@@ -416,15 +416,15 @@ int LoadOptionsClass::Process() {
     if (input == KN_RETURN) {
       switch (Style) {
         case SAVE:
-          input = (KeyNumType)(BUTTON_SAVE | KN_BUTTON);
+          input = static_cast<KeyNumType>(BUTTON_SAVE | KN_BUTTON);
           break;
 
         case LOAD:
-          input = (KeyNumType)(BUTTON_LOAD | KN_BUTTON);
+          input = static_cast<KeyNumType>(BUTTON_LOAD | KN_BUTTON);
           break;
 
         case WWDELETE:
-          input = (KeyNumType)(BUTTON_DELETE | KN_BUTTON);
+          input = static_cast<KeyNumType>(BUTTON_DELETE | KN_BUTTON);
           break;
       }
     }

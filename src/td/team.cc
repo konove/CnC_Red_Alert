@@ -77,6 +77,7 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mouse.h"
+#include "td/object.h"
 #include "td/target.h"
 #include "td/teamtype.h"
 #include "td/techno.h"
@@ -157,16 +158,16 @@ void TeamClass::Init() {
 void* TeamClass::operator new(size_t) throw() {
   void* ptr = Teams.Allocate();
   if (ptr) {
-    ((TeamClass*)ptr)->IsActive = true;
+    static_cast<TeamClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
 
 void TeamClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TeamClass*)ptr)->IsActive = false;
+    static_cast<TeamClass*>(ptr)->IsActive = false;
   }
-  Teams.Free((TeamClass*)ptr);
+  Teams.Free(static_cast<TeamClass*>(ptr));
 }
 
 TeamClass::~TeamClass() {
@@ -435,7 +436,7 @@ void TeamClass::AI() {
     DoType doaction = Random_Pick(1, 2) == 1 ? DO_GESTURE1 : DO_GESTURE2;
     while (techno) {
       if (!techno->IsInLimbo && techno->What_Am_I() == RTTI_INFANTRY) {
-        ((InfantryClass*)techno)->Do_Action(doaction);
+        dynamic_cast<InfantryClass*>(techno)->Do_Action(doaction);
       }
 
       if (IsReforming || IsForcedActive) {
@@ -494,7 +495,8 @@ void TeamClass::AI() {
       Target = TARGET_NONE;
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
-          Assign_Mission_Target(::As_Target((CELL)mission->Argument));
+          Assign_Mission_Target(
+              ::As_Target(static_cast<CELL>(mission->Argument)));
           break;
 
         case TMISSION_MOVE:
@@ -793,7 +795,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   **	Decrement the counter for the team class. There is now one less of this
   *object type.
   */
-  if ((unsigned)typeindex < Class->ClassCount) {
+  if (static_cast<unsigned>(typeindex) < Class->ClassCount) {
     Quantity[typeindex]--;
   }
 
@@ -923,7 +925,7 @@ int TeamClass::Recruit(int typeindex) {
             FootClass* f = unit->Attached_Object();
             while (f) {
               Add(f);
-              f = (FootClass*)f->Next;
+              f = dynamic_cast<FootClass*>(f->Next);
             }
           }
         }
@@ -1041,7 +1043,7 @@ void TeamClass::Calc_Center(CELL& center, CELL& obj_center) const {
   if (quantity) {
     x /= quantity;
     y /= quantity;
-    CELL cell = XY_Cell((int)x, (int)y);
+    CELL cell = XY_Cell(static_cast<int>(x), static_cast<int>(y));
     center = cell;
   }
 }
@@ -1086,8 +1088,8 @@ void TeamClass::Took_Damage(FootClass*, ResultType result,
             TechnoClass* techno = As_Techno(Target);
 
             if (techno &&
-                ((TechnoTypeClass const&)techno->Class_Of()).Primary !=
-                    WEAPON_NONE) {
+                dynamic_cast<TechnoTypeClass const&>(techno->Class_Of())
+                        .Primary != WEAPON_NONE) {
               if (techno->In_Range(Cell_Coord(Center), 0)) {
                 return;
               }
@@ -1241,7 +1243,7 @@ void TeamClass::Coordinate_Move() {
           } else {
             if (unit->Distance(Target) / ICON_LEPTON_W > STRAY_DISTANCE ||
                 (unit->What_Am_I() == RTTI_AIRCRAFT &&
-                 ((AircraftClass*)unit)->Altitude > 0 &&
+                 dynamic_cast<AircraftClass*>(unit)->Altitude > 0 &&
                  Class->MissionList[CurrentMission + 1].Mission !=
                      TMISSION_MOVE)) {
               if (unit->Mission != MISSION_MOVE) {

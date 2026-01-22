@@ -136,9 +136,9 @@ int Distance(COORDINATE coord1, COORDINATE coord2) {
   diff2 = Coord_X(coord1) - Coord_X(coord2);
   if (diff2 < 0) diff2 = -diff2;
   if (diff1 > diff2) {
-    return diff1 + (unsigned)diff2 / 2;
+    return diff1 + static_cast<unsigned>(diff2) / 2;
   }
-  return diff2 + (unsigned)diff1 / 2;
+  return diff2 + static_cast<unsigned>(diff1) / 2;
 }
 
 /***********************************************************************************************
@@ -166,7 +166,7 @@ int Distance(COORDINATE coord1, COORDINATE coord2) {
  *   01/07/1995 JLB : Manually calculates spillage list for large objects. *
  *=============================================================================================*/
 short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
-  static short const _MoveSpillage[(int)FACING_COUNT + 1][5] = {
+  static short const _MoveSpillage[static_cast<int>(FACING_COUNT) + 1][5] = {
       {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
       {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
       {0, 1, REFRESH_EOL, 0, 0},                             // E
@@ -299,8 +299,8 @@ short const* Coord_Spillage_List(COORDINATE coord, Rect const& rect,
   LEPTON_COMPOSITE starty;
   LEPTON_COMPOSITE endx;
   LEPTON_COMPOSITE endy;
-  startx.Raw = (int)x + (short)Pixel_To_Lepton(rect.X);
-  starty.Raw = (int)y + (short)Pixel_To_Lepton(rect.Y);
+  startx.Raw = static_cast<int>(x) + static_cast<short>(Pixel_To_Lepton(rect.X));
+  starty.Raw = static_cast<int>(y) + static_cast<short>(Pixel_To_Lepton(rect.Y));
   endx.Raw = startx.Raw + Pixel_To_Lepton(rect.Width - 1);
   endy.Raw = starty.Raw + Pixel_To_Lepton(rect.Height - 1);
 

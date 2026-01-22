@@ -1916,25 +1916,25 @@ typedef enum FacingType : int8_t {
 } FacingType;
 
 inline FacingType operator+(FacingType f1, FacingType f2) {
-  return (FacingType)((int)f1 + (int)f2 & 0x07);
+  return static_cast<FacingType>((int)f1 + (int)f2 & 0x07);
 }
 inline FacingType operator+(FacingType f1, int f2) {
-  return (FacingType)((int)f1 + f2 & 0x07);
+  return static_cast<FacingType>((int)f1 + f2 & 0x07);
 }
 
 inline FacingType operator-(FacingType f1, FacingType f2) {
-  return (FacingType)((int)f1 - (int)f2 & 0x07);
+  return static_cast<FacingType>((int)f1 - (int)f2 & 0x07);
 }
 inline FacingType operator-(FacingType f1, int f2) {
-  return (FacingType)((int)f1 - f2 & 0x07);
+  return static_cast<FacingType>((int)f1 - f2 & 0x07);
 }
 
 inline FacingType operator+=(FacingType& f1, FacingType f2) {
-  f1 = (FacingType)((int)f1 + (int)f2 & 0x07);
+  f1 = static_cast<FacingType>((int)f1 + (int)f2 & 0x07);
   return f1;
 }
 inline FacingType operator+=(FacingType& f1, int f2) {
-  f1 = (FacingType)((int)f1 + f2 & 0x07);
+  f1 = static_cast<FacingType>((int)f1 + f2 & 0x07);
   return f1;
 }
 
@@ -1953,10 +1953,10 @@ typedef enum DirType : uint8_t {
   DIR_MAX = 254
 } DirType;
 inline DirType operator+(DirType f1, DirType f2) {
-  return (DirType)((int)f1 + (int)f2 & 0x00FF);
+  return static_cast<DirType>((int)f1 + (int)f2 & 0x00FF);
 }
 inline DirType operator+(DirType f1, int f2) {
-  return (DirType)((int)f1 + f2 & 0x00FF);
+  return static_cast<DirType>((int)f1 + f2 & 0x00FF);
 }
 
 /****************************************************************************

@@ -68,7 +68,7 @@
 
 ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
   if (SpeedAdd != MPH_IMMOBILE) {
-    int actual = (int)SpeedAdd + SpeedAccum;
+    int actual = static_cast<int>(SpeedAdd) + SpeedAccum;
     div_t result = div(actual, PIXEL_LEPTON_W);
     SpeedAccum = result.rem;
     actual -= result.rem;
@@ -131,5 +131,5 @@ ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
  *as guiding value.                                    *
  *=============================================================================================*/
 void FlyClass::Fly_Speed(int speed, MPHType maximum) {
-  SpeedAdd = (MPHType)Fixed_To_Cardinal(maximum, speed);
+  SpeedAdd = static_cast<MPHType>(Fixed_To_Cardinal(maximum, speed));
 }

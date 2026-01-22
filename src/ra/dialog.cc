@@ -433,7 +433,7 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y,
   /*
   **	A gradient font always requires special fixups for the palette
   */
-  int point = flag & (TextPrintType)0x000F;
+  int point = flag & static_cast<TextPrintType>(0x000F);
   if (point == TPF_VCR || point == TPF_6PT_GRAD || point == TPF_METAL12 ||
       point == TPF_EFNT || point == TPF_TYPE) {
     /*

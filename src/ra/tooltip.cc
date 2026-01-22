@@ -119,7 +119,7 @@ void ToolTipClass::Show() {
       wShowUse = wShow;
       szTipUse = szTip;
     } else {
-      IconListClass* pIconList = (IconListClass*)pGadget;
+      IconListClass* pIconList = static_cast<IconListClass*>(pGadget);
       iLastIconListIndex = pIconList->IndexUnderMouse();
       if (iLastIconListIndex < 0) {
         //	Nothing to show.
@@ -214,7 +214,7 @@ bool ToolTipClass::bOverDifferentLine() const {
   //	bIconList must be true if this is being used.
   //	Returns true if the iconlist line that the mouse is over is different
   // than the last time Show() was called.
-  return ((IconListClass*)pGadget)->IndexUnderMouse() != iLastIconListIndex;
+  return static_cast<IconListClass*>(pGadget)->IndexUnderMouse() != iLastIconListIndex;
 }
 
 //***********************************************************************************************
@@ -238,7 +238,7 @@ bool SaveSurfaceRect(int xRect, int yRect, int wRect, int hRect, char* pBits,
         draw_window.Get_Width();  //	Meaning of "Pitch" in this class seems
                                   // to mean the eol skip.
     const char* pLineSurf =
-        (char*)draw_window.Get_Offset() + xRect + yRect * iPitchSurf;
+        static_cast<char*>(draw_window.Get_Offset()) + xRect + yRect * iPitchSurf;
     char* pLineSave = pBits;
 
     //	ajw - Should copy DWORDs here instead for speed.
@@ -273,7 +273,7 @@ bool RestoreSurfaceRect(int xRect, int yRect, int wRect, int hRect,
         draw_window.Get_Width();  //	Meaning of "Pitch" in this class seems
                                   // to mean the eol skip.
     char* pLineSurf =
-        (char*)draw_window.Get_Offset() + xRect + yRect * iPitchSurf;
+        static_cast<char*>(draw_window.Get_Offset()) + xRect + yRect * iPitchSurf;
     const char* pLineSave = pBits;
 
     //	ajw - Should copy DWORDs here instead for speed.

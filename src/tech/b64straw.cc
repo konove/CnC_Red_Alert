@@ -97,7 +97,7 @@ int Base64Straw::Get(void* source, int slen) {
       memmove(source, &to[tosize - Counter], len);
       Counter -= len;
       slen -= len;
-      source = (char*)source + len;
+      source = static_cast<char*>(source) + len;
       total += len;
     }
     if (slen == 0) break;

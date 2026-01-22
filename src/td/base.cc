@@ -369,8 +369,9 @@ BuildingClass* BaseClass::Get_Building(int index) {
   for (int i = 0; i < 4; i++) {
     if (obj[i] && obj[i]->Coord == Nodes[index].Coord &&
         obj[i]->What_Am_I() == RTTI_BUILDING &&
-        ((BuildingClass*)obj[i])->Class->Type == Nodes[index].Type) {
-      bldg = (BuildingClass*)obj[i];
+        dynamic_cast<BuildingClass*>(obj[i])->Class->Type ==
+            Nodes[index].Type) {
+      bldg = dynamic_cast<BuildingClass*>(obj[i]);
       break;
     }
   }

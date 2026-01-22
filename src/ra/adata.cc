@@ -1985,7 +1985,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, char const* name, int size,
                              bool isflame, fixed damage, int delaytime,
                              int start, int loopstart, int loopend, int stages,
                              int loops, VocType soundid, AnimType chainto)
-    : ObjectTypeClass(RTTI_ANIMTYPE, int(anim), true, true, false, false, true,
+    : ObjectTypeClass(RTTI_ANIMTYPE, static_cast<int>(anim), true, true, false, false, true,
                       true, false, TXT_NONE, name),
       IsNormalized(isnormal),
       IsGroundLayer(ground),
@@ -2045,7 +2045,7 @@ void* AnimTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void AnimTypeClass::operator delete(void* pointer) {
-  AnimTypes.Free((AnimTypeClass*)pointer);
+  AnimTypes.Free(static_cast<AnimTypeClass*>(pointer));
 }
 
 /***********************************************************************************************

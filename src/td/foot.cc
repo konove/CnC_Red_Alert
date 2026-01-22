@@ -301,7 +301,7 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 void FootClass::Set_Speed(int speed) {
   speed &= 0xFF;
-  (unsigned char&)Speed = speed;
+  static_cast<unsigned char&>(Speed) = speed;
 }
 
 /***********************************************************************************************
@@ -386,15 +386,15 @@ bool FootClass::Basic_Path() {
     //		IsFindPath = true;
     if (Can_Enter_Cell(cell) == MOVE_NO && Distance(NavCom) > 0x0300) {
       static int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
-      FacingType f2 =
-          (FacingType)((unsigned)::Direction(cell, Coord_Cell(Coord)) >> 5);
+      FacingType f2 = static_cast<FacingType>(
+          (unsigned)::Direction(cell, Coord_Cell(Coord)) >> 5);
 
       for (unsigned index = 0;
            index < sizeof(_faceadjust) / sizeof(_faceadjust[0]); index++) {
         CELL cell2;
 
-        cell2 =
-            Adjacent_Cell(cell, (FacingType)(f2 + _faceadjust[index] & 0x7));
+        cell2 = Adjacent_Cell(
+            cell, static_cast<FacingType>(f2 + _faceadjust[index] & 0x7));
         if (Can_Enter_Cell(cell2, FACING_NONE) <= MOVE_CLOAK) {
           cell = cell2;
           break;
@@ -524,7 +524,7 @@ bool FootClass::Basic_Path() {
       if (found1) {
         Fixup_Path(&path1);
         memcpy(&Path[0], &workpath1[0],
-               std::min(path1.Length, (int)sizeof(Path)));
+               std::min(path1.Length, static_cast<int>(sizeof(Path))));
       }
 
       Mark(MARK_DOWN);
@@ -654,8 +654,7 @@ int FootClass::Mission_Guard() {
   if (!Target_Something_Nearby(THREAT_RANGE)) {
     Random_Animate();
   }
-  return TICKS_PER_SECOND +
-         Random_Picky(0, 4, nullptr, 0);
+  return TICKS_PER_SECOND + Random_Picky(0, 4, nullptr, 0);
 }
 
 /***********************************************************************************************
@@ -678,7 +677,8 @@ int FootClass::Mission_Hunt() {
     Random_Animate();
   } else {
     if (What_Am_I() == RTTI_INFANTRY &&
-        ((InfantryTypeClass const&)Class_Of()).Type == INFANTRY_E7) {
+        dynamic_cast<InfantryTypeClass const&>(Class_Of()).Type ==
+            INFANTRY_E7) {
       Assign_Destination(TarCom);
       Assign_Mission(MISSION_CAPTURE);
     } else {
@@ -905,8 +905,7 @@ void FootClass::Approach_Target() {
       */
       BuildingClass* obj = As_Building(TarCom);
       if (obj) {
-        maxrange +=
-            (obj->Class->Width() + obj->Class->Height()) * (0x100 / 4);
+        maxrange += (obj->Class->Width() + obj->Class->Height()) * (0x100 / 4);
       }
 
       /*
@@ -989,7 +988,8 @@ void FootClass::Approach_Target() {
  * HISTORY: * 12/23/1994 JLB : Created. * 07/27/1995 JLB : Greatly simplified. *
  *=============================================================================================*/
 int FootClass::Mission_Guard_Area() {
-  if (What_Am_I() == RTTI_UNIT && ((UnitClass*)this)->Class->IsToHarvest) {
+  if (What_Am_I() == RTTI_UNIT &&
+      dynamic_cast<UnitClass*>(this)->Class->IsToHarvest) {
     Assign_Mission(MISSION_HARVEST);
     return 1 + Random_Pick(1, 10);
   }
@@ -1022,8 +1022,7 @@ int FootClass::Mission_Guard_Area() {
   } else {
     Approach_Target();
   }
-  return TICKS_PER_SECOND +
-         Random_Picky(0, 4, nullptr, 0);
+  return TICKS_PER_SECOND + Random_Picky(0, 4, nullptr, 0);
 }
 
 /***********************************************************************************************
@@ -1079,7 +1078,8 @@ bool FootClass::Unlimbo(COORDINATE coord, DirType dir) {
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
 void FootClass::Assign_Mission(MissionType order) {
-  if (What_Am_I() != RTTI_UNIT || *(UnitClass*)this != UNIT_GUNBOAT) {
+  if (What_Am_I() != RTTI_UNIT ||
+      *dynamic_cast<UnitClass*>(this) != UNIT_GUNBOAT) {
     Path[0] = FACING_NONE;
   }
   TechnoClass::Assign_Mission(order);
@@ -1263,7 +1263,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
 
     case ACTION_ENTER:
       if (Can_Player_Move() && object && object->Is_Techno() &&
-          !((RadioClass*)object)->In_Radio_Contact()) {
+          !dynamic_cast<RadioClass*>(object)->In_Radio_Contact()) {
         Player_Assign_Mission(MISSION_ENTER, TARGET_NONE, object->As_Target());
       }
       break;
@@ -1389,11 +1389,13 @@ void FootClass::Per_Cell_Process(bool center) {
   **	Shorten the path if the target is now within weapon range of this
   **	unit and this unit is on an attack type mission.
   */
-  if (What_Am_I() != RTTI_UNIT || *(UnitClass*)this != UNIT_GUNBOAT) {
+  if (What_Am_I() != RTTI_UNIT ||
+      *dynamic_cast<UnitClass*>(this) != UNIT_GUNBOAT) {
     bool inrange = In_Range(TarCom);
     TechnoClass const* techno = As_Techno(TarCom);
     if (techno && techno->What_Am_I() != RTTI_BUILDING) {
-      inrange = In_Range(((FootClass const*)techno)->Likely_Coord());
+      inrange =
+          In_Range(dynamic_cast<FootClass const*>(techno)->Likely_Coord());
     }
 
     if (Target_Legal(TarCom) &&
@@ -1515,7 +1517,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     *motion, *	then it doesn't need furthur movement instructions.
     */
     case RADIO_NEED_TO_MOVE:
-      param = (long)NavCom;
+      param = static_cast<long>(NavCom);
       if (!Target_Legal(NavCom)) {
         return RADIO_ROGER;
       }
@@ -1526,14 +1528,14 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     **	for complex loading and unloading missions.
     */
     case RADIO_MOVE_HERE:
-      if (NavCom != (TARGET)param) {
-        if (::As_Target(Coord_Cell(Coord)) == (TARGET)param) {
+      if (NavCom != static_cast<TARGET>(param)) {
+        if (::As_Target(Coord_Cell(Coord)) == static_cast<TARGET>(param)) {
           return RADIO_YEA_NOW_WHAT;
         } else {
           if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
             Assign_Mission(MISSION_MOVE);
           }
-          Assign_Destination((TARGET)param);
+          Assign_Destination(static_cast<TARGET>(param));
         }
       }
       return RADIO_ROGER;
@@ -1713,7 +1715,8 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
     ** Next we need to figure out how fast the unit moves because this
     ** decreases the distance penalty.
     */
-    speed = std::max((unsigned)Techno_Type_Class()->MaxSpeed, (unsigned)1);
+    speed = std::max(static_cast<unsigned>(Techno_Type_Class()->MaxSpeed),
+                     static_cast<unsigned>(1));
 
     int ratio = speed > 0 ? std::max(dist / speed, 1) : 1;
 
@@ -1742,9 +1745,9 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
 void FootClass::Death_Announcement(TechnoClass const* source) const {
   if (IsDiscoveredByPlayer || IsOwnedByPlayer) {
     if (!source || source->What_Am_I() != RTTI_INFANTRY ||
-        *(InfantryClass const*)source != INFANTRY_RAMBO) {
+        *dynamic_cast<InfantryClass const*>(source) != INFANTRY_RAMBO) {
       if (What_Am_I() == RTTI_INFANTRY &&
-          ((InfantryTypeClass const&)Class_Of()).IsCivilian &&
+          dynamic_cast<InfantryTypeClass const&>(Class_Of()).IsCivilian &&
           !((InfantryClass*)this)->IsTechnician) {
         if (Options.IsDeathAnnounce) Speak(VOX_DEAD_CIV);
       } else {
@@ -1931,7 +1934,7 @@ bool FootClass::Can_Demolish() const {
     case RTTI_AIRCRAFT:
       if (In_Radio_Contact() &&
           Contact_With_Whom()->What_Am_I() == RTTI_BUILDING &&
-          *(BuildingClass*)Contact_With_Whom() == STRUCT_REPAIR &&
+          *dynamic_cast<BuildingClass*>(Contact_With_Whom()) == STRUCT_REPAIR &&
           Distance(Contact_With_Whom()) < 0x0080) {
         return true;
       }

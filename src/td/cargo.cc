@@ -121,7 +121,7 @@ void CargoClass::Attach(FootClass* object) {
   object = CargoHold;
   while (object) {
     Quantity++;
-    object = (FootClass*)object->Next;
+    object = dynamic_cast<FootClass*>(object->Next);
   }
 }
 
@@ -146,7 +146,7 @@ FootClass* CargoClass::Detach_Object() {
   FootClass* unit = Attached_Object();
 
   if (unit) {
-    CargoHold = (FootClass*)unit->Next;
+    CargoHold = dynamic_cast<FootClass*>(unit->Next);
     unit->Next = nullptr;
     Quantity--;
   }

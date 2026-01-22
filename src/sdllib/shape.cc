@@ -24,6 +24,6 @@ void* Extract_Shape(void const* buffer, int shape) {
 }
 
 void Set_Shape_Buffer(void* buffer, int size) {
-  _ShapeBuffer = (char*)buffer;
+  _ShapeBuffer = static_cast<char*>(buffer);
   _ShapeBufferSize = size;
 }

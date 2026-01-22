@@ -408,9 +408,11 @@ void EventClass::Execute() {
     case ALLY:
       house = Houses.Raw_Ptr(Data.General.Value);
       if (Houses.Raw_Ptr(ID)->Is_Ally(house)) {
-        Houses.Raw_Ptr(ID)->Make_Enemy((HousesType)Data.General.Value);
+        Houses.Raw_Ptr(ID)->Make_Enemy(
+            static_cast<HousesType>(Data.General.Value));
       } else {
-        Houses.Raw_Ptr(ID)->Make_Ally((HousesType)Data.General.Value);
+        Houses.Raw_Ptr(ID)->Make_Ally(
+            static_cast<HousesType>(Data.General.Value));
       }
       break;
 
@@ -563,8 +565,9 @@ void EventClass::Execute() {
         switch (techno->What_Am_I()) {
           case RTTI_INFANTRY:
           case RTTI_UNIT:
-            if (((FootClass*)techno)->Team) {
-              ((FootClass*)techno)->Team->Remove((FootClass*)techno);
+            if (dynamic_cast<FootClass*>(techno)->Team) {
+              dynamic_cast<FootClass*>(techno)->Team->Remove(
+                  dynamic_cast<FootClass*>(techno));
             }
             break;
         }
@@ -588,7 +591,8 @@ void EventClass::Execute() {
             (techno->What_Am_I() == RTTI_INFANTRY ||
              techno->What_Am_I() == RTTI_UNIT ||
              techno->What_Am_I() == RTTI_AIRCRAFT)) {
-          ((FootClass*)techno)->ArchiveTarget = Data.MegaMission.Target;
+          dynamic_cast<FootClass*>(techno)->ArchiveTarget =
+              Data.MegaMission.Target;
           techno->Assign_Target(TARGET_NONE);
           techno->Assign_Destination(Data.MegaMission.Target);
         } else {
@@ -638,7 +642,7 @@ void EventClass::Execute() {
     case SPECIAL_PLACE:
       CCDebugString("C&C95 - Special blast packet received\n");
       Houses.Raw_Ptr(ID)->Place_Special_Blast(
-          (SpecialWeaponType)Data.Special.ID, Data.Special.Cell);
+          static_cast<SpecialWeaponType>(Data.Special.ID), Data.Special.Cell);
       break;
 
     /*

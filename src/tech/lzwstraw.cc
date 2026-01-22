@@ -147,7 +147,7 @@ int LZWStraw::Get(void* destbuf, int slen) {
                                 Counter],
                 len);
       }
-      destbuf = (char*)destbuf + len;
+      destbuf = static_cast<char*>(destbuf) + len;
       slen -= len;
       Counter -= len;
       total += len;
@@ -168,13 +168,13 @@ int LZWStraw::Get(void* destbuf, int slen) {
     } else {
       // Compress
       BlockHeader.UncompCount =
-          (unsigned short)Straw::Get(source_buffer_, BlockSize);
+          static_cast<unsigned short>(Straw::Get(source_buffer_, BlockSize));
       if (BlockHeader.UncompCount == 0) {
         break;
       }
-      BlockHeader.CompCount = (unsigned short)LZW_Compress(
-          Buffer(source_buffer_, BlockHeader.UncompCount),
-          Buffer(&output_buffer_[sizeof(BlockHeader)]));
+      BlockHeader.CompCount = static_cast<unsigned short>(
+          LZW_Compress(Buffer(source_buffer_, BlockHeader.UncompCount),
+                       Buffer(&output_buffer_[sizeof(BlockHeader)])));
       memmove(output_buffer_, &BlockHeader, sizeof(BlockHeader));
       Counter = BlockHeader.CompCount + sizeof(BlockHeader);
     }

@@ -155,8 +155,8 @@ BulletClass::~BulletClass() {
     *location possible to *	the bullet.
     */
     if (Payback != nullptr && Payback->What_Am_I() == RTTI_INFANTRY &&
-        ((InfantryClass*)Payback)->Class->IsDog) {
-      InfantryClass* dog = (InfantryClass*)Payback;
+        dynamic_cast<InfantryClass*>(Payback)->Class->IsDog) {
+      InfantryClass* dog = dynamic_cast<InfantryClass*>(Payback);
       if (dog) {
         bool unlimbo = false;
         COORDINATE newcoord = Coord;
@@ -179,7 +179,7 @@ BulletClass::~BulletClass() {
         */
         for (int i = -1; i < 8; i++) {
           if (i != -1) {
-            newcoord = Adjacent_Cell(Coord, FacingType(i));
+            newcoord = Adjacent_Cell(Coord, static_cast<FacingType>(i));
           }
           ScenarioInit++;
           if (dog->Unlimbo(newcoord, dog->PrimaryFacing)) {
@@ -226,7 +226,7 @@ BulletClass::~BulletClass() {
 void* BulletClass::operator new(size_t) throw() {
   void* ptr = Bullets.Allocate();
   if (ptr) {
-    ((BulletClass*)ptr)->IsActive = true;
+    static_cast<BulletClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -247,9 +247,9 @@ void* BulletClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void BulletClass::operator delete(void* ptr) {
   if (ptr) {
-    ((BulletClass*)ptr)->IsActive = false;
+    static_cast<BulletClass*>(ptr)->IsActive = false;
   }
-  Bullets.Free((BulletClass*)ptr);
+  Bullets.Free(static_cast<BulletClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -547,7 +547,7 @@ int BulletClass::Shape_Number() const {
   **	For tumbling projectiles, fetch offset stage.
   */
   if (Class->Tumble > 0) {
-    shapenum += (long)Frame % Class->Tumble;
+    shapenum += static_cast<long>(Frame) % Class->Tumble;
   }
 
   return shapenum;
@@ -680,7 +680,7 @@ void BulletClass::Detach(TARGET target, bool all) {
     ** in limbo, then don't detach.  If for any other reason, detach.
     */
     if (Payback->What_Am_I() != RTTI_INFANTRY ||
-        !((InfantryClass*)Payback)->Class->IsDog) {
+        !dynamic_cast<InfantryClass*>(Payback)->Class->IsDog) {
       Payback = nullptr;
     }
   }
@@ -751,14 +751,16 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       */
       if (/*Class->ROT != 0 ||*/ Class->IsArcing) {
         int scatterdist = ::Distance(coord, tcoord) / 16 - 0x0040;
-        scatterdist = std::min(scatterdist, int(Rule.HomingScatter));
+        scatterdist =
+            std::min(scatterdist, static_cast<int>(Rule.HomingScatter));
         scatterdist = std::max(scatterdist, 0);
 
-        dir = (DirType)(dir + (Random_Pick(0, 10) - 5) & 0x00FF);
+        dir = static_cast<DirType>(dir + (Random_Pick(0, 10) - 5) & 0x00FF);
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
         int scatterdist = ::Distance(coord, tcoord) / 16 - 0x0040;
-        scatterdist = std::min(scatterdist, int(Rule.BallisticScatter));
+        scatterdist =
+            std::min(scatterdist, static_cast<int>(Rule.BallisticScatter));
         scatterdist = std::max(scatterdist, 0);
         tcoord = Coord_Move(tcoord, dir, Random_Pick(0, scatterdist));
       }
@@ -798,7 +800,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       speed = std::max(speed, 25);
     }
     if (!Class->IsDropping) {
-      Fly_Speed(255, (MPHType)speed);
+      Fly_Speed(255, static_cast<MPHType>(speed));
     }
 
     /*
@@ -1014,7 +1016,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   **	flight logic.
   */
   if ((Payback != nullptr && Payback->What_Am_I() == RTTI_INFANTRY &&
-       ((InfantryClass*)Payback)->Class->IsDog) ||
+       dynamic_cast<InfantryClass*>(Payback)->Class->IsDog) ||
       (!forced && !Class->IsArcing && Class->ROT == 0 && Fuse_Target())) {
     Coord = Fuse_Target();
   }
@@ -1068,7 +1070,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   if (anim >= ANIM_WATER_EXP1 && anim <= ANIM_WATER_EXP3 &&
       Is_Target_Vessel(TarCom)) {
     if (Coord_Cell(Coord) == Coord_Cell(As_Vessel(TarCom)->Center_Coord())) {
-      anim = (AnimType)(ANIM_VEH_HIT1 + (anim - ANIM_WATER_EXP1));
+      anim = static_cast<AnimType>(ANIM_VEH_HIT1 + (anim - ANIM_WATER_EXP1));
     }
   }
 

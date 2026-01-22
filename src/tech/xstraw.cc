@@ -77,7 +77,7 @@ int BufferStraw::Get(void* source, int slen) {
     }
 
     if (len > 0) {
-      memmove(source, (char*)BufferPtr.Get_Buffer() + Index, len);
+      memmove(source, static_cast<char*>(BufferPtr.Get_Buffer()) + Index, len);
     }
 
     Index += len;

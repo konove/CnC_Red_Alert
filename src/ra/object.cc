@@ -1119,7 +1119,7 @@ bool ObjectClass::Select() {
   }
 
   if (!Debug_Map && Can_Player_Move() && Is_Techno() &&
-      ((TechnoClass*)this)->IsALoaner) {
+      dynamic_cast<TechnoClass*>(this)->IsALoaner) {
     return false;
   }
 
@@ -1152,7 +1152,7 @@ bool ObjectClass::Select() {
       Unselect_All();
     }
   }
-  if (((TechnoTypeClass const&)Class_Of()).IsLeader) {
+  if (dynamic_cast<TechnoTypeClass const&>(Class_Of()).IsLeader) {
     CurrentObject.Add_Head(this);
   } else {
     CurrentObject.Add(this);
@@ -1553,7 +1553,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
       *victim and no *	damage to others.
       */
       if (source && source->What_Am_I() == RTTI_INFANTRY &&
-          ((InfantryClass*)source)->Class->IsDog) {
+          dynamic_cast<InfantryClass*>(source)->Class->IsDog) {
         if (source->TarCom == As_Target()) {
           damage = Strength;
         } else {
@@ -1615,8 +1615,10 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
         Record_The_Kill(source);
         result = RESULT_DESTROYED;
         if (this->Is_Techno()) {
-          if (this == As_Object(((TechnoClass*)this)->House->UnitToTeleport))
-            ((TechnoClass*)this)->House->UnitToTeleport = 0;
+          if (this ==
+              As_Object(
+                  dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport))
+            dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport = 0;
         }
         Detach_All();
         break;
@@ -1719,7 +1721,7 @@ bool ObjectClass::Mark(MarkType mark) {
     CELL cell = 0;
     TechnoClass* tech;
     if (Is_Techno()) {
-      tech = (TechnoClass*)this;
+      tech = dynamic_cast<TechnoClass*>(this);
       threat = tech->Risk();
       house = tech->Owner();
       cell = Coord_Cell(Coord);

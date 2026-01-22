@@ -239,7 +239,7 @@ void Special_Dialog(bool simple) {
 
       default:
         int index = (input & ~KN_BUTTON) - 100;
-        if ((unsigned)index < sizeof(_options) / sizeof(_options[0])) {
+        if (static_cast<unsigned>(index) < sizeof(_options) / sizeof(_options[0])) {
           _options[index].Setting = _options[index].Button->IsOn;
         }
         break;
@@ -297,7 +297,7 @@ void PWEditClass::Draw_Text(char const* text) {
     if (Has_Focus()) {
       flags = TPF_BRIGHT_COLOR;
     } else {
-      flags = (TextPrintType)0;
+      flags = static_cast<TextPrintType>(0);
     }
 
     Conquer_Clip_Text_Print(buffer, X + 1, Y + 1, Color, TBLACK,

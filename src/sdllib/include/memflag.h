@@ -88,7 +88,7 @@ void Mem_Copy(void const* source, void* dest, unsigned long bytes_to_copy);
 }
 
 inline void* Add_Long_To_Pointer(void const* ptr, long size) {
-  return (void*)((char const*)ptr + size);
+  return (void*)(static_cast<char const*>(ptr) + size);
 }
 
 extern void (*Memory_Error)();

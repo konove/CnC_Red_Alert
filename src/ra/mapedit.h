@@ -75,12 +75,12 @@
 */
 enum MapEdit1Enum {
   MAX_EDIT_OBJECTS =  // max # of ObjectTypeClasses allowed
-  (int)TEMPLATE_COUNT + (int)OVERLAY_COUNT + (int)SMUDGE_COUNT +
-  (int)TERRAIN_COUNT + (int)UNIT_COUNT + (int)INFANTRY_COUNT +
-  (int)VESSEL_COUNT + (int)STRUCT_COUNT,
+  static_cast<int>(TEMPLATE_COUNT) + static_cast<int>(OVERLAY_COUNT) + static_cast<int>(SMUDGE_COUNT) +
+  static_cast<int>(TERRAIN_COUNT) + static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) +
+  static_cast<int>(VESSEL_COUNT) + static_cast<int>(STRUCT_COUNT),
 
   MAX_TEAM_CLASSES =  // max # ObjectTypeClasses for a team
-  (int)UNIT_COUNT + (int)INFANTRY_COUNT + (int)AIRCRAFT_COUNT,
+  static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) + static_cast<int>(AIRCRAFT_COUNT),
 
   //	NUM_EDIT_MISSIONS = 6,			// # missions that can be
   // assigned an object

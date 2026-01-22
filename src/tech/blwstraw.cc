@@ -90,7 +90,7 @@ int BlowStraw::Get(void* source, int slen) {
       int sublen = slen < Counter ? slen : Counter;
       memmove(source, &Buffer[sizeof(Buffer) - Counter], sublen);
       Counter -= sublen;
-      source = (char*)source + sublen;
+      source = static_cast<char*>(source) + sublen;
       slen -= sublen;
       total += sublen;
     }

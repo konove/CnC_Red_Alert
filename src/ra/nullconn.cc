@@ -188,7 +188,7 @@ int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
   ------------------------------------------------------------------------*/
   header = (SerialHeaderType*)SendBuf;
   header->MagicNumber = PACKET_SERIAL_START;
-  header->Length = (short)buflen;
+  header->Length = static_cast<short>(buflen);
   header->MagicNumber2 = PACKET_SERIAL_VERIFY;
 
   sendlen = sizeof(SerialHeaderType);
@@ -205,7 +205,7 @@ int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
   Send the data
   ------------------------------------------------------------------------*/
 #ifdef WIN32
-  SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, (int)sendlen);
+  SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, static_cast<int>(sendlen));
   return true;
 
 #else   // WIN32
@@ -251,10 +251,10 @@ int NullModemConnClass::Compute_CRC(char* buf, int buflen) {
     }
 
     sum <<= 1;
-    sum += hibit + (unsigned char)buf[i];
+    sum += hibit + static_cast<unsigned char>(buf[i]);
   }
 
-  return (int)sum;
+  return static_cast<int>(sum);
 
 } /* end of Compute_CRC */
 

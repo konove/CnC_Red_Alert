@@ -14,29 +14,29 @@ extern GroundType Ground[LAND_COUNT];
 **	These are the access passwords used to activate cheat mode, editor mode,
 **	and special game options.
 */
-constexpr long PlayCodes[] = {long(0xE0792D6D),  // Dwight Okahara
-                              long(0x90046ECF),  // Paul S. Mudra
-                              long(0xC3EE9A26),  // Frank Klepaki
-                              long(0xED382178),  // Ed Del Castillo
+constexpr long PlayCodes[] = {static_cast<long>(0xE0792D6D),  // Dwight Okahara
+                              static_cast<long>(0x90046ECF),  // Paul S. Mudra
+                              static_cast<long>(0xC3EE9A26),  // Frank Klepaki
+                              static_cast<long>(0xED382178),  // Ed Del Castillo
                               0L};
 
-constexpr long CheatCodes[] = {long(0xA0E2AB53),  // Joseph Hewitt
-                               long(0x00532693),  // Mike Lightner
-                               long(0x7DDFF824),  // Joe Bostic
-                               long(0x2CB5CF01),  // Phil Gorrow
-                               long(0xB5B63531),  // Bill Randolph
-                               long(0xDFABC23A),  // Adam Isgreen
-                               long(0x52B19A22),  // Erik Yeo
-                               long(0xBE79088C),  // David Dettmer
-                               long(0xB216AE7E),  // Barry Green
-                               long(0x0E07B213),  // Steve Tall
+constexpr long CheatCodes[] = {static_cast<long>(0xA0E2AB53),  // Joseph Hewitt
+                               static_cast<long>(0x00532693),  // Mike Lightner
+                               static_cast<long>(0x7DDFF824),  // Joe Bostic
+                               static_cast<long>(0x2CB5CF01),  // Phil Gorrow
+                               static_cast<long>(0xB5B63531),  // Bill Randolph
+                               static_cast<long>(0xDFABC23A),  // Adam Isgreen
+                               static_cast<long>(0x52B19A22),  // Erik Yeo
+                               static_cast<long>(0xBE79088C),  // David Dettmer
+                               static_cast<long>(0xB216AE7E),  // Barry Green
+                               static_cast<long>(0x0E07B213),  // Steve Tall
                                0L};
 
-constexpr long EditorCodes[] = {long(0xA2C09326),  // Erik Yeo
-                                long(0x1F944BB3),  // Mike Lightner
-                                long(0xDE07154D),  // Adam Isgreen
-                                long(0x0E07B213),  // Steve Tall
-                                long(0x16B170B1),  // Joe Bostic
+constexpr long EditorCodes[] = {static_cast<long>(0xA2C09326),  // Erik Yeo
+                                static_cast<long>(0x1F944BB3),  // Mike Lightner
+                                static_cast<long>(0xDE07154D),  // Adam Isgreen
+                                static_cast<long>(0x0E07B213),  // Steve Tall
+                                static_cast<long>(0x16B170B1),  // Joe Bostic
                                 0L};
 
 /***********************************************************************************************

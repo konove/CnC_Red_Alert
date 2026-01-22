@@ -42,6 +42,7 @@
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/dialog.h"
+#include "ra/gadget.h"
 #include "ra/keyframe.h"
 #include "sdllib/include/font.h"
 
@@ -69,17 +70,17 @@ void DropListClass::Zap() {
 
 DropListClass& DropListClass::Add(LinkClass& object) {
   DropButton.Add(object);
-  return (DropListClass&)EditClass::Add(object);
+  return dynamic_cast<DropListClass&>(EditClass::Add(object));
 }
 
 DropListClass& DropListClass::Add_Tail(LinkClass& object) {
   DropButton.Add_Tail(object);
-  return (DropListClass&)EditClass::Add_Tail(object);
+  return dynamic_cast<DropListClass&>(EditClass::Add_Tail(object));
 }
 
 DropListClass& DropListClass::Add_Head(LinkClass& object) {
   DropButton.Add_Head(object);
-  return (DropListClass&)EditClass::Add_Head(object);
+  return dynamic_cast<DropListClass&>(EditClass::Add_Head(object));
 }
 
 DropListClass* DropListClass::Remove() {
@@ -87,7 +88,7 @@ DropListClass* DropListClass::Remove() {
     Collapse();
   }
   DropButton.Remove();
-  return (DropListClass*)EditClass::Remove();
+  return dynamic_cast<DropListClass*>(EditClass::Remove());
 }
 
 int DropListClass::Add_Item(char const* text) {
@@ -101,7 +102,7 @@ char const* DropListClass::Current_Item() { return List.Current_Item(); }
 int DropListClass::Current_Index() { return List.Current_Index(); }
 
 void DropListClass::Set_Selected_Index(int index) {
-  if ((unsigned)index < List.Count()) {
+  if (static_cast<unsigned>(index) < List.Count()) {
     List.Set_Selected_Index(index);
     port::SafeCopy(String, List.Get_Item(Current_Index()), MaxLength);
   } else {
@@ -117,7 +118,7 @@ void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
     if (flags & LEFTRELEASE) {
       if (IsDropped) {
         Collapse();
-        key = (KeyNumType)(ID | KN_BUTTON);
+        key = static_cast<KeyNumType>(ID | KN_BUTTON);
       } else {
         Expand();
       }
@@ -127,7 +128,7 @@ void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
   if (&whom == &List) {
     port::SafeCopy(String, List.Current_Item(), MaxLength);
     Flag_To_Redraw();
-    key = (KeyNumType)(ID | KN_BUTTON);
+    key = static_cast<KeyNumType>(ID | KN_BUTTON);
   }
 }
 

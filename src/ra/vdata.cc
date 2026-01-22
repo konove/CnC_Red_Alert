@@ -222,7 +222,7 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, char const* ininame,
                                  bool is_eight, bool is_nominal,
                                  bool is_turret_equipped, int rotation,
                                  int toffset)
-    : TechnoTypeClass(RTTI_VESSELTYPE, int(type), name, ininame, REMAP_NORMAL,
+    : TechnoTypeClass(RTTI_VESSELTYPE, static_cast<int>(type), name, ininame, REMAP_NORMAL,
                       verticaloffset, primaryoffset, primarylateral,
                       secondaryoffset, secondarylateral, is_nominal, false,
                       true, true, false, false, false, is_turret_equipped, true,
@@ -277,7 +277,7 @@ void* VesselTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselTypeClass::operator delete(void* pointer) {
-  VesselTypes.Free((VesselTypeClass*)pointer);
+  VesselTypes.Free(static_cast<VesselTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -545,7 +545,7 @@ void VesselTypeClass::One_Time() {
                         .string();
     uclass.SetBorrowedImage(MFCD::RetrieveData(fullname));
 
-    (int&)uclass.MaxSize = 26;
+    static_cast<int&>(uclass.MaxSize) = 26;
   }
 }
 

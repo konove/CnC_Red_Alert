@@ -136,7 +136,7 @@ void BlowfishEngine::Submit_Key(void const* key, int length) {
   **	into a long by using endian independent means.
   */
   int j = 0;
-  unsigned char const* key_ptr = (unsigned char const*)key;
+  unsigned char const* key_ptr = static_cast<unsigned char const*>(key);
   unsigned long* p_ptr = &P_Encrypt[0];
   for (int index = 0; index < ROUNDS + 2; index++) {
     unsigned long data = 0;
@@ -229,7 +229,7 @@ int BlowfishEngine::Encrypt(void const* plaintext, int length,
     for (int index = 0; index < blocks; index++) {
       Process_Block(plaintext, cyphertext, P_Encrypt);
       plaintext = (char*)plaintext + BYTES_PER_BLOCK;
-      cyphertext = (char*)cyphertext + BYTES_PER_BLOCK;
+      cyphertext = static_cast<char*>(cyphertext) + BYTES_PER_BLOCK;
     }
     int encrypted = blocks * BYTES_PER_BLOCK;
 
@@ -295,7 +295,7 @@ int BlowfishEngine::Decrypt(void const* cyphertext, int length,
     for (int index = 0; index < blocks; index++) {
       Process_Block(cyphertext, plaintext, P_Decrypt);
       cyphertext = (char*)cyphertext + BYTES_PER_BLOCK;
-      plaintext = (char*)plaintext + BYTES_PER_BLOCK;
+      plaintext = static_cast<char*>(plaintext) + BYTES_PER_BLOCK;
     }
     int encrypted = blocks * BYTES_PER_BLOCK;
 
@@ -354,7 +354,7 @@ void BlowfishEngine::Process_Block(void const* plaintext, void* cyphertext,
   **	biased toward "big endian" architecture and some optimizations
   **	could be done for big endian processors in that case.
   */
-  unsigned char const* source = (unsigned char const*)plaintext;
+  unsigned char const* source = static_cast<unsigned char const*>(plaintext);
   Int left;
   left.Char.C0 = *source++;
   left.Char.C1 = *source++;
@@ -399,7 +399,7 @@ void BlowfishEngine::Process_Block(void const* plaintext, void* cyphertext,
   **	superfluous exchange that occurs as a side effect of the
   **	encryption rounds.
   */
-  unsigned char* out = (unsigned char*)cyphertext;
+  unsigned char* out = static_cast<unsigned char*>(cyphertext);
   *out++ = right.Char.C0;
   *out++ = right.Char.C1;
   *out++ = right.Char.C2;

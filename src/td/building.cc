@@ -271,14 +271,14 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
       switch (Class->Type) {
         case STRUCT_AIRSTRIP:
           if (from->What_Am_I() == RTTI_AIRCRAFT &&
-              *(AircraftClass const *)from == AIRCRAFT_CARGO) {
+              *dynamic_cast<AircraftClass const *>(from) == AIRCRAFT_CARGO) {
             return RADIO_ROGER;
           }
           break;
 
         case STRUCT_HELIPAD:
           if (from->What_Am_I() == RTTI_AIRCRAFT &&
-              !((AircraftClass const *)from)->Class->IsFixedWing) {
+              !dynamic_cast<AircraftClass const *>(from)->Class->IsFixedWing) {
             return RADIO_ROGER;
           }
           break;
@@ -293,7 +293,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
 
         case STRUCT_REFINERY:
           if (from->What_Am_I() == RTTI_UNIT &&
-              *(UnitClass *)from == UNIT_HARVESTER &&
+              *dynamic_cast<UnitClass *>(from) == UNIT_HARVESTER &&
               (ScenarioInit || !Is_Something_Attached())) {
             return RADIO_ROGER;
           }
@@ -865,9 +865,10 @@ BulletClass *BuildingClass::Fire_At(TARGET target, int which) {
   bullet = TechnoClass::Fire_At(target, which);
   if (bullet) {
     if (*this == STRUCT_SAM) {
-      AnimClass *anim = new AnimClass(
-          (AnimType)(ANIM_SAM_N + Dir_Facing(PrimaryFacing.Current())),
-          Center_Coord());
+      AnimClass *anim =
+          new AnimClass(static_cast<AnimType>(
+                            ANIM_SAM_N + Dir_Facing(PrimaryFacing.Current())),
+                        Center_Coord());
       if (anim) {
         anim->Attach_To(this);
       }
@@ -879,9 +880,9 @@ BulletClass *BuildingClass::Fire_At(TARGET target, int which) {
       Sound_Effect(weapon->Sound, Coord);
 
       if (weapon->Fires == BULLET_BULLET) {
-        new AnimClass(
-            (AnimType)(ANIM_GUN_N + Dir_Facing(PrimaryFacing.Current())),
-            Fire_Coord(which));
+        new AnimClass(static_cast<AnimType>(
+                          ANIM_GUN_N + Dir_Facing(PrimaryFacing.Current())),
+                      Fire_Coord(which));
       } else {
         if (weapon->Fires == BULLET_LASER) {
           int x, y, x1, y1;
@@ -1739,7 +1740,7 @@ void BuildingClass::Look(bool) {
 void *BuildingClass::operator new(size_t) throw() {
   void *ptr = Buildings.Allocate();
   if (ptr) {
-    ((BuildingClass *)ptr)->IsActive = true;
+    static_cast<BuildingClass *>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -1761,9 +1762,9 @@ void *BuildingClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void BuildingClass::operator delete(void *ptr) {
   if (ptr) {
-    ((BuildingClass *)ptr)->IsActive = false;
+    static_cast<BuildingClass *>(ptr)->IsActive = false;
   }
-  Buildings.Free((BuildingClass *)ptr);
+  Buildings.Free(static_cast<BuildingClass *>(ptr));
 }
 
 /***********************************************************************************************
@@ -1885,7 +1886,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
     ScenarioInit++;
     if (i->Unlimbo(Center_Coord(), DIR_N)) {
       i->Trigger = TriggerClass::As_Pointer("CHAN");
-      i->Strength = Random_Pick(5, (int)i->Class->MaxStrength);
+      i->Strength = Random_Pick(5, static_cast<int>(i->Class->MaxStrength));
       ScenarioInit--;
       i->Scatter(0, true);
       ScenarioInit++;
@@ -1922,7 +1923,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
             i->IsTechnician = true;
           ScenarioInit++;
           if (i->Unlimbo(Cell_Coord(newcell), DIR_N)) {
-            i->Strength = Random_Pick(5, (int)i->Class->MaxStrength);
+            i->Strength =
+                Random_Pick(5, static_cast<int>(i->Class->MaxStrength));
             i->Scatter(0, true);
             if (source != TARGET_NONE && !House->Is_Ally(As_Object(source))) {
               i->Assign_Mission(MISSION_ATTACK);
@@ -2101,7 +2103,8 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
   Validate();
   if (!base) return 0;
 
-  TechnoTypeClass const *ttype = (TechnoTypeClass const *)&base->Class_Of();
+  TechnoTypeClass const *ttype =
+      dynamic_cast<TechnoTypeClass const *>(&base->Class_Of());
 
   /*
   **	A unit exiting a building is always considered to be "locked". That
@@ -2119,7 +2122,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
 
     case RTTI_AIRCRAFT:
       if (!In_Radio_Contact()) {
-        AircraftClass *air = (AircraftClass *)base;
+        AircraftClass *air = dynamic_cast<AircraftClass *>(base);
 
         air->Altitude = 0;
         ScenarioInit++;
@@ -2131,7 +2134,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
         }
         ScenarioInit--;
       } else {
-        AircraftClass *air = (AircraftClass *)base;
+        AircraftClass *air = dynamic_cast<AircraftClass *>(base);
 
         if (Cell_X(Coord_Cell(Center_Coord())) - Map.MapCellX <
             Map.MapCellWidth / 2) {
@@ -2158,7 +2161,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
         case STRUCT_REFINERY:
           if (base->What_Am_I() == RTTI_UNIT) {
             CELL cell = Coord_Cell(Center_Coord());
-            UnitClass *unit = (UnitClass *)base;
+            UnitClass *unit = dynamic_cast<UnitClass *>(base);
 
             cell = Adjacent_Cell(cell, FACING_SW);
             ScenarioInit++;
@@ -2259,8 +2262,8 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
         *calling routine will probably abandon this *	building in preference
         *to building another.
         */
-        BaseNodeClass *node =
-            Base.Next_Buildable(((BuildingClass *)base)->Class->Type);
+        BaseNodeClass *node = Base.Next_Buildable(
+            dynamic_cast<BuildingClass *>(base)->Class->Type);
         if (node) {
           if (Flush_For_Placement(base, Coord_Cell(node->Coord))) {
             return 1;
@@ -3017,7 +3020,7 @@ void BuildingClass::Read_INI(char *buffer) {
       /*
       **	5th token: facing.
       */
-      facing = (DirType)atoi(strtok(nullptr, ","));
+      facing = static_cast<DirType>(atoi(strtok(nullptr, ",")));
 
       /*
       **	6th token: triggername (can be NULL).
@@ -4295,7 +4298,8 @@ int BuildingClass::Mission_Missile() {
       case LAUNCH_UP: {
         BulletClass *bullet = new BulletClass(BULLET_NUKE_UP);
         if (bullet) {
-          COORDINATE launch = Coord_Move(Center_Coord(), (DirType)1, 0x1A0);
+          COORDINATE launch =
+              Coord_Move(Center_Coord(), static_cast<DirType>(1), 0x1A0);
           bullet->Assign_Target(TARGET_NONE);
           bullet->Payback = nullptr;
           bullet->Strength = 1;
@@ -4579,7 +4583,7 @@ int BuildingClass::Mission_Unload() {
     UnitClass *unit;
     switch (Status) {
       case INITIAL:
-        unit = (UnitClass *)Contact_With_Whom();
+        unit = dynamic_cast<UnitClass *>(Contact_With_Whom());
         if (unit) {
           unit->Assign_Mission(MISSION_GUARD);
           unit->Commence();
@@ -4590,7 +4594,7 @@ int BuildingClass::Mission_Unload() {
 
       case OPEN:
         if (Is_Door_Open()) {
-          unit = (UnitClass *)Contact_With_Whom();
+          unit = dynamic_cast<UnitClass *>(Contact_With_Whom());
           if (unit) {
             unit->Assign_Mission(MISSION_MOVE);
             unit->Force_Track(DriveClass::OUT_OF_WEAPON_FACTORY,

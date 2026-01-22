@@ -240,7 +240,7 @@ static BuildingTypeClass const ClassEye(
     true,             // Does it contain a crew?
     false,            // Does building care less if placed on concrete?
     RTTI_NONE,        // The object type produced at this factory.
-    (DirType)160,     // Starting idle frame to match construction.
+    static_cast<DirType>(160),     // Starting idle frame to match construction.
     500,              // STRNTH:		Full strength of building.
     10,               // SIGHTRANGE:	Range of sighting.
     2800,             // COST:			Cost to purchase.
@@ -499,7 +499,7 @@ static BuildingTypeClass const ClassTurret(
     true,              // Does it contain a crew?
     false,             // Does building care less if placed on concrete?
     RTTI_NONE,         // The object type produced at this factory.
-    (DirType)208,      // Starting idle frame to match construction.
+    static_cast<DirType>(208),      // Starting idle frame to match construction.
     200,               // STRNTH:		Full strength of building.
     5,                 // SIGHTRANGE:	Range of sighting.
 #ifdef ADVANCED
@@ -759,7 +759,7 @@ static BuildingTypeClass const ClassCommand(
     true,              // Does it contain a crew?
     false,             // Does building care less if placed on concrete?
     RTTI_NONE,         // The object type produced at this factory.
-    (DirType)160,      // Starting idle frame to match construction.
+    static_cast<DirType>(160),      // Starting idle frame to match construction.
     500,               // STRNTH:		Full strength of building.
     10,                // SIGHTRANGE:	Range of sighting.
     1000,              // COST:			Cost to purchase.

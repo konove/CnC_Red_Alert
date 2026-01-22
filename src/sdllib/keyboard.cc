@@ -40,7 +40,7 @@ int WWKeyboardClass::Get() {
 bool WWKeyboardClass::Put(int key) {
   int temp = Tail + 1 & 255;
   if (temp != Head) {
-    Buffer[Tail] = (short)key;
+    Buffer[Tail] = static_cast<short>(key);
 
     Tail = temp;
     return true;
@@ -82,7 +82,7 @@ int WWKeyboardClass::To_ASCII(int num) {
 
   // this isn't great but we can't do much better without rewriting everything
   // to use textinput events (SDL3 would allow passing the mods in)
-  int key = SDL_GetKeyFromScancode((SDL_Scancode)(num & 0xFF));
+  int key = SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(num & 0xFF));
 
   if (key <= SDLK_z) return key;
 

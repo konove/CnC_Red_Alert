@@ -398,16 +398,16 @@ T Gcd(const T& a, const T& n) {
 
 template <class T>
 T Generate_Prime(Straw& rng, int pbits, T const*) {
-  T minQ = T(1UL) << (unsigned short)(pbits - (unsigned short)2);
-  T maxQ = (T(1UL) << (unsigned short)(pbits - (unsigned short)1)) -
-           (unsigned short)1;
+  T minQ = T(1UL) << static_cast<unsigned short>(pbits - (unsigned short)2);
+  T maxQ = (T(1UL) << static_cast<unsigned short>(pbits - (unsigned short)1)) -
+           static_cast<unsigned short>(1);
 
   T q;
   T p;
 
   do {
     q.Randomize(rng, minQ, maxQ);
-    p = q * 2 + (unsigned short)1;
+    p = q * 2 + static_cast<unsigned short>(1);
 
     typename T::RemainderTable rtQ(q);
     typename T::RemainderTable rtP(p);

@@ -86,33 +86,33 @@ class fixed {
   // Conversion constructor to get fixed point from integer.
   fixed(int value) {
     Data.Composite.Fraction = 0;
-    Data.Composite.Whole = (unsigned char)value;
+    Data.Composite.Whole = static_cast<unsigned char>(value);
   }
 
   // Constructor if ASCII image of number is known.
   fixed(char const* ascii);
 
   // Convert to integer when implicitly required.
-  operator unsigned() const { return ((unsigned)Data.Raw + 256 / 2) / 256; }
+  operator unsigned() const { return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256; }
 
   /*
   **	The standard operators as they apply to in-place operation.
   */
   fixed& operator*=(fixed const& rvalue) {
-    Data.Raw = (unsigned short)((int)Data.Raw * rvalue.Data.Raw / 256);
+    Data.Raw = static_cast<unsigned short>((int)Data.Raw * rvalue.Data.Raw / 256);
     return *this;
   }
   fixed& operator*=(int rvalue) {
-    Data.Raw = (unsigned short)(Data.Raw * rvalue);
+    Data.Raw = static_cast<unsigned short>(Data.Raw * rvalue);
     return *this;
   }
   fixed& operator/=(fixed const& rvalue) {
     if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256)
-      Data.Raw = (unsigned short)((int)Data.Raw * 256 / rvalue);
+      Data.Raw = static_cast<unsigned short>((int)Data.Raw * 256 / rvalue);
     return *this;
   }
   fixed& operator/=(int rvalue) {
-    if (rvalue) Data.Raw = (unsigned short)((unsigned)Data.Raw / rvalue);
+    if (rvalue) Data.Raw = static_cast<unsigned short>((unsigned)Data.Raw / rvalue);
     return *this;
   }
   fixed& operator+=(fixed const& rvalue) {
@@ -134,11 +134,12 @@ class fixed {
   const fixed operator*(fixed const& rvalue) const {
     fixed temp = *this;
     temp.Data.Raw =
-        (unsigned short)((int)temp.Data.Raw * (int)rvalue.Data.Raw / 256);
+        static_cast<unsigned short>((int)temp.Data.Raw *
+                                                (int)rvalue.Data.Raw / 256);
     return temp;
   }
   const int operator*(int rvalue) const {
-    return ((unsigned)Data.Raw * rvalue + 256 / 2) / 256;
+    return (static_cast<unsigned>(Data.Raw) * rvalue + 256 / 2) / 256;
   }
   //		const fixed operator / (fixed const & rvalue) const
   //{return(fixed(*this) /= rvalue);}
@@ -146,12 +147,13 @@ class fixed {
     fixed temp = *this;
     if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256)
       temp.Data.Raw =
-          (unsigned short)((int)temp.Data.Raw * 256 / rvalue.Data.Raw);
+          static_cast<unsigned short>((int)temp.Data.Raw * 256 /
+                                                  rvalue.Data.Raw);
     return temp;
   }
   const int operator/(int rvalue) const {
     if (rvalue)
-      return ((unsigned)Data.Raw + 256 / 2) / ((unsigned)rvalue * 256);
+      return (static_cast<unsigned>(Data.Raw) + 256 / 2) / (static_cast<unsigned>(rvalue) * 256);
     return *this;
   }
   //		const fixed operator + (fixed const & rvalue) const
@@ -162,7 +164,7 @@ class fixed {
     return temp;
   }
   const int operator+(int rvalue) const {
-    return ((unsigned)Data.Raw + 256 / 2) / 256 + rvalue;
+    return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256 + rvalue;
   }
   //		const fixed operator - (fixed const & rvalue) const
   //{return(fixed(*this) -= rvalue);}
@@ -172,12 +174,12 @@ class fixed {
     return temp;
   }
   const int operator-(int rvalue) const {
-    return ((unsigned)Data.Raw + 256 / 2) / 256 - rvalue;
+    return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256 - rvalue;
   }
 
   // extra to help MSVC
   const int operator*(unsigned short rvalue) const {
-    return *this * int(rvalue);
+    return *this * static_cast<int>(rvalue);
   }
 
   /*
@@ -245,7 +247,7 @@ class fixed {
   }
   friend const int operator/(int lvalue, fixed const& rvalue) {
     if (rvalue.Data.Raw == 0 || rvalue.Data.Raw == 256) return lvalue;
-    return ((unsigned)(lvalue * 256) + 256 / 2) / rvalue.Data.Raw;
+    return (static_cast<unsigned>(lvalue * 256) + 256 / 2) / rvalue.Data.Raw;
   }
   friend const int operator+(int lvalue, fixed const& rvalue) {
     return rvalue + lvalue;
@@ -290,7 +292,7 @@ class fixed {
 
   // extra to help MSVC
   friend const int operator*(unsigned short lvalue, fixed const& rvalue) {
-    return rvalue * int(lvalue);
+    return rvalue * static_cast<int>(lvalue);
   }
 
   /*
@@ -298,7 +300,7 @@ class fixed {
   *numbers.
   */
   void Round_Up() {
-    Data.Raw += (unsigned short)(256 - 1);
+    Data.Raw += static_cast<unsigned short>(256 - 1);
     Data.Composite.Fraction = 0;
   }
   void Round_Down() { Data.Composite.Fraction = 0; }
@@ -308,17 +310,17 @@ class fixed {
   }
   void Saturate(unsigned capvalue) {
     if (Data.Raw > capvalue * 256)
-      Data.Raw = (unsigned short)(capvalue * 256);
+      Data.Raw = static_cast<unsigned short>(capvalue * 256);
   }
   void Saturate(fixed const& capvalue) {
     if (*this > capvalue) *this = capvalue;
   }
   void Sub_Saturate(unsigned capvalue) {
     if (Data.Raw >= capvalue * 256)
-      Data.Raw = (unsigned short)(capvalue * 256 - 1);
+      Data.Raw = static_cast<unsigned short>(capvalue * 256 - 1);
   }
   void Sub_Saturate(fixed const& capvalue) {
-    if (*this >= capvalue) Data.Raw = (unsigned short)(capvalue.Data.Raw - 1);
+    if (*this >= capvalue) Data.Raw = static_cast<unsigned short>(capvalue.Data.Raw - 1);
   }
   void Inverse() { *this = fixed(1) / *this; }
 

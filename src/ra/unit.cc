@@ -117,7 +117,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "ra/abstract.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
@@ -223,7 +222,7 @@ void Recoil_Adjust(DirType dir, int& x, int& y) {
 void* UnitClass::operator new(size_t) throw() {
   void* ptr = Units.Alloc();
   if (ptr != nullptr) {
-    ((UnitClass*)ptr)->IsActive = true;
+    static_cast<UnitClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -245,9 +244,9 @@ void* UnitClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void UnitClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
-    ((UnitClass*)ptr)->IsActive = false;
+    static_cast<UnitClass*>(ptr)->IsActive = false;
   }
-  Units.Free((UnitClass*)ptr);
+  Units.Free(static_cast<UnitClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -732,8 +731,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     **	Checks to see if this object is in need of service depot processing.
     */
     case RADIO_NEED_REPAIR:
-      if (!IsDriving && !Target_Legal(NavCom) &&
-          Health_Ratio() >= 1 &&
+      if (!IsDriving && !Target_Legal(NavCom) && Health_Ratio() >= 1 &&
           (*this != UNIT_MINELAYER || Ammo >= Class->MaxAmmo))
         return RADIO_NEGATIVE;
       break;
@@ -847,7 +845,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
             if (cell == 0) {
               Transmit_Message(RADIO_OVER_OUT, from);
             } else {
-              param = (long)::As_Target(cell);
+              param = static_cast<long>(::As_Target(cell));
               Do_Turn(dir);
 
               /*
@@ -876,7 +874,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
                   RADIO_YEA_NOW_WHAT) {
                 if ((*this != UNIT_APC && *this != UNIT_PHASE) ||
                     Is_Door_Open()) {
-                  param = (long)As_Target();
+                  param = static_cast<long>(As_Target());
                   Transmit_Message(RADIO_TETHER);
                   if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
                       RADIO_ROGER) {
@@ -1064,7 +1062,8 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         }
         if (i != nullptr) {
           if (i->Unlimbo(Coord, DIR_N)) {
-            i->Strength = Random_Pick(5, (int)i->Class->MaxStrength / 2);
+            i->Strength =
+                Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2);
             i->Scatter(0, true);
             if (!House->IsHuman) {
               i->Assign_Mission(MISSION_HUNT);
@@ -1392,9 +1391,9 @@ bool UnitClass::Goto_Clear_Spot() {
         -MAP_CELL_W * 4, -(MAP_CELL_W * 4) + 1, -(MAP_CELL_W * 4) - 1,
         -(MAP_CELL_W * 4) + 2, -(MAP_CELL_W * 4) - 2,
         // BG: Added south scanning
-        MAP_CELL_W * 1, MAP_CELL_W * 2, MAP_CELL_W * 2 + 1, MAP_CELL_W * 2 - 1, MAP_CELL_W * 3, MAP_CELL_W * 3 + 1, MAP_CELL_W * 3 - 1,
-        MAP_CELL_W * 3 + 2, MAP_CELL_W * 3 - 2,
-        MAP_CELL_W * 4,
+        MAP_CELL_W * 1, MAP_CELL_W * 2, MAP_CELL_W * 2 + 1, MAP_CELL_W * 2 - 1,
+        MAP_CELL_W * 3, MAP_CELL_W * 3 + 1, MAP_CELL_W * 3 - 1,
+        MAP_CELL_W * 3 + 2, MAP_CELL_W * 3 - 2, MAP_CELL_W * 4,
         MAP_CELL_W * 4 + 1, MAP_CELL_W * 4 - 1, MAP_CELL_W * 4 + 2,
         MAP_CELL_W * 4 - 2,
 
@@ -1611,7 +1610,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     TechnoClass* whom = Contact_With_Whom();
     if (IsTethered && whom != nullptr) {
       if (whom->What_Am_I() == RTTI_BUILDING && Mission == MISSION_ENTER) {
-        if (whom == Map[CELL(cell - MAP_CELL_W)].Cell_Building()) {
+        if (whom == Map[static_cast<CELL>(cell - MAP_CELL_W)].Cell_Building()) {
           switch (Transmit_Message(RADIO_IM_IN, whom)) {
             case RADIO_ROGER:
               break;
@@ -3023,7 +3022,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
   CellClass const* cellptr = &Map[cell];
 
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 
   /*
   **	Moving off the edge of the map is not allowed unless
@@ -3046,7 +3045,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
     if (optr->IsCrate && House &&
         !(Session.Type == GAME_NORMAL ? House->IsPlayerControl
-                                        : House->IsHuman) &&
+                                      : House->IsHuman) &&
         Session.Type == GAME_NORMAL) {
       return MOVE_NO;
     }
@@ -3093,9 +3092,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
       */
       if (obj->What_Am_I() == RTTI_BUILDING &&
           (!Rule.IsMineAware ||
-           !((BuildingClass*)obj)->House->Is_Ally(House))) {
-        if (*(BuildingClass*)obj == STRUCT_APMINE) return MOVE_OK;
-        if (*(BuildingClass*)obj == STRUCT_AVMINE) return MOVE_OK;
+           !dynamic_cast<BuildingClass*>(obj)->House->Is_Ally(House))) {
+        if (*dynamic_cast<BuildingClass*>(obj) == STRUCT_APMINE) return MOVE_OK;
+        if (*dynamic_cast<BuildingClass*>(obj) == STRUCT_AVMINE) return MOVE_OK;
       }
 
       /*
@@ -3103,8 +3102,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
       **	authorization from the occupier.
       */
       if (obj == Contact_With_Whom() &&
-          (IsTethered || (obj->What_Am_I() == RTTI_BUILDING &&
-                          *(BuildingClass*)obj == STRUCT_REPAIR))) {
+          (IsTethered ||
+           (obj->What_Am_I() == RTTI_BUILDING &&
+            *dynamic_cast<BuildingClass*>(obj) == STRUCT_REPAIR))) {
         return MOVE_OK;
       }
 
@@ -3126,9 +3126,10 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
       }
 
       bool is_moving =
-          obj->Is_Foot() && (Target_Legal(((FootClass*)obj)->NavCom) ||
-                             ((FootClass*)obj)->PrimaryFacing.Is_Rotating() ||
-                             ((FootClass*)obj)->IsDriving);
+          obj->Is_Foot() &&
+          (Target_Legal(dynamic_cast<FootClass*>(obj)->NavCom) ||
+           dynamic_cast<FootClass*>(obj)->PrimaryFacing.Is_Rotating() ||
+           dynamic_cast<FootClass*>(obj)->IsDriving);
       //						(((FootClass
       //*)obj)->PrimaryFacing.Is_Rotating() || ((FootClass *)obj)->IsDriving);
       //						(((FootClass
@@ -3139,9 +3140,10 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
       if (House->Is_Ally(obj)) {
         if (is_moving) {
           int face = Dir_Facing(PrimaryFacing);
-          int techface = Dir_Facing(((FootClass const*)obj)->PrimaryFacing) ^ 4;
-          if (face == techface &&
-              Distance(obj) <= 0x1FF) {
+          int techface =
+              Dir_Facing(dynamic_cast<FootClass const*>(obj)->PrimaryFacing) ^
+              4;
+          if (face == techface && Distance(obj) <= 0x1FF) {
             return MOVE_NO;
           }
           if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
@@ -3162,7 +3164,8 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
         **	Cloaked enemy objects are not considered if this is a
         *Find_Path() *	call.
         */
-        if (!obj->Is_Techno() || ((TechnoClass*)obj)->Cloak != CLOAKED) {
+        if (!obj->Is_Techno() ||
+            dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED) {
           /*
           **	If this unit can crush infantry, and there is an enemy infantry
           *in the *	cell, don't consider the cell impassible. This is true
@@ -3431,7 +3434,7 @@ ActionType UnitClass::What_Action(ObjectClass const* object) const {
   **	Special return to friendly refinery action.
   */
   if (House->IsPlayerControl && object->Is_Techno() &&
-      ((TechnoClass const*)object)->House->Is_Ally(this)) {
+      dynamic_cast<TechnoClass const*>(object)->House->Is_Ally(this)) {
     if (object->What_Am_I() == RTTI_BUILDING &&
         ((UnitClass*)this)
                 ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object) ==
@@ -3709,7 +3712,8 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     **	Give more weight to the cells that require the least rotation of the
     *transport or the *	least roundabout movement for the potential passenger.
     */
-    value -= std::abs((int)(signed char)Facing_Dir(face) - (int)(signed char)faceto);
+    value -= std::abs(static_cast<int>((signed char)Facing_Dir(face)) -
+                      static_cast<int>((signed char)faceto));
     if (face == FACING_S) {
       value -= 100;
     }
@@ -3995,9 +3999,9 @@ DirType UnitClass::Fire_Direction() const {
       int adj = Fixed_To_Cardinal(std::abs(SecondaryFacing.Difference(DIR_N)),
                                   64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {
-        return SecondaryFacing - (DirType)adj;
+        return SecondaryFacing - static_cast<DirType>(adj);
       } else {
-        return SecondaryFacing + (DirType)adj;
+        return SecondaryFacing + static_cast<DirType>(adj);
       }
     }
     return SecondaryFacing.Current();
@@ -4501,7 +4505,8 @@ void UnitClass::Assign_Destination(TARGET target) {
         **	Last check to make sure that the loading square is free from
         *permanent *	occupation (such as a building).
         */
-        CELL cell = (CELL)(Coord_Cell(b->Center_Coord()) + (MAP_CELL_W - 1));
+        CELL cell =
+            static_cast<CELL>(Coord_Cell(b->Center_Coord()) + (MAP_CELL_W - 1));
         if (Ground[Map[cell].Land_Type()].Cost[Techno_Type_Class()->Speed] >
             0) {
           if (Transmit_Message(RADIO_DOCKING) == RADIO_ROGER) {
@@ -4604,9 +4609,8 @@ void UnitClass::Read_INI(CCINIClass& ini) {
 
           COORDINATE coord = Cell_Coord(cell);
 
-          DirType dir = (DirType)atoi(strtok(nullptr, ",\r\n"));
-          MissionType mission =
-              Mission_From_Name(strtok(nullptr, ",\n\r"));
+          DirType dir = static_cast<DirType>(atoi(strtok(nullptr, ",\r\n")));
+          MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
 
           unit->Trigger = nullptr;
           TriggerTypeClass* tp =
@@ -4857,7 +4861,7 @@ void UnitClass::Shroud_Regen() {
     CELL trycell;
 
     // Only restore under the shroud if it's a valid field.
-    if (ShroudBits != (unsigned)-1L) {
+    if (ShroudBits != static_cast<unsigned>(-1L)) {
       centerx = Cell_X(ShroudCenter);
       centery = Cell_Y(ShroudCenter);
       for (index = 30; index >= 0 && ShroudBits; index--) {

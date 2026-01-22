@@ -147,13 +147,13 @@ int XMP_DER_Length_Encode(unsigned long length, unsigned char* output) {
   int header_length = 0;
 
   if (length <= SCHAR_MAX) {
-    output[header_length++] = (unsigned char)length;
+    output[header_length++] = static_cast<unsigned char>(length);
   } else {
-    output[header_length++] = (unsigned char)(_Byte_Precision(length) | 0x80);
+    output[header_length++] = static_cast<unsigned char>(_Byte_Precision(length) | 0x80);
     for (int byte_counter = _Byte_Precision(length); byte_counter;
          --byte_counter) {
       output[header_length++] =
-          (unsigned char)(length >> ((byte_counter - 1) * 8));
+          static_cast<unsigned char>(length >> ((byte_counter - 1) * 8));
     }
   }
   return header_length;
@@ -271,16 +271,16 @@ unsigned XMP_Encode(unsigned char* to, unsigned tobytes, uint32_t const* from,
 
   unsigned frombytes = precision * sizeof(uint32_t);
   unsigned char filler =
-      (unsigned char)(XMP_Is_Negative(from, precision) ? 0xff : 0);
+      static_cast<unsigned char>(XMP_Is_Negative(from, precision) ? 0xff : 0);
 
   int index;
-  for (index = 0; index < (int)(tobytes - frombytes); index++) {
+  for (index = 0; index < static_cast<int>(tobytes - frombytes); index++) {
     *to++ = filler;
   }
 
   const unsigned char* fptr =
       (const unsigned char*)from + std::min(tobytes, frombytes);
-  for (index = 0; index < (int)std::min(tobytes, frombytes); index++) {
+  for (index = 0; index < static_cast<int>(std::min(tobytes, frombytes)); index++) {
     *to++ = *--fptr;
   }
 
@@ -313,12 +313,12 @@ unsigned XMP_Encode(unsigned char* to, uint32_t const* from, int precision) {
   assert(precision > 0);
 
   bool is_negative = XMP_Is_Negative(from, precision);
-  unsigned char filler = (unsigned char)(is_negative ? 0xff : 0);
+  unsigned char filler = static_cast<unsigned char>(is_negative ? 0xff : 0);
   unsigned char* number_ptr;
 
   unsigned char* const end = (unsigned char*)from;
-  for (number_ptr = (unsigned char*)end + precision - 1;
-       number_ptr > (unsigned char*)end; number_ptr--) {
+  for (number_ptr = static_cast<unsigned char*>(end) + precision - 1;
+       number_ptr > static_cast<unsigned char*>(end); number_ptr--) {
     if (*number_ptr != filler) break;
   }
 
@@ -366,7 +366,7 @@ void XMP_Signed_Decode(uint32_t* result, const unsigned char* from,
   assert(frombytes > 0);
   assert(precision > 0);
 
-  unsigned char filler = (unsigned char)(*from & 0x80 ? 0xff : 0);
+  unsigned char filler = static_cast<unsigned char>(*from & 0x80 ? 0xff : 0);
 
   int fillcount = precision * sizeof(uint32_t) - frombytes;
   unsigned char* dest = (unsigned char*)&result[precision];
@@ -511,7 +511,7 @@ void XMP_Dec(uint32_t* number, int precision) {
 
   do {
     *number -= 1;
-    if (*number != ~(uint32_t)0) break;
+    if (*number != ~static_cast<uint32_t>(0)) break;
     number++;
   } while (--precision);
 }
@@ -699,7 +699,7 @@ void XMP_Shift_Left_Bits(uint32_t* number, int bits, int precision) {
   */
   if (bits < UNITSIZE) {
     uint32_t carry = 0;
-    uint32_t bitmask = ~((uint32_t)-1 >> bits);
+    uint32_t bitmask = ~(static_cast<uint32_t>(-1) >> bits);
     int unbits = UNITSIZE - bits; /* shift bits must be <= UNITSIZE */
 
     while (precision--) {
@@ -1057,11 +1057,11 @@ bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
 
   precision *= 2;
   while (precision--) {
-    uint32_t x = (uint32_t)*left_number_ptr - (uint32_t)*right_number_ptr -
-                 (uint32_t)borrow;
+    uint32_t x = static_cast<uint32_t>(*left_number_ptr) - static_cast<uint32_t>(*right_number_ptr) -
+                 static_cast<uint32_t>(borrow);
     right_number_ptr++;
     left_number_ptr++;
-    *result_ptr++ = (unsigned short)x;
+    *result_ptr++ = static_cast<unsigned short>(x);
     borrow = (1L << 16 & x) != 0L;
   }
   return borrow;
@@ -1100,9 +1100,9 @@ bool XMP_Sub_Int(uint32_t* result, const uint32_t* left_number,
 
   precision *= 2;
   while (precision--) {
-    uint32_t x = (uint32_t)*left_number_ptr - right_number - borrow;
+    uint32_t x = static_cast<uint32_t>(*left_number_ptr) - right_number - borrow;
     left_number_ptr++;
-    *result_ptr++ = (unsigned short)x;
+    *result_ptr++ = static_cast<unsigned short>(x);
     borrow = (1L << 16 & x) != 0L;
 
     right_number = 0;
@@ -1193,8 +1193,8 @@ int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
   unsigned short* pr = (unsigned short*)prod;
   unsigned long carry = 0;
   for (int i = 0; i < precision * 2; ++i) {
-    unsigned long p = (unsigned long)multiplier * *m2 + carry;
-    *pr = (unsigned short)p;
+    unsigned long p = static_cast<unsigned long>(multiplier) * *m2 + carry;
+    *pr = static_cast<unsigned short>(p);
     carry = p >> 16;
     m2++;
     pr++;
@@ -1234,7 +1234,7 @@ int XMP_Signed_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
     XMP_Neg(abs_multiplicand, precision);
 
     if (multiplier < 0) {
-      multiplier = (signed short)-multiplier;
+      multiplier = static_cast<signed short>(-multiplier);
 
       XMP_Unsigned_Mult_Int(prod, abs_multiplicand, multiplier, precision);
     } else {
@@ -1243,7 +1243,7 @@ int XMP_Signed_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
     }
   } else {
     if (multiplier < 0) {
-      multiplier = (signed short)-multiplier;
+      multiplier = static_cast<signed short>(-multiplier);
 
       XMP_Unsigned_Mult_Int(prod, multiplicand, multiplier, precision);
       XMP_Neg(prod, precision);
@@ -1658,7 +1658,7 @@ void XMP_Decode_ASCII(char const* str, uint32_t* mpn, int precision) {
   if (minus) str++;
 
   uint32_t c;
-  while ((c = (unsigned char)*str++) != 0) {
+  while ((c = static_cast<unsigned char>(*str++)) != 0) {
     if (c == ',') continue; /* allow commas in number */
 
     /*
@@ -1666,15 +1666,15 @@ void XMP_Decode_ASCII(char const* str, uint32_t* mpn, int precision) {
     **	clearly the end of the processable string. Bail out
     **	of the scan loop.
     */
-    if (!isxdigit((char)c)) break;
+    if (!isxdigit(static_cast<char>(c))) break;
 
     /*
     **	Convert the character into an integer number 0 through 15.
     */
-    if (isdigit((char)c)) {
+    if (isdigit(static_cast<char>(c))) {
       c -= '0';
     } else {
-      c = (unsigned char)(toupper((char)c) - 'A') + 10;
+      c = static_cast<unsigned char>(toupper((char)c) - 'A') + 10;
     }
 
     /*
@@ -1731,14 +1731,14 @@ void XMP_Hybrid_Mul(unsigned short* prod, unsigned short* multiplicand,
                     unsigned short multiplier, int precision) {
   unsigned long carry = 0;
   for (int i = 0; i < precision; ++i) {
-    unsigned long p = (unsigned long)multiplier * *multiplicand++;
+    unsigned long p = static_cast<unsigned long>(multiplier) * *multiplicand++;
     p += *prod + carry;
-    *prod++ = (unsigned short)p;
+    *prod++ = static_cast<unsigned short>(p);
     carry = p >> 16;
   }
 
   /* Add carry to the next higher word of product / dividend */
-  *prod += (unsigned short)carry;
+  *prod += static_cast<unsigned short>(carry);
 }
 
 /***********************************************************************************************
@@ -2011,25 +2011,26 @@ unsigned short mp_quo_digit(unsigned short* dividend) {
    * The last terms of q1 and q2 perform upward rounding, which is
    * needed to guarantee that the result not be too small.
    */
-  q1 = (dividend[-2] ^ SEMI_MASK) * (unsigned long)_reciprical_high_digit +
+  q1 = (dividend[-2] ^ SEMI_MASK) * static_cast<unsigned long>(_reciprical_high_digit) +
        _reciprical_high_digit;
-  q2 = (dividend[-1] ^ SEMI_MASK) * (unsigned long)_reciprical_low_digit +
+  q2 = (dividend[-1] ^ SEMI_MASK) * static_cast<unsigned long>(_reciprical_low_digit) +
        (1L << 16);
   q0 = (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the middle significant product group.   */
-  q1 = (dividend[-1] ^ SEMI_MASK) * (unsigned long)_reciprical_high_digit;
-  q2 = (dividend[0] ^ SEMI_MASK) * (unsigned long)_reciprical_low_digit;
+  q1 = (dividend[-1] ^ SEMI_MASK) * static_cast<unsigned long>(_reciprical_high_digit);
+  q2 = (dividend[0] ^ SEMI_MASK) * static_cast<unsigned long>(_reciprical_low_digit);
   q = (q0 >> 16) + (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the most significant term and add in the others */
   q = (q >> (16 - 2)) +
-      (((dividend[0] ^ SEMI_MASK) * (unsigned long)_reciprical_high_digit)
+      (((dividend[0] ^ SEMI_MASK) * static_cast<unsigned long>(_reciprical_high_digit))
        << 1);
   q >>= _modulus_shift;
 
   /*      Prevent overflow and then wipe out the intermediate results. */
-  return (unsigned short)std::min(q, (unsigned long)(1L << 16) - 1);
+  return static_cast<unsigned short>(
+      std::min(q, (unsigned long)(1L << 16) - 1));
 }
 
 /*
@@ -2175,9 +2176,9 @@ bool XMP_Is_Small_Prime(const uint32_t* candidate, int precision) {
   if (XMP_Significance(candidate, precision) > 1) return false;
   if (*candidate > primeTable[ARRAY_SIZE(primeTable) - 1]) return false;
 
-  unsigned long* ptr = (unsigned long*)bsearch(&candidate, &primeTable[0],
-                                               ARRAY_SIZE(primeTable),
-                                               sizeof(primeTable[0]), pfunc);
+  unsigned long* ptr = static_cast<unsigned long*>(
+      bsearch(&candidate, &primeTable[0], ARRAY_SIZE(primeTable),
+              sizeof(primeTable[0]), pfunc));
   return ptr != nullptr;
 }
 
@@ -2365,7 +2366,7 @@ void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits,
   rng.Get(result, nbytes);
 
   ((unsigned char*)result)[nbytes - 1] &=
-      (unsigned char)~(~0 << (total_bits % 8));
+      static_cast<unsigned char>(~(~0 << (total_bits % 8)));
 }
 
 /***********************************************************************************************

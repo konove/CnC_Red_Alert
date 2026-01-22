@@ -801,7 +801,7 @@ void TechnoClass::Per_Cell_Process(bool) {
   */
   if (Map.In_Radar(cell)) {
     if (What_Am_I() == RTTI_UNIT) {
-      UnitClass* u = (UnitClass*)this;
+      UnitClass* u = dynamic_cast<UnitClass*>(this);
 
       if (*u != UNIT_HOVER && *u != UNIT_GUNBOAT) {
         IsLocked = true;
@@ -855,7 +855,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
     }
 
     if (What_Am_I() == RTTI_BUILDING &&
-        ((BuildingTypeClass const&)Class_Of()).Type == STRUCT_BARRACKS) {
+        dynamic_cast<BuildingTypeClass const&>(Class_Of()).Type ==
+            STRUCT_BARRACKS) {
       y -= 5;
     }
 
@@ -1021,7 +1022,8 @@ bool TechnoClass::In_Range(ObjectClass const* target, int which) const {
   if (IsLocked && target) {
     int range = Weapon_Range(which);
     if (target->What_Am_I() == RTTI_BUILDING) {
-      BuildingClass const* building = (BuildingClass const*)target;
+      BuildingClass const* building =
+          dynamic_cast<BuildingClass const*>(target);
       range += (building->Class->Width() + building->Class->Height()) *
                (ICON_LEPTON_W / 4);
     }
@@ -1170,7 +1172,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   */
   if (method & THREAT_CAPTURE &&
       (otype != RTTI_BUILDING ||
-       !((BuildingTypeClass const*)tclass)->IsCaptureable)) {
+       !dynamic_cast<BuildingTypeClass const*>(tclass)->IsCaptureable)) {
     return false;
   }
 
@@ -1202,7 +1204,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         break;
 
       case RTTI_BUILDING:
-        if (!((BuildingTypeClass const*)tclass)->Capacity) return false;
+        if (!dynamic_cast<BuildingTypeClass const*>(tclass)->Capacity)
+          return false;
         break;
 
       default:
@@ -1298,10 +1301,11 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
   **	techno object there, then bail.
   */
   CellClass* cellptr = &Map[cell];
-  TechnoClass const* tentative = (TechnoClass const*)cellptr->Cell_Occupier();
+  TechnoClass const* tentative =
+      dynamic_cast<TechnoClass const*>(cellptr->Cell_Occupier());
   while (tentative) {
     if (tentative->Is_Techno() && !House->Is_Ally(tentative)) break;
-    tentative = (TechnoClass const*)tentative->Next;
+    tentative = dynamic_cast<TechnoClass const*>(tentative->Next);
   }
 
   if (!tentative) return false;
@@ -1500,8 +1504,8 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
 
       int value = 0;
       if (object->Is_Techno() &&
-          Evaluate_Object(method, mask, -1, (TechnoClass const*)object,
-                          value)) {
+          Evaluate_Object(method, mask, -1,
+                          dynamic_cast<TechnoClass const*>(object), value)) {
         if (value > bestval) {
           bestobject = object;
           bestval = value;
@@ -1647,7 +1651,7 @@ void TechnoClass::AI() {
               *captured *	flag, it will never fully cloak.
               */
               if (What_Am_I() == RTTI_UNIT &&
-                  ((UnitClass*)this)->Flagged != HOUSE_NONE) {
+                  dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
                 Do_Shimmer();
               } else {
                 Detach_All(false);
@@ -1768,7 +1772,8 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
   // Mono_Printf("object=%p, Strength=%d, IsActive=%d, IsInLimbo=%d.\n", object,
   // (long)object->Strength, object->IsActive, object->IsInLimbo);Get_Key();
   if (object && /*(object->IsActive || GameToPlay != GAME_NORMAL) &&*/
-      object->Is_Techno() && ((TechnoClass*)object)->Cloak == CLOAKED) {
+      object->Is_Techno() &&
+      dynamic_cast<TechnoClass*>(object)->Cloak == CLOAKED) {
     return FIRE_CANT;
   }
 
@@ -1787,7 +1792,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
   */
   if (object && object->What_Am_I() == RTTI_AIRCRAFT &&
       !BulletTypeClass::As_Reference(Weapons[weap].Fires).IsAntiAircraft &&
-      ((AircraftClass*)object)->Altitude > 0) {
+      dynamic_cast<AircraftClass*>(object)->Altitude > 0) {
     return FIRE_CANT;
   }
 
@@ -1994,7 +1999,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     *inaccurate.
     */
     if (Special.IsDefenderAdvantage && What_Am_I() != RTTI_BUILDING &&
-        ((FootClass const*)this)->IsDriving) {
+        dynamic_cast<FootClass const*>(this)->IsDriving) {
       bullet->IsInaccurate = true;
     }
 
@@ -2027,7 +2032,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       case ANIM_GUN_N:
       case ANIM_CHEM_N:
       case ANIM_FLAME_N:
-        a = (AnimType)(a + Dir_Facing(Fire_Direction()));
+        a = static_cast<AnimType>(a + Dir_Facing(Fire_Direction()));
         break;
     }
 
@@ -2636,7 +2641,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
     */
     switch (source->What_Am_I()) {
       case RTTI_INFANTRY:
-        ((InfantryClass*)source)->Made_A_Kill();
+        dynamic_cast<InfantryClass*>(source)->Made_A_Kill();
         break;
 
       case RTTI_UNIT:
@@ -2657,13 +2662,13 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
 
   switch (What_Am_I()) {
     case RTTI_BUILDING:
-      if (((BuildingClass*)this)->WhoLastHurtMe != HOUSE_NONE) {
+      if (dynamic_cast<BuildingClass*>(this)->WhoLastHurtMe != HOUSE_NONE) {
         House->BuildingsLost++;
       }
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedBuildings->Increment_Unit_Total(
-              ((BuildingClass*)this)->Class->Type);
+              dynamic_cast<BuildingClass*>(this)->Class->Type);
         }
         source->House->BuildingsKilled[Owner()]++;
       }
@@ -2682,7 +2687,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedAircraft->Increment_Unit_Total(
-              ((AircraftClass*)this)->Class->Type);
+              dynamic_cast<AircraftClass*>(this)->Class->Type);
         }
         source->House->UnitsKilled[Owner()]++;
       }
@@ -2700,7 +2705,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedInfantry->Increment_Unit_Total(
-              ((InfantryClass*)this)->Class->Type);
+              dynamic_cast<InfantryClass*>(this)->Class->Type);
         }
         source->House->UnitsKilled[Owner()]++;
       }
@@ -2718,7 +2723,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedUnits->Increment_Unit_Total(
-              ((UnitClass*)this)->Class->Type);
+              dynamic_cast<UnitClass*>(this)->Class->Type);
         }
         source->House->UnitsKilled[Owner()]++;
       }
@@ -3117,7 +3122,7 @@ int TechnoClass::Value() const {
 
       while (object) {
         value += object->Value();
-        object = (FootClass*)object->Next;
+        object = dynamic_cast<FootClass*>(object->Next);
       }
     }
   }
@@ -3207,8 +3212,8 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const* enemy) {
   */
   // This should allow helicopters to retaliate however. Hmmm.
   if (enemy->What_Am_I() == RTTI_UNIT &&
-      (*(UnitClass const*)enemy == UNIT_GUNBOAT ||
-       *(UnitClass const*)enemy == UNIT_HOVER)) {
+      (*dynamic_cast<UnitClass const*>(enemy) == UNIT_GUNBOAT ||
+       *dynamic_cast<UnitClass const*>(enemy) == UNIT_HOVER)) {
     return;
   }
 
@@ -3265,7 +3270,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const* enemy) {
       }
 
       if (count < 6) {
-        defender[count] = (FootClass*)infantry;
+        defender[count] = static_cast<FootClass*>(infantry);
         value[count] = threat;
         count++;
         continue;
@@ -3277,7 +3282,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const* enemy) {
         for (int lp = 0; lp < count; lp++) {
           if (value[lp] == weakest) {
             value[lp] = threat;
-            defender[lp] = (FootClass*)infantry;
+            defender[lp] = static_cast<FootClass*>(infantry);
             continue;
           }
           if (value[lp] < newweakest) {
@@ -3327,7 +3332,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const* enemy) {
       }
 
       if (count < 6) {
-        defender[count] = (FootClass*)unit;
+        defender[count] = static_cast<FootClass*>(unit);
         value[count] = threat;
         count++;
         continue;
@@ -3338,7 +3343,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const* enemy) {
         for (int lp = 0; lp < count; lp++) {
           if (value[lp] == weakest) {
             value[lp] = threat;
-            defender[lp] = (FootClass*)unit;
+            defender[lp] = static_cast<FootClass*>(unit);
             continue;
           }
           if (value[lp] < newweakest) {
@@ -3400,7 +3405,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const* enemy) {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 unsigned char TechnoClass::Get_Ownable() const {
-  return ((TechnoTypeClass const&)Class_Of()).Ownable;
+  return dynamic_cast<TechnoTypeClass const&>(Class_Of()).Ownable;
 }
 
 /***********************************************************************************************

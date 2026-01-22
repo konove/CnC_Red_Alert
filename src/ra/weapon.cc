@@ -153,7 +153,7 @@ void* WeaponTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 void WeaponTypeClass::operator delete(void* pointer) {
-  Weapons.Free((WeaponTypeClass*)pointer);
+  Weapons.Free(static_cast<WeaponTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -217,7 +217,7 @@ bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
     IsTurboBoosted = ini.Get_Bool(Name(), "TurboBoost", IsTurboBoosted);
 
     WarheadType wtype =
-        WarheadPtr != nullptr ? WarheadType(WarheadPtr->ID) : WARHEAD_NONE;
+        WarheadPtr != nullptr ? static_cast<WarheadType>(WarheadPtr->ID) : WARHEAD_NONE;
     wtype = ini.Get_WarheadType(Name(), "Warhead", wtype);
     if (wtype != WARHEAD_NONE) {
       WarheadPtr = WarheadTypeClass::As_Pointer(wtype);
@@ -227,7 +227,7 @@ bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
     }
 
     BulletType btype =
-        Bullet != nullptr ? BulletType(Bullet->ID) : BULLET_NONE;
+        Bullet != nullptr ? static_cast<BulletType>(Bullet->ID) : BULLET_NONE;
     btype = ini.Get_BulletType(Name(), "Projectile", btype);
     if (btype != BULLET_NONE) {
       Bullet = &BulletTypeClass::As_Reference(btype);
@@ -260,7 +260,7 @@ WeaponType Weapon_From_Name(char const* name) {
 
   for (int index = 0; index < Weapons.Count(); index++) {
     if (stricmp(Weapons.Ptr(index)->Name(), name) == 0) {
-      return WeaponType(Weapons.Ptr(index)->ID);
+      return static_cast<WeaponType>(Weapons.Ptr(index)->ID);
     }
   }
 

@@ -190,7 +190,7 @@ ResultType TerrainClass::Take_Damage(int& damage, int distance,
 void* TerrainClass::operator new(size_t) throw() {
   void* ptr = Terrains.Allocate();
   if (ptr) {
-    ((TerrainClass*)ptr)->IsActive = true;
+    static_cast<TerrainClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -211,9 +211,9 @@ void* TerrainClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void TerrainClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TerrainClass*)ptr)->IsActive = false;
+    static_cast<TerrainClass*>(ptr)->IsActive = false;
   }
-  Terrains.Free((TerrainClass*)ptr);
+  Terrains.Free(static_cast<TerrainClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -384,16 +384,16 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
   short const* offset;  // Pointer to cell offset list.
 
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 
   offset = Occupy_List();
   while (*offset != REFRESH_EOL) {
     if (Class->IsWaterBased) {
-      if (!Map[(CELL)(cell + *offset++)].Is_Clear_To_Build(SPEED_FLOAT)) {
+      if (!Map[static_cast<CELL>(cell + *offset++)].Is_Clear_To_Build(SPEED_FLOAT)) {
         return MOVE_NO;
       }
     } else {
-      if (!Map[(CELL)(cell + *offset++)].Is_Clear_To_Build()) {
+      if (!Map[static_cast<CELL>(cell + *offset++)].Is_Clear_To_Build()) {
         return MOVE_NO;
       }
     }

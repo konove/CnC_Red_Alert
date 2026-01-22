@@ -228,7 +228,7 @@ class TeamClass : public AbstractClass {
   void Code_Pointers();
   void Decode_Pointers();
 
-  bool Is_Empty() const { return Member == (void*)nullptr; }
+  bool Is_Empty() const { return Member == static_cast<void*>(nullptr); }
   bool Has_Entered_Map() const;
   void Force_Active() {
     IsForcedActive = true;

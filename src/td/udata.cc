@@ -1474,8 +1474,8 @@ void UnitTypeClass::One_Time() {
       if (index == UNIT_MLRS || index == UNIT_MSAM) {
         largest = 26;
       } else {
-        largest = std::max(largest, (int)Get_Build_Frame_Width(ptr));
-        largest = std::max(largest, (int)Get_Build_Frame_Height(ptr));
+        largest = std::max(largest, static_cast<int>(Get_Build_Frame_Width(ptr)));
+        largest = std::max(largest, static_cast<int>(Get_Build_Frame_Height(ptr)));
       }
     }
 

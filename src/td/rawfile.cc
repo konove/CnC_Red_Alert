@@ -562,7 +562,7 @@ int RawFileClass::Is_Available(int forced) {
         // if successful, replace the filename with the working one
         if (Allocated) delete[] Filename;
 
-        (char const*&)Filename = lower_name;
+        static_cast<char const*&>(Filename) = lower_name;
         Allocated = true;
       } else {
         delete[] lower_name;

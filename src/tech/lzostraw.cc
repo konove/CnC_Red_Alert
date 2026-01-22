@@ -144,7 +144,7 @@ int LZOStraw::Get(void* destbuf, int slen) {
             &Buffer2[BlockHeader.CompCount + sizeof(BlockHeader) - Counter],
             len);
       }
-      destbuf = (char*)destbuf + len;
+      destbuf = static_cast<char*>(destbuf) + len;
       slen -= len;
       Counter -= len;
       total += len;
@@ -164,14 +164,14 @@ int LZOStraw::Get(void* destbuf, int slen) {
       delete[] staging_buffer;
       Counter = BlockHeader.UncompCount;
     } else {
-      BlockHeader.UncompCount = (unsigned short)Straw::Get(Buffer, BlockSize);
+      BlockHeader.UncompCount = static_cast<unsigned short>(Straw::Get(Buffer, BlockSize));
       if (BlockHeader.UncompCount == 0) break;
       char* dictionary = new char[64 * 1024];
       unsigned int length = sizeof(Buffer2) - sizeof(BlockHeader);
       lzo1x_1_compress((unsigned char*)Buffer, BlockHeader.UncompCount,
                        (unsigned char*)&Buffer2[sizeof(BlockHeader)], &length,
                        dictionary);
-      BlockHeader.CompCount = (unsigned short)length;
+      BlockHeader.CompCount = static_cast<unsigned short>(length);
       delete[] dictionary;
       memmove(Buffer2, &BlockHeader, sizeof(BlockHeader));
       Counter = BlockHeader.CompCount + sizeof(BlockHeader);

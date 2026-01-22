@@ -682,9 +682,10 @@ void ScoreClass::Presentation() {
 
   if (Special.IsJurassic && AreThingiesEnabled) return;
 
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void*)nullptr);
+  PseudoSeenBuff =
+      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
   TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
   TextPrintBuffer->Clear();
   BlitList.Clear();
   Disable_Uncompressed_Shapes();
@@ -711,10 +712,10 @@ void ScoreClass::Presentation() {
   ** Load the background for the score screen
   */
   anim = Open_Animation(ScreenNames[house], nullptr, 0L,
-                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
-                        Palette);
+                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
 
-  unsigned minutes = (unsigned)(ElapsedTime / (long)TIMER_MINUTE) + 1;
+  unsigned minutes =
+      static_cast<unsigned>(ElapsedTime / (long)TIMER_MINUTE) + 1;
 
   /*
   **	Determine leadership rating.
@@ -729,7 +730,8 @@ void ScoreClass::Presentation() {
 
   HouseClass* houses[3];
   for (int index = 0; index < 3; index++) {
-    houses[index] = HouseClass::As_Pointer((HousesType)(HOUSE_GOOD + index));
+    houses[index] =
+        HouseClass::As_Pointer(static_cast<HousesType>(HOUSE_GOOD + index));
   }
 
   GKilled = HouseClass::As_Pointer(HOUSE_GOOD)->UnitsLost;
@@ -753,10 +755,10 @@ void ScoreClass::Presentation() {
   /*
   **	Determine efficiency rating.
   */
-  unsigned efficiency =
-      Cardinal_To_Fixed((house == HOUSE_GOOD ? GHarvested : NHarvested) +
-                            (unsigned)PlayerPtr->InitialCredits + 1,
-                        (unsigned)PlayerPtr->Available_Money() + 1);
+  unsigned efficiency = Cardinal_To_Fixed(
+      (house == HOUSE_GOOD ? GHarvested : NHarvested) +
+          static_cast<unsigned>(PlayerPtr->InitialCredits) + 1,
+      static_cast<unsigned>(PlayerPtr->Available_Money()) + 1);
   if (!efficiency) efficiency++;
   efficiency = Fixed_To_Cardinal(100, efficiency);
 
@@ -842,7 +844,7 @@ void ScoreClass::Presentation() {
   Play_Sample(sfx4, 255, Options.Normalize_Sound(120));
   Call_Back_Delay(13);
 
-  max = std::max((long)leadership, (long)efficiency);
+  max = std::max(static_cast<long>(leadership), static_cast<long>(efficiency));
   int scorecounter = 0;
   Keyboard::Clear();
 
@@ -1004,7 +1006,7 @@ void ScoreClass::Presentation() {
     Alloc_Object(new ScorePrintClass(hallfame[i].name, HALLFAME_X,
                                      HALLFAME_Y + i * 8, _bluepal));
     if (hallfame[i].score) {
-      char* str = (char*)SysMemPage.Get_Buffer() + i * 32;
+      char* str = static_cast<char*>(SysMemPage.Get_Buffer()) + i * 32;
       sprintf(str, "%d", hallfame[i].score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + 6 * 15,
                                        HALLFAME_Y + i * 8, _bluepal, BLACK));
@@ -1514,8 +1516,8 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
   i = -50;
 
   BlitList.Add(RESFACTOR * _credpx[house], RESFACTOR * _credpy[house],
-               RESFACTOR * _credpx[house], RESFACTOR * _credpy[house],
-               5 * 12, 12);
+               RESFACTOR * _credpx[house], RESFACTOR * _credpy[house], 5 * 12,
+               12);
 
   do {
     add = 5;
@@ -1537,7 +1539,8 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
   } while (i < PlayerPtr->Available_Money());
 
   // Make sure the credits object doesn't freeze on the white stage
-  while (((ScoreTimeClass*)ScoreObjs[credobj])->Stage >= 20 && !ControlQ) {
+  while (dynamic_cast<ScoreTimeClass*>(ScoreObjs[credobj])->Stage >= 20 &&
+         !ControlQ) {
     Call_Back_Delay(1);
   }
   delete ScoreObjs[credobj];
@@ -1931,8 +1934,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
           New_Infantry_Anim(NUMINFANTRYMEN * 2 / 3 + i / 11,
                             DO_GUN_DEATH + (Random() & 3));
         } else {
-          New_Infantry_Anim(NUMINFANTRYMEN * 2 / 3 + i / 11,
-                            DO_GUN_DEATH);
+          New_Infantry_Anim(NUMINFANTRYMEN * 2 / 3 + i / 11, DO_GUN_DEATH);
         }
         //				Sound_Effect(Random_Pick(VOC_SCREAM1,
         // VOC_SCREAM5));
@@ -2065,9 +2067,10 @@ void Multi_Score_Presentation() {
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   Theme.Queue_Song(THEME_WIN1);
 
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void*)nullptr);
+  PseudoSeenBuff =
+      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
   TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
   BlitList.Clear();
 
   SysMemPage.Clear();
@@ -2078,8 +2081,7 @@ void Multi_Score_Presentation() {
   Set_Palette(BlackPalette);
 
   anim = Open_Animation("MLTIPLYR.WSA", nullptr, 0L,
-                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
-                        Palette);
+                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
   Hide_Mouse();
 
   /*

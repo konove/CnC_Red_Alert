@@ -84,7 +84,7 @@ static int64_t VQADOSHandler(VQAHandle* vqa, int64_t action, void* buffer,
  ****************************************************************************/
 
 void VQA_InitAsDOS(VQAHandle* vqa) {
-  ((VQAHandleP*)vqa)->IOHandler = VQADOSHandler;
+  dynamic_cast<VQAHandleP*>(vqa)->IOHandler = VQADOSHandler;
 }
 
 /****************************************************************************

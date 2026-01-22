@@ -189,7 +189,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   //	range = ICON_LEPTON_W*2;
   range = ICON_LEPTON_W + (ICON_LEPTON_W >> 1);
   cell = Coord_Cell(coord);
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return;
 
   CellClass* cellptr = &Map[cell];
   ObjectClass* impacto = cellptr->Cell_Occupier();
@@ -435,10 +435,10 @@ void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int rawdamage,
       **	then don't process it. This unusual check method ensures that
       **	damage won't wrap from one side of the map to the other.
       */
-      if ((unsigned)xpos > MAP_CELL_W) {
+      if (static_cast<unsigned>(xpos) > MAP_CELL_W) {
         continue;
       }
-      if ((unsigned)ypos > MAP_CELL_H) {
+      if (static_cast<unsigned>(ypos) > MAP_CELL_H) {
         continue;
       }
       CELL tcell = XY_Cell(xpos, ypos);

@@ -82,7 +82,7 @@ class FixedHeapClass {
   virtual int Free_All();
 
  protected:
-  void* operator[](int index) { return (char*)Buffer + index * Size; }
+  void* operator[](int index) { return static_cast<char*>(Buffer) + index * Size; }
 
   /*
   **	If the memory block buffer was allocated by this class, then this flag
@@ -137,11 +137,11 @@ class TFixedHeapClass : public FixedHeapClass {
 
   virtual int ID(T const* pointer) { return FixedHeapClass::ID(pointer); }
 
-  virtual T* Alloc() { return (T*)FixedHeapClass::Allocate(); }
+  virtual T* Alloc() { return static_cast<T*>(FixedHeapClass::Allocate()); }
   virtual int Free(T* pointer) { return FixedHeapClass::Free(pointer); }
 
  protected:
-  T& operator[](int index) { return *((char*)Buffer + index * Size); }
+  T& operator[](int index) { return *(static_cast<char*>(Buffer) + index * Size); }
 };
 
 /**************************************************************************
@@ -184,7 +184,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
   ~TFixedIHeapClass() override = default;
 
   virtual int ID(T const* pointer) { return FixedIHeapClass::ID(pointer); }
-  virtual T* Alloc() { return (T*)FixedIHeapClass::Allocate(); }
+  virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
   virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   int Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
   virtual int Save(FileClass&);
@@ -192,8 +192,8 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual void Code_Pointers();
   virtual void Decode_Pointers();
 
-  virtual T* Ptr(int index) { return (T*)ActivePointers[index]; }
-  virtual T* Raw_Ptr(int index) { return (T*)(*this)[index]; }
+  virtual T* Ptr(int index) { return static_cast<T*>(ActivePointers[index]); }
+  virtual T* Raw_Ptr(int index) { return static_cast<T*>((*this)[index]); }
 };
 
 #endif

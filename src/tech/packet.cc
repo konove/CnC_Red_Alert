@@ -190,7 +190,8 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   //   are building.
   //
   for (current = Head; current; current = current->Next) {
-    size += (unsigned short)FIELD_HEADER_SIZE;  // add in packet header size
+    size += static_cast<unsigned short>(
+        FIELD_HEADER_SIZE);  // add in packet header size
     size += current->Size;                      // add in data size
     size +=
         4 - (size & 3) & 3;  // add in pad value to dword align next packet
@@ -206,7 +207,7 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   //
   // write the size into the packet header
   //
-  *(unsigned short*)curbuf = htons((unsigned short)size);
+  *(unsigned short*)curbuf = htons(static_cast<unsigned short>(size));
   curbuf += sizeof(unsigned short);
   *(short*)curbuf = htons(ID);
   curbuf += sizeof(short);
@@ -289,7 +290,7 @@ FieldClass* PacketClass::Find_Field(char const* id) {
 bool PacketClass::Get_Field(char const* id, char& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *(char*)field->Data;
+    data = *static_cast<char*>(field->Data);
   }
   return field ? true : false;
 }
@@ -312,7 +313,7 @@ bool PacketClass::Get_Field(char const* id, char& data) {
 bool PacketClass::Get_Field(char const* id, unsigned char& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *(unsigned char*)field->Data;
+    data = *static_cast<unsigned char*>(field->Data);
   }
   return field ? true : false;
 }
@@ -335,7 +336,7 @@ bool PacketClass::Get_Field(char const* id, unsigned char& data) {
 bool PacketClass::Get_Field(char const* id, short& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *(short*)field->Data;
+    data = *static_cast<short*>(field->Data);
   }
   return field ? true : false;
 }
@@ -358,7 +359,7 @@ bool PacketClass::Get_Field(char const* id, short& data) {
 bool PacketClass::Get_Field(char const* id, unsigned short& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *(unsigned short*)field->Data;
+    data = *static_cast<unsigned short*>(field->Data);
   }
   return field ? true : false;
 }
@@ -381,7 +382,7 @@ bool PacketClass::Get_Field(char const* id, unsigned short& data) {
 bool PacketClass::Get_Field(char const* id, long& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *(long*)field->Data;
+    data = *static_cast<long*>(field->Data);
   }
   return field ? true : false;
 }
@@ -407,7 +408,7 @@ bool PacketClass::Get_Field(char const* id, long& data) {
 bool PacketClass::Get_Field(char const* id, char* data, size_t data_size) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    port::SafeCopy(data, (char*)field->Data, data_size);
+    port::SafeCopy(data, static_cast<char*>(field->Data), data_size);
   }
   return field ? true : false;
 }
@@ -430,7 +431,7 @@ bool PacketClass::Get_Field(char const* id, char* data, size_t data_size) {
 bool PacketClass::Get_Field(char const* id, unsigned long& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *(unsigned long*)field->Data;
+    data = *static_cast<unsigned long*>(field->Data);
   }
   return field ? true : false;
 }
@@ -454,8 +455,8 @@ bool PacketClass::Get_Field(char const* id, unsigned long& data) {
 bool PacketClass::Get_Field(char const* id, void* data, int& length) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    memcpy(data, field->Data, std::min(int(field->Size), length));
-    length = (int)field->Size;
+    memcpy(data, field->Data, std::min(static_cast<int>(field->Size), length));
+    length = static_cast<int>(field->Size);
   }
   return field ? true : false;
 }

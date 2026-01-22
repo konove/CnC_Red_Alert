@@ -503,9 +503,11 @@ void EventClass::Execute() {
     case ALLY:
       house = Houses.Raw_Ptr(Data.General.Value);
       if (Houses.Raw_Ptr(ID)->Is_Ally(house)) {
-        Houses.Raw_Ptr(ID)->Make_Enemy((HousesType)Data.General.Value);
+        Houses.Raw_Ptr(ID)->Make_Enemy(
+            static_cast<HousesType>(Data.General.Value));
       } else {
-        Houses.Raw_Ptr(ID)->Make_Ally((HousesType)Data.General.Value);
+        Houses.Raw_Ptr(ID)->Make_Ally(
+            static_cast<HousesType>(Data.General.Value));
       }
       break;
 
@@ -640,10 +642,11 @@ void EventClass::Execute() {
     */
     case MEGAMISSION_F:
       techno = Data.MegaMission_F.Whom.As_Techno();
-      if (techno && techno->IsActive && techno->Is_Foot()) {
-        ((FootClass*)techno)->IsFormationMove = true;
-        ((FootClass*)techno)->FormationSpeed = Data.MegaMission_F.Speed;
-        ((FootClass*)techno)->FormationMaxSpeed = Data.MegaMission_F.MaxSpeed;
+      if (techno != nullptr && techno->IsActive && techno->Is_Foot()) {
+        auto foot_class = dynamic_cast<FootClass*>(techno);
+        foot_class->IsFormationMove = true;
+        foot_class->FormationSpeed = Data.MegaMission_F.Speed;
+        foot_class->FormationMaxSpeed = Data.MegaMission_F.MaxSpeed;
         FormMove = true;
         FormSpeed = Data.MegaMission_F.Speed;
         FormMaxSpeed = Data.MegaMission_F.MaxSpeed;
@@ -699,9 +702,10 @@ void EventClass::Execute() {
           techno->Transmit_Message(RADIO_OVER_OUT);
         }
         if (techno->Is_Foot()) {
-          if (!formation) ((FootClass*)techno)->IsFormationMove = false;
-          if (((FootClass*)techno)->Team) {
-            ((FootClass*)techno)->Team->Remove((FootClass*)techno);
+          auto foot_class = dynamic_cast<FootClass*>(techno);
+          if (!formation) foot_class->IsFormationMove = false;
+          if (foot_class->Team) {
+            foot_class->Team->Remove(foot_class);
           }
         }
 
@@ -722,7 +726,7 @@ void EventClass::Execute() {
         techno->Assign_Mission(Data.MegaMission.Mission);
 
         if (techno->Is_Foot()) {
-          ((FootClass*)techno)->SuspendedNavCom = TARGET_NONE;
+          dynamic_cast<FootClass*>(techno)->SuspendedNavCom = TARGET_NONE;
         }
         techno->SuspendedTarCom = TARGET_NONE;
 
@@ -739,12 +743,11 @@ void EventClass::Execute() {
           techno->ArchiveTarget = Data.MegaMission.Target.As_TARGET();
         } else {
           if (q && techno->Is_Foot()) {
-            ((FootClass*)techno)
-                ->Queue_Navigation_List(
-                    Data.MegaMission.Destination.As_TARGET());
+            dynamic_cast<FootClass*>(techno)->Queue_Navigation_List(
+                Data.MegaMission.Destination.As_TARGET());
           } else {
             if (techno->Is_Foot()) {
-              ((FootClass*)techno)->Clear_Navigation_List();
+              dynamic_cast<FootClass*>(techno)->Clear_Navigation_List();
             }
             techno->Assign_Target(Data.MegaMission.Target.As_TARGET());
             techno->Assign_Destination(
@@ -763,13 +766,15 @@ void EventClass::Execute() {
         if (rt == RTTI_VESSEL && techno != nullptr &&
             techno->What_Am_I() == RTTI_VESSEL &&
             Data.MegaMission.Mission == MISSION_MOVE) {
-          VesselClass* ship = (VesselClass*)techno;
+          VesselClass* ship = dynamic_cast<VesselClass*>(techno);
           if (object != nullptr) {
             if (object->What_Am_I() == RTTI_BUILDING &&
                 //						if
                 //((RTTIType)Data.MegaMission.Destination == RTTI_BUILDING &&
-                (((BuildingClass*)object)->Class->Type == STRUCT_SHIP_YARD ||
-                 ((BuildingClass*)object)->Class->Type == STRUCT_SUB_PEN)) {
+                (dynamic_cast<BuildingClass*>(object)->Class->Type ==
+                     STRUCT_SHIP_YARD ||
+                 dynamic_cast<BuildingClass*>(object)->Class->Type ==
+                     STRUCT_SUB_PEN)) {
               ship->IsToSelfRepair = true;
             } else {
               ship->IsToSelfRepair = false;
@@ -803,7 +808,7 @@ void EventClass::Execute() {
         techno->Assign_Target(TARGET_NONE);
         techno->Enter_Idle_Mode();
         if (techno->Is_Foot()) {
-          ((FootClass*)techno)->Clear_Navigation_List();
+          dynamic_cast<FootClass*>(techno)->Clear_Navigation_List();
         }
       }
       break;
@@ -816,7 +821,7 @@ void EventClass::Execute() {
       techno = Data.Target.Whom.As_Techno();
       if (techno != nullptr && techno->Is_Foot() && techno->IsActive &&
           !techno->IsInLimbo && !techno->IsTethered) {
-        ((FootClass*)techno)->IsScattering = true;
+        dynamic_cast<FootClass*>(techno)->IsScattering = true;
         techno->Scatter(0, true, false);
       }
       break;
@@ -827,7 +832,7 @@ void EventClass::Execute() {
     */
     case SPECIAL_PLACE:
       Houses.Raw_Ptr(ID)->Place_Special_Blast(
-          (SpecialWeaponType)Data.Special.ID, Data.Special.Cell);
+          static_cast<SpecialWeaponType>(Data.Special.ID), Data.Special.Cell);
       break;
 
     /*
@@ -908,7 +913,7 @@ void EventClass::Execute() {
       int i;
       printf("ADDPLAYER EVENT!\n");
       for (i = 0; i < Data.Variable.Size; i++) {
-        printf("%d\n", ((char*)Data.Variable.Pointer)[i]);
+        printf("%d\n", static_cast<char*>(Data.Variable.Pointer)[i]);
       }
       if (ID != PlayerPtr->ID) {
         delete[] static_cast<char*>(Data.Variable.Pointer);

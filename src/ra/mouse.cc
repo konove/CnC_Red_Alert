@@ -102,7 +102,7 @@ MouseClass::MouseClass()
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 void MouseClass::Set_Default_Mouse(MouseType mouse, bool size) {
-  assert((unsigned)mouse < MOUSE_COUNT);
+  assert(static_cast<unsigned>(mouse) < MOUSE_COUNT);
 
   NormalMouseShape = mouse;
   Override_Mouse_Shape(mouse, size);
@@ -194,7 +194,7 @@ void Unblock_Mouse(GraphicBufferClass* buffer);
 #endif
 
 bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
-  assert((unsigned)mouse < MOUSE_COUNT);
+  assert(static_cast<unsigned>(mouse) < MOUSE_COUNT);
 
   MouseStruct const* control = &MouseControl[mouse];
   static bool startup = false;

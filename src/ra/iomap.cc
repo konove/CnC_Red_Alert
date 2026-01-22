@@ -168,13 +168,13 @@ void CellClass::Code_Pointers() {
  *=============================================================================================*/
 void CellClass::Decode_Pointers() {
   if (OccupierPtr != nullptr) {
-    OccupierPtr = As_Object((TARGET)(intptr_t)OccupierPtr);
+    OccupierPtr = As_Object(static_cast<TARGET>((intptr_t)OccupierPtr));
     assert(OccupierPtr != nullptr);
   }
 
   for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
     if (Overlappers[index] != nullptr) {
-      Overlappers[index] = As_Object((TARGET)(intptr_t)Overlappers[index]);
+      Overlappers[index] = As_Object(static_cast<TARGET>((intptr_t)Overlappers[index]));
       assert(Overlappers[index] != nullptr);
     }
   }
@@ -326,7 +326,7 @@ bool MouseClass::Save(Pipe& file) const {
   **	Count how many cells will be saved.
   */
   int count = 0;
-  CellClass const* cellptr = &(*this)[(CELL)0];
+  CellClass const* cellptr = &(*this)[static_cast<CELL>(0)];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if (cellptr->Should_Save()) {
       count++;
@@ -342,7 +342,7 @@ bool MouseClass::Save(Pipe& file) const {
   /*
   **	Save cells that need it
   */
-  cellptr = &(*this)[(CELL)0];
+  cellptr = &(*this)[static_cast<CELL>(0)];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if (cellptr->Should_Save()) {
       file.Put(&cell, sizeof(cell));
@@ -410,7 +410,7 @@ void DisplayClass::Decode_Pointers() {
   *here *	either.  These have to be done as last-minute fixups.
   */
   if (PendingObjectPtr) {
-    PendingObjectPtr = As_Object((TARGET)(intptr_t)PendingObjectPtr);
+    PendingObjectPtr = As_Object(static_cast<TARGET>((intptr_t)PendingObjectPtr));
     assert(PendingObjectPtr != nullptr);
   }
 
@@ -437,7 +437,7 @@ void DisplayClass::Decode_Pointers() {
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void MapClass::Code_Pointers() {
-  CellClass* cellptr = &(*this)[(CELL)0];
+  CellClass* cellptr = &(*this)[static_cast<CELL>(0)];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     cellptr->Code_Pointers();
     cellptr++;
@@ -459,7 +459,7 @@ void MapClass::Code_Pointers() {
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void MapClass::Decode_Pointers() {
-  CellClass* cellptr = &(*this)[(CELL)0];
+  CellClass* cellptr = &(*this)[static_cast<CELL>(0)];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     cellptr->Decode_Pointers();
     cellptr++;

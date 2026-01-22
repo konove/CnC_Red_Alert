@@ -72,7 +72,7 @@ MixFileClass::~MixFileClass() {
 
   // Unlink from the global mixfile chain.
   if (this == First) {
-    First = (MixFileClass*)Get_Next();
+    First = dynamic_cast<MixFileClass*>(Get_Next());
   } else {
     Remove();
   }
@@ -167,7 +167,7 @@ MixFileClass* MixFileClass::Finder(const char* filename) {
   ptr = First;
   while (ptr) {
     if (strlen(ptr->Filename) < strlen(filename)) {
-      ptr = (MixFileClass*)ptr->Get_Next();
+      ptr = dynamic_cast<MixFileClass*>(ptr->Get_Next());
       continue;
     }
 
@@ -175,7 +175,7 @@ MixFileClass* MixFileClass::Finder(const char* filename) {
                 filename) == 0) {
       return ptr;
     }
-    ptr = (MixFileClass*)ptr->Get_Next();
+    ptr = dynamic_cast<MixFileClass*>(ptr->Get_Next());
   }
   return nullptr;
 }
@@ -247,8 +247,10 @@ void MixFileClass::Free() {
 
 // Comparison function for bsearch() on SubBlock CRC values.
 int compfunc(void const* ptr1, void const* ptr2) {
-  if (*(int32_t const*)ptr1 < *(int32_t const*)ptr2) return -1;
-  if (*(int32_t const*)ptr1 > *(int32_t const*)ptr2) return 1;
+  if (*static_cast<int32_t const*>(ptr1) < *static_cast<int32_t const*>(ptr2))
+    return -1;
+  if (*static_cast<int32_t const*>(ptr1) > *static_cast<int32_t const*>(ptr2))
+    return 1;
   return 0;
 }
 
@@ -273,8 +275,8 @@ bool MixFileClass::Offset(char const* filename, void** realptr,
     SubBlock* block;
 
     // Binary search the index for matching CRC.
-    block = (SubBlock*)bsearch(&key, ptr->Buffer, ptr->Count, sizeof(SubBlock),
-                               compfunc);
+    block = static_cast<SubBlock*>(
+        bsearch(&key, ptr->Buffer, ptr->Count, sizeof(SubBlock), compfunc));
     if (block) {
       if (mixfile) *mixfile = ptr;
       if (size) *size = block->Size;
@@ -290,7 +292,7 @@ bool MixFileClass::Offset(char const* filename, void** realptr,
       return true;
     }
 
-    ptr = (MixFileClass*)ptr->Get_Next();
+    ptr = dynamic_cast<MixFileClass*>(ptr->Get_Next());
   }
 
   return false;

@@ -609,7 +609,7 @@ long BufferIOFileClass::Write(void const* buffer, long size) {
           }
         }
 
-        memmove((char*)Buffer + BufferPos, (char*)buffer + sizewritten,
+        memmove(static_cast<char*>(Buffer) + BufferPos, (char*)buffer + sizewritten,
                 sizetowrite);
 
         IsChanged = true;
@@ -747,7 +747,7 @@ long BufferIOFileClass::Read(void* buffer, long size) {
           IsCached = true;
         }
 
-        memmove((char*)buffer + sizeread, (char*)Buffer + BufferPos,
+        memmove(static_cast<char*>(buffer) + sizeread, static_cast<char*>(Buffer) + BufferPos,
                 sizetoread);
 
         sizeread += sizetoread;

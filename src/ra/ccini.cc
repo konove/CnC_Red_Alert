@@ -369,8 +369,8 @@ bool CCINIClass::Put_Lepton(char const* section, char const* entry,
  *=============================================================================================*/
 MPHType CCINIClass::Get_MPHType(char const* section, char const* entry,
                                 MPHType defvalue) const {
-  int val = Get_Int(section, entry, (int)defvalue * 100 / 256);
-  return MPHType(_Scale_To_256(val));
+  int val = Get_Int(section, entry, static_cast<int>(defvalue) * 100 / 256);
+  return static_cast<MPHType>(_Scale_To_256(val));
 }
 
 /***********************************************************************************************
@@ -395,7 +395,7 @@ MPHType CCINIClass::Get_MPHType(char const* section, char const* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_MPHType(char const* section, char const* entry,
                              MPHType value) {
-  return Put_Int(section, entry, (int)value * 100 / 256);
+  return Put_Int(section, entry, static_cast<int>(value) * 100 / 256);
 }
 
 /***********************************************************************************************

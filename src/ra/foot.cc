@@ -390,7 +390,7 @@ bool FootClass::Basic_Path() {
       ObjectClass* obj = Map[mycell].Cell_Occupier();
       while (obj) {
         if (obj != this && obj->What_Am_I() == RTTI_INFANTRY) {
-          InfantryClass* inf = (InfantryClass*)obj;
+          InfantryClass* inf = dynamic_cast<InfantryClass*>(obj);
           if (inf->NavCom == NavCom && inf->Path[0] != FACING_NONE) {
             if (Coord_Cell(inf->Head_To_Coord()) == Coord_Cell(inf->Coord)) {
               Mem_Copy(&inf->Path[1], Path, sizeof(Path) - sizeof(Path[0]));
@@ -511,7 +511,7 @@ bool FootClass::Basic_Path() {
       if (found1) {
         Fixup_Path(&path1);
         memcpy(&Path[0], &workpath1[0],
-               std::min(path->Length, (int)sizeof(Path)));
+               std::min(path->Length, static_cast<int>(sizeof(Path))));
       }
 
       Mark(MARK_DOWN);
@@ -588,7 +588,8 @@ int FootClass::Mission_Capture() {
   *accordingly.
   */
   if (Is_Target_Building(TarCom) && !Target_Legal(NavCom) &&
-      What_Am_I() == RTTI_INFANTRY && ((InfantryClass*)this)->Class->IsBomber) {
+      What_Am_I() == RTTI_INFANTRY &&
+      dynamic_cast<InfantryClass*>(this)->Class->IsBomber) {
     Assign_Destination(TarCom);
   }
 
@@ -650,7 +651,7 @@ int FootClass::Mission_Guard() {
 
   int dtime = MissionControl[Mission].Normal_Delay();
   if (What_Am_I() == RTTI_VESSEL) {
-    switch (((VesselClass*)this)->Class->Type) {
+    switch (dynamic_cast<VesselClass*>(this)->Class->Type) {
       case VESSEL_DD:
       case VESSEL_PT:
         dtime = MissionControl[Mission].AA_Delay();
@@ -670,12 +671,12 @@ int FootClass::Mission_Guard() {
     *then go into *	sabotage mode if not already.
     */
     if (!House->IsHuman && Is_Target_Building(TarCom) &&
-        ((InfantryClass*)this)->Class->IsBomber &&
+        dynamic_cast<InfantryClass*>(this)->Class->IsBomber &&
         Mission != MISSION_SABOTAGE) {
       Assign_Mission(MISSION_SABOTAGE);
     }
 
-    switch (((InfantryClass*)this)->Class->Type) {
+    switch (dynamic_cast<InfantryClass*>(this)->Class->Type) {
       case INFANTRY_E1:
       case INFANTRY_E3:
         dtime = MissionControl[Mission].AA_Delay();
@@ -686,7 +687,7 @@ int FootClass::Mission_Guard() {
     }
   }
 
-  return Arm != 0 ? (int)Arm : dtime + Random_Pick(0, 2);
+  return Arm != 0 ? static_cast<int>(Arm) : dtime + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -740,13 +741,15 @@ int FootClass::Mission_Hunt() {
     Random_Animate();
   } else {
     if (What_Am_I() == RTTI_INFANTRY &&
-        (((InfantryTypeClass const&)Class_Of()).Type == INFANTRY_RENOVATOR ||
-         ((InfantryTypeClass const&)Class_Of()).Type == INFANTRY_THIEF)) {
+        (dynamic_cast<InfantryTypeClass const&>(Class_Of()).Type ==
+             INFANTRY_RENOVATOR ||
+         dynamic_cast<InfantryTypeClass const&>(Class_Of()).Type ==
+             INFANTRY_THIEF)) {
       Assign_Destination(TarCom);
       Assign_Mission(MISSION_CAPTURE);
     } else {
       if (What_Am_I() == RTTI_INFANTRY &&
-          ((InfantryClass*)this)->Class->IsBomber &&
+          dynamic_cast<InfantryClass*>(this)->Class->IsBomber &&
           Is_Target_Building(TarCom)) {
         Assign_Destination(TarCom);
         Assign_Mission(MISSION_SABOTAGE);
@@ -1023,7 +1026,8 @@ void FootClass::Approach_Target() {
 int FootClass::Mission_Guard_Area() {
   assert(IsActive);
 
-  if (What_Am_I() == RTTI_UNIT && ((UnitClass*)this)->Class->IsToHarvest) {
+  if (What_Am_I() == RTTI_UNIT &&
+      dynamic_cast<UnitClass*>(this)->Class->IsToHarvest) {
     Assign_Mission(MISSION_HARVEST);
     return 1 + Random_Pick(1, 10);
   }
@@ -1040,7 +1044,8 @@ int FootClass::Mission_Guard_Area() {
   *then go into *	sabotage mode if not already.
   */
   if (!House->IsHuman && What_Am_I() == RTTI_INFANTRY &&
-      Is_Target_Building(TarCom) && ((InfantryClass*)this)->Class->IsBomber &&
+      Is_Target_Building(TarCom) &&
+      dynamic_cast<InfantryClass*>(this)->Class->IsBomber &&
       Mission != MISSION_SABOTAGE) {
     Assign_Mission(MISSION_SABOTAGE);
     return 1;
@@ -1239,7 +1244,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
     case ACTION_GUARD_AREA:
       if (Can_Player_Fire() && Can_Player_Move()) {
         if (What_Am_I() == RTTI_INFANTRY &&
-            ((InfantryClass*)this)->Class->IsBomber &&
+            dynamic_cast<InfantryClass*>(this)->Class->IsBomber &&
             object->What_Am_I() == RTTI_BUILDING && !House->Is_Ally(object)) {
           Player_Assign_Mission(MISSION_SABOTAGE, TARGET_NONE,
                                 object->As_Target());
@@ -1457,13 +1462,15 @@ void FootClass::Per_Cell_Process(PCPType why) {
     **	Shorten the path if the target is now within weapon range of this
     **	unit and this unit is on an attack type mission.
     */
-    if (Target_Legal(TarCom) && (What_Am_I() != RTTI_INFANTRY ||
-                                 !((InfantryClass*)this)->Class->IsDog)) {
+    if (Target_Legal(TarCom) &&
+        (What_Am_I() != RTTI_INFANTRY ||
+         !dynamic_cast<InfantryClass*>(this)->Class->IsDog)) {
       int primary = What_Weapon_Should_I_Use(TarCom);
       bool inrange = In_Range(TarCom, primary);
       TechnoClass const* techno = As_Techno(TarCom);
       if (techno != nullptr && techno->Is_Foot()) {
-        inrange = In_Range(((FootClass const*)techno)->Likely_Coord(), primary);
+        inrange = In_Range(
+            dynamic_cast<FootClass const*>(techno)->Likely_Coord(), primary);
       }
 
       if ((Mission == MISSION_RESCUE || Mission == MISSION_GUARD_AREA ||
@@ -1687,7 +1694,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     *motion, *	then it doesn't need further movement instructions.
     */
     case RADIO_NEED_TO_MOVE:
-      param = (long)NavCom;
+      param = static_cast<long>(NavCom);
       if (!Target_Legal(NavCom)) {
         return RADIO_ROGER;
       }
@@ -1698,14 +1705,14 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     **	for complex loading and unloading missions.
     */
     case RADIO_MOVE_HERE:
-      if (NavCom != (TARGET)param) {
-        if (::As_Target(Coord_Cell(Coord)) == (TARGET)param) {
+      if (NavCom != static_cast<TARGET>(param)) {
+        if (::As_Target(Coord_Cell(Coord)) == static_cast<TARGET>(param)) {
           return RADIO_YEA_NOW_WHAT;
         } else {
           if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
             Assign_Mission(MISSION_MOVE);
           }
-          Assign_Destination((TARGET)param);
+          Assign_Destination(static_cast<TARGET>(param));
           Shorten_Mission_Timer();
         }
       }
@@ -1905,7 +1912,8 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
     ** Next we need to figure out how fast the unit moves because this
     ** decreases the distance penalty.
     */
-    speed = std::max((unsigned)Techno_Type_Class()->MaxSpeed, (unsigned)1);
+    speed = std::max(static_cast<unsigned>(Techno_Type_Class()->MaxSpeed),
+                     static_cast<unsigned>(1));
 
     int ratio = speed > 0 ? std::max(dist / speed, 1) : 1;
 
@@ -2154,7 +2162,7 @@ bool FootClass::Can_Demolish() const {
     case RTTI_AIRCRAFT:
       if (In_Radio_Contact() &&
           Contact_With_Whom()->What_Am_I() == RTTI_BUILDING &&
-          *(BuildingClass*)Contact_With_Whom() == STRUCT_REPAIR &&
+          *dynamic_cast<BuildingClass*>(Contact_With_Whom()) == STRUCT_REPAIR &&
           Distance(Contact_With_Whom()) < 0x0080) {
         return true;
       }

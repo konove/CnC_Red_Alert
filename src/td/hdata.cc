@@ -280,8 +280,8 @@ void HouseTypeClass::One_Time() {
   ** color as the player!
   */
   if (Special.IsJurassic && AreThingiesEnabled) {
-    (unsigned char&)HouseJP.Color = (unsigned char)COLOR_BAD;
-    (unsigned char&)HouseJP.BrightColor = (unsigned char)COLOR_BRIGHT_BAD;
+    (unsigned char&)HouseJP.Color = static_cast<unsigned char>(COLOR_BAD);
+    (unsigned char&)HouseJP.BrightColor = static_cast<unsigned char>(COLOR_BRIGHT_BAD);
   }
 }
 

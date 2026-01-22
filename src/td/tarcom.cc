@@ -64,7 +64,6 @@
 #include "td/target.h"
 #include "td/turret.h"
 #include "td/type.h"
-#include "td/unit.h"
 
 TarComClass::~TarComClass() {}
 

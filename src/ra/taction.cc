@@ -295,7 +295,7 @@ void TActionClass::Build_INI_Entry(std::string& buffer) const {
 void TActionClass::Read_INI() {
   switch (NewINIFormat) {
     default: {
-      Action = TActionType(atoi(strtok(nullptr, ",")));
+      Action = static_cast<TActionType>(atoi(strtok(nullptr, ",")));
       Team.Set_Raw(atoi(strtok(nullptr, ",")));
       Trigger.Set_Raw(atoi(strtok(nullptr, ",")));
       Data.Value = atoi(strtok(nullptr, ","));
@@ -304,7 +304,7 @@ void TActionClass::Read_INI() {
 
     case 1:
     case 0:
-      Action = TActionType(atoi(strtok(nullptr, ",")));
+      Action = static_cast<TActionType>(atoi(strtok(nullptr, ",")));
 
       char const* ptr = strtok(nullptr, ",");
       Team = TeamTypeClass::From_Name(ptr);

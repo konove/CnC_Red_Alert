@@ -231,7 +231,7 @@ int PKStraw::Get(void* source, int length) {
   if (BytesLeft > 0) {
     int tocopy = length < BytesLeft ? length : BytesLeft;
     memmove(source, &Buffer[Counter - BytesLeft], tocopy);
-    source = (char*)source + tocopy;
+    source = static_cast<char*>(source) + tocopy;
     BytesLeft -= tocopy;
     length -= tocopy;
     total += tocopy;

@@ -84,7 +84,7 @@ void* Set_Font(void const* fontptr) {
 }
 
 int Char_Pixel_Width(char chr) {
-  return (unsigned char)*(FontWidthBlockPtr + (unsigned char)chr) +
+  return static_cast<unsigned char>(*(FontWidthBlockPtr + (unsigned char)chr)) +
          FontXSpacing;
 }
 

@@ -293,7 +293,7 @@ void CDFileClass::Add_Search_Drive(char* path) {
     SearchDriveType* chain = First;
 
     while (chain->Next) {
-      chain = (SearchDriveType*)chain->Next;
+      chain = static_cast<SearchDriveType*>(chain->Next);
     }
     chain->Next = srch;
   }
@@ -320,7 +320,7 @@ void CDFileClass::Clear_Search_Drives() {
   while (chain) {
     SearchDriveType* next;
 
-    next = (SearchDriveType*)chain->Next;
+    next = static_cast<SearchDriveType*>(chain->Next);
     delete[] chain->Path;
     delete chain;
 
@@ -394,7 +394,7 @@ char const* CDFileClass::Set_Name(char const* filename) {
     /*
     **	It wasn't found, so try the next path entry.
     */
-    srch = (SearchDriveType*)srch->Next;
+    srch = static_cast<SearchDriveType*>(srch->Next);
   }
 
   /*

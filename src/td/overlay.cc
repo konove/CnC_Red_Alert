@@ -145,7 +145,7 @@ void OverlayClass::Init() {
 void* OverlayClass::operator new(size_t) throw() {
   void* ptr = Overlays.Allocate();
   if (ptr) {
-    ((OverlayClass*)ptr)->IsActive = true;
+    static_cast<OverlayClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -166,9 +166,9 @@ void* OverlayClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void OverlayClass::operator delete(void* ptr) {
   if (ptr) {
-    ((OverlayClass*)ptr)->IsActive = false;
+    static_cast<OverlayClass*>(ptr)->IsActive = false;
   }
-  Overlays.Free((OverlayClass*)ptr);
+  Overlays.Free(static_cast<OverlayClass*>(ptr));
 }
 
 /***********************************************************************************************

@@ -186,7 +186,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
   //------------------------------------------------------------------------
   txtlabel = MessageList;
   while (txtlabel) {
-    MessageList = (TextLabelClass*)txtlabel->Remove();
+    MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
     delete txtlabel;
     txtlabel = MessageList;
   }
@@ -278,7 +278,7 @@ void MessageListClass::Reset() {
   //------------------------------------------------------------------------
   TextLabelClass* txtlabel = MessageList;
   while (txtlabel) {
-    MessageList = (TextLabelClass*)txtlabel->Remove();
+    MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
     delete txtlabel;
     txtlabel = MessageList;
   }
@@ -401,7 +401,7 @@ TextLabelClass* MessageListClass::Add_Message(char const* name, int id,
     //.....................................................................
     //	Remove this message from the list; mark its buffer as being available.
     //.....................................................................
-    MessageList = (TextLabelClass*)txtlabel->Remove();
+    MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
     for (i = 0; i < MAX_NUM_MESSAGES; i++) {
       if (txtlabel->Text == MessageBuffers[i]) BufferAvail[i] = 1;
     }
@@ -499,7 +499,7 @@ char* MessageListClass::Get_Message(int id) {
       if (gadg->UserData2 == id) {
         return gadg->Text;
       }
-      gadg = (TextLabelClass*)gadg->Get_Next();
+      gadg = dynamic_cast<TextLabelClass*>(gadg->Get_Next());
     }
   }
 
@@ -538,7 +538,7 @@ TextLabelClass* MessageListClass::Get_Label(int id) {
       if (gadg->UserData2 == id) {
         return gadg;
       }
-      gadg = (TextLabelClass*)gadg->Get_Next();
+      gadg = dynamic_cast<TextLabelClass*>(gadg->Get_Next());
     }
   }
 
@@ -596,7 +596,7 @@ int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
         found = 1;
         break;
       }
-      tlabel = (TextLabelClass*)tlabel->Get_Next();
+      tlabel = dynamic_cast<TextLabelClass*>(tlabel->Get_Next());
     }
   }
 
@@ -754,7 +754,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
   //------------------------------------------------------------------------
   if (AdjustEdit && Num_Messages() + 1 > MaxMessages) {
     txtlabel = MessageList;
-    MessageList = (TextLabelClass*)txtlabel->Remove();
+    MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
     for (i = 0; i < MAX_NUM_MESSAGES; i++) {
       if (txtlabel->Text == MessageBuffers[i]) BufferAvail[i] = 1;
     }
@@ -925,8 +925,8 @@ int MessageListClass::Manage() {
       //..................................................................
       //	Save the next ptr in the list; remove this entry
       //..................................................................
-      next = (TextLabelClass*)txtlabel->Get_Next();
-      MessageList = (TextLabelClass*)txtlabel->Remove();
+      next = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
+      MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
       for (i = 0; i < MAX_NUM_MESSAGES; i++) {
         if (txtlabel->Text == MessageBuffers[i]) {
           BufferAvail[i] = 1;
@@ -936,7 +936,7 @@ int MessageListClass::Manage() {
       changed = 1;
       txtlabel = next;
     } else {
-      txtlabel = (TextLabelClass*)txtlabel->Get_Next();
+      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
     }
   }
 
@@ -995,14 +995,14 @@ int MessageListClass::Input(KeyNumType& input) {
   //	If we're in 'edit mode', handle keys
   //------------------------------------------------------------------------
   if (IsEdit) {
-    ascii = (KeyASCIIType)(Keyboard->To_ASCII(input) & 0x00ff);
+    ascii = static_cast<KeyASCIIType>(Keyboard->To_ASCII(input) & 0x00ff);
 
 #ifdef WIN32
     /*
     ** Allow numeric keypad presses to map to ascii numbers
     */
     if (input & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
-      input = (KeyNumType)(input & ~WWKEY_VK_BIT);
+      input = static_cast<KeyNumType>(input & ~WWKEY_VK_BIT);
 
     } else {
       /*
@@ -1230,7 +1230,7 @@ void MessageListClass::Set_Width(int width) {
   if (MessageList) {
     gadg = MessageList;
     while (gadg) {
-      ((TextLabelClass*)gadg)->PixWidth = width;
+      dynamic_cast<TextLabelClass*>(gadg)->PixWidth = width;
       gadg = gadg->Get_Next();
     }
   }

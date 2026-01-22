@@ -128,7 +128,7 @@ int RandomStraw::Seed_Bits_Needed() const {
  *=============================================================================================*/
 void RandomStraw::Seed_Bit(int seed) {
   char* ptr = (char*)&Random[0] + SeedBits / CHAR_BIT % sizeof(Random);
-  char frac = (char)(1 << (SeedBits & CHAR_BIT - 1));
+  char frac = static_cast<char>(1 << (SeedBits & CHAR_BIT - 1));
 
   if (seed & 0x01) {
     *ptr ^= frac;
@@ -260,9 +260,9 @@ int RandomStraw::Get(void* source, int slen) {
 
   int total = 0;
   while (slen > 0) {
-    *(char*)source = (char)Random[Current++];
+    *static_cast<char*>(source) = static_cast<char>(Random[Current++]);
     Current = Current % (sizeof(Random) / sizeof(Random[0]));
-    source = (char*)source + sizeof(char);
+    source = static_cast<char*>(source) + sizeof(char);
     slen--;
     total++;
   }

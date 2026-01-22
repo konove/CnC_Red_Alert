@@ -529,7 +529,7 @@ void AnimClass::Init() {
 void* AnimClass::operator new(size_t) throw() {
   void* ptr = Anims.Allocate();
   if (ptr) {
-    ((AnimClass*)ptr)->IsActive = true;
+    static_cast<AnimClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -551,9 +551,9 @@ void* AnimClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void AnimClass::operator delete(void* ptr) {
   if (ptr) {
-    ((AnimClass*)ptr)->IsActive = false;
+    static_cast<AnimClass*>(ptr)->IsActive = false;
   }
-  Anims.Free((AnimClass*)ptr);
+  Anims.Free(static_cast<AnimClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -614,8 +614,8 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
   */
   Delay = timedelay;
 
-  Loops = (unsigned char)(std::max<int>(loop, 1) * Class->Loops);
-  Loops = (unsigned char)std::max<int>(Loops, 1);
+  Loops = static_cast<unsigned char>(std::max<int>(loop, 1) * Class->Loops);
+  Loops = static_cast<unsigned char>(std::max<int>(Loops, 1));
 
   IsToDelete = false;
   IsBrandNew = true;
@@ -779,7 +779,7 @@ void AnimClass::AI() {
             return;
           }
         }
-        Accum = (unsigned char)(accum & 0x00FF);
+        Accum = static_cast<unsigned char>(accum & 0x00FF);
       }
 
       /*
@@ -817,7 +817,7 @@ void AnimClass::AI() {
             //						AnimTypeClass const *
             // aptr = &AnimTypeClass::As_Reference(Class->ChainTo);
 
-            (AnimTypeClass const*&)Class =
+            (const AnimTypeClass*&)Class =
                 &AnimTypeClass::As_Reference(Class->ChainTo);
 
             if (Class->IsNormalized) {
@@ -972,16 +972,16 @@ void AnimClass::Middle() {
         ObjectClass* obj = Logic[index];
 
         if (obj && obj->Is_Techno() && obj->Owner() == Owner) {
-          backup = (TechnoClass*)obj;
+          backup = dynamic_cast<TechnoClass*>(obj);
           if (obj->What_Am_I() == RTTI_BUILDING &&
-              *(BuildingClass*)obj == STRUCT_TEMPLE) {
-            building = (BuildingClass*)obj;
+              *dynamic_cast<BuildingClass*>(obj) == STRUCT_TEMPLE) {
+            building = dynamic_cast<BuildingClass*>(obj);
             break;
           }
         }
       }
 
-      if (!building) building = (BuildingClass*)backup;
+      if (!building) building = dynamic_cast<BuildingClass*>(backup);
     }
 
     int radius = 3;
@@ -1001,10 +1001,10 @@ void AnimClass::Middle() {
         **	then don't process it. This unusual check method ensures that
         **	damage won't wrap from one side of the map to the other.
         */
-        if ((unsigned)xpos > MAP_CELL_W) {
+        if (static_cast<unsigned>(xpos) > MAP_CELL_W) {
           continue;
         }
-        if ((unsigned)ypos > MAP_CELL_H) {
+        if (static_cast<unsigned>(ypos) > MAP_CELL_H) {
           continue;
         }
         CELL tcell = XY_Cell(xpos, ypos);
@@ -1054,9 +1054,11 @@ void AnimClass::Middle() {
   */
   if (Class->IsFlameThrower) {
     COORDINATE c2 = Coord_Move(
-        Center_Coord(), (DirType)((Class->Type - ANIM_FLAME_N) << 5), 0x00E0);
+        Center_Coord(), static_cast<DirType>((Class->Type - ANIM_FLAME_N) << 5),
+        0x00E0);
     COORDINATE c3 = Map.Closest_Free_Spot(
-        Coord_Move(Center_Coord(), (DirType)((Class->Type - ANIM_FLAME_N) << 5),
+        Coord_Move(Center_Coord(),
+                   static_cast<DirType>((Class->Type - ANIM_FLAME_N) << 5),
                    0x0140),
         true);
 
@@ -1095,16 +1097,16 @@ void AnimClass::Middle() {
 
           if (obj && obj->Is_Techno() && obj->Owner() == Owner &&
               !obj->IsInLimbo) {
-            backup = (TechnoClass*)obj;
+            backup = dynamic_cast<TechnoClass*>(obj);
             if (obj->What_Am_I() == RTTI_BUILDING &&
-                *(BuildingClass*)obj == STRUCT_EYE) {
-              building = (BuildingClass*)obj;
+                *dynamic_cast<BuildingClass*>(obj) == STRUCT_EYE) {
+              building = dynamic_cast<BuildingClass*>(obj);
               break;
             }
           }
         }
 
-        if (!building) building = (BuildingClass*)backup;
+        if (!building) building = dynamic_cast<BuildingClass*>(backup);
       }
       Explosion_Damage(Center_Coord(), 600, building, WARHEAD_PB);
     } break;

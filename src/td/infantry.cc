@@ -390,7 +390,7 @@ InfantryClass::~InfantryClass() {
 void* InfantryClass::operator new(size_t) throw() {
   void* ptr = Infantry.Allocate();
   if (ptr) {
-    ((InfantryClass*)ptr)->IsActive = true;
+    static_cast<InfantryClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -411,9 +411,9 @@ void* InfantryClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void InfantryClass::operator delete(void* ptr) {
   if (ptr) {
-    ((InfantryClass*)ptr)->IsActive = false;
+    static_cast<InfantryClass*>(ptr)->IsActive = false;
   }
-  Infantry.Free((InfantryClass*)ptr);
+  Infantry.Free(static_cast<InfantryClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -604,7 +604,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
       } else {
         int morefear = FEAR_ANXIOUS;
         if (Health_Ratio() > 0x0080) morefear /= 4;
-        Fear = std::min((int)Fear + morefear, FEAR_MAXIMUM);
+        Fear = std::min(static_cast<int>(Fear) + morefear, FEAR_MAXIMUM);
       }
 #ifdef BOXING
     }
@@ -1142,9 +1142,11 @@ void InfantryClass::AI() {
     if (*this == INFANTRY_RAMBO) {
       VocType _response[] = {VOC_RAMBO_LEFTY, VOC_RAMBO_LAUGH, VOC_RAMBO_COMIN,
                              VOC_RAMBO_TUFF};
-      Sound_Effect(_response[Sim_Random_Pick(
-                       0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)],
-                   Coord);
+      Sound_Effect(
+          _response[Sim_Random_Pick(
+              0,
+              static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)],
+          Coord);
     }
   }
 
@@ -1578,7 +1580,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   /*
   ** If we are moving into an illegal cell, then we can't do that.
   */
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 
   /*
   **	If moving off the edge of the map, then consider that an illegal move.
@@ -1622,7 +1624,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
       */
       if ((Mission != MISSION_CAPTURE && Mission != MISSION_SABOTAGE) ||
           obj->What_Am_I() != RTTI_AIRCRAFT ||
-          !((AircraftClass*)obj)->In_Radio_Contact()) {
+          !dynamic_cast<AircraftClass*>(obj)->In_Radio_Contact()) {
         /*
         **	Special check to always allow entry into the building that this
         *infantry *	is trying to capture.
@@ -1656,8 +1658,8 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
             *moving or not.
             */
             case RTTI_UNIT:
-              if (((UnitClass*)obj)->IsDriving ||
-                  Target_Legal(((UnitClass*)obj)->NavCom)) {
+              if (dynamic_cast<UnitClass*>(obj)->IsDriving ||
+                  Target_Legal(dynamic_cast<UnitClass*>(obj)->NavCom)) {
                 if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
               } else {
                 if (retval < MOVE_TEMP) retval = MOVE_TEMP;
@@ -1683,7 +1685,8 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
           **	Cloaked enemy objects are not considered if this is a
           *Find_Path() *	call.
           */
-          if (!obj->Is_Techno() || ((TechnoClass*)obj)->Cloak != CLOAKED) {
+          if (!obj->Is_Techno() ||
+              dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED) {
             /*
             **	Any non-allied blockage is considered impassible if the infantry
             **	is not equipped with a weapon.
@@ -1697,7 +1700,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
             */
             switch (obj->What_Am_I()) {
               case RTTI_TERRAIN:
-                if (((TerrainClass*)obj)->Class->IsFlammable &&
+                if (dynamic_cast<TerrainClass*>(obj)->Class->IsFlammable &&
                     BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
                             .Warhead == WARHEAD_FIRE) {
                   if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
@@ -1990,10 +1993,11 @@ void InfantryClass::Random_Animate() {
               VOC_QUIP1,
               //						VOC_QUIP2
           };
-          Sound_Effect(
-              _response[Sim_Random_Pick(
-                  0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)],
-              Coord);
+          Sound_Effect(_response[Sim_Random_Pick(
+                           0, static_cast<int>(sizeof(_response) /
+                                               sizeof(_response[0])) -
+                                  1)],
+                       Coord);
         }
         break;
 
@@ -2528,14 +2532,14 @@ void InfantryClass::Response_Select() {
   if (*this == INFANTRY_RAMBO) {
     static VocType _response[] = {VOC_RAMBO_YEA, VOC_RAMBO_YES, VOC_RAMBO_YO};
     response = _response[Sim_Random_Pick(
-        0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+        0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   } else {
     if (Class->IsCivilian) {
       if (*this == INFANTRY_MOEBIUS) {
         static VocType _response[] = {VOC_YES, VOC_COMMANDER, VOC_HELLO,
                                       VOC_HMMM};
         response = _response[Sim_Random_Pick(
-            0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+            0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
       } else {
         if (Class->IsFemale) {
           response = VOC_GIRL_YEAH;
@@ -2548,7 +2552,7 @@ void InfantryClass::Response_Select() {
                                     VOC_YESSIR,  VOC_YESSIR, VOC_READY,
                                     VOC_AWAIT};
       response = _response[Sim_Random_Pick(
-          0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+          0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
     }
   }
   if (AllowVoice) {
@@ -2578,13 +2582,13 @@ void InfantryClass::Response_Move() {
     static VocType _response[] = {VOC_RAMBO_UGOTIT, VOC_RAMBO_ONIT,
                                   VOC_RAMBO_NOPROB};
     response = _response[Sim_Random_Pick(
-        0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+        0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   } else {
     if (Class->IsCivilian) {
       if (*this == INFANTRY_MOEBIUS) {
         static VocType _response[] = {VOC_OF_COURSE, VOC_YESYES};
         response = _response[Sim_Random_Pick(
-            0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+            0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
       } else {
         if (Class->IsFemale) {
           response = VOC_GIRL_OKAY;
@@ -2597,7 +2601,7 @@ void InfantryClass::Response_Move() {
                                     VOC_ROGER,   VOC_RIGHT_AWAY, VOC_UGOTIT,
                                     VOC_AFFIRM,  VOC_AFFIRM};
       response = _response[Sim_Random_Pick(
-          0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+          0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
     }
   }
   if (AllowVoice) {
@@ -2628,7 +2632,7 @@ void InfantryClass::Response_Attack() {
     static VocType _response[] = {VOC_RAMBO_NOPROB, VOC_RAMBO_UGOTIT,
                                   VOC_RAMBO_NOPROB, VOC_RAMBO_ONIT};
     response = _response[Sim_Random_Pick(
-        0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+        0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   } else {
     if (Class->IsCivilian) {
       if (Class->IsFemale) {
@@ -2641,7 +2645,7 @@ void InfantryClass::Response_Attack() {
                                     VOC_UGOTIT,     VOC_NO_PROB, VOC_YESSIR,
                                     VOC_YESSIR,     VOC_YESSIR};
       response = _response[Sim_Random_Pick(
-          0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+          0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
     }
   }
 
@@ -2732,8 +2736,8 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
     */
     case RADIO_KICK:
       damage = Infantry_Kick_Damage[Random_Pick(
-          0, (int)(sizeof(Infantry_Kick_Damage) /
-                   sizeof(Infantry_Kick_Damage[0])))];
+          0, static_cast<int>(sizeof(Infantry_Kick_Damage) /
+                              sizeof(Infantry_Kick_Damage[0])))];
       if (Take_Damage(damage, 0, WARHEAD_FOOT, this) == RESULT_DESTROYED)
         return RADIO_STATIC;
       return RADIO_ROGER;
@@ -2743,8 +2747,8 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
     */
     case RADIO_PUNCH:
       damage = Infantry_Punch_Damage[Random_Pick(
-          0, (int)(sizeof(Infantry_Punch_Damage) /
-                   sizeof(Infantry_Punch_Damage[0])))];
+          0, static_cast<int>(sizeof(Infantry_Punch_Damage) /
+                              sizeof(Infantry_Punch_Damage[0])))];
       if (Take_Damage(damage, 0, WARHEAD_FIST, this) == RESULT_DESTROYED)
         return RADIO_STATIC;
       return RADIO_ROGER;
@@ -2843,8 +2847,8 @@ ActionType InfantryClass::What_Action(ObjectClass* object) const {
   if (House->Is_Ally(object) && IsOwnedByPlayer && object->Is_Techno() &&
       IsOwnedByPlayer &&
       ((InfantryClass*)this)
-              ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object) ==
-          RADIO_ROGER) {
+              ->Transmit_Message(RADIO_CAN_LOAD, dynamic_cast<TechnoClass*>(
+                                                     object)) == RADIO_ROGER) {
     //	if (object->Owner() == Owner() && object->What_Am_I() == RTTI_UNIT &&
     //((UnitClass *)object)->Class->IsTransporter && ((UnitClass
     //*)object)->How_Many() < 5) {
@@ -2854,11 +2858,12 @@ ActionType InfantryClass::What_Action(ObjectClass* object) const {
   if (Class->IsCapture && action == ACTION_ATTACK) {
     if (object->Owner() != Owner() &&
         ((object->What_Am_I() == RTTI_AIRCRAFT &&
-          ((AircraftClass*)object)->Pip_Count() == 0 &&
-          *(AircraftClass*)object == AIRCRAFT_TRANSPORT) ||
+          dynamic_cast<AircraftClass*>(object)->Pip_Count() == 0 &&
+          *dynamic_cast<AircraftClass*>(object) == AIRCRAFT_TRANSPORT) ||
          (object->What_Am_I() == RTTI_BUILDING &&
-          ((BuildingClass*)object)->Class->IsCaptureable &&
-          (GameToPlay != GAME_NORMAL || *(BuildingClass*)object != STRUCT_EYE ||
+          dynamic_cast<BuildingClass*>(object)->Class->IsCaptureable &&
+          (GameToPlay != GAME_NORMAL ||
+           *dynamic_cast<BuildingClass*>(object) != STRUCT_EYE ||
            Scenario < 13)))) {
       action = ACTION_CAPTURE;
     } else {
@@ -2933,7 +2938,8 @@ void InfantryClass::Read_INI(char* buffer) {
           /*
           **	4th token: cell #.
           */
-          COORDINATE coord = Cell_Coord((CELL)atoi(strtok(nullptr, ",\n\r")));
+          COORDINATE coord =
+              Cell_Coord(static_cast<CELL>(atoi(strtok(nullptr, ",\n\r"))));
 
           /*
           **	5th token: cell sub-location.
@@ -2945,7 +2951,7 @@ void InfantryClass::Read_INI(char* buffer) {
           **	Fetch the mission and facing.
           */
           MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
-          DirType dir = (DirType)atoi(strtok(nullptr, ",\n\r"));
+          DirType dir = static_cast<DirType>(atoi(strtok(nullptr, ",\n\r")));
           infantry->Trigger =
               TriggerClass::As_Pointer(strtok(nullptr, ",\n\r"));
           if (infantry->Trigger) {

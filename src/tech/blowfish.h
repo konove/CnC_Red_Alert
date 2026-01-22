@@ -92,14 +92,14 @@ class BlowfishEngine {
   **	filled with a number generated from pi. Thus they are not random but
   **	they don't hold a weak pattern either.
   */
-  static unsigned long const P_Init[(int)ROUNDS + 2];
+  static unsigned long const P_Init[static_cast<int>(ROUNDS) + 2];
   static unsigned long const S_Init[4][UCHAR_MAX + 1];
 
   /*
   **	Permutation tables for encryption and decryption.
   */
-  unsigned long P_Encrypt[(int)ROUNDS + 2];
-  unsigned long P_Decrypt[(int)ROUNDS + 2];
+  unsigned long P_Encrypt[static_cast<int>(ROUNDS) + 2];
+  unsigned long P_Decrypt[static_cast<int>(ROUNDS) + 2];
 
   /*
   **	S-Box tables (four).

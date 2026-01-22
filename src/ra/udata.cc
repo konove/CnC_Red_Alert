@@ -822,7 +822,7 @@ UnitTypeClass::UnitTypeClass(
     bool is_turret_equipped, bool is_radar_equipped, bool is_fire_anim,
     bool is_lock_turret, bool is_gigundo, bool is_animating, bool is_jammer,
     bool is_gapper, int rotation, int toffset, MissionType order)
-    : TechnoTypeClass(RTTI_UNITTYPE, int(type), name, ininame, remap,
+    : TechnoTypeClass(RTTI_UNITTYPE, static_cast<int>(type), name, ininame, remap,
                       verticaloffset, primaryoffset, primarylateral,
                       secondaryoffset, secondarylateral, is_nominal,
                       is_stealthy, true, true, is_insignificant, false, false,
@@ -887,7 +887,7 @@ void* UnitTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void UnitTypeClass::operator delete(void* pointer) {
-  UnitTypes.Free((UnitTypeClass*)pointer);
+  UnitTypes.Free(static_cast<UnitTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -1054,9 +1054,9 @@ void UnitTypeClass::One_Time() {
 #ifndef NDEBUG
     RawFileClass datafile(fullname.c_str());
     if (datafile.Is_Available()) {
-      (void const*&)uclass.CameoData = Load_Alloc_Data(datafile);
+      static_cast<void const*&>(uclass.CameoData) = Load_Alloc_Data(datafile);
     } else {
-      (void const*&)uclass.CameoData = MFCD::Retrieve(fullname);
+      static_cast<void const*&>(uclass.CameoData) = MFCD::Retrieve(fullname);
     }
 #else
     ((void const*&)uclass.CameoData) = MFCD::Retrieve(fullname);
@@ -1086,11 +1086,11 @@ void UnitTypeClass::One_Time() {
     uclass.SetBorrowedImage(borrowed_data);
 #endif
     if (ptr != nullptr) {
-      largest = std::max(largest, (int)Get_Build_Frame_Width(ptr));
-      largest = std::max(largest, (int)Get_Build_Frame_Height(ptr));
+      largest = std::max(largest, static_cast<int>(Get_Build_Frame_Width(ptr)));
+      largest = std::max(largest, static_cast<int>(Get_Build_Frame_Height(ptr)));
     }
 
-    (int&)uclass.MaxSize = std::max(largest, 8);
+    static_cast<int&>(uclass.MaxSize) = std::max(largest, 8);
   }
 
   /*

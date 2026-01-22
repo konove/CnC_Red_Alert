@@ -287,9 +287,9 @@ void SoundControlsClass::Process() {
 
       void* ptr = new char[sizeof(buffer)];
       if (ptr) {
-        sprintf((char*)ptr, "%cTrack %d\t%d:%02d\t%s", index,
+        sprintf(static_cast<char*>(ptr), "%cTrack %d\t%d:%02d\t%s", index,
                 listbox.Count() + 1, length / 60, length % 60, fullname);
-        listbox.Add_Item((char const*)ptr);
+        listbox.Add_Item(static_cast<char const*>(ptr));
       }
 
       if (Theme.What_Is_Playing() == index) {
@@ -413,8 +413,8 @@ void SoundControlsClass::Process() {
       case KN_SPACE:
       case BUTTON_PLAY | KN_BUTTON:
         if (listbox.Count()) {
-          Theme.Queue_Song((ThemeType) *
-                           (unsigned char*)listbox.Current_Item());
+          Theme.Queue_Song(
+              static_cast<ThemeType>(*(unsigned char*)listbox.Current_Item()));
         }
         break;
 
@@ -474,11 +474,13 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
       }
     }
 
-    Conquer_Clip_Text_Print((char*)Add_Long_To_Pointer(List[index], 1), x, y,
+    Conquer_Clip_Text_Print(
+        static_cast<char*>(Add_Long_To_Pointer(List[index], 1)), x, y,
                             CC_GREEN, TBLACK, flags, width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print((char*)Add_Long_To_Pointer(List[index], 1), x, y,
+    Conquer_Clip_Text_Print(
+        static_cast<char*>(Add_Long_To_Pointer(List[index], 1)), x, y,
                             selected ? BLUE : WHITE, TBLACK, TextFlags, width,
                             Tabs);
   }

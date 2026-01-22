@@ -71,10 +71,10 @@ typedef enum KindType {
 #define TARGET_EXPONENT_MASK (~(((unsigned)(~0)) >> TARGET_EXPONENT))
 
 inline KindType Target_Kind(TARGET a) {
-  return (KindType)((unsigned)a >> TARGET_MANTISSA);
+  return static_cast<KindType>((unsigned)a >> TARGET_MANTISSA);
 }
 inline unsigned Target_Value(TARGET a) {
-  return (unsigned)a & TARGET_MANTISSA_MASK;
+  return static_cast<unsigned>(a) & TARGET_MANTISSA_MASK;
 }
 
 inline bool Is_Target_Team(TARGET a) { return Target_Kind(a) == KIND_TEAM; }
@@ -109,10 +109,11 @@ inline bool Is_Target_Animation(TARGET a) {
 }
 
 inline TARGET Build_Target(KindType kind, int value) {
-  return (TARGET)((unsigned)kind << TARGET_MANTISSA | (unsigned)value);
+  return static_cast<TARGET>((unsigned)kind << TARGET_MANTISSA |
+                             (unsigned)value);
 }
 inline TARGET As_Target(CELL cell) {
-  return (TARGET)((unsigned)KIND_CELL << TARGET_MANTISSA | cell);
+  return static_cast<TARGET>((unsigned)KIND_CELL << TARGET_MANTISSA | cell);
 }
 
 class UnitClass;

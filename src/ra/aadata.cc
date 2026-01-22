@@ -255,7 +255,7 @@ AircraftTypeClass::AircraftTypeClass(
     bool is_stealthy, bool is_selectable, bool is_legal_target,
     bool is_insignificant, bool is_immune, StructType building,
     int landingspeed, int rotation, MissionType deforder)
-    : TechnoTypeClass(RTTI_AIRCRAFTTYPE, int(airtype), name, ininame,
+    : TechnoTypeClass(RTTI_AIRCRAFTTYPE, static_cast<int>(airtype), name, ininame,
                       REMAP_NORMAL, verticaloffset, primaryoffset,
                       primarylateral, primaryoffset, primarylateral, false,
                       is_stealthy, is_selectable, is_legal_target,
@@ -312,7 +312,7 @@ void* AircraftTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void AircraftTypeClass::operator delete(void* pointer) {
-  AircraftTypes.Free((AircraftTypeClass*)pointer);
+  AircraftTypes.Free(static_cast<AircraftTypeClass*>(pointer));
 }
 
 /***********************************************************************************************

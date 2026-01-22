@@ -858,7 +858,7 @@ void Destroy_Null_Connection(int id, int error) {
   /*
   **	Do nothing if the house isn't human.
   */
-  housep = HouseClass::As_Pointer((HousesType)id);
+  housep = HouseClass::As_Pointer(static_cast<HousesType>(id));
   if (!housep || !housep->IsHuman) return;
 
   /*
@@ -2097,7 +2097,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     if (port_index == -1) {
       temp = strchr(custom_port, '-');
       if (temp) {
-        pos = (int)(temp - custom_port) + 2;
+        pos = static_cast<int>(temp - custom_port) + 2;
         len = strlen(tempsettings.ModemName);
         port::SafeCopy(custom_port + pos, tempsettings.ModemName, len);
         *(custom_port + pos + len) = 0;
@@ -2135,7 +2135,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         sprintf(portbuf, "%x", tempsettings.Port);
         temp = strchr(custom_port, '-');
         if (temp) {
-          pos = (int)(temp - custom_port) + 2;
+          pos = static_cast<int>(temp - custom_port) + 2;
           len = strlen(portbuf);
           port::SafeCopy(custom_port + pos, portbuf, len);
           *(custom_port + pos + len) = 0;
@@ -2367,7 +2367,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           if (!temp) {
             port::SafeCopy(portbuf, item, PORTBUF_MAX);
           } else {
-            pos = (int)(temp - item);
+            pos = static_cast<int>(temp - item);
             port::SafeCopy(portbuf, item, pos);
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
@@ -2429,7 +2429,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                   port_index = port_custom_index;
                   temp = strchr(item, '-');
                   if (temp) {
-                    pos = (int)(temp - item) + 2;
+                    pos = static_cast<int>(temp - item) + 2;
                     len = strlen(portbuf);
                     port::SafeCopy(item + pos, portbuf, len);
                     *(item + pos + len) = 0;
@@ -2449,7 +2449,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           } else {
             temp = strchr(item, '-');
             if (temp) {
-              pos = (int)(temp - item) + 2;
+              pos = static_cast<int>(temp - item) + 2;
               len = strlen(portbuf);
               port::SafeCopy(item + pos, portbuf, len);
               *(item + pos + len) = 0;
@@ -2501,7 +2501,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               */
               temp = strchr(item, '-');
               if (temp) {
-                pos = (int)(temp - item) + 2;
+                pos = static_cast<int>(temp - item) + 2;
                 if (*(item + pos) == '?') {
                   portbuf[0] = 0;
                 } else {
@@ -2680,7 +2680,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         } else {
           temp = strchr(item, '-');
           if (temp) {
-            pos = (int)(temp - item) + 2;
+            pos = static_cast<int>(temp - item) + 2;
             len = strlen(cwaitstrbuf);
             port::SafeCopy(item + pos, cwaitstrbuf, len);
             *(item + pos + len) = 0;
@@ -2699,7 +2699,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           } else {
             temp = strchr(item, '-');
             if (temp) {
-              pos = (int)(temp - item) + 2;
+              pos = static_cast<int>(temp - item) + 2;
               port::SafeCopy(cwaitstrbuf, item + pos);
             }
             cwaitstr_edt.Set_Focus();
@@ -2802,7 +2802,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         item = Session.CallWaitStrings[CALL_WAIT_CUSTOM];
         temp = strchr(item, '-');
         if (temp) {
-          pos = (int)(temp - item) + 2;
+          pos = static_cast<int>(temp - item) + 2;
           port::SafeCopy(cwaitstrbuf, item + pos);
         } else {
           cwaitstrbuf[0] = 0;
@@ -3775,7 +3775,8 @@ int Com_Scenario_Dialog(bool skirmish) {
               Keyboard->MouseQY > d_color_y &&
               Keyboard->MouseQY < d_color_y + d_color_h) {
             Session.PrefColor =
-                (PlayerColorType)((Keyboard->MouseQX - cbox_x[0]) / d_color_w);
+                static_cast<PlayerColorType>(
+                (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
             Session.ColorIdx = Session.PrefColor;
             if (display < REDRAW_COLORS) display = REDRAW_COLORS;
 
@@ -3831,7 +3832,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           break;
 #else
         case BUTTON_HOUSE | KN_BUTTON:
-          Session.House = HousesType(housebtn.Current_Index() + HOUSE_USSR);
+          Session.House = static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
           port::SafeCopy(Session.Handle, namebuf);
           display = REDRAW_BACKGROUND;
           transmit = true;
@@ -4415,13 +4416,13 @@ int Com_Scenario_Dialog(bool skirmish) {
             case SERIAL_MESSAGE:
               Session.Messages.Add_Message(
                   ReceivePacket.Name,
-                  (PlayerColorType)ReceivePacket.ID == PCOLOR_DIALOG_BLUE
+                  static_cast<PlayerColorType>(ReceivePacket.ID) == PCOLOR_DIALOG_BLUE
                       ? PCOLOR_REALLY_BLUE
-                      : (PlayerColorType)ReceivePacket.ID,
+                      : static_cast<PlayerColorType>(ReceivePacket.ID),
                   ReceivePacket.Message.Message,
-                  (PlayerColorType)ReceivePacket.ID == PCOLOR_DIALOG_BLUE
+                  static_cast<PlayerColorType>(ReceivePacket.ID) == PCOLOR_DIALOG_BLUE
                       ? PCOLOR_REALLY_BLUE
-                      : (PlayerColorType)ReceivePacket.ID,
+                      : static_cast<PlayerColorType>(ReceivePacket.ID),
                   TPF_TEXT, -1);
 
               Sound_Effect(VOC_INCOMING_MESSAGE);
@@ -4585,7 +4586,8 @@ int Com_Scenario_Dialog(bool skirmish) {
                        Session.FrameSendRate * 2);
         } else {
           Session.MaxAhead =
-              std::max(unsigned(SendPacket.ScenarioInfo.ResponseTime / 8),
+              std::max(
+              static_cast<unsigned>(SendPacket.ScenarioInfo.ResponseTime / 8),
                        MODEM_MIN_MAX_AHEAD);
         }
       }
@@ -5537,7 +5539,8 @@ int Com_Show_Scenario_Dialog() {
           Compute my preferred color as the one I clicked on.
           .........................................................*/
           Session.PrefColor =
-              (PlayerColorType)((Keyboard->MouseQX - cbox_x[0]) / d_color_w);
+              static_cast<PlayerColorType>(
+              (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
           changed = true;
 
           /*.........................................................
@@ -5606,7 +5609,7 @@ int Com_Show_Scenario_Dialog() {
         break;
 #else   // OLDWAY
       case BUTTON_HOUSE | KN_BUTTON:
-        Session.House = HousesType(housebtn.Current_Index() + HOUSE_USSR);
+        Session.House = static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
         port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         // display = REDRAW_BACKGROUND;
@@ -5852,7 +5855,7 @@ int Com_Show_Scenario_Dialog() {
               transmit = true;
               transmittime = 0;
 
-              Session.ColorIdx = (PlayerColorType)(TheirColor + 1);
+              Session.ColorIdx = static_cast<PlayerColorType>(TheirColor + 1);
               if (Session.ColorIdx >= 6) {
                 Session.ColorIdx = PCOLOR_FIRST;
               }
@@ -6236,7 +6239,8 @@ int Com_Show_Scenario_Dialog() {
                            Session.FrameSendRate * 2);
             } else {
               Session.MaxAhead = std::max(
-                  unsigned(ReceivePacket.ScenarioInfo.ResponseTime / 8),
+                  static_cast<unsigned>(
+                               ReceivePacket.ScenarioInfo.ResponseTime / 8),
                   MODEM_MIN_MAX_AHEAD);
             }
 
@@ -6253,13 +6257,13 @@ int Com_Show_Scenario_Dialog() {
 
             Session.Messages.Add_Message(
                 ReceivePacket.Name,
-                (PlayerColorType)ReceivePacket.ID == PCOLOR_DIALOG_BLUE
+                static_cast<PlayerColorType>(ReceivePacket.ID) == PCOLOR_DIALOG_BLUE
                     ? PCOLOR_REALLY_BLUE
-                    : (PlayerColorType)ReceivePacket.ID,
+                    : static_cast<PlayerColorType>(ReceivePacket.ID),
                 ReceivePacket.Message.Message,
-                (PlayerColorType)ReceivePacket.ID == PCOLOR_DIALOG_BLUE
+                static_cast<PlayerColorType>(ReceivePacket.ID) == PCOLOR_DIALOG_BLUE
                     ? PCOLOR_REALLY_BLUE
-                    : (PlayerColorType)ReceivePacket.ID,
+                    : static_cast<PlayerColorType>(ReceivePacket.ID),
                 TPF_TEXT, -1);
 
             Sound_Effect(VOC_INCOMING_MESSAGE);

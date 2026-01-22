@@ -87,7 +87,7 @@
 StaticButtonClass::StaticButtonClass(unsigned, char const* text,
                                      TextPrintType style, int x, int y, int w,
                                      int h)
-    : GadgetClass(x, y, w, h, FlagEnum(0)), String(nullptr), PrintFlags(style) {
+    : GadgetClass(x, y, w, h, static_cast<FlagEnum>(0)), String(nullptr), PrintFlags(style) {
   /*
   **	Make a duplicate of the string to display.
   */
@@ -117,7 +117,7 @@ StaticButtonClass::StaticButtonClass(unsigned, char const* text,
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
 StaticButtonClass::StaticButtonClass()
-    : GadgetClass(0, 0, 0, 0, FlagEnum(0)),
+    : GadgetClass(0, 0, 0, 0, static_cast<FlagEnum>(0)),
       String(nullptr),
       PrintFlags(TPF_8POINT) {}
 

@@ -155,7 +155,7 @@ void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass* source,
   WarheadTypeClass const* whead = &Warheads[warhead];
   range = ICON_LEPTON_W + (ICON_LEPTON_W >> 1);
   cell = Coord_Cell(coord);
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return;
   //	if (!Map.In_Radar(cell)) return;
 
   CellClass* cellptr = &Map[cell];

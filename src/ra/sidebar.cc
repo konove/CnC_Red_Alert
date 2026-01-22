@@ -503,7 +503,7 @@ int SidebarClass::Which_Column(RTTIType type) {
  * HISTORY: * 05/19/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
-  assert((unsigned)type < RTTI_COUNT);
+  assert(static_cast<unsigned>(type) < RTTI_COUNT);
   assert(id >= 0);
 
   return Column[Which_Column(type)].Factory_Link(factory, type, id);
@@ -687,7 +687,7 @@ bool SidebarClass::Activate_Demolish(int control) {
  * HISTORY: * 11/17/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Add(RTTIType type, int id) {
-  assert((unsigned)type < RTTI_COUNT);
+  assert(static_cast<unsigned>(type) < RTTI_COUNT);
 
   /*
   ** Add the sidebar only if we're not in editor mode.
@@ -1127,7 +1127,7 @@ void SidebarClass::StripClass::One_Time(int) {
  *=============================================================================================*/
 void const* SidebarClass::StripClass::Get_Special_Cameo(
     SpecialWeaponType type) {
-  if ((unsigned)type < SPC_COUNT) {
+  if (static_cast<unsigned>(type) < SPC_COUNT) {
     return SpecialShapes[type];
   }
   return nullptr;
@@ -1673,7 +1673,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       *current working *	slot. This shape pointer is used to draw the
       *underlying graphic there.
       */
-      if ((unsigned)index < BuildableCount) {
+      if (static_cast<unsigned>(index) < BuildableCount) {
         ObjectTypeClass const* obj = nullptr;
         SpecialWeaponType spc = SPC_NONE;
 
@@ -1686,7 +1686,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             **	type.
             */
             remapper = PlayerPtr->Remap_Table(
-                false, ((TechnoTypeClass const*)obj)->Remap);
+                false, dynamic_cast<TechnoTypeClass const*>(obj)->Remap);
 
             /*
             **	If there is already a factory producing this kind of object,
@@ -1732,7 +1732,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           }
 
         } else {
-          spc = SpecialWeaponType(Buildables[index].BuildableID);
+          spc = static_cast<SpecialWeaponType>(Buildables[index].BuildableID);
           shapefile = Get_Special_Cameo(spc);
           shapenum = 0;
 
@@ -1876,7 +1876,7 @@ bool SidebarClass::StripClass::Recalc() {
       ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) !=
            nullptr;
     } else {
-      if ((unsigned)Buildables[index].BuildableID < SPC_COUNT) {
+      if (static_cast<unsigned>(Buildables[index].BuildableID) < SPC_COUNT) {
         ok = PlayerPtr->SuperWeapon[Buildables[index].BuildableID].Is_Present();
       } else {
         ok = false;
@@ -2004,7 +2004,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     if (otype != RTTI_SPECIAL) {
       choice = Fetch_Techno_Type(otype, oid);
     } else {
-      spc = SpecialWeaponType(oid);
+      spc = static_cast<SpecialWeaponType>(oid);
     }
 
     if (fnumber != -1) {
@@ -2036,7 +2036,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     ** available then we should activate it.
     */
     if (flags & LEFTPRESS) {
-      if ((unsigned)spc < SPC_COUNT) {
+      if (static_cast<unsigned>(spc) < SPC_COUNT) {
         if (PlayerPtr->SuperWeapon[spc].Is_Ready()) {
           if (spc != SPC_SONAR_PULSE) {
             Map.IsTargettingMode = spc;
@@ -2139,7 +2139,8 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                   **	the building is actually placed down.
                   */
                   if (pending->What_Am_I() == RTTI_BUILDING) {
-                    PlayerPtr->Manual_Place(builder, (BuildingClass*)pending);
+                    PlayerPtr->Manual_Place(
+                        builder, dynamic_cast<BuildingClass*>(pending));
                   } else {
                     /*
                     **	For objects that can leave the factory under their own

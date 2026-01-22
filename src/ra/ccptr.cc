@@ -86,7 +86,7 @@ CCPtr<T>::CCPtr(T* ptr) : ID(-1) {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-bool CCPtr<T>::operator>(CCPtr<T> const& rvalue) const {
+bool CCPtr<T>::operator>(CCPtr const& rvalue) const {
   return stricmp((*this)->Name(), rvalue->Name()) > 0;
 }
 

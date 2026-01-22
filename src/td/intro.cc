@@ -125,10 +125,10 @@ void Choose_Side() {
 #endif
 
   TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
   TextPrintBuffer->Clear();
   BlitList.Clear();
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void*)nullptr);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
   int frame = 0, endframe = 255, lettersdone = 0;
 
   Hide_Mouse();

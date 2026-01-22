@@ -341,7 +341,7 @@ void* HouseTypeClass::operator new(size_t) throw() {
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
 void HouseTypeClass::operator delete(void* ptr) {
-  HouseTypes.Free((HouseTypeClass*)ptr);
+  HouseTypes.Free(static_cast<HouseTypeClass*>(ptr));
 }
 
 /***********************************************************************************************

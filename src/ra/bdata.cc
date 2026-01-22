@@ -122,8 +122,7 @@ static short const List000111111[] = {(MCW * 1),  MCW * 1 + 1, MCW * 1 + 2,
                                       REFRESH_EOL};
 static short const List0010[] = {MCW, REFRESH_EOL};
 static short const List0011[] = {(MCW * 1), MCW * 1 + 1, REFRESH_EOL};
-static short const List010111100[] = {
-    1, (MCW * 1), MCW * 1 + 1,
+static short const List010111100[] = {1,           (MCW * 1), MCW * 1 + 1,
                                       MCW * 1 + 2, (MCW * 2), REFRESH_EOL};
 static short const List0111[] = {1, (MCW * 1), MCW * 1 + 1, REFRESH_EOL};
 static short const List1000[] = {0, REFRESH_EOL};
@@ -169,13 +168,9 @@ static short const OListSPen[] = {0, 2, MCW + MCW, MCW + MCW + 2, REFRESH_EOL};
 static short const OListWestwood[] = {0, MCW, REFRESH_EOL};
 static short const StoreList[] = {0, REFRESH_EOL};
 
-static short const ListFactory[] = {0,
-                                    1,
-                                    2,
-                                    (MCW * 1),   MCW * 1 + 1,
-    MCW * 1 + 2,
-                                    (MCW * 2), MCW * 2 + 1, MCW * 2 + 2,
-                                    REFRESH_EOL};
+static short const ListFactory[] = {
+    0,           1,         2,           (MCW * 1),   MCW * 1 + 1,
+    MCW * 1 + 2, (MCW * 2), MCW * 2 + 1, MCW * 2 + 2, REFRESH_EOL};
 
 static short const OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, REFRESH_EOL};
 static short const OListWeap[] = {REFRESH_EOL};
@@ -211,7 +206,7 @@ static BuildingTypeClass const ClassBarrel(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -241,7 +236,7 @@ static BuildingTypeClass const ClassBarrel3(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -271,7 +266,7 @@ static BuildingTypeClass const ClassAVMine(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -301,7 +296,7 @@ static BuildingTypeClass const ClassAPMine(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -331,7 +326,7 @@ static BuildingTypeClass const ClassIronCurtain(
     DIR_N,             // Starting idle frame to match construction.
     BSIZE_22,          // SIZE:			Building size.
     nullptr,           // Preferred exit cell list.
-    List22_0011,           // OCCUPYLIST:	List of active foundation squares.
+    List22_0011,       // OCCUPYLIST:	List of active foundation squares.
     List22_1100        // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -361,7 +356,7 @@ static BuildingTypeClass const ClassForwardCom(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List22_0011,           // OCCUPYLIST:	List of active foundation squares.
+    List22_0011,      // OCCUPYLIST:	List of active foundation squares.
     List22_1100       // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -392,7 +387,7 @@ static BuildingTypeClass const ClassAdvancedTech(
     DIR_N,      // Starting idle frame to match construction.
     BSIZE_22,   // SIZE:			Building size.
     nullptr,    // Preferred exit cell list.
-    List22,            // OCCUPYLIST:	List of active foundation squares.
+    List22,     // OCCUPYLIST:	List of active foundation squares.
     nullptr     // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -453,8 +448,8 @@ static BuildingTypeClass const ClassWeapon(
     RTTI_UNITTYPE,  // The object type produced at this factory.
     DIR_N,          // Starting idle frame to match construction.
     BSIZE_32,       // SIZE:			Building size.
-    ExitWeap,  // Preferred exit cell list.
-    ListWeap,            // OCCUPYLIST:	List of active foundation squares.
+    ExitWeap,       // Preferred exit cell list.
+    ListWeap,       // OCCUPYLIST:	List of active foundation squares.
     OListWeap       // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -486,7 +481,7 @@ static BuildingTypeClass const ClassShipYard(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_33,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    ListSPen,            // OCCUPYLIST:	List of active foundation squares.
+    ListSPen,         // OCCUPYLIST:	List of active foundation squares.
     OListSPen         // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -517,8 +512,8 @@ static BuildingTypeClass const ClassSubPen(
     RTTI_VESSELTYPE,  // The object type produced at this factory.
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_33,         // SIZE:			Building size.
-    ExitSub,  // Preferred exit cell list.
-    ListSPen,            // OCCUPYLIST:	List of active foundation squares.
+    ExitSub,          // Preferred exit cell list.
+    ListSPen,         // OCCUPYLIST:	List of active foundation squares.
     OListSPen         // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -548,7 +543,7 @@ static BuildingTypeClass const ClassPillbox(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -578,7 +573,7 @@ static BuildingTypeClass const ClassCamoPillbox(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -608,7 +603,7 @@ static BuildingTypeClass const ClassTesla(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_12,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List12,            // OCCUPYLIST:	List of active foundation squares.
+    List12,           // OCCUPYLIST:	List of active foundation squares.
     OList12           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -635,11 +630,11 @@ static BuildingTypeClass const ClassTurret(
     true,             // Does it have a rotating turret?
     true,             // Can the building be color remapped to indicate owner?
     RTTI_NONE,        // The object type produced at this factory.
-    (DirType)208,     // Starting idle frame to match construction.
-    BSIZE_11,         // SIZE:			Building size.
-    nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
-    nullptr           // OVERLAPLIST:List of overlap cell offset.
+    static_cast<DirType>(208),  // Starting idle frame to match construction.
+    BSIZE_11,                   // SIZE:			Building size.
+    nullptr,                    // Preferred exit cell list.
+    List1,   // OCCUPYLIST:	List of active foundation squares.
+    nullptr  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassAAGun(
@@ -668,7 +663,7 @@ static BuildingTypeClass const ClassAAGun(
     DIR_NE,           // Starting idle frame to match construction.
     BSIZE_12,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List12,            // OCCUPYLIST:	List of active foundation squares.
+    List12,           // OCCUPYLIST:	List of active foundation squares.
     OList12           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -728,7 +723,7 @@ static BuildingTypeClass const ClassConst(
     DIR_N,              // Starting idle frame to match construction.
     BSIZE_33,           // SIZE:			Building size.
     nullptr,            // Preferred exit cell list.
-    ListFactory,       // OCCUPYLIST:	List of active foundation squares.
+    ListFactory,        // OCCUPYLIST:	List of active foundation squares.
     nullptr             // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -758,7 +753,7 @@ static BuildingTypeClass const ClassFakeConst(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_33,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    ListFactory,       // OCCUPYLIST:	List of active foundation squares.
+    ListFactory,      // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -789,8 +784,8 @@ static BuildingTypeClass const ClassFakeWeapon(
     RTTI_NONE,  // The object type produced at this factory.
     DIR_N,      // Starting idle frame to match construction.
     BSIZE_32,   // SIZE:			Building size.
-    ExitWeap,  // Preferred exit cell list.
-    ListWeap,            // OCCUPYLIST:	List of active foundation squares.
+    ExitWeap,   // Preferred exit cell list.
+    ListWeap,   // OCCUPYLIST:	List of active foundation squares.
     OListWeap   // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -820,7 +815,7 @@ static BuildingTypeClass const ClassRefinery(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_33,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List010111100,  // OCCUPYLIST:	List of active foundation squares.
+    List010111100,    // OCCUPYLIST:	List of active foundation squares.
     List101000011     // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -850,7 +845,7 @@ static BuildingTypeClass const ClassStorage(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    StoreList,         // OCCUPYLIST:	List of active foundation squares.
+    StoreList,        // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -880,7 +875,7 @@ static BuildingTypeClass const ClassHelipad(
     DIR_N,              // Starting idle frame to match construction.
     BSIZE_22,           // SIZE:			Building size.
     nullptr,            // Preferred exit cell list.
-    List2,             // OCCUPYLIST:	List of active foundation squares.
+    List2,              // OCCUPYLIST:	List of active foundation squares.
     nullptr             // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -910,7 +905,7 @@ static BuildingTypeClass const ClassCommand(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    ComList,           // OCCUPYLIST:	List of active foundation squares.
+    ComList,          // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -941,7 +936,7 @@ static BuildingTypeClass const ClassGapGenerator(
     DIR_N,      // Starting idle frame to match construction.
     BSIZE_12,   // SIZE:			Building size.
     nullptr,    // Preferred exit cell list.
-    List0010,        // OCCUPYLIST:	List of active foundation squares.
+    List0010,   // OCCUPYLIST:	List of active foundation squares.
     List1       // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -971,7 +966,7 @@ static BuildingTypeClass const ClassSAM(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_21,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List21,             // OCCUPYLIST:	List of active foundation squares.
+    List21,           // OCCUPYLIST:	List of active foundation squares.
     OListSAM          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1001,7 +996,7 @@ static BuildingTypeClass const ClassMissileSilo(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_21,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List21,             // OCCUPYLIST:	List of active foundation squares.
+    List21,           // OCCUPYLIST:	List of active foundation squares.
     OListSAM          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1031,7 +1026,7 @@ static BuildingTypeClass const ClassAirStrip(
     DIR_N,              // Starting idle frame to match construction.
     BSIZE_32,           // SIZE:			Building size.
     nullptr,            // Preferred exit cell list.
-    List32,            // OCCUPYLIST:	List of active foundation squares.
+    List32,             // OCCUPYLIST:	List of active foundation squares.
     nullptr             // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1061,7 +1056,7 @@ static BuildingTypeClass const ClassPower(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List22,                // OCCUPYLIST:	List of active foundation squares.
+    List22,           // OCCUPYLIST:	List of active foundation squares.
     List22_1100       // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1075,24 +1070,24 @@ static BuildingTypeClass const ClassAdvancedPower(
     REMAP_ALTERNATE,     // Sidebar remap logic.
     0x0000,              //	Vertical offset.
     0x0000,              // Primary weapon offset along turret centerline.
-    0x0000,     // Primary weapon lateral offset along turret centerline.
-    false,      // Is this building a fake (decoy?)
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    true,       // Can the building be color remapped to indicate owner?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    BSIZE_33,   // SIZE:			Building size.
-    nullptr,    // Preferred exit cell list.
-    List000111111,       // OCCUPYLIST:	List of active foundation squares.
+    0x0000,         // Primary weapon lateral offset along turret centerline.
+    false,          // Is this building a fake (decoy?)
+    true,           // Animation rate is regulated for constant speed?
+    false,          // Always use the given name for the building?
+    false,          // Is this a wall type structure?
+    true,           // Simple (one frame) damage imagery?
+    false,          // Is it invisible to radar?
+    true,           // Can the player select this?
+    true,           // Is this a legal target for attack or move?
+    false,          // Is this an insignificant building?
+    false,          // Theater specific graphic image?
+    false,          // Does it have a rotating turret?
+    true,           // Can the building be color remapped to indicate owner?
+    RTTI_NONE,      // The object type produced at this factory.
+    DIR_N,          // Starting idle frame to match construction.
+    BSIZE_33,       // SIZE:			Building size.
+    nullptr,        // Preferred exit cell list.
+    List000111111,  // OCCUPYLIST:	List of active foundation squares.
     OListTmpl       // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1122,7 +1117,7 @@ static BuildingTypeClass const ClassSovietTech(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_33,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List000111111,       // OCCUPYLIST:	List of active foundation squares.
+    List000111111,    // OCCUPYLIST:	List of active foundation squares.
     OListTmpl         // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1152,7 +1147,7 @@ static BuildingTypeClass const ClassHospital(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List2,             // OCCUPYLIST:	List of active foundation squares.
+    List2,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1182,7 +1177,7 @@ static BuildingTypeClass const ClassBioLab(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List2,             // OCCUPYLIST:	List of active foundation squares.
+    List2,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1210,12 +1205,12 @@ static BuildingTypeClass const ClassBarracks(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_INFANTRYTYPE,       // The object type produced at this factory.
-    DIR_N,                   // Starting idle frame to match construction.
-    BSIZE_22,                // SIZE:			Building size.
-    ExitPyle,  // Preferred exit cell list.
-    List22,  // OCCUPYLIST:	List of active foundation squares.
-    nullptr      // OVERLAPLIST:List of overlap cell offset.
+    RTTI_INFANTRYTYPE,  // The object type produced at this factory.
+    DIR_N,              // Starting idle frame to match construction.
+    BSIZE_22,           // SIZE:			Building size.
+    ExitPyle,           // Preferred exit cell list.
+    List22,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr             // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassTent(
@@ -1240,12 +1235,12 @@ static BuildingTypeClass const ClassTent(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_INFANTRYTYPE,       // The object type produced at this factory.
-    DIR_N,                   // Starting idle frame to match construction.
-    BSIZE_22,                // SIZE:			Building size.
-    ExitPyle,  // Preferred exit cell list.
-    List22,  // OCCUPYLIST:	List of active foundation squares.
-    nullptr      // OVERLAPLIST:List of overlap cell offset.
+    RTTI_INFANTRYTYPE,  // The object type produced at this factory.
+    DIR_N,              // Starting idle frame to match construction.
+    BSIZE_22,           // SIZE:			Building size.
+    ExitPyle,           // Preferred exit cell list.
+    List22,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr             // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassKennel(
@@ -1276,8 +1271,8 @@ static BuildingTypeClass const ClassKennel(
     nullptr,            // Preferred exit cell list.
                         //	(short const *)ExitPyle,	// Preferred exit cell
                         // list.
-    List1,  // OCCUPYLIST:	List of active foundation squares.
-    nullptr     // OVERLAPLIST:List of overlap cell offset.
+    List1,              // OCCUPYLIST:	List of active foundation squares.
+    nullptr             // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassFakeShipYard(
@@ -1307,8 +1302,8 @@ static BuildingTypeClass const ClassFakeShipYard(
     RTTI_NONE,  // The object type produced at this factory.
     DIR_N,      // Starting idle frame to match construction.
     BSIZE_33,   // SIZE:			Building size.
-    ExitWeap,  // Preferred exit cell list.
-    ListSPen,            // OCCUPYLIST:	List of active foundation squares.
+    ExitWeap,   // Preferred exit cell list.
+    ListSPen,   // OCCUPYLIST:	List of active foundation squares.
     OListSPen   // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1339,8 +1334,8 @@ static BuildingTypeClass const ClassFakeSubPen(
     RTTI_NONE,  // The object type produced at this factory.
     DIR_N,      // Starting idle frame to match construction.
     BSIZE_33,   // SIZE:			Building size.
-    ExitSub,  // Preferred exit cell list.
-    ListSPen,            // OCCUPYLIST:	List of active foundation squares.
+    ExitSub,    // Preferred exit cell list.
+    ListSPen,   // OCCUPYLIST:	List of active foundation squares.
     OListSPen   // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1370,7 +1365,7 @@ static BuildingTypeClass const ClassFakeCommand(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    ComList,            // OCCUPYLIST:	List of active foundation squares.
+    ComList,          // OCCUPYLIST:	List of active foundation squares.
     OComList          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1400,7 +1395,7 @@ static BuildingTypeClass const ClassRepair(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_33,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    ListFix,            // OCCUPYLIST:	List of active foundation squares.
+    ListFix,          // OCCUPYLIST:	List of active foundation squares.
     OListFix          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1430,7 +1425,7 @@ static BuildingTypeClass const ClassV01(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE: Building size.
     nullptr,          // Preferred exit cell list.
-    List0011,           // OCCUPYLIST:	List of active foundation squares.
+    List0011,         // OCCUPYLIST:	List of active foundation squares.
     List1100          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1460,7 +1455,7 @@ static BuildingTypeClass const ClassV02(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List0011,           // OCCUPYLIST:	List of active foundation squares.
+    List0011,         // OCCUPYLIST:	List of active foundation squares.
     List1100          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1490,7 +1485,7 @@ static BuildingTypeClass const ClassV03(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List0111,           // OCCUPYLIST:	List of active foundation squares.
+    List0111,         // OCCUPYLIST:	List of active foundation squares.
     List1000          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1520,7 +1515,7 @@ static BuildingTypeClass const ClassV04(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List0011,           // OCCUPYLIST:	List of active foundation squares.
+    List0011,         // OCCUPYLIST:	List of active foundation squares.
     List1100          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1550,7 +1545,7 @@ static BuildingTypeClass const ClassV05(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_21,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List11,            // OCCUPYLIST:	List of active foundation squares.
+    List11,           // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1580,7 +1575,7 @@ static BuildingTypeClass const ClassV06(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_21,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List11,            // OCCUPYLIST:	List of active foundation squares.
+    List11,           // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1610,7 +1605,7 @@ static BuildingTypeClass const ClassV07(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_21,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List11,            // OCCUPYLIST:	List of active foundation squares.
+    List11,           // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1640,7 +1635,7 @@ static BuildingTypeClass const ClassV08(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1670,7 +1665,7 @@ static BuildingTypeClass const ClassV09(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1700,7 +1695,7 @@ static BuildingTypeClass const ClassV10(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1730,7 +1725,7 @@ static BuildingTypeClass const ClassV11(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1760,7 +1755,7 @@ static BuildingTypeClass const ClassV12(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1790,7 +1785,7 @@ static BuildingTypeClass const ClassV13(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1820,7 +1815,7 @@ static BuildingTypeClass const ClassV14(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1850,7 +1845,7 @@ static BuildingTypeClass const ClassV15(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1880,7 +1875,7 @@ static BuildingTypeClass const ClassV16(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1910,7 +1905,7 @@ static BuildingTypeClass const ClassV17(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1940,7 +1935,7 @@ static BuildingTypeClass const ClassV18(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -1970,7 +1965,7 @@ static BuildingTypeClass const ClassV19(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2000,7 +1995,7 @@ static BuildingTypeClass const ClassV20(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List0011,           // OCCUPYLIST:	List of active foundation squares.
+    List0011,         // OCCUPYLIST:	List of active foundation squares.
     List1100          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2030,7 +2025,7 @@ static BuildingTypeClass const ClassV21(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1101,           // OCCUPYLIST:	List of active foundation squares.
+    List1101,         // OCCUPYLIST:	List of active foundation squares.
     List0010          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2060,7 +2055,7 @@ static BuildingTypeClass const ClassV22(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_21,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List11,            // OCCUPYLIST:	List of active foundation squares.
+    List11,           // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2090,7 +2085,7 @@ static BuildingTypeClass const ClassV23(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2120,7 +2115,7 @@ static BuildingTypeClass const ClassV24(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List0011,           // OCCUPYLIST:	List of active foundation squares.
+    List0011,         // OCCUPYLIST:	List of active foundation squares.
     List1100          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2150,7 +2145,7 @@ static BuildingTypeClass const ClassV25(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_22,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List0111,           // OCCUPYLIST:	List of active foundation squares.
+    List0111,         // OCCUPYLIST:	List of active foundation squares.
     List1000          // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2180,7 +2175,7 @@ static BuildingTypeClass const ClassV26(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_21,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List11,            // OCCUPYLIST:	List of active foundation squares.
+    List11,           // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2210,7 +2205,7 @@ static BuildingTypeClass const ClassV27(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2240,7 +2235,7 @@ static BuildingTypeClass const ClassV28(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2270,7 +2265,7 @@ static BuildingTypeClass const ClassV29(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2300,7 +2295,7 @@ static BuildingTypeClass const ClassV30(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_21,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List11,            // OCCUPYLIST:	List of active foundation squares.
+    List11,           // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2330,7 +2325,7 @@ static BuildingTypeClass const ClassV31(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_21,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List11,            // OCCUPYLIST:	List of active foundation squares.
+    List11,           // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2360,7 +2355,7 @@ static BuildingTypeClass const ClassV32(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_21,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List11,            // OCCUPYLIST:	List of active foundation squares.
+    List11,           // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2390,7 +2385,7 @@ static BuildingTypeClass const ClassV33(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_21,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List11,            // OCCUPYLIST:	List of active foundation squares.
+    List11,           // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2420,7 +2415,7 @@ static BuildingTypeClass const ClassV34(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2450,7 +2445,7 @@ static BuildingTypeClass const ClassV35(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2480,7 +2475,7 @@ static BuildingTypeClass const ClassV36(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 static BuildingTypeClass const ClassV37(
@@ -2509,7 +2504,7 @@ static BuildingTypeClass const ClassV37(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_42,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    ListWestwood,  // OCCUPYLIST:	List of active foundation squares.
+    ListWestwood,     // OCCUPYLIST:	List of active foundation squares.
     OListWestwood     // OVERLAPLIST:List of overlap cell offset.
 );
 static BuildingTypeClass const ClassMission(
@@ -2538,7 +2533,7 @@ static BuildingTypeClass const ClassMission(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_32,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List32,            // OCCUPYLIST:	List of active foundation squares.
+    List32,           // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2629,7 +2624,7 @@ static BuildingTypeClass const Brick(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 // Barbwire wall
@@ -2660,7 +2655,7 @@ static BuildingTypeClass const Barbwire(
     DIR_N,      // Starting idle frame to match construction.
     BSIZE_11,   // SIZE:			Building size.
     nullptr,    // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,      // OCCUPYLIST:	List of active foundation squares.
     nullptr     // OVERLAPLIST:List of overlap cell offset.
 );
 // Wood wall
@@ -2690,7 +2685,7 @@ static BuildingTypeClass const Wood(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 static BuildingTypeClass const Fence(
@@ -2719,7 +2714,7 @@ static BuildingTypeClass const Fence(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 
@@ -2749,8 +2744,8 @@ static BuildingTypeClass const ClassQueen(
     DIR_N,      // Starting idle frame to match construction.
     BSIZE_21,   // SIZE:			Building size.
     nullptr,    // Preferred exit cell list.
-    List11,  // OCCUPYLIST:	List of active foundation squares.
-    nullptr      // OVERLAPLIST:List of overlap cell offset.
+    List11,     // OCCUPYLIST:	List of active foundation squares.
+    nullptr     // OVERLAPLIST:List of overlap cell offset.
 );
 static BuildingTypeClass const ClassLarva1(
     STRUCT_LARVA1,
@@ -2778,7 +2773,7 @@ static BuildingTypeClass const ClassLarva1(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 static BuildingTypeClass const ClassLarva2(
@@ -2807,7 +2802,7 @@ static BuildingTypeClass const ClassLarva2(
     DIR_N,            // Starting idle frame to match construction.
     BSIZE_11,         // SIZE:			Building size.
     nullptr,          // Preferred exit cell list.
-    List1,             // OCCUPYLIST:	List of active foundation squares.
+    List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
 void const* BuildingTypeClass::WarFactoryOverlay;
@@ -2836,8 +2831,8 @@ BuildingTypeClass::BuildingTypeClass(
     bool is_theater, bool is_turret_equipped, bool is_remappable,
     RTTIType tobuild, DirType sframe, BSizeType size, short const* exitlist,
     short const* sizelist, short const* overlap)
-    : TechnoTypeClass(RTTI_BUILDINGTYPE, int(type), name, ininame, remap,
-                      verticaloffset, primaryoffset, primarylateral,
+    : TechnoTypeClass(RTTI_BUILDINGTYPE, static_cast<int>(type), name, ininame,
+                      remap, verticaloffset, primaryoffset, primarylateral,
                       primaryoffset, primarylateral, is_nominal, is_stealthy,
                       is_selectable, is_legal_target, is_insignificant, false,
                       is_theater, is_turret_equipped, is_remappable, true,
@@ -2923,7 +2918,7 @@ void* BuildingTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void BuildingTypeClass::operator delete(void* ptr) {
-  BuildingTypes.Free((BuildingTypeClass*)ptr);
+  BuildingTypes.Free(static_cast<BuildingTypeClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -3364,7 +3359,8 @@ void BuildingTypeClass::Init(TheaterType theater) {
                                          "MAKE")
                        .replace_extension(Theaters[theater].Suffix)
                        .string();
-        (void const*&)classptr->BuildupData = MFCD::Retrieve(fullname);
+        static_cast<void const*&>(classptr->BuildupData) =
+            MFCD::Retrieve(fullname);
         if (classptr->BuildupData) {
           int timedelay = 1;
           int count = Get_Build_Frame_Count(classptr->BuildupData);
@@ -3702,7 +3698,7 @@ bool BuildingTypeClass::Flush_For_Placement(CELL cell,
         if (occupier != nullptr) {
           again = true;
           if (occupier->House->Is_Ally(house) && occupier->Is_Foot() &&
-              !Target_Legal(((FootClass*)occupier)->NavCom)) {
+              !Target_Legal(dynamic_cast<FootClass*>(occupier)->NavCom)) {
             Map[newcell].Incoming(0, true);
           } else {
             //						Base_Is_Attacked(occupier);

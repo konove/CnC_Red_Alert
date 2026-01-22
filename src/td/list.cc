@@ -814,7 +814,7 @@ GadgetClass* ListClass::Remove() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 void ListClass::Set_Selected_Index(int index) {
-  if ((unsigned)index < List.Count()) {
+  if (static_cast<unsigned>(index) < List.Count()) {
     SelectedIndex = index;
     Flag_To_Redraw();
     if (SelectedIndex < CurrentTopIndex) {

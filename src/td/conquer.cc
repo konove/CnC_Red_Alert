@@ -520,8 +520,8 @@ void Keyboard_Process(KeyNumType& input) {
   ** Use WWKEY values because KN values have WWKEY_VK_BIT or'd in with them
   ** and we need WWKEY_VK_BIT to still be set if it is.
   */
-  KeyNumType plain =
-      (KeyNumType)(input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT | WWKEY_CTRL_BIT));
+  KeyNumType plain = static_cast<KeyNumType>(
+      input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT | WWKEY_CTRL_BIT));
 
 #ifdef CHEAT_KEYS
 
@@ -955,8 +955,8 @@ static void Message_Input(KeyNumType& input) {
 
       sent_so_far = 0;
       magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-      crc = (unsigned short)(CrcEngine::Compute(Messages.Get_Edit_Buf()) &
-                             0xffff);
+      crc = static_cast<unsigned short>(
+          CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
       while (sent_so_far < message_length) {
         serial_packet = (SerialPacketType*)NullModem.BuildBuf;
@@ -1011,8 +1011,8 @@ static void Message_Input(KeyNumType& input) {
       if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
         sent_so_far = 0;
         magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-        crc = (unsigned short)(CrcEngine::Compute(Messages.Get_Edit_Buf()) &
-                               0xffff);
+        crc = static_cast<unsigned short>(
+            CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
         while (sent_so_far < message_length) {
           GPacket.Command = NET_MESSAGE;
@@ -1139,7 +1139,7 @@ bool Color_Cycle() {
       GamePalette[767] -= STEP_RATE;
       GamePalette[766] -= STEP_RATE;
       GamePalette[765] -= STEP_RATE;
-      if ((unsigned)GamePalette[767] < MIN_CYCLE_COLOR) {
+      if (static_cast<unsigned>(GamePalette[767]) < MIN_CYCLE_COLOR) {
         GamePalette[767] = MIN_CYCLE_COLOR;
         GamePalette[766] = MIN_CYCLE_COLOR;
         GamePalette[765] = MIN_CYCLE_COLOR;
@@ -1381,7 +1381,7 @@ SourceType Source_From_Name(char const* name) {
  * HISTORY: * 11/15/1994 BR : Created. *
  *=============================================================================================*/
 char const* Name_From_Source(SourceType source) {
-  if ((unsigned)source < SOURCE_COUNT) {
+  if (static_cast<unsigned>(source) < SOURCE_COUNT) {
     return SourceName[source];
   }
   return "None";
@@ -2171,8 +2171,8 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
     ** VQAERR_READ.
     */
     case VQACMD_READ:
-      error =
-          file->Read(buffer, (unsigned short)nbytes) != (unsigned short)nbytes;
+      error = file->Read(buffer, static_cast<unsigned short>(nbytes)) !=
+              static_cast<unsigned short>(nbytes);
       break;
 
     /*
@@ -2202,10 +2202,10 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
     **	VQACMD_OPEN asks that you open your stream for access.
     */
     case VQACMD_OPEN:
-      file = new CCFileClass((char*)buffer);
+      file = new CCFileClass(static_cast<char*>(buffer));
 
       if (file != nullptr && file->Is_Available()) {
-        error = file->Open((char*)buffer, READ);
+        error = file->Open(static_cast<char*>(buffer), READ);
 
         if (error != -1) {
           vqa->VQAio = (unsigned long)file;
@@ -2589,8 +2589,8 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
   ** function.
   */
   retval = buffer;
-  *buffer++ = (char)icon_width;
-  *buffer++ = (char)icon_height;
+  *buffer++ = static_cast<char>(icon_width);
+  *buffer++ = static_cast<char>(icon_height);
   int val = 24 / zoomfactor;
 
   for (framelp = 0; framelp < frames; framelp++) {
@@ -2615,8 +2615,9 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
               int gety = icony * 24 + y * val + zoomfactor / 2;
               if (getx < pixel_width && gety < pixel_height) {
                 for (lp = 0; lp < 9; lp++) {
-                  pixel = *(char*)Add_Long_To_Pointer(
-                      ptr, (gety - _offy[lp]) * pixel_width + getx - _offx[lp]);
+                  pixel = *static_cast<char*>(Add_Long_To_Pointer(
+                      ptr,
+                      (gety - _offy[lp]) * pixel_width + getx - _offx[lp]));
                   if (pixel == LTGREEN) pixel = 0;
                   if (pixel) {
                     break;
@@ -2657,7 +2658,8 @@ void CC_Texture_Fill(void const* shapefile, int shapenum, int xpos, int ypos,
     }
 
     if (shape_size) {
-      shape_pointer = (unsigned char*)Get_Shape_Header_Data(shape_size);
+      shape_pointer =
+          static_cast<unsigned char*>(Get_Shape_Header_Data(shape_size));
       int source_width = Get_Build_Frame_Width(shapefile);
       int source_height = Get_Build_Frame_Height(shapefile);
 
@@ -2752,7 +2754,7 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
           WindowList[window][WINDOWWIDTH] << 3,
           WindowList[window][WINDOWHEIGHT]);
 
-      shape_pointer = (char*)shape_size;
+      shape_pointer = static_cast<char*>(shape_size);
 
       /*
       **	Special shadow drawing code (used for aircraft and bullets).
@@ -2828,19 +2830,19 @@ TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id) {
   switch (type) {
     case RTTI_UNITTYPE:
     case RTTI_UNIT:
-      return &UnitTypeClass::As_Reference((UnitType)id);
+      return &UnitTypeClass::As_Reference(static_cast<UnitType>(id));
 
     case RTTI_BUILDINGTYPE:
     case RTTI_BUILDING:
-      return &BuildingTypeClass::As_Reference((StructType)id);
+      return &BuildingTypeClass::As_Reference(static_cast<StructType>(id));
 
     case RTTI_INFANTRYTYPE:
     case RTTI_INFANTRY:
-      return &InfantryTypeClass::As_Reference((InfantryType)id);
+      return &InfantryTypeClass::As_Reference(static_cast<InfantryType>(id));
 
     case RTTI_AIRCRAFTTYPE:
     case RTTI_AIRCRAFT:
-      return &AircraftTypeClass::As_Reference((AircraftType)id);
+      return &AircraftTypeClass::As_Reference(static_cast<AircraftType>(id));
   }
   return nullptr;
 }
@@ -3079,7 +3081,7 @@ void Handle_Team(int team, int action) {
           case RTTI_UNIT:
           case RTTI_INFANTRY:
           case RTTI_AIRCRAFT:
-            if (((FootClass*)CurrentObject[0])->Group != team) {
+            if (dynamic_cast<FootClass*>(CurrentObject[0])->Group != team) {
               Unselect_All();
             }
             break;
@@ -3209,7 +3211,7 @@ void Handle_Team(int team, int action) {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 void Handle_View(int view, int action) {
-  if ((unsigned)view < sizeof(Views) / sizeof(Views[0])) {
+  if (static_cast<unsigned>(view) < sizeof(Views) / sizeof(Views[0])) {
     if (action == 0) {
       Map.Set_Tactical_Position(Cell_Coord(Views[view]) & 0xFF00FF00L);
       Map.Flag_To_Redraw(true);
@@ -3894,7 +3896,7 @@ static void Do_Record_Playback() {
     .....................................................................*/
     sum = 0;
     for (i = 0; i < count; i++) {
-      ltgt = (unsigned long)CurrentObject[i]->As_Target();
+      ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
       sum += ltgt;
     }
     RecordFile.Write(&sum, sizeof(sum));
@@ -3934,7 +3936,7 @@ static void Do_Record_Playback() {
       ..................................................................*/
       sum = 0;
       for (i = 0; i < CurrentObject.Count(); i++) {
-        ltgt = (unsigned long)CurrentObject[i]->As_Target();
+        ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
         sum += ltgt;
       }
 

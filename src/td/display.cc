@@ -284,7 +284,7 @@ void DisplayClass::One_Time() {
           Mem_Copy(FadingShade, RemapTables[hindex][fade], 256);
           break;
       }
-      Mem_Copy(&RemapTables[hindex][fade][((int)hindex + 11) * 16],
+      Mem_Copy(&RemapTables[hindex][fade][(static_cast<int>(hindex) + 11) * 16],
                &RemapTables[hindex][fade][(0 + 11) * 16], 16);
     }
   }
@@ -1119,7 +1119,8 @@ CELL DisplayClass::Click_Cell_Calc(int x, int y) {
   y -= TacPixelY;
   y = Pixel_To_Lepton(y);
 
-  if ((unsigned)x < TacLeptonWidth && (unsigned)y < TacLeptonHeight) {
+  if (static_cast<unsigned>(x) < TacLeptonWidth &&
+      static_cast<unsigned>(y) < TacLeptonHeight) {
     COORDINATE tcoord =
         XY_Coord(Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(TacticalCoord))),
                  Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(TacticalCoord))));
@@ -1491,7 +1492,7 @@ int DisplayClass::Cell_Shadow(CELL cell) {
   **	problem of accessing cells off the top or bottom of the map and into
   **	who-knows-what memory.
   */
-  if ((unsigned)(Cell_Y(cell) - 1) >= MAP_CELL_H - 2) return -2;
+  if (static_cast<unsigned>(Cell_Y(cell) - 1) >= MAP_CELL_H - 2) return -2;
 
   bool rightedge = Cell_X(cell) == MAP_CELL_W - 1;
 
@@ -1556,7 +1557,7 @@ int DisplayClass::Cell_Shadow(CELL cell) {
  *pointer to HouseClass.                                             *
  *=============================================================================================*/
 bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
-  if (house != PlayerPtr || cell >= (CELL)Size) return false;
+  if (house != PlayerPtr || cell >= static_cast<CELL>(Size)) return false;
 
   /*
   **	Don't bother remapping this cell if it is already mapped.
@@ -1644,12 +1645,12 @@ bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) {
     int xoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(coord)));
 
     xoff = xoff + EDGE_ZONE - xtac;
-    if ((unsigned)xoff <= TacLeptonWidth + EDGE_ZONE * 2) {
+    if (static_cast<unsigned>(xoff) <= TacLeptonWidth + EDGE_ZONE * 2) {
       int ytac = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(TacticalCoord)));
       int yoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(coord)));
 
       yoff = yoff + EDGE_ZONE - ytac;
-      if ((unsigned)yoff <= TacLeptonHeight + EDGE_ZONE * 2) {
+      if (static_cast<unsigned>(yoff) <= TacLeptonHeight + EDGE_ZONE * 2) {
         x = Lepton_To_Pixel(xoff) - CELL_PIXEL_W * 2;
         y = Lepton_To_Pixel(yoff) - CELL_PIXEL_H * 2;
         return true;
@@ -2312,7 +2313,8 @@ ObjectClass* DisplayClass::Next_Object(ObjectClass* object) {
     /*
     **	Verify that the object can be selected by and is owned by the player.
     */
-    if (obj && obj->Is_Techno() && ((TechnoClass*)obj)->IsDiscoveredByPlayer &&
+    if (obj && obj->Is_Techno() &&
+        dynamic_cast<TechnoClass*>(obj)->IsDiscoveredByPlayer &&
         obj->Class_Of().IsSelectable &&
         obj->Owner() == PlayerPtr->Class->House) {
       if (!firstobj) firstobj = obj;
@@ -2354,7 +2356,8 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) {
     /*
     **	Verify that the object can be selected by and is owned by the player.
     */
-    if (obj && obj->Is_Techno() && ((TechnoClass*)obj)->IsDiscoveredByPlayer &&
+    if (obj && obj->Is_Techno() &&
+        dynamic_cast<TechnoClass*>(obj)->IsDiscoveredByPlayer &&
         obj->Class_Of().IsSelectable &&
         obj->Owner() == PlayerPtr->Class->House) {
       if (!firstobj) firstobj = obj;
@@ -2392,7 +2395,8 @@ COORDINATE DisplayClass::Pixel_To_Coord(int x, int y) {
   **	If pixel coordinate is over the tactical map, then translate it into a
   *coordinate *	value. If not, then just return with NULL.
   */
-  if ((unsigned)x < TacLeptonWidth && (unsigned)y < TacLeptonHeight) {
+  if (static_cast<unsigned>(x) < TacLeptonWidth &&
+      static_cast<unsigned>(y) < TacLeptonHeight) {
     return Coord_Add(TacticalCoord, XY_Coord(x, y));
   }
   return 0;
@@ -3210,7 +3214,7 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
       */
       text = object->Full_Name();
       if (object->Is_Techno() &&
-          !((TechnoTypeClass const&)object->Class_Of()).IsNominal) {
+          !dynamic_cast<TechnoTypeClass const&>(object->Class_Of()).IsNominal) {
         if (!PlayerPtr->Is_Ally(object)) {
           switch (object->What_Am_I()) {
             case RTTI_INFANTRY:
@@ -3222,7 +3226,7 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
               break;
 
             case RTTI_BUILDING:
-              if (*(BuildingClass*)object != STRUCT_MISSION) {
+              if (*dynamic_cast<BuildingClass*>(object) != STRUCT_MISSION) {
                 text = TXT_ENEMY_STRUCTURE;
               }
               break;
@@ -3538,8 +3542,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < Infantry.Count(); i++) {
     InfantryClass* infp = Infantry.Ptr(i);
     if (!infp->IsInLimbo && infp->House == PlayerPtr) {
-      x += (long)Coord_XCell(infp->Coord);
-      y += (long)Coord_YCell(infp->Coord);
+      x += static_cast<long>(Coord_XCell(infp->Coord));
+      y += static_cast<long>(Coord_YCell(infp->Coord));
       num++;
     }
   }
@@ -3547,8 +3551,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < Units.Count(); i++) {
     UnitClass* unitp = Units.Ptr(i);
     if (!unitp->IsInLimbo && unitp->House == PlayerPtr) {
-      x += (long)Coord_XCell(unitp->Coord);
-      y += (long)Coord_YCell(unitp->Coord);
+      x += static_cast<long>(Coord_XCell(unitp->Coord));
+      y += static_cast<long>(Coord_YCell(unitp->Coord));
       num++;
     }
   }
@@ -3556,8 +3560,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < Buildings.Count(); i++) {
     BuildingClass* bldgp = Buildings.Ptr(i);
     if (!bldgp->IsInLimbo && bldgp->House == PlayerPtr) {
-      x += (long)Coord_XCell(bldgp->Coord) << 4;
-      y += (long)Coord_YCell(bldgp->Coord) << 4;
+      x += static_cast<long>(Coord_XCell(bldgp->Coord)) << 4;
+      y += static_cast<long>(Coord_YCell(bldgp->Coord)) << 4;
       num += 16;
     }
   }
@@ -3715,9 +3719,11 @@ bool DisplayClass::In_View(CELL cell) {
   COORDINATE coord = Cell_Coord(cell) & 0xFF00FF00L;
   COORDINATE tcoord = TacticalCoord & 0xFF00FF00L;
 
-  if ((unsigned)(Coord_X(coord) - Coord_X(tcoord)) > TacLeptonWidth + 255)
+  if (static_cast<unsigned>(Coord_X(coord) - Coord_X(tcoord)) >
+      TacLeptonWidth + 255)
     return false;
-  if ((unsigned)(Coord_Y(coord) - Coord_Y(tcoord)) > TacLeptonHeight + 255)
+  if (static_cast<unsigned>(Coord_Y(coord) - Coord_Y(tcoord)) >
+      TacLeptonHeight + 255)
     return false;
   return true;
 

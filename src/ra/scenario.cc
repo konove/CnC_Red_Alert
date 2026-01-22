@@ -104,6 +104,7 @@
 #include "ra/ini.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/link.h"
 #include "ra/logic.h"
 #include "ra/map.h"
 #include "ra/mouse.h"
@@ -310,7 +311,7 @@ void ScenarioClass::Do_Fade_AI() {
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
 bool ScenarioClass::Set_Global_To(int global, bool value) {
-  if ((unsigned)global < ARRAY_SIZE(Scen.GlobalFlags)) {
+  if (static_cast<unsigned>(global) < ARRAY_SIZE(Scen.GlobalFlags)) {
     bool previous = GlobalFlags[global];
     if (previous != value) {
       GlobalFlags[global] = value;
@@ -612,13 +613,14 @@ void Fill_In_Data() {
   */
   int x, y;
   for (x = Map.MapCellX - 1;
-       x < (unsigned)(Map.MapCellX + Map.MapCellWidth + 1); x++) {
+       x < static_cast<unsigned>(Map.MapCellX + Map.MapCellWidth + 1); x++) {
     Map[XY_Cell(x, Map.MapCellY - 1)].IsVisible =
         Map[XY_Cell(x, Map.MapCellY - 1)].IsMapped = true;
 
-    Map[XY_Cell(x, Map.MapCellY + (unsigned)Map.MapCellHeight)].IsVisible =
-        Map[XY_Cell(x, Map.MapCellY + (unsigned)Map.MapCellHeight)].IsMapped =
-            true;
+    Map[XY_Cell(x, Map.MapCellY + static_cast<unsigned>(Map.MapCellHeight))]
+        .IsVisible =
+        Map[XY_Cell(x, Map.MapCellY + static_cast<unsigned>(Map.MapCellHeight))]
+            .IsMapped = true;
   }
   for (y = Map.MapCellY; y < Map.MapCellY + Map.MapCellHeight; y++) {
     Map[XY_Cell(Map.MapCellX - 1, y)].IsVisible =
@@ -635,7 +637,7 @@ void Fill_In_Data() {
     CarryoverClass* cptr = Carryover;
     while (cptr != nullptr) {
       cptr->Create();
-      cptr = (CarryoverClass*)cptr->Get_Next();
+      cptr = dynamic_cast<CarryoverClass*>(cptr->Get_Next());
     }
   }
 
@@ -976,7 +978,8 @@ void Do_Win() {
     **	list to be maintained.
     */
     while (Carryover) {
-      CarryoverClass* cptr = (CarryoverClass*)Carryover->Get_Next();
+      CarryoverClass* cptr =
+          dynamic_cast<CarryoverClass*>(Carryover->Get_Next());
       Carryover->Remove();
       delete Carryover;
       Carryover = cptr;
@@ -1425,14 +1428,16 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
     if (b2txt) {
       numbuttons = 2;
       b2char = toupper(b2txt[0]);
-      bwidth = std::max(String_Pixel_Width(b2txt) + 8, unsigned(bwidth));
+      bwidth = std::max(String_Pixel_Width(b2txt) + 8,
+                        static_cast<unsigned>(bwidth));
       //			b1x = x + 10;
       //// left side
 
       if (b3txt) {
         numbuttons = 3;
         b3char = toupper(b3txt[0]);
-        bwidth = std::max(String_Pixel_Width(b3txt) + 8, unsigned(bwidth));
+        bwidth = std::max(String_Pixel_Width(b3txt) + 8,
+                          static_cast<unsigned>(bwidth));
       }
 
     } else {
@@ -1714,18 +1719,18 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
         **	Check 'input' to see if it's the 1st char of button text
         */
         default:
-          if (b1char ==
-              toupper(Keyboard->To_ASCII((KeyNumType)(input & 0xFF)))) {
+          if (b1char == toupper(Keyboard->To_ASCII(
+                            static_cast<KeyNumType>(input & 0xFF)))) {
             selection = BUTTON_1;
             pressed = true;
           } else if (b2txt != nullptr &&
                      b2char == toupper(Keyboard->To_ASCII(
-                                   (KeyNumType)(input & 0xFF)))) {
+                                   static_cast<KeyNumType>(input & 0xFF)))) {
             selection = BUTTON_2;
             pressed = true;
           } else if (b3txt != nullptr &&
                      b3char == toupper(Keyboard->To_ASCII(
-                                   (KeyNumType)(input & 0xFF)))) {
+                                   static_cast<KeyNumType>(input & 0xFF)))) {
             selection = BUTTON_3;
             pressed = true;
           }
@@ -2579,7 +2584,7 @@ void Assign_Houses() {
     // Assign the lowest-color'd player to the next available slot in the
     // HouseClass array.
     //.....................................................................
-    house = (HousesType)(i + HOUSE_MULTI1);
+    house = static_cast<HousesType>(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
     port::SafeCopy(housep->IniName, Session.Players[index]->Name);
 #ifdef WOLAPI_INTEGRATION
@@ -2615,7 +2620,7 @@ void Assign_Houses() {
   //------------------------------------------------------------------------
   for (i = Session.Players.Count();
        i < Session.Players.Count() + Session.Options.AIPlayers; i++) {
-    house = (HousesType)(i + HOUSE_MULTI1);
+    house = static_cast<HousesType>(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
     if (Percent_Chance(50)) {
       pref_house = HOUSE_GREECE;
@@ -2650,7 +2655,7 @@ void Assign_Houses() {
       housep->IQ = Rule.MaxIQ;
     }
 
-    housep->Init_Data((PlayerColorType)color, pref_house,
+    housep->Init_Data(static_cast<PlayerColorType>(color), pref_house,
                       Session.Options.Credits);
     housep->Control.TechLevel = _build_tech[BuildLevel];
     //		housep->Control.TechLevel = BuildLevel;
@@ -2659,14 +2664,14 @@ void Assign_Houses() {
 
     if (Session.Players.Count() > 1 && Rule.IsCompEasyBonus &&
         difficulty > DIFF_EASY) {
-      difficulty = (DiffType)(difficulty - 1);
+      difficulty = static_cast<DiffType>(difficulty - 1);
     }
     housep->Assign_Handicap(difficulty);
   }
 
   for (i = Session.Players.Count() + Session.Options.AIPlayers;
        i < Rule.MaxPlayers; i++) {
-    house = (HousesType)(i + HOUSE_MULTI1);
+    house = static_cast<HousesType>(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
     if (housep != nullptr) {
       housep->IsDefeated = true;
@@ -2692,7 +2697,7 @@ static void Remove_AI_Players() {
   HouseClass* housep;
 
   for (i = 0; i < MAX_PLAYERS; i++) {
-    house = (HousesType)(i + (int)HOUSE_MULTI1);
+    house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
     if (housep->IsHuman == false) {
       aicount++;
@@ -2986,7 +2991,7 @@ static void Create_Units(bool official) {
         hptr->FlagHome = 0;
         hptr->FlagLocation = 0;
         if (Special.IsCaptureTheFlag) {
-          hptr->Flag_Attach((UnitClass*)obj, true);
+          hptr->Flag_Attach(dynamic_cast<UnitClass*>(obj), true);
         }
       }
     } else {
@@ -3430,5 +3435,5 @@ void Disect_Scenario_Name(char const* name, int& scenario,
   **	Fetch the variation.
   */
   var = SCEN_VAR_A;
-  var = ScenarioVarType(name[6] - 'A' + SCEN_VAR_A);
+  var = static_cast<ScenarioVarType>(name[6] - 'A' + SCEN_VAR_A);
 }

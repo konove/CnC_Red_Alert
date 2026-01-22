@@ -58,7 +58,7 @@ class SHAEngine {
     Acc.Long[4] = SE;
   }
 
-  void Init() { new ((void*)this) SHAEngine; }
+  void Init() { new (static_cast<void*>(this)) SHAEngine; }
 
   // Fetch result as if source data were to stop now.
   int Result(void* result) const;

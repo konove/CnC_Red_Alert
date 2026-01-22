@@ -94,7 +94,7 @@ static bool _Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
   */
   while (group != nullptr) {
     TechnoClass* todo = group;
-    group = (FootClass*)(ObjectClass*)group->Next;
+    group = dynamic_cast<FootClass*>((ObjectClass*)group->Next);
     todo->Next = nullptr;
 
     switch (object->What_Am_I()) {
@@ -115,7 +115,7 @@ static bool _Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
       case RTTI_UNIT:
       case RTTI_VESSEL:
       case RTTI_AIRCRAFT:
-        object->Attach((FootClass*)todo);
+        object->Attach(dynamic_cast<FootClass*>(todo));
         object->Assign_Mission(MISSION_UNLOAD);
         ++quantity;
         break;
@@ -211,8 +211,8 @@ static FootClass* _Create_Group(TeamTypeClass const* teamtype) {
 
     for (int sub = 0; sub < teamtype->Members[index].Quantity; sub++) {
       ScenarioInit++;
-      FootClass* temp = (FootClass*)tclass->Create_One_Of(
-          HouseClass::As_Pointer(teamtype->House));
+      FootClass* temp = dynamic_cast<FootClass*>(
+          tclass->Create_One_Of(HouseClass::As_Pointer(teamtype->House)));
       ScenarioInit--;
 
       if (temp != nullptr) {
@@ -227,7 +227,7 @@ static FootClass* _Create_Group(TeamTypeClass const* teamtype) {
         }
 
         if (temp->What_Am_I() == RTTI_AIRCRAFT &&
-            !_Need_To_Take((AircraftClass const*)temp)) {
+            !_Need_To_Take(dynamic_cast<AircraftClass const*>(temp))) {
           temp->IsALoaner = true;
         }
 
@@ -277,7 +277,7 @@ static FootClass* _Create_Group(TeamTypeClass const* teamtype) {
   */
   if (transport != nullptr && object == nullptr &&
       transport->What_Am_I() == RTTI_AIRCRAFT &&
-      *(AircraftClass*)transport == AIRCRAFT_TRANSPORT) {
+      *dynamic_cast<AircraftClass*>(transport) == AIRCRAFT_TRANSPORT) {
     transport->IsALoaner = false;
   }
 
@@ -319,7 +319,7 @@ static bool _Consists_Only_Of_Infantry(FootClass const* first) {
     if (first->What_Am_I() != RTTI_INFANTRY) {
       return false;
     }
-    first = (FootClass const*)(ObjectClass*)first->Next;
+    first = dynamic_cast<FootClass const*>((ObjectClass*)first->Next);
   }
   return true;
 }
@@ -349,7 +349,7 @@ static TechnoClass* _Who_Can_Pop_Out_Of(CELL origin) {
   for (int f = -1; f < 8; f++) {
     CellClass* ptr = cellptr;
     if (f != -1) {
-      ptr = &ptr->Adjacent_Cell(FacingType(f));
+      ptr = &ptr->Adjacent_Cell(static_cast<FacingType>(f));
     }
 
     BuildingClass* building = ptr->Cell_Building();
@@ -449,7 +449,8 @@ bool Do_Reinforcements(TeamTypeClass const* teamtype) {
   **	Pick the location where the reinforcements appear and then place
   **	them there.
   */
-  FacingType eface = (FacingType)(source << 1);  // Facing to enter map.
+  FacingType eface =
+      static_cast<FacingType>(source << 1);  // Facing to enter map.
 
   CELL cell = Map.Calculated_Cell(source, teamtype->Origin, -1,
                                   object->Techno_Type_Class()->Speed);
@@ -457,9 +458,9 @@ bool Do_Reinforcements(TeamTypeClass const* teamtype) {
   **	For the ants, they will pop out of the ant hill directly.
   */
   if (teamtype->Origin != -1 && object->What_Am_I() == RTTI_UNIT &&
-      (*(UnitClass*)object == UNIT_ANT1 ||
-       *(UnitClass*)object == UNIT_ANT2 ||
-       *(UnitClass*)object == UNIT_ANT3)) {
+      (*dynamic_cast<UnitClass*>(object) == UNIT_ANT1 ||
+       *dynamic_cast<UnitClass*>(object) == UNIT_ANT2 ||
+       *dynamic_cast<UnitClass*>(object) == UNIT_ANT3)) {
     CELL newcell = Scen.Waypoint[teamtype->Origin];
     if (newcell != -1) {
       if (Map[newcell].TType == TEMPLATE_HILL01) {
@@ -470,7 +471,7 @@ bool Do_Reinforcements(TeamTypeClass const* teamtype) {
 
   CELL newcell = cell;
 
-  FootClass* o = (FootClass*)(ObjectClass*)object->Next;
+  FootClass* o = dynamic_cast<FootClass*>((ObjectClass*)object->Next);
   object->Next = nullptr;
   bool okvoice = false;
   while (newcell > 0 && object != nullptr) {
@@ -515,7 +516,7 @@ bool Do_Reinforcements(TeamTypeClass const* teamtype) {
 
     object = o;
     if (object != nullptr) {
-      o = (FootClass*)(ObjectClass*)object->Next;
+      o = dynamic_cast<FootClass*>((ObjectClass*)object->Next);
       object->Next = nullptr;
     }
   }
@@ -526,7 +527,7 @@ bool Do_Reinforcements(TeamTypeClass const* teamtype) {
   if (o != nullptr) {
     while (o != nullptr) {
       FootClass* old = o;
-      o = (FootClass*)(ObjectClass*)o->Next;
+      o = dynamic_cast<FootClass*>((ObjectClass*)o->Next);
       old->Next = nullptr;
 
       delete old;
@@ -652,14 +653,14 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
                              MissionType mission, TARGET tarcom, TARGET navcom,
                              InfantryType passenger) {
   assert(house != nullptr);
-  assert((unsigned)air < AIRCRAFT_COUNT);
+  assert(static_cast<unsigned>(air) < AIRCRAFT_COUNT);
   assert(number != 0);
-  assert((unsigned)mission < MISSION_COUNT);
+  assert(static_cast<unsigned>(mission) < MISSION_COUNT);
   /*
   ** Get a pointer to the class of the object that we are going to create.
   */
   TechnoTypeClass const* type =
-      (TechnoTypeClass*)&AircraftTypeClass::As_Reference(air);
+      static_cast<TechnoTypeClass*>(&AircraftTypeClass::As_Reference(air));
 
   /*
   ** Abort the airstrike if Tanya is the passenger and she's dead.
@@ -679,7 +680,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ** a real problem.
     */
     ScenarioInit++;
-    TechnoClass* obj = (TechnoClass*)type->Create_One_Of(house);
+    TechnoClass* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
     ScenarioInit--;
     if (!obj) return sub;
 

@@ -253,8 +253,7 @@ void SidebarClass::One_Time() {
   **	Set up the coordinates for the sidebar strips. These coordinates are for
   **	the upper left corner.
   */
-  int width =
-      SideWidth - PowWidth - ((StripClass::STRIP_WIDTH *factor) << 1);
+  int width = SideWidth - PowWidth - ((StripClass::STRIP_WIDTH * factor) << 1);
   int spacing = width / 3;
 
   Column[0].X = SideX + PowWidth + spacing;
@@ -1712,7 +1711,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       *current working *	slot. This shape pointer is used to draw the
       *underlying graphic there.
       */
-      if ((unsigned)index < BuildableCount) {
+      if (static_cast<unsigned>(index) < BuildableCount) {
         ObjectTypeClass const* obj = nullptr;
         int spc = 0;
 
@@ -1729,7 +1728,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
               case RTTI_BUILDINGTYPE:
                 isbusy = PlayerPtr->BuildingFactory != -1;
                 if (!BuildingTypeClass::As_Reference(
-                         (StructType)Buildables[index].BuildableID)
+                         static_cast<StructType>(Buildables[index].BuildableID))
                          .IsWall) {
                   remapper = PlayerPtr->Remap_Table(false, false);
                 }
@@ -1867,13 +1866,13 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           /*
           **	Display text showing that the object is ready to place.
           */
-          CC_Draw_Shape(
-              ObjectTypeClass::PipShapes, PIP_READY,
-              x - WindowList[WINDOW_SIDEBAR][WINDOWX] * 8 + LeftEdgeOffset +
-                  (ObjectWidth >> 1),
-              y - WindowList[WINDOW_SIDEBAR][WINDOWY] + ObjectHeight -
-                  Get_Build_Frame_Height(ObjectTypeClass::PipShapes) - 8,
-              WINDOW_SIDEBAR, SHAPE_CENTER);
+          CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_READY,
+                        x - WindowList[WINDOW_SIDEBAR][WINDOWX] * 8 +
+                            LeftEdgeOffset + (ObjectWidth >> 1),
+                        y - WindowList[WINDOW_SIDEBAR][WINDOWY] + ObjectHeight -
+                            Get_Build_Frame_Height(ObjectTypeClass::PipShapes) -
+                            8,
+                        WINDOW_SIDEBAR, SHAPE_CENTER);
           //					Fancy_Text_Print(TXT_READY,
           // x+TEXT_X_OFFSET, y+TEXT_Y_OFFSET, TEXT_COLOR, TBLACK,
           // TPF_6POINT|TPF_CENTER|TPF_NOSHADOW);
@@ -1891,8 +1890,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           if (factory && !factory->Is_Building()) {
             CC_Draw_Shape(
                 ObjectTypeClass::PipShapes, PIP_HOLDING,
-                x - WindowList[WINDOW_SIDEBAR][WINDOWX] * 8 +
-                    LeftEdgeOffset + (ObjectWidth >> 1),
+                x - WindowList[WINDOW_SIDEBAR][WINDOWX] * 8 + LeftEdgeOffset +
+                    (ObjectWidth >> 1),
                 y - WindowList[WINDOW_SIDEBAR][WINDOWY] + ObjectHeight -
                     Get_Build_Frame_Height(ObjectTypeClass::PipShapes) -
                     8,  // Moved up now that icons have names on them
@@ -2322,7 +2321,8 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                   **	the building is actually placed down.
                   */
                   if (pending->What_Am_I() == RTTI_BUILDING) {
-                    PlayerPtr->Manual_Place(builder, (BuildingClass*)pending);
+                    PlayerPtr->Manual_Place(
+                        builder, dynamic_cast<BuildingClass*>(pending));
                   } else {
                     /*
                     **	For objects that can leave the factory under their own

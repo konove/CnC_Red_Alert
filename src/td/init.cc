@@ -343,10 +343,11 @@ bool Init_Game(int, char*[]) {
   */
   if (RawFileClass(Language_Name("CONQUER")).Is_Available()) {
     RawFileClass rf(Language_Name("CONQUER"));
-    SystemStrings = (char const*)Load_Alloc_Data(rf);
+    SystemStrings = static_cast<char const*>(Load_Alloc_Data(rf));
   } else {
     SystemStrings =
-        (char const*)MixFileClass::Retrieve(Language_Name("CONQUER"));
+        static_cast<char const*>(
+        MixFileClass::Retrieve(Language_Name("CONQUER")));
   }
 
   /*
@@ -2071,7 +2072,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
 
     bool processed = true;
-    switch ((unsigned long)Obfuscate(string)) {
+    switch (static_cast<unsigned long>(Obfuscate(string))) {
       /*
       **	Signal that easy mode is active.
       */
@@ -2236,9 +2237,9 @@ bool Parse_Command_Line(int argc, char* argv[]) {
 
         sscanf(p, "%x", &x);  // convert from hex string to int
         if (i < 4) {
-          net[i] = (char)x;  // fill NetNum
+          net[i] = static_cast<char>(x);  // fill NetNum
         } else {
-          node[i - 4] = (char)x;  // fill NetNode
+          node[i - 4] = static_cast<char>(x);  // fill NetNode
         }
         i++;
         p = strtok(nullptr, ".");
@@ -2262,7 +2263,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     if (strstr(string, "-SOCKET")) {
       unsigned short socket;
 
-      socket = (unsigned short)atoi(string + strlen("SOCKET"));
+      socket = static_cast<unsigned short>(atoi(string + strlen("SOCKET")));
       socket += 0x4000;
       if (socket >= 0x4000 && socket < 0x8000) {
         Ipx.Set_Socket(socket);
@@ -2906,11 +2907,11 @@ long Obfuscate(char const* string) {
   */
   strrev(buffer);  // Restore original string order.
   for (int index = 0; index < length; index++) {
-    code ^= (unsigned char)buffer[index];
-    unsigned char temp = (unsigned char)code;
+    code ^= static_cast<unsigned char>(buffer[index]);
+    unsigned char temp = static_cast<unsigned char>(code);
     buffer[index] ^= temp;
     code >>= 8;
-    code |= (long)temp << 24;
+    code |= static_cast<long>(temp) << 24;
   }
 
   /*
@@ -2985,7 +2986,7 @@ long Obfuscate(char const* string) {
   /*
   **	Return the final code value.
   */
-  return (uint32_t)code;
+  return static_cast<uint32_t>(code);
 }
 
 /***********************************************************************************************

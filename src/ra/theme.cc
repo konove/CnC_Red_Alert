@@ -398,7 +398,7 @@ char const* ThemeClass::Theme_File_Name(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Track_Length(ThemeType theme) const {
-  if ((unsigned)theme < THEME_COUNT) {
+  if (static_cast<unsigned>(theme) < THEME_COUNT) {
     return _themes[theme].Duration;
   }
   return 0;
@@ -474,7 +474,7 @@ int ThemeClass::Still_Playing() const {
  *playlist checking.                                     *
  *=============================================================================================*/
 bool ThemeClass::Is_Allowed(ThemeType index) const {
-  if ((unsigned)index >= THEME_COUNT) return true;
+  if (static_cast<unsigned>(index) >= THEME_COUNT) return true;
 
   /*
   **	If the theme is not present, then it certainly isn't allowed.

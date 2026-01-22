@@ -309,7 +309,7 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
         coord = object->Center_Coord() & 0x00FF00FFL;
         dist = Distance(coord, click);
         if (!close || dist < distance) {
-          close = (TechnoClass*)object;
+          close = dynamic_cast<TechnoClass*>(object);
           distance = dist;
         }
       }
@@ -364,7 +364,7 @@ ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
  *=============================================================================================*/
 BuildingClass* CellClass::Cell_Building() const {
   Validate();
-  return (BuildingClass*)Cell_Find_Object(RTTI_BUILDING);
+  return dynamic_cast<BuildingClass*>(Cell_Find_Object(RTTI_BUILDING));
 }
 
 /***********************************************************************************************
@@ -384,7 +384,7 @@ BuildingClass* CellClass::Cell_Building() const {
  *=============================================================================================*/
 TerrainClass* CellClass::Cell_Terrain() const {
   Validate();
-  return (TerrainClass*)Cell_Find_Object(RTTI_TERRAIN);
+  return dynamic_cast<TerrainClass*>(Cell_Find_Object(RTTI_TERRAIN));
 }
 
 /***********************************************************************************************
@@ -847,7 +847,7 @@ void CellClass::Overlap_Up(ObjectClass* object) {
  *=============================================================================================*/
 UnitClass* CellClass::Cell_Unit() const {
   Validate();
-  return (UnitClass*)Cell_Find_Object(RTTI_UNIT);
+  return dynamic_cast<UnitClass*>(Cell_Find_Object(RTTI_UNIT));
 }
 
 /***********************************************************************************************
@@ -869,7 +869,7 @@ UnitClass* CellClass::Cell_Unit() const {
  *=============================================================================================*/
 InfantryClass* CellClass::Cell_Infantry() const {
   Validate();
-  return (InfantryClass*)Cell_Find_Object(RTTI_INFANTRY);
+  return dynamic_cast<InfantryClass*>(Cell_Find_Object(RTTI_INFANTRY));
 }
 
 /***********************************************************************************************
@@ -930,8 +930,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
     Fancy_Text_Print("%d\r%2X%c\r%02X.%02X",
                      Map.TacPixelX + x + (ICON_PIXEL_W >> 1), Map.TacPixelY + y,
                      WHITE, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_CENTER,
-                     cell, Flag.Composite, Cell_Occupier() ? '*' : ' ',
-                     Overlay, OverlayData);
+                     cell, Flag.Composite, Cell_Occupier() ? '*' : ' ', Overlay,
+                     OverlayData);
     FontXSpacing += 2;
   } else {
     if (!draw_type || draw_type == CELL_BLIT_ONLY) {
@@ -1026,7 +1026,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       */
       if (Overlay != OVERLAY_NONE) {
         OverlayTypeClass const& otype = OverlayTypeClass::As_Reference(Overlay);
-        IsTheaterShape = (bool)otype.IsTheater;
+        IsTheaterShape = static_cast<bool>(otype.IsTheater);
         CC_Draw_Shape(otype.Get_Image_Data(), OverlayData,
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
                       WINDOW_TACTICAL,
@@ -1758,7 +1758,8 @@ void CellClass::Incoming(COORDINATE threat, bool forced) {
     **	Special check to make sure that friendly units never scatter.
     */
     if (Special.IsScatter ||
-        (object->Is_Techno() && !((TechnoClass*)object)->House->IsHuman)) {
+        (object->Is_Techno() &&
+         !dynamic_cast<TechnoClass*>(object)->House->IsHuman)) {
       if (object->What_Am_I() == RTTI_INFANTRY) {
         object->Scatter(threat, forced);
       } else {
@@ -1788,7 +1789,7 @@ void CellClass::Incoming(COORDINATE threat, bool forced) {
  *=============================================================================================*/
 CellClass const& CellClass::Adjacent_Cell(FacingType face) const {
   Validate();
-  if ((unsigned)face >= FACING_COUNT) {
+  if (static_cast<unsigned>(face) >= FACING_COUNT) {
     return *this;
   }
 
@@ -1979,8 +1980,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
         }
 
         while (what == -1) {
-          what =
-              _what[Random_Pick(0, int(sizeof(_what) / sizeof(_what[0]) - 1))];
+          what = _what[Random_Pick(
+              0, static_cast<int>(sizeof(_what) / sizeof(_what[0]) - 1))];
 
           if (what == REVEAL && object->House->IsVisionary) what = -1;
           if (what == AIR_STRIKE && object->House->AirStrike.Is_Present())
@@ -2047,7 +2048,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
                  index++) {
               ObjectClass* object = Map.Layer[LAYER_GROUND][index];
               if (object && object->Is_Techno() &&
-                  ((TechnoClass*)object)->House == PlayerPtr) {
+                  dynamic_cast<TechnoClass*>(object)->House == PlayerPtr) {
                 object->Look();
               }
             }
@@ -2098,18 +2099,18 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
           while (!utp) {
             UnitType utype =
-                Random_Pick(UNIT_FIRST, (UnitType)(UNIT_COUNT - 1));
+                Random_Pick(UNIT_FIRST, static_cast<UnitType>(UNIT_COUNT - 1));
             if (utype != UNIT_MCV || MPlayerBases) {
               utp = &UnitTypeClass::As_Reference(utype);
-              if (utp->IsCrateGoodie &&
-                  utp->Ownable & 1 << object->Owner() &&
+              if (utp->IsCrateGoodie && utp->Ownable & 1 << object->Owner() &&
                   utp->Level <= BuildLevel + 2)
                 break;
               utp = nullptr;
             }
           }
 
-          UnitClass* unit = (UnitClass*)utp->Create_One_Of(object->House);
+          UnitClass* unit =
+              dynamic_cast<UnitClass*>(utp->Create_One_Of(object->House));
           if (unit) {
             if (unit->Unlimbo(Cell_Coord())) {
               return false;
@@ -2128,7 +2129,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 INFANTRY_E1, INFANTRY_E1, INFANTRY_E2, INFANTRY_E3,
                 INFANTRY_E4, INFANTRY_E5, INFANTRY_E7, INFANTRY_RAMBO};
             InfantryTypeClass::As_Reference(
-                _inf[Random_Pick(0, int(sizeof(_inf) / sizeof(_inf[0]) - 1))])
+                _inf[Random_Pick(
+                    0, static_cast<int>(sizeof(_inf) / sizeof(_inf[0]) - 1))])
                 .Create_And_Place(Cell_Number(), object->Owner());
           }
           return false;
@@ -2235,7 +2237,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
             if (obj && obj->Is_Techno() &&
                 Distance(Cell_Coord(), obj->Center_Coord()) < 0x0300) {
-              ((TechnoClass*)obj)->IsCloakable = true;
+              dynamic_cast<TechnoClass*>(obj)->IsCloakable = true;
             }
           }
           break;

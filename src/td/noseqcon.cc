@@ -247,7 +247,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
   /*
   --------------------------- Check the magic # ----------------------------
   */
-  packet = (CommHeaderType*)buf;
+  packet = static_cast<CommHeaderType*>(buf);
   if (packet->MagicNumber != MagicNum) {
     // Smart_Printf( "Bad Magic Number\n" );
     return false;

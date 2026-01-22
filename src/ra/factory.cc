@@ -156,7 +156,7 @@ void FactoryClass::Init() { Factories.Free_All(); }
 void* FactoryClass::operator new(size_t) throw() {
   void* ptr = Factories.Allocate();
   if (ptr) {
-    ((FactoryClass*)ptr)->IsActive = true;
+    static_cast<FactoryClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -178,9 +178,9 @@ void* FactoryClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void FactoryClass::operator delete(void* ptr) {
   if (ptr) {
-    ((FactoryClass*)ptr)->IsActive = false;
+    static_cast<FactoryClass*>(ptr)->IsActive = false;
   }
-  Factories.Free((FactoryClass*)ptr);
+  Factories.Free(static_cast<FactoryClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -309,7 +309,7 @@ bool FactoryClass::Set(TechnoTypeClass const& object, HouseClass& house) {
   /*
   **	Create an object of the type requested.
   */
-  Object = (TechnoClass*)object.Create_One_Of(&house);
+  Object = dynamic_cast<TechnoClass*>(object.Create_One_Of(&house));
 
   /*
   **	Buildings that are constructed, will default to rebuilding on so that
@@ -317,7 +317,10 @@ bool FactoryClass::Set(TechnoTypeClass const& object, HouseClass& house) {
   */
   if (!house.IsHuman && Object != nullptr &&
       Object->What_Am_I() == RTTI_BUILDING) {
-    ((BuildingClass*)Object)->IsToRebuild = true;
+    if (const auto building_class = dynamic_cast<BuildingClass*>(Object);
+        building_class != nullptr) {
+      building_class->IsToRebuild = true;
+    }
   }
 
   if (Object) {

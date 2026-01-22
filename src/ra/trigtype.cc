@@ -113,7 +113,7 @@ TriggerTypeClass::TriggerTypeClass()
 void* TriggerTypeClass::operator new(size_t) {
   void* ptr = TriggerTypes.Allocate();
   if (ptr) {
-    ((TriggerTypeClass*)ptr)->IsActive = true;
+    static_cast<TriggerTypeClass*>(ptr)->IsActive = true;
   }
 
   return ptr;
@@ -136,9 +136,9 @@ void* TriggerTypeClass::operator new(size_t) {
  *=============================================================================================*/
 void TriggerTypeClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TriggerTypeClass*)ptr)->IsActive = false;
+    static_cast<TriggerTypeClass*>(ptr)->IsActive = false;
   }
-  TriggerTypes.Free((TriggerTypeClass*)ptr);
+  TriggerTypes.Free(static_cast<TriggerTypeClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -1909,10 +1909,10 @@ void TriggerTypeClass::Fill_In(char* name, char* entry) {
   */
   Set_Name(name);
 
-  IsPersistant = PersistantType(atoi(strtok(entry, ",")));
-  House = HousesType(atoi(strtok(nullptr, ",")));
-  EventControl = MultiStyleType(atoi(strtok(nullptr, ",")));
-  ActionControl = MultiStyleType(atoi(strtok(nullptr, ",")));
+  IsPersistant = static_cast<PersistantType>(atoi(strtok(entry, ",")));
+  House = static_cast<HousesType>(atoi(strtok(nullptr, ",")));
+  EventControl = static_cast<MultiStyleType>(atoi(strtok(nullptr, ",")));
+  ActionControl = static_cast<MultiStyleType>(atoi(strtok(nullptr, ",")));
 
   Event1.Read_INI();
   Event2.Read_INI();

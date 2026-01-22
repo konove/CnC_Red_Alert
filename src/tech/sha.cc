@@ -97,7 +97,7 @@ void SHAEngine::Process_Partial(void const*& data, long& length) {
   */
   if (PartialCount == SRC_BLOCK_SIZE) {
     Process_Block(&Partial[0], Acc);
-    Length += (long)SRC_BLOCK_SIZE;
+    Length += static_cast<long>(SRC_BLOCK_SIZE);
     PartialCount = 0;
   }
 }
@@ -138,12 +138,12 @@ void SHAEngine::Hash(void const* data, long length) {
   **	First process all the whole blocks available in the source data.
   */
   long blocks = length / SRC_BLOCK_SIZE;
-  uint32_t const* source = (uint32_t const*)data;
+  uint32_t const* source = static_cast<uint32_t const*>(data);
   for (int bcount = 0; bcount < blocks; bcount++) {
     Process_Block(source, Acc);
-    Length += (long)SRC_BLOCK_SIZE;
+    Length += static_cast<long>(SRC_BLOCK_SIZE);
     source += SRC_BLOCK_SIZE / sizeof(uint32_t);
-    length -= (long)SRC_BLOCK_SIZE;
+    length -= static_cast<long>(SRC_BLOCK_SIZE);
   }
 
   /*
@@ -240,7 +240,7 @@ int SHAEngine::Result(void* result) const {
 */
 template <class T>
 T _rotl(T X, int n) {
-  return (T)(X << n | (unsigned)X >> (sizeof(T) * 8 - n));
+  return static_cast<T>(X << n | (unsigned)X >> (sizeof(T) * 8 - n));
 }
 // unsigned long _RTLENTRY _rotl(unsigned long X, int n)
 //{
@@ -279,7 +279,7 @@ void SHAEngine::Process_Block(void const* source, SHADigest& acc) const {
   **	Expand the source data into a large 80 * 32bit buffer. This is the
   *working *	data that will be transformed by the secure hash algorithm.
   */
-  uint32_t const* data = (uint32_t const*)source;
+  uint32_t const* data = static_cast<uint32_t const*>(source);
   int index;
   for (index = 0; index < SRC_BLOCK_SIZE / sizeof(uint32_t); index++) {
     block[index] = Reverse_LONG(data[index]);

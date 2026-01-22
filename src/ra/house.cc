@@ -596,7 +596,7 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
 void* HouseClass::operator new(size_t) throw() {
   void* ptr = Houses.Allocate();
   if (ptr) {
-    ((HouseClass*)ptr)->IsActive = true;
+    static_cast<HouseClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -617,9 +617,9 @@ void* HouseClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void HouseClass::operator delete(void* ptr) {
   if (ptr) {
-    ((HouseClass*)ptr)->IsActive = false;
+    static_cast<HouseClass*>(ptr)->IsActive = false;
   }
-  Houses.Free((HouseClass*)ptr);
+  Houses.Free(static_cast<HouseClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -822,19 +822,19 @@ HouseClass::HouseClass(HousesType house)
            Random_Pick(TICKS_PER_MINUTE / 2, TICKS_PER_MINUTE * 2);
 
   if (Session.Type == GAME_INTERNET) {
-    AircraftTotals = new UnitTrackerClass((int)AIRCRAFT_COUNT);
-    InfantryTotals = new UnitTrackerClass((int)INFANTRY_COUNT);
-    UnitTotals = new UnitTrackerClass((int)UNIT_COUNT);
-    BuildingTotals = new UnitTrackerClass((int)STRUCT_COUNT);
-    VesselTotals = new UnitTrackerClass((int)VESSEL_COUNT);
+    AircraftTotals = new UnitTrackerClass(static_cast<int>(AIRCRAFT_COUNT));
+    InfantryTotals = new UnitTrackerClass(static_cast<int>(INFANTRY_COUNT));
+    UnitTotals = new UnitTrackerClass(static_cast<int>(UNIT_COUNT));
+    BuildingTotals = new UnitTrackerClass(static_cast<int>(STRUCT_COUNT));
+    VesselTotals = new UnitTrackerClass(static_cast<int>(VESSEL_COUNT));
 
-    DestroyedAircraft = new UnitTrackerClass((int)AIRCRAFT_COUNT);
-    DestroyedInfantry = new UnitTrackerClass((int)INFANTRY_COUNT);
-    DestroyedUnits = new UnitTrackerClass((int)UNIT_COUNT);
-    DestroyedBuildings = new UnitTrackerClass((int)STRUCT_COUNT);
-    DestroyedVessels = new UnitTrackerClass((int)VESSEL_COUNT);
+    DestroyedAircraft = new UnitTrackerClass(static_cast<int>(AIRCRAFT_COUNT));
+    DestroyedInfantry = new UnitTrackerClass(static_cast<int>(INFANTRY_COUNT));
+    DestroyedUnits = new UnitTrackerClass(static_cast<int>(UNIT_COUNT));
+    DestroyedBuildings = new UnitTrackerClass(static_cast<int>(STRUCT_COUNT));
+    DestroyedVessels = new UnitTrackerClass(static_cast<int>(VESSEL_COUNT));
 
-    CapturedBuildings = new UnitTrackerClass((int)STRUCT_COUNT);
+    CapturedBuildings = new UnitTrackerClass(static_cast<int>(STRUCT_COUNT));
     TotalCrates = new UnitTrackerClass(CRATE_COUNT);
   }
 }
@@ -933,7 +933,7 @@ bool HouseClass::Can_Build(ObjectTypeClass const* type,
   **	An object with a prohibited tech level availability will never be
   *allowed, regardless *	of who requests it.
   */
-  if (((TechnoTypeClass const*)type)->Level == -1) return false;
+  if (dynamic_cast<TechnoTypeClass const*>(type)->Level == -1) return false;
 
   /*
   ** If this is a CounterStrike II-only unit, and we're playing a multiplayer
@@ -986,7 +986,7 @@ bool HouseClass::Can_Build(ObjectTypeClass const* type,
     flags = OldBScan;
   }
 
-  int pre = ((TechnoTypeClass const*)type)->Prerequisite;
+  int pre = dynamic_cast<TechnoTypeClass const*>(type)->Prerequisite;
 
   /*
   **	Advanced power also serves as a prerequisite for normal power.
@@ -1012,7 +1012,8 @@ bool HouseClass::Can_Build(ObjectTypeClass const* type,
   /*
   **	See if the prerequisite requirements have been met.
   */
-  return (pre & flags) == pre && ((TechnoTypeClass const*)type)->Level <= level;
+  return (pre & flags) == pre &&
+         dynamic_cast<TechnoTypeClass const*>(type)->Level <= level;
 }
 
 /***************************************************************************
@@ -1147,7 +1148,7 @@ void HouseClass::AI() {
     if (techno != nullptr) {
       bool moving = false;
       if (techno->Is_Foot()) {
-        if (Target_Legal(((FootClass*)techno)->NavCom)) {
+        if (Target_Legal(dynamic_cast<FootClass*>(techno)->NavCom)) {
           moving = true;
         }
       }
@@ -1161,7 +1162,7 @@ void HouseClass::AI() {
       **	so blow him up.
       */
       if (techno->Is_Foot()) {
-        if (Target_Legal(((FootClass*)techno)->NavCom)) {
+        if (Target_Legal(dynamic_cast<FootClass*>(techno)->NavCom)) {
           moving = true;
         }
       }
@@ -1633,9 +1634,10 @@ void HouseClass::Super_Weapon_Handler() {
           if (Map.IsTargettingMode == SPC_CHRONOSPHERE ||
               Map.IsTargettingMode == SPC_CHRONO2) {
             if (Map.IsTargettingMode == SPC_CHRONO2) {
-              TechnoClass* tech = (TechnoClass*)As_Object(UnitToTeleport);
+              TechnoClass* tech =
+                  dynamic_cast<TechnoClass*>(As_Object(UnitToTeleport));
               if (tech && tech->IsActive && tech->What_Am_I() == RTTI_UNIT &&
-                  *(UnitClass*)tech == UNIT_CHRONOTANK) {
+                  *dynamic_cast<UnitClass*>(tech) == UNIT_CHRONOTANK) {
               } else {
                 Map.IsTargettingMode = SPC_NONE;
               }
@@ -1731,8 +1733,7 @@ void HouseClass::Super_Weapon_Handler() {
     for (int q = 0; q < Buildings.Count() && !powered; q++) {
       BuildingClass* bldg = Buildings.Ptr(q);
       if (*bldg == STRUCT_SUB_PEN &&
-          bldg->House->Class->House != Class->House &&
-          bldg->SpiedBy & usspy) {
+          bldg->House->Class->House != Class->House && bldg->SpiedBy & usspy) {
         present = true;
         powered = !(bldg->House->Power_Fraction() < 1);
       }
@@ -2009,7 +2010,7 @@ void HouseClass::Spend_Money(unsigned money) {
 
   long oldtib = Tiberium;
   if (money > Tiberium) {
-    money -= (unsigned)Tiberium;
+    money -= static_cast<unsigned>(Tiberium);
     Tiberium = 0;
     Credits -= money;
   } else {
@@ -2249,10 +2250,10 @@ void HouseClass::Make_Ally(HousesType house) {
 
         if (object != nullptr && object->Is_Techno() && !object->IsInLimbo &&
             object->Owner() == Class->House) {
-          TARGET target = ((TechnoClass*)object)->TarCom;
+          TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
           if (Target_Legal(target) && As_Techno(target) != nullptr) {
             if (Is_Ally(As_Techno(target))) {
-              ((TechnoClass*)object)->Assign_Target(TARGET_NONE);
+              dynamic_cast<TechnoClass*>(object)->Assign_Target(TARGET_NONE);
             }
           }
         }
@@ -2266,7 +2267,8 @@ void HouseClass::Make_Ally(HousesType house) {
         for (int index = 0; index < Buildings.Count(); index++) {
           BuildingClass const* b = Buildings.Ptr(index);
 
-          if (b && !b->IsInLimbo && (HouseClass*)b->House == this) {
+          if (b && !b->IsInLimbo &&
+              static_cast<HouseClass*>(b->House) == this) {
             Map.Sight_From(Coord_Cell(b->Center_Coord()), b->Class->SightRange,
                            PlayerPtr, false);
           }
@@ -2833,7 +2835,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
               tech->IronCurtainCountDown =
                   Rule.IronCurtainDuration * TICKS_PER_MINUTE;
               if (tech->What_Am_I() == RTTI_UNIT &&
-                  *(UnitClass*)tech == UNIT_DEMOTRUCK) {
+                  *dynamic_cast<UnitClass*>(tech) == UNIT_DEMOTRUCK) {
                 tech->IronCurtainCountDown =
                     Rule.IronCurtainDuration * TICKS_PER_SECOND;
               }
@@ -2862,13 +2864,14 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           if (tech->What_Am_I() == RTTI_UNIT ||
               tech->What_Am_I() == RTTI_INFANTRY ||
               (tech->What_Am_I() == RTTI_VESSEL &&
-               *(VesselClass*)tech != VESSEL_TRANSPORT &&
-               *(VesselClass*)tech != VESSEL_CARRIER)) {
+               *dynamic_cast<VesselClass*>(tech) != VESSEL_TRANSPORT &&
+               *dynamic_cast<VesselClass*>(tech) != VESSEL_CARRIER)) {
             if (tech->What_Am_I() != RTTI_UNIT ||
-                !((UnitClass*)tech)->IsDeploying) {
+                !dynamic_cast<UnitClass*>(tech)->IsDeploying) {
               bool porthim = true;
               if (tech->What_Am_I() == RTTI_UNIT &&
-                  ((UnitClass*)tech)->Class->Type == UNIT_CHRONOTANK) {
+                  dynamic_cast<UnitClass*>(tech)->Class->Type ==
+                      UNIT_CHRONOTANK) {
                 porthim = false;
               }
               if (porthim) {
@@ -2884,21 +2887,21 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       break;
 
     case SPC_CHRONO2: {
-      TechnoClass* tech = (TechnoClass*)As_Object(UnitToTeleport);
+      TechnoClass* tech = dynamic_cast<TechnoClass*>(As_Object(UnitToTeleport));
       if (tech != nullptr && tech->IsActive && tech->Is_Foot() &&
           tech->What_Am_I() != RTTI_AIRCRAFT) {
         /*
         ** Destroy any infantryman that gets teleported
         */
         if (tech->What_Am_I() == RTTI_INFANTRY) {
-          InfantryClass* inf = (InfantryClass*)tech;
+          InfantryClass* inf = dynamic_cast<InfantryClass*>(tech);
           inf->Mark(MARK_UP);
           inf->Coord = Cell_Coord(cell);
           inf->Mark(MARK_DOWN);
           int damage = inf->Strength;
           inf->Take_Damage(damage, 0, WARHEAD_FIRE, nullptr, true);
         } else if (tech->What_Am_I() == RTTI_UNIT &&
-                   *(UnitClass*)tech == UNIT_DEMOTRUCK) {
+                   *dynamic_cast<UnitClass*>(tech) == UNIT_DEMOTRUCK) {
           tech->Assign_Target(tech->As_Target());
         } else {
           /*
@@ -2909,12 +2912,12 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           drive->Teleport_To(cell);
           drive->IsMoebius = true;
           if (tech->What_Am_I() == RTTI_UNIT &&
-              *(UnitClass*)tech == UNIT_CHRONOTANK) {
+              *dynamic_cast<UnitClass*>(tech) == UNIT_CHRONOTANK) {
             drive->IsMoebius = false;
           }
           drive->MoebiusCountDown = Rule.ChronoDuration * TICKS_PER_MINUTE;
           if (tech->What_Am_I() == RTTI_UNIT &&
-              *(UnitClass*)tech == UNIT_CHRONOTANK) {
+              *dynamic_cast<UnitClass*>(tech) == UNIT_CHRONOTANK) {
             drive->MoebiusCountDown = ChronoTankDuration * TICKS_PER_MINUTE;
           }
           Scen.Do_BW_Fade();
@@ -2927,7 +2930,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       }
       if (tech && tech->IsActive &&
           (tech->What_Am_I() != RTTI_UNIT ||
-           *(UnitClass*)tech != UNIT_CHRONOTANK)) {
+           *dynamic_cast<UnitClass*>(tech) != UNIT_CHRONOTANK)) {
         SuperWeapon[SPC_CHRONOSPHERE].Discharged(this == PlayerPtr);
       }
       IsRecalcNeeded = true;
@@ -2947,7 +2950,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       // Don't allow a vortex if the teleportation was due to a chrono tank.
       if (tech && tech->IsActive &&
           (tech->What_Am_I() != RTTI_UNIT ||
-           *(UnitClass*)tech != UNIT_CHRONOTANK))
+           *dynamic_cast<UnitClass*>(tech) != UNIT_CHRONOTANK))
         if (!ChronalVortex.Is_Active() &&
             Percent_Chance(Rule.VortexChance * 100)) {
           int x = Random_Pick(0, Map.MapCellWidth - 1);
@@ -3026,7 +3029,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
           ** emerge from, in fact, they'll land next to a building if
           ** need be.
           */
-          if (!((AircraftClass*)pending)->Class->IsFixedWing) {
+          if (!dynamic_cast<AircraftClass*>(pending)->Class->IsFixedWing) {
             intheory = true;
           }
         }
@@ -3043,27 +3046,31 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
           Abandon_Production(type);
           switch (pending->What_Am_I()) {
             case RTTI_UNIT:
-              JustBuiltUnit = ((UnitClass*)pending)->Class->Type;
+              JustBuiltUnit = dynamic_cast<UnitClass*>(pending)->Class->Type;
               IsBuiltSomething = true;
               break;
 
             case RTTI_VESSEL:
-              JustBuiltVessel = ((VesselClass*)pending)->Class->Type;
+              JustBuiltVessel =
+                  dynamic_cast<VesselClass*>(pending)->Class->Type;
               IsBuiltSomething = true;
               break;
 
             case RTTI_INFANTRY:
-              JustBuiltInfantry = ((InfantryClass*)pending)->Class->Type;
+              JustBuiltInfantry =
+                  dynamic_cast<InfantryClass*>(pending)->Class->Type;
               IsBuiltSomething = true;
               break;
 
             case RTTI_BUILDING:
-              JustBuiltStructure = ((BuildingClass*)pending)->Class->Type;
+              JustBuiltStructure =
+                  dynamic_cast<BuildingClass*>(pending)->Class->Type;
               IsBuiltSomething = true;
               break;
 
             case RTTI_AIRCRAFT:
-              JustBuiltAircraft = ((AircraftClass*)pending)->Class->Type;
+              JustBuiltAircraft =
+                  dynamic_cast<AircraftClass*>(pending)->Class->Type;
               IsBuiltSomething = true;
               break;
           }
@@ -3638,7 +3645,7 @@ void HouseClass::MPlayer_Defeated() {
   num_alive = 0;
   num_humans = 0;
   for (i = 0; i < Session.MaxPlayers; i++) {
-    hptr = As_Pointer((HousesType)(HOUSE_MULTI1 + i));
+    hptr = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + i));
     if (hptr && !hptr->IsDefeated) {
       if (hptr->IsHuman) {
         num_humans++;
@@ -3656,7 +3663,7 @@ void HouseClass::MPlayer_Defeated() {
     /*
     **	Get a pointer to this house
     */
-    hptr = As_Pointer((HousesType)(HOUSE_MULTI1 + i));
+    hptr = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + i));
     if (!hptr || hptr->IsDefeated) continue;
 
     /*
@@ -3664,7 +3671,7 @@ void HouseClass::MPlayer_Defeated() {
     **	isn't allied with, then all_allies will be false
     */
     for (j = 0; j < Session.MaxPlayers; j++) {
-      hptr2 = As_Pointer((HousesType)(HOUSE_MULTI1 + j));
+      hptr2 = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + j));
       if (!hptr2) {
         continue;
       }
@@ -4165,7 +4172,7 @@ fixed HouseClass::Power_Fraction() const {
 void HouseClass::Sell_Wall(CELL cell) {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if ((unsigned)cell > 0) {
+  if (static_cast<unsigned>(cell) > 0) {
     OverlayType overlay = Map[cell].Overlay;
 
     if (overlay != OVERLAY_NONE && Map[cell].Owner == Class->House) {
@@ -4453,8 +4460,8 @@ void HouseClass::Recalc_Center() {
     for (int index = 0; index < Buildings.Count(); index++) {
       BuildingClass const* b = Buildings.Ptr(index);
 
-      if (b != nullptr && !b->IsInLimbo && (HouseClass*)b->House == this &&
-          b->Strength > 0) {
+      if (b != nullptr && !b->IsInLimbo &&
+          static_cast<HouseClass*>(b->House) == this && b->Strength > 0) {
         /*
         **	Give more "weight" to buildings that cost more. The presumption
         *is that cheap *	buildings don't affect the base disposition as
@@ -4508,8 +4515,8 @@ void HouseClass::Recalc_Center() {
       for (int index = 0; index < Buildings.Count(); index++) {
         BuildingClass const* b = Buildings.Ptr(index);
 
-        if (b != nullptr && !b->IsInLimbo && (HouseClass*)b->House == this &&
-            b->Strength > 0) {
+        if (b != nullptr && !b->IsInLimbo &&
+            static_cast<HouseClass*>(b->House) == this && b->Strength > 0) {
           radius += Distance(Center, b->Center_Coord());
         }
       }
@@ -4521,8 +4528,8 @@ void HouseClass::Recalc_Center() {
       for (int index = 0; index < Buildings.Count(); index++) {
         BuildingClass const* b = Buildings.Ptr(index);
 
-        if (b != nullptr && !b->IsInLimbo && (HouseClass*)b->House == this &&
-            b->Strength > 0) {
+        if (b != nullptr && !b->IsInLimbo &&
+            static_cast<HouseClass*>(b->House) == this && b->Strength > 0) {
           ZoneType z = Which_Zone(b);
 
           if (z != ZONE_NONE) {
@@ -5778,7 +5785,7 @@ int HouseClass::AI_Unit() {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
             TechnoTypeClass const* memtype = team->Members[subindex].Class;
             if (memtype->What_Am_I() == RTTI_UNITTYPE) {
-              counter[((UnitTypeClass const*)memtype)->Type] = 1;
+              counter[dynamic_cast<UnitTypeClass const*>(memtype)->Type] = 1;
             }
           }
         }
@@ -5798,7 +5805,7 @@ int HouseClass::AI_Unit() {
           TechnoTypeClass const* memtype = team->Members[subindex].Class;
 
           if (memtype->What_Am_I() == RTTI_UNITTYPE) {
-            int subtype = ((UnitTypeClass const*)memtype)->Type;
+            int subtype = dynamic_cast<UnitTypeClass const*>(memtype)->Type;
             counter[subtype] =
                 std::max(counter[subtype], team->Members[subindex].Quantity);
           }
@@ -5917,7 +5924,8 @@ int HouseClass::AI_Vessel() {
             team->House == Class->House) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
             if (team->Members[subindex].Class->What_Am_I() == RTTI_VESSELTYPE) {
-              counter[((VesselTypeClass const*)team->Members[subindex].Class)
+              counter[dynamic_cast<VesselTypeClass const*>(
+                          team->Members[subindex].Class)
                           ->Type] = 1;
             }
           }
@@ -5937,9 +5945,9 @@ int HouseClass::AI_Vessel() {
             (!team->IsAutocreate || IsAlerted)) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
             if (team->Members[subindex].Class->What_Am_I() == RTTI_VESSELTYPE) {
-              int subtype =
-                  ((VesselTypeClass const*)team->Members[subindex].Class)
-                      ->Type;
+              int subtype = dynamic_cast<VesselTypeClass const*>(
+                                team->Members[subindex].Class)
+                                ->Type;
               counter[subtype] =
                   std::max(counter[subtype], team->Members[subindex].Quantity);
             }
@@ -6037,7 +6045,8 @@ int HouseClass::AI_Infantry() {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
             if (team->Members[subindex].Class->What_Am_I() ==
                 RTTI_INFANTRYTYPE) {
-              counter[((InfantryTypeClass const*)team->Members[subindex].Class)
+              counter[dynamic_cast<InfantryTypeClass const*>(
+                          team->Members[subindex].Class)
                           ->Type] += team->Members[subindex].Quantity +
                                      (team->IsReinforcable ? 1 : 0);
             }
@@ -6059,9 +6068,9 @@ int HouseClass::AI_Infantry() {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
             if (team->Members[subindex].Class->What_Am_I() ==
                 RTTI_INFANTRYTYPE) {
-              int subtype =
-                  ((InfantryTypeClass const*)team->Members[subindex].Class)
-                      ->Type;
+              int subtype = dynamic_cast<InfantryTypeClass const*>(
+                                team->Members[subindex].Class)
+                                ->Type;
               //									counter[subtype]
               //= 1;
               counter[subtype] =
@@ -6353,18 +6362,20 @@ void HouseClass::Tracking_Remove(TechnoClass const* techno) {
   switch (techno->What_Am_I()) {
     case RTTI_BUILDING:
       CurBuildings--;
-      BQuantity[((BuildingTypeClass const&)techno->Class_Of()).Type]--;
+      BQuantity[dynamic_cast<BuildingTypeClass const&>(techno->Class_Of())
+                    .Type]--;
       break;
 
     case RTTI_AIRCRAFT:
       CurAircraft--;
-      AQuantity[((AircraftTypeClass const&)techno->Class_Of()).Type]--;
+      AQuantity[dynamic_cast<AircraftTypeClass const&>(techno->Class_Of())
+                    .Type]--;
       break;
 
     case RTTI_INFANTRY:
       CurInfantry--;
       if (!((InfantryClass*)techno)->IsTechnician) {
-        type = ((InfantryTypeClass const&)techno->Class_Of()).Type;
+        type = dynamic_cast<InfantryTypeClass const&>(techno->Class_Of()).Type;
         if (type >= INFANTRY_RA_COUNT) type -= INFANTRY_RA_COUNT;
         IQuantity[type]--;
       }
@@ -6372,14 +6383,14 @@ void HouseClass::Tracking_Remove(TechnoClass const* techno) {
 
     case RTTI_UNIT:
       CurUnits--;
-      type = ((UnitTypeClass const&)techno->Class_Of()).Type;
+      type = dynamic_cast<UnitTypeClass const&>(techno->Class_Of()).Type;
       if (type >= UNIT_RA_COUNT) type -= UNIT_RA_COUNT;
       UQuantity[type]--;
       break;
 
     case RTTI_VESSEL:
       CurVessels--;
-      type = ((VesselTypeClass const&)techno->Class_Of()).Type;
+      type = dynamic_cast<VesselTypeClass const&>(techno->Class_Of()).Type;
       if (type >= VESSEL_RA_COUNT) type -= VESSEL_RA_COUNT;
       VQuantity[type]--;
       break;
@@ -6418,7 +6429,8 @@ void HouseClass::Tracking_Add(TechnoClass const* techno) {
   switch (techno->What_Am_I()) {
     case RTTI_BUILDING:
       CurBuildings++;
-      building = ((BuildingTypeClass const&)techno->Class_Of()).Type;
+      building =
+          dynamic_cast<BuildingTypeClass const&>(techno->Class_Of()).Type;
       BQuantity[building]++;
       BScan |= 1L << building;
       if (Session.Type == GAME_INTERNET) {
@@ -6428,7 +6440,8 @@ void HouseClass::Tracking_Add(TechnoClass const* techno) {
 
     case RTTI_AIRCRAFT:
       CurAircraft++;
-      aircraft = ((AircraftTypeClass const&)techno->Class_Of()).Type;
+      aircraft =
+          dynamic_cast<AircraftTypeClass const&>(techno->Class_Of()).Type;
       AQuantity[aircraft]++;
       AScan |= 1L << aircraft;
       if (Session.Type == GAME_INTERNET) {
@@ -6438,12 +6451,14 @@ void HouseClass::Tracking_Add(TechnoClass const* techno) {
 
     case RTTI_INFANTRY:
       CurInfantry++;
-      infantry = ((InfantryTypeClass const&)techno->Class_Of()).Type;
+      infantry =
+          dynamic_cast<InfantryTypeClass const&>(techno->Class_Of()).Type;
       if (!((InfantryClass*)techno)->IsTechnician) {
         quant = infantry;
         if (quant >= INFANTRY_RA_COUNT) quant -= INFANTRY_RA_COUNT;
         IQuantity[quant]++;
-        if (!((InfantryTypeClass const&)techno->Class_Of()).IsCivilian &&
+        if (!dynamic_cast<InfantryTypeClass const&>(techno->Class_Of())
+                 .IsCivilian &&
             Session.Type == GAME_INTERNET) {
           InfantryTotals->Increment_Unit_Total(techno->Class_Of().ID);
         }
@@ -6453,7 +6468,7 @@ void HouseClass::Tracking_Add(TechnoClass const* techno) {
 
     case RTTI_UNIT:
       CurUnits++;
-      unit = ((UnitTypeClass const&)techno->Class_Of()).Type;
+      unit = dynamic_cast<UnitTypeClass const&>(techno->Class_Of()).Type;
       quant = unit;
       if (quant >= UNIT_RA_COUNT) quant -= UNIT_RA_COUNT;
       UQuantity[quant]++;
@@ -6465,7 +6480,7 @@ void HouseClass::Tracking_Add(TechnoClass const* techno) {
 
     case RTTI_VESSEL:
       CurVessels++;
-      vessel = ((VesselTypeClass const&)techno->Class_Of()).Type;
+      vessel = dynamic_cast<VesselTypeClass const&>(techno->Class_Of()).Type;
       quant = vessel;
       if (quant >= VESSEL_RA_COUNT) quant -= VESSEL_RA_COUNT;
       VQuantity[quant]++;
@@ -7156,7 +7171,8 @@ void HouseClass::Write_INI(CCINIClass& ini) {
       if (i >= HOUSE_MULTI1) continue;
 
       if (p->Control.InitialCredits != control.InitialCredits) {
-        ini.Put_Int(name, "Credits", (int)(p->Control.InitialCredits / 100));
+        ini.Put_Int(name, "Credits",
+                    static_cast<int>(p->Control.InitialCredits / 100));
       }
 
       if (p->Control.Edge != control.Edge) {
@@ -7227,7 +7243,8 @@ bool HouseClass::Is_No_YakMig() const {
   */
   FactoryClass const* factory = Fetch_Factory(RTTI_AIRCRAFT);
   if (factory != nullptr && factory->Get_Object() != nullptr) {
-    AircraftClass const* air = (AircraftClass const*)factory->Get_Object();
+    AircraftClass const* air =
+        dynamic_cast<AircraftClass const*>(factory->Get_Object());
     if (*air == AIRCRAFT_MIG || *air == AIRCRAFT_YAK) {
       quantity -= 1;
     }
@@ -7652,22 +7669,20 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       break;
 
     case ZONE_NORTH:
-      maxdist = std::min(
-          Radius * 3,
-          Coord_Y(Center) - Cell_To_Lepton(Map.MapCellY) - CELL_LEPTON_H);
+      maxdist =
+          std::min(Radius * 3, Coord_Y(Center) - Cell_To_Lepton(Map.MapCellY) -
+                                   CELL_LEPTON_H);
       if (maxdist < 0) break;
       coord = Coord_Move(Center,
-                         Random_Pick(DIR_N, DIR_E) - (DirType)32,
+                         Random_Pick(DIR_N, DIR_E) - static_cast<DirType>(32),
                          Random_Pick(std::min(Radius * 2, maxdist),
                                      std::min(Radius * 3, maxdist)));
       break;
 
     case ZONE_EAST:
-      maxdist = std::min(
-          Radius * 3,
-          Cell_To_Lepton(Map.MapCellX + Map.MapCellWidth) -
-                                   Coord_X(Center) -
-              CELL_LEPTON_W);
+      maxdist =
+          std::min(Radius * 3, Cell_To_Lepton(Map.MapCellX + Map.MapCellWidth) -
+                                   Coord_X(Center) - CELL_LEPTON_W);
       if (maxdist < 0) break;
       coord = Coord_Move(Center, Random_Pick(DIR_NE, DIR_SE),
                          Random_Pick(std::min(Radius * 2, maxdist),
@@ -7675,11 +7690,9 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       break;
 
     case ZONE_SOUTH:
-      maxdist = std::min(
-          Radius * 3,
-          Cell_To_Lepton(Map.MapCellY + Map.MapCellHeight) -
-                             Coord_Y(Center) -
-              CELL_LEPTON_H);
+      maxdist = std::min(Radius * 3,
+                         Cell_To_Lepton(Map.MapCellY + Map.MapCellHeight) -
+                             Coord_Y(Center) - CELL_LEPTON_H);
       if (maxdist < 0) break;
       coord = Coord_Move(Center, Random_Pick(DIR_SE, DIR_SW),
                          Random_Pick(std::min(Radius * 2, maxdist),
@@ -7687,9 +7700,9 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       break;
 
     case ZONE_WEST:
-      maxdist = std::min(
-          Radius * 3,
-          Coord_X(Center) - Cell_To_Lepton(Map.MapCellX) - CELL_LEPTON_W);
+      maxdist =
+          std::min(Radius * 3, Coord_X(Center) - Cell_To_Lepton(Map.MapCellX) -
+                                   CELL_LEPTON_W);
       if (maxdist < 0) break;
       coord = Coord_Move(Center, Random_Pick(DIR_SW, DIR_NW),
                          Random_Pick(std::min(Radius * 2, maxdist),

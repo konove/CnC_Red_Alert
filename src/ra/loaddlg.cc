@@ -137,11 +137,11 @@ int LoadOptionsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 250 * RESFACTOR;                         // dialog width
-  int d_dialog_h = 156 * RESFACTOR;                         // dialog height
+  int d_dialog_w = 250 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 156 * RESFACTOR;                     // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // centered x-coord
   int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;          // coord of x-center
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // coord of x-center
 
   int d_txt8_h = 11 * RESFACTOR;  // ht of 8-pt text
   int d_margin = 7 * RESFACTOR;   // margin width/height
@@ -367,10 +367,11 @@ int LoadOptionsClass::Process() {
       ToggleClass* toggle = nullptr;
       switch (Style) {
         case SAVE:
-          input = (KeyNumType)(BUTTON_SAVE | KN_BUTTON);
+          input = static_cast<KeyNumType>(BUTTON_SAVE | KN_BUTTON);
           cancelbtn.Turn_Off();
           //					cancelbtn.IsOn = false;
-          toggle = (ToggleClass*)commands->Extract_Gadget(BUTTON_SAVE);
+          toggle =
+              dynamic_cast<ToggleClass*>(commands->Extract_Gadget(BUTTON_SAVE));
           if (toggle != nullptr) {
             toggle->Turn_On();
             //						toggle->IsOn = true;
@@ -379,10 +380,11 @@ int LoadOptionsClass::Process() {
           break;
 
         case LOAD:
-          input = (KeyNumType)(BUTTON_LOAD | KN_BUTTON);
+          input = static_cast<KeyNumType>(BUTTON_LOAD | KN_BUTTON);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
-          toggle = (ToggleClass*)commands->Extract_Gadget(BUTTON_LOAD);
+          toggle =
+              dynamic_cast<ToggleClass*>(commands->Extract_Gadget(BUTTON_LOAD));
           if (toggle != nullptr) {
             toggle->IsOn = true;
             toggle->IsPressed = true;
@@ -390,10 +392,11 @@ int LoadOptionsClass::Process() {
           break;
 
         case WWDELETE:
-          input = (KeyNumType)(BUTTON_DELETE | KN_BUTTON);
+          input = static_cast<KeyNumType>(BUTTON_DELETE | KN_BUTTON);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
-          toggle = (ToggleClass*)commands->Extract_Gadget(BUTTON_DELETE);
+          toggle = dynamic_cast<ToggleClass*>(
+              commands->Extract_Gadget(BUTTON_DELETE));
           if (toggle != nullptr) {
             toggle->IsOn = true;
             toggle->IsPressed = true;
@@ -519,8 +522,8 @@ int LoadOptionsClass::Process() {
           if (listbtn.Count() == 0) {
             process = false;
           } else {
-            ToggleClass* toggle =
-                (ToggleClass*)commands->Extract_Gadget(BUTTON_DELETE);
+            ToggleClass* toggle = dynamic_cast<ToggleClass*>(
+                commands->Extract_Gadget(BUTTON_DELETE));
             if (toggle != nullptr) {
               //							toggle->IsOn
               //= false;

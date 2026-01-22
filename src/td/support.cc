@@ -34,7 +34,7 @@ void* Conquer_Build_Fading_Table(void const* palette, void* dest, int color,
 
   // Main loop
 
-  auto dptr = (uint8_t*)dest;
+  auto dptr = static_cast<uint8_t*>(dest);
 
   // Transparent black never gets remapped.
   *dptr++ = 0;

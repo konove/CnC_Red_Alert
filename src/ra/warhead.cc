@@ -125,7 +125,7 @@ void* WarheadTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 void WarheadTypeClass::operator delete(void* pointer) {
-  Warheads.Free((WarheadTypeClass*)pointer);
+  Warheads.Free(static_cast<WarheadTypeClass*>(pointer));
 }
 
 /***********************************************************************************************

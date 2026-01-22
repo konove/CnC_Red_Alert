@@ -189,11 +189,11 @@ void Create_Palette_Interpolation_Table() {
       closest_distance = 500000;
       match_pal_ptr = InterpolationPalette;
       for (p = 0; p < SIZE_OF_PALETTE; p++) {
-        diff_r = (int)*match_pal_ptr - dest_r;
+        diff_r = static_cast<int>(*match_pal_ptr) - dest_r;
         match_pal_ptr++;
-        diff_g = (int)*match_pal_ptr - dest_g;
+        diff_g = static_cast<int>(*match_pal_ptr) - dest_g;
         match_pal_ptr++;
-        diff_b = (int)*match_pal_ptr - dest_b;
+        diff_b = static_cast<int>(*match_pal_ptr) - dest_b;
         match_pal_ptr++;
 
         distance = diff_r * diff_r + diff_g * diff_g + diff_b * diff_b;
@@ -203,7 +203,7 @@ void Create_Palette_Interpolation_Table() {
         }
       }
 
-      PaletteInterpolationTable[i][j] = (unsigned char)index_of_closest_color;
+      PaletteInterpolationTable[i][j] = static_cast<unsigned char>(index_of_closest_color);
     }
   }
 
@@ -236,9 +236,9 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
   unsigned int green;
   unsigned int blue;
   for (int i = 0; i < SIZE_OF_PALETTE * 3; i += 3) {
-    red = (unsigned)*(palette + i);
-    green = (unsigned)*(palette + i + 1);
-    blue = (unsigned)*(palette + i + 2);
+    red = static_cast<unsigned>(*(palette + i));
+    green = static_cast<unsigned>(*(palette + i + 1));
+    blue = static_cast<unsigned>(*(palette + i + 2));
 
     red += red * red_percentage / 100;
     green += green * green_percentage / 100;
@@ -248,9 +248,9 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
     green = std::min(cap, green);
     blue = std::min(cap, blue);
 
-    *(palette + i) = (unsigned char)red;
-    *(palette + i + 1) = (unsigned char)green;
-    *(palette + i + 2) = (unsigned char)blue;
+    *(palette + i) = static_cast<unsigned char>(red);
+    *(palette + i + 1) = static_cast<unsigned char>(green);
+    *(palette + i + 2) = static_cast<unsigned char>(blue);
   }
 }
 

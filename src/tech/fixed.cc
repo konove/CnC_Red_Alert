@@ -62,7 +62,8 @@ fixed::fixed(int numerator, int denominator) {
     Data.Raw = 0;
   } else {
     Data.Raw =
-        (unsigned short)((unsigned)(numerator * 256) / (unsigned)denominator);
+        static_cast<unsigned short>((unsigned)(numerator * 256) /
+                                           (unsigned)denominator);
   }
 }
 
@@ -122,11 +123,11 @@ fixed::fixed(char const* ascii) {
   **	divided by 100 to get mathematical fixed point percentage value.
   */
   if (*tptr == '\%') {
-    Data.Raw = (unsigned short)(atoi(ascii) * 256 / 100);
+    Data.Raw = static_cast<unsigned short>(atoi(ascii) * 256 / 100);
   } else {
     Data.Composite.Whole = Data.Composite.Fraction = 0;
     if (wholepart && *wholepart != '.') {
-      Data.Composite.Whole = (unsigned char)atoi(wholepart);
+      Data.Composite.Whole = static_cast<unsigned char>(atoi(wholepart));
     }
 
     const char* fracpart = strchr(ascii, '.');
@@ -141,7 +142,7 @@ fixed::fixed(char const* ascii) {
         base *= 10;
       }
 
-      Data.Composite.Fraction = (unsigned char)(256 * frac / base);
+      Data.Composite.Fraction = static_cast<unsigned char>(256 * frac / base);
     }
   }
 }
@@ -173,7 +174,7 @@ int fixed::To_ASCII(char* buffer, int maxlen) const {
   **	part number is the value in 1000ths.
   */
   int whole = Data.Composite.Whole;
-  int frac = (int)Data.Composite.Fraction * 1000 / 256;
+  int frac = static_cast<int>(Data.Composite.Fraction) * 1000 / 256;
   char tbuffer[32];
 
   /*

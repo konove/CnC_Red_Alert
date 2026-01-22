@@ -45,7 +45,6 @@
 class RegionClass {
  public:
   RegionClass() { Threat = 0; }
-  ~RegionClass() {}
   int operator!=(RegionClass const& region) {
     return memcmp(this, &region, sizeof(RegionClass));
   }

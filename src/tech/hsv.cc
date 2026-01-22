@@ -104,13 +104,13 @@ void HSVClass::Adjust(int ratio, HSVClass const& hsv) {
  * HISTORY: * 02/20/1996 JLB : Created. *
  *=============================================================================================*/
 int HSVClass::Difference(HSVClass const& hsv) const {
-  int hue = (int)Hue - (int)hsv.Hue;
+  int hue = static_cast<int>(Hue) - static_cast<int>(hsv.Hue);
   if (hue < 0) hue = -hue;
 
-  int saturation = (int)Saturation - (int)hsv.Saturation;
+  int saturation = static_cast<int>(Saturation) - static_cast<int>(hsv.Saturation);
   if (saturation < 0) saturation = -saturation;
 
-  int value = (int)Value - (int)hsv.Value;
+  int value = static_cast<int>(Value) - static_cast<int>(hsv.Value);
   if (value < 0) value = -value;
 
   return hue * hue + saturation * saturation + value * value;

@@ -23,7 +23,7 @@ inline int Make_Code(int x, int y, int w, int h) {
 }
 
 void Buffer_Put_Pixel(void* thisptr, int x, int y, unsigned char color) {
-  auto vp_dst = (GraphicViewPortClass*)thisptr;
+  auto vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
   if (x < 0 || y < 0 || x >= vp_dst->Get_Width() || y >= vp_dst->Get_Height())
     return;
@@ -35,7 +35,7 @@ void Buffer_Put_Pixel(void* thisptr, int x, int y, unsigned char color) {
 }
 
 int Buffer_Get_Pixel(void* thisptr, int x, int y) {
-  auto vp_dst = (GraphicViewPortClass*)thisptr;
+  auto vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
   if (x < 0 || y < 0 || x >= vp_dst->Get_Width() || y >= vp_dst->Get_Height())
     return 0;
@@ -47,7 +47,7 @@ int Buffer_Get_Pixel(void* thisptr, int x, int y) {
 }
 
 void Buffer_Clear(void* thisptr, unsigned char color) {
-  auto vp_dst = (GraphicViewPortClass*)thisptr;
+  auto vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto dst_offset = vp_dst->Get_Offset();
@@ -64,7 +64,7 @@ void Buffer_Clear(void* thisptr, unsigned char color) {
 
 long Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel, int pixel_width,
                       int pixel_height, void* buff, long /*size*/) {
-  auto vp_src = (GraphicViewPortClass*)thisptr;
+  auto vp_src = static_cast<GraphicViewPortClass*>(thisptr);
 
   int dst_x0 = 0;
   int dst_y0 = 0;
@@ -101,7 +101,7 @@ long Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel, int pixel_width,
   int src_area = vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
   auto src_offset = vp_src->Get_Offset() + src_x0 + src_y0 * src_area;
 
-  auto dst_offset = (uint8_t*)buff + dst_x0 + dst_y0 * pixel_width;
+  auto dst_offset = static_cast<uint8_t*>(buff) + dst_x0 + dst_y0 * pixel_width;
 
   if (src_x1 <= src_x0 || src_y1 <= src_y0) return true;
 
@@ -122,7 +122,7 @@ long Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel, int pixel_width,
 
 long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
                     int pixel_height, void* Buffer, void* view) {
-  auto vp_dst = (GraphicViewPortClass*)view;
+  auto vp_dst = static_cast<GraphicViewPortClass*>(view);
 
   int src_x0 = 0;
   int src_y0 = 0;
@@ -156,7 +156,7 @@ long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
     if (code1 & 0b0001) dst_y1 = vp_dst->Get_Height();
   }
 
-  auto src_offset = (uint8_t*)Buffer + src_x0 + src_y0 * pixel_width;
+  auto src_offset = static_cast<uint8_t*>(Buffer) + src_x0 + src_y0 * pixel_width;
 
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_area;
@@ -183,8 +183,8 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
                            int pixel_height, bool trans) {
   // trans seems to only be used by TD
 
-  auto vp_src = (GraphicViewPortClass*)thisptr;
-  auto vp_dst = (GraphicViewPortClass*)dest;
+  auto vp_src = static_cast<GraphicViewPortClass*>(thisptr);
+  auto vp_dst = static_cast<GraphicViewPortClass*>(dest);
 
   // clip source
   int src_x0 = x_pixel;
@@ -308,8 +308,8 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
   // Check for scale error when to or from size 0,0
   if (dst_w == 0 || dst_h == 0 || src_w == 0 || src_h == 0) return true;
 
-  auto vp_src = (GraphicViewPortClass*)thisptr;
-  auto vp_dst = (GraphicViewPortClass*)dest;
+  auto vp_src = static_cast<GraphicViewPortClass*>(thisptr);
+  auto vp_dst = static_cast<GraphicViewPortClass*>(dest);
 
   int src_x0 = src_x;
   int src_y0 = src_y;
@@ -496,7 +496,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
 
 long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
                   int bcolor) {
-  auto vp_dst = (GraphicViewPortClass*)thisptr;
+  auto vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
   if (!str) return 0;
 
@@ -625,7 +625,7 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
 
 void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
                       unsigned char color) {
-  auto vp_dst = (GraphicViewPortClass*)thisptr;
+  auto vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
   int width = vp_dst->Get_Width();
   int height = vp_dst->Get_Height();
@@ -780,7 +780,7 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
 
 void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
                       unsigned char color) {
-  auto vp_dst = (GraphicViewPortClass*)thisptr;
+  auto vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
   if (sx > dx) std::swap(sx, dx);
   if (sy > dy) std::swap(sy, dy);
@@ -812,7 +812,7 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
                   void* remap) {
   if (!remap) return;
 
-  auto vp_dst = (GraphicViewPortClass*)thisptr;
+  auto vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
   // clip
   int dst_x0 = sx;
@@ -849,7 +849,7 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
   // remap lines
   do {
     for (int x = 0; x < pixel_count; x++) {
-      auto v = ((uint8_t*)remap)[*dst_offset];
+      auto v = static_cast<uint8_t*>(remap)[*dst_offset];
       *dst_offset++ = v;
     }
     dst_offset += skip;
@@ -984,7 +984,7 @@ void GraphicBufferClass::Init(int w, int h, void* buffer, long size,
       Buffer = new uint8_t[Size];
     }
 
-    Offset = (uint8_t*)Buffer;
+    Offset = static_cast<uint8_t*>(Buffer);
   }
 }
 

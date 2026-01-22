@@ -582,9 +582,10 @@ void Keyboard_Process(KeyNumType& input) {
   *key was pressed.
   */
 
-  KeyNumType plain = KeyNumType(input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT |
-                                          WWKEY_CTRL_BIT | WWKEY_VK_BIT));
-  KeyNumType key = KeyNumType(input & ~WWKEY_VK_BIT);
+  KeyNumType plain =
+      static_cast<KeyNumType>(input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT |
+                                        WWKEY_CTRL_BIT | WWKEY_VK_BIT));
+  KeyNumType key = static_cast<KeyNumType>(input & ~WWKEY_VK_BIT);
 
 #else
   KeyNumType plain =
@@ -1018,7 +1019,7 @@ void Toggle_Formation() {
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr && obj->IsSelected) {
       team = obj->Group;
       if (team != -1) {
-        setform = obj->XFormOffset == (int)0x80000000;
+        setform = obj->XFormOffset == static_cast<int>(0x80000000);
         TeamSpeed[team] = SPEED_WHEEL;
         TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
         break;
@@ -1032,7 +1033,7 @@ void Toggle_Formation() {
           obj->IsSelected) {
         team = obj->Group;
         if (team != -1) {
-          setform = obj->XFormOffset == (int)0x80000000;
+          setform = obj->XFormOffset == static_cast<int>(0x80000000);
           TeamSpeed[team] = SPEED_WHEEL;
           TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
           break;
@@ -1078,7 +1079,7 @@ void Toggle_Formation() {
           TeamSpeed[team] = obj->Class->Speed;
         }
       } else {
-        obj->XFormOffset = obj->YFormOffset = (int)0x80000000;
+        obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000);
       }
     }
   }
@@ -1099,7 +1100,7 @@ void Toggle_Formation() {
           TeamMaxSpeed[team] = obj->Class->MaxSpeed;
         }
       } else {
-        obj->XFormOffset = obj->YFormOffset = (int)0x80000000;
+        obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000);
       }
     }
   }
@@ -1131,8 +1132,8 @@ void Toggle_Formation() {
   ** set them into formation, proceed to do so.  Otherwise, bail.
   */
   if (setform) {
-    int centerx = (int)((maxx - minx) / 2) + minx;
-    int centery = (int)((maxy - miny) / 2) + miny;
+    int centerx = static_cast<int>((maxx - minx) / 2) + minx;
+    int centery = static_cast<int>((maxy - miny) / 2) + miny;
 
     for (index = 0; index < Units.Count(); index++) {
       UnitClass* obj = Units.Ptr(index);
@@ -2009,7 +2010,7 @@ SourceType Source_From_Name(char const* name) {
  * HISTORY: * 11/15/1994 BR : Created. *
  *=============================================================================================*/
 char const* Name_From_Source(SourceType source) {
-  if ((unsigned)source < SOURCE_COUNT) {
+  if (static_cast<unsigned>(source) < SOURCE_COUNT) {
     return SourceName[source];
   }
   return "None";
@@ -2633,8 +2634,8 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
     ** VQAERR_READ.
     */
     case VQACMD_READ:
-      error =
-          file->Read(buffer, (unsigned short)nbytes) != (unsigned short)nbytes;
+      error = file->Read(buffer, static_cast<unsigned short>(nbytes)) !=
+              static_cast<unsigned short>(nbytes);
       break;
 
     /*
@@ -2664,10 +2665,10 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
     **	VQACMD_OPEN asks that you open your stream for access.
     */
     case VQACMD_OPEN:
-      file = new CCFileClass((char*)buffer);
+      file = new CCFileClass(static_cast<char*>(buffer));
 
       if (file != nullptr && file->Is_Available()) {
-        error = file->Open((char*)buffer, READ);
+        error = file->Open(static_cast<char*>(buffer), READ);
 
         if (error != -1) {
           vqa->VQAio = (uintptr_t)file;
@@ -3269,8 +3270,8 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
   ** function.
   */
   retval = buffer;
-  *buffer++ = (char)icon_width;
-  *buffer++ = (char)icon_height;
+  *buffer++ = static_cast<char>(icon_width);
+  *buffer++ = static_cast<char>(icon_height);
   int val = 24 / zoomfactor;
 
   for (framelp = 0; framelp < frames; framelp++) {
@@ -3304,8 +3305,9 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
               int gety = icony * 24 + y * val + zoomfactor / 2;
               if (getx < pixel_width && gety < pixel_height) {
                 for (lp = 0; lp < 9; lp++) {
-                  pixel = *((char*)ptr + (gety - _offy[lp]) * pixel_width +
-                            getx - _offx[lp]);
+                  pixel =
+                      *(static_cast<char*>(ptr) +
+                        (gety - _offy[lp]) * pixel_width + getx - _offx[lp]);
 
 #else   // WIN32
           for (int y = 0; y < 3; y++) {
@@ -3433,8 +3435,8 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
           WindowList[window][WINDOWX] + LogicPage->Get_XPos(),
           WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
           WindowList[window][WINDOWWIDTH], WindowList[window][WINDOWHEIGHT]);
-      unsigned char* buffer = (unsigned char*)
-          shape_pointer;  // Get_Shape_Header_Data((void*)shape_pointer);
+      unsigned char* buffer = static_cast<unsigned char*>(
+          shape_pointer);  // Get_Shape_Header_Data((void*)shape_pointer);
 
 #else   // WIN32
     if (Build_Frame(shapefile, shapenum, _ShapeBuffer) <=
@@ -3456,7 +3458,8 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
         */
         UseOldShapeDraw = true;
 #ifdef WIN32
-        buffer = (unsigned char*)Get_Shape_Header_Data(shape_pointer);
+        buffer =
+            static_cast<unsigned char*>(Get_Shape_Header_Data(shape_pointer));
 #endif
 
         if (Debug_Rotate) {
@@ -3661,23 +3664,23 @@ TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id) {
   switch (type) {
     case RTTI_UNITTYPE:
     case RTTI_UNIT:
-      return &UnitTypeClass::As_Reference(UnitType(id));
+      return &UnitTypeClass::As_Reference(static_cast<UnitType>(id));
 
     case RTTI_VESSELTYPE:
     case RTTI_VESSEL:
-      return &VesselTypeClass::As_Reference(VesselType(id));
+      return &VesselTypeClass::As_Reference(static_cast<VesselType>(id));
 
     case RTTI_BUILDINGTYPE:
     case RTTI_BUILDING:
-      return &BuildingTypeClass::As_Reference(StructType(id));
+      return &BuildingTypeClass::As_Reference(static_cast<StructType>(id));
 
     case RTTI_INFANTRYTYPE:
     case RTTI_INFANTRY:
-      return &InfantryTypeClass::As_Reference(InfantryType(id));
+      return &InfantryTypeClass::As_Reference(static_cast<InfantryType>(id));
 
     case RTTI_AIRCRAFTTYPE:
     case RTTI_AIRCRAFT:
-      return &AircraftTypeClass::As_Reference(AircraftType(id));
+      return &AircraftTypeClass::As_Reference(static_cast<AircraftType>(id));
 
     default:
       break;
@@ -3791,8 +3794,8 @@ void Handle_Team(int team, int action) {
   // Recording support
   //
   if (Session.Record) {
-    TeamNumber = (char)team;
-    TeamEvent = (char)action + 1;
+    TeamNumber = static_cast<char>(team);
+    TeamEvent = static_cast<char>(action) + 1;
   }
 
   AllowVoice = true;
@@ -3811,7 +3814,7 @@ void Handle_Team(int team, int action) {
       */
       if (CurrentObject.Count()) {
         if (CurrentObject[0]->Is_Foot() &&
-            ((FootClass*)CurrentObject[0])->Group != team) {
+            dynamic_cast<FootClass*>(CurrentObject[0])->Group != team) {
           Unselect_All();
         }
       }
@@ -4005,7 +4008,7 @@ void Handle_Team(int team, int action) {
           ** offsets, and they'll be formationed.
           */
 #if (1)
-          obj->XFormOffset = obj->YFormOffset = (int)0x80000000;
+          obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000);
 #else
 #if (1)
           // Old always-north formation stuff
@@ -4030,7 +4033,7 @@ void Handle_Team(int team, int action) {
           if (obj->IsSelected) obj->Group = team;
           if (obj->Group == team && obj->IsSelected) {
 #if (1)
-            obj->XFormOffset = obj->YFormOffset = (int)0x80000000;
+            obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000);
 #else
 #if (1)
             // Old always-north formation stuff
@@ -4077,7 +4080,7 @@ void Handle_Team(int team, int action) {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 void Handle_View(int view, int action) {
-  if ((unsigned)view < ARRAY_SIZE(Scen.Views)) {
+  if (static_cast<unsigned>(view) < ARRAY_SIZE(Scen.Views)) {
     if (action == 0) {
       Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
           Scen.Views[view] - MAP_CELL_W * 4 * RESFACTOR - 5 * RESFACTOR)));
@@ -4542,7 +4545,7 @@ static void Do_Record_Playback() {
     */
     sum = 0;
     for (i = 0; i < count; i++) {
-      ltgt = (unsigned long)CurrentObject[i]->As_Target();
+      ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
       sum += ltgt;
     }
     Session.RecordFile.Write(&sum, sizeof(sum));
@@ -4590,7 +4593,7 @@ static void Do_Record_Playback() {
       */
       sum = 0;
       for (i = 0; i < CurrentObject.Count(); i++) {
-        ltgt = (unsigned long)CurrentObject[i]->As_Target();
+        ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
         sum += ltgt;
       }
 

@@ -27,8 +27,8 @@ bool GraphicBufferClass::Lock() {
   if (!PaletteSurface) return true;
 
   if (!LockCount) {
-    SDL_LockSurface((SDL_Surface*)PaletteSurface);
-    Offset = (uint8_t*)((SDL_Surface*)PaletteSurface)->pixels;
+    SDL_LockSurface(static_cast<SDL_Surface*>(PaletteSurface));
+    Offset = static_cast<uint8_t*>(((SDL_Surface*)PaletteSurface)->pixels);
   }
 
   LockCount++;
@@ -41,7 +41,7 @@ bool GraphicBufferClass::Unlock() {
   LockCount--;
 
   if (!LockCount) {
-    SDL_UnlockSurface((SDL_Surface*)PaletteSurface);
+    SDL_UnlockSurface(static_cast<SDL_Surface*>(PaletteSurface));
     Offset = nullptr;
     Update_Window_Surface(false);
   }
@@ -81,7 +81,7 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
     Destroy_VQA_Texture();
   }
 
-  auto window_tex = (SDL_Texture*)WindowTexture;
+  auto window_tex = static_cast<SDL_Texture*>(WindowTexture);
 
   if (!end_frame) {
     if (!RedrawTimer)
@@ -97,7 +97,7 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
   // blit from paletted surface
   SDL_Surface* tmp_surf;
   SDL_LockTextureToSurface(window_tex, nullptr, &tmp_surf);
-  SDL_BlitSurface((SDL_Surface*)PaletteSurface, nullptr, tmp_surf, nullptr);
+  SDL_BlitSurface(static_cast<SDL_Surface*>(PaletteSurface), nullptr, tmp_surf, nullptr);
   SDL_UnlockTexture(window_tex);
 
   // copy to screen
@@ -110,7 +110,7 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
 }
 
 void GraphicBufferClass::Update_Palette(uint8_t* palette) {
-  auto sdl_pal = ((SDL_Surface*)PaletteSurface)->format->palette;
+  auto sdl_pal = static_cast<SDL_Surface*>(PaletteSurface)->format->palette;
 
   bool changed = false;
 

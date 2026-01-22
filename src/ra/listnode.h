@@ -141,9 +141,9 @@ class List;
 template <class T>
 class Node : public GenericNode {
  public:
-  List<T>* Main_List() const { return (List<T>*)GenericNode::Main_List(); }
-  T* Next() const { return (T*)GenericNode::Next(); }
-  T* Prev() const { return (T*)GenericNode::Prev(); }
+  List<T>* Main_List() const { return static_cast<List<T>*>(GenericNode::Main_List()); }
+  T* Next() const { return static_cast<T*>(GenericNode::Next()); }
+  T* Prev() const { return static_cast<T*>(GenericNode::Prev()); }
 };
 
 /*
@@ -154,8 +154,8 @@ class Node : public GenericNode {
 template <class T>
 class List : public GenericList {
  public:
-  T* First() const { return (T*)GenericList::First(); }
-  T* Last() const { return (T*)GenericList::Last(); }
+  T* First() const { return static_cast<T*>(GenericList::First()); }
+  T* Last() const { return static_cast<T*>(GenericList::Last()); }
 };
 
 #endif

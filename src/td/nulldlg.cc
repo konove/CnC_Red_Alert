@@ -819,7 +819,7 @@ void Destroy_Null_Connection(int id, int error) {
 
   idx = -1;
   for (i = 0; i < MPlayerCount; i++) {
-    if (MPlayerID[i] == (unsigned char)id) {
+    if (MPlayerID[i] == static_cast<unsigned char>(id)) {
       idx = i;
       break;
     }
@@ -843,13 +843,13 @@ void Destroy_Null_Connection(int id, int error) {
 
   if (strlen(txt)) {
     Messages.Add_Message(
-        txt, MPlayerTColors[MPlayerID_To_ColorIndex((unsigned char)id)],
+        txt, MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }
 
   for (i = 0; i < MPlayerCount; i++) {
-    if (MPlayerID[i] == (unsigned char)id) {
+    if (MPlayerID[i] == static_cast<unsigned char>(id)) {
       /*..................................................................
       Turn the player's house over to the computer's AI
       ..................................................................*/
@@ -877,7 +877,7 @@ void Destroy_Null_Connection(int id, int error) {
   if (MPlayerCount == 1) {
     sprintf(txt, "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Messages.Add_Message(
-        txt, MPlayerTColors[MPlayerID_To_ColorIndex((unsigned char)id)],
+        txt, MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }
@@ -2174,7 +2174,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     if (port_index == -1) {
       temp = strchr(custom_port, '-');
       if (temp) {
-        pos = (int)(temp - custom_port) + 2;
+        pos = static_cast<int>(temp - custom_port) + 2;
         len = strlen(tempsettings.ModemName);
         strncpy(custom_port + pos, tempsettings.ModemName, len);
         *(custom_port + pos + len) = 0;
@@ -2211,7 +2211,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         sprintf(portbuf, "%x", tempsettings.Port);
         temp = strchr(custom_port, '-');
         if (temp) {
-          pos = (int)(temp - custom_port) + 2;
+          pos = static_cast<int>(temp - custom_port) + 2;
           len = strlen(portbuf);
           strncpy(custom_port + pos, portbuf, len);
           *(custom_port + pos + len) = 0;
@@ -2263,7 +2263,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       item = CallWaitStrings[i];
       temp = strchr(item, '-');
       if (temp) {
-        pos = (int)(temp - item) + 2;
+        pos = static_cast<int>(temp - item) + 2;
         len = strlen(tempsettings.CallWaitString);
         strncpy(item + pos, tempsettings.CallWaitString, len);
         *(item + pos + len) = 0;
@@ -2461,7 +2461,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           if (!temp) {
             strncpy(portbuf, item, PORTBUF_MAX);
           } else {
-            pos = (int)(temp - item);
+            pos = static_cast<int>(temp - item);
             strncpy(portbuf, item, pos);
             portbuf[pos] = 0;
           }
@@ -2519,7 +2519,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                   port_index = port_custom_index;
                   temp = strchr(item, '-');
                   if (temp) {
-                    pos = (int)(temp - item) + 2;
+                    pos = static_cast<int>(temp - item) + 2;
                     len = strlen(portbuf);
                     strncpy(item + pos, portbuf, len);
                     *(item + pos + len) = 0;
@@ -2537,7 +2537,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           } else {
             temp = strchr(item, '-');
             if (temp) {
-              pos = (int)(temp - item) + 2;
+              pos = static_cast<int>(temp - item) + 2;
               len = strlen(portbuf);
               strncpy(item + pos, portbuf, len);
               *(item + pos + len) = 0;
@@ -2563,7 +2563,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             if (!temp) {
               strncpy(portbuf, item, PORTBUF_MAX);
             } else {
-              pos = (int)(temp - item);
+              pos = static_cast<int>(temp - item);
               strncpy(portbuf, item, pos);
               portbuf[pos] = 0;
             }
@@ -2592,7 +2592,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               */
               temp = strchr(item, '-');
               if (temp) {
-                pos = (int)(temp - item) + 2;
+                pos = static_cast<int>(temp - item) + 2;
                 if (*(item + pos) == '?') {
                   portbuf[0] = 0;
                 } else {
@@ -2777,7 +2777,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         } else {
           temp = strchr(item, '-');
           if (temp) {
-            pos = (int)(temp - item) + 2;
+            pos = static_cast<int>(temp - item) + 2;
             len = strlen(cwaitstrbuf);
             strncpy(item + pos, cwaitstrbuf, len);
             *(item + pos + len) = 0;
@@ -2796,7 +2796,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           } else {
             temp = strchr(item, '-');
             if (temp) {
-              pos = (int)(temp - item) + 2;
+              pos = static_cast<int>(temp - item) + 2;
               strncpy(cwaitstrbuf, item + pos, CWAITSTRBUF_MAX);
             }
             cwaitstr_edt.Set_Focus();
@@ -2896,7 +2896,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         item = CallWaitStrings[CALL_WAIT_CUSTOM];
         temp = strchr(item, '-');
         if (temp) {
-          pos = (int)(temp - item) + 2;
+          pos = static_cast<int>(temp - item) + 2;
           strncpy(cwaitstrbuf, item + pos, CWAITSTRBUF_MAX);
         } else {
           cwaitstrbuf[0] = 0;
@@ -4056,8 +4056,8 @@ int Com_Scenario_Dialog() {
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
           message_length = strlen(Messages.Get_Edit_Buf());
-          crc = (unsigned short)(CrcEngine::Compute(Messages.Get_Edit_Buf()) &
-                                 0xffff);
+          crc = static_cast<unsigned short>(
+              CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
           while (sent_so_far < message_length) {
             SendPacket.Command = SERIAL_MESSAGE;
@@ -5240,9 +5240,8 @@ int Com_Show_Scenario_Dialog() {
                 sent_so_far = 0;
                 magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
                 message_length = strlen(Messages.Get_Edit_Buf());
-                crc = (unsigned short)(CrcEngine::Compute(
-                                           Messages.Get_Edit_Buf()) &
-                                       0xffff);
+                crc = static_cast<unsigned short>(
+                    CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
                 while (sent_so_far < message_length) {
                   SendPacket.Command = SERIAL_MESSAGE;

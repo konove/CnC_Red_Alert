@@ -224,7 +224,7 @@ int FixedHeapClass::Free(void* pointer) {
   if (pointer && ActiveCount) {
     int index = ID(pointer);
 
-    if ((unsigned)index < TotalCount) {
+    if (static_cast<unsigned>(index) < TotalCount) {
       if (FreeFlag[index]) {
         ActiveCount--;
         FreeFlag[index] = false;
@@ -255,7 +255,7 @@ int FixedHeapClass::Free(void* pointer) {
  *=============================================================================================*/
 int FixedHeapClass::ID(void const* pointer) const {
   if (pointer && Size) {
-    return (int)(((char*)pointer - (char*)Buffer) / Size);
+    return static_cast<int>(((char*)pointer - (char*)Buffer) / Size);
   }
   return -1;
 }
@@ -280,7 +280,7 @@ void FixedHeapClass::Clear() {
   **	Free the old buffer (if present).
   */
   if (Buffer && IsAllocated) {
-    delete[] (char*)Buffer;
+    delete[] static_cast<char*>(Buffer);
   }
   Buffer = nullptr;
   IsAllocated = false;
@@ -551,7 +551,7 @@ int TFixedIHeapClass<T>::Load(Straw& file) {
     /*
     ** Get a pointer to the object, activate that object
     */
-    ptr = (T*)(*this)[idx];
+    ptr = static_cast<T*>((*this)[idx]);
     FreeFlag[idx] = true;
     ActiveCount++;
     ActivePointers.Add(ptr);

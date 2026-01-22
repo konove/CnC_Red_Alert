@@ -109,7 +109,7 @@ bool TemplateClass::Mark(MarkType mark) {
           *no real *	icon is associated with this logical position, then
           *don't do any action *	since none is required.
           */
-          char* mapptr = (char*)map;
+          char* mapptr = static_cast<char*>(map);
           bool real = mapptr[number] != -1;
 
           if (real) {
@@ -185,7 +185,7 @@ bool TemplateClass::Mark(MarkType mark) {
 void* TemplateClass::operator new(size_t) throw() {
   void* ptr = Templates.Allocate();
   if (ptr) {
-    ((TemplateClass*)ptr)->IsActive = true;
+    static_cast<TemplateClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -206,9 +206,9 @@ void* TemplateClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void TemplateClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TemplateClass*)ptr)->IsActive = false;
+    static_cast<TemplateClass*>(ptr)->IsActive = false;
   }
-  Templates.Free((TemplateClass*)ptr);
+  Templates.Free(static_cast<TemplateClass*>(ptr));
 }
 
 /***********************************************************************************************

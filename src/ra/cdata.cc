@@ -1157,7 +1157,7 @@ static TemplateTypeClass const AntHill(TEMPLATE_HILL01, THEATERF_TEMPERATE,
  *=============================================================================================*/
 TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
                                      char const* ininame, int fullname)
-    : ObjectTypeClass(RTTI_TEMPLATETYPE, int(iconset), false, true, false,
+    : ObjectTypeClass(RTTI_TEMPLATETYPE, static_cast<int>(iconset), false, true, false,
                       false, true, true, false, fullname, ininame),
       Type(iconset),
       Theater(theater),
@@ -1199,7 +1199,7 @@ void* TemplateTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void TemplateTypeClass::operator delete(void* ptr) {
-  TemplateTypes.Free((TemplateTypeClass*)ptr);
+  TemplateTypes.Free(static_cast<TemplateTypeClass*>(ptr));
 }
 
 static void _Watcom_Ugh_Hack() {
@@ -1646,7 +1646,7 @@ void TemplateTypeClass::Init_Heap() {
  * HISTORY: * 12/12/1995 JLB : Created. *
  *=============================================================================================*/
 LandType TemplateTypeClass::Land_Type(int icon) const {
-  IconsetClass const* icontrol = (IconsetClass const*)Get_Image_Data();
+  IconsetClass const* icontrol = static_cast<IconsetClass const*>(Get_Image_Data());
 
   if (icontrol != nullptr) {
     unsigned char const* map = icontrol->Control_Map();
@@ -1722,7 +1722,7 @@ short const* TemplateTypeClass::Occupy_List(bool) const {
   static short _occupy[13 * 8 + 5];
   short* ptr;
 
-  IconsetClass const* iconset = (IconsetClass const*)Get_Image_Data();
+  IconsetClass const* iconset = static_cast<IconsetClass const*>(Get_Image_Data());
   unsigned char const* map = iconset->Map_Data();
 
   ptr = &_occupy[0];

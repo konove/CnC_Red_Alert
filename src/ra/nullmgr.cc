@@ -722,7 +722,7 @@ int NullModemClass::Service() {
   }
 
   RXCount += SerialPort->Read_From_Serial_Port(
-      (unsigned char*)(RXBuf + RXCount), int(RXSize - RXCount));
+      (unsigned char*)(RXBuf + RXCount), static_cast<int>(RXSize - RXCount));
 
   // minimum packet size
 
@@ -1399,7 +1399,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   /*
   ** Start waiting for connection response
   */
-  SerialPort->Set_Modem_Dial_Type((WinCommDialMethodType)method);
+  SerialPort->Set_Modem_Dial_Type(static_cast<WinCommDialMethodType>(method));
   /*
   ** Clear out any old modem results that might be hanging around
   */

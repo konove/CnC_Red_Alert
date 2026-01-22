@@ -144,7 +144,7 @@ long VQA_Open(VQAHandle* vqa, char const* filename, VQAConfig* config) {
   long done;
 
   /* Dereference commonly used data members for quicker access. */
-  vqap = (VQAHandleP*)vqa;
+  vqap = dynamic_cast<VQAHandleP*>(vqa);
   header = &vqap->Header;
 
   VQAMovieDone = 0;
@@ -337,11 +337,9 @@ long VQA_Open(VQAHandle* vqa, char const* filename, VQAConfig* config) {
       audio->ADPCM_Info.channels = 1;
     } else {
       audio->ADPCM_Info.bit_size = audio->BitsPerSample;
-      audio->ADPCM_Info.uncomp_size =
-          audio->SampleRate / header->FPS *
+      audio->ADPCM_Info.uncomp_size = audio->SampleRate / header->FPS *
                                       (audio->BitsPerSample >> 3) *
-                                      audio->Channels *
-          header->Frames;
+                                      audio->Channels * header->Frames;
 
       audio->ADPCM_Info.channels = audio->Channels;
     }
@@ -383,21 +381,22 @@ long VQA_Open(VQAHandle* vqa, char const* filename, VQAConfig* config) {
  ****************************************************************************/
 
 void VQA_Close(VQAHandle* vqa) {
+  auto vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
   /* Shutdown audio/timing system. */
-  if (((VQAHandleP*)vqa)->Config.OptionFlags & VQAOPTF_AUDIO) {
-    VQA_CloseAudio((VQAHandleP*)vqa);
+  if (vqa_handle_p->Config.OptionFlags & VQAOPTF_AUDIO) {
+    VQA_CloseAudio(vqa_handle_p);
   } else {
-    VQA_StopTimerInt((VQAHandleP*)vqa);
+    VQA_StopTimerInt(vqa_handle_p);
   }
 
   /* Free memory */
-  if (((VQAHandleP*)vqa)->VQABuf != nullptr) {
-    FreeBuffers(((VQAHandleP*)vqa)->VQABuf, &((VQAHandleP*)vqa)->Config,
-                &((VQAHandleP*)vqa)->Header);
+  if (vqa_handle_p->VQABuf != nullptr) {
+    FreeBuffers(vqa_handle_p->VQABuf, &vqa_handle_p->Config,
+                &vqa_handle_p->Header);
   }
 
   /* Close the VQA file */
-  ((VQAHandleP*)vqa)->IOHandler(vqa, VQACMD_CLOSE, nullptr, 0);
+  vqa_handle_p->IOHandler(vqa, VQACMD_CLOSE, nullptr, 0);
 
   /* Reset the VQAHandle */
   vqa->Reset();
@@ -442,7 +441,6 @@ void VQA_Close(VQAHandle* vqa) {
  ****************************************************************************/
 
 long VQA_LoadFrame(VQAHandle* vqa) {
-  VQAHandleP* vqap;
   VQAData* vqabuf;
   VQALoader* loader;
   VQADrawer* drawer;
@@ -452,17 +450,17 @@ long VQA_LoadFrame(VQAHandle* vqa) {
   long frame_loaded = 0;
 
   /* Dereference commonly used data members for quicker access. */
-  vqap = (VQAHandleP*)vqa;
-  vqabuf = vqap->VQABuf;
+  VQAHandleP* vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
+  vqabuf = vqa_handle_p->VQABuf;
   loader = &vqabuf->Loader;
-  drawer = &((VQAHandleP*)vqa)->VQABuf->Drawer;
+  drawer = &vqa_handle_p->VQABuf->Drawer;
   curframe = loader->CurFrame;
   chunk = &loader->CurChunkHdr;
 
   iffsize = REVERSE_LONG(chunk->size);
 
   /* We have reached the end of the file if we loaded all the frames. */
-  if (loader->CurFrameNum >= vqap->Header.Frames) {
+  if (loader->CurFrameNum >= vqa_handle_p->Header.Frames) {
     return VQAERR_EOF;
   }
 
@@ -495,7 +493,7 @@ long VQA_LoadFrame(VQAHandle* vqa) {
     /* Read new chunk, only if we're not sleeping */
     if (!(vqabuf->Flags & VQADATF_LSLEEP)) {
       /* Read chunk ID */
-      if (vqap->IOHandler(vqa, VQACMD_READ, chunk, 8)) {
+      if (vqa_handle_p->IOHandler(vqa, VQACMD_READ, chunk, 8)) {
         return VQAERR_EOF;
       }
 
@@ -507,7 +505,7 @@ long VQA_LoadFrame(VQAHandle* vqa) {
     switch (chunk->id) {
       /* VQ Normal Frame */
       case ID_VQFR:
-        if (Load_VQF(vqap, iffsize)) {
+        if (Load_VQF(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
 
@@ -516,7 +514,7 @@ long VQA_LoadFrame(VQAHandle* vqa) {
 
       /* VQ Key Frame */
       case ID_VQFK:
-        if (Load_VQF(vqap, iffsize)) {
+        if (Load_VQF(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
 
@@ -527,35 +525,35 @@ long VQA_LoadFrame(VQAHandle* vqa) {
 
       /* Full uncompressed codebook */
       case ID_CBF0:
-        if (Load_CBF0(vqap, iffsize)) {
+        if (Load_CBF0(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Full compressed codebook */
       case ID_CBFZ:
-        if (Load_CBFZ(vqap, iffsize)) {
+        if (Load_CBFZ(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Partial uncompressed codebook */
       case ID_CBP0:
-        if (Load_CBP0(vqap, iffsize)) {
+        if (Load_CBP0(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Partial compressed codebook */
       case ID_CBPZ:
-        if (Load_CBPZ(vqap, iffsize)) {
+        if (Load_CBPZ(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Uncompressed palette */
       case ID_CPL0:
-        if (Load_CPL0(vqap, iffsize)) {
+        if (Load_CPL0(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
 
@@ -573,7 +571,7 @@ long VQA_LoadFrame(VQAHandle* vqa) {
 
       /* Compressed palette */
       case ID_CPLZ:
-        if (Load_CPLZ(vqap, iffsize)) {
+        if (Load_CPLZ(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
 
@@ -592,7 +590,7 @@ long VQA_LoadFrame(VQAHandle* vqa) {
 
       /* Uncompressed pointer data */
       case ID_VPT0:
-        if (Load_VPT0(vqap, iffsize)) {
+        if (Load_VPT0(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
 
@@ -602,7 +600,7 @@ long VQA_LoadFrame(VQAHandle* vqa) {
       /* Compressed pointer data */
       case ID_VPTZ:
       case ID_VPTD:
-        if (Load_VPTZ(vqap, iffsize)) {
+        if (Load_VPTZ(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
 
@@ -611,7 +609,7 @@ long VQA_LoadFrame(VQAHandle* vqa) {
 
       /* Pointer data Key (Must draw) */
       case ID_VPTK:
-        if (Load_VPTZ(vqap, iffsize)) {
+        if (Load_VPTZ(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
 
@@ -627,9 +625,9 @@ long VQA_LoadFrame(VQAHandle* vqa) {
          *  - Load the data into TempBuf.
          */
       case ID_SND0:
-        if (!(vqap->Config.OptionFlags & VQAOPTF_ALTAUDIO)) {
+        if (!(vqa_handle_p->Config.OptionFlags & VQAOPTF_ALTAUDIO)) {
           /* Move the last audio frame to the play buffer. */
-          if (CopyAudio(vqap) == VQAERR_SLEEPING) {
+          if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
           } else {
@@ -637,21 +635,21 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           }
 
           /* Load an uncompressed audio frame. */
-          if (Load_SND0(vqap, iffsize) != 0) {
+          if (Load_SND0(vqa_handle_p, iffsize) != 0) {
             return VQAERR_READ;
           }
         } else {
-          if (vqap->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
-                              PADSIZE(iffsize))) {
+          if (vqa_handle_p->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
+                                      PADSIZE(iffsize))) {
             return VQAERR_SEEK;
           }
         }
         break;
 
       case ID_SNA0:
-        if (vqap->Config.OptionFlags & VQAOPTF_ALTAUDIO) {
+        if (vqa_handle_p->Config.OptionFlags & VQAOPTF_ALTAUDIO) {
           /* Move the last audio frame to the play buffer. */
-          if (CopyAudio(vqap) == VQAERR_SLEEPING) {
+          if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
           } else {
@@ -659,12 +657,12 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           }
 
           /* Load an uncompressed audio frame. */
-          if (Load_SND0(vqap, iffsize) != 0) {
+          if (Load_SND0(vqa_handle_p, iffsize) != 0) {
             return VQAERR_READ;
           }
         } else {
-          if (vqap->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
-                              PADSIZE(iffsize))) {
+          if (vqa_handle_p->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
+                                      PADSIZE(iffsize))) {
             return VQAERR_SEEK;
           }
         }
@@ -677,9 +675,9 @@ long VQA_LoadFrame(VQAHandle* vqa) {
        *  - Load the data into TempBuf.
        */
       case ID_SND1:
-        if (!(vqap->Config.OptionFlags & VQAOPTF_ALTAUDIO)) {
+        if (!(vqa_handle_p->Config.OptionFlags & VQAOPTF_ALTAUDIO)) {
           /* Move the last audio frame to the play buffer. */
-          if (CopyAudio(vqap) == VQAERR_SLEEPING) {
+          if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
           } else {
@@ -687,21 +685,21 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           }
 
           /* Load a compressed audio frame. */
-          if (Load_SND1(vqap, iffsize) != 0) {
+          if (Load_SND1(vqa_handle_p, iffsize) != 0) {
             return VQAERR_READ;
           }
         } else {
-          if (vqap->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
-                              PADSIZE(iffsize))) {
+          if (vqa_handle_p->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
+                                      PADSIZE(iffsize))) {
             return VQAERR_SEEK;
           }
         }
         break;
 
       case ID_SNA1:
-        if (vqap->Config.OptionFlags & VQAOPTF_ALTAUDIO) {
+        if (vqa_handle_p->Config.OptionFlags & VQAOPTF_ALTAUDIO) {
           /* Move the last audio frame to the play buffer. */
-          if (CopyAudio(vqap) == VQAERR_SLEEPING) {
+          if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
           } else {
@@ -709,12 +707,12 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           }
 
           /* Load a compressed audio frame. */
-          if (Load_SND1(vqap, iffsize) != 0) {
+          if (Load_SND1(vqa_handle_p, iffsize) != 0) {
             return VQAERR_READ;
           }
         } else {
-          if (vqap->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
-                              PADSIZE(iffsize))) {
+          if (vqa_handle_p->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
+                                      PADSIZE(iffsize))) {
             return VQAERR_SEEK;
           }
         }
@@ -727,9 +725,9 @@ long VQA_LoadFrame(VQAHandle* vqa) {
        *  - Load the data into TempBuf.
        */
       case ID_SND2:
-        if (!(vqap->Config.OptionFlags & VQAOPTF_ALTAUDIO)) {
+        if (!(vqa_handle_p->Config.OptionFlags & VQAOPTF_ALTAUDIO)) {
           /* Move the last audio frame to the play buffer. */
-          if (CopyAudio(vqap) == VQAERR_SLEEPING) {
+          if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
           } else {
@@ -737,21 +735,21 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           }
 
           /* Load a compressed audio frame. */
-          if (Load_SND2(vqap, iffsize) != 0) {
+          if (Load_SND2(vqa_handle_p, iffsize) != 0) {
             return VQAERR_READ;
           }
         } else {
-          if (vqap->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
-                              PADSIZE(iffsize))) {
+          if (vqa_handle_p->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
+                                      PADSIZE(iffsize))) {
             return VQAERR_SEEK;
           }
         }
         break;
 
       case ID_SNA2:
-        if (vqap->Config.OptionFlags & VQAOPTF_ALTAUDIO) {
+        if (vqa_handle_p->Config.OptionFlags & VQAOPTF_ALTAUDIO) {
           /* Move the last audio frame to the play buffer. */
-          if (CopyAudio(vqap) == VQAERR_SLEEPING) {
+          if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
           } else {
@@ -759,12 +757,12 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           }
 
           /* Load a compressed audio frame. */
-          if (Load_SND2(vqap, iffsize) != 0) {
+          if (Load_SND2(vqa_handle_p, iffsize) != 0) {
             return VQAERR_READ;
           }
         } else {
-          if (vqap->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
-                              PADSIZE(iffsize))) {
+          if (vqa_handle_p->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
+                                      PADSIZE(iffsize))) {
             return VQAERR_SEEK;
           }
         }
@@ -772,8 +770,8 @@ long VQA_LoadFrame(VQAHandle* vqa) {
 
       /* Skip any unknown chunks. */
       default:
-        if (vqap->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
-                            PADSIZE(iffsize))) {
+        if (vqa_handle_p->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_CUR,
+                                    PADSIZE(iffsize))) {
           return VQAERR_SEEK;
         }
         break;
@@ -841,7 +839,7 @@ long VQA_SeekFrame(VQAHandle* vqa, long framenum, long /*fromwhere*/) {
   VQAAudio* audio;
   long audio_on;
   /* Dereference commonly used data members for quick access. */
-  vqap = (VQAHandleP*)vqa;
+  vqap = dynamic_cast<VQAHandleP*>(vqa);
   vqabuf = vqap->VQABuf;
   loader = &vqabuf->Loader;
   header = &vqap->Header;
@@ -865,7 +863,7 @@ long VQA_SeekFrame(VQAHandle* vqa, long framenum, long /*fromwhere*/) {
       for (i = framenum; i >= 0; i--) {
         if (vqabuf->Foff[i] & VQAFINF_PAL) {
           /* Seek to the palette frame. */
-          rc = vqap->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_SET,
+          rc = vqap->IOHandler(vqa, VQACMD_SEEK, static_cast<void*>(SEEK_SET),
                                VQAFRAME_OFFSET(vqabuf->Foff[i]));
 
           /* Fool the loader into thinking this frame is empty. */
@@ -912,18 +910,17 @@ long VQA_SeekFrame(VQAHandle* vqa, long framenum, long /*fromwhere*/) {
       /* Seek to the start of the group containing the partial codebooks for
        * the target frame.
        */
-      if (!vqap->IOHandler(vqa, VQACMD_SEEK, (void*)SEEK_SET,
+      if (!vqap->IOHandler(vqa, VQACMD_SEEK, static_cast<void*>(SEEK_SET),
                            VQAFRAME_OFFSET(vqabuf->Foff[group]))) {
         /* Throw away any audio frames that were loaded. */
-        if (config->OptionFlags & VQAOPTF_AUDIO &&
-            audio->Buffer != nullptr) {
+        if (config->OptionFlags & VQAOPTF_AUDIO && audio->Buffer != nullptr) {
           memset(audio->IsLoaded, 0, audio->NumAudBlocks * sizeof(short));
           memset(audio->Buffer, 0, config->AudioBufSize);
 
           /* Position the audio buffer to 1/2 second. */
-          audio->AudBufPos = (long)(audio->SampleRate * audio->Channels *
-                                    (audio->BitsPerSample >> 3) /
-                                    2);
+          audio->AudBufPos =
+              static_cast<long>(audio->SampleRate * audio->Channels *
+                                (audio->BitsPerSample >> 3) / 2);
 
           /* Mark 1/2 second of the audio buffer as loaded. */
           for (i = 0; i < audio->AudBufPos / config->HMIBufSize; i++) {
@@ -1058,12 +1055,11 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
   vqa->Max_Pal_Size = 768 + 1024 & 0xFFFC;
 
   /* Set maximum vector pointers size. */
-  vqa->Max_Ptr_Size =
-      header->ImageWidth / header->BlockWidth *
+  vqa->Max_Ptr_Size = header->ImageWidth / header->BlockWidth *
                               (header->ImageHeight / header->BlockHeight) *
                               sizeof(short) +
                           1024 &
-      0xFFFC;
+                      0xFFFC;
 
   /* Set the frame number of the frame containing the last codebook. */
   vqa->Loader.LastCBFrame =
@@ -1083,7 +1079,7 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
     cbnode->Buffer = cbnode->BufferStorage.data();
 
     /* Keep count of the memory usage. */
-    vqa->MemUsed += (long)(sizeof(VQACBNode) + vqa->Max_CB_Size);
+    vqa->MemUsed += static_cast<long>(sizeof(VQACBNode) + vqa->Max_CB_Size);
 
     vqa->CBNodes.push_back(std::move(cbnode));
   }
@@ -1117,8 +1113,8 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
     framenode->Codebook = vqa->CBData;
 
     /* Keep count of the memory usage. */
-    vqa->MemUsed +=
-        (long)(sizeof(VQAFrameNode) + vqa->Max_Ptr_Size + vqa->Max_Pal_Size);
+    vqa->MemUsed += static_cast<long>(sizeof(VQAFrameNode) + vqa->Max_Ptr_Size +
+                                      vqa->Max_Pal_Size);
 
     vqa->FrameNodes.push_back(std::move(framenode));
   }
@@ -1147,7 +1143,8 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
       /* Plugin image buffer information. */
       vqa->Drawer.ImageWidth = header->ImageWidth;
       vqa->Drawer.ImageHeight = header->ImageHeight;
-      vqa->MemUsed += (long)(header->ImageWidth * header->ImageHeight);
+      vqa->MemUsed +=
+          static_cast<long>(header->ImageWidth * header->ImageHeight);
     } else {
       vqa->Drawer.ImageWidth = config->ImageWidth;
       vqa->Drawer.ImageHeight = config->ImageHeight;
@@ -1196,7 +1193,8 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
       /* Compute the number of HMI buffers that will completly fit into
        * 1.5 seconds of audio data.
        */
-      auto i = (audio->BytesPerSec + audio->BytesPerSec / 2) / config->HMIBufSize;
+      auto i =
+          (audio->BytesPerSec + audio->BytesPerSec / 2) / config->HMIBufSize;
       config->AudioBufSize = config->HMIBufSize * i;
     }
 
@@ -1314,8 +1312,8 @@ long PrimeBuffers(VQAHandle* vqa) {
   long i;
 
   /* Dereference commonly used data members for quick access. */
-  vqabuf = ((VQAHandleP*)vqa)->VQABuf;
-  config = &((VQAHandleP*)vqa)->Config;
+  vqabuf = dynamic_cast<VQAHandleP*>(vqa)->VQABuf;
+  config = &dynamic_cast<VQAHandleP*>(vqa)->Config;
 
   /* Pre-load the buffers */
   for (i = 0; i < config->NumFrameBufs; i++) {
@@ -1375,7 +1373,7 @@ static long Load_VQF(VQAHandleP* vqap, unsigned long frame_iffsize) {
    *-----------------------------------------------------------------------*/
   while (bytes_loaded < framesize) {
     /* Read chunk ID */
-    if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, chunk, 8)) {
+    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, chunk, 8)) {
       return VQAERR_EOF;
     }
 
@@ -1516,13 +1514,13 @@ static long Load_FINF(VQAHandleP* vqap, unsigned long iffsize) {
    * skip it.
    */
   if (vqabuf->Foff != nullptr) {
-    if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, vqabuf->Foff,
-                        PADSIZE(iffsize))) {
+    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ,
+                        vqabuf->Foff, PADSIZE(iffsize))) {
       return VQAERR_READ;
     }
   } else {
-    if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_SEEK, (void*)SEEK_CUR,
-                        PADSIZE(iffsize))) {
+    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_SEEK,
+                        (void*)SEEK_CUR, PADSIZE(iffsize))) {
       return VQAERR_SEEK;
     }
   }
@@ -1560,7 +1558,7 @@ static long Load_CBF0(VQAHandleP* vqap, unsigned long iffsize) {
   curcb = loader->CurCB;
 
   /* Read into the start of the buffer */
-  if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, curcb->Buffer,
+  if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, curcb->Buffer,
                       PADSIZE(iffsize))) {
     return VQAERR_READ;
   }
@@ -1617,7 +1615,8 @@ static long Load_CBFZ(VQAHandleP* vqap, unsigned long iffsize) {
   lcwoffset = vqap->VQABuf->Max_CB_Size - padsize;
   buffer = curcb->Buffer + lcwoffset;
 
-  if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, buffer, padsize)) {
+  if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, buffer,
+                      padsize)) {
     return VQAERR_READ;
   }
 
@@ -1675,7 +1674,7 @@ static long Load_CBP0(VQAHandleP* vqap, unsigned long iffsize) {
   /* Read the partial codebook into the next position in the buffer. */
   buffer = curcb->Buffer + loader->PartialCBSize;
 
-  if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, buffer,
+  if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, buffer,
                       PADSIZE(iffsize))) {
     return VQAERR_READ;
   }
@@ -1755,7 +1754,8 @@ static long Load_CBPZ(VQAHandleP* vqap, unsigned long iffsize) {
   /* Read the partial codebook into the next position in the buffer. */
   buffer = curcb->Buffer + curcb->CBOffset + loader->PartialCBSize;
 
-  if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, buffer, padsize)) {
+  if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, buffer,
+                      padsize)) {
     return VQAERR_READ;
   }
 
@@ -1811,8 +1811,8 @@ static long Load_CPL0(VQAHandleP* vqap, unsigned long iffsize) {
   curframe = vqap->VQABuf->Loader.CurFrame;
 
   /* Read the palette into the palette buffer */
-  if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, curframe->Palette,
-                      PADSIZE(iffsize))) {
+  if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ,
+                      curframe->Palette, PADSIZE(iffsize))) {
     return VQAERR_READ;
   }
 
@@ -1859,7 +1859,8 @@ static long Load_CPLZ(VQAHandleP* vqap, unsigned long iffsize) {
   lcwoffset = vqap->VQABuf->Max_Pal_Size - padsize;
   buffer = curframe->Palette + lcwoffset;
 
-  if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, buffer, padsize)) {
+  if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, buffer,
+                      padsize)) {
     return VQAERR_READ;
   }
 
@@ -1899,8 +1900,8 @@ static long Load_VPT0(VQAHandleP* vqap, unsigned long iffsize) {
   curframe = vqap->VQABuf->Loader.CurFrame;
 
   /* Read the pointers into start of the pointer buffer. */
-  if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, curframe->Pointers,
-                      PADSIZE(iffsize))) {
+  if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ,
+                      curframe->Pointers, PADSIZE(iffsize))) {
     return VQAERR_READ;
   }
 
@@ -1946,7 +1947,8 @@ static long Load_VPTZ(VQAHandleP* vqap, unsigned long iffsize) {
   /* Read the pointers into end of the pointer buffer. */
   buffer = curframe->Pointers + lcwoffset;
 
-  if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, buffer, padsize)) {
+  if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, buffer,
+                      padsize)) {
     return VQAERR_READ;
   }
 
@@ -1998,10 +2000,9 @@ static long Load_SND0(VQAHandleP* vqap, unsigned long iffsize) {
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk.
    */
-  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 ||
-      audio->Buffer == nullptr) {
-    if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_SEEK, (void*)SEEK_CUR,
-                        padsize)) {
+  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer == nullptr) {
+    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_SEEK,
+                        (void*)SEEK_CUR, padsize)) {
       return VQAERR_SEEK;
     } else {
       return 0;
@@ -2010,8 +2011,8 @@ static long Load_SND0(VQAHandleP* vqap, unsigned long iffsize) {
 
   /* Read large startup chunk directly into AudioBuf */
   if (padsize > audio->TempBufSize && audio->AudBufPos == 0) {
-    if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, audio->Buffer,
-                        padsize)) {
+    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ,
+                        audio->Buffer, padsize)) {
       return VQAERR_READ;
     }
 
@@ -2025,8 +2026,8 @@ static long Load_SND0(VQAHandleP* vqap, unsigned long iffsize) {
     return 0;
   } else {
     /*  Read data into TempBuf */
-    if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, audio->TempBuf,
-                        padsize)) {
+    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ,
+                        audio->TempBuf, padsize)) {
       return VQAERR_READ;
     }
   }
@@ -2080,10 +2081,9 @@ static long Load_SND1(VQAHandleP* vqap, unsigned long iffsize) {
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk
    */
-  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 ||
-      audio->Buffer == nullptr) {
-    if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_SEEK, (void*)SEEK_CUR,
-                        padsize)) {
+  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer == nullptr) {
+    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_SEEK,
+                        (void*)SEEK_CUR, padsize)) {
       return VQAERR_SEEK;
     } else {
       return 0;
@@ -2091,7 +2091,8 @@ static long Load_SND1(VQAHandleP* vqap, unsigned long iffsize) {
   }
 
   /* Read the ZAP audio frame header. */
-  if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, &zap, sizeof(ZAPHeader))) {
+  if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, &zap,
+                      sizeof(ZAPHeader))) {
     return VQAERR_READ;
   }
 
@@ -2102,15 +2103,16 @@ static long Load_SND1(VQAHandleP* vqap, unsigned long iffsize) {
   if (zap.UnCompSize > audio->TempBufSize && audio->AudBufPos == 0) {
     /* Load RAW uncompressed data. */
     if (zap.UnCompSize == zap.CompSize) {
-      if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, audio->Buffer,
-                          padsize)) {
+      if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ,
+                          audio->Buffer, padsize)) {
         return VQAERR_READ;
       }
     } else {
       /* Load compressed data into the end of the buffer. */
       loadbuf = audio->Buffer + config->AudioBufSize - padsize;
 
-      if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, loadbuf, padsize)) {
+      if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, loadbuf,
+                          padsize)) {
         return VQAERR_READ;
       }
 
@@ -2131,15 +2133,16 @@ static long Load_SND1(VQAHandleP* vqap, unsigned long iffsize) {
   /* Load an audio frame. */
   if (zap.UnCompSize == zap.CompSize) {
     /* If the frame is uncompressed the load it in directly. */
-    if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, audio->TempBuf,
-                        padsize)) {
+    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ,
+                        audio->TempBuf, padsize)) {
       return VQAERR_READ;
     }
   } else {
     /* Load the audio frame into the end of the buffer. */
     loadbuf = audio->TempBuf + audio->TempBufSize - padsize;
 
-    if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, loadbuf, padsize)) {
+    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, loadbuf,
+                        padsize)) {
       return VQAERR_READ;
     }
 
@@ -2196,10 +2199,9 @@ static long Load_SND2(VQAHandleP* vqap, unsigned long iffsize) {
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk
    */
-  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 ||
-      audio->Buffer == nullptr) {
-    if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_SEEK, (void*)SEEK_CUR,
-                        padsize)) {
+  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer == nullptr) {
+    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_SEEK,
+                        (void*)SEEK_CUR, padsize)) {
       return VQAERR_SEEK;
     } else {
       return 0;
@@ -2213,7 +2215,8 @@ static long Load_SND2(VQAHandleP* vqap, unsigned long iffsize) {
     /* Load compressed data into the end of the buffer. */
     loadbuf = audio->Buffer + config->AudioBufSize - padsize;
 
-    if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, loadbuf, padsize)) {
+    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, loadbuf,
+                        padsize)) {
       return VQAERR_READ;
     }
 
@@ -2235,7 +2238,8 @@ static long Load_SND2(VQAHandleP* vqap, unsigned long iffsize) {
   /* Load an audio frame. */
   loadbuf = audio->TempBuf + audio->TempBufSize - padsize;
 
-  if (vqap->IOHandler((VQAHandle*)vqap, VQACMD_READ, loadbuf, padsize)) {
+  if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ, loadbuf,
+                      padsize)) {
     return VQAERR_READ;
   }
 

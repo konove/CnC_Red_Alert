@@ -462,7 +462,7 @@ void AnimClass::Init() { Anims.Free_All(); }
 void* AnimClass::operator new(size_t) throw() {
   void* ptr = Anims.Allocate();
   if (ptr != nullptr) {
-    ((AnimClass*)ptr)->IsActive = true;
+    static_cast<AnimClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -484,9 +484,9 @@ void* AnimClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void AnimClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
-    ((AnimClass*)ptr)->IsActive = false;
+    static_cast<AnimClass*>(ptr)->IsActive = false;
   }
-  Anims.Free((AnimClass*)ptr);
+  Anims.Free(static_cast<AnimClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -526,11 +526,12 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
 #ifdef VIC
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
-    (int&)Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
+    static_cast<int&>(Class->Stages) =
+        Get_Build_Frame_Count(Class->Get_Image_Data());
     IsTheaterShape = false;
   }
   if (Class->LoopEnd == -1) {
-    (int&)Class->LoopEnd = Class->Stages;
+    static_cast<int&>(Class->LoopEnd) = Class->Stages;
   }
   if (Class->IsNormalized) {
     Set_Rate(Options.Normalize_Delay(Class->Delay));
@@ -553,8 +554,8 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
                    PlayerPtr, false);
   }
 
-  Loops = (unsigned char)(std::max(int(loop), 1) * Class->Loops);
-  Loops = (unsigned char)std::max(int(Loops), 1);
+  Loops = static_cast<unsigned char>(std::max(int(loop), 1) * Class->Loops);
+  Loops = static_cast<unsigned char>(std::max(int(Loops), 1));
 
   /*
   **	If the animation starts immediately, then play the associated sound
@@ -694,11 +695,12 @@ void AnimClass::AI() {
 
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
-    (int&)Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
+    static_cast<int&>(Class->Stages) =
+        Get_Build_Frame_Count(Class->Get_Image_Data());
     IsTheaterShape = false;
   }
   if (Class->LoopEnd == -1) {
-    (int&)Class->LoopEnd = Class->Stages;
+    static_cast<int&>(Class->LoopEnd) = Class->Stages;
   }
 
   if (Delay) {
@@ -709,11 +711,12 @@ void AnimClass::AI() {
   } else {
     if (Class->Stages == -1) {
       IsTheaterShape = Class->IsTheater;
-      (int&)Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
+      static_cast<int&>(Class->Stages) =
+          Get_Build_Frame_Count(Class->Get_Image_Data());
       IsTheaterShape = false;
     }
     if (Class->LoopEnd == -1) {
-      (int&)Class->LoopEnd = Class->Stages;
+      static_cast<int&>(Class->LoopEnd) = Class->Stages;
     }
 
     /*
@@ -786,12 +789,12 @@ void AnimClass::AI() {
 
             if (Class->Stages == -1) {
               IsTheaterShape = Class->IsTheater;
-              (int&)Class->Stages =
+              static_cast<int&>(Class->Stages) =
                   Get_Build_Frame_Count(Class->Get_Image_Data());
               IsTheaterShape = false;
             }
             if (Class->LoopEnd == -1) {
-              (int&)Class->LoopEnd = Class->Stages;
+              static_cast<int&>(Class->LoopEnd) = Class->Stages;
             }
 
             IsToDelete = false;
@@ -1082,16 +1085,16 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
       ObjectClass* obj = Logic[index];
 
       if (obj != nullptr && obj->Is_Techno() && obj->Owner() == ownerhouse) {
-        backup = (TechnoClass*)obj;
+        backup = dynamic_cast<TechnoClass*>(obj);
         if (obj->What_Am_I() == RTTI_BUILDING &&
-            *(BuildingClass*)obj == STRUCT_MSLO) {
-          building = (BuildingClass*)obj;
+            *dynamic_cast<BuildingClass*>(obj) == STRUCT_MSLO) {
+          building = dynamic_cast<BuildingClass*>(obj);
           break;
         }
       }
     }
 
-    if (building == nullptr) building = (BuildingClass*)backup;
+    if (building == nullptr) building = dynamic_cast<BuildingClass*>(backup);
   }
 
   int radius;

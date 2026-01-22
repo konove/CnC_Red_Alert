@@ -177,7 +177,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         //			}
         if (Keyboard->Down(KN_RMOUSE)) {
           rate =
-              Bound(rate + 1, 4, (int)(sizeof(_rate) / sizeof(_rate[0])) - 1);
+              Bound(rate + 1, 4, static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
         }
 
         /*
@@ -190,9 +190,9 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         int distance = _rate[rate] / 2;
 
         if (!Scroll_Map(direction, distance, false)) {
-          Override_Mouse_Shape((MouseType)(MOUSE_NO_N + control), false);
+          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_NO_N + control), false);
         } else {
-          Override_Mouse_Shape((MouseType)(MOUSE_N + control), false);
+          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_N + control), false);
 
           /*
           **	If the mouse button is pressed or auto scrolling is active, then

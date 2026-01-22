@@ -731,7 +731,7 @@ int NullModemClass::Service() {
   own buffer.
   ------------------------------------------------------------------------*/
   RXCount += SerialPort->Read_From_Serial_Port(
-      (unsigned char*)(RXBuf + RXCount), int(RXSize - RXCount));
+      (unsigned char*)(RXBuf + RXCount), static_cast<int>(RXSize - RXCount));
 
   //	if (RXCount){
   // char port[128];
@@ -1543,7 +1543,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   // Delay(120);
   // HMSetDialingMethod( Port, (int)method );
   CCDebugString("C&C95 - About to set modem dial type.\n");
-  SerialPort->Set_Modem_Dial_Type((WinCommDialMethodType)method);
+  SerialPort->Set_Modem_Dial_Type(static_cast<WinCommDialMethodType>(method));
 
   // Timer_Test(__LINE__, __FILE__);
 

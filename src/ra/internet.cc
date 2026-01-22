@@ -287,10 +287,11 @@ int Read_Game_Options(char* name) {
                             sizeof(Session.Handle), buffer);
   port::SafeCopy(Session.GameName, Session.Handle);
   Session.ColorIdx =
-      (PlayerColorType)WWGetPrivateProfileInt("Options", "Color", 0, buffer);
+      static_cast<PlayerColorType>(
+      WWGetPrivateProfileInt("Options", "Color", 0, buffer));
   Session.PrefColor = Session.ColorIdx;
   int temp = WWGetPrivateProfileInt("Options", "Side", 0, buffer);
-  Session.House = (HousesType)((int)HOUSE_USSR + temp);
+  Session.House = static_cast<HousesType>((int)HOUSE_USSR + temp);
 
   Session.Options.Credits =
       WWGetPrivateProfileInt("Options", "Credits", 0, buffer);

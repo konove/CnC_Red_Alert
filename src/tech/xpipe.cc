@@ -76,7 +76,7 @@ int BufferPipe::Put(void const* source, int slen) {
     }
 
     if (len > 0) {
-      memmove((char*)BufferPtr.Get_Buffer() + Index, source, len);
+      memmove(static_cast<char*>(BufferPtr.Get_Buffer()) + Index, source, len);
     }
 
     Index += len;

@@ -225,7 +225,7 @@ VesselClass::~VesselClass() {
 void* VesselClass::operator new(size_t) throw() {
   void* ptr = Vessels.Alloc();
   if (ptr != nullptr) {
-    ((VesselClass*)ptr)->IsActive = true;
+    static_cast<VesselClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -246,10 +246,10 @@ void* VesselClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void VesselClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
-    assert(((VesselClass*)ptr)->IsActive);
-    ((VesselClass*)ptr)->IsActive = false;
+    assert(static_cast<VesselClass*>(ptr)->IsActive);
+    static_cast<VesselClass*>(ptr)->IsActive = false;
   }
-  Vessels.Free((VesselClass*)ptr);
+  Vessels.Free(static_cast<VesselClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -293,7 +293,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 
   CellClass const* cellptr = &Map[cell];
 
@@ -449,7 +449,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	is any firing animation in progress.
       */
       int shapenum = BodyShape[tfacing] + 32;
-      DirType turdir = DirType(Dir_To_16(PrimaryFacing) * 16);
+      DirType turdir = static_cast<DirType>(Dir_To_16(PrimaryFacing) * 16);
 
       switch (Class->Type) {
         case VESSEL_CA:
@@ -459,7 +459,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
           Techno_Draw_Object(shapefile, shapenum, xx, yy, window);
           xx = x;
           yy = y;
-          turdir = DirType(Dir_To_16(PrimaryFacing + DIR_S) * 16);
+          turdir = static_cast<DirType>(Dir_To_16(PrimaryFacing + DIR_S) * 16);
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
@@ -635,7 +635,8 @@ void VesselClass::AI() {
       ObjectClass* obj = Attached_Object();
       while (obj) {
         long bogus;
-        ((AircraftClass*)obj)->Receive_Message(this, RADIO_RELOAD, bogus);
+        dynamic_cast<AircraftClass*>(obj)->Receive_Message(this, RADIO_RELOAD,
+                                                           bogus);
         obj = obj->Next;
       }
     }
@@ -674,7 +675,7 @@ void VesselClass::AI() {
     */
     if (!Is_Door_Closed() && Mission != MISSION_UNLOAD &&
         Transmit_Message(RADIO_TRYING_TO_LOAD) != RADIO_ROGER &&
-        !(long)DoorShutCountDown) {
+        !static_cast<long>(DoorShutCountDown)) {
       LST_Close_Door();
     }
   }
@@ -1105,8 +1106,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       if (!isseatarget) {
         return FIRE_CANT;
       } else {
-        if (Is_Target_Vessel(target) &&
-            *As_Vessel(target) != VESSEL_SS &&
+        if (Is_Target_Vessel(target) && *As_Vessel(target) != VESSEL_SS &&
             *As_Vessel(target) != VESSEL_MISSILESUB) {
           if (!Is_Target_Vessel(target) || !weapon->Bullet->IsSubSurface) {
             return FIRE_CANT;
@@ -1234,7 +1234,7 @@ void VesselClass::Init() { Vessels.Free_All(); }
 TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
 {
   if (*this == VESSEL_SS) {
-    threat = threat & ThreatType(THREAT_RANGE | THREAT_AREA);
+    threat = threat & static_cast<ThreatType>(THREAT_RANGE | THREAT_AREA);
     threat = threat | THREAT_BOATS;
 
     // BG: get subs to attack buildings also.
@@ -1471,7 +1471,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
             if (cell == 0) {
               Transmit_Message(RADIO_OVER_OUT, from);
             } else {
-              param = (long)::As_Target(cell);
+              param = static_cast<long>(::As_Target(cell));
 
               /*
               **	If it is now facing the correct direction, then open the
@@ -1490,7 +1490,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
               if (Transmit_Message(RADIO_MOVE_HERE, param, from) ==
                   RADIO_YEA_NOW_WHAT) {
                 if (Is_Door_Open()) {
-                  param = (long)As_Target();
+                  param = static_cast<long>(As_Target());
                   Transmit_Message(RADIO_TETHER);
                   if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
                       RADIO_ROGER) {
@@ -1770,7 +1770,7 @@ int VesselClass::Mission_Unload() {
                   Transmit_Message(RADIO_HELLO, passenger);
                   Transmit_Message(RADIO_TETHER, passenger);
                   if (passenger->What_Am_I() == RTTI_UNIT) {
-                    ((UnitClass*)passenger)->IsToScatter = true;
+                    dynamic_cast<UnitClass*>(passenger)->IsToScatter = true;
                   }
                   placed = true;
                   break;
@@ -1941,9 +1941,7 @@ int VesselClass::Mission_Retreat() {
  *                                                                                             *
  * HISTORY: * 07/09/1996 BWG : Created. *
  *=============================================================================================*/
-bool VesselClass::Is_Allowed_To_Recloak() const {
-  return PulseCountDown == 0;
-}
+bool VesselClass::Is_Allowed_To_Recloak() const { return PulseCountDown == 0; }
 
 /***********************************************************************************************
  * VesselClass::Read_INI -- Read the vessel data from the INI database. *
@@ -1987,9 +1985,8 @@ void VesselClass::Read_INI(CCINIClass& ini) {
 
           COORDINATE coord = Cell_Coord(cell);
 
-          DirType dir = (DirType)atoi(strtok(nullptr, ",\r\n"));
-          MissionType mission =
-              Mission_From_Name(strtok(nullptr, ",\n\r"));
+          DirType dir = static_cast<DirType>(atoi(strtok(nullptr, ",\r\n")));
+          MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
 
           vessel->Trigger = nullptr;
           TriggerTypeClass* tp =
@@ -2162,8 +2159,8 @@ void VesselClass::Rotation_AI() {
   if (Class->IsTurretEquipped) {
     if (SecondaryFacing.Is_Rotating()) {
       Mark(MARK_CHANGE_REDRAW);
-      if (SecondaryFacing.Rotation_Adjust(
-              Class->ROT * House->GroundspeedBias + 1)) {
+      if (SecondaryFacing.Rotation_Adjust(Class->ROT * House->GroundspeedBias +
+                                          1)) {
         Mark(MARK_CHANGE_REDRAW);
       }
 

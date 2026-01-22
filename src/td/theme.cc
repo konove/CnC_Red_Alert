@@ -385,7 +385,7 @@ char const* ThemeClass::Theme_File_Name(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Track_Length(ThemeType theme) {
-  if ((unsigned)theme < THEME_COUNT) {
+  if (static_cast<unsigned>(theme) < THEME_COUNT) {
     return _themes[theme].Duration;
   }
   return 0;

@@ -178,7 +178,7 @@ static SmudgeTypeClass const Bibx3(SMUDGE_BIB3, "BIB3", TXT_BIB, 2,
 SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, char const* ininame,
                                  int fullname, int width, int height,
                                  bool isbib, bool iscrater)
-    : ObjectTypeClass(RTTI_SMUDGETYPE, int(smudge), false, true, false, false,
+    : ObjectTypeClass(RTTI_SMUDGETYPE, static_cast<int>(smudge), false, true, false, false,
                       true, true, false, fullname, ininame),
       Type(smudge),
       Width(width),
@@ -224,7 +224,7 @@ void* SmudgeTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::operator delete(void* pointer) {
-  SmudgeTypes.Free((SmudgeTypeClass*)pointer);
+  SmudgeTypes.Free(static_cast<SmudgeTypeClass*>(pointer));
 }
 
 /***********************************************************************************************

@@ -41,12 +41,9 @@
 #include "ra/heap.h"
 #include "tech/noinit.h"
 
-/*
-**	The CCPtr class is designed for a specific purpose. It functions like a
-*pointer except that *	it requires no fixups for saving and loading. If pointer
-*fixups are not an issue, than using *	regular pointers would be more
-*efficient.
-*/
+// The CCPtr class is designed for a specific purpose. It functions like a
+// pointer except that it requires no fixups for saving and loading. If pointer
+// fixups are not an issue, than using regular pointers would be more efficient.
 template <class T>
 class CCPtr {
  public:
@@ -57,16 +54,16 @@ class CCPtr {
   operator T*() const {
     if (ID == -1) return nullptr;
     assert(Heap != nullptr && ID < Heap->Length());
-    return (T*)(*Heap)[ID];
+    return static_cast<T*>((*Heap)[ID]);
   }
   T& operator*() const {
     assert(Heap != nullptr && ID < Heap->Length());
-    return *(T*)(*Heap)[ID];
+    return *static_cast<T*>((*Heap)[ID]);
   }
   T* operator->() const {
     if (ID == -1) return nullptr;
     assert(Heap != nullptr && ID < Heap->Length());
-    return (T*)(*Heap)[ID];
+    return static_cast<T*>((*Heap)[ID]);
   }
 
   bool Is_Valid() const { return ID != -1; }
@@ -108,12 +105,12 @@ class CCPtr {
 */
 template <class T>
 bool operator==(CCPtr<T>& lvalue, T* rvalue) {
-  return (T*)lvalue == rvalue;
+  return static_cast<T*>(lvalue) == rvalue;
 }
 
 template <class T>
 bool operator==(T* lvalue, CCPtr<T>& rvalue) {
-  return lvalue == (T*)rvalue;
+  return lvalue == static_cast<T*>(rvalue);
 }
 
 #endif  // CNC_RED_ALERT_RA_CCPTR_H_

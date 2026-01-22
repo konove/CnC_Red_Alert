@@ -94,7 +94,7 @@ int PKey::Encode_Modulus(void* buffer) const {
   if (buffer == nullptr) {
     return 0;
   }
-  return Modulus.DEREncode((unsigned char*)buffer);
+  return Modulus.DEREncode(static_cast<unsigned char*>(buffer));
 }
 
 /***********************************************************************************************
@@ -120,7 +120,7 @@ int PKey::Encode_Exponent(void* buffer) const {
   if (buffer == nullptr) {
     return 0;
   }
-  return Exponent.DEREncode((unsigned char*)buffer);
+  return Exponent.DEREncode(static_cast<unsigned char*>(buffer));
 }
 
 /***********************************************************************************************
@@ -140,7 +140,7 @@ int PKey::Encode_Exponent(void* buffer) const {
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
 void PKey::Decode_Modulus(void* buffer) {
-  Modulus.DERDecode((unsigned char*)buffer);
+  Modulus.DERDecode(static_cast<unsigned char*>(buffer));
   BitPrecision = Modulus.BitCount() - 1;
 }
 
@@ -160,7 +160,7 @@ void PKey::Decode_Modulus(void* buffer) {
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
 void PKey::Decode_Exponent(void* buffer) {
-  Exponent.DERDecode((unsigned char*)buffer);
+  Exponent.DERDecode(static_cast<unsigned char*>(buffer));
 }
 
 /***********************************************************************************************
@@ -239,7 +239,7 @@ void PKey::Generate(Straw& random, int bits, PKey& fastkey, PKey& slowkey) {
     char after[256];
 
     for (int index = 0; index < fastkey.Plain_Block_Size(); index++) {
-      before[index] = (char)rand();
+      before[index] = static_cast<char>(rand());
     }
     fastkey.Encrypt(before, fastkey.Plain_Block_Size(), after);
     slowkey.Decrypt(after, slowkey.Crypt_Block_Size(), after);
@@ -296,7 +296,7 @@ int PKey::Encrypt(void const* source, int slen, void* dest) const {
     memmove(dest, &temp, Crypt_Block_Size());
     slen -= Plain_Block_Size();
     source = (char*)source + Plain_Block_Size();
-    dest = (char*)dest + Crypt_Block_Size();
+    dest = static_cast<char*>(dest) + Crypt_Block_Size();
     total += Crypt_Block_Size();
   }
 
@@ -348,7 +348,7 @@ int PKey::Decrypt(void const* source, int slen, void* dest) const {
     memmove(dest, &temp, Plain_Block_Size());
     slen -= Crypt_Block_Size();
     source = (char*)source + Crypt_Block_Size();
-    dest = (char*)dest + Plain_Block_Size();
+    dest = static_cast<char*>(dest) + Plain_Block_Size();
     total += Plain_Block_Size();
   }
 

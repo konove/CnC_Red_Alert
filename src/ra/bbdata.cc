@@ -95,7 +95,7 @@ BulletTypeClass::BulletTypeClass(char const* name)
       IsSubSurface(false),
       IsParachuted(false),
       IsGigundo(false),
-      Type(BulletType(ID)),
+      Type(static_cast<BulletType>(ID)),
       ROT(0),
       Arming(0),
       Tumble(0) {}
@@ -137,7 +137,7 @@ void* BulletTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void BulletTypeClass::operator delete(void* ptr) {
-  BulletTypes.Free((BulletTypeClass*)ptr);
+  BulletTypes.Free(static_cast<BulletTypeClass*>(ptr));
 }
 
 /***********************************************************************************************

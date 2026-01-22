@@ -144,7 +144,7 @@ int LCWStraw::Get(void* destbuf, int slen) {
             &Buffer2[BlockHeader.CompCount + sizeof(BlockHeader) - Counter],
             len);
       }
-      destbuf = (char*)destbuf + len;
+      destbuf = static_cast<char*>(destbuf) + len;
       slen -= len;
       Counter -= len;
       total += len;
@@ -162,10 +162,10 @@ int LCWStraw::Get(void* destbuf, int slen) {
       LCW_Uncomp(ptr, Buffer);
       Counter = BlockHeader.UncompCount;
     } else {
-      BlockHeader.UncompCount = (unsigned short)Straw::Get(Buffer, BlockSize);
+      BlockHeader.UncompCount = static_cast<unsigned short>(Straw::Get(Buffer, BlockSize));
       if (BlockHeader.UncompCount == 0) break;
-      BlockHeader.CompCount = (unsigned short)LCW_Comp(
-          Buffer, &Buffer2[sizeof(BlockHeader)], BlockHeader.UncompCount);
+      BlockHeader.CompCount = static_cast<unsigned short>(LCW_Comp(
+          Buffer, &Buffer2[sizeof(BlockHeader)], BlockHeader.UncompCount));
       memmove(Buffer2, &BlockHeader, sizeof(BlockHeader));
       Counter = BlockHeader.CompCount + sizeof(BlockHeader);
     }

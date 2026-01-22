@@ -723,7 +723,7 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
 
   BufferClass destbuf(width * height);
 
-  unsigned char* destptr = (unsigned char*)destbuf.Get_Buffer();
+  unsigned char* destptr = static_cast<unsigned char*>(destbuf.Get_Buffer());
 
   int destx = x;
   int desty = y;
@@ -828,7 +828,7 @@ void ChronalVortexClass::Render() {
       */
       if (!RenderBuffer) {
         RenderBuffer = new GraphicBufferClass(CELL_PIXEL_W * 4,
-                                              CELL_PIXEL_H * 4, (void*)nullptr);
+                                              CELL_PIXEL_H * 4, static_cast<void*>(nullptr));
       }
       CELL xc = Coord_XCell(Position);
       CELL yc = Coord_YCell(Position);
@@ -906,7 +906,8 @@ void ChronalVortexClass::Render() {
               OverlayTypeClass const& otype =
                   OverlayTypeClass::As_Reference(cellptr->Overlay);
               IsTheaterShape =
-                  (bool)otype.IsTheater;  // Tell Build_Frame if this overlay is
+                  static_cast<bool>(
+                  otype.IsTheater);  // Tell Build_Frame if this overlay is
                                           // theater specific
               CC_Draw_Shape(otype.Get_Image_Data(), cellptr->OverlayData,
                             x * CELL_PIXEL_W + (CELL_PIXEL_W >> 1),
@@ -1076,7 +1077,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
   if (theater != Theater) {
     Theater = theater;
 
-    CCFileClass file(_remaps[(int)Theater]);
+    CCFileClass file(_remaps[static_cast<int>(Theater)]);
 
     if (file.Is_Available()) {
       file.Read(VortexRemapTables, MAX_REMAP_SHADES * 256);
@@ -1123,7 +1124,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
 void ChronalVortexClass::Build_Fading_Table(PaletteClass const& palette,
                                             void* dest, int color, int frac) {
   if (dest) {
-    unsigned char* ptr = (unsigned char*)dest;
+    unsigned char* ptr = static_cast<unsigned char*>(dest);
 
     /*
     **	Find an appropriate remap color index for every color in the palette.

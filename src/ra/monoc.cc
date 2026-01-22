@@ -119,7 +119,7 @@ MonoClass::MonoClass()
   for (index = 0; index < MAX_MONO_PAGES; index++) {
     if (!PageUsage[index]) {
       PageUsage[index] = this;
-      Page = (char)index;
+      Page = static_cast<char>(index);
       break;
     }
   }
@@ -363,8 +363,8 @@ void MonoClass::Set_Cursor(int x, int y) {
   */
   int pos = (y + SubY) * COLUMNS + (x + SubX);
   if (Page == 0) {
-    output(CONTROL_PORT, (short)(0x0E | pos & 0xFF00));
-    output(CONTROL_PORT, (short)(0x0F | pos << 8));
+    output(CONTROL_PORT, static_cast<short>(0x0E | pos & 0xFF00));
+    output(CONTROL_PORT, static_cast<short>(0x0F | pos << 8));
   }
 }
 
@@ -421,8 +421,8 @@ void MonoClass::Clear() {
  * HISTORY: * 06/04/1996 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib) {
-  if (!w || !h || (unsigned)x >= SubW || (unsigned)h >= SubH ||
-      (unsigned)x + w > SubW || (unsigned)y + h > SubH)
+  if (!w || !h || static_cast<unsigned>(x) >= SubW || static_cast<unsigned>(h) >= SubH ||
+      static_cast<unsigned>(x) + w > SubW || static_cast<unsigned>(y) + h > SubH)
     return;
 
   for (int rows = y; rows < y + h; rows++) {
@@ -672,8 +672,8 @@ void MonoClass::Text_Print(char const* text, int x, int y,
   int oldy = Y;
   MonoAttribute oldattrib = Attrib;
 
-  X = (char)x;
-  Y = (char)y;
+  X = static_cast<char>(x);
+  Y = static_cast<char>(y);
   Attrib = attrib;
   Print(text);
   Attrib = oldattrib;
@@ -705,8 +705,8 @@ void MonoClass::Text_Print(int text, int x, int y, MonoAttribute attrib) {
   MonoAttribute oldattrib = Attrib;
 
   if (text != 0) {
-    X = (char)x;
-    Y = (char)y;
+    X = static_cast<char>(x);
+    Y = static_cast<char>(y);
     Attrib = attrib;
     Print(Text_String(text));
     Attrib = oldattrib;
@@ -861,7 +861,7 @@ int Mono_Printf(char const* string, ...) {
 
     va_end(va);
   }
-  return (short)strlen(buffer);
+  return static_cast<short>(strlen(buffer));
 }
 
 /***********************************************************************************************
@@ -912,7 +912,7 @@ void Mono_Text_Print(void const* text, int x, int y, int attrib) {
       mono = new MonoClass();
       mono->View();
     }
-    mono->Text_Print((const char*)text, x, y, (MonoClass::MonoAttribute)attrib);
+    mono->Text_Print(static_cast<const char*>(text), x, y, static_cast<MonoClass::MonoAttribute>(attrib));
   }
 }
 
@@ -943,8 +943,8 @@ void Mono_Draw_Rect(int x, int y, int w, int h, int attrib, int thick) {
       mono = new MonoClass();
       mono->View();
     }
-    mono->Draw_Box(x, y, w, h, (MonoClass::MonoAttribute)attrib,
-                   (MonoClass::BoxStyleType)thick);
+    mono->Draw_Box(x, y, w, h, static_cast<MonoClass::MonoAttribute>(attrib),
+                   static_cast<MonoClass::BoxStyleType>(thick));
   }
 }
 
@@ -968,7 +968,7 @@ void Mono_Print(void const* text) {
       mono = new MonoClass();
       mono->View();
     }
-    mono->Print((const char*)text);
+    mono->Print(static_cast<const char*>(text));
   }
 }
 
@@ -993,7 +993,7 @@ int Mono_X() {
       mono = new MonoClass();
       mono->View();
     }
-    return (short)mono->Get_X();
+    return static_cast<short>(mono->Get_X());
   }
   return 0;
 }
@@ -1019,7 +1019,7 @@ int Mono_Y() {
       mono = new MonoClass();
       mono->View();
     }
-    return (short)mono->Get_X();
+    return static_cast<short>(mono->Get_X());
   }
   return 0;
 }
@@ -1049,5 +1049,5 @@ int Mono_Printf(int string, ...) {
 
     va_end(va);
   }
-  return (short)strlen(buffer);
+  return static_cast<short>(strlen(buffer));
 }

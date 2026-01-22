@@ -43,6 +43,7 @@
 #include <algorithm>
 #include <cstring>
 
+#include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
@@ -123,13 +124,13 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     **	Build the button list.
     */
     bheight = FontHeight + FontYSpacing + 2 * RESFACTOR;
-    bwidth = std::max(String_Pixel_Width(b1txt) + 8 * RESFACTOR,
-                      30u * RESFACTOR);
+    bwidth =
+        std::max(String_Pixel_Width(b1txt) + 8 * RESFACTOR, 30u * RESFACTOR);
 
     if (b2txt != nullptr) {
       numbuttons = 2;
       bwidth = std::max(String_Pixel_Width(b2txt) + 8 * RESFACTOR,
-                        unsigned(bwidth));
+                        static_cast<unsigned>(bwidth));
 
       if (b3txt != nullptr) {
         numbuttons = 3;
@@ -406,17 +407,20 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         /*
         **	Turn all the buttons off.
         */
-        toggle = (TextButtonClass*)buttonlist->Extract_Gadget(BUTTON_1);
+        toggle = dynamic_cast<TextButtonClass*>(
+            buttonlist->Extract_Gadget(BUTTON_1));
         if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
         }
-        toggle = (TextButtonClass*)buttonlist->Extract_Gadget(BUTTON_2);
+        toggle = dynamic_cast<TextButtonClass*>(
+            buttonlist->Extract_Gadget(BUTTON_2));
         if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
         }
-        toggle = (TextButtonClass*)buttonlist->Extract_Gadget(BUTTON_3);
+        toggle = dynamic_cast<TextButtonClass*>(
+            buttonlist->Extract_Gadget(BUTTON_3));
         if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
@@ -427,8 +431,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         */
         if (selection == BUTTON_1 || selection == BUTTON_2 ||
             selection == BUTTON_3) {
-          TextButtonClass* toggle =
-              (TextButtonClass*)buttonlist->Extract_Gadget(selection);
+          TextButtonClass* toggle = dynamic_cast<TextButtonClass*>(
+              buttonlist->Extract_Gadget(selection));
           if (toggle != nullptr) {
             toggle->Turn_On();
             //						toggle->IsOn = true;

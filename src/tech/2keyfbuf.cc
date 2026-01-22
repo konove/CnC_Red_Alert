@@ -32,7 +32,7 @@ enum BlitFlags {
 
 // the one in jshell isn't const enough
 inline constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
-  return (BlitFlags)((int)t1 | (int)t2);
+  return static_cast<BlitFlags>((int)t1 | (int)t2);
 }
 
 #define PRED_MASK 0xE
@@ -155,7 +155,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   // Save the line attributes pointers and modify the src pointer to point to
   // the actual image.
   if (use_new_draw) {
-    header_pointer = (ShapeHeaderType*)src;
+    header_pointer = static_cast<ShapeHeaderType*>(src);
 
     auto* shape_buffer_start = header_pointer->shape_buffer
                                    ? TheaterShapeBufferStart
@@ -196,8 +196,8 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
       (header_pointer->draw_flags == -1 ||
        header_pointer->draw_flags != (flags & SHAPE_TRANS | SHAPE_FADING |
                                       SHAPE_PREDATOR | SHAPE_GHOST))) {
-    Setup_Shape_Header(w, h, (char*)src, header_pointer, flags, Translucent,
-                       IsTranslucent);
+    Setup_Shape_Header(w, h, static_cast<char*>(src), header_pointer, flags,
+                       Translucent, IsTranslucent);
     // ShapeJumpTableAddress = AllFlagsJumpTable;
     use_all_flags = true;
   } else {
@@ -238,8 +238,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
     offset <<= 1;
 
     if (offset < 0)
-      offset =
-          -offset & PRED_MASK | 0xFFFFFF00;  // will be ffffff00-ffffff0E
+      offset = -offset & PRED_MASK | 0xFFFFFF00;  // will be ffffff00-ffffff0E
     else
       offset &= PRED_MASK;
 
@@ -300,7 +299,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   }
 
   // do blit
-  auto src_offset = (uint8_t*)src + src_x0 + src_y0 * w;
+  auto src_offset = static_cast<uint8_t*>(src) + src_x0 + src_y0 * w;
   int src_adjust_width = w - (dst_x1 - dst_x0);
 
   int dst_area = dest.Get_XAdd() + dest.Get_Width() + dest.Get_Pitch();

@@ -287,7 +287,7 @@ void TeamClass::Init() { Teams.Free_All(); }
 void* TeamClass::operator new(size_t) throw() {
   void* ptr = Teams.Allocate();
   if (ptr != nullptr) {
-    ((TeamClass*)ptr)->IsActive = true;
+    static_cast<TeamClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -307,9 +307,9 @@ void* TeamClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void TeamClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
-    ((TeamClass*)ptr)->IsActive = false;
+    static_cast<TeamClass*>(ptr)->IsActive = false;
   }
-  Teams.Free((TeamClass*)ptr);
+  Teams.Free(static_cast<TeamClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -342,7 +342,7 @@ TeamClass::~TeamClass() {
     */
     if (Trigger.Is_Valid()) {
       if (Trigger->AttachCount == 0) {
-        delete (TriggerClass*)Trigger;
+        delete static_cast<TriggerClass*>(Trigger);
       }
       Trigger = nullptr;
     }
@@ -668,7 +668,7 @@ void TeamClass::AI() {
     DoType doaction = Percent_Chance(50) ? DO_GESTURE1 : DO_GESTURE2;
     while (techno) {
       if (_Is_It_Breathing(techno) && techno->What_Am_I() == RTTI_INFANTRY) {
-        ((InfantryClass*)techno)->Do_Action(doaction);
+        dynamic_cast<InfantryClass*>(techno)->Do_Action(doaction);
       }
 
       if (IsReforming || IsForcedActive) {
@@ -744,11 +744,13 @@ void TeamClass::AI() {
       Target = TARGET_NONE;
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
-          Assign_Mission_Target(::As_Target((CELL)mission->Data.Value));
+          Assign_Mission_Target(
+              ::As_Target(static_cast<CELL>(mission->Data.Value)));
           break;
 
         case TMISSION_MOVE:
-          if ((unsigned)mission->Data.Value < WAYPT_COUNT && Member != NULL) {
+          if (static_cast<unsigned>(mission->Data.Value) < WAYPT_COUNT &&
+              Member != NULL) {
             FootClass* leader = Fetch_A_Leader();
             CELL movecell = Scen.Waypoint[mission->Data.Value];
             if (!Is_Leaving_Map()) {
@@ -765,7 +767,7 @@ void TeamClass::AI() {
         case TMISSION_ATT_WAYPT:
         case TMISSION_PATROL:
         case TMISSION_SPY:
-          if ((unsigned)mission->Data.Value < WAYPT_COUNT) {
+          if (static_cast<unsigned>(mission->Data.Value) < WAYPT_COUNT) {
             Assign_Mission_Target(
                 ::As_Target(Scen.Waypoint[mission->Data.Value]));
           }
@@ -1123,7 +1125,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   **	Decrement the counter for the team class. There is now one less of this
   *object type.
   */
-  if ((unsigned)typeindex < Class->ClassCount) {
+  if (static_cast<unsigned>(typeindex) < Class->ClassCount) {
     Quantity[typeindex]--;
   }
 
@@ -1309,7 +1311,7 @@ int TeamClass::Recruit(int typeindex) {
             FootClass* f = best->Attached_Object();
             while (f) {
               Add(f);
-              f = (FootClass*)(ObjectClass*)f->Next;
+              f = dynamic_cast<FootClass*>((ObjectClass*)f->Next);
             }
           }
         }
@@ -1345,7 +1347,7 @@ int TeamClass::Recruit(int typeindex) {
             FootClass* f = best->Attached_Object();
             while (f) {
               Add(f);
-              f = (FootClass*)(ObjectClass*)f->Next;
+              f = dynamic_cast<FootClass*>((ObjectClass*)f->Next);
             }
           }
         }
@@ -1554,7 +1556,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     if (quantity) {
       x /= quantity;
       y /= quantity;
-      COORDINATE coord = XY_Coord((int)x, (int)y);
+      COORDINATE coord = XY_Coord(static_cast<int>(x), static_cast<int>(y));
       center = ::As_Target(coord);
 
       /*
@@ -1620,7 +1622,8 @@ void TeamClass::Took_Damage(FootClass*, ResultType result,
       if (source && !Is_A_Member(source) && Member &&
           Member->What_Am_I() != RTTI_AIRCRAFT &&
           (Member->What_Am_I() != RTTI_VESSEL ||
-           *(VesselClass*)(FootClass*)Member != VESSEL_TRANSPORT)) {
+           *dynamic_cast<VesselClass*>((FootClass*)Member) !=
+               VESSEL_TRANSPORT)) {
         if (Target != source->As_Target()) {
           /*
           **	Don't change target if the team's target is one that can fire as
@@ -1631,8 +1634,8 @@ void TeamClass::Took_Damage(FootClass*, ResultType result,
             TechnoClass* techno = As_Techno(Target);
 
             if (techno &&
-                ((TechnoTypeClass const&)techno->Class_Of()).PrimaryWeapon !=
-                    nullptr) {
+                dynamic_cast<TechnoTypeClass const&>(techno->Class_Of())
+                        .PrimaryWeapon != nullptr) {
               if (techno->In_Range(As_Coord(Zone), 0)) {
                 return;
               }
@@ -1701,7 +1704,7 @@ void TeamClass::Coordinate_Attack() {
         FootClass* unit = Member;
         TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
         if (unit->What_Am_I() != RTTI_UNIT ||
-            *(UnitClass*)unit != UNIT_CHRONOTANK ||
+            *dynamic_cast<UnitClass*>(unit) != UNIT_CHRONOTANK ||
             mission->Mission != TMISSION_SPY)
           Target = 0;  // invalidize the target so it'll go to next mission.
       }
@@ -1721,14 +1724,14 @@ void TeamClass::Coordinate_Attack() {
       if (_Is_It_Playing(unit)) {
         if (mission->Mission == TMISSION_SPY &&
             unit->What_Am_I() == RTTI_INFANTRY &&
-            *(InfantryClass*)unit == INFANTRY_SPY) {
+            *dynamic_cast<InfantryClass*>(unit) == INFANTRY_SPY) {
           unit->Assign_Mission(MISSION_CAPTURE);
           unit->Assign_Target(Target);
         } else {
           if (mission->Mission == TMISSION_SPY &&
               unit->What_Am_I() == RTTI_UNIT &&
-              *(UnitClass*)unit == UNIT_CHRONOTANK) {
-            UnitClass* tank = (UnitClass*)unit;
+              *dynamic_cast<UnitClass*>(unit) == UNIT_CHRONOTANK) {
+            UnitClass* tank = dynamic_cast<UnitClass*>(unit);
             tank->Teleport_To(As_Cell(Target));
             tank->MoebiusCountDown = ChronoTankDuration * TICKS_PER_MINUTE;
             Scen.Do_BW_Fade();
@@ -1933,7 +1936,7 @@ void TeamClass::Coordinate_Move() {
             stray *= 3;
           }
           if (unit->What_Am_I() == RTTI_INFANTRY &&
-              ((InfantryClass const*)unit)->Class->IsDog) {
+              dynamic_cast<InfantryClass const*>(unit)->Class->IsDog) {
             if (Target_Legal(unit->TarCom))
               stray = unit->Techno_Type_Class()->ThreatRange;
             if (Target_Legal(unit->TarCom) &&
@@ -1956,7 +1959,7 @@ void TeamClass::Coordinate_Move() {
                //== LAYER_TOP &&
                unit->Height > 0 &&
                Coord_Cell(unit->Center_Coord()) != As_Cell(Target) &&
-               !((AircraftClass*)unit)->Class->IsFixedWing &&
+               !dynamic_cast<AircraftClass*>(unit)->Class->IsFixedWing &&
                Class->MissionList[CurrentMission + 1].Mission !=
                    TMISSION_MOVE)) {
             bool wasform = false;
@@ -2150,8 +2153,9 @@ int TeamClass::TMission_Unload() {
       /* Also, allow unload if it's a MAD Tank. */
       if (unit->Is_Something_Attached() ||
           (unit->What_Am_I() == RTTI_UNIT &&
-           *(UnitClass*)unit == UNIT_MINELAYER && unit->Ammo) ||
-          (unit->What_Am_I() == RTTI_UNIT && *(UnitClass*)unit == UNIT_MAD)) {
+           *dynamic_cast<UnitClass*>(unit) == UNIT_MINELAYER && unit->Ammo) ||
+          (unit->What_Am_I() == RTTI_UNIT &&
+           *dynamic_cast<UnitClass*>(unit) == UNIT_MAD)) {
         if (unit->Is_Something_Attached()) {
           /*
           ** Passenger-carrying vehicles will always return false until
@@ -2434,7 +2438,7 @@ bool TeamClass::Has_Entered_Map() const {
       ok = false;
       break;
     }
-    foot = (FootClass*)(ObjectClass*)foot->Next;
+    foot = dynamic_cast<FootClass*>((ObjectClass*)foot->Next);
   }
   return ok;
 }
@@ -2629,18 +2633,18 @@ int TeamClass::TMission_Formation() {
 
       if (mytype == RTTI_INFANTRY) {
         memspeed = SPEED_FOOT;
-        memmax = ((InfantryClass*)member)->Class->MaxSpeed;
+        memmax = dynamic_cast<InfantryClass*>(member)->Class->MaxSpeed;
         speedcheck = true;
       }
       if (mytype == RTTI_UNIT) {
-        memspeed = ((UnitClass*)member)->Class->Speed;
-        memmax = ((UnitClass*)member)->Class->MaxSpeed;
+        memspeed = dynamic_cast<UnitClass*>(member)->Class->Speed;
+        memmax = dynamic_cast<UnitClass*>(member)->Class->MaxSpeed;
         speedcheck = true;
       }
 
       if (mytype == RTTI_VESSEL) {
-        memspeed = ((VesselClass*)member)->Class->Speed;
-        memmax = ((VesselClass*)member)->Class->MaxSpeed;
+        memspeed = dynamic_cast<VesselClass*>(member)->Class->Speed;
+        memmax = dynamic_cast<VesselClass*>(member)->Class->MaxSpeed;
         speedcheck = true;
       }
 
@@ -2783,10 +2787,11 @@ int TeamClass::TMission_Spy() {
     } else {
       FootClass* member = Member;
       if (member->What_Am_I() == RTTI_UNIT &&
-          *(UnitClass*)member == UNIT_CHRONOTANK) {
+          *dynamic_cast<UnitClass*>(member) == UNIT_CHRONOTANK) {
         bool finished = true;
         while (member) {
-          if (!((UnitClass*)member)->MoebiusCountDown) finished = false;
+          if (!dynamic_cast<UnitClass*>(member)->MoebiusCountDown)
+            finished = false;
           member = member->Member;
         }
 
@@ -2930,7 +2935,7 @@ int TeamClass::TMission_Patrol() {
   */
   if (!Target_Legal(Target)) {
     TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
-    if ((unsigned)mission->Data.Value < WAYPT_COUNT) {
+    if (static_cast<unsigned>(mission->Data.Value) < WAYPT_COUNT) {
       Assign_Mission_Target(::As_Target(Scen.Waypoint[mission->Data.Value]));
     }
   }
@@ -2974,7 +2979,8 @@ int TeamClass::TMission_Deploy() {
     Coordinate_Conscript(unit);
 
     if (_Is_It_Playing(unit)) {
-      if (unit->What_Am_I() == RTTI_UNIT && *(UnitClass*)unit == UNIT_MCV) {
+      if (unit->What_Am_I() == RTTI_UNIT &&
+          *dynamic_cast<UnitClass*>(unit) == UNIT_MCV) {
         if (unit->Mission != MISSION_UNLOAD) {
           unit->Assign_Destination(TARGET_NONE);
           unit->Assign_Target(TARGET_NONE);
@@ -2984,7 +2990,8 @@ int TeamClass::TMission_Deploy() {
       }
 
       if (unit->What_Am_I() == RTTI_UNIT &&
-          *(UnitClass*)unit == UNIT_MINELAYER && unit->Ammo != 0) {
+          *dynamic_cast<UnitClass*>(unit) == UNIT_MINELAYER &&
+          unit->Ammo != 0) {
         /*
         **	The check for a building is located here because the mine layer
         *may have *	already unloaded the mine but is still in the process of

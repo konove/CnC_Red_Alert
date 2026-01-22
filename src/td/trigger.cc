@@ -482,7 +482,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
 
     case ACTION_AUTOCREATE:
       if (obj && obj->Is_Techno()) {
-        ((TechnoClass*)obj)->House->IsAlerted = true;
+        dynamic_cast<TechnoClass*>(obj)->House->IsAlerted = true;
       }
       break;
 
@@ -1121,7 +1121,7 @@ void TriggerClass::Fill_In(char* name, char* entry) {
   */
   p = strtok(nullptr, ",");
   if (p) {
-    IsPersistant = (PersistantType)atoi(p);
+    IsPersistant = static_cast<PersistantType>(atoi(p));
   } else {
     IsPersistant = VOLATILE;
   }
@@ -1179,10 +1179,9 @@ void TriggerClass::Write_INI(char* buffer, bool refresh) {
       tname = trigger->Team->IniName;
     }
 
-    sprintf(buf, "%s,%s,%ld,%s,%s,%d",
-            Name_From_Event(trigger->Event),
-            Name_From_Action(trigger->Action), trigger->Data,
-            hname, tname, trigger->IsPersistant);
+    sprintf(buf, "%s,%s,%ld,%s,%s,%d", Name_From_Event(trigger->Event),
+            Name_From_Action(trigger->Action), trigger->Data, hname, tname,
+            trigger->IsPersistant);
     WWWritePrivateProfileString(INI_Name(), trigger->Get_Name(), buf, buffer);
   }
 }
@@ -1232,7 +1231,7 @@ TriggerClass* TriggerClass::As_Pointer(char const* name) {
 void* TriggerClass::operator new(size_t) throw() {
   void* ptr = Triggers.Allocate();
   if (ptr) {
-    ((TriggerClass*)ptr)->IsActive = true;
+    static_cast<TriggerClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -1250,9 +1249,9 @@ void* TriggerClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void TriggerClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TriggerClass*)ptr)->IsActive = false;
+    static_cast<TriggerClass*>(ptr)->IsActive = false;
   }
-  Triggers.Free((TriggerClass*)ptr);
+  Triggers.Free(static_cast<TriggerClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -1275,7 +1274,7 @@ EventType TriggerClass::Event_From_Name(char const* name) {
 
   for (i = EVENT_NONE; i < EVENT_COUNT; i++) {
     if (!stricmp(name, EventText[i + 1])) {
-      return (EventType)i;
+      return static_cast<EventType>(i);
     }
   }
 
@@ -1317,7 +1316,7 @@ TriggerClass::ActionType TriggerClass::Action_From_Name(char const* name) {
 
   for (i = ACTION_NONE; i < ACTION_COUNT; i++) {
     if (!stricmp(name, ActionText[i + 1])) {
-      return (ActionType)i;
+      return static_cast<ActionType>(i);
     }
   }
 

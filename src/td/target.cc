@@ -217,7 +217,7 @@ TechnoClass* As_Techno(TARGET target) {
   ObjectClass* obj = As_Object(target);
 
   if (obj && obj->Is_Techno()) {
-    return (TechnoClass*)obj;
+    return dynamic_cast<TechnoClass*>(obj);
   }
   return nullptr;
 }
@@ -424,7 +424,7 @@ COORDINATE As_Coord(TARGET target) {
     *target number is *	actually the cell index number.
     */
     if (Is_Target_Cell(target)) {
-      return Cell_Coord((CELL)Target_Value(target));
+      return Cell_Coord(static_cast<CELL>(Target_Value(target)));
     }
 
     /*
@@ -480,7 +480,7 @@ COORDINATE As_Movement_Coord(TARGET target) {
     *target number is *	actually the cell index number.
     */
     if (Is_Target_Cell(target)) {
-      return Cell_Coord((CELL)Target_Value(target));
+      return Cell_Coord(static_cast<CELL>(Target_Value(target)));
     }
 
     /*

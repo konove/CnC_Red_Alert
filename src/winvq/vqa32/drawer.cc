@@ -117,7 +117,7 @@ unsigned char* VQA_GetPalette(VQAHandle* vqa) {
   unsigned char* palette = nullptr;
 
   /* Dereference commonly used data members for quick access. */
-  drawer = &((VQAHandleP*)vqa)->VQABuf->Drawer;
+  drawer = &dynamic_cast<VQAHandleP*>(vqa)->VQABuf->Drawer;
 
   if (drawer->CurPalSize > 0) {
     palette = drawer->Palette_24;
@@ -149,10 +149,8 @@ unsigned char* VQA_GetPalette(VQAHandle* vqa) {
  ****************************************************************************/
 
 long VQA_GetPaletteSize(VQAHandle* vqa) {
-  VQADrawer* drawer;
-
   /* Dereference commonly used data members for quick access. */
-  drawer = &((VQAHandleP*)vqa)->VQABuf->Drawer;
+  const VQADrawer* drawer = &dynamic_cast<VQAHandleP*>(vqa)->VQABuf->Drawer;
 
   return drawer->CurPalSize;
 }
@@ -188,16 +186,12 @@ long VQA_GetPaletteSize(VQAHandle* vqa) {
 void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
                         unsigned long width, unsigned long height, long xpos,
                         long ypos) {
-  VQAHeader* header;
-  VQADrawer* drawer;
-  VQAConfig* config;
-  long origin;
-
+  const auto vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
   /* Dereference commonly used data members for quick access. */
-  header = &((VQAHandleP*)vqa)->Header;
-  drawer = &((VQAHandleP*)vqa)->VQABuf->Drawer;
-  config = &((VQAHandleP*)vqa)->Config;
-  origin = config->DrawFlags & VQACFGF_ORIGIN;
+  VQAHeader* header = &vqa_handle_p->Header;
+  VQADrawer* drawer = &vqa_handle_p->VQABuf->Drawer;
+  VQAConfig* config = &vqa_handle_p->Config;
+  long origin = config->DrawFlags & VQACFGF_ORIGIN;
 
   /* Set the drawer buffer information. */
   drawer->ImageBuf = buffer;
@@ -603,25 +597,22 @@ extern void __cdecl Set_Palette(void* palette);
 extern void Flag_To_Set_Palette(unsigned char* palette, long numbytes,
                                 unsigned long slowpal);
 static long DrawFrame_Buffer(VQAHandle* vqa) {
-  VQAData* vqabuf;
-  VQADrawer* drawer;
   VQAFrameNode* curframe;
-  VQAConfig* config;
   unsigned char* pal;
   long palsize;
   long slowpal;
   unsigned char* buff;
 
+  const auto vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
   /* Dereference data members for quicker access. */
-  config = &((VQAHandleP*)vqa)->Config;
-  vqabuf = ((VQAHandleP*)vqa)->VQABuf;
-  drawer = &vqabuf->Drawer;
+  VQAConfig* config = &vqa_handle_p->Config;
+  VQAData* vqabuf = vqa_handle_p->VQABuf;
+  VQADrawer* drawer = &vqabuf->Drawer;
 
   /* Check our "sleep" state */
   if (!(vqabuf->Flags & VQADATF_DSLEEP)) {
     /* Find the frame to draw */
-    const long result = Select_Frame(dynamic_cast<VQAHandleP*>(vqa));
-    if (result != 0) {
+    if (const auto result = Select_Frame(vqa_handle_p); result != 0) {
       return result;
     }
 

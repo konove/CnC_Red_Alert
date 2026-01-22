@@ -10,14 +10,14 @@ template <class T>
 inline T Random_Picky(T a, T b, const char* sfile, int line) {
   sfile = sfile;
   line = line;
-  return (T)IRandom((int)a, (int)b);  //, sfile, line);
+  return static_cast<T>(IRandom((int)a, (int)b));  //, sfile, line);
 };
 
 #define Random_Pick(low, high) Random_Picky((low), (high), __FILE__, __LINE__)
 
 template <class T>
 inline T Sim_Random_Pick(T a, T b) {
-  return (T)Sim_IRandom((int)a, (int)b);
+  return static_cast<T>(Sim_IRandom((int)a, (int)b));
 };
 
 #endif  // CNC_RED_ALERT_TD_RAND_H_

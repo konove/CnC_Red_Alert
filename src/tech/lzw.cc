@@ -131,7 +131,7 @@ int LZWEngine::Uncompress(Buffer const& input, Buffer const& output) {
     return outcount;
   }
 
-  unsigned char character = (unsigned char)old_code;
+  unsigned char character = static_cast<unsigned char>(old_code);
   outcount += outpipe.Put(&character, sizeof(character));
 
   unsigned int count;
@@ -177,7 +177,7 @@ int LZWEngine::Uncompress(Buffer const& input, Buffer const& output) {
 }
 
 int LZWEngine::Make_LZW_Hash(CodeType code, char character) {
-  return (int)(unsigned char)character << (BITS - 8) ^ (int)code;
+  return static_cast<int>((unsigned char)character) << (BITS - 8) ^ static_cast<int>(code);
 }
 
 int LZWEngine::Find_Child_Node(CodeType parent_code, char child_character) {
@@ -237,7 +237,7 @@ int LZWEngine::Decode_String(char* ptr, CodeType code) {
     count++;
     code = dict[code].ParentCode;
   }
-  *ptr = (char)code;
+  *ptr = static_cast<char>(code);
   count++;
   return count;
 }

@@ -253,7 +253,7 @@ TARGET TerrainClass::As_Target() const {
 void* TerrainClass::operator new(size_t) throw() {
   void* ptr = Terrains.Allocate();
   if (ptr) {
-    ((TerrainClass*)ptr)->IsActive = true;
+    static_cast<TerrainClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -274,9 +274,9 @@ void* TerrainClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void TerrainClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TerrainClass*)ptr)->IsActive = false;
+    static_cast<TerrainClass*>(ptr)->IsActive = false;
   }
-  Terrains.Free((TerrainClass*)ptr);
+  Terrains.Free(static_cast<TerrainClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -450,11 +450,11 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
   Validate();
   short const* offset;  // Pointer to cell offset list.
 
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 
   offset = Occupy_List();
   while (*offset != REFRESH_EOL) {
-    if (!Map[(CELL)(cell + *offset++)].Is_Generally_Clear()) {
+    if (!Map[static_cast<CELL>(cell + *offset++)].Is_Generally_Clear()) {
       return MOVE_NO;
     }
   }

@@ -5,7 +5,7 @@ char* Extract_String(void const* data, int string) {
 
   if (!data || string < 0) return nullptr;
 
-  ptr = (unsigned short int const*)data;
+  ptr = static_cast<const unsigned short int*>(data);
 
   // assume offset of first string is end of index table
   int numstrings = ptr[0] / 2;

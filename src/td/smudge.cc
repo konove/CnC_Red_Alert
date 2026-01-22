@@ -119,7 +119,7 @@ int SmudgeClass::Validate() const {
 void* SmudgeClass::operator new(size_t) throw() {
   void* ptr = Smudges.Allocate();
   if (ptr) {
-    ((SmudgeClass*)ptr)->IsActive = true;
+    static_cast<SmudgeClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -140,9 +140,9 @@ void* SmudgeClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void SmudgeClass::operator delete(void* ptr) {
   if (ptr) {
-    ((SmudgeClass*)ptr)->IsActive = false;
+    static_cast<SmudgeClass*>(ptr)->IsActive = false;
   }
-  Smudges.Free((SmudgeClass*)ptr);
+  Smudges.Free(static_cast<SmudgeClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -238,7 +238,7 @@ bool SmudgeClass::Mark(MarkType mark) {
                     SmudgeTypeClass::As_Reference(cell->Smudge).IsCrater) {
                   cell->SmudgeData++;
                   cell->SmudgeData =
-                      (int)std::min((int)cell->SmudgeData, 4);
+                      static_cast<int>(std::min((int)cell->SmudgeData, 4));
                 }
 
                 if (cell->Smudge == SMUDGE_NONE) {
@@ -247,8 +247,8 @@ bool SmudgeClass::Mark(MarkType mark) {
                   *the *	specified coordinate as possible.
                   */
                   if (Class->IsCrater) {
-                    cell->Smudge = (SmudgeType)(SMUDGE_CRATER1 +
-                                                CellClass::Spot_Index(Coord));
+                    cell->Smudge = static_cast<SmudgeType>(
+                        SMUDGE_CRATER1 + CellClass::Spot_Index(Coord));
                   } else {
                     cell->Smudge = Class->Type;
                   }

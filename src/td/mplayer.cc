@@ -576,8 +576,8 @@ void Read_MultiPlayer_Settings() {
     ------------------------------------------------------------------------*/
     MPlayerPrefColor =
         WWGetPrivateProfileInt("MultiPlayer", "Color", 0, buffer);
-    MPlayerHouse = (HousesType)WWGetPrivateProfileInt("MultiPlayer", "Side",
-                                                      HOUSE_GOOD, buffer);
+    MPlayerHouse = static_cast<HousesType>(
+        WWGetPrivateProfileInt("MultiPlayer", "Side", HOUSE_GOOD, buffer));
     CurPhoneIdx =
         WWGetPrivateProfileInt("MultiPlayer", "PhoneIndex", -1, buffer);
   } else {
@@ -617,7 +617,7 @@ void Read_MultiPlayer_Settings() {
 
   for (i = 0; i < DIAL_METHODS; i++) {
     if (!stricmp(buf, DialMethodCheck[i])) {
-      SerialDefaults.DialMethod = (DialMethodType)i;
+      SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
       break;
     }
   }
@@ -781,7 +781,7 @@ void Read_MultiPlayer_Settings() {
 
       for (i = 0; i < DIAL_METHODS; i++) {
         if (!stricmp(buf, DialMethodCheck[i])) {
-          phone->Settings.DialMethod = (DialMethodType)i;
+          phone->Settings.DialMethod = static_cast<DialMethodType>(i);
           break;
         }
       }
@@ -831,7 +831,8 @@ void Read_MultiPlayer_Settings() {
     TrapFrame = WWGetPrivateProfileInt("SyncBug", "Frame", 0x7fffffff, buffer);
 
     TrapObjType =
-        (RTTIType)WWGetPrivateProfileInt("SyncBug", "Type", RTTI_NONE, buffer);
+        static_cast<RTTIType>(
+        WWGetPrivateProfileInt("SyncBug", "Type", RTTI_NONE, buffer));
     WWGetPrivateProfileString("SyncBug", "Type", "NONE", buf, 80, buffer);
     if (!stricmp(buf, "AIRCRAFT"))
       TrapObjType = RTTI_AIRCRAFT;

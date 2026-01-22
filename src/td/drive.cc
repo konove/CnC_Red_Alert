@@ -219,8 +219,7 @@ void DriveClass::Approach_Target() {
     */
     TechnoClass* target = As_Techno(TarCom);
     if (Class->Primary != WEAPON_FLAME_TONGUE && Class->IsCrusher &&
-        Distance(TarCom) < 0x0180 && target &&
-        target->Class_Of().IsCrushable) {
+        Distance(TarCom) < 0x0180 && target && target->Class_Of().IsCrushable) {
       Assign_Destination(TarCom);
       return;
     }
@@ -450,17 +449,17 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType* dir) {
     temp = x;
     x = y;
     y = temp;
-    workdir = (DirType)(DIR_W - workdir);
+    workdir = static_cast<DirType>(DIR_W - workdir);
   }
 
   if (flags & F_X) {
     x = -x;
-    workdir = (DirType)-workdir;
+    workdir = static_cast<DirType>(-workdir);
   }
 
   if (flags & F_Y) {
     y = -y;
-    workdir = (DirType)(DIR_S - workdir);
+    workdir = static_cast<DirType>(DIR_S - workdir);
   }
 
   *dir = workdir;
@@ -618,7 +617,7 @@ bool DriveClass::While_Moving() {
   **	visibly move on the map, then process accordingly.
   ** Slow the unit down if he's carrying a flag.
   */
-  if (((UnitClass*)this)->Flagged != HOUSE_NONE) {
+  if (dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
     actual = SpeedAccum + Fixed_To_Cardinal(Class->MaxSpeed / 2, Speed);
   } else {
     actual = SpeedAccum + Fixed_To_Cardinal(Class->MaxSpeed, Speed);
@@ -1316,23 +1315,31 @@ void DriveClass::Fixup_Path(PathType* path) {
                          FACING_N, FACING_N};  // Prefix path elements.
   int facediff;  // The facing difference value (0..4 | 0..-4).
   static FacingType _path[4][6] = {
-      {(FacingType)2, (FacingType)0, (FacingType)2, (FacingType)0,
-       (FacingType)0, (FacingType)0},
-      {(FacingType)3, (FacingType)0, (FacingType)2, (FacingType)2,
-       (FacingType)0, (FacingType)0},
-      {(FacingType)4, (FacingType)0, (FacingType)2, (FacingType)2,
-       (FacingType)0, (FacingType)0},
-      {(FacingType)4, (FacingType)0, (FacingType)2, (FacingType)2,
-       (FacingType)1, (FacingType)0}};
+      {static_cast<FacingType>(2), static_cast<FacingType>(0),
+       static_cast<FacingType>(2), static_cast<FacingType>(0),
+       static_cast<FacingType>(0), static_cast<FacingType>(0)},
+      {static_cast<FacingType>(3), static_cast<FacingType>(0),
+       static_cast<FacingType>(2), static_cast<FacingType>(2),
+       static_cast<FacingType>(0), static_cast<FacingType>(0)},
+      {static_cast<FacingType>(4), static_cast<FacingType>(0),
+       static_cast<FacingType>(2), static_cast<FacingType>(2),
+       static_cast<FacingType>(0), static_cast<FacingType>(0)},
+      {static_cast<FacingType>(4), static_cast<FacingType>(0),
+       static_cast<FacingType>(2), static_cast<FacingType>(2),
+       static_cast<FacingType>(1), static_cast<FacingType>(0)}};
   static FacingType _dpath[4][6] = {
-      {(FacingType)0, (FacingType)0, (FacingType)0, (FacingType)0,
-       (FacingType)0, (FacingType)0},
-      {(FacingType)3, (FacingType)0, (FacingType)2, (FacingType)2,
-       (FacingType)0, (FacingType)0},
-      {(FacingType)4, (FacingType)0, (FacingType)2, (FacingType)2,
-       (FacingType)1, (FacingType)0},
-      {(FacingType)5, (FacingType)0, (FacingType)2, (FacingType)2,
-       (FacingType)1, (FacingType)0}};
+      {static_cast<FacingType>(0), static_cast<FacingType>(0),
+       static_cast<FacingType>(0), static_cast<FacingType>(0),
+       static_cast<FacingType>(0), static_cast<FacingType>(0)},
+      {static_cast<FacingType>(3), static_cast<FacingType>(0),
+       static_cast<FacingType>(2), static_cast<FacingType>(2),
+       static_cast<FacingType>(0), static_cast<FacingType>(0)},
+      {static_cast<FacingType>(4), static_cast<FacingType>(0),
+       static_cast<FacingType>(2), static_cast<FacingType>(2),
+       static_cast<FacingType>(1), static_cast<FacingType>(0)},
+      {static_cast<FacingType>(5), static_cast<FacingType>(0),
+       static_cast<FacingType>(2), static_cast<FacingType>(2),
+       static_cast<FacingType>(1), static_cast<FacingType>(0)}};
 
   int index;
   int counter;          // Path addition
@@ -1360,20 +1367,23 @@ void DriveClass::Fixup_Path(PathType* path) {
   **	If the original path starts in the same direction as the unit, then
   **	there is no problem to resolve -- abort.
   */
-  facediff = PrimaryFacing.Difference((DirType)(path->Command[0] << 5)) >> 5;
+  facediff =
+      PrimaryFacing.Difference(static_cast<DirType>(path->Command[0] << 5)) >>
+      5;
 
   if (!facediff) return;
 
   if (Dir_Facing(PrimaryFacing) & FACING_NE) {
-    ptr = &_dpath[(FacingType)std::abs(facediff) - FACING_NE]
+    ptr = &_dpath[static_cast<FacingType>(std::abs(facediff)) - FACING_NE]
                  [1];  // Pointer to path adjust list.
-    counter = (int)_dpath[(FacingType)std::abs(facediff) - FACING_NE]
-                         [0];  // Number of path adjusts.
+    counter =
+        static_cast<int>(_dpath[(FacingType)std::abs(facediff) - FACING_NE]
+                               [0]);  // Number of path adjusts.
   } else {
-    ptr = &_path[(FacingType)std::abs(facediff) - FACING_NE]
+    ptr = &_path[static_cast<FacingType>(std::abs(facediff)) - FACING_NE]
                 [1];  // Pointer to path adjust list.
-    counter = (int)_path[(FacingType)std::abs(facediff) - FACING_NE]
-                        [0];  // Number of path adjusts.
+    counter = static_cast<int>(_path[(FacingType)std::abs(facediff) - FACING_NE]
+                                    [0]);  // Number of path adjusts.
   }
   ptr2 = ptr;
 
@@ -1635,303 +1645,402 @@ ObjectTypeClass const& DriveClass::Class_Of() const { return *Class; }
 **	Track 12= drive out of refinery
 */
 DriveClass::TrackType const DriveClass::Track1[24] = {
-    {0x00F50000L, (DirType)0},
-    {0x00EA0000L, (DirType)0},
-    {0x00DF0000L, (DirType)0},
-    {0x00D40000L, (DirType)0},
-    {0x00C90000L, (DirType)0},
-    {0x00BE0000L, (DirType)0},
-    {0x00B30000L, (DirType)0},
-    {0x00A80000L, (DirType)0},
-    {0x009D0000L, (DirType)0},
-    {0x00920000L, (DirType)0},
-    {0x00870000L, (DirType)0},
-    {0x007C0000L, (DirType)0},  // Track jump check here.
-    {0x00710000L, (DirType)0},
-    {0x00660000L, (DirType)0},
-    {0x005B0000L, (DirType)0},
-    {0x00500000L, (DirType)0},
-    {0x00450000L, (DirType)0},
-    {0x003A0000L, (DirType)0},
-    {0x002F0000L, (DirType)0},
-    {0x00240000L, (DirType)0},
-    {0x00190000L, (DirType)0},
-    {0x000E0000L, (DirType)0},
-    {0x00030000L, (DirType)0},
-    {0x00000000L, (DirType)0}};
+    {0x00F50000L, static_cast<DirType>(0)},
+    {0x00EA0000L, static_cast<DirType>(0)},
+    {0x00DF0000L, static_cast<DirType>(0)},
+    {0x00D40000L, static_cast<DirType>(0)},
+    {0x00C90000L, static_cast<DirType>(0)},
+    {0x00BE0000L, static_cast<DirType>(0)},
+    {0x00B30000L, static_cast<DirType>(0)},
+    {0x00A80000L, static_cast<DirType>(0)},
+    {0x009D0000L, static_cast<DirType>(0)},
+    {0x00920000L, static_cast<DirType>(0)},
+    {0x00870000L, static_cast<DirType>(0)},
+    {0x007C0000L, static_cast<DirType>(0)},  // Track jump check here.
+    {0x00710000L, static_cast<DirType>(0)},
+    {0x00660000L, static_cast<DirType>(0)},
+    {0x005B0000L, static_cast<DirType>(0)},
+    {0x00500000L, static_cast<DirType>(0)},
+    {0x00450000L, static_cast<DirType>(0)},
+    {0x003A0000L, static_cast<DirType>(0)},
+    {0x002F0000L, static_cast<DirType>(0)},
+    {0x00240000L, static_cast<DirType>(0)},
+    {0x00190000L, static_cast<DirType>(0)},
+    {0x000E0000L, static_cast<DirType>(0)},
+    {0x00030000L, static_cast<DirType>(0)},
+    {0x00000000L, static_cast<DirType>(0)}};
 
 DriveClass::TrackType const DriveClass::Track2[] = {
-    {0x00F8FF08L, (DirType)32},
-    {0x00F0FF10L, (DirType)32},
-    {0x00E8FF18L, (DirType)32},
-    {0x00E0FF20L, (DirType)32},
-    {0x00D8FF28L, (DirType)32},
-    {0x00D0FF30L, (DirType)32},
-    {0x00C8FF38L, (DirType)32},
-    {0x00C0FF40L, (DirType)32},
-    {0x00B8FF48L, (DirType)32},
-    {0x00B0FF50L, (DirType)32},
-    {0x00A8FF58L, (DirType)32},
-    {0x00A0FF60L, (DirType)32},
-    {0x0098FF68L, (DirType)32},
-    {0x0090FF70L, (DirType)32},
-    {0x0088FF78L, (DirType)32},
-    {0x0080FF80L, (DirType)32},  // Track jump check here.
-    {0x0078FF88L, (DirType)32},
-    {0x0070FF90L, (DirType)32},
-    {0x0068FF98L, (DirType)32},
-    {0x0060FFA0L, (DirType)32},
-    {0x0058FFA8L, (DirType)32},
-    {0x0050FFB0L, (DirType)32},
-    {0x0048FFB8L, (DirType)32},
-    {0x0040FFC0L, (DirType)32},
-    {0x0038FFC8L, (DirType)32},
-    {0x0030FFD0L, (DirType)32},
-    {0x0028FFD8L, (DirType)32},
-    {0x0020FFE0L, (DirType)32},
-    {0x0018FFE8L, (DirType)32},
-    {0x0010FFF0L, (DirType)32},
-    {0x0008FFF8L, (DirType)32},
-    {0x00000000L, (DirType)32}};
+    {0x00F8FF08L, static_cast<DirType>(32)},
+    {0x00F0FF10L, static_cast<DirType>(32)},
+    {0x00E8FF18L, static_cast<DirType>(32)},
+    {0x00E0FF20L, static_cast<DirType>(32)},
+    {0x00D8FF28L, static_cast<DirType>(32)},
+    {0x00D0FF30L, static_cast<DirType>(32)},
+    {0x00C8FF38L, static_cast<DirType>(32)},
+    {0x00C0FF40L, static_cast<DirType>(32)},
+    {0x00B8FF48L, static_cast<DirType>(32)},
+    {0x00B0FF50L, static_cast<DirType>(32)},
+    {0x00A8FF58L, static_cast<DirType>(32)},
+    {0x00A0FF60L, static_cast<DirType>(32)},
+    {0x0098FF68L, static_cast<DirType>(32)},
+    {0x0090FF70L, static_cast<DirType>(32)},
+    {0x0088FF78L, static_cast<DirType>(32)},
+    {0x0080FF80L, static_cast<DirType>(32)},  // Track jump check here.
+    {0x0078FF88L, static_cast<DirType>(32)},
+    {0x0070FF90L, static_cast<DirType>(32)},
+    {0x0068FF98L, static_cast<DirType>(32)},
+    {0x0060FFA0L, static_cast<DirType>(32)},
+    {0x0058FFA8L, static_cast<DirType>(32)},
+    {0x0050FFB0L, static_cast<DirType>(32)},
+    {0x0048FFB8L, static_cast<DirType>(32)},
+    {0x0040FFC0L, static_cast<DirType>(32)},
+    {0x0038FFC8L, static_cast<DirType>(32)},
+    {0x0030FFD0L, static_cast<DirType>(32)},
+    {0x0028FFD8L, static_cast<DirType>(32)},
+    {0x0020FFE0L, static_cast<DirType>(32)},
+    {0x0018FFE8L, static_cast<DirType>(32)},
+    {0x0010FFF0L, static_cast<DirType>(32)},
+    {0x0008FFF8L, static_cast<DirType>(32)},
+    {0x00000000L, static_cast<DirType>(32)}};
 
 DriveClass::TrackType const DriveClass::Track3[] = {
-    {0x01F5FF00L, (DirType)0},  {0x01EAFF00L, (DirType)0},
-    {0x01DFFF00L, (DirType)0},  {0x01D4FF00L, (DirType)0},
-    {0x01C9FF00L, (DirType)0},  {0x01BEFF00L, (DirType)0},
-    {0x01B3FF00L, (DirType)0},  {0x01A8FF00L, (DirType)0},
-    {0x019DFF00L, (DirType)0},  {0x0192FF00L, (DirType)0},
-    {0x0187FF00L, (DirType)0},  {0x0180FF00L, (DirType)0},
-    {0x0175FF00L, (DirType)0},  // Jump entry point here.
-    {0x016BFF00L, (DirType)0},  {0x0160FF02L, (DirType)1},
-    {0x0155FF04L, (DirType)3},  {0x014CFF06L, (DirType)4},
-    {0x0141FF08L, (DirType)5},  {0x0137FF0BL, (DirType)7},
-    {0x012EFF0FL, (DirType)8},  {0x0124FF13L, (DirType)9},
-    {0x011AFF17L, (DirType)11}, {0x0110FF1BL, (DirType)12},
-    {0x0107FF1FL, (DirType)13},  // Center cell processing here.
-    {0x00FCFF24L, (DirType)15}, {0x00F3FF28L, (DirType)16},
-    {0x00ECFF2CL, (DirType)17}, {0x00E0FF32L, (DirType)19},
-    {0x00D7FF36L, (DirType)20}, {0x00CFFF3DL, (DirType)21},
-    {0x00C6FF42L, (DirType)23}, {0x00BAFF49L, (DirType)24},
-    {0x00B0FF4DL, (DirType)25}, {0x00A8FF58L, (DirType)27},
-    {0x00A0FF60L, (DirType)28}, {0x0098FF68L, (DirType)29},
-    {0x0090FF70L, (DirType)31}, {0x0088FF78L, (DirType)32},
-    {0x0080FF80L, (DirType)32},  // Track jump check here.
-    {0x0078FF88L, (DirType)32}, {0x0070FF90L, (DirType)32},
-    {0x0068FF98L, (DirType)32}, {0x0060FFA0L, (DirType)32},
-    {0x0058FFA8L, (DirType)32}, {0x0050FFB0L, (DirType)32},
-    {0x0048FFB8L, (DirType)32}, {0x0040FFC0L, (DirType)32},
-    {0x0038FFC8L, (DirType)32}, {0x0030FFD0L, (DirType)32},
-    {0x0028FFD8L, (DirType)32}, {0x0020FFE0L, (DirType)32},
-    {0x0018FFE8L, (DirType)32}, {0x0010FFF0L, (DirType)32},
-    {0x0008FFF8L, (DirType)32}, {0x00000000L, (DirType)32}};
+    {0x01F5FF00L, static_cast<DirType>(0)},
+    {0x01EAFF00L, static_cast<DirType>(0)},
+    {0x01DFFF00L, static_cast<DirType>(0)},
+    {0x01D4FF00L, static_cast<DirType>(0)},
+    {0x01C9FF00L, static_cast<DirType>(0)},
+    {0x01BEFF00L, static_cast<DirType>(0)},
+    {0x01B3FF00L, static_cast<DirType>(0)},
+    {0x01A8FF00L, static_cast<DirType>(0)},
+    {0x019DFF00L, static_cast<DirType>(0)},
+    {0x0192FF00L, static_cast<DirType>(0)},
+    {0x0187FF00L, static_cast<DirType>(0)},
+    {0x0180FF00L, static_cast<DirType>(0)},
+    {0x0175FF00L, static_cast<DirType>(0)},  // Jump entry point here.
+    {0x016BFF00L, static_cast<DirType>(0)},
+    {0x0160FF02L, static_cast<DirType>(1)},
+    {0x0155FF04L, static_cast<DirType>(3)},
+    {0x014CFF06L, static_cast<DirType>(4)},
+    {0x0141FF08L, static_cast<DirType>(5)},
+    {0x0137FF0BL, static_cast<DirType>(7)},
+    {0x012EFF0FL, static_cast<DirType>(8)},
+    {0x0124FF13L, static_cast<DirType>(9)},
+    {0x011AFF17L, static_cast<DirType>(11)},
+    {0x0110FF1BL, static_cast<DirType>(12)},
+    {0x0107FF1FL, static_cast<DirType>(13)},  // Center cell processing here.
+    {0x00FCFF24L, static_cast<DirType>(15)},
+    {0x00F3FF28L, static_cast<DirType>(16)},
+    {0x00ECFF2CL, static_cast<DirType>(17)},
+    {0x00E0FF32L, static_cast<DirType>(19)},
+    {0x00D7FF36L, static_cast<DirType>(20)},
+    {0x00CFFF3DL, static_cast<DirType>(21)},
+    {0x00C6FF42L, static_cast<DirType>(23)},
+    {0x00BAFF49L, static_cast<DirType>(24)},
+    {0x00B0FF4DL, static_cast<DirType>(25)},
+    {0x00A8FF58L, static_cast<DirType>(27)},
+    {0x00A0FF60L, static_cast<DirType>(28)},
+    {0x0098FF68L, static_cast<DirType>(29)},
+    {0x0090FF70L, static_cast<DirType>(31)},
+    {0x0088FF78L, static_cast<DirType>(32)},
+    {0x0080FF80L, static_cast<DirType>(32)},  // Track jump check here.
+    {0x0078FF88L, static_cast<DirType>(32)},
+    {0x0070FF90L, static_cast<DirType>(32)},
+    {0x0068FF98L, static_cast<DirType>(32)},
+    {0x0060FFA0L, static_cast<DirType>(32)},
+    {0x0058FFA8L, static_cast<DirType>(32)},
+    {0x0050FFB0L, static_cast<DirType>(32)},
+    {0x0048FFB8L, static_cast<DirType>(32)},
+    {0x0040FFC0L, static_cast<DirType>(32)},
+    {0x0038FFC8L, static_cast<DirType>(32)},
+    {0x0030FFD0L, static_cast<DirType>(32)},
+    {0x0028FFD8L, static_cast<DirType>(32)},
+    {0x0020FFE0L, static_cast<DirType>(32)},
+    {0x0018FFE8L, static_cast<DirType>(32)},
+    {0x0010FFF0L, static_cast<DirType>(32)},
+    {0x0008FFF8L, static_cast<DirType>(32)},
+    {0x00000000L, static_cast<DirType>(32)}};
 
 DriveClass::TrackType const DriveClass::Track4[] = {
-    {0x00F5FF00L, (DirType)0},  {0x00EBFF00L, (DirType)0},
-    {0x00E0FF00L, (DirType)0},  {0x00D5FF00L, (DirType)0},
-    {0x00CBFF01L, (DirType)0},  {0x00C0FF03L, (DirType)0},
-    {0x00B5FF05L, (DirType)1},  {0x00ABFF07L, (DirType)1},
-    {0x00A0FF0AL, (DirType)2},  {0x0095FF0DL, (DirType)3},
-    {0x008BFF10L, (DirType)4},  {0x0080FF14L, (DirType)5},  // Track entry here.
-    {0x0075FF18L, (DirType)8},  {0x006DFF1CL, (DirType)12},
-    {0x0063FF22L, (DirType)16}, {0x005AFF25L, (DirType)20},
-    {0x0052FF2BL, (DirType)23}, {0x0048FF32L, (DirType)27},
-    {0x0040FF37L, (DirType)32}, {0x0038FF3DL, (DirType)36},
-    {0x0030FF46L, (DirType)39}, {0x002BFF4FL, (DirType)43},
-    {0x0024FF58L, (DirType)47}, {0x0020FF60L, (DirType)51},
-    {0x001BFF6DL, (DirType)54}, {0x0017FF79L, (DirType)57},
-    {0x0014FF82L, (DirType)60},  // Track jump here.
-    {0x0011FF8FL, (DirType)62}, {0x000DFF98L, (DirType)63},
-    {0x0009FFA2L, (DirType)64}, {0x0006FFACL, (DirType)64},
-    {0x0004FFB5L, (DirType)66}, {0x0003FFC0L, (DirType)64},
-    {0x0002FFCBL, (DirType)64}, {0x0001FFD5L, (DirType)64},
-    {0x0000FFE0L, (DirType)64}, {0x0000FFEBL, (DirType)64},
-    {0x0000FFF5L, (DirType)64}, {0x00000000L, (DirType)64}};
+    {0x00F5FF00L, static_cast<DirType>(0)},
+    {0x00EBFF00L, static_cast<DirType>(0)},
+    {0x00E0FF00L, static_cast<DirType>(0)},
+    {0x00D5FF00L, static_cast<DirType>(0)},
+    {0x00CBFF01L, static_cast<DirType>(0)},
+    {0x00C0FF03L, static_cast<DirType>(0)},
+    {0x00B5FF05L, static_cast<DirType>(1)},
+    {0x00ABFF07L, static_cast<DirType>(1)},
+    {0x00A0FF0AL, static_cast<DirType>(2)},
+    {0x0095FF0DL, static_cast<DirType>(3)},
+    {0x008BFF10L, static_cast<DirType>(4)},
+    {0x0080FF14L, static_cast<DirType>(5)},  // Track entry here.
+    {0x0075FF18L, static_cast<DirType>(8)},
+    {0x006DFF1CL, static_cast<DirType>(12)},
+    {0x0063FF22L, static_cast<DirType>(16)},
+    {0x005AFF25L, static_cast<DirType>(20)},
+    {0x0052FF2BL, static_cast<DirType>(23)},
+    {0x0048FF32L, static_cast<DirType>(27)},
+    {0x0040FF37L, static_cast<DirType>(32)},
+    {0x0038FF3DL, static_cast<DirType>(36)},
+    {0x0030FF46L, static_cast<DirType>(39)},
+    {0x002BFF4FL, static_cast<DirType>(43)},
+    {0x0024FF58L, static_cast<DirType>(47)},
+    {0x0020FF60L, static_cast<DirType>(51)},
+    {0x001BFF6DL, static_cast<DirType>(54)},
+    {0x0017FF79L, static_cast<DirType>(57)},
+    {0x0014FF82L, static_cast<DirType>(60)},  // Track jump here.
+    {0x0011FF8FL, static_cast<DirType>(62)},
+    {0x000DFF98L, static_cast<DirType>(63)},
+    {0x0009FFA2L, static_cast<DirType>(64)},
+    {0x0006FFACL, static_cast<DirType>(64)},
+    {0x0004FFB5L, static_cast<DirType>(66)},
+    {0x0003FFC0L, static_cast<DirType>(64)},
+    {0x0002FFCBL, static_cast<DirType>(64)},
+    {0x0001FFD5L, static_cast<DirType>(64)},
+    {0x0000FFE0L, static_cast<DirType>(64)},
+    {0x0000FFEBL, static_cast<DirType>(64)},
+    {0x0000FFF5L, static_cast<DirType>(64)},
+    {0x00000000L, static_cast<DirType>(64)}};
 
 DriveClass::TrackType const DriveClass::Track5[] = {
-    {0xFFF8FE08L, (DirType)32},
-    {0xFFF0FE10L, (DirType)32},
-    {0xFFE8FE18L, (DirType)32},
-    {0xFFE0FE20L, (DirType)32},
-    {0xFFD8FE28L, (DirType)32},
-    {0xFFD0FE30L, (DirType)32},
-    {0xFFC8FE38L, (DirType)32},
-    {0xFFC0FE40L, (DirType)32},
-    {0xFFB8FE48L, (DirType)32},
-    {0xFFB0FE50L, (DirType)32},
-    {0xFFA8FE58L, (DirType)32},
-    {0xFFA0FE60L, (DirType)32},
-    {0xFF98FE68L, (DirType)32},
-    {0xFF90FE70L, (DirType)32},
-    {0xFF88FE78L, (DirType)32},
-    {0xFF80FE80L, (DirType)32},  // Track entry here.
-    {0xFF78FE88L, (DirType)32},
-    {0xFF71FE90L, (DirType)32},
-    {0xFF6AFE97L, (DirType)32},
-    {0xFF62FE9FL, (DirType)32},
-    {0xFF5AFEA8L, (DirType)32},
-    {0xFF53FEB0L, (DirType)35},
-    {0xFF4BFEB7L, (DirType)38},
-    {0xFF44FEBEL, (DirType)41},
-    {0xFF3EFEC4L, (DirType)44},
-    {0xFF39FECEL, (DirType)47},
-    {0xFF34FED8L, (DirType)50},
-    {0xFF30FEE0L, (DirType)53},
-    {0xFF2DFEEBL, (DirType)56},
-    {0xFF2CFEF5L, (DirType)59},
-    {0xFF2BFF00L, (DirType)62},
-    {0xFF2CFF0BL, (DirType)66},
-    {0xFF2DFF15L, (DirType)69},
-    {0xFF30FF1FL, (DirType)72},
-    {0xFF34FF28L, (DirType)75},
-    {0xFF39FF30L, (DirType)78},
-    {0xFF3EFF3AL, (DirType)81},
-    {0xFF44FF44L, (DirType)84},
-    {0xFF4BFF4BL, (DirType)87},
-    {0xFF53FF50L, (DirType)90},
-    {0xFF5AFF58L, (DirType)93},
-    {0xFF62FF60L, (DirType)96},
-    {0xFF6AFF68L, (DirType)96},
-    {0xFF71FF70L, (DirType)96},
-    {0xFF78FF78L, (DirType)96},
-    {0xFF80FF80L, (DirType)96},  // Track jump check here.
-    {0xFF88FF88L, (DirType)96},
-    {0xFF90FF90L, (DirType)96},
-    {0xFF98FF98L, (DirType)96},
-    {0xFFA0FFA0L, (DirType)96},
-    {0xFFA8FFA8L, (DirType)96},
-    {0xFFB0FFB0L, (DirType)96},
-    {0xFFB8FFB8L, (DirType)96},
-    {0xFFC0FFC0L, (DirType)96},
-    {0xFFC8FFC8L, (DirType)96},
-    {0xFFD0FFD0L, (DirType)96},
-    {0xFFD8FFD8L, (DirType)96},
-    {0xFFE0FFE0L, (DirType)96},
-    {0xFFE8FFE8L, (DirType)96},
-    {0xFFF0FFF0L, (DirType)96},
-    {0xFFF8FFF8L, (DirType)96},
-    {0x00000000L, (DirType)96}};
+    {0xFFF8FE08L, static_cast<DirType>(32)},
+    {0xFFF0FE10L, static_cast<DirType>(32)},
+    {0xFFE8FE18L, static_cast<DirType>(32)},
+    {0xFFE0FE20L, static_cast<DirType>(32)},
+    {0xFFD8FE28L, static_cast<DirType>(32)},
+    {0xFFD0FE30L, static_cast<DirType>(32)},
+    {0xFFC8FE38L, static_cast<DirType>(32)},
+    {0xFFC0FE40L, static_cast<DirType>(32)},
+    {0xFFB8FE48L, static_cast<DirType>(32)},
+    {0xFFB0FE50L, static_cast<DirType>(32)},
+    {0xFFA8FE58L, static_cast<DirType>(32)},
+    {0xFFA0FE60L, static_cast<DirType>(32)},
+    {0xFF98FE68L, static_cast<DirType>(32)},
+    {0xFF90FE70L, static_cast<DirType>(32)},
+    {0xFF88FE78L, static_cast<DirType>(32)},
+    {0xFF80FE80L, static_cast<DirType>(32)},  // Track entry here.
+    {0xFF78FE88L, static_cast<DirType>(32)},
+    {0xFF71FE90L, static_cast<DirType>(32)},
+    {0xFF6AFE97L, static_cast<DirType>(32)},
+    {0xFF62FE9FL, static_cast<DirType>(32)},
+    {0xFF5AFEA8L, static_cast<DirType>(32)},
+    {0xFF53FEB0L, static_cast<DirType>(35)},
+    {0xFF4BFEB7L, static_cast<DirType>(38)},
+    {0xFF44FEBEL, static_cast<DirType>(41)},
+    {0xFF3EFEC4L, static_cast<DirType>(44)},
+    {0xFF39FECEL, static_cast<DirType>(47)},
+    {0xFF34FED8L, static_cast<DirType>(50)},
+    {0xFF30FEE0L, static_cast<DirType>(53)},
+    {0xFF2DFEEBL, static_cast<DirType>(56)},
+    {0xFF2CFEF5L, static_cast<DirType>(59)},
+    {0xFF2BFF00L, static_cast<DirType>(62)},
+    {0xFF2CFF0BL, static_cast<DirType>(66)},
+    {0xFF2DFF15L, static_cast<DirType>(69)},
+    {0xFF30FF1FL, static_cast<DirType>(72)},
+    {0xFF34FF28L, static_cast<DirType>(75)},
+    {0xFF39FF30L, static_cast<DirType>(78)},
+    {0xFF3EFF3AL, static_cast<DirType>(81)},
+    {0xFF44FF44L, static_cast<DirType>(84)},
+    {0xFF4BFF4BL, static_cast<DirType>(87)},
+    {0xFF53FF50L, static_cast<DirType>(90)},
+    {0xFF5AFF58L, static_cast<DirType>(93)},
+    {0xFF62FF60L, static_cast<DirType>(96)},
+    {0xFF6AFF68L, static_cast<DirType>(96)},
+    {0xFF71FF70L, static_cast<DirType>(96)},
+    {0xFF78FF78L, static_cast<DirType>(96)},
+    {0xFF80FF80L, static_cast<DirType>(96)},  // Track jump check here.
+    {0xFF88FF88L, static_cast<DirType>(96)},
+    {0xFF90FF90L, static_cast<DirType>(96)},
+    {0xFF98FF98L, static_cast<DirType>(96)},
+    {0xFFA0FFA0L, static_cast<DirType>(96)},
+    {0xFFA8FFA8L, static_cast<DirType>(96)},
+    {0xFFB0FFB0L, static_cast<DirType>(96)},
+    {0xFFB8FFB8L, static_cast<DirType>(96)},
+    {0xFFC0FFC0L, static_cast<DirType>(96)},
+    {0xFFC8FFC8L, static_cast<DirType>(96)},
+    {0xFFD0FFD0L, static_cast<DirType>(96)},
+    {0xFFD8FFD8L, static_cast<DirType>(96)},
+    {0xFFE0FFE0L, static_cast<DirType>(96)},
+    {0xFFE8FFE8L, static_cast<DirType>(96)},
+    {0xFFF0FFF0L, static_cast<DirType>(96)},
+    {0xFFF8FFF8L, static_cast<DirType>(96)},
+    {0x00000000L, static_cast<DirType>(96)}};
 
 DriveClass::TrackType const DriveClass::Track6[] = {
-    {0x0100FE00L, (DirType)32},
-    {0x00F8FE08L, (DirType)32},
-    {0x00F0FE10L, (DirType)32},
-    {0x00E8FE18L, (DirType)32},
-    {0x00E0FE20L, (DirType)32},
-    {0x00D8FE28L, (DirType)32},
-    {0x00D0FE30L, (DirType)32},
-    {0x00C8FE38L, (DirType)32},
-    {0x00C0FE40L, (DirType)32},
-    {0x00B8FE48L, (DirType)32},
-    {0x00B0FE50L, (DirType)32},
-    {0x00A8FE58L, (DirType)32},
-    {0x00A0FE60L, (DirType)32},
-    {0x0098FE68L, (DirType)32},
-    {0x0090FE70L, (DirType)32},
-    {0x0088FE78L, (DirType)32},
-    {0x0080FE80L, (DirType)32},  // Jump entry point here.
-    {0x0078FE88L, (DirType)32},
-    {0x0070FE90L, (DirType)32},
-    {0x0068FE98L, (DirType)32},
-    {0x0060FEA0L, (DirType)32},
-    {0x0058FEA8L, (DirType)32},
-    {0x0055FEAEL, (DirType)32},
-    {0x004EFEB8L, (DirType)35},
-    {0x0048FEC0L, (DirType)37},
-    {0x0042FEC9L, (DirType)40},
-    {0x003BFED2L, (DirType)43},
-    {0x0037FEDAL, (DirType)45},
-    {0x0032FEE3L, (DirType)48},
-    {0x002BFEEBL, (DirType)51},
-    {0x0026FEF5L, (DirType)53},
-    {0x0022FEFEL, (DirType)56},
-    {0x001CFF08L, (DirType)59},
-    {0x0019FF12L, (DirType)61},
-    {0x0015FF1BL, (DirType)64},
-    {0x0011FF26L, (DirType)64},
-    {0x000EFF30L, (DirType)64},
-    {0x000BFF39L, (DirType)64},
-    {0x0009FF43L, (DirType)64},
-    {0x0007FF4EL, (DirType)64},
-    {0x0005FF57L, (DirType)64},
-    {0x0003FF62L, (DirType)64},
-    {0x0001FF6DL, (DirType)64},
-    {0x0000FF77L, (DirType)64},
-    {0x0000FF80L, (DirType)64},  // Track jump check here.
-    {0x0000FF8BL, (DirType)64},
-    {0x0000FF95L, (DirType)64},
-    {0x0000FFA0L, (DirType)64},
-    {0x0000FFABL, (DirType)64},
-    {0x0000FFB5L, (DirType)64},
-    {0x0000FFC0L, (DirType)64},
-    {0x0000FFCBL, (DirType)64},
-    {0x0000FFD5L, (DirType)64},
-    {0x0000FFE0L, (DirType)64},
-    {0x0000FFEBL, (DirType)64},
-    {0x0000FFF5L, (DirType)64},
-    {0x00000000L, (DirType)64}};
+    {0x0100FE00L, static_cast<DirType>(32)},
+    {0x00F8FE08L, static_cast<DirType>(32)},
+    {0x00F0FE10L, static_cast<DirType>(32)},
+    {0x00E8FE18L, static_cast<DirType>(32)},
+    {0x00E0FE20L, static_cast<DirType>(32)},
+    {0x00D8FE28L, static_cast<DirType>(32)},
+    {0x00D0FE30L, static_cast<DirType>(32)},
+    {0x00C8FE38L, static_cast<DirType>(32)},
+    {0x00C0FE40L, static_cast<DirType>(32)},
+    {0x00B8FE48L, static_cast<DirType>(32)},
+    {0x00B0FE50L, static_cast<DirType>(32)},
+    {0x00A8FE58L, static_cast<DirType>(32)},
+    {0x00A0FE60L, static_cast<DirType>(32)},
+    {0x0098FE68L, static_cast<DirType>(32)},
+    {0x0090FE70L, static_cast<DirType>(32)},
+    {0x0088FE78L, static_cast<DirType>(32)},
+    {0x0080FE80L, static_cast<DirType>(32)},  // Jump entry point here.
+    {0x0078FE88L, static_cast<DirType>(32)},
+    {0x0070FE90L, static_cast<DirType>(32)},
+    {0x0068FE98L, static_cast<DirType>(32)},
+    {0x0060FEA0L, static_cast<DirType>(32)},
+    {0x0058FEA8L, static_cast<DirType>(32)},
+    {0x0055FEAEL, static_cast<DirType>(32)},
+    {0x004EFEB8L, static_cast<DirType>(35)},
+    {0x0048FEC0L, static_cast<DirType>(37)},
+    {0x0042FEC9L, static_cast<DirType>(40)},
+    {0x003BFED2L, static_cast<DirType>(43)},
+    {0x0037FEDAL, static_cast<DirType>(45)},
+    {0x0032FEE3L, static_cast<DirType>(48)},
+    {0x002BFEEBL, static_cast<DirType>(51)},
+    {0x0026FEF5L, static_cast<DirType>(53)},
+    {0x0022FEFEL, static_cast<DirType>(56)},
+    {0x001CFF08L, static_cast<DirType>(59)},
+    {0x0019FF12L, static_cast<DirType>(61)},
+    {0x0015FF1BL, static_cast<DirType>(64)},
+    {0x0011FF26L, static_cast<DirType>(64)},
+    {0x000EFF30L, static_cast<DirType>(64)},
+    {0x000BFF39L, static_cast<DirType>(64)},
+    {0x0009FF43L, static_cast<DirType>(64)},
+    {0x0007FF4EL, static_cast<DirType>(64)},
+    {0x0005FF57L, static_cast<DirType>(64)},
+    {0x0003FF62L, static_cast<DirType>(64)},
+    {0x0001FF6DL, static_cast<DirType>(64)},
+    {0x0000FF77L, static_cast<DirType>(64)},
+    {0x0000FF80L, static_cast<DirType>(64)},  // Track jump check here.
+    {0x0000FF8BL, static_cast<DirType>(64)},
+    {0x0000FF95L, static_cast<DirType>(64)},
+    {0x0000FFA0L, static_cast<DirType>(64)},
+    {0x0000FFABL, static_cast<DirType>(64)},
+    {0x0000FFB5L, static_cast<DirType>(64)},
+    {0x0000FFC0L, static_cast<DirType>(64)},
+    {0x0000FFCBL, static_cast<DirType>(64)},
+    {0x0000FFD5L, static_cast<DirType>(64)},
+    {0x0000FFE0L, static_cast<DirType>(64)},
+    {0x0000FFEBL, static_cast<DirType>(64)},
+    {0x0000FFF5L, static_cast<DirType>(64)},
+    {0x00000000L, static_cast<DirType>(64)}};
 
 DriveClass::TrackType const DriveClass::Track7[] = {
-    {0x0006FFFFL, (DirType)0},  {0x000CFFFEL, (DirType)4},
-    {0x0011FFFCL, (DirType)8},  {0x0018FFFAL, (DirType)12},
-    {0x001FFFF6L, (DirType)16}, {0x0024FFF3L, (DirType)19},
-    {0x002BFFF0L, (DirType)22}, {0x0030FFFDL, (DirType)23},
-    {0x0035FFEBL, (DirType)24}, {0x0038FFE8L, (DirType)25},
-    {0x003CFFE6L, (DirType)26}, {0x0040FFE3L, (DirType)27},
-    {0x0043FFE0L, (DirType)28}, {0x0046FFDDL, (DirType)29},
-    {0x0043FFDFL, (DirType)30}, {0x0040FFE1L, (DirType)30},
-    {0x003CFFE3L, (DirType)30}, {0x0038FFE5L, (DirType)30},
-    {0x0035FFE7L, (DirType)31}, {0x0030FFE9L, (DirType)31},
-    {0x002BFFEBL, (DirType)31}, {0x0024FFEDL, (DirType)31},
-    {0x001FFFF1L, (DirType)31}, {0x0018FFF4L, (DirType)32},
-    {0x0011FFF7L, (DirType)32}, {0x000CFFFAL, (DirType)32},
-    {0x0006FFFDL, (DirType)32}, {0x00000000L, (DirType)32}};
+    {0x0006FFFFL, static_cast<DirType>(0)},
+    {0x000CFFFEL, static_cast<DirType>(4)},
+    {0x0011FFFCL, static_cast<DirType>(8)},
+    {0x0018FFFAL, static_cast<DirType>(12)},
+    {0x001FFFF6L, static_cast<DirType>(16)},
+    {0x0024FFF3L, static_cast<DirType>(19)},
+    {0x002BFFF0L, static_cast<DirType>(22)},
+    {0x0030FFFDL, static_cast<DirType>(23)},
+    {0x0035FFEBL, static_cast<DirType>(24)},
+    {0x0038FFE8L, static_cast<DirType>(25)},
+    {0x003CFFE6L, static_cast<DirType>(26)},
+    {0x0040FFE3L, static_cast<DirType>(27)},
+    {0x0043FFE0L, static_cast<DirType>(28)},
+    {0x0046FFDDL, static_cast<DirType>(29)},
+    {0x0043FFDFL, static_cast<DirType>(30)},
+    {0x0040FFE1L, static_cast<DirType>(30)},
+    {0x003CFFE3L, static_cast<DirType>(30)},
+    {0x0038FFE5L, static_cast<DirType>(30)},
+    {0x0035FFE7L, static_cast<DirType>(31)},
+    {0x0030FFE9L, static_cast<DirType>(31)},
+    {0x002BFFEBL, static_cast<DirType>(31)},
+    {0x0024FFEDL, static_cast<DirType>(31)},
+    {0x001FFFF1L, static_cast<DirType>(31)},
+    {0x0018FFF4L, static_cast<DirType>(32)},
+    {0x0011FFF7L, static_cast<DirType>(32)},
+    {0x000CFFFAL, static_cast<DirType>(32)},
+    {0x0006FFFDL, static_cast<DirType>(32)},
+    {0x00000000L, static_cast<DirType>(32)}};
 
 DriveClass::TrackType const DriveClass::Track8[] = {
-    {0x0003FFFCL, (DirType)32}, {0x0006FFF7L, (DirType)36},
-    {0x000AFFF1L, (DirType)40}, {0x000CFFEBL, (DirType)44},
-    {0x000DFFE4L, (DirType)46}, {0x000EFFDCL, (DirType)48},
-    {0x000FFFD5L, (DirType)50}, {0x0010FFD0L, (DirType)52},
-    {0x0011FFC9L, (DirType)54}, {0x0012FFC2L, (DirType)56},
-    {0x0011FFC0L, (DirType)58}, {0x0010FFC2L, (DirType)60},
-    {0x000EFFC9L, (DirType)62}, {0x000CFFCFL, (DirType)64},
-    {0x000AFFD5L, (DirType)64}, {0x0008FFDAL, (DirType)64},
-    {0x0006FFE2L, (DirType)64}, {0x0004FFE9L, (DirType)64},
-    {0x0002FFEFL, (DirType)64}, {0x0001FFF5L, (DirType)64},
-    {0x0000FFF9L, (DirType)64}, {0x00000000L, (DirType)64}};
+    {0x0003FFFCL, static_cast<DirType>(32)},
+    {0x0006FFF7L, static_cast<DirType>(36)},
+    {0x000AFFF1L, static_cast<DirType>(40)},
+    {0x000CFFEBL, static_cast<DirType>(44)},
+    {0x000DFFE4L, static_cast<DirType>(46)},
+    {0x000EFFDCL, static_cast<DirType>(48)},
+    {0x000FFFD5L, static_cast<DirType>(50)},
+    {0x0010FFD0L, static_cast<DirType>(52)},
+    {0x0011FFC9L, static_cast<DirType>(54)},
+    {0x0012FFC2L, static_cast<DirType>(56)},
+    {0x0011FFC0L, static_cast<DirType>(58)},
+    {0x0010FFC2L, static_cast<DirType>(60)},
+    {0x000EFFC9L, static_cast<DirType>(62)},
+    {0x000CFFCFL, static_cast<DirType>(64)},
+    {0x000AFFD5L, static_cast<DirType>(64)},
+    {0x0008FFDAL, static_cast<DirType>(64)},
+    {0x0006FFE2L, static_cast<DirType>(64)},
+    {0x0004FFE9L, static_cast<DirType>(64)},
+    {0x0002FFEFL, static_cast<DirType>(64)},
+    {0x0001FFF5L, static_cast<DirType>(64)},
+    {0x0000FFF9L, static_cast<DirType>(64)},
+    {0x00000000L, static_cast<DirType>(64)}};
 
 DriveClass::TrackType const DriveClass::Track9[] = {
-    {0xFFF50002L, (DirType)0},  {0xFFEB0004L, (DirType)2},
-    {0xFFE00006L, (DirType)4},  {0xFFD50009L, (DirType)6},
-    {0xFFCE000CL, (DirType)9},  {0xFFC8000FL, (DirType)11},
-    {0xFFC00012L, (DirType)13}, {0xFFB80015L, (DirType)16},
-    {0xFFC00012L, (DirType)18}, {0xFFC8000EL, (DirType)20},
-    {0xFFCE000AL, (DirType)22}, {0xFFD50004L, (DirType)24},
-    {0xFFDE0000L, (DirType)26}, {0xFFE9FFF8L, (DirType)28},
-    {0xFFEEFFF2L, (DirType)30}, {0xFFF5FFEBL, (DirType)32},
-    {0xFFFDFFE1L, (DirType)34}, {0x0002FFD8L, (DirType)36},
-    {0x0007FFD2L, (DirType)39}, {0x000BFFCBL, (DirType)41},
-    {0x0010FFC5L, (DirType)43}, {0x0013FFBEL, (DirType)45},
-    {0x0015FFB7L, (DirType)48}, {0x0013FFBEL, (DirType)50},
-    {0x0011FFC5L, (DirType)52}, {0x000BFFCCL, (DirType)54},
-    {0x0008FFD4L, (DirType)56}, {0x0005FFDFL, (DirType)58},
-    {0x0003FFEBL, (DirType)62}, {0x0001FFF5L, (DirType)64},
-    {0x00000000L, (DirType)64}};
+    {0xFFF50002L, static_cast<DirType>(0)},
+    {0xFFEB0004L, static_cast<DirType>(2)},
+    {0xFFE00006L, static_cast<DirType>(4)},
+    {0xFFD50009L, static_cast<DirType>(6)},
+    {0xFFCE000CL, static_cast<DirType>(9)},
+    {0xFFC8000FL, static_cast<DirType>(11)},
+    {0xFFC00012L, static_cast<DirType>(13)},
+    {0xFFB80015L, static_cast<DirType>(16)},
+    {0xFFC00012L, static_cast<DirType>(18)},
+    {0xFFC8000EL, static_cast<DirType>(20)},
+    {0xFFCE000AL, static_cast<DirType>(22)},
+    {0xFFD50004L, static_cast<DirType>(24)},
+    {0xFFDE0000L, static_cast<DirType>(26)},
+    {0xFFE9FFF8L, static_cast<DirType>(28)},
+    {0xFFEEFFF2L, static_cast<DirType>(30)},
+    {0xFFF5FFEBL, static_cast<DirType>(32)},
+    {0xFFFDFFE1L, static_cast<DirType>(34)},
+    {0x0002FFD8L, static_cast<DirType>(36)},
+    {0x0007FFD2L, static_cast<DirType>(39)},
+    {0x000BFFCBL, static_cast<DirType>(41)},
+    {0x0010FFC5L, static_cast<DirType>(43)},
+    {0x0013FFBEL, static_cast<DirType>(45)},
+    {0x0015FFB7L, static_cast<DirType>(48)},
+    {0x0013FFBEL, static_cast<DirType>(50)},
+    {0x0011FFC5L, static_cast<DirType>(52)},
+    {0x000BFFCCL, static_cast<DirType>(54)},
+    {0x0008FFD4L, static_cast<DirType>(56)},
+    {0x0005FFDFL, static_cast<DirType>(58)},
+    {0x0003FFEBL, static_cast<DirType>(62)},
+    {0x0001FFF5L, static_cast<DirType>(64)},
+    {0x00000000L, static_cast<DirType>(64)}};
 
 DriveClass::TrackType const DriveClass::Track10[] = {
-    {0xFFF6000BL, (DirType)32}, {0xFFF00015L, (DirType)37},
-    {0xFFEB0020L, (DirType)42}, {0xFFE9002BL, (DirType)47},
-    {0xFFE50032L, (DirType)52}, {0xFFE30038L, (DirType)57},
-    {0xFFE00040L, (DirType)60}, {0xFFE20038L, (DirType)62},
-    {0xFFE40032L, (DirType)64}, {0xFFE5002AL, (DirType)68},
-    {0xFFE6001EL, (DirType)70}, {0xFFE70015L, (DirType)72},
-    {0xFFE8000BL, (DirType)74}, {0xFFE90000L, (DirType)76},
-    {0xFFE8FFF5L, (DirType)78}, {0xFFE7FFEBL, (DirType)80},
-    {0xFFE6FFE0L, (DirType)82}, {0xFFE5FFD5L, (DirType)84},
-    {0xFFE4FFCEL, (DirType)86}, {0xFFE2FFC5L, (DirType)88},
-    {0xFFE0FFC0L, (DirType)90}, {0xFFE3FFC5L, (DirType)92},
-    {0xFFE5FFCEL, (DirType)94}, {0xFFE9FFD5L, (DirType)95},
-    {0xFFEBFFE0L, (DirType)96}, {0xFFF0FFEBL, (DirType)96},
-    {0xFFF6FFF5L, (DirType)96}, {0x00000000L, (DirType)96}};
+    {0xFFF6000BL, static_cast<DirType>(32)},
+    {0xFFF00015L, static_cast<DirType>(37)},
+    {0xFFEB0020L, static_cast<DirType>(42)},
+    {0xFFE9002BL, static_cast<DirType>(47)},
+    {0xFFE50032L, static_cast<DirType>(52)},
+    {0xFFE30038L, static_cast<DirType>(57)},
+    {0xFFE00040L, static_cast<DirType>(60)},
+    {0xFFE20038L, static_cast<DirType>(62)},
+    {0xFFE40032L, static_cast<DirType>(64)},
+    {0xFFE5002AL, static_cast<DirType>(68)},
+    {0xFFE6001EL, static_cast<DirType>(70)},
+    {0xFFE70015L, static_cast<DirType>(72)},
+    {0xFFE8000BL, static_cast<DirType>(74)},
+    {0xFFE90000L, static_cast<DirType>(76)},
+    {0xFFE8FFF5L, static_cast<DirType>(78)},
+    {0xFFE7FFEBL, static_cast<DirType>(80)},
+    {0xFFE6FFE0L, static_cast<DirType>(82)},
+    {0xFFE5FFD5L, static_cast<DirType>(84)},
+    {0xFFE4FFCEL, static_cast<DirType>(86)},
+    {0xFFE2FFC5L, static_cast<DirType>(88)},
+    {0xFFE0FFC0L, static_cast<DirType>(90)},
+    {0xFFE3FFC5L, static_cast<DirType>(92)},
+    {0xFFE5FFCEL, static_cast<DirType>(94)},
+    {0xFFE9FFD5L, static_cast<DirType>(95)},
+    {0xFFEBFFE0L, static_cast<DirType>(96)},
+    {0xFFF0FFEBL, static_cast<DirType>(96)},
+    {0xFFF6FFF5L, static_cast<DirType>(96)},
+    {0x00000000L, static_cast<DirType>(96)}};
 
 DriveClass::TrackType const DriveClass::Track11[] = {
     {0x01000000L, DIR_SW},    {0x00F30008L, DIR_SW},
@@ -1958,29 +2067,29 @@ DriveClass::TrackType const DriveClass::Track12[] = {
 **	Drive out of weapon's factory.
 */
 DriveClass::TrackType const DriveClass::Track13[] = {
-    {XYP_COORD(10, -21), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(10, -21), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(10, -20), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(10, -20), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(9, -18), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(9, -18), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(9, -17), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(8, -16), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(8, -15), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(7, -14), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(7, -13), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(6, -12), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(6, -11), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(5, -10), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(5, -9), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(4, -8), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(4, -7), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(3, -6), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(3, -5), (DirType)(DIR_SW - 9)},
-    {XYP_COORD(2, -4), (DirType)(DIR_SW - 7)},
-    {XYP_COORD(2, -3), (DirType)(DIR_SW - 5)},
-    {XYP_COORD(1, -2), (DirType)(DIR_SW - 3)},
-    {XYP_COORD(1, -1), (DirType)(DIR_SW - 1)},
+    {XYP_COORD(10, -21), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(10, -21), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(10, -20), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(10, -20), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(9, -18), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(9, -18), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(9, -17), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(8, -16), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(8, -15), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(7, -14), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(7, -13), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(6, -12), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(6, -11), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(5, -10), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(5, -9), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(4, -8), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(4, -7), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(3, -6), static_cast<DirType>(DIR_SW - 10)},
+    {XYP_COORD(3, -5), static_cast<DirType>(DIR_SW - 9)},
+    {XYP_COORD(2, -4), static_cast<DirType>(DIR_SW - 7)},
+    {XYP_COORD(2, -3), static_cast<DirType>(DIR_SW - 5)},
+    {XYP_COORD(1, -2), static_cast<DirType>(DIR_SW - 3)},
+    {XYP_COORD(1, -1), static_cast<DirType>(DIR_SW - 1)},
 
     {0x00000000L, DIR_SW}};
 
@@ -2002,80 +2111,70 @@ DriveClass::RawTrackType const DriveClass::RawTracks[13] = {
 **	be performed on the track data.
 */
 DriveClass::TurnTrackType const DriveClass::TrackControl[67] = {
-    {1, 0, DIR_N, F_},    //	0-0
-    {3, 7, DIR_NE, F_D},  //	0-1 (raw chart)
-    {4, 9, DIR_E, F_D},   //	0-2 (raw chart)
-    {0, 0, DIR_SE, F_},   //	0-3 !
-    {0, 0, DIR_S, F_},    //	0-4 !
-    {0, 0, DIR_SW, F_},   //	0-5 !
-    {4, 9, DIR_W, (F_X | F_D)},   //	0-6
-    {3, 7, DIR_NW, (F_X | F_D)},  //	0-7
-    {6, 8, DIR_N,
-     (F_T | F_X | F_Y | F_D)},  //	1-0
-    {2, 0, DIR_NE, F_},                                       //	1-1 (raw chart)
-    {6, 8, DIR_E, F_D},                                       //	1-2 (raw chart)
-    {5, 10, DIR_SE, F_D},                                     //	1-3 (raw chart)
-    {0, 0, DIR_S, F_},                                        //	1-4 !
-    {0, 0, DIR_SW, F_},                                       //	1-5 !
-    {0, 0, DIR_W, F_},                                        //	1-6 !
-    {5, 10, DIR_NW,
-     (F_T | F_X | F_Y | F_D)},  //	1-7
-    {4, 9, DIR_N,
-     (F_T | F_X | F_Y | F_D)},  //	2-0
-    {3, 7, DIR_NE,
-     (F_T | F_X | F_Y | F_D)},   //	2-1
-    {1, 0, DIR_E, (F_T | F_X)},  //	2-2
-    {3, 7, DIR_SE,
-     (F_T | F_X | F_D)},               //	2-3
-    {4, 9, DIR_S, (F_T | F_X | F_D)},  //	2-4
-    {0, 0, DIR_SW, F_},                                              //	2-5 !
-    {0, 0, DIR_W, F_},                                               //	2-6 !
-    {0, 0, DIR_NW, F_},                                              //	2-7 !
-    {0, 0, DIR_N, F_},                                               //	3-0 !
-    {5, 10, DIR_NE, (F_Y | F_D)},      //	3-1
-    {6, 8, DIR_E, (F_Y | F_D)},        //	3-2
-    {2, 0, DIR_SE, F_Y},                                             //	3-3
-    {6, 8, DIR_S, (F_T | F_X | F_D)},  //	3-4
-    {5, 10, DIR_SW,
-     (F_T | F_X | F_D)},          //	3-5
-    {0, 0, DIR_W, F_},                                          //	3-6 !
-    {0, 0, DIR_NW, F_},                                         //	3-7 !
-    {0, 0, DIR_N, F_},                                          //	4-0 !
-    {0, 0, DIR_NE, F_},                                         //	4-1 !
-    {4, 9, DIR_E, (F_Y | F_D)},   //	4-2
-    {3, 7, DIR_SE, (F_Y | F_D)},  //	4-3
-    {1, 0, DIR_S, F_Y},                                         //	4-4
-    {3, 7, DIR_SW,
-     (F_X | F_Y | F_D)},               //	4-5
-    {4, 9, DIR_W, (F_X | F_Y | F_D)},  //	4-6
-    {0, 0, DIR_NW, F_},                                              //	4-7 !
-    {0, 0, DIR_N, F_},                                               //	5-0 !
-    {0, 0, DIR_NE, F_},                                              //	5-1 !
-    {0, 0, DIR_E, F_},                                               //	5-2 !
-    {5, 10, DIR_SE, (F_T | F_D)},      //	5-3
-    {6, 8, DIR_S, (F_T | F_D)},        //	5-4
-    {2, 0, DIR_SW, F_T},                                             //	5-5
-    {6, 8, DIR_W, (F_X | F_Y | F_D)},  //	5-6
-    {5, 10, DIR_NW,
-     (F_X | F_Y | F_D)},               //	5-7
-    {4, 9, DIR_N, (F_T | F_Y | F_D)},  //	6-0
-    {0, 0, DIR_NE, F_},                                              //	6-1 !
-    {0, 0, DIR_E, F_},                                               //	6-2 !
-    {0, 0, DIR_SE, F_},                                              //	6-3 !
-    {4, 9, DIR_S, (F_T | F_D)},        //	6-4
-    {3, 7, DIR_SW, (F_T | F_D)},       //	6-5
-    {1, 0, DIR_W, F_T},                                              //	6-6
-    {3, 7, DIR_NW,
-     (F_T | F_Y | F_D)},               //	6-7
-    {6, 8, DIR_N, (F_T | F_Y | F_D)},  //	7-0
-    {5, 10, DIR_NE,
-     (F_T | F_Y | F_D)},           //	7-1
-    {0, 0, DIR_E, F_},                                           //	7-2 !
-    {0, 0, DIR_SE, F_},                                          //	7-3 !
-    {0, 0, DIR_S, F_},                                           //	7-4 !
-    {5, 10, DIR_SW, (F_X | F_D)},  //	7-5
-    {6, 8, DIR_W, (F_X | F_D)},    //	7-6
-    {2, 0, DIR_NW, F_X},                                         //	7-7
+    {1, 0, DIR_N, F_},                         //	0-0
+    {3, 7, DIR_NE, F_D},                       //	0-1 (raw chart)
+    {4, 9, DIR_E, F_D},                        //	0-2 (raw chart)
+    {0, 0, DIR_SE, F_},                        //	0-3 !
+    {0, 0, DIR_S, F_},                         //	0-4 !
+    {0, 0, DIR_SW, F_},                        //	0-5 !
+    {4, 9, DIR_W, (F_X | F_D)},                //	0-6
+    {3, 7, DIR_NW, (F_X | F_D)},               //	0-7
+    {6, 8, DIR_N, (F_T | F_X | F_Y | F_D)},    //	1-0
+    {2, 0, DIR_NE, F_},                        //	1-1 (raw chart)
+    {6, 8, DIR_E, F_D},                        //	1-2 (raw chart)
+    {5, 10, DIR_SE, F_D},                      //	1-3 (raw chart)
+    {0, 0, DIR_S, F_},                         //	1-4 !
+    {0, 0, DIR_SW, F_},                        //	1-5 !
+    {0, 0, DIR_W, F_},                         //	1-6 !
+    {5, 10, DIR_NW, (F_T | F_X | F_Y | F_D)},  //	1-7
+    {4, 9, DIR_N, (F_T | F_X | F_Y | F_D)},    //	2-0
+    {3, 7, DIR_NE, (F_T | F_X | F_Y | F_D)},   //	2-1
+    {1, 0, DIR_E, (F_T | F_X)},                //	2-2
+    {3, 7, DIR_SE, (F_T | F_X | F_D)},         //	2-3
+    {4, 9, DIR_S, (F_T | F_X | F_D)},          //	2-4
+    {0, 0, DIR_SW, F_},                        //	2-5 !
+    {0, 0, DIR_W, F_},                         //	2-6 !
+    {0, 0, DIR_NW, F_},                        //	2-7 !
+    {0, 0, DIR_N, F_},                         //	3-0 !
+    {5, 10, DIR_NE, (F_Y | F_D)},              //	3-1
+    {6, 8, DIR_E, (F_Y | F_D)},                //	3-2
+    {2, 0, DIR_SE, F_Y},                       //	3-3
+    {6, 8, DIR_S, (F_T | F_X | F_D)},          //	3-4
+    {5, 10, DIR_SW, (F_T | F_X | F_D)},        //	3-5
+    {0, 0, DIR_W, F_},                         //	3-6 !
+    {0, 0, DIR_NW, F_},                        //	3-7 !
+    {0, 0, DIR_N, F_},                         //	4-0 !
+    {0, 0, DIR_NE, F_},                        //	4-1 !
+    {4, 9, DIR_E, (F_Y | F_D)},                //	4-2
+    {3, 7, DIR_SE, (F_Y | F_D)},               //	4-3
+    {1, 0, DIR_S, F_Y},                        //	4-4
+    {3, 7, DIR_SW, (F_X | F_Y | F_D)},         //	4-5
+    {4, 9, DIR_W, (F_X | F_Y | F_D)},          //	4-6
+    {0, 0, DIR_NW, F_},                        //	4-7 !
+    {0, 0, DIR_N, F_},                         //	5-0 !
+    {0, 0, DIR_NE, F_},                        //	5-1 !
+    {0, 0, DIR_E, F_},                         //	5-2 !
+    {5, 10, DIR_SE, (F_T | F_D)},              //	5-3
+    {6, 8, DIR_S, (F_T | F_D)},                //	5-4
+    {2, 0, DIR_SW, F_T},                       //	5-5
+    {6, 8, DIR_W, (F_X | F_Y | F_D)},          //	5-6
+    {5, 10, DIR_NW, (F_X | F_Y | F_D)},        //	5-7
+    {4, 9, DIR_N, (F_T | F_Y | F_D)},          //	6-0
+    {0, 0, DIR_NE, F_},                        //	6-1 !
+    {0, 0, DIR_E, F_},                         //	6-2 !
+    {0, 0, DIR_SE, F_},                        //	6-3 !
+    {4, 9, DIR_S, (F_T | F_D)},                //	6-4
+    {3, 7, DIR_SW, (F_T | F_D)},               //	6-5
+    {1, 0, DIR_W, F_T},                        //	6-6
+    {3, 7, DIR_NW, (F_T | F_Y | F_D)},         //	6-7
+    {6, 8, DIR_N, (F_T | F_Y | F_D)},          //	7-0
+    {5, 10, DIR_NE, (F_T | F_Y | F_D)},        //	7-1
+    {0, 0, DIR_E, F_},                         //	7-2 !
+    {0, 0, DIR_SE, F_},                        //	7-3 !
+    {0, 0, DIR_S, F_},                         //	7-4 !
+    {5, 10, DIR_SW, (F_X | F_D)},              //	7-5
+    {6, 8, DIR_W, (F_X | F_D)},                //	7-6
+    {2, 0, DIR_NW, F_X},                       //	7-7
 
     {11, 11, DIR_SW, F_},     // Backup harvester into refinery.
     {12, 12, DIR_SW_X2, F_},  // Drive back into refinery.

@@ -922,7 +922,7 @@ InfantryTypeClass::InfantryTypeClass(
     bool is_remap_override, bool is_nominal, bool is_theater, PipEnum pip,
     DoInfoStruct const* control, int firelaunch, int pronelaunch,
     unsigned char const* override_remap)
-    : TechnoTypeClass(RTTI_INFANTRYTYPE, int(type), name, ininame, REMAP_NORMAL,
+    : TechnoTypeClass(RTTI_INFANTRYTYPE, static_cast<int>(type), name, ininame, REMAP_NORMAL,
                       verticaloffset, primaryoffset, 0x0000, 0x0000, 0x0000,
                       is_nominal, true, true, true, false, false, is_theater,
                       false, true, true, 8, SPEED_FOOT),
@@ -985,7 +985,7 @@ void* InfantryTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 void InfantryTypeClass::operator delete(void* pointer) {
-  InfantryTypes.Free((InfantryTypeClass*)pointer);
+  InfantryTypes.Free(static_cast<InfantryTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -1251,9 +1251,9 @@ void InfantryTypeClass::One_Time() {
 #ifndef NDEBUG
     RawFileClass ifile(fullname.c_str());
     if (ifile.Is_Available()) {
-      (void const*&)uclass->CameoData = Load_Alloc_Data(ifile);
+      static_cast<void const*&>(uclass->CameoData) = Load_Alloc_Data(ifile);
     } else {
-      (void const*&)uclass->CameoData = MFCD::Retrieve(fullname);
+      static_cast<void const*&>(uclass->CameoData) = MFCD::Retrieve(fullname);
     }
 #else
     ((void const*&)uclass->CameoData) = MFCD::Retrieve(fullname);

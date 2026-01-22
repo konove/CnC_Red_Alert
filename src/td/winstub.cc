@@ -295,7 +295,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       return 0;
 
     case WM_ACTIVATEAPP:
-      GameInFocus = (BOOL)wParam;
+      GameInFocus = static_cast<BOOL>(wParam);
       if (!GameInFocus) {
         Focus_Loss();
       }
@@ -757,7 +757,7 @@ GraphicBufferClass* Read_PCX_File(char const* name, char* palette, void* Buff,
   height = header.height - header.y + 1;
 
   if (Buff) {
-    buffer = (char*)Buff;
+    buffer = static_cast<char*>(Buff);
     i = Size / width;
     height = std::min(i - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
@@ -767,7 +767,7 @@ GraphicBufferClass* Read_PCX_File(char const* name, char* palette, void* Buff,
     if (!(pic && pic->Get_Buffer())) return NULL;
   }
 
-  buffer = (char*)pic->Get_Buffer();
+  buffer = static_cast<char*>(pic->Get_Buffer());
   file_ptr = pool;
   file_handle.Read(pool, POOL_SIZE);
 
@@ -782,7 +782,7 @@ GraphicBufferClass* Read_PCX_File(char const* name, char* palette, void* Buff,
           memset(buffer + scan_pos + i, color, rle);
           i += rle;
         } else {
-          *(buffer + scan_pos + i++) = (char)rle;
+          *(buffer + scan_pos + i++) = static_cast<char>(rle);
         }
       }
     }
@@ -800,7 +800,7 @@ GraphicBufferClass* Read_PCX_File(char const* name, char* palette, void* Buff,
         memset(buffer + i, color, rle);
         i += rle;
       } else {
-        *(buffer + i++) = (char)rle;
+        *(buffer + i++) = static_cast<char>(rle);
       }
     }
   }

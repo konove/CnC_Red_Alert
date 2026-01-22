@@ -172,13 +172,13 @@ bool ConfirmationClass::Process(char const* string) {
     **	Process Input.
     */
     switch (input) {
-      case KeyNumType(BUTTON_YES | KN_BUTTON):
+      case static_cast<KeyNumType>(BUTTON_YES | KN_BUTTON):
         selection = BUTTON_YES;
         pressed = true;
         break;
 
       case KN_ESC:
-      case KeyNumType(BUTTON_NO | KN_BUTTON):
+      case static_cast<KeyNumType>(BUTTON_NO | KN_BUTTON):
         selection = BUTTON_NO;
         pressed = true;
         break;

@@ -260,13 +260,13 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
     } else {
 #ifdef WIN32
 
-      KeyASCIIType ascii = (KeyASCIIType)(Keyboard->To_ASCII(key) & 0xff);
+      KeyASCIIType ascii = static_cast<KeyASCIIType>(Keyboard->To_ASCII(key) & 0xff);
 
       /*
       ** Allow numeric keypad presses to map to ascii numbers
       */
       if (key & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
-        key = (KeyNumType)(key & ~WWKEY_VK_BIT);
+        key = static_cast<KeyNumType>(key & ~WWKEY_VK_BIT);
         if (!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) {
           if (Handle_Key(ascii)) {
             flags &= ~KEYBOARD;
@@ -344,7 +344,7 @@ void EditClass::Draw_Text(char const* text) {
   if (Has_Focus()) {
     flags = TPF_BRIGHT_COLOR;
   } else {
-    flags = (TextPrintType)0;
+    flags = static_cast<TextPrintType>(0);
   }
 
   Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, TBLACK, TextFlags | flags,
@@ -438,7 +438,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       *alphabetic *	character to upper case.
       */
       if (EditFlags & UPPERCASE && isalpha(ascii)) {
-        ascii = (KeyASCIIType)toupper(ascii);
+        ascii = static_cast<KeyASCIIType>(toupper(ascii));
       }
 
       if ((!(EditFlags & NUMERIC) || !isdigit(ascii)) &&

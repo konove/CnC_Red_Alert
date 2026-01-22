@@ -402,7 +402,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
             /*
             **	Copy the entry into the return buffer.
             */
-            len = (int)(altworkptr - workptr);
+            len = static_cast<int>(altworkptr - workptr);
             if (len > retlen - 1) {
               len = retlen - 1;
             }
@@ -438,7 +438,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
             if (altworkptr && altworkptr < next) {
               int length;  // Length of ID string.
 
-              length = (int)(altworkptr - workptr);
+              length = static_cast<int>(altworkptr - workptr);
 
               /*
               **	Make sure we don't write past the end of the retbuffer;

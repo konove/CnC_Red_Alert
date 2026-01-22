@@ -106,9 +106,9 @@ static int Length;
 void* Get_Shape_Header_Data(void* ptr) {
   if (UseBigShapeBuffer) {
     ShapeHeaderType* header = static_cast<ShapeHeaderType*>(ptr);
-    return header->shape_data + (long)(header->shape_buffer
-                                           ? TheaterShapeBufferStart
-                                           : BigShapeBufferStart);
+    return header->shape_data +
+           reinterpret_cast<long>(header->shape_buffer ? TheaterShapeBufferStart
+                                                       : BigShapeBufferStart);
   }
   return ptr;
 }
@@ -131,10 +131,10 @@ void Reset_Theater_Shapes() {
 void Reallocate_Big_Shape_Buffer() {
   if (ReallocShapeBufferFlag) {
     BigShapeBufferLength += 2000000;  // Extra 2 Mb of uncompressed shape space
-    BigShapeBufferPtr -= (uintptr_t)BigShapeBufferStart;
+    BigShapeBufferPtr -= reinterpret_cast<uintptr_t>(BigShapeBufferStart);
     Memory_Error = nullptr;
-    BigShapeBufferStart =
-        (char*)Resize_Alloc(BigShapeBufferStart, BigShapeBufferLength);
+    BigShapeBufferStart = static_cast<char*>(
+        Resize_Alloc(BigShapeBufferStart, BigShapeBufferLength));
     Memory_Error = &Memory_Error_Handler;
     /*
     ** If we have run out of memory then disable the uncompressed shapes
@@ -238,14 +238,15 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
     **
     */
     if (!BigShapeBufferStart) {
-      BigShapeBufferStart = (char*)Alloc(BigShapeBufferLength, MEM_NORMAL);
+      BigShapeBufferStart =
+          static_cast<char*>(Alloc(BigShapeBufferLength, MEM_NORMAL));
       BigShapeBufferPtr = BigShapeBufferStart;
 
       /*
       ** Allocate memory for theater specific uncompressed shapes
       */
       TheaterShapeBufferStart =
-          (char*)Alloc(TheaterShapeBufferLength, MEM_NORMAL);
+          static_cast<char*>(Alloc(TheaterShapeBufferLength, MEM_NORMAL));
       TheaterShapeBufferPtr = TheaterShapeBufferStart;
     }
 
@@ -299,16 +300,17 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
   buffsize = keyfr->width * keyfr->height;
 
   // get offset into data
-  ptr = (char*)Add_Long_To_Pointer(
-      dataptr, ((unsigned long)framenumber << 3) + sizeof(KeyFrameHeaderType));
+  ptr = static_cast<char*>(Add_Long_To_Pointer(
+      dataptr, ((unsigned long)framenumber << 3) + sizeof(KeyFrameHeaderType)));
   Mem_Copy(ptr, &offset[0], 12L);
-  frameflags = (char)(offset[0] >> 24);
+  frameflags = static_cast<char>(offset[0] >> 24);
 
   if (frameflags & KF_KEYFRAME) {
-    ptr = (char*)Add_Long_To_Pointer(dataptr, offset[0] & 0x00FFFFFFL);
+    ptr = static_cast<char*>(
+        Add_Long_To_Pointer(dataptr, offset[0] & 0x00FFFFFFL));
 
     if (keyfr->flags & 1) {
-      ptr = (char*)Add_Long_To_Pointer(ptr, 768L);
+      ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, 768L));
     }
     length = LCW_Uncompress(ptr, buffptr, buffsize);
   } else {
@@ -316,11 +318,11 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
     // key delta or delta
 
     if (frameflags & KF_DELTA) {
-      currframe = (unsigned short)offset[1];
+      currframe = static_cast<unsigned short>(offset[1]);
 
-      ptr =
-          (char*)Add_Long_To_Pointer(dataptr, ((unsigned long)currframe << 3) +
-                                                  sizeof(KeyFrameHeaderType));
+      ptr = static_cast<char*>(Add_Long_To_Pointer(
+          dataptr,
+          ((unsigned long)currframe << 3) + sizeof(KeyFrameHeaderType)));
       Mem_Copy(ptr, &offset[0], SUBFRAMEOFFS * sizeof(uint32_t));
     }
 
@@ -330,10 +332,10 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
     // key delta
     offdiff = (offset[0] & 0x00FFFFFFL) - offcurr;
 
-    ptr = (char*)Add_Long_To_Pointer(dataptr, offcurr);
+    ptr = static_cast<char*>(Add_Long_To_Pointer(dataptr, offcurr));
 
     if (keyfr->flags & 1) {
-      ptr = (char*)Add_Long_To_Pointer(ptr, 768L);
+      ptr = static_cast<char*>(Add_Long_To_Pointer(ptr, 768L));
     }
 
     length = LCW_Uncompress(ptr, buffptr, buffsize);
@@ -361,10 +363,10 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
         subframe += 2;
 
         if (subframe >= SUBFRAMEOFFS - 1 && currframe <= framenumber) {
-          Mem_Copy(
-              Add_Long_To_Pointer(dataptr, ((unsigned long)currframe << 3) +
-                                               sizeof(KeyFrameHeaderType)),
-              &offset[0], SUBFRAMEOFFS * sizeof(uint32_t));
+          Mem_Copy(Add_Long_To_Pointer(
+                       dataptr, (static_cast<unsigned long>(currframe) << 3) +
+                                    sizeof(KeyFrameHeaderType)),
+                   &offset[0], SUBFRAMEOFFS * sizeof(uint32_t));
           subframe = 0;
         }
       }
@@ -464,21 +466,21 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
  *=============================================================================================*/
 unsigned short Get_Build_Frame_Count(void const* dataptr) {
   if (dataptr) {
-    return ((KeyFrameHeaderType const*)dataptr)->frames;
+    return static_cast<KeyFrameHeaderType const*>(dataptr)->frames;
   }
   return 0;
 }
 
 unsigned short Get_Build_Frame_X(void const* dataptr) {
   if (dataptr) {
-    return ((KeyFrameHeaderType const*)dataptr)->x;
+    return static_cast<KeyFrameHeaderType const*>(dataptr)->x;
   }
   return 0;
 }
 
 unsigned short Get_Build_Frame_Y(void const* dataptr) {
   if (dataptr) {
-    return ((KeyFrameHeaderType const*)dataptr)->y;
+    return static_cast<KeyFrameHeaderType const*>(dataptr)->y;
   }
   return 0;
 }
@@ -500,7 +502,7 @@ unsigned short Get_Build_Frame_Y(void const* dataptr) {
  *=============================================================================================*/
 unsigned short Get_Build_Frame_Width(void const* dataptr) {
   if (dataptr) {
-    return ((KeyFrameHeaderType const*)dataptr)->width;
+    return static_cast<KeyFrameHeaderType const*>(dataptr)->width;
   }
   return 0;
 }
@@ -522,17 +524,17 @@ unsigned short Get_Build_Frame_Width(void const* dataptr) {
  *=============================================================================================*/
 unsigned short Get_Build_Frame_Height(void const* dataptr) {
   if (dataptr) {
-    return ((KeyFrameHeaderType const*)dataptr)->height;
+    return static_cast<KeyFrameHeaderType const*>(dataptr)->height;
   }
   return 0;
 }
 
 bool Get_Build_Frame_Palette(void const* dataptr, void* palette) {
-  if (dataptr && ((KeyFrameHeaderType const*)dataptr)->flags & 1) {
-    char const* ptr = (char const*)Add_Long_To_Pointer(
+  if (dataptr && static_cast<KeyFrameHeaderType const*>(dataptr)->flags & 1) {
+    char const* ptr = static_cast<char const*>(Add_Long_To_Pointer(
         dataptr, ((long)sizeof(unsigned long) << 1) *
                          ((KeyFrameHeaderType*)dataptr)->frames +
-                     16 + sizeof(KeyFrameHeaderType));
+                     16 + sizeof(KeyFrameHeaderType)));
 
     memcpy(palette, ptr, 768L);
     return true;

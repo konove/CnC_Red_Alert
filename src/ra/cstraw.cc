@@ -77,12 +77,12 @@ int CacheStraw::Get(void* source, int slen) {
       */
       if (Length > 0) {
         int tocopy = Length < slen ? Length : slen;
-        memmove(source, (char*)BufferPtr.Get_Buffer() + Index, tocopy);
+        memmove(source, static_cast<char*>(BufferPtr.Get_Buffer()) + Index, tocopy);
         slen -= tocopy;
         Index += tocopy;
         total += tocopy;
         Length -= tocopy;
-        source = (char*)source + tocopy;
+        source = static_cast<char*>(source) + tocopy;
       }
       if (slen == 0) break;
 

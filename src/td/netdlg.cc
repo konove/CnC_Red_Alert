@@ -448,7 +448,7 @@ void Destroy_Connection(int id, int error) {
 
   if (strlen(txt)) {
     Messages.Add_Message(
-        txt, MPlayerTColors[MPlayerID_To_ColorIndex((unsigned char)id)],
+        txt, MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }
@@ -459,7 +459,7 @@ void Destroy_Connection(int id, int error) {
   Ipx.Delete_Connection(id);
 
   for (i = 0; i < MPlayerCount; i++) {
-    if (MPlayerID[i] == (unsigned char)id) {
+    if (MPlayerID[i] == static_cast<unsigned char>(id)) {
       /*..................................................................
       Turn the player's house over to the computer's AI
       ..................................................................*/
@@ -488,7 +488,7 @@ void Destroy_Connection(int id, int error) {
   if (MPlayerCount == 1) {
     sprintf(txt, "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Messages.Add_Message(
-        txt, MPlayerTColors[MPlayerID_To_ColorIndex((unsigned char)id)],
+        txt, MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }
@@ -1597,8 +1597,8 @@ static int Net_Join_Dialog() {
               magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
               message_length = strlen(Messages.Get_Edit_Buf());
               crc =
-                  (unsigned short)(CrcEngine::Compute(Messages.Get_Edit_Buf()) &
-                                   0xffff);
+                  static_cast<unsigned short>(
+                  CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
               while (sent_so_far < message_length) {
                 GPacket.Command = NET_MESSAGE;
@@ -3578,8 +3578,8 @@ static int Net_New_Dialog() {
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
           message_length = strlen(Messages.Get_Edit_Buf());
-          crc = (unsigned short)(CrcEngine::Compute(Messages.Get_Edit_Buf()) &
-                                 0xffff);
+          crc = static_cast<unsigned short>(
+              CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
           while (sent_so_far < message_length) {
             memset(&GPacket, 0, sizeof(GlobalPacketType));
             GPacket.Command = NET_MESSAGE;
@@ -4056,7 +4056,7 @@ unsigned long Compute_Name_CRC(char* name) {
   strupr(buf);
 
   for (i = 0; i < strlen(buf); i++) {
-    Add_CRC(&crc, (unsigned long)buf[i]);
+    Add_CRC(&crc, static_cast<unsigned long>(buf[i]));
   }
 
   return crc;

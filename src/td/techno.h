@@ -223,7 +223,7 @@ class TechnoClass : public RadioClass,
   virtual int Threat_Range(int control) const;
   virtual InfantryType Crew_Type() const;
   TechnoTypeClass const* Techno_Type_Class() const {
-    return (TechnoTypeClass const*)&Class_Of();
+    return dynamic_cast<TechnoTypeClass const*>(&Class_Of());
   }
   CELL Nearby_Location(TechnoClass const* from = nullptr) const;
   unsigned char Get_Ownable() const override;
@@ -272,13 +272,13 @@ class TechnoClass : public RadioClass,
   virtual TARGET Greatest_Threat(ThreatType threat) const;
   virtual void Assign_Target(TARGET target);
   void Override_Mission(MissionType mission, TARGET tarcom,
-                                TARGET navcom) override;
+                        TARGET navcom) override;
   bool Restore_Mission() override;
   virtual BulletClass* Fire_At(TARGET target, int which = 0);
   int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source) override;
+                         TechnoClass* source) override;
   bool Evaluate_Cell(ThreatType method, int mask, CELL cell, int range,
                      TechnoClass const** object, int& value) const;
   bool Evaluate_Object(ThreatType method, int mask, int range,
@@ -289,9 +289,8 @@ class TechnoClass : public RadioClass,
   */
   void AI() override;
   bool Revealed(HouseClass* house) override;
-  RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           long& param) override;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
 
 /*
 **	Scenario and debug support.

@@ -232,7 +232,7 @@ class CellClass {
   COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
   COORDINATE Free_Spot() const { return Closest_Free_Spot(Cell_Coord()); }
   CellClass& Adjacent_Cell(FacingType face) {
-    return (CellClass&)(*(CellClass const*)this).Adjacent_Cell(face);
+    return (CellClass&)(*static_cast<CellClass const*>(this)).Adjacent_Cell(face);
   }
   CellClass const& Adjacent_Cell(FacingType face) const;
   InfantryClass* Cell_Infantry() const;

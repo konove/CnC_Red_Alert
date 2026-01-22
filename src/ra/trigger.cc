@@ -377,7 +377,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
 void* TriggerClass::operator new(size_t) throw() {
   void* ptr = Triggers.Allocate();
   if (ptr) {
-    ((TriggerClass*)ptr)->IsActive = true;
+    static_cast<TriggerClass*>(ptr)->IsActive = true;
   }
 
   return ptr;
@@ -400,9 +400,9 @@ void* TriggerClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void TriggerClass::operator delete(void* pointer) {
   if (pointer) {
-    ((TriggerClass*)pointer)->IsActive = false;
+    static_cast<TriggerClass*>(pointer)->IsActive = false;
   }
-  Triggers.Free((TriggerClass*)pointer);
+  Triggers.Free(static_cast<TriggerClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -480,7 +480,7 @@ TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
  *=============================================================================================*/
 void TriggerClass::Detach(TARGET target, bool) {
   if (Is_Target_TriggerType(target)) {
-    assert((TriggerTypeClass*)Class != As_TriggerType(target));
+    assert(static_cast<TriggerTypeClass*>(Class) != As_TriggerType(target));
     //		if (Class == As_TriggerType(target)) {
     //			Class = NULL;
     //		}

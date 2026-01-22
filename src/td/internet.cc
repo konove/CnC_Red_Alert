@@ -278,7 +278,8 @@ int Read_Game_Options(char* name) {
   MPlayerColorIdx = WWGetPrivateProfileInt("Options", "Color", 0, buffer);
   MPlayerPrefColor = MPlayerColorIdx;
   MPlayerHouse =
-      (HousesType)WWGetPrivateProfileInt("Options", "Side", HOUSE_GOOD, buffer);
+      static_cast<HousesType>(
+      WWGetPrivateProfileInt("Options", "Side", HOUSE_GOOD, buffer));
 
   MPlayerCredits = WWGetPrivateProfileInt("Options", "Credits", 0, buffer);
   MPlayerBases = WWGetPrivateProfileInt("Options", "Bases", 0, buffer);

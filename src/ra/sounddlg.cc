@@ -271,9 +271,9 @@ void SoundControlsClass::Process() {
 
       void* ptr = new char[sizeof(buffer)];
       if (ptr) {
-        sprintf((char*)ptr, "%cTrack %d\t%d:%02d\t%s", index,
+        sprintf(static_cast<char*>(ptr), "%cTrack %d\t%d:%02d\t%s", index,
                 listbox.Count() + 1, length / 60, length % 60, fullname);
-        listbox.Add_Item((char const*)ptr);
+        listbox.Add_Item(static_cast<char const*>(ptr));
       }
 
       if (Theme.What_Is_Playing() == index) {
@@ -402,8 +402,8 @@ void SoundControlsClass::Process() {
       */
       case KN_SPACE:
       case BUTTON_PLAY | KN_BUTTON:
-        Theme.Queue_Song((ThemeType) *
-                         (unsigned char*)listbox.Current_Item());
+        Theme.Queue_Song(
+            static_cast<ThemeType>(*(unsigned char*)listbox.Current_Item()));
         break;
 
       /*

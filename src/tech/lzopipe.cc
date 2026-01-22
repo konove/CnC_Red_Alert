@@ -198,8 +198,8 @@ int LZOPipe::Put(void const* source, int slen) {
         lzo1x_1_compress((unsigned char*)Buffer, BlockSize,
                          (unsigned char*)Buffer2, &len, dictionary);
         delete[] dictionary;
-        BlockHeader.CompCount = (unsigned short)len;
-        BlockHeader.UncompCount = (unsigned short)BlockSize;
+        BlockHeader.CompCount = static_cast<unsigned short>(len);
+        BlockHeader.UncompCount = static_cast<unsigned short>(BlockSize);
         total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
         total += Pipe::Put(Buffer2, len);
         Counter = 0;
@@ -219,8 +219,8 @@ int LZOPipe::Put(void const* source, int slen) {
       source = (char*)source + BlockSize;
       slen -= BlockSize;
 
-      BlockHeader.CompCount = (unsigned short)len;
-      BlockHeader.UncompCount = (unsigned short)BlockSize;
+      BlockHeader.CompCount = static_cast<unsigned short>(len);
+      BlockHeader.UncompCount = static_cast<unsigned short>(BlockSize);
       total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
       total += Pipe::Put(Buffer2, len);
     }
@@ -301,8 +301,8 @@ int LZOPipe::Flush() {
       lzo1x_1_compress((unsigned char*)Buffer, Counter, (unsigned char*)Buffer2,
                        &len, dictionary);
       delete[] dictionary;
-      BlockHeader.CompCount = (unsigned short)len;
-      BlockHeader.UncompCount = (unsigned short)Counter;
+      BlockHeader.CompCount = static_cast<unsigned short>(len);
+      BlockHeader.UncompCount = static_cast<unsigned short>(Counter);
       total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
       total += Pipe::Put(Buffer2, len);
       Counter = 0;

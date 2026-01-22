@@ -120,7 +120,7 @@ TargetClass::TargetClass(CellClass const* ptr) {
 
 CellClass* xTargetClass::As_Cell() const {
   if (Target.Sub.Exponent == RTTI_CELL) {
-    return &Map[(CELL)Target.Sub.Mantissa];
+    return &Map[static_cast<CELL>(Target.Sub.Mantissa)];
   }
   return nullptr;
 }
@@ -271,7 +271,7 @@ TechnoClass* As_Techno(TARGET target) {
   ObjectClass* obj = As_Object(target);
 
   if (obj && obj->Is_Techno()) {
-    return (TechnoClass*)obj;
+    return dynamic_cast<TechnoClass*>(obj);
   }
   return nullptr;
 }
@@ -546,7 +546,7 @@ COORDINATE As_Movement_Coord(TARGET target) {
     *target number is *	actually the cell index number.
     */
     if (Is_Target_Cell(target)) {
-      return Cell_Coord((CELL)Target_Value(target));
+      return Cell_Coord(static_cast<CELL>(Target_Value(target)));
     }
 
     /*
@@ -582,7 +582,7 @@ COORDINATE As_Movement_Coord(TARGET target) {
  * HISTORY: * 03/05/1996 JLB : Created. *
  *=============================================================================================*/
 AbstractClass* xTargetClass::As_Abstract() const {
-  switch ((RTTIType) * this) {
+  switch (static_cast<RTTIType>(*this)) {
     case RTTI_TEAM:
       return Teams.Raw_Ptr(Value());
 
@@ -623,7 +623,7 @@ AbstractClass* xTargetClass::As_Abstract() const {
 }
 
 AbstractTypeClass* xTargetClass::As_TypeClass() const {
-  switch ((RTTIType) * this) {
+  switch (static_cast<RTTIType>(*this)) {
     case RTTI_TEAMTYPE:
       return TeamTypes.Raw_Ptr(Value());
 
@@ -631,34 +631,36 @@ AbstractTypeClass* xTargetClass::As_TypeClass() const {
       return TriggerTypes.Raw_Ptr(Value());
 
     case RTTI_BULLETTYPE:
-      return &BulletTypeClass::As_Reference(BulletType(Value()));
+      return &BulletTypeClass::As_Reference(static_cast<BulletType>(Value()));
 
     case RTTI_OVERLAY:
-      return &OverlayTypeClass::As_Reference(OverlayType(Value()));
+      return &OverlayTypeClass::As_Reference(static_cast<OverlayType>(Value()));
 
     case RTTI_SMUDGE:
-      return &SmudgeTypeClass::As_Reference(SmudgeType(Value()));
+      return &SmudgeTypeClass::As_Reference(static_cast<SmudgeType>(Value()));
 
     case RTTI_UNIT:
-      return &UnitTypeClass::As_Reference(UnitType(Value()));
+      return &UnitTypeClass::As_Reference(static_cast<UnitType>(Value()));
 
     case RTTI_VESSEL:
-      return &VesselTypeClass::As_Reference(VesselType(Value()));
+      return &VesselTypeClass::As_Reference(static_cast<VesselType>(Value()));
 
     case RTTI_BUILDING:
-      return &BuildingTypeClass::As_Reference(StructType(Value()));
+      return &BuildingTypeClass::As_Reference(static_cast<StructType>(Value()));
 
     case RTTI_INFANTRY:
-      return &InfantryTypeClass::As_Reference(InfantryType(Value()));
+      return &InfantryTypeClass::As_Reference(
+          static_cast<InfantryType>(Value()));
 
     case RTTI_AIRCRAFT:
-      return &AircraftTypeClass::As_Reference(AircraftType(Value()));
+      return &AircraftTypeClass::As_Reference(
+          static_cast<AircraftType>(Value()));
 
     case RTTI_TERRAIN:
-      return &TerrainTypeClass::As_Reference(TerrainType(Value()));
+      return &TerrainTypeClass::As_Reference(static_cast<TerrainType>(Value()));
 
     case RTTI_ANIM:
-      return &AnimTypeClass::As_Reference(AnimType(Value()));
+      return &AnimTypeClass::As_Reference(static_cast<AnimType>(Value()));
 
     default:
       break;
@@ -683,7 +685,7 @@ AbstractTypeClass* xTargetClass::As_TypeClass() const {
  * HISTORY: * 03/05/1996 JLB : Created. *
  *=============================================================================================*/
 TechnoClass* xTargetClass::As_Techno() const {
-  switch ((RTTIType) * this) {
+  switch (static_cast<RTTIType>(*this)) {
     case RTTI_UNIT:
       return Units.Raw_Ptr(Value());
 
@@ -706,7 +708,7 @@ TechnoClass* xTargetClass::As_Techno() const {
 }
 
 ObjectClass* xTargetClass::As_Object() const {
-  switch ((RTTIType) * this) {
+  switch (static_cast<RTTIType>(*this)) {
     case RTTI_TERRAIN:
       return Terrains.Raw_Ptr(Value());
 
@@ -815,19 +817,19 @@ TechnoTypeClass const* As_TechnoType(TARGET target) {
   int val = Target_Value(target);
   switch (Target_Kind(target)) {
     case RTTI_INFANTRYTYPE:
-      return &InfantryTypeClass::As_Reference(InfantryType(val));
+      return &InfantryTypeClass::As_Reference(static_cast<InfantryType>(val));
 
     case RTTI_UNITTYPE:
-      return &UnitTypeClass::As_Reference(UnitType(val));
+      return &UnitTypeClass::As_Reference(static_cast<UnitType>(val));
 
     case RTTI_VESSELTYPE:
-      return &VesselTypeClass::As_Reference(VesselType(val));
+      return &VesselTypeClass::As_Reference(static_cast<VesselType>(val));
 
     case RTTI_AIRCRAFTTYPE:
-      return &AircraftTypeClass::As_Reference(AircraftType(val));
+      return &AircraftTypeClass::As_Reference(static_cast<AircraftType>(val));
 
     case RTTI_BUILDINGTYPE:
-      return &BuildingTypeClass::As_Reference(StructType(val));
+      return &BuildingTypeClass::As_Reference(static_cast<StructType>(val));
   }
   return nullptr;
 }

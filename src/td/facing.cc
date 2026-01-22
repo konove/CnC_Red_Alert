@@ -165,9 +165,9 @@ int FacingClass::Rotation_Adjust(int rate) {
       *current *	facing.
       */
       if (diff < 0) {
-        CurrentFacing = (DirType)(CurrentFacing - (DirType)rate);
+        CurrentFacing = static_cast<DirType>(CurrentFacing - (DirType)rate);
       } else {
-        CurrentFacing = CurrentFacing + (DirType)rate;
+        CurrentFacing = CurrentFacing + static_cast<DirType>(rate);
       }
     }
 

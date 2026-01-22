@@ -135,7 +135,7 @@ UDPInterfaceClass::~UDPInterfaceClass() {
  * HISTORY: * 8/5/97 12:12PM ST : Created *
  *=============================================================================================*/
 void UDPInterfaceClass::Set_Broadcast_Address(void* address) {
-  char* ip_addr = (char*)address;
+  char* ip_addr = static_cast<char*>(address);
   assert(strlen(ip_addr) <= strlen("xxx.xxx.xxx.xxx"));
 
   unsigned char* baddr = new unsigned char[4];
@@ -187,7 +187,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   */
   addr.sin_family = AF_INET;
   addr.sin_port =
-      htons((unsigned short)PlanetWestwoodPortNumber);
+      htons(static_cast<unsigned short>(PlanetWestwoodPortNumber));
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if (bind(Socket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
@@ -384,7 +384,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       */
       addr.sin_family = AF_INET;
       addr.sin_port =
-          htons((unsigned short)PlanetWestwoodPortNumber);
+          htons(static_cast<unsigned short>(PlanetWestwoodPortNumber));
       memcpy(&addr.sin_addr.s_addr, packet->Address + 4, 4);
 
       /*

@@ -33,7 +33,7 @@ class BufferClass {
       : Buffer(new uint8_t[size]), Size(size), Allocated(true) {}
   ~BufferClass() {
     if (Allocated) {
-      delete[] (uint8_t*)Buffer;
+      delete[] static_cast<uint8_t*>(Buffer);
     }
   }
 

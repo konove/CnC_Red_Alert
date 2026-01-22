@@ -75,19 +75,19 @@ CarryoverClass::CarryoverClass(TechnoClass* techno)
 
     switch (RTTI) {
       case RTTI_UNIT:
-        Type.Unit = ((UnitClass*)techno)->Class->Type;
+        Type.Unit = dynamic_cast<UnitClass*>(techno)->Class->Type;
         break;
 
       case RTTI_BUILDING:
-        Type.Building = ((BuildingClass*)techno)->Class->Type;
+        Type.Building = dynamic_cast<BuildingClass*>(techno)->Class->Type;
         break;
 
       case RTTI_INFANTRY:
-        Type.Infantry = ((InfantryClass*)techno)->Class->Type;
+        Type.Infantry = dynamic_cast<InfantryClass*>(techno)->Class->Type;
         break;
 
       case RTTI_VESSEL:
-        Type.Vessel = ((VesselClass*)techno)->Class->Type;
+        Type.Vessel = dynamic_cast<VesselClass*>(techno)->Class->Type;
         break;
 
       default:

@@ -85,8 +85,10 @@
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/jshell.h"
+#include "td/object.h"
 #include "td/techno.h"
 #include "td/type.h"
+
 #ifdef CHEAT_KEYS
 int FactoryClass::Validate() const {
   int num;
@@ -183,7 +185,7 @@ void FactoryClass::Init() { Factories.Free_All(); }
 void* FactoryClass::operator new(size_t) throw() {
   void* ptr = Factories.Allocate();
   if (ptr) {
-    ((FactoryClass*)ptr)->IsActive = true;
+    static_cast<FactoryClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -205,9 +207,9 @@ void* FactoryClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void FactoryClass::operator delete(void* ptr) {
   if (ptr) {
-    ((FactoryClass*)ptr)->IsActive = false;
+    static_cast<FactoryClass*>(ptr)->IsActive = false;
   }
-  Factories.Free((FactoryClass*)ptr);
+  Factories.Free(static_cast<FactoryClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -364,7 +366,7 @@ bool FactoryClass::Set(TechnoTypeClass const& object, HouseClass& house) {
   /*
   **	Create an object of the type requested.
   */
-  Object = (TechnoClass*)object.Create_One_Of(&house);
+  Object = dynamic_cast<TechnoClass*>(object.Create_One_Of(&house));
 
   if (Object) {
     House = Object->House;

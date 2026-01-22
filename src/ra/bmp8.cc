@@ -47,25 +47,25 @@ bool BMP8::Init(const char* szFile, HWND hWnd) {
 
   //	Retrieve a handle identifying the file.
   HANDLE hFile = ::CreateFile(szFile, GENERIC_READ, FILE_SHARE_READ,
-                              (LPSECURITY_ATTRIBUTES)NULL, OPEN_EXISTING,
-                              FILE_ATTRIBUTE_READONLY, (HANDLE)NULL);
+                              static_cast<LPSECURITY_ATTRIBUTES>(NULL), OPEN_EXISTING,
+                              FILE_ATTRIBUTE_READONLY, static_cast<HANDLE>(NULL));
 
   if (!hFile) return false;
 
   // Retrieve the BITMAPFILEHEADER structure.
   ::ReadFile(hFile, &bitmapHeader, sizeof(BITMAPFILEHEADER), &dwRead,
-             (LPOVERLAPPED)NULL);
+             static_cast<LPOVERLAPPED>(NULL));
 
   // Retrieve the BITMAPFILEHEADER structure.
   ::ReadFile(hFile, &bitmapInfoHeader, sizeof(BITMAPINFOHEADER), &dwRead,
-             (LPOVERLAPPED)NULL);
+             static_cast<LPOVERLAPPED>(NULL));
 
   // Allocate memory for the BITMAPINFO structure.
   HGLOBAL infoHeaderMem = ::GlobalAlloc(
       GHND, sizeof(BITMAPINFOHEADER) +
                 (1 << bitmapInfoHeader.biBitCount) * sizeof(RGBQUAD));
 
-  LPBITMAPINFO lpHeaderMem = (LPBITMAPINFO)::GlobalLock(infoHeaderMem);
+  LPBITMAPINFO lpHeaderMem = static_cast<LPBITMAPINFO>(::GlobalLock(infoHeaderMem));
 
   // Load BITMAPINFOHEADER into the BITMAPINFO structure.
   lpHeaderMem->bmiHeader.biSize = bitmapInfoHeader.biSize;
@@ -84,13 +84,14 @@ bool BMP8::Init(const char* szFile, HWND hWnd) {
   // 1 << bitmapInfoHeader.biBitCount == 2 ^ bitmapInfoHeader.biBitCount
   ::ReadFile(hFile, lpHeaderMem->bmiColors,
              (1 << bitmapInfoHeader.biBitCount) * sizeof(RGBQUAD), &dwRead,
-             (LPOVERLAPPED)NULL);
+             static_cast<LPOVERLAPPED>(NULL));
 
-  lpLogPalette = (LPLOGPALETTE) new char[sizeof(LOGPALETTE) + sizeof(PALETTEENTRY) * 256];
+  lpLogPalette = static_cast<LPLOGPALETTE>(
+      new char[sizeof(LOGPALETTE) + sizeof(PALETTEENTRY) * 256]);
   lpLogPalette->palVersion = 0x300;
   lpLogPalette->palNumEntries = 256;
 
-  palData = (char*)lpHeaderMem->bmiColors;
+  palData = static_cast<char*>(lpHeaderMem->bmiColors);
 
   for (i = 0; i < 256; i++) {
     lpLogPalette->palPalEntry[i].peRed = *palData++;
@@ -108,7 +109,7 @@ bool BMP8::Init(const char* szFile, HWND hWnd) {
 
   // Retrieve the bitmap data.
   ::ReadFile(hFile, lpvBits, bitmapHeader.bfSize - bitmapHeader.bfOffBits,
-             &dwRead, (LPOVERLAPPED)NULL);
+             &dwRead, static_cast<LPOVERLAPPED>(NULL));
 
   // Create a bitmap from the data stored in the .BMP file.
   hdc = ::GetDC(hWnd);

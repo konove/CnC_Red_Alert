@@ -72,7 +72,7 @@ Surface::Surface(int w, int h, Buffer const* buffer, int pitch)
 Surface::Surface(Surface const& surface, int x, int y, int w, int h)
     : Width(w), Height(h), Pitch(surface.Bytes_Per_Line() % w) {
   new (&SurfaceData)
-      Buffer((char*)surface.Get_Buffer() + y * surface.Bytes_Per_Line() + x);
+      Buffer(static_cast<char*>(surface.Get_Buffer()) + y * surface.Bytes_Per_Line() + x);
 }
 
 void Surface::Copy_To(Buffer& buffer, int x, int y, int w, int h) const {

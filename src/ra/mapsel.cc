@@ -166,7 +166,7 @@ char const* Map_Selection() {
 
 #if RESFACTOR == 2
   GraphicBufferClass* pseudoseenbuff =
-      new GraphicBufferClass(320, 200, (void*)nullptr);
+      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
 #endif
 
   //	fixed oldvolume = Options.ScoreVolume;

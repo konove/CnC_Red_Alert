@@ -115,7 +115,7 @@
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline int Lepton_To_Pixel(LEPTON lepton) {
-  return ((int)(signed short)lepton * ICON_PIXEL_W + ICON_LEPTON_W / 2) /
+  return (static_cast<int>((signed short)lepton) * ICON_PIXEL_W + ICON_LEPTON_W / 2) /
          ICON_LEPTON_W;
 }
 
@@ -134,8 +134,8 @@ inline int Lepton_To_Pixel(LEPTON lepton) {
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline LEPTON Pixel_To_Lepton(int pixel) {
-  return (LEPTON)((pixel * ICON_LEPTON_W + ICON_PIXEL_W / 2) /
-                  ICON_PIXEL_W);
+  return static_cast<LEPTON>((pixel * ICON_LEPTON_W + ICON_PIXEL_W / 2) /
+                             ICON_PIXEL_W);
 }
 
 /***********************************************************************************************
@@ -255,7 +255,7 @@ inline CELL XY_Cell(int x, int y) {
  *=============================================================================================*/
 inline LEPTON Cell_To_Lepton(int cell_distance) {
   LEPTON_COMPOSITE lepton;
-  lepton.Sub.Cell = (unsigned char)cell_distance;
+  lepton.Sub.Cell = static_cast<unsigned char>(cell_distance);
   lepton.Sub.Lepton = 0;
   return lepton.Raw;
 }
@@ -438,10 +438,10 @@ inline COORDINATE XYP_Coord(int x, int y) {
 inline COORDINATE Cell_Coord(CELL cell) {
   COORD_COMPOSITE coord;
 
-  coord.Sub.X.Sub.Cell = (unsigned char)((CELL_COMPOSITE&)cell).Sub.X;
-  coord.Sub.X.Sub.Lepton = (unsigned char)(CELL_LEPTON_W / 2);
-  coord.Sub.Y.Sub.Cell = (unsigned char)((CELL_COMPOSITE&)cell).Sub.Y;
-  coord.Sub.Y.Sub.Lepton = (unsigned char)(CELL_LEPTON_W / 2);
+  coord.Sub.X.Sub.Cell = static_cast<unsigned char>(((CELL_COMPOSITE&)cell).Sub.X);
+  coord.Sub.X.Sub.Lepton = static_cast<unsigned char>((CELL_LEPTON_W / 2));
+  coord.Sub.Y.Sub.Cell = static_cast<unsigned char>(((CELL_COMPOSITE&)cell).Sub.Y);
+  coord.Sub.Y.Sub.Lepton = static_cast<unsigned char>((CELL_LEPTON_W / 2));
   return coord.Coord;
 }
 
@@ -530,10 +530,10 @@ inline COORDINATE Coord_Whole(COORDINATE coord) {
 inline COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2) {
   COORD_COMPOSITE coord;
 
-  coord.Sub.X.Raw = (LEPTON)((int)(short)((COORD_COMPOSITE&)coord1).Sub.X.Raw +
-                             (int)(short)((COORD_COMPOSITE&)coord2).Sub.X.Raw);
-  coord.Sub.Y.Raw = (LEPTON)((int)(short)((COORD_COMPOSITE&)coord1).Sub.Y.Raw +
-                             (int)(short)((COORD_COMPOSITE&)coord2).Sub.Y.Raw);
+  coord.Sub.X.Raw = static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.X.Raw +
+                          (int)(short)((COORD_COMPOSITE&)coord2).Sub.X.Raw);
+  coord.Sub.Y.Raw = static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.Y.Raw +
+                          (int)(short)((COORD_COMPOSITE&)coord2).Sub.Y.Raw);
   return coord.Coord;
 }
 
@@ -558,10 +558,10 @@ inline COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2) {
 inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
   COORD_COMPOSITE coord;
 
-  coord.Sub.X.Raw = (LEPTON)((int)(short)((COORD_COMPOSITE&)coord1).Sub.X.Raw -
-                             (int)(short)((COORD_COMPOSITE&)coord2).Sub.X.Raw);
-  coord.Sub.Y.Raw = (LEPTON)((int)(short)((COORD_COMPOSITE&)coord1).Sub.Y.Raw -
-                             (int)(short)((COORD_COMPOSITE&)coord2).Sub.Y.Raw);
+  coord.Sub.X.Raw = static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.X.Raw -
+                          (int)(short)((COORD_COMPOSITE&)coord2).Sub.X.Raw);
+  coord.Sub.Y.Raw = static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.Y.Raw -
+                          (int)(short)((COORD_COMPOSITE&)coord2).Sub.Y.Raw);
   return coord.Coord;
 }
 
@@ -584,12 +584,12 @@ inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
   COORD_COMPOSITE coord;
 
-  coord.Sub.X.Raw = (LEPTON)(((int)((COORD_COMPOSITE&)coord1).Sub.X.Raw +
-                              (int)((COORD_COMPOSITE&)coord2).Sub.X.Raw) /
-                             2);
-  coord.Sub.Y.Raw = (LEPTON)(((int)((COORD_COMPOSITE&)coord1).Sub.Y.Raw +
-                              (int)((COORD_COMPOSITE&)coord2).Sub.Y.Raw) /
-                             2);
+  coord.Sub.X.Raw = static_cast<LEPTON>(((int)((COORD_COMPOSITE&)coord1).Sub.X.Raw +
+                           (int)((COORD_COMPOSITE&)coord2).Sub.X.Raw) /
+                          2);
+  coord.Sub.Y.Raw = static_cast<LEPTON>(((int)((COORD_COMPOSITE&)coord1).Sub.Y.Raw +
+                           (int)((COORD_COMPOSITE&)coord2).Sub.Y.Raw) /
+                          2);
   return coord.Coord;
 }
 
@@ -609,7 +609,8 @@ inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline FacingType Dir_Facing(DirType facing) {
-  return (FacingType)(((unsigned char)((int)facing + 0x10) & 0xFF) >> 5);
+  return static_cast<FacingType>(((unsigned char)((int)facing + 0x10) & 0xFF) >>
+                                 5);
 }
 
 /***********************************************************************************************
@@ -627,7 +628,7 @@ inline FacingType Dir_Facing(DirType facing) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline DirType Facing_Dir(FacingType facing) {
-  return (DirType)((int)facing << 5);
+  return static_cast<DirType>((int)facing << 5);
 }
 
 /***********************************************************************************************
@@ -772,7 +773,7 @@ inline DirType Direction(CELL cell1, CELL cell2) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir) {
-  return Coord_Snap(Coord_Add(AdjacentCoord[(int)dir & 0x07], coord));
+  return Coord_Snap(Coord_Add(AdjacentCoord[static_cast<int>(dir) & 0x07], coord));
 }
 
 /***********************************************************************************************
@@ -814,7 +815,7 @@ inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
-  return (CELL)(cell + AdjacentCell[dir]);
+  return static_cast<CELL>(cell + AdjacentCell[dir]);
 }
 
 /***********************************************************************************************
@@ -835,7 +836,7 @@ inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline CELL Adjacent_Cell(CELL cell, DirType dir) {
-  return (CELL)(cell + AdjacentCell[Dir_Facing(dir)]);
+  return static_cast<CELL>(cell + AdjacentCell[Dir_Facing(dir)]);
 }
 
 /***********************************************************************************************
@@ -854,7 +855,7 @@ inline CELL Adjacent_Cell(CELL cell, DirType dir) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline FacingType Dir_To_8(DirType facing) {
-  return (FacingType)((unsigned char)((int)facing | 0x10) >> 5);
+  return static_cast<FacingType>((unsigned char)((int)facing | 0x10) >> 5);
 }
 
 /***********************************************************************************************
@@ -900,7 +901,7 @@ inline char const* Text_String(int string) {
  *=============================================================================================*/
 template <class T>
 inline T Random_Pick(T a, T b) {
-  return T(Scen.RandomNumber((int)a, (int)b));
+  return T(Scen.RandomNumber(static_cast<int>(a), static_cast<int>(b)));
 };
 
 /***********************************************************************************************
@@ -948,7 +949,7 @@ inline bool Percent_Chance(int percent) {
  *=============================================================================================*/
 template <class T>
 inline T Sim_Random_Pick(T a, T b) {
-  return T(NonCriticalRandomNumber((int)a, (int)b));
+  return T(NonCriticalRandomNumber(static_cast<int>(a), static_cast<int>(b)));
 };
 
 /***********************************************************************************************
@@ -1001,9 +1002,9 @@ inline int Distance(int x1, int y1, int x2, int y2) {
   int diff2 = x1 - x2;
   if (diff2 < 0) diff2 = -diff2;
   if (diff1 > diff2) {
-    return diff1 + (unsigned)diff2 / 2;
+    return diff1 + static_cast<unsigned>(diff2) / 2;
   }
-  return diff2 + (unsigned)diff1 / 2;
+  return diff2 + static_cast<unsigned>(diff1) / 2;
 }
 
 #endif

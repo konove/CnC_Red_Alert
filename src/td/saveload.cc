@@ -835,7 +835,8 @@ void Decode_All_Pointers() {
   /*
   **	PlayerPtr.
   */
-  PlayerPtr = HouseClass::As_Pointer((HousesType)(intptr_t)PlayerPtr);
+  PlayerPtr =
+      HouseClass::As_Pointer(static_cast<HousesType>((intptr_t)PlayerPtr));
   Whom = PlayerPtr->Class->House;
   switch (PlayerPtr->Class->House) {
     case HOUSE_GOOD:
@@ -858,7 +859,8 @@ void Decode_All_Pointers() {
   **	Currently-selected objects.
   */
   for (i = 0; i < CurrentObject.Count(); i++) {
-    CurrentObject[i] = As_Object((TARGET)(uintptr_t)CurrentObject[i]);
+    CurrentObject[i] =
+        As_Object(static_cast<TARGET>((uintptr_t)CurrentObject[i]));
     Check_Ptr(CurrentObject[i], __FILE__, __LINE__);
   }
 
@@ -949,7 +951,7 @@ bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
   **	Fill in VTable.
   */
   if (vtable) {
-    ((void**)((char*)ptr + base_size - 4))[0] = vtable;
+    ((void**)(static_cast<char*>(ptr) + base_size - 4))[0] = vtable;
   }
 
   return true;
@@ -1089,22 +1091,23 @@ TARGET TechnoType_To_Target(TechnoTypeClass const* ptr) {
 
   switch (ptr->What_Am_I()) {
     case RTTI_INFANTRYTYPE:
-      target =
-          Build_Target(KIND_INFANTRY, ((InfantryTypeClass const*)ptr)->Type);
+      target = Build_Target(KIND_INFANTRY,
+                            dynamic_cast<InfantryTypeClass const*>(ptr)->Type);
       break;
 
     case RTTI_UNITTYPE:
-      target = Build_Target(KIND_UNIT, ((UnitTypeClass const*)ptr)->Type);
+      target = Build_Target(KIND_UNIT,
+                            dynamic_cast<UnitTypeClass const*>(ptr)->Type);
       break;
 
     case RTTI_AIRCRAFTTYPE:
-      target =
-          Build_Target(KIND_AIRCRAFT, ((AircraftTypeClass const*)ptr)->Type);
+      target = Build_Target(KIND_AIRCRAFT,
+                            dynamic_cast<AircraftTypeClass const*>(ptr)->Type);
       break;
 
     case RTTI_BUILDINGTYPE:
-      target =
-          Build_Target(KIND_BUILDING, ((BuildingTypeClass const*)ptr)->Type);
+      target = Build_Target(KIND_BUILDING,
+                            dynamic_cast<BuildingTypeClass const*>(ptr)->Type);
       break;
 
     default:
@@ -1136,17 +1139,19 @@ TechnoTypeClass const* Target_To_TechnoType(TARGET target) {
   switch (Target_Kind(target)) {
     case KIND_INFANTRY:
       return &InfantryTypeClass::As_Reference(
-          (InfantryType)Target_Value(target));
+          static_cast<InfantryType>(Target_Value(target)));
 
     case KIND_UNIT:
-      return &UnitTypeClass::As_Reference((UnitType)Target_Value(target));
+      return &UnitTypeClass::As_Reference(
+          static_cast<UnitType>(Target_Value(target)));
 
     case KIND_AIRCRAFT:
       return &AircraftTypeClass::As_Reference(
-          (AircraftType)Target_Value(target));
+          static_cast<AircraftType>(Target_Value(target)));
 
     case KIND_BUILDING:
-      return &BuildingTypeClass::As_Reference((StructType)Target_Value(target));
+      return &BuildingTypeClass::As_Reference(
+          static_cast<StructType>(Target_Value(target)));
   }
   return nullptr;
 }
@@ -1167,7 +1172,7 @@ TechnoTypeClass const* Target_To_TechnoType(TARGET target) {
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
 void* Get_VTable(void* ptr, int base_size) {
-  return ((void**)((char*)ptr + base_size - 4))[0];
+  return ((void**)(static_cast<char*>(ptr) + base_size - 4))[0];
 }
 
 /***************************************************************************
@@ -1188,7 +1193,7 @@ void* Get_VTable(void* ptr, int base_size) {
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
 void Set_VTable(void* ptr, int base_size, void* vtable) {
-  ((void**)((char*)ptr + base_size - 4))[0] = vtable;
+  ((void**)(static_cast<char*>(ptr) + base_size - 4))[0] = vtable;
 }
 
 #if 0

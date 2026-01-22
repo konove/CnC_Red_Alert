@@ -353,9 +353,7 @@ RTTIType ObjectClass::What_Am_I() const { return RTTI_OBJECT; }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(ObjectClass*) const {
-  return ACTION_NONE;
-}
+ActionType ObjectClass::What_Action(ObjectClass*) const { return ACTION_NONE; }
 
 /***********************************************************************************************
  * ObjectClass::What_Action -- Returns with the action to perform for this
@@ -716,7 +714,8 @@ void ObjectClass::Unselect() {
 bool ObjectClass::Select() {
   if (!Debug_Map && (IsSelected || !Class_Of().IsSelectable)) return false;
 
-  if (Can_Player_Move() && Is_Techno() && ((TechnoClass*)this)->IsALoaner)
+  if (Can_Player_Move() && Is_Techno() &&
+      dynamic_cast<TechnoClass*>(this)->IsALoaner)
     return false;
 
   /*
@@ -734,7 +733,7 @@ bool ObjectClass::Select() {
       Unselect_All();
     }
   }
-  if (((TechnoTypeClass const&)Class_Of()).IsLeader) {
+  if (dynamic_cast<TechnoTypeClass const&>(Class_Of()).IsLeader) {
     CurrentObject.Add_Head(this);
   } else {
     CurrentObject.Add(this);
@@ -784,14 +783,13 @@ bool ObjectClass::Render(bool forced) {
       switch (What_Am_I()) {
         case RTTI_INFANTRY:
         case RTTI_UNIT:
-          FootClass* foot = (FootClass*)this;
+          FootClass* foot = dynamic_cast<FootClass*>(this);
           CELL cell;
           int oldx, oldy;
 
           if (foot->Head_To_Coord() && foot->Path[0] != FACING_NONE) {
-            cell = Adjacent_Cell(
-                Coord_Cell(foot->Head_To_Coord()),
-                foot->Path[0] + FACING_S & FACING_NW);
+            cell = Adjacent_Cell(Coord_Cell(foot->Head_To_Coord()),
+                                 foot->Path[0] + FACING_S & FACING_NW);
             Map.Coord_To_Pixel(Cell_Coord(cell), oldx, oldy);
             for (int index = 0; index < CONQUER_PATH_MAX; index++) {
               if (foot->Path[index] == FACING_NONE) break;
@@ -1343,7 +1341,7 @@ bool ObjectClass::Mark(MarkType mark) {
     ** or not to see if we have to adjust the regional threat ratings
     */
     if (Is_Techno()) {
-      tech = (TechnoClass*)this;
+      tech = dynamic_cast<TechnoClass*>(this);
       threat = tech->Risk();
       house = tech->Owner();
       cell = Coord_Cell(Coord);

@@ -208,7 +208,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
   /*------------------------------------------------------------------------
   Check the magic #
   ------------------------------------------------------------------------*/
-  packet = (GlobalHeaderType*)buf;
+  packet = static_cast<GlobalHeaderType*>(buf);
   if (packet->Header.MagicNumber != MagicNum) {
     return 0;
   }
@@ -428,7 +428,7 @@ int IPXGlobalConnClass::Send(char* buf, int buflen, void* extrabuf, int) {
   /*------------------------------------------------------------------------
   Extract the packet's embedded IPX address
   ------------------------------------------------------------------------*/
-  addr = (IPXAddressClass*)extrabuf;
+  addr = static_cast<IPXAddressClass*>(extrabuf);
 
   /*------------------------------------------------------------------------
   If it's a broadcast address, broadcast it

@@ -250,14 +250,14 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
       switch (Class->Type) {
         case STRUCT_AIRSTRIP:
           if (from->What_Am_I() == RTTI_AIRCRAFT &&
-              ((AircraftClass const *)from)->Class->IsFixedWing) {
+              dynamic_cast<AircraftClass const *>(from)->Class->IsFixedWing) {
             return RADIO_ROGER;
           }
           break;
 
         case STRUCT_HELIPAD:
           if (from->What_Am_I() == RTTI_AIRCRAFT &&
-              !((AircraftClass const *)from)->Class->IsFixedWing) {
+              !dynamic_cast<AircraftClass const *>(from)->Class->IsFixedWing) {
             return RADIO_ROGER;
           }
           break;
@@ -273,7 +273,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
 
         case STRUCT_REFINERY:
           if (from->What_Am_I() == RTTI_UNIT &&
-              *(UnitClass *)from == UNIT_HARVESTER &&
+              *dynamic_cast<UnitClass *>(from) == UNIT_HARVESTER &&
               (ScenarioInit || !Is_Something_Attached())) {
             return RADIO_ROGER;
           }
@@ -579,12 +579,10 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
       TechnoClass *contact = Contact_With_Whom();
 
       assert(contact->IsActive);
-      int xxx =
-          x + (Lepton_To_Pixel(Coord_X(contact->Render_Coord())) -
-               Lepton_To_Pixel(Coord_X(Render_Coord())));
-      int yyy =
-          y + (Lepton_To_Pixel(Coord_Y(contact->Render_Coord())) -
-               Lepton_To_Pixel(Coord_Y(Render_Coord())));
+      int xxx = x + (Lepton_To_Pixel(Coord_X(contact->Render_Coord())) -
+                     Lepton_To_Pixel(Coord_X(Render_Coord())));
+      int yyy = y + (Lepton_To_Pixel(Coord_Y(contact->Render_Coord())) -
+                     Lepton_To_Pixel(Coord_Y(Render_Coord())));
       contact->Draw_It(xxx, yyy, window);
       contact->IsToDisplay = false;
     }
@@ -1337,8 +1335,9 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
         ** If we were in contact with a landed plane, blow the plane up too.
         */
         if (tech && tech->IsActive && tech->What_Am_I() == RTTI_AIRCRAFT &&
-            ((AircraftClass *)tech)->Class->IsFixedWing &&
-            ((AircraftClass *)tech)->In_Which_Layer() == LAYER_GROUND) {
+            dynamic_cast<AircraftClass *>(tech)->Class->IsFixedWing &&
+            dynamic_cast<AircraftClass *>(tech)->In_Which_Layer() ==
+                LAYER_GROUND) {
           int damage = 500;
           tech->Take_Damage(damage, 0, WARHEAD_AP, source, forced);
         }
@@ -1536,7 +1535,8 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
               ** renovator that caused the damage.
               */
               if (source == nullptr || source->What_Am_I() != RTTI_INFANTRY ||
-                  *(InfantryClass *)source != INFANTRY_RENOVATOR) {
+                  *dynamic_cast<InfantryClass *>(source) !=
+                      INFANTRY_RENOVATOR) {
                 anim = new AnimClass(ANIM_FIRE_SMALL,
                                      Coord_Scatter(Cell_Coord(cell), 0x0060),
                                      Random_Pick(0, 7), Random_Pick(1, 3));
@@ -1622,7 +1622,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
 void *BuildingClass::operator new(size_t) throw() {
   void *ptr = Buildings.Allocate();
   if (ptr) {
-    ((BuildingClass *)ptr)->IsActive = true;
+    static_cast<BuildingClass *>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -1644,9 +1644,9 @@ void *BuildingClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void BuildingClass::operator delete(void *ptr) {
   if (ptr) {
-    ((BuildingClass *)ptr)->IsActive = false;
+    static_cast<BuildingClass *>(ptr)->IsActive = false;
   }
-  Buildings.Free((BuildingClass *)ptr);
+  Buildings.Free(static_cast<BuildingClass *>(ptr));
 }
 
 /***********************************************************************************************
@@ -1740,7 +1740,7 @@ BuildingClass::~BuildingClass() {
   }
   Class = nullptr;
 
-  delete (FactoryClass *)Factory;
+  delete static_cast<FactoryClass *>(Factory);
   Factory = nullptr;
   ID = -1;
 }
@@ -1800,7 +1800,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
           ScenarioInit++;
           if (i->Unlimbo(Cell_Coord(newcell), DIR_N)) {
             count--;
-            i->Strength = Random_Pick(5, (int)i->Class->MaxStrength);
+            i->Strength =
+                Random_Pick(5, static_cast<int>(i->Class->MaxStrength));
             i->Scatter(0, true);
             if (source != TARGET_NONE && !House->Is_Ally(As_Object(source))) {
               i->Assign_Mission(MISSION_ATTACK);
@@ -2008,7 +2009,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
   switch (base->What_Am_I()) {
     case RTTI_AIRCRAFT:
       if (!In_Radio_Contact()) {
-        AircraftClass *air = (AircraftClass *)base;
+        AircraftClass *air = dynamic_cast<AircraftClass *>(base);
 
         air->Height = 0;
         ScenarioInit++;
@@ -2020,7 +2021,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
         }
         ScenarioInit--;
       } else {
-        AircraftClass *air = (AircraftClass *)base;
+        AircraftClass *air = dynamic_cast<AircraftClass *>(base);
 
         if (Cell_X(Coord_Cell(Center_Coord())) - Map.MapCellX <
             Map.MapCellWidth / 2) {
@@ -2070,7 +2071,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
         case STRUCT_REFINERY:
           if (base->What_Am_I() == RTTI_UNIT) {
             cell = Coord_Cell(Center_Coord());
-            UnitClass *unit = (UnitClass *)base;
+            UnitClass *unit = dynamic_cast<UnitClass *>(base);
 
             cell = Adjacent_Cell(cell, FACING_SW);
             ScenarioInit++;
@@ -2137,8 +2138,8 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
               base->Assign_Destination(::As_Target(cell));
               if (House->IQ >= Rule.IQGuardArea) {
                 base->Assign_Mission(MISSION_GUARD_AREA);
-                base->ArchiveTarget =
-                    ::As_Target(House->Where_To_Go((FootClass *)base));
+                base->ArchiveTarget = ::As_Target(
+                    House->Where_To_Go(dynamic_cast<FootClass *>(base)));
               }
 
               /*
@@ -2172,8 +2173,8 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
               base->Assign_Destination(::As_Target(cell));
               if (House->IQ >= Rule.IQGuardArea) {
                 base->Assign_Mission(MISSION_GUARD_AREA);
-                base->ArchiveTarget =
-                    ::As_Target(House->Where_To_Go((FootClass *)base));
+                base->ArchiveTarget = ::As_Target(
+                    House->Where_To_Go(dynamic_cast<FootClass *>(base)));
               }
               ScenarioInit--;
               return 2;
@@ -2194,8 +2195,8 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
         *calling routine will probably abandon this *	building in preference
         *to building another.
         */
-        BaseNodeClass *node =
-            Base.Next_Buildable(((BuildingClass *)base)->Class->Type);
+        BaseNodeClass *node = Base.Next_Buildable(
+            dynamic_cast<BuildingClass *>(base)->Class->Type);
         COORDINATE coord = 0;
         if (node) {
           coord = Cell_Coord(node->Cell);
@@ -2203,7 +2204,8 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
           /*
           **	Find a suitable new spot to place.
           */
-          coord = House->Find_Build_Location((BuildingClass *)base);
+          coord =
+              House->Find_Build_Location(dynamic_cast<BuildingClass *>(base));
         }
 
         if (coord) {
@@ -2211,8 +2213,8 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
             return 1;
           }
           if (base->Unlimbo(coord)) {
-            if (node &&
-                ((BuildingClass *)base)->Class->Type == House->BuildStructure) {
+            if (node && dynamic_cast<BuildingClass *>(base)->Class->Type ==
+                            House->BuildStructure) {
               House->BuildStructure = STRUCT_NONE;
             }
             return 2;
@@ -2997,7 +2999,7 @@ bool BuildingClass::Toggle_Primary() {
       }
     }
     IsLeader = true;
-    if ((HouseClass *)House == PlayerPtr) {
+    if (static_cast<HouseClass *>(House) == PlayerPtr) {
       Speak(VOX_PRIMARY_SELECTED);
     }
   }
@@ -3091,8 +3093,9 @@ bool BuildingClass::Captured(HouseClass *newowner) {
       if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
           (::Distance(tech->Center_Coord(), Docking_Coord()) < 0x0040 ||
            (tech->What_Am_I() == RTTI_AIRCRAFT &&
-            ((AircraftClass *)tech)->Class->IsFixedWing &&
-            ((AircraftClass *)tech)->In_Which_Layer() == LAYER_GROUND))) {
+            dynamic_cast<AircraftClass *>(tech)->Class->IsFixedWing &&
+            dynamic_cast<AircraftClass *>(tech)->In_Which_Layer() ==
+                LAYER_GROUND))) {
         tech->Captured(newowner);
       } else {
         Transmit_Message(RADIO_RUN_AWAY);
@@ -3104,7 +3107,7 @@ bool BuildingClass::Captured(HouseClass *newowner) {
     **	Abort any computer production in progress.
     */
     if (Factory) {
-      delete (FactoryClass *)Factory;
+      delete static_cast<FactoryClass *>(Factory);
       Factory = nullptr;
     }
 
@@ -3919,8 +3922,9 @@ int BuildingClass::Mission_Repair() {
         ** their landings.
         */
         if (tech->What_Am_I() == RTTI_AIRCRAFT) {
-          if (((AircraftClass *)tech)->Class->IsFixedWing &&
-              ((AircraftClass *)tech)->In_Which_Layer() == LAYER_GROUND) {
+          if (dynamic_cast<AircraftClass *>(tech)->Class->IsFixedWing &&
+              dynamic_cast<AircraftClass *>(tech)->In_Which_Layer() ==
+                  LAYER_GROUND) {
             distance = 0x80;
           }
         }
@@ -3943,7 +3947,7 @@ int BuildingClass::Mission_Repair() {
 
           if ((radio->Health_Ratio() < Rule.ConditionGreen ||
                (radio->What_Am_I() == RTTI_UNIT &&
-                *(UnitClass *)radio == UNIT_MINELAYER)) &&
+                *dynamic_cast<UnitClass *>(radio) == UNIT_MINELAYER)) &&
               Transmit_Message(RADIO_REPAIR) == RADIO_ROGER) {
             /*
             **	If the object over the repair bay is marked as useless, then
@@ -4120,7 +4124,8 @@ int BuildingClass::Mission_Missile() {
       ** opening on the building, the missile rising, and smoke broiling.
       */
       case DOOR_OPENING: {
-        COORDINATE door = Coord_Move(Center_Coord(), (DirType)0xC0, 0x30);
+        COORDINATE door =
+            Coord_Move(Center_Coord(), static_cast<DirType>(0xC0), 0x30);
         AnimClass *sput = new AnimClass(ANIM_SPUTDOOR, door);
         if (sput) {
           IsReadyToCommence = false;
@@ -4146,7 +4151,7 @@ int BuildingClass::Mission_Missile() {
                                 WARHEAD_FIRE, MPH_ROCKET);
             if (bullet) {
               COORDINATE launch =
-                  Coord_Move(Center_Coord(), (DirType)0xC0, 0x30);
+                  Coord_Move(Center_Coord(), static_cast<DirType>(0xC0), 0x30);
               if (!bullet->Unlimbo(launch, DIR_N)) {
                 delete bullet;
                 bullet = nullptr;
@@ -4200,7 +4205,8 @@ int BuildingClass::Mission_Missile() {
         BulletClass *bullet = new BulletClass(BULLET_NUKE_UP, targ, this, 200,
                                               WARHEAD_HE, MPH_VERY_FAST);
         if (bullet) {
-          COORDINATE launch = Coord_Move(Center_Coord(), (DirType)28, 0xA0);
+          COORDINATE launch =
+              Coord_Move(Center_Coord(), static_cast<DirType>(28), 0xA0);
           if (!bullet->Unlimbo(launch, DIR_N)) {
             delete bullet;
             bullet = nullptr;
@@ -4513,7 +4519,7 @@ int BuildingClass::Mission_Unload() {
         //				if (cellptr->Cell_Techno()) {
         //					cellptr->Incoming(0, true);
         //				}
-        unit = (UnitClass *)Contact_With_Whom();
+        unit = dynamic_cast<UnitClass *>(Contact_With_Whom());
         if (unit) {
           unit->Assign_Mission(MISSION_GUARD);
           unit->Commence();
@@ -4551,7 +4557,7 @@ int BuildingClass::Mission_Unload() {
       */
       case OPEN:
         if (Is_Door_Open()) {
-          unit = (UnitClass *)Contact_With_Whom();
+          unit = dynamic_cast<UnitClass *>(Contact_With_Whom());
           if (unit) {
             unit->Assign_Mission(MISSION_MOVE);
 
@@ -4738,7 +4744,7 @@ void BuildingClass::Detach_All(bool all) {
   */
   if (Factory) {
     Factory->Abandon();
-    delete (FactoryClass *)Factory;
+    delete static_cast<FactoryClass *>(Factory);
     Factory = nullptr;
   }
 
@@ -4794,7 +4800,7 @@ bool BuildingClass::Flush_For_Placement(TechnoClass *techno, CELL cell) {
   assert(IsActive);
 
   if (techno) {
-    return ((BuildingTypeClass const &)techno->Class_Of())
+    return dynamic_cast<BuildingTypeClass const &>(techno->Class_Of())
         .Flush_For_Placement(cell, House);
   }
   return false;
@@ -5055,7 +5061,7 @@ void BuildingClass::Read_INI(CCINIClass &ini) {
       /*
       **	5th token: facing.
       */
-      facing = (DirType)atoi(strtok(nullptr, ","));
+      facing = static_cast<DirType>(atoi(strtok(nullptr, ",")));
 
       /*
       **	6th token: triggername (can be nullptr).
@@ -5210,7 +5216,7 @@ void BuildingClass::Factory_AI() {
       */
       case 0:
         Factory->Abandon();
-        delete (FactoryClass *)Factory;
+        delete static_cast<FactoryClass *>(Factory);
         Factory = nullptr;
         break;
 
@@ -5229,27 +5235,32 @@ void BuildingClass::Factory_AI() {
       case 2:
         switch (product->What_Am_I()) {
           case RTTI_VESSEL:
-            House->JustBuiltVessel = ((VesselClass *)product)->Class->Type;
+            House->JustBuiltVessel =
+                dynamic_cast<VesselClass *>(product)->Class->Type;
             House->IsBuiltSomething = true;
             break;
 
           case RTTI_UNIT:
-            House->JustBuiltUnit = ((UnitClass *)product)->Class->Type;
+            House->JustBuiltUnit =
+                dynamic_cast<UnitClass *>(product)->Class->Type;
             House->IsBuiltSomething = true;
             break;
 
           case RTTI_INFANTRY:
-            House->JustBuiltInfantry = ((InfantryClass *)product)->Class->Type;
+            House->JustBuiltInfantry =
+                dynamic_cast<InfantryClass *>(product)->Class->Type;
             House->IsBuiltSomething = true;
             break;
 
           case RTTI_BUILDING:
-            House->JustBuiltStructure = ((BuildingClass *)product)->Class->Type;
+            House->JustBuiltStructure =
+                dynamic_cast<BuildingClass *>(product)->Class->Type;
             House->IsBuiltSomething = true;
             break;
 
           case RTTI_AIRCRAFT:
-            House->JustBuiltAircraft = ((AircraftClass *)product)->Class->Type;
+            House->JustBuiltAircraft =
+                dynamic_cast<AircraftClass *>(product)->Class->Type;
             House->IsBuiltSomething = true;
             break;
 
@@ -5259,7 +5270,7 @@ void BuildingClass::Factory_AI() {
         //				fact->Completed();
         Factory->Completed();
         //				delete fact;
-        delete (FactoryClass *)Factory;
+        delete static_cast<FactoryClass *>(Factory);
         Factory = nullptr;
         break;
 
@@ -5285,7 +5296,7 @@ void BuildingClass::Factory_AI() {
         */
         if (PlacementDelay == 0 && !Factory->Is_Building()) {
           Factory->Abandon();
-          delete (FactoryClass *)Factory;
+          delete static_cast<FactoryClass *>(Factory);
           Factory = nullptr;
         }
 
@@ -5308,7 +5319,7 @@ void BuildingClass::Factory_AI() {
             Factory = new FactoryClass;
             if (Factory.Is_Valid()) {
               if (!Factory->Set(*techno, *House)) {
-                delete (FactoryClass *)Factory;
+                delete static_cast<FactoryClass *>(Factory);
                 Factory = nullptr;
               } else {
                 House->Production_Begun(Factory->Get_Object());
@@ -5436,9 +5447,9 @@ void BuildingClass::Repair_AI() {
             Repair(1);
 
             if (!House->IsHuman) {
-              House->RepairTimer = Random_Pick(
-                  House->RepairDelay * (TICKS_PER_MINUTE / 4),
-                  House->RepairDelay * TICKS_PER_MINUTE * 2);
+              House->RepairTimer =
+                  Random_Pick(House->RepairDelay * (TICKS_PER_MINUTE / 4),
+                              House->RepairDelay * TICKS_PER_MINUTE * 2);
             }
           }
         }
@@ -5702,7 +5713,8 @@ void BuildingClass::Remove_Gap_Effect() {
 short const *BuildingClass::Overlap_List(bool redraw) const {
   if ((SpiedBy & 1 << PlayerPtr->Class->House) != 0 && IsSelected &&
       (*this == STRUCT_BARRACKS || *this == STRUCT_TENT)) {
-    static short const _list[] = {-1, 2, MAP_CELL_W * 1 - 1, MAP_CELL_W * 1 + 2, REFRESH_EOL};
+    static short const _list[] = {-1, 2, MAP_CELL_W * 1 - 1, MAP_CELL_W * 1 + 2,
+                                  REFRESH_EOL};
     return _list;
   }
   return TechnoClass::Overlap_List(redraw);

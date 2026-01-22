@@ -534,13 +534,13 @@ void Map_Selection() {
 
   Theme.Queue_Song(THEME_MAP1);
 
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void*)nullptr);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
 
   /*
   ** Extra graphic buffer to draw text into
   */
   TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
   TextPrintBuffer->Clear();
   BlitList.Clear();
 
@@ -1580,7 +1580,7 @@ void Bit_It_In_Scale(int x, int y, int w, int h, GraphicBufferClass* src,
   unsigned int i, j, k, m, j1;
   short ScaleBuffer[320 + 200];
 
-  xindex = (short int*)ScaleBuffer;
+  xindex = static_cast<short int*>(ScaleBuffer);
   yindex = xindex + 320;
 
   for (i = 0; i < w; i++) xindex[i] = i; /* init the index array */

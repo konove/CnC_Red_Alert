@@ -532,7 +532,7 @@ void TEventClass::Read_INI() {
   char const* token;
   switch (NewINIFormat) {
     default:
-      Event = TEventType(atoi(strtok(nullptr, ",")));
+      Event = static_cast<TEventType>(atoi(strtok(nullptr, ",")));
       Team.Set_Raw(atoi(strtok(nullptr, ",")));
       Data.Value = atoi(strtok(nullptr, ","));
       break;
@@ -540,7 +540,7 @@ void TEventClass::Read_INI() {
     case 1:
       token = strtok(nullptr, ",");
       Event = TEVENT_NONE;
-      if (token) Event = TEventType(atoi(token));
+      if (token) Event = static_cast<TEventType>(atoi(token));
 
       token = strtok(nullptr, ",");
       Team = nullptr;
@@ -555,7 +555,7 @@ void TEventClass::Read_INI() {
       break;
 
     case 0:
-      Event = TEventType(atoi(strtok(nullptr, ",")));
+      Event = static_cast<TEventType>(atoi(strtok(nullptr, ",")));
 
       strtok(nullptr, ",");
       strtok(nullptr, ",");

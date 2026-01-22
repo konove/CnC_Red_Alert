@@ -116,7 +116,8 @@ bool Load_IPX_Dll() {
     do {
       function_name = FunctionNames[count];
       if (function_name) {
-        *fptr = (unsigned long)GetProcAddress(IpxDllInstance, function_name);
+        *fptr = static_cast<unsigned long>(
+            GetProcAddress(IpxDllInstance, function_name));
         assert(*fptr != NULL);
         fptr++;
         count++;
@@ -152,11 +153,11 @@ void Unload_IPX_Dll() {
 }
 
 int IPX_Open_Socket(unsigned short socket) {
-  return IPX_Open_Socket95((int)socket);
+  return IPX_Open_Socket95(static_cast<int>(socket));
 }
 
 int IPX_Close_Socket(unsigned short socket) {
-  IPX_Close_Socket95((int)socket);
+  IPX_Close_Socket95(static_cast<int>(socket));
   return 0;
 }
 

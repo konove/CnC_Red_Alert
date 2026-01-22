@@ -148,9 +148,9 @@ void Nod_Ending() {
   Score.Presentation();
 
   oldfont = Set_Font(ScoreFontPtr);
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void*)nullptr);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
   TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
   TextPrintBuffer->Clear();
   BlitList.Clear();
   SeenBuff.Clear();
@@ -180,7 +180,7 @@ void Nod_Ending() {
   Show_Mouse();
 
   InterpolationPaletteChanged = true;
-  InterpolationPalette = (unsigned char*)localpal;
+  InterpolationPalette = static_cast<unsigned char*>(localpal);
   Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
   Read_Interpolation_Palette("SATSELIN.PAL");
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "SATSELIN.PAL");
@@ -287,7 +287,7 @@ void Nod_Ending() {
 
   Play_Movie("CC2TEASE");
 
-  delete[] (char*)localpal;
+  delete[] static_cast<char*>(localpal);
   delete TextPrintBuffer;
   BlitList.Clear();
 }

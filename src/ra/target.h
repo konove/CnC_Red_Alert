@@ -60,7 +60,7 @@ class UnitClass;
 class VesselClass;
 
 inline RTTIType Target_Kind(TARGET a) {
-  return RTTIType(((TARGET_COMPOSITE&)a).Sub.Exponent);
+  return static_cast<RTTIType>(((TARGET_COMPOSITE&)a).Sub.Exponent);
 }
 
 inline unsigned Target_Value(TARGET a) {
@@ -127,7 +127,7 @@ class xTargetClass {
 
  public:
   // conversion operator to RTTIType
-  operator RTTIType() const { return RTTIType(Target.Sub.Exponent); }
+  operator RTTIType() const { return static_cast<RTTIType>(Target.Sub.Exponent); }
 
   // comparison operator
   int operator==(xTargetClass& tgt) {

@@ -779,7 +779,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
   if (name) {
     for (order = TMISSION_FIRST; order < TMISSION_COUNT; order++) {
       if (stricmp(TMissions[order], name) == 0) {
-        return (TeamMissionType)order;
+        return static_cast<TeamMissionType>(order);
       }
     }
   }
@@ -828,7 +828,7 @@ char const* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
 void* TeamTypeClass::operator new(size_t) throw() {
   void* ptr = TeamTypes.Allocate();
   if (ptr) {
-    ((TeamTypeClass*)ptr)->IsActive = true;
+    static_cast<TeamTypeClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -850,9 +850,9 @@ void* TeamTypeClass::operator new(size_t) throw() {
  *=========================================================================*/
 void TeamTypeClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TeamTypeClass*)ptr)->IsActive = false;
+    static_cast<TeamTypeClass*>(ptr)->IsActive = false;
   }
-  TeamTypes.Free((TeamTypeClass*)ptr);
+  TeamTypes.Free(static_cast<TeamTypeClass*>(ptr));
 }
 
 TeamClass* TeamTypeClass::Create_One_Of() const {

@@ -531,7 +531,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   ** list.
   */
   if (obj && obj->What_Am_I() == RTTI_TERRAIN)
-    list[listidx++] = (TerrainClass*)obj;
+    list[listidx++] = dynamic_cast<TerrainClass*>(obj);
 
   /*
   ** Now loop through all the occupiers and add them to the list if they
@@ -540,7 +540,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   for (lp = 0; lp < 3; lp++) {
     obj = Map[cell].Overlappers[lp];
     if (obj && obj->IsActive && obj->What_Am_I() == RTTI_TERRAIN)
-      list[listidx++] = (TerrainClass*)obj;
+      list[listidx++] = dynamic_cast<TerrainClass*>(obj);
   }
 
   /*
@@ -610,8 +610,9 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
 
   obj = Map[cell].Cell_Occupier();
   while (obj) {
-    if (obj->Is_Techno() && (((TechnoClass*)obj)->Cloak != CLOAKED ||
-                             ((TechnoClass*)obj)->House->Is_Ally(PlayerPtr))) {
+    if (obj->Is_Techno() &&
+        (dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED ||
+         dynamic_cast<TechnoClass*>(obj)->House->Is_Ally(PlayerPtr))) {
       switch (obj->What_Am_I()) {
         case RTTI_INFANTRY: {
           // int divisor = 255 / ZoomFactor;
@@ -629,15 +630,16 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
           }
           LogicPage->Put_Pixel(
               x + xoff, y + yoff,
-              ((InfantryClass*)obj)->House->Class->BrightColor);
+              dynamic_cast<InfantryClass*>(obj)->House->Class->BrightColor);
         } break;
 
         case RTTI_UNIT:
         case RTTI_AIRCRAFT:
           // PWG: Slowdown?
           // if (LogicPage->Lock()){
-          Fat_Put_Pixel(x, y, ((UnitClass*)obj)->House->Class->BrightColor,
-                        size, *LogicPage);
+          Fat_Put_Pixel(
+              x, y, dynamic_cast<UnitClass*>(obj)->House->Class->BrightColor,
+              size, *LogicPage);
           // LogicPage->Unlock();
           //}
           break;
@@ -791,7 +793,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
   /*
   **	Perform any clipping on the cell coordinate.
   */
-  if (!IsRadarActive || (unsigned)cell > MAP_CELL_TOTAL) return;
+  if (!IsRadarActive || static_cast<unsigned>(cell) > MAP_CELL_TOTAL) return;
 
   if (!In_Radar(cell) || !Cell_On_Radar(cell)) {
     return;
@@ -848,8 +850,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         **	Convert the logical icon number into the actual icon number.
         */
         Mem_Copy(Add_Long_To_Pointer(ptr, 28), &offset, sizeof(offset));
-        Mem_Copy(Add_Long_To_Pointer(ptr, offset + icon), &icon,
-                 sizeof(char));
+        Mem_Copy(Add_Long_To_Pointer(ptr, offset + icon), &icon, sizeof(char));
         icon &= 0x00FF;
 
         Mem_Copy(Add_Long_To_Pointer(ptr, 12), &offset, sizeof(offset));
@@ -940,11 +941,13 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) {
 
   x -= RadX + RadOffX;
   y -= RadY + RadOffY;
-  if ((unsigned)x < RadIWidth && (unsigned)y < RadIHeight) {
+  if (static_cast<unsigned>(x) < RadIWidth &&
+      static_cast<unsigned>(y) < RadIHeight) {
     x -= BaseX;
     y -= BaseY;
 
-    if ((unsigned)x < RadarWidth && (unsigned)y < RadarHeight) {
+    if (static_cast<unsigned>(x) < RadarWidth &&
+        static_cast<unsigned>(y) < RadarHeight) {
       x = RadarX + x / ZoomFactor;
       y = RadarY + y / ZoomFactor;
       if (change) {
@@ -1649,8 +1652,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           HidPage.Blit(
               temp_surface,
               (radx < 0 ? -radx : 0) * ZoomFactor + RadX + RadOffX + BaseX,
-              (rady < 0 ? -rady : 0) * ZoomFactor + RadY + RadOffY + BaseY,
-              0, 0, RadarWidth, RadarHeight);
+              (rady < 0 ? -rady : 0) * ZoomFactor + RadY + RadOffY + BaseY, 0,
+              0, RadarWidth, RadarHeight);
 
           temp_surface.Blit(
               HidPage, 0, 0,
@@ -1784,11 +1787,12 @@ void RadarClass::Set_Tactical_Position(COORDINATE coord) {
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::Cell_On_Radar(CELL cell) {
-  if ((unsigned)cell > MAP_CELL_TOTAL) return false;
+  if (static_cast<unsigned>(cell) > MAP_CELL_TOTAL) return false;
 
   int x = Cell_X(cell) - RadarX;
   int y = Cell_Y(cell) - RadarY;
-  return !((unsigned)x >= RadarCellWidth || (unsigned)y >= RadarCellHeight);
+  return !(static_cast<unsigned>(x) >= RadarCellWidth ||
+           static_cast<unsigned>(y) >= RadarCellHeight);
 
   //	if (!IsZoomed) {
   //		return(true);

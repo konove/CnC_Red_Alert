@@ -188,7 +188,7 @@ static bool _Counts_As_Civ_Evac(ObjectClass const* candidate) {
   /*
   **	Working infantry object pointer.
   */
-  InfantryClass const* inf = (InfantryClass const*)candidate;
+  InfantryClass const* inf = dynamic_cast<InfantryClass const*>(candidate);
 
   /*
   **	Certain infantry types will always be considered a civilian evacuation
@@ -230,7 +230,7 @@ static bool _Counts_As_Civ_Evac(ObjectClass const* candidate) {
 void* AircraftClass::operator new(size_t) throw() {
   void* ptr = Aircraft.Allocate();
   if (ptr) {
-    ((AircraftClass*)ptr)->IsActive = true;
+    static_cast<AircraftClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -251,9 +251,9 @@ void* AircraftClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void AircraftClass::operator delete(void* ptr) {
   if (ptr) {
-    ((AircraftClass*)ptr)->IsActive = false;
+    static_cast<AircraftClass*>(ptr)->IsActive = false;
   }
-  Aircraft.Free((AircraftClass*)ptr);
+  Aircraft.Free(static_cast<AircraftClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -470,7 +470,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   DirType rotation = DIR_N;
   if (Class->Rotation == 16) {
-    rotation = DirType(Rotation16[SecondaryFacing]);
+    rotation = static_cast<DirType>(Rotation16[SecondaryFacing]);
   }
 
 #ifdef TOFIX
@@ -627,14 +627,14 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
 
           token = strtok(nullptr, ",");
           if (token) {
-            coord = Cell_Coord((CELL)atoi(token));
+            coord = Cell_Coord(static_cast<CELL>(atoi(token)));
           } else {
             coord = 0xFFFFFFFFL;
           }
 
           token = strtok(nullptr, ",");
           if (token) {
-            dir = (DirType)atoi(token);
+            dir = static_cast<DirType>(atoi(token));
           } else {
             dir = DIR_N;
           }
@@ -1401,7 +1401,8 @@ int AircraftClass::Mission_Retreat() {
       *results. Use this value to head the aircraft *	toward the "friendly"
       *map edge.
       */
-      PrimaryFacing.Set_Desired((DirType)((House->Control.Edge & 0x03) << 6));
+      PrimaryFacing.Set_Desired(
+          static_cast<DirType>((House->Control.Edge & 0x03) << 6));
       SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
       Status = KEEP_FLYING;
       break;
@@ -2475,7 +2476,8 @@ int AircraftClass::Mission_Attack() {
           */
           int diff = SecondaryFacing.Difference(Direction(NavCom));
           diff = Bound(diff, -128, 128);
-          PrimaryFacing = DirType((int)SecondaryFacing.Current() + diff);
+          PrimaryFacing =
+              static_cast<DirType>((int)SecondaryFacing.Current() + diff);
         }
         return 1;
       }
@@ -2743,10 +2745,10 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
           return RADIO_NEGATIVE;
         }
         Assign_Mission(MISSION_ENTER);
-        Assign_Destination((TARGET)param);
+        Assign_Destination(static_cast<TARGET>(param));
       } else {
         Assign_Mission(MISSION_MOVE);
-        Assign_Destination((TARGET)param);
+        Assign_Destination(static_cast<TARGET>(param));
       }
       Commence();
       return RADIO_ROGER;
@@ -2806,7 +2808,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
             if (cell == 0) {
               Transmit_Message(RADIO_OVER_OUT, from);
             } else {
-              param = (long)::As_Target(cell);
+              param = static_cast<long>(::As_Target(cell));
 
               /*
               **	Tell the potential passenger where it should go. If the
@@ -2815,7 +2817,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
               */
               if (Transmit_Message(RADIO_MOVE_HERE, param, from) ==
                   RADIO_YEA_NOW_WHAT) {
-                param = (long)As_Target();
+                param = static_cast<long>(As_Target());
                 Transmit_Message(RADIO_TETHER);
                 if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
                     RADIO_ROGER) {
@@ -2881,13 +2883,13 @@ DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
 
   CELL center = Coord_Cell(Center_Coord());
   for (int sweep = FACING_N; sweep < FACING_S; sweep++) {
-    moveto = Adjacent_Cell(center, FacingType(FACING_S + sweep));
+    moveto = Adjacent_Cell(center, static_cast<FacingType>(FACING_S + sweep));
     if (Map.In_Radar(moveto) &&
         (Coord_Cell(object->Center_Coord()) == moveto ||
          Map[moveto].Is_Clear_To_Move(SPEED_FOOT, false, false)))
       return DIR_N;
 
-    moveto = Adjacent_Cell(center, FacingType(FACING_S - sweep));
+    moveto = Adjacent_Cell(center, static_cast<FacingType>(FACING_S - sweep));
     if (Map.In_Radar(moveto) &&
         (Coord_Cell(object->Center_Coord()) == moveto ||
          Map[moveto].Is_Clear_To_Move(SPEED_FOOT, false, false)))
@@ -3100,7 +3102,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
     */
     COORDINATE altcoord = 0;
     if (Is_Target_Object(target) && As_Object(target)->Is_Foot()) {
-      TARGET alttarg = ((FootClass*)As_Object(target))->NavCom;
+      TARGET alttarg = dynamic_cast<FootClass*>(As_Object(target))->NavCom;
       if (Target_Legal(alttarg)) {
         altcoord = As_Coord(alttarg);
       }
@@ -3108,7 +3110,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
     for (int r = range - 0x0100; r > 0x0100; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        COORDINATE newcoord = Coord_Move(tcoord, (DirType)face, r);
+        COORDINATE newcoord = Coord_Move(tcoord, static_cast<DirType>(face), r);
         CELL newcell = Coord_Cell(newcoord);
 
         if (Map.In_Radar(newcell) &&
@@ -3539,7 +3541,7 @@ void AircraftClass::Set_Speed(int speed) {
 
   FootClass::Set_Speed(speed);
 
-  MPHType sp = MPHType(std::min(
+  MPHType sp = static_cast<MPHType>(std::min(
       Class->MaxSpeed * SpeedBias * House->AirspeedBias, int(MPH_LIGHT_SPEED)));
   Fly_Speed(speed, sp);
 }
@@ -3697,9 +3699,9 @@ int AircraftClass::Mission_Guard() {
   if (House->Available_Money() >= 100 &&
       Health_Ratio() <= Rule.ConditionYellow) {
     if (!In_Radio_Contact() ||
-        (Height == 0 &&
-         (Contact_With_Whom()->What_Am_I() != RTTI_BUILDING ||
-          *(BuildingClass*)Contact_With_Whom() != STRUCT_REPAIR))) {
+        (Height == 0 && (Contact_With_Whom()->What_Am_I() != RTTI_BUILDING ||
+                         *dynamic_cast<BuildingClass*>(Contact_With_Whom()) !=
+                             STRUCT_REPAIR))) {
       BuildingClass* building = Find_Docking_Bay(STRUCT_REPAIR, true);
       if (building != nullptr) {
         Assign_Destination(building->As_Target());

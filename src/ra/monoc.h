@@ -183,7 +183,7 @@ class MonoClass {
     CONTROL_PORT = 0x03B4,  // CRTC control register.
     DATA_PORT = 0x03B5,     // CRTC data register.
     SIZE_OF_PAGE =
-        (int)LINES * (int)COLUMNS * sizeof(CellType)  // Entire page size.
+        static_cast<int>(LINES) * static_cast<int>(COLUMNS) * sizeof(CellType)  // Entire page size.
   };
 
   /*

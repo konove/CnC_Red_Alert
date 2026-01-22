@@ -202,7 +202,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
   /*
   --------------------------- Check the magic # ----------------------------
   */
-  packet = (GlobalHeaderType*)buf;
+  packet = static_cast<GlobalHeaderType*>(buf);
   if (packet->Header.MagicNumber != MagicNum) {
     return false;
   }

@@ -377,7 +377,7 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
     default:
       for (idx = 0; idx < menuptr[ITEMSHIGH]; idx++) {
         if (toupper(*text[Select_To_Entry(idx, field, index)]) ==
-            toupper(Keyboard->To_ASCII((KeyNumType)(key & 0x0FF)))) {
+            toupper(Keyboard->To_ASCII(static_cast<KeyNumType>(key & 0x0FF)))) {
           newitem = select = idx;
           break;
         }
@@ -464,7 +464,7 @@ int Do_Menu(char const** strings, bool) {
   length = 0;
   ptr = strings;
   while (*ptr) {
-    length = std::max(length, (int)String_Pixel_Width(*ptr));
+    length = std::max(length, static_cast<int>(String_Pixel_Width(*ptr)));
     ptr++;
   }
   length += 7;
@@ -477,7 +477,8 @@ int Do_Menu(char const** strings, bool) {
   WindowList[WINDOW_MENU][WINDOWWIDTH] = (MenuList[0][ITEMWIDTH] + 2) * 8;
   WindowList[WINDOW_MENU][WINDOWX] = (19 - (length >> 4)) * 8;
   WindowList[WINDOW_MENU][WINDOWY] =
-      174 - (unsigned)(MenuList[0][ITEMSHIGH] * (FontHeight + FontYSpacing));
+      174 - static_cast<unsigned>(MenuList[0][ITEMSHIGH] *
+                                  (FontHeight + FontYSpacing));
   WindowList[WINDOW_MENU][WINDOWHEIGHT] =
       MenuList[0][ITEMSHIGH] * FontHeight + 5 /*11*/;
 

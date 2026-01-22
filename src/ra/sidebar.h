@@ -68,7 +68,7 @@ class SidebarClass : public PowerClass {
     SIDE_HEIGHT = 200 - (7 + 70),  // Height of the entire sidebar (in pixels).
     TOP_HEIGHT = 13,  // Height of top section (with repair/sell buttons).
     COLUMN_ONE_X = 320 - 80 + 8,  // Sidestrip upper left coordinates...
-    COLUMN_ONE_Y = int(SIDE_Y) + int(TOP_HEIGHT),
+    COLUMN_ONE_Y = static_cast<int>(SIDE_Y) + static_cast<int>(TOP_HEIGHT),
     COLUMN_TWO_X = 320 - 80 + 8 + (80 - 16) / 2 + 3,
     COLUMN_TWO_Y = 7 + 70 + 13,
 
@@ -209,7 +209,7 @@ class SidebarClass : public PowerClass {
 #endif
       UP_X_OFFSET = 2,  // Scroll up arrow coordinates.
 #ifdef WIN32
-      UP_Y_OFFSET = int(MAX_VISIBLE) * int(OBJECT_HEIGHT) + 1,
+      UP_Y_OFFSET = static_cast<int>(MAX_VISIBLE) * static_cast<int>(OBJECT_HEIGHT) + 1,
 #else
       UP_Y_OFFSET = int(MAX_VISIBLE) * int(OBJECT_HEIGHT) + 2,
 #endif
@@ -377,10 +377,10 @@ class SidebarClass : public PowerClass {
    public:
     // #ifdef WIN32
     SBGadgetClass()
-        : GadgetClass(((int)SIDE_X + 8) * RESFACTOR,
-                      (int)SIDE_Y * RESFACTOR,
-                      ((int)SIDE_WIDTH - 1) * RESFACTOR - 1,
-                      ((int)SIDE_HEIGHT - 1) * RESFACTOR, LEFTUP) {}
+        : GadgetClass((static_cast<int>(SIDE_X) + 8) * RESFACTOR,
+                      static_cast<int>(SIDE_Y) * RESFACTOR,
+                      (static_cast<int>(SIDE_WIDTH) - 1) * RESFACTOR - 1,
+                      (static_cast<int>(SIDE_HEIGHT) - 1) * RESFACTOR, LEFTUP) {}
     // #else
     //				SBGadgetClass() : GadgetClass((int)SIDE_X+8,
     //(int)SIDE_Y, (int)SIDE_WIDTH-1, (int)SIDE_HEIGHT-1, LEFTUP) {}; #endif

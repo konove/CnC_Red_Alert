@@ -524,7 +524,7 @@ OverlayTypeClass::OverlayTypeClass(OverlayType iconset, char const* ininame,
                                    bool istarget, bool iscrushable,
                                    bool istiberium, bool high, bool theater,
                                    bool walltype, bool iscrate)
-    : ObjectTypeClass(RTTI_OVERLAYTYPE, int(iconset), false, true, false,
+    : ObjectTypeClass(RTTI_OVERLAYTYPE, static_cast<int>(iconset), false, true, false,
                       istarget, true, false, false, fullname, ininame),
       Type(iconset),
       Land(ground),
@@ -578,7 +578,7 @@ void* OverlayTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void OverlayTypeClass::operator delete(void* pointer) {
-  OverlayTypes.Free((OverlayTypeClass*)pointer);
+  OverlayTypes.Free(static_cast<OverlayTypeClass*>(pointer));
 }
 
 /***********************************************************************************************

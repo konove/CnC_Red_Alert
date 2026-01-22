@@ -202,7 +202,7 @@ CellClass::CellClass()
  *into account any stealth characteristics of object.                *
  *=============================================================================================*/
 int CellClass::Cell_Color(bool override) const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   BuildingClass* object = Cell_Building();
   if (object && !object->Class->IsInvisible) {
@@ -239,7 +239,7 @@ int CellClass::Cell_Color(bool override) const {
  *function.                                            *
  *=============================================================================================*/
 TechnoClass* CellClass::Cell_Techno(int x, int y) const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   ObjectClass* object;
   COORDINATE click;  // Coordinate of click relative to cell corner.
@@ -260,7 +260,7 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
         COORDINATE coord = Coord_Fraction(object->Center_Coord());
         long dist = Distance(coord, click);
         if (!close || dist < distance) {
-          close = (TechnoClass*)object;
+          close = dynamic_cast<TechnoClass*>(object);
           distance = dist;
         }
       }
@@ -284,7 +284,7 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
  *   06/12/1995 JLB : Returns object class pointer.                        *
  *=========================================================================*/
 ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
   assert(rtti != RTTI_NONE);
 
   ObjectClass* object = Cell_Occupier();
@@ -315,9 +315,9 @@ ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
  *function.                                            *
  *=============================================================================================*/
 BuildingClass* CellClass::Cell_Building() const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  return (BuildingClass*)Cell_Find_Object(RTTI_BUILDING);
+  return dynamic_cast<BuildingClass*>(Cell_Find_Object(RTTI_BUILDING));
 }
 
 /***********************************************************************************************
@@ -336,9 +336,9 @@ BuildingClass* CellClass::Cell_Building() const {
  * HISTORY: * 05/18/1994 JLB : Created. *
  *=============================================================================================*/
 TerrainClass* CellClass::Cell_Terrain() const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  return (TerrainClass*)Cell_Find_Object(RTTI_TERRAIN);
+  return dynamic_cast<TerrainClass*>(Cell_Find_Object(RTTI_TERRAIN));
 }
 
 /***********************************************************************************************
@@ -362,7 +362,7 @@ TerrainClass* CellClass::Cell_Terrain() const {
  * HISTORY: * 05/13/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* CellClass::Cell_Object(int x, int y) const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   ObjectClass* ptr;
 
@@ -403,7 +403,7 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
  *checks if cell is in view and not flagged already.                  *
  *=============================================================================================*/
 void CellClass::Redraw_Objects(bool forced) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   CELL cell = Cell_Number();
 
@@ -484,7 +484,7 @@ void CellClass::Redraw_Objects(bool forced) {
  *Checks for crushable walls and crushable object.                         *
  *=============================================================================================*/
 bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   /*
   **	During scenario initialization, passability is always guaranteed.
@@ -562,7 +562,7 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
  *pointer in cell object.                             *
  *=============================================================================================*/
 void CellClass::Recalc_Attributes() {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   /*
   **	Special override for interior terrain set so that a non-template or a
@@ -614,7 +614,7 @@ void CellClass::Recalc_Attributes() {
  * HISTORY: * 07/18/1994 JLB : Created. * 11/29/1994 JLB : Simplified. *
  *=============================================================================================*/
 void CellClass::Occupy_Down(ObjectClass* object) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
   assert(object != nullptr && object->IsActive);
 
   ObjectClass* optr;
@@ -691,7 +691,7 @@ void CellClass::Occupy_Down(ObjectClass* object) {
  *pointer in previous object.                         *
  *=============================================================================================*/
 void CellClass::Occupy_Up(ObjectClass* object) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
   assert(object != nullptr && object->IsActive);
 
   if (object == nullptr) return;
@@ -756,7 +756,7 @@ void CellClass::Occupy_Up(ObjectClass* object) {
  *buildings are always marked down.                           *
  *=============================================================================================*/
 void CellClass::Overlap_Down(ObjectClass* object) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
   assert(object != nullptr && object->IsActive);
 
   ObjectClass** ptr = nullptr;
@@ -813,7 +813,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 void CellClass::Overlap_Up(ObjectClass* object) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
   assert(object != nullptr && object->IsActive);
 
   for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
@@ -840,9 +840,9 @@ void CellClass::Overlap_Up(ObjectClass* object) {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass* CellClass::Cell_Unit() const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  return (UnitClass*)Cell_Find_Object(RTTI_UNIT);
+  return dynamic_cast<UnitClass*>(Cell_Find_Object(RTTI_UNIT));
 }
 
 /***********************************************************************************************
@@ -863,9 +863,9 @@ UnitClass* CellClass::Cell_Unit() const {
  * HISTORY: * 05/20/1996 JLB : Created. *
  *=============================================================================================*/
 VesselClass* CellClass::Cell_Vessel() const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  return (VesselClass*)Cell_Find_Object(RTTI_VESSEL);
+  return dynamic_cast<VesselClass*>(Cell_Find_Object(RTTI_VESSEL));
 }
 
 /***********************************************************************************************
@@ -886,9 +886,9 @@ VesselClass* CellClass::Cell_Vessel() const {
  * HISTORY: * 12/21/1994 JLB : Created. *
  *=============================================================================================*/
 InfantryClass* CellClass::Cell_Infantry() const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  return (InfantryClass*)Cell_Find_Object(RTTI_INFANTRY);
+  return dynamic_cast<InfantryClass*>(Cell_Find_Object(RTTI_INFANTRY));
 }
 
 #ifdef SORTDRAW
@@ -967,7 +967,7 @@ static int _ocompare(const void* left, const void* right) {
  *Objects added to draw process.                                           *
  *=============================================================================================*/
 void CellClass::Draw_It(int x, int y, bool objects) const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (!objects) {
     BStart(BENCH_CELL);
@@ -1076,7 +1076,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       */
       if (Overlay != OVERLAY_NONE) {
         OverlayTypeClass const& otype = OverlayTypeClass::As_Reference(Overlay);
-        IsTheaterShape = (bool)otype.IsTheater;  // Tell Build_Frame if this
+        IsTheaterShape =
+            static_cast<bool>(otype.IsTheater);  // Tell Build_Frame if this
                                                  // overlay is theater specific
         CC_Draw_Shape(otype.Get_Image_Data(), OverlayData,
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
@@ -1145,7 +1146,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         SpeedType loco = SPEED_NONE;
         if (Map.PendingObjectPtr) {
           if (Map.PendingObjectPtr->What_Am_I() == RTTI_BUILDING) {
-            BuildingClass* obj = (BuildingClass*)Map.PendingObjectPtr;
+            BuildingClass* obj =
+                dynamic_cast<BuildingClass*>(Map.PendingObjectPtr);
             loco = obj->Class->Speed;
             //					if (*obj == STRUCT_SUB_PEN ||
             //*obj == STRUCT_SHIP_YARD ||
@@ -1571,7 +1573,7 @@ void CellClass::Concrete_Calc() {
  *partially-damaged walls.                               *
  *=============================================================================================*/
 void CellClass::Wall_Update() {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   static FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
                                    FACING_NONE};
@@ -1651,7 +1653,7 @@ void CellClass::Wall_Update() {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 COORDINATE CellClass::Cell_Coord() const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   return ::Cell_Coord(Cell_Number());
 }
@@ -1672,7 +1674,7 @@ COORDINATE CellClass::Cell_Coord() const {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 int CellClass::Reduce_Tiberium(int levels) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   int reducer = 0;
 
@@ -1707,7 +1709,7 @@ int CellClass::Reduce_Tiberium(int levels) {
  *Updates zone as necessary.                                               *
  *=============================================================================================*/
 int CellClass::Reduce_Wall(int damage) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (Overlay != OVERLAY_NONE) {
     bool destroyed = false;
@@ -1821,7 +1823,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
  *mix-up factor if center location is occupied.                     *
  *=============================================================================================*/
 COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   int spot_index = Spot_Index(coord);
 
@@ -1907,7 +1909,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
  *scramble algorithm.                                        *
  *=============================================================================================*/
 int CellClass::Clear_Icon() const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   CELL cell = Cell_Number();
   return Cell_X(cell) & 0x03 | (Cell_Y(cell) & 0x03) << 2;
@@ -1937,7 +1939,7 @@ int CellClass::Clear_Icon() const {
  *parameter.                                         *
  *=============================================================================================*/
 void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   ObjectClass* object = nullptr;
 
@@ -1948,7 +1950,7 @@ void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
     */
     if (nokidding || Rule.IsScatter ||
         (object->Is_Techno() &&
-         ((TechnoClass*)object)->House->IQ >= Rule.IQScatter)) {
+         dynamic_cast<TechnoClass*>(object)->House->IQ >= Rule.IQScatter)) {
       object->Scatter(threat, forced, nokidding);
     }
     object = object->Next;
@@ -1972,14 +1974,15 @@ void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 CellClass const& CellClass::Adjacent_Cell(FacingType face) const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  if ((unsigned)face >= FACING_COUNT) {
+  if (static_cast<unsigned>(face) >= FACING_COUNT) {
     return *this;
   }
 
   CellClass const* ptr = this + AdjacentCell[face];
-  if ((unsigned)Cell_Number() + AdjacentCell[face] >= MAP_CELL_TOTAL)
+  if (static_cast<unsigned>(Cell_Number()) + AdjacentCell[face] >=
+      MAP_CELL_TOTAL)
     return *this;
   return *ptr;
 }
@@ -1997,7 +2000,7 @@ CellClass const& CellClass::Adjacent_Cell(FacingType face) const {
  *   04/24/1995 PWG : Created.                                             *
  *=========================================================================*/
 void CellClass::Adjust_Threat(HousesType house, int threat_value) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   int region = Map.Cell_Region(Cell_Number());
 
@@ -2036,7 +2039,7 @@ void CellClass::Adjust_Threat(HousesType house, int threat_value) {
  *the ore type.                                         *
  *=============================================================================================*/
 long CellClass::Tiberium_Adjust(bool pregame) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
   if (Overlay != OVERLAY_NONE) {
     if (OverlayTypeClass::As_Reference(Overlay).Land == LAND_TIBERIUM) {
       static int _adj[9] = {0, 1, 3, 4, 6, 7, 8, 10, 11};
@@ -2089,7 +2092,7 @@ long CellClass::Tiberium_Adjust(bool pregame) {
 
       if (gems) {
         OverlayData = _adjgem[count];
-        OverlayData = std::min(int(OverlayData), 2);
+        OverlayData = std::min(static_cast<int>(OverlayData), 2);
       } else {
         OverlayData = _adj[count];
       }
@@ -2117,7 +2120,7 @@ long CellClass::Tiberium_Adjust(bool pregame) {
  *Revamped for Red Alert                                                   *
  *=============================================================================================*/
 bool CellClass::Goodie_Check(FootClass* object) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (object != nullptr && Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(Overlay).IsCrate) {
@@ -2239,7 +2242,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             bool found = false;
             unsigned long minutes = Score.ElapsedTime / TIMER_MINUTE;
             if (minutes > 100) minutes = 100;
-            if (Random_Pick(0, 100 - (int)minutes) == 0) {
+            if (Random_Pick(0, 100 - static_cast<int>(minutes)) == 0) {
               for (i = 0;
                    i < Session.Players.Count() + Session.Options.AIPlayers;
                    i++) {
@@ -2429,8 +2432,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	If no unit type has been determined, then pick one at random.
         */
         while (utp == nullptr) {
-          UnitType utype =
-              Random_Pick(UNIT_FIRST, (UnitType)(UNIT_RA_COUNT - 1 - 3));
+          UnitType utype = Random_Pick(
+              UNIT_FIRST, static_cast<UnitType>(UNIT_RA_COUNT - 1 - 3));
           if (utype != UNIT_MCV || Session.Options.Bases) {
             utp = &UnitTypeClass::As_Reference(utype);
             if (utp->IsCrateGoodie &&
@@ -2444,7 +2447,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
         if (utp != nullptr) {
           UnitClass* goodie_unit =
-              (UnitClass*)utp->Create_One_Of(object->House);
+              dynamic_cast<UnitClass*>(utp->Create_One_Of(object->House));
           if (goodie_unit != nullptr) {
             if (goodie_unit->Unlimbo(Cell_Coord())) {
               return false;
@@ -2552,7 +2555,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
           if (obj && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius) {
-            ((TechnoClass*)obj)->IsCloakable = true;
+            dynamic_cast<TechnoClass*>(obj)->IsCloakable = true;
           }
         }
         break;
@@ -2590,10 +2593,10 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
           if (obj != nullptr && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
-              ((TechnoClass*)obj)->ArmorBias == 1) {
-            fixed val = ((TechnoClass*)obj)->ArmorBias *
+              dynamic_cast<TechnoClass*>(obj)->ArmorBias == 1) {
+            fixed val = dynamic_cast<TechnoClass*>(obj)->ArmorBias *
                         Inverse(fixed(CrateData[powerup], 256));
-            ((TechnoClass*)obj)->ArmorBias = val;
+            dynamic_cast<TechnoClass*>(obj)->ArmorBias = val;
             if (obj->Owner() == PlayerPtr->Class->House) tospeak = true;
           }
         }
@@ -2607,9 +2610,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
           if (obj && obj->Is_Foot() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
-              ((FootClass*)obj)->SpeedBias == 1 &&
+              dynamic_cast<FootClass*>(obj)->SpeedBias == 1 &&
               obj->What_Am_I() != RTTI_AIRCRAFT) {
-            FootClass* foot = (FootClass*)obj;
+            FootClass* foot = dynamic_cast<FootClass*>(obj);
 
             fixed val = foot->SpeedBias * fixed(CrateData[powerup], 256);
             foot->SpeedBias = val;
@@ -2626,10 +2629,10 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
           if (obj && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
-              ((TechnoClass*)obj)->FirepowerBias == 1) {
-            fixed val = ((TechnoClass*)obj)->FirepowerBias *
+              dynamic_cast<TechnoClass*>(obj)->FirepowerBias == 1) {
+            fixed val = dynamic_cast<TechnoClass*>(obj)->FirepowerBias *
                         fixed(CrateData[powerup], 256);
-            ((TechnoClass*)obj)->FirepowerBias = val;
+            dynamic_cast<TechnoClass*>(obj)->FirepowerBias = val;
             if (obj->Owner() == PlayerPtr->Class->House) tospeak = true;
           }
         }
@@ -2643,7 +2646,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
           if (obj && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius) {
-            ((TechnoClass*)obj)->IronCurtainCountDown =
+            dynamic_cast<TechnoClass*>(obj)->IronCurtainCountDown =
                 TICKS_PER_MINUTE * fixed(CrateData[powerup], 256);
             obj->Mark(MARK_CHANGE);
           }
@@ -2683,7 +2686,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Flag_Place(HousesType house) {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (!IsFlagged && Is_Clear_To_Move(SPEED_TRACK, false, false)) {
     IsFlagged = true;
@@ -2709,7 +2712,7 @@ bool CellClass::Flag_Place(HousesType house) {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Flag_Remove() {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (IsFlagged) {
     IsFlagged = false;
@@ -2736,7 +2739,7 @@ bool CellClass::Flag_Remove() {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 void CellClass::Shimmer() {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   ObjectClass* object = Cell_Occupier();
 
@@ -2781,7 +2784,7 @@ void CellClass::Shimmer() {
 bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
                                  bool ignorevehicles, int zone,
                                  MZoneType check) const {
-  assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
+  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   /*
   **	Flying objects always consider every cell passable since they can fly

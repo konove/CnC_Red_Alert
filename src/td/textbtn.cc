@@ -345,7 +345,7 @@ void TextButtonClass::Draw_Text(char const* text) {
       color = CC_GREEN;
 
       if (IsDisabled) {
-        flags = (TextPrintType)0;
+        flags = static_cast<TextPrintType>(0);
       } else {
         if (IsPressed || IsOn) {
           flags = TPF_USE_GRAD_PAL | TPF_BRIGHT_COLOR;

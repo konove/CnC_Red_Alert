@@ -365,7 +365,7 @@ int File_Stream_Sample_Vol(char const* filename, int volume,
 
   chan.file_handle = handle;
 
-  chan.compression = (SCompressType)header.Compression;
+  chan.compression = static_cast<SCompressType>(header.Compression);
 
   if (chan.compression == SCOMP_SOS) {
     chan.step = 0;
@@ -546,7 +546,7 @@ int Play_Sample_Handle(void const* sample, int priority, int volume,
   chan.length = header->UncompSize / channels / (bits / 8);
   chan.in_ptr = (uint8_t*)sample + sizeof(AUDHeaderType);
 
-  chan.compression = (SCompressType)header->Compression;
+  chan.compression = static_cast<SCompressType>(header->Compression);
 
   if (chan.compression == SCOMP_SOS) {
     chan.step = 0;

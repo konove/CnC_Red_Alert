@@ -104,14 +104,14 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
                        8,
                        0,
                        0,
-                       (short)(pic.Get_Width() - 1),
-                       (short)(pic.Get_Height() - 1),
-                       (short)pic.Get_Width(),
-                       (short)pic.Get_Height(),
+                       static_cast<short>(pic.Get_Width() - 1),
+                       static_cast<short>(pic.Get_Height() - 1),
+                       static_cast<short>(pic.Get_Width()),
+                       static_cast<short>(pic.Get_Height()),
                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                        0,
                        1,
-                       (short)pic.Get_Width(),
+                       static_cast<short>(pic.Get_Width()),
                        1,
                        {0}};
 
@@ -131,7 +131,7 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
   **	Write out the picture, line by line.
   */
   VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
-  ptr = (char*)pic.Get_Buffer();
+  ptr = static_cast<char*>(pic.Get_Buffer());
   ptr += pic.Get_YPos() * VP_Scan_Line + pic.Get_XPos();
   for (int line = 0; line < header.height + 1; line++) {
     Write_Pcx_ScanLine(file, header.byte_per_line, ptr + line * VP_Scan_Line);
@@ -149,9 +149,9 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
   memmove(palcopy, palette, sizeof(PaletteClass));
   pal = (RGB*)palcopy;
   for (int palindex = 0; palindex < 256; palindex++) {
-    pal->red = (unsigned char)(pal->red << 2);      // | (pal->red>>6));
-    pal->green = (unsigned char)(pal->green << 2);  // | (pal->green>>6));
-    pal->blue = (unsigned char)(pal->blue << 2);    // | (pal->blue>>6));
+    pal->red = static_cast<unsigned char>(pal->red << 2);      // | (pal->red>>6));
+    pal->green = static_cast<unsigned char>(pal->green << 2);  // | (pal->green>>6));
+    pal->blue = static_cast<unsigned char>(pal->blue << 2);    // | (pal->blue>>6));
     pal++;
   }
 
@@ -192,7 +192,7 @@ static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr) {
   unsigned char rle = 1;
   unsigned char c;
   for (int i = 1; i < scansize; i++) {
-    unsigned char color = (unsigned char)(0xff & *++ptr);
+    unsigned char color = static_cast<unsigned char>(0xff & *++ptr);
     if (color == last) {
       rle++;
       if (rle == rle_max_run) {
@@ -205,7 +205,7 @@ static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr) {
         if (rle == 1 && rle_code != (rle_code & last)) {
           file.Write(&last, sizeof(last));
         } else {
-          c = (unsigned char)(rle | rle_code);
+          c = static_cast<unsigned char>(rle | rle_code);
           file.Write(&c, sizeof(c));
           file.Write(&last, sizeof(last));
         }
@@ -218,7 +218,7 @@ static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr) {
     if (rle == 1 && rle_code != (rle_code & last)) {
       file.Write(&last, sizeof(last));
     } else {
-      c = (unsigned char)(rle | rle_code);
+      c = static_cast<unsigned char>(rle | rle_code);
       file.Write(&c, sizeof(c));
       file.Write(&last, sizeof(last));
     }

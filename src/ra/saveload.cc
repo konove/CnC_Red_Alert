@@ -82,6 +82,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/layer.h"
+#include "ra/link.h"
 #include "ra/logic.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
@@ -272,7 +273,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   CarryoverClass const* cptr = Carryover;
   while (cptr != nullptr) {
     carry_count++;
-    cptr = (CarryoverClass const*)cptr->Get_Next();
+    cptr = dynamic_cast<CarryoverClass const*>(cptr->Get_Next());
   }
 
   if (!save_net) Call_Back();
@@ -289,7 +290,8 @@ static void Put_All(Pipe& pipe, int save_net) {
   CarryoverClass const* object_to_write = Carryover;
   while (object_to_write != nullptr) {
     pipe.Put(object_to_write, sizeof(*object_to_write));
-    object_to_write = (CarryoverClass const*)object_to_write->Get_Next();
+    object_to_write =
+        dynamic_cast<CarryoverClass const*>(object_to_write->Get_Next());
   }
   if (!save_net) Call_Back();
 
@@ -740,7 +742,7 @@ bool Load_Game(int id) {
   **	Delete any carryover pseudo-saved game list.
   */
   while (Carryover != nullptr) {
-    CarryoverClass* cptr = (CarryoverClass*)Carryover->Get_Next();
+    CarryoverClass* cptr = dynamic_cast<CarryoverClass*>(Carryover->Get_Next());
     Carryover->Remove();
     delete Carryover;
     Carryover = cptr;
@@ -1048,7 +1050,7 @@ bool Load_Misc_Values(Straw& file) {
   int x;
   file.Get(&x, sizeof(x));
   //	file.Get(&PlayerPtr, sizeof(PlayerPtr));
-  PlayerPtr = HouseClass::As_Pointer((HousesType)x);
+  PlayerPtr = HouseClass::As_Pointer(static_cast<HousesType>(x));
 
   /*
   **	Load frame #.
@@ -1301,7 +1303,8 @@ void Decode_All_Pointers() {
   **	Currently-selected objects.
   */
   for (int index = 0; index < CurrentObject.Count(); index++) {
-    CurrentObject[index] = As_Object((TARGET)(intptr_t)CurrentObject[index]);
+    CurrentObject[index] =
+        As_Object(static_cast<TARGET>((intptr_t)CurrentObject[index]));
     assert(CurrentObject[index] != nullptr);
   }
 

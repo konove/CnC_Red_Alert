@@ -78,7 +78,7 @@ int LCW_Uncomp(void const* source, void* dest, unsigned long) {
 
   /* Copy the source and destination ptrs. */
   source_ptr = (unsigned char*)source;
-  dest_ptr = (unsigned char*)dest;
+  dest_ptr = static_cast<unsigned char*>(dest);
 
   while (true) {
     /* Read in the operation code. */
@@ -88,7 +88,7 @@ int LCW_Uncomp(void const* source, void* dest, unsigned long) {
       /* Do a short copy from destination. */
       count = (op_code >> 4) + 3;
       copy_ptr = dest_ptr -
-                 ((unsigned)*source_ptr++ + (((unsigned)op_code & 0x0f) << 8));
+                 (static_cast<unsigned>(*source_ptr++) + ((static_cast<unsigned>(op_code) & 0x0f) << 8));
 
       while (count--) *dest_ptr++ = *copy_ptr++;
 
@@ -96,7 +96,7 @@ int LCW_Uncomp(void const* source, void* dest, unsigned long) {
       if (!(op_code & 0x40)) {
         if (op_code == 0x80) {
           /* Return # of destination bytes written. */
-          return (unsigned long)(dest_ptr - (unsigned char*)dest);
+          return static_cast<unsigned long>(dest_ptr - (unsigned char*)dest);
 
         } else {
           /* Do a medium copy from source. */
@@ -108,7 +108,7 @@ int LCW_Uncomp(void const* source, void* dest, unsigned long) {
       } else {
         if (op_code == 0xfe) {
           /* Do a long run. */
-          count = *source_ptr + ((unsigned)*(source_ptr + 1) << 8);
+          count = *source_ptr + (static_cast<unsigned>(*(source_ptr + 1)) << 8);
           word_data = data = *(source_ptr + 2);
           word_data = (word_data << 24) + (word_data << 16) + (word_data << 8) +
                       word_data;
@@ -134,9 +134,9 @@ int LCW_Uncomp(void const* source, void* dest, unsigned long) {
         } else {
           if (op_code == 0xff) {
             /* Do a long copy from destination. */
-            count = *source_ptr + ((unsigned)*(source_ptr + 1) << 8);
-            copy_ptr = (unsigned char*)dest + *(source_ptr + 2) +
-                       ((unsigned)*(source_ptr + 3) << 8);
+            count = *source_ptr + (static_cast<unsigned>(*(source_ptr + 1)) << 8);
+            copy_ptr = static_cast<unsigned char*>(dest) + *(source_ptr + 2) +
+                       (static_cast<unsigned>(*(source_ptr + 3)) << 8);
             source_ptr += 4;
 
             while (count--) *dest_ptr++ = *copy_ptr++;
@@ -144,8 +144,8 @@ int LCW_Uncomp(void const* source, void* dest, unsigned long) {
           } else {
             /* Do a medium copy from destination. */
             count = (op_code & 0x3f) + 3;
-            copy_ptr = (unsigned char*)dest + *source_ptr +
-                       ((unsigned)*(source_ptr + 1) << 8);
+            copy_ptr = static_cast<unsigned char*>(dest) + *source_ptr +
+                       (static_cast<unsigned>(*(source_ptr + 1)) << 8);
             source_ptr += 2;
 
             while (count--) *dest_ptr++ = *copy_ptr++;

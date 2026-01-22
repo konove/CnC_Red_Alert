@@ -478,7 +478,7 @@ void ScoreClass::Presentation() {
       (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), ScorePalette);
 #endif
 
-  unsigned minutes = (unsigned)(ElapsedTime / (long)TIMER_MINUTE) + 1;
+  unsigned minutes = static_cast<unsigned>(ElapsedTime / (long)TIMER_MINUTE) + 1;
 
 // Load up the shapes for the Nod score screen
 #if RESFACTOR == 2
@@ -628,10 +628,10 @@ void ScoreClass::Presentation() {
   **	Determine economy rating.
   */
   int economy =
-      100 * fixed((unsigned)PlayerPtr->Available_Money() + 1 +
+      100 * fixed(static_cast<unsigned>(PlayerPtr->Available_Money()) + 1 +
                       PlayerPtr->StolenBuildingsCredits,
                   PlayerPtr->HarvestedCredits +
-                      (unsigned)PlayerPtr->Control.InitialCredits + 1);
+                      static_cast<unsigned>(PlayerPtr->Control.InitialCredits) + 1);
   economy = std::min(economy, 150);
 
   int total = uspoints * leadership / 100 + uspoints * economy / 100;
@@ -1042,7 +1042,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
         rmboptr,
         ramboclass->DoControls[DO_WALK].Frame +
             ramboclass->DoControls[DO_WALK].Jump * 6 +
-            (unsigned(i) >> 1) % ramboclass->DoControls[DO_WALK].Count,
+            (static_cast<unsigned>(i) >> 1) % ramboclass->DoControls[DO_WALK].Count,
         i + 32, 40, WINDOW_MAIN,
         SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
         ColorRemaps[PCOLOR_RED].RemapTable, DisplayClass::UnitShadow);
@@ -1868,7 +1868,7 @@ void Multi_Score_Presentation() {
   char remap[16];
 #if RESFACTOR == 2
   GraphicBufferClass* pseudoseenbuff =
-      new GraphicBufferClass(320, 200, (void*)nullptr);
+      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
 #ifdef SEENBUF_COPY
   PseudoSeenBuff = new GraphicBufferClass(SeenBuff.Get_Width(),
                                           SeenBuff.Get_Height(), (void*)NULL);

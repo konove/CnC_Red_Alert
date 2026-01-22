@@ -120,7 +120,7 @@ void TarComClass::AI() {
         //				if (What_Am_I() != RTTI_UNIT) {
         //					IsFiring = false;
         //				} else {
-        if (!((UnitClass*)this)->Class->IsFireAnim) {
+        if (!static_cast<UnitClass*>(this)->Class->IsFireAnim) {
           Mark(MARK_OVERLAP_UP);
           IsFiring = false;
           Mark(MARK_OVERLAP_DOWN);

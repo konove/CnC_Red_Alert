@@ -139,7 +139,8 @@ void TeamTypeClass::Decode_Pointers() {
   **	Decode the Class array
   */
   for (int i = 0; i < ClassCount; i++) {
-    Members[i].Class = As_TechnoType((TARGET)(intptr_t)Members[i].Class);
+    Members[i].Class =
+        As_TechnoType(static_cast<TARGET>((intptr_t)Members[i].Class));
     assert(Members[i].Class != nullptr);
   }
 }
@@ -188,7 +189,7 @@ void TeamClass::Decode_Pointers() {
   **	Decode the 'Member'
   */
   if (Member) {
-    Member = (FootClass*)As_Techno(Member);
+    Member = dynamic_cast<FootClass*>(As_Techno(Member));
     assert(Member != nullptr);
   }
 }
@@ -282,7 +283,7 @@ void BulletClass::Decode_Pointers() {
   **	Decode 'Payback'
   */
   if (Payback) {
-    Payback = As_Techno((TARGET)(intptr_t)Payback);
+    Payback = As_Techno(static_cast<TARGET>((intptr_t)Payback));
     assert(Payback != nullptr);
   }
 
@@ -313,7 +314,7 @@ void FactoryClass::Code_Pointers() {
     Object = (TechnoClass*)Object->As_Target();
   }
 
-  (HouseClass*&)House = (HouseClass*)House->Class->House;
+  static_cast<HouseClass*&>(House) = (HouseClass*)House->Class->House;
 }
 
 /***********************************************************************************************
@@ -332,11 +333,12 @@ void FactoryClass::Code_Pointers() {
  *=============================================================================================*/
 void FactoryClass::Decode_Pointers() {
   if (Object) {
-    Object = As_Techno((TARGET)(intptr_t)Object);
+    Object = As_Techno(static_cast<TARGET>((intptr_t)Object));
     assert(Object != nullptr);
   }
 
-  (HouseClass*&)House = HouseClass::As_Pointer((HousesType)(intptr_t)House);
+  static_cast<HouseClass*&>(House) =
+      HouseClass::As_Pointer(static_cast<HousesType>((intptr_t)House));
   assert(House != nullptr);
 }
 
@@ -448,7 +450,7 @@ void LayerClass::Code_Pointers() {
  *=============================================================================================*/
 void LayerClass::Decode_Pointers() {
   for (int index = 0; index < Count(); index++) {
-    TARGET target = (TARGET)(intptr_t)(*this)[index];
+    TARGET target = static_cast<TARGET>((intptr_t)(*this)[index]);
     (*this)[index] = As_Object(target);
     assert((*this)[index] != nullptr);
   }
@@ -563,8 +565,8 @@ void FootClass::Code_Pointers() {
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void FootClass::Decode_Pointers() {
-  if ((TARGET)(intptr_t)Member != TARGET_NONE) {
-    Member = (FootClass*)As_Techno((TARGET)(intptr_t)Member);
+  if (static_cast<TARGET>((intptr_t)Member) != TARGET_NONE) {
+    Member = dynamic_cast<FootClass*>(As_Techno((TARGET)(intptr_t)Member));
     assert(Member != nullptr);
   }
 
@@ -617,7 +619,7 @@ void RadioClass::Decode_Pointers() {
   **	Decode 'Radio'
   */
   if (Radio) {
-    Radio = As_Techno((TARGET)(intptr_t)Radio);
+    Radio = As_Techno(static_cast<TARGET>((intptr_t)Radio));
     assert(Radio != nullptr);
   }
 
@@ -708,7 +710,8 @@ void CargoClass::Decode_Pointers() {
   **	Decode 'CargoHold'
   */
   if (CargoHold) {
-    CargoHold = (FootClass*)As_Techno((TARGET)(intptr_t)CargoHold);
+    CargoHold =
+        dynamic_cast<FootClass*>(As_Techno((TARGET)(intptr_t)CargoHold));
     assert(CargoHold != nullptr);
   }
 }

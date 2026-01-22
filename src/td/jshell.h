@@ -57,10 +57,10 @@
 */
 class Keyboard {
  public:
-  static KeyNumType Get() { return (KeyNumType)Get_Key_Num(); }
-  static KeyNumType Check() { return (KeyNumType)Check_Key_Num(); }
+  static KeyNumType Get() { return static_cast<KeyNumType>(Get_Key_Num()); }
+  static KeyNumType Check() { return static_cast<KeyNumType>(Check_Key_Num()); }
   static KeyASCIIType To_ASCII(KeyNumType key) {
-    return (KeyASCIIType)KN_To_KA(key);
+    return static_cast<KeyASCIIType>(KN_To_KA(key));
   }
   static void Clear() { Clear_KeyBuffer(); }
   static void Stuff(KeyNumType key) { Stuff_Key_Num(key); }
@@ -82,37 +82,37 @@ inline void* operator delete[](void* data) { Free(data); }
 */
 template <class T>
 inline T operator++(T& a) {
-  a = (T)((int)a + 1);
+  a = static_cast<T>((int)a + 1);
   return a;
 }
 template <class T>
 inline T operator++(T& a, int) {
   T aa = a;
-  a = (T)((int)a + 1);
+  a = static_cast<T>((int)a + 1);
   return aa;
 }
 template <class T>
 inline T operator--(T& a) {
-  a = (T)((int)a - 1);
+  a = static_cast<T>((int)a - 1);
   return a;
 }
 template <class T>
 inline T operator--(T& a, int) {
   T aa = a;
-  a = (T)((int)a - 1);
+  a = static_cast<T>((int)a - 1);
   return aa;
 }
 template <class T>
 inline constexpr T operator|(T t1, T t2) {
-  return (T)((int)t1 | (int)t2);
+  return static_cast<T>((int)t1 | (int)t2);
 }
 template <class T>
 inline T operator&(T t1, T t2) {
-  return (T)((int)t1 & (int)t2);
+  return static_cast<T>((int)t1 & (int)t2);
 }
 template <class T>
 inline T operator~(T t1) {
-  return (T) ~(int)t1;
+  return static_cast<T>(~(int)t1);
 }
 
 inline void Set_Bit(void* array, int bit, int value) {
@@ -129,9 +129,9 @@ inline void Set_Bit(void* array, int bit, int value) {
           "ok:"
   */
   if (value)
-    ((uint32_t*)array)[(unsigned)bit >> 5] |= 1 << (bit & 0x1F);
+    static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] |= 1 << (bit & 0x1F);
   else
-    ((uint32_t*)array)[(unsigned)bit >> 5] &= ~(1 << (bit & 0x1F));
+    static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] &= ~(1 << (bit & 0x1F));
 }
 
 inline int Get_Bit(void const* array, int bit) {
@@ -142,7 +142,8 @@ inline int Get_Bit(void const* array, int bit) {
           "bt	[esi+ebx*4],eax"		\
           "setc	al"
   */
-  return !!(((const uint32_t*)array)[(unsigned)bit >> 5] & 1 << (bit & 0x1F));
+  return !!(
+      static_cast<const uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] & 1 << (bit & 0x1F));
 }
 
 inline int First_True_Bit(void const* array) {
@@ -159,7 +160,7 @@ inline int First_True_Bit(void const* array) {
           "jz	again"					\
           "add	eax,ebx"
   */
-  const uint32_t* array32 = (const uint32_t*)array;
+  const uint32_t* array32 = static_cast<const uint32_t*>(array);
   int off = 0;
   while (true) {
     uint32_t v = *array32++;
@@ -188,7 +189,7 @@ inline int First_False_Bit(void const* array) {
           "jz	again"					\
           "add	eax,ebx"
   */
-  const uint32_t* array32 = (const uint32_t*)array;
+  const uint32_t* array32 = static_cast<const uint32_t*>(array);
   int off = 0;
   while (true) {
     uint32_t v = *array32++;

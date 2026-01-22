@@ -140,7 +140,7 @@ void HelpClass::Init_Clear() {
  *=============================================================================================*/
 short const* HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer) {
-    (short&)OverlapList[0] = REFRESH_EOL;
+    static_cast<short&>(OverlapList[0]) = REFRESH_EOL;
   }
   return OverlapList;
 }

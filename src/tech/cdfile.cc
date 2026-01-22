@@ -82,7 +82,7 @@ extern int Get_CD_Index(int cd_drive, int timeout);
 int cdecl Is_Disk_Inserted(int disk) {
   char scan[] = "?:\\*.*";
 
-  scan[0] = (char)('A' + disk);
+  scan[0] = static_cast<char>('A' + disk);
 
   // yeah this isn't going to work on non-windows...
   FindFileState state;

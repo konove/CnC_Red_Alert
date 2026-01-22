@@ -323,7 +323,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   ScenarioCRC = 0;
   len = strlen(buffer);
   for (int i = 0; i < len; i++) {
-    val = (unsigned char)buffer[i];
+    val = static_cast<unsigned char>(buffer[i]);
 #ifndef DEMO
     Add_CRC(&ScenarioCRC, val);
 #endif
@@ -545,9 +545,9 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
 
       sprintf(buff, "%d", index++);
       *work = '\0';
-      WWGetPrivateProfileString(
-          root, buff, "", work,
-          sizeof(BriefingText) - strlen(BriefingText) - 1, _ShapeBuffer);
+      WWGetPrivateProfileString(root, buff, "", work,
+                                sizeof(BriefingText) - strlen(BriefingText) - 1,
+                                _ShapeBuffer);
       if (strlen(work) == 0) break;
       // Really old and ugly code - refactor.
       // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
@@ -594,7 +594,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
         }
 
         for (int i = 0; i < MPlayerMax; i++) {
-          HousesType house = (HousesType)(i + (int)HOUSE_MULTI1);
+          HousesType house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
           HouseClass* housep = HouseClass::As_Pointer(house);
           housep->BlitzTime = IRandom(rndmin, rndmax);
         }
@@ -810,7 +810,7 @@ static void Assign_Houses() {
     **	Set the house, preferred house (GDI/NOD), color, and actual house;
     **	get a pointer to the house instance
     */
-    house = (HousesType)(j + (int)HOUSE_MULTI1);
+    house = static_cast<HousesType>(j + (int)HOUSE_MULTI1);
     pref_house = MPlayerID_To_HousesType(MPlayerID[i]);
     color = MPlayerID_To_ColorIndex(MPlayerID[i]);
     housep = HouseClass::As_Pointer(house);
@@ -847,8 +847,8 @@ static void Assign_Houses() {
       **	Set the house, preferred house (GDI/NOD), and color; get a
       *pointer *	to the house instance
       */
-      house = (HousesType)(i + (int)HOUSE_MULTI1);
-      pref_house = (HousesType)(IRandom(0, 1) + (int)HOUSE_GOOD);
+      house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
+      pref_house = static_cast<HousesType>(IRandom(0, 1) + (int)HOUSE_GOOD);
       for (;;) {
         color = Random_Pick(REMAP_FIRST, REMAP_LAST);
         if (color_used[color] == false) {
@@ -878,8 +878,7 @@ static void Assign_Houses() {
     housep = HouseClass::As_Pointer(house);
     if (housep->IsHuman) continue;
 
-    for (house2 = HOUSE_MULTI1; house2 < HOUSE_MULTI1 + MPlayerMax;
-         house2++) {
+    for (house2 = HOUSE_MULTI1; house2 < HOUSE_MULTI1 + MPlayerMax; house2++) {
       housep2 = HouseClass::As_Pointer(house2);
       if (housep2->IsHuman) continue;
       housep->Make_Ally(house2);
@@ -904,7 +903,7 @@ static void Remove_AI_Players() {
   HouseClass* housep;
 
   for (i = 0; i < MAX_PLAYERS; i++) {
-    house = (HousesType)(i + (int)HOUSE_MULTI1);
+    house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
     if (housep->IsHuman == false) {
       housep->Clobber_All();
@@ -1145,7 +1144,7 @@ static void Create_Units() {
           hptr->FlagHome = 0;
           hptr->FlagLocation = 0;
           if (Special.IsCaptureTheFlag) {
-            hptr->Flag_Attach((UnitClass*)obj, true);
+            hptr->Flag_Attach(dynamic_cast<UnitClass*>(obj), true);
           }
         }
       } else {
@@ -1329,7 +1328,7 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
     /*.....................................................................
     Pick a random starting direction
     .....................................................................*/
-    rot = (FacingType)IRandom(FACING_N, FACING_NW);
+    rot = static_cast<FacingType>(IRandom(FACING_N, FACING_NW));
     /*.....................................................................
     Try all directions twice
     .....................................................................*/

@@ -147,7 +147,7 @@ RulesClass::RulesClass()
       GameSpeedBias(1),
       NervousBias(1),
       VortexRange(10 * CELL_LEPTON_W),
-      VortexSpeed((MPHType)10),
+      VortexSpeed(static_cast<MPHType>(10)),
       VortexDamage(200),
       VortexChance(".2"),
       ExplosionSpread(fixed(1, 2)),
@@ -294,7 +294,7 @@ RulesClass::RulesClass()
   QuakeInfantryDamage = 0;
   QuakeDelay = 120;
   ChronoTankDuration = 0x300;
-  EngineerDamage = (fixed)1 / (fixed)3;  // Amount of damage an engineer does
+  EngineerDamage = static_cast<fixed>(1) / static_cast<fixed>(3);  // Amount of damage an engineer does
   EngineerCaptureLevel =
       ConditionRed;  // Building damage level before engineer can capture
   CarrierLaunchDelay = 60;
@@ -522,7 +522,7 @@ bool RulesClass::General(CCINIClass& ini) {
     ChronoTechLevel = ini.Get_Int(GENERAL, "ChronoTechLevel", ChronoTechLevel);
     CrateTime = ini.Get_Fixed(GENERAL, "CrateRegen", CrateTime);
     VortexRange = ini.Get_Lepton(GENERAL, "VortexRange", VortexRange);
-    VortexSpeed = MPHType(
+    VortexSpeed = static_cast<MPHType>(
         _Scale_To_256(ini.Get_Int(GENERAL, "VortexSpeed", VortexSpeed)));
     VortexDamage = ini.Get_Int(GENERAL, "VortexDamage", VortexDamage);
     VortexChance = ini.Get_Fixed(GENERAL, "VortexChance", VortexChance);

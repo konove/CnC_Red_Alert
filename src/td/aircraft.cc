@@ -219,7 +219,7 @@ TARGET AircraftClass::As_Target() const {
 void* AircraftClass::operator new(size_t) throw() {
   void* ptr = Aircraft.Allocate();
   if (ptr) {
-    ((AircraftClass*)ptr)->IsActive = true;
+    static_cast<AircraftClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -240,9 +240,9 @@ void* AircraftClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void AircraftClass::operator delete(void* ptr) {
   if (ptr) {
-    ((AircraftClass*)ptr)->IsActive = false;
+    static_cast<AircraftClass*>(ptr)->IsActive = false;
   }
-  Aircraft.Free((AircraftClass*)ptr);
+  Aircraft.Free(static_cast<AircraftClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -526,8 +526,8 @@ void AircraftClass::Read_INI(char* buffer) {
           **	Read the raw data.
           */
           strength = atoi(strtok(nullptr, ","));
-          coord = Cell_Coord((CELL)atoi(strtok(nullptr, ",")));
-          dir = (DirType)atoi(strtok(nullptr, ","));
+          coord = Cell_Coord(static_cast<CELL>(atoi(strtok(nullptr, ","))));
+          dir = static_cast<DirType>(atoi(strtok(nullptr, ",")));
 
           if (!Map.In_Radar(Coord_Cell(coord))) {
             delete air;
@@ -870,8 +870,8 @@ void AircraftClass::AI() {
       while (Is_Something_Attached()) {
         FootClass* obj = Detach_Object();
         if (obj->What_Am_I() == RTTI_INFANTRY &&
-            ((InfantryClass*)obj)->Class->IsCivilian &&
-            !((InfantryClass*)obj)->IsTechnician) {
+            dynamic_cast<InfantryClass*>(obj)->Class->IsCivilian &&
+            !dynamic_cast<InfantryClass*>(obj)->IsTechnician) {
           House->IsCivEvacuated = true;
         }
 
@@ -1425,7 +1425,8 @@ int AircraftClass::Mission_Retreat() {
       *results. Use this value to head the aircraft *	toward the "friendly"
       *map edge.
       */
-      PrimaryFacing.Set_Desired((DirType)((House->Edge & 0x03) << 6));
+      PrimaryFacing.Set_Desired(
+          static_cast<DirType>((House->Edge & 0x03) << 6));
       SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
       Status = KEEP_FLYING;
       break;
@@ -2125,8 +2126,8 @@ ActionType AircraftClass::What_Action(ObjectClass* target) const {
   if (IsOwnedByPlayer && House->Is_Ally(target) &&
       target->What_Am_I() == RTTI_BUILDING &&
       ((AircraftClass*)this)
-              ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)target) ==
-          RADIO_ROGER) {
+              ->Transmit_Message(RADIO_CAN_LOAD, dynamic_cast<TechnoClass*>(
+                                                     target)) == RADIO_ROGER) {
     action = ACTION_ENTER;
   }
   return action;
@@ -2532,10 +2533,10 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
           return RADIO_NEGATIVE;
         }
         Assign_Mission(MISSION_ENTER);
-        Assign_Destination((TARGET)param);
+        Assign_Destination(static_cast<TARGET>(param));
       } else {
         Assign_Mission(MISSION_MOVE);
-        Assign_Destination((TARGET)param);
+        Assign_Destination(static_cast<TARGET>(param));
       }
       Commence();
       return RADIO_ROGER;
@@ -2565,8 +2566,8 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
       *immediately *	fly off the map.
       */
       if (from->What_Am_I() == RTTI_INFANTRY &&
-          ((InfantryClass*)from)->Class->IsCivilian &&
-          !((InfantryClass*)from)->IsTechnician) {
+          dynamic_cast<InfantryClass*>(from)->Class->IsCivilian &&
+          !dynamic_cast<InfantryClass*>(from)->IsTechnician) {
         Assign_Mission(MISSION_RETREAT);
       }
       return RADIO_ATTACH;
@@ -2597,7 +2598,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
             if (cell == 0) {
               Transmit_Message(RADIO_OVER_OUT, from);
             } else {
-              param = (long)::As_Target(cell);
+              param = static_cast<long>(::As_Target(cell));
 
               /*
               **	Tell the potential passenger where it should go. If the
@@ -2606,7 +2607,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
               */
               if (Transmit_Message(RADIO_MOVE_HERE, param, from) ==
                   RADIO_YEA_NOW_WHAT) {
-                param = (long)As_Target();
+                param = static_cast<long>(As_Target());
                 Transmit_Message(RADIO_TETHER);
                 if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
                     RADIO_ROGER) {
@@ -2783,8 +2784,9 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
   CellClass* cellptr = &Map[cell];
 
   if (!cellptr->Cell_Occupier() || !cellptr->Cell_Occupier()->Is_Techno() ||
-      ((TechnoClass*)cellptr->Cell_Occupier())->House->Is_Ally(House) ||
-      ((TechnoClass*)cellptr->Cell_Occupier())->Cloak != CLOAKED) {
+      dynamic_cast<TechnoClass*>(cellptr->Cell_Occupier())
+          ->House->Is_Ally(House) ||
+      dynamic_cast<TechnoClass*>(cellptr->Cell_Occupier())->Cloak != CLOAKED) {
     if (!cellptr->Is_Generally_Clear()) return MOVE_NO;
   }
 
@@ -2823,7 +2825,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
     for (int r = range - 0x0180; r > 0x0180; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        COORDINATE newcoord = Coord_Move(tcoord, (DirType)face, r);
+        COORDINATE newcoord = Coord_Move(tcoord, static_cast<DirType>(face), r);
         CELL newcell = Coord_Cell(newcoord);
 
         if (Map.In_Radar(newcell) &&
@@ -3307,9 +3309,9 @@ int AircraftClass::Mission_Guard() {
   */
   if (House->Available_Money() >= 100 && Health_Ratio() <= 0x0080) {
     if (!In_Radio_Contact() ||
-        (Altitude == 0 &&
-         (Contact_With_Whom()->What_Am_I() != RTTI_BUILDING ||
-          *(BuildingClass*)Contact_With_Whom() != STRUCT_REPAIR))) {
+        (Altitude == 0 && (Contact_With_Whom()->What_Am_I() != RTTI_BUILDING ||
+                           *dynamic_cast<BuildingClass*>(Contact_With_Whom()) !=
+                               STRUCT_REPAIR))) {
       BuildingClass* building = Find_Docking_Bay(STRUCT_REPAIR, true);
       if (building) {
         Assign_Destination(building->As_Target());
@@ -3419,7 +3421,7 @@ void AircraftClass::Response_Attack() {
   static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL, VOC_YESSIR, VOC_YESSIR,
                                 VOC_YESSIR};
   VocType response = _response[Sim_Random_Pick(
-      0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));
   }
@@ -3443,7 +3445,7 @@ void AircraftClass::Response_Move() {
   static VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT, VOC_MOVEOUT,
                                 VOC_ACKNOWL, VOC_AFFIRM,  VOC_AFFIRM};
   VocType response = _response[Sim_Random_Pick(
-      0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));
   }
@@ -3467,7 +3469,7 @@ void AircraftClass::Response_Select() {
   static VocType _response[] = {VOC_VEHIC,  VOC_UNIT,   VOC_YESSIR,
                                 VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
   VocType response = _response[Sim_Random_Pick(
-      0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));
   }

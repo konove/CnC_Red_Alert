@@ -83,7 +83,7 @@
  *   01/07/1995 JLB : Manually calculates spillage list for large objects. *
  *=============================================================================================*/
 short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
-  static short const _MoveSpillage[(int)FACING_COUNT + 1][5] = {
+  static short const _MoveSpillage[static_cast<int>(FACING_COUNT) + 1][5] = {
       {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
       {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
       {0, 1, REFRESH_EOL, 0, 0},                             // E

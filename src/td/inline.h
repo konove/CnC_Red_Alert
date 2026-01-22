@@ -45,23 +45,23 @@ template <std::integral T>
   COORDINATE(((x) * ICON_LEPTON_W) / CELL_PIXEL_W + \
              ((((y) * ICON_LEPTON_H) / CELL_PIXEL_H) << 16))
 inline FacingType Dir_Facing(DirType facing) {
-  return (FacingType)(((unsigned char)(facing + 0x10) & 0xFF) >> 5);
+  return static_cast<FacingType>(((unsigned char)(facing + 0x10) & 0xFF) >> 5);
 }
 inline DirType Facing_Dir(FacingType facing) {
-  return (DirType)((int)facing << 5);
+  return static_cast<DirType>((int)facing << 5);
 }
 inline int Cell_To_Lepton(int cell) { return cell << 8; }
 inline int Lepton_To_Cell(int lepton) {
-  return (unsigned)(lepton + 0x0080) >> 8;
+  return static_cast<unsigned>(lepton + 0x0080) >> 8;
 }
-inline CELL XY_Cell(int x, int y) { return (CELL)(y << 6 | x); }
+inline CELL XY_Cell(int x, int y) { return static_cast<CELL>(y << 6 | x); }
 inline COORDINATE XY_Coord(int x, int y) {
-  return (COORDINATE)MakeLong(y, x);
+  return static_cast<COORDINATE>(MakeLong(y, x));
 }
-inline int Coord_X(COORDINATE coord) { return (short)LowWord(coord); }
-inline int Coord_Y(COORDINATE coord) { return (short)HighWord(coord); }
-inline int Cell_X(CELL cell) { return (int)((unsigned)cell & 0x3F); }
-inline int Cell_Y(CELL cell) { return (int)((unsigned)cell >> 6); }
+inline int Coord_X(COORDINATE coord) { return static_cast<short>(LowWord(coord)); }
+inline int Coord_Y(COORDINATE coord) { return static_cast<short>(HighWord(coord)); }
+inline int Cell_X(CELL cell) { return static_cast<int>((unsigned)cell & 0x3F); }
+inline int Cell_Y(CELL cell) { return static_cast<int>((unsigned)cell >> 6); }
 inline int Dir_Diff(DirType dir1, DirType dir2) {
   return *(signed char*)&dir2 - *(signed char*)&dir1;
 }
@@ -74,35 +74,35 @@ inline CELL Coord_YLepton(COORDINATE coord) {
 // inline COORD CellXY_Coord(unsigned x, unsigned y) {return
 // (COORD)(MAKE_LONG(y<<8, x<<8));}
 inline COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2) {
-  return (COORDINATE)MakeLong(
-      *((short*)&coord1 + 1) + *((short*)&coord2 + 1),
-      *(short*)&coord1 + *(short*)&coord2);
+  return static_cast<COORDINATE>(
+      MakeLong(*((short*)&coord1 + 1) + *((short*)&coord2 + 1),
+               *(short*)&coord1 + *(short*)&coord2));
 }
 inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
-  return (COORDINATE)MakeLong(
-      *((short*)&coord1 + 1) - *((short*)&coord2 + 1),
-      *(short*)&coord1 - *(short*)&coord2);
+  return static_cast<COORDINATE>(
+      MakeLong(*((short*)&coord1 + 1) - *((short*)&coord2 + 1),
+               *(short*)&coord1 - *(short*)&coord2));
 }
 inline COORDINATE Coord_Snap(COORDINATE coord) {
-  return (COORDINATE)MakeLong(
-      *((unsigned short*)&coord + 1) & 0xFF00 | 0x80,
-      *(unsigned short*)&coord & 0xFF00 | 0x80);
+  return static_cast<COORDINATE>(
+      MakeLong(*((unsigned short*)&coord + 1) & 0xFF00 | 0x80,
+               *(unsigned short*)&coord & 0xFF00 | 0x80));
 }
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
-  return (COORDINATE)MakeLong(
-      (*((unsigned short*)&coord1 + 1) + *((unsigned short*)&coord2 + 1)) >>
-          1,
-      (*(unsigned short*)&coord1 + *(unsigned short*)&coord2) >> 1);
+  return static_cast<COORDINATE>(MakeLong(
+      (*((unsigned short*)&coord1 + 1) + *((unsigned short*)&coord2 + 1)) >> 1,
+      (*(unsigned short*)&coord1 + *(unsigned short*)&coord2) >> 1));
 }
 inline COORDINATE Cell_Coord(CELL cell) {
-  return (COORDINATE)MakeLong((cell & 0x0FC0) << 2 | 0x80,
-                              (((cell & 0x003F) << 1) + 1) << 7);
+  return static_cast<COORDINATE>(
+      MakeLong((cell & 0x0FC0) << 2 | 0x80, (((cell & 0x003F) << 1) + 1) << 7));
 }
 inline COORDINATE XYPixel_Coord(int x, int y) {
-  return (COORDINATE)MakeLong((int)((long)y * (long)ICON_LEPTON_H /
-                                    (long)ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
-                              (int)((long)x * (long)ICON_LEPTON_W /
-                                    (long)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/);
+  return static_cast<COORDINATE>(
+      MakeLong((int)((long)y * (long)ICON_LEPTON_H /
+                     (long)ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
+               (int)((long)x * (long)ICON_LEPTON_W /
+                     (long)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
 }
 inline int Facing_To_32(DirType facing) { return Facing32[facing]; }
 inline DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
@@ -128,10 +128,10 @@ inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
   return Adjacent_Cell(coord, Dir_Facing(dir));
 }
 inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
-  return (CELL)(cell + AdjacentCell[dir]);
+  return static_cast<CELL>(cell + AdjacentCell[dir]);
 }
 inline CELL Adjacent_Cell(CELL cell, DirType dir) {
-  return (CELL)(cell + AdjacentCell[Dir_Facing(dir)]);
+  return static_cast<CELL>(cell + AdjacentCell[Dir_Facing(dir)]);
 }
 inline int Lepton_To_Pixel(int lepton) {
   return (lepton * ICON_PIXEL_W + ICON_LEPTON_W / 2) / ICON_LEPTON_W;

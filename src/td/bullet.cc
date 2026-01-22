@@ -162,7 +162,7 @@ BulletClass::BulletClass() : Class(nullptr) {
 void* BulletClass::operator new(size_t) throw() {
   void* ptr = Bullets.Allocate();
   if (ptr) {
-    ((BulletClass*)ptr)->IsActive = true;
+    static_cast<BulletClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -183,9 +183,9 @@ void* BulletClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void BulletClass::operator delete(void* ptr) {
   if (ptr) {
-    ((BulletClass*)ptr)->IsActive = false;
+    static_cast<BulletClass*>(ptr)->IsActive = false;
   }
-  Bullets.Free((BulletClass*)ptr);
+  Bullets.Free(static_cast<BulletClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -678,7 +678,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
           scatterdist = std::min(scatterdist, 0x0080);
         }
 
-        dir = (DirType)(dir + (Random_Pick(0, 10) - 5) & 0x00FF);
+        dir = static_cast<DirType>(dir + (Random_Pick(0, 10) - 5) & 0x00FF);
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
         tcoord = Coord_Move(tcoord, dir, Random_Pick(0, 0x0100));
@@ -735,7 +735,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       speed = std::max(speed, 25);
     }
     if (!Class->IsDropping) {
-      Fly_Speed(255, (MPHType)speed);
+      Fly_Speed(255, static_cast<MPHType>(speed));
     }
 
     /*

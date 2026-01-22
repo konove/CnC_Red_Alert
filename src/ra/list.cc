@@ -218,7 +218,7 @@ int ListClass::Add_Item(int text) {
 }
 
 void ListClass::Remove_Item(int index) {
-  if ((unsigned)index < List.Count()) {
+  if (static_cast<unsigned>(index) < List.Count()) {
     List.Delete(index);
 
     /*
@@ -853,7 +853,7 @@ GadgetClass* ListClass::Remove() {
  *to always be zero for a null list.                 *
  *=============================================================================================*/
 void ListClass::Set_Selected_Index(int index) {
-  if ((unsigned)index < List.Count()) {
+  if (static_cast<unsigned>(index) < List.Count()) {
     SelectedIndex = index;
     Flag_To_Redraw();
     if (SelectedIndex < CurrentTopIndex) {

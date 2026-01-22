@@ -99,7 +99,7 @@ void OverlayClass::Init() { Overlays.Free_All(); }
 void* OverlayClass::operator new(size_t) throw() {
   void* ptr = Overlays.Allocate();
   if (ptr) {
-    ((OverlayClass*)ptr)->IsActive = true;
+    static_cast<OverlayClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -120,9 +120,9 @@ void* OverlayClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void OverlayClass::operator delete(void* ptr) {
   if (ptr) {
-    ((OverlayClass*)ptr)->IsActive = false;
+    static_cast<OverlayClass*>(ptr)->IsActive = false;
   }
-  Overlays.Free((OverlayClass*)ptr);
+  Overlays.Free(static_cast<OverlayClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -367,7 +367,7 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   comppipe.Put_To(&bpipe);
 
   int total = 0;
-  CellClass* cellptr = &Map[(CELL)0];
+  CellClass* cellptr = &Map[static_cast<CELL>(0)];
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
     total += comppipe.Put(&cellptr->Overlay, sizeof(cellptr->Overlay));
     cellptr++;

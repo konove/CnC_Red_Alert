@@ -392,7 +392,7 @@ int main(int argc, char* argv[])
 #endif
 
     if (cfile.Is_Available()) {
-      char* cdata = (char*)Load_Alloc_Data(cfile);
+      char* cdata = static_cast<char*>(Load_Alloc_Data(cfile));
       Read_Private_Config_Struct(cdata, &NewConfig);
       delete[] cdata;
       Read_Setup_Options(&cfile);
@@ -454,7 +454,7 @@ int main(int argc, char* argv[])
         VisiblePage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
                          GBC_VISIBLE | GBC_VIDEOMEM);
 #ifdef PORTABLE
-        HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0, (GBC_Enum)0);
+        HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0, static_cast<GBC_Enum>(0));
 #else
         /*
         ** Check that we really got a video memory page. Failure is fatal.
@@ -566,7 +566,8 @@ int main(int argc, char* argv[])
       */
       CCDebugString("C&C95 - Reading CONQUER.INI.\n");
       char* buffer =
-          (char*)Alloc(64000, MEM_NORMAL);  //(char *)HidPage.Get_Buffer();
+          static_cast<char*>(
+          Alloc(64000, MEM_NORMAL));  //(char *)HidPage.Get_Buffer();
       cfile.Read(buffer, cfile.Size());
       buffer[cfile.Size()] = '\0';
 
@@ -838,9 +839,9 @@ void Read_Setup_Options(RawFileClass* config_file) {
       while (p) {
         sscanf(p, "%x", &x);  // convert from hex string to int
         if (i < 4) {
-          net[i] = (char)x;  // fill NetNum
+          net[i] = static_cast<char>(x);  // fill NetNum
         } else {
-          node[i - 4] = (char)x;  // fill NetNode
+          node[i - 4] = static_cast<char>(x);  // fill NetNode
         }
         i++;
         p = strtok(nullptr, ".");

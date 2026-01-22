@@ -279,7 +279,7 @@ void Special_Dialog() {
 
       default:
         int index = (input & ~KN_BUTTON) - 100;
-        if ((unsigned)index < sizeof(_options) / sizeof(_options[0])) {
+        if (static_cast<unsigned>(index) < sizeof(_options) / sizeof(_options[0])) {
           _options[index].Setting = _options[index].Setting == false;
           if (_options[index].Setting) {
             _options[index].Button->Turn_On();

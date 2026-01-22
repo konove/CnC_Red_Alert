@@ -425,7 +425,7 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
   /*
   **	Change the current font if it differs from the font desired.
   */
-  point = flag & (TextPrintType)0x000F;
+  point = flag & static_cast<TextPrintType>(0x000F);
   xspace = 1;
   yspace = 0;
 

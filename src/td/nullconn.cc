@@ -176,7 +176,7 @@ int NullModemConnClass::Send(char* buf, int buflen) {
   ------------------------------------------------------------------------*/
   header = (SerialHeaderType*)SendBuf;
   header->MagicNumber = PACKET_SERIAL_START;
-  header->Length = (short)buflen;
+  header->Length = static_cast<short>(buflen);
   header->MagicNumber2 = PACKET_SERIAL_VERIFY;
 
   sendlen = sizeof(SerialHeaderType);
@@ -195,9 +195,9 @@ int NullModemConnClass::Send(char* buf, int buflen) {
   // status =
 #ifdef FORCE_WINSOCK
   if (Winsock.Get_Connected() || GameToPlay == GAME_INTERNET) {
-    Winsock.Write(SendBuf, (int)sendlen);
+    Winsock.Write(SendBuf, static_cast<int>(sendlen));
   } else {
-    SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, (int)sendlen);
+    SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, static_cast<int>(sendlen));
   }
 #else
   SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, (int)sendlen);
@@ -244,10 +244,10 @@ int NullModemConnClass::Compute_CRC(char* buf, int buflen) {
     }
 
     sum <<= 1;
-    sum += hibit + (unsigned char)buf[i];
+    sum += hibit + static_cast<unsigned char>(buf[i]);
   }
 
-  return (int)sum;
+  return static_cast<int>(sum);
 }
 
 /***************************************************************************

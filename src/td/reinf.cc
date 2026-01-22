@@ -52,6 +52,7 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mouse.h"
+#include "td/object.h"
 #include "td/rand.h"
 #include "td/target.h"
 #include "td/team.h"
@@ -113,7 +114,8 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
         airtransport = true;
       } else {
         watertransport =
-            ((UnitTypeClass const*)teamtype->Class[index])->Type == UNIT_HOVER;
+            dynamic_cast<UnitTypeClass const*>(teamtype->Class[index])->Type ==
+            UNIT_HOVER;
       }
     } else {
       onlytransport = false;
@@ -136,7 +138,8 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       *shipping source.
       */
       if (teamtype->Class[0]->What_Am_I() == RTTI_UNITTYPE &&
-          ((UnitTypeClass const*)teamtype->Class[0])->Type == UNIT_GUNBOAT) {
+          dynamic_cast<UnitTypeClass const*>(teamtype->Class[0])->Type ==
+              UNIT_GUNBOAT) {
         source = SOURCE_SHIPPING;
       } else {
         source = HouseClass::As_Pointer(teamtype->House)->Edge;
@@ -164,8 +167,8 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
 
     for (int sub = 0; sub < teamtype->DesiredNum[index]; sub++) {
       ScenarioInit++;
-      FootClass* temp = (FootClass*)tclass->Create_One_Of(
-          HouseClass::As_Pointer(teamtype->House));
+      FootClass* temp = dynamic_cast<FootClass*>(
+          tclass->Create_One_Of(HouseClass::As_Pointer(teamtype->House)));
       ScenarioInit--;
 
       if (temp) {
@@ -175,7 +178,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
         *becomes part of the team.
         */
         if (team && (temp->What_Am_I() != RTTI_UNIT ||
-                     *(UnitClass*)temp != UNIT_HOVER)) {
+                     *dynamic_cast<UnitClass*>(temp) != UNIT_HOVER)) {
           ScenarioInit++;
           team->Add(temp);
           ScenarioInit--;
@@ -206,7 +209,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
           **	never be allowed to control them.
           */
           if (temp->What_Am_I() == RTTI_AIRCRAFT &&
-              *(AircraftClass*)temp == AIRCRAFT_A10) {
+              *dynamic_cast<AircraftClass*>(temp) == AIRCRAFT_A10) {
             temp->IsALoaner = true;
           }
 
@@ -242,11 +245,11 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       *occur when the *	transport unloads.
       */
       if (transport->What_Am_I() == RTTI_AIRCRAFT &&
-          *(AircraftClass*)transport == AIRCRAFT_CARGO) {
+          *dynamic_cast<AircraftClass*>(transport) == AIRCRAFT_CARGO) {
         okvoice = false;
       }
 
-      transport->Attach((FootClass*)object);
+      transport->Attach(dynamic_cast<FootClass*>(object));
     }
     object = transport;
   }
@@ -277,14 +280,14 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     case SOURCE_SOUTH:
     case SOURCE_EAST:
     case SOURCE_WEST: {
-      eface = (FacingType)(source << 1);  // Facing to enter map.
+      eface = static_cast<FacingType>(source << 1);  // Facing to enter map.
 
       if (airtransport) ScenarioInit++;
       cell = Map.Calculated_Cell(source, teamtype->House);
       if (airtransport) ScenarioInit--;
       CELL newcell = cell;
 
-      FootClass* o = (FootClass*)object->Next;
+      FootClass* o = dynamic_cast<FootClass*>(object->Next);
       object->Next = nullptr;
       bool ok = true;
       while (newcell > 0 && object) {
@@ -334,7 +337,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
 
         object = o;
         if (object) {
-          o = (FootClass*)object->Next;
+          o = dynamic_cast<FootClass*>(object->Next);
           object->Next = nullptr;
         }
       }
@@ -346,7 +349,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       if (o) {
         while (o) {
           FootClass* old = o;
-          o = (FootClass*)o->Next;
+          o = dynamic_cast<FootClass*>(o->Next);
           old->Next = nullptr;
 
           delete old;
@@ -358,9 +361,9 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     **	Bring out the aircraft as separate "groups" of one.
     */
     case SOURCE_AIR: {
-      AircraftClass* thisone = (AircraftClass*)object;
+      AircraftClass* thisone = dynamic_cast<AircraftClass*>(object);
       while (thisone) {
-        AircraftClass* next = (AircraftClass*)thisone->Next;
+        AircraftClass* next = dynamic_cast<AircraftClass*>(thisone->Next);
 
         /*
         **	Find a suitable map entry location. Cargo planes will try to
@@ -551,8 +554,9 @@ bool Create_Special_Reinforcement(HouseClass* house,
       team->DesiredNum[0] = 1;
       team->MissionCount = 1;
       if (mission == TMISSION_NONE) {
-        if (another && (another->What_Am_I() != RTTI_UNITTYPE ||
-                        ((UnitTypeClass const*)another)->Type != UNIT_HOVER)) {
+        if (another &&
+            (another->What_Am_I() != RTTI_UNITTYPE ||
+             dynamic_cast<UnitTypeClass const*>(another)->Type != UNIT_HOVER)) {
           team->MissionList[0].Mission = TMISSION_UNLOAD;
           team->MissionList[0].Argument = WAYPT_REINF;
         }
@@ -623,7 +627,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ** a real problem.
     */
     ScenarioInit++;
-    TechnoClass* obj = (TechnoClass*)type->Create_One_Of(house);
+    TechnoClass* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
     ScenarioInit--;
     if (!obj) return sub;
 

@@ -357,7 +357,7 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
                                    bool is_water, char const* ininame,
                                    int fullname, short const* occupy,
                                    short const* overlap)
-    : ObjectTypeClass(RTTI_TERRAINTYPE, int(terrain), true, true, false, false,
+    : ObjectTypeClass(RTTI_TERRAINTYPE, static_cast<int>(terrain), true, true, false, false,
                       true, is_immune, true, fullname, ininame),
       Type(terrain),
       CenterBase(centerbase),
@@ -406,7 +406,7 @@ void* TerrainTypeClass::operator new(size_t) throw() {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 void TerrainTypeClass::operator delete(void* pointer) {
-  TerrainTypes.Free((TerrainTypeClass*)pointer);
+  TerrainTypes.Free(static_cast<TerrainTypeClass*>(pointer));
 }
 
 /***********************************************************************************************

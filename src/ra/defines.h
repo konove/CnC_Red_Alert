@@ -2819,30 +2819,30 @@ typedef enum FacingType : int8_t {
 } FacingType;
 
 inline FacingType operator+(FacingType f1, FacingType f2) {
-  return (FacingType)((int)f1 + (int)f2 & 0x07);
+  return static_cast<FacingType>((int)f1 + (int)f2 & 0x07);
 }
 inline FacingType operator+(FacingType f1, int f2) {
-  return (FacingType)((int)f1 + f2 & 0x07);
+  return static_cast<FacingType>((int)f1 + f2 & 0x07);
 }
 
 inline FacingType operator-(FacingType f1, FacingType f2) {
-  return (FacingType)((int)f1 - (int)f2 & 0x07);
+  return static_cast<FacingType>((int)f1 - (int)f2 & 0x07);
 }
 inline FacingType operator-(FacingType f1, int f2) {
-  return (FacingType)((int)f1 - f2 & 0x07);
+  return static_cast<FacingType>((int)f1 - f2 & 0x07);
 }
 
 inline FacingType operator+=(FacingType& f1, FacingType f2) {
-  f1 = (FacingType)((int)f1 + (int)f2 & 0x07);
+  f1 = static_cast<FacingType>((int)f1 + (int)f2 & 0x07);
   return f1;
 }
 inline FacingType operator+=(FacingType& f1, int f2) {
-  f1 = (FacingType)((int)f1 + f2 & 0x07);
+  f1 = static_cast<FacingType>((int)f1 + f2 & 0x07);
   return f1;
 }
 
 inline int operator*(FacingType f1, FacingType f2) {
-  return (int)f1 * (int)f2;
+  return static_cast<int>(f1) * static_cast<int>(f2);
 }
 
 #ifdef NEVER

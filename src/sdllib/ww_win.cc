@@ -40,7 +40,7 @@ void SDL_Create_Main_Window(const char* title, int width, int height) {
 
   ForceRenderEventID = SDL_RegisterEvents(1);
 
-  SDLRenderer = SDL_CreateRenderer((SDL_Window*)MainWindow, -1,
+  SDLRenderer = SDL_CreateRenderer(static_cast<SDL_Window*>(MainWindow), -1,
                                    SDL_RENDERER_PRESENTVSYNC);
 
   // Keep logical size at original resolution, SDL will scale to window size

@@ -624,7 +624,7 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
     **	Determine if the map edge has been wrapped. If so,
     **	then don't process the cell.
     */
-    if ((unsigned)newcell >= MAP_CELL_TOTAL) continue;
+    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) continue;
     xdiff = Cell_X(newcell) - xx;
     xdiff = std::abs(xdiff);
     if (xdiff > sightrange) continue;
@@ -695,8 +695,10 @@ int MapClass::Cell_Distance(CELL cell1, CELL cell2) {
  *=============================================================================================*/
 bool MapClass::In_Radar(CELL cell) const {
   if (cell & 0xF000) return false;
-  return (unsigned)(Cell_X(cell) - MapCellX) < (unsigned)MapCellWidth &&
-         (unsigned)(Cell_Y(cell) - MapCellY) < (unsigned)MapCellHeight;
+  return static_cast<unsigned>(Cell_X(cell) - MapCellX) <
+             static_cast<unsigned>(MapCellWidth) &&
+         static_cast<unsigned>(Cell_Y(cell) - MapCellY) <
+             static_cast<unsigned>(MapCellHeight);
 }
 
 /***********************************************************************************************
@@ -724,7 +726,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
   short const* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = cell + *list++;
-    if ((unsigned)newcell < MAP_CELL_TOTAL) {
+    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Occupy_Down(object);
       (*this)[newcell].Recalc_Attributes();
       (*this)[newcell].Redraw_Objects();
@@ -734,7 +736,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
   list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = cell + *list++;
-    if ((unsigned)newcell < MAP_CELL_TOTAL) {
+    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Down(object);
       (*this)[newcell].Redraw_Objects();
     }
@@ -765,7 +767,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
   short const* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = cell + *list++;
-    if ((unsigned)newcell < MAP_CELL_TOTAL) {
+    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Occupy_Up(object);
       (*this)[newcell].Recalc_Attributes();
       (*this)[newcell].Redraw_Objects();
@@ -775,7 +777,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
   list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = cell + *list++;
-    if ((unsigned)newcell < MAP_CELL_TOTAL) {
+    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Up(object);
       (*this)[newcell].Redraw_Objects();
     }
@@ -806,7 +808,7 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
   short const* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = cell + *list++;
-    if ((unsigned)newcell < MAP_CELL_TOTAL) {
+    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Down(object);
       (*this)[newcell].Redraw_Objects();
     }
@@ -836,7 +838,7 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
   short const* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = cell + *list++;
-    if ((unsigned)newcell < MAP_CELL_TOTAL) {
+    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Up(object);
       (*this)[newcell].Redraw_Objects();
     }
@@ -929,7 +931,7 @@ bool MapClass::Read_Binary(char const* root, unsigned long* crc)
     } temp;
 
     if (file.Read(&temp, sizeof(temp)) != sizeof(temp)) break;
-    if (temp.TType == (TemplateType)255) {
+    if (temp.TType == static_cast<TemplateType>(255)) {
       temp.TType = TEMPLATE_NONE;
     }
 
@@ -943,7 +945,7 @@ bool MapClass::Read_Binary(char const* root, unsigned long* crc)
       if (shape) {
         rawmap = Get_Icon_Set_Map(shape);
         if (rawmap) {
-          map = (char*)rawmap;
+          map = static_cast<char*>(rawmap);
           if (map[temp.TIcon] == -1) {
             temp.TIcon = 0;
             temp.TType = TEMPLATE_NONE;
@@ -1079,8 +1081,7 @@ void MapClass::Logic() {
     **	Heavy Tiberium growth can spread.
     */
     TerrainClass* terrain = ptr->Cell_Terrain();
-    if (Special.IsTSpread &&
-            ptr->Land_Type() == LAND_TIBERIUM &&
+    if (Special.IsTSpread && ptr->Land_Type() == LAND_TIBERIUM &&
             ptr->OverlayData > 6 ||
         (terrain && terrain->Class->IsTiberiumSpawn)) {
       int tries = 1;
@@ -1325,10 +1326,9 @@ int MapClass::Validate() {
     .....................................................................*/
     obj = (*this)[cell].Cell_Occupier();
     if (obj) {
-      if ((uintptr_t)obj & 0xff000000 ||
-          (uintptr_t)obj->Next & 0xff000000 ||
+      if ((uintptr_t)obj & 0xff000000 || (uintptr_t)obj->Next & 0xff000000 ||
           (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
-          (unsigned int)Coord_Cell(obj->Coord) > 4095)
+          static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)
         return false;
     }
 
@@ -1338,10 +1338,9 @@ int MapClass::Validate() {
     for (i = 0; i < 3; i++) {
       obj = (*this)[cell].Overlappers[i];
       if (obj) {
-        if ((uintptr_t)obj & 0xff000000 ||
-            (uintptr_t)obj->Next & 0xff000000 ||
+        if ((uintptr_t)obj & 0xff000000 || (uintptr_t)obj->Next & 0xff000000 ||
             (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
-            (unsigned int)Coord_Cell(obj->Coord) > 4095)
+            static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)
           return false;
       }
     }
@@ -1386,8 +1385,7 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
                            MAP_CELL_W + 1,
                            -(MAP_CELL_W - 1),
                            -(MAP_CELL_W + 1)};
-  for (int index = 0; index < sizeof(_offsets) / sizeof(_offsets[0]);
-       index++) {
+  for (int index = 0; index < sizeof(_offsets) / sizeof(_offsets[0]); index++) {
     /*
     **	Examine the cell for close object. Make sure that the cell actually is a
     **	legal one.
@@ -1405,8 +1403,8 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
         **	Special case check to ignore cloaked object if not owned by the
         *player.
         */
-        if (!o->Is_Techno() || ((TechnoClass*)o)->IsOwnedByPlayer ||
-            ((TechnoClass*)o)->Cloak != CLOAKED) {
+        if (!o->Is_Techno() || dynamic_cast<TechnoClass*>(o)->IsOwnedByPlayer ||
+            dynamic_cast<TechnoClass*>(o)->Cloak != CLOAKED) {
           int d = -1;
           if (o->What_Am_I() == RTTI_BUILDING) {
             d = Distance(coord, Cell_Coord(newcell));

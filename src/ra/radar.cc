@@ -672,7 +672,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   ** list.
   */
   if (obj && obj->What_Am_I() == RTTI_TERRAIN)
-    list[listidx++] = (TerrainClass*)obj;
+    list[listidx++] = dynamic_cast<TerrainClass*>(obj);
 
   /*
   ** Now loop through all the occupiers and add them to the list if they
@@ -681,7 +681,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   for (lp = 0; lp < ARRAY_SIZE(Map[cell].Overlappers); lp++) {
     obj = Map[cell].Overlappers[lp];
     if (obj && obj->What_Am_I() == RTTI_TERRAIN)
-      list[listidx++] = (TerrainClass*)obj;
+      list[listidx++] = dynamic_cast<TerrainClass*>(obj);
   }
 
   /*
@@ -750,10 +750,10 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
 
   obj = Map[cell].Cell_Occupier();
   while (obj) {
-    if (obj->Is_Techno() && ((TechnoClass*)obj)->Is_Visible_On_Radar()) {
-      int color = ColorRemaps[((InfantryClass*)obj)->House->RemapColor].Bar;
-      //			int color = ColorRemaps[((InfantryClass
-      //*)obj)->House->RemapColor].BrightColor;
+    if (obj->Is_Techno() &&
+        dynamic_cast<TechnoClass*>(obj)->Is_Visible_On_Radar()) {
+      int color =
+          ColorRemaps[dynamic_cast<TechnoClass*>(obj)->House->RemapColor].Bar;
       int xoff;
       int yoff;
       int subsize = std::max(1, size / 3);
@@ -773,10 +773,8 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
           ** Draw the infantryman's pixel.  If he's a spy, draw in my house
           *color
           */
-          if (*(InfantryClass*)obj == INFANTRY_SPY) {
+          if (*dynamic_cast<InfantryClass*>(obj) == INFANTRY_SPY) {
             color = ColorRemaps[PlayerPtr->RemapColor].Bar;
-            //						color =
-            // ColorRemaps[PlayerPtr->RemapColor].BrightColor;
           }
           LogicPage->Fill_Rect(x + xoff, y + yoff, x + xoff + (subsize - 1),
                                y + yoff + (subsize - 1), color);
@@ -1028,7 +1026,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
   /*
   **	Perform any clipping on the cell coordinate.
   */
-  if (!IsRadarActive || (unsigned)cell > MAP_CELL_TOTAL) {
+  if (!IsRadarActive || static_cast<unsigned>(cell) > MAP_CELL_TOTAL) {
     return;
   }
 
@@ -1042,7 +1040,8 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
   */
   x = Cell_X(cell) - RadarX;
   y = Cell_Y(cell) - RadarY;
-  if ((unsigned)x >= RadarCellWidth || (unsigned)y >= RadarCellHeight) {
+  if (static_cast<unsigned>(x) >= RadarCellWidth ||
+      static_cast<unsigned>(y) >= RadarCellHeight) {
     return;
   }
 
@@ -1100,7 +1099,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
           icon = cellptr->Clear_Icon();
         }
 
-        IconsetClass const* iconset = (IconsetClass const*)ptr;
+        IconsetClass const* iconset = static_cast<IconsetClass const*>(ptr);
         unsigned char const* icondata = iconset->Icon_Data();
 
         /*
@@ -1193,12 +1192,13 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) const {
 
   x -= RadX + RadOffX;
   y -= RadY + RadOffY;
-  if ((unsigned)x < RadIWidth && (unsigned)y < RadIHeight) {
+  if (static_cast<unsigned>(x) < RadIWidth &&
+      static_cast<unsigned>(y) < RadIHeight) {
     x -= BaseX;
     y -= BaseY;
 
-    if ((unsigned)x < RadarWidth + (ZoomFactor - 1) &&
-        (unsigned)y < RadarHeight + (ZoomFactor - 1)) {
+    if (static_cast<unsigned>(x) < RadarWidth + (ZoomFactor - 1) &&
+        static_cast<unsigned>(y) < RadarHeight + (ZoomFactor - 1)) {
       //		if ((unsigned)x < RadarWidth && (unsigned)y <
       // RadarHeight) {
       x = RadarX + x / ZoomFactor;
@@ -2012,8 +2012,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           HidPage.Blit(
               temp_surface,
               (radx < 0 ? -radx : 0) * ZoomFactor + RadX + RadOffX + BaseX,
-              (rady < 0 ? -rady : 0) * ZoomFactor + RadY + RadOffY + BaseY,
-              0, 0, RadarWidth, RadarHeight);
+              (rady < 0 ? -rady : 0) * ZoomFactor + RadY + RadOffY + BaseY, 0,
+              0, RadarWidth, RadarHeight);
 
           temp_surface.Blit(
               HidPage, 0, 0,
@@ -2194,7 +2194,7 @@ void RadarClass::Set_Tactical_Position(COORDINATE coord) {
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::Cell_On_Radar(CELL cell) {
-  if ((unsigned)cell > MAP_CELL_TOTAL) return false;
+  if (static_cast<unsigned>(cell) > MAP_CELL_TOTAL) return false;
 
   if (!IsZoomed) {
     return true;
@@ -2257,7 +2257,7 @@ bool RadarClass::Spy_Next_House() {
   }
 
   if (IsHouseSpy) {
-    house = (HousesType)(SpyingOn + 1);
+    house = static_cast<HousesType>(SpyingOn + 1);
   } else {
     house = firsthouse;
   }

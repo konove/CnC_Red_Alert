@@ -144,7 +144,7 @@ typedef enum {
 /*-------------------------------------------------------------------------*/
 // static bool DrawPath;
 
-inline FacingType Opposite(FacingType face) { return (FacingType)(face ^ 4); }
+inline FacingType Opposite(FacingType face) { return static_cast<FacingType>(face ^ 4); }
 
 inline static FacingType Next_Direction(FacingType facing, FacingType dir) {
   facing = facing + dir;
@@ -202,8 +202,8 @@ static CELL StartLocation;
  *   10/28/1994 SKB : Created.                                             *
  *=========================================================================*/
 int Point_Relative_To_Line(int x, int z, int x1, int z1, int x2, int z2) {
-  return ((long)x - (long)x2) * ((long)z1 - (long)z2) -
-         ((long)z - (long)z2) * ((long)x1 - (long)x2);
+  return (static_cast<long>(x) - static_cast<long>(x2)) * (static_cast<long>(z1) - static_cast<long>(z2)) -
+         (static_cast<long>(z) - static_cast<long>(z2)) * (static_cast<long>(x1) - static_cast<long>(x2));
 }
 
 /***************************************************************************
@@ -805,7 +805,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
   int oldval = 0;
   int cellcount = 0;
   int forceout = false;
-  FacingType firstdir = (FacingType)-1;
+  FacingType firstdir = static_cast<FacingType>(-1);
   CELL firstcell = -1;
   startx = Cell_X(start);
   starty = Cell_Y(start);
@@ -912,7 +912,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         ** because we could be trying to escape from a culdesack!
         */
         if (forcefail && path->Length > 0 &&
-            (FacingType)(newdir ^ 4) == path->Command[path->Length - 1]) {
+            static_cast<FacingType>(newdir ^ 4) == path->Command[path->Length - 1]) {
           forcefail = false;
         }
       }
@@ -974,7 +974,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         ** attaining this square, we were moving turned further in the
         ** search direction then we really were.
         */
-        newdir = Next_Direction(newdir, (FacingType)(search * 2));
+        newdir = Next_Direction(newdir, static_cast<FacingType>(search * 2));
       }
       /*
       ** Find out which side of the line this cell is on.  If it is on
@@ -1024,7 +1024,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
 *turn at *	the start of this loop.
 */
 #ifdef DIAGONAL
-    olddir = Next_Direction(newdir, (FacingType)(-(int)search * 3));
+    olddir = Next_Direction(newdir, static_cast<FacingType>(-(int)search * 3));
 #else
     olddir = Next_Direction(newdir, (FacingType)(-(int)search * 4));
 #endif
@@ -1065,9 +1065,9 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   */
 #ifdef DIAGONAL
   static FacingType _trans[FACING_COUNT] = {
-      (FacingType)0,  (FacingType)0, (FacingType)1,
-      (FacingType)2,  (FacingType)3, (FacingType)-2,
-      (FacingType)-1, (FacingType)0};  // Smoothing.
+      static_cast<FacingType>(0),  static_cast<FacingType>(0), static_cast<FacingType>(1),
+      static_cast<FacingType>(2),  static_cast<FacingType>(3), static_cast<FacingType>(-2),
+      static_cast<FacingType>(-1), static_cast<FacingType>(0)};  // Smoothing.
 #else
   static FacingType _trans[FACING_COUNT] = {
       (FacingType)0, (FacingType)0,  (FacingType)0, (FacingType)2,
@@ -1155,7 +1155,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
           **	degree adjustments.
           */
           newdir = Next_Direction(
-              *cmd1, newcmd < FACING_N ? (FacingType)-1 : (FacingType)1);
+              *cmd1, newcmd < FACING_N ? static_cast<FacingType>(-1) : static_cast<FacingType>(1));
 
           /*
           **	Diagonal 90 degree changes can be smoothed, although
@@ -1233,7 +1233,7 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) {
   CELL next;
   int lp;
 
-  dir = (FacingType)(CELL_FACING(src, dst) ^ 4) - 1;
+  dir = static_cast<FacingType>((CELL_FACING(src, dst) ^ 4)) - 1;
 
   /*
   ** Loop through the different acceptable distances.

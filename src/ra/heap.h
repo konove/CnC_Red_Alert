@@ -89,9 +89,9 @@ class FixedHeapClass {
   virtual int Free(void* pointer);
   virtual int Free_All();
 
-  void* operator[](int index) { return (char*)Buffer + index * Size; }
+  void* operator[](int index) { return static_cast<char*>(Buffer) + index * Size; }
   void const* operator[](int index) const {
-    return (char*)Buffer + index * Size;
+    return static_cast<char*>(Buffer) + index * Size;
   }
 
  protected:
@@ -148,12 +148,12 @@ class TFixedHeapClass : public FixedHeapClass {
   int ID(T const* pointer) const override {
     return FixedHeapClass::ID(pointer);
   }
-  virtual T* Alloc() { return (T*)FixedHeapClass::Allocate(); }
+  virtual T* Alloc() { return static_cast<T*>(FixedHeapClass::Allocate()); }
   int Free(T* pointer) override { return FixedHeapClass::Free(pointer); }
 
-  T& operator[](int index) { return *(T*)((char*)Buffer + index * Size); }
+  T& operator[](int index) { return *static_cast<T*>((char*)Buffer + index * Size); }
   T const& operator[](int index) const {
-    return *(T*)((char*)Buffer + index * Size);
+    return *static_cast<T*>((char*)Buffer + index * Size);
   }
 };
 
@@ -207,7 +207,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
   int Logical_ID(int id) const override {
     return FixedIHeapClass::Logical_ID(id);
   }
-  virtual T* Alloc() { return (T*)FixedIHeapClass::Allocate(); }
+  virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
   virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   int Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
   virtual int Save(Pipe& file) const;
@@ -215,8 +215,8 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual void Code_Pointers();
   virtual void Decode_Pointers();
 
-  virtual T* Ptr(std::size_t index) const { return (T*)ActivePointers[index]; }
-  virtual T* Raw_Ptr(std::size_t index) { return (T*)(*this)[index]; }
+  virtual T* Ptr(std::size_t index) const { return static_cast<T*>(ActivePointers[index]); }
+  virtual T* Raw_Ptr(std::size_t index) { return static_cast<T*>((*this)[index]); }
 };
 
 #endif

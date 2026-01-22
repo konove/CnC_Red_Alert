@@ -218,7 +218,7 @@ unsigned long ConnectionClass::Time() {
   unsigned long msec;
 
   ftime(&mytime);
-  msec = (unsigned long)mytime.time * 1000L + (unsigned long)mytime.millitm;
+  msec = static_cast<unsigned long>(mytime.time) * 1000L + static_cast<unsigned long>(mytime.millitm);
   return msec / 100 * 6;
 #endif
 

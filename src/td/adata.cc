@@ -2226,7 +2226,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, char const* name, int size,
   Biggest = biggest;
   ChainTo = chainto;
   Damage = damage;
-  Delay = (unsigned char)delaytime;
+  Delay = static_cast<unsigned char>(delaytime);
   IsCraterForming = iscrater;
   IsFlameThrower = isflame;
   IsGroundLayer = ground;
@@ -2237,7 +2237,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, char const* name, int size,
   IsWhiteTrans = iswhitetrans;
   LoopEnd = loopend;
   LoopStart = loopstart;
-  Loops = (unsigned char)loops;
+  Loops = static_cast<unsigned char>(loops);
   Size = size;
   Sound = sound;
   Stages = stages;

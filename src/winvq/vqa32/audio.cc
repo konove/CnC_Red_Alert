@@ -290,7 +290,7 @@ long VQA_OpenAudio(VQAHandleP* vqap, void* /*window*/) {
   // setup audio stream
   if (SDLStream) SDL_FreeAudioStream(SDLStream);
 
-  auto spec = (SDL_AudioSpec*)config->AudioSpec;
+  auto spec = static_cast<SDL_AudioSpec*>(config->AudioSpec);
 
   SDLStream = SDL_NewAudioStream(
       audio->BitsPerSample == 16 ? AUDIO_S16 : AUDIO_S8, audio->Channels,
@@ -755,7 +755,7 @@ int64_t VQA_GetTime(VQAHandleP* vqap) {
        * processed times the tick resolution per second divided by the
        * sample rate.
        */
-      ticks = (long)(samples * VQA_TIMETICKS / audio->SampleRate);
+      ticks = static_cast<long>(samples * VQA_TIMETICKS / audio->SampleRate);
       ticks += TickOffset;
       break;
 

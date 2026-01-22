@@ -176,8 +176,8 @@ int GadgetClass::Clicked_On(KeyNumType& key, unsigned flags, int mousex,
   *typical action for *	buttons.
   */
   if (this == StuckOn || flags & KEYBOARD ||
-      (flags && (unsigned)(mousex - X) < Width &&
-       (unsigned)(mousey - Y) < Height)) {
+      (flags && static_cast<unsigned>(mousex - X) < Width &&
+       static_cast<unsigned>(mousey - Y) < Height)) {
     return Action(flags, key);
   }
   return false;
@@ -240,7 +240,7 @@ void GadgetClass::Disable() {
  *=============================================================================================*/
 GadgetClass* GadgetClass::Remove() {
   Clear_Focus();
-  return (GadgetClass*)LinkClass::Remove();
+  return dynamic_cast<GadgetClass*>(LinkClass::Remove());
 }
 
 /***********************************************************************************************
@@ -258,7 +258,7 @@ GadgetClass* GadgetClass::Remove() {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 GadgetClass* GadgetClass::Get_Next() const {
-  return (GadgetClass*)LinkClass::Get_Next();
+  return dynamic_cast<GadgetClass*>(LinkClass::Get_Next());
 }
 
 /***********************************************************************************************
@@ -277,7 +277,7 @@ GadgetClass* GadgetClass::Get_Next() const {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 GadgetClass* GadgetClass::Get_Prev() const {
-  return (GadgetClass*)LinkClass::Get_Prev();
+  return dynamic_cast<GadgetClass*>(LinkClass::Get_Prev());
 }
 
 /***********************************************************************************************
@@ -618,7 +618,7 @@ ControlClass* GadgetClass::Extract_Gadget(unsigned id) {
   if (id) {
     while (g) {
       if (g->Get_ID() == id) {
-        return (ControlClass*)g;
+        return dynamic_cast<ControlClass*>(g);
       }
       g = g->Get_Next();
     }

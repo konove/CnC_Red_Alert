@@ -91,7 +91,7 @@ typedef int socklen_t;
 
 #ifdef PORTABLE
 static void Socket_Event_Handler(int socket, SocketEvent event, void* data) {
-  ((WinsockInterfaceClass*)data)->Event_Handler(socket, event);
+  static_cast<WinsockInterfaceClass*>(data)->Event_Handler(socket, event);
 }
 #endif
 

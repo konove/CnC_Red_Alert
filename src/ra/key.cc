@@ -261,8 +261,8 @@ bool WWKeyboardClass::Put_Mouse_Message(unsigned short vk_key, int x, int y,
                                         bool release) {
   if (Available_Buffer_Room() >= 3 && Is_Mouse_Key(vk_key)) {
     Put_Key_Message(vk_key, release);
-    Put((unsigned short)x);
-    Put((unsigned short)y);
+    Put(static_cast<unsigned short>(x));
+    Put(static_cast<unsigned short>(y));
     return true;
   }
   return false;
@@ -315,8 +315,8 @@ char WWKeyboardClass::To_ASCII(unsigned short key) {
   int scancode = 0;
 
   scancode = MapVirtualKey(key & 0xFF, 0);
-  result = ToAscii((UINT)(key & 0xFF), (UINT)scancode, (PBYTE)KeyState,
-                   (LPWORD)buffer, (UINT)0);
+  result = ToAscii((UINT)(key & 0xFF), static_cast<UINT>(scancode), static_cast<PBYTE>(KeyState),
+                   static_cast<LPWORD>(buffer), static_cast<UINT>(0));
 
   /*
   **	Restore the KeyState buffer back to pristine condition.
@@ -588,7 +588,7 @@ bool WWKeyboardClass::Message_Handler(HWND window, UINT message, UINT wParam,
       if (wParam == VK_SCROLL) {
         Stop_Execution();
       } else {
-        Put_Key_Message((unsigned short)wParam);
+        Put_Key_Message(static_cast<unsigned short>(wParam));
       }
       processed = true;
       break;
@@ -598,7 +598,7 @@ bool WWKeyboardClass::Message_Handler(HWND window, UINT message, UINT wParam,
     */
     case WM_SYSKEYUP:
     case WM_KEYUP:
-      Put_Key_Message((unsigned short)wParam, true);
+      Put_Key_Message(static_cast<unsigned short>(wParam), true);
       processed = true;
       break;
 

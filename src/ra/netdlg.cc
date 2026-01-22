@@ -1152,13 +1152,13 @@ void Destroy_Connection(int id, int error) {
 
   if (Debug_Print_Events) {
     printf("Destroying connection for house %d (%s)\n", id,
-           HouseClass::As_Pointer((HousesType)id)->IniName);
+           HouseClass::As_Pointer(static_cast<HousesType>(id))->IniName);
   }
 
   //------------------------------------------------------------------------
   //	Do nothing if the house isn't human.
   //------------------------------------------------------------------------
-  housep = HouseClass::As_Pointer((HousesType)id);
+  housep = HouseClass::As_Pointer(static_cast<HousesType>(id));
   if (!housep || !housep->IsHuman) return;
 
   //------------------------------------------------------------------------
@@ -2123,7 +2123,8 @@ static int Net_Join_Dialog() {
             Keyboard->MouseQY > d_color_y &&
             Keyboard->MouseQY < d_color_y + d_color_h) {
           Session.PrefColor =
-              (PlayerColorType)((Keyboard->MouseQX - cbox_x[0]) / d_color_w);
+              static_cast<PlayerColorType>(
+              (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
           Session.ColorIdx = Session.PrefColor;
 
           if (Session.ColorIdx == PCOLOR_DIALOG_BLUE) {
@@ -2188,7 +2189,7 @@ static int Net_Join_Dialog() {
             name_edt.Flag_To_Redraw();
             port::SafeCopy(Session.Handle, namebuf);
 #ifndef OLDWAY
-            Session.House = (HousesType)(housebtn.Current_Index() + HOUSE_USSR);
+            Session.House = static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
 #endif
             join_index = gamelist.Current_Index();
             parms_received = 0;
@@ -2276,7 +2277,7 @@ static int Net_Join_Dialog() {
         name_edt.Flag_To_Redraw();
         port::SafeCopy(Session.Handle, namebuf);
 #ifndef OLDWAY
-        Session.House = (HousesType)(housebtn.Current_Index() + HOUSE_USSR);
+        Session.House = static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
 #endif
         join_index = gamelist.Current_Index();
         parms_received = 0;
@@ -2384,7 +2385,7 @@ static int Net_Join_Dialog() {
         port::SafeCopy(Session.Handle, namebuf);
         port::SafeCopy(Session.GameName, namebuf);
 #ifndef OLDWAY
-        Session.House = (HousesType)(housebtn.Current_Index() + HOUSE_USSR);
+        Session.House = static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
 #endif
 
         name_edt.Clear_Focus();
@@ -2600,7 +2601,7 @@ static int Net_Join_Dialog() {
         *scenario locally then *	we need to fix up the file name so we
         *load the right one.
         */
-        Ipx.Set_Timing(25, (unsigned long)-1, 1000);
+        Ipx.Set_Timing(25, static_cast<unsigned long>(-1), 1000);
         if (Find_Local_Scenario(
                 Session.Options.ScenarioDescription, Session.ScenarioFileName,
                 Session.ScenarioFileLength, Session.ScenarioDigest,
@@ -2636,7 +2637,7 @@ static int Net_Join_Dialog() {
           }
         }
 
-        Ipx.Set_Timing(30, (unsigned long)-1, 600);
+        Ipx.Set_Timing(30, static_cast<unsigned long>(-1), 600);
         port::SafeCopy(Scen.ScenarioName, Session.ScenarioFileName);
         rc = 0;
         process = false;
@@ -3003,7 +3004,7 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   //		Ipx.Global_Response_Time() * 4);
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, (unsigned long)-1,
+  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, static_cast<unsigned long>(-1),
                  std::max(120ul, Ipx.Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
@@ -3735,7 +3736,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     // If we're waiting for confirmation & got rejected, tell the user why
     //.....................................................................
     else if (*joinstate == JOIN_WAIT_CONFIRM) {
-      *why = (RejectType)Session.GPacket.Reject.Why;
+      *why = static_cast<RejectType>(Session.GPacket.Reject.Why);
       *joinstate = JOIN_REJECTED;
       retcode = EV_STATE_CHANGE;
     }
@@ -5093,11 +5094,11 @@ static int Net_New_Dialog() {
               Session.FrameSendRate * Session.FrameSendRate,
           Session.FrameSendRate * 2);
     } else {
-      Session.MaxAhead = std::max(unsigned(Ipx.Global_Response_Time() / 8),
+      Session.MaxAhead = std::max(static_cast<unsigned>(Ipx.Global_Response_Time() / 8),
                                   NETWORK_MIN_MAX_AHEAD);
     }
 
-    Ipx.Set_Timing(25, (unsigned long)-1, 1000);
+    Ipx.Set_Timing(25, static_cast<unsigned long>(-1), 1000);
 
     //.....................................................................
     //	Send all players the NET_GO packet.  Wait until all ACK's have
@@ -5189,7 +5190,7 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   // Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   // Ipx.Global_Response_Time() * 4);
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, (unsigned long)-1,
+  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, static_cast<unsigned long>(-1),
                  std::max(120ul, Ipx.Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
@@ -5333,7 +5334,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     if (found) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
       Session.GPacket.Command = NET_REJECT_JOIN;
-      Session.GPacket.Reject.Why = (int)REJECT_DUPLICATE_NAME;
+      Session.GPacket.Reject.Why = static_cast<int>(REJECT_DUPLICATE_NAME);
       Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                               &Session.GAddress);
       return EV_NONE;
@@ -5345,7 +5346,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     else if (Session.Players.Count() >= Session.MaxPlayers && !resend) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
       Session.GPacket.Command = NET_REJECT_JOIN;
-      Session.GPacket.Reject.Why = (int)REJECT_GAME_FULL;
+      Session.GPacket.Reject.Why = static_cast<int>(REJECT_GAME_FULL);
       Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                               &Session.GAddress);
       return EV_NONE;
@@ -5359,7 +5360,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
              !resend) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
       Session.GPacket.Command = NET_REJECT_JOIN;
-      Session.GPacket.Reject.Why = (int)REJECT_MISMATCH;
+      Session.GPacket.Reject.Why = static_cast<int>(REJECT_MISMATCH);
       Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                               &Session.GAddress);
       return EV_NONE;
@@ -5405,7 +5406,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       if (version == 0) {
         memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
         Session.GPacket.Command = NET_REJECT_JOIN;
-        Session.GPacket.Reject.Why = (int)REJECT_VERSION_TOO_OLD;
+        Session.GPacket.Reject.Why = static_cast<int>(REJECT_VERSION_TOO_OLD);
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                                 &Session.GAddress);
         return EV_NONE;
@@ -5417,7 +5418,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       else if (version == 0xffffffff) {
         memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
         Session.GPacket.Command = NET_REJECT_JOIN;
-        Session.GPacket.Reject.Why = (int)REJECT_VERSION_TOO_NEW;
+        Session.GPacket.Reject.Why = static_cast<int>(REJECT_VERSION_TOO_NEW);
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                                 &Session.GAddress);
         return EV_NONE;
@@ -5450,7 +5451,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       } else {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           if (color_used[i] == 0) {
-            who->Player.Color = (PlayerColorType)i;
+            who->Player.Color = static_cast<PlayerColorType>(i);
             break;
           }
         }
@@ -5592,7 +5593,7 @@ uint32_t Compute_Name_CRC(char* name) {
   strupr(buf);
 
   for (i = 0; i < strlen(buf); i++) {
-    Add_CRC(&crc, (uint32_t)buf[i]);
+    Add_CRC(&crc, static_cast<uint32_t>(buf[i]));
   }
 
   return crc;
@@ -5711,7 +5712,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
       w += (d_margin * 5);
     }
 #else
-    w = std::max(String_Pixel_Width(buf3), unsigned(w)) * RESFACTOR;
+    w = std::max(String_Pixel_Width(buf3), static_cast<unsigned>(w)) * RESFACTOR;
     w += d_margin * 5;
 #endif
 
@@ -7326,7 +7327,7 @@ void Start_WWChat(ColorListClass* playerlist) {
     //.....................................................................
     if (i == 0 || strcmp(WWPersons[i].Name, WWPersons[i - 1].Name)) {
       WWPersons[i].Color =
-          (PlayerColorType)Random_Pick(0, PCOLOR_LAST - 1);
+          static_cast<PlayerColorType>(Random_Pick(0, PCOLOR_LAST - 1));
       if (Percent_Chance(50)) {
         house = HOUSE_GREECE;
       } else {
@@ -8197,7 +8198,7 @@ static int Net_Fake_New_Dialog() {
   //------------------------------------------------------------------------
   // Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   //	Ipx.Global_Response_Time() * 4);
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, (unsigned long)-1,
+  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, static_cast<unsigned long>(-1),
                  std::max(120ul, Ipx.Global_Response_Time() * 8));
 
   Clear_Listbox(&playerlist);
@@ -9052,7 +9053,7 @@ static int Net_Fake_Join_Dialog() {
   //------------------------------------------------------------------------
   // Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   //	Ipx.Global_Response_Time() * 4);
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, (unsigned long)-1,
+  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, static_cast<unsigned long>(-1),
                  std::max(120ul, Ipx.Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------

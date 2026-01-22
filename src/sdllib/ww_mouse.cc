@@ -116,7 +116,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
 
   // Shape data is LCW compressed starting at byte 10 (after the header).
   auto decompressed_data = new uint8_t[cursor_shape->DataLength];
-  LCW_Uncompress((uint8_t*)cursor + 10, decompressed_data,
+  LCW_Uncompress(static_cast<uint8_t*>(cursor) + 10, decompressed_data,
                  cursor_shape->DataLength);
 
   // After LCW decompression, the shape is still RLE encoded.
@@ -183,7 +183,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
 
   if (WindowBuffer) {
     // Sync cursor palette with game palette. Index 0 is transparent.
-    auto window_pal = (const SDL_Palette*)WindowBuffer->Get_Palette();
+    auto window_pal = static_cast<const SDL_Palette*>(WindowBuffer->Get_Palette());
     SDL_SetPaletteColors(sdl_surf->format->palette, window_pal->colors + 1, 1,
                          255);
     sdl_surf->format->palette->colors[0].a = 0;
@@ -194,7 +194,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
 
   SDL_SetCursor(sdl_cursor.get());
 
-  PrevCursor = (char*)cursor;
+  PrevCursor = static_cast<char*>(cursor);
   sdl_cursor_ = std::move(sdl_cursor);
   sdl_surface_ = std::move(sdl_surf);
   MouseXHot = xhotspot;
@@ -237,12 +237,12 @@ void WWMouseClass::Erase_Mouse(GraphicViewPortClass* /*scr*/, bool /*forced*/) {
 
 void WWMouseClass::Set_Cursor_Clip() {
   if (!NoMouseGrab) {
-    SDL_SetWindowGrab((SDL_Window*)MainWindow, SDL_TRUE);
+    SDL_SetWindowGrab(static_cast<SDL_Window*>(MainWindow), SDL_TRUE);
   }
 }
 
 void WWMouseClass::Clear_Cursor_Clip() {
-  SDL_SetWindowGrab((SDL_Window*)MainWindow, SDL_FALSE);
+  SDL_SetWindowGrab(static_cast<SDL_Window*>(MainWindow), SDL_FALSE);
 }
 
 // SDL bakes palette colors into the cursor at creation time, so we must
@@ -258,7 +258,7 @@ void WWMouseClass::Update_Palette() {
 
   PaletteDirty = false;
 
-  auto window_pal = (const SDL_Palette*)WindowBuffer->Get_Palette();
+  auto window_pal = static_cast<const SDL_Palette*>(WindowBuffer->Get_Palette());
   SDL_SetPaletteColors(sdl_surface_->format->palette, window_pal->colors + 1, 1,
                        255);
 

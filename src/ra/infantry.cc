@@ -315,7 +315,7 @@ InfantryClass::~InfantryClass() {
 void* InfantryClass::operator new(size_t) throw() {
   void* ptr = Infantry.Allocate();
   if (ptr != nullptr) {
-    ((InfantryClass*)ptr)->IsActive = true;
+    static_cast<InfantryClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -336,9 +336,9 @@ void* InfantryClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void InfantryClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
-    ((InfantryClass*)ptr)->IsActive = false;
+    static_cast<InfantryClass*>(ptr)->IsActive = false;
   }
-  Infantry.Free((InfantryClass*)ptr);
+  Infantry.Free(static_cast<InfantryClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -389,7 +389,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
   ** we're not the target, or the dog doesn't exist, then take no damage.
   */
   if (source != nullptr && source->What_Am_I() == RTTI_INFANTRY &&
-      ((InfantryClass*)source)->Class->IsDog) {
+      dynamic_cast<InfantryClass*>(source)->Class->IsDog) {
     if (source->TarCom == As_Target()) {
       damage = Strength;
     } else {
@@ -506,7 +506,8 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
       int morefear = FEAR_ANXIOUS;
       if (Health_Ratio() > Rule.ConditionRed) morefear /= 2;
       if (Health_Ratio() > Rule.ConditionYellow) morefear /= 2;
-      Fear = FearType(std::min((int)Fear + morefear, int(FEAR_MAXIMUM)));
+      Fear = static_cast<FearType>(
+          std::min((int)Fear + morefear, int(FEAR_MAXIMUM)));
     }
   }
   return res;
@@ -541,8 +542,8 @@ int InfantryClass::Shape_Number() const {
   **	The infantry shape is always modulo the number of animation frames
   **	of the action stage that the infantry is doing.
   */
-  int shapenum =
-      Fetch_Stage() % std::max(int(Class->DoControls[doit].Count), 1);
+  int shapenum = Fetch_Stage() %
+                 std::max(static_cast<int>(Class->DoControls[doit].Count), 1);
 
   /*
   **	If facing makes a difference, then the shape number will be incremented
@@ -662,7 +663,8 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           } else {
             bool iscapturable = false;
             if (tech->What_Am_I() == RTTI_BUILDING) {
-              iscapturable = ((BuildingClass*)tech)->Class->IsCaptureable;
+              iscapturable =
+                  dynamic_cast<BuildingClass*>(tech)->Class->IsCaptureable;
             }
             if (tech->Health_Ratio() <= EngineerCaptureLevel && iscapturable) {
               if (tech->Trigger.Is_Valid()) {
@@ -701,7 +703,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
             tech->SpiedBy |= housespy;
             tech->Mark(MARK_OVERLAP_DOWN);
             if (tech->What_Am_I() == RTTI_BUILDING) {
-              StructType build = *(BuildingClass*)tech;
+              StructType build = *dynamic_cast<BuildingClass*>(tech);
               if (build == STRUCT_RADAR /* || build == STRUCT_EYE */) {
                 tech->House->RadarSpied |= housespy;
               }
@@ -721,7 +723,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               tech->House->IsThieved = true;
 
               if (tech->What_Am_I() == RTTI_BUILDING) {
-                BuildingClass* bldg = (BuildingClass*)tech;
+                BuildingClass* bldg = dynamic_cast<BuildingClass*>(tech);
                 if (bldg->Class->Capacity) {
                   /*
                   ** If we just raided a storage facility (refinery or silo)
@@ -1168,8 +1170,7 @@ void InfantryClass::Assign_Target(TARGET target) {
 
   Path[0] = FACING_NONE;
   if (Class->IsDog) {
-    if (As_Object(target) &&
-        As_Object(target)->What_Am_I() != RTTI_INFANTRY) {
+    if (As_Object(target) && As_Object(target)->What_Am_I() != RTTI_INFANTRY) {
       target = TARGET_NONE;
     }
   }
@@ -1311,7 +1312,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   /*
   ** If we are moving into an illegal cell, then we can't do that.
   */
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 
   /*
   **	If moving off the edge of the map, then consider that an illegal move.
@@ -1382,13 +1383,13 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
       ** If object is a land mine, allow movement
       */
       if (obj->What_Am_I() == RTTI_BUILDING) {
-        if (*(BuildingClass*)obj == STRUCT_AVMINE) {
+        if (*dynamic_cast<BuildingClass*>(obj) == STRUCT_AVMINE) {
           obj = obj->Next;
           continue;
         } else {
           if (!Rule.IsMineAware ||
-              !((BuildingClass*)obj)->House->Is_Ally(House)) {
-            if (*(BuildingClass*)obj == STRUCT_APMINE) {
+              !dynamic_cast<BuildingClass*>(obj)->House->Is_Ally(House)) {
+            if (*dynamic_cast<BuildingClass*>(obj) == STRUCT_APMINE) {
               obj = obj->Next;
               continue;
             }
@@ -1439,8 +1440,8 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
           *not.
           */
           case RTTI_UNIT:
-            if (((UnitClass*)obj)->IsDriving ||
-                Target_Legal(((UnitClass*)obj)->NavCom)) {
+            if (dynamic_cast<UnitClass*>(obj)->IsDriving ||
+                Target_Legal(dynamic_cast<UnitClass*>(obj)->NavCom)) {
               if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
             } else {
               if (retval < MOVE_TEMP) retval = MOVE_TEMP;
@@ -1466,7 +1467,8 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
         **	Cloaked enemy objects are not considered if this is a
         *Find_Path() *	call.
         */
-        if (!obj->Is_Techno() || ((TechnoClass*)obj)->Cloak != CLOAKED) {
+        if (!obj->Is_Techno() ||
+            dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED) {
           /*
           **	Any non-allied blockage is considered impassible if the infantry
           **	is not equipped with a weapon.
@@ -1492,7 +1494,8 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
               return MOVE_NO;
 #endif
             case RTTI_INFANTRY:
-              if (*(InfantryClass*)obj == INFANTRY_SPY && !Class->IsDog) {
+              if (*dynamic_cast<InfantryClass*>(obj) == INFANTRY_SPY &&
+                  !Class->IsDog) {
                 retval = MOVE_TEMP;
                 break;
               }
@@ -1937,7 +1940,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
 
     if (threat) {
       toface = Dir_Facing(Direction8(threat, Coord));
-      toface = toface + FacingType(Random_Pick(0, 4) - 2);
+      toface = toface + static_cast<FacingType>(Random_Pick(0, 4) - 2);
     } else {
       COORDINATE coord = Coord_Fraction(Center_Coord());
 
@@ -1947,7 +1950,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
       } else {
         toface = Dir_Facing(PrimaryFacing.Current());
       }
-      toface = toface + FacingType(Random_Pick(0, 4) - 2);
+      toface = toface + static_cast<FacingType>(Random_Pick(0, 4) - 2);
     }
 
     CELL newcell = 0;
@@ -2008,7 +2011,7 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
   }
 
   if (*this == INFANTRY_SPY && todo >= DO_GESTURE1) {
-    todo = (DoType)(DO_IDLE1 + Random_Pick(0, 1));
+    todo = static_cast<DoType>(DO_IDLE1 + Random_Pick(0, 1));
   }
 
   if (todo != Doing &&
@@ -2933,8 +2936,7 @@ ActionType InfantryClass::What_Action(ObjectClass const* object) const {
         // AIRCRAFT_TRANSPORT) ||
         object->What_Am_I() == RTTI_BUILDING &&
         ((BuildingClass*)object)->Class->IsCaptureable) {
-      if (*this == INFANTRY_THIEF &&
-          object->What_Am_I() == RTTI_BUILDING &&
+      if (*this == INFANTRY_THIEF && object->What_Am_I() == RTTI_BUILDING &&
           ((BuildingClass*)object)->Class->Capacity == 0) {
         action = ACTION_NONE;
       } else {
@@ -3365,11 +3367,10 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           /*
           **	Fetch the mission and facing.
           */
-          MissionType mission =
-              Mission_From_Name(strtok(nullptr, ",\n\r"));
+          MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
           validation = strtok(nullptr, ",\n\r");
           if (validation) {
-            dir = (DirType)atoi(validation);
+            dir = static_cast<DirType>(atoi(validation));
             validation = strtok(nullptr, ",\n\r");
             if (validation) {
               tp = TriggerTypeClass::From_Name(validation);
@@ -3377,7 +3378,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
               tp = nullptr;
             }
           } else {
-            dir = (DirType)0;
+            dir = static_cast<DirType>(0);
             tp = nullptr;
           }
 
@@ -3451,8 +3452,8 @@ void InfantryClass::Write_INI(CCINIClass& ini) {
               Coord_Cell(infantry->Coord),
               CellClass::Spot_Index(infantry->Coord),
               Mission_Name(infantry->Mission == MISSION_NONE
-                                             ? infantry->MissionQueue
-                                             : infantry->Mission),
+                               ? infantry->MissionQueue
+                               : infantry->Mission),
               infantry->PrimaryFacing.Current(),
               infantry->Trigger.Is_Valid() ? infantry->Trigger->Class->IniName
                                            : "None");
@@ -4023,7 +4024,7 @@ void InfantryClass::Movement_AI() {
         /*
         **	Advance the infantry as far as it should go.
         */
-        MPHType maxspeed = MPHType(
+        MPHType maxspeed = static_cast<MPHType>(
             std::min(Class->MaxSpeed * SpeedBias * House->GroundspeedBias,
                      int(MPH_LIGHT_SPEED)));
 

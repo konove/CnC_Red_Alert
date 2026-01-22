@@ -658,7 +658,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
             if (cell == 0) {
               Transmit_Message(RADIO_OVER_OUT, from);
             } else {
-              param = (long)::As_Target(cell);
+              param = static_cast<long>(::As_Target(cell));
               Do_Turn(dir);
 
               /*
@@ -684,7 +684,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
               if (Transmit_Message(RADIO_MOVE_HERE, param, from) ==
                   RADIO_YEA_NOW_WHAT) {
                 if (Is_Door_Open()) {
-                  param = (long)As_Target();
+                  param = static_cast<long>(As_Target());
                   Transmit_Message(RADIO_TETHER);
                   if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
                       RADIO_ROGER) {
@@ -891,7 +891,8 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         }
         if (i) {
           if (i->Unlimbo(Coord, DIR_N)) {
-            i->Strength = Random_Pick(5, (int)i->Class->MaxStrength / 2);
+            i->Strength =
+                Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2);
             i->Scatter(0, true);
             if (!House->IsHuman) {
               i->Assign_Mission(MISSION_HUNT);
@@ -1041,9 +1042,9 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
  *new.                                               *
  *=============================================================================================*/
 void* UnitClass::operator new(size_t) throw() {
-  void* ptr = (UnitClass*)Units.Allocate();
+  void* ptr = static_cast<UnitClass*>(Units.Allocate());
   if (ptr) {
-    ((UnitClass*)ptr)->IsActive = true;
+    static_cast<UnitClass*>(ptr)->IsActive = true;
   }
   return ptr;
 }
@@ -1065,9 +1066,9 @@ void* UnitClass::operator new(size_t) throw() {
  *=============================================================================================*/
 void UnitClass::operator delete(void* ptr) {
   if (ptr) {
-    ((UnitClass*)ptr)->IsActive = false;
+    static_cast<UnitClass*>(ptr)->IsActive = false;
   }
-  Units.Free((UnitClass*)ptr);
+  Units.Free(static_cast<UnitClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -2043,7 +2044,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
           u->Draw_It(x1, y1, WINDOW_TACTICAL);
         }
         if (!u->Next) break;
-        u = (TechnoClass*)u->Next;
+        u = dynamic_cast<TechnoClass*>(u->Next);
       }
     }
   }
@@ -2742,7 +2743,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
   Validate();
   CellClass const* cellptr = &Map[cell];
 
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 
   /*
   **	The gunboat can always move. This prevents it from trying to move around
@@ -2821,19 +2822,22 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
       **	authorization from the occupier.
       */
       if (obj == Contact_With_Whom() &&
-          (IsTethered || (obj->What_Am_I() == RTTI_BUILDING &&
-                          *(BuildingClass*)obj == STRUCT_REPAIR))) {
+          (IsTethered ||
+           (obj->What_Am_I() == RTTI_BUILDING &&
+            *dynamic_cast<BuildingClass*>(obj) == STRUCT_REPAIR))) {
         return MOVE_OK;
       }
 
       bool is_moving = (obj->What_Am_I() == RTTI_INFANTRY ||
                         obj->What_Am_I() == RTTI_UNIT) &&
-                       Target_Legal(((FootClass*)obj)->NavCom);
+                       Target_Legal(dynamic_cast<FootClass*>(obj)->NavCom);
 
       if (House->Is_Ally(obj)) {
         if (is_moving) {
           int face = Dir_Facing(PrimaryFacing);
-          int techface = Dir_Facing(((FootClass const*)obj)->PrimaryFacing) ^ 4;
+          int techface =
+              Dir_Facing(dynamic_cast<FootClass const*>(obj)->PrimaryFacing) ^
+              4;
           if (face == techface && Distance(obj) <= 0x1FF) {
             return MOVE_NO;
           }
@@ -2847,7 +2851,8 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
         **	Cloaked enemy objects are not considered if this is a
         *Find_Path() *	call.
         */
-        if (!obj->Is_Techno() || ((TechnoClass*)obj)->Cloak != CLOAKED) {
+        if (!obj->Is_Techno() ||
+            dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED) {
           /*
           **	If this unit can crush infantry, and there is an enemy infantry
           *in the *	cell, don't consider the cell impassible. This is true
@@ -2867,7 +2872,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
             */
             switch (obj->What_Am_I()) {
               case RTTI_TERRAIN:
-                if (((TerrainClass*)obj)->Class->IsFlammable &&
+                if (dynamic_cast<TerrainClass*>(obj)->Class->IsFlammable &&
                     BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
                             .Warhead == WARHEAD_FIRE) {
                   if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
@@ -3165,7 +3170,7 @@ void UnitClass::Response_Select() {
   static VocType _response[] = {VOC_VEHIC,  VOC_UNIT,   VOC_YESSIR,
                                 VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
   VocType response = _response[Sim_Random_Pick(
-      0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
 
   if (*this == UNIT_TRIC || *this == UNIT_TREX || *this == UNIT_RAPT ||
       *this == UNIT_STEG) {
@@ -3196,7 +3201,7 @@ void UnitClass::Response_Move() {
   static VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT, VOC_MOVEOUT,
                                 VOC_ACKNOWL, VOC_AFFIRM,  VOC_AFFIRM};
   VocType response = _response[Sim_Random_Pick(
-      0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
 
   if (*this == UNIT_TRIC || *this == UNIT_TREX || *this == UNIT_RAPT ||
       *this == UNIT_STEG) {
@@ -3227,7 +3232,7 @@ void UnitClass::Response_Attack() {
   static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL, VOC_YESSIR, VOC_YESSIR,
                                 VOC_YESSIR};
   VocType response = _response[Sim_Random_Pick(
-      0, (int)(sizeof(_response) / sizeof(_response[0])) - 1)];
+      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
 
   if (*this == UNIT_TRIC || *this == UNIT_TREX || *this == UNIT_RAPT ||
       *this == UNIT_STEG) {
@@ -3296,10 +3301,11 @@ ActionType UnitClass::What_Action(ObjectClass* object) const {
   **	Special return to friendly refinery action.
   */
   if (IsOwnedByPlayer && object->Is_Techno() &&
-      ((TechnoClass const*)object)->House->Is_Ally(this)) {
+      dynamic_cast<TechnoClass const*>(object)->House->Is_Ally(this)) {
     if (object->What_Am_I() == RTTI_BUILDING &&
         ((UnitClass*)this)
-                ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object) ==
+                ->Transmit_Message(RADIO_CAN_LOAD,
+                                   dynamic_cast<TechnoClass*>(object)) ==
             RADIO_ROGER) {
       action = ACTION_ENTER;
     }
@@ -3310,7 +3316,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) const {
   */
   if (IsOwnedByPlayer && action == ACTION_SELECT &&
       object->What_Am_I() == RTTI_BUILDING) {
-    BuildingClass* building = (BuildingClass*)object;
+    BuildingClass* building = dynamic_cast<BuildingClass*>(object);
     if (building->Class->Type == STRUCT_REPAIR &&
         !building->In_Radio_Contact() && !building->Is_Something_Attached()) {
       action = ACTION_MOVE;
@@ -3398,8 +3404,9 @@ void UnitClass::Read_INI(char* buffer) {
           **	Read the raw data.
           */
           int strength = atoi(strtok(nullptr, ",\r\n"));
-          COORDINATE coord = Cell_Coord((CELL)atoi(strtok(nullptr, ",\r\n")));
-          DirType dir = (DirType)atoi(strtok(nullptr, ",\r\n"));
+          COORDINATE coord =
+              Cell_Coord(static_cast<CELL>(atoi(strtok(nullptr, ",\r\n"))));
+          DirType dir = static_cast<DirType>(atoi(strtok(nullptr, ",\r\n")));
           MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
           unit->Trigger = TriggerClass::As_Pointer(strtok(nullptr, ",\r\n"));
           if (unit->Trigger) {

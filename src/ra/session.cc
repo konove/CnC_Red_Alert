@@ -513,7 +513,7 @@ bool SessionClass::Am_I_Master() {
   // the master.
   //------------------------------------------------------------------------
   for (i = 0; i < Session.MaxPlayers; i++) {
-    house = (HousesType)((int)HOUSE_MULTI1 + i);
+    house = static_cast<HousesType>((int)HOUSE_MULTI1 + i);
     hptr = HouseClass::As_Pointer(house);
     if (hptr->IsHuman) {
       if (PlayerPtr == hptr) {
@@ -766,10 +766,10 @@ void SessionClass::Read_MultiPlayer_Settings() {
     ini.Get_String("MultiPlayer", "Handle", "Noname", Handle, sizeof(Handle));
 
     //	Get the player's last-used Color
-    PrefColor = (PlayerColorType)ini.Get_Int("MultiPlayer", "Color", 0);
+    PrefColor = static_cast<PlayerColorType>(ini.Get_Int("MultiPlayer", "Color", 0));
     int iSide = ini.Get_Int("MultiPlayer", "Side", HOUSE_USSR);
     iSide = std::max(2, std::min(6, iSide));
-    House = (HousesType)iSide;
+    House = static_cast<HousesType>(iSide);
     CurPhoneIdx = ini.Get_Int("MultiPlayer", "PhoneIndex", -1);
     TrapCheckHeap = ini.Get_Int("MultiPlayer", "CheckHeap", 0);
 
@@ -805,7 +805,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     // find dial method
     for (i = 0; i < DIAL_METHODS; i++) {
       if (!stricmp(buf, DialMethodCheck[i])) {
-        SerialDefaults.DialMethod = (DialMethodType)i;
+        SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
         break;
       }
     }
@@ -948,7 +948,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         //	find dial method
         for (i = 0; i < DIAL_METHODS; i++) {
           if (!stricmp(buf, DialMethodCheck[i])) {
-            phone->Settings.DialMethod = (DialMethodType)i;
+            phone->Settings.DialMethod = static_cast<DialMethodType>(i);
             break;
           }
         }
@@ -1713,7 +1713,7 @@ unsigned long SessionClass::Compute_Unique_ID() {
   // Start with the seconds since Jan 1, 1970 (system local time)
   //------------------------------------------------------------------------
   time(&tm);
-  id = (uint32_t)tm;
+  id = static_cast<uint32_t>(tm);
 
   //------------------------------------------------------------------------
   // Now add in the free space on the hard drive
@@ -1728,7 +1728,7 @@ unsigned long SessionClass::Compute_Unique_ID() {
   path = getenv("PATH");
   if (path) {
     for (i = 0; i < strlen(path); i++) {
-      Add_CRC(&id, (uint32_t)path[i]);
+      Add_CRC(&id, static_cast<uint32_t>(path[i]));
     }
   }
 

@@ -292,7 +292,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
   /*------------------------------------------------------------------------
   Check the magic #
   ------------------------------------------------------------------------*/
-  packet = (CommHeaderType*)buf;
+  packet = static_cast<CommHeaderType*>(buf);
   if (packet->MagicNumber != MagicNum) {
     return 0;
   }
@@ -797,7 +797,7 @@ unsigned long ConnectionClass::Time() {
   If the Westwood library isn't being used, use the DOS timer.
   ------------------------------------------------------------------------*/
   ftime(&mytime);
-  msec = (unsigned long)mytime.time * 1000L + (unsigned long)mytime.millitm;
+  msec = static_cast<unsigned long>(mytime.time) * 1000L + static_cast<unsigned long>(mytime.millitm);
   return msec / 100 * 6;
 
 #endif
