@@ -107,37 +107,37 @@ struct KeyboardClass : public WWKeyboardClass {
 **	enumerated types desired.
 */
 template <class T>
-inline T operator++(T& a) {
+T operator++(T& a) {
   a = (T)((int)a + 1);
   return a;
 }
 template <class T>
-inline T operator++(T& a, int) {
+T operator++(T& a, int) {
   T aa = a;
   a = (T)((int)a + 1);
   return aa;
 }
 template <class T>
-inline T operator--(T& a) {
+T operator--(T& a) {
   a = (T)((int)a - 1);
   return a;
 }
 template <class T>
-inline T operator--(T& a, int) {
+T operator--(T& a, int) {
   T aa = a;
   a = (T)((int)a - 1);
   return aa;
 }
 template <class T>
-inline constexpr T operator|(T t1, T t2) {
+constexpr T operator|(T t1, T t2) {
   return (T)((int)t1 | (int)t2);
 }
 template <class T>
-inline T operator&(T t1, T t2) {
+T operator&(T t1, T t2) {
   return (T)((int)t1 & (int)t2);
 }
 template <class T>
-inline T operator~(T t1) {
+T operator~(T t1) {
   return (T) ~(int)t1;
 }
 
@@ -164,7 +164,7 @@ long max(long, long);
 #endif
 
 template <class T>
-inline void swap(T& value1, T& value2) {
+void swap(T& value1, T& value2) {
   T temp = value1;
   value1 = value2;
   value2 = temp;
@@ -174,7 +174,7 @@ long swap(long, long);
 
 // TODO(konove): Replace with std::clamp
 template <class T>
-inline T Bound(T original, T minval, T maxval) {
+T Bound(T original, T minval, T maxval) {
   if (original < minval) return minval;
   if (original > maxval) return maxval;
   return original;

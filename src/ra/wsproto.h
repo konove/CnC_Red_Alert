@@ -135,7 +135,7 @@ class WinsockInterfaceClass {
     CONNECTION_LOST
   } ConnectStatusEnum;
 
-  inline ConnectStatusEnum Get_Connection_Status() { return ConnectStatus; }
+  ConnectStatusEnum Get_Connection_Status() { return ConnectStatus; }
 
  protected:
   int Get_Last_Error();

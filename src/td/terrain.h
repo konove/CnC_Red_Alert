@@ -64,9 +64,9 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   **	Constructor for terrain object class.
   */
-  static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return ptr; }
-  static void operator delete(void* ptr);
+  void* operator new(size_t size) throw();
+  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void operator delete(void* ptr);
   TerrainClass();
   TerrainClass(TerrainType id, CELL cell);
   TerrainClass(NoInitClass const& x)

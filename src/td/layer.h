@@ -50,7 +50,7 @@ class LayerClass : public DynamicVectorClass<ObjectClass*> {
   //-----------------------------------------------------------------
   void Sort();
   bool Submit(ObjectClass const* object, bool sort = false);
-  int Sorted_Add(ObjectClass const* const object);
+  int Sorted_Add(ObjectClass const* object);
 
   virtual void Init() { Clear(); }
   virtual void One_Time() {}

@@ -57,9 +57,9 @@
 */
 class AnimClass : public ObjectClass, private StageClass {
  public:
-  static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return ptr; }
-  static void operator delete(void* ptr);
+  void* operator new(size_t size) throw();
+  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void operator delete(void* ptr);
   AnimClass() : Class(nullptr) {
     Owner = HOUSE_NONE;
     Object = nullptr;

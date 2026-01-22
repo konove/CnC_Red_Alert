@@ -93,9 +93,9 @@ class VesselClass : public DriveClass {
   VesselClass(VesselType classid, HousesType house);
   VesselClass(NoInitClass const& x)
       : DriveClass(x), Class(x), SecondaryFacing(x) {}
-  static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return ptr; }
-  static void operator delete(void* ptr);
+  void* operator new(size_t size) throw();
+  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void operator delete(void* ptr);
   operator VesselType() const { return Class->Type; }
 
   static void Init();

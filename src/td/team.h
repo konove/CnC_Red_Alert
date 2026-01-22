@@ -187,9 +187,9 @@ class TeamClass : public AbstractClass {
         TimeOut(x) {}
   ~TeamClass() override;
   virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
-  static void operator delete(void* ptr);
-  static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void operator delete(void* ptr);
+  void* operator new(size_t size) throw();
+  void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void Init();
   static void Suspend_Teams(int priority);
 

@@ -900,7 +900,7 @@ inline char const* Text_String(int string) {
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline T Random_Pick(T a, T b) {
+T Random_Pick(T a, T b) {
   return T(Scen.RandomNumber(static_cast<int>(a), static_cast<int>(b)));
 };
 
@@ -948,7 +948,7 @@ inline bool Percent_Chance(int percent) {
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline T Sim_Random_Pick(T a, T b) {
+T Sim_Random_Pick(T a, T b) {
   return T(NonCriticalRandomNumber(static_cast<int>(a), static_cast<int>(b)));
 };
 

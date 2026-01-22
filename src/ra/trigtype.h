@@ -112,9 +112,9 @@ class TriggerTypeClass : public AbstractTypeClass {
       : AbstractTypeClass(x), Event1(x), Event2(x), Action1(x), Action2(x) {}
   ~TriggerTypeClass() override = default;
 
-  static void* operator new(size_t);
-  static void* operator new(size_t, void* ptr) throw() { return ptr; }
-  static void operator delete(void* ptr);
+  void* operator new(size_t);
+  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void operator delete(void* ptr);
 
   /*
   **	Initialization: clears all trigger types in preparation for new scenario

@@ -376,8 +376,6 @@ void BulletClass::AI() {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 
-  COORDINATE coord;
-
   ObjectClass::AI();
 
   if (!IsActive) return;
@@ -403,7 +401,7 @@ void BulletClass::AI() {
   **	Move the projectile forward according to its speed
   **	and direction.
   */
-  coord = Coord;
+  COORDINATE coord = Coord;
   if (Class->IsFlameEquipped) {
     if (IsToAnimate) {
       if (stricmp(Class->GraphicName, "FB1") == 0) {

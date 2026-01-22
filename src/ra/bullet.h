@@ -71,7 +71,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   TechnoClass* Payback;
 
   /*
-  **	This is the facing that the projectile is travelling.
+  **	This is the facing that the projectile is traveling.
   */
   FacingClass PrimaryFacing;
 
@@ -79,9 +79,9 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return ptr; }
-  static void operator delete(void* ptr);
+  void* operator new(size_t size) throw();
+  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void operator delete(void* ptr);
   BulletClass(BulletType id, TARGET target, TechnoClass* Payback, int strength,
               WarheadType warhead, int speed);
   BulletClass(NoInitClass const& x)

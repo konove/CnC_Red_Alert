@@ -124,9 +124,9 @@ class TeamTypeClass : public AbstractTypeClass {
   TeamTypeClass(NoInitClass const& x) : AbstractTypeClass(x), Trigger(x) {}
   ~TeamTypeClass() override {}
 
-  static void* operator new(size_t);
-  static void* operator new(size_t, void* ptr) throw() { return ptr; }
-  static void operator delete(void* ptr);
+  void* operator new(size_t);
+  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void operator delete(void* ptr);
 
   /*
   **	Initialization: clears all team types in preparation for new scenario

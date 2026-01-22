@@ -103,9 +103,9 @@ class TriggerClass {
   /*
   **	Overloaded operators
   */
-  static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return ptr; }
-  static void operator delete(void* ptr);
+  void* operator new(size_t size) throw();
+  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void operator delete(void* ptr);
 
   /*
   **	If this trigger object is active, then this flag will be true. Trigger

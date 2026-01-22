@@ -135,7 +135,7 @@ class QueueClass {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline QueueClass<T, size>::QueueClass() : Count(0) {
+QueueClass<T, size>::QueueClass() : Count(0) {
   Init();
 }
 
@@ -153,7 +153,7 @@ inline QueueClass<T, size>::QueueClass() : Count(0) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline void QueueClass<T, size>::Init() {
+void QueueClass<T, size>::Init() {
   (int&)Count = 0;
   Head = 0;
   Tail = 0;
@@ -176,7 +176,7 @@ inline void QueueClass<T, size>::Init() {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline int QueueClass<T, size>::Add(T const& q) {
+int QueueClass<T, size>::Add(T const& q) {
   if (Count < size) {
     Array[Tail] = q;
     Tail = Tail + 1 & size - 1;
@@ -206,7 +206,7 @@ inline int QueueClass<T, size>::Add(T const& q) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline int QueueClass<T, size>::Next() {
+int QueueClass<T, size>::Next() {
   if (Count) {
     Head = Head + 1 & size - 1;
     (int&)Count = Count - 1;
@@ -237,7 +237,7 @@ inline int QueueClass<T, size>::Next() {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline T& QueueClass<T, size>::operator[](int index) {
+T& QueueClass<T, size>::operator[](int index) {
   return Array[Head + index & size - 1];
 }
 
@@ -261,7 +261,7 @@ inline T& QueueClass<T, size>::operator[](int index) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline T& QueueClass<T, size>::First() {
+T& QueueClass<T, size>::First() {
   return Array[Head];
 }
 

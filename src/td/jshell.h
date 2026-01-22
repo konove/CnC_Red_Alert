@@ -81,37 +81,37 @@ inline void* operator delete[](void* data) { Free(data); }
 **	enumerated types desired.
 */
 template <class T>
-inline T operator++(T& a) {
+T operator++(T& a) {
   a = static_cast<T>((int)a + 1);
   return a;
 }
 template <class T>
-inline T operator++(T& a, int) {
+T operator++(T& a, int) {
   T aa = a;
   a = static_cast<T>((int)a + 1);
   return aa;
 }
 template <class T>
-inline T operator--(T& a) {
+T operator--(T& a) {
   a = static_cast<T>((int)a - 1);
   return a;
 }
 template <class T>
-inline T operator--(T& a, int) {
+T operator--(T& a, int) {
   T aa = a;
   a = static_cast<T>((int)a - 1);
   return aa;
 }
 template <class T>
-inline constexpr T operator|(T t1, T t2) {
+constexpr T operator|(T t1, T t2) {
   return static_cast<T>((int)t1 | (int)t2);
 }
 template <class T>
-inline T operator&(T t1, T t2) {
+T operator&(T t1, T t2) {
   return static_cast<T>((int)t1 & (int)t2);
 }
 template <class T>
-inline T operator~(T t1) {
+T operator~(T t1) {
   return static_cast<T>(~(int)t1);
 }
 

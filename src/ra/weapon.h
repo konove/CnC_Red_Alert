@@ -60,7 +60,7 @@ class WeaponTypeClass {
   ~WeaponTypeClass();
 
   void* operator new(size_t) throw();
-  static void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t, void* ptr) throw() { return ptr; }
   void operator delete(void* pointer);
 
   char const* Name() const { return IniName; }

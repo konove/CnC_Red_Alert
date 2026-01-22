@@ -65,7 +65,7 @@ class AircraftClass : public FootClass, public FlyClass {
 
   //-----------------------------------------------------------------------------
   void* operator new(size_t) throw();
-  static void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t, void* ptr) throw() { return ptr; }
   void operator delete(void*);
   operator AircraftType() const { return Class->Type; }
   AircraftClass() : Class(nullptr) {}
@@ -104,7 +104,7 @@ class AircraftClass : public FootClass, public FlyClass {
   int Threat_Range(int control) const override;
   int Rearm_Delay(bool second) const override;
   MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType facing = FACING_NONE) const override;
+                          FacingType facing = FACING_NONE) const override;
   LayerType In_Which_Layer() const override;
   ObjectTypeClass const& Class_Of() const override { return *Class; }
   ActionType What_Action(ObjectClass* target) const override;
@@ -151,9 +151,8 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, CELL cell) override;
-  void Player_Assign_Mission(MissionType mission,
-                                     TARGET target = TARGET_NONE,
-                                     TARGET destination = TARGET_NONE) override;
+  void Player_Assign_Mission(MissionType mission, TARGET target = TARGET_NONE,
+                             TARGET destination = TARGET_NONE) override;
   void Response_Select() override;
   void Response_Move() override;
   void Response_Attack() override;
@@ -164,7 +163,7 @@ class AircraftClass : public FootClass, public FlyClass {
   //		virtual bool Target_Something_Nearby(ThreatType
   // threat=THREAT_NORMAL);
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source) override;
+                         TechnoClass* source) override;
   BulletClass* Fire_At(TARGET target, int which) override;
   TARGET As_Target() const override;
 
@@ -173,9 +172,8 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   void AI() override;
   void Enter_Idle_Mode(bool initial = false) override;
-  RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           long& param) override;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
   void Scatter(COORDINATE threat, bool forced = false) override;
 
 /*

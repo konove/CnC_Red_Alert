@@ -169,7 +169,7 @@ class IconsetClass : protected IControl_Type {
  private:
   IconsetClass& operator=(IconsetClass const&);
   IconsetClass();
-  static void* operator new(size_t);
+  void* operator new(size_t);
 };
 
 #endif
