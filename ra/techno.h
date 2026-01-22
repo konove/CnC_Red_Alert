@@ -278,10 +278,10 @@ class TechnoClass : public RadioClass,
   int Combat_Damage(int which = -1) const;
   bool Is_Ready_To_Cloak() const;
   virtual int How_Many_Survivors() const;
-  virtual DirType Turret_Facing() const { return (PrimaryFacing.Current()); }
+  virtual DirType Turret_Facing() const { return PrimaryFacing.Current(); }
   CELL Nearby_Location(TechnoClass const* from = nullptr) const;
   TechnoTypeClass* Techno_Type_Class() const {
-    return ((TechnoTypeClass*)&Class_Of());
+    return (TechnoTypeClass*)&Class_Of();
   }
   bool Is_Visible_On_Radar() const;
   int Anti_Air() const;
@@ -328,7 +328,7 @@ class TechnoClass : public RadioClass,
   **	Combat related.
   */
   fixed Area_Modify(CELL cell) const;
-  virtual int Made_A_Kill() { return (Crew.Made_A_Kill()); }
+  virtual int Made_A_Kill() { return Crew.Made_A_Kill(); }
   void Base_Is_Attacked(TechnoClass const* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;
@@ -407,7 +407,7 @@ class TechnoClass : public RadioClass,
   **	Movement and animation.
   */
   virtual bool Is_Ready_To_Random_Animate() const;
-  virtual bool Random_Animate() { return (false); }
+  virtual bool Random_Animate() { return false; }
   virtual void Assign_Destination(TARGET target);
   void Per_Cell_Process(PCPType why) override;
   virtual void Enter_Idle_Mode(bool initial = false);

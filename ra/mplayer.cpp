@@ -98,8 +98,8 @@ GameType Select_MPlayer_Game() {
   int d_dialog_h = 78 * RESFACTOR;
   int d_dialog_y = 90 * RESFACTOR;
 #endif
-  int d_dialog_x = (((320 * RESFACTOR) - d_dialog_w) / 2);
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
+  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;
 
   int d_txt6_h = 7 * RESFACTOR;
   int d_margin = 7 * RESFACTOR;
@@ -333,17 +333,17 @@ GameType Select_MPlayer_Game() {
     //	Process input
     //.....................................................................
     switch (input) {
-      case (BUTTON_MODEMSERIAL | KN_BUTTON):
+      case BUTTON_MODEMSERIAL | KN_BUTTON:
         selection = BUTTON_MODEMSERIAL;
         pressed = true;
         break;
 
-      case (BUTTON_SKIRMISH | KN_BUTTON):
+      case BUTTON_SKIRMISH | KN_BUTTON:
         selection = BUTTON_SKIRMISH;
         pressed = true;
         break;
 
-      case (BUTTON_IPX | KN_BUTTON):
+      case BUTTON_IPX | KN_BUTTON:
         selection = BUTTON_IPX;
         pressed = true;
         break;
@@ -355,8 +355,8 @@ GameType Select_MPlayer_Game() {
         break;
 #endif
 
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         selection = BUTTON_CANCEL;
         pressed = true;
         break;
@@ -365,7 +365,7 @@ GameType Select_MPlayer_Game() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton--;
-        if (curbutton < 0) curbutton = (num_of_buttons - 1);
+        if (curbutton < 0) curbutton = num_of_buttons - 1;
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
@@ -374,7 +374,7 @@ GameType Select_MPlayer_Game() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton++;
-        if (curbutton > (num_of_buttons - 1)) curbutton = 0;
+        if (curbutton > num_of_buttons - 1) curbutton = 0;
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
@@ -401,7 +401,7 @@ GameType Select_MPlayer_Game() {
       buttons[curbutton]->Draw_Me(true);
 
       switch (selection) {
-        case (BUTTON_MODEMSERIAL):
+        case BUTTON_MODEMSERIAL:
 
           //............................................................
           // Pop up the modem/serial/com port dialog
@@ -416,7 +416,7 @@ GameType Select_MPlayer_Game() {
           }
           break;
 
-        case (BUTTON_SKIRMISH):
+        case BUTTON_SKIRMISH:
           Session.Type = GAME_SKIRMISH;
           if (Com_Scenario_Dialog(true)) {
             retval = GAME_SKIRMISH;
@@ -433,7 +433,7 @@ GameType Select_MPlayer_Game() {
           }
           break;
 
-        case (BUTTON_IPX):
+        case BUTTON_IPX:
           retval = GAME_IPX;
           process = false;
           break;
@@ -445,7 +445,7 @@ GameType Select_MPlayer_Game() {
           break;
 #endif
 
-        case (BUTTON_CANCEL):
+        case BUTTON_CANCEL:
           retval = GAME_NORMAL;
           process = false;
           break;
@@ -454,7 +454,7 @@ GameType Select_MPlayer_Game() {
       pressed = false;
     }
   }
-  return (retval);
+  return retval;
 
 } /* end of Select_MPlayer_Game */
 
@@ -486,7 +486,7 @@ void Clear_Listbox(ListClass* list) {
   //	Clear the list box
   //------------------------------------------------------------------------
   while (list->Count()) {
-    item = (char*)(list->Get_Item(0));
+    item = (char*)list->Get_Item(0);
     list->Remove_Item(item);
     delete[] item;
   }
@@ -704,9 +704,9 @@ int Surrender_Dialog(const char* text) {
   enum {
     D_DIALOG_W = 240 * RESFACTOR,                       // dialog width
     D_DIALOG_H = 63 * RESFACTOR,                        // dialog height
-    D_DIALOG_X = ((320 * RESFACTOR - D_DIALOG_W) / 2),  // centered x-coord
-    D_DIALOG_Y = ((200 * RESFACTOR - D_DIALOG_H) / 2),  // centered y-coord
-    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),        // coord of x-center
+    D_DIALOG_X = (320 * RESFACTOR - D_DIALOG_W) / 2,  // centered x-coord
+    D_DIALOG_Y = (200 * RESFACTOR - D_DIALOG_H) / 2,  // centered y-coord
+    D_DIALOG_CX = D_DIALOG_X + D_DIALOG_W / 2,        // coord of x-center
 
     D_TXT6_H = 7 * RESFACTOR,      // ht of 6-pt text
     D_MARGIN = 5 * RESFACTOR,      // margin width/height
@@ -816,17 +816,17 @@ int Surrender_Dialog(const char* text) {
     //	Process input
     //.....................................................................
     switch (input) {
-      case (BUTTON_OK | KN_BUTTON):
+      case BUTTON_OK | KN_BUTTON:
         retcode = 1;
         process = false;
         break;
 
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case BUTTON_CANCEL | KN_BUTTON:
         retcode = 0;
         process = false;
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
         if (curbutton == 0) {
           retcode = 1;
         } else {
@@ -835,12 +835,12 @@ int Surrender_Dialog(const char* text) {
         process = false;
         break;
 
-      case (KN_ESC):
+      case KN_ESC:
         retcode = 0;
         process = false;
         break;
 
-      case (KN_RIGHT):
+      case KN_RIGHT:
         buttons[curbutton]->Turn_Off();
         curbutton++;
         if (curbutton > 1) {
@@ -849,7 +849,7 @@ int Surrender_Dialog(const char* text) {
         buttons[curbutton]->Turn_On();
         break;
 
-      case (KN_LEFT):
+      case KN_LEFT:
         buttons[curbutton]->Turn_Off();
         curbutton--;
         if (curbutton < 0) {
@@ -870,7 +870,7 @@ int Surrender_Dialog(const char* text) {
   Map.Flag_To_Redraw(true);
   Map.Render();
 
-  return (retcode);
+  return retcode;
 }
 
 /***************************************************************************
@@ -897,9 +897,9 @@ int Abort_Dialog() {
   enum {
     D_DIALOG_W = 170 * RESFACTOR,                       // dialog width
     D_DIALOG_H = 63 * RESFACTOR,                        // dialog height
-    D_DIALOG_X = ((320 * RESFACTOR - D_DIALOG_W) / 2),  // centered x-coord
-    D_DIALOG_Y = ((200 * RESFACTOR - D_DIALOG_H) / 2),  // centered y-coord
-    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),        // coord of x-center
+    D_DIALOG_X = (320 * RESFACTOR - D_DIALOG_W) / 2,  // centered x-coord
+    D_DIALOG_Y = (200 * RESFACTOR - D_DIALOG_H) / 2,  // centered y-coord
+    D_DIALOG_CX = D_DIALOG_X + D_DIALOG_W / 2,        // coord of x-center
 
     D_TXT6_H = 7 * RESFACTOR,      // ht of 6-pt text
     D_MARGIN = 5 * RESFACTOR,      // margin width/height
@@ -1007,17 +1007,17 @@ int Abort_Dialog() {
     //	Process input
     //.....................................................................
     switch (input) {
-      case (BUTTON_YES | KN_BUTTON):
+      case BUTTON_YES | KN_BUTTON:
         retcode = 1;
         process = false;
         break;
 
-      case (BUTTON_NO | KN_BUTTON):
+      case BUTTON_NO | KN_BUTTON:
         retcode = 0;
         process = false;
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
         if (curbutton == 0) {
           retcode = 1;
         } else {
@@ -1026,12 +1026,12 @@ int Abort_Dialog() {
         process = false;
         break;
 
-      case (KN_ESC):
+      case KN_ESC:
         retcode = 0;
         process = false;
         break;
 
-      case (KN_RIGHT):
+      case KN_RIGHT:
         buttons[curbutton]->Turn_Off();
         curbutton++;
         if (curbutton > 1) {
@@ -1040,7 +1040,7 @@ int Abort_Dialog() {
         buttons[curbutton]->Turn_On();
         break;
 
-      case (KN_LEFT):
+      case KN_LEFT:
         buttons[curbutton]->Turn_Off();
         curbutton--;
         if (curbutton < 0) {
@@ -1061,7 +1061,7 @@ int Abort_Dialog() {
   Map.Flag_To_Redraw(true);
   Map.Render();
 
-  return (retcode);
+  return retcode;
 }
 
 #if (TEN)

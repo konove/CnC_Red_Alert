@@ -116,7 +116,7 @@ void* TriggerTypeClass::operator new(size_t) {
     ((TriggerTypeClass*)ptr)->IsActive = true;
   }
 
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -158,7 +158,7 @@ void TriggerTypeClass::operator delete(void* ptr) {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 TARGET TriggerTypeClass::As_Target() const {
-  return (Build_Target(RTTI_TRIGGERTYPE, ID));
+  return Build_Target(RTTI_TRIGGERTYPE, ID);
 }
 
 /***********************************************************************************************
@@ -1799,7 +1799,7 @@ AttachType TriggerTypeClass::Attaches_To() const {
   if (EventControl != MULTI_ONLY) {
     attach = attach | ::Attaches_To(Event2.Event);
   }
-  return (attach);
+  return attach;
 }
 
 /***********************************************************************************************
@@ -2088,9 +2088,9 @@ TriggerTypeClass* TriggerTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (int index = 0; index < TriggerTypes.Count(); index++) {
       if (stricmp(TriggerTypes.Ptr(index)->Name(), name) == 0) {
-        return (TriggerTypes.Ptr(index));
+        return TriggerTypes.Ptr(index);
       }
     }
   }
-  return (nullptr);
+  return nullptr;
 }

@@ -105,7 +105,7 @@ int Init_TEN() {
 
   return (1);
 #else
-  return (1);
+  return 1;
 #endif
 
 }  // end of Init_TEN

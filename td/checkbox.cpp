@@ -72,7 +72,7 @@ int CheckBoxClass::Draw_Me(int forced) {
       LogicPage->Draw_Line(X + Width - 2, Y + 1, X + 1, Y + Height - 2, BLACK);
     }
     Show_Mouse();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

@@ -228,7 +228,7 @@ class BuildingClass : public TechnoClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); }
+  static void *operator new(size_t, void *ptr) throw() { return ptr; }
   static void operator delete(void *ptr);
   BuildingClass(StructType type, HousesType house);
   BuildingClass(NoInitClass const &x)
@@ -243,7 +243,7 @@ class BuildingClass : public TechnoClass {
 
   TARGET Target_Scan();
   BuildingTypeClass::AnimControlType const *Fetch_Anim_Control() {
-    return (&Class->Anims[BState]);
+    return &Class->Anims[BState];
   }
 
   /*

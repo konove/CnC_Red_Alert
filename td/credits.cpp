@@ -179,7 +179,7 @@ void CreditClass::AI(bool forced) {
 
     if (Current - adder != Current) {
       IsAudible = true;
-      IsUp = (adder > 0);
+      IsUp = adder > 0;
     }
   }
   IsToRedraw = true;

@@ -123,7 +123,7 @@
 bool Start_Scenario(char* root, bool briefing) {
   if (!Read_Scenario(root)) {
     CCDebugString("C&C95 - Failed to read scenario.\n");
-    return (false);
+    return false;
   }
   CCDebugString("C&C95 - Scenario read OK.\n");
 
@@ -148,7 +148,7 @@ bool Start_Scenario(char* root, bool briefing) {
     }
 
     if ((Scenario > 1 || Whom == HOUSE_BAD) && briefing) {
-      PreserveVQAScreen = (Scenario == 1);
+      PreserveVQAScreen = Scenario == 1;
       Play_Movie(BriefMovie);
     }
     Play_Movie(ActionMovie, TransitTheme);
@@ -195,7 +195,7 @@ bool Start_Scenario(char* root, bool briefing) {
   CCDebugString("C&C95 - About to call Options.Set.\n");
   Options.Set();
   CCDebugString("C&C95 - About to return from Start_Scenario.\n");
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -240,11 +240,11 @@ bool Read_Scenario(char* root) {
     Show_Mouse();
     CCMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
     Hide_Mouse();
-    return (false);
+    return false;
   }
   ScenarioInit--;
   CCDebugString("C&C95 - Leaving Read_Scenario.\n");
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -375,8 +375,8 @@ void Do_Win() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
-  int y = Map.TacPixelY + (Lepton_To_Pixel(Map.TacLeptonHeight) / 2) - 32;
+  int x = Map.TacPixelX + Lepton_To_Pixel(Map.TacLeptonWidth) / 2;
+  int y = Map.TacPixelY + Lepton_To_Pixel(Map.TacLeptonHeight) / 2 - 32;
 
   /*
   **	Announce win to player.
@@ -495,7 +495,7 @@ void Do_Win() {
       return;
     }
 
-    if ((Special.IsJurassic && AreThingiesEnabled) && Scenario == 5) {
+    if (Special.IsJurassic && AreThingiesEnabled && Scenario == 5) {
       Prog_End();
       exit(0);
     }
@@ -597,8 +597,8 @@ void Do_Lose() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
-  int y = Map.TacPixelY + (Lepton_To_Pixel(Map.TacLeptonHeight) / 2) - 32;
+  int x = Map.TacPixelX + Lepton_To_Pixel(Map.TacLeptonWidth) / 2;
+  int y = Map.TacPixelY + Lepton_To_Pixel(Map.TacLeptonHeight) / 2 - 32;
 
   /*
   **	Announce win to player.
@@ -753,13 +753,13 @@ bool Restate_Mission(char const* name, int button1, int button2) {
 
       if (CCMessageBox(TXT_OBJECTIVE).Process(_buff, button1, button2)) {
         if (hidden) Hide_Mouse();
-        return (true);
+        return true;
       }
       if (hidden) Hide_Mouse();
-      if (!brief) return (true);
-      return (false);
+      if (!brief) return true;
+      return false;
     }
 #endif
   }
-  return (false);
+  return false;
 }

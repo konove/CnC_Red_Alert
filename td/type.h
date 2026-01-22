@@ -236,7 +236,7 @@ class AbstractTypeClass {
   virtual int Full_Name() const;
   void Set_Name(char const* buf) const {
     strncpy((char*)IniName, buf, sizeof(IniName));
-    ((char&)IniName[sizeof(IniName) - 1]) = '\0';
+    (char&)IniName[sizeof(IniName) - 1] = '\0';
   }
   virtual unsigned short Get_Ownable() const;
 };
@@ -691,7 +691,7 @@ class BuildingTypeClass : public TechnoTypeClass {
                     int drain, BSizeType size, short const* exitlist,
                     short const* sizelist, short const* overlap);
   RTTIType What_Am_I() const override { return RTTI_BUILDINGTYPE; }
-  operator StructType() const { return (Type); }
+  operator StructType() const { return Type; }
 
   static BuildingTypeClass const& As_Reference(StructType type);
   static StructType From_Name(char const* name);
@@ -716,7 +716,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   short const* Overlap_List() const override;
   BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
                                           HousesType house) const override;
-  virtual void const* Get_Buildup_Data() const { return (BuildupData); }
+  virtual void const* Get_Buildup_Data() const { return BuildupData; }
 
   int Raw_Cost() const override;
   int Repair_Cost() const override;
@@ -765,7 +765,7 @@ class UnitTypeClass : public TechnoTypeClass {
   enum UnitTypeClassRepairEnums {
     TIBERIUM_STEP = 25,  // Credits per step of Tiberium.
     STEP_COUNT = 28,     // Number of steps a harvester can carry.
-    FULL_LOAD_CREDITS = (TIBERIUM_STEP * STEP_COUNT),
+    FULL_LOAD_CREDITS = TIBERIUM_STEP * STEP_COUNT,
     REPAIR_PERCENT = 102,  // 40% fixed point number.
     REPAIR_STEP = 4        // Number of damage points recovered per "step".
   };

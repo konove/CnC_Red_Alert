@@ -132,14 +132,14 @@ class MapClass : public GScreenClass {
   */
   long TotalValue;
 
-  CellClass& operator[](COORDINATE coord) { return (Array[Coord_Cell(coord)]); }
-  CellClass& operator[](CELL cell) { return (Array[cell]); }
+  CellClass& operator[](COORDINATE coord) { return Array[Coord_Cell(coord)]; }
+  CellClass& operator[](CELL cell) { return Array[cell]; }
   CellClass const& operator[](COORDINATE coord) const {
-    return (Array[Coord_Cell(coord)]);
+    return Array[Coord_Cell(coord)];
   }
-  CellClass const& operator[](CELL cell) const { return (Array[cell]); }
-  int ID(CellClass const* ptr) { return (Array.ID(ptr)); }
-  int ID(CellClass const& ptr) { return (Array.ID(ptr)); }
+  CellClass const& operator[](CELL cell) const { return Array[cell]; }
+  int ID(CellClass const* ptr) { return Array.ID(ptr); }
+  int ID(CellClass const& ptr) { return Array.ID(ptr); }
 
  protected:
   /*

@@ -194,12 +194,12 @@ int VectorClass<T>::operator==(VectorClass<T> const& vector) const {
   if (VectorMax == vector.Length()) {
     for (int index = 0; index < VectorMax; index++) {
       if (Vector[index] != vector[index]) {
-        return (false);
+        return false;
       }
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -249,10 +249,10 @@ template <class T>
 int VectorClass<T>::ID(T const& object) {
   for (int index = 0; index < VectorMax; index++) {
     if ((*this)[index] == object) {
-      return (index);
+      return index;
     }
   }
-  return (-1);
+  return -1;
 }
 
 /***********************************************************************************************
@@ -315,7 +315,7 @@ int VectorClass<T>::Resize(unsigned newsize, T const* array) {
       newptr = new ((void*)array) T[newsize];
     }
     if (!newptr) {
-      return (false);
+      return false;
     }
 
     /*
@@ -328,7 +328,7 @@ int VectorClass<T>::Resize(unsigned newsize, T const* array) {
       *This *	presumes that there is a functional assignment operator for each
       **	of the objects in the vector.
       */
-      int copycount = (newsize < VectorMax) ? newsize : VectorMax;
+      int copycount = newsize < VectorMax ? newsize : VectorMax;
       for (int index = 0; index < copycount; index++) {
         newptr[index] = Vector[index];
       }
@@ -350,7 +350,7 @@ int VectorClass<T>::Resize(unsigned newsize, T const* array) {
     */
     Vector = newptr;
     VectorMax = newsize;
-    IsAllocated = (Vector && !array);
+    IsAllocated = Vector && !array;
 
   } else {
     /*
@@ -358,7 +358,7 @@ int VectorClass<T>::Resize(unsigned newsize, T const* array) {
     */
     Clear();
   }
-  return (true);
+  return true;
 }
 
 template class VectorClass<NodeNameTag*>;
@@ -431,9 +431,9 @@ int DynamicVectorClass<T>::Resize(unsigned newsize, T const* array) {
     if (this->Length() < ActiveCount) {
       ActiveCount = this->Length();
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -457,9 +457,9 @@ int DynamicVectorClass<T>::Resize(unsigned newsize, T const* array) {
 template <class T>
 int DynamicVectorClass<T>::ID(T const& ptr) {
   for (size_t index = 0; index < Count(); index++) {
-    if ((*this)[index] == ptr) return (index);
+    if ((*this)[index] == ptr) return index;
   }
-  return (-1);
+  return -1;
 }
 
 /***********************************************************************************************
@@ -499,7 +499,7 @@ int DynamicVectorClass<T>::Add(T const& object) {
       **	Increasing the size of this vector is not allowed! Bail this
       **	routine with the error code.
       */
-      return (false);
+      return false;
     }
   }
 
@@ -508,7 +508,7 @@ int DynamicVectorClass<T>::Add(T const& object) {
   *vector.
   */
   (*this)[ActiveCount++] = object;
-  return (true);
+  return true;
 }
 
 template <class T>
@@ -520,18 +520,18 @@ int DynamicVectorClass<T>::Add_Head(T const& object) {
         **	Failure to increase the size of the vector is an error
         *condition. *	Return with the error flag.
         */
-        return (false);
+        return false;
       }
       // Verify resize actually allocated space.
       if (ActiveCount >= this->Length()) {
-        return (false);
+        return false;
       }
     } else {
       /*
       **	Increasing the size of this vector is not allowed! Bail this
       **	routine with the error code.
       */
-      return (false);
+      return false;
     }
   }
 
@@ -548,7 +548,7 @@ int DynamicVectorClass<T>::Add_Head(T const& object) {
   (*this)[0] = object;
   ActiveCount++;
   //	(*this)[ActiveCount++] = object;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -575,9 +575,9 @@ template <class T>
 int DynamicVectorClass<T>::Delete(T const& object) {
   int index = ID(object);
   if (index != -1) {
-    return (Delete(index));
+    return Delete(index);
   } else {
-    return (false);
+    return false;
   }
 }
 
@@ -620,9 +620,9 @@ int DynamicVectorClass<T>::Delete(int index) {
     for (int i = index; i < ActiveCount; i++) {
       (*this)[i] = (*this)[i + 1];
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 template class DynamicVectorClass<NodeNameTag*>;

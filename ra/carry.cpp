@@ -149,5 +149,5 @@ bool CarryoverClass::Create() const {
     }
   }
 
-  return (false);
+  return false;
 }

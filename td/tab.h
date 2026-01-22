@@ -67,7 +67,7 @@ class TabClass : public SidebarClass {
   */
   void Code_Pointers() override;
   void Decode_Pointers() override;
-  inline int Get_Tab_Height() { return (Tab_Height); }
+  inline int Get_Tab_Height() { return Tab_Height; }
 
   CreditClass Credits;
 

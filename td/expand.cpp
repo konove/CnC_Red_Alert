@@ -82,7 +82,7 @@ static char* CreateIndexedListItem(int index, const std::string& str) {
 bool Expansion_Present() {
   CCFileClass file("EXPAND.DAT");
 
-  return (file.Is_Available());
+  return file.Is_Available();
 }
 
 class EListClass : public ListClass {
@@ -114,13 +114,13 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
 
   } else {
     Conquer_Clip_Text_Print(List[index] + sizeof(int), x, y,
-                            (selected ? BLUE : WHITE), TBLACK, TextFlags, width,
+                            selected ? BLUE : WHITE, TBLACK, TextFlags, width,
                             Tabs);
   }
 }
 
 bool Expansion_Dialog() {
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   int option_width = 236 * factor;
   int option_height = 162 * factor;
@@ -271,7 +271,7 @@ bool Expansion_Dialog() {
     delete[] (char*)list.Get_Item(index);
   }
 
-  return (okval);
+  return okval;
 }
 
 /***********************************************************************************************
@@ -288,7 +288,7 @@ bool Expansion_Dialog() {
  * HISTORY: * 3/26/97 11:07AM ST : Created *
  *=============================================================================================*/
 bool Bonus_Dialog() {
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   int option_width = 236 * factor;
   int option_height = 162 * factor;
@@ -431,7 +431,7 @@ bool Bonus_Dialog() {
     delete[] (char*)list.Get_Item(index);
   }
 
-  return (okval);
+  return okval;
 }
 
 #endif

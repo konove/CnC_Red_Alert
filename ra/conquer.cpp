@@ -129,7 +129,6 @@
 #include "ra/scenario.h"
 #include "ra/score.h"
 #include "ra/session.h"
-#include "ra/sidebar.h"
 #include "ra/special.h"
 #include "ra/target.h"
 #include "ra/theme.h"
@@ -1211,7 +1210,7 @@ static void Message_Input(KeyNumType& input) {
       !Session.Messages.Is_Edit()) {
 #else
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-      input >= KN_F1 && input < (KN_F1 + Session.MaxPlayers) &&
+      input >= KN_F1 && input < KN_F1 + Session.MaxPlayers &&
       !Session.Messages.Is_Edit()) {
 #endif
     memset(txt, 0, 40);
@@ -1221,7 +1220,7 @@ static void Message_Input(KeyNumType& input) {
     **	"Message:" string & add an editable message to the list.
     */
     if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
-      if (input == KN_F1 || input == (KN_F1 + Session.MaxPlayers - 1)) {
+      if (input == KN_F1 || input == KN_F1 + Session.MaxPlayers - 1) {
         port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
         Session.Messages.Add_Edit(
@@ -1237,7 +1236,7 @@ static void Message_Input(KeyNumType& input) {
       **	F1-F7 = "To <name> (house):" (only allowed if we're not in
       *ObiWan mode) *	F8 = "To All:"
       */
-      if (input == (KN_F1 + Session.MaxPlayers - 1)) {
+      if (input == KN_F1 + Session.MaxPlayers - 1) {
         Session.MessageAddress = IPXAddressClass();    // set to broadcast
         port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
@@ -1251,10 +1250,10 @@ static void Message_Input(KeyNumType& input) {
       } else if ((input - KN_F1) < Ipx.Num_Connections() && !Session.ObiWan &&
                  input != PAGE_RESPOND_KEY) {
 #else
-      } else if ((input - KN_F1) < Ipx.Num_Connections() && !Session.ObiWan) {
+      } else if (input - KN_F1 < Ipx.Num_Connections() && !Session.ObiWan) {
 #endif
         id = Ipx.Connection_ID(input - KN_F1);
-        Session.MessageAddress = (*(Ipx.Connection_Address(id)));
+        Session.MessageAddress = *Ipx.Connection_Address(id);
         sprintf(txt, Text_String(TXT_TO), Ipx.Connection_Name(id));
 
         Session.Messages.Add_Edit(
@@ -1688,7 +1687,7 @@ void Call_Back() {
   **	Serial game maintenance.
   */
   if (Session.Type == GAME_NULL_MODEM ||
-      ((Session.Type == GAME_MODEM) && Session.ModemService)) {
+      (Session.Type == GAME_MODEM && Session.ModemService)) {
     NullModem.Service();
   }
 
@@ -1768,7 +1767,7 @@ void IPX_Call_Back() {
           for (int i = 0; i < Ipx.Num_Connections(); i++) {
             int id = Ipx.Connection_ID(i);
 
-            if (Session.GAddress == (*Ipx.Connection_Address(id))) {
+            if (Session.GAddress == *Ipx.Connection_Address(id)) {
               Destroy_Connection(id, 0);
             }
           }
@@ -1962,10 +1961,10 @@ void MPATH_Call_Back() {
 char const* Language_Name(char const* basename) {
   static char _fullname[_MAX_FNAME + _MAX_EXT];
 
-  if (!basename) return (nullptr);
+  if (!basename) return nullptr;
 
   sprintf(_fullname, "%s.ENG", basename);
-  return (_fullname);
+  return _fullname;
 }
 
 /***********************************************************************************************
@@ -1987,11 +1986,11 @@ SourceType Source_From_Name(char const* name) {
   if (name) {
     for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; source++) {
       if (stricmp(SourceName[source], name) == 0) {
-        return (source);
+        return source;
       }
     }
   }
-  return (SOURCE_NONE);
+  return SOURCE_NONE;
 }
 
 /***********************************************************************************************
@@ -2011,9 +2010,9 @@ SourceType Source_From_Name(char const* name) {
  *=============================================================================================*/
 char const* Name_From_Source(SourceType source) {
   if ((unsigned)source < SOURCE_COUNT) {
-    return (SourceName[source]);
+    return SourceName[source];
   }
-  return ("None");
+  return "None";
 }
 
 /***********************************************************************************************
@@ -2037,11 +2036,11 @@ TheaterType Theater_From_Name(char const* name) {
   if (name) {
     for (index = THEATER_FIRST; index < THEATER_COUNT; index++) {
       if (stricmp(name, Theaters[index].Name) == 0) {
-        return (index);
+        return index;
       }
     }
   }
-  return (THEATER_NONE);
+  return THEATER_NONE;
 }
 
 /***********************************************************************************************
@@ -2064,33 +2063,33 @@ FacingType KN_To_Facing(int input) {
   input &= ~(KN_ALT_BIT | KN_SHIFT_BIT | KN_CTRL_BIT);
   switch (input) {
     case KN_LEFT:
-      return (FACING_W);
+      return FACING_W;
 
     case KN_RIGHT:
-      return (FACING_E);
+      return FACING_E;
 
     case KN_UP:
-      return (FACING_N);
+      return FACING_N;
 
     case KN_DOWN:
-      return (FACING_S);
+      return FACING_S;
 
     case KN_UPLEFT:
-      return (FACING_NW);
+      return FACING_NW;
 
     case KN_UPRIGHT:
-      return (FACING_NE);
+      return FACING_NE;
 
     case KN_DOWNLEFT:
-      return (FACING_SW);
+      return FACING_SW;
 
     case KN_DOWNRIGHT:
-      return (FACING_SE);
+      return FACING_SE;
 
     default:
       break;
   }
-  return (FACING_NONE);
+  return FACING_NONE;
 }
 
 /***********************************************************************************************
@@ -2166,7 +2165,7 @@ bool Main_Loop() {
 
   Mono_Set_Cursor(0, 0);
 
-  if (!GameActive) return (!GameActive);
+  if (!GameActive) return !GameActive;
 
 #ifdef WIN32
   /*
@@ -2308,7 +2307,7 @@ bool Main_Loop() {
   //
   // Measure how long it took to process the AI
   //
-  Session.ProcessTicks += (TickCount - Session.ProcessTimer);
+  Session.ProcessTicks += TickCount - Session.ProcessTimer;
   Session.ProcessFrames++;
 
   /*
@@ -2344,7 +2343,7 @@ bool Main_Loop() {
     PlayerRestarts = false;
     Map.Help_Text(TXT_NONE);
     Do_Win();
-    return (!GameActive);
+    return !GameActive;
   }
   if (PlayerLoses) {
 #ifdef WIN32
@@ -2363,7 +2362,7 @@ bool Main_Loop() {
     PlayerRestarts = false;
     Map.Help_Text(TXT_NONE);
     Do_Lose();
-    return (!GameActive);
+    return !GameActive;
   }
   if (PlayerRestarts) {
 #ifdef WIN32
@@ -2374,7 +2373,7 @@ bool Main_Loop() {
     PlayerRestarts = false;
     Map.Help_Text(TXT_NONE);
     Do_Restart();
-    return (!GameActive);
+    return !GameActive;
   }
 
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
@@ -2388,7 +2387,7 @@ bool Main_Loop() {
     WWMouse->Erase_Mouse(&HidPage, true);
     Map.Help_Text(TXT_NONE);
     Do_Draw();
-    return (!GameActive);
+    return !GameActive;
   }
 
   /*
@@ -2465,7 +2464,7 @@ bool Main_Loop() {
   BEnd(BENCH_GAME_FRAME);
 
   Sync_Delay();
-  return (!GameActive);
+  return !GameActive;
 }
 
 #ifdef SCENARIO_EDITOR
@@ -2634,8 +2633,8 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
     ** VQAERR_READ.
     */
     case VQACMD_READ:
-      error = (file->Read(buffer, (unsigned short)nbytes) !=
-               (unsigned short)nbytes);
+      error =
+          file->Read(buffer, (unsigned short)nbytes) != (unsigned short)nbytes;
       break;
 
     /*
@@ -2658,7 +2657,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
     ** VQAERR_SEEK.
     */
     case VQACMD_SEEK:
-      error = (file->Seek(nbytes, SEEK_CUR) == -1);
+      error = file->Seek(nbytes, SEEK_CUR) == -1;
       break;
 
     /*
@@ -2713,7 +2712,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
       break;
   }
 
-  return (error);
+  return error;
 }
 
 void Rebuild_Interpolated_Palette(unsigned char* interpal) {
@@ -2787,7 +2786,7 @@ int Load_Interpolated_Palettes(char const* filename, bool add) {
     file.Close();
   }
   PaletteCounter = 0;
-  return (num_palettes);
+  return num_palettes;
 }
 
 void Free_Interpolated_Palettes() {
@@ -3229,7 +3228,7 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
   /*
   **	If there is no shape file, then there can be no radar icon imagery.
   */
-  if (!shapefile) return (nullptr);
+  if (!shapefile) return nullptr;
 
 #if (0)
   CCPalette.Set();
@@ -3262,8 +3261,8 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
   ** Allocate a position to store our icons.  If the alloc fails then
   ** we don't add these icons to the set.
   **/
-  buffer = new char[(icon_width * icon_height * 9 * frames) + 2];
-  if (!buffer) return (nullptr);
+  buffer = new char[icon_width * icon_height * 9 * frames + 2];
+  if (!buffer) return nullptr;
 
   /*
   ** Save off the return value so that we can return it to the calling
@@ -3301,12 +3300,12 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
 
           for (int y = 0; y < zoomfactor; y++) {
             for (int x = 0; x < zoomfactor; x++) {
-              int getx = (iconx * 24) + (x * val) + (zoomfactor / 2);
-              int gety = (icony * 24) + (y * val) + (zoomfactor / 2);
-              if ((getx < pixel_width) && (gety < pixel_height)) {
+              int getx = iconx * 24 + x * val + zoomfactor / 2;
+              int gety = icony * 24 + y * val + zoomfactor / 2;
+              if (getx < pixel_width && gety < pixel_height) {
                 for (lp = 0; lp < 9; lp++) {
                   pixel =
-                      *(char*)((char*)ptr + ((gety - _offy[lp]) * pixel_width) +
+                      *(char*)((char*)ptr + (gety - _offy[lp]) * pixel_width +
                                getx - _offx[lp]);
 
 #else   // WIN32
@@ -3337,7 +3336,7 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
       buffer += icon_width * icon_height * 9;
     }
   }
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -3389,10 +3388,10 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
   /*
   ** Special kludge for E3 to prevent crashes
   */
-  if ((flags & SHAPE_GHOST) && (!ghostdata)) {
+  if (flags & SHAPE_GHOST && !ghostdata) {
     ghostdata = DisplayClass::SpecialGhost;
   }
-  if ((flags & SHAPE_FADING) && (!fadingdata)) {
+  if (flags & SHAPE_FADING && !fadingdata) {
     fadingdata = DisplayClass::FadingShade;
   }
 
@@ -3478,7 +3477,7 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
           GraphicBufferClass gb(width, height, _xbuffer);
           TPoint2D pt(width / 2, height / 2);
 
-          gb.Scale_Rotate(bm, pt, scale, (256 - (rotation - 64)));
+          gb.Scale_Rotate(bm, pt, scale, 256 - (rotation - 64));
           buffer = _xbuffer;
         }
       }
@@ -3495,7 +3494,7 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
 
       predoffset = Frame;
 
-      if (x > (WindowList[window][WINDOWWIDTH] << 2)) {
+      if (x > WindowList[window][WINDOWWIDTH] << 2) {
         predoffset = -predoffset;
       }
 
@@ -3552,7 +3551,7 @@ Rect const Shape_Dimensions(void const* shapedata, int shapenum) {
 
   if (shapedata == nullptr || shapenum < 0 ||
       shapenum > Get_Build_Frame_Count(shapedata)) {
-    return (rect);
+    return rect;
   }
 
   char* shape;
@@ -3595,7 +3594,7 @@ Rect const Shape_Dimensions(void const* shapedata, int shapenum) {
   for (int y = ylimit; y >= rect.Y; y--) {
     for (int x = xlimit; x >= 0; x--) {
       if (shape[y * width + x] != 0) {
-        rect.Height = (y - rect.Y) + 1;
+        rect.Height = y - rect.Y + 1;
         xlimit = x;
         y = rect.Y - 1;
         break;
@@ -3622,7 +3621,7 @@ Rect const Shape_Dimensions(void const* shapedata, int shapenum) {
   for (int x = width - 1; x >= xlimit; x--) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
       if (shape[y * width + x] != 0) {
-        rect.Width = (x - rect.X) + 1;
+        rect.Width = x - rect.X + 1;
         x = xlimit - 1;
         break;
       }
@@ -3638,7 +3637,7 @@ Rect const Shape_Dimensions(void const* shapedata, int shapenum) {
   /*
   **	Return with the minimum rectangle that encloses the shape.
   */
-  return (rect);
+  return rect;
 }
 
 /***********************************************************************************************
@@ -3663,28 +3662,28 @@ TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id) {
   switch (type) {
     case RTTI_UNITTYPE:
     case RTTI_UNIT:
-      return (&UnitTypeClass::As_Reference(UnitType(id)));
+      return &UnitTypeClass::As_Reference(UnitType(id));
 
     case RTTI_VESSELTYPE:
     case RTTI_VESSEL:
-      return (&VesselTypeClass::As_Reference(VesselType(id)));
+      return &VesselTypeClass::As_Reference(VesselType(id));
 
     case RTTI_BUILDINGTYPE:
     case RTTI_BUILDING:
-      return (&BuildingTypeClass::As_Reference(StructType(id)));
+      return &BuildingTypeClass::As_Reference(StructType(id));
 
     case RTTI_INFANTRYTYPE:
     case RTTI_INFANTRY:
-      return (&InfantryTypeClass::As_Reference(InfantryType(id)));
+      return &InfantryTypeClass::As_Reference(InfantryType(id));
 
     case RTTI_AIRCRAFTTYPE:
     case RTTI_AIRCRAFT:
-      return (&AircraftTypeClass::As_Reference(AircraftType(id)));
+      return &AircraftTypeClass::As_Reference(AircraftType(id));
 
     default:
       break;
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -3727,7 +3726,7 @@ long VQ_Call_Back(unsigned char*, long) {
   if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
     Keyboard->Clear();
     Brokeout = true;
-    return (true);
+    return true;
   }
 
   if (!GameInFocus) {
@@ -3739,7 +3738,7 @@ long VQ_Call_Back(unsigned char*, long) {
 #ifdef PORTABLE
   Video_End_Frame();
 #endif
-  return (false);
+  return false;
 }
 
 #else   // WIN32
@@ -3998,7 +3997,7 @@ void Handle_Team(int team, int action) {
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl &&
-            (obj->Group == team) && (obj->IsSelected)) {
+            obj->Group == team && obj->IsSelected) {
           /*
           ** When a team is first created, they're created without a
           ** formation offset, so they will not be created in
@@ -4082,7 +4081,7 @@ void Handle_View(int view, int action) {
   if ((unsigned)view < ARRAY_SIZE(Scen.Views)) {
     if (action == 0) {
       Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
-          Scen.Views[view] - (MAP_CELL_W * 4 * RESFACTOR) - (5 * RESFACTOR))));
+          Scen.Views[view] - MAP_CELL_W * 4 * RESFACTOR - 5 * RESFACTOR)));
 
 #ifdef WIN32
       /*
@@ -4093,7 +4092,7 @@ void Handle_View(int view, int action) {
 #endif  // WIN32
     } else {
       Scen.Views[view] = Coord_Cell(Map.TacticalCoord) +
-                         (MAP_CELL_W * 4 * RESFACTOR) + (5 * RESFACTOR);
+                         MAP_CELL_W * 4 * RESFACTOR + 5 * RESFACTOR;
     }
   }
 }
@@ -4249,7 +4248,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
   ** If the required CD is set to -2 then it means that the file is present
   ** on the local hard drive and we shouldn't have to worry about it.
   */
-  if (cd_desired == CD_LOCAL) return (true);
+  if (cd_desired == CD_LOCAL) return true;
 
   /*
   ** Find out if the CD in the current drive is the one we are looking for
@@ -4445,7 +4444,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
           1) {
         Set_Logic_Page(oldpage);
         while (hidden--) Hide_Mouse();
-        return (false);
+        return false;
       }
 
       while (hidden--) Hide_Mouse();
@@ -4496,7 +4495,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
     ThemeClass::Scan();
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -4544,7 +4543,7 @@ static void Do_Record_Playback() {
     */
     sum = 0;
     for (i = 0; i < count; i++) {
-      ltgt = (unsigned long)(CurrentObject[i]->As_Target());
+      ltgt = (unsigned long)CurrentObject[i]->As_Target();
       sum += ltgt;
     }
     Session.RecordFile.Write(&sum, sizeof(sum));
@@ -4592,7 +4591,7 @@ static void Do_Record_Playback() {
       */
       sum = 0;
       for (i = 0; i < CurrentObject.Count(); i++) {
-        ltgt = (unsigned long)(CurrentObject[i]->As_Target());
+        ltgt = (unsigned long)CurrentObject[i]->As_Target();
         sum += ltgt;
       }
 
@@ -4610,7 +4609,7 @@ static void Do_Record_Playback() {
       for (i = 0; i < count; i++) {
         if (Session.RecordFile.Read(&tgt, sizeof(tgt)) == sizeof(tgt)) {
           obj = As_Object(tgt);
-          if (obj && (sum2 != sum)) {
+          if (obj && sum2 != sum) {
             obj->Select();
             AllowVoice = false;
           }
@@ -4671,10 +4670,10 @@ void* Hires_Load(char* name) {
     length = file.Size();
     return_ptr = new char[length];
     file.Read(return_ptr, length);
-    return (return_ptr);
+    return return_ptr;
 
   } else {
-    return (nullptr);
+    return nullptr;
   }
 }
 
@@ -4696,10 +4695,10 @@ void* Hires_Load(char* name) {
 CrateType Crate_From_Name(char const* name) {
   if (name != nullptr) {
     for (CrateType crate = CRATE_FIRST; crate < CRATE_COUNT; crate++) {
-      if (stricmp(name, CrateNames[crate]) == 0) return (crate);
+      if (stricmp(name, CrateNames[crate]) == 0) return crate;
     }
   }
-  return (CRATE_MONEY);
+  return CRATE_MONEY;
 }
 
 /***********************************************************************************************
@@ -4728,11 +4727,11 @@ int Owner_From_Name(char const* text) {
     } else {
       HousesType h = HouseTypeClass::From_Name(text);
       if (h != HOUSE_NONE && (h < HOUSE_MULTI1 || h > HOUSE_MULTI8)) {
-        ownable |= (1 << h);
+        ownable |= 1 << h;
       }
     }
   }
-  return (ownable);
+  return ownable;
 }
 
 /***********************************************************************************************

@@ -128,7 +128,7 @@ int LZWStraw::Get(void* destbuf, int slen) {
   **	Verify parameters for legality.
   */
   if (destbuf == nullptr || slen < 1) {
-    return (0);
+    return 0;
   }
 
   while (slen > 0) {
@@ -137,17 +137,17 @@ int LZWStraw::Get(void* destbuf, int slen) {
     **	destination buffer.
     */
     if (Counter) {
-      int len = (slen < Counter) ? slen : Counter;
+      int len = slen < Counter ? slen : Counter;
       if (Control == DECOMPRESS) {
         memmove(destbuf, &source_buffer_[BlockHeader.UncompCount - Counter],
                 len);
       } else {
         memmove(destbuf,
-                &output_buffer_[(BlockHeader.CompCount + sizeof(BlockHeader)) -
+                &output_buffer_[BlockHeader.CompCount + sizeof(BlockHeader) -
                                 Counter],
                 len);
       }
-      destbuf = ((char*)destbuf) + len;
+      destbuf = (char*)destbuf + len;
       slen -= len;
       Counter -= len;
       total += len;
@@ -159,7 +159,7 @@ int LZWStraw::Get(void* destbuf, int slen) {
       if (incount != sizeof(BlockHeader)) break;
 
       void* ptr =
-          &source_buffer_[(BlockSize + SafetyMargin) - BlockHeader.CompCount];
+          &source_buffer_[BlockSize + SafetyMargin - BlockHeader.CompCount];
       incount = Straw::Get(ptr, BlockHeader.CompCount);
       if (incount != BlockHeader.CompCount) break;
 
@@ -180,5 +180,5 @@ int LZWStraw::Get(void* destbuf, int slen) {
     }
   }
 
-  return (total);
+  return total;
 }

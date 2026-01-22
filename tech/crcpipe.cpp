@@ -70,7 +70,7 @@
 int CRCPipe::Put(const void* source, int slen) {
   crc_.Update(std::span(static_cast<const uint8_t*>(source),
                         static_cast<size_t>(slen)));
-  return (Pipe::Put(source, slen));
+  return Pipe::Put(source, slen);
 }
 
 /***********************************************************************************************

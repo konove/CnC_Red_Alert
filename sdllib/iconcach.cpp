@@ -112,8 +112,8 @@ void Buffer_Draw_Stamp_Clip(void const* thisptr, void const* icondata, int icon,
   // clipping rectangle
 
   if (x_pixel < min_x) {
-    ptr += (min_x - x_pixel);
-    iwidth -= (min_x - x_pixel);
+    ptr += min_x - x_pixel;
+    iwidth -= min_x - x_pixel;
     x_pixel = min_x;
   }
 
@@ -126,7 +126,7 @@ void Buffer_Draw_Stamp_Clip(void const* thisptr, void const* icondata, int icon,
   }
 
   if (y_pixel < min_y) {
-    iheight -= (min_y - y_pixel);
+    iheight -= min_y - y_pixel;
     ptr += IconWidth * (min_y - y_pixel);
     y_pixel = min_y;
   }

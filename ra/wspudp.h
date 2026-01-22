@@ -61,9 +61,9 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
   void Set_Broadcast_Address(void* address) override;
   void Broadcast(void* buffer, int buffer_len) override;
 
-  ProtocolEnum Get_Protocol() override { return (PROTOCOL_UDP); }
+  ProtocolEnum Get_Protocol() override { return PROTOCOL_UDP; }
 
-  int Protocol_Event_Message() override { return (WM_UDPASYNCEVENT); }
+  int Protocol_Event_Message() override { return WM_UDPASYNCEVENT; }
 
  private:
   /*

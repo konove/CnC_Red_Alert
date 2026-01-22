@@ -154,7 +154,7 @@
  *=============================================================================================*/
 bool CCINIClass::Load(FileClass& file, bool withdigest) {
   FileStraw fs(file);
-  return (Load(fs, withdigest));
+  return Load(fs, withdigest);
 }
 
 /***********************************************************************************************
@@ -199,11 +199,11 @@ bool CCINIClass::Load(Straw& file, bool withdigest) {
       *error code.
       */
       if (memcmp(digest, Digest, sizeof(digest)) != 0) {
-        return (2);
+        return 2;
       }
     }
   }
-  return (ok);
+  return ok;
 }
 
 /***********************************************************************************************
@@ -227,7 +227,7 @@ bool CCINIClass::Load(Straw& file, bool withdigest) {
  *=============================================================================================*/
 int CCINIClass::Save(FileClass& file, bool withdigest) const {
   FilePipe fp(file);
-  return (Save(fp, withdigest));
+  return Save(fp, withdigest);
 }
 
 /***********************************************************************************************
@@ -253,7 +253,7 @@ int CCINIClass::Save(FileClass& file, bool withdigest) const {
  *=============================================================================================*/
 int CCINIClass::Save(Pipe& pipe, bool withdigest) const {
   if (!withdigest) {
-    return (INIClass::Save(pipe));
+    return INIClass::Save(pipe);
   }
 
   /*
@@ -285,15 +285,15 @@ int CCINIClass::Save(Pipe& pipe, bool withdigest) const {
   /*
   **	Finally, return with the total number of bytes send out the pipe.
   */
-  return (length);
+  return length;
 }
 
 static inline int _Scale_To_256(int val) {
   val = std::min(val, 100);
   val = std::max(val, 0);
-  val = ((val * 256) / 100);
+  val = val * 256 / 100;
   val = std::min(val, 255);
-  return (val);
+  return val;
 }
 
 /***********************************************************************************************
@@ -319,7 +319,7 @@ static inline int _Scale_To_256(int val) {
 LEPTON CCINIClass::Get_Lepton(char const* section, char const* entry,
                               LEPTON defvalue) const {
   fixed result = Get_Fixed(section, entry, fixed(defvalue, CELL_LEPTON_W));
-  return (result * CELL_LEPTON_W);
+  return result * CELL_LEPTON_W;
 }
 
 /***********************************************************************************************
@@ -342,7 +342,7 @@ LEPTON CCINIClass::Get_Lepton(char const* section, char const* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_Lepton(char const* section, char const* entry,
                             LEPTON value) {
-  return (Put_Fixed(section, entry, fixed(value, CELL_LEPTON_W)));
+  return Put_Fixed(section, entry, fixed(value, CELL_LEPTON_W));
 }
 
 /***********************************************************************************************
@@ -369,8 +369,8 @@ bool CCINIClass::Put_Lepton(char const* section, char const* entry,
  *=============================================================================================*/
 MPHType CCINIClass::Get_MPHType(char const* section, char const* entry,
                                 MPHType defvalue) const {
-  int val = Get_Int(section, entry, ((int)defvalue * 100) / 256);
-  return (MPHType(_Scale_To_256(val)));
+  int val = Get_Int(section, entry, (int)defvalue * 100 / 256);
+  return MPHType(_Scale_To_256(val));
 }
 
 /***********************************************************************************************
@@ -395,7 +395,7 @@ MPHType CCINIClass::Get_MPHType(char const* section, char const* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_MPHType(char const* section, char const* entry,
                              MPHType value) {
-  return (Put_Int(section, entry, ((int)value * 100) / 256));
+  return Put_Int(section, entry, (int)value * 100 / 256);
 }
 
 /***********************************************************************************************
@@ -436,7 +436,7 @@ long CCINIClass::Get_Owners(char const* section, char const* entry,
       name = strtok(nullptr, ",");
     }
   }
-  return (ownable);
+  return ownable;
 }
 
 /***********************************************************************************************
@@ -484,7 +484,7 @@ bool CCINIClass::Put_Owners(char const* section, char const* entry,
 
   // Iterate through House Types
   for (int i = HOUSE_FIRST; i < static_cast<int>(HOUSE_COUNT); ++i) {
-    if ((value & (1L << i)) != 0) {
+    if ((value & 1L << i) != 0) {
       const auto house = static_cast<HousesType>(i);
       append(HouseTypeClass::As_Reference(house).Name());
     }
@@ -523,7 +523,7 @@ ArmorType CCINIClass::Get_ArmorType(char const* section, char const* entry,
   char buffer[128];
 
   Get_String(section, entry, ArmorName[defvalue], buffer, sizeof(buffer));
-  return (Armor_From_Name(buffer));
+  return Armor_From_Name(buffer);
 }
 
 /***********************************************************************************************
@@ -545,7 +545,7 @@ ArmorType CCINIClass::Get_ArmorType(char const* section, char const* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_ArmorType(char const* section, char const* entry,
                                ArmorType value) {
-  return (Put_String(section, entry, ArmorName[value]));
+  return Put_String(section, entry, ArmorName[value]);
 }
 
 /***********************************************************************************************
@@ -576,7 +576,7 @@ VocType CCINIClass::Get_VocType(char const* section, char const* entry,
   char buffer[128];
 
   Get_String(section, entry, Voc_Name(defvalue), buffer, sizeof(buffer));
-  return (Voc_From_Name(buffer));
+  return Voc_From_Name(buffer);
 }
 
 /***********************************************************************************************
@@ -601,9 +601,9 @@ VocType CCINIClass::Get_VocType(char const* section, char const* entry,
 bool CCINIClass::Put_VocType(char const* section, char const* entry,
                              VocType value) {
   if (value == VOC_NONE) {
-    return (Put_String(section, entry, "<none>"));
+    return Put_String(section, entry, "<none>");
   }
-  return (Put_String(section, entry, Voc_Name(value)));
+  return Put_String(section, entry, Voc_Name(value));
 }
 
 /***********************************************************************************************
@@ -632,7 +632,7 @@ AnimType CCINIClass::Get_AnimType(char const* section, char const* entry,
   char buffer[128];
 
   Get_String(section, entry, Anim_Name(defvalue), buffer, sizeof(buffer));
-  return (Anim_From_Name(buffer));
+  return Anim_From_Name(buffer);
 }
 
 /***********************************************************************************************
@@ -658,9 +658,9 @@ AnimType CCINIClass::Get_AnimType(char const* section, char const* entry,
 bool CCINIClass::Put_AnimType(char const* section, char const* entry,
                               AnimType value) {
   if (value == ANIM_NONE) {
-    return (Put_String(section, entry, "<none>"));
+    return Put_String(section, entry, "<none>");
   }
-  return (Put_String(section, entry, Anim_Name(value)));
+  return Put_String(section, entry, Anim_Name(value));
 }
 
 UnitType CCINIClass::Get_UnitType(char const* section, char const* entry,
@@ -672,16 +672,15 @@ UnitType CCINIClass::Get_UnitType(char const* section, char const* entry,
     def = UnitTypeClass::As_Reference(defvalue).Name();
   }
   Get_String(section, entry, def, buffer, sizeof(buffer));
-  return (UnitTypeClass::From_Name(buffer));
+  return UnitTypeClass::From_Name(buffer);
 }
 
 bool CCINIClass::Put_UnitType(char const* section, char const* entry,
                               UnitType value) {
   if (value == UNIT_NONE) {
-    return (Put_String(section, entry, "<none>"));
+    return Put_String(section, entry, "<none>");
   }
-  return (
-      Put_String(section, entry, UnitTypeClass::As_Reference(value).Name()));
+  return Put_String(section, entry, UnitTypeClass::As_Reference(value).Name());
 }
 
 /***********************************************************************************************
@@ -710,9 +709,9 @@ WeaponType CCINIClass::Get_WeaponType(char const* section, char const* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return (Weapon_From_Name(buffer));
+    return Weapon_From_Name(buffer);
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -736,10 +735,9 @@ WeaponType CCINIClass::Get_WeaponType(char const* section, char const* entry,
 bool CCINIClass::Put_WeaponType(char const* section, char const* entry,
                                 WeaponType value) {
   if (value == WEAPON_NONE) {
-    return (Put_String(section, entry, "<none>"));
+    return Put_String(section, entry, "<none>");
   }
-  return (
-      Put_String(section, entry, WeaponTypeClass::As_Pointer(value)->Name()));
+  return Put_String(section, entry, WeaponTypeClass::As_Pointer(value)->Name());
 }
 
 /***********************************************************************************************
@@ -770,11 +768,11 @@ WarheadType CCINIClass::Get_WarheadType(char const* section, char const* entry,
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     for (WarheadType wh = WARHEAD_FIRST; wh < WARHEAD_COUNT; wh++) {
       if (stricmp(WarheadTypeClass::As_Pointer(wh)->Name(), buffer) == 0) {
-        return (wh);
+        return wh;
       }
     }
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -798,10 +796,10 @@ WarheadType CCINIClass::Get_WarheadType(char const* section, char const* entry,
 bool CCINIClass::Put_WarheadType(char const* section, char const* entry,
                                  WarheadType value) {
   if (value == WARHEAD_NONE) {
-    return (Put_String(section, entry, "<none>"));
+    return Put_String(section, entry, "<none>");
   }
-  return (
-      Put_String(section, entry, WarheadTypeClass::As_Pointer(value)->Name()));
+  return Put_String(section, entry,
+                    WarheadTypeClass::As_Pointer(value)->Name());
 }
 
 /***********************************************************************************************
@@ -830,9 +828,9 @@ OverlayType CCINIClass::Get_OverlayType(char const* section, char const* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return (OverlayTypeClass::From_Name(buffer));
+    return OverlayTypeClass::From_Name(buffer);
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -856,8 +854,8 @@ OverlayType CCINIClass::Get_OverlayType(char const* section, char const* entry,
 bool CCINIClass::Put_OverlayType(char const* section, char const* entry,
                                  OverlayType value) {
   assert(value != OVERLAY_NONE);
-  return (
-      Put_String(section, entry, OverlayTypeClass::As_Reference(value).Name()));
+  return Put_String(section, entry,
+                    OverlayTypeClass::As_Reference(value).Name());
 }
 
 /***********************************************************************************************
@@ -890,11 +888,11 @@ BulletType CCINIClass::Get_BulletType(char const* section, char const* entry,
       if (stricmp(BulletTypeClass::As_Reference(proj).Name(), buffer) == 0) {
         //			if (stricmp(ProjectileNames[proj], buffer) == 0)
         //{
-        return (proj);
+        return proj;
       }
     }
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -920,10 +918,10 @@ BulletType CCINIClass::Get_BulletType(char const* section, char const* entry,
 bool CCINIClass::Put_BulletType(char const* section, char const* entry,
                                 BulletType value) {
   if (value == BULLET_NONE) {
-    return (Put_String(section, entry, "<none>"));
+    return Put_String(section, entry, "<none>");
   }
-  return (
-      Put_String(section, entry, BulletTypeClass::As_Reference(value).Name()));
+  return Put_String(section, entry,
+                    BulletTypeClass::As_Reference(value).Name());
   //	return(Put_String(section, entry, ProjectileNames[value]));
 }
 
@@ -955,9 +953,9 @@ HousesType CCINIClass::Get_HousesType(char const* section, char const* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return (HouseTypeClass::From_Name(buffer));
+    return HouseTypeClass::From_Name(buffer);
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -980,8 +978,7 @@ HousesType CCINIClass::Get_HousesType(char const* section, char const* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_HousesType(char const* section, char const* entry,
                                 HousesType value) {
-  return (
-      Put_String(section, entry, HouseTypeClass::As_Reference(value).Name()));
+  return Put_String(section, entry, HouseTypeClass::As_Reference(value).Name());
 }
 
 /***********************************************************************************************
@@ -1012,11 +1009,11 @@ VQType CCINIClass::Get_VQType(char const* section, char const* entry,
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     for (VQType vq = VQ_FIRST; vq < VQ_COUNT; vq++) {
       if (stricmp(buffer, VQName[vq]) == 0) {
-        return (vq);
+        return vq;
       }
     }
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -1040,9 +1037,9 @@ VQType CCINIClass::Get_VQType(char const* section, char const* entry,
 bool CCINIClass::Put_VQType(char const* section, char const* entry,
                             VQType value) {
   if (value == VQ_NONE) {
-    return (Put_String(section, entry, "<none>"));
+    return Put_String(section, entry, "<none>");
   }
-  return (Put_String(section, entry, VQName[value]));
+  return Put_String(section, entry, VQName[value]);
 }
 
 /***********************************************************************************************
@@ -1071,9 +1068,9 @@ TheaterType CCINIClass::Get_TheaterType(char const* section, char const* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return (Theater_From_Name(buffer));
+    return Theater_From_Name(buffer);
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -1096,7 +1093,7 @@ TheaterType CCINIClass::Get_TheaterType(char const* section, char const* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_TheaterType(char const* section, char const* entry,
                                  TheaterType value) {
-  return (Put_String(section, entry, Theaters[value].Name));
+  return Put_String(section, entry, Theaters[value].Name);
 }
 
 /***********************************************************************************************
@@ -1122,9 +1119,9 @@ TriggerTypeClass* CCINIClass::Get_TriggerType(char const* section,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return (TriggerTypeClass::From_Name(buffer));
+    return TriggerTypeClass::From_Name(buffer);
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -1148,7 +1145,7 @@ TriggerTypeClass* CCINIClass::Get_TriggerType(char const* section,
  *=============================================================================================*/
 bool CCINIClass::Put_TriggerType(char const* section, char const* entry,
                                  TriggerTypeClass* value) {
-  return (Put_String(section, entry, value->Name()));
+  return Put_String(section, entry, value->Name());
 }
 
 /***********************************************************************************************
@@ -1175,9 +1172,9 @@ ThemeType CCINIClass::Get_ThemeType(char const* section, char const* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return (Theme.From_Name(buffer));
+    return Theme.From_Name(buffer);
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -1201,7 +1198,7 @@ ThemeType CCINIClass::Get_ThemeType(char const* section, char const* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_ThemeType(char const* section, char const* entry,
                                ThemeType value) {
-  return (Put_String(section, entry, Theme.Base_Name(value)));
+  return Put_String(section, entry, Theme.Base_Name(value));
 }
 
 /***********************************************************************************************
@@ -1231,9 +1228,9 @@ SourceType CCINIClass::Get_SourceType(char const* section, char const* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return (Source_From_Name(buffer));
+    return Source_From_Name(buffer);
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -1258,7 +1255,7 @@ SourceType CCINIClass::Get_SourceType(char const* section, char const* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_SourceType(char const* section, char const* entry,
                                 SourceType value) {
-  return (Put_String(section, entry, SourceName[value]));
+  return Put_String(section, entry, SourceName[value]);
 }
 
 /***********************************************************************************************
@@ -1286,9 +1283,9 @@ CrateType CCINIClass::Get_CrateType(char const* section, char const* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return (Crate_From_Name(buffer));
+    return Crate_From_Name(buffer);
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -1312,7 +1309,7 @@ CrateType CCINIClass::Get_CrateType(char const* section, char const* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_CrateType(char const* section, char const* entry,
                                CrateType value) {
-  return (Put_String(section, entry, CrateNames[value]));
+  return Put_String(section, entry, CrateNames[value]);
 }
 
 /***********************************************************************************************
@@ -1340,9 +1337,9 @@ TerrainType CCINIClass::Get_TerrainType(char const* section, char const* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return (TerrainTypeClass::From_Name(strtok(buffer, ",")));
+    return TerrainTypeClass::From_Name(strtok(buffer, ","));
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -1365,8 +1362,8 @@ TerrainType CCINIClass::Get_TerrainType(char const* section, char const* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_TerrainType(char const* section, char const* entry,
                                  TerrainType value) {
-  return (
-      Put_String(section, entry, TerrainTypeClass::As_Reference(value).Name()));
+  return Put_String(section, entry,
+                    TerrainTypeClass::As_Reference(value).Name());
 }
 
 /***********************************************************************************************
@@ -1403,7 +1400,7 @@ long CCINIClass::Get_Buildings(char const* section, char const* entry,
     while (token != nullptr && *token != '\0') {
       StructType building = BuildingTypeClass::From_Name(token);
       if (building != STRUCT_NONE) {
-        pre |= (1L << building);
+        pre |= 1L << building;
       }
       token = strtok(nullptr, ",");
     }
@@ -1411,7 +1408,7 @@ long CCINIClass::Get_Buildings(char const* section, char const* entry,
     pre = defvalue;
   }
 
-  return (pre);
+  return pre;
 }
 
 /***********************************************************************************************
@@ -1458,7 +1455,7 @@ bool CCINIClass::Put_Buildings(const char* section, const char* entry,
   for (size_t i = STRUCT_FIRST; i < limit; ++i) {
     // Check if the bit at index 'i' is set.
     // We use 1L (long) to match the type of 'value'.
-    if ((value & (1L << i)) != 0) {
+    if ((value & 1L << i) != 0) {
       const auto index = static_cast<StructType>(i);
 
       // Access the building name safely

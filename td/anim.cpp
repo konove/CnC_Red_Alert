@@ -84,7 +84,6 @@
 #include "td/object.h"
 #include "td/palette.h"
 #include "td/smudge.h"
-#include "td/stage.h"
 #include "td/target.h"
 #include "td/techno.h"
 #include "td/type.h"
@@ -177,15 +176,15 @@ void Shorten_Attached_Anims(ObjectClass* obj) {
 COORDINATE AnimClass::Sort_Y() const {
   Validate();
   if (Object && Object->IsActive) {
-    return (Coord_Add(Object->Sort_Y(), 0x00010000L));
+    return Coord_Add(Object->Sort_Y(), 0x00010000L);
   }
   if (*this == ANIM_MOVE_FLASH) {
-    return (Coord_Add(Center_Coord(), XYP_COORD(0, -24)));
+    return Coord_Add(Center_Coord(), XYP_COORD(0, -24));
   }
   if (*this == ANIM_LZ_SMOKE) {
-    return (Coord_Add(Center_Coord(), XYP_COORD(0, 14)));
+    return Coord_Add(Center_Coord(), XYP_COORD(0, 14));
   }
-  return (Coord);
+  return Coord;
 }
 
 /***********************************************************************************************
@@ -209,9 +208,9 @@ COORDINATE AnimClass::Sort_Y() const {
 COORDINATE AnimClass::Center_Coord() const {
   Validate();
   if (Object) {
-    return (Coord_Add(Coord, Object->Center_Coord()));
+    return Coord_Add(Coord, Object->Center_Coord());
   }
-  return (Coord);
+  return Coord;
 }
 
 /***********************************************************************************************
@@ -230,9 +229,9 @@ COORDINATE AnimClass::Center_Coord() const {
  *=============================================================================================*/
 bool AnimClass::Render(bool forced) {
   Validate();
-  if (Delay) return (false);
+  if (Delay) return false;
   IsToDisplay = true;
-  return (ObjectClass::Render(forced));
+  return ObjectClass::Render(forced);
 }
 
 /***********************************************************************************************
@@ -327,9 +326,9 @@ bool AnimClass::Mark(MarkType mark) {
   if (ObjectClass::Mark(mark)) {
     Map.Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
     ObjectClass::Mark(mark);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -401,85 +400,68 @@ short const* AnimClass::Overlap_List() const {
                                     -(MAP_CELL_W * 2 - 2),
                                     -(MAP_CELL_W * 2 - 1),
                                     REFRESH_EOL};
-  static short const OverlapIon[] = {(-MAP_CELL_W * 7) - 1,
-                                     (-MAP_CELL_W * 7),
-                                     (-MAP_CELL_W * 7) + 1,
-                                     (-MAP_CELL_W * 6) - 1,
-                                     (-MAP_CELL_W * 6),
-                                     (-MAP_CELL_W * 6) + 1,
-                                     (-MAP_CELL_W * 5) - 1,
-                                     (-MAP_CELL_W * 5),
-                                     (-MAP_CELL_W * 5) + 1,
-                                     (-MAP_CELL_W * 4) - 1,
-                                     (-MAP_CELL_W * 4),
-                                     (-MAP_CELL_W * 4) + 1,
-                                     (-MAP_CELL_W * 3) - 1,
-                                     (-MAP_CELL_W * 3),
-                                     (-MAP_CELL_W * 3) + 1,
-                                     (-MAP_CELL_W * 2) - 1,
-                                     (-MAP_CELL_W * 2),
-                                     (-MAP_CELL_W * 2) + 1,
-                                     (-MAP_CELL_W * 1) - 1,
-                                     (-MAP_CELL_W * 1),
-                                     (-MAP_CELL_W * 1) + 1,
-                                     (-MAP_CELL_W * 0) - 1,
-                                     (-MAP_CELL_W * 0),
-                                     (-MAP_CELL_W * 0) + 1,
-                                     REFRESH_EOL};
+  static short const OverlapIon[] = {
+      -MAP_CELL_W * 7 - 1, (-MAP_CELL_W * 7), -MAP_CELL_W * 7 + 1,
+      -MAP_CELL_W * 6 - 1, (-MAP_CELL_W * 6), -MAP_CELL_W * 6 + 1,
+      -MAP_CELL_W * 5 - 1, (-MAP_CELL_W * 5), -MAP_CELL_W * 5 + 1,
+      -MAP_CELL_W * 4 - 1, (-MAP_CELL_W * 4), -MAP_CELL_W * 4 + 1,
+      -MAP_CELL_W * 3 - 1, (-MAP_CELL_W * 3), -MAP_CELL_W * 3 + 1,
+      -MAP_CELL_W * 2 - 1, (-MAP_CELL_W * 2), -MAP_CELL_W * 2 + 1,
+      -MAP_CELL_W * 1 - 1, (-MAP_CELL_W * 1), -MAP_CELL_W * 1 + 1,
+      -MAP_CELL_W * 0 - 1, (-MAP_CELL_W * 0), -MAP_CELL_W * 0 + 1,
+      REFRESH_EOL};
 
   static short const OverlapAtom[] = {
-      (-MAP_CELL_W * 2) - 1, (-MAP_CELL_W * 2),
-      (-MAP_CELL_W * 2) + 1, (-MAP_CELL_W * 1) - 1,
-      (-MAP_CELL_W * 1),     (-MAP_CELL_W * 1) + 1,
-      (-MAP_CELL_W * 0) - 1, (-MAP_CELL_W * 0),
-      (-MAP_CELL_W * 0) + 1, (MAP_CELL_W * 1) - 1,
-      (MAP_CELL_W * 1),      (MAP_CELL_W * 1) + 1,
-      (MAP_CELL_W * 2) - 1,  (MAP_CELL_W * 2),
-      (MAP_CELL_W * 2) + 1,  REFRESH_EOL};
+      -MAP_CELL_W * 2 - 1, (-MAP_CELL_W * 2), -MAP_CELL_W * 2 + 1,
+      -MAP_CELL_W * 1 - 1, (-MAP_CELL_W * 1), -MAP_CELL_W * 1 + 1,
+      -MAP_CELL_W * 0 - 1, (-MAP_CELL_W * 0), -MAP_CELL_W * 0 + 1,
+      MAP_CELL_W * 1 - 1,  (MAP_CELL_W * 1),  MAP_CELL_W * 1 + 1,
+      MAP_CELL_W * 2 - 1,  (MAP_CELL_W * 2),  MAP_CELL_W * 2 + 1,
+      REFRESH_EOL};
 
   switch (Class->Type) {
     case ANIM_CHEM_N:
     case ANIM_FLAME_N:
-      return (OverlapN);
+      return OverlapN;
 
     case ANIM_CHEM_NW:
     case ANIM_FLAME_NW:
-      return (OverlapNW);
+      return OverlapNW;
 
     case ANIM_CHEM_W:
     case ANIM_FLAME_W:
-      return (OverlapW);
+      return OverlapW;
 
     case ANIM_CHEM_SW:
     case ANIM_FLAME_SW:
-      return (OverlapSW);
+      return OverlapSW;
 
     case ANIM_CHEM_S:
     case ANIM_FLAME_S:
-      return (OverlapS);
+      return OverlapS;
 
     case ANIM_CHEM_SE:
     case ANIM_FLAME_SE:
-      return (OverlapSE);
+      return OverlapSE;
 
     case ANIM_CHEM_E:
     case ANIM_FLAME_E:
-      return (OverlapE);
+      return OverlapE;
 
     case ANIM_CHEM_NE:
     case ANIM_FLAME_NE:
-      return (OverlapNE);
+      return OverlapNE;
 
     case ANIM_ION_CANNON:
-      return (OverlapIon);
+      return OverlapIon;
 
     case ANIM_ATOM_BLAST:
-      return (OverlapAtom);
+      return OverlapAtom;
 
     default:
       break;
   }
-  return (Coord_Spillage_List(Center_Coord(), Class->Size));
+  return Coord_Spillage_List(Center_Coord(), Class->Size);
 }
 
 /***********************************************************************************************
@@ -501,7 +483,7 @@ short const* AnimClass::Occupy_List() const {
   Validate();
   static short _simple[] = {REFRESH_EOL};
 
-  return (_simple);
+  return _simple;
 }
 
 /***********************************************************************************************
@@ -525,7 +507,7 @@ void AnimClass::Init() {
   Anims.Free_All();
 
   ptr = new AnimClass();
-  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -549,7 +531,7 @@ void* AnimClass::operator new(size_t) throw() {
   if (ptr) {
     ((AnimClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -603,10 +585,10 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
   Owner = HOUSE_NONE;
 
   if (Class->Stages == -1) {
-    ((int&)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
+    (int&)Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
   }
   if (Class->LoopEnd == -1) {
-    ((int&)Class->LoopEnd) = Class->Stages;
+    (int&)Class->LoopEnd = Class->Stages;
   }
   if (Class->IsNormalized) {
     Set_Rate(Options.Normalize_Delay(Class->Delay));
@@ -835,7 +817,7 @@ void AnimClass::AI() {
             //						AnimTypeClass const *
             // aptr = &AnimTypeClass::As_Reference(Class->ChainTo);
 
-            ((AnimTypeClass const*&)Class) =
+            (AnimTypeClass const*&)Class =
                 &AnimTypeClass::As_Reference(Class->ChainTo);
 
             if (Class->IsNormalized) {
@@ -901,9 +883,9 @@ void AnimClass::Attach_To(ObjectClass* obj) {
 LayerType AnimClass::In_Which_Layer() const {
   Validate();
   if (Object || Class->IsGroundLayer) {
-    return (LAYER_GROUND);
+    return LAYER_GROUND;
   }
-  return (LAYER_AIR);
+  return LAYER_AIR;
 }
 
 /***********************************************************************************************
@@ -992,7 +974,7 @@ void AnimClass::Middle() {
         if (obj && obj->Is_Techno() && obj->Owner() == Owner) {
           backup = (TechnoClass*)obj;
           if (obj->What_Am_I() == RTTI_BUILDING &&
-              *((BuildingClass*)obj) == STRUCT_TEMPLE) {
+              *(BuildingClass*)obj == STRUCT_TEMPLE) {
             building = (BuildingClass*)obj;
             break;
           }
@@ -1028,7 +1010,7 @@ void AnimClass::Middle() {
         CELL tcell = XY_Cell(xpos, ypos);
         if (!Map.In_Radar(tcell)) continue;
 
-        int damage = rawdamage / ((std::abs(radius) / 2) + 1);
+        int damage = rawdamage / (std::abs(radius) / 2 + 1);
         Explosion_Damage(Cell_Coord(tcell), damage, building, WARHEAD_FIRE);
         new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
                         Cell_Coord(tcell));
@@ -1079,18 +1061,18 @@ void AnimClass::Middle() {
         true);
 
     c2 = Map.Closest_Free_Spot(c2, true);
-    if (c3 && (Random_Pick(0, 1) == 1)) {
+    if (c3 && Random_Pick(0, 1) == 1) {
       if (!Map[Coord_Cell(c3)].Cell_Terrain()) {
         new AnimClass(ANIM_FIRE_SMALL, c3, 0, 2);
       }
     }
-    if (c2 && (Random_Pick(0, 1) == 1)) {
+    if (c2 && Random_Pick(0, 1) == 1) {
       if (!Map[Coord_Cell(c2)].Cell_Terrain()) {
         new AnimClass(ANIM_FIRE_SMALL, c2, 0, 2);
       }
     }
     new SmudgeClass(SMUDGE_SCORCH1, c2);
-    if (c3 && (Random_Pick(0, 1) == 1)) {
+    if (c3 && Random_Pick(0, 1) == 1) {
       if (!Map[Coord_Cell(c3)].Cell_Terrain()) {
         new AnimClass(ANIM_SMOKE_M, c3);
       }
@@ -1115,7 +1097,7 @@ void AnimClass::Middle() {
               !obj->IsInLimbo) {
             backup = (TechnoClass*)obj;
             if (obj->What_Am_I() == RTTI_BUILDING &&
-                *((BuildingClass*)obj) == STRUCT_EYE) {
+                *(BuildingClass*)obj == STRUCT_EYE) {
               building = (BuildingClass*)obj;
               break;
             }
@@ -1133,25 +1115,25 @@ void AnimClass::Middle() {
       new AnimClass(
           ANIM_FIRE_SMALL,
           Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0040), true), 0,
-          ((Random_Pick(0, 1) == 1) ? 1 : 2));
+          Random_Pick(0, 1) == 1 ? 1 : 2);
       if (Random_Pick(0, 1) == 1) {
         new AnimClass(
             ANIM_FIRE_SMALL,
             Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x00A0), true),
-            0, ((Random_Pick(0, 1) == 1) ? 1 : 2));
+            0, Random_Pick(0, 1) == 1 ? 1 : 2);
       }
       if (Random_Pick(0, 1) == 1) {
         new AnimClass(
             ANIM_FIRE_MED,
             Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0070), true),
-            0, ((Random_Pick(0, 1) == 1) ? 1 : 2));
+            0, Random_Pick(0, 1) == 1 ? 1 : 2);
       }
       break;
 
     case ANIM_FIRE_MED:
     case ANIM_FIRE_MED2:
       newanim = new AnimClass(ANIM_FIRE_SMALL, Center_Coord(), 0,
-                              ((Random_Pick(0, 1) == 1) ? 1 : 2));
+                              Random_Pick(0, 1) == 1 ? 1 : 2);
       if (newanim && Object) {
         newanim->Attach_To(Object);
       }
@@ -1178,7 +1160,7 @@ void AnimClass::Middle() {
  *=============================================================================================*/
 TARGET AnimClass::As_Target() const {
   Validate();
-  return (Build_Target(KIND_ANIMATION, Anims.ID(this)));
+  return Build_Target(KIND_ANIMATION, Anims.ID(this));
 }
 
 /***************************************************************************
@@ -1202,11 +1184,11 @@ COORDINATE AnimClass::Adjust_Coord(COORDINATE coord) {
       break;
 
     default:
-      return (coord);
+      return coord;
   }
   COORDINATE addval = XYPixel_Coord(x, y);
   coord = Coord_Add(coord, addval);
-  return (coord);
+  return coord;
 }
 
 /***********************************************************************************************

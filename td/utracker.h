@@ -54,7 +54,7 @@ class UnitTrackerClass {
 
   int Get_Unit_Total(int unit_type);
   long* Get_All_Totals();
-  int Get_Unit_Count() { return (UnitCount); }
+  int Get_Unit_Count() { return UnitCount; }
 
   void To_Network_Format();
   void To_PC_Format();

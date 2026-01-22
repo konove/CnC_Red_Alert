@@ -92,9 +92,9 @@ PKey::PKey(void const* exponent, void const* modulus) {
  *=============================================================================================*/
 int PKey::Encode_Modulus(void* buffer) const {
   if (buffer == nullptr) {
-    return (0);
+    return 0;
   }
-  return (Modulus.DEREncode((unsigned char*)buffer));
+  return Modulus.DEREncode((unsigned char*)buffer);
 }
 
 /***********************************************************************************************
@@ -118,9 +118,9 @@ int PKey::Encode_Modulus(void* buffer) const {
  *=============================================================================================*/
 int PKey::Encode_Exponent(void* buffer) const {
   if (buffer == nullptr) {
-    return (0);
+    return 0;
   }
-  return (Exponent.DEREncode((unsigned char*)buffer));
+  return Exponent.DEREncode((unsigned char*)buffer);
 }
 
 /***********************************************************************************************
@@ -300,7 +300,7 @@ int PKey::Encrypt(void const* source, int slen, void* dest) const {
     total += Crypt_Block_Size();
   }
 
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************
@@ -352,5 +352,5 @@ int PKey::Decrypt(void const* source, int slen, void* dest) const {
     total += Plain_Block_Size();
   }
 
-  return (total);
+  return total;
 }

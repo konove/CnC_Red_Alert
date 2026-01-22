@@ -87,7 +87,7 @@ void SHAEngine::Process_Partial(void const*& data, long& length) {
   */
   int add_count = min((int)length, SRC_BLOCK_SIZE - PartialCount);
   memcpy(&Partial[PartialCount], data, add_count);
-  data = ((char const*&)data) + add_count;
+  data = (char const*&)data + add_count;
   PartialCount += add_count;
   length -= add_count;
 
@@ -137,7 +137,7 @@ void SHAEngine::Hash(void const* data, long length) {
   /*
   **	First process all the whole blocks available in the source data.
   */
-  long blocks = (length / SRC_BLOCK_SIZE);
+  long blocks = length / SRC_BLOCK_SIZE;
   uint32_t const* source = (uint32_t const*)data;
   for (int bcount = 0; bcount < blocks; bcount++) {
     Process_Block(source, Acc);
@@ -202,7 +202,7 @@ int SHAEngine::Result(void* result) const {
   **	count value.
   */
   SHADigest acc = Acc;
-  if ((SRC_BLOCK_SIZE - partialcount) < 9) {
+  if (SRC_BLOCK_SIZE - partialcount < 9) {
     if (partialcount + 1 < SRC_BLOCK_SIZE) {
       memset(&partial[partialcount + 1], '\0',
              SRC_BLOCK_SIZE - (partialcount + 1));
@@ -218,7 +218,7 @@ int SHAEngine::Result(void* result) const {
   **	last 8 bytes of the pseudo-source data.
   */
   memset(&partial[partialcount], '\0', SRC_BLOCK_SIZE - partialcount);
-  *(uint32_t*)(&partial[SRC_BLOCK_SIZE - 4]) = Reverse_LONG((length * 8));
+  *(uint32_t*)&partial[SRC_BLOCK_SIZE - 4] = Reverse_LONG((length * 8));
   Process_Block(&partial[0], acc);
 
   memcpy((char*)&FinalResult, &acc, sizeof(acc));
@@ -228,7 +228,7 @@ int SHAEngine::Result(void* result) const {
   }
   (bool&)IsCached = true;
   memcpy(result, &FinalResult, sizeof(FinalResult));
-  return (sizeof(FinalResult));
+  return sizeof(FinalResult);
 }
 
 /*
@@ -240,7 +240,7 @@ int SHAEngine::Result(void* result) const {
 */
 template <class T>
 T _rotl(T X, int n) {
-  return (T)((X << n) | ((unsigned)X >> ((sizeof(T) * 8) - n)));
+  return (T)(X << n | (unsigned)X >> (sizeof(T) * 8 - n));
 }
 // unsigned long _RTLENTRY _rotl(unsigned long X, int n)
 //{

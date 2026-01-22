@@ -1268,11 +1268,11 @@ TemplateType TemplateTypeClass::From_Name(char const* name) {
   if (name) {
     for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
-        return (index);
+        return index;
       }
     }
   }
-  return (TEMPLATE_NONE);
+  return TEMPLATE_NONE;
 }
 
 /***********************************************************************************************
@@ -1303,12 +1303,12 @@ short const* TemplateTypeClass::Occupy_List(bool) const {
   ptr = &_occupy[0];
   for (index = 0; index < Width * Height; index++) {
     if (map[index] != 0xFF) {
-      *ptr++ = (index % Width) + ((index / Width) * MAP_CELL_W);
+      *ptr++ = index % Width + index / Width * MAP_CELL_W;
     }
   }
   *ptr = REFRESH_EOL;
 
-  return ((short const*)&_occupy[0]);
+  return (short const*)&_occupy[0];
 }
 
 /***********************************************************************************************
@@ -1334,14 +1334,14 @@ void TemplateTypeClass::Init(TheaterType theater) {
   for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
     TemplateTypeClass const& tplate = As_Reference(index);
 
-    ((void const*&)tplate.ImageData) = nullptr;
-    if (tplate.Theater & (1 << theater)) {
+    (void const*&)tplate.ImageData = nullptr;
+    if (tplate.Theater & 1 << theater) {
       // Fully constructed iconset name.
       auto fullname = std::filesystem::path(tplate.IniName)
                           .replace_extension(Theaters[theater].Suffix)
                           .string();
       ptr = MixFileClass::Retrieve(fullname.c_str());
-      ((void const*&)tplate.ImageData) = ptr;
+      (void const*&)tplate.ImageData = ptr;
       Register_Icon_Set((void*)ptr,
                         true);  // Register icon set for video memory caching
     }
@@ -1450,9 +1450,9 @@ void TemplateTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 bool TemplateTypeClass::Create_And_Place(CELL cell, HousesType) const {
   if (new TemplateClass(Type, cell)) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1474,7 +1474,7 @@ bool TemplateTypeClass::Create_And_Place(CELL cell, HousesType) const {
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* TemplateTypeClass::Create_One_Of(HouseClass*) const {
-  return (new TemplateClass(Type, -1));
+  return new TemplateClass(Type, -1);
 }
 
 /***********************************************************************************************

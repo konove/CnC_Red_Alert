@@ -174,7 +174,7 @@ LinkClass& LinkClass::operator=(LinkClass& link) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass* LinkClass::Get_Next() const { return (Next); }
+LinkClass* LinkClass::Get_Next() const { return Next; }
 
 /***********************************************************************************************
  * LinkClass::Get_Prev -- Fetches previous object in linked list. *
@@ -192,7 +192,7 @@ LinkClass* LinkClass::Get_Next() const { return (Next); }
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass* LinkClass::Get_Prev() const { return (Prev); }
+LinkClass* LinkClass::Get_Prev() const { return Prev; }
 
 /***********************************************************************************************
  * LinkClass::Head_Of_List -- Finds the head of the list. *
@@ -214,7 +214,7 @@ LinkClass const& LinkClass::Head_Of_List() const {
     link = link->Prev;
     if (link == this) break;  // Safety check
   }
-  return (*link);
+  return *link;
 }
 
 /***********************************************************************************************
@@ -237,7 +237,7 @@ LinkClass const& LinkClass::Tail_Of_List() const {
     link = link->Next;
     if (link == this) break;  // Safety check
   }
-  return (*link);
+  return *link;
 }
 
 /***********************************************************************************************
@@ -278,7 +278,7 @@ LinkClass& LinkClass::Add(LinkClass& list) {
     ptr->Prev = this;
   }
 
-  return (Head_Of_List());
+  return Head_Of_List();
 }
 
 /***********************************************************************************************
@@ -308,7 +308,7 @@ LinkClass& LinkClass::Add_Head(LinkClass& list) {
   Next = ptr;
   Prev = nullptr;
 
-  return (*this);
+  return *this;
 }
 
 /***********************************************************************************************
@@ -338,7 +338,7 @@ LinkClass& LinkClass::Add_Tail(LinkClass& list) {
   Prev = ptr;
   Next = nullptr;
 
-  return (Head_Of_List());
+  return Head_Of_List();
 }
 
 /***********************************************************************************************
@@ -372,9 +372,9 @@ LinkClass* LinkClass::Remove() {
 
   if (head == this) {
     if (tail == this) {
-      return (nullptr);
+      return nullptr;
     }
-    return (&tail->Head_Of_List());
+    return &tail->Head_Of_List();
   }
-  return (head);
+  return head;
 }

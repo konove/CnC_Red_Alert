@@ -67,7 +67,7 @@ class FlyClass {
   */
   void Fly_Speed(int speed, MPHType maximum);
   ImpactType Physics(COORDINATE& coord, DirType facing);
-  MPHType Get_Speed() const { return (SpeedAdd); }
+  MPHType Get_Speed() const { return SpeedAdd; }
 
  private:
   /*

@@ -445,7 +445,7 @@ bool Save_Game(int id, char const* descr, bool) {
 
   Decode_All_Pointers();
 
-  return (true);
+  return true;
 }
 
 /***************************************************************************
@@ -512,7 +512,7 @@ bool Load_Game(int id) {
   */
   RawFileClass file(name);
   if (!file.Is_Available()) {
-    return (false);
+    return false;
   }
 
   FileStraw fstraw(file);
@@ -523,15 +523,15 @@ bool Load_Game(int id) {
   **	Read & discard the save-game's header info
   */
   if (fstraw.Get(descr_buf, DESCRIP_MAX) != DESCRIP_MAX) {
-    return (false);
+    return false;
   }
 
   if (fstraw.Get(&scenario, sizeof(scenario)) != sizeof(scenario)) {
-    return (false);
+    return false;
   }
 
   if (fstraw.Get(&house, sizeof(house)) != sizeof(house)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -539,11 +539,11 @@ bool Load_Game(int id) {
   */
   unsigned long version;
   if (fstraw.Get(&version, sizeof(version)) != sizeof(version)) {
-    return (false);
+    return false;
   }
   GameVersion = version;
-  if (version != SAVEGAME_VERSION && ((version - 1) != SAVEGAME_VERSION)) {
-    return (false);
+  if (version != SAVEGAME_VERSION && version - 1 != SAVEGAME_VERSION) {
+    return false;
   }
   /*
   **	Get the message digest that is embedded in the file.
@@ -579,7 +579,7 @@ bool Load_Game(int id) {
   **	before any damage could be done.
   */
   if (memcmp(actual, digest, sizeof(digest)) != 0) {
-    return (false);
+    return false;
   }
 
   /*
@@ -870,7 +870,7 @@ bool Load_Game(int id) {
 
   if (load_net) {
     if (!Reconcile_Players()) {  // (must do after Decode pointers)
-      return (false);
+      return false;
     }
     //!!!!!!!!!! put Fixup_Player_Units() here
     Session.LoadGame = true;
@@ -964,7 +964,7 @@ bool Load_Game(int id) {
   } else {
     Theme.Queue_Song(Scen.TransitTheme);
   }
-  return (true);
+  return true;
 }
 
 /***************************************************************************
@@ -1025,7 +1025,7 @@ bool Save_Misc_Values(Pipe& file) {
   file.Put(&IsTanyaDead, sizeof(IsTanyaDead));
   file.Put(&SaveTanya, sizeof(SaveTanya));
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1081,7 +1081,7 @@ bool Load_Misc_Values(Straw& file) {
   file.Get(&IsTanyaDead, sizeof(IsTanyaDead));
   file.Get(&SaveTanya, sizeof(SaveTanya));
 
-  return (true);
+  return true;
 }
 
 /***************************************************************************
@@ -1120,7 +1120,7 @@ bool Save_MPlayer_Values(Pipe& file) {
   file.Put(&Special, sizeof(SpecialClass));
   file.Put(&Options, sizeof(GameOptionsClass));
 
-  return (true);
+  return true;
 }
 
 /***************************************************************************
@@ -1150,7 +1150,7 @@ bool Load_MPlayer_Values(Straw& file) {
   file.Get(&Special, sizeof(SpecialClass));
   file.Get(&Options, sizeof(GameOptionsClass));
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1358,30 +1358,30 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
   **	Read in the description, scenario #, and the house
   */
   if (straw.Get(descr_buf, DESCRIP_MAX) != DESCRIP_MAX) {
-    return (false);
+    return false;
   }
 
   descr_buf[strlen(descr_buf) - 2] = '\0';  // trim off CR/LF
   port::SafeCopy(buf, descr_buf, buf_size);
 
   if (straw.Get(scenp, sizeof(unsigned)) != sizeof(unsigned)) {
-    return (false);
+    return false;
   }
 
   if (straw.Get(housep, sizeof(HousesType)) != sizeof(HousesType)) {
-    return (false);
+    return false;
   }
 
   /*
   **	Read & verify the save-game version #
   */
   if (straw.Get(&version, sizeof(version)) != sizeof(version)) {
-    return (false);
+    return false;
   }
-  if (version != SAVEGAME_VERSION && ((version - 1 != SAVEGAME_VERSION))) {
-    return (false);
+  if (version != SAVEGAME_VERSION && version - 1 != SAVEGAME_VERSION) {
+    return false;
   }
-  return (true);
+  return true;
 }
 
 /***************************************************************************
@@ -1435,7 +1435,7 @@ static int Reconcile_Players() {
   /*
   **	If there are no players, there's nothing to do.
   */
-  if (Session.Players.Count() == 0) return (true);
+  if (Session.Players.Count() == 0) return true;
 
   /*
   **	Make sure every name we're connected to can be found in a House
@@ -1454,7 +1454,7 @@ static int Reconcile_Players() {
         break;
       }
     }
-    if (!found) return (false);
+    if (!found) return false;
   }
 
   //
@@ -1510,9 +1510,9 @@ static int Reconcile_Players() {
   // from the saved game, minus any players we removed.
   //
   if (Session.NumPlayers == Session.Players.Count()) {
-    return (true);
+    return true;
   } else {
-    return (false);
+    return false;
   }
 }
 

@@ -213,7 +213,7 @@ ResultType TerrainClass::Take_Damage(int& damage, int distance,
       }
     }
   }
-  return (res);
+  return res;
 }
 
 /***********************************************************************************************
@@ -233,7 +233,7 @@ ResultType TerrainClass::Take_Damage(int& damage, int distance,
  *=============================================================================================*/
 TARGET TerrainClass::As_Target() const {
   Validate();
-  return (Build_Target(KIND_TERRAIN, Terrains.ID(this)));
+  return Build_Target(KIND_TERRAIN, Terrains.ID(this));
 }
 
 /***********************************************************************************************
@@ -255,7 +255,7 @@ void* TerrainClass::operator new(size_t) throw() {
   if (ptr) {
     ((TerrainClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -348,9 +348,9 @@ bool TerrainClass::Mark(MarkType mark) {
         Map.Refresh_Cells(cell, occupy);
         break;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -426,7 +426,7 @@ void TerrainClass::Init() {
   Terrains.Free_All();
 
   ptr = new TerrainClass();
-  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -450,15 +450,15 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
   Validate();
   short const* offset;  // Pointer to cell offset list.
 
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return (MOVE_NO);
+  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
 
   offset = Occupy_List();
   while (*offset != REFRESH_EOL) {
     if (!Map[(CELL)(cell + *offset++)].Is_Generally_Clear()) {
-      return (MOVE_NO);
+      return MOVE_NO;
     }
   }
-  return (MOVE_OK);
+  return MOVE_OK;
 }
 
 /***********************************************************************************************
@@ -490,9 +490,9 @@ bool TerrainClass::Catch_Fire() {
       anim->Attach_To(this);
     }
     IsOnFire = true;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -645,10 +645,10 @@ void TerrainClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
   Validate();
-  if (Class->Theater & (1 << Map.Theater)) {
-    return (ObjectClass::Unlimbo(coord, dir));
+  if (Class->Theater & 1 << Map.Theater) {
+    return ObjectClass::Unlimbo(coord, dir);
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -695,7 +695,7 @@ bool TerrainClass::Limbo() {
     CELL cell = Coord_Cell(Coord);
     Map[cell].Flag.Occupy.Monolith = false;
   }
-  return (ObjectClass::Limbo());
+  return ObjectClass::Limbo();
 }
 
 /***********************************************************************************************
@@ -714,7 +714,7 @@ bool TerrainClass::Limbo() {
  *=============================================================================================*/
 COORDINATE TerrainClass::Center_Coord() const {
   Validate();
-  return (Coord_Add(Coord, Class->CenterBase));
+  return Coord_Add(Coord, Class->CenterBase);
 }
 
 /***********************************************************************************************
@@ -773,10 +773,10 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   int ydiff = Cell_Y(cell) - Cell_Y(basecell);
   int xdiff = Cell_X(cell) - Cell_X(basecell);
   if (xdiff < width && ydiff < height) {
-    int iconnum = (ydiff * width) + xdiff;
-    return (icon + (iconnum * 9));
+    int iconnum = ydiff * width + xdiff;
+    return icon + iconnum * 9;
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************

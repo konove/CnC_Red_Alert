@@ -149,7 +149,7 @@ void Special_Dialog(bool simple) {
   for (int index = 0; index < sizeof(_options) / sizeof(_options[0]); index++) {
     _options[index].Button =
         new CheckBoxClass(100 + index, OPTION_X + 17 * RESFACTOR,
-                          OPTION_Y + 20 * RESFACTOR + (index * 10 * RESFACTOR));
+                          OPTION_Y + 20 * RESFACTOR + index * 10 * RESFACTOR);
     if (_options[index].Button) {
       _options[index].Button->Add(*buttons);
 
@@ -362,7 +362,7 @@ char const* Fetch_Password(int caption, int message, int btext) {
   **	Build the button list.
   */
   bheight = FontHeight + FontYSpacing + 2 * RESFACTOR;
-  bwidth = std::max((String_Pixel_Width(Text_String(btext)) + 8 * RESFACTOR),
+  bwidth = std::max(String_Pixel_Width(Text_String(btext)) + 8 * RESFACTOR,
                     30u * RESFACTOR);
 
   /*
@@ -395,7 +395,7 @@ char const* Fetch_Password(int caption, int message, int btext) {
   int editwidth = (SeenBuff.Get_Width() / 2 - editx) * 2;
   PWEditClass button2(2, &pbuffer[0], sizeof(pbuffer),
                       TPF_6PT_GRAD | TPF_NOSHADOW, editx,
-                      (y + height) - 35 * RESFACTOR, editwidth, 10 * RESFACTOR);
+                      y + height - 35 * RESFACTOR, editwidth, 10 * RESFACTOR);
 
   TextButtonClass* buttonlist = nullptr;
 
@@ -460,16 +460,16 @@ char const* Fetch_Password(int caption, int message, int btext) {
       first = false;
     }
     switch (input) {
-      case (1 | BUTTON_FLAG):
+      case 1 | BUTTON_FLAG:
         process = false;
         break;
 
-      case (KN_ESC):
-      case (2 | BUTTON_FLAG):
+      case KN_ESC:
+      case 2 | BUTTON_FLAG:
         process = false;
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
         process = false;
         break;
 
@@ -478,7 +478,7 @@ char const* Fetch_Password(int caption, int message, int btext) {
     }
   }
 
-  return (pbuffer);
+  return pbuffer;
 }
 
 /***********************************************************************************************
@@ -499,8 +499,8 @@ char const* Fetch_Password(int caption, int message, int btext) {
 int Fetch_Difficulty(bool amath) {
   int const w = 250 * RESFACTOR;
   int const h = 80 * RESFACTOR;
-  int const x = ((320 * RESFACTOR) / 2) - w / 2;
-  int const y = ((200 * RESFACTOR) / 2) - h / 2;
+  int const x = 320 * RESFACTOR / 2 - w / 2;
+  int const y = 200 * RESFACTOR / 2 - h / 2;
   int const bwidth = 30 * RESFACTOR;
 
   /*
@@ -528,8 +528,8 @@ int Fetch_Difficulty(bool amath) {
   **	Create the OK button.
   */
   TextButtonClass okbutton(1, TXT_OK, TPF_BUTTON,
-                           (x + w) - (bwidth + 20 * RESFACTOR),
-                           (y + h) - (18 * RESFACTOR), bwidth);
+                           x + w - (bwidth + 20 * RESFACTOR),
+                           y + h - 18 * RESFACTOR, bwidth);
   GadgetClass* buttonlist = &okbutton;
 
   /*
@@ -582,7 +582,7 @@ int Fetch_Difficulty(bool amath) {
       Fancy_Text_Print(TXT_EASY, slider.X, slider.Y - 9 * RESFACTOR,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_6PT_GRAD | TPF_DROPSHADOW);
-      Fancy_Text_Print(TXT_NORMAL, slider.X + (slider.Width / 2),
+      Fancy_Text_Print(TXT_NORMAL, slider.X + slider.Width / 2,
                        slider.Y - 9 * RESFACTOR,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
@@ -619,7 +619,7 @@ int Fetch_Difficulty(bool amath) {
 
     switch (input) {
       case KN_RETURN:
-      case (1 | BUTTON_FLAG):
+      case 1 | BUTTON_FLAG:
         process = false;
         break;
 
@@ -628,5 +628,5 @@ int Fetch_Difficulty(bool amath) {
     }
   }
 
-  return (slider.Get_Value() * (Rule.IsFineDifficulty ? 1 : 2));
+  return slider.Get_Value() * (Rule.IsFineDifficulty ? 1 : 2);
 }

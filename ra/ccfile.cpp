@@ -156,7 +156,7 @@ long CCFileClass::Write(void const* buffer, long size) {
     Error(EACCES, false, File_Name());
   }
 
-  return (CDFileClass::Write(buffer, size));
+  return CDFileClass::Write(buffer, size);
 }
 
 /***********************************************************************************************
@@ -206,7 +206,7 @@ long CCFileClass::Read(void* buffer, long size) {
       Position += size;
     }
     if (opened) Close();
-    return (size);
+    return size;
   }
 
   long s = CDFileClass::Read(buffer, size);
@@ -219,7 +219,7 @@ long CCFileClass::Read(void* buffer, long size) {
   /*
   **	Return with the number of bytes read.
   */
-  return (s);
+  return s;
 }
 
 /***********************************************************************************************
@@ -265,9 +265,9 @@ long CCFileClass::Seek(long pos, int dir) {
     Position = Position < 0 ? 0 : Position;
     Position = Position > Data.Get_Size() ? Data.Get_Size() : Position;
     //		Position = Bound(Position+pos, 0L, Length);
-    return (Position);
+    return Position;
   }
-  return (CDFileClass::Seek(pos, dir));
+  return CDFileClass::Seek(pos, dir);
 }
 
 /***********************************************************************************************
@@ -291,7 +291,7 @@ long CCFileClass::Size() {
   **	If the file is resident, the the size is already known. Just return the
   *size in this *	case.
   */
-  if (Is_Resident()) return (Data.Get_Size());
+  if (Is_Resident()) return Data.Get_Size();
 
   /*
   **	If the file is not available as a stand alone file, then search for it
@@ -304,7 +304,7 @@ long CCFileClass::Size() {
     return 0;
   }
 
-  return (CDFileClass::Size());
+  return CDFileClass::Size();
 }
 
 /***********************************************************************************************
@@ -326,20 +326,20 @@ int CCFileClass::Is_Available(int) {
   /*
   **	A file that is open is presumed available.
   */
-  if (Is_Open()) return (true);
+  if (Is_Open()) return true;
 
   /*
   **	A file that is part of a mixfile is also presumed available.
   */
   if (MFCD::Offset(File_Name()).has_value()) {
-    return (true);
+    return true;
   }
 
   /*
   **	Otherwise a manual check of the file system is required to
   **	determine if the file is actually available.
   */
-  return (CDFileClass::Is_Available());
+  return CDFileClass::Is_Available();
 }
 
 /***********************************************************************************************
@@ -361,12 +361,12 @@ int CCFileClass::Is_Open() const {
   **	If the file is part of a cached file, then return that it is opened. A
   *closed file *	doesn't have a valid pointer.
   */
-  if (Is_Resident()) return (true);
+  if (Is_Resident()) return true;
 
   /*
   **	Otherwise, go to a lower level to determine if the file is open.
   */
-  return (CDFileClass::Is_Open());
+  return CDFileClass::Is_Open();
 }
 
 /***********************************************************************************************
@@ -416,8 +416,8 @@ int CCFileClass::Open(int rights) {
   **	of whether it also exists in RAM. This is slower, but allows
   **	upgrade files to work.
   */
-  if ((rights & WRITE) || CDFileClass::Is_Available()) {
-    return (CDFileClass::Open(rights));
+  if (rights & WRITE || CDFileClass::Is_Available()) {
+    return CDFileClass::Open(rights);
   }
 
   /*
@@ -430,7 +430,7 @@ int CCFileClass::Open(int rights) {
     **	The file cannot be found in any mixfile, so it must reside as
     ** an individual file on the disk. Or else it is just plain missing.
     */
-    return (CDFileClass::Open(rights));
+    return CDFileClass::Open(rights);
   }
 
   /*
@@ -457,7 +457,7 @@ int CCFileClass::Open(int rights) {
     Position = 0;
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -529,12 +529,12 @@ int __cdecl Open_File(char const* file_name, int mode) {
   for (int index = 0; index < ARRAY_SIZE(Handles); index++) {
     if (!Handles[index].Is_Open()) {
       if (Handles[index].Open(file_name, mode)) {
-        return (index);
+        return index;
       }
       break;
     }
   }
-  return (WWERROR);
+  return WWERROR;
 }
 
 void __cdecl Close_File(int handle) {
@@ -545,21 +545,21 @@ void __cdecl Close_File(int handle) {
 
 long __cdecl Read_File(int handle, void* buf, unsigned long bytes) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return (Handles[handle].Read(buf, bytes));
+    return Handles[handle].Read(buf, bytes);
   }
-  return (0);
+  return 0;
 }
 
 long __cdecl Write_File(int handle, void const* buf, unsigned long bytes) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return (Handles[handle].Write(buf, bytes));
+    return Handles[handle].Write(buf, bytes);
   }
-  return (0);
+  return 0;
 }
 
 int __cdecl Find_File(char const* file_name) {
   CCFileClass file(file_name);
-  return (file.Is_Available());
+  return file.Is_Available();
 }
 
 #ifdef NEVER
@@ -580,14 +580,14 @@ unsigned long __cdecl Load_Data(char const* name, void* ptr,
 void* __cdecl Load_Alloc_Data(char const* name, int) {
   CCFileClass file(name);
 
-  return (Load_Alloc_Data(file));
+  return Load_Alloc_Data(file);
 }
 
 unsigned long __cdecl File_Size(int handle) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return (Handles[handle].Size());
+    return Handles[handle].Size();
   }
-  return (0);
+  return 0;
 }
 
 #ifdef NEVER
@@ -599,9 +599,9 @@ unsigned long __cdecl Write_Data(char const* name, void const* ptr,
 
 unsigned long __cdecl Seek_File(int handle, long offset, int starting) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
-    return (Handles[handle].Seek(offset, starting));
+    return Handles[handle].Seek(offset, starting);
   }
-  return (0);
+  return 0;
 }
 
 #ifdef NEVER

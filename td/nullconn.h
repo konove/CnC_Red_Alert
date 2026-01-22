@@ -96,8 +96,7 @@ class NullModemConnClass : public NonSequencedConnClass {
   Utility routines.
   .....................................................................*/
   unsigned long Actual_Max_Packet() {
-    return (MaxPacketLen + (sizeof(SerialHeaderType)) + sizeof(int) +
-            sizeof(char));
+    return MaxPacketLen + sizeof(SerialHeaderType) + sizeof(int) + sizeof(char);
   }
 
   /*.....................................................................

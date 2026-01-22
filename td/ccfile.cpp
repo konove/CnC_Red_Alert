@@ -186,7 +186,7 @@ long CCFileClass::Write(void const* buffer, long size) {
     Error(EACCES, false, File_Name());
   }
 
-  return (CDFileClass::Write(buffer, size));
+  return CDFileClass::Write(buffer, size);
 }
 
 /***********************************************************************************************
@@ -230,7 +230,7 @@ long CCFileClass::Read(void* buffer, long size) {
       Position += size;
     }
     if (opened) Close();
-    return (size);
+    return size;
   }
 
   /*
@@ -247,12 +247,12 @@ long CCFileClass::Read(void* buffer, long size) {
       Position += size;
     }
     if (opened) Close();
-    return (size);
+    return size;
   }
 
   long s = CDFileClass::Read(buffer, size);
   if (opened) Close();
-  return (s);
+  return s;
 }
 
 /***********************************************************************************************
@@ -293,9 +293,9 @@ long CCFileClass::Seek(long pos, int dir) {
     Position += pos;
     if (Position < 0) Position = 0;
     if (Position > Length) Position = Length;
-    return (Position);
+    return Position;
   }
-  return (CDFileClass::Seek(pos, dir));
+  return CDFileClass::Seek(pos, dir);
 }
 
 /***********************************************************************************************
@@ -314,9 +314,9 @@ long CCFileClass::Seek(long pos, int dir) {
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
 long CCFileClass::Size() {
-  if (Pointer || FromDisk) return (Length);
+  if (Pointer || FromDisk) return Length;
 
-  return (CDFileClass::Size());
+  return CDFileClass::Size();
 }
 
 /***********************************************************************************************
@@ -336,9 +336,9 @@ long CCFileClass::Size() {
  *=============================================================================================*/
 int CCFileClass::Is_Available(int) {
   if (MixFileClass::Offset(File_Name())) {
-    return (true);
+    return true;
   }
-  return (CDFileClass::Is_Available());
+  return CDFileClass::Is_Available();
 }
 
 /***********************************************************************************************
@@ -360,8 +360,8 @@ int CCFileClass::Is_Open() const {
   **	If the file is part of a cached file, then return that it is opened. A
   *closed file *	doesn't have a valid pointer.
   */
-  if (Pointer) return (true);
-  return (CDFileClass::Is_Open());
+  if (Pointer) return true;
+  return CDFileClass::Is_Open();
 }
 
 /***********************************************************************************************
@@ -414,8 +414,8 @@ int CCFileClass::Open(int rights) {
   **	of whether it also exists in RAM. This is slower, but allows
   **	upgrade files to work.
   */
-  if ((rights & WRITE) || CDFileClass::Is_Available()) {
-    return (CDFileClass::Open(rights));
+  if (rights & WRITE || CDFileClass::Is_Available()) {
+    return CDFileClass::Open(rights);
   }
 
   /*
@@ -453,9 +453,9 @@ int CCFileClass::Open(int rights) {
     **	The file cannot be found in any mixfile, so it must reside as
     ** an individual file on the disk. Or else it is just plain missing.
     */
-    return (CDFileClass::Open(rights));
+    return CDFileClass::Open(rights);
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************
@@ -478,12 +478,12 @@ int __cdecl Open_File(char const* file_name, int mode) {
       Handles[index].Set_Name(file_name);
       if (Handles[index].Open(mode)) {
         //			if (Handles[index].Open(file_name, mode)) {
-        return (index);
+        return index;
       }
       break;
     }
   }
-  return (kInvalidHandle);
+  return kInvalidHandle;
 }
 
 void __cdecl Close_File(int handle) {
@@ -494,21 +494,21 @@ void __cdecl Close_File(int handle) {
 
 long __cdecl Read_File(int handle, void* buf, unsigned long bytes) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return (Handles[handle].Read(buf, bytes));
+    return Handles[handle].Read(buf, bytes);
   }
-  return (0);
+  return 0;
 }
 
 long __cdecl Write_File(int handle, void const* buf, unsigned long bytes) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return (Handles[handle].Write(buf, bytes));
+    return Handles[handle].Write(buf, bytes);
   }
-  return (0);
+  return 0;
 }
 
 int __cdecl Find_File(char const* file_name) {
   CCFileClass file(file_name);
-  return (file.Is_Available());
+  return file.Is_Available();
 }
 
 #ifdef NEVER
@@ -528,14 +528,14 @@ ULONG __cdecl Load_Data(char const* name, VOID* ptr, ULONG size) {
 void* __cdecl Load_Alloc_Data(char const* name, int) {
   CCFileClass file(name);
 
-  return (Load_Alloc_Data(file));
+  return Load_Alloc_Data(file);
 }
 
 unsigned long __cdecl File_Size(int handle) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return (Handles[handle].Size());
+    return Handles[handle].Size();
   }
-  return (0);
+  return 0;
 }
 
 #ifdef NEVER
@@ -546,9 +546,9 @@ ULONG __cdecl Write_Data(char const* name, VOID const* ptr, ULONG size) {
 
 unsigned long __cdecl Seek_File(int handle, long offset, int starting) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
-    return (Handles[handle].Seek(offset, starting));
+    return Handles[handle].Seek(offset, starting);
   }
-  return (0);
+  return 0;
 }
 
 void WWDOS_Shutdown() {

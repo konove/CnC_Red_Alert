@@ -126,7 +126,7 @@ int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height) {
     *x = 0;
     ret = 1;
   } else if (*x + dw > width) {
-    *x -= (*x + dw) - width;
+    *x -= *x + dw - width;
 
     if (*x < 0) *x = 0;
 
@@ -137,7 +137,7 @@ int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height) {
     *y = 0;
     ret = 1;
   } else if (*y + dh > height) {
-    *y -= (*y + dh) - height;
+    *y -= *y + dh - height;
 
     if (*y < 0) *y = 0;
 
@@ -171,7 +171,7 @@ int IRandom(int minval, int maxval) {
   mask = Get_Random_Mask(maxval - minval);
 
   while ((num = (rand() & mask) + minval) > maxval);
-  return (num);
+  return num;
 }
 
 uint8_t Random() {
@@ -201,7 +201,7 @@ uint8_t Random() {
 static unsigned Divide_With_Round(unsigned num, unsigned den) {
   // return num/den + (0 ro 1).  1 if the remainder is more than half the
   // denominator.
-  return ((num / den) + static_cast<unsigned>((num % den) >= ((den + 1) >> 1)));
+  return num / den + static_cast<unsigned>(num % den >= (den + 1) >> 1);
 }
 
 #define HSV_BASE \
@@ -213,19 +213,19 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
   unsigned int m, r1, g1, b1, tmp;
 
   // Convert RGB base to HSV base.
-  r = Divide_With_Round((r * HSV_BASE), RGB_BASE);
-  g = Divide_With_Round((g * HSV_BASE), RGB_BASE);
-  b = Divide_With_Round((b * HSV_BASE), RGB_BASE);
+  r = Divide_With_Round(r * HSV_BASE, RGB_BASE);
+  g = Divide_With_Round(g * HSV_BASE, RGB_BASE);
+  b = Divide_With_Round(b * HSV_BASE, RGB_BASE);
 
   // Set hue to default.
   *h = 0;
 
   // Set v = Max(r,g,b) to find dominant primary color.
-  *v = (r > g) ? r : g;
+  *v = r > g ? r : g;
   if (b > *v) *v = b;
 
   // Set m = min(r,g,b) to find amount of white.
-  m = (r < g) ? r : g;
+  m = r < g ? r : g;
   if (b < m) m = b;
 
   // Determine the normalized saturation.
@@ -244,14 +244,14 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
 
     // Find effect of second most predominant color.
     // In which section of the hexagon of colors does the color lie?
-    if ((*v) == r) {
+    if (*v == r) {
       if (m == g) {
         *h = 5 * HSV_BASE + b1;
       } else {
         *h = 1 * HSV_BASE - g1;
       }
     } else {
-      if ((*v) == g) {
+      if (*v == g) {
         if (m == b) {
           *h = 1 * HSV_BASE + r1;
         } else {
@@ -304,12 +304,12 @@ void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
   // This should not be rounded.
   i = h / HSV_BASE;
 
-  i += (i > 4) ? -4 : 2;
+  i += i > 4 ? -4 : 2;
   *r = Divide_With_Round(values[i] * RGB_BASE, HSV_BASE);
 
-  i += (i > 4) ? -4 : 2;
+  i += i > 4 ? -4 : 2;
   *b = Divide_With_Round(values[i] * RGB_BASE, HSV_BASE);
 
-  i += (i > 4) ? -4 : 2;
+  i += i > 4 ? -4 : 2;
   *g = Divide_With_Round(values[i] * RGB_BASE, HSV_BASE);
 }

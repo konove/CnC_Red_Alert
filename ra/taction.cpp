@@ -221,8 +221,7 @@ void ActionChoiceClass::Draw_It(int, int x, int y, int width, int height,
                             _tabs);
   } else {
     Conquer_Clip_Text_Print(Description(), x, y,
-                            (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                      : &ColorRemaps[PCOLOR_GREY]),
+                            selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
                             TBLACK, flags, width, _tabs);
   }
 }
@@ -560,7 +559,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_ADD_TIMER:
       Scen.MissionTimer =
-          Scen.MissionTimer + (Data.Value * (TICKS_PER_MINUTE / 10));
+          Scen.MissionTimer + Data.Value * (TICKS_PER_MINUTE / 10);
       Map.Redraw_Tab();
       break;
 
@@ -572,7 +571,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
         Scen.MissionTimer = 0;
       } else {
         Scen.MissionTimer =
-            Scen.MissionTimer - (Data.Value * (TICKS_PER_MINUTE / 10));
+            Scen.MissionTimer - Data.Value * (TICKS_PER_MINUTE / 10);
       }
       Map.Redraw_Tab();
       break;
@@ -830,7 +829,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     default:
       break;
   }
-  return (success);
+  return success;
 }
 
 /***********************************************************************************************
@@ -846,16 +845,16 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
  *=============================================================================================*/
 TActionType Action_From_Name(char const* name) {
   if (name == nullptr) {
-    return (TACTION_NONE);
+    return TACTION_NONE;
   }
 
   for (TActionType i = TACTION_NONE; i < TACTION_COUNT; i++) {
     if (!stricmp(name, ActionText[i])) {
-      return (i);
+      return i;
     }
   }
 
-  return (TACTION_NONE);
+  return TACTION_NONE;
 }
 
 /***********************************************************************************************
@@ -870,7 +869,7 @@ TActionType Action_From_Name(char const* name) {
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
 char const* Name_From_Action(TActionType action) {
-  return (ActionText[action]);
+  return ActionText[action];
 }
 
 /***********************************************************************************************
@@ -892,7 +891,7 @@ NeedType Action_Needs(TActionType action) {
   switch (action) {
     case TACTION_1_SPECIAL:
     case TACTION_FULL_SPECIAL:
-      return (NEED_SPECIAL);
+      return NEED_SPECIAL;
 
     case TACTION_FIRE_SALE:
     case TACTION_WIN:
@@ -900,38 +899,38 @@ NeedType Action_Needs(TActionType action) {
     case TACTION_ALL_HUNT:
     case TACTION_BEGIN_PRODUCTION:
     case TACTION_AUTOCREATE:
-      return (NEED_HOUSE);
+      return NEED_HOUSE;
 
     case TACTION_BASE_BUILDING:
-      return (NEED_BOOL);
+      return NEED_BOOL;
 
     case TACTION_CREATE_TEAM:
     case TACTION_DESTROY_TEAM:
     case TACTION_REINFORCEMENTS:
-      return (NEED_TEAM);
+      return NEED_TEAM;
 
     case TACTION_FORCE_TRIGGER:
     case TACTION_DESTROY_TRIGGER:
-      return (NEED_TRIGGER);
+      return NEED_TRIGGER;
 
     case TACTION_DZ:
-      return (NEED_WAYPOINT);
+      return NEED_WAYPOINT;
 
     case TACTION_REVEAL_SOME:
     case TACTION_REVEAL_ZONE:
-      return (NEED_WAYPOINT);
+      return NEED_WAYPOINT;
 
     case TACTION_PLAY_MUSIC:
-      return (NEED_THEME);
+      return NEED_THEME;
 
     case TACTION_PLAY_MOVIE:
-      return (NEED_MOVIE);
+      return NEED_MOVIE;
 
     case TACTION_PLAY_SOUND:
-      return (NEED_SOUND);
+      return NEED_SOUND;
 
     case TACTION_PLAY_SPEECH:
-      return (NEED_SPEECH);
+      return NEED_SPEECH;
 
     case TACTION_TEXT_TRIGGER:
     case TACTION_ADD_TIMER:
@@ -939,13 +938,13 @@ NeedType Action_Needs(TActionType action) {
     case TACTION_SET_TIMER:
     case TACTION_SET_GLOBAL:
     case TACTION_CLEAR_GLOBAL:
-      return (NEED_NUMBER);
+      return NEED_NUMBER;
 
     case TACTION_PREFERRED_TARGET:
-      return (NEED_QUARRY);
+      return NEED_QUARRY;
 
     default:
       break;
   }
-  return (NEED_NONE);
+  return NEED_NONE;
 }

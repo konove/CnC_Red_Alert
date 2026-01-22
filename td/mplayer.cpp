@@ -106,7 +106,7 @@ void Show_Internet_Connection_Progress();
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 GameType Select_MPlayer_Game() {
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   bool ipx_avail = false;
   int number_of_buttons;
   /*........................................................................
@@ -114,10 +114,10 @@ GameType Select_MPlayer_Game() {
   ........................................................................*/
   int d_dialog_w = 190 * factor;
   int d_dialog_h = 26 * 4 * factor;
-  int d_dialog_x = ((320 * factor - d_dialog_w) / 2);
+  int d_dialog_x = (320 * factor - d_dialog_w) / 2;
   //	d_dialog_y = ((200 - d_dialog_h) / 2),
-  int d_dialog_y = ((136 * factor - d_dialog_h) / 2);
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
+  int d_dialog_y = (136 * factor - d_dialog_h) / 2;
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;
 
   int d_txt6_h = 11 * factor;
   int d_margin = 7 * factor;
@@ -309,7 +309,7 @@ GameType Select_MPlayer_Game() {
     ............................ Process input ............................
     */
     switch (input) {
-      case (BUTTON_MODEMSERIAL | KN_BUTTON):
+      case BUTTON_MODEMSERIAL | KN_BUTTON:
         selection = BUTTON_MODEMSERIAL;
         pressed = true;
         break;
@@ -321,13 +321,13 @@ GameType Select_MPlayer_Game() {
         break;
 #endif  //(0)
 
-      case (BUTTON_IPX | KN_BUTTON):
+      case BUTTON_IPX | KN_BUTTON:
         selection = BUTTON_IPX;
         pressed = true;
         break;
 
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         selection = BUTTON_CANCEL;
         pressed = true;
         break;
@@ -336,7 +336,7 @@ GameType Select_MPlayer_Game() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton--;
-        if (curbutton < 0) curbutton = (number_of_buttons - 1);
+        if (curbutton < 0) curbutton = number_of_buttons - 1;
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
@@ -345,7 +345,7 @@ GameType Select_MPlayer_Game() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton++;
-        if (curbutton > (number_of_buttons - 1)) curbutton = 0;
+        if (curbutton > number_of_buttons - 1) curbutton = 0;
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
@@ -373,7 +373,7 @@ GameType Select_MPlayer_Game() {
       buttons[curbutton]->Draw_Me(true);
 
       switch (selection) {
-        case (BUTTON_MODEMSERIAL):
+        case BUTTON_MODEMSERIAL:
 
           //
           // Pop up the modem/serial/com port dialog
@@ -489,12 +489,12 @@ GameType Select_MPlayer_Game() {
 
 #endif  //(0)
 
-        case (BUTTON_IPX):
+        case BUTTON_IPX:
           retval = GAME_IPX;
           process = false;
           break;
 
-        case (BUTTON_CANCEL):
+        case BUTTON_CANCEL:
           retval = GAME_NORMAL;
           process = false;
           break;
@@ -503,7 +503,7 @@ GameType Select_MPlayer_Game() {
       pressed = false;
     }
   }
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -676,7 +676,7 @@ void Read_MultiPlayer_Settings() {
 
   // if no entries then have at least one
 
-  if (tbuffer == (buffer + len)) {
+  if (tbuffer == buffer + len) {
     entry = new char[INITSTRBUF_MAX];
     port::SafeCopy(entry, "ATZ", INITSTRBUF_MAX);
     InitStrings.Add(entry);
@@ -858,7 +858,7 @@ void Read_MultiPlayer_Settings() {
     WWGetPrivateProfileString("SyncBug", "Cell", "0", buf, 80, buffer);
     cell = atoi(buf);
     if (cell) {
-      TrapCell = &(Map[cell]);
+      TrapCell = &Map[cell];
     }
   }
 }
@@ -945,7 +945,7 @@ void Write_MultiPlayer_Settings() {
   Save all InitString entries.  In descending order so they come out in
   ascending order.
   ------------------------------------------------------------------------*/
-  for (i = (InitStrings.Count() - 1); i >= 0; i--) {
+  for (i = InitStrings.Count() - 1; i >= 0; i--) {
     sprintf(buf, "%03d", i);
     WWWritePrivateProfileString("InitStrings", buf, InitStrings[i], buffer);
   }
@@ -959,7 +959,7 @@ void Write_MultiPlayer_Settings() {
   Save all Phone Book entries.
   Format: Entry=Name,PhoneNum,Port,IRQ,Baud,InitString
   ------------------------------------------------------------------------*/
-  for (i = (PhoneBook.Count() - 1); i >= 0; i--) {
+  for (i = PhoneBook.Count() - 1; i >= 0; i--) {
     sprintf(buf, "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s", PhoneBook[i]->Name,
             PhoneBook[i]->Number, PhoneBook[i]->Settings.Port,
             PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
@@ -1113,7 +1113,7 @@ void Computer_Message() {
   /*------------------------------------------------------------------------
   Find the computer house that the message will be from
   ------------------------------------------------------------------------*/
-  for (house = HOUSE_MULTI1; house < (HOUSE_MULTI1 + MPlayerMax); house++) {
+  for (house = HOUSE_MULTI1; house < HOUSE_MULTI1 + MPlayerMax; house++) {
     ptr = HouseClass::As_Pointer(house);
 
     if (!ptr || ptr->IsHuman || ptr->IsDefeated) {
@@ -1193,7 +1193,7 @@ static void Garble_Message(char* buf) {
       p++;
       break;
     }
-    if (strlen(p) >= (sizeof(punct) - 1)) {
+    if (strlen(p) >= sizeof(punct) - 1) {
       break;
     }
   }
@@ -1255,15 +1255,15 @@ static void Garble_Message(char* buf) {
  *   07/05/1995 BRR : Created.                                             *
  *=========================================================================*/
 int Surrender_Dialog() {
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
   int d_dialog_w = 170 * factor;                       // dialog width
   int d_dialog_h = 53 * factor;                        // dialog height
-  int d_dialog_x = ((320 * factor - d_dialog_w) / 2);  // centered x-coord
-  int d_dialog_y = ((200 * factor - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // coord of x-center
+  int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // centered x-coord
+  int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // coord of x-center
 
   int d_margin = 5 * factor;      // margin width/height
   int d_topmargin = 20 * factor;  // top margin
@@ -1394,14 +1394,14 @@ int Surrender_Dialog() {
     ............................ Process input ............................
     */
     switch (input) {
-      case (KN_RETURN):
-      case (BUTTON_OK | KN_BUTTON):
+      case KN_RETURN:
+      case BUTTON_OK | KN_BUTTON:
         retcode = 1;
         process = false;
         break;
 
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         retcode = 0;
         process = false;
         break;
@@ -1418,5 +1418,5 @@ int Surrender_Dialog() {
   Map.Flag_To_Redraw(true);
   Map.Render();
 
-  return (retcode);
+  return retcode;
 }

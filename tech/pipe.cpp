@@ -121,9 +121,9 @@ void Pipe::Put_To(Pipe* pipe) {
  *=============================================================================================*/
 int Pipe::Put(void const* source, int length) {
   if (ChainTo != nullptr) {
-    return (ChainTo->Put(source, length));
+    return ChainTo->Put(source, length);
   }
-  return (length);
+  return length;
 }
 
 /***********************************************************************************************
@@ -145,7 +145,7 @@ int Pipe::Put(void const* source, int length) {
  *=============================================================================================*/
 int Pipe::Flush() {
   if (ChainTo != nullptr) {
-    return (ChainTo->Flush());
+    return ChainTo->Flush();
   }
-  return (0);
+  return 0;
 }

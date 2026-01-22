@@ -137,7 +137,7 @@ int Base64_Encode(void const* source, int slen, void* dest, int dlen) {
   **	Check the parameters for legality.
   */
   if (source == nullptr || slen == 0 || dest == nullptr || dlen == 0) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -202,7 +202,7 @@ int Base64_Encode(void const* source, int slen, void* dest, int dlen) {
   /*
   **	Return with the total number of characters in the output buffer.
   */
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************
@@ -237,7 +237,7 @@ int Base64_Decode(void const* source, int slen, void* dest, int dlen) {
   **	Check the parameters for legality.
   */
   if (source == nullptr || slen == 0 || dest == nullptr || dlen == 0) {
-    return (0);
+    return 0;
   }
 
   int total = 0;
@@ -315,7 +315,7 @@ int Base64_Decode(void const* source, int slen, void* dest, int dlen) {
   **	Return with the total number of characters decoded into the
   **	output buffer.
   */
-  return (total);
+  return total;
 }
 
 /*

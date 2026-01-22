@@ -91,13 +91,13 @@
  *=============================================================================================*/
 int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
                   int distance) {
-  if (!damage) return (damage);
+  if (!damage) return damage;
 
   /*
   **	If there is no raw damage value to start with, then
   **	there can be no modified damage either.
   */
-  if (Special.IsInert || !damage || warhead == WARHEAD_NONE) return (0);
+  if (Special.IsInert || !damage || warhead == WARHEAD_NONE) return 0;
 
   /*
   **	Negative damage (i.e., heal) is always applied full strength, but only
@@ -105,10 +105,10 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   */
   if (damage < 0) {
     if (distance < 0x008) {
-      if (warhead != WARHEAD_MECHANICAL && armor == ARMOR_NONE) return (damage);
-      if (warhead == WARHEAD_MECHANICAL && armor != ARMOR_NONE) return (damage);
+      if (warhead != WARHEAD_MECHANICAL && armor == ARMOR_NONE) return damage;
+      if (warhead == WARHEAD_MECHANICAL && armor != ARMOR_NONE) return damage;
     }
-    return (0);
+    return 0;
   }
 
   WarheadTypeClass const* whead = WarheadTypeClass::As_Pointer(warhead);
@@ -141,7 +141,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   }
 
   damage = std::min(damage, Rule.MaxDamage);
-  return (damage);
+  return damage;
 }
 
 /***********************************************************************************************
@@ -284,8 +284,8 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
       cellptr->TType == TEMPLATE_BRIDGE_2B ||
       cellptr->TType == TEMPLATE_BRIDGE_3A ||
       cellptr->TType == TEMPLATE_BRIDGE_3B) {
-    if (((warhead == WARHEAD_AP || warhead == WARHEAD_HE) &&
-         Random_Pick(1, Rule.BridgeStrength) < strength)) {
+    if ((warhead == WARHEAD_AP || warhead == WARHEAD_HE) &&
+        Random_Pick(1, Rule.BridgeStrength) < strength) {
       Map.Destroy_Bridge_At(cell);
     }
   }
@@ -318,7 +318,7 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
   **	animation effect at all.
   */
   if (damage == 0 || warhead == WARHEAD_NONE) {
-    return (ANIM_NONE);
+    return ANIM_NONE;
   }
 
   static AnimType _aplist[] = {
@@ -353,46 +353,46 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
   //	WarheadTypeClass const * wptr = &Warheads[warhead];
   switch (wptr->ExplosionSet) {
     case 6:
-      return (ANIM_ATOM_BLAST);
+      return ANIM_ATOM_BLAST;
 
     case 2:
       if (damage > 15) {
-        return (ANIM_PIFFPIFF);
+        return ANIM_PIFFPIFF;
       }
-      return (ANIM_PIFF);
+      return ANIM_PIFF;
 
     case 4:
-      if (land == LAND_NONE) return (ANIM_FLAK);
+      if (land == LAND_NONE) return ANIM_FLAK;
       //	Fixed math error
       if (land == LAND_WATER)
-        return (_waterlist[(ARRAY_SIZE(_waterlist) - 1) *
-                           fixed(std::min(damage, 90), 90)]);
-      return (
-          _aplist[(ARRAY_SIZE(_aplist) - 1) * fixed(std::min(damage, 90), 90)]);
+        return _waterlist[(ARRAY_SIZE(_waterlist) - 1) *
+                          fixed(std::min(damage, 90), 90)];
+      return _aplist[(ARRAY_SIZE(_aplist) - 1) *
+                     fixed(std::min(damage, 90), 90)];
 
     case 5:
-      if (land == LAND_NONE) return (ANIM_FLAK);
+      if (land == LAND_NONE) return ANIM_FLAK;
       if (land == LAND_WATER)
-        return (_waterlist[(ARRAY_SIZE(_waterlist) - 1) *
-                           fixed(std::min(damage, 130), 130)]);
-      return (_helist[(ARRAY_SIZE(_helist) - 1) *
-                      fixed(std::min(damage, 130), 130)]);
+        return _waterlist[(ARRAY_SIZE(_waterlist) - 1) *
+                          fixed(std::min(damage, 130), 130)];
+      return _helist[(ARRAY_SIZE(_helist) - 1) *
+                     fixed(std::min(damage, 130), 130)];
 
     case 3:
-      if (land == LAND_NONE) return (ANIM_FLAK);
+      if (land == LAND_NONE) return ANIM_FLAK;
       if (land == LAND_WATER)
-        return (_waterlist[(ARRAY_SIZE(_waterlist) - 1) *
-                           fixed(std::min(damage, 150), 150)]);
-      return (_firelist[(ARRAY_SIZE(_firelist) - 1) *
-                        fixed(std::min(damage, 150), 150)]);
+        return _waterlist[(ARRAY_SIZE(_waterlist) - 1) *
+                          fixed(std::min(damage, 150), 150)];
+      return _firelist[(ARRAY_SIZE(_firelist) - 1) *
+                       fixed(std::min(damage, 150), 150)];
 
     case 1:
-      return (ANIM_PIFF);
+      return ANIM_PIFF;
 
     default:
       break;
   }
-  return (ANIM_NONE);
+  return ANIM_NONE;
 }
 
 /***********************************************************************************************

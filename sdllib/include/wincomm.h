@@ -235,12 +235,12 @@ class WinModemClass {
 class WinNullModemClass : public WinModemClass {
  public:
   virtual void Set_Modem_Dial_Type(int) {}
-  unsigned Get_Modem_Status() override { return (0); }
+  unsigned Get_Modem_Status() override { return 0; }
   void Set_Serial_DTR(bool) override {}
-  virtual int Get_Modem_Result(int, char*, int) { return (0); }
+  virtual int Get_Modem_Result(int, char*, int) { return 0; }
   virtual void Dial_Modem(char*) {}
   virtual int Send_Command_To_Modem(char*, char, char*, int, int, int) {
-    return (0);
+    return 0;
   }
   void Set_Echo_Function(void (*)(char)) override {}
   void Set_Abort_Function(int (*)()) override {}

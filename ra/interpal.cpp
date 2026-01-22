@@ -190,14 +190,14 @@ void Create_Palette_Interpolation_Table() {
       closest_distance = 500000;
       match_pal_ptr = (unsigned char*)InterpolationPalette;
       for (p = 0; p < SIZE_OF_PALETTE; p++) {
-        diff_r = (((int)(*match_pal_ptr)) - dest_r);
+        diff_r = (int)*match_pal_ptr - dest_r;
         match_pal_ptr++;
-        diff_g = (((int)(*match_pal_ptr)) - dest_g);
+        diff_g = (int)*match_pal_ptr - dest_g;
         match_pal_ptr++;
-        diff_b = (((int)(*match_pal_ptr)) - dest_b);
+        diff_b = (int)*match_pal_ptr - dest_b;
         match_pal_ptr++;
 
-        distance = (diff_r * diff_r) + (diff_g * diff_g) + (diff_b * diff_b);
+        distance = diff_r * diff_r + diff_g * diff_g + diff_b * diff_b;
         if (distance < closest_distance) {
           closest_distance = distance;
           index_of_closest_color = p;

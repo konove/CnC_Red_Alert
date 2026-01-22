@@ -255,7 +255,7 @@ int Read_Game_Options(char* name) {
   CCFileClass file(filename);
 
   if (name && !file.Is_Available()) {
-    return (0);
+    return 0;
   } else {
     if (name) {
       buffer = new char[8192];  // INI staging buffer pointer.
@@ -323,7 +323,7 @@ int Read_Game_Options(char* name) {
       WWGetPrivateProfileInt("Timing", "SendRate", 3, buffer);
 
   if (name) delete[] buffer;
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -672,16 +672,16 @@ bool Spawn_Registration_App() {
 bool Do_The_Internet_Menu_Thang() {
 #ifndef DEMO
 
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*
   ** Dialog & button dimensions
   */
   int d_dialog_w = 120 * factor;                       // dialog width
   int d_dialog_h = 80 * factor;                        // dialog height
-  int d_dialog_x = ((320 * factor - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((200 * factor - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
+  int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
 
 #if (GERMAN | FRENCH)
   int d_cancel_w = 50 * factor;
@@ -755,7 +755,7 @@ bool Do_The_Internet_Menu_Thang() {
         Set_Palette(Palette);
         CCMessageBox().Process(TXT_ERROR_UNABLE_TO_RUN_WCHAT, TXT_OK);
         LogicPage->Clear();
-        return (false);
+        return false;
       }
     } else {
       Set_Logic_Page(SeenBuff);
@@ -764,11 +764,11 @@ bool Do_The_Internet_Menu_Thang() {
       if (CCMessageBox().Process(TXT_EXPLAIN_REGISTRATION, TXT_REGISTER,
                                  TXT_CANCEL)) {
         LogicPage->Clear();
-        return (false);
+        return false;
       } else {
         LogicPage->Clear();
         Spawn_Registration_App();
-        return (false);
+        return false;
       }
     }
   }
@@ -850,8 +850,8 @@ bool Do_The_Internet_Menu_Thang() {
       /*
       ** Cancel. Just return to the main menu
       */
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         process = false;
 #ifdef _WIN32
         Send_Data_To_DDE_Server(packet, strlen(packet),
@@ -865,5 +865,5 @@ bool Do_The_Internet_Menu_Thang() {
 
 #endif  // DEMO
 
-  return (false);
+  return false;
 }

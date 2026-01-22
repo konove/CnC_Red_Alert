@@ -68,9 +68,9 @@ class IPXInterfaceClass : public WinsockInterfaceClass {
 #endif
   bool Open_Socket(SOCKET socketnum) override;
 
-  ProtocolEnum Get_Protocol() override { return (PROTOCOL_IPX); }
+  ProtocolEnum Get_Protocol() override { return PROTOCOL_IPX; }
 
-  int Protocol_Event_Message() override { return (WM_IPXASYNCEVENT); }
+  int Protocol_Event_Message() override { return WM_IPXASYNCEVENT; }
 
  private:
   /*

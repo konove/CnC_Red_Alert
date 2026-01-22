@@ -28,12 +28,12 @@ unsigned long Power_Mod(unsigned long root, unsigned long exponent,
 
   while (u) {
     if (u & 1) {
-      s = (s * t) % mod;
+      s = s * t % mod;
     }
     u >>= 1;
-    t = (t * t) % mod;
+    t = t * t % mod;
   }
-  return (s);
+  return s;
 }
 
 /*
@@ -48,7 +48,7 @@ int Greatest_Common_Divisor(int x, int y) {
     y = -y;
   }
   if (x + y == 0) {
-    return (0);  // This is an error condition.
+    return 0;  // This is an error condition.
   }
 
   int greatest = y;
@@ -57,7 +57,7 @@ int Greatest_Common_Divisor(int x, int y) {
     x = y % x;
     y = greatest;
   }
-  return (g);
+  return g;
 }
 
 /*
@@ -66,15 +66,15 @@ int Greatest_Common_Divisor(int x, int y) {
 */
 int Grestest_Common_Divisor(int count, int* data) {
   if (count < 1) {
-    return (0);
+    return 0;
   }
 
   greatest = data[0];
   for (int i = 1; i < count; i++) {
     greatest = Greatest_Common_Divisor(greatest, data[i]);
     if (greatest == 1) {
-      return (1);
+      return 1;
     }
   }
-  return (greatest);
+  return greatest;
 }

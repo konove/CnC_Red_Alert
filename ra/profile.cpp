@@ -102,7 +102,7 @@ bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config) {
   // "Speed", 0,profile); 	WWGetPrivateProfileString("Language",
   // "Language", NULL, config->Language, 3, profile);
 
-  return ((config->DigitCard == 0) && (config->IRQ == 0) && (config->DMA == 0));
+  return config->DigitCard == 0 && config->IRQ == 0 && config->DMA == 0;
 }
 
 /***************************************************************************
@@ -131,7 +131,7 @@ unsigned WWGetPrivateProfileHex(char const* section, char const* entry,
     card = 0;
   }
 
-  return (card);
+  return card;
 }
 
 /***********************************************************************************************
@@ -169,7 +169,7 @@ int WWGetPrivateProfileInt(char const* section, char const* entry, int def,
   /*
   **	Convert to int & return.
   */
-  return (atoi(buffer));
+  return atoi(buffer);
 }
 
 /***********************************************************************************************
@@ -198,7 +198,7 @@ bool WWWritePrivateProfileInt(char const* section, char const* entry, int value,
   **	Just return if nothing to do.
   */
   if (!profile || !section) {
-    return (true);
+    return true;
   }
 
   /*
@@ -209,7 +209,7 @@ bool WWWritePrivateProfileInt(char const* section, char const* entry, int value,
   /*
   **	Save the string.
   */
-  return (WWWritePrivateProfileString(section, entry, buffer, profile));
+  return WWWritePrivateProfileString(section, entry, buffer, profile);
 }
 
 /***********************************************************************************************
@@ -269,7 +269,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
   **	Make sure a profile string was passed in
   */
   if (!profile || !section) {
-    return (retbuffer);
+    return retbuffer;
   }
 
   /*
@@ -295,7 +295,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
     **	then abort with a failure flag.
     */
     if (!workptr) {
-      return (nullptr);
+      return nullptr;
     }
 
     /*
@@ -311,7 +311,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
     **	If this is the section name & the character before is a newline,
     **	process this section
     */
-    if (memicmp(workptr, sec, len) == 0 && (c == '\n')) {
+    if (memicmp(workptr, sec, len) == 0 && c == '\n') {
       /*
       **	Skip work pointer to start of first valid entry.
       */
@@ -381,7 +381,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
           **	into the next section, then abort
           */
           if (!workptr || workptr >= next) {
-            return (nullptr);
+            return nullptr;
           }
 
           /*
@@ -394,7 +394,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
           /*
           **	Entry found; extract it
           */
-          if (memicmp(workptr, entry, entrylen) == 0 && (c == '\n') &&
+          if (memicmp(workptr, entry, entrylen) == 0 && c == '\n' &&
               (c2 == '=' || isspace(c2))) {
             retval = workptr;
             workptr += entrylen;             // skip entry name
@@ -413,7 +413,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
             **	the next '='
             */
             if (workptr == nullptr || altworkptr < workptr) {
-              return ((char*)retval);
+              return (char*)retval;
             }
 
             /*
@@ -425,7 +425,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
               /*
               **	Just return if there's no entry past the '='.
               */
-              if (workptr >= altworkptr) return ((char*)retval);
+              if (workptr >= altworkptr) return (char*)retval;
 
               workptr++;  // Skip the whitespace
             }
@@ -443,7 +443,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
               *(retbuffer + len) = '\0';  // Insert trailing null.
               strtrim(retbuffer);
             }
-            return ((char*)retval);
+            return (char*)retval;
           }
 
           /*
@@ -519,7 +519,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
     }
   }
 
-  return ((char*)retval);
+  return (char*)retval;
 }
 
 /***********************************************************************************************
@@ -547,7 +547,7 @@ bool WWWritePrivateProfileString(char const* section, char const* entry,
   **	Just return if nothing to do.
   */
   if (!profile || !section) {
-    return (true);
+    return true;
   }
 
   /*
@@ -614,7 +614,7 @@ bool WWWritePrivateProfileString(char const* section, char const* entry,
     // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
     strcpy(offset, next);
 
-    return (true);
+    return true;
   }
 
   /*
@@ -676,24 +676,24 @@ bool WWWritePrivateProfileString(char const* section, char const* entry,
     std::copy(buffer, buffer + strlen(buffer), offset);
   }
 
-  return (true);
+  return true;
 }
 
-char* Read_Bin_Buffer() { return (ReadBinBuffer); }
+char* Read_Bin_Buffer() { return ReadBinBuffer; }
 
 bool Read_Bin_Init(char* buffer, int length) {
   ReadBinBuffer = buffer;
   ReadBinBufferLen = length;
   ReadBinBufferPos = 0;
   ReadBinBufferMax = 0;
-  return (true);
+  return true;
 }
 
 int Read_Bin_Length(char* buffer) {
   if (buffer != ReadBinBuffer) {
-    return (-1);
+    return -1;
   } else {
-    return (ReadBinBufferMax);
+    return ReadBinBufferMax;
   }
 }
 
@@ -701,8 +701,8 @@ bool Read_Bin_Num(void* num, int length, char* buffer) {
   char* ptr;
 
   if (buffer != ReadBinBuffer || length <= 0 || length > 4 ||
-      (ReadBinBufferPos + length) >= ReadBinBufferLen) {
-    return (false);
+      ReadBinBufferPos + length >= ReadBinBufferLen) {
+    return false;
   } else {
     ptr = ReadBinBuffer + ReadBinBufferPos;
     memcpy(num, ptr, length);
@@ -712,24 +712,24 @@ bool Read_Bin_Num(void* num, int length, char* buffer) {
       ReadBinBufferMax = ReadBinBufferPos;
     }
 
-    return (true);
+    return true;
   }
 }
 
 int Read_Bin_Pos(char* buffer) {
   if (buffer != ReadBinBuffer) {
-    return (-1);
+    return -1;
   } else {
-    return (ReadBinBufferPos);
+    return ReadBinBufferPos;
   }
 }
 
 int Read_Bin_PosSet(unsigned int pos, char* buffer) {
   if (buffer != ReadBinBuffer) {
-    return (-1);
+    return -1;
   } else {
     ReadBinBufferPos = pos;
-    return (ReadBinBufferPos);
+    return ReadBinBufferPos;
   }
 }
 
@@ -738,40 +738,40 @@ bool Read_Bin_String(char* string, char* buffer) {
   unsigned char length;
 
   if (buffer != ReadBinBuffer || ReadBinBufferPos >= ReadBinBufferLen) {
-    return (false);
+    return false;
   } else {
     ptr = ReadBinBuffer + ReadBinBufferPos;
     length = (unsigned char)*ptr++;
-    if ((ReadBinBufferPos + length + 2) <= ReadBinBufferLen) {
+    if (ReadBinBufferPos + length + 2 <= ReadBinBufferLen) {
       memcpy(string, ptr, (unsigned int)(length + 1));
-      ReadBinBufferPos += (length + 2);
+      ReadBinBufferPos += length + 2;
 
       if (ReadBinBufferPos > ReadBinBufferMax) {
         ReadBinBufferMax = ReadBinBufferPos;
       }
 
-      return (true);
+      return true;
     } else {
-      return (false);
+      return false;
     }
   }
 }
 
-char* Write_Bin_Buffer() { return (WriteBinBuffer); }
+char* Write_Bin_Buffer() { return WriteBinBuffer; }
 
 bool Write_Bin_Init(char* buffer, int length) {
   WriteBinBuffer = buffer;
   WriteBinBufferLen = length;
   WriteBinBufferPos = 0;
   WriteBinBufferMax = 0;
-  return (true);
+  return true;
 }
 
 int Write_Bin_Length(char* buffer) {
   if (buffer != WriteBinBuffer) {
-    return (-1);
+    return -1;
   } else {
-    return (WriteBinBufferMax);
+    return WriteBinBufferMax;
   }
 }
 
@@ -779,8 +779,8 @@ bool Write_Bin_Num(void* num, int length, char* buffer) {
   char* ptr;
 
   if (buffer != WriteBinBuffer || length <= 0 || length > 4 ||
-      (WriteBinBufferPos + length) > WriteBinBufferLen) {
-    return (false);
+      WriteBinBufferPos + length > WriteBinBufferLen) {
+    return false;
   } else {
     ptr = WriteBinBuffer + WriteBinBufferPos;
     memcpy(ptr, num, length);
@@ -790,24 +790,24 @@ bool Write_Bin_Num(void* num, int length, char* buffer) {
       WriteBinBufferMax = WriteBinBufferPos;
     }
 
-    return (true);
+    return true;
   }
 }
 
 int Write_Bin_Pos(char* buffer) {
   if (buffer != WriteBinBuffer) {
-    return (-1);
+    return -1;
   } else {
-    return (WriteBinBufferPos);
+    return WriteBinBufferPos;
   }
 }
 
 int Write_Bin_PosSet(unsigned int pos, char* buffer) {
   if (buffer != WriteBinBuffer) {
-    return (-1);
+    return -1;
   } else {
     WriteBinBufferPos = pos;
-    return (WriteBinBufferPos);
+    return WriteBinBufferPos;
   }
 }
 
@@ -815,18 +815,18 @@ bool Write_Bin_String(char* string, int length, char* buffer) {
   char* ptr;
 
   if (buffer != WriteBinBuffer || length < 0 || length > 255 ||
-      (WriteBinBufferPos + length + 2) > WriteBinBufferLen) {
-    return (false);
+      WriteBinBufferPos + length + 2 > WriteBinBufferLen) {
+    return false;
   } else {
     ptr = WriteBinBuffer + WriteBinBufferPos;
     *ptr++ = (char)length;
-    memcpy(ptr, string, (length + 1));
-    WriteBinBufferPos += (length + 2);
+    memcpy(ptr, string, length + 1);
+    WriteBinBufferPos += length + 2;
 
     if (WriteBinBufferPos > WriteBinBufferMax) {
       WriteBinBufferMax = WriteBinBufferPos;
     }
 
-    return (true);
+    return true;
   }
 }

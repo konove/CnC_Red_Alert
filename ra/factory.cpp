@@ -158,7 +158,7 @@ void* FactoryClass::operator new(size_t) throw() {
   if (ptr) {
     ((FactoryClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -263,7 +263,7 @@ bool FactoryClass::Has_Changed() {
 
   bool changed = IsDifferent;
   IsDifferent = false;
-  return (changed);
+  return changed;
 }
 
 /***********************************************************************************************
@@ -329,7 +329,7 @@ bool FactoryClass::Set(TechnoTypeClass const& object, HouseClass& house) {
   /*
   **	If all was set up successfully, then return true.
   */
-  return (Object != nullptr);
+  return Object != nullptr;
 }
 
 /***********************************************************************************************
@@ -384,9 +384,9 @@ bool FactoryClass::Suspend() {
   if (!IsSuspended) {
     IsSuspended = true;
     Set_Rate(0);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -438,10 +438,10 @@ bool FactoryClass::Start() {
 
       Set_Rate(rate);
       IsSuspended = false;
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -494,9 +494,9 @@ bool FactoryClass::Abandon() {
     IsSuspended = true;
     IsDifferent = true;
 
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -517,7 +517,7 @@ bool FactoryClass::Abandon() {
 int FactoryClass::Completion() {
   assert(Factories.ID(this) == ID);
 
-  return (Fetch_Stage());
+  return Fetch_Stage();
 }
 
 /***********************************************************************************************
@@ -541,12 +541,12 @@ bool FactoryClass::Has_Completed() {
   assert(Factories.ID(this) == ID);
 
   if (Object && Fetch_Stage() == STEP_COUNT) {
-    return (true);
+    return true;
   }
   if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -565,7 +565,7 @@ bool FactoryClass::Has_Completed() {
 TechnoClass* FactoryClass::Get_Object() const {
   assert(Factories.ID(this) == ID);
 
-  return (Object);
+  return Object;
 }
 
 /***************************************************************************
@@ -581,7 +581,7 @@ TechnoClass* FactoryClass::Get_Object() const {
 int FactoryClass::Get_Special_Item() const {
   assert(Factories.ID(this) == ID);
 
-  return (SpecialItem);
+  return SpecialItem;
 }
 
 /***********************************************************************************************
@@ -606,11 +606,11 @@ int FactoryClass::Cost_Per_Tick() {
   if (Object) {
     int steps = STEP_COUNT - Fetch_Stage();
     if (steps) {
-      return (Balance / steps);
+      return Balance / steps;
     }
-    return (Balance);
+    return Balance;
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -640,7 +640,7 @@ bool FactoryClass::Completed() {
     IsDifferent = true;
     Set_Stage(0);
     Set_Rate(0);
-    return (true);
+    return true;
   }
 
   if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
@@ -649,7 +649,7 @@ bool FactoryClass::Completed() {
     IsDifferent = true;
     Set_Stage(0);
     Set_Rate(0);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

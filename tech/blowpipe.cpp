@@ -66,7 +66,7 @@ int BlowPipe::Flush() {
   }
   Counter = 0;
   total += Pipe::Flush();
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************
@@ -91,7 +91,7 @@ int BlowPipe::Flush() {
  *=============================================================================================*/
 int BlowPipe::Put(void const* source, int slen) {
   if (source == nullptr || slen < 1) {
-    return (Pipe::Put(source, slen));
+    return Pipe::Put(source, slen);
   }
 
   /*
@@ -99,7 +99,7 @@ int BlowPipe::Put(void const* source, int slen) {
   *through *	unchanged in any way.
   */
   if (BF == nullptr) {
-    return (Pipe::Put(source, slen));
+    return Pipe::Put(source, slen);
   }
 
   int total = 0;
@@ -112,10 +112,10 @@ int BlowPipe::Put(void const* source, int slen) {
   */
   if (Counter) {
     int sublen =
-        (sizeof(Buffer) - Counter < slen) ? (sizeof(Buffer) - Counter) : slen;
+        sizeof(Buffer) - Counter < slen ? sizeof(Buffer) - Counter : slen;
     memmove(&Buffer[Counter], source, sublen);
     Counter += sublen;
-    source = ((char*)source) + sublen;
+    source = (char*)source + sublen;
     slen -= sublen;
 
     if (Counter == sizeof(Buffer)) {
@@ -140,7 +140,7 @@ int BlowPipe::Put(void const* source, int slen) {
       BF->Encrypt(source, sizeof(Buffer), Buffer);
     }
     total += Pipe::Put(Buffer, sizeof(Buffer));
-    source = ((char*)source) + sizeof(Buffer);
+    source = (char*)source + sizeof(Buffer);
     slen -= sizeof(Buffer);
   }
 
@@ -158,7 +158,7 @@ int BlowPipe::Put(void const* source, int slen) {
   **	Return with the total number of bytes flushed out to the final end of
   *the *	pipe chain.
   */
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************

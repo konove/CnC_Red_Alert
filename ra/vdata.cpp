@@ -257,7 +257,7 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, char const* ininame,
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* VesselTypeClass::operator new(size_t) throw() {
-  return (VesselTypes.Alloc());
+  return VesselTypes.Alloc();
 }
 
 /***********************************************************************************************
@@ -327,7 +327,7 @@ void VesselTypeClass::Init_Heap() {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 VesselTypeClass& VesselTypeClass::As_Reference(VesselType type) {
-  return (*VesselTypes.Ptr(type));
+  return *VesselTypes.Ptr(type);
 }
 
 #ifdef NEVER
@@ -457,7 +457,7 @@ void VesselTypeClass::Prep_For_Add() {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* VesselTypeClass::Create_One_Of(HouseClass* house) const {
-  return (new VesselClass(Type, house->Class->House));
+  return new VesselClass(Type, house->Class->House);
 }
 
 /***********************************************************************************************
@@ -481,10 +481,10 @@ ObjectClass* VesselTypeClass::Create_One_Of(HouseClass* house) const {
 bool VesselTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   VesselClass* unit = new VesselClass(Type, house);
   if (unit != nullptr) {
-    return (unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX)));
+    return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
   }
   delete unit;
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -545,7 +545,7 @@ void VesselTypeClass::One_Time() {
                         .string();
     uclass.SetBorrowedImage(MFCD::RetrieveData(fullname));
 
-    ((int&)uclass.MaxSize) = 26;
+    (int&)uclass.MaxSize = 26;
   }
 }
 
@@ -632,7 +632,7 @@ short const* VesselTypeClass::Overlap_List() const {
   //		+MAP_CELL_W, +(MAP_CELL_W+1), +(MAP_CELL_W-1),
   //		REFRESH_EOL};
 
-  return (&_ship[0]);
+  return &_ship[0];
 }
 
 /***********************************************************************************************
@@ -656,11 +656,11 @@ VesselType VesselTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (VesselType classid = VESSEL_FIRST; classid < VESSEL_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
-        return (classid);
+        return classid;
       }
     }
   }
-  return (VESSEL_NONE);
+  return VESSEL_NONE;
 }
 
 /***********************************************************************************************
@@ -680,4 +680,4 @@ VesselType VesselTypeClass::From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
-int VesselTypeClass::Max_Pips() const { return (Max_Passengers()); }
+int VesselTypeClass::Max_Pips() const { return Max_Passengers(); }

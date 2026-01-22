@@ -178,16 +178,16 @@ unsigned long VersionClass::Version_Number() {
   // If the version has already been set, just return it.
   //------------------------------------------------------------------------
   if (VersionInit) {
-    return (Version);
+    return Version;
   }
 
   //------------------------------------------------------------------------
   // Generate the version #
   //------------------------------------------------------------------------
-  Version = ((Major_Version() << 16) | Minor_Version());
+  Version = Major_Version() << 16 | Minor_Version();
   VersionInit = 1;
 
-  return (Version);
+  return Version;
 
 } /* end of Version_Number */
 
@@ -232,7 +232,7 @@ unsigned short VersionClass::Major_Version() {
   // If the major version # is already set, just return it.
   //------------------------------------------------------------------------
   if (MajorInit) {
-    return (MajorVer);
+    return MajorVer;
   }
 
   //------------------------------------------------------------------------
@@ -286,7 +286,7 @@ unsigned short VersionClass::Major_Version() {
 
   MajorInit = 1;
 
-  return (MajorVer);
+  return MajorVer;
 
 } /* end of Major_Version */
 
@@ -329,7 +329,7 @@ unsigned short VersionClass::Minor_Version() {
   // If the minor version # is already set, just return it.
   //------------------------------------------------------------------------
   if (MinorInit) {
-    return (MinorVer);
+    return MinorVer;
   }
 
   //------------------------------------------------------------------------
@@ -383,7 +383,7 @@ unsigned short VersionClass::Minor_Version() {
 
   MinorInit = 1;
 
-  return (MinorVer);
+  return MinorVer;
 
 } /* end of Minor_Version */
 
@@ -430,7 +430,7 @@ char* VersionClass::Version_Name() {
   sprintf(VersionName, "%x.%x", VerNum.Major_Version(), adjusted_minor);
 #endif
 
-  return (VersionName);
+  return VersionName;
 
 } /* end of Version_Name */
 
@@ -500,7 +500,7 @@ CommProtocolType VersionClass::Version_Protocol(unsigned long version) {
   //------------------------------------------------------------------------
   for (i = j - 1; i >= 0; i--) {
     if (version >= VersionProtocol[i].Version) {
-      return (VersionProtocol[i].Protocol);
+      return VersionProtocol[i].Protocol;
     }
   }
 
@@ -509,7 +509,7 @@ CommProtocolType VersionClass::Version_Protocol(unsigned long version) {
   // possible protocol.  (If version clipping is being done properly, this
   // case should never happen, but never say never.)
   //------------------------------------------------------------------------
-  return (VersionProtocol[j - 1].Protocol);
+  return VersionProtocol[j - 1].Protocol;
 
 } /* end of Version_Protocol */
 
@@ -584,12 +584,12 @@ unsigned long VersionClass::Clip_Version(unsigned long minver,
   //------------------------------------------------------------------------
   // If the given range is outside & above our own, return an error.
   //------------------------------------------------------------------------
-  if (minver > MaxClipVer) return (0xffffffff);
+  if (minver > MaxClipVer) return 0xffffffff;
 
   //------------------------------------------------------------------------
   // If the given range is outside & below our own, return an error.
   //------------------------------------------------------------------------
-  if (maxver < MinClipVer) return (0);
+  if (maxver < MinClipVer) return 0;
 
   //------------------------------------------------------------------------
   // Clip the lower range value
@@ -604,7 +604,7 @@ unsigned long VersionClass::Clip_Version(unsigned long minver,
   //------------------------------------------------------------------------
   // Return the highest version supported by the newly-adjusted range.
   //------------------------------------------------------------------------
-  return (MaxClipVer);
+  return MaxClipVer;
 
 } /* end of Clip_Version */
 
@@ -649,9 +649,9 @@ unsigned long VersionClass::Min_Version() {
 #else  // WOLAPI_INTEGRATION
 
   if (Is_Counterstrike_Installed()) {
-    return (MIN_VERSION - 1);
+    return MIN_VERSION - 1;
   }
-  return (MIN_VERSION);
+  return MIN_VERSION;
 
 #endif  // WOLAPI_INTEGRATION
 

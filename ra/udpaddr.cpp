@@ -43,14 +43,14 @@
 bool Get_Broadcast_Addresses() {
   int d_dialog_w = 320 * RESFACTOR;                       // dialog width
   int d_dialog_h = 160 * RESFACTOR;                       // dialog height
-  int d_dialog_x = ((320 * RESFACTOR - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((200 * RESFACTOR - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
+  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
   int d_margin2 = 7 * RESFACTOR;  // small margin
 
   int d_ip_address_list_w = 300 * RESFACTOR;
-  int d_ip_address_list_h = ((20 * 6) + 3) * RESFACTOR;  // 6 rows high
+  int d_ip_address_list_h = (20 * 6 + 3) * RESFACTOR;  // 6 rows high
   int d_ip_address_list_x = d_dialog_cx - d_ip_address_list_w / 2;
   int d_ip_address_list_y = d_margin2 + d_dialog_y;
 
@@ -216,12 +216,12 @@ bool Get_Broadcast_Addresses() {
       // ESC / CANCEL: send a SIGN_OFF
       // - If we're part of a game, stay in this dialog; otherwise, exit
       //..................................................................
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         process = false;
-        return (false);
+        return false;
 
-      case (BUTTON_OK | KN_BUTTON):
+      case BUTTON_OK | KN_BUTTON:
         process = false;
         break;
     }
@@ -244,5 +244,5 @@ bool Get_Broadcast_Addresses() {
     PacketTransport->Set_Broadcast_Address(addr.data());
   }
 
-  return (true);
+  return true;
 }

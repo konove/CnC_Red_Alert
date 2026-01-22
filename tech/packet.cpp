@@ -145,7 +145,7 @@ PacketClass::PacketClass(char* curbuf) {
     //
     // Make sure we allow for the pad bytes.
     //
-    int pad = (4 - (ntohs(field->Size) & 3)) & 3;
+    int pad = 4 - (ntohs(field->Size) & 3) & 3;
     curbuf += pad;
     remaining_size -= pad;
 
@@ -193,7 +193,7 @@ char* PacketClass::Create_Comms_Packet(int& size) {
     size += (unsigned short)FIELD_HEADER_SIZE;  // add in packet header size
     size += current->Size;                      // add in data size
     size +=
-        (4 - (size & 3)) & 3;  // add in pad value to dword align next packet
+        4 - (size & 3) & 3;  // add in pad value to dword align next packet
   }
 
   //
@@ -237,7 +237,7 @@ char* PacketClass::Create_Comms_Packet(int& size) {
     //
     // Finally take care of any pad bytes by setting them to 0
     //
-    int pad = (4 - (ntohs(current->Size) & 3)) & 3;
+    int pad = 4 - (ntohs(current->Size) & 3) & 3;
 
     //
     //	If there is any pad left over, make sure you memset it
@@ -250,7 +250,7 @@ char* PacketClass::Create_Comms_Packet(int& size) {
 
     current->Net_To_Host();
   }
-  return (retval);
+  return retval;
 }
 
 /**************************************************************************
@@ -289,9 +289,9 @@ FieldClass* PacketClass::Find_Field(char const* id) {
 bool PacketClass::Get_Field(char const* id, char& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((char*)field->Data);
+    data = *(char*)field->Data;
   }
-  return ((field) ? true : false);
+  return field ? true : false;
 }
 
 /**************************************************************************
@@ -312,9 +312,9 @@ bool PacketClass::Get_Field(char const* id, char& data) {
 bool PacketClass::Get_Field(char const* id, unsigned char& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((unsigned char*)field->Data);
+    data = *(unsigned char*)field->Data;
   }
-  return ((field) ? true : false);
+  return field ? true : false;
 }
 
 /**************************************************************************
@@ -335,9 +335,9 @@ bool PacketClass::Get_Field(char const* id, unsigned char& data) {
 bool PacketClass::Get_Field(char const* id, short& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((short*)field->Data);
+    data = *(short*)field->Data;
   }
-  return ((field) ? true : false);
+  return field ? true : false;
 }
 
 /**************************************************************************
@@ -358,9 +358,9 @@ bool PacketClass::Get_Field(char const* id, short& data) {
 bool PacketClass::Get_Field(char const* id, unsigned short& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((unsigned short*)field->Data);
+    data = *(unsigned short*)field->Data;
   }
-  return ((field) ? true : false);
+  return field ? true : false;
 }
 
 /**************************************************************************
@@ -381,9 +381,9 @@ bool PacketClass::Get_Field(char const* id, unsigned short& data) {
 bool PacketClass::Get_Field(char const* id, long& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((long*)field->Data);
+    data = *(long*)field->Data;
   }
-  return ((field) ? true : false);
+  return field ? true : false;
 }
 
 /**************************************************************************
@@ -409,7 +409,7 @@ bool PacketClass::Get_Field(char const* id, char* data, size_t data_size) {
   if (field) {
     port::SafeCopy(data, (char*)field->Data, data_size);
   }
-  return ((field) ? true : false);
+  return field ? true : false;
 }
 
 /**************************************************************************
@@ -430,9 +430,9 @@ bool PacketClass::Get_Field(char const* id, char* data, size_t data_size) {
 bool PacketClass::Get_Field(char const* id, unsigned long& data) {
   FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((unsigned long*)field->Data);
+    data = *(unsigned long*)field->Data;
   }
-  return ((field) ? true : false);
+  return field ? true : false;
 }
 
 /**************************************************************************
@@ -457,5 +457,5 @@ bool PacketClass::Get_Field(char const* id, void* data, int& length) {
     memcpy(data, field->Data, std::min(int(field->Size), length));
     length = (int)field->Size;
   }
-  return ((field) ? true : false);
+  return field ? true : false;
 }

@@ -85,8 +85,8 @@ class VectorClass {
   VectorClass(VectorClass const&);  // Copy constructor.
   virtual ~VectorClass();
 
-  T& operator[](size_t index) { return (Vector[index]); }
-  T const& operator[](size_t index) const { return (Vector[index]); }
+  T& operator[](size_t index) { return Vector[index]; }
+  T const& operator[](size_t index) const { return Vector[index]; }
   virtual VectorClass& operator=(VectorClass const&);
   virtual int operator==(VectorClass const&) const;
   virtual int Resize(unsigned newsize, T const* array = nullptr);
@@ -138,7 +138,7 @@ class DynamicVectorClass : public VectorClass<T> {
   }
 
   // Fetch number of "allocated" vector objects.
-  size_t Count() const { return (ActiveCount); }
+  size_t Count() const { return ActiveCount; }
 
   // Add object to vector (growing as necessary).
   int Add(T const& object);
@@ -154,12 +154,12 @@ class DynamicVectorClass : public VectorClass<T> {
   void Delete_All() { ActiveCount = 0; }
 
   // Set amount that vector grows by.
-  int Set_Growth_Step(int step) { return (GrowthStep = step); }
+  int Set_Growth_Step(int step) { return GrowthStep = step; }
 
   // Fetch current growth step rate.
   int Growth_Step() { return GrowthStep; }
 
-  int ID(T const* ptr) override { return (VectorClass<T>::ID(ptr)); }
+  int ID(T const* ptr) override { return VectorClass<T>::ID(ptr); }
   int ID(T const& ptr) override;
 
  protected:

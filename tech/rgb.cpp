@@ -69,7 +69,7 @@ HSVClass RGBClass::ToHSV() const {
 
   if (delta > 0 && value > 0) {
     // Calculate Saturation (0-255)
-    saturation = (delta * 255) / value;
+    saturation = delta * 255 / value;
 
     // Calculate Hue Segment (0-6 scale) using integer math.
     // We calculate (Segment * Delta) + Offset to avoid early division/precision
@@ -83,10 +83,10 @@ HSVClass RGBClass::ToHSV() const {
       segment_numerator = g - b;
     } else if (max_val == g) {
       // Segment 2: Green is dominant. Offset is 2.0 * delta
-      segment_numerator = (2 * delta) + (b - r);
+      segment_numerator = 2 * delta + (b - r);
     } else {
       // Segment 4: Blue is dominant. Offset is 4.0 * delta
-      segment_numerator = (4 * delta) + (r - g);
+      segment_numerator = 4 * delta + (r - g);
     }
 
     // Convert to 0-255 range.
@@ -95,7 +95,7 @@ HSVClass RGBClass::ToHSV() const {
     // Scale factor: 255 / 6 = 42.5.
     //
     // Logic: (Numerator * 255) / (Delta * 6)
-    hue = (segment_numerator * 255) / (delta * 6);
+    hue = segment_numerator * 255 / (delta * 6);
 
     // Handle negative wrap-around (Red-Magenta zone)
     if (hue < 0) {

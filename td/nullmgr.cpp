@@ -349,7 +349,7 @@ int NullModemClass::Init(int port, int, char* dev_name, int baud, char parity,
                                             stopbits, flowcontrol);
   if (PortHandle == nullptr) {
     Shutdown();
-    return (false);
+    return false;
   }
 
   /*------------------------------------------------------------------------
@@ -359,7 +359,7 @@ int NullModemClass::Init(int port, int, char* dev_name, int baud, char parity,
 
   NumConnections = 1;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -375,7 +375,7 @@ int NullModemClass::Init(int port, int, char* dev_name, int baud, char parity,
  *                                                                                             *
  * HISTORY: * 8/2/96 11:44AM ST : Documented / Win32 support *
  *=============================================================================================*/
-int NullModemClass::Num_Connections() { return (NumConnections); }
+int NullModemClass::Num_Connections() { return NumConnections; }
 
 /***********************************************************************************************
  * NMC::Delete_Connection -- removes the connection *
@@ -413,7 +413,7 @@ int NullModemClass::Delete_Connection() {
 
   NumConnections = 0;
 
-  return (true);
+  return true;
 } /* end of Delete_Connection */
 
 /***********************************************************************************************
@@ -437,7 +437,7 @@ int NullModemClass::Init_Send_Queue() {
     Connection->Queue->Init_Send_Queue();
   }
 
-  return (true);
+  return true;
 }
 
 // DetectPortType NullModemClass::Detect_Port( SerialSettingsType *settings )
@@ -529,7 +529,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
       break;
 
     default:
-      return (PORT_INVALID);
+      return PORT_INVALID;
   }
 
   /*
@@ -539,11 +539,11 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
       device, baud, 0, 8, 1, settings->HardwareFlowControl);
 
   if (porthandle == nullptr) {
-    return (PORT_INVALID);
+    return PORT_INVALID;
   }
 
   SerialPort->Serial_Port_Close();
-  return (PORT_VALID);
+  return PORT_VALID;
 }
 
 /***********************************************************************************************
@@ -657,13 +657,13 @@ int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
   int rc;
 
   if (NumConnections == 0) {
-    return (false);
+    return false;
   }
 
   rc = Connection->Send_Packet(buf, buflen, ack_req);
   if (!rc) SendOverflows++;
 
-  return (rc);
+  return rc;
 
 } /* end of Send_Message */
 
@@ -689,9 +689,9 @@ int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
  *=========================================================================*/
 int NullModemClass::Get_Message(void* buf, int* buflen) {
   if (NumConnections == 0) {
-    return (false);
+    return false;
   }
-  return (Connection->Get_Packet(buf, buflen));
+  return Connection->Get_Packet(buf, buflen);
 }
 
 /***************************************************************************
@@ -723,7 +723,7 @@ int NullModemClass::Service() {
   char moredata = 0;
 
   if (NumConnections == 0) {
-    return (false);
+    return false;
   }
 
   /*------------------------------------------------------------------------
@@ -769,8 +769,8 @@ int NullModemClass::Service() {
 
   // minimum packet size
 
-  if (RXCount < (PACKET_SERIAL_OVERHEAD_SIZE + 1)) {
-    return (Connection->Service());
+  if (RXCount < PACKET_SERIAL_OVERHEAD_SIZE + 1) {
+    return Connection->Service();
   }
 
   /*------------------------------------------------------------------------
@@ -778,7 +778,7 @@ int NullModemClass::Service() {
   ------------------------------------------------------------------------*/
   pos = -1;
   for (i = 0; i <= RXCount - sizeof(short); i++) {
-    if (*((unsigned short*)(RXBuf + i)) == PACKET_SERIAL_START) {
+    if (*(unsigned short*)(RXBuf + i) == PACKET_SERIAL_START) {
       pos = i;
       break;
     }
@@ -795,16 +795,16 @@ int NullModemClass::Service() {
     .....................................................................*/
     memmove(RXBuf, RXBuf + i, sizeof(short) - 1);
     RXCount = sizeof(short) - 1;
-    return (Connection->Service());
+    return Connection->Service();
   }
 
   /*........................................................................
   Check to see if there are enough bytes for the header to be decoded
   ........................................................................*/
-  if ((RXCount - pos) < sizeof(SerialHeaderType)) {
+  if (RXCount - pos < sizeof(SerialHeaderType)) {
     memmove(RXBuf, RXBuf + pos, RXCount - pos);
     RXCount -= pos;
-    return (Connection->Service());
+    return Connection->Service();
   }
 
   /*------------------------------------------------------------------------
@@ -824,7 +824,7 @@ int NullModemClass::Service() {
     pos += sizeof(short);  // throw away the bogus start code
     memmove(RXBuf, RXBuf + pos, RXCount - pos);
     RXCount -= pos;
-    return (Connection->Service());
+    return Connection->Service();
   }
 
   length = header->Length;
@@ -844,14 +844,14 @@ int NullModemClass::Service() {
     pos += sizeof(short);  // throw away the bogus start code
     memmove(RXBuf, RXBuf + pos, RXCount - pos);
     RXCount -= pos;
-    return (Connection->Service());
+    return Connection->Service();
   }
 
   /*........................................................................
   If the entire packet isn't stored in our buffer, copy the remaining bytes
   to the front of the buffer & return.
   ........................................................................*/
-  if ((pos + length + PACKET_SERIAL_OVERHEAD_SIZE) > RXCount) {
+  if (pos + length + PACKET_SERIAL_OVERHEAD_SIZE > RXCount) {
     if (moredata) {
       // Smart_Printf( "waiting for more data %d, pos = %d \n", ((length +
       // PACKET_SERIAL_OVERHEAD_SIZE) - (RXCount - pos)), pos );
@@ -861,7 +861,7 @@ int NullModemClass::Service() {
       memmove(RXBuf, RXBuf + pos, RXCount - pos);
       RXCount -= pos;
     }
-    return (Connection->Service());
+    return Connection->Service();
   }
 
   /*........................................................................
@@ -888,7 +888,7 @@ int NullModemClass::Service() {
     pos += sizeof(short);  // throw away the bogus start code
     memmove(RXBuf, RXBuf + pos, RXCount - pos);
     RXCount -= pos;
-    return (Connection->Service());
+    return Connection->Service();
   }
 
   /*------------------------------------------------------------------------
@@ -907,14 +907,14 @@ int NullModemClass::Service() {
   /*------------------------------------------------------------------------
   Move all data past this packet to the front of the buffer.
   ------------------------------------------------------------------------*/
-  pos += (PACKET_SERIAL_OVERHEAD_SIZE + length);
+  pos += PACKET_SERIAL_OVERHEAD_SIZE + length;
   memmove(RXBuf, RXBuf + pos, RXCount - pos);
   RXCount -= pos;
 
   /*------------------------------------------------------------------------
   Now, service the connection's Queue's; this will handle ACK & Retries.
   ------------------------------------------------------------------------*/
-  return (Connection->Service());
+  return Connection->Service();
 
 } /* end of Service */
 
@@ -933,9 +933,9 @@ int NullModemClass::Service() {
  *=========================================================================*/
 int NullModemClass::Num_Send() {
   if (Connection)
-    return (Connection->Queue->Num_Send());
+    return Connection->Queue->Num_Send();
   else
-    return (0);
+    return 0;
 
 } /* end of Num_Send */
 
@@ -953,9 +953,9 @@ int NullModemClass::Num_Send() {
  *=========================================================================*/
 int NullModemClass::Num_Receive() {
   if (Connection)
-    return (Connection->Queue->Num_Receive());
+    return Connection->Queue->Num_Receive();
   else
-    return (0);
+    return 0;
 
 } /* end of Num_Receive */
 
@@ -973,9 +973,9 @@ int NullModemClass::Num_Receive() {
  *=========================================================================*/
 unsigned long NullModemClass::Response_Time() {
   if (Connection)
-    return (Connection->Queue->Avg_Response_Time());
+    return Connection->Queue->Avg_Response_Time();
   else
-    return (0);
+    return 0;
 
 } /* end of Response_Time */
 
@@ -1026,7 +1026,7 @@ void* NullModemClass::Oldest_Send() {
     }
   }
 
-  return (buf);
+  return buf;
 
 } /* end of Oldest_Send */
 
@@ -1255,7 +1255,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     *19200) and
     ** try again.
     */
-    return (false);
+    return false;
   }
 
   /*
@@ -1287,7 +1287,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
       if (status < ASSUCCESS) {
         if (CCMessageBox().Process(TXT_ERROR_NO_INIT, TXT_IGNORE, TXT_CANCEL)) {
           delete[] istr;
-          return (false);
+          return false;
         }
         error_count++;
         break;
@@ -1317,7 +1317,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
                                      TXT_CANCEL))
-            return (false);
+            return false;
         }
       }
     } else {
@@ -1332,7 +1332,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
                                      TXT_CANCEL))
-            return (false);
+            return false;
         }
       }
     }
@@ -1348,7 +1348,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
                                      TXT_CANCEL))
-            return (false);
+            return false;
         }
       }
     } else {
@@ -1359,7 +1359,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
                                      TXT_CANCEL))
-            return (false);
+            return false;
         }
       }
     }
@@ -1375,7 +1375,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE,
                                      TXT_IGNORE, TXT_CANCEL))
-            return (false);
+            return false;
         }
       }
     } else {
@@ -1386,7 +1386,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE,
                                      TXT_IGNORE, TXT_CANCEL))
-            return (false);
+            return false;
         }
       }
     }
@@ -1398,7 +1398,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                               INIT_COMMAND_RETRIES);
   if (status != MODEM_CMD_OK) {
     if (CCMessageBox().Process(TXT_ERROR_NO_DISABLE, TXT_IGNORE, TXT_CANCEL))
-      return (false);
+      return false;
     error_count++;
   }
 
@@ -1407,10 +1407,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   if (error_count >= 3) {
     CCMessageBox().Process(TXT_ERROR_TOO_MANY, TXT_OK);
-    return (false);
+    return false;
   }
 
-  return (true);
+  return true;
 }
 
 /***************************************************************************
@@ -1604,8 +1604,8 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
     if (!Input) Input = Commands->Input();
 
     switch (Input) {
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         dialstatus = DIAL_CANCELED;
         process = false;
         break;
@@ -1643,7 +1643,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
   Remove_Abort_Modem();
 
-  return (dialstatus);
+  return dialstatus;
 
 } /* end of Dial_Modem */
 
@@ -1666,7 +1666,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
  *   06/02/1995 DRD : Created.                                             *
  *=========================================================================*/
 DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*........................................................................
   Button Enumerations
@@ -1813,8 +1813,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     */
     if (!Input) Input = Commands->Input();
     switch (Input) {
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         //				Sound_Effect(VOC_BUTTON,255);
         dialstatus = DIAL_CANCELED;
         process = false;
@@ -1889,7 +1889,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
   Remove_Abort_Modem();
 
-  return (dialstatus);
+  return dialstatus;
 
 } /* end of Answer_Modem */
 
@@ -1926,7 +1926,7 @@ bool NullModemClass::Hangup_Modem() {
 
   if (status == MODEM_CMD_OK) {
     ModemService = true;
-    return (true);
+    return true;
   }
 
   SerialPort->Set_Serial_DTR(false);
@@ -1941,7 +1941,7 @@ bool NullModemClass::Hangup_Modem() {
 
   if (status == MODEM_CMD_OK) {
     ModemService = true;
-    return (true);
+    return true;
   }
 
   delay = ModemGuardTime;
@@ -1973,7 +1973,7 @@ bool NullModemClass::Hangup_Modem() {
   if (status == MODEM_CMD_OK) {
   } else {
     ModemService = true;
-    return (false);
+    return false;
   }
 
   status = Send_Modem_Command("ATZ", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
@@ -1981,11 +1981,11 @@ bool NullModemClass::Hangup_Modem() {
   if (status == MODEM_CMD_OK) {
   } else {
     ModemService = true;
-    return (false);
+    return false;
   }
 
   ModemService = true;
-  return (true);
+  return true;
 
 } /* end of Hangup_Modem */
 
@@ -2105,12 +2105,12 @@ int NullModemClass::Abort_Modem()
   Input = Commands->Input();
 
   switch (Input) {
-    case (KN_ESC):
-    case (BUTTON_CANCEL | KN_BUTTON):
-      return (ASUSERABORT);
+    case KN_ESC:
+    case BUTTON_CANCEL | KN_BUTTON:
+      return ASUSERABORT;
   }
 
-  return (ASSUCCESS);
+  return ASSUCCESS;
 
 } /* end of Abort_Modem */
 
@@ -2163,7 +2163,7 @@ void NullModemClass::Remove_Abort_Modem() {
  * HISTORY: * 8/2/96 3:03PM ST : Documented / Win32 support added *
  *=============================================================================================*/
 int NullModemClass::Change_IRQ_Priority(int) {
-  return (ASSUCCESS);
+  return ASSUCCESS;
 } /* end of Change_IRQ_Priority */
 
 /***********************************************************************************************
@@ -2190,10 +2190,10 @@ int NullModemClass::Get_Modem_Status() {
   status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
 
   if (status == MODEM_CMD_OK) {
-    modemstatus &= (~CD_SET);
+    modemstatus &= ~CD_SET;
   }
 
-  return (modemstatus);
+  return modemstatus;
 
 } /* end of Get_Modem_Status */
 
@@ -2219,8 +2219,8 @@ int NullModemClass::Get_Modem_Status() {
 int NullModemClass::Send_Modem_Command(char* command, char terminator,
                                        char* buffer, int buflen, int delay,
                                        int retries) {
-  return (SerialPort->Send_Command_To_Modem(command, terminator, buffer, buflen,
-                                            delay, retries));
+  return SerialPort->Send_Command_To_Modem(command, terminator, buffer, buflen,
+                                           delay, retries);
 }
 
 /***********************************************************************************************
@@ -2252,7 +2252,7 @@ int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
     value = atoi(buffer);
   }
 
-  return (value);
+  return value;
 
 } /* end of Verify_And_Convert_To_Int */
 

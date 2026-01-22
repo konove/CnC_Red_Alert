@@ -50,7 +50,7 @@ class SoundControlsClass {
 #endif
     OPTION_HEIGHT = 146,
 
-    OPTION_X = ((320 - OPTION_WIDTH) / 2),
+    OPTION_X = (320 - OPTION_WIDTH) / 2,
     OPTION_Y = (200 - OPTION_HEIGHT) / 2,
 
     LISTBOX_X = 1,

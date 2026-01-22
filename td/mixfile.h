@@ -79,9 +79,9 @@ class MixFileClass : public LinkClass {
     int32_t Offset;  // Offset from start of data section.
     int32_t Size;    // Size of data subfile.
 
-    int operator<(SubBlock& two) const { return (CRC < two.CRC); }
-    int operator>(SubBlock& two) const { return (CRC > two.CRC); }
-    int operator==(SubBlock& two) const { return (CRC == two.CRC); }
+    int operator<(SubBlock& two) const { return CRC < two.CRC; }
+    int operator>(SubBlock& two) const { return CRC > two.CRC; }
+    int operator==(SubBlock& two) const { return CRC == two.CRC; }
   };
 
  private:

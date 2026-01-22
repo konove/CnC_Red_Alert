@@ -1327,9 +1327,9 @@ short const* UnitTypeClass::Occupy_List(bool) const {
   static short const _gun[] = {0, -1, 1, REFRESH_EOL};
 
   if (Type == UNIT_GUNBOAT) {
-    return (&_gun[0]);
+    return &_gun[0];
   }
-  return (&_simple[0]);
+  return &_simple[0];
 }
 
 /***********************************************************************************************
@@ -1352,11 +1352,11 @@ UnitType UnitTypeClass::From_Name(char const* name) {
   if (name) {
     for (UnitType classid = UNIT_FIRST; classid < UNIT_COUNT; classid++) {
       if (stricmp(Pointers[classid]->IniName, name) == 0) {
-        return (classid);
+        return classid;
       }
     }
   }
-  return (UNIT_NONE);
+  return UNIT_NONE;
 }
 
 #ifdef SCENARIO_EDITOR
@@ -1453,7 +1453,7 @@ void UnitTypeClass::One_Time() {
       }
       auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      ((void const*&)uclass.CameoData) =
+      (void const*&)uclass.CameoData =
           MixFileClass::Retrieve(fullname.c_str());
     }
 
@@ -1469,7 +1469,7 @@ void UnitTypeClass::One_Time() {
       ptr = nullptr;
     }
 
-    ((void const*&)uclass.ImageData) = ptr;
+    (void const*&)uclass.ImageData = ptr;
     if (ptr) {
       if (index == UNIT_MLRS || index == UNIT_MSAM) {
         largest = 26;
@@ -1479,7 +1479,7 @@ void UnitTypeClass::One_Time() {
       }
     }
 
-    ((int&)uclass.MaxSize) = std::max(largest, 8);
+    (int&)uclass.MaxSize = std::max(largest, 8);
   }
 
   /*
@@ -1512,7 +1512,7 @@ void UnitTypeClass::Init(TheaterType theater) {
       for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
         UnitTypeClass const& uclass = As_Reference(index);
 
-        ((void const*&)uclass.CameoData) = nullptr;
+        (void const*&)uclass.CameoData = nullptr;
 
         if (uclass.IsBuildable) {
           auto fullname =
@@ -1521,7 +1521,7 @@ void UnitTypeClass::Init(TheaterType theater) {
                   .string();
           cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
           if (cameo_ptr) {
-            ((void const*&)uclass.CameoData) = cameo_ptr;
+            (void const*&)uclass.CameoData = cameo_ptr;
           }
         }
       }
@@ -1549,9 +1549,9 @@ void UnitTypeClass::Init(TheaterType theater) {
 bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   UnitClass* unit = new UnitClass(Type, house);
   if (unit) {
-    return (unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX)));
+    return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1571,7 +1571,7 @@ bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  * HISTORY: * 06/07/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* UnitTypeClass::Create_One_Of(HouseClass* house) const {
-  return (new UnitClass(Type, house->Class->House));
+  return new UnitClass(Type, house->Class->House);
 }
 
 /***********************************************************************************************
@@ -1609,14 +1609,14 @@ BuildingClass* UnitTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         building->House->Class->House == house &&
         building->Class->ToBuild == RTTI_UNITTYPE &&
         building->Mission != MISSION_DECONSTRUCTION &&
-        ((1L << building->ActLike) & Ownable) &&
+        1L << building->ActLike & Ownable &&
         (!legal || building->House->Can_Build(Type, building->ActLike)) &&
         (intheory || !building->In_Radio_Contact())) {
-      if (building->IsLeader) return (building);
+      if (building->IsLeader) return building;
       anybuilding = building;
     }
   }
-  return (anybuilding);
+  return anybuilding;
 }
 
 /***********************************************************************************************
@@ -1636,7 +1636,7 @@ BuildingClass* UnitTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 UnitTypeClass const& UnitTypeClass::As_Reference(UnitType type) {
-  return (*Pointers[type]);
+  return *Pointers[type];
 }
 
 /***********************************************************************************************
@@ -1661,8 +1661,8 @@ void UnitTypeClass::Dimensions(int& width, int& height) const {
     width = 46;
     height = 18;
   } else {
-    width = MaxSize - (MaxSize / 4);
-    height = MaxSize - (MaxSize / 4);
+    width = MaxSize - MaxSize / 4;
+    height = MaxSize - MaxSize / 4;
   }
 }
 
@@ -1682,8 +1682,7 @@ void UnitTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 04/03/1995 BWG : Created. *
  *=============================================================================================*/
 int UnitTypeClass::Repair_Cost() const {
-  return (
-      Fixed_To_Cardinal(Cost / (MaxStrength / REPAIR_STEP), REPAIR_PERCENT));
+  return Fixed_To_Cardinal(Cost / (MaxStrength / REPAIR_STEP), REPAIR_PERCENT);
 }
 
 /***********************************************************************************************
@@ -1701,7 +1700,7 @@ int UnitTypeClass::Repair_Cost() const {
  *                                                                                             *
  * HISTORY: * 04/03/1995 BWG : Created. *
  *=============================================================================================*/
-int UnitTypeClass::Repair_Step() const { return (REPAIR_STEP); }
+int UnitTypeClass::Repair_Step() const { return REPAIR_STEP; }
 
 /***********************************************************************************************
  * UnitTypeClass::Max_Pips -- Fetches the maximum pips allowed for this unit. *
@@ -1721,11 +1720,11 @@ int UnitTypeClass::Repair_Step() const { return (REPAIR_STEP); }
  *=============================================================================================*/
 int UnitTypeClass::Max_Pips() const {
   if (Type == UNIT_HARVESTER) {
-    return (FULL_LOAD_CREDITS / 100);
+    return FULL_LOAD_CREDITS / 100;
   }
 
   if (IsTransporter) {
-    return (Max_Passengers());
+    return Max_Passengers();
   }
-  return (0);
+  return 0;
 }

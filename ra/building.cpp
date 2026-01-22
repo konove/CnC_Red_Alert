@@ -242,47 +242,47 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
     */
     case RADIO_CAN_LOAD:
       TechnoClass::Receive_Message(from, message, param);
-      if (!House->Is_Ally(from)) return (RADIO_STATIC);
+      if (!House->Is_Ally(from)) return RADIO_STATIC;
       if (Mission == MISSION_CONSTRUCTION ||
           Mission == MISSION_DECONSTRUCTION || BState == BSTATE_CONSTRUCTION ||
           (!ScenarioInit && In_Radio_Contact() && Contact_With_Whom() != from))
-        return (RADIO_NEGATIVE);
+        return RADIO_NEGATIVE;
       switch (Class->Type) {
         case STRUCT_AIRSTRIP:
           if (from->What_Am_I() == RTTI_AIRCRAFT &&
               ((AircraftClass const *)from)->Class->IsFixedWing) {
-            return (RADIO_ROGER);
+            return RADIO_ROGER;
           }
           break;
 
         case STRUCT_HELIPAD:
           if (from->What_Am_I() == RTTI_AIRCRAFT &&
               !((AircraftClass const *)from)->Class->IsFixedWing) {
-            return (RADIO_ROGER);
+            return RADIO_ROGER;
           }
           break;
 
         case STRUCT_REPAIR:
           if (from->What_Am_I() == RTTI_UNIT ||
-              (from->What_Am_I() == RTTI_AIRCRAFT)) {
+              from->What_Am_I() == RTTI_AIRCRAFT) {
             if (Transmit_Message(RADIO_ON_DEPOT, from) != RADIO_ROGER) {
-              return (RADIO_ROGER);
+              return RADIO_ROGER;
             }
           }
-          return (RADIO_NEGATIVE);
+          return RADIO_NEGATIVE;
 
         case STRUCT_REFINERY:
           if (from->What_Am_I() == RTTI_UNIT &&
-              *((UnitClass *)from) == UNIT_HARVESTER &&
+              *(UnitClass *)from == UNIT_HARVESTER &&
               (ScenarioInit || !Is_Something_Attached())) {
-            return (RADIO_ROGER);
+            return RADIO_ROGER;
           }
           break;
 
         default:
           break;
       }
-      return (RADIO_STATIC);
+      return RADIO_STATIC;
 
     /*
     **	This message is received when the object has attached itself to this
@@ -290,25 +290,25 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
     */
     case RADIO_IM_IN:
       if (Mission == MISSION_DECONSTRUCTION) {
-        return (RADIO_NEGATIVE);
+        return RADIO_NEGATIVE;
       }
       switch (Class->Type) {
         case STRUCT_REPAIR:
           IsReadyToCommence = true;
           Assign_Mission(MISSION_REPAIR);
           from->Assign_Mission(MISSION_SLEEP);
-          return (RADIO_ROGER);
+          return RADIO_ROGER;
 
         case STRUCT_AIRSTRIP:
         case STRUCT_HELIPAD:
           Assign_Mission(MISSION_REPAIR);
           from->Assign_Mission(MISSION_SLEEP);
-          return (RADIO_ROGER);
+          return RADIO_ROGER;
 
         case STRUCT_REFINERY:
           Mark(MARK_CHANGE);
           from->Assign_Mission(MISSION_UNLOAD);
-          return (RADIO_ROGER);
+          return RADIO_ROGER;
 
         default:
           break;
@@ -340,7 +340,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
           if (Transmit_Message(RADIO_ON_DEPOT) == RADIO_ROGER) {
             if (Transmit_Message(RADIO_NEED_REPAIR) == RADIO_NEGATIVE) {
               Transmit_Message(RADIO_RUN_AWAY);
-              return (RADIO_ROGER);
+              return RADIO_ROGER;
             }
             //					} else {
             //						if
@@ -352,7 +352,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
           }
         } else {
           if (Transmit_Message(RADIO_NEED_REPAIR) == RADIO_NEGATIVE) {
-            return (RADIO_NEGATIVE);
+            return RADIO_NEGATIVE;
           }
         }
       }
@@ -402,7 +402,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
           }
         }
       }
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
 
     /*
     **	If a transport or harvester is requesting permission to head toward,
@@ -412,10 +412,10 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
     case RADIO_ARE_REFINERY:
       if (Is_Something_Attached() || In_Radio_Contact() || IsInLimbo ||
           House->Class->House != from->Owner() ||
-          (*this != STRUCT_REFINERY /* && *this != STRUCT_REPAIR*/)) {
-        return (RADIO_NEGATIVE);
+          *this != STRUCT_REFINERY /* && *this != STRUCT_REPAIR*/) {
+        return RADIO_NEGATIVE;
       }
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
 
     /*
     **	Someone is telling us that it is starting construction. This should only
@@ -425,7 +425,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
     case RADIO_BUILDING:
       Assign_Mission(MISSION_REPAIR);
       TechnoClass::Receive_Message(from, message, param);
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
 
     /*
     **	Someone is telling us that they have finished construction. This should
@@ -438,7 +438,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
         Assign_Mission(MISSION_GUARD);
       }
       TechnoClass::Receive_Message(from, message, param);
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
 
     /*
     **	This message may occur unexpectedly if the unit in contact with this
@@ -449,7 +449,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
     case RADIO_OVER_OUT:
       Begin_Mode(BSTATE_IDLE);
       TechnoClass::Receive_Message(from, message, param);
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
 
     /*
     **	This message is received when an object has completely left
@@ -459,14 +459,14 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
     case RADIO_UNLOADED:
       if (*this == STRUCT_REPAIR) {
         if (Distance(from) < 0x0180) {
-          return (RADIO_ROGER);
+          return RADIO_ROGER;
         }
       }
       TechnoClass::Receive_Message(from, message, param);
       if (*this == STRUCT_WEAP || *this == STRUCT_AIRSTRIP ||
           *this == STRUCT_REPAIR)
-        return (RADIO_RUN_AWAY);
-      return (RADIO_ROGER);
+        return RADIO_RUN_AWAY;
+      return RADIO_ROGER;
 
     default:
       break;
@@ -476,7 +476,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
   **	Pass along the message to the default message handler in the radio
   *itself.
   */
-  return (TechnoClass::Receive_Message(from, message, param));
+  return TechnoClass::Receive_Message(from, message, param);
 }
 
 #ifdef CHEAT_KEYS
@@ -592,7 +592,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     /*
     **	Draw the weapon factory custom overlay graphic.
     */
-    if ((*this == STRUCT_WEAP || *this == STRUCT_FAKEWEAP)) {
+    if (*this == STRUCT_WEAP || *this == STRUCT_FAKEWEAP) {
       int shapenum = Door_Stage();
       if (Health_Ratio() <= Rule.ConditionYellow) shapenum += 4;
       Techno_Draw_Object(Class->WarFactoryOverlay, shapenum, x, y, window);
@@ -612,7 +612,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   ** If this is a factory that we're spying on, show what it's producing
   */
-  if (SpiedBy & (1 << (PlayerPtr->Class->House)) && IsSelected) {
+  if (SpiedBy & 1 << PlayerPtr->Class->House && IsSelected) {
     /*
     **	Fetch the factory that is associate with this building. For computer
     *controlled buildings, the *	factory pointer is integral to the
@@ -673,7 +673,7 @@ int BuildingClass::Shape_Number() const {
     **	from the end to the beginning. Reverse the shape number accordingly.
     */
     if (Mission == MISSION_DECONSTRUCTION) {
-      shapenum = (Class->Anims[BState].Start + Class->Anims[BState].Count - 1) -
+      shapenum = Class->Anims[BState].Start + Class->Anims[BState].Count - 1 -
                  shapenum;
     }
 
@@ -682,7 +682,7 @@ int BuildingClass::Shape_Number() const {
     **	If this is a camouflaged pill box and it is not owned by the player,
     *then *	it is displayed with the MEGA-camouflaged imagery.
     */
-    if ((!IsOwnedByPlayer) && (*this == STRUCT_CAMOPILLBOX)) {
+    if (!IsOwnedByPlayer && *this == STRUCT_CAMOPILLBOX) {
       shapenum += 1;
     }
 
@@ -750,7 +750,7 @@ int BuildingClass::Shape_Number() const {
         if (*this == STRUCT_STORAGE) {
           int level = 0;
           if (House->Capacity) {
-            level = (House->Tiberium * 5) / House->Capacity;
+            level = House->Tiberium * 5 / House->Capacity;
           }
 
           shapenum += Bound(level, 0, 4);
@@ -781,7 +781,7 @@ int BuildingClass::Shape_Number() const {
       }
     }
   }
-  return (shapenum);
+  return shapenum;
 }
 
 /***********************************************************************************************
@@ -881,7 +881,7 @@ bool BuildingClass::Mark(MarkType mark) {
 
             Map.Place_Down(cell, this);
           } else {
-            return (false);
+            return false;
           }
         }
         break;
@@ -895,9 +895,9 @@ bool BuildingClass::Mark(MarkType mark) {
         Map.Refresh_Cells(cell, occupy);
         break;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1100,7 +1100,7 @@ void BuildingClass::AI() {
   ** radar jammer.
   */
   if ((*this == STRUCT_RADAR || *this == STRUCT_SAM) &&
-      (Frame % TICKS_PER_SECOND) == 0) {
+      Frame % TICKS_PER_SECOND == 0) {
     IsJammed = false;
     for (int index = 0; index < Units.Count(); index++) {
       UnitClass *obj = Units.Ptr(index);
@@ -1182,11 +1182,11 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
           Transmit_Message(RADIO_OVER_OUT);
           Map.Sight_From(Coord_Cell(coord), Class->SightRange, House);
           delete this;
-          return (true);
+          return true;
         }
       }
     }
-    return (false);
+    return false;
   }
 
   /*
@@ -1197,8 +1197,8 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->BScan |= (1L << Class->Type);
-    House->ActiveBScan |= (1L << Class->Type);
+    House->BScan |= 1L << Class->Type;
+    House->ActiveBScan |= 1L << Class->Type;
 
     /*
     **	Recalculate the center point of the house's base.
@@ -1238,9 +1238,9 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
       }
     }
 
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1598,7 +1598,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
     }
   }
 
-  return (res);
+  return res;
 }
 
 /***********************************************************************************************
@@ -1624,7 +1624,7 @@ void *BuildingClass::operator new(size_t) throw() {
   if (ptr) {
     ((BuildingClass *)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -1990,7 +1990,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  if (!base) return (0);
+  if (!base) return 0;
 
   /*
   **	A unit exiting a building is always considered to be "locked". That
@@ -2016,7 +2016,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
           Transmit_Message(RADIO_HELLO, air);
           Transmit_Message(RADIO_TETHER);
           ScenarioInit--;
-          return (2);
+          return 2;
         }
         ScenarioInit--;
       } else {
@@ -2038,7 +2038,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
               ::As_Target(air->Nearby_Location(this)));
           air->Assign_Mission(MISSION_MOVE);
           ScenarioInit--;
-          return (2);
+          return 2;
         }
         ScenarioInit--;
       }
@@ -2054,7 +2054,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
               base->Unlimbo(Cell_Coord(cell), Direction(Cell_Coord(cell)))) {
             base->Assign_Mission(MISSION_GUARD);
             ScenarioInit--;
-            return (2);
+            return 2;
           }
           ScenarioInit--;
           break;
@@ -2095,13 +2095,13 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
                 FactoryClass *temp = Factory;
                 bldg->Factory = Factory;
                 Factory = nullptr;
-                int retval = (bldg->Exit_Object(base));
+                int retval = bldg->Exit_Object(base);
                 bldg->Factory = nullptr;
                 Factory = temp;
-                return (retval);
+                return retval;
               }
             }
-            return (1);  // fail while we're still unloading previous
+            return 1;  // fail while we're still unloading previous
           }
           ScenarioInit++;
           if (base->Unlimbo(Exit_Coord(), DIR_S)) {
@@ -2112,7 +2112,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
             Transmit_Message(RADIO_TETHER);
             Assign_Mission(MISSION_UNLOAD);
             ScenarioInit--;
-            return (2);
+            return 2;
           }
           ScenarioInit--;
           break;
@@ -2149,7 +2149,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
                 Transmit_Message(RADIO_UNLOAD);
               }
               ScenarioInit--;
-              return (2);
+              return 2;
             }
             ScenarioInit--;
           }
@@ -2176,7 +2176,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
                     ::As_Target(House->Where_To_Go((FootClass *)base));
               }
               ScenarioInit--;
-              return (2);
+              return 2;
             }
             ScenarioInit--;
           }
@@ -2208,14 +2208,14 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
 
         if (coord) {
           if (Flush_For_Placement(base, Coord_Cell(coord))) {
-            return (1);
+            return 1;
           }
           if (base->Unlimbo(coord)) {
             if (node &&
                 ((BuildingClass *)base)->Class->Type == House->BuildStructure) {
               House->BuildStructure = STRUCT_NONE;
             }
-            return (2);
+            return 2;
           }
         }
       }
@@ -2228,7 +2228,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
   /*
   **	Failure to exit the object results in a false return value.
   */
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -2392,7 +2392,7 @@ bool BuildingClass::Limbo() {
     //			IsInLimbo = false;
     //		}
   }
-  return (TechnoClass::Limbo());
+  return TechnoClass::Limbo();
 }
 
 /***********************************************************************************************
@@ -2413,9 +2413,9 @@ bool BuildingClass::Limbo() {
  *=============================================================================================*/
 DirType BuildingClass::Turret_Facing() const {
   if (!Class->IsTurretEquipped && Target_Legal(TarCom)) {
-    return (::Direction(Center_Coord(), As_Coord(TarCom)));
+    return ::Direction(Center_Coord(), As_Coord(TarCom));
   }
-  return (PrimaryFacing.Current());
+  return PrimaryFacing.Current();
 }
 
 /***********************************************************************************************
@@ -2461,7 +2461,7 @@ TARGET BuildingClass::Greatest_Threat(ThreatType threat)  // const
   //		}
   //		threat = threat | THREAT_RANGE;
   //	}
-  return (TechnoClass::Greatest_Threat(threat));
+  return TechnoClass::Greatest_Threat(threat);
 }
 
 /***********************************************************************************************
@@ -2579,7 +2579,7 @@ void BuildingClass::Repair(int control) {
 
   switch (control) {
     case -1:
-      IsRepairing = (IsRepairing == false);
+      IsRepairing = IsRepairing == false;
       break;
 
     case 1:
@@ -2643,7 +2643,7 @@ void BuildingClass::Sell_Back(int control) {
     bool decon = false;
     switch (control) {
       case -1:
-        decon = (Mission != MISSION_DECONSTRUCTION);
+        decon = Mission != MISSION_DECONSTRUCTION;
         break;
 
       case 1:
@@ -2760,7 +2760,7 @@ ActionType BuildingClass::What_Action(ObjectClass const *object) const {
     action = ACTION_NONE;
   }
 
-  return (action);
+  return action;
 }
 
 /***********************************************************************************************
@@ -2800,7 +2800,7 @@ ActionType BuildingClass::What_Action(CELL cell) const {
     action = ACTION_NONE;
   }
 
-  return (action);
+  return action;
 }
 
 /***********************************************************************************************
@@ -2857,7 +2857,7 @@ COORDINATE BuildingClass::Center_Coord() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  return (Coord_Add(Coord, CenterOffset[Class->Size]));
+  return Coord_Add(Coord, CenterOffset[Class->Size]);
 }
 
 /***********************************************************************************************
@@ -2883,12 +2883,12 @@ COORDINATE BuildingClass::Docking_Coord() const {
   assert(IsActive);
 
   if (*this == STRUCT_HELIPAD) {
-    return (Coord_Add(Coord, XYP_COORD(24, 18)));
+    return Coord_Add(Coord, XYP_COORD(24, 18));
   }
   if (*this == STRUCT_AIRSTRIP) {
-    return (Coord_Add(Coord, XYP_COORD(ICON_PIXEL_W + ICON_PIXEL_W / 2, 28)));
+    return Coord_Add(Coord, XYP_COORD(ICON_PIXEL_W + ICON_PIXEL_W / 2, 28));
   }
-  return (TechnoClass::Docking_Coord());
+  return TechnoClass::Docking_Coord();
 }
 
 /***********************************************************************************************
@@ -2927,7 +2927,7 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
       diff = abs(diff);
       if (std::abs(diff) > (*this == STRUCT_SAM ? 64 : 8)) {
         //			if (std::abs(diff) > 8) {
-        return (FIRE_FACING);
+        return FIRE_FACING;
       }
 
       /*
@@ -2942,7 +2942,7 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
     **	Certain buildings cannot fire if there is insufficient power.
     */
     if (Class->IsPowered && House->Power_Fraction() < 1) {
-      return (FIRE_BUSY);
+      return FIRE_BUSY;
     }
 
     /*
@@ -2950,10 +2950,10 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
     */
     if (Class->PrimaryWeapon != nullptr && Class->PrimaryWeapon->IsElectric &&
         !IsCharged) {
-      return (FIRE_BUSY);
+      return FIRE_BUSY;
     }
   }
-  return (canfire);
+  return canfire;
 }
 
 /***********************************************************************************************
@@ -3002,7 +3002,7 @@ bool BuildingClass::Toggle_Primary() {
     }
   }
   Mark(MARK_CHANGE);
-  return (IsLeader);
+  return IsLeader;
 }
 
 /***********************************************************************************************
@@ -3044,8 +3044,8 @@ bool BuildingClass::Captured(HouseClass *newowner) {
     ** Make sure the capturer isn't spying on his own building, and if
     ** it was a radar facility, update the target house's RadarSpied field.
     */
-    if (SpiedBy & (1 << (newowner->Class->House))) {
-      SpiedBy -= (1 << (newowner->Class->House));
+    if (SpiedBy & 1 << newowner->Class->House) {
+      SpiedBy -= 1 << newowner->Class->House;
       if (*this == STRUCT_RADAR) {
         Update_Radar_Spied();
       }
@@ -3171,8 +3171,8 @@ bool BuildingClass::Captured(HouseClass *newowner) {
     ** If it was spied upon by the player who just captured it, clear the
     ** spiedby flag for that house.
     */
-    if (SpiedBy & (1 << (newowner->Class->House))) {
-      SpiedBy &= ~(1 << (newowner->Class->House));
+    if (SpiedBy & 1 << newowner->Class->House) {
+      SpiedBy &= ~(1 << newowner->Class->House);
     }
 
     /*
@@ -3183,9 +3183,9 @@ bool BuildingClass::Captured(HouseClass *newowner) {
       CELL cell = Coord_Cell(Coord) + *offset++;
       Map.Radar_Pixel(cell);
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3209,13 +3209,13 @@ COORDINATE BuildingClass::Sort_Y() const {
   assert(IsActive);
 
   if (*this == STRUCT_REPAIR) {
-    return (Coord);
+    return Coord;
   }
   if (*this == STRUCT_BARRACKS /*|| *this == STRUCT_POWER*/) {
-    return (Center_Coord());
+    return Center_Coord();
   }
   if (*this == STRUCT_REFINERY) {
-    return (Center_Coord());
+    return Center_Coord();
   }
 
   /*
@@ -3223,10 +3223,10 @@ COORDINATE BuildingClass::Sort_Y() const {
   *drawn *	before any objects that might overlap them.
   */
   if (*this == STRUCT_AVMINE || *this == STRUCT_APMINE) {
-    return (Coord_Move(Center_Coord(), DIR_N, CELL_LEPTON_H));
+    return Coord_Move(Center_Coord(), DIR_N, CELL_LEPTON_H);
   }
 
-  return (Coord_Add(Center_Coord(), XY_Coord(0, (Class->Height() * 256) / 3)));
+  return Coord_Add(Center_Coord(), XY_Coord(0, Class->Height() * 256 / 3));
 }
 
 /***********************************************************************************************
@@ -3250,15 +3250,15 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType) const {
   assert(IsActive);
 
   if (*this == STRUCT_CONST && IsDown) {
-    return (Map[cell].Is_Clear_To_Build(Class->Speed) ? MOVE_OK : MOVE_NO);
+    return Map[cell].Is_Clear_To_Build(Class->Speed) ? MOVE_OK : MOVE_NO;
   }
 
   if (!Debug_Map && ScenarioInit == 0 && Session.Type == GAME_NORMAL &&
       House->IsPlayerControl && !Map[cell].IsMapped) {
-    return (MOVE_NO);
+    return MOVE_NO;
   }
 
-  return (Class->Legal_Placement(cell) ? MOVE_OK : MOVE_NO);
+  return Class->Legal_Placement(cell) ? MOVE_OK : MOVE_NO;
 }
 
 /***********************************************************************************************
@@ -3283,14 +3283,14 @@ bool BuildingClass::Can_Demolish() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  if (Class->IsUnsellable) return (false);
+  if (Class->IsUnsellable) return false;
 
   if (Class->Get_Buildup_Data() && BState != BSTATE_CONSTRUCTION &&
       Mission != MISSION_DECONSTRUCTION && Mission != MISSION_CONSTRUCTION) {
-    if (*this == STRUCT_REFINERY && Is_Something_Attached()) return (false);
-    return (true);
+    if (*this == STRUCT_REFINERY && Is_Something_Attached()) return false;
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3339,7 +3339,7 @@ int BuildingClass::Mission_Guard() {
     if (Target_Legal(TarCom)) {
       Assign_Mission(MISSION_ATTACK);
       Commence();
-      return (1);
+      return 1;
     }
   } else {
     /*
@@ -3365,7 +3365,7 @@ int BuildingClass::Mission_Guard() {
             Distance(Contact_With_Whom()) < 0x0040 &&
             Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
           Assign_Mission(MISSION_REPAIR);
-          return (1);
+          return 1;
         }
         break;
 
@@ -3374,12 +3374,12 @@ int BuildingClass::Mission_Guard() {
     }
 
     if (*this == STRUCT_REPAIR) {
-      return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+      return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
     } else {
-      return (MissionControl[Mission].Normal_Delay() * 3 + Random_Pick(0, 2));
+      return MissionControl[Mission].Normal_Delay() * 3 + Random_Pick(0, 2);
     }
   }
-  return (MissionControl[Mission].AA_Delay() + Random_Pick(0, 2));
+  return MissionControl[Mission].AA_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -3431,7 +3431,7 @@ int BuildingClass::Mission_Construction() {
     default:
       break;
   }
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -3479,7 +3479,7 @@ int BuildingClass::Mission_Deconstruction() {
         if (IsOwnedByPlayer) Speak(VOX_UNIT_SOLD);
         tech->Sell_Back(1);
         Assign_Mission(MISSION_GUARD);
-        return (1);
+        return 1;
       }
 
       /*
@@ -3648,7 +3648,7 @@ int BuildingClass::Mission_Deconstruction() {
     default:
       break;
   }
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -3679,7 +3679,7 @@ int BuildingClass::Mission_Attack() {
       */
       case SAM_READY:
         if ((Class->IsPowered && House->Power_Fraction() < 1) || IsJammed) {
-          return (1);
+          return 1;
         }
         if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
             As_Aircraft(TarCom)->Height == 0) {
@@ -3687,7 +3687,7 @@ int BuildingClass::Mission_Attack() {
           Status = SAM_READY;
           Assign_Mission(MISSION_GUARD);
           Commence();
-          return (1);
+          return 1;
         } else {
           if (!PrimaryFacing.Is_Rotating()) {
             DirType facing = Direction(TarCom);
@@ -3698,7 +3698,7 @@ int BuildingClass::Mission_Attack() {
             }
           }
         }
-        return (1);
+        return 1;
 
       /*
       **	The launcher is in the process of firing.
@@ -3726,19 +3726,19 @@ int BuildingClass::Mission_Attack() {
             }
           }
         }
-        return (1);
+        return 1;
 
       default:
         break;
     }
-    return (MissionControl[Mission].AA_Delay() + Random_Pick(0, 2));
+    return MissionControl[Mission].AA_Delay() + Random_Pick(0, 2);
   }
 
   if (!Target_Legal(TarCom)) {
     Assign_Target(TARGET_NONE);
     Assign_Mission(MISSION_GUARD);
     Commence();
-    return (1);
+    return 1;
   }
 
   int primary = What_Weapon_Should_I_Use(TarCom);
@@ -3755,14 +3755,14 @@ int BuildingClass::Mission_Attack() {
 
     case FIRE_FACING:
       PrimaryFacing.Set_Desired(Direction(TarCom));
-      return (2);
+      return 2;
 
     case FIRE_REARM:
       PrimaryFacing.Set_Desired(Direction(TarCom));
-      return (Arm);
+      return Arm;
 
     case FIRE_BUSY:
-      return (1);
+      return 1;
 
     case FIRE_CLOAKED:
       Do_Uncloak();
@@ -3770,13 +3770,13 @@ int BuildingClass::Mission_Attack() {
 
     case FIRE_OK:
       Fire_At(TarCom, primary);
-      return (1);
+      return 1;
 
     default:
       break;
   }
   PrimaryFacing.Set_Desired(Direction(TarCom));
-  return (1);
+  return 1;
   //	return(MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
 }
 
@@ -3833,7 +3833,7 @@ int BuildingClass::Mission_Harvest() {
           if (bail) {
             House->Harvested(bail);
             if (techno->Tiberium_Load() > 0) {
-              return (1);
+              return 1;
             }
           }
         }
@@ -3853,7 +3853,7 @@ int BuildingClass::Mission_Harvest() {
     default:
       break;
   }
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -3896,7 +3896,7 @@ int BuildingClass::Mission_Repair() {
       default:
         break;
     }
-    return (1);
+    return 1;
   }
 
   if (*this == STRUCT_REPAIR) {
@@ -3906,7 +3906,7 @@ int BuildingClass::Mission_Repair() {
         if (!In_Radio_Contact()) {
           Begin_Mode(BSTATE_IDLE);
           Assign_Mission(MISSION_GUARD);
-          return (1);
+          return 1;
         }
         IsReadyToCommence = false;
         int distance = 0x10;
@@ -3927,7 +3927,7 @@ int BuildingClass::Mission_Repair() {
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
             Distance(Contact_With_Whom()) < distance) {
           Status = IDLE;
-          return (TICKS_PER_SECOND / 4);
+          return TICKS_PER_SECOND / 4;
         }
         break;
       }
@@ -3935,13 +3935,13 @@ int BuildingClass::Mission_Repair() {
       case IDLE:
         if (!In_Radio_Contact()) {
           Assign_Mission(MISSION_GUARD);
-          return (1);
+          return 1;
         }
 
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
           TechnoClass *radio = Contact_With_Whom();
 
-          if (((radio->Health_Ratio() < Rule.ConditionGreen) ||
+          if ((radio->Health_Ratio() < Rule.ConditionGreen ||
                (radio->What_Am_I() == RTTI_UNIT &&
                 *(UnitClass *)radio == UNIT_MINELAYER)) &&
               Transmit_Message(RADIO_REPAIR) == RADIO_ROGER) {
@@ -3975,7 +3975,7 @@ int BuildingClass::Mission_Repair() {
         if (!In_Radio_Contact()) {
           Begin_Mode(BSTATE_IDLE);
           Status = IDLE;
-          return (1);
+          return 1;
         }
 
         /*
@@ -4031,12 +4031,12 @@ int BuildingClass::Mission_Repair() {
               break;
           }
         }
-        return (1);
+        return 1;
 
       default:
         break;
     }
-    return (MissionControl[Mission].Normal_Delay());
+    return MissionControl[Mission].Normal_Delay();
   }
 
   if (*this == STRUCT_HELIPAD || *this == STRUCT_AIRSTRIP) {
@@ -4048,7 +4048,7 @@ int BuildingClass::Mission_Repair() {
           Begin_Mode(BSTATE_ACTIVE);
           Contact_With_Whom()->Assign_Mission(MISSION_SLEEP);
           Status = DURING;
-          return (1);
+          return 1;
         }
         Assign_Mission(MISSION_GUARD);
         break;
@@ -4058,19 +4058,19 @@ int BuildingClass::Mission_Repair() {
           if (!In_Radio_Contact() ||
               Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_NEGATIVE) {
             Assign_Mission(MISSION_GUARD);
-            return (1);
+            return 1;
           }
 
           if (Transmit_Message(RADIO_PREPARED) == RADIO_ROGER) {
             Contact_With_Whom()->Assign_Mission(MISSION_GUARD);
             Assign_Mission(MISSION_GUARD);
-            return (1);
+            return 1;
           }
 
           if (Transmit_Message(RADIO_RELOAD) != RADIO_ROGER) {
             Assign_Mission(MISSION_GUARD);
             Contact_With_Whom()->Assign_Mission(MISSION_GUARD);
-            return (1);
+            return 1;
           } else {
             fixed pfrac = Saturate(House->Power_Fraction(), 1);
             if (pfrac < fixed::_1_2) pfrac = fixed::_1_2;
@@ -4080,7 +4080,7 @@ int BuildingClass::Mission_Repair() {
             // 1)), 0, TICKS_PER_SECOND);
             // time = (TICKS_PER_SECOND*3) - time;
             IsReadyToCommence = false;
-            return (time);
+            return time;
           }
         }
         break;
@@ -4088,9 +4088,9 @@ int BuildingClass::Mission_Repair() {
       default:
         break;
     }
-    return (3);
+    return 3;
   }
-  return (TICKS_PER_SECOND);
+  return TICKS_PER_SECOND;
 }
 
 /***********************************************************************************************
@@ -4159,7 +4159,7 @@ int BuildingClass::Mission_Missile() {
           }
         }
       }
-        return (1);
+        return 1;
     }
   }
 
@@ -4175,7 +4175,7 @@ int BuildingClass::Mission_Missile() {
         IsReadyToCommence = false;
         Begin_Mode(BSTATE_ACTIVE);  // open the door
         Status = DOOR_OPENING;
-        return (1);
+        return 1;
 
       /*
       ** This polls for the case when the door is actually open and
@@ -4185,9 +4185,9 @@ int BuildingClass::Mission_Missile() {
         if (IsReadyToCommence) {
           Begin_Mode(BSTATE_AUX1);  // hold the door open
           Status = LAUNCH_UP;
-          return (14);
+          return 14;
         }
-        return (1);
+        return 1;
 
       /*
       ** Once the smoke has been going for a little while this
@@ -4220,7 +4220,7 @@ int BuildingClass::Mission_Missile() {
           ** tech level 15 or so.
           */
           if (House->Control.TechLevel <= 10) {
-            return (6);
+            return 6;
           }
           bullet =
               new BulletClass(BULLET_NUKE_DOWN, ::As_Target(House->NukeDest),
@@ -4235,10 +4235,10 @@ int BuildingClass::Mission_Missile() {
               delete bullet;
             }
           }
-          return (8 * TICKS_PER_SECOND);
+          return 8 * TICKS_PER_SECOND;
         }
       }
-        return (1);
+        return 1;
 
       /*
       ** Once the missile is in the air, this handles waiting for
@@ -4278,7 +4278,7 @@ int BuildingClass::Mission_Missile() {
         if (bullet) {
 #endif
           Status = DONE_LAUNCH;
-          return (6);
+          return 6;
         }
 #ifdef OBSOLETE
       }
@@ -4292,10 +4292,10 @@ int BuildingClass::Mission_Missile() {
       case DONE_LAUNCH:
         Begin_Mode(BSTATE_IDLE);  // keep the door closed.
         Assign_Mission(MISSION_GUARD);
-        return (60);
+        return 60;
     }
   }
-  return (MissionControl[Mission].Normal_Delay());
+  return MissionControl[Mission].Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -4341,9 +4341,9 @@ bool BuildingClass::Revealed(HouseClass *house) {
       }
     }
 
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -4401,7 +4401,7 @@ int BuildingClass::Pip_Count() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  return (Class->Max_Pips() * House->Tiberium_Fraction());
+  return Class->Max_Pips() * House->Tiberium_Fraction();
 }
 
 /***********************************************************************************************
@@ -4450,9 +4450,9 @@ DirType BuildingClass::Fire_Direction() const {
   assert(IsActive);
 
   if (Class->IsTurretEquipped) {
-    return (PrimaryFacing.Current());
+    return PrimaryFacing.Current();
   }
-  return (Direction(TarCom));
+  return Direction(TarCom);
 }
 
 /***********************************************************************************************
@@ -4475,7 +4475,7 @@ void const *BuildingClass::Remap_Table() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  return (House->Remap_Table(IsBlushing, Class->Remap));
+  return House->Remap_Table(IsBlushing, Class->Remap);
 }
 
 /***********************************************************************************************
@@ -4599,11 +4599,11 @@ int BuildingClass::Mission_Unload() {
       default:
         break;
     }
-    return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+    return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
   }
 
   Assign_Mission(MISSION_GUARD);
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -4626,9 +4626,9 @@ int BuildingClass::Power_Output() const {
   assert(IsActive);
 
   if (Class->Power) {
-    return (Class->Power * fixed(LastStrength, Class->MaxStrength));
+    return Class->Power * fixed(LastStrength, Class->MaxStrength);
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -4685,32 +4685,32 @@ InfantryType BuildingClass::Crew_Type() const {
   switch (Class->Type) {
     case STRUCT_STORAGE:
       if (Percent_Chance(50)) {
-        return (INFANTRY_C1);
+        return INFANTRY_C1;
       } else {
-        return (INFANTRY_C7);
+        return INFANTRY_C7;
       }
 
     case STRUCT_CONST:
       if (!IsCaptured && House->IsHuman && Percent_Chance(25)) {
-        return (INFANTRY_RENOVATOR);
+        return INFANTRY_RENOVATOR;
       }
       break;
 
     case STRUCT_KENNEL:
       if (Percent_Chance(50)) {
-        return (INFANTRY_DOG);
+        return INFANTRY_DOG;
       } else {
-        return (INFANTRY_NONE);
+        return INFANTRY_NONE;
       }
 
     case STRUCT_TENT:
     case STRUCT_BARRACKS:
-      return (INFANTRY_E1);
+      return INFANTRY_E1;
 
     default:
       break;
   }
-  return (TechnoClass::Crew_Type());
+  return TechnoClass::Crew_Type();
 }
 
 /***********************************************************************************************
@@ -4794,10 +4794,10 @@ bool BuildingClass::Flush_For_Placement(TechnoClass *techno, CELL cell) {
   assert(IsActive);
 
   if (techno) {
-    return (((BuildingTypeClass const &)techno->Class_Of())
-                .Flush_For_Placement(cell, House));
+    return ((BuildingTypeClass const &)techno->Class_Of())
+        .Flush_For_Placement(cell, House);
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -4832,7 +4832,7 @@ CELL BuildingClass::Find_Exit_Cell(TechnoClass const *techno) const {
     while (*ptr != REFRESH_EOL) {
       CELL cell = origin + *ptr++;
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
-        return (cell);
+        return cell;
       }
     }
   } else {
@@ -4843,30 +4843,30 @@ CELL BuildingClass::Find_Exit_Cell(TechnoClass const *techno) const {
     y1 = -1;
     y2 = Class->Height();
     for (x1 = -1; x1 <= Class->Width(); x1++) {
-      cell = origin + x1 + (y1 * MAP_CELL_W);
+      cell = origin + x1 + y1 * MAP_CELL_W;
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
-        return (cell);
+        return cell;
       }
-      cell = origin + x1 + (y2 * MAP_CELL_W);
+      cell = origin + x1 + y2 * MAP_CELL_W;
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
-        return (cell);
+        return cell;
       }
     }
 
     x1 = -1;
     x2 = Class->Width();
     for (y1 = -1; y1 <= Class->Height(); y1++) {
-      cell = origin + (y1 * MAP_CELL_W) + x1;
+      cell = origin + y1 * MAP_CELL_W + x1;
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
-        return (cell);
+        return cell;
       }
-      cell = origin + (y1 * MAP_CELL_W) + x2;
+      cell = origin + y1 * MAP_CELL_W + x2;
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
-        return (cell);
+        return cell;
       }
     }
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -4888,7 +4888,7 @@ bool BuildingClass::Can_Player_Move() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  return (*this == STRUCT_CONST);
+  return *this == STRUCT_CONST;
 }
 
 /***********************************************************************************************
@@ -4911,9 +4911,9 @@ COORDINATE BuildingClass::Exit_Coord() const {
   assert(IsActive);
 
   if (Class->ExitCoordinate) {
-    return (Coord_Add(Coord, Class->ExitCoordinate));
+    return Coord_Add(Coord, Class->ExitCoordinate);
   }
-  return (TechnoClass::Exit_Coord());
+  return TechnoClass::Exit_Coord();
 }
 
 /***********************************************************************************************
@@ -4952,15 +4952,15 @@ CELL BuildingClass::Check_Point(CheckPointType cp) const {
       break;
   }
 
-  if ((Cell_X(cell) - Map.MapCellX) > Map.MapCellWidth / 2) {
+  if (Cell_X(cell) - Map.MapCellX > Map.MapCellWidth / 2) {
     xoffset = -xoffset;
   }
 
-  if ((Cell_Y(cell) - Map.MapCellY) > Map.MapCellHeight / 2) {
+  if (Cell_Y(cell) - Map.MapCellY > Map.MapCellHeight / 2) {
     yoffset = -yoffset;
   }
 
-  return (XY_Cell(Cell_X(cell) + xoffset, Cell_Y(cell) + yoffset));
+  return XY_Cell(Cell_X(cell) + xoffset, Cell_Y(cell) + yoffset);
 }
 
 /***********************************************************************************************
@@ -5171,9 +5171,9 @@ COORDINATE BuildingClass::Target_Coord() const {
   COORDINATE coord = Center_Coord();
 
   if (Class->FoundationFace != FACING_NONE) {
-    return (Adjacent_Cell(coord, Class->FoundationFace));
+    return Adjacent_Cell(coord, Class->FoundationFace);
   }
-  return (coord);
+  return coord;
 }
 
 /***********************************************************************************************
@@ -5457,8 +5457,8 @@ void BuildingClass::Repair_AI() {
   /*
   **	If it is repairing, then apply any repair effects as necessary.
   */
-  if (IsRepairing && (Frame % (Rule.RepairRate * TICKS_PER_MINUTE)) == 0) {
-    IsWrenchVisible = (IsWrenchVisible == false);
+  if (IsRepairing && Frame % (Rule.RepairRate * TICKS_PER_MINUTE) == 0) {
+    IsWrenchVisible = IsWrenchVisible == false;
     Mark(MARK_CHANGE);
     int cost = Class->Repair_Cost();
     int step = Class->Repair_Step();
@@ -5524,7 +5524,7 @@ void BuildingClass::Animation_AI() {
       if (Fetch_Stage() == ctrl->Start + ctrl->Count - 1 ||
           (!Target_Legal(ArchiveTarget) /*Special.IsMCVDeploy*/ &&
            *this == STRUCT_CONST && Mission == MISSION_DECONSTRUCTION &&
-           Fetch_Stage() == (42 - 19))) {
+           Fetch_Stage() == 42 - 19)) {
         IsReadyToCommence = true;
       }
 
@@ -5589,13 +5589,13 @@ void BuildingClass::Animation_AI() {
  * HISTORY: * 08/04/1996 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::How_Many_Survivors() const {
-  if (IsSurvivorless || !Class->IsCrew) return (0);
+  if (IsSurvivorless || !Class->IsCrew) return 0;
 
   int divisor = InfantryTypeClass::As_Reference(INFANTRY_E1).Raw_Cost();
-  if (divisor == 0) return (0);
+  if (divisor == 0) return 0;
   if (IsCaptured) divisor *= 2;
-  int count = (Class->Raw_Cost() * Rule.SurvivorFraction) / divisor;
-  return (Bound(count, 1, 5));
+  int count = Class->Raw_Cost() * Rule.SurvivorFraction / divisor;
+  return Bound(count, 1, 5);
 }
 
 /***********************************************************************************************
@@ -5615,9 +5615,9 @@ int BuildingClass::How_Many_Survivors() const {
  *=============================================================================================*/
 void const *BuildingClass::Get_Image_Data() const {
   if (BState == BSTATE_CONSTRUCTION) {
-    return (Class->Get_Buildup_Data());
+    return Class->Get_Buildup_Data();
   }
-  return (TechnoClass::Get_Image_Data());
+  return TechnoClass::Get_Image_Data();
 }
 
 /***********************************************************************************************
@@ -5640,30 +5640,30 @@ int BuildingClass::Value() const {
   if (Class->IsFake) {
     switch (Class->Type) {
       case STRUCT_FAKEWEAP:
-        return (BuildingTypeClass::As_Reference(STRUCT_WEAP).Reward +
-                BuildingTypeClass::As_Reference(STRUCT_WEAP).Risk);
+        return BuildingTypeClass::As_Reference(STRUCT_WEAP).Reward +
+               BuildingTypeClass::As_Reference(STRUCT_WEAP).Risk;
 
       case STRUCT_FAKECONST:
-        return (BuildingTypeClass::As_Reference(STRUCT_CONST).Reward +
-                BuildingTypeClass::As_Reference(STRUCT_CONST).Risk);
+        return BuildingTypeClass::As_Reference(STRUCT_CONST).Reward +
+               BuildingTypeClass::As_Reference(STRUCT_CONST).Risk;
 
       case STRUCT_FAKE_YARD:
-        return (BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD).Reward +
-                BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD).Risk);
+        return BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD).Reward +
+               BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD).Risk;
 
       case STRUCT_FAKE_PEN:
-        return (BuildingTypeClass::As_Reference(STRUCT_SUB_PEN).Reward +
-                BuildingTypeClass::As_Reference(STRUCT_SUB_PEN).Risk);
+        return BuildingTypeClass::As_Reference(STRUCT_SUB_PEN).Reward +
+               BuildingTypeClass::As_Reference(STRUCT_SUB_PEN).Risk;
 
       case STRUCT_FAKE_RADAR:
-        return (BuildingTypeClass::As_Reference(STRUCT_RADAR).Reward +
-                BuildingTypeClass::As_Reference(STRUCT_RADAR).Risk);
+        return BuildingTypeClass::As_Reference(STRUCT_RADAR).Reward +
+               BuildingTypeClass::As_Reference(STRUCT_RADAR).Risk;
 
       default:
         break;
     }
   }
-  return (TechnoClass::Value());
+  return TechnoClass::Value();
 }
 
 /***********************************************************************************************
@@ -5700,11 +5700,10 @@ void BuildingClass::Remove_Gap_Effect() {
 }
 
 short const *BuildingClass::Overlap_List(bool redraw) const {
-  if ((SpiedBy & (1 << PlayerPtr->Class->House)) != 0 && IsSelected &&
+  if ((SpiedBy & 1 << PlayerPtr->Class->House) != 0 && IsSelected &&
       (*this == STRUCT_BARRACKS || *this == STRUCT_TENT)) {
-    static short const _list[] = {-1, 2, (MAP_CELL_W * 1) - 1,
-                                  (MAP_CELL_W * 1) + 2, REFRESH_EOL};
-    return (_list);
+    static short const _list[] = {-1, 2, MAP_CELL_W * 1 - 1, MAP_CELL_W * 1 + 2, REFRESH_EOL};
+    return _list;
   }
-  return (TechnoClass::Overlap_List(redraw));
+  return TechnoClass::Overlap_List(redraw);
 }

@@ -92,8 +92,8 @@ class PowerClass : public RadarClass {
   enum PowerEnums {
     POWER_X = 10 * ICON_PIXEL_W,
 #if RESFACTOR == 2
-    POWER_Y = (7 + 70 + 13),
-    POWER_HEIGHT = (200 - (7 + 70 + 13)),
+    POWER_Y = 7 + 70 + 13,
+    POWER_HEIGHT = 200 - (7 + 70 + 13),
 #else
     POWER_Y = (88 + 9),
     POWER_HEIGHT = 80,

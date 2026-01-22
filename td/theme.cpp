@@ -132,9 +132,9 @@ ThemeClass::ThemeControl ThemeClass::_themes[THEME_COUNT] = {
  *=============================================================================================*/
 char const* ThemeClass::Base_Name(ThemeType theme) const {
   if (theme != THEME_NONE) {
-    return (_themes[theme].Name);
+    return _themes[theme].Name;
   }
-  return ("No theme");
+  return "No theme";
 }
 
 /***********************************************************************************************
@@ -173,9 +173,9 @@ ThemeClass::ThemeClass() {
  *=============================================================================================*/
 char const* ThemeClass::Full_Name(ThemeType theme) const {
   if (theme != THEME_NONE) {
-    return (Text_String(_themes[theme].Fullname));
+    return Text_String(_themes[theme].Fullname);
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -262,7 +262,7 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
       }
     }
   }
-  return (theme);
+  return theme;
 }
 
 /***********************************************************************************************
@@ -328,7 +328,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
 #endif
     }
   }
-  return (Current);
+  return Current;
 }
 
 /***********************************************************************************************
@@ -386,9 +386,9 @@ char const* ThemeClass::Theme_File_Name(ThemeType theme) {
  *=============================================================================================*/
 int ThemeClass::Track_Length(ThemeType theme) {
   if ((unsigned)theme < THEME_COUNT) {
-    return (_themes[theme].Duration);
+    return _themes[theme].Duration;
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -431,9 +431,9 @@ void ThemeClass::Stop() {
  *=============================================================================================*/
 int ThemeClass::Still_Playing() {
   if (ScoresPresent && SampleType && Current != -1 && !Debug_Quiet) {
-    return (Sample_Status(Current));
+    return Sample_Status(Current);
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -466,16 +466,15 @@ bool ThemeClass::Is_Allowed(ThemeType index) const {
 
   if (index == THEME_NONE) return true;
 
-  return (
-      _themes[index].Available &&
-      (_themes[index].Normal ||
-       //		(index == THEME_MAP1 && ScenarioInit) ||
-       ((Special.IsVariation && _themes[index].Variation &&
-         index != THEME_WIN1) &&
+  return _themes[index].Available &&
+         (_themes[index].Normal ||
+          //		(index == THEME_MAP1 && ScenarioInit) ||
+          (Special.IsVariation && _themes[index].Variation &&
+           index != THEME_WIN1 &&
 #ifndef DEMO
-        (GameToPlay != GAME_NORMAL || _themes[index].Scenario <= Scenario) &&
+           (GameToPlay != GAME_NORMAL || _themes[index].Scenario <= Scenario) &&
 #endif
-        (index != THEME_J1 || Special.IsJurassic))));
+           (index != THEME_J1 || Special.IsJurassic)));
 }
 
 /***********************************************************************************************
@@ -505,7 +504,7 @@ ThemeType ThemeClass::From_Name(char const* name) {
     */
     for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
       if (stricmp(_themes[theme].Name, name) == 0) {
-        return (theme);
+        return theme;
       }
     }
 
@@ -516,12 +515,12 @@ ThemeType ThemeClass::From_Name(char const* name) {
     */
     for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
       if (strstr(Text_String(_themes[theme].Fullname), name) != nullptr) {
-        return (theme);
+        return theme;
       }
     }
   }
 
-  return (THEME_NONE);
+  return THEME_NONE;
 }
 
 /***********************************************************************************************

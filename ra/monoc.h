@@ -95,8 +95,8 @@ class MonoClass {
   void Pan(int cols = 1);
   int Get_X() const { return X; }
   int Get_Y() const { return Y; }
-  int Get_Width() const { return (SubW); }
-  int Get_Height() const { return (SubH); }
+  int Get_Width() const { return SubW; }
+  int Get_Height() const { return SubH; }
 
   /*
   **	Handles deep copies for the mono class objects. This performs what is
@@ -200,7 +200,7 @@ class MonoClass {
   MonoPageType* Raw_Ptr(int page) const {
     return &((MonoPageType*)0xB0000)[page];
   }
-  MonoPageType* Page_Ptr() const { return (Raw_Ptr(Page)); }
+  MonoPageType* Page_Ptr() const { return Raw_Ptr(Page); }
 
   /*
   **	If this is true, then monochrome output is allowed. It defaults to false

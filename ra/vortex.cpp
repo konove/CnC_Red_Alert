@@ -375,7 +375,7 @@ void ChronalVortexClass::AI() {
     */
     Zap_Target();
 
-    if (Hidden && (Frame - HiddenFrame > 50)) {
+    if (Hidden && Frame - HiddenFrame > 50) {
       /*
       ** Vortex is hidden. Chance of it showing itself increases the longer its
       *stays hidden.
@@ -546,7 +546,7 @@ void ChronalVortexClass::Set_Target(ObjectClass* target) {
     if (target != nullptr) TargetObject = target->As_Target();
     LastAttackFrame = Frame;
     TargetDistance =
-        (target != nullptr) ? Distance(target->Center_Coord(), Position) : 0;
+        target != nullptr ? Distance(target->Center_Coord(), Position) : 0;
   }
 }
 
@@ -756,13 +756,13 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
         /*
         ** Get the coordinates of the pixel to draw
         */
-        getx = *(remap_table++);
-        gety = *(remap_table++);
-        remap_color = *(remap_table++);
+        getx = *remap_table++;
+        gety = *remap_table++;
+        remap_color = *remap_table++;
 
-        pixel_color = *(bufptr + getx + (gety * modulo));
+        pixel_color = *(bufptr + getx + gety * modulo);
 
-        *(destptr++) = VortexRemapTables[remap_color][pixel_color];
+        *destptr++ = VortexRemapTables[remap_color][pixel_color];
       }
 
       remap_table += 3 * (width - dest_width);
@@ -1083,7 +1083,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
     } else {
       for (i = 0; i < MAX_REMAP_SHADES; i++) {
         Build_Fading_Table(GamePalette, &VortexRemapTables[i][0], 0,
-                           240 - ((i * 256) / MAX_REMAP_SHADES));
+                           240 - i * 256 / MAX_REMAP_SHADES);
       }
 
       file.Write(VortexRemapTables, MAX_REMAP_SHADES * 256);
@@ -1137,7 +1137,7 @@ void ChronalVortexClass::Build_Fading_Table(PaletteClass const& palette,
       */
       if (index == 0 ||
           (index >= CYCLE_COLOR_START &&
-           index < (CYCLE_COLOR_START + CYCLE_COLOR_COUNT)) ||
+           index < CYCLE_COLOR_START + CYCLE_COLOR_COUNT) ||
           index == CC_PULSE_COLOR || index == CC_EMBER_COLOR) {
         *ptr++ = index;
       } else {
@@ -1157,7 +1157,7 @@ void ChronalVortexClass::Build_Fading_Table(PaletteClass const& palette,
         for (int id = 0; id < PaletteClass::COLOR_COUNT; id++) {
           if (id != 0 &&
               (id < CYCLE_COLOR_START ||
-               id >= (CYCLE_COLOR_START + CYCLE_COLOR_COUNT)) &&
+               id >= CYCLE_COLOR_START + CYCLE_COLOR_COUNT) &&
               id != CC_PULSE_COLOR && id != CC_EMBER_COLOR) {
             int diff = palette[id].Difference(trycolor);
             if (best == -1 || diff < bvalue) {

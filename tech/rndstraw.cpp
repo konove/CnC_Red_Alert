@@ -104,9 +104,9 @@ RandomStraw::~RandomStraw() {
 int RandomStraw::Seed_Bits_Needed() const {
   const int total = sizeof(Random) * CHAR_BIT;
   if (SeedBits < total) {
-    return (total - SeedBits);
+    return total - SeedBits;
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -127,15 +127,15 @@ int RandomStraw::Seed_Bits_Needed() const {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 void RandomStraw::Seed_Bit(int seed) {
-  char* ptr = ((char*)&Random[0]) + ((SeedBits / CHAR_BIT) % sizeof(Random));
-  char frac = (char)(1 << (SeedBits & (CHAR_BIT - 1)));
+  char* ptr = (char*)&Random[0] + SeedBits / CHAR_BIT % sizeof(Random);
+  char frac = (char)(1 << (SeedBits & CHAR_BIT - 1));
 
   if (seed & 0x01) {
     *ptr ^= frac;
   }
   SeedBits++;
 
-  if (SeedBits == (sizeof(Random) * CHAR_BIT)) {
+  if (SeedBits == sizeof(Random) * CHAR_BIT) {
     Scramble_Seed();
   }
 }
@@ -174,7 +174,7 @@ void RandomStraw::Seed_Byte(char seed) {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 void RandomStraw::Seed_Short(short seed) {
-  for (int index = 0; index < (sizeof(seed) * CHAR_BIT); index++) {
+  for (int index = 0; index < sizeof(seed) * CHAR_BIT; index++) {
     Seed_Bit(seed);
     seed >>= 1;
   }
@@ -194,7 +194,7 @@ void RandomStraw::Seed_Short(short seed) {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 void RandomStraw::Seed_Long(long seed) {
-  for (int index = 0; index < (sizeof(seed) * CHAR_BIT); index++) {
+  for (int index = 0; index < sizeof(seed) * CHAR_BIT; index++) {
     Seed_Bit(seed);
     seed >>= 1;
   }
@@ -227,10 +227,10 @@ void RandomStraw::Scramble_Seed() {
     sha.Hash(&Random[0], sizeof(Random));
     sha.Result(digest);
 
-    int tocopy = sizeof(digest) < (sizeof(Random) - index)
+    int tocopy = sizeof(digest) < sizeof(Random) - index
                      ? sizeof(digest)
-                     : (sizeof(Random) - index);
-    memmove(((char*)&Random[0]) + index, digest, tocopy);
+                     : sizeof(Random) - index;
+    memmove((char*)&Random[0] + index, digest, tocopy);
   }
 }
 
@@ -255,7 +255,7 @@ void RandomStraw::Scramble_Seed() {
  *=============================================================================================*/
 int RandomStraw::Get(void* source, int slen) {
   if (source == nullptr || slen < 1) {
-    return (Straw::Get(source, slen));
+    return Straw::Get(source, slen);
   }
 
   int total = 0;
@@ -266,5 +266,5 @@ int RandomStraw::Get(void* source, int slen) {
     slen--;
     total++;
   }
-  return (total);
+  return total;
 }

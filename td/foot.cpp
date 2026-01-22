@@ -301,7 +301,7 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 void FootClass::Set_Speed(int speed) {
   speed &= 0xFF;
-  ((unsigned char&)Speed) = speed;
+  (unsigned char&)Speed = speed;
 }
 
 /***********************************************************************************************
@@ -347,9 +347,9 @@ bool FootClass::Mark(MarkType mark) {
         Map.Refresh_Cells(cell, Occupy_List());
         break;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -387,14 +387,14 @@ bool FootClass::Basic_Path() {
     if (Can_Enter_Cell(cell) == MOVE_NO && Distance(NavCom) > 0x0300) {
       static int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
       FacingType f2 =
-          (FacingType)(((unsigned)::Direction(cell, Coord_Cell(Coord))) >> 5);
+          (FacingType)((unsigned)::Direction(cell, Coord_Cell(Coord)) >> 5);
 
       for (unsigned index = 0;
-           index < (sizeof(_faceadjust) / sizeof(_faceadjust[0])); index++) {
+           index < sizeof(_faceadjust) / sizeof(_faceadjust[0]); index++) {
         CELL cell2;
 
         cell2 =
-            Adjacent_Cell(cell, (FacingType)((f2 + _faceadjust[index]) & 0x7));
+            Adjacent_Cell(cell, (FacingType)(f2 + _faceadjust[index] & 0x7));
         if (Can_Enter_Cell(cell2, FACING_NONE) <= MOVE_CLOAK) {
           cell = cell2;
           break;
@@ -475,7 +475,7 @@ bool FootClass::Basic_Path() {
         */
         path = Find_Path(cell, &workpath2[0], sizeof(workpath2), MOVE_CLOAK);
         if (path && path->Cost &&
-            path->Cost < std::max((path1.Cost + (path1.Cost / 2)), 3)) {
+            path->Cost < std::max(path1.Cost + path1.Cost / 2, 3)) {
           memcpy(&path1, path, sizeof(path1));
           memcpy(workpath1, workpath2, sizeof(workpath1));
         } else {
@@ -487,7 +487,7 @@ bool FootClass::Basic_Path() {
           for (MoveType move = MOVE_MOVING_BLOCK; move < maxtype; move++) {
             path = Find_Path(cell, &workpath2[0], sizeof(workpath2), move);
             if (path && path->Cost &&
-                path->Cost < std::max((path1.Cost + (path1.Cost / 2)), 3)) {
+                path->Cost < std::max(path1.Cost + path1.Cost / 2, 3)) {
               memcpy(&path1, path, sizeof(path1));
               memcpy(workpath1, workpath2, sizeof(workpath1));
             }
@@ -545,7 +545,7 @@ bool FootClass::Basic_Path() {
 #endif
 
     PathDelay = PATH_DELAY;
-    if (Path[0] != FACING_NONE) return (true);
+    if (Path[0] != FACING_NONE) return true;
 
     /*
     **	If a basic path couldn't be determined, then abort the navigation
@@ -554,7 +554,7 @@ bool FootClass::Basic_Path() {
     //		NavCom = TARGET_NONE;
     Stop_Driver();
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -581,7 +581,7 @@ int FootClass::Mission_Move() {
   if (!Target_Legal(TarCom) && !House->IsHuman) {
     Target_Something_Nearby(THREAT_RANGE);
   }
-  return (TICKS_PER_SECOND + 3);
+  return TICKS_PER_SECOND + 3;
 }
 
 /***********************************************************************************************
@@ -608,7 +608,7 @@ int FootClass::Mission_Capture() {
       Scatter(0, true);
     }
   }
-  return (TICKS_PER_SECOND - 2);
+  return TICKS_PER_SECOND - 2;
 }
 
 /***********************************************************************************************
@@ -633,7 +633,7 @@ int FootClass::Mission_Attack() {
   } else {
     Enter_Idle_Mode();
   }
-  return (TICKS_PER_SECOND + 2);
+  return TICKS_PER_SECOND + 2;
 }
 
 /***********************************************************************************************
@@ -654,8 +654,8 @@ int FootClass::Mission_Guard() {
   if (!Target_Something_Nearby(THREAT_RANGE)) {
     Random_Animate();
   }
-  return (TICKS_PER_SECOND +
-          Random_Picky((int)0, (int)4, (char*)nullptr, (int)0));
+  return TICKS_PER_SECOND +
+         Random_Picky((int)0, (int)4, (char*)nullptr, (int)0);
 }
 
 /***********************************************************************************************
@@ -685,7 +685,7 @@ int FootClass::Mission_Hunt() {
       Approach_Target();
     }
   }
-  return (TICKS_PER_SECOND + 5);
+  return TICKS_PER_SECOND + 5;
 }
 
 /***********************************************************************************************
@@ -716,7 +716,7 @@ int FootClass::Mission_Timed_Hunt() {
     ** (it gets mad at you)
     */
     if ((MPlayerBlitz && House->BlitzTime == 0) ||
-        House->CurUnits < ((House->MaxUnit * 4) / 5)) {
+        House->CurUnits < House->MaxUnit * 4 / 5) {
       Assign_Mission(MISSION_HUNT);
       changed = 1;
     }
@@ -747,7 +747,7 @@ int FootClass::Mission_Timed_Hunt() {
     }
   }
 
-  return (TICKS_PER_SECOND + Random_Pick(0, 4));  // call me back in 1 second.
+  return TICKS_PER_SECOND + Random_Pick(0, 4);  // call me back in 1 second.
 }
 
 /***********************************************************************************************
@@ -770,9 +770,9 @@ bool FootClass::Stop_Driver() {
     HeadToCoord = 0;
     Set_Speed(0);
     IsDriving = false;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -802,13 +802,13 @@ bool FootClass::Start_Driver(COORDINATE& headto) {
     **	Check for crate goodie finder here.
     */
     if (Map[Coord_Cell(headto)].Goodie_Check(this)) {
-      return (true);
+      return true;
     }
 
     HeadToCoord = 0;
     IsDriving = false;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -831,13 +831,13 @@ bool FootClass::Start_Driver(COORDINATE& headto) {
  *=============================================================================================*/
 COORDINATE FootClass::Sort_Y() const {
   if (IsUnloading) {
-    return (Coord_Add(Coord, 0x01000000L));
+    return Coord_Add(Coord, 0x01000000L);
   }
   if (In_Radio_Contact() && IsTethered &&
       Contact_With_Whom()->What_Am_I() == RTTI_UNIT) {
-    return (Coord_Add(Coord, 0x01000000L));
+    return Coord_Add(Coord, 0x01000000L);
   }
-  return (Coord_Add(Coord, 0x00300000L));
+  return Coord_Add(Coord, 0x00300000L);
 }
 
 /***********************************************************************************************
@@ -906,7 +906,7 @@ void FootClass::Approach_Target() {
       BuildingClass* obj = As_Building(TarCom);
       if (obj) {
         maxrange +=
-            ((obj->Class->Width() + obj->Class->Height()) * (0x100 / 4));
+            (obj->Class->Width() + obj->Class->Height()) * (0x100 / 4);
       }
 
       /*
@@ -941,7 +941,7 @@ void FootClass::Approach_Target() {
         static int _angles[] = {0,  8,   -8, 16,  -16, 24, -24,
                                 32, -32, 48, -48, 64,  -64};
 
-        for (int index = 0; index < (sizeof(_angles) / sizeof(_angles[0]));
+        for (int index = 0; index < sizeof(_angles) / sizeof(_angles[0]);
              index++) {
           trycoord = Coord_Move(tcoord, (DirType)(dir + _angles[index]), range);
 
@@ -991,7 +991,7 @@ void FootClass::Approach_Target() {
 int FootClass::Mission_Guard_Area() {
   if (What_Am_I() == RTTI_UNIT && ((UnitClass*)this)->Class->IsToHarvest) {
     Assign_Mission(MISSION_HARVEST);
-    return (1 + Random_Pick(1, 10));
+    return 1 + Random_Pick(1, 10);
   }
 
   /*
@@ -1018,12 +1018,12 @@ int FootClass::Mission_Guard_Area() {
     Coord = As_Coord(ArchiveTarget);
     Target_Something_Nearby(THREAT_AREA);
     Coord = old;
-    if (Target_Legal(TarCom)) return (1);
+    if (Target_Legal(TarCom)) return 1;
   } else {
     Approach_Target();
   }
-  return (TICKS_PER_SECOND +
-          Random_Picky((int)0, (int)4, (char*)nullptr, (int)0));
+  return TICKS_PER_SECOND +
+         Random_Picky((int)0, (int)4, (char*)nullptr, (int)0);
 }
 
 /***********************************************************************************************
@@ -1058,9 +1058,9 @@ bool FootClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Start in a still (non-moving) state.
     */
     Path[0] = FACING_NONE;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1106,7 +1106,7 @@ bool FootClass::Limbo() {
       Team->Remove(this);
     }
   }
-  return (TechnoClass::Limbo());
+  return TechnoClass::Limbo();
 }
 
 /***********************************************************************************************
@@ -1155,7 +1155,7 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
       if (As_Techno(TarCom)) {
         weap = As_Techno(TarCom)->Techno_Type_Class()->Primary;
       }
-      bool tweap = (weap != WEAPON_NONE && weap != WEAPON_NIKE);
+      bool tweap = weap != WEAPON_NONE && weap != WEAPON_NIKE;
 
       /*
       **	This ensures that if a unit is in sticky mode, then it will snap
@@ -1224,7 +1224,7 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
       }
     }
   }
-  return (result);
+  return result;
 }
 
 /***********************************************************************************************
@@ -1389,7 +1389,7 @@ void FootClass::Per_Cell_Process(bool center) {
   **	Shorten the path if the target is now within weapon range of this
   **	unit and this unit is on an attack type mission.
   */
-  if (What_Am_I() != RTTI_UNIT || *((UnitClass*)this) != UNIT_GUNBOAT) {
+  if (What_Am_I() != RTTI_UNIT || *(UnitClass*)this != UNIT_GUNBOAT) {
     bool inrange = In_Range(TarCom);
     TechnoClass const* techno = As_Techno(TarCom);
     if (techno && techno->What_Am_I() != RTTI_BUILDING) {
@@ -1459,9 +1459,9 @@ void FootClass::Override_Mission(MissionType mission, TARGET tarcom,
 bool FootClass::Restore_Mission() {
   if (TechnoClass::Restore_Mission()) {
     Assign_Destination(SuspendedNavCom);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1494,7 +1494,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     *repair *	is possible.
     */
     case RADIO_REPAIR:
-      if (Target_Legal(NavCom)) return (RADIO_NEGATIVE);
+      if (Target_Legal(NavCom)) return RADIO_NEGATIVE;
       break;
 
     /*
@@ -1517,9 +1517,9 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     case RADIO_NEED_TO_MOVE:
       param = (long)NavCom;
       if (!Target_Legal(NavCom)) {
-        return (RADIO_ROGER);
+        return RADIO_ROGER;
       }
-      return (RADIO_NEGATIVE);
+      return RADIO_NEGATIVE;
 
     /*
     **	Radio request to move to location specified. Typically this is used
@@ -1528,7 +1528,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     case RADIO_MOVE_HERE:
       if (NavCom != (TARGET)param) {
         if (::As_Target(Coord_Cell(Coord)) == (TARGET)param) {
-          return (RADIO_YEA_NOW_WHAT);
+          return RADIO_YEA_NOW_WHAT;
         } else {
           if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
             Assign_Mission(MISSION_MOVE);
@@ -1536,7 +1536,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
           Assign_Destination((TARGET)param);
         }
       }
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
 
     /*
     ** Requests if this unit is trying to cooperatively load up. Typically, this
@@ -1545,11 +1545,11 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     case RADIO_TRYING_TO_LOAD:
       if (Mission == MISSION_ENTER || MissionQueue == MISSION_ENTER) {
         TechnoClass::Receive_Message(from, message, param);
-        return (RADIO_ROGER);
+        return RADIO_ROGER;
       }
       break;
   }
-  return (TechnoClass::Receive_Message(from, message, param));
+  return TechnoClass::Receive_Message(from, message, param);
 }
 
 /***********************************************************************************************
@@ -1603,7 +1603,7 @@ int FootClass::Mission_Enter() {
       Enter_Idle_Mode();
     }
   }
-  return (TICKS_PER_SECOND / 2);
+  return TICKS_PER_SECOND / 2;
 }
 
 /***********************************************************************************************
@@ -1670,7 +1670,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   **	If the target specified is not legal, then it cannot be attacked. Always
   *return *	zero in this case.
   */
-  if (!Target_Legal(tarcom)) return (0);
+  if (!Target_Legal(tarcom)) return 0;
 
   /*
   ** If the unit is already assigned to destroy the tarcom then we need
@@ -1678,7 +1678,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   ** desired threat rating.
   */
   if (TarCom == tarcom) {
-    return (-Risk());
+    return -Risk();
   }
 
   /*
@@ -1688,7 +1688,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   if (Target_Legal(TarCom)) {
     TechnoClass* techno = As_Techno(TarCom);
     if (techno && techno->Techno_Type_Class()->Primary != WEAPON_NONE) {
-      return (0);
+      return 0;
     }
   }
 
@@ -1698,7 +1698,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   ** at all.
   */
   if (Team || Mission == MISSION_HARVEST || !Risk()) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -1715,14 +1715,14 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
     */
     speed = std::max((unsigned)Techno_Type_Class()->MaxSpeed, (unsigned)1);
 
-    int ratio = (speed > 0) ? std::max(dist / speed, 1) : 1;
+    int ratio = speed > 0 ? std::max(dist / speed, 1) : 1;
 
     /*
     ** Finally modify the threat by the distance the unit is away.
     */
     threat = std::max(threat / ratio, 1);
   }
-  return (threat);
+  return threat;
 }
 
 /***********************************************************************************************
@@ -1742,7 +1742,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
 void FootClass::Death_Announcement(TechnoClass const* source) const {
   if (IsDiscoveredByPlayer || IsOwnedByPlayer) {
     if (!source || source->What_Am_I() != RTTI_INFANTRY ||
-        *((InfantryClass const*)source) != INFANTRY_RAMBO) {
+        *(InfantryClass const*)source != INFANTRY_RAMBO) {
       if (What_Am_I() == RTTI_INFANTRY &&
           ((InfantryTypeClass const&)Class_Of()).IsCivilian &&
           !((InfantryClass*)this)->IsTechnician) {
@@ -1798,7 +1798,7 @@ TARGET FootClass::Greatest_Threat(ThreatType method) const {
   **	If this object can cloak, then it won't select a target automatically.
   */
   if (House->IsHuman && IsCloakable && Mission == MISSION_GUARD) {
-    return (TARGET_NONE);
+    return TARGET_NONE;
   }
 
   if (Techno_Type_Class()->Primary != WEAPON_NONE &&
@@ -1813,7 +1813,7 @@ TARGET FootClass::Greatest_Threat(ThreatType method) const {
     method = method | THREAT_AIR;
   }
 
-  return (TechnoClass::Greatest_Threat(method | THREAT_GROUND));
+  return TechnoClass::Greatest_Threat(method | THREAT_GROUND);
 }
 
 /***********************************************************************************************
@@ -1885,7 +1885,7 @@ void FootClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Offload_Tiberium_Bail() { return (0); }
+int FootClass::Offload_Tiberium_Bail() { return 0; }
 
 /***********************************************************************************************
  * FootClass::Can_Enter_Cell -- Checks to see if the object can enter cell
@@ -1931,16 +1931,16 @@ bool FootClass::Can_Demolish() const {
     case RTTI_AIRCRAFT:
       if (In_Radio_Contact() &&
           Contact_With_Whom()->What_Am_I() == RTTI_BUILDING &&
-          *((BuildingClass*)Contact_With_Whom()) == STRUCT_REPAIR &&
+          *(BuildingClass*)Contact_With_Whom() == STRUCT_REPAIR &&
           Distance(Contact_With_Whom()) < 0x0080) {
-        return (true);
+        return true;
       }
       break;
 
     default:
       break;
   }
-  return (TechnoClass::Can_Demolish());
+  return TechnoClass::Can_Demolish();
 }
 
 /***********************************************************************************************
@@ -1989,7 +1989,7 @@ void FootClass::Sell_Back(int control) {
  *=============================================================================================*/
 COORDINATE FootClass::Likely_Coord() const {
   if (Head_To_Coord()) {
-    return (Head_To_Coord());
+    return Head_To_Coord();
   }
-  return (Target_Coord());
+  return Target_Coord();
 }

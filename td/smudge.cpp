@@ -121,7 +121,7 @@ void* SmudgeClass::operator new(size_t) throw() {
   if (ptr) {
     ((SmudgeClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -196,7 +196,7 @@ void SmudgeClass::Init() {
   Smudges.Free_All();
 
   ptr = new SmudgeClass();
-  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -224,13 +224,13 @@ bool SmudgeClass::Mark(MarkType mark) {
 
       for (int w = 0; w < Class->Width; w++) {
         for (int h = 0; h < Class->Height; h++) {
-          CELL newcell = origin + w + (h * MAP_CELL_W);
+          CELL newcell = origin + w + h * MAP_CELL_W;
           if (Map.In_Radar(newcell)) {
             CellClass* cell = &Map[newcell];
 
             if (Class->IsBib) {
               cell->Smudge = Class->Type;
-              cell->SmudgeData = w + (h * Class->Width);
+              cell->SmudgeData = w + h * Class->Width;
               cell->Owner = ToOwn;
             } else {
               if (cell->Is_Generally_Clear()) {
@@ -272,10 +272,10 @@ bool SmudgeClass::Mark(MarkType mark) {
       *proper smudge data.
       */
       delete this;
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -396,7 +396,7 @@ void SmudgeClass::Disown(CELL cell) {
   if (Class->IsBib) {
     for (int w = 0; w < Class->Width; w++) {
       for (int h = 0; h < Class->Height; h++) {
-        CellClass& cellptr = Map[cell + w + (h * MAP_CELL_W)];
+        CellClass& cellptr = Map[cell + w + h * MAP_CELL_W];
 
         if (cellptr.Overlay == OVERLAY_NONE ||
             !OverlayTypeClass::As_Reference(cellptr.Overlay).IsWall) {

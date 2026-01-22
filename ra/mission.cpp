@@ -161,7 +161,7 @@ void MissionClass::Set_Mission(MissionType mission) {
 MissionType MissionClass::Get_Mission() const {
   assert(IsActive);
 
-  return (Mission == MISSION_NONE ? MissionQueue : Mission);
+  return Mission == MISSION_NONE ? MissionQueue : Mission;
 }
 
 #ifdef CHEAT_KEYS
@@ -347,9 +347,9 @@ bool MissionClass::Commence() {
     */
     Timer = 0;
     Status = 0;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -404,11 +404,11 @@ MissionType MissionClass::Mission_From_Name(char const* name) {
   if (name) {
     for (order = MISSION_FIRST; order < MISSION_COUNT; order++) {
       if (stricmp(Missions[order], name) == 0) {
-        return (order);
+        return order;
       }
     }
   }
-  return (MISSION_NONE);
+  return MISSION_NONE;
 }
 
 /***********************************************************************************************
@@ -429,9 +429,9 @@ MissionType MissionClass::Mission_From_Name(char const* name) {
  *=============================================================================================*/
 char const* MissionClass::Mission_Name(MissionType mission) {
   if (mission != MISSION_NONE) {
-    return (Missions[mission]);
+    return Missions[mission];
   }
-  return ("None");
+  return "None";
 }
 
 /***********************************************************************************************
@@ -479,9 +479,9 @@ bool MissionClass::Restore_Mission() {
   if (SuspendedMission != MISSION_NONE) {
     Assign_Mission(SuspendedMission);
     SuspendedMission = MISSION_NONE;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -503,9 +503,9 @@ bool MissionClass::Restore_Mission() {
  *=============================================================================================*/
 bool MissionClass::Is_Recruitable_Mission(MissionType mission) {
   if (mission == MISSION_NONE) {
-    return (true);
+    return true;
   }
-  return (MissionControl[mission].IsRecruitable);
+  return MissionControl[mission].IsRecruitable;
 }
 
 MissionControlClass::MissionControlClass()
@@ -521,9 +521,9 @@ MissionControlClass::MissionControlClass()
 
 char const* MissionControlClass::Name() const {
   if (Mission == MISSION_NONE) {
-    return ("<none>");
+    return "<none>";
   }
-  return (Missions[Mission]);
+  return Missions[Mission];
 }
 
 bool MissionControlClass::Read_INI(CCINIClass& ini) {
@@ -539,7 +539,7 @@ bool MissionControlClass::Read_INI(CCINIClass& ini) {
     if (AARate == 0) {
       AARate = Rate;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

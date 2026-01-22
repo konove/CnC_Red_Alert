@@ -132,7 +132,7 @@ class UnitClass : public DriveClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void operator delete(void* ptr);
   UnitClass(UnitType classid, HousesType house);
   UnitClass(NoInitClass const& x)
@@ -165,8 +165,8 @@ class UnitClass : public DriveClass {
   bool Should_Crush_It(TechnoClass const* it) const;
   int Credit_Load() const;
   DirType Turret_Facing() const override {
-    if (Class->IsTurretEquipped) return (SecondaryFacing.Current());
-    return (PrimaryFacing.Current());
+    if (Class->IsTurretEquipped) return SecondaryFacing.Current();
+    return PrimaryFacing.Current();
   }
   int Shape_Number() const;
   int Pip_Count() const override;

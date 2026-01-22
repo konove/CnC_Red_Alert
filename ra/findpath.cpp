@@ -144,14 +144,14 @@ typedef enum {
 /*-------------------------------------------------------------------------*/
 // static bool DrawPath;
 
-inline FacingType Opposite(FacingType face) { return ((FacingType)(face ^ 4)); }
+inline FacingType Opposite(FacingType face) { return (FacingType)(face ^ 4); }
 
 inline static FacingType Next_Direction(FacingType facing, FacingType dir) {
   facing = facing + dir;
 #ifndef DIAGONAL
   facing = (FacingType)(facing & 0x06);
 #endif
-  return (facing);
+  return facing;
 }
 
 /*=========================================================================*/
@@ -202,8 +202,8 @@ static CELL StartLocation;
  *   10/28/1994 SKB : Created.                                             *
  *=========================================================================*/
 int Point_Relative_To_Line(int x, int z, int x1, int z1, int x2, int z2) {
-  return ((((long)x - (long)x2) * ((long)z1 - (long)z2)) -
-          (((long)z - (long)z2) * ((long)x1 - (long)x2)));
+  return ((long)x - (long)x2) * ((long)z1 - (long)z2) -
+         ((long)z - (long)z2) * ((long)x1 - (long)x2);
 }
 
 /***************************************************************************
@@ -268,7 +268,7 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
         dir = *(list - 1);
         path->Length = idx;
         path->LastFixup = curr_pos;
-        return (true);
+        return true;
       }
 
       last_was_line = !last_was_line;
@@ -283,7 +283,7 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
     ** Remove this cells flag from the overlap list for the path
     */
 #ifdef TEST
-    path->Overlap[curr_pos >> 5] &= ~(1 << ((curr_pos & 31)));
+    path->Overlap[curr_pos >> 5] &= ~(1 << (curr_pos & 31));
 #else
     path->Overlap[curr_pos >> 5] &= ~(1 << ((curr_pos & 31) - 1));
 #endif
@@ -301,7 +301,7 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
   ** a larger problem in that we have deleted all of the cells in the
   ** list.
   */
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -325,7 +325,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
   FacingType* list;
   int pos = cell >> 5;
 #ifdef TEST
-  int bit = (cell & 31);
+  int bit = cell & 31;
 #else
   int bit = (cell & 31) - 1;
 #endif
@@ -335,7 +335,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
   ** we need to truncate the list back to this point and register the
   ** new direction.
   */
-  if (path->Overlap[pos] & (1 << bit)) {
+  if (path->Overlap[pos] & 1 << bit) {
     /*
     ** If this is not a case of immediate back tracking then handle
     ** by searching the list to see what we find.  However is this is
@@ -348,7 +348,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
     if (path->Command[path->Length - 1] == Opposite(dir)) {
       CELL pos = Adjacent_Cell(cell, Opposite(dir));
 #ifdef TEST
-      path->Overlap[pos >> 5] &= ~(1 << ((pos & 31)));
+      path->Overlap[pos >> 5] &= ~(1 << (pos & 31));
 #else
       path->Overlap[pos >> 5] &= ~(1 << ((pos & 31) - 1));
 #endif
@@ -360,7 +360,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
       ** cannot register this cell.
       */
       if (path->LastOverlap == cell) {
-        return (false);
+        return false;
       } else {
         path->LastOverlap = cell;
       }
@@ -403,7 +403,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
         pos = Adjacent_Cell(pos, *list);
         path->Cost -= Passable_Cell(pos, *list, -1, threshhold);
 #ifdef TEST
-        path->Overlap[pos >> 5] &= ~(1 << ((pos & 31)));
+        path->Overlap[pos >> 5] &= ~(1 << (pos & 31));
 #else
         path->Overlap[pos >> 5] &= ~(1 << ((pos & 31) - 1));
 #endif
@@ -420,9 +420,9 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
     int cpos = path->Length++;
     path->Command[cpos] = dir;         // save of the direction we moved
     path->Cost += cost;                // figure new cost for cell
-    path->Overlap[pos] |= (1 << bit);  // mark the we have entered point
+    path->Overlap[pos] |= 1 << bit;  // mark the we have entered point
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -468,14 +468,14 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
   ** If we have been provided an illegal place to store our final moves
   ** then forget it.
   */
-  if (!final_moves) return (nullptr);
+  if (!final_moves) return nullptr;
 
   BStart(BENCH_FINDPATH);
 
   PathCount++;
 
   if (Team && Team->Class->IsRoundAbout) {
-    unit_threat = (Team) ? Team->Risk : Risk();
+    unit_threat = Team ? Team->Risk : Risk();
     threat_stage = 0;
     threat = 0;
   } else {
@@ -506,7 +506,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
   ** on the overlap list.  (Otherwise the harvesters will drive in circles... )
   */
 #ifdef TEST
-  path.Overlap[source >> 5] |= (1 << ((source & 31)));
+  path.Overlap[source >> 5] |= 1 << (source & 31);
 #else
   path.Overlap[source >> 5] |= (1 << ((source & 31) - 1));
 #endif
@@ -764,7 +764,7 @@ end_of_list:
 
   BEnd(BENCH_FINDPATH);
 
-  return (&path);
+  return &path;
 }
 
 /***********************************************************************************************
@@ -812,7 +812,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
   targetx = Cell_X(target);
   targety = Cell_Y(target);
 
-  if (!path) return (false);
+  if (!path) return false;
   path->LastOverlap = -1;
   path->LastFixup = -1;
 
@@ -903,7 +903,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         int checkval = Point_Relative_To_Line(checkx, checky, startx, starty,
                                               targetx, targety);
         if (checkval && !online) {
-          forcefail = ((checkval ^ oldval) < 0);
+          forcefail = (checkval ^ oldval) < 0;
         } else {
           forcefail = false;
         }
@@ -926,7 +926,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
       **	we are surrounded by impassable characters and we exit.
       */
       if (newdir == olddir) {
-        return (false);
+        return false;
       }
 
       /*
@@ -967,7 +967,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         */
         if (!Unravel_Loop(path, newcell, newdir, startx, starty, targetx,
                           targety, threshhold)) {
-          return (false);
+          return false;
         }
         /*
         ** Since we need to eliminate a diagonal we must pretend the upon
@@ -992,7 +992,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
       }
       cellcount++;
       if (cellcount == MAX_PATH_EDGE_FOLLOW) {
-        return (false);
+        return false;
       }
     }
 
@@ -1001,14 +1001,14 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
     */
     if (newcell == target) {
       path->Command[path->Length] = END;
-      return (true);
+      return true;
     }
 
     /*
     **	If we make a full circle back to our original spot, get out.
     */
     if (newcell == firstcell && newdir == firstdir) {
-      return (false);
+      return false;
     }
 
     if (firstcell == -1) {
@@ -1034,7 +1034,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
   /*
   **	The maximum search path is exhausted... abort with a failure.
   */
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1082,7 +1082,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   /*
   **	Abort if there is any illegal parameter.
   */
-  if (!path || !path->Command) return (0);
+  if (!path || !path->Command) return 0;
 
   /*
   **	Optimization loop -- start scanning with the
@@ -1091,7 +1091,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   */
   path->Command[path->Length] = END;  // Force end of list.
 
-  if (path->Length == 0) return (0);
+  if (path->Length == 0) return 0;
 
   cell = path->Start;
   if (path->Length > 1) {
@@ -1155,7 +1155,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
           **	degree adjustments.
           */
           newdir = Next_Direction(
-              *cmd1, (newcmd < FACING_N) ? (FacingType)-1 : (FacingType)1);
+              *cmd1, newcmd < FACING_N ? (FacingType)-1 : (FacingType)1);
 
           /*
           **	Diagonal 90 degree changes can be smoothed, although
@@ -1225,7 +1225,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   }
   path->Length++;
   *cmd1 = END;
-  return (path->Length);
+  return path->Length;
 }
 
 CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) {
@@ -1257,7 +1257,7 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) {
       for (lp = 0; lp < dist << 1; lp++) {
         next = Adjacent_Cell(next, dir + 3);
         if (!Can_Enter_Cell(next)) {
-          return (next);
+          return next;
         }
       }
     } else {
@@ -1268,19 +1268,19 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) {
       for (lp = 0; lp < dist; lp++) {
         next = Adjacent_Cell(next, dir + 2);
         if (!Can_Enter_Cell(next)) {
-          return (next);
+          return next;
         }
       }
 
       for (lp = 0; lp < dist; lp++) {
         next = Adjacent_Cell(next, dir + 4);
         if (!Can_Enter_Cell(next)) {
-          return (next);
+          return next;
         }
       }
     }
   }
-  return (-1);
+  return -1;
 }
 
 int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
@@ -1290,15 +1290,15 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
   if (move < MOVE_MOVING_BLOCK && Distance(Cell_Coord(cell)) > 0x0100)
     threshhold = MOVE_MOVING_BLOCK;
 
-  if (move > threshhold) return (0);
+  if (move > threshhold) return 0;
 
   if (Session.Type == GAME_NORMAL) {
     if (threat != -1) {
       if (::Distance(Cell_Coord(cell), Cell_Coord(DestLocation)) >
-          (THREAT_THRESHOLD * CELL_LEPTON_W)) {
+          THREAT_THRESHOLD * CELL_LEPTON_W) {
         //			if (Map.Cell_Distance(cell, DestLocation) >
         // THREAT_THRESHOLD) {
-        if (Map.Cell_Threat(cell, Owner()) > threat) return (0);
+        if (Map.Cell_Threat(cell, Owner()) > threat) return 0;
       }
     }
   }
@@ -1311,5 +1311,5 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
       10,  //	MOVE_TEMP
       0    //	MOVE_NO
   };
-  return (_value[move]);
+  return _value[move];
 }

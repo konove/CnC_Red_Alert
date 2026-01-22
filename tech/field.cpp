@@ -141,12 +141,12 @@ void FieldClass::Host_To_Net() {
 
     case TYPE_SHORT:
     case TYPE_UNSIGNED_SHORT:
-      *((unsigned short*)Data) = htons(*((unsigned short*)Data));
+      *(unsigned short*)Data = htons(*(unsigned short*)Data);
       break;
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      *((unsigned long*)Data) = htonl(*((unsigned long*)Data));
+      *(unsigned long*)Data = htonl(*(unsigned long*)Data);
       break;
 
     //
@@ -196,12 +196,12 @@ void FieldClass::Net_To_Host() {
 
     case TYPE_SHORT:
     case TYPE_UNSIGNED_SHORT:
-      *((unsigned short*)Data) = ntohs(*((unsigned short*)Data));
+      *(unsigned short*)Data = ntohs(*(unsigned short*)Data);
       break;
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      *((unsigned long*)Data) = ntohl(*((unsigned long*)Data));
+      *(unsigned long*)Data = ntohl(*(unsigned long*)Data);
       break;
 
     //

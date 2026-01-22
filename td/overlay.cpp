@@ -124,7 +124,7 @@ void OverlayClass::Init() {
   Overlays.Free_All();
 
   ptr = new OverlayClass();
-  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -147,7 +147,7 @@ void* OverlayClass::operator new(size_t) throw() {
   if (ptr) {
     ((OverlayClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -259,7 +259,7 @@ bool OverlayClass::Mark(MarkType mark) {
 
           } else {
             delete this;
-            return (false);
+            return false;
           }
         } else {
           if ((cellptr->Overlay == OVERLAY_NONE ||
@@ -299,10 +299,10 @@ bool OverlayClass::Mark(MarkType mark) {
                 */
                 if (Cell_X(cell) & 0x01) {
                   newcell =
-                      Adjacent_Cell((CELL)(cellptr->Cell_Number()), FACING_W);
+                      Adjacent_Cell((CELL)cellptr->Cell_Number(), FACING_W);
                 } else {
                   newcell =
-                      Adjacent_Cell((CELL)(cellptr->Cell_Number()), FACING_E);
+                      Adjacent_Cell((CELL)cellptr->Cell_Number(), FACING_E);
                 }
                 if (Map[newcell].Overlay != OVERLAY_CONCRETE) {
                   Class->Create_And_Place(newcell);
@@ -316,7 +316,7 @@ bool OverlayClass::Mark(MarkType mark) {
                 static FacingType _face[4] = {FACING_N, FACING_E, FACING_S,
                                               FACING_W};
 
-                for (int index = 0; index < (sizeof(_face) / sizeof(_face[0]));
+                for (int index = 0; index < sizeof(_face) / sizeof(_face[0]);
                      index++) {
                   cellptr->Adjacent_Cell(_face[index]).Concrete_Calc();
                 }
@@ -331,10 +331,10 @@ bool OverlayClass::Mark(MarkType mark) {
         cellptr->Recalc_Attributes();
       }
       delete this;
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************

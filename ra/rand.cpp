@@ -84,7 +84,7 @@ int Sim_Random() {
 
   ((unsigned char&)SimRandIndex)++;
   //	SimRandIndex &= 0xff;
-  return (_randvals[SimRandIndex]);
+  return _randvals[SimRandIndex];
 }
 
 /***************************************************************************
@@ -104,7 +104,7 @@ int Sim_Random() {
  *   06/17/1995 JLB : Uses fixed point math helper routine.                *
  *=========================================================================*/
 int Sim_IRandom(int minval, int maxval) {
-  return (Fixed_To_Cardinal((maxval - minval), Sim_Random()) + minval);
+  return Fixed_To_Cardinal(maxval - minval, Sim_Random()) + minval;
 }
 
 /*

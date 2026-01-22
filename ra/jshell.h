@@ -88,17 +88,17 @@ struct KeyboardClass : public WWKeyboardClass {
   int Down(KeyNumType key) { return (Key_Down(key)); };
 #else
   KeyboardClass() : IsLibrary(true) {}
-  KeyNumType Get() { return ((KeyNumType)WWKeyboardClass::Get()); }
-  KeyNumType Check() { return ((KeyNumType)WWKeyboardClass::Check()); }
+  KeyNumType Get() { return (KeyNumType)WWKeyboardClass::Get(); }
+  KeyNumType Check() { return (KeyNumType)WWKeyboardClass::Check(); }
   KeyASCIIType To_ASCII(KeyNumType key) {
-    return ((KeyASCIIType)WWKeyboardClass::To_ASCII(key));
+    return (KeyASCIIType)WWKeyboardClass::To_ASCII(key);
   }
   void Clear() { WWKeyboardClass::Clear(); }
-  int Down(KeyNumType key) { return (WWKeyboardClass::Down(key)); }
+  int Down(KeyNumType key) { return WWKeyboardClass::Down(key); }
 #endif
 
-  int Mouse_X() { return (Get_Mouse_X()); }
-  int Mouse_Y() { return (Get_Mouse_Y()); }
+  int Mouse_X() { return Get_Mouse_X(); }
+  int Mouse_Y() { return Get_Mouse_Y(); }
 };
 
 /*
@@ -109,36 +109,36 @@ struct KeyboardClass : public WWKeyboardClass {
 template <class T>
 inline T operator++(T& a) {
   a = (T)((int)a + (int)1);
-  return (a);
+  return a;
 }
 template <class T>
 inline T operator++(T& a, int) {
   T aa = a;
   a = (T)((int)a + (int)1);
-  return (aa);
+  return aa;
 }
 template <class T>
 inline T operator--(T& a) {
   a = (T)((int)a - (int)1);
-  return (a);
+  return a;
 }
 template <class T>
 inline T operator--(T& a, int) {
   T aa = a;
   a = (T)((int)a - (int)1);
-  return (aa);
+  return aa;
 }
 template <class T>
 inline constexpr T operator|(T t1, T t2) {
-  return ((T)((int)t1 | (int)t2));
+  return (T)((int)t1 | (int)t2);
 }
 template <class T>
 inline T operator&(T t1, T t2) {
-  return ((T)((int)t1 & (int)t2));
+  return (T)((int)t1 & (int)t2);
 }
 template <class T>
 inline T operator~(T t1) {
-  return ((T)(~(int)t1));
+  return (T) ~(int)t1;
 }
 
 #ifndef WIN32
@@ -175,14 +175,14 @@ long swap(long, long);
 // TODO(konove): Replace with std::clamp
 template <class T>
 inline T Bound(T original, T minval, T maxval) {
-  if (original < minval) return (minval);
-  if (original > maxval) return (maxval);
-  return (original);
+  if (original < minval) return minval;
+  if (original > maxval) return maxval;
+  return original;
 };
 
 template <class T>
 T _rotl(T X, int n) {
-  return ((T)((((X) << n) | ((X) >> ((sizeof(T) * 8) - n)))));
+  return (T)(X << n | X >> (sizeof(T) * 8 - n));
 }
 
 /*
@@ -206,7 +206,7 @@ inline void Set_Bit(void* array, int bit, int value) {
           "ok:"
   */
   if (value)
-    ((uint32_t*)array)[(unsigned)bit >> 5] |= (1 << (bit & 0x1F));
+    ((uint32_t*)array)[(unsigned)bit >> 5] |= 1 << (bit & 0x1F);
   else
     ((uint32_t*)array)[(unsigned)bit >> 5] &= ~(1 << (bit & 0x1F));
 }
@@ -219,7 +219,7 @@ inline int Get_Bit(void const* array, int bit) {
           "bt	[esi+ebx*4],eax"		\
           "setc	al"
   */
-  return !!(((const uint32_t*)array)[(unsigned)bit >> 5] & (1 << (bit & 0x1F)));
+  return !!(((const uint32_t*)array)[(unsigned)bit >> 5] & 1 << (bit & 0x1F));
 }
 
 inline int First_True_Bit(void const* array) {
@@ -351,8 +351,8 @@ extern void outport(int port, unsigned short data);
 extern std::uint64_t Frame;
 class FrameTimerClass {
  public:
-  std::uint64_t operator()() const { return (Frame); }
-  operator std::uint64_t() const { return (Frame); }
+  std::uint64_t operator()() const { return Frame; }
+  operator std::uint64_t() const { return Frame; }
 };
 
 #ifndef WIN32
@@ -373,12 +373,12 @@ class SystemTimerClass {
  public:
 #ifdef WIN32
   std::uint64_t operator()() const {
-    if (!WindowsTimer) return (0);
-    return (WindowsTimer->Get_System_Tick_Count());
+    if (!WindowsTimer) return 0;
+    return WindowsTimer->Get_System_Tick_Count();
   }
   operator std::uint64_t() const {
-    if (!WindowsTimer) return (0);
-    return (WindowsTimer->Get_System_Tick_Count());
+    if (!WindowsTimer) return 0;
+    return WindowsTimer->Get_System_Tick_Count();
   }
 #else
   std::uint64_t operator()() const { return (Get_System_Tick_Count()); };
@@ -391,12 +391,12 @@ class UserTimerClass {
  public:
 #ifdef WIN32
   std::uint64_t operator()() const {
-    if (!WindowsTimer) return (0);
-    return (WindowsTimer->Get_User_Tick_Count());
+    if (!WindowsTimer) return 0;
+    return WindowsTimer->Get_User_Tick_Count();
   }
   operator std::uint64_t() const {
-    if (!WindowsTimer) return (0);
-    return (WindowsTimer->Get_User_Tick_Count());
+    if (!WindowsTimer) return 0;
+    return WindowsTimer->Get_User_Tick_Count();
   }
 #else
   std::uint64_t operator()() const { return (Get_User_Tick_Count()); }
@@ -469,44 +469,44 @@ class SmartPtr {
   SmartPtr(SmartPtr const& rvalue) : Pointer(rvalue.Pointer) {}
   ~SmartPtr() { Pointer = nullptr; }
 
-  operator T*() const { return (Pointer); }
+  operator T*() const { return Pointer; }
 
-  operator long() const { return ((long)Pointer); }
+  operator long() const { return (long)Pointer; }
 
   SmartPtr<T> operator++(int) {
     assert(Pointer != nullptr);
     SmartPtr<T> temp = *this;
     ++Pointer;
-    return (temp);
+    return temp;
   }
   SmartPtr<T>& operator++() {
     assert(Pointer != nullptr);
     ++Pointer;
-    return (*this);
+    return *this;
   }
   SmartPtr<T> operator--(int) {
     assert(Pointer != nullptr);
     SmartPtr<T> temp = *this;
     --Pointer;
-    return (temp);
+    return temp;
   }
   SmartPtr<T>& operator--() {
     assert(Pointer != nullptr);
     --Pointer;
-    return (*this);
+    return *this;
   }
 
   SmartPtr& operator=(SmartPtr const& rvalue) {
     Pointer = rvalue.Pointer;
-    return (*this);
+    return *this;
   }
   T* operator->() const {
     assert(Pointer != nullptr);
-    return (Pointer);
+    return Pointer;
   }
   T& operator*() const {
     assert(Pointer != nullptr);
-    return (*Pointer);
+    return *Pointer;
   }
 
  private:

@@ -276,7 +276,7 @@ bool IndexClass<T>::Increase_Table_Size(int amount) {
   /*
   **	Check size increase parameter for legality.
   */
-  if (amount < 0) return (false);
+  if (amount < 0) return false;
 
   NodeElement* table = new NodeElement[IndexSize + amount];
   if (table != nullptr) {
@@ -298,14 +298,14 @@ bool IndexClass<T>::Increase_Table_Size(int amount) {
     /*
     **	Return with success flag.
     */
-    return (true);
+    return true;
   }
 
   /*
   **	Failure to allocate the memory results in a failure to increase
   **	the size of the index table.
   */
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -324,7 +324,7 @@ bool IndexClass<T>::Increase_Table_Size(int amount) {
  *=============================================================================================*/
 template <class T>
 int IndexClass<T>::Count() const {
-  return (IndexCount);
+  return IndexCount;
 }
 
 /***********************************************************************************************
@@ -349,7 +349,7 @@ bool IndexClass<T>::Is_Present(int id) const {
   **	in this case.
   */
   if (IndexCount == 0) {
-    return (false);
+    return false;
   }
 
   /*
@@ -358,7 +358,7 @@ bool IndexClass<T>::Is_Present(int id) const {
   **	again -- just return true.
   */
   if (Is_Archive_Same(id)) {
-    return (true);
+    return true;
   }
 
   /*
@@ -373,13 +373,13 @@ bool IndexClass<T>::Is_Present(int id) const {
   */
   if (nodeptr != nullptr) {
     ((IndexClass<T>*)this)->Set_Archive(nodeptr);
-    return (true);
+    return true;
   }
 
   /*
   **	Could not find element so return failure condition.
   */
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -406,9 +406,9 @@ T IndexClass<T>::Fetch_Index(int id) const {
     **	Count on the fact that the archive pointer is always valid after a call
     *to Is_Present *	that returns "true".
     */
-    return (Archive->Data);
+    return Archive->Data;
   }
-  return (T());
+  return T();
 }
 
 /***********************************************************************************************
@@ -429,9 +429,9 @@ T IndexClass<T>::Fetch_Index(int id) const {
 template <class T>
 bool IndexClass<T>::Is_Archive_Same(int id) const {
   if (Archive != nullptr && Archive->ID == id) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -506,7 +506,7 @@ bool IndexClass<T>::Add_Index(int id, T data) {
       **	Failure to increase the size of the index table means failure to
       *add *	the index element.
       */
-      return (false);
+      return false;
     }
   }
 
@@ -518,7 +518,7 @@ bool IndexClass<T>::Add_Index(int id, T data) {
   IndexCount++;
   IsSorted = false;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -567,10 +567,10 @@ bool IndexClass<T>::Remove_Index(int id) {
     IndexTable[IndexCount] = fake;  // zap last (now unused) element
 
     Invalidate_Archive();
-    return (true);
+    return true;
   }
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -595,12 +595,12 @@ template <class T>
 int _USERENTRY IndexClass<T>::search_compfunc(void const* ptr1,
                                               void const* ptr2) {
   if (*(int const*)ptr1 == *(int const*)ptr2) {
-    return (0);
+    return 0;
   }
   if (*(int const*)ptr1 < *(int const*)ptr2) {
-    return (-1);
+    return -1;
   }
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -628,7 +628,7 @@ typename IndexClass<T>::NodeElement const* IndexClass<T>::Search_For_Node(
   *matches.
   */
   if (IndexCount == 0) {
-    return (nullptr);
+    return nullptr;
   }
 
   /*
@@ -646,8 +646,8 @@ typename IndexClass<T>::NodeElement const* IndexClass<T>::Search_For_Node(
   */
   NodeElement node;
   node.ID = id;
-  return ((NodeElement const*)bsearch(&node, &IndexTable[0], IndexCount,
-                                      sizeof(IndexTable[0]), search_compfunc));
+  return (NodeElement const*)bsearch(&node, &IndexTable[0], IndexCount,
+                                     sizeof(IndexTable[0]), search_compfunc);
 }
 
 #endif

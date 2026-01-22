@@ -116,7 +116,7 @@ ColorListClass::~ColorListClass() { Colors.Clear(); }
  *=========================================================================*/
 int ColorListClass::Add_Item(char const* text, char color) {
   Colors.Add(color);
-  return (ListClass::Add_Item(text));
+  return ListClass::Add_Item(text);
 }
 
 /***************************************************************************
@@ -137,7 +137,7 @@ int ColorListClass::Add_Item(char const* text, char color) {
  *=========================================================================*/
 int ColorListClass::Add_Item(int text, char color) {
   Colors.Add(color);
-  return (ListClass::Add_Item(text));
+  return ListClass::Add_Item(text);
 }
 
 /***************************************************************************

@@ -126,7 +126,7 @@ int LZOStraw::Get(void* destbuf, int slen) {
   **	Verify parameters for legality.
   */
   if (destbuf == nullptr || slen < 1) {
-    return (0);
+    return 0;
   }
 
   while (slen > 0) {
@@ -135,16 +135,16 @@ int LZOStraw::Get(void* destbuf, int slen) {
     **	destination buffer.
     */
     if (Counter) {
-      int len = (slen < Counter) ? slen : Counter;
+      int len = slen < Counter ? slen : Counter;
       if (Control == DECOMPRESS) {
         memmove(destbuf, &Buffer[BlockHeader.UncompCount - Counter], len);
       } else {
         memmove(
             destbuf,
-            &Buffer2[(BlockHeader.CompCount + sizeof(BlockHeader)) - Counter],
+            &Buffer2[BlockHeader.CompCount + sizeof(BlockHeader) - Counter],
             len);
       }
-      destbuf = ((char*)destbuf) + len;
+      destbuf = (char*)destbuf + len;
       slen -= len;
       Counter -= len;
       total += len;
@@ -169,7 +169,7 @@ int LZOStraw::Get(void* destbuf, int slen) {
       char* dictionary = new char[64 * 1024];
       unsigned int length = sizeof(Buffer2) - sizeof(BlockHeader);
       lzo1x_1_compress((unsigned char*)Buffer, BlockHeader.UncompCount,
-                       (unsigned char*)(&Buffer2[sizeof(BlockHeader)]), &length,
+                       (unsigned char*)&Buffer2[sizeof(BlockHeader)], &length,
                        dictionary);
       BlockHeader.CompCount = (unsigned short)length;
       delete[] dictionary;
@@ -178,5 +178,5 @@ int LZOStraw::Get(void* destbuf, int slen) {
     }
   }
 
-  return (total);
+  return total;
 }

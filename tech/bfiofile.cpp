@@ -162,9 +162,9 @@ bool BufferIOFileClass::Cache(long size, void* ptr) {
     // if trying to cache again with size or ptr fail
     //
     if (size || ptr) {
-      return (false);
+      return false;
     } else {
-      return (true);
+      return true;
     }
   }
 
@@ -202,7 +202,7 @@ bool BufferIOFileClass::Cache(long size, void* ptr) {
   // specified so exit.
   //
   if ((size == 0 && ptr) || !BufferSize) {
-    return (false);
+    return false;
   }
 
   if (ptr) {
@@ -293,12 +293,12 @@ bool BufferIOFileClass::Cache(long size, void* ptr) {
     }
 
     UseBuffer = true;
-    return (true);
+    return true;
   }
 
   Error(ENOMEM);
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -366,12 +366,12 @@ bool BufferIOFileClass::Commit() {
       }
 
       IsChanged = false;
-      return (true);
+      return true;
     } else {
-      return (false);
+      return false;
     }
   } else {
-    return (false);
+    return false;
   }
 }
 
@@ -396,7 +396,7 @@ bool BufferIOFileClass::Commit() {
 char const* BufferIOFileClass::Set_Name(char const* filename) {
   if (File_Name() && UseBuffer) {
     if (strcmp(filename, File_Name()) == 0) {
-      return (File_Name());
+      return File_Name();
     } else {
       Commit();
       IsCached = false;
@@ -404,7 +404,7 @@ char const* BufferIOFileClass::Set_Name(char const* filename) {
   }
 
   RawFileClass::Set_Name(filename);
-  return (File_Name());
+  return File_Name();
 }
 
 /***********************************************************************************************
@@ -422,10 +422,10 @@ char const* BufferIOFileClass::Set_Name(char const* filename) {
  *=============================================================================================*/
 int BufferIOFileClass::Is_Available(int) {
   if (UseBuffer) {
-    return (true);
+    return true;
   }
 
-  return (RawFileClass::Is_Available());
+  return RawFileClass::Is_Available();
 }
 
 /***********************************************************************************************
@@ -444,10 +444,10 @@ int BufferIOFileClass::Is_Available(int) {
  *=============================================================================================*/
 int BufferIOFileClass::Is_Open() const {
   if (IsOpen && UseBuffer) {
-    return (true);
+    return true;
   }
 
-  return (RawFileClass::Is_Open());
+  return RawFileClass::Is_Open();
 }
 
 /***********************************************************************************************
@@ -473,7 +473,7 @@ int BufferIOFileClass::Is_Open() const {
  *=============================================================================================*/
 int BufferIOFileClass::Open(char const* filename, int rights) {
   Set_Name(filename);
-  return (BufferIOFileClass::Open(rights));
+  return BufferIOFileClass::Open(rights);
 }
 
 /***********************************************************************************************
@@ -536,7 +536,7 @@ int BufferIOFileClass::Open(int rights) {
     RawFileClass::Open(rights);
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -559,7 +559,7 @@ long BufferIOFileClass::Write(void const* buffer, long size) {
 
   if (!Is_Open()) {
     if (!Open(WRITE)) {
-      return (0);
+      return 0;
     }
     TrueFileStart = RawFileClass::Seek(0);
     opened = true;
@@ -572,8 +572,8 @@ long BufferIOFileClass::Write(void const* buffer, long size) {
       while (size) {
         long sizetowrite;
 
-        if (size >= (BufferSize - BufferPos)) {
-          sizetowrite = (BufferSize - BufferPos);
+        if (size >= BufferSize - BufferPos) {
+          sizetowrite = BufferSize - BufferPos;
         } else {
           sizetowrite = size;
         }
@@ -677,7 +677,7 @@ long BufferIOFileClass::Write(void const* buffer, long size) {
     Close();
   }
 
-  return (size);
+  return size;
 }
 
 /***********************************************************************************************
@@ -712,8 +712,8 @@ long BufferIOFileClass::Read(void* buffer, long size) {
       while (size) {
         long sizetoread;
 
-        if (size >= (BufferSize - BufferPos)) {
-          sizetoread = (BufferSize - BufferPos);
+        if (size >= BufferSize - BufferPos) {
+          sizetoread = BufferSize - BufferPos;
         } else {
           sizetoread = size;
         }
@@ -795,7 +795,7 @@ long BufferIOFileClass::Read(void* buffer, long size) {
     Close();
   }
 
-  return (size);
+  return size;
 }
 
 /***********************************************************************************************
@@ -856,7 +856,7 @@ long BufferIOFileClass::Seek(long pos, int dir) {
     if (FileSize <= BufferSize) {
       BufferPos = FilePos;
     } else {
-      if (FilePos >= BufferFilePos && FilePos < (BufferFilePos + BufferSize)) {
+      if (FilePos >= BufferFilePos && FilePos < BufferFilePos + BufferSize) {
         BufferPos = FilePos - BufferFilePos;
       } else {
         Commit();
@@ -874,13 +874,13 @@ long BufferIOFileClass::Seek(long pos, int dir) {
     }
 
     if (TrueFileStart && adjusted) {
-      return (FilePos + TrueFileStart);
+      return FilePos + TrueFileStart;
     }
 
-    return (FilePos);
+    return FilePos;
   }
 
-  return (RawFileClass::Seek(pos, dir));
+  return RawFileClass::Seek(pos, dir);
 }
 
 /***********************************************************************************************
@@ -900,10 +900,10 @@ long BufferIOFileClass::Seek(long pos, int dir) {
  *=============================================================================================*/
 long BufferIOFileClass::Size() {
   if (IsOpen && UseBuffer) {
-    return (FileSize);
+    return FileSize;
   }
 
-  return (RawFileClass::Size());
+  return RawFileClass::Size();
 }
 
 /***********************************************************************************************

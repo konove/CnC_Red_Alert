@@ -122,7 +122,7 @@ fixed::fixed(char const* ascii) {
   **	divided by 100 to get mathematical fixed point percentage value.
   */
   if (*tptr == '\%') {
-    Data.Raw = (unsigned short)((atoi(ascii) * 256) / 100);
+    Data.Raw = (unsigned short)(atoi(ascii) * 256 / 100);
   } else {
     Data.Composite.Whole = Data.Composite.Fraction = 0;
     if (wholepart && *wholepart != '.') {
@@ -141,7 +141,7 @@ fixed::fixed(char const* ascii) {
         base *= 10;
       }
 
-      Data.Composite.Fraction = (unsigned char)((256 * frac) / base);
+      Data.Composite.Fraction = (unsigned char)(256 * frac / base);
     }
   }
 }
@@ -166,14 +166,14 @@ fixed::fixed(char const* ascii) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 int fixed::To_ASCII(char* buffer, int maxlen) const {
-  if (buffer == nullptr) return (0);
+  if (buffer == nullptr) return 0;
 
   /*
   **	Determine the whole and fractional parts of the number. The fractional
   **	part number is the value in 1000ths.
   */
   int whole = Data.Composite.Whole;
-  int frac = ((int)Data.Composite.Fraction * 1000) / 256;
+  int frac = (int)Data.Composite.Fraction * 1000 / 256;
   char tbuffer[32];
 
   /*
@@ -213,8 +213,8 @@ int fixed::To_ASCII(char* buffer, int maxlen) const {
   *buffer.
   */
   int len = strlen(tbuffer);
-  if (len < maxlen - 1) return (len);
-  return (maxlen - 1);
+  if (len < maxlen - 1) return len;
+  return maxlen - 1;
 }
 
 /***********************************************************************************************
@@ -238,5 +238,5 @@ char const* fixed::As_ASCII() const {
   static char buffer[32];
 
   To_ASCII(buffer, sizeof(buffer));
-  return (buffer);
+  return buffer;
 }

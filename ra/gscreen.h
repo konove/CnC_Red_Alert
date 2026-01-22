@@ -101,7 +101,7 @@ class GScreenClass {
   /*
   **	Misc routines.
   */
-  virtual void* Shadow_Address() { return (ShadowPage); }
+  virtual void* Shadow_Address() { return ShadowPage; }
 
   /*
   **	This points to the buttons that are used for input. All of the derived

@@ -171,13 +171,13 @@ int ToggleClass::Action(unsigned flags, KeyNumType& key) {
     flags &= ~LEFTPRESS;
     ControlClass::Action(flags, key);
     key = KN_NONE;  // erase the event
-    return (true);  // stop processing other buttons now
+    return true;  // stop processing other buttons now
   }
 
   if (flags & LEFTRELEASE) {
     if (IsPressed) {
       if (IsToggleType) {
-        IsOn = (IsOn == false);
+        IsOn = IsOn == false;
       }
       IsPressed = false;
     } else {
@@ -189,5 +189,5 @@ int ToggleClass::Action(unsigned flags, KeyNumType& key) {
   **	Do normal button processing. This ends up causing the button's ID number
   *to *	be returned from the controlling Input() function.
   */
-  return (ControlClass::Action(flags, key));
+  return ControlClass::Action(flags, key);
 }

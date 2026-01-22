@@ -344,7 +344,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
                  (Lepton_To_Cell(Map.TacLeptonWidth) >> 1);
     if (std::abs(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth >> 1)) {
       pan_value *= 0x8000;
-      pan_value /= (MAP_CELL_W >> 2);
+      pan_value /= MAP_CELL_W >> 2;
       pan_value = Bound(pan_value, -0x7FFF, 0x7FFF);
       //			pan_value  = std::max((int)pan_value,
       //(int)-0x7FFF); 			pan_value  = std::min((int)pan_value,
@@ -380,7 +380,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
                  signed short pan_value) {
   if (!Options.Volume || voc == VOC_NONE || !SoundOn ||
       SampleType == SAMPLE_NONE) {
-    return (-1);
+    return -1;
   }
 
   /*
@@ -421,11 +421,11 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   **	If the sound data pointer is not null, then presume that it is valid.
   */
   if (ptr) {
-    return (Play_Sample(
+    return Play_Sample(
         ptr, Fixed_To_Cardinal(SoundEffectName[voc].Priority, (int)volume),
-        (int)volume, pan_value));
+        (int)volume, pan_value);
   }
-  return (-1);
+  return -1;
 }
 
 /*
@@ -632,7 +632,7 @@ bool Is_Speaking() {
   Speak_AI();
   if (SampleType != 0 &&
       (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer))) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

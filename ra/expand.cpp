@@ -258,13 +258,13 @@ class EListClass : public ListClass {
       : ListClass(id, x, y, w, h, flags, up, down) {}
 
   virtual int Add_Object(EObjectClass* obj) {
-    return (ListClass::Add_Item((char const*)obj));
+    return ListClass::Add_Item((char const*)obj);
   }
   virtual EObjectClass* Get_Object(int index) const {
-    return ((EObjectClass*)ListClass::Get_Item(index));
+    return (EObjectClass*)ListClass::Get_Item(index);
   }
   virtual EObjectClass* Current_Object() {
-    return ((EObjectClass*)ListClass::Current_Item());
+    return (EObjectClass*)ListClass::Current_Item();
   }
 
  protected:
@@ -272,14 +272,14 @@ class EListClass : public ListClass {
 
  private:
   int Add_Item(char const* text) override {
-    return (ListClass::Add_Item(text));
+    return ListClass::Add_Item(text);
   }
-  int Add_Item(int text) override { return (ListClass::Add_Item(text)); }
+  int Add_Item(int text) override { return ListClass::Add_Item(text); }
   char const* Current_Item() const override {
-    return (ListClass::Current_Item());
+    return ListClass::Current_Item();
   }
   virtual char const* Get_Item(int index) const {
-    return (ListClass::Get_Item(index));
+    return ListClass::Get_Item(index);
   }
 };
 
@@ -332,7 +332,7 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
                           width, Tabs);
 #else
   Conquer_Clip_Text_Print(buffer, x + 100, y, scheme, TBLACK,
-                          flags & ~(TPF_CENTER), width, Tabs);
+                          flags & ~TPF_CENTER, width, Tabs);
 #endif
 }
 
@@ -375,7 +375,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   CCFileClass file;
   char buffer[128], buffer2[128];
   char* sbuffer = (char*)_ShapeBuffer;
-  for (int index = 20; index < (36 + 18); index++) {
+  for (int index = 20; index < 36 + 18; index++) {
 #ifndef CS_DEBUG
     port::SafeCopy(buffer, ExpandNames[index - 20]);
     port::SafeCopy(buffer2, ExpandNames[index - 20]);
@@ -500,7 +500,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
         okval = false;
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
         Whom = list.Current_Object()->House;
         Scen.Scenario = list.Current_Object()->Scenario;
         port::SafeCopy(Scen.ScenarioName, list.Current_Object()->FullName);
@@ -520,5 +520,5 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     delete list.Get_Object(index);
   }
 
-  return (okval);
+  return okval;
 }

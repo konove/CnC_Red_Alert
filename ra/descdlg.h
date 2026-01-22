@@ -45,8 +45,8 @@ class DescriptionClass {
   enum DescriptionClassEnum {
     OPTION_WIDTH = 216,   // Width of dialog box.
     OPTION_HEIGHT = 122,  // Height of dialog box.
-    OPTION_X = (((320 - OPTION_WIDTH) / 2) & ~7),
-    OPTION_Y = ((200 - OPTION_HEIGHT) / 2),
+    OPTION_X = (320 - OPTION_WIDTH) / 2 & ~7,
+    OPTION_Y = (200 - OPTION_HEIGHT) / 2,
     TEXT_X = OPTION_X + 32,  // Title's x pos
     TEXT_Y = OPTION_Y + 32,  // Add 11 for each following line
     BUTTON_OPTIONS = 1,      // Button number for "Ok"

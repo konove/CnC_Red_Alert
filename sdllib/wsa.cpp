@@ -121,7 +121,7 @@ void* Open_Animation(char const* file_name, char* user_buffer,
     palette_adjust = 768;
 
     if (palette != nullptr) {
-      Seek_File(fh, sizeof(uint32_t) * (file_header.total_frames), SEEK_CUR);
+      Seek_File(fh, sizeof(uint32_t) * file_header.total_frames, SEEK_CUR);
       Read_File(fh, palette, 768L);
     }
 
@@ -180,9 +180,9 @@ void* Open_Animation(char const* file_name, char* user_buffer,
   max_buffer_size = min_buffer_size + file_buffer_size;
 
   // check to see if buffer size is big enough for at least min required
-  if (user_buffer && (user_buffer_size < min_buffer_size)) {
+  if (user_buffer && user_buffer_size < min_buffer_size) {
     Close_File(fh);
-    return (nullptr);
+    return nullptr;
   }
 
   // A buffer was not passed in, so do allocations
@@ -211,7 +211,7 @@ void* Open_Animation(char const* file_name, char* user_buffer,
 
       if (min_buffer_size > Ram_Free(MEM_NORMAL)) {
         Close_File(fh);
-        return (nullptr);
+        return nullptr;
       }
 
       // Else make buffer size the min and allocate it.
@@ -224,8 +224,8 @@ void* Open_Animation(char const* file_name, char* user_buffer,
     anim_flags |= WSA_SYS_ALLOCATED;
   } else {
     // Check to see if the user_buffer_size should be min or max.
-    if ((user_flags & WSA_OPEN_FROM_DISK) ||
-        (user_buffer_size < max_buffer_size)) {
+    if (user_flags & WSA_OPEN_FROM_DISK ||
+        user_buffer_size < max_buffer_size) {
       user_buffer_size = min_buffer_size;
     } else {
       user_buffer_size = max_buffer_size;
@@ -328,7 +328,7 @@ void* Open_Animation(char const* file_name, char* user_buffer,
   sys_header->flags = (short)anim_flags;
 
   // return valid handle
-  return (user_buffer);
+  return user_buffer;
 }
 
 void Close_Animation(void* handle) {
@@ -371,11 +371,11 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
   total_frames = sys_header->total_frames;
 
   // Are the animation handle and the frame number valid?
-  if (!handle || (total_frames <= frame_number)) {
+  if (!handle || total_frames <= frame_number) {
     return false;
   }
 
-  if (view.Lock() != true) return (false);
+  if (view.Lock() != true) return false;
 
   // Decide if we are going to a page or a viewport (part of a buffer).
   dest_width = view.Get_Width() + view.Get_XAdd() + view.Get_Pitch();
@@ -397,7 +397,7 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
     direct_to_dest = false;
   } else {
     frame_buffer = (char*)view.Get_Offset();
-    frame_buffer += (y_pixel * dest_width) + x_pixel;
+    frame_buffer += y_pixel * dest_width + x_pixel;
     direct_to_dest = true;
   }
   //
@@ -418,7 +418,7 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
         Apply_XOR_Delta_To_Page_Or_Viewport(
             frame_buffer, sys_header->delta_buffer, sys_header->pixel_width,
             dest_width,  // dest_width - sys_header->pixel_width,
-            (sys_header->flags & WSA_FRAME_0_IS_DELTA) ? DO_XOR : DO_COPY);
+            sys_header->flags & WSA_FRAME_0_IS_DELTA ? DO_XOR : DO_COPY);
       } else {
         Apply_XOR_Delta(frame_buffer, sys_header->delta_buffer);
       }
@@ -445,7 +445,7 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
 
     // Is going right faster than going backwards?
     // Or are they trying to loop when the should not?
-    if ((search_frames < distance) && !(sys_header->flags & WSA_LINEAR_ONLY)) {
+    if (search_frames < distance && !(sys_header->flags & WSA_LINEAR_ONLY)) {
       search_dir = -1;  // No, so go left
     } else {
       search_frames = distance;
@@ -455,7 +455,7 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
 
     // Is going right faster than going backwards?
     // Or are they trying to loop when the should not?
-    if ((search_frames >= distance) || (sys_header->flags & WSA_LINEAR_ONLY)) {
+    if (search_frames >= distance || sys_header->flags & WSA_LINEAR_ONLY) {
       search_dir = -1;  // No, so go left
       search_frames = distance;
     }
@@ -512,7 +512,7 @@ int Get_Animation_Frame_Count(void* handle) {
     return 0;
   }
   sys_header = (SysAnimHeaderType*)handle;
-  return ((short)sys_header->total_frames);
+  return (short)sys_header->total_frames;
 }
 
 unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
@@ -794,9 +794,9 @@ static unsigned long Get_Resident_Frame_Offset(char* file_buffer, int frame) {
   // Return the offset into RAM for the frame.
   lptr += frame;
   if (*lptr)
-    return (*lptr - (frame0_size + WSA_FILE_HEADER_SIZE));
+    return *lptr - (frame0_size + WSA_FILE_HEADER_SIZE);
   else
-    return (0L);
+    return 0L;
 }
 
 static unsigned long Get_File_Frame_Offset(int file_handle, int frame,
@@ -810,7 +810,7 @@ static unsigned long Get_File_Frame_Offset(int file_handle, int frame,
     offset = 0L;
   }
   offset += palette_adjust;
-  return (offset);
+  return offset;
 }
 
 static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
@@ -819,7 +819,7 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
   int file_handle, palette_adjust;
   unsigned long frame_data_size, frame_offset;
 
-  palette_adjust = ((sys_header->flags & WSA_PALETTE_PRESENT) ? 768 : 0);
+  palette_adjust = sys_header->flags & WSA_PALETTE_PRESENT ? 768 : 0;
   delta_back = sys_header->delta_buffer;
 
   if (sys_header->flags & WSA_RESIDENT) {
@@ -861,7 +861,7 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
         frame_offset;
 
     if (!frame_offset || !frame_data_size) {
-      return (false);
+      return false;
     }
 
     Seek_File(file_handle, frame_offset, SEEK_SET);
@@ -870,7 +870,7 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
 
     if (Read_File(file_handle, delta_back, frame_data_size) !=
         frame_data_size) {
-      return (false);
+      return false;
     }
   }
 
@@ -889,5 +889,5 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
                                         DO_XOR);
   }
 
-  return (true);
+  return true;
 }

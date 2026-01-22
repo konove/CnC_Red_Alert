@@ -155,7 +155,7 @@ RadioMessageType RadioClass::Receive_Message(RadioClass* from,
   if (from == Radio && message == RADIO_OVER_OUT) {
     MissionClass::Receive_Message(from, message, param);
     Radio_Off();
-    return (RADIO_ROGER);
+    return RADIO_ROGER;
   }
 
   /*
@@ -166,12 +166,12 @@ RadioMessageType RadioClass::Receive_Message(RadioClass* from,
   if (message == RADIO_HELLO && Strength) {
     if (Radio == from || !Radio) {
       Radio = from;
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
     }
-    return (RADIO_NEGATIVE);
+    return RADIO_NEGATIVE;
   }
 
-  return (MissionClass::Receive_Message(from, message, param));
+  return MissionClass::Receive_Message(from, message, param);
 }
 
 /***********************************************************************************************
@@ -205,7 +205,7 @@ RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
   /*
   **	If there is no target for the radio message, then always return static.
   */
-  if (!to) return (RADIO_STATIC);
+  if (!to) return RADIO_STATIC;
 
   /*
   **	Handle some special case processing that occurs when certain messages
@@ -225,12 +225,12 @@ RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
     Transmit_Message(RADIO_OVER_OUT);
     if (to->Receive_Message(this, message, param) == RADIO_ROGER) {
       Radio = to;
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
     }
-    return (RADIO_NEGATIVE);
+    return RADIO_NEGATIVE;
   }
 
-  return (to->Receive_Message(this, message, param));
+  return to->Receive_Message(this, message, param);
 }
 
 /***********************************************************************************************
@@ -251,10 +251,10 @@ bool RadioClass::Limbo() {
   if (!IsInLimbo) {
     Transmit_Message(RADIO_OVER_OUT);
   }
-  return (MissionClass::Limbo());
+  return MissionClass::Limbo();
 }
 
 RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
                                               RadioClass* to) {
-  return (Transmit_Message(message, LParam, to));
+  return Transmit_Message(message, LParam, to);
 };

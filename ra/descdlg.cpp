@@ -63,8 +63,8 @@ void DescriptionClass::Process(char* string) {
   TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OK, TPF_BUTTON, 0, BUTTON_Y);
   TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, 0, BUTTON_Y);
 
-  cancelbtn.X = OPTION_X + ((OPTION_WIDTH - optionsbtn.Width) / 3) * 2;
-  optionsbtn.X = OPTION_X + ((OPTION_WIDTH - optionsbtn.Width) / 3);
+  cancelbtn.X = OPTION_X + (OPTION_WIDTH - optionsbtn.Width) / 3 * 2;
+  optionsbtn.X = OPTION_X + (OPTION_WIDTH - optionsbtn.Width) / 3;
   optionsbtn.Add_Tail(cancelbtn);
 
   EditClass edit(BUTTON_EDIT, string, 31, TPF_6PT_GRAD, 0, EDIT_Y, EDIT_W);

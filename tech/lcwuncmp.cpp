@@ -99,7 +99,7 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
 
       // not possible to write any more, and if we try to read more we might
       // fault
-      if (!count) return ((unsigned long)(dest_ptr - (unsigned char*)dest));
+      if (!count) return (unsigned long)(dest_ptr - (unsigned char*)dest);
 
       copy_ptr = dest_ptr -
                  ((unsigned)*source_ptr++ + (((unsigned)op_code & 0x0f) << 8));
@@ -110,7 +110,7 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
       if (!(op_code & 0x40)) {
         if (op_code == 0x80) {
           /* Return # of destination bytes written. */
-          return ((unsigned long)(dest_ptr - (unsigned char*)dest));
+          return (unsigned long)(dest_ptr - (unsigned char*)dest);
 
         } else {
           /* Do a medium copy from source. */
@@ -132,12 +132,12 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
           if (count > dest_end - dest_ptr) count = dest_end - dest_ptr;
 
           copy_ptr = dest_ptr + 4 - ((uintptr_t)dest_ptr & 0x3);
-          count -= (copy_ptr - dest_ptr);
+          count -= copy_ptr - dest_ptr;
           while (dest_ptr < copy_ptr) *dest_ptr++ = data;
 
           word_dest_ptr = (unsigned*)dest_ptr;
 
-          dest_ptr += (count & 0xfffffffc);
+          dest_ptr += count & 0xfffffffc;
 
           while (word_dest_ptr < (unsigned*)dest_ptr) {
             *word_dest_ptr = word_data;
@@ -172,6 +172,6 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
     }
   }
 
-  return ((unsigned long)(dest_ptr - (unsigned char*)dest));
+  return (unsigned long)(dest_ptr - (unsigned char*)dest);
 }
 }

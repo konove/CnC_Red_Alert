@@ -72,11 +72,11 @@ int BufferPipe::Put(void const* source, int slen) {
     int len = slen;
     if (BufferPtr.Get_Size() != 0) {
       int theoretical_max = BufferPtr.Get_Size() - Index;
-      len = (slen < theoretical_max) ? slen : theoretical_max;
+      len = slen < theoretical_max ? slen : theoretical_max;
     }
 
     if (len > 0) {
-      memmove(((char*)BufferPtr.Get_Buffer()) + Index, source, len);
+      memmove((char*)BufferPtr.Get_Buffer() + Index, source, len);
     }
 
     Index += len;
@@ -84,7 +84,7 @@ int BufferPipe::Put(void const* source, int slen) {
     //		Buffer = ((char *)Buffer) + len;
     total += len;
   }
-  return (total);
+  return total;
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ int FilePipe::End() {
     HasOpened = false;
     File->Close();
   }
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************
@@ -151,7 +151,7 @@ int FilePipe::Put(void const* source, int slen) {
       File->Open(WRITE);
     }
 
-    return (File->Write(source, slen));
+    return File->Write(source, slen);
   }
-  return (0);
+  return 0;
 }

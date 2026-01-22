@@ -65,7 +65,7 @@ class SHAEngine {
 
   void Hash(void const* data, long length);
 
-  static int Digest_Size() { return (sizeof(SHADigest)); }
+  static int Digest_Size() { return sizeof(SHADigest); }
 
  private:
   typedef union {
@@ -111,22 +111,22 @@ class SHAEngine {
 
   // Used for 0..19
   uint32_t Function1(uint32_t X, uint32_t Y, uint32_t Z) const {
-    return (Z ^ (X & (Y ^ Z)));
+    return Z ^ X & (Y ^ Z);
   }
 
   // Used for 20..39
   uint32_t Function2(uint32_t X, uint32_t Y, uint32_t Z) const {
-    return (X ^ Y ^ Z);
+    return X ^ Y ^ Z;
   }
 
   // Used for 40..59
   uint32_t Function3(uint32_t X, uint32_t Y, uint32_t Z) const {
-    return ((X & Y) | (Z & (X | Y)));
+    return X & Y | Z & (X | Y);
   }
 
   // Used for 60..79
   uint32_t Function4(uint32_t X, uint32_t Y, uint32_t Z) const {
-    return (X ^ Y ^ Z);
+    return X ^ Y ^ Z;
   }
 
   uint32_t Do_Function(int index, uint32_t X, uint32_t Y, uint32_t Z) const {

@@ -64,9 +64,9 @@ bool LayerClass::Submit(ObjectClass const* object, bool sort) {
   *at the *	appropriately sorted position.
   */
   if (sort) {
-    return (Sorted_Add(object));
+    return Sorted_Add(object);
   }
-  return (Add((ObjectClass*)object));
+  return Add((ObjectClass*)object);
 }
 
 /***********************************************************************************************
@@ -122,14 +122,14 @@ int LayerClass::Sorted_Add(ObjectClass const* const object) {
         **	Failure to increase the size of the vector is an error
         *condition. *	Return with the error flag.
         */
-        return (false);
+        return false;
       }
     } else {
       /*
       **	Increasing the size of this vector is not allowed! Bail this
       **	routine with the error code.
       */
-      return (false);
+      return false;
     }
   }
 
@@ -139,7 +139,7 @@ int LayerClass::Sorted_Add(ObjectClass const* const object) {
   */
   int index;
   for (index = 0; index < ActiveCount; index++) {
-    if ((*(*this)[index]) > (*object)) {
+    if (*(*this)[index] > *object) {
       break;
     }
   }
@@ -152,5 +152,5 @@ int LayerClass::Sorted_Add(ObjectClass const* const object) {
   }
   (*this)[index] = (ObjectClass*)object;
   ActiveCount++;
-  return (true);
+  return true;
 }

@@ -89,9 +89,9 @@ class FixedHeapClass {
   virtual int Free(void* pointer);
   virtual int Free_All();
 
-  void* operator[](int index) { return ((char*)Buffer) + (index * Size); }
+  void* operator[](int index) { return (char*)Buffer + index * Size; }
   void const* operator[](int index) const {
-    return ((char*)Buffer) + (index * Size);
+    return (char*)Buffer + index * Size;
   }
 
  protected:
@@ -149,11 +149,11 @@ class TFixedHeapClass : public FixedHeapClass {
     return FixedHeapClass::ID(pointer);
   }
   virtual T* Alloc() { return (T*)FixedHeapClass::Allocate(); }
-  int Free(T* pointer) override { return (FixedHeapClass::Free(pointer)); }
+  int Free(T* pointer) override { return FixedHeapClass::Free(pointer); }
 
-  T& operator[](int index) { return *(T*)(((char*)Buffer) + (index * Size)); }
+  T& operator[](int index) { return *(T*)((char*)Buffer + index * Size); }
   T const& operator[](int index) const {
-    return *(T*)(((char*)Buffer) + (index * Size));
+    return *(T*)((char*)Buffer + index * Size);
   }
 };
 
@@ -173,7 +173,7 @@ class FixedIHeapClass : public FixedHeapClass {
   int Free(void* pointer) override;
   int Free_All() override;
   virtual int Logical_ID(void const* pointer) const;
-  virtual int Logical_ID(int id) const { return (Logical_ID((*this)[id])); }
+  virtual int Logical_ID(int id) const { return Logical_ID((*this)[id]); }
 
   virtual void* Active_Ptr(int index) { return ActivePointers[index]; }
   virtual void const* Active_Ptr(int index) const {
@@ -202,10 +202,10 @@ class TFixedIHeapClass : public FixedIHeapClass {
     return FixedIHeapClass::ID(pointer);
   }
   virtual int Logical_ID(T const* pointer) const {
-    return (FixedIHeapClass::Logical_ID(pointer));
+    return FixedIHeapClass::Logical_ID(pointer);
   }
   int Logical_ID(int id) const override {
-    return (FixedIHeapClass::Logical_ID(id));
+    return FixedIHeapClass::Logical_ID(id);
   }
   virtual T* Alloc() { return (T*)FixedIHeapClass::Allocate(); }
   virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
@@ -216,7 +216,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual void Decode_Pointers();
 
   virtual T* Ptr(std::size_t index) const { return (T*)ActivePointers[index]; }
-  virtual T* Raw_Ptr(std::size_t index) { return (T*)((*this)[index]); }
+  virtual T* Raw_Ptr(std::size_t index) { return (T*)(*this)[index]; }
 };
 
 #endif

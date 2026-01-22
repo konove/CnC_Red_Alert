@@ -34,7 +34,7 @@ template <std::integral T>
 [[nodiscard]] constexpr int32_t MakeLong(uint16_t high, uint16_t low) {
   // Use unsigned math for the shift to prevent Undefined Behavior,
   // then cast back to the legacy int32_t type.
-  return static_cast<int32_t>((static_cast<uint32_t>(high) << 16) |
+  return static_cast<int32_t>(static_cast<uint32_t>(high) << 16 |
                               static_cast<uint32_t>(low));
 }
 
@@ -52,77 +52,77 @@ inline DirType Facing_Dir(FacingType facing) {
 }
 inline int Cell_To_Lepton(int cell) { return cell << 8; }
 inline int Lepton_To_Cell(int lepton) {
-  return ((unsigned)(lepton + 0x0080)) >> 8;
+  return (unsigned)(lepton + 0x0080) >> 8;
 }
-inline CELL XY_Cell(int x, int y) { return ((CELL)(((y) << 6) | (x))); }
+inline CELL XY_Cell(int x, int y) { return (CELL)(y << 6 | x); }
 inline COORDINATE XY_Coord(int x, int y) {
-  return ((COORDINATE)MakeLong(y, x));
+  return (COORDINATE)MakeLong(y, x);
 }
-inline int Coord_X(COORDINATE coord) { return (short)(LowWord(coord)); }
-inline int Coord_Y(COORDINATE coord) { return (short)(HighWord(coord)); }
-inline int Cell_X(CELL cell) { return (int)(((unsigned)cell) & 0x3F); }
-inline int Cell_Y(CELL cell) { return (int)(((unsigned)cell) >> 6); }
+inline int Coord_X(COORDINATE coord) { return (short)LowWord(coord); }
+inline int Coord_Y(COORDINATE coord) { return (short)HighWord(coord); }
+inline int Cell_X(CELL cell) { return (int)((unsigned)cell & 0x3F); }
+inline int Cell_Y(CELL cell) { return (int)((unsigned)cell >> 6); }
 inline int Dir_Diff(DirType dir1, DirType dir2) {
-  return (int)(*((signed char*)&dir2) - *((signed char*)&dir1));
+  return (int)(*(signed char*)&dir2 - *(signed char*)&dir1);
 }
 inline CELL Coord_XLepton(COORDINATE coord) {
-  return (CELL)(*((unsigned char*)&coord));
+  return (CELL) * (unsigned char*)&coord;
 }
 inline CELL Coord_YLepton(COORDINATE coord) {
-  return (CELL)(*(((unsigned char*)&coord) + 2));
+  return (CELL) * ((unsigned char*)&coord + 2);
 }
 // inline COORD CellXY_Coord(unsigned x, unsigned y) {return
 // (COORD)(MAKE_LONG(y<<8, x<<8));}
 inline COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2) {
   return (COORDINATE)MakeLong(
-      (*((short*)(&coord1) + 1) + *((short*)(&coord2) + 1)),
-      (*((short*)(&coord1)) + *((short*)(&coord2))));
+      *((short*)&coord1 + 1) + *((short*)&coord2 + 1),
+      *(short*)&coord1 + *(short*)&coord2);
 }
 inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
   return (COORDINATE)MakeLong(
-      (*((short*)(&coord1) + 1) - *((short*)(&coord2) + 1)),
-      (*((short*)(&coord1)) - *((short*)(&coord2))));
+      *((short*)&coord1 + 1) - *((short*)&coord2 + 1),
+      *(short*)&coord1 - *(short*)&coord2);
 }
 inline COORDINATE Coord_Snap(COORDINATE coord) {
   return (COORDINATE)MakeLong(
-      (((*(((unsigned short*)&coord) + 1)) & 0xFF00) | 0x80),
-      (((*((unsigned short*)&coord)) & 0xFF00) | 0x80));
+      *((unsigned short*)&coord + 1) & 0xFF00 | 0x80,
+      *(unsigned short*)&coord & 0xFF00 | 0x80);
 }
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
   return (COORDINATE)MakeLong(
-      (*((unsigned short*)(&coord1) + 1) + *((unsigned short*)(&coord2) + 1)) >>
+      (*((unsigned short*)&coord1 + 1) + *((unsigned short*)&coord2 + 1)) >>
           1,
-      (*((unsigned short*)(&coord1)) + *((unsigned short*)(&coord2))) >> 1);
+      (*(unsigned short*)&coord1 + *(unsigned short*)&coord2) >> 1);
 }
 inline COORDINATE Cell_Coord(CELL cell) {
-  return (COORDINATE)MakeLong((((cell & 0x0FC0) << 2) | 0x80),
-                              ((((cell & 0x003F) << 1) + 1) << 7));
+  return (COORDINATE)MakeLong((cell & 0x0FC0) << 2 | 0x80,
+                              (((cell & 0x003F) << 1) + 1) << 7);
 }
 inline COORDINATE XYPixel_Coord(int x, int y) {
-  return ((COORDINATE)MakeLong((int)(((long)y * (long)ICON_LEPTON_H) /
-                                     (long)ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
-                               (int)(((long)x * (long)ICON_LEPTON_W) /
-                                     (long)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
+  return (COORDINATE)MakeLong((int)((long)y * (long)ICON_LEPTON_H /
+                                    (long)ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
+                              (int)((long)x * (long)ICON_LEPTON_W /
+                                    (long)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/);
 }
 inline int Facing_To_32(DirType facing) { return Facing32[facing]; }
 inline DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
-  return ((DirType)Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
-                                     Coord_X(coord2), Coord_Y(coord2)));
+  return (DirType)Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
+                                    Coord_X(coord2), Coord_Y(coord2));
 }
 inline DirType Direction(COORDINATE coord1, COORDINATE coord2) {
-  return ((DirType)Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
-                                     Coord_X(coord2), Coord_Y(coord2)));
+  return (DirType)Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
+                                    Coord_X(coord2), Coord_Y(coord2));
 }
 inline DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
-  return ((DirType)Desired_Facing8(Coord_X(coord1), Coord_Y(coord1),
-                                   Coord_X(coord2), Coord_Y(coord2)));
+  return (DirType)Desired_Facing8(Coord_X(coord1), Coord_Y(coord1),
+                                  Coord_X(coord2), Coord_Y(coord2));
 }
 inline DirType Direction(CELL cell1, CELL cell2) {
-  return (DirType)(Desired_Facing8(Cell_X(cell1), Cell_Y(cell1), Cell_X(cell2),
-                                   Cell_Y(cell2)));
+  return (DirType)Desired_Facing8(Cell_X(cell1), Cell_Y(cell1), Cell_X(cell2),
+                                  Cell_Y(cell2));
 }
 inline COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir) {
-  return (Coord_Snap(Coord_Add(AdjacentCoord[dir & 0x07], coord)));
+  return Coord_Snap(Coord_Add(AdjacentCoord[dir & 0x07], coord));
 }
 inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
   return Adjacent_Cell(coord, Dir_Facing(dir));
@@ -134,29 +134,29 @@ inline CELL Adjacent_Cell(CELL cell, DirType dir) {
   return (CELL)(cell + AdjacentCell[Dir_Facing(dir)]);
 }
 inline int Lepton_To_Pixel(int lepton) {
-  return ((lepton * ICON_PIXEL_W) + (ICON_LEPTON_W / 2)) / ICON_LEPTON_W;
+  return (lepton * ICON_PIXEL_W + ICON_LEPTON_W / 2) / ICON_LEPTON_W;
 }
 inline int Pixel_To_Lepton(int pixel) {
-  return ((pixel * ICON_LEPTON_W) + (ICON_PIXEL_W / 2)) / ICON_PIXEL_W;
+  return (pixel * ICON_LEPTON_W + ICON_PIXEL_W / 2) / ICON_PIXEL_W;
 }
 inline COORDINATE XYP_Coord(int x, int y) {
   return XY_Coord(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
 };
 
 inline CELL Coord_XCell(COORDINATE coord) {
-  return (CELL)(*(((unsigned char*)&coord) + 1));
+  return (CELL) * ((unsigned char*)&coord + 1);
 }
 inline CELL Coord_YCell(COORDINATE coord) {
-  return (CELL)(*(((unsigned char*)&coord) + 3));
+  return (CELL) * ((unsigned char*)&coord + 3);
 }
 [[nodiscard]] constexpr CELL Coord_Cell(const COORDINATE coord) noexcept {
   // Capture the 'High Word' processing:
   // ((coord >> 16) & 0xFF00) clears the 'AL' equivalent (bits 23-16).
   // Then we shift that right by 2.
-  const uint32_t processed_high = ((coord >> 16) & 0xFF00) >> 2;
+  const uint32_t processed_high = (coord >> 16 & 0xFF00) >> 2;
 
   // Capture 'BH' (bits 15-8 of original)
-  const uint8_t original_mid_byte = (coord >> 8) & 0xFF;
+  const uint8_t original_mid_byte = coord >> 8 & 0xFF;
 
   // Combine them.
   // Note: The 'OR' only affects the bottom 8 bits because 'original_mid_byte'
@@ -189,9 +189,9 @@ inline int Distance(COORDINATE coord1, COORDINATE coord2) {
   diff2 = Coord_X(coord1) - Coord_X(coord2);
   if (diff2 < 0) diff2 = -diff2;
   if (diff1 > diff2) {
-    return (diff1 + (diff2 >> 1));
+    return diff1 + (diff2 >> 1);
   }
-  return (diff2 + (diff1 >> 1));
+  return diff2 + (diff1 >> 1);
 }
 
 /***********************************************************************************************
@@ -217,9 +217,9 @@ inline int Distance(CELL coord1, CELL coord2) {
   diff2 = Cell_X(coord1) - Cell_X(coord2);
   if (diff2 < 0) diff2 = -diff2;
   if (diff1 > diff2) {
-    return (diff1 + (diff2 >> 1));
+    return diff1 + (diff2 >> 1);
   }
-  return (diff2 + (diff1 >> 1));
+  return diff2 + (diff1 >> 1);
 }
 
 #endif  // CNC_RED_ALERT_TD_INLINE_H_

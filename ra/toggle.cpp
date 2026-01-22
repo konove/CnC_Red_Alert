@@ -135,8 +135,8 @@ int ToggleClass::Action(unsigned flags, KeyNumType& key) {
   *forced call *	must never actually function like a real call, but
   *rather only performs any necessary *	graphic updating.
   */
-  bool overbutton = ((unsigned)(Get_Mouse_X() - X) < Width &&
-                     (unsigned)(Get_Mouse_Y() - Y) < Height);
+  bool overbutton = (unsigned)(Get_Mouse_X() - X) < Width &&
+                    (unsigned)(Get_Mouse_Y() - Y) < Height;
   if (!flags) {
     if (overbutton) {
       if (!IsPressed) {
@@ -168,13 +168,13 @@ int ToggleClass::Action(unsigned flags, KeyNumType& key) {
     flags &= ~LEFTPRESS;
     ControlClass::Action(flags, key);
     key = KN_NONE;  // erase the event
-    return (true);  // stop processing other buttons now
+    return true;  // stop processing other buttons now
   }
 
   if (flags & LEFTRELEASE) {
     if (IsPressed) {
       if (IsToggleType && overbutton) {
-        IsOn = (IsOn == false);
+        IsOn = IsOn == false;
       }
       IsPressed = false;
       Flag_To_Redraw();
@@ -187,5 +187,5 @@ int ToggleClass::Action(unsigned flags, KeyNumType& key) {
   **	Do normal button processing. This ends up causing the button's ID number
   *to *	be returned from the controlling Input() function.
   */
-  return (ControlClass::Action(flags, key));
+  return ControlClass::Action(flags, key);
 }

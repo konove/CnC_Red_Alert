@@ -116,7 +116,6 @@
 #include "ra/rules.h"
 #include "ra/score.h"
 #include "ra/session.h"
-#include "ra/sidebar.h"
 #include "ra/smudge.h"
 #include "ra/special.h"
 #include "ra/startup.h"
@@ -336,9 +335,9 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
         }
       }
     }
-    return (previous);
+    return previous;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -364,7 +363,7 @@ bool Start_Scenario(char* name, bool briefing) {
   Theme.Stop();
   IsTanyaDead = SaveTanya;
   if (!Read_Scenario(name)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -442,7 +441,7 @@ bool Start_Scenario(char* name, bool briefing) {
   */
   Options.Set();
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -526,11 +525,11 @@ bool Read_Scenario(char* name) {
     WWMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
     Hide_Mouse();
     BEnd(BENCH_SCENARIO);
-    return (false);
+    return false;
   }
   ScenarioInit--;
   BEnd(BENCH_SCENARIO);
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -575,9 +574,9 @@ void Fill_In_Data() {
     //		if (Session.Type == GAME_NORMAL) {
     Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
         Scen.Waypoint[WAYPT_HOME];
-    Map.Set_Tactical_Position(
-        Cell_Coord((Scen.Waypoint[WAYPT_HOME] - (MAP_CELL_W * 4 * RESFACTOR)) -
-                   (5 * RESFACTOR)));
+    Map.Set_Tactical_Position(Cell_Coord(Scen.Waypoint[WAYPT_HOME] -
+                                         MAP_CELL_W * 4 * RESFACTOR -
+                                         5 * RESFACTOR));
     //		}
   }
 #endif
@@ -613,7 +612,7 @@ void Fill_In_Data() {
   */
   int x, y;
   for (x = Map.MapCellX - 1;
-       x < ((unsigned)(Map.MapCellX + Map.MapCellWidth + 1)); x++) {
+       x < (unsigned)(Map.MapCellX + Map.MapCellWidth + 1); x++) {
     Map[XY_Cell(x, Map.MapCellY - 1)].IsVisible =
         Map[XY_Cell(x, Map.MapCellY - 1)].IsMapped = true;
 
@@ -621,7 +620,7 @@ void Fill_In_Data() {
         Map[XY_Cell(x, Map.MapCellY + (unsigned)Map.MapCellHeight)].IsMapped =
             true;
   }
-  for (y = Map.MapCellY; y < (Map.MapCellY + Map.MapCellHeight); y++) {
+  for (y = Map.MapCellY; y < Map.MapCellY + Map.MapCellHeight; y++) {
     Map[XY_Cell(Map.MapCellX - 1, y)].IsVisible =
         Map[XY_Cell(Map.MapCellX - 1, y)].IsMapped = true;
     Map[XY_Cell(Map.MapCellX + Map.MapCellWidth, y)].IsVisible =
@@ -836,7 +835,7 @@ void Do_Win() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  int x = Map.TacPixelX + Lepton_To_Pixel(Map.TacLeptonWidth) / 2;
 
   /*
   ** Hack section.  If it's allied scenario 10, variation A, then skip the
@@ -1107,7 +1106,7 @@ void Do_Lose() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  int x = Map.TacPixelX + Lepton_To_Pixel(Map.TacLeptonWidth) / 2;
 
   /*
   **	Announce win to player.
@@ -1199,7 +1198,7 @@ void Do_Draw() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  int x = Map.TacPixelX + Lepton_To_Pixel(Map.TacLeptonWidth) / 2;
 
   /*
   **	Announce win to player.
@@ -1319,13 +1318,13 @@ bool Restate_Mission(char const* name, int button1, int button2) {
       port::SafeCopy(_ShapeBuffer, Scen.BriefingText, _ShapeBufferSize);
       BlackPalette.Set(FADE_PALETTE_MEDIUM, Call_Back);
       if (BGMessageBox(_ShapeBuffer, button2, button1)) {
-        return (true);
+        return true;
       }
-      if (!brief) return (true);
-      return (false);
+      if (!brief) return true;
+      return false;
     }
   }
-  return (false);
+  return false;
 }
 
 #define BUTTON_1 1
@@ -1422,18 +1421,18 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
     **	Build the button list.
     */
     bheight = FontHeight + FontYSpacing + 2;
-    bwidth = std::max((String_Pixel_Width(b1txt) + 8), 80u);
+    bwidth = std::max(String_Pixel_Width(b1txt) + 8, 80u);
     if (b2txt) {
       numbuttons = 2;
       b2char = toupper(b2txt[0]);
-      bwidth = std::max((String_Pixel_Width(b2txt) + 8), unsigned(bwidth));
+      bwidth = std::max(String_Pixel_Width(b2txt) + 8, unsigned(bwidth));
       //			b1x = x + 10;
       //// left side
 
       if (b3txt) {
         numbuttons = 3;
         b3char = toupper(b3txt[0]);
-        bwidth = std::max((String_Pixel_Width(b3txt) + 8), unsigned(bwidth));
+        bwidth = std::max(String_Pixel_Width(b3txt) + 8, unsigned(bwidth));
       }
 
     } else {
@@ -1463,7 +1462,7 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
   int width;
   int height;
   Format_Window_String(buffer, 300, width, height);
-  height += (numbuttons == 0) ? 30 : 60;
+  height += numbuttons == 0 ? 30 : 60;
 
   int x = (SeenBuff.Get_Width() - width) / 2;
   int y = (SeenBuff.Get_Height() - height) / 2;
@@ -1477,10 +1476,9 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
   **	Initialize the button structures. All are initialized, even though one
   *(or none) may *	actually be added to the button list.
   */
-  TextButtonClass button1(
-      BUTTON_1, b1txt, TPF_BUTTON,
-      x + ((numbuttons == 1) ? ((width - bwidth) >> 1) : 10),
-      y + height - (bheight + 5), bwidth);
+  TextButtonClass button1(BUTTON_1, b1txt, TPF_BUTTON,
+                          x + (numbuttons == 1 ? (width - bwidth) >> 1 : 10),
+                          y + height - (bheight + 5), bwidth);
 
   TextButtonClass button2(BUTTON_2, b2txt, TPF_BUTTON,
                           x + width - (bwidth + 10), y + height - (bheight + 5),
@@ -1652,12 +1650,12 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
       */
       input = buttonlist->Input();
       switch (input) {
-        case (BUTTON_1 | BUTTON_FLAG):
+        case BUTTON_1 | BUTTON_FLAG:
           selection = realval[0];
           pressed = true;
           break;
 
-        case (KN_ESC):
+        case KN_ESC:
           if (numbuttons > 2) {
             selection = realval[1];
             pressed = true;
@@ -1667,17 +1665,17 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
           }
           break;
 
-        case (BUTTON_2 | BUTTON_FLAG):
+        case BUTTON_2 | BUTTON_FLAG:
           selection = BUTTON_2;
           pressed = true;
           break;
 
-        case (BUTTON_3 | BUTTON_FLAG):
+        case BUTTON_3 | BUTTON_FLAG:
           selection = realval[1];
           pressed = true;
           break;
 
-        case (KN_LEFT):
+        case KN_LEFT:
           if (numbuttons > 1) {
             buttons[curbutton]->Turn_Off();
             buttons[curbutton]->Flag_To_Redraw();
@@ -1692,13 +1690,13 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
           }
           break;
 
-        case (KN_RIGHT):
+        case KN_RIGHT:
           if (numbuttons > 1) {
             buttons[curbutton]->Turn_Off();
             buttons[curbutton]->Flag_To_Redraw();
 
             curbutton++;
-            if (curbutton > (numbuttons - 1)) {
+            if (curbutton > numbuttons - 1) {
               curbutton = 0;
             }
 
@@ -1707,7 +1705,7 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
           }
           break;
 
-        case (KN_RETURN):
+        case KN_RETURN:
           selection = curbutton + BUTTON_1;
           pressed = true;
           break;
@@ -1736,12 +1734,12 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
 
       if (pressed) {
         switch (selection) {
-          case (BUTTON_1):
+          case BUTTON_1:
             retval = 1;
             process = false;
             break;
 
-          case (BUTTON_2):
+          case BUTTON_2:
             retval = 0;
             process = false;
             break;
@@ -1760,7 +1758,7 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
     Keyboard->Clear();
   }
 
-  if (retval == (morebutton - 1) && strlen(msg) > BUFFSIZE - 1) {
+  if (retval == morebutton - 1 && strlen(msg) > BUFFSIZE - 1) {
     retval = BGMessageBox(msg + buffend + 1, btn1, btn2);
   }
   /*
@@ -1788,7 +1786,7 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
 
   GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_DIALOG_BLUE]);
 
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -1924,13 +1922,13 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   if (scenario < 100) {
     sprintf(ScenarioName, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, c_var);
   } else {
-    char first = (scenario / 36) + 'A';
+    char first = scenario / 36 + 'A';
     char second = scenario % 36;
 
     if (second < 10) {
       second += '0';
     } else {
-      second = (second - 10) + 'A';
+      second = second - 10 + 'A';
     }
 
     sprintf(ScenarioName, "SC%c%c%c%c%c.INI", c_player, first, second, c_dir,
@@ -1958,10 +1956,10 @@ void ScenarioClass::Set_Scenario_Name(char const* name) {
       if (second <= '9') {
         second -= '0';
       } else {
-        second = (second - 'A') + 10;
+        second = second - 'A' + 10;
       }
 
-      Scenario = (36 * first) + second;
+      Scenario = 36 * first + second;
     } else {
       Scenario = atoi(buf);
     }
@@ -2110,7 +2108,7 @@ bool Read_Scenario_INI(char* fname, bool) {
   int result = ini.Load(file, true);
   if (result == 0) {
     //		Mono_Printf("ini.Load failed");
-    return (false);
+    return false;
   }
 
   /*
@@ -2127,7 +2125,7 @@ bool Read_Scenario_INI(char* fname, bool) {
       GamePalette.Set();
       WWMessageBox().Process(TXT_SCENARIO_ERROR, TXT_OK);
 #ifdef RELEASE_VERSION
-      return (false);
+      return false;
 #endif
     }
     //		}
@@ -2379,8 +2377,7 @@ bool Read_Scenario_INI(char* fname, bool) {
     **	If Ghosts are disabled and we're not editing, remove computer players
     **	(Must be done after all objects are read in from the INI)
     */
-    if ((Session.Options.AIPlayers + Session.Players.Count() <
-         Rule.MaxPlayers) &&
+    if (Session.Options.AIPlayers + Session.Players.Count() < Rule.MaxPlayers &&
         !Debug_Map) {
       Remove_AI_Players();
     }
@@ -2427,7 +2424,7 @@ bool Read_Scenario_INI(char* fname, bool) {
     }
   }
   ScenarioInit--;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2590,7 +2587,7 @@ void Assign_Houses() {
     port::SafeCopy(housep->InitialName, Session.Players[index]->Name);
 #endif
     housep->IsHuman = true;
-    housep->Init_Data((PlayerColorType)(Session.Players[index]->Player.Color),
+    housep->Init_Data((PlayerColorType)Session.Players[index]->Player.Color,
                       Session.Players[index]->Player.House,
                       Session.Options.Credits);
     if (index == 0) {
@@ -2788,7 +2785,7 @@ static void Create_Units(bool official) {
   /*
   **	Compute allowed # units
   */
-  tot_units = (Session.Options.UnitCount * 2) / 3;
+  tot_units = Session.Options.UnitCount * 2 / 3;
   if (u_limit == 0) tot_units = 0;
 
   /*
@@ -2894,7 +2891,7 @@ static void Create_Units(bool official) {
   */
   int numtaken = 0;
   for (HousesType house = HOUSE_MULTI1;
-       house < (HOUSE_MULTI1 + Session.MaxPlayers); house++) {
+       house < HOUSE_MULTI1 + Session.MaxPlayers; house++) {
     /*
     **	Get a pointer to this house; if there is none, go to the next house
     */
@@ -3141,7 +3138,7 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
     if (!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                     obj->What_Am_I() == RTTI_INFANTRY)) {
       if (obj->Unlimbo(Cell_Coord(cell), DIR_N)) {
-        return (true);
+        return true;
       }
     }
   }
@@ -3201,7 +3198,7 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
           if (!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                           obj->What_Am_I() == RTTI_INFANTRY)) {
             if (obj->Unlimbo(Cell_Coord(newcell), DIR_N)) {
-              return (true);
+              return true;
             }
           }
         }
@@ -3214,7 +3211,7 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
     }
   }
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3281,7 +3278,7 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
     }
   }
 
-  return (XY_Cell(x, y));
+  return XY_Cell(x, y);
 }
 
 /***********************************************************************************************
@@ -3365,7 +3362,7 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
   if (y > ymax) y = ymax;
   if (y < ymin) y = ymin;
 
-  return (XY_Cell(x, y));
+  return XY_Cell(x, y);
 }
 
 void Disect_Scenario_Name(char const* name, int& scenario,
@@ -3397,12 +3394,12 @@ void Disect_Scenario_Name(char const* name, int& scenario,
       second -= '0';
     } else {
       if (second >= 'a' && second <= 'z') {
-        second = (second - 'a') + 10;
+        second = second - 'a' + 10;
       } else {
-        second = (second - 'A') + 10;
+        second = second - 'A' + 10;
       }
     }
-    scenario = (36 * first) + second;
+    scenario = 36 * first + second;
   }
 
   /*
@@ -3433,5 +3430,5 @@ void Disect_Scenario_Name(char const* name, int& scenario,
   **	Fetch the variation.
   */
   var = SCEN_VAR_A;
-  var = ScenarioVarType((name[6] - 'A') + SCEN_VAR_A);
+  var = ScenarioVarType(name[6] - 'A' + SCEN_VAR_A);
 }

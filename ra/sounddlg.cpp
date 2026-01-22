@@ -107,7 +107,7 @@ void SoundControlsClass::Process() {
   int listbox_y = LISTBOX_Y * RESFACTOR;
   int listbox_w = LISTBOX_W * RESFACTOR;
 #ifdef WIN32
-  int listbox_h = (LISTBOX_H * RESFACTOR) + 2;
+  int listbox_h = LISTBOX_H * RESFACTOR + 2;
 #else
   int listbox_h = LISTBOX_H * RESFACTOR;
 #endif
@@ -329,12 +329,12 @@ void SoundControlsClass::Process() {
       /*
       ** Draw the Music, Speech & Sound titles.
       */
-      Fancy_Text_Print(TXT_MUSIC_VOLUME, option_x + mslider_x - (5 * RESFACTOR),
-                       option_y + mslider_y - (2 * RESFACTOR), scheme, TBLACK,
+      Fancy_Text_Print(TXT_MUSIC_VOLUME, option_x + mslider_x - 5 * RESFACTOR,
+                       option_y + mslider_y - 2 * RESFACTOR, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
       Fancy_Text_Print(TXT_SOUND_VOLUME,
-                       option_x + fxslider_x - (5 * RESFACTOR),
-                       option_y + fxslider_y - (2 * RESFACTOR), scheme, TBLACK,
+                       option_x + fxslider_x - 5 * RESFACTOR,
+                       option_y + fxslider_y - 2 * RESFACTOR, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
 
 #if defined(GERMAN) || defined(FRENCH)
@@ -342,12 +342,12 @@ void SoundControlsClass::Process() {
                        option_y + shuffle_y + (1 * RESFACTOR), scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
 #else
-      Fancy_Text_Print(TXT_SHUFFLE, option_x + shuffle_x - (5 * RESFACTOR),
-                       option_y + shuffle_y + (1 * RESFACTOR), scheme, TBLACK,
+      Fancy_Text_Print(TXT_SHUFFLE, option_x + shuffle_x - 5 * RESFACTOR,
+                       option_y + shuffle_y + 1 * RESFACTOR, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
 #endif
-      Fancy_Text_Print(TXT_REPEAT, option_x + repeat_x - (5 * RESFACTOR),
-                       option_y + repeat_y + (1 * RESFACTOR), scheme, TBLACK,
+      Fancy_Text_Print(TXT_REPEAT, option_x + repeat_x - 5 * RESFACTOR,
+                       option_y + repeat_y + 1 * RESFACTOR, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
 
       optionsbtn->Draw_All();
@@ -403,7 +403,7 @@ void SoundControlsClass::Process() {
       case KN_SPACE:
       case BUTTON_PLAY | KN_BUTTON:
         Theme.Queue_Song((ThemeType) *
-                         ((unsigned char*)listbox.Current_Item()));
+                         (unsigned char*)listbox.Current_Item());
         break;
 
       /*
@@ -485,8 +485,7 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
 
   } else {
     Conquer_Clip_Text_Print((char*)List[index] + 1, x, y,
-                            (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                      : &ColorRemaps[PCOLOR_GREY]),
+                            selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
                             TBLACK, TextFlags, width, Tabs);
   }
 }

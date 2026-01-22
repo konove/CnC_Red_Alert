@@ -126,7 +126,7 @@ class InfantryClass : public FootClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void operator delete(void* ptr);
   InfantryClass();
   InfantryClass(InfantryType classid, HousesType house);

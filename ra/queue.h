@@ -159,7 +159,7 @@ inline QueueClass<T, size>::QueueClass() : Count(0) {
  *=============================================================================================*/
 template <class T, int size>
 inline void QueueClass<T, size>::Init() {
-  ((int&)Count) = 0;
+  (int&)Count = 0;
   Head = 0;
   Tail = 0;
 }
@@ -184,11 +184,11 @@ template <class T, int size>
 inline int QueueClass<T, size>::Add(T const& q) {
   if (Count < size) {
     Array[Tail] = q;
-    Tail = (Tail + 1) & (size - 1);
-    ((int&)Count) = Count + 1;
-    return (true);
+    Tail = Tail + 1 & size - 1;
+    (int&)Count = Count + 1;
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -211,10 +211,10 @@ inline int QueueClass<T, size>::Add(T const& q) {
 template <class T, int size>
 inline int QueueClass<T, size>::Next() {
   if (Count) {
-    Head = (Head + 1) & (size - 1);
-    ((int&)Count) = Count - 1;
+    Head = Head + 1 & size - 1;
+    (int&)Count = Count - 1;
   }
-  return (Count);
+  return Count;
 }
 
 /***********************************************************************************************
@@ -241,7 +241,7 @@ inline int QueueClass<T, size>::Next() {
  *=============================================================================================*/
 template <class T, int size>
 inline T& QueueClass<T, size>::operator[](int index) {
-  return Array[(Head + index) & (size - 1)];
+  return Array[Head + index & size - 1];
 }
 
 /***********************************************************************************************

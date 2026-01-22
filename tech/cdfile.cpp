@@ -293,7 +293,7 @@ char const* CDFileClass::Set_Name(char const* filename) {
   *the *	plain text passed to this routine and be done with it.
   */
   BufferIOFileClass::Set_Name(filename);
-  return (File_Name());
+  return File_Name();
 }
 
 /***********************************************************************************************
@@ -336,7 +336,7 @@ int CDFileClass::Open(char const* filename, int rights) {
   */
   if (is_disabled_ || rights == WRITE) {
     BufferIOFileClass::Set_Name(filename);
-    return (BufferIOFileClass::Open(rights));
+    return BufferIOFileClass::Open(rights);
   }
 
   /*
@@ -344,5 +344,5 @@ int CDFileClass::Open(char const* filename, int rights) {
   **	using the normal procedure.
   */
   Set_Name(filename);
-  return (BufferIOFileClass::Open(rights));
+  return BufferIOFileClass::Open(rights);
 }

@@ -70,9 +70,9 @@ bool CrateClass::Remove_It() {
   if (Is_Valid()) {
     Get_Crate(Cell);
     Make_Invalid();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -104,9 +104,9 @@ bool CrateClass::Create_Crate(CELL cell) {
     Timer = Random_Pick(Rule.CrateTime * (TICKS_PER_MINUTE / 2),
                         Rule.CrateTime * (TICKS_PER_MINUTE * 2));
     Timer.Start();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -151,11 +151,11 @@ bool CrateClass::Put_Crate(CELL& cell) {
       new OverlayClass(OVERLAY_WOOD_CRATE, cell);
     }
     ScenarioInit = old;
-    return (true);
+    return true;
   }
 
   ScenarioInit = old;
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -182,8 +182,8 @@ bool CrateClass::Get_Crate(CELL cell) {
       cellptr->Overlay = OVERLAY_NONE;
       cellptr->OverlayData = 0;
       cellptr->Redraw_Objects();
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }

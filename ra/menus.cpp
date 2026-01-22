@@ -109,19 +109,19 @@ static int Select_To_Entry(int select, unsigned long bitfield, int index) {
   int placement;
 
   if (bitfield == 0xFFFFFFFFL) /* if all bits are set	*/
-    return (select);           /*		then it as is		*/
+    return select;           /*		then it as is		*/
 
   placement = 0;                                /* current pos zero		*/
   while (select) {                              /* while still ones		*/
-    if (bitfield & (1L << (placement + index))) /* if this flagged then	*/
+    if (bitfield & 1L << (placement + index)) /* if this flagged then	*/
       select--;                                 /* decrement counter		*/
     placement++;                                /* and we moved a place	*/
   }
-  while (!(bitfield & (1L << (placement + index)))) {
+  while (!(bitfield & 1L << (placement + index))) {
     placement++;
   }
 
-  return (placement); /* return the position	*/
+  return placement; /* return the position	*/
 }
 
 /*=========================================================================*/
@@ -174,7 +174,7 @@ static void Flash_Line(char const* text, int xpix, int ypix, unsigned nfgc,
 /*=========================================================================*/
 static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                  int iny2) {
-  return ((x >= inx1) && (x <= inx2) && (y >= iny1) && (y <= iny2));
+  return x >= inx1 && x <= inx2 && y >= iny1 && y <= iny2;
 }
 
 #ifdef NEVER
@@ -238,7 +238,7 @@ void Setup_Menu(int menu, char const* text[], unsigned long field, int index,
 
   menuptr = &MenuList[menu][0];    /* get pointer to menu	*/
   menuy = WinY + menuptr[MENUY];   /* get the absolute 		*/
-  menux = (WinX + menuptr[MENUX]); /*		coords of menu		*/
+  menux = WinX + menuptr[MENUX]; /*		coords of menu		*/
   item = Select_To_Entry(menuptr[MSELECTED], field, index);
   num = menuptr[ITEMSHIGH];
 
@@ -246,10 +246,10 @@ void Setup_Menu(int menu, char const* text[], unsigned long field, int index,
   Hide_Mouse();
   for (lp = 0; lp < num; lp++) {
     idx = Select_To_Entry(lp, field, index);
-    drawy = menuy + (lp * FontHeight) + (lp * skip);
+    drawy = menuy + lp * FontHeight + lp * skip;
     Plain_Text_Print(
         text[idx], menux, drawy,
-        menuptr[((idx == item) && (MenuUpdate)) ? HILITE : NORMCOL], TBLACK,
+        menuptr[idx == item && MenuUpdate ? HILITE : NORMCOL], TBLACK,
         TPF_8POINT | TPF_DROPSHADOW);
     //		if ((idx==item) && (MenuUpdate ))
     //			Text_Print(text[idx], menux, drawy, menuptr[HILITE],
@@ -278,7 +278,7 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
   halfskip = MenuSkip >> 1;         /* adjustment for menus	*/
 
   menuy = WinY + menuptr[MENUY];   /* get the absolute 		*/
-  menux = (WinX + menuptr[MENUX]); /*		coords of menu		*/
+  menux = WinX + menuptr[MENUX]; /*		coords of menu		*/
   normcol = menuptr[NORMCOL];
   litcol = menuptr[HILITE];
 
@@ -291,9 +291,9 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
   UnknownKey = 0;
   if (Keyboard->Check()) {
 #ifdef WIN32
-    key = (Keyboard->Get() &
-           ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT |
-             WWKEY_CTRL_BIT)); /* mask off all but release bit	*/
+    key = Keyboard->Get() &
+          ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT |
+            WWKEY_CTRL_BIT); /* mask off all but release bit	*/
 #else
     key = (Keyboard->Get() & 0x08FF); /* mask off all but release bit	*/
 #endif
@@ -305,13 +305,13 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
   **	the heck outta here. If we are somewhere on the menu, then figure
   **	out the new selected item, and continue forward.
   */
-  mx1 = (WinX) + (menuptr[MENUX] * FontWidth); /* get menu coords
+  mx1 = WinX + menuptr[MENUX] * FontWidth; /* get menu coords
                                                 */
-  my1 = (WinY) + (menuptr[MENUY]) -
+  my1 = WinY + menuptr[MENUY] -
         halfskip; /*		from the menu		*/
-  mx2 = mx1 + (menuptr[ITEMWIDTH] * FontWidth) -
+  mx2 = mx1 + menuptr[ITEMWIDTH] * FontWidth -
         1; /*		structure as		*/
-  my2 = my1 + (menuptr[ITEMSHIGH] * menuskip) -
+  my2 = my1 + menuptr[ITEMSHIGH] * menuskip -
         1; /*		necessary			*/
 
   tempy = Get_Mouse_Y();
@@ -376,7 +376,7 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
     */
     default:
       for (idx = 0; idx < menuptr[ITEMSHIGH]; idx++) {
-        if (toupper(*(text[Select_To_Entry(idx, field, index)])) ==
+        if (toupper(*text[Select_To_Entry(idx, field, index)]) ==
             toupper(Keyboard->To_ASCII((KeyNumType)(key & 0x0FF)))) {
           newitem = select = idx;
           break;
@@ -389,11 +389,11 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
   if (newitem != item) {
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
-    drawy = menuy + (item * menuskip);
+    drawy = menuy + item * menuskip;
     Plain_Text_Print(text[idx], menux, drawy, normcol, TBLACK,
                      TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
-    drawy = menuy + (newitem * menuskip);
+    drawy = menuy + newitem * menuskip;
     Plain_Text_Print(text[idx], menux, drawy, litcol, TBLACK,
                      TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
@@ -402,7 +402,7 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
   if (select != -1) {
     idx = Select_To_Entry(select, field, index);
     Hide_Mouse(); /* get rid of the mouse	*/
-    drawy = menuy + (newitem * menuskip);
+    drawy = menuy + newitem * menuskip;
     Flash_Line(text[idx], menux, drawy, normcol, litcol, TBLACK);
     Show_Mouse();
     select = idx;
@@ -410,7 +410,7 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
 
   menuptr[MSELECTED] = newitem; /* update menu select	*/
 
-  return (select);
+  return select;
 }
 
 /***************************************************************************
@@ -442,7 +442,7 @@ int Do_Menu(char const** strings, bool) {
   char const** ptr;  // Working menu text pointer.
   int selection;     // Selection from user.
 
-  if (!strings) return (-1);
+  if (!strings) return -1;
   Set_Logic_Page(SeenBuff);
   Keyboard->Clear();
 
@@ -506,7 +506,7 @@ int Do_Menu(char const** strings, bool) {
   // WindowList[WINDOW_MAIN][2] = SeenBuff.Get_Width();//BG
   Change_Window((int)WINDOW_MAIN);
   Map.Flag_To_Redraw(true);
-  return (selection);
+  return selection;
 }
 
 /***************************************************************************
@@ -562,7 +562,7 @@ int Main_Menu(unsigned long) {
   int d_exit_h = 9 * RESFACTOR;
   int d_exit_x = 102 * RESFACTOR;  // Added V.Grippi
 
-  int starty = d_dialog_y + (12 * RESFACTOR);
+  int starty = d_dialog_y + 12 * RESFACTOR;
 
   // #if defined(WIN32) && !defined(INTERNET_OFF)
   // Denzil 5/1/98 - No internet play
@@ -667,7 +667,7 @@ int Main_Menu(unsigned long) {
   /*
   **	Fill array of button ptrs
   */
-  curbutton = bExpansionCS ? 0 : (bExpansionAM ? 1 : 2);
+  curbutton = bExpansionCS ? 0 : bExpansionAM ? 1 : 2;
 
   buttons[0] = &expandbtnCS;
   buttons[1] = &expandbtnAM;
@@ -739,8 +739,8 @@ int Main_Menu(unsigned long) {
       // d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x,
       // d_dialog_y, d_dialog_w);
       commands->Draw_All();
-      Fancy_Text_Print("V%s", d_dialog_x + d_dialog_w - (18 * RESFACTOR),
-                       d_dialog_y + d_dialog_h - (5 * RESFACTOR),
+      Fancy_Text_Print("V%s", d_dialog_x + d_dialog_w - 18 * RESFACTOR,
+                       d_dialog_y + d_dialog_h - 5 * RESFACTOR,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Version_Name());
 
@@ -782,17 +782,17 @@ int Main_Menu(unsigned long) {
     **	Dispatch the input to be processed.
     */
     switch (input) {
-      case (BUTTON_EXPAND | KN_BUTTON):
+      case BUTTON_EXPAND | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case (BUTTON_EXPAND_AM | KN_BUTTON):
+      case BUTTON_EXPAND_AM | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case (BUTTON_START | KN_BUTTON):
+      case BUTTON_START | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
@@ -803,22 +803,22 @@ int Main_Menu(unsigned long) {
         // BUTTON_EXPAND; 				process = false;
         // break; 			#endif
 
-      case (BUTTON_LOAD | KN_BUTTON):
+      case BUTTON_LOAD | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case (BUTTON_MULTI | KN_BUTTON):
+      case BUTTON_MULTI | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case (BUTTON_INTRO | KN_BUTTON):
+      case BUTTON_INTRO | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case (BUTTON_EXIT | KN_BUTTON):
+      case BUTTON_EXIT | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
@@ -906,5 +906,5 @@ int Main_Menu(unsigned long) {
 
   Options.Set_Score_Volume(oldvolume, false);
 
-  return (retval);
+  return retval;
 }

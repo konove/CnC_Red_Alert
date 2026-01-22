@@ -99,7 +99,7 @@ class RadarClass : public DisplayClass {
   void Render_Overlay(CELL cell, int x, int y, int size);
   void Radar_Anim();
   bool Is_Radar_Active() { return IsRadarActive; }
-  bool Is_Radar_Existing() { return (DoesRadarExist); }
+  bool Is_Radar_Existing() { return DoesRadarExist; }
 
   /*
   **	File I/O.

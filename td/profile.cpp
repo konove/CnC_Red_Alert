@@ -76,7 +76,7 @@ bool Read_Private_Config_Struct(char* profile, NewConfigType* config) {
   WWGetPrivateProfileString("Language", "Language", nullptr, config->Language,
                             3, profile);
 
-  return ((config->DigitCard == 0) && (config->IRQ == 0) && (config->DMA == 0));
+  return config->DigitCard == 0 && config->IRQ == 0 && config->DMA == 0;
 }
 
 /***************************************************************************
@@ -105,7 +105,7 @@ unsigned WWGetPrivateProfileHex(char const* section, char const* entry,
     card = 0;
   }
 
-  return (card);
+  return card;
 }
 
 /***********************************************************************************************
@@ -142,7 +142,7 @@ int WWGetPrivateProfileInt(char const* section, char const* entry, int def,
   /*
   **	Convert to int & return.
   */
-  return (atoi(buffer));
+  return atoi(buffer);
 }
 
 /***********************************************************************************************
@@ -171,7 +171,7 @@ bool WWWritePrivateProfileInt(char const* section, char const* entry, int value,
   **	Just return if nothing to do.
   */
   if (!profile || !section) {
-    return (true);
+    return true;
   }
 
   /*
@@ -182,7 +182,7 @@ bool WWWritePrivateProfileInt(char const* section, char const* entry, int value,
   /*
   **	Save the string.
   */
-  return (WWWritePrivateProfileString(section, entry, buffer, profile));
+  return WWWritePrivateProfileString(section, entry, buffer, profile);
 }
 
 /***********************************************************************************************
@@ -238,7 +238,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
   **	Make sure a profile string was passed in
   */
   if (!profile || !section) {
-    return (retbuffer);
+    return retbuffer;
   }
 
   /*
@@ -264,7 +264,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
     **	then abort with a failure flag.
     */
     if (!workptr) {
-      return (nullptr);
+      return nullptr;
     }
 
     /*
@@ -280,7 +280,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
     **	If this is the section name & the character before is a newline,
     **	process this section
     */
-    if (memicmp(workptr, sec, len) == 0 && (c == '\n')) {
+    if (memicmp(workptr, sec, len) == 0 && c == '\n') {
       /*
       **	Skip work pointer to start of first valid entry.
       */
@@ -350,7 +350,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
           **	into the next section, then abort
           */
           if (!workptr || workptr >= next) {
-            return (nullptr);
+            return nullptr;
           }
 
           /*
@@ -363,7 +363,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
           /*
           **	Entry found; extract it
           */
-          if (memicmp(workptr, entry, entrylen) == 0 && (c == '\n') &&
+          if (memicmp(workptr, entry, entrylen) == 0 && c == '\n' &&
               (c2 == '=' || isspace(c2))) {
             retval = workptr;
             workptr += entrylen;             // skip entry name
@@ -382,7 +382,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
             **	the next '='
             */
             if (workptr == nullptr || altworkptr < workptr) {
-              return (retval);
+              return retval;
             }
 
             /*
@@ -394,7 +394,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
               /*
               **	Just return if there's no entry past the '='.
               */
-              if (workptr >= altworkptr) return (retval);
+              if (workptr >= altworkptr) return retval;
 
               workptr++;  // Skip the whitespace
             }
@@ -412,7 +412,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
               *(retbuffer + len) = '\0';  // Insert trailing null.
               strtrim(retbuffer);
             }
-            return (retval);
+            return retval;
           }
 
           /*
@@ -488,7 +488,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
     }
   }
 
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -516,7 +516,7 @@ bool WWWritePrivateProfileString(char const* section, char const* entry,
   **	Just return if nothing to do.
   */
   if (!profile || !section) {
-    return (true);
+    return true;
   }
 
   /*
@@ -580,7 +580,7 @@ bool WWWritePrivateProfileString(char const* section, char const* entry,
     // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
     strcpy(offset, next);
 
-    return (true);
+    return true;
   }
 
   /*
@@ -639,5 +639,5 @@ bool WWWritePrivateProfileString(char const* section, char const* entry,
     std::copy(buffer, buffer + strlen(buffer), offset);
   }
 
-  return (true);
+  return true;
 }

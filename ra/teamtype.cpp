@@ -226,11 +226,11 @@ TeamTypeClass* TeamTypeClass::As_Pointer(char const* name) {
   if (name) {
     for (int index = 0; index < TeamTypes.Count(); index++) {
       if (!stricmp(name, TeamTypes.Ptr(index)->IniName)) {
-        return (TeamTypes.Ptr(index));
+        return TeamTypes.Ptr(index);
       }
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***************************************************************************
@@ -253,12 +253,12 @@ TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
     for (TeamMissionType order = TMISSION_FIRST; order < TMISSION_COUNT;
          order++) {
       if (stricmp(TMissions[order], name) == 0) {
-        return (order);
+        return order;
       }
     }
   }
 
-  return (TMISSION_NONE);
+  return TMISSION_NONE;
 }
 
 /***************************************************************************
@@ -279,7 +279,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
 char const* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   assert((unsigned)order < TMISSION_COUNT);
 
-  return (TMissions[order]);
+  return TMissions[order];
 }
 
 /***************************************************************************
@@ -302,7 +302,7 @@ void* TeamTypeClass::operator new(size_t) {
   if (ptr) {
     ((TeamTypeClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***************************************************************************
@@ -344,9 +344,9 @@ void TeamTypeClass::operator delete(void* ptr) {
 TeamClass* TeamTypeClass::Create_One_Of() const {
   if (ScenarioInit || Number < MaxAllowed) {
     //	if (ScenarioInit || TeamClass::Number[ID] < MaxAllowed) {
-    return (new TeamClass(this, HouseClass::As_Pointer(House)));
+    return new TeamClass(this, HouseClass::As_Pointer(House));
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -487,9 +487,9 @@ TeamTypeClass const* TeamTypeClass::Suggested_New_Team(HouseClass* house, long,
   }
 
   if (choicecount > 0) {
-    return (choices[Random_Pick(0, choicecount - 1)]);
+    return choices[Random_Pick(0, choicecount - 1)];
   }
-  return (nullptr);
+  return nullptr;
 
   //	return(best);
 }
@@ -513,11 +513,11 @@ TeamTypeClass* TeamTypeClass::From_Name(char const* name) {
   if (name) {
     for (int index = 0; index < TeamTypes.Count(); index++) {
       if (stricmp(name, TeamTypes.Ptr(index)->IniName) == 0) {
-        return (TeamTypes.Ptr(index));
+        return TeamTypes.Ptr(index);
       }
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -540,24 +540,24 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
     **	Requires a formation type.
     */
     case TMISSION_FORMATION:
-      return (NEED_FORMATION);
+      return NEED_FORMATION;
 
     /*
     **	Team mission requires a target quarry value.
     */
     case TMISSION_ATTACK:
-      return (NEED_QUARRY);
+      return NEED_QUARRY;
 
     /*
     **	Team mission requires a data value.
     */
     case TMISSION_MOVECELL:
-      return (NEED_HEX_NUMBER);
+      return NEED_HEX_NUMBER;
 
     case TMISSION_SET_GLOBAL:
     case TMISSION_GUARD:
     case TMISSION_LOOP:
-      return (NEED_NUMBER);
+      return NEED_NUMBER;
 
     /*
     **	Team mission requires a waypoint.
@@ -566,18 +566,18 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
     case TMISSION_MOVE:
     case TMISSION_ATT_WAYPT:
     case TMISSION_SPY:
-      return (NEED_WAYPOINT);
+      return NEED_WAYPOINT;
 
     /*
     **	Team mission requires a general mission type.
     */
     case TMISSION_DO:
-      return (NEED_MISSION);
+      return NEED_MISSION;
 
     default:
       break;
   }
-  return (NEED_NONE);
+  return NEED_NONE;
 }
 
 #ifdef SCENARIO_EDITOR
@@ -1694,11 +1694,11 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   switch (NewINIFormat) {
     default:
       code = atoi(strtok(nullptr, ","));
-      IsRoundAbout = ((code & 0x0001) != 0);
-      IsSuicide = ((code & 0x0002) != 0);
-      IsAutocreate = ((code & 0x0004) != 0);
-      IsPrebuilt = ((code & 0x0008) != 0);
-      IsReinforcable = ((code & 0x0010) != 0);
+      IsRoundAbout = (code & 0x0001) != 0;
+      IsSuicide = (code & 0x0002) != 0;
+      IsAutocreate = (code & 0x0004) != 0;
+      IsPrebuilt = (code & 0x0008) != 0;
+      IsReinforcable = (code & 0x0010) != 0;
       break;
 
     case 0:

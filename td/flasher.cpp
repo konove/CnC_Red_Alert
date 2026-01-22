@@ -88,7 +88,7 @@ bool FlasherClass::Process() {
     if (FlashCount & 0x01) {
       IsBlushing = true;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

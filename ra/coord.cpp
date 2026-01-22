@@ -85,7 +85,7 @@ CELL Coord_Cell(COORDINATE coord) {
   cell.Cell = 0;
   cell.Sub.X = ((COORD_COMPOSITE&)coord).Sub.X.Sub.Cell;
   cell.Sub.Y = ((COORD_COMPOSITE&)coord).Sub.Y.Sub.Cell;
-  return (cell.Cell);
+  return cell.Cell;
   //	return(XY_Cell(((COORD_COMPOSITE)coord).Sub.X,
   //((COORD_COMPOSITE)composite).Sub.Y));
 }
@@ -108,7 +108,7 @@ CELL Coord_Cell(COORDINATE coord) {
  * HISTORY: * 06/17/1996 JLB : Created. *
  *=============================================================================================*/
 int Distance(TARGET target1, TARGET target2) {
-  return (Distance(As_Coord(target1), As_Coord(target2)));
+  return Distance(As_Coord(target1), As_Coord(target2));
 }
 
 /***********************************************************************************************
@@ -136,9 +136,9 @@ int Distance(COORDINATE coord1, COORDINATE coord2) {
   diff2 = Coord_X(coord1) - Coord_X(coord2);
   if (diff2 < 0) diff2 = -diff2;
   if (diff1 > diff2) {
-    return (diff1 + ((unsigned)diff2 / 2));
+    return diff1 + (unsigned)diff2 / 2;
   }
-  return (diff2 + ((unsigned)diff1 / 2));
+  return diff2 + (unsigned)diff1 / 2;
 }
 
 /***********************************************************************************************
@@ -193,20 +193,20 @@ short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   */
   if (maxsize > ICON_PIXEL_W * 2) {
     static short const _gigundo[] = {
-        -((2 * MAP_CELL_W) - 2), -((2 * MAP_CELL_W) - 1),
-        -((2 * MAP_CELL_W)),     -((2 * MAP_CELL_W) + 1),
-        -((2 * MAP_CELL_W) + 2), -((1 * MAP_CELL_W) - 2),
-        -((1 * MAP_CELL_W) - 1), -((1 * MAP_CELL_W)),
-        -((1 * MAP_CELL_W) + 1), -((1 * MAP_CELL_W) + 2),
-        -((0 * MAP_CELL_W) - 2), -((0 * MAP_CELL_W) - 1),
-        -((0 * MAP_CELL_W)),     -((0 * MAP_CELL_W) + 1),
-        -((0 * MAP_CELL_W) + 2), ((1 * MAP_CELL_W) - 2),
-        ((1 * MAP_CELL_W) - 1),  ((1 * MAP_CELL_W)),
-        ((1 * MAP_CELL_W) + 1),  ((1 * MAP_CELL_W) + 2),
-        +((2 * MAP_CELL_W) - 2), +((2 * MAP_CELL_W) - 1),
-        +((2 * MAP_CELL_W)),     +((2 * MAP_CELL_W) + 1),
-        +((2 * MAP_CELL_W) + 2), REFRESH_EOL};
-    return (&_gigundo[0]);
+        -(2 * MAP_CELL_W - 2), -(2 * MAP_CELL_W - 1),
+        -(2 * MAP_CELL_W),     -(2 * MAP_CELL_W + 1),
+        -(2 * MAP_CELL_W + 2), -(1 * MAP_CELL_W - 2),
+        -(1 * MAP_CELL_W - 1), -(1 * MAP_CELL_W),
+        -(1 * MAP_CELL_W + 1), -(1 * MAP_CELL_W + 2),
+        -(0 * MAP_CELL_W - 2), -(0 * MAP_CELL_W - 1),
+        -(0 * MAP_CELL_W),     -(0 * MAP_CELL_W + 1),
+        -(0 * MAP_CELL_W + 2), (1 * MAP_CELL_W - 2),
+        (1 * MAP_CELL_W - 1),  (1 * MAP_CELL_W),
+        (1 * MAP_CELL_W + 1),  (1 * MAP_CELL_W + 2),
+        +(2 * MAP_CELL_W - 2), +(2 * MAP_CELL_W - 1),
+        +(2 * MAP_CELL_W),     +(2 * MAP_CELL_W + 1),
+        +(2 * MAP_CELL_W + 2), REFRESH_EOL};
+    return &_gigundo[0];
   }
 
   /*
@@ -215,10 +215,10 @@ short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   *cell unnecessarily.
   */
   if (maxsize > ICON_PIXEL_W) {
-    maxsize = std::min(maxsize, (ICON_PIXEL_W * 2)) / 2;
+    maxsize = std::min(maxsize, ICON_PIXEL_W * 2) / 2;
 
-    x = (ICON_PIXEL_W * Coord_XLepton(coord)) / ICON_LEPTON_W;
-    y = (ICON_PIXEL_H * Coord_YLepton(coord)) / ICON_LEPTON_H;
+    x = ICON_PIXEL_W * Coord_XLepton(coord) / ICON_LEPTON_W;
+    y = ICON_PIXEL_H * Coord_YLepton(coord) / ICON_LEPTON_H;
     int left = x - maxsize;
     int right = x + maxsize;
     int top = y - maxsize;
@@ -235,7 +235,7 @@ short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
     if (left < 0 && bottom >= ICON_PIXEL_H) _manual[index++] = MAP_CELL_W - 1;
     if (right >= ICON_PIXEL_H && top < 0) _manual[index++] = -(MAP_CELL_W - 1);
     _manual[index] = REFRESH_EOL;
-    return (&_manual[0]);
+    return &_manual[0];
   }
 
   /*
@@ -250,7 +250,7 @@ short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   if (x > posval) index |= 0x02;   // Spilling East.
   if (x < -posval) index |= 0x01;  // Spilling West.
 
-  return (&_MoveSpillage[_SpillTable[index]][0]);
+  return &_MoveSpillage[_SpillTable[index]][0];
 }
 
 /***********************************************************************************************
@@ -283,7 +283,7 @@ short const* Coord_Spillage_List(COORDINATE coord, Rect const& rect,
                                  bool nocenter) {
   if (!rect.Is_Valid()) {
     static short const _list[] = {REFRESH_EOL};
-    return (_list);
+    return _list;
   }
 
   CELL coordcell = Coord_Cell(coord);
@@ -324,7 +324,7 @@ short const* Coord_Spillage_List(COORDINATE coord, Rect const& rect,
   short* ptr = _spillagelist;
   for (int yy = celly; yy <= celly2; yy++) {
     for (int xx = cellx; xx <= cellx2; xx++) {
-      short offset = (XY_Cell(xx, yy) - coordcell);
+      short offset = XY_Cell(xx, yy) - coordcell;
       if (!nocenter || offset != 0) {
         *ptr++ = offset;
         count++;
@@ -339,7 +339,7 @@ short const* Coord_Spillage_List(COORDINATE coord, Rect const& rect,
   **	to the completed list.
   */
   *ptr = REFRESH_EOL;
-  return (_spillagelist);
+  return _spillagelist;
 }
 
 /***********************************************************************************************
@@ -370,8 +370,8 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
   return (XY_Coord(x, y));
 #endif
 
-  Move_Point(*(short*)&start, *(((short*)&start) + 1), dir, distance);
-  return (start);
+  Move_Point(*(short*)&start, *((short*)&start + 1), dir, distance);
+  return start;
 }
 
 /***********************************************************************************************
@@ -407,7 +407,7 @@ COORDINATE Coord_Scatter(COORDINATE coord, unsigned distance, bool lock) {
     newcoord = Coord_Snap(newcoord);
   }
 
-  return (newcoord);
+  return newcoord;
 }
 
 int calcx(signed short v, short distance) {
@@ -631,7 +631,7 @@ unsigned int Cardinal_To_Fixed(unsigned base, unsigned cardinal) {
 }
 
 unsigned int Fixed_To_Cardinal(unsigned base, unsigned fixed) {
-  unsigned ret = (base * fixed) + 0x80;
+  unsigned ret = base * fixed + 0x80;
 
   if (ret & 0xFF000000) return 0xFFFF;
 

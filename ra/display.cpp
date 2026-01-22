@@ -543,7 +543,7 @@ short const* DisplayClass::Text_Overlap_List(char const* text, int x,
 
     *ptr = REFRESH_EOL;
   }
-  return (_list);
+  return _list;
 }
 
 /***********************************************************************************************
@@ -588,14 +588,14 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
   **	Adjust the tactical cell if it is now in an invalid position
   **	because of the changed dimensions.
   */
-  int xx = Coord_X(TacticalCoord) - (MapCellX * CELL_LEPTON_W);
-  int yy = Coord_Y(TacticalCoord) - (MapCellY * CELL_LEPTON_H);
+  int xx = Coord_X(TacticalCoord) - MapCellX * CELL_LEPTON_W;
+  int yy = Coord_Y(TacticalCoord) - MapCellY * CELL_LEPTON_H;
 
   Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
                MapCellWidth * CELL_LEPTON_W, MapCellHeight * CELL_LEPTON_H);
 
-  Set_Tactical_Position(XY_Coord(xx + (MapCellX * CELL_LEPTON_W),
-                                 yy + (MapCellY * CELL_LEPTON_H)));
+  Set_Tactical_Position(XY_Coord(xx + MapCellX * CELL_LEPTON_W,
+                                 yy + MapCellY * CELL_LEPTON_H));
 
   TacPixelX = x;
   TacPixelY = y;
@@ -649,7 +649,7 @@ void DisplayClass::Set_Cursor_Shape(short const* list) {
 
     CursorSize = _list;
     Get_Occupy_Dimensions(w, h, CursorSize);
-    ZoneOffset = -(((h / 2) * MAP_CELL_W) + (w / 2));
+    ZoneOffset = -(h / 2 * MAP_CELL_W + w / 2);
     Cursor_Mark(ZoneCell + ZoneOffset, true);
   } else {
     CursorSize = nullptr;
@@ -703,15 +703,15 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const* object,
   ** In editor mode, the proximity check always passes.
   */
   if (Debug_Map) {
-    return (true);
+    return true;
   }
 
   if (list == nullptr || trycell == 0) {
-    return (true);
+    return true;
   }
 
   if (object == nullptr || object->What_Am_I() != RTTI_BUILDINGTYPE) {
-    return (true);
+    return true;
   }
 
   BuildingTypeClass const* building = (BuildingTypeClass const*)object;
@@ -726,7 +726,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const* object,
   CELL cell = trycell;
   //	CELL cell = ZoneCell;
   if (building->Adjacent == 1) {
-    while (*ptr != REFRESH_EOL && (retval == -1)) {
+    while (*ptr != REFRESH_EOL && retval == -1) {
       cell = trycell + *ptr++;
       //			cell = ZoneCell + ZoneOffset + *ptr++;
 
@@ -809,7 +809,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const* object,
   if (retval == -1) retval = false;
 
   if (house == PlayerPtr->Class->House) {
-    PassedProximity = (retval != false);
+    PassedProximity = retval != false;
   }
 
   /*
@@ -837,7 +837,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const* object,
     }
   }
 
-  return ((bool)retval);
+  return (bool)retval;
 }
 
 /***********************************************************************************************
@@ -874,7 +874,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   if (CursorSize == nullptr) {
     prevpos = ZoneCell;
     ZoneCell = pos;
-    return (prevpos);
+    return prevpos;
   }
 
   /*
@@ -899,7 +899,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   ** This checks to see if NO animation or drawing is to occur and, if so,
   **	exits.
   */
-  if (pos == ZoneCell) return (pos);
+  if (pos == ZoneCell) return pos;
 
   prevpos = ZoneCell;
 
@@ -926,7 +926,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   ProximityCheck = Passes_Proximity_Check(PendingObject, PendingHouse,
                                           CursorSize, ZoneCell + ZoneOffset);
 
-  return (prevpos);
+  return prevpos;
 }
 
 /***********************************************************************************************
@@ -963,8 +963,8 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h,
       ** & Cell_Y(), because they use shifts to compute the values, and if the
       ** offset is negative we'll get a bogus coordinate!
       */
-      x = (*list) % MAP_CELL_W;
-      y = (*list) / MAP_CELL_H;
+      x = *list % MAP_CELL_W;
+      y = *list / MAP_CELL_H;
 
       max_x = std::max(max_x, x);
       min_x = std::min(min_x, x);
@@ -1062,8 +1062,8 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
 void DisplayClass::AI(KeyNumType& input, int x, int y) {
   if (IsRubberBand &&
       (Get_Mouse_X() < TacPixelX || Get_Mouse_Y() < TacPixelY ||
-       Get_Mouse_X() >= (TacPixelX + Lepton_To_Pixel(TacLeptonWidth)) ||
-       Get_Mouse_Y() >= (TacPixelY + Lepton_To_Pixel(TacLeptonHeight)))) {
+       Get_Mouse_X() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
+       Get_Mouse_Y() >= TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
     Mouse_Left_Release(-1, Get_Mouse_X(), Get_Mouse_Y(), nullptr, ACTION_NONE);
   }
 
@@ -1095,7 +1095,7 @@ void DisplayClass::AI(KeyNumType& input, int x, int y) {
  *=============================================================================================*/
 void DisplayClass::Submit(ObjectClass const* object, LayerType layer) {
   if (object) {
-    Layer[layer].Submit(object, (layer == LAYER_GROUND));
+    Layer[layer].Submit(object, layer == LAYER_GROUND);
   }
 }
 
@@ -1152,9 +1152,9 @@ CELL DisplayClass::Click_Cell_Calc(int x, int y) const {
     COORDINATE tcoord =
         XY_Coord(Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(TacticalCoord))),
                  Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(TacticalCoord))));
-    return (Coord_Cell(Coord_Add(tcoord, XY_Coord(x, y))));
+    return Coord_Cell(Coord_Add(tcoord, XY_Coord(x, y)));
   }
-  return (-1);
+  return -1;
 }
 
 /***********************************************************************************************
@@ -1185,7 +1185,7 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
   **	If the distance is invalid then no further checking is required. Bail
   **	with a no-can-do flag.
   */
-  if (distance == 0) return (false);
+  if (distance == 0) return false;
   FacingType crude = Dir_Facing(facing);
 
   if (Coord_X(TacticalCoord) == Cell_To_Lepton(MapCellX) && crude != FACING_W) {
@@ -1245,7 +1245,7 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
   **	If the new coordinate is the same as the old, then no scrolling would
   *occur.
   */
-  if (!distance || coord == TacticalCoord) return (false);
+  if (!distance || coord == TacticalCoord) return false;
 
   /*
   **	Since the new coordinate is different than the old one, possibly adjust
@@ -1266,7 +1266,7 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
       Layer[LAYER_AIR][index]->Mark(MARK_CHANGE);
     }
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1350,7 +1350,7 @@ int DisplayClass::Cell_Shadow(CELL cell) const {
   **	problem of accessing cells off the top or bottom of the map and into
   **	who-knows-what memory.
   */
-  if ((unsigned)(Cell_Y(cell) - 1) >= MAP_CELL_H - 2) return (-1);
+  if ((unsigned)(Cell_Y(cell) - 1) >= MAP_CELL_H - 2) return -1;
   // if ((unsigned)(Cell_Y(cell)-1) > MAP_CELL_H-2) return(-2);
 
   CellClass const* cellptr = &(*this)[cell];
@@ -1386,7 +1386,7 @@ int DisplayClass::Cell_Shadow(CELL cell) const {
 
     value = _shadow[index];
   }
-  return (value);
+  return value;
 }
 
 /***********************************************************************************************
@@ -1415,12 +1415,12 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   ** facility, to see if his mapping is applicable to us.
   */
   if (house && house != PlayerPtr) {
-    if (house->RadarSpied & (1 << (PlayerPtr->Class->House))) house = PlayerPtr;
+    if (house->RadarSpied & 1 << PlayerPtr->Class->House) house = PlayerPtr;
     if (Session.Type == GAME_NORMAL && house->Is_Ally(PlayerPtr))
       house = PlayerPtr;
   }
 
-  if (house != PlayerPtr || !In_Radar(cell)) return (false);
+  if (house != PlayerPtr || !In_Radar(cell)) return false;
 
   CellClass* cellptr = &(*this)[cell];
 
@@ -1431,7 +1431,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
     if (!cellptr->IsVisible) {
       cellptr->Redraw_Objects();
     }
-    return (false);
+    return false;
   }
 
   /*
@@ -1481,7 +1481,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   if (tech) {
     tech->Revealed(house);
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1514,20 +1514,20 @@ bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) const {
     int xtac = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(TacticalCoord)));
     int xoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(coord)));
 
-    xoff = (xoff + EDGE_ZONE) - xtac;
+    xoff = xoff + EDGE_ZONE - xtac;
     if ((unsigned)xoff <= TacLeptonWidth + EDGE_ZONE * 2) {
       int ytac = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(TacticalCoord)));
       int yoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(coord)));
 
-      yoff = (yoff + EDGE_ZONE) - ytac;
+      yoff = yoff + EDGE_ZONE - ytac;
       if ((unsigned)yoff <= TacLeptonHeight + EDGE_ZONE * 2) {
         x = Lepton_To_Pixel(xoff) - CELL_PIXEL_W * 2;
         y = Lepton_To_Pixel(yoff) - CELL_PIXEL_H * 2;
-        return (true);
+        return true;
       }
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1548,7 +1548,7 @@ bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) const {
  * HISTORY: * 03/27/1995 BWG : Created. *
  *=============================================================================================*/
 bool DisplayClass::Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) {
-  if (!source || !dest) return (false);
+  if (!source || !dest) return false;
 
   int x1 = Coord_X(source);
   int y1 = Coord_Y(source);
@@ -1559,10 +1559,10 @@ bool DisplayClass::Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) {
   int top = Coord_Y(TacticalCoord);
   int bottom = Coord_Y(TacticalCoord) + TacLeptonHeight;
 
-  if (x1 < left && x2 < left) return (false);
-  if (x1 > right && x2 > right) return (false);
-  if (y1 < top && y2 < top) return (false);
-  if (y1 > bottom && y2 > bottom) return (false);
+  if (x1 < left && x2 < left) return false;
+  if (x1 > right && x2 > right) return false;
+  if (y1 < top && y2 < top) return false;
+  if (y1 > bottom && y2 > bottom) return false;
 
   x1 = Bound(x1, left, right);
   x2 = Bound(x2, left, right);
@@ -1571,7 +1571,7 @@ bool DisplayClass::Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) {
 
   source = XY_Coord(x1, y1);
   dest = XY_Coord(x2, y2);
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1724,10 +1724,10 @@ void DisplayClass::Draw_It(bool forced) {
       /*
       ** Work out which map edges need to be redrawn
       */
-      bool redraw_right = (oldx < 0) ? true : false;   // Right hand edge
-      bool redraw_left = (oldx > 0) ? true : false;    // Left hand edge
-      bool redraw_bottom = (oldy < 0) ? true : false;  // Bottom edge
-      bool redraw_top = (oldy > 0) ? true : false;     // Top edge
+      bool redraw_right = oldx < 0 ? true : false;   // Right hand edge
+      bool redraw_left = oldx > 0 ? true : false;    // Left hand edge
+      bool redraw_bottom = oldy < 0 ? true : false;  // Bottom edge
+      bool redraw_top = oldy > 0 ? true : false;     // Top edge
 
       /*
       **	Blit any replicable block to avoid having to drawstamp.
@@ -1743,16 +1743,16 @@ void DisplayClass::Draw_It(bool forced) {
         */
         if (HidPage.Get_IsDirectDraw()) {
           Hide_Mouse();
-          SeenBuff.Blit(HidPage, ((oldx < 0) ? -oldx : 0) + TacPixelX,
-                        ((oldy < 0) ? -oldy : 0) + TacPixelY,
-                        ((oldx < 0) ? 0 : oldx) + TacPixelX,
-                        ((oldy < 0) ? 0 : oldy) + TacPixelY, oldw, oldh);
+          SeenBuff.Blit(HidPage, (oldx < 0 ? -oldx : 0) + TacPixelX,
+                        (oldy < 0 ? -oldy : 0) + TacPixelY,
+                        (oldx < 0 ? 0 : oldx) + TacPixelX,
+                        (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
           Show_Mouse();
         } else {
-          HidPage.Blit(HidPage, ((oldx < 0) ? -oldx : 0) + TacPixelX,
-                       ((oldy < 0) ? -oldy : 0) + TacPixelY,
-                       ((oldx < 0) ? 0 : oldx) + TacPixelX,
-                       ((oldy < 0) ? 0 : oldy) + TacPixelY, oldw, oldh);
+          HidPage.Blit(HidPage, (oldx < 0 ? -oldx : 0) + TacPixelX,
+                       (oldy < 0 ? -oldy : 0) + TacPixelY,
+                       (oldx < 0 ? 0 : oldx) + TacPixelX,
+                       (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
         }
 
       } else {
@@ -1785,8 +1785,8 @@ void DisplayClass::Draw_It(bool forced) {
           /*
           ** The width of the area we redraw depends on the scroll speed
           */
-          int extra_x = (abs(oldx) >= 16) ? 2 : 1;
-          int extra_y = (abs(oldy) >= 16) ? 2 : 1;
+          int extra_x = abs(oldx) >= 16 ? 2 : 1;
+          int extra_y = abs(oldy) >= 16 ? 2 : 1;
 
           /*
           ** Flag the cells across the top of the visible area if required
@@ -1795,7 +1795,7 @@ void DisplayClass::Draw_It(bool forced) {
             for (y = starty; y <= starty + CELL_PIXEL_H * extra_y;
                  y += CELL_PIXEL_H) {
               for (x = startx;
-                   x <= Lepton_To_Pixel(TacLeptonWidth) + ((CELL_PIXEL_W * 2));
+                   x <= Lepton_To_Pixel(TacLeptonWidth) + CELL_PIXEL_W * 2;
                    x += CELL_PIXEL_W) {
                 CELL c = Click_Cell_Calc(
                     Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
@@ -1817,7 +1817,7 @@ void DisplayClass::Draw_It(bool forced) {
                  y <= Lepton_To_Pixel(TacLeptonHeight) + CELL_PIXEL_H * 3;
                  y += CELL_PIXEL_H) {
               for (x = startx;
-                   x <= Lepton_To_Pixel(TacLeptonWidth) + ((CELL_PIXEL_W * 2));
+                   x <= Lepton_To_Pixel(TacLeptonWidth) + CELL_PIXEL_W * 2;
                    x += CELL_PIXEL_W) {
                 CELL c = Click_Cell_Calc(
                     Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
@@ -1837,7 +1837,7 @@ void DisplayClass::Draw_It(bool forced) {
             for (x = startx; x <= startx + CELL_PIXEL_W * extra_x;
                  x += CELL_PIXEL_W) {
               for (y = starty;
-                   y <= Lepton_To_Pixel(TacLeptonHeight) + ((CELL_PIXEL_H * 2));
+                   y <= Lepton_To_Pixel(TacLeptonHeight) + CELL_PIXEL_H * 2;
                    y += CELL_PIXEL_H) {
                 CELL c = Click_Cell_Calc(
                     Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
@@ -1859,7 +1859,7 @@ void DisplayClass::Draw_It(bool forced) {
                  x <= Lepton_To_Pixel(TacLeptonWidth) + CELL_PIXEL_W * 3;
                  x += CELL_PIXEL_W) {
               for (y = starty;
-                   y <= Lepton_To_Pixel(TacLeptonHeight) + ((CELL_PIXEL_H * 2));
+                   y <= Lepton_To_Pixel(TacLeptonHeight) + CELL_PIXEL_H * 2;
                    y += CELL_PIXEL_H) {
                 CELL c = Click_Cell_Calc(
                     Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
@@ -1882,10 +1882,10 @@ void DisplayClass::Draw_It(bool forced) {
           oldw -= 24;
           oldh -= 24;
           for (y = starty;
-               y <= Lepton_To_Pixel(TacLeptonHeight) + ((CELL_PIXEL_H * 2));
+               y <= Lepton_To_Pixel(TacLeptonHeight) + CELL_PIXEL_H * 2;
                y += CELL_PIXEL_H) {
             for (x = startx;
-                 x <= Lepton_To_Pixel(TacLeptonWidth) + ((CELL_PIXEL_W * 2));
+                 x <= Lepton_To_Pixel(TacLeptonWidth) + CELL_PIXEL_W * 2;
                  x += CELL_PIXEL_W) {
               if (x <= oldx || x >= oldx + oldw || y <= oldy ||
                   y >= oldy + oldh) {
@@ -2306,11 +2306,11 @@ ObjectClass* DisplayClass::Next_Object(ObjectClass* object) const {
     */
     if (obj != nullptr && obj->Is_Players_Army()) {
       if (firstobj == nullptr) firstobj = obj;
-      if (foundmatch) return (obj);
+      if (foundmatch) return obj;
       if (object == obj) foundmatch = true;
     }
   }
-  return (firstobj);
+  return firstobj;
 }
 
 /***********************************************************************************************
@@ -2346,12 +2346,12 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) const {
     */
     if (obj != nullptr && obj->Is_Players_Army()) {
       if (firstobj == nullptr) firstobj = obj;
-      if (foundmatch) return (obj);
+      if (foundmatch) return obj;
       if (object == obj) foundmatch = true;
     }
   }
 
-  return (firstobj);
+  return firstobj;
 }
 
 /***********************************************************************************************
@@ -2382,9 +2382,9 @@ COORDINATE DisplayClass::Pixel_To_Coord(int x, int y) const {
   *coordinate *	value. If not, then just return with nullptr.
   */
   if ((unsigned)x < TacLeptonWidth && (unsigned)y < TacLeptonHeight) {
-    return (Coord_Add(TacticalCoord, XY_Coord(x, y)));
+    return Coord_Add(TacticalCoord, XY_Coord(x, y));
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -2458,15 +2458,15 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
   */
   if (trycell != -1) {
     x = Cell_X(trycell) - MapCellX;
-    x = std::min(x, (-Cell_X(trycell) + (MapCellX + MapCellWidth)));
+    x = std::min(x, -Cell_X(trycell) + (MapCellX + MapCellWidth));
 
     y = Cell_Y(trycell) - MapCellY;
-    y = std::min(y, (-Cell_Y(trycell) + (MapCellY + MapCellHeight)));
+    y = std::min(y, -Cell_Y(trycell) + (MapCellY + MapCellHeight));
 
     if (x < y) {
       vert = true;
       horz = false;
-      if ((Cell_X(trycell) - MapCellX) < MapCellWidth / 2) {
+      if (Cell_X(trycell) - MapCellX < MapCellWidth / 2) {
         x = -1;
       } else {
         x = MapCellWidth;
@@ -2476,7 +2476,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
     } else {
       vert = false;
       horz = true;
-      if ((Cell_Y(trycell) - MapCellY) < MapCellHeight / 2) {
+      if (Cell_Y(trycell) - MapCellY < MapCellHeight / 2) {
         y = -1;
       } else {
         y = MapCellHeight;
@@ -2529,29 +2529,29 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
   **	from the edge position specified by the X and Y variables.
   */
   if (vert) {
-    int modifier = (x > MapCellX) ? -1 : 1;
+    int modifier = x > MapCellX ? -1 : 1;
 
     for (int index = 0; index < MapCellHeight; index++) {
       CELL trycell =
-          XY_Cell(x + MapCellX, ((y + index) % MapCellHeight) + MapCellY);
+          XY_Cell(x + MapCellX, (y + index) % MapCellHeight + MapCellY);
 
       if (Good_Reinforcement_Cell(trycell, trycell + modifier, loco, zone,
                                   mzone)) {
-        return (trycell);
+        return trycell;
       }
     }
   }
 
   if (horz) {
-    int modifier = (y > MapCellY) ? -MAP_CELL_W : MAP_CELL_W;
+    int modifier = y > MapCellY ? -MAP_CELL_W : MAP_CELL_W;
 
     for (int index = 0; index < MapCellWidth; index++) {
       CELL trycell =
-          XY_Cell(((x + index) % MapCellWidth) + MapCellX, y + MapCellY);
+          XY_Cell((x + index) % MapCellWidth + MapCellX, y + MapCellY);
 
       if (Good_Reinforcement_Cell(trycell, trycell + modifier, loco, zone,
                                   mzone)) {
-        return (trycell);
+        return trycell;
       }
     }
   }
@@ -2560,7 +2560,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
   **	If there was no success in finding a suitable reinforcement edge cell,
   *then return *	with the default 'punt' cell location.
   */
-  return (punt);
+  return punt;
 }
 
 /***********************************************************************************************
@@ -2598,7 +2598,7 @@ bool DisplayClass::Good_Reinforcement_Cell(CELL outcell, CELL incell,
   *not *	a good cell for reinforcement purposes.
   */
   if (!(*this)[outcell].Is_Clear_To_Move(loco, false, false)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -2606,7 +2606,7 @@ bool DisplayClass::Good_Reinforcement_Cell(CELL outcell, CELL incell,
   *with *	the failure code.
   */
   if (!(*this)[incell].Is_Clear_To_Move(loco, false, false, zone, mzone)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -2614,15 +2614,15 @@ bool DisplayClass::Good_Reinforcement_Cell(CELL outcell, CELL incell,
   *code.
   */
   if ((*this)[outcell].Cell_Techno() != nullptr) {
-    return (false);
+    return false;
   }
-  if ((*this)[incell].Cell_Techno() != nullptr) return (false);
+  if ((*this)[incell].Cell_Techno() != nullptr) return false;
 
   /*
   **	All tests have passed, return with success code.
   */
   // Mono_Printf("<%04X>\n", incell);Keyboard->Get();
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2687,7 +2687,7 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
     *be *	selected, and are within the bounding box.
     */
     HouseClass* hptr = HouseClass::As_Pointer(obj->Owner());
-    if ((hptr != nullptr && hptr->IsPlayerControl) &&
+    if (hptr != nullptr && hptr->IsPlayerControl &&
         obj->Class_Of().IsSelectable && obj->What_Am_I() != RTTI_BUILDING &&
         x >= x1 && x <= x2 && y >= y1 && y <= y2) {
       if (obj->Select()) {
@@ -2831,12 +2831,12 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     x = Get_Mouse_X();
     y = Get_Mouse_Y();
   }
-  bool edge = (y == 0 || x == 0 || x == SeenBuff.Get_Width() - 1 ||
-               y == SeenBuff.Get_Height() - 1);
+  bool edge = y == 0 || x == 0 || x == SeenBuff.Get_Width() - 1 ||
+              y == SeenBuff.Get_Height() - 1;
   COORDINATE coord = Map.Pixel_To_Coord(x, y);
   CELL cell = Coord_Cell(coord);
   if (coord) {
-    shadow = (!Map[cell].IsMapped && !Debug_Unshroud);
+    shadow = !Map[cell].IsMapped && !Debug_Unshroud;
     x -= Map.TacPixelX;
     y -= Map.TacPixelY;
 
@@ -2984,7 +2984,7 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     *know about it, *	then it must be informed. Do this by faking a mouse
     *release event.
     */
-    if ((flags & LEFTUP) && Map.IsRubberBand) {
+    if (flags & LEFTUP && Map.IsRubberBand) {
       flags |= LEFTRELEASE;
     }
 
@@ -3013,7 +3013,7 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     **	mode can be made. Rubber band mode starts when the mouse is
     **	held down and moved a certain minimum distance.
     */
-    if (!edge && (flags & LEFTPRESS)) {
+    if (!edge && flags & LEFTPRESS) {
       Map.Mouse_Left_Up(cell, shadow, object, action);
       Map.Mouse_Left_Press(x, y);
     }
@@ -3028,7 +3028,7 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     }
   }
 
-  return (GadgetClass::Action(0, key));
+  return GadgetClass::Action(0, key);
 }
 
 /***********************************************************************************************
@@ -3838,8 +3838,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < Buildings.Count(); i++) {
     BuildingClass* bldgp = Buildings.Ptr(i);
     if (!bldgp->IsInLimbo && bldgp->IsOwnedByPlayer) {
-      x += (((long)Coord_XCell(bldgp->Coord)) * 16);
-      y += (((long)Coord_YCell(bldgp->Coord)) * 16);
+      x += (long)Coord_XCell(bldgp->Coord) * 16;
+      y += (long)Coord_YCell(bldgp->Coord) * 16;
       num += 16;
     }
   }
@@ -3847,8 +3847,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < Vessels.Count(); i++) {
     VesselClass* bldgp = Vessels.Ptr(i);
     if (!bldgp->IsInLimbo && bldgp->IsOwnedByPlayer) {
-      x += (((long)Coord_XCell(bldgp->Coord)));
-      y += (((long)Coord_YCell(bldgp->Coord)));
+      x += (long)Coord_XCell(bldgp->Coord);
+      y += (long)Coord_YCell(bldgp->Coord);
       num++;
     }
   }
@@ -3885,7 +3885,7 @@ void DisplayClass::Compute_Start_Pos() {
       Scen.Views[3] = XY_Cell(x, y);
 
   Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
-      (Scen.Views[0] - (MAP_CELL_W * 4 * RESFACTOR)) - (5 * RESFACTOR))));
+      Scen.Views[0] - MAP_CELL_W * 4 * RESFACTOR - 5 * RESFACTOR)));
   //	Set_Tactical_Position(Cell_Coord(XY_Cell(x, y)));
 }
 
@@ -3912,7 +3912,7 @@ void DisplayClass::Sell_Mode_Control(int control) {
       break;
 
     case -1:
-      mode = (IsSellMode == false);
+      mode = IsSellMode == false;
       break;
 
     case 1:
@@ -3954,7 +3954,7 @@ void DisplayClass::Repair_Mode_Control(int control) {
       break;
 
     case -1:
-      mode = (IsRepairMode == false);
+      mode = IsRepairMode == false;
       break;
 
     case 1:
@@ -3991,18 +3991,18 @@ void DisplayClass::Repair_Mode_Control(int control) {
  *function.                                            *
  *=============================================================================================*/
 bool DisplayClass::In_View(CELL cell) const {
-  if (cell & 0xC000) return (false);
+  if (cell & 0xC000) return false;
 
   COORDINATE coord = Coord_Whole(Cell_Coord(cell));
   COORDINATE tcoord = Coord_Whole(TacticalCoord);
 
   if ((unsigned)(Coord_X(coord) - Coord_X(tcoord)) >
       TacLeptonWidth + CELL_LEPTON_W - 1)
-    return (false);
+    return false;
   if ((unsigned)(Coord_Y(coord) - Coord_Y(tcoord)) >
       TacLeptonHeight + CELL_LEPTON_H - 1)
-    return (false);
-  return (true);
+    return false;
+  return true;
 }
 
 /***********************************************************************************************
@@ -4028,7 +4028,7 @@ bool DisplayClass::In_View(CELL cell) const {
  *=============================================================================================*/
 COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   if (coord & HIGH_COORD_MASK) {
-    return (0x00800080);
+    return 0x00800080;
   }
   return Map[coord].Closest_Free_Spot(coord, any);
 }
@@ -4053,7 +4053,7 @@ COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
  *=============================================================================================*/
 bool DisplayClass::Is_Spot_Free(COORDINATE coord) const {
   if (coord & HIGH_COORD_MASK) {
-    return (0x00800080);
+    return 0x00800080;
   }
   return Map[coord].Is_Spot_Free(CellClass::Spot_Index(coord));
 }
@@ -4179,7 +4179,7 @@ void DisplayClass::Encroach_Shadow() {
  *=============================================================================================*/
 void DisplayClass::Shroud_Cell(CELL cell /*KO, bool shadeit*/) {
   if (PlayerPtr->IsGPSActive) {
-    if ((*this)[cell].Jammed & (1 << PlayerPtr->Class->House)) {
+    if ((*this)[cell].Jammed & 1 << PlayerPtr->Class->House) {
       return;
     }
   }
@@ -4305,8 +4305,9 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
       Scen.Waypoint[WAYPT_HOME];
   Set_Tactical_Position(
-      Cell_Coord((Scen.Waypoint[WAYPT_HOME] - (MAP_CELL_W * 4 * RESFACTOR)) -
-                 (5 * RESFACTOR)));
+      Cell_Coord(Scen.Waypoint[WAYPT_HOME] -
+                                   MAP_CELL_W * 4 * RESFACTOR -
+                 5 * RESFACTOR));
 
   /*
   **	Loop through all CellTrigger entries.
@@ -4436,7 +4437,7 @@ void DisplayClass::All_To_Look(bool units_only) {
   for (int index = 0; index < Layer[LAYER_GROUND].Count(); index++) {
     ObjectClass* object = Layer[LAYER_GROUND][index];
     if (object != nullptr && object->Is_Techno()) {
-      TechnoClass* tech = ((TechnoClass*)object);
+      TechnoClass* tech = (TechnoClass*)object;
 
       if (tech->What_Am_I() == RTTI_BUILDING && units_only) continue;
 
@@ -4458,7 +4459,7 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
   for (int index = 0; index < Layer[LAYER_GROUND].Count(); index++) {
     ObjectClass* object = Layer[LAYER_GROUND][index];
     if (object != nullptr && object->Is_Techno()) {
-      TechnoClass* tech = ((TechnoClass*)object);
+      TechnoClass* tech = (TechnoClass*)object;
 
       //			if (tech->What_Am_I() == RTTI_BUILDING &&
       // units_only) continue;
@@ -4466,7 +4467,7 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
       if (tech->House->IsPlayerControl) {
         if (tech->IsDiscoveredByPlayer &&
             Distance(tech->Center_Coord(), center) <=
-                (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) +
+                tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W +
                     distance) {
           object->Look();
         }
@@ -4474,7 +4475,7 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
         if (tech->What_Am_I() == RTTI_BUILDING && Rule.IsAllyReveal &&
             tech->House->Is_Ally(PlayerPtr) &&
             Distance(tech->Center_Coord(), center) <=
-                (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) +
+                tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W +
                     distance) {
           tech->Look();
         }

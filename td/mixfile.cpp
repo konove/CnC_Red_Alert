@@ -35,9 +35,9 @@
 
 template <class T>
 int Compare(T const* obj1, T const* obj2) {
-  if (*obj1 < *obj2) return (-1);
-  if (*obj1 > *obj2) return (1);
-  return (0);
+  if (*obj1 < *obj2) return -1;
+  if (*obj1 > *obj2) return 1;
+  return 0;
 };
 
 // Head of the global linked list of registered mixfiles.
@@ -49,9 +49,9 @@ bool MixFileClass::Free(char const* filename) {
 
   if (ptr) {
     ptr->Free();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 void MixFileClass::Free_All() {
@@ -156,7 +156,7 @@ MixFileClass::MixFileClass(const char* filename) {
 const void* MixFileClass::Retrieve(const char* filename) {
   void* ptr = nullptr;
   Offset(filename, &ptr);
-  return (ptr);
+  return ptr;
 }
 
 // Searches registered mixfiles by suffix-matching the filename. This allows
@@ -173,11 +173,11 @@ MixFileClass* MixFileClass::Finder(const char* filename) {
 
     if (stricmp(&ptr->Filename[strlen(ptr->Filename) - strlen(filename)],
                 filename) == 0) {
-      return (ptr);
+      return ptr;
     }
     ptr = (MixFileClass*)ptr->Get_Next();
   }
-  return (nullptr);
+  return nullptr;
 }
 
 // Looks up the mixfile by name and delegates to the instance Cache() method.
@@ -185,16 +185,16 @@ bool MixFileClass::Cache(char const* filename) {
   MixFileClass* mixer = Finder(filename);
 
   if (mixer) {
-    return (mixer->Cache());
+    return mixer->Cache();
   }
-  return (false);
+  return false;
 }
 
 // Allocates the Data buffer and reads the raw data section from disk.
 // Seeks past the FileHeader and SubBlock index to reach the data. Returns
 // immediately if already cached.
 bool MixFileClass::Cache() {
-  if (Data) return (true);
+  if (Data) return true;
 
   Data = new char[DataSize];
   if (Data) {
@@ -222,7 +222,7 @@ bool MixFileClass::Cache() {
 #endif
     }
     file.Close();
-    return (true);
+    return true;
   }
 #ifdef GERMAN
   Fatal("Kann Datei \"%s\" nicht laden.", Filename);
@@ -233,7 +233,7 @@ bool MixFileClass::Cache() {
   Fatal("Unable to load \"%s\".", Filename);
 #endif
 #endif
-  return (false);
+  return false;
 }
 
 // Frees only the raw data buffer, keeping the SubBlock index. This allows
@@ -247,9 +247,9 @@ void MixFileClass::Free() {
 
 // Comparison function for bsearch() on SubBlock CRC values.
 int compfunc(void const* ptr1, void const* ptr2) {
-  if (*(int32_t const*)ptr1 < *(int32_t const*)ptr2) return (-1);
-  if (*(int32_t const*)ptr1 > *(int32_t const*)ptr2) return (1);
-  return (0);
+  if (*(int32_t const*)ptr1 < *(int32_t const*)ptr2) return -1;
+  if (*(int32_t const*)ptr1 > *(int32_t const*)ptr2) return 1;
+  return 0;
 }
 
 // Searches all registered mixfiles for a file by computing its CRC and doing
@@ -260,7 +260,7 @@ bool MixFileClass::Offset(char const* filename, void** realptr,
                           MixFileClass** mixfile, long* offset, long* size) {
   MixFileClass* ptr;
 
-  if (!filename) return (false);
+  if (!filename) return false;
 
   // Compute CRC of uppercase filename for index lookup.
   long crc = CrcEngine::Compute(absl::AsciiStrToUpper(filename));
@@ -287,11 +287,11 @@ bool MixFileClass::Offset(char const* filename, void** realptr,
       if (!ptr->Data && offset) {
         *offset += sizeof(SubBlock) * ptr->Count + sizeof(FileHeader);
       }
-      return (true);
+      return true;
     }
 
     ptr = (MixFileClass*)ptr->Get_Next();
   }
 
-  return (false);
+  return false;
 }

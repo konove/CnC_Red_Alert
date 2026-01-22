@@ -91,7 +91,7 @@ int Init_MPATH() {
 
   return (1);
 #else
-  return (1);
+  return 1;
 #endif
 
 }  // end of Init_MPATH

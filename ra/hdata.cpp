@@ -322,7 +322,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, char const* ini, int fullname,
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
 void* HouseTypeClass::operator new(size_t) throw() {
-  return (HouseTypes.Alloc());
+  return HouseTypes.Alloc();
 }
 
 /***********************************************************************************************
@@ -410,11 +410,11 @@ HousesType HouseTypeClass::From_Name(char const* name) {
       if (stricmp(As_Reference(house).IniName, name) == 0) {
         //			if (stricmp(Pointers[house]->IniName, name) ==
         // 0) {
-        return (house);
+        return house;
       }
     }
   }
-  return (HOUSE_NONE);
+  return HOUSE_NONE;
 }
 
 /***********************************************************************************************
@@ -446,7 +446,7 @@ void HouseTypeClass::One_Time() {}
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
-  return (*HouseTypes.Ptr(house));
+  return *HouseTypes.Ptr(house);
 }
 
 /***********************************************************************************************
@@ -465,7 +465,7 @@ HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 unsigned char const* HouseTypeClass::Remap_Table() const {
-  return (ColorRemaps[RemapColor].RemapTable);
+  return ColorRemaps[RemapColor].RemapTable;
 }
 
 /***********************************************************************************************
@@ -493,7 +493,7 @@ bool HouseTypeClass::Read_INI(CCINIClass& ini) {
     ROFBias = ini.Get_Fixed(Name(), "ROF", ROFBias);
     CostBias = ini.Get_Fixed(Name(), "Cost", CostBias);
     BuildSpeedBias = ini.Get_Fixed(Name(), "BuildTime", BuildSpeedBias);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

@@ -119,7 +119,7 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
   /*------------------------------------------------------------------------
   Save the values passed in
   ------------------------------------------------------------------------*/
-  if (address) Address = (*address);
+  if (address) Address = *address;
   ID = id;
   port::SafeCopy(Name, name);
 
@@ -275,18 +275,18 @@ void IPXConnClass::Configure(unsigned short socket, int conn_num,
 bool IPXConnClass::Start_Listening() {
 #ifndef NOT_FOR_WIN95
 
-  if (Winsock.Get_Connected()) return (true);
+  if (Winsock.Get_Connected()) return true;
 
   /*------------------------------------------------------------------------
   Open the Socket
   ------------------------------------------------------------------------*/
-  if (!Open_Socket(Socket)) return (false);
+  if (!Open_Socket(Socket)) return false;
 
   if (IPX_Start_Listening95()) {
     Listening = 1;
-    return (true);
+    return true;
   } else {
-    return (false);
+    return false;
   }
 
 #else
@@ -371,13 +371,13 @@ bool IPXConnClass::Stop_Listening() {
   /*------------------------------------------------------------------------
   Don't do anything unless we're already Listening.
   ------------------------------------------------------------------------*/
-  if (Listening == 0) return (false);
+  if (Listening == 0) return false;
 
 #ifndef NOT_FOR_WIN95
 
   if (Winsock.Get_Connected()) {
     Listening = 0;
-    return (true);
+    return true;
   } else {
     IPX_Shut_Down95();
     Close_Socket(Socket);
@@ -398,7 +398,7 @@ bool IPXConnClass::Stop_Listening() {
   /*------------------------------------------------------------------------
   All done.
   ------------------------------------------------------------------------*/
-  return (true);
+  return true;
 
 } /* end of Stop_Listening */
 
@@ -425,9 +425,9 @@ int IPXConnClass::Send(char* buf, int buflen) {
   Invoke our own Send_To routine, filling in our Address as the destination.
   ------------------------------------------------------------------------*/
   if (Immed_Set) {
-    return (Send_To(buf, buflen, &Address, ImmediateAddress));
+    return Send_To(buf, buflen, &Address, ImmediateAddress);
   } else {
-    return (Send_To(buf, buflen, &Address, nullptr));
+    return Send_To(buf, buflen, &Address, nullptr);
   }
 
 } /* end of Send */
@@ -456,7 +456,7 @@ int IPXConnClass::Open_Socket(unsigned short socket) {
 
   if (Winsock.Get_Connected()) {
     SocketOpen = 1;
-    return (true);
+    return true;
   }
 
   SocketOpen = 0;
@@ -478,14 +478,14 @@ int IPXConnClass::Open_Socket(unsigned short socket) {
       .................. Still can't open: return error ..................
       */
       if (rc) {
-        return (false);
+        return false;
       }
     }
   }
 
   SocketOpen = 1;
 
-  return (true);
+  return true;
 }
 
 /***************************************************************************
@@ -605,7 +605,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
     Winsock.Write((void*)buf, buflen);
 #endif  // VIRTUAL_SUBNET_SERVER
 
-    return (true);
+    return true;
   }
 
   if (immed) {
@@ -622,7 +622,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
     if (ConnectionNum != 0) {
       rc = IPX_Get_Local_Target(net, node, Socket, &send_address[0]);
       if (rc != 0) {
-        return (false);
+        return false;
       }
     } else {
       /*.....................................................................
@@ -633,8 +633,8 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
     }
   }
 
-  return (IPX_Send_Packet95(&send_address[0], (unsigned char*)buf, buflen,
-                            (unsigned char*)net, (unsigned char*)node));
+  return IPX_Send_Packet95(&send_address[0], (unsigned char*)buf, buflen,
+                           (unsigned char*)net, (unsigned char*)node);
 }
 
 /***************************************************************************
@@ -685,8 +685,8 @@ int IPXConnClass::Broadcast(char* buf, int buflen) {
 #else   // VIRTUAL_SUBNET_SERVER
     Winsock.Write((void*)buf, buflen);
 #endif  // VIRTUAL_SUBNET_SERVER
-    return (true);
+    return true;
   } else {
-    return (IPX_Broadcast_Packet95((unsigned char*)buf, buflen));
+    return IPX_Broadcast_Packet95((unsigned char*)buf, buflen);
   }
 }

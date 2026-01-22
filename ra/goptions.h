@@ -57,10 +57,10 @@ class GameOptionsClass : public OptionsClass {
   };
 
   enum GameOptionsEnum {
-    OPTION_WIDTH = (216 + 8),
+    OPTION_WIDTH = 216 + 8,
     OPTION_HEIGHT = 100,
-    OPTION_X = ((320 - (216 + 8)) / 2),
-    OPTION_Y = ((200 - 100) / 2),
+    OPTION_X = (320 - (216 + 8)) / 2,
+    OPTION_Y = (200 - 100) / 2,
 #ifdef FRENCH
     BUTTON_WIDTH = 142,
 #else
@@ -71,7 +71,7 @@ class GameOptionsClass : public OptionsClass {
     BUTTON_Y = 21,
     BORDER1_LEN = 72,
     BORDER2_LEN = 16,
-    BUTTON_RESUME_Y = (100 - 15)
+    BUTTON_RESUME_Y = 100 - 15
   };
 
  public:

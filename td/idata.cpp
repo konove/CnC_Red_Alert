@@ -1634,7 +1634,7 @@ InfantryTypeClass::InfantryTypeClass(
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
-  return (new InfantryClass(Type, house->Class->House));
+  return new InfantryClass(Type, house->Class->House);
 }
 
 /***********************************************************************************************
@@ -1660,12 +1660,12 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   if (i) {
     COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
-      return (i->Unlimbo(coord, DIR_E));
+      return i->Unlimbo(coord, DIR_E);
     } else {
       delete i;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1690,7 +1690,7 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
 short const* InfantryTypeClass::Occupy_List(bool) const {
   static short const _list[] = {0, REFRESH_EOL};
 
-  return (&_list[0]);
+  return &_list[0];
 }
 
 #ifdef SCENARIO_EDITOR
@@ -1776,11 +1776,11 @@ InfantryType InfantryTypeClass::From_Name(char const* name) {
     for (InfantryType classid = INFANTRY_FIRST; classid < INFANTRY_COUNT;
          classid++) {
       if (stricmp(Pointers[classid]->IniName, name) == 0) {
-        return (classid);
+        return classid;
       }
     }
   }
-  return (INFANTRY_NONE);
+  return INFANTRY_NONE;
 }
 
 /***********************************************************************************************
@@ -1814,7 +1814,7 @@ void InfantryTypeClass::One_Time() {
     auto fullname = std::filesystem::path(uclass->IniName)
                         .replace_extension(".SHP")
                         .string();
-    ((void const*&)uclass->ImageData) =
+    (void const*&)uclass->ImageData =
         MixFileClass::Retrieve(fullname.c_str());
 
     /*
@@ -1828,7 +1828,7 @@ void InfantryTypeClass::One_Time() {
     }
     fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    ((void const*&)uclass->CameoData) =
+    (void const*&)uclass->CameoData =
         MixFileClass::Retrieve(fullname.c_str());
   }
 }
@@ -1859,7 +1859,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
 
         uclass = &As_Reference(index);
 
-        ((void const*&)uclass->CameoData) = nullptr;
+        (void const*&)uclass->CameoData = nullptr;
 
         const auto filename =
             std::string(uclass->IniName).substr(0, 4) + "ICNH";
@@ -1869,7 +1869,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
                             .string();
         cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
         if (cameo_ptr) {
-          ((void const*&)uclass->CameoData) = cameo_ptr;
+          (void const*&)uclass->CameoData = cameo_ptr;
         }
       }
     }
@@ -1915,14 +1915,14 @@ BuildingClass* InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         building->House->Class->House == house &&
         building->Mission != MISSION_DECONSTRUCTION &&
         building->Class->ToBuild == RTTI_INFANTRYTYPE &&
-        ((1L << building->ActLike) & Ownable) &&
+        1L << building->ActLike & Ownable &&
         (!legal || building->House->Can_Build(Type, building->ActLike)) &&
         (intheory || !building->In_Radio_Contact())) {
       anybuilding = building;
-      if (building->IsLeader) return (building);
+      if (building->IsLeader) return building;
     }
   }
-  return (anybuilding);
+  return anybuilding;
 }
 
 /***********************************************************************************************
@@ -1944,7 +1944,7 @@ BuildingClass* InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
 int InfantryTypeClass::Full_Name() const {
   if (Debug_Map || !IsNominal || Special.IsNamed || Type == INFANTRY_C10 ||
       Type == INFANTRY_DELPHI || Type == INFANTRY_MOEBIUS) {
-    return (TechnoTypeClass::Full_Name());
+    return TechnoTypeClass::Full_Name();
   }
-  return (TXT_CIVILIAN);
+  return TXT_CIVILIAN;
 }

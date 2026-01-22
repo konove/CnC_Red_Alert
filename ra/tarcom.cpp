@@ -177,7 +177,7 @@ void TarComClass::AI() {
       *Wheeled vehicles never rotate to face the *	target, since they
       *aren't maneuverable enough.
       */
-      if ((Class->Speed == SPEED_TRACK /* || *this == UNIT_BIKE */) &&
+      if (Class->Speed == SPEED_TRACK /* || *this == UNIT_BIKE */ &&
           !Target_Legal(NavCom) && !IsDriving &&
           PrimaryFacing.Difference(dir)) {
 #ifdef OLD

@@ -603,7 +603,7 @@ PaletteClass ScorePalette;
 *reached.
 */
 QueueClass<EventClass, MAX_EVENTS> OutList;
-QueueClass<EventClass, (MAX_EVENTS * 64)> DoList;
+QueueClass<EventClass, MAX_EVENTS * 64> DoList;
 
 #ifdef MIRROR_QUEUE
 QueueClass<EventClass, (MAX_EVENTS * 64)> MirrorList;
@@ -665,7 +665,7 @@ bool bAftermathMultiplayer;  //	Is multiplayer game being played with Aftermath
 */
 NullModemClass NullModem(16,  // number of send entries
                          16,  // number of receive entries
-                         (MAX_SERIAL_PACKET_SIZE / sizeof(EventClass)) *
+                         MAX_SERIAL_PACKET_SIZE / sizeof(EventClass) *
                                  sizeof(EventClass) +
                              sizeof(CommHeaderType),
                          0x1234);  // Magic number must have each digit unique
@@ -689,7 +689,7 @@ NullModemClass NullModem(16,  // number of send entries
 IPXManagerClass Ipx(
     std::max(sizeof(GlobalPacketType),
              sizeof(RemoteFileTransferType)),  // size of Global Channel packets
-    ((546 - sizeof(CommHeaderType)) / sizeof(EventClass)) * sizeof(EventClass),
+    (546 - sizeof(CommHeaderType)) / sizeof(EventClass) * sizeof(EventClass),
     160,                                        // # entries in Global Queue
     32,                                         // # entries in Private Queues
     VIRGIN_SOCKET,                              // Socket ID #

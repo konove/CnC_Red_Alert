@@ -75,7 +75,7 @@ class SliderClass : public GaugeClass {
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
 
-  int Thumb_Pixels() override { return (ThumbSize); }
+  int Thumb_Pixels() override { return ThumbSize; }
 
  protected:
   /*

@@ -97,10 +97,10 @@ class AbstractClass {
   /*
   **	Query functions.
   */
-  virtual char const* Name() const { return (""); }
+  virtual char const* Name() const { return ""; }
   virtual HousesType Owner() const { return HOUSE_NONE; }
-  TARGET As_Target() const { return (Build_Target(RTTI, ID)); }
-  RTTIType What_Am_I() const { return (RTTI); }
+  TARGET As_Target() const { return Build_Target(RTTI, ID); }
+  RTTIType What_Am_I() const { return RTTI; }
 
 /*
 **	Scenario and debug support.

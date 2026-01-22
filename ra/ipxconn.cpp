@@ -113,7 +113,7 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
   /*------------------------------------------------------------------------
   Save the values passed in
   ------------------------------------------------------------------------*/
-  if (address) Address = (*address);
+  if (address) Address = *address;
   ID = id;
   port::SafeCopy(Name, name);
 
@@ -278,17 +278,17 @@ int IPXConnClass::Start_Listening() {
   /*
   ** Open the socket.
   */
-  if (!Open_Socket(Socket)) return (false);
+  if (!Open_Socket(Socket)) return false;
 
   /*
   ** start listening on the socket.
   */
   if (PacketTransport->Start_Listening()) {
     Listening = 1;
-    return (true);
+    return true;
   } else {
     Close_Socket(Socket);
-    return (false);
+    return false;
   }
 
 #else
@@ -397,7 +397,7 @@ int IPXConnClass::Stop_Listening() {
   Listening = 0;
 
   //	All done.
-  return (1);
+  return 1;
 #else
   /*------------------------------------------------------------------------
   Don't do anything unless we're already Listening.
@@ -462,9 +462,9 @@ int IPXConnClass::Send(char* buf, int buflen, void*, int) {
   Invoke our own Send_To routine, filling in our Address as the destination.
   ------------------------------------------------------------------------*/
   if (Immed_Set) {
-    return (Send_To(buf, buflen, &Address, ImmediateAddress));
+    return Send_To(buf, buflen, &Address, ImmediateAddress);
   } else {
-    return (Send_To(buf, buflen, &Address, nullptr));
+    return Send_To(buf, buflen, &Address, nullptr);
   }
 
 } /* end of Send */
@@ -494,7 +494,7 @@ int IPXConnClass::Open_Socket(unsigned short socket) {
   rc = PacketTransport->Open_Socket(socket);
 
   SocketOpen = rc;
-  return (rc);
+  return rc;
 
 #else  // WINSOCK_IPX
   if (Winsock.Get_Connected()) {
@@ -619,7 +619,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
 
   assert(immed == nullptr);
   PacketTransport->WriteTo((void*)buf, buflen, (void*)address);
-  return (true);
+  return true;
 
 #else  // WINSOCK_IPX
   NetNumType net;
@@ -774,7 +774,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
 int IPXConnClass::Broadcast(char* buf, int buflen) {
 #ifdef WINSOCK_IPX
   PacketTransport->Broadcast(buf, buflen);
-  return (true);
+  return true;
 
 #else  // WINSOCK_IPX
 

@@ -140,7 +140,7 @@ void MissionClass::Set_Mission(MissionType mission) {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 MissionType MissionClass::Get_Mission() const {
-  return (Mission == MISSION_NONE ? MissionQueue : Mission);
+  return Mission == MISSION_NONE ? MissionQueue : Mission;
 }
 
 #ifdef CHEAT_KEYS
@@ -306,9 +306,9 @@ bool MissionClass::Commence() {
     */
     Timer = 0;
     Status = 0;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -357,11 +357,11 @@ MissionType MissionClass::Mission_From_Name(char const* name) {
   if (name) {
     for (order = MISSION_FIRST; order < MISSION_COUNT; order++) {
       if (stricmp(Missions[order], name) == 0) {
-        return (order);
+        return order;
       }
     }
   }
-  return (MISSION_NONE);
+  return MISSION_NONE;
 }
 
 /***********************************************************************************************
@@ -381,7 +381,7 @@ MissionType MissionClass::Mission_From_Name(char const* name) {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 char const* MissionClass::Mission_Name(MissionType mission) {
-  return (mission == MISSION_NONE ? "None" : Missions[mission]);
+  return mission == MISSION_NONE ? "None" : Missions[mission];
 }
 
 /***********************************************************************************************
@@ -425,9 +425,9 @@ bool MissionClass::Restore_Mission() {
   if (SuspendedMission != MISSION_NONE) {
     Assign_Mission(SuspendedMission);
     SuspendedMission = MISSION_NONE;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************

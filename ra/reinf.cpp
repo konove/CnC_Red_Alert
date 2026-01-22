@@ -126,7 +126,7 @@ static bool _Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
     }
   }
 
-  return (quantity != 0);
+  return quantity != 0;
 }
 
 /***********************************************************************************************
@@ -164,9 +164,9 @@ bool _Need_To_Take(AircraftClass const* air) {
       }
     }
 
-    if (deficit > 0) return (true);
+    if (deficit > 0) return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -277,13 +277,13 @@ static FootClass* _Create_Group(TeamTypeClass const* teamtype) {
   */
   if (transport != nullptr && object == nullptr &&
       transport->What_Am_I() == RTTI_AIRCRAFT &&
-      *((AircraftClass*)transport) == AIRCRAFT_TRANSPORT) {
+      *(AircraftClass*)transport == AIRCRAFT_TRANSPORT) {
     transport->IsALoaner = false;
   }
 
   if (transport == nullptr && object == nullptr) {
     delete team;
-    return (nullptr);
+    return nullptr;
   }
 
   /*
@@ -291,10 +291,10 @@ static FootClass* _Create_Group(TeamTypeClass const* teamtype) {
   *with a pointer *	to the first member of the group.
   */
   if (transport == nullptr) {
-    return (object);
+    return object;
   }
 
-  return (transport);
+  return transport;
 }
 
 /***********************************************************************************************
@@ -317,11 +317,11 @@ static FootClass* _Create_Group(TeamTypeClass const* teamtype) {
 static bool _Consists_Only_Of_Infantry(FootClass const* first) {
   while (first != nullptr) {
     if (first->What_Am_I() != RTTI_INFANTRY) {
-      return (false);
+      return false;
     }
-    first = (FootClass const*)((ObjectClass*)first->Next);
+    first = (FootClass const*)(ObjectClass*)first->Next;
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -359,10 +359,10 @@ static TechnoClass* _Who_Can_Pop_Out_Of(CELL origin) {
 
     UnitClass* unit = ptr->Cell_Unit();
     if (unit && unit->Strength && unit->Class->Max_Passengers() > 0) {
-      return (unit);
+      return unit;
     }
   }
-  return (candidate);
+  return candidate;
 }
 
 /***********************************************************************************************
@@ -390,7 +390,7 @@ bool Do_Reinforcements(TeamTypeClass const* teamtype) {
   /*
   **	perform some preliminary checks for validity.
   */
-  if (!teamtype || !teamtype->ClassCount) return (false);
+  if (!teamtype || !teamtype->ClassCount) return false;
 
   /*
   **	HACK ALERT!
@@ -414,7 +414,7 @@ bool Do_Reinforcements(TeamTypeClass const* teamtype) {
   **	This is probably because the object maximum was reached.
   */
   if (!object) {
-    return (false);
+    return false;
   }
 
   /*
@@ -431,7 +431,7 @@ bool Do_Reinforcements(TeamTypeClass const* teamtype) {
         _Who_Can_Pop_Out_Of(Scen.Waypoint[teamtype->Origin]);
 
     if (candidate != nullptr) {
-      return (_Pop_Group_Out_Of_Object(object, candidate));
+      return _Pop_Group_Out_Of_Object(object, candidate);
     }
   }
 
@@ -457,9 +457,9 @@ bool Do_Reinforcements(TeamTypeClass const* teamtype) {
   **	For the ants, they will pop out of the ant hill directly.
   */
   if (teamtype->Origin != -1 && object->What_Am_I() == RTTI_UNIT &&
-      (*((UnitClass*)object) == UNIT_ANT1 ||
-       *((UnitClass*)object) == UNIT_ANT2 ||
-       *((UnitClass*)object) == UNIT_ANT3)) {
+      (*(UnitClass*)object == UNIT_ANT1 ||
+       *(UnitClass*)object == UNIT_ANT2 ||
+       *(UnitClass*)object == UNIT_ANT3)) {
     CELL newcell = Scen.Waypoint[teamtype->Origin];
     if (newcell != -1) {
       if (Map[newcell].TType == TEMPLATE_HILL01) {
@@ -540,7 +540,7 @@ bool Do_Reinforcements(TeamTypeClass const* teamtype) {
     Speak(VOX_REINFORCEMENTS);
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -616,10 +616,10 @@ bool Create_Special_Reinforcement(HouseClass* house,
 
       bool ok = Do_Reinforcements(team);
       if (!ok) delete team;
-      return (ok);
+      return ok;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -681,7 +681,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ScenarioInit++;
     TechnoClass* obj = (TechnoClass*)type->Create_One_Of(house);
     ScenarioInit--;
-    if (!obj) return (sub);
+    if (!obj) return sub;
 
     /*
     ** Flying objects always have the IsALoaner bit set.
@@ -755,8 +755,8 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     } else {
       delete obj;
       sub--;
-      return (sub);
+      return sub;
     }
   }
-  return (sub);
+  return sub;
 }

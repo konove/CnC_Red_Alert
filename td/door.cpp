@@ -123,9 +123,9 @@ bool DoorClass::Open_Door(int rate, int stages) {
       Stages = stages - 1;
       Control.Set_Stage(0);
       Control.Set_Rate(rate);
-      return (true);
+      return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -154,9 +154,9 @@ bool DoorClass::Close_Door(int rate, int stages) {
       Stages = stages - 1;
       Control.Set_Stage(0);
       Control.Set_Rate(rate);
-      return (true);
+      return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -180,16 +180,16 @@ bool DoorClass::Close_Door(int rate, int stages) {
 int DoorClass::Door_Stage() const {
   switch (State) {
     case IS_CLOSING:
-      return ((Stages - 1) - Control.Fetch_Stage());
+      return Stages - 1 - Control.Fetch_Stage();
 
     case IS_CLOSED:
-      return (0);
+      return 0;
 
     case IS_OPENING:
-      return (Control.Fetch_Stage());
+      return Control.Fetch_Stage();
 
     case IS_OPEN:
-      return (Stages - 1);
+      return Stages - 1;
   }
-  return (0);
+  return 0;
 }

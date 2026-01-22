@@ -78,13 +78,13 @@ void HSVClass::Adjust(int ratio, HSVClass const& hsv) {
   **	destination color.
   */
   int value = hsv.Value_Component() - Value_Component();
-  Value = Value_Component() + (value * ratio) / 256;
+  Value = Value_Component() + value * ratio / 256;
 
   int saturation = hsv.Saturation_Component() - Saturation_Component();
-  Saturation = Saturation_Component() + (saturation * ratio) / 256;
+  Saturation = Saturation_Component() + saturation * ratio / 256;
 
   int hue = hsv.Hue_Component() - Hue_Component();
-  Hue = Hue_Component() + (hue * ratio) / 256;
+  Hue = Hue_Component() + hue * ratio / 256;
 }
 
 /***********************************************************************************************
@@ -113,7 +113,7 @@ int HSVClass::Difference(HSVClass const& hsv) const {
   int value = (int)Value - (int)hsv.Value;
   if (value < 0) value = -value;
 
-  return (hue * hue + saturation * saturation + value * value);
+  return hue * hue + saturation * saturation + value * value;
 }
 
 /***********************************************************************************************
@@ -155,25 +155,25 @@ HSVClass::operator RGBClass() const {
   // so that the are rounded divides.
   //
 
-  tmp = (saturation * f) / 255;
-  values[3] = (value * (255 - tmp)) / 255;
+  tmp = saturation * f / 255;
+  values[3] = value * (255 - tmp) / 255;
 
-  values[4] = values[5] = (value * (255 - saturation)) / 255;
+  values[4] = values[5] = value * (255 - saturation) / 255;
 
-  tmp = 255 - (saturation * (255 - f)) / 255;
-  values[6] = (value * tmp) / 255;
+  tmp = 255 - saturation * (255 - f) / 255;
+  values[6] = value * tmp / 255;
 
   // This should not be rounded.
   i = hue / 255;
 
-  i += (i > 4) ? -4 : 2;
+  i += i > 4 ? -4 : 2;
   red = values[i];
 
-  i += (i > 4) ? -4 : 2;
+  i += i > 4 ? -4 : 2;
   blue = values[i];
 
-  i += (i > 4) ? -4 : 2;
+  i += i > 4 ? -4 : 2;
   green = values[i];
 
-  return (RGBClass(red, green, blue));
+  return RGBClass(red, green, blue);
 }

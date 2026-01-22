@@ -393,10 +393,10 @@ TextLabelClass* MessageListClass::Add_Message(char const* name, int id,
   //------------------------------------------------------------------------
   //	Remove the top-most message if we're about to exceed the max allowed
   //------------------------------------------------------------------------
-  if ((MaxMessages > 0) && ((Num_Messages() + 1) > MaxMessages)) {
+  if (MaxMessages > 0 && Num_Messages() + 1 > MaxMessages) {
     txtlabel = MessageList;
 
-    if (txtlabel == nullptr) return (nullptr);
+    if (txtlabel == nullptr) return nullptr;
 
     //.....................................................................
     //	Remove this message from the list; mark its buffer as being available.
@@ -437,7 +437,7 @@ TextLabelClass* MessageListClass::Add_Message(char const* name, int id,
   }
   if (!found) {
     delete txtlabel;
-    return (nullptr);
+    return nullptr;
   }
 
   Sound_Effect(VOC_INCOMING_MESSAGE);
@@ -465,7 +465,7 @@ TextLabelClass* MessageListClass::Add_Message(char const* name, int id,
     Add_Message(name, id, &message[print_this_pass], color, style, timeout);
   }
 
-  return (txtlabel);
+  return txtlabel;
 
 }  // end of Add_Message
 
@@ -497,13 +497,13 @@ char* MessageListClass::Get_Message(int id) {
     gadg = MessageList;
     while (gadg) {
       if (gadg->UserData2 == id) {
-        return (gadg->Text);
+        return gadg->Text;
       }
       gadg = (TextLabelClass*)gadg->Get_Next();
     }
   }
 
-  return (nullptr);
+  return nullptr;
 
 }  // end of Get_Message
 
@@ -536,13 +536,13 @@ TextLabelClass* MessageListClass::Get_Label(int id) {
     gadg = MessageList;
     while (gadg) {
       if (gadg->UserData2 == id) {
-        return (gadg);
+        return gadg;
       }
       gadg = (TextLabelClass*)gadg->Get_Next();
     }
   }
 
-  return (nullptr);
+  return nullptr;
 
 }  // end of Get_Label
 
@@ -580,7 +580,7 @@ int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
   // don't concatenate the message
   //------------------------------------------------------------------------
   if (!name || !EnableOverflow) {
-    return (0);
+    return 0;
   }
 
   //------------------------------------------------------------------------
@@ -604,7 +604,7 @@ int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
   // name and ID not found; return
   //------------------------------------------------------------------------
   if (!found) {
-    return (0);
+    return 0;
   }
 
   //------------------------------------------------------------------------
@@ -615,7 +615,7 @@ int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
   //------------------------------------------------------------------------
   // If there's room enough in the message, just add the given string
   //------------------------------------------------------------------------
-  if ((strlen(msg) + strlen(txt)) < MaxChars) {
+  if (strlen(msg) + strlen(txt) < MaxChars) {
     //---------------------------------------------------------------------
     // We need to trim the message if there is no room to draw it
     //---------------------------------------------------------------------
@@ -654,7 +654,7 @@ int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
   // Trim from left to right to remove the minimum required text.
   //------------------------------------------------------------------------
   else {
-    min_chars = (strlen(msg) + strlen(txt)) - MaxChars;
+    min_chars = strlen(msg) + strlen(txt) - MaxChars;
     max_chars = strlen(msg);
     if (max_chars < min_chars) {
       max_chars = min_chars;
@@ -672,7 +672,7 @@ int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
     tlabel->UserData1 = TickCount + timeout;
   }
 
-  return (1);
+  return 1;
 
 }  // end of Concat_Message
 
@@ -710,9 +710,9 @@ void MessageListClass::Set_Edit_Focus() {
  *=============================================================================================*/
 bool MessageListClass::Has_Edit_Focus() {
   if (IsEdit) {
-    return (EditLabel->Has_Focus());
+    return EditLabel->Has_Focus();
   } else {
-    return (false);
+    return false;
   }
 }
 
@@ -746,13 +746,13 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
   //------------------------------------------------------------------------
   if (IsEdit) {
     EditLabel->Set_Focus();
-    return (nullptr);
+    return nullptr;
   }
 
   //------------------------------------------------------------------------
   //	Remove the top-most message if we're about to exceed the max allowed
   //------------------------------------------------------------------------
-  if (AdjustEdit && ((Num_Messages() + 1) > MaxMessages)) {
+  if (AdjustEdit && Num_Messages() + 1 > MaxMessages) {
     txtlabel = MessageList;
     MessageList = (TextLabelClass*)txtlabel->Remove();
     for (i = 0; i < MAX_NUM_MESSAGES; i++) {
@@ -802,7 +802,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
     MaxMessages--;
   }
 
-  return (EditLabel);
+  return EditLabel;
 
 }  // end of Add_Edit
 
@@ -861,7 +861,7 @@ void MessageListClass::Remove_Edit() {
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 char* MessageListClass::Get_Edit_Buf() {
-  return (EditBuf + EditInitPos);
+  return EditBuf + EditInitPos;
 
 }  // end of Get_Edit_Buf
 
@@ -947,7 +947,7 @@ int MessageListClass::Manage() {
     Compute_Y();
   }
 
-  return (changed);
+  return changed;
 
 }  // end of Manage
 
@@ -980,15 +980,15 @@ int MessageListClass::Input(KeyNumType& input) {
   //	Do nothing if nothing to do.
   //------------------------------------------------------------------------
   if (input == KN_NONE) {
-    return (0);
+    return 0;
   }
 
   //------------------------------------------------------------------------
   //	Leave mouse events alone.
   //------------------------------------------------------------------------
-  if ((input & (~KN_RLSE_BIT)) == KN_LMOUSE ||
-      (input & (~KN_RLSE_BIT)) == KN_RMOUSE) {
-    return (0);
+  if ((input & ~KN_RLSE_BIT) == KN_LMOUSE ||
+      (input & ~KN_RLSE_BIT) == KN_RMOUSE) {
+    return 0;
   }
 
   //------------------------------------------------------------------------
@@ -1001,7 +1001,7 @@ int MessageListClass::Input(KeyNumType& input) {
     /*
     ** Allow numeric keypad presses to map to ascii numbers
     */
-    if ((input & WWKEY_VK_BIT) && ascii >= '0' && ascii <= '9') {
+    if (input & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
       input = (KeyNumType)(input & ~WWKEY_VK_BIT);
 
     } else {
@@ -1016,7 +1016,7 @@ int MessageListClass::Input(KeyNumType& input) {
         // ascii = (KeyASCIIType)(Keyboard->To_ASCII(input));
       } else {
         input = KN_NONE;
-        return (0);
+        return 0;
       }
     }
 #endif  // WIN32
@@ -1043,7 +1043,7 @@ int MessageListClass::Input(KeyNumType& input) {
           input = KN_NONE;
           break;
         }
-        if ((EditCurPos - EditInitPos) < (MaxChars - 1)) {
+        if (EditCurPos - EditInitPos < MaxChars - 1) {
           EditBuf[EditCurPos] = ' ';
           EditCurPos++;
           EditBuf[EditCurPos] = 0;
@@ -1075,7 +1075,7 @@ int MessageListClass::Input(KeyNumType& input) {
         EditLabel->Set_Focus();
         bool overflowed = false;
         if (ascii >= ' ' && ascii <= 127) {
-          if ((EditCurPos - EditInitPos) < (MaxChars - 1)) {
+          if (EditCurPos - EditInitPos < MaxChars - 1) {
             EditBuf[EditCurPos] = ascii;
             EditCurPos++;
             EditBuf[EditCurPos] = 0;
@@ -1119,7 +1119,7 @@ int MessageListClass::Input(KeyNumType& input) {
     }
   }
 
-  return (retcode);
+  return retcode;
 
 }  // end of Input
 
@@ -1147,7 +1147,7 @@ void MessageListClass::Draw() {
     }
     EditLabel->Draw_Me(true);
 
-    if (CursorChar && (EditCurPos - EditInitPos) < (MaxChars - 1) &&
+    if (CursorChar && EditCurPos - EditInitPos < MaxChars - 1 &&
         EditLabel->Has_Focus()) {
       txt[0] = CursorChar;
       Fancy_Text_Print(txt, EditLabel->X + String_Pixel_Width(EditLabel->Text),
@@ -1205,7 +1205,7 @@ int MessageListClass::Num_Messages() {
     num++;
   }
 
-  return (num);
+  return num;
 
 }  // end of Num_Messages
 
@@ -1274,7 +1274,7 @@ int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
   // validate parameters
   //------------------------------------------------------------------------
   if (min_chars <= 0) {
-    return (0);
+    return 0;
   }
 
   len = strlen(src);
@@ -1330,7 +1330,7 @@ int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
   //------------------------------------------------------------------------
   memmove(src, src + i, len - i + 1);
 
-  return (i);
+  return i;
 
 }  // end of Trim_Message
 

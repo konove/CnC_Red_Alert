@@ -3,7 +3,7 @@
 char* Extract_String(void const* data, int string) {
   unsigned short int const* ptr;
 
-  if (!data || string < 0) return (nullptr);
+  if (!data || string < 0) return nullptr;
 
   ptr = (unsigned short int const*)data;
 
@@ -13,5 +13,5 @@ char* Extract_String(void const* data, int string) {
   // don't index past the end (might happen if expansion files missing)
   if (string >= numstrings) return nullptr;
 
-  return (((char*)data) + ptr[string]);
+  return (char*)data + ptr[string];
 }

@@ -64,7 +64,7 @@
  *=============================================================================================*/
 PKPipe::PKPipe(CryptControl control, RandomStraw& rnd)
     : Rand(rnd),
-      BF((control == ENCRYPT) ? BlowPipe::ENCRYPT : BlowPipe::DECRYPT),
+      BF(control == ENCRYPT ? BlowPipe::ENCRYPT : BlowPipe::DECRYPT),
       Control(control) {}
 
 /***********************************************************************************************
@@ -161,7 +161,7 @@ int PKPipe::Put(void const* source, int length) {
   **	next pipe in the chain and let them deal with it.
   */
   if (source == nullptr || length < 1 || CipherKey == nullptr) {
-    return (Pipe::Put(source, length));
+    return Pipe::Put(source, length);
   }
 
   int total = 0;
@@ -198,7 +198,7 @@ int PKPipe::Put(void const* source, int length) {
       /*
       **	First try to accumulate a full key.
       */
-      int toget = (BytesLeft < length) ? BytesLeft : length;
+      int toget = BytesLeft < length ? BytesLeft : length;
       memmove(&Buffer[Counter - BytesLeft], source, toget);
       length -= toget;
       BytesLeft -= toget;
@@ -224,7 +224,7 @@ int PKPipe::Put(void const* source, int length) {
   **	blowfish engine.
   */
   total += Pipe::Put(source, length);
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************
@@ -245,9 +245,9 @@ int PKPipe::Put(void const* source, int length) {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 int PKPipe::Encrypted_Key_Length() const {
-  if (CipherKey == nullptr) return (0);
-  return (CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
-          CipherKey->Crypt_Block_Size());
+  if (CipherKey == nullptr) return 0;
+  return CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
+         CipherKey->Crypt_Block_Size();
 }
 
 /***********************************************************************************************
@@ -270,7 +270,7 @@ int PKPipe::Encrypted_Key_Length() const {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 int PKPipe::Plain_Key_Length() const {
-  if (CipherKey == nullptr) return (0);
-  return (CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
-          CipherKey->Plain_Block_Size());
+  if (CipherKey == nullptr) return 0;
+  return CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
+         CipherKey->Plain_Block_Size();
 }

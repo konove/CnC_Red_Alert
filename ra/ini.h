@@ -76,11 +76,11 @@ class INIClass {
   bool Clear(char const* section = nullptr, char const* entry = nullptr);
 
   int Line_Count(char const* section) const;
-  bool Is_Loaded() const { return (!SectionList.Is_Empty()); }
+  bool Is_Loaded() const { return !SectionList.Is_Empty(); }
   int Size() const;
   bool Is_Present(char const* section, char const* entry = nullptr) const {
-    if (entry == nullptr) return (Find_Section(section) != nullptr);
-    return (Find_Entry(section, entry) != nullptr);
+    if (entry == nullptr) return Find_Section(section) != nullptr;
+    return Find_Entry(section, entry) != nullptr;
   }
 
   /*
@@ -89,7 +89,7 @@ class INIClass {
   */
   int Section_Count() const;
   bool Section_Present(char const* section) const {
-    return (Find_Section(section) != nullptr);
+    return Find_Section(section) != nullptr;
   }
 
   /*

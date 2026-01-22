@@ -108,7 +108,7 @@ class BaseClass {
   ** Returns a pointer to the requested node.
   */
   BaseNodeClass* Get_Node(BuildingClass* obj);
-  BaseNodeClass* Get_Node(int index) { return (&Nodes[index]); }
+  BaseNodeClass* Get_Node(int index) { return &Nodes[index]; }
 
   /**********************************************************************
   ** Returns a pointer to the next "hole" in the Nodes list.

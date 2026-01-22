@@ -229,7 +229,7 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
       dst_x0 = 0;
     }
     if (code1 & 0b0100) {
-      src_x1 = (dst_x1 - vp_dst->Get_Width());
+      src_x1 = dst_x1 - vp_dst->Get_Width();
       dst_x1 = vp_dst->Get_Width();
     }
     if (code0 & 0b0010) {
@@ -237,7 +237,7 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
       dst_y0 = 0;
     }
     if (code1 & 0b0001) {
-      src_y1 = (dst_x1 - vp_dst->Get_Height());
+      src_y1 = dst_x1 - vp_dst->Get_Height();
       dst_y1 = vp_dst->Get_Height();
     }
   }
@@ -510,10 +510,10 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
 
   if (!FontPtr) return 0;
 
-  uint16_t infoblock_off = *((uint16_t*)(font + FONTINFOBLOCK));
-  uint16_t offsetblock_off = *((uint16_t*)(font + FONTOFFSETBLOCK));
-  uint16_t widthblock_off = *((uint16_t*)(font + FONTWIDTHBLOCK));
-  uint16_t heightblock_off = *((uint16_t*)(font + FONTHEIGHTBLOCK));
+  uint16_t infoblock_off = *(uint16_t*)(font + FONTINFOBLOCK);
+  uint16_t offsetblock_off = *(uint16_t*)(font + FONTOFFSETBLOCK);
+  uint16_t widthblock_off = *(uint16_t*)(font + FONTWIDTHBLOCK);
+  uint16_t heightblock_off = *(uint16_t*)(font + FONTHEIGHTBLOCK);
 
   uint8_t* infoblock = font + infoblock_off;
   uint16_t* offsetblock = (uint16_t*)(font + offsetblock_off);
@@ -583,7 +583,7 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
 
     // draw char
     int y_count = charheight;
-    auto char_data = (font + char_offset);
+    auto char_data = font + char_offset;
     if (y_count != 0) {
       do {
         int x_count = char_w;
@@ -607,7 +607,7 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
         startdraw = startdraw + nextdraw;
       } while (--y_count);
 
-      if (bottomblank && (ColorXlat[0] != 0)) {
+      if (bottomblank && ColorXlat[0] != 0) {
         do {
           int x_count = char_w;
           do {
@@ -653,11 +653,11 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
 
     if (code0 & 0b0010)  // top
     {
-      if (dy != sy) sx = sx + (-sy * (dx - sx)) / (dy - sy);
+      if (dy != sy) sx = sx + -sy * (dx - sx) / (dy - sy);
       sy = 0;
     } else if (code0 & 0b0001)  // bottom
     {
-      if (dy != sy) sx = sx + (((height - 1) - sy) * (dx - sx)) / (dy - sy);
+      if (dy != sy) sx = sx + (height - 1 - sy) * (dx - sx) / (dy - sy);
       sy = height - 1;
     }
   }
@@ -665,21 +665,21 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
   if (code1) {
     if (code1 & 0b1000)  // left
     {
-      if (sx != dx) dy = dy + (-dx * (sy - dy)) / (sx - dx);
+      if (sx != dx) dy = dy + -dx * (sy - dy) / (sx - dx);
       dx = 0;
     } else if (code1 & 0b0100)  // right
     {
-      if (sx != dx) dy = dy + (((width - 1) - dx) * (sy - dy)) / (sx - dx);
+      if (sx != dx) dy = dy + (width - 1 - dx) * (sy - dy) / (sx - dx);
       dx = width - 1;
     }
 
     if (code1 & 0b0010)  // top
     {
-      if (sy != dy) dx = dx + (-dy * (sx - dx)) / (sy - dy);
+      if (sy != dy) dx = dx + -dy * (sx - dx) / (sy - dy);
       dy = 0;
     } else if (code1 & 0b0001)  // bottom
     {
-      if (sy != dy) dx = dx + (((height - 1) - dy) * (sx - dx)) / (sy - dy);
+      if (sy != dy) dx = dx + (height - 1 - dy) * (sx - dx) / (sy - dy);
       dy = height - 1;
     }
   }
@@ -692,7 +692,7 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
     // horizontal
     if (dx < sx) std::swap(dx, sx);
 
-    int count = (dx - sx) + 1;
+    int count = dx - sx + 1;
     auto ptr = vp_dst->Get_Offset() + sx + bpr * sy;
     if (count < 16) {
       for (; count != 0; count--) *ptr++ = color;
@@ -798,8 +798,8 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto dst_offset = vp_dst->Get_Offset() + sx + sy * dst_area;
 
-  int pixel_count = (dx - sx) + 1;
-  int line_count = (dy - sy) + 1;
+  int pixel_count = dx - sx + 1;
+  int line_count = dy - sy + 1;
 
   // fill lines
   do {
@@ -930,7 +930,7 @@ void GraphicViewPortClass::Attach(GraphicBufferClass* graphic_buff, int x,
    */
   /*======================================================================*/
   Offset = graphic_buff->Get_Offset() +
-           ((graphic_buff->Get_Width() + graphic_buff->Get_Pitch()) * y) + x;
+           (graphic_buff->Get_Width() + graphic_buff->Get_Pitch()) * y + x;
 
   /*======================================================================*/
   /* Copy over all of the variables that we need to store.

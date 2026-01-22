@@ -59,7 +59,7 @@ class ProgressBarClass {
  private:
   void Outline() const;
   bool Is_Horizontal() const;
-  bool Is_Outlined() const { return (BorderColor != 0); }
+  bool Is_Outlined() const { return BorderColor != 0; }
 
   /*
   **	This is the upper left coordinates of the bargraph.

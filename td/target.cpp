@@ -88,8 +88,8 @@
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TriggerClass* As_Trigger(TARGET target) {
-  return (Is_Target_Trigger(target) ? Triggers.Raw_Ptr(Target_Value(target))
-                                    : nullptr);
+  return Is_Target_Trigger(target) ? Triggers.Raw_Ptr(Target_Value(target))
+                                   : nullptr;
 }
 
 /***********************************************************************************************
@@ -108,8 +108,7 @@ TriggerClass* As_Trigger(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamClass* As_Team(TARGET target) {
-  return (Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target))
-                                 : nullptr);
+  return Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target)) : nullptr;
 }
 
 /***********************************************************************************************
@@ -129,8 +128,8 @@ TeamClass* As_Team(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamTypeClass* As_TeamType(TARGET target) {
-  return (Is_Target_TeamType(target) ? TeamTypes.Raw_Ptr(Target_Value(target))
-                                     : nullptr);
+  return Is_Target_TeamType(target) ? TeamTypes.Raw_Ptr(Target_Value(target))
+                                    : nullptr;
 }
 
 /***********************************************************************************************
@@ -151,8 +150,8 @@ TeamTypeClass* As_TeamType(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 AnimClass* As_Animation(TARGET target) {
-  return (Is_Target_Animation(target) ? Anims.Raw_Ptr(Target_Value(target))
-                                      : nullptr);
+  return Is_Target_Animation(target) ? Anims.Raw_Ptr(Target_Value(target))
+                                     : nullptr;
 }
 
 /***********************************************************************************************
@@ -171,8 +170,8 @@ AnimClass* As_Animation(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 BulletClass* As_Bullet(TARGET target) {
-  return (Is_Target_Bullet(target) ? Bullets.Raw_Ptr(Target_Value(target))
-                                   : nullptr);
+  return Is_Target_Bullet(target) ? Bullets.Raw_Ptr(Target_Value(target))
+                                  : nullptr;
 }
 
 /***********************************************************************************************
@@ -192,8 +191,8 @@ BulletClass* As_Bullet(TARGET target) {
  * HISTORY: * 08/27/1995 JLB : Created. *
  *=============================================================================================*/
 AircraftClass* As_Aircraft(TARGET target) {
-  return (Is_Target_Aircraft(target) ? Aircraft.Raw_Ptr(Target_Value(target))
-                                     : nullptr);
+  return Is_Target_Aircraft(target) ? Aircraft.Raw_Ptr(Target_Value(target))
+                                    : nullptr;
 }
 
 /***********************************************************************************************
@@ -220,7 +219,7 @@ TechnoClass* As_Techno(TARGET target) {
   if (obj && obj->Is_Techno()) {
     return (TechnoClass*)obj;
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -287,7 +286,7 @@ ObjectClass* As_Object(TARGET target) {
     object = nullptr;
   }
 
-  return (object);
+  return object;
 }
 
 /***********************************************************************************************
@@ -306,8 +305,7 @@ ObjectClass* As_Object(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass* As_Unit(TARGET target) {
-  return (Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target))
-                                 : nullptr);
+  return Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target)) : nullptr;
 }
 
 /***********************************************************************************************
@@ -327,8 +325,8 @@ UnitClass* As_Unit(TARGET target) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 InfantryClass* As_Infantry(TARGET target) {
-  return (Is_Target_Infantry(target) ? Infantry.Raw_Ptr(Target_Value(target))
-                                     : nullptr);
+  return Is_Target_Infantry(target) ? Infantry.Raw_Ptr(Target_Value(target))
+                                    : nullptr;
 }
 
 #ifdef NEVER
@@ -353,8 +351,8 @@ TerrainClass* As_Terrain(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 BuildingClass* As_Building(TARGET target) {
-  return (Is_Target_Building(target) ? Buildings.Raw_Ptr(Target_Value(target))
-                                     : nullptr);
+  return Is_Target_Building(target) ? Buildings.Raw_Ptr(Target_Value(target))
+                                    : nullptr;
 }
 
 #ifdef NEVER
@@ -402,7 +400,7 @@ bool Target_Legal(TARGET target) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-CELL As_Cell(TARGET target) { return (Coord_Cell(As_Coord(target))); }
+CELL As_Cell(TARGET target) { return Coord_Cell(As_Coord(target)); }
 
 /***********************************************************************************************
  * As_Coord -- Converts a target value into a coordinate value. *
@@ -426,7 +424,7 @@ COORDINATE As_Coord(TARGET target) {
     *target number is *	actually the cell index number.
     */
     if (Is_Target_Cell(target)) {
-      return (Cell_Coord((CELL)Target_Value(target)));
+      return Cell_Coord((CELL)Target_Value(target));
     }
 
     /*
@@ -449,14 +447,14 @@ COORDINATE As_Coord(TARGET target) {
         return (0x00000000L);
       }
 #endif
-      return (obj->Target_Coord());
+      return obj->Target_Coord();
     }
   }
 
   /*
   **	An unrecognized target value results in a null coordinate value.
   */
-  return (0x00000000L);
+  return 0x00000000L;
 }
 
 /***********************************************************************************************
@@ -482,7 +480,7 @@ COORDINATE As_Movement_Coord(TARGET target) {
     *target number is *	actually the cell index number.
     */
     if (Is_Target_Cell(target)) {
-      return (Cell_Coord((CELL)Target_Value(target)));
+      return Cell_Coord((CELL)Target_Value(target));
     }
 
     /*
@@ -492,12 +490,12 @@ COORDINATE As_Movement_Coord(TARGET target) {
     */
     ObjectClass* obj = As_Object(target);
     if (obj) {
-      return (obj->Docking_Coord());
+      return obj->Docking_Coord();
     }
   }
 
   /*
   **	An unrecognized target value results in a null coordinate value.
   */
-  return (0x00000000L);
+  return 0x00000000L;
 }

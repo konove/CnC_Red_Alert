@@ -394,15 +394,15 @@ static struct {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 VocType Voc_From_Name(char const* name) {
-  if (name == nullptr) return (VOC_NONE);
+  if (name == nullptr) return VOC_NONE;
 
   for (VocType voc = VOC_FIRST; voc < VOC_COUNT; voc++) {
     if (stricmp(name, SoundEffectName[voc].Name) == 0) {
-      return (voc);
+      return voc;
     }
   }
 
-  return (VOC_NONE);
+  return VOC_NONE;
 }
 
 /***********************************************************************************************
@@ -421,8 +421,8 @@ VocType Voc_From_Name(char const* name) {
  * HISTORY: * 05/06/1996 JLB : Created. *
  *=============================================================================================*/
 char const* Voc_Name(VocType voc) {
-  if (voc == VOC_NONE) return ("none");
-  return (SoundEffectName[voc].Name);
+  if (voc == VOC_NONE) return "none";
+  return SoundEffectName[voc].Name;
 }
 
 /***********************************************************************************************
@@ -475,10 +475,10 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
 
     pan_value = Cell_X(cell_pos);
     pan_value -= Coord_XCell(Map.TacticalCoord) +
-                 (Lepton_To_Cell(Map.TacLeptonWidth) / 2);
+                 Lepton_To_Cell(Map.TacLeptonWidth) / 2;
     if (std::abs(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth / 2)) {
       pan_value *= 0x8000;
-      pan_value /= (MAP_CELL_W >> 2);
+      pan_value /= MAP_CELL_W >> 2;
       pan_value = Bound(pan_value, -0x7FFF, 0x7FFF);
     } else {
       pan_value = 0;
@@ -521,11 +521,11 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
     DLOG(WARNING) << "Sound_Effect: invalid voc=" << static_cast<int>(voc)
                   << ", valid range is [0, " << static_cast<int>(VOC_COUNT) - 1
                   << "]";
-    return (-1);
+    return -1;
   }
   if (Debug_Quiet || Options.Volume == 0 || voc == VOC_NONE || !SoundOn ||
       SampleType == SAMPLE_NONE) {
-    return (-1);
+    return -1;
   }
 
   /*
@@ -550,7 +550,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
     /*
     **	Change the extension based on the variation and house accent requested.
     */
-    if (((1 << house) & HOUSEF_ALLIES) != 0) {
+    if ((1 << house & HOUSEF_ALLIES) != 0) {
       /*
       **	For infantry, use a variation on the response. For vehicles,
       *always *	use the vehicle response table.
@@ -594,10 +594,10 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
   */
   if (ptr != nullptr) {
     volume.Sub_Saturate(1);
-    return (Play_Sample(ptr, SoundEffectName[voc].Priority * volume,
-                        volume * 256, pan_value));
+    return Play_Sample(ptr, SoundEffectName[voc].Priority * volume,
+                       volume * 256, pan_value);
   }
-  return (-1);
+  return -1;
 }
 
 /*
@@ -784,8 +784,8 @@ static VoxType CurrentVoice = VOX_NONE;
  * HISTORY: * 06/01/1996 JLB : Created. *
  *=============================================================================================*/
 char const* Speech_Name(VoxType speech) {
-  if (speech == VOX_NONE) return ("none");
-  return (Speech[speech]);
+  if (speech == VOX_NONE) return "none";
+  return Speech[speech];
 }
 
 /***********************************************************************************************
@@ -914,7 +914,7 @@ bool Is_Speaking() {
   Speak_AI();
   if (!Debug_Quiet && SampleType != 0 &&
       (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer))) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

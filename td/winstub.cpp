@@ -231,7 +231,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       Theme.Queue_Song(OldTheme);
       OldTheme = THEME_NONE;
     }
-    return (0);
+    return 0;
   }
 
   switch (message) {
@@ -250,7 +250,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
     case WM_RBUTTONUP:
     case WM_RBUTTONDBLCLK:
       Kbd.Message_Handler(hwnd, message, wParam, lParam);
-      return (0);
+      return 0;
 
     case WM_DESTROY:
       CCDebugString("C&C95 - WM_DESTROY message received.\n");
@@ -292,7 +292,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
         ExitProcess(0);
       }
       CCDebugString("C&C95 - Clean & ready to quit.\n");
-      return (0);
+      return 0;
 
     case WM_ACTIVATEAPP:
       GameInFocus = (BOOL)wParam;
@@ -307,7 +307,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       //				Start_Primary_Sound_Buffer(true);
       //				if (WWMouse) WWMouse->Set_Cursor_Clip();
       //			}
-      return (0);
+      return 0;
 #if (0)
     case WM_ACTIVATE:
       if (low_param == WA_INACTIVE) {
@@ -325,7 +325,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
           *Ignore it by
           ** pretending to handle the message and returning 0;
           */
-          return (0);
+          return 0;
 
         case SC_SCREENSAVE:
           /*
@@ -334,7 +334,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
           ** this message to DefWindowProc then the screen saver will not be
           *allowed to start.
           */
-          return (0);
+          return 0;
       }
       break;
 
@@ -345,11 +345,11 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
     case WM_ASYNCEVENT:
     case WM_UDPASYNCEVENT:
       Winsock.Message_Handler(hwnd, message, wParam, lParam);
-      return (0);
+      return 0;
 #endif  // FORCE_WINSOCK
   }
 
-  return (DefWindowProc(hwnd, message, wParam, lParam));
+  return DefWindowProc(hwnd, message, wParam, lParam);
 }
 
 /***********************************************************************************************
@@ -478,9 +478,9 @@ void Colour_Debug(int call_number) {
 
 BOOL Any_Locked() {
   if (SeenBuff.Get_LockCount() || HidPage.Get_LockCount()) {
-    return (true);
+    return true;
   } else {
-    return (FALSE);
+    return FALSE;
   }
 }
 
@@ -744,7 +744,7 @@ GraphicBufferClass* Read_PCX_File(char const* name, char* palette, void* Buff,
 
   CCFileClass file_handle(name);
 
-  if (!file_handle.Is_Available()) return (NULL);
+  if (!file_handle.Is_Available()) return NULL;
 
   file_handle.Open(READ);
 

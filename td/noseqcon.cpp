@@ -205,11 +205,11 @@ int NonSequencedConnClass::Send_Packet(void* buf, int buflen, int ack_req) {
       // *)PacketBuf)->PacketID );
       NumSendNoAck++;
     }
-    return (true);
+    return true;
   } else {
     // Smart_Printf( "Packet not Queued ID %d \n", ((CommHeaderType
     // *)PacketBuf)->PacketID );
-    return (false);
+    return false;
   }
 }
 
@@ -250,7 +250,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
   packet = (CommHeaderType*)buf;
   if (packet->MagicNumber != MagicNum) {
     // Smart_Printf( "Bad Magic Number\n" );
-    return (false);
+    return false;
   }
 
   /*------------------------------------------------------------------------
@@ -285,7 +285,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     //		}
     //}
 
-    return (true);
+    return true;
   }
 
   /*------------------------------------------------------------------------
@@ -298,7 +298,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     if (Queue->Max_Receive() - Queue->Num_Receive() <= 1) {
       // Smart_Printf( "Only one slot left don't tie up with DATA NOACK packet
       // %d \n", packet->PacketID );
-      return (false);
+      return false;
     }
 
     /*---------------------------------------------------------------------
@@ -306,13 +306,13 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     ---------------------------------------------------------------------*/
     if (!Queue->Queue_Receive(buf, buflen)) {
       // Smart_Printf( "Can't Queue the packet %d \n", packet->PacketID );
-      return (false);
+      return false;
     }
 
     // Smart_Printf( "Queued DATA NOACK for %d \n", packet->PacketID );
     NumRecNoAck++;
 
-    return (true);
+    return true;
   }
 
   /*------------------------------------------------------------------------
@@ -362,11 +362,11 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
       stuck, forever unable to increment LastSeqID.
       ------------------------------------------------------------------*/
       if (Queue->Max_Receive() - Queue->Num_Receive() <= 1) {
-        if (packet->PacketID != (LastSeqID + 1)) {
+        if (packet->PacketID != LastSeqID + 1) {
           // Smart_Printf( "One slot left not what we looking for max=%d,num=%d
           // \n",
           //	Queue->Max_Receive(), Queue->Num_Receive() );
-          return (0);
+          return 0;
         }
       }
 
@@ -375,7 +375,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
       ------------------------------------------------------------------*/
       if (!Queue->Queue_Receive(buf, buflen)) {
         // Smart_Printf( "unable to queue packet\n" );
-        return (0);
+        return 0;
       }
 
       NumRecAck++;
@@ -384,7 +384,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
       Update our LastSeqID value if we can.  Anything less than LastSeqID
       we'll know is a resend.
       ------------------------------------------------------------------*/
-      if (packet->PacketID == (LastSeqID + 1)) {
+      if (packet->PacketID == LastSeqID + 1) {
         LastSeqID = packet->PacketID;
         /*............................................................
         Now that we have a new 'LastSeqID', search our Queue to see if
@@ -404,7 +404,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
               Entry is found
               ......................................................*/
               if (entry_data->Code == PACKET_DATA_ACK &&
-                  entry_data->PacketID == (LastSeqID + 1)) {
+                  entry_data->PacketID == LastSeqID + 1) {
                 LastSeqID = entry_data->PacketID;
                 found = 1;
                 break;
@@ -424,13 +424,13 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     // Smart_Printf( "Sending ACK for %d \n", packet->PacketID );
     Send((char*)&ackpacket, sizeof(CommHeaderType));
 
-    return (true);
+    return true;
 
   } else {
     // Smart_Printf( "invalid packet type %d \n", packet->Code );
   }
 
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -476,8 +476,8 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
       If this is a DATA_ACK packet, its ID must be one greater than
       the last one we read.
       ..................................................................*/
-      if ((entry_data->Code == PACKET_DATA_ACK) &&
-          (entry_data->PacketID == (LastReadID + 1))) {
+      if (entry_data->Code == PACKET_DATA_ACK &&
+          entry_data->PacketID == LastReadID + 1) {
         LastReadID = entry_data->PacketID;
         rec_entry->IsRead = 1;
 
@@ -485,8 +485,8 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
         if (packetlen > 0) {
           memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
         }
-        (*buflen) = packetlen;
-        return (true);
+        *buflen = packetlen;
+        return true;
       }
       /*..................................................................
       If this is a DATA_NOACK packet, who cares what the ID is?
@@ -498,13 +498,13 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
         if (packetlen > 0) {
           memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
         }
-        (*buflen) = packetlen;
-        return (true);
+        *buflen = packetlen;
+        return true;
       }
     }
   }
 
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -640,7 +640,7 @@ int NonSequencedConnClass::Service_Send_Queue() {
       }
 
       if (Timeout != -1 &&
-          (send_entry->LastTime - send_entry->FirstTime) > Timeout) {
+          send_entry->LastTime - send_entry->FirstTime > Timeout) {
         // Smart_Printf( "Timed out!!! Time %d, Timeout %d, buflen %d !!! \n",
         //	(send_entry->LastTime - send_entry->FirstTime), Timeout,
         //	send_entry->BufLen );
@@ -654,9 +654,9 @@ int NonSequencedConnClass::Service_Send_Queue() {
   ------------------------------------------------------------------------*/
   if (bad_conn) {
     // Smart_Printf( "Connection going bad!!! \n" );
-    return (false);
+    return false;
   } else {
-    return (true);
+    return true;
   }
 }
 
@@ -694,7 +694,7 @@ int NonSequencedConnClass::Service_Receive_Queue() {
     rec_entry = Queue->Get_Receive(i);
 
     if (rec_entry->IsRead) {
-      packet_hdr = (CommHeaderType*)(rec_entry->Buffer);
+      packet_hdr = (CommHeaderType*)rec_entry->Buffer;
 
       if (packet_hdr->Code == PACKET_DATA_NOACK) {
         Queue->UnQueue_Receive(nullptr, nullptr, i);
@@ -708,5 +708,5 @@ int NonSequencedConnClass::Service_Receive_Queue() {
     }
   }
 
-  return (true);
+  return true;
 }

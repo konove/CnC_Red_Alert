@@ -310,7 +310,7 @@ bool WinsockInterfaceClass::Init() {
   /*
   ** Just return true if we are already set up
   */
-  if (WinsockInitialised) return (true);
+  if (WinsockInitialised) return true;
 
 #ifdef _WIN32
   /*
@@ -363,7 +363,7 @@ bool WinsockInterfaceClass::Init() {
   */
   WinsockInitialised = true;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -393,7 +393,7 @@ int WinsockInterfaceClass::Read(void* buffer, int& buffer_len, void* address,
   /*
   ** If there are no available packets then return 0
   */
-  if (InBuffers.Count() == 0) return (0);
+  if (InBuffers.Count() == 0) return 0;
 
   /*
   ** Get the oldest packet for reading
@@ -422,7 +422,7 @@ int WinsockInterfaceClass::Read(void* buffer, int& buffer_len, void* address,
   InBuffers.Delete(packetnum);
   delete packet;
 
-  return (buffer_len);
+  return buffer_len;
 }
 
 /***********************************************************************************************
@@ -614,7 +614,7 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
 #endif
 #endif
 
-  return (true);
+  return true;
 }
 
 int WinsockInterfaceClass::Get_Last_Error() {

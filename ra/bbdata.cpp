@@ -117,7 +117,7 @@ BulletTypeClass::BulletTypeClass(char const* name)
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void* BulletTypeClass::operator new(size_t) throw() {
-  return (BulletTypes.Alloc());
+  return BulletTypes.Alloc();
 }
 
 /***********************************************************************************************
@@ -241,7 +241,7 @@ void BulletTypeClass::One_Time() {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 BulletTypeClass& BulletTypeClass::As_Reference(BulletType type) {
-  return (*BulletTypes.Ptr(type));
+  return *BulletTypes.Ptr(type);
 }
 
 /***********************************************************************************************
@@ -284,7 +284,7 @@ bool BulletTypeClass::Read_INI(CCINIClass& ini) {
     IsTranslucent = ini.Get_Bool(Name(), "Translucent", IsTranslucent);
     IsGigundo = ini.Get_Bool(Name(), "Gigundo", IsGigundo);
     ini.Get_String(Name(), "Image", "none", GraphicName, sizeof(GraphicName));
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

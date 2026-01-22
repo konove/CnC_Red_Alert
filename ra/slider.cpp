@@ -144,9 +144,9 @@ SliderClass::~SliderClass() {
 int SliderClass::Set_Maximum(int value) {
   if (GaugeClass::Set_Maximum(value)) {
     Recalc_Thumb();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -184,9 +184,9 @@ int SliderClass::Set_Value(int value) {
 
   if (GaugeClass::Set_Value(value)) {
     Recalc_Thumb();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -253,17 +253,17 @@ int SliderClass::Action(unsigned flags, KeyNumType& key) {
       Bump(true);
       GaugeClass::Action(0, key);
       key = KN_NONE;
-      return (true);
+      return true;
     } else {
       if (mouse > edge + ThumbStart + ThumbSize) {
         Bump(false);
         GaugeClass::Action(0, key);
         key = KN_NONE;
-        return (true);
+        return true;
       } else {
         GaugeClass::Action(flags, key);
         key = KN_NONE;
-        return (true);
+        return true;
       }
     }
   }
@@ -271,7 +271,7 @@ int SliderClass::Action(unsigned flags, KeyNumType& key) {
   /*
   **  CHANGE GAUGECLASS::ACTION -- REMOVE (LEFTRELEASE) FROM IF STMT
   */
-  return (GaugeClass::Action(flags, key));
+  return GaugeClass::Action(flags, key);
 }
 
 /***********************************************************************************************
@@ -288,9 +288,9 @@ int SliderClass::Action(unsigned flags, KeyNumType& key) {
  *=============================================================================================*/
 int SliderClass::Bump(int up) {
   if (up) {
-    return (Set_Value(CurValue - Thumb));
+    return Set_Value(CurValue - Thumb);
   }
-  return (Set_Value(CurValue + Thumb));
+  return Set_Value(CurValue + Thumb);
 }
 
 /***********************************************************************************************
@@ -306,9 +306,9 @@ int SliderClass::Bump(int up) {
  *=============================================================================================*/
 int SliderClass::Step(int up) {
   if (up) {
-    return (Set_Value(CurValue - 1));
+    return Set_Value(CurValue - 1);
   }
-  return (Set_Value(CurValue + 1));
+  return Set_Value(CurValue + 1);
 }
 
 /***********************************************************************************************
@@ -361,14 +361,14 @@ int SliderClass::Draw_Me(int forced) {
       if (LogicPage == &SeenBuff) {
         Conditional_Show_Mouse();
       }
-      return (true);
+      return true;
     }
   }
 
   /*
   **	If it does not belong to a listbox...
   */
-  return (GaugeClass::Draw_Me(forced));
+  return GaugeClass::Draw_Me(forced);
 }
 
 /***********************************************************************************************

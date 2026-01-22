@@ -116,10 +116,10 @@ void Set_Font_Palette_Range(void const* palette, int start_idx, int end_idx) {
 
   if (end_idx < start_idx) return;
 
-  int num_cols = (end_idx - start_idx) + 1;
+  int num_cols = end_idx - start_idx + 1;
 
   auto lo = ColorXlat + start_idx;
-  auto hi = ColorXlat + (start_idx * 16);
+  auto hi = ColorXlat + start_idx * 16;
 
   do {
     int col = *palette8++;

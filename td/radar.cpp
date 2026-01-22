@@ -259,7 +259,7 @@ bool RadarClass::Radar_Activate(int control) {
     ** Toggle the state of the radar map on or off.
     */
     case -1: {
-      int temp = (IsRadarActive == false);
+      int temp = IsRadarActive == false;
       if (temp) {
         Radar_Activate(1);
       } else {
@@ -285,7 +285,7 @@ bool RadarClass::Radar_Activate(int control) {
       } else {
         Radar_Activate(2);
       }
-      return (old);
+      return old;
 
     case 1:
       if (Map.IsSidebarActive) {
@@ -305,7 +305,7 @@ bool RadarClass::Radar_Activate(int control) {
       } else {
         Radar_Activate(3);
       }
-      return (old);
+      return old;
 
     case 2:
       if (GameToPlay == GAME_NORMAL) {
@@ -340,7 +340,7 @@ bool RadarClass::Radar_Activate(int control) {
     Flag_To_Redraw(false);
   }
   FullRedraw = IsRadarActive;
-  return (old);
+  return old;
 }
 
 /***********************************************************************************************
@@ -495,7 +495,7 @@ void RadarClass::Draw_It(bool forced) {
       *forced to do so.
       */
       //			if (forced) {
-      int val = (DoesRadarExist) ? MAX_RADAR_FRAMES : 0;
+      int val = DoesRadarExist ? MAX_RADAR_FRAMES : 0;
       CC_Draw_Shape(RadarAnim, val, RadX, RadY + 1, WINDOW_MAIN, SHAPE_NORMAL);
       FullRedraw = false;
       IsToRedraw = false;
@@ -725,8 +725,8 @@ void RadarClass::Zoom_Mode(CELL cell) {
   ** Find the amount of remainder because this will let us calculate
   ** how to center the thing.
   */
-  int rem_x = RadIWidth - (map_c_width * ZoomFactor);
-  int rem_y = RadIHeight - (map_c_height * ZoomFactor);
+  int rem_x = RadIWidth - map_c_width * ZoomFactor;
+  int rem_y = RadIHeight - map_c_height * ZoomFactor;
 
   /*
   ** Finally mark the map so it shows just as much as it is supposed
@@ -806,8 +806,8 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
 
   if (LogicPage->Lock()) {
     CellClass* cellptr = &(*this)[cell];
-    x = RadX + RadOffX + BaseX + (x * ZoomFactor);
-    y = RadY + RadOffY + BaseY + (y * ZoomFactor);
+    x = RadX + RadOffX + BaseX + x * ZoomFactor;
+    y = RadY + RadOffY + BaseY + y * ZoomFactor;
 
     /*
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
@@ -936,26 +936,26 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) {
   /*
   ** If radar is not active the click could have been on a radar point
   */
-  if (!IsRadarActive || !Map.IsSidebarActive) return (0);
+  if (!IsRadarActive || !Map.IsSidebarActive) return 0;
 
-  x -= (RadX + RadOffX);
-  y -= (RadY + RadOffY);
+  x -= RadX + RadOffX;
+  y -= RadY + RadOffY;
   if ((unsigned)x < RadIWidth && (unsigned)y < RadIHeight) {
     x -= BaseX;
     y -= BaseY;
 
     if ((unsigned)x < RadarWidth && (unsigned)y < RadarHeight) {
-      x = RadarX + (x / ZoomFactor);
-      y = RadarY + (y / ZoomFactor);
+      x = RadarX + x / ZoomFactor;
+      y = RadarY + y / ZoomFactor;
       if (change) {
         ptr_x = x;
         ptr_y = y;
       }
-      return (1);
+      return 1;
     }
-    return (-1);
+    return -1;
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -980,12 +980,12 @@ CELL RadarClass::Click_Cell_Calc(int x, int y) {
   int result = Click_In_Radar(x, y, true);
   switch (result) {
     case 1:
-      return (XY_Cell(x, y));
+      return XY_Cell(x, y);
 
     case -1:
-      return (-1);
+      return -1;
   }
-  return (DisplayClass::Click_Cell_Calc(x, y));
+  return DisplayClass::Click_Cell_Calc(x, y);
 }
 
 /***********************************************************************************************
@@ -1006,9 +1006,9 @@ CELL RadarClass::Click_Cell_Calc(int x, int y) {
 bool RadarClass::Map_Cell(CELL cell, HouseClass* house) {
   if (DisplayClass::Map_Cell(cell, house)) {
     Radar_Pixel(cell);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 void RadarClass::Cursor_Cell(CELL cell, int value) {
@@ -1040,15 +1040,15 @@ void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, int value,
   /*
   ** First step is to convert pixel coordinates back to a CellX and CellY.
   */
-  x1 = RadarX + (x1 / ZoomFactor);
-  y1 = RadarY + (y1 / ZoomFactor);
-  x2 = RadarX + (x2 / ZoomFactor);
-  y2 = RadarY + (y2 / ZoomFactor);
+  x1 = RadarX + x1 / ZoomFactor;
+  y1 = RadarY + y1 / ZoomFactor;
+  x2 = RadarX + x2 / ZoomFactor;
+  y2 = RadarY + y2 / ZoomFactor;
 
   /*
   ** Now we need to convert the Pixel length to a cell length.
   */
-  barlen = (barlen / ZoomFactor) + 1;
+  barlen = barlen / ZoomFactor + 1;
 
   /*
   ** Now lets loop through and mark the map with the proper value.
@@ -1388,7 +1388,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     if (Map.IsSidebarActive) {
       Map.Override_Mouse_Shape(MOUSE_NORMAL, true);
     }
-    return (false);
+    return false;
   }
 
   /*
@@ -1396,7 +1396,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   */
   if (Map.Is_Player_Names()) {
     GadgetClass::Action(0, key);
-    return (true);
+    return true;
   }
 
   /*
@@ -1417,7 +1417,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   if (result == 1) {
     cell = Map.RadarClass::Click_Cell_Calc(x, y);
     if (cell != -1 && Map.In_Radar(cell)) {
-      shadow = (!Map[cell].IsVisible && !Debug_Unshroud);
+      shadow = !Map[cell].IsVisible && !Debug_Unshroud;
       cellx = 12;
       celly = 12;
 
@@ -1509,7 +1509,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
             celly -= Lepton_To_Cell(Map.TacLeptonHeight) / 2;
             celly = std::max(celly, Map.MapCellY);
             cell = XY_Cell(cellx, celly);
-            shadow = (!Map[cell].IsVisible && !Debug_Unshroud);
+            shadow = !Map[cell].IsVisible && !Debug_Unshroud;
             Map.Set_Tactical_Position(Cell_Coord(cell));
             cell = Coord_Cell(Map.DesiredTacticalCoord);
             Map.DisplayClass::IsToRedraw = true;
@@ -1532,7 +1532,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     Map.Override_Mouse_Shape(MOUSE_NORMAL, true);
   }
   GadgetClass::Action(0, key);
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1590,8 +1590,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
     oldx = (Cell_X(cell) - MapCellX) - (RadarCellWidth / 2);
     oldy = (Cell_Y(cell) - MapCellY) - (RadarCellHeight / 2);
 #else
-    oldx = (Cell_X(cell) - MapCellX);
-    oldy = (Cell_Y(cell) - MapCellY);
+    oldx = Cell_X(cell) - MapCellX;
+    oldy = Cell_Y(cell) - MapCellY;
 #endif
   } else {
     oldx = 0;
@@ -1610,8 +1610,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
     int xmod = newx;
     int ymod = newy;
 
-    int radx = (Cell_X(RadarCell)) - xmod;
-    int rady = (Cell_Y(RadarCell)) - ymod;
+    int radx = Cell_X(RadarCell) - xmod;
+    int rady = Cell_Y(RadarCell) - ymod;
 
     RadarX = newx;
     RadarY = newy;
@@ -1631,10 +1631,10 @@ void RadarClass::Set_Radar_Position(CELL cell) {
         if (OverlappedVideoBlits || !HidPage.Get_IsDirectDraw()) {
           HidPage.Blit(
               HidPage,
-              (((radx < 0) ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
-              (((rady < 0) ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
-              (((radx < 0) ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
-              (((rady < 0) ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
+              (radx < 0 ? -radx : 0) * ZoomFactor + RadX + RadOffX + BaseX,
+              (rady < 0 ? -rady : 0) * ZoomFactor + RadY + RadOffY + BaseY,
+              (radx < 0 ? 0 : radx) * ZoomFactor + RadX + RadOffX + BaseX,
+              (rady < 0 ? 0 : rady) * ZoomFactor + RadY + RadOffY + BaseY,
               radw * ZoomFactor, radh * ZoomFactor);
         } else {
           /*
@@ -1642,20 +1642,20 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           ** Blit it in 2 stages using an intermediate buffer.
           */
           GraphicBufferClass temp_surface;
-          temp_surface.Init((RadarWidth + 16) & 0xfffffff0,
-                            (RadarHeight + 16) & 0xfffffff0, nullptr, 0,
+          temp_surface.Init(RadarWidth + 16 & 0xfffffff0,
+                            RadarHeight + 16 & 0xfffffff0, nullptr, 0,
                             (GBC_Enum)GBC_VIDEOMEM);
 
           HidPage.Blit(
               temp_surface,
-              (((radx < 0) ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
-              (((rady < 0) ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
+              (radx < 0 ? -radx : 0) * ZoomFactor + RadX + RadOffX + BaseX,
+              (rady < 0 ? -rady : 0) * ZoomFactor + RadY + RadOffY + BaseY,
               0, 0, RadarWidth, RadarHeight);
 
           temp_surface.Blit(
               HidPage, 0, 0,
-              (((radx < 0) ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
-              (((rady < 0) ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
+              (radx < 0 ? 0 : radx) * ZoomFactor + RadX + RadOffX + BaseX,
+              (rady < 0 ? 0 : rady) * ZoomFactor + RadY + RadOffY + BaseY,
               radw * ZoomFactor, radh * ZoomFactor);
         }
 
@@ -1723,7 +1723,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-CELL RadarClass::Radar_Position() { return (RadarCell); }
+CELL RadarClass::Radar_Position() { return RadarCell; }
 
 /***********************************************************************************************
  * RadarClass::Set_Map_Dimensions -- Sets the tactical map dimensions. *
@@ -1784,11 +1784,11 @@ void RadarClass::Set_Tactical_Position(COORDINATE coord) {
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::Cell_On_Radar(CELL cell) {
-  if ((unsigned)cell > MAP_CELL_TOTAL) return (false);
+  if ((unsigned)cell > MAP_CELL_TOTAL) return false;
 
   int x = Cell_X(cell) - RadarX;
   int y = Cell_Y(cell) - RadarY;
-  return (!((unsigned)x >= RadarCellWidth || (unsigned)y >= RadarCellHeight));
+  return !((unsigned)x >= RadarCellWidth || (unsigned)y >= RadarCellHeight);
 
   //	if (!IsZoomed) {
   //		return(true);
@@ -1842,7 +1842,7 @@ void RadarClass::Draw_Names() {
   int kills;
   int color;
   TextPrintType style;
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*
   ** Do nothing if the sidebar isn't there
@@ -1873,7 +1873,7 @@ void RadarClass::Draw_Names() {
 
   y += 2 * factor;
 
-  for (house = HOUSE_MULTI1; house < (HOUSE_MULTI1 + MPlayerMax); house++) {
+  for (house = HOUSE_MULTI1; house < HOUSE_MULTI1 + MPlayerMax; house++) {
     ptr = HouseClass::As_Pointer(house);
 
     if (!ptr) continue;

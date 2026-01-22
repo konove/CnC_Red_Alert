@@ -114,7 +114,7 @@ class VersionClass {
   //.....................................................................
   // Retrieves a pointer to the current version text.
   //.....................................................................
-  char* Version_Text() { return (VersionText); }
+  char* Version_Text() { return VersionText; }
 
   //.....................................................................
   // Returns the default comm protocol for a given version number.
@@ -126,7 +126,7 @@ class VersionClass {
   //.....................................................................
   void Init_Clipping();
   unsigned long Clip_Version(unsigned long minver, unsigned long maxver);
-  unsigned long Get_Clipped_Version() { return (MaxClipVer); }
+  unsigned long Get_Clipped_Version() { return MaxClipVer; }
 
   //.....................................................................
   // These routines return the theoretical lowest & highest version #'s

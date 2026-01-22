@@ -87,7 +87,7 @@
 bool CellClass::Should_Save() const {
   static CellClass const _identity_cell;
 
-  return (memcmp(&_identity_cell, this, sizeof(*this)) != 0);
+  return memcmp(&_identity_cell, this, sizeof(*this)) != 0;
 }
 
 /***********************************************************************************************
@@ -103,7 +103,7 @@ bool CellClass::Should_Save() const {
  *=============================================================================================*/
 bool CellClass::Load(Straw& file) {
   file.Get(this, sizeof(*this));
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -119,7 +119,7 @@ bool CellClass::Load(Straw& file) {
  *=============================================================================================*/
 bool CellClass::Save(Pipe& file) const {
   file.Put(this, sizeof(*this));
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -215,7 +215,7 @@ bool MouseClass::Load(Straw& file) {
   */
   TheaterType theater;
   if (file.Get(&theater, sizeof(theater)) != sizeof(theater)) {
-    return (false);
+    return false;
   }
 
 #ifdef WIN32
@@ -281,7 +281,7 @@ bool MouseClass::Load(Straw& file) {
   */
   int count;
   if (file.Get(&count, sizeof(count)) != sizeof(count)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -290,16 +290,16 @@ bool MouseClass::Load(Straw& file) {
   for (int index = 0; index < count; index++) {
     CELL cell = 0;
     if (file.Get(&cell, sizeof(cell)) != sizeof(cell)) {
-      return (false);
+      return false;
     }
 
     if (!(*this)[cell].Load(file)) {
-      return (false);
+      return false;
     }
   }
 
   LastTheater = Scen.Theater;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -352,9 +352,9 @@ bool MouseClass::Save(Pipe& file) const {
     cellptr++;
   }
 
-  if (count != 0) return (false);
+  if (count != 0) return false;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************

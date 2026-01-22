@@ -180,28 +180,28 @@ class EventChoiceClass {
  public:
   EventChoiceClass(TEventType event = TEVENT_NONE) : Event(event) {}
 
-  operator TEventType() const { return (Event); }
+  operator TEventType() const { return Event; }
   bool operator==(EventChoiceClass const& rvalue) const {
-    return (Event == rvalue.Event);
+    return Event == rvalue.Event;
   }
   bool operator!=(EventChoiceClass const& rvalue) const {
-    return (Event != rvalue.Event);
+    return Event != rvalue.Event;
   }
   bool operator>(EventChoiceClass const& rvalue) const {
-    return (stricmp(Description(), rvalue.Description()) > 0);
+    return stricmp(Description(), rvalue.Description()) > 0;
   }
   bool operator<(EventChoiceClass const& rvalue) const {
-    return (stricmp(Description(), rvalue.Description()) < 0);
+    return stricmp(Description(), rvalue.Description()) < 0;
   }
   bool operator<=(EventChoiceClass const& rvalue) const {
-    return (Event == rvalue.Event ||
-            stricmp(Description(), rvalue.Description()) < 0);
+    return Event == rvalue.Event ||
+           stricmp(Description(), rvalue.Description()) < 0;
   }
   bool operator>=(EventChoiceClass const& rvalue) const {
-    return (Event == rvalue.Event ||
-            stricmp(Description(), rvalue.Description()) > 0);
+    return Event == rvalue.Event ||
+           stricmp(Description(), rvalue.Description()) > 0;
   }
-  char const* Description() const { return (Name_From_Event(Event)); }
+  char const* Description() const { return Name_From_Event(Event); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
 

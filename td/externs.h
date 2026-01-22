@@ -181,7 +181,7 @@ extern TFixedIHeapClass<TeamClass> Teams;
 extern TFixedIHeapClass<HouseClass> Houses;
 
 extern QueueClass<EventClass, MAX_EVENTS> OutList;
-extern QueueClass<EventClass, (MAX_EVENTS * 8)> DoList;
+extern QueueClass<EventClass, MAX_EVENTS * 8> DoList;
 
 extern DynamicVectorClass<ObjectClass*> CurrentObject;
 extern DynamicVectorClass<TriggerClass*> CellTriggers;

@@ -48,7 +48,7 @@ class SaveOptionsClass {
     BUTTON_SAVE,
     OPTION_WIDTH = 216,
     OPTION_HEIGHT = 122,
-    OPTION_X = ((320 - OPTION_WIDTH) / 2) & ~7,
+    OPTION_X = (320 - OPTION_WIDTH) / 2 & ~7,
     OPTION_Y = (200 - OPTION_HEIGHT) / 2,
     NUMBER_OF_BUTTONS = 2,
     CAPTION_Y_POS = 5,

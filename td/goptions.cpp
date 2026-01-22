@@ -82,19 +82,19 @@
 #include "td/theme.h"
 
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   OptionWidth = (216 + 8) * factor;
   OptionHeight = 100 * factor;
-  OptionX = ((SeenBuff.Get_Width() - OptionWidth) / 2);
-  OptionY = ((SeenBuff.Get_Height() - OptionHeight) / 2);
+  OptionX = (SeenBuff.Get_Width() - OptionWidth) / 2;
+  OptionY = (SeenBuff.Get_Height() - OptionHeight) / 2;
   ButtonWidth = 130 * factor;
   OButtonHeight = 9 * factor;
   CaptionYPos = 5 * factor;
   ButtonY = 21 * factor;
   Border1Len = 72 * factor;
   Border2Len = 16 * factor;
-  ButtonResumeY = (OptionHeight - (15 * factor));
+  ButtonResumeY = OptionHeight - 15 * factor;
 }
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *
@@ -144,7 +144,7 @@ void GameOptionsClass::Process() {
   **	Build the button list for all of the buttons for this dialog.
   */
   int maxwidth = 0;
-  int resfactor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int resfactor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   for (int index = 0; index < sizeof(_constants) / sizeof(_constants[0]);
        index++) {
@@ -162,7 +162,7 @@ void GameOptionsClass::Process() {
 
     if (index < 5) {
       y = (SeenBuff.Get_Height() - OptionHeight) / 2 + ButtonY +
-          ((OButtonHeight + 2) * index);
+          (OButtonHeight + 2) * index;
     } else {
       y = OptionY + ButtonResumeY;
     }
@@ -199,13 +199,13 @@ void GameOptionsClass::Process() {
 #else
   buttonsel[BUTTON_RESUME - 1]->Width = 90 * resfactor;
 #endif
-  buttonsel[BUTTON_RESUME - 1]->X = OptionX + (5 * resfactor);
+  buttonsel[BUTTON_RESUME - 1]->X = OptionX + 5 * resfactor;
 
   if (GameToPlay == GAME_NORMAL) {
     buttonsel[BUTTON_RESTATE - 1]->Width = 90 * resfactor;
     buttonsel[BUTTON_RESTATE - 1]->X =
         OptionX + OptionWidth -
-        (buttonsel[BUTTON_RESTATE - 1]->Width + (5 * resfactor));
+        (buttonsel[BUTTON_RESTATE - 1]->Width + 5 * resfactor);
   }
 
   /*
@@ -310,8 +310,8 @@ void GameOptionsClass::Process() {
                            3 * resfactor,
                        WindowList[WINDOW_EDITOR][WINDOWY] +
                            WindowList[WINDOW_EDITOR][WINDOWHEIGHT] -
-                           ((GameToPlay == GAME_NORMAL) ? (32 * resfactor)
-                                                        : (24 * resfactor)),
+                           (GameToPlay == GAME_NORMAL ? 32 * resfactor
+                                                        : 24 * resfactor),
                        DKGREY, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT,
                        ScenarioName, Version_Number(), VersionText);
 #endif
@@ -331,49 +331,49 @@ void GameOptionsClass::Process() {
     **	Process Input.
     */
     switch (input) {
-      case (BUTTON_RESTATE | KN_BUTTON):
+      case BUTTON_RESTATE | KN_BUTTON:
         selection = BUTTON_RESTATE;
         pressed = true;
         break;
 
-      case (BUTTON_LOAD | KN_BUTTON):
+      case BUTTON_LOAD | KN_BUTTON:
         selection = BUTTON_LOAD;
         pressed = true;
         break;
 
-      case (BUTTON_SAVE | KN_BUTTON):
+      case BUTTON_SAVE | KN_BUTTON:
         selection = BUTTON_SAVE;
         pressed = true;
         break;
 
-      case (BUTTON_DELETE | KN_BUTTON):
+      case BUTTON_DELETE | KN_BUTTON:
         selection = BUTTON_DELETE;
         pressed = true;
         break;
 
-      case (BUTTON_QUIT | KN_BUTTON):
+      case BUTTON_QUIT | KN_BUTTON:
         selection = BUTTON_QUIT;
         pressed = true;
         break;
 
-      case (BUTTON_GAME | KN_BUTTON):
+      case BUTTON_GAME | KN_BUTTON:
         selection = BUTTON_GAME;
         pressed = true;
         break;
 
-      case (KN_ESC):
-      case (BUTTON_RESUME | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_RESUME | KN_BUTTON:
         selection = BUTTON_RESUME;
         pressed = true;
         break;
 
-      case (KN_UP):
+      case KN_UP:
         buttonsel[curbutton - 1]->Turn_Off();
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         curbutton--;
         if (GameToPlay == GAME_NORMAL) {
           if (curbutton < BUTTON_LOAD) {
-            curbutton = (BUTTON_COUNT - 1);
+            curbutton = BUTTON_COUNT - 1;
           }
         } else {
           if (curbutton < BUTTON_DELETE) {
@@ -386,7 +386,7 @@ void GameOptionsClass::Process() {
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         break;
 
-      case (KN_DOWN):
+      case KN_DOWN:
         buttonsel[curbutton - 1]->Turn_Off();
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         curbutton++;
@@ -403,7 +403,7 @@ void GameOptionsClass::Process() {
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
         buttonsel[curbutton - 1]->IsPressed = true;
         buttonsel[curbutton - 1]->Draw_Me(true);
         selection = curbutton;
@@ -449,19 +449,19 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case (BUTTON_LOAD):
+        case BUTTON_LOAD:
           display = true;
           if (LoadOptionsClass(LoadOptionsClass::LOAD).Process()) {
             process = false;
           }
           break;
 
-        case (BUTTON_SAVE):
+        case BUTTON_SAVE:
           display = true;
           LoadOptionsClass(LoadOptionsClass::SAVE).Process();
           break;
 
-        case (BUTTON_DELETE):
+        case BUTTON_DELETE:
           display = true;
           if (GameToPlay != GAME_NORMAL) {
             if (Surrender_Dialog()) {
@@ -473,7 +473,7 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case (BUTTON_QUIT):
+        case BUTTON_QUIT:
           if (GameToPlay == GAME_NORMAL) {
 #ifdef JAPANESE
             switch (CCMessageBox().Process(TXT_CONFIRM_EXIT, TXT_YES, TXT_NO,
@@ -506,12 +506,12 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case (BUTTON_GAME):
+        case BUTTON_GAME:
           display = true;
           GameControlsClass().Process();
           break;
 
-        case (BUTTON_RESUME):
+        case BUTTON_RESUME:
           // Save_Settings();
           process = false;
           display = true;
@@ -563,7 +563,7 @@ void GameOptionsClass::Process() {
  *=============================================================================================*/
 void Draw_Caption(int text, int x, int y, int w) {
   OptionControlType option = OPTION_NONE;
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*
   **	Determine the filigree to use depending on the text of the caption.
@@ -638,9 +638,9 @@ void Draw_Caption(int text, int x, int y, int w) {
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     int length = String_Pixel_Width(Text_String(text));
-    LogicPage->Draw_Line((x + (w / 2)) - (length / 2),
+    LogicPage->Draw_Line(x + w / 2 - length / 2,
                          y + FontHeight + FontYSpacing + 5 * factor,
-                         (x + (w / 2)) + (length / 2),
+                         x + w / 2 + length / 2,
                          y + FontHeight + FontYSpacing + 5 * factor, CC_GREEN);
   }
 }

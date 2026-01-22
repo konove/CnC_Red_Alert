@@ -177,7 +177,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
 
     default:
     case SCEN_DIR_NONE:
-      c_dir = (Random_Pick(0, 1) == 0) ? 'W' : 'E';
+      c_dir = Random_Pick(0, 1) == 0 ? 'W' : 'E';
       break;
   }
 
@@ -312,7 +312,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   sprintf(fname, "%s.INI", root);
   CCFileClass file(fname);
   if (!file.Is_Available()) {
-    return (false);
+    return false;
   } else {
     file.Read(buffer, _ShapeBufferSize - 1);
   }
@@ -517,7 +517,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
     sprintf(buff, "%d", index++);
     *stage = '\0';
     WWGetPrivateProfileString("Briefing", buff, "", stage,
-                              (sizeof(BriefingText) - strlen(BriefingText)) - 1,
+                              sizeof(BriefingText) - strlen(BriefingText) - 1,
                               buffer);
     if (strlen(stage) == 0) break;
     // Really old and ugly code - refactor.
@@ -547,7 +547,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
       *work = '\0';
       WWGetPrivateProfileString(
           root, buff, "", work,
-          (sizeof(BriefingText) - strlen(BriefingText)) - 1, _ShapeBuffer);
+          sizeof(BriefingText) - strlen(BriefingText) - 1, _ShapeBuffer);
       if (strlen(work) == 0) break;
       // Really old and ugly code - refactor.
       // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
@@ -635,7 +635,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   **	Return with flag saying that the scenario file was read.
   */
   ScenarioInit--;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -874,11 +874,11 @@ static void Assign_Houses() {
   /*
   **	Now make all computer-owned houses allies of each other.
   */
-  for (house = HOUSE_MULTI1; house < (HOUSE_MULTI1 + MPlayerMax); house++) {
+  for (house = HOUSE_MULTI1; house < HOUSE_MULTI1 + MPlayerMax; house++) {
     housep = HouseClass::As_Pointer(house);
     if (housep->IsHuman) continue;
 
-    for (house2 = HOUSE_MULTI1; house2 < (HOUSE_MULTI1 + MPlayerMax);
+    for (house2 = HOUSE_MULTI1; house2 < HOUSE_MULTI1 + MPlayerMax;
          house2++) {
       housep2 = HouseClass::As_Pointer(house2);
       if (housep2->IsHuman) continue;
@@ -1025,7 +1025,7 @@ static void Create_Units() {
   /*........................................................................
   Compute allowed # units
   ........................................................................*/
-  tot_units = (MPlayerUnitCount * 2) / 3;
+  tot_units = MPlayerUnitCount * 2 / 3;
   //	tot_units = std::max(tot_units, 1);
 
   /*........................................................................
@@ -1088,7 +1088,7 @@ static void Create_Units() {
   ON, are treated as though bases are OFF (since we have no base-building
   AI logic.)
   ------------------------------------------------------------------------*/
-  for (h = HOUSE_MULTI1; h < (HOUSE_MULTI1 + MPlayerMax); h++) {
+  for (h = HOUSE_MULTI1; h < HOUSE_MULTI1 + MPlayerMax; h++) {
     /*.....................................................................
     Get a pointer to this house; if there is none, go to the next house
     .....................................................................*/
@@ -1313,7 +1313,7 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
     if (!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                     obj->What_Am_I() == RTTI_INFANTRY)) {
       if (obj->Unlimbo(Cell_Coord(cell), DIR_N)) {
-        return (true);
+        return true;
       }
     }
   }
@@ -1367,7 +1367,7 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
           if (!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                           obj->What_Am_I() == RTTI_INFANTRY)) {
             if (obj->Unlimbo(Cell_Coord(newcell), DIR_N)) {
-              return (true);
+              return true;
             }
           }
         }
@@ -1378,7 +1378,7 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
     }
   }
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1482,7 +1482,7 @@ static int Furthest_Cell(CELL* cells, int numcells, CELL* tcells,
     }
   }
 
-  return (maxmin_idx);
+  return maxmin_idx;
 }
 
 /***********************************************************************************************
@@ -1549,7 +1549,7 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
     }
   }
 
-  return (XY_Cell(x, y));
+  return XY_Cell(x, y);
 }
 
 /***********************************************************************************************
@@ -1633,5 +1633,5 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
   if (y > ymax) y = ymax;
   if (y < ymin) y = ymin;
 
-  return (XY_Cell(x, y));
+  return XY_Cell(x, y);
 }

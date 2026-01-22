@@ -209,7 +209,7 @@ ObjectClass::ObjectClass(RTTIType rtti, int id)
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
 void const* ObjectClass::Get_Image_Data() const {
-  return (Class_Of().Get_Image_Data());
+  return Class_Of().Get_Image_Data();
 }
 
 /***********************************************************************************************
@@ -227,7 +227,7 @@ void const* ObjectClass::Get_Image_Data() const {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-char const* ObjectClass::Name() const { return (Class_Of().Name()); }
+char const* ObjectClass::Name() const { return Class_Of().Name(); }
 
 /***********************************************************************************************
  * ObjectClass::Exit_Coord -- Return with the exit coordinate for this object. *
@@ -245,7 +245,7 @@ char const* ObjectClass::Name() const { return (Class_Of().Name()); }
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Exit_Coord() const { return (Center_Coord()); }
+COORDINATE ObjectClass::Exit_Coord() const { return Center_Coord(); }
 
 /***********************************************************************************************
  * ObjectClass::AI -- Handles generic object AI processing. *
@@ -327,7 +327,7 @@ ActionType ObjectClass::What_Action(ObjectClass const*) const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (ACTION_NONE);
+  return ACTION_NONE;
 }
 
 /***********************************************************************************************
@@ -354,7 +354,7 @@ ActionType ObjectClass::What_Action(CELL) const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (ACTION_NONE);
+  return ACTION_NONE;
 }
 
 /***********************************************************************************************
@@ -377,10 +377,10 @@ LayerType ObjectClass::In_Which_Layer() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  if (Height < (FLIGHT_LEVEL - (FLIGHT_LEVEL / 3))) {
-    return (LAYER_GROUND);
+  if (Height < FLIGHT_LEVEL - FLIGHT_LEVEL / 3) {
+    return LAYER_GROUND;
   }
-  return (LAYER_TOP);
+  return LAYER_TOP;
 }
 
 /***********************************************************************************************
@@ -404,7 +404,7 @@ int ObjectClass::Get_Ownable() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (HOUSEF_ALLIES | HOUSEF_SOVIET | HOUSEF_OTHERS);
+  return HOUSEF_ALLIES | HOUSEF_SOVIET | HOUSEF_OTHERS;
 }
 
 /***********************************************************************************************
@@ -426,7 +426,7 @@ bool ObjectClass::Can_Repair() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -448,7 +448,7 @@ bool ObjectClass::Can_Demolish() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -471,7 +471,7 @@ bool ObjectClass::Can_Player_Fire() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -494,7 +494,7 @@ bool ObjectClass::Can_Player_Move() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -518,7 +518,7 @@ COORDINATE ObjectClass::Target_Coord() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (Coord_Add(XY_Coord(0, -Height), Center_Coord()));
+  return Coord_Add(XY_Coord(0, -Height), Center_Coord());
   //	return(Center_Coord());
 }
 
@@ -542,7 +542,7 @@ COORDINATE ObjectClass::Center_Coord() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (Coord);
+  return Coord;
 }
 
 /***********************************************************************************************
@@ -564,7 +564,7 @@ COORDINATE ObjectClass::Render_Coord() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (Center_Coord());
+  return Center_Coord();
 }
 
 /***********************************************************************************************
@@ -588,7 +588,7 @@ COORDINATE ObjectClass::Docking_Coord() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (Center_Coord());
+  return Center_Coord();
 }
 
 /***********************************************************************************************
@@ -613,7 +613,7 @@ COORDINATE ObjectClass::Sort_Y() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (Coord);
+  return Coord;
 }
 
 /***********************************************************************************************
@@ -639,7 +639,7 @@ COORDINATE ObjectClass::Fire_Coord(int) const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (Coord);
+  return Coord;
 }
 
 /***********************************************************************************************
@@ -708,7 +708,7 @@ void ObjectClass::Do_Shimmer() {
 int ObjectClass::Exit_Object(TechnoClass*) {
   assert(this != nullptr);
   assert(IsActive);
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -848,7 +848,7 @@ bool ObjectClass::In_Range(COORDINATE, int) const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -871,7 +871,7 @@ int ObjectClass::Weapon_Range(int) const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -966,7 +966,7 @@ int ObjectClass::Value() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -989,7 +989,7 @@ MissionType ObjectClass::Get_Mission() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (MISSION_NONE);
+  return MISSION_NONE;
 }
 
 /***********************************************************************************************
@@ -1115,12 +1115,12 @@ bool ObjectClass::Select() {
   assert(IsActive);
 
   if (!Debug_Map && (IsSelected || !Class_Of().IsSelectable)) {
-    return (false);
+    return false;
   }
 
   if (!Debug_Map && Can_Player_Move() && Is_Techno() &&
       ((TechnoClass*)this)->IsALoaner) {
-    return (false);
+    return false;
   }
 
   /*
@@ -1128,14 +1128,14 @@ bool ObjectClass::Select() {
   */
   if (Height > 0 && (What_Am_I() == RTTI_UNIT || What_Am_I() == RTTI_VESSEL ||
                      What_Am_I() == RTTI_INFANTRY)) {
-    return (false);
+    return false;
   }
 
   /*
   **	Don't allow selection of object when in building placement mode.
   */
   if (Map.PendingObject) {
-    return (false);
+    return false;
   }
 
   /*
@@ -1161,7 +1161,7 @@ bool ObjectClass::Select() {
   if (In_Which_Layer() == LAYER_GROUND) Mark(MARK_OVERLAP_UP);
   IsSelected = true;
   if (In_Which_Layer() == LAYER_GROUND) Mark(MARK_OVERLAP_DOWN);
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1210,10 +1210,10 @@ bool ObjectClass::Render(bool forced)  // const
       }
 #endif
 
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 #ifdef CHEAT_KEYS
@@ -1342,9 +1342,9 @@ bool ObjectClass::Limbo() {
     Hidden();
     IsInLimbo = true;
     IsToDisplay = false;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1389,11 +1389,11 @@ bool ObjectClass::Unlimbo(COORDINATE coord, DirType) {
             Logic.Submit(this);
           }
         }
-        return (true);
+        return true;
       }
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1488,12 +1488,12 @@ RadioMessageType ObjectClass::Receive_Message(RadioClass*,
     */
     case RADIO_REDRAW:
       Mark(MARK_CHANGE);
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
 
     default:
       break;
   }
-  return (RADIO_STATIC);
+  return RADIO_STATIC;
 }
 
 /***********************************************************************************************
@@ -1561,7 +1561,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
         }
       }
     }
-    if (damage == 0) return (RESULT_NONE);
+    if (damage == 0) return RESULT_NONE;
 
     /*
     ** Are we healing/repairing?  If so, add strength, but in
@@ -1576,7 +1576,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
           Strength = maxstrength;
         }
       }
-      return (RESULT_NONE);
+      return RESULT_NONE;
     }
 
     /*
@@ -1589,8 +1589,8 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     *to below *	half strength or if it is now down to one hit point.
     */
     if (oldstrength > damage) {
-      if (oldstrength >= (maxstrength >> 1) &&
-          (oldstrength - damage) < (maxstrength >> 1)) {
+      if (oldstrength >= maxstrength >> 1 &&
+          oldstrength - damage < maxstrength >> 1) {
         result = RESULT_HALF;
       }
     } else {
@@ -1648,7 +1648,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
   /*
   **	Return with the result of the damage taken.
   */
-  return (result);
+  return result;
 }
 
 /***********************************************************************************************
@@ -1680,12 +1680,12 @@ bool ObjectClass::Mark(MarkType mark) {
     **	this game frame.
     */
     if (mark == MARK_CHANGE || mark == MARK_CHANGE_REDRAW) {
-      if (IsToDisplay && mark != MARK_CHANGE_REDRAW) return (false);
+      if (IsToDisplay && mark != MARK_CHANGE_REDRAW) return false;
       if (IsDown) {
         Mark_For_Redraw();
-        return (true);
+        return true;
       }
-      return (false);
+      return false;
     }
 
     /*
@@ -1697,7 +1697,7 @@ bool ObjectClass::Mark(MarkType mark) {
           Map.Overlap_Up(Coord_Cell(Coord), this);
         }
         Mark_For_Redraw();
-        return (true);
+        return true;
       }
     }
     if (mark == MARK_OVERLAP_DOWN) {
@@ -1706,7 +1706,7 @@ bool ObjectClass::Mark(MarkType mark) {
           Map.Overlap_Down(Coord_Cell(Coord), this);
         }
         Mark_For_Redraw();
-        return (true);
+        return true;
       }
     }
 
@@ -1738,7 +1738,7 @@ bool ObjectClass::Mark(MarkType mark) {
       }
       IsDown = true;
       Mark_For_Redraw();
-      return (true);
+      return true;
     }
 
     /*
@@ -1751,10 +1751,10 @@ bool ObjectClass::Mark(MarkType mark) {
         Map[cell].Adjust_Threat(house, -threat);
       }
       IsDown = false;
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1793,7 +1793,7 @@ bool ObjectClass::Revealed(HouseClass* house) {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (house != nullptr);
+  return house != nullptr;
 }
 
 /***********************************************************************************************
@@ -1835,9 +1835,9 @@ bool ObjectClass::Paradrop(COORDINATE coord) {
     if (anim != nullptr) {
       anim->Attach_To(this);
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1864,23 +1864,23 @@ bool ObjectClass::Attach_Trigger(TriggerClass* trigger) {
   if (trigger) {
     Trigger = trigger;
     trigger->AttachCount++;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 // These can't be made inline (for various reasons).
 short const* ObjectClass::Occupy_List(bool placement) const {
-  return (Class_Of().Occupy_List(placement));
+  return Class_Of().Occupy_List(placement);
 };
 short const* ObjectClass::Overlap_List(bool) const {
-  return (Class_Of().Overlap_List());
+  return Class_Of().Overlap_List();
 };
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
-  return (Class_Of().Who_Can_Build_Me(intheory, legal, Owner()));
+  return Class_Of().Who_Can_Build_Me(intheory, legal, Owner());
 };
 fixed ObjectClass::Health_Ratio() const {
-  return (fixed(Strength, Class_Of().MaxStrength));
+  return fixed(Strength, Class_Of().MaxStrength);
 };
 int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); };
 
@@ -1960,7 +1960,7 @@ ObjectTypeClass::~ObjectTypeClass() {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectTypeClass::Max_Pips() const { return (0); }
+int ObjectTypeClass::Max_Pips() const { return 0; }
 
 /***********************************************************************************************
  * ObjectTypeClass::Dimensions -- Gets the dimensions of the object in pixels. *
@@ -2002,7 +2002,7 @@ void ObjectTypeClass::Dimensions(int& width, int& height) const {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectTypeClass::Cost_Of() const { return (0); }
+int ObjectTypeClass::Cost_Of() const { return 0; }
 
 /***********************************************************************************************
  * ObjectTypeClass::Time_To_Build -- Fetches the time to construct this object.
@@ -2021,7 +2021,7 @@ int ObjectTypeClass::Cost_Of() const { return (0); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectTypeClass::Time_To_Build() const { return (0); }
+int ObjectTypeClass::Time_To_Build() const { return 0; }
 
 /***********************************************************************************************
  * ObjectTypeClass::Get_Cameo_Data -- Fetches pointer to cameo data for this
@@ -2039,7 +2039,7 @@ int ObjectTypeClass::Time_To_Build() const { return (0); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void const* ObjectTypeClass::Get_Cameo_Data() const { return (nullptr); }
+void const* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
 
 /***********************************************************************************************
  * ObjectTypeClass::Occupy_List -- Returns with simple occupation list for
@@ -2060,7 +2060,7 @@ void const* ObjectTypeClass::Get_Cameo_Data() const { return (nullptr); }
  *=============================================================================================*/
 short const* ObjectTypeClass::Occupy_List(bool) const {
   static short const _list[] = {0, REFRESH_EOL};
-  return (_list);
+  return _list;
 }
 
 /***********************************************************************************************
@@ -2083,7 +2083,7 @@ short const* ObjectTypeClass::Occupy_List(bool) const {
  *=============================================================================================*/
 short const* ObjectTypeClass::Overlap_List() const {
   static short const _list[] = {REFRESH_EOL};
-  return (_list);
+  return _list;
 }
 
 /***********************************************************************************************
@@ -2155,7 +2155,7 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         building->Class->ToBuild == RTTI &&
         building->Mission != MISSION_DECONSTRUCTION &&
         building->MissionQueue != MISSION_DECONSTRUCTION &&
-        ((1L << building->ActLike) & Get_Ownable()) &&
+        1L << building->ActLike & Get_Ownable() &&
         (!legal || building->House->Can_Build(this, building->ActLike)) &&
         (intheory || !building->In_Radio_Contact())) {
       // BG: Hack so only kennels can build dogs, and no other, and barracks can
@@ -2164,12 +2164,12 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         InfantryTypeClass* me = (InfantryTypeClass*)this;
         if (me->IsDog) {
           if (*building == STRUCT_KENNEL) {
-            if (building->IsLeader) return (building);
+            if (building->IsLeader) return building;
             anybuilding = building;
           }
         } else {
           if (*building != STRUCT_KENNEL) {
-            if (building->IsLeader) return (building);
+            if (building->IsLeader) return building;
             anybuilding = building;
           }
         }
@@ -2182,16 +2182,16 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
           AircraftTypeClass* air = (AircraftTypeClass*)this;
           if ((*building == STRUCT_HELIPAD && !air->IsFixedWing) ||
               (*building == STRUCT_AIRSTRIP && air->IsFixedWing)) {
-            if (building->IsLeader) return (building);
+            if (building->IsLeader) return building;
             anybuilding = building;
           }
 
         } else {
-          if (building->IsLeader) return (building);
+          if (building->IsLeader) return building;
           anybuilding = building;
         }
       }
     }
   }
-  return (anybuilding);
+  return anybuilding;
 }

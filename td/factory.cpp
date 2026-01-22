@@ -185,7 +185,7 @@ void* FactoryClass::operator new(size_t) throw() {
   if (ptr) {
     ((FactoryClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -319,7 +319,7 @@ bool FactoryClass::Has_Changed() {
   Validate();
   bool changed = IsDifferent;
   IsDifferent = false;
-  return (changed);
+  return changed;
 }
 
 /***********************************************************************************************
@@ -375,7 +375,7 @@ bool FactoryClass::Set(TechnoTypeClass const& object, HouseClass& house) {
   /*
   **	If all was set up successfully, then return true.
   */
-  return (Object != nullptr);
+  return Object != nullptr;
 }
 
 /***********************************************************************************************
@@ -420,7 +420,7 @@ bool FactoryClass::Set(int const& type, HouseClass& house) {
   /*
   **	If all was set up successfully, then return true.
   */
-  return (SpecialItem != SPC_NONE);
+  return SpecialItem != SPC_NONE;
 }
 
 /***********************************************************************************************
@@ -473,9 +473,9 @@ bool FactoryClass::Suspend() {
   if (!IsSuspended) {
     IsSuspended = true;
     Set_Rate(0);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -509,17 +509,17 @@ bool FactoryClass::Start() {
 
       int frac = House->Power_Fraction();
       frac = Bound(frac, 0x0010, 0x0100);
-      int rate = (time * 256) / frac;
+      int rate = time * 256 / frac;
 
       rate /= STEP_COUNT;
       rate = Bound(rate, 1, 255);
 
       Set_Rate(rate);
       IsSuspended = false;
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -570,9 +570,9 @@ bool FactoryClass::Abandon() {
     IsSuspended = true;
     IsDifferent = true;
 
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -592,7 +592,7 @@ bool FactoryClass::Abandon() {
  *=============================================================================================*/
 int FactoryClass::Completion() {
   Validate();
-  return (Fetch_Stage());
+  return Fetch_Stage();
 }
 
 /***********************************************************************************************
@@ -615,12 +615,12 @@ int FactoryClass::Completion() {
 bool FactoryClass::Has_Completed() {
   Validate();
   if (Object && Fetch_Stage() == STEP_COUNT) {
-    return (true);
+    return true;
   }
   if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -638,7 +638,7 @@ bool FactoryClass::Has_Completed() {
  *=============================================================================================*/
 TechnoClass* FactoryClass::Get_Object() const {
   Validate();
-  return (Object);
+  return Object;
 }
 
 /***************************************************************************
@@ -653,7 +653,7 @@ TechnoClass* FactoryClass::Get_Object() const {
  *=========================================================================*/
 int FactoryClass::Get_Special_Item() const {
   Validate();
-  return (SpecialItem);
+  return SpecialItem;
 }
 
 /***********************************************************************************************
@@ -677,11 +677,11 @@ int FactoryClass::Cost_Per_Tick() {
   if (Object) {
     int steps = STEP_COUNT - Fetch_Stage();
     if (steps) {
-      return (Balance / steps);
+      return Balance / steps;
     }
-    return (Balance);
+    return Balance;
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -710,7 +710,7 @@ bool FactoryClass::Completed() {
     IsDifferent = true;
     Set_Stage(0);
     Set_Rate(0);
-    return (true);
+    return true;
   }
 
   if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
@@ -719,7 +719,7 @@ bool FactoryClass::Completed() {
     IsDifferent = true;
     Set_Stage(0);
     Set_Rate(0);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

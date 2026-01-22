@@ -112,10 +112,10 @@
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Should_Save() const {
-  return ((Smudge != SMUDGE_NONE) || (TType != TEMPLATE_NONE) ||
-          (Overlay != OVERLAY_NONE) || IsMapped || IsVisible || IsTrigger ||
-          Flag.Composite || OccupierPtr || Overlappers[0] || Overlappers[1] ||
-          Overlappers[2]);
+  return Smudge != SMUDGE_NONE || TType != TEMPLATE_NONE ||
+         Overlay != OVERLAY_NONE || IsMapped || IsVisible || IsTrigger ||
+         Flag.Composite || OccupierPtr || Overlappers[0] || Overlappers[1] ||
+         Overlappers[2];
 }
 
 /***********************************************************************************************
@@ -143,12 +143,12 @@ bool CellClass::Load(FileClass& file) {
   */
   if (rc) {
     if (IsTrigger) {
-      if (file.Read(&trig, sizeof(void*)) != sizeof(void*)) return (false);
+      if (file.Read(&trig, sizeof(void*)) != sizeof(void*)) return false;
       CellTriggers[Cell_Number()] = trig;
     }
   }
 
-  return (rc);
+  return rc;
 }
 
 /***********************************************************************************************
@@ -177,11 +177,11 @@ bool CellClass::Save(FileClass& file) {
   if (rc) {
     if (IsTrigger) {
       trig = CellTriggers[Cell_Number()];
-      if (file.Write(&trig, sizeof(void*)) != sizeof(void*)) return (false);
+      if (file.Write(&trig, sizeof(void*)) != sizeof(void*)) return false;
     }
   }
 
-  return (rc);
+  return rc;
 }
 
 /***********************************************************************************************
@@ -314,7 +314,7 @@ bool MouseClass::Load(FileClass& file) {
   disk will be over-written when initialization occurs.  This code must
   go in the most-derived Map class.
   ------------------------------------------------------------------------*/
-  if (file.Read(&Theater, sizeof(Theater)) != sizeof(Theater)) return (false);
+  if (file.Read(&Theater, sizeof(Theater)) != sizeof(Theater)) return false;
 
   /*
   ** Remove any old theater specific uncompressed shapes
@@ -373,19 +373,19 @@ bool MouseClass::Load(FileClass& file) {
   --------------------------- Read # cells saved ---------------------------
   */
   if (file.Read(&count, sizeof(count)) != sizeof(count)) {
-    return (false);
+    return false;
   }
 
   /*
   ------------------------------- Read cells -------------------------------
   */
   for (index = 0; index < count; index++) {
-    if (file.Read(&cell, sizeof(cell)) != sizeof(cell)) return (false);
+    if (file.Read(&cell, sizeof(cell)) != sizeof(cell)) return false;
 
-    if (!(*this)[cell].Load(file)) return (false);
+    if (!(*this)[cell].Load(file)) return false;
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -406,9 +406,9 @@ bool MouseClass::Save(FileClass& file) {
   /*
   -------------------------- Save Theater >first< --------------------------
   */
-  if (file.Write(&Theater, sizeof(Theater)) != sizeof(Theater)) return (false);
+  if (file.Write(&Theater, sizeof(Theater)) != sizeof(Theater)) return false;
 
-  if (!Write_Object(this, sizeof(MouseClass), file)) return (false);
+  if (!Write_Object(this, sizeof(MouseClass), file)) return false;
 
   /*
   ---------------------- Record current file position ----------------------
@@ -418,7 +418,7 @@ bool MouseClass::Save(FileClass& file) {
   /*
   ---------------------- write out placeholder bytes -----------------------
   */
-  if (file.Write(&count, sizeof(count)) != sizeof(count)) return (false);
+  if (file.Write(&count, sizeof(count)) != sizeof(count)) return false;
 
   /*
   ------------------------ Save cells that need it -------------------------
@@ -426,11 +426,11 @@ bool MouseClass::Save(FileClass& file) {
   count = 0;
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if ((*this)[cell].Should_Save()) {
-      if (file.Write(&cell, sizeof(cell)) != sizeof(cell)) return (false);
+      if (file.Write(&cell, sizeof(cell)) != sizeof(cell)) return false;
 
       count++;
 
-      if (!(*this)[cell].Save(file)) return (false);
+      if (!(*this)[cell].Save(file)) return false;
     }
   }
 
@@ -439,11 +439,11 @@ bool MouseClass::Save(FileClass& file) {
   */
   file.Seek(pos, SEEK_SET);
 
-  if (file.Write(&count, sizeof(count)) != sizeof(count)) return (false);
+  if (file.Write(&count, sizeof(count)) != sizeof(count)) return false;
 
   file.Seek(0, SEEK_END);
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************

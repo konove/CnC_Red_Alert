@@ -98,7 +98,7 @@ CDFileClass::CDFileClass() : IsDisabled(false) {}
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(int rights) { return (RawFileClass::Open(rights)); }
+int CDFileClass::Open(int rights) { return RawFileClass::Open(rights); }
 
 /***********************************************************************************************
  * CDFC::Refresh_Search_Drives -- Updates the search path when a CD changes or
@@ -165,7 +165,7 @@ int CDFileClass::Set_Search_Drives(char* pathlist) {
   /*
   **	If there is no pathlist to add, then just return.
   */
-  if (!pathlist) return (0);
+  if (!pathlist) return 0;
 
   /*
   ** Save the path as it was passed in so we can parse it again later.
@@ -230,9 +230,9 @@ int CDFileClass::Set_Search_Drives(char* pathlist) {
     */
     ptr = strtok(nullptr, ";");
   }
-  if (!found) return (1);
-  if (empty) return (2);
-  return (0);
+  if (!found) return 1;
+  if (empty) return 2;
+  return 0;
 }
 
 /***********************************************************************************************
@@ -360,7 +360,7 @@ char const* CDFileClass::Set_Name(char const* filename) {
   */
   RawFileClass::Set_Name(filename);
   if (IsDisabled || !First || RawFileClass::Is_Available()) {
-    return (File_Name());
+    return File_Name();
   }
 
   /*
@@ -388,7 +388,7 @@ char const* CDFileClass::Set_Name(char const* filename) {
     */
     RawFileClass::Set_Name(path);
     if (RawFileClass::Is_Available()) {
-      return (File_Name());
+      return File_Name();
     }
 
     /*
@@ -402,7 +402,7 @@ char const* CDFileClass::Set_Name(char const* filename) {
   *the *	plain text passed to this routine and be done with it.
   */
   RawFileClass::Set_Name(filename);
-  return (File_Name());
+  return File_Name();
 }
 
 /***********************************************************************************************
@@ -444,7 +444,7 @@ int CDFileClass::Open(char const* filename, int rights) {
   **	If writing is requested, then multiple drive searching is not performed.
   */
   if (IsDisabled || rights == WRITE) {
-    return (RawFileClass::Open(filename, rights));
+    return RawFileClass::Open(filename, rights);
   }
 
   /*
@@ -452,7 +452,7 @@ int CDFileClass::Open(char const* filename, int rights) {
   **	using the normal procedure.
   */
   Set_Name(filename);
-  return (RawFileClass::Open(rights));
+  return RawFileClass::Open(rights);
 }
 
 #ifdef NEVER
@@ -484,6 +484,6 @@ int Get_CD_Drive() {
 
   //	GetCDClass temp;
   //	return(temp.GetCDDrive());
-  return (0);
+  return 0;
 #endif
 }

@@ -102,7 +102,7 @@ void* Small_Icon(void const* iconptr, int iconnum) {
     }
   }
 
-  return (_icon);
+  return _icon;
 }
 
 /***********************************************************************************************
@@ -208,7 +208,7 @@ long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
   */
   if (!file.Is_Open()) {
     if (!file.Open()) {
-      return (0);
+      return 0;
     }
     opened = true;
   }
@@ -267,14 +267,14 @@ long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
   if (opened) {
     file.Close();
   }
-  return ((long)size);
+  return (long)size;
 }
 
 int Load_Picture(char const* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType) {
   CCFileClass fc(filename);
-  return (Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000);
+  return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
 }
 
 /***********************************************************************************************
@@ -303,7 +303,7 @@ void* Load_Alloc_Data(FileClass& file) {
     file.Read(ptr, size);
     ((char*)ptr)[size] = 0;  // workaround scanning past the end of text files
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -321,7 +321,7 @@ void* Load_Alloc_Data(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 04/02/1994 JLB : Created. *
  *=============================================================================================*/
-long Translucent_Table_Size(int count) { return (256L + (256L * count)); }
+long Translucent_Table_Size(int count) { return 256L + 256L * count; }
 
 /***********************************************************************************************
  * Build_Translucent_Table -- Creates a translucent control table. *
@@ -374,7 +374,7 @@ void* Build_Translucent_Table(void const* palette, TLucentType const* control,
       }
     }
   }
-  return (buffer);
+  return buffer;
 }
 
 /***********************************************************************************************
@@ -433,5 +433,5 @@ void* Conquer_Build_Translucent_Table(void const* palette,
       }
     }
   }
-  return (buffer);
+  return buffer;
 }

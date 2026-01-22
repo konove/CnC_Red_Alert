@@ -64,12 +64,12 @@
  *=============================================================================================*/
 int SHAStraw::Get(void* source, int slen) {
   if (source == nullptr || slen < 1) {
-    return (0);
+    return 0;
   }
 
   int counter = Straw::Get(source, slen);
   SHA.Hash(source, counter);
-  return (counter);
+  return counter;
 }
 
 /***********************************************************************************************
@@ -89,4 +89,4 @@ int SHAStraw::Get(void* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int SHAStraw::Result(void* result) const { return (SHA.Result(result)); }
+int SHAStraw::Result(void* result) const { return SHA.Result(result); }

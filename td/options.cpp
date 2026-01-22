@@ -277,7 +277,7 @@ void OptionsClass::Set_Brightness(int brightness) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 int OptionsClass::Get_Brightness() const {
-  return (Cardinal_To_Fixed(0x80, Brightness - 0x40));
+  return Cardinal_To_Fixed(0x80, Brightness - 0x40);
 }
 
 /***********************************************************************************************
@@ -319,7 +319,7 @@ void OptionsClass::Set_Color(int color) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-int OptionsClass::Get_Color() const { return (Color); }
+int OptionsClass::Get_Color() const { return Color; }
 
 /***********************************************************************************************
  * OptionsClass::Set_Contrast -- Sets the contrast to the value specified. *
@@ -360,7 +360,7 @@ void OptionsClass::Set_Contrast(int contrast) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 int OptionsClass::Get_Contrast() const {
-  return (Cardinal_To_Fixed(0x80, Contrast - 0x40));
+  return Cardinal_To_Fixed(0x80, Contrast - 0x40);
 }
 
 /***********************************************************************************************
@@ -402,7 +402,7 @@ void OptionsClass::Set_Tint(int tint) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-int OptionsClass::Get_Tint() const { return (Tint); }
+int OptionsClass::Get_Tint() const { return Tint; }
 
 /***********************************************************************************************
  * OptionsClass::Adjust_Palette -- Adjusts the palette according to the settings
@@ -447,9 +447,9 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
     if (/*index == LTGREEN ||*/ index == 255) {
       memcpy(&((char*)newpal)[index * 3], &((char*)oldpal)[index * 3], 3);
     } else {
-      r = ((char*)oldpal)[(index * 3) + 0];
-      g = ((char*)oldpal)[(index * 3) + 1];
-      b = ((char*)oldpal)[(index * 3) + 2];
+      r = ((char*)oldpal)[index * 3 + 0];
+      g = ((char*)oldpal)[index * 3 + 1];
+      b = ((char*)oldpal)[index * 3 + 2];
       Convert_RGB_To_HSV(r, g, b, &h, &s, &v);
 
       /*
@@ -458,22 +458,22 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
       */
       int temp;
 
-      temp = (v * brightness) / 0x80;  // Brightness
+      temp = v * brightness / 0x80;  // Brightness
       temp = Bound(temp, 0, 0xFF);
       v = temp;
-      temp = (((((int)v) - 0x80) * contrast) / 0x80) + 0x80;  // Contrast
+      temp = ((int)v - 0x80) * contrast / 0x80 + 0x80;  // Contrast
       temp = Bound(temp, 0, 0xFF);
       v = temp;
-      temp = (s * color) / 0x80;  // Color
+      temp = s * color / 0x80;  // Color
       temp = Bound(temp, 0, 0xFF);
       s = temp;
-      temp = (h * tint) / 0x80;  // Tint
+      temp = h * tint / 0x80;  // Tint
       temp = Bound(temp, 0, 0xFF);
       h = temp;
       Convert_HSV_To_RGB(h, s, v, &r, &g, &b);
-      ((char*)newpal)[(index * 3) + 0] = r;
-      ((char*)newpal)[(index * 3) + 1] = g;
-      ((char*)newpal)[(index * 3) + 2] = b;
+      ((char*)newpal)[index * 3 + 0] = r;
+      ((char*)newpal)[index * 3 + 1] = g;
+      ((char*)newpal)[index * 3 + 2] = b;
     }
   }
 }
@@ -766,10 +766,10 @@ int OptionsClass::Normalize_Delay(int delay) const {
     if (delay < 5) {
       delay = _adjust[delay - 1][GameSpeed];
     } else {
-      delay = ((delay * 8) / (GameSpeed + 1));
+      delay = delay * 8 / (GameSpeed + 1);
     }
   }
-  return (delay);
+  return delay;
 }
 
 void OptionsClass::Fixup_Palette() const {
@@ -778,5 +778,5 @@ void OptionsClass::Fixup_Palette() const {
 }
 
 int OptionsClass::Normalize_Sound(int volume) const {
-  return (Fixed_To_Cardinal(volume, Volume));
+  return Fixed_To_Cardinal(volume, Volume);
 }

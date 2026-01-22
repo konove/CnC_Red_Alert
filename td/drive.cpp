@@ -182,9 +182,9 @@ void DriveClass::Force_Track(int track, COORDINATE coord) {
  *=============================================================================================*/
 int DriveClass::Tiberium_Load() const {
   if (*this == UNIT_HARVESTER) {
-    return (Cardinal_To_Fixed(UnitTypeClass::STEP_COUNT, Tiberium));
+    return Cardinal_To_Fixed(UnitTypeClass::STEP_COUNT, Tiberium);
   }
-  return (0x0000);
+  return 0x0000;
 }
 
 /***********************************************************************************************
@@ -220,7 +220,7 @@ void DriveClass::Approach_Target() {
     TechnoClass* target = As_Techno(TarCom);
     if (Class->Primary != WEAPON_FLAME_TONGUE && Class->IsCrusher &&
         Distance(TarCom) < 0x0180 && target &&
-        ((TechnoTypeClass const&)(target->Class_Of())).IsCrushable) {
+        ((TechnoTypeClass const&)target->Class_Of()).IsCrushable) {
       Assign_Destination(TarCom);
       return;
     }
@@ -465,7 +465,7 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType* dir) {
 
   *dir = workdir;
 
-  return (XY_Coord(Coord_X(Head_To_Coord()) + x, Coord_Y(Head_To_Coord()) + y));
+  return XY_Coord(Coord_X(Head_To_Coord()) + x, Coord_Y(Head_To_Coord()) + y);
 }
 
 /***********************************************************************************************
@@ -610,7 +610,7 @@ bool DriveClass::While_Moving() {
       (IsRotating && !Class->IsTurretEquipped)) {
     SpeedAccum =
         0;  // Kludge?  No speed should accumulate if movement is on hold.
-    return (false);
+    return false;
   }
 
   /*
@@ -674,7 +674,7 @@ bool DriveClass::While_Moving() {
         if (TrackIndex && RawTracks[tracknum - 1].Cell == TrackIndex) {
           Per_Cell_Process(false);
           if (!IsActive) {
-            return (false);
+            return false;
           }
         }
 
@@ -765,7 +765,7 @@ bool DriveClass::While_Moving() {
   **	accumulator to be processed next pass.
   */
   SpeedAccum = actual;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -857,7 +857,7 @@ bool DriveClass::Start_Of_Move() {
     if (Mission == MISSION_MOVE) {
       Enter_Idle_Mode();
     }
-    return (false);  // Why is it calling this routine!?!
+    return false;  // Why is it calling this routine!?!
   }
 
 #ifdef NEVER
@@ -907,7 +907,7 @@ bool DriveClass::Start_Of_Move() {
     **	navigation target.
     */
     if (!PathDelay.Expired()) {
-      return (false);
+      return false;
     }
     if (!Basic_Path()) {
       if (Distance(NavCom) < 0x0280 &&
@@ -945,7 +945,7 @@ bool DriveClass::Start_Of_Move() {
       Stop_Driver();
       TrackNumber = -1;
       IsTurretLockedDown = false;
-      return (false);
+      return false;
     }
 
     /*
@@ -1002,7 +1002,7 @@ bool DriveClass::Start_Of_Move() {
     **	Request a change of facing.
     */
     Do_Turn(dir);
-    return (true);
+    return true;
 
   } else {
     /* NOTE:  Beyond this point, actual track assignment can begin.
@@ -1068,7 +1068,7 @@ bool DriveClass::Start_Of_Move() {
       }
       IsNewNavCom = false;
       TrackNumber = -1;
-      return (true);
+      return true;
     }
 
     /*
@@ -1092,10 +1092,10 @@ bool DriveClass::Start_Of_Move() {
     /*
     **	A damaged unit has a reduced speed.
     */
-    if ((Class->MaxStrength >> 1) > Strength) {
-      speed -= (speed >> 2);  // Three quarters speed.
+    if (Class->MaxStrength >> 1 > Strength) {
+      speed -= speed >> 2;  // Three quarters speed.
     }
-    if ((speed != Speed) /* || !SpeedAdd*/) {
+    if (speed != Speed /* || !SpeedAdd*/) {
       Set_Speed(speed);  // Full speed.
     }
 
@@ -1134,7 +1134,7 @@ bool DriveClass::Start_Of_Move() {
       if (TrackControl[TrackNumber].Track == 0) {
         Path[0] = FACING_NONE;
         TrackNumber = -1;
-        return (true);
+        return true;
       } else {
         if (TrackControl[TrackNumber].Flag & F_D) {
           /*
@@ -1188,7 +1188,7 @@ bool DriveClass::Start_Of_Move() {
               }
               IsNewNavCom = false;
               TrackIndex = 0;
-              return (true);
+              return true;
             }
           } else {
             memmove(&Path[0], &Path[2], CONQUER_PATH_MAX - 2);
@@ -1210,7 +1210,7 @@ bool DriveClass::Start_Of_Move() {
       Set_Speed(0);
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1574,12 +1574,12 @@ int DriveClass::Offload_Tiberium_Bail() {
   if (Tiberium) {
     Tiberium--;
     if (House->IsHuman) {
-      return (UnitTypeClass::FULL_LOAD_CREDITS / UnitTypeClass::STEP_COUNT);
+      return UnitTypeClass::FULL_LOAD_CREDITS / UnitTypeClass::STEP_COUNT;
     }
-    return (UnitTypeClass::FULL_LOAD_CREDITS +
-            (UnitTypeClass::FULL_LOAD_CREDITS / 3) / UnitTypeClass::STEP_COUNT);
+    return UnitTypeClass::FULL_LOAD_CREDITS +
+           UnitTypeClass::FULL_LOAD_CREDITS / 3 / UnitTypeClass::STEP_COUNT;
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************

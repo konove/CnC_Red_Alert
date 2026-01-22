@@ -81,7 +81,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   /*
   **	preform some preliminary checks for validity.
   */
-  if (!teamtype || !teamtype->ClassCount) return (false);
+  if (!teamtype || !teamtype->ClassCount) return false;
 
   /*
   **	Create the controlling team. All the objects are grouped
@@ -91,7 +91,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   TeamClass* team = nullptr;
   if (teamtype->MissionCount) {
     team = new TeamClass(teamtype, HouseClass::As_Pointer(teamtype->House));
-    if (!team) return (false);
+    if (!team) return false;
     team->Force_Active();
   }
 
@@ -113,8 +113,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
         airtransport = true;
       } else {
         watertransport =
-            (((UnitTypeClass const*)teamtype->Class[index])->Type ==
-             UNIT_HOVER);
+            ((UnitTypeClass const*)teamtype->Class[index])->Type == UNIT_HOVER;
       }
     } else {
       onlytransport = false;
@@ -151,7 +150,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   */
   if (source == SOURCE_NONE) {
     delete team;
-    return (false);
+    return false;
   }
 
   /*
@@ -176,7 +175,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
         *becomes part of the team.
         */
         if (team && (temp->What_Am_I() != RTTI_UNIT ||
-                     *((UnitClass*)temp) != UNIT_HOVER)) {
+                     *(UnitClass*)temp != UNIT_HOVER)) {
           ScenarioInit++;
           team->Add(temp);
           ScenarioInit--;
@@ -207,7 +206,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
           **	never be allowed to control them.
           */
           if (temp->What_Am_I() == RTTI_AIRCRAFT &&
-              *((AircraftClass*)temp) == AIRCRAFT_A10) {
+              *(AircraftClass*)temp == AIRCRAFT_A10) {
             temp->IsALoaner = true;
           }
 
@@ -227,7 +226,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   */
   if (!object && !transport) {
     delete team;
-    return (false);
+    return false;
   }
 
   /*
@@ -243,7 +242,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       *occur when the *	transport unloads.
       */
       if (transport->What_Am_I() == RTTI_AIRCRAFT &&
-          *((AircraftClass*)transport) == AIRCRAFT_CARGO) {
+          *(AircraftClass*)transport == AIRCRAFT_CARGO) {
         okvoice = false;
       }
 
@@ -270,7 +269,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       } else {
         delete team;
         delete object;
-        return (false);
+        return false;
       }
       break;
 
@@ -415,7 +414,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       *created. *	This prevent "phantom" teams and team types from being
       *left around.
       */
-      if (GameToPlay == GAME_NORMAL && !placed) return (false);
+      if (GameToPlay == GAME_NORMAL && !placed) return false;
 
     } break;
 
@@ -436,7 +435,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
         } else {
           delete team;
           delete object;
-          return (false);
+          return false;
         }
       }
       break;
@@ -452,7 +451,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     Speak(VOX_REINFORCEMENTS);
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -572,10 +571,10 @@ bool Create_Special_Reinforcement(HouseClass* house,
       if (!ok && GameToPlay == GAME_NORMAL) {
         delete team;
       }
-      return (ok);
+      return ok;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -626,7 +625,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ScenarioInit++;
     TechnoClass* obj = (TechnoClass*)type->Create_One_Of(house);
     ScenarioInit--;
-    if (!obj) return (sub);
+    if (!obj) return sub;
 
     /*
     ** Flying objects always have the IsALoaner bit set.
@@ -685,8 +684,8 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     } else {
       delete obj;
       sub--;
-      return (sub);
+      return sub;
     }
   }
-  return (sub);
+  return sub;
 }

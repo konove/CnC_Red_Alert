@@ -115,10 +115,10 @@ bool SuperClass::Suspend(bool on) {
         Control = SuspendTime;
       }
       IsSuspended = on;
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -149,9 +149,9 @@ bool SuperClass::Enable(bool onetime, bool player, bool quiet) {
     IsOneTime = onetime;
     bool retval = Recharge(player && !quiet);
     if (quiet) Suspend(true);
-    return (retval);
+    return retval;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -173,9 +173,9 @@ bool SuperClass::Remove(bool forced) {
   if (IsPresent && (!IsOneTime || forced)) {
     IsReady = false;
     IsPresent = false;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -209,9 +209,9 @@ bool SuperClass::Recharge(bool player) {
     if (player && VoxCharging != VOX_NONE) {
       Speak(VoxCharging);
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -237,12 +237,12 @@ bool SuperClass::Discharged(bool player) {
     IsReady = false;
     if (IsOneTime) {
       IsOneTime = false;
-      return (Remove());
+      return Remove();
     } else {
       Recharge(player);
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -269,7 +269,7 @@ bool SuperClass::AI(bool player) {
     if (IsSuspended) {
       if (OldStage != -1) {
         OldStage = -1;
-        return (true);
+        return true;
       }
     } else {
       if (Control.Expired()) {
@@ -277,16 +277,16 @@ bool SuperClass::AI(bool player) {
         if (player && VoxRecharge != VOX_NONE) {
           Speak(VoxRecharge);
         }
-        return (true);
+        return true;
       } else {
         if (Anim_Stage() != OldStage) {
           OldStage = Anim_Stage();
-          return (true);
+          return true;
         }
       }
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -310,18 +310,17 @@ bool SuperClass::AI(bool player) {
 int SuperClass::Anim_Stage() const {
   if (IsPresent) {
     if (IsReady) {
-      return (ANIMATION_STAGES);
+      return ANIMATION_STAGES;
     }
     int time = Control.Time();
     if (IsSuspended) {
       time = SuspendTime;
     }
 
-    return (Fixed_To_Cardinal(
-        ANIMATION_STAGES,
-        Cardinal_To_Fixed(RechargeTime, RechargeTime - time)));
+    return Fixed_To_Cardinal(
+        ANIMATION_STAGES, Cardinal_To_Fixed(RechargeTime, RechargeTime - time));
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************

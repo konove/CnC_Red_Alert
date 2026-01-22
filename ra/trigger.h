@@ -98,13 +98,13 @@ class TriggerClass {
   char const* Description() const;
   void Draw_It(int, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  char const* Name() const { return (Class->Name()); }
+  char const* Name() const { return Class->Name(); }
 
   /*
   **	Overloaded operators
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void operator delete(void* ptr);
 
   /*

@@ -386,7 +386,7 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 void* TerrainTypeClass::operator new(size_t) throw() {
-  return (TerrainTypes.Alloc());
+  return TerrainTypes.Alloc();
 }
 
 /***********************************************************************************************
@@ -512,7 +512,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
       */
       terrain.ClearImage();
 
-      if (terrain.Theater & (1 << theater)) {
+      if (terrain.Theater & 1 << theater) {
         /*
         **	Load in the appropriate object shape data.
         */
@@ -552,11 +552,11 @@ TerrainType TerrainTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
       if (stricmp(name, As_Reference(index).IniName) == 0) {
-        return (index);
+        return index;
       }
     }
   }
-  return (TERRAIN_NONE);
+  return TERRAIN_NONE;
 }
 
 #ifdef SCENARIO_EDITOR
@@ -625,9 +625,9 @@ void TerrainTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 bool TerrainTypeClass::Create_And_Place(CELL cell, HousesType) const {
   if (new TerrainClass(Type, cell)) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -647,7 +647,7 @@ bool TerrainTypeClass::Create_And_Place(CELL cell, HousesType) const {
  * HISTORY: * 07/19/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass*) const {
-  return (new TerrainClass(Type, -1));
+  return new TerrainClass(Type, -1);
 }
 
 /***********************************************************************************************
@@ -668,10 +668,10 @@ ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass*) const {
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
 short const* TerrainTypeClass::Occupy_List(bool) const {
-  if (Occupy != nullptr) return (Occupy);
+  if (Occupy != nullptr) return Occupy;
 
   static short const _simple[1] = {REFRESH_EOL};
-  return (&_simple[0]);
+  return &_simple[0];
 }
 
 /***********************************************************************************************
@@ -694,10 +694,10 @@ short const* TerrainTypeClass::Occupy_List(bool) const {
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
 short const* TerrainTypeClass::Overlap_List() const {
-  if (Overlap != nullptr) return (Overlap);
+  if (Overlap != nullptr) return Overlap;
 
   static short const _simple[1] = {REFRESH_EOL};
-  return (&_simple[0]);
+  return &_simple[0];
 }
 
 /***********************************************************************************************
@@ -718,7 +718,7 @@ short const* TerrainTypeClass::Overlap_List() const {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 TerrainTypeClass& TerrainTypeClass::As_Reference(TerrainType type) {
-  return (*TerrainTypes.Ptr(type));
+  return *TerrainTypes.Ptr(type);
 }
 
 COORDINATE TerrainTypeClass::Coord_Fixup(COORDINATE coord) const {

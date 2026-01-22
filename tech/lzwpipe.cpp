@@ -116,7 +116,7 @@ LZWPipe::~LZWPipe() {
  *=============================================================================================*/
 int LZWPipe::Put(void const* source, int slen) {
   if (source == nullptr || slen < 1) {
-    return (Pipe::Put(source, slen));
+    return Pipe::Put(source, slen);
   }
 
   assert(source_buffer_ != nullptr);
@@ -134,11 +134,11 @@ int LZWPipe::Put(void const* source, int slen) {
       *the regular *	data processing begin for the block.
       */
       if (BlockHeader.CompCount == 0xFFFF) {
-        int len = (slen < (sizeof(BlockHeader) - Counter))
+        int len = slen < sizeof(BlockHeader) - Counter
                       ? slen
-                      : (sizeof(BlockHeader) - Counter);
+                      : sizeof(BlockHeader) - Counter;
         memmove(&source_buffer_[Counter], source, len);
-        source = ((char*)source) + len;
+        source = (char*)source + len;
         slen -= len;
         Counter += len;
 
@@ -157,13 +157,13 @@ int LZWPipe::Put(void const* source, int slen) {
       *make a whole *	data block.
       */
       if (slen > 0) {
-        int len = (slen < (BlockHeader.CompCount - Counter))
+        int len = slen < BlockHeader.CompCount - Counter
                       ? slen
-                      : (BlockHeader.CompCount - Counter);
+                      : BlockHeader.CompCount - Counter;
 
         memmove(&source_buffer_[Counter], source, len);
         slen -= len;
-        source = ((char*)source) + len;
+        source = (char*)source + len;
         Counter += len;
 
         /*
@@ -186,9 +186,9 @@ int LZWPipe::Put(void const* source, int slen) {
     */
     if (Counter > 0) {
       int tocopy =
-          (slen < (BlockSize - Counter)) ? slen : (BlockSize - Counter);
+          slen < BlockSize - Counter ? slen : BlockSize - Counter;
       memmove(&source_buffer_[Counter], source, tocopy);
-      source = ((char*)source) + tocopy;
+      source = (char*)source + tocopy;
       slen -= tocopy;
       Counter += tocopy;
 
@@ -212,7 +212,7 @@ int LZWPipe::Put(void const* source, int slen) {
       int len = LZW_Compress(Buffer((void*)source, BlockSize),
                              Buffer(output_buffer_));
 
-      source = ((char*)source) + BlockSize;
+      source = (char*)source + BlockSize;
       slen -= BlockSize;
 
       BlockHeader.CompCount = (unsigned short)len;
@@ -231,7 +231,7 @@ int LZWPipe::Put(void const* source, int slen) {
     }
   }
 
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************
@@ -304,5 +304,5 @@ int LZWPipe::Flush() {
   }
 
   total += Pipe::Flush();
-  return (total);
+  return total;
 }

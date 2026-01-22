@@ -57,12 +57,12 @@ class WarheadTypeClass {
   WarheadTypeClass(NoInitClass const&) {}
 
   void* operator new(size_t) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   void operator delete(void* pointer);
 
   void Code_Pointers() {}
   void Decode_Pointers() {}
-  char const* Name() const { return (IniName); }
+  char const* Name() const { return IniName; }
   bool Read_INI(CCINIClass& ini);
   static WarheadTypeClass* As_Pointer(WarheadType weapon);
 

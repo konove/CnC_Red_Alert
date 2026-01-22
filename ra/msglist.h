@@ -157,9 +157,9 @@ class MessageListClass {
                            char cursor = 0, int width = 640);
   void Remove_Edit();
   char* Get_Edit_Buf();
-  char* Get_Overflow_Buf() { return (OverflowBuf); }
+  char* Get_Overflow_Buf() { return OverflowBuf; }
   void Clear_Overflow_Buf() { OverflowBuf[0] = 0; }
-  int Is_Edit() { return (IsEdit); }
+  int Is_Edit() { return IsEdit; }
   void Set_Edit_Color(PlayerColorType color);
 
   //.....................................................................

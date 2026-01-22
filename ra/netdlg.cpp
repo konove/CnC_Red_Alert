@@ -955,7 +955,7 @@ bool Init_Network() {
   //	memory, and commands IPX to start listening on the Global Channel.
   //------------------------------------------------------------------------
   if (!Ipx.Init()) {
-    return (false);
+    return false;
   }
 
   //------------------------------------------------------------------------
@@ -968,7 +968,7 @@ bool Init_Network() {
     }
   }
 
-  return (true);
+  return true;
 
 } /* end of Init_Network */
 
@@ -1075,7 +1075,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
   // If our Players vector is empty, just return.
   //------------------------------------------------------------------------
   if (Session.Players.Count() == 0) {
-    return (true);
+    return true;
   }
 
   //------------------------------------------------------------------------
@@ -1089,7 +1089,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
     //	If the game is open, only the game owner may respond.
     //.....................................................................
     if (strlen(Session.GameName) > 0 &&
-        ((!Session.NetOpen) ||
+        (!Session.NetOpen ||
          (Session.NetOpen &&
           !strcmp(Session.Players[0]->Name, Session.GameName)))) {
       memset(&mypacket, 0, sizeof(GlobalPacketType));
@@ -1100,7 +1100,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
 
       Ipx.Send_Global_Message(&mypacket, sizeof(GlobalPacketType), 1, address);
     }
-    return (true);
+    return true;
   }
 
   //------------------------------------------------------------------------
@@ -1108,7 +1108,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
   //------------------------------------------------------------------------
   else if (packet->Command == NET_QUERY_PLAYER &&
            !strcmp(packet->Name, Session.GameName) &&
-           (strlen(Session.GameName) > 0) && Session.NetStealth == 0) {
+           strlen(Session.GameName) > 0 && Session.NetStealth == 0) {
     memset(&mypacket, 0, sizeof(GlobalPacketType));  // changed DRD 9/26
 
     mypacket.Command = NET_ANSWER_PLAYER;
@@ -1118,10 +1118,10 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
     mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(Session.GameName);
 
     Ipx.Send_Global_Message(&mypacket, sizeof(GlobalPacketType), 1, address);
-    return (true);
+    return true;
   }
 
-  return (false);
+  return false;
 
 } /* end of Process_Global_Packet */
 
@@ -1274,7 +1274,7 @@ bool Remote_Connect() {
     if (rc == -1) {
       Session.NetStealth = stealth;
       Session.NetOpen = 0;
-      return (false);
+      return false;
     }
 
     //.....................................................................
@@ -1285,7 +1285,7 @@ bool Remote_Connect() {
       Session.NetStealth = stealth;
       Session.NetOpen = 0;
 
-      return (true);
+      return true;
     }
 
     //.....................................................................
@@ -1301,7 +1301,7 @@ bool Remote_Connect() {
         Session.NetStealth = stealth;
         Session.NetOpen = 0;
 
-        return (true);
+        return true;
       } else {
         continue;
       }
@@ -1374,9 +1374,9 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   int d_dialog_w = 320 * RESFACTOR;                       // dialog width
   int d_dialog_h = 200 * RESFACTOR;                       // dialog height
-  int d_dialog_x = ((320 * RESFACTOR - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((200 * RESFACTOR - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
+  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
   int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
   int d_margin1 = 17 * RESFACTOR;    // large margin
@@ -1384,8 +1384,8 @@ static int Net_Join_Dialog() {
 
   int d_name_w = 70 * RESFACTOR;
   int d_name_h = 9 * RESFACTOR;
-  int d_name_x = d_dialog_x + (d_dialog_w / 4) - (d_name_w / 2);
-  int d_name_y = d_dialog_y + d_margin2 + d_txt6_h + (2 * RESFACTOR);
+  int d_name_x = d_dialog_x + d_dialog_w / 4 - d_name_w / 2;
+  int d_name_y = d_dialog_y + d_margin2 + d_txt6_h + 2 * RESFACTOR;
 
 #ifdef OLDWAY
   int d_gdi_w = 40 * RESFACTOR;
@@ -1399,25 +1399,25 @@ static int Net_Join_Dialog() {
   int d_nod_y = d_name_y;
 #else
   int d_house_w = 60 * RESFACTOR;
-  int d_house_h = (8 * 5 * RESFACTOR);
-  int d_house_x = d_dialog_cx - (d_house_w / 2);
+  int d_house_h = 8 * 5 * RESFACTOR;
+  int d_house_x = d_dialog_cx - d_house_w / 2;
   int d_house_y = d_name_y;
 #endif
 
   int d_color_w = 10 * RESFACTOR;
   int d_color_h = 9 * RESFACTOR;
   int d_color_y = d_name_y;
-  int d_color_x = d_dialog_x + ((d_dialog_w / 4) * 3) - (d_color_w * 3);
+  int d_color_x = d_dialog_x + d_dialog_w / 4 * 3 - d_color_w * 3;
 
   int d_gamelist_w = 155 * RESFACTOR;
-  int d_gamelist_h = ((6 * 6) + 3) * RESFACTOR;  // 6 rows high
+  int d_gamelist_h = (6 * 6 + 3) * RESFACTOR;  // 6 rows high
   int d_gamelist_x = d_dialog_x + d_margin1 - 2 * RESFACTOR;
   int d_gamelist_y = d_color_y + d_color_h + d_margin2 +
                      2 * RESFACTOR /*KO + d_txt6_h + d_margin2*/;
 
   // BG		int d_playerlist_w = 113 *RESFACTOR;
   int d_playerlist_w = 118 * RESFACTOR;
-  int d_playerlist_h = ((6 * 6) + 3) * RESFACTOR;  // 6 rows high
+  int d_playerlist_h = (6 * 6 + 3) * RESFACTOR;  // 6 rows high
   int d_playerlist_x =
       d_dialog_x + d_dialog_w - (d_margin1 + d_playerlist_w - 2 * RESFACTOR);
   int d_playerlist_y = d_color_y + d_color_h + d_margin2 +
@@ -1425,37 +1425,37 @@ static int Net_Join_Dialog() {
 
   int d_count_w = 25 * RESFACTOR;
   int d_count_h = d_txt6_h;
-  int d_count_x = d_gamelist_x + (d_gamelist_w / 2);
+  int d_count_x = d_gamelist_x + d_gamelist_w / 2;
   int d_count_y = d_gamelist_y + d_gamelist_h + d_margin2;
 
   int d_level_w = 25 * RESFACTOR;
   int d_level_h = d_txt6_h;
-  int d_level_x = d_gamelist_x + (d_gamelist_w / 2);
+  int d_level_x = d_gamelist_x + d_gamelist_w / 2;
   int d_level_y = d_count_y + d_count_h;
 
   int d_credits_w = 25 * RESFACTOR;
   int d_credits_h = d_txt6_h;
-  int d_credits_x = d_gamelist_x + (d_gamelist_w / 2);
+  int d_credits_x = d_gamelist_x + d_gamelist_w / 2;
   int d_credits_y = d_level_y + d_level_h;
 
   int d_aiplayers_w = 25 * RESFACTOR;
   int d_aiplayers_h = d_txt6_h;
-  int d_aiplayers_x = d_gamelist_x + (d_gamelist_w / 2);
+  int d_aiplayers_x = d_gamelist_x + d_gamelist_w / 2;
   int d_aiplayers_y = d_credits_y + d_level_h;
 
   int d_options_w = d_playerlist_w;
-  int d_options_h = ((5 * 6) + 4) * RESFACTOR;
+  int d_options_h = (5 * 6 + 4) * RESFACTOR;
   int d_options_x = d_playerlist_x;
   int d_options_y =
-      d_playerlist_y + d_playerlist_h + d_margin2 - (2 * RESFACTOR);
+      d_playerlist_y + d_playerlist_h + d_margin2 - 2 * RESFACTOR;
 
-  int d_message1_w = d_dialog_w - (d_margin1 * 2) + 4 * RESFACTOR;
-  int d_message1_h = (14 * d_txt6_h) + 3 * RESFACTOR;
+  int d_message1_w = d_dialog_w - d_margin1 * 2 + 4 * RESFACTOR;
+  int d_message1_h = 14 * d_txt6_h + 3 * RESFACTOR;
   int d_message1_x = d_dialog_x + (d_dialog_w - d_message1_w) / 2;
   int d_message1_y = d_dialog_y + d_dialog_h - (27 * RESFACTOR + d_message1_h);
 
   int d_message2_w = d_message1_w;
-  int d_message2_h = (8 * d_txt6_h) + 3 * RESFACTOR;
+  int d_message2_h = 8 * d_txt6_h + 3 * RESFACTOR;
   int d_message2_x = d_message1_x;
   int d_message2_y = d_dialog_y + d_dialog_h - (27 * RESFACTOR + d_message2_h);
 
@@ -1465,7 +1465,7 @@ static int Net_Join_Dialog() {
   int d_join_w = 40 * RESFACTOR;
 #endif
   int d_join_h = 9 * RESFACTOR;
-  int d_join_x = d_dialog_x + (d_dialog_w / 6) - (d_join_w / 2);
+  int d_join_x = d_dialog_x + d_dialog_w / 6 - d_join_w / 2;
   int d_join_y = d_dialog_y + d_dialog_h - d_join_h - 8 * RESFACTOR;
 
   int d_cancel_w = 50 * RESFACTOR;
@@ -1477,7 +1477,7 @@ static int Net_Join_Dialog() {
 #else
   int d_new_w = 40 * RESFACTOR;
 #endif
-  int d_new_x = d_dialog_x + ((d_dialog_w * 5) / 6) - (d_new_w / 2);
+  int d_new_x = d_dialog_x + d_dialog_w * 5 / 6 - d_new_w / 2;
   int d_new_y = d_join_y;
 
   int d_send_w = d_message1_w;
@@ -1530,12 +1530,12 @@ static int Net_Join_Dialog() {
   int cbox_x[] = {
       d_color_x,
       d_color_x + d_color_w,
-      d_color_x + (d_color_w * 2),
-      d_color_x + (d_color_w * 3),
-      d_color_x + (d_color_w * 4),
-      d_color_x + (d_color_w * 5),
-      d_color_x + (d_color_w * 6),
-      d_color_x + (d_color_w * 7),
+      d_color_x + d_color_w * 2,
+      d_color_x + d_color_w * 3,
+      d_color_x + d_color_w * 4,
+      d_color_x + d_color_w * 5,
+      d_color_x + d_color_w * 6,
+      d_color_x + d_color_w * 7,
   };
   char housetext[25] = "";  // buffer for house droplist
 
@@ -1707,7 +1707,7 @@ static int Net_Join_Dialog() {
       d_message1_x + 1 * RESFACTOR, d_message1_y + 1 * RESFACTOR, 14,
       MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 1 * RESFACTOR,
       d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5, d_message2_w);
-  Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+  Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                 ? PCOLOR_REALLY_BLUE
                                 : Session.ColorIdx,
                             TPF_TEXT, nullptr, '_', d_message2_w);
@@ -1823,10 +1823,10 @@ static int Net_Join_Dialog() {
         //...............................................................
         //	Dialog & Field labels
         //...............................................................
-        Fancy_Text_Print(TXT_CHANNEL_GAMES, d_gamelist_x + (d_gamelist_w / 2),
+        Fancy_Text_Print(TXT_CHANNEL_GAMES, d_gamelist_x + d_gamelist_w / 2,
                          d_gamelist_y - d_txt6_h, scheme, TBLACK,
                          TPF_CENTER | TPF_TEXT);
-        Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+        Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + d_playerlist_w / 2,
                          d_playerlist_y - d_txt6_h, scheme, TBLACK,
                          TPF_CENTER | TPF_TEXT);
 
@@ -1834,7 +1834,7 @@ static int Net_Join_Dialog() {
         // For game-browsing, label the name, side, & color buttons:
         //...............................................................
         if (joinstate < JOIN_CONFIRMED) {
-          Fancy_Text_Print(TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
+          Fancy_Text_Print(TXT_YOUR_NAME, d_name_x + d_name_w / 2,
                            d_name_y - d_txt6_h, scheme, TBLACK,
                            TPF_CENTER | TPF_TEXT);
 
@@ -1843,12 +1843,12 @@ static int Net_Join_Dialog() {
                            d_gdi_y - d_txt6_h, scheme, TBLACK,
                            TPF_CENTER | TPF_TEXT);
 #else
-          Fancy_Text_Print(TXT_SIDE_COLON, d_house_x + (d_house_w / 2),
+          Fancy_Text_Print(TXT_SIDE_COLON, d_house_x + d_house_w / 2,
                            d_house_y - d_txt6_h, scheme, TBLACK,
                            TPF_CENTER | TPF_TEXT);
 #endif
 
-          Fancy_Text_Print(TXT_COLOR_COLON, d_dialog_x + ((d_dialog_w / 4) * 3),
+          Fancy_Text_Print(TXT_COLOR_COLON, d_dialog_x + d_dialog_w / 4 * 3,
                            d_color_y - d_txt6_h, scheme, TBLACK,
                            TPF_CENTER | TPF_TEXT);
         } else {
@@ -1869,8 +1869,8 @@ static int Net_Join_Dialog() {
                       HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
           Fancy_Text_Print(txt, d_dialog_cx,
-                           d_dialog_y + d_margin2 + (1 * RESFACTOR),
-                           (Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+                           d_dialog_y + d_margin2 + 1 * RESFACTOR,
+                           Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                ? &ColorRemaps[PCOLOR_REALLY_BLUE]
                                : &ColorRemaps[Session.ColorIdx],
                            TBLACK, TPF_CENTER | TPF_TEXT);
@@ -2119,9 +2119,9 @@ static int Net_Join_Dialog() {
         }
 
         if (Keyboard->MouseQX > cbox_x[0] &&
-            Keyboard->MouseQX < (cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w) &&
+            Keyboard->MouseQX < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
             Keyboard->MouseQY > d_color_y &&
-            Keyboard->MouseQY < (d_color_y + d_color_h)) {
+            Keyboard->MouseQY < d_color_y + d_color_h) {
           Session.PrefColor =
               (PlayerColorType)((Keyboard->MouseQX - cbox_x[0]) / d_color_w);
           Session.ColorIdx = Session.PrefColor;
@@ -2130,14 +2130,14 @@ static int Net_Join_Dialog() {
             name_edt.Set_Color(&ColorRemaps[PCOLOR_REALLY_BLUE]);
           } else {
             name_edt.Set_Color(
-                &ColorRemaps[(Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+                &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                  ? PCOLOR_REALLY_BLUE
                                  : Session.ColorIdx]);
           }
           name_edt.Flag_To_Redraw();
 
           Session.Messages.Set_Edit_Color(
-              (Session.ColorIdx == PCOLOR_DIALOG_BLUE) ? PCOLOR_REALLY_BLUE
+              Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                        : Session.ColorIdx);
 
           display = REDRAW_COLORS;
@@ -2147,7 +2147,7 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	User clicks on the game list:
       //..................................................................
-      case (BUTTON_GAMELIST | KN_BUTTON):
+      case BUTTON_GAMELIST | KN_BUTTON:
         //...............................................................
         // Handle a double-click
         //...............................................................
@@ -2209,7 +2209,7 @@ static int Net_Join_Dialog() {
                 MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 1 * RESFACTOR,
                 d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5,
                 d_message2_w);
-            Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+            Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                           ? PCOLOR_REALLY_BLUE
                                           : Session.ColorIdx,
                                       TPF_TEXT, nullptr, '_', d_message2_w);
@@ -2271,7 +2271,7 @@ static int Net_Join_Dialog() {
       //	JOIN: send a join request packet & switch to waiting-for-
       // confirmation mode.
       //..................................................................
-      case (BUTTON_JOIN | KN_BUTTON):
+      case BUTTON_JOIN | KN_BUTTON:
         name_edt.Clear_Focus();
         name_edt.Flag_To_Redraw();
         port::SafeCopy(Session.Handle, namebuf);
@@ -2292,8 +2292,8 @@ static int Net_Join_Dialog() {
       // ESC / CANCEL: send a SIGN_OFF
       // - If we're part of a game, stay in this dialog; otherwise, exit
       //..................................................................
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         if (housebtn.IsDropped) {
           housebtn.Collapse();
         }
@@ -2318,7 +2318,7 @@ static int Net_Join_Dialog() {
           port::SafeCopy(Session.GPacket.Name, namebuf);
           for (i = 1; i < Session.Chat.Count(); i++) {
             Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
-                                    1, &(Session.Chat[i]->Address));
+                                    1, &Session.Chat[i]->Address);
             Ipx.Service();
           }
 
@@ -2345,7 +2345,7 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	NEW: bail out with return code 1
       //..................................................................
-      case (BUTTON_NEW | KN_BUTTON):
+      case BUTTON_NEW | KN_BUTTON:
         //...............................................................
         //	Force user to enter a name
         //...............................................................
@@ -2452,7 +2452,7 @@ static int Net_Join_Dialog() {
             for (i = 1; i < Session.Players.Count(); i++) {
               Ipx.Send_Global_Message(&Session.GPacket,
                                       sizeof(GlobalPacketType), 1,
-                                      &(Session.Players[i]->Address));
+                                      &Session.Players[i]->Address);
               Ipx.Service();
             }
           } else {
@@ -2462,7 +2462,7 @@ static int Net_Join_Dialog() {
             for (i = 1; i < Session.Chat.Count(); i++) {
               Ipx.Send_Global_Message(&Session.GPacket,
                                       sizeof(GlobalPacketType), 1,
-                                      &(Session.Chat[i]->Address));
+                                      &Session.Chat[i]->Address);
               Ipx.Service();
             }
             if (Obfuscate(Session.GPacket.Message.Buf) == 0x72A47EF6) {
@@ -2478,14 +2478,14 @@ static int Net_Join_Dialog() {
           //............................................................
           Session.Messages.Add_Message(
               Session.GPacket.Name,
-              (Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE)
+              Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
                   ? PCOLOR_REALLY_BLUE
                   : Session.GPacket.Message.Color,
               Session.GPacket.Message.Buf,
-              (Session.ColorIdx == PCOLOR_DIALOG_BLUE) ? PCOLOR_REALLY_BLUE
+              Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                        : Session.ColorIdx,
               TPF_TEXT, -1);
-          Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+          Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                         ? PCOLOR_REALLY_BLUE
                                         : Session.ColorIdx,
                                     TPF_TEXT, nullptr, '_', d_message2_w);
@@ -2572,7 +2572,7 @@ static int Net_Join_Dialog() {
               ** We should have the scenario but the wrong disk is in.
               ** Tell the host that I am ready to go anyway.
               */
-              memset((void*)&(Session.GPacket), 0, sizeof(Session.GPacket));
+              memset((void*)&Session.GPacket, 0, sizeof(Session.GPacket));
               Session.GPacket.Command = NET_READY_TO_GO;
               Ipx.Send_Global_Message(&Session.GPacket,
                                       sizeof(GlobalPacketType), 1,
@@ -2612,7 +2612,7 @@ static int Net_Join_Dialog() {
           ** We have the scenario. Tell the host that I am ready to go.
           */
           if (!ready_packet_was_sent) {
-            memset((void*)&(Session.GPacket), 0, sizeof(Session.GPacket));
+            memset((void*)&Session.GPacket, 0, sizeof(Session.GPacket));
             Session.GPacket.Command = NET_READY_TO_GO;
             Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
                                     1, &Session.HostAddress);
@@ -2664,7 +2664,7 @@ static int Net_Join_Dialog() {
                 Text_String(
                     HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
-        playerlist.Add_Item(item, (Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+        playerlist.Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                       ? &ColorRemaps[PCOLOR_REALLY_BLUE]
                                       : &ColorRemaps[Session.ColorIdx]);
 
@@ -2684,7 +2684,7 @@ static int Net_Join_Dialog() {
             MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 1 * RESFACTOR,
             d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5,
             d_message2_w);
-        Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+        Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                       ? PCOLOR_REALLY_BLUE
                                       : Session.ColorIdx,
                                   TPF_TEXT, nullptr, '_', d_message2_w);
@@ -2699,7 +2699,7 @@ static int Net_Join_Dialog() {
             MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 1 * RESFACTOR,
             d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5,
             d_message2_w);
-        Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+        Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                       ? PCOLOR_REALLY_BLUE
                                       : Session.ColorIdx,
                                   TPF_TEXT, nullptr, '_', d_message2_w);
@@ -2817,7 +2817,7 @@ static int Net_Join_Dialog() {
           delete Session.Games[i];
           Session.Games.Delete(Session.Games[i]);
 
-          item = (char*)(gamelist.Get_Item(i));
+          item = (char*)gamelist.Get_Item(i);
           gamelist.Remove_Item(item);
           delete[] item;
 
@@ -2865,7 +2865,7 @@ static int Net_Join_Dialog() {
           Session.GPacket.Name[0] = 0;
           Session.GPacket.Command = NET_CHAT_REQUEST;
           Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                                  &(Session.Chat[i]->Address));
+                                  &Session.Chat[i]->Address);
           Ipx.Service();
           Session.Chat[i]->Chat.LastChance = 1;
         }
@@ -2897,7 +2897,7 @@ static int Net_Join_Dialog() {
           }
           for (i = 0; i < Session.Chat.Count(); i++) {
             if (stricmp(Session.Chat[i]->Name, playerlist.Get_Item(i)) ||
-                &ColorRemaps[(Session.Chat[i]->Chat.Color == PCOLOR_DIALOG_BLUE)
+                &ColorRemaps[Session.Chat[i]->Chat.Color == PCOLOR_DIALOG_BLUE
                                  ? PCOLOR_REALLY_BLUE
                                  : Session.Chat[i]->Chat.Color] !=
                     playerlist.Colors[i]) {
@@ -2955,7 +2955,7 @@ static int Net_Join_Dialog() {
       //..................................................................
       for (int i = 1; i < Session.Players.Count(); i++) {
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                &(Session.Players[i]->Address));
+                                &Session.Players[i]->Address);
         Ipx.Service();
       }
 
@@ -3045,7 +3045,7 @@ static int Net_Join_Dialog() {
   }
   Clear_Vector(&Session.Chat);
 
-  return (rc);
+  return rc;
 
 } /* end of Net_Join_Dialog */
 
@@ -3083,14 +3083,14 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
                                  (char*)Text_String(TXT_MUST_SELECT_GAME),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
-    return (false);
+    return false;
   }
-  if ((Session.Games.Count() <= 1) || join_index > Session.Games.Count()) {
+  if (Session.Games.Count() <= 1 || join_index > Session.Games.Count()) {
     Session.Messages.Add_Message(nullptr, 0,
                                  (char*)Text_String(TXT_NOTHING_TO_JOIN),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
-    return (false);
+    return false;
   }
 
   //------------------------------------------------------------------------
@@ -3100,7 +3100,7 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
     Session.Messages.Add_Message(nullptr, 0, (char*)Text_String(TXT_NAME_ERROR),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
-    return (false);
+    return false;
   }
 
   //------------------------------------------------------------------------
@@ -3111,7 +3111,7 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
                                  (char*)Text_String(TXT_GAME_IS_CLOSED),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
-    return (false);
+    return false;
   }
 
   //------------------------------------------------------------------------
@@ -3138,9 +3138,9 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
   Session.GPacket.PlayerInfo.CheatCheck = RuleINI.Get_Unique_ID();
 
   Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                          &(Session.Games[join_index]->Address));
+                          &Session.Games[join_index]->Address);
 
-  return (true);
+  return true;
 
 } /* end of Request_To_Join */
 
@@ -3190,13 +3190,13 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
   //------------------------------------------------------------------------
   for (i = 1; i < Session.Players.Count(); i++) {
     Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                            &(Session.Players[i]->Address));
+                            &Session.Players[i]->Address);
     Ipx.Service();
   }
 
   if (joinstate == JOIN_WAIT_CONFIRM || joinstate == JOIN_CONFIRMED) {
     Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                            &(Session.Games[game_index]->Address));
+                            &Session.Games[game_index]->Address);
   }
 
   //------------------------------------------------------------------------
@@ -3204,7 +3204,7 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
   //------------------------------------------------------------------------
   Session.Messages.Init(msg_x + 1, msg_y + 1, 14, msg_len, msg_h, send_x + 1,
                         send_y + 1, 1, 20, msg_len - 5);
-  Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+  Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                 ? PCOLOR_REALLY_BLUE
                                 : Session.ColorIdx,
                             TPF_TEXT, nullptr, '_');
@@ -3213,7 +3213,7 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
   // Remove myself from the player list, and reset my game name
   //------------------------------------------------------------------------
   if (playerlist->Count()) {
-    item = (char*)(playerlist->Get_Item(0));
+    item = (char*)playerlist->Get_Item(0);
     playerlist->Remove_Item(item);
     delete[] item;
     playerlist->Flag_To_Redraw();
@@ -3327,7 +3327,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   //	expired and there is a currently-selected game, or we're told to do it
   //	right now
   //------------------------------------------------------------------------
-  if (((curgame > 0) && (curgame < Session.Games.Count()) && !player_timer) ||
+  if ((curgame > 0 && curgame < Session.Games.Count() && !player_timer) ||
       playernow) {
     player_timer = PLAYER_QUERY_TIME;
 
@@ -3436,15 +3436,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   rc = Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                               &Session.GAddress, &Session.GProductID);
   if (!rc || Session.GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER0)
-    return (EV_NONE);
+    return EV_NONE;
 
   //------------------------------------------------------------------------
   //	If we're joined in a game, handle the packet in a standard way;
   // otherwise, 	don't answer standard queries.
   //------------------------------------------------------------------------
-  if ((*joinstate) == JOIN_CONFIRMED &&
+  if (*joinstate == JOIN_CONFIRMED &&
       Process_Global_Packet(&Session.GPacket, &Session.GAddress) != 0) {
-    return (EV_NONE);
+    return EV_NONE;
   }
 
   //------------------------------------------------------------------------
@@ -3550,7 +3550,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // If this game is open, display a message stating that it's
       // now available.
       //..................................................................
-      if (Session.GPacket.GameInfo.IsOpen && (*joinstate) < JOIN_CONFIRMED) {
+      if (Session.GPacket.GameInfo.IsOpen && *joinstate < JOIN_CONFIRMED) {
         sprintf(txt, Text_String(TXT_S_FORMED_NEW_GAME), Session.GPacket.Name);
         Session.Messages.Add_Message(nullptr, 0, txt, PCOLOR_BROWN, TPF_TEXT,
                                      1200);
@@ -3643,7 +3643,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                   HouseTypeClass::As_Reference(Session.GPacket.PlayerInfo.House)
                       .Full_Name()));
 #endif  // OLDWAY
-      playerlist->Add_Item(item, (who->Player.Color == PCOLOR_DIALOG_BLUE)
+      playerlist->Add_Item(item, who->Player.Color == PCOLOR_DIALOG_BLUE
                                      ? &ColorRemaps[PCOLOR_REALLY_BLUE]
                                      : &ColorRemaps[who->Player.Color]);
 
@@ -3661,7 +3661,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       // If this player has joined our game, play a special sound.
       //..................................................................
-      if ((*joinstate) >= JOIN_CONFIRMED) {
+      if (*joinstate >= JOIN_CONFIRMED) {
         Sound_Effect(VOC_PLAYER_JOINED);
       }
 
@@ -3674,12 +3674,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   // as being confirmed, and start answering queries from other systems
   //------------------------------------------------------------------------
   else if (Session.GPacket.Command == NET_CONFIRM_JOIN) {
-    if ((*joinstate) != JOIN_CONFIRMED) {
+    if (*joinstate != JOIN_CONFIRMED) {
       port::SafeCopy(Session.GameName, Session.GPacket.Name);
       Session.House = Session.GPacket.PlayerInfo.House;
       Session.ColorIdx = Session.GPacket.PlayerInfo.Color;
 
-      (*joinstate) = JOIN_CONFIRMED;
+      *joinstate = JOIN_CONFIRMED;
       retcode = EV_STATE_CHANGE;
     }
   }
@@ -3694,14 +3694,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     // systems that I'm no longer a part of any game; this way, I'll be
     // properly removed from their dialogs.
     //.....................................................................
-    if ((*joinstate) == JOIN_CONFIRMED) {
+    if (*joinstate == JOIN_CONFIRMED) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
       Session.GPacket.Command = NET_SIGN_OFF;
       port::SafeCopy(Session.GPacket.Name, my_name);
 
       for (i = 1; i < Session.Players.Count(); i++) {
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                &(Session.Players[i]->Address));
+                                &Session.Players[i]->Address);
         Ipx.Service();
       }
 
@@ -3719,7 +3719,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       // remove myself from the player list
       //..................................................................
-      item = (char*)(playerlist->Get_Item(0));
+      item = (char*)playerlist->Get_Item(0);
       playerlist->Remove_Item(item);
       delete[] item;
       playerlist->Flag_To_Redraw();
@@ -3727,16 +3727,16 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       delete Session.Players[0];
       Session.Players.Delete(Session.Players[0]);
 
-      (*joinstate) = JOIN_REJECTED;
-      (*why) = REJECT_BY_OWNER;
+      *joinstate = JOIN_REJECTED;
+      *why = REJECT_BY_OWNER;
       retcode = EV_STATE_CHANGE;
     }
     //.....................................................................
     // If we're waiting for confirmation & got rejected, tell the user why
     //.....................................................................
-    else if ((*joinstate) == JOIN_WAIT_CONFIRM) {
-      (*why) = (RejectType)Session.GPacket.Reject.Why;
-      (*joinstate) = JOIN_REJECTED;
+    else if (*joinstate == JOIN_WAIT_CONFIRM) {
+      *why = (RejectType)Session.GPacket.Reject.Why;
+      *joinstate = JOIN_REJECTED;
       retcode = EV_STATE_CHANGE;
     }
   }
@@ -3746,7 +3746,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   // sending us the new values.
   //------------------------------------------------------------------------
   else if (Session.GPacket.Command == NET_GAME_OPTIONS) {
-    if ((*joinstate) == JOIN_CONFIRMED || (*joinstate) == JOIN_WAIT_CONFIRM) {
+    if (*joinstate == JOIN_CONFIRMED || *joinstate == JOIN_WAIT_CONFIRM) {
       Session.Options.Credits = Session.GPacket.ScenarioInfo.Credits;
       Session.Options.Bases = Session.GPacket.ScenarioInfo.IsBases;
       Session.Options.Tiberium = Session.GPacket.ScenarioInfo.IsTiberium;
@@ -3835,10 +3835,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //	If the system signing off was the owner of our game, mark
         //	ourselves as rejected
         //...............................................................
-        if ((*joinstate) > JOIN_NOTHING && i == join_index) {
-          (*joinstate) = JOIN_REJECTED;
+        if (*joinstate > JOIN_NOTHING && i == join_index) {
+          *joinstate = JOIN_REJECTED;
           retcode = EV_STATE_CHANGE;
-          (*why) = REJECT_DISBANDED;
+          *why = REJECT_DISBANDED;
         }
 
         //...............................................................
@@ -3857,7 +3857,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         delete Session.Games[i];
         Session.Games.Delete(Session.Games[i]);
-        item = (char*)(gamelist->Get_Item(i));
+        item = (char*)gamelist->Get_Item(i);
         gamelist->Remove_Item(item);
         delete[] item;
         gamelist->Flag_To_Redraw();
@@ -3872,7 +3872,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //	Name found; remove it
       //..................................................................
       if (Session.Players[i]->Address == Session.GAddress) {
-        item = (char*)(playerlist->Get_Item(i));
+        item = (char*)playerlist->Get_Item(i);
         playerlist->Remove_Item(item);
         delete[] item;
 
@@ -3884,7 +3884,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         // If this player has left our game, play a special sound.
         //...............................................................
-        if ((*joinstate) >= JOIN_CONFIRMED) {
+        if (*joinstate >= JOIN_CONFIRMED) {
           Sound_Effect(VOC_PLAYER_LEFT);
         }
 
@@ -3916,9 +3916,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   //	NET_GO: The game's owner is signalling us to start playing.
   //------------------------------------------------------------------------
   else if (Session.GPacket.Command == NET_GO) {
-    if ((*joinstate) == JOIN_CONFIRMED) {
+    if (*joinstate == JOIN_CONFIRMED) {
       Session.MaxAhead = Session.GPacket.ResponseTime.OneWay;
-      (*joinstate) = JOIN_GAME_START;
+      *joinstate = JOIN_GAME_START;
       retcode = EV_STATE_CHANGE;
       Session.HostAddress = Session.GAddress;
     }
@@ -3928,9 +3928,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   //	NET_LOADGAME: The game's owner is signalling us to start playing.
   //------------------------------------------------------------------------
   else if (Session.GPacket.Command == NET_LOADGAME) {
-    if ((*joinstate) == JOIN_CONFIRMED) {
+    if (*joinstate == JOIN_CONFIRMED) {
       Session.MaxAhead = Session.GPacket.ResponseTime.OneWay;
-      (*joinstate) = JOIN_GAME_START_LOAD;
+      *joinstate = JOIN_GAME_START_LOAD;
       retcode = EV_STATE_CHANGE;
     }
   }
@@ -3983,7 +3983,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   // one to him directly.
   //------------------------------------------------------------------------
   else if (Session.GPacket.Command == NET_CHAT_REQUEST) {
-    if ((*joinstate) != JOIN_WAIT_CONFIRM && (*joinstate) != JOIN_CONFIRMED) {
+    if (*joinstate != JOIN_WAIT_CONFIRM && *joinstate != JOIN_CONFIRMED) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
       Session.GPacket.Command = NET_CHAT_ANNOUNCE;
@@ -4005,16 +4005,16 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //.....................................................................
     // If we're in a game, the sender must be in our game.
     //.....................................................................
-    if ((*joinstate) == JOIN_CONFIRMED) {
+    if (*joinstate == JOIN_CONFIRMED) {
       if (Session.GPacket.Message.NameCRC ==
           Compute_Name_CRC(Session.GameName)) {
         Session.Messages.Add_Message(
             Session.GPacket.Name,
-            (Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE)
+            Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
                 ? PCOLOR_REALLY_BLUE
                 : Session.GPacket.Message.Color,
             Session.GPacket.Message.Buf,
-            (Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE)
+            Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
                 ? PCOLOR_REALLY_BLUE
                 : Session.GPacket.Message.Color,
             TPF_TEXT, -1);
@@ -4027,7 +4027,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       Session.Messages.Add_Message(
           Session.GPacket.Name, Session.GPacket.Message.Color,
           Session.GPacket.Message.Buf,
-          (Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE)
+          Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
               ? PCOLOR_REALLY_BLUE
               : Session.GPacket.Message.Color,
           TPF_TEXT, -1);
@@ -4054,7 +4054,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     retcode = EV_NONE;
   }
 
-  return (retcode);
+  return retcode;
 
 } /* end of Get_Join_Responses */
 
@@ -4089,9 +4089,9 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   int d_dialog_w = 320 * RESFACTOR;                       // dialog width
   int d_dialog_h = 200 * RESFACTOR;                       // dialog height
-  int d_dialog_x = ((320 * RESFACTOR - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((200 * RESFACTOR - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
+  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
   int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
   int d_margin1 = 5 * RESFACTOR;     // margin width/height
@@ -4099,75 +4099,75 @@ static int Net_New_Dialog() {
 
   // BG	int d_playerlist_w = 118*RESFACTOR;
   int d_playerlist_w = 124 * RESFACTOR;
-  int d_playerlist_h = (6 * d_txt6_h) + 3 * RESFACTOR;  // 6 rows high
+  int d_playerlist_h = 6 * d_txt6_h + 3 * RESFACTOR;  // 6 rows high
   int d_playerlist_x = d_dialog_x + d_margin1 + d_margin1 + 5 * RESFACTOR;
   int d_playerlist_y = d_dialog_y + d_margin1 + d_txt6_h + 3 * RESFACTOR;
 
   int d_scenariolist_w = 162 * RESFACTOR;
-  int d_scenariolist_h = (6 * d_txt6_h) + 3 * RESFACTOR;  // 6 rows high
+  int d_scenariolist_h = 6 * d_txt6_h + 3 * RESFACTOR;  // 6 rows high
   int d_scenariolist_x = d_dialog_x + d_dialog_w - d_margin1 - d_margin1 -
-                         d_scenariolist_w - (5 * RESFACTOR);
+                         d_scenariolist_w - 5 * RESFACTOR;
   int d_scenariolist_y = d_playerlist_y;
 
   int d_reject_w = 55 * RESFACTOR;
   int d_reject_h = 9 * RESFACTOR;
-  int d_reject_x = d_playerlist_x + (d_playerlist_w / 2) - (d_reject_w / 2);
+  int d_reject_x = d_playerlist_x + d_playerlist_w / 2 - d_reject_w / 2;
   int d_reject_y = d_playerlist_y + d_playerlist_h + d_margin2;
 
   int d_count_w = 25 * RESFACTOR;
   int d_count_h = d_txt6_h;
   int d_count_x =
-      d_playerlist_x + (d_playerlist_w / 2) + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
   int d_count_y = d_reject_y + d_reject_h /*KO+ d_margin2*/;
 
   int d_level_w = 25 * RESFACTOR;
   int d_level_h = d_txt6_h;
   int d_level_x =
-      d_playerlist_x + (d_playerlist_w / 2) + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
   int d_level_y = d_count_y + d_count_h;
 
   int d_credits_w = 25 * RESFACTOR;
   int d_credits_h = d_txt6_h;
   int d_credits_x =
-      d_playerlist_x + (d_playerlist_w / 2) + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
   int d_credits_y = d_level_y + d_level_h;
 
   int d_aiplayers_w = 25 * RESFACTOR;
   int d_aiplayers_h = d_txt6_h;
   int d_aiplayers_x =
-      d_playerlist_x + (d_playerlist_w / 2) + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
   int d_aiplayers_y = d_credits_y + d_credits_h;
 
   int d_options_w = 106 * RESFACTOR;
-  int d_options_h = ((5 * 6) + 4) * RESFACTOR;
-  int d_options_x = d_scenariolist_x + ((d_scenariolist_w - d_options_w) / 2);
+  int d_options_h = (5 * 6 + 4) * RESFACTOR;
+  int d_options_x = d_scenariolist_x + (d_scenariolist_w - d_options_w) / 2;
   int d_options_y = d_scenariolist_y + d_scenariolist_h + d_margin1;
 
-  int d_message_w = d_dialog_w - (d_margin1 * 2) - 20 * RESFACTOR;
-  int d_message_h = (kNumMessages * d_txt6_h) + 3 * RESFACTOR;  // 10 rows high
+  int d_message_w = d_dialog_w - d_margin1 * 2 - 20 * RESFACTOR;
+  int d_message_h = kNumMessages * d_txt6_h + 3 * RESFACTOR;  // 10 rows high
   int d_message_x = d_dialog_x + d_margin1 + 10 * RESFACTOR;
   int d_message_y = d_dialog_y + d_dialog_h - (27 * RESFACTOR + d_message_h);
   //	int d_message_y = d_options_y + d_options_h + d_margin1;
 
-  int d_send_w = d_dialog_w - (d_margin1 * 2) - 20 * RESFACTOR;
+  int d_send_w = d_dialog_w - d_margin1 * 2 - 20 * RESFACTOR;
   int d_send_h = 9 * RESFACTOR;
   int d_send_x = d_dialog_x + d_margin1 + 10 * RESFACTOR;
   int d_send_y = d_message_y + d_message_h;
 
   int d_ok_w = 50 * RESFACTOR;
   int d_ok_h = 9 * RESFACTOR;
-  int d_ok_x = d_dialog_x + (d_dialog_w / 6) - (d_ok_w / 2);
+  int d_ok_x = d_dialog_x + d_dialog_w / 6 - d_ok_w / 2;
   int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 3 * RESFACTOR;
 
   int d_cancel_w = 50 * RESFACTOR;
   int d_cancel_h = 9 * RESFACTOR;
-  int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
   int d_cancel_y =
       d_dialog_y + d_dialog_h - d_cancel_h - d_margin1 - 3 * RESFACTOR;
 
   int d_load_w = 50 * RESFACTOR;
   int d_load_h = 9 * RESFACTOR;
-  int d_load_x = d_dialog_x + ((d_dialog_w * 5) / 6) - (d_load_w / 2);
+  int d_load_x = d_dialog_x + d_dialog_w * 5 / 6 - d_load_w / 2;
   int d_load_y = d_dialog_y + d_dialog_h - d_load_h - d_margin1 - 3 * RESFACTOR;
 
   //------------------------------------------------------------------------
@@ -4360,10 +4360,10 @@ static int Net_New_Dialog() {
         // ajw Added Aftermath installed checks (before, it was
         // assumed). Add mission if it's available to us.
         if (!((Is_Mission_Counterstrike(
-                   (char*)(Session.Scenarios[i]->Get_Filename())) &&
+                   (char*)Session.Scenarios[i]->Get_Filename()) &&
                !Is_Counterstrike_Installed()) ||
               (Is_Mission_Aftermath(
-                   (char*)(Session.Scenarios[i]->Get_Filename())) &&
+                   (char*)Session.Scenarios[i]->Get_Filename()) &&
                !Is_Aftermath_Installed())))
 #if defined(GERMAN) || defined(FRENCH)
           scenariolist.Add_Item(EngMisStr[j + 1]);
@@ -4380,10 +4380,10 @@ static int Net_New_Dialog() {
       // it's available to us.
       if (!Session.Scenarios[i]->Get_Official() ||
           !((Is_Mission_Counterstrike(
-                 (char*)(Session.Scenarios[i]->Get_Filename())) &&
+                 (char*)Session.Scenarios[i]->Get_Filename()) &&
              !Is_Counterstrike_Installed()) ||
             (Is_Mission_Aftermath(
-                 (char*)(Session.Scenarios[i]->Get_Filename())) &&
+                 (char*)Session.Scenarios[i]->Get_Filename()) &&
              !Is_Aftermath_Installed()))) {
         scenariolist.Add_Item(Session.Scenarios[i]->Description());
       }
@@ -4418,7 +4418,7 @@ static int Net_New_Dialog() {
       d_message_x + 1 * RESFACTOR, d_message_y + 1 * RESFACTOR, kNumMessages,
       MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 1 * RESFACTOR,
       d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5, d_message_w);
-  Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+  Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                 ? PCOLOR_REALLY_BLUE
                                 : Session.ColorIdx,
                             TPF_TEXT, nullptr, '_', d_message_w);
@@ -4447,7 +4447,7 @@ static int Net_New_Dialog() {
   sprintf(item, "%s\t%s", Session.Handle,
           Text_String(HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
-  playerlist.Add_Item(item, (Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+  playerlist.Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                 ? &ColorRemaps[PCOLOR_REALLY_BLUE]
                                 : &ColorRemaps[Session.ColorIdx]);
 
@@ -4499,11 +4499,11 @@ static int Net_New_Dialog() {
         //...............................................................
         //	Dialog & Field labels
         //...............................................................
-        Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+        Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + d_playerlist_w / 2,
                          d_playerlist_y - d_txt6_h, scheme, TBLACK,
                          TPF_TEXT | TPF_CENTER);
         Fancy_Text_Print(
-            TXT_SCENARIOS, d_scenariolist_x + (d_scenariolist_w / 2),
+            TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w / 2,
             d_scenariolist_y - d_txt6_h, scheme, TBLACK, TPF_TEXT | TPF_CENTER);
         Fancy_Text_Print(TXT_COUNT, d_count_x - 2 * RESFACTOR, d_count_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
@@ -4630,7 +4630,7 @@ static int Net_New_Dialog() {
       //	New Scenario selected.
       //..................................................................
       // All scenarios now allowable as downloads. ajw
-      case (BUTTON_SCENARIOLIST | KN_BUTTON):
+      case BUTTON_SCENARIOLIST | KN_BUTTON:
         if (scenariolist.Current_Index() != Session.Options.ScenarioIndex) {
           Session.Options.ScenarioIndex = scenariolist.Current_Index();
           transmit = 1;
@@ -4640,7 +4640,7 @@ static int Net_New_Dialog() {
       //	Reject the currently-selected player (don't allow rejecting
       // myself, 	who will be the first entry in the list)
       //..................................................................
-      case (BUTTON_REJECT | KN_BUTTON):
+      case BUTTON_REJECT | KN_BUTTON:
         index = playerlist.Current_Index();
 
         if (index == 0) {
@@ -4664,13 +4664,13 @@ static int Net_New_Dialog() {
         Session.GPacket.Command = NET_REJECT_JOIN;
 
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                &(Session.Players[index]->Address));
+                                &Session.Players[index]->Address);
         break;
 
       //..................................................................
       //	User adjusts max # units
       //..................................................................
-      case (BUTTON_COUNT | KN_BUTTON):
+      case BUTTON_COUNT | KN_BUTTON:
         Session.Options.UnitCount =
             countgauge.Get_Value() +
             SessionClass::CountMin[Session.Options.Bases];
@@ -4681,7 +4681,7 @@ static int Net_New_Dialog() {
       //..................................................................
       //	User adjusts build level
       //..................................................................
-      case (BUTTON_LEVEL | KN_BUTTON):
+      case BUTTON_LEVEL | KN_BUTTON:
         BuildLevel = levelgauge.Get_Value() + 1;
         if (BuildLevel > MPLAYER_BUILD_LEVEL_MAX)  // if it's pegged, max it out
           BuildLevel = MPLAYER_BUILD_LEVEL_MAX;
@@ -4693,9 +4693,9 @@ static int Net_New_Dialog() {
       //	User edits the credits value; retransmit new game options
       // Round the credits to the nearest 500.
       //..................................................................
-      case (BUTTON_CREDITS | KN_BUTTON):
+      case BUTTON_CREDITS | KN_BUTTON:
         Session.Options.Credits = creditsgauge.Get_Value();
-        Session.Options.Credits = ((Session.Options.Credits + 250) / 500) * 500;
+        Session.Options.Credits = (Session.Options.Credits + 250) / 500 * 500;
         transmit = 1;
         display = REDRAW_PARMS;
         break;
@@ -4703,7 +4703,7 @@ static int Net_New_Dialog() {
       //..................................................................
       //	User adjusts # of AI players
       //..................................................................
-      case (BUTTON_AIPLAYERS | KN_BUTTON):
+      case BUTTON_AIPLAYERS | KN_BUTTON:
         Session.Options.AIPlayers = aiplayersgauge.Get_Value();
         if (Session.Options.AIPlayers + Session.Players.Count() >
             Rule.MaxPlayers) {  // if it's pegged, max it out
@@ -4721,7 +4721,7 @@ static int Net_New_Dialog() {
       // Also, if Tiberium gets toggled, we have to set the flags
       // in SpecialClass.
       //..................................................................
-      case (BUTTON_OPTIONS | KN_BUTTON):
+      case BUTTON_OPTIONS | KN_BUTTON:
         if (Special.IsCaptureTheFlag != optionlist.Is_Checked(3) &&
             !Special.IsCaptureTheFlag) {
           optionlist.Check_Item(0, true);
@@ -4770,8 +4770,8 @@ static int Net_New_Dialog() {
       //..................................................................
       //	OK: exit loop with true status
       //..................................................................
-      case (BUTTON_LOAD | KN_BUTTON):
-      case (BUTTON_OK | KN_BUTTON):
+      case BUTTON_LOAD | KN_BUTTON:
+      case BUTTON_OK | KN_BUTTON:
         //...............................................................
         //	If a new player has joined in the last second, don't allow
         //	an OK; force a wait longer than 1 second (to give all players
@@ -4808,8 +4808,8 @@ static int Net_New_Dialog() {
       //..................................................................
       //	CANCEL: send a SIGN_OFF, bail out with error code
       //..................................................................
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
         Session.GPacket.Command = NET_SIGN_OFF;
@@ -4846,7 +4846,7 @@ static int Net_New_Dialog() {
         //...............................................................
         for (i = 1; i < Session.Players.Count(); i++) {
           Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                  &(Session.Players[i]->Address));
+                                  &Session.Players[i]->Address);
           Ipx.Service();
         }
         while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
@@ -4911,7 +4911,7 @@ static int Net_New_Dialog() {
           //............................................................
           for (i = 1; i < Session.Players.Count(); i++) {
             Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
-                                    1, &(Session.Players[i]->Address));
+                                    1, &Session.Players[i]->Address);
             Ipx.Service();
           }
 
@@ -4923,15 +4923,15 @@ static int Net_New_Dialog() {
           //............................................................
           Session.Messages.Add_Message(
               Session.GPacket.Name,
-              (Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE)
+              Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
                   ? PCOLOR_REALLY_BLUE
                   : Session.GPacket.Message.Color,
               Session.GPacket.Message.Buf,
-              (Session.ColorIdx == PCOLOR_DIALOG_BLUE) ? PCOLOR_REALLY_BLUE
+              Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                        : Session.ColorIdx,
               TPF_TEXT, -1);
 
-          Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+          Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                         ? PCOLOR_REALLY_BLUE
                                         : Session.ColorIdx,
                                     TPF_TEXT, nullptr, '_', d_message_w);
@@ -5034,7 +5034,7 @@ static int Net_New_Dialog() {
         }
 
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                &(Session.Players[i]->Address));
+                                &Session.Players[i]->Address);
       }
       Sound_Effect(VOC_OPTIONS_CHANGED);
       transmit = 0;
@@ -5050,7 +5050,7 @@ static int Net_New_Dialog() {
       Session.GPacket.Command = NET_PING;
       for (i = 1; i < Session.Players.Count(); i++) {
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                &(Session.Players[i]->Address));
+                                &Session.Players[i]->Address);
       }
       ping_timer = TickCount;
     }
@@ -5089,10 +5089,9 @@ static int Net_New_Dialog() {
     //.....................................................................
     if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
       Session.MaxAhead = std::max(
-          ((((Ipx.Global_Response_Time() / 8) + (Session.FrameSendRate - 1)) /
-            Session.FrameSendRate) *
-           Session.FrameSendRate),
-          (Session.FrameSendRate * 2));
+          (Ipx.Global_Response_Time() / 8 + (Session.FrameSendRate - 1)) /
+              Session.FrameSendRate * Session.FrameSendRate,
+          Session.FrameSendRate * 2);
     } else {
       Session.MaxAhead = std::max(unsigned(Ipx.Global_Response_Time() / 8),
                                   NETWORK_MIN_MAX_AHEAD);
@@ -5112,7 +5111,7 @@ static int Net_New_Dialog() {
     Session.GPacket.ResponseTime.OneWay = Session.MaxAhead;
     for (i = 1; i < Session.Players.Count(); i++) {
       Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                              &(Session.Players[i]->Address));
+                              &Session.Players[i]->Address);
     }
     //.....................................................................
     //	Wait for all the ACK's to come in.
@@ -5240,7 +5239,7 @@ static int Net_New_Dialog() {
   //		optionlist.Remove_Item(item);
   //	}
 
-  return (rc);
+  return rc;
 
 } /* end of Net_New_Dialog */
 
@@ -5287,14 +5286,14 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
   rc = Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                               &Session.GAddress, &Session.GProductID);
   if (!rc || Session.GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER0) {
-    return (EV_NONE);
+    return EV_NONE;
   }
 
   //------------------------------------------------------------------------
   //	Try to handle the packet in a standard way
   //------------------------------------------------------------------------
   if (Process_Global_Packet(&Session.GPacket, &Session.GAddress) != 0) {
-    return (EV_NONE);
+    return EV_NONE;
   } else if (Session.GPacket.Command == NET_QUERY_JOIN) {
     //------------------------------------------------------------------------
     //	NET_QUERY_JOIN:
@@ -5337,19 +5336,19 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       Session.GPacket.Reject.Why = (int)REJECT_DUPLICATE_NAME;
       Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                               &Session.GAddress);
-      return (EV_NONE);
+      return EV_NONE;
     }
 
     //.....................................................................
     //	Reject if there are too many players
     //.....................................................................
-    else if ((Session.Players.Count() >= Session.MaxPlayers) && !resend) {
+    else if (Session.Players.Count() >= Session.MaxPlayers && !resend) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
       Session.GPacket.Command = NET_REJECT_JOIN;
       Session.GPacket.Reject.Why = (int)REJECT_GAME_FULL;
       Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                               &Session.GAddress);
-      return (EV_NONE);
+      return EV_NONE;
     }
 
     /*
@@ -5363,7 +5362,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       Session.GPacket.Reject.Why = (int)REJECT_MISMATCH;
       Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                               &Session.GAddress);
-      return (EV_NONE);
+      return EV_NONE;
     }
 
     //.....................................................................
@@ -5409,7 +5408,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         Session.GPacket.Reject.Why = (int)REJECT_VERSION_TOO_OLD;
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                                 &Session.GAddress);
-        return (EV_NONE);
+        return EV_NONE;
       }
 
       //..................................................................
@@ -5421,7 +5420,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         Session.GPacket.Reject.Why = (int)REJECT_VERSION_TOO_NEW;
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                                 &Session.GAddress);
-        return (EV_NONE);
+        return EV_NONE;
       }
       //..................................................................
       // If the player is accepted, our mutually-accepted version may be
@@ -5474,7 +5473,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                   HouseTypeClass::As_Reference(Session.GPacket.PlayerInfo.House)
                       .Full_Name()));
 #endif  // OLDWAY
-      playerlist->Add_Item(item, (who->Player.Color == PCOLOR_DIALOG_BLUE)
+      playerlist->Add_Item(item, who->Player.Color == PCOLOR_DIALOG_BLUE
                                      ? &ColorRemaps[PCOLOR_REALLY_BLUE]
                                      : &ColorRemaps[who->Player.Color]);
 
@@ -5514,7 +5513,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         //...............................................................
         //	Remove from the list box
         //...............................................................
-        item = (char*)(playerlist->Get_Item(i));
+        item = (char*)playerlist->Get_Item(i);
         playerlist->Remove_Item(item);
         playerlist->Flag_To_Redraw();
         delete[] item;
@@ -5548,11 +5547,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
   else if (Session.GPacket.Command == NET_MESSAGE) {
     Session.Messages.Add_Message(
         Session.GPacket.Name,
-        (Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE)
+        Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
             ? PCOLOR_REALLY_BLUE
             : Session.GPacket.Message.Color,
         Session.GPacket.Message.Buf,
-        (Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE)
+        Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
             ? PCOLOR_REALLY_BLUE
             : Session.GPacket.Message.Color,
         TPF_TEXT, -1);
@@ -5562,7 +5561,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     retval = EV_MESSAGE;
   }
 
-  return (retval);
+  return retval;
 
 } /* end of Get_NewGame_Responses */
 
@@ -5596,7 +5595,7 @@ uint32_t Compute_Name_CRC(char* name) {
     Add_CRC(&crc, (uint32_t)buf[i]);
   }
 
-  return (crc);
+  return crc;
 
 } /* end of Compute_Name_CRC */
 
@@ -5713,22 +5712,22 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
     }
 #else
     w = std::max(String_Pixel_Width(buf3), unsigned(w)) * RESFACTOR;
-    w += (d_margin * 5);
+    w += d_margin * 5;
 #endif
 
-    h = (d_txt6_h * 3) + (d_margin * 6);
-    x = 160 * RESFACTOR - (w / 2);
-    y = 100 * RESFACTOR - (h / 2);
+    h = d_txt6_h * 3 + d_margin * 6;
+    x = 160 * RESFACTOR - w / 2;
+    y = 100 * RESFACTOR - h / 2;
 
     Hide_Mouse();
     Set_Logic_Page(SeenBuff);
     Dialog_Box(x, y, w, h);
 
-    Fancy_Text_Print(buf1, 160 * RESFACTOR, y + (d_margin * 2), scheme, TBLACK,
+    Fancy_Text_Print(buf1, 160 * RESFACTOR, y + d_margin * 2, scheme, TBLACK,
                      TPF_CENTER | TPF_TEXT);
 
     Fancy_Text_Print(buf2, 160 * RESFACTOR,
-                     y + (d_margin * 2) + d_txt6_h + d_margin, scheme, TBLACK,
+                     y + d_margin * 2 + d_txt6_h + d_margin, scheme, TBLACK,
                      TPF_CENTER | TPF_TEXT);
 
 #if defined(WOLAPI_INTEGRATION)
@@ -5743,7 +5742,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
                        TBLACK, TPF_CENTER | TPF_TEXT);
 #else
     Fancy_Text_Print(buf3, 160 * RESFACTOR,
-                     y + (d_margin * 2) + (d_txt6_h + d_margin) * 2, scheme,
+                     y + d_margin * 2 + (d_txt6_h + d_margin) * 2, scheme,
                      TBLACK, TPF_CENTER | TPF_TEXT);
 #endif
 
@@ -5758,15 +5757,15 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
 
     sprintf(buf2, Text_String(TXT_TIME_ALLOWED), timeval + 1);
 
-    int fillx = 160 * RESFACTOR - (String_Pixel_Width(buf2) / 2) - 6;
+    int fillx = 160 * RESFACTOR - String_Pixel_Width(buf2) / 2 - 6;
     LogicPage->Fill_Rect(
-        fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
+        fillx, y + d_margin * 2 + d_txt6_h + d_margin,
         fillx + String_Pixel_Width(buf2) + 12,
-        y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 1 * RESFACTOR,
+        y + d_margin * 2 + d_txt6_h + d_margin + d_txt6_h + 1 * RESFACTOR,
         BLACK);
 
     Fancy_Text_Print(buf2, 160 * RESFACTOR,
-                     y + (d_margin * 2) + d_txt6_h + d_margin, scheme, BLACK,
+                     y + d_margin * 2 + d_txt6_h + d_margin, scheme, BLACK,
                      TPF_CENTER | TPF_TEXT);
 
     Show_Mouse();
@@ -7313,7 +7312,7 @@ void Start_WWChat(ColorListClass* playerlist) {
   sprintf(item, "%s\t%s", Session.Handle,
           Text_String(HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
-  playerlist->Add_Item(item, (Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+  playerlist->Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                  ? &ColorRemaps[PCOLOR_REALLY_BLUE]
                                  : &ColorRemaps[Session.ColorIdx]);
 
@@ -7327,7 +7326,7 @@ void Start_WWChat(ColorListClass* playerlist) {
     //.....................................................................
     if (i == 0 || strcmp(WWPersons[i].Name, WWPersons[i - 1].Name)) {
       WWPersons[i].Color =
-          (PlayerColorType)(Random_Pick(0, (int)(PCOLOR_LAST - 1)));
+          (PlayerColorType)Random_Pick(0, (int)(PCOLOR_LAST - 1));
       if (Percent_Chance(50)) {
         house = HOUSE_GREECE;
       } else {
@@ -7341,7 +7340,7 @@ void Start_WWChat(ColorListClass* playerlist) {
       } else {
         sprintf(item, "%s\t%s", WWPersons[i].Name, Text_String(TXT_SOVIET));
       }
-      playerlist->Add_Item(item, (WWPersons[i].Color == PCOLOR_DIALOG_BLUE)
+      playerlist->Add_Item(item, WWPersons[i].Color == PCOLOR_DIALOG_BLUE
                                      ? &ColorRemaps[PCOLOR_REALLY_BLUE]
                                      : &ColorRemaps[WWPersons[i].Color]);
     }
@@ -7367,7 +7366,7 @@ int Update_WWChat() {
   // Do nothing if it's too soon.
   //------------------------------------------------------------------------
   if (wwperson_timer > 0) {
-    return (0);
+    return 0;
   }
 
   // wwperson_timer = 240;
@@ -7378,7 +7377,7 @@ int Update_WWChat() {
   // print a message.
   //------------------------------------------------------------------------
   if (Percent_Chance(12)) {
-    return (0);
+    return 0;
   }
 
   //------------------------------------------------------------------------
@@ -7387,16 +7386,16 @@ int Update_WWChat() {
   //------------------------------------------------------------------------
   j = sizeof(WWPersons) / sizeof(struct WWPerson);
   i = Random_Pick(0, j - 1);
-  if ((TickCount - WWPersons[i].LastTime) < 1800 &&
+  if (TickCount - WWPersons[i].LastTime < 1800 &&
       WWPersons[i].LastTime != 0) {
-    return (0);
+    return 0;
   }
 
   Session.Messages.Add_Message(WWPersons[i].Name, 0, WWPersons[i].Phrase,
                                WWPersons[i].Color, TPF_TEXT, -1);
   WWPersons[i].LastTime = TickCount;
 
-  return (1);
+  return 1;
 
 }  // end of Update_WWChat
 
@@ -7542,15 +7541,15 @@ static int Net_Fake_New_Dialog() {
   //------------------------------------------------------------------------
   int d_dialog_w = 120 * RESFACTOR;                       // dialog width
   int d_dialog_h = 80 * RESFACTOR;                        // dialog height
-  int d_dialog_x = ((320 * RESFACTOR - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((200 * RESFACTOR - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
+  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
   int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
   int d_margin1 = 5 * RESFACTOR;     // margin width/height
 
   int d_playerlist_w = 118 * RESFACTOR;
-  int d_playerlist_h = ((6 * 6) + 3) * RESFACTOR;  // 6 rows high
+  int d_playerlist_h = (6 * 6 + 3) * RESFACTOR;  // 6 rows high
   int d_playerlist_x = 500 * RESFACTOR;
   int d_playerlist_y = d_dialog_y + d_margin1 + d_txt6_h;
 
@@ -7689,7 +7688,7 @@ static int Net_Fake_New_Dialog() {
   sprintf(item, "%s\t%s", Session.Handle,
           Text_String(HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
-  playerlist.Add_Item(item, (Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+  playerlist.Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                 ? &ColorRemaps[PCOLOR_REALLY_BLUE]
                                 : &ColorRemaps[Session.ColorIdx]);
 
@@ -7795,8 +7794,8 @@ static int Net_Fake_New_Dialog() {
     //	Process input
     //.....................................................................
     switch (input) {
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
         Session.GPacket.Command = NET_SIGN_OFF;
@@ -7822,7 +7821,7 @@ static int Net_Fake_New_Dialog() {
         //...............................................................
         for (i = 1; i < Session.Players.Count(); i++) {
           Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                  &(Session.Players[i]->Address));
+                                  &Session.Players[i]->Address);
           Ipx.Service();
         }
         while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
@@ -7980,7 +7979,7 @@ static int Net_Fake_New_Dialog() {
             for (i = 1; i < Session.Players.Count(); i++) {
               Ipx.Send_Global_Message(&Session.GPacket,
                                       sizeof(GlobalPacketType), 1,
-                                      &(Session.Players[i]->Address));
+                                      &Session.Players[i]->Address);
               Ipx.Service();
             }
 
@@ -8004,7 +8003,7 @@ static int Net_Fake_New_Dialog() {
             // Clear the Players vector if we're not starting a game.
             //------------------------------------------------------------------------
             Clear_Vector(&Session.Players);
-            return (false);
+            return false;
           }
         }
 
@@ -8038,7 +8037,7 @@ static int Net_Fake_New_Dialog() {
         Session.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
 
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                &(Session.Players[i]->Address));
+                                &Session.Players[i]->Address);
       }
       Sound_Effect(VOC_OPTIONS_CHANGED);
       transmit = 0;
@@ -8054,7 +8053,7 @@ static int Net_Fake_New_Dialog() {
       Session.GPacket.Command = NET_PING;
       for (i = 1; i < Session.Players.Count(); i++) {
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                &(Session.Players[i]->Address));
+                                &Session.Players[i]->Address);
       }
       ping_timer = TickCount;
     }
@@ -8093,12 +8092,11 @@ static int Net_Fake_New_Dialog() {
     //.....................................................................
     if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
       Session.MaxAhead = std::max(
-          ((((Ipx.Global_Response_Time() / 8) + (Session.FrameSendRate - 1)) /
-            Session.FrameSendRate) *
-           Session.FrameSendRate),
-          (Session.FrameSendRate * 2));
+          (Ipx.Global_Response_Time() / 8 + (Session.FrameSendRate - 1)) /
+              Session.FrameSendRate * Session.FrameSendRate,
+          Session.FrameSendRate * 2);
     } else {
-      Session.MaxAhead = std::max<int>((Ipx.Global_Response_Time() / 8),
+      Session.MaxAhead = std::max<int>(Ipx.Global_Response_Time() / 8,
                                        NETWORK_MIN_MAX_AHEAD);
     }
 
@@ -8114,7 +8112,7 @@ static int Net_Fake_New_Dialog() {
     Session.GPacket.ResponseTime.OneWay = Session.MaxAhead;
     for (i = 1; i < Session.Players.Count(); i++) {
       Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                              &(Session.Players[i]->Address));
+                              &Session.Players[i]->Address);
     }
     //.....................................................................
     //	Wait for all the ACK's to come in.
@@ -8232,7 +8230,7 @@ static int Net_Fake_New_Dialog() {
   //		optionlist.Remove_Item(item);
   //	}
 
-  return (rc);
+  return rc;
 
 #else  // WIN32
 
@@ -8333,20 +8331,20 @@ static int Net_Fake_Join_Dialog() {
   //------------------------------------------------------------------------
   int d_dialog_w = 120 * RESFACTOR;                       // dialog width
   int d_dialog_h = 80 * RESFACTOR;                        // dialog height
-  int d_dialog_x = ((320 * RESFACTOR - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((200 * RESFACTOR - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
+  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
   int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
   int d_margin2 = 7 * RESFACTOR;     // small margin
 
   int d_gamelist_w = 160 * RESFACTOR;
-  int d_gamelist_h = ((6 * 6) + 3) * RESFACTOR;  // 6 rows high
+  int d_gamelist_h = (6 * 6 + 3) * RESFACTOR;  // 6 rows high
   int d_gamelist_x = 500 * RESFACTOR;
   int d_gamelist_y = 50 + d_margin2 + 2 * RESFACTOR;
 
   int d_playerlist_w = 118 * RESFACTOR;
-  int d_playerlist_h = ((6 * 6) + 3) * RESFACTOR;  // 6 rows high
+  int d_playerlist_h = (6 * 6 + 3) * RESFACTOR;  // 6 rows high
   int d_playerlist_x = 500 * RESFACTOR;
   int d_playerlist_y = 50 + d_margin2 + 2 * RESFACTOR;
 
@@ -8597,8 +8595,8 @@ static int Net_Fake_Join_Dialog() {
       // ESC / CANCEL: send a SIGN_OFF
       // - If we're part of a game, stay in this dialog; otherwise, exit
       //..................................................................
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         //...............................................................
         //	If we're joined to a game, make extra sure the other players in
         //	that game know I'm exiting; send my SIGN_OFF as an ack-required
@@ -8620,7 +8618,7 @@ static int Net_Fake_Join_Dialog() {
           port::SafeCopy(Session.GPacket.Name, namebuf);
           for (i = 1; i < Session.Chat.Count(); i++) {
             Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
-                                    1, &(Session.Chat[i]->Address));
+                                    1, &Session.Chat[i]->Address);
             Ipx.Service();
           }
 
@@ -8735,7 +8733,7 @@ static int Net_Fake_Join_Dialog() {
                 ** We should have the scenario but the wrong disk is in.
                 ** Tell the host that I am ready to go anyway.
                 */
-                memset((void*)&(Session.GPacket), 0, sizeof(Session.GPacket));
+                memset((void*)&Session.GPacket, 0, sizeof(Session.GPacket));
                 Session.GPacket.Command = NET_READY_TO_GO;
                 Ipx.Send_Global_Message(&Session.GPacket,
                                         sizeof(GlobalPacketType), 1,
@@ -8789,7 +8787,7 @@ static int Net_Fake_Join_Dialog() {
             ** We have the scenario. Tell the host that I am ready to go.
             */
             if (!ready_packet_was_sent) {
-              memset((void*)&(Session.GPacket), 0, sizeof(Session.GPacket));
+              memset((void*)&Session.GPacket, 0, sizeof(Session.GPacket));
               Session.GPacket.Command = NET_READY_TO_GO;
               Ipx.Send_Global_Message(&Session.GPacket,
                                       sizeof(GlobalPacketType), 1,
@@ -8816,7 +8814,7 @@ static int Net_Fake_Join_Dialog() {
           /*
           ** Make sure we respond to the host in a load game
           */
-          memset((void*)&(Session.GPacket), 0, sizeof(Session.GPacket));
+          memset((void*)&Session.GPacket, 0, sizeof(Session.GPacket));
           Session.GPacket.Command = NET_READY_TO_GO;
           Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                                   &Session.HostAddress);
@@ -8852,7 +8850,7 @@ static int Net_Fake_Join_Dialog() {
                 Text_String(
                     HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
-        playerlist.Add_Item(item, (Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+        playerlist.Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                       ? &ColorRemaps[PCOLOR_REALLY_BLUE]
                                       : &ColorRemaps[Session.ColorIdx]);
 
@@ -8935,7 +8933,7 @@ static int Net_Fake_Join_Dialog() {
           delete Session.Games[i];
           Session.Games.Delete(Session.Games[i]);
 
-          item = (char*)(gamelist.Get_Item(i));
+          item = (char*)gamelist.Get_Item(i);
           gamelist.Remove_Item(item);
           delete[] item;
 
@@ -8997,7 +8995,7 @@ static int Net_Fake_Join_Dialog() {
       //..................................................................
       for (i = 1; i < Session.Players.Count(); i++) {
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                &(Session.Players[i]->Address));
+                                &Session.Players[i]->Address);
         Ipx.Service();
       }
 
@@ -9090,7 +9088,7 @@ static int Net_Fake_Join_Dialog() {
   }
   Clear_Vector(&Session.Chat);
 
-  return (rc);
+  return rc;
 
 #else  // WIN32
 
@@ -9129,13 +9127,13 @@ bool Server_Remote_Connect() {
   //------------------------------------------------------------------------
   if (!Net_Fake_New_Dialog()) {
     Session.Write_MultiPlayer_Settings();
-    return (false);
+    return false;
   }
 
   Session.NetOpen = 0;
   Session.NetStealth = stealth;
   Session.Write_MultiPlayer_Settings();
-  return (true);
+  return true;
 
 } /* end of Server_Remote_Connect */
 
@@ -9174,9 +9172,9 @@ bool Client_Remote_Connect() {
   Session.NetOpen = 0;
 
   if (rc == -1) {
-    return (false);
+    return false;
   } else {
-    return (true);
+    return true;
   }
 
 } /* end of Client_Remote_Connect */

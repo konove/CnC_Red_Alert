@@ -77,16 +77,16 @@ class DoorClass {
   DoorClass();
   DoorClass(NoInitClass const& x) : Control(x) {}
 
-  bool Time_To_Redraw() { return (IsToRedraw); }
+  bool Time_To_Redraw() { return IsToRedraw; }
   void Clear_Redraw_Flag() { IsToRedraw = false; }
   void AI();
   int Door_Stage() const;
-  bool Is_Door_Opening() { return (State == IS_OPENING); }
-  bool Is_Door_Closing() { return (State == IS_CLOSING); }
+  bool Is_Door_Opening() { return State == IS_OPENING; }
+  bool Is_Door_Closing() { return State == IS_CLOSING; }
   bool Open_Door(int rate, int stages);
   bool Close_Door(int rate, int stages);
-  bool Is_Door_Open() { return (State == IS_OPEN); }
-  bool Is_Door_Closed() { return (State == IS_CLOSED); }
+  bool Is_Door_Open() { return State == IS_OPEN; }
+  bool Is_Door_Closed() { return State == IS_CLOSED; }
   bool Is_Ready_To_Open();
 
   /*

@@ -135,7 +135,7 @@ class GadgetClass : public LinkClass {
   virtual void Clear_Focus();
   virtual bool Has_Focus();
   virtual int Is_List_To_Redraw();
-  virtual bool Is_To_Redraw() { return (IsToRepaint); }
+  virtual bool Is_To_Redraw() { return IsToRepaint; }
   virtual void Set_Position(int x, int y);
 
   /*
@@ -150,7 +150,7 @@ class GadgetClass : public LinkClass {
     ColorScheme = scheme;
   }
 
-  static RemapControlType* Get_Color_Scheme() { return (ColorScheme); }
+  static RemapControlType* Get_Color_Scheme() { return ColorScheme; }
 
   /*
   **	This is the coordinates and dimensions of the gadget region. These are

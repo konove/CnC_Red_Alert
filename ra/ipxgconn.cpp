@@ -158,7 +158,7 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
   a Broadcast address (which IPXAddressClass's default constructor creates).
   ------------------------------------------------------------------------*/
   if (address != nullptr) {
-    dest_addr = (*address);
+    dest_addr = *address;
   }
 
   /*------------------------------------------------------------------------
@@ -169,8 +169,8 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
   /*------------------------------------------------------------------------
   Queue it, along with the destination address
   ------------------------------------------------------------------------*/
-  return (Queue->Queue_Send(PacketBuf, buflen + sizeof(GlobalHeaderType),
-                            &dest_addr, sizeof(IPXAddressClass)));
+  return Queue->Queue_Send(PacketBuf, buflen + sizeof(GlobalHeaderType),
+                           &dest_addr, sizeof(IPXAddressClass));
 
 } /* end of Send_Packet */
 
@@ -210,7 +210,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
   ------------------------------------------------------------------------*/
   packet = (GlobalHeaderType*)buf;
   if (packet->Header.MagicNumber != MagicNum) {
-    return (0);
+    return 0;
   }
 
   /*------------------------------------------------------------------------
@@ -232,7 +232,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
         if (i >= Queue->Receive_Total()) {
           break;
         }
-        if ((*address) == LastAddress[i] &&
+        if (*address == LastAddress[i] &&
             packet->Header.PacketID == LastPacketID[i]) {
           resend = 1;
           break;
@@ -248,7 +248,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
       if (!resend) {
         if (Queue->Queue_Receive(buf, buflen, address,
                                  sizeof(IPXAddressClass))) {
-          LastAddress[LastRXIndex] = (*address);
+          LastAddress[LastRXIndex] = *address;
           LastPacketID[LastRXIndex] = packet->Header.PacketID;
           LastRXIndex++;
           if (LastRXIndex >= 4) {
@@ -301,7 +301,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
         /*...............................................................
         If ptr is valid, get ptr to its data
         ...............................................................*/
-        entry_data = (GlobalHeaderType*)(send_entry->Buffer);
+        entry_data = (GlobalHeaderType*)send_entry->Buffer;
 
         /*...............................................................
         If ACK is for this entry, mark it
@@ -321,7 +321,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
       break;
   }
 
-  return (1);
+  return 1;
 
 } /* end of Receive_Packet */
 
@@ -358,7 +358,7 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
   Return if nothing to do
   ------------------------------------------------------------------------*/
   if (Queue->Num_Receive() == 0) {
-    return (0);
+    return 0;
   }
 
   /*------------------------------------------------------------------------
@@ -378,19 +378,19 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
     /*.....................................................................
     Copy data packet
     .....................................................................*/
-    packet = (GlobalHeaderType*)(rec_entry->Buffer);
+    packet = (GlobalHeaderType*)rec_entry->Buffer;
     packetlen = rec_entry->BufLen - sizeof(GlobalHeaderType);
     if (packetlen > 0) {
       memcpy(buf, rec_entry->Buffer + sizeof(GlobalHeaderType), packetlen);
     }
-    (*buflen) = packetlen;
-    (*product_id) = packet->ProductID;
-    (*address) = (*((IPXAddressClass*)(rec_entry->ExtraBuffer)));
+    *buflen = packetlen;
+    *product_id = packet->ProductID;
+    *address = *(IPXAddressClass*)rec_entry->ExtraBuffer;
 
-    return (1);
+    return 1;
   }
 
-  return (0);
+  return 0;
 
 } /* end of Get_Packet */
 
@@ -434,7 +434,7 @@ int IPXGlobalConnClass::Send(char* buf, int buflen, void* extrabuf, int) {
   If it's a broadcast address, broadcast it
   ------------------------------------------------------------------------*/
   if (addr->Is_Broadcast()) {
-    return (Broadcast(buf, buflen));
+    return Broadcast(buf, buflen);
   }
 
   /*------------------------------------------------------------------------
@@ -446,7 +446,7 @@ int IPXGlobalConnClass::Send(char* buf, int buflen, void* extrabuf, int) {
     } else {
       rc = Send_To(buf, buflen, addr, nullptr);
     }
-    return (rc);
+    return rc;
   }
 
 } /* end of Send */
@@ -491,7 +491,7 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
     }
   }
 
-  return (1);
+  return 1;
 
 } /* end of Service_Receive_Queue */
 

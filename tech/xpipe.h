@@ -69,7 +69,7 @@ class BufferPipe : public Pipe {
   Buffer BufferPtr;
   int Index;
 
-  bool Is_Valid() { return (BufferPtr.Is_Valid()); }
+  bool Is_Valid() { return BufferPtr.Is_Valid(); }
 };
 
 /*
@@ -95,7 +95,7 @@ class FilePipe : public Pipe {
   FileClass* File;
   bool HasOpened;
 
-  bool Valid_File() { return (File != nullptr); }
+  bool Valid_File() { return File != nullptr; }
 };
 
 #endif

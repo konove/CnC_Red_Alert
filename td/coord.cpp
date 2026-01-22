@@ -112,20 +112,20 @@ short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   */
   if (maxsize > ICON_PIXEL_W * 2) {
     static short const _gigundo[] = {
-        -((2 * MAP_CELL_W) - 2), -((2 * MAP_CELL_W) - 1),
-        -((2 * MAP_CELL_W)),     -((2 * MAP_CELL_W) + 1),
-        -((2 * MAP_CELL_W) + 2), -((1 * MAP_CELL_W) - 2),
-        -((1 * MAP_CELL_W) - 1), -((1 * MAP_CELL_W)),
-        -((1 * MAP_CELL_W) + 1), -((1 * MAP_CELL_W) + 2),
-        -((0 * MAP_CELL_W) - 2), -((0 * MAP_CELL_W) - 1),
-        -((0 * MAP_CELL_W)),     -((0 * MAP_CELL_W) + 1),
-        -((0 * MAP_CELL_W) + 2), ((1 * MAP_CELL_W) - 2),
-        ((1 * MAP_CELL_W) - 1),  ((1 * MAP_CELL_W)),
-        ((1 * MAP_CELL_W) + 1),  ((1 * MAP_CELL_W) + 2),
-        +((2 * MAP_CELL_W) - 2), +((2 * MAP_CELL_W) - 1),
-        +((2 * MAP_CELL_W)),     +((2 * MAP_CELL_W) + 1),
-        +((2 * MAP_CELL_W) + 2), REFRESH_EOL};
-    return (&_gigundo[0]);
+        -(2 * MAP_CELL_W - 2), -(2 * MAP_CELL_W - 1),
+        -(2 * MAP_CELL_W),     -(2 * MAP_CELL_W + 1),
+        -(2 * MAP_CELL_W + 2), -(1 * MAP_CELL_W - 2),
+        -(1 * MAP_CELL_W - 1), -(1 * MAP_CELL_W),
+        -(1 * MAP_CELL_W + 1), -(1 * MAP_CELL_W + 2),
+        -(0 * MAP_CELL_W - 2), -(0 * MAP_CELL_W - 1),
+        -(0 * MAP_CELL_W),     -(0 * MAP_CELL_W + 1),
+        -(0 * MAP_CELL_W + 2), (1 * MAP_CELL_W - 2),
+        (1 * MAP_CELL_W - 1),  (1 * MAP_CELL_W),
+        (1 * MAP_CELL_W + 1),  (1 * MAP_CELL_W + 2),
+        +(2 * MAP_CELL_W - 2), +(2 * MAP_CELL_W - 1),
+        +(2 * MAP_CELL_W),     +(2 * MAP_CELL_W + 1),
+        +(2 * MAP_CELL_W + 2), REFRESH_EOL};
+    return &_gigundo[0];
   }
 
   /*
@@ -134,7 +134,7 @@ short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   *cell unnecessarily.
   */
   if (maxsize > ICON_PIXEL_W) {
-    maxsize = std::min(maxsize, (ICON_PIXEL_W * 2)) / 2;
+    maxsize = std::min(maxsize, ICON_PIXEL_W * 2) / 2;
 
     x = Fixed_To_Cardinal(ICON_PIXEL_W, Coord_XLepton(coord));
     y = Fixed_To_Cardinal(ICON_PIXEL_H, Coord_YLepton(coord));
@@ -154,7 +154,7 @@ short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
     if (left < 0 && bottom >= ICON_PIXEL_H) _manual[index++] = MAP_CELL_W - 1;
     if (right >= ICON_PIXEL_H && top < 0) _manual[index++] = -(MAP_CELL_W - 1);
     _manual[index] = REFRESH_EOL;
-    return (&_manual[0]);
+    return &_manual[0];
   }
 
   /*
@@ -169,7 +169,7 @@ short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   if (x > posval) index |= 0x02;   // Spilling East.
   if (x < -posval) index |= 0x01;  // Spilling West.
 
-  return (&_MoveSpillage[_SpillTable[index]][0]);
+  return &_MoveSpillage[_SpillTable[index]][0];
 }
 
 /***********************************************************************************************
@@ -196,7 +196,7 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
   short y = Coord_Y(start);
 
   Move_Point(x, y, dir, distance);
-  return (XY_Coord(x, y));
+  return XY_Coord(x, y);
 #ifdef NEVER
   static char const CosTable[256] = {
       0x00, 0x03, 0x06, 0x09, 0x0c, 0x0f, 0x12, 0x15, 0x18, 0x1b, 0x1e,
@@ -386,7 +386,7 @@ COORDINATE Coord_Scatter(COORDINATE coord, unsigned distance, bool lock) {
     newcoord = Coord_Snap(newcoord);
   }
 
-  return (newcoord);
+  return newcoord;
 }
 
 int calcx(signed short v, short distance) {
@@ -520,7 +520,7 @@ unsigned int Cardinal_To_Fixed(unsigned base, unsigned cardinal) {
 }
 
 unsigned int Fixed_To_Cardinal(unsigned base, unsigned fixed) {
-  unsigned ret = (base * fixed) + 0x80;
+  unsigned ret = base * fixed + 0x80;
 
   if (ret & 0xFF000000) return 0xFFFF;
 

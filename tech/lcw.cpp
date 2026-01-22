@@ -96,7 +96,7 @@ int LCW_Uncomp(void const* source, void* dest, unsigned long) {
       if (!(op_code & 0x40)) {
         if (op_code == 0x80) {
           /* Return # of destination bytes written. */
-          return ((unsigned long)(dest_ptr - (unsigned char*)dest));
+          return (unsigned long)(dest_ptr - (unsigned char*)dest);
 
         } else {
           /* Do a medium copy from source. */
@@ -115,12 +115,12 @@ int LCW_Uncomp(void const* source, void* dest, unsigned long) {
           source_ptr += 3;
 
           copy_ptr = dest_ptr + 4 - ((uintptr_t)dest_ptr & 0x3);
-          count -= (copy_ptr - dest_ptr);
+          count -= copy_ptr - dest_ptr;
           while (dest_ptr < copy_ptr) *dest_ptr++ = data;
 
           word_dest_ptr = (unsigned*)dest_ptr;
 
-          dest_ptr += (count & 0xfffffffc);
+          dest_ptr += count & 0xfffffffc;
 
           while (word_dest_ptr < (unsigned*)dest_ptr) {
             *word_dest_ptr = word_data;

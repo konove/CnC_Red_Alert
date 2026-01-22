@@ -171,7 +171,7 @@ char const* RawFileClass::Set_Name(char const* filename) {
  *=============================================================================================*/
 int RawFileClass::Open(char const* filename, int rights) {
   Set_Name(filename);
-  return (Open(rights));
+  return Open(rights);
 }
 
 /***********************************************************************************************
@@ -237,7 +237,7 @@ int RawFileClass::Open(int rights) {
     break;
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -260,13 +260,13 @@ int RawFileClass::Open(int rights) {
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
 int RawFileClass::Is_Available(int forced) {
-  if (Filename_.empty()) return (false);
+  if (Filename_.empty()) return false;
 
   /*
   **	If the file is already open, then is must have already passed the
   *availability check. *	Return true in this case.
   */
-  if (Is_Open()) return (true);
+  if (Is_Open()) return true;
 
   /*
   **	If this is a forced check, then go through the normal open channels,
@@ -275,7 +275,7 @@ int RawFileClass::Is_Available(int forced) {
   if (forced) {
     RawFileClass::Open(READ);
     RawFileClass::Close();
-    return (true);
+    return true;
   }
 
   /*
@@ -308,7 +308,7 @@ int RawFileClass::Is_Available(int forced) {
   IO_Close_File(Handle);
   Handle = nullptr;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -381,7 +381,7 @@ long RawFileClass::Read(void* buffer, long size) {
     *succeeded.
     */
     if (!Open(READ)) {
-      return (0);
+      return 0;
     }
     opened = true;
   }
@@ -406,7 +406,7 @@ long RawFileClass::Read(void* buffer, long size) {
   **	the actual number of bytes read into the buffer.
   */
   if (opened) Close();
-  return (bytesread);
+  return bytesread;
 }
 
 /***********************************************************************************************
@@ -438,7 +438,7 @@ long RawFileClass::Write(void const* buffer, long size) {
   */
   if (!Is_Open()) {
     if (!Open(WRITE)) {
-      return (0);
+      return 0;
     }
     opened = true;
   }
@@ -468,7 +468,7 @@ long RawFileClass::Write(void const* buffer, long size) {
   *of bytes *	requested, since the case of the disk being full is caught by
   *this routine.
   */
-  return (bytesread);
+  return bytesread;
 }
 
 /***********************************************************************************************
@@ -535,14 +535,14 @@ long RawFileClass::Seek(long pos, int dir) {
     if (newpos > BiasLength) {
       newpos = Raw_Seek(BiasStart + BiasLength, SEEK_SET) - BiasStart;
     }
-    return (newpos);
+    return newpos;
   }
 
   /*
   **	If the file is not biased in any fashion, then the normal seek logic
   *will *	work just fine.
   */
-  return (Raw_Seek(pos, dir));
+  return Raw_Seek(pos, dir);
 }
 
 /***********************************************************************************************
@@ -567,7 +567,7 @@ long RawFileClass::Size() {
   **	A biased file already has its length determined.
   */
   if (BiasLength != -1) {
-    return (BiasLength);
+    return BiasLength;
   }
 
   /*
@@ -592,7 +592,7 @@ long RawFileClass::Size() {
   }
 
   BiasLength = size - BiasStart;
-  return (BiasLength);
+  return BiasLength;
 }
 
 /***********************************************************************************************
@@ -625,9 +625,9 @@ int RawFileClass::Create() {
     }
 
     Close();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -673,7 +673,7 @@ int RawFileClass::Delete() {
     *case, but is handled here.
     */
     if (!Is_Available()) {
-      return (false);
+      return false;
     }
 
     if (!IO_Delete_File(Filename_.c_str())) return false;
@@ -684,7 +684,7 @@ int RawFileClass::Delete() {
   **	DOS reports that the file was successfully deleted. Return with this
   *fact.
   */
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -805,5 +805,5 @@ long RawFileClass::Raw_Seek(long pos, int dir) {
   **	Return with the new position of the file. This will range between zero
   *and the number of *	bytes the file contains.
   */
-  return (pos);
+  return pos;
 }

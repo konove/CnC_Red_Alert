@@ -371,7 +371,7 @@ extern GraphicBufferClass* WindowBuffer;
 
 void Do_Set_Palette(void* palette);
 
-inline int GraphicViewPortClass::Get_LockCount() { return (LockCount); }
+inline int GraphicViewPortClass::Get_LockCount() { return LockCount; }
 
 /***********************************************************************************************
  * GVPC::Get_IsDirectDraw -- provide read access to the IsDirectDraw flag *
@@ -407,7 +407,7 @@ inline bool GraphicViewPortClass::Get_IsDirectDraw() {
  *=============================================================================================*/
 inline bool GraphicViewPortClass::Lock() {
   bool lock = GraphicBuff->Lock();
-  if (!lock) return (false);
+  if (!lock) return false;
 
   if (this != GraphicBuff) {
     Attach(GraphicBuff, XPos, YPos, Width, Height);
@@ -431,7 +431,7 @@ inline bool GraphicViewPortClass::Lock() {
  *=============================================================================================*/
 inline bool GraphicViewPortClass::Unlock() {
   bool unlock = GraphicBuff->Unlock();
-  if (!unlock) return (false);
+  if (!unlock) return false;
 
   return true;
 }
@@ -446,7 +446,7 @@ inline bool GraphicViewPortClass::Unlock() {
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline std::uint8_t* GraphicViewPortClass::Get_Offset() { return (Offset); }
+inline std::uint8_t* GraphicViewPortClass::Get_Offset() { return Offset; }
 
 /***************************************************************************
  * GVPC::GET_HEIGHT -- Gets the height of a virtual viewport instance      *
@@ -458,7 +458,7 @@ inline std::uint8_t* GraphicViewPortClass::Get_Offset() { return (Offset); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_Height() { return (Height); }
+inline int GraphicViewPortClass::Get_Height() { return Height; }
 
 /***************************************************************************
  * GVPC::GET_WIDTH -- Get the width of a virtual viewport instance
@@ -471,7 +471,7 @@ inline int GraphicViewPortClass::Get_Height() { return (Height); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_Width() { return (Width); }
+inline int GraphicViewPortClass::Get_Width() { return Width; }
 
 /***************************************************************************
  * GVPC::GET_XADD -- Get the X add offset for virtual viewport instance    *
@@ -483,7 +483,7 @@ inline int GraphicViewPortClass::Get_Width() { return (Width); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_XAdd() { return (XAdd); }
+inline int GraphicViewPortClass::Get_XAdd() { return XAdd; }
 /***************************************************************************
  * GVPC::GET_XPOS -- Get the x pos of the VP on the Video                  *
  *                                                                         *
@@ -495,7 +495,7 @@ inline int GraphicViewPortClass::Get_XAdd() { return (XAdd); }
  * HISTORY:                                                                *
  *   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_XPos() { return (XPos); }
+inline int GraphicViewPortClass::Get_XPos() { return XPos; }
 
 /***************************************************************************
  * GVPC::GET_YPOS -- Get the y pos of the VP on the video                  *
@@ -510,7 +510,7 @@ inline int GraphicViewPortClass::Get_XPos() { return (XPos); }
  * HISTORY:                                                                *
  *   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_YPos() { return (YPos); }
+inline int GraphicViewPortClass::Get_YPos() { return YPos; }
 
 /***************************************************************************
  * GVPC::GET_GRAPHIC_BUFFER -- Get the graphic buffer of the VP.            *
@@ -523,7 +523,7 @@ inline int GraphicViewPortClass::Get_YPos() { return (YPos); }
  *   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
 inline GraphicBufferClass* GraphicViewPortClass::Get_Graphic_Buffer() {
-  return (GraphicBuff);
+  return GraphicBuff;
 }
 
 inline void GraphicViewPortClass::Put_Pixel(int x, int y, unsigned char color) {
@@ -537,10 +537,10 @@ inline int GraphicViewPortClass::Get_Pixel(int x, int y) {
   int return_code = 0;
 
   if (Lock()) {
-    return_code = (Buffer_Get_Pixel(this, x, y));
+    return_code = Buffer_Get_Pixel(this, x, y);
   }
   Unlock();
-  return (return_code);
+  return return_code;
 }
 
 inline void GraphicViewPortClass::Clear(unsigned char color) {
@@ -554,10 +554,10 @@ inline long GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
                                             void* buff, long size) {
   long return_code = 0;
   if (Lock()) {
-    return_code = (Buffer_To_Buffer(this, x, y, w, h, buff, size));
+    return_code = Buffer_To_Buffer(this, x, y, w, h, buff, size);
   }
   Unlock();
-  return (return_code);
+  return return_code;
 }
 
 inline long GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
@@ -578,14 +578,14 @@ inline int GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int x_pixel,
   if (Lock()) {
     if (dest.Lock()) {
       return_code =
-          (Linear_Blit_To_Linear(this, &dest, x_pixel, y_pixel, dx_pixel,
-                                 dy_pixel, pixel_width, pixel_height, trans));
+          Linear_Blit_To_Linear(this, &dest, x_pixel, y_pixel, dx_pixel,
+                                dy_pixel, pixel_width, pixel_height, trans);
     }
     dest.Unlock();
   }
   Unlock();
 
-  return (return_code);
+  return return_code;
 }
 
 inline int GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int dx,
@@ -605,13 +605,13 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
   if (Lock()) {
     if (dest.Lock()) {
       return_code =
-          (Linear_Scale_To_Linear(this, &dest, src_x, src_y, dst_x, dst_y,
-                                  src_w, src_h, dst_w, dst_h, trans, remap));
+          Linear_Scale_To_Linear(this, &dest, src_x, src_y, dst_x, dst_y, src_w,
+                                 src_h, dst_w, dst_h, trans, remap);
     }
     dest.Unlock();
   }
   Unlock();
-  return (return_code);
+  return return_code;
 }
 
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
@@ -638,10 +638,10 @@ inline unsigned long GraphicViewPortClass::Print(char const* str, int x, int y,
                                                  int fcol, int bcol) {
   unsigned long return_code = 0;
   if (Lock()) {
-    return_code = (Buffer_Print(this, str, x, y, fcol, bcol));
+    return_code = Buffer_Print(this, str, x, y, fcol, bcol);
   }
   Unlock();
-  return (return_code);
+  return return_code;
 }
 
 inline unsigned long GraphicViewPortClass::Print(int num, int x, int y,
@@ -651,10 +651,10 @@ inline unsigned long GraphicViewPortClass::Print(int num, int x, int y,
   unsigned long return_code = 0;
   if (Lock()) {
     snprintf(str, sizeof(str), "%i", num);
-    return_code = (Buffer_Print(this, str, x, y, fcol, bcol));
+    return_code = Buffer_Print(this, str, x, y, fcol, bcol);
   }
   Unlock();
-  return (return_code);
+  return return_code;
 }
 
 inline void GraphicViewPortClass::Draw_Stamp(void const* icondata, int icon,
@@ -707,7 +707,7 @@ inline void GraphicViewPortClass::Remap(void* remap) {
   return Remap(0, 0, Width, Height, remap);
 }
 
-inline int GraphicViewPortClass::Get_Pitch() { return (Pitch); }
+inline int GraphicViewPortClass::Get_Pitch() { return Pitch; }
 /*=========================================================================*/
 /* The following BufferClass functions are defined here because they act
  */
@@ -732,10 +732,10 @@ inline long Buffer_To_Page(int x, int y, int w, int h, void* Buffer,
                            GraphicViewPortClass& view) {
   long return_code = 0;
   if (view.Lock()) {
-    return_code = (Buffer_To_Page(x, y, w, h, Buffer, &view));
+    return_code = Buffer_To_Page(x, y, w, h, Buffer, &view);
   }
   view.Unlock();
-  return (return_code);
+  return return_code;
 }
 
 /***************************************************************************
@@ -797,10 +797,10 @@ inline long BufferClass::To_Page(int x, int y, int w, int h,
                                  GraphicViewPortClass& view) {
   long return_code = 0;
   if (view.Lock()) {
-    return_code = (Buffer_To_Page(x, y, w, h, Buffer, &view));
+    return_code = Buffer_To_Page(x, y, w, h, Buffer, &view);
   }
   view.Unlock();
-  return (return_code);
+  return return_code;
 }
 
 #endif

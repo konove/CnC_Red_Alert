@@ -158,7 +158,7 @@ void PowerClass::One_Time() {
   PowerButton.Width = PowWidth - 1;
   PowerButton.Height = PowHeight;
 
-  PowerShape = MixFileClass::Retrieve((factor) ? "HPOWER.SHP" : "POWER.SHP");
+  PowerShape = MixFileClass::Retrieve(factor ? "HPOWER.SHP" : "POWER.SHP");
   PowerBarShape = Hires_Retrieve("PWRBAR.SHP");
 }
 
@@ -194,12 +194,12 @@ void PowerClass::Draw_It(bool complete) {
         */
         int bottom = PowY + PowHeight - 1;
         int power_height =
-            (PowerHeight == DesiredPowerHeight)
-                ? PowerHeight + (_modtable[PowerBounce] * PowerDir)
+            PowerHeight == DesiredPowerHeight
+                ? PowerHeight + _modtable[PowerBounce] * PowerDir
                 : PowerHeight;
         int drain_height =
-            (DrainHeight == DesiredDrainHeight)
-                ? DrainHeight + (_modtable[DrainBounce] * DrainDir)
+            DrainHeight == DesiredDrainHeight
+                ? DrainHeight + _modtable[DrainBounce] * DrainDir
                 : DrainHeight;
         power_height = Bound(power_height, 0, PowHeight - 2);
         drain_height = Bound(drain_height, 0, PowHeight - 2);
@@ -236,7 +236,7 @@ void PowerClass::Draw_It(bool complete) {
           if (PlayerPtr->Drain > PlayerPtr->Power) {
             power_color = 2;
           }
-          if (PlayerPtr->Drain > (PlayerPtr->Power * 2)) {
+          if (PlayerPtr->Drain > PlayerPtr->Power * 2) {
             power_color = 4;
           }
 
@@ -410,7 +410,7 @@ int PowerClass::Power_Height(int value) {
   ** of each.
   */
   for (int lp = 0; lp < num; lp++) {
-    retval = retval + (((PowHeight - 2) - retval) / POWER_STEP_FACTOR);
+    retval = retval + (PowHeight - 2 - retval) / POWER_STEP_FACTOR;
     value -= POWER_STEP_LEVEL;
   }
 
@@ -419,12 +419,12 @@ int PowerClass::Power_Height(int value) {
   */
   if (value) {
     retval =
-        retval + (((((PowHeight - 2) - retval) / POWER_STEP_FACTOR) * value) /
-                  POWER_STEP_LEVEL);
+        retval + (PowHeight - 2 - retval) / POWER_STEP_FACTOR * value /
+                          POWER_STEP_LEVEL;
   }
 
   retval = Bound(retval, 0, PowHeight - 2);
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -448,7 +448,7 @@ int PowerClass::Power_Height(int value) {
  *=============================================================================================*/
 int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
   if (!Map.IsSidebarActive) {
-    return (false);
+    return false;
   }
 
   /*
@@ -462,5 +462,5 @@ int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
     Map.Help_Text(TXT_POWER_OUTPUT, -1, -1, CC_GREEN);
   }
   GadgetClass::Action(flags, key);
-  return (true);
+  return true;
 }

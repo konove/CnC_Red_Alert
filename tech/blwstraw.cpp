@@ -68,7 +68,7 @@ int BlowStraw::Get(void* source, int slen) {
   **	Verify the parameter for legality.
   */
   if (source == nullptr || slen <= 0) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -76,7 +76,7 @@ int BlowStraw::Get(void* source, int slen) {
   *through *	unchanged.
   */
   if (BF == nullptr) {
-    return (Straw::Get(source, slen));
+    return Straw::Get(source, slen);
   }
 
   int total = 0;
@@ -87,10 +87,10 @@ int BlowStraw::Get(void* source, int slen) {
     **	through first.
     */
     if (Counter > 0) {
-      int sublen = (slen < Counter) ? slen : Counter;
+      int sublen = slen < Counter ? slen : Counter;
       memmove(source, &Buffer[sizeof(Buffer) - Counter], sublen);
       Counter -= sublen;
-      source = ((char*)source) + sublen;
+      source = (char*)source + sublen;
       slen -= sublen;
       total += sublen;
     }
@@ -121,7 +121,7 @@ int BlowStraw::Get(void* source, int slen) {
   /*
   **	Return with the total number of bytes placed into the buffer.
   */
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************

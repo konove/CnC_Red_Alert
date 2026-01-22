@@ -109,22 +109,22 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
   **	If on the diagonal, then incorporate this into the facing
   **	and then bail. The facing is known.
   */
-  if (((bigger + 1) / 2) <= smaller) {
+  if ((bigger + 1) / 2 <= smaller) {
     index += 0x0020;
-    return (DirType(index));
+    return DirType(index);
   }
 
   /*
   **	Determine if the facing is closer to the Y axis or
   **	the X axis.
   */
-  int adder = (index & 0x0040);
+  int adder = index & 0x0040;
   if (xdiff == bigger) {
     adder ^= 0x0040;
   }
   index += adder;
 
-  return (DirType(index));
+  return DirType(index);
 }
 
 /***********************************************************************************************
@@ -178,7 +178,7 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   **	has the added bonus of ensuring that checking for division
   **	by zero is not needed in the following section.
   */
-  if (xdiff == 0 && ydiff == 0) return (DirType(0xFF));
+  if (xdiff == 0 && ydiff == 0) return DirType(0xFF);
 
   /*
   **	Determine which of the two direction offsets it bigger. The
@@ -202,19 +202,19 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   **	(matches diagonal).
   */
   CHECK_NE(bigger, 0U);
-  int frac = (smaller * 32U) / bigger;
+  int frac = smaller * 32U / bigger;
 
   /*
   **	Given the quadrant and knowing whether the facing is closer
   **	to the X or Y axis, we must make an adjustment toward the
   **	subsequent quadrant if necessary.
   */
-  int adder = (composite & 0x0040);
+  int adder = composite & 0x0040;
   if (xdiff > ydiff) {
     adder ^= 0x0040;
   }
   if (adder) {
-    frac = (adder - frac) - 1;
+    frac = adder - frac - 1;
   }
 
   /*
@@ -225,5 +225,5 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   /*
   **	Return with the final facing value.
   */
-  return (DirType(composite & 0x00FF));
+  return DirType(composite & 0x00FF);
 }

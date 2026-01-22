@@ -199,7 +199,7 @@ bool TcpipManagerClass::Init() {
   /*
   ** Just return true if we are already set up
   */
-  if (WinsockInitialised) return (true);
+  if (WinsockInitialised) return true;
 
 #ifdef _WIN32
   /*
@@ -231,7 +231,7 @@ bool TcpipManagerClass::Init() {
   ** Everything is OK so return success
   */
   WinsockInitialised = true;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -361,7 +361,7 @@ int TcpipManagerClass::Read(void* buffer, int buffer_len) {
     RXBufferTail &= WS_NUM_RX_BUFFERS - 1;
   }
 
-  return (bytes_copied);
+  return bytes_copied;
 }
 
 /***********************************************************************************************
@@ -430,7 +430,7 @@ bool TcpipManagerClass::Add_Client() {
   ConnectSocket = accept(ListenSocket, (sockaddr*)&addr, &addrsize);
   if (ConnectSocket == INVALID_SOCKET) {
     // Show_Error("accept", WSAGetLastError());
-    return (false);
+    return false;
   }
 
   /*
@@ -472,7 +472,7 @@ bool TcpipManagerClass::Add_Client() {
   */
   UDPSocket = socket(AF_INET, SOCK_DGRAM, 0);
   if (UDPSocket == INVALID_SOCKET) {
-    return (false);
+    return false;
   }
 
   /*
@@ -485,7 +485,7 @@ bool TcpipManagerClass::Add_Client() {
   if (bind(UDPSocket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
     Close_Socket(UDPSocket);
     ConnectStatus = NOT_CONNECTING;
-    return (false);
+    return false;
   }
 
   /*
@@ -507,7 +507,7 @@ bool TcpipManagerClass::Add_Client() {
   }
 #endif
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************

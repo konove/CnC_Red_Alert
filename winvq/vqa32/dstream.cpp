@@ -127,7 +127,7 @@ static int64_t VQADOSHandler(VQAHandle* vqa, int64_t action, void* buffer,
      * VQAERR_READ.
      */
     case VQACMD_READ:
-      error = (read(fh, buffer, nbytes) != nbytes);
+      error = read(fh, buffer, nbytes) != nbytes;
       break;
 
     /* VQACMD_WRITE is analogous to VQACMD_READ.
@@ -148,7 +148,7 @@ static int64_t VQADOSHandler(VQAHandle* vqa, int64_t action, void* buffer,
      * VQAERR_SEEK.
      */
     case VQACMD_SEEK:
-      error = (lseek(fh, nbytes, (long)buffer) == -1);
+      error = lseek(fh, nbytes, (long)buffer) == -1;
       break;
 
     /* VQACMD_OPEN asks that you open the file for access. */
@@ -186,5 +186,5 @@ static int64_t VQADOSHandler(VQAHandle* vqa, int64_t action, void* buffer,
       break;
   }
 
-  return (error);
+  return error;
 }

@@ -49,12 +49,12 @@ class SoundControlsClass {
 #endif
     OPTION_HEIGHT = 146,
 
-    OPTION_X = ((320 - OPTION_WIDTH) / 2),
+    OPTION_X = (320 - OPTION_WIDTH) / 2,
     OPTION_Y = (200 - OPTION_HEIGHT) / 2,
 
     LISTBOX_X = 17,
     LISTBOX_Y = 54,
-    LISTBOX_W = OPTION_WIDTH - (LISTBOX_X * 2),
+    LISTBOX_W = OPTION_WIDTH - LISTBOX_X * 2,
     LISTBOX_H = 72,
 
     BUTTON_WIDTH = 70,

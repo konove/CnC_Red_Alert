@@ -75,46 +75,46 @@
  *: Created.                                                                 *
  *=============================================================================================*/
 void GameControlsClass::Process() {
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*
   **	Dialog & button dimensions
   */
   int d_dialog_w = 232 * factor;                               // dialog width
   int d_dialog_h = 141 * factor;                               // dialog height
-  int d_dialog_x = ((SeenBuff.Get_Width() - d_dialog_w) / 2);  // dialog x-coord
+  int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y =
-      ((SeenBuff.Get_Height() - d_dialog_h) / 2);   // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
+      (SeenBuff.Get_Height() - d_dialog_h) / 2;   // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;  // center x-coord
   int d_top_margin = 30 * factor;
 
   int d_txt6_h = 7 * factor;   // ht of 6-pt text
   int d_margin1 = 5 * factor;  // large margin
 
-  int d_speed_w = d_dialog_w - (20 * factor);
+  int d_speed_w = d_dialog_w - 20 * factor;
   int d_speed_h = 6 * factor;
-  int d_speed_x = d_dialog_x + (10 * factor);
+  int d_speed_x = d_dialog_x + 10 * factor;
   int d_speed_y = d_dialog_y + d_top_margin + d_margin1 + d_txt6_h;
 
-  int d_scroll_w = d_dialog_w - (20 * factor);
+  int d_scroll_w = d_dialog_w - 20 * factor;
   int d_scroll_h = 6 * factor;
-  int d_scroll_x = d_dialog_x + (10 * factor);
+  int d_scroll_x = d_dialog_x + 10 * factor;
   int d_scroll_y =
-      d_speed_y + d_speed_h + d_txt6_h + (d_margin1 * 2) + d_txt6_h;
+      d_speed_y + d_speed_h + d_txt6_h + d_margin1 * 2 + d_txt6_h;
 
-  int d_visual_w = d_dialog_w - (40 * factor);
+  int d_visual_w = d_dialog_w - 40 * factor;
   int d_visual_h = 9 * factor;
-  int d_visual_x = d_dialog_x + (20 * factor);
-  int d_visual_y = d_scroll_y + d_scroll_h + d_txt6_h + (d_margin1 * 2);
+  int d_visual_x = d_dialog_x + 20 * factor;
+  int d_visual_y = d_scroll_y + d_scroll_h + d_txt6_h + d_margin1 * 2;
 
-  int d_sound_w = d_dialog_w - (40 * factor);
+  int d_sound_w = d_dialog_w - 40 * factor;
   int d_sound_h = 9 * factor;
-  int d_sound_x = d_dialog_x + (20 * factor);
+  int d_sound_x = d_dialog_x + 20 * factor;
   int d_sound_y = d_visual_y + d_visual_h + d_margin1;
 
   int d_ok_w = 20 * factor;
   int d_ok_h = 9 * factor;
-  int d_ok_x = d_dialog_cx - (d_ok_w / 2);
+  int d_ok_x = d_dialog_cx - d_ok_w / 2;
   int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1;
 
   /*
@@ -194,12 +194,12 @@ void GameControlsClass::Process() {
   */
   gspeed_btn.Set_Maximum(OptionsClass::MAX_SPEED_SETTING);  // varies from 0 - 7
   gspeed_btn.Set_Thumb_Size(1);
-  gspeed_btn.Set_Value((OptionsClass::MAX_SPEED_SETTING - 1) - gamespeed);
+  gspeed_btn.Set_Value(OptionsClass::MAX_SPEED_SETTING - 1 - gamespeed);
 
   scrate_btn.Set_Maximum(
       OptionsClass::MAX_SCROLL_SETTING);  // varies from 0 - 7
   scrate_btn.Set_Thumb_Size(1);
-  scrate_btn.Set_Value((OptionsClass::MAX_SCROLL_SETTING - 1) - scrollrate);
+  scrate_btn.Set_Value(OptionsClass::MAX_SCROLL_SETTING - 1 - scrollrate);
 
   /*
   **	Fill array of button ptrs.
@@ -257,7 +257,7 @@ void GameControlsClass::Process() {
       **	Label the game speed slider
       */
       style = TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL;
-      if (curbutton == (BUTTON_SPEED - BUTTON_FIRST)) {
+      if (curbutton == BUTTON_SPEED - BUTTON_FIRST) {
         style = (TextPrintType)(style | TPF_BRIGHT_COLOR);
       }
       Fancy_Text_Print(TXT_SPEED, d_speed_x, d_speed_y - d_txt6_h, CC_GREEN,
@@ -275,7 +275,7 @@ void GameControlsClass::Process() {
       **	Label the scroll rate slider
       */
       style = TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL;
-      if (curbutton == (BUTTON_SCROLLRATE - BUTTON_FIRST)) {
+      if (curbutton == BUTTON_SCROLLRATE - BUTTON_FIRST) {
         style = (TextPrintType)(style | TPF_BRIGHT_COLOR);
       }
       Fancy_Text_Print(TXT_SCROLLRATE, d_scroll_x, d_scroll_y - d_txt6_h,
@@ -304,52 +304,52 @@ void GameControlsClass::Process() {
     **	Process input.
     */
     switch (input) {
-      case (BUTTON_SPEED | KN_BUTTON):
-        curbutton = (BUTTON_SPEED - BUTTON_FIRST);
+      case BUTTON_SPEED | KN_BUTTON:
+        curbutton = BUTTON_SPEED - BUTTON_FIRST;
         refresh = true;
         break;
 
-      case (BUTTON_SCROLLRATE | KN_BUTTON):
-        curbutton = (BUTTON_SCROLLRATE - BUTTON_FIRST);
+      case BUTTON_SCROLLRATE | KN_BUTTON:
+        curbutton = BUTTON_SCROLLRATE - BUTTON_FIRST;
         refresh = true;
         break;
 
-      case (BUTTON_VISUAL | KN_BUTTON):
+      case BUTTON_VISUAL | KN_BUTTON:
         selection = BUTTON_VISUAL;
         pressed = true;
         break;
 
-      case (BUTTON_SOUND | KN_BUTTON):
+      case BUTTON_SOUND | KN_BUTTON:
         selection = BUTTON_SOUND;
         pressed = true;
         break;
 
-      case (BUTTON_OK | KN_BUTTON):
+      case BUTTON_OK | KN_BUTTON:
         selection = BUTTON_OK;
         pressed = true;
         break;
 
-      case (KN_ESC):
+      case KN_ESC:
         process = false;
         break;
 
-      case (KN_LEFT):
-        if (curbutton == (BUTTON_SPEED - BUTTON_FIRST)) {
+      case KN_LEFT:
+        if (curbutton == BUTTON_SPEED - BUTTON_FIRST) {
           gspeed_btn.Bump(1);
-        } else if (curbutton == (BUTTON_SCROLLRATE - BUTTON_FIRST)) {
+        } else if (curbutton == BUTTON_SCROLLRATE - BUTTON_FIRST) {
           scrate_btn.Bump(1);
         }
         break;
 
-      case (KN_RIGHT):
-        if (curbutton == (BUTTON_SPEED - BUTTON_FIRST)) {
+      case KN_RIGHT:
+        if (curbutton == BUTTON_SPEED - BUTTON_FIRST) {
           gspeed_btn.Bump(0);
-        } else if (curbutton == (BUTTON_SCROLLRATE - BUTTON_FIRST)) {
+        } else if (curbutton == BUTTON_SCROLLRATE - BUTTON_FIRST) {
           scrate_btn.Bump(0);
         }
         break;
 
-      case (KN_UP):
+      case KN_UP:
         if (buttons[curbutton]) {
           buttons[curbutton]->Turn_Off();
           buttons[curbutton]->Flag_To_Redraw();
@@ -357,7 +357,7 @@ void GameControlsClass::Process() {
 
         curbutton--;
         if (curbutton < 0) {
-          curbutton = (BUTTON_COUNT - BUTTON_FIRST - 1);
+          curbutton = BUTTON_COUNT - BUTTON_FIRST - 1;
         }
 
         if (buttons[curbutton]) {
@@ -367,14 +367,14 @@ void GameControlsClass::Process() {
         refresh = true;
         break;
 
-      case (KN_DOWN):
+      case KN_DOWN:
         if (buttons[curbutton]) {
           buttons[curbutton]->Turn_Off();
           buttons[curbutton]->Flag_To_Redraw();
         }
 
         curbutton++;
-        if (curbutton > (BUTTON_COUNT - BUTTON_FIRST - 1)) {
+        if (curbutton > BUTTON_COUNT - BUTTON_FIRST - 1) {
           curbutton = 0;
         }
 
@@ -385,7 +385,7 @@ void GameControlsClass::Process() {
         refresh = true;
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
         selection = curbutton + BUTTON_FIRST;
         pressed = true;
         break;
@@ -406,16 +406,16 @@ void GameControlsClass::Process() {
       *executed.
       */
       if (gamespeed !=
-          ((OptionsClass::MAX_SPEED_SETTING - 1) - gspeed_btn.Get_Value())) {
+          OptionsClass::MAX_SPEED_SETTING - 1 - gspeed_btn.Get_Value()) {
         gamespeed =
-            (OptionsClass::MAX_SPEED_SETTING - 1) - gspeed_btn.Get_Value();
+            OptionsClass::MAX_SPEED_SETTING - 1 - gspeed_btn.Get_Value();
         OutList.Add(EventClass(EventClass::GAMESPEED, gamespeed));
       }
 
       if (scrollrate !=
-          ((OptionsClass::MAX_SCROLL_SETTING - 1) - scrate_btn.Get_Value())) {
+          OptionsClass::MAX_SCROLL_SETTING - 1 - scrate_btn.Get_Value()) {
         scrollrate =
-            (OptionsClass::MAX_SCROLL_SETTING - 1) - scrate_btn.Get_Value();
+            OptionsClass::MAX_SCROLL_SETTING - 1 - scrate_btn.Get_Value();
         Options.ScrollRate = scrollrate;
       }
       process = false;
@@ -435,14 +435,14 @@ void GameControlsClass::Process() {
       **	Possibly launch into another dialog if so directed.
       */
       switch (selection) {
-        case (BUTTON_VISUAL):
+        case BUTTON_VISUAL:
           VisualControlsClass().Process();
           process = true;
           display = true;
           refresh = true;
           break;
 
-        case (BUTTON_SOUND):
+        case BUTTON_SOUND:
           if (!SoundType) {
             CCMessageBox().Process(Text_String(TXT_NO_SOUND_CARD));
             process = true;
@@ -453,7 +453,7 @@ void GameControlsClass::Process() {
           }
           break;
 
-        case (BUTTON_OK):
+        case BUTTON_OK:
           break;
       }
 

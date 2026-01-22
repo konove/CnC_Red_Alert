@@ -141,10 +141,10 @@ void BlowfishEngine::Submit_Key(void const* key, int length) {
   for (int index = 0; index < ROUNDS + 2; index++) {
     unsigned long data = 0;
 
-    data = (data << CHAR_BIT) | key_ptr[j++ % length];
-    data = (data << CHAR_BIT) | key_ptr[j++ % length];
-    data = (data << CHAR_BIT) | key_ptr[j++ % length];
-    data = (data << CHAR_BIT) | key_ptr[j++ % length];
+    data = data << CHAR_BIT | key_ptr[j++ % length];
+    data = data << CHAR_BIT | key_ptr[j++ % length];
+    data = data << CHAR_BIT | key_ptr[j++ % length];
+    data = data << CHAR_BIT | key_ptr[j++ % length];
 
     *p_ptr++ ^= data;
   }
@@ -213,7 +213,7 @@ void BlowfishEngine::Submit_Key(void const* key, int length) {
 int BlowfishEngine::Encrypt(void const* plaintext, int length,
                             void* cyphertext) {
   if (plaintext == nullptr || length == 0) {
-    return (0);
+    return 0;
   }
   if (cyphertext == nullptr) cyphertext = (void*)plaintext;
 
@@ -228,8 +228,8 @@ int BlowfishEngine::Encrypt(void const* plaintext, int length,
     */
     for (int index = 0; index < blocks; index++) {
       Process_Block(plaintext, cyphertext, P_Encrypt);
-      plaintext = ((char*)plaintext) + BYTES_PER_BLOCK;
-      cyphertext = ((char*)cyphertext) + BYTES_PER_BLOCK;
+      plaintext = (char*)plaintext + BYTES_PER_BLOCK;
+      cyphertext = (char*)cyphertext + BYTES_PER_BLOCK;
     }
     int encrypted = blocks * BYTES_PER_BLOCK;
 
@@ -240,7 +240,7 @@ int BlowfishEngine::Encrypt(void const* plaintext, int length,
       memmove(cyphertext, plaintext, length - encrypted);
     }
 
-    return (encrypted);
+    return encrypted;
   }
 
   /*
@@ -249,7 +249,7 @@ int BlowfishEngine::Encrypt(void const* plaintext, int length,
   if (plaintext != cyphertext) {
     memmove(cyphertext, plaintext, length);
   }
-  return (length);
+  return length;
 }
 
 /***********************************************************************************************
@@ -279,7 +279,7 @@ int BlowfishEngine::Encrypt(void const* plaintext, int length,
 int BlowfishEngine::Decrypt(void const* cyphertext, int length,
                             void* plaintext) {
   if (cyphertext == nullptr || length == 0) {
-    return (0);
+    return 0;
   }
   if (plaintext == nullptr) plaintext = (void*)cyphertext;
 
@@ -294,8 +294,8 @@ int BlowfishEngine::Decrypt(void const* cyphertext, int length,
     */
     for (int index = 0; index < blocks; index++) {
       Process_Block(cyphertext, plaintext, P_Decrypt);
-      cyphertext = ((char*)cyphertext) + BYTES_PER_BLOCK;
-      plaintext = ((char*)plaintext) + BYTES_PER_BLOCK;
+      cyphertext = (char*)cyphertext + BYTES_PER_BLOCK;
+      plaintext = (char*)plaintext + BYTES_PER_BLOCK;
     }
     int encrypted = blocks * BYTES_PER_BLOCK;
 
@@ -306,7 +306,7 @@ int BlowfishEngine::Decrypt(void const* cyphertext, int length,
       memmove(plaintext, cyphertext, length - encrypted);
     }
 
-    return (encrypted);
+    return encrypted;
   }
 
   /*
@@ -315,7 +315,7 @@ int BlowfishEngine::Decrypt(void const* cyphertext, int length,
   if (plaintext != cyphertext) {
     memmove(plaintext, cyphertext, length);
   }
-  return (length);
+  return length;
 }
 
 /***********************************************************************************************
@@ -375,13 +375,13 @@ void BlowfishEngine::Process_Block(void const* plaintext, void* cyphertext,
   */
   for (int index = 0; index < ROUNDS / 2; index++) {
     left.Long ^= *ptable++;
-    right.Long ^= (((bf_S[0][left.Char.C0] + bf_S[1][left.Char.C1]) ^
-                    bf_S[2][left.Char.C2]) +
-                   bf_S[3][left.Char.C3]);
+    right.Long ^= (bf_S[0][left.Char.C0] + bf_S[1][left.Char.C1] ^
+                   bf_S[2][left.Char.C2]) +
+                  bf_S[3][left.Char.C3];
     right.Long ^= *ptable++;
-    left.Long ^= (((bf_S[0][right.Char.C0] + bf_S[1][right.Char.C1]) ^
-                   bf_S[2][right.Char.C2]) +
-                  bf_S[3][right.Char.C3]);
+    left.Long ^= (bf_S[0][right.Char.C0] + bf_S[1][right.Char.C1] ^
+                  bf_S[2][right.Char.C2]) +
+                 bf_S[3][right.Char.C3];
   }
 
   /*
@@ -443,12 +443,12 @@ void BlowfishEngine::Sub_Key_Encrypt(unsigned long& left,
   for (int index = 0; index < ROUNDS; index += 2) {
     l.Long ^= P_Encrypt[index];
     r.Long ^=
-        (((bf_S[0][l.Char.C0] + bf_S[1][l.Char.C1]) ^ bf_S[2][l.Char.C2]) +
-         bf_S[3][l.Char.C3]);
+        (bf_S[0][l.Char.C0] + bf_S[1][l.Char.C1] ^ bf_S[2][l.Char.C2]) +
+              bf_S[3][l.Char.C3];
     r.Long ^= P_Encrypt[index + 1];
     l.Long ^=
-        (((bf_S[0][r.Char.C0] + bf_S[1][r.Char.C1]) ^ bf_S[2][r.Char.C2]) +
-         bf_S[3][r.Char.C3]);
+        (bf_S[0][r.Char.C0] + bf_S[1][r.Char.C1] ^ bf_S[2][r.Char.C2]) +
+              bf_S[3][r.Char.C3];
   }
   left = r.Long ^ P_Encrypt[ROUNDS + 1];
   right = l.Long ^ P_Encrypt[ROUNDS];

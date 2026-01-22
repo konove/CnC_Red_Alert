@@ -150,7 +150,7 @@ void TeamClass::Init() {
   memset(Success, 0, sizeof(Success));
 
   ptr = new TeamClass();
-  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -159,7 +159,7 @@ void* TeamClass::operator new(size_t) throw() {
   if (ptr) {
     ((TeamClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 void TeamClass::operator delete(void* ptr) {
@@ -228,8 +228,8 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
   */
   FootClass* unit = Member;
   while (unit) {
-    bool tar = (unit->TarCom == MissionTarget);
-    bool nav = (unit->NavCom == MissionTarget);
+    bool tar = unit->TarCom == MissionTarget;
+    bool nav = unit->NavCom == MissionTarget;
     if (tar || nav) {
       /*
       ** If the unit was doing something related to the team mission
@@ -313,7 +313,7 @@ void TeamClass::AI() {
     }
 
     if (Total) {
-      IsFullStrength = (Total == desired);
+      IsFullStrength = Total == desired;
 
       /*
       **	Human controlled teams are always considered full strength. This
@@ -329,7 +329,7 @@ void TeamClass::AI() {
         *threshhold.
         */
         if (Class->IsReinforcable) {
-          IsUnderStrength = (Total <= desired / 3);
+          IsUnderStrength = Total <= desired / 3;
         } else {
           /*
           **	Teams that are not flagged as reinforcable are never considered
@@ -432,7 +432,7 @@ void TeamClass::AI() {
     **	a gesture at random.
     */
     FootClass* techno = Member;
-    DoType doaction = (Random_Pick(1, 2) == 1) ? DO_GESTURE1 : DO_GESTURE2;
+    DoType doaction = Random_Pick(1, 2) == 1 ? DO_GESTURE1 : DO_GESTURE2;
     while (techno) {
       if (!techno->IsInLimbo && techno->What_Am_I() == RTTI_INFANTRY) {
         ((InfantryClass*)techno)->Do_Action(doaction);
@@ -462,7 +462,7 @@ void TeamClass::AI() {
   **	Only try to recruit members for a non player controlled team.
   */
   if (!IsMoving ||
-      (!IsFullStrength && Class->IsReinforcable) && !House->IsHuman) {
+      !IsFullStrength && Class->IsReinforcable && !House->IsHuman) {
     for (int index = 0; index < Class->ClassCount; index++) {
       if (Quantity[index] < Class->DesiredNum[index]) {
         Recruit(index);
@@ -661,7 +661,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
 
   if (!obj || !obj->Strength || (obj->IsInLimbo && !ScenarioInit) ||
       obj->In_Radio_Contact() || obj->House != House) {
-    return (false);
+    return false;
   }
 
   TeamClass* team = obj->Team;
@@ -671,7 +671,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   *return *	with success, since the end result is the same.
   */
   if (team == this) {
-    return (true);
+    return true;
   }
 
   /*
@@ -681,7 +681,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   if (obj->Mission == MISSION_STICKY || obj->Mission == MISSION_SLEEP ||
       obj->Mission == MISSION_GUARD_AREA || obj->Mission == MISSION_HUNT ||
       obj->Mission == MISSION_HARVEST) {
-    return (false);
+    return false;
   }
 
   /*
@@ -689,9 +689,8 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   **	is permitted to leave the other team in order to join this one. If not,
   **	then no further processing is allowed -- bail.
   */
-  if (team && (/*team->Total >= Total || team->IsMoving ||*/
-               team->Class->RecruitPriority >= Class->RecruitPriority)) {
-    return (false);
+  if (team && team->Class->RecruitPriority >= Class->RecruitPriority) {
+    return false;
   }
 
   /*
@@ -712,7 +711,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   *allowed. *	Return with a failure flag in this case.
   */
   if (Quantity[typeindex] >= Class->DesiredNum[typeindex]) {
-    return (false);
+    return false;
   }
 
   /*
@@ -727,7 +726,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   **	Actually add the object to the team.
   */
   Quantity[typeindex]++;
-  obj->IsInitiated = (Member == nullptr);
+  obj->IsInitiated = Member == nullptr;
   obj->Member = Member;
   Member = obj;
   obj->Team = this;
@@ -741,7 +740,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   **	Return with success, since the object was added to the team.
   */
   IsAltered = true;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -772,7 +771,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   *it can't *	be removed. Return success because the end result is the same.
   */
   if (obj->Team != this) {
-    return (true);
+    return true;
   }
 
   /*
@@ -852,7 +851,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   *adjustments made.
   */
   IsAltered = true;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -940,7 +939,7 @@ int TeamClass::Recruit(int typeindex) {
     }
   }
 
-  return (added);
+  return added;
 }
 
 /***********************************************************************************************
@@ -994,7 +993,7 @@ void TeamClass::Detach(TARGET target, bool) {
  *=============================================================================================*/
 TARGET TeamClass::As_Target() const {
   Validate();
-  return (Build_Target(KIND_TEAM, Teams.ID(this)));
+  return Build_Target(KIND_TEAM, Teams.ID(this));
 }
 
 /***********************************************************************************************
@@ -1070,7 +1069,7 @@ void TeamClass::Calc_Center(CELL& center, CELL& obj_center) const {
 void TeamClass::Took_Damage(FootClass*, ResultType result,
                             TechnoClass* source) {
   Validate();
-  if ((result != RESULT_NONE) && (!Class->IsSuicide)) {
+  if (result != RESULT_NONE && !Class->IsSuicide) {
     if (!IsMoving) {
       // Should run to a better hiding place or disband into a group of hunting
       // units.
@@ -1203,7 +1202,7 @@ bool TeamClass::Coordinate_Regroup() {
 
     unit = unit->Member;
   }
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -1240,7 +1239,7 @@ void TeamClass::Coordinate_Move() {
             IsLagging = true;
             finished = false;
           } else {
-            if ((unit->Distance(Target) / ICON_LEPTON_W) > STRAY_DISTANCE ||
+            if (unit->Distance(Target) / ICON_LEPTON_W > STRAY_DISTANCE ||
                 (unit->What_Am_I() == RTTI_AIRCRAFT &&
                  ((AircraftClass*)unit)->Altitude > 0 &&
                  Class->MissionList[CurrentMission + 1].Mission !=
@@ -1296,7 +1295,7 @@ bool TeamClass::Lagging_Units() {
   ** If the IsLagging bit is not set, then obviously there are no lagging
   ** units.
   */
-  if (!IsLagging) return (false);
+  if (!IsLagging) return false;
 
   /*
   **	Scan through all of the units, searching for units who are having
@@ -1334,7 +1333,7 @@ bool TeamClass::Lagging_Units() {
   ** units or not.
   */
   IsLagging = lag;
-  return (lag);
+  return lag;
 }
 
 /***********************************************************************************************
@@ -1440,11 +1439,11 @@ bool TeamClass::Is_A_Member(void const* who) const {
   FootClass* unit = Member;
   while (unit) {
     if (unit == who) {
-      return (true);
+      return true;
     }
     unit = unit->Member;
   }
-  return (false);
+  return false;
 }
 
 /***************************************************************************

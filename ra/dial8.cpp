@@ -46,7 +46,6 @@
 #include "ra/control.h"
 #include "ra/dialog.h"
 #include "ra/face.h"
-#include "ra/gadget.h"
 #include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
@@ -77,8 +76,8 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
   /*
   **	Center coordinates.
   */
-  FaceX = X + (Width / 2);
-  FaceY = Y + (Height / 2);
+  FaceX = X + Width / 2;
+  FaceY = Y + Height / 2;
 
   /*
   **	Init directions.
@@ -94,52 +93,52 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
   **	Height/2 for y-radius.
   */
   FacePoint[0][0] = FaceX;
-  FacePoint[0][1] = FaceY - (h * 8 / 2) / 10;
+  FacePoint[0][1] = FaceY - h * 8 / 2 / 10;
 
-  FacePoint[1][0] = FaceX + (w * 7 * 8 / 2) / 100;
-  FacePoint[1][1] = FaceY - (h * 7 * 8 / 2) / 100;
+  FacePoint[1][0] = FaceX + w * 7 * 8 / 2 / 100;
+  FacePoint[1][1] = FaceY - h * 7 * 8 / 2 / 100;
 
-  FacePoint[2][0] = FaceX + (w * 8 / 2) / 10;
+  FacePoint[2][0] = FaceX + w * 8 / 2 / 10;
   FacePoint[2][1] = FaceY;
 
-  FacePoint[3][0] = FaceX + (w * 7 * 8 / 2) / 100;
-  FacePoint[3][1] = FaceY + (h * 7 * 8 / 2) / 100;
+  FacePoint[3][0] = FaceX + w * 7 * 8 / 2 / 100;
+  FacePoint[3][1] = FaceY + h * 7 * 8 / 2 / 100;
 
   FacePoint[4][0] = FaceX;
-  FacePoint[4][1] = FaceY + (h * 8 / 2) / 10;
+  FacePoint[4][1] = FaceY + h * 8 / 2 / 10;
 
-  FacePoint[5][0] = FaceX - (w * 7 * 8 / 2) / 100;
-  FacePoint[5][1] = FaceY + (h * 7 * 8 / 2) / 100;
+  FacePoint[5][0] = FaceX - w * 7 * 8 / 2 / 100;
+  FacePoint[5][1] = FaceY + h * 7 * 8 / 2 / 100;
 
-  FacePoint[6][0] = FaceX - (w * 8 / 2) / 10;
+  FacePoint[6][0] = FaceX - w * 8 / 2 / 10;
   FacePoint[6][1] = FaceY;
 
-  FacePoint[7][0] = FaceX - (w * 7 * 8 / 2) / 100;
-  FacePoint[7][1] = FaceY - (h * 7 * 8 / 2) / 100;
+  FacePoint[7][0] = FaceX - w * 7 * 8 / 2 / 100;
+  FacePoint[7][1] = FaceY - h * 7 * 8 / 2 / 100;
 
   FaceLine[0][0] = FaceX;
-  FaceLine[0][1] = FaceY - (h * 6 / 2) / 10;
+  FaceLine[0][1] = FaceY - h * 6 / 2 / 10;
 
-  FaceLine[1][0] = FaceX + (w * 7 * 6 / 2) / 100;
-  FaceLine[1][1] = FaceY - (h * 7 * 6 / 2) / 100;
+  FaceLine[1][0] = FaceX + w * 7 * 6 / 2 / 100;
+  FaceLine[1][1] = FaceY - h * 7 * 6 / 2 / 100;
 
-  FaceLine[2][0] = FaceX + (w * 6 / 2) / 10;
+  FaceLine[2][0] = FaceX + w * 6 / 2 / 10;
   FaceLine[2][1] = FaceY;
 
-  FaceLine[3][0] = FaceX + (w * 7 * 6 / 2) / 100;
-  FaceLine[3][1] = FaceY + (h * 7 * 6 / 2) / 100;
+  FaceLine[3][0] = FaceX + w * 7 * 6 / 2 / 100;
+  FaceLine[3][1] = FaceY + h * 7 * 6 / 2 / 100;
 
   FaceLine[4][0] = FaceX;
-  FaceLine[4][1] = FaceY + (h * 6 / 2) / 10;
+  FaceLine[4][1] = FaceY + h * 6 / 2 / 10;
 
-  FaceLine[5][0] = FaceX - (w * 7 * 6 / 2) / 100;
-  FaceLine[5][1] = FaceY + (h * 7 * 6 / 2) / 100;
+  FaceLine[5][0] = FaceX - w * 7 * 6 / 2 / 100;
+  FaceLine[5][1] = FaceY + h * 7 * 6 / 2 / 100;
 
-  FaceLine[6][0] = FaceX - (w * 6 / 2) / 10;
+  FaceLine[6][0] = FaceX - w * 6 / 2 / 10;
   FaceLine[6][1] = FaceY;
 
-  FaceLine[7][0] = FaceX - (w * 7 * 6 / 2) / 100;
-  FaceLine[7][1] = FaceY - (h * 7 * 6 / 2) / 100;
+  FaceLine[7][0] = FaceX - w * 7 * 6 / 2 / 100;
+  FaceLine[7][1] = FaceY - h * 7 * 6 / 2 / 100;
 }
 
 /***************************************************************************
@@ -179,7 +178,7 @@ int Dial8Class::Action(unsigned flags, KeyNumType& key) {
   *substitutes *	  'key' with the button ID if any flags are set, or 0 if
   *no flags are set
   */
-  if (flags & LEFTPRESS || ((flags & LEFTHELD) && is_sel)) {
+  if (flags & LEFTPRESS || (flags & LEFTHELD && is_sel)) {
     /*
     **	Get new dial position (0-255)
     */
@@ -197,7 +196,7 @@ int Dial8Class::Action(unsigned flags, KeyNumType& key) {
     if (Facing != OldFacing) {
       OldFacing = Facing;
       ControlClass::Action(flags, key);
-      return (true);
+      return true;
 
     } else {
       /*
@@ -205,7 +204,7 @@ int Dial8Class::Action(unsigned flags, KeyNumType& key) {
       */
       key = KN_NONE;
       ControlClass::Action(0, key);
-      return (true);
+      return true;
     }
 
   } else {
@@ -217,7 +216,7 @@ int Dial8Class::Action(unsigned flags, KeyNumType& key) {
       key = KN_NONE;
       is_sel = 0;
     }
-    return (ControlClass::Action(0, key));
+    return ControlClass::Action(0, key);
   }
 }
 
@@ -274,10 +273,10 @@ int Dial8Class::Draw_Me(int forced) {
       Show_Mouse();
     }
 
-    return (true);
+    return true;
   }
 
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -295,7 +294,7 @@ int Dial8Class::Draw_Me(int forced) {
  * HISTORY:                                                                *
  *   11/17/1994 BR : Created.                                              *
  *=========================================================================*/
-DirType Dial8Class::Get_Direction() const { return (Direction); }
+DirType Dial8Class::Get_Direction() const { return Direction; }
 
 /***************************************************************************
  * Dial8Class::Set_Direction -- sets current direction (0-255) of dial     *

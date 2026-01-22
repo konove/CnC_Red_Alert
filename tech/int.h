@@ -81,49 +81,49 @@ class Int {
   /*
   **	Array access operator (references bit position). Bit 0 is the first bit.
   */
-  bool operator[](unsigned bit) const { return (XMP_Test_Bit(&reg[0], bit)); }
+  bool operator[](unsigned bit) const { return XMP_Test_Bit(&reg[0], bit); }
 
   /*
   **	Unary operators.
   */
   Int& operator++() {
     XMP_Inc(&reg[0], PRECISION);
-    return (*this);
+    return *this;
   }
   Int& operator--() {
     XMP_Dec(&reg[0], PRECISION);
-    return (*this);
+    return *this;
   }
-  int operator!() const { return (XMP_Test_Eq_Int(&reg[0], 0, PRECISION)); }
+  int operator!() const { return XMP_Test_Eq_Int(&reg[0], 0, PRECISION); }
   Int operator~() {
     XMP_Not(&reg[0], PRECISION);
-    return (*this);
+    return *this;
   }
   Int operator-() const {
     Int a = *this;
     a.Negate();
-    return (a);
+    return a;
   }
 
   /*
   **	Attribute query functions.
   */
-  int ByteCount() const { return (XMP_Count_Bytes(&reg[0], PRECISION)); }
-  int BitCount() const { return (XMP_Count_Bits(&reg[0], PRECISION)); }
-  bool Is_Negative() const { return (XMP_Is_Negative(&reg[0], PRECISION)); }
+  int ByteCount() const { return XMP_Count_Bytes(&reg[0], PRECISION); }
+  int BitCount() const { return XMP_Count_Bits(&reg[0], PRECISION); }
+  bool Is_Negative() const { return XMP_Is_Negative(&reg[0], PRECISION); }
   unsigned MaxBitPrecision() const {
     return PRECISION * (sizeof(uint32_t) * CHAR_BIT);
   }
-  bool IsSmallPrime() const { return (XMP_Is_Small_Prime(&reg[0], PRECISION)); }
+  bool IsSmallPrime() const { return XMP_Is_Small_Prime(&reg[0], PRECISION); }
   bool SmallDivisorsTest() const {
-    return (XMP_Small_Divisors_Test(&reg[0], PRECISION));
+    return XMP_Small_Divisors_Test(&reg[0], PRECISION);
   }
   bool FermatTest(unsigned rounds) const {
-    return (XMP_Fermat_Test(&reg[0], rounds, PRECISION));
+    return XMP_Fermat_Test(&reg[0], rounds, PRECISION);
   }
-  bool IsPrime() const { return (XMP_Is_Prime(&reg[0], PRECISION)); }
+  bool IsPrime() const { return XMP_Is_Prime(&reg[0], PRECISION); }
   bool RabinMillerTest(Straw& rng, unsigned int rounds) const {
-    return (XMP_Rabin_Miller_Test(rng, &reg[0], rounds, PRECISION));
+    return XMP_Rabin_Miller_Test(rng, &reg[0], rounds, PRECISION);
   }
 
   /*
@@ -131,23 +131,23 @@ class Int {
   */
   Int& operator+=(const Int& number) {
     Carry = XMP_Add(&reg[0], &reg[0], number, 0, PRECISION);
-    return (*this);
+    return *this;
   }
   Int& operator-=(const Int& number) {
     Borrow = XMP_Sub(&reg[0], &reg[0], number, 0, PRECISION);
-    return (*this);
+    return *this;
   }
   Int& operator*=(const Int& multiplier) {
     Remainder = *this;
     Error = XMP_Signed_Mult(&reg[0], Remainder, multiplier, PRECISION);
-    return (*this);
+    return *this;
   }
   Int& operator/=(const Int& t) {
-    *this = (*this) / t;
+    *this = *this / t;
     return *this;
   }
   Int& operator%=(const Int& t) {
-    *this = (*this) % t;
+    *this = *this % t;
     return *this;
   }
   Int& operator<<=(int bits) {
@@ -165,24 +165,24 @@ class Int {
   Int operator+(const Int& number) const {
     Int term;
     Carry = XMP_Add(term, &reg[0], number, 0, PRECISION);
-    return (term);
+    return term;
   }
   Int operator+(unsigned short b) const {
     Int result;
     Carry = XMP_Add_Int(result, &reg[0], b, 0, PRECISION);
-    return (result);
+    return result;
   }
   //		friend Int<PRECISION> operator + (digit b, const Int<PRECISION>
   //& a) {return(Int<PRECISION>(b) + a);}
   Int operator-(const Int& number) const {
     Int term;
     Borrow = XMP_Sub(term, &reg[0], number, 0, PRECISION);
-    return (term);
+    return term;
   }
   Int operator-(unsigned short b) const {
     Int result;
     Borrow = XMP_Sub_Int(result, &reg[0], b, 0, PRECISION);
-    return (result);
+    return result;
   }
   //		friend Int<PRECISION> operator - (digit b, const Int<PRECISION>
   //& a) {return(Int<PRECISION>(b) - a);}
@@ -194,31 +194,31 @@ class Int {
   Int operator*(unsigned short b) const {
     Int result;
     Error = XMP_Unsigned_Mult_Int(result, &reg[0], b, PRECISION);
-    return (result);
+    return result;
   }
   //		friend Int<PRECISION> operator * (digit b, const Int<PRECISION>
   //& a) {return(Int<PRECISION>(b) * a);}
   Int operator/(const Int& divisor) const {
     Int quotient = *this;
     XMP_Signed_Div(Remainder, quotient, &reg[0], divisor, PRECISION);
-    return (quotient);
+    return quotient;
   }
-  Int operator/(unsigned long b) const { return (*this / Int<PRECISION>(b)); }
+  Int operator/(unsigned long b) const { return *this / Int<PRECISION>(b); }
   Int operator/(unsigned short divisor) const {
     Int quotient;
     Error = XMP_Unsigned_Div_Int(quotient, &reg[0], divisor, PRECISION);
-    return (quotient);
+    return quotient;
   }
   //		friend Int<PRECISION> operator / (digit a, const Int<PRECISION>
   //& b) {return(Int<PRECISION>(a) / b);}
   Int operator%(const Int& divisor) const {
     Int remainder;
     XMP_Signed_Div(remainder, Remainder, &reg[0], divisor, PRECISION);
-    return (remainder);
+    return remainder;
   }
-  Int operator%(unsigned long b) const { return (*this % Int<PRECISION>(b)); }
+  Int operator%(unsigned long b) const { return *this % Int<PRECISION>(b); }
   unsigned short operator%(unsigned short divisor) const {
-    return (XMP_Unsigned_Div_Int(Remainder, &reg[0], divisor, PRECISION));
+    return XMP_Unsigned_Div_Int(Remainder, &reg[0], divisor, PRECISION);
   }
   //		friend Int<PRECISION> operator % (digit a, const Int<PRECISION>
   //& b) {return(Int<PRECISION>(a) % b);}
@@ -241,20 +241,20 @@ class Int {
   **	Comparison binary operators.
   */
   int operator==(const Int& b) const {
-    return (memcmp(&reg[0], &b.reg[0], (MAX_BIT_PRECISION / CHAR_BIT)) == 0);
+    return memcmp(&reg[0], &b.reg[0], MAX_BIT_PRECISION / CHAR_BIT) == 0;
   }
   int operator!=(const Int& b) const { return !(*this == b); }
   int operator>(const Int& number) const {
-    return (XMP_Compare(&reg[0], number, PRECISION) > 0);
+    return XMP_Compare(&reg[0], number, PRECISION) > 0;
   }
   int operator>=(const Int& number) const {
-    return (XMP_Compare(&reg[0], number, PRECISION) >= 0);
+    return XMP_Compare(&reg[0], number, PRECISION) >= 0;
   }
   int operator<(const Int& number) const {
-    return (XMP_Compare(&reg[0], number, PRECISION) < 0);
+    return XMP_Compare(&reg[0], number, PRECISION) < 0;
   }
   int operator<=(const Int& number) const {
-    return (XMP_Compare(&reg[0], number, PRECISION) <= 0);
+    return XMP_Compare(&reg[0], number, PRECISION) <= 0;
   }
 
   /*
@@ -263,7 +263,7 @@ class Int {
   void Negate() { XMP_Neg(&reg[0], PRECISION); }
   Int Abs() {
     XMP_Abs(&reg[0], PRECISION);
-    return (*this);
+    return *this;
   }
   Int times_b_mod_c(Int const& multiplier, Int const& modulus) const {
     Int result;
@@ -283,7 +283,7 @@ class Int {
     Int product;
     Error = XMP_Unsigned_Mult(&product.reg[0], &multiplicand.reg[0],
                               &multiplier.reg[0], PRECISION);
-    return (product);
+    return product;
   }
   static void Unsigned_Divide(Int& remainder, Int& quotient,
                               const Int& dividend, const Int& divisor) {
@@ -296,21 +296,21 @@ class Int {
   Int Inverse(const Int& modulus) const {
     Int result;
     XMP_Inverse_A_Mod_B(result, &reg[0], modulus, PRECISION);
-    return (result);
+    return result;
   }
 
   static Int Decode_ASCII(char const* string) {
     Int result;
     XMP_Decode_ASCII(string, result, PRECISION);
-    return (result);
+    return result;
   }
 
   // Number (sign independand) inserted into buffer.
   int Encode(unsigned char* output) const {
-    return (XMP_Encode(output, &reg[0], PRECISION));
+    return XMP_Encode(output, &reg[0], PRECISION);
   }
   int Encode(unsigned char* output, unsigned length) const {
-    return (XMP_Encode(output, length, &reg[0], PRECISION));
+    return XMP_Encode(output, length, &reg[0], PRECISION);
   }
   void Signed_Decode(const unsigned char* from, int frombytes) {
     XMP_Signed_Decode(&reg[0], from, frombytes, PRECISION);
@@ -321,7 +321,7 @@ class Int {
 
   // encode Int using Distinguished Encoding Rules, returns size of output
   int DEREncode(unsigned char* output) const {
-    return (XMP_DER_Encode(&reg[0], output, PRECISION));
+    return XMP_DER_Encode(&reg[0], output, PRECISION);
   }
   void DERDecode(const unsigned char* input) {
     XMP_DER_Decode(&reg[0], input, PRECISION);
@@ -357,7 +357,7 @@ class Int {
         table[i] = p % primeTable[i];
       }
     }
-    bool HasZero() const { return (HasZeroEntry); }
+    bool HasZero() const { return HasZeroEntry; }
     void Increment(unsigned short increment = 1) {
       HasZeroEntry = false;
       for (unsigned int i = 0; i < ARRAY_SIZE(primeTable); i++) {
@@ -365,7 +365,7 @@ class Int {
         while (table[i] >= primeTable[i]) {
           table[i] -= primeTable[i];
         }
-        HasZeroEntry = (HasZeroEntry || !table[i]);
+        HasZeroEntry = HasZeroEntry || !table[i];
       }
     }
     void Increment(const RemainderTable& rtQ) {
@@ -375,7 +375,7 @@ class Int {
         if (table[i] >= primeTable[i]) {
           table[i] -= primeTable[i];
         }
-        HasZeroEntry = (HasZeroEntry || !table[i]);
+        HasZeroEntry = HasZeroEntry || !table[i];
       }
     }
 
@@ -398,16 +398,16 @@ T Gcd(const T& a, const T& n) {
 
 template <class T>
 T Generate_Prime(Straw& rng, int pbits, T const*) {
-  T minQ = (T(1UL) << (unsigned short)(pbits - (unsigned short)2));
-  T maxQ = ((T(1UL) << (unsigned short)(pbits - (unsigned short)1)) -
-            (unsigned short)1);
+  T minQ = T(1UL) << (unsigned short)(pbits - (unsigned short)2);
+  T maxQ = (T(1UL) << (unsigned short)(pbits - (unsigned short)1)) -
+           (unsigned short)1;
 
   T q;
   T p;
 
   do {
     q.Randomize(rng, minQ, maxQ);
-    p = (q * 2) + (unsigned short)1;
+    p = q * 2 + (unsigned short)1;
 
     typename T::RemainderTable rtQ(q);
     typename T::RemainderTable rtP(p);
@@ -422,7 +422,7 @@ T Generate_Prime(Straw& rng, int pbits, T const*) {
     }
   } while (q > maxQ);
 
-  return (p);
+  return p;
 }
 
 template <int PRECISION>

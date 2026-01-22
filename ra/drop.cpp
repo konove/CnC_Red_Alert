@@ -69,17 +69,17 @@ void DropListClass::Zap() {
 
 DropListClass& DropListClass::Add(LinkClass& object) {
   DropButton.Add(object);
-  return ((DropListClass&)EditClass::Add(object));
+  return (DropListClass&)EditClass::Add(object);
 }
 
 DropListClass& DropListClass::Add_Tail(LinkClass& object) {
   DropButton.Add_Tail(object);
-  return ((DropListClass&)EditClass::Add_Tail(object));
+  return (DropListClass&)EditClass::Add_Tail(object);
 }
 
 DropListClass& DropListClass::Add_Head(LinkClass& object) {
   DropButton.Add_Head(object);
-  return ((DropListClass&)EditClass::Add_Head(object));
+  return (DropListClass&)EditClass::Add_Head(object);
 }
 
 DropListClass* DropListClass::Remove() {
@@ -87,18 +87,18 @@ DropListClass* DropListClass::Remove() {
     Collapse();
   }
   DropButton.Remove();
-  return ((DropListClass*)EditClass::Remove());
+  return (DropListClass*)EditClass::Remove();
 }
 
 int DropListClass::Add_Item(char const* text) {
   port::SafeCopy(String, text, MaxLength);
   Flag_To_Redraw();
-  return (List.Add_Item(text));
+  return List.Add_Item(text);
 }
 
-char const* DropListClass::Current_Item() { return (List.Current_Item()); }
+char const* DropListClass::Current_Item() { return List.Current_Item(); }
 
-int DropListClass::Current_Index() { return (List.Current_Index()); }
+int DropListClass::Current_Index() { return List.Current_Index(); }
 
 void DropListClass::Set_Selected_Index(int index) {
   if ((unsigned)index < List.Count()) {
@@ -151,7 +151,7 @@ void DropListClass::Collapse() {
 }
 
 DropListClass& DropListClass::operator=(DropListClass const& list) {
-  if (this == &list) return (*this);
+  if (this == &list) return *this;
   EditClass::operator=(list);
   List = list.List;
   IsDropped = list.IsDropped;
@@ -159,7 +159,7 @@ DropListClass& DropListClass::operator=(DropListClass const& list) {
   DropButton = list.DropButton;
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
-  return (*this);
+  return *this;
 }
 
 DropListClass::DropListClass(DropListClass const& list)

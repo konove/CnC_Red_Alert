@@ -140,7 +140,7 @@ void UnitTrackerClass::Decrement_Unit_Total(int unit_type) {
  *                                                                                             *
  * HISTORY: * 6/7/96 0:13AM ST : Created *
  *=============================================================================================*/
-long* UnitTrackerClass::Get_All_Totals() { return (UnitTotals); }
+long* UnitTrackerClass::Get_All_Totals() { return UnitTotals; }
 
 /***********************************************************************************************
  * UTC::Clear_Unit_Total -- Clear out all the unit totals *

@@ -717,7 +717,7 @@ void EventClass::Execute() {
         *this is a *	special queued move mission and there is already a valid
         *navigation *	target for this unit.
         */
-        bool q = (Data.MegaMission.Mission == MISSION_QMOVE);
+        bool q = Data.MegaMission.Mission == MISSION_QMOVE;
 
         techno->Assign_Mission(Data.MegaMission.Mission);
 

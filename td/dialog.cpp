@@ -145,11 +145,11 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
   }
 
   switch (up) {
-    case (BOXSTYLE_GREEN_BOX):
+    case BOXSTYLE_GREEN_BOX:
       LogicPage->Draw_Rect(x, y, x + w, y + h, style.Highlight);
       break;
 
-    case (BOXSTYLE_GREEN_BORDER):
+    case BOXSTYLE_GREEN_BORDER:
       LogicPage->Draw_Rect(x + 1, y + 1, x + w - 1, y + h - 1, style.Highlight);
       break;
 
@@ -191,7 +191,7 @@ int Format_Window_String(char* string, int maxlinelen, int& width,
   height = 0;
 
   // In no string was passed in, then there are no lines.
-  if (!string) return (0);
+  if (!string) return 0;
 
   // While there are more letters left divide the line up.
   while (*string) {
@@ -228,7 +228,7 @@ int Format_Window_String(char* string, int maxlinelen, int& width,
       *string++ = '\r';
     }
   }
-  return (lines);
+  return lines;
 }
 
 /***********************************************************************************************
@@ -277,7 +277,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   **	If it is to be rendered to the seenpage, then
   **	hide the mouse.
   */
-  if (LogicPage == (&SeenBuff)) Conditional_Hide_Mouse(x, y, x + w, y + h);
+  if (LogicPage == &SeenBuff) Conditional_Hide_Mouse(x, y, x + w, y + h);
 
   Draw_Box(x, y, w, h, style, true);
   border = _border[style][1];
@@ -425,7 +425,7 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
   /*
   **	Change the current font if it differs from the font desired.
   */
-  point = (flag & (TextPrintType)0x000F);
+  point = flag & (TextPrintType)0x000F;
   xspace = 1;
   yspace = 0;
 
@@ -484,8 +484,8 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
   /*
   **	Change the current font palette according to the dropshadow flags.
   */
-  shadow = (flag &
-            (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_LIGHTSHADOW));
+  shadow =
+      flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_LIGHTSHADOW);
   switch (shadow) {
     /*
     **	The text is rendered plain.
@@ -512,7 +512,7 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
     **	dialog system.
     */
     case TPF_LIGHTSHADOW:
-      fontpalette[2] = ((14 * 16) + 7) + 1;
+      fontpalette[2] = 14 * 16 + 7 + 1;
       fontpalette[3] = back;
       xspace -= 1;
       break;
@@ -769,7 +769,7 @@ void Conquer_Clip_Text_Print(char const* text, unsigned x, unsigned y,
           }
           offset = *tabs;
         } else {
-          offset = ((offset + 1 / 50) + 1) * 50;
+          offset = (offset + 1 / 50 + 1) * 50;
         }
         source = ptr + 1;
       } else {

@@ -214,13 +214,13 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
   *the *	change.
   */
   if (!startup ||
-      (MouseShapes && ((mouse != CurrentMouseShape) || (wsmall != IsSmall)))) {
+      (MouseShapes && (mouse != CurrentMouseShape || wsmall != IsSmall))) {
     startup = true;
 
     Timer = control->FrameRate;
     Frame = 0;
 
-    baseshp = (wsmall) ? control->SmallFrame : control->StartFrame;
+    baseshp = wsmall ? control->SmallFrame : control->StartFrame;
     if (baseshp == -1) {
       baseshp = control->StartFrame;
     }
@@ -229,9 +229,9 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
                      Extract_Shape(MouseShapes, baseshp));
     CurrentMouseShape = mouse;
     IsSmall = wsmall;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -264,7 +264,7 @@ void MouseClass::AI(KeyNumType& input, int x, int y) {
     Timer = control->FrameRate;
 
     if (!IsSmall || control->SmallFrame != -1) {
-      int baseframe = (IsSmall) ? control->SmallFrame : control->StartFrame;
+      int baseframe = IsSmall ? control->SmallFrame : control->StartFrame;
       if (baseframe == -1) baseframe = control->StartFrame;
       Set_Mouse_Cursor(control->X, control->Y,
                        Extract_Shape(MouseShapes, baseframe + Frame));

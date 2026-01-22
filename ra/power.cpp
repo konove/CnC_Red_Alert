@@ -143,7 +143,7 @@ void PowerClass::One_Time() {
   RadarClass::One_Time();
   PowerButton.X = POWER_X * RESFACTOR;
   PowerButton.Y = POWER_Y * RESFACTOR;
-  PowerButton.Width = (POWER_WIDTH * RESFACTOR) - 1;
+  PowerButton.Width = POWER_WIDTH * RESFACTOR - 1;
   PowerButton.Height = POWER_HEIGHT * RESFACTOR;
   PowerShape = MFCD::Retrieve("POWER.SHP");
   PowerBarShape = MFCD::Retrieve("POWERBAR.SHP");
@@ -176,7 +176,7 @@ void PowerClass::Draw_It(bool complete) {
         ShapeFlags_Type flags = SHAPE_NORMAL;
         void const* remap = nullptr;
 
-        if (FlashTimer > 1 && ((FlashTimer % 3) & 0x01) != 0) {
+        if (FlashTimer > 1 && (FlashTimer % 3 & 0x01) != 0) {
           flags = flags | SHAPE_FADING;
           remap = Map.FadingRed;
         }
@@ -192,7 +192,7 @@ void PowerClass::Draw_It(bool complete) {
         *parts
         */
         CC_Draw_Shape(PowerBarShape, 1, 240 * RESFACTOR,
-                      (88 * RESFACTOR) + (56 * RESFACTOR), WINDOW_MAIN,
+                      88 * RESFACTOR + 56 * RESFACTOR, WINDOW_MAIN,
                       flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
 #endif
         /*
@@ -201,12 +201,12 @@ void PowerClass::Draw_It(bool complete) {
         */
         int bottom = (POWER_Y + POWER_HEIGHT - 1) * RESFACTOR;
         int power_height =
-            (PowerHeight == DesiredPowerHeight)
-                ? PowerHeight + (_modtable[PowerBounce] * PowerDir)
+            PowerHeight == DesiredPowerHeight
+                ? PowerHeight + _modtable[PowerBounce] * PowerDir
                 : PowerHeight;
         int drain_height =
-            (DrainHeight == DesiredDrainHeight)
-                ? DrainHeight + (_modtable[DrainBounce] * DrainDir)
+            DrainHeight == DesiredDrainHeight
+                ? DrainHeight + _modtable[DrainBounce] * DrainDir
                 : DrainHeight;
         power_height = Bound(power_height, 0, POWER_HEIGHT - 2);
         drain_height = Bound(drain_height, 0, POWER_HEIGHT - 2);
@@ -222,7 +222,7 @@ void PowerClass::Draw_It(bool complete) {
             color1 = 214;
             color2 = 211;
           }
-          if (PlayerPtr->Drain > (PlayerPtr->Power * 2)) {
+          if (PlayerPtr->Drain > PlayerPtr->Power * 2) {
             color1 = 235;
             color2 = 230;
           }
@@ -236,11 +236,11 @@ void PowerClass::Draw_It(bool complete) {
           */
 #if RESFACTOR == 2
           power_height =
-              (power_height * (76 * RESFACTOR + 1)) / (53 * RESFACTOR + 1);
+              power_height * (76 * RESFACTOR + 1) / (53 * RESFACTOR + 1);
           drain_height =
-              (drain_height * (76 * RESFACTOR + 1)) / (53 * RESFACTOR + 1);
+              drain_height * (76 * RESFACTOR + 1) / (53 * RESFACTOR + 1);
 #endif
-          bottom = (175 * RESFACTOR) + 1;
+          bottom = 175 * RESFACTOR + 1;
 
           LogicPage->Fill_Rect(245 * RESFACTOR, bottom - power_height,
                                245 * RESFACTOR + 1, bottom, color2);
@@ -251,8 +251,8 @@ void PowerClass::Draw_It(bool complete) {
         /*
         **	Draw the power drain threshold marker.
         */
-        CC_Draw_Shape(PowerShape, 0, (POWER_X * RESFACTOR) + RESFACTOR,
-                      bottom - (drain_height + (2 * RESFACTOR)), WINDOW_MAIN,
+        CC_Draw_Shape(PowerShape, 0, POWER_X * RESFACTOR + RESFACTOR,
+                      bottom - (drain_height + 2 * RESFACTOR), WINDOW_MAIN,
                       flags | SHAPE_NORMAL, remap);
       }
       LogicPage->Unlock();
@@ -411,7 +411,7 @@ int PowerClass::Power_Height(int value) {
   ** of each.
   */
   for (int lp = 0; lp < num; lp++) {
-    retval = retval + (((POWER_HEIGHT - 2) - retval) / POWER_STEP_FACTOR);
+    retval = retval + (POWER_HEIGHT - 2 - retval) / POWER_STEP_FACTOR;
     value -= POWER_STEP_LEVEL;
   }
 
@@ -420,12 +420,12 @@ int PowerClass::Power_Height(int value) {
   */
   if (value) {
     retval = retval +
-             (((((POWER_HEIGHT - 2) - retval) / POWER_STEP_FACTOR) * value) /
-              POWER_STEP_LEVEL);
+             (POWER_HEIGHT - 2 - retval) / POWER_STEP_FACTOR * value /
+                          POWER_STEP_LEVEL;
   }
 
   retval = Bound(retval, 0, POWER_HEIGHT - 2);
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -449,7 +449,7 @@ int PowerClass::Power_Height(int value) {
  *=============================================================================================*/
 int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
   if (!Map.IsSidebarActive) {
-    return (false);
+    return false;
   }
 
   /*
@@ -465,7 +465,7 @@ int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
                   Get_Color_Scheme()->Color);
   }
   GadgetClass::Action(flags, key);
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************

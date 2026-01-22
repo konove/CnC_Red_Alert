@@ -53,11 +53,11 @@ void strtrim(char* buffer) {
 
 int Read_Line(FileClass& file, char* buffer, int len, bool& eof) {
   FileStraw fs(file);
-  return (Read_Line(fs, buffer, len, eof));
+  return Read_Line(fs, buffer, len, eof);
 }
 
 int Read_Line(Straw& file, char* buffer, int len, bool& eof) {
-  if (len == 0 || buffer == nullptr) return (0);
+  if (len == 0 || buffer == nullptr) return 0;
 
   int count = 0;
   for (;;) {
@@ -76,5 +76,5 @@ int Read_Line(Straw& file, char* buffer, int len, bool& eof) {
   buffer[count] = '\0';
 
   strtrim(buffer);
-  return (strlen(buffer));
+  return strlen(buffer);
 }

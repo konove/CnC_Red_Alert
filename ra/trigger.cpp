@@ -258,13 +258,13 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
 
       case MULTI_AND:
         e2 = Class->Event2(Event2, event, Class->House, obj, forced);
-        execute = (e1 && e2);
+        execute = e1 && e2;
         break;
 
       case MULTI_LINKED:
       case MULTI_OR:
         e2 = Class->Event2(Event2, event, Class->House, obj, forced);
-        execute = (e1 || e2);
+        execute = e1 || e2;
         break;
     }
   }
@@ -297,7 +297,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
       */
       AttachCount--;
       if (AttachCount > 0) {
-        return (false);
+        return false;
       }
     }
 
@@ -323,7 +323,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
           break;
       }
     }
-    if (!IsActive) return (true);
+    if (!IsActive) return true;
 
     /*
     **	If at least one action was performed, then consider this
@@ -348,7 +348,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
            AttachCount <= 1)) {
         Detach_This_From_All(As_Target(), true);
         delete this;
-        return (true);
+        return true;
       } else {
         /*
         **	Reset event data so that the event will
@@ -360,7 +360,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
     }
   }
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -380,7 +380,7 @@ void* TriggerClass::operator new(size_t) throw() {
     ((TriggerClass*)ptr)->IsActive = true;
   }
 
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -421,7 +421,7 @@ void TriggerClass::operator delete(void* pointer) {
 TARGET TriggerClass::As_Target() const {
   assert(Triggers.ID(this) == ID);
 
-  return (Build_Target(RTTI_TRIGGER, ID));
+  return Build_Target(RTTI_TRIGGER, ID);
 }
 
 /***********************************************************************************************
@@ -445,11 +445,11 @@ TARGET TriggerClass::As_Target() const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
-  if (!trigtype) return (nullptr);
+  if (!trigtype) return nullptr;
 
   for (int index = 0; index < Triggers.Count(); index++) {
     if (trigtype == Triggers.Ptr(index)->Class) {
-      return (Triggers.Ptr(index));
+      return Triggers.Ptr(index);
     }
   }
 
@@ -457,7 +457,7 @@ TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
   **	No trigger was found, so make one.
   */
   TriggerClass* trig = new TriggerClass(trigtype);
-  return (trig);
+  return trig;
 }
 
 /***********************************************************************************************

@@ -137,16 +137,16 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
     /*
     **	If the timer has run out, then the warhead explodes.
     */
-    if (!Timer) return (true);
+    if (!Timer) return true;
 
     proximity = Distance(newlocation, HeadTo);
-    if (proximity < 0x0010) return (true);
+    if (proximity < 0x0010) return true;
     if (proximity < ICON_LEPTON_W && proximity > Proximity) {
-      return (true);
+      return true;
     }
     Proximity = proximity;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************

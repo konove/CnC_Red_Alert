@@ -84,7 +84,7 @@ VQAHandle* Open_Movie(char* name) {
       vqa = nullptr;
     }
   }
-  return (vqa);
+  return vqa;
 }
 
 /***********************************************************************************************
@@ -241,10 +241,10 @@ void Choose_Side() {
     if (frame >= Get_Animation_Frame_Count(anim)) frame = 0;
     if (Keyboard::Check() && endframe == 255) {
       if ((Keyboard::Get() & 0x10FF) == KN_LMOUSE) {
-        if ((_Kbd->MouseQY > 48 * RESFACTOR) &&
-            (_Kbd->MouseQY < 150 * RESFACTOR)) {
-          if ((_Kbd->MouseQX > 18 * RESFACTOR) &&
-              (_Kbd->MouseQX < 148 * RESFACTOR)) {
+        if (_Kbd->MouseQY > 48 * RESFACTOR &&
+            _Kbd->MouseQY < 150 * RESFACTOR) {
+          if (_Kbd->MouseQX > 18 * RESFACTOR &&
+              _Kbd->MouseQX < 148 * RESFACTOR) {
             // Chose GDI
             Whom = HOUSE_GOOD;
             ScenPlayer = SCEN_PLAYER_GDI;
@@ -253,8 +253,8 @@ void Choose_Side() {
             speechplaying = true;
             speech = speechg;
 
-          } else if ((_Kbd->MouseQX > 160 * RESFACTOR) &&
-                     (_Kbd->MouseQX < 300 * RESFACTOR)) {
+          } else if (_Kbd->MouseQX > 160 * RESFACTOR &&
+                     _Kbd->MouseQX < 300 * RESFACTOR) {
             // Chose Nod
             endframe = 14;
             Whom = HOUSE_BAD;

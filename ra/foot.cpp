@@ -274,7 +274,7 @@ void FootClass::Set_Speed(int speed) {
   assert(IsActive);
 
   speed &= 0xFF;
-  ((unsigned char&)Speed) = speed;
+  (unsigned char&)Speed = speed;
 }
 
 /***********************************************************************************************
@@ -335,9 +335,9 @@ bool FootClass::Mark(MarkType mark) {
         Map.Refresh_Cells(cell, Occupy_List());
         break;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -518,7 +518,7 @@ bool FootClass::Basic_Path() {
     }
 
     PathDelay = Rule.PathDelay * TICKS_PER_MINUTE;
-    if (Path[0] != FACING_NONE) return (true);
+    if (Path[0] != FACING_NONE) return true;
 
     /*
     **	If a basic path couldn't be determined, then abort the navigation
@@ -526,7 +526,7 @@ bool FootClass::Basic_Path() {
     */
     Stop_Driver();
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -552,7 +552,7 @@ int FootClass::Mission_Move() {
 
   if (!Target_Legal(NavCom) && !IsDriving && MissionQueue == MISSION_NONE) {
     Enter_Idle_Mode();
-    return (1);
+    return 1;
   }
   //	if (!Target_Legal(TarCom) && !House->IsPlayerControl && !House->IsHuman)
   //{
@@ -560,7 +560,7 @@ int FootClass::Mission_Move() {
       (!Team.Is_Valid() || !Team->Class->IsSuicide)) {
     Target_Something_Nearby(THREAT_RANGE);
   }
-  return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -598,7 +598,7 @@ int FootClass::Mission_Capture() {
       Scatter(0, true);
     }
   }
-  return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -624,7 +624,7 @@ int FootClass::Mission_Attack() {
   } else {
     Enter_Idle_Mode();
   }
-  return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -686,7 +686,7 @@ int FootClass::Mission_Guard() {
     }
   }
 
-  return ((Arm != 0) ? (int)Arm : (dtime + Random_Pick(0, 2)));
+  return Arm != 0 ? (int)Arm : dtime + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -755,7 +755,7 @@ int FootClass::Mission_Hunt() {
       }
     }
   }
-  return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -780,9 +780,9 @@ bool FootClass::Stop_Driver() {
     HeadToCoord = 0;
     Set_Speed(0);
     IsDriving = false;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -814,14 +814,14 @@ bool FootClass::Start_Driver(COORDINATE& headto) {
     **	Check for crate goodie finder here.
     */
     if (Map[headto].Goodie_Check(this)) {
-      return (true);
+      return true;
     }
-    if (!IsActive) return (false);
+    if (!IsActive) return false;
 
     HeadToCoord = 0;
     IsDriving = false;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -846,13 +846,13 @@ COORDINATE FootClass::Sort_Y() const {
   assert(IsActive);
 
   if (IsUnloading) {
-    return (Coord_Add(Coord, 0x01000000L));
+    return Coord_Add(Coord, 0x01000000L);
   }
   if (In_Radio_Contact() && IsTethered &&
       Contact_With_Whom()->What_Am_I() == RTTI_UNIT) {
-    return (Coord_Add(Coord, 0x01000000L));
+    return Coord_Add(Coord, 0x01000000L);
   }
-  return (Coord_Add(Coord, 0x00300000L));
+  return Coord_Add(Coord, 0x00300000L);
 }
 
 /***********************************************************************************************
@@ -927,8 +927,7 @@ void FootClass::Approach_Target() {
       */
       BuildingClass* obj = As_Building(TarCom);
       if (obj) {
-        maxrange +=
-            ((obj->Class->Width() + obj->Class->Height()) * (0x100 / 4));
+        maxrange += (obj->Class->Width() + obj->Class->Height()) * (0x100 / 4);
       }
 
       /*
@@ -963,7 +962,7 @@ void FootClass::Approach_Target() {
         static int _angles[] = {0,  8,   -8, 16,  -16, 24, -24,
                                 32, -32, 48, -48, 64,  -64};
 
-        for (int index = 0; index < (sizeof(_angles) / sizeof(_angles[0]));
+        for (int index = 0; index < sizeof(_angles) / sizeof(_angles[0]);
              index++) {
           trycoord = Coord_Move(tcoord, (DirType)(dir + _angles[index]), range);
 
@@ -1026,7 +1025,7 @@ int FootClass::Mission_Guard_Area() {
 
   if (What_Am_I() == RTTI_UNIT && ((UnitClass*)this)->Class->IsToHarvest) {
     Assign_Mission(MISSION_HARVEST);
-    return (1 + Random_Pick(1, 10));
+    return 1 + Random_Pick(1, 10);
   }
 
   /*
@@ -1044,7 +1043,7 @@ int FootClass::Mission_Guard_Area() {
       Is_Target_Building(TarCom) && ((InfantryClass*)this)->Class->IsBomber &&
       Mission != MISSION_SABOTAGE) {
     Assign_Mission(MISSION_SABOTAGE);
-    return (1);
+    return 1;
   }
 
   /*
@@ -1065,7 +1064,7 @@ int FootClass::Mission_Guard_Area() {
     Target_Something_Nearby(THREAT_AREA);
     Coord = old;
     if (Target_Legal(TarCom)) {
-      return (1);
+      return 1;
     }
     Random_Animate();
   } else {
@@ -1076,7 +1075,7 @@ int FootClass::Mission_Guard_Area() {
   if (What_Am_I() == RTTI_AIRCRAFT) {
     dtime *= 2;
   }
-  return (dtime + Random_Pick(1, 5));
+  return dtime + Random_Pick(1, 5);
 }
 
 /***********************************************************************************************
@@ -1113,9 +1112,9 @@ bool FootClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Start in a still (non-moving) state.
     */
     Path[0] = FACING_NONE;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1213,7 +1212,7 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
       }
     }
   }
-  return (result);
+  return result;
 }
 
 /***********************************************************************************************
@@ -1608,9 +1607,9 @@ bool FootClass::Restore_Mission() {
 
   if (TechnoClass::Restore_Mission()) {
     Assign_Destination(SuspendedNavCom);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1647,17 +1646,17 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
       if (Map[Center_Coord()].Cell_Building() != nullptr) {
         BuildingClass const* building = Map[Center_Coord()].Cell_Building();
         if (*building == STRUCT_REPAIR) {
-          return (RADIO_ROGER);
+          return RADIO_ROGER;
         }
       }
-      return (RADIO_NEGATIVE);
+      return RADIO_NEGATIVE;
 
     /*
     **	Intercept the repair request and if this object is moving, then no
     *repair *	is possible.
     */
     case RADIO_REPAIR:
-      if (Target_Legal(NavCom)) return (RADIO_NEGATIVE);
+      if (Target_Legal(NavCom)) return RADIO_NEGATIVE;
       break;
 
     /*
@@ -1690,9 +1689,9 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     case RADIO_NEED_TO_MOVE:
       param = (long)NavCom;
       if (!Target_Legal(NavCom)) {
-        return (RADIO_ROGER);
+        return RADIO_ROGER;
       }
-      return (RADIO_NEGATIVE);
+      return RADIO_NEGATIVE;
 
     /*
     **	Radio request to move to location specified. Typically this is used
@@ -1701,7 +1700,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     case RADIO_MOVE_HERE:
       if (NavCom != (TARGET)param) {
         if (::As_Target(Coord_Cell(Coord)) == (TARGET)param) {
-          return (RADIO_YEA_NOW_WHAT);
+          return RADIO_YEA_NOW_WHAT;
         } else {
           if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
             Assign_Mission(MISSION_MOVE);
@@ -1710,7 +1709,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
           Shorten_Mission_Timer();
         }
       }
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
 
     /*
     ** Requests if this unit is trying to cooperatively load up. Typically, this
@@ -1719,11 +1718,11 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     case RADIO_TRYING_TO_LOAD:
       if (Mission == MISSION_ENTER || MissionQueue == MISSION_ENTER) {
         TechnoClass::Receive_Message(from, message, param);
-        return (RADIO_ROGER);
+        return RADIO_ROGER;
       }
       break;
   }
-  return (TechnoClass::Receive_Message(from, message, param));
+  return TechnoClass::Receive_Message(from, message, param);
 }
 
 /***********************************************************************************************
@@ -1781,7 +1780,7 @@ int FootClass::Mission_Enter() {
     Enter_Idle_Mode();
   }
 
-  return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -1863,7 +1862,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   **	If the target specified is not legal, then it cannot be attacked. Always
   *return *	zero in this case.
   */
-  if (!Target_Legal(tarcom)) return (0);
+  if (!Target_Legal(tarcom)) return 0;
 
   /*
   ** If the unit is already assigned to destroy the tarcom then we need
@@ -1871,7 +1870,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   ** desired threat rating.
   */
   if (TarCom == tarcom) {
-    return (-Risk());
+    return -Risk();
   }
 
   /*
@@ -1881,7 +1880,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   if (Target_Legal(TarCom)) {
     TechnoClass* techno = As_Techno(TarCom);
     if (techno != nullptr && techno->Is_Weapon_Equipped()) {
-      return (0);
+      return 0;
     }
   }
 
@@ -1891,7 +1890,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   ** at all.
   */
   if (Team.Is_Valid() || Mission == MISSION_HARVEST || !Risk()) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -1908,14 +1907,14 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
     */
     speed = std::max((unsigned)Techno_Type_Class()->MaxSpeed, (unsigned)1);
 
-    int ratio = (speed > 0) ? std::max(dist / speed, 1) : 1;
+    int ratio = speed > 0 ? std::max(dist / speed, 1) : 1;
 
     /*
     ** Finally modify the threat by the distance the unit is away.
     */
     threat = std::max(threat / ratio, 1);
   }
-  return (threat);
+  return threat;
 }
 
 /***********************************************************************************************
@@ -1979,7 +1978,7 @@ TARGET FootClass::Greatest_Threat(ThreatType method)  // const
   **	If this object can cloak, then it won't select a target automatically.
   */
   if (House->IsHuman && IsCloakable && Mission == MISSION_GUARD) {
-    return (TARGET_NONE);
+    return TARGET_NONE;
   }
 
   if (!(method &
@@ -2009,7 +2008,7 @@ TARGET FootClass::Greatest_Threat(ThreatType method)  // const
   /*
   **	Return with final target found.
   */
-  return (target);
+  return target;
 }
 
 /***********************************************************************************************
@@ -2065,7 +2064,7 @@ void FootClass::Detach(TARGET target, bool all) {
       NavQueue[index] = TARGET_NONE;
       if (index < ARRAY_SIZE(NavQueue) - 1) {
         memmove(&NavQueue[index], &NavQueue[index + 1],
-                ((ARRAY_SIZE(NavQueue) - index) - 1) * sizeof(NavQueue[0]));
+                (ARRAY_SIZE(NavQueue) - index - 1) * sizeof(NavQueue[0]));
         index--;
       }
     }
@@ -2101,7 +2100,7 @@ void FootClass::Detach(TARGET target, bool all) {
 int FootClass::Offload_Tiberium_Bail() {
   assert(IsActive);
 
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -2155,16 +2154,16 @@ bool FootClass::Can_Demolish() const {
     case RTTI_AIRCRAFT:
       if (In_Radio_Contact() &&
           Contact_With_Whom()->What_Am_I() == RTTI_BUILDING &&
-          *((BuildingClass*)Contact_With_Whom()) == STRUCT_REPAIR &&
+          *(BuildingClass*)Contact_With_Whom() == STRUCT_REPAIR &&
           Distance(Contact_With_Whom()) < 0x0080) {
-        return (true);
+        return true;
       }
       break;
 
     default:
       break;
   }
-  return (TechnoClass::Can_Demolish());
+  return TechnoClass::Can_Demolish();
 }
 
 /***********************************************************************************************
@@ -2218,9 +2217,9 @@ COORDINATE FootClass::Likely_Coord() const {
   assert(IsActive);
 
   if (Head_To_Coord()) {
-    return (Head_To_Coord());
+    return Head_To_Coord();
   }
-  return (Target_Coord());
+  return Target_Coord();
 }
 
 /***********************************************************************************************
@@ -2256,7 +2255,7 @@ CELL FootClass::Adjust_Dest(CELL cell) const {
 
     cell = XY_Cell(newx, newy);
   }
-  return (cell);
+  return cell;
 }
 
 /***********************************************************************************************
@@ -2409,7 +2408,7 @@ bool FootClass::Is_Allowed_To_Leave_Map() const {
   /*
   **	If the unit hasn't entered the map yet, then don't allow leave the game.
   */
-  if (!IsLocked) return (false);
+  if (!IsLocked) return false;
 
   /*
   **	A unit that isn't marked as a loaner is a gift to the player. Such
@@ -2418,9 +2417,9 @@ bool FootClass::Is_Allowed_To_Leave_Map() const {
   */
   if (!IsALoaner && Mission != MISSION_RETREAT &&
       (!Team.Is_Valid() || !Team->Is_Leaving_Map()))
-    return (false);
+    return false;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2445,7 +2444,7 @@ bool FootClass::Is_Recruitable(HouseClass const* house) const {
   **	If not of the correct house presuasion, then recruitment is not allowed.
   */
   if (house != nullptr && house != House) {
-    return (false);
+    return false;
   }
 
   /*
@@ -2453,7 +2452,7 @@ bool FootClass::Is_Recruitable(HouseClass const* house) const {
   *it available.
   */
   if (IsInLimbo) {
-    return (false);
+    return false;
   }
 
   /*
@@ -2461,7 +2460,7 @@ bool FootClass::Is_Recruitable(HouseClass const* house) const {
   **	general recruitment.
   */
   if (Team.Is_Valid()) {
-    return (false);
+    return false;
   }
 
   /*
@@ -2469,14 +2468,14 @@ bool FootClass::Is_Recruitable(HouseClass const* house) const {
   *then *	return with this information.
   */
   if (!Is_Recruitable_Mission(Mission)) {
-    return (false);
+    return false;
   }
 
   /*
   **	It was not disqualified for general team recruitment, so return that
   **	it is available.
   */
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2527,8 +2526,8 @@ void FootClass::AI() {
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
 bool FootClass::Is_On_Priority_Mission() const {
-  if (Mission == MISSION_ENTER) return (true);
-  return (false);
+  if (Mission == MISSION_ENTER) return true;
+  return false;
 }
 
 /***********************************************************************************************
@@ -2600,5 +2599,5 @@ int FootClass::Mission_Retreat() {
       break;
   }
 
-  return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
 }

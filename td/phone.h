@@ -47,22 +47,22 @@ class PhoneEntryClass {
   PhoneEntryClass() = default;
 
   bool operator==(PhoneEntryClass& obj) {
-    return (memcmp(Name, obj.Name, strlen(Name)) == 0);
+    return memcmp(Name, obj.Name, strlen(Name)) == 0;
   }
   bool operator!=(PhoneEntryClass& obj) {
-    return (memcmp(Name, obj.Name, strlen(Name)) != 0);
+    return memcmp(Name, obj.Name, strlen(Name)) != 0;
   }
   bool operator>(PhoneEntryClass& obj) {
-    return (memcmp(Name, obj.Name, strlen(Name)) > 0);
+    return memcmp(Name, obj.Name, strlen(Name)) > 0;
   }
   bool operator<(PhoneEntryClass& obj) {
-    return (memcmp(Name, obj.Name, strlen(Name)) < 0);
+    return memcmp(Name, obj.Name, strlen(Name)) < 0;
   }
   bool operator>=(PhoneEntryClass& obj) {
-    return (memcmp(Name, obj.Name, strlen(Name)) >= 0);
+    return memcmp(Name, obj.Name, strlen(Name)) >= 0;
   }
   bool operator<=(PhoneEntryClass& obj) {
-    return (memcmp(Name, obj.Name, strlen(Name)) <= 0);
+    return memcmp(Name, obj.Name, strlen(Name)) <= 0;
   }
 
   SerialSettingsType Settings = {};

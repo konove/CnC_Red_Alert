@@ -107,24 +107,24 @@ typedef enum MenuIndexType {
 
 inline short Get_IconSet_MapWidth(void const* data) {
   if (data) {
-    return (((IControl_Type*)data)->MapWidth);
+    return ((IControl_Type*)data)->MapWidth;
   }
-  return (0);
+  return 0;
 }
 
 inline short Get_IconSet_MapHeight(void const* data) {
   if (data) {
-    return (((IControl_Type*)data)->MapHeight);
+    return ((IControl_Type*)data)->MapHeight;
   }
-  return (0);
+  return 0;
 }
 
 inline unsigned char const* Get_IconSet_ControlMap(void const* data) {
   if (data) {
-    return (
-        (unsigned char const*)((char*)data + ((IControl_Type*)data)->ColorMap));
+    return (unsigned char const*)((char*)data +
+                                  ((IControl_Type*)data)->ColorMap);
   }
-  return (nullptr);
+  return nullptr;
 }
 
 class IconsetClass : protected IControl_Type {
@@ -132,36 +132,36 @@ class IconsetClass : protected IControl_Type {
   /*
   **	Query functions.
   */
-  int Map_Width() const { return (MapWidth); }
-  int Map_Height() const { return (MapHeight); }
-  unsigned char* Control_Map() { return ((unsigned char*)this + ColorMap); }
+  int Map_Width() const { return MapWidth; }
+  int Map_Height() const { return MapHeight; }
+  unsigned char* Control_Map() { return (unsigned char*)this + ColorMap; }
   unsigned char const* Control_Map() const {
-    return ((unsigned char const*)this + ColorMap);
+    return (unsigned char const*)this + ColorMap;
   }
-  int Icon_Count() const { return (Count); }
-  int Pixel_Width() const { return (Width); }
-  int Pixel_Height() const { return (Height); }
-  int Total_Size() const { return (Size); }
+  int Icon_Count() const { return Count; }
+  int Pixel_Width() const { return Width; }
+  int Pixel_Height() const { return Height; }
+  int Total_Size() const { return Size; }
   unsigned char const* Palette_Data() const {
-    return ((unsigned char const*)this + Palettes);
+    return (unsigned char const*)this + Palettes;
   }
-  unsigned char* Palette_Data() { return ((unsigned char*)this + Palettes); }
+  unsigned char* Palette_Data() { return (unsigned char*)this + Palettes; }
   unsigned char const* Icon_Data() const {
-    return ((unsigned char const*)this + Icons);
+    return (unsigned char const*)this + Icons;
   }
-  unsigned char* Icon_Data() { return ((unsigned char*)this + Icons); }
+  unsigned char* Icon_Data() { return (unsigned char*)this + Icons; }
   unsigned char const* Map_Data() const {
-    return ((unsigned char const*)this + Map);
+    return (unsigned char const*)this + Map;
   }
-  unsigned char* Map_Data() { return ((unsigned char*)this + Map); }
+  unsigned char* Map_Data() { return (unsigned char*)this + Map; }
   unsigned char const* Remap_Data() const {
-    return ((unsigned char const*)this + Remaps);
+    return (unsigned char const*)this + Remaps;
   }
-  unsigned char* Remap_Data() { return ((unsigned char*)this + Remaps); }
+  unsigned char* Remap_Data() { return (unsigned char*)this + Remaps; }
   unsigned char const* Trans_Data() const {
-    return ((unsigned char const*)this + TransFlag);
+    return (unsigned char const*)this + TransFlag;
   }
-  unsigned char* Trans_Data() { return ((unsigned char*)this + TransFlag); }
+  unsigned char* Trans_Data() { return (unsigned char*)this + TransFlag; }
 
   /*
   **	Disallow these operations with an IconsetClass object.

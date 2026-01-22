@@ -867,7 +867,7 @@ UnitTypeClass::UnitTypeClass(
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* UnitTypeClass::operator new(size_t) throw() {
-  return (UnitTypes.Alloc());
+  return UnitTypes.Alloc();
 }
 
 /***********************************************************************************************
@@ -956,11 +956,11 @@ UnitType UnitTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (UnitType classid = UNIT_FIRST; classid < UNIT_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
-        return (classid);
+        return classid;
       }
     }
   }
-  return (UNIT_NONE);
+  return UNIT_NONE;
 }
 
 #ifdef SCENARIO_EDITOR
@@ -1054,9 +1054,9 @@ void UnitTypeClass::One_Time() {
 #ifndef NDEBUG
     RawFileClass datafile(fullname.c_str());
     if (datafile.Is_Available()) {
-      ((void const*&)uclass.CameoData) = Load_Alloc_Data(datafile);
+      (void const*&)uclass.CameoData = Load_Alloc_Data(datafile);
     } else {
-      ((void const*&)uclass.CameoData) = MFCD::Retrieve(fullname);
+      (void const*&)uclass.CameoData = MFCD::Retrieve(fullname);
     }
 #else
     ((void const*&)uclass.CameoData) = MFCD::Retrieve(fullname);
@@ -1090,7 +1090,7 @@ void UnitTypeClass::One_Time() {
       largest = std::max(largest, (int)Get_Build_Frame_Height(ptr));
     }
 
-    ((int&)uclass.MaxSize) = std::max(largest, 8);
+    (int&)uclass.MaxSize = std::max(largest, 8);
   }
 
   /*
@@ -1130,9 +1130,9 @@ void UnitTypeClass::One_Time() {
 bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   UnitClass* unit = new UnitClass(Type, house);
   if (unit != nullptr) {
-    return (unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX)));
+    return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1152,7 +1152,7 @@ bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  * HISTORY: * 06/07/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* UnitTypeClass::Create_One_Of(HouseClass* house) const {
-  return (new UnitClass(Type, house->Class->House));
+  return new UnitClass(Type, house->Class->House);
 }
 
 /***********************************************************************************************
@@ -1172,7 +1172,7 @@ ObjectClass* UnitTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 UnitTypeClass& UnitTypeClass::As_Reference(UnitType type) {
-  return (*UnitTypes.Ptr(type));
+  return *UnitTypes.Ptr(type);
 }
 
 /***********************************************************************************************
@@ -1193,9 +1193,9 @@ UnitTypeClass& UnitTypeClass::As_Reference(UnitType type) {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 void UnitTypeClass::Dimensions(int& width, int& height) const {
-  width = MaxSize - (MaxSize / 4);
+  width = MaxSize - MaxSize / 4;
   width = std::min(width, 48);
-  height = MaxSize - (MaxSize / 4);
+  height = MaxSize - MaxSize / 4;
   height = std::min(height, 48);
 }
 
@@ -1217,13 +1217,13 @@ void UnitTypeClass::Dimensions(int& width, int& height) const {
  *=============================================================================================*/
 int UnitTypeClass::Max_Pips() const {
   if (Type == UNIT_HARVESTER) {
-    return (7);
+    return 7;
   }
 
   if (Type == UNIT_MINELAYER) {
-    return (MaxAmmo);
+    return MaxAmmo;
   }
-  return (Max_Passengers());
+  return Max_Passengers();
 }
 
 /***********************************************************************************************
@@ -1293,7 +1293,7 @@ bool UnitTypeClass::Read_INI(CCINIClass& ini) {
   if (TechnoTypeClass::Read_INI(ini)) {
     IsNoFireWhileMoving =
         ini.Get_Bool(IniName, "NoMovingFire", IsNoFireWhileMoving);
-    Speed = ini.Get_Bool(IniName, "Tracked", (Speed == SPEED_TRACK))
+    Speed = ini.Get_Bool(IniName, "Tracked", Speed == SPEED_TRACK)
                 ? SPEED_TRACK
                 : SPEED_WHEEL;
 
@@ -1304,7 +1304,7 @@ bool UnitTypeClass::Read_INI(CCINIClass& ini) {
     if (MZone < MZONE_CRUSHER && IsCrusher) {
       MZone = MZONE_CRUSHER;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

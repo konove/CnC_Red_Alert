@@ -143,9 +143,9 @@ void HelpClass::Init_Clear() {
  *=============================================================================================*/
 short const* HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer.Time()) {
-    ((short&)(OverlapList[0])) = REFRESH_EOL;
+    (short&)OverlapList[0] = REFRESH_EOL;
   }
-  return (OverlapList);
+  return OverlapList;
 }
 
 /***********************************************************************************************
@@ -244,7 +244,7 @@ void HelpClass::Help_Text(int text, int x, int y, int color, bool quick,
     if (x == -1) X = Get_Mouse_X();
     Y = y;
     if (y == -1) Y = Get_Mouse_Y();
-    IsRight = (y != -1) || (x != -1);
+    IsRight = y != -1 || x != -1;
 
     if (quick) {
       CountDownTimer.Set(1);
@@ -333,15 +333,15 @@ void HelpClass::Set_Text(int text) {
       DrawX = X + X_OFFSET;
       DrawY = Y + Y_OFFSET;
       if (DrawX + Width > right) {
-        DrawX -= (DrawX + Width) - right;
+        DrawX -= DrawX + Width - right;
       }
       if (DrawY + FontHeight > bottom) {
-        DrawY -= (DrawY + FontHeight) - bottom;
+        DrawY -= DrawY + FontHeight - bottom;
       }
       if (DrawX < TacPixelX + 1) DrawX = TacPixelX + 1;
       if (DrawY < TacPixelY + 1) DrawY = TacPixelY + 1;
     }
-    int lines = (Cost) ? 2 : 1;
+    int lines = Cost ? 2 : 1;
     memcpy((void*)OverlapList,
            Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY, lines),
            sizeof(OverlapList));
@@ -371,7 +371,7 @@ bool HelpClass::Scroll_Map(DirType facing, int& distance, bool really) {
   if (really) {
     Help_Text(TXT_NONE);
   }
-  return (TabClass::Scroll_Map(facing, distance, really));
+  return TabClass::Scroll_Map(facing, distance, really);
 }
 
 /***********************************************************************************************

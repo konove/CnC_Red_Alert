@@ -135,12 +135,12 @@ char const* Map_Selection() {
     char buf[10];
     sprintf(buf, "%02d", Scen.Scenario + 1);
     memcpy(&scenarioname[3], buf, 2);
-    return (scenarioname);
+    return scenarioname;
   }
 
   char _filename[] = "MSAA.WSA";
-  int house = (PlayerPtr->Class->House == HOUSE_USSR ||
-               PlayerPtr->Class->House == HOUSE_UKRAINE);
+  int house = PlayerPtr->Class->House == HOUSE_USSR ||
+              PlayerPtr->Class->House == HOUSE_UKRAINE;
 
   _filename[2] = house ? 'S' : 'A';
   _filename[3] = Scen.Scenario + 'A';
@@ -307,7 +307,7 @@ char const* Map_Selection() {
 
   //	Scen.ScenVar = (ScenarioVarType)selection;
   // Mono_Printf("Chose variant %d  \n", selection);
-  return (scenarioname);
+  return scenarioname;
 }
 
 int Mouse_Over_Spot(int house, int scenario) {
@@ -325,7 +325,7 @@ int Mouse_Over_Spot(int house, int scenario) {
       break;
     }
   }
-  return (retval);
+  return retval;
 }
 
 void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {

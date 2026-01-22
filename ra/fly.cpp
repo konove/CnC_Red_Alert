@@ -88,7 +88,7 @@ ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
       **	and return immediately with this indication.
       */
       if (newcoord == coord) {
-        return (IMPACT_NONE);
+        return IMPACT_NONE;
       }
 
       /*
@@ -104,13 +104,13 @@ ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
           HIGH_COORD_MASK /*|| !Map.In_Radar(Coord_Cell(newcoord))*/) {
         //			if (!Map.In_Radar(Coord_Cell(newcoord))) {
         coord = old;
-        return (IMPACT_EDGE);
+        return IMPACT_EDGE;
       }
 
-      return (IMPACT_NORMAL);
+      return IMPACT_NORMAL;
     }
   }
-  return (IMPACT_NONE);
+  return IMPACT_NONE;
 }
 
 /***********************************************************************************************

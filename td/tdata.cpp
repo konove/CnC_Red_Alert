@@ -680,21 +680,21 @@ void TerrainTypeClass::Init(TheaterType theater) {
       *specific, thus if *	it isn't loaded in this routine, it shouldn't
       *exist at all.
       */
-      ((void const*&)terrain.ImageData) = nullptr;
+      (void const*&)terrain.ImageData = nullptr;
 
-      if (terrain.Theater & (1 << theater)) {
+      if (terrain.Theater & 1 << theater) {
         /*
         **	Load in the appropriate object shape data.
         */
         auto fullname = std::filesystem::path(terrain.IniName)
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        ((void const*&)terrain.ImageData) =
+        (void const*&)terrain.ImageData =
             MixFileClass::Retrieve(fullname.c_str());
 
         IsTheaterShape = true;
         if (terrain.RadarIcon) delete[] (char*)terrain.RadarIcon;
-        ((void const*&)terrain.RadarIcon) =
+        (void const*&)terrain.RadarIcon =
             Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3);
         IsTheaterShape = false;
       }
@@ -722,11 +722,11 @@ TerrainType TerrainTypeClass::From_Name(char const* name) {
   if (name) {
     for (index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
       if (stricmp(name, Pointers[index]->IniName) == 0) {
-        return (index);
+        return index;
       }
     }
   }
-  return (TERRAIN_NONE);
+  return TERRAIN_NONE;
 }
 
 #ifdef SCENARIO_EDITOR
@@ -793,9 +793,9 @@ void TerrainTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 bool TerrainTypeClass::Create_And_Place(CELL cell, HousesType) const {
   if (new TerrainClass(Type, cell)) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -815,19 +815,19 @@ bool TerrainTypeClass::Create_And_Place(CELL cell, HousesType) const {
  * HISTORY: * 07/19/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass*) const {
-  return (new TerrainClass(Type, -1));
+  return new TerrainClass(Type, -1);
 }
 
 short const* TerrainTypeClass::Occupy_List(bool) const {
-  if (Occupy) return (Occupy);
+  if (Occupy) return Occupy;
 
   static short const _simple[1] = {REFRESH_EOL};
-  return (&_simple[0]);
+  return &_simple[0];
 }
 
 short const* TerrainTypeClass::Overlap_List() const {
-  if (Overlap) return (Overlap);
+  if (Overlap) return Overlap;
 
   static short const _simple[1] = {REFRESH_EOL};
-  return (&_simple[0]);
+  return &_simple[0];
 }

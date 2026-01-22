@@ -172,7 +172,7 @@ class TriggerClass {
   //		void Set_House(HousesType house) {House = house;}
   //		long Get_Data() const {return(Data);}
   //		void Set_Data(long credits) {Data = credits;}
-  char const* Get_Name() const { return (Name); }
+  char const* Get_Name() const { return Name; }
   void Set_Name(char const* buf) {
     strncpy(Name, buf, sizeof(Name));
     Name[sizeof(Name) - 1] = '\0';
@@ -195,7 +195,7 @@ class TriggerClass {
   **	Overloaded operators
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void operator delete(void* ptr);
 
   /*

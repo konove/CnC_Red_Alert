@@ -170,7 +170,7 @@ ResultType TerrainClass::Take_Damage(int& damage, int distance,
       }
     }
   }
-  return (res);
+  return res;
 }
 
 /***********************************************************************************************
@@ -192,7 +192,7 @@ void* TerrainClass::operator new(size_t) throw() {
   if (ptr) {
     ((TerrainClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -283,9 +283,9 @@ bool TerrainClass::Mark(MarkType mark) {
         Map.Refresh_Cells(cell, Occupy_List());
         break;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -384,21 +384,21 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
   short const* offset;  // Pointer to cell offset list.
 
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return (MOVE_NO);
+  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
 
   offset = Occupy_List();
   while (*offset != REFRESH_EOL) {
     if (Class->IsWaterBased) {
       if (!Map[(CELL)(cell + *offset++)].Is_Clear_To_Build(SPEED_FLOAT)) {
-        return (MOVE_NO);
+        return MOVE_NO;
       }
     } else {
       if (!Map[(CELL)(cell + *offset++)].Is_Clear_To_Build()) {
-        return (MOVE_NO);
+        return MOVE_NO;
       }
     }
   }
-  return (MOVE_OK);
+  return MOVE_OK;
 }
 
 /***********************************************************************************************
@@ -432,9 +432,9 @@ bool TerrainClass::Catch_Fire() {
       anim->Attach_To(this);
     }
     IsOnFire = true;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -490,8 +490,8 @@ void TerrainClass::AI() {
 
   ObjectClass::AI();
 
-  if ((*this == TERRAIN_MINE) &&
-      (Frame % (Rule.GrowthRate * TICKS_PER_MINUTE)) == 0) {
+  if (*this == TERRAIN_MINE &&
+      Frame % (Rule.GrowthRate * TICKS_PER_MINUTE) == 0) {
     Map[As_Cell(As_Target())].Spread_Tiberium(true);
   }
   if (Graphic_Logic()) {
@@ -559,10 +559,10 @@ bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  if (Class->Theater & (1 << Scen.Theater)) {
-    return (ObjectClass::Unlimbo(coord, dir));
+  if (Class->Theater & 1 << Scen.Theater) {
+    return ObjectClass::Unlimbo(coord, dir);
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -613,7 +613,7 @@ bool TerrainClass::Limbo() {
     CELL cell = Coord_Cell(Coord);
     Map[cell].Flag.Occupy.Monolith = false;
   }
-  return (ObjectClass::Limbo());
+  return ObjectClass::Limbo();
 }
 
 /***********************************************************************************************
@@ -634,7 +634,7 @@ COORDINATE TerrainClass::Center_Coord() const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  return (Coord_Add(Coord, Class->CenterBase));
+  return Coord_Add(Coord, Class->CenterBase);
 }
 
 /***********************************************************************************************
@@ -672,10 +672,10 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   int ydiff = Cell_Y(cell) - Cell_Y(basecell);
   int xdiff = Cell_X(cell) - Cell_X(basecell);
   if (xdiff < width && ydiff < height) {
-    int iconnum = (ydiff * width) + xdiff;
-    return (icon + (iconnum * 9));
+    int iconnum = ydiff * width + xdiff;
+    return icon + iconnum * 9;
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -695,7 +695,7 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
  * HISTORY: * 02/07/1996 JLB : Created. *
  *=============================================================================================*/
 COORDINATE TerrainClass::Target_Coord() const {
-  return (Coord_Add(XY_Coord(0, -Height), Sort_Y()));
+  return Coord_Add(XY_Coord(0, -Height), Sort_Y());
 }
 
 /***********************************************************************************************

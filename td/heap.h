@@ -82,7 +82,7 @@ class FixedHeapClass {
   virtual int Free_All();
 
  protected:
-  void* operator[](int index) { return ((char*)Buffer) + (index * Size); }
+  void* operator[](int index) { return (char*)Buffer + index * Size; }
 
   /*
   **	If the memory block buffer was allocated by this class, then this flag
@@ -141,7 +141,7 @@ class TFixedHeapClass : public FixedHeapClass {
   virtual int Free(T* pointer) { return FixedHeapClass::Free(pointer); }
 
  protected:
-  T& operator[](int index) { return *(((char*)Buffer) + (index * Size)); }
+  T& operator[](int index) { return *((char*)Buffer + index * Size); }
 };
 
 /**************************************************************************
@@ -193,7 +193,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual void Decode_Pointers();
 
   virtual T* Ptr(int index) { return (T*)ActivePointers[index]; }
-  virtual T* Raw_Ptr(int index) { return (T*)((*this)[index]); }
+  virtual T* Raw_Ptr(int index) { return (T*)(*this)[index]; }
 };
 
 #endif

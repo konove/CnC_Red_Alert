@@ -87,7 +87,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   **	If there is no raw damage value to start with, then
   **	there can be no modified damage either.
   */
-  if (Special.IsInert || !damage || warhead == WARHEAD_NONE) return (0);
+  if (Special.IsInert || !damage || warhead == WARHEAD_NONE) return 0;
 
   WarheadTypeClass const* whead = &Warheads[warhead];
 
@@ -109,7 +109,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   *point regardless *	of modifiers. This allows a very weak attacker to
   *eventually destroy anything it *	fires upon, given enough time.
   */
-  return (damage);
+  return damage;
 }
 
 /***********************************************************************************************
@@ -188,11 +188,11 @@ void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass* source,
       if (!object->IsToDamage && object != source) {
         object->IsToDamage = true;
         objects[count++] = object;
-        if (count >= (sizeof(objects) / sizeof(objects[0]))) break;
+        if (count >= sizeof(objects) / sizeof(objects[0])) break;
       }
       object = object->Next;
     }
-    if (count >= (sizeof(objects) / sizeof(objects[0]))) break;
+    if (count >= sizeof(objects) / sizeof(objects[0])) break;
   }
 
   /*

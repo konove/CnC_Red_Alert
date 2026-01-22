@@ -387,7 +387,7 @@ class HouseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void operator delete(void* ptr);
   HouseClass() : Class(nullptr) {}
   HouseClass(HousesType house);
@@ -463,7 +463,7 @@ class HouseClass {
   int Adjust_Capacity(int adjust, bool inanger = false);
   int Power_Fraction() const;
   int Tiberium_Fraction() {
-    return (!Tiberium) ? 0 : Cardinal_To_Fixed(Capacity, Tiberium);
+    return !Tiberium ? 0 : Cardinal_To_Fixed(Capacity, Tiberium);
   }
   void Begin_Production() { IsStarted = true; }
   TeamTypeClass const* Suggested_New_Team(bool alertcheck = false);

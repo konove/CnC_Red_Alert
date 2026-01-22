@@ -236,7 +236,7 @@ std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
           .mixfile = mix,
           // If cached, offset is relative to buffer. If not, absolute file
           // offset.
-          .offset = cached ? it->offset : (it->offset + mix->data_start_),
+          .offset = cached ? it->offset : it->offset + mix->data_start_,
           .size = it->size,
       };
     }

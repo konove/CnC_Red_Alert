@@ -225,7 +225,7 @@ void* UnitClass::operator new(size_t) throw() {
   if (ptr != nullptr) {
     ((UnitClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -402,7 +402,7 @@ COORDINATE UnitClass::Sort_Y() const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-  return (Coord_Add(Coord, 0x00800000L));
+  return Coord_Add(Coord, 0x00800000L);
 }
 
 /***********************************************************************************************
@@ -510,7 +510,7 @@ void UnitClass::AI() {
   **	Mobile gap generators regenerate their gap every so often (just in
   *case).
   */
-  if (Class->IsGapper && !IsDriving && (Frame % TICKS_PER_SECOND) == 0) {
+  if (Class->IsGapper && !IsDriving && Frame % TICKS_PER_SECOND == 0) {
     Shroud_Regen();
   }
 }
@@ -543,7 +543,7 @@ void UnitClass::Rotation_AI() {
       *Wheeled vehicles never rotate to face the *	target, since they
       *aren't maneuverable enough.
       */
-      if ((Class->Speed == SPEED_TRACK /* || *this == UNIT_BIKE */) &&
+      if (Class->Speed == SPEED_TRACK /* || *this == UNIT_BIKE */ &&
           !Target_Legal(NavCom) && !IsDriving &&
           PrimaryFacing.Difference(dir)) {
         PrimaryFacing.Set_Desired(dir);
@@ -610,9 +610,9 @@ bool UnitClass::Edge_Of_World_AI() {
     if (Team.Is_Valid()) Team->IsLeaveMap = true;
     Stun();
     delete this;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -733,9 +733,9 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     */
     case RADIO_NEED_REPAIR:
       if (!IsDriving && !Target_Legal(NavCom) &&
-          (Health_Ratio() >= 1 &&
-           (*this != UNIT_MINELAYER || Ammo >= Class->MaxAmmo)))
-        return (RADIO_NEGATIVE);
+          Health_Ratio() >= 1 &&
+          (*this != UNIT_MINELAYER || Ammo >= Class->MaxAmmo))
+        return RADIO_NEGATIVE;
       break;
       //			return(RADIO_ROGER);
 
@@ -745,11 +745,11 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     case RADIO_CAN_LOAD:
       if (Class->Max_Passengers() == 0 || from == nullptr ||
           !House->Is_Ally(from->Owner()))
-        return (RADIO_STATIC);
+        return RADIO_STATIC;
       if (How_Many() < Class->Max_Passengers()) {
-        return (RADIO_ROGER);
+        return RADIO_ROGER;
       }
-      return (RADIO_NEGATIVE);
+      return RADIO_NEGATIVE;
 
     /*
     **	The refinery has told this harvester that it should begin the backup
@@ -772,7 +772,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
           }
         }
       }
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
 
     /*
     **	This message is sent by the passenger when it determines that it has
@@ -782,7 +782,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
       if (How_Many() == Class->Max_Passengers()) {
         APC_Close_Door();
       }
-      return (RADIO_ATTACH);
+      return RADIO_ATTACH;
 
     /*
     **	Docking maintenance message received. Check to see if new orders should
@@ -795,7 +795,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
       *request.
       */
       if (IsDriving || Target_Legal(NavCom)) {
-        return (RADIO_NEGATIVE);
+        return RADIO_NEGATIVE;
       }
 
       /*
@@ -811,7 +811,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
         **	Can't ever load up so tell the passenger to bug off.
         */
         if (How_Many() >= Class->Max_Passengers()) {
-          return (RADIO_NEGATIVE);
+          return RADIO_NEGATIVE;
         }
 
         /*
@@ -824,7 +824,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
           **	This causes the potential passenger to think that all is ok and
           *to *	hold on for a bit.
           */
-          return (RADIO_ROGER);
+          return RADIO_ROGER;
         }
       }
 
@@ -889,7 +889,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
             }
           }
         }
-        return (RADIO_ROGER);
+        return RADIO_ROGER;
       }
       break;
 
@@ -902,9 +902,9 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
         Assign_Mission(MISSION_GUARD);
       }
       DriveClass::Receive_Message(from, message, param);
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
   }
-  return (DriveClass::Receive_Message(from, message, param));
+  return DriveClass::Receive_Message(from, message, param);
 }
 
 /***********************************************************************************************
@@ -939,8 +939,8 @@ bool UnitClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->UScan |= (1L << Class->Type);
-    House->ActiveUScan |= (1L << Class->Type);
+    House->UScan |= 1L << Class->Type;
+    House->ActiveUScan |= 1L << Class->Type;
 
     /*
     **	If it starts off the edge of the map, then it already starts cloaked.
@@ -953,9 +953,9 @@ bool UnitClass::Unlimbo(COORDINATE coord, DirType dir) {
     Set_Rate(0);
     Set_Stage(0);
 
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1004,7 +1004,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
   *and it has *	passengers that pop out, then the passengers will inherit the
   *select state.
   */
-  bool select = (IsSelected && House->IsPlayerControl);
+  bool select = IsSelected && House->IsPlayerControl;
 
   /*
   **	In order for a this to be damaged, it must either be a unit
@@ -1172,7 +1172,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
       Base_Is_Attacked(source);
     }
   }
-  return (res);
+  return res;
 }
 
 /***********************************************************************************************
@@ -1377,7 +1377,7 @@ bool UnitClass::Goto_Clear_Spot() {
           .Legal_Placement(
               Adjacent_Cell(Coord_Cell(Center_Coord()), FACING_NW))) {
     Mark(MARK_DOWN);
-    return (true);
+    return true;
   }
 
   if (!Target_Legal(NavCom)) {
@@ -1392,11 +1392,11 @@ bool UnitClass::Goto_Clear_Spot() {
         -MAP_CELL_W * 4, -(MAP_CELL_W * 4) + 1, -(MAP_CELL_W * 4) - 1,
         -(MAP_CELL_W * 4) + 2, -(MAP_CELL_W * 4) - 2,
         // BG: Added south scanning
-        MAP_CELL_W * 1, MAP_CELL_W * 2, (MAP_CELL_W * 2) + 1,
-        (MAP_CELL_W * 2) - 1, MAP_CELL_W * 3, (MAP_CELL_W * 3) + 1,
-        (MAP_CELL_W * 3) - 1, (MAP_CELL_W * 3) + 2, (MAP_CELL_W * 3) - 2,
-        MAP_CELL_W * 4, (MAP_CELL_W * 4) + 1, (MAP_CELL_W * 4) - 1,
-        (MAP_CELL_W * 4) + 2, (MAP_CELL_W * 4) - 2,
+        MAP_CELL_W * 1, MAP_CELL_W * 2, MAP_CELL_W * 2 + 1, MAP_CELL_W * 2 - 1, MAP_CELL_W * 3, MAP_CELL_W * 3 + 1, MAP_CELL_W * 3 - 1,
+        MAP_CELL_W * 3 + 2, MAP_CELL_W * 3 - 2,
+        MAP_CELL_W * 4,
+        MAP_CELL_W * 4 + 1, MAP_CELL_W * 4 - 1, MAP_CELL_W * 4 + 2,
+        MAP_CELL_W * 4 - 2,
 
         // BG: Added some token east/west scanning
         -1, -2, -3, -4,
@@ -1425,7 +1425,7 @@ bool UnitClass::Goto_Clear_Spot() {
     Scatter(0);
   }
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1471,7 +1471,7 @@ bool UnitClass::Try_To_Deploy() {
         }
         Mark(MARK_DOWN);
         IsDeploying = false;
-        return (false);
+        return false;
       }
       Mark(MARK_DOWN);
 
@@ -1485,7 +1485,7 @@ bool UnitClass::Try_To_Deploy() {
         Do_Turn(DIR_SW);
         //				PrimaryFacing.Set_Desired(DIR_SW);
         IsDeploying = true;
-        return (true);
+        return true;
       }
 
       /*
@@ -1546,7 +1546,7 @@ bool UnitClass::Try_To_Deploy() {
             Scen.FadeTimer = GRAYFADETIME;
           }
           delete this;
-          return (true);
+          return true;
         } else {
           /*
           **	Could not deploy the construction yard at this location! Just
@@ -1560,7 +1560,7 @@ bool UnitClass::Try_To_Deploy() {
       IsDeploying = false;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1892,20 +1892,20 @@ int UnitClass::Shape_Number() const {
     /*
     **	The starting frame is based on the facing of the unit.
     */
-    shapenum = ((BodyShape[facing] + 2) / 4) & 0x07;
+    shapenum = (BodyShape[facing] + 2) / 4 & 0x07;
 
     /*
     **	If the unit is driving, then it has an animation adjustment to the frame
     *number.
     */
     if (IsDriving) {
-      shapenum = 8 + (shapenum * 8) + ((Frame + ID) / 2) % 8;
+      shapenum = 8 + shapenum * 8 + (Frame + ID) / 2 % 8;
     } else {
       /*
       **	If in combat, then do combat anims.
       */
       if (Arm > 0) {
-        shapenum = 8 + 64 + (shapenum * 4) + ((Frame + ID) / 2) % 4;
+        shapenum = 8 + 64 + shapenum * 4 + (Frame + ID) / 2 % 4;
       }
     }
   } else {
@@ -1919,8 +1919,7 @@ int UnitClass::Shape_Number() const {
       if (stage >= ARRAY_SIZE(Class->Harvester_Load_List))
         stage = ARRAY_SIZE(Class->Harvester_Load_List) - 1;
       shapenum = 32 +
-                 (((BodyShape[facing] + 2) / 4) *
-                  Class->Harvester_Load_Count) +
+                 (BodyShape[facing] + 2) / 4 * Class->Harvester_Load_Count +
                  Class->Harvester_Load_List[stage];
     } else {
       /*
@@ -1932,7 +1931,7 @@ int UnitClass::Shape_Number() const {
           if (stage >= 8) {
             stage = 7;
           }
-          shapenum = 32 + stage + (BodyShape[facing] / 4) * 8;
+          shapenum = 32 + stage + BodyShape[facing] / 4 * 8;
         } else {
           if (stage >= ARRAY_SIZE(Class->Harvester_Dump_List))
             stage = ARRAY_SIZE(Class->Harvester_Dump_List) - 1;
@@ -1973,7 +1972,7 @@ int UnitClass::Shape_Number() const {
     if (Ammo == 0) shapenum += 32;
   }
 
-  return (shapenum);
+  return shapenum;
 }
 
 /***********************************************************************************************
@@ -2043,7 +2042,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
         Class->Turret_Adjust(PrimaryFacing, x2, y2);
         Techno_Draw_Object(shapefile, shapenum, x2, y2, window);
       } else {
-        shapenum = 32 + (Frame % 32);
+        shapenum = 32 + Frame % 32;
         if (*this == UNIT_TESLATANK) {
           Techno_Draw_Object(shapefile, shapenum, x, y, window);
         } else {
@@ -2128,23 +2127,22 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
   **	If the specified offset from the origin will cause it
   **	to spill past the map edge, then abort this cell check.
   */
-  if (Cell_X(center) + x < Map.MapCellX) return (false);
-  if (Cell_X(center) + x >= Map.MapCellX + Map.MapCellWidth) return (false);
-  if (Cell_Y(center) + y < Map.MapCellY) return (false);
-  if (Cell_Y(center) + y >= Map.MapCellY + Map.MapCellHeight) return (false);
+  if (Cell_X(center) + x < Map.MapCellX) return false;
+  if (Cell_X(center) + x >= Map.MapCellX + Map.MapCellWidth) return false;
+  if (Cell_Y(center) + y < Map.MapCellY) return false;
+  if (Cell_Y(center) + y >= Map.MapCellY + Map.MapCellHeight) return false;
 
   center = XY_Cell(Cell_X(center) + x, Cell_Y(center) + y);
 
-  if ((Session.Type != GAME_NORMAL ||
-       (!IsOwnedByPlayer || Map[center].IsMapped))) {
+  if (Session.Type != GAME_NORMAL || !IsOwnedByPlayer || Map[center].IsMapped) {
     if (Map[Coord].Zones[Class->MZone] != Map[center].Zones[Class->MZone])
-      return (false);
+      return false;
     if (!Map[center].Cell_Techno() &&
         Map[center].Land_Type() == LAND_TIBERIUM) {
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2171,7 +2169,7 @@ bool UnitClass::Goto_Tiberium(int rad) {
   if (!Target_Legal(NavCom)) {
     CELL center = Coord_Cell(Center_Coord());
     if (Map[center].Land_Type() == LAND_TIBERIUM) {
-      return (true);
+      return true;
     } else {
       /*
       **	Perform a ring search outward from the center.
@@ -2181,32 +2179,32 @@ bool UnitClass::Goto_Tiberium(int rad) {
           CELL cell = center;
           if (Tiberium_Check(cell, x, -radius)) {
             Assign_Destination(::As_Target(cell));
-            return (false);
+            return false;
           }
 
           cell = center;
           if (Tiberium_Check(cell, x, +radius)) {
             Assign_Destination(::As_Target(cell));
-            return (false);
+            return false;
           }
 
           cell = center;
           if (Tiberium_Check(cell, -radius, x)) {
             Assign_Destination(::As_Target(cell));
-            return (false);
+            return false;
           }
 
           cell = center;
           if (Tiberium_Check(cell, +radius, x)) {
             Assign_Destination(::As_Target(cell));
-            return (false);
+            return false;
           }
         }
       }
     }
   }
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2234,7 +2232,7 @@ bool UnitClass::Harvesting() {
   /*
   **	Keep waiting if still heading toward a spot to harvest.
   */
-  if (Target_Legal(NavCom)) return (true);
+  if (Target_Legal(NavCom)) return true;
 
   if (Tiberium_Load() < 1 && ptr->Land_Type() == LAND_TIBERIUM) {
     /*
@@ -2291,9 +2289,9 @@ bool UnitClass::Harvesting() {
     */
     Set_Stage(0);
     Set_Rate(0);
-    return (false);
+    return false;
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2324,7 +2322,7 @@ int UnitClass::Mission_Unload() {
         if (!IsRotating) {
           Do_Turn(DIR_W);
         }
-        return (5);
+        return 5;
       }
 
       if (!IsDumping) {
@@ -2354,7 +2352,7 @@ int UnitClass::Mission_Unload() {
           if (How_Many() && cell != 0) {
             Do_Turn(dir);
             Status = MANEUVERING;
-            return (1);
+            return 1;
           } else {
             Assign_Mission(MISSION_GUARD);
           }
@@ -2363,7 +2361,7 @@ int UnitClass::Mission_Unload() {
         case MANEUVERING:
           if (!IsRotating) {
             Status = UNLOADING;
-            return (1);
+            return 1;
           }
           break;
 
@@ -2422,7 +2420,7 @@ int UnitClass::Mission_Unload() {
           if (How_Many() && cell != 0) {
             Do_Turn(dir);
             Status = MANEUVERING;
-            return (1);
+            return 1;
           } else {
             Assign_Mission(MISSION_GUARD);
           }
@@ -2433,7 +2431,7 @@ int UnitClass::Mission_Unload() {
             APC_Open_Door();
             if (Is_Door_Opening()) {
               Status = OPENING_DOOR;
-              return (1);
+              return 1;
             }
           }
           break;
@@ -2441,7 +2439,7 @@ int UnitClass::Mission_Unload() {
         case OPENING_DOOR:
           if (Is_Door_Open()) {
             Status = UNLOADING;
-            return (1);
+            return 1;
           } else {
             if (!Is_Door_Opening()) {
               Status = INITIAL_CHECK;
@@ -2531,7 +2529,7 @@ int UnitClass::Mission_Unload() {
           }
           break;
       }
-      return (1);
+      return 1;
 
     case UNIT_MINELAYER:
       switch (Status) {
@@ -2540,7 +2538,7 @@ int UnitClass::Mission_Unload() {
           if (Ammo > 0) {
             Do_Turn(dir);
             Status = MANEUVERING;
-            return (1);
+            return 1;
           } else {
             Assign_Mission(MISSION_GUARD);
           }
@@ -2551,7 +2549,7 @@ int UnitClass::Mission_Unload() {
             APC_Open_Door();
             if (Is_Door_Opening()) {
               Status = OPENING_DOOR;
-              return (1);
+              return 1;
             }
           }
           break;
@@ -2559,7 +2557,7 @@ int UnitClass::Mission_Unload() {
         case OPENING_DOOR:
           if (Is_Door_Open()) {
             Status = UNLOADING;
-            return (1);
+            return 1;
           } else {
             if (!Is_Door_Opening()) {
               Status = INITIAL_CHECK;
@@ -2572,9 +2570,9 @@ int UnitClass::Mission_Unload() {
             if (!Map[Center_Coord()].Cell_Building()) {
               Mark(MARK_UP);
               BuildingClass* building =
-                  new BuildingClass((House->ActLike == HOUSE_USSR ||
-                                     House->ActLike == HOUSE_UKRAINE ||
-                                     House->ActLike == HOUSE_BAD)
+                  new BuildingClass(House->ActLike == HOUSE_USSR ||
+                                            House->ActLike == HOUSE_UKRAINE ||
+                                            House->ActLike == HOUSE_BAD
                                         ? STRUCT_APMINE
                                         : STRUCT_AVMINE,
                                     House->Class->House);
@@ -2650,18 +2648,18 @@ int UnitClass::Mission_Unload() {
 
       if ((Arm && !Gold) || IronCurtainCountDown) {
         Set_Stage(Fetch_Stage() & 1);
-        return (1);
+        return 1;
       }
 
       if (!Gold) {
         Sound_Effect(VOC_MAD_CHARGE, Center_Coord());
         Set_Stage(0);
         Gold = 1;
-        return (1);
+        return 1;
       }
 
       if (Fetch_Stage() < 7) {
-        return (1);
+        return 1;
       }
 
       IsDumping = false;
@@ -2685,7 +2683,7 @@ int UnitClass::Mission_Unload() {
     default:
       break;
   }
-  return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -2723,14 +2721,14 @@ int UnitClass::Mission_Harvest() {
   **	A non-harvesting type unit will just sit still if it is given the
   *harvest mission. This *	allows combat units to act "brain dead".
   */
-  if (!Class->IsToHarvest) return (TICKS_PER_SECOND * 30);
+  if (!Class->IsToHarvest) return TICKS_PER_SECOND * 30;
 
   /*
   **	If there are no more refineries, then drop into guard mode.
   */
   if (!(House->ActiveBScan & STRUCTF_REFINERY)) {
     Assign_Mission(MISSION_GUARD);
-    return (1);
+    return 1;
   }
 
   switch (Status) {
@@ -2744,7 +2742,7 @@ int UnitClass::Mission_Harvest() {
       */
       if (Tiberium_Load() == 1) {
         Status = FINDHOME;
-        return (1);
+        return 1;
       }
 
       /*
@@ -2760,7 +2758,7 @@ int UnitClass::Mission_Harvest() {
         Set_Rate(2);
         Set_Stage(0);
         Status = HARVESTING;
-        return (1);
+        return 1;
       } else {
         /*
         **	If the harvester isn't on Tiberium and it is not heading toward
@@ -2781,7 +2779,7 @@ int UnitClass::Mission_Harvest() {
             Status = GOINGTOIDLE;
             IsUseless = true;
             House->IsTiberiumShort = true;
-            return (TICKS_PER_SECOND * 7);
+            return TICKS_PER_SECOND * 7;
           }
         } else {
           IsUseless = false;
@@ -2802,7 +2800,7 @@ int UnitClass::Mission_Harvest() {
         Set_Rate(Rule.OreDumpRate);
       }
 
-      if (Fetch_Stage() < ARRAY_SIZE(Class->Harvester_Load_List)) return (1);
+      if (Fetch_Stage() < ARRAY_SIZE(Class->Harvester_Load_List)) return 1;
       if (!Harvesting()) {
         IsHarvesting = false;
         if (Tiberium_Load() == 1) {
@@ -2818,9 +2816,9 @@ int UnitClass::Mission_Harvest() {
             IsHarvesting = true;
           }
         }
-        return (1);
+        return 1;
       }
-      return (1);
+      return 1;
       //			return(TICKS_PER_SECOND*Rule.OreDumpRate);
 
     /*
@@ -2841,9 +2839,9 @@ int UnitClass::Mission_Harvest() {
             Transmit_Message(RADIO_HELLO, nearest) == RADIO_ROGER) {
           Status = HEADINGHOME;
           if (nearest->House == PlayerPtr &&
-              (PlayerPtr->Capacity - PlayerPtr->Tiberium) < 300 &&
+              PlayerPtr->Capacity - PlayerPtr->Tiberium < 300 &&
               PlayerPtr->Capacity > 500 &&
-              (PlayerPtr->ActiveBScan & (STRUCTF_REFINERY | STRUCTF_CONST))) {
+              PlayerPtr->ActiveBScan & (STRUCTF_REFINERY | STRUCTF_CONST)) {
             Speak(VOX_NEED_MO_CAPACITY);
           }
         } else {
@@ -2864,7 +2862,7 @@ int UnitClass::Mission_Harvest() {
     */
     case HEADINGHOME:
       Assign_Mission(MISSION_ENTER);
-      return (1);
+      return 1;
 
     /*
     **	The harvester has nothing to do. There is no Tiberium nearby and
@@ -2881,7 +2879,7 @@ int UnitClass::Mission_Harvest() {
       Assign_Mission(MISSION_GUARD);
       break;
   }
-  return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -2932,9 +2930,9 @@ int UnitClass::Mission_Hunt() {
         break;
     }
   } else {
-    return (DriveClass::Mission_Hunt());
+    return DriveClass::Mission_Hunt();
   }
-  return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -2977,7 +2975,7 @@ short const* UnitClass::Overlap_List(bool redraw) const {
       rect = Union(rect, Rect(-15, -15, 30, 30));
     }
 
-    return (Coord_Spillage_List(Coord, rect, true));
+    return Coord_Spillage_List(Coord, rect, true);
   }
 #else
   redraw = redraw;
@@ -2992,7 +2990,7 @@ short const* UnitClass::Overlap_List(bool redraw) const {
     size = ICON_PIXEL_W * 2;
   }
 
-  return (Coord_Spillage_List(Coord, size) + 1);
+  return Coord_Spillage_List(Coord, size) + 1;
 }
 
 /***********************************************************************************************
@@ -3025,7 +3023,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
   CellClass const* cellptr = &Map[cell];
 
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return (MOVE_NO);
+  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
 
   /*
   **	Moving off the edge of the map is not allowed unless
@@ -3033,7 +3031,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
   */
   if (!ScenarioInit && !Map.In_Radar(cell) && !Is_Allowed_To_Leave_Map() &&
       IsLocked) {
-    return (MOVE_NO);
+    return MOVE_NO;
   }
 
   MoveType retval = MOVE_OK;
@@ -3047,10 +3045,10 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (optr->IsCrate && House &&
-        !((Session.Type == GAME_NORMAL) ? House->IsPlayerControl
+        !(Session.Type == GAME_NORMAL ? House->IsPlayerControl
                                         : House->IsHuman) &&
         Session.Type == GAME_NORMAL) {
-      return (MOVE_NO);
+      return MOVE_NO;
     }
 
     if (optr->IsWall) {
@@ -3076,7 +3074,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
           //						return(MOVE_NO);
           //					}
         } else {
-          return (MOVE_NO);
+          return MOVE_NO;
         }
       }
     }
@@ -3096,8 +3094,8 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
       if (obj->What_Am_I() == RTTI_BUILDING &&
           (!Rule.IsMineAware ||
            !((BuildingClass*)obj)->House->Is_Ally(House))) {
-        if ((*(BuildingClass*)obj) == STRUCT_APMINE) return (MOVE_OK);
-        if ((*(BuildingClass*)obj) == STRUCT_AVMINE) return (MOVE_OK);
+        if (*(BuildingClass*)obj == STRUCT_APMINE) return MOVE_OK;
+        if (*(BuildingClass*)obj == STRUCT_AVMINE) return MOVE_OK;
       }
 
       /*
@@ -3106,8 +3104,8 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
       */
       if (obj == Contact_With_Whom() &&
           (IsTethered || (obj->What_Am_I() == RTTI_BUILDING &&
-                          *((BuildingClass*)obj) == STRUCT_REPAIR))) {
-        return (MOVE_OK);
+                          *(BuildingClass*)obj == STRUCT_REPAIR))) {
+        return MOVE_OK;
       }
 
       /*
@@ -3116,7 +3114,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
       */
       if (Mission == MISSION_ENTER && obj->As_Target() == NavCom &&
           IsTethered) {
-        return (MOVE_OK);
+        return MOVE_OK;
       }
 
       /*
@@ -3124,7 +3122,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
       *with the *	guarded unit.
       */
       if (Mission == MISSION_GUARD_AREA && ArchiveTarget == obj->As_Target()) {
-        return (MOVE_NO);
+        return MOVE_NO;
       }
 
       bool is_moving =
@@ -3144,18 +3142,18 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
           int techface = Dir_Facing(((FootClass const*)obj)->PrimaryFacing) ^ 4;
           if (face == techface &&
               Distance((AbstractClass const*)obj) <= 0x1FF) {
-            return (MOVE_NO);
+            return MOVE_NO;
           }
           if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
         } else {
-          if (obj->What_Am_I() == RTTI_BUILDING) return (MOVE_NO);
+          if (obj->What_Am_I() == RTTI_BUILDING) return MOVE_NO;
 
           /*
           **	If the blocking object is not in the same zone, then it
           *certainly *	isn't a temporary block, it is a permanent one.
           */
           if (Map[Coord].Zones[Class->MZone] != cellptr->Zones[Class->MZone])
-            return (MOVE_NO);
+            return MOVE_NO;
 
           if (retval < MOVE_TEMP) retval = MOVE_TEMP;
         }
@@ -3176,7 +3174,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
             **	Any non-allied blockage is considered impassable if the unit
             **	is not equipped with a weapon.
             */
-            if (Class->PrimaryWeapon == nullptr) return (MOVE_NO);
+            if (Class->PrimaryWeapon == nullptr) return MOVE_NO;
 
             /*
             **	Some kinds of terrain are considered destroyable if the unit is
@@ -3195,7 +3193,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
                 }
                 break;
 #else
-                return (MOVE_NO);
+                return MOVE_NO;
 #endif
 
               default:
@@ -3223,7 +3221,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
   */
   if (!cancrush && retval != MOVE_DESTROYABLE &&
       Ground[cellptr->Land_Type()].Cost[Class->Speed] == 0) {
-    return (MOVE_NO);
+    return MOVE_NO;
   }
 
   /*
@@ -3252,7 +3250,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
               Class->PrimaryWeapon->Bullet->IsAntiGround) {
             retval = MOVE_DESTROYABLE;
           } else {
-            return (MOVE_NO);
+            return MOVE_NO;
           }
         }
       }
@@ -3272,14 +3270,14 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
     **	cell, then allow entry.
     */
     if (!cellptr->Cell_Unit() || !cellptr->Cell_Unit()->Class->IsCrushable) {
-      return (MOVE_MOVING_BLOCK);
+      return MOVE_MOVING_BLOCK;
     }
   }
 
   /*
   **	Return with the most severe reason why this cell would be impassable.
   */
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -3322,9 +3320,9 @@ bool UnitClass::Start_Driver(COORDINATE& headto) {
   if (DriveClass::Start_Driver(headto) &&
       IsActive) {  // BG IsActive can be cleared by Start_Driver
     Mark_Track(headto, MARK_DOWN);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3355,8 +3353,8 @@ ActionType UnitClass::What_Action(ObjectClass const* object) const {
   ** Allow units to move onto land mines.
   */
   if (action == ACTION_NONE && object->What_Am_I() == RTTI_BUILDING) {
-    StructType blah = *((BuildingClass*)object);
-    if (blah == STRUCT_AVMINE || blah == STRUCT_APMINE) return (ACTION_MOVE);
+    StructType blah = *(BuildingClass*)object;
+    if (blah == STRUCT_AVMINE || blah == STRUCT_APMINE) return ACTION_MOVE;
   }
 
   /*
@@ -3380,13 +3378,13 @@ ActionType UnitClass::What_Action(ObjectClass const* object) const {
       **	The MCV will get the no-deploy cursor if it couldn't
       **	deploy at its current location.
       */
-      ((ObjectClass&)(*this)).Mark(MARK_UP);
+      ((ObjectClass&)*this).Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
                .Legal_Placement(
                    Coord_Cell(Adjacent_Cell(Center_Coord(), FACING_NW)))) {
         action = ACTION_NO_DEPLOY;
       }
-      ((ObjectClass&)(*this)).Mark(MARK_DOWN);
+      ((ObjectClass&)*this).Mark(MARK_DOWN);
 
     } else {
       /*
@@ -3488,7 +3486,7 @@ ActionType UnitClass::What_Action(ObjectClass const* object) const {
   */
   if (action == ACTION_NONE) action = ACTION_NOMOVE;
 
-  return (action);
+  return action;
 }
 
 /***********************************************************************************************
@@ -3515,12 +3513,12 @@ ActionType UnitClass::What_Action(CELL cell) const {
   ActionType action = DriveClass::What_Action(cell);
   if (action == ACTION_MOVE && Map[cell].Land_Type() == LAND_TIBERIUM &&
       Class->IsToHarvest) {
-    return (ACTION_HARVEST);
+    return ACTION_HARVEST;
   }
   if (*this == UNIT_MAD && (IsDumping || Gold)) {
     action = ACTION_NOMOVE;
   }
-  return (action);
+  return action;
 }
 
 /***********************************************************************************************
@@ -3587,16 +3585,16 @@ int UnitClass::Mission_Guard() {
   if (/*House->IsBaseBuilding &&*/ !House->IsHuman && Class->IsToHarvest &&
       House->Get_Quantity(STRUCT_REFINERY) > 0 && !House->IsTiberiumShort) {
     Assign_Mission(MISSION_HARVEST);
-    return (1);
+    return 1;
     //		return(MissionControl[Mission].Normal_Delay() + Random_Pick(0,
     // 2));
   }
 
   if (*this == UNIT_MCV && House->IsBaseBuilding) {
     Assign_Mission(MISSION_UNLOAD);
-    return (MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+    return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
   }
-  return (DriveClass::Mission_Guard());
+  return DriveClass::Mission_Guard();
 }
 
 /***********************************************************************************************
@@ -3630,7 +3628,7 @@ int UnitClass::Mission_Move() {
     APC_Close_Door();
   }
 
-  return (DriveClass::Mission_Move());
+  return DriveClass::Mission_Move();
 }
 
 /***********************************************************************************************
@@ -3687,8 +3685,8 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     *that cell for load/unload.
     */
     if (passenger != nullptr) {
-      value = (passenger->Can_Enter_Cell(cellnum) == MOVE_OK ||
-               Coord_Cell(passenger->Coord) == cellnum)
+      value = passenger->Can_Enter_Cell(cellnum) == MOVE_OK ||
+                      Coord_Cell(passenger->Coord) == cellnum
                   ? 128
                   : -128;
     } else {
@@ -3737,9 +3735,9 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
         DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
-    return (_desired_to_actual[bestdir]);
+    return _desired_to_actual[bestdir];
   }
-  return (DIR_S);
+  return DIR_S;
 }
 
 /***********************************************************************************************
@@ -3763,9 +3761,9 @@ bool UnitClass::Flag_Attach(HousesType house) {
   if (house != HOUSE_NONE && Flagged == HOUSE_NONE) {
     Flagged = house;
     Mark(MARK_CHANGE);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3790,9 +3788,9 @@ bool UnitClass::Flag_Remove() {
   if (Flagged != HOUSE_NONE) {
     Flagged = HOUSE_NONE;
     Mark(MARK_CHANGE);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3815,7 +3813,7 @@ int UnitClass::Pip_Count() const {
   assert(IsActive);
 
   if (Class->Max_Passengers() > 0) {
-    return (How_Many());
+    return How_Many();
   }
 
   if (*this == UNIT_MINELAYER) {
@@ -3824,18 +3822,18 @@ int UnitClass::Pip_Count() const {
       retval = Class->Max_Pips() * fixed(Ammo, Class->MaxAmmo);
       if (!retval) retval = 1;
     }
-    return (retval);
+    return retval;
   }
 
   if (*this == UNIT_HARVESTER) {
-    return ((Gold + Gems) / 4);
+    return (Gold + Gems) / 4;
   }
 
   if (*this == UNIT_CHRONOTANK) {
     int fulldur = ChronoTankDuration * TICKS_PER_MINUTE;
-    return ((fulldur - MoebiusCountDown) / (fulldur / 5));
+    return (fulldur - MoebiusCountDown) / (fulldur / 5);
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -3906,12 +3904,12 @@ InfantryType UnitClass::Crew_Type() const {
 
   if (Class->PrimaryWeapon == nullptr) {
     if (Percent_Chance(50)) {
-      return (INFANTRY_C1);
+      return INFANTRY_C1;
     } else {
-      return (INFANTRY_C7);
+      return INFANTRY_C7;
     }
   }
-  return (DriveClass::Crew_Type());
+  return DriveClass::Crew_Type();
 }
 
 /***********************************************************************************************
@@ -3957,7 +3955,7 @@ int UnitClass::Mission_Repair() {
     */
     if (Transmit_Message(RADIO_HELLO, nearest) == RADIO_ROGER) {
       Assign_Mission(MISSION_ENTER);
-      return (1);
+      return 1;
     }
   }
 
@@ -3965,7 +3963,7 @@ int UnitClass::Mission_Repair() {
   **	If no action could be performed at this time, then wait
   **	around for a bit before trying again.
   */
-  return (MissionControl[Mission].Normal_Delay());
+  return MissionControl[Mission].Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -4003,10 +4001,10 @@ DirType UnitClass::Fire_Direction() const {
         return (DirType)(SecondaryFacing + (DirType)adj);
       }
     }
-    return (SecondaryFacing.Current());
+    return SecondaryFacing.Current();
   }
 
-  return (DriveClass::Fire_Direction());
+  return DriveClass::Fire_Direction();
 }
 
 /***********************************************************************************************
@@ -4033,15 +4031,15 @@ bool UnitClass::Ok_To_Move(DirType dir) const {
 
   if (Class->IsLockTurret) {
     if (IsRotating) {
-      return (false);
+      return false;
     } else {
       if (SecondaryFacing.Difference(dir)) {
         ((UnitClass*)this)->SecondaryFacing.Set_Desired(dir);
-        return (false);
+        return false;
       }
     }
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -4073,13 +4071,15 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
 
   if (fire == FIRE_OK) {
     WeaponTypeClass const* weapon =
-        (which == 0) ? Class->PrimaryWeapon : Class->SecondaryWeapon;
+        which == 0 ? Class->PrimaryWeapon : Class->SecondaryWeapon;
 
     /*
     **	If this unit cannot fire while moving, then bail.
     */
-    if ((Class->IsNoFireWhileMoving /*!Class->IsTurretEquipped || Class->IsLockTurret*/) && Target_Legal(NavCom)) {
-      return (FIRE_MOVING);
+    if (Class->IsNoFireWhileMoving /*!Class->IsTurretEquipped ||
+                                      Class->IsLockTurret*/
+        && Target_Legal(NavCom)) {
+      return FIRE_MOVING;
     }
 
     /*
@@ -4087,7 +4087,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
     **	firing must be delayed until the rotation stops.
     */
     if (!IsFiring && IsRotating && weapon->Bullet->ROT == 0) {
-      return (FIRE_ROTATING);
+      return FIRE_ROTATING;
     }
 
     dir = Direction(target);
@@ -4106,11 +4106,11 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
       diff >>= 2;
     }
     if (diff < 8) {
-      return (DriveClass::Can_Fire(target, which));
+      return DriveClass::Can_Fire(target, which);
     }
-    return (FIRE_FACING);
+    return FIRE_FACING;
   }
-  return (fire);
+  return fire;
 }
 
 /***********************************************************************************************
@@ -4139,8 +4139,8 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
 
   BulletClass* bullet = nullptr;
   WeaponTypeClass const* weap =
-      (which == 0) ? Class->PrimaryWeapon : Class->SecondaryWeapon;
-  if (weap == nullptr) return (nullptr);
+      which == 0 ? Class->PrimaryWeapon : Class->SecondaryWeapon;
+  if (weap == nullptr) return nullptr;
 
   if (Can_Fire(target, which) == FIRE_OK) {
     bullet = DriveClass::Fire_At(target, which);
@@ -4150,13 +4150,13 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
       /*
       **	Possible reload timer set.
       */
-      if ((*this == UNIT_V2_LAUNCHER) && Reload == 0) {
+      if (*this == UNIT_V2_LAUNCHER && Reload == 0) {
         Reload = TICKS_PER_SECOND * 30;
       }
     }
   }
 
-  return (bullet);
+  return bullet;
 }
 
 /***********************************************************************************************
@@ -4177,7 +4177,7 @@ ObjectTypeClass const& UnitClass::Class_Of() const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-  return (*Class);
+  return *Class;
 }
 
 /***********************************************************************************************
@@ -4198,9 +4198,9 @@ fixed UnitClass::Tiberium_Load() const {
   assert(IsActive);
 
   if (*this == UNIT_HARVESTER) {
-    return (fixed(Tiberium, Rule.BailCount));
+    return fixed(Tiberium, Rule.BailCount);
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -4233,7 +4233,7 @@ int UnitClass::Offload_Tiberium_Bail() {
             (UnitTypeClass::FULL_LOAD_CREDITS / 3) / UnitTypeClass::STEP_COUNT);
 #endif
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -4270,7 +4270,7 @@ void UnitClass::Approach_Target() {
     */
     TechnoClass* target = As_Techno(TarCom);
     if (Class->IsCrusher && Distance(TarCom) < Rule.CrushDistance && target &&
-        ((TechnoTypeClass const&)(target->Class_Of())).IsCrushable) {
+        ((TechnoTypeClass const&)target->Class_Of()).IsCrushable) {
       Assign_Destination(TarCom);
       return;
     }
@@ -4486,7 +4486,7 @@ void UnitClass::Assign_Destination(TARGET target) {
   *unloading).
   */
   if (b != nullptr && *b == STRUCT_REPAIR) {
-    if (b->In_Radio_Contact() && (b->Contact_With_Whom() != this)) {
+    if (b->In_Radio_Contact() && b->Contact_With_Whom() != this) {
       //			if (target != NULL) {
       ArchiveTarget = target;
       //			}
@@ -4555,7 +4555,7 @@ TARGET UnitClass::Greatest_Threat(ThreatType threat)  // const
   }
 #endif
 
-  return (FootClass::Greatest_Threat(threat));
+  return FootClass::Greatest_Threat(threat);
 }
 
 /***********************************************************************************************
@@ -4701,7 +4701,7 @@ void UnitClass::Write_INI(CCINIClass& ini) {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 int UnitClass::Credit_Load() const {
-  return ((Gold * Rule.GoldValue) + (Gems * Rule.GemValue));
+  return Gold * Rule.GoldValue + Gems * Rule.GemValue;
 }
 
 /***********************************************************************************************
@@ -4732,19 +4732,19 @@ bool UnitClass::Should_Crush_It(TechnoClass const* it) const {
   */
   if (!Class->IsCrusher || it == nullptr ||
       !it->Techno_Type_Class()->IsCrushable)
-    return (false);
+    return false;
 
   /*
   **	Objects that are far away should really be fired upon rather than
   *crushed.
   */
-  if (Distance(it) > Rule.CrushDistance) return (false);
+  if (Distance(it) > Rule.CrushDistance) return false;
 
   /*
   **	Human controlled units don't automatically crush. Neither do computer
   *controlled ones *	if they are at difficult setting.
   */
-  if (House->IsHuman || House->Difficulty == DIFF_HARD) return (false);
+  if (House->IsHuman || House->Difficulty == DIFF_HARD) return false;
 
   /*
   **	If the weapon this unit is equipped with is very good against crushable
@@ -4753,22 +4753,22 @@ bool UnitClass::Should_Crush_It(TechnoClass const* it) const {
   */
   if (Class->PrimaryWeapon != nullptr &&
       Class->PrimaryWeapon->WarheadPtr->IsWoodDestroyer)
-    return (false);
+    return false;
 
   /*
   **	If the house IQ indicates that crushing should not be allowed, then
   *don't *	suggest that crushing be done.
   */
-  if (House->IQ < Rule.IQCrush) return (false);
+  if (House->IQ < Rule.IQCrush) return false;
 
   /*
   ** Don't allow crushing of spies by computer-controlled vehicles.
   */
   if (it->What_Am_I() == RTTI_INFANTRY && *(InfantryClass*)it == INFANTRY_SPY) {
-    return (false);
+    return false;
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -4840,9 +4840,9 @@ bool UnitClass::Limbo() {
       HouseClass::As_Pointer(Flagged)->Flag_Attach(Coord_Cell(Coord));
       Flagged = HOUSE_NONE;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 void UnitClass::Shroud_Regen() {
@@ -4946,5 +4946,5 @@ int UnitClass::Mission_Guard_Area() {
       }
     }
   }
-  return (DriveClass::Mission_Guard_Area());
+  return DriveClass::Mission_Guard_Area();
 }

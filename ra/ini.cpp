@@ -152,7 +152,7 @@ bool INIClass::Clear(char const* section, char const* entry) {
       }
     }
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -172,7 +172,7 @@ bool INIClass::Clear(char const* section, char const* entry) {
  *=============================================================================================*/
 bool INIClass::Load(FileClass& file) {
   FileStraw fs(file);
-  return (Load(fs));
+  return Load(fs);
 }
 
 /***********************************************************************************************
@@ -207,7 +207,7 @@ bool INIClass::Load(Straw& file)
   */
   while (!end_of_file) {
     Read_Line(file, buffer, sizeof(buffer), end_of_file);
-    if (end_of_file) return (false);
+    if (end_of_file) return false;
     if (buffer[0] == '[' && strchr(buffer, ']') != nullptr) break;
   }
 
@@ -222,7 +222,7 @@ bool INIClass::Load(Straw& file)
     INISection* secptr = new INISection(strdup(buffer));
     if (secptr == nullptr) {
       Clear();
-      return (false);
+      return false;
     }
 
     /*
@@ -266,7 +266,7 @@ bool INIClass::Load(Straw& file)
       if (entryptr == nullptr) {
         delete secptr;
         Clear();
-        return (false);
+        return false;
       }
 
       secptr->EntryIndex.Add_Index(entryptr->Index_ID(), entryptr);
@@ -284,7 +284,7 @@ bool INIClass::Load(Straw& file)
       SectionList.Add_Tail(secptr);
     }
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -303,7 +303,7 @@ bool INIClass::Load(Straw& file)
  *=============================================================================================*/
 int INIClass::Save(FileClass& file) const {
   FilePipe fp(file);
-  return (Save(fp));
+  return Save(fp);
 }
 
 /***********************************************************************************************
@@ -355,7 +355,7 @@ int INIClass::Save(Pipe& pipe) const {
   }
   total += pipe.End();
 
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************
@@ -380,10 +380,10 @@ INIClass::INISection* INIClass::Find_Section(char const* section) const {
     long crc = CrcEngine::Compute(section);
 
     if (SectionIndex.Is_Present(crc)) {
-      return (SectionIndex.Fetch_Index(crc));
+      return SectionIndex.Fetch_Index(crc);
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -400,7 +400,7 @@ INIClass::INISection* INIClass::Find_Section(char const* section) const {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. * 11/02/1996 JLB : Uses index manager. *
  *=============================================================================================*/
-int INIClass::Section_Count() const { return (SectionIndex.Count()); }
+int INIClass::Section_Count() const { return SectionIndex.Count(); }
 
 /***********************************************************************************************
  * INIClass::Entry_Count -- Fetches the number of entries in a specified
@@ -420,9 +420,9 @@ int INIClass::Section_Count() const { return (SectionIndex.Count()); }
 int INIClass::Entry_Count(char const* section) const {
   INISection* secptr = Find_Section(section);
   if (secptr != nullptr) {
-    return (secptr->EntryIndex.Count());
+    return secptr->EntryIndex.Count();
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -447,9 +447,9 @@ INIClass::INIEntry* INIClass::Find_Entry(char const* section,
                                          char const* entry) const {
   INISection* secptr = Find_Section(section);
   if (secptr != nullptr) {
-    return (secptr->Find_Entry(entry));
+    return secptr->Find_Entry(entry);
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -478,12 +478,12 @@ char const* INIClass::Get_Entry(char const* section, int index) const {
     INIEntry* entryptr = secptr->EntryList.First();
 
     while (entryptr != nullptr && entryptr->Is_Valid()) {
-      if (index == 0) return (entryptr->Entry);
+      if (index == 0) return entryptr->Entry;
       index--;
       entryptr = entryptr->Next();
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -509,7 +509,7 @@ char const* INIClass::Get_Entry(char const* section, int index) const {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool INIClass::Put_UUBlock(char const* section, void const* block, int len) {
-  if (section == nullptr || block == nullptr || len < 1) return (false);
+  if (section == nullptr || block == nullptr || len < 1) return false;
 
   Clear(section);
 
@@ -531,7 +531,7 @@ bool INIClass::Put_UUBlock(char const* section, void const* block, int len) {
     Put_String(section, sbuffer, buffer);
     counter++;
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -562,7 +562,7 @@ bool INIClass::Put_UUBlock(char const* section, void const* block, int len) {
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 int INIClass::Get_UUBlock(char const* section, void* block, int len) const {
-  if (section == nullptr) return (0);
+  if (section == nullptr) return 0;
 
   Base64Pipe b64pipe(Base64Pipe::DECODE);
   BufferPipe bpipe(block, len);
@@ -580,7 +580,7 @@ int INIClass::Get_UUBlock(char const* section, void* block, int len) const {
     total += outcount;
   }
   total += b64pipe.End();
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************
@@ -605,7 +605,7 @@ int INIClass::Get_UUBlock(char const* section, void* block, int len) const {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool INIClass::Put_TextBlock(char const* section, char const* text) {
-  if (section == nullptr) return (false);
+  if (section == nullptr) return false;
 
   Clear(section);
 
@@ -642,12 +642,12 @@ bool INIClass::Put_TextBlock(char const* section, char const* text) {
       strtrim(buffer);
       Put_String(section, b, buffer);
       index++;
-      text = ((char*)text) + count;
+      text = (char*)text + count;
     } else {
       break;
     }
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -674,10 +674,10 @@ bool INIClass::Put_TextBlock(char const* section, char const* text) {
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 int INIClass::Get_TextBlock(char const* section, char* buffer, int len) const {
-  if (len <= 0) return (0);
+  if (len <= 0) return 0;
 
   buffer[0] = '\0';
-  if (len <= 1) return (0);
+  if (len <= 1) return 0;
 
   int elen = Entry_Count(section);
   int total = 0;
@@ -699,7 +699,7 @@ int INIClass::Get_TextBlock(char const* section, char* buffer, int len) const {
     len -= partial;
     if (len <= 1) break;
   }
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************
@@ -748,7 +748,7 @@ bool INIClass::Put_Int(char const* section, char const* entry, int number,
       sprintf(buffer, "$%X", number);
       break;
   }
-  return (Put_String(section, entry, buffer));
+  return Put_String(section, entry, buffer);
 }
 
 /***********************************************************************************************
@@ -778,7 +778,7 @@ int INIClass::Get_Int(char const* section, char const* entry,
   /*
   **	Verify that the parameters are nominally correct.
   */
-  if (section == nullptr || entry == nullptr) return (defvalue);
+  if (section == nullptr || entry == nullptr) return defvalue;
 
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr && entryptr->Value != nullptr) {
@@ -792,7 +792,7 @@ int INIClass::Get_Int(char const* section, char const* entry,
       }
     }
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -821,7 +821,7 @@ bool INIClass::Put_Hex(char const* section, char const* entry, int number) {
   char buffer[MAX_LINE_LENGTH];
 
   sprintf(buffer, "%X", number);
-  return (Put_String(section, entry, buffer));
+  return Put_String(section, entry, buffer);
 }
 
 /***********************************************************************************************
@@ -853,13 +853,13 @@ int INIClass::Get_Hex(char const* section, char const* entry,
   /*
   **	Verify that the parameters are nominally correct.
   */
-  if (section == nullptr || entry == nullptr) return (defvalue);
+  if (section == nullptr || entry == nullptr) return defvalue;
 
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr && entryptr->Value != nullptr) {
     sscanf(entryptr->Value, "%x", &defvalue);
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -883,13 +883,13 @@ int INIClass::Get_Hex(char const* section, char const* entry,
  *=============================================================================================*/
 bool INIClass::Put_String(char const* section, char const* entry,
                           char const* string) {
-  if (section == nullptr || entry == nullptr) return (false);
+  if (section == nullptr || entry == nullptr) return false;
 
   INISection* secptr = Find_Section(section);
 
   if (secptr == nullptr) {
     secptr = new INISection(strdup(section));
-    if (secptr == nullptr) return (false);
+    if (secptr == nullptr) return false;
     SectionList.Add_Tail(secptr);
     SectionIndex.Add_Index(secptr->Index_ID(), secptr);
   }
@@ -910,12 +910,12 @@ bool INIClass::Put_String(char const* section, char const* entry,
     entryptr = new INIEntry(strdup(entry), strdup(string));
 
     if (entryptr == nullptr) {
-      return (false);
+      return false;
     }
     secptr->EntryList.Add_Tail(entryptr);
     secptr->EntryIndex.Add_Index(entryptr->Index_ID(), entryptr);
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -955,7 +955,7 @@ int INIClass::Get_String(char const* section, char const* entry,
     buffer[0] = '\0';
   }
   if (buffer == nullptr || !size || section == nullptr || entry == nullptr)
-    return (0);
+    return 0;
 
   /*
   **	Fetch the entry string if it is present. If not, then the normal default
@@ -974,12 +974,12 @@ int INIClass::Get_String(char const* section, char const* entry,
   */
   if (defvalue == nullptr) {
     buffer[0] = '\0';
-    return (0);
+    return 0;
   } else {
     if (buffer != defvalue) strncpy(buffer, defvalue, size);
     buffer[size - 1] = '\0';
     strtrim(buffer);
-    return (strlen(buffer));
+    return strlen(buffer);
   }
 }
 
@@ -1003,9 +1003,9 @@ int INIClass::Get_String(char const* section, char const* entry,
  *=============================================================================================*/
 bool INIClass::Put_Bool(char const* section, char const* entry, bool value) {
   if (value) {
-    return (Put_String(section, entry, "yes"));
+    return Put_String(section, entry, "yes");
   } else {
-    return (Put_String(section, entry, "no"));
+    return Put_String(section, entry, "no");
   }
 }
 
@@ -1039,7 +1039,7 @@ bool INIClass::Get_Bool(char const* section, char const* entry,
   /*
   **	Verify that the parameters are nominally correct.
   */
-  if (section == nullptr || entry == nullptr) return (defvalue);
+  if (section == nullptr || entry == nullptr) return defvalue;
 
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr && entryptr->Value != nullptr) {
@@ -1047,15 +1047,15 @@ bool INIClass::Get_Bool(char const* section, char const* entry,
       case 'Y':
       case 'T':
       case '1':
-        return (true);
+        return true;
 
       case 'N':
       case 'F':
       case '0':
-        return (false);
+        return false;
     }
   }
-  return (defvalue);
+  return defvalue;
 }
 
 /***********************************************************************************************
@@ -1078,10 +1078,10 @@ INIClass::INIEntry* INIClass::INISection::Find_Entry(char const* entry) const {
   if (entry != nullptr) {
     int crc = CrcEngine::Compute(entry);
     if (EntryIndex.Is_Present(crc)) {
-      return (EntryIndex.Fetch_Index(crc));
+      return EntryIndex.Fetch_Index(crc);
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -1112,7 +1112,7 @@ bool INIClass::Put_PKey(PKey const& key) {
 
   len = key.Encode_Exponent(buffer);
   Put_UUBlock("PrivateKey", buffer, len);
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1151,7 +1151,7 @@ PKey INIClass::Get_PKey(bool fast) const {
   Get_UUBlock("PublicKey", buffer, sizeof(buffer));
   key.Decode_Modulus(buffer);
 
-  return (key);
+  return key;
 }
 
 /***********************************************************************************************
@@ -1185,7 +1185,7 @@ fixed INIClass::Get_Fixed(char const* section, char const* entry,
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     retval = fixed(buffer);
   }
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -1208,7 +1208,7 @@ fixed INIClass::Get_Fixed(char const* section, char const* entry,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool INIClass::Put_Fixed(char const* section, char const* entry, fixed value) {
-  return (Put_String(section, entry, value.As_ASCII()));
+  return Put_String(section, entry, value.As_ASCII());
 }
 
 /***********************************************************************************************

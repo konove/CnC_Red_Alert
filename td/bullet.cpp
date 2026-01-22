@@ -164,7 +164,7 @@ void* BulletClass::operator new(size_t) throw() {
   if (ptr) {
     ((BulletClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -242,11 +242,11 @@ short const* BulletClass::Occupy_List() const {
   Validate();
   switch (*this) {
     case BULLET_FLAME:
-      return (Coord_Spillage_List(Coord, 25));
+      return Coord_Spillage_List(Coord, 25);
 
     case BULLET_NUKE_UP:
     case BULLET_NUKE_DOWN:
-      return (Coord_Spillage_List(Coord, 48));
+      return Coord_Spillage_List(Coord, 48);
 
     default:
       if (Altitude) {
@@ -265,13 +265,13 @@ short const* BulletClass::Occupy_List() const {
         CELL cell2 = Coord_Cell(coord);
         ptr = Coord_Spillage_List(coord, 5);
         while (*ptr != REFRESH_EOL) {
-          _list[index++] = (*ptr++) + (cell2 - cell1);
+          _list[index++] = *ptr++ + (cell2 - cell1);
         }
         _list[index] = REFRESH_EOL;
-        return (_list);
+        return _list;
       }
   }
-  return (Coord_Spillage_List(Coord, 10));
+  return Coord_Spillage_List(Coord, 10);
 }
 
 /***********************************************************************************************
@@ -295,9 +295,9 @@ bool BulletClass::Mark(MarkType mark) {
     if (!Class->IsInvisible) {
       Map.Refresh_Cells(Coord_Cell(Coord), Occupy_List());
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -351,7 +351,7 @@ void BulletClass::AI() {
   *but *	they only do so every other game frame (improves game speed and
   *makes *	missiles not so deadly).
   */
-  if ((Frame & 0x01) && Class->IsHoming && Target_Legal(TarCom)) {
+  if (Frame & 0x01 && Class->IsHoming && Target_Legal(TarCom)) {
     PrimaryFacing.Set_Desired(Direction256(Coord, As_Coord(TarCom)));
   }
 
@@ -580,7 +580,7 @@ void BulletClass::Init() {
   Bullets.Free_All();
 
   ptr = new BulletClass();
-  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -678,7 +678,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
           scatterdist = std::min(scatterdist, 0x0080);
         }
 
-        dir = (DirType)((dir + (Random_Pick(0, 10) - 5)) & 0x00FF);
+        dir = (DirType)(dir + (Random_Pick(0, 10) - 5) & 0x00FF);
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
         tcoord = Coord_Move(tcoord, dir, Random_Pick(0, 0x0100));
@@ -713,7 +713,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     int range = 0xFF;
     if (!Class->Range) {
       if (!Class->IsDropping) {
-        range = (::Distance(tcoord, Coord) / Class->MaxSpeed) + 4;
+        range = ::Distance(tcoord, Coord) / Class->MaxSpeed + 4;
       }
     } else {
       range = Class->Range;
@@ -742,7 +742,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Arm the fuse.
     */
     Arm_Fuse(Coord, tcoord, range,
-             ((As_Aircraft(TarCom) != nullptr) ? 0 : Class->Arming));
+             As_Aircraft(TarCom) != nullptr ? 0 : Class->Arming);
 
     /*
     **	Projectiles that make a ballistic flight to impact point must determine
@@ -758,7 +758,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     Riser = 0;
     if (Class->IsArcing) {
       Altitude = 1;
-      Riser = ((Distance(tcoord) / 2) / (speed + 1)) * GRAVITY;
+      Riser = Distance(tcoord) / 2 / (speed + 1) * GRAVITY;
       Riser = std::max<int>(Riser, 10);
     }
     if (Class->IsDropping) {
@@ -767,9 +767,9 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     }
 
     PrimaryFacing = dir;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -788,5 +788,5 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
  *=============================================================================================*/
 TARGET BulletClass::As_Target() const {
   Validate();
-  return (Build_Target(KIND_BULLET, Bullets.ID(this)));
+  return Build_Target(KIND_BULLET, Bullets.ID(this));
 }

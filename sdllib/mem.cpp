@@ -13,7 +13,7 @@ void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
 
   if (!ptr && Memory_Error) Memory_Error();
 
-  if (ptr && (flags & MEM_CLEAR)) memset(ptr, 0, bytes_to_alloc);
+  if (ptr && flags & MEM_CLEAR) memset(ptr, 0, bytes_to_alloc);
 
   return ptr;
 }

@@ -120,14 +120,14 @@ int AbstractClass::Distance(TARGET target) const {
   ** of the object.
   */
   if (obj) {
-    dist -= ((obj->Class->Width() + obj->Class->Height()) * (0x100 / 4));
+    dist -= (obj->Class->Width() + obj->Class->Height()) * (0x100 / 4);
     if (dist < 0) dist = 0;
   }
 
   /*
   ** Return the distance to the target
   */
-  return (dist);
+  return dist;
 }
 
 /***********************************************************************************************
@@ -151,7 +151,7 @@ AbstractTypeClass::AbstractTypeClass(RTTIType rtti, int id, int name,
                                      char const* ini)
     : RTTI(rtti), ID(id), FullName(name) {
   strncpy((char*)IniName, ini, sizeof(IniName));
-  ((char&)IniName[sizeof(IniName) - 1]) = '\0';
+  (char&)IniName[sizeof(IniName) - 1] = '\0';
 }
 
 /***********************************************************************************************
@@ -174,7 +174,7 @@ AbstractTypeClass::AbstractTypeClass(RTTIType rtti, int id, int name,
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE AbstractTypeClass::Coord_Fixup(COORDINATE coord) const {
-  return (coord);
+  return coord;
 }
 
 /***********************************************************************************************
@@ -194,11 +194,11 @@ COORDINATE AbstractTypeClass::Coord_Fixup(COORDINATE coord) const {
  *=============================================================================================*/
 int AbstractTypeClass::Full_Name() const {
   for (int index = 0; index < ARRAY_SIZE(NameOverride); index++) {
-    if (NameIDOverride[index] == ((RTTI + 1) * 100) + ID) {
-      return (-(index + 1));
+    if (NameIDOverride[index] == (RTTI + 1) * 100 + ID) {
+      return -(index + 1);
     }
   }
-  return (FullName);
+  return FullName;
 }
 
 /***********************************************************************************************
@@ -218,5 +218,5 @@ int AbstractTypeClass::Full_Name() const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 int AbstractTypeClass::Get_Ownable() const {
-  return (HOUSEF_ALLIES | HOUSEF_SOVIET | HOUSEF_OTHERS);
+  return HOUSEF_ALLIES | HOUSEF_SOVIET | HOUSEF_OTHERS;
 }

@@ -2025,7 +2025,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, char const* name, int size,
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* AnimTypeClass::operator new(size_t) throw() {
-  return (AnimTypes.Alloc());
+  return AnimTypes.Alloc();
 }
 
 /***********************************************************************************************
@@ -2236,9 +2236,9 @@ void AnimTypeClass::Init(TheaterType theater) {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 char const* Anim_Name(AnimType anim) {
-  if (anim == ANIM_NONE) return ("");
+  if (anim == ANIM_NONE) return "";
 
-  return (AnimTypeClass::As_Reference(anim).IniName);
+  return AnimTypeClass::As_Reference(anim).IniName;
 }
 
 /***********************************************************************************************
@@ -2258,5 +2258,5 @@ char const* Anim_Name(AnimType anim) {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 AnimTypeClass& AnimTypeClass::As_Reference(AnimType type) {
-  return (*AnimTypes.Ptr(type));
+  return *AnimTypes.Ptr(type);
 }

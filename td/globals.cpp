@@ -430,7 +430,7 @@ unsigned char* Palette;
 *reached.
 */
 QueueClass<EventClass, MAX_EVENTS> OutList;
-QueueClass<EventClass, (MAX_EVENTS * 8)> DoList;
+QueueClass<EventClass, MAX_EVENTS * 8> DoList;
 
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
@@ -482,7 +482,7 @@ NullModemClass NullModem(16,  // number of send entries
                          64,  // number of receive entries
                               //	sizeof (EventClass) * MAX_EVENTS,
                               //// maxlen of entry buffer
-                         (200 / sizeof(EventClass)) * sizeof(EventClass) +
+                         200 / sizeof(EventClass) * sizeof(EventClass) +
                              sizeof(CommHeaderType),
                          0x1234);  // Magic number must have each digit unique
                                    // and different from the queue magic number
@@ -781,7 +781,7 @@ int TrapCheckHeap = 0;                  // start checking the Heap
 ** the class itself is 140 bytes.
 */
 IPXManagerClass Ipx(sizeof(GlobalPacketType),  // size of Global Channel packets
-                    ((546 - sizeof(CommHeaderType)) / sizeof(EventClass)) *
+                    (546 - sizeof(CommHeaderType)) / sizeof(EventClass) *
                         sizeof(EventClass),
                     10,             // # entries in Global Queue
                     8,              // # entries in Private Queues
@@ -853,7 +853,7 @@ unsigned short GProductID;  // sender's Product ID
 */
 char* MetaPacket = nullptr;
 int MetaSize =
-    ((546 - sizeof(CommHeaderType)) / sizeof(EventClass)) * sizeof(EventClass);
+    (546 - sizeof(CommHeaderType)) / sizeof(EventClass) * sizeof(EventClass);
 
 /***************************************************************************
 **	This is the random-number seed; it's synchronized between systems for

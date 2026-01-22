@@ -225,7 +225,7 @@ void SidebarClass::One_Time() {
   ** sidebar.  They are now variables because we need to change them for
   ** variable resolutions.
   */
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   SideBarWidth = SIDEBARWIDTH * factor;
   SideX = SeenBuff.Get_Width() - SideBarWidth;
   SideY = Map.RadY + Map.RadHeight + (factor - 1);
@@ -233,7 +233,7 @@ void SidebarClass::One_Time() {
   SideHeight = SeenBuff.Get_Height() - SideY;
   MaxVisible = 4;
   ButtonHeight = 9 * factor;
-  TopHeight = ButtonHeight + (4 * factor);
+  TopHeight = ButtonHeight + 4 * factor;
 
   Background.X = SideX + 8 * factor;
   Background.Y = SideY, Background.Width = SideWidth - 1;
@@ -247,20 +247,20 @@ void SidebarClass::One_Time() {
   WindowList[WINDOW_SIDEBAR][WINDOWY] = SideY + 1 + TopHeight;
   WindowList[WINDOW_SIDEBAR][WINDOWWIDTH] = SideWidth >> 3;
   WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] =
-      (MaxVisible * (StripClass::OBJECT_HEIGHT * factor)) - 1;
+      MaxVisible * (StripClass::OBJECT_HEIGHT * factor) - 1;
 
   /*
   **	Set up the coordinates for the sidebar strips. These coordinates are for
   **	the upper left corner.
   */
   int width =
-      (SideWidth - PowWidth) - (((StripClass::STRIP_WIDTH)*factor) << 1);
+      SideWidth - PowWidth - ((StripClass::STRIP_WIDTH *factor) << 1);
   int spacing = width / 3;
 
   Column[0].X = SideX + PowWidth + spacing;
   Column[0].Y = SideY + TopHeight + 1;
   Column[1].X =
-      Column[0].X + (StripClass::STRIP_WIDTH * factor) + spacing - (factor - 1);
+      Column[0].X + StripClass::STRIP_WIDTH * factor + spacing - (factor - 1);
   Column[1].Y = SideY + TopHeight + 1;
 
   Column[0].One_Time(0);
@@ -445,9 +445,9 @@ void SidebarClass::Init_Theater(TheaterType theater) {
  *=============================================================================================*/
 int SidebarClass::Which_Column(RTTIType type) {
   if (type == RTTI_BUILDINGTYPE || type == RTTI_BUILDING) {
-    return (0);
+    return 0;
   }
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -470,7 +470,7 @@ int SidebarClass::Which_Column(RTTIType type) {
  * HISTORY: * 05/19/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
-  return (Column[Which_Column(type)].Factory_Link(factory, type, id));
+  return Column[Which_Column(type)].Factory_Link(factory, type, id);
 }
 
 /***********************************************************************************************
@@ -545,7 +545,7 @@ bool SidebarClass::Activate_Repair(int control) {
       Set_Default_Mouse(MOUSE_NORMAL, false);
     }
   }
-  return (old);
+  return old;
 }
 
 /***********************************************************************************************
@@ -588,7 +588,7 @@ bool SidebarClass::Activate_Upgrade(int control) {
       Set_Default_Mouse(MOUSE_NORMAL, false);
     }
   }
-  return (old);
+  return old;
 }
 
 /***********************************************************************************************
@@ -632,7 +632,7 @@ bool SidebarClass::Activate_Demolish(int control) {
       Set_Default_Mouse(MOUSE_NORMAL, false);
     }
   }
-  return (old);
+  return old;
 }
 
 /***********************************************************************************************
@@ -663,12 +663,12 @@ bool SidebarClass::Add(RTTIType type, int id) {
       Activate(1);
       IsToRedraw = true;
       Flag_To_Redraw(false);
-      return (true);
+      return true;
     }
-    return (false);
+    return false;
   }
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -693,9 +693,9 @@ bool SidebarClass::Scroll(bool up, int column) {
   if (Column[column].Scroll(up)) {
     IsToRedraw = true;
     Flag_To_Redraw(false);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -885,11 +885,11 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
     }
   }
 
-  if ((!IsRepairMode) && Repair.IsOn) {
+  if (!IsRepairMode && Repair.IsOn) {
     Repair.Turn_Off();
   }
 
-  if ((!IsSellMode) && Upgrade.IsOn) {
+  if (!IsSellMode && Upgrade.IsOn) {
     Upgrade.Turn_Off();
   }
 
@@ -950,7 +950,7 @@ bool SidebarClass::Activate(int control) {
   int sidex = SeenBuff.Get_Width() - SideBarWidth;
   int sidewidth = SeenBuff.Get_Width() - sidex;
 
-  if (PlaybackGame) return (old);
+  if (PlaybackGame) return old;
 
   /*
   **	Determine the new state of the sidebar.
@@ -1018,7 +1018,7 @@ bool SidebarClass::Activate(int control) {
     Flag_To_Redraw(true);
   }
 
-  return (old);
+  return old;
 }
 
 /***********************************************************************************************
@@ -1107,7 +1107,7 @@ void SidebarClass::StripClass::One_Time(int) {
  * HISTORY: * 05/19/1995 JLB : commented *
  *=============================================================================================*/
 void const* SidebarClass::StripClass::Get_Special_Cameo(int type) {
-  return (SpecialShapes[type]);
+  return SpecialShapes[type];
 }
 
 /***********************************************************************************************
@@ -1178,7 +1178,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
     SelectClass& g = SelectButton[ID][index];
     g.ID = BUTTON_SELECT;
     g.X = X;
-    g.Y = Y + (ObjectHeight * index);
+    g.Y = Y + ObjectHeight * index;
     g.Width = ObjectWidth;
     g.Height = ObjectHeight;
     g.Set_Owner(*this, index);
@@ -1388,7 +1388,7 @@ bool SidebarClass::StripClass::Add(RTTIType type, int id) {
     for (int index = 0; index < BuildableCount; index++) {
       if (Buildables[index].BuildableType == type &&
           Buildables[index].BuildableID == id) {
-        return (false);
+        return false;
       }
     }
     if (!ScenarioInit && type != RTTI_SPECIAL) {
@@ -1403,9 +1403,9 @@ bool SidebarClass::StripClass::Add(RTTIType type, int id) {
       qsort(&Buildables[0], BuildableCount, sizeof(Buildables[0]), sortfunc);
     }
 #endif
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1454,7 +1454,7 @@ bool SidebarClass::StripClass::Scroll(bool up) {
   IsScrollingDown = !up;
   IsScrolling = true;
 #endif
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1640,7 +1640,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
   if (redraw) {
     Flag_To_Redraw();
   }
-  return (redraw);
+  return redraw;
 }
 
 /***********************************************************************************************
@@ -1723,11 +1723,11 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             bool isbusy = false;
             switch (Buildables[index].BuildableType) {
               case RTTI_INFANTRYTYPE:
-                isbusy = (PlayerPtr->InfantryFactory != -1);
+                isbusy = PlayerPtr->InfantryFactory != -1;
                 break;
 
               case RTTI_BUILDINGTYPE:
-                isbusy = (PlayerPtr->BuildingFactory != -1);
+                isbusy = PlayerPtr->BuildingFactory != -1;
                 if (!BuildingTypeClass::As_Reference(
                          (StructType)Buildables[index].BuildableID)
                          .IsWall) {
@@ -1736,7 +1736,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
                 break;
 
               case RTTI_UNITTYPE:
-                isbusy = (PlayerPtr->UnitFactory != -1);
+                isbusy = PlayerPtr->UnitFactory != -1;
                 switch (Buildables[index].BuildableID) {
                   case UNIT_MCV:
                   case UNIT_HARVESTER:
@@ -1750,7 +1750,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
                 break;
 
               case RTTI_AIRCRAFTTYPE:
-                isbusy = (PlayerPtr->AircraftFactory != -1);
+                isbusy = PlayerPtr->AircraftFactory != -1;
                 remapper = PlayerPtr->Remap_Table(false, true);
                 break;
             }
@@ -1809,7 +1809,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           ** If this item is flashing then take care of it.
           **
           */
-          if (Flasher == index && (Fetch_Stage() & 0x01)) {
+          if (Flasher == index && Fetch_Stage() & 0x01) {
             remapper = Map.FadingLight;
           }
 
@@ -1836,7 +1836,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         IsTheaterShape = true;  // This shape is theater specific
         CC_Draw_Shape(
             shapefile, shapenum,
-            x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) + LeftEdgeOffset,
+            x - WindowList[WINDOW_SIDEBAR][WINDOWX] * 8 + LeftEdgeOffset,
             y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
             SHAPE_NORMAL | SHAPE_WIN_REL |
                 (remapper ? SHAPE_FADING : SHAPE_NORMAL),
@@ -1850,7 +1850,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         if (darken) {
           CC_Draw_Shape(
               ClockShapes, 0,
-              x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) + LeftEdgeOffset,
+              x - WindowList[WINDOW_SIDEBAR][WINDOWX] * 8 + LeftEdgeOffset,
               y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
               SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
               ClockTranslucentTable);
@@ -1869,9 +1869,9 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           */
           CC_Draw_Shape(
               ObjectTypeClass::PipShapes, PIP_READY,
-              (x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8)) + LeftEdgeOffset +
+              x - WindowList[WINDOW_SIDEBAR][WINDOWX] * 8 + LeftEdgeOffset +
                   (ObjectWidth >> 1),
-              (y - WindowList[WINDOW_SIDEBAR][WINDOWY]) + ObjectHeight -
+              y - WindowList[WINDOW_SIDEBAR][WINDOWY] + ObjectHeight -
                   Get_Build_Frame_Height(ObjectTypeClass::PipShapes) - 8,
               WINDOW_SIDEBAR, SHAPE_CENTER);
           //					Fancy_Text_Print(TXT_READY,
@@ -1880,7 +1880,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         } else {
           CC_Draw_Shape(
               ClockShapes, stage + 1,
-              x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) + LeftEdgeOffset,
+              x - WindowList[WINDOW_SIDEBAR][WINDOWX] * 8 + LeftEdgeOffset,
               y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
               SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
               ClockTranslucentTable);
@@ -1891,9 +1891,9 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           if (factory && !factory->Is_Building()) {
             CC_Draw_Shape(
                 ObjectTypeClass::PipShapes, PIP_HOLDING,
-                (x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8)) +
+                x - WindowList[WINDOW_SIDEBAR][WINDOWX] * 8 +
                     LeftEdgeOffset + (ObjectWidth >> 1),
-                (y - WindowList[WINDOW_SIDEBAR][WINDOWY]) + ObjectHeight -
+                y - WindowList[WINDOW_SIDEBAR][WINDOWY] + ObjectHeight -
                     Get_Build_Frame_Height(ObjectTypeClass::PipShapes) -
                     8,  // Moved up now that icons have names on them
                 WINDOW_SIDEBAR, SHAPE_CENTER);
@@ -1930,7 +1930,7 @@ bool SidebarClass::StripClass::Recalc() {
   int ok;
 
   if (Debug_Map || !BuildableCount) {
-    return (false);
+    return false;
   }
 
   /*
@@ -2020,7 +2020,7 @@ bool SidebarClass::StripClass::Recalc() {
       */
       if (BuildableCount > 1 && index < BuildableCount - 1) {
         memcpy(&Buildables[index], &Buildables[index + 1],
-               sizeof(Buildables[0]) * ((BuildableCount - index) - 1));
+               sizeof(Buildables[0]) * (BuildableCount - index - 1));
       }
       TopIndex = 0;
       IsToRedraw = true;
@@ -2039,7 +2039,7 @@ bool SidebarClass::StripClass::Recalc() {
     Map.SidebarClass::Activate(0);
   }
 #endif
-  return (redraw);
+  return redraw;
 }
 
 /***********************************************************************************************
@@ -2093,7 +2093,7 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
   Strip = &strip;
   Index = index;
   X = strip.X;
-  Y = strip.Y + (index * (OBJECT_HEIGHT << factor));
+  Y = strip.Y + index * (OBJECT_HEIGHT << factor);
 }
 
 /***********************************************************************************************
@@ -2289,7 +2289,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
         if (fnumber == -1 && genfactory != -1) {
           Speak(VOX_NO_FACTORY);
           ControlClass::Action(flags, key);
-          return (true);
+          return true;
         }
 
         if (factory) {
@@ -2366,7 +2366,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
   }
 
   ControlClass::Action(flags, key);
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2390,7 +2390,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
 int SidebarClass::SBGadgetClass::Action(unsigned, KeyNumType&) {
   Map.Help_Text(TXT_NONE);
   Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2428,10 +2428,10 @@ bool SidebarClass::StripClass::Factory_Link(int factory, RTTIType type,
       ** Flag that all the icons on this strip need to be redrawn
       */
       Flag_To_Redraw();
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2454,7 +2454,7 @@ bool SidebarClass::StripClass::Factory_Link(int factory, RTTIType type,
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Abandon_Production(RTTIType type, int factory) {
-  return (Column[Which_Column(type)].Abandon_Production(factory));
+  return Column[Which_Column(type)].Abandon_Production(factory);
 }
 
 /***********************************************************************************************
@@ -2501,5 +2501,5 @@ bool SidebarClass::StripClass::Abandon_Production(int factory) {
   if (noprod) {
     IsBuilding = false;
   }
-  return (abandon);
+  return abandon;
 }

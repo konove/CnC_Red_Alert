@@ -86,7 +86,6 @@
 #include "ra/rules.h"
 #include "ra/session.h"
 #include "ra/smudge.h"
-#include "ra/stage.h"
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type.h"
@@ -95,6 +94,7 @@
 #include "sdllib/include/shape.h"
 #include "tech/fixed.h"
 #include "tech/rect.h"
+
 #define VIC 1
 
 /***********************************************************************************************
@@ -114,15 +114,15 @@
  *=============================================================================================*/
 AnimType Anim_From_Name(char const* name) {
 #ifdef VIC
-  if (name == nullptr) return (ANIM_NONE);
+  if (name == nullptr) return ANIM_NONE;
 
   for (AnimType anim = ANIM_FIRST; anim < ANIM_COUNT; anim++) {
     if (stricmp(AnimTypeClass::As_Reference(anim).IniName, name) == 0) {
-      return (anim);
+      return anim;
     }
   }
 #endif
-  return (ANIM_NONE);
+  return ANIM_NONE;
 }
 
 /***********************************************************************************************
@@ -179,16 +179,16 @@ COORDINATE AnimClass::Sort_Y() const {
   assert(IsActive);
 
   if (xObject != TARGET_NONE) {
-    return (Coord_Add(As_Object(xObject)->Sort_Y(), 0x00010000L));
+    return Coord_Add(As_Object(xObject)->Sort_Y(), 0x00010000L);
   }
   if (*this == ANIM_MOVE_FLASH) {
-    return (Coord_Add(Center_Coord(), XYP_COORD(0, -24)));
+    return Coord_Add(Center_Coord(), XYP_COORD(0, -24));
   }
   if (Class->IsGroundLayer || *this == ANIM_LZ_SMOKE) {
-    return (Coord_Add(Center_Coord(), XYP_COORD(0, 14)));
+    return Coord_Add(Center_Coord(), XYP_COORD(0, 14));
   }
 #endif
-  return (Coord);
+  return Coord;
 }
 
 /***********************************************************************************************
@@ -216,10 +216,10 @@ COORDINATE AnimClass::Center_Coord() const {
   assert(IsActive);
 
   if (xObject != TARGET_NONE) {
-    return (Coord_Add(Coord, As_Object(xObject)->Target_Coord()));
+    return Coord_Add(Coord, As_Object(xObject)->Target_Coord());
   }
 #endif
-  return (Coord);
+  return Coord;
 }
 
 /***********************************************************************************************
@@ -242,12 +242,12 @@ bool AnimClass::Render(bool forced)  // const
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
-  if (Delay) return (false);
+  if (Delay) return false;
   if (Map[Center_Coord()].IsVisible) {
     IsToDisplay = true;
   }
 #endif
-  return (ObjectClass::Render(forced));
+  return ObjectClass::Render(forced);
 }
 
 /***********************************************************************************************
@@ -334,10 +334,10 @@ bool AnimClass::Mark(MarkType mark) {
   if (ObjectClass::Mark(mark)) {
     Map.Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
     //		ObjectClass::Mark(mark);
-    return (true);
+    return true;
   }
 #endif
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -360,22 +360,20 @@ short const* AnimClass::Overlap_List() const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
   static short const OverlapAtom[] = {
-      (-MAP_CELL_W * 2) - 1, (-MAP_CELL_W * 2),
-      (-MAP_CELL_W * 2) + 1, (-MAP_CELL_W * 1) - 1,
-      (-MAP_CELL_W * 1),     (-MAP_CELL_W * 1) + 1,
-      (-MAP_CELL_W * 0) - 1, (-MAP_CELL_W * 0),
-      (-MAP_CELL_W * 0) + 1, (MAP_CELL_W * 1) - 1,
-      (MAP_CELL_W * 1),      (MAP_CELL_W * 1) + 1,
-      (MAP_CELL_W * 2) - 1,  (MAP_CELL_W * 2),
-      (MAP_CELL_W * 2) + 1,  REFRESH_EOL};
+      -MAP_CELL_W * 2 - 1, (-MAP_CELL_W * 2), -MAP_CELL_W * 2 + 1,
+      -MAP_CELL_W * 1 - 1, (-MAP_CELL_W * 1), -MAP_CELL_W * 1 + 1,
+      -MAP_CELL_W * 0 - 1, (-MAP_CELL_W * 0), -MAP_CELL_W * 0 + 1,
+      MAP_CELL_W * 1 - 1,  (MAP_CELL_W * 1),  MAP_CELL_W * 1 + 1,
+      MAP_CELL_W * 2 - 1,  (MAP_CELL_W * 2),  MAP_CELL_W * 2 + 1,
+      REFRESH_EOL};
 
   if (IsToDelete) {
     static short const _list[] = {REFRESH_EOL};
-    return (_list);
+    return _list;
   }
 
   if (Class->Type == ANIM_ATOM_BLAST) {
-    return (OverlapAtom);
+    return OverlapAtom;
   }
 
 #ifdef PARTIAL
@@ -393,14 +391,14 @@ short const* AnimClass::Overlap_List() const {
       Class->DimensionData[shapenum] =
           Shape_Dimensions(Class->Get_Image_Data(), shapenum);
       IsTheaterShape = false;
-      return (
-          Coord_Spillage_List(Center_Coord(), Class->DimensionData[shapenum]));
+      return Coord_Spillage_List(Center_Coord(),
+                                 Class->DimensionData[shapenum]);
     }
   }
   IsTheaterShape = false;
 #endif
 #endif
-  return (Coord_Spillage_List(Center_Coord(), Class->Size));
+  return Coord_Spillage_List(Center_Coord(), Class->Size);
 }
 
 /***********************************************************************************************
@@ -426,7 +424,7 @@ short const* AnimClass::Occupy_List(bool) const {
   static short _simple[] = {REFRESH_EOL};
 
 #endif
-  return (_simple);
+  return _simple;
 }
 
 /***********************************************************************************************
@@ -466,7 +464,7 @@ void* AnimClass::operator new(size_t) throw() {
   if (ptr != nullptr) {
     ((AnimClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -528,11 +526,11 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
 #ifdef VIC
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
-    ((int&)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
+    (int&)Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
     IsTheaterShape = false;
   }
   if (Class->LoopEnd == -1) {
-    ((int&)Class->LoopEnd) = Class->Stages;
+    (int&)Class->LoopEnd = Class->Stages;
   }
   if (Class->IsNormalized) {
     Set_Rate(Options.Normalize_Delay(Class->Delay));
@@ -696,11 +694,11 @@ void AnimClass::AI() {
 
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
-    ((int&)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
+    (int&)Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
     IsTheaterShape = false;
   }
   if (Class->LoopEnd == -1) {
-    ((int&)Class->LoopEnd) = Class->Stages;
+    (int&)Class->LoopEnd = Class->Stages;
   }
 
   if (Delay) {
@@ -711,11 +709,11 @@ void AnimClass::AI() {
   } else {
     if (Class->Stages == -1) {
       IsTheaterShape = Class->IsTheater;
-      ((int&)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
+      (int&)Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
       IsTheaterShape = false;
     }
     if (Class->LoopEnd == -1) {
-      ((int&)Class->LoopEnd) = Class->Stages;
+      (int&)Class->LoopEnd = Class->Stages;
     }
 
     /*
@@ -789,12 +787,12 @@ void AnimClass::AI() {
 
             if (Class->Stages == -1) {
               IsTheaterShape = Class->IsTheater;
-              ((int&)Class->Stages) =
+              (int&)Class->Stages =
                   Get_Build_Frame_Count(Class->Get_Image_Data());
               IsTheaterShape = false;
             }
             if (Class->LoopEnd == -1) {
-              ((int&)Class->LoopEnd) = Class->Stages;
+              (int&)Class->LoopEnd = Class->Stages;
             }
 
             IsToDelete = false;
@@ -873,14 +871,14 @@ LayerType AnimClass::In_Which_Layer() const {
   assert(IsActive);
 
   if (Class->Type >= ANIM_CORPSE1 && Class->Type <= ANIM_CORPSE3) {
-    return (LAYER_SURFACE);
+    return LAYER_SURFACE;
   }
 
   if (Target_Legal(xObject) || Class->IsGroundLayer) {
-    return (LAYER_GROUND);
+    return LAYER_GROUND;
   }
 #endif
-  return (LAYER_AIR);
+  return LAYER_AIR;
 }
 
 /***********************************************************************************************
@@ -1087,7 +1085,7 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
       if (obj != nullptr && obj->Is_Techno() && obj->Owner() == ownerhouse) {
         backup = (TechnoClass*)obj;
         if (obj->What_Am_I() == RTTI_BUILDING &&
-            *((BuildingClass*)obj) == STRUCT_MSLO) {
+            *(BuildingClass*)obj == STRUCT_MSLO) {
           building = (BuildingClass*)obj;
           break;
         }

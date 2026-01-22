@@ -73,9 +73,9 @@ int CheckBoxClass::Draw_Me(int forced) {
                            LTGREEN);
     }
     Show_Mouse();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -103,5 +103,5 @@ int CheckBoxClass::Action(unsigned flags, KeyNumType& key) {
       Turn_On();
     }
   }
-  return (ToggleClass::Action(flags, key));
+  return ToggleClass::Action(flags, key);
 }

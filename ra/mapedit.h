@@ -96,7 +96,7 @@ enum MapEdit1Enum {
   POPUP_HOUSE_X = 10,
   POPUP_HOUSE_Y = 100,
   POPUP_HOUSE_W = 60,
-  POPUP_HOUSE_H = (190 - 100),
+  POPUP_HOUSE_H = 190 - 100,
 
   //	POPUP_GDI_W = 50,
   //	POPUP_GDI_H = 9,

@@ -226,7 +226,7 @@ TemplateClass::TemplateClass() : Class(nullptr) {}
  *=============================================================================================*/
 TARGET TemplateClass::As_Target() const {
   Validate();
-  return (Build_Target(KIND_TEMPLATE, Templates.ID(this)));
+  return Build_Target(KIND_TEMPLATE, Templates.ID(this));
 }
 
 /***********************************************************************************************
@@ -249,7 +249,7 @@ void TemplateClass::Init() {
   Templates.Free_All();
 
   ptr = new TemplateClass();
-  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -288,7 +288,7 @@ bool TemplateClass::Mark(MarkType mark) {
           *don't do any action *	since none is required.
           */
           char* mapptr = (char*)map;
-          bool real = (mapptr[number] != -1);
+          bool real = mapptr[number] != -1;
 
           if (real) {
             /*
@@ -334,9 +334,9 @@ bool TemplateClass::Mark(MarkType mark) {
       delete this;
       noup = false;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -358,7 +358,7 @@ void* TemplateClass::operator new(size_t) throw() {
   if (ptr) {
     ((TemplateClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************

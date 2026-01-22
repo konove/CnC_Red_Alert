@@ -169,7 +169,7 @@ int NullModemConnClass::Send(char* buf, int buflen) {
   /*------------------------------------------------------------------------
   Error if we haven't been properly initialized
   ------------------------------------------------------------------------*/
-  if (PortHandle == nullptr) return (false);
+  if (PortHandle == nullptr) return false;
 
   /*------------------------------------------------------------------------
   Package the data into the Send Buffer
@@ -204,7 +204,7 @@ int NullModemConnClass::Send(char* buf, int buflen) {
 #endif  // WINSOCK
 
   // if ( status == ASSUCCESS ) {
-  return (true);
+  return true;
   //} else {
   // Smart_Printf( "Write Buffer status %d, Port->status %d, sendlen %d \n",
   // status, Port->status, sendlen );
@@ -244,10 +244,10 @@ int NullModemConnClass::Compute_CRC(char* buf, int buflen) {
     }
 
     sum <<= 1;
-    sum += (hibit + (unsigned char)buf[i]);
+    sum += hibit + (unsigned char)buf[i];
   }
 
-  return ((int)sum);
+  return (int)sum;
 }
 
 /***************************************************************************
@@ -276,6 +276,6 @@ int NullModemConnClass::Packet_Overhead_Size() {
   // CommHeaderType for Queued packets
   //
 
-  return ((PACKET_SERIAL_OVERHEAD_SIZE + sizeof(CommHeaderType)));
+  return PACKET_SERIAL_OVERHEAD_SIZE + sizeof(CommHeaderType);
 
 } /* end of Packet_Overhead_Size */

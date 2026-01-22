@@ -181,8 +181,7 @@ void EventChoiceClass::Draw_It(int, int x, int y, int width, int height,
                             _tabs);
   } else {
     Conquer_Clip_Text_Print(Description(), x, y,
-                            (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                      : &ColorRemaps[PCOLOR_GREY]),
+                            selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
                             TBLACK, flags, width, _tabs);
   }
 }
@@ -248,7 +247,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
     td.IsTripped = true;
   }
 
-  if (td.IsTripped) return (true);
+  if (td.IsTripped) return true;
 
   /*
   **	Triggers based on the game's global environment such as time or
@@ -257,23 +256,23 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   */
   switch (Event) {
     case TEVENT_GLOBAL_SET:
-      if (!Scen.GlobalFlags[Data.Value]) return (false);
-      return (true);
+      if (!Scen.GlobalFlags[Data.Value]) return false;
+      return true;
 
     case TEVENT_GLOBAL_CLEAR:
-      if (Scen.GlobalFlags[Data.Value]) return (false);
-      return (true);
+      if (Scen.GlobalFlags[Data.Value]) return false;
+      return true;
 
     case TEVENT_MISSION_TIMER_EXPIRED:
       //			if (MissionSuspend == -1 || MissionTimer != 0)
       // return(false);
       if (!Scen.MissionTimer.Is_Active() || Scen.MissionTimer != 0)
-        return (false);
-      return (true);
+        return false;
+      return true;
 
     case TEVENT_TIME:
-      if (td.Timer != 0) return (false);
-      return (true);
+      if (td.Timer != 0) return false;
+      return true;
   }
 
   /*
@@ -281,7 +280,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   **	this would be for events related to time or other outside influences.
   */
   if (Event == TEVENT_NONE) {
-    return (false);
+    return false;
   }
 
   /*
@@ -296,7 +295,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       Event == TEVENT_CROSS_VERTICAL || Event == TEVENT_ENTERS_ZONE ||
       Event == TEVENT_PLAYER_ENTERED) {
     if (event != Event && event != TEVENT_ANY) {
-      return (false);
+      return false;
     }
   }
 
@@ -307,18 +306,18 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   */
   if (Event == TEVENT_PLAYER_ENTERED || Event == TEVENT_CROSS_HORIZONTAL ||
       Event == TEVENT_CROSS_VERTICAL || Event == TEVENT_ENTERS_ZONE) {
-    if (!object || object->Owner() != Data.House) return (false);
+    if (!object || object->Owner() != Data.House) return false;
     td.IsTripped = true;
-    return (true);
+    return true;
   }
 
   /*
   **	Check for all bridges destroyed condition.
   */
   if (Event == TEVENT_ALL_BRIDGES_DESTROYED) {
-    if (Scen.BridgeCount) return (false);
+    if (Scen.BridgeCount) return false;
     td.IsTripped = true;
-    return (true);
+    return true;
   }
 
   /*
@@ -344,14 +343,14 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
             break;
           }
         }
-        if (index == Teams.Count()) return (false);
+        if (index == Teams.Count()) return false;
         break;
 
       /*
       **	Credits must be equal or greater to the value specified.
       */
       case TEVENT_CREDITS:
-        if (hptr->Available_Money() < Data.Value) return (false);
+        if (hptr->Available_Money() < Data.Value) return false;
         break;
 
       /*
@@ -360,7 +359,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       case TEVENT_NOFACTORIES:
         if (hptr->BScan & (STRUCTF_AIRSTRIP | STRUCTF_TENT | STRUCTF_WEAP |
                            STRUCTF_BARRACKS | STRUCTF_CONST))
-          return (false);
+          return false;
         break;
 
       /*
@@ -368,21 +367,21 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       */
       case TEVENT_FAKES_DESTROYED:
         if (hptr->BScan & (STRUCTF_FAKECONST | STRUCTF_FAKEWEAP))
-          return (false);
+          return false;
         break;
 
       /*
       **	A civilian must have been evacuated.
       */
       case TEVENT_EVAC_CIVILIAN:
-        if (!hptr->IsCivEvacuated) return (false);
+        if (!hptr->IsCivEvacuated) return false;
         break;
 
       /*
       **	Verify that the structure has been built.
       */
       case TEVENT_BUILDING_EXISTS:
-        if ((hptr->ActiveBScan & (1 << Data.Structure)) == 0) return (false);
+        if ((hptr->ActiveBScan & 1 << Data.Structure) == 0) return false;
         //				if (hptr->Get_Quantity(Data.Structure)
         //== 0) return(false);
         break;
@@ -391,7 +390,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the structure has been built.
       */
       case TEVENT_BUILD:
-        if (hptr->JustBuiltStructure != Data.Structure) return (false);
+        if (hptr->JustBuiltStructure != Data.Structure) return false;
         td.IsTripped = true;
         break;
 
@@ -399,7 +398,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the unit has been built.
       */
       case TEVENT_BUILD_UNIT:
-        if (hptr->JustBuiltUnit != Data.Unit) return (false);
+        if (hptr->JustBuiltUnit != Data.Unit) return false;
         td.IsTripped = true;
         break;
 
@@ -407,7 +406,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the infantry has been built.
       */
       case TEVENT_BUILD_INFANTRY:
-        if (hptr->JustBuiltInfantry != Data.Infantry) return (false);
+        if (hptr->JustBuiltInfantry != Data.Infantry) return false;
         td.IsTripped = true;
         break;
 
@@ -415,7 +414,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the aircraft has been built.
       */
       case TEVENT_BUILD_AIRCRAFT:
-        if (hptr->JustBuiltAircraft != Data.Aircraft) return (false);
+        if (hptr->JustBuiltAircraft != Data.Aircraft) return false;
         td.IsTripped = true;
         break;
 
@@ -424,14 +423,14 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       *destroyed.
       */
       case TEVENT_NBUILDINGS_DESTROYED:
-        if (hptr->BuildingsLost < Data.Value) return (false);
+        if (hptr->BuildingsLost < Data.Value) return false;
         break;
 
       /*
       **	Verify that the specified number of units have been destroyed.
       */
       case TEVENT_NUNITS_DESTROYED:
-        if (hptr->UnitsLost < Data.Value) return (false);
+        if (hptr->UnitsLost < Data.Value) return false;
         break;
 
       default:
@@ -443,7 +442,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   if (hptr) {
     switch (Event) {
       case TEVENT_LOW_POWER:
-        if (hptr->Power_Fraction() >= 1) return (false);
+        if (hptr->Power_Fraction() >= 1) return false;
         break;
 
         //			case TEVENT_SPIED:
@@ -451,21 +450,21 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         //				break;
 
       case TEVENT_THIEVED:
-        if (!hptr->IsThieved) return (false);
+        if (!hptr->IsThieved) return false;
         break;
 
       /*
       **	Verify that the house has been discovered.
       */
       case TEVENT_HOUSE_DISCOVERED:
-        if (!hptr->IsDiscovered) return (false);
+        if (!hptr->IsDiscovered) return false;
         break;
 
       /*
       **	Verify that all buildings have been destroyed.
       */
       case TEVENT_BUILDINGS_DESTROYED:
-        if (hptr->ActiveBScan) return (false);
+        if (hptr->ActiveBScan) return false;
         break;
 
       /*
@@ -473,7 +472,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	exceptions.
       */
       case TEVENT_UNITS_DESTROYED:
-        if (hptr->ActiveUScan | hptr->ActiveIScan) return (false);
+        if (hptr->ActiveUScan | hptr->ActiveIScan) return false;
         break;
 
       /*
@@ -482,7 +481,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       case TEVENT_ALL_DESTROYED:
         if (hptr->ActiveBScan | hptr->ActiveUScan | hptr->ActiveIScan |
             hptr->ActiveVScan)
-          return (false);
+          return false;
         break;
 
       default:
@@ -490,7 +489,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
     }
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -596,7 +595,7 @@ NeedType Event_Needs(TEventType event) {
     case TEVENT_UNITS_DESTROYED:
     case TEVENT_ALL_DESTROYED:
     case TEVENT_LOW_POWER:
-      return (NEED_HOUSE);
+      return NEED_HOUSE;
 
     case TEVENT_NUNITS_DESTROYED:
     case TEVENT_NBUILDINGS_DESTROYED:
@@ -604,28 +603,28 @@ NeedType Event_Needs(TEventType event) {
     case TEVENT_TIME:
     case TEVENT_GLOBAL_SET:
     case TEVENT_GLOBAL_CLEAR:
-      return (NEED_NUMBER);
+      return NEED_NUMBER;
 
     case TEVENT_BUILDING_EXISTS:
     case TEVENT_BUILD:
-      return (NEED_STRUCTURE);
+      return NEED_STRUCTURE;
 
     case TEVENT_BUILD_UNIT:
-      return (NEED_UNIT);
+      return NEED_UNIT;
 
     case TEVENT_BUILD_INFANTRY:
-      return (NEED_INFANTRY);
+      return NEED_INFANTRY;
 
     case TEVENT_BUILD_AIRCRAFT:
-      return (NEED_AIRCRAFT);
+      return NEED_AIRCRAFT;
 
     case TEVENT_LEAVES_MAP:
-      return (NEED_TEAM);
+      return NEED_TEAM;
 
     default:
       break;
   }
-  return (NEED_NONE);
+  return NEED_NONE;
 }
 
 /***********************************************************************************************
@@ -643,12 +642,12 @@ TEventType Event_From_Name(char const* name) {
   if (name) {
     for (TEventType i = TEVENT_NONE; i < TEVENT_COUNT; i++) {
       if (!stricmp(name, EventText[i])) {
-        return (i);
+        return i;
       }
     }
   }
 
-  return (TEVENT_NONE);
+  return TEVENT_NONE;
 }
 
 /***********************************************************************************************
@@ -662,7 +661,7 @@ TEventType Event_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-char const* Name_From_Event(TEventType event) { return (EventText[event]); }
+char const* Name_From_Event(TEventType event) { return EventText[event]; }
 
 /***********************************************************************************************
  * Attaches_To -- Determines what event can be attached to. *
@@ -768,5 +767,5 @@ AttachType Attaches_To(TEventType event) {
       break;
   }
 
-  return (attach);
+  return attach;
 }

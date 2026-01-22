@@ -627,7 +627,7 @@ class HouseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void operator delete(void* ptr);
   HouseClass(HousesType house);
   HouseClass(NoInitClass const& x)
@@ -680,7 +680,7 @@ class HouseClass {
   COORDINATE Find_Build_Location(BuildingClass* building) const;
   BuildingClass* Find_Building(StructType type,
                                ZoneType zone = ZONE_NONE) const;
-  char const* Name() const { return (Class->Name()); }
+  char const* Name() const { return Class->Name(); }
 
   bool Fire_Sale();
   bool Is_Hack_Prevented(RTTIType rtti, int value) const;
@@ -767,7 +767,7 @@ class HouseClass {
   bool AI_Lower_Power(UrgencyType urgency) const;
 
   bool Can_Make_Money() const {
-    return (Available_Money() > 300 || (BScan & STRUCTF_REFINERY));
+    return Available_Money() > 300 || BScan & STRUCTF_REFINERY;
   }
 
   static void Init();
@@ -873,14 +873,14 @@ class HouseClass {
   **	the house AI processing. Higher priority build requests take precidence.
   */
   struct BuildChoiceClass {
-    static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+    static void* operator new(size_t, void* ptr) throw() { return ptr; }
     UrgencyType Urgency;   // The urgency of the build request
     StructType Structure;  // The type of building to produce.
 
     BuildChoiceClass(UrgencyType u, StructType s) : Urgency(u), Structure(s) {}
     BuildChoiceClass(NoInitClass const&) {}
-    int Save(Pipe&) const { return (true); }
-    int Load(Straw&) { return (true); }
+    int Save(Pipe&) const { return true; }
+    int Load(Straw&) { return true; }
     void Code_Pointers() {}
     void Decode_Pointers() {}
   };
@@ -911,19 +911,19 @@ class HouseClass {
   char InitialName[HOUSE_NAME_MAX];
 #endif
 
-  int QuantityB(int index) { return (BQuantity[index]); }
+  int QuantityB(int index) { return BQuantity[index]; }
   int QuantityU(int index) {
     if (index >= UNIT_RA_COUNT) index -= UNIT_RA_COUNT;
-    return (UQuantity[index]);
+    return UQuantity[index];
   }
   int QuantityI(int index) {
     if (index >= INFANTRY_RA_COUNT) index -= INFANTRY_RA_COUNT;
-    return (IQuantity[index]);
+    return IQuantity[index];
   }
-  int QuantityA(int index) { return (AQuantity[index]); }
+  int QuantityA(int index) { return AQuantity[index]; }
   int QuantityV(int index) {
     if (index >= VESSEL_RA_COUNT) index -= VESSEL_RA_COUNT;
-    return (VQuantity[index]);
+    return VQuantity[index];
   }
 };
 

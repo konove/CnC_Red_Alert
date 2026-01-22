@@ -73,7 +73,7 @@ class ThemeClass {
   ThemeType What_Is_Playing() const { return Score; }
   bool Is_Allowed(ThemeType index) const;
   bool Is_Regular(ThemeType theme) const {
-    return (theme != THEME_NONE && _themes[theme].Normal);
+    return theme != THEME_NONE && _themes[theme].Normal;
   }
   char const* Base_Name(ThemeType index) const;
   char const* Full_Name(ThemeType index) const;

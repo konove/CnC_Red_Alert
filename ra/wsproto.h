@@ -114,11 +114,11 @@ class WinsockInterfaceClass {
   virtual bool Set_Socket_Options();
   virtual void Set_Broadcast_Address(void*) {}
 
-  virtual ProtocolEnum Get_Protocol() { return (PROTOCOL_NONE); }
+  virtual ProtocolEnum Get_Protocol() { return PROTOCOL_NONE; }
 
-  virtual int Protocol_Event_Message() { return (0); }
+  virtual int Protocol_Event_Message() { return 0; }
 
-  virtual bool Open_Socket(SOCKET) { return (false); }
+  virtual bool Open_Socket(SOCKET) { return false; }
 
   virtual void Event_Handler(int, SocketEvent) {}
 
@@ -135,7 +135,7 @@ class WinsockInterfaceClass {
     CONNECTION_LOST
   } ConnectStatusEnum;
 
-  inline ConnectStatusEnum Get_Connection_Status() { return (ConnectStatus); }
+  inline ConnectStatusEnum Get_Connection_Status() { return ConnectStatus; }
 
  protected:
   int Get_Last_Error();

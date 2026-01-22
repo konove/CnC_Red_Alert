@@ -173,7 +173,7 @@ class BuildingClass : public TechnoClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); }
+  static void *operator new(size_t, void *ptr) throw() { return ptr; }
   static void operator delete(void *ptr);
   BuildingClass() : Class(nullptr) {}
   BuildingClass(StructType type, HousesType house);
@@ -189,7 +189,7 @@ class BuildingClass : public TechnoClass {
 
   TARGET Target_Scan();
   BuildingTypeClass::AnimControlType const *Fetch_Anim_Control() {
-    return (&Class->Anims[BState]);
+    return &Class->Anims[BState];
   }
 
   /*
@@ -198,7 +198,7 @@ class BuildingClass : public TechnoClass {
   CELL Find_Exit_Cell(TechnoClass const *techno) const override;
   InfantryType Crew_Type() const override;
   int Pip_Count() const override;
-  bool Can_Player_Move() const override { return (false); }
+  bool Can_Player_Move() const override { return false; }
   ActionType What_Action(ObjectClass *target) const override;
   ActionType What_Action(CELL cell) const override;
   bool Can_Demolish() const override;

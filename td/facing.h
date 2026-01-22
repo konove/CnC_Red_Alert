@@ -72,15 +72,15 @@ class FacingClass {
 
   DirType Get() const { return CurrentFacing; }
 
-  int Is_Rotating() const { return (DesiredFacing != CurrentFacing); }
+  int Is_Rotating() const { return DesiredFacing != CurrentFacing; }
 
   int Difference() const {
-    return (signed char)(*((unsigned char*)&DesiredFacing) -
-                         *((unsigned char*)&CurrentFacing));
+    return (signed char)(*(unsigned char*)&DesiredFacing -
+                         *(unsigned char*)&CurrentFacing);
   }
   int Difference(DirType facing) const {
-    return (signed char)(*((signed char*)&facing) -
-                         *((signed char*)&CurrentFacing));
+    return (signed char)(*(signed char*)&facing -
+                         *(signed char*)&CurrentFacing);
   }
   int Rotation_Adjust(int rate);
 

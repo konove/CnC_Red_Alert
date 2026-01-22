@@ -61,9 +61,9 @@ class HSVClass {
 
   void Adjust(int ratio, HSVClass const& hsv);
   int Difference(HSVClass const& hsv) const;
-  int Hue_Component() const { return (Hue); }
-  int Saturation_Component() const { return (Saturation); }
-  int Value_Component() const { return (Value); }
+  int Hue_Component() const { return Hue; }
+  int Saturation_Component() const { return Saturation; }
+  int Value_Component() const { return Value; }
 
  private:
   unsigned char Hue;

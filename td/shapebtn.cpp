@@ -158,7 +158,7 @@ int ShapeButtonClass::Draw_Me(int forced) {
     if (LogicPage == &SeenBuff) {
       Conditional_Show_Mouse();
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

@@ -75,7 +75,7 @@ class AircraftClass : public FootClass, public FlyClass {
 
   //-----------------------------------------------------------------------------
   static void* operator new(size_t) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void operator delete(void*);
   operator AircraftType() const { return Class->Type; }
   AircraftClass(AircraftType classid, HousesType house);
@@ -110,7 +110,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	Query functions.
   */
   LayerType In_Which_Layer() const override;
-  DirType Turret_Facing() const override { return (SecondaryFacing.Current()); }
+  DirType Turret_Facing() const override { return SecondaryFacing.Current(); }
   int Shape_Number() const;
   MoveType Can_Enter_Cell(CELL cell,
                                   FacingType facing = FACING_NONE) const override;

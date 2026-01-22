@@ -204,7 +204,7 @@ SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, char const* ininame,
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* SmudgeTypeClass::operator new(size_t) throw() {
-  return (SmudgeTypes.Alloc());
+  return SmudgeTypes.Alloc();
 }
 
 /***********************************************************************************************
@@ -285,11 +285,11 @@ SmudgeType SmudgeTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
-        return (index);
+        return index;
       }
     }
   }
-  return (SMUDGE_NONE);
+  return SMUDGE_NONE;
 }
 
 /***********************************************************************************************
@@ -315,11 +315,11 @@ short const* SmudgeTypeClass::Occupy_List(bool) const {
 
   for (int x = 0; x < Width; x++) {
     for (int y = 0; y < Height; y++) {
-      *ptr++ = x + (y * MAP_CELL_W);
+      *ptr++ = x + y * MAP_CELL_W;
     }
   }
   *ptr = REFRESH_EOL;
-  return (_occupy);
+  return _occupy;
 }
 
 /***********************************************************************************************
@@ -430,9 +430,9 @@ void SmudgeTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType) const {
   if (new SmudgeClass(Type, Cell_Coord(cell))) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -453,7 +453,7 @@ bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType) const {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass*) const {
-  return (new SmudgeClass(Type, -1));
+  return new SmudgeClass(Type, -1);
 }
 
 /***********************************************************************************************
@@ -512,5 +512,5 @@ void SmudgeTypeClass::One_Time() {}
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 SmudgeTypeClass& SmudgeTypeClass::As_Reference(SmudgeType type) {
-  return (*SmudgeTypes.Ptr(type));
+  return *SmudgeTypes.Ptr(type);
 }

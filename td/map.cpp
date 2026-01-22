@@ -91,314 +91,314 @@
 #define MCW MAP_CELL_W
 int const MapClass::RadiusOffset[] = {
     /* 0  */ 0,
-    /* 1  */ (-MCW * 1) - 1,
-    (-MCW * 1) + 0,
-    (-MCW * 1) + 1,
+    /* 1  */ -MCW * 1 - 1,
+    -MCW * 1 + 0,
+    -MCW * 1 + 1,
     -1,
     1,
-    (MCW * 1) - 1,
-    (MCW * 1) + 0,
-    (MCW * 1) + 1,
-    /* 2  */ (-MCW * 2) - 1,
-    (-MCW * 2) + 0,
-    (-MCW * 2) + 1,
-    (-MCW * 1) - 2,
-    (-MCW * 1) + 2,
+    MCW * 1 - 1,
+    MCW * 1 + 0,
+    MCW * 1 + 1,
+    /* 2  */ -MCW * 2 - 1,
+    -MCW * 2 + 0,
+    -MCW * 2 + 1,
+    -MCW * 1 - 2,
+    -MCW * 1 + 2,
     -2,
     2,
-    (MCW * 1) - 2,
-    (MCW * 1) + 2,
-    (MCW * 2) - 1,
-    (MCW * 2) + 0,
-    (MCW * 2) + 1,
-    /* 3  */ (-MCW * 3) - 1,
-    (-MCW * 3) + 0,
-    (-MCW * 3) + 1,
-    (-MCW * 2) - 2,
-    (-MCW * 2) + 2,
-    (-MCW * 1) - 3,
-    (-MCW * 1) + 3,
+    MCW * 1 - 2,
+    MCW * 1 + 2,
+    MCW * 2 - 1,
+    MCW * 2 + 0,
+    MCW * 2 + 1,
+    /* 3  */ -MCW * 3 - 1,
+    -MCW * 3 + 0,
+    -MCW * 3 + 1,
+    -MCW * 2 - 2,
+    -MCW * 2 + 2,
+    -MCW * 1 - 3,
+    -MCW * 1 + 3,
     -3,
     3,
-    (MCW * 1) - 3,
-    (MCW * 1) + 3,
-    (MCW * 2) - 2,
-    (MCW * 2) + 2,
-    (MCW * 3) - 1,
-    (MCW * 3) + 0,
-    (MCW * 3) + 1,
-    /* 4  */ (-MCW * 4) - 1,
-    (-MCW * 4) + 0,
-    (-MCW * 4) + 1,
-    (-MCW * 3) - 3,
-    (-MCW * 3) - 2,
-    (-MCW * 3) + 2,
-    (-MCW * 3) + 3,
-    (-MCW * 2) - 3,
-    (-MCW * 2) + 3,
-    (-MCW * 1) - 4,
-    (-MCW * 1) + 4,
+    MCW * 1 - 3,
+    MCW * 1 + 3,
+    MCW * 2 - 2,
+    MCW * 2 + 2,
+    MCW * 3 - 1,
+    MCW * 3 + 0,
+    MCW * 3 + 1,
+    /* 4  */ -MCW * 4 - 1,
+    -MCW * 4 + 0,
+    -MCW * 4 + 1,
+    -MCW * 3 - 3,
+    -MCW * 3 - 2,
+    -MCW * 3 + 2,
+    -MCW * 3 + 3,
+    -MCW * 2 - 3,
+    -MCW * 2 + 3,
+    -MCW * 1 - 4,
+    -MCW * 1 + 4,
     -4,
     4,
-    (MCW * 1) - 4,
-    (MCW * 1) + 4,
-    (MCW * 2) - 3,
-    (MCW * 2) + 3,
-    (MCW * 3) - 3,
-    (MCW * 3) - 2,
-    (MCW * 3) + 2,
-    (MCW * 3) + 3,
-    (MCW * 4) - 1,
-    (MCW * 4) + 0,
-    (MCW * 4) + 1,
-    /* 5  */ (-MCW * 5) - 1,
-    (-MCW * 5) + 0,
-    (-MCW * 5) + 1,
-    (-MCW * 4) - 3,
-    (-MCW * 4) - 2,
-    (-MCW * 4) + 2,
-    (-MCW * 4) + 3,
-    (-MCW * 3) - 4,
-    (-MCW * 3) + 4,
-    (-MCW * 2) - 4,
-    (-MCW * 2) + 4,
-    (-MCW * 1) - 5,
-    (-MCW * 1) + 5,
+    MCW * 1 - 4,
+    MCW * 1 + 4,
+    MCW * 2 - 3,
+    MCW * 2 + 3,
+    MCW * 3 - 3,
+    MCW * 3 - 2,
+    MCW * 3 + 2,
+    MCW * 3 + 3,
+    MCW * 4 - 1,
+    MCW * 4 + 0,
+    MCW * 4 + 1,
+    /* 5  */ -MCW * 5 - 1,
+    -MCW * 5 + 0,
+    -MCW * 5 + 1,
+    -MCW * 4 - 3,
+    -MCW * 4 - 2,
+    -MCW * 4 + 2,
+    -MCW * 4 + 3,
+    -MCW * 3 - 4,
+    -MCW * 3 + 4,
+    -MCW * 2 - 4,
+    -MCW * 2 + 4,
+    -MCW * 1 - 5,
+    -MCW * 1 + 5,
     -5,
     5,
-    (MCW * 1) - 5,
-    (MCW * 1) + 5,
-    (MCW * 2) - 4,
-    (MCW * 2) + 4,
-    (MCW * 3) - 4,
-    (MCW * 3) + 4,
-    (MCW * 4) - 3,
-    (MCW * 4) - 2,
-    (MCW * 4) + 2,
-    (MCW * 4) + 3,
-    (MCW * 5) - 1,
-    (MCW * 5) + 0,
-    (MCW * 5) + 1,
-    /* 6  */ (-MCW * 6) - 1,
-    (-MCW * 6) + 0,
-    (-MCW * 6) + 1,
-    (-MCW * 5) - 3,
-    (-MCW * 5) - 2,
-    (-MCW * 5) + 2,
-    (-MCW * 5) + 3,
-    (-MCW * 4) - 4,
-    (-MCW * 4) + 4,
-    (-MCW * 3) - 5,
-    (-MCW * 3) + 5,
-    (-MCW * 2) - 5,
-    (-MCW * 2) + 5,
-    (-MCW * 1) - 6,
-    (-MCW * 1) + 6,
+    MCW * 1 - 5,
+    MCW * 1 + 5,
+    MCW * 2 - 4,
+    MCW * 2 + 4,
+    MCW * 3 - 4,
+    MCW * 3 + 4,
+    MCW * 4 - 3,
+    MCW * 4 - 2,
+    MCW * 4 + 2,
+    MCW * 4 + 3,
+    MCW * 5 - 1,
+    MCW * 5 + 0,
+    MCW * 5 + 1,
+    /* 6  */ -MCW * 6 - 1,
+    -MCW * 6 + 0,
+    -MCW * 6 + 1,
+    -MCW * 5 - 3,
+    -MCW * 5 - 2,
+    -MCW * 5 + 2,
+    -MCW * 5 + 3,
+    -MCW * 4 - 4,
+    -MCW * 4 + 4,
+    -MCW * 3 - 5,
+    -MCW * 3 + 5,
+    -MCW * 2 - 5,
+    -MCW * 2 + 5,
+    -MCW * 1 - 6,
+    -MCW * 1 + 6,
     -6,
     6,
-    (MCW * 1) - 6,
-    (MCW * 1) + 6,
-    (MCW * 2) - 5,
-    (MCW * 2) + 5,
-    (MCW * 3) - 5,
-    (MCW * 3) + 5,
-    (MCW * 4) - 4,
-    (MCW * 4) + 4,
-    (MCW * 5) - 3,
-    (MCW * 5) - 2,
-    (MCW * 5) + 2,
-    (MCW * 5) + 3,
-    (MCW * 6) - 1,
-    (MCW * 6) + 0,
-    (MCW * 6) + 1,
-    /* 7  */ (-MCW * 7) - 1,
-    (-MCW * 7) + 0,
-    (-MCW * 7) + 1,
-    (-MCW * 6) - 3,
-    (-MCW * 6) - 2,
-    (-MCW * 6) + 2,
-    (-MCW * 6) + 3,
-    (-MCW * 5) - 5,
-    (-MCW * 5) - 4,
-    (-MCW * 5) + 4,
-    (-MCW * 5) + 5,
-    (-MCW * 4) - 5,
-    (-MCW * 4) + 5,
-    (-MCW * 3) - 6,
-    (-MCW * 3) + 6,
-    (-MCW * 2) - 6,
-    (-MCW * 2) + 6,
-    (-MCW * 1) - 7,
-    (-MCW * 1) + 7,
+    MCW * 1 - 6,
+    MCW * 1 + 6,
+    MCW * 2 - 5,
+    MCW * 2 + 5,
+    MCW * 3 - 5,
+    MCW * 3 + 5,
+    MCW * 4 - 4,
+    MCW * 4 + 4,
+    MCW * 5 - 3,
+    MCW * 5 - 2,
+    MCW * 5 + 2,
+    MCW * 5 + 3,
+    MCW * 6 - 1,
+    MCW * 6 + 0,
+    MCW * 6 + 1,
+    /* 7  */ -MCW * 7 - 1,
+    -MCW * 7 + 0,
+    -MCW * 7 + 1,
+    -MCW * 6 - 3,
+    -MCW * 6 - 2,
+    -MCW * 6 + 2,
+    -MCW * 6 + 3,
+    -MCW * 5 - 5,
+    -MCW * 5 - 4,
+    -MCW * 5 + 4,
+    -MCW * 5 + 5,
+    -MCW * 4 - 5,
+    -MCW * 4 + 5,
+    -MCW * 3 - 6,
+    -MCW * 3 + 6,
+    -MCW * 2 - 6,
+    -MCW * 2 + 6,
+    -MCW * 1 - 7,
+    -MCW * 1 + 7,
     -7,
     7,
-    (MCW * 1) - 7,
-    (MCW * 1) + 7,
-    (MCW * 2) - 6,
-    (MCW * 2) + 6,
-    (MCW * 3) - 6,
-    (MCW * 3) + 6,
-    (MCW * 4) - 5,
-    (MCW * 4) + 5,
-    (MCW * 5) - 5,
-    (MCW * 5) - 4,
-    (MCW * 5) + 4,
-    (MCW * 5) + 5,
-    (MCW * 6) - 3,
-    (MCW * 6) - 2,
-    (MCW * 6) + 2,
-    (MCW * 6) + 3,
-    (MCW * 7) - 1,
-    (MCW * 7) + 0,
-    (MCW * 7) + 1,
-    /* 8  */ (-MCW * 8) - 1,
-    (-MCW * 8) + 0,
-    (-MCW * 8) + 1,
-    (-MCW * 7) - 3,
-    (-MCW * 7) - 2,
-    (-MCW * 7) + 2,
-    (-MCW * 7) + 3,
-    (-MCW * 6) - 5,
-    (-MCW * 6) - 4,
-    (-MCW * 6) + 4,
-    (-MCW * 6) + 5,
-    (-MCW * 5) - 6,
-    (-MCW * 5) + 6,
-    (-MCW * 4) - 6,
-    (-MCW * 4) + 6,
-    (-MCW * 3) - 7,
-    (-MCW * 3) + 7,
-    (-MCW * 2) - 7,
-    (-MCW * 2) + 7,
-    (-MCW * 1) - 8,
-    (-MCW * 1) + 8,
+    MCW * 1 - 7,
+    MCW * 1 + 7,
+    MCW * 2 - 6,
+    MCW * 2 + 6,
+    MCW * 3 - 6,
+    MCW * 3 + 6,
+    MCW * 4 - 5,
+    MCW * 4 + 5,
+    MCW * 5 - 5,
+    MCW * 5 - 4,
+    MCW * 5 + 4,
+    MCW * 5 + 5,
+    MCW * 6 - 3,
+    MCW * 6 - 2,
+    MCW * 6 + 2,
+    MCW * 6 + 3,
+    MCW * 7 - 1,
+    MCW * 7 + 0,
+    MCW * 7 + 1,
+    /* 8  */ -MCW * 8 - 1,
+    -MCW * 8 + 0,
+    -MCW * 8 + 1,
+    -MCW * 7 - 3,
+    -MCW * 7 - 2,
+    -MCW * 7 + 2,
+    -MCW * 7 + 3,
+    -MCW * 6 - 5,
+    -MCW * 6 - 4,
+    -MCW * 6 + 4,
+    -MCW * 6 + 5,
+    -MCW * 5 - 6,
+    -MCW * 5 + 6,
+    -MCW * 4 - 6,
+    -MCW * 4 + 6,
+    -MCW * 3 - 7,
+    -MCW * 3 + 7,
+    -MCW * 2 - 7,
+    -MCW * 2 + 7,
+    -MCW * 1 - 8,
+    -MCW * 1 + 8,
     -8,
     8,
-    (MCW * 1) - 8,
-    (MCW * 1) + 8,
-    (MCW * 2) - 7,
-    (MCW * 2) + 7,
-    (MCW * 3) - 7,
-    (MCW * 3) + 7,
-    (MCW * 4) - 6,
-    (MCW * 4) + 6,
-    (MCW * 5) - 6,
-    (MCW * 5) + 6,
-    (MCW * 6) - 5,
-    (MCW * 6) - 4,
-    (MCW * 6) + 4,
-    (MCW * 6) + 5,
-    (MCW * 7) - 3,
-    (MCW * 7) - 2,
-    (MCW * 7) + 2,
-    (MCW * 7) + 3,
-    (MCW * 8) - 1,
-    (MCW * 8) + 0,
-    (MCW * 8) + 1,
-    /* 9  */ (-MCW * 9) - 1,
-    (-MCW * 9) + 0,
-    (-MCW * 9) + 1,
-    (-MCW * 8) - 3,
-    (-MCW * 8) - 2,
-    (-MCW * 8) + 2,
-    (-MCW * 8) + 3,
-    (-MCW * 7) - 5,
-    (-MCW * 7) - 4,
-    (-MCW * 7) + 4,
-    (-MCW * 7) + 5,
-    (-MCW * 6) - 6,
-    (-MCW * 6) + 6,
-    (-MCW * 5) - 7,
-    (-MCW * 5) + 7,
-    (-MCW * 4) - 7,
-    (-MCW * 4) + 7,
-    (-MCW * 3) - 8,
-    (-MCW * 3) + 8,
-    (-MCW * 2) - 8,
-    (-MCW * 2) + 8,
-    (-MCW * 1) - 9,
-    (-MCW * 1) + 9,
+    MCW * 1 - 8,
+    MCW * 1 + 8,
+    MCW * 2 - 7,
+    MCW * 2 + 7,
+    MCW * 3 - 7,
+    MCW * 3 + 7,
+    MCW * 4 - 6,
+    MCW * 4 + 6,
+    MCW * 5 - 6,
+    MCW * 5 + 6,
+    MCW * 6 - 5,
+    MCW * 6 - 4,
+    MCW * 6 + 4,
+    MCW * 6 + 5,
+    MCW * 7 - 3,
+    MCW * 7 - 2,
+    MCW * 7 + 2,
+    MCW * 7 + 3,
+    MCW * 8 - 1,
+    MCW * 8 + 0,
+    MCW * 8 + 1,
+    /* 9  */ -MCW * 9 - 1,
+    -MCW * 9 + 0,
+    -MCW * 9 + 1,
+    -MCW * 8 - 3,
+    -MCW * 8 - 2,
+    -MCW * 8 + 2,
+    -MCW * 8 + 3,
+    -MCW * 7 - 5,
+    -MCW * 7 - 4,
+    -MCW * 7 + 4,
+    -MCW * 7 + 5,
+    -MCW * 6 - 6,
+    -MCW * 6 + 6,
+    -MCW * 5 - 7,
+    -MCW * 5 + 7,
+    -MCW * 4 - 7,
+    -MCW * 4 + 7,
+    -MCW * 3 - 8,
+    -MCW * 3 + 8,
+    -MCW * 2 - 8,
+    -MCW * 2 + 8,
+    -MCW * 1 - 9,
+    -MCW * 1 + 9,
     -9,
     9,
-    (MCW * 1) - 9,
-    (MCW * 1) + 9,
-    (MCW * 2) - 8,
-    (MCW * 2) + 8,
-    (MCW * 3) - 8,
-    (MCW * 3) + 8,
-    (MCW * 4) - 7,
-    (MCW * 4) + 7,
-    (MCW * 5) - 7,
-    (MCW * 5) + 7,
-    (MCW * 6) - 6,
-    (MCW * 6) + 6,
-    (MCW * 7) - 5,
-    (MCW * 7) - 4,
-    (MCW * 7) + 4,
-    (MCW * 7) + 5,
-    (MCW * 8) - 3,
-    (MCW * 8) - 2,
-    (MCW * 8) + 2,
-    (MCW * 8) + 3,
-    (MCW * 9) - 1,
-    (MCW * 9) + 0,
-    (MCW * 9) + 1,
-    /* 10 */ (-MCW * 10) - 1,
-    (-MCW * 10) + 0,
-    (-MCW * 10) + 1,
-    (-MCW * 9) - 3,
-    (-MCW * 9) - 2,
-    (-MCW * 9) + 2,
-    (-MCW * 9) + 3,
-    (-MCW * 8) - 5,
-    (-MCW * 8) - 4,
-    (-MCW * 8) + 4,
-    (-MCW * 8) + 5,
-    (-MCW * 7) - 7,
-    (-MCW * 7) - 6,
-    (-MCW * 7) + 6,
-    (-MCW * 7) + 7,
-    (-MCW * 6) - 7,
-    (-MCW * 6) + 7,
-    (-MCW * 5) - 8,
-    (-MCW * 5) + 8,
-    (-MCW * 4) - 8,
-    (-MCW * 4) + 8,
-    (-MCW * 3) - 9,
-    (-MCW * 3) + 9,
-    (-MCW * 2) - 9,
-    (-MCW * 2) + 9,
-    (-MCW * 1) - 10,
-    (-MCW * 1) + 10,
+    MCW * 1 - 9,
+    MCW * 1 + 9,
+    MCW * 2 - 8,
+    MCW * 2 + 8,
+    MCW * 3 - 8,
+    MCW * 3 + 8,
+    MCW * 4 - 7,
+    MCW * 4 + 7,
+    MCW * 5 - 7,
+    MCW * 5 + 7,
+    MCW * 6 - 6,
+    MCW * 6 + 6,
+    MCW * 7 - 5,
+    MCW * 7 - 4,
+    MCW * 7 + 4,
+    MCW * 7 + 5,
+    MCW * 8 - 3,
+    MCW * 8 - 2,
+    MCW * 8 + 2,
+    MCW * 8 + 3,
+    MCW * 9 - 1,
+    MCW * 9 + 0,
+    MCW * 9 + 1,
+    /* 10 */ -MCW * 10 - 1,
+    -MCW * 10 + 0,
+    -MCW * 10 + 1,
+    -MCW * 9 - 3,
+    -MCW * 9 - 2,
+    -MCW * 9 + 2,
+    -MCW * 9 + 3,
+    -MCW * 8 - 5,
+    -MCW * 8 - 4,
+    -MCW * 8 + 4,
+    -MCW * 8 + 5,
+    -MCW * 7 - 7,
+    -MCW * 7 - 6,
+    -MCW * 7 + 6,
+    -MCW * 7 + 7,
+    -MCW * 6 - 7,
+    -MCW * 6 + 7,
+    -MCW * 5 - 8,
+    -MCW * 5 + 8,
+    -MCW * 4 - 8,
+    -MCW * 4 + 8,
+    -MCW * 3 - 9,
+    -MCW * 3 + 9,
+    -MCW * 2 - 9,
+    -MCW * 2 + 9,
+    -MCW * 1 - 10,
+    -MCW * 1 + 10,
     -10,
     10,
-    (MCW * 1) - 10,
-    (MCW * 1) + 10,
-    (MCW * 2) - 9,
-    (MCW * 2) + 9,
-    (MCW * 3) - 9,
-    (MCW * 3) + 9,
-    (MCW * 4) - 8,
-    (MCW * 4) + 8,
-    (MCW * 5) - 8,
-    (MCW * 5) + 8,
-    (MCW * 6) - 7,
-    (MCW * 6) + 7,
-    (MCW * 7) - 7,
-    (MCW * 7) - 6,
-    (MCW * 7) + 6,
-    (MCW * 7) + 7,
-    (MCW * 8) - 5,
-    (MCW * 8) - 4,
-    (MCW * 8) + 4,
-    (MCW * 8) + 5,
-    (MCW * 9) - 3,
-    (MCW * 9) - 2,
-    (MCW * 9) + 2,
-    (MCW * 9) + 3,
-    (MCW * 10) - 1,
-    (MCW * 10) + 0,
-    (MCW * 10) + 1,
+    MCW * 1 - 10,
+    MCW * 1 + 10,
+    MCW * 2 - 9,
+    MCW * 2 + 9,
+    MCW * 3 - 9,
+    MCW * 3 + 9,
+    MCW * 4 - 8,
+    MCW * 4 + 8,
+    MCW * 5 - 8,
+    MCW * 5 + 8,
+    MCW * 6 - 7,
+    MCW * 6 + 7,
+    MCW * 7 - 7,
+    MCW * 7 - 6,
+    MCW * 7 + 6,
+    MCW * 7 + 7,
+    MCW * 8 - 5,
+    MCW * 8 - 4,
+    MCW * 8 + 4,
+    MCW * 8 + 5,
+    MCW * 9 - 3,
+    MCW * 9 - 2,
+    MCW * 9 + 2,
+    MCW * 9 + 3,
+    MCW * 10 - 1,
+    MCW * 10 + 0,
+    MCW * 10 + 1,
 };
 
 int const MapClass::RadiusCount[11] = {1,   9,   21,  37,  61, 89,
@@ -670,9 +670,9 @@ int MapClass::Cell_Distance(CELL cell1, CELL cell2) {
   if (y < 0) y = -y;
 
   if (x > y) {
-    return (x + (y >> 1));
+    return x + (y >> 1);
   }
-  return (y + (x >> 1));
+  return y + (x >> 1);
 }
 
 /***********************************************************************************************
@@ -694,9 +694,9 @@ int MapClass::Cell_Distance(CELL cell1, CELL cell2) {
  *Speeded up.                                                              *
  *=============================================================================================*/
 bool MapClass::In_Radar(CELL cell) const {
-  if (cell & 0xF000) return (false);
-  return ((unsigned)(Cell_X(cell) - MapCellX) < (unsigned)MapCellWidth &&
-          (unsigned)(Cell_Y(cell) - MapCellY) < (unsigned)MapCellHeight);
+  if (cell & 0xF000) return false;
+  return (unsigned)(Cell_X(cell) - MapCellX) < (unsigned)MapCellWidth &&
+         (unsigned)(Cell_Y(cell) - MapCellY) < (unsigned)MapCellHeight;
 }
 
 /***********************************************************************************************
@@ -875,7 +875,7 @@ long MapClass::Overpass() {
               true);
     }
   }
-  return (value);
+  return value;
 }
 
 /***********************************************************************************************
@@ -914,7 +914,7 @@ bool MapClass::Read_Binary(char const* root, unsigned long* crc)
   */
   file.Set_Name(fname);
   if (!file.Is_Available()) {
-    return (false);
+    return false;
   }
   file.Open(READ);
 
@@ -969,7 +969,7 @@ bool MapClass::Read_Binary(char const* root, unsigned long* crc)
   */
   file.Close();
 
-  return (i == MAP_CELL_TOTAL);
+  return i == MAP_CELL_TOTAL;
 }
 
 /***********************************************************************************************
@@ -1006,21 +1006,21 @@ bool MapClass::Write_Binary(char const* root) {
     /*
     **	Save TType.
     */
-    if (file->Write(&(Map[i].TType), sizeof(TemplateType)) !=
+    if (file->Write(&Map[i].TType, sizeof(TemplateType)) !=
         sizeof(TemplateType)) {
       file->Close();
       delete file;
-      return (false);
+      return false;
     }
 
     /*
     **	Save TIcon.
     */
-    if (file->Write(&(Map[i].TIcon), sizeof(unsigned char)) !=
+    if (file->Write(&Map[i].TIcon, sizeof(unsigned char)) !=
         sizeof(unsigned char)) {
       file->Close();
       delete file;
-      return (false);
+      return false;
     }
   }
 
@@ -1030,7 +1030,7 @@ bool MapClass::Write_Binary(char const* root) {
   file->Close();
   delete file;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1062,7 +1062,7 @@ void MapClass::Logic() {
   int index;
   for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {
     CELL cell = index;
-    if (!IsForwardScan) cell = (MAP_CELL_TOTAL - 1) - index;
+    if (!IsForwardScan) cell = MAP_CELL_TOTAL - 1 - index;
     CellClass* ptr = &(*this)[cell];
 
     if (Special.IsTGrowth && ptr->Land_Type() == LAND_TIBERIUM &&
@@ -1080,7 +1080,8 @@ void MapClass::Logic() {
     */
     TerrainClass* terrain = ptr->Cell_Terrain();
     if (Special.IsTSpread &&
-            (ptr->Land_Type() == LAND_TIBERIUM && ptr->OverlayData > 6) ||
+            ptr->Land_Type() == LAND_TIBERIUM &&
+            ptr->OverlayData > 6 ||
         (terrain && terrain->Class->IsTiberiumSpawn)) {
       int tries = 1;
       if (terrain) tries = 3;
@@ -1102,7 +1103,7 @@ void MapClass::Logic() {
     int tries = 1;
     if (Special.IsTFast || GameToPlay != GAME_NORMAL) tries = 2;
     TiberiumScan = 0;
-    IsForwardScan = (IsForwardScan == false);
+    IsForwardScan = IsForwardScan == false;
 
     /*
     **	Growth logic.
@@ -1180,8 +1181,8 @@ void MapClass::Logic() {
  * HISTORY: * 03/15/1995 JLB : Created. *
  *=============================================================================================*/
 int MapClass::Cell_Region(CELL cell) {
-  return ((Cell_X(cell) / REGION_WIDTH) + 1) +
-         (((Cell_Y(cell) / REGION_HEIGHT) + 1) * MAP_REGION_WIDTH);
+  return Cell_X(cell) / REGION_WIDTH + 1 +
+         (Cell_Y(cell) / REGION_HEIGHT + 1) * MAP_REGION_WIDTH;
 }
 
 /***************************************************************************
@@ -1204,7 +1205,7 @@ int MapClass::Cell_Threat(CELL cell, HousesType house) {
   if (!threat && Map[cell].IsVisible) {
     threat = 1;
   }
-  return (threat);
+  return threat;
 }
 
 /***********************************************************************************************
@@ -1236,11 +1237,11 @@ bool MapClass::Place_Random_Crate() {
       ptr->OverlayData = 0;
       ptr->Redraw_Objects();
       ScenarioInit = old;
-      return (true);
+      return true;
     }
   }
   ScenarioInit = old;
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -1283,7 +1284,7 @@ int MapClass::Validate() {
     .....................................................................*/
     ttype = (*this)[cell].TType;
     ticon = (*this)[cell].TIcon;
-    if (ttype >= TEMPLATE_COUNT && ttype != TEMPLATE_NONE) return (false);
+    if (ttype >= TEMPLATE_COUNT && ttype != TEMPLATE_NONE) return false;
 
     /*.....................................................................
     To validate the icon value, we have to get a copy of the template's
@@ -1296,39 +1297,39 @@ int MapClass::Validate() {
       ticon = (*this)[cell].TIcon;
       Mem_Copy(Get_Icon_Set_Map(tclass->Get_Image_Data()), map,
                tclass->Width * tclass->Height);
-      if (ticon < 0 || ticon >= (tclass->Width * tclass->Height) ||
+      if (ticon < 0 || ticon >= tclass->Width * tclass->Height ||
           map[ticon] == 0xff)
-        return (false);
+        return false;
     }
 
     /*.....................................................................
     Validate Overlay
     .....................................................................*/
     overlay = (*this)[cell].Overlay;
-    if (overlay < OVERLAY_NONE || overlay >= OVERLAY_COUNT) return (false);
+    if (overlay < OVERLAY_NONE || overlay >= OVERLAY_COUNT) return false;
 
     /*.....................................................................
     Validate Smudge
     .....................................................................*/
     smudge = (*this)[cell].Smudge;
-    if (smudge < SMUDGE_NONE || smudge >= SMUDGE_COUNT) return (false);
+    if (smudge < SMUDGE_NONE || smudge >= SMUDGE_COUNT) return false;
 
     /*.....................................................................
     Validate LandType
     .....................................................................*/
     land = (*this)[cell].Land_Type();
-    if (land < LAND_CLEAR || land >= LAND_COUNT) return (false);
+    if (land < LAND_CLEAR || land >= LAND_COUNT) return false;
 
     /*.....................................................................
     Validate Occupier
     .....................................................................*/
     obj = (*this)[cell].Cell_Occupier();
     if (obj) {
-      if (((uintptr_t)obj & 0xff000000) ||
-          ((uintptr_t)obj->Next & 0xff000000) ||
-          ((uintptr_t)obj->Trigger & 0xff000000) || obj->IsInLimbo ||
-          ((unsigned int)Coord_Cell(obj->Coord) > 4095))
-        return (false);
+      if ((uintptr_t)obj & 0xff000000 ||
+          (uintptr_t)obj->Next & 0xff000000 ||
+          (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
+          (unsigned int)Coord_Cell(obj->Coord) > 4095)
+        return false;
     }
 
     /*.....................................................................
@@ -1337,16 +1338,16 @@ int MapClass::Validate() {
     for (i = 0; i < 3; i++) {
       obj = (*this)[cell].Overlappers[i];
       if (obj) {
-        if (((uintptr_t)obj & 0xff000000) ||
-            ((uintptr_t)obj->Next & 0xff000000) ||
-            ((uintptr_t)obj->Trigger & 0xff000000) || obj->IsInLimbo ||
-            ((unsigned int)Coord_Cell(obj->Coord) > 4095))
-          return (false);
+        if ((uintptr_t)obj & 0xff000000 ||
+            (uintptr_t)obj->Next & 0xff000000 ||
+            (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
+            (unsigned int)Coord_Cell(obj->Coord) > 4095)
+          return false;
       }
     }
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1385,7 +1386,7 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
                            MAP_CELL_W + 1,
                            -(MAP_CELL_W - 1),
                            -(MAP_CELL_W + 1)};
-  for (int index = 0; index < (sizeof(_offsets) / sizeof(_offsets[0]));
+  for (int index = 0; index < sizeof(_offsets) / sizeof(_offsets[0]);
        index++) {
     /*
     **	Examine the cell for close object. Make sure that the cell actually is a
@@ -1430,5 +1431,5 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
   if (object && distance > 0xB5) {
     object = nullptr;
   }
-  return (object);
+  return object;
 }

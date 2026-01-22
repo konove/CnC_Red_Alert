@@ -132,7 +132,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
     memset(&net_send_packet, 0, sizeof(net_send_packet));
     net_send_packet.Command = NET_REQ_SCENARIO;
     Ipx.Send_Global_Message(&net_send_packet, sizeof(net_send_packet), 1,
-                            &(Session.HostAddress));
+                            &Session.HostAddress);
   }
 
   // WWDebugString ("RA95 - Waiting for response from host\n");
@@ -196,14 +196,14 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
   *just
   ** return failure.
   */
-  if (!response_timer) return (false);
+  if (!response_timer) return false;
 
   //	debugprint( "about to download '%s'\n", return_name );
 
   /*
   ** Receive the file from the host
   */
-  return (Receive_Remote_File(return_name, file_length, gametype));
+  return Receive_Remote_File(return_name, file_length, gametype);
 }
 
 /***********************************************************************************************
@@ -232,9 +232,9 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
   */
   int d_dialog_w = 200 * RESFACTOR;                       // dialog width
   int d_dialog_h = 90 * RESFACTOR;                        // dialog height
-  int d_dialog_x = ((320 * RESFACTOR - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((200 * RESFACTOR - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
+  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
 #if (GERMAN | FRENCH)
   int d_cancel_w = 50 * RESFACTOR;
@@ -247,7 +247,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
 
   int d_progress_w = 100 * RESFACTOR;
   int d_progress_h = 10 * RESFACTOR;
-  int d_progress_x = (SeenBuff.Get_Width() / 2) - d_progress_w / 2;
+  int d_progress_x = SeenBuff.Get_Width() / 2 - d_progress_w / 2;
   int d_progress_y = d_dialog_y + 45 * RESFACTOR;
 
   int width;
@@ -410,7 +410,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
 
             update_time++;
             if (update_time > 7) {
-              progress_meter.Set_Value((total_length * 100) / file_length);
+              progress_meter.Set_Value(total_length * 100 / file_length);
               display = REDRAW_PROGRESS;
               update_time = 0;
             }
@@ -446,7 +446,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
 
             update_time++;
             if (update_time > 7) {
-              progress_meter.Set_Value((total_length * 100) / file_length);
+              progress_meter.Set_Value(total_length * 100 / file_length);
               display = REDRAW_PROGRESS;
               update_time = 0;
             }
@@ -472,8 +472,8 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
         /*
         ** Cancel. Just return to the main menu
         */
-        case (KN_ESC):
-        case (BUTTON_CANCEL | KN_BUTTON):
+        case KN_ESC:
+        case BUTTON_CANCEL | KN_BUTTON:
           process = false;
           return_code = false;
           break;
@@ -491,7 +491,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
   */
   Session.Read_Scenario_Descriptions();
 
-  return (return_code);
+  return return_code;
 }
 
 /***********************************************************************************************
@@ -514,13 +514,13 @@ bool Send_Remote_File(char* file_name, int gametype) {
   /*
   ** Dialog & button dimensions
   */
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   int d_dialog_w = 240 * factor;                       // dialog width
   int d_dialog_h = 90 * factor;                        // dialog height
-  int d_dialog_x = ((320 * factor - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((200 * factor - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
+  int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
 
 #if (GERMAN | FRENCH)
   int d_cancel_w = 50 * factor;
@@ -533,7 +533,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
 
   int d_progress_w = 100 * factor;
   int d_progress_h = 10 * factor;
-  int d_progress_x = (SeenBuff.Get_Width() / 2) - d_progress_w / 2;
+  int d_progress_x = SeenBuff.Get_Width() / 2 - d_progress_w / 2;
   int d_progress_y = d_dialog_y + 45 * factor;
 
   int width;
@@ -607,7 +607,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
     // WWDebugString ("RA95 - Error - could not find file to send to client\n");
     //		debugprint("RA95 - Error - could not find file to send to
     // client\n");
-    return (false);
+    return false;
   }
   file_length = send_file.Size();
 
@@ -649,7 +649,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
     for (int i = 0; i < Session.RequestCount; i++) {
       Ipx.Send_Global_Message(
           &net_file_info, sizeof(GlobalPacketType), 1,
-          &(Session.Players[Session.ScenarioRequests[i]]->Address));
+          &Session.Players[Session.ScenarioRequests[i]]->Address);
     }
 
     while (Ipx.Global_Num_Send() > 0 && response_timer) {
@@ -748,7 +748,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
 
           update_time++;
           if (update_time > 7) {
-            progress_meter.Set_Value((block_number * 100) / total_blocks);
+            progress_meter.Set_Value(block_number * 100 / total_blocks);
             display = REDRAW_PROGRESS;
             update_time = 0;
           }
@@ -780,7 +780,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
             for (int i = 0; i < Session.RequestCount; i++) {
               Ipx.Send_Global_Message(
                   &send_packet, sizeof(send_packet), 1,
-                  &(Session.Players[Session.ScenarioRequests[i]]->Address));
+                  &Session.Players[Session.ScenarioRequests[i]]->Address);
             }
           }
 
@@ -788,7 +788,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
 
           update_time++;
           if (update_time > 7) {
-            progress_meter.Set_Value((block_number * 100) / total_blocks);
+            progress_meter.Set_Value(block_number * 100 / total_blocks);
             display = REDRAW_PROGRESS;
             update_time = 0;
           }
@@ -813,8 +813,8 @@ bool Send_Remote_File(char* file_name, int gametype) {
         /*
         ** Cancel. Just return to the main menu
         */
-        case (KN_ESC):
-        case (BUTTON_CANCEL | KN_BUTTON):
+        case KN_ESC:
+        case BUTTON_CANCEL | KN_BUTTON:
           process = false;
           return_code = false;
           break;
@@ -822,5 +822,5 @@ bool Send_Remote_File(char* file_name, int gametype) {
     }
   }
 
-  return (return_code);
+  return return_code;
 }

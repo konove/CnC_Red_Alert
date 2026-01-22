@@ -92,7 +92,7 @@
 static inline int _Scale_To_256(int val) {
   val = fixed(100, 256) * val;
   val = std::min(val, 255);
-  return (val);
+  return val;
 }
 
 /***********************************************************************************************
@@ -367,7 +367,7 @@ bool RulesClass::Process(CCINIClass& ini) {
 
   BEnd(BENCH_RULES);
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -537,9 +537,9 @@ bool RulesClass::General(CCINIClass& ini) {
     // ChronalVortex.Set_Damage ( ini.Get_Int (GENERAL, "VortexDamage",
     // ChronalVortex.Get_Damage() ) );
 
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -567,9 +567,9 @@ bool RulesClass::MPlayer(CCINIClass& ini) {
     IsMPCrates = ini.Get_Bool(MPLAYER, "Crates", IsMPCrates);
     IsMPCaptureTheFlag =
         ini.Get_Bool(MPLAYER, "CaptureTheFlag", IsMPCaptureTheFlag);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -597,9 +597,9 @@ bool RulesClass::Recharge(CCINIClass& ini) {
     IronCurtainTime = ini.Get_Fixed(RECHARGE, "IronCurtain", IronCurtainTime);
     GPSTime = ini.Get_Fixed(RECHARGE, "GPS", GPSTime);
     NukeTime = ini.Get_Fixed(RECHARGE, "Nuke", NukeTime);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -706,7 +706,7 @@ bool RulesClass::Heap_Maximums(CCINIClass& ini) {
   new WeaponTypeClass("Democharge");
   new WeaponTypeClass("AirAssault");
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -759,9 +759,9 @@ bool RulesClass::AI(CCINIClass& ini) {
     IsComputerParanoid = ini.Get_Bool(AI, "Paranoid", IsComputerParanoid);
     PowerEmergencyFraction =
         ini.Get_Fixed(AI, "PowerEmergency", PowerEmergencyFraction);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -818,9 +818,9 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         }
       }
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -861,7 +861,7 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
       gptr->Build = ini.Get_Bool(_lands[land], "Buildable", false);
     }
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -905,9 +905,9 @@ bool RulesClass::Themes(CCINIClass& ini) {
         Theme.Set_Theme_Data(theme, scen, owners);
       }
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -941,9 +941,9 @@ bool RulesClass::IQ(CCINIClass& ini) {
     IQHarvester = ini.Get_Int(IQCONTROL, "Harvester", IQHarvester);
     IQSellBack = ini.Get_Int(IQCONTROL, "SellBack", IQSellBack);
 
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1013,7 +1013,7 @@ bool RulesClass::Objects(CCINIClass& ini) {
     miss->Read_INI(ini);
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1035,5 +1035,5 @@ bool RulesClass::Difficulty(CCINIClass& ini) {
   Difficulty_Get(ini, Diff[DIFF_EASY], "Easy");
   Difficulty_Get(ini, Diff[DIFF_NORMAL], "Normal");
   Difficulty_Get(ini, Diff[DIFF_HARD], "Difficult");
-  return (true);
+  return true;
 }

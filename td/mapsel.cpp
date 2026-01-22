@@ -508,16 +508,16 @@ void Map_Selection() {
   Set_Font_Palette(_regpal);
   Set_Palette(BlackPalette);
 
-  scenario = Scenario + ((house == HOUSE_GOOD) ? 0 : 14);
+  scenario = Scenario + (house == HOUSE_GOOD ? 0 : 14);
   if (house == HOUSE_GOOD) {
-    lastscenario = (Scenario == 14);
+    lastscenario = Scenario == 14;
     if (Scenario == 15) {
       delete[] progresspalette;
       delete[] grey2palette;
       return;
     }
   } else {
-    lastscenario = (Scenario == 12);
+    lastscenario = Scenario == 12;
     if (Scenario == 13) {
       delete[] progresspalette;
       delete[] grey2palette;
@@ -823,7 +823,7 @@ void Map_Selection() {
   /*
   ** Now dissolve in first advance of territories
   */
-  int xcoord = (house == HOUSE_GOOD ? 0 : 204);
+  int xcoord = house == HOUSE_GOOD ? 0 : 204;
   SysMemPage.Blit(backpage, xcoord, 1, 0, 0, 20 * 6, 8);
   Play_Sample(text2, 255, Options.Normalize_Sound(90));
   if (house == HOUSE_GOOD) {
@@ -947,7 +947,7 @@ void Map_Selection() {
 
   int q = 0;
   for (frame = 0;
-       frame < ((lastscenario) ? Get_Animation_Frame_Count(progress) - 4 : 13);
+       frame < (lastscenario ? Get_Animation_Frame_Count(progress) - 4 : 13);
        frame++) {
     if (!frame) Play_Sample(beepy3, 255, Options.Normalize_Sound(90));
     if (frame == 2) Play_Sample(beepy3, 255, Options.Normalize_Sound(90));
@@ -1088,7 +1088,7 @@ void Map_Selection() {
           ** Special hack for Egypt the second time through
           */
           if (CountryArray[scenario].CountryColor[ScenDir][selection] == 0xA0) {
-            if ((color == 0x80) || (color == 0x81)) color = 0xA0;
+            if (color == 0x80 || color == 0x81) color = 0xA0;
           }
 
           if (CountryArray[scenario].CountryColor[ScenDir][selection] ==
@@ -1117,10 +1117,10 @@ void Map_Selection() {
 
     Hide_Mouse();
     // erase "Select country to attack"
-    PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + (17 * 6), 178,
+    PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + 17 * 6, 178,
                               BLACK);
     TextPrintBuffer->Fill_Rect(RESFACTOR * attackxcoord, RESFACTOR * 160,
-                               RESFACTOR * (attackxcoord + (17 * 6)), 2 * 178,
+                               RESFACTOR * (attackxcoord + 17 * 6), 2 * 178,
                                BLACK);
 #if (GERMAN | FRENCH)
     PseudoSeenBuff->Fill_Rect(attackxcoord + (17 * 6), 160,
@@ -1180,10 +1180,10 @@ void Map_Selection() {
                                RESFACTOR * 178,
                                BLACK);  // erase "Select country to attack"
 #else
-    PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + (17 * 6), 199,
+    PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + 17 * 6, 199,
                               BLACK);  // erase "Select country to attack"
     TextPrintBuffer->Fill_Rect(RESFACTOR * attackxcoord, RESFACTOR * 160,
-                               RESFACTOR * (attackxcoord + (17 * 6)),
+                               RESFACTOR * (attackxcoord + 17 * 6),
                                RESFACTOR * 199,
                                BLACK);  // erase "Select country to attack"
 #endif
@@ -1268,9 +1268,9 @@ void Print_Statistics(int country, int xpos, int ypos) {
 #ifdef GERMAN
   xpos = 8;
 #else
-  xpos = (xpos > 128) ? 8 : 136;
+  xpos = xpos > 128 ? 8 : 136;
 #endif
-  ypos = (ypos > 100) ? 8 : 104 - 6;
+  ypos = ypos > 100 ? 8 : 104 - 6;
   if (PlayerPtr->Class->House == HOUSE_GOOD) {
     Alloc_Object(new ScorePrintClass(_countryname[GDIStats[country].nameindex],
                                      xpos, ypos, _greenpal));
@@ -1383,7 +1383,7 @@ void Print_Statistics(int country, int xpos, int ypos) {
   Alloc_Object(new ScorePrintClass(TXT_MAP_CLICK2, 94, 193 - 6, _greenpal));
 #else
   Alloc_Object(
-      new ScorePrintClass(TXT_MAP_CLICK2, 160 - (17 * 3), 193 - 6, _greenpal));
+      new ScorePrintClass(TXT_MAP_CLICK2, 160 - 17 * 3, 193 - 6, _greenpal));
 #endif
 
   int done = 0;
@@ -1515,7 +1515,7 @@ void Cycle_Call_Back_Delay(int time, unsigned char* pal) {
   int i;
 
   while (time--) {
-    _counter = (++_counter & 3);
+    _counter = ++_counter & 3;
 
     if (!(_counter & 3)) {
       r = pal[249 * 3 + 0];
@@ -1538,9 +1538,9 @@ void Cycle_Call_Back_Delay(int time, unsigned char* pal) {
 }
 
 int LowMedHiStr(int percentage) {
-  if (percentage < 30) return (TXT_MAP_LMH0);
-  if (percentage < 70) return (TXT_MAP_LMH1);
-  return (TXT_MAP_LMH2);
+  if (percentage < 30) return TXT_MAP_LMH0;
+  if (percentage < 70) return TXT_MAP_LMH1;
+  return TXT_MAP_LMH2;
 }
 
 #endif  // DEMO

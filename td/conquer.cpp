@@ -832,7 +832,7 @@ static void Message_Input(KeyNumType& input) {
   int sent_so_far;
   unsigned short magic_number;
   unsigned short crc;
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*
   **	Check keyboard input for a request to send a message.
@@ -842,7 +842,7 @@ static void Message_Input(KeyNumType& input) {
   **	'to' portion.  At the other end, the buffer allocated to display the
   **	message must be MAX_MESSAGE_LENGTH plus the size of "From: xxx (house)".
   */
-  if (input >= KN_F1 && input < (KN_F1 + MPlayerMax) &&
+  if (input >= KN_F1 && input < KN_F1 + MPlayerMax &&
       Messages.Get_Edit_Buf() == nullptr) {
     memset(txt, 0, 40);
 
@@ -852,7 +852,7 @@ static void Message_Input(KeyNumType& input) {
     */
     if (GameToPlay == GAME_NULL_MODEM || GameToPlay == GAME_MODEM) {
       //|| GameToPlay == GAME_INTERNET) {
-      if (input == KN_F1 || input == (KN_F1 + MPlayerMax - 1)) {
+      if (input == KN_F1 || input == KN_F1 + MPlayerMax - 1) {
         port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
         Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
@@ -868,7 +868,7 @@ static void Message_Input(KeyNumType& input) {
       *ObiWan mode) *	F4 = "To All:"
       */
       if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
-        if (input == (KN_F1 + MPlayerMax - 1) &&
+        if (input == KN_F1 + MPlayerMax - 1 &&
             Messages.Get_Edit_Buf() == nullptr) {
           MessageAddress = IPXAddressClass();            // set to broadcast
           port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
@@ -880,9 +880,9 @@ static void Message_Input(KeyNumType& input) {
           Map.Flag_To_Redraw(false);
         } else {
           if (Messages.Get_Edit_Buf() == nullptr) {
-            if ((input - KN_F1) < Ipx.Num_Connections() && !MPlayerObiWan) {
+            if (input - KN_F1 < Ipx.Num_Connections() && !MPlayerObiWan) {
               id = Ipx.Connection_ID(input - KN_F1);
-              MessageAddress = (*(Ipx.Connection_Address(id)));
+              MessageAddress = *Ipx.Connection_Address(id);
               sprintf(txt, Text_String(TXT_TO), Ipx.Connection_Name(id));
 
               Messages.Add_Edit(
@@ -973,14 +973,14 @@ static void Message_Input(KeyNumType& input) {
 
         /* Start at the end of the message and find a space with 10 chars. */
         the_string = serial_packet->Message;
-        while ((COMPAT_MESSAGE_LENGTH - 5) - actual_message_size < 10 &&
+        while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
                the_string[actual_message_size] != ' ') {
           --actual_message_size;
         }
         if (the_string[actual_message_size] == ' ') {
           /* Now delete the extra characters after the space (they musnt print)
            */
-          for (int i = 0; i < (COMPAT_MESSAGE_LENGTH - 5) - actual_message_size;
+          for (int i = 0; i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
                i++) {
             the_string[i + actual_message_size] = 0xff;
           }
@@ -992,10 +992,10 @@ static void Message_Input(KeyNumType& input) {
         /*
         ** Flag this message segment as either a message head or a message tail.
         */
-        *((unsigned short*)(serial_packet->Message + COMPAT_MESSAGE_LENGTH -
-                            4)) = magic_number;
-        *((unsigned short*)(serial_packet->Message + COMPAT_MESSAGE_LENGTH -
-                            2)) = crc;
+        *(unsigned short*)(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 4) =
+            magic_number;
+        *(unsigned short*)(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 2) =
+            crc;
         serial_packet->ID = MPlayerLocalID;
 
         NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
@@ -1027,15 +1027,15 @@ static void Message_Input(KeyNumType& input) {
 
           /* Start at the end of the message and find a space with 10 chars. */
           the_string = GPacket.Message.Buf;
-          while ((COMPAT_MESSAGE_LENGTH - 5) - actual_message_size < 10 &&
+          while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
                  the_string[actual_message_size] != ' ') {
             --actual_message_size;
           }
           if (the_string[actual_message_size] == ' ') {
             /* Now delete the extra characters after the space (they musnt
              * print) */
-            for (int i = 0;
-                 i < (COMPAT_MESSAGE_LENGTH - 5) - actual_message_size; i++) {
+            for (int i = 0; i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
+                 i++) {
               the_string[i + actual_message_size] = 0xff;
             }
           } else {
@@ -1047,10 +1047,10 @@ static void Message_Input(KeyNumType& input) {
           ** Flag this message segment as either a message head or a message
           *tail.
           */
-          *((unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
-                              4)) = magic_number;
-          *((unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
-                              2)) = crc;
+          *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4) =
+              magic_number;
+          *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2) =
+              crc;
 
           GPacket.Message.ID = MPlayerLocalID;
           GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
@@ -1173,9 +1173,9 @@ bool Color_Cycle() {
   if (changed) {
     Wait_Vert_Blank();
     Set_Palette(GamePalette);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1235,7 +1235,7 @@ void Call_Back() {
               id = Ipx.Connection_ID(i);
 
               if (!strcmp(GPacket.Name, Ipx.Connection_Name(id)) &&
-                  GAddress == (*Ipx.Connection_Address(id))) {
+                  GAddress == *Ipx.Connection_Address(id)) {
                 CCDebugString(
                     "C&C95 = Destroying connection due to sign off\n");
                 Destroy_Connection(id, 0);
@@ -1267,10 +1267,10 @@ void Call_Back() {
               if (msg_ok) {
                 sprintf(txt, Text_String(TXT_FROM), GPacket.Name,
                         GPacket.Message.Buf);
-                magic_number = *((unsigned short*)(GPacket.Message.Buf +
-                                                   COMPAT_MESSAGE_LENGTH - 4));
-                crc = *((unsigned short*)(GPacket.Message.Buf +
-                                          COMPAT_MESSAGE_LENGTH - 2));
+                magic_number = *(unsigned short*)(GPacket.Message.Buf +
+                                                  COMPAT_MESSAGE_LENGTH - 4);
+                crc = *(unsigned short*)(GPacket.Message.Buf +
+                                         COMPAT_MESSAGE_LENGTH - 2);
                 color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
                 Messages.Add_Message(
                     txt, MPlayerTColors[color],
@@ -1303,7 +1303,7 @@ void Call_Back() {
   **	Modem and Null Modem maintenance
   */
   if (GameToPlay == GAME_NULL_MODEM ||
-      ((GameToPlay == GAME_MODEM) && ModemService)) {
+      (GameToPlay == GAME_MODEM && ModemService)) {
     //|| GameToPlay == GAME_INTERNET) {
     NullModem.Service();
   }
@@ -1333,10 +1333,10 @@ void Call_Back() {
 char const* Language_Name(char const* basename) {
   static char _fullname[_MAX_FNAME + _MAX_EXT];
 
-  if (!basename) return (nullptr);
+  if (!basename) return nullptr;
 
   sprintf(_fullname, "%s.ENG", basename);
-  return (_fullname);
+  return _fullname;
 }
 
 /***********************************************************************************************
@@ -1358,11 +1358,11 @@ SourceType Source_From_Name(char const* name) {
   if (name) {
     for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; source++) {
       if (stricmp(SourceName[source], name) == 0) {
-        return (source);
+        return source;
       }
     }
   }
-  return (SOURCE_NONE);
+  return SOURCE_NONE;
 }
 
 /***********************************************************************************************
@@ -1382,9 +1382,9 @@ SourceType Source_From_Name(char const* name) {
  *=============================================================================================*/
 char const* Name_From_Source(SourceType source) {
   if ((unsigned)source < SOURCE_COUNT) {
-    return (SourceName[source]);
+    return SourceName[source];
   }
-  return ("None");
+  return "None";
 }
 
 /***********************************************************************************************
@@ -1408,11 +1408,11 @@ TheaterType Theater_From_Name(char const* name) {
   if (name) {
     for (index = THEATER_FIRST; index < THEATER_COUNT; index++) {
       if (stricmp(name, Theaters[index].Name) == 0) {
-        return (index);
+        return index;
       }
     }
   }
-  return (THEATER_NONE);
+  return THEATER_NONE;
 }
 
 /***********************************************************************************************
@@ -1435,30 +1435,30 @@ FacingType KN_To_Facing(int input) {
   input &= ~(KN_ALT_BIT | KN_SHIFT_BIT | KN_CTRL_BIT);
   switch (input) {
     case KN_LEFT:
-      return (FACING_W);
+      return FACING_W;
 
     case KN_RIGHT:
-      return (FACING_E);
+      return FACING_E;
 
     case KN_UP:
-      return (FACING_N);
+      return FACING_N;
 
     case KN_DOWN:
-      return (FACING_S);
+      return FACING_S;
 
     case KN_UPLEFT:
-      return (FACING_NW);
+      return FACING_NW;
 
     case KN_UPRIGHT:
-      return (FACING_NE);
+      return FACING_NE;
 
     case KN_DOWNLEFT:
-      return (FACING_SW);
+      return FACING_SW;
 
     case KN_DOWNRIGHT:
-      return (FACING_SE);
+      return FACING_SE;
   }
-  return (FACING_NONE);
+  return FACING_NONE;
 }
 
 /***********************************************************************************************
@@ -1741,7 +1741,7 @@ bool Main_Loop() {
 
   Sync_Delay();
   //	InMainLoop = false;
-  return (!GameActive);
+  return !GameActive;
 }
 
 #ifdef SCENARIO_EDITOR
@@ -2171,8 +2171,8 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
     ** VQAERR_READ.
     */
     case VQACMD_READ:
-      error = (file->Read(buffer, (unsigned short)nbytes) !=
-               (unsigned short)nbytes);
+      error =
+          file->Read(buffer, (unsigned short)nbytes) != (unsigned short)nbytes;
       break;
 
     /*
@@ -2195,7 +2195,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
     ** VQAERR_SEEK.
     */
     case VQACMD_SEEK:
-      error = (file->Seek(nbytes, SEEK_CUR) == -1);
+      error = file->Seek(nbytes, SEEK_CUR) == -1;
       break;
 
     /*
@@ -2247,7 +2247,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
       break;
   }
 
-  return (error);
+  return error;
 }
 
 // #endif	//(0)
@@ -2305,7 +2305,7 @@ int Load_Interpolated_Palettes(char const* filename, bool add) {
   file.Close();
   //	}
   PaletteCounter = 0;
-  return (num_palettes);
+  return num_palettes;
 }
 
 void Free_Interpolated_Palettes() {
@@ -2554,7 +2554,7 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
   /*
   **	If there is no shape file, then there can be no radar icon imagery.
   */
-  if (!shapefile) return (nullptr);
+  if (!shapefile) return nullptr;
 
   /*
   ** Get the pixel width and height of the frame we built.  This will
@@ -2581,8 +2581,8 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
   ** Allocate a position to store our icons.  If the alloc fails then
   ** we dont add these icons to the set.
   **/
-  buffer = new char[(icon_width * icon_height * 9 * frames) + 2];
-  if (!buffer) return (nullptr);
+  buffer = new char[icon_width * icon_height * 9 * frames + 2];
+  if (!buffer) return nullptr;
 
   /*
   ** Save off the return value so that we can return it to the calling
@@ -2611,13 +2611,12 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
         for (int iconx = 0; iconx < icon_width; iconx++) {
           for (int y = 0; y < zoomfactor; y++) {
             for (int x = 0; x < zoomfactor; x++) {
-              int getx = (iconx * 24) + (x * val) + (zoomfactor / 2);
-              int gety = (icony * 24) + (y * val) + (zoomfactor / 2);
-              if ((getx < pixel_width) && (gety < pixel_height)) {
+              int getx = iconx * 24 + x * val + zoomfactor / 2;
+              int gety = icony * 24 + y * val + zoomfactor / 2;
+              if (getx < pixel_width && gety < pixel_height) {
                 for (lp = 0; lp < 9; lp++) {
-                  pixel = *((char*)(Add_Long_To_Pointer(
-                      ptr,
-                      ((gety - _offy[lp]) * pixel_width) + getx - _offx[lp])));
+                  pixel = *(char*)Add_Long_To_Pointer(
+                      ptr, (gety - _offy[lp]) * pixel_width + getx - _offx[lp]);
                   if (pixel == LTGREEN) pixel = 0;
                   if (pixel) {
                     break;
@@ -2635,7 +2634,7 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
       buffer += icon_width * icon_height * 9;
     }
   }
-  return (retval);
+  return retval;
 }
 
 void CC_Texture_Fill(void const* shapefile, int shapenum, int xpos, int ypos,
@@ -2767,7 +2766,7 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
 
       predoffset = Frame;
 
-      if (x > (WindowList[window][WINDOWWIDTH] << 2)) {
+      if (x > WindowList[window][WINDOWWIDTH] << 2) {
         predoffset = -predoffset;
       }
 
@@ -2829,21 +2828,21 @@ TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id) {
   switch (type) {
     case RTTI_UNITTYPE:
     case RTTI_UNIT:
-      return (&UnitTypeClass::As_Reference((UnitType)id));
+      return &UnitTypeClass::As_Reference((UnitType)id);
 
     case RTTI_BUILDINGTYPE:
     case RTTI_BUILDING:
-      return (&BuildingTypeClass::As_Reference((StructType)id));
+      return &BuildingTypeClass::As_Reference((StructType)id);
 
     case RTTI_INFANTRYTYPE:
     case RTTI_INFANTRY:
-      return (&InfantryTypeClass::As_Reference((InfantryType)id));
+      return &InfantryTypeClass::As_Reference((InfantryType)id);
 
     case RTTI_AIRCRAFTTYPE:
     case RTTI_AIRCRAFT:
-      return (&AircraftTypeClass::As_Reference((AircraftType)id));
+      return &AircraftTypeClass::As_Reference((AircraftType)id);
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***************************************************************************
@@ -3012,7 +3011,7 @@ long VQ_Call_Back(unsigned char*, long) {
   if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
     Keyboard::Clear();
     Brokeout = true;
-    return (true);
+    return true;
   }
 
   if (!GameInFocus) {
@@ -3027,7 +3026,7 @@ long VQ_Call_Back(unsigned char*, long) {
   Video_End_Frame();
 #endif
 
-  return (false);
+  return false;
 }
 
 long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
@@ -3645,7 +3644,7 @@ bool Force_CD_Available(int cd) {
   ** If the required CD is set to -2 then it means that the file is present
   ** on the local hard drive and we shouldn't have to worry about it.
   */
-  if (cd == -2) return (true);
+  if (cd == -2) return true;
 
   /*
   ** Find out if the CD in the current drive is the one we are looking for
@@ -3777,7 +3776,7 @@ bool Force_CD_Available(int cd) {
         Set_Logic_Page(oldpage);
         Hide_Mouse();
         InMainLoop = old_in_main_loop;
-        return (false);
+        return false;
       }
       while (hidden--) Hide_Mouse();
       Set_Palette(_palette);
@@ -3817,7 +3816,7 @@ bool Force_CD_Available(int cd) {
     Theme.Queue_Song(theme_playing);
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -3895,7 +3894,7 @@ static void Do_Record_Playback() {
     .....................................................................*/
     sum = 0;
     for (i = 0; i < count; i++) {
-      ltgt = (unsigned long)(CurrentObject[i]->As_Target());
+      ltgt = (unsigned long)CurrentObject[i]->As_Target();
       sum += ltgt;
     }
     RecordFile.Write(&sum, sizeof(sum));
@@ -3935,7 +3934,7 @@ static void Do_Record_Playback() {
       ..................................................................*/
       sum = 0;
       for (i = 0; i < CurrentObject.Count(); i++) {
-        ltgt = (unsigned long)(CurrentObject[i]->As_Target());
+        ltgt = (unsigned long)CurrentObject[i]->As_Target();
         sum += ltgt;
       }
 
@@ -3951,7 +3950,7 @@ static void Do_Record_Playback() {
       for (i = 0; i < count; i++) {
         if (RecordFile.Read(&tgt, sizeof(tgt)) == sizeof(tgt)) {
           obj = As_Object(tgt);
-          if (obj && (sum2 != sum)) {
+          if (obj && sum2 != sum) {
             obj->Select();
             AllowVoice = false;
           }
@@ -3987,6 +3986,6 @@ void const* Hires_Retrieve(const char* name) {
   } else {
     port::SafeCopy(filename, name);
   }
-  return (MixFileClass::Retrieve(filename));
+  return MixFileClass::Retrieve(filename);
 }
-int Get_Resolution_Factor() { return ((SeenBuff.Get_Width() == 320) ? 0 : 1); }
+int Get_Resolution_Factor() { return SeenBuff.Get_Width() == 320 ? 0 : 1; }

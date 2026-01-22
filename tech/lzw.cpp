@@ -118,7 +118,7 @@ int LZWEngine::Compress(Buffer const& input, Buffer const& output) {
     outcount += outpipe.Put(&string_code, sizeof(string_code));
   }
 
-  return (outcount);
+  return outcount;
 }
 
 int LZWEngine::Uncompress(Buffer const& input, Buffer const& output) {
@@ -128,7 +128,7 @@ int LZWEngine::Uncompress(Buffer const& input, Buffer const& output) {
 
   CodeType old_code;
   if (instraw.Get(&old_code, sizeof(old_code)) == 0) {
-    return (outcount);
+    return outcount;
   }
 
   unsigned char character = (unsigned char)old_code;
@@ -173,11 +173,11 @@ int LZWEngine::Uncompress(Buffer const& input, Buffer const& output) {
     old_code = new_code;
   }
 
-  return (outcount);
+  return outcount;
 }
 
 int LZWEngine::Make_LZW_Hash(CodeType code, char character) {
-  return ((((int)(unsigned char)character) << (BITS - 8)) ^ (int)code);
+  return (int)(unsigned char)character << (BITS - 8) ^ (int)code;
 }
 
 int LZWEngine::Find_Child_Node(CodeType parent_code, char child_character) {
@@ -227,7 +227,7 @@ int LZWEngine::Find_Child_Node(CodeType parent_code, char child_character) {
       break;
     }
   }
-  return (hash_index);
+  return hash_index;
 }
 
 int LZWEngine::Decode_String(char* ptr, CodeType code) {
@@ -239,17 +239,17 @@ int LZWEngine::Decode_String(char* ptr, CodeType code) {
   }
   *ptr = (char)code;
   count++;
-  return (count);
+  return count;
 }
 
 int LZW_Uncompress(Buffer const& inbuff, Buffer const& outbuff) {
   LZWEngine lzw;
-  return (lzw.Uncompress(inbuff, outbuff));
+  return lzw.Uncompress(inbuff, outbuff);
 }
 
 int LZW_Compress(Buffer const& inbuff, Buffer const& outbuff) {
   LZWEngine lzw;
-  return (lzw.Compress(inbuff, outbuff));
+  return lzw.Compress(inbuff, outbuff);
 }
 
 #ifdef NEVER

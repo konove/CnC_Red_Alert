@@ -132,7 +132,7 @@ WeaponTypeClass::~WeaponTypeClass() {
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 void* WeaponTypeClass::operator new(size_t) throw() {
-  return (Weapons.Alloc());
+  return Weapons.Alloc();
 }
 
 /***********************************************************************************************
@@ -175,7 +175,7 @@ void WeaponTypeClass::operator delete(void* pointer) {
  *=============================================================================================*/
 WeaponTypeClass* WeaponTypeClass::As_Pointer(WeaponType weapon) {
   if (weapon != WEAPON_NONE) {
-    return (Weapons.Ptr(weapon));
+    return Weapons.Ptr(weapon);
     //		for (int index = 0; index < Weapons.Count(); index++) {
     //			WeaponTypeClass * ptr = Weapons.Ptr(index);
     //			if (ptr->ID == weapon) {
@@ -183,7 +183,7 @@ WeaponTypeClass* WeaponTypeClass::As_Pointer(WeaponType weapon) {
     //			}
     //		}
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -217,7 +217,7 @@ bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
     IsTurboBoosted = ini.Get_Bool(Name(), "TurboBoost", IsTurboBoosted);
 
     WarheadType wtype =
-        (WarheadPtr != nullptr) ? WarheadType(WarheadPtr->ID) : WARHEAD_NONE;
+        WarheadPtr != nullptr ? WarheadType(WarheadPtr->ID) : WARHEAD_NONE;
     wtype = ini.Get_WarheadType(Name(), "Warhead", wtype);
     if (wtype != WARHEAD_NONE) {
       WarheadPtr = WarheadTypeClass::As_Pointer(wtype);
@@ -227,7 +227,7 @@ bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
     }
 
     BulletType btype =
-        (Bullet != nullptr) ? BulletType(Bullet->ID) : BULLET_NONE;
+        Bullet != nullptr ? BulletType(Bullet->ID) : BULLET_NONE;
     btype = ini.Get_BulletType(Name(), "Projectile", btype);
     if (btype != BULLET_NONE) {
       Bullet = &BulletTypeClass::As_Reference(btype);
@@ -235,9 +235,9 @@ bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
       Bullet = nullptr;
     }
 
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -256,15 +256,15 @@ bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 WeaponType Weapon_From_Name(char const* name) {
-  if (!name) return (WEAPON_NONE);
+  if (!name) return WEAPON_NONE;
 
   for (int index = 0; index < Weapons.Count(); index++) {
     if (stricmp(Weapons.Ptr(index)->Name(), name) == 0) {
-      return (WeaponType(Weapons.Ptr(index)->ID));
+      return WeaponType(Weapons.Ptr(index)->ID);
     }
   }
 
-  return (WEAPON_NONE);
+  return WEAPON_NONE;
 }
 
 /***********************************************************************************************
@@ -283,15 +283,15 @@ WeaponType Weapon_From_Name(char const* name) {
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 ArmorType Armor_From_Name(char const* name) {
-  if (!name) return (ARMOR_NONE);
+  if (!name) return ARMOR_NONE;
 
   for (ArmorType index = ARMOR_FIRST; index < ARMOR_COUNT; index++) {
     if (stricmp(ArmorName[index], name) == 0) {
-      return (index);
+      return index;
     }
   }
 
-  return (ARMOR_NONE);
+  return ARMOR_NONE;
 }
 
 /***********************************************************************************************
@@ -318,12 +318,12 @@ ThreatType WeaponTypeClass::Allowed_Threats() const {
     threat = threat | THREAT_INFANTRY | THREAT_VEHICLES | THREAT_BOATS |
              THREAT_BUILDINGS;
   }
-  return (threat);
+  return threat;
 }
 
 bool WeaponTypeClass::Is_Wall_Destroyer() const {
   if (WarheadPtr != nullptr && WarheadPtr->IsWallDestroyer) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

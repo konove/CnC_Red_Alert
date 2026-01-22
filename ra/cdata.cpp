@@ -1181,7 +1181,7 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void* TemplateTypeClass::operator new(size_t) throw() {
-  return (TemplateTypes.Alloc());
+  return TemplateTypes.Alloc();
 }
 
 /***********************************************************************************************
@@ -1666,11 +1666,11 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
           LAND_CLEAR,
       };
 
-      return (
-          _land[map[icon % (icontrol->Map_Width() * icontrol->Map_Height())]]);
+      return _land[map[icon %
+                       (icontrol->Map_Width() * icontrol->Map_Height())]];
     }
   }
-  return (LAND_CLEAR);
+  return LAND_CLEAR;
 }
 
 /***********************************************************************************************
@@ -1693,11 +1693,11 @@ TemplateType TemplateTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
-        return (index);
+        return index;
       }
     }
   }
-  return (TEMPLATE_NONE);
+  return TEMPLATE_NONE;
 }
 
 /***********************************************************************************************
@@ -1728,12 +1728,12 @@ short const* TemplateTypeClass::Occupy_List(bool) const {
   ptr = &_occupy[0];
   for (int index = 0; index < Width * Height; index++) {
     if (*map++ != 0xFF) {
-      *ptr++ = (index % Width) + ((index / Width) * MAP_CELL_W);
+      *ptr++ = index % Width + index / Width * MAP_CELL_W;
     }
   }
   *ptr = REFRESH_EOL;
 
-  return ((short const*)&_occupy[0]);
+  return (short const*)&_occupy[0];
 }
 
 /***********************************************************************************************
@@ -1758,7 +1758,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
     TemplateTypeClass& tplate = As_Reference(index);
 
     tplate.ClearImage();
-    if (tplate.Theater & (1 << theater)) {
+    if (tplate.Theater & 1 << theater) {
       auto fullname = std::filesystem::path(tplate.IniName)
                           .replace_extension(Theaters[theater].Suffix)
                           .string();
@@ -1879,9 +1879,9 @@ void TemplateTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 bool TemplateTypeClass::Create_And_Place(CELL cell, HousesType) const {
   if (new TemplateClass(Type, cell)) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1903,7 +1903,7 @@ bool TemplateTypeClass::Create_And_Place(CELL cell, HousesType) const {
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* TemplateTypeClass::Create_One_Of(HouseClass*) const {
-  return (new TemplateClass(Type, -1));
+  return new TemplateClass(Type, -1);
 }
 
 /***********************************************************************************************
@@ -1935,7 +1935,7 @@ void TemplateTypeClass::One_Time() {}
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 TemplateTypeClass& TemplateTypeClass::As_Reference(TemplateType type) {
-  return (*TemplateTypes.Ptr(type));
+  return *TemplateTypes.Ptr(type);
 }
 
 COORDINATE TemplateTypeClass::Coord_Fixup(COORDINATE coord) const {

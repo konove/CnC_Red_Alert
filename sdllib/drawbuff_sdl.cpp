@@ -184,7 +184,7 @@ void GraphicBufferClass::Render_Scaled_Frame(const uint8_t* paletted_data,
       uint8_t r = sdl_pal->colors[idx].r;
       uint8_t g = sdl_pal->colors[idx].g;
       uint8_t b = sdl_pal->colors[idx].b;
-      dest[y * (pitch / 4) + x] = (0xFFU << 24) | (b << 16) | (g << 8) | r;
+      dest[y * (pitch / 4) + x] = 0xFFU << 24 | b << 16 | g << 8 | r;
     }
   }
   SDL_UnlockTexture(static_cast<SDL_Texture*>(VQATexture));

@@ -90,6 +90,6 @@ class FuseClass {
   short Proximity;
 };
 
-inline COORDINATE FuseClass::Fuse_Target() { return (HeadTo); }
+inline COORDINATE FuseClass::Fuse_Target() { return HeadTo; }
 
 #endif

@@ -257,13 +257,13 @@ int CellClass::Cell_Color(bool override) const {
   Validate();
   BuildingClass* object = Cell_Building();
   if (object) {
-    return (object->House->Class->Color);
+    return object->House->Class->Color;
   }
 
   if (override) {
-    return (TBLACK);
+    return TBLACK;
   }
-  return (Ground[Land_Type()].Color);
+  return Ground[Land_Type()].Color;
 }
 
 /***********************************************************************************************
@@ -316,7 +316,7 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
       object = object->Next;
     }
   }
-  return (close);
+  return close;
 }
 
 /***************************************************************************
@@ -338,11 +338,11 @@ ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
 
   while (object) {
     if (object->IsActive && object->What_Am_I() == rtti) {
-      return (object);
+      return object;
     }
     object = object->Next;
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -364,7 +364,7 @@ ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
  *=============================================================================================*/
 BuildingClass* CellClass::Cell_Building() const {
   Validate();
-  return ((BuildingClass*)Cell_Find_Object(RTTI_BUILDING));
+  return (BuildingClass*)Cell_Find_Object(RTTI_BUILDING);
 }
 
 /***********************************************************************************************
@@ -384,7 +384,7 @@ BuildingClass* CellClass::Cell_Building() const {
  *=============================================================================================*/
 TerrainClass* CellClass::Cell_Terrain() const {
   Validate();
-  return ((TerrainClass*)Cell_Find_Object(RTTI_TERRAIN));
+  return (TerrainClass*)Cell_Find_Object(RTTI_TERRAIN);
 }
 
 /***********************************************************************************************
@@ -418,16 +418,16 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
   */
   ptr = (ObjectClass*)Cell_Find_Object(RTTI_AIRCRAFT);
   if (ptr) {
-    return (ptr);
+    return ptr;
   }
 
   ptr = Cell_Techno(x, y);
   if (ptr) {
-    return (ptr);
+    return ptr;
   }
   ptr = Cell_Terrain();
-  if (ptr) return (ptr);
-  return (ptr);
+  if (ptr) return ptr;
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -504,17 +504,17 @@ void CellClass::Redraw_Objects(bool forced) {
  *=============================================================================================*/
 bool CellClass::Is_Generally_Clear() const {
   Validate();
-  if (ScenarioInit) return (true);
+  if (ScenarioInit) return true;
   if (Flag.Composite || IsFlagged || Cell_Occupier()) {
-    return (false);
+    return false;
   }
   if (Smudge != SMUDGE_NONE && SmudgeTypeClass::As_Reference(Smudge).IsBib &&
       Owner != HOUSE_NONE) {
-    return (false);
+    return false;
   }
   if (Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(Overlay).IsWall) {
-    return (false);
+    return false;
   }
 
 #ifdef ADVANCED
@@ -540,7 +540,7 @@ bool CellClass::Is_Generally_Clear() const {
   }
 #endif
 
-  return (Ground[Land_Type()].Build);
+  return Ground[Land_Type()].Build;
 }
 
 /***********************************************************************************************
@@ -847,7 +847,7 @@ void CellClass::Overlap_Up(ObjectClass* object) {
  *=============================================================================================*/
 UnitClass* CellClass::Cell_Unit() const {
   Validate();
-  return ((UnitClass*)Cell_Find_Object(RTTI_UNIT));
+  return (UnitClass*)Cell_Find_Object(RTTI_UNIT);
 }
 
 /***********************************************************************************************
@@ -869,7 +869,7 @@ UnitClass* CellClass::Cell_Unit() const {
  *=============================================================================================*/
 InfantryClass* CellClass::Cell_Infantry() const {
   Validate();
-  return ((InfantryClass*)Cell_Find_Object(RTTI_INFANTRY));
+  return (InfantryClass*)Cell_Find_Object(RTTI_INFANTRY);
 }
 
 /***********************************************************************************************
@@ -930,7 +930,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
     Fancy_Text_Print("%d\r%2X%c\r%02X.%02X",
                      Map.TacPixelX + x + (ICON_PIXEL_W >> 1), Map.TacPixelY + y,
                      WHITE, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_CENTER,
-                     cell, Flag.Composite, (Cell_Occupier() ? '*' : ' '),
+                     cell, Flag.Composite, Cell_Occupier() ? '*' : ' ',
                      Overlay, OverlayData);
     FontXSpacing += 2;
   } else {
@@ -1028,7 +1028,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         OverlayTypeClass const& otype = OverlayTypeClass::As_Reference(Overlay);
         IsTheaterShape = (bool)otype.IsTheater;
         CC_Draw_Shape(otype.Get_Image_Data(), OverlayData,
-                      (x + (CELL_PIXEL_W >> 1)), (y + (CELL_PIXEL_H >> 1)),
+                      x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
                       WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
                       Map.UnitShadow);
@@ -1147,7 +1147,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
         CC_Draw_Shape(
             MixFileClass::Retrieve("FLAGFLY.SHP"), Frame % 14,
-            x + (ICON_PIXEL_W / 2), y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
+            x + ICON_PIXEL_W / 2, y + ICON_PIXEL_H / 2, WINDOW_TACTICAL,
             SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, remap, Map.UnitShadow);
       }
     }
@@ -1196,13 +1196,13 @@ void CellClass::Concrete_Calc() {
   /*
   **	Determine if the even or odd row logic is necessary.
   */
-  isodd = ((Cell_Number() & 0x01) != 0);
+  isodd = (Cell_Number() & 0x01) != 0;
 
   /*
   **	Fetch correct pointer depending on whether this is for an
   **	odd or even row.
   */
-  ptr = (isodd) ? _odd : _even;
+  ptr = isodd ? _odd : _even;
 
   /*
   **	Build an index according to the presence of concrete in the special
@@ -1211,7 +1211,7 @@ void CellClass::Concrete_Calc() {
   **	depends on whether this is for an even or odd column.
   */
   index = 0;
-  for (int i = 0; i < (sizeof(_even) / sizeof(_even[0])); i++) {
+  for (int i = 0; i < sizeof(_even) / sizeof(_even[0]); i++) {
     CellClass& cellptr = Adjacent_Cell(*ptr++);
 
     //		if ((cellptr->IsConcrete) ||
@@ -1219,7 +1219,7 @@ void CellClass::Concrete_Calc() {
     //					cellptr->Concrete == C_UPDOWN_LEFT) {
 
     if (cellptr.Overlay == OVERLAY_CONCRETE) {
-      index |= (1 << i);
+      index |= 1 << i;
     }
   }
 
@@ -1396,7 +1396,7 @@ void CellClass::Wall_Update() {
   static FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
                                    FACING_NONE};
 
-  for (unsigned index = 0; index < (sizeof(_offsets) / sizeof(_offsets[0]));
+  for (unsigned index = 0; index < sizeof(_offsets) / sizeof(_offsets[0]);
        index++) {
     CellClass& newcell = Adjacent_Cell(_offsets[index]);
 
@@ -1413,7 +1413,7 @@ void CellClass::Wall_Update() {
           icon |= 1 << i;
         }
       }
-      newcell.OverlayData = (newcell.OverlayData & 0xFFF0) | icon;
+      newcell.OverlayData = newcell.OverlayData & 0xFFF0 | icon;
       //			newcell.OverlayData = icon;
 
       /*
@@ -1471,7 +1471,7 @@ void CellClass::Wall_Update() {
  *=============================================================================================*/
 COORDINATE CellClass::Cell_Coord() const {
   Validate();
-  return (::Cell_Coord(Cell_Number()));
+  return ::Cell_Coord(Cell_Number());
 }
 
 /***********************************************************************************************
@@ -1504,7 +1504,7 @@ int CellClass::Reduce_Tiberium(int levels) {
       Recalc_Attributes();
     }
   }
-  return (reducer);
+  return reducer;
 }
 
 /***********************************************************************************************
@@ -1543,7 +1543,7 @@ int CellClass::Reduce_Wall(int damage) {
 
       if (destroyed) {
         OverlayData += 16;
-        if ((OverlayData >> 4) >= wall.DamageLevels) {
+        if (OverlayData >> 4 >= wall.DamageLevels) {
           ObjectClass::Detach_This_From_All(As_Target());
           Owner = HOUSE_NONE;
           Overlay = OVERLAY_NONE;
@@ -1554,12 +1554,12 @@ int CellClass::Reduce_Wall(int damage) {
           Adjacent_Cell(FACING_W).Wall_Update();
           Adjacent_Cell(FACING_S).Wall_Update();
           Adjacent_Cell(FACING_E).Wall_Update();
-          return (true);
+          return true;
         }
       }
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1577,9 +1577,9 @@ int CellClass::Reduce_Wall(int damage) {
 TriggerClass* CellClass::Get_Trigger() const {
   Validate();
   if (IsTrigger) {
-    return (CellTriggers[Cell_Number()]);
+    return CellTriggers[Cell_Number()];
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -1602,7 +1602,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
   **	the center position index.
   */
   if (Distance(rel, 0x00800080L) < 60) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -1614,7 +1614,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
   int index = 0;
   if (Coord_X(rel) > 0x80) index |= 0x01;
   if (Coord_Y(rel) > 0x80) index |= 0x02;
-  return (index + 1);
+  return index + 1;
 }
 
 /***********************************************************************************************
@@ -1669,7 +1669,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   **	Cells occupied by buildings or vehicles don't have any free spots.
   */
   if (!any && (Flag.Occupy.Vehicle || Flag.Occupy.Monolith)) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -1677,7 +1677,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   *or not, *	then just return with the stopping coordinate value.
   */
   if (any || Is_Spot_Free(spot_index)) {
-    return (Coord_Add(coord, StoppingCoordAbs[spot_index]));
+    return Coord_Add(coord, StoppingCoordAbs[spot_index]);
   }
 
   /*
@@ -1695,14 +1695,14 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
     int pos = *sequence++;
 
     if (Is_Spot_Free(pos)) {
-      return (Coord_Add(coord, StoppingCoordAbs[pos]));
+      return Coord_Add(coord, StoppingCoordAbs[pos]);
     }
   }
 
   /*
   **	No free spot could be found so return a NULL coordinate.
   */
-  return (0x00000000L);
+  return 0x00000000L;
 }
 
 /***********************************************************************************************
@@ -1727,7 +1727,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
 int CellClass::Clear_Icon() const {
   Validate();
   CELL cell = Cell_Number();
-  return ((cell & 0x03) | ((cell >> 4) & 0x0C));
+  return cell & 0x03 | cell >> 4 & 0x0C;
 }
 
 /***********************************************************************************************
@@ -1789,12 +1789,12 @@ void CellClass::Incoming(COORDINATE threat, bool forced) {
 CellClass const& CellClass::Adjacent_Cell(FacingType face) const {
   Validate();
   if ((unsigned)face >= FACING_COUNT) {
-    return (*this);
+    return *this;
   }
 
   CellClass const* ptr = this + AdjacentCell[face];
-  if (ptr->Cell_Number() & 0xF000) return (*this);
-  return (*ptr);
+  if (ptr->Cell_Number() & 0xF000) return *this;
+  return *ptr;
   //	return(*(this + AdjacentCell[face]));
 }
 
@@ -1875,10 +1875,10 @@ long CellClass::Tiberium_Adjust(bool pregame) {
       }
 
       OverlayData = _adj[count];
-      return ((OverlayData + 1) * UnitTypeClass::TIBERIUM_STEP);
+      return (OverlayData + 1) * UnitTypeClass::TIBERIUM_STEP;
     }
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -1927,7 +1927,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
   if (object && Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(Overlay).IsCrate) {
-    bool steel = (Overlay == OVERLAY_STEEL_CRATE);
+    bool steel = Overlay == OVERLAY_STEEL_CRATE;
     COORDINATE coord;  // Temporary working coordinate value.
 
     /*
@@ -1973,8 +1973,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
         if (Random_Pick(0, 1) == 0 && MPlayerBases &&
             !(object->House->UScan & UNITF_MCV) && object->House->BScan == 0 &&
             object->House->Available_Money() >
-                (BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
-                 BuildingTypeClass::As_Reference(STRUCT_POWER).Cost)) {
+                BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
+                    BuildingTypeClass::As_Reference(STRUCT_POWER).Cost) {
           what = UNIT;
         }
 
@@ -2025,7 +2025,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             HouseClass::As_Pointer(object->Owner())->Refund_Money(2000);
           } else {
             HouseClass::As_Pointer(object->Owner())
-                ->Refund_Money(100 + (Random_Pick(0, 19) * 100));
+                ->Refund_Money(100 + Random_Pick(0, 19) * 100);
           }
           break;
 
@@ -2082,8 +2082,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
           if (MPlayerBases && !(object->House->UScan & UNITF_MCV) &&
               object->House->BScan == 0 &&
               object->House->Available_Money() >
-                  (BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
-                   BuildingTypeClass::As_Reference(STRUCT_POWER).Cost)) {
+                  BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
+                      BuildingTypeClass::As_Reference(STRUCT_POWER).Cost) {
             utp = &UnitTypeClass::As_Reference(UNIT_MCV);
           }
 
@@ -2091,7 +2091,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           **	If the player has a base and a refinery, but no harvester, then
           *give him *	a free one.
           */
-          if (!utp && (object->House->BScan & STRUCTF_REFINERY) &&
+          if (!utp && object->House->BScan & STRUCTF_REFINERY &&
               !(object->House->UScan & UNITF_HARVESTER)) {
             utp = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
           }
@@ -2102,7 +2102,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             if (utype != UNIT_MCV || MPlayerBases) {
               utp = &UnitTypeClass::As_Reference(utype);
               if (utp->IsCrateGoodie &&
-                  (utp->Ownable & (1 << object->Owner())) &&
+                  utp->Ownable & 1 << object->Owner() &&
                   utp->Level <= BuildLevel + 2)
                 break;
               utp = nullptr;
@@ -2112,7 +2112,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           UnitClass* unit = (UnitClass*)utp->Create_One_Of(object->House);
           if (unit) {
             if (unit->Unlimbo(Cell_Coord())) {
-              return (false);
+              return false;
             }
             delete unit;
           }
@@ -2131,7 +2131,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 _inf[Random_Pick(0, int(sizeof(_inf) / sizeof(_inf[0]) - 1))])
                 .Create_And_Place(Cell_Number(), object->Owner());
           }
-          return (false);
+          return false;
 
         /*
         **	Sometimes an explosion of great magnitude occurs.
@@ -2218,7 +2218,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           unit = new UnitClass(UNIT_VICE, HOUSE_JP);
           if (unit) {
             if (unit->Unlimbo(Cell_Coord())) {
-              return (false);
+              return false;
             }
             delete unit;
           }
@@ -2257,7 +2257,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       }
     }
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2280,9 +2280,9 @@ bool CellClass::Flag_Place(HousesType house) {
     IsFlagged = true;
     Owner = house;
     Redraw_Objects();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2305,9 +2305,9 @@ bool CellClass::Flag_Remove() {
     IsFlagged = false;
     Owner = HOUSE_NONE;
     Redraw_Objects();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2355,10 +2355,10 @@ ObjectClass* CellClass::Cell_Occupier() const {
 
   while (ptr && !ptr->IsActive) {
     ptr = ptr->Next;
-    ((ObjectClass*&)OccupierPtr) = nullptr;
+    (ObjectClass*&)OccupierPtr = nullptr;
   }
 
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -2376,4 +2376,4 @@ ObjectClass* CellClass::Cell_Occupier() const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-CELL CellClass::Cell_Number() const { return (Map.ID(this)); }
+CELL CellClass::Cell_Number() const { return Map.ID(this); }

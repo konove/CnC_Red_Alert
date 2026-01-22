@@ -227,7 +227,7 @@ void* VesselClass::operator new(size_t) throw() {
   if (ptr != nullptr) {
     ((VesselClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -270,7 +270,7 @@ void VesselClass::operator delete(void* ptr) {
 ObjectTypeClass const& VesselClass::Class_Of() const {
   assert(IsActive);
 
-  return (*Class);
+  return *Class;
 }
 
 /***********************************************************************************************
@@ -293,7 +293,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return (MOVE_NO);
+  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
 
   CellClass const* cellptr = &Map[cell];
 
@@ -302,7 +302,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
   **	this is a loaner vehicle.
   */
   if (!ScenarioInit && !Map.In_Radar(cell) && !Is_Allowed_To_Leave_Map()) {
-    return (MOVE_NO);
+    return MOVE_NO;
   }
 
   MoveType retval = MOVE_OK;
@@ -312,7 +312,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
   **	can't move there.
   */
   if (cellptr->Cell_Terrain() != nullptr) {
-    return (MOVE_NO);
+    return MOVE_NO;
   }
 
   /*
@@ -320,7 +320,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
   *then *	return this immutable fact.
   */
   if (Ground[cellptr->Land_Type()].Cost[Class->Speed] == 0) {
-    return (MOVE_NO);
+    return MOVE_NO;
   }
 
   /*
@@ -329,13 +329,13 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
   */
   if (cellptr->Flag.Composite) {
     if (cellptr->Flag.Occupy.Building) {
-      return (MOVE_NO);
+      return MOVE_NO;
     }
 
     TechnoClass* techno = cellptr->Cell_Techno();
     if (techno != nullptr && techno->Cloak == CLOAKED &&
         !House->Is_Ally(techno)) {
-      return (MOVE_CLOAK);
+      return MOVE_CLOAK;
     }
 
     /*
@@ -349,7 +349,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
   /*
   **	Return with the most severe reason why this cell would be impassable.
   */
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -390,7 +390,7 @@ int VesselClass::Shape_Number() const {
     shapenum = Door_Stage();
   }
 
-  return (shapenum);
+  return shapenum;
 }
 
 /***********************************************************************************************
@@ -570,13 +570,13 @@ short const* VesselClass::Overlap_List(bool redraw) const {
       rect = Union(rect, Rect(-32, 32, 64, 64));
     }
 
-    return (Coord_Spillage_List(Coord, rect, true));
+    return Coord_Spillage_List(Coord, rect, true);
   }
 #else
   redraw = redraw;
 #endif
 
-  return (Coord_Spillage_List(Coord, 56) + 1);
+  return Coord_Spillage_List(Coord, 56) + 1;
 }
 
 /***********************************************************************************************
@@ -636,7 +636,7 @@ void VesselClass::AI() {
       while (obj) {
         long bogus;
         ((AircraftClass*)obj)->Receive_Message(this, RADIO_RELOAD, bogus);
-        obj = (obj->Next);
+        obj = obj->Next;
       }
     }
   }
@@ -730,7 +730,7 @@ void VesselClass::Per_Cell_Process(PCPType why) {
         SmartPtr<BuildingClass> whom;
         whom = Map[cell].Cell_Building();
         if (whom != NULL &&
-            ((*whom == STRUCT_SHIP_YARD) || (*whom == STRUCT_SUB_PEN))) {
+            (*whom == STRUCT_SHIP_YARD || *whom == STRUCT_SUB_PEN)) {
           if (IsOwnedByPlayer) Speak(VOX_REPAIRING);
           IsSelfRepairing = true;
           IsToSelfRepair = false;
@@ -828,7 +828,7 @@ ActionType VesselClass::What_Action(ObjectClass const* object) const {
   */
   if (action == ACTION_NONE) action = ACTION_NOMOVE;
 
-  return (action);
+  return action;
 }
 
 /***********************************************************************************************
@@ -998,13 +998,13 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
     **	it isn't already smoking (and it's not a submarine).
     */
     if (Health_Ratio() <= Rule.ConditionYellow && !IsAnimAttached &&
-        (*this != VESSEL_SS && *this != VESSEL_MISSILESUB)) {
+        *this != VESSEL_SS && *this != VESSEL_MISSILESUB) {
       AnimClass* anim =
           new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
       if (anim != nullptr) anim->Attach_To(this);
     }
   }
-  return (res);
+  return res;
 }
 
 /***********************************************************************************************
@@ -1035,9 +1035,9 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
 
   if (*this == VESSEL_CARRIER) {
     if (!How_Many() || Arm) {
-      return (FIRE_REARM);
+      return FIRE_REARM;
     } else {
-      return (FIRE_OK);
+      return FIRE_OK;
     }
   }
   FireErrorType fire = DriveClass::Can_Fire(target, which);
@@ -1046,7 +1046,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
   }
   if (fire == FIRE_OK || fire == FIRE_CLOAKED) {
     WeaponTypeClass const* weapon =
-        (which == 0) ? Class->PrimaryWeapon : Class->SecondaryWeapon;
+        which == 0 ? Class->PrimaryWeapon : Class->SecondaryWeapon;
 
     /*
     **	Ensure that a torpedo will never be fired upon a non naval target.
@@ -1067,7 +1067,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
 
     if (weapon->Bullet->IsSubSurface) {
       if (!isseatarget && Is_Target_Object(target)) {
-        return (FIRE_CANT);
+        return FIRE_CANT;
       }
 
       /*
@@ -1082,7 +1082,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
           coord = Coord_Move(coord, dir, CELL_LEPTON_W);
           if (Map[coord].Land_Type() != LAND_WATER) {
             if (!isbridgetarget) {
-              return (FIRE_RANGE);
+              return FIRE_RANGE;
             }
           }
 
@@ -1091,7 +1091,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
           */
           TechnoClass* tech = Map[coord].Cell_Techno();
           if (tech != nullptr && tech != this && House->Is_Ally(tech)) {
-            return (FIRE_RANGE);
+            return FIRE_RANGE;
           }
           totaldist -= CELL_LEPTON_W;
         }
@@ -1103,13 +1103,13 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     */
     if (weapon->Bullet->IsAntiSub) {
       if (!isseatarget) {
-        return (FIRE_CANT);
+        return FIRE_CANT;
       } else {
         if (Is_Target_Vessel(target) &&
-            (*As_Vessel(target) != VESSEL_SS &&
-             *As_Vessel(target) != VESSEL_MISSILESUB)) {
+            *As_Vessel(target) != VESSEL_SS &&
+            *As_Vessel(target) != VESSEL_MISSILESUB) {
           if (!Is_Target_Vessel(target) || !weapon->Bullet->IsSubSurface) {
-            return (FIRE_CANT);
+            return FIRE_CANT;
           }
         }
       }
@@ -1117,7 +1117,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       if (Is_Target_Vessel(target) &&
           (*As_Vessel(target) == VESSEL_SS ||
            *As_Vessel(target) == VESSEL_MISSILESUB)) {
-        return (FIRE_CANT);
+        return FIRE_CANT;
       }
     }
 
@@ -1125,7 +1125,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     **	If this unit cannot fire while moving, then bail.
     */
     if (!Class->IsTurretEquipped && Target_Legal(NavCom)) {
-      return (FIRE_MOVING);
+      return FIRE_MOVING;
     }
 
     /*
@@ -1133,7 +1133,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     **	firing must be delayed until the rotation stops.
     */
     if (!IsFiring && IsRotating && weapon->Bullet->ROT == 0) {
-      return (FIRE_ROTATING);
+      return FIRE_ROTATING;
     }
 
     /*
@@ -1150,10 +1150,10 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       diff >>= 2;
     }
     if (diff > 8) {
-      return (FIRE_FACING);
+      return FIRE_FACING;
     }
   }
-  return (fire);
+  return fire;
 }
 
 /***********************************************************************************************
@@ -1186,17 +1186,17 @@ COORDINATE VesselClass::Fire_Coord(int which) const {
     }
     coord = Coord_Move(coord, DIR_N, 0x0030);
     coord = Coord_Move(coord, Turret_Facing(), 0x0040);
-    return (coord);
+    return coord;
   }
 
   if (*this == VESSEL_PT) {
     coord = Coord_Move(coord, PrimaryFacing, 0x0080);
     coord = Coord_Move(coord, DIR_N, 0x0020);
     coord = Coord_Move(coord, Turret_Facing(), 0x0010);
-    return (coord);
+    return coord;
   }
 
-  return (DriveClass::Fire_Coord(which));
+  return DriveClass::Fire_Coord(which);
 }
 
 /***********************************************************************************************
@@ -1258,13 +1258,13 @@ TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
     // Cruisers can never hit infantry anyway, so take 'em out of the list
     // of possible targets.
     if (*this == VESSEL_CA) {
-      threat = (ThreatType)(threat & (~THREAT_INFANTRY));
+      threat = (ThreatType)(threat & ~THREAT_INFANTRY);
     }
   }
   if (*this == VESSEL_CARRIER) {
-    return (TARGET_NONE);
+    return TARGET_NONE;
   }
-  return (FootClass::Greatest_Threat(threat));
+  return FootClass::Greatest_Threat(threat);
 }
 
 /***********************************************************************************************
@@ -1367,10 +1367,10 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
     case RADIO_CAN_LOAD:
       if (Class->Max_Passengers() == 0 || from == nullptr ||
           !House->Is_Ally(from->Owner()))
-        return (RADIO_STATIC);
+        return RADIO_STATIC;
       if (How_Many() < Class->Max_Passengers()) {
         if (*this == VESSEL_CARRIER && from->What_Am_I() == RTTI_AIRCRAFT) {
-          return (RADIO_ROGER);
+          return RADIO_ROGER;
         }
         /*
         ** Before saying "Sure, come on board", make sure we're adjacent to
@@ -1379,10 +1379,10 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         CELL cell;
         Desired_Load_Dir(from, cell);
         if (cell) {
-          return (RADIO_ROGER);
+          return RADIO_ROGER;
         }
       }
-      return (RADIO_NEGATIVE);
+      return RADIO_NEGATIVE;
 
     /*
     **	This message is sent by the passenger when it determines that it has
@@ -1396,7 +1396,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
           DoorShutCountDown = TICKS_PER_SECOND;
         }
       }
-      return (RADIO_ATTACH);
+      return RADIO_ATTACH;
 
     /*
     **	Docking maintenance message received. Check to see if new orders should
@@ -1409,7 +1409,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
       *request.
       */
       if (IsDriving || Target_Legal(NavCom)) {
-        return (RADIO_NEGATIVE);
+        return RADIO_NEGATIVE;
       }
 
       /*
@@ -1425,7 +1425,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         **	Can't ever load up so tell the passenger to bug off.
         */
         if (How_Many() >= Class->Max_Passengers()) {
-          return (RADIO_NEGATIVE);
+          return RADIO_NEGATIVE;
         }
 
         /*
@@ -1435,13 +1435,13 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
           param = TARGET_NONE;
           Transmit_Message(RADIO_HELLO, from);
           Transmit_Message(RADIO_MOVE_HERE, param);
-          return (RADIO_ROGER);
+          return RADIO_ROGER;
         } else {
           /*
           **	This causes the potential passenger to think that all is ok and
           *to *	hold on for a bit.
           */
-          return (RADIO_ROGER);
+          return RADIO_ROGER;
         }
       }
 
@@ -1503,7 +1503,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
             }
           }
         }
-        return (RADIO_ROGER);
+        return RADIO_ROGER;
       }
       if (Class->Max_Passengers() > 0 && *this == VESSEL_CARRIER &&
           How_Many() < Class->Max_Passengers()) {
@@ -1521,7 +1521,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
             Transmit_Message(RADIO_TETHER);
           }
         }
-        return (RADIO_ROGER);
+        return RADIO_ROGER;
       }
       break;
 
@@ -1534,9 +1534,9 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         Assign_Mission(MISSION_GUARD);
       }
       DriveClass::Receive_Message(from, message, param);
-      return (RADIO_ROGER);
+      return RADIO_ROGER;
   }
-  return (DriveClass::Receive_Message(from, message, param));
+  return DriveClass::Receive_Message(from, message, param);
 }
 
 /***********************************************************************************************
@@ -1581,8 +1581,8 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
     *that cell for load/unload.
     */
     if (passenger != nullptr) {
-      value = (passenger->Can_Enter_Cell(cellnum) == MOVE_OK ||
-               Coord_Cell(passenger->Coord) == cellnum)
+      value = passenger->Can_Enter_Cell(cellnum) == MOVE_OK ||
+                      Coord_Cell(passenger->Coord) == cellnum
                   ? 128
                   : -128;
     } else {
@@ -1636,9 +1636,9 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
         DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
-    return (_desired_to_actual[bestdir]);
+    return _desired_to_actual[bestdir];
   }
-  return (DIR_N);
+  return DIR_N;
 }
 
 /***********************************************************************************************
@@ -1713,7 +1713,7 @@ int VesselClass::Mission_Unload() {
           if (How_Many() > 0 && cell != 0) {
             Do_Turn(dir);
             Status = MANEUVERING;
-            return (1);
+            return 1;
           } else {
             if (!How_Many()) {  // don't break out if still carrying passengers
               Assign_Mission(MISSION_GUARD);
@@ -1726,7 +1726,7 @@ int VesselClass::Mission_Unload() {
             LST_Open_Door();
             if (Is_Door_Opening()) {
               Status = OPENING_DOOR;
-              return (1);
+              return 1;
             }
           }
           break;
@@ -1734,7 +1734,7 @@ int VesselClass::Mission_Unload() {
         case OPENING_DOOR:
           if (Is_Door_Open()) {
             Status = UNLOADING;
-            return (1);
+            return 1;
           } else {
             if (!Is_Door_Opening()) {
               Status = INITIAL_CHECK;
@@ -1747,7 +1747,7 @@ int VesselClass::Mission_Unload() {
             /*
             **	Don't do anything if still in radio contact.
             */
-            if (In_Radio_Contact()) return (TICKS_PER_SECOND);
+            if (In_Radio_Contact()) return TICKS_PER_SECOND;
 
             FootClass* passenger = Detach_Object();
 
@@ -1824,7 +1824,7 @@ int VesselClass::Mission_Unload() {
     default:
       break;
   }
-  return (MissionControl[Mission].Normal_Delay());
+  return MissionControl[Mission].Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -1904,7 +1904,7 @@ int VesselClass::Mission_Retreat() {
         // Map.Calculated_Cell(House->Control.Edge, (Team.Is_Valid()) ?
         // Team->Class->Origin : -1, -1, Class->Speed);
         CELL cell = Map.Calculated_Cell(
-            House->Control.Edge, (Team.Is_Valid()) ? Team->Class->Origin : -1,
+            House->Control.Edge, Team.Is_Valid() ? Team->Class->Origin : -1,
             Coord_Cell(Center_Coord()), Class->Speed);
         if (Team.Is_Valid()) {
           Team->Remove(this);
@@ -1912,7 +1912,7 @@ int VesselClass::Mission_Retreat() {
         Assign_Destination(::As_Target(cell));
       }
       Status = TRAVEL;
-      return (1);
+      return 1;
 
     case TRAVEL:
       if (!Target_Legal(NavCom)) {
@@ -1923,7 +1923,7 @@ int VesselClass::Mission_Retreat() {
     default:
       break;
   }
-  return (MissionControl[Mission].Normal_Delay());
+  return MissionControl[Mission].Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -1942,7 +1942,7 @@ int VesselClass::Mission_Retreat() {
  * HISTORY: * 07/09/1996 BWG : Created. *
  *=============================================================================================*/
 bool VesselClass::Is_Allowed_To_Recloak() const {
-  return (PulseCountDown == 0);
+  return PulseCountDown == 0;
 }
 
 /***********************************************************************************************
@@ -2096,9 +2096,9 @@ bool VesselClass::Start_Driver(COORDINATE& headto) {
   if (DriveClass::Start_Driver(headto) &&
       IsActive) {  // BG IsActive can be cleared by Start_Driver
     Mark_Track(headto, MARK_DOWN);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2123,15 +2123,15 @@ ActionType VesselClass::What_Action(CELL cell) const {
 
   ActionType action = DriveClass::What_Action(cell);
   if (action == ACTION_NOMOVE && Map[cell].Land_Type() == LAND_BEACH) {
-    return (ACTION_MOVE);
+    return ACTION_MOVE;
   }
 
   if (action == ACTION_NOMOVE && Class->PrimaryWeapon != nullptr &&
       Class->PrimaryWeapon->Bullet->IsSubSurface &&
       Map[cell].Is_Bridge_Here()) {
-    return (ACTION_ATTACK);
+    return ACTION_ATTACK;
   }
-  return (action);
+  return action;
 }
 
 /***********************************************************************************************
@@ -2163,7 +2163,7 @@ void VesselClass::Rotation_AI() {
     if (SecondaryFacing.Is_Rotating()) {
       Mark(MARK_CHANGE_REDRAW);
       if (SecondaryFacing.Rotation_Adjust(
-              (Class->ROT * House->GroundspeedBias) + 1)) {
+              Class->ROT * House->GroundspeedBias + 1)) {
         Mark(MARK_CHANGE_REDRAW);
       }
 
@@ -2250,9 +2250,9 @@ bool VesselClass::Edge_Of_World_AI() {
     if (Team.Is_Valid()) Team->IsLeaveMap = true;
     Stun();
     delete this;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2272,7 +2272,7 @@ bool VesselClass::Edge_Of_World_AI() {
  *=============================================================================================*/
 void VesselClass::Repair_AI() {
   if (IsSelfRepairing) {
-    if ((Frame % (TICKS_PER_MINUTE * Rule.RepairRate)) == 0) {
+    if (Frame % (TICKS_PER_MINUTE * Rule.RepairRate) == 0) {
       Mark(MARK_CHANGE);
       int cost = Class->Repair_Cost();
       int step = Class->Repair_Step();
@@ -2329,5 +2329,5 @@ BulletClass* VesselClass::Fire_At(TARGET target, int which) {
   } else {
     return DriveClass::Fire_At(target, which);
   }
-  return (nullptr);
+  return nullptr;
 }

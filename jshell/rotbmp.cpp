@@ -107,16 +107,16 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
   sp[1].y = y;
 
   // now calculate the rotated rectangle
-  dp[0].x = (((sp[0].x - halfws) * ca) - ((sp[0].y - halfhs) * sa)) >> shift;
+  dp[0].x = ((sp[0].x - halfws) * ca - (sp[0].y - halfhs) * sa) >> shift;
   dp[0].x += halfwd;
 
-  dp[0].y = (((sp[0].x - halfws) * sa) + ((sp[0].y - halfhs) * ca)) >> shift;
+  dp[0].y = ((sp[0].x - halfws) * sa + (sp[0].y - halfhs) * ca) >> shift;
   dp[0].y += halfhd;
 
-  dp[1].x = (((sp[1].x - halfws) * ca) - ((sp[1].y - halfhs) * sa)) >> shift;
+  dp[1].x = ((sp[1].x - halfws) * ca - (sp[1].y - halfhs) * sa) >> shift;
   dp[1].x += halfwd;
 
-  dp[1].y = (((sp[1].x - halfws) * sa) + ((sp[1].y - halfhs) * ca)) >> shift;
+  dp[1].y = ((sp[1].x - halfws) * sa + (sp[1].y - halfhs) * ca) >> shift;
   dp[1].y += halfhd;
 
   rx = dp[0].x;
@@ -125,11 +125,11 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
 
   // diff from new to old x
 
-  Deltax = (dp[1].x - dp[0].x);
+  Deltax = dp[1].x - dp[0].x;
 
   // diff from new to old y
 
-  Deltay = (dp[1].y - dp[0].y);
+  Deltay = dp[1].y - dp[0].y;
 
   // handle the easy cases
 
@@ -257,14 +257,14 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
       // the use delta formula to walk in x and y in destination space
       // always walking in the x in the source!
       // figure out rotated location to start in dest
-      rx = (((sx - halfws) * ca) - ((sy - halfhs) * sa)) >> shift;
+      rx = ((sx - halfws) * ca - (sy - halfhs) * sa) >> shift;
       rx += halfwd;
-      ry = (((sx - halfws) * sa) + ((sy - halfhs) * ca)) >> shift;
+      ry = ((sx - halfws) * sa + (sy - halfhs) * ca) >> shift;
       ry += halfhd;
 
       // this is the end point of the line
 
-      int y2 = ((((w)-halfws) * sa) + ((sy - halfhs) * ca)) >> shift;
+      int y2 = ((w - halfws) * sa + (sy - halfhs) * ca) >> shift;
       y2 += halfhd;
 
       // length of line
@@ -343,13 +343,13 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
       // always walking in the x in the source!
       // figure out rotated location to start
 
-      rx = (((sx - halfws) * ca) - ((sy - halfhs) * sa)) >> shift;
+      rx = ((sx - halfws) * ca - (sy - halfhs) * sa) >> shift;
       rx += halfwd;
-      ry = (((sx - halfws) * sa) + ((sy - halfhs) * ca)) >> shift;
+      ry = ((sx - halfws) * sa + (sy - halfhs) * ca) >> shift;
       ry += halfhd;
       // this is the other side of the box
 
-      int x2 = ((((sx + w) - halfws) * ca) - ((sy - halfhs) * sa)) >> shift;
+      int x2 = ((sx + w - halfws) * ca - (sy - halfhs) * sa) >> shift;
 
       x2 += halfwd;
 

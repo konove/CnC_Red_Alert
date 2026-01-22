@@ -258,7 +258,7 @@ void ScorePrintClass::Update() {
   static char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
 
-  if (Stage && (((char*)DataPtr)[Stage - 1] == 0)) {
+  if (Stage && ((char*)DataPtr)[Stage - 1] == 0) {
     for (int i = 0; i < MAXSCOREOBJS; i++) {
       if (ScoreObjs[i] == this) {
         ScoreObjs[i] = nullptr;
@@ -274,7 +274,7 @@ void ScorePrintClass::Update() {
   if (!Timer) {
     Timer = 1;
 
-    int pos = XPos + (Stage * (6 * RESFACTOR));
+    int pos = XPos + Stage * (6 * RESFACTOR);
     // print the letter properly
     if (Stage) {
       Set_Font_Palette(PrimaryPalette);
@@ -374,7 +374,7 @@ int Alloc_Object(ScoreAnimClass* obj) {
       break;
     }
   }
-  return (ret);
+  return ret;
 }
 
 /***********************************************************************************************
@@ -440,8 +440,8 @@ void ScoreClass::Presentation() {
   struct Fame hallfame[NUMFAMENAMES];
   void* oldfont;
   int oldfontxspacing = FontXSpacing;
-  int house = (PlayerPtr->Class->House == HOUSE_USSR ||
-               PlayerPtr->Class->House == HOUSE_UKRAINE);  // 0 or 1
+  int house = PlayerPtr->Class->House == HOUSE_USSR ||
+              PlayerPtr->Class->House == HOUSE_UKRAINE;  // 0 or 1
 #if RESFACTOR == 2
   char inter_pal[15];
   sprintf(inter_pal, "SCORPAL1.PAL");
@@ -478,7 +478,7 @@ void ScoreClass::Presentation() {
       (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), ScorePalette);
 #endif
 
-  unsigned minutes = (unsigned)((ElapsedTime / (long)TIMER_MINUTE)) + 1;
+  unsigned minutes = (unsigned)(ElapsedTime / (long)TIMER_MINUTE) + 1;
 
 // Load up the shapes for the Nod score screen
 #if RESFACTOR == 2
@@ -574,11 +574,11 @@ void ScoreClass::Presentation() {
   for (int index = 0; index < Logic.Count(); index++) {
     ObjectClass* object = Logic[index];
     HousesType owner = object->Owner();
-    if ((house) &&
+    if (house &&
         (owner == HOUSE_USSR || owner == HOUSE_BAD || owner == HOUSE_UKRAINE)) {
       leadership++;
     } else {
-      if ((!house) && (object->Owner() == HOUSE_GREECE)) {
+      if (!house && object->Owner() == HOUSE_GREECE) {
         leadership++;
       }
     }
@@ -620,8 +620,8 @@ void ScoreClass::Presentation() {
 
   if (!leadership) leadership++;
   leadership =
-      100 * fixed(leadership, (house ? NKilled + NBKilled + leadership
-                                     : GKilled + GBKilled + leadership));
+      100 * fixed(leadership, house ? NKilled + NBKilled + leadership
+                                             : GKilled + GBKilled + leadership);
   leadership = std::min(150, leadership);
 
   /*
@@ -634,17 +634,17 @@ void ScoreClass::Presentation() {
                       (unsigned)PlayerPtr->Control.InitialCredits + 1);
   economy = std::min(economy, 150);
 
-  int total = ((uspoints * leadership) / 100) + ((uspoints * economy) / 100);
+  int total = uspoints * leadership / 100 + uspoints * economy / 100;
   if (total < -9999) total = -9999;
   total = std::min(total, 99999);
 
   Keyboard->Clear();
   for (i = 0; i <= 130; i++) {
     Set_Font_Palette(_greenpal);
-    int lead = (leadership * i) / 100;
+    int lead = leadership * i / 100;
     Count_Up_Print("%3d%%", lead, leadership, 244, 26);
     if (i >= 30) {
-      int econo = (economy * (i - 30)) / 100;
+      int econo = economy * (i - 30) / 100;
       Count_Up_Print("%3d%%", econo, economy, 244, 38);
     }
     Print_Minutes(minutes);
@@ -654,7 +654,7 @@ void ScoreClass::Presentation() {
 #else
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(40));
 #endif
-    if ((i >= 30) && (i >= leadership) && ((i - 30) >= economy)) break;
+    if (i >= 30 && i >= leadership && i - 30 >= economy) break;
     // BG		if (Keyboard->Check()) break;
   }
   Count_Up_Print("%3d%%", leadership, leadership, 244, 26);
@@ -823,8 +823,8 @@ void ScoreClass::Presentation() {
   int index;
   for (index = 0; index < NUMFAMENAMES; index++) {
     if (total > hallfame[index].score) {
-      if (index < (NUMFAMENAMES - 1))
-        for (i = (NUMFAMENAMES - 1); i > index; i--)
+      if (index < NUMFAMENAMES - 1)
+        for (i = NUMFAMENAMES - 1; i > index; i--)
           hallfame[i] = hallfame[i - 1];
       hallfame[index].score = total;
       hallfame[index].level = Scen.Scenario;
@@ -844,19 +844,19 @@ void ScoreClass::Presentation() {
   for (i = 0; i < NUMFAMENAMES; i++) {
     pal = hallfame[i].side ? _redpal : _bluepal;
     Alloc_Object(new ScorePrintClass(hallfame[i].name, HALLFAME_X,
-                                     HALLFAME_Y + (i * 8), pal));
+                                     HALLFAME_Y + i * 8, pal));
     if (hallfame[i].score) {
       char* str = maststr + i * 32;
       sprintf(str, "%d", hallfame[i].score);
-      Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 14),
-                                       HALLFAME_Y + (i * 8), pal, BLACK));
+      Alloc_Object(new ScorePrintClass(str, HALLFAME_X + 6 * 14,
+                                       HALLFAME_Y + i * 8, pal, BLACK));
       if (hallfame[i].level < 20) {
         sprintf(str + 16, "%d", hallfame[i].level);
       } else {
         sprintf(str + 16, "**");
       }
-      Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + (6 * 11),
-                                       HALLFAME_Y + (i * 8), pal, BLACK));
+      Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + 6 * 11,
+                                       HALLFAME_Y + i * 8, pal, BLACK));
       Call_Back_Delay(13);
     }
   }
@@ -871,7 +871,7 @@ void ScoreClass::Presentation() {
 
   if (index < NUMFAMENAMES) {
     pal = hallfame[index].side ? _redpal : _bluepal;
-    Input_Name(hallfame[index].name, HALLFAME_X, HALLFAME_Y + (index * 8), pal);
+    Input_Name(hallfame[index].name, HALLFAME_X, HALLFAME_Y + index * 8, pal);
 
     file.Open(WRITE);
     for (i = 0; i < NUMFAMENAMES; i++) {
@@ -929,7 +929,7 @@ void Cycle_Wait_Click(bool cycle) {
       //
       // send a timing packet if enough time has gone by.
       //
-      if ((TickCount - timingtime) > PACKET_TIMING_TIMEOUT) {
+      if (TickCount - timingtime > PACKET_TIMING_TIMEOUT) {
         memset(&sendpacket, 0, sizeof(SerialPacketType));
         sendpacket.Command = SERIAL_SCORE_SCREEN;
         sendpacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
@@ -953,7 +953,7 @@ void Cycle_Wait_Click(bool cycle) {
     }
 
     if (cycle) {
-      counter = ((++counter) & 7);
+      counter = ++counter & 7;
       if (counter == 0 && Options.IsPaletteScroll) {
         RGBClass rgb = ScorePalette[233];
         for (int i = 233; i < 237; i++) {
@@ -1040,9 +1040,9 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     */
     CC_Draw_Shape(
         rmboptr,
-        (ramboclass->DoControls[DO_WALK].Frame +
-         ramboclass->DoControls[DO_WALK].Jump * 6) +
-            ((unsigned(i) >> 1) % ramboclass->DoControls[DO_WALK].Count),
+        ramboclass->DoControls[DO_WALK].Frame +
+            ramboclass->DoControls[DO_WALK].Jump * 6 +
+            (unsigned(i) >> 1) % ramboclass->DoControls[DO_WALK].Count,
         i + 32, 40, WINDOW_MAIN,
         SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
         ColorRemaps[PCOLOR_RED].RemapTable, DisplayClass::UnitShadow);
@@ -1091,8 +1091,8 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
   int i, maxval;
 #ifdef WIN32
   int xpos = 174;
-  int house = (PlayerPtr->Class->House == HOUSE_USSR ||
-               PlayerPtr->Class->House == HOUSE_UKRAINE);  // 0 or 1
+  int house = PlayerPtr->Class->House == HOUSE_USSR ||
+              PlayerPtr->Class->House == HOUSE_UKRAINE;  // 0 or 1
   if (house) {
     int temp = gkilled;
     gkilled = nkilled;
@@ -1109,8 +1109,8 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
   maxval = std::max(gdikilled, nodkilled);
   if (!maxval) maxval = 1;
 
-  gdikilled = (gdikilled * SIZEGBAR) / maxval;
-  nodkilled = (nodkilled * SIZEGBAR) / maxval;
+  gdikilled = gdikilled * SIZEGBAR / maxval;
+  nodkilled = nodkilled * SIZEGBAR / maxval;
   if (maxval < 20) {
     gdikilled = gkilled * 5;
     nodkilled = nkilled * 5;
@@ -1150,7 +1150,7 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
 #endif
     }
 
-    Count_Up_Print("%d", (i * gkilled) / maxval, gkilled, 297, ypos + 2);
+    Count_Up_Print("%d", i * gkilled / maxval, gkilled, 297, ypos + 2);
 // BG		if (!Keyboard->Check()) {
 #ifdef WIN32
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
@@ -1196,7 +1196,7 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
 #endif
     }
 
-    Count_Up_Print("%d", (i * nkilled) / maxval, nkilled, 297, ypos + 14);
+    Count_Up_Print("%d", i * nkilled / maxval, nkilled, 297, ypos + 14);
 // BG		if (!Keyboard->Check()) {
 #ifdef WIN32
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
@@ -1234,10 +1234,10 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   maxval = std::max(gdikilled, nodkilled);
 
   if (!maxval) maxval = 1;
-  if ((gdikilled > (MAX_BAR_X - BARGRAPH_X)) ||
-      (nodkilled > (MAX_BAR_X - BARGRAPH_X))) {
-    gdikilled = (gdikilled * (MAX_BAR_X - BARGRAPH_X)) / maxval;
-    nodkilled = (nodkilled * (MAX_BAR_X - BARGRAPH_X)) / maxval;
+  if (gdikilled > MAX_BAR_X - BARGRAPH_X ||
+      nodkilled > MAX_BAR_X - BARGRAPH_X) {
+    gdikilled = gdikilled * (MAX_BAR_X - BARGRAPH_X) / maxval;
+    nodkilled = nodkilled * (MAX_BAR_X - BARGRAPH_X) / maxval;
   }
 
   maxval = std::max(gdikilled, nodkilled);
@@ -1249,7 +1249,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   */
   int r = NUMINFANTRYMEN / 2;
   for (i = 0; i < NUMINFANTRYMEN / 2; i++) {
-    InfantryMan[i + 0].xpos = InfantryMan[i + r].xpos = (i * 10) + 7;
+    InfantryMan[i + 0].xpos = InfantryMan[i + r].xpos = i * 10 + 7;
     InfantryMan[i + 0].ypos = 11;
     InfantryMan[i + r].ypos = 21;
     InfantryMan[i + 0].shapefile = InfantryMan[i + r].shapefile = e1ptr;
@@ -1279,10 +1279,10 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
                    34);
 
       Set_Font_Palette(_redpal);
-      Count_Up_Print("%d", (i * NKilled) / maxval, NKilled, SCORETEXT_X + 64,
+      Count_Up_Print("%d", i * NKilled / maxval, NKilled, SCORETEXT_X + 64,
                      CASUALTY_Y + 2);
       Set_Font_Palette(_bluepal);
-      Count_Up_Print("%d", (i * GKilled) / maxval, GKilled, SCORETEXT_X + 64,
+      Count_Up_Print("%d", i * GKilled / maxval, GKilled, SCORETEXT_X + 64,
                      CASUALTY_Y + 14);
       /*BG			if (!Keyboard->Check()) */ Call_Back_Delay(3);
     }
@@ -1360,9 +1360,9 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
 
   do {
     add = 5;
-    if ((PlayerPtr->Available_Money() - i) > 100) add += 15;
-    if ((PlayerPtr->Available_Money() - i) > 500) add += 30;
-    if ((PlayerPtr->Available_Money() - i) > 1000)
+    if (PlayerPtr->Available_Money() - i > 100) add += 15;
+    if (PlayerPtr->Available_Money() - i > 500) add += 30;
+    if (PlayerPtr->Available_Money() - i > 1000)
       add += PlayerPtr->Available_Money() / 40;
     if (add < minval) add = minval;
     i += add;
@@ -1402,9 +1402,9 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
 void ScoreClass::Print_Minutes(int minutes) {
   char str[20];
   if (minutes >= 60) {
-    if ((minutes / 60) > 9) minutes = (9 * 60 + 59);
-    sprintf(str, Text_String(TXT_SCORE_TIMEFORMAT1), (minutes / 60),
-            (minutes % 60));
+    if (minutes / 60 > 9) minutes = 9 * 60 + 59;
+    sprintf(str, Text_String(TXT_SCORE_TIMEFORMAT1), minutes / 60,
+            minutes % 60);
   } else {
     sprintf(str, Text_String(TXT_SCORE_TIMEFORMAT2), minutes);
   }
@@ -1500,14 +1500,14 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
       ** If they hit 'backspace' when they're on the last letter,
       ** turn it into a space instead.
       */
-      if ((key == KA_BACKSPACE) && (index == MAX_FAMENAME_LENGTH - 2)) {
+      if (key == KA_BACKSPACE && index == MAX_FAMENAME_LENGTH - 2) {
         if (str[index] && str[index] != 32) key = 32;
       }
       if (key == KA_BACKSPACE) {  // if (key == KN_BACKSPACE) {
         if (index) {
           str[--index] = 0;
 
-          int xposindex6 = (xpos + (index * 6)) * RESFACTOR;
+          int xposindex6 = (xpos + index * 6) * RESFACTOR;
           HidPage.Blit(SeenPage, xposindex6, (ypos - 100) * RESFACTOR,
                        xposindex6, ypos * RESFACTOR, 6 * RESFACTOR,
                        6 * RESFACTOR);
@@ -1524,11 +1524,11 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
       } else if (key != KA_RETURN) {  // else if (key != KN_RETURN &&
                                       // key!=KN_KEYPAD_RETURN) {
         ascii = key;                  // ascii = KN_To_KA(key);
-        if (ascii >= 'a' && ascii <= 'z') ascii -= ('a' - 'A');
+        if (ascii >= 'a' && ascii <= 'z') ascii -= 'a' - 'A';
         if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
-          HidPage.Blit(SeenPage, (xpos + (index * 6)) * RESFACTOR,
+          HidPage.Blit(SeenPage, (xpos + index * 6) * RESFACTOR,
                        (ypos - 100) * RESFACTOR,
-                       (xpos + (index * 6)) * RESFACTOR, ypos * RESFACTOR,
+                       (xpos + index * 6) * RESFACTOR, ypos * RESFACTOR,
                        6 * RESFACTOR, 6 * RESFACTOR);
 #ifdef SEENBUF_COPY
           HidPage.Blit(*PseudoSeenBuff, (xpos + (index * 6)) * RESFACTOR,
@@ -1536,9 +1536,9 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
                        (xpos + (index * 6)) * RESFACTOR, ypos * RESFACTOR,
                        6 * RESFACTOR, 6 * RESFACTOR);
 #endif
-          HidPage.Blit(HidPage, (xpos + (index * 6)) * RESFACTOR,
+          HidPage.Blit(HidPage, (xpos + index * 6) * RESFACTOR,
                        (ypos - 100) * RESFACTOR,
-                       (xpos + (index * 6)) * RESFACTOR, ypos * RESFACTOR,
+                       (xpos + index * 6) * RESFACTOR, ypos * RESFACTOR,
                        6 * RESFACTOR, 6 * RESFACTOR);
           str[index] = ascii;
           str[index + 1] = 0;
@@ -1550,10 +1550,10 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           Play_Sample(keystrok, 255, Options.Normalize_Volume(105));
 #endif
           objindex = Alloc_Object(
-              new ScoreScaleClass(str + index, xpos + (index * 6), ypos, pal));
+              new ScoreScaleClass(str + index, xpos + index * 6, ypos, pal));
           while (ScoreObjs[objindex]) Call_Back_Delay(1);
 
-          if (index < (MAX_FAMENAME_LENGTH - 2)) index++;
+          if (index < MAX_FAMENAME_LENGTH - 2) index++;
         }
       }
     }
@@ -1573,9 +1573,9 @@ void Animate_Cursor(int pos, int ypos) {
   // If they moved the cursor, erase old one and force state=0, to make green
   // draw right away
   if (pos != _lastpos) {
-    HidPage.Blit(SeenPage, (HALLFAME_X + (_lastpos * 6)) * RESFACTOR,
+    HidPage.Blit(SeenPage, (HALLFAME_X + _lastpos * 6) * RESFACTOR,
                  ypos - 100 * RESFACTOR,
-                 (HALLFAME_X + (_lastpos * 6)) * RESFACTOR, ypos, 6 * RESFACTOR,
+                 (HALLFAME_X + _lastpos * 6) * RESFACTOR, ypos, 6 * RESFACTOR,
                  1 * RESFACTOR);
 #ifdef SEENBUF_COPY
     HidPage.Blit(*PseudoSeenBuff, (HALLFAME_X + (_lastpos * 6)) * RESFACTOR,
@@ -1586,8 +1586,8 @@ void Animate_Cursor(int pos, int ypos) {
     _lastpos = pos;
     _state = 0;
   }
-  SeenBuff.Draw_Line((HALLFAME_X + (pos * 6)) * RESFACTOR, ypos,
-                     (HALLFAME_X + (pos * 6) + 5) * RESFACTOR, ypos,
+  SeenBuff.Draw_Line((HALLFAME_X + pos * 6) * RESFACTOR, ypos,
+                     (HALLFAME_X + pos * 6 + 5) * RESFACTOR, ypos,
                      _state ? LTBLUE : TBLACK);
 #ifdef SEENBUF_COPY
   PseudoSeenBuff->Draw_Line((HALLFAME_X + (pos * 6)) * RESFACTOR, ypos,
@@ -1760,13 +1760,13 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
         (0 + std::min(i, nkilled) + 1) * RESFACTOR, 0 + 17 * RESFACTOR,
         (0 + std::min(i, nkilled) + 1) * RESFACTOR, 0 + 17 * RESFACTOR, TBLACK);
     if (i <= nkilled) {
-      int anim = InfantryMan[(NUMINFANTRYMEN / 2) + (i / 11)].anim;
+      int anim = InfantryMan[NUMINFANTRYMEN / 2 + i / 11].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
         if (i / 11) {
-          New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11),
+          New_Infantry_Anim(NUMINFANTRYMEN / 2 + i / 11,
                             DO_GUN_DEATH + (NonCriticalRandomNumber & 3));
         } else {
-          New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11), DO_GUN_DEATH);
+          New_Infantry_Anim(NUMINFANTRYMEN / 2 + i / 11, DO_GUN_DEATH);
         }
         //				Sound_Effect(Random_Pick(VOC_SCREAM1,
         // VOC_SCREAM5));
@@ -1980,7 +1980,7 @@ void Multi_Score_Presentation() {
       for (k = 0; k <= std::min(Session.CurGame, MAX_MULTI_GAMES - 2); k++) {
         if (Session.Score[i].Kills[k] >= 0) {
           Alloc_Object(new ScorePrintClass(Int_Print(Session.Score[i].Kills[k]),
-                                           225 + (24 * k), y, remap));
+                                           225 + 24 * k, y, remap));
           Call_Back_Delay(6);
         }
       }

@@ -84,7 +84,7 @@ class RadioClass : public MissionClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  bool In_Radio_Contact() const { return (Radio != nullptr); }
+  bool In_Radio_Contact() const { return Radio != nullptr; }
   void Radio_Off() { Radio = nullptr; }
   TechnoClass* Contact_With_Whom() const { return (TechnoClass*)Radio; }
 

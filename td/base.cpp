@@ -80,7 +80,7 @@
 #include "tech/wwfile.h"
 
 int BaseNodeClass::operator==(BaseNodeClass const& node) {
-  return (Type == node.Type && Coord == node.Coord);
+  return Type == node.Type && Coord == node.Coord;
 }
 
 /***********************************************************************************************
@@ -95,7 +95,7 @@ int BaseNodeClass::operator==(BaseNodeClass const& node) {
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 int BaseNodeClass::operator!=(BaseNodeClass const& node) {
-  return (Type != node.Type || Coord != node.Coord);
+  return Type != node.Type || Coord != node.Coord;
 }
 
 /***********************************************************************************************
@@ -109,7 +109,7 @@ int BaseNodeClass::operator!=(BaseNodeClass const& node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator>(BaseNodeClass const&) { return (true); }
+int BaseNodeClass::operator>(BaseNodeClass const&) { return true; }
 
 /***********************************************************************************************
  * BaseClass::Read_INI -- INI reading routine *
@@ -239,22 +239,22 @@ bool BaseClass::Load(FileClass& file) {
   ** Read in & check the size of this class
   */
   if (file.Read(&i, sizeof(i)) != sizeof(i)) {
-    return (false);
+    return false;
   }
 
   if (i != sizeof(*this)) {
-    return (false);
+    return false;
   }
 
   /*
   ** Read in the House & the number of structures in the base
   */
   if (file.Read(&House, sizeof(House)) != sizeof(House)) {
-    return (false);
+    return false;
   }
 
   if (file.Read(&num_struct, sizeof(num_struct)) != sizeof(num_struct)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -262,12 +262,12 @@ bool BaseClass::Load(FileClass& file) {
   */
   for (i = 0; i < num_struct; i++) {
     if (file.Read(&node, sizeof(node)) != sizeof(node)) {
-      return (false);
+      return false;
     }
     Nodes.Add(node);
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -291,19 +291,19 @@ bool BaseClass::Save(FileClass& file) {
   */
   i = sizeof(*this);
   if (file.Write(&i, sizeof(i)) != sizeof(i)) {
-    return (false);
+    return false;
   }
 
   /*
   ** Write the House & the number of structures in the base
   */
   if (file.Write(&House, sizeof(House)) != sizeof(House)) {
-    return (false);
+    return false;
   }
 
   num_struct = Nodes.Count();
   if (file.Write(&num_struct, sizeof(num_struct)) != sizeof(num_struct)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -312,11 +312,11 @@ bool BaseClass::Save(FileClass& file) {
   for (i = 0; i < num_struct; i++) {
     node = Nodes[i];
     if (file.Write(&node, sizeof(node)) != sizeof(node)) {
-      return (false);
+      return false;
     }
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -332,9 +332,9 @@ bool BaseClass::Save(FileClass& file) {
  *=============================================================================================*/
 bool BaseClass::Is_Built(int index) {
   if (Get_Building(index) != nullptr) {
-    return (true);
+    return true;
   } else {
-    return (false);
+    return false;
   }
 }
 
@@ -375,7 +375,7 @@ BuildingClass* BaseClass::Get_Building(int index) {
     }
   }
 
-  return (bldg);
+  return bldg;
 }
 
 /***********************************************************************************************
@@ -391,9 +391,9 @@ BuildingClass* BaseClass::Get_Building(int index) {
  *=============================================================================================*/
 bool BaseClass::Is_Node(BuildingClass* obj) {
   if (Get_Node(obj) != nullptr) {
-    return (true);
+    return true;
   } else {
-    return (false);
+    return false;
   }
 }
 
@@ -412,10 +412,10 @@ bool BaseClass::Is_Node(BuildingClass* obj) {
 BaseNodeClass* BaseClass::Get_Node(BuildingClass* obj) {
   for (int i = 0; i < Nodes.Count(); i++) {
     if (obj->Class->Type == Nodes[i].Type && obj->Coord == Nodes[i].Coord) {
-      return (&Nodes[i]);
+      return &Nodes[i];
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -445,7 +445,7 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
     */
     if (type == STRUCT_NONE) {
       if (!Is_Built(i)) {
-        return (&Nodes[i]);
+        return &Nodes[i];
       }
 
     } else {
@@ -453,7 +453,7 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
       ** For a "real" building type, return the first hold for that type
       */
       if (Nodes[i].Type == type && !Is_Built(i)) {
-        return (&Nodes[i]);
+        return &Nodes[i];
       }
     }
   }
@@ -462,5 +462,5 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
   // placement of the building. Make it static and reuse the next time this
   // routine is called.
 
-  return (nullptr);
+  return nullptr;
 }

@@ -175,7 +175,7 @@ bool Save_Game(int id, char* descr) {
   */
   if (!file.Open(name, WRITE)) {
     Decode_All_Pointers();
-    return (false);
+    return false;
   }
 
   /*
@@ -192,17 +192,17 @@ bool Save_Game(int id, char* descr) {
 
   if (file.Write(descr_buf, DESCRIP_MAX) != DESCRIP_MAX) {
     file.Close();
-    return (false);
+    return false;
   }
 
   if (file.Write(&scenario, sizeof(scenario)) != sizeof(scenario)) {
     file.Close();
-    return (false);
+    return false;
   }
 
   if (file.Write(&house, sizeof(house)) != sizeof(house)) {
     file.Close();
-    return (false);
+    return false;
   }
 
   /*
@@ -212,7 +212,7 @@ bool Save_Game(int id, char* descr) {
 
   if (file.Write(&version, sizeof(version)) != sizeof(version)) {
     file.Close();
-    return (false);
+    return false;
   }
 
   Call_Back();
@@ -235,7 +235,7 @@ bool Save_Game(int id, char* descr) {
 
     Decode_All_Pointers();
 
-    return (false);
+    return false;
   }
 
   Call_Back();
@@ -245,14 +245,14 @@ bool Save_Game(int id, char* descr) {
   if (!Logic.Save(file)) {
     file.Close();
     Decode_All_Pointers();
-    return (false);
+    return false;
   }
 
   for (i = 0; i < LAYER_COUNT; i++) {
     if (!Map.Layer[i].Save(file)) {
       file.Close();
       Decode_All_Pointers();
-      return (false);
+      return false;
     }
   }
 
@@ -262,7 +262,7 @@ bool Save_Game(int id, char* descr) {
   if (!Score.Save(file)) {
     file.Close();
     Decode_All_Pointers();
-    return (false);
+    return false;
   }
 
   /*
@@ -271,7 +271,7 @@ bool Save_Game(int id, char* descr) {
   if (!Base.Save(file)) {
     file.Close();
     Decode_All_Pointers();
-    return (false);
+    return false;
   }
 
   /*
@@ -280,7 +280,7 @@ bool Save_Game(int id, char* descr) {
   if (!Save_Misc_Values(file)) {
     file.Close();
     Decode_All_Pointers();
-    return (false);
+    return false;
   }
 
   Call_Back();
@@ -290,7 +290,7 @@ bool Save_Game(int id, char* descr) {
   file.Close();
   Decode_All_Pointers();
 
-  return (true);
+  return true;
 }
 
 /***************************************************************************
@@ -350,7 +350,7 @@ bool Load_Game(int id) {
   **	Open the file
   */
   if (!file.Open(name, READ)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -358,17 +358,17 @@ bool Load_Game(int id) {
   */
   if (file.Read(descr_buf, DESCRIP_MAX) != DESCRIP_MAX) {
     file.Close();
-    return (false);
+    return false;
   }
 
   if (file.Read(&scenario, sizeof(scenario)) != sizeof(scenario)) {
     file.Close();
-    return (false);
+    return false;
   }
 
   if (file.Read(&house, sizeof(house)) != sizeof(house)) {
     file.Close();
-    return (false);
+    return false;
   }
 
   Call_Back();
@@ -388,12 +388,12 @@ bool Load_Game(int id) {
   */
   if (file.Read(&version, sizeof(version)) != sizeof(version)) {
     file.Close();
-    return (false);
+    return false;
   }
 
   if (version != SAVEGAME_VERSION) {
     file.Close();
-    return (false);
+    return false;
   }
 
   Call_Back();
@@ -444,7 +444,7 @@ bool Load_Game(int id) {
       !Overlays.Load(file) || !Smudges.Load(file) || !Templates.Load(file) ||
       !Terrains.Load(file) || !Units.Load(file) || !Factories.Load(file)) {
     file.Close();
-    return (false);
+    return false;
   }
 
   // add triggers
@@ -459,12 +459,12 @@ bool Load_Game(int id) {
   */
   if (!Logic.Load(file)) {
     file.Close();
-    return (false);
+    return false;
   }
   for (i = 0; i < LAYER_COUNT; i++) {
     if (!Map.Layer[i].Load(file)) {
       file.Close();
-      return (false);
+      return false;
     }
   }
 
@@ -474,7 +474,7 @@ bool Load_Game(int id) {
   */
   if (!Score.Load(file)) {
     file.Close();
-    return (false);
+    return false;
   }
 
   /*
@@ -482,7 +482,7 @@ bool Load_Game(int id) {
   */
   if (!Base.Load(file)) {
     file.Close();
-    return (false);
+    return false;
   }
 
   /*
@@ -490,7 +490,7 @@ bool Load_Game(int id) {
   */
   if (!Load_Misc_Values(file)) {
     file.Close();
-    return (false);
+    return false;
   }
 
   file.Close();
@@ -508,7 +508,7 @@ bool Load_Game(int id) {
 #endif
 
   Call_Back();
-  return (true);
+  return true;
 }
 
 /***************************************************************************
@@ -535,32 +535,32 @@ bool Save_Misc_Values(FileClass& file) {
   **	Player's House.
   */
   if (file.Write(&PlayerPtr, sizeof(void*)) != sizeof(void*)) {
-    return (false);
+    return false;
   }
 
   /*
   **	Save this scenario number.
   */
   if (file.Write(&Scenario, sizeof(Scenario)) != sizeof(Scenario)) {
-    return (false);
+    return false;
   }
 
   /*
   **	Save frame #.
   */
   if (file.Write(&Frame, sizeof(Frame)) != sizeof(Frame)) {
-    return (false);
+    return false;
   }
 
   /*
   **	Save VQ Movie names.
   */
   if (file.Write(WinMovie, sizeof(WinMovie)) != sizeof(WinMovie)) {
-    return (false);
+    return false;
   }
 
   if (file.Write(LoseMovie, sizeof(LoseMovie)) != sizeof(LoseMovie)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -569,7 +569,7 @@ bool Save_Misc_Values(FileClass& file) {
   */
   count = CurrentObject.Count();
   if (file.Write(&count, sizeof(count)) != sizeof(count)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -578,7 +578,7 @@ bool Save_Misc_Values(FileClass& file) {
   for (i = 0; i < count; i++) {
     ptr = CurrentObject[i];
     if (file.Write(&ptr, sizeof(void*)) != sizeof(void*)) {
-      return (false);
+      return false;
     }
   }
 
@@ -586,7 +586,7 @@ bool Save_Misc_Values(FileClass& file) {
   **	Save the list of waypoints.
   */
   if (file.Write(Waypoint, sizeof(Waypoint)) != sizeof(Waypoint)) {
-    return (false);
+    return false;
   }
 
   file.Write(&ScenDir, sizeof(ScenDir));
@@ -602,7 +602,7 @@ bool Save_Misc_Values(FileClass& file) {
   // This is new...
   file.Write(ActionMovie, sizeof(ActionMovie));
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -625,32 +625,32 @@ bool Load_Misc_Values(FileClass& file) {
   **	Player's House.
   */
   if (file.Read(&PlayerPtr, sizeof(void*)) != sizeof(void*)) {
-    return (false);
+    return false;
   }
 
   /*
   **	Read this scenario number.
   */
   if (file.Read(&Scenario, sizeof(Scenario)) != sizeof(Scenario)) {
-    return (false);
+    return false;
   }
 
   /*
   **	Load frame #.
   */
   if (file.Read(&Frame, sizeof(Frame)) != sizeof(Frame)) {
-    return (false);
+    return false;
   }
 
   /*
   **	Load VQ Movie names.
   */
   if (file.Read(WinMovie, sizeof(WinMovie)) != sizeof(WinMovie)) {
-    return (false);
+    return false;
   }
 
   if (file.Read(LoseMovie, sizeof(LoseMovie)) != sizeof(LoseMovie)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -658,7 +658,7 @@ bool Load_Misc_Values(FileClass& file) {
   **	Load the # of ptrs in the list.
   */
   if (file.Read(&count, sizeof(count)) != sizeof(count)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -666,7 +666,7 @@ bool Load_Misc_Values(FileClass& file) {
   */
   for (i = 0; i < count; i++) {
     if (file.Read(&ptr, sizeof(void*)) != sizeof(void*)) {
-      return (false);
+      return false;
     }
     CurrentObject.Add(ptr);  // add to the list
   }
@@ -675,7 +675,7 @@ bool Load_Misc_Values(FileClass& file) {
   **	Save the list of waypoints.
   */
   if (file.Read(Waypoint, sizeof(Waypoint)) != sizeof(Waypoint)) {
-    return (false);
+    return false;
   }
 
   file.Read(&ScenDir, sizeof(ScenDir));
@@ -692,7 +692,7 @@ bool Load_Misc_Values(FileClass& file) {
     file.Read(ActionMovie, sizeof(ActionMovie));
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -753,7 +753,7 @@ void Code_All_Pointers() {
   /*
   **	PlayerPtr.
   */
-  PlayerPtr = (HouseClass*)(PlayerPtr->Class->House);
+  PlayerPtr = (HouseClass*)PlayerPtr->Class->House;
 
   /*
   **	Currently-selected objects.
@@ -928,31 +928,31 @@ bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
   **	Read size of this chunk.
   */
   if (file.Read(&size, sizeof(size)) != sizeof(size)) {
-    return (false);
+    return false;
   }
 
   /*
   **	Error if incorrect size.
   */
   if (size != class_size) {
-    return (false);
+    return false;
   }
 
   /*
   **	Read object data.
   */
-  if (file.Read(ptr, class_size) != (class_size)) {
-    return (false);
+  if (file.Read(ptr, class_size) != class_size) {
+    return false;
   }
 
   /*
   **	Fill in VTable.
   */
   if (vtable) {
-    ((void**)(((char*)ptr) + base_size - 4))[0] = vtable;
+    ((void**)((char*)ptr + base_size - 4))[0] = vtable;
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -980,17 +980,17 @@ bool Write_Object(void* ptr, int class_size, FileClass& file) {
   **	Save size of this chunk.
   */
   if (file.Write(&class_size, sizeof(class_size)) != sizeof(class_size)) {
-    return (false);
+    return false;
   }
 
   /*
   **	Save object data.
   */
-  if (file.Write(ptr, class_size) != (class_size)) {
-    return (false);
+  if (file.Write(ptr, class_size) != class_size) {
+    return false;
   }
 
-  return (true);
+  return true;
 }
 
 /***************************************************************************
@@ -1031,7 +1031,7 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
     */
     if (file.Read(descr_buf, DESCRIP_MAX) != DESCRIP_MAX) {
       file.Close();
-      return (false);
+      return false;
     }
 
     descr_buf[strlen(descr_buf) - 2] = '\0';  // trim off CR/LF
@@ -1039,12 +1039,12 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
 
     if (file.Read(scenp, sizeof(unsigned)) != sizeof(unsigned)) {
       file.Close();
-      return (false);
+      return false;
     }
 
     if (file.Read(housep, sizeof(HousesType)) != sizeof(HousesType)) {
       file.Close();
-      return (false);
+      return false;
     }
 
     /*
@@ -1052,19 +1052,19 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
     */
     if (file.Read(&version, sizeof(version)) != sizeof(version)) {
       file.Close();
-      return (false);
+      return false;
     }
 
     if (version != SAVEGAME_VERSION) {
       file.Close();
-      return (false);
+      return false;
     }
 
     file.Close();
 
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -1112,7 +1112,7 @@ TARGET TechnoType_To_Target(TechnoTypeClass const* ptr) {
       break;
   }
 
-  return (target);
+  return target;
 }
 
 /***************************************************************************
@@ -1135,21 +1135,20 @@ TARGET TechnoType_To_Target(TechnoTypeClass const* ptr) {
 TechnoTypeClass const* Target_To_TechnoType(TARGET target) {
   switch (Target_Kind(target)) {
     case KIND_INFANTRY:
-      return (
-          &InfantryTypeClass::As_Reference((InfantryType)Target_Value(target)));
+      return &InfantryTypeClass::As_Reference(
+          (InfantryType)Target_Value(target));
 
     case KIND_UNIT:
-      return (&UnitTypeClass::As_Reference((UnitType)Target_Value(target)));
+      return &UnitTypeClass::As_Reference((UnitType)Target_Value(target));
 
     case KIND_AIRCRAFT:
-      return (
-          &AircraftTypeClass::As_Reference((AircraftType)Target_Value(target)));
+      return &AircraftTypeClass::As_Reference(
+          (AircraftType)Target_Value(target));
 
     case KIND_BUILDING:
-      return (
-          &BuildingTypeClass::As_Reference((StructType)Target_Value(target)));
+      return &BuildingTypeClass::As_Reference((StructType)Target_Value(target));
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***************************************************************************
@@ -1168,7 +1167,7 @@ TechnoTypeClass const* Target_To_TechnoType(TARGET target) {
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
 void* Get_VTable(void* ptr, int base_size) {
-  return (((void**)(((char*)ptr) + base_size - 4))[0]);
+  return ((void**)((char*)ptr + base_size - 4))[0];
 }
 
 /***************************************************************************
@@ -1189,7 +1188,7 @@ void* Get_VTable(void* ptr, int base_size) {
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
 void Set_VTable(void* ptr, int base_size, void* vtable) {
-  ((void**)(((char*)ptr) + base_size - 4))[0] = vtable;
+  ((void**)((char*)ptr + base_size - 4))[0] = vtable;
 }
 
 #if 0

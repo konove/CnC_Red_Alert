@@ -82,7 +82,7 @@ class TimerClass {
   long Get_Ticks();
 };
 
-inline long TimerClass::Reset(bool start) { return (Set(0, start)); }
+inline long TimerClass::Reset(bool start) { return Set(0, start); }
 
 class CountDownTimerClass : private TimerClass {
  public:
@@ -109,16 +109,16 @@ class CountDownTimerClass : private TimerClass {
 
 inline long CountDownTimerClass::Stop() {
   TimerClass::Stop();
-  return (Time());
+  return Time();
 }
 
 inline long CountDownTimerClass::Start() {
   TimerClass::Start();
-  return (Time());
+  return Time();
 }
 
 inline long CountDownTimerClass::Reset(bool start) {
-  return (TimerClass::Reset(start));
+  return TimerClass::Reset(start);
 }
 
 class WinTimerClass {

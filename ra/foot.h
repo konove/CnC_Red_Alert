@@ -292,7 +292,7 @@ class FootClass : public TechnoClass {
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  COORDINATE Head_To_Coord() const { return (HeadToCoord); }
+  COORDINATE Head_To_Coord() const { return HeadToCoord; }
   virtual bool Start_Driver(COORDINATE& headto);
   virtual bool Stop_Driver();
   void Assign_Destination(TARGET target) override;

@@ -193,7 +193,7 @@ class CellClass {
   ObjectClass* Cell_Occupier() const;
   static int Spot_Index(COORDINATE coord);
   bool Is_Spot_Free(int spot_index) const {
-    return (!(Flag.Composite & (1 << spot_index)));
+    return !(Flag.Composite & 1 << spot_index);
   }
   COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
   COORDINATE Free_Spot() const { return Closest_Free_Spot(Cell_Coord()); }
@@ -202,7 +202,7 @@ class CellClass {
   BuildingClass* Cell_Building() const;
   CellClass const& Adjacent_Cell(FacingType face) const;
   CellClass& Adjacent_Cell(FacingType face) {
-    return (CellClass&)((*((CellClass const*)this)).Adjacent_Cell(face));
+    return (CellClass&)(*(CellClass const*)this).Adjacent_Cell(face);
   }
   COORDINATE Cell_Coord() const;
   int Cell_Color(bool override = false) const;

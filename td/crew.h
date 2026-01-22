@@ -60,7 +60,7 @@ class CrewClass {
 
   int Made_A_Kill() {
     Kills++;
-    return (Kills);
+    return Kills;
   }
 
  private:

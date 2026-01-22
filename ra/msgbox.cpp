@@ -122,13 +122,13 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     /*
     **	Build the button list.
     */
-    bheight = FontHeight + FontYSpacing + (2 * RESFACTOR);
-    bwidth = std::max((String_Pixel_Width(b1txt) + (8 * RESFACTOR)),
-                      (30u * RESFACTOR));
+    bheight = FontHeight + FontYSpacing + 2 * RESFACTOR;
+    bwidth = std::max(String_Pixel_Width(b1txt) + 8 * RESFACTOR,
+                      30u * RESFACTOR);
 
     if (b2txt != nullptr) {
       numbuttons = 2;
-      bwidth = std::max((String_Pixel_Width(b2txt) + (8 * RESFACTOR)),
+      bwidth = std::max(String_Pixel_Width(b2txt) + 8 * RESFACTOR,
                         unsigned(bwidth));
 
       if (b3txt != nullptr) {
@@ -152,9 +152,9 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   int lines = Format_Window_String(buffer, 255 * RESFACTOR, width, height);
   TextPrintType tpf = TPF_TEXT;
 
-  width = std::max(width, (90 * RESFACTOR));
+  width = std::max(width, 90 * RESFACTOR);
   width += 40 * RESFACTOR;
-  height += (numbuttons == 0) ? (40 * RESFACTOR) : (60 * RESFACTOR);
+  height += numbuttons == 0 ? 40 * RESFACTOR : 60 * RESFACTOR;
 
   // make sure dialog is wide enough for the buttons
   if (bwidth * numbuttons + 40 * RESFACTOR > width)
@@ -162,7 +162,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 
   int x = (SeenBuff.Get_Width() - width) / 2;
   int y = (SeenBuff.Get_Height() - height) / 2;
-  int printx = x + (20 * RESFACTOR);
+  int printx = x + 20 * RESFACTOR;
 
   /*
   **	Special hack to center a one line dialog box text.
@@ -187,21 +187,21 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   // DOS BUILD GERMAN BUTTONS NEED TO ONE ON TOP OF THE OTHER  VG 11/6/96
   TextButtonClass button1(
       BUTTON_1, b1txt, TPF_BUTTON,
-      x + ((numbuttons == 1) ? ((width - bwidth) >> 1) : (20 * RESFACTOR)),
-      y + height - (bheight + (15 * RESFACTOR)), bwidth);
+      x + (numbuttons == 1 ? (width - bwidth) >> 1 : 20 * RESFACTOR),
+      y + height - (bheight + 15 * RESFACTOR), bwidth);
 
   /*
   **	Center button.
   */
   TextButtonClass button2(BUTTON_2, b2txt, TPF_BUTTON,
-                          x + width - (bwidth + (20 * RESFACTOR)),
-                          y + height - (bheight + (15 * RESFACTOR)), bwidth);
+                          x + width - (bwidth + 20 * RESFACTOR),
+                          y + height - (bheight + 15 * RESFACTOR), bwidth);
 
   /*
   **	Right button.
   */
   TextButtonClass button3(BUTTON_3, b3txt, TPF_BUTTON, 0,
-                          y + height - (bheight + (15 * RESFACTOR)));
+                          y + height - (bheight + 15 * RESFACTOR));
   button3.X = x + ((width - button3.Width) >> 1);
 
   TextButtonClass* buttonlist = nullptr;
@@ -325,7 +325,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         input = KN_ESC;
       }
       switch (input) {
-        case (KN_ESC):
+        case KN_ESC:
           selection = realval[numbuttons - 1];
           pressed = true;
 
@@ -340,12 +340,12 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 #endif
           break;
 
-        case (BUTTON_1 | BUTTON_FLAG):
+        case BUTTON_1 | BUTTON_FLAG:
           selection = realval[0];
           pressed = true;
           break;
 
-        case (BUTTON_2 | BUTTON_FLAG):
+        case BUTTON_2 | BUTTON_FLAG:
           if (numbuttons > 2) {
             selection = realval[2];
           } else {
@@ -354,12 +354,12 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           pressed = true;
           break;
 
-        case (BUTTON_3 | BUTTON_FLAG):
+        case BUTTON_3 | BUTTON_FLAG:
           selection = realval[1];
           pressed = true;
           break;
 
-        case (KN_LEFT):
+        case KN_LEFT:
           if (numbuttons > 1) {
             buttons[curbutton]->Turn_Off();
             buttons[curbutton]->Flag_To_Redraw();
@@ -374,13 +374,13 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           }
           break;
 
-        case (KN_RIGHT):
+        case KN_RIGHT:
           if (numbuttons > 1) {
             buttons[curbutton]->Turn_Off();
             buttons[curbutton]->Flag_To_Redraw();
 
             curbutton++;
-            if (curbutton > (numbuttons - 1)) {
+            if (curbutton > numbuttons - 1) {
               curbutton = 0;
             }
 
@@ -389,7 +389,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           }
           break;
 
-        case (KN_RETURN):
+        case KN_RETURN:
           selection = realval[curbutton];
           pressed = true;
           break;
@@ -440,12 +440,12 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         Show_Mouse();
 
         switch (selection) {
-          case (BUTTON_1):
+          case BUTTON_1:
             retval = 0;
             process = false;
             break;
 
-          case (BUTTON_2):
+          case BUTTON_2:
             retval = 1;
             process = false;
             break;
@@ -483,7 +483,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     back = nullptr;
     Show_Mouse();
   }
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -501,7 +501,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
  *=============================================================================================*/
 int WWMessageBox::Process(int msg, int b1txt, int b2txt, int b3txt,
                           bool preserve) {
-  return (Process(Text_String(msg), b1txt, b2txt, b3txt, preserve));
+  return Process(Text_String(msg), b1txt, b2txt, b3txt, preserve);
 }
 
 /***********************************************************************************************
@@ -526,6 +526,6 @@ int WWMessageBox::Process(int msg, int b1txt, int b2txt, int b3txt,
  *=============================================================================================*/
 int WWMessageBox::Process(char const* msg, int b1txt, int b2txt, int b3txt,
                           bool preserve) {
-  return (Process(msg, Text_String(b1txt), Text_String(b2txt),
-                  Text_String(b3txt), preserve));
+  return Process(msg, Text_String(b1txt), Text_String(b2txt),
+                 Text_String(b3txt), preserve);
 }

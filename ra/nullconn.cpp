@@ -174,7 +174,7 @@ int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
   Error if we haven't been properly initialized
   ------------------------------------------------------------------------*/
 #ifdef WIN32
-  if (PortHandle == nullptr) return (false);
+  if (PortHandle == nullptr) return false;
 
 #else   // WIN32
   int status;
@@ -206,7 +206,7 @@ int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
   ------------------------------------------------------------------------*/
 #ifdef WIN32
   SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, (int)sendlen);
-  return (true);
+  return true;
 
 #else   // WIN32
   status = WriteBuffer(Port, SendBuf, sendlen);
@@ -251,10 +251,10 @@ int NullModemConnClass::Compute_CRC(char* buf, int buflen) {
     }
 
     sum <<= 1;
-    sum += (hibit + (unsigned char)buf[i]);
+    sum += hibit + (unsigned char)buf[i];
   }
 
-  return ((int)sum);
+  return (int)sum;
 
 } /* end of Compute_CRC */
 
@@ -283,7 +283,7 @@ int NullModemConnClass::Packet_Overhead_Size() {
   int for Null Modem CRC check
   CommHeaderType for Queued packets
   ------------------------------------------------------------------------*/
-  return ((PACKET_SERIAL_OVERHEAD_SIZE + sizeof(CommHeaderType)));
+  return PACKET_SERIAL_OVERHEAD_SIZE + sizeof(CommHeaderType);
 
 } /* end of Packet_Overhead_Size */
 

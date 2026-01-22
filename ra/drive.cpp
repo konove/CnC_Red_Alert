@@ -260,7 +260,7 @@ bool DriveClass::Limbo() {
     Stop_Driver();
     TrackNumber = -1;
   }
-  return (FootClass::Limbo());
+  return FootClass::Limbo();
 }
 
 /***********************************************************************************************
@@ -313,7 +313,7 @@ bool DriveClass::Stop_Driver() {
       Mark(MARK_DOWN);
     }
   }
-  return (FootClass::Stop_Driver());
+  return FootClass::Stop_Driver();
 }
 
 /***********************************************************************************************
@@ -415,7 +415,7 @@ bool DriveClass::Teleport_To(CELL cell) {
   }
   Coord = Cell_Coord(cell);
   Mark(MARK_DOWN);
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -549,8 +549,8 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType& dir) {
 
   dir = workdir;
 
-  return (XY_Coord((LEPTON)(Coord_X(Head_To_Coord()) + x),
-                   (LEPTON)(Coord_Y(Head_To_Coord()) + y)));
+  return XY_Coord((LEPTON)(Coord_X(Head_To_Coord()) + x),
+                  (LEPTON)(Coord_Y(Head_To_Coord()) + y));
 }
 
 /***********************************************************************************************
@@ -649,7 +649,7 @@ bool DriveClass::While_Moving() {
       (IsRotating && !Techno_Type_Class()->IsTurretEquipped)) {
     SpeedAccum =
         0;  // Kludge?  No speed should accumulate if movement is on hold.
-    return (false);
+    return false;
   }
 
   /*
@@ -664,7 +664,7 @@ bool DriveClass::While_Moving() {
 
   int actual;  // Working movement addition value.
   if (((UnitClass*)this)->Flagged != HOUSE_NONE) {
-    actual = SpeedAccum + ((int)maxspeed / 2) * fixed(Speed, 256);
+    actual = SpeedAccum + (int)maxspeed / 2 * fixed(Speed, 256);
   } else {
     actual = SpeedAccum + maxspeed * fixed(Speed, 256);
   }
@@ -720,7 +720,7 @@ bool DriveClass::While_Moving() {
           Mark(MARK_DOWN);
           Per_Cell_Process(PCP_DURING);
           if (!IsActive) {
-            return (false);
+            return false;
           }
           Mark(MARK_UP);
         }
@@ -759,7 +759,7 @@ bool DriveClass::While_Moving() {
                 IsDriving = true;
                 Per_Cell_Process(PCP_END);
                 IsDriving = false;
-                if (!IsActive) return (false);
+                if (!IsActive) return false;
                 if (Start_Driver(c)) {
                   Set_Speed(oldspeed);
                   memmove((char*)&Path[0], (char*)&Path[1],
@@ -802,7 +802,7 @@ bool DriveClass::While_Moving() {
         */
         Mark(MARK_DOWN);
         Per_Cell_Process(PCP_END);
-        if (!IsActive) return (false);
+        if (!IsActive) return false;
         Mark(MARK_UP);
 
         break;
@@ -818,7 +818,7 @@ bool DriveClass::While_Moving() {
   **	accumulator to be processed next pass.
   */
   SpeedAccum = actual;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -906,7 +906,7 @@ bool DriveClass::Start_Of_Move() {
     if (Mission == MISSION_MOVE) {
       Enter_Idle_Mode();
     }
-    return (false);  // Why is it calling this routine!?!
+    return false;  // Why is it calling this routine!?!
   }
 
   /*
@@ -938,7 +938,7 @@ bool DriveClass::Start_Of_Move() {
     **	navigation target.
     */
     if (PathDelay != 0) {
-      return (false);
+      return false;
     }
 
     if (!Basic_Path()) {
@@ -953,7 +953,7 @@ bool DriveClass::Start_Of_Move() {
           Distance(NavCom) < Rule.CloseEnoughDistance &&
           (Mission == MISSION_MOVE || Mission == MISSION_GUARD_AREA)) {
         Assign_Destination(TARGET_NONE);
-        if (!IsActive) return (false);
+        if (!IsActive) return false;
       } else {
         /*
         **	If a basic path could not be found, but the immediate move
@@ -976,7 +976,7 @@ bool DriveClass::Start_Of_Move() {
               if (Distance(NavCom) < Rule.CloseEnoughDistance &&
                   !In_Radio_Contact()) {
                 Assign_Destination(TARGET_NONE);
-                return (false);
+                return false;
               } else {
                 cellptr->Incoming(0, true, false);
                 //								cellptr->Incoming(0,
@@ -990,7 +990,7 @@ bool DriveClass::Start_Of_Move() {
           TryTryAgain--;
         } else {
           Assign_Destination(TARGET_NONE);
-          if (!IsActive) return (false);
+          if (!IsActive) return false;
           if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
           IsNewNavCom = false;
         }
@@ -1015,7 +1015,7 @@ bool DriveClass::Start_Of_Move() {
       Stop_Driver();
       TrackNumber = -1;
       IsTurretLockedDown = false;
-      return (false);
+      return false;
     }
 
     /*
@@ -1038,7 +1038,7 @@ bool DriveClass::Start_Of_Move() {
           if (Distance(NavCom) < Rule.CloseEnoughDistance &&
               !In_Radio_Contact()) {
             Assign_Destination(TARGET_NONE);
-            return (false);
+            return false;
           } else {
             cellptr->Incoming(0, true, false);
             //						cellptr->Incoming(0,
@@ -1068,7 +1068,7 @@ bool DriveClass::Start_Of_Move() {
     **	Request a change of facing.
     */
     Do_Turn(dir);
-    return (true);
+    return true;
 
   } else {
     /* NOTE:  Beyond this point, actual track assignment can begin.
@@ -1086,7 +1086,7 @@ bool DriveClass::Start_Of_Move() {
       if (Mission == MISSION_MOVE /*KO&& House->IsHuman */ &&
           Distance(NavCom) < Rule.CloseEnoughDistance) {
         Assign_Destination(TARGET_NONE);
-        if (!IsActive) return (false);  // BG
+        if (!IsActive) return false;  // BG
       }
 
       /*
@@ -1132,7 +1132,7 @@ bool DriveClass::Start_Of_Move() {
       }
       IsNewNavCom = false;
       TrackNumber = -1;
-      return (true);
+      return true;
     }
 
     /*
@@ -1160,9 +1160,9 @@ bool DriveClass::Start_Of_Move() {
     **	A damaged unit has a reduced speed.
     */
     if (Health_Ratio() <= Rule.ConditionYellow /*(Techno_Type_Class()->MaxStrength>>1) > Strength*/) {
-      speed -= (speed / 4);  // Three quarters speed.
+      speed -= speed / 4;  // Three quarters speed.
     }
-    if ((speed != Speed) /* || !SpeedAdd*/) {
+    if (speed != Speed /* || !SpeedAdd*/) {
       Set_Speed(speed);  // Full speed.
     }
 
@@ -1188,7 +1188,7 @@ bool DriveClass::Start_Of_Move() {
       if (TrackControl[TrackNumber].Track == 0) {
         Path[0] = FACING_NONE;
         TrackNumber = -1;
-        return (true);
+        return true;
       } else {
         if (TrackControl[TrackNumber].Flag & F_D) {
           /*
@@ -1197,14 +1197,14 @@ bool DriveClass::Start_Of_Move() {
           */
           if (!Map[destcell].Goodie_Check(this)) {
             cando = MOVE_NO;
-            if (!IsActive) return (false);
+            if (!IsActive) return false;
           } else {
-            if (!IsActive) return (false);
+            if (!IsActive) return false;
             dest = Adjacent_Cell(dest, nextface);
             destcell = Coord_Cell(dest);
             cando = Can_Enter_Cell(destcell);
           }
-          if (!IsActive) return (false);
+          if (!IsActive) return false;
 
           if (cando != MOVE_OK) {
             /*
@@ -1242,7 +1242,7 @@ bool DriveClass::Start_Of_Move() {
               }
               IsNewNavCom = false;
               TrackIndex = 0;
-              return (true);
+              return true;
             }
           } else {
             memmove((char*)&Path[0], (char*)&Path[2], CONQUER_PATH_MAX - 2);
@@ -1264,7 +1264,7 @@ bool DriveClass::Start_Of_Move() {
       Set_Speed(0);
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************

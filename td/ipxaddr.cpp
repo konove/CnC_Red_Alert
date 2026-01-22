@@ -303,9 +303,9 @@ bool IPXAddressClass::Is_Broadcast() {
       NodeAddress[0] == 0xff && NodeAddress[1] == 0xff &&
       NodeAddress[2] == 0xff && NodeAddress[3] == 0xff &&
       NodeAddress[4] == 0xff && NodeAddress[5] == 0xff) {
-    return (true);
+    return true;
   } else {
-    return (false);
+    return false;
   }
 }
 
@@ -342,9 +342,9 @@ int IPXAddressClass::operator==(IPXAddressClass& addr) {
       (addr.NetworkNumber[0] == 0 && addr.NetworkNumber[1] == 0 &&
        addr.NetworkNumber[2] == 0 && addr.NetworkNumber[3] == 0)) {
     if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0) {
-      return (true);
+      return true;
     } else {
-      return (false);
+      return false;
     }
 
   } else {
@@ -353,9 +353,9 @@ int IPXAddressClass::operator==(IPXAddressClass& addr) {
     ------------------------------------------------------------------------*/
     if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0 &&
         memcmp(NetworkNumber, addr.NetworkNumber, 4) == 0) {
-      return (true);
+      return true;
     } else {
-      return (false);
+      return false;
     }
   }
 }
@@ -393,9 +393,9 @@ int IPXAddressClass::operator!=(IPXAddressClass& addr) {
       (addr.NetworkNumber[0] == 0 && addr.NetworkNumber[1] == 0 &&
        addr.NetworkNumber[2] == 0 && addr.NetworkNumber[3] == 0)) {
     if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0) {
-      return (false);
+      return false;
     } else {
-      return (true);
+      return true;
     }
   } else {
     /*------------------------------------------------------------------------
@@ -403,9 +403,9 @@ int IPXAddressClass::operator!=(IPXAddressClass& addr) {
     ------------------------------------------------------------------------*/
     if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0 &&
         memcmp(NetworkNumber, addr.NetworkNumber, 4) == 0) {
-      return (false);
+      return false;
     } else {
-      return (true);
+      return true;
     }
   }
 }
@@ -429,7 +429,7 @@ int IPXAddressClass::operator!=(IPXAddressClass& addr) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXAddressClass::operator>(IPXAddressClass& addr) {
-  return (memcmp(this, &addr, 10) > 0);
+  return memcmp(this, &addr, 10) > 0;
 
 } /* end of operator != */
 
@@ -452,7 +452,7 @@ int IPXAddressClass::operator>(IPXAddressClass& addr) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXAddressClass::operator<(IPXAddressClass& addr) {
-  return (memcmp(this, &addr, 10) < 0);
+  return memcmp(this, &addr, 10) < 0;
 
 } /* end of operator != */
 
@@ -475,7 +475,7 @@ int IPXAddressClass::operator<(IPXAddressClass& addr) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXAddressClass::operator>=(IPXAddressClass& addr) {
-  return (memcmp(this, &addr, 10) >= 0);
+  return memcmp(this, &addr, 10) >= 0;
 
 } /* end of operator != */
 
@@ -498,6 +498,6 @@ int IPXAddressClass::operator>=(IPXAddressClass& addr) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXAddressClass::operator<=(IPXAddressClass& addr) {
-  return (memcmp(this, &addr, 10) <= 0);
+  return memcmp(this, &addr, 10) <= 0;
 
 } /* end of operator != */

@@ -54,8 +54,8 @@ class RAMFileClass : public FileClass {
   RAMFileClass(RAMFileClass&&) = delete;
   RAMFileClass& operator=(RAMFileClass&&) = delete;
 
-  char const* File_Name() const override { return ("UNKNOWN"); }
-  char const* Set_Name(char const*) override { return (File_Name()); }
+  char const* File_Name() const override { return "UNKNOWN"; }
+  char const* Set_Name(char const*) override { return File_Name(); }
   int Create() override;
   int Delete() override;
   int Is_Available(int forced = false) override;
@@ -67,8 +67,8 @@ class RAMFileClass : public FileClass {
   long Size() override;
   long Write(void const* buffer, long size) override;
   void Close() override;
-  unsigned long Get_Date_Time() override { return (0); }
-  bool Set_Date_Time(unsigned long) override { return (true); }
+  unsigned long Get_Date_Time() override { return 0; }
+  bool Set_Date_Time(unsigned long) override { return true; }
   void Error(int, int = false, char const* = nullptr) override {}
 
   operator char const*() { return File_Name(); }

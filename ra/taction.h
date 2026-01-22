@@ -146,28 +146,28 @@ class ActionChoiceClass {
  public:
   ActionChoiceClass(TActionType event = TACTION_NONE) : Action(event) {}
 
-  operator TActionType() const { return (Action); }
+  operator TActionType() const { return Action; }
   bool operator==(ActionChoiceClass const& rvalue) const {
-    return (Action == rvalue.Action);
+    return Action == rvalue.Action;
   }
   bool operator!=(ActionChoiceClass const& rvalue) const {
-    return (Action != rvalue.Action);
+    return Action != rvalue.Action;
   }
   bool operator>(ActionChoiceClass const& rvalue) const {
-    return (stricmp(Description(), rvalue.Description()) > 0);
+    return stricmp(Description(), rvalue.Description()) > 0;
   }
   bool operator<(ActionChoiceClass const& rvalue) const {
-    return (stricmp(Description(), rvalue.Description()) < 0);
+    return stricmp(Description(), rvalue.Description()) < 0;
   }
   bool operator<=(ActionChoiceClass const& rvalue) const {
-    return (Action == rvalue.Action ||
-            stricmp(Description(), rvalue.Description()) < 0);
+    return Action == rvalue.Action ||
+           stricmp(Description(), rvalue.Description()) < 0;
   }
   bool operator>=(ActionChoiceClass const& rvalue) const {
-    return (Action == rvalue.Action ||
-            stricmp(Description(), rvalue.Description()) > 0);
+    return Action == rvalue.Action ||
+           stricmp(Description(), rvalue.Description()) > 0;
   }
-  char const* Description() const { return (Name_From_Action(Action)); }
+  char const* Description() const { return Name_From_Action(Action); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
 

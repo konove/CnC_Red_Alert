@@ -97,7 +97,7 @@ void Special_Dialog() {
 
   for (int index = 0; index < sizeof(_options) / sizeof(_options[0]); index++) {
     _options[index].Button = new CheckBoxClass(100 + index, OPTION_X + 7,
-                                               OPTION_Y + 20 + (index * 10));
+                                               OPTION_Y + 20 + index * 10);
     if (_options[index].Button) {
       _options[index].Button->Add(*buttons);
 
@@ -280,7 +280,7 @@ void Special_Dialog() {
       default:
         int index = (input & ~KN_BUTTON) - 100;
         if ((unsigned)index < sizeof(_options) / sizeof(_options[0])) {
-          _options[index].Setting = (_options[index].Setting == false);
+          _options[index].Setting = _options[index].Setting == false;
           if (_options[index].Setting) {
             _options[index].Button->Turn_On();
           } else {

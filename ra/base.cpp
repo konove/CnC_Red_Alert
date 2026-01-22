@@ -84,7 +84,7 @@
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 int BaseNodeClass::operator==(BaseNodeClass const& node) {
-  return (Type == node.Type && Cell == node.Cell);
+  return Type == node.Type && Cell == node.Cell;
 }
 
 /***********************************************************************************************
@@ -99,7 +99,7 @@ int BaseNodeClass::operator==(BaseNodeClass const& node) {
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 int BaseNodeClass::operator!=(BaseNodeClass const& node) {
-  return (!(*this == node));
+  return !(*this == node);
 }
 
 /***********************************************************************************************
@@ -113,7 +113,7 @@ int BaseNodeClass::operator!=(BaseNodeClass const& node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator>(BaseNodeClass const&) { return (true); }
+int BaseNodeClass::operator>(BaseNodeClass const&) { return true; }
 
 /***********************************************************************************************
  * BaseClass::Load -- loads from a saved game file *
@@ -136,22 +136,22 @@ bool BaseClass::Load(Straw& file) {
   ** Read in & check the size of this class
   */
   if (file.Get(&i, sizeof(i)) != sizeof(i)) {
-    return (false);
+    return false;
   }
 
   if (i != sizeof(*this)) {
-    return (false);
+    return false;
   }
 
   /*
   ** Read in the House & the number of structures in the base
   */
   if (file.Get(&House, sizeof(House)) != sizeof(House)) {
-    return (false);
+    return false;
   }
 
   if (file.Get(&num_struct, sizeof(num_struct)) != sizeof(num_struct)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -159,12 +159,12 @@ bool BaseClass::Load(Straw& file) {
   */
   for (i = 0; i < num_struct; i++) {
     if (file.Get(&node, sizeof(node)) != sizeof(node)) {
-      return (false);
+      return false;
     }
     Nodes.Add(node);
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -206,7 +206,7 @@ bool BaseClass::Save(Pipe& file) const {
     file.Put(&node, sizeof(node));
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -222,9 +222,9 @@ bool BaseClass::Save(Pipe& file) const {
  *=============================================================================================*/
 bool BaseClass::Is_Built(int index) const {
   if (Get_Building(index) != nullptr) {
-    return (true);
+    return true;
   } else {
-    return (false);
+    return false;
   }
 }
 
@@ -308,9 +308,9 @@ BuildingClass* BaseClass::Get_Building(int index) const {
  *=============================================================================================*/
 bool BaseClass::Is_Node(BuildingClass const* obj) {
   if (Get_Node(obj) != nullptr) {
-    return (true);
+    return true;
   } else {
-    return (false);
+    return false;
   }
 }
 
@@ -330,10 +330,10 @@ BaseNodeClass* BaseClass::Get_Node(BuildingClass const* obj) {
   for (int i = 0; i < Nodes.Count(); i++) {
     if (obj->Class->Type == Nodes[i].Type &&
         Coord_Cell(obj->Coord) == Nodes[i].Cell) {
-      return (&Nodes[i]);
+      return &Nodes[i];
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -354,10 +354,10 @@ BaseNodeClass* BaseClass::Get_Node(BuildingClass const* obj) {
 BaseNodeClass* BaseClass::Get_Node(CELL cell) {
   for (int index = 0; index < Nodes.Count(); index++) {
     if (cell == Nodes[index].Cell) {
-      return (&Nodes[index]);
+      return &Nodes[index];
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -387,7 +387,7 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
     */
     if (type == STRUCT_NONE) {
       if (!Is_Built(i)) {
-        return (&Nodes[i]);
+        return &Nodes[i];
       }
 
     } else {
@@ -395,7 +395,7 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
       ** For a "real" building type, return the first hold for that type
       */
       if (Nodes[i].Type == type && !Is_Built(i)) {
-        return (&Nodes[i]);
+        return &Nodes[i];
       }
     }
   }
@@ -404,7 +404,7 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
   // placement of the building. Make it static and reuse the next time this
   // routine is called.
 
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************

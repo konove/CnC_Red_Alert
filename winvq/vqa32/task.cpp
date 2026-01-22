@@ -249,8 +249,7 @@ long VQA_Play(VQAHandle* vqa, long mode) {
     }
 
     /* Initialize the timer */
-    auto i = ((vqabuf->Drawer.CurFrame->FrameNum * VQA_TIMETICKS) /
-              config->DrawRate);
+    auto i = vqabuf->Drawer.CurFrame->FrameNum * VQA_TIMETICKS / config->DrawRate;
 
     VQA_SetTimer(dynamic_cast<VQAHandleP*>(vqa), i, config->TimerMethod);
     vqabuf->StartTime = VQA_GetTime(dynamic_cast<VQAHandleP*>(vqa));
@@ -294,7 +293,7 @@ long VQA_Play(VQAHandle* vqa, long mode) {
             */
             SetPriorityClass(GetCurrentProcess(), process_priority);
 #endif  // _WIN32
-            return (VQAERR_EOF);
+            return VQAERR_EOF;
           }
         }
 
@@ -311,7 +310,7 @@ long VQA_Play(VQAHandle* vqa, long mode) {
           if (rc == 0) {
             vqabuf->LoadedFrames++;
           } else {
-            if ((rc != VQAERR_NOBUFFER) && (rc != VQAERR_SLEEPING)) {
+            if (rc != VQAERR_NOBUFFER && rc != VQAERR_SLEEPING) {
               vqabuf->Flags |= VQADATF_LDONE;
               rc = 0;
             }
@@ -322,19 +321,19 @@ long VQA_Play(VQAHandle* vqa, long mode) {
 
         /* Draw a frame */
         if ((config->DrawFlags & VQACFGF_NODRAW) == 0) {
-          rc = (*(vqabuf->Draw_Frame))(vqa);
+          rc = (*vqabuf->Draw_Frame)(vqa);
           if (rc == 0) {
             vqabuf->DrawnFrames++;
             rc = vqabuf->Drawer.LastFrameNum;
             if (User_Update(vqa) != 0) {
-              vqabuf->Flags |= (VQADATF_DDONE | VQADATF_LDONE);
+              vqabuf->Flags |= VQADATF_DDONE | VQADATF_LDONE;
             }
           } else {
             if (rc == VQAERR_EOF) {
               break;
             }
             if ((vqabuf->Flags & VQADATF_LDONE) != 0 &&
-                (rc == VQAERR_NOBUFFER)) {
+                rc == VQAERR_NOBUFFER) {
               vqabuf->Flags |= VQADATF_DDONE;
             }
 
@@ -357,9 +356,9 @@ long VQA_Play(VQAHandle* vqa, long mode) {
   }
 
   /* If the movie is finished or we are requested to stop then shutdown. */
-  if (((vqabuf->Flags & (VQADATF_DDONE | VQADATF_LDONE)) ==
-       (VQADATF_DDONE | VQADATF_LDONE)) ||
-      (mode == VQAMODE_STOP)) {
+  if ((vqabuf->Flags & (VQADATF_DDONE | VQADATF_LDONE)) ==
+          (VQADATF_DDONE | VQADATF_LDONE) ||
+      mode == VQAMODE_STOP) {
     /* Record the end time; must be done before stopping audio, since we're
      * getting the elapsed time from the audio DMA position.
      */
@@ -381,7 +380,7 @@ long VQA_Play(VQAHandle* vqa, long mode) {
   SetPriorityClass(GetCurrentProcess(), process_priority);
 #endif  // WIN32
 
-  return (rc);
+  return rc;
 }
 
 /****************************************************************************
@@ -511,7 +510,7 @@ void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats) {
  *
  ****************************************************************************/
 
-char* VQA_Version() { return (VQA_VERSION); }
+char* VQA_Version() { return VQA_VERSION; }
 
 /****************************************************************************
  *
@@ -534,7 +533,7 @@ char* VQA_Version() { return (VQA_VERSION); }
  *
  ****************************************************************************/
 
-char* VQA_IDString() { return (VQA_IDSTRING); }
+char* VQA_IDString() { return VQA_IDSTRING; }
 
 /****************************************************************************
  *
@@ -565,7 +564,7 @@ int64_t User_Update(VQAHandle* vqa) {
 
     // Mark the frame as loadable
     vqabuf->Flipper.CurFrame->Flags = 0;
-    vqabuf->Flags &= (~VQADATF_UPDATE);
+    vqabuf->Flags &= ~VQADATF_UPDATE;
   }
 
   return 0;

@@ -107,7 +107,7 @@ void CreditClass::Graphic_Logic(bool forced) {
   if (forced || IsToRedraw) {
     BStart(BENCH_TABS);
 
-    int xx = SeenBuff.Get_Width() - (120 * RESFACTOR);
+    int xx = SeenBuff.Get_Width() - 120 * RESFACTOR;
 
     /*
     ** Adjust the credits display to be above the sidebar for 640x400
@@ -152,15 +152,15 @@ void CreditClass::Graphic_Logic(bool forced) {
       **	Speak mission timer reminders.
       */
       VoxType vox = VOX_NONE;
-      if (Scen.MissionTimer == (1 * TICKS_PER_MINUTE)) vox = VOX_TIME_1;
-      if (Scen.MissionTimer == (2 * TICKS_PER_MINUTE)) vox = VOX_TIME_2;
-      if (Scen.MissionTimer == (3 * TICKS_PER_MINUTE)) vox = VOX_TIME_3;
-      if (Scen.MissionTimer == (4 * TICKS_PER_MINUTE)) vox = VOX_TIME_4;
-      if (Scen.MissionTimer == (5 * TICKS_PER_MINUTE)) vox = VOX_TIME_5;
-      if (Scen.MissionTimer == (10 * TICKS_PER_MINUTE)) vox = VOX_TIME_10;
-      if (Scen.MissionTimer == (20 * TICKS_PER_MINUTE)) vox = VOX_TIME_20;
-      if (Scen.MissionTimer == (30 * TICKS_PER_MINUTE)) vox = VOX_TIME_30;
-      if (Scen.MissionTimer == (40 * TICKS_PER_MINUTE)) vox = VOX_TIME_40;
+      if (Scen.MissionTimer == 1 * TICKS_PER_MINUTE) vox = VOX_TIME_1;
+      if (Scen.MissionTimer == 2 * TICKS_PER_MINUTE) vox = VOX_TIME_2;
+      if (Scen.MissionTimer == 3 * TICKS_PER_MINUTE) vox = VOX_TIME_3;
+      if (Scen.MissionTimer == 4 * TICKS_PER_MINUTE) vox = VOX_TIME_4;
+      if (Scen.MissionTimer == 5 * TICKS_PER_MINUTE) vox = VOX_TIME_5;
+      if (Scen.MissionTimer == 10 * TICKS_PER_MINUTE) vox = VOX_TIME_10;
+      if (Scen.MissionTimer == 20 * TICKS_PER_MINUTE) vox = VOX_TIME_20;
+      if (Scen.MissionTimer == 30 * TICKS_PER_MINUTE) vox = VOX_TIME_30;
+      if (Scen.MissionTimer == 40 * TICKS_PER_MINUTE) vox = VOX_TIME_40;
       if (vox != VOX_NONE) {
         Speak(vox);
         Map.FlasherTimer = 7;
@@ -262,7 +262,7 @@ void CreditClass::AI(bool forced) {
     Current += adder;
     if (Current - adder != Current) {
       IsAudible = true;
-      IsUp = (adder > 0);
+      IsUp = adder > 0;
     }
   }
   IsToRedraw = true;

@@ -101,7 +101,7 @@ class ChronalVortexClass {
   /*
   ** Returns true of vortex is currently active.
   */
-  bool Is_Active() { return (Active); }
+  bool Is_Active() { return Active; }
 
   /*
   ** Makes the vortex attack the specified target. Target must be in range of
@@ -117,9 +117,9 @@ class ChronalVortexClass {
   /*
   ** Members to allow read access to private data
   */
-  int Get_Range() { return (Range); }
-  int Get_Speed() { return (Speed); }
-  int Get_Damage() { return (Damage); }
+  int Get_Range() { return Range; }
+  int Get_Speed() { return Speed; }
+  int Get_Damage() { return Damage; }
 
   /*
   ** Members to allow write access to private data.

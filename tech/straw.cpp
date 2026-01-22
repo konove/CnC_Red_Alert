@@ -125,7 +125,7 @@ void Straw::Get_From(Straw* straw) {
  *=============================================================================================*/
 int Straw::Get(void* source, int slen) {
   if (ChainTo != nullptr) {
-    return (ChainTo->Get(source, slen));
+    return ChainTo->Get(source, slen);
   }
-  return (0);
+  return 0;
 }

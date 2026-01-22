@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
     printf("Insufficient RAM available.\n");
 #endif
 #endif
-    return (EXIT_FAILURE);
+    return EXIT_FAILURE;
   }
 
   // void *test_buffer = Alloc(20,MEM_NORMAL);
@@ -343,7 +343,7 @@ int main(int argc, char* argv[])
 #ifdef PORTABLE
       // pretty unlikely
       delete WindowsTimer;
-      return (EXIT_FAILURE);
+      return EXIT_FAILURE;
 #else
 #ifdef GERMAN
       char disk_space_message[512];
@@ -438,7 +438,7 @@ int main(int argc, char* argv[])
 #endif
         delete WindowsTimer;
         delete[] Palette;
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
       }
 
       CCDebugString("C&C95 - Initialising video surfaces.\n");
@@ -577,7 +577,7 @@ int main(int argc, char* argv[])
       char tempbuff[5];
       WWGetPrivateProfileString("Intro", "PlayIntro", "Yes", tempbuff, 4,
                                 buffer);
-      if ((stricmp(tempbuff, "No") == 0) || SpawnedFromWChat) {
+      if (stricmp(tempbuff, "No") == 0 || SpawnedFromWChat) {
         Special.IsFromInstall = false;
       } else {
         Special.IsFromInstall = true;
@@ -654,7 +654,7 @@ int main(int argc, char* argv[])
       // AllSurfaces.Release();
       // Reset_Video_Mode();
       // Stop_Profiler();
-      return (EXIT_SUCCESS);
+      return EXIT_SUCCESS;
 
     } else {
 #ifdef GERMAN
@@ -690,7 +690,7 @@ int main(int argc, char* argv[])
   chdir(oldpath);
 #endif  // NOT_FOR_WIN95
 
-  return (EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }
 
 /***********************************************************************************************

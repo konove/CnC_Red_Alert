@@ -237,7 +237,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
       if (!txtlabel->Segments) {
         if (!strcmp(txtlabel->Text, txt) && txtlabel->Color == color &&
             txtlabel->Style == style) {
-          return (txtlabel);
+          return txtlabel;
         }
       }
       txtlabel = (TextLabelClass*)txtlabel->Get_Next();
@@ -277,7 +277,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
           ** If this message segment hasnt already come through then add it to
           *the existing text
           */
-          if (!(txtlabel->Segments & (1 << position))) {
+          if (!(txtlabel->Segments & 1 << position)) {
             /*
             ** Search for the ':' to find the actual message after the players
             *name
@@ -285,21 +285,21 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
             raw_string = s2;
             current_string = s1;
             if (raw_string++ && current_string++) {
-              memcpy(current_string + (position * (COMPAT_MESSAGE_LENGTH -
-                                                   5)) /*+from_adjust*/,
+              memcpy(current_string + position * (COMPAT_MESSAGE_LENGTH -
+                                                  5) /*+from_adjust*/,
                      raw_string, COMPAT_MESSAGE_LENGTH - 4);
               /*
               ** Flag this string segment as complete
               */
               txtlabel->Segments |= 1 << position;
-              return (txtlabel);
+              return txtlabel;
             }
           } else {
             /*
             ** This segment has already come through for this string so discard
             *it.
             */
-            return (txtlabel);
+            return txtlabel;
           }
         }
       }
@@ -322,14 +322,14 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   /*........................................................................
   Remove the top-most message, but don't remove the edit message.
   ........................................................................*/
-  if ((MaxMessages > 0) && ((num_msg + 1) > MaxMessages)) {
+  if (MaxMessages > 0 && num_msg + 1 > MaxMessages) {
     txtlabel = MessageList;
     /*.....................................................................
     If the top label is the edit label, go to the next one; if there is
     no next one, just return.
     .....................................................................*/
     if (txtlabel == EditLabel) txtlabel = (TextLabelClass*)txtlabel->Get_Next();
-    if (txtlabel == nullptr) return (nullptr);
+    if (txtlabel == nullptr) return nullptr;
 
     /*.....................................................................
     Remove this message from the list; mark its buffer as being available.
@@ -408,7 +408,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
 
         if (raw_string++) {
           for (j = 0; j < 3; j++) {
-            if (!((magic_number - j) == MESSAGE_HEAD_MAGIC_NUMBER)) {
+            if (!(magic_number - j == MESSAGE_HEAD_MAGIC_NUMBER)) {
               memset(
                   dest_str + j * (COMPAT_MESSAGE_LENGTH - 4) /*+from_adjust*/,
                   32, COMPAT_MESSAGE_LENGTH - 4);
@@ -435,7 +435,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   }
   if (!found) {
     delete txtlabel;
-    return (nullptr);
+    return nullptr;
   }
 
   /*------------------------------------------------------------------------
@@ -447,7 +447,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
     MessageList = txtlabel;
   }
 
-  return (txtlabel);
+  return txtlabel;
 }
 
 /***************************************************************************
@@ -473,7 +473,7 @@ TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
   /*------------------------------------------------------------------------
   Do nothing if we're already in "edit" mode
   ------------------------------------------------------------------------*/
-  if (EditLabel) return (nullptr);
+  if (EditLabel) return nullptr;
 
   /*------------------------------------------------------------------------
   Initialize the buffer positions; add a new label to the label list.
@@ -490,7 +490,7 @@ TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
   else
     EditBuf = nullptr;
 
-  return (EditLabel);
+  return EditLabel;
 }
 
 /***************************************************************************
@@ -509,9 +509,9 @@ TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 char* MessageListClass::Get_Edit_Buf() {
-  if (!EditBuf) return (nullptr);
+  if (!EditBuf) return nullptr;
 
-  return (EditBuf + EditInitPos);
+  return EditBuf + EditInitPos;
 }
 
 /***************************************************************************
@@ -587,7 +587,7 @@ int MessageListClass::Manage() {
     }
   }
 
-  return (changed);
+  return changed;
 }
 
 /***************************************************************************
@@ -616,14 +616,14 @@ int MessageListClass::Input(KeyNumType& input) {
   /*------------------------------------------------------------------------
   Do nothing if nothing to do.
   ------------------------------------------------------------------------*/
-  if (input == KN_NONE) return (0);
+  if (input == KN_NONE) return 0;
 
   /*------------------------------------------------------------------------
   Leave mouse events alone.
   ------------------------------------------------------------------------*/
-  if ((input & (~KN_RLSE_BIT)) == KN_LMOUSE ||
-      (input & (~KN_RLSE_BIT)) == KN_RMOUSE)
-    return (0);
+  if ((input & ~KN_RLSE_BIT) == KN_LMOUSE ||
+      (input & ~KN_RLSE_BIT) == KN_RMOUSE)
+    return 0;
 
   /*------------------------------------------------------------------------
   If we're in 'edit mode', handle keys
@@ -634,7 +634,7 @@ int MessageListClass::Input(KeyNumType& input) {
     /*
     ** Allow numeric keypad presses to map to ascii numbers
     */
-    if ((input & WWKEY_VK_BIT) && ascii >= '0' && ascii <= '9') {
+    if (input & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
       input = (KeyNumType)(input & ~WWKEY_VK_BIT);
 
     } else {
@@ -649,7 +649,7 @@ int MessageListClass::Input(KeyNumType& input) {
         // ascii = (KeyASCIIType)(Keyboard->To_ASCII(input));
       } else {
         input = KN_NONE;
-        return (0);
+        return 0;
       }
     }
 
@@ -689,7 +689,7 @@ int MessageListClass::Input(KeyNumType& input) {
       character, after the "To:" prefix.
       ------------------------------------------------------------------*/
       default:
-        if ((EditCurPos - EditInitPos) < (MaxChars - 1)) {
+        if (EditCurPos - EditInitPos < MaxChars - 1) {
           if (!(input & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 127) {
             EditBuf[EditCurPos] = ascii;
             EditCurPos++;
@@ -713,7 +713,7 @@ int MessageListClass::Input(KeyNumType& input) {
     }
   }
 
-  return (retcode);
+  return retcode;
 }
 
 /***************************************************************************
@@ -768,7 +768,7 @@ int MessageListClass::Num_Messages() {
     }
   }
 
-  return (num);
+  return num;
 }
 
 /***************************************************************************

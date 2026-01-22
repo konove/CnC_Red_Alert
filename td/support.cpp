@@ -60,7 +60,7 @@ void* Conquer_Build_Fading_Table(void const* palette, void* dest, int color,
     matchcolor = color;  // Default color (self).
     matchvalue = -1;     // Ridiculous match value init.
 
-    auto palptr = pal8 + (ALLOWED_START * 3);
+    auto palptr = pal8 + ALLOWED_START * 3;
 
     for (int color_index = ALLOWED_START; color_index < 256; color_index++) {
       int compval = 0;

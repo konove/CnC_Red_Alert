@@ -350,7 +350,7 @@ int SessionClass::Create_Connections() {
   int i;
 
   if (Session.Type != GAME_IPX && Session.Type != GAME_INTERNET) {
-    return (0);
+    return 0;
   }
 
   //------------------------------------------------------------------------
@@ -364,14 +364,14 @@ int SessionClass::Create_Connections() {
     if (!stricmp(Players[i]->Name,
                  HouseClass::As_Pointer(Players[i]->Player.ID)->IniName)) {
       Ipx.Create_Connection((int)Players[i]->Player.ID, Players[i]->Name,
-                            &(Players[i]->Address));
+                            &Players[i]->Address);
       Players[i]->Player.ProcessTime = -1;
     } else {
-      return (0);
+      return 0;
     }
   }
 
-  return (1);
+  return 1;
 
 }  // end of Create_Connections
 
@@ -517,14 +517,14 @@ bool SessionClass::Am_I_Master() {
     hptr = HouseClass::As_Pointer(house);
     if (hptr->IsHuman) {
       if (PlayerPtr == hptr) {
-        return (true);
+        return true;
       } else {
-        return (false);
+        return false;
       }
     }
   }
 
-  return (false);
+  return false;
 
 }  // end of Am_I_Master
 
@@ -569,7 +569,7 @@ int SessionClass::Save(Pipe& file) const {
   file.Put(&ObiWan, sizeof(ObiWan));
   file.Put(&EmergencySave, sizeof(EmergencySave));
 
-  return (1);
+  return 1;
 
 }  // end of Save
 
@@ -612,7 +612,7 @@ int SessionClass::Load(Straw& file) {
   file.Get(&ObiWan, sizeof(ObiWan));
   file.Get(&EmergencySave, sizeof(EmergencySave));
 
-  return (1);
+  return 1;
 
 }  // end of Load
 
@@ -664,7 +664,7 @@ int SessionClass::Save(CCFileClass& file) {
     file.Write(Players[i], sizeof(NodeNameType));
   }
 
-  return (1);
+  return 1;
 
 }  // end of Save
 
@@ -715,7 +715,7 @@ int SessionClass::Load(CCFileClass& file) {
     Players.Add(node);
   }
 
-  return (1);
+  return 1;
 
 }  // end of Load
 
@@ -1018,7 +1018,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     ini.Get_String("SyncBug", "Cell", "0", buf, 80);
     cell = atoi(buf);
     if (cell) {
-      TrapCell = &(Map[cell]);
+      TrapCell = &Map[cell];
     }
 
     TrapPrintCRC = ini.Get_Int("SyncBug", "PrintCRC", 0x7fffffff);
@@ -1191,7 +1191,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
 
     //	Save all Phone Book entries.
     //	Format: Entry=Name,PhoneNum,Port,IRQ,Baud,InitString
-    for (int i = (PhoneBook.Count() - 1); i >= 0; i--) {
+    for (int i = PhoneBook.Count() - 1; i >= 0; i--) {
       char buf[128];
       char entrytext[10];
       sprintf(buf, "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s", PhoneBook[i]->Name,
@@ -1224,11 +1224,11 @@ bool Is_Mission_Counterstrike(char* file_name) {
     sscanf(file_name, "SCM%03d", &scenario_number);
   } else {
     if (!isdigit(file_name[3]) || !isdigit(file_name[4])) {
-      return (false);
+      return false;
     }
     sscanf(file_name, "SCM%02d", &scenario_number);
   }
-  return (scenario_number > 24);
+  return scenario_number > 24;
 }
 
 bool Is_Mission_Aftermath(char* file_name) {
@@ -1247,14 +1247,14 @@ bool Is_Mission_Aftermath(char* file_name) {
 bool Is_Mission_126x126(char* file_name)  //	This is no longer used. ajw
 {
   if (isdigit(file_name[5])) {
-    return (false);
+    return false;
   }
 
   if ((file_name[3] >= 'k' && file_name[3] <= 'm') ||
       (file_name[3] >= 'K' && file_name[3] <= 'M')) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -1732,7 +1732,7 @@ unsigned long SessionClass::Compute_Unique_ID() {
     }
   }
 
-  return (id);
+  return id;
 
 }  // end of Compute_Unique_ID
 
@@ -1763,8 +1763,7 @@ void MultiMission::Draw_It(int, int x, int y, int width, int height,
                             width, _tabs);
   } else {
     Conquer_Clip_Text_Print(ScenarioDescription, x, y,
-                            (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                      : &ColorRemaps[PCOLOR_GREY]),
+                            selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
                             TBLACK, flags, width, _tabs);
   }
 }

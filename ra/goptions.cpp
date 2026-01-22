@@ -128,7 +128,7 @@ void GameOptionsClass::Process() {
   // if there are more than 1.
   //
   for (i = 0; i < Session.Players.Count(); i++) {
-    if (!(HouseClass::As_Pointer(Session.Players[i]->Player.ID)->IsDefeated)) {
+    if (!HouseClass::As_Pointer(Session.Players[i]->Player.ID)->IsDefeated) {
       num_players++;
     }
   }
@@ -153,7 +153,7 @@ void GameOptionsClass::Process() {
       continue;
     }
 
-    if (Session.Type != GAME_NORMAL && (num_players < 2) &&
+    if (Session.Type != GAME_NORMAL && num_players < 2 &&
         text == TXT_SAVE_MISSION) {
       continue;
     }
@@ -168,7 +168,7 @@ void GameOptionsClass::Process() {
 
     if (index < 6) {
       y = (SeenBuff.Get_Height() - OptionHeight) / 2 + ButtonY +
-          ((OButtonHeight + 2) * index);
+          (OButtonHeight + 2) * index;
     } else {
       y = OptionY + ButtonResumeY;
     }
@@ -231,14 +231,14 @@ void GameOptionsClass::Process() {
   //	buttonsel[BUTTON_RESUME-1]->X = OptionX + (17 * RESFACTOR) - 5;
   // #else
   buttonsel[BUTTON_RESUME - 1]->Width = 90 * RESFACTOR;
-  buttonsel[BUTTON_RESUME - 1]->X = OptionX + (17 * RESFACTOR);
+  buttonsel[BUTTON_RESUME - 1]->X = OptionX + 17 * RESFACTOR;
   // #endif
 
   if (Session.Type == GAME_NORMAL) {
     buttonsel[BUTTON_RESTATE - 1]->Width = 90 * RESFACTOR;
     buttonsel[BUTTON_RESTATE - 1]->X =
         OptionX + OptionWidth -
-        (buttonsel[BUTTON_RESTATE - 1]->Width + (17 * RESFACTOR));
+        (buttonsel[BUTTON_RESTATE - 1]->Width + 17 * RESFACTOR);
   }
 
   /*
@@ -333,10 +333,9 @@ void GameOptionsClass::Process() {
                        Version_Name());
 
 #else
-      Fancy_Text_Print("%s\rV%s", (OptionX + OptionWidth) - (25 * RESFACTOR),
+      Fancy_Text_Print("%s\rV%s", OptionX + OptionWidth - 25 * RESFACTOR,
                        OptionY + OptionHeight -
-                           ((Session.Type == GAME_NORMAL) ? (32 * RESFACTOR)
-                                                          : (24 * RESFACTOR)),
+                           (Session.Type == GAME_NORMAL ? 32 * RESFACTOR : 24 * RESFACTOR),
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Scen.ScenarioName,
                        Version_Name());
@@ -358,48 +357,48 @@ void GameOptionsClass::Process() {
     **	Process Input.
     */
     switch (input) {
-      case (BUTTON_RESTATE | KN_BUTTON):
+      case BUTTON_RESTATE | KN_BUTTON:
         selection = BUTTON_RESTATE;
         pressed = true;
         break;
 
-      case (BUTTON_LOAD | KN_BUTTON):
+      case BUTTON_LOAD | KN_BUTTON:
         selection = BUTTON_LOAD;
         pressed = true;
         break;
 
-      case (BUTTON_SAVE | KN_BUTTON):
+      case BUTTON_SAVE | KN_BUTTON:
         selection = BUTTON_SAVE;
         pressed = true;
         break;
 
-      case (BUTTON_DELETE | KN_BUTTON):
+      case BUTTON_DELETE | KN_BUTTON:
         selection = BUTTON_DELETE;
         pressed = true;
         break;
 
-      case (BUTTON_QUIT | KN_BUTTON):
+      case BUTTON_QUIT | KN_BUTTON:
         selection = BUTTON_QUIT;
         pressed = true;
         break;
 
-      case (BUTTON_GAME | KN_BUTTON):
+      case BUTTON_GAME | KN_BUTTON:
         selection = BUTTON_GAME;
         pressed = true;
         break;
 
-      case (BUTTON_DRAW | KN_BUTTON):
+      case BUTTON_DRAW | KN_BUTTON:
         selection = BUTTON_DRAW;
         pressed = true;
         break;
 
-      case (KN_ESC):
-      case (BUTTON_RESUME | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_RESUME | KN_BUTTON:
         selection = BUTTON_RESUME;
         pressed = true;
         break;
 
-      case (KN_UP):
+      case KN_UP:
         buttonsel[curbutton - 1]->Turn_Off();
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         do {
@@ -411,7 +410,7 @@ void GameOptionsClass::Process() {
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         break;
 
-      case (KN_DOWN):
+      case KN_DOWN:
         buttonsel[curbutton - 1]->Turn_Off();
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         do {
@@ -423,7 +422,7 @@ void GameOptionsClass::Process() {
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
         buttonsel[curbutton - 1]->IsPressed = true;
         buttonsel[curbutton - 1]->Draw_Me(true);
         selection = curbutton;
@@ -470,14 +469,14 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case (BUTTON_LOAD):
+        case BUTTON_LOAD:
           display = true;
           if (LoadOptionsClass(LoadOptionsClass::LOAD).Process()) {
             process = false;
           }
           break;
 
-        case (BUTTON_SAVE):
+        case BUTTON_SAVE:
           display = true;
           if (Session.Type == GAME_NORMAL) {
             LoadOptionsClass(LoadOptionsClass::SAVE).Process();
@@ -488,7 +487,7 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case (BUTTON_DELETE):
+        case BUTTON_DELETE:
           display = true;
           if (Session.Type != GAME_NORMAL) {
             if (Surrender_Dialog(TXT_SURRENDER)) {
@@ -500,7 +499,7 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case (BUTTON_QUIT):
+        case BUTTON_QUIT:
           if (Session.Type == GAME_NORMAL) {
             switch (WWMessageBox().Process(TXT_CONFIRM_EXIT, TXT_ABORT,
                                            TXT_CANCEL, TXT_RESTART)) {
@@ -557,12 +556,12 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case (BUTTON_GAME):
+        case BUTTON_GAME:
           display = true;
           GameControlsClass().Process();
           break;
 
-        case (BUTTON_RESUME):
+        case BUTTON_RESUME:
           Save_Settings();
           process = false;
           display = true;
@@ -593,13 +592,13 @@ void GameOptionsClass::Process() {
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
   OptionWidth = (216 + 8) * RESFACTOR;
   OptionHeight = 111 * RESFACTOR;
-  OptionX = ((SeenBuff.Get_Width() - OptionWidth) / 2);
-  OptionY = ((SeenBuff.Get_Height() - OptionHeight) / 2);
+  OptionX = (SeenBuff.Get_Width() - OptionWidth) / 2;
+  OptionY = (SeenBuff.Get_Height() - OptionHeight) / 2;
   ButtonWidth = 130 * RESFACTOR;
   OButtonHeight = 9 * RESFACTOR;
   CaptionYPos = 5 * RESFACTOR;
   ButtonY = 21 * RESFACTOR;
   Border1Len = 72 * RESFACTOR;
   Border2Len = 16 * RESFACTOR;
-  ButtonResumeY = (OptionHeight - (19 * RESFACTOR));
+  ButtonResumeY = OptionHeight - 19 * RESFACTOR;
 }

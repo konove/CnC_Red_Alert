@@ -67,9 +67,9 @@ class DropListClass : public EditClass {
   virtual void Set_Selected_Index(char const* text);
   void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) override;
   void Clear_Focus() override;
-  virtual int Count() const { return (List.Count()); }
+  virtual int Count() const { return List.Count(); }
   virtual char const* Get_Item(int index) const {
-    return (List.Get_Item(index));
+    return List.Get_Item(index);
   }
 
 #ifdef WOLAPI_INTEGRATION

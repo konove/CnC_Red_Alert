@@ -177,7 +177,7 @@ void TeamTypeClass::Init() {
   TeamTypes.Free_All();
 
   ptr = new TeamTypeClass();
-  VTable = ((void**)(((char*)ptr) + sizeof(AbstractTypeClass) - 4))[0];
+  VTable = ((void**)((char*)ptr + sizeof(AbstractTypeClass) - 4))[0];
   delete ptr;
 }
 
@@ -710,16 +710,16 @@ TeamTypeClass* TeamTypeClass::As_Pointer(char* name) {
   int i;
 
   if (name == nullptr) {
-    return (nullptr);
+    return nullptr;
   }
 
   for (i = 0; i < TeamTypes.Count(); i++) {
     if (!stricmp(name, TeamTypes.Ptr(i)->IniName)) {
-      return (TeamTypes.Ptr(i));
+      return TeamTypes.Ptr(i);
     }
   }
 
-  return (nullptr);
+  return nullptr;
 }
 
 /***************************************************************************
@@ -779,12 +779,12 @@ TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
   if (name) {
     for (order = TMISSION_FIRST; order < TMISSION_COUNT; order++) {
       if (stricmp(TMissions[order], name) == 0) {
-        return ((TeamMissionType)order);
+        return (TeamMissionType)order;
       }
     }
   }
 
-  return (TMISSION_NONE);
+  return TMISSION_NONE;
 }
 
 /***************************************************************************
@@ -804,9 +804,9 @@ TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
  *=========================================================================*/
 char const* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   if (order <= TMISSION_NONE || order >= TMISSION_COUNT) {
-    return ("None");
+    return "None";
   } else {
-    return (TMissions[order]);
+    return TMissions[order];
   }
 }
 
@@ -830,7 +830,7 @@ void* TeamTypeClass::operator new(size_t) throw() {
   if (ptr) {
     ((TeamTypeClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***************************************************************************
@@ -857,14 +857,14 @@ void TeamTypeClass::operator delete(void* ptr) {
 
 TeamClass* TeamTypeClass::Create_One_Of() const {
   if (ScenarioInit || TeamClass::Number[TeamTypes.ID(this)] < MaxAllowed) {
-    return (new TeamClass(this, HouseClass::As_Pointer(House)));
+    return new TeamClass(this, HouseClass::As_Pointer(House));
   }
-  return (nullptr);
+  return nullptr;
 }
 
 TARGET TeamTypeClass::As_Target() const {
   Validate();
-  return (Build_Target(KIND_TEAMTYPE, TeamTypes.ID(this)));
+  return Build_Target(KIND_TEAMTYPE, TeamTypes.ID(this));
 }
 
 void TeamTypeClass::Destroy_All_Of() const {
@@ -914,7 +914,7 @@ TeamTypeClass const* TeamTypeClass::Suggested_New_Team(HouseClass* house,
 
     if (ttype && ttype->House == house->Class->House &&
         TeamClass::Number[index] <
-            ((alerted || !ttype->IsAutocreate) ? ttype->MaxAllowed : 0)) {
+            (alerted || !ttype->IsAutocreate ? ttype->MaxAllowed : 0)) {
       /*
       **	Determine what kind of units this team requires.
       */
@@ -923,11 +923,11 @@ TeamTypeClass const* TeamTypeClass::Suggested_New_Team(HouseClass* house,
       for (int ctype = 0; ctype < ttype->ClassCount; ctype++) {
         switch (ttype->Class[ctype]->What_Am_I()) {
           case RTTI_INFANTRYTYPE:
-            ineeded |= (1 << ((InfantryTypeClass*)ttype->Class[ctype])->Type);
+            ineeded |= 1 << ((InfantryTypeClass*)ttype->Class[ctype])->Type;
             break;
 
           case RTTI_UNITTYPE:
-            uneeded |= (1 << ((UnitTypeClass*)ttype->Class[ctype])->Type);
+            uneeded |= 1 << ((UnitTypeClass*)ttype->Class[ctype])->Type;
             break;
         }
       }
@@ -937,7 +937,7 @@ TeamTypeClass const* TeamTypeClass::Suggested_New_Team(HouseClass* house,
       *possible *	team type to create.
       */
       int value = 0;
-      if ((ineeded & itypes) || (uneeded & utypes)) {
+      if (ineeded & itypes || uneeded & utypes) {
         value = ttype->RecruitPriority;
       } else {
         value = ttype->RecruitPriority / 2;
@@ -950,5 +950,5 @@ TeamTypeClass const* TeamTypeClass::Suggested_New_Team(HouseClass* house,
     }
   }
 
-  return (best);
+  return best;
 }

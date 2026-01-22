@@ -99,7 +99,7 @@ VectorClass<T>& VectorClass<T>::operator=(VectorClass<T> const& vector) {
       IsAllocated = false;
     }
   }
-  return (*this);
+  return *this;
 }
 
 // Element-by-element comparison. Requires T to have operator!=.
@@ -162,7 +162,7 @@ bool VectorClass<T>::Resize(base::ssize newsize, T const* array) {
 
     if (Vector) {
       // Copy existing elements (uses assignment operator).
-      base::ssize copycount = (newsize < VectorMax) ? newsize : VectorMax;
+      base::ssize copycount = newsize < VectorMax ? newsize : VectorMax;
       for (base::ssize index = 0; index < copycount; index++) {
         newptr[index] = Vector[index];
       }
@@ -174,7 +174,7 @@ bool VectorClass<T>::Resize(base::ssize newsize, T const* array) {
 
     Vector = newptr;
     VectorMax = newsize;
-    IsAllocated = (Vector && !array);
+    IsAllocated = Vector && !array;
     return true;
   }
   // Resize to 0 is a failure. Use Clear() to explicitly deallocate.

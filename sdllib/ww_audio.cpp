@@ -81,13 +81,13 @@ struct ChannelState {
 
 static int Calculate_Volume(int vol) {
   // TODO: improve?
-  return vol * (32767) / (255 * 255);
+  return vol * 32767 / (255 * 255);
 }
 
 static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
                                  uint8_t* in_ptr) {
   auto clamp = [](int v, int min, int max) {
-    return v < min ? min : (v > max ? max : v);
+    return v < min ? min : v > max ? max : v;
   };
 
   for (int i = 0; i < block_size; i++) {
@@ -139,7 +139,7 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
       if (data & 0x20) {
         // The lower 5 bits are actually a signed delta.
         // Sign extend the delta and add it to the stream.
-        int8_t v = (data & 0x10) ? (data | 0xE0) : (data & 0xF);
+        int8_t v = data & 0x10 ? data | 0xE0 : data & 0xF;
 
         prev_sample += v;
 
@@ -392,7 +392,7 @@ void Sound_Callback() {
 
     // limit how much we buffer so we don't end up with the whole file
     // (not that it's a problem on any modern system, but still)
-    int max_buf = (SDL_AUDIO_BITSIZE(ObtainedSpec.format) / 8) *
+    int max_buf = SDL_AUDIO_BITSIZE(ObtainedSpec.format) / 8 *
                   ObtainedSpec.channels * ObtainedSpec.freq;
     if (SDL_AudioStreamAvailable(chan.stream) >= max_buf) continue;
 
@@ -578,7 +578,7 @@ int Set_Score_Vol(int volume) {
 
 void Fade_Sample(int handle, int ticks) {
   // recalse from game ticks, to audio callbacks
-  int fade_time = (1000 / 60) * ticks;
+  int fade_time = 1000 / 60 * ticks;
   int callback_interval = ObtainedSpec.samples * 1000 / ObtainedSpec.freq;
 
   int num_steps = fade_time / callback_interval;

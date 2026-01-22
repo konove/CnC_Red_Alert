@@ -140,7 +140,7 @@ static inline bool _Is_It_Breathing(FootClass const* object) {
   **	certainly isn't an active member of the team.
   */
   if (object == nullptr || !object->IsActive || object->Strength == 0)
-    return (false);
+    return false;
 
   /*
   **	If the object is in limbo, then it isn't an active team member either.
@@ -149,13 +149,13 @@ static inline bool _Is_It_Breathing(FootClass const* object) {
   *members are considered active because they need to *	be given special orders
   *and treatment.
   */
-  if (!ScenarioInit && object->IsInLimbo) return (false);
+  if (!ScenarioInit && object->IsInLimbo) return false;
 
   /*
   **	Nothing eliminated this object from being considered an active member of
   *the team (i.e., *	"breathing"), then return that it is ok.
   */
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -183,7 +183,7 @@ static inline bool _Is_It_Playing(FootClass const* object) {
   **	If the object is not active, then it certainly can be a participating
   *member of the *	team.
   */
-  if (!_Is_It_Breathing(object)) return (false);
+  if (!_Is_It_Breathing(object)) return false;
 
   /*
   **	Only members that have been "Initiated" are considered "playing"
@@ -193,14 +193,14 @@ static inline bool _Is_It_Playing(FootClass const* object) {
   *team specific orders.
   */
   if (!object->IsInitiated && object->What_Am_I() != RTTI_AIRCRAFT)
-    return (false);
+    return false;
 
   /*
   **	If it reaches this point, then nothing appears to disqualify the
   *specified object from *	being considered an active playing member of the
   *team. In this case, return that *	information.
   */
-  return (true);
+  return true;
 }
 
 #ifdef CHEAT_KEYS
@@ -289,7 +289,7 @@ void* TeamClass::operator new(size_t) throw() {
   if (ptr != nullptr) {
     ((TeamClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -438,8 +438,8 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
   FootClass* unit = Member;
   if (MissionTarget != TARGET_NONE) {
     while (unit != nullptr) {
-      bool tar = (unit->TarCom == MissionTarget);
-      bool nav = (unit->NavCom == MissionTarget);
+      bool tar = unit->TarCom == MissionTarget;
+      bool nav = unit->NavCom == MissionTarget;
       if (tar || nav) {
         /*
         ** If the unit was doing something related to the team mission
@@ -530,7 +530,7 @@ void TeamClass::AI() {
     assert(desired != 0);
 
     if (Total) {
-      IsFullStrength = (Total == desired);
+      IsFullStrength = Total == desired;
       if (IsFullStrength) {
         IsHasBeen = true;
       }
@@ -542,9 +542,9 @@ void TeamClass::AI() {
       */
       if (Class->IsReinforcable) {
         if (desired > 2) {
-          IsUnderStrength = (Total <= desired / 3);
+          IsUnderStrength = Total <= desired / 3;
         } else {
-          IsUnderStrength = (Total < desired);
+          IsUnderStrength = Total < desired;
         }
       } else {
         /*
@@ -696,7 +696,7 @@ void TeamClass::AI() {
   **	Only try to recruit members for a non player controlled team.
   */
   if ((!IsMoving || (!IsFullStrength && Class->IsReinforcable)) &&
-      ((!House->IsHuman || !IsHasBeen) && Session.Type == GAME_NORMAL)) {
+      (!House->IsHuman || !IsHasBeen) && Session.Type == GAME_NORMAL) {
     //	if ((!IsMoving || (!IsFullStrength && Class->IsReinforcable)) &&
     //((/*!House->IsHuman ||*/ !IsHasBeen) && Session.Type == GAME_NORMAL)) {
     for (int index = 0; index < Class->ClassCount; index++) {
@@ -744,7 +744,7 @@ void TeamClass::AI() {
       Target = TARGET_NONE;
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
-          Assign_Mission_Target(::As_Target((CELL)(mission->Data.Value)));
+          Assign_Mission_Target(::As_Target((CELL)mission->Data.Value));
           break;
 
         case TMISSION_MOVE:
@@ -922,10 +922,10 @@ void TeamClass::AI() {
 bool TeamClass::Add(FootClass* obj) {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
-  if (!obj) return (false);
+  if (!obj) return false;
 
   int typeindex;
-  if (!Can_Add(obj, typeindex)) return (false);
+  if (!Can_Add(obj, typeindex)) return false;
 
   /*
   **	All is ok to add the object to the team, but if the object is already
@@ -939,7 +939,7 @@ bool TeamClass::Add(FootClass* obj) {
   **	Actually add the object to the team.
   */
   Quantity[typeindex]++;
-  obj->IsInitiated = (Member == NULL);
+  obj->IsInitiated = Member == NULL;
   obj->Member = Member;
   Member = obj;
   obj->Team = this;
@@ -962,7 +962,7 @@ bool TeamClass::Add(FootClass* obj) {
   **	Return with success, since the object was added to the team.
   */
   IsAltered = JustAltered = true;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -996,7 +996,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   **	Trying to add the team member to itself is an error condition.
   */
   if (obj->Team == this) {
-    return (false);
+    return false;
   }
 
   /*
@@ -1006,7 +1006,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   */
   if (!_Is_It_Breathing(obj) || obj->In_Radio_Contact() ||
       obj->House != House) {
-    return (false);
+    return false;
   }
 
   /*
@@ -1015,7 +1015,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   */
   if (obj->Mission != MISSION_NONE &&
       !MissionClass::Is_Recruitable_Mission(obj->Mission)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -1024,8 +1024,8 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   **	then no further processing is allowed -- bail.
   */
   if (obj->Team.Is_Valid() &&
-      (obj->Team->Class->RecruitPriority >= Class->RecruitPriority)) {
-    return (false);
+      obj->Team->Class->RecruitPriority >= Class->RecruitPriority) {
+    return false;
   }
 
   /*
@@ -1034,7 +1034,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   */
   if (obj->What_Am_I() == RTTI_AIRCRAFT &&
       obj->Techno_Type_Class()->PrimaryWeapon != nullptr && !obj->Ammo) {
-    return (false);
+    return false;
   }
 
   /*
@@ -1048,7 +1048,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
     }
   }
   if (typeindex == Class->ClassCount) {
-    return (false);
+    return false;
   }
 
   /*
@@ -1056,10 +1056,10 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   *allowed. *	Return with a failure flag in this case.
   */
   if (Quantity[typeindex] >= Class->Members[typeindex].Quantity) {
-    return (false);
+    return false;
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1092,7 +1092,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   *it can't *	be removed. Return success because the end result is the same.
   */
   if (this != obj->Team) {
-    return (true);
+    return true;
   }
 
   /*
@@ -1189,7 +1189,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   *adjustments made.
   */
   IsAltered = JustAltered = true;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1352,7 +1352,7 @@ int TeamClass::Recruit(int typeindex) {
       } break;
     }
   }
-  return (added);
+  return added;
 }
 
 /***********************************************************************************************
@@ -1607,7 +1607,7 @@ void TeamClass::Took_Damage(FootClass*, ResultType result,
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
-  if ((result != RESULT_NONE) && (!Class->IsSuicide)) {
+  if (result != RESULT_NONE && !Class->IsSuicide) {
     if (!IsMoving) {
       // TCTCTC
       // Should run to a better hiding place or disband into a group of hunting
@@ -1620,7 +1620,7 @@ void TeamClass::Took_Damage(FootClass*, ResultType result,
       if (source && !Is_A_Member(source) && Member &&
           Member->What_Am_I() != RTTI_AIRCRAFT &&
           (Member->What_Am_I() != RTTI_VESSEL ||
-           *(VesselClass*)((FootClass*)Member) != VESSEL_TRANSPORT)) {
+           *(VesselClass*)(FootClass*)Member != VESSEL_TRANSPORT)) {
         if (Target != source->As_Target()) {
           /*
           **	Don't change target if the team's target is one that can fire as
@@ -1817,7 +1817,7 @@ bool TeamClass::Coordinate_Regroup() {
 
     unit = unit->Member;
   }
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -2068,7 +2068,7 @@ bool TeamClass::Lagging_Units() {
   ** If the IsLagging bit is not set, then obviously there are no lagging
   ** units.
   */
-  if (!IsLagging) return (false);
+  if (!IsLagging) return false;
 
   /*
   **	Scan through all of the units, searching for units who are having
@@ -2115,7 +2115,7 @@ bool TeamClass::Lagging_Units() {
   ** units or not.
   */
   IsLagging = lag;
-  return (lag);
+  return lag;
 }
 
 /***********************************************************************************************
@@ -2193,7 +2193,7 @@ int TeamClass::TMission_Unload() {
   if (finished) {
     IsNextMission = true;
   }
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -2235,7 +2235,7 @@ int TeamClass::TMission_Load() {
   */
   if (trans == nullptr) {
     IsNextMission = true;
-    return (1);
+    return 1;
   }
 
   /*
@@ -2244,7 +2244,7 @@ int TeamClass::TMission_Load() {
   *assign *	the enter mission to the other team members.
   */
   if (trans->In_Radio_Contact()) {
-    return (1);
+    return 1;
   }
 
   /*
@@ -2275,7 +2275,7 @@ int TeamClass::TMission_Load() {
   if (finished) {
     IsNextMission = true;
   }
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -2305,7 +2305,7 @@ bool TeamClass::Coordinate_Conscript(FootClass* unit) {
         unit->IsFormationMove = false;
         unit->Assign_Destination(Zone);
       }
-      return (true);
+      return true;
 
     } else {
       /*
@@ -2316,7 +2316,7 @@ bool TeamClass::Coordinate_Conscript(FootClass* unit) {
       unit->IsInitiated = true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -2338,11 +2338,11 @@ bool TeamClass::Is_A_Member(void const* who) const {
   FootClass* unit = Member;
   while (unit != nullptr) {
     if (unit == who) {
-      return (true);
+      return true;
     }
     unit = unit->Member;
   }
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -2402,10 +2402,10 @@ bool TeamClass::Is_Leaving_Map() const {
 
     if (mission->Mission == TMISSION_MOVE &&
         !Map.In_Radar(Scen.Waypoint[mission->Data.Value])) {
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2434,9 +2434,9 @@ bool TeamClass::Has_Entered_Map() const {
       ok = false;
       break;
     }
-    foot = (FootClass*)(ObjectClass*)(foot->Next);
+    foot = (FootClass*)(ObjectClass*)foot->Next;
   }
-  return (ok);
+  return ok;
 }
 
 /***********************************************************************************************
@@ -2540,7 +2540,7 @@ int TeamClass::TMission_Formation() {
       }
       break;
     case FORMATION_WEDGE_E:
-      xdir = (Total / 2);
+      xdir = Total / 2;
       ydir = 0;
       while (member != nullptr) {
         member->Group = group;
@@ -2557,7 +2557,7 @@ int TeamClass::TMission_Formation() {
       }
       break;
     case FORMATION_WEDGE_S:
-      ydir = (Total / 2);
+      ydir = Total / 2;
       xdir = 0;
       while (member != nullptr) {
         member->Group = group;
@@ -2672,7 +2672,7 @@ int TeamClass::TMission_Formation() {
   // Advance past the formation-setting command.
   IsNextMission = true;
 
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -2752,7 +2752,7 @@ int TeamClass::TMission_Attack() {
     if (!Target_Legal(MissionTarget)) IsNextMission = true;
   }
   Coordinate_Attack();
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -2806,7 +2806,7 @@ int TeamClass::TMission_Spy() {
       Coordinate_Attack();
     }
   }
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -2828,7 +2828,7 @@ int TeamClass::TMission_Follow() {
   Calc_Center(Zone, ClosestMember);
   Target = Zone;
   Coordinate_Move();
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -2852,7 +2852,7 @@ int TeamClass::TMission_Loop() {
   TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
   CurrentMission = mission->Data.Value - 1;
   IsNextMission = true;
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -2879,7 +2879,7 @@ int TeamClass::TMission_Invulnerable() {
     foot = foot->Member;
   }
   IsNextMission = true;
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -2902,7 +2902,7 @@ int TeamClass::TMission_Set_Global() {
   TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
   Scen.Set_Global_To(mission->Data.Value, true);
   IsNextMission = true;
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -2960,7 +2960,7 @@ int TeamClass::TMission_Patrol() {
   } else {
     Coordinate_Move();
   }
-  return (1);
+  return 1;
 }
 
 int TeamClass::TMission_Deploy() {
@@ -3007,7 +3007,7 @@ int TeamClass::TMission_Deploy() {
   if (finished) {
     IsNextMission = true;
   }
-  return (1);
+  return 1;
 }
 
 /***********************************************************************************************
@@ -3047,5 +3047,5 @@ FootClass* TeamClass::Fetch_A_Leader() const {
     leader = Member;
   }
 
-  return (leader);
+  return leader;
 }

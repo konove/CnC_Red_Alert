@@ -109,7 +109,7 @@ unsigned short WWKeyboardClass::Buff_Get() {
     MouseQX = Fetch_Element();
     MouseQY = Fetch_Element();
   }
-  return (temp);
+  return temp;
 }
 
 /***********************************************************************************************
@@ -129,7 +129,7 @@ unsigned short WWKeyboardClass::Buff_Get() {
  *=============================================================================================*/
 bool WWKeyboardClass::Is_Mouse_Key(unsigned short key) {
   key &= 0xFF;
-  return (key == VK_LBUTTON || key == VK_MBUTTON || key == VK_RBUTTON);
+  return key == VK_LBUTTON || key == VK_MBUTTON || key == VK_RBUTTON;
 }
 
 /***********************************************************************************************
@@ -146,8 +146,8 @@ bool WWKeyboardClass::Is_Mouse_Key(unsigned short key) {
  *=============================================================================================*/
 unsigned short WWKeyboardClass::Check() const {
   ((WWKeyboardClass*)this)->Fill_Buffer_From_System();
-  if (Is_Buffer_Empty()) return (false);
-  return (Peek_Element());
+  if (Is_Buffer_Empty()) return false;
+  return Peek_Element();
 }
 
 /***********************************************************************************************
@@ -166,7 +166,7 @@ unsigned short WWKeyboardClass::Check() const {
 unsigned short WWKeyboardClass::Get() {
   while (!Check()) {
   }  // wait for key in buffer
-  return (Buff_Get());
+  return Buff_Get();
 }
 
 /***********************************************************************************************
@@ -185,9 +185,9 @@ unsigned short WWKeyboardClass::Get() {
 bool WWKeyboardClass::Put(unsigned short key) {
   if (!Is_Buffer_Full()) {
     Put_Element(key);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -213,9 +213,9 @@ bool WWKeyboardClass::Put_Key_Message(unsigned short vk_key, bool release) {
   ** would be incompatible with the dos version.
   */
   if (!Is_Mouse_Key(vk_key)) {
-    if (((GetKeyState(VK_SHIFT) & 0x8000) != 0) ||
-        ((GetKeyState(VK_CAPITAL) & 0x0008) != 0) ||
-        ((GetKeyState(VK_NUMLOCK) & 0x0008) != 0)) {
+    if ((GetKeyState(VK_SHIFT) & 0x8000) != 0 ||
+        (GetKeyState(VK_CAPITAL) & 0x0008) != 0 ||
+        (GetKeyState(VK_NUMLOCK) & 0x0008) != 0) {
       vk_key |= WWKEY_SHIFT_BIT;
     }
     if ((GetKeyState(VK_CONTROL) & 0x8000) != 0) {
@@ -234,7 +234,7 @@ bool WWKeyboardClass::Put_Key_Message(unsigned short vk_key, bool release) {
   ** Finally use the put command to enter the key into the keyboard
   ** system.
   */
-  return (Put(vk_key));
+  return Put(vk_key);
 }
 
 /***********************************************************************************************
@@ -263,9 +263,9 @@ bool WWKeyboardClass::Put_Mouse_Message(unsigned short vk_key, int x, int y,
     Put_Key_Message(vk_key, release);
     Put((unsigned short)x);
     Put((unsigned short)y);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -290,7 +290,7 @@ char WWKeyboardClass::To_ASCII(unsigned short key) {
   **	Released keys never translate into an ASCII value.
   */
   if (key & WWKEY_RLS_BIT) {
-    return ('\0');
+    return '\0';
   }
 
   /*
@@ -336,10 +336,10 @@ char WWKeyboardClass::To_ASCII(unsigned short key) {
   **	return with a null ASCII value.
   */
   if (result != 1) {
-    return ('\0');
+    return '\0';
   }
 
-  return (buffer[0]);
+  return buffer[0];
 }
 
 /***********************************************************************************************
@@ -358,7 +358,7 @@ char WWKeyboardClass::To_ASCII(unsigned short key) {
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
 WWKeyboardClass::Down(unsigned short key) {
-  return (GetAsyncKeyState(key & 0xFF));
+  return GetAsyncKeyState(key & 0xFF);
 }
 
 extern "C" {
@@ -388,7 +388,7 @@ unsigned short WWKeyboardClass::Fetch_Element() {
 
     Head = (Head + 1) % ARRAY_SIZE(Buffer);
   }
-  return (val);
+  return val;
 }
 
 /***********************************************************************************************
@@ -410,9 +410,9 @@ unsigned short WWKeyboardClass::Fetch_Element() {
  *=============================================================================================*/
 unsigned short WWKeyboardClass::Peek_Element() const {
   if (!Is_Buffer_Empty()) {
-    return (Buffer[Head]);
+    return Buffer[Head];
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -436,9 +436,9 @@ bool WWKeyboardClass::Put_Element(unsigned short val) {
     int temp = (Tail + 1) % ARRAY_SIZE(Buffer);
     Buffer[Tail] = val;
     Tail = temp;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -458,9 +458,9 @@ bool WWKeyboardClass::Put_Element(unsigned short val) {
  *=============================================================================================*/
 bool WWKeyboardClass::Is_Buffer_Full() const {
   if ((Tail + 1) % ARRAY_SIZE(Buffer) == Head) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -481,9 +481,9 @@ bool WWKeyboardClass::Is_Buffer_Full() const {
  *=============================================================================================*/
 bool WWKeyboardClass::Is_Buffer_Empty() const {
   if (Head == Tail) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -700,9 +700,9 @@ bool WWKeyboardClass::Message_Handler(HWND window, UINT message, UINT wParam,
   */
   if (processed) {
     DefWindowProc(window, message, wParam, lParam);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -734,7 +734,7 @@ int WWKeyboardClass::Available_Buffer_Room() const {
     avail = Tail - Head;
   }
   if (Head > Tail) {
-    avail = (Tail + ARRAY_SIZE(Buffer)) - Head;
+    avail = Tail + ARRAY_SIZE(Buffer) - Head;
   }
-  return (avail);
+  return avail;
 }

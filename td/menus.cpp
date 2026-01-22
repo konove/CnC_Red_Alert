@@ -526,7 +526,7 @@ int Main_Menu(unsigned long timeout) {
     D_DIALOG_H = 136 * RESFACTOR,
     D_DIALOG_X = 85 * RESFACTOR,
     D_DIALOG_Y = 0,
-    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),
+    D_DIALOG_CX = D_DIALOG_X + D_DIALOG_W / 2,
 
     D_START_W = 125 * RESFACTOR,
     D_START_H = 9 * RESFACTOR,
@@ -906,12 +906,12 @@ int Main_Menu(unsigned long timeout) {
     input = commands->Input();
     switch (input) {
 #ifdef NEWMENU
-      case (BUTTON_EXPAND | KN_BUTTON):
+      case BUTTON_EXPAND | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case (BUTTON_INTERNET | KN_BUTTON):
+      case BUTTON_INTERNET | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
@@ -920,19 +920,19 @@ int Main_Menu(unsigned long timeout) {
 #define BUTTON_EXPAND BUTTON_START
 #endif
 
-      case (BUTTON_START | KN_BUTTON):
+      case BUTTON_START | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
 #ifdef BONUS_MISSIONS
-      case (BUTTON_BONUS | KN_BUTTON):
+      case BUTTON_BONUS | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 #endif  // BONUS_MISSIONS
 
-      case (BUTTON_LOAD | KN_BUTTON):
+      case BUTTON_LOAD | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
 #ifdef DEMO
         retval += 1;
@@ -940,7 +940,7 @@ int Main_Menu(unsigned long timeout) {
         process = false;
         break;
 
-      case (BUTTON_MULTI | KN_BUTTON):
+      case BUTTON_MULTI | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
 #ifdef DEMO
         retval += 1;
@@ -948,7 +948,7 @@ int Main_Menu(unsigned long timeout) {
         process = false;
         break;
 
-      case (BUTTON_INTRO | KN_BUTTON):
+      case BUTTON_INTRO | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
 #ifdef DEMO
         retval += 1;
@@ -956,7 +956,7 @@ int Main_Menu(unsigned long timeout) {
         process = false;
         break;
 
-      case (BUTTON_EXIT | KN_BUTTON):
+      case BUTTON_EXIT | KN_BUTTON:
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
 #ifdef DEMO
         retval += 1;
@@ -1019,5 +1019,5 @@ int Main_Menu(unsigned long timeout) {
         break;
     }
   }
-  return (retval);
+  return retval;
 }

@@ -266,7 +266,7 @@ int CommBufferClass::Queue_Send(void* buf, int buflen) {
   /*
   --------------------- Error if no room in the queue ----------------------
   */
-  if (SendCount == MaxSend) return (0);
+  if (SendCount == MaxSend) return 0;
 
   /*
   -------------------------- Find an empty slot ----------------------------
@@ -305,7 +305,7 @@ int CommBufferClass::Queue_Send(void* buf, int buflen) {
   SendCount++;
   SendTotal++;
 
-  return (1);
+  return 1;
 
 } /* end of Queue_Send */
 
@@ -341,7 +341,7 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index) {
   /*
   --------------------- Error if no entry to retrieve ----------------------
   */
-  if (SendCount == 0 || SendQueue[SendIndex[index]].IsActive == 0) return (0);
+  if (SendCount == 0 || SendQueue[SendIndex[index]].IsActive == 0) return 0;
 
   /*
   ---------------------- Copy the data from the entry ----------------------
@@ -349,7 +349,7 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index) {
   if (buf != nullptr) {
     memcpy(buf, SendQueue[SendIndex[index]].Buffer,
            SendQueue[SendIndex[index]].BufLen);
-    (*buflen) = SendQueue[SendIndex[index]].BufLen;
+    *buflen = SendQueue[SendIndex[index]].BufLen;
   }
 
   /*
@@ -371,7 +371,7 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index) {
   SendIndex[SendCount - 1] = 0;
   SendCount--;
 
-  return (1);
+  return 1;
 
 } /* end of UnQueue_Send */
 
@@ -399,9 +399,9 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index) {
  *=========================================================================*/
 SendQueueType* CommBufferClass::Get_Send(int index) {
   if (SendQueue[SendIndex[index]].IsActive == 0) {
-    return (nullptr);
+    return nullptr;
   } else {
-    return (&SendQueue[SendIndex[index]]);
+    return &SendQueue[SendIndex[index]];
   }
 
 } /* end of Get_Send */
@@ -437,7 +437,7 @@ int CommBufferClass::Queue_Receive(void* buf, int buflen) {
   */
   if (ReceiveCount == MaxReceive) {
     // CCDebugString("C&C95 - Error - Receive queue full!\n");
-    return (0);
+    return 0;
   }
 
   /*
@@ -479,7 +479,7 @@ int CommBufferClass::Queue_Receive(void* buf, int buflen) {
   ReceiveCount++;
   ReceiveTotal++;
 
-  return (1);
+  return 1;
 
 } /* end of Queue_Receive */
 
@@ -517,7 +517,7 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index) {
   --------------------- Error if no entry to retrieve ----------------------
   */
   if (ReceiveCount == 0 || ReceiveQueue[ReceiveIndex[index]].IsActive == 0) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -526,7 +526,7 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index) {
   if (buf != nullptr) {
     memcpy(buf, ReceiveQueue[ReceiveIndex[index]].Buffer,
            ReceiveQueue[ReceiveIndex[index]].BufLen);
-    (*buflen) = ReceiveQueue[ReceiveIndex[index]].BufLen;
+    *buflen = ReceiveQueue[ReceiveIndex[index]].BufLen;
   }
 
   /*
@@ -546,7 +546,7 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index) {
   ReceiveIndex[ReceiveCount - 1] = 0;
   ReceiveCount--;
 
-  return (1);
+  return 1;
 
 } /* end of UnQueue_Receive */
 
@@ -574,9 +574,9 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index) {
  *=========================================================================*/
 ReceiveQueueType* CommBufferClass::Get_Receive(int index) {
   if (ReceiveQueue[ReceiveIndex[index]].IsActive == 0) {
-    return (nullptr);
+    return nullptr;
   } else {
-    return (&ReceiveQueue[ReceiveIndex[index]]);
+    return &ReceiveQueue[ReceiveIndex[index]];
   }
 
 } /* end of Get_Receive */
@@ -648,7 +648,7 @@ void CommBufferClass::Add_Delay(unsigned long delay) {
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
 unsigned long CommBufferClass::Avg_Response_Time() {
-  return (MeanDelay);
+  return MeanDelay;
 
 } /* end of Avg_Response_Time */
 
@@ -671,7 +671,7 @@ unsigned long CommBufferClass::Avg_Response_Time() {
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
 unsigned long CommBufferClass::Max_Response_Time() {
-  return (MaxDelay);
+  return MaxDelay;
 
 } /* end of Max_Response_Time */
 

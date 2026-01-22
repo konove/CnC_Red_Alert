@@ -311,7 +311,7 @@ int CommBufferClass::Queue_Send(void* buf, int buflen, void* extrabuf,
   //------------------------------------------------------------------------
   //	Error if no room in the queue
   //------------------------------------------------------------------------
-  if (SendCount == MaxSend || buflen > MaxPacketSize) return (0);
+  if (SendCount == MaxSend || buflen > MaxPacketSize) return 0;
 
   //------------------------------------------------------------------------
   //	Find an empty slot
@@ -323,7 +323,7 @@ int CommBufferClass::Queue_Send(void* buf, int buflen, void* extrabuf,
       break;
     }
   }
-  if (index == -1) return (0);
+  if (index == -1) return 0;
 
   //------------------------------------------------------------------------
   //	Set entry flags
@@ -361,7 +361,7 @@ int CommBufferClass::Queue_Send(void* buf, int buflen, void* extrabuf,
   SendCount++;
   SendTotal++;
 
-  return (1);
+  return 1;
 
 } /* end of Queue_Send */
 
@@ -401,7 +401,7 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
   //	Error if no entry to retrieve
   //------------------------------------------------------------------------
   if (SendCount == 0 || SendQueue[SendIndex[index]].IsActive == 0) {
-    return (0);
+    return 0;
   }
 
   //------------------------------------------------------------------------
@@ -410,7 +410,7 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
   if (buf != nullptr) {
     memcpy(buf, SendQueue[SendIndex[index]].Buffer,
            SendQueue[SendIndex[index]].BufLen);
-    (*buflen) = SendQueue[SendIndex[index]].BufLen;
+    *buflen = SendQueue[SendIndex[index]].BufLen;
   }
 
   //------------------------------------------------------------------------
@@ -419,7 +419,7 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
   if (extrabuf != nullptr && extralen != nullptr) {
     memcpy(extrabuf, SendQueue[SendIndex[index]].ExtraBuffer,
            SendQueue[SendIndex[index]].ExtraLen);
-    (*extralen) = SendQueue[SendIndex[index]].ExtraLen;
+    *extralen = SendQueue[SendIndex[index]].ExtraLen;
   }
 
   //------------------------------------------------------------------------
@@ -442,7 +442,7 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
   SendIndex[SendCount - 1] = 0;
   SendCount--;
 
-  return (1);
+  return 1;
 
 } /* end of UnQueue_Send */
 
@@ -470,9 +470,9 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
  *=========================================================================*/
 SendQueueType* CommBufferClass::Get_Send(int index) {
   if (SendQueue[SendIndex[index]].IsActive == 0) {
-    return (nullptr);
+    return nullptr;
   } else {
-    return (&SendQueue[SendIndex[index]]);
+    return &SendQueue[SendIndex[index]];
   }
 
 } /* end of Get_Send */
@@ -508,7 +508,7 @@ int CommBufferClass::Queue_Receive(void* buf, int buflen, void* extrabuf,
   //	Error if no room in the queue
   //------------------------------------------------------------------------
   if (ReceiveCount == MaxReceive || buflen > MaxPacketSize) {
-    return (0);
+    return 0;
   }
 
   //------------------------------------------------------------------------
@@ -521,7 +521,7 @@ int CommBufferClass::Queue_Receive(void* buf, int buflen, void* extrabuf,
       break;
     }
   }
-  if (index == -1) return (0);
+  if (index == -1) return 0;
 
   //------------------------------------------------------------------------
   //	Set entry flags
@@ -557,7 +557,7 @@ int CommBufferClass::Queue_Receive(void* buf, int buflen, void* extrabuf,
   ReceiveCount++;
   ReceiveTotal++;
 
-  return (1);
+  return 1;
 
 } /* end of Queue_Receive */
 
@@ -598,7 +598,7 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index,
   //	Error if no entry to retrieve
   //------------------------------------------------------------------------
   if (ReceiveCount == 0 || ReceiveQueue[ReceiveIndex[index]].IsActive == 0) {
-    return (0);
+    return 0;
   }
 
   //------------------------------------------------------------------------
@@ -607,7 +607,7 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index,
   if (buf != nullptr) {
     memcpy(buf, ReceiveQueue[ReceiveIndex[index]].Buffer,
            ReceiveQueue[ReceiveIndex[index]].BufLen);
-    (*buflen) = ReceiveQueue[ReceiveIndex[index]].BufLen;
+    *buflen = ReceiveQueue[ReceiveIndex[index]].BufLen;
   }
 
   //------------------------------------------------------------------------
@@ -616,7 +616,7 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index,
   if (extrabuf != nullptr && extralen != nullptr) {
     memcpy(extrabuf, ReceiveQueue[ReceiveIndex[index]].ExtraBuffer,
            ReceiveQueue[ReceiveIndex[index]].ExtraLen);
-    (*extralen) = ReceiveQueue[ReceiveIndex[index]].ExtraLen;
+    *extralen = ReceiveQueue[ReceiveIndex[index]].ExtraLen;
   }
 
   //------------------------------------------------------------------------
@@ -637,7 +637,7 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index,
   ReceiveIndex[ReceiveCount - 1] = 0;
   ReceiveCount--;
 
-  return (1);
+  return 1;
 
 } /* end of UnQueue_Receive */
 
@@ -665,9 +665,9 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index,
  *=========================================================================*/
 ReceiveQueueType* CommBufferClass::Get_Receive(int index) {
   if (ReceiveQueue[ReceiveIndex[index]].IsActive == 0) {
-    return (nullptr);
+    return nullptr;
   } else {
-    return (&ReceiveQueue[ReceiveIndex[index]]);
+    return &ReceiveQueue[ReceiveIndex[index]];
   }
 
 } /* end of Get_Receive */
@@ -741,7 +741,7 @@ void CommBufferClass::Add_Delay(unsigned long delay) {
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
 unsigned long CommBufferClass::Avg_Response_Time() {
-  return (MeanDelay);
+  return MeanDelay;
 
 } /* end of Avg_Response_Time */
 
@@ -764,7 +764,7 @@ unsigned long CommBufferClass::Avg_Response_Time() {
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
 unsigned long CommBufferClass::Max_Response_Time() {
-  return (MaxDelay);
+  return MaxDelay;
 
 } /* end of Max_Response_Time */
 
@@ -1148,15 +1148,15 @@ void CommBufferClass::Mono_Debug_Print2(int refresh) {
       //..................................................................
       //	Decode app's ID & its name
       //..................................................................
-      if (DebugSize && (DebugOffset + DebugSize) <= SendQueue[i].BufLen) {
+      if (DebugSize && DebugOffset + DebugSize <= SendQueue[i].BufLen) {
         if (DebugSize == 1) {
           val = *(SendQueue[i].Buffer + DebugOffset);
 
         } else if (DebugSize == 2) {
-          val = *((short*)(SendQueue[i].Buffer + DebugOffset));
+          val = *(short*)(SendQueue[i].Buffer + DebugOffset);
 
         } else if (DebugSize == 4) {
-          val = *((int*)(SendQueue[i].Buffer + DebugOffset));
+          val = *(int*)(SendQueue[i].Buffer + DebugOffset);
         }
         sprintf(txt + strlen(txt), "%4d  ", val);
 
@@ -1202,15 +1202,15 @@ void CommBufferClass::Mono_Debug_Print2(int refresh) {
       //..................................................................
       //	Decode app's ID & its name
       //..................................................................
-      if (DebugSize && (DebugOffset + DebugSize) <= ReceiveQueue[i].BufLen) {
+      if (DebugSize && DebugOffset + DebugSize <= ReceiveQueue[i].BufLen) {
         if (DebugSize == 1) {
           val = *(ReceiveQueue[i].Buffer + DebugOffset);
 
         } else if (DebugSize == 2) {
-          val = *((short*)(ReceiveQueue[i].Buffer + DebugOffset));
+          val = *(short*)(ReceiveQueue[i].Buffer + DebugOffset);
 
         } else if (DebugSize == 4) {
-          val = *((int*)(ReceiveQueue[i].Buffer + DebugOffset));
+          val = *(int*)(ReceiveQueue[i].Buffer + DebugOffset);
         }
         sprintf(txt + strlen(txt), "%4d  ", val);
 

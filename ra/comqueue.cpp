@@ -233,7 +233,7 @@ int CommQueueClass::Queue_Send(void* buf, int buflen) {
   **	Error if no room in the queue
   */
   if (SendCount == MaxSend || SendQueue[SendEmpty].IsActive != 0) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -262,7 +262,7 @@ int CommQueueClass::Queue_Send(void* buf, int buflen) {
 
   SendTotal++;
 
-  return (1);
+  return 1;
 }
 
 /***************************************************************************
@@ -289,7 +289,7 @@ int CommQueueClass::UnQueue_Send(void* buf, int* buflen) {
   **	Error if no entry to retrieve
   */
   if (SendCount == 0 || SendQueue[SendNext].IsActive == 0) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -297,7 +297,7 @@ int CommQueueClass::UnQueue_Send(void* buf, int* buflen) {
   */
   if (buf != nullptr) {
     memcpy(buf, SendQueue[SendNext].Buffer, SendQueue[SendNext].BufLen);
-    (*buflen) = SendQueue[SendNext].BufLen;
+    *buflen = SendQueue[SendNext].BufLen;
   }
 
   /*
@@ -315,7 +315,7 @@ int CommQueueClass::UnQueue_Send(void* buf, int* buflen) {
     SendNext = 0;
   }
 
-  return (1);
+  return 1;
 }
 
 /***************************************************************************
@@ -338,9 +338,9 @@ int CommQueueClass::UnQueue_Send(void* buf, int* buflen) {
  *=========================================================================*/
 SendQueueType* CommQueueClass::Next_Send() {
   if (SendCount == 0) {
-    return (nullptr);
+    return nullptr;
   } else {
-    return (&SendQueue[SendNext]);
+    return &SendQueue[SendNext];
   }
 }
 
@@ -375,9 +375,9 @@ SendQueueType* CommQueueClass::Get_Send(int index) {
   }
 
   if (SendQueue[i].IsActive == 0) {
-    return (nullptr);
+    return nullptr;
   } else {
-    return (&SendQueue[i]);
+    return &SendQueue[i];
   }
 }
 
@@ -406,7 +406,7 @@ int CommQueueClass::Queue_Receive(void* buf, int buflen) {
   **	Error if no room in the queue
   */
   if (ReceiveCount == MaxReceive || ReceiveQueue[ReceiveEmpty].IsActive != 0) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -433,7 +433,7 @@ int CommQueueClass::Queue_Receive(void* buf, int buflen) {
 
   ReceiveTotal++;
 
-  return (1);
+  return 1;
 }
 
 /***************************************************************************
@@ -461,7 +461,7 @@ int CommQueueClass::UnQueue_Receive(void* buf, int* buflen) {
   **	Error if no entry to retrieve
   */
   if (ReceiveCount == 0 || ReceiveQueue[ReceiveNext].IsActive == 0) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -470,7 +470,7 @@ int CommQueueClass::UnQueue_Receive(void* buf, int* buflen) {
   if (buf != nullptr) {
     memcpy(buf, ReceiveQueue[ReceiveNext].Buffer,
            ReceiveQueue[ReceiveNext].BufLen);
-    (*buflen) = ReceiveQueue[ReceiveNext].BufLen;
+    *buflen = ReceiveQueue[ReceiveNext].BufLen;
   }
 
   /*
@@ -486,7 +486,7 @@ int CommQueueClass::UnQueue_Receive(void* buf, int* buflen) {
     ReceiveNext = 0;
   }
 
-  return (1);
+  return 1;
 }
 
 /***************************************************************************
@@ -509,9 +509,9 @@ int CommQueueClass::UnQueue_Receive(void* buf, int* buflen) {
  *=========================================================================*/
 ReceiveQueueType* CommQueueClass::Next_Receive() {
   if (ReceiveCount == 0) {
-    return (nullptr);
+    return nullptr;
   } else {
-    return (&ReceiveQueue[ReceiveNext]);
+    return &ReceiveQueue[ReceiveNext];
   }
 }
 
@@ -546,9 +546,9 @@ ReceiveQueueType* CommQueueClass::Get_Receive(int index) {
   }
 
   if (ReceiveQueue[i].IsActive == 0) {
-    return (nullptr);
+    return nullptr;
   } else {
-    return (&ReceiveQueue[i]);
+    return &ReceiveQueue[i];
   }
 }
 
@@ -621,7 +621,7 @@ void CommQueueClass::Add_Delay(unsigned long delay) {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-unsigned long CommQueueClass::Avg_Response_Time() { return (MeanDelay); }
+unsigned long CommQueueClass::Avg_Response_Time() { return MeanDelay; }
 
 /***************************************************************************
  * CommQueueClass::Max_Response_Time -- returns max response time *
@@ -641,7 +641,7 @@ unsigned long CommQueueClass::Avg_Response_Time() { return (MeanDelay); }
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-unsigned long CommQueueClass::Max_Response_Time() { return (MaxDelay); }
+unsigned long CommQueueClass::Max_Response_Time() { return MaxDelay; }
 
 /***************************************************************************
  * CommQueueClass::Reset_Response_Time -- resets computations

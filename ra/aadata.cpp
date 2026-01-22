@@ -293,7 +293,7 @@ AircraftTypeClass::AircraftTypeClass(
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* AircraftTypeClass::operator new(size_t) throw() {
-  return (AircraftTypes.Alloc());
+  return AircraftTypes.Alloc();
 }
 
 /***********************************************************************************************
@@ -369,11 +369,11 @@ AircraftType AircraftTypeClass::From_Name(char const* name) {
     for (AircraftType classid = AIRCRAFT_FIRST; classid < AIRCRAFT_COUNT;
          classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
-        return (classid);
+        return classid;
       }
     }
   }
-  return (AIRCRAFT_NONE);
+  return AIRCRAFT_NONE;
 }
 
 /// Performs one-time initialization of aircraft type class data
@@ -414,7 +414,7 @@ void AircraftTypeClass::One_Time() {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
-  return (new AircraftClass(Type, house->Class->House));
+  return new AircraftClass(Type, house->Class->House);
 }
 
 #ifdef SCENARIO_EDITOR
@@ -492,7 +492,7 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 short const* AircraftTypeClass::Occupy_List(bool) const {
   static short const _list[] = {0, REFRESH_EOL};
-  return (_list);
+  return _list;
 }
 
 /***********************************************************************************************
@@ -514,7 +514,7 @@ short const* AircraftTypeClass::Overlap_List() const {
   static short const _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
       (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  REFRESH_EOL};
-  return (_list);
+  return _list;
 }
 
 /***********************************************************************************************
@@ -533,9 +533,9 @@ short const* AircraftTypeClass::Overlap_List() const {
  *=============================================================================================*/
 int AircraftTypeClass::Max_Pips() const {
   if (PrimaryWeapon != nullptr) {
-    return (5);
+    return 5;
   }
-  return (Max_Passengers());
+  return Max_Passengers();
 }
 
 /***********************************************************************************************
@@ -555,7 +555,7 @@ int AircraftTypeClass::Max_Pips() const {
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
 bool AircraftTypeClass::Create_And_Place(CELL, HousesType) const {
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -606,5 +606,5 @@ void AircraftTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 AircraftTypeClass& AircraftTypeClass::As_Reference(AircraftType aircraft) {
-  return (*AircraftTypes.Ptr(aircraft));
+  return *AircraftTypes.Ptr(aircraft);
 }

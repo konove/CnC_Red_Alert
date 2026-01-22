@@ -126,7 +126,7 @@ int LCWStraw::Get(void* destbuf, int slen) {
   **	Verify parameters for legality.
   */
   if (destbuf == nullptr || slen < 1) {
-    return (0);
+    return 0;
   }
 
   while (slen > 0) {
@@ -135,16 +135,16 @@ int LCWStraw::Get(void* destbuf, int slen) {
     **	destination buffer.
     */
     if (Counter) {
-      int len = (slen < Counter) ? slen : Counter;
+      int len = slen < Counter ? slen : Counter;
       if (Control == DECOMPRESS) {
         memmove(destbuf, &Buffer[BlockHeader.UncompCount - Counter], len);
       } else {
         memmove(
             destbuf,
-            &Buffer2[(BlockHeader.CompCount + sizeof(BlockHeader)) - Counter],
+            &Buffer2[BlockHeader.CompCount + sizeof(BlockHeader) - Counter],
             len);
       }
-      destbuf = ((char*)destbuf) + len;
+      destbuf = (char*)destbuf + len;
       slen -= len;
       Counter -= len;
       total += len;
@@ -155,7 +155,7 @@ int LCWStraw::Get(void* destbuf, int slen) {
       int incount = Straw::Get(&BlockHeader, sizeof(BlockHeader));
       if (incount != sizeof(BlockHeader)) break;
 
-      void* ptr = &Buffer[(BlockSize + SafetyMargin) - BlockHeader.CompCount];
+      void* ptr = &Buffer[BlockSize + SafetyMargin - BlockHeader.CompCount];
       incount = Straw::Get(ptr, BlockHeader.CompCount);
       if (incount != BlockHeader.CompCount) break;
 
@@ -171,5 +171,5 @@ int LCWStraw::Get(void* destbuf, int slen) {
     }
   }
 
-  return (total);
+  return total;
 }

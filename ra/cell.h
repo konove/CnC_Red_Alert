@@ -225,21 +225,21 @@ class CellClass {
   bool Can_Tiberium_Grow() const;
   bool Can_Tiberium_Spread() const;
   bool Is_Bridge_Here() const;
-  RTTIType What_Am_I() const { return (RTTI_CELL); }
+  RTTIType What_Am_I() const { return RTTI_CELL; }
   BuildingClass* Cell_Building() const;
-  CELL Cell_Number() const { return (ID); }
+  CELL Cell_Number() const { return ID; }
   COORDINATE Cell_Coord() const;
   COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
   COORDINATE Free_Spot() const { return Closest_Free_Spot(Cell_Coord()); }
   CellClass& Adjacent_Cell(FacingType face) {
-    return (CellClass&)((*((CellClass const*)this)).Adjacent_Cell(face));
+    return (CellClass&)(*(CellClass const*)this).Adjacent_Cell(face);
   }
   CellClass const& Adjacent_Cell(FacingType face) const;
   InfantryClass* Cell_Infantry() const;
-  LandType Land_Type() const { return (Land); }
+  LandType Land_Type() const { return Land; }
   ObjectClass* Cell_Find_Object(RTTIType rtti) const;
   ObjectClass* Cell_Object(int x = 0, int y = 0) const;
-  ObjectClass* Cell_Occupier() const { return (OccupierPtr); }
+  ObjectClass* Cell_Occupier() const { return OccupierPtr; }
   ObjectClass* Fetch_Occupier() const;
   TARGET As_Target() const { return ::As_Target(Cell_Number()); }
   TechnoClass* Cell_Techno(int x = 0, int y = 0) const;
@@ -252,7 +252,7 @@ class CellClass {
                         bool ignorevehicles, int zone = -1,
                         MZoneType check = MZONE_NORMAL) const;
   bool Is_Spot_Free(int spot_index) const {
-    return (!(Flag.Composite & (1 << spot_index)));
+    return !(Flag.Composite & 1 << spot_index);
   }
   int Cell_Color(bool override = false) const;
   int Clear_Icon() const;

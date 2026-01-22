@@ -256,11 +256,11 @@ HousesType HouseTypeClass::From_Name(char const* name) {
   if (name) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
       if (stricmp(Pointers[house]->IniName, name) == 0) {
-        return (house);
+        return house;
       }
     }
   }
-  return (HOUSE_NONE);
+  return HOUSE_NONE;
 }
 
 /***********************************************************************************************
@@ -280,8 +280,8 @@ void HouseTypeClass::One_Time() {
   ** color as the player!
   */
   if (Special.IsJurassic && AreThingiesEnabled) {
-    ((unsigned char&)HouseJP.Color) = (unsigned char)COLOR_BAD;
-    ((unsigned char&)HouseJP.BrightColor) = (unsigned char)COLOR_BRIGHT_BAD;
+    (unsigned char&)HouseJP.Color = (unsigned char)COLOR_BAD;
+    (unsigned char&)HouseJP.BrightColor = (unsigned char)COLOR_BRIGHT_BAD;
   }
 }
 
@@ -300,5 +300,5 @@ void HouseTypeClass::One_Time() {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 HouseTypeClass const& HouseTypeClass::As_Reference(HousesType house) {
-  return (*Pointers[house]);
+  return *Pointers[house];
 }

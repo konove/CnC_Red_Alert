@@ -313,7 +313,7 @@ void FactoryClass::Code_Pointers() {
     Object = (TechnoClass*)Object->As_Target();
   }
 
-  ((HouseClass*&)House) = (HouseClass*)House->Class->House;
+  (HouseClass*&)House = (HouseClass*)House->Class->House;
 }
 
 /***********************************************************************************************
@@ -336,7 +336,7 @@ void FactoryClass::Decode_Pointers() {
     assert(Object != nullptr);
   }
 
-  ((HouseClass*&)House) = HouseClass::As_Pointer((HousesType)(intptr_t)House);
+  (HouseClass*&)House = HouseClass::As_Pointer((HousesType)(intptr_t)House);
   assert(House != nullptr);
 }
 
@@ -357,7 +357,7 @@ bool LayerClass::Load(Straw& file) {
   */
   int count;
   if (file.Get(&count, sizeof(count)) != sizeof(count)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -371,12 +371,12 @@ bool LayerClass::Load(Straw& file) {
   for (int index = 0; index < count; index++) {
     ObjectClass* ptr;
     if (file.Get(&ptr, sizeof(ObjectClass*)) != sizeof(ObjectClass*)) {
-      return (false);
+      return false;
     }
     Add(ptr);
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -405,7 +405,7 @@ bool LayerClass::Save(Pipe& file) const {
     file.Put(&ptr, sizeof(ObjectClass*));
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -428,7 +428,7 @@ void LayerClass::Code_Pointers() {
   for (int index = 0; index < Count(); index++) {
     ObjectClass* obj = (*this)[index];
     assert(obj != nullptr);
-    (*this)[index] = (ObjectClass*)(obj->As_Target());
+    (*this)[index] = (ObjectClass*)obj->As_Target();
   }
 }
 

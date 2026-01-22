@@ -206,16 +206,16 @@ int CellClass::Cell_Color(bool override) const {
 
   BuildingClass* object = Cell_Building();
   if (object && !object->Class->IsInvisible) {
-    return (ColorRemaps[object->House->RemapColor].Bar);
+    return ColorRemaps[object->House->RemapColor].Bar;
   }
 
   if (override) {
-    return (TBLACK);
+    return TBLACK;
   }
   if (LastTheater == THEATER_SNOW) {
-    return (SnowColor[Land_Type()]);
+    return SnowColor[Land_Type()];
   } else {
-    return (GroundColor[Land_Type()]);
+    return GroundColor[Land_Type()];
   }
 }
 
@@ -267,7 +267,7 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
       object = object->Next;
     }
   }
-  return (close);
+  return close;
 }
 
 /***************************************************************************
@@ -291,11 +291,11 @@ ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
 
   while (object != nullptr) {
     if (object->What_Am_I() == rtti) {
-      return (object);
+      return object;
     }
     object = object->Next;
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -317,7 +317,7 @@ ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
 BuildingClass* CellClass::Cell_Building() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
-  return ((BuildingClass*)Cell_Find_Object(RTTI_BUILDING));
+  return (BuildingClass*)Cell_Find_Object(RTTI_BUILDING);
 }
 
 /***********************************************************************************************
@@ -338,7 +338,7 @@ BuildingClass* CellClass::Cell_Building() const {
 TerrainClass* CellClass::Cell_Terrain() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
-  return ((TerrainClass*)Cell_Find_Object(RTTI_TERRAIN));
+  return (TerrainClass*)Cell_Find_Object(RTTI_TERRAIN);
 }
 
 /***********************************************************************************************
@@ -372,16 +372,16 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
   */
   ptr = (ObjectClass*)Cell_Find_Object(RTTI_AIRCRAFT);
   if (ptr) {
-    return (ptr);
+    return ptr;
   }
 
   ptr = Cell_Techno(x, y);
   if (ptr) {
-    return (ptr);
+    return ptr;
   }
   ptr = Cell_Terrain();
-  if (ptr) return (ptr);
-  return (ptr);
+  if (ptr) return ptr;
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -489,20 +489,20 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
   /*
   **	During scenario initialization, passability is always guaranteed.
   */
-  if (ScenarioInit) return (true);
+  if (ScenarioInit) return true;
 
   /*
   **	If there is an object there, then don't allow building.
   */
   if (Cell_Object() != nullptr) {
-    return (false);
+    return false;
   }
 
   /*
   **	Prevents a building from being placed over a flag object.
   */
   if (IsFlagged) {
-    return (false);
+    return false;
   }
 
   /*
@@ -512,7 +512,7 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
   if (Overlay != OVERLAY_NONE &&
       (Overlay == OVERLAY_FLAG_SPOT || !Debug_Map ||
        OverlayTypeClass::As_Reference(Overlay).IsWall)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -520,7 +520,7 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
   */
   if (Smudge != SMUDGE_NONE &&
       SmudgeTypeClass::As_Reference(Smudge).IsBib /* && Owner != HOUSE_NONE*/) {
-    return (false);
+    return false;
   }
 
   /*
@@ -530,18 +530,18 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
   */
   if (loco == SPEED_NONE) {
     if (Is_Bridge_Here()) {
-      return (false);
+      return false;
     }
 
-    return (Ground[Land_Type()].Build);
+    return Ground[Land_Type()].Build;
 
   } else {
     if (Ground[Land_Type()].Cost[loco] == fixed(0)) {
       //		if (::Ground[Land_Type()].Cost[SPEED_TRACK] == fixed(0))
       //{
-      return (false);
+      return false;
     }
-    return (true);
+    return true;
   }
 }
 
@@ -842,7 +842,7 @@ void CellClass::Overlap_Up(ObjectClass* object) {
 UnitClass* CellClass::Cell_Unit() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
-  return ((UnitClass*)Cell_Find_Object(RTTI_UNIT));
+  return (UnitClass*)Cell_Find_Object(RTTI_UNIT);
 }
 
 /***********************************************************************************************
@@ -865,7 +865,7 @@ UnitClass* CellClass::Cell_Unit() const {
 VesselClass* CellClass::Cell_Vessel() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
-  return ((VesselClass*)Cell_Find_Object(RTTI_VESSEL));
+  return (VesselClass*)Cell_Find_Object(RTTI_VESSEL);
 }
 
 /***********************************************************************************************
@@ -888,7 +888,7 @@ VesselClass* CellClass::Cell_Vessel() const {
 InfantryClass* CellClass::Cell_Infantry() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
-  return ((InfantryClass*)Cell_Find_Object(RTTI_INFANTRY));
+  return (InfantryClass*)Cell_Find_Object(RTTI_INFANTRY);
 }
 
 #ifdef SORTDRAW
@@ -1079,7 +1079,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         IsTheaterShape = (bool)otype.IsTheater;  // Tell Build_Frame if this
                                                  // overlay is theater specific
         CC_Draw_Shape(otype.Get_Image_Data(), OverlayData,
-                      (x + (CELL_PIXEL_W >> 1)), (y + (CELL_PIXEL_H >> 1)),
+                      x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
                       WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
                       DisplayClass::UnitShadow);
@@ -1145,7 +1145,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         SpeedType loco = SPEED_NONE;
         if (Map.PendingObjectPtr) {
           if (Map.PendingObjectPtr->What_Am_I() == RTTI_BUILDING) {
-            BuildingClass* obj = (BuildingClass*)(Map.PendingObjectPtr);
+            BuildingClass* obj = (BuildingClass*)Map.PendingObjectPtr;
             loco = obj->Class->Speed;
             //					if (*obj == STRUCT_SUB_PEN ||
             //*obj == STRUCT_SHIP_YARD ||
@@ -1218,7 +1218,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         void const* flag_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
         CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), Frame % 14,
-                      x + (ICON_PIXEL_W / 2), y + (ICON_PIXEL_H / 2),
+                      x + ICON_PIXEL_W / 2, y + ICON_PIXEL_H / 2,
                       WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, flag_remap,
                       DisplayClass::UnitShadow);
@@ -1576,7 +1576,7 @@ void CellClass::Wall_Update() {
   static FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
                                    FACING_NONE};
 
-  for (unsigned index = 0; index < (sizeof(_offsets) / sizeof(_offsets[0]));
+  for (unsigned index = 0; index < sizeof(_offsets) / sizeof(_offsets[0]);
        index++) {
     CellClass& newcell = Adjacent_Cell(_offsets[index]);
 
@@ -1593,7 +1593,7 @@ void CellClass::Wall_Update() {
           icon |= 1 << i;
         }
       }
-      newcell.OverlayData = (newcell.OverlayData & 0xFFF0) | icon;
+      newcell.OverlayData = newcell.OverlayData & 0xFFF0 | icon;
 
       /*
       **	Handle special cases for the incomplete damaged wall sets. If a
@@ -1653,7 +1653,7 @@ void CellClass::Wall_Update() {
 COORDINATE CellClass::Cell_Coord() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
-  return (::Cell_Coord(Cell_Number()));
+  return ::Cell_Coord(Cell_Number());
 }
 
 /***********************************************************************************************
@@ -1687,7 +1687,7 @@ int CellClass::Reduce_Tiberium(int levels) {
       Recalc_Attributes();
     }
   }
-  return (reducer);
+  return reducer;
 }
 
 /***********************************************************************************************
@@ -1732,8 +1732,8 @@ int CellClass::Reduce_Wall(int damage) {
       */
       if (destroyed) {
         OverlayData += 16;
-        if (damage == -1 || (OverlayData >> 4) >= wall.DamageLevels ||
-            ((OverlayData >> 4) == wall.DamageLevels - 1 &&
+        if (damage == -1 || OverlayData >> 4 >= wall.DamageLevels ||
+            (OverlayData >> 4 == wall.DamageLevels - 1 &&
              (OverlayData & 0xF) == 0)) {
           Owner = HOUSE_NONE;
           Overlay = OVERLAY_NONE;
@@ -1755,12 +1755,12 @@ int CellClass::Reduce_Wall(int damage) {
           } else {
             Map.Zone_Reset(MZONEF_CRUSHER | MZONEF_NORMAL);
           }
-          return (true);
+          return true;
         }
       }
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1783,7 +1783,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
   **	the center position index.
   */
   if (Distance(rel, (COORDINATE)0x00800080L) < 60) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -1795,7 +1795,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
   int index = 0;
   if (Coord_X(rel) > 0x80) index |= 0x01;
   if (Coord_Y(rel) > 0x80) index |= 0x02;
-  return (index + 1);
+  return index + 1;
 }
 
 /***********************************************************************************************
@@ -1851,7 +1851,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   **	Cells occupied by buildings or vehicles don't have any free spots.
   */
   if (!any && (Flag.Occupy.Vehicle || Flag.Occupy.Monolith)) {
-    return (0);
+    return 0;
   }
 
   /*
@@ -1859,7 +1859,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   *or not, *	then just return with the stopping coordinate value.
   */
   if (any || Is_Spot_Free(spot_index)) {
-    return (Coord_Add(coord, StoppingCoordAbs[spot_index]));
+    return Coord_Add(coord, StoppingCoordAbs[spot_index]);
   }
 
   /*
@@ -1877,14 +1877,14 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
     int pos = *sequence++;
 
     if (Is_Spot_Free(pos)) {
-      return (Coord_Add(coord, StoppingCoordAbs[pos]));
+      return Coord_Add(coord, StoppingCoordAbs[pos]);
     }
   }
 
   /*
   **	No free spot could be found so return a nullptr coordinate.
   */
-  return (0x00000000L);
+  return 0x00000000L;
 }
 
 /***********************************************************************************************
@@ -1910,7 +1910,7 @@ int CellClass::Clear_Icon() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   CELL cell = Cell_Number();
-  return ((Cell_X(cell) & 0x03) | ((Cell_Y(cell) & 0x03) << 2));
+  return Cell_X(cell) & 0x03 | (Cell_Y(cell) & 0x03) << 2;
   //	return((cell & 0x03) | ((unsigned(cell)>>5) & 0x0C));
 }
 
@@ -1975,13 +1975,13 @@ CellClass const& CellClass::Adjacent_Cell(FacingType face) const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   if ((unsigned)face >= FACING_COUNT) {
-    return (*this);
+    return *this;
   }
 
   CellClass const* ptr = this + AdjacentCell[face];
   if ((unsigned)Cell_Number() + AdjacentCell[face] >= MAP_CELL_TOTAL)
-    return (*this);
-  return (*ptr);
+    return *this;
+  return *ptr;
 }
 
 /***************************************************************************
@@ -2093,10 +2093,10 @@ long CellClass::Tiberium_Adjust(bool pregame) {
       } else {
         OverlayData = _adj[count];
       }
-      return ((OverlayData + 1) * value);
+      return (OverlayData + 1) * value;
     }
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -2237,11 +2237,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
             int i, ucount;
             int minunits = 1000;
             bool found = false;
-            unsigned long minutes = (Score.ElapsedTime / TIMER_MINUTE);
+            unsigned long minutes = Score.ElapsedTime / TIMER_MINUTE;
             if (minutes > 100) minutes = 100;
             if (Random_Pick(0, 100 - (int)minutes) == 0) {
               for (i = 0;
-                   i < (Session.Players.Count() + Session.Options.AIPlayers);
+                   i < Session.Players.Count() + Session.Options.AIPlayers;
                    i++) {
                 ucount = 0;
                 HouseClass* hptr = Houses.Ptr(i + HOUSE_MULTI1);
@@ -2284,9 +2284,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
       */
       if (object->House->BScan == 0 &&
           object->House->Available_Money() >
-              ((BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
-                BuildingTypeClass::As_Reference(STRUCT_POWER).Cost) *
-               object->House->CostBias) &&
+              (BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
+               BuildingTypeClass::As_Reference(STRUCT_POWER).Cost) *
+                  object->House->CostBias &&
           Session.Options.Bases && !(object->House->UScan & UNITF_MCV)) {
         powerup = CRATE_UNIT;
         force_mcv = true;
@@ -2413,7 +2413,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	If the player has a base and a refinery, but no harvester, then
         *give him *	a free one.
         */
-        if (utp == nullptr && (object->House->BScan & STRUCTF_REFINERY) &&
+        if (utp == nullptr && object->House->BScan & STRUCTF_REFINERY &&
             !(object->House->UScan & UNITF_HARVESTER)) {
           utp = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
         }
@@ -2434,8 +2434,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
           if (utype != UNIT_MCV || Session.Options.Bases) {
             utp = &UnitTypeClass::As_Reference(utype);
             if (utp->IsCrateGoodie &&
-                (utp->Ownable &
-                 (1 << HouseClass::As_Pointer(object->Owner())->ActLike))) {
+                utp->Ownable &
+                    1 << HouseClass::As_Pointer(object->Owner())->ActLike) {
               break;
             }
             utp = nullptr;
@@ -2447,7 +2447,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
               (UnitClass*)utp->Create_One_Of(object->House);
           if (goodie_unit != nullptr) {
             if (goodie_unit->Unlimbo(Cell_Coord())) {
-              return (false);
+              return false;
             }
 
             /*
@@ -2457,7 +2457,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             CELL cell =
                 Map.Nearby_Location(Cell_Number(), goodie_unit->Class->Speed);
             if (goodie_unit->Unlimbo(::Cell_Coord(cell))) {
-              return (false);
+              return false;
             }
             delete goodie_unit;
             give_crate_money();
@@ -2484,7 +2484,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             }
           }
         }
-        return (false);
+        return false;
 
       /*
       **	A one para-bomb mission.
@@ -2644,7 +2644,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           if (obj && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius) {
             ((TechnoClass*)obj)->IronCurtainCountDown =
-                (TICKS_PER_MINUTE * fixed(CrateData[powerup], 256));
+                TICKS_PER_MINUTE * fixed(CrateData[powerup], 256);
             obj->Mark(MARK_CHANGE);
           }
         }
@@ -2665,7 +2665,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         break;
     }
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2689,9 +2689,9 @@ bool CellClass::Flag_Place(HousesType house) {
     IsFlagged = true;
     Owner = house;
     Redraw_Objects();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2715,9 +2715,9 @@ bool CellClass::Flag_Remove() {
     IsFlagged = false;
     Owner = HOUSE_NONE;
     Redraw_Objects();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2788,7 +2788,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   *over everything.
   */
   if (loco == SPEED_WINGED) {
-    return (true);
+    return true;
   }
 
   /*
@@ -2797,7 +2797,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   */
   if (zone != -1) {
     if (zone != Zones[check]) {
-      return (false);
+      return false;
     }
   }
 
@@ -2813,7 +2813,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
     composite &= 0x5F;  // Drop the vehicle/building bit.
   }
   if (composite != 0) {
-    return (false);
+    return false;
   }
 
   /*
@@ -2833,7 +2833,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   if (overlay != nullptr && overlay->IsWall) {
     if (check != MZONE_DESTROYER &&
         (check != MZONE_CRUSHER || !overlay->IsCrushable)) {
-      return (false);
+      return false;
     }
 
     /*
@@ -2848,13 +2848,13 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   **	so, return the error condition.
   */
   if (Ground[land].Cost[loco] == 0) {
-    return (false);
+    return false;
   }
 
   /*
   **	All checks passed, so this cell must be passable.
   */
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2890,9 +2890,9 @@ bool CellClass::Is_Bridge_Here() const {
     case TEMPLATE_BRIDGE_3D:
     case TEMPLATE_BRIDGE_3E:
     case TEMPLATE_BRIDGE_3F:
-      return (true);
+      return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2912,21 +2912,21 @@ bool CellClass::Is_Bridge_Here() const {
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Can_Tiberium_Grow() const {
-  if (!Rule.IsTGrowth) return (false);
+  if (!Rule.IsTGrowth) return false;
 
   if (Session.Type != GAME_NORMAL) {
-    if (!Session.Options.Tiberium) return (false);
+    if (!Session.Options.Tiberium) return false;
   }
 
-  if (Land_Type() != LAND_TIBERIUM) return (false);
+  if (Land_Type() != LAND_TIBERIUM) return false;
 
-  if (OverlayData >= 11) return (false);
+  if (OverlayData >= 11) return false;
 
   if (Overlay != OVERLAY_GOLD1 && Overlay != OVERLAY_GOLD2 &&
       Overlay != OVERLAY_GOLD3 && Overlay != OVERLAY_GOLD4)
-    return (false);
+    return false;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2947,21 +2947,21 @@ bool CellClass::Can_Tiberium_Grow() const {
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Can_Tiberium_Spread() const {
-  if (!Rule.IsTSpread) return (false);
+  if (!Rule.IsTSpread) return false;
 
   if (Session.Type != GAME_NORMAL) {
-    if (!Session.Options.Tiberium) return (false);
+    if (!Session.Options.Tiberium) return false;
   }
 
-  if (Land_Type() != LAND_TIBERIUM) return (false);
+  if (Land_Type() != LAND_TIBERIUM) return false;
 
-  if (OverlayData <= 6) return (false);
+  if (OverlayData <= 6) return false;
 
   if (Overlay != OVERLAY_GOLD1 && Overlay != OVERLAY_GOLD2 &&
       Overlay != OVERLAY_GOLD3 && Overlay != OVERLAY_GOLD4)
-    return (false);
+    return false;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2981,9 +2981,9 @@ bool CellClass::Grow_Tiberium() {
   if (Can_Tiberium_Grow()) {
     OverlayData++;
     Redraw_Objects();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3004,7 +3004,7 @@ bool CellClass::Grow_Tiberium() {
  *=============================================================================================*/
 bool CellClass::Spread_Tiberium(bool forced) {
   if (!forced) {
-    if (!Can_Tiberium_Spread()) return (false);
+    if (!Can_Tiberium_Spread()) return false;
   }
   FacingType offset = Random_Pick(FACING_N, FACING_NW);
   for (FacingType index = FACING_N; index < FACING_COUNT; index++) {
@@ -3014,10 +3014,10 @@ bool CellClass::Spread_Tiberium(bool forced) {
       new OverlayClass(Random_Pick(OVERLAY_GOLD1, OVERLAY_GOLD4),
                        newcell->Cell_Number());
       newcell->OverlayData = 0;
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3036,9 +3036,9 @@ bool CellClass::Spread_Tiberium(bool forced) {
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Can_Tiberium_Germinate() const {
-  if (!Map.In_Radar(Cell_Number())) return (false);
+  if (!Map.In_Radar(Cell_Number())) return false;
 
-  if (Is_Bridge_Here()) return (false);
+  if (Is_Bridge_Here()) return false;
 
   /*
   **	Don't allow Tiberium to grow on a cell with a building unless that
@@ -3046,11 +3046,11 @@ bool CellClass::Can_Tiberium_Germinate() const {
   *else the location of the *	building will be revealed.
   */
   BuildingClass const* building = Cell_Building();
-  if (building != nullptr && !building->Class->IsInvisible) return (false);
+  if (building != nullptr && !building->Class->IsInvisible) return false;
 
-  if (!Ground[Land_Type()].Build) return (false);
+  if (!Ground[Land_Type()].Build) return false;
 
-  if (Overlay != OVERLAY_NONE) return (false);
+  if (Overlay != OVERLAY_NONE) return false;
 
-  return (true);
+  return true;
 }

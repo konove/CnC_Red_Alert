@@ -189,12 +189,12 @@ int GadgetClass::Clicked_On(KeyNumType& key, unsigned flags, int mousex,
   *button *	before calling the associated action function. This is the
   *typical action for *	buttons.
   */
-  if (this == StuckOn || (flags & KEYBOARD) ||
+  if (this == StuckOn || flags & KEYBOARD ||
       (flags && (unsigned)(mousex - X) < Width &&
        (unsigned)(mousey - Y) < Height)) {
-    return (Action(flags, key));
+    return Action(flags, key);
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -362,9 +362,9 @@ int GadgetClass::Action(unsigned flags, KeyNumType&) {
   if (flags) {
     IsToRepaint = true;
     Sticky_Process(flags);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -386,9 +386,9 @@ int GadgetClass::Action(unsigned flags, KeyNumType&) {
 int GadgetClass::Draw_Me(int forced) {
   if (forced || IsToRepaint) {
     IsToRepaint = false;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -487,7 +487,7 @@ KeyNumType GadgetClass::Input() {
   *the click occurred *	rather the the mouse position at the time we get around
   *to this function.
   */
-  if (((key & 0xFF) == KN_LMOUSE) || ((key & 0xFF) == KN_RMOUSE)) {
+  if ((key & 0xFF) == KN_LMOUSE || (key & 0xFF) == KN_RMOUSE) {
     mousex = Keyboard->MouseQX;
     mousey = Keyboard->MouseQY;
   } else {
@@ -565,7 +565,7 @@ KeyNumType GadgetClass::Input() {
     **	If there is a gadget that has the keyboard focus, then route all
     *keyboard *	events to it.
     */
-    if (Focused && (flags & KEYBOARD)) {
+    if (Focused && flags & KEYBOARD) {
       Focused->Draw_Me(false);
       Focused->Clicked_On(key, flags, mousex, mousey);
       if (Focused) {
@@ -607,7 +607,7 @@ KeyNumType GadgetClass::Input() {
       }
     }
   }
-  return (key);
+  return key;
 }
 
 /***********************************************************************************************
@@ -638,12 +638,12 @@ ControlClass* GadgetClass::Extract_Gadget(unsigned id) {
   if (id != 0) {
     while (g != nullptr) {
       if (g->Get_ID() == id) {
-        return ((ControlClass*)g);
+        return (ControlClass*)g;
       }
       g = g->Get_Next();
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -680,10 +680,10 @@ void GadgetClass::Flag_To_Redraw() { IsToRepaint = true; }
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 void GadgetClass::Sticky_Process(unsigned flags) {
-  if (IsSticky && (flags & LEFTPRESS)) {
+  if (IsSticky && flags & LEFTPRESS) {
     StuckOn = this;
   }
-  if (StuckOn == this && (flags & LEFTRELEASE)) {
+  if (StuckOn == this && flags & LEFTRELEASE) {
     StuckOn = nullptr;
   }
 }
@@ -752,7 +752,7 @@ void GadgetClass::Clear_Focus() {
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool GadgetClass::Has_Focus() { return (this == Focused); }
+bool GadgetClass::Has_Focus() { return this == Focused; }
 
 /***********************************************************************************************
  * GadgetClass::Is_List_To_Redraw -- tells if any gadget in the list needs
@@ -775,11 +775,11 @@ int GadgetClass::Is_List_To_Redraw() {
 
   while (gadget != nullptr) {
     if (gadget->IsToRepaint) {
-      return (true);
+      return true;
     }
     gadget = gadget->Get_Next();
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************

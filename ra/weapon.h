@@ -60,10 +60,10 @@ class WeaponTypeClass {
   ~WeaponTypeClass();
 
   void* operator new(size_t) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   void operator delete(void* pointer);
 
-  char const* Name() const { return (IniName); }
+  char const* Name() const { return IniName; }
   bool Read_INI(CCINIClass& ini);
   static WeaponTypeClass* As_Pointer(WeaponType weapon);
   void Code_Pointers() {}

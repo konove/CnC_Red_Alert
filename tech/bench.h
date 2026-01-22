@@ -52,12 +52,12 @@ class PentiumTimerClass {
   unsigned long operator()() const {
     unsigned long h;
     unsigned long l = Get_CPU_Clock(h);
-    return ((l >> 4) | (h << 28));
+    return l >> 4 | h << 28;
   }
   operator unsigned long() const {
     unsigned long h;
     unsigned long l = Get_CPU_Clock(h);
-    return ((l >> 4) | (h << 28));
+    return l >> 4 | h << 28;
   }
 };
 
@@ -77,7 +77,7 @@ class Benchmark {
 
   void Reset();
   unsigned long Value() const;
-  unsigned long Count() const { return (TotalCount); }
+  unsigned long Count() const { return TotalCount; }
 
  private:
   /*

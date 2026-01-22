@@ -731,7 +731,7 @@ bool Init_Game(int, char*[]) {
   */
   Options.Load_Settings();
 
-  return (true);
+  return true;
 }
 
 void Uninit_Game() {
@@ -1568,7 +1568,7 @@ bool Select_Game(bool fade) {
 #ifdef JAPANESE
           VisiblePage.Clear();
 #endif
-          return (false);
+          return false;
 
         /*
         **	Display the hall of fame.
@@ -1722,7 +1722,7 @@ bool Select_Game(bool fade) {
     Special.IsFromInstall = 0;
     DLOG(INFO) << "C&C95 - Starting scenario.";
     if (!Start_Scenario(ScenarioName)) {
-      return (false);
+      return false;
     }
     DLOG(INFO) << "C&C95 - Scenario started OK.";
   }
@@ -1733,7 +1733,7 @@ bool Select_Game(bool fade) {
   **	properly set.
   */
   DLOG(INFO) << "C&C95 - Initialising message system.";
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   Messages.Init(Map.TacPixelX, Map.TacPixelY, 6, MAX_MESSAGE_LENGTH,
                 6 * factor + 1);
 
@@ -1786,7 +1786,7 @@ bool Select_Game(bool fade) {
     }
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2067,7 +2067,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
           "\r\n");
 #endif
 #endif
-      return (false);
+      return false;
     }
 
     bool processed = true;
@@ -2262,7 +2262,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     if (strstr(string, "-SOCKET")) {
       unsigned short socket;
 
-      socket = (unsigned short)(atoi(string + strlen("SOCKET")));
+      socket = (unsigned short)atoi(string + strlen("SOCKET"));
       socket += 0x4000;
       if (socket >= 0x4000 && socket < 0x8000) {
         Ipx.Set_Socket(socket);
@@ -2459,7 +2459,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
             puts("Invalid option switch.\n");
 #endif
 #endif
-            return (false);
+            return false;
         }
       }
 
@@ -2469,7 +2469,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       continue;
     }
   }
-  return (true);
+  return true;
 }
 
 #ifdef ONHOLD
@@ -2670,7 +2670,7 @@ int Version_Number() {
 #endif         // GERMAN
 
 #if !(FRENCH | GERMAN | JAPANESE)
-  return (1);  // Win95 USA version number
+  return 1;  // Win95 USA version number
 #endif         // FRENCH | GERMAN
 
 #else
@@ -2826,7 +2826,7 @@ void Load_Recording_Values() {
 long Obfuscate(char const* string) {
   char buffer[128];
 
-  if (!string) return (0);
+  if (!string) return 0;
   memset(buffer, '\xA5', sizeof(buffer));
 
   /*
@@ -2848,7 +2848,7 @@ long Obfuscate(char const* string) {
   */
   for (int index = 0; index < length; index++) {
     if (!isgraph(buffer[index])) {
-      buffer[index] = 'A' + (index % 26);
+      buffer[index] = 'A' + index % 26;
     }
   }
 
@@ -2859,14 +2859,14 @@ long Obfuscate(char const* string) {
   **	process also forces the key phrase to be an even multiple of four.
   **	This is necessary to support the cypher process that occurs later.
   */
-  if (length < 16 || (length & 0x03)) {
+  if (length < 16 || length & 0x03) {
     int maxlen = 16;
-    if (((length + 3) & 0x00FC) > maxlen) {
-      maxlen = ((length + 3) & 0x00FC);
+    if ((length + 3 & 0x00FC) > maxlen) {
+      maxlen = length + 3 & 0x00FC;
     }
     int index;
     for (index = length; index < maxlen; index++) {
-      buffer[index] = 'A' + ((('?' ^ buffer[index - length]) + index) % 26);
+      buffer[index] = 'A' + (('?' ^ buffer[index - length]) + index) % 26;
     }
     length = index;
     buffer[length] = '\0';
@@ -2910,7 +2910,7 @@ long Obfuscate(char const* string) {
     unsigned char temp = (unsigned char)code;
     buffer[index] ^= temp;
     code >>= 8;
-    code |= (((long)temp) << 24);
+    code |= (long)temp << 24;
   }
 
   /*
@@ -2985,7 +2985,7 @@ long Obfuscate(char const* string) {
   /*
   **	Return the final code value.
   */
-  return ((uint32_t)code);
+  return (uint32_t)code;
 }
 
 /***********************************************************************************************

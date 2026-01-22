@@ -72,14 +72,14 @@ class TCountDownTimerClass {
     Started = -1;
     DelayTime = 0;
   }
-  long Get_Start() const { return (Started); }
-  long Get_Delay() const { return (DelayTime); }
-  bool Active() const { return (Started != -1); }
-  int Expired() const { return (Time() == 0); }
+  long Get_Start() const { return Started; }
+  long Get_Delay() const { return DelayTime; }
+  bool Active() const { return Started != -1; }
+  int Expired() const { return Time() == 0; }
   long Time() const {
     long remain = DelayTime - (Frame - Started);
     if (remain < 0) remain = 0;
-    return (remain);
+    return remain;
   }  // Fetch current count down value.
 
  protected:

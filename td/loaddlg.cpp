@@ -131,7 +131,7 @@ int LoadOptionsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   int d_dialog_w = 250 * factor;
   int d_dialog_h = 156 * factor;
   int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) >> 1;
@@ -140,14 +140,14 @@ int LoadOptionsClass::Process() {
   int d_txt8_h = 11 * factor;
   int d_margin = 7 * factor;
 
-  int d_list_w = d_dialog_w - (d_margin * 2);
+  int d_list_w = d_dialog_w - d_margin * 2;
   int d_list_h = 104 * factor;
   int d_list_x = d_dialog_x + d_margin;
   int d_list_y = d_dialog_y + d_margin + d_txt8_h + d_margin;
 
-  int d_edit_w = d_dialog_w - (d_margin * 2);
+  int d_edit_w = d_dialog_w - d_margin * 2;
   int d_edit_x = d_dialog_x + d_margin;
-  int d_edit_y = d_list_y + d_list_h - (30 * factor) + d_margin + d_txt8_h;
+  int d_edit_y = d_list_y + d_list_h - 30 * factor + d_margin + d_txt8_h;
 
 #ifdef german
   int d_button_w = 50 * factor;
@@ -306,7 +306,7 @@ int LoadOptionsClass::Process() {
   if ((Style == LOAD || Style == WWDELETE) && listbtn.Count() == 0) {
     Clear_List(&listbtn);
     CCMessageBox().Process(TXT_NO_SAVES);
-    return (false);
+    return false;
   }
 
   /*
@@ -437,7 +437,7 @@ int LoadOptionsClass::Process() {
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game
       */
-      case (BUTTON_LOAD | KN_BUTTON):
+      case BUTTON_LOAD | KN_BUTTON:
         game_idx = listbtn.Current_Index();
         game_num = Files[game_idx]->Num;
         if (Files[game_idx]->Valid) {
@@ -459,7 +459,7 @@ int LoadOptionsClass::Process() {
       /*
       ** Save: Save the game & exit the dialog
       */
-      case (BUTTON_SAVE | KN_BUTTON):
+      case BUTTON_SAVE | KN_BUTTON:
         if (!strlen(game_descr)) {
           CCMessageBox().Process(TXT_MUSTENTER_DESCRIPTION);
           firsttime = true;
@@ -490,7 +490,7 @@ int LoadOptionsClass::Process() {
       ** Delete: delete the file & stay in the dialog, to allow the user
       ** to delete multiple files.
       */
-      case (BUTTON_DELETE | KN_BUTTON):
+      case BUTTON_DELETE | KN_BUTTON:
         game_idx = listbtn.Current_Index();
         game_num = Files[game_idx]->Num;
         if (CCMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
@@ -511,7 +511,7 @@ int LoadOptionsClass::Process() {
       ** item; if so, and if we're in SAVE mode, copy the list item into
       ** the save-game description field.
       */
-      case (BUTTON_LIST | KN_BUTTON):
+      case BUTTON_LIST | KN_BUTTON:
         if (Style != SAVE) {
           break;
         }
@@ -534,8 +534,8 @@ int LoadOptionsClass::Process() {
       /*
       ** ESC/Cancel: break
       */
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         cancel = true;
         process = false;
         break;
@@ -547,9 +547,9 @@ int LoadOptionsClass::Process() {
 
   Clear_List(&listbtn);
 
-  if (cancel) return (false);
+  if (cancel) return false;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -640,7 +640,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     fdata->Descr[0] = '\0';
     if (!ok) port::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
     strncat(fdata->Descr, descr,
-            (sizeof(fdata->Descr) - strlen(fdata->Descr)) - 1);
+            sizeof(fdata->Descr) - strlen(fdata->Descr) - 1);
     fdata->Valid = ok;
     fdata->Scenario = scenario;
     fdata->House = house;
@@ -682,7 +682,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   /*
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
-  qsort((void*)(&Files[0]), Files.Count(), sizeof(class FileEntryClass*),
+  qsort((void*)&Files[0], Files.Count(), sizeof(class FileEntryClass*),
         Compare);
 
   /*
@@ -729,10 +729,10 @@ int LoadOptionsClass::Num_From_Ext(const char* fname) {
 int LoadOptionsClass::Compare(const void* p1, const void* p2) {
   class FileEntryClass *fe1, *fe2;
 
-  fe1 = *((class FileEntryClass**)p1);
-  fe2 = *((class FileEntryClass**)p2);
+  fe1 = *(class FileEntryClass**)p1;
+  fe2 = *(class FileEntryClass**)p2;
 
-  if (fe1->DateTime > fe2->DateTime) return (-1);
-  if (fe1->DateTime < fe2->DateTime) return (1);
-  return (0);
+  if (fe1->DateTime > fe2->DateTime) return -1;
+  if (fe1->DateTime < fe2->DateTime) return 1;
+  return 0;
 }

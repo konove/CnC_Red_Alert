@@ -63,7 +63,7 @@ bool BMP8::Init(const char* szFile, HWND hWnd) {
   // Allocate memory for the BITMAPINFO structure.
   HGLOBAL infoHeaderMem = ::GlobalAlloc(
       GHND, sizeof(BITMAPINFOHEADER) +
-                ((1 << bitmapInfoHeader.biBitCount) * sizeof(RGBQUAD)));
+                (1 << bitmapInfoHeader.biBitCount) * sizeof(RGBQUAD));
 
   LPBITMAPINFO lpHeaderMem = (LPBITMAPINFO)::GlobalLock(infoHeaderMem);
 
@@ -83,11 +83,10 @@ bool BMP8::Init(const char* szFile, HWND hWnd) {
   // Retrieve the color table.
   // 1 << bitmapInfoHeader.biBitCount == 2 ^ bitmapInfoHeader.biBitCount
   ::ReadFile(hFile, lpHeaderMem->bmiColors,
-             ((1 << bitmapInfoHeader.biBitCount) * sizeof(RGBQUAD)), &dwRead,
+             (1 << bitmapInfoHeader.biBitCount) * sizeof(RGBQUAD), &dwRead,
              (LPOVERLAPPED)NULL);
 
-  lpLogPalette = (LPLOGPALETTE) new char[(sizeof(LOGPALETTE) +
-                                          sizeof(PALETTEENTRY) * 256)];
+  lpLogPalette = (LPLOGPALETTE) new char[sizeof(LOGPALETTE) + sizeof(PALETTEENTRY) * 256];
   lpLogPalette->palVersion = 0x300;
   lpLogPalette->palNumEntries = 256;
 
@@ -103,12 +102,12 @@ bool BMP8::Init(const char* szFile, HWND hWnd) {
   delete[] lpLogPalette;
 
   // Allocate memory for the required number of bytes.
-  hmem2 = ::GlobalAlloc(GHND, (bitmapHeader.bfSize - bitmapHeader.bfOffBits));
+  hmem2 = ::GlobalAlloc(GHND, bitmapHeader.bfSize - bitmapHeader.bfOffBits);
 
   lpvBits = ::GlobalLock(hmem2);
 
   // Retrieve the bitmap data.
-  ::ReadFile(hFile, lpvBits, (bitmapHeader.bfSize - bitmapHeader.bfOffBits),
+  ::ReadFile(hFile, lpvBits, bitmapHeader.bfSize - bitmapHeader.bfOffBits,
              &dwRead, (LPOVERLAPPED)NULL);
 
   // Create a bitmap from the data stored in the .BMP file.
@@ -159,7 +158,7 @@ bit8 BMP8::drawBmp() {
   HDC hdcMem = CreateCompatibleDC(ps.hdc);
   SelectObject(hdcMem, BitmapHandle_);
   BITMAP bm;
-  GetObject(BitmapHandle_, sizeof(BITMAP), (LPSTR)&bm);
+  GetObject(BitmapHandle_, sizeof(BITMAP), LPSTR&bm);
 
   /// for non-stretching version
   ///////BitBlt(ps.hdc, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
@@ -172,5 +171,5 @@ bit8 BMP8::drawBmp() {
 
   DeleteDC(hdcMem);
   EndPaint(WindowHandle_, &ps);
-  return (true);
+  return true;
 }

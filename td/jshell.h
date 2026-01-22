@@ -83,36 +83,36 @@ inline void* operator delete[](void* data) { Free(data); }
 template <class T>
 inline T operator++(T& a) {
   a = (T)((int)a + (int)1);
-  return (a);
+  return a;
 }
 template <class T>
 inline T operator++(T& a, int) {
   T aa = a;
   a = (T)((int)a + (int)1);
-  return (aa);
+  return aa;
 }
 template <class T>
 inline T operator--(T& a) {
   a = (T)((int)a - (int)1);
-  return (a);
+  return a;
 }
 template <class T>
 inline T operator--(T& a, int) {
   T aa = a;
   a = (T)((int)a - (int)1);
-  return (aa);
+  return aa;
 }
 template <class T>
 inline constexpr T operator|(T t1, T t2) {
-  return ((T)((int)t1 | (int)t2));
+  return (T)((int)t1 | (int)t2);
 }
 template <class T>
 inline T operator&(T t1, T t2) {
-  return ((T)((int)t1 & (int)t2));
+  return (T)((int)t1 & (int)t2);
 }
 template <class T>
 inline T operator~(T t1) {
-  return ((T)(~(int)t1));
+  return (T) ~(int)t1;
 }
 
 inline void Set_Bit(void* array, int bit, int value) {
@@ -129,7 +129,7 @@ inline void Set_Bit(void* array, int bit, int value) {
           "ok:"
   */
   if (value)
-    ((uint32_t*)array)[(unsigned)bit >> 5] |= (1 << (bit & 0x1F));
+    ((uint32_t*)array)[(unsigned)bit >> 5] |= 1 << (bit & 0x1F);
   else
     ((uint32_t*)array)[(unsigned)bit >> 5] &= ~(1 << (bit & 0x1F));
 }
@@ -142,7 +142,7 @@ inline int Get_Bit(void const* array, int bit) {
           "bt	[esi+ebx*4],eax"		\
           "setc	al"
   */
-  return !!(((const uint32_t*)array)[(unsigned)bit >> 5] & (1 << (bit & 0x1F)));
+  return !!(((const uint32_t*)array)[(unsigned)bit >> 5] & 1 << (bit & 0x1F));
 }
 
 inline int First_True_Bit(void const* array) {
@@ -205,9 +205,9 @@ inline int First_False_Bit(void const* array) {
 
 #ifdef PORTABLE
 inline int Bound(int original, int minval, int maxval) {
-  if (original < minval) return (minval);
-  if (original > maxval) return (maxval);
-  return (original);
+  if (original < minval) return minval;
+  if (original > maxval) return maxval;
+  return original;
 };
 #else
 extern int Bound(int original, int min, int max);

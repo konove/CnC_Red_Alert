@@ -85,7 +85,7 @@ int IPX_SPX_Installed() {
 #ifdef WIN32
 
 #if defined(TIBERIAN_SUN) || defined(PORTABLE)
-  return (false);
+  return false;
 #else
   if (Load_IPX_Dll()) {
     return (IPX_Initialise());

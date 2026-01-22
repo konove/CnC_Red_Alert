@@ -147,9 +147,9 @@ ThemeClass::ThemeControl ThemeClass::_themes[THEME_COUNT] = {
  *=============================================================================================*/
 char const* ThemeClass::Base_Name(ThemeType theme) const {
   if (theme != THEME_NONE) {
-    return (_themes[theme].Name);
+    return _themes[theme].Name;
   }
-  return ("No theme");
+  return "No theme";
 }
 
 /***********************************************************************************************
@@ -185,9 +185,9 @@ ThemeClass::ThemeClass()
  *=============================================================================================*/
 char const* ThemeClass::Full_Name(ThemeType theme) const {
   if (theme >= THEME_FIRST && theme < THEME_COUNT) {
-    return (Text_String(_themes[theme].Fullname));
+    return Text_String(_themes[theme].Fullname);
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -271,7 +271,7 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) const {
       } while (!Is_Allowed(theme));
     }
   }
-  return (theme);
+  return theme;
 }
 
 /***********************************************************************************************
@@ -347,7 +347,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
       StreamLowImpact = false;
     }
   }
-  return (Current);
+  return Current;
 }
 
 /***********************************************************************************************
@@ -377,7 +377,7 @@ char const* ThemeClass::Theme_File_Name(ThemeType theme) {
     return name.data();
   }
 
-  return ("");
+  return "";
 }
 
 /***********************************************************************************************
@@ -399,9 +399,9 @@ char const* ThemeClass::Theme_File_Name(ThemeType theme) {
  *=============================================================================================*/
 int ThemeClass::Track_Length(ThemeType theme) const {
   if ((unsigned)theme < THEME_COUNT) {
-    return (_themes[theme].Duration);
+    return _themes[theme].Duration;
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -451,9 +451,9 @@ void ThemeClass::Suspend() {
  *=============================================================================================*/
 int ThemeClass::Still_Playing() const {
   if (ScoresPresent && SampleType && Current != -1 && !Debug_Quiet) {
-    return (Sample_Status(Current));
+    return Sample_Status(Current);
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -474,17 +474,17 @@ int ThemeClass::Still_Playing() const {
  *playlist checking.                                     *
  *=============================================================================================*/
 bool ThemeClass::Is_Allowed(ThemeType index) const {
-  if ((unsigned)index >= THEME_COUNT) return (true);
+  if ((unsigned)index >= THEME_COUNT) return true;
 
   /*
   **	If the theme is not present, then it certainly isn't allowed.
   */
-  if (!_themes[index].Available) return (false);
+  if (!_themes[index].Available) return false;
 
   /*
   **	Only normal themes (playable during battle) are considered allowed.
   */
-  if (!_themes[index].Normal) return (false);
+  if (!_themes[index].Normal) return false;
 
   /*
   **	If the theme is not allowed to be played by the player's house, then
@@ -492,20 +492,20 @@ bool ThemeClass::Is_Allowed(ThemeType index) const {
   *then presume this test *	passes.
   */
   if (PlayerPtr != nullptr &&
-      ((1 << PlayerPtr->ActLike) & _themes[index].Owner) == 0)
-    return (false);
+      (1 << PlayerPtr->ActLike & _themes[index].Owner) == 0)
+    return false;
 
   /*
   **	If the scenario doesn't allow this theme yet, then return the failure
   *flag. The *	scenario check only makes sense for solo play.
   */
   if (Session.Type == GAME_NORMAL && Scen.Scenario < _themes[index].Scenario)
-    return (false);
+    return false;
 
   /*
   **	Since all tests passed, return with the "is allowed" flag.
   */
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -535,7 +535,7 @@ ThemeType ThemeClass::From_Name(char const* name) const {
     */
     for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
       if (stricmp(_themes[theme].Name, name) == 0) {
-        return (theme);
+        return theme;
       }
     }
 
@@ -546,12 +546,12 @@ ThemeType ThemeClass::From_Name(char const* name) const {
     */
     for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
       if (strstr(Text_String(_themes[theme].Fullname), name) != nullptr) {
-        return (theme);
+        return theme;
       }
     }
   }
 
-  return (THEME_NONE);
+  return THEME_NONE;
 }
 
 /***********************************************************************************************

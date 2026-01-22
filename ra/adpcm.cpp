@@ -69,6 +69,6 @@ SkipLoop:
   // Put local vars back
   info->dwSampleIndex = (unsigned long)fastindex;
   info->dwPredicted = sample;
-  return (numbytes << 2);
+  return numbytes << 2;
 }
 }

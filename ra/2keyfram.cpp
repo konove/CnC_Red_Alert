@@ -113,7 +113,7 @@ void* Get_Shape_Header_Data(void* ptr) {
   return ptr;
 }
 
-int Get_Last_Frame_Length() { return (Length); }
+int Get_Last_Frame_Length() { return Length; }
 
 void Reset_Theater_Shapes() {
   /*
@@ -207,7 +207,8 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
   unsigned long offcurr, offdiff;
   uint32_t offset[SUBFRAMEOFFS];
   KeyFrameHeaderType* keyfr;
-  unsigned short buffsize, currframe, subframe;
+  unsigned short buffsize;
+  unsigned short subframe;
   unsigned long length = 0;
   char frameflags;
   void* return_value;
@@ -218,7 +219,7 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
   //
   Length = 0;
   if (!dataptr || !buffptr) {
-    return (nullptr);
+    return nullptr;
   }
 
   //
@@ -228,7 +229,7 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
   keyfr = (KeyFrameHeaderType*)dataptr;
 
   if (framenumber >= keyfr->frames) {
-    return (nullptr);
+    return nullptr;
   }
 
   if (UseBigShapeBuffer) {
@@ -252,7 +253,7 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
     ** If we are running out of memory (<10k left) for uncompressed shapes
     ** then allocate some more.
     */
-    if (((uintptr_t)BigShapeBufferStart + BigShapeBufferLength) -
+    if ((uintptr_t)BigShapeBufferStart + BigShapeBufferLength -
             (uintptr_t)BigShapeBufferPtr <
         128000) {
       ReallocShapeBufferFlag = true;
@@ -285,11 +286,11 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
     */
     if (*(KeyFrameSlots[keyfr->y] + framenumber)) {
       if (IsTheaterShape) {
-        return (TheaterShapeBufferStart +
-                (unsigned long)*(KeyFrameSlots[keyfr->y] + framenumber));
+        return TheaterShapeBufferStart +
+               (unsigned long)*(KeyFrameSlots[keyfr->y] + framenumber);
       } else {
-        return (BigShapeBufferStart +
-                (unsigned long)*(KeyFrameSlots[keyfr->y] + framenumber));
+        return BigShapeBufferStart +
+               (unsigned long)*(KeyFrameSlots[keyfr->y] + framenumber);
       }
     }
   }
@@ -298,26 +299,28 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
   buffsize = keyfr->width * keyfr->height;
 
   // get offset into data
-  ptr = (char*)Add_Long_To_Pointer(dataptr, (((unsigned long)framenumber << 3) +
-                                             sizeof(KeyFrameHeaderType)));
+  ptr = (char*)Add_Long_To_Pointer(
+      dataptr, ((unsigned long)framenumber << 3) + sizeof(KeyFrameHeaderType));
   Mem_Copy(ptr, &offset[0], 12L);
   frameflags = (char)(offset[0] >> 24);
 
-  if ((frameflags & KF_KEYFRAME)) {
-    ptr = (char*)Add_Long_To_Pointer(dataptr, (offset[0] & 0x00FFFFFFL));
+  if (frameflags & KF_KEYFRAME) {
+    ptr = (char*)Add_Long_To_Pointer(dataptr, offset[0] & 0x00FFFFFFL);
 
     if (keyfr->flags & 1) {
       ptr = (char*)Add_Long_To_Pointer(ptr, 768L);
     }
     length = LCW_Uncompress(ptr, buffptr, buffsize);
-  } else {  // key delta or delta
+  } else {
+    unsigned short currframe = 0;
+    // key delta or delta
 
-    if ((frameflags & KF_DELTA)) {
+    if (frameflags & KF_DELTA) {
       currframe = (unsigned short)offset[1];
 
-      ptr = (char*)Add_Long_To_Pointer(
-          dataptr,
-          (((unsigned long)currframe << 3) + sizeof(KeyFrameHeaderType)));
+      ptr =
+          (char*)Add_Long_To_Pointer(dataptr, ((unsigned long)currframe << 3) +
+                                                  sizeof(KeyFrameHeaderType));
       Mem_Copy(ptr, &offset[0], (long)(SUBFRAMEOFFS * sizeof(uint32_t)));
     }
 
@@ -336,13 +339,13 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
     length = LCW_Uncompress(ptr, buffptr, buffsize);
 
     if (length > buffsize) {
-      return (nullptr);
+      return nullptr;
     }
 
     length = buffsize;
     Apply_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));
 
-    if ((frameflags & KF_DELTA)) {
+    if (frameflags & KF_DELTA) {
       // adjust to delta after the keydelta
 
       currframe++;
@@ -357,10 +360,10 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
         currframe++;
         subframe += 2;
 
-        if (subframe >= (SUBFRAMEOFFS - 1) && currframe <= framenumber) {
+        if (subframe >= SUBFRAMEOFFS - 1 && currframe <= framenumber) {
           Mem_Copy(
-              Add_Long_To_Pointer(dataptr, (((unsigned long)currframe << 3) +
-                                            sizeof(KeyFrameHeaderType))),
+              Add_Long_To_Pointer(dataptr, ((unsigned long)currframe << 3) +
+                                               sizeof(KeyFrameHeaderType)),
               &offset[0], (long)(SUBFRAMEOFFS * sizeof(uint32_t)));
           subframe = 0;
         }
@@ -409,7 +412,7 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
             (char*)((uintptr_t)(TheaterShapeBufferPtr + 3) & ~3);
       }
       Length = length;
-      return (return_value);
+      return return_value;
 
     } else {
       return_value = BigShapeBufferPtr;
@@ -437,11 +440,11 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
         BigShapeBufferPtr = (char*)((uintptr_t)(BigShapeBufferPtr + 3) & ~3);
       }
       Length = length;
-      return (return_value);
+      return return_value;
     }
 
   } else {
-    return (buffptr);
+    return buffptr;
   }
 }
 
@@ -461,23 +464,23 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
  *=============================================================================================*/
 unsigned short Get_Build_Frame_Count(void const* dataptr) {
   if (dataptr) {
-    return (((KeyFrameHeaderType const*)dataptr)->frames);
+    return ((KeyFrameHeaderType const*)dataptr)->frames;
   }
-  return (0);
+  return 0;
 }
 
 unsigned short Get_Build_Frame_X(void const* dataptr) {
   if (dataptr) {
-    return (((KeyFrameHeaderType const*)dataptr)->x);
+    return ((KeyFrameHeaderType const*)dataptr)->x;
   }
-  return (0);
+  return 0;
 }
 
 unsigned short Get_Build_Frame_Y(void const* dataptr) {
   if (dataptr) {
-    return (((KeyFrameHeaderType const*)dataptr)->y);
+    return ((KeyFrameHeaderType const*)dataptr)->y;
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -497,9 +500,9 @@ unsigned short Get_Build_Frame_Y(void const* dataptr) {
  *=============================================================================================*/
 unsigned short Get_Build_Frame_Width(void const* dataptr) {
   if (dataptr) {
-    return (((KeyFrameHeaderType const*)dataptr)->width);
+    return ((KeyFrameHeaderType const*)dataptr)->width;
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -519,20 +522,20 @@ unsigned short Get_Build_Frame_Width(void const* dataptr) {
  *=============================================================================================*/
 unsigned short Get_Build_Frame_Height(void const* dataptr) {
   if (dataptr) {
-    return (((KeyFrameHeaderType const*)dataptr)->height);
+    return ((KeyFrameHeaderType const*)dataptr)->height;
   }
-  return (0);
+  return 0;
 }
 
 bool Get_Build_Frame_Palette(void const* dataptr, void* palette) {
-  if (dataptr && (((KeyFrameHeaderType const*)dataptr)->flags & 1)) {
+  if (dataptr && ((KeyFrameHeaderType const*)dataptr)->flags & 1) {
     char const* ptr = (char const*)Add_Long_To_Pointer(
-        dataptr, ((((long)sizeof(unsigned long) << 1) *
-                   ((KeyFrameHeaderType*)dataptr)->frames) +
-                  16 + sizeof(KeyFrameHeaderType)));
+        dataptr, ((long)sizeof(unsigned long) << 1) *
+                         ((KeyFrameHeaderType*)dataptr)->frames +
+                     16 + sizeof(KeyFrameHeaderType));
 
     memcpy(palette, ptr, 768L);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

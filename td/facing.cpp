@@ -90,9 +90,9 @@ FacingClass::FacingClass() {
 int FacingClass::Set_Desired(DirType facing) {
   if (DesiredFacing != facing) {
     DesiredFacing = facing;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -113,9 +113,9 @@ int FacingClass::Set_Desired(DirType facing) {
 int FacingClass::Set_Current(DirType facing) {
   if (CurrentFacing != facing) {
     CurrentFacing = facing;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -176,7 +176,7 @@ int FacingClass::Rotation_Adjust(int rate) {
     **	new 1/32 rotation zone (likely to cause a redraw), then return
     **	this fact with a true value.
     */
-    return (Facing_To_32(CurrentFacing) != Facing_To_32(oldfacing));
+    return Facing_To_32(CurrentFacing) != Facing_To_32(oldfacing);
   }
-  return (false);
+  return false;
 }

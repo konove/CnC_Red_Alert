@@ -130,7 +130,7 @@ void Benchmark::End() {
  *=============================================================================================*/
 unsigned long Benchmark::Value() const {
   if (Counter) {
-    return (Average / Counter);
+    return Average / Counter;
   }
-  return (0);
+  return 0;
 }

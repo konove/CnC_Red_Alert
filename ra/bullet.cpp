@@ -228,7 +228,7 @@ void* BulletClass::operator new(size_t) throw() {
   if (ptr) {
     ((BulletClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -296,7 +296,7 @@ short const* BulletClass::Occupy_List(bool) const {
                             -MAP_CELL_W * 3,
                             -MAP_CELL_W * 3 + 1,
                             REFRESH_EOL};
-    return (_list);
+    return _list;
     //		return(Coord_Spillage_List(Coord, 64));
   }
 
@@ -323,10 +323,10 @@ short const* BulletClass::Occupy_List(bool) const {
       ptr++;
     }
     _list[index] = REFRESH_EOL;
-    return (_list);
+    return _list;
   }
 
-  return (Coord_Spillage_List(Coord, 10));
+  return Coord_Spillage_List(Coord, 10);
 }
 
 /***********************************************************************************************
@@ -352,9 +352,9 @@ bool BulletClass::Mark(MarkType mark) {
     if (!Class->IsInvisible) {
       Map.Refresh_Cells(Coord_Cell(Coord), Occupy_List());
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -395,7 +395,7 @@ void BulletClass::AI() {
   *but *	they only do so every other game frame (improves game speed and
   *makes *	missiles not so deadly).
   */
-  if ((Frame & 0x01) && Class->ROT != 0 && Target_Legal(TarCom)) {
+  if (Frame & 0x01 && Class->ROT != 0 && Target_Legal(TarCom)) {
     PrimaryFacing.Set_Desired(Direction256(Coord, As_Coord(TarCom)));
   }
 
@@ -550,7 +550,7 @@ int BulletClass::Shape_Number() const {
     shapenum += (long)Frame % Class->Tumble;
   }
 
-  return (shapenum);
+  return shapenum;
 }
 
 /***********************************************************************************************
@@ -750,14 +750,14 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       *the straight line flight.
       */
       if (/*Class->ROT != 0 ||*/ Class->IsArcing) {
-        int scatterdist = (::Distance(coord, tcoord) / 16) - 0x0040;
+        int scatterdist = ::Distance(coord, tcoord) / 16 - 0x0040;
         scatterdist = std::min(scatterdist, int(Rule.HomingScatter));
         scatterdist = std::max(scatterdist, 0);
 
-        dir = (DirType)((dir + (Random_Pick(0, 10) - 5)) & 0x00FF);
+        dir = (DirType)(dir + (Random_Pick(0, 10) - 5) & 0x00FF);
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
-        int scatterdist = (::Distance(coord, tcoord) / 16) - 0x0040;
+        int scatterdist = ::Distance(coord, tcoord) / 16 - 0x0040;
         scatterdist = std::min(scatterdist, int(Rule.BallisticScatter));
         scatterdist = std::max(scatterdist, 0);
         tcoord = Coord_Move(tcoord, dir, Random_Pick(0, scatterdist));
@@ -779,7 +779,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     */
     int range = 0xFF;
     if (!Class->IsDropping) {
-      range = (::Distance(tcoord, Coord) / MaxSpeed) + 4;
+      range = ::Distance(tcoord, Coord) / MaxSpeed + 4;
     }
 
     /*
@@ -790,7 +790,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     int speed = MaxSpeed;
     if (speed == MPH_LIGHT_SPEED) speed = MPH_IMMOBILE;
     if (Class->IsArcing) {
-      speed = MaxSpeed + (Distance(tcoord) / 32);
+      speed = MaxSpeed + Distance(tcoord) / 32;
 
       /*
       **	Set minimum speed (i.e., distance) for arcing projectiles.
@@ -805,7 +805,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Arm the fuse.
     */
     Arm_Fuse(Coord, tcoord, range,
-             ((As_Aircraft(TarCom) != nullptr) ? 0 : Class->Arming));
+             As_Aircraft(TarCom) != nullptr ? 0 : Class->Arming);
 
     /*
     **	Projectiles that make a ballistic flight to impact point must determine
@@ -821,7 +821,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     if (Class->IsArcing) {
       IsFalling = true;
       Height = 1;
-      Riser = ((Distance(tcoord) / 2) / (speed + 1)) * Rule.Gravity;
+      Riser = Distance(tcoord) / 2 / (speed + 1) * Rule.Gravity;
       Riser = std::max(Riser, 10);
     }
     if (Class->IsDropping) {
@@ -841,9 +841,9 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     Map.Submit(this, In_Which_Layer());
 
     PrimaryFacing = dir;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -864,7 +864,7 @@ COORDINATE BulletClass::Target_Coord() const {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 
-  return (Coord_Add(XY_Coord(0, -Height), Coord));
+  return Coord_Add(XY_Coord(0, -Height), Coord);
 }
 
 /***********************************************************************************************
@@ -889,7 +889,7 @@ COORDINATE BulletClass::Sort_Y() const {
   assert(this != nullptr);
   assert(IsActive);
 
-  return (Coord_Move(Coord, DIR_S, CELL_LEPTON_H / 2));
+  return Coord_Move(Coord, DIR_S, CELL_LEPTON_H / 2);
 }
 
 /***********************************************************************************************
@@ -910,9 +910,9 @@ COORDINATE BulletClass::Sort_Y() const {
  *=============================================================================================*/
 LayerType BulletClass::In_Which_Layer() const {
   if (Class->IsSubSurface) {
-    return (LAYER_SURFACE);
+    return LAYER_SURFACE;
   }
-  return (ObjectClass::In_Which_Layer());
+  return ObjectClass::In_Which_Layer();
 }
 
 /***********************************************************************************************
@@ -943,7 +943,7 @@ bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
   if (!Class->IsHigh && cellptr->Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(cellptr->Overlay).IsHigh) {
     coord = Cell_Coord(Coord_Cell(coord));
-    return (true);
+    return true;
   }
 
   /*
@@ -972,7 +972,7 @@ bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
         coord = Coord_Snap(coord);
       }
 
-      return (true);
+      return true;
     }
   }
 
@@ -981,14 +981,14 @@ bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
   */
   if (Class->IsAntiAircraft && As_Aircraft(TarCom) &&
       Distance(TarCom) < 0x0080) {
-    return (true);
+    return true;
   }
 
   /*
   **	No reason for forced explosion was detected, so return 'false' to
   **	indicate that no forced explosion is required.
   */
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************

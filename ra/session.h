@@ -453,12 +453,12 @@ class MultiMission {
   void Set_Expansion(bool expansion);
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  char const* Description() const { return (ScenarioDescription); }
-  char const* Get_Filename() const { return (Filename); }
-  char const* Get_Digest() const { return (Digest); }
-  bool Get_Official() { return (IsOfficial); }
+  char const* Description() const { return ScenarioDescription; }
+  char const* Get_Filename() const { return Filename; }
+  char const* Get_Digest() const { return Digest; }
+  bool Get_Official() { return IsOfficial; }
   bool Get_Expansion() {
-    return (IsExpansion);
+    return IsExpansion;
   }  //	Implied "IsCounterstrike". No longer used. -ajw
 
  private:

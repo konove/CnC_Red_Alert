@@ -129,28 +129,28 @@ static short const ListWestwood[] = {1,       2,       3,          MCW + 1,
 static short const OListWestwood[] = {0, MCW, REFRESH_EOL};
 static short const ComList[] = {0, MCW, MCW + 1, REFRESH_EOL};
 static short const List21[] = {0, 1, REFRESH_EOL};
-static short const ListWeap[] = {(MCW * 1),  (MCW * 1) + 1, (MCW * 1) + 2,
-                                 (MCW * 2),  (MCW * 2) + 1, (MCW * 2) + 2,
+static short const ListWeap[] = {(MCW * 1),  MCW * 1 + 1, MCW * 1 + 2,
+                                 (MCW * 2),  MCW * 2 + 1, MCW * 2 + 2,
                                  REFRESH_EOL};
 static short const List12[] = {MCW, REFRESH_EOL};
 static short const ListHand[] = {MCW, MCW + 1, MCW * 2 + 1, REFRESH_EOL};
 static short const ListTmpl[] = {MCW,         MCW + 1,     MCW + 2,    MCW * 2,
                                  MCW * 2 + 1, MCW * 2 + 2, REFRESH_EOL};
-static short const List0011[] = {(MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
-static short const List1101[] = {0, 1, (MCW * 1) + 1, REFRESH_EOL};
+static short const List0011[] = {(MCW * 1), MCW * 1 + 1, REFRESH_EOL};
+static short const List1101[] = {0, 1, MCW * 1 + 1, REFRESH_EOL};
 static short const List11[] = {0, 1, REFRESH_EOL};
 static short const List1[] = {0, REFRESH_EOL};
 static short const List1100[] = {0, 1, REFRESH_EOL};
 static short const List0010[] = {MCW, REFRESH_EOL};
 static short const List1000[] = {0, REFRESH_EOL};
 static short const List0100[] = {1, REFRESH_EOL};
-static short const List0111[] = {1, (MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
+static short const List0111[] = {1, (MCW * 1), MCW * 1 + 1, REFRESH_EOL};
 // static short const List1111[] = {0, 1, (MCW*1), (MCW*1)+1, REFRESH_EOL};
-static short const List1011[] = {0, (MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
-static short const List010111000[] = {1, (MCW * 1), (MCW * 1) + 1,
-                                      (MCW * 1) + 2, REFRESH_EOL};
+static short const List1011[] = {0, (MCW * 1), MCW * 1 + 1, REFRESH_EOL};
+static short const List010111000[] = {1, (MCW * 1), MCW * 1 + 1, MCW * 1 + 2, REFRESH_EOL};
 static short const List101000111[] = {
-    0, 2, (MCW * 2), (MCW * 2) + 1, (MCW * 2) + 2, REFRESH_EOL};
+    0, 2, (MCW * 2),
+                                      MCW * 2 + 1, MCW * 2 + 2, REFRESH_EOL};
 
 static short const OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, REFRESH_EOL};
 static short const OListWeap[] = {0, 1, 2, REFRESH_EOL};
@@ -3773,7 +3773,7 @@ void BuildingTypeClass::One_Time() {
       }
       auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      ((void const*&)building.CameoData) =
+      (void const*&)building.CameoData =
           MixFileClass::Retrieve(fullname.c_str());
     }
 
@@ -3784,12 +3784,12 @@ void BuildingTypeClass::One_Time() {
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
     void const* dataptr = MixFileClass::Retrieve(fullname.c_str());
-    ((void const*&)building.BuildupData) = dataptr;
+    (void const*&)building.BuildupData = dataptr;
     if (dataptr) {
       int timedelay = 1;
       int count = Get_Build_Frame_Count(dataptr);
       if (count) {
-        timedelay = (5 * TICKS_PER_SECOND) / count;
+        timedelay = 5 * TICKS_PER_SECOND / count;
       }
       building.Init_Anim(BSTATE_CONSTRUCTION, 0, count, timedelay);
     }
@@ -3800,7 +3800,7 @@ void BuildingTypeClass::One_Time() {
     fullname = std::filesystem::path(building.IniName)
                    .replace_extension(".SHP")
                    .string();
-    ((void const*&)building.ImageData) =
+    (void const*&)building.ImageData =
         MixFileClass::Retrieve(fullname.c_str());
   }
 
@@ -3811,7 +3811,7 @@ void BuildingTypeClass::One_Time() {
   **	Install all the special animation sequences for the different building
   *types.
   */
-  for (unsigned index = 0; index < (sizeof(_anims) / sizeof(_anims[0]));
+  for (unsigned index = 0; index < sizeof(_anims) / sizeof(_anims[0]);
        index++) {
     BuildingTypeClass const* b = &As_Reference(_anims[index].Class);
     if (b) {
@@ -3841,11 +3841,11 @@ StructType BuildingTypeClass::From_Name(char const* name) {
   if (name) {
     for (StructType classid = STRUCT_FIRST; classid < STRUCT_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
-        return (classid);
+        return classid;
       }
     }
   }
-  return (STRUCT_NONE);
+  return STRUCT_NONE;
 }
 
 #ifdef SCENARIO_EDITOR
@@ -3925,9 +3925,9 @@ bool BuildingTypeClass::Create_And_Place(CELL cell, HousesType house) const {
 
   ptr = new BuildingClass(Type, house);
   if (ptr) {
-    return (ptr->Unlimbo(Cell_Coord(cell), DIR_N));
+    return ptr->Unlimbo(Cell_Coord(cell), DIR_N);
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3954,7 +3954,7 @@ ObjectClass* BuildingTypeClass::Create_One_Of(HouseClass* house) const {
   if (house) {
     htype = house->Class->House;
   }
-  return (new BuildingClass(Type, htype));
+  return new BuildingClass(Type, htype);
 }
 
 /***********************************************************************************************
@@ -3981,9 +3981,9 @@ ObjectClass* BuildingTypeClass::Create_One_Of(HouseClass* house) const {
  *=============================================================================================*/
 void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
                                   int rate) const {
-  ((int&)Anims[state].Start) = start;
-  ((int&)Anims[state].Count) = count;
-  ((int&)Anims[state].Rate) = rate;
+  (int&)Anims[state].Start = start;
+  (int&)Anims[state].Count = count;
+  (int&)Anims[state].Rate = rate;
 }
 
 /***********************************************************************************************
@@ -4010,7 +4010,7 @@ void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
 int BuildingTypeClass::Legal_Placement(CELL pos) const {
   short const* offset;  // Pointer to cell offset list.
 
-  if (pos == -1) return (false);
+  if (pos == -1) return false;
 
 #ifdef NEVER
   /*
@@ -4044,12 +4044,12 @@ int BuildingTypeClass::Legal_Placement(CELL pos) const {
   offset = Occupy_List(true);
   while (*offset != REFRESH_EOL) {
     CELL cell = pos + *offset++;
-    if (!Map.In_Radar(cell)) return (false);
+    if (!Map.In_Radar(cell)) return false;
     if (!Map[cell].Is_Generally_Clear()) {
-      return (false);
+      return false;
     }
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -4090,13 +4090,13 @@ BuildingClass* BuildingTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         building->House->Class->House == house &&
         building->Class->ToBuild == RTTI_BUILDINGTYPE &&
         building->Mission != MISSION_DECONSTRUCTION &&
-        ((1L << building->ActLike) & Ownable) &&
+        1L << building->ActLike & Ownable &&
         (!legal || building->House->Can_Build(Type, building->ActLike)) &&
         (intheory || !building->In_Radio_Contact())) {
-      return (building);
+      return building;
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -4123,14 +4123,14 @@ void BuildingTypeClass::Init(TheaterType theater) {
         auto fullname = std::filesystem::path(classptr->IniName)
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        ((void const*&)classptr->ImageData) =
+        (void const*&)classptr->ImageData =
             MixFileClass::Retrieve(fullname.c_str());
       }
 
       if (Get_Resolution_Factor()) {
         void const* cameo_ptr;
 
-        ((void const*&)classptr->CameoData) = nullptr;
+        (void const*&)classptr->CameoData = nullptr;
         const auto filename =
             std::string(classptr->IniName).substr(0, 4) + "ICNH";
 
@@ -4140,7 +4140,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
 
         cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
         if (cameo_ptr) {
-          ((void const*&)classptr->CameoData) = cameo_ptr;
+          (void const*&)classptr->CameoData = cameo_ptr;
         }
       }
     }
@@ -4172,9 +4172,9 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
                                 {3, 2}, {3, 3}, {4, 2}, {5, 5}};
 
   width = _dimensions[Size].Width * ICON_PIXEL_W;
-  width -= (width / 5);
+  width -= width / 5;
   height = _dimensions[Size].Height * ICON_PIXEL_H;
-  height -= (height / 5);
+  height -= height / 5;
 }
 
 /***********************************************************************************************
@@ -4195,7 +4195,7 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 BuildingTypeClass const& BuildingTypeClass::As_Reference(StructType type) {
-  return (*Pointers[type]);
+  return *Pointers[type];
 }
 
 /***********************************************************************************************
@@ -4249,7 +4249,7 @@ short const* BuildingTypeClass::Occupy_List(bool placement) const {
     */
     short const* src = smudge.Occupy_List();
     while (*src != REFRESH_EOL) {
-      *dest++ = (*src++) + cell;
+      *dest++ = *src++ + cell;
     }
 
     /*
@@ -4261,15 +4261,15 @@ short const* BuildingTypeClass::Occupy_List(bool placement) const {
     }
     *dest = REFRESH_EOL;
 
-    return (&_list[0]);
+    return &_list[0];
   }
 
   if (OccupyList) {
-    return (OccupyList);
+    return OccupyList;
   }
 
   static short const _templap[] = {REFRESH_EOL};
-  return (&_templap[0]);
+  return &_templap[0];
 }
 
 /***********************************************************************************************
@@ -4291,11 +4291,11 @@ short const* BuildingTypeClass::Occupy_List(bool placement) const {
  *=============================================================================================*/
 short const* BuildingTypeClass::Overlap_List() const {
   if (OverlapList) {
-    return (OverlapList);
+    return OverlapList;
   }
 
   static short const _templap[] = {REFRESH_EOL};
-  return (&_templap[0]);
+  return &_templap[0];
 }
 
 /***********************************************************************************************
@@ -4313,7 +4313,7 @@ short const* BuildingTypeClass::Overlap_List() const {
  *=============================================================================================*/
 int BuildingTypeClass::Width() const {
   static int width[BSIZE_COUNT] = {1, 2, 1, 2, 2, 3, 3, 4, 5};
-  return (width[Size]);
+  return width[Size];
 }
 
 /***********************************************************************************************
@@ -4331,7 +4331,7 @@ int BuildingTypeClass::Width() const {
  *=============================================================================================*/
 int BuildingTypeClass::Height() const {
   static int height[BSIZE_COUNT] = {1, 1, 2, 2, 3, 2, 3, 2, 5};
-  return (height[Size]);
+  return height[Size];
 }
 
 /***********************************************************************************************
@@ -4350,11 +4350,11 @@ int BuildingTypeClass::Height() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Repair_Cost() const {
-  int cost = (Raw_Cost() * REPAIR_STEP) / MaxStrength;
+  int cost = Raw_Cost() * REPAIR_STEP / MaxStrength;
   cost /= 2;
   cost = std::max(cost, 1);
   cost = Fixed_To_Cardinal(cost, REPAIR_PERCENT);
-  return (std::max(cost, 1));
+  return std::max(cost, 1);
 }
 
 /***********************************************************************************************
@@ -4372,7 +4372,7 @@ int BuildingTypeClass::Repair_Cost() const {
  *                                                                                             *
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Repair_Step() const { return (REPAIR_STEP); }
+int BuildingTypeClass::Repair_Step() const { return REPAIR_STEP; }
 
 /***********************************************************************************************
  * BuildingTypeClass::Bib_And_Offset -- Determines the bib and appropriate cell
@@ -4418,10 +4418,10 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
     **	of the building art itself.
     */
     if (bib != SMUDGE_NONE) {
-      cell += ((Height() - 1) * MAP_CELL_W);
+      cell += (Height() - 1) * MAP_CELL_W;
     }
   }
-  return (bib != SMUDGE_NONE);
+  return bib != SMUDGE_NONE;
 }
 
 /***********************************************************************************************
@@ -4441,7 +4441,7 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Max_Pips() const {
-  return (Bound(Capacity / 100, 0, 10));
+  return Bound(Capacity / 100, 0, 10);
 }
 
 /***********************************************************************************************
@@ -4462,14 +4462,14 @@ int BuildingTypeClass::Max_Pips() const {
  *=============================================================================================*/
 int BuildingTypeClass::Full_Name() const {
   if (::Scenario == 3 && Type == STRUCT_MISSION) {
-    return (TXT_PRISON);
+    return TXT_PRISON;
   }
   if (!IsNominal || Special.IsNamed || IsWall || Debug_Map ||
       Type == STRUCT_V23 || Type == STRUCT_V30 || Type == STRUCT_MISSION ||
       Type == STRUCT_BIO_LAB) {
-    return (TechnoTypeClass::Full_Name());
+    return TechnoTypeClass::Full_Name();
   }
-  return (TXT_CIVILIAN_BUILDING);
+  return TXT_CIVILIAN_BUILDING;
 }
 
 int BuildingTypeClass::Raw_Cost() const {
@@ -4479,7 +4479,7 @@ int BuildingTypeClass::Raw_Cost() const {
   **	version games.
   */
   if (IsV107 && Type == STRUCT_TURRET && GameToPlay != GAME_NORMAL) {
-    return (250);
+    return 250;
   }
 #endif
 
@@ -4491,12 +4491,12 @@ int BuildingTypeClass::Raw_Cost() const {
   if (Type == STRUCT_REFINERY) {
     cost -= UnitTypeClass::As_Reference(UNIT_HARVESTER).Cost;
   }
-  return (cost);
+  return cost;
 }
 
 int BuildingTypeClass::Cost_Of() const {
   if (Special.IsSeparate && Type == STRUCT_HELIPAD) {
-    return (Raw_Cost());
+    return Raw_Cost();
   }
 
 #ifdef PATCH
@@ -4505,9 +4505,9 @@ int BuildingTypeClass::Cost_Of() const {
   **	version games.
   */
   if (IsV107 && Type == STRUCT_TURRET && GameToPlay != GAME_NORMAL) {
-    return (250);
+    return 250;
   }
 #endif
 
-  return (TechnoTypeClass::Cost_Of());
+  return TechnoTypeClass::Cost_Of();
 }

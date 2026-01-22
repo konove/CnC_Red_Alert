@@ -123,7 +123,7 @@ unsigned char* VQA_GetPalette(VQAHandle* vqa) {
     palette = drawer->Palette_24;
   }
 
-  return (palette);
+  return palette;
 }
 
 /****************************************************************************
@@ -154,7 +154,7 @@ long VQA_GetPaletteSize(VQAHandle* vqa) {
   /* Dereference commonly used data members for quick access. */
   drawer = &((VQAHandleP*)vqa)->VQABuf->Drawer;
 
-  return (drawer->CurPalSize);
+  return drawer->CurPalSize;
 }
 
 /****************************************************************************
@@ -197,7 +197,7 @@ void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
   header = &((VQAHandleP*)vqa)->Header;
   drawer = &((VQAHandleP*)vqa)->VQABuf->Drawer;
   config = &((VQAHandleP*)vqa)->Config;
-  origin = (config->DrawFlags & VQACFGF_ORIGIN);
+  origin = config->DrawFlags & VQACFGF_ORIGIN;
 
   /* Set the drawer buffer information. */
   drawer->ImageBuf = buffer;
@@ -210,39 +210,39 @@ void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
    * X1 = -1 -- Center image of the X axis, otherwise use X1 value.
    * Y1 = -1 -- Center image of the Y axis, otherwise use Y1 value.
    *-----------------------------------------------------------------------*/
-  if ((xpos == -1) && (ypos == -1)) {
-    drawer->X1 = ((width - header->ImageWidth) / 2);
-    drawer->Y1 = ((height - header->ImageHeight) / 2);
-    drawer->X2 = ((drawer->X1 + header->ImageWidth) - 1);
-    drawer->Y2 = ((drawer->Y1 + header->ImageHeight) - 1);
+  if (xpos == -1 && ypos == -1) {
+    drawer->X1 = (width - header->ImageWidth) / 2;
+    drawer->Y1 = (height - header->ImageHeight) / 2;
+    drawer->X2 = drawer->X1 + header->ImageWidth - 1;
+    drawer->Y2 = drawer->Y1 + header->ImageHeight - 1;
   } else {
     switch (origin) {
       default:
       case VQACFGF_TOPLEFT:
         drawer->X1 = xpos;
         drawer->Y1 = ypos;
-        drawer->X2 = ((drawer->X1 + header->ImageWidth) - 1);
-        drawer->Y2 = ((drawer->Y1 + header->ImageHeight) - 1);
+        drawer->X2 = drawer->X1 + header->ImageWidth - 1;
+        drawer->Y2 = drawer->Y1 + header->ImageHeight - 1;
         break;
 
       case VQACFGF_BOTLEFT:
         drawer->X1 = xpos;
-        drawer->Y1 = (height - ypos);
-        drawer->X2 = ((drawer->X1 + header->ImageWidth) - 1);
-        drawer->Y2 = ((drawer->Y2 - header->ImageHeight) - 1);
+        drawer->Y1 = height - ypos;
+        drawer->X2 = drawer->X1 + header->ImageWidth - 1;
+        drawer->Y2 = drawer->Y2 - header->ImageHeight - 1;
         break;
 
       case VQACFGF_BOTRIGHT:
-        drawer->X1 = (width - xpos);
-        drawer->Y1 = (height - ypos);
-        drawer->X2 = (drawer->X1 - header->ImageWidth);
-        drawer->Y2 = (drawer->Y1 - header->ImageHeight);
+        drawer->X1 = width - xpos;
+        drawer->Y1 = height - ypos;
+        drawer->X2 = drawer->X1 - header->ImageWidth;
+        drawer->Y2 = drawer->Y1 - header->ImageHeight;
         break;
     }
   }
 
   /* Pre-compute the draw offset for speed. */
-  drawer->ScreenOffset = ((width * drawer->Y1) + drawer->X1);
+  drawer->ScreenOffset = width * drawer->Y1 + drawer->X1;
 }
 
 /****************************************************************************
@@ -280,7 +280,7 @@ void VQA_Configure_Drawer(VQAHandleP* vqap) {
   drawer = &vqabuf->Drawer;
   header = &vqap->Header;
   config = &vqap->Config;
-  origin = (config->DrawFlags & VQACFGF_ORIGIN);
+  origin = config->DrawFlags & VQACFGF_ORIGIN;
 
   /*-------------------------------------------------------------------------
    * SET THE DRAW POSITION OF THE MOVIE.
@@ -288,33 +288,33 @@ void VQA_Configure_Drawer(VQAHandleP* vqap) {
    * X1 = -1 -- Center image of the X axis, otherwise use X1 value.
    * Y1 = -1 -- Center image of the Y axis, otherwise use Y1 value.
    *-----------------------------------------------------------------------*/
-  if ((config->X1 == -1) && (config->Y1 == -1)) {
-    drawer->X1 = ((drawer->ImageWidth - header->ImageWidth) / 2);
-    drawer->Y1 = ((drawer->ImageHeight - header->ImageHeight) / 2);
-    drawer->X2 = ((drawer->X1 + header->ImageWidth) - 1);
-    drawer->Y2 = ((drawer->Y1 + header->ImageHeight) - 1);
+  if (config->X1 == -1 && config->Y1 == -1) {
+    drawer->X1 = (drawer->ImageWidth - header->ImageWidth) / 2;
+    drawer->Y1 = (drawer->ImageHeight - header->ImageHeight) / 2;
+    drawer->X2 = drawer->X1 + header->ImageWidth - 1;
+    drawer->Y2 = drawer->Y1 + header->ImageHeight - 1;
   } else {
     switch (origin) {
       default:
       case VQACFGF_TOPLEFT:
         drawer->X1 = config->X1;
         drawer->Y1 = config->Y1;
-        drawer->X2 = ((drawer->X1 + header->ImageWidth) - 1);
-        drawer->Y2 = ((drawer->Y1 + header->ImageHeight) - 1);
+        drawer->X2 = drawer->X1 + header->ImageWidth - 1;
+        drawer->Y2 = drawer->Y1 + header->ImageHeight - 1;
         break;
 
       case VQACFGF_BOTLEFT:
         drawer->X1 = config->X1;
-        drawer->Y1 = (drawer->ImageHeight - config->Y1);
-        drawer->X2 = ((drawer->X1 + header->ImageWidth) - 1);
-        drawer->Y2 = ((drawer->Y2 - header->ImageHeight) - 1);
+        drawer->Y1 = drawer->ImageHeight - config->Y1;
+        drawer->X2 = drawer->X1 + header->ImageWidth - 1;
+        drawer->Y2 = drawer->Y2 - header->ImageHeight - 1;
         break;
 
       case VQACFGF_BOTRIGHT:
-        drawer->X1 = (drawer->ImageWidth - config->X1);
-        drawer->Y1 = (drawer->ImageHeight - config->Y1);
-        drawer->X2 = (drawer->X1 - header->ImageWidth);
-        drawer->Y2 = (drawer->Y1 - header->ImageHeight);
+        drawer->X1 = drawer->ImageWidth - config->X1;
+        drawer->Y1 = drawer->ImageHeight - config->Y1;
+        drawer->X2 = drawer->X1 - header->ImageWidth;
+        drawer->Y2 = drawer->Y1 - header->ImageHeight;
         break;
     }
   }
@@ -357,7 +357,7 @@ void VQA_Configure_Drawer(VQAHandleP* vqap) {
       vqabuf->Draw_Frame = DrawFrame_Buffer;
 
       /* Pre-compute the draw offset for speed. */
-      drawer->ScreenOffset = ((drawer->ImageWidth * drawer->Y1) + drawer->X1);
+      drawer->ScreenOffset = drawer->ImageWidth * drawer->Y1 + drawer->X1;
       break;
   }
 }
@@ -404,13 +404,13 @@ static long Select_Frame(VQAHandleP* vqap) {
    */
   if ((curframe->Flags & VQAFRMF_LOADED) == 0) {
     drawer->WaitsOnLoader++;
-    return (VQAERR_NOBUFFER);
+    return VQAERR_NOBUFFER;
   }
 
   /* If single stepping then return with the next frame.*/
   if (config->OptionFlags & VQAOPTF_STEP) {
     drawer->LastFrame = curframe->FrameNum;
-    return (0);
+    return 0;
   }
 
   /* Find the frame # we should play (rounded to nearest frame): */
@@ -418,7 +418,7 @@ static long Select_Frame(VQAHandleP* vqap) {
   //	desiredframe = ((curtime * config->FrameRate) / VQA_TIMETICKS);
   // MEG MOD 06.22.95 - Should look for the desired frame to draw, not load,
   // right?
-  desiredframe = ((curtime * config->DrawRate) / VQA_TIMETICKS);
+  desiredframe = curtime * config->DrawRate / VQA_TIMETICKS;
 
   /* Handle the cases where the player is going so fast that it's not time
    * to draw this frame yet.
@@ -427,25 +427,25 @@ static long Select_Frame(VQAHandleP* vqap) {
    *   delta-time-based wait; otherwise, use the frame number as the wait.
    */
   if (config->DrawRate != config->FrameRate) {
-    if (curtime - drawer->LastTime < (VQA_TIMETICKS / config->DrawRate)) {
-      return (VQAERR_NOT_TIME);
+    if (curtime - drawer->LastTime < VQA_TIMETICKS / config->DrawRate) {
+      return VQAERR_NOT_TIME;
     }
   } else {
     if (curframe->FrameNum > desiredframe) {
-      return (VQAERR_NOT_TIME);
+      return VQAERR_NOT_TIME;
     }
   }
 
   /* Make sure we draw at least 5 frames per second */
-  if ((curframe->FrameNum - drawer->LastFrame) >= (config->FrameRate / 5)) {
+  if (curframe->FrameNum - drawer->LastFrame >= config->FrameRate / 5) {
     drawer->LastFrame = curframe->FrameNum;
-    return (0);
+    return 0;
   }
 
   /* If frame skipping is disabled then draw every frame. */
   if (config->DrawFlags & VQACFGF_NOSKIP) {
     drawer->LastFrame = curframe->FrameNum;
-    return (0);
+    return 0;
   }
 
   /* Handle the case where the player is going too slow, so we have to skip
@@ -462,7 +462,7 @@ static long Select_Frame(VQAHandleP* vqap) {
   while (1) {
     /* No frame available; return */
     if ((curframe->Flags & VQAFRMF_LOADED) == 0) {
-      return (VQAERR_NOBUFFER);
+      return VQAERR_NOBUFFER;
     }
 
     /* Force drawing of a Key Frame */
@@ -496,8 +496,8 @@ static long Select_Frame(VQAHandleP* vqap) {
 
       /* Invoke callback with nullptr screen ptr */
       if (config->DrawerCallback != nullptr) {
-        if ((config->DrawerCallback(nullptr, curframe->FrameNum)) != 0) {
-          return (VQAERR_EOF);
+        if (config->DrawerCallback(nullptr, curframe->FrameNum) != 0) {
+          return VQAERR_EOF;
         }
       }
 
@@ -514,7 +514,7 @@ static long Select_Frame(VQAHandleP* vqap) {
   drawer->LastFrame = curframe->FrameNum;
   drawer->LastTime = curtime;
 
-  return (0);
+  return 0;
 }
 
 /****************************************************************************
@@ -556,7 +556,7 @@ static void Prepare_Frame(VQAData* vqabuf) {
                    (char*)codebook->Buffer, vqabuf->Max_CB_Size);
 
     /* Mark as uncompressed for the next time we use it */
-    codebook->Flags &= (~VQACBF_CBCOMP);
+    codebook->Flags &= ~VQACBF_CBCOMP;
   }
 
   /* Decompress the palette, if needed */
@@ -632,12 +632,12 @@ static long DrawFrame_Buffer(VQAHandle* vqa) {
   /* Wait for Update_Enabled to be set low */
   if (vqabuf->Flags & VQADATF_UPDATE) {
     vqabuf->Flags |= VQADATF_DSLEEP;
-    return (VQAERR_SLEEPING);
+    return VQAERR_SLEEPING;
   }
 
   if (vqabuf->Flags & VQADATF_DSLEEP) {
     drawer->WaitsOnFlipper++;
-    vqabuf->Flags &= (~VQADATF_DSLEEP);
+    vqabuf->Flags &= ~VQADATF_DSLEEP;
   }
 
   /* Dereference current frame for quicker access. */
@@ -647,10 +647,10 @@ static long DrawFrame_Buffer(VQAHandle* vqa) {
 
   pal = curframe->Palette;
   palsize = curframe->PaletteSize;
-  slowpal = (config->OptionFlags & VQAOPTF_SLOWPAL) ? 1 : 0;
+  slowpal = config->OptionFlags & VQAOPTF_SLOWPAL ? 1 : 0;
 
   /* Set the palette if neccessary */
-  if ((curframe->Flags & VQAFRMF_PALETTE) || (drawer->Flags & VQADRWF_SETPAL)) {
+  if (curframe->Flags & VQAFRMF_PALETTE || drawer->Flags & VQADRWF_SETPAL) {
     Flag_To_Set_Palette(pal, palsize, slowpal);
     curframe->Flags &= ~VQAFRMF_PALETTE;
     drawer->Flags &= ~VQADRWF_SETPAL;
@@ -671,15 +671,15 @@ static long DrawFrame_Buffer(VQAHandle* vqa) {
 
   /* Invoke user's callback routine */
   if (config->DrawerCallback != nullptr) {
-    if ((config->DrawerCallback(drawer->ImageBuf, curframe->FrameNum)) != 0) {
-      return (VQAERR_EOF);
+    if (config->DrawerCallback(drawer->ImageBuf, curframe->FrameNum) != 0) {
+      return VQAERR_EOF;
     }
   }
 
   /* Move to the next frame */
   drawer->CurFrame = curframe->Next;
 
-  return (0);
+  return 0;
 }
 
 /****************************************************************************

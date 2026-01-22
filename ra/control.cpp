@@ -117,7 +117,7 @@ int ControlClass::Action(unsigned flags, KeyNumType& key) {
     Peer->Peer_To_Peer(flags, key, *this);
   }
 
-  return (GadgetClass::Action(flags, key));
+  return GadgetClass::Action(flags, key);
 }
 
 /***********************************************************************************************
@@ -157,7 +157,7 @@ void ControlClass::Make_Peer(GadgetClass& gadget) { Peer = &gadget; }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned ControlClass::Get_ID() const { return (ID); }
+unsigned ControlClass::Get_ID() const { return ID; }
 
 /***********************************************************************************************
  * ControlClass::Draw_Me -- Draw logic for the control class object. *
@@ -187,5 +187,5 @@ int ControlClass::Draw_Me(int forced) {
   if (Peer) {
     Peer->Draw_Me();
   }
-  return (GadgetClass::Draw_Me(forced));
+  return GadgetClass::Draw_Me(forced);
 }

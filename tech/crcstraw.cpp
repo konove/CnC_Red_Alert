@@ -66,7 +66,7 @@
  *=============================================================================================*/
 int CRCStraw::Get(void* source, int slen) {
   if (source == nullptr || slen < 1) {
-    return (0);
+    return 0;
   }
 
   int counter = Straw::Get(source, slen);

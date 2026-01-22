@@ -687,11 +687,11 @@ OverlayType OverlayTypeClass::From_Name(char const* name) {
   if (name) {
     for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
-        return (index);
+        return index;
       }
     }
   }
-  return (OVERLAY_NONE);
+  return OVERLAY_NONE;
 }
 
 /***********************************************************************************************
@@ -714,7 +714,7 @@ OverlayType OverlayTypeClass::From_Name(char const* name) {
 short const* OverlayTypeClass::Occupy_List(bool) const {
   static short _simple[] = {0, REFRESH_EOL};
 
-  return (_simple);
+  return _simple;
 }
 
 /***************************************************************************
@@ -733,8 +733,8 @@ short const* OverlayTypeClass::Occupy_List(bool) const {
 unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
   unsigned char* icon =
       (unsigned char*)Get_Radar_Data();  // Get pointer to radar icons
-  icon += (data * 9) + 2;                // move icon ptr to correct icon
-  return (icon);                         // Return the correct icon
+  icon += data * 9 + 2;                // move icon ptr to correct icon
+  return icon;                         // Return the correct icon
 }
 
 #ifdef SCENARIO_EDITOR
@@ -814,9 +814,9 @@ void OverlayTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 bool OverlayTypeClass::Create_And_Place(CELL cell, HousesType) const {
   if (new OverlayClass(Type, cell)) {
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -837,7 +837,7 @@ bool OverlayTypeClass::Create_And_Place(CELL cell, HousesType) const {
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass*) const {
-  return (new OverlayClass(Type, -1));
+  return new OverlayClass(Type, -1);
 }
 
 /***********************************************************************************************
@@ -897,12 +897,12 @@ void OverlayTypeClass::Init(TheaterType theater) {
                        .replace_extension(".SHP")
                        .string();
       }
-      ((void const*&)overlay.ImageData) =
+      (void const*&)overlay.ImageData =
           MixFileClass::Retrieve(fullname.c_str());
 
       IsTheaterShape = overlay.IsTheater;
       if (overlay.RadarIcon) delete[] (char*)overlay.RadarIcon;
-      ((void const*&)overlay.RadarIcon) =
+      (void const*&)overlay.RadarIcon =
           Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3);
       IsTheaterShape = false;
     }

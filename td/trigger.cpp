@@ -182,9 +182,9 @@ bool TriggerClass::Event_Need_Object(EventType event) {
     case EVENT_ATTACKED:
     case EVENT_DESTROYED:
     case EVENT_ANY:
-      return (true);
+      return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -217,9 +217,9 @@ bool TriggerClass::Event_Need_House(EventType event) {
     case EVENT_NOFACTORIES:
     case EVENT_EVAC_CIVILIAN:
     case EVENT_BUILD:
-      return (true);
+      return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -244,9 +244,9 @@ bool TriggerClass::Event_Need_Data(EventType event) {
     case EVENT_NBUILDINGS_DESTROYED:
     case EVENT_NUNITS_DESTROYED:
     case EVENT_BUILD:
-      return (true);
+      return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -270,9 +270,9 @@ bool TriggerClass::Action_Need_Team(ActionType action) {
     case ACTION_CREATE_TEAM:
     case ACTION_DESTROY_TEAM:
     case ACTION_REINFORCEMENTS:
-      return (true);
+      return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -353,7 +353,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
   **	If this is not the event for this trigger, just return.
   */
   if (event != Event && Event != EVENT_ANY) {
-    return (false);
+    return false;
   }
 
   /*
@@ -362,7 +362,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
   if (Event == EVENT_TIME) {
     Data--;
     if (Data > 0) {
-      return (false);
+      return false;
     }
     Data = DataCopy;
   }
@@ -389,7 +389,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
     ** from the game after we go off.
     */
     if (AttachCount > 0) {
-      return (false);
+      return false;
     } else {
       IsPersistant = VOLATILE;
     }
@@ -523,7 +523,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
     Remove();
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -545,7 +545,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
   **	If this is not the event for this trigger, just return.
   */
   if (event != Event) {
-    return (false);
+    return false;
   }
 
   /*
@@ -554,7 +554,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
   if (Event == EVENT_TIME) {
     Data--;
     if (Data > 0) {
-      return (false);
+      return false;
     }
     Data = DataCopy;
   }
@@ -581,7 +581,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
     ** from the game after we go off.
     */
     if (AttachCount > 0) {
-      return (false);
+      return false;
     } else {
       IsPersistant = VOLATILE;
     }
@@ -706,7 +706,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
     Remove();
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -734,21 +734,21 @@ bool TriggerClass::Spring(EventType event, HousesType house, long data) {
   **	If this is not the event for this trigger, just return.
   */
   if (event != Event || house != House) {
-    return (false);
+    return false;
   }
 
   /*
   **	If credits-based, check 'data'
   */
   if (Event == EVENT_CREDITS && data < Data) {
-    return (false);
+    return false;
   }
 
   /*
   **	Building event check to ensure that the building number matches.
   */
   if (Event == EVENT_BUILD && data != Data) {
-    return (false);
+    return false;
   }
 
   /*
@@ -758,7 +758,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, long data) {
   */
   if (Event == EVENT_NBUILDINGS_DESTROYED || Event == EVENT_NUNITS_DESTROYED) {
     if (data < Data) {
-      return (false);
+      return false;
     }
   }
 
@@ -768,7 +768,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, long data) {
   if (Event == EVENT_TIME) {
     Data--;
     if (Data > 0) {
-      return (false);
+      return false;
     }
     Data = DataCopy;
   }
@@ -892,7 +892,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, long data) {
     Remove();
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -959,7 +959,7 @@ bool TriggerClass::Remove() {
 
   delete this;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -1204,18 +1204,18 @@ void TriggerClass::Write_INI(char* buffer, bool refresh) {
  *=============================================================================================*/
 TriggerClass* TriggerClass::As_Pointer(char const* name) {
   if (name == nullptr) {
-    return (nullptr);
+    return nullptr;
   }
 
   for (int i = 0; i < Triggers.Count(); i++) {
     TriggerClass* trigger = Triggers.Ptr(i);
 
     if (!stricmp(name, trigger->Name)) {
-      return (trigger);
+      return trigger;
     }
   }
 
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -1234,7 +1234,7 @@ void* TriggerClass::operator new(size_t) throw() {
   if (ptr) {
     ((TriggerClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -1270,16 +1270,16 @@ EventType TriggerClass::Event_From_Name(char const* name) {
   int i;
 
   if (name == nullptr) {
-    return (EVENT_NONE);
+    return EVENT_NONE;
   }
 
   for (i = EVENT_NONE; i < EVENT_COUNT; i++) {
     if (!stricmp(name, EventText[i + 1])) {
-      return ((EventType)i);
+      return (EventType)i;
     }
   }
 
-  return (EVENT_NONE);
+  return EVENT_NONE;
 }
 
 /***********************************************************************************************
@@ -1294,7 +1294,7 @@ EventType TriggerClass::Event_From_Name(char const* name) {
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
 char const* TriggerClass::Name_From_Event(EventType event) {
-  return (EventText[event + 1]);
+  return EventText[event + 1];
 }
 
 /***********************************************************************************************
@@ -1312,16 +1312,16 @@ TriggerClass::ActionType TriggerClass::Action_From_Name(char const* name) {
   int i;
 
   if (name == nullptr) {
-    return (ACTION_NONE);
+    return ACTION_NONE;
   }
 
   for (i = ACTION_NONE; i < ACTION_COUNT; i++) {
     if (!stricmp(name, ActionText[i + 1])) {
-      return ((ActionType)i);
+      return (ActionType)i;
     }
   }
 
-  return (ACTION_NONE);
+  return ACTION_NONE;
 }
 
 /***********************************************************************************************
@@ -1336,7 +1336,7 @@ TriggerClass::ActionType TriggerClass::Action_From_Name(char const* name) {
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
 char const* TriggerClass::Name_From_Action(ActionType action) {
-  return (ActionText[action + 1]);
+  return ActionText[action + 1];
 }
 
 /***********************************************************************************************
@@ -1352,7 +1352,7 @@ char const* TriggerClass::Name_From_Action(ActionType action) {
  *=============================================================================================*/
 TARGET TriggerClass::As_Target() const {
   Validate();
-  return (Build_Target(KIND_TRIGGER, Triggers.ID(this)));
+  return Build_Target(KIND_TRIGGER, Triggers.ID(this));
 }
 
 /***********************************************************************************************

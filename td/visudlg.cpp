@@ -116,8 +116,8 @@ void VisualControlsClass::Process() {
   **	Centers options button.
   */
   optionsbtn.X =
-      option_x + (option_width - optionsbtn.Width - (15 * RESFACTOR));
-  resetbtn.X = option_x + (15 * RESFACTOR);
+      option_x + (option_width - optionsbtn.Width - 15 * RESFACTOR);
+  resetbtn.X = option_x + 15 * RESFACTOR;
 
   resetbtn.Add_Tail(optionsbtn);
 
@@ -125,7 +125,7 @@ void VisualControlsClass::Process() {
   **	Brightness (value) control.
   */
   SliderClass brightness(BUTTON_BRIGHTNESS, slider_x,
-                         slider_y + (slider_y_spacing * 0), slider_width,
+                         slider_y + slider_y_spacing * 0, slider_width,
                          slider_height);
   brightness.Set_Thumb_Size(20 * RESFACTOR);
   brightness.Set_Value(Options.Get_Brightness());
@@ -134,7 +134,7 @@ void VisualControlsClass::Process() {
   /*
   **	Color (saturation) control.
   */
-  SliderClass color(BUTTON_COLOR, slider_x, slider_y + (slider_y_spacing * 1),
+  SliderClass color(BUTTON_COLOR, slider_x, slider_y + slider_y_spacing * 1,
                     slider_width, slider_height);
   color.Set_Thumb_Size(20 * RESFACTOR);
   color.Set_Value(Options.Get_Color());
@@ -144,7 +144,7 @@ void VisualControlsClass::Process() {
   **	Contrast control.
   */
   SliderClass contrast(BUTTON_CONTRAST, slider_x,
-                       slider_y + (slider_y_spacing * 2), slider_width,
+                       slider_y + slider_y_spacing * 2, slider_width,
                        slider_height);
   contrast.Set_Thumb_Size(20 * RESFACTOR);
   contrast.Set_Value(Options.Get_Contrast());
@@ -153,7 +153,7 @@ void VisualControlsClass::Process() {
   /*
   **	Tint (hue) control.
   */
-  SliderClass tint(BUTTON_TINT, slider_x, slider_y + (slider_y_spacing * 3),
+  SliderClass tint(BUTTON_TINT, slider_x, slider_y + slider_y_spacing * 3,
                    slider_width, slider_height);
   tint.Set_Thumb_Size(20 * RESFACTOR);
   tint.Set_Value(Options.Get_Tint());
@@ -241,12 +241,12 @@ void VisualControlsClass::Process() {
       /*
       **	Draw the titles.
       */
-      for (int i = 0; i < (sizeof(_titles) / sizeof(_titles[0])); i++) {
+      for (int i = 0; i < sizeof(_titles) / sizeof(_titles[0]); i++) {
         Fancy_Text_Print(
-            _titles[i], slider_x - (8 * RESFACTOR),
-            text_y + (i * slider_y_spacing), CC_GREEN, TBLACK,
+            _titles[i], slider_x - 8 * RESFACTOR,
+            text_y + i * slider_y_spacing, CC_GREEN, TBLACK,
             TPF_6PT_GRAD | TPF_RIGHT | TPF_NOSHADOW |
-                ((curbutton == i) ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));
+                (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));
       }
       optionsbtn.Draw_All();
       Show_Mouse();
@@ -258,23 +258,23 @@ void VisualControlsClass::Process() {
     */
     KeyNumType input = optionsbtn.Input();
     switch (input) {
-      case (BUTTON_BRIGHTNESS | KN_BUTTON):
+      case BUTTON_BRIGHTNESS | KN_BUTTON:
         Options.Set_Brightness(brightness.Get_Value());
         break;
 
-      case (BUTTON_COLOR | KN_BUTTON):
+      case BUTTON_COLOR | KN_BUTTON:
         Options.Set_Color(color.Get_Value());
         break;
 
-      case (BUTTON_CONTRAST | KN_BUTTON):
+      case BUTTON_CONTRAST | KN_BUTTON:
         Options.Set_Contrast(contrast.Get_Value());
         break;
 
-      case (BUTTON_TINT | KN_BUTTON):
+      case BUTTON_TINT | KN_BUTTON:
         Options.Set_Tint(tint.Get_Value());
         break;
 
-      case (BUTTON_RESET | KN_BUTTON):
+      case BUTTON_RESET | KN_BUTTON:
         selection = BUTTON_RESET;
         pressed = true;
         break;
@@ -285,23 +285,23 @@ void VisualControlsClass::Process() {
         pressed = true;
         break;
 
-      case (KN_LEFT):
-        if (curbutton <= (BUTTON_TINT - BUTTON_BASE)) {
+      case KN_LEFT:
+        if (curbutton <= BUTTON_TINT - BUTTON_BASE) {
           buttonsliders[curbutton]->Bump(1);
           switch (curbutton) {
-            case (BUTTON_BRIGHTNESS - BUTTON_BASE):
+            case BUTTON_BRIGHTNESS - BUTTON_BASE:
               Options.Set_Brightness(brightness.Get_Value());
               break;
 
-            case (BUTTON_COLOR - BUTTON_BASE):
+            case BUTTON_COLOR - BUTTON_BASE:
               Options.Set_Color(color.Get_Value());
               break;
 
-            case (BUTTON_CONTRAST - BUTTON_BASE):
+            case BUTTON_CONTRAST - BUTTON_BASE:
               Options.Set_Contrast(contrast.Get_Value());
               break;
 
-            case (BUTTON_TINT - BUTTON_BASE):
+            case BUTTON_TINT - BUTTON_BASE:
               Options.Set_Tint(tint.Get_Value());
               break;
           }
@@ -310,8 +310,8 @@ void VisualControlsClass::Process() {
           buttons[curbutton]->Flag_To_Redraw();
 
           curbutton--;
-          if (curbutton < (BUTTON_RESET - BUTTON_BASE)) {
-            curbutton = (BUTTON_OPTIONS - BUTTON_BASE);
+          if (curbutton < BUTTON_RESET - BUTTON_BASE) {
+            curbutton = BUTTON_OPTIONS - BUTTON_BASE;
           }
 
           buttons[curbutton]->Turn_On();
@@ -319,23 +319,23 @@ void VisualControlsClass::Process() {
         }
         break;
 
-      case (KN_RIGHT):
-        if (curbutton <= (BUTTON_TINT - BUTTON_BASE)) {
+      case KN_RIGHT:
+        if (curbutton <= BUTTON_TINT - BUTTON_BASE) {
           buttonsliders[curbutton]->Bump(0);
           switch (curbutton) {
-            case (BUTTON_BRIGHTNESS - BUTTON_BASE):
+            case BUTTON_BRIGHTNESS - BUTTON_BASE:
               Options.Set_Brightness(brightness.Get_Value());
               break;
 
-            case (BUTTON_COLOR - BUTTON_BASE):
+            case BUTTON_COLOR - BUTTON_BASE:
               Options.Set_Color(color.Get_Value());
               break;
 
-            case (BUTTON_CONTRAST - BUTTON_BASE):
+            case BUTTON_CONTRAST - BUTTON_BASE:
               Options.Set_Contrast(contrast.Get_Value());
               break;
 
-            case (BUTTON_TINT - BUTTON_BASE):
+            case BUTTON_TINT - BUTTON_BASE:
               Options.Set_Tint(tint.Get_Value());
               break;
           }
@@ -344,8 +344,8 @@ void VisualControlsClass::Process() {
           buttons[curbutton]->Flag_To_Redraw();
 
           curbutton++;
-          if (curbutton > (BUTTON_OPTIONS - BUTTON_BASE)) {
-            curbutton = (BUTTON_RESET - BUTTON_BASE);
+          if (curbutton > BUTTON_OPTIONS - BUTTON_BASE) {
+            curbutton = BUTTON_RESET - BUTTON_BASE;
           }
 
           buttons[curbutton]->Turn_On();
@@ -353,8 +353,8 @@ void VisualControlsClass::Process() {
         }
         break;
 
-      case (KN_UP):
-        if (curbutton <= (BUTTON_TINT - BUTTON_BASE)) {
+      case KN_UP:
+        if (curbutton <= BUTTON_TINT - BUTTON_BASE) {
           partial = true;
         } else {
           buttons[curbutton]->Turn_Off();
@@ -362,15 +362,15 @@ void VisualControlsClass::Process() {
         }
 
         curbutton--;
-        if (curbutton == (BUTTON_RESET - BUTTON_BASE)) {
+        if (curbutton == BUTTON_RESET - BUTTON_BASE) {
           curbutton--;
         }
 
         if (curbutton < 0) {
-          curbutton = (BUTTON_RESET - BUTTON_BASE);
+          curbutton = BUTTON_RESET - BUTTON_BASE;
         }
 
-        if (curbutton <= (BUTTON_TINT - BUTTON_BASE)) {
+        if (curbutton <= BUTTON_TINT - BUTTON_BASE) {
           partial = true;
         } else {
           buttons[curbutton]->Turn_On();
@@ -378,8 +378,8 @@ void VisualControlsClass::Process() {
         }
         break;
 
-      case (KN_DOWN):
-        if (curbutton <= (BUTTON_TINT - BUTTON_BASE)) {
+      case KN_DOWN:
+        if (curbutton <= BUTTON_TINT - BUTTON_BASE) {
           partial = true;
         } else {
           buttons[curbutton]->Turn_Off();
@@ -387,11 +387,11 @@ void VisualControlsClass::Process() {
         }
 
         curbutton++;
-        if (curbutton > (BUTTON_RESET - BUTTON_BASE)) {
+        if (curbutton > BUTTON_RESET - BUTTON_BASE) {
           curbutton = 0;
         }
 
-        if (curbutton <= (BUTTON_TINT - BUTTON_BASE)) {
+        if (curbutton <= BUTTON_TINT - BUTTON_BASE) {
           partial = true;
         } else {
           buttons[curbutton]->Turn_On();
@@ -399,7 +399,7 @@ void VisualControlsClass::Process() {
         }
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
         selection = curbutton + BUTTON_BRIGHTNESS;
         pressed = true;
         break;
@@ -410,7 +410,7 @@ void VisualControlsClass::Process() {
 
     if (pressed) {
       switch (selection) {
-        case (BUTTON_RESET):
+        case BUTTON_RESET:
           brightness.Set_Value(128);
           contrast.Set_Value(128);
           color.Set_Value(128);
@@ -422,7 +422,7 @@ void VisualControlsClass::Process() {
           Options.Set_Tint(128);
           break;
 
-        case (BUTTON_OPTIONS):
+        case BUTTON_OPTIONS:
           process = false;
           break;
       }

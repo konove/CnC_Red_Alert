@@ -179,7 +179,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   */
   Socket = socket(AF_INET, SOCK_DGRAM, 0);
   if (Socket == INVALID_SOCKET) {
-    return (false);
+    return false;
   }
 
   /*
@@ -192,7 +192,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
 
   if (bind(Socket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
     Close_Socket();
-    return (false);
+    return false;
   }
 
   /*
@@ -218,7 +218,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   *any packets that
   ** we send to ourselves.
   */
-  uint32_t** addresses = (uint32_t**)(host_info->h_addr_list);
+  uint32_t** addresses = (uint32_t**)host_info->h_addr_list;
 
   for (;;) {
     if (!*addresses) break;
@@ -233,7 +233,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
     OutputDebugString(temp);
 
     unsigned char* a = new unsigned char[4];
-    *((uint32_t*)a) = address;
+    *(uint32_t*)a = address;
     if (!LocalAddresses.Add(a)) {
       delete[] a;
     }
@@ -252,7 +252,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
 
   WinsockInterfaceClass::Set_Socket_Options();
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************

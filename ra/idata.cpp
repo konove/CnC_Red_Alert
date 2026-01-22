@@ -967,7 +967,7 @@ InfantryTypeClass::InfantryTypeClass(
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 void* InfantryTypeClass::operator new(size_t) throw() {
-  return (InfantryTypes.Alloc());
+  return InfantryTypes.Alloc();
 }
 
 /***********************************************************************************************
@@ -1055,7 +1055,7 @@ void InfantryTypeClass::Init_Heap() {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
-  return (new InfantryClass(Type, house->Class->House));
+  return new InfantryClass(Type, house->Class->House);
 }
 
 /***********************************************************************************************
@@ -1081,12 +1081,12 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   if (i != nullptr) {
     COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
-      return (i->Unlimbo(coord, DIR_E));
+      return i->Unlimbo(coord, DIR_E);
     } else {
       delete i;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1111,7 +1111,7 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
 short const* InfantryTypeClass::Occupy_List(bool) const {
   static short const _list[] = {0, REFRESH_EOL};
 
-  return (&_list[0]);
+  return &_list[0];
 }
 
 #ifdef SCENARIO_EDITOR
@@ -1197,11 +1197,11 @@ InfantryType InfantryTypeClass::From_Name(char const* name) {
     for (InfantryType classid = INFANTRY_FIRST; classid < INFANTRY_COUNT;
          classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
-        return (classid);
+        return classid;
       }
     }
   }
-  return (INFANTRY_NONE);
+  return INFANTRY_NONE;
 }
 
 /***********************************************************************************************
@@ -1251,9 +1251,9 @@ void InfantryTypeClass::One_Time() {
 #ifndef NDEBUG
     RawFileClass ifile(fullname.c_str());
     if (ifile.Is_Available()) {
-      ((void const*&)uclass->CameoData) = Load_Alloc_Data(ifile);
+      (void const*&)uclass->CameoData = Load_Alloc_Data(ifile);
     } else {
-      ((void const*&)uclass->CameoData) = MFCD::Retrieve(fullname);
+      (void const*&)uclass->CameoData = MFCD::Retrieve(fullname);
     }
 #else
     ((void const*&)uclass->CameoData) = MFCD::Retrieve(fullname);
@@ -1280,9 +1280,9 @@ void InfantryTypeClass::One_Time() {
 int InfantryTypeClass::Full_Name() const {
   if (Debug_Map || !IsNominal || Rule.IsNamed || Type == INFANTRY_C10 ||
       Type == INFANTRY_DELPHI || Type == INFANTRY_EINSTEIN) {
-    return (TechnoTypeClass::Full_Name());
+    return TechnoTypeClass::Full_Name();
   }
-  return (TXT_CIVILIAN);
+  return TXT_CIVILIAN;
 }
 
 /***********************************************************************************************
@@ -1304,7 +1304,7 @@ int InfantryTypeClass::Full_Name() const {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 InfantryTypeClass& InfantryTypeClass::As_Reference(InfantryType type) {
-  return (*InfantryTypes.Ptr(type));
+  return *InfantryTypes.Ptr(type);
 }
 
 /***********************************************************************************************
@@ -1331,9 +1331,9 @@ bool InfantryTypeClass::Read_INI(CCINIClass& ini) {
     IsDog = ini.Get_Bool(Name(), "IsCanine", IsDog);
     if (IsBomber) IsCapture = true;
     if (IsDog) IsLeader = false;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 void InfantryTypeClass::Dimensions(int& width, int& height) const {

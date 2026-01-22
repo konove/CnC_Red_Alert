@@ -110,7 +110,7 @@ bool TemplateClass::Mark(MarkType mark) {
           *don't do any action *	since none is required.
           */
           char* mapptr = (char*)map;
-          bool real = (mapptr[number] != -1);
+          bool real = mapptr[number] != -1;
 
           if (real) {
             /*
@@ -163,9 +163,9 @@ bool TemplateClass::Mark(MarkType mark) {
       delete this;
       noup = false;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -187,7 +187,7 @@ void* TemplateClass::operator new(size_t) throw() {
   if (ptr) {
     ((TemplateClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************

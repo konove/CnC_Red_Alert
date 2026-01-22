@@ -49,10 +49,10 @@ class GaugeClass : public ControlClass {
   int Draw_Me(int forced = false) override;
   virtual int Set_Maximum(int value);
   virtual int Set_Value(int value);
-  virtual int Get_Value() const { return (CurValue); }
+  virtual int Get_Value() const { return CurValue; }
   virtual void Use_Thumb(int value) { HasThumb = value ? true : false; }
 
-  virtual int Thumb_Pixels() { return (4); }
+  virtual int Thumb_Pixels() { return 4; }
 
   /*
   **	If this gauge has a color to the left of the current setting, then this

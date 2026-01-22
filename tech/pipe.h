@@ -58,7 +58,7 @@ class Pipe {
   Pipe& operator=(Pipe&&) = delete;
 
   virtual int Flush();
-  virtual int End() { return (Flush()); }
+  virtual int End() { return Flush(); }
   virtual void Put_To(Pipe* pipe);
   void Put_To(Pipe& pipe) { Put_To(&pipe); }
   virtual int Put(void const* source, int slen);

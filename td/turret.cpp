@@ -128,15 +128,15 @@ void TurretClass::Debug_Dump(MonoClass* mono) const {
 bool TurretClass::Ok_To_Move(DirType dir) {
   if (Class->IsLockTurret) {
     if (IsRotating) {
-      return (false);
+      return false;
     } else {
       if (SecondaryFacing.Difference(dir)) {
         SecondaryFacing.Set_Desired(dir);
-        return (false);
+        return false;
       }
     }
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -228,7 +228,7 @@ BulletClass* TurretClass::Fire_At(TARGET target, int which) {
     }
   }
 
-  return (bullet);
+  return bullet;
 }
 
 /***********************************************************************************************
@@ -257,14 +257,14 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
 
   if (fire == FIRE_OK) {
     WeaponTypeClass const* weapon =
-        (which == 0) ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
+        which == 0 ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 
     /*
     **	If this unit cannot fire while moving, then bail.
     */
     if ((!Class->IsTurretEquipped || Class->IsLockTurret) &&
         Target_Legal(NavCom)) {
-      return (FIRE_MOVING);
+      return FIRE_MOVING;
     }
 
     /*
@@ -273,7 +273,7 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
     */
     if (!IsFiring && IsRotating &&
         !BulletTypeClass::As_Reference(weapon->Fires).IsHoming) {
-      return (FIRE_ROTATING);
+      return FIRE_ROTATING;
     }
 
     dir = Direction(target);
@@ -301,11 +301,11 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
       diff >>= 2;
     }
     if (diff < 8) {
-      return (DriveClass::Can_Fire(target, which));
+      return DriveClass::Can_Fire(target, which);
     }
-    return (FIRE_FACING);
+    return FIRE_FACING;
   }
-  return (fire);
+  return fire;
 }
 
 /***********************************************************************************************
@@ -394,7 +394,7 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
     coord = Coord_Move(coord, dir, dist);
   }
 
-  return (coord);
+  return coord;
 }
 
 /***********************************************************************************************
@@ -416,9 +416,9 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
 bool TurretClass::Unlimbo(COORDINATE coord, DirType dir) {
   if (DriveClass::Unlimbo(coord, dir)) {
     SecondaryFacing = dir;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -453,8 +453,8 @@ DirType TurretClass::Fire_Direction() const {
         return (DirType)(SecondaryFacing + (DirType)adj);
       }
     }
-    return (SecondaryFacing.Current());
+    return SecondaryFacing.Current();
   }
 
-  return (PrimaryFacing.Current());
+  return PrimaryFacing.Current();
 }

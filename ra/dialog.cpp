@@ -130,7 +130,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   for (int yy = 0; yy < h; yy += 6) {
     CC_Draw_Shape(shapedata, 0, 7 * RESFACTOR, yy, WINDOW_PARTIAL,
                   SHAPE_WIN_REL);
-    CC_Draw_Shape(shapedata, 1, w - ((7 + 8) * RESFACTOR), yy, WINDOW_PARTIAL,
+    CC_Draw_Shape(shapedata, 1, w - (7 + 8) * RESFACTOR, yy, WINDOW_PARTIAL,
                   SHAPE_WIN_REL);
   }
 
@@ -143,7 +143,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   CC_Draw_Shape(shapedata, 0, 0, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   shapedata = MFCD::Retrieve("DD-RIGHT.SHP");
-  int rightx = w - (7 * RESFACTOR);
+  int rightx = w - 7 * RESFACTOR;
 #if RESFACTOR == 1
   rightx--;
 #endif
@@ -169,9 +169,9 @@ void Dialog_Box(int x, int y, int w, int h) {
   CC_Draw_Shape(shapedata, 0, 0, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 1, w - (12 * RESFACTOR - 1), 0, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 2, 0, h - (12 * RESFACTOR), WINDOW_PARTIAL,
+  CC_Draw_Shape(shapedata, 2, 0, h - 12 * RESFACTOR, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 3, w - (12 * RESFACTOR - 1), h - (12 * RESFACTOR),
+  CC_Draw_Shape(shapedata, 3, w - (12 * RESFACTOR - 1), h - 12 * RESFACTOR,
                 WINDOW_PARTIAL, SHAPE_WIN_REL);
 
 #ifdef WIN32
@@ -237,11 +237,11 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
   }
 
   switch (up) {
-    case (BOXSTYLE_BOX):
+    case BOXSTYLE_BOX:
       LogicPage->Draw_Rect(x, y, x + w, y + h, style.Highlight);
       break;
 
-    case (BOXSTYLE_BORDER):
+    case BOXSTYLE_BORDER:
       LogicPage->Draw_Rect(x + 1, y + 1, x + w - 1, y + h - 1, style.Highlight);
       break;
 
@@ -331,7 +331,7 @@ int Format_Window_String(char* string, int maxlinelen, int& width,
       *string++ = '\r';
     }
   }
-  return (lines);
+  return lines;
 }
 
 /***********************************************************************************************
@@ -363,7 +363,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   **	If it is to be rendered to the seenpage, then
   **	hide the mouse.
   */
-  if (LogicPage == (&SeenBuff)) Conditional_Hide_Mouse(x, y, x + w, y + h);
+  if (LogicPage == &SeenBuff) Conditional_Hide_Mouse(x, y, x + w, y + h);
 
   Draw_Box(x, y, w, h, style, true);
 
@@ -433,7 +433,7 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y,
   /*
   **	A gradient font always requires special fixups for the palette
   */
-  int point = (flag & (TextPrintType)0x000F);
+  int point = flag & (TextPrintType)0x000F;
   if (point == TPF_VCR || point == TPF_6PT_GRAD || point == TPF_METAL12 ||
       point == TPF_EFNT || point == TPF_TYPE) {
     /*
@@ -568,8 +568,7 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y,
   /*
   **	Change the current font palette according to the dropshadow flags.
   */
-  shadow = (flag &
-            (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_LIGHTSHADOW));
+  shadow = flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_LIGHTSHADOW);
   switch (shadow) {
     /*
     **	The text is rendered plain.
@@ -600,7 +599,7 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y,
     **	dialog system.
     */
     case TPF_LIGHTSHADOW:
-      fontpalette[2] = ((14 * 16) + 7) + 1;
+      fontpalette[2] = 14 * 16 + 7 + 1;
       fontpalette[3] = back;
       xspace -= 1;
       break;
@@ -860,7 +859,7 @@ void Conquer_Clip_Text_Print(char const* text, unsigned x, unsigned y,
           }
           offset = *tabs;
         } else {
-          offset = ((offset + 1 / 50) + 1) * 50;
+          offset = (offset + 1 / 50 + 1) * 50;
         }
         source = ptr + 1;
       } else {
@@ -900,7 +899,7 @@ void Plain_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
   RemapControlType scheme;
 
   memset(&scheme, 0, sizeof(RemapControlType));
-  memset(&(scheme.FontRemap[4]), fore, 12);
+  memset(&scheme.FontRemap[4], fore, 12);
 
   scheme.BrightColor = fore;
   scheme.Color = fore;
@@ -946,7 +945,7 @@ void Plain_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
   RemapControlType scheme;
 
   memset(&scheme, 0, sizeof(RemapControlType));
-  memset(&(scheme.FontRemap[4]), fore, 12);
+  memset(&scheme.FontRemap[4], fore, 12);
 
   scheme.BrightColor = fore;
   scheme.Color = fore;
@@ -967,7 +966,7 @@ unsigned char* Font_Palette(int color) {
 
   memset(_fpalette, '\0', sizeof(_fpalette));
   memset(&_fpalette[11], color, 5);
-  return (_fpalette);
+  return _fpalette;
 }
 
 /***********************************************************************************************
@@ -999,18 +998,19 @@ void Draw_Caption(char const* text, int x, int y, int w) {
   */
   if (text != nullptr && *text != '\0') {
     if (Debug_Map) {
-      Fancy_Text_Print(text, w / 2 + x, (2 * RESFACTOR) + y,
+      Fancy_Text_Print(text, w / 2 + x, 2 * RESFACTOR + y,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | TPF_EFNT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     } else {
-      Fancy_Text_Print(text, w / 2 + x, (8 * RESFACTOR) + y,
+      Fancy_Text_Print(text, w / 2 + x, 8 * RESFACTOR + y,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | TPF_TEXT);
       int length = String_Pixel_Width(text);
-      LogicPage->Draw_Line((x + (w / 2)) - (length / 2),
-                           y + FontHeight + FontYSpacing + (8 * RESFACTOR),
-                           (x + (w / 2)) + (length / 2),
-                           y + FontHeight + FontYSpacing + (8 * RESFACTOR),
+      LogicPage->Draw_Line(
+          x + w / 2 - length / 2,
+                           y + FontHeight + FontYSpacing + 8 * RESFACTOR,
+                           x + w / 2 + length / 2,
+                           y + FontHeight + FontYSpacing + 8 * RESFACTOR,
                            GadgetClass::Get_Color_Scheme()->Box);
     }
   }

@@ -57,7 +57,7 @@ class GenericNode {
     if (&node != this) {
       node.Link(this);
     }
-    return (*this);
+    return *this;
   }
 
   void Unlink() {
@@ -77,7 +77,7 @@ class GenericNode {
     while (node->PrevNode) {
       node = PrevNode;
     }
-    return ((GenericList*)this);
+    return (GenericList*)this;
   }
   void Link(GenericNode* node) {
     assert(node != nullptr);
@@ -88,8 +88,8 @@ class GenericNode {
     NextNode = node;
   }
 
-  GenericNode* Next() const { return (NextNode); }
-  GenericNode* Prev() const { return (PrevNode); }
+  GenericNode* Next() const { return NextNode; }
+  GenericNode* Prev() const { return PrevNode; }
   bool Is_Valid() const { return NextNode != nullptr && PrevNode != nullptr; }
 
  protected:
@@ -105,9 +105,9 @@ class GenericList {
  public:
   GenericList() { FirstNode.Link(&LastNode); }
 
-  GenericNode* First() const { return (FirstNode.Next()); }
-  GenericNode* Last() const { return (LastNode.Prev()); }
-  bool Is_Empty() const { return (!FirstNode.Next()->Is_Valid()); }
+  GenericNode* First() const { return FirstNode.Next(); }
+  GenericNode* Last() const { return LastNode.Prev(); }
+  bool Is_Empty() const { return !FirstNode.Next()->Is_Valid(); }
   void Add_Head(GenericNode* node) { FirstNode.Link(node); }
   void Add_Tail(GenericNode* node) { LastNode.Prev()->Link(node); }
   void Delete() {
@@ -141,9 +141,9 @@ class List;
 template <class T>
 class Node : public GenericNode {
  public:
-  List<T>* Main_List() const { return ((List<T>*)GenericNode::Main_List()); }
-  T* Next() const { return ((T*)GenericNode::Next()); }
-  T* Prev() const { return ((T*)GenericNode::Prev()); }
+  List<T>* Main_List() const { return (List<T>*)GenericNode::Main_List(); }
+  T* Next() const { return (T*)GenericNode::Next(); }
+  T* Prev() const { return (T*)GenericNode::Prev(); }
 };
 
 /*
@@ -154,8 +154,8 @@ class Node : public GenericNode {
 template <class T>
 class List : public GenericList {
  public:
-  T* First() const { return ((T*)GenericList::First()); }
-  T* Last() const { return ((T*)GenericList::Last()); }
+  T* First() const { return (T*)GenericList::First(); }
+  T* Last() const { return (T*)GenericList::Last(); }
 };
 
 #endif

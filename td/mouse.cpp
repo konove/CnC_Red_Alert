@@ -177,7 +177,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
   *the *	change.
   */
   if (!startup ||
-      (MouseShapes && ((mouse != CurrentMouseShape) || (wwsmall != IsSmall)))) {
+      (MouseShapes && (mouse != CurrentMouseShape || wwsmall != IsSmall))) {
     startup = true;
 
     Timer.Set(control->FrameRate);
@@ -188,15 +188,15 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
     int rate = Options.Normalize_Delay(control->FrameRate);
     Control.Set_Rate(std::max(rate, 1));
 #endif
-    baseshp = (wwsmall) ? control->SmallFrame : control->StartFrame;
+    baseshp = wwsmall ? control->SmallFrame : control->StartFrame;
 
     Set_Mouse_Cursor(control->X, control->Y,
                      Extract_Shape(MouseShapes, baseshp + Frame / 4));
     CurrentMouseShape = mouse;
     IsSmall = wwsmall;
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -235,7 +235,7 @@ void MouseClass::AI(KeyNumType& input, int x, int y) {
 #endif
 
     if (!IsSmall || control->SmallFrame != -1) {
-      int baseframe = (IsSmall) ? control->SmallFrame : control->StartFrame;
+      int baseframe = IsSmall ? control->SmallFrame : control->StartFrame;
       mouse_shape_ptr = Extract_Shape(MouseShapes, baseframe + Frame);
       if (mouse_shape_ptr) {
         Set_Mouse_Cursor(control->X, control->Y, mouse_shape_ptr);
@@ -295,7 +295,7 @@ void MouseClass::One_Time() {
     MouseShapes = MixFileClass::Retrieve("MOUSE.SHP");
   }
 
-  VTable = ((void**)(((char*)this) + sizeof(VectorClass<CellClass>) - 4))[0];
+  VTable = ((void**)((char*)this + sizeof(VectorClass<CellClass>) - 4))[0];
 }
 
 /***********************************************************************************************

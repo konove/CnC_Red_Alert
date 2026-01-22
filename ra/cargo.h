@@ -65,7 +65,7 @@ class CargoClass {
   void AI() {}
 
   int How_Many() const { return Quantity; }
-  bool Is_Something_Attached() const { return (CargoHold != nullptr); }
+  bool Is_Something_Attached() const { return CargoHold != nullptr; }
   FootClass* Attached_Object() const;
   FootClass* Detach_Object();
   void Attach(FootClass* object);

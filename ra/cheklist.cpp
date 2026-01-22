@@ -54,13 +54,13 @@
 #include "port/ex_string.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/gadget.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/wwstd.h"
+
 /***************************************************************************
  * CheckListClass::CheckListClass -- constructor                           *
  *                                                                         *
@@ -125,13 +125,13 @@ CheckListClass::~CheckListClass() {
  *=============================================================================================*/
 int CheckListClass::Add_Item(char const* text) {
   CheckObject* obj = new CheckObject(text, false);
-  return (ListClass::Add_Item((char const*)obj));
+  return ListClass::Add_Item((char const*)obj);
 }
 
 char const* CheckListClass::Current_Item() const {
   CheckObject* obj = (CheckObject*)ListClass::Current_Item();
   if (obj) {
-    return (obj->Text);
+    return obj->Text;
   }
   return nullptr;
 }
@@ -154,7 +154,7 @@ char const* CheckListClass::Current_Item() const {
 char const* CheckListClass::Get_Item(int index) const {
   CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
   if (obj) {
-    return (obj->Text);
+    return obj->Text;
   }
   return nullptr;
 }
@@ -257,9 +257,9 @@ void CheckListClass::Check_Item(int index, bool checked) {
 bool CheckListClass::Is_Checked(int index) const {
   CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
   if (obj) {
-    return (obj->IsChecked);
+    return obj->IsChecked;
   }
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -285,7 +285,7 @@ int CheckListClass::Action(unsigned flags, KeyNumType& key) {
   ** If this is a read-only list, it's a display-only device
   */
   if (IsReadOnly) {
-    return (false);
+    return false;
   }
 
   /*
@@ -301,7 +301,7 @@ int CheckListClass::Action(unsigned flags, KeyNumType& key) {
     Check_Item(SelectedIndex, !Is_Checked(SelectedIndex));
   }
 
-  return (rc);
+  return rc;
 }
 
 /***************************************************************************

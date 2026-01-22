@@ -94,13 +94,13 @@ int RandomClass::operator()() {
   /*
   **	Transform the seed value into the next number in the sequence.
   */
-  Seed = (Seed * MULT_CONSTANT) + ADD_CONSTANT;
+  Seed = Seed * MULT_CONSTANT + ADD_CONSTANT;
 
   /*
   **	Extract the 'random' bits from the seed and return that value as the
   **	random number result.
   */
-  return ((Seed >> THROW_AWAY_BITS) & (~((~0) << SIGNIFICANT_BITS)));
+  return Seed >> THROW_AWAY_BITS & ~(~0 << SIGNIFICANT_BITS);
 }
 
 /***********************************************************************************************
@@ -134,7 +134,7 @@ int RandomClass::operator()(int minval, int maxval) {
   **	the number to return is actually implicit from the
   **	parameters.
   */
-  if (minval == maxval) return (minval);
+  if (minval == maxval) return minval;
 
   /*
   **	Ensure that the min and max range values are in proper order.
@@ -153,7 +153,7 @@ int RandomClass::operator()(int minval, int maxval) {
   */
   int magnitude = maxval - minval;
   int highbit = SIGNIFICANT_BITS - 1;
-  while ((magnitude & (1 << highbit)) == 0 && highbit > 0) {
+  while ((magnitude & 1 << highbit) == 0 && highbit > 0) {
     highbit--;
   }
 
@@ -161,7 +161,7 @@ int RandomClass::operator()(int minval, int maxval) {
   **	Create a full bit mask pattern that has all bits set that just
   **	barely covers the magnitude of the number range desired.
   */
-  int mask = ~((~0L) << (highbit + 1));
+  int mask = ~(~0L << (highbit + 1));
 
   /*
   **	Keep picking random numbers until it fits within the magnitude desired.
@@ -175,5 +175,5 @@ int RandomClass::operator()(int minval, int maxval) {
   **	Finally, bias the random number pick to the start of the range
   **	requested.
   */
-  return (pick + minval);
+  return pick + minval;
 }

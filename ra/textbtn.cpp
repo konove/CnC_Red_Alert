@@ -49,7 +49,6 @@
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/dialog.h"
-#include "ra/gadget.h"
 #include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
@@ -208,9 +207,9 @@ int TextButtonClass::Draw_Me(int forced) {
     if (LogicPage == &SeenBuff) {
       Conditional_Show_Mouse();
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************

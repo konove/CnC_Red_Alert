@@ -120,9 +120,9 @@ TargetClass::TargetClass(CellClass const* ptr) {
 
 CellClass* xTargetClass::As_Cell() const {
   if (Target.Sub.Exponent == RTTI_CELL) {
-    return (&Map[(CELL)Target.Sub.Mantissa]);
+    return &Map[(CELL)Target.Sub.Mantissa];
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -142,8 +142,8 @@ CellClass* xTargetClass::As_Cell() const {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TriggerClass* As_Trigger(TARGET target) {
-  return (Is_Target_Trigger(target) ? Triggers.Raw_Ptr(Target_Value(target))
-                                    : nullptr);
+  return Is_Target_Trigger(target) ? Triggers.Raw_Ptr(Target_Value(target))
+                                   : nullptr;
 }
 
 /***********************************************************************************************
@@ -162,8 +162,7 @@ TriggerClass* As_Trigger(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamClass* As_Team(TARGET target) {
-  return (Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target))
-                                 : nullptr);
+  return Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target)) : nullptr;
 }
 
 /***********************************************************************************************
@@ -183,8 +182,8 @@ TeamClass* As_Team(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamTypeClass* As_TeamType(TARGET target) {
-  return (Is_Target_TeamType(target) ? TeamTypes.Raw_Ptr(Target_Value(target))
-                                     : nullptr);
+  return Is_Target_TeamType(target) ? TeamTypes.Raw_Ptr(Target_Value(target))
+                                    : nullptr;
 }
 
 /***********************************************************************************************
@@ -205,8 +204,8 @@ TeamTypeClass* As_TeamType(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 AnimClass* As_Animation(TARGET target) {
-  return (Is_Target_Animation(target) ? Anims.Raw_Ptr(Target_Value(target))
-                                      : nullptr);
+  return Is_Target_Animation(target) ? Anims.Raw_Ptr(Target_Value(target))
+                                     : nullptr;
 }
 
 /***********************************************************************************************
@@ -225,8 +224,8 @@ AnimClass* As_Animation(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 BulletClass* As_Bullet(TARGET target) {
-  return (Is_Target_Bullet(target) ? Bullets.Raw_Ptr(Target_Value(target))
-                                   : nullptr);
+  return Is_Target_Bullet(target) ? Bullets.Raw_Ptr(Target_Value(target))
+                                  : nullptr;
 }
 
 /***********************************************************************************************
@@ -246,8 +245,8 @@ BulletClass* As_Bullet(TARGET target) {
  * HISTORY: * 08/27/1995 JLB : Created. *
  *=============================================================================================*/
 AircraftClass* As_Aircraft(TARGET target) {
-  return (Is_Target_Aircraft(target) ? Aircraft.Raw_Ptr(Target_Value(target))
-                                     : nullptr);
+  return Is_Target_Aircraft(target) ? Aircraft.Raw_Ptr(Target_Value(target))
+                                    : nullptr;
 }
 
 /***********************************************************************************************
@@ -274,7 +273,7 @@ TechnoClass* As_Techno(TARGET target) {
   if (obj && obj->Is_Techno()) {
     return (TechnoClass*)obj;
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -344,7 +343,7 @@ ObjectClass* As_Object(TARGET target) {
     object = nullptr;
   }
 
-  return (object);
+  return object;
 }
 
 /***********************************************************************************************
@@ -363,8 +362,7 @@ ObjectClass* As_Object(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass* As_Unit(TARGET target) {
-  return (Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target))
-                                 : nullptr);
+  return Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target)) : nullptr;
 }
 
 /***********************************************************************************************
@@ -384,8 +382,8 @@ UnitClass* As_Unit(TARGET target) {
  * HISTORY: * 07/16/1996 JLB : Created. *
  *=============================================================================================*/
 VesselClass* As_Vessel(TARGET target) {
-  return (Is_Target_Vessel(target) ? Vessels.Raw_Ptr(Target_Value(target))
-                                   : nullptr);
+  return Is_Target_Vessel(target) ? Vessels.Raw_Ptr(Target_Value(target))
+                                  : nullptr;
 }
 
 /***********************************************************************************************
@@ -405,8 +403,8 @@ VesselClass* As_Vessel(TARGET target) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 InfantryClass* As_Infantry(TARGET target) {
-  return (Is_Target_Infantry(target) ? Infantry.Raw_Ptr(Target_Value(target))
-                                     : nullptr);
+  return Is_Target_Infantry(target) ? Infantry.Raw_Ptr(Target_Value(target))
+                                    : nullptr;
 }
 
 /***********************************************************************************************
@@ -425,8 +423,8 @@ InfantryClass* As_Infantry(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 BuildingClass* As_Building(TARGET target) {
-  return (Is_Target_Building(target) ? Buildings.Raw_Ptr(Target_Value(target))
-                                     : nullptr);
+  return Is_Target_Building(target) ? Buildings.Raw_Ptr(Target_Value(target))
+                                    : nullptr;
 }
 
 #ifdef NEVER
@@ -474,7 +472,7 @@ bool Target_Legal(TARGET target) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-CELL As_Cell(TARGET target) { return (Coord_Cell(As_Coord(target))); }
+CELL As_Cell(TARGET target) { return Coord_Cell(As_Coord(target)); }
 
 /***********************************************************************************************
  * As_Coord -- Converts a target value into a coordinate value. *
@@ -501,8 +499,8 @@ COORDINATE As_Coord(TARGET target) {
       int v = Target_Value(target);
 
       int x = ((v & 0x0FFF) << 4) + 0x0008;
-      int y = (((v >> 12) & 0x0FFF) << 4) + 0x0008;
-      return (XY_Coord(x, y));
+      int y = ((v >> 12 & 0x0FFF) << 4) + 0x0008;
+      return XY_Coord(x, y);
 
       //			return(Cell_Coord((CELL)Target_Value(target)));
     }
@@ -515,14 +513,14 @@ COORDINATE As_Coord(TARGET target) {
     ObjectClass* obj = As_Object(target);
     if (obj != nullptr) {
       assert(obj->IsActive);
-      return (obj->Target_Coord());
+      return obj->Target_Coord();
     }
   }
 
   /*
   **	An unrecognized target value results in a null coordinate value.
   */
-  return (0x00000000L);
+  return 0x00000000L;
 }
 
 /***********************************************************************************************
@@ -548,7 +546,7 @@ COORDINATE As_Movement_Coord(TARGET target) {
     *target number is *	actually the cell index number.
     */
     if (Is_Target_Cell(target)) {
-      return (Cell_Coord((CELL)Target_Value(target)));
+      return Cell_Coord((CELL)Target_Value(target));
     }
 
     /*
@@ -558,14 +556,14 @@ COORDINATE As_Movement_Coord(TARGET target) {
     */
     ObjectClass* obj = As_Object(target);
     if (obj) {
-      return (obj->Docking_Coord());
+      return obj->Docking_Coord();
     }
   }
 
   /*
   **	An unrecognized target value results in a null coordinate value.
   */
-  return (0x00000000L);
+  return 0x00000000L;
 }
 
 /***********************************************************************************************
@@ -586,94 +584,94 @@ COORDINATE As_Movement_Coord(TARGET target) {
 AbstractClass* xTargetClass::As_Abstract() const {
   switch ((RTTIType) * this) {
     case RTTI_TEAM:
-      return (Teams.Raw_Ptr(Value()));
+      return Teams.Raw_Ptr(Value());
 
     case RTTI_BULLET:
-      return (Bullets.Raw_Ptr(Value()));
+      return Bullets.Raw_Ptr(Value());
 
     case RTTI_OVERLAY:
-      return (Overlays.Raw_Ptr(Value()));
+      return Overlays.Raw_Ptr(Value());
 
     case RTTI_SMUDGE:
-      return (Smudges.Raw_Ptr(Value()));
+      return Smudges.Raw_Ptr(Value());
 
     case RTTI_UNIT:
-      return (Units.Raw_Ptr(Value()));
+      return Units.Raw_Ptr(Value());
 
     case RTTI_VESSEL:
-      return (Vessels.Raw_Ptr(Value()));
+      return Vessels.Raw_Ptr(Value());
 
     case RTTI_BUILDING:
-      return (Buildings.Raw_Ptr(Value()));
+      return Buildings.Raw_Ptr(Value());
 
     case RTTI_INFANTRY:
-      return (Infantry.Raw_Ptr(Value()));
+      return Infantry.Raw_Ptr(Value());
 
     case RTTI_AIRCRAFT:
-      return (Aircraft.Raw_Ptr(Value()));
+      return Aircraft.Raw_Ptr(Value());
 
     case RTTI_TERRAIN:
-      return (Terrains.Raw_Ptr(Value()));
+      return Terrains.Raw_Ptr(Value());
 
     case RTTI_ANIM:
-      return (Anims.Raw_Ptr(Value()));
+      return Anims.Raw_Ptr(Value());
 
     default:
       break;
   }
-  return (nullptr);
+  return nullptr;
 }
 
 AbstractTypeClass* xTargetClass::As_TypeClass() const {
   switch ((RTTIType) * this) {
     case RTTI_TEAMTYPE:
-      return (TeamTypes.Raw_Ptr(Value()));
+      return TeamTypes.Raw_Ptr(Value());
 
     case RTTI_TRIGGERTYPE:
-      return (TriggerTypes.Raw_Ptr(Value()));
+      return TriggerTypes.Raw_Ptr(Value());
 
     case RTTI_BULLETTYPE:
-      return ((BulletTypeClass*)&BulletTypeClass::As_Reference(
-          BulletType(Value())));
+      return (BulletTypeClass*)&BulletTypeClass::As_Reference(
+          BulletType(Value()));
 
     case RTTI_OVERLAY:
-      return ((OverlayTypeClass*)&OverlayTypeClass::As_Reference(
-          OverlayType(Value())));
+      return (OverlayTypeClass*)&OverlayTypeClass::As_Reference(
+          OverlayType(Value()));
 
     case RTTI_SMUDGE:
-      return ((SmudgeTypeClass*)&SmudgeTypeClass::As_Reference(
-          SmudgeType(Value())));
+      return (SmudgeTypeClass*)&SmudgeTypeClass::As_Reference(
+          SmudgeType(Value()));
 
     case RTTI_UNIT:
-      return ((UnitTypeClass*)&UnitTypeClass::As_Reference(UnitType(Value())));
+      return (UnitTypeClass*)&UnitTypeClass::As_Reference(UnitType(Value()));
 
     case RTTI_VESSEL:
-      return ((VesselTypeClass*)&VesselTypeClass::As_Reference(
-          VesselType(Value())));
+      return (VesselTypeClass*)&VesselTypeClass::As_Reference(
+          VesselType(Value()));
 
     case RTTI_BUILDING:
-      return ((BuildingTypeClass*)&BuildingTypeClass::As_Reference(
-          StructType(Value())));
+      return (BuildingTypeClass*)&BuildingTypeClass::As_Reference(
+          StructType(Value()));
 
     case RTTI_INFANTRY:
-      return ((InfantryTypeClass*)&InfantryTypeClass::As_Reference(
-          InfantryType(Value())));
+      return (InfantryTypeClass*)&InfantryTypeClass::As_Reference(
+          InfantryType(Value()));
 
     case RTTI_AIRCRAFT:
-      return ((AircraftTypeClass*)&AircraftTypeClass::As_Reference(
-          AircraftType(Value())));
+      return (AircraftTypeClass*)&AircraftTypeClass::As_Reference(
+          AircraftType(Value()));
 
     case RTTI_TERRAIN:
-      return ((TerrainTypeClass*)&TerrainTypeClass::As_Reference(
-          TerrainType(Value())));
+      return (TerrainTypeClass*)&TerrainTypeClass::As_Reference(
+          TerrainType(Value()));
 
     case RTTI_ANIM:
-      return ((AnimTypeClass*)&AnimTypeClass::As_Reference(AnimType(Value())));
+      return (AnimTypeClass*)&AnimTypeClass::As_Reference(AnimType(Value()));
 
     default:
       break;
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -695,62 +693,62 @@ AbstractTypeClass* xTargetClass::As_TypeClass() const {
 TechnoClass* xTargetClass::As_Techno() const {
   switch ((RTTIType) * this) {
     case RTTI_UNIT:
-      return (Units.Raw_Ptr(Value()));
+      return Units.Raw_Ptr(Value());
 
     case RTTI_VESSEL:
-      return (Vessels.Raw_Ptr(Value()));
+      return Vessels.Raw_Ptr(Value());
 
     case RTTI_BUILDING:
-      return (Buildings.Raw_Ptr(Value()));
+      return Buildings.Raw_Ptr(Value());
 
     case RTTI_INFANTRY:
-      return (Infantry.Raw_Ptr(Value()));
+      return Infantry.Raw_Ptr(Value());
 
     case RTTI_AIRCRAFT:
-      return (Aircraft.Raw_Ptr(Value()));
+      return Aircraft.Raw_Ptr(Value());
 
     default:
       break;
   }
-  return (nullptr);
+  return nullptr;
 }
 
 ObjectClass* xTargetClass::As_Object() const {
   switch ((RTTIType) * this) {
     case RTTI_TERRAIN:
-      return (Terrains.Raw_Ptr(Value()));
+      return Terrains.Raw_Ptr(Value());
 
     case RTTI_SMUDGE:
-      return (Smudges.Raw_Ptr(Value()));
+      return Smudges.Raw_Ptr(Value());
 
     case RTTI_OVERLAY:
-      return (Overlays.Raw_Ptr(Value()));
+      return Overlays.Raw_Ptr(Value());
 
     case RTTI_BULLET:
-      return (Bullets.Raw_Ptr(Value()));
+      return Bullets.Raw_Ptr(Value());
 
     case RTTI_ANIM:
-      return (Anims.Raw_Ptr(Value()));
+      return Anims.Raw_Ptr(Value());
 
     case RTTI_UNIT:
-      return (Units.Raw_Ptr(Value()));
+      return Units.Raw_Ptr(Value());
 
     case RTTI_VESSEL:
-      return (Vessels.Raw_Ptr(Value()));
+      return Vessels.Raw_Ptr(Value());
 
     case RTTI_BUILDING:
-      return (Buildings.Raw_Ptr(Value()));
+      return Buildings.Raw_Ptr(Value());
 
     case RTTI_INFANTRY:
-      return (Infantry.Raw_Ptr(Value()));
+      return Infantry.Raw_Ptr(Value());
 
     case RTTI_AIRCRAFT:
-      return (Aircraft.Raw_Ptr(Value()));
+      return Aircraft.Raw_Ptr(Value());
 
     default:
       break;
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -776,7 +774,7 @@ TARGET As_Target(CELL cell) {
   x += 0x0008;
   y += 0x0008;
 
-  return (Build_Target(RTTI_CELL, ((y << 12) | x)));
+  return Build_Target(RTTI_CELL, y << 12 | x);
 }
 
 /***********************************************************************************************
@@ -801,7 +799,7 @@ TARGET As_Target(COORDINATE coord) {
   x >>= 4;
   y >>= 4;
 
-  return (Build_Target(RTTI_CELL, ((y << 12) | x)));
+  return Build_Target(RTTI_CELL, y << 12 | x);
 }
 
 /***********************************************************************************************
@@ -825,21 +823,21 @@ TechnoTypeClass const* As_TechnoType(TARGET target) {
   int val = Target_Value(target);
   switch (Target_Kind(target)) {
     case RTTI_INFANTRYTYPE:
-      return (&InfantryTypeClass::As_Reference(InfantryType(val)));
+      return &InfantryTypeClass::As_Reference(InfantryType(val));
 
     case RTTI_UNITTYPE:
-      return (&UnitTypeClass::As_Reference(UnitType(val)));
+      return &UnitTypeClass::As_Reference(UnitType(val));
 
     case RTTI_VESSELTYPE:
-      return (&VesselTypeClass::As_Reference(VesselType(val)));
+      return &VesselTypeClass::As_Reference(VesselType(val));
 
     case RTTI_AIRCRAFTTYPE:
-      return (&AircraftTypeClass::As_Reference(AircraftType(val)));
+      return &AircraftTypeClass::As_Reference(AircraftType(val));
 
     case RTTI_BUILDINGTYPE:
-      return (&BuildingTypeClass::As_Reference(StructType(val)));
+      return &BuildingTypeClass::As_Reference(StructType(val));
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -861,7 +859,7 @@ TechnoTypeClass const* As_TechnoType(TARGET target) {
  *=============================================================================================*/
 TriggerTypeClass* As_TriggerType(TARGET target) {
   if (Target_Kind(target) == RTTI_TRIGGERTYPE) {
-    return (TriggerTypes.Raw_Ptr(Target_Value(target)));
+    return TriggerTypes.Raw_Ptr(Target_Value(target));
   }
-  return (nullptr);
+  return nullptr;
 }

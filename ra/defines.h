@@ -571,7 +571,7 @@ inline TARGET Build_Target(RTTIType kind, int value) {
   target.Target = 0;
   target.Sub.Exponent = kind;
   target.Sub.Mantissa = value;
-  return (target.Target);
+  return target.Target;
 }
 
 #define TARGET_NONE ((TARGET)0)
@@ -2819,30 +2819,30 @@ typedef enum FacingType : int8_t {
 } FacingType;
 
 inline FacingType operator+(FacingType f1, FacingType f2) {
-  return (FacingType)(((int)f1 + (int)f2) & 0x07);
+  return (FacingType)((int)f1 + (int)f2 & 0x07);
 }
 inline FacingType operator+(FacingType f1, int f2) {
-  return (FacingType)(((int)f1 + (int)f2) & 0x07);
+  return (FacingType)((int)f1 + (int)f2 & 0x07);
 }
 
 inline FacingType operator-(FacingType f1, FacingType f2) {
-  return (FacingType)(((int)f1 - (int)f2) & 0x07);
+  return (FacingType)((int)f1 - (int)f2 & 0x07);
 }
 inline FacingType operator-(FacingType f1, int f2) {
-  return (FacingType)(((int)f1 - (int)f2) & 0x07);
+  return (FacingType)((int)f1 - (int)f2 & 0x07);
 }
 
 inline FacingType operator+=(FacingType& f1, FacingType f2) {
-  f1 = (FacingType)(((int)f1 + (int)f2) & 0x07);
-  return (f1);
+  f1 = (FacingType)((int)f1 + (int)f2 & 0x07);
+  return f1;
 }
 inline FacingType operator+=(FacingType& f1, int f2) {
-  f1 = (FacingType)(((int)f1 + (int)f2) & 0x07);
-  return (f1);
+  f1 = (FacingType)((int)f1 + (int)f2 & 0x07);
+  return f1;
 }
 
 inline int operator*(FacingType f1, FacingType f2) {
-  return ((int)f1 * (int)f2);
+  return (int)f1 * (int)f2;
 }
 
 #ifdef NEVER

@@ -77,7 +77,7 @@ GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)
   Set_Value(0);
 
   HasThumb = true;
-  IsHorizontal = (w > h);
+  IsHorizontal = w > h;
   IsColorized = true;
 
   ClickDiff = 0;
@@ -104,9 +104,9 @@ int GaugeClass::Set_Maximum(int value) {
   if (value != MaxValue) {
     MaxValue = value;
     Flag_To_Redraw();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -131,9 +131,9 @@ int GaugeClass::Set_Value(int value) {
   if (value != CurValue) {
     CurValue = value;
     Flag_To_Redraw();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -165,7 +165,7 @@ int GaugeClass::Pixel_To_Value(int pixel) {
   pixel = Bound(pixel, 0, maximum);
   //	pixel = std::min(pixel, maximum);
   //	pixel = std::max(pixel, 0);
-  return (Fixed_To_Cardinal(MaxValue, Cardinal_To_Fixed(maximum, pixel)));
+  return Fixed_To_Cardinal(MaxValue, Cardinal_To_Fixed(maximum, pixel));
 }
 
 /***********************************************************************************************
@@ -194,8 +194,7 @@ int GaugeClass::Value_To_Pixel(int value) {
     start = Y;
   }
   maximum -= 2;
-  return (start +
-          Fixed_To_Cardinal(maximum, Cardinal_To_Fixed(MaxValue, value)));
+  return start + Fixed_To_Cardinal(maximum, Cardinal_To_Fixed(MaxValue, value));
 }
 
 /***********************************************************************************************
@@ -233,10 +232,10 @@ int GaugeClass::Draw_Me(int forced) {
       int middle = Value_To_Pixel(CurValue);
       int color = CC_BRIGHT_GREEN;
       if (IsHorizontal) {
-        if (middle >= (X + 1))
+        if (middle >= X + 1)
           LogicPage->Fill_Rect(X + 1, Y + 1, middle, Y + Height - 2, color);
       } else {
-        if (middle >= (Y + 1))
+        if (middle >= Y + 1)
           LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, middle, color);
       }
     }
@@ -249,9 +248,9 @@ int GaugeClass::Draw_Me(int forced) {
     if (LogicPage == &SeenBuff) {
       Conditional_Show_Mouse();
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -276,7 +275,7 @@ int GaugeClass::Action(unsigned flags, KeyNumType& key) {
   */
   if (!HasThumb) {
     key = KN_NONE;
-    return (true);
+    return true;
   }
 
   /*
@@ -290,17 +289,17 @@ int GaugeClass::Action(unsigned flags, KeyNumType& key) {
   **	position according to the mouse position. In all other cases, ignore the
   **	button being held down.
   */
-  if ((flags & LEFTPRESS) || ((flags & LEFTHELD) && StuckOn == this)) {
+  if (flags & LEFTPRESS || (flags & LEFTHELD && StuckOn == this)) {
     /*
     ** Compute the difference between where we clicked, and the edge of
     ** the thumb (only if we clicked on the thumb.)
     */
     if (flags & LEFTPRESS) {
       int curpix = Value_To_Pixel(CurValue);
-      int clickpix = (IsHorizontal ? Get_Mouse_X() : Get_Mouse_Y());
+      int clickpix = IsHorizontal ? Get_Mouse_X() : Get_Mouse_Y();
 
-      if ((clickpix > curpix) && (clickpix - curpix) < Thumb_Pixels()) {
-        ClickDiff = (clickpix - curpix);
+      if (clickpix > curpix && clickpix - curpix < Thumb_Pixels()) {
+        ClickDiff = clickpix - curpix;
       } else {
         ClickDiff = 0;
       }
@@ -331,7 +330,7 @@ int GaugeClass::Action(unsigned flags, KeyNumType& key) {
       flags &= ~(LEFTHELD | LEFTRELEASE | LEFTPRESS);
       ControlClass::Action(0, key);
       key = KN_NONE;
-      return (true);
+      return true;
     }
 
   } else {
@@ -343,7 +342,7 @@ int GaugeClass::Action(unsigned flags, KeyNumType& key) {
     */
     flags &= ~LEFTHELD;
   }
-  return (ControlClass::Action(flags, key));
+  return ControlClass::Action(flags, key);
 }
 
 /***********************************************************************************************
@@ -363,7 +362,7 @@ void GaugeClass::Draw_Thumb() {
   int x = Value_To_Pixel(CurValue);
 
   //	if ((x + 8) > Value_To_Pixel(MaxValue)) {
-  if ((x + 4) > Value_To_Pixel(MaxValue)) {
+  if (x + 4 > Value_To_Pixel(MaxValue)) {
     x = Value_To_Pixel(MaxValue) - 2;
   }
 
@@ -417,9 +416,9 @@ int TriColorGaugeClass::Set_Red_Limit(int value) {
     RedLimit = value;
     //		}
     Flag_To_Redraw();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -443,9 +442,9 @@ int TriColorGaugeClass::Set_Yellow_Limit(int value) {
     YellowLimit = value;
     //		}
     Flag_To_Redraw();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -471,7 +470,7 @@ int TriColorGaugeClass::Draw_Me(int forced) {
     =========== Draw the body & set text color ===============
     */
     Draw_Box(X, Y, Width, Height,
-             (IsDisabled ? BOXSTYLE_GREEN_RAISED : BOXSTYLE_GREEN_DOWN), true);
+             IsDisabled ? BOXSTYLE_GREEN_RAISED : BOXSTYLE_GREEN_DOWN, true);
 
     /*
     **	Colorize the inside of the gauge if indicated.
@@ -514,7 +513,7 @@ int TriColorGaugeClass::Draw_Me(int forced) {
     if (LogicPage == &SeenBuff) {
       Conditional_Show_Mouse();
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

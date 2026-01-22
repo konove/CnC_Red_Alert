@@ -72,10 +72,10 @@ void* Resize_Alloc(void* original_ptr, unsigned long new_size_in_bytes);
 long Ram_Free(MemoryFlagType flag);
 
 inline void* operator new(size_t size, MemoryFlagType flag) {
-  return (Alloc(size, flag));
+  return Alloc(size, flag);
 }
 inline void* operator new[](size_t size, MemoryFlagType flag) {
-  return (Alloc(size, flag));
+  return Alloc(size, flag);
 }
 
 /*=========================================================================*/
@@ -88,7 +88,7 @@ void Mem_Copy(void const* source, void* dest, unsigned long bytes_to_copy);
 }
 
 inline void* Add_Long_To_Pointer(void const* ptr, long size) {
-  return ((void*)((char const*)ptr + size));
+  return (void*)((char const*)ptr + size);
 }
 
 extern void (*Memory_Error)();

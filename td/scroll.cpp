@@ -124,10 +124,10 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
       /*
       **	Verify that the mouse is over a scroll region.
       */
-      if (Inertia || y <= 0 || x <= 0 || x >= (SeenBuff.Get_Width() - 1) ||
-          y >= (SeenBuff.Get_Height() - 1)) {
-        if (y <= 0 || x <= 0 || x >= (SeenBuff.Get_Width() - 1) ||
-            y >= (SeenBuff.Get_Height() - 1)) {
+      if (Inertia || y <= 0 || x <= 0 || x >= SeenBuff.Get_Width() - 1 ||
+          y >= SeenBuff.Get_Height() - 1) {
+        if (y <= 0 || x <= 0 || x >= SeenBuff.Get_Width() - 1 ||
+            y >= SeenBuff.Get_Height() - 1) {
           player_scrolled = true;
           /*
           **	Adjust the mouse coordinates to emphasise the
@@ -136,22 +136,23 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           int altx = x;
           if (altx < 50) altx -= (50 - altx) * 2;
           altx = std::max(altx, 0);
-          if (altx > (SeenBuff.Get_Width() - 50))
+          if (altx > SeenBuff.Get_Width() - 50)
             altx += (altx - (SeenBuff.Get_Width() - 50)) * 2;
           altx = std::min(altx, SeenBuff.Get_Width());
-          if (altx > 50 && altx < (SeenBuff.Get_Width() - 50)) {
-            altx += ((SeenBuff.Get_Width() / 2) - altx) / 2;
+          if (altx > 50 && altx < SeenBuff.Get_Width() - 50) {
+            altx += (SeenBuff.Get_Width() / 2 - altx) / 2;
           }
 
           int alty = y;
-          if (alty < 50) alty -= (50 - alty);
+          if (alty < 50) alty -= 50 - alty;
           alty = std::max(alty, 0);
-          if (alty > (SeenBuff.Get_Height() - 50))
-            alty += ((alty - (SeenBuff.Get_Height() - 50)));
+          if (alty > SeenBuff.Get_Height() - 50)
+            alty += alty - (SeenBuff.Get_Height() - 50);
           alty = std::min(alty, SeenBuff.Get_Height());
 
-          direction = (DirType)Desired_Facing256((SeenBuff.Get_Width()) / 2,
-                                                 (SeenBuff.Get_Height()) / 2,
+          direction = (DirType)Desired_Facing256(
+              SeenBuff.Get_Width() / 2,
+                                                 SeenBuff.Get_Height() / 2,
                                                  altx, alty);
         }
         int control = Dir_Facing(direction);
@@ -257,5 +258,5 @@ bool ScrollClass::Set_Autoscroll(int control) {
       IsAutoScroll = control;
       break;
   }
-  return (old);
+  return old;
 }

@@ -108,7 +108,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),
                                     VisiblePage.Get_Height(), (void*)nullptr);
 
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   if (b1txt && *b1txt == '\0') b1txt = nullptr;
   if (b2txt && *b2txt == '\0') b2txt = nullptr;
@@ -126,14 +126,14 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     /*
     **	Build the button list.
     */
-    bheight = FontHeight + FontYSpacing + (2 * factor);
+    bheight = FontHeight + FontYSpacing + 2 * factor;
     bwidth =
-        std::max<int>((String_Pixel_Width(b1txt) + (8 * factor)), 30 * factor);
+        std::max<int>(String_Pixel_Width(b1txt) + 8 * factor, 30 * factor);
 
     if (b2txt) {
       numbuttons = 2;
       bwidth =
-          std::max<int>((String_Pixel_Width(b2txt) + (8 * factor)), bwidth);
+          std::max<int>(String_Pixel_Width(b2txt) + 8 * factor, bwidth);
 
       if (b3txt) {
         numbuttons = 3;
@@ -170,7 +170,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   // BG #ifdef JAPANESE
   // BG 	}
   // BG #endif
-  height += (numbuttons == 0) ? (30 * factor) : (60 * factor);
+  height += numbuttons == 0 ? 30 * factor : 60 * factor;
 
   int x = (SeenBuff.Get_Width() - width) / 2;
   int y = (SeenBuff.Get_Height() - height) / 2;
@@ -187,17 +187,17 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   TextButtonClass button1(
       BUTTON_1, b1txt, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      x + ((numbuttons == 1) ? ((width - bwidth) >> 1) : (10 * factor)),
-      y + height - (bheight + (5 * factor)), bwidth);
+      x + (numbuttons == 1 ? (width - bwidth) >> 1 : 10 * factor),
+      y + height - (bheight + 5 * factor), bwidth);
 
   TextButtonClass button2(BUTTON_2, b2txt,
                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                          x + width - (bwidth + (10 * factor)),
-                          y + height - (bheight + (5 * factor)), bwidth);
+                          x + width - (bwidth + 10 * factor),
+                          y + height - (bheight + 5 * factor), bwidth);
 
   TextButtonClass button3(BUTTON_3, b3txt,
                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, 0,
-                          y + height - (bheight + (5 * factor)));
+                          y + height - (bheight + 5 * factor));
   button3.X = x + ((width - button3.Width) >> 1);
 
   TextButtonClass* buttonlist = nullptr;
@@ -247,7 +247,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     /*
     **	Draw the caption.
     */
-    Fancy_Text_Print(buffer, x + (20 * factor), y + (25 * factor), CC_GREEN,
+    Fancy_Text_Print(buffer, x + 20 * factor, y + 25 * factor, CC_GREEN,
                      TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
   }
@@ -295,7 +295,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           /*
           **	Draw the caption.
           */
-          Fancy_Text_Print(buffer, x + (20 * factor), y + (25 * factor),
+          Fancy_Text_Print(buffer, x + 20 * factor, y + 25 * factor,
                            CC_GREEN, TBLACK,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
@@ -320,12 +320,12 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       */
       input = buttonlist->Input();
       switch (input) {
-        case (BUTTON_1 | BUTTON_FLAG):
+        case BUTTON_1 | BUTTON_FLAG:
           selection = realval[0];
           pressed = true;
           break;
 
-        case (KN_ESC):
+        case KN_ESC:
           if (numbuttons > 2) {
             selection = realval[1];
             pressed = true;
@@ -335,17 +335,17 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           }
           break;
 
-        case (BUTTON_2 | BUTTON_FLAG):
+        case BUTTON_2 | BUTTON_FLAG:
           selection = realval[1];
           pressed = true;
           break;
 
-        case (BUTTON_3 | BUTTON_FLAG):
+        case BUTTON_3 | BUTTON_FLAG:
           selection = realval[2];
           pressed = true;
           break;
 
-        case (KN_LEFT):
+        case KN_LEFT:
           if (numbuttons > 1) {
             buttons[curbutton]->Turn_Off();
             buttons[curbutton]->Flag_To_Redraw();
@@ -360,13 +360,13 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           }
           break;
 
-        case (KN_RIGHT):
+        case KN_RIGHT:
           if (numbuttons > 1) {
             buttons[curbutton]->Turn_Off();
             buttons[curbutton]->Flag_To_Redraw();
 
             curbutton++;
-            if (curbutton > (numbuttons - 1)) {
+            if (curbutton > numbuttons - 1) {
               curbutton = 0;
             }
 
@@ -375,7 +375,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           }
           break;
 
-        case (KN_RETURN):
+        case KN_RETURN:
           selection = curbutton + BUTTON_1;
           pressed = true;
           break;
@@ -401,12 +401,12 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 
       if (pressed) {
         switch (selection) {
-          case (BUTTON_1):
+          case BUTTON_1:
             retval = 0;
             process = false;
             break;
 
-          case (BUTTON_2):
+          case BUTTON_2:
             retval = 1;
             process = false;
             break;
@@ -448,7 +448,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     back = nullptr;
     Show_Mouse();
   }
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -466,7 +466,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
  *=============================================================================================*/
 int CCMessageBox::Process(int msg, int b1txt, int b2txt, int b3txt,
                           bool preserve) {
-  return (Process(Text_String(msg), b1txt, b2txt, b3txt, preserve));
+  return Process(Text_String(msg), b1txt, b2txt, b3txt, preserve);
 }
 
 /***********************************************************************************************
@@ -491,6 +491,6 @@ int CCMessageBox::Process(int msg, int b1txt, int b2txt, int b3txt,
  *=============================================================================================*/
 int CCMessageBox::Process(char const* msg, int b1txt, int b2txt, int b3txt,
                           bool preserve) {
-  return (Process(msg, Text_String(b1txt), Text_String(b2txt),
-                  Text_String(b3txt), preserve));
+  return Process(msg, Text_String(b1txt), Text_String(b2txt),
+                 Text_String(b3txt), preserve);
 }

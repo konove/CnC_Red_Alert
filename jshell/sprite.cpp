@@ -124,12 +124,12 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
     long W = (scale * bmp.Width) >> 1;
     long L = (scale * bmp.Height) >> 1;
 
-    p0.x = (pt.x + ((((L * c) >> 8) - ((W * s) >> 8)) >> 8));
-    p0.y = (pt.y + (((-(L * s) >> 8) - ((W * c) >> 8)) >> 8));
-    p1.x = (pt.x + ((((L * c) >> 8) + ((W * s) >> 8)) >> 8));
-    p1.y = (pt.y + (((-(L * s) >> 8) + ((W * c) >> 8)) >> 8));
-    p2.x = (pt.x + (((-(L * c) >> 8) - ((W * s) >> 8)) >> 8));
-    p2.y = (pt.y + ((((L * s) >> 8) - ((W * c) >> 8)) >> 8));
+    p0.x = pt.x + ((((L * c) >> 8) - ((W * s) >> 8)) >> 8);
+    p0.y = pt.y + (((-(L * s) >> 8) - ((W * c) >> 8)) >> 8);
+    p1.x = pt.x + ((((L * c) >> 8) + ((W * s) >> 8)) >> 8);
+    p1.y = pt.y + (((-(L * s) >> 8) + ((W * c) >> 8)) >> 8);
+    p2.x = pt.x + (((-(L * c) >> 8) - ((W * s) >> 8)) >> 8);
+    p2.y = pt.y + ((((L * s) >> 8) - ((W * c) >> 8)) >> 8);
   }
 
   /*-----------------------------------
@@ -139,8 +139,8 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
   // This breshnam line goes across the FRONT of the rectangle
   // In the bitmap, this will step from left to right
 
-  int f_deltax = (p1.x - p0.x);
-  int f_deltay = (p1.y - p0.y);
+  int f_deltax = p1.x - p0.x;
+  int f_deltay = p1.y - p0.y;
   int f_error = 0;
   int f_xstep = 1;
   int f_ystep = Width;
@@ -148,8 +148,8 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
   // This breshnam line goes down the SIDE of the rectangle
   // In the bitmap, this line will step from top to bottom
 
-  int s_deltax = (p2.x - p0.x);
-  int s_deltay = (p2.y - p0.y);
+  int s_deltax = p2.x - p0.x;
+  int s_deltay = p2.y - p0.y;
   int s_error = 0;
   int s_xstep = 1;
   int s_ystep = Width;

@@ -223,7 +223,7 @@ class TechnoClass : public RadioClass,
   virtual int Threat_Range(int control) const;
   virtual InfantryType Crew_Type() const;
   TechnoTypeClass const* Techno_Type_Class() const {
-    return ((TechnoTypeClass const*)&Class_Of());
+    return (TechnoTypeClass const*)&Class_Of();
   }
   CELL Nearby_Location(TechnoClass const* from = nullptr) const;
   unsigned char Get_Ownable() const override;

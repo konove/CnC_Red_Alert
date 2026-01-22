@@ -139,22 +139,22 @@ int LoadOptionsClass::Process() {
   */
   int d_dialog_w = 250 * RESFACTOR;                         // dialog width
   int d_dialog_h = 156 * RESFACTOR;                         // dialog height
-  int d_dialog_x = (((320 * RESFACTOR) - d_dialog_w) / 2);  // centered x-coord
-  int d_dialog_y = (((200 * RESFACTOR) - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);          // coord of x-center
+  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // centered x-coord
+  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;          // coord of x-center
 
   int d_txt8_h = 11 * RESFACTOR;  // ht of 8-pt text
   int d_margin = 7 * RESFACTOR;   // margin width/height
   int x_margin = 16 * RESFACTOR;  // margin width/height
 
-  int d_list_w = d_dialog_w - (x_margin * 2);
+  int d_list_w = d_dialog_w - x_margin * 2;
   int d_list_h = 104 * RESFACTOR;
   int d_list_x = d_dialog_x + x_margin;
   int d_list_y = d_dialog_y + d_margin + d_txt8_h + d_margin;
 
-  int d_edit_w = d_dialog_w - (x_margin * 2);
+  int d_edit_w = d_dialog_w - x_margin * 2;
   int d_edit_x = d_dialog_x + x_margin;
-  int d_edit_y = d_list_y + d_list_h - (30 * RESFACTOR) + d_margin + d_txt8_h;
+  int d_edit_y = d_list_y + d_list_h - 30 * RESFACTOR + d_margin + d_txt8_h;
 
 #if (GERMAN | FRENCH)
   int d_button_w = 50 * RESFACTOR;
@@ -266,7 +266,7 @@ int LoadOptionsClass::Process() {
   if ((Style == LOAD || Style == WWDELETE) && listbtn.Count() == 0) {
     Clear_List(&listbtn);
     WWMessageBox().Process(TXT_NO_SAVES);
-    return (false);
+    return false;
   }
 
   /*
@@ -413,7 +413,7 @@ int LoadOptionsClass::Process() {
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game
       */
-      case (BUTTON_LOAD | KN_BUTTON):
+      case BUTTON_LOAD | KN_BUTTON:
         game_idx = listbtn.Current_Index();
         if (game_idx < 0 || game_idx >= Files.Count()) break;
         game_num = Files[game_idx]->Num;
@@ -459,9 +459,9 @@ int LoadOptionsClass::Process() {
       /*
       ** Save: Save the game & exit the dialog
       */
-      case (BUTTON_EDIT | KN_BUTTON):
+      case BUTTON_EDIT | KN_BUTTON:
 
-      case (BUTTON_SAVE | KN_BUTTON):
+      case BUTTON_SAVE | KN_BUTTON:
         if (!strlen(game_descr)) {
           WWMessageBox().Process(TXT_MUSTENTER_DESCRIPTION);
           firsttime = true;
@@ -506,7 +506,7 @@ int LoadOptionsClass::Process() {
       ** Delete: delete the file & stay in the dialog, to allow the user
       ** to delete multiple files.
       */
-      case (BUTTON_DELETE | KN_BUTTON):
+      case BUTTON_DELETE | KN_BUTTON:
         game_idx = listbtn.Current_Index();
         if (game_idx < 0 || game_idx >= Files.Count()) break;
         game_num = Files[game_idx]->Num;
@@ -538,7 +538,7 @@ int LoadOptionsClass::Process() {
       ** item; if so, and if we're in SAVE mode, copy the list item into
       ** the save-game description field.
       */
-      case (BUTTON_LIST | KN_BUTTON):
+      case BUTTON_LIST | KN_BUTTON:
         if (Style != SAVE) {
           break;
         }
@@ -574,8 +574,8 @@ int LoadOptionsClass::Process() {
       /*
       ** ESC/Cancel: break
       */
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_CANCEL | KN_BUTTON:
         cancel = true;
         process = false;
         break;
@@ -587,9 +587,9 @@ int LoadOptionsClass::Process() {
 
   Clear_List(&listbtn);
 
-  if (cancel) return (false);
+  if (cancel) return false;
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -789,10 +789,10 @@ int LoadOptionsClass::Num_From_Ext(const char* fname) {
 int LoadOptionsClass::Compare(const void* p1, const void* p2) {
   class FileEntryClass *fe1, *fe2;
 
-  fe1 = *((class FileEntryClass**)p1);
-  fe2 = *((class FileEntryClass**)p2);
+  fe1 = *(class FileEntryClass**)p1;
+  fe2 = *(class FileEntryClass**)p2;
 
-  if (fe1->DateTime > fe2->DateTime) return (-1);
-  if (fe1->DateTime < fe2->DateTime) return (1);
-  return (0);
+  if (fe1->DateTime > fe2->DateTime) return -1;
+  if (fe1->DateTime < fe2->DateTime) return 1;
+  return 0;
 }

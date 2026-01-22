@@ -93,7 +93,7 @@ CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
  *=========================================================================*/
 void CheckListClass::Check_Item(int index, int checked) {
   if (List[index]) {
-    ((char&)List[index][0]) = checked ? CHECK_CHAR : UNCHECK_CHAR;
+    (char&)List[index][0] = checked ? CHECK_CHAR : UNCHECK_CHAR;
   }
 }
 
@@ -114,9 +114,9 @@ void CheckListClass::Check_Item(int index, int checked) {
  *=========================================================================*/
 int CheckListClass::Is_Checked(int index) const {
   if (List[index]) {
-    return (List[index][0] == CHECK_CHAR);
+    return List[index][0] == CHECK_CHAR;
   }
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -142,7 +142,7 @@ int CheckListClass::Action(unsigned flags, KeyNumType& key) {
   ** If this is a read-only list, it's a display-only device
   */
   if (IsReadOnly) {
-    return (false);
+    return false;
   }
 
   /*
@@ -162,5 +162,5 @@ int CheckListClass::Action(unsigned flags, KeyNumType& key) {
     }
   }
 
-  return (rc);
+  return rc;
 }

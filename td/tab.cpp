@@ -124,7 +124,7 @@ void TabClass::Draw_It(bool complete) {
 
       Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, Eva_Width / 2, 0, 11, TBLACK,
                        TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL);
-      Fancy_Text_Print(TXT_TAB_SIDEBAR, width - (Eva_Width / 2), 0, 11, TBLACK,
+      Fancy_Text_Print(TXT_TAB_SIDEBAR, width - Eva_Width / 2, 0, 11, TBLACK,
                        TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL);
     }
     LogicPage->Unlock();
@@ -179,7 +179,7 @@ void TabClass::Hilite_Tab(int /*tab*/) {
  *JLB : Handles new scrolling option. *
  *=============================================================================================*/
 void TabClass::AI(KeyNumType& input, int x, int y) {
-  if (y >= 0 && y < Tab_Height && x < (SeenBuff.Get_Width() - 1) && x > 0) {
+  if (y >= 0 && y < Tab_Height && x < SeenBuff.Get_Width() - 1 && x > 0) {
     bool ok = false;
     int width = SeenBuff.Get_Width();
 
@@ -245,7 +245,7 @@ void TabClass::Set_Active(int select) {
 }
 
 void TabClass::One_Time() {
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   Eva_Width = 80 * factor;
   Tab_Height = 8 * factor;
 

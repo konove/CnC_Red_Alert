@@ -101,7 +101,7 @@ void* OverlayClass::operator new(size_t) throw() {
   if (ptr) {
     ((OverlayClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -199,7 +199,7 @@ bool OverlayClass::Mark(MarkType mark) {
 
         } else {
           delete this;
-          return (false);
+          return false;
         }
       } else {
         bool clear = false;
@@ -244,10 +244,10 @@ bool OverlayClass::Mark(MarkType mark) {
       IsInLimbo = true;
 
       delete this;
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************

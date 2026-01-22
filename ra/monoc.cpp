@@ -361,10 +361,10 @@ void MonoClass::Set_Cursor(int x, int y) {
   **	Update the visible cursor position only if the this mono page is the
   *currently *	visible one.
   */
-  int pos = ((y + SubY) * COLUMNS) + (x + SubX);
+  int pos = (y + SubY) * COLUMNS + (x + SubX);
   if (Page == 0) {
-    output(CONTROL_PORT, (short)(0x0E | (pos & 0xFF00)));
-    output(CONTROL_PORT, (short)(0x0F | (pos << 8)));
+    output(CONTROL_PORT, (short)(0x0E | pos & 0xFF00));
+    output(CONTROL_PORT, (short)(0x0F | pos << 8));
   }
 }
 
@@ -749,7 +749,7 @@ void MonoClass::Print(int text) { Print(Text_String(text)); }
 MonoClass& MonoClass::operator=(MonoClass const& src) {
   memmove(Page_Ptr(), src.Page_Ptr(), sizeof(MonoPageType));
   Set_Cursor(src.X, src.Y);
-  return (*this);
+  return *this;
 }
 
 /***********************************************************************************************
@@ -861,7 +861,7 @@ int Mono_Printf(char const* string, ...) {
 
     va_end(va);
   }
-  return ((short)strlen(buffer));
+  return (short)strlen(buffer);
 }
 
 /***********************************************************************************************
@@ -995,7 +995,7 @@ int Mono_X() {
     }
     return (short)mono->Get_X();
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -1021,7 +1021,7 @@ int Mono_Y() {
     }
     return (short)mono->Get_X();
   }
-  return (0);
+  return 0;
 }
 
 void Mono_Put_Char(char, int) {}
@@ -1049,5 +1049,5 @@ int Mono_Printf(int string, ...) {
 
     va_end(va);
   }
-  return ((short)strlen(buffer));
+  return (short)strlen(buffer);
 }

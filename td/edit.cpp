@@ -116,7 +116,7 @@ EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
       if (strlen(String) > 0) {
         Width = String_Pixel_Width(String) + 6;
       } else {
-        Width = ((Char_Pixel_Width('X') + FontXSpacing) * (MaxLength + 1)) + 2;
+        Width = (Char_Pixel_Width('X') + FontXSpacing) * (MaxLength + 1) + 2;
       }
     }
   }
@@ -202,9 +202,9 @@ int EditClass::Draw_Me(int forced) {
       Conditional_Show_Mouse();
     }
 
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -230,7 +230,7 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
   ** If this is a read-only edit box, it's a display-only device
   */
   if (IsReadOnly) {
-    return (false);
+    return false;
   }
 
   /*
@@ -238,7 +238,7 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
   *to *	this gadget. The event flag is cleared so that no button ID number is
   *returned.
   */
-  if ((flags & LEFTPRESS)) {
+  if (flags & LEFTPRESS) {
     flags &= ~LEFTPRESS;
     Set_Focus();
     Flag_To_Redraw();  // force to draw cursor
@@ -249,7 +249,7 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
   *but if the *	RETURN key is pressed, then the button ID number is returned
   *from the Input() *	function.
   */
-  if ((flags & KEYBOARD) && Has_Focus()) {
+  if (flags & KEYBOARD && Has_Focus()) {
     /*
     **	Process the keyboard character. If indicated, consume this keyboard
     *event *	so that the edit gadget ID number is not returned.
@@ -264,10 +264,10 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
       /*
       ** Allow numeric keypad presses to map to ascii numbers
       */
-      if ((key & WWKEY_VK_BIT) && ascii >= '0' && ascii <= '9') {
+      if (key & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
         key = (KeyNumType)(key & ~WWKEY_VK_BIT);
 
-        if ((!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))) {
+        if (!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) {
           if (Handle_Key(ascii)) {
             flags &= ~KEYBOARD;
             key = KN_NONE;
@@ -280,7 +280,7 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
         */
         if ((!(key & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 127) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
-          if ((!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))) {
+          if (!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) {
             if (Handle_Key(Keyboard::To_ASCII(key))) {
               flags &= ~KEYBOARD;
               key = KN_NONE;
@@ -298,7 +298,7 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
     }
   }
 
-  return (ControlClass::Action(flags, key));
+  return ControlClass::Action(flags, key);
 }
 
 /***********************************************************************************************
@@ -349,7 +349,7 @@ void EditClass::Draw_Text(char const* text) {
                             TextFlags | flags, Width - 2);
 
     if (Has_Focus() && strlen(text) < MaxLength &&
-        (String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2)) {
+        String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1,
                               Color, TBLACK, TextFlags | flags);
     }
@@ -358,7 +358,7 @@ void EditClass::Draw_Text(char const* text) {
                             TBLACK, TextFlags, Width - 2);
 
     if (Has_Focus() && strlen(text) < MaxLength &&
-        (String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2)) {
+        String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1,
                               BLUE, TBLACK, TextFlags);
     }
@@ -401,7 +401,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
     */
     case KA_RETURN:
       Clear_Focus();
-      return (false);
+      return false;
 
     /*
     **	When the BACKSPACE key is pressed, remove the last character in the edit
@@ -425,8 +425,8 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       /*
       **	Don't add a character if the length is greater than edit width.
       */
-      if ((String_Pixel_Width(String) + Char_Pixel_Width(ascii)) >=
-          (Width - 2)) {
+      if (String_Pixel_Width(String) + Char_Pixel_Width(ascii) >=
+          Width - 2) {
         break;
       }
 
@@ -446,7 +446,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       **	If this is an upper case only edit gadget, then force the
       *alphabetic *	character to upper case.
       */
-      if ((EditFlags & UPPERCASE) && isalpha(ascii)) {
+      if (EditFlags & UPPERCASE && isalpha(ascii)) {
         ascii = (KeyASCIIType)toupper(ascii);
       }
 
@@ -468,5 +468,5 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       Flag_To_Redraw();
       break;
   }
-  return (true);
+  return true;
 }

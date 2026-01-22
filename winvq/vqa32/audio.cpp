@@ -182,24 +182,24 @@ long VQA_StartTimerInt(VQAHandleP* vqap, long /*init*/) {
   audio = &vqap->VQABuf->Audio;
 
   /* Register the VQA_TickCount timer event. */
-  if ((AudioFlags & VQAAUDF_HMITIMER) == (HMI_UNINIT << VQAAUDB_HMITIMER)) {
+  if ((AudioFlags & VQAAUDF_HMITIMER) == HMI_UNINIT << VQAAUDB_HMITIMER) {
     // TODO: add timer (VQATimer)
 
     if (VQATimer) {
       /* Flag the timer interrupt as being registered. */
-      AudioFlags |= (HMI_VQAINIT << VQAAUDB_HMITIMER);
+      AudioFlags |= HMI_VQAINIT << VQAAUDB_HMITIMER;
     } else {
-      return (-1);
+      return -1;
     }
   }
 
   /* Flag availability of the timer interrupt. */
-  audio->Flags |= (HMI_VQAINIT << VQAAUDB_HMITIMER);
+  audio->Flags |= HMI_VQAINIT << VQAAUDB_HMITIMER;
 
   /* Increment the timer interrupt usage count. */
   TimerIntCount++;
 
-  return (0);
+  return 0;
 }
 
 /****************************************************************************
@@ -233,8 +233,8 @@ void VQA_StopTimerInt(VQAHandleP* /*vqap*/) {
   /* Remove the timer interrrupt if it is initialized and the use count is
    * zero. Otherwise, clear the callers timer interrupt availability flag.
    */
-  if (((AudioFlags & VQAAUDF_HMITIMER) == (HMI_VQAINIT << VQAAUDB_HMITIMER)) &&
-      (TimerIntCount == 0)) {
+  if ((AudioFlags & VQAAUDF_HMITIMER) == HMI_VQAINIT << VQAAUDB_HMITIMER &&
+      TimerIntCount == 0) {
     // TODO: remove timer
     AudioFlags &= ~VQAAUDF_HMITIMER;
   } else {
@@ -298,21 +298,21 @@ long VQA_OpenAudio(VQAHandleP* vqap, void* /*window*/) {
 
   // calculate scaling factor
   unsigned bytes_per_second_in =
-      (audio->BitsPerSample / 8) * audio->Channels * audio->SampleRate;
+      audio->BitsPerSample / 8 * audio->Channels * audio->SampleRate;
   unsigned bytes_per_second_out =
-      (SDL_AUDIO_BITSIZE(spec->format) / 8) * spec->channels * spec->freq;
+      SDL_AUDIO_BITSIZE(spec->format) / 8 * spec->channels * spec->freq;
 
   StreamConvScale = (bytes_per_second_in << 15) / bytes_per_second_out;
 
   // register our audio callback
   *config->AudioCallback = VQA_Audio_Callback;
 
-  audio->Flags |= (HMI_VQAINIT << VQAAUDB_DIGIINIT);
-  AudioFlags |= (HMI_VQAINIT << VQAAUDB_DIGIINIT);
+  audio->Flags |= HMI_VQAINIT << VQAAUDB_DIGIINIT;
+  AudioFlags |= HMI_VQAINIT << VQAAUDB_DIGIINIT;
 
   OpenCount++;
 
-  return (0);
+  return 0;
 }
 
 /****************************************************************************
@@ -406,7 +406,7 @@ long VQA_StartAudio(VQAHandleP* vqap) {
 
   /* Return if already playing */
   if (AudioFlags & VQAAUDF_ISPLAYING) {
-    return (-1);
+    return -1;
   }
 
   SDL_LockAudioDevice(config->AudioDeviceID);
@@ -418,7 +418,7 @@ long VQA_StartAudio(VQAHandleP* vqap) {
 
   SDL_UnlockAudioDevice(config->AudioDeviceID);
 
-  return (0);
+  return 0;
 }
 
 /****************************************************************************
@@ -502,13 +502,13 @@ long CopyAudio(VQAHandleP* vqap) {
   /* If audio is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, or if there's no data to copy, just return 0
    */
-  if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) ||
-      (audio->Buffer == nullptr) || (audio->TempBufLen == 0)) {
-    return (0);
+  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer == nullptr ||
+      audio->TempBufLen == 0) {
+    return 0;
   }
 
   /* Compute start & end blocks to copy into */
-  startblock = (audio->AudBufPos / config->HMIBufSize);
+  startblock = audio->AudBufPos / config->HMIBufSize;
   endblock = (audio->AudBufPos + audio->TempBufLen) / config->HMIBufSize;
 
   if (endblock >= audio->NumAudBlocks) {
@@ -517,7 +517,7 @@ long CopyAudio(VQAHandleP* vqap) {
 
   /* If 'endblock' hasn't played yet, return VQAERR_SLEEPING */
   if (audio->IsLoaded[endblock] == 1) {
-    return (VQAERR_SLEEPING);
+    return VQAERR_SLEEPING;
   }
 
   SDL_LockAudioDevice(config->AudioDeviceID);
@@ -530,8 +530,7 @@ long CopyAudio(VQAHandleP* vqap) {
    */
   if (startblock <= endblock) {
     /* Copy data */
-    memcpy((audio->Buffer + audio->AudBufPos), audio->TempBuf,
-           audio->TempBufLen);
+    memcpy(audio->Buffer + audio->AudBufPos, audio->TempBuf, audio->TempBufLen);
 
     /* Adjust current load position */
     audio->AudBufPos += audio->TempBufLen;
@@ -545,14 +544,14 @@ long CopyAudio(VQAHandleP* vqap) {
     }
 
     SDL_UnlockAudioDevice(config->AudioDeviceID);
-    return (0);
+    return 0;
   } else {
     /* Compute length of each piece */
     len1 = config->AudioBufSize - audio->AudBufPos;
     len2 = audio->TempBufLen - len1;
 
     /* Copy 1st piece into end of Audio Buffer */
-    memcpy((audio->Buffer + audio->AudBufPos), audio->TempBuf, len1);
+    memcpy(audio->Buffer + audio->AudBufPos, audio->TempBuf, len1);
 
     /* Copy 2nd piece into start of Audio Buffer */
     memcpy(audio->Buffer, audio->TempBuf + len1, len2);
@@ -573,7 +572,7 @@ long CopyAudio(VQAHandleP* vqap) {
     }
 
     SDL_UnlockAudioDevice(config->AudioDeviceID);
-    return (0);
+    return 0;
   }
 }
 
@@ -646,12 +645,12 @@ void VQA_SetTimer(VQAHandleP* vqap, long time, long method) {
     }
   } else {
     /* We cannot use the DMA position if there isn't any audio playing. */
-    if (!(AudioFlags & VQAAUDF_ISPLAYING) && (method == VQA_TMETHOD_AUDIO)) {
+    if (!(AudioFlags & VQAAUDF_ISPLAYING) && method == VQA_TMETHOD_AUDIO) {
       method = VQA_TMETHOD_INT;
     }
 
     /* We cannot use the timer if it has not been initialized. */
-    if (!(AudioFlags & VQAAUDF_HMITIMER) && (method == VQA_TMETHOD_INT)) {
+    if (!(AudioFlags & VQAAUDF_HMITIMER) && method == VQA_TMETHOD_INT) {
       method = VQA_TMETHOD_DOS;
     }
   }
@@ -660,7 +659,7 @@ void VQA_SetTimer(VQAHandleP* vqap, long time, long method) {
 
   TickOffset = 0L;
   curtime = VQA_GetTime(vqap);
-  TickOffset = (time - curtime);
+  TickOffset = time - curtime;
 }
 
 /****************************************************************************
@@ -740,7 +739,7 @@ int64_t VQA_GetTime(VQAHandleP* vqap) {
       config = &vqap->Config;
 
       SDL_LockAudioDevice(vqap->Config.AudioDeviceID);
-      totalbytes = (audio->ChunksMovedToAudioBuffer) * config->HMIBufSize;
+      totalbytes = audio->ChunksMovedToAudioBuffer * config->HMIBufSize;
 
       // offset by any bytes still in the stream
       // there will still be samples in the "hardware" queue, but this is the
@@ -756,13 +755,13 @@ int64_t VQA_GetTime(VQAHandleP* vqap) {
        * processed times the tick resolution per second divided by the
        * sample rate.
        */
-      ticks = (long)((samples * VQA_TIMETICKS) / audio->SampleRate);
+      ticks = (long)(samples * VQA_TIMETICKS / audio->SampleRate);
       ticks += TickOffset;
       break;
 
     /* No audio playing, but timer interrupt is going; use VQATickCount */
     case VQA_TMETHOD_INT:
-      ticks = (VQATickCount + TickOffset);
+      ticks = VQATickCount + TickOffset;
       break;
 
     /* No interrupts are going at all; use system time */
@@ -774,12 +773,12 @@ int64_t VQA_GetTime(VQAHandleP* vqap) {
                     .count();
 
       ticks = static_cast<unsigned long>(ms);
-      ticks = ((ticks * VQA_TIMETICKS) / 1000L);
+      ticks = ticks * VQA_TIMETICKS / 1000L;
       ticks += TickOffset;
     } break;
   }
 
-  return (ticks);
+  return ticks;
 }
 
 /****************************************************************************
@@ -803,4 +802,4 @@ int64_t VQA_GetTime(VQAHandleP* vqap) {
  *
  ****************************************************************************/
 
-long VQA_TimerMethod() { return (TimerMethod); }
+long VQA_TimerMethod() { return TimerMethod; }

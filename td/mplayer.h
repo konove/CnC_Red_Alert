@@ -7,10 +7,10 @@ inline PlayerColorType MPlayerID_To_ColorIndex(unsigned short id) {
   return (PlayerColorType)(id >> 4);
 }
 inline HousesType MPlayerID_To_HousesType(unsigned short id) {
-  return ((HousesType)(id & 0x000f));
+  return (HousesType)(id & 0x000f);
 }
 inline unsigned short Build_MPlayerID(int c_idx, HousesType htype) {
-  return ((c_idx << 4) | htype);
+  return c_idx << 4 | htype;
 }
 
 GameType Select_MPlayer_Game();

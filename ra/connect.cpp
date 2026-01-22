@@ -251,9 +251,9 @@ int ConnectionClass::Send_Packet(void* buf, int buflen, int ack_req) {
     } else {
       NumSendNoAck++;
     }
-    return (1);
+    return 1;
   } else {
-    return (0);
+    return 0;
   }
 
 } /* end of Send_Packet */
@@ -294,7 +294,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
   ------------------------------------------------------------------------*/
   packet = (CommHeaderType*)buf;
   if (packet->MagicNumber != MagicNum) {
-    return (0);
+    return 0;
   }
 
   /*------------------------------------------------------------------------
@@ -324,7 +324,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
       }
     }
 
-    return (1);
+    return 1;
   }
 
   /*------------------------------------------------------------------------
@@ -335,19 +335,19 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
     If there's only one slot left, don't tie up the queue with this packet
     .....................................................................*/
     if (Queue->Max_Receive() - Queue->Num_Receive() <= 1) {
-      return (0);
+      return 0;
     }
 
     /*.....................................................................
     Error if we can't queue the packet
     .....................................................................*/
     if (!Queue->Queue_Receive(buf, buflen, nullptr, 0)) {
-      return (0);
+      return 0;
     }
 
     NumRecNoAck++;
 
-    return (1);
+    return 1;
   }
 
   /*------------------------------------------------------------------------
@@ -396,8 +396,8 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
       get stuck, forever unable to increment LastSeqID.
       ..................................................................*/
       if (Queue->Max_Receive() - Queue->Num_Receive() <= 1) {
-        if (packet->PacketID != (LastSeqID + 1)) {
-          return (0);
+        if (packet->PacketID != LastSeqID + 1) {
+          return 0;
         }
       }
 
@@ -405,7 +405,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
       If we can't queue the packet, return; don't send an ACK.
       ..................................................................*/
       if (!Queue->Queue_Receive(buf, buflen, nullptr, 0)) {
-        return (0);
+        return 0;
       }
 
       NumRecAck++;
@@ -414,7 +414,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
       Update our LastSeqID value if we can.  Anything less than LastSeqID
       we'll know is a resend.
       ..................................................................*/
-      if (packet->PacketID == (LastSeqID + 1)) {
+      if (packet->PacketID == LastSeqID + 1) {
         LastSeqID = packet->PacketID;
         /*...............................................................
         Now that we have a new 'LastSeqID', search our Queue to see if
@@ -434,7 +434,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
               Entry is found
               ......................................................*/
               if (entry_data->Code == PACKET_DATA_ACK &&
-                  entry_data->PacketID == (LastSeqID + 1)) {
+                  entry_data->PacketID == LastSeqID + 1) {
                 LastSeqID = entry_data->PacketID;
                 found = 1;
                 break;
@@ -453,10 +453,10 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
     ackpacket.PacketID = packet->PacketID;
     Send((char*)&ackpacket, sizeof(CommHeaderType), nullptr, 0);
 
-    return (1);
+    return 1;
   }
 
-  return (0);
+  return 0;
 
 } /* end of Receive_Packet */
 
@@ -503,8 +503,8 @@ int ConnectionClass::Get_Packet(void* buf, int* buflen) {
       If this is a DATA_ACK packet, its ID must be one greater than
       the last one we read.
       ..................................................................*/
-      if ((entry_data->Code == PACKET_DATA_ACK) &&
-          (entry_data->PacketID == (LastReadID + 1))) {
+      if (entry_data->Code == PACKET_DATA_ACK &&
+          entry_data->PacketID == LastReadID + 1) {
         LastReadID = entry_data->PacketID;
         rec_entry->IsRead = 1;
 
@@ -512,8 +512,8 @@ int ConnectionClass::Get_Packet(void* buf, int* buflen) {
         if (packetlen > 0) {
           memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
         }
-        (*buflen) = packetlen;
-        return (1);
+        *buflen = packetlen;
+        return 1;
       }
       /*..................................................................
       If this is a DATA_NOACK packet, who cares what the ID is?
@@ -525,13 +525,13 @@ int ConnectionClass::Get_Packet(void* buf, int* buflen) {
         if (packetlen > 0) {
           memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
         }
-        (*buflen) = packetlen;
-        return (1);
+        *buflen = packetlen;
+        return 1;
       }
     }
   }
 
-  return (0);
+  return 0;
 
 } /* end of Get_Packet */
 
@@ -565,9 +565,9 @@ int ConnectionClass::Service() {
   should be removed.
   ------------------------------------------------------------------------*/
   if (Service_Send_Queue() && Service_Receive_Queue()) {
-    return (1);
+    return 1;
   } else {
-    return (0);
+    return 0;
   }
 
 } /* end of Service */
@@ -685,7 +685,7 @@ int ConnectionClass::Service_Send_Queue() {
       }
 
       if (Timeout != -1 &&
-          (send_entry->LastTime - send_entry->FirstTime) > Timeout) {
+          send_entry->LastTime - send_entry->FirstTime > Timeout) {
         bad_conn = 1;
       }
     }
@@ -695,9 +695,9 @@ int ConnectionClass::Service_Send_Queue() {
   If the connection is going bad, return an error
   ------------------------------------------------------------------------*/
   if (bad_conn) {
-    return (0);
+    return 0;
   } else {
-    return (1);
+    return 1;
   }
 
 } /* end of Service_Send_Queue */
@@ -736,7 +736,7 @@ int ConnectionClass::Service_Receive_Queue() {
     rec_entry = Queue->Get_Receive(i);
 
     if (rec_entry->IsRead) {
-      packet_hdr = (CommHeaderType*)(rec_entry->Buffer);
+      packet_hdr = (CommHeaderType*)rec_entry->Buffer;
 
       if (packet_hdr->Code == PACKET_DATA_NOACK) {
         Queue->UnQueue_Receive(nullptr, nullptr, i, nullptr, nullptr);
@@ -749,7 +749,7 @@ int ConnectionClass::Service_Receive_Queue() {
     }
   }
 
-  return (1);
+  return 1;
 
 } /* end of Service_Receive_Queue */
 
@@ -798,7 +798,7 @@ unsigned long ConnectionClass::Time() {
   ------------------------------------------------------------------------*/
   ftime(&mytime);
   msec = (unsigned long)mytime.time * 1000L + (unsigned long)mytime.millitm;
-  return ((msec / 100) * 6);
+  return msec / 100 * 6;
 
 #endif
 
@@ -824,9 +824,9 @@ unsigned long ConnectionClass::Time() {
  *=========================================================================*/
 char* ConnectionClass::Command_Name(int command) {
   if (command >= 0 && command < PACKET_COUNT) {
-    return (Commands[command]);
+    return Commands[command];
   } else {
-    return (nullptr);
+    return nullptr;
   }
 
 } /* end of Command_Name */

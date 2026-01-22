@@ -174,7 +174,7 @@ int ListClass::Add_Item(char const* text) {
       ScrollGadget.Set_Maximum(List.Count());
     }
   }
-  return (List.Count() - 1);
+  return List.Count() - 1;
 }
 
 /***********************************************************************************************
@@ -192,7 +192,7 @@ int ListClass::Add_Item(int text) {
   if (text != TXT_NONE) {
     Add_Item(Text_String(text));
   }
-  return (List.Count() - 1);
+  return List.Count() - 1;
 }
 
 /***********************************************************************************************
@@ -258,9 +258,9 @@ void ListClass::Remove_Item(char const* text) {
 int ListClass::Action(unsigned flags, KeyNumType& key) {
   if (flags & LEFTRELEASE) {
     key = KN_NONE;
-    flags &= (~LEFTRELEASE);
+    flags &= ~LEFTRELEASE;
     ControlClass::Action(flags, key);
-    return (true);
+    return true;
   } else {
     /*	--------------------------------------------------
     **			Handle keyboard events here.
@@ -287,7 +287,7 @@ int ListClass::Action(unsigned flags, KeyNumType& key) {
       SelectedIndex = std::min<int>(SelectedIndex, List.Count() - 1);
     }
   }
-  return (ControlClass::Action(flags, key));
+  return ControlClass::Action(flags, key);
 }
 
 /***********************************************************************************************
@@ -327,8 +327,8 @@ int ListClass::Draw_Me(int forced) {
           /*
           **	Prints the text and handles right edge clipping and tabs.
           */
-          Draw_Entry(line, X + 1, Y + (LineHeight * index) + 1, Width - 2,
-                     (line == SelectedIndex));
+          Draw_Entry(line, X + 1, Y + LineHeight * index + 1, Width - 2,
+                     line == SelectedIndex);
         }
       }
     }
@@ -339,9 +339,9 @@ int ListClass::Draw_Me(int forced) {
     if (LogicPage == &SeenBuff) {
       Conditional_Show_Mouse();
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -407,10 +407,10 @@ void ListClass::Step(int up) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 char const* ListClass::Get_Item(int index) const {
-  if (List.Count() == 0) return (nullptr);
+  if (List.Count() == 0) return nullptr;
 
   index = std::min<int>(index, List.Count() - 1);
-  return (List[index]);
+  return List[index];
 }
 
 /***********************************************************************************************
@@ -426,7 +426,7 @@ char const* ListClass::Get_Item(int index) const {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-char const* ListClass::Current_Item() { return (List[SelectedIndex]); }
+char const* ListClass::Current_Item() { return List[SelectedIndex]; }
 
 /***********************************************************************************************
  * ListClass::Current_Index -- Fetches the current selected index. *
@@ -443,7 +443,7 @@ char const* ListClass::Current_Item() { return (List[SelectedIndex]); }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Current_Index() { return (SelectedIndex); }
+int ListClass::Current_Index() { return SelectedIndex; }
 
 /***********************************************************************************************
  * ListClass::Peer_To_Peer -- A peer gadget was touched -- make adjustments. *
@@ -506,9 +506,9 @@ int ListClass::Set_View_Index(int index) {
     if (IsScrollActive) {
       ScrollGadget.Set_Value(CurrentTopIndex);
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -573,9 +573,9 @@ int ListClass::Add_Scroll_Bar() {
     /*
     **	Return with success flag.
     */
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -600,9 +600,9 @@ int ListClass::Remove_Scroll_Bar() {
     UpGadget.Remove();
     DownGadget.Remove();
     Flag_To_Redraw();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -661,7 +661,7 @@ void ListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
                             Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(List[index], x, y, (selected ? BLUE : WHITE),
+    Conquer_Clip_Text_Print(List[index], x, y, selected ? BLUE : WHITE,
                             TBLACK, TextFlags, width, Tabs);
   }
 }
@@ -698,7 +698,7 @@ LinkClass& ListClass::Add(LinkClass& list) {
   /*
   **	Add myself to the list, then return.
   */
-  return (ControlClass::Add(list));
+  return ControlClass::Add(list);
 }
 
 /***********************************************************************************************
@@ -726,7 +726,7 @@ LinkClass& ListClass::Add_Head(LinkClass& list) {
   /*
   **	Add myself to the list, then return.
   */
-  return (ControlClass::Add_Head(list));
+  return ControlClass::Add_Head(list);
 }
 
 /***********************************************************************************************
@@ -762,7 +762,7 @@ LinkClass& ListClass::Add_Tail(LinkClass& list) {
     ScrollGadget.Add_Tail(list);
   }
 
-  return (Head_Of_List());
+  return Head_Of_List();
 }
 
 /***********************************************************************************************
@@ -794,7 +794,7 @@ GadgetClass* ListClass::Remove() {
   /*
   **	Remove myself & return
   */
-  return (ControlClass::Remove());
+  return ControlClass::Remove();
 }
 
 /***********************************************************************************************
@@ -846,5 +846,5 @@ int ListClass::Step_Selected_Index(int step) {
   int old = SelectedIndex;
 
   Set_Selected_Index(old + step);
-  return (old);
+  return old;
 }

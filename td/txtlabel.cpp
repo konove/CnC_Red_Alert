@@ -90,7 +90,7 @@ int TextLabelClass::Draw_Me(int forced) {
     } else {
       Conquer_Clip_Text_Print(Text, X, Y, Color, TBLACK, Style, PixWidth);
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }

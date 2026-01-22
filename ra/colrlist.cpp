@@ -117,7 +117,7 @@ ColorListClass::~ColorListClass() {
  *=========================================================================*/
 int ColorListClass::Add_Item(char const* text, RemapControlType* color) {
   Colors.Add(color);
-  return (ListClass::Add_Item(text));
+  return ListClass::Add_Item(text);
 }
 
 /***************************************************************************
@@ -138,7 +138,7 @@ int ColorListClass::Add_Item(char const* text, RemapControlType* color) {
  *=========================================================================*/
 int ColorListClass::Add_Item(int text, RemapControlType* color) {
   Colors.Add(color);
-  return (ListClass::Add_Item(text));
+  return ListClass::Add_Item(text);
 }
 
 /***************************************************************************

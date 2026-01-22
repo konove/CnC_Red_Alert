@@ -89,8 +89,8 @@ bool ToolTipClass::bGadgetHit() const {
   // bound.
   int x = Get_Mouse_X();
   int y = Get_Mouse_Y();
-  return (x > pGadget->X && x < pGadget->X + pGadget->Width && y > pGadget->Y &&
-          y < pGadget->Y + pGadget->Height);
+  return x > pGadget->X && x < pGadget->X + pGadget->Width && y > pGadget->Y &&
+         y < pGadget->Y + pGadget->Height;
 }
 
 //***********************************************************************************************
@@ -214,7 +214,7 @@ bool ToolTipClass::bOverDifferentLine() const {
   //	bIconList must be true if this is being used.
   //	Returns true if the iconlist line that the mouse is over is different
   // than the last time Show() was called.
-  return (((IconListClass*)pGadget)->IndexUnderMouse() != iLastIconListIndex);
+  return ((IconListClass*)pGadget)->IndexUnderMouse() != iLastIconListIndex;
 }
 
 //***********************************************************************************************

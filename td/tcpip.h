@@ -115,7 +115,7 @@ class TcpipManagerClass {
   void Set_Protocol_UDP(bool state);
   void Clear_Socket_Error(SOCKET socket);
 
-  inline bool Get_Connected() { return (Connected); }
+  inline bool Get_Connected() { return Connected; }
 
   typedef enum ConnectStatusEnum {
     CONNECTED_OK = 0,
@@ -130,7 +130,7 @@ class TcpipManagerClass {
     CONNECTION_LOST
   } ConnectStatusEnum;
 
-  inline ConnectStatusEnum Get_Connection_Status() { return (ConnectStatus); }
+  inline ConnectStatusEnum Get_Connection_Status() { return ConnectStatus; }
 
  private:
   //...........................................................................

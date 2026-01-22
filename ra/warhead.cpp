@@ -105,7 +105,7 @@ WarheadTypeClass::WarheadTypeClass(char const* name)
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 void* WarheadTypeClass::operator new(size_t) throw() {
-  return (Warheads.Alloc());
+  return Warheads.Alloc();
 }
 
 /***********************************************************************************************
@@ -145,9 +145,9 @@ void WarheadTypeClass::operator delete(void* pointer) {
  *=============================================================================================*/
 WarheadTypeClass* WarheadTypeClass::As_Pointer(WarheadType warhead) {
   if (warhead != WARHEAD_NONE) {
-    return (Warheads.Ptr(warhead));
+    return Warheads.Ptr(warhead);
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -185,8 +185,8 @@ bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
       }
     }
 
-    IsOrganic = (Modifier[ARMOR_STEEL] == 0);
-    return (true);
+    IsOrganic = Modifier[ARMOR_STEEL] == 0;
+    return true;
   }
-  return (false);
+  return false;
 }

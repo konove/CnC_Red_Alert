@@ -27,11 +27,11 @@ inline constexpr BuildVersion kBuildVersion = BuildVersion::Release;
 
 // Convenience helpers for backward compatibility
 inline constexpr bool kReleaseVersion =
-    (kBuildVersion == BuildVersion::Release);
+    kBuildVersion == BuildVersion::Release;
 inline constexpr bool kPlaytestVersion =
-    (kBuildVersion == BuildVersion::Playtest);
+    kBuildVersion == BuildVersion::Playtest;
 inline constexpr bool kInternalVersion =
-    (kBuildVersion == BuildVersion::Internal);
+    kBuildVersion == BuildVersion::Internal;
 
 // Scenario editor enabled (migrated from SCENARIO_EDITOR macro).
 // Enabled only for internal builds
@@ -49,8 +49,8 @@ inline constexpr bool kVirginCheatKeysEnabled = kPlaytestVersion;
 // Network service providers (migrated from MPATH and TEN macros in
 // defines.h:249,255) IMPORTANT: Only one of these can be enabled (non-zero) at
 // a time
-inline constexpr bool kMPathEnabled = (MPATH != 0);
-inline constexpr bool kTenEnabled = (TEN != 0);
+inline constexpr bool kMPathEnabled = MPATH != 0;
+inline constexpr bool kTenEnabled = TEN != 0;
 
 // Compile-time assertion to ensure MPATH and TEN are mutually exclusive
 static_assert(!(kMPathEnabled && kTenEnabled),

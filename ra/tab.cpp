@@ -131,10 +131,10 @@ void TabClass::Draw_It(bool complete) {
     CC_Draw_Shape(TabShape, 2, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
 #endif
     Draw_Credits_Tab();
-    LogicPage->Draw_Line(0, tab_height - (1 * RESFACTOR), rightx,
-                         tab_height - (1 * RESFACTOR), BLACK);
+    LogicPage->Draw_Line(0, tab_height - 1 * RESFACTOR, rightx,
+                         tab_height - 1 * RESFACTOR, BLACK);
 #ifdef WIN32
-    Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, (EVA_WIDTH / 2) * RESFACTOR, 0,
+    Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH / 2 * RESFACTOR, 0,
                      &MetalScheme, TBLACK,
                      TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
 #else
@@ -151,10 +151,10 @@ void TabClass::Draw_It(bool complete) {
       TabClass::Hilite_Tab(1);
 #endif  // WIN32
     } else {
-      CC_Draw_Shape(TabShape, 0, width - (EVA_WIDTH * RESFACTOR), 0,
+      CC_Draw_Shape(TabShape, 0, width - EVA_WIDTH * RESFACTOR, 0,
                     WINDOW_MAIN, SHAPE_NORMAL);
       Fancy_Text_Print(
-          TXT_TAB_SIDEBAR, width - ((EVA_WIDTH / 2) * RESFACTOR), 0,
+          TXT_TAB_SIDEBAR, width - EVA_WIDTH / 2 * RESFACTOR, 0,
           &ColorRemaps[PCOLOR_GREY], TBLACK,
           TPF_METAL12 | TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
     }
@@ -178,7 +178,7 @@ void TabClass::Draw_Credits_Tab() {
 #endif
 
   if (Scen.MissionTimer.Is_Active()) {
-    bool light = (Scen.MissionTimer < TICKS_PER_MINUTE * Rule.TimerWarning) ||
+    bool light = Scen.MissionTimer < TICKS_PER_MINUTE * Rule.TimerWarning ||
                  Map.FlasherTimer > 0;
 #ifdef WIN32
     CC_Draw_Shape(TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN, SHAPE_NORMAL);
@@ -202,7 +202,7 @@ void TabClass::Hilite_Tab(int tab) {
   */
   CC_Draw_Shape(TabShape, 1, xpos, 0, WINDOW_MAIN, SHAPE_NORMAL);
   MetalScheme.Color = 128 + 6;
-  Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, (EVA_WIDTH / 2) * RESFACTOR, 0,
+  Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH / 2 * RESFACTOR, 0,
                    &MetalScheme, TBLACK,
                    TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
   MetalScheme.Color = 128;
@@ -237,8 +237,8 @@ void TabClass::Hilite_Tab(int tab) {
  *JLB : Handles new scrolling option. *
  *=============================================================================================*/
 void TabClass::AI(KeyNumType& input, int x, int y) {
-  if (y >= 0 && y < (TAB_HEIGHT * RESFACTOR) &&
-      x < (SeenBuff.Get_Width() - 1) && x > 0) {
+  if (y >= 0 && y < TAB_HEIGHT * RESFACTOR &&
+      x < SeenBuff.Get_Width() - 1 && x > 0) {
     bool ok = false;
 
     /*

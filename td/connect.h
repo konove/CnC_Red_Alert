@@ -298,14 +298,14 @@ class ConnectionClass {
   /*.....................................................................
   Utility routines.
   .....................................................................*/
-  unsigned short Magic_Num() { return (MagicNum); }
-  unsigned long Retry_Delta() { return (RetryDelta); }
+  unsigned short Magic_Num() { return MagicNum; }
+  unsigned long Retry_Delta() { return RetryDelta; }
   void Set_Retry_Delta(unsigned long delta) { RetryDelta = delta; }
-  unsigned long Max_Retries() { return (MaxRetries); }
+  unsigned long Max_Retries() { return MaxRetries; }
   void Set_Max_Retries(unsigned long retries) { MaxRetries = retries; }
-  unsigned long Time_Out() { return (Timeout); }
+  unsigned long Time_Out() { return Timeout; }
   void Set_TimeOut(unsigned long t) { Timeout = t; }
-  unsigned long Max_Packet_Len() { return (MaxPacketLen); }
+  unsigned long Max_Packet_Len() { return MaxPacketLen; }
   static char* Command_Name(int command);
 
   /*

@@ -113,8 +113,8 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
 
     if (!noscroll) {
       bool at_screen_edge =
-          (y <= 0 || x <= 0 || x >= SeenBuff.Get_Width() - 1 ||
-           y >= SeenBuff.Get_Height() - 1);
+          y <= 0 || x <= 0 || x >= SeenBuff.Get_Width() - 1 ||
+                            y >= SeenBuff.Get_Height() - 1;
 
       /*
       **	Verify that the mouse is over a scroll region.
@@ -128,23 +128,23 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           **	cardinal directions over the diagonals.
           */
           int altx = x;
-          if (altx < 50 * RESFACTOR) altx -= ((50 * RESFACTOR) - altx);
+          if (altx < 50 * RESFACTOR) altx -= 50 * RESFACTOR - altx;
           altx = std::max(altx, 0);
-          if (altx > ((320 - 50) * RESFACTOR))
-            altx += altx - ((320 - 50) * RESFACTOR);
-          altx = std::min(altx, (320 * RESFACTOR));
-          if (altx > (50 * RESFACTOR) && altx < ((320 - 50) * RESFACTOR)) {
-            altx += (((320 / 2) * RESFACTOR) - altx) / 2;
+          if (altx > (320 - 50) * RESFACTOR)
+            altx += altx - (320 - 50) * RESFACTOR;
+          altx = std::min(altx, 320 * RESFACTOR);
+          if (altx > 50 * RESFACTOR && altx < (320 - 50) * RESFACTOR) {
+            altx += (320 / 2 * RESFACTOR - altx) / 2;
           }
 
           int alty = y;
-          if (alty < (50 * RESFACTOR)) alty -= (50 * RESFACTOR) - alty;
+          if (alty < 50 * RESFACTOR) alty -= 50 * RESFACTOR - alty;
           alty = std::max(alty, 0);
-          if (alty > (150 * RESFACTOR)) alty += alty - (150 * RESFACTOR);
+          if (alty > 150 * RESFACTOR) alty += alty - 150 * RESFACTOR;
           alty = std::min(alty, 200 * RESFACTOR);
 
           direction = (DirType)Desired_Facing256(
-              (320 / 2) * RESFACTOR, (200 / 2) * RESFACTOR, altx, alty);
+              320 / 2 * RESFACTOR, 200 / 2 * RESFACTOR, altx, alty);
         }
 
         int control = Dir_Facing(direction);
@@ -259,5 +259,5 @@ bool ScrollClass::Set_Autoscroll(int control) {
       IsAutoScroll = control;
       break;
   }
-  return (old);
+  return old;
 }

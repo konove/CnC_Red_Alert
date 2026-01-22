@@ -62,7 +62,7 @@
 #include "td/textbtn.h"
 
 bool ConfirmationClass::Process(int text) {
-  return (Process(Text_String(text)));
+  return Process(Text_String(text));
 }
 
 /***********************************************************************************************
@@ -74,7 +74,7 @@ bool ConfirmationClass::Process(int text) {
  *none * HISTORY:    12/31/1994 MML : Created. *
  *=============================================================================================*/
 bool ConfirmationClass::Process(char const* string) {
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   enum { NUM_OF_BUTTONS = 2 };
 
@@ -106,7 +106,7 @@ bool ConfirmationClass::Process(char const* string) {
   */
 
   bheight = FontHeight + FontYSpacing + 2;
-  bwidth = std::max<int>((String_Pixel_Width(Text_String(TXT_YES)) + 8), 30);
+  bwidth = std::max<int>(String_Pixel_Width(Text_String(TXT_YES)) + 8, 30);
 
   TextButtonClass yesbtn(
       BUTTON_YES, TXT_YES, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -200,18 +200,18 @@ bool ConfirmationClass::Process(char const* string) {
     **	Process Input.
     */
     switch (input) {
-      case (BUTTON_YES | KN_BUTTON):
+      case BUTTON_YES | KN_BUTTON:
         selection = BUTTON_YES;
         pressed = true;
         break;
 
-      case (KN_ESC):
-      case (BUTTON_NO | KN_BUTTON):
+      case KN_ESC:
+      case BUTTON_NO | KN_BUTTON:
         selection = BUTTON_NO;
         pressed = true;
         break;
 
-      case (KN_LEFT):
+      case KN_LEFT:
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
 
@@ -224,12 +224,12 @@ bool ConfirmationClass::Process(char const* string) {
         buttons[curbutton]->Flag_To_Redraw();
         break;
 
-      case (KN_RIGHT):
+      case KN_RIGHT:
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
 
         curbutton++;
-        if (curbutton > (NUM_OF_BUTTONS - 1)) {
+        if (curbutton > NUM_OF_BUTTONS - 1) {
           curbutton = 0;
         }
 
@@ -237,7 +237,7 @@ bool ConfirmationClass::Process(char const* string) {
         buttons[curbutton]->Flag_To_Redraw();
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
         selection = curbutton + BUTTON_YES;
         pressed = true;
         break;
@@ -248,12 +248,12 @@ bool ConfirmationClass::Process(char const* string) {
 
     if (pressed) {
       switch (selection) {
-        case (BUTTON_YES):
+        case BUTTON_YES:
           result = true;
           process = false;
           break;
 
-        case (BUTTON_NO):
+        case BUTTON_NO:
           result = false;
           process = false;
           break;
@@ -262,5 +262,5 @@ bool ConfirmationClass::Process(char const* string) {
       pressed = false;
     }
   }
-  return (result);
+  return result;
 }

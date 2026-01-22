@@ -60,7 +60,7 @@ class CCFileClass : public CDFileClass {
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 
-  bool Is_Resident() const { return (Data.Get_Buffer() != nullptr); }
+  bool Is_Resident() const { return Data.Get_Buffer() != nullptr; }
   int Is_Available(int forced = false) override;
   int Is_Open() const override;
   int Open(char const* filename, int rights = READ) override {

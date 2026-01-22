@@ -71,48 +71,48 @@ typedef enum KindType {
 #define TARGET_EXPONENT_MASK (~(((unsigned)(~0)) >> TARGET_EXPONENT))
 
 inline KindType Target_Kind(TARGET a) {
-  return (KindType)(((unsigned)a) >> TARGET_MANTISSA);
+  return (KindType)((unsigned)a >> TARGET_MANTISSA);
 }
 inline unsigned Target_Value(TARGET a) {
-  return (((unsigned)a) & TARGET_MANTISSA_MASK);
+  return (unsigned)a & TARGET_MANTISSA_MASK;
 }
 
-inline bool Is_Target_Team(TARGET a) { return (Target_Kind(a) == KIND_TEAM); }
+inline bool Is_Target_Team(TARGET a) { return Target_Kind(a) == KIND_TEAM; }
 inline bool Is_Target_TeamType(TARGET a) {
-  return (Target_Kind(a) == KIND_TEAMTYPE);
+  return Target_Kind(a) == KIND_TEAMTYPE;
 }
 inline bool Is_Target_Trigger(TARGET a) {
-  return (Target_Kind(a) == KIND_TRIGGER);
+  return Target_Kind(a) == KIND_TRIGGER;
 }
 inline bool Is_Target_Infantry(TARGET a) {
-  return (Target_Kind(a) == KIND_INFANTRY);
+  return Target_Kind(a) == KIND_INFANTRY;
 }
 inline bool Is_Target_Bullet(TARGET a) {
-  return (Target_Kind(a) == KIND_BULLET);
+  return Target_Kind(a) == KIND_BULLET;
 }
 inline bool Is_Target_Terrain(TARGET a) {
-  return (Target_Kind(a) == KIND_TERRAIN);
+  return Target_Kind(a) == KIND_TERRAIN;
 }
-inline bool Is_Target_Cell(TARGET a) { return (Target_Kind(a) == KIND_CELL); }
-inline bool Is_Target_Unit(TARGET a) { return (Target_Kind(a) == KIND_UNIT); }
+inline bool Is_Target_Cell(TARGET a) { return Target_Kind(a) == KIND_CELL; }
+inline bool Is_Target_Unit(TARGET a) { return Target_Kind(a) == KIND_UNIT; }
 inline bool Is_Target_Building(TARGET a) {
-  return (Target_Kind(a) == KIND_BUILDING);
+  return Target_Kind(a) == KIND_BUILDING;
 }
 inline bool Is_Target_Template(TARGET a) {
-  return (Target_Kind(a) == KIND_TEMPLATE);
+  return Target_Kind(a) == KIND_TEMPLATE;
 }
 inline bool Is_Target_Aircraft(TARGET a) {
-  return (Target_Kind(a) == KIND_AIRCRAFT);
+  return Target_Kind(a) == KIND_AIRCRAFT;
 }
 inline bool Is_Target_Animation(TARGET a) {
-  return (Target_Kind(a) == KIND_ANIMATION);
+  return Target_Kind(a) == KIND_ANIMATION;
 }
 
 inline TARGET Build_Target(KindType kind, int value) {
-  return (TARGET)((((unsigned)kind) << TARGET_MANTISSA) | (unsigned)value);
+  return (TARGET)((unsigned)kind << TARGET_MANTISSA | (unsigned)value);
 }
 inline TARGET As_Target(CELL cell) {
-  return (TARGET)(((unsigned)KIND_CELL << TARGET_MANTISSA) | cell);
+  return (TARGET)((unsigned)KIND_CELL << TARGET_MANTISSA | cell);
 }
 
 class UnitClass;
@@ -195,7 +195,7 @@ TechnoClass* As_Techno(TARGET target);
 // TerrainClass * As_Terrain(TARGET target);
 TriggerClass* As_Trigger(TARGET target);
 UnitClass* As_Unit(TARGET target);
-inline bool Target_Legal(TARGET target) { return (target != TARGET_NONE); };
+inline bool Target_Legal(TARGET target) { return target != TARGET_NONE; };
 ObjectClass* As_Object(TARGET target);
 
 #endif

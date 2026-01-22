@@ -32,7 +32,7 @@ enum BlitFlags {
 
 // the one in jshell isn't const enough
 inline constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
-  return ((BlitFlags)((int)t1 | (int)t2));
+  return (BlitFlags)((int)t1 | (int)t2);
 }
 
 #define PRED_MASK 0xE
@@ -71,13 +71,13 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
     do {
       int pixel = *src;
       src = src + 1;
-      if (!pixel && (flags & SHAPE_TRANS)) {
+      if (!pixel && flags & SHAPE_TRANS) {
         line_flags = BLIT_TRANSPARENT;
         trans_count++;  // keep track of number of transparent pixels
       } else {
         if (flags & SHAPE_PREDATOR) line_flags |= BLIT_PREDATOR;
 
-        if ((flags & SHAPE_GHOST) && IsTranslucent[pixel] != 0xFF)
+        if (flags & SHAPE_GHOST && IsTranslucent[pixel] != 0xFF)
           line_flags |= BLIT_GHOST;
 
         if (flags & SHAPE_FADING) line_flags |= BLIT_FADING;
@@ -85,7 +85,7 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
     } while (--x_count);
 
     // all pixels in the line were transparent so we dont need to draw it at all
-    if ((line_flags & BLIT_TRANSPARENT) && trans_count == pixel_width)
+    if (line_flags & BLIT_TRANSPARENT && trans_count == pixel_width)
       line_flags = BLIT_SKIP;
 
     *ptr++ = line_flags;
@@ -113,7 +113,7 @@ inline void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
             // pick up a color offset a pseudo-random amount from the current
             // viewport address
             pixel = dst_offset[BFPredTable[BFPredOffset >> 1]];
-            BFPredOffset = (BFPredOffset + 2) & PRED_MASK;
+            BFPredOffset = BFPredOffset + 2 & PRED_MASK;
           }
         }
 
@@ -194,7 +194,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
 
   if (use_new_draw &&
       (header_pointer->draw_flags == -1 ||
-       header_pointer->draw_flags != ((flags & SHAPE_TRANS) | SHAPE_FADING |
+       header_pointer->draw_flags != (flags & SHAPE_TRANS | SHAPE_FADING |
                                       SHAPE_PREDATOR | SHAPE_GHOST))) {
     Setup_Shape_Header(w, h, (char*)src, header_pointer, flags, Translucent,
                        IsTranslucent);
@@ -239,7 +239,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
 
     if (offset < 0)
       offset =
-          ((-offset) & PRED_MASK) | 0xFFFFFF00;  // will be ffffff00-ffffff0E
+          -offset & PRED_MASK | 0xFFFFFF00;  // will be ffffff00-ffffff0E
     else
       offset &= PRED_MASK;
 

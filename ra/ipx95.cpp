@@ -102,7 +102,7 @@ bool WindowsNT = false;
  *=============================================================================================*/
 bool Load_IPX_Dll() {
   Get_OS_Version();
-  if (WindowsNT) return (false);
+  if (WindowsNT) return false;
 
   SetErrorMode(SEM_NOOPENFILEERRORBOX);
   IpxDllInstance = LoadLibrary("THIPX32.DLL");
@@ -124,10 +124,10 @@ bool Load_IPX_Dll() {
 
     } while (function_name);
 
-    return (true);
+    return true;
 
   } else {
-    return (false);
+    return false;
   }
 }
 
@@ -152,18 +152,18 @@ void Unload_IPX_Dll() {
 }
 
 int IPX_Open_Socket(unsigned short socket) {
-  return (IPX_Open_Socket95((int)socket));
+  return IPX_Open_Socket95((int)socket);
 }
 
 int IPX_Close_Socket(unsigned short socket) {
   IPX_Close_Socket95((int)socket);
-  return (0);
+  return 0;
 }
 
-int IPX_Get_Connection_Number() { return (IPX_Get_Connection_Number95()); }
+int IPX_Get_Connection_Number() { return IPX_Get_Connection_Number95(); }
 
 int IPX_Broadcast_Packet(unsigned char* buf, int buflen) {
-  return (IPX_Broadcast_Packet95(buf, buflen));
+  return IPX_Broadcast_Packet95(buf, buflen);
 }
 
 extern "C" {
@@ -174,8 +174,8 @@ int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,
                          unsigned short dest_socket,
                          unsigned char* bridge_address) {
   // Int3();
-  return (IPX_Get_Local_Target95(dest_network, dest_node, dest_socket,
-                                 bridge_address));
+  return IPX_Get_Local_Target95(dest_network, dest_node, dest_socket,
+                                bridge_address);
 }
 
 #endif  // WIN32

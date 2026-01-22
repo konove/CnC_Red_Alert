@@ -117,19 +117,20 @@ static short const ExitWeap[] = {XYCELL(1, 2), XYCELL(-1, 3), XYCELL(0, 3),
                                  REFRESH_EOL};
 
 static short const ComList[] = {0, 1, MCW, MCW + 1, REFRESH_EOL};
-static short const List000111111[] = {(MCW * 1),  (MCW * 1) + 1, (MCW * 1) + 2,
-                                      (MCW * 2),  (MCW * 2) + 1, (MCW * 2) + 2,
+static short const List000111111[] = {(MCW * 1),  MCW * 1 + 1, MCW * 1 + 2,
+                                      (MCW * 2),  MCW * 2 + 1, MCW * 2 + 2,
                                       REFRESH_EOL};
 static short const List0010[] = {MCW, REFRESH_EOL};
-static short const List0011[] = {(MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
+static short const List0011[] = {(MCW * 1), MCW * 1 + 1, REFRESH_EOL};
 static short const List010111100[] = {
-    1, (MCW * 1), (MCW * 1) + 1, (MCW * 1) + 2, (MCW * 2), REFRESH_EOL};
-static short const List0111[] = {1, (MCW * 1), (MCW * 1) + 1, REFRESH_EOL};
+    1, (MCW * 1), MCW * 1 + 1,
+                                      MCW * 1 + 2, (MCW * 2), REFRESH_EOL};
+static short const List0111[] = {1, (MCW * 1), MCW * 1 + 1, REFRESH_EOL};
 static short const List1000[] = {0, REFRESH_EOL};
-static short const List101000011[] = {0, 2, (MCW * 2) + 1, (MCW * 2) + 2,
+static short const List101000011[] = {0, 2, MCW * 2 + 1, MCW * 2 + 2,
                                       REFRESH_EOL};
 static short const List1100[] = {0, 1, REFRESH_EOL};
-static short const List1101[] = {0, 1, (MCW * 1) + 1, REFRESH_EOL};
+static short const List1101[] = {0, 1, MCW * 1 + 1, REFRESH_EOL};
 static short const List11[] = {0, 1, REFRESH_EOL};
 static short const List12[] = {MCW, REFRESH_EOL};
 static short const List1[] = {0, REFRESH_EOL};
@@ -144,7 +145,7 @@ static short const List32[] = {0, 1, 2, MCW, MCW + 1, MCW + 2, REFRESH_EOL};
 static short const ListFix[] = {1,       MCW,           MCW + 1,
                                 MCW + 2, MCW + MCW + 1, REFRESH_EOL};
 static short const ListWeap[] = {
-    0, 1, 2, (MCW * 1), (MCW * 1) + 1, (MCW * 1) + 2, REFRESH_EOL};
+    0, 1, 2, (MCW * 1), MCW * 1 + 1, MCW * 1 + 2, REFRESH_EOL};
 static short const ListWestwood[] = {1,       2,       3,          MCW + 1,
                                      MCW + 2, MCW + 3, REFRESH_EOL};
 static short const OListSAM[] = {-MCW, -(MCW - 1), REFRESH_EOL};
@@ -171,12 +172,9 @@ static short const StoreList[] = {0, REFRESH_EOL};
 static short const ListFactory[] = {0,
                                     1,
                                     2,
-                                    (MCW * 1),
-                                    (MCW * 1) + 1,
-                                    (MCW * 1) + 2,
-                                    (MCW * 2),
-                                    (MCW * 2) + 1,
-                                    (MCW * 2) + 2,
+                                    (MCW * 1),   MCW * 1 + 1,
+    MCW * 1 + 2,
+                                    (MCW * 2), MCW * 2 + 1, MCW * 2 + 2,
                                     REFRESH_EOL};
 
 static short const OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, REFRESH_EOL};
@@ -442,7 +440,7 @@ static BuildingTypeClass const ClassWeapon(
                          // structure.
     "WEAP",              // NAME:			Short name of the structure.
     FACING_NONE,         // Foundation direction from center of building.
-    XY_Coord(CELL_LEPTON_W + (CELL_LEPTON_W / 2),
+    XY_Coord(CELL_LEPTON_W + CELL_LEPTON_W / 2,
              CELL_LEPTON_H),  // Exit point for produced units.
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
@@ -474,9 +472,9 @@ static BuildingTypeClass const ClassShipYard(
     TXT_SHIP_YARD,  // NAME:			Short name of the structure.
     "SYRD",         // NAME:			Short name of the structure.
     FACING_NONE,    // Foundation direction from center of building.
-    XYP_COORD(22 + (CELL_PIXEL_W / 2),
-              ((CELL_PIXEL_H * 2) -
-               (CELL_PIXEL_H / 2))),  // Exit point for produced units.
+    XYP_COORD(22 + CELL_PIXEL_W / 2,
+              CELL_PIXEL_H * 2 -
+                  CELL_PIXEL_H / 2),  // Exit point for produced units.
     REMAP_ALTERNATE,                  // Sidebar remap logic.
     0x0000,                           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -507,9 +505,9 @@ static BuildingTypeClass const ClassSubPen(
     TXT_SUB_PEN,  // NAME:			Short name of the structure.
     "SPEN",       // NAME:			Short name of the structure.
     FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(22 + (CELL_PIXEL_W / 2),
-              ((CELL_PIXEL_H * 2) -
-               (CELL_PIXEL_H / 2))),  // Exit point for produced units.
+    XYP_COORD(22 + CELL_PIXEL_W / 2,
+              CELL_PIXEL_H * 2 -
+                  CELL_PIXEL_H / 2),  // Exit point for produced units.
     REMAP_ALTERNATE,                  // Sidebar remap logic.
     0x0000,                           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -788,8 +786,8 @@ static BuildingTypeClass const ClassFakeWeapon(
     TXT_FAKE_WEAP,  // NAME:			Short name of the structure.
     "WEAF",         // NAME:			Short name of the structure.
     FACING_NONE,    // Foundation direction from center of building.
-    XYP_COORD(10 + (CELL_PIXEL_W / 2),
-              ((CELL_PIXEL_H * 3) - (CELL_PIXEL_H / 2)) -
+    XYP_COORD(10 + CELL_PIXEL_W / 2,
+              CELL_PIXEL_H * 3 - CELL_PIXEL_H / 2 -
                   21),  // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
@@ -1323,9 +1321,9 @@ static BuildingTypeClass const ClassFakeShipYard(
     TXT_FAKE_YARD,  // NAME:			Short name of the structure.
     "SYRF",         // NAME:			Short name of the structure.
     FACING_NONE,    // Foundation direction from center of building.
-    XYP_COORD(22 + (CELL_PIXEL_W / 2),
-              ((CELL_PIXEL_H * 2) -
-               (CELL_PIXEL_H / 2))),  // Exit point for produced units.
+    XYP_COORD(22 + CELL_PIXEL_W / 2,
+              CELL_PIXEL_H * 2 -
+                  CELL_PIXEL_H / 2),  // Exit point for produced units.
     REMAP_ALTERNATE,                  // Sidebar remap logic.
     0x0000,                           //	Vertical offset.
     0x0000,     // Primary weapon offset along turret centerline.
@@ -1356,9 +1354,9 @@ static BuildingTypeClass const ClassFakeSubPen(
     TXT_FAKE_PEN,  // NAME:			Short name of the structure.
     "SPEF",        // NAME:			Short name of the structure.
     FACING_NONE,   // Foundation direction from center of building.
-    XYP_COORD(22 + (CELL_PIXEL_W / 2),
-              ((CELL_PIXEL_H * 2) -
-               (CELL_PIXEL_H / 2))),  // Exit point for produced units.
+    XYP_COORD(22 + CELL_PIXEL_W / 2,
+              CELL_PIXEL_H * 2 -
+                  CELL_PIXEL_H / 2),  // Exit point for produced units.
     REMAP_ALTERNATE,                  // Sidebar remap logic.
     0x0000,                           //	Vertical offset.
     0x0000,     // Primary weapon offset along turret centerline.
@@ -2930,7 +2928,7 @@ BuildingTypeClass::BuildingTypeClass(
                       primaryoffset, primarylateral, is_nominal, is_stealthy,
                       is_selectable, is_legal_target, is_insignificant, false,
                       is_theater, is_turret_equipped, is_remappable, true,
-                      (is_turret_equipped ? 32 : 1), SPEED_NONE),
+                      is_turret_equipped ? 32 : 1, SPEED_NONE),
       IsBase(true),
       IsFake(is_fake),
       IsBibbed(false),
@@ -2992,7 +2990,7 @@ BuildingTypeClass::BuildingTypeClass(
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void* BuildingTypeClass::operator new(size_t) throw() {
-  return (BuildingTypes.Alloc());
+  return BuildingTypes.Alloc();
 }
 
 /***********************************************************************************************
@@ -3222,7 +3220,7 @@ void BuildingTypeClass::One_Time() {
       int timedelay = 1;
       int count = Get_Build_Frame_Count(dataptr);
       if (count > 0) {
-        timedelay = (Rule.BuildupTime * TICKS_PER_MINUTE) / count;
+        timedelay = Rule.BuildupTime * TICKS_PER_MINUTE / count;
       }
       building.Init_Anim(BSTATE_CONSTRUCTION, 0, count, timedelay);
     }
@@ -3274,11 +3272,11 @@ StructType BuildingTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (StructType classid = STRUCT_FIRST; classid < STRUCT_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
-        return (classid);
+        return classid;
       }
     }
   }
-  return (STRUCT_NONE);
+  return STRUCT_NONE;
 }
 
 #ifdef SCENARIO_EDITOR
@@ -3358,9 +3356,9 @@ bool BuildingTypeClass::Create_And_Place(CELL cell, HousesType house) const {
 
   ptr = new BuildingClass(Type, house);
   if (ptr != nullptr) {
-    return (ptr->Unlimbo(Cell_Coord(cell), DIR_N));
+    return ptr->Unlimbo(Cell_Coord(cell), DIR_N);
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3387,7 +3385,7 @@ ObjectClass* BuildingTypeClass::Create_One_Of(HouseClass* house) const {
   if (house != nullptr) {
     htype = house->Class->House;
   }
-  return (new BuildingClass(Type, htype));
+  return new BuildingClass(Type, htype);
 }
 
 /***********************************************************************************************
@@ -3414,9 +3412,9 @@ ObjectClass* BuildingTypeClass::Create_One_Of(HouseClass* house) const {
  *=============================================================================================*/
 void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
                                   int rate) const {
-  ((int&)Anims[state].Start) = start;
-  ((int&)Anims[state].Count) = count;
-  ((int&)Anims[state].Rate) = rate;
+  (int&)Anims[state].Start = start;
+  (int&)Anims[state].Count = count;
+  (int&)Anims[state].Rate = rate;
 }
 
 /***********************************************************************************************
@@ -3453,12 +3451,12 @@ void BuildingTypeClass::Init(TheaterType theater) {
                                          "MAKE")
                        .replace_extension(Theaters[theater].Suffix)
                        .string();
-        ((void const*&)classptr->BuildupData) = MFCD::Retrieve(fullname);
+        (void const*&)classptr->BuildupData = MFCD::Retrieve(fullname);
         if (classptr->BuildupData) {
           int timedelay = 1;
           int count = Get_Build_Frame_Count(classptr->BuildupData);
           if (count != 0) {
-            timedelay = (5 * TICKS_PER_SECOND) / count;
+            timedelay = 5 * TICKS_PER_SECOND / count;
           }
           classptr->Init_Anim(BSTATE_CONSTRUCTION, 0, count, timedelay);
         }
@@ -3486,9 +3484,9 @@ void BuildingTypeClass::Init(TheaterType theater) {
  *=============================================================================================*/
 void BuildingTypeClass::Dimensions(int& width, int& height) const {
   width = Width() * ICON_PIXEL_W;
-  width -= (width / 5);
+  width -= width / 5;
   height = Height() * ICON_PIXEL_H;
-  height -= (height / 5);
+  height -= height / 5;
 }
 
 /***********************************************************************************************
@@ -3509,7 +3507,7 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 BuildingTypeClass& BuildingTypeClass::As_Reference(StructType type) {
-  return (*BuildingTypes.Ptr(type));
+  return *BuildingTypes.Ptr(type);
 }
 
 /***********************************************************************************************
@@ -3543,7 +3541,7 @@ short const* BuildingTypeClass::Occupy_List(bool placement) const {
     */
     short const* src = smudge.Occupy_List();
     while (*src != REFRESH_EOL) {
-      *dest++ = (*src++) + cell;
+      *dest++ = *src++ + cell;
     }
 
     /*
@@ -3555,15 +3553,15 @@ short const* BuildingTypeClass::Occupy_List(bool placement) const {
     }
     *dest = REFRESH_EOL;
 
-    return (&_list[0]);
+    return &_list[0];
   }
 
   if (OccupyList != nullptr) {
-    return (OccupyList);
+    return OccupyList;
   }
 
   static short const _templap[] = {REFRESH_EOL};
-  return (&_templap[0]);
+  return &_templap[0];
 }
 
 /***********************************************************************************************
@@ -3585,11 +3583,11 @@ short const* BuildingTypeClass::Occupy_List(bool placement) const {
  *=============================================================================================*/
 short const* BuildingTypeClass::Overlap_List() const {
   if (OverlapList != nullptr) {
-    return (OverlapList);
+    return OverlapList;
   }
 
   static short const _templap[] = {REFRESH_EOL};
-  return (&_templap[0]);
+  return &_templap[0];
 }
 
 /***********************************************************************************************
@@ -3607,7 +3605,7 @@ short const* BuildingTypeClass::Overlap_List() const {
  *=============================================================================================*/
 int BuildingTypeClass::Width() const {
   static int width[BSIZE_COUNT] = {1, 2, 1, 2, 2, 3, 3, 4, 5};
-  return (width[Size]);
+  return width[Size];
 }
 
 /***********************************************************************************************
@@ -3626,7 +3624,7 @@ int BuildingTypeClass::Width() const {
  *=============================================================================================*/
 int BuildingTypeClass::Height(bool bib) const {
   static int height[BSIZE_COUNT] = {1, 1, 2, 2, 3, 2, 3, 2, 5};
-  return (height[Size] + ((bib && IsBibbed) ? 1 : 0));
+  return height[Size] + (bib && IsBibbed ? 1 : 0);
 }
 
 /***********************************************************************************************
@@ -3677,10 +3675,10 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
     **	of the building art itself.
     */
     if (bib != SMUDGE_NONE) {
-      cell += ((Height() - 1) * MAP_CELL_W);
+      cell += (Height() - 1) * MAP_CELL_W;
     }
   }
-  return (bib != SMUDGE_NONE);
+  return bib != SMUDGE_NONE;
 }
 
 /***********************************************************************************************
@@ -3700,8 +3698,8 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Max_Pips() const {
-  int maxpips = (Width() * ICON_PIXEL_W) / 4;
-  return (Bound((int)(Capacity / 100), 0, maxpips));
+  int maxpips = Width() * ICON_PIXEL_W / 4;
+  return Bound((int)(Capacity / 100), 0, maxpips);
 }
 
 /***********************************************************************************************
@@ -3734,7 +3732,7 @@ int BuildingTypeClass::Raw_Cost() const {
   if (Type == STRUCT_REFINERY) {
     cost -= UnitTypeClass::As_Reference(UNIT_HARVESTER).Cost;
   }
-  return (cost);
+  return cost;
 }
 
 /***********************************************************************************************
@@ -3752,9 +3750,9 @@ int BuildingTypeClass::Raw_Cost() const {
  *=============================================================================================*/
 int BuildingTypeClass::Cost_Of() const {
   if (Rule.IsSeparate && Type == STRUCT_HELIPAD) {
-    return (Raw_Cost());
+    return Raw_Cost();
   }
-  return (TechnoTypeClass::Cost_Of());
+  return TechnoTypeClass::Cost_Of();
 }
 
 /***********************************************************************************************
@@ -3800,7 +3798,7 @@ bool BuildingTypeClass::Flush_For_Placement(CELL cell,
       }
     }
   }
-  return (again);
+  return again;
 }
 
 /***********************************************************************************************
@@ -3820,7 +3818,7 @@ bool BuildingTypeClass::Flush_For_Placement(CELL cell,
  *=============================================================================================*/
 bool BuildingTypeClass::Read_INI(CCINIClass& ini) {
   if (TechnoTypeClass::Read_INI(ini)) {
-    Speed = ini.Get_Bool(Name(), "WaterBound", (Speed == SPEED_FLOAT))
+    Speed = ini.Get_Bool(Name(), "WaterBound", Speed == SPEED_FLOAT)
                 ? SPEED_FLOAT
                 : SPEED_NONE;
     Capacity = ini.Get_Int(Name(), "Storage", Capacity);
@@ -3830,14 +3828,14 @@ bool BuildingTypeClass::Read_INI(CCINIClass& ini) {
     IsBibbed = ini.Get_Bool(Name(), "Bib", IsBibbed);
     IsUnsellable = ini.Get_Bool(Name(), "Unsellable", IsUnsellable);
     IsBase = ini.Get_Bool(Name(), "BaseNormal", IsBase);
-    Power = ini.Get_Int(Name(), "Power", (Power > 0) ? Power : -Drain);
+    Power = ini.Get_Int(Name(), "Power", Power > 0 ? Power : -Drain);
     if (Power < 0) {
       Drain = -Power;
       Power = 0;
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3881,7 +3879,7 @@ COORDINATE BuildingTypeClass::Coord_Fixup(COORDINATE coord) const {
  *=============================================================================================*/
 int BuildingTypeClass::Full_Name() const {
   if (Debug_Map || Rule.IsNamed || *this < STRUCT_V01 || *this > STRUCT_V37) {
-    return (TechnoTypeClass::Full_Name());
+    return TechnoTypeClass::Full_Name();
   }
-  return (TXT_CIVILIAN_BUILDING);
+  return TXT_CIVILIAN_BUILDING;
 }

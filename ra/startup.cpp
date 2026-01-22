@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
   if (Ram_Free(MEM_NORMAL) < 7000000) {
     printf(TEXT_NO_RAM);
 
-    return (EXIT_FAILURE);
+    return EXIT_FAILURE;
   }
 
 #ifdef _WIN32
@@ -299,7 +299,7 @@ int main(int argc, char* argv[])
       printf(TEXT_MUST_HAVE, INIT_FREE_DISK_SPACE / (1024 * 1024));
       printf("\n");
       delete WindowsTimer;
-      return (EXIT_FAILURE);
+      return EXIT_FAILURE;
     }
 
     if (!cfile.Is_Available()) {
@@ -315,7 +315,7 @@ int main(int argc, char* argv[])
       Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
       SoundOn = Audio_Init(MainWindow, 16, false, 11025 * 2, 0);
 
-      if (!InitDDraw()) return (EXIT_FAILURE);
+      if (!InitDDraw()) return EXIT_FAILURE;
 
       Options.Adjust_Variables_For_Resolution();
 
@@ -419,7 +419,7 @@ int main(int argc, char* argv[])
         Keyboard->Check();
       } while (ReadyToQuit == 1);
 
-      return (EXIT_SUCCESS);
+      return EXIT_SUCCESS;
     } else {
       puts(TEXT_SETUP_FIRST);
       Keyboard->Get();
@@ -433,7 +433,7 @@ int main(int argc, char* argv[])
   /*
   **	Restore the current drive and directory.
   */
-  return (EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }
 
 /* Initialize DirectDraw and surfaces */

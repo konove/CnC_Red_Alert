@@ -149,13 +149,13 @@ int FixedHeapClass::Set_Heap(int count, void* buffer) {
   **	If there is no size to the objects in the heap, then this block memory
   **	handler can NEVER function. Return with a failure condition.
   */
-  if (!Size) return (false);
+  if (!Size) return false;
 
   /*
   **	If there is no count specified, then this indicates that the heap should
   **	be disabled.
   */
-  if (!count) return (true);
+  if (!count) return true;
 
   /*
   **	Initialize the free boolean vector and the buffer for the actual
@@ -166,13 +166,13 @@ int FixedHeapClass::Set_Heap(int count, void* buffer) {
     buffer = new char[count * Size];
     if (!buffer) {
       FreeFlag.clear();
-      return (false);
+      return false;
     }
     IsAllocated = true;
   }
   Buffer = buffer;
   TotalCount = count;
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -198,10 +198,10 @@ void* FixedHeapClass::Allocate() {
     if (index != -1) {
       ActiveCount++;
       FreeFlag[index] = true;
-      return ((*this)[index]);
+      return (*this)[index];
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -227,11 +227,11 @@ int FixedHeapClass::Free(void* pointer) {
       if (FreeFlag[index]) {
         ActiveCount--;
         FreeFlag[index] = false;
-        return (true);
+        return true;
       }
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -254,9 +254,9 @@ int FixedHeapClass::Free(void* pointer) {
  *=============================================================================================*/
 int FixedHeapClass::ID(void const* pointer) {
   if (pointer && Size) {
-    return ((int)(((char*)pointer - (char*)Buffer) / Size));
+    return (int)(((char*)pointer - (char*)Buffer) / Size);
   }
-  return (-1);
+  return -1;
 }
 
 /***********************************************************************************************
@@ -305,7 +305,7 @@ void FixedHeapClass::Clear() {
 int FixedHeapClass::Free_All() {
   ActiveCount = 0;
   FreeFlag.assign(FreeFlag.size(), false);
-  return (true);
+  return true;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -326,7 +326,7 @@ int FixedHeapClass::Free_All() {
  *=============================================================================================*/
 int FixedIHeapClass::Free_All() {
   ActivePointers.Delete_All();
-  return (FixedHeapClass::Free_All());
+  return FixedHeapClass::Free_All();
 }
 
 void FixedIHeapClass::Clear() {
@@ -338,9 +338,9 @@ int FixedIHeapClass::Set_Heap(int count, void* buffer) {
   Clear();
   if (FixedHeapClass::Set_Heap(count, buffer)) {
     ActivePointers.Resize(count);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 void* FixedIHeapClass::Allocate() {
@@ -349,7 +349,7 @@ void* FixedIHeapClass::Allocate() {
     ActivePointers.Add(ptr);
     memset(ptr, 0, Size);
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -372,7 +372,7 @@ int FixedIHeapClass::Free(void* pointer) {
   if (FixedHeapClass::Free(pointer)) {
     ActivePointers.Delete(pointer);
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -395,7 +395,7 @@ int TFixedIHeapClass<T>::Save(FileClass& file) {
   ** Save the number of instances of this class
   */
   if (file.Write(&ActiveCount, sizeof(ActiveCount)) != sizeof(ActiveCount)) {
-    return (false);
+    return false;
   }
 
   /*
@@ -408,18 +408,18 @@ int TFixedIHeapClass<T>::Save(FileClass& file) {
     */
     idx = ID(Ptr(i));
     if (file.Write(&idx, sizeof(idx)) != sizeof(idx)) {
-      return (false);
+      return false;
     }
 
     /*
     ** Save the object itself
     */
     if (!Ptr(i)->Save(file)) {
-      return (false);
+      return false;
     }
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -444,14 +444,14 @@ int TFixedIHeapClass<T>::Load(FileClass& file) {
   ** Read the number of instances of this class
   */
   if (file.Read(&a_count, sizeof(a_count)) != sizeof(a_count)) {
-    return (false);
+    return false;
   }
 
   /*
   ** Error if more objects than we can hold
   */
   if (a_count > TotalCount) {
-    return (false);
+    return false;
   }
 
   /*
@@ -462,7 +462,7 @@ int TFixedIHeapClass<T>::Load(FileClass& file) {
     ** Read the object's array index
     */
     if (file.Read(&idx, sizeof(idx)) != sizeof(idx)) {
-      return (false);
+      return false;
     }
 
     /*
@@ -485,7 +485,7 @@ int TFixedIHeapClass<T>::Load(FileClass& file) {
     //		}
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************

@@ -189,7 +189,7 @@ class TeamClass : public AbstractClass {
   virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
   static void operator delete(void* ptr);
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void Init();
   static void Suspend_Teams(int priority);
 

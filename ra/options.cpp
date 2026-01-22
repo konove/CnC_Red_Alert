@@ -310,7 +310,7 @@ void OptionsClass::Set_Sound_Volume(fixed volume, bool feedback) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Brightness(fixed brightness) {
-  Brightness = fixed::_1_4 + (fixed::_1_2 * brightness);
+  Brightness = fixed::_1_4 + fixed::_1_2 * brightness;
   Adjust_Palette(OriginalPalette, InGamePalette, Brightness, Saturation, Tint,
                  Contrast);
   InGamePalette.Set();
@@ -332,7 +332,7 @@ void OptionsClass::Set_Brightness(fixed brightness) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 fixed OptionsClass::Get_Brightness() const {
-  return ((Brightness - fixed::_1_4) / fixed::_1_2);
+  return (Brightness - fixed::_1_4) / fixed::_1_2;
 }
 
 /***********************************************************************************************
@@ -372,7 +372,7 @@ void OptionsClass::Set_Saturation(fixed color) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-fixed OptionsClass::Get_Saturation() const { return (Saturation); }
+fixed OptionsClass::Get_Saturation() const { return Saturation; }
 
 /***********************************************************************************************
  * OptionsClass::Set_Contrast -- Sets the contrast to the value specified. *
@@ -389,7 +389,7 @@ fixed OptionsClass::Get_Saturation() const { return (Saturation); }
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Contrast(fixed contrast) {
-  Contrast = fixed::_1_4 + (fixed::_1_2 * contrast);
+  Contrast = fixed::_1_4 + fixed::_1_2 * contrast;
   Adjust_Palette(OriginalPalette, InGamePalette, Brightness, Saturation, Tint,
                  Contrast);
   InGamePalette.Set();
@@ -411,7 +411,7 @@ void OptionsClass::Set_Contrast(fixed contrast) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 fixed OptionsClass::Get_Contrast() const {
-  return ((Contrast - fixed::_1_4) / fixed::_1_2);
+  return (Contrast - fixed::_1_4) / fixed::_1_2;
 }
 
 /***********************************************************************************************
@@ -451,7 +451,7 @@ void OptionsClass::Set_Tint(fixed tint) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-fixed OptionsClass::Get_Tint() const { return (Tint); }
+fixed OptionsClass::Get_Tint() const { return Tint; }
 
 /***********************************************************************************************
  * OptionsClass::Adjust_Palette -- Adjusts the palette according to the settings
@@ -504,17 +504,17 @@ void OptionsClass::Adjust_Palette(PaletteClass const& oldpal,
       *to the *	percentage indicated.
       */
       int temp;
-      temp = (hsv.Value_Component() * (brightness * 256)) / 0x80;  // Brightness
+      temp = hsv.Value_Component() * (brightness * 256) / 0x80;  // Brightness
       temp = Bound(temp, 0, 0xFF);
       int v = temp;
       temp =
-          (((((int)v) - 0x80) * (contrast * 256)) / 0x80) + 0x80;  // Contrast
+          ((int)v - 0x80) * (contrast * 256) / 0x80 + 0x80;  // Contrast
       temp = Bound(temp, 0, 0xFF);
       v = temp;
-      temp = (hsv.Saturation_Component() * (color * 256)) / 0x80;  // Color
+      temp = hsv.Saturation_Component() * (color * 256) / 0x80;  // Color
       temp = Bound(temp, 0, 0xFF);
       int s = temp;
-      temp = (hsv.Hue_Component() * (tint * 256)) / 0x80;  // Tint
+      temp = hsv.Hue_Component() * (tint * 256) / 0x80;  // Tint
       temp = Bound(temp, 0, 0xFF);
       int h = temp;
 
@@ -847,10 +847,10 @@ int OptionsClass::Normalize_Delay(int delay) const {
     if (delay < 5) {
       delay = _adjust[delay - 1][GameSpeed];
     } else {
-      delay = ((delay * 8) / (GameSpeed + 1));
+      delay = delay * 8 / (GameSpeed + 1);
     }
   }
-  return (delay);
+  return delay;
 }
 
 /***********************************************************************************************
@@ -891,5 +891,5 @@ void OptionsClass::Fixup_Palette() const {
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
 int OptionsClass::Normalize_Volume(int volume) const {
-  return (volume * Volume);
+  return volume * Volume;
 }

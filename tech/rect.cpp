@@ -77,7 +77,7 @@ Rect::Rect(int x, int y, int w, int h) : X(x), Y(y), Width(w), Height(h) {}
  *                                                                                             *
  * HISTORY: * 07/22/1996 JLB : Created. *
  *=============================================================================================*/
-bool Rect::Is_Valid() const { return (Width > 0 && Height > 0); }
+bool Rect::Is_Valid() const { return Width > 0 && Height > 0; }
 
 /***********************************************************************************************
  * Rect::Intersect -- Find the intersection between two rectangles. *
@@ -110,7 +110,7 @@ Rect const Rect::Intersect(Rect const& rectangle, int* x, int* y) const {
   **	Both rectangles must be valid or else no intersection can occur. In such
   **	a case, return an illegal rectangle.
   */
-  if (!Is_Valid() || !rectangle.Is_Valid()) return (rect);
+  if (!Is_Valid() || !rectangle.Is_Valid()) return rect;
 
   /*
   **	The rectangle spills past the left edge.
@@ -119,7 +119,7 @@ Rect const Rect::Intersect(Rect const& rectangle, int* x, int* y) const {
     r.Width -= X - r.X;
     r.X = X;
   }
-  if (r.Width < 1) return (rect);
+  if (r.Width < 1) return rect;
 
   /*
   **	The rectangle spills past top edge.
@@ -128,36 +128,36 @@ Rect const Rect::Intersect(Rect const& rectangle, int* x, int* y) const {
     r.Height -= Y - r.Y;
     r.Y = Y;
   }
-  if (r.Height < 1) return (rect);
+  if (r.Height < 1) return rect;
 
   /*
   **	The rectangle spills past the right edge.
   */
   if (r.X + r.Width > X + Width) {
-    r.Width -= (r.X + r.Width) - (X + Width);
+    r.Width -= r.X + r.Width - (X + Width);
   }
-  if (r.Width < 1) return (rect);
+  if (r.Width < 1) return rect;
 
   /*
   **	The rectangle spills past the bottom edge.
   */
   if (r.Y + r.Height > Y + Height) {
-    r.Height -= (r.Y + r.Height) - (Y + Height);
+    r.Height -= r.Y + r.Height - (Y + Height);
   }
-  if (r.Height < 1) return (rect);
+  if (r.Height < 1) return rect;
 
   /*
   **	Adjust Height relative draw position according to Height new rectangle
   **	union.
   */
   if (x != nullptr) {
-    *x -= (r.X - X);
+    *x -= r.X - X;
   }
   if (y != nullptr) {
-    *y -= (r.Y - Y);
+    *y -= r.Y - Y;
   }
 
-  return (r);
+  return r;
 }
 
 Rect const Union(Rect const& rect1, Rect const& rect2) {
@@ -174,14 +174,14 @@ Rect const Union(Rect const& rect1, Rect const& rect2) {
         result.Y = rect2.Y;
       }
       if (result.X + result.Width < rect2.X + rect2.Width) {
-        result.Width = ((rect2.X + rect2.Width) - result.X) + 1;
+        result.Width = rect2.X + rect2.Width - result.X + 1;
       }
       if (result.Y + result.Height < rect2.Y + rect2.Height) {
-        result.Height = ((rect2.Y + rect2.Height) - result.Y) + 1;
+        result.Height = rect2.Y + rect2.Height - result.Y + 1;
       }
-      return (result);
+      return result;
     }
-    return (rect1);
+    return rect1;
   }
-  return (rect2);
+  return rect2;
 }

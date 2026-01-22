@@ -59,7 +59,7 @@ class FactoryClass : private StageClass {
   FactoryClass(NoInitClass const& x) : StageClass(x) {}
   ~FactoryClass();
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void operator delete(void* ptr);
 
   static void Init();
@@ -76,7 +76,7 @@ class FactoryClass : private StageClass {
   bool Completed();
   bool Has_Changed();
   bool Has_Completed();
-  bool Is_Building() const { return (Fetch_Rate() != 0); }
+  bool Is_Building() const { return Fetch_Rate() != 0; }
   bool Set(TechnoTypeClass const& object, HouseClass& house);
   bool Set(int const& type, HouseClass& house);
   bool Start();
@@ -86,8 +86,8 @@ class FactoryClass : private StageClass {
   int Get_Special_Item() const;
   void AI();
   void Set(TechnoClass& object);
-  HouseClass* Get_House() { return (House); }
-  char const* Name() { return ("Factory"); }
+  HouseClass* Get_House() { return House; }
+  char const* Name() { return "Factory"; }
 
   /*
   **	This flag is used to maintain the pool of factory class objects. If the

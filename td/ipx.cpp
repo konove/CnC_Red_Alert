@@ -87,7 +87,7 @@
 int IPX_SPX_Installed() {
 #ifndef NOT_FOR_WIN95
 
-  return (IPX_Initialise());
+  return IPX_Initialise();
 
 #else   // NOT_FOR_WIN95
 

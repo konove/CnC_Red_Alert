@@ -214,7 +214,7 @@ int HouseClass::Validate() const {
  *=============================================================================================*/
 HouseClass::operator HousesType() const {
   Validate();
-  return (Class->House);
+  return Class->House;
 }
 
 /***********************************************************************************************
@@ -238,10 +238,10 @@ HouseClass::operator HousesType() const {
 HouseClass* HouseClass::As_Pointer(HousesType house) {
   for (int index = 0; index < Houses.Count(); index++) {
     if (Houses.Ptr(index)->Class->House == house) {
-      return (Houses.Ptr(index));
+      return Houses.Ptr(index);
     }
   }
-  return (nullptr);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -306,7 +306,7 @@ void* HouseClass::operator new(size_t) throw() {
   if (ptr) {
     ((HouseClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -496,13 +496,13 @@ HouseClass::~HouseClass() {
 bool HouseClass::Can_Build(TechnoTypeClass const* type,
                            HousesType house) const {
   Validate();
-  if (!type || !type->IsBuildable || !((1L << house) & type->Ownable))
-    return (false);
+  if (!type || !type->IsBuildable || !(1L << house & type->Ownable))
+    return false;
 
   /*
   **	The computer can always build everthing.
   */
-  if (!IsHuman) return (true);
+  if (!IsHuman) return true;
 
   /*
   **	Perform some equivalency fixups for the building existance flags.
@@ -520,7 +520,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   **	Multiplayer game uses a different legality check for building.
   */
   if (GameToPlay != GAME_NORMAL || (Special.IsJurassic && AreThingiesEnabled)) {
-    return ((pre & flags) == pre && type->Level <= BuildLevel);
+    return (pre & flags) == pre && type->Level <= BuildLevel;
   }
 
 #ifdef NEWMENU
@@ -545,7 +545,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   */
   if (house == HOUSE_GOOD && type->What_Am_I() == RTTI_INFANTRYTYPE &&
       ((InfantryTypeClass const*)type)->Type == INFANTRY_E3 && level < 7) {
-    return (false);
+    return false;
   }
 
   /*
@@ -554,7 +554,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   */
   if (house == HOUSE_GOOD && type->What_Am_I() == RTTI_UNITTYPE &&
       ((UnitTypeClass const*)type)->Type == UNIT_MLRS && level < 9) {
-    return (false);
+    return false;
   }
 
   /*
@@ -562,7 +562,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   */
   if (house == HOUSE_BAD && type->What_Am_I() == RTTI_UNITTYPE &&
       ((UnitTypeClass const*)type)->Type == UNIT_APC) {
-    return (false);
+    return false;
   }
 
   /*
@@ -573,7 +573,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
       (((BuildingTypeClass const*)type)->Type == STRUCT_TEMPLE ||
        ((BuildingTypeClass const*)type)->Type == STRUCT_OBELISK) &&
       Class->House == HOUSE_GOOD) {
-    return (false);
+    return false;
   }
 
   /*
@@ -582,7 +582,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   if (type->What_Am_I() == RTTI_UNITTYPE &&
       ((UnitTypeClass const*)type)->Type == UNIT_MLRS &&
       Class->House == HOUSE_BAD) {
-    return (false);
+    return false;
   }
 
   /*
@@ -590,9 +590,9 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   **	Nod has captured the GDI construction yard.
   */
   if (type->What_Am_I() == RTTI_BUILDINGTYPE &&
-      (((BuildingTypeClass const*)type)->Type == STRUCT_EYE) &&
+      ((BuildingTypeClass const*)type)->Type == STRUCT_EYE &&
       Class->House == HOUSE_BAD) {
-    return (false);
+    return false;
   }
 
   /*
@@ -609,7 +609,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   */
   if (house == HOUSE_BAD && type->What_Am_I() == RTTI_BUILDINGTYPE &&
       ((BuildingTypeClass const*)type)->Type == STRUCT_HELIPAD) {
-    return (false);
+    return false;
   }
 
   /*
@@ -618,7 +618,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   if (house == HOUSE_GOOD && level < 8 &&
       type->What_Am_I() == RTTI_BUILDINGTYPE &&
       ((BuildingTypeClass const*)type)->Type == STRUCT_SANDBAG_WALL) {
-    return (false);
+    return false;
   }
 
   /*
@@ -630,7 +630,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   }
 
   if (Debug_Cheat) level = 98;
-  return ((pre & flags) == pre && type->Scenario <= level);
+  return (pre & flags) == pre && type->Scenario <= level;
 }
 
 /***********************************************************************************************
@@ -658,7 +658,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
  *=============================================================================================*/
 bool HouseClass::Can_Build(StructType s, HousesType house) const {
   Validate();
-  return (Can_Build(&BuildingTypeClass::As_Reference(s), house));
+  return Can_Build(&BuildingTypeClass::As_Reference(s), house);
 }
 
 /***********************************************************************************************
@@ -687,7 +687,7 @@ bool HouseClass::Can_Build(StructType s, HousesType house) const {
  *=============================================================================================*/
 bool HouseClass::Can_Build(InfantryType infantry, HousesType house) const {
   Validate();
-  return (Can_Build(&InfantryTypeClass::As_Reference(infantry), house));
+  return Can_Build(&InfantryTypeClass::As_Reference(infantry), house);
 }
 
 /***********************************************************************************************
@@ -715,7 +715,7 @@ bool HouseClass::Can_Build(InfantryType infantry, HousesType house) const {
  *=============================================================================================*/
 bool HouseClass::Can_Build(UnitType unit, HousesType house) const {
   Validate();
-  return (Can_Build(&UnitTypeClass::As_Reference(unit), house));
+  return Can_Build(&UnitTypeClass::As_Reference(unit), house);
 }
 
 /***********************************************************************************************
@@ -739,7 +739,7 @@ bool HouseClass::Can_Build(UnitType unit, HousesType house) const {
  *=============================================================================================*/
 bool HouseClass::Can_Build(AircraftType aircraft, HousesType house) const {
   Validate();
-  return (Can_Build(&AircraftTypeClass::As_Reference(aircraft), house));
+  return Can_Build(&AircraftTypeClass::As_Reference(aircraft), house);
 }
 
 /***************************************************************************
@@ -859,7 +859,7 @@ void HouseClass::AI() {
     /*
     **	Adjusted to reduce maximum number of teams created.
     */
-    int maxteams = Random_Pick(2, (int)(((BuildLevel - 1) / 3) + 1));
+    int maxteams = Random_Pick(2, (int)((BuildLevel - 1) / 3 + 1));
     for (int index = 0; index < maxteams; index++) {
       TeamTypeClass const* ttype = Suggested_New_Team(true);
       if (ttype) {
@@ -869,12 +869,12 @@ void HouseClass::AI() {
       }
     }
     if (Special.IsDifficult) {
-      AlertTime = (TICKS_PER_MINUTE * Random_Pick(4, 10));
+      AlertTime = TICKS_PER_MINUTE * Random_Pick(4, 10);
     } else {
       if (Special.IsEasy) {
-        AlertTime = (TICKS_PER_MINUTE * Random_Pick(16, 40));
+        AlertTime = TICKS_PER_MINUTE * Random_Pick(16, 40);
       } else {
-        AlertTime = (TICKS_PER_MINUTE * Random_Pick(5, 20));
+        AlertTime = TICKS_PER_MINUTE * Random_Pick(5, 20);
       }
     }
   }
@@ -926,7 +926,7 @@ void HouseClass::AI() {
           */
           if (!moving) {
             count = 0;
-            while (!(techno->IsInLimbo) && count++ < 5) {
+            while (!techno->IsInLimbo && count++ < 5) {
               damage = 0x7fff;
               Explosion_Damage(techno->Center_Coord(), damage, nullptr,
                                WARHEAD_HE);
@@ -1040,8 +1040,8 @@ void HouseClass::AI() {
   if (PlayerPtr == this) {
     if (SpeakMaxedDelay.Expired() && IsMaxedOut) {
       IsMaxedOut = false;
-      if ((Capacity - Tiberium) < 300 && Capacity > 500 &&
-          (BScan & (STRUCTF_REFINERY | STRUCTF_CONST))) {
+      if (Capacity - Tiberium < 300 && Capacity > 500 &&
+          BScan & (STRUCTF_REFINERY | STRUCTF_CONST)) {
         Speak(VOX_NEED_MO_CAPACITY);
         SpeakMaxedDelay.Set(Options.Normalize_Delay(SPEAK_DELAY));
       }
@@ -1124,7 +1124,7 @@ void HouseClass::AI() {
     **	If there is no ion cannon present, but there is an advanced communcation
     **	center available, then make the ion cannon available as well.
     */
-    if ((ActiveBScan & STRUCTF_EYE) &&
+    if (ActiveBScan & STRUCTF_EYE &&
         (ActLike == HOUSE_GOOD || GameToPlay != GAME_NORMAL) &&
         (IsHuman || GameToPlay != GAME_NORMAL)) {
       IonCannon.Enable(false, this == PlayerPtr, Power_Fraction() < 0x0100);
@@ -1184,8 +1184,8 @@ void HouseClass::AI() {
     **	If there is no nuke strike present, but there is a Temple of Nod
     **	available, then make the nuke strike strike available.
     */
-    if ((ActiveBScan & STRUCTF_TEMPLE) && Has_Nuke_Device() && IsHuman) {
-      NukeStrike.Enable((GameToPlay == GAME_NORMAL), this == PlayerPtr);
+    if (ActiveBScan & STRUCTF_TEMPLE && Has_Nuke_Device() && IsHuman) {
+      NukeStrike.Enable(GameToPlay == GAME_NORMAL, this == PlayerPtr);
 
       /*
       **	Flag the sidebar to be redrawn if necessary.
@@ -1310,9 +1310,9 @@ void HouseClass::AI() {
       /*
       **	All units destroyed checker.
       */
-      if (!((ActiveUScan & ~(UNITF_GUNBOAT)) | IScan |
-            (ActiveAScan &
-             ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10)))) {
+      if (!(ActiveUScan & ~(UNITF_GUNBOAT) | IScan |
+            ActiveAScan &
+                ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10))) {
         if (t->Spring(EVENT_UNITS_DESTROYED, Class->House)) {
           continue;
         }
@@ -1321,9 +1321,9 @@ void HouseClass::AI() {
       /*
       **	All buildings AND units destroyed checker.
       */
-      if (!(ActiveBScan | (ActiveUScan & ~(UNITF_GUNBOAT)) | IScan |
-            (ActiveAScan &
-             ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10)))) {
+      if (!(ActiveBScan | ActiveUScan & ~(UNITF_GUNBOAT) | IScan |
+            ActiveAScan &
+                ~(AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10))) {
         if (t->Spring(EVENT_ALL_DESTROYED, Class->House)) {
           continue;
         }
@@ -1500,7 +1500,7 @@ void HouseClass::Harvested(unsigned tiberium) {
  *=============================================================================================*/
 long HouseClass::Available_Money() const {
   Validate();
-  return (Tiberium + Credits);
+  return Tiberium + Credits;
 }
 
 /***********************************************************************************************
@@ -1593,7 +1593,7 @@ int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
     }
   }
   Silo_Redraw_Check(Tiberium, oldcap);
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -1617,9 +1617,9 @@ int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
 void HouseClass::Silo_Redraw_Check(long oldtib, long oldcap) {
   Validate();
   int oldratio = 0;
-  if (oldcap) oldratio = (oldtib * 5) / oldcap;
+  if (oldcap) oldratio = oldtib * 5 / oldcap;
   int newratio = 0;
-  if (Capacity) newratio = (Tiberium * 5) / Capacity;
+  if (Capacity) newratio = Tiberium * 5 / Capacity;
 
   if (oldratio != newratio) {
     for (int index = 0; index < Buildings.Count(); index++) {
@@ -1762,9 +1762,9 @@ void HouseClass::Write_INI(char* buffer) {
 bool HouseClass::Is_Ally(HousesType house) const {
   Validate();
   if (house != HOUSE_NONE) {
-    return (((1 << house) & Allies) != 0);
+    return (1 << house & Allies) != 0;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1785,9 +1785,9 @@ bool HouseClass::Is_Ally(HousesType house) const {
 bool HouseClass::Is_Ally(HouseClass const* house) const {
   Validate();
   if (house) {
-    return (Is_Ally(house->Class->House));
+    return Is_Ally(house->Class->House);
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1807,9 +1807,9 @@ bool HouseClass::Is_Ally(HouseClass const* house) const {
 bool HouseClass::Is_Ally(ObjectClass const* object) const {
   Validate();
   if (object) {
-    return (Is_Ally(object->Owner()));
+    return Is_Ally(object->Owner());
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1836,7 +1836,7 @@ void HouseClass::Make_Ally(HousesType house) {
     */
     if (!ScenarioInit && (IsDefeated || house == HOUSE_JP)) return;
 
-    Allies |= (1 << house);
+    Allies |= 1 << house;
 
 #ifdef CHEAT_KEYS
     if (Debug_Flag) {
@@ -1936,7 +1936,7 @@ void HouseClass::Make_Enemy(HousesType house) {
  *=============================================================================================*/
 unsigned char const* HouseClass::Remap_Table(bool blushing, bool unit) const {
   Validate();
-  if (blushing) return (&Map.FadingLight[0]);
+  if (blushing) return &Map.FadingLight[0];
 
   /*
   ** For normal game play, return the TypeClass's remap table for this
@@ -1948,16 +1948,16 @@ unsigned char const* HouseClass::Remap_Table(bool blushing, bool unit) const {
     **	buildings to red as opposed to the default color of bluegrey.
     */
     if (!unit && Class->House == HOUSE_BAD) {
-      return (RemapRed);
+      return RemapRed;
     }
 
-    return (Class->RemapTable);
+    return Class->RemapTable;
   } else {
     /*
     ** For multiplayer games, return the remap table for this exact house
     *instance.
     */
-    return (RemapTable);
+    return RemapTable;
   }
 }
 
@@ -1979,8 +1979,8 @@ unsigned char const* HouseClass::Remap_Table(bool blushing, bool unit) const {
  *=============================================================================================*/
 TeamTypeClass const* HouseClass::Suggested_New_Team(bool alertcheck) {
   Validate();
-  return (TeamTypeClass::Suggested_New_Team(this, UScan, IScan,
-                                            IsAlerted && alertcheck));
+  return TeamTypeClass::Suggested_New_Team(this, UScan, IScan,
+                                           IsAlerted && alertcheck);
 }
 
 /***********************************************************************************************
@@ -2077,7 +2077,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   /*
   **	Check for legality of the production object type suggested.
   */
-  if (!factory) return (PROD_ILLEGAL);
+  if (!factory) return PROD_ILLEGAL;
 
   /*
   **	If the house is already busy producing the requested object, then
@@ -2085,12 +2085,12 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   */
   if (*factory != -1) {
     fptr = Factories.Raw_Ptr(*factory);
-    if (fptr->Is_Building()) return (PROD_CANT);
+    if (fptr->Is_Building()) return PROD_CANT;
   } else {
     fptr = new FactoryClass();
-    if (!fptr) return (PROD_CANT);
+    if (!fptr) return PROD_CANT;
     *factory = Factories.ID(fptr);
-    result = (tech) ? fptr->Set(*tech, *this) : fptr->Set(id, *this);
+    result = tech ? fptr->Set(*tech, *this) : fptr->Set(id, *this);
   }
 
   if (result) {
@@ -2104,9 +2104,9 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
       Map.Factory_Link(*factory, type, id);
     }
 
-    return (PROD_OK);
+    return PROD_OK;
   }
-  return (PROD_CANT);
+  return PROD_CANT;
 }
 
 /***********************************************************************************************
@@ -2158,20 +2158,20 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   /*
   **	Check for legality of the production object type suggested.
   */
-  if (!factory) return (PROD_ILLEGAL);
+  if (!factory) return PROD_ILLEGAL;
 
   /*
   **	If the house is already busy producing the requested object, then
   **	return with this failure code.
   */
-  if (*factory == -1) return (PROD_CANT);
+  if (*factory == -1) return PROD_CANT;
 
   /*
   **	Create the factory pointer object.
   **	If the factory could not be created, then report this error condition.
   */
   FactoryClass* fptr = Factories.Raw_Ptr(*factory);
-  if (!fptr) return (PROD_CANT);
+  if (!fptr) return PROD_CANT;
 
   /*
   **	Actually suspend the production.
@@ -2188,7 +2188,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
     Map.Flag_To_Redraw(false);
   }
 
-  return (PROD_OK);
+  return PROD_OK;
 }
 
 /***********************************************************************************************
@@ -2240,18 +2240,18 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   /*
   **	Check for legality of the production object type suggested.
   */
-  if (!factory) return (PROD_ILLEGAL);
+  if (!factory) return PROD_ILLEGAL;
 
   /*
   **	If there is no factory to abandon, then return with a failure code.
   */
-  if (*factory == -1) return (PROD_CANT);
+  if (*factory == -1) return PROD_CANT;
 
   /*
   **	Fetch the factory pointer object.
   */
   FactoryClass* fptr = Factories.Raw_Ptr(*factory);
-  if (!fptr) return (PROD_CANT);
+  if (!fptr) return PROD_CANT;
 
   /*
   **	Tell the sidebar that it needs to be redrawn because of this.
@@ -2274,7 +2274,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   delete fptr;
   *factory = -1;
 
-  return (PROD_OK);
+  return PROD_OK;
 }
 
 /***********************************************************************************************
@@ -2401,7 +2401,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           **	Only in the multiplayer version can the nuclear bomb be
           **	sent from some off screen source.
           */
-          if (GameToPlay == GAME_NORMAL) return (false);
+          if (GameToPlay == GAME_NORMAL) return false;
 
           /*
           **	Since no launch site was found, just bring the missile in
@@ -2448,7 +2448,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       }
       break;
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2535,7 +2535,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
           **	The object could not leave under it's own power. Just wait
           **	until the player tries to place the object again.
           */
-          return (false);
+          return false;
         }
       }
 
@@ -2561,7 +2561,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
                 Map.PendingObject = nullptr;
                 Map.PendingHouse = HOUSE_NONE;
               }
-              return (true);
+              return true;
             } else {
               if (this == PlayerPtr) {
                 Speak(VOX_DEPLOY);
@@ -2570,16 +2570,16 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
             builder->Transmit_Message(RADIO_OVER_OUT);
           }
         }
-        return (false);
+        return false;
 
       } else {
         // Play a bad sound here?
-        return (false);
+        return false;
       }
     }
   }
 
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -2622,9 +2622,9 @@ bool HouseClass::Manual_Place(BuildingClass* builder, BuildingClass* object) {
     Map.Set_Cursor_Shape(object->Occupy_List(true));
     Map.Set_Cursor_Pos(Coord_Cell(builder->Coord));
     builder->Mark(MARK_CHANGE);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 #ifdef OBSOLETE
@@ -3082,10 +3082,10 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
     HouseClass* house = As_Pointer(index);
 
     if (house && !Is_Ally(house) && (house->BScan & bflag) != 0) {
-      return (true);
+      return true;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3125,7 +3125,7 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
         **	harvester if possible. Never replace harvesters if the game
         **	is in easy mode.
         */
-        if (!Special.IsEasy && !IsHuman && (ActiveBScan & STRUCTF_REFINERY) &&
+        if (!Special.IsEasy && !IsHuman && ActiveBScan & STRUCTF_REFINERY &&
             !(UScan & UNITF_HARVESTER)) {
           techno = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
           if (techno->Scenario <= BuildLevel) break;
@@ -3155,11 +3155,11 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
           if (tptr) {
             TeamTypeClass const* team = tptr->Class;
 
-            if ((/*team->IsReinforcable || */ !tptr->IsFullStrength) &&
+            if (/*team->IsReinforcable || */ !tptr->IsFullStrength &&
                 team->House == Class->House) {
               for (int subindex = 0; subindex < team->ClassCount; subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
-                  counter[((UnitTypeClass const*)(team->Class[subindex]))
+                  counter[((UnitTypeClass const*)team->Class[subindex])
                               ->Type] = 1;
                   //									counter[((UnitTypeClass
                   // const *)(team->Class[subindex]))->Type] +=
@@ -3183,7 +3183,7 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
               for (int subindex = 0; subindex < team->ClassCount; subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
                   int subtype =
-                      ((UnitTypeClass const*)(team->Class[subindex]))->Type;
+                      ((UnitTypeClass const*)team->Class[subindex])->Type;
                   counter[subtype] = std::max<int>(counter[subtype],
                                                    team->DesiredNum[subindex]);
                 }
@@ -3199,10 +3199,10 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
         for (int uindex = 0; uindex < Units.Count(); uindex++) {
           UnitClass* unit = Units.Ptr(uindex);
           if (unit && !unit->Team && unit->House == this &&
-              (unit->Mission != MISSION_GUARD_AREA &&
-               unit->Mission != MISSION_HUNT &&
-               unit->Mission != MISSION_STICKY &&
-               unit->Mission != MISSION_SLEEP)) {
+              unit->Mission != MISSION_GUARD_AREA &&
+              unit->Mission != MISSION_HUNT &&
+              unit->Mission != MISSION_STICKY &&
+              unit->Mission != MISSION_SLEEP) {
             counter[unit->Class->Type]--;
           }
         }
@@ -3273,7 +3273,7 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
                 team->House == Class->House) {
               for (int subindex = 0; subindex < team->ClassCount; subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
-                  counter[((InfantryTypeClass const*)(team->Class[subindex]))
+                  counter[((InfantryTypeClass const*)team->Class[subindex])
                               ->Type] += team->DesiredNum[subindex] + 1;
                 }
               }
@@ -3294,7 +3294,7 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
               for (int subindex = 0; subindex < team->ClassCount; subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
                   int subtype =
-                      ((InfantryTypeClass const*)(team->Class[subindex]))->Type;
+                      ((InfantryTypeClass const*)team->Class[subindex])->Type;
                   //									counter[subtype]
                   //= 1;
                   counter[subtype] = std::max<int>(counter[subtype],
@@ -3313,10 +3313,10 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
         for (int uindex = 0; uindex < Infantry.Count(); uindex++) {
           InfantryClass* infantry = Infantry.Ptr(uindex);
           if (infantry && !infantry->Team && infantry->House == this &&
-              (infantry->Mission != MISSION_GUARD_AREA &&
-               infantry->Mission != MISSION_HUNT &&
-               infantry->Mission != MISSION_STICKY &&
-               infantry->Mission != MISSION_SLEEP)) {
+              infantry->Mission != MISSION_GUARD_AREA &&
+              infantry->Mission != MISSION_HUNT &&
+              infantry->Mission != MISSION_STICKY &&
+              infantry->Mission != MISSION_SLEEP) {
             counter[infantry->Class->Type]--;
           }
         }
@@ -3366,7 +3366,7 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
       }
       break;
   }
-  return (techno);
+  return techno;
 }
 
 /***********************************************************************************************
@@ -3427,9 +3427,9 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
       }
     }
 
-    return (rc);
+    return rc;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3540,9 +3540,9 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
       }
     }
 
-    return (rc);
+    return rc;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -3572,9 +3572,9 @@ bool HouseClass::Flag_Attach(UnitClass* object, bool set_home) {
     */
     object->Flag_Attach(Class->House);
     FlagLocation = object->As_Target();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -3879,7 +3879,7 @@ void HouseClass::MPlayer_Defeated() {
     ---------------------------------------------------------------------*/
     if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
       i = 0;
-      while (Ipx.Num_Connections() && (i++ < 1000)) {
+      while (Ipx.Num_Connections() && i++ < 1000) {
         id = Ipx.Connection_ID(0);
         Ipx.Delete_Connection(id);
       }
@@ -4059,7 +4059,7 @@ bool HouseClass::Flag_To_Die() {
       BorrowedTime = TICKS_PER_SECOND * 1;
     }
   }
-  return (IsToDie);
+  return IsToDie;
 }
 
 /***********************************************************************************************
@@ -4086,7 +4086,7 @@ bool HouseClass::Flag_To_Win() {
       BorrowedTime = TICKS_PER_SECOND * 1;
     }
   }
-  return (IsToWin);
+  return IsToWin;
 }
 
 /***********************************************************************************************
@@ -4116,7 +4116,7 @@ bool HouseClass::Flag_To_Lose() {
       BorrowedTime = TICKS_PER_SECOND * 1;
     }
   }
-  return (IsToLose);
+  return IsToLose;
 }
 
 /***********************************************************************************************
@@ -4147,38 +4147,38 @@ void HouseClass::Init_Data(PlayerColorType color, HousesType house,
   switch (color) {
     case REMAP_YELLOW:
       RemapTable = RemapYellow;
-      ((unsigned char&)Class->Color) = 157;
-      ((unsigned char&)Class->BrightColor) = 5;
+      (unsigned char&)Class->Color = 157;
+      (unsigned char&)Class->BrightColor = 5;
       break;
 
     case REMAP_RED:
       RemapTable = RemapRed;
-      ((unsigned char&)Class->Color) = 123;
-      ((unsigned char&)Class->BrightColor) = 127;
+      (unsigned char&)Class->Color = 123;
+      (unsigned char&)Class->BrightColor = 127;
       break;
 
     case REMAP_AQUA:
       RemapTable = RemapBlueGreen;
-      ((unsigned char&)Class->Color) = 135;
-      ((unsigned char&)Class->BrightColor) = 2;
+      (unsigned char&)Class->Color = 135;
+      (unsigned char&)Class->BrightColor = 2;
       break;
 
     case REMAP_ORANGE:
       RemapTable = RemapOrange;
-      ((unsigned char&)Class->Color) = 26;
-      ((unsigned char&)Class->BrightColor) = 24;
+      (unsigned char&)Class->Color = 26;
+      (unsigned char&)Class->BrightColor = 24;
       break;
 
     case REMAP_GREEN:
       RemapTable = RemapGreen;
-      ((unsigned char&)Class->Color) = 167;
-      ((unsigned char&)Class->BrightColor) = 159;
+      (unsigned char&)Class->Color = 167;
+      (unsigned char&)Class->BrightColor = 159;
       break;
 
     case REMAP_BLUE:
       RemapTable = RemapBlue;
-      ((unsigned char&)Class->Color) = 203;
-      ((unsigned char&)Class->BrightColor) = 201;
+      (unsigned char&)Class->Color = 203;
+      (unsigned char&)Class->BrightColor = 201;
       break;
   }
 }
@@ -4201,12 +4201,12 @@ int HouseClass::Power_Fraction() const {
   Validate();
   if (Power) {
     if (Drain) {
-      return (Cardinal_To_Fixed(Drain, Power));
+      return Cardinal_To_Fixed(Drain, Power);
     } else {
-      return (0x0100);
+      return 0x0100;
     }
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -4229,8 +4229,8 @@ int HouseClass::Power_Fraction() const {
  *=============================================================================================*/
 bool HouseClass::Has_Nuke_Device() {
   Validate();
-  if (GameToPlay != GAME_NORMAL || !IsHuman) return (true);
-  return ((NukePieces & 0x07) == 0x07);
+  if (GameToPlay != GAME_NORMAL || !IsHuman) return true;
+  return (NukePieces & 0x07) == 0x07;
 }
 
 /***********************************************************************************************

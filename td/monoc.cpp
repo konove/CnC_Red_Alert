@@ -477,7 +477,7 @@ void MonoClass::Print(char const* ptr) {
           X = 0;
           Y++;
 
-          if (Y > (LINES - 1)) {
+          if (Y > LINES - 1) {
             Scroll(Y - (LINES - 1));
             //						optr = Offset(X, Y);
           }
@@ -565,7 +565,7 @@ MonoClass& MonoClass::operator=(MonoClass const& src) {
   //	DOSSegmentClass::Copy(MonoSegment, src.Offset(0, 0), MonoSegment,
   // Offset(0,0), SIZE_OF_PAGE);
   Set_Cursor(src.X, src.Y);
-  return (*this);
+  return *this;
 }
 
 /***********************************************************************************************
@@ -665,7 +665,7 @@ int Mono_Printf(char const* string, ...) {
 
     va_end(va);
   }
-  return ((short)strlen(buffer));
+  return (short)strlen(buffer);
 }
 
 void Mono_Clear_Screen() {
@@ -721,7 +721,7 @@ int Mono_X() {
     }
     return (short)mono->Get_X();
   }
-  return (0);
+  return 0;
 }
 
 int Mono_Y() {
@@ -733,7 +733,7 @@ int Mono_Y() {
     }
     return (short)mono->Get_X();
   }
-  return (0);
+  return 0;
 }
 
 void Mono_Put_Char(char, int) {}

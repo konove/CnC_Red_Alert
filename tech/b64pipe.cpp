@@ -65,7 +65,7 @@
  *=============================================================================================*/
 int Base64Pipe::Put(void const* source, int slen) {
   if (source == nullptr || slen < 1) {
-    return (Pipe::Put(source, slen));
+    return Pipe::Put(source, slen);
   }
 
   int total = 0;
@@ -88,11 +88,11 @@ int Base64Pipe::Put(void const* source, int slen) {
   }
 
   if (Counter > 0) {
-    int len = (slen < (fromsize - Counter)) ? slen : (fromsize - Counter);
+    int len = slen < fromsize - Counter ? slen : fromsize - Counter;
     memmove(&from[Counter], source, len);
     Counter += len;
     slen -= len;
-    source = ((char*)source) + len;
+    source = (char*)source + len;
 
     if (Counter == fromsize) {
       int outcount;
@@ -113,7 +113,7 @@ int Base64Pipe::Put(void const* source, int slen) {
     } else {
       outcount = Base64_Decode(source, fromsize, to, tosize);
     }
-    source = ((char*)source) + fromsize;
+    source = (char*)source + fromsize;
     total += Pipe::Put(to, outcount);
     slen -= fromsize;
   }
@@ -123,7 +123,7 @@ int Base64Pipe::Put(void const* source, int slen) {
     Counter = slen;
   }
 
-  return (total);
+  return total;
 }
 
 /***********************************************************************************************
@@ -156,5 +156,5 @@ int Base64Pipe::Flush() {
     Counter = 0;
   }
   len += Pipe::Flush();
-  return (len);
+  return len;
 }

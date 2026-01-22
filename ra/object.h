@@ -156,20 +156,20 @@ class ObjectClass : public AbstractClass {
   /*
   **	Query functions.
   */
-  virtual bool Is_Players_Army() const { return (false); }
+  virtual bool Is_Players_Army() const { return false; }
   virtual void const* Get_Image_Data() const;
   virtual ActionType What_Action(ObjectClass const*) const;
   virtual ActionType What_Action(CELL) const;
   virtual LayerType In_Which_Layer() const;
-  bool Is_Infantry() const { return (RTTI == RTTI_INFANTRY); }
+  bool Is_Infantry() const { return RTTI == RTTI_INFANTRY; }
   bool Is_Foot() const {
-    return (RTTI == RTTI_INFANTRY || RTTI == RTTI_UNIT || RTTI == RTTI_VESSEL ||
-            RTTI == RTTI_AIRCRAFT);
+    return RTTI == RTTI_INFANTRY || RTTI == RTTI_UNIT || RTTI == RTTI_VESSEL ||
+           RTTI == RTTI_AIRCRAFT;
   }
   bool Is_Techno() const {
-    return (RTTI == RTTI_BUILDING || RTTI == RTTI_UNIT ||
-            RTTI == RTTI_INFANTRY || RTTI == RTTI_VESSEL ||
-            RTTI == RTTI_AIRCRAFT);
+    return RTTI == RTTI_BUILDING || RTTI == RTTI_UNIT ||
+           RTTI == RTTI_INFANTRY || RTTI == RTTI_VESSEL ||
+           RTTI == RTTI_AIRCRAFT;
   }
   virtual int Get_Ownable() const;
   virtual ObjectTypeClass const& Class_Of() const = 0;

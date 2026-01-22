@@ -60,53 +60,53 @@ class UnitClass;
 class VesselClass;
 
 inline RTTIType Target_Kind(TARGET a) {
-  return (RTTIType(((TARGET_COMPOSITE&)a).Sub.Exponent));
+  return RTTIType(((TARGET_COMPOSITE&)a).Sub.Exponent);
 }
 
 inline unsigned Target_Value(TARGET a) {
-  return (((TARGET_COMPOSITE&)a).Sub.Mantissa);
+  return ((TARGET_COMPOSITE&)a).Sub.Mantissa;
 }
 
-inline bool Is_Target_Team(TARGET a) { return (Target_Kind(a) == RTTI_TEAM); }
+inline bool Is_Target_Team(TARGET a) { return Target_Kind(a) == RTTI_TEAM; }
 inline bool Is_Target_TeamType(TARGET a) {
-  return (Target_Kind(a) == RTTI_TEAMTYPE);
+  return Target_Kind(a) == RTTI_TEAMTYPE;
 }
 inline bool Is_Target_Trigger(TARGET a) {
-  return (Target_Kind(a) == RTTI_TRIGGER);
+  return Target_Kind(a) == RTTI_TRIGGER;
 }
 inline bool Is_Target_TriggerType(TARGET a) {
-  return (Target_Kind(a) == RTTI_TRIGGERTYPE);
+  return Target_Kind(a) == RTTI_TRIGGERTYPE;
 }
 inline bool Is_Target_Infantry(TARGET a) {
-  return (Target_Kind(a) == RTTI_INFANTRY);
+  return Target_Kind(a) == RTTI_INFANTRY;
 }
 inline bool Is_Target_Bullet(TARGET a) {
-  return (Target_Kind(a) == RTTI_BULLET);
+  return Target_Kind(a) == RTTI_BULLET;
 }
 inline bool Is_Target_Terrain(TARGET a) {
-  return (Target_Kind(a) == RTTI_TERRAIN);
+  return Target_Kind(a) == RTTI_TERRAIN;
 }
-inline bool Is_Target_Cell(TARGET a) { return (Target_Kind(a) == RTTI_CELL); }
-inline bool Is_Target_Unit(TARGET a) { return (Target_Kind(a) == RTTI_UNIT); }
+inline bool Is_Target_Cell(TARGET a) { return Target_Kind(a) == RTTI_CELL; }
+inline bool Is_Target_Unit(TARGET a) { return Target_Kind(a) == RTTI_UNIT; }
 inline bool Is_Target_Vessel(TARGET a) {
-  return (Target_Kind(a) == RTTI_VESSEL);
+  return Target_Kind(a) == RTTI_VESSEL;
 }
 inline bool Is_Target_Building(TARGET a) {
-  return (Target_Kind(a) == RTTI_BUILDING);
+  return Target_Kind(a) == RTTI_BUILDING;
 }
 inline bool Is_Target_Template(TARGET a) {
-  return (Target_Kind(a) == RTTI_TEMPLATE);
+  return Target_Kind(a) == RTTI_TEMPLATE;
 }
 inline bool Is_Target_Aircraft(TARGET a) {
-  return (Target_Kind(a) == RTTI_AIRCRAFT);
+  return Target_Kind(a) == RTTI_AIRCRAFT;
 }
 inline bool Is_Target_Animation(TARGET a) {
-  return (Target_Kind(a) == RTTI_ANIM);
+  return Target_Kind(a) == RTTI_ANIM;
 }
 inline bool Is_Target_Object(TARGET a) {
-  return (Target_Kind(a) == RTTI_TERRAIN || Target_Kind(a) == RTTI_UNIT ||
-          Target_Kind(a) == RTTI_VESSEL || Target_Kind(a) == RTTI_INFANTRY ||
-          Target_Kind(a) == RTTI_BUILDING || Target_Kind(a) == RTTI_AIRCRAFT);
+  return Target_Kind(a) == RTTI_TERRAIN || Target_Kind(a) == RTTI_UNIT ||
+         Target_Kind(a) == RTTI_VESSEL || Target_Kind(a) == RTTI_INFANTRY ||
+         Target_Kind(a) == RTTI_BUILDING || Target_Kind(a) == RTTI_AIRCRAFT;
 }
 
 TARGET As_Target(CELL cell);
@@ -127,25 +127,25 @@ class xTargetClass {
 
  public:
   // conversion operator to RTTIType
-  operator RTTIType() const { return (RTTIType(Target.Sub.Exponent)); }
+  operator RTTIType() const { return RTTIType(Target.Sub.Exponent); }
 
   // comparison operator
   int operator==(xTargetClass& tgt) {
-    return (tgt.Target.Target == Target.Target ? 1 : 0);
+    return tgt.Target.Target == Target.Target ? 1 : 0;
   }
 
   // conversion operator to regular TARGET type
-  TARGET As_TARGET() const { return (Target.Target); }
+  TARGET As_TARGET() const { return Target.Target; }
 
-  unsigned Value() const { return (Target.Sub.Mantissa); }
+  unsigned Value() const { return Target.Sub.Mantissa; }
 
   void Invalidate() {
     Target.Sub.Exponent = RTTI_NONE;
     Target.Sub.Mantissa = (1 << TARGET_MANTISSA) - 1;
   }
-  bool Is_Valid() const { return (Target.Sub.Exponent != RTTI_NONE); }
+  bool Is_Valid() const { return Target.Sub.Exponent != RTTI_NONE; }
 
-  TARGET As_Target() const { return (Target.Target); }
+  TARGET As_Target() const { return Target.Target; }
   AbstractTypeClass* As_TypeClass() const;
   AbstractClass* As_Abstract() const;
   TechnoClass* As_Techno() const;
@@ -157,48 +157,48 @@ class xTargetClass {
   **	type of object indicated.
   */
   TriggerTypeClass* As_TriggerType() const {
-    if (*this == RTTI_TRIGGERTYPE) return ((TriggerTypeClass*)As_TypeClass());
-    return (nullptr);
+    if (*this == RTTI_TRIGGERTYPE) return (TriggerTypeClass*)As_TypeClass();
+    return nullptr;
   }
   TeamTypeClass* As_TeamType() const {
-    if (*this == RTTI_TEAMTYPE) return ((TeamTypeClass*)As_TypeClass());
-    return (nullptr);
+    if (*this == RTTI_TEAMTYPE) return (TeamTypeClass*)As_TypeClass();
+    return nullptr;
   }
   TerrainClass* As_Terrain() const {
-    if (*this == RTTI_TERRAIN) return ((TerrainClass*)As_Abstract());
-    return (nullptr);
+    if (*this == RTTI_TERRAIN) return (TerrainClass*)As_Abstract();
+    return nullptr;
   }
   BulletClass* As_Bullet() const {
-    if (*this == RTTI_BULLET) return ((BulletClass*)As_Abstract());
-    return (nullptr);
+    if (*this == RTTI_BULLET) return (BulletClass*)As_Abstract();
+    return nullptr;
   }
   AnimClass* As_Anim() const {
-    if (*this == RTTI_ANIM) return ((AnimClass*)As_Abstract());
-    return (nullptr);
+    if (*this == RTTI_ANIM) return (AnimClass*)As_Abstract();
+    return nullptr;
   }
   TeamClass* As_Team() const {
-    if (*this == RTTI_TEAM) return ((TeamClass*)As_Abstract());
-    return (nullptr);
+    if (*this == RTTI_TEAM) return (TeamClass*)As_Abstract();
+    return nullptr;
   }
   InfantryClass* As_Infantry() const {
-    if (*this == RTTI_INFANTRY) return ((InfantryClass*)As_Techno());
-    return (nullptr);
+    if (*this == RTTI_INFANTRY) return (InfantryClass*)As_Techno();
+    return nullptr;
   }
   UnitClass* As_Unit() const {
-    if (*this == RTTI_UNIT) return ((UnitClass*)As_Techno());
-    return (nullptr);
+    if (*this == RTTI_UNIT) return (UnitClass*)As_Techno();
+    return nullptr;
   }
   BuildingClass* As_Building() const {
-    if (*this == RTTI_BUILDING) return ((BuildingClass*)As_Techno());
-    return (nullptr);
+    if (*this == RTTI_BUILDING) return (BuildingClass*)As_Techno();
+    return nullptr;
   }
   AircraftClass* As_Aircraft() const {
-    if (*this == RTTI_AIRCRAFT) return ((AircraftClass*)As_Techno());
-    return (nullptr);
+    if (*this == RTTI_AIRCRAFT) return (AircraftClass*)As_Techno();
+    return nullptr;
   }
   VesselClass* As_Vessel() const {
-    if (*this == RTTI_VESSEL) return ((VesselClass*)As_Techno());
-    return (nullptr);
+    if (*this == RTTI_VESSEL) return (VesselClass*)As_Techno();
+    return nullptr;
   }
 };
 
@@ -246,7 +246,7 @@ TriggerClass* As_Trigger(TARGET target);
 TriggerTypeClass* As_TriggerType(TARGET target);
 UnitClass* As_Unit(TARGET target);
 VesselClass* As_Vessel(TARGET target);
-inline bool Target_Legal(TARGET target) { return (target != TARGET_NONE); };
+inline bool Target_Legal(TARGET target) { return target != TARGET_NONE; };
 ObjectClass* As_Object(TARGET target);
 
 #endif

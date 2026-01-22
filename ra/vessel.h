@@ -94,7 +94,7 @@ class VesselClass : public DriveClass {
   VesselClass(NoInitClass const& x)
       : DriveClass(x), Class(x), SecondaryFacing(x) {}
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+  static void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void operator delete(void* ptr);
   operator VesselType() const { return Class->Type; }
 
@@ -103,15 +103,15 @@ class VesselClass : public DriveClass {
   ~VesselClass() override;
   ObjectTypeClass const& Class_Of() const override;
 
-  virtual MZoneType Zone_Check_Type() const { return (MZONE_WATER); }
+  virtual MZoneType Zone_Check_Type() const { return MZONE_WATER; }
   int Shape_Number() const;
   void Rotation_AI();
   void Combat_AI();
   bool Edge_Of_World_AI();
   void Repair_AI();
   DirType Turret_Facing() const override {
-    if (Class->IsTurretEquipped) return (SecondaryFacing.Current());
-    return (PrimaryFacing.Current());
+    if (Class->IsTurretEquipped) return SecondaryFacing.Current();
+    return PrimaryFacing.Current();
   }
   bool Start_Driver(COORDINATE& headto) override;
   int Mission_Retreat() override;

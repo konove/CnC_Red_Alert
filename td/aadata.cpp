@@ -339,11 +339,11 @@ AircraftType AircraftTypeClass::From_Name(char const* name) {
     for (AircraftType classid = AIRCRAFT_FIRST; classid < AIRCRAFT_COUNT;
          classid++) {
       if (stricmp(Pointers[classid]->IniName, name) == 0) {
-        return (classid);
+        return classid;
       }
     }
   }
-  return (AIRCRAFT_NONE);
+  return AIRCRAFT_NONE;
 }
 
 /***********************************************************************************************
@@ -378,7 +378,7 @@ void AircraftTypeClass::One_Time() {
     }
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    ((void const*&)uclass.CameoData) = MixFileClass::Retrieve(fullname.c_str());
+    (void const*&)uclass.CameoData = MixFileClass::Retrieve(fullname.c_str());
 
     /*
     **	Generic shape for all houses load method.
@@ -387,7 +387,7 @@ void AircraftTypeClass::One_Time() {
                    .replace_extension(".SHP")
                    .string();
 
-    ((void const*&)uclass.ImageData) = MixFileClass::Retrieve(fullname.c_str());
+    (void const*&)uclass.ImageData = MixFileClass::Retrieve(fullname.c_str());
   }
 
   LRotorData = MixFileClass::Retrieve("LROTOR.SHP");
@@ -412,7 +412,7 @@ void AircraftTypeClass::One_Time() {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
-  return (new AircraftClass(Type, house->Class->House));
+  return new AircraftClass(Type, house->Class->House);
 }
 
 #ifdef SCENARIO_EDITOR
@@ -492,7 +492,7 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 short const* AircraftTypeClass::Occupy_List(bool) const {
   static short const _list[] = {0, REFRESH_EOL};
-  return (_list);
+  return _list;
 }
 
 /***********************************************************************************************
@@ -514,7 +514,7 @@ short const* AircraftTypeClass::Overlap_List() const {
   static short const _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
       (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  REFRESH_EOL};
-  return (_list);
+  return _list;
 }
 
 /***********************************************************************************************
@@ -550,14 +550,14 @@ BuildingClass* AircraftTypeClass::Who_Can_Build_Me(bool, bool legal,
     if (building && !building->IsInLimbo &&
         building->House->Class->House == house &&
         building->Mission != MISSION_DECONSTRUCTION &&
-        ((1L << building->ActLike) & Ownable) &&
+        1L << building->ActLike & Ownable &&
         (!legal || building->House->Can_Build(Type, building->ActLike)) &&
         building->Class->ToBuild == RTTI_AIRCRAFTTYPE) {
-      if (building->IsLeader) return (building);
+      if (building->IsLeader) return building;
       anybuilding = building;
     }
   }
-  return (anybuilding);
+  return anybuilding;
 }
 
 /***********************************************************************************************
@@ -574,8 +574,7 @@ BuildingClass* AircraftTypeClass::Who_Can_Build_Me(bool, bool legal,
  * HISTORY: * 06/26/1995 JLB : Created. *
  *=============================================================================================*/
 int AircraftTypeClass::Repair_Cost() const {
-  return (
-      Fixed_To_Cardinal(Cost / (MaxStrength / REPAIR_STEP), REPAIR_PERCENT));
+  return Fixed_To_Cardinal(Cost / (MaxStrength / REPAIR_STEP), REPAIR_PERCENT);
 }
 
 /***********************************************************************************************
@@ -594,7 +593,7 @@ int AircraftTypeClass::Repair_Cost() const {
  *                                                                                             *
  * HISTORY: * 06/26/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftTypeClass::Repair_Step() const { return (REPAIR_STEP); }
+int AircraftTypeClass::Repair_Step() const { return REPAIR_STEP; }
 
 /***********************************************************************************************
  * AircraftTypeClass::Max_Pips -- Fetches the maximum number of pips allowed. *
@@ -612,13 +611,13 @@ int AircraftTypeClass::Repair_Step() const { return (REPAIR_STEP); }
  *=============================================================================================*/
 int AircraftTypeClass::Max_Pips() const {
   if (IsTransporter) {
-    return (Max_Passengers());
+    return Max_Passengers();
   } else {
     if (Primary != WEAPON_NONE) {
-      return (5);
+      return 5;
     }
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************
@@ -638,7 +637,7 @@ int AircraftTypeClass::Max_Pips() const {
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
 bool AircraftTypeClass::Create_And_Place(CELL, HousesType) const {
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -664,7 +663,7 @@ void AircraftTypeClass::Init(TheaterType theater) {
       for (index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
         AircraftTypeClass const& uclass = As_Reference(index);
 
-        ((void const*&)uclass.CameoData) = nullptr;
+        (void const*&)uclass.CameoData = nullptr;
 
         const auto filename = std::string(uclass.IniName).substr(0, 4) + "ICNH";
 
@@ -674,7 +673,7 @@ void AircraftTypeClass::Init(TheaterType theater) {
 
         cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
         if (cameo_ptr) {
-          ((void const*&)uclass.CameoData) = cameo_ptr;
+          (void const*&)uclass.CameoData = cameo_ptr;
         }
       }
     }

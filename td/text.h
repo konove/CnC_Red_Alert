@@ -36,7 +36,7 @@ inline char const* Text_String(int string) {
     case TXT_BONUS_MISSION_5:
       return "Bonus Mission 5";
   }
-  return (Extract_String(SystemStrings, string));
+  return Extract_String(SystemStrings, string);
 }
 
 #endif  // CNC_RED_ALERT_TD_TEXT_H_

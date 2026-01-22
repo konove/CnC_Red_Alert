@@ -359,7 +359,7 @@ char const* RawFileClass::Set_Name(char const* filename) {
     Allocated = false;
   }
 
-  if (!filename) return (nullptr);
+  if (!filename) return nullptr;
 
   size_t len = strlen(filename) + 1;
   char* name_copy = new (std::nothrow) char[len];
@@ -370,7 +370,7 @@ char const* RawFileClass::Set_Name(char const* filename) {
   memcpy(name_copy, filename, len);
   Filename = name_copy;
   Allocated = true;
-  return (Filename);
+  return Filename;
 }
 
 /***********************************************************************************************
@@ -396,7 +396,7 @@ char const* RawFileClass::Set_Name(char const* filename) {
  *=============================================================================================*/
 int RawFileClass::Open(char const* filename, int rights) {
   Set_Name(filename);
-  return (Open(rights));
+  return Open(rights);
 }
 
 /***********************************************************************************************
@@ -493,7 +493,7 @@ int RawFileClass::Open(int rights) {
 #endif
     break;
   }
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -528,7 +528,7 @@ int RawFileClass::Is_Available(int forced) {
   *availability check. *	Return true in this case.
   */
   if (Is_Open()) {
-    return (true);
+    return true;
   }
 
   /*
@@ -538,7 +538,7 @@ int RawFileClass::Is_Available(int forced) {
   if (forced) {
     RawFileClass::Open(READ);
     RawFileClass::Close();
-    return (true);
+    return true;
   }
 
   /*
@@ -562,7 +562,7 @@ int RawFileClass::Is_Available(int forced) {
         // if successful, replace the filename with the working one
         if (Allocated) delete[] Filename;
 
-        ((char const*&)Filename) = lower_name;
+        (char const*&)Filename = lower_name;
         Allocated = true;
       } else {
         delete[] lower_name;
@@ -628,7 +628,7 @@ int RawFileClass::Is_Available(int forced) {
     Error(errno, false, Filename);
   }
 #endif
-  return (true);
+  return true;
 }
 
 /***********************************************************************************************
@@ -734,7 +734,7 @@ long RawFileClass::Read(void* buffer, long size) {
     *succeeded.
     */
     if (!Open(READ)) {
-      return (0);
+      return 0;
     }
     opened = true;
   }
@@ -798,7 +798,7 @@ long RawFileClass::Read(void* buffer, long size) {
   **	the actual number of bytes read into the buffer.
   */
   if (opened) Close();
-  return (bytesread);
+  return bytesread;
 }
 
 /***********************************************************************************************
@@ -831,7 +831,7 @@ long RawFileClass::Write(void const* buffer, long size) {
   */
   if (!Is_Open()) {
     if (!Open(WRITE)) {
-      return (0);
+      return 0;
     }
     opened = true;
   }
@@ -902,7 +902,7 @@ long RawFileClass::Write(void const* buffer, long size) {
   *of bytes *	requested, since the case of the disk being full is caught by
   *this routine.
   */
-  return (bytesread);
+  return bytesread;
 }
 
 /***********************************************************************************************
@@ -971,7 +971,7 @@ long RawFileClass::Seek(long pos, int dir) {
   **	Return with the new position of the file. This will range between zero
   *and the number of *	bytes the file contains.
   */
-  return (pos);
+  return pos;
 }
 
 /***********************************************************************************************
@@ -1037,7 +1037,7 @@ long RawFileClass::Size() {
       Close();
     }
   }
-  return (size);
+  return size;
 }
 
 /***********************************************************************************************
@@ -1061,9 +1061,9 @@ int RawFileClass::Create() {
   Close();
   if (Open(WRITE)) {
     Close();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1148,5 +1148,5 @@ int RawFileClass::Delete() {
   **	DOS reports that the file was successfully deleted. Return with this
   *fact.
   */
-  return (true);
+  return true;
 }

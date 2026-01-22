@@ -79,11 +79,11 @@ class MusicListClass : public ListClass {
 };
 
 int SoundControlsClass::Init() {
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   Option_Width = 292 * factor;
   Option_Height = 146 * factor;
 
-  Option_X = ((SeenBuff.Get_Width() - Option_Width) / 2);
+  Option_X = (SeenBuff.Get_Width() - Option_Width) / 2;
   Option_Y = (SeenBuff.Get_Height() - Option_Height) / 2;
 
   Listbox_X = 1 * factor;
@@ -92,7 +92,7 @@ int SoundControlsClass::Init() {
   Listbox_H = 73 * factor;
 
   Button_Width = 85 * factor;
-  Button_X = Option_Width - (Button_Width + (7 * factor));
+  Button_X = Option_Width - (Button_Width + 7 * factor);
   Button_Y = 130 * factor;
 
   Stop_X = 5 * factor;
@@ -122,7 +122,7 @@ int SoundControlsClass::Init() {
   FXSlider_Y = 40 * factor;
   FXSlider_W = 108 * factor;
   FXSlider_Height = 5 * factor;
-  return (factor);
+  return factor;
 }
 
 /***********************************************************************************************
@@ -143,7 +143,7 @@ int SoundControlsClass::Init() {
 void SoundControlsClass::Process() {
   //	ThemeType theme;
 
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   Init();
   /*
@@ -414,7 +414,7 @@ void SoundControlsClass::Process() {
       case BUTTON_PLAY | KN_BUTTON:
         if (listbox.Count()) {
           Theme.Queue_Song((ThemeType) *
-                           ((unsigned char*)listbox.Current_Item()));
+                           (unsigned char*)listbox.Current_Item());
         }
         break;
 
@@ -479,7 +479,7 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
 
   } else {
     Conquer_Clip_Text_Print((char*)Add_Long_To_Pointer(List[index], 1), x, y,
-                            (selected ? BLUE : WHITE), TBLACK, TextFlags, width,
+                            selected ? BLUE : WHITE, TBLACK, TextFlags, width,
                             Tabs);
   }
 }

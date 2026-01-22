@@ -123,7 +123,6 @@
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/mission.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/profile.h"
@@ -393,7 +392,7 @@ void* InfantryClass::operator new(size_t) throw() {
   if (ptr) {
     ((InfantryClass*)ptr)->IsActive = true;
   }
-  return (ptr);
+  return ptr;
 }
 
 /***********************************************************************************************
@@ -475,7 +474,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
     res = std::max(res, newres);
   }
 
-  if (res == RESULT_NONE) return (res);
+  if (res == RESULT_NONE) return res;
 
   if (res == RESULT_DESTROYED) {
     Death_Announcement(source);
@@ -567,14 +566,14 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
         break;
     }
 
-    return (res);
+    return res;
   }
 
   /*
   **	When infantry gets hit, it gets scared.
   */
   if (res != RESULT_DESTROYED) {
-    COORDINATE c4 = (source) ? source->Coord : 0;
+    COORDINATE c4 = source ? source->Coord : 0;
     if (source) {
       Scatter(c4);
     }
@@ -611,7 +610,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
     }
 #endif
   }
-  return (res);
+  return res;
 }
 
 /***********************************************************************************************
@@ -866,7 +865,7 @@ void InfantryClass::Detach(TARGET target, bool all) {
  *=============================================================================================*/
 TARGET InfantryClass::As_Target() const {
   Validate();
-  return (Build_Target(KIND_INFANTRY, Infantry.ID(this)));
+  return Build_Target(KIND_INFANTRY, Infantry.ID(this));
 }
 
 /***********************************************************************************************
@@ -890,7 +889,7 @@ void InfantryClass::Init() {
   Infantry.Free_All();
 
   ptr = new InfantryClass();
-  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -1139,7 +1138,7 @@ void InfantryClass::AI() {
   */
   if (!Target_Legal(NavCom) && !IsProne && IsStoked && Comment.Expired()) {
     IsStoked = false;
-    Do_Action((Random_Pick(0, 1) == 0) ? DO_GESTURE1 : DO_GESTURE2);
+    Do_Action(Random_Pick(0, 1) == 0 ? DO_GESTURE1 : DO_GESTURE2);
     if (*this == INFANTRY_RAMBO) {
       VocType _response[] = {VOC_RAMBO_LEFTY, VOC_RAMBO_LAUGH, VOC_RAMBO_COMIN,
                              VOC_RAMBO_TUFF};
@@ -1434,7 +1433,7 @@ void InfantryClass::AI() {
       Mark(MARK_UP);
       if (Distance(Head_To_Coord()) < 0x0010) {
         memmove(&Path[0], &Path[1], sizeof(Path) - sizeof(Path[0]));
-        Path[(sizeof(Path) / sizeof(Path[0])) - 1] = FACING_NONE;
+        Path[sizeof(Path) / sizeof(Path[0]) - 1] = FACING_NONE;
         Coord = Head_To_Coord();
         Stop_Driver();
         Per_Cell_Process(true);
@@ -1579,13 +1578,13 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   /*
   ** If we are moving into an illegal cell, then we can't do that.
   */
-  if ((unsigned)cell >= MAP_CELL_TOTAL) return (MOVE_NO);
+  if ((unsigned)cell >= MAP_CELL_TOTAL) return MOVE_NO;
 
   /*
   **	If moving off the edge of the map, then consider that an illegal move.
   */
   if (IsLocked && !IsALoaner && !ScenarioInit && !Map.In_Radar(cell)) {
-    return (MOVE_NO);
+    return MOVE_NO;
   }
   CellClass* cellptr = &Map[cell];
 
@@ -1598,12 +1597,12 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
         OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (otype.IsCrate && !House->IsHuman) {
-      return (MOVE_NO);
+      return MOVE_NO;
     }
 
     if (otype.IsWall) {
-      if ((cellptr->OverlayData / 16) != otype.DamageLevels) {
-        return (MOVE_NO);
+      if (cellptr->OverlayData / 16 != otype.DamageLevels) {
+        return MOVE_NO;
       }
     }
   }
@@ -1632,7 +1631,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
             obj->What_Am_I() == RTTI_AIRCRAFT) {
           if ((Mission == MISSION_CAPTURE || Mission == MISSION_SABOTAGE) &&
               (obj->As_Target() == NavCom || obj->As_Target() == TarCom)) {
-            return (MOVE_OK);
+            return MOVE_OK;
           }
         }
 
@@ -1642,7 +1641,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
         */
         if (Mission == MISSION_ENTER && obj->As_Target() == NavCom &&
             IsTethered) {
-          return (MOVE_OK);
+          return MOVE_OK;
         }
 
         /*
@@ -1673,7 +1672,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
             case RTTI_TERRAIN:
             case RTTI_AIRCRAFT:
             case RTTI_BUILDING:
-              return (MOVE_NO);
+              return MOVE_NO;
 
             default:
               break;
@@ -1689,7 +1688,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
             **	Any non-allied blockage is considered impassible if the infantry
             **	is not equipped with a weapon.
             */
-            if (Class->Primary == WEAPON_NONE) return (MOVE_NO);
+            if (Class->Primary == WEAPON_NONE) return MOVE_NO;
 
             /*
             **	Some kinds of terrain are considered destroyable if the infantry
@@ -1703,7 +1702,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
                             .Warhead == WARHEAD_FIRE) {
                   if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
                 } else {
-                  return (MOVE_NO);
+                  return MOVE_NO;
                 }
                 break;
 
@@ -1729,14 +1728,14 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   */
   if (retval == MOVE_OK && !IsTethered &&
       !Ground[cellptr->Land_Type()].Cost[SPEED_FOOT]) {
-    return (MOVE_NO);
+    return MOVE_NO;
   }
 
   /*
   ** if a unit has the cell reserved then we just can't go in there.
   */
   if (retval == MOVE_OK && cellptr->Flag.Occupy.Vehicle) {
-    return (MOVE_NO);
+    return MOVE_NO;
   }
 
   /*
@@ -1752,7 +1751,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
       if (Class->Primary != WEAPON_NONE) {
         if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
       } else {
-        return (MOVE_NO);
+        return MOVE_NO;
       }
     }
   }
@@ -1762,13 +1761,13 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   **	to see if the cell is already full of infantry.
   */
   if (retval == MOVE_OK && (cellptr->Flag.Composite & 0x1F) == 0x1F) {
-    return (MOVE_NO);
+    return MOVE_NO;
   }
 
   /*
   **	Return with the most severe reason why this cell would be impassable.
   */
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -1793,8 +1792,8 @@ short const* InfantryClass::Overlap_List() const {
   Validate();
   // return(Coord_Spillage_List(Coord, 24 + ((IsSelected || Doing >
   // DO_WALK)?12:0)));
-  return (Coord_Spillage_List(Coord,
-                              24 + ((Doing > DO_WALK || IsSelected) ? 12 : 0)));
+  return Coord_Spillage_List(Coord,
+                             24 + (Doing > DO_WALK || IsSelected ? 12 : 0));
   //	return(Coord_Spillage_List(Coord, (IsSelected ? 24 : 14))+1);
 }
 
@@ -1833,7 +1832,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   /*
   **	Don't allow firing if the turret is not ready.
   */
-  if (IsFiring) return (FIRE_REARM);
+  if (IsFiring) return FIRE_REARM;
 
 #ifdef OBSOLETE
   WeaponTypeClass const* weapon =
@@ -1846,7 +1845,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   **	The target must still be legal.
   */
   if (!Target_Legal(target)) {
-    return (FIRE_ILLEGAL);
+    return FIRE_ILLEGAL;
   }
 
   /*
@@ -1854,7 +1853,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   */
   if ((IsDriving && Special.IsDefenderAdvantage) ||
       (Doing != DO_NOTHING && !MasterDoControls[Doing].Interrupt)) {
-    return (FIRE_MOVING);
+    return FIRE_MOVING;
   }
 
   /*
@@ -1863,11 +1862,11 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   if (!Special.IsDefenderAdvantage && IsDriving) {
     int diff = PrimaryFacing.Difference(Direction(TarCom));
     if (std::abs(diff) >= 32) {
-      return (FIRE_MOVING);
+      return FIRE_MOVING;
     }
   }
 
-  return (FootClass::Can_Fire(target, which));
+  return FootClass::Can_Fire(target, which);
 }
 
 /***********************************************************************************************
@@ -2169,10 +2168,10 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
         break;
     }
 
-    return (true);
+    return true;
   }
 
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2210,7 +2209,7 @@ bool InfantryClass::Stop_Driver() {
     Do_Action(DO_STAND_READY);
   }
 
-  return (FootClass::Stop_Driver());
+  return FootClass::Stop_Driver();
 }
 
 /***********************************************************************************************
@@ -2262,10 +2261,10 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
     **	Set the occupation bit for the new headto location.
     */
     Set_Occupy_Bit(headto);
-    return (true);
+    return true;
   }
 
-  return (false);
+  return false;
 }
 
 #ifdef NEVER
@@ -2312,7 +2311,7 @@ bool InfantryClass::Limbo() {
 
     Clear_Occupy_Bit(Coord);
   }
-  return (FootClass::Limbo());
+  return FootClass::Limbo();
 }
 
 /***********************************************************************************************
@@ -2339,7 +2338,7 @@ BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
   Validate();
   BulletClass* bullet = nullptr;
   WeaponTypeClass const* weapon =
-      (which == 0) ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
+      which == 0 ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 
   IsFiring = false;
 
@@ -2389,7 +2388,7 @@ BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
 #ifdef BOXING
   }
 #endif
-  return (bullet);
+  return bullet;
 }
 
 /***********************************************************************************************
@@ -2419,7 +2418,7 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
   */
   coord = Map[Coord_Cell(coord)].Closest_Free_Spot(coord, ScenarioInit);
   if (coord == 0) {
-    return (false);
+    return false;
   }
 
   if (FootClass::Unlimbo(coord, facing)) {
@@ -2427,8 +2426,8 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->IScan |= (1L << Class->Type);
-    House->ActiveIScan |= (1L << Class->Type);
+    House->IScan |= 1L << Class->Type;
+    House->ActiveIScan |= 1L << Class->Type;
 
     /*
     **	If there is no sight range, then this object isn't discovered by the
@@ -2439,9 +2438,9 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
     }
 
     Set_Occupy_Bit(coord);
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -2475,7 +2474,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const {
   switch (Class->Primary) {
     case WEAPON_NONE:
       if (*this != INFANTRY_E7) {
-        return (TARGET_NONE);
+        return TARGET_NONE;
       }
       // fall into next case.
 
@@ -2498,12 +2497,12 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const {
     case WEAPON_RIFLE:
       if (House->IsHuman &&
           (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA)) {
-        return (TARGET_NONE);
+        return TARGET_NONE;
       }
-      return (TechnoClass::Greatest_Threat(threat | THREAT_INFANTRY |
-                                           THREAT_BUILDINGS));
+      return TechnoClass::Greatest_Threat(threat | THREAT_INFANTRY |
+                                          THREAT_BUILDINGS);
   }
-  return (FootClass::Greatest_Threat(threat));
+  return FootClass::Greatest_Threat(threat);
 }
 
 /***********************************************************************************************
@@ -2672,9 +2671,9 @@ void InfantryClass::Response_Attack() {
 COORDINATE InfantryClass::Fire_Coord(int) const {
   Validate();
   if (Class->Type == INFANTRY_E4) {
-    return (Coord);  // special case for flame thrower guy
+    return Coord;  // special case for flame thrower guy
   } else {
-    return (Coord_Add(Coord, XYP_COORD(0, -5)));
+    return Coord_Add(Coord, XYP_COORD(0, -5));
   }
 }
 
@@ -2724,9 +2723,9 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
       if (Contact_With_Whom() == from) {
         Do_Action(DO_ON_GUARD, true);
         Assign_Target(Contact_With_Whom()->As_Target());
-        return (RADIO_ROGER);
+        return RADIO_ROGER;
       }
-      return (RADIO_NEGATIVE);
+      return RADIO_NEGATIVE;
 
     /*
     **	Just received a kick! Take some damage.
@@ -2736,8 +2735,8 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
           0, (int)(sizeof(Infantry_Kick_Damage) /
                    sizeof(Infantry_Kick_Damage[0])))];
       if (Take_Damage(damage, 0, WARHEAD_FOOT, this) == RESULT_DESTROYED)
-        return (RADIO_STATIC);
-      return (RADIO_ROGER);
+        return RADIO_STATIC;
+      return RADIO_ROGER;
 
     /*
     **	Just recieved a punch! Take some damage.
@@ -2747,10 +2746,10 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
           0, (int)(sizeof(Infantry_Punch_Damage) /
                    sizeof(Infantry_Punch_Damage[0])))];
       if (Take_Damage(damage, 0, WARHEAD_FIST, this) == RESULT_DESTROYED)
-        return (RADIO_STATIC);
-      return (RADIO_ROGER);
+        return RADIO_STATIC;
+      return RADIO_ROGER;
   }
-  return (FootClass::Receive_Message(from, message, param));
+  return FootClass::Receive_Message(from, message, param);
 }
 
 /***************************************************************************
@@ -2775,7 +2774,7 @@ int InfantryClass::Rearm_Delay(bool second) const {
     return (Random_Pick(5, 50));
   }
 #endif
-  return (FootClass::Rearm_Delay(second));
+  return FootClass::Rearm_Delay(second);
 }
 
 /***********************************************************************************************
@@ -2828,7 +2827,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) const {
   */
   if (*this == INFANTRY_RAMBO && action == ACTION_ATTACK &&
       object->What_Am_I() == RTTI_BUILDING) {
-    return (ACTION_SABOTAGE);
+    return ACTION_SABOTAGE;
   }
 
   /*
@@ -2856,11 +2855,11 @@ ActionType InfantryClass::What_Action(ObjectClass* object) const {
     if (object->Owner() != Owner() &&
         ((object->What_Am_I() == RTTI_AIRCRAFT &&
           ((AircraftClass*)object)->Pip_Count() == 0 &&
-          *((AircraftClass*)object) == AIRCRAFT_TRANSPORT) ||
+          *(AircraftClass*)object == AIRCRAFT_TRANSPORT) ||
          (object->What_Am_I() == RTTI_BUILDING &&
           ((BuildingClass*)object)->Class->IsCaptureable &&
-          (GameToPlay != GAME_NORMAL ||
-           *((BuildingClass*)object) != STRUCT_EYE || Scenario < 13)))) {
+          (GameToPlay != GAME_NORMAL || *(BuildingClass*)object != STRUCT_EYE ||
+           Scenario < 13)))) {
       action = ACTION_CAPTURE;
     } else {
       if (Class->Primary == WEAPON_NONE) {
@@ -2868,7 +2867,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) const {
       }
     }
   }
-  return (action);
+  return action;
 }
 
 /***********************************************************************************************
@@ -2945,8 +2944,7 @@ void InfantryClass::Read_INI(char* buffer) {
           /*
           **	Fetch the mission and facing.
           */
-          MissionType mission =
-              Mission_From_Name(strtok(nullptr, ",\n\r"));
+          MissionType mission = Mission_From_Name(strtok(nullptr, ",\n\r"));
           DirType dir = (DirType)atoi(strtok(nullptr, ",\n\r"));
           infantry->Trigger =
               TriggerClass::As_Pointer(strtok(nullptr, ",\n\r"));
@@ -3024,9 +3022,9 @@ void InfantryClass::Write_INI(char* buffer) {
               infantry->Class->IniName, infantry->Health_Ratio(),
               Coord_Cell(infantry->Coord),
               CellClass::Spot_Index(infantry->Coord),
-              Mission_Name((infantry->Mission == MISSION_NONE)
-                                             ? infantry->MissionQueue
-                                             : infantry->Mission),
+              Mission_Name(infantry->Mission == MISSION_NONE
+                               ? infantry->MissionQueue
+                               : infantry->Mission),
               infantry->PrimaryFacing.Current(),
               infantry->Trigger ? infantry->Trigger->Get_Name() : "None");
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
@@ -3096,7 +3094,7 @@ int InfantryClass::Made_A_Kill() {
     IsStoked = true;
     Comment = TICKS_PER_SECOND * 2;
   }
-  return (FootClass::Made_A_Kill());
+  return FootClass::Made_A_Kill();
 }
 
 /***********************************************************************************************
@@ -3115,7 +3113,7 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Set the occupy postion for the spot that we passed in
   */
-  Map[cell].Flag.Composite |= (1 << spot_index);
+  Map[cell].Flag.Composite |= 1 << spot_index;
 
   /*
   ** Record the type of infantry that now owns the cell
@@ -3171,9 +3169,9 @@ void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
 int InfantryClass::Full_Name() const {
   Validate();
   if (IsTechnician) {
-    return (TXT_TECHNICIAN);
+    return TXT_TECHNICIAN;
   }
-  return (Class->Full_Name());
+  return Class->Full_Name();
 }
 
 /***********************************************************************************************
@@ -3199,14 +3197,14 @@ int InfantryClass::Mission_Attack() {
   if (*this == INFANTRY_E7 && As_Building(TarCom)) {
     Assign_Destination(TarCom);
     Assign_Mission(MISSION_CAPTURE);
-    return (1);
+    return 1;
   }
-  return (FootClass::Mission_Attack());
+  return FootClass::Mission_Attack();
 }
 
 RTTIType InfantryClass::What_Am_I() const {
   Validate();
-  return (RTTI_INFANTRY);
+  return RTTI_INFANTRY;
 }
 
 ActionType InfantryClass::What_Action(CELL cell) const {
@@ -3216,10 +3214,10 @@ ActionType InfantryClass::What_Action(CELL cell) const {
 
 ObjectTypeClass const& InfantryClass::Class_Of() const {
   Validate();
-  return (*Class);
+  return *Class;
 }
 
 bool InfantryClass::Is_Infantry() const {
   Validate();
-  return (true);
+  return true;
 }
