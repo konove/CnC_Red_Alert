@@ -353,7 +353,7 @@ RTTIType ObjectClass::What_Am_I() const { return RTTI_OBJECT; }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(ObjectClass*) const { return ACTION_NONE; }
+ActionType ObjectClass::What_Action(ObjectClass*) { return ACTION_NONE; }
 
 /***********************************************************************************************
  * ObjectClass::What_Action -- Returns with the action to perform for this
@@ -537,7 +537,7 @@ void ObjectClass::Active_Click_With(ActionType, CELL){};
 void ObjectClass::Clicked_As_Target(int) {};
 bool ObjectClass::In_Range(COORDINATE, int) const { return false; };
 int ObjectClass::Weapon_Range(int) const { return 0x0000; };
-TARGET ObjectClass::As_Target() const { return TARGET_NONE; };
+TARGET ObjectClass::As_Target() const { return kTargetNone; };
 void ObjectClass::Scatter(COORDINATE, bool) {};
 bool ObjectClass::Catch_Fire() { return false; };
 

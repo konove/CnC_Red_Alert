@@ -195,9 +195,9 @@ TeamClass::TeamClass(TeamTypeClass const* type, HouseClass* owner)
   IsMoving = false;
   IsHasBeen = false;
   Center = 0;
-  Target = TARGET_NONE;
+  Target = kTargetNone;
   ObjectiveCenter = 0;
-  MissionTarget = TARGET_NONE;
+  MissionTarget = kTargetNone;
   Member = nullptr;
   Total = 0;
   Risk = 0;
@@ -244,7 +244,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
       ** clear it, so that it will be reset by whatever happens next.
       */
       if (nav) {
-        unit->Assign_Destination(TARGET_NONE);
+        unit->Assign_Destination(kTargetNone);
       }
 
       /*
@@ -252,7 +252,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
       ** clear it, so that it will be reset by whatever happens next.
       */
       if (tar) {
-        unit->Assign_Target(TARGET_NONE);
+        unit->Assign_Target(kTargetNone);
       }
     }
     unit = unit->Member;
@@ -492,7 +492,7 @@ void TeamClass::AI() {
       TeamMissionStruct const* mission = &Class->MissionList[CurrentMission];
 
       TimeOut = mission->Argument * (TICKS_PER_MINUTE / 10);
-      Target = TARGET_NONE;
+      Target = kTargetNone;
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
           Assign_Mission_Target(
@@ -509,7 +509,7 @@ void TeamClass::AI() {
           break;
 
         default:
-          Assign_Mission_Target(TARGET_NONE);
+          Assign_Mission_Target(kTargetNone);
           break;
       }
     } else {
@@ -972,10 +972,10 @@ void TeamClass::Detach(TARGET target, bool) {
   **	where they may.
   */
   if (Target == target) {
-    Target = TARGET_NONE;
+    Target = kTargetNone;
   }
   if (MissionTarget == target) {
-    MissionTarget = TARGET_NONE;
+    MissionTarget = kTargetNone;
   }
 }
 
@@ -1134,8 +1134,8 @@ void TeamClass::Coordinate_Attack() {
         if (unit->Mission != MISSION_ATTACK && unit->Mission != MISSION_ENTER &&
             unit->Mission != MISSION_CAPTURE) {
           unit->Assign_Mission(MISSION_ATTACK);
-          unit->Assign_Target(TARGET_NONE);
-          unit->Assign_Destination(TARGET_NONE);
+          unit->Assign_Target(kTargetNone);
+          unit->Assign_Destination(kTargetNone);
         }
 
         if (unit->TarCom != Target) {
@@ -1197,7 +1197,7 @@ bool TeamClass::Coordinate_Regroup() {
         */
         if (unit->Mission != MISSION_GUARD_AREA) {
           unit->Assign_Mission(MISSION_GUARD);
-          unit->Assign_Destination(TARGET_NONE);
+          unit->Assign_Destination(kTargetNone);
         }
       }
     }
@@ -1324,7 +1324,7 @@ bool TeamClass::Lagging_Units() {
         ** position until all lagging units catch up.
         */
         unit->Assign_Mission(MISSION_GUARD);
-        unit->Assign_Destination(TARGET_NONE);
+        unit->Assign_Destination(kTargetNone);
       }
     }
     unit = unit->Member;
@@ -1410,7 +1410,7 @@ void TeamClass::Coordinate_Conscript(FootClass* unit) {
     if (unit->Distance(Center) > STRAY_DISTANCE) {
       if (!Target_Legal(unit->NavCom)) {
         unit->Assign_Mission(MISSION_MOVE);
-        unit->Assign_Target(TARGET_NONE);
+        unit->Assign_Target(kTargetNone);
         unit->Assign_Destination(::As_Target(Center));
       }
     } else {

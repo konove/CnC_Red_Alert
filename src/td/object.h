@@ -77,7 +77,7 @@ class ObjectClass : public AbstractClass {
   *objects to *	be damaged by a proximity affect (explosion). When this flag is
   *set, this object *	will not be added to the list of units to damage. When
   *damage is applied to the *	object, this flag is cleared again. This process
-  *ensures that an object is never *	subject to "double jeapordy".
+  *ensures that an object is never *	subject to "double jeopardy".
   */
   unsigned IsToDamage : 1;
 
@@ -152,7 +152,7 @@ class ObjectClass : public AbstractClass {
   /*
   **	Query functions.
   */
-  virtual ActionType What_Action(ObjectClass*) const;
+  virtual ActionType What_Action(ObjectClass*);
   virtual ActionType What_Action(CELL) const;
   virtual LayerType In_Which_Layer() const;
   virtual bool Is_Infantry() const;

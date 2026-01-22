@@ -139,7 +139,7 @@ BulletClass::BulletClass() : Class(nullptr) {
   IsToAnimate = false;
   Altitude = 0;
   Riser = 0;
-  TarCom = TARGET_NONE;
+  TarCom = kTargetNone;
   Strength = 0;
   IsLocked = true;
   IsInaccurate = false;
@@ -218,7 +218,7 @@ BulletClass::BulletClass(BulletType id)
   Payback = nullptr;
   Riser = 0;
   Strength = Class->MaxStrength;
-  TarCom = TARGET_NONE;
+  TarCom = kTargetNone;
 }
 
 /***********************************************************************************************
@@ -613,7 +613,7 @@ void BulletClass::Detach(TARGET target, bool all) {
   }
 
   if (all && target == TarCom) {
-    TarCom = TARGET_NONE;
+    TarCom = kTargetNone;
   }
 }
 

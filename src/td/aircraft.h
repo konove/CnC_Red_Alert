@@ -16,28 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\aircraft.h_v   2.17   16 Oct 1995
- * 16:47:48   JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : AIRCRAFT.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : July 22, 1994 *
- *                                                                                             *
- *                  Last Update : November 28, 1994 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #ifndef AIRCRAFT_H
 #define AIRCRAFT_H
 
@@ -58,12 +36,6 @@
 
 class AircraftClass : public FootClass, public FlyClass {
  public:
-  /*
-  **	This is a pointer to the class control structure for the aircraft.
-  */
-  AircraftTypeClass const* const Class;
-
-  //-----------------------------------------------------------------------------
   void* operator new(size_t) throw();
   void* operator new(size_t, void* ptr) throw() { return ptr; }
   void operator delete(void*);
@@ -91,23 +63,19 @@ class AircraftClass : public FootClass, public FlyClass {
   int Mission_Guard() override;
   int Mission_Guard_Area() override;
 
-  /*
-  **	State machine support routines.
-  */
+  // State machine support routines.
   bool Process_Take_Off();
   bool Process_Landing();
   int Process_Fly_To(bool slowdown);
 
-  /*
-  **	Query functions.
-  */
+  // Query functions.
   int Threat_Range(int control) const override;
   int Rearm_Delay(bool second) const override;
   MoveType Can_Enter_Cell(CELL cell,
                           FacingType facing = FACING_NONE) const override;
   LayerType In_Which_Layer() const override;
   ObjectTypeClass const& Class_Of() const override { return *Class; }
-  ActionType What_Action(ObjectClass* target) const override;
+  ActionType What_Action(ObjectClass* target) override;
   ActionType What_Action(CELL cell) const override;
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
   int Pip_Count() const override;
@@ -117,23 +85,16 @@ class AircraftClass : public FootClass, public FlyClass {
   TARGET Good_LZ() const;
   DirType Fire_Direction() const override;
 
-  /*
-  **	Landing zone support functionality.
-  */
+  // Landing zone support functionality.
   bool Is_LZ_Clear(TARGET target) const;
   TARGET New_LZ(TARGET oldlz) const;
 
-  /*
-  **	Coordinate inquiry functions. These are used for both display and
-  **	combat purposes.
-  */
+  // Coordinate inquiry functions. These are used for both display and
   COORDINATE Sort_Y() const override;
   COORDINATE Fire_Coord(int which) const override;
   COORDINATE Target_Coord() const override;
 
-  /*
-  **	Object entry and exit from the game system.
-  */
+  // Object entry and exit from the game system.
   bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
 
   /*
@@ -151,17 +112,13 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, CELL cell) override;
-  void Player_Assign_Mission(MissionType mission, TARGET target = TARGET_NONE,
-                             TARGET destination = TARGET_NONE) override;
+  void Player_Assign_Mission(MissionType mission, TARGET target = kTargetNone,
+                             TARGET destination = kTargetNone) override;
   void Response_Select() override;
   void Response_Move() override;
   void Response_Attack() override;
 
-  /*
-  **	Combat related.
-  */
-  //		virtual bool Target_Something_Nearby(ThreatType
-  // threat=THREAT_NORMAL);
+  // Combat related.
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source) override;
   BulletClass* Fire_At(TARGET target, int which) override;
@@ -194,18 +151,26 @@ class AircraftClass : public FootClass, public FlyClass {
   void Code_Pointers() override;
   void Decode_Pointers() override;
 
-  /*
-  **	Dee-buggin' support.
-  */
+  // Debugging support.
   int Validate() const;
 
- public:
+  // This is a pointer to the class control structure for the aircraft.
+  AircraftTypeClass const* const Class;
+
   /*
   **	This is the facing used for the body of the aircraft. Typically, this is
   *the same *	as the PrimaryFacing, but in the case of helicopters, it can be
   *different.
   */
   FacingClass SecondaryFacing;
+
+  /*
+  **	This is the altitude of the aircraft. It is expressed in pixels that
+  **	the shadow is offset to the south. If the altitude reaches zero, then
+  **	the aircraft has landed. The altitude for normal aircraft is at
+  **	Flight_Level().
+  */
+  int Altitude;
 
  private:
   /*
@@ -246,16 +211,6 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   unsigned char Jitter;
 
- public:
-  /*
-  **	This is the altitude of the aircraft. It is expressed in pixels that
-  **	the shadow is offset to the south. If the altitude reaches zero, then
-  **	the aircraft has landed. The altitude for normal aircraft is at
-  **	Flight_Level().
-  */
-  int Altitude;
-
- private:
   /*
   **	This timer controls when the aircraft will reveal the terrain around
   *itself. *	When this timer expires and this aircraft has a sight range,

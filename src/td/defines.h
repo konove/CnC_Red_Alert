@@ -655,8 +655,6 @@ typedef enum ScenarioPlayerEnum {
   SCEN_PLAYER_FIRST = 0,
 } ScenarioPlayerType;
 
-inline ScenarioPlayerType operator++(ScenarioPlayerType&, int);
-
 /**********************************************************************
 ** These are the directional parameters for a scenario.
 */
@@ -667,8 +665,6 @@ typedef enum ScenarioDirEnum {
   SCEN_DIR_COUNT,
   SCEN_DIR_FIRST = 0,
 } ScenarioDirType;
-
-inline ScenarioDirType operator++(ScenarioDirType&, int);
 
 /**********************************************************************
 ** These are the random variations of a scenario.
@@ -973,7 +969,7 @@ typedef enum UnitType {
 #define UNITF_STEG (1L << UNIT_STEG)
 
 /**********************************************************************
-**	The variuos aircraft types are enumerated here. These include
+**	The various aircraft types are enumerated here. These include
 *helicopters *	as well as traditional aircraft.
 */
 typedef enum AircraftType {
@@ -1456,8 +1452,6 @@ typedef enum DoType {
   DO_FIRST = 0
 } DoType;
 
-inline DoType operator++(DoType&, int);
-
 /*
 **	This structure is associated with each maneuver type. It tells whether
 *the *	maneuver can be interrupted and the frame rate.
@@ -1529,7 +1523,7 @@ typedef uint32_t COORDINATE;
 typedef signed short CELL;
 
 typedef unsigned short TARGET;
-#define TARGET_NONE ((TARGET)0)
+inline constexpr TARGET kTargetNone{};
 
 /****************************************************************************
 **	Selected units have a special selected unit box around them. These are
@@ -1864,8 +1858,6 @@ typedef enum BSizeType {
   BSIZE_COUNT
 } BSizeType;
 
-inline BSizeType operator++(BSizeType&, int);
-
 /**********************************************************************
 ** When objects are manipulated on the map that are marked as being
 **	removed (up), placed down (down), or just to be redrawn (change);
@@ -1900,7 +1892,7 @@ typedef enum WindowNumberType {
 **	when referring to adjacent cells. This comes into play when moving
 **	between cells and in the Desired_Facing() algorithm.
 */
-typedef enum FacingType : int8_t {
+enum FacingType : int8_t {
   FACING_NONE = -1,
   FACING_N,   // North
   FACING_NE,  // North-East
@@ -1913,7 +1905,7 @@ typedef enum FacingType : int8_t {
 
   FACING_COUNT,  // Total of 8 directions (0..7).
   FACING_FIRST = 0
-} FacingType;
+};
 
 inline FacingType operator+(FacingType f1, FacingType f2) {
   return static_cast<FacingType>((int)f1 + (int)f2 & 0x07);

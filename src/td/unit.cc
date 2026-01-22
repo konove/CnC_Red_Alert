@@ -1219,8 +1219,8 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
         } else {
           order = MISSION_GUARD;
         }
-        Assign_Target(TARGET_NONE);
-        Assign_Destination(TARGET_NONE);
+        Assign_Target(kTargetNone);
+        Assign_Destination(kTargetNone);
       } else {
         return;
       }
@@ -1230,8 +1230,8 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
         order = MISSION_UNLOAD;
       } else {
         order = MISSION_GUARD;
-        Assign_Target(TARGET_NONE);
-        Assign_Destination(TARGET_NONE);
+        Assign_Target(kTargetNone);
+        Assign_Destination(kTargetNone);
       }
     }
   } else {
@@ -1631,7 +1631,7 @@ void UnitClass::Per_Cell_Process(bool center) {
         if (Target_Legal(ArchiveTarget)) {
           Assign_Mission(MISSION_HARVEST);
           Assign_Destination(ArchiveTarget);
-          ArchiveTarget = TARGET_NONE;
+          ArchiveTarget = kTargetNone;
         } else {
           /*
           **	Since there is no place to go, move away to clear
@@ -1658,7 +1658,7 @@ void UnitClass::Per_Cell_Process(bool center) {
         if (Target_Legal(ArchiveTarget)) {
           Assign_Mission(MISSION_HARVEST);
           Assign_Destination(ArchiveTarget);
-          ArchiveTarget = TARGET_NONE;
+          ArchiveTarget = kTargetNone;
         } else {
           /*
           **	Since there is no place to go, move away to clear
@@ -2422,7 +2422,7 @@ int UnitClass::Mission_Harvest() {
           ArchiveTarget = ::As_Target(Coord_Cell(Coord));
         } else {
           if (!Goto_Tiberium() && !Target_Legal(NavCom)) {
-            ArchiveTarget = TARGET_NONE;
+            ArchiveTarget = kTargetNone;
             Status = FINDHOME;
           } else {
             Status = HARVESTING;
@@ -2651,7 +2651,7 @@ MoveBitType UnitClass::Blocking_Object(TechnoClass const* techno,
       ** If the unit in question has a destination than we should
       ** be prepared to wait for the unit to get out of our way.
       */
-      if (((FootClass*)techno)->NavCom != TARGET_NONE) {
+      if (((FootClass*)techno)->NavCom != kTargetNone) {
         int face = Dir_Facing(PrimaryFacing);
         int techface =
             Dir_Facing(((FootClass const*)techno)->PrimaryFacing) ^ 4;
@@ -3262,7 +3262,7 @@ void UnitClass::Response_Attack() {
  *                                                                                             *
  * HISTORY: * 01/11/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType UnitClass::What_Action(ObjectClass* object) const {
+ActionType UnitClass::What_Action(ObjectClass* object) {
   Validate();
   ActionType action = TarComClass::What_Action(object);
 

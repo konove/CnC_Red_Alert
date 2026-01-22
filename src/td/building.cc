@@ -1797,7 +1797,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
   CountDown.Set(0);
   Factory = nullptr;
   House->CurBuildings++;
-  WhomToRepay = TARGET_NONE;
+  WhomToRepay = kTargetNone;
   IsCaptured = false;
   IsCharged = false;
   IsCharging = false;
@@ -1926,7 +1926,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
             i->Strength =
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength));
             i->Scatter(0, true);
-            if (source != TARGET_NONE && !House->Is_Ally(As_Object(source))) {
+            if (source != kTargetNone && !House->Is_Ally(As_Object(source))) {
               i->Assign_Mission(MISSION_ATTACK);
               i->Assign_Target(source);
             } else {
@@ -2043,7 +2043,7 @@ void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
 void BuildingClass::Assign_Target(TARGET target) {
   Validate();
   if (*this != STRUCT_SAM && !In_Range(target, 0)) {
-    target = TARGET_NONE;
+    target = kTargetNone;
   }
 
   TechnoClass::Assign_Target(target);
@@ -2831,7 +2831,7 @@ void BuildingClass::Sell_Back(int control) {
  *                                                                                             *
  * HISTORY: * 01/18/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType BuildingClass::What_Action(ObjectClass *object) const {
+ActionType BuildingClass::What_Action(ObjectClass *object) {
   Validate();
   ActionType action = TechnoClass::What_Action(object);
 
@@ -3857,7 +3857,7 @@ int BuildingClass::Mission_Attack() {
       case SAM_READY:
         if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
             As_Aircraft(TarCom)->Altitude == 0) {
-          Assign_Target(TARGET_NONE);
+          Assign_Target(kTargetNone);
           Status = SAM_LOCKING;
           return TICKS_PER_SECOND;
         } else {
@@ -3878,13 +3878,13 @@ int BuildingClass::Mission_Attack() {
       case SAM_FIRING:
         if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
             As_Aircraft(TarCom)->Altitude == 0) {
-          Assign_Target(TARGET_NONE);
+          Assign_Target(kTargetNone);
           Status = SAM_LOCKING;
         } else {
           FireErrorType error = Can_Fire(TarCom, 0);
           if (error == FIRE_ILLEGAL || error == FIRE_CANT ||
               error == FIRE_RANGE) {
-            Assign_Target(TARGET_NONE);
+            Assign_Target(kTargetNone);
             Status = SAM_LOCKING;
           } else {
             if (error == FIRE_FACING) {
@@ -3903,7 +3903,7 @@ int BuildingClass::Mission_Attack() {
       case SAM_READY2:
         if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
             As_Aircraft(TarCom)->Altitude == 0) {
-          Assign_Target(TARGET_NONE);
+          Assign_Target(kTargetNone);
           Status = SAM_LOCKING;
           return TICKS_PER_SECOND;
         } else {
@@ -3921,13 +3921,13 @@ int BuildingClass::Mission_Attack() {
       case SAM_FIRING2:
         if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
             As_Aircraft(TarCom)->Altitude == 0) {
-          Assign_Target(TARGET_NONE);
+          Assign_Target(kTargetNone);
           Status = SAM_LOCKING;
         } else {
           FireErrorType error = Can_Fire(TarCom, 0);
           if (error == FIRE_ILLEGAL || error == FIRE_CANT ||
               error == FIRE_RANGE) {
-            Assign_Target(TARGET_NONE);
+            Assign_Target(kTargetNone);
             Status = SAM_LOCKING;
           } else {
             if (error == FIRE_FACING) {
@@ -3985,7 +3985,7 @@ int BuildingClass::Mission_Attack() {
       case FIRE_CANT:
       case FIRE_RANGE:
       case FIRE_AMMO:
-        Assign_Target(TARGET_NONE);
+        Assign_Target(kTargetNone);
         Assign_Mission(MISSION_GUARD);
         Commence();
         break;
@@ -4300,7 +4300,7 @@ int BuildingClass::Mission_Missile() {
         if (bullet) {
           COORDINATE launch =
               Coord_Move(Center_Coord(), static_cast<DirType>(1), 0x1A0);
-          bullet->Assign_Target(TARGET_NONE);
+          bullet->Assign_Target(kTargetNone);
           bullet->Payback = nullptr;
           bullet->Strength = 1;
           if (!bullet->Unlimbo(launch, DIR_N)) {
@@ -4672,7 +4672,7 @@ void BuildingClass::Detach(TARGET target, bool all) {
   Validate();
   TechnoClass::Detach(target, all);
   if (target == WhomToRepay) {
-    WhomToRepay = TARGET_NONE;
+    WhomToRepay = kTargetNone;
   }
 }
 

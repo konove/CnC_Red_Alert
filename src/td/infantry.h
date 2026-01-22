@@ -182,18 +182,17 @@ class InfantryClass : public FootClass {
   **	Combat related.
   */
   virtual int Made_A_Kill();
-  ActionType What_Action(ObjectClass* object) const override;
+  ActionType What_Action(ObjectClass* object) override;
   ActionType What_Action(CELL cell) const override;
   void Assign_Mission(MissionType order) override;
   BulletClass* Fire_At(TARGET target, int which) override;
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source = nullptr) override;
+                         TechnoClass* source = nullptr) override;
   TARGET As_Target() const override;
   FireErrorType Can_Fire(TARGET target, int which) const override;
   void Assign_Target(TARGET) override;
-  RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           long& param) override;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
   int Rearm_Delay(bool second) const override;
   void Set_Occupy_Bit(COORDINATE coord) {
     Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));

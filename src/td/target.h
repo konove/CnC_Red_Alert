@@ -196,7 +196,7 @@ TechnoClass* As_Techno(TARGET target);
 // TerrainClass * As_Terrain(TARGET target);
 TriggerClass* As_Trigger(TARGET target);
 UnitClass* As_Unit(TARGET target);
-inline bool Target_Legal(TARGET target) { return target != TARGET_NONE; };
+inline bool Target_Legal(TARGET target) { return target != kTargetNone; };
 ObjectClass* As_Object(TARGET target);
 
 #endif

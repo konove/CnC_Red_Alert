@@ -397,7 +397,7 @@ HouseClass::HouseClass(HousesType house)
   Drain = 0;
   Edge = SOURCE_NORTH;
   FlagHome = 0;
-  FlagLocation = TARGET_NONE;
+  FlagLocation = kTargetNone;
   HarvestedCredits = 0;
   HouseTriggers[house].Clear();
   IGaveUp = false;
@@ -1866,7 +1866,7 @@ void HouseClass::Make_Ally(HousesType house) {
           TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
           if (Target_Legal(target) && As_Techno(target)) {
             if (Is_Ally(As_Techno(target))) {
-              dynamic_cast<TechnoClass*>(object)->TarCom = TARGET_NONE;
+              dynamic_cast<TechnoClass*>(object)->TarCom = kTargetNone;
             }
           }
         }
@@ -2443,7 +2443,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           strike = Bound(MPlayerUnitCount / 5, 1, 3);
         }
         Create_Air_Reinforcement(this, AIRCRAFT_A10, strike, MISSION_HUNT,
-                                 As_Target(cell), TARGET_NONE);
+                                 As_Target(cell), kTargetNone);
         if (this == PlayerPtr) {
           Map.IsTargettingMode = false;
         }
@@ -3408,7 +3408,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
     if (object) {
       rc = object->Flag_Remove();
       if (rc && FlagLocation == target) {
-        FlagLocation = TARGET_NONE;
+        FlagLocation = kTargetNone;
       }
 
     } else {
@@ -3419,7 +3419,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
       if (Map.In_Radar(cell)) {
         rc = Map[cell].Flag_Remove();
         if (rc && FlagLocation == target) {
-          FlagLocation = TARGET_NONE;
+          FlagLocation = kTargetNone;
         }
       }
     }

@@ -236,7 +236,7 @@ class TechnoClass : public RadioClass,
   virtual int Risk() const;
   int Value() const override;
   virtual int Rearm_Delay(bool second = true) const;
-  ActionType What_Action(ObjectClass* target) const override;
+  ActionType What_Action(ObjectClass* target) override;
   ActionType What_Action(CELL cell) const override;
   virtual int Tiberium_Load() const;
   virtual DirType Desired_Load_Dir(ObjectClass*, CELL& moveto) const;
@@ -252,8 +252,8 @@ class TechnoClass : public RadioClass,
   virtual void Response_Move();
   virtual void Response_Attack();
   virtual void Player_Assign_Mission(MissionType order,
-                                     TARGET target = TARGET_NONE,
-                                     TARGET destination = TARGET_NONE);
+                                     TARGET target = kTargetNone,
+                                     TARGET destination = kTargetNone);
 
   /*
   **	Combat related.

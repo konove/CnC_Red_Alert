@@ -760,7 +760,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
       building->CountDown.Set(20);
       building->WhomToRepay = As_Target();
       Special.IsScatter = true;
-      NavCom = TARGET_NONE;
+      NavCom = kTargetNone;
       Do_Uncloak();
       Arm = Rearm_Delay(true);
       Scatter(building->Center_Coord(), true);  // RUN AWAY!
@@ -1206,7 +1206,7 @@ void InfantryClass::AI() {
           **	stop and keep firing.
           */
           if (TarCom == NavCom) {
-            NavCom = TARGET_NONE;
+            NavCom = kTargetNone;
             Path[0] = FACING_NONE;
           }
 #ifdef BOXING
@@ -1310,7 +1310,7 @@ void InfantryClass::AI() {
       */
       if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE &&
           Target_Legal(NavCom)) {
-        Assign_Destination(TARGET_NONE);
+        Assign_Destination(kTargetNone);
         //				if (IsTethered) Scatter(0, true);
       }
 
@@ -1358,7 +1358,7 @@ void InfantryClass::AI() {
           if (!Basic_Path()) {
             // Mono_Printf("Infantry Basic_Path is failing.\n");Get_Key();
             if (Distance(NavCom) < 0x0280 && !IsTethered) {
-              Assign_Destination(TARGET_NONE);
+              Assign_Destination(kTargetNone);
             } else {
               if (TryTryAgain) {
                 TryTryAgain--;
@@ -1383,7 +1383,7 @@ void InfantryClass::AI() {
         if (Can_Enter_Cell(acell) != MOVE_OK) {
           if ((Mission == MISSION_MOVE || Mission == MISSION_ENTER) &&
               !IsTethered && House->IsHuman && Distance(NavCom) < 0x0200) {
-            Assign_Destination(TARGET_NONE);
+            Assign_Destination(kTargetNone);
           }
 
           /*
@@ -1395,13 +1395,13 @@ void InfantryClass::AI() {
               if (!House->Is_Ally(Map[acell].Cell_Object())) {
                 Override_Mission(MISSION_ATTACK,
                                  Map[acell].Cell_Object()->As_Target(),
-                                 TARGET_NONE);
+                                 kTargetNone);
               }
             } else {
               if (Map[acell].Overlay != OVERLAY_NONE &&
                   OverlayTypeClass::As_Reference(Map[acell].Overlay).IsWall) {
                 Override_Mission(MISSION_ATTACK, ::As_Target(acell),
-                                 TARGET_NONE);
+                                 kTargetNone);
               }
             }
           }
@@ -1443,7 +1443,7 @@ void InfantryClass::AI() {
         if (!IsActive || IsInLimbo) return;
 
         if (Coord_Cell(Coord) == As_Cell(NavCom)) {
-          NavCom = TARGET_NONE;
+          NavCom = kTargetNone;
           if (Mission == MISSION_MOVE) {
             Enter_Idle_Mode();
           }
@@ -1526,7 +1526,7 @@ MoveBitType InfantryClass::Blocking_Object(TechnoClass const* techno,
       ** If the unit in question has a destination than we should
       ** be prepared to wait for the unit to get out of our way.
       */
-      if (((FootClass*)techno)->NavCom != TARGET_NONE) {
+      if (((FootClass*)techno)->NavCom != kTargetNone) {
         return (MOVEF_MOVING_BLOCK);
       }
       return (MOVEF_TEMP);
@@ -2478,7 +2478,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const {
   switch (Class->Primary) {
     case WEAPON_NONE:
       if (*this != INFANTRY_E7) {
-        return TARGET_NONE;
+        return kTargetNone;
       }
       // fall into next case.
 
@@ -2501,7 +2501,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const {
     case WEAPON_RIFLE:
       if (House->IsHuman &&
           (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA)) {
-        return TARGET_NONE;
+        return kTargetNone;
       }
       return TechnoClass::Greatest_Threat(threat | THREAT_INFANTRY |
                                           THREAT_BUILDINGS);
@@ -2821,7 +2821,7 @@ void InfantryClass::Assign_Mission(MissionType order) {
  *                                                                                             *
  * HISTORY: * 03/01/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType InfantryClass::What_Action(ObjectClass* object) const {
+ActionType InfantryClass::What_Action(ObjectClass* object) {
   Validate();
   ActionType action = FootClass::What_Action(object);
 

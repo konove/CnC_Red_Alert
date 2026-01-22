@@ -215,8 +215,8 @@ class EventClass {
   EventClass(EventType type, int val);
   EventClass(EventType type, TARGET src, TARGET dest);
   //		EventClass(TARGET src, MissionType mission);
-  EventClass(TARGET src, MissionType mission, TARGET target = TARGET_NONE,
-             TARGET destination = TARGET_NONE);
+  EventClass(TARGET src, MissionType mission, TARGET target = kTargetNone,
+             TARGET destination = kTargetNone);
   EventClass(EventType type, RTTIType object, int id);
   EventClass(EventType type, RTTIType object, CELL cell);
   EventClass(EventType type, int id, CELL cell);

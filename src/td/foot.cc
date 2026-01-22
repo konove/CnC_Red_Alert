@@ -135,7 +135,7 @@
  * HISTORY: * 11/23/1994 JLB : Created. *
  *=============================================================================================*/
 FootClass::FootClass() : Speed(0) {
-  ArchiveTarget = TARGET_NONE;
+  ArchiveTarget = kTargetNone;
   IsDriving = false;
   IsInitiated = false;
   IsPlanningToLook = false;
@@ -144,8 +144,8 @@ FootClass::FootClass() : Speed(0) {
   IsFiring = false;
   IsRotating = false;
   IsUnloading = false;
-  NavCom = TARGET_NONE;
-  SuspendedNavCom = TARGET_NONE;
+  NavCom = kTargetNone;
+  SuspendedNavCom = kTargetNone;
   Path[0] = FACING_NONE;
   HeadToCoord = 0;
   Member = nullptr;
@@ -193,12 +193,12 @@ FootClass::~FootClass() {
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
 FootClass::FootClass(HousesType house) : TechnoClass(house), Speed(0) {
-  ArchiveTarget = TARGET_NONE;
+  ArchiveTarget = kTargetNone;
   Member = nullptr;
   Team = nullptr;
   Path[0] = FACING_NONE;
-  NavCom = TARGET_NONE;
-  SuspendedNavCom = TARGET_NONE;
+  NavCom = kTargetNone;
+  SuspendedNavCom = kTargetNone;
   IsUnloading = false;
   IsDriving = false;
   IsInitiated = false;
@@ -858,7 +858,7 @@ COORDINATE FootClass::Sort_Y() const {
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
 void FootClass::Stun() {
-  Assign_Destination(TARGET_NONE);
+  Assign_Destination(kTargetNone);
   Path[0] = FACING_NONE;
   Stop_Driver();
   TechnoClass::Stun();
@@ -1009,7 +1009,7 @@ int FootClass::Mission_Guard_Area() {
   if (!Target_Legal(NavCom) &&
       (Distance(ArchiveTarget) > maxrange ||
        (!Target_Legal(TarCom) && Distance(ArchiveTarget) > 0x0200))) {
-    Assign_Target(TARGET_NONE);
+    Assign_Target(kTargetNone);
     Assign_Destination(ArchiveTarget);
   }
 
@@ -1264,20 +1264,20 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
     case ACTION_ENTER:
       if (Can_Player_Move() && object && object->Is_Techno() &&
           !dynamic_cast<RadioClass*>(object)->In_Radio_Contact()) {
-        Player_Assign_Mission(MISSION_ENTER, TARGET_NONE, object->As_Target());
+        Player_Assign_Mission(MISSION_ENTER, kTargetNone, object->As_Target());
       }
       break;
 
     case ACTION_CAPTURE:
       if (Can_Player_Move()) {
-        Player_Assign_Mission(MISSION_CAPTURE, TARGET_NONE,
+        Player_Assign_Mission(MISSION_CAPTURE, kTargetNone,
                               object->As_Target());
       }
       break;
 
     case ACTION_SABOTAGE:
       if (Can_Player_Move()) {
-        Player_Assign_Mission(MISSION_SABOTAGE, TARGET_NONE,
+        Player_Assign_Mission(MISSION_SABOTAGE, kTargetNone,
                               object->As_Target());
       }
       break;
@@ -1285,7 +1285,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
     case ACTION_NOMOVE:
     case ACTION_MOVE:
       if (Can_Player_Move()) {
-        Player_Assign_Mission(MISSION_MOVE, TARGET_NONE, object->As_Target());
+        Player_Assign_Mission(MISSION_MOVE, kTargetNone, object->As_Target());
       }
       break;
 
@@ -1314,7 +1314,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
 void FootClass::Active_Click_With(ActionType action, CELL cell) {
   switch (action) {
     case ACTION_HARVEST:
-      Player_Assign_Mission(MISSION_HARVEST, TARGET_NONE, ::As_Target(cell));
+      Player_Assign_Mission(MISSION_HARVEST, kTargetNone, ::As_Target(cell));
       break;
 
     case ACTION_MOVE:
@@ -1327,7 +1327,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
 
     case ACTION_NOMOVE:
       if (What_Am_I() != RTTI_AIRCRAFT || Map[cell].IsVisible) {
-        Player_Assign_Mission(MISSION_MOVE, TARGET_NONE, ::As_Target(cell));
+        Player_Assign_Mission(MISSION_MOVE, kTargetNone, ::As_Target(cell));
       }
       break;
 
@@ -1402,7 +1402,7 @@ void FootClass::Per_Cell_Process(bool center) {
         (Mission == MISSION_RESCUE || Mission == MISSION_GUARD_AREA ||
          Mission == MISSION_ATTACK || Mission == MISSION_HUNT) &&
         inrange) {
-      Assign_Destination(TARGET_NONE);
+      Assign_Destination(kTargetNone);
       Path[0] = FACING_NONE;
     }
   }
@@ -1507,7 +1507,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     case RADIO_RUN_AWAY:
       if (In_Radio_Contact()) {
         if (NavCom == Contact_With_Whom()->As_Target()) {
-          Assign_Destination(TARGET_NONE);
+          Assign_Destination(kTargetNone);
         }
       }
       break;
@@ -1585,13 +1585,13 @@ int FootClass::Mission_Enter() {
       **	establish radio contact later.
       */
       if (Transmit_Message(RADIO_HELLO, techno) != RADIO_ROGER) {
-        ArchiveTarget = TARGET_NONE;
+        ArchiveTarget = kTargetNone;
         Enter_Idle_Mode();
       } else {
-        Assign_Destination(TARGET_NONE);
+        Assign_Destination(kTargetNone);
       }
     } else {
-      ArchiveTarget = TARGET_NONE;
+      ArchiveTarget = kTargetNone;
       Enter_Idle_Mode();
     }
 
@@ -1801,7 +1801,7 @@ TARGET FootClass::Greatest_Threat(ThreatType method) const {
   **	If this object can cloak, then it won't select a target automatically.
   */
   if (House->IsHuman && IsCloakable && Mission == MISSION_GUARD) {
-    return TARGET_NONE;
+    return kTargetNone;
   }
 
   if (Techno_Type_Class()->Primary != WEAPON_NONE &&
@@ -1842,12 +1842,12 @@ void FootClass::Detach(TARGET target, bool all) {
 
   if (!SpecialFlag) {
     if (ArchiveTarget == target) {
-      ArchiveTarget = TARGET_NONE;
+      ArchiveTarget = kTargetNone;
     }
   }
 
   if (SuspendedNavCom == target) {
-    SuspendedNavCom = TARGET_NONE;
+    SuspendedNavCom = kTargetNone;
     SuspendedMission = MISSION_NONE;
   }
 
@@ -1856,7 +1856,7 @@ void FootClass::Detach(TARGET target, bool all) {
   *navigation *	computer must be cleared.
   */
   if (NavCom == target) {
-    NavCom = TARGET_NONE;
+    NavCom = kTargetNone;
     Path[0] = FACING_NONE;
     Restore_Mission();
   }

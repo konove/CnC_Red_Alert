@@ -94,6 +94,7 @@ class ScoreAnimClass {
  public:
   ScoreAnimClass(int x, int y, void const* data);
   int XPos;
+  int Stage;
   int YPos;
   CountDownTimerClass Timer;
   void const* DataPtr;
@@ -103,7 +104,6 @@ class ScoreAnimClass {
 
 class ScoreCredsClass : public ScoreAnimClass {
  public:
-  int Stage;
   int MaxStage;
   int TimerReset;
   void const* CashTurn;
@@ -116,7 +116,6 @@ class ScoreCredsClass : public ScoreAnimClass {
 
 class ScoreTimeClass : public ScoreAnimClass {
  public:
-  int Stage;
   int MaxStage;
   int TimerReset;
   void Update() override;
@@ -127,7 +126,6 @@ class ScoreTimeClass : public ScoreAnimClass {
 class ScorePrintClass : public ScoreAnimClass {
  public:
   int Background;
-  int Stage;
   void const* PrimaryPalette;
   void Update() override;
   ScorePrintClass(void const* string, int xpos, int ypos, void const* palette,
@@ -140,7 +138,6 @@ class ScorePrintClass : public ScoreAnimClass {
 class MultiStagePrintClass : public ScoreAnimClass {
  public:
   int Background;
-  int Stage;
   void const* PrimaryPalette;
   void Update() override;
   MultiStagePrintClass(void const* string, int xpos, int ypos,
@@ -152,7 +149,6 @@ class MultiStagePrintClass : public ScoreAnimClass {
 
 class ScoreScaleClass : public ScoreAnimClass {
  public:
-  int Stage;
   unsigned char const* Palette;
   void Update() override;
   ScoreScaleClass(void const* data, int xpos, int ypos,

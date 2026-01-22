@@ -127,7 +127,7 @@ class UnitClass : public TarComClass {
   **	User I/O.
   */
   ActionType What_Action(CELL cell) const override;
-  ActionType What_Action(ObjectClass* object) const override;
+  ActionType What_Action(ObjectClass* object) override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, CELL cell) override;
   void Response_Select() override;
@@ -139,7 +139,7 @@ class UnitClass : public TarComClass {
   */
   COORDINATE Target_Coord() const override;
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source = nullptr) override;
+                         TechnoClass* source = nullptr) override;
   TARGET As_Target() const override;
   void Stun() override;
 
@@ -154,9 +154,8 @@ class UnitClass : public TarComClass {
   **	AI.
   */
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
-  RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           long& param) override;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
   void AI() override;
   int Mission_Attack() override;
   int Mission_Unload() override;
@@ -178,7 +177,7 @@ class UnitClass : public TarComClass {
   */
   void Enter_Idle_Mode(bool initial = false) override;
   MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType facing = FACING_NONE) const override;
+                          FacingType facing = FACING_NONE) const override;
   void Per_Cell_Process(bool center) override;
   void Scatter(COORDINATE threat, bool forced = false) override;
   void Exit_Repair();

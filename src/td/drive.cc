@@ -798,7 +798,7 @@ void DriveClass::Per_Cell_Process(bool center) {
   */
   if (center && As_Cell(NavCom) == cell) {
     IsTurretLockedDown = false;
-    NavCom = TARGET_NONE;
+    NavCom = kTargetNone;
     Path[0] = FACING_NONE;
   }
 
@@ -911,7 +911,7 @@ bool DriveClass::Start_Of_Move() {
     if (!Basic_Path()) {
       if (Distance(NavCom) < 0x0280 &&
           (Mission == MISSION_MOVE || Mission == MISSION_GUARD_AREA)) {
-        Assign_Destination(TARGET_NONE);
+        Assign_Destination(kTargetNone);
       } else {
         /*
         **	If a basic path could be found, but the immediate move
@@ -936,7 +936,7 @@ bool DriveClass::Start_Of_Move() {
         if (TryTryAgain) {
           TryTryAgain--;
         } else {
-          Assign_Destination(TARGET_NONE);
+          Assign_Destination(kTargetNone);
           if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
           IsNewNavCom = false;
         }
@@ -1018,7 +1018,7 @@ bool DriveClass::Start_Of_Move() {
     if (cando != MOVE_OK) {
       if (Mission == MISSION_MOVE && House->IsHuman &&
           Distance(NavCom) < 0x0200) {
-        Assign_Destination(TARGET_NONE);
+        Assign_Destination(kTargetNone);
       }
 
       /*
@@ -1053,13 +1053,13 @@ bool DriveClass::Start_Of_Move() {
           if (!House->Is_Ally(Map[destcell].Cell_Object())) {
             Override_Mission(MISSION_ATTACK,
                              Map[destcell].Cell_Object()->As_Target(),
-                             TARGET_NONE);
+                             kTargetNone);
           }
         } else {
           if (Map[destcell].Overlay != OVERLAY_NONE &&
               OverlayTypeClass::As_Reference(Map[destcell].Overlay).IsWall) {
             Override_Mission(MISSION_ATTACK, ::As_Target(destcell),
-                             TARGET_NONE);
+                             kTargetNone);
           }
         }
       } else {
@@ -1175,14 +1175,14 @@ bool DriveClass::Start_Of_Move() {
                 if (!House->Is_Ally(Map[destcell].Cell_Object())) {
                   Override_Mission(MISSION_ATTACK,
                                    Map[destcell].Cell_Object()->As_Target(),
-                                   TARGET_NONE);
+                                   kTargetNone);
                 }
               } else {
                 if (Map[destcell].Overlay != OVERLAY_NONE &&
                     OverlayTypeClass::As_Reference(Map[destcell].Overlay)
                         .IsWall) {
                   Override_Mission(MISSION_ATTACK, ::As_Target(destcell),
-                                   TARGET_NONE);
+                                   kTargetNone);
                 }
               }
               IsNewNavCom = false;
@@ -1276,7 +1276,7 @@ void DriveClass::AI() {
       **	is a navigation target or a remaining path,
       **	then start on a new track.
       */
-      if (Mission != MISSION_GUARD || NavCom != TARGET_NONE) {
+      if (Mission != MISSION_GUARD || NavCom != kTargetNone) {
         if (Target_Legal(NavCom) || Path[0] != FACING_NONE) {
           Start_Of_Move();
           While_Moving();

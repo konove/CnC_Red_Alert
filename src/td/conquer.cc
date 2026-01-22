@@ -3740,6 +3740,7 @@ bool Force_CD_Available(int cd) {
       **	Prompt to insert the CD into the drive.
       */
       if (cd == -1) {
+        // TODO(konove): This is wrong, it is accessing negative index.
         sprintf(buffer, Text_String(TXT_CD_DIALOG_1), cd + 1, _volid[cd]);
       } else {
         if (cd == 2) {

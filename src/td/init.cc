@@ -345,8 +345,7 @@ bool Init_Game(int, char*[]) {
     RawFileClass rf(Language_Name("CONQUER"));
     SystemStrings = static_cast<char const*>(Load_Alloc_Data(rf));
   } else {
-    SystemStrings =
-        static_cast<char const*>(
+    SystemStrings = static_cast<char const*>(
         MixFileClass::Retrieve(Language_Name("CONQUER")));
   }
 
@@ -354,8 +353,6 @@ bool Init_Game(int, char*[]) {
   **	Default palette initialization. Uses the desert palette for convenience,
   **	but only the non terrain specific colors matter.
   */
-  // Mem_Copy((void *)MixFileClass::Retrieve("TEMPERAT.PAL"), GamePalette,
-  // 768L);
   CCFileClass palfile("TEMPERAT.PAL");
   palfile.Read(GamePalette, 768L);
 
@@ -2672,7 +2669,7 @@ int Version_Number() {
 
 #if !(FRENCH | GERMAN | JAPANESE)
   return 1;  // Win95 USA version number
-#endif         // FRENCH | GERMAN
+#endif       // FRENCH | GERMAN
 
 #else
 

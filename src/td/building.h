@@ -199,7 +199,7 @@ class BuildingClass : public TechnoClass {
   InfantryType Crew_Type() const override;
   int Pip_Count() const override;
   bool Can_Player_Move() const override { return false; }
-  ActionType What_Action(ObjectClass *target) const override;
+  ActionType What_Action(ObjectClass *target) override;
   ActionType What_Action(CELL cell) const override;
   bool Can_Demolish() const override;
   ObjectTypeClass const &Class_Of() const override { return *Class; }
@@ -307,7 +307,7 @@ class BuildingClass : public TechnoClass {
   int Validate() const;
 
  private:
-  void Drop_Debris(TARGET source = TARGET_NONE);
+  void Drop_Debris(TARGET source = kTargetNone);
   BulletClass *Fire_At(TARGET target, int which) override;
 
   static COORDINATE const CenterOffset[BSIZE_COUNT];

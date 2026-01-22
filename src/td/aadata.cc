@@ -82,14 +82,14 @@ static AircraftTypeClass const AttackPlane(
     STRUCTF_NONE,  // Building prerequisite.
     false,         // Is a leader type?
     false,         // Does it fire a pair of shots in quick succession?
-    false,         //	Is this a typical transport vehicle?
+    false,         // Is this a typical transport vehicle?
     true,          // Fixed wing aircraft?
     false,         // Equipped with a rotor?
     false,         // Custom rotor sets for each facing?
     false,         // Can this aircraft land on clear terrain?
     false,         // Can the aircraft be crushed by a tracked vehicle?
     true,          // Is it invisible on radar?
-    false,         // Can the player select it so as to give it orders?
+    false,         // Can the player select it to give it orders?
     true,          // Can it be assigned as a target for attack.
     false,         // Is it insignificant (won't be announced)?
     false,         // Is it immune to normal combat damage?

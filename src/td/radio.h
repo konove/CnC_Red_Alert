@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RADIO_H
-#define RADIO_H
+#ifndef CNC_RED_ALERT_TD_RADIO_H_
+#define CNC_RED_ALERT_TD_RADIO_H_
 
 #include "td/defines.h"
 #include "td/globals.h"
@@ -93,9 +93,8 @@ class RadioClass : public MissionClass {
   TechnoClass* Contact_With_Whom() const { return (TechnoClass*)Radio; }
 
   // Inherited from base class(es).
-  RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           long& param) override;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
                                             long& param = LParam,
                                             RadioClass* to = nullptr);
@@ -113,4 +112,4 @@ class RadioClass : public MissionClass {
   void Decode_Pointers() override;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_RADIO_H_

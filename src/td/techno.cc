@@ -453,7 +453,7 @@ void TechnoClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-TechnoClass::TechnoClass() : TarCom(TARGET_NONE), House(nullptr) {
+TechnoClass::TechnoClass() : TarCom(kTargetNone), House(nullptr) {
   Arm = 0;
   Ammo = -1;
   PurchasePrice = 0;
@@ -472,7 +472,7 @@ TechnoClass::TechnoClass() : TarCom(TARGET_NONE), House(nullptr) {
   IsOwnedByPlayer = false;
   IsSecondShot = true;
   IsTethered = false;
-  SuspendedTarCom = TARGET_NONE;
+  SuspendedTarCom = kTargetNone;
   PrimaryFacing.Set(DIR_N);
 }
 
@@ -741,7 +741,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 TechnoClass::TechnoClass(HousesType house)
-    : House(HouseClass::As_Pointer(house)), TarCom(TARGET_NONE) {
+    : House(HouseClass::As_Pointer(house)), TarCom(kTargetNone) {
   Arm = 0;
   Ammo = -1;
   PurchasePrice = 0;
@@ -761,7 +761,7 @@ TechnoClass::TechnoClass(HousesType house)
   IsSecondShot = false;
   IsTethered = false;
 
-  SuspendedTarCom = TARGET_NONE;
+  SuspendedTarCom = kTargetNone;
 
   PrimaryFacing.Set(DIR_N);
 
@@ -1521,7 +1521,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
   if (bestobject) {
     return bestobject->As_Target();
   }
-  return TARGET_NONE;
+  return kTargetNone;
 }
 
 /***********************************************************************************************
@@ -1841,8 +1841,8 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Stun() {
-  Assign_Target(TARGET_NONE);
-  Assign_Destination(TARGET_NONE);
+  Assign_Target(kTargetNone);
+  Assign_Destination(kTargetNone);
   Transmit_Message(RADIO_OVER_OUT);
   Detach_All();
   Unselect();
@@ -1867,7 +1867,7 @@ void TechnoClass::Assign_Target(TARGET target) {
   if (target == TarCom) return;
 
   if (!Target_Legal(target)) {
-    target = TARGET_NONE;
+    target = kTargetNone;
   } else {
     /*
     **	Prevent targeting of self.
@@ -1880,7 +1880,7 @@ void TechnoClass::Assign_Target(TARGET target) {
       */
       ObjectClass* object = As_Object(target);
       if (object && (object->IsActive == false || object->Strength == 0)) {
-        target = TARGET_NONE;
+        target = kTargetNone;
       }
     }
   }
@@ -2139,7 +2139,7 @@ void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
  * HISTORY: * 01/19/1995 JLB : Created. * 03/21/1995 JLB : Special target
  *control for trees.                                        *
  *=============================================================================================*/
-ActionType TechnoClass::What_Action(ObjectClass* object) const {
+ActionType TechnoClass::What_Action(ObjectClass* object) {
   if (object) {
     /*
     **	Return the ACTION_SELF flag if clicking on itself. However, if this
@@ -3018,7 +3018,7 @@ void TechnoClass::Detach(TARGET target, bool all) {
 
   if (SuspendedMission != MISSION_NONE && SuspendedTarCom == target) {
     SuspendedMission = MISSION_NONE;
-    SuspendedTarCom = TARGET_NONE;
+    SuspendedTarCom = kTargetNone;
   }
 
   /*
@@ -3026,7 +3026,7 @@ void TechnoClass::Detach(TARGET target, bool all) {
   **	computer must be cleared.
   */
   if (TarCom == target) {
-    Assign_Target(TARGET_NONE);
+    Assign_Target(kTargetNone);
     Restore_Mission();
   }
 
@@ -3606,7 +3606,7 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
   */
   if (Target_Legal(TarCom)) {
     if (threat & THREAT_RANGE && !In_Range(TarCom)) {
-      Assign_Target(TARGET_NONE);
+      Assign_Target(kTargetNone);
     }
   }
 

@@ -165,8 +165,8 @@ void* AircraftClass::VTable;
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int AircraftClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Aircraft.ID(this);
@@ -175,10 +175,10 @@ int AircraftClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * AircraftClass::As_Target -- Returns aircraft as a target number. *
@@ -284,7 +284,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
   IsHovering = false;
   IsHoming = false;
   Strength = Class->MaxStrength;
-  NavCom = TARGET_NONE;
+  NavCom = kTargetNone;
   SecondaryFacing = PrimaryFacing;
   Jitter = 0;
 
@@ -820,7 +820,7 @@ void AircraftClass::AI() {
         *Pick_Up functions.
         */
         if (In_Which_Layer() == LAYER_GROUND) {
-          Assign_Destination(TARGET_NONE);  // Clear the navcom.
+          Assign_Destination(kTargetNone);  // Clear the navcom.
           Transmit_Message(RADIO_TETHER);
           Map.Place_Down(Coord_Cell(Coord), this);
           if (IsOwnedByPlayer) {
@@ -1126,7 +1126,7 @@ int AircraftClass::Mission_Unload() {
                 ScenarioInit--;
 
                 Transmit_Message(RADIO_OVER_OUT);
-                Assign_Target(TARGET_NONE);
+                Assign_Target(kTargetNone);
               } else {
                 Attach(unit);
               }
@@ -1660,7 +1660,7 @@ int AircraftClass::Mission_Move() {
               ScenarioInit--;
 
               Transmit_Message(RADIO_OVER_OUT);
-              Assign_Target(TARGET_NONE);
+              Assign_Target(kTargetNone);
             }
             Status = BUG_OUT;
           }
@@ -1799,8 +1799,8 @@ void AircraftClass::Enter_Idle_Mode(bool) {
         Transmit_Message(RADIO_IM_IN);
       }
 #endif
-      Assign_Destination(TARGET_NONE);
-      Assign_Target(TARGET_NONE);
+      Assign_Destination(kTargetNone);
+      Assign_Target(kTargetNone);
       mission = MISSION_GUARD;
     }
   } else {
@@ -1839,7 +1839,7 @@ void AircraftClass::Enter_Idle_Mode(bool) {
           **	Normal aircraft try to find a good landing spot to rest.
           */
           BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
-          Assign_Destination(TARGET_NONE);
+          Assign_Destination(kTargetNone);
           if (building &&
               Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER) {
             mission = MISSION_ENTER;
@@ -1894,7 +1894,7 @@ int AircraftClass::Process_Fly_To(bool slowdown) {
 
   if (slowdown) {
     int speed = std::min(distance, 0x0300);
-    speed = Bound(speed / 3, 0x0020, 0x00FF);
+    speed = std::clamp(speed / 3, 0x0020, 0x00FF);
     if (Speed != speed) {
       Set_Speed(speed);
     }
@@ -2008,11 +2008,11 @@ void AircraftClass::Active_Click_With(ActionType action, ObjectClass* object) {
   Validate();
   switch (action) {
     case ACTION_ENTER:
-      Player_Assign_Mission(MISSION_ENTER, TARGET_NONE, object->As_Target());
+      Player_Assign_Mission(MISSION_ENTER, kTargetNone, object->As_Target());
       break;
 
     case ACTION_SELF:
-      Player_Assign_Mission(MISSION_UNLOAD, TARGET_NONE, TARGET_NONE);
+      Player_Assign_Mission(MISSION_UNLOAD, kTargetNone, kTargetNone);
       break;
 
     default:
@@ -2044,7 +2044,7 @@ void AircraftClass::Active_Click_With(ActionType action, CELL cell) {
   switch (action) {
     case ACTION_MOVE:
       if (Map[cell].IsVisible) {
-        Player_Assign_Mission(MISSION_MOVE, TARGET_NONE, ::As_Target(cell));
+        Player_Assign_Mission(MISSION_MOVE, kTargetNone, ::As_Target(cell));
       }
       break;
 
@@ -2094,24 +2094,17 @@ void AircraftClass::Player_Assign_Mission(MissionType mission, TARGET target,
   Queue_Mission(As_Target(), mission, target, destination);
 }
 
-/***********************************************************************************************
- * AircraftClass::What_Action -- Determines what action to perform. *
- *                                                                                             *
- *    This routine is used to determine what action will likely be performed if
- *the mouse      * were clicked over the object specified. The display system
- *calls this routine to         * control the mouse shape. *
- *                                                                                             *
- * INPUT:   target   -- Pointer to the object that the mouse is currently over.
- **
- *                                                                                             *
- * OUTPUT:  Returns with the action that will occur if the mouse were clicked
- *over the         * object specified. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/19/1995 JLB : Created. *
- *=============================================================================================*/
-ActionType AircraftClass::What_Action(ObjectClass* target) const {
+// AircraftClass::What_Action -- Determines what action to perform.
+//
+// This routine is used to determine what action will likely be performed if the
+// mouse were clicked over the object specified. The display system calls this
+// routine to control the mouse shape.
+//
+// INPUT:   target   -- Pointer to the object that the mouse is currently over.
+//
+// OUTPUT:  Returns with the action that will occur if the mouse were clicked
+// over the object specified.
+ActionType AircraftClass::What_Action(ObjectClass* target) {
   Validate();
   ActionType action = FootClass::What_Action(target);
 
@@ -2125,11 +2118,11 @@ ActionType AircraftClass::What_Action(ObjectClass* target) const {
 
   if (IsOwnedByPlayer && House->Is_Ally(target) &&
       target->What_Am_I() == RTTI_BUILDING &&
-      ((AircraftClass*)this)
-              ->Transmit_Message(RADIO_CAN_LOAD, dynamic_cast<TechnoClass*>(
-                                                     target)) == RADIO_ROGER) {
+      this->Transmit_Message(
+          RADIO_CAN_LOAD, dynamic_cast<TechnoClass*>(target)) == RADIO_ROGER) {
     action = ACTION_ENTER;
   }
+
   return action;
 }
 
@@ -2271,7 +2264,7 @@ int AircraftClass::Mission_Attack() {
           **	the direction of travel.
           */
           int diff = SecondaryFacing.Difference(Direction(NavCom));
-          diff = Bound(diff, -128, 128);
+          diff = std::clamp(diff, -128, 128);
           PrimaryFacing = SecondaryFacing.Current() + diff;
         }
         return 1;
@@ -2300,7 +2293,7 @@ int AircraftClass::Mission_Attack() {
 
           if (distance < 0x0010) {
             Status = FIRE_AT_TARGET;
-            Assign_Destination(TARGET_NONE);
+            Assign_Destination(kTargetNone);
           }
         } else {
           SecondaryFacing.Set_Desired(
@@ -2388,7 +2381,7 @@ int AircraftClass::Mission_Attack() {
     **	Fly back to landing spot.
     */
     case RETURN_TO_BASE:
-      Assign_Destination(TARGET_NONE);
+      Assign_Destination(kTargetNone);
       Enter_Idle_Mode();
       break;
   }
@@ -2859,7 +2852,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
       }
     }
   }
-  return TARGET_NONE;
+  return kTargetNone;
 }
 
 /***********************************************************************************************
@@ -2990,7 +2983,7 @@ int AircraftClass::Mission_Enter() {
           Transmit_Message(RADIO_DOCKING);
           Status = TRAVEL;
         } else {
-          Assign_Destination(TARGET_NONE);
+          Assign_Destination(kTargetNone);
           Enter_Idle_Mode();
         }
       }
@@ -2999,7 +2992,7 @@ int AircraftClass::Mission_Enter() {
     case TRAVEL:
       Transmit_Message(RADIO_DOCKING);
       if (!In_Radio_Contact()) {
-        Assign_Destination(TARGET_NONE);
+        Assign_Destination(kTargetNone);
         Enter_Idle_Mode();
       } else {
         int distance = Process_Fly_To(true);
@@ -3025,7 +3018,7 @@ int AircraftClass::Mission_Enter() {
 
     case LANDING:
       if (IsTakingOff) {
-        Assign_Destination(TARGET_NONE);
+        Assign_Destination(kTargetNone);
         Enter_Idle_Mode();
       }
       if (Process_Landing()) {
@@ -3315,7 +3308,7 @@ int AircraftClass::Mission_Guard() {
       BuildingClass* building = Find_Docking_Bay(STRUCT_REPAIR, true);
       if (building) {
         Assign_Destination(building->As_Target());
-        Assign_Target(TARGET_NONE);
+        Assign_Target(kTargetNone);
         Assign_Mission(MISSION_ENTER);
         return 1;
       }
@@ -3332,7 +3325,7 @@ int AircraftClass::Mission_Guard() {
       BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
       if (building) {
         Assign_Destination(building->As_Target());
-        Assign_Target(TARGET_NONE);
+        Assign_Target(kTargetNone);
         Assign_Mission(MISSION_ENTER);
         return 1;
       }

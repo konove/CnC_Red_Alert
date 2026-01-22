@@ -41,6 +41,7 @@
 #ifndef JSHELL_H
 #define JSHELL_H
 
+#include <algorithm>
 #include <cstdint>
 
 #include "sdllib/include/buffer.h"
@@ -68,12 +69,6 @@ class Keyboard {
   static int Mouse_X() { return Get_Mouse_X(); }
   static int Mouse_Y() { return Get_Mouse_Y(); }
 };
-
-#ifdef NEVER
-inline void* operator delete(void* data) { Free(data); }
-
-inline void* operator delete[](void* data) { Free(data); }
-#endif
 
 /*
 **	These templates allow enumeration types to have simple bitwise
@@ -129,9 +124,11 @@ inline void Set_Bit(void* array, int bit, int value) {
           "ok:"
   */
   if (value)
-    static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] |= 1 << (bit & 0x1F);
+    static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] |=
+        1 << (bit & 0x1F);
   else
-    static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] &= ~(1 << (bit & 0x1F));
+    static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] &=
+        ~(1 << (bit & 0x1F));
 }
 
 inline int Get_Bit(void const* array, int bit) {
@@ -143,7 +140,8 @@ inline int Get_Bit(void const* array, int bit) {
           "setc	al"
   */
   return !!(
-      static_cast<const uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] & 1 << (bit & 0x1F));
+      static_cast<const uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] &
+      1 << (bit & 0x1F));
 }
 
 inline int First_True_Bit(void const* array) {
@@ -174,6 +172,7 @@ inline int First_True_Bit(void const* array) {
     off += 32;
   }
 }
+
 inline int First_False_Bit(void const* array) {
   /*
   #pragma aux First_False_Bit parm [esi] \
@@ -204,27 +203,9 @@ inline int First_False_Bit(void const* array) {
   }
 }
 
-#ifdef PORTABLE
 inline int Bound(int original, int minval, int maxval) {
-  if (original < minval) return minval;
-  if (original > maxval) return maxval;
-  return original;
-};
-#else
-extern int Bound(int original, int min, int max);
-#pragma aux Bound parm[eax][ebx]                       \
-    [ecx] modify[eax] value[eax] =                     \
-                                "cmp	ebx,ecx"          \
-                                "jl	okorder"           \
-                                "xchg	ebx,ecx"         \
-                                "okorder: cmp	eax,ebx" \
-                                "jg	okmin"             \
-                                "mov	eax,ebx"          \
-                                "okmin: cmp	eax,ecx"   \
-                                "jl	okmax"             \
-                                "mov	eax,ecx"          \
-                                "okmax:"
-#endif
+  return std::clamp(original, minval, maxval);
+}
 
 #ifdef NEVER
 extern unsigned Bound(unsigned original, unsigned min, unsigned max);

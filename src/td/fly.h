@@ -63,6 +63,7 @@ class FlyClass {
     SpeedAccum = 0;
   }
   FlyClass(NoInitClass const&) {}
+  virtual ~FlyClass() = default;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -74,8 +75,8 @@ class FlyClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers();
-  void Decode_Pointers();
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
  private:
   /*

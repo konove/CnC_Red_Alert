@@ -1539,8 +1539,7 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
   } while (i < PlayerPtr->Available_Money());
 
   // Make sure the credits object doesn't freeze on the white stage
-  while (dynamic_cast<ScoreTimeClass*>(ScoreObjs[credobj])->Stage >= 20 &&
-         !ControlQ) {
+  while (ScoreObjs[credobj]->Stage >= 20 && ControlQ == 0) {
     Call_Back_Delay(1);
   }
   delete ScoreObjs[credobj];

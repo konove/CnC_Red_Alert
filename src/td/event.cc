@@ -593,7 +593,7 @@ void EventClass::Execute() {
              techno->What_Am_I() == RTTI_AIRCRAFT)) {
           dynamic_cast<FootClass*>(techno)->ArchiveTarget =
               Data.MegaMission.Target;
-          techno->Assign_Target(TARGET_NONE);
+          techno->Assign_Target(kTargetNone);
           techno->Assign_Destination(Data.MegaMission.Target);
         } else {
           techno->Assign_Target(Data.MegaMission.Target);
@@ -617,8 +617,8 @@ void EventClass::Execute() {
       techno = As_Techno(Data.Target.Whom);
       if (techno && techno->IsActive && !techno->IsInLimbo &&
           !techno->IsTethered) {
-        techno->Assign_Destination(TARGET_NONE);
-        techno->Assign_Target(TARGET_NONE);
+        techno->Assign_Destination(kTargetNone);
+        techno->Assign_Target(kTargetNone);
         techno->Enter_Idle_Mode();
       }
       break;
