@@ -534,7 +534,7 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType& dir) {
     temp = x;
     x = y;
     y = temp;
-    workdir = (DirType)(DIR_W - workdir);
+    workdir = DIR_W - workdir;
   }
 
   if (flags & F_X) {
@@ -544,7 +544,7 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType& dir) {
 
   if (flags & F_Y) {
     y = -y;
-    workdir = (DirType)(DIR_S - workdir);
+    workdir = DIR_S - workdir;
   }
 
   dir = workdir;
@@ -735,7 +735,7 @@ bool DriveClass::While_Moving() {
           int tnum;
 
           tnum =
-              (int)(Dir_Facing(track->Facing) * FACING_COUNT) + (int)nextface;
+              Dir_Facing(track->Facing) * FACING_COUNT + (int)nextface;
           newtrack = &TrackControl[tnum];
           if (newtrack->Track && RawTracks[newtrack->Track - 1].Entry) {
             COORDINATE c = Head_To_Coord();
@@ -762,7 +762,7 @@ bool DriveClass::While_Moving() {
                 if (!IsActive) return false;
                 if (Start_Driver(c)) {
                   Set_Speed(oldspeed);
-                  memmove((char*)&Path[0], (char*)&Path[1],
+                  memmove(&Path[0], &Path[1],
                           CONQUER_PATH_MAX - 1);
                   Path[CONQUER_PATH_MAX - 1] = FACING_NONE;
                 } else {
@@ -1245,12 +1245,12 @@ bool DriveClass::Start_Of_Move() {
               return true;
             }
           } else {
-            memmove((char*)&Path[0], (char*)&Path[2], CONQUER_PATH_MAX - 2);
+            memmove(&Path[0], &Path[2], CONQUER_PATH_MAX - 2);
             Path[CONQUER_PATH_MAX - 2] = FACING_NONE;
             IsPlanningToLook = true;
           }
         } else {
-          memmove((char*)&Path[0], (char*)&Path[1], CONQUER_PATH_MAX - 1);
+          memmove(&Path[0], &Path[1], CONQUER_PATH_MAX - 1);
         }
         Path[CONQUER_PATH_MAX - 1] = FACING_NONE;
       }
@@ -1468,14 +1468,14 @@ void DriveClass::Fixup_Path(PathType* path) {
   if (!facediff) return;
 
   if (Dir_Facing(PrimaryFacing) & FACING_NE) {
-    ptr = &_dpath[(FacingType)std::abs((int)facediff) - FACING_NE]
+    ptr = &_dpath[(FacingType)std::abs(facediff) - FACING_NE]
                  [1];  // Pointer to path adjust list.
-    counter = (int)_dpath[(FacingType)std::abs((int)facediff) - FACING_NE]
+    counter = (int)_dpath[(FacingType)std::abs(facediff) - FACING_NE]
                          [0];  // Number of path adjusts.
   } else {
-    ptr = &_path[(FacingType)std::abs((int)facediff) - FACING_NE]
+    ptr = &_path[(FacingType)std::abs(facediff) - FACING_NE]
                 [1];  // Pointer to path adjust list.
-    counter = (int)_path[(FacingType)std::abs((int)facediff) - FACING_NE]
+    counter = (int)_path[(FacingType)std::abs(facediff) - FACING_NE]
                         [0];  // Number of path adjusts.
   }
   ptr2 = ptr;
@@ -1551,7 +1551,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   */
   if (ok) {
     if (path->Length <= 1) {
-      memmove((char*)&stage[0], (char*)path->Command, std::max(counter, 1));
+      memmove(&stage[0], path->Command, std::max(counter, 1));
       path->Length = counter;
     } else {
       /*
@@ -1570,9 +1570,9 @@ void DriveClass::Fixup_Path(PathType* path) {
       **	insert the rest now.
       */
       if (counter) {
-        memmove((char*)&path->Command[0], (char*)&path->Command[counter],
+        memmove(&path->Command[0], &path->Command[counter],
                 40 - counter);
-        memmove((char*)&stage[0], (char*)&path->Command[0], counter);
+        memmove(&stage[0], &path->Command[0], counter);
         path->Length += counter;
       }
     }
@@ -2102,10 +2102,10 @@ DriveClass::TurnTrackType const DriveClass::TrackControl[67] = {
     {0, 0, DIR_SE, F_},   //	0-3 !
     {0, 0, DIR_S, F_},    //	0-4 !
     {0, 0, DIR_SW, F_},   //	0-5 !
-    {4, 9, DIR_W, (TrackControlType)(F_X | F_D)},   //	0-6
-    {3, 7, DIR_NW, (TrackControlType)(F_X | F_D)},  //	0-7
+    {4, 9, DIR_W, (F_X | F_D)},   //	0-6
+    {3, 7, DIR_NW, (F_X | F_D)},  //	0-7
     {6, 8, DIR_N,
-     (TrackControlType)(F_T | F_X | F_Y | F_D)},  //	1-0
+     (F_T | F_X | F_Y | F_D)},  //	1-0
     {2, 0, DIR_NE, F_},                                       //	1-1 (raw chart)
     {6, 8, DIR_E, F_D},                                       //	1-2 (raw chart)
     {5, 10, DIR_SE, F_D},                                     //	1-3 (raw chart)
@@ -2113,62 +2113,62 @@ DriveClass::TurnTrackType const DriveClass::TrackControl[67] = {
     {0, 0, DIR_SW, F_},                                       //	1-5 !
     {0, 0, DIR_W, F_},                                        //	1-6 !
     {5, 10, DIR_NW,
-     (TrackControlType)(F_T | F_X | F_Y | F_D)},  //	1-7
+     (F_T | F_X | F_Y | F_D)},  //	1-7
     {4, 9, DIR_N,
-     (TrackControlType)(F_T | F_X | F_Y | F_D)},  //	2-0
+     (F_T | F_X | F_Y | F_D)},  //	2-0
     {3, 7, DIR_NE,
-     (TrackControlType)(F_T | F_X | F_Y | F_D)},   //	2-1
-    {1, 0, DIR_E, (TrackControlType)(F_T | F_X)},  //	2-2
+     (F_T | F_X | F_Y | F_D)},   //	2-1
+    {1, 0, DIR_E, (F_T | F_X)},  //	2-2
     {3, 7, DIR_SE,
-     (TrackControlType)(F_T | F_X | F_D)},               //	2-3
-    {4, 9, DIR_S, (TrackControlType)(F_T | F_X | F_D)},  //	2-4
+     (F_T | F_X | F_D)},               //	2-3
+    {4, 9, DIR_S, (F_T | F_X | F_D)},  //	2-4
     {0, 0, DIR_SW, F_},                                              //	2-5 !
     {0, 0, DIR_W, F_},                                               //	2-6 !
     {0, 0, DIR_NW, F_},                                              //	2-7 !
     {0, 0, DIR_N, F_},                                               //	3-0 !
-    {5, 10, DIR_NE, (TrackControlType)(F_Y | F_D)},      //	3-1
-    {6, 8, DIR_E, (TrackControlType)(F_Y | F_D)},        //	3-2
+    {5, 10, DIR_NE, (F_Y | F_D)},      //	3-1
+    {6, 8, DIR_E, (F_Y | F_D)},        //	3-2
     {2, 0, DIR_SE, F_Y},                                             //	3-3
-    {6, 8, DIR_S, (TrackControlType)(F_T | F_X | F_D)},  //	3-4
+    {6, 8, DIR_S, (F_T | F_X | F_D)},  //	3-4
     {5, 10, DIR_SW,
-     (TrackControlType)(F_T | F_X | F_D)},          //	3-5
+     (F_T | F_X | F_D)},          //	3-5
     {0, 0, DIR_W, F_},                                          //	3-6 !
     {0, 0, DIR_NW, F_},                                         //	3-7 !
     {0, 0, DIR_N, F_},                                          //	4-0 !
     {0, 0, DIR_NE, F_},                                         //	4-1 !
-    {4, 9, DIR_E, (TrackControlType)(F_Y | F_D)},   //	4-2
-    {3, 7, DIR_SE, (TrackControlType)(F_Y | F_D)},  //	4-3
+    {4, 9, DIR_E, (F_Y | F_D)},   //	4-2
+    {3, 7, DIR_SE, (F_Y | F_D)},  //	4-3
     {1, 0, DIR_S, F_Y},                                         //	4-4
     {3, 7, DIR_SW,
-     (TrackControlType)(F_X | F_Y | F_D)},               //	4-5
-    {4, 9, DIR_W, (TrackControlType)(F_X | F_Y | F_D)},  //	4-6
+     (F_X | F_Y | F_D)},               //	4-5
+    {4, 9, DIR_W, (F_X | F_Y | F_D)},  //	4-6
     {0, 0, DIR_NW, F_},                                              //	4-7 !
     {0, 0, DIR_N, F_},                                               //	5-0 !
     {0, 0, DIR_NE, F_},                                              //	5-1 !
     {0, 0, DIR_E, F_},                                               //	5-2 !
-    {5, 10, DIR_SE, (TrackControlType)(F_T | F_D)},      //	5-3
-    {6, 8, DIR_S, (TrackControlType)(F_T | F_D)},        //	5-4
+    {5, 10, DIR_SE, (F_T | F_D)},      //	5-3
+    {6, 8, DIR_S, (F_T | F_D)},        //	5-4
     {2, 0, DIR_SW, F_T},                                             //	5-5
-    {6, 8, DIR_W, (TrackControlType)(F_X | F_Y | F_D)},  //	5-6
+    {6, 8, DIR_W, (F_X | F_Y | F_D)},  //	5-6
     {5, 10, DIR_NW,
-     (TrackControlType)(F_X | F_Y | F_D)},               //	5-7
-    {4, 9, DIR_N, (TrackControlType)(F_T | F_Y | F_D)},  //	6-0
+     (F_X | F_Y | F_D)},               //	5-7
+    {4, 9, DIR_N, (F_T | F_Y | F_D)},  //	6-0
     {0, 0, DIR_NE, F_},                                              //	6-1 !
     {0, 0, DIR_E, F_},                                               //	6-2 !
     {0, 0, DIR_SE, F_},                                              //	6-3 !
-    {4, 9, DIR_S, (TrackControlType)(F_T | F_D)},        //	6-4
-    {3, 7, DIR_SW, (TrackControlType)(F_T | F_D)},       //	6-5
+    {4, 9, DIR_S, (F_T | F_D)},        //	6-4
+    {3, 7, DIR_SW, (F_T | F_D)},       //	6-5
     {1, 0, DIR_W, F_T},                                              //	6-6
     {3, 7, DIR_NW,
-     (TrackControlType)(F_T | F_Y | F_D)},               //	6-7
-    {6, 8, DIR_N, (TrackControlType)(F_T | F_Y | F_D)},  //	7-0
+     (F_T | F_Y | F_D)},               //	6-7
+    {6, 8, DIR_N, (F_T | F_Y | F_D)},  //	7-0
     {5, 10, DIR_NE,
-     (TrackControlType)(F_T | F_Y | F_D)},           //	7-1
+     (F_T | F_Y | F_D)},           //	7-1
     {0, 0, DIR_E, F_},                                           //	7-2 !
     {0, 0, DIR_SE, F_},                                          //	7-3 !
     {0, 0, DIR_S, F_},                                           //	7-4 !
-    {5, 10, DIR_SW, (TrackControlType)(F_X | F_D)},  //	7-5
-    {6, 8, DIR_W, (TrackControlType)(F_X | F_D)},    //	7-6
+    {5, 10, DIR_SW, (F_X | F_D)},  //	7-5
+    {6, 8, DIR_W, (F_X | F_D)},    //	7-6
     {2, 0, DIR_NW, F_X},                                         //	7-7
 
     {11, 11, DIR_SW, F_},     // Backup harvester into refinery.

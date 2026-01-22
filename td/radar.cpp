@@ -608,7 +608,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
   ObjectClass* obj;
   int xoff, yoff;
 
-  obj = (ObjectClass*)Map[cell].Cell_Occupier();
+  obj = Map[cell].Cell_Occupier();
   while (obj) {
     if (obj->Is_Techno() && (((TechnoClass*)obj)->Cloak != CLOAKED ||
                              ((TechnoClass*)obj)->House->Is_Ally(PlayerPtr))) {
@@ -847,13 +847,13 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         /*
         **	Convert the logical icon number into the actual icon number.
         */
-        Mem_Copy(Add_Long_To_Pointer((void*)ptr, 28), &offset, sizeof(offset));
-        Mem_Copy(Add_Long_To_Pointer((void*)ptr, offset + icon), &icon,
+        Mem_Copy(Add_Long_To_Pointer(ptr, 28), &offset, sizeof(offset));
+        Mem_Copy(Add_Long_To_Pointer(ptr, offset + icon), &icon,
                  sizeof(char));
         icon &= 0x00FF;
 
-        Mem_Copy(Add_Long_To_Pointer((void*)ptr, 12), &offset, sizeof(offset));
-        ptr = Add_Long_To_Pointer((void*)ptr, offset + icon * (24 * 24));
+        Mem_Copy(Add_Long_To_Pointer(ptr, 12), &offset, sizeof(offset));
+        ptr = Add_Long_To_Pointer(ptr, offset + icon * (24 * 24));
 
         unsigned char* data = (unsigned char*)ptr;
         Buffer_To_Page(0, 0, 24, 24, data, _TileStage);
@@ -1644,7 +1644,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           GraphicBufferClass temp_surface;
           temp_surface.Init(RadarWidth + 16 & 0xfffffff0,
                             RadarHeight + 16 & 0xfffffff0, nullptr, 0,
-                            (GBC_Enum)GBC_VIDEOMEM);
+                            GBC_VIDEOMEM);
 
           HidPage.Blit(
               temp_surface,

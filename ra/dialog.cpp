@@ -647,8 +647,8 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y,
         break;
     }
 
-    if ((unsigned)x < LogicPage->Get_Width() &&
-        (unsigned)y < LogicPage->Get_Height()) {
+    if (x < LogicPage->Get_Width() &&
+        y < LogicPage->Get_Height()) {
       LogicPage->Print(text, x, y, forecolor, back);
       //			LogicPage->Print(text, x, y, fore->Color, back);
     }

@@ -331,7 +331,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
   pan_value = 0;
   if (coord && !Map.In_View(cell_pos)) {
     distance = Map.Cell_Distance(cell_pos, Coord_Cell(Map.TacticalCoord));
-    distance = (unsigned int)std::min((int)distance, (int)MAP_CELL_W);
+    distance = (unsigned int)std::min((int)distance, MAP_CELL_W);
     distance = Cardinal_To_Fixed(MAP_CELL_W, distance);
     distance = std::min(distance, 0xFFu);
     distance ^= 0xFF;
@@ -422,8 +422,8 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   */
   if (ptr) {
     return Play_Sample(
-        ptr, Fixed_To_Cardinal(SoundEffectName[voc].Priority, (int)volume),
-        (int)volume, pan_value);
+        ptr, Fixed_To_Cardinal(SoundEffectName[voc].Priority, volume),
+        volume, pan_value);
   }
   return -1;
 }

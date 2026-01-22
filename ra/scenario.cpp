@@ -2587,7 +2587,7 @@ void Assign_Houses() {
     port::SafeCopy(housep->InitialName, Session.Players[index]->Name);
 #endif
     housep->IsHuman = true;
-    housep->Init_Data((PlayerColorType)Session.Players[index]->Player.Color,
+    housep->Init_Data(Session.Players[index]->Player.Color,
                       Session.Players[index]->Player.House,
                       Session.Options.Credits);
     if (index == 0) {

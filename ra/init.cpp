@@ -1545,7 +1545,7 @@ static void Play_Intro(bool sequenced) {
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 #ifdef MOVIE640
-GraphicBufferClass VQ640(640, 400, (void*)nullptr);
+GraphicBufferClass VQ640(640, 400, nullptr);
 #endif
 void Anim_Init() {
   /* Configure player with INI file */
@@ -1563,12 +1563,12 @@ void Anim_Init() {
   AnimControl.EventHandler = VQ_Event_Handler;
   AnimControl.ImageWidth = 320;
   AnimControl.ImageHeight = 200;
-  AnimControl.ImageBuf = (unsigned char*)SysMemPage.Get_Offset();
+  AnimControl.ImageBuf = SysMemPage.Get_Offset();
 #ifdef MOVIE640
   if (IsVQ640) {
     AnimControl.ImageWidth = 640;
     AnimControl.ImageHeight = 400;
-    AnimControl.ImageBuf = (unsigned char*)VQ640.Get_Offset();
+    AnimControl.ImageBuf = VQ640.Get_Offset();
   }
 #endif
   AnimControl.Vmode = 0;
@@ -2439,7 +2439,7 @@ static void Init_Color_Remaps() {
   /*
   ** Set up the metallic remap table for the font that prints over the tabs
   */
-  memset((void*)&MetalScheme, 4, sizeof(MetalScheme));
+  memset(&MetalScheme, 4, sizeof(MetalScheme));
   for (int color_counter = 0; color_counter < 16; color_counter++) {
     MetalScheme.FontRemap[color_counter] = color_counter;
   }

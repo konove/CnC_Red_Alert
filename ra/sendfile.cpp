@@ -400,7 +400,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
     if (!gametype) {
       NullModem.Service();
 
-      if (NullModem.Get_Message((void*)&receive_packet, (int*)&packet_len) >
+      if (NullModem.Get_Message(&receive_packet, (int*)&packet_len) >
           0) {
         if (receive_packet.Command == NET_FILE_CHUNK) {
           if (receive_packet.BlockNumber == last_received_block + 1) {
@@ -741,7 +741,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
 
           if (send_file.Read(read_ptr, send_packet.BlockLength) ==
               send_packet.BlockLength) {
-            NullModem.Send_Message((void*)&send_packet, sizeof(send_packet), 1);
+            NullModem.Send_Message(&send_packet, sizeof(send_packet), 1);
           }
 
           block_number++;

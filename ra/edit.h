@@ -50,7 +50,7 @@ class EditClass : public ControlClass {
     NUMERIC = 0x0002,    // Edit accepts numbers.
     MISC = 0x0004,       // Edit accepts misc graphic characters.
     UPPERCASE = 0x0008,  // Force to upper case.
-    ALPHANUMERIC = (int)ALPHA | (int)NUMERIC | (int)MISC
+    ALPHANUMERIC = ALPHA | NUMERIC | MISC
   } EditStyle;
 
   EditClass(int id, char* text, int max_len, TextPrintType flags, int x, int y,

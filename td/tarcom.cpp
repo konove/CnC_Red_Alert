@@ -128,7 +128,7 @@ void TarComClass::AI() {
         if (What_Am_I() != RTTI_UNIT) {
           IsFiring = false;
         } else {
-          if (!((UnitClass*)this)->Class->IsFireAnim) {
+          if (!this->Class->IsFireAnim) {
             IsFiring = false;
           }
         }

@@ -853,7 +853,7 @@ typedef enum ThemeType {
   THEME_WASTELND,
 
   THEME_COUNT,
-  THEME_LAST = (int)THEME_COUNT - 1,
+  THEME_LAST = THEME_COUNT - 1,
   THEME_FIRST = 0
 } ThemeType;
 
@@ -1161,7 +1161,7 @@ typedef enum PlayerColorType {
 
   PCOLOR_COUNT,
   PCOLOR_FIRST = 0,
-  PCOLOR_LAST = (int)PCOLOR_COUNT - 1
+  PCOLOR_LAST = PCOLOR_COUNT - 1
 } PlayerColorType;
 
 /**********************************************************************
@@ -2822,14 +2822,14 @@ inline FacingType operator+(FacingType f1, FacingType f2) {
   return (FacingType)((int)f1 + (int)f2 & 0x07);
 }
 inline FacingType operator+(FacingType f1, int f2) {
-  return (FacingType)((int)f1 + (int)f2 & 0x07);
+  return (FacingType)((int)f1 + f2 & 0x07);
 }
 
 inline FacingType operator-(FacingType f1, FacingType f2) {
   return (FacingType)((int)f1 - (int)f2 & 0x07);
 }
 inline FacingType operator-(FacingType f1, int f2) {
-  return (FacingType)((int)f1 - (int)f2 & 0x07);
+  return (FacingType)((int)f1 - f2 & 0x07);
 }
 
 inline FacingType operator+=(FacingType& f1, FacingType f2) {
@@ -2837,7 +2837,7 @@ inline FacingType operator+=(FacingType& f1, FacingType f2) {
   return f1;
 }
 inline FacingType operator+=(FacingType& f1, int f2) {
-  f1 = (FacingType)((int)f1 + (int)f2 & 0x07);
+  f1 = (FacingType)((int)f1 + f2 & 0x07);
   return f1;
 }
 

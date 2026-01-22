@@ -345,7 +345,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
   ** Keep count of the number of units created. Dont track civilians.
   */
   if (!Class->IsCivilian && GameToPlay == GAME_INTERNET) {
-    House->InfantryTotals->Increment_Unit_Total((int)classid);
+    House->InfantryTotals->Increment_Unit_Total(classid);
   }
 }
 
@@ -1952,7 +1952,7 @@ void InfantryClass::Random_Animate() {
       }
     }
 
-    switch (Random_Picky((int)0, (int)55, (char*)nullptr, (int)0)) {
+    switch (Random_Picky(0, 55, nullptr, 0)) {
       case 10:
         Do_Action(DO_SALUTE1);
         break;
@@ -2077,8 +2077,8 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
       COORDINATE coord = Coord & 0x00FF00FFL;
 
       if (coord != 0x00800080L) {
-        toface = Dir_Facing((DirType)Desired_Facing8(
-            0x0080, 0x0080, Coord_X(coord), Coord_Y(coord)));
+        toface = Dir_Facing(
+            Desired_Facing8(0x0080, 0x0080, Coord_X(coord), Coord_Y(coord)));
       } else {
         toface = Dir_Facing(PrimaryFacing.Current());
       }

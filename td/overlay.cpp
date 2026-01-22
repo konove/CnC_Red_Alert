@@ -299,10 +299,10 @@ bool OverlayClass::Mark(MarkType mark) {
                 */
                 if (Cell_X(cell) & 0x01) {
                   newcell =
-                      Adjacent_Cell((CELL)cellptr->Cell_Number(), FACING_W);
+                      Adjacent_Cell(cellptr->Cell_Number(), FACING_W);
                 } else {
                   newcell =
-                      Adjacent_Cell((CELL)cellptr->Cell_Number(), FACING_E);
+                      Adjacent_Cell(cellptr->Cell_Number(), FACING_E);
                 }
                 if (Map[newcell].Overlay != OVERLAY_CONCRETE) {
                   Class->Create_And_Place(newcell);

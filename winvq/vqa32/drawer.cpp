@@ -643,13 +643,13 @@ static long DrawFrame_Buffer(VQAHandle* vqa) {
   /* Dereference current frame for quicker access. */
   curframe = drawer->CurFrame;
 
-  buff = (unsigned char*)(drawer->ImageBuf + drawer->ScreenOffset);
+  buff = drawer->ImageBuf + drawer->ScreenOffset;
 
   pal = curframe->Palette;
   palsize = curframe->PaletteSize;
   slowpal = config->OptionFlags & VQAOPTF_SLOWPAL ? 1 : 0;
 
-  /* Set the palette if neccessary */
+  /* Set the palette if necessary */
   if (curframe->Flags & VQAFRMF_PALETTE || drawer->Flags & VQADRWF_SETPAL) {
     Flag_To_Set_Palette(pal, palsize, slowpal);
     curframe->Flags &= ~VQAFRMF_PALETTE;

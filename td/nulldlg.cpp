@@ -2993,7 +2993,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the init string list by name then number
   */
-  qsort((void*)&InitStrings[0], InitStrings.Count(), sizeof(char*),
+  qsort(&InitStrings[0], InitStrings.Count(), sizeof(char*),
         Init_String_Compare);
 
   /*........................................................................

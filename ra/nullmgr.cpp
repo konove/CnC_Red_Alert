@@ -1948,7 +1948,7 @@ int NullModemClass::Abort_Modem() {
  * HISTORY: * 8/2/96 2:59PM ST : Documented / Win32 support added *
  *=============================================================================================*/
 void NullModemClass::Setup_Abort_Modem() {
-  SerialPort->Set_Abort_Function((int (*)())Abort_Modem);
+  SerialPort->Set_Abort_Function(Abort_Modem);
 }
 
 /***********************************************************************************************

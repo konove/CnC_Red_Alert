@@ -618,7 +618,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
 #ifdef WINSOCK_IPX
 
   assert(immed == nullptr);
-  PacketTransport->WriteTo((void*)buf, buflen, (void*)address);
+  PacketTransport->WriteTo(buf, buflen, address);
   return true;
 
 #else  // WINSOCK_IPX

@@ -376,7 +376,7 @@ void Slide_Show(int slide, int frame) {
       ** If this is the last fade down frame then zero the picture palette
       *entries.
       */
-      unsigned char* ccpalptr = (unsigned char*)CCPalette;
+      unsigned char* ccpalptr = CCPalette;
       for (int index = 0; index < 256; index++) {
         if (PaletteLUT[index]) {
           ccpalptr[index * 3] = 0;
@@ -825,7 +825,7 @@ void Show_Who_Was_Responsible() {
     if (frame && 3 == 3) {
       for (i = slide_number + 1; i < NUM_SLIDES; i++) {
         if (!SlideBuffers[i]->Get_IsDirectDraw()) {
-          Force_VM_Page_In((void*)SlideBuffers[i]->Get_Offset(),
+          Force_VM_Page_In(SlideBuffers[i]->Get_Offset(),
                            SeenBuff.Get_Width() * SeenBuff.Get_Height());
         }
       }

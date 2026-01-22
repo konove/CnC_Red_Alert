@@ -175,7 +175,7 @@ char const* Map_Selection() {
 
   void* anim = Open_Animation(
       _filename, nullptr, 0L,
-      (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), mappalette);
+      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, mappalette);
 
   Keyboard->Clear();
   SeenPage.Clear();

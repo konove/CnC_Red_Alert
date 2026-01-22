@@ -212,7 +212,7 @@ void PKey::Generate(Straw& random, int bits, PKey& fastkey, PKey& slowkey) {
     */
     BigInt e = Fast_Exponent();
     BigInt n = p * q;
-    BigInt pqmin = (p - (unsigned short)1) * (q - (unsigned short)1);
+    BigInt pqmin = (p - 1) * (q - 1);
     BigInt d = e.Inverse(pqmin);
 
     /*

@@ -238,7 +238,7 @@ bool SmudgeClass::Mark(MarkType mark) {
                     SmudgeTypeClass::As_Reference(cell->Smudge).IsCrater) {
                   cell->SmudgeData++;
                   cell->SmudgeData =
-                      (int)std::min((int)cell->SmudgeData, (int)4);
+                      (int)std::min((int)cell->SmudgeData, 4);
                 }
 
                 if (cell->Smudge == SMUDGE_NONE) {

@@ -339,11 +339,11 @@ static TemplateTypeClass const Water2(TEMPLATE_WATER2,
 static TemplateTypeClass const Shore1(TEMPLATE_SHORE1,
                                       THEATERF_WINTER | THEATERF_TEMPERATE,
                                       "SH1", TXT_WATER, LAND_WATER, 3, 3,
-                                      LAND_BEACH, (char const*)_slope111111);
+                                      LAND_BEACH, _slope111111);
 static TemplateTypeClass const Shore2(TEMPLATE_SHORE2,
                                       THEATERF_WINTER | THEATERF_TEMPERATE,
                                       "SH2", TXT_WATER, LAND_ROCK, 3, 3,
-                                      LAND_BEACH, (char const*)_slope111);
+                                      LAND_BEACH, _slope111);
 static TemplateTypeClass const Shore3(TEMPLATE_SHORE3,
                                       THEATERF_WINTER | THEATERF_TEMPERATE,
                                       "SH3", TXT_WATER, LAND_ROCK, 1, 1,
@@ -355,49 +355,49 @@ static TemplateTypeClass const Shore4(TEMPLATE_SHORE4,
 static TemplateTypeClass const Shore5(TEMPLATE_SHORE5,
                                       THEATERF_WINTER | THEATERF_TEMPERATE,
                                       "SH5", TXT_WATER, LAND_WATER, 3, 3,
-                                      LAND_BEACH, (char const*)_slope111111);
+                                      LAND_BEACH, _slope111111);
 static TemplateTypeClass const Shore6(TEMPLATE_SHORE6,
                                       THEATERF_WINTER | THEATERF_TEMPERATE,
                                       "SH6", TXT_WATER, LAND_WATER, 3, 3,
-                                      LAND_BEACH, (char const*)_slope111111);
+                                      LAND_BEACH, _slope111111);
 static TemplateTypeClass const Shore7(TEMPLATE_SHORE7,
                                       THEATERF_WINTER | THEATERF_TEMPERATE,
                                       "SH7", TXT_WATER, LAND_WATER, 2, 2,
-                                      LAND_BEACH, (char const*)_slope1);
+                                      LAND_BEACH, _slope1);
 static TemplateTypeClass const Shore8(TEMPLATE_SHORE8,
                                       THEATERF_WINTER | THEATERF_TEMPERATE,
                                       "SH8", TXT_WATER, LAND_WATER, 3, 3,
-                                      LAND_BEACH, (char const*)_slope11111111);
+                                      LAND_BEACH, _slope11111111);
 static TemplateTypeClass const Shore9(TEMPLATE_SHORE9,
                                       THEATERF_WINTER | THEATERF_TEMPERATE,
                                       "SH9", TXT_WATER, LAND_WATER, 3, 3,
-                                      LAND_BEACH, (char const*)_slope111111011);
+                                      LAND_BEACH, _slope111111011);
 static TemplateTypeClass const Shore10(TEMPLATE_SHORE10,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "SH10", TXT_WATER, LAND_WATER, 2, 2,
-                                       LAND_BEACH, (char const*)_slope01);
+                                       LAND_BEACH, _slope01);
 static TemplateTypeClass const Shore11(TEMPLATE_SHORE11,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "SH11", TXT_WATER, LAND_WATER, 3, 3,
-                                       LAND_BEACH, (char const*)_slope1001);
+                                       LAND_BEACH, _slope1001);
 static TemplateTypeClass const Shore12(TEMPLATE_SHORE12,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "SH12", TXT_WATER, LAND_WATER, 3, 3,
                                        LAND_BEACH,
-                                       (char const*)_slope000001001);
+                                       _slope000001001);
 static TemplateTypeClass const Shore13(TEMPLATE_SHORE13,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "SH13", TXT_WATER, LAND_WATER, 3, 3,
-                                       LAND_BEACH, (char const*)_slope0000001);
+                                       LAND_BEACH, _slope0000001);
 static TemplateTypeClass const Shore14(TEMPLATE_SHORE14,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "SH14", TXT_WATER, LAND_ROCK, 3, 3,
-                                       LAND_BEACH, (char const*)_slope00000011);
+                                       LAND_BEACH, _slope00000011);
 static TemplateTypeClass const Shore15(TEMPLATE_SHORE15,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "SH15", TXT_WATER, LAND_ROCK, 3, 3,
                                        LAND_BEACH,
-                                       (char const*)_slope000000101);
+                                       _slope000000101);
 static TemplateTypeClass const Shore16(TEMPLATE_SHORE16,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "SH16", TXT_WATER, LAND_ROCK, 3, 2,
@@ -426,13 +426,13 @@ static TemplateTypeClass const Shore22(TEMPLATE_SHORE22, THEATERF_DESERT,
                                        LAND_ROCK, nullptr);
 static TemplateTypeClass const Shore23(TEMPLATE_SHORE23, THEATERF_DESERT,
                                        "SH23", TXT_WATER, LAND_ROCK, 2, 2,
-                                       LAND_CLEAR, (char const*)_slope01);
+                                       LAND_CLEAR, _slope01);
 static TemplateTypeClass const Shore24(TEMPLATE_SHORE24, THEATERF_DESERT,
                                        "SH24", TXT_WATER, LAND_ROCK, 3, 3,
-                                       LAND_CLEAR, (char const*)_slope000001);
+                                       LAND_CLEAR, _slope000001);
 static TemplateTypeClass const Shore25(TEMPLATE_SHORE25, THEATERF_DESERT,
                                        "SH25", TXT_WATER, LAND_ROCK, 3, 2,
-                                       LAND_CLEAR, (char const*)_slope0001);
+                                       LAND_CLEAR, _slope0001);
 static TemplateTypeClass const Shore26(TEMPLATE_SHORE26, THEATERF_DESERT,
                                        "SH26", TXT_WATER, LAND_ROCK, 3, 2,
                                        LAND_CLEAR, nullptr);
@@ -444,7 +444,7 @@ static TemplateTypeClass const Shore28(TEMPLATE_SHORE28, THEATERF_DESERT,
                                        LAND_CLEAR, nullptr);
 static TemplateTypeClass const Shore29(TEMPLATE_SHORE29, THEATERF_DESERT,
                                        "SH29", TXT_WATER, LAND_ROCK, 6, 2,
-                                       LAND_CLEAR, (char const*)_slope00000001);
+                                       LAND_CLEAR, _slope00000001);
 static TemplateTypeClass const Shore30(TEMPLATE_SHORE30, THEATERF_DESERT,
                                        "SH30", TXT_WATER, LAND_ROCK, 2, 2,
                                        LAND_CLEAR, nullptr);
@@ -454,20 +454,20 @@ static TemplateTypeClass const Shore31(TEMPLATE_SHORE31, THEATERF_DESERT,
 static TemplateTypeClass const Shore32(TEMPLATE_SHORE32,
                                        THEATERF_TEMPERATE | THEATERF_WINTER,
                                        "SH32", TXT_WATER, LAND_CLEAR, 3, 3,
-                                       LAND_WATER, (char const*)_slope1);
+                                       LAND_WATER, _slope1);
 static TemplateTypeClass const Shore33(TEMPLATE_SHORE33,
                                        THEATERF_TEMPERATE | THEATERF_WINTER,
                                        "SH33", TXT_WATER, LAND_CLEAR, 3, 3,
-                                       LAND_WATER, (char const*)_slope001);
+                                       LAND_WATER, _slope001);
 static TemplateTypeClass const Shore34(TEMPLATE_SHORE34,
                                        THEATERF_TEMPERATE | THEATERF_WINTER,
                                        "SH34", TXT_WATER, LAND_CLEAR, 3, 3,
                                        LAND_WATER,
-                                       (char const*)_slope001001001);
+                                       _slope001001001);
 static TemplateTypeClass const Shore35(TEMPLATE_SHORE35,
                                        THEATERF_TEMPERATE | THEATERF_WINTER,
                                        "SH35", TXT_WATER, LAND_CLEAR, 3, 3,
-                                       LAND_WATER, (char const*)_slope1001001);
+                                       LAND_WATER, _slope1001001);
 static TemplateTypeClass const Shore36(TEMPLATE_SHORE36, THEATERF_DESERT,
                                        "SH36", TXT_WATER, LAND_CLEAR, 1, 1,
                                        LAND_CLEAR, nullptr);
@@ -482,10 +482,10 @@ static TemplateTypeClass const Shore39(TEMPLATE_SHORE39, THEATERF_DESERT,
                                        LAND_CLEAR, nullptr);
 static TemplateTypeClass const Shore40(TEMPLATE_SHORE40, THEATERF_DESERT,
                                        "SH40", TXT_WATER, LAND_WATER, 3, 3,
-                                       LAND_CLEAR, (char const*)_slope1);
+                                       LAND_CLEAR, _slope1);
 static TemplateTypeClass const Shore41(TEMPLATE_SHORE41, THEATERF_DESERT,
                                        "SH41", TXT_WATER, LAND_CLEAR, 3, 3,
-                                       LAND_WATER, (char const*)_slope1101101);
+                                       LAND_WATER, _slope1101101);
 static TemplateTypeClass const Shore42(TEMPLATE_SHORE42, THEATERF_DESERT,
                                        "SH42", TXT_WATER, LAND_WATER, 1, 2,
                                        LAND_CLEAR, nullptr);
@@ -500,7 +500,7 @@ static TemplateTypeClass const Shore45(TEMPLATE_SHORE45, THEATERF_DESERT,
                                        LAND_CLEAR, nullptr);
 static TemplateTypeClass const Shore46(TEMPLATE_SHORE46, THEATERF_DESERT,
                                        "SH46", TXT_WATER, LAND_WATER, 3, 3,
-                                       LAND_CLEAR, (char const*)_slope1101);
+                                       LAND_CLEAR, _slope1101);
 static TemplateTypeClass const Shore47(TEMPLATE_SHORE47, THEATERF_DESERT,
                                        "SH47", TXT_WATER, LAND_WATER, 3, 3,
                                        LAND_CLEAR, nullptr);
@@ -512,7 +512,7 @@ static TemplateTypeClass const Shore49(TEMPLATE_SHORE49, THEATERF_DESERT,
                                        LAND_CLEAR, nullptr);
 static TemplateTypeClass const Shore50(TEMPLATE_SHORE50, THEATERF_DESERT,
                                        "SH50", TXT_WATER, LAND_WATER, 4, 3,
-                                       LAND_CLEAR, (char const*)_slope00000001);
+                                       LAND_CLEAR, _slope00000001);
 static TemplateTypeClass const Shore51(TEMPLATE_SHORE51, THEATERF_DESERT,
                                        "SH51", TXT_WATER, LAND_WATER, 4, 3,
                                        LAND_CLEAR, nullptr);
@@ -521,13 +521,13 @@ static TemplateTypeClass const Shore52(TEMPLATE_SHORE52, THEATERF_DESERT,
                                        LAND_CLEAR, nullptr);
 static TemplateTypeClass const Shore53(TEMPLATE_SHORE53, THEATERF_DESERT,
                                        "SH53", TXT_WATER, LAND_WATER, 4, 3,
-                                       LAND_CLEAR, (char const*)_slope11101);
+                                       LAND_CLEAR, _slope11101);
 static TemplateTypeClass const Shore54(TEMPLATE_SHORE54, THEATERF_DESERT,
                                        "SH54", TXT_WATER, LAND_WATER, 3, 2,
-                                       LAND_CLEAR, (char const*)_slope1);
+                                       LAND_CLEAR, _slope1);
 static TemplateTypeClass const Shore55(TEMPLATE_SHORE55, THEATERF_DESERT,
                                        "SH55", TXT_WATER, LAND_WATER, 3, 2,
-                                       LAND_CLEAR, (char const*)_slope001);
+                                       LAND_CLEAR, _slope001);
 static TemplateTypeClass const Shore56(TEMPLATE_SHORE56, THEATERF_DESERT,
                                        "SH56", TXT_WATER, LAND_WATER, 3, 2,
                                        LAND_CLEAR, nullptr);
@@ -539,13 +539,13 @@ static TemplateTypeClass const Shore58(TEMPLATE_SHORE58, THEATERF_DESERT,
                                        LAND_CLEAR, nullptr);
 static TemplateTypeClass const Shore59(TEMPLATE_SHORE59, THEATERF_DESERT,
                                        "SH59", TXT_WATER, LAND_WATER, 2, 3,
-                                       LAND_CLEAR, (char const*)_slope1);
+                                       LAND_CLEAR, _slope1);
 static TemplateTypeClass const Shore60(TEMPLATE_SHORE60, THEATERF_DESERT,
                                        "SH60", TXT_WATER, LAND_WATER, 2, 3,
-                                       LAND_CLEAR, (char const*)_slope000101);
+                                       LAND_CLEAR, _slope000101);
 static TemplateTypeClass const Shore61(TEMPLATE_SHORE61, THEATERF_DESERT,
                                        "SH61", TXT_WATER, LAND_WATER, 2, 3,
-                                       LAND_CLEAR, (char const*)_slope01);
+                                       LAND_CLEAR, _slope01);
 static TemplateTypeClass const Shore62(TEMPLATE_SHORE62, THEATERF_DESERT,
                                        "SH62", TXT_WATER, LAND_WATER, 6, 1,
                                        LAND_CLEAR, nullptr);
@@ -579,12 +579,12 @@ static TemplateTypeClass const Slope1(TEMPLATE_SLOPE1,
                                       THEATERF_WINTER | THEATERF_DESERT |
                                           THEATERF_TEMPERATE,
                                       "S01", TXT_SLOPE, LAND_ROCK, 2, 2,
-                                      LAND_CLEAR, (char const*)_slope001);
+                                      LAND_CLEAR, _slope001);
 static TemplateTypeClass const Slope2(TEMPLATE_SLOPE2,
                                       THEATERF_WINTER | THEATERF_DESERT |
                                           THEATERF_TEMPERATE,
                                       "S02", TXT_SLOPE, LAND_ROCK, 2, 3,
-                                      LAND_CLEAR, (char const*)_slope01);
+                                      LAND_CLEAR, _slope01);
 static TemplateTypeClass const Slope3(TEMPLATE_SLOPE3,
                                       THEATERF_WINTER | THEATERF_DESERT |
                                           THEATERF_TEMPERATE,
@@ -604,7 +604,7 @@ static TemplateTypeClass const Slope6(TEMPLATE_SLOPE6,
                                       THEATERF_WINTER | THEATERF_DESERT |
                                           THEATERF_TEMPERATE,
                                       "S06", TXT_SLOPE, LAND_ROCK, 2, 3,
-                                      LAND_CLEAR, (char const*)_slope1);
+                                      LAND_CLEAR, _slope1);
 static TemplateTypeClass const Slope7(TEMPLATE_SLOPE7,
                                       THEATERF_WINTER | THEATERF_DESERT |
                                           THEATERF_TEMPERATE,
@@ -614,12 +614,12 @@ static TemplateTypeClass const Slope8(TEMPLATE_SLOPE8,
                                       THEATERF_WINTER | THEATERF_DESERT |
                                           THEATERF_TEMPERATE,
                                       "S08", TXT_SLOPE, LAND_ROCK, 2, 2,
-                                      LAND_CLEAR, (char const*)_slope01);
+                                      LAND_CLEAR, _slope01);
 static TemplateTypeClass const Slope9(TEMPLATE_SLOPE9,
                                       THEATERF_WINTER | THEATERF_DESERT |
                                           THEATERF_TEMPERATE,
                                       "S09", TXT_SLOPE, LAND_ROCK, 3, 2,
-                                      LAND_CLEAR, (char const*)_slope0001);
+                                      LAND_CLEAR, _slope0001);
 static TemplateTypeClass const Slope10(TEMPLATE_SLOPE10,
                                        THEATERF_WINTER | THEATERF_DESERT |
                                            THEATERF_TEMPERATE,
@@ -639,17 +639,17 @@ static TemplateTypeClass const Slope13(TEMPLATE_SLOPE13,
                                        THEATERF_WINTER | THEATERF_DESERT |
                                            THEATERF_TEMPERATE,
                                        "S13", TXT_SLOPE, LAND_ROCK, 3, 2,
-                                       LAND_CLEAR, (char const*)_slope000001);
+                                       LAND_CLEAR, _slope000001);
 static TemplateTypeClass const Slope14(TEMPLATE_SLOPE14,
                                        THEATERF_WINTER | THEATERF_DESERT |
                                            THEATERF_TEMPERATE,
                                        "S14", TXT_SLOPE, LAND_ROCK, 2, 2,
-                                       LAND_CLEAR, (char const*)_slope0111);
+                                       LAND_CLEAR, _slope0111);
 static TemplateTypeClass const Slope15(TEMPLATE_SLOPE15,
                                        THEATERF_WINTER | THEATERF_DESERT |
                                            THEATERF_TEMPERATE,
                                        "S15", TXT_SLOPE, LAND_ROCK, 2, 2,
-                                       LAND_CLEAR, (char const*)_slope01);
+                                       LAND_CLEAR, _slope01);
 static TemplateTypeClass const Slope16(TEMPLATE_SLOPE16,
                                        THEATERF_WINTER | THEATERF_DESERT |
                                            THEATERF_TEMPERATE,
@@ -674,7 +674,7 @@ static TemplateTypeClass const Slope20(TEMPLATE_SLOPE20,
                                        THEATERF_WINTER | THEATERF_DESERT |
                                            THEATERF_TEMPERATE,
                                        "S20", TXT_SLOPE, LAND_ROCK, 2, 3,
-                                       LAND_CLEAR, (char const*)_slope000001);
+                                       LAND_CLEAR, _slope000001);
 static TemplateTypeClass const Slope21(TEMPLATE_SLOPE21,
                                        THEATERF_WINTER | THEATERF_DESERT |
                                            THEATERF_TEMPERATE,
@@ -689,7 +689,7 @@ static TemplateTypeClass const Slope23(TEMPLATE_SLOPE23,
                                        THEATERF_WINTER | THEATERF_DESERT |
                                            THEATERF_TEMPERATE,
                                        "S23", TXT_SLOPE, LAND_ROCK, 3, 2,
-                                       LAND_CLEAR, (char const*)_slope000001);
+                                       LAND_CLEAR, _slope000001);
 static TemplateTypeClass const Slope24(TEMPLATE_SLOPE24,
                                        THEATERF_WINTER | THEATERF_DESERT |
                                            THEATERF_TEMPERATE,
@@ -709,7 +709,7 @@ static TemplateTypeClass const Slope27(TEMPLATE_SLOPE27,
                                        THEATERF_WINTER | THEATERF_DESERT |
                                            THEATERF_TEMPERATE,
                                        "S27", TXT_SLOPE, LAND_ROCK, 3, 2,
-                                       LAND_CLEAR, (char const*)_slope0011);
+                                       LAND_CLEAR, _slope0011);
 static TemplateTypeClass const Slope28(TEMPLATE_SLOPE28,
                                        THEATERF_WINTER | THEATERF_DESERT |
                                            THEATERF_TEMPERATE,
@@ -865,7 +865,7 @@ static TemplateTypeClass const River2(TEMPLATE_RIVER2,
 static TemplateTypeClass const River3(TEMPLATE_RIVER3,
                                       THEATERF_WINTER | THEATERF_TEMPERATE,
                                       "RV03", TXT_RIVER, LAND_WATER, 4, 4,
-                                      LAND_CLEAR, (char const*)_slope00000001);
+                                      LAND_CLEAR, _slope00000001);
 static TemplateTypeClass const River4(TEMPLATE_RIVER4,
                                       THEATERF_WINTER | THEATERF_TEMPERATE,
                                       "RV04", TXT_RIVER, LAND_WATER, 4, 4,
@@ -946,17 +946,17 @@ static TemplateTypeClass const Ford1(TEMPLATE_FORD1,
                                      THEATERF_WINTER | THEATERF_DESERT |
                                          THEATERF_TEMPERATE,
                                      "FORD1", TXT_RIVER, LAND_WATER, 3, 3,
-                                     LAND_CLEAR, (char const*)_slope001111001);
+                                     LAND_CLEAR, _slope001111001);
 static TemplateTypeClass const Ford2(TEMPLATE_FORD2,
                                      THEATERF_WINTER | THEATERF_DESERT |
                                          THEATERF_TEMPERATE,
                                      "FORD2", TXT_RIVER, LAND_WATER, 3, 3,
-                                     LAND_CLEAR, (char const*)_slope111010011);
+                                     LAND_CLEAR, _slope111010011);
 static TemplateTypeClass const Falls1(TEMPLATE_FALLS1,
                                       THEATERF_WINTER | THEATERF_DESERT |
                                           THEATERF_TEMPERATE,
                                       "FALLS1", TXT_RIVER, LAND_WATER, 3, 3,
-                                      LAND_CLEAR, (char const*)_slope1);
+                                      LAND_CLEAR, _slope1);
 static TemplateTypeClass const Falls2(TEMPLATE_FALLS2,
                                       THEATERF_WINTER | THEATERF_DESERT |
                                           THEATERF_TEMPERATE,
@@ -966,32 +966,32 @@ static TemplateTypeClass const Bridge1(TEMPLATE_BRIDGE1,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "BRIDGE1", TXT_RIVER, LAND_WATER, 4, 4,
                                        LAND_CLEAR,
-                                       (char const*)_slope00110010010011);
+                                       _slope00110010010011);
 static TemplateTypeClass const Bridge1d(TEMPLATE_BRIDGE1D,
                                         THEATERF_WINTER | THEATERF_TEMPERATE,
                                         "BRIDGE1D", TXT_RIVER, LAND_WATER, 4, 4,
                                         LAND_CLEAR,
-                                        (char const*)_slope00110000000011);
+                                        _slope00110000000011);
 static TemplateTypeClass const Bridge2(
     TEMPLATE_BRIDGE2, THEATERF_WINTER | THEATERF_TEMPERATE, "BRIDGE2",
     TXT_RIVER, LAND_WATER, 5, 5, LAND_CLEAR,
-    (char const*)_slope1100001000001000001100011);
+    _slope1100001000001000001100011);
 static TemplateTypeClass const Bridge2d(
     TEMPLATE_BRIDGE2D, THEATERF_WINTER | THEATERF_TEMPERATE, "BRIDGE2D",
     TXT_RIVER, LAND_WATER, 5, 5, LAND_CLEAR,
-    (char const*)_slope1100000000000000001100011);
+    _slope1100000000000000001100011);
 static TemplateTypeClass const Bridge3(
     TEMPLATE_BRIDGE3, THEATERF_DESERT, "BRIDGE3", TXT_RIVER, LAND_WATER, 6, 5,
-    LAND_CLEAR, (char const*)_slope00011010010100100001000011);
+    LAND_CLEAR, _slope00011010010100100001000011);
 static TemplateTypeClass const Bridge3d(
     TEMPLATE_BRIDGE3D, THEATERF_DESERT, "BRIDGE3D", TXT_RIVER, LAND_WATER, 6, 5,
-    LAND_CLEAR, (char const*)_slope00011010000100000001000011);
+    LAND_CLEAR, _slope00011010000100000001000011);
 static TemplateTypeClass const Bridge4(
     TEMPLATE_BRIDGE4, THEATERF_DESERT, "BRIDGE4", TXT_RIVER, LAND_WATER, 6, 4,
-    LAND_CLEAR, (char const*)_slope01000000100000010000001);
+    LAND_CLEAR, _slope01000000100000010000001);
 static TemplateTypeClass const Bridge4d(
     TEMPLATE_BRIDGE4D, THEATERF_DESERT, "BRIDGE4D", TXT_RIVER, LAND_WATER, 6, 4,
-    LAND_CLEAR, (char const*)_slope01000000000000000000001);
+    LAND_CLEAR, _slope01000000000000000000001);
 
 TemplateTypeClass const* const TemplateTypeClass::Pointers[TEMPLATE_COUNT] = {
     &Clear,     // TEMPLATE_CLEAR1
@@ -1308,7 +1308,7 @@ short const* TemplateTypeClass::Occupy_List(bool) const {
   }
   *ptr = REFRESH_EOL;
 
-  return (short const*)&_occupy[0];
+  return &_occupy[0];
 }
 
 /***********************************************************************************************
@@ -1342,7 +1342,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
                           .string();
       ptr = MixFileClass::Retrieve(fullname.c_str());
       (void const*&)tplate.ImageData = ptr;
-      Register_Icon_Set((void*)ptr,
+      Register_Icon_Set(ptr,
                         true);  // Register icon set for video memory caching
     }
   }

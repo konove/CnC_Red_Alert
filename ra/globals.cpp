@@ -265,7 +265,7 @@ fixed EngineerCaptureLevel =
 #ifdef WIN32
 unsigned short Hard_Error_Occured = 0;
 WWMouseClass* WWMouse = nullptr;
-GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void*)nullptr);
+GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, nullptr);
 WinTimerClass* WindowsTimer = nullptr;
 int ScreenWidth = 640;
 int ScreenHeight = 400;

@@ -163,7 +163,7 @@ void Choose_Side() {
   // anim = Open_Animation("CHOOSE.WSA",NULL,0L,(WSAOpenType)(WSA_OPEN_FROM_MEM
   // | WSA_OPEN_TO_PAGE),Palette);
   anim = Open_Animation("CHOOSE.WSA", nullptr, 0L,
-                        (WSAOpenType)(WSA_OPEN_FROM_DISK | WSA_OPEN_TO_PAGE),
+                        WSA_OPEN_FROM_DISK | WSA_OPEN_TO_PAGE,
                         Palette);
   Call_Back();
 

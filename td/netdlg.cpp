@@ -1911,7 +1911,7 @@ static int Net_Join_Dialog() {
 
           tmp_id[i] = id;
 
-          Ipx.Create_Connection((int)id, Players[i]->Name,
+          Ipx.Create_Connection(id, Players[i]->Name,
                                 &Players[i]->Address);
         } else {
           tmp_id[i] = MPlayerLocalID;
@@ -5372,7 +5372,7 @@ static int Net_Fake_Join_Dialog() {
 
           tmp_id[i] = id;
 
-          Ipx.Create_Connection((int)id, Players[i]->Name,
+          Ipx.Create_Connection(id, Players[i]->Name,
                                 &Players[i]->Address);
         } else {
           tmp_id[i] = MPlayerLocalID;

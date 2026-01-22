@@ -90,9 +90,8 @@ void* Small_Icon(void const* iconptr, int iconnum) {
   unsigned char* data;
 
   if (iconptr) {
-    iconnum = ((char*)((char*)iptr + iptr->Map))[iconnum];
-    data = &((unsigned char*)((unsigned char*)iptr +
-                              iptr->Icons))[iconnum * (24 * 24)];
+    iconnum = ((char*)iptr + iptr->Map)[iconnum];
+    data = &((unsigned char*)iptr + iptr->Icons)[iconnum * (24 * 24)];
 
     for (int index = 0; index < 9; index++) {
       int _offsets[9] = {4 + 4 * 24,  12 + 4 * 24,  20 + 4 * 24,
@@ -267,7 +266,7 @@ long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
   if (opened) {
     file.Close();
   }
-  return (long)size;
+  return size;
 }
 
 int Load_Picture(char const* filename, BufferClass& scratchbuf,
@@ -361,7 +360,7 @@ void* Build_Translucent_Table(void const* palette, TLucentType const* control,
 
     if (buffer) {
       memset(buffer, -1, 256);
-      table = (unsigned char*)Add_Long_To_Pointer((void*)buffer, 256);
+      table = (unsigned char*)Add_Long_To_Pointer(buffer, 256);
 
       /*
       **	Build the individual remap tables for each translucent color.
@@ -370,7 +369,7 @@ void* Build_Translucent_Table(void const* palette, TLucentType const* control,
         ((unsigned char*)buffer)[control[index].SourceColor] = index;
         Build_Fading_Table(palette, (void*)table, control[index].DestColor,
                            control[index].Fading);
-        table = (unsigned char*)Add_Long_To_Pointer((void*)table, 256);
+        table = (unsigned char*)Add_Long_To_Pointer(table, 256);
       }
     }
   }
@@ -419,7 +418,7 @@ void* Conquer_Build_Translucent_Table(void const* palette,
 
     if (buffer) {
       memset(buffer, -1, 256);
-      table = (unsigned char*)Add_Long_To_Pointer((void*)buffer, 256);
+      table = (unsigned char*)Add_Long_To_Pointer(buffer, 256);
 
       /*
       **	Build the individual remap tables for each translucent color.
@@ -429,7 +428,7 @@ void* Conquer_Build_Translucent_Table(void const* palette,
         Conquer_Build_Fading_Table(palette, (void*)table,
                                    control[index].DestColor,
                                    control[index].Fading);
-        table = (unsigned char*)Add_Long_To_Pointer((void*)table, 256);
+        table = (unsigned char*)Add_Long_To_Pointer(table, 256);
       }
     }
   }

@@ -84,8 +84,7 @@ static int Length;
 
 void* Get_Shape_Header_Data(void* ptr) {
   if (UseBigShapeBuffer) {
-    return (void*)(((ShapeHeaderType*)ptr)->shape_data +
-                   (long)BigShapeBufferStart);
+    return ((ShapeHeaderType*)ptr)->shape_data + (long)BigShapeBufferStart;
   } else {
     return ptr;
   }

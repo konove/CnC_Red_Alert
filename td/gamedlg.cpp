@@ -258,7 +258,7 @@ void GameControlsClass::Process() {
       */
       style = TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL;
       if (curbutton == BUTTON_SPEED - BUTTON_FIRST) {
-        style = (TextPrintType)(style | TPF_BRIGHT_COLOR);
+        style = style | TPF_BRIGHT_COLOR;
       }
       Fancy_Text_Print(TXT_SPEED, d_speed_x, d_speed_y - d_txt6_h, CC_GREEN,
                        TBLACK, style);
@@ -276,7 +276,7 @@ void GameControlsClass::Process() {
       */
       style = TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL;
       if (curbutton == BUTTON_SCROLLRATE - BUTTON_FIRST) {
-        style = (TextPrintType)(style | TPF_BRIGHT_COLOR);
+        style = style | TPF_BRIGHT_COLOR;
       }
       Fancy_Text_Print(TXT_SCROLLRATE, d_scroll_x, d_scroll_y - d_txt6_h,
                        CC_GREEN, TBLACK, style);

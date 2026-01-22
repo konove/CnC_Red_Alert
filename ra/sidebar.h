@@ -104,12 +104,12 @@ class SidebarClass : public PowerClass {
     BUTTON_TWO_WIDTH = 20,              // Button width.
     BUTTON_THREE_WIDTH = 20,            // Button width.
     BUTTON_HEIGHT = 9,                  // Button height.
-    BUTTON_ONE_X = (int)SIDE_X + 2,     // Left button X coordinate.
-    BUTTON_ONE_Y = (int)SIDE_Y + 2,     // Left button Y coordinate.
-    BUTTON_TWO_X = (int)SIDE_X + 36,    // Right button X coordinate.
-    BUTTON_TWO_Y = (int)SIDE_Y + 2,     // Right button Y coordinate.
-    BUTTON_THREE_X = (int)SIDE_X + 58,  // Right button X coordinate.
-    BUTTON_THREE_Y = (int)SIDE_Y + 2,   // Right button Y coordinate.
+    BUTTON_ONE_X = SIDE_X + 2,     // Left button X coordinate.
+    BUTTON_ONE_Y = SIDE_Y + 2,     // Left button Y coordinate.
+    BUTTON_TWO_X = SIDE_X + 36,    // Right button X coordinate.
+    BUTTON_TWO_Y = SIDE_Y + 2,     // Right button Y coordinate.
+    BUTTON_THREE_X = SIDE_X + 58,  // Right button X coordinate.
+    BUTTON_THREE_Y = SIDE_Y + 2,   // Right button Y coordinate.
 #endif
 
     COLUMNS = 2  // Number of side strips on sidebar.
@@ -377,10 +377,10 @@ class SidebarClass : public PowerClass {
    public:
     // #ifdef WIN32
     SBGadgetClass()
-        : GadgetClass((int)((int)SIDE_X + 8) * RESFACTOR,
+        : GadgetClass(((int)SIDE_X + 8) * RESFACTOR,
                       (int)SIDE_Y * RESFACTOR,
-                      (int)((int)SIDE_WIDTH - 1) * RESFACTOR - 1,
-                      (int)((int)SIDE_HEIGHT - 1) * RESFACTOR, LEFTUP) {}
+                      ((int)SIDE_WIDTH - 1) * RESFACTOR - 1,
+                      ((int)SIDE_HEIGHT - 1) * RESFACTOR, LEFTUP) {}
     // #else
     //				SBGadgetClass() : GadgetClass((int)SIDE_X+8,
     //(int)SIDE_Y, (int)SIDE_WIDTH-1, (int)SIDE_HEIGHT-1, LEFTUP) {}; #endif

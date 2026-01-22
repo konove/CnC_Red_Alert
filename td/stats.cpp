@@ -267,7 +267,7 @@ void Send_Statistics_Packet() {
     */
     char fname[128];
     char namebuffer[40];
-    char* abuffer = (char*)_ShapeBuffer;
+    char* abuffer = _ShapeBuffer;
     memset(abuffer, '\0', _ShapeBufferSize);
     sprintf(fname, "%s.INI", ScenarioName);
     CCFileClass fileo;
@@ -364,7 +364,7 @@ void Send_Statistics_Packet() {
     /*
     ** Game duration (seconds).
     */
-    stats.Add_Field(FIELD_GAME_DURATION, (long)GameEndTime / 60);
+    stats.Add_Field(FIELD_GAME_DURATION, GameEndTime / 60);
 
     /*
     ** Avg. frame rate.
@@ -372,7 +372,7 @@ void Send_Statistics_Packet() {
     if (GameEndTime / 60 == 0) {
       stats.Add_Field(FIELD_FRAME_RATE, 0L);
     } else {
-      stats.Add_Field(FIELD_FRAME_RATE, (long)Frame / (GameEndTime / 60));
+      stats.Add_Field(FIELD_FRAME_RATE, Frame / (GameEndTime / 60));
     }
 
 #ifndef PORTABLE
@@ -457,7 +457,7 @@ void Send_Statistics_Packet() {
         ** Player handle.
         */
         field_player_handle[3] = '1' + (char)house;
-        stats.Add_Field(field_player_handle, (char*)MPlayerNames[house]);
+        stats.Add_Field(field_player_handle, MPlayerNames[house]);
 
         /*
         ** Player team. (NOD or GDI)
@@ -493,16 +493,16 @@ void Send_Statistics_Packet() {
         player->BuildingTotals->To_Network_Format();
 
         stats.Add_Field(field_player_infantry_bought,
-                        (void*)player->InfantryTotals->Get_All_Totals(),
+                        player->InfantryTotals->Get_All_Totals(),
                         player->InfantryTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_units_bought,
-                        (void*)player->UnitTotals->Get_All_Totals(),
+                        player->UnitTotals->Get_All_Totals(),
                         player->UnitTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_planes_bought,
-                        (void*)player->AircraftTotals->Get_All_Totals(),
+                        player->AircraftTotals->Get_All_Totals(),
                         player->AircraftTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_buildings_bought,
-                        (void*)player->BuildingTotals->Get_All_Totals(),
+                        player->BuildingTotals->Get_All_Totals(),
                         player->BuildingTotals->Get_Unit_Count() * 4);
 
         player->InfantryTotals->To_PC_Format();
@@ -561,16 +561,16 @@ void Send_Statistics_Packet() {
         field_player_planes_left[3] = '1' + (char)house;
         field_player_buildings_left[3] = '1' + (char)house;
         stats.Add_Field(field_player_infantry_left,
-                        (void*)player->InfantryTotals->Get_All_Totals(),
+                        player->InfantryTotals->Get_All_Totals(),
                         player->InfantryTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_units_left,
-                        (void*)player->UnitTotals->Get_All_Totals(),
+                        player->UnitTotals->Get_All_Totals(),
                         player->UnitTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_planes_left,
-                        (void*)player->AircraftTotals->Get_All_Totals(),
+                        player->AircraftTotals->Get_All_Totals(),
                         player->AircraftTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_buildings_left,
-                        (void*)player->BuildingTotals->Get_All_Totals(),
+                        player->BuildingTotals->Get_All_Totals(),
                         player->BuildingTotals->Get_Unit_Count() * 4);
 
         /*
@@ -587,16 +587,16 @@ void Send_Statistics_Packet() {
         field_player_planes_killed[3] = '1' + (char)house;
         field_player_buildings_killed[3] = '1' + (char)house;
         stats.Add_Field(field_player_infantry_killed,
-                        (void*)player->DestroyedInfantry->Get_All_Totals(),
+                        player->DestroyedInfantry->Get_All_Totals(),
                         player->DestroyedInfantry->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_units_killed,
-                        (void*)player->DestroyedUnits->Get_All_Totals(),
+                        player->DestroyedUnits->Get_All_Totals(),
                         player->DestroyedUnits->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_planes_killed,
-                        (void*)player->DestroyedAircraft->Get_All_Totals(),
+                        player->DestroyedAircraft->Get_All_Totals(),
                         player->DestroyedAircraft->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_buildings_killed,
-                        (void*)player->DestroyedBuildings->Get_All_Totals(),
+                        player->DestroyedBuildings->Get_All_Totals(),
                         player->DestroyedBuildings->Get_Unit_Count() * 4);
 
         /*
@@ -605,7 +605,7 @@ void Send_Statistics_Packet() {
         field_player_buildings_captured[3] = '1' + (char)house;
         player->CapturedBuildings->To_Network_Format();
         stats.Add_Field(field_player_buildings_captured,
-                        (void*)player->CapturedBuildings->Get_All_Totals(),
+                        player->CapturedBuildings->Get_All_Totals(),
                         player->CapturedBuildings->Get_Unit_Count() * 4);
 
         /*
@@ -614,7 +614,7 @@ void Send_Statistics_Packet() {
         field_player_crates_found[3] = '1' + (char)house;
         player->TotalCrates->To_Network_Format();
         stats.Add_Field(field_player_crates_found,
-                        (void*)player->TotalCrates->Get_All_Totals(),
+                        player->TotalCrates->Get_All_Totals(),
                         player->TotalCrates->Get_Unit_Count() * 4);
 
         /*

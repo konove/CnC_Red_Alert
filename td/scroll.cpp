@@ -150,10 +150,8 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
             alty += alty - (SeenBuff.Get_Height() - 50);
           alty = std::min(alty, SeenBuff.Get_Height());
 
-          direction = (DirType)Desired_Facing256(
-              SeenBuff.Get_Width() / 2,
-                                                 SeenBuff.Get_Height() / 2,
-                                                 altx, alty);
+          direction = Desired_Facing256(SeenBuff.Get_Width() / 2,
+                                        SeenBuff.Get_Height() / 2, altx, alty);
         }
         int control = Dir_Facing(direction);
 

@@ -1954,7 +1954,7 @@ void TeamClass::Coordinate_Move() {
               (unit->What_Am_I() == RTTI_AIRCRAFT &&
                //						(unit->In_Which_Layer()
                //== LAYER_TOP &&
-               ((AircraftClass*)unit)->Height > 0 &&
+               unit->Height > 0 &&
                Coord_Cell(unit->Center_Coord()) != As_Cell(Target) &&
                !((AircraftClass*)unit)->Class->IsFixedWing &&
                Class->MissionList[CurrentMission + 1].Mission !=

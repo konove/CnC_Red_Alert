@@ -608,9 +608,9 @@ COORDINATE TechnoClass::Fire_Coord(int which) const {
   COORDINATE coord =
       Coord_Move(Center_Coord(), DIR_N, tclass->VerticalOffset + Height);
   if (IsSecondShot) {
-    coord = Coord_Move(coord, (DirType)(dir + DIR_E), lateral);
+    coord = Coord_Move(coord, dir + DIR_E, lateral);
   } else {
-    coord = Coord_Move(coord, (DirType)(dir + DIR_W), lateral);
+    coord = Coord_Move(coord, dir + DIR_W, lateral);
   }
   coord = Coord_Move(coord, dir, dist);
 
@@ -1079,8 +1079,8 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
       *precedence *	over repair, since this operation is free.
       */
       if (What_Am_I() == RTTI_UNIT && *(UnitClass*)this == UNIT_MINELAYER &&
-          ((UnitClass*)this)->Ammo < ((UnitClass*)this)->Class->MaxAmmo) {
-        ((UnitClass*)this)->Ammo = ((UnitClass*)this)->Class->MaxAmmo;
+          this->Ammo < ((UnitClass*)this)->Class->MaxAmmo) {
+        this->Ammo = ((UnitClass*)this)->Class->MaxAmmo;
         return RADIO_NEGATIVE;
       }
 
@@ -2048,7 +2048,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     /*
     **	See if the object has a weapon that can damage walls.
     */
-    TechnoTypeClass const* ttype = (TechnoTypeClass const*)Techno_Type_Class();
+    TechnoTypeClass const* ttype = Techno_Type_Class();
     if (ttype->PrimaryWeapon == nullptr ||
         ttype->PrimaryWeapon->WarheadPtr == nullptr) {
       BEnd(BENCH_EVAL_WALL);
@@ -2834,7 +2834,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     */
     if (object != nullptr && object->What_Am_I() == RTTI_AIRCRAFT &&
         !weapon->Bullet->IsAntiAircraft &&
-        ((AircraftClass*)object)->Height > 0) {
+        object->Height > 0) {
       return FIRE_CANT;
     }
 

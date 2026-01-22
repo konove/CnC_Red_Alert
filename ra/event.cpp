@@ -883,7 +883,7 @@ void EventClass::Execute() {
 
         WWMessageBox().Process(TXT_SAVING_GAME, TXT_NONE);
 
-        Save_Game(-1, (char*)Text_String(TXT_MULTIPLAYER_GAME));
+        Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
 
         while (timer > 0) {
           Call_Back();
@@ -893,7 +893,7 @@ void EventClass::Execute() {
         Map.Flag_To_Redraw(true);
         Map.Render();
       } else {
-        Save_Game(-1, (char*)Text_String(TXT_MULTIPLAYER_GAME));
+        Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
       }
       break;
 

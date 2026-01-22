@@ -187,7 +187,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   */
   addr.sin_family = AF_INET;
   addr.sin_port =
-      (unsigned short)htons((unsigned short)PlanetWestwoodPortNumber);
+      htons((unsigned short)PlanetWestwoodPortNumber);
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if (bind(Socket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
@@ -244,11 +244,11 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   */
   ling.l_onoff = 0;   // linger off
   ling.l_linger = 0;  // timeout in seconds (ie close now)
-  setsockopt(Socket, SOL_SOCKET, SO_LINGER, (char*)&ling, sizeof(ling));
+  setsockopt(Socket, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling));
 
   // enable broadcast
   int yes = 1;
-  setsockopt(Socket, SOL_SOCKET, SO_BROADCAST, (char*)&yes, sizeof(int));
+  setsockopt(Socket, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(int));
 
   WinsockInterfaceClass::Set_Socket_Options();
 
@@ -330,7 +330,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       ** Call the recvfrom function to get the outstanding packet.
       */
       socklen_t addr_len = sizeof(addr);
-      int rc = recvfrom(Socket, (char*)ReceiveBuffer, sizeof(ReceiveBuffer), 0,
+      int rc = recvfrom(Socket, ReceiveBuffer, sizeof(ReceiveBuffer), 0,
                         (sockaddr*)&addr, &addr_len);
       if (rc == SOCKET_ERROR) {
         Clear_Socket_Error(Socket);
@@ -384,7 +384,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       */
       addr.sin_family = AF_INET;
       addr.sin_port =
-          (unsigned short)htons((unsigned short)PlanetWestwoodPortNumber);
+          htons((unsigned short)PlanetWestwoodPortNumber);
       memcpy(&addr.sin_addr.s_addr, packet->Address + 4, 4);
 
       /*
@@ -395,7 +395,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       *Winsock will
       ** send us another WRITE message when it is ready to receive more data.
       */
-      int rc = sendto(Socket, (const char*)packet->Buffer, packet->BufferLen, 0,
+      int rc = sendto(Socket, packet->Buffer, packet->BufferLen, 0,
                       (sockaddr*)&addr, sizeof(addr));
 
       if (rc == -1) {

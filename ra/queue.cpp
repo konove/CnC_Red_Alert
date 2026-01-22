@@ -1150,7 +1150,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
             // Count1:%d, Count2:%d, Seed:%d\n", Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
             //	Scen.RandomNumber.Seed);
-            Save_Game(-1, (char*)Text_String(TXT_MULTIPLAYER_GAME));
+            Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
             // printf("After Save: Count1:%d, Count2:%d, Seed:%d\n",
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
@@ -1224,7 +1224,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
             //	Scen.RandomNumber.Seed);
-            Save_Game(-1, (char*)Text_String(TXT_MULTIPLAYER_GAME));
+            Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
             // printf("After Save: Count1:%d, Count2:%d, Seed:%d\n",
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
@@ -3874,8 +3874,8 @@ static void Compute_Game_CRC() {
   for (i = 0; i < Infantry.Count(); i++) {
     infp = (InfantryClass*)Infantry.Active_Ptr(i);
     Add_CRC(&GameCRC, (int)infp->Coord + (int)infp->PrimaryFacing);
-    Add_CRC(&GameCRC, (int)infp->Speed + (int)infp->NavCom);
-    Add_CRC(&GameCRC, (int)infp->Mission + (int)infp->TarCom);
+    Add_CRC(&GameCRC, infp->Speed + infp->NavCom);
+    Add_CRC(&GameCRC, (int)infp->Mission + infp->TarCom);
   }
 
   //------------------------------------------------------------------------
@@ -3893,9 +3893,9 @@ static void Compute_Game_CRC() {
   for (i = 0; i < Vessels.Count(); i++) {
     vessp = (VesselClass*)Vessels.Active_Ptr(i);
     Add_CRC(&GameCRC, (int)vessp->Coord + (int)vessp->PrimaryFacing);
-    Add_CRC(&GameCRC, (int)vessp->Speed + (int)vessp->NavCom);
-    Add_CRC(&GameCRC, (int)vessp->Strength);
-    Add_CRC(&GameCRC, (int)vessp->Mission + (int)vessp->TarCom);
+    Add_CRC(&GameCRC, vessp->Speed + vessp->NavCom);
+    Add_CRC(&GameCRC, vessp->Strength);
+    Add_CRC(&GameCRC, (int)vessp->Mission + vessp->TarCom);
   }
 
   //------------------------------------------------------------------------
@@ -3912,7 +3912,7 @@ static void Compute_Game_CRC() {
   for (i = 0; i < Houses.Count(); i++) {
     housep = (HouseClass*)Houses.Active_Ptr(i);
     Add_CRC(&GameCRC,
-            (int)housep->Credits + (int)housep->Power + (int)housep->Drain);
+            (int)housep->Credits + housep->Power + housep->Drain);
   }
 
   //------------------------------------------------------------------------
@@ -4030,7 +4030,7 @@ static void Print_CRCs(EventClass* ev) {
               housep->IniName, housep->IsHuman, ColorNames[color], housep->ID,
               HouseClass::As_Pointer(actlike)->Class->Name());
       Add_CRC(&GameCRC,
-              (int)housep->Credits + (int)housep->Power + (int)housep->Drain);
+              (int)housep->Credits + housep->Power + housep->Drain);
       Mono_Printf("House %s:%x\n", housep->Class->Name(), GameCRC);
     }
   }
@@ -4048,8 +4048,8 @@ static void Print_CRCs(EventClass* ev) {
         infp = (InfantryClass*)Infantry.Active_Ptr(i);
         if (infp->Owner() == house) {
           Add_CRC(&GameCRC, (int)infp->Coord + (int)infp->PrimaryFacing);
-          Add_CRC(&GameCRC, (int)infp->Speed + (int)infp->NavCom);
-          Add_CRC(&GameCRC, (int)infp->Mission + (int)infp->TarCom);
+          Add_CRC(&GameCRC, infp->Speed + infp->NavCom);
+          Add_CRC(&GameCRC, (int)infp->Mission + infp->TarCom);
           fprintf(fp,
                   "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x "
                   "Speed:%d NavCom:%x\n",
@@ -4101,9 +4101,9 @@ static void Print_CRCs(EventClass* ev) {
         vesselp = (VesselClass*)Vessels.Active_Ptr(i);
         if (vesselp->Owner() == house) {
           Add_CRC(&GameCRC, (int)vesselp->Coord + (int)vesselp->PrimaryFacing);
-          Add_CRC(&GameCRC, (int)vesselp->Speed + (int)vesselp->NavCom);
-          Add_CRC(&GameCRC, (int)vesselp->Strength);
-          Add_CRC(&GameCRC, (int)vesselp->Mission + (int)vesselp->TarCom);
+          Add_CRC(&GameCRC, vesselp->Speed + vesselp->NavCom);
+          Add_CRC(&GameCRC, vesselp->Strength);
+          Add_CRC(&GameCRC, (int)vesselp->Mission + vesselp->TarCom);
           fprintf(fp,
                   "COORD:%x   Facing:%d   Mission:%d   Strength:%d Type:%d   "
                   "Tgt:%x\n",

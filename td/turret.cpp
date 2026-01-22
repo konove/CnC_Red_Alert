@@ -161,7 +161,7 @@ void TurretClass::AI() {
   **	A unit with a constant rotating radar dish is handled here.
   */
   if (Class->IsRadarEquipped) {
-    SecondaryFacing.Set((DirType)(SecondaryFacing.Current() + 8));
+    SecondaryFacing.Set(SecondaryFacing.Current() + 8);
     Mark(MARK_CHANGE);
   } else {
     IsRotating = false;
@@ -350,9 +350,9 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
     case UNIT_FTANK:
       dist = 0x30;
       if (IsSecondShot) {
-        coord = Coord_Move(coord, (DirType)(dir + DIR_E), 0x20);
+        coord = Coord_Move(coord, dir + DIR_E, 0x20);
       } else {
-        coord = Coord_Move(coord, (DirType)(dir + DIR_W), 0x20);
+        coord = Coord_Move(coord, dir + DIR_W, 0x20);
       }
       break;
 
@@ -366,9 +366,9 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
         lateral = 0x0040;
       }
       if (IsSecondShot) {
-        coord = Coord_Move(coord, (DirType)(dir + DIR_E), lateral);
+        coord = Coord_Move(coord, dir + DIR_E, lateral);
       } else {
-        coord = Coord_Move(coord, (DirType)(dir + DIR_W), lateral);
+        coord = Coord_Move(coord, dir + DIR_W, lateral);
       }
       break;
 
@@ -450,7 +450,7 @@ DirType TurretClass::Fire_Direction() const {
       if (SecondaryFacing.Difference(DIR_N) < 0) {
         return (DirType)(SecondaryFacing - (DirType)adj);
       } else {
-        return (DirType)(SecondaryFacing + (DirType)adj);
+        return SecondaryFacing + (DirType)adj;
       }
     }
     return SecondaryFacing.Current();

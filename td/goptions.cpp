@@ -623,7 +623,7 @@ void Draw_Caption(int text, int x, int y, int w) {
   **	Draw the filigree at the corners of the dialog.
   */
   if (option != OPTION_NONE) {
-    CC_Draw_Shape(MixFileClass::Retrieve("OPTIONS.SHP"), (int)option, x + 12,
+    CC_Draw_Shape(MixFileClass::Retrieve("OPTIONS.SHP"), option, x + 12,
                   y + 11, WINDOW_MAIN, SHAPE_CENTER);
     CC_Draw_Shape(MixFileClass::Retrieve("OPTIONS.SHP"), (int)option + 1,
                   x + w - 14, y + 11, WINDOW_MAIN, SHAPE_CENTER);

@@ -8,7 +8,7 @@
 int Format_Window_String(char* string, int maxlinelen, int& width, int& height);
 extern void Dialog_Box(int x, int y, int w, int h);
 void Conquer_Clip_Text_Print(char const*, unsigned x, unsigned y, unsigned fore,
-                             unsigned back = (unsigned)TBLACK,
+                             unsigned back = TBLACK,
                              TextPrintType flag = TPF_8POINT | TPF_DROPSHADOW,
                              unsigned width = -1, int const* tabs = nullptr);
 void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled);

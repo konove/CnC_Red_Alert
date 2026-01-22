@@ -150,7 +150,7 @@ int AbstractClass::Distance(TARGET target) const {
 AbstractTypeClass::AbstractTypeClass(RTTIType rtti, int id, int name,
                                      char const* ini)
     : RTTI(rtti), ID(id), FullName(name) {
-  strncpy((char*)IniName, ini, sizeof(IniName));
+  strncpy(IniName, ini, sizeof(IniName));
   (char&)IniName[sizeof(IniName) - 1] = '\0';
 }
 

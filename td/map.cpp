@@ -957,8 +957,8 @@ bool MapClass::Read_Binary(char const* root, unsigned long* crc)
     cellptr->Recalc_Attributes();
 
 #ifndef DEMO
-    Add_CRC(crc, (unsigned long)cellptr->TType);
-    Add_CRC(crc, (unsigned long)cellptr->TIcon);
+    Add_CRC(crc, cellptr->TType);
+    Add_CRC(crc, cellptr->TIcon);
 #endif
 
     cellptr++;

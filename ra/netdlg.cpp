@@ -2110,7 +2110,7 @@ static int Net_Join_Dialog() {
                Get_Mouse_Y() >= d_options_y &&
                Get_Mouse_Y() <= d_options_y + d_options_h)) {
             Session.Messages.Add_Message(
-                nullptr, 0, (char*)Text_String(TXT_ONLY_HOST_CAN_MODIFY),
+                nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
                 PCOLOR_BROWN, TPF_TEXT, 1200);
             Sound_Effect(VOC_SYS_ERROR);
             display = REDRAW_MESSAGE;
@@ -2351,7 +2351,7 @@ static int Net_Join_Dialog() {
         //...............................................................
         if (strlen(namebuf) == 0) {
           Session.Messages.Add_Message(nullptr, 0,
-                                       (char*)Text_String(TXT_NAME_ERROR),
+                                       Text_String(TXT_NAME_ERROR),
                                        PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -2366,7 +2366,7 @@ static int Net_Join_Dialog() {
           if (!stricmp(Session.Games[i]->Name, namebuf)) {
             found = 1;
             Session.Messages.Add_Message(
-                nullptr, 0, (char*)Text_String(TXT_GAMENAME_MUSTBE_UNIQUE),
+                nullptr, 0, Text_String(TXT_GAMENAME_MUSTBE_UNIQUE),
                 PCOLOR_BROWN, TPF_TEXT, 1200);
             Sound_Effect(VOC_SYS_ERROR);
             display = REDRAW_MESSAGE;
@@ -2572,7 +2572,7 @@ static int Net_Join_Dialog() {
               ** We should have the scenario but the wrong disk is in.
               ** Tell the host that I am ready to go anyway.
               */
-              memset((void*)&Session.GPacket, 0, sizeof(Session.GPacket));
+              memset(&Session.GPacket, 0, sizeof(Session.GPacket));
               Session.GPacket.Command = NET_READY_TO_GO;
               Ipx.Send_Global_Message(&Session.GPacket,
                                       sizeof(GlobalPacketType), 1,
@@ -2612,7 +2612,7 @@ static int Net_Join_Dialog() {
           ** We have the scenario. Tell the host that I am ready to go.
           */
           if (!ready_packet_was_sent) {
-            memset((void*)&Session.GPacket, 0, sizeof(Session.GPacket));
+            memset(&Session.GPacket, 0, sizeof(Session.GPacket));
             Session.GPacket.Command = NET_READY_TO_GO;
             Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
                                     1, &Session.HostAddress);
@@ -2705,7 +2705,7 @@ static int Net_Join_Dialog() {
                                   TPF_TEXT, nullptr, '_', d_message2_w);
 
         Session.Messages.Add_Message(nullptr, 0,
-                                     (char*)Text_String(TXT_REQUEST_DENIED),
+                                     Text_String(TXT_REQUEST_DENIED),
                                      PCOLOR_BROWN, TPF_TEXT, 1200);
         Sound_Effect(VOC_SYS_ERROR);
 
@@ -3080,14 +3080,14 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
   //------------------------------------------------------------------------
   if (join_index < 1) {
     Session.Messages.Add_Message(nullptr, 0,
-                                 (char*)Text_String(TXT_MUST_SELECT_GAME),
+                                 Text_String(TXT_MUST_SELECT_GAME),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
     return false;
   }
   if (Session.Games.Count() <= 1 || join_index > Session.Games.Count()) {
     Session.Messages.Add_Message(nullptr, 0,
-                                 (char*)Text_String(TXT_NOTHING_TO_JOIN),
+                                 Text_String(TXT_NOTHING_TO_JOIN),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
     return false;
@@ -3097,7 +3097,7 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
   //	Force user to enter a name
   //------------------------------------------------------------------------
   if (strlen(playername) == 0) {
-    Session.Messages.Add_Message(nullptr, 0, (char*)Text_String(TXT_NAME_ERROR),
+    Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_NAME_ERROR),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
     return false;
@@ -3108,7 +3108,7 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
   //------------------------------------------------------------------------
   if (!Session.Games[join_index]->Game.IsOpen) {
     Session.Messages.Add_Message(nullptr, 0,
-                                 (char*)Text_String(TXT_GAME_IS_CLOSED),
+                                 Text_String(TXT_GAME_IS_CLOSED),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
     return false;
@@ -4645,7 +4645,7 @@ static int Net_New_Dialog() {
 
         if (index == 0) {
           Session.Messages.Add_Message(nullptr, 0,
-                                       (char*)Text_String(TXT_CANT_REJECT_SELF),
+                                       Text_String(TXT_CANT_REJECT_SELF),
                                        PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -4653,7 +4653,7 @@ static int Net_New_Dialog() {
 
         } else if (index < 0 || index >= playerlist.Count()) {
           Session.Messages.Add_Message(
-              nullptr, 0, (char*)Text_String(TXT_SELECT_PLAYER_REJECT),
+              nullptr, 0, Text_String(TXT_SELECT_PLAYER_REJECT),
               PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -4793,7 +4793,7 @@ static int Net_New_Dialog() {
           process = false;
         } else {
           Session.Messages.Add_Message(nullptr, 0,
-                                       (char*)Text_String(TXT_ONLY_ONE),
+                                       Text_String(TXT_ONLY_ONE),
                                        PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -7326,7 +7326,7 @@ void Start_WWChat(ColorListClass* playerlist) {
     //.....................................................................
     if (i == 0 || strcmp(WWPersons[i].Name, WWPersons[i - 1].Name)) {
       WWPersons[i].Color =
-          (PlayerColorType)Random_Pick(0, (int)(PCOLOR_LAST - 1));
+          (PlayerColorType)Random_Pick(0, PCOLOR_LAST - 1);
       if (Percent_Chance(50)) {
         house = HOUSE_GREECE;
       } else {
@@ -8733,7 +8733,7 @@ static int Net_Fake_Join_Dialog() {
                 ** We should have the scenario but the wrong disk is in.
                 ** Tell the host that I am ready to go anyway.
                 */
-                memset((void*)&Session.GPacket, 0, sizeof(Session.GPacket));
+                memset(&Session.GPacket, 0, sizeof(Session.GPacket));
                 Session.GPacket.Command = NET_READY_TO_GO;
                 Ipx.Send_Global_Message(&Session.GPacket,
                                         sizeof(GlobalPacketType), 1,
@@ -8787,7 +8787,7 @@ static int Net_Fake_Join_Dialog() {
             ** We have the scenario. Tell the host that I am ready to go.
             */
             if (!ready_packet_was_sent) {
-              memset((void*)&Session.GPacket, 0, sizeof(Session.GPacket));
+              memset(&Session.GPacket, 0, sizeof(Session.GPacket));
               Session.GPacket.Command = NET_READY_TO_GO;
               Ipx.Send_Global_Message(&Session.GPacket,
                                       sizeof(GlobalPacketType), 1,
@@ -8814,7 +8814,7 @@ static int Net_Fake_Join_Dialog() {
           /*
           ** Make sure we respond to the host in a load game
           */
-          memset((void*)&Session.GPacket, 0, sizeof(Session.GPacket));
+          memset(&Session.GPacket, 0, sizeof(Session.GPacket));
           Session.GPacket.Command = NET_READY_TO_GO;
           Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                                   &Session.HostAddress);

@@ -2588,7 +2588,7 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
   ** Save off the return value so that we can return it to the calling
   ** function.
   */
-  retval = (char*)buffer;
+  retval = buffer;
   *buffer++ = (char)icon_width;
   *buffer++ = (char)icon_height;
   int val = 24 / zoomfactor;
@@ -2657,7 +2657,7 @@ void CC_Texture_Fill(void const* shapefile, int shapenum, int xpos, int ypos,
     }
 
     if (shape_size) {
-      shape_pointer = (unsigned char*)Get_Shape_Header_Data((void*)shape_size);
+      shape_pointer = (unsigned char*)Get_Shape_Header_Data(shape_size);
       int source_width = Get_Build_Frame_Width(shapefile);
       int source_height = Get_Build_Frame_Height(shapefile);
 

@@ -1899,7 +1899,7 @@ void Anim_Init() {
   AnimControl.ImageWidth = 320;
   AnimControl.ImageHeight = 200;
   AnimControl.Vmode = 0;
-  AnimControl.ImageBuf = (unsigned char*)SysMemPage.Get_Offset();
+  AnimControl.ImageBuf = SysMemPage.Get_Offset();
   // AnimControl.VBIBit = VertBlank;
   // AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
   AnimControl.OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;

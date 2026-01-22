@@ -142,7 +142,7 @@ void OverlayClass::operator delete(void* ptr) {
  *=============================================================================================*/
 OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
     : ObjectClass(RTTI_OVERLAY, Overlays.ID(this)),
-      Class(OverlayTypes.Ptr((int)type)) {
+      Class(OverlayTypes.Ptr(type)) {
   if (pos != -1) {
     ToOwn = house;
     Unlimbo(Cell_Coord(pos));

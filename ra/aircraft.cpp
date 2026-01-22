@@ -275,7 +275,7 @@ void AircraftClass::operator delete(void* ptr) {
  *=============================================================================================*/
 AircraftClass::AircraftClass(AircraftType classid, HousesType house)
     : FootClass(RTTI_AIRCRAFT, Aircraft.ID(this), house),
-      Class(AircraftTypes.Ptr((int)classid)),
+      Class(AircraftTypes.Ptr(classid)),
       SecondaryFacing(PrimaryFacing),
       Passenger(false),
       IsLanding(false),
@@ -1216,7 +1216,7 @@ int AircraftClass::Mission_Unload() {
       case UNLOAD_PASSENGERS:
         if (!IsTethered) {
           if (Is_Something_Attached()) {
-            FootClass* unit = (FootClass*)Detach_Object();
+            FootClass* unit = Detach_Object();
 
             /*
             **	First thing is to lift the transport off of the map so that the

@@ -128,7 +128,7 @@
  *=============================================================================================*/
 VesselClass::VesselClass(VesselType classid, HousesType house)
     : DriveClass(RTTI_VESSEL, Vessels.ID(this), house),
-      Class(VesselTypes.Ptr((int)classid)),
+      Class(VesselTypes.Ptr(classid)),
       IsToSelfRepair(false),
       IsSelfRepairing(false),
       DoorShutCountDown(0),
@@ -1258,7 +1258,7 @@ TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
     // Cruisers can never hit infantry anyway, so take 'em out of the list
     // of possible targets.
     if (*this == VESSEL_CA) {
-      threat = (ThreatType)(threat & ~THREAT_INFANTRY);
+      threat = threat & ~THREAT_INFANTRY;
     }
   }
   if (*this == VESSEL_CARRIER) {

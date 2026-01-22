@@ -552,9 +552,9 @@ void WinsockInterfaceClass::Clear_Socket_Error(SOCKET socket) {
   unsigned long error_code;
   socklen_t length = 4;
 
-  getsockopt(socket, SOL_SOCKET, SO_ERROR, (char*)&error_code, &length);
+  getsockopt(socket, SOL_SOCKET, SO_ERROR, &error_code, &length);
   error_code = 0;
-  setsockopt(socket, SOL_SOCKET, SO_ERROR, (char*)&error_code, length);
+  setsockopt(socket, SOL_SOCKET, SO_ERROR, &error_code, length);
 }
 
 /***********************************************************************************************
@@ -579,7 +579,7 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
   ** Specify the size of the receive buffer.
   */
   int err = setsockopt(Socket, SOL_SOCKET, SO_RCVBUF,
-                       (char*)&socket_receive_buffer_size, 4);
+                       &socket_receive_buffer_size, 4);
   if (err == INVALID_SOCKET) {
     char out[128];
     sprintf(out,
@@ -593,7 +593,7 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
   ** Specify the size of the send buffer.
   */
   err = setsockopt(Socket, SOL_SOCKET, SO_SNDBUF,
-                   (char*)&socket_transmit_buffer_size, 4);
+                   &socket_transmit_buffer_size, 4);
   if (err == INVALID_SOCKET) {
     char out[128];
     sprintf(out,

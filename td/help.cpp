@@ -342,7 +342,7 @@ void HelpClass::Set_Text(int text) {
       if (DrawY < TacPixelY + 1) DrawY = TacPixelY + 1;
     }
     int lines = Cost ? 2 : 1;
-    memcpy((void*)OverlapList,
+    memcpy(OverlapList,
            Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY, lines),
            sizeof(OverlapList));
   }

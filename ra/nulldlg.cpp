@@ -2905,7 +2905,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the init string list by name then number
   */
-  qsort((void*)&Session.InitStrings[0], Session.InitStrings.Count(),
+  qsort(&Session.InitStrings[0], Session.InitStrings.Count(),
         sizeof(char*), Init_String_Compare);
 
   /*........................................................................
@@ -5573,7 +5573,7 @@ int Com_Show_Scenario_Dialog() {
                     Get_Mouse_Y() >= d_options_y &&
                     Get_Mouse_Y() <= d_options_y + d_options_h)) {
           Session.Messages.Add_Message(
-              nullptr, 0, (char*)Text_String(TXT_ONLY_HOST_CAN_MODIFY),
+              nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
               PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
@@ -6133,7 +6133,7 @@ int Com_Show_Scenario_Dialog() {
                     ** We should have the scenario but the wrong disk is in.
                     ** Tell the host that I am ready to go anyway.
                     */
-                    memset((void*)&SendPacket, 0, sizeof(SendPacket));
+                    memset(&SendPacket, 0, sizeof(SendPacket));
                     SendPacket.Command = SERIAL_READY_TO_GO;
                     NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
@@ -6177,7 +6177,7 @@ int Com_Show_Scenario_Dialog() {
                 ** We have the scenario. Tell the host that I am ready to go.
                 */
                 if (!ready_packet_was_sent) {
-                  memset((void*)&SendPacket, 0, sizeof(SendPacket));
+                  memset(&SendPacket, 0, sizeof(SendPacket));
                   SendPacket.Command = SERIAL_READY_TO_GO;
                   NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
                   starttime = TickCount;
@@ -6208,7 +6208,7 @@ int Com_Show_Scenario_Dialog() {
               /*
               ** Make sure we respond to the host in a load game
               */
-              memset((void*)&SendPacket, 0, sizeof(SendPacket));
+              memset(&SendPacket, 0, sizeof(SendPacket));
               SendPacket.Command = SERIAL_READY_TO_GO;
               NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
               starttime = TickCount;
@@ -6939,7 +6939,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   /*
   ** Now sort the phone list by name then number
   */
-  qsort((void*)&Session.PhoneBook[0], Session.PhoneBook.Count(),
+  qsort(&Session.PhoneBook[0], Session.PhoneBook.Count(),
         sizeof(class PhoneEntryClass*), Phone_Compare);
 
   /*........................................................................

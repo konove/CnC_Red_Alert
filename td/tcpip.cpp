@@ -436,10 +436,10 @@ bool TcpipManagerClass::Add_Client() {
   /*
   ** Set options for this socket
   */
-  setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&delay, 4);
-  setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, (char*)&SocketReceiveBuffer,
+  setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, &delay, 4);
+  setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, &SocketReceiveBuffer,
              4);
-  setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDBUF, (char*)&SocketSendBuffer, 4);
+  setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDBUF, &SocketSendBuffer, 4);
 
   /*
   ** Save the clients address
@@ -491,8 +491,8 @@ bool TcpipManagerClass::Add_Client() {
   /*
   ** Set options for the UDP socket
   */
-  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, (char*)&SocketReceiveBuffer, 4);
-  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, (char*)&SocketSendBuffer, 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, &SocketReceiveBuffer, 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, &SocketSendBuffer, 4);
 
 #ifndef PORTABLE
   /*
@@ -876,8 +876,8 @@ void TcpipManagerClass::Start_Client() {
   /*
   ** Set options for the UDP socket
   */
-  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, (char*)&SocketReceiveBuffer, 4);
-  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, (char*)&SocketSendBuffer, 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, &SocketReceiveBuffer, 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, &SocketSendBuffer, 4);
 
 #ifndef PORTABLE
   /*
@@ -929,7 +929,7 @@ void TcpipManagerClass::Close_Socket(SOCKET s) {
 
   ling.l_onoff = 0;   // linger off
   ling.l_linger = 0;  // timeout in seconds (ie close now)
-  setsockopt(s, SOL_SOCKET, SO_LINGER, (char*)&ling, sizeof(ling));
+  setsockopt(s, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling));
   closesocket(s);
 }
 
@@ -939,9 +939,9 @@ void TcpipManagerClass::Clear_Socket_Error(SOCKET socket) {
   unsigned long error_code;
   socklen_t length = 4;
 
-  getsockopt(socket, SOL_SOCKET, SO_ERROR, (char*)&error_code, &length);
+  getsockopt(socket, SOL_SOCKET, SO_ERROR, &error_code, &length);
   error_code = 0;
-  setsockopt(socket, SOL_SOCKET, SO_ERROR, (char*)&error_code, length);
+  setsockopt(socket, SOL_SOCKET, SO_ERROR, &error_code, length);
 }
 
 #endif  // FORCE_WINSOCK

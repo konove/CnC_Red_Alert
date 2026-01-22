@@ -514,7 +514,7 @@ void AnimClass::operator delete(void* ptr) {
 AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
                      unsigned char timedelay, unsigned char loop)
     : ObjectClass(RTTI_ANIM, Anims.ID(this)),
-      Class(AnimTypes.Ptr((int)animnum)),
+      Class(AnimTypes.Ptr(animnum)),
       xObject(TARGET_NONE),
       OwnerHouse(HOUSE_NONE),
       Loops(1),
@@ -782,8 +782,7 @@ void AnimClass::AI() {
           **	new form.
           */
           if (Class->ChainTo != ANIM_NONE) {
-            Class =
-                (AnimTypeClass*)&AnimTypeClass::As_Reference(Class->ChainTo);
+            Class = &AnimTypeClass::As_Reference(Class->ChainTo);
 
             if (Class->Stages == -1) {
               IsTheaterShape = Class->IsTheater;

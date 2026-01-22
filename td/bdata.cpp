@@ -207,9 +207,8 @@ static BuildingTypeClass const ClassTemple(
     150,             // DRAIN:		Power points required.
     BSIZE_33,        // SIZE:			Building size.
     nullptr,         // Preferred exit cell list.
-    (short const*)
-        ListTmpl,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)OListTmpl  // OVERLAPLIST:List of overlap cell offset.
+    ListTmpl,            // OCCUPYLIST:	List of active foundation squares.
+    OListTmpl        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassEye(
@@ -258,9 +257,8 @@ static BuildingTypeClass const ClassEye(
     200,         // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        ComList,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)OComList  // OVERLAPLIST:List of overlap cell offset.
+    ComList,            // OCCUPYLIST:	List of active foundation squares.
+    OComList     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassWeapon(
@@ -315,10 +313,9 @@ static BuildingTypeClass const ClassWeapon(
     0,                       // POWER:		Power points required.
     30,                      // DRAIN:		Power points required.
     BSIZE_33,                // SIZE:			Building size.
-    (short const*)ExitWeap,  // Preferred exit cell list.
-    (short const*)
-        ListWeap,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)OListWeap  // OVERLAPLIST:List of overlap cell offset.
+    ExitWeap,  // Preferred exit cell list.
+    ListWeap,            // OCCUPYLIST:	List of active foundation squares.
+    OListWeap        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassGTower(
@@ -368,9 +365,8 @@ static BuildingTypeClass const ClassGTower(
     10,          // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassATower(
@@ -420,9 +416,8 @@ static BuildingTypeClass const ClassATower(
     20,              // DRAIN:		Power points required.
     BSIZE_12,        // SIZE:			Building size.
     nullptr,         // Preferred exit cell list.
-    (short const*)
-        List12,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)OList12  // OVERLAPLIST:List of overlap cell offset.
+    List12,            // OCCUPYLIST:	List of active foundation squares.
+    OList12          // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassObelisk(
@@ -471,9 +466,8 @@ static BuildingTypeClass const ClassObelisk(
     150,             // DRAIN:		Power points required.
     BSIZE_12,        // SIZE:			Building size.
     nullptr,         // Preferred exit cell list.
-    (short const*)
-        List12,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)OList12  // OVERLAPLIST:List of overlap cell offset.
+    List12,            // OCCUPYLIST:	List of active foundation squares.
+    OList12          // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassTurret(
@@ -530,9 +524,8 @@ static BuildingTypeClass const ClassTurret(
     20,           // DRAIN:		Power points required.
     BSIZE_11,     // SIZE:			Building size.
     nullptr,      // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr       // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassConst(
@@ -581,9 +574,8 @@ static BuildingTypeClass const ClassConst(
     15,          // DRAIN:		Power points required.
     BSIZE_32,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List32,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List32,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassRefinery(
@@ -632,9 +624,8 @@ static BuildingTypeClass const ClassRefinery(
     40,          // DRAIN:		Power points required.
     BSIZE_33,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List010111000,  // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List101000111  // OVERLAPLIST:List of overlap cell offset.
+    List010111000,  // OCCUPYLIST:	List of active foundation squares.
+    List101000111   // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassStorage(
@@ -685,9 +676,8 @@ static BuildingTypeClass const ClassStorage(
     10,          // DRAIN:		Power points required.
     BSIZE_21,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        StoreList,         // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    StoreList,         // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassHelipad(
@@ -736,9 +726,8 @@ static BuildingTypeClass const ClassHelipad(
     10,          // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List2,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List2,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassCommand(
@@ -787,9 +776,8 @@ static BuildingTypeClass const ClassCommand(
     40,          // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        ComList,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)OComList  // OVERLAPLIST:List of overlap cell offset.
+    ComList,            // OCCUPYLIST:	List of active foundation squares.
+    OComList     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassSAM(
@@ -838,9 +826,8 @@ static BuildingTypeClass const ClassSAM(
     20,           // DRAIN:		Power points required.
     BSIZE_21,     // SIZE:			Building size.
     nullptr,      // Preferred exit cell list.
-    (short const*)
-        List21,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)OListSAM  // OVERLAPLIST:List of overlap cell offset.
+    List21,             // OCCUPYLIST:	List of active foundation squares.
+    OListSAM      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassAirStrip(
@@ -889,9 +876,8 @@ static BuildingTypeClass const ClassAirStrip(
     30,            // DRAIN:		Power points required.
     BSIZE_42,      // SIZE:			Building size.
     ExitAirstrip,  // Preferred exit cell list.
-    (short const*)
-        List42,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List42,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassPower(
@@ -940,9 +926,8 @@ static BuildingTypeClass const ClassPower(
     0,           // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1011,           // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List0100  // OVERLAPLIST:List of overlap cell offset.
+    List1011,           // OCCUPYLIST:	List of active foundation squares.
+    List0100     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassAdvancedPower(
@@ -992,9 +977,8 @@ static BuildingTypeClass const ClassAdvancedPower(
     0,           // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1011,           // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List0100  // OVERLAPLIST:List of overlap cell offset.
+    List1011,           // OCCUPYLIST:	List of active foundation squares.
+    List0100     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassHospital(
@@ -1043,9 +1027,8 @@ static BuildingTypeClass const ClassHospital(
     20,          // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List2,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List2,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassBioLab(
@@ -1094,9 +1077,8 @@ static BuildingTypeClass const ClassBioLab(
     40,          // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List2,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List2,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassBarracks(
@@ -1144,10 +1126,9 @@ static BuildingTypeClass const ClassBarracks(
     0,                       // POWER:		Power points required.
     20,                      // DRAIN:		Power points required.
     BSIZE_22,                // SIZE:			Building size.
-    (short const*)ExitPyle,  // Preferred exit cell list.
-    (short const*)
-        List22_1100,           // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List22_0011  // OVERLAPLIST:List of overlap cell offset.
+    ExitPyle,  // Preferred exit cell list.
+    List22_1100,           // OCCUPYLIST:	List of active foundation squares.
+    List22_0011   // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassHand(
@@ -1195,10 +1176,9 @@ static BuildingTypeClass const ClassHand(
     0,                       // POWER:		Power points required.
     20,                      // DRAIN:		Power points required.
     BSIZE_23,                // SIZE:			Building size.
-    (short const*)ExitHand,  // Preferred exit cell list.
-    (short const*)
-        ListHand,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)OListHand  // OVERLAPLIST:List of overlap cell offset.
+    ExitHand,  // Preferred exit cell list.
+    ListHand,            // OCCUPYLIST:	List of active foundation squares.
+    OListHand    // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassTanker(
@@ -1247,9 +1227,8 @@ static BuildingTypeClass const ClassTanker(
     0,           // DRAIN:		Power points required.
     BSIZE_21,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List21,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List21,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassRepair(
@@ -1298,9 +1277,8 @@ static BuildingTypeClass const ClassRepair(
     30,          // DRAIN:		Power points required.
     BSIZE_33,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        ListFix,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)OListFix  // OVERLAPLIST:List of overlap cell offset.
+    ListFix,            // OCCUPYLIST:	List of active foundation squares.
+    OListFix     // OVERLAPLIST:List of overlap cell offset.
 );
 
 #ifdef OBSOLETE
@@ -1403,9 +1381,8 @@ static BuildingTypeClass const ClassV01(
     0,           // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List0011,           // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List1100  // OVERLAPLIST:List of overlap cell offset.
+    List0011,           // OCCUPYLIST:	List of active foundation squares.
+    List1100     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV02(
@@ -1454,9 +1431,8 @@ static BuildingTypeClass const ClassV02(
     0,           // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List0011,           // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List1100  // OVERLAPLIST:List of overlap cell offset.
+    List0011,           // OCCUPYLIST:	List of active foundation squares.
+    List1100     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV03(
@@ -1505,9 +1481,8 @@ static BuildingTypeClass const ClassV03(
     0,           // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List0111,           // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List1000  // OVERLAPLIST:List of overlap cell offset.
+    List0111,           // OCCUPYLIST:	List of active foundation squares.
+    List1000     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV04(
@@ -1556,9 +1531,8 @@ static BuildingTypeClass const ClassV04(
     0,           // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List0011,           // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List1100  // OVERLAPLIST:List of overlap cell offset.
+    List0011,           // OCCUPYLIST:	List of active foundation squares.
+    List1100     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV05(
@@ -1607,9 +1581,8 @@ static BuildingTypeClass const ClassV05(
     0,           // DRAIN:		Power points required.
     BSIZE_21,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List11,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV06(
@@ -1658,9 +1631,8 @@ static BuildingTypeClass const ClassV06(
     0,           // DRAIN:		Power points required.
     BSIZE_21,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List11,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV07(
@@ -1709,9 +1681,8 @@ static BuildingTypeClass const ClassV07(
     0,           // DRAIN:		Power points required.
     BSIZE_21,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List11,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV08(
@@ -1760,9 +1731,8 @@ static BuildingTypeClass const ClassV08(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV09(
@@ -1811,9 +1781,8 @@ static BuildingTypeClass const ClassV09(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV10(
@@ -1862,9 +1831,8 @@ static BuildingTypeClass const ClassV10(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV11(
@@ -1913,9 +1881,8 @@ static BuildingTypeClass const ClassV11(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV12(
@@ -1964,9 +1931,8 @@ static BuildingTypeClass const ClassV12(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV13(
@@ -2015,9 +1981,8 @@ static BuildingTypeClass const ClassV13(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV14(
@@ -2066,9 +2031,8 @@ static BuildingTypeClass const ClassV14(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV15(
@@ -2117,9 +2081,8 @@ static BuildingTypeClass const ClassV15(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV16(
@@ -2168,9 +2131,8 @@ static BuildingTypeClass const ClassV16(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV17(
@@ -2219,9 +2181,8 @@ static BuildingTypeClass const ClassV17(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV18(
@@ -2270,9 +2231,8 @@ static BuildingTypeClass const ClassV18(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV19(
@@ -2321,9 +2281,8 @@ static BuildingTypeClass const ClassV19(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV20(
@@ -2372,9 +2331,8 @@ static BuildingTypeClass const ClassV20(
     0,           // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List0011,           // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List1100  // OVERLAPLIST:List of overlap cell offset.
+    List0011,           // OCCUPYLIST:	List of active foundation squares.
+    List1100     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV21(
@@ -2423,9 +2381,8 @@ static BuildingTypeClass const ClassV21(
     0,           // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1101,           // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List0010  // OVERLAPLIST:List of overlap cell offset.
+    List1101,           // OCCUPYLIST:	List of active foundation squares.
+    List0010     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV22(
@@ -2474,9 +2431,8 @@ static BuildingTypeClass const ClassV22(
     0,           // DRAIN:		Power points required.
     BSIZE_21,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List11,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV23(
@@ -2525,9 +2481,8 @@ static BuildingTypeClass const ClassV23(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV24(
@@ -2576,9 +2531,8 @@ static BuildingTypeClass const ClassV24(
     0,           // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List0011,           // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List1100  // OVERLAPLIST:List of overlap cell offset.
+    List0011,           // OCCUPYLIST:	List of active foundation squares.
+    List1100     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV25(
@@ -2627,9 +2581,8 @@ static BuildingTypeClass const ClassV25(
     0,           // DRAIN:		Power points required.
     BSIZE_22,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List0111,           // OCCUPYLIST:	List of active foundation squares.
-    (short const*)List1000  // OVERLAPLIST:List of overlap cell offset.
+    List0111,           // OCCUPYLIST:	List of active foundation squares.
+    List1000     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV26(
@@ -2678,9 +2631,8 @@ static BuildingTypeClass const ClassV26(
     0,           // DRAIN:		Power points required.
     BSIZE_21,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List11,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV27(
@@ -2729,9 +2681,8 @@ static BuildingTypeClass const ClassV27(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV28(
@@ -2780,9 +2731,8 @@ static BuildingTypeClass const ClassV28(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV29(
@@ -2831,9 +2781,8 @@ static BuildingTypeClass const ClassV29(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV30(
@@ -2882,9 +2831,8 @@ static BuildingTypeClass const ClassV30(
     0,           // DRAIN:		Power points required.
     BSIZE_21,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List11,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV31(
@@ -2933,9 +2881,8 @@ static BuildingTypeClass const ClassV31(
     0,           // DRAIN:		Power points required.
     BSIZE_21,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List11,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV32(
@@ -2984,9 +2931,8 @@ static BuildingTypeClass const ClassV32(
     0,           // DRAIN:		Power points required.
     BSIZE_21,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List11,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV33(
@@ -3035,9 +2981,8 @@ static BuildingTypeClass const ClassV33(
     0,           // DRAIN:		Power points required.
     BSIZE_21,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List11,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV34(
@@ -3086,9 +3031,8 @@ static BuildingTypeClass const ClassV34(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV35(
@@ -3137,9 +3081,8 @@ static BuildingTypeClass const ClassV35(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static BuildingTypeClass const ClassV36(
@@ -3188,9 +3131,8 @@ static BuildingTypeClass const ClassV36(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 static BuildingTypeClass const ClassV37(
     STRUCT_V37,
@@ -3238,9 +3180,8 @@ static BuildingTypeClass const ClassV37(
     0,           // DRAIN:		Power points required.
     BSIZE_42,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        ListWestwood,  // OCCUPYLIST:	List of active foundation squares.
-    (short const*)OListWestwood  // OVERLAPLIST:List of overlap cell offset.
+    ListWestwood,  // OCCUPYLIST:	List of active foundation squares.
+    OListWestwood  // OVERLAPLIST:List of overlap cell offset.
 );
 static BuildingTypeClass const ClassMission(
     STRUCT_MISSION,
@@ -3289,9 +3230,8 @@ static BuildingTypeClass const ClassMission(
     0,           // DRAIN:		Power points required.
     BSIZE_32,    // SIZE:			Building size.
     nullptr,     // Preferred exit cell list.
-    (short const*)
-        List32,            // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List32,            // OCCUPYLIST:	List of active foundation squares.
+    nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
 // Sandbag wall
@@ -3341,9 +3281,8 @@ static BuildingTypeClass const Sandbag(
     0,               // DRAIN:		Power points required.
     BSIZE_11,        // SIZE:			Building size.
     nullptr,         // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr          // OVERLAPLIST:List of overlap cell offset.
 );
 // Cyclone fence
 static BuildingTypeClass const Cyclone(
@@ -3392,9 +3331,8 @@ static BuildingTypeClass const Cyclone(
     0,               // DRAIN:		Power points required.
     BSIZE_11,        // SIZE:			Building size.
     nullptr,         // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr          // OVERLAPLIST:List of overlap cell offset.
 );
 // Brick wall
 static BuildingTypeClass const Brick(
@@ -3443,9 +3381,8 @@ static BuildingTypeClass const Brick(
     0,               // DRAIN:		Power points required.
     BSIZE_11,        // SIZE:			Building size.
     nullptr,         // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr          // OVERLAPLIST:List of overlap cell offset.
 );
 // Barbwire wall
 static BuildingTypeClass const Barbwire(
@@ -3496,9 +3433,8 @@ static BuildingTypeClass const Barbwire(
     0,               // DRAIN:		Power points required.
     BSIZE_11,        // SIZE:			Building size.
     nullptr,         // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr          // OVERLAPLIST:List of overlap cell offset.
 );
 // Wood wall
 static BuildingTypeClass const Wood(
@@ -3547,9 +3483,8 @@ static BuildingTypeClass const Wood(
     0,               // DRAIN:		Power points required.
     BSIZE_11,        // SIZE:			Building size.
     nullptr,         // Preferred exit cell list.
-    (short const*)
-        List1,             // OCCUPYLIST:	List of active foundation squares.
-    (short const*)nullptr  // OVERLAPLIST:List of overlap cell offset.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    nullptr          // OVERLAPLIST:List of overlap cell offset.
 );
 
 BuildingTypeClass const* const BuildingTypeClass::Pointers[STRUCT_COUNT] = {

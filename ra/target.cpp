@@ -631,42 +631,34 @@ AbstractTypeClass* xTargetClass::As_TypeClass() const {
       return TriggerTypes.Raw_Ptr(Value());
 
     case RTTI_BULLETTYPE:
-      return (BulletTypeClass*)&BulletTypeClass::As_Reference(
-          BulletType(Value()));
+      return &BulletTypeClass::As_Reference(BulletType(Value()));
 
     case RTTI_OVERLAY:
-      return (OverlayTypeClass*)&OverlayTypeClass::As_Reference(
-          OverlayType(Value()));
+      return &OverlayTypeClass::As_Reference(OverlayType(Value()));
 
     case RTTI_SMUDGE:
-      return (SmudgeTypeClass*)&SmudgeTypeClass::As_Reference(
-          SmudgeType(Value()));
+      return &SmudgeTypeClass::As_Reference(SmudgeType(Value()));
 
     case RTTI_UNIT:
-      return (UnitTypeClass*)&UnitTypeClass::As_Reference(UnitType(Value()));
+      return &UnitTypeClass::As_Reference(UnitType(Value()));
 
     case RTTI_VESSEL:
-      return (VesselTypeClass*)&VesselTypeClass::As_Reference(
-          VesselType(Value()));
+      return &VesselTypeClass::As_Reference(VesselType(Value()));
 
     case RTTI_BUILDING:
-      return (BuildingTypeClass*)&BuildingTypeClass::As_Reference(
-          StructType(Value()));
+      return &BuildingTypeClass::As_Reference(StructType(Value()));
 
     case RTTI_INFANTRY:
-      return (InfantryTypeClass*)&InfantryTypeClass::As_Reference(
-          InfantryType(Value()));
+      return &InfantryTypeClass::As_Reference(InfantryType(Value()));
 
     case RTTI_AIRCRAFT:
-      return (AircraftTypeClass*)&AircraftTypeClass::As_Reference(
-          AircraftType(Value()));
+      return &AircraftTypeClass::As_Reference(AircraftType(Value()));
 
     case RTTI_TERRAIN:
-      return (TerrainTypeClass*)&TerrainTypeClass::As_Reference(
-          TerrainType(Value()));
+      return &TerrainTypeClass::As_Reference(TerrainType(Value()));
 
     case RTTI_ANIM:
-      return (AnimTypeClass*)&AnimTypeClass::As_Reference(AnimType(Value()));
+      return &AnimTypeClass::As_Reference(AnimType(Value()));
 
     default:
       break;

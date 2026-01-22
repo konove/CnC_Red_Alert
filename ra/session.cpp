@@ -363,7 +363,7 @@ int SessionClass::Create_Connections() {
     //.....................................................................
     if (!stricmp(Players[i]->Name,
                  HouseClass::As_Pointer(Players[i]->Player.ID)->IniName)) {
-      Ipx.Create_Connection((int)Players[i]->Player.ID, Players[i]->Name,
+      Ipx.Create_Connection(Players[i]->Player.ID, Players[i]->Name,
                             &Players[i]->Address);
       Players[i]->Player.ProcessTime = -1;
     } else {
@@ -1150,7 +1150,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
   if (ini.Load(file)) {
     //	Save the player's last-used Handle & Color
     ini.Put_Int("MultiPlayer", "PhoneIndex", CurPhoneIdx);
-    ini.Put_Int("MultiPlayer", "Color", (int)PrefColor);
+    ini.Put_Int("MultiPlayer", "Color", PrefColor);
     ini.Put_Int("MultiPlayer", "Side", House);
     ini.Put_String("MultiPlayer", "Handle", Handle);
 

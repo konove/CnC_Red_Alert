@@ -2905,11 +2905,11 @@ void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
     if (IsVQ640) {
       AnimControl.ImageWidth = 640;
       AnimControl.ImageHeight = 400;
-      AnimControl.ImageBuf = (unsigned char*)VQ640.Get_Offset();
+      AnimControl.ImageBuf = VQ640.Get_Offset();
     } else {
       AnimControl.ImageWidth = 320;
       AnimControl.ImageHeight = 200;
-      AnimControl.ImageBuf = (unsigned char*)SysMemPage.Get_Offset();
+      AnimControl.ImageBuf = SysMemPage.Get_Offset();
     }
 #endif
 #endif
@@ -3268,7 +3268,7 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
   ** Save off the return value so that we can return it to the calling
   ** function.
   */
-  retval = (char*)buffer;
+  retval = buffer;
   *buffer++ = (char)icon_width;
   *buffer++ = (char)icon_height;
   int val = 24 / zoomfactor;
@@ -3304,9 +3304,8 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
               int gety = icony * 24 + y * val + zoomfactor / 2;
               if (getx < pixel_width && gety < pixel_height) {
                 for (lp = 0; lp < 9; lp++) {
-                  pixel =
-                      *(char*)((char*)ptr + (gety - _offy[lp]) * pixel_width +
-                               getx - _offx[lp]);
+                  pixel = *((char*)ptr + (gety - _offy[lp]) * pixel_width +
+                            getx - _offx[lp]);
 
 #else   // WIN32
           for (int y = 0; y < 3; y++) {
@@ -3457,7 +3456,7 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
         */
         UseOldShapeDraw = true;
 #ifdef WIN32
-        buffer = (unsigned char*)Get_Shape_Header_Data((void*)shape_pointer);
+        buffer = (unsigned char*)Get_Shape_Header_Data(shape_pointer);
 #endif
 
         if (Debug_Rotate) {

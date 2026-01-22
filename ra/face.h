@@ -61,13 +61,13 @@ inline DirType operator+(DirType f1, DirType f2) {
   return (DirType)((int)f1 + (int)f2 & 0x00FF);
 }
 inline DirType operator+(DirType f1, int f2) {
-  return (DirType)((int)f1 + (int)f2 & 0x00FF);
+  return (DirType)((int)f1 + f2 & 0x00FF);
 }
 inline DirType operator-(DirType f1, DirType f2) {
   return (DirType)((int)f1 - (int)f2 & 0x00FF);
 }
 inline DirType operator-(DirType f1, int f2) {
-  return (DirType)((int)f1 - (int)f2 & 0x00FF);
+  return (DirType)((int)f1 - f2 & 0x00FF);
 }
 
 // Function prototypes.

@@ -86,9 +86,8 @@ void* Small_Icon(void const* iconptr, int iconnum) {
   unsigned char* data;
 
   if (iconptr) {
-    iconnum = ((char*)((char*)iptr + iptr->Map))[iconnum];
-    data = &((unsigned char*)((unsigned char*)iptr +
-                              iptr->Icons))[iconnum * (24 * 24)];
+    iconnum = ((char*)iptr + iptr->Map)[iconnum];
+    data = &((unsigned char*)iptr + iptr->Icons)[iconnum * (24 * 24)];
     //		data = &iptr->Icons[iconnum*(24*24)];
 
     for (int index = 0; index < 9; index++) {
@@ -263,7 +262,7 @@ long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
   if (opened) {
     file.Close();
   }
-  return (long)size;
+  return size;
 }
 
 int Load_Picture(char const* filename, BufferClass& scratchbuf,

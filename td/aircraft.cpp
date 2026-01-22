@@ -294,7 +294,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
   ** automatically, not bought.
   */
   if (classid != AIRCRAFT_CARGO && GameToPlay == GAME_INTERNET) {
-    House->AircraftTotals->Increment_Unit_Total((int)classid);
+    House->AircraftTotals->Increment_Unit_Total(classid);
   }
 }
 
@@ -1103,7 +1103,7 @@ int AircraftClass::Mission_Unload() {
           }
 
           if (navdist < 0x0080) {
-            FootClass* unit = (FootClass*)Detach_Object();
+            FootClass* unit = Detach_Object();
 
             if (unit) {
               CELL cell = Contact_With_Whom()->Find_Exit_Cell(unit);
@@ -1228,7 +1228,7 @@ int AircraftClass::Mission_Unload() {
       case UNLOAD_PASSENGERS:
         if (!IsTethered) {
           if (Is_Something_Attached()) {
-            FootClass* unit = (FootClass*)Detach_Object();
+            FootClass* unit = Detach_Object();
 
             /*
             **	First thing is to lift the transport off of the map so that the
@@ -1649,7 +1649,7 @@ int AircraftClass::Mission_Move() {
           }
           SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
           if (Distance(NavCom) < 0x0080) {
-            FootClass* unit = (FootClass*)Detach_Object();
+            FootClass* unit = Detach_Object();
 
             if (unit) {
               ScenarioInit++;

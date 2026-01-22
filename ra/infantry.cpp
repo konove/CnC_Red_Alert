@@ -232,7 +232,7 @@ void InfantryClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 InfantryClass::InfantryClass(InfantryType classid, HousesType house)
     : FootClass(RTTI_INFANTRY, Infantry.ID(this), house),
-      Class(InfantryTypes.Ptr((int)classid)),
+      Class(InfantryTypes.Ptr(classid)),
       Doing(DO_NOTHING),
       Comment(0),
       IsTechnician(false),
@@ -1942,8 +1942,8 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
       COORDINATE coord = Coord_Fraction(Center_Coord());
 
       if (coord != 0x00800080L) {
-        toface = Dir_Facing((DirType)Desired_Facing8(
-            0x0080, 0x0080, Coord_X(coord), Coord_Y(coord)));
+        toface = Dir_Facing(
+            Desired_Facing8(0x0080, 0x0080, Coord_X(coord), Coord_Y(coord)));
       } else {
         toface = Dir_Facing(PrimaryFacing.Current());
       }

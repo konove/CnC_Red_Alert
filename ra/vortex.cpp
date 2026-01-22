@@ -736,7 +736,7 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
     ** Get a pointer to the section of buffer we are going to work on.
     */
     unsigned char* bufptr =
-        (unsigned char*)inbuffer->Get_Offset() + destx
+        inbuffer->Get_Offset() + destx
 #ifdef WIN32
         + desty * (inbuffer->Get_Width() + inbuffer->Get_XAdd() +
                    inbuffer->Get_Pitch());

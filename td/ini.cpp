@@ -264,7 +264,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   *this, since *	the HidPage may be needed for various uncompressions
   *during the INI *	parsing.)
   */
-  buffer = (char*)_ShapeBuffer;
+  buffer = _ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
   if (fresh) {
@@ -325,7 +325,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   for (int i = 0; i < len; i++) {
     val = (unsigned char)buffer[i];
 #ifndef DEMO
-    Add_CRC(&ScenarioCRC, (unsigned long)val);
+    Add_CRC(&ScenarioCRC, val);
 #endif
   }
 
@@ -825,8 +825,8 @@ static void Assign_Houses() {
     /*
     **	Set the house's IsHuman, Credits, ActLike, & RemapTable
     */
-    memset((char*)housep->Name, 0, MPLAYER_NAME_MAX);
-    strncpy((char*)housep->Name, MPlayerNames[i], MPLAYER_NAME_MAX - 1);
+    memset(housep->Name, 0, MPLAYER_NAME_MAX);
+    strncpy(housep->Name, MPlayerNames[i], MPLAYER_NAME_MAX - 1);
     housep->IsHuman = true;
     housep->Init_Data(color, pref_house, MPlayerCredits);
 

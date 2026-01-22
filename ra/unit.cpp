@@ -310,7 +310,7 @@ UnitClass::~UnitClass() {
  *=============================================================================================*/
 UnitClass::UnitClass(UnitType classid, HousesType house)
     : DriveClass(RTTI_UNIT, Units.ID(this), house),
-      Class(UnitTypes.Ptr((int)classid)),
+      Class(UnitTypes.Ptr(classid)),
       Flagged(HOUSE_NONE),
       IsDumping(false),
       Gems(0),
@@ -553,7 +553,7 @@ void UnitClass::Rotation_AI() {
 
   if (Class->IsRadarEquipped) {
     Mark(MARK_CHANGE_REDRAW);
-    SecondaryFacing.Set((DirType)(SecondaryFacing.Current() + 8));
+    SecondaryFacing.Set(SecondaryFacing.Current() + 8);
     Mark(MARK_CHANGE_REDRAW);
   } else {
     IsRotating = false;
@@ -671,7 +671,7 @@ void UnitClass::Firing_AI() {
     FireErrorType ok = Can_Fire(TarCom, primary);
     switch (ok) {
       case FIRE_OK:
-        if (!((UnitClass*)this)->Class->IsFireAnim) {
+        if (!this->Class->IsFireAnim) {
           Mark(MARK_OVERLAP_UP);
           IsFiring = false;
           Mark(MARK_OVERLAP_DOWN);
@@ -3141,7 +3141,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
           int face = Dir_Facing(PrimaryFacing);
           int techface = Dir_Facing(((FootClass const*)obj)->PrimaryFacing) ^ 4;
           if (face == techface &&
-              Distance((AbstractClass const*)obj) <= 0x1FF) {
+              Distance(obj) <= 0x1FF) {
             return MOVE_NO;
           }
           if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
@@ -3709,8 +3709,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     **	Give more weight to the cells that require the least rotation of the
     *transport or the *	least roundabout movement for the potential passenger.
     */
-    value -= (int)std::abs((int)(signed char)Facing_Dir(face) -
-                           (int)(signed char)faceto);
+    value -= std::abs((int)(signed char)Facing_Dir(face) - (int)(signed char)faceto);
     if (face == FACING_S) {
       value -= 100;
     }
@@ -3996,9 +3995,9 @@ DirType UnitClass::Fire_Direction() const {
       int adj = Fixed_To_Cardinal(std::abs(SecondaryFacing.Difference(DIR_N)),
                                   64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {
-        return (DirType)(SecondaryFacing - (DirType)adj);
+        return SecondaryFacing - (DirType)adj;
       } else {
-        return (DirType)(SecondaryFacing + (DirType)adj);
+        return SecondaryFacing + (DirType)adj;
       }
     }
     return SecondaryFacing.Current();
@@ -4270,7 +4269,7 @@ void UnitClass::Approach_Target() {
     */
     TechnoClass* target = As_Techno(TarCom);
     if (Class->IsCrusher && Distance(TarCom) < Rule.CrushDistance && target &&
-        ((TechnoTypeClass const&)target->Class_Of()).IsCrushable) {
+        target->Class_Of().IsCrushable) {
       Assign_Destination(TarCom);
       return;
     }

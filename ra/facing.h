@@ -72,10 +72,10 @@ class FacingClass {
 
   int Is_Rotating() const { return DesiredFacing != CurrentFacing; }
   int Difference() const {
-    return (int)(signed char)((int)DesiredFacing - (int)CurrentFacing);
+    return (signed char)((int)DesiredFacing - (int)CurrentFacing);
   }
   int Difference(DirType facing) const {
-    return (int)(signed char)((int)facing - (int)CurrentFacing);
+    return (signed char)((int)facing - (int)CurrentFacing);
   }
   int Rotation_Adjust(int rate);
 

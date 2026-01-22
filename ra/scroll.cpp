@@ -143,8 +143,8 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           if (alty > 150 * RESFACTOR) alty += alty - 150 * RESFACTOR;
           alty = std::min(alty, 200 * RESFACTOR);
 
-          direction = (DirType)Desired_Facing256(
-              320 / 2 * RESFACTOR, 200 / 2 * RESFACTOR, altx, alty);
+          direction = Desired_Facing256(320 / 2 * RESFACTOR,
+                                        200 / 2 * RESFACTOR, altx, alty);
         }
 
         int control = Dir_Facing(direction);

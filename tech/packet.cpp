@@ -206,7 +206,7 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   //
   // write the size into the packet header
   //
-  *(unsigned short*)curbuf = (unsigned short)htons((unsigned short)size);
+  *(unsigned short*)curbuf = htons((unsigned short)size);
   curbuf += sizeof(unsigned short);
   *(short*)curbuf = htons(ID);
   curbuf += sizeof(short);

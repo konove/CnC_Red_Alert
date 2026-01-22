@@ -119,7 +119,7 @@ class RawFileClass : public FileClass {
   **	perform. Larger file transfers are performed in chunks of this size or
   *less.
   */
-  long Transfer_Block_Size() { return (long)(unsigned)UINT_MAX - 16L; }
+  long Transfer_Block_Size() { return (long)(UINT_MAX) - 16L; }
 
   long Raw_Seek(long pos, int dir = SEEK_CUR);
 

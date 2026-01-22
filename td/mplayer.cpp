@@ -534,7 +534,7 @@ void Read_MultiPlayer_Settings() {
   the HidPage may be needed for various uncompressions during the INI
   parsing.)
   ------------------------------------------------------------------------*/
-  buffer = (char*)_ShapeBuffer;
+  buffer = _ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
   /*------------------------------------------------------------------------
@@ -885,7 +885,7 @@ void Write_MultiPlayer_Settings() {
   Get a working pointer to the INI staging buffer. Make sure that the buffer
   starts cleared out of any data.
   ------------------------------------------------------------------------*/
-  buffer = (char*)_ShapeBuffer;
+  buffer = _ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
   file.Set_Name("CONQUER.INI");
@@ -1030,7 +1030,7 @@ void Read_Scenario_Descriptions() {
     Fetch working pointer to the INI staging buffer. Make sure that the
     buffer is cleared out before proceeding.
     .....................................................................*/
-    buffer = (char*)_ShapeBuffer;
+    buffer = _ShapeBuffer;
     memset(buffer, '\0', _ShapeBufferSize);
 
     /*.....................................................................

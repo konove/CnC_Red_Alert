@@ -188,7 +188,7 @@ void TeamClass::Decode_Pointers() {
   **	Decode the 'Member'
   */
   if (Member) {
-    Member = (FootClass*)As_Techno((TARGET)Member);
+    Member = (FootClass*)As_Techno(Member);
     assert(Member != nullptr);
   }
 }
@@ -449,7 +449,7 @@ void LayerClass::Code_Pointers() {
 void LayerClass::Decode_Pointers() {
   for (int index = 0; index < Count(); index++) {
     TARGET target = (TARGET)(intptr_t)(*this)[index];
-    (*this)[index] = (ObjectClass*)As_Object(target);
+    (*this)[index] = As_Object(target);
     assert((*this)[index] != nullptr);
   }
 }
@@ -751,7 +751,7 @@ void ObjectClass::Code_Pointers() {
  *=============================================================================================*/
 void ObjectClass::Decode_Pointers() {
   if (Next) {
-    Next = As_Object((TARGET)Next);
+    Next = As_Object(Next);
     assert(Next != nullptr);
   }
 }

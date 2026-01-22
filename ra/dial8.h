@@ -39,6 +39,7 @@
 
 #ifndef DIAL8_H
 #define DIAL8_H
+
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/face.h"

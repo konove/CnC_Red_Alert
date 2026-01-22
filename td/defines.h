@@ -1919,14 +1919,14 @@ inline FacingType operator+(FacingType f1, FacingType f2) {
   return (FacingType)((int)f1 + (int)f2 & 0x07);
 }
 inline FacingType operator+(FacingType f1, int f2) {
-  return (FacingType)((int)f1 + (int)f2 & 0x07);
+  return (FacingType)((int)f1 + f2 & 0x07);
 }
 
 inline FacingType operator-(FacingType f1, FacingType f2) {
   return (FacingType)((int)f1 - (int)f2 & 0x07);
 }
 inline FacingType operator-(FacingType f1, int f2) {
-  return (FacingType)((int)f1 - (int)f2 & 0x07);
+  return (FacingType)((int)f1 - f2 & 0x07);
 }
 
 inline FacingType operator+=(FacingType& f1, FacingType f2) {
@@ -1934,7 +1934,7 @@ inline FacingType operator+=(FacingType& f1, FacingType f2) {
   return f1;
 }
 inline FacingType operator+=(FacingType& f1, int f2) {
-  f1 = (FacingType)((int)f1 + (int)f2 & 0x07);
+  f1 = (FacingType)((int)f1 + f2 & 0x07);
   return f1;
 }
 
@@ -1956,7 +1956,7 @@ inline DirType operator+(DirType f1, DirType f2) {
   return (DirType)((int)f1 + (int)f2 & 0x00FF);
 }
 inline DirType operator+(DirType f1, int f2) {
-  return (DirType)((int)f1 + (int)f2 & 0x00FF);
+  return (DirType)((int)f1 + f2 & 0x00FF);
 }
 
 /****************************************************************************

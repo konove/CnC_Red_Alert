@@ -1826,7 +1826,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
   }
 
   if (GameToPlay == GAME_INTERNET) {
-    House->BuildingTotals->Increment_Unit_Total((int)type);
+    House->BuildingTotals->Increment_Unit_Total(type);
   }
 }
 
@@ -3562,7 +3562,7 @@ int BuildingClass::Mission_Guard() {
         */
         if (*this == STRUCT_REPAIR && In_Radio_Contact() &&
             Contact_With_Whom()->Is_Techno() &&
-            ((TechnoClass *)Contact_With_Whom())->Mission == MISSION_ENTER &&
+            Contact_With_Whom()->Mission == MISSION_ENTER &&
             Distance(Contact_With_Whom()) < 0x0040 &&
             Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
           Assign_Mission(MISSION_REPAIR);

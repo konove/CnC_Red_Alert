@@ -811,7 +811,7 @@ HouseClass::HouseClass(HousesType house)
   memset(VQuantity, '\0', sizeof(VQuantity));
   port::SafeCopy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
   HouseTriggers[house].Clear();
-  memset((void*)&Regions[0], 0x00, sizeof(Regions));
+  memset(&Regions[0], 0x00, sizeof(Regions));
   Make_Ally(house);
   Assign_Handicap(Scen.CDifficulty);
 
@@ -1121,7 +1121,7 @@ void HouseClass::AI() {
     /*
     **	Adjusted to reduce maximum number of teams created.
     */
-    int maxteams = Random_Pick(2, (int)((Control.TechLevel - 1) / 3 + 1));
+    int maxteams = Random_Pick(2, (Control.TechLevel - 1) / 3 + 1);
     for (int index = 0; index < maxteams; index++) {
       TeamTypeClass const* ttype = Suggested_New_Team(true);
       if (ttype != nullptr) {
@@ -7657,7 +7657,7 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
           Coord_Y(Center) - Cell_To_Lepton(Map.MapCellY) - CELL_LEPTON_H);
       if (maxdist < 0) break;
       coord = Coord_Move(Center,
-                         (DirType)(Random_Pick(DIR_N, DIR_E) - (DirType)32),
+                         Random_Pick(DIR_N, DIR_E) - (DirType)32,
                          Random_Pick(std::min(Radius * 2, maxdist),
                                      std::min(Radius * 3, maxdist)));
       break;

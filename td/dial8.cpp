@@ -185,7 +185,7 @@ int Dial8Class::Action(unsigned flags, KeyNumType& key) {
     **	Get new dial position (0-255)
     */
     Direction =
-        (DirType)Desired_Facing8(FaceX, FaceY, Get_Mouse_X(), Get_Mouse_Y());
+        Desired_Facing8(FaceX, FaceY, Get_Mouse_X(), Get_Mouse_Y());
 
     /*
     **	Convert to Facing value (0-7).

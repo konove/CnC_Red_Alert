@@ -370,7 +370,7 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
   **	Hack so that aircraft landed on helipads can still be selected if
   *directly *	clicked on.
   */
-  ptr = (ObjectClass*)Cell_Find_Object(RTTI_AIRCRAFT);
+  ptr = Cell_Find_Object(RTTI_AIRCRAFT);
   if (ptr) {
     return ptr;
   }
@@ -1782,7 +1782,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
   **	If the coordinate is close enough to the center of the cell, then return
   **	the center position index.
   */
-  if (Distance(rel, (COORDINATE)0x00800080L) < 60) {
+  if (Distance(rel, 0x00800080L) < 60) {
     return 0;
   }
 
@@ -2656,7 +2656,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       case CRATE_VORTEX:
         if (!ChronalVortex.Is_Active()) {
           ChronalVortex.Appear(Cell_Coord());
-          ChronalVortex.Set_Target((ObjectClass*)object);
+          ChronalVortex.Set_Target(object);
           Sound_Effect(VOC_TESLA_ZAP, object->Center_Coord());
         }
         break;

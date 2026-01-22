@@ -1889,7 +1889,7 @@ void Multi_Score_Presentation() {
   Hide_Mouse();
   void* anim = Open_Animation(
       "MLTIPLYR.WSA", nullptr, 0L,
-      (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), ScorePalette);
+      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, ScorePalette);
   /*
   ** Display the background animation
   */

@@ -964,7 +964,7 @@ void FootClass::Approach_Target() {
 
         for (int index = 0; index < sizeof(_angles) / sizeof(_angles[0]);
              index++) {
-          trycoord = Coord_Move(tcoord, (DirType)(dir + _angles[index]), range);
+          trycoord = Coord_Move(tcoord, dir + _angles[index], range);
 
           if (::Distance(trycoord, tcoord) < range) {
             trycell = Coord_Cell(trycoord);

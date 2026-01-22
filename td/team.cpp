@@ -254,7 +254,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
         unit->Assign_Target(TARGET_NONE);
       }
     }
-    unit = (FootClass*)unit->Member;
+    unit = unit->Member;
   }
 
   /*
@@ -499,7 +499,7 @@ void TeamClass::AI() {
 
         case TMISSION_MOVE:
         case TMISSION_UNLOAD:
-          Assign_Mission_Target(::As_Target((CELL)Waypoint[mission->Argument]));
+          Assign_Mission_Target(::As_Target(Waypoint[mission->Argument]));
           break;
 
         case TMISSION_ATTACKTARCOM:

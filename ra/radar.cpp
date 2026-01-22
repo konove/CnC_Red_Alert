@@ -748,7 +748,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
 void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
   ObjectClass* obj;
 
-  obj = (ObjectClass*)Map[cell].Cell_Occupier();
+  obj = Map[cell].Cell_Occupier();
   while (obj) {
     if (obj->Is_Techno() && ((TechnoClass*)obj)->Is_Visible_On_Radar()) {
       int color = ColorRemaps[((InfantryClass*)obj)->House->RemapColor].Bar;

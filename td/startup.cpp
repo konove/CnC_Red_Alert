@@ -452,7 +452,7 @@ int main(int argc, char* argv[])
 #endif
       {
         VisiblePage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
-                         (GBC_Enum)(GBC_VISIBLE | GBC_VIDEOMEM));
+                         GBC_VISIBLE | GBC_VIDEOMEM);
 #ifdef PORTABLE
         HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0, (GBC_Enum)0);
 #else

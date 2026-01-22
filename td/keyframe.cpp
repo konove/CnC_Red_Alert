@@ -106,9 +106,9 @@ static int Length;
 void* Get_Shape_Header_Data(void* ptr) {
   if (UseBigShapeBuffer) {
     ShapeHeaderType* header = (ShapeHeaderType*)ptr;
-    return (void*)(header->shape_data + (long)(header->shape_buffer
-                                                   ? TheaterShapeBufferStart
-                                                   : BigShapeBufferStart));
+    return header->shape_data + (long)(header->shape_buffer
+                                           ? TheaterShapeBufferStart
+                                           : BigShapeBufferStart);
 
   } else {
     return ptr;
@@ -346,7 +346,7 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
           dataptr,
           ((unsigned long)currframe << 3) +
                                                   sizeof(KeyFrameHeaderType));
-      Mem_Copy(ptr, &offset[0], (long)(SUBFRAMEOFFS * sizeof(uint32_t)));
+      Mem_Copy(ptr, &offset[0], SUBFRAMEOFFS * sizeof(uint32_t));
     }
 
     // key frame
@@ -408,7 +408,7 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
           Mem_Copy(
               Add_Long_To_Pointer(dataptr, ((unsigned long)currframe << 3) +
                                                sizeof(KeyFrameHeaderType)),
-              &offset[0], (long)(SUBFRAMEOFFS * sizeof(uint32_t)));
+              &offset[0], SUBFRAMEOFFS * sizeof(uint32_t));
           subframe = 0;
         }
       }

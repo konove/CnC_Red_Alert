@@ -2640,15 +2640,15 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
         break;
 
       case RTTI_UNIT:
-        ((UnitClass*)source)->Made_A_Kill();
+        source->Made_A_Kill();
         break;
 
       case RTTI_BUILDING:
-        ((BuildingClass*)source)->Made_A_Kill();
+        source->Made_A_Kill();
         break;
 
       case RTTI_AIRCRAFT:
-        ((AircraftClass*)source)->Made_A_Kill();
+        source->Made_A_Kill();
         break;
     }
 

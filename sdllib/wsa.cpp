@@ -107,7 +107,7 @@ void* Open_Animation(char const* file_name, char* user_buffer,
 
   anim_flags = 0;
   fh = Open_File(file_name, READ);
-  Read_File(fh, (char*)&file_header, sizeof(WSA_FileHeaderType));
+  Read_File(fh, &file_header, sizeof(WSA_FileHeaderType));
 
   /*======================================================================*/
   /* If the file has an attached palette then if we have a valid palette
@@ -224,8 +224,7 @@ void* Open_Animation(char const* file_name, char* user_buffer,
     anim_flags |= WSA_SYS_ALLOCATED;
   } else {
     // Check to see if the user_buffer_size should be min or max.
-    if (user_flags & WSA_OPEN_FROM_DISK ||
-        user_buffer_size < max_buffer_size) {
+    if (user_flags & WSA_OPEN_FROM_DISK || user_buffer_size < max_buffer_size) {
       user_buffer_size = min_buffer_size;
     } else {
       user_buffer_size = max_buffer_size;
@@ -805,8 +804,7 @@ static unsigned long Get_File_Frame_Offset(int file_handle, int frame,
 
   Seek_File(file_handle, (frame << 2) + WSA_FILE_HEADER_SIZE, SEEK_SET);
 
-  if (Read_File(file_handle, (char*)&offset, sizeof(uint32_t)) !=
-      sizeof(uint32_t)) {
+  if (Read_File(file_handle, &offset, sizeof(uint32_t)) != sizeof(uint32_t)) {
     offset = 0L;
   }
   offset += palette_adjust;

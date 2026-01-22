@@ -188,7 +188,7 @@ void Create_Palette_Interpolation_Table() {
       index_of_closest_color = 0;
       //			closest_distance = (256 * 256) * 3;
       closest_distance = 500000;
-      match_pal_ptr = (unsigned char*)InterpolationPalette;
+      match_pal_ptr = InterpolationPalette;
       for (p = 0; p < SIZE_OF_PALETTE; p++) {
         diff_r = (int)*match_pal_ptr - dest_r;
         match_pal_ptr++;

@@ -117,7 +117,7 @@
 BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
                          int strength, WarheadType warhead, int speed)
     : ObjectClass(RTTI_BULLET, Bullets.ID(this)),
-      Class(BulletTypes.Ptr((int)id)),
+      Class(BulletTypes.Ptr(id)),
       Payback(payback),
       PrimaryFacing(DIR_N),
       IsInaccurate(false),

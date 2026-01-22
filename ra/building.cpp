@@ -580,11 +580,11 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
 
       assert(contact->IsActive);
       int xxx =
-          x + ((int)Lepton_To_Pixel((int)Coord_X(contact->Render_Coord())) -
-               (int)Lepton_To_Pixel((int)Coord_X(Render_Coord())));
+          x + (Lepton_To_Pixel(Coord_X(contact->Render_Coord())) -
+               Lepton_To_Pixel(Coord_X(Render_Coord())));
       int yyy =
-          y + ((int)Lepton_To_Pixel((int)Coord_Y(contact->Render_Coord())) -
-               (int)Lepton_To_Pixel((int)Coord_Y(Render_Coord())));
+          y + (Lepton_To_Pixel(Coord_Y(contact->Render_Coord())) -
+               Lepton_To_Pixel(Coord_Y(Render_Coord())));
       contact->Draw_It(xxx, yyy, window);
       contact->IsToDisplay = false;
     }
@@ -1672,7 +1672,7 @@ void BuildingClass::operator delete(void *ptr) {
  *=============================================================================================*/
 BuildingClass::BuildingClass(StructType type, HousesType house)
     : TechnoClass(RTTI_BUILDING, Buildings.ID(this), house),
-      Class(BuildingTypes.Ptr((int)type)),
+      Class(BuildingTypes.Ptr(type)),
       Factory(nullptr),
       ActLike(House->ActLike),
       IsToRebuild(false),
@@ -3361,7 +3361,7 @@ int BuildingClass::Mission_Guard() {
         */
         if (*this == STRUCT_REPAIR && In_Radio_Contact() &&
             Contact_With_Whom()->Is_Techno() &&
-            ((TechnoClass *)Contact_With_Whom())->Mission == MISSION_ENTER &&
+            Contact_With_Whom()->Mission == MISSION_ENTER &&
             Distance(Contact_With_Whom()) < 0x0040 &&
             Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
           Assign_Mission(MISSION_REPAIR);
@@ -5437,8 +5437,8 @@ void BuildingClass::Repair_AI() {
 
             if (!House->IsHuman) {
               House->RepairTimer = Random_Pick(
-                  (int)(House->RepairDelay * (TICKS_PER_MINUTE / 4)),
-                  (int)(House->RepairDelay * TICKS_PER_MINUTE * 2));
+                  House->RepairDelay * (TICKS_PER_MINUTE / 4),
+                  House->RepairDelay * TICKS_PER_MINUTE * 2);
             }
           }
         }

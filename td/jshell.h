@@ -82,24 +82,24 @@ inline void* operator delete[](void* data) { Free(data); }
 */
 template <class T>
 inline T operator++(T& a) {
-  a = (T)((int)a + (int)1);
+  a = (T)((int)a + 1);
   return a;
 }
 template <class T>
 inline T operator++(T& a, int) {
   T aa = a;
-  a = (T)((int)a + (int)1);
+  a = (T)((int)a + 1);
   return aa;
 }
 template <class T>
 inline T operator--(T& a) {
-  a = (T)((int)a - (int)1);
+  a = (T)((int)a - 1);
   return a;
 }
 template <class T>
 inline T operator--(T& a, int) {
   T aa = a;
-  a = (T)((int)a - (int)1);
+  a = (T)((int)a - 1);
   return aa;
 }
 template <class T>

@@ -711,7 +711,7 @@ void ScoreClass::Presentation() {
   ** Load the background for the score screen
   */
   anim = Open_Animation(ScreenNames[house], nullptr, 0L,
-                        (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE),
+                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
                         Palette);
 
   unsigned minutes = (unsigned)(ElapsedTime / (long)TIMER_MINUTE) + 1;
@@ -2078,7 +2078,7 @@ void Multi_Score_Presentation() {
   Set_Palette(BlackPalette);
 
   anim = Open_Animation("MLTIPLYR.WSA", nullptr, 0L,
-                        (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE),
+                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
                         Palette);
   Hide_Mouse();
 

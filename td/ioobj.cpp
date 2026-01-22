@@ -1551,7 +1551,7 @@ void LayerClass::Decode_Pointers() {
 
   for (int i = 0; i < Count(); i++) {
     target = (TARGET)(uintptr_t)(*this)[i];
-    (*this)[i] = (ObjectClass*)As_Object(target);
+    (*this)[i] = As_Object(target);
     Check_Ptr((*this)[i], __FILE__, __LINE__);
   }
 }

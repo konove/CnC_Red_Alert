@@ -440,7 +440,7 @@ HouseClass::HouseClass(HousesType house)
   UnitFactories = 0;
   UnitFactory = -1;
   UScan = 0;
-  memset((void*)&Regions[0], 0x00, sizeof(Regions));
+  memset(&Regions[0], 0x00, sizeof(Regions));
 
   AircraftTotals = new UnitTrackerClass((int)AIRCRAFT_COUNT);
   InfantryTotals = new UnitTrackerClass((int)INFANTRY_COUNT);
@@ -1005,7 +1005,7 @@ void HouseClass::AI() {
     if (IsFreeHarvester && FreeHarvester.Expired()) {
       IsFreeHarvester = false;
       Create_Special_Reinforcement(
-          this, (TechnoTypeClass*)&UnitTypeClass::As_Reference(UNIT_HARVESTER),
+          this, &UnitTypeClass::As_Reference(UNIT_HARVESTER),
           nullptr);
     }
 

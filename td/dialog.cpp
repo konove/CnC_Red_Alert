@@ -558,8 +558,8 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
         break;
     }
 
-    if ((unsigned)x < SeenBuff.Get_Width() &&
-        (unsigned)y < SeenBuff.Get_Height()) {
+    if (x < SeenBuff.Get_Width() &&
+        y < SeenBuff.Get_Height()) {
       LogicPage->Print(tempstr, x, y, fore, back);
     }
   }
@@ -614,7 +614,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
     /*
     **	Just the flags are to be changed, since the text number is TXT_NONE.
     */
-    Simple_Text_Print((char const*)nullptr, x, y, fore, back, flag);
+    Simple_Text_Print(nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -669,7 +669,7 @@ void Fancy_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
     **	Just the flags are desired to be changed, so call the simple print
     *routine with *	a NULL text pointer.
     */
-    Simple_Text_Print((char const*)nullptr, x, y, fore, back, flag);
+    Simple_Text_Print(nullptr, x, y, fore, back, flag);
   }
 }
 

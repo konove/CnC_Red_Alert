@@ -1266,8 +1266,8 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	commands. Any other value is new direction and eliminate
       **	one command.
       */
-      newcmd = (FacingType)(*cmd2 - *cmd1);
-      if (newcmd < FACING_N) newcmd = (FacingType)(newcmd + FACING_COUNT);
+      newcmd = *cmd2 - *cmd1;
+      if (newcmd < FACING_N) newcmd = newcmd + FACING_COUNT;
       newcmd = _trans[newcmd];
 
       /*
@@ -1305,7 +1305,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
           **	Diagonal 90 degree changes can be smoothed, although
           **	the path isn't any shorter.
           */
-          if (std::abs((int)newcmd) == 1) {
+          if (std::abs(newcmd) == 1) {
             if (Passable_Cell(Adjacent_Cell(cell, newdir), newdir, -1,
                               threshhold)) {
               *cmd2 = newdir;

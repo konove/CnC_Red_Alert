@@ -416,7 +416,7 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
   **	Hack so that aircraft landed on helipads can still be selected if
   *directly *	clicked on.
   */
-  ptr = (ObjectClass*)Cell_Find_Object(RTTI_AIRCRAFT);
+  ptr = Cell_Find_Object(RTTI_AIRCRAFT);
   if (ptr) {
     return ptr;
   }

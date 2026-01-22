@@ -149,7 +149,7 @@ void Create_Palette_Interpolation_Table() {
   //
   // Create an interpolation table for the current palette.
   //
-  first_palette_ptr = (unsigned char*)InterpolationPalette;
+  first_palette_ptr = InterpolationPalette;
   for (i = 0; i < SIZE_OF_PALETTE; i++) {
     //
     // Get the first palette entry's RGB.
@@ -161,7 +161,7 @@ void Create_Palette_Interpolation_Table() {
     first_b = *first_palette_ptr;
     first_palette_ptr++;
 
-    second_palette_ptr = (unsigned char*)InterpolationPalette;
+    second_palette_ptr = InterpolationPalette;
     for (j = 0; j < SIZE_OF_PALETTE; j++) {
       //
       // Get the second palette entry's RGB.
@@ -187,7 +187,7 @@ void Create_Palette_Interpolation_Table() {
       index_of_closest_color = 0;
       //			closest_distance = (256 * 256) * 3;
       closest_distance = 500000;
-      match_pal_ptr = (unsigned char*)InterpolationPalette;
+      match_pal_ptr = InterpolationPalette;
       for (p = 0; p < SIZE_OF_PALETTE; p++) {
         diff_r = (int)*match_pal_ptr - dest_r;
         match_pal_ptr++;

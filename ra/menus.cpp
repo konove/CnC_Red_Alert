@@ -484,7 +484,7 @@ int Do_Menu(char const** strings, bool) {
   /*
   **	Display the menu.
   */
-  Change_Window((int)WINDOW_MENU);
+  Change_Window(WINDOW_MENU);
   Show_Mouse();
   Window_Box(WINDOW_MENU, BOXSTYLE_RAISED);
   Setup_Menu(0, strings, 0xFFFFL, 0, 0);
@@ -504,7 +504,7 @@ int Do_Menu(char const** strings, bool) {
 
   HidPage.Blit(SeenPage);
   // WindowList[WINDOW_MAIN][2] = SeenBuff.Get_Width();//BG
-  Change_Window((int)WINDOW_MAIN);
+  Change_Window(WINDOW_MAIN);
   Map.Flag_To_Redraw(true);
   return selection;
 }

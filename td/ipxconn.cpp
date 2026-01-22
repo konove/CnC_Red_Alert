@@ -602,7 +602,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
     Winsock.Write((void*)tempsend, buflen + sizeof(target_mask));
     delete[] tempsend;
 #else   // VIRTUAL_SUBNET_SERVER
-    Winsock.Write((void*)buf, buflen);
+    Winsock.Write(buf, buflen);
 #endif  // VIRTUAL_SUBNET_SERVER
 
     return true;
@@ -634,7 +634,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
   }
 
   return IPX_Send_Packet95(&send_address[0], (unsigned char*)buf, buflen,
-                           (unsigned char*)net, (unsigned char*)node);
+                           net, node);
 }
 
 /***************************************************************************
@@ -683,7 +683,7 @@ int IPXConnClass::Broadcast(char* buf, int buflen) {
     Winsock.Write((void*)tempsend, buflen + sizeof(unsigned short));
     delete[] tempsend;
 #else   // VIRTUAL_SUBNET_SERVER
-    Winsock.Write((void*)buf, buflen);
+    Winsock.Write(buf, buflen);
 #endif  // VIRTUAL_SUBNET_SERVER
     return true;
   } else {

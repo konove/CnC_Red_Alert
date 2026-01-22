@@ -129,7 +129,7 @@ void SmudgeClass::operator delete(void* ptr) {
  *=============================================================================================*/
 SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
     : ObjectClass(RTTI_SMUDGE, Smudges.ID(this)),
-      Class(SmudgeTypes.Ptr((int)type)) {
+      Class(SmudgeTypes.Ptr(type)) {
   if (pos != -1) {
     ToOwn = house;
     if (!Unlimbo(pos)) {
@@ -196,7 +196,7 @@ bool SmudgeClass::Mark(MarkType mark) {
                     SmudgeTypeClass::As_Reference(cell->Smudge).IsCrater) {
                   cell->SmudgeData++;
                   cell->SmudgeData =
-                      (int)std::min((int)cell->SmudgeData, (int)4);
+                      (int)std::min((int)cell->SmudgeData, 4);
                 }
 
                 if (cell->Smudge == SMUDGE_NONE) {

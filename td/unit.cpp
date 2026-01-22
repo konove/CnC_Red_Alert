@@ -988,7 +988,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
           (GameToPlay != GAME_NORMAL || *this != UNIT_HARVESTER ||
            BuildLevel > 8 || Special.IsDifficult) &&
           !Special.IsEasy && Class->IsCrusher && source->Is_Techno() &&
-          ((TechnoTypeClass const&)source->Class_Of()).IsCrushable) {
+          source->Class_Of().IsCrushable) {
         Assign_Destination(source->As_Target());
         Assign_Mission(MISSION_MOVE);
       } else {
@@ -1128,7 +1128,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   ** Keep count of the number of units created.
   */
   if (GameToPlay == GAME_INTERNET) {
-    House->UnitTotals->Increment_Unit_Total((int)classid);
+    House->UnitTotals->Increment_Unit_Total(classid);
   }
 }
 
@@ -1326,7 +1326,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
       cell =
           Coord_Cell(Adjacent_Cell(Coord, Dir_Facing(PrimaryFacing.Current())));
 
-      unit = (FootClass*)Attached_Object();
+      unit = Attached_Object();
 
       Mark(MARK_UP);
       if (Map.In_Radar(cell) && !Map[cell].Cell_Unit()) {
@@ -1338,7 +1338,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
           bool first = true;
           FootClass* secondary = nullptr;
           while (Attached_Object()) {
-            FootClass* u = (FootClass*)Detach_Object();
+            FootClass* u = Detach_Object();
 
             if (!first && !secondary) secondary = u;
             first = false;
@@ -2031,7 +2031,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
     **	If this unit has "piggy back" unit(s), then render it at the same time.
     */
     if (*this == UNIT_HOVER && Is_Something_Attached()) {
-      TechnoClass* u = (TechnoClass*)Attached_Object();
+      TechnoClass* u = Attached_Object();
 
       int counter = 0;
       for (;;) {
@@ -2834,8 +2834,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
         if (is_moving) {
           int face = Dir_Facing(PrimaryFacing);
           int techface = Dir_Facing(((FootClass const*)obj)->PrimaryFacing) ^ 4;
-          if (face == techface &&
-              Distance((AbstractClass const*)obj) <= 0x1FF) {
+          if (face == techface && Distance(obj) <= 0x1FF) {
             return MOVE_NO;
           }
           if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
@@ -3691,7 +3690,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     **	Give more weight to the cells that require the least rotation of the
     *transport or the *	least roundabout movement for the potential passenger.
     */
-    value -= (int)std::abs(Dir_Diff(Facing_Dir(face), faceto));
+    value -= std::abs(Dir_Diff(Facing_Dir(face), faceto));
     if (face == FACING_S) {
       value -= 100;
     }

@@ -1733,7 +1733,7 @@ short const* TemplateTypeClass::Occupy_List(bool) const {
   }
   *ptr = REFRESH_EOL;
 
-  return (short const*)&_occupy[0];
+  return &_occupy[0];
 }
 
 /***********************************************************************************************

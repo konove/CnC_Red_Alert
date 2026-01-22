@@ -549,28 +549,28 @@ void Map_Selection() {
   */
   greyearth = Open_Animation(
       "GREYERTH.WSA", nullptr, 0,
-      (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), localpalette);
+      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, localpalette);
   greyearth2 = Open_Animation(
       "E-BWTOCL.WSA", nullptr, 0,
-      (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), grey2palette);
+      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, grey2palette);
 
   /*
   ** Load the spinning-globe anim
   */
   if (house == HOUSE_GOOD) {
     anim = Open_Animation("HEARTH_E.WSA", nullptr, 0,
-                          (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE),
+                          WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
                           Palette);
     progress = Open_Animation(
         lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA", nullptr, 0,
-        (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), progresspalette);
+        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
   } else {
     anim = Open_Animation("HEARTH_A.WSA", nullptr, 0,
-                          (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE),
+                          WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
                           Palette);
     progress = Open_Animation(
         lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA", nullptr, 0,
-        (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), progresspalette);
+        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
   }
 
   void const* appear1 = MixFileClass::Retrieve("APPEAR1.AUD");

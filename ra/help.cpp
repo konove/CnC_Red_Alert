@@ -332,10 +332,10 @@ void HelpClass::Set_Text(int text) {
       if (DrawX < TacPixelX + 1) DrawX = TacPixelX + 1;
       if (DrawY < TacPixelY + 1) DrawY = TacPixelY + 1;
     }
-    memcpy((void*)OverlapList,
+    memcpy(OverlapList,
            Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY),
            sizeof(OverlapList));
-    *(short*)&OverlapList[ARRAY_SIZE(OverlapList) - 1] = REFRESH_EOL;
+    *&OverlapList[ARRAY_SIZE(OverlapList) - 1] = REFRESH_EOL;
   }
 }
 

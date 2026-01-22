@@ -374,7 +374,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   */
   CCFileClass file;
   char buffer[128], buffer2[128];
-  char* sbuffer = (char*)_ShapeBuffer;
+  char* sbuffer = _ShapeBuffer;
   for (int index = 20; index < 36 + 18; index++) {
 #ifndef CS_DEBUG
     port::SafeCopy(buffer, ExpandNames[index - 20]);
