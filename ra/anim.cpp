@@ -726,7 +726,7 @@ void AnimClass::AI() {
     */
     Mark(MARK_CHANGE);
 
-    if (StageClass::Graphic_Logic()) {
+    if (Graphic_Logic()) {
       int stage = Fetch_Stage();
 
       /*

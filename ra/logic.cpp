@@ -326,7 +326,7 @@ void LogicClass::AI() {
         obj->Strength) {
       int damage = obj->Class_Of().MaxStrength * Rule.QuakeDamagePercent;
       if (TimeQuakeCenter) {
-        if (::Distance(obj->As_Target(), TimeQuakeCenter) / 256 <
+        if (Distance(obj->As_Target(), TimeQuakeCenter) / 256 <
             MTankDistance) {
           switch (obj->What_Am_I()) {
             case RTTI_INFANTRY:

@@ -459,10 +459,10 @@ int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   if (PlayerPtr->Power_Fraction() < 1 && PlayerPtr->Power > 0) {
     Map.Help_Text(TXT_POWER_OUTPUT_LOW, -1, -1,
-                  GadgetClass::Get_Color_Scheme()->Color);
+                  Get_Color_Scheme()->Color);
   } else {
     Map.Help_Text(TXT_POWER_OUTPUT, -1, -1,
-                  GadgetClass::Get_Color_Scheme()->Color);
+                  Get_Color_Scheme()->Color);
   }
   GadgetClass::Action(flags, key);
   return (true);

@@ -1869,7 +1869,7 @@ void HouseClass::Make_Ally(HousesType house) {
       }
 
       sprintf(buffer, Text_String(TXT_HAS_ALLIED), Name,
-              HouseClass::As_Pointer(house)->Name);
+              As_Pointer(house)->Name);
       Messages.Add_Message(buffer, MPlayerTColors[RemapColor],
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                            1200, 0, 0);
@@ -1896,7 +1896,7 @@ void HouseClass::Make_Ally(HousesType house) {
 void HouseClass::Make_Enemy(HousesType house) {
   Validate();
   if (house != HOUSE_NONE && Is_Ally(house)) {
-    HouseClass* enemy = HouseClass::As_Pointer(house);
+    HouseClass* enemy = As_Pointer(house);
     Allies &= ~(1 << house);
     if (enemy && enemy->Is_Ally(this)) {
       enemy->Allies &= ~(1 << Class->House);
@@ -2183,8 +2183,8 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   */
   if (PlayerPtr == this) {
     Map.SidebarClass::IsToRedraw = true;
-    Map.SidebarClass::Column[0].IsToRedraw = true;
-    Map.SidebarClass::Column[1].IsToRedraw = true;
+    Map.Column[0].IsToRedraw = true;
+    Map.Column[1].IsToRedraw = true;
     Map.Flag_To_Redraw(false);
   }
 
@@ -2410,7 +2410,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           BulletClass* bullet = new BulletClass(BULLET_NUKE_DOWN);
           if (bullet) {
             COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), 0));
-            bullet->Assign_Target(::As_Target(cell));
+            bullet->Assign_Target(As_Target(cell));
             bullet->Payback = nullptr;
             bullet->Strength = 1;
             if (!bullet->Unlimbo(start, DIR_S)) {
@@ -2439,7 +2439,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           strike = Bound(MPlayerUnitCount / 5, 1, 3);
         }
         Create_Air_Reinforcement(this, AIRCRAFT_A10, strike, MISSION_HUNT,
-                                 ::As_Target(cell), TARGET_NONE);
+                                 As_Target(cell), TARGET_NONE);
         if (this == PlayerPtr) {
           Map.IsTargettingMode = false;
         }
@@ -2796,15 +2796,15 @@ void HouseClass::Clobber_All() {
   Validate();
   int i;
 
-  for (i = 0; i < ::Aircraft.Count(); i++) {
-    if (::Aircraft.Ptr(i)->House == this) {
-      delete ::Aircraft.Ptr(i);
+  for (i = 0; i < Aircraft.Count(); i++) {
+    if (Aircraft.Ptr(i)->House == this) {
+      delete Aircraft.Ptr(i);
       i--;
     }
   }
-  for (i = 0; i < ::Units.Count(); i++) {
-    if (::Units.Ptr(i)->House == this) {
-      delete ::Units.Ptr(i);
+  for (i = 0; i < Units.Count(); i++) {
+    if (Units.Ptr(i)->House == this) {
+      delete Units.Ptr(i);
       i--;
     }
   }
@@ -3079,7 +3079,7 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
   Validate();
   int bflag = 1L << btype;
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
-    HouseClass* house = HouseClass::As_Pointer(index);
+    HouseClass* house = As_Pointer(index);
 
     if (house && !Is_Ally(house) && (house->BScan & bflag) != 0) {
       return (true);
@@ -3658,7 +3658,7 @@ void HouseClass::MPlayer_Defeated() {
       id = 0;
       for (i = 0; i < MPlayerCount; i++) {
         house = MPlayerHouses[i];
-        if (HouseClass::As_Pointer(house) == this) {
+        if (As_Pointer(house) == this) {
           sprintf(txt, Text_String(TXT_PLAYER_DEFEATED), MPlayerNames[i]);
           id = MPlayerID[i];
         }
@@ -3677,7 +3677,7 @@ void HouseClass::MPlayer_Defeated() {
   num_alive = 0;
   num_humans = 0;
   for (i = 0; i < MPlayerMax; i++) {
-    hptr = HouseClass::As_Pointer((HousesType)(HOUSE_MULTI1 + i));
+    hptr = As_Pointer((HousesType)(HOUSE_MULTI1 + i));
     if (hptr && hptr->IsDefeated == 0) {
       if (hptr->IsHuman) num_humans++;
       num_alive++;
@@ -3693,7 +3693,7 @@ void HouseClass::MPlayer_Defeated() {
     /*.....................................................................
     Get a pointer to this house
     .....................................................................*/
-    hptr = HouseClass::As_Pointer((HousesType)(HOUSE_MULTI1 + i));
+    hptr = As_Pointer((HousesType)(HOUSE_MULTI1 + i));
     if (!hptr || hptr->IsDefeated) continue;
 
     /*.....................................................................
@@ -3701,7 +3701,7 @@ void HouseClass::MPlayer_Defeated() {
     isn't allied with, then all_allies will be false
     .....................................................................*/
     for (j = 0; j < MPlayerMax; j++) {
-      hptr2 = HouseClass::As_Pointer((HousesType)(HOUSE_MULTI1 + j));
+      hptr2 = As_Pointer((HousesType)(HOUSE_MULTI1 + j));
       if (!hptr2) continue;
       if (!hptr2->IsDefeated && !hptr->Is_Ally(hptr2)) {
         all_allies = 0;
@@ -3848,7 +3848,7 @@ void HouseClass::MPlayer_Defeated() {
       - Each player's Kills value is the sum of the unit's they killed
     ---------------------------------------------------------------------*/
     for (i = 0; i < MPlayerCount; i++) {
-      hptr = HouseClass::As_Pointer(MPlayerHouses[i]);
+      hptr = As_Pointer(MPlayerHouses[i]);
 
       /*..................................................................
       If this house was undefeated, it must have been the winner.  (If
@@ -3925,9 +3925,9 @@ void HouseClass::Blowup_All() {
   *are killed *	too.  Using Explosion_Damage is like dropping a big bomb right
   *on the *	object; it will also damage anything around it.
   */
-  for (i = 0; i < ::Units.Count(); i++) {
-    if (::Units.Ptr(i)->House == this && !::Units.Ptr(i)->IsInLimbo) {
-      uptr = ::Units.Ptr(i);
+  for (i = 0; i < Units.Count(); i++) {
+    if (Units.Ptr(i)->House == this && !Units.Ptr(i)->IsInLimbo) {
+      uptr = Units.Ptr(i);
 
       /*
       **	Some units can't be killed with one shot, so keep damaging them
@@ -3936,7 +3936,7 @@ void HouseClass::Blowup_All() {
       **	its pointer will be removed from the active pointer list.
       */
       count = 0;
-      while (::Units.Ptr(i) == uptr && uptr->Strength) {
+      while (Units.Ptr(i) == uptr && uptr->Strength) {
         damage = 0x7fff;
         Explosion_Damage(uptr->Center_Coord(), damage, nullptr, WARHEAD_HE);
         count++;
@@ -3952,9 +3952,9 @@ void HouseClass::Blowup_All() {
   /*
   **	Destroy all aircraft owned by this house.
   */
-  for (i = 0; i < ::Aircraft.Count(); i++) {
-    if (::Aircraft.Ptr(i)->House == this && !::Aircraft.Ptr(i)->IsInLimbo) {
-      AircraftClass* aptr = ::Aircraft.Ptr(i);
+  for (i = 0; i < Aircraft.Count(); i++) {
+    if (Aircraft.Ptr(i)->House == this && !Aircraft.Ptr(i)->IsInLimbo) {
+      AircraftClass* aptr = Aircraft.Ptr(i);
 
       damage = 0x7fff;
       aptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr);
@@ -4292,7 +4292,7 @@ void HouseClass::Sell_Wall(CELL cell) {
         Map[cell].Wall_Update();
         Map[cell].Recalc_Attributes();
         Map[cell].Redraw_Objects();
-        ObjectClass::Detach_This_From_All(::As_Target(cell), true);
+        ObjectClass::Detach_This_From_All(As_Target(cell), true);
       }
     }
   }

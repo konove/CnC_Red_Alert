@@ -69,7 +69,7 @@ class LoadOptionsClass {
     WWDELETE
   } LoadStyleType;
 
-  LoadOptionsClass(LoadStyleType style = LoadOptionsClass::NONE);
+  LoadOptionsClass(LoadStyleType style = NONE);
   ~LoadOptionsClass();
   int Process();
 

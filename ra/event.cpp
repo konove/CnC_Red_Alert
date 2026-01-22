@@ -96,7 +96,7 @@
 ** Table of what data is really used in the EventClass struct for different
 ** events.  This table must be kept current with the EventType enum.
 */
-unsigned char EventClass::EventLength[EventClass::LAST_EVENT] = {
+unsigned char EventClass::EventLength[LAST_EVENT] = {
     0,                                          // EMPTY
     size_of(EventClass, Data.General),          // ALLY
     size_of(EventClass, Data.MegaMission),      // MEGAMISSION
@@ -132,7 +132,7 @@ unsigned char EventClass::EventLength[EventClass::LAST_EVENT] = {
     0,                                          // RETRACT_DRAW
 };
 
-char* EventClass::EventNames[EventClass::LAST_EVENT] = {
+char* EventClass::EventNames[LAST_EVENT] = {
     "EMPTY",         "ALLY",      "MEGAMISSION",  "MEGAMISSION_F",
     "IDLE",          "SCATTER",   "DESTRUCT",     "DEPLOY",
     "PLACE",         "OPTIONS",   "GAMESPEED",    "PRODUCE",

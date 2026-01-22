@@ -408,15 +408,15 @@ int AircraftClass::Shape_Number() const {
 
   switch (Class->Rotation) {
     case 32:
-      shapenum = UnitClass::BodyShape[Dir_To_32(SecondaryFacing)];
+      shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
       break;
 
     case 16:
-      shapenum = UnitClass::BodyShape[Dir_To_16(SecondaryFacing) * 2] / 2;
+      shapenum = BodyShape[Dir_To_16(SecondaryFacing) * 2] / 2;
       break;
 
     case 8:
-      shapenum = UnitClass::BodyShape[Dir_To_8(SecondaryFacing) * 4] / 4;
+      shapenum = BodyShape[Dir_To_8(SecondaryFacing) * 4] / 4;
       break;
 
     default:
@@ -490,7 +490,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   int jitter = 0;
   if (Height == FLIGHT_LEVEL && Get_Speed() < 3) {
     static int _jitter[] = {0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, -1, -1, -1, 0};
-    jitter = _jitter[::Frame % 16];
+    jitter = _jitter[Frame % 16];
   }
 
   /*
@@ -646,7 +646,7 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
             air->Strength = air->Class->MaxStrength * fixed(strength, 256);
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(
-                  AircraftClass::Mission_From_Name(strtok(nullptr, ",\n\r")));
+                  Mission_From_Name(strtok(nullptr, ",\n\r")));
             } else {
               delete air;
             }
@@ -791,7 +791,7 @@ int AircraftClass::Mission_Hunt() {
               if (Class->PrimaryWeapon->IsCamera) {
                 Status = REGROUP;
               } else {
-                Map[::As_Cell(TarCom)].Incoming(Coord, true);
+                Map[As_Cell(TarCom)].Incoming(Coord, true);
               }
 
               /*
@@ -1299,7 +1299,7 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
   assert(IsActive);
 
   if (!Target_Legal(target)) return (false);
-  CELL cell = ::As_Cell(target);
+  CELL cell = As_Cell(target);
   if (!Map.In_Radar(cell)) return (false);
 
   /*
@@ -2535,7 +2535,7 @@ int AircraftClass::Mission_Attack() {
 
         case FIRE_OK:
           Fire_At(TarCom, 0);
-          Map[::As_Cell(TarCom)].Incoming(Coord, true);
+          Map[As_Cell(TarCom)].Incoming(Coord, true);
           Status = FIRE_AT_TARGET2;
           break;
 
@@ -2574,7 +2574,7 @@ int AircraftClass::Mission_Attack() {
 
         case FIRE_OK:
           Fire_At(TarCom, 0);
-          Map[::As_Cell(TarCom)].Incoming(Coord, true);
+          Map[As_Cell(TarCom)].Incoming(Coord, true);
 
           if (Ammo) {
             Status =

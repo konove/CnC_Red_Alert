@@ -1236,7 +1236,7 @@ void InfantryClass::AI() {
     Fire_At(TarCom, 0);
 
     if (Class->Primary == WEAPON_GRENADE) {
-      Map[::As_Cell(TarCom)].Incoming(Coord, true);
+      Map[As_Cell(TarCom)].Incoming(Coord, true);
     }
   }
 
@@ -2946,7 +2946,7 @@ void InfantryClass::Read_INI(char* buffer) {
           **	Fetch the mission and facing.
           */
           MissionType mission =
-              MissionClass::Mission_From_Name(strtok(nullptr, ",\n\r"));
+              Mission_From_Name(strtok(nullptr, ",\n\r"));
           DirType dir = (DirType)atoi(strtok(nullptr, ",\n\r"));
           infantry->Trigger =
               TriggerClass::As_Pointer(strtok(nullptr, ",\n\r"));
@@ -3024,7 +3024,7 @@ void InfantryClass::Write_INI(char* buffer) {
               infantry->Class->IniName, infantry->Health_Ratio(),
               Coord_Cell(infantry->Coord),
               CellClass::Spot_Index(infantry->Coord),
-              MissionClass::Mission_Name((infantry->Mission == MISSION_NONE)
+              Mission_Name((infantry->Mission == MISSION_NONE)
                                              ? infantry->MissionQueue
                                              : infantry->Mission),
               infantry->PrimaryFacing.Current(),

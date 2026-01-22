@@ -1168,8 +1168,8 @@ void InfantryClass::Assign_Target(TARGET target) {
 
   Path[0] = FACING_NONE;
   if (Class->IsDog) {
-    if (::As_Object(target) &&
-        ::As_Object(target)->What_Am_I() != RTTI_INFANTRY) {
+    if (As_Object(target) &&
+        As_Object(target)->What_Am_I() != RTTI_INFANTRY) {
       target = TARGET_NONE;
     }
   }
@@ -2948,8 +2948,8 @@ ActionType InfantryClass::What_Action(ObjectClass const* object) const {
         */
         action = ACTION_CAPTURE;
         if (object->What_Am_I() == RTTI_BUILDING) {
-          CELL cell = ::As_Cell(object->As_Target());
-          int targzone = Map[::As_Cell(As_Target())].Zones[Class->MZone];
+          CELL cell = As_Cell(object->As_Target());
+          int targzone = Map[As_Cell(As_Target())].Zones[Class->MZone];
           short const* list =
               ((BuildingClass*)object)->Class->Occupy_List(false);
           bool found = false;
@@ -3367,7 +3367,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           **	Fetch the mission and facing.
           */
           MissionType mission =
-              MissionClass::Mission_From_Name(strtok(nullptr, ",\n\r"));
+              Mission_From_Name(strtok(nullptr, ",\n\r"));
           validation = strtok(nullptr, ",\n\r");
           if (validation) {
             dir = (DirType)atoi(validation);
@@ -3451,7 +3451,7 @@ void InfantryClass::Write_INI(CCINIClass& ini) {
               infantry->Class->IniName, infantry->Health_Ratio() * 256,
               Coord_Cell(infantry->Coord),
               CellClass::Spot_Index(infantry->Coord),
-              MissionClass::Mission_Name((infantry->Mission == MISSION_NONE)
+              Mission_Name((infantry->Mission == MISSION_NONE)
                                              ? infantry->MissionQueue
                                              : infantry->Mission),
               infantry->PrimaryFacing.Current(),
@@ -3643,7 +3643,7 @@ void InfantryClass::Firing_AI() {
       **	Run away from slowly approaching projectiles.
       */
       if (Class->PrimaryWeapon->MaxSpeed < Rule.Incoming) {
-        Map[::As_Cell(TarCom)].Incoming(Coord, true);
+        Map[As_Cell(TarCom)].Incoming(Coord, true);
       }
 
       /*

@@ -265,7 +265,7 @@ bool TriggerClass::Event_Need_Data(EventType event) {
  *                                                                                             *
  * HISTORY: * 08/27/1995 JLB : Created. *
  *=============================================================================================*/
-bool TriggerClass::Action_Need_Team(TriggerClass::ActionType action) {
+bool TriggerClass::Action_Need_Team(ActionType action) {
   switch (action) {
     case ACTION_CREATE_TEAM:
     case ACTION_DESTROY_TEAM:
@@ -1180,8 +1180,8 @@ void TriggerClass::Write_INI(char* buffer, bool refresh) {
     }
 
     sprintf(buf, "%s,%s,%ld,%s,%s,%d",
-            TriggerClass::Name_From_Event(trigger->Event),
-            TriggerClass::Name_From_Action(trigger->Action), trigger->Data,
+            Name_From_Event(trigger->Event),
+            Name_From_Action(trigger->Action), trigger->Data,
             hname, tname, trigger->IsPersistant);
     WWWritePrivateProfileString(INI_Name(), trigger->Get_Name(), buf, buffer);
   }

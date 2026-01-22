@@ -213,9 +213,9 @@ int CellClass::Cell_Color(bool override) const {
     return (TBLACK);
   }
   if (LastTheater == THEATER_SNOW) {
-    return (::SnowColor[Land_Type()]);
+    return (SnowColor[Land_Type()]);
   } else {
-    return (::GroundColor[Land_Type()]);
+    return (GroundColor[Land_Type()]);
   }
 }
 
@@ -533,10 +533,10 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
       return (false);
     }
 
-    return (::Ground[Land_Type()].Build);
+    return (Ground[Land_Type()].Build);
 
   } else {
-    if (::Ground[Land_Type()].Cost[loco] == fixed(0)) {
+    if (Ground[Land_Type()].Cost[loco] == fixed(0)) {
       //		if (::Ground[Land_Type()].Cost[SPEED_TRACK] == fixed(0))
       //{
       return (false);
@@ -2847,7 +2847,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   **	See if the ground type is impassable to this locomotion type and if
   **	so, return the error condition.
   */
-  if (::Ground[land].Cost[loco] == 0) {
+  if (Ground[land].Cost[loco] == 0) {
     return (false);
   }
 

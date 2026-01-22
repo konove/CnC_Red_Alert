@@ -495,7 +495,7 @@ void UnitClass::AI() {
   */
   if (Class->IsAnimating) {
     if (!Fetch_Rate()) Set_Rate(2);
-    StageClass::Graphic_Logic();
+    Graphic_Logic();
     if (Fetch_Stage() >= Get_Build_Frame_Count(Class->Get_Image_Data()) - 1) {
       Set_Stage(0);
     }
@@ -511,7 +511,7 @@ void UnitClass::AI() {
         Set_Rate(Options.Normalize_Delay(2));
         Set_Stage(0);
       }
-      StageClass::Graphic_Logic();
+      Graphic_Logic();
       if (Fetch_Stage() >=
           ((IsDriving || *this == UNIT_TREX || *this == UNIT_RAPT) ? 8 : 12)) {
         Set_Stage(0);
@@ -1886,14 +1886,14 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
           case FACING_NE:
           case FACING_E:
           case FACING_SE:
-            shapenum = UnitClass::BodyShape[tfacing] + 96;
+            shapenum = BodyShape[tfacing] + 96;
             shapestart = 0;
             // xx -= 4;
             break;
 
           case FACING_W:
           default:
-            shapenum = UnitClass::BodyShape[tfacing];
+            shapenum = BodyShape[tfacing];
             shapestart = 6;
             xx += 4;
             break;
@@ -1922,16 +1922,16 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
       if (IsHarvesting && !PrimaryFacing.Is_Rotating() && !NavCom &&
           !IsDriving) {
         static char _hstage[6] = {0, 1, 2, 3, 2, 1};
-        shapenum = 32 + (((UnitClass::BodyShape[facing] + 2) / 4) * 4) +
+        shapenum = 32 + (((BodyShape[facing] + 2) / 4) * 4) +
                    _hstage[Fetch_Stage() % sizeof(_hstage)];
       } else {
-        shapenum = UnitClass::BodyShape[facing];
+        shapenum = BodyShape[facing];
         if (Class->IsAnimating) {
           shapenum = Fetch_Stage();
         }
         if (Class->IsPieceOfEight) {
           shapenum = 0;
-          if (facing) shapenum = UnitClass::BodyShape[24 + facing];
+          if (facing) shapenum = BodyShape[24 + facing];
           if (IsDriving) shapenum = Fetch_Stage() + 16 + shapenum * 8;
           if (IsFiring)
             shapenum =
@@ -1995,7 +1995,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
       **	Determine which turret shape to use. This depends on if there
       **	is any firing animation in progress.
       */
-      shapenum = TechnoClass::BodyShape[tfacing] + 32;
+      shapenum = BodyShape[tfacing] + 32;
 
       /*
       **	The shape to use for the rocket launcher is dependant on the
@@ -3407,7 +3407,7 @@ void UnitClass::Read_INI(char* buffer) {
           COORDINATE coord = Cell_Coord((CELL)atoi(strtok(nullptr, ",\r\n")));
           DirType dir = (DirType)atoi(strtok(nullptr, ",\r\n"));
           MissionType mission =
-              MissionClass::Mission_From_Name(strtok(nullptr, ",\n\r"));
+              Mission_From_Name(strtok(nullptr, ",\n\r"));
           unit->Trigger = TriggerClass::As_Pointer(strtok(nullptr, ",\r\n"));
           if (unit->Trigger) {
             unit->Trigger->AttachCount++;
@@ -3497,7 +3497,7 @@ void UnitClass::Write_INI(char* buffer) {
       sprintf(buf, "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
               unit->Class->IniName, unit->Health_Ratio(),
               Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
-              MissionClass::Mission_Name(unit->Mission),
+              Mission_Name(unit->Mission),
               unit->Trigger ? unit->Trigger->Get_Name() : "None");
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
     }

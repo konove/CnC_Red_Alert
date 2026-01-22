@@ -157,7 +157,7 @@ class DriveClass : public FootClass {
     char Track;                         // Which track to use.
     char StartTrack;                    // Track when starting from stand-still.
     DirType Facing;                     // Facing when track has been completed.
-    DriveClass::TrackControlType Flag;  // List processing flag bits.
+    TrackControlType Flag;  // List processing flag bits.
   } TurnTrackType;
 
   typedef struct {
@@ -166,7 +166,7 @@ class DriveClass : public FootClass {
   } TrackType;
 
   typedef struct {
-    DriveClass::TrackType const* Track;  // Pointer to track list.
+    TrackType const* Track;  // Pointer to track list.
     int Jump;   // Index where track jumping is allowed.
     int Entry;  // Entry point if jumping to this track.
     int Cell;   // Per cell process should occur at this index.

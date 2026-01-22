@@ -2063,8 +2063,8 @@ SidebarClass::StripClass::SelectClass::SelectClass()
 
   Strip = nullptr;
   Index = 0;
-  Width = StripClass::OBJECT_WIDTH << factor;
-  Height = StripClass::OBJECT_HEIGHT << factor;
+  Width = OBJECT_WIDTH << factor;
+  Height = OBJECT_HEIGHT << factor;
 }
 
 /***********************************************************************************************
@@ -2093,7 +2093,7 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
   Strip = &strip;
   Index = index;
   X = strip.X;
-  Y = strip.Y + (index * (StripClass::OBJECT_HEIGHT << factor));
+  Y = strip.Y + (index * (OBJECT_HEIGHT << factor));
 }
 
 /***********************************************************************************************

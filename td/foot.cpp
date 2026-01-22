@@ -923,7 +923,7 @@ void FootClass::Approach_Target() {
 #endif
       maxrange = std::max(maxrange, 0);
 
-      COORDINATE tcoord = ::As_Coord(TarCom);
+      COORDINATE tcoord = As_Coord(TarCom);
       COORDINATE trycoord = 0;
       CELL tcell = Coord_Cell(tcoord);
       CELL trycell = tcell;

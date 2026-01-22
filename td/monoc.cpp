@@ -66,7 +66,7 @@
 //		"out	dx,al"
 
 int MonoClass::Enabled = 0;
-MonoClass* MonoClass::PageUsage[MonoClass::MAX_MONO_PAGES] = {
+MonoClass* MonoClass::PageUsage[MAX_MONO_PAGES] = {
     nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 // DOSSegmentClass MonoClass::MonoSegment(MonoClass::SEGMENT);
 void* MonoClass::MonoSegment = (void*)0x000b0000;
@@ -74,7 +74,7 @@ void* MonoClass::MonoSegment = (void*)0x000b0000;
 /*
 **	These are the IBM linedraw characters.
 */
-MonoClass::BoxDataType const MonoClass::CharData[MonoClass::COUNT] = {
+MonoClass::BoxDataType const MonoClass::CharData[COUNT] = {
     {0xDA, 0xC4, 0xBF, 0xB3, 0xD9, 0xC4, 0xC0, 0xB3},  // Single line
     {0xD5, 0xCD, 0xB8, 0xB3, 0xBE, 0xCD, 0xD4, 0xB3},  // Double horz.
     {0xD6, 0xC4, 0xB7, 0xBA, 0xBD, 0xC4, 0xD3, 0xBA},  // Double vert.

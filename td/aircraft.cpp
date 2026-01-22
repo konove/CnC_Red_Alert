@@ -387,7 +387,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   */
   shapefile = Class->Get_Image_Data();
   if (!shapefile) return;
-  shapenum = UnitClass::BodyShape[facing];
+  shapenum = BodyShape[facing];
 
   /*
   **	The orca attack helicopter uses a special shape set when it is
@@ -538,7 +538,7 @@ void AircraftClass::Read_INI(char* buffer) {
                 Fixed_To_Cardinal(air->Class->MaxStrength, strength);
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(
-                  AircraftClass::Mission_From_Name(strtok(nullptr, ",\n\r")));
+                  Mission_From_Name(strtok(nullptr, ",\n\r")));
             } else {
               delete air;
             }
@@ -595,7 +595,7 @@ void AircraftClass::Write_INI(char* buffer) {
       sprintf(buf, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
               unit->Class->IniName, unit->Health_Ratio(),
               Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
-              MissionClass::Mission_Name(unit->Mission));
+              Mission_Name(unit->Mission));
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
     }
   }
@@ -680,7 +680,7 @@ int AircraftClass::Mission_Hunt() {
           Status = LOOK_FOR_TARGET;
         } else {
           Fire_At(TarCom, 0);
-          Map[::As_Cell(TarCom)].Incoming(Coord, true);
+          Map[As_Cell(TarCom)].Incoming(Coord, true);
           return (5);
         }
         break;
@@ -1307,7 +1307,7 @@ int AircraftClass::Mission_Unload() {
 bool AircraftClass::Is_LZ_Clear(TARGET target) const {
   Validate();
   if (!Target_Legal(target)) return (false);
-  CELL cell = ::As_Cell(target);
+  CELL cell = As_Cell(target);
   if (!Map.In_Radar(cell)) return (false);
 
   ObjectClass* object = Map[cell].Cell_Object();
@@ -2332,7 +2332,7 @@ int AircraftClass::Mission_Attack() {
 
         case FIRE_OK:
           Fire_At(TarCom, 0);
-          Map[::As_Cell(TarCom)].Incoming(Coord, true);
+          Map[As_Cell(TarCom)].Incoming(Coord, true);
           Status = FIRE_AT_TARGET2;
           break;
 
@@ -2367,7 +2367,7 @@ int AircraftClass::Mission_Attack() {
 
         case FIRE_OK:
           Fire_At(TarCom, 0);
-          Map[::As_Cell(TarCom)].Incoming(Coord, true);
+          Map[As_Cell(TarCom)].Incoming(Coord, true);
 
           if (Ammo) {
             Status = PICK_ATTACK_LOCATION;

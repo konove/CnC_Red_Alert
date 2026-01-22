@@ -1729,7 +1729,7 @@ void TeamClass::Coordinate_Attack() {
               unit->What_Am_I() == RTTI_UNIT &&
               *(UnitClass*)unit == UNIT_CHRONOTANK) {
             UnitClass* tank = (UnitClass*)unit;
-            tank->Teleport_To(::As_Cell(Target));
+            tank->Teleport_To(As_Cell(Target));
             tank->MoebiusCountDown = ChronoTankDuration * TICKS_PER_MINUTE;
             Scen.Do_BW_Fade();
             Sound_Effect(VOC_CHRONOTANK1, unit->Coord);
@@ -2774,7 +2774,7 @@ int TeamClass::TMission_Attack() {
  *=============================================================================================*/
 int TeamClass::TMission_Spy() {
   if (Is_Target_Cell(MissionTarget)) {
-    CELL cell = ::As_Cell(MissionTarget);
+    CELL cell = As_Cell(MissionTarget);
     CellClass* cellptr = &Map[cell];
     ObjectClass* bldg = cellptr->Cell_Building();
     if (bldg != nullptr) {

@@ -371,7 +371,7 @@ int VesselClass::Shape_Number() const {
   /*
   **	For eight facing units, adjust the facing number accordingly.
   */
-  int shapenum = UnitClass::BodyShape[Dir_To_16(PrimaryFacing) * 2] >> 1;
+  int shapenum = BodyShape[Dir_To_16(PrimaryFacing) * 2] >> 1;
 
   /*
   **	Special case code for transport. The north/south facing is in frame
@@ -448,13 +448,13 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	Determine which turret shape to use. This depends on if there
       **	is any firing animation in progress.
       */
-      int shapenum = TechnoClass::BodyShape[tfacing] + 32;
+      int shapenum = BodyShape[tfacing] + 32;
       DirType turdir = DirType(Dir_To_16(PrimaryFacing) * 16);
 
       switch (Class->Type) {
         case VESSEL_CA:
           shapefile = Class->TurretShapes;
-          shapenum = TechnoClass::BodyShape[Dir_To_32(SecondaryFacing)];
+          shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
           Class->Turret_Adjust(turdir, xx, yy);
           Techno_Draw_Object(shapefile, shapenum, xx, yy, window);
           xx = x;
@@ -465,18 +465,18 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
 
         case VESSEL_DD:
           shapefile = Class->SamShapes;
-          shapenum = TechnoClass::BodyShape[Dir_To_32(SecondaryFacing)];
+          shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
         case VESSEL_PT:
           shapefile = Class->MGunShapes;
-          shapenum = TechnoClass::BodyShape[Dir_To_32(SecondaryFacing)];
+          shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
         default:
-          shapenum = TechnoClass::BodyShape[Dir_To_32(SecondaryFacing)];
+          shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
           Class->Turret_Adjust(turdir, xx, yy);
           break;
       }
@@ -1058,7 +1058,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       isbridgetarget = Is_Target_Cell(target);  // enable shooting at bridges
       isseatarget |= isbridgetarget;
     }
-    BuildingClass* bldg = ::As_Building(target);
+    BuildingClass* bldg = As_Building(target);
     if (bldg != nullptr && bldg->Class->Speed == SPEED_FLOAT) {
       isseatarget = true;
     }
@@ -1989,7 +1989,7 @@ void VesselClass::Read_INI(CCINIClass& ini) {
 
           DirType dir = (DirType)atoi(strtok(nullptr, ",\r\n"));
           MissionType mission =
-              MissionClass::Mission_From_Name(strtok(nullptr, ",\n\r"));
+              Mission_From_Name(strtok(nullptr, ",\n\r"));
 
           vessel->Trigger = nullptr;
           TriggerTypeClass* tp =
@@ -2065,7 +2065,7 @@ void VesselClass::Write_INI(CCINIClass& ini) {
       sprintf(buf, "%s,%s,%d,%u,%d,%s,%s", vessel->House->Class->IniName,
               vessel->Class->IniName, vessel->Health_Ratio() * 256,
               Coord_Cell(vessel->Coord), vessel->PrimaryFacing.Current(),
-              MissionClass::Mission_Name(vessel->Mission),
+              Mission_Name(vessel->Mission),
               vessel->Trigger.Is_Valid() ? vessel->Trigger->Class->IniName
                                          : "None");
       ini.Put_String(INI_Name(), uname, buf);

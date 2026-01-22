@@ -73,7 +73,7 @@
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
-    : ::ControlClass(id, x, y, w, h, LEFTPRESS | LEFTHELD | LEFTRELEASE, true) {
+    : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTHELD | LEFTRELEASE, true) {
   /*
   **	Center coordinates.
   */
@@ -237,7 +237,7 @@ int Dial8Class::Action(unsigned flags, KeyNumType& key) {
  *   02/06/1995 BR : Created.                                              *
  *=========================================================================*/
 int Dial8Class::Draw_Me(int forced) {
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   /*
   **	Redraw if parent indicates a redraw is needed

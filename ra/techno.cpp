@@ -2528,10 +2528,10 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	if the current animation process needs to change.
     */
     if (What_Am_I() != RTTI_BUILDING) {
-      if (StageClass::About_To_Change()) {
+      if (About_To_Change()) {
         Mark(MARK_CHANGE_REDRAW);
       }
-      if (StageClass::Graphic_Logic() || Time_To_Redraw()) {
+      if (Graphic_Logic() || Time_To_Redraw()) {
         Mark(MARK_CHANGE_REDRAW);
       }
     }
@@ -2540,7 +2540,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	If the object is flashing and a change of flash state has occurred, then
     *mark the *	object to be redrawn.
     */
-    if (FlasherClass::Process()) {
+    if (Process()) {
       Mark(MARK_CHANGE);
     }
   }
@@ -3963,7 +3963,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
           Wide_Area_Damage(Center_Coord(), radius, damage, source, wh);
         }
 
-        if (this == (TechnoClass*)::As_Object(House->UnitToTeleport)) {
+        if (this == (TechnoClass*)As_Object(House->UnitToTeleport)) {
           House->UnitToTeleport = 0;
           if (!Scen.IsFadingColor) {
             Scen.IsFadingBW = false;

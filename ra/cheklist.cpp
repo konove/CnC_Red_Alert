@@ -342,7 +342,7 @@ void CheckListClass::Draw_Entry(int index, int x, int y, int width,
     sprintf(&buffer[2], obj->Text);
 
     TextPrintType flags = TextFlags;
-    RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+    RemapControlType* scheme = Get_Color_Scheme();
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;

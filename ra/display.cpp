@@ -825,7 +825,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const* object,
         BuildingClass* obj = Buildings.Ptr(index);
         if (obj != nullptr && !obj->IsInLimbo &&
             obj->House->Class->House == house && obj->Class->IsBase) {
-          int centdist = ::Distance(obj->Center_Coord(), Cell_Coord(cell));
+          int centdist = Distance(obj->Center_Coord(), Cell_Coord(cell));
           centdist /= CELL_LEPTON_W;
           centdist -= (obj->Class->Width() + obj->Class->Height()) / 2;
           if (centdist <= building->Adjacent) {

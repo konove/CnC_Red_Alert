@@ -1892,20 +1892,20 @@ int UnitClass::Shape_Number() const {
     /*
     **	The starting frame is based on the facing of the unit.
     */
-    shapenum = ((UnitClass::BodyShape[facing] + 2) / 4) & 0x07;
+    shapenum = ((BodyShape[facing] + 2) / 4) & 0x07;
 
     /*
     **	If the unit is driving, then it has an animation adjustment to the frame
     *number.
     */
     if (IsDriving) {
-      shapenum = 8 + (shapenum * 8) + ((::Frame + ID) / 2) % 8;
+      shapenum = 8 + (shapenum * 8) + ((Frame + ID) / 2) % 8;
     } else {
       /*
       **	If in combat, then do combat anims.
       */
       if (Arm > 0) {
-        shapenum = 8 + 64 + (shapenum * 4) + ((::Frame + ID) / 2) % 4;
+        shapenum = 8 + 64 + (shapenum * 4) + ((Frame + ID) / 2) % 4;
       }
     }
   } else {
@@ -1919,7 +1919,7 @@ int UnitClass::Shape_Number() const {
       if (stage >= ARRAY_SIZE(Class->Harvester_Load_List))
         stage = ARRAY_SIZE(Class->Harvester_Load_List) - 1;
       shapenum = 32 +
-                 (((UnitClass::BodyShape[facing] + 2) / 4) *
+                 (((BodyShape[facing] + 2) / 4) *
                   Class->Harvester_Load_Count) +
                  Class->Harvester_Load_List[stage];
     } else {
@@ -1932,14 +1932,14 @@ int UnitClass::Shape_Number() const {
           if (stage >= 8) {
             stage = 7;
           }
-          shapenum = 32 + stage + (UnitClass::BodyShape[facing] / 4) * 8;
+          shapenum = 32 + stage + (BodyShape[facing] / 4) * 8;
         } else {
           if (stage >= ARRAY_SIZE(Class->Harvester_Dump_List))
             stage = ARRAY_SIZE(Class->Harvester_Dump_List) - 1;
           shapenum = Class->Harvester_Dump_List[stage] + 96;
         }
       } else {
-        shapenum = UnitClass::BodyShape[facing];
+        shapenum = BodyShape[facing];
 
         if (Class->IsAnimating) {
           shapenum = Fetch_Stage();
@@ -2064,7 +2064,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	Determine which turret shape to use. This depends on if there
       **	is any firing animation in progress.
       */
-      shapenum = TechnoClass::BodyShape[tfacing] + 32;
+      shapenum = BodyShape[tfacing] + 32;
       if (*this == UNIT_PHASE) {
         shapenum += 6;
       }
@@ -4607,7 +4607,7 @@ void UnitClass::Read_INI(CCINIClass& ini) {
 
           DirType dir = (DirType)atoi(strtok(nullptr, ",\r\n"));
           MissionType mission =
-              MissionClass::Mission_From_Name(strtok(nullptr, ",\n\r"));
+              Mission_From_Name(strtok(nullptr, ",\n\r"));
 
           unit->Trigger = nullptr;
           TriggerTypeClass* tp =
@@ -4677,7 +4677,7 @@ void UnitClass::Write_INI(CCINIClass& ini) {
           buf, "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
           unit->Class->IniName, unit->Health_Ratio() * 256,
           Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
-          MissionClass::Mission_Name(unit->Mission),
+          Mission_Name(unit->Mission),
           unit->Trigger.Is_Valid() ? unit->Trigger->Class->IniName : "None");
       ini.Put_String(INI_Name(), uname, buf);
     }

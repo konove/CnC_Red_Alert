@@ -3379,7 +3379,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           if (object) {
             OutList.Add(EventClass(EventClass::SELL, object->As_Target()));
           } else {
-            OutList.Add(EventClass(EventClass::SELL, ::As_Target(cell)));
+            OutList.Add(EventClass(EventClass::SELL, As_Target(cell)));
           }
         }
         if (action == ACTION_ION) {

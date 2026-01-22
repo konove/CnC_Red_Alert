@@ -465,7 +465,7 @@ void SoundControlsClass::Process() {
  *=============================================================================================*/
 void MusicListClass::Draw_Entry(int index, int x, int y, int width,
                                 int selected) {
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   if (TextFlags & TPF_6PT_GRAD) {
     TextPrintType flags = TextFlags;
@@ -473,7 +473,7 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
       LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                           GadgetClass::Get_Color_Scheme()->Shadow);
+                           Get_Color_Scheme()->Shadow);
     } else {
       if (!(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;

@@ -265,7 +265,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       object->IsALoaner = true;
       if (object->Unlimbo(Cell_Coord(cell), DIR_W)) {
         object->Assign_Mission(MISSION_GUARD);
-        object->Assign_Destination(::As_Target(
+        object->Assign_Destination(As_Target(
             XY_Cell(Map.MapCellX - 1, Cell_Y(Coord_Cell(object->Coord)))));
       } else {
         delete team;
@@ -398,7 +398,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
                 thisone->Assign_Mission(MISSION_MOVE);
               }
               thisone->Assign_Destination(
-                  ::As_Target(Map.Calculated_Cell(source, teamtype->House)));
+                  As_Target(Map.Calculated_Cell(source, teamtype->House)));
             }
             thisone->Commence();
           }
@@ -431,7 +431,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
             object->IsLocked = false;
             object->Assign_Mission(MISSION_UNLOAD);
             object->Commence();
-            object->Assign_Destination(::As_Target(cell));
+            object->Assign_Destination(As_Target(cell));
           }
         } else {
           delete team;

@@ -152,7 +152,7 @@ class DriveClass : public FootClass {
     char Track;                         // Which track to use.
     char StartTrack;                    // Track when starting from stand-still.
     DirType Facing;                     // Facing when track has been completed.
-    DriveClass::TrackControlType Flag;  // List processing flag bits.
+    TrackControlType Flag;  // List processing flag bits.
   } TurnTrackType;
 
   typedef struct {

@@ -1615,7 +1615,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
         Record_The_Kill(source);
         result = RESULT_DESTROYED;
         if (this->Is_Techno()) {
-          if (this == ::As_Object(((TechnoClass*)this)->House->UnitToTeleport))
+          if (this == As_Object(((TechnoClass*)this)->House->UnitToTeleport))
             ((TechnoClass*)this)->House->UnitToTeleport = 0;
         }
         Detach_All();

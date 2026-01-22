@@ -683,7 +683,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
   qsort((void*)(&Files[0]), Files.Count(), sizeof(class FileEntryClass*),
-        LoadOptionsClass::Compare);
+        Compare);
 
   /*
   ** Now add every file's name to the list box

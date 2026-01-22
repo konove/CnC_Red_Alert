@@ -543,7 +543,7 @@ void TerrainClass::AI() {
   Validate();
   ObjectClass::AI();
 
-  if (StageClass::Graphic_Logic()) {
+  if (Graphic_Logic()) {
     Mark();
 
     /*
@@ -579,13 +579,13 @@ void TerrainClass::AI() {
             Set_Stage(FIRST_SPORE_STAGE);
             if (Random() & 1) {
               IsSporing = false;
-              StageClass::Set_Rate(0);
+              Set_Rate(0);
             }
           }
         } else {
           if (Random() == 255) {  // is it time to start sporing?
             IsSporing = true;
-            StageClass::Set_Rate(Options.Normalize_Delay(1));
+            Set_Rate(Options.Normalize_Delay(1));
           }
         }
       }
@@ -593,8 +593,8 @@ void TerrainClass::AI() {
       // If it hasn't tried to blossom yet, can it do so now?
       if (Random_Picky((int)1, (int)5000, (char*)nullptr, (int)0) == 1) {
         IsBlossoming = true;
-        StageClass::Set_Stage(1);
-        StageClass::Set_Rate(Options.Normalize_Delay(1));
+        Set_Stage(1);
+        Set_Rate(Options.Normalize_Delay(1));
       }
     }
   }

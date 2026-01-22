@@ -1236,7 +1236,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
 void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   Reload_LogoShapes();
 
-  if ((theater != THEATER_NONE) && (theater != ::LastTheater)) {
+  if ((theater != THEATER_NONE) && (theater != LastTheater)) {
     static TLucentType const ClockCols[1] = {
         {GREEN, BLACK, 100, 0}  //			{GREEN, LTGREY, 180, 0}
     };
@@ -1987,7 +1987,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
   RTTIType otype = Strip->Buildables[index].BuildableType;
   int oid = Strip->Buildables[index].BuildableID;
   int fnumber = Strip->Buildables[index].Factory;
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   ObjectTypeClass const* choice = nullptr;
   SpecialWeaponType spc = SPC_NONE;

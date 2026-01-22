@@ -1460,7 +1460,7 @@ bool Select_Game(bool /*fade*/) {
   ** Sidebar is always active in hi-res.
   */
   if (!Debug_Map) {
-    Map.SidebarClass::Activate(1);
+    Map.Activate(1);
   }
   Map.Flag_To_Redraw();
   Call_Back();

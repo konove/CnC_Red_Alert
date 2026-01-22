@@ -72,7 +72,7 @@
  * HISTORY:  01/05/1995 MML : Created.                                     *
  *=========================================================================*/
 GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)
-    : ::ControlClass(id, x, y, w, h, LEFTHELD | LEFTPRESS | LEFTRELEASE, true) {
+    : ControlClass(id, x, y, w, h, LEFTHELD | LEFTPRESS | LEFTRELEASE, true) {
   Set_Maximum(255);
   Set_Value(0);
 
@@ -229,7 +229,7 @@ int GaugeClass::Draw_Me(int forced) {
     */
     if (IsColorized) {
       int middle = Value_To_Pixel(CurValue);
-      int color = GadgetClass::Get_Color_Scheme()->Bright;
+      int color = Get_Color_Scheme()->Bright;
       if (IsHorizontal) {
         if (middle >= (X + 1))
           LogicPage->Fill_Rect(X + 1, Y + 1, middle, Y + Height - 2, color);

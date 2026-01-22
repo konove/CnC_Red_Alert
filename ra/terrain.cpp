@@ -492,9 +492,9 @@ void TerrainClass::AI() {
 
   if ((*this == TERRAIN_MINE) &&
       (Frame % (Rule.GrowthRate * TICKS_PER_MINUTE)) == 0) {
-    Map[::As_Cell(As_Target())].Spread_Tiberium(true);
+    Map[As_Cell(As_Target())].Spread_Tiberium(true);
   }
-  if (StageClass::Graphic_Logic()) {
+  if (Graphic_Logic()) {
     Mark();
 
     /*

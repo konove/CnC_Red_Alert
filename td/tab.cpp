@@ -236,7 +236,7 @@ void TabClass::Set_Active(int select) {
       break;
 
     case 1:
-      Map.SidebarClass::Activate(-1);
+      Map.Activate(-1);
       break;
 
     default:

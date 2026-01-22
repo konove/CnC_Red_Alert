@@ -328,7 +328,7 @@ void TextButtonClass::Draw_Background() {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void TextButtonClass::Draw_Text(char const* text) {
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   /*
   **	Display the text.

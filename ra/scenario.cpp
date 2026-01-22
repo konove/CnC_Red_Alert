@@ -571,7 +571,7 @@ void Fill_In_Data() {
   *that *	the right edge of the map will still be visible.
   */
   if (!Debug_Map) {
-    Map.SidebarClass::Activate(1);
+    Map.Activate(1);
     //		if (Session.Type == GAME_NORMAL) {
     Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
         Scen.Waypoint[WAYPT_HOME];

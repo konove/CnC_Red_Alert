@@ -877,7 +877,7 @@ void Keyboard_Process(KeyNumType& input) {
   **	Scrolls the sidebar up one slot.
   */
   if (key != 0 && key == Options.KeySidebarUp) {
-    Map.SidebarClass::Scroll(true, -1);
+    Map.Scroll(true, -1);
     input = KN_NONE;
   }
 
@@ -885,7 +885,7 @@ void Keyboard_Process(KeyNumType& input) {
   **	Scrolls the sidebar down one slot.
   */
   if (key != 0 && key == Options.KeySidebarDown) {
-    Map.SidebarClass::Scroll(false, -1);
+    Map.Scroll(false, -1);
     input = KN_NONE;
   }
 

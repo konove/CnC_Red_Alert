@@ -1634,7 +1634,7 @@ void HouseClass::Super_Weapon_Handler() {
           if (Map.IsTargettingMode == SPC_CHRONOSPHERE ||
               Map.IsTargettingMode == SPC_CHRONO2) {
             if (Map.IsTargettingMode == SPC_CHRONO2) {
-              TechnoClass* tech = (TechnoClass*)::As_Object(UnitToTeleport);
+              TechnoClass* tech = (TechnoClass*)As_Object(UnitToTeleport);
               if (tech && tech->IsActive && tech->What_Am_I() == RTTI_UNIT &&
                   *(UnitClass*)tech == UNIT_CHRONOTANK) {
               } else {
@@ -2224,7 +2224,7 @@ void HouseClass::Make_Ally(HousesType house) {
     }
 
     if (Session.Type != GAME_NORMAL && !ScenarioInit) {
-      HouseClass* hptr = HouseClass::As_Pointer(house);
+      HouseClass* hptr = As_Pointer(house);
 
       /*
       **	An alliance with another human player will cause the computer
@@ -2276,7 +2276,7 @@ void HouseClass::Make_Ally(HousesType house) {
 
       if (IsHuman) {
         sprintf(buffer, Text_String(TXT_HAS_ALLIED), IniName,
-                HouseClass::As_Pointer(house)->IniName);
+                As_Pointer(house)->IniName);
         //				sprintf(buffer,
         // Text_String(TXT_HAS_ALLIED), Session.Players[Class->House -
         // HOUSE_MULTI1]->Name,
@@ -2321,7 +2321,7 @@ void HouseClass::Make_Enemy(HousesType house) {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (house != HOUSE_NONE && Is_Ally(house)) {
-    HouseClass* enemy = HouseClass::As_Pointer(house);
+    HouseClass* enemy = As_Pointer(house);
     Allies &= ~(1L << house);
 
     if (ScenarioInit) {
@@ -2344,7 +2344,7 @@ void HouseClass::Make_Enemy(HousesType house) {
       char buffer[80];
 
       sprintf(buffer, Text_String(TXT_AT_WAR), IniName,
-              HouseClass::As_Pointer(house)->IniName);
+              As_Pointer(house)->IniName);
       //			sprintf(buffer, Text_String(TXT_AT_WAR),
       // Session.Players[Class->House - HOUSE_MULTI1]->Name,
       // Session.Players[enemy->Class->House - HOUSE_MULTI1]->Name);
@@ -2712,7 +2712,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       if (SuperWeapon[SPC_NUCLEAR_BOMB].Is_Ready()) {
         if (SuperWeapon[SPC_NUCLEAR_BOMB].Is_One_Time()) {
           BulletClass* bullet =
-              new BulletClass(BULLET_NUKE_DOWN, ::As_Target(cell), nullptr, 200,
+              new BulletClass(BULLET_NUKE_DOWN, As_Target(cell), nullptr, 200,
                               WARHEAD_NUKE, MPH_VERY_FAST);
           if (bullet) {
             int celly = Cell_Y(cell);
@@ -2799,7 +2799,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
     case SPC_SPY_MISSION:
       if (SuperWeapon[SPC_SPY_MISSION].Is_Ready()) {
         Create_Air_Reinforcement(this, AIRCRAFT_U2, 1, MISSION_HUNT,
-                                 ::As_Target(cell), ::As_Target(cell));
+                                 As_Target(cell), As_Target(cell));
         if (this == PlayerPtr) {
           Map.IsTargettingMode = SPC_NONE;
         }
@@ -2811,7 +2811,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
     case SPC_PARA_BOMB:
       if (SuperWeapon[SPC_PARA_BOMB].Is_Ready()) {
         Create_Air_Reinforcement(this, AIRCRAFT_BADGER, Rule.BadgerBombCount,
-                                 MISSION_HUNT, ::As_Target(cell), TARGET_NONE);
+                                 MISSION_HUNT, As_Target(cell), TARGET_NONE);
         if (this == PlayerPtr) {
           Map.IsTargettingMode = SPC_NONE;
         }
@@ -2885,7 +2885,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       break;
 
     case SPC_CHRONO2: {
-      TechnoClass* tech = (TechnoClass*)::As_Object(UnitToTeleport);
+      TechnoClass* tech = (TechnoClass*)As_Object(UnitToTeleport);
       if (tech != nullptr && tech->IsActive && tech->Is_Foot() &&
           tech->What_Am_I() != RTTI_AIRCRAFT) {
         /*
@@ -3182,21 +3182,21 @@ void HouseClass::Clobber_All() {
 
   int i;
 
-  for (i = 0; i < ::Aircraft.Count(); i++) {
-    if (::Aircraft.Ptr(i)->House == this) {
-      delete ::Aircraft.Ptr(i);
+  for (i = 0; i < Aircraft.Count(); i++) {
+    if (Aircraft.Ptr(i)->House == this) {
+      delete Aircraft.Ptr(i);
       i--;
     }
   }
-  for (i = 0; i < ::Units.Count(); i++) {
-    if (::Units.Ptr(i)->House == this) {
-      delete ::Units.Ptr(i);
+  for (i = 0; i < Units.Count(); i++) {
+    if (Units.Ptr(i)->House == this) {
+      delete Units.Ptr(i);
       i--;
     }
   }
-  for (i = 0; i < ::Vessels.Count(); i++) {
-    if (::Vessels.Ptr(i)->House == this) {
-      delete ::Vessels.Ptr(i);
+  for (i = 0; i < Vessels.Count(); i++) {
+    if (Vessels.Ptr(i)->House == this) {
+      delete Vessels.Ptr(i);
       i--;
     }
   }
@@ -3286,7 +3286,7 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
 
   int bflag = 1L << btype;
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
-    HouseClass* house = HouseClass::As_Pointer(index);
+    HouseClass* house = As_Pointer(index);
 
     if (house && !Is_Ally(house) && (house->ActiveBScan & bflag) != 0) {
       return (true);
@@ -3639,7 +3639,7 @@ void HouseClass::MPlayer_Defeated() {
   num_alive = 0;
   num_humans = 0;
   for (i = 0; i < Session.MaxPlayers; i++) {
-    hptr = HouseClass::As_Pointer((HousesType)(HOUSE_MULTI1 + i));
+    hptr = As_Pointer((HousesType)(HOUSE_MULTI1 + i));
     if (hptr && !hptr->IsDefeated) {
       if (hptr->IsHuman) {
         num_humans++;
@@ -3657,7 +3657,7 @@ void HouseClass::MPlayer_Defeated() {
     /*
     **	Get a pointer to this house
     */
-    hptr = HouseClass::As_Pointer((HousesType)(HOUSE_MULTI1 + i));
+    hptr = As_Pointer((HousesType)(HOUSE_MULTI1 + i));
     if (!hptr || hptr->IsDefeated) continue;
 
     /*
@@ -3665,7 +3665,7 @@ void HouseClass::MPlayer_Defeated() {
     **	isn't allied with, then all_allies will be false
     */
     for (j = 0; j < Session.MaxPlayers; j++) {
-      hptr2 = HouseClass::As_Pointer((HousesType)(HOUSE_MULTI1 + j));
+      hptr2 = As_Pointer((HousesType)(HOUSE_MULTI1 + j));
       if (!hptr2) {
         continue;
       }
@@ -3787,7 +3787,7 @@ void HouseClass::Tally_Score() {
   ** Loop through all houses, tallying up each player's score
   */
   for (house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-    hptr = HouseClass::As_Pointer(house);
+    hptr = As_Pointer(house);
     /*
     ** Skip this house if it's not human.
     */
@@ -3917,9 +3917,9 @@ void HouseClass::Blowup_All() {
   *are killed *	too.  Using Explosion_Damage is like dropping a big bomb right
   *on the *	object; it will also damage anything around it.
   */
-  for (i = 0; i < ::Units.Count(); i++) {
-    if (::Units.Ptr(i)->House == this && !::Units.Ptr(i)->IsInLimbo) {
-      uptr = ::Units.Ptr(i);
+  for (i = 0; i < Units.Count(); i++) {
+    if (Units.Ptr(i)->House == this && !Units.Ptr(i)->IsInLimbo) {
+      uptr = Units.Ptr(i);
 
       /*
       **	Some units can't be killed with one shot, so keep damaging them
@@ -3928,7 +3928,7 @@ void HouseClass::Blowup_All() {
       **	its pointer will be removed from the active pointer list.
       */
       count = 0;
-      while (::Units.Ptr(i) == uptr && uptr->Strength) {
+      while (Units.Ptr(i) == uptr && uptr->Strength) {
         damage = uptr->Strength;
         uptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
         count++;
@@ -3944,9 +3944,9 @@ void HouseClass::Blowup_All() {
   /*
   **	Destroy all aircraft owned by this house.
   */
-  for (i = 0; i < ::Aircraft.Count(); i++) {
-    if (::Aircraft.Ptr(i)->House == this && !::Aircraft.Ptr(i)->IsInLimbo) {
-      AircraftClass* aptr = ::Aircraft.Ptr(i);
+  for (i = 0; i < Aircraft.Count(); i++) {
+    if (Aircraft.Ptr(i)->House == this && !Aircraft.Ptr(i)->IsInLimbo) {
+      AircraftClass* aptr = Aircraft.Ptr(i);
 
       damage = aptr->Strength;
       aptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
@@ -3959,9 +3959,9 @@ void HouseClass::Blowup_All() {
   /*
   **	Destroy all vessels owned by this house.
   */
-  for (i = 0; i < ::Vessels.Count(); i++) {
-    if (::Vessels.Ptr(i)->House == this && !::Vessels.Ptr(i)->IsInLimbo) {
-      VesselClass* vptr = ::Vessels.Ptr(i);
+  for (i = 0; i < Vessels.Count(); i++) {
+    if (Vessels.Ptr(i)->House == this && !Vessels.Ptr(i)->IsInLimbo) {
+      VesselClass* vptr = Vessels.Ptr(i);
 
       damage = vptr->Strength;
       vptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
@@ -4215,7 +4215,7 @@ void HouseClass::Sell_Wall(CELL cell) {
           Map[cell].Recalc_Attributes();
           Map[cell].Redraw_Objects();
           Map.Radar_Pixel(cell);
-          Detach_This_From_All(::As_Target(cell), true);
+          Detach_This_From_All(As_Target(cell), true);
 
           if (optr.IsCrushable) {
             Map.Zone_Reset(MZONEF_NORMAL);
@@ -4565,7 +4565,7 @@ int HouseClass::Expert_AI() {
   *try *	to find a new enemy.
   */
   if (Enemy != HOUSE_NONE) {
-    HouseClass* h = HouseClass::As_Pointer(Enemy);
+    HouseClass* h = As_Pointer(Enemy);
 
     if (h == nullptr || !h->IsActive || h->IsDefeated || Is_Ally(h) ||
         h->BScan == 0) {
@@ -4589,7 +4589,7 @@ int HouseClass::Expert_AI() {
     int enemycount = 0;
 
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-      HouseClass* h = HouseClass::As_Pointer(house);
+      HouseClass* h = As_Pointer(house);
       if (h != nullptr && h->IsActive && !h->IsDefeated && !Is_Ally(h)) {
         /*
         **	Perform a special restriction check to ensure that no enemy is
@@ -5033,7 +5033,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
         */
         if (Percent_Chance(20) && u->Mission == MISSION_GUARD_AREA &&
             Which_Zone(u) != ZONE_NONE) {
-          u->ArchiveTarget = ::As_Target(Where_To_Go(u));
+          u->ArchiveTarget = As_Target(Where_To_Go(u));
         }
       }
     }
@@ -5052,7 +5052,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
         */
         if (Percent_Chance(20) && i->Mission == MISSION_GUARD_AREA &&
             Which_Zone(i) != ZONE_NONE) {
-          i->ArchiveTarget = ::As_Target(Where_To_Go(i));
+          i->ArchiveTarget = As_Target(Where_To_Go(i));
         }
       }
     }
@@ -5375,7 +5375,7 @@ int HouseClass::AI_Building() {
     */
     int quant = 0;
     for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-      HouseClass const* hptr = HouseClass::As_Pointer(h);
+      HouseClass const* hptr = As_Pointer(h);
 
       if (hptr != nullptr && hptr->IsActive && hptr->IsHuman &&
           quant < hptr->CurBuildings) {
@@ -5395,7 +5395,7 @@ int HouseClass::AI_Building() {
     BuildingTypeClass const* b = nullptr;
     HouseClass const* enemy = nullptr;
     if (Enemy != HOUSE_NONE) {
-      enemy = HouseClass::As_Pointer(Enemy);
+      enemy = As_Pointer(Enemy);
     }
 
     /*
@@ -5565,7 +5565,7 @@ int HouseClass::AI_Building() {
       }
       if (!airthreat) {
         for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-          HouseClass* h = HouseClass::As_Pointer(house);
+          HouseClass* h = As_Pointer(house);
           if (h != nullptr && !Is_Ally(house) && h->AScan != 0) {
             airthreat = true;
             break;
@@ -6123,7 +6123,7 @@ int HouseClass::AI_Infantry() {
   if (IsBaseBuilding) {
     HouseClass const* enemy = nullptr;
     if (Enemy != HOUSE_NONE) {
-      enemy = HouseClass::As_Pointer(Enemy);
+      enemy = As_Pointer(Enemy);
     }
 
     /*
@@ -7409,7 +7409,7 @@ bool HouseClass::Is_Allowed_To_Ally(HousesType house) const {
   }
 
   // Fix to prevent ally with computer.
-  if (!HouseClass::As_Pointer(house)->IsHuman) {
+  if (!As_Pointer(house)->IsHuman) {
     return (false);
   }
 
@@ -7420,7 +7420,7 @@ bool HouseClass::Is_Allowed_To_Ally(HousesType house) const {
   int housecount = 0;
   int allycount = 0;
   for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_COUNT; house2++) {
-    HouseClass* hptr = HouseClass::As_Pointer(house2);
+    HouseClass* hptr = As_Pointer(house2);
     if (hptr != nullptr && hptr->IsActive && !hptr->IsDefeated) {
       housecount++;
       if (Is_Ally(hptr)) {
@@ -7463,7 +7463,7 @@ void HouseClass::Computer_Paranoid() {
   *human controlled houses.
   */
   for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; house++) {
-    HouseClass* hptr = HouseClass::As_Pointer(house);
+    HouseClass* hptr = As_Pointer(house);
     if (hptr != nullptr && hptr->IsActive && !hptr->IsDefeated &&
         !hptr->IsHuman) {
       hptr->IsParanoid = true;
@@ -7473,7 +7473,7 @@ void HouseClass::Computer_Paranoid() {
       *friends with *	any other computer players.
       */
       for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_COUNT; house2++) {
-        HouseClass* hptr2 = HouseClass::As_Pointer(house2);
+        HouseClass* hptr2 = As_Pointer(house2);
         if (hptr2 != nullptr && hptr2->IsActive && !hptr2->IsDefeated) {
           if (hptr2->IsHuman) {
             hptr->Make_Enemy(house2);

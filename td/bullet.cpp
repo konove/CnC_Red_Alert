@@ -352,7 +352,7 @@ void BulletClass::AI() {
   *makes *	missiles not so deadly).
   */
   if ((Frame & 0x01) && Class->IsHoming && Target_Legal(TarCom)) {
-    PrimaryFacing.Set_Desired(Direction256(Coord, ::As_Coord(TarCom)));
+    PrimaryFacing.Set_Desired(Direction256(Coord, As_Coord(TarCom)));
   }
 
   /*

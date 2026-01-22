@@ -945,7 +945,7 @@ void FootClass::Approach_Target() {
 #endif
       maxrange = std::max(maxrange, 0);
 
-      COORDINATE tcoord = ::As_Coord(TarCom);
+      COORDINATE tcoord = As_Coord(TarCom);
       COORDINATE trycoord = 0;
       CELL tcell = Coord_Cell(tcoord);
       CELL trycell = tcell;
@@ -1362,7 +1362,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
         ** nearest cell using an expanding-radius box, and ignores cells
         ** off the edge of the map.
         */
-        CellClass const* cellptr = &Map[::As_Cell(::As_Target(Center_Coord()))];
+        CellClass const* cellptr = &Map[As_Cell(::As_Target(Center_Coord()))];
         if (What_Am_I() != RTTI_AIRCRAFT) {
           if (Can_Enter_Cell(Coord_Cell(Center_Coord())) == MOVE_OK) {
             cell =

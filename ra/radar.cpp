@@ -1762,7 +1762,7 @@ int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
     return (false);
   }
 
-  int result = Map.RadarClass::Click_In_Radar(x, y, false);
+  int result = Map.Click_In_Radar(x, y, false);
 
   if (result == 1) {
     cell = Map.RadarClass::Click_Cell_Calc(x, y);

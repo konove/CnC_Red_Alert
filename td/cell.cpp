@@ -263,7 +263,7 @@ int CellClass::Cell_Color(bool override) const {
   if (override) {
     return (TBLACK);
   }
-  return (::Ground[Land_Type()].Color);
+  return (Ground[Land_Type()].Color);
 }
 
 /***********************************************************************************************
@@ -540,7 +540,7 @@ bool CellClass::Is_Generally_Clear() const {
   }
 #endif
 
-  return (::Ground[Land_Type()].Build);
+  return (Ground[Land_Type()].Build);
 }
 
 /***********************************************************************************************

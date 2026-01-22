@@ -688,7 +688,7 @@ void ListClass::Set_Tabs(int const* tabs) { Tabs = tabs; }
  *=============================================================================================*/
 void ListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
   TextPrintType flags = TextFlags;
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   if (selected) {
     flags = flags | TPF_BRIGHT_COLOR;

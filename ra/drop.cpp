@@ -55,7 +55,7 @@ DropListClass::DropListClass(int id, char* text, int max_len,
       List(0, x, y + Get_Build_Frame_Height(down),
            w + Get_Build_Frame_Width(down), h, flags, up, down) {
   Fancy_Text_Print("", 0, 0, nullptr, 0, flags);
-  EditClass::Height = FontHeight + 1;
+  Height = FontHeight + 1;
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
 }

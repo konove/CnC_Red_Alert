@@ -1690,7 +1690,7 @@ void TechnoClass::AI() {
   **	if the current animation process needs to change.
   */
   if (What_Am_I() != RTTI_BUILDING) {
-    if (StageClass::Graphic_Logic() || Time_To_Redraw()) {
+    if (Graphic_Logic() || Time_To_Redraw()) {
       Mark(MARK_CHANGE);
     }
   }
@@ -1699,7 +1699,7 @@ void TechnoClass::AI() {
   **	If the object is flashing and a change of flash state has occured, then
   *mark the *	object to be redrawn.
   */
-  if (FlasherClass::Process()) {
+  if (Process()) {
     Mark(MARK_CHANGE);
   }
 }

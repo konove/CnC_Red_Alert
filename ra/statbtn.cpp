@@ -268,7 +268,7 @@ void StaticButtonClass::Draw_Text(char const* text) {
       x += Width - 1;
     }
 
-    Fancy_Text_Print(text, x, Y, GadgetClass::Get_Color_Scheme(), TBLACK,
+    Fancy_Text_Print(text, x, Y, Get_Color_Scheme(), TBLACK,
                      PrintFlags);
   }
 }
