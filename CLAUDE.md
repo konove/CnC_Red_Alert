@@ -91,7 +91,7 @@ class MyClass {
 // Returns the cell at coordinates, or nullptr if out of bounds.
 CellClass* Get_Cell_At(int x, int y);
 
-// Function definition (.cpp): HOW it works, not WHAT (don't repeat .h comment).
+// Function definition (.cc): HOW it works, not WHAT (don't repeat .h comment).
 
 // Variables: Document sentinel values.
 int max_units_;      // -1 means unlimited
@@ -166,7 +166,7 @@ everywhere, removing globals.
 ## Platform Notes
 
 - **Linux/macOS:** Primary platforms. Requires `libsdl2-dev` (apt) or `sdl2` (brew).
-- **Windows:** Links `wsock32`, includes `dde.cpp`, `ccdde.cpp`, `cc_icon.rc`.
+- **Windows:** Links `wsock32`, includes `dde.cc`, `ccdde.cc`, `cc_icon.rc`.
 - **Emscripten:** Experimental WebAssembly support.
 
 ## Git Commits

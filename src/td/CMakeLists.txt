@@ -1,14 +1,14 @@
 add_executable(tdsdl WIN32)
 
 file(GLOB_RECURSE TD_SOURCES
-        CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+        CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cc"
 )
 list(REMOVE_ITEM TD_SOURCES
-        "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/cdfile.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dde.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/rawfile.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/winstub.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cdfile.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dde.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/rawfile.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/winstub.cc"
 )
 
 file(GLOB_RECURSE TD_HEADERS
@@ -39,8 +39,8 @@ set_target_properties(tdsdl PROPERTIES
 
 if (WIN32)
     target_sources(tdsdl PRIVATE
-            dde.cpp
-            ccdde.cpp
+            dde.cc
+            ccdde.cc
             cc_icon.rc
     )
     target_link_libraries(tdsdl PRIVATE wsock32)

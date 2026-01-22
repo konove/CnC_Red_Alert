@@ -1,40 +1,40 @@
 add_executable(rasdl WIN32)
 
 file(GLOB_RECURSE RA_SOURCES
-        CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+        CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cc"
 )
 list(REMOVE_ITEM RA_SOURCES
-        "${CMAKE_CURRENT_SOURCE_DIR}/adpcm.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/alloc.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/cominit.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/comqueue.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/confdlg.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/cstraw.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dde.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/descdlg.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dibfile.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dibutil.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/key.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/keyframe.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/mplib.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/mplpc.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/mpmgrd.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/mpmgrw.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/noseqcon.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/number.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/rand.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/seqconn.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/stub.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/surface.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tarcom.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tooltip.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/turret.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/winstub.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/adpcm.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/alloc.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cominit.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/comqueue.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/confdlg.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cstraw.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dde.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/descdlg.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dibfile.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dibutil.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/key.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/keyframe.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/mplib.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/mplpc.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/mpmgrd.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/mpmgrw.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/noseqcon.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/number.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/rand.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/seqconn.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/stub.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/surface.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tarcom.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tooltip.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/turret.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/winstub.cc"
 )
 
 file(GLOB_RECURSE RA_HEADERS
@@ -95,8 +95,8 @@ set_target_properties(rasdl PROPERTIES
 
 if (WIN32)
     target_sources(rasdl PRIVATE
-            dde.cpp
-            ccdde.cpp
+            dde.cc
+            ccdde.cc
             cc_icon.rc
     )
     target_link_libraries(rasdl PRIVATE wsock32)
