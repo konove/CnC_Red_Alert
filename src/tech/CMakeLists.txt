@@ -10,7 +10,7 @@ target_sources(tech PRIVATE
 
 target_sources(tech PUBLIC
         FILE_SET HEADERS
-        BASE_DIRS ${CMAKE_SOURCE_DIR}
+        BASE_DIRS ${CMAKE_SOURCE_DIR}/src
         FILES ${TECH_HEADERS}
 )
 

@@ -42,7 +42,7 @@ endif ()
 if (STRICT_CHECKS)
     set(CMAKE_CXX_CLANG_TIDY
         "clang-tidy"
-        "--header-filter=${CMAKE_SOURCE_DIR}/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*"
+        "--header-filter=${CMAKE_SOURCE_DIR}/src/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*"
     )
     message(STATUS "Strict checks enabled (clang-tidy + warnings)")
 else ()
@@ -117,20 +117,20 @@ endif ()
 
 add_compile_definitions(WIN32) # hopefully easier than DOS
 
-# Use Chromium-style includes: all paths relative to project root
-include_directories(${CMAKE_SOURCE_DIR})
+# Use Chromium-style includes: all paths relative to src root
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
 # Testing support
 include(GoogleTest)
 enable_testing()
 
-add_subdirectory(base)
-add_subdirectory(port)
-add_subdirectory(sdllib)
-add_subdirectory(winvq)
-add_subdirectory(jshell)
+add_subdirectory(src/base)
+add_subdirectory(src/port)
+add_subdirectory(src/sdllib)
+add_subdirectory(src/winvq)
+add_subdirectory(src/jshell)
 add_subdirectory(third_party)
-add_subdirectory(tech)
+add_subdirectory(src/tech)
 
-add_subdirectory(ra)
-add_subdirectory(td)
+add_subdirectory(src/ra)
+add_subdirectory(src/td)

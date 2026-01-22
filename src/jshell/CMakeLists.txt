@@ -10,7 +10,7 @@ target_sources(jshell PRIVATE
 
 target_sources(jshell PUBLIC
         FILE_SET HEADERS
-        BASE_DIRS ${CMAKE_SOURCE_DIR}
+        BASE_DIRS ${CMAKE_SOURCE_DIR}/src
         FILES ${JSHELL_HEADERS}
 )
 

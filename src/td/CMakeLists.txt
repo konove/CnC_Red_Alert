@@ -29,7 +29,7 @@ target_sources(tdsdl PRIVATE
 
 target_sources(tdsdl PUBLIC
         FILE_SET HEADERS
-        BASE_DIRS ${CMAKE_SOURCE_DIR}
+        BASE_DIRS ${CMAKE_SOURCE_DIR}/src
         FILES ${TD_HEADERS}
 )
 

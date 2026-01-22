@@ -167,7 +167,7 @@ checks.
 | Type.4 | Don't use C-style casts             | `cppcoreguidelines-pro-type-cstyle-cast`          | Disabled |
 | Type.5 | Always initialize variables         | `cppcoreguidelines-init-variables`                | Disabled |
 | Type.6 | Always initialize member variables  | `cppcoreguidelines-pro-type-member-init`          | Disabled |
-| Type.7 | Avoid naked unions                  | `cppcoreguidelines-pro-type-union-access`         | Enabled  |
+| Type.7 | Avoid naked unions                  | `cppcoreguidelines-pro-type-union-access`         | Disabled |
 | Type.8 | Avoid varargs                       | `cppcoreguidelines-pro-type-vararg`               | Disabled |
 
 ### Recommended Adoption Order

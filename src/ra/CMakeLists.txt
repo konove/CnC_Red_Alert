@@ -85,7 +85,7 @@ target_sources(rasdl PRIVATE
 
 target_sources(rasdl PUBLIC
         FILE_SET HEADERS
-        BASE_DIRS ${CMAKE_SOURCE_DIR}
+        BASE_DIRS ${CMAKE_SOURCE_DIR}/src
         FILES ${RA_HEADERS}
 )
 

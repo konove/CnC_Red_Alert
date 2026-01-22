@@ -22,7 +22,7 @@
 #include <cstring>
 #include <string>
 
-#include "cmake-build-strict-ra/_deps/abseil-cpp-src/absl/strings/ascii.h"
+#include "absl/strings/ascii.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "sdllib/include/memflag.h"

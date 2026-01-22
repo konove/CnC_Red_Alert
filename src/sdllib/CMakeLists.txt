@@ -10,7 +10,7 @@ target_sources(sdllib PRIVATE
 
 target_sources(sdllib PUBLIC
         FILE_SET HEADERS
-        BASE_DIRS ${CMAKE_SOURCE_DIR}
+        BASE_DIRS ${CMAKE_SOURCE_DIR}/src
         FILES ${SDLLIB_HEADERS}
 )
 

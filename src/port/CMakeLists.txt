@@ -11,7 +11,7 @@ target_sources(port PRIVATE
 
 target_sources(port PUBLIC
         FILE_SET HEADERS
-        BASE_DIRS ${CMAKE_SOURCE_DIR}
+        BASE_DIRS ${CMAKE_SOURCE_DIR}/src
         FILES ${PORT_HEADERS}
 )
 
