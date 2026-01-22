@@ -3740,12 +3740,12 @@ bool Force_CD_Available(int cd) {
       **	Prompt to insert the CD into the drive.
       */
       if (cd == -1) {
-        // TODO(konove): This is wrong, it is accessing negative index.
-        sprintf(buffer, Text_String(TXT_CD_DIALOG_1), cd + 1, _volid[cd]);
+        sprintf(buffer, Text_String(TXT_CD_DIALOG_1));
       } else {
         if (cd == 2) {
           sprintf(buffer, Text_String(TXT_CD_DIALOG_3));
         } else {
+          // 0 or 1?
           sprintf(buffer, Text_String(TXT_CD_DIALOG_2), cd + 1, _volid[cd]);
         }
       }
@@ -3760,9 +3760,7 @@ bool Force_CD_Available(int cd) {
       /*
       **	Only set the palette if necessary.
       */
-      //			if (CurrentPalette[3] == 0) {
       Set_Palette(GamePalette);
-      //			}
 
       /*
       ** Pretend we are in the game, even if we arent
@@ -3772,7 +3770,9 @@ bool Force_CD_Available(int cd) {
 
       Keyboard::Clear();
 
-      while (Get_Mouse_State()) Show_Mouse();
+      while (Get_Mouse_State()) {
+        Show_Mouse();
+      }
 
       if (CCMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {

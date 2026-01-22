@@ -1470,7 +1470,7 @@ bool Select_Game(bool fade) {
           Play_Intro(false);
           Hide_Mouse();
 
-          // verify existance of movie file before playing this sequence.
+          // verify existence of movie file before playing this sequence.
           if (CCFileClass("TRAILER.VQA").Is_Available()) {
             Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
             VisiblePage.Clear();
@@ -2289,6 +2289,15 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     */
     if (strstr(string, "-ATTRACT")) {
       AllowAttract = true;
+      continue;
+    }
+
+    /*
+    ** Disable mouse grabbing for debugging
+    */
+    if (strstr(string, "-NOMOUSEGRAB")) {
+      extern bool NoMouseGrab;
+      NoMouseGrab = true;
       continue;
     }
 
