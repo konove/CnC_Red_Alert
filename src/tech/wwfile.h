@@ -56,6 +56,12 @@
 #define WRITE 2
 #endif
 
+// Specifies how thoroughly to check file availability.
+enum class AvailabilityCheck {
+  kQuick,     // Fast check, may return false for temporarily unavailable files
+  kBlocking,  // Full check with error recovery, may block waiting for media
+};
+
 class FileClass {
  public:
   FileClass() = default;
@@ -70,7 +76,16 @@ class FileClass {
   virtual char const* Set_Name(char const* filename) = 0;
   virtual int Create() = 0;
   virtual int Delete() = 0;
-  virtual int Is_Available(int forced = false) = 0;
+
+  // Returns true if the file is available to be opened.
+  int Is_Available() { return Do_Is_Available(AvailabilityCheck::kQuick); }
+
+  // Returns true if the file is available. Uses full error recovery which may
+  // block waiting for media (e.g., prompting for CD-ROM).
+  int Is_Available_Strict() {
+    return Do_Is_Available(AvailabilityCheck::kBlocking);
+  }
+
   virtual int Is_Open() const = 0;
   virtual int Open(char const* filename, int rights = READ) = 0;
   virtual int Open(int rights = READ) = 0;
@@ -85,6 +100,9 @@ class FileClass {
                      char const* filename = nullptr) = 0;
 
   operator char const*() { return File_Name(); }
+
+ protected:
+  virtual int Do_Is_Available(AvailabilityCheck mode) = 0;
 };
 
 #endif

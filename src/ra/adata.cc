@@ -1985,8 +1985,8 @@ AnimTypeClass::AnimTypeClass(AnimType anim, char const* name, int size,
                              bool isflame, fixed damage, int delaytime,
                              int start, int loopstart, int loopend, int stages,
                              int loops, VocType soundid, AnimType chainto)
-    : ObjectTypeClass(RTTI_ANIMTYPE, static_cast<int>(anim), true, true, false, false, true,
-                      true, false, TXT_NONE, name),
+    : ObjectTypeClass(RTTI_ANIMTYPE, static_cast<int>(anim), true, true, false,
+                      false, true, true, false, TXT_NONE, name),
       IsNormalized(isnormal),
       IsGroundLayer(ground),
       IsTranslucent(istrans),
@@ -2024,9 +2024,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, char const* name, int size,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* AnimTypeClass::operator new(size_t) throw() {
-  return AnimTypes.Alloc();
-}
+void* AnimTypeClass::operator new(size_t) throw() { return AnimTypes.Alloc(); }
 
 /***********************************************************************************************
  * AnimTypeClass::operator delete -- Returns an anim type class object back to

@@ -474,8 +474,8 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
     volume = fixed(1) - dfixed;
 
     pan_value = Cell_X(cell_pos);
-    pan_value -= Coord_XCell(Map.TacticalCoord) +
-                 Lepton_To_Cell(Map.TacLeptonWidth) / 2;
+    pan_value -=
+        Coord_XCell(Map.TacticalCoord) + Lepton_To_Cell(Map.TacLeptonWidth) / 2;
     if (std::abs(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth / 2)) {
       pan_value *= 0x8000;
       pan_value /= MAP_CELL_W >> 2;

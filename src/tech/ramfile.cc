@@ -156,11 +156,11 @@ int RAMFileClass::Delete() {
 }
 
 /***********************************************************************************************
- * RAMFileClass::Is_Available -- Determines if the "file" is available. *
+ * RAMFileClass::Do_Is_Available -- Determines if the "file" is available. *
  *                                                                                             *
  *    RAM files are always available. *
  *                                                                                             *
- * INPUT:   none *
+ * INPUT:   mode -- Ignored for RAM files. *
  *                                                                                             *
  * OUTPUT:  true *
  *                                                                                             *
@@ -168,7 +168,7 @@ int RAMFileClass::Delete() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Is_Available(int) { return true; }
+int RAMFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) { return true; }
 
 /***********************************************************************************************
  * RAMFileClass::Is_Open -- Is the file open? *

@@ -766,7 +766,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
     ini.Get_String("MultiPlayer", "Handle", "Noname", Handle, sizeof(Handle));
 
     //	Get the player's last-used Color
-    PrefColor = static_cast<PlayerColorType>(ini.Get_Int("MultiPlayer", "Color", 0));
+    PrefColor =
+        static_cast<PlayerColorType>(ini.Get_Int("MultiPlayer", "Color", 0));
     int iSide = ini.Get_Int("MultiPlayer", "Side", HOUSE_USSR);
     iSide = std::max(2, std::min(6, iSide));
     House = static_cast<HousesType>(iSide);
@@ -1762,9 +1763,10 @@ void MultiMission::Draw_It(int, int x, int y, int width, int height,
     Conquer_Clip_Text_Print(ScenarioDescription, x, y, scheme, TBLACK, flags,
                             width, _tabs);
   } else {
-    Conquer_Clip_Text_Print(ScenarioDescription, x, y,
-                            selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
-                            TBLACK, flags, width, _tabs);
+    Conquer_Clip_Text_Print(
+        ScenarioDescription, x, y,
+        selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
+        TBLACK, flags, width, _tabs);
   }
 }
 

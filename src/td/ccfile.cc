@@ -320,13 +320,14 @@ long CCFileClass::Size() {
 }
 
 /***********************************************************************************************
- * CCFileClass::Is_Available -- Checks for existence of file on disk or in
+ * CCFileClass::Do_Is_Available -- Checks for existence of file on disk or in
  *mixfile.            *
  *                                                                                             *
  *    This routine will examine the mixfile system looking for the file. If the
  *file could     * not be found there, then the disk is examined directly. *
  *                                                                                             *
- * INPUT:   none *
+ * INPUT:   mode -- Ignored for mixfile lookups, passed through for disk checks.
+ * *
  *                                                                                             *
  * OUTPUT:  bool; Is the file available for opening? *
  *                                                                                             *
@@ -334,7 +335,7 @@ long CCFileClass::Size() {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int CCFileClass::Is_Available(int) {
+int CCFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) {
   if (MixFileClass::Offset(File_Name())) {
     return true;
   }

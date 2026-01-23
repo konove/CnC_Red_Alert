@@ -271,9 +271,7 @@ class EListClass : public ListClass {
   void Draw_Entry(int index, int x, int y, int width, int selected) override;
 
  private:
-  int Add_Item(char const* text) override {
-    return ListClass::Add_Item(text);
-  }
+  int Add_Item(char const* text) override { return ListClass::Add_Item(text); }
   int Add_Item(int text) override { return ListClass::Add_Item(text); }
   char const* Current_Item() const override {
     return ListClass::Current_Item();

@@ -507,8 +507,7 @@ void OptionsClass::Adjust_Palette(PaletteClass const& oldpal,
       temp = hsv.Value_Component() * (brightness * 256) / 0x80;  // Brightness
       temp = Bound(temp, 0, 0xFF);
       int v = temp;
-      temp =
-          (v - 0x80) * (contrast * 256) / 0x80 + 0x80;  // Contrast
+      temp = (v - 0x80) * (contrast * 256) / 0x80 + 0x80;  // Contrast
       temp = Bound(temp, 0, 0xFF);
       v = temp;
       temp = hsv.Saturation_Component() * (color * 256) / 0x80;  // Color
@@ -568,17 +567,13 @@ void OptionsClass::Load_Settings() {
   SlowPalette = ini.Get_Bool(OPTIONS, "SlowPalette", SlowPalette);
   IsPaletteScroll = ini.Get_Bool(OPTIONS, "PaletteScroll", IsPaletteScroll);
 
-  KeyForceMove1 =
-      static_cast<KeyNumType>(
+  KeyForceMove1 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyForceMove1", KeyForceMove1));
-  KeyForceMove2 =
-      static_cast<KeyNumType>(
+  KeyForceMove2 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyForceMove2", KeyForceMove2));
-  KeyForceAttack1 =
-      static_cast<KeyNumType>(
+  KeyForceAttack1 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyForceAttack1", KeyForceAttack1));
-  KeyForceAttack2 =
-      static_cast<KeyNumType>(
+  KeyForceAttack2 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyForceAttack2", KeyForceAttack2));
   KeySelect1 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeySelect1", KeySelect1));
@@ -586,85 +581,90 @@ void OptionsClass::Load_Settings() {
       ini.Get_Int(HotkeyName, "KeySelect2", KeySelect2));
   KeyScatter = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyScatter", KeyScatter));
-  KeyStop = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyStop", KeyStop));
-  KeyGuard = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyGuard", KeyGuard));
-  KeyNext = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyNext", KeyNext));
+  KeyStop =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyStop", KeyStop));
+  KeyGuard =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyGuard", KeyGuard));
+  KeyNext =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyNext", KeyNext));
   KeyPrevious = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyPrevious", KeyPrevious));
-  KeyFormation =
-      static_cast<KeyNumType>(
+  KeyFormation = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyFormation", KeyFormation));
-  KeyHome1 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyHome1", KeyHome1));
-  KeyHome2 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyHome2", KeyHome2));
-  KeyBase = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyBase", KeyBase));
-  KeyResign = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyResign", KeyResign));
+  KeyHome1 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyHome1", KeyHome1));
+  KeyHome2 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyHome2", KeyHome2));
+  KeyBase =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyBase", KeyBase));
+  KeyResign =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyResign", KeyResign));
   KeyAlliance = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyAlliance", KeyAlliance));
-  KeyBookmark1 =
-      static_cast<KeyNumType>(
+  KeyBookmark1 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyBookmark1", KeyBookmark1));
-  KeyBookmark2 =
-      static_cast<KeyNumType>(
+  KeyBookmark2 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyBookmark2", KeyBookmark2));
-  KeyBookmark3 =
-      static_cast<KeyNumType>(
+  KeyBookmark3 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyBookmark3", KeyBookmark3));
-  KeyBookmark4 =
-      static_cast<KeyNumType>(
+  KeyBookmark4 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyBookmark4", KeyBookmark4));
-  KeySelectView =
-      static_cast<KeyNumType>(
+  KeySelectView = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeySelectView", KeySelectView));
   KeyRepair = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyRepairToggle", KeyRepair));
   KeyRepairOn = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyRepairOn", KeyRepairOn));
-  KeyRepairOff =
-      static_cast<KeyNumType>(
+  KeyRepairOff = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyRepairOff", KeyRepairOff));
   KeySell = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeySellToggle", KeySell));
-  KeySellOn = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeySellOn", KeySellOn));
+  KeySellOn =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeySellOn", KeySellOn));
   KeySellOff = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeySellOff", KeySellOff));
-  KeyMap = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyMapToggle", KeyMap));
-  KeySidebarUp =
-      static_cast<KeyNumType>(
+  KeyMap =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyMapToggle", KeyMap));
+  KeySidebarUp = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeySidebarUp", KeySidebarUp));
-  KeySidebarDown =
-      static_cast<KeyNumType>(
+  KeySidebarDown = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeySidebarDown", KeySidebarDown));
   KeyOption1 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyOption1", KeyOption1));
   KeyOption2 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyOption2", KeyOption2));
-  KeyScrollLeft =
-      static_cast<KeyNumType>(
+  KeyScrollLeft = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyScrollLeft", KeyScrollLeft));
-  KeyScrollRight =
-      static_cast<KeyNumType>(
+  KeyScrollRight = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyScrollRight", KeyScrollRight));
   KeyScrollUp = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyScrollUp", KeyScrollUp));
-  KeyScrollDown =
-      static_cast<KeyNumType>(
+  KeyScrollDown = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyScrollDown", KeyScrollDown));
-  KeyQueueMove1 =
-      static_cast<KeyNumType>(
+  KeyQueueMove1 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyQueueMove1", KeyQueueMove1));
-  KeyQueueMove2 =
-      static_cast<KeyNumType>(
+  KeyQueueMove2 = static_cast<KeyNumType>(
       ini.Get_Int(HotkeyName, "KeyQueueMove2", KeyQueueMove2));
-  KeyTeam1 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam1", KeyTeam1));
-  KeyTeam2 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam2", KeyTeam2));
-  KeyTeam3 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam3", KeyTeam3));
-  KeyTeam4 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam4", KeyTeam4));
-  KeyTeam5 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam5", KeyTeam5));
-  KeyTeam6 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam6", KeyTeam6));
-  KeyTeam7 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam7", KeyTeam7));
-  KeyTeam8 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam8", KeyTeam8));
-  KeyTeam9 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam9", KeyTeam9));
-  KeyTeam10 = static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam10", KeyTeam10));
+  KeyTeam1 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam1", KeyTeam1));
+  KeyTeam2 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam2", KeyTeam2));
+  KeyTeam3 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam3", KeyTeam3));
+  KeyTeam4 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam4", KeyTeam4));
+  KeyTeam5 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam5", KeyTeam5));
+  KeyTeam6 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam6", KeyTeam6));
+  KeyTeam7 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam7", KeyTeam7));
+  KeyTeam8 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam8", KeyTeam8));
+  KeyTeam9 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam9", KeyTeam9));
+  KeyTeam10 =
+      static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam10", KeyTeam10));
 
 #ifdef WIN32
   KeyForceMove1 = static_cast<KeyNumType>(KeyForceMove1 & ~WWKEY_VK_BIT);
@@ -920,6 +920,4 @@ void OptionsClass::Fixup_Palette() const {
  *                                                                                             *
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
-int OptionsClass::Normalize_Volume(int volume) const {
-  return volume * Volume;
-}
+int OptionsClass::Normalize_Volume(int volume) const { return volume * Volume; }

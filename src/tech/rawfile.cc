@@ -241,25 +241,24 @@ int RawFileClass::Open(int rights) {
 }
 
 /***********************************************************************************************
- * RawFileClass::Is_Available -- Checks to see if the specified file is
+ * RawFileClass::Do_Is_Available -- Checks to see if the specified file is
  *available to open.     *
  *                                                                                             *
  *    This routine will examine the disk system to see if the specified file can
  *be opened     * or not. Use this routine before opening a file in order to
  *make sure that is available   * or to perform other necessary actions. *
  *                                                                                             *
- * INPUT:   force -- Should this routine keep retrying until the file becomes
- *available? If    * in this case it doesn't become available, then the program
- *will abort.    *
+ * INPUT:   mode -- kQuick for fast check that may fail silently, kBlocking for
+ *full error      * recovery which may block waiting for media. *
  *                                                                                             *
  * OUTPUT:  bool; Is the file available to be opened? *
  *                                                                                             *
- * WARNINGS:   Depending on the parameter passed in, this routine may never
+ * WARNINGS:   Depending on the mode passed in, this routine may never
  *return.            *
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Is_Available(int forced) {
+int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
   if (Filename_.empty()) return false;
 
   /*
@@ -268,11 +267,9 @@ int RawFileClass::Is_Available(int forced) {
   */
   if (Is_Open()) return true;
 
-  /*
-  **	If this is a forced check, then go through the normal open channels,
-  *since those *	channels ensure that the file must exist.
-  */
-  if (forced) {
+  // If this is a blocking check, then go through the normal open channels,
+  // since those channels ensure that the file must exist.
+  if (mode == AvailabilityCheck::kBlocking) {
     RawFileClass::Open(READ);
     RawFileClass::Close();
     return true;

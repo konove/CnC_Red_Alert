@@ -151,7 +151,7 @@ EZERO,                 // Non-error.
   virtual char const* Set_Name(char const* filename);
   virtual int Create();
   virtual int Delete();
-  virtual int Is_Available(int forced = false);
+  virtual int Is_Available(int forced);
   virtual int Is_Open() const;
   virtual int Open(char const* filename, int rights = READ);
   virtual int Open(int rights = READ);

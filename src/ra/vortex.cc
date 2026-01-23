@@ -736,20 +736,12 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
     ** Get a pointer to the section of buffer we are going to work on.
     */
     unsigned char* bufptr =
-        inbuffer->Get_Offset() + destx
-#ifdef WIN32
-        + desty * (inbuffer->Get_Width() + inbuffer->Get_XAdd() +
-                   inbuffer->Get_Pitch());
-#else
-        + desty * (inbuffer->Get_Width() + inbuffer->Get_XAdd());
-#endif
+        inbuffer->Get_Offset() + destx +
+        desty * (inbuffer->Get_Width() + inbuffer->Get_XAdd() +
+                 inbuffer->Get_Pitch());
 
-#ifdef WIN32
     int modulo =
         inbuffer->Get_Pitch() + inbuffer->Get_XAdd() + inbuffer->Get_Width();
-#else
-    int modulo = inbuffer->Get_XAdd() + inbuffer->Get_Width();
-#endif
 
     for (int yy = desty; yy < desty + dest_height; yy++) {
       for (int xx = destx; xx < destx + dest_width; xx++) {
@@ -827,8 +819,8 @@ void ChronalVortexClass::Render() {
       ** the image from the hidpage.
       */
       if (!RenderBuffer) {
-        RenderBuffer = new GraphicBufferClass(CELL_PIXEL_W * 4,
-                                              CELL_PIXEL_H * 4, static_cast<void*>(nullptr));
+        RenderBuffer =
+            new GraphicBufferClass(CELL_PIXEL_W * 4, CELL_PIXEL_H * 4, nullptr);
       }
       CELL xc = Coord_XCell(Position);
       CELL yc = Coord_YCell(Position);
@@ -837,11 +829,7 @@ void ChronalVortexClass::Render() {
       TemplateTypeClass const* ttype = nullptr;
       int icon;  // The icon number to use from the template set.
 
-#ifdef WIN32
       GraphicViewPortClass* oldpage = Set_Logic_Page(RenderBuffer);
-#else
-      GraphicBufferClass* oldpage = Set_Logic_Page(RenderBuffer);
-#endif
 
       /*
       ** Temporarily modify the tactical window so it works with our offscreen
@@ -905,10 +893,9 @@ void ChronalVortexClass::Render() {
             if (cellptr->Overlay != OVERLAY_NONE) {
               OverlayTypeClass const& otype =
                   OverlayTypeClass::As_Reference(cellptr->Overlay);
-              IsTheaterShape =
-                  static_cast<bool>(
+              IsTheaterShape = static_cast<bool>(
                   otype.IsTheater);  // Tell Build_Frame if this overlay is
-                                          // theater specific
+                                     // theater specific
               CC_Draw_Shape(otype.Get_Image_Data(), cellptr->OverlayData,
                             x * CELL_PIXEL_W + (CELL_PIXEL_W >> 1),
                             y * CELL_PIXEL_H + (CELL_PIXEL_H >> 1),

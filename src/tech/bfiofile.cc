@@ -397,10 +397,9 @@ char const* BufferIOFileClass::Set_Name(char const* filename) {
   if (File_Name() && UseBuffer) {
     if (strcmp(filename, File_Name()) == 0) {
       return File_Name();
-    } else {
-      Commit();
-      IsCached = false;
     }
+    Commit();
+    IsCached = false;
   }
 
   RawFileClass::Set_Name(filename);
@@ -408,11 +407,11 @@ char const* BufferIOFileClass::Set_Name(char const* filename) {
 }
 
 /***********************************************************************************************
- * BufferIOFileClass::Is_Available -- Checks for existence of file cached or on
- *disk.          *
+ * BufferIOFileClass::Do_Is_Available -- Checks for existence of file cached or
+ * on disk.          *
  *                                                                                             *
  *                                                                                             *
- * INPUT:   none *
+ * INPUT:   mode -- kQuick for fast check, kBlocking for full error recovery. *
  *                                                                                             *
  * OUTPUT:  bool; Is the file available for opening? *
  *                                                                                             *
@@ -420,12 +419,12 @@ char const* BufferIOFileClass::Set_Name(char const* filename) {
  *                                                                                             *
  * HISTORY: * 11/16/1995 DRD : Created. *
  *=============================================================================================*/
-int BufferIOFileClass::Is_Available(int) {
+int BufferIOFileClass::Do_Is_Available(AvailabilityCheck mode) {
   if (UseBuffer) {
     return true;
   }
 
-  return RawFileClass::Is_Available();
+  return RawFileClass::Do_Is_Available(mode);
 }
 
 /***********************************************************************************************
@@ -609,8 +608,8 @@ long BufferIOFileClass::Write(void const* buffer, long size) {
           }
         }
 
-        memmove(static_cast<char*>(Buffer) + BufferPos, (char*)buffer + sizewritten,
-                sizetowrite);
+        memmove(static_cast<char*>(Buffer) + BufferPos,
+                (char*)buffer + sizewritten, sizetowrite);
 
         IsChanged = true;
         sizewritten += sizetowrite;
@@ -747,8 +746,8 @@ long BufferIOFileClass::Read(void* buffer, long size) {
           IsCached = true;
         }
 
-        memmove(static_cast<char*>(buffer) + sizeread, static_cast<char*>(Buffer) + BufferPos,
-                sizetoread);
+        memmove(static_cast<char*>(buffer) + sizeread,
+                static_cast<char*>(Buffer) + BufferPos, sizetoread);
 
         sizeread += sizetoread;
         size -= sizetoread;

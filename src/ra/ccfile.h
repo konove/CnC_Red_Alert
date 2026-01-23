@@ -61,7 +61,6 @@ class CCFileClass : public CDFileClass {
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 
   bool Is_Resident() const { return Data.Get_Buffer() != nullptr; }
-  int Is_Available(int forced = false) override;
   int Is_Open() const override;
   int Open(char const* filename, int rights = READ) override {
     Set_Name(filename);
@@ -77,6 +76,9 @@ class CCFileClass : public CDFileClass {
   bool Set_Date_Time(unsigned long datetime) override;
   void Error(int error, int canretry = false,
              char const* filename = nullptr) override;
+
+ protected:
+  int Do_Is_Available(AvailabilityCheck mode) override;
 
  private:
   /*

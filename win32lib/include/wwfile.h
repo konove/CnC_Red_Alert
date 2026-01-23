@@ -57,7 +57,8 @@ class FileClass {
   virtual char const* Set_Name(char const* filename) = 0;
   virtual int Create() = 0;
   virtual int Delete() = 0;
-  virtual int Is_Available(int forced = false) = 0;
+  virtual int Is_Available(int forced) = 0;
+  int Is_Available() { return Is_Available(false); }
   virtual int Is_Open() const = 0;
   virtual int Open(char const* filename, int rights = READ) = 0;
   virtual int Open(int rights = READ) = 0;

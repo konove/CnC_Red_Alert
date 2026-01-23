@@ -478,7 +478,8 @@ void ScoreClass::Presentation() {
       (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), ScorePalette);
 #endif
 
-  unsigned minutes = static_cast<unsigned>(ElapsedTime / (long)TIMER_MINUTE) + 1;
+  unsigned minutes =
+      static_cast<unsigned>(ElapsedTime / (long)TIMER_MINUTE) + 1;
 
 // Load up the shapes for the Nod score screen
 #if RESFACTOR == 2
@@ -619,8 +620,7 @@ void ScoreClass::Presentation() {
   }
 
   if (!leadership) leadership++;
-  leadership =
-      100 * fixed(leadership, house ? NKilled + NBKilled + leadership
+  leadership = 100 * fixed(leadership, house ? NKilled + NBKilled + leadership
                                              : GKilled + GBKilled + leadership);
   leadership = std::min(150, leadership);
 
@@ -628,10 +628,11 @@ void ScoreClass::Presentation() {
   **	Determine economy rating.
   */
   int economy =
-      100 * fixed(static_cast<unsigned>(PlayerPtr->Available_Money()) + 1 +
-                      PlayerPtr->StolenBuildingsCredits,
-                  PlayerPtr->HarvestedCredits +
-                      static_cast<unsigned>(PlayerPtr->Control.InitialCredits) + 1);
+      100 *
+      fixed(static_cast<unsigned>(PlayerPtr->Available_Money()) + 1 +
+                PlayerPtr->StolenBuildingsCredits,
+            PlayerPtr->HarvestedCredits +
+                static_cast<unsigned>(PlayerPtr->Control.InitialCredits) + 1);
   economy = std::min(economy, 150);
 
   int total = uspoints * leadership / 100 + uspoints * economy / 100;
@@ -1038,14 +1039,14 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     /*
     ** Draw the Tanya character running away from the building
     */
-    CC_Draw_Shape(
-        rmboptr,
-        ramboclass->DoControls[DO_WALK].Frame +
-            ramboclass->DoControls[DO_WALK].Jump * 6 +
-            (static_cast<unsigned>(i) >> 1) % ramboclass->DoControls[DO_WALK].Count,
-        i + 32, 40, WINDOW_MAIN,
-        SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
-        ColorRemaps[PCOLOR_RED].RemapTable, DisplayClass::UnitShadow);
+    CC_Draw_Shape(rmboptr,
+                  ramboclass->DoControls[DO_WALK].Frame +
+                      ramboclass->DoControls[DO_WALK].Jump * 6 +
+                      (static_cast<unsigned>(i) >> 1) %
+                          ramboclass->DoControls[DO_WALK].Count,
+                  i + 32, 40, WINDOW_MAIN,
+                  SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
+                  ColorRemaps[PCOLOR_RED].RemapTable, DisplayClass::UnitShadow);
     HidPage.Blit(SeenPage, 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48);
     /*BG		if (!Keyboard->Check()) */ Call_Back_Delay(1);
   }
@@ -1527,9 +1528,8 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
         if (ascii >= 'a' && ascii <= 'z') ascii -= 'a' - 'A';
         if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
           HidPage.Blit(SeenPage, (xpos + index * 6) * RESFACTOR,
-                       (ypos - 100) * RESFACTOR,
-                       (xpos + index * 6) * RESFACTOR, ypos * RESFACTOR,
-                       6 * RESFACTOR, 6 * RESFACTOR);
+                       (ypos - 100) * RESFACTOR, (xpos + index * 6) * RESFACTOR,
+                       ypos * RESFACTOR, 6 * RESFACTOR, 6 * RESFACTOR);
 #ifdef SEENBUF_COPY
           HidPage.Blit(*PseudoSeenBuff, (xpos + (index * 6)) * RESFACTOR,
                        (ypos - 100) * RESFACTOR,
@@ -1537,9 +1537,8 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
                        6 * RESFACTOR, 6 * RESFACTOR);
 #endif
           HidPage.Blit(HidPage, (xpos + index * 6) * RESFACTOR,
-                       (ypos - 100) * RESFACTOR,
-                       (xpos + index * 6) * RESFACTOR, ypos * RESFACTOR,
-                       6 * RESFACTOR, 6 * RESFACTOR);
+                       (ypos - 100) * RESFACTOR, (xpos + index * 6) * RESFACTOR,
+                       ypos * RESFACTOR, 6 * RESFACTOR, 6 * RESFACTOR);
           str[index] = ascii;
           str[index + 1] = 0;
 
@@ -1887,9 +1886,9 @@ void Multi_Score_Presentation() {
   SeenPage.Clear();
   HidPage.Clear();
   Hide_Mouse();
-  void* anim = Open_Animation(
-      "MLTIPLYR.WSA", nullptr, 0L,
-      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, ScorePalette);
+  void* anim =
+      Open_Animation("MLTIPLYR.WSA", nullptr, 0L,
+                     WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, ScorePalette);
   /*
   ** Display the background animation
   */

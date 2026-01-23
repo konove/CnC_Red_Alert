@@ -66,7 +66,6 @@ class CCFileClass : public CDFileClass {
   }
   int Open(int rights = READ) override;
   int Is_Open() const override;
-  int Is_Available(int forced = false) override;
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;
@@ -74,6 +73,9 @@ class CCFileClass : public CDFileClass {
   void Close() override;
   void Error(int error, int canretry = false,
              char const* filename = nullptr) override;
+
+ protected:
+  int Do_Is_Available(AvailabilityCheck mode) override;
 
  private:
   /*

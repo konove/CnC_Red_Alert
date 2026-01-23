@@ -129,7 +129,7 @@ MixFileClass::MixFileClass(const char* filename) {
     exit(EXIT_FAILURE);
   }
 
-  if (file.Is_Available(true)) {
+  if (file.Is_Available_Strict()) {
     FileHeader fileheader;
 
     file.Open();

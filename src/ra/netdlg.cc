@@ -1372,8 +1372,8 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  int d_dialog_w = 320 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 200 * RESFACTOR;                       // dialog height
+  int d_dialog_w = 320 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 200 * RESFACTOR;                     // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
@@ -1446,8 +1446,7 @@ static int Net_Join_Dialog() {
   int d_options_w = d_playerlist_w;
   int d_options_h = (5 * 6 + 4) * RESFACTOR;
   int d_options_x = d_playerlist_x;
-  int d_options_y =
-      d_playerlist_y + d_playerlist_h + d_margin2 - 2 * RESFACTOR;
+  int d_options_y = d_playerlist_y + d_playerlist_h + d_margin2 - 2 * RESFACTOR;
 
   int d_message1_w = d_dialog_w - d_margin1 * 2 + 4 * RESFACTOR;
   int d_message1_h = 14 * d_txt6_h + 3 * RESFACTOR;
@@ -2109,9 +2108,9 @@ static int Net_Join_Dialog() {
                Get_Mouse_X() <= d_options_x + d_options_w &&
                Get_Mouse_Y() >= d_options_y &&
                Get_Mouse_Y() <= d_options_y + d_options_h)) {
-            Session.Messages.Add_Message(
-                nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
-                PCOLOR_BROWN, TPF_TEXT, 1200);
+            Session.Messages.Add_Message(nullptr, 0,
+                                         Text_String(TXT_ONLY_HOST_CAN_MODIFY),
+                                         PCOLOR_BROWN, TPF_TEXT, 1200);
             Sound_Effect(VOC_SYS_ERROR);
             display = REDRAW_MESSAGE;
           }
@@ -2122,8 +2121,7 @@ static int Net_Join_Dialog() {
             Keyboard->MouseQX < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
             Keyboard->MouseQY > d_color_y &&
             Keyboard->MouseQY < d_color_y + d_color_h) {
-          Session.PrefColor =
-              static_cast<PlayerColorType>(
+          Session.PrefColor = static_cast<PlayerColorType>(
               (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
           Session.ColorIdx = Session.PrefColor;
 
@@ -2137,9 +2135,9 @@ static int Net_Join_Dialog() {
           }
           name_edt.Flag_To_Redraw();
 
-          Session.Messages.Set_Edit_Color(
-              Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                       : Session.ColorIdx);
+          Session.Messages.Set_Edit_Color(Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                                              ? PCOLOR_REALLY_BLUE
+                                              : Session.ColorIdx);
 
           display = REDRAW_COLORS;
         }
@@ -2189,7 +2187,8 @@ static int Net_Join_Dialog() {
             name_edt.Flag_To_Redraw();
             port::SafeCopy(Session.Handle, namebuf);
 #ifndef OLDWAY
-            Session.House = static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
+            Session.House =
+                static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
 #endif
             join_index = gamelist.Current_Index();
             parms_received = 0;
@@ -2277,7 +2276,8 @@ static int Net_Join_Dialog() {
         name_edt.Flag_To_Redraw();
         port::SafeCopy(Session.Handle, namebuf);
 #ifndef OLDWAY
-        Session.House = static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
+        Session.House =
+            static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
 #endif
         join_index = gamelist.Current_Index();
         parms_received = 0;
@@ -2351,8 +2351,7 @@ static int Net_Join_Dialog() {
         //	Force user to enter a name
         //...............................................................
         if (strlen(namebuf) == 0) {
-          Session.Messages.Add_Message(nullptr, 0,
-                                       Text_String(TXT_NAME_ERROR),
+          Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_NAME_ERROR),
                                        PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -2385,7 +2384,8 @@ static int Net_Join_Dialog() {
         port::SafeCopy(Session.Handle, namebuf);
         port::SafeCopy(Session.GameName, namebuf);
 #ifndef OLDWAY
-        Session.House = static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
+        Session.House =
+            static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
 #endif
 
         name_edt.Clear_Focus();
@@ -2484,7 +2484,7 @@ static int Net_Join_Dialog() {
                   : Session.GPacket.Message.Color,
               Session.GPacket.Message.Buf,
               Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                       : Session.ColorIdx,
+                                                     : Session.ColorIdx,
               TPF_TEXT, -1);
           Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                         ? PCOLOR_REALLY_BLUE
@@ -3080,15 +3080,13 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
   //	Validate join_index
   //------------------------------------------------------------------------
   if (join_index < 1) {
-    Session.Messages.Add_Message(nullptr, 0,
-                                 Text_String(TXT_MUST_SELECT_GAME),
+    Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_MUST_SELECT_GAME),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
     return false;
   }
   if (Session.Games.Count() <= 1 || join_index > Session.Games.Count()) {
-    Session.Messages.Add_Message(nullptr, 0,
-                                 Text_String(TXT_NOTHING_TO_JOIN),
+    Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_NOTHING_TO_JOIN),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
     return false;
@@ -3108,8 +3106,7 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
   //	The game must be open
   //------------------------------------------------------------------------
   if (!Session.Games[join_index]->Game.IsOpen) {
-    Session.Messages.Add_Message(nullptr, 0,
-                                 Text_String(TXT_GAME_IS_CLOSED),
+    Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_GAME_IS_CLOSED),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
     return false;
@@ -4088,8 +4085,8 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  int d_dialog_w = 320 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 200 * RESFACTOR;                       // dialog height
+  int d_dialog_w = 320 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 200 * RESFACTOR;                     // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
@@ -4503,9 +4500,9 @@ static int Net_New_Dialog() {
         Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + d_playerlist_w / 2,
                          d_playerlist_y - d_txt6_h, scheme, TBLACK,
                          TPF_TEXT | TPF_CENTER);
-        Fancy_Text_Print(
-            TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w / 2,
-            d_scenariolist_y - d_txt6_h, scheme, TBLACK, TPF_TEXT | TPF_CENTER);
+        Fancy_Text_Print(TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w / 2,
+                         d_scenariolist_y - d_txt6_h, scheme, TBLACK,
+                         TPF_TEXT | TPF_CENTER);
         Fancy_Text_Print(TXT_COUNT, d_count_x - 2 * RESFACTOR, d_count_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
         Fancy_Text_Print(TXT_LEVEL, d_level_x - 2 * RESFACTOR, d_level_y,
@@ -4653,9 +4650,9 @@ static int Net_New_Dialog() {
           break;
 
         } else if (index < 0 || index >= playerlist.Count()) {
-          Session.Messages.Add_Message(
-              nullptr, 0, Text_String(TXT_SELECT_PLAYER_REJECT),
-              PCOLOR_BROWN, TPF_TEXT, 1200);
+          Session.Messages.Add_Message(nullptr, 0,
+                                       Text_String(TXT_SELECT_PLAYER_REJECT),
+                                       PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
           break;
@@ -4793,8 +4790,7 @@ static int Net_New_Dialog() {
           rc = true;
           process = false;
         } else {
-          Session.Messages.Add_Message(nullptr, 0,
-                                       Text_String(TXT_ONLY_ONE),
+          Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_ONLY_ONE),
                                        PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -4929,7 +4925,7 @@ static int Net_New_Dialog() {
                   : Session.GPacket.Message.Color,
               Session.GPacket.Message.Buf,
               Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                       : Session.ColorIdx,
+                                                     : Session.ColorIdx,
               TPF_TEXT, -1);
 
           Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
@@ -5094,8 +5090,9 @@ static int Net_New_Dialog() {
               Session.FrameSendRate * Session.FrameSendRate,
           Session.FrameSendRate * 2);
     } else {
-      Session.MaxAhead = std::max(static_cast<unsigned>(Ipx.Global_Response_Time() / 8),
-                                  NETWORK_MIN_MAX_AHEAD);
+      Session.MaxAhead =
+          std::max(static_cast<unsigned>(Ipx.Global_Response_Time() / 8),
+                   NETWORK_MIN_MAX_AHEAD);
     }
 
     Ipx.Set_Timing(25, static_cast<unsigned long>(-1), 1000);
@@ -5712,7 +5709,8 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
       w += (d_margin * 5);
     }
 #else
-    w = std::max(String_Pixel_Width(buf3), static_cast<unsigned>(w)) * RESFACTOR;
+    w = std::max(String_Pixel_Width(buf3), static_cast<unsigned>(w)) *
+        RESFACTOR;
     w += d_margin * 5;
 #endif
 
@@ -7387,8 +7385,7 @@ int Update_WWChat() {
   //------------------------------------------------------------------------
   j = sizeof(WWPersons) / sizeof(struct WWPerson);
   i = Random_Pick(0, j - 1);
-  if (TickCount - WWPersons[i].LastTime < 1800 &&
-      WWPersons[i].LastTime != 0) {
+  if (TickCount - WWPersons[i].LastTime < 1800 && WWPersons[i].LastTime != 0) {
     return 0;
   }
 
@@ -7540,8 +7537,8 @@ static int Net_Fake_New_Dialog() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  int d_dialog_w = 120 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 80 * RESFACTOR;                        // dialog height
+  int d_dialog_w = 120 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 80 * RESFACTOR;                      // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
@@ -8097,8 +8094,8 @@ static int Net_Fake_New_Dialog() {
               Session.FrameSendRate * Session.FrameSendRate,
           Session.FrameSendRate * 2);
     } else {
-      Session.MaxAhead = std::max<int>(Ipx.Global_Response_Time() / 8,
-                                       NETWORK_MIN_MAX_AHEAD);
+      Session.MaxAhead =
+          std::max<int>(Ipx.Global_Response_Time() / 8, NETWORK_MIN_MAX_AHEAD);
     }
 
     //.....................................................................
@@ -8330,8 +8327,8 @@ static int Net_Fake_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  int d_dialog_w = 120 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 80 * RESFACTOR;                        // dialog height
+  int d_dialog_w = 120 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 80 * RESFACTOR;                      // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord

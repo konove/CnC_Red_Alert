@@ -883,7 +883,7 @@ void Destroy_Null_Connection(int id, int error) {
     Session.Messages.Add_Message(
         nullptr, 0, txt,
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                   : housep->RemapColor,
+                                                 : housep->RemapColor,
         TPF_TEXT, Rule.MessageDelay * TICKS_PER_MINUTE);
     Map.Flag_To_Redraw(false);
   }
@@ -917,7 +917,7 @@ void Destroy_Null_Connection(int id, int error) {
     Session.Messages.Add_Message(
         nullptr, 0, txt,
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                   : housep->RemapColor,
+                                                 : housep->RemapColor,
         TPF_TEXT, Rule.MessageDelay * TICKS_PER_MINUTE);
     Map.Flag_To_Redraw(false);
   }
@@ -950,8 +950,8 @@ GameType Select_Serial_Dialog() {
   /*
   ** Dialog & button dimensions
   */
-  int d_dialog_w = 160 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 94 * RESFACTOR;                        // dialog height
+  int d_dialog_w = 160 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 94 * RESFACTOR;                      // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = 80 * RESFACTOR;
   //	int d_dialog_y = ((136 * RESFACTOR - d_dialog_h) / 2);	// dialog
@@ -1689,8 +1689,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*
   ** Dialog & button dimensions
   */
-  int d_dialog_w = 320 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 200 * RESFACTOR;                       // dialog height
+  int d_dialog_w = 320 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 200 * RESFACTOR;                     // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // dialog y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
@@ -2905,8 +2905,8 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the init string list by name then number
   */
-  qsort(&Session.InitStrings[0], Session.InitStrings.Count(),
-        sizeof(char*), Init_String_Compare);
+  qsort(&Session.InitStrings[0], Session.InitStrings.Count(), sizeof(char*),
+        Init_String_Compare);
 
   /*........................................................................
   Build the list
@@ -2983,8 +2983,8 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 320 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 200 * RESFACTOR;                       // dialog height
+  int d_dialog_w = 320 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 200 * RESFACTOR;                     // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // dialog y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
@@ -3314,9 +3314,9 @@ int Com_Scenario_Dialog(bool skirmish) {
   Session.ColorIdx = Session.PrefColor;     // init my preferred color
   port::SafeCopy(namebuf, Session.Handle);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
-  name_edt.Set_Color(&ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                      ? PCOLOR_REALLY_BLUE
-                                      : Session.ColorIdx]);
+  name_edt.Set_Color(
+      &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                          : Session.ColorIdx]);
 
 #ifdef OLDWAY
   if (Session.House == HOUSE_GOOD) {
@@ -3770,12 +3770,10 @@ int Com_Scenario_Dialog(bool skirmish) {
         ------------------------------------------------------------------*/
         case KN_LMOUSE:
           if (Keyboard->MouseQX > cbox_x[0] &&
-              Keyboard->MouseQX <
-                  cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
+              Keyboard->MouseQX < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
               Keyboard->MouseQY > d_color_y &&
               Keyboard->MouseQY < d_color_y + d_color_h) {
-            Session.PrefColor =
-                static_cast<PlayerColorType>(
+            Session.PrefColor = static_cast<PlayerColorType>(
                 (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
             Session.ColorIdx = Session.PrefColor;
             if (display < REDRAW_COLORS) display = REDRAW_COLORS;
@@ -3787,7 +3785,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             name_edt.Flag_To_Redraw();
             Session.Messages.Set_Edit_Color(
                 Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                         : Session.ColorIdx);
+                                                       : Session.ColorIdx);
             port::SafeCopy(Session.Handle, namebuf);
             transmit = true;
             changed = true;
@@ -3832,7 +3830,8 @@ int Com_Scenario_Dialog(bool skirmish) {
           break;
 #else
         case BUTTON_HOUSE | KN_BUTTON:
-          Session.House = static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
+          Session.House =
+              static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
           port::SafeCopy(Session.Handle, namebuf);
           display = REDRAW_BACKGROUND;
           transmit = true;
@@ -3891,8 +3890,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         ------------------------------------------------------------------*/
         case BUTTON_CREDITS | KN_BUTTON:
           Session.Options.Credits = creditsgauge.Get_Value();
-          Session.Options.Credits =
-              (Session.Options.Credits + 250) / 500 * 500;
+          Session.Options.Credits = (Session.Options.Credits + 250) / 500 * 500;
           if (display < REDRAW_PARMS) display = REDRAW_PARMS;
           if (housebtn.IsDropped) {
             housebtn.Collapse();
@@ -4099,7 +4097,7 @@ int Com_Scenario_Dialog(bool skirmish) {
               Session.Messages.Add_Message(
                   SendPacket.Name, SendPacket.ID, SendPacket.Message.Message,
                   Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                           : Session.ColorIdx,
+                                                         : Session.ColorIdx,
                   TPF_TEXT, -1);
               Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                             ? PCOLOR_REALLY_BLUE
@@ -4416,11 +4414,13 @@ int Com_Scenario_Dialog(bool skirmish) {
             case SERIAL_MESSAGE:
               Session.Messages.Add_Message(
                   ReceivePacket.Name,
-                  static_cast<PlayerColorType>(ReceivePacket.ID) == PCOLOR_DIALOG_BLUE
+                  static_cast<PlayerColorType>(ReceivePacket.ID) ==
+                          PCOLOR_DIALOG_BLUE
                       ? PCOLOR_REALLY_BLUE
                       : static_cast<PlayerColorType>(ReceivePacket.ID),
                   ReceivePacket.Message.Message,
-                  static_cast<PlayerColorType>(ReceivePacket.ID) == PCOLOR_DIALOG_BLUE
+                  static_cast<PlayerColorType>(ReceivePacket.ID) ==
+                          PCOLOR_DIALOG_BLUE
                       ? PCOLOR_REALLY_BLUE
                       : static_cast<PlayerColorType>(ReceivePacket.ID),
                   TPF_TEXT, -1);
@@ -4585,10 +4585,9 @@ int Com_Scenario_Dialog(bool skirmish) {
                            Session.FrameSendRate * Session.FrameSendRate,
                        Session.FrameSendRate * 2);
         } else {
-          Session.MaxAhead =
-              std::max(
+          Session.MaxAhead = std::max(
               static_cast<unsigned>(SendPacket.ScenarioInfo.ResponseTime / 8),
-                       MODEM_MIN_MAX_AHEAD);
+              MODEM_MIN_MAX_AHEAD);
         }
       }
       SendPacket.ID = Session.ModemType;
@@ -4703,7 +4702,6 @@ int Com_Scenario_Dialog(bool skirmish) {
 
       if (!skirmish) Shutdown_Modem();
     }
-
   }
 
   /*------------------------------------------------------------------------
@@ -4902,8 +4900,8 @@ int Com_Show_Scenario_Dialog() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 320 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 200 * RESFACTOR;                       // dialog height
+  int d_dialog_w = 320 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 200 * RESFACTOR;                     // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // dialog y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
@@ -5168,9 +5166,9 @@ int Com_Show_Scenario_Dialog() {
   Session.ColorIdx = Session.PrefColor;     // init my preferred color
   port::SafeCopy(namebuf, Session.Handle);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
-  name_edt.Set_Color(&ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                      ? PCOLOR_REALLY_BLUE
-                                      : Session.ColorIdx]);
+  name_edt.Set_Color(
+      &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                          : Session.ColorIdx]);
 
   //........................................................................
   // List boxes
@@ -5538,8 +5536,7 @@ int Com_Show_Scenario_Dialog() {
           /*.........................................................
           Compute my preferred color as the one I clicked on.
           .........................................................*/
-          Session.PrefColor =
-              static_cast<PlayerColorType>(
+          Session.PrefColor = static_cast<PlayerColorType>(
               (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
           changed = true;
 
@@ -5552,14 +5549,13 @@ int Com_Show_Scenario_Dialog() {
           }
           Session.ColorIdx = Session.PrefColor;
 
-          name_edt.Set_Color(
-              &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                               ? PCOLOR_REALLY_BLUE
-                               : Session.ColorIdx]);
+          name_edt.Set_Color(&ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                                              ? PCOLOR_REALLY_BLUE
+                                              : Session.ColorIdx]);
           name_edt.Flag_To_Redraw();
-          Session.Messages.Set_Edit_Color(
-              Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                       : Session.ColorIdx);
+          Session.Messages.Set_Edit_Color(Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                                              ? PCOLOR_REALLY_BLUE
+                                              : Session.ColorIdx);
           if (display < REDRAW_COLORS) display = REDRAW_COLORS;
           port::SafeCopy(Session.Handle, namebuf);
           transmit = true;
@@ -5575,9 +5571,9 @@ int Com_Show_Scenario_Dialog() {
                     Get_Mouse_X() <= d_options_x + d_options_w &&
                     Get_Mouse_Y() >= d_options_y &&
                     Get_Mouse_Y() <= d_options_y + d_options_h)) {
-          Session.Messages.Add_Message(
-              nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
-              PCOLOR_BROWN, TPF_TEXT, 1200);
+          Session.Messages.Add_Message(nullptr, 0,
+                                       Text_String(TXT_ONLY_HOST_CAN_MODIFY),
+                                       PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
           if (housebtn.IsDropped) {
@@ -5609,7 +5605,8 @@ int Com_Show_Scenario_Dialog() {
         break;
 #else   // OLDWAY
       case BUTTON_HOUSE | KN_BUTTON:
-        Session.House = static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
+        Session.House =
+            static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
         port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         // display = REDRAW_BACKGROUND;
@@ -5699,7 +5696,7 @@ int Com_Show_Scenario_Dialog() {
           Session.Messages.Add_Message(
               SendPacket.Name, SendPacket.ID, SendPacket.Message.Message,
               Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                       : Session.ColorIdx,
+                                                     : Session.ColorIdx,
               TPF_TEXT, -1);
           Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                         ? PCOLOR_REALLY_BLUE
@@ -6018,10 +6015,10 @@ int Com_Show_Scenario_Dialog() {
                                          : Session.ColorIdx]);
               item = new char[MPLAYER_NAME_MAX +
                               64];  // Need room to display country name
-              playerlist.Add_Item(
-                  item, &ColorRemaps[TheirColor == PCOLOR_DIALOG_BLUE
-                                         ? PCOLOR_REALLY_BLUE
-                                         : TheirColor]);
+              playerlist.Add_Item(item,
+                                  &ColorRemaps[TheirColor == PCOLOR_DIALOG_BLUE
+                                                   ? PCOLOR_REALLY_BLUE
+                                                   : TheirColor]);
 
               first = false;
               transmit = true;
@@ -6066,10 +6063,9 @@ int Com_Show_Scenario_Dialog() {
                     Text_String(
                         HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
-            playerlist.Colors[1] =
-                &ColorRemaps[TheirColor == PCOLOR_DIALOG_BLUE
-                                 ? PCOLOR_REALLY_BLUE
-                                 : TheirColor];
+            playerlist.Colors[1] = &ColorRemaps[TheirColor == PCOLOR_DIALOG_BLUE
+                                                    ? PCOLOR_REALLY_BLUE
+                                                    : TheirColor];
 
             gamelist.Flag_To_Redraw();
             playerlist.Flag_To_Redraw();
@@ -6141,7 +6137,8 @@ int Com_Show_Scenario_Dialog() {
                     NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
                     starttime = TickCount;
-                    while ((NullModem.Num_Send() && TickCount - starttime < PACKET_SENDING_TIMEOUT) ||
+                    while ((NullModem.Num_Send() &&
+                            TickCount - starttime < PACKET_SENDING_TIMEOUT) ||
                            TickCount - starttime < 60) {
                       NullModem.Service();
                     }
@@ -6238,10 +6235,10 @@ int Com_Show_Scenario_Dialog() {
                                Session.FrameSendRate * Session.FrameSendRate,
                            Session.FrameSendRate * 2);
             } else {
-              Session.MaxAhead = std::max(
-                  static_cast<unsigned>(
+              Session.MaxAhead =
+                  std::max(static_cast<unsigned>(
                                ReceivePacket.ScenarioInfo.ResponseTime / 8),
-                  MODEM_MIN_MAX_AHEAD);
+                           MODEM_MIN_MAX_AHEAD);
             }
 
             process = false;
@@ -6257,11 +6254,13 @@ int Com_Show_Scenario_Dialog() {
 
             Session.Messages.Add_Message(
                 ReceivePacket.Name,
-                static_cast<PlayerColorType>(ReceivePacket.ID) == PCOLOR_DIALOG_BLUE
+                static_cast<PlayerColorType>(ReceivePacket.ID) ==
+                        PCOLOR_DIALOG_BLUE
                     ? PCOLOR_REALLY_BLUE
                     : static_cast<PlayerColorType>(ReceivePacket.ID),
                 ReceivePacket.Message.Message,
-                static_cast<PlayerColorType>(ReceivePacket.ID) == PCOLOR_DIALOG_BLUE
+                static_cast<PlayerColorType>(ReceivePacket.ID) ==
+                        PCOLOR_DIALOG_BLUE
                     ? PCOLOR_REALLY_BLUE
                     : static_cast<PlayerColorType>(ReceivePacket.ID),
                 TPF_TEXT, -1);
@@ -6474,8 +6473,8 @@ static int Phone_Dialog() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 280 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 160 * RESFACTOR;                       // dialog height
+  int d_dialog_w = 280 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 160 * RESFACTOR;                     // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // dialog y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
@@ -7060,8 +7059,8 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 230 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 110 * RESFACTOR;                       // dialog height
+  int d_dialog_w = 230 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 110 * RESFACTOR;                     // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (136 * RESFACTOR - d_dialog_h) / 2;  // dialog y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
@@ -7071,8 +7070,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   int d_name_w =
       (PhoneEntryClass::PHONE_MAX_NAME - 1) * 6 * RESFACTOR + 3 * RESFACTOR;
   int d_name_h = 9 * RESFACTOR;
-  int d_name_x =
-      d_dialog_x + (d_dialog_w - d_name_w) * 3 / 4 - 5 * RESFACTOR;
+  int d_name_x = d_dialog_x + (d_dialog_w - d_name_w) * 3 / 4 - 5 * RESFACTOR;
   int d_name_y = d_dialog_y + 25 * RESFACTOR;
 
   int d_number_w =

@@ -230,8 +230,8 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
   /*
   ** Dialog & button dimensions
   */
-  int d_dialog_w = 200 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 90 * RESFACTOR;                        // dialog height
+  int d_dialog_w = 200 * RESFACTOR;                     // dialog width
+  int d_dialog_h = 90 * RESFACTOR;                      // dialog height
   int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
@@ -400,8 +400,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
     if (!gametype) {
       NullModem.Service();
 
-      if (NullModem.Get_Message(&receive_packet, (int*)&packet_len) >
-          0) {
+      if (NullModem.Get_Message(&receive_packet, (int*)&packet_len) > 0) {
         if (receive_packet.Command == NET_FILE_CHUNK) {
           if (receive_packet.BlockNumber == last_received_block + 1) {
             save_file.Write(receive_packet.RawData, receive_packet.BlockLength);
@@ -516,8 +515,8 @@ bool Send_Remote_File(char* file_name, int gametype) {
   */
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
-  int d_dialog_w = 240 * factor;                       // dialog width
-  int d_dialog_h = 90 * factor;                        // dialog height
+  int d_dialog_w = 240 * factor;                     // dialog width
+  int d_dialog_h = 90 * factor;                      // dialog height
   int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord

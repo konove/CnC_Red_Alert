@@ -87,7 +87,6 @@ class RawFileClass : public FileClass {
   char const* Set_Name(char const* filename) override;
   int Create() override;
   int Delete() override;
-  int Is_Available(int forced = false) override;
   int Is_Open() const override;
   int Open(char const* filename, int rights = READ) override;
   int Open(int rights = READ) override;
@@ -114,6 +113,8 @@ class RawFileClass : public FileClass {
   int BiasLength;
 
  protected:
+  int Do_Is_Available(AvailabilityCheck mode) override;
+
   /*
   **	This function returns the largest size a low level DOS read or write may
   **	perform. Larger file transfers are performed in chunks of this size or

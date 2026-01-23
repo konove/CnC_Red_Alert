@@ -66,7 +66,6 @@ class BufferIOFileClass : public RawFileClass {
   void Free();
   bool Commit();
   char const* Set_Name(char const* filename) override;
-  int Is_Available(int forced = false) override;
   int Is_Open() const override;
   int Open(char const* filename, int rights = READ) override;
   int Open(int rights = READ) override;
@@ -77,6 +76,9 @@ class BufferIOFileClass : public RawFileClass {
   void Close() override;
 
   enum { MINIMUM_BUFFER_SIZE = 1024 };
+
+ protected:
+  int Do_Is_Available(AvailabilityCheck mode) override;
 
  private:
   unsigned IsAllocated : 1;

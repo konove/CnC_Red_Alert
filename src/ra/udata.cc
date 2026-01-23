@@ -822,8 +822,8 @@ UnitTypeClass::UnitTypeClass(
     bool is_turret_equipped, bool is_radar_equipped, bool is_fire_anim,
     bool is_lock_turret, bool is_gigundo, bool is_animating, bool is_jammer,
     bool is_gapper, int rotation, int toffset, MissionType order)
-    : TechnoTypeClass(RTTI_UNITTYPE, static_cast<int>(type), name, ininame, remap,
-                      verticaloffset, primaryoffset, primarylateral,
+    : TechnoTypeClass(RTTI_UNITTYPE, static_cast<int>(type), name, ininame,
+                      remap, verticaloffset, primaryoffset, primarylateral,
                       secondaryoffset, secondarylateral, is_nominal,
                       is_stealthy, true, true, is_insignificant, false, false,
                       is_turret_equipped, true, true, rotation, SPEED_TRACK),
@@ -866,9 +866,7 @@ UnitTypeClass::UnitTypeClass(
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* UnitTypeClass::operator new(size_t) throw() {
-  return UnitTypes.Alloc();
-}
+void* UnitTypeClass::operator new(size_t) throw() { return UnitTypes.Alloc(); }
 
 /***********************************************************************************************
  * UnitTypeClass::operator delete -- Return a unit type class object back to the
@@ -1087,7 +1085,8 @@ void UnitTypeClass::One_Time() {
 #endif
     if (ptr != nullptr) {
       largest = std::max(largest, static_cast<int>(Get_Build_Frame_Width(ptr)));
-      largest = std::max(largest, static_cast<int>(Get_Build_Frame_Height(ptr)));
+      largest =
+          std::max(largest, static_cast<int>(Get_Build_Frame_Height(ptr)));
     }
 
     static_cast<int&>(uclass.MaxSize) = std::max(largest, 8);

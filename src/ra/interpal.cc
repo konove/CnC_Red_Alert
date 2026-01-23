@@ -204,7 +204,8 @@ void Create_Palette_Interpolation_Table() {
         }
       }
 
-      PaletteInterpolationTable[i][j] = static_cast<unsigned char>(index_of_closest_color);
+      PaletteInterpolationTable[i][j] =
+          static_cast<unsigned char>(index_of_closest_color);
     }
   }
 

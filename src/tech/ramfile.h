@@ -58,7 +58,6 @@ class RAMFileClass : public FileClass {
   char const* Set_Name(char const*) override { return File_Name(); }
   int Create() override;
   int Delete() override;
-  int Is_Available(int forced = false) override;
   int Is_Open() const override;
   int Open(char const* filename, int access = READ) override;
   int Open(int access = READ) override;
@@ -72,6 +71,9 @@ class RAMFileClass : public FileClass {
   void Error(int, int = false, char const* = nullptr) override {}
 
   operator char const*() { return File_Name(); }
+
+ protected:
+  int Do_Is_Available(AvailabilityCheck mode) override;
 
  private:
   /*
