@@ -45,6 +45,7 @@
 #include "ra/compat.h"
 #include "tech/buff.h"
 #include "tech/cdfile.h"
+#include "tech/wwfile.h"
 
 /*
 **	This derived class for file access knows about mixfiles (packed files).

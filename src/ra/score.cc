@@ -969,13 +969,11 @@ void Cycle_Wait_Click(bool cycle) {
 }
 
 void ScoreClass::Do_Nod_Buildings_Graph() {
-  int shapenum;
-  InfantryTypeClass const* ramboclass;
-
-  void const* factptr = MFCD::Retrieve("POWR.SHP");
-  void const* rmboptr = MFCD::Retrieve("E7.SHP");
-  void const* fball1ptr = MFCD::Retrieve("FBALL1.SHP");
-  ramboclass = &InfantryTypeClass::As_Reference(INFANTRY_TANYA);
+  const auto power_plant_shape = MFCD::RetrieveData("POWR.SHP");
+  const auto tanya_shape = MFCD::RetrieveData("E7.SHP");
+  const auto fireball_shape = MFCD::RetrieveData("FBALL1.SHP");
+  const InfantryTypeClass* ramboclass =
+      &InfantryTypeClass::As_Reference(INFANTRY_TANYA);
 
   /*
   ** Print the # of buildings on the hidpage so we only need to do it once
@@ -993,9 +991,9 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
   */
   for (int i = 0; i < 98; i++) {
     HidPage.Blit(HidPage, BUILDING_X, BUILDING_Y, 0, 0, 320 - BUILDING_X, 48);
-    shapenum = 0;  // no damage
+    int shapenum = 0;  // no damage
     if (i >= 60) {
-      shapenum = Extract_Shape_Count(factptr) - 2;  // some damage
+      shapenum = Extract_Shape_Count(power_plant_shape) - 2;  // some damage
       if (i == 60) {
 #ifndef PORTABLE  // would blit SeenPage to HidPage, causing the "factory" to
                   // persist
@@ -1004,7 +1002,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
         Sound_Effect(VOC_CRUMBLE);
       }
       if (i > 65) {
-        shapenum = Extract_Shape_Count(factptr) - 1;  // mega damage
+        shapenum = Extract_Shape_Count(power_plant_shape) - 1;  // mega damage
       }
     }
 
@@ -1012,7 +1010,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     ** Draw the building before Rambo
     */
     if (i < 68) {
-      CC_Draw_Shape(factptr, shapenum, 0, 0, WINDOW_MAIN,
+      CC_Draw_Shape(power_plant_shape, shapenum, 0, 0, WINDOW_MAIN,
                     SHAPE_GHOST | SHAPE_FADING | SHAPE_WIN_REL,
                     ColorRemaps[PCOLOR_GOLD].RemapTable,
                     DisplayClass::UnitShadow);
@@ -1022,16 +1020,16 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     ** Now draw some fires, if appropriate
     */
     if (i >= 61) {
-      int firecount = Extract_Shape_Count(fball1ptr);
+      int firecount = Extract_Shape_Count(fireball_shape);
       int shapeindex = (i - 61) / 2;
       if (shapeindex < firecount) {
-        CC_Draw_Shape(fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,
+        CC_Draw_Shape(fireball_shape, shapeindex, 10, 10, WINDOW_MAIN,
                       SHAPE_CENTER | SHAPE_WIN_REL);
       }
       if (i > 64) {
         shapeindex = (i - 64) / 2;
         if (shapeindex < firecount) {
-          CC_Draw_Shape(fball1ptr, shapeindex, 50, 30, WINDOW_MAIN,
+          CC_Draw_Shape(fireball_shape, shapeindex, 50, 30, WINDOW_MAIN,
                         SHAPE_CENTER | SHAPE_WIN_REL);
         }
       }
@@ -1039,7 +1037,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     /*
     ** Draw the Tanya character running away from the building
     */
-    CC_Draw_Shape(rmboptr,
+    CC_Draw_Shape(tanya_shape,
                   ramboclass->DoControls[DO_WALK].Frame +
                       ramboclass->DoControls[DO_WALK].Jump * 6 +
                       (static_cast<unsigned>(i) >> 1) %
@@ -1048,7 +1046,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
                   SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
                   ColorRemaps[PCOLOR_RED].RemapTable, DisplayClass::UnitShadow);
     HidPage.Blit(SeenPage, 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48);
-    /*BG		if (!Keyboard->Check()) */ Call_Back_Delay(1);
+    Call_Back_Delay(1);
   }
 
   int i = std::max(GBKilled, NBKilled);
@@ -1057,14 +1055,8 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     Count_Up_Print("%d", q, NBKilled, BUILDING_X + 16, BUILDING_Y + 10);
     Set_Font_Palette(_bluepal);
     Count_Up_Print("%d", q, GBKilled, BUILDING_X + 16, BUILDING_Y + 22);
-// BG		if (!Keyboard->Check()) {
-#ifdef WIN32
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
-#else
-    Play_Sample(Beepy6, 255, Options.Normalize_Volume(60));
-#endif
     Call_Back_Delay(1);
-    // BG		}
   }
   Set_Font_Palette(_redpal);
   Count_Up_Print("%d", NBKilled, NBKilled, BUILDING_X + 16, BUILDING_Y + 10);

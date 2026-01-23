@@ -134,7 +134,6 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/keyframe.h"
 #include "ra/map.h"
 #include "ra/mission.h"
 #include "ra/mouse.h"
@@ -154,7 +153,6 @@
 #include "ra/ww_audio.h"
 #include "sdllib/include/shape.h"
 #include "tech/fixed.h"
-#include "tech/rect.h"
 
 /***********************************************************************************************
  * _Counts_As_Civ_Evac -- Is the specified object a candidate for civilian evac

@@ -112,7 +112,6 @@
 #include "ra/jshell.h"
 #include "ra/keyframe.h"
 #include "ra/language.h"
-#include "ra/layer.h"
 #include "ra/logic.h"
 #include "ra/monoc.h"
 #include "ra/mouse.h"
@@ -3382,9 +3381,7 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
                    void const* fadingdata, void const* ghostdata,
                    DirType rotation, long scale) {
   int predoffset;
-#ifdef WIN32
   void* shape_pointer;
-#endif  // WIN32
 
   /*
   ** Special kludge for E3 to prevent crashes
@@ -3406,25 +3403,6 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
     int width = Get_Build_Frame_Width(shapefile);
     int height = Get_Build_Frame_Height(shapefile);
 
-#ifdef NEVER
-    /*
-    **	Perform a quick clip check against the destination rectangle.
-    */
-    if (flags & SHAPE_CENTER) {
-      if (x - width / 2 >= WindowList[window][WINDOWWIDTH]) return;
-      if (y - width / 2 >= WindowList[window][WINDOWHEIGHT]) return;
-      if (x + width / 2 < 0) return;
-      if (y + height / 2 < 0) return;
-
-    } else {
-      if (x >= WindowList[window][WINDOWWIDTH]) return;
-      if (y >= WindowList[window][WINDOWHEIGHT]) return;
-      if (x + width < 0) return;
-      if (y + height < 0) return;
-    }
-#endif
-
-#ifdef WIN32
     /*
     ** In WIn95, build shape returns a pointer to the shape not its size
     */
@@ -3435,17 +3413,7 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
           WindowList[window][WINDOWX] + LogicPage->Get_XPos(),
           WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
           WindowList[window][WINDOWWIDTH], WindowList[window][WINDOWHEIGHT]);
-      unsigned char* buffer = static_cast<unsigned char*>(
-          shape_pointer);  // Get_Shape_Header_Data((void*)shape_pointer);
-
-#else   // WIN32
-    if (Build_Frame(shapefile, shapenum, _ShapeBuffer) <=
-        (unsigned long)_ShapeBufferSize) {
-      GraphicViewPortClass draw_window(
-          LogicPage, WindowList[window][WINDOWX], WindowList[window][WINDOWY],
-          WindowList[window][WINDOWWIDTH], WindowList[window][WINDOWHEIGHT]);
-      unsigned char* buffer = (unsigned char*)_ShapeBuffer;
-#endif  // WIN32
+      unsigned char* buffer = static_cast<unsigned char*>(shape_pointer);
 
       UseOldShapeDraw = false;
       /*
@@ -3457,10 +3425,8 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
         *shape drawing
         */
         UseOldShapeDraw = true;
-#ifdef WIN32
         buffer =
             static_cast<unsigned char*>(Get_Shape_Header_Data(shape_pointer));
-#endif
 
         if (Debug_Rotate) {
           GraphicBufferClass src(width, height, buffer);
@@ -3525,6 +3491,14 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
       }
     }
   }
+}
+
+void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
+                   int y, WindowNumberType window, ShapeFlags_Type flags,
+                   void const* fadingdata, void const* ghostdata,
+                   DirType rotation, long scale) {
+  CC_Draw_Shape(shapefile.data(), shapenum, x, y, window, flags, fadingdata,
+                ghostdata, rotation, scale);
 }
 
 /***********************************************************************************************

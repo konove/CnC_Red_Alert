@@ -18,7 +18,9 @@
 #ifndef CNC_RED_ALERT_RA_CONQUER_H_
 #define CNC_RED_ALERT_RA_CONQUER_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string>
 
 #include "ra/defines.h"
@@ -625,6 +627,11 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
                            int zoomfactor);
 void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
+                   void const* fadingdata = nullptr,
+                   void const* ghostdata = nullptr, DirType rotation = DIR_N,
+                   long scale = 0x0100);
+void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
+                   int y, WindowNumberType window, ShapeFlags_Type flags,
                    void const* fadingdata = nullptr,
                    void const* ghostdata = nullptr, DirType rotation = DIR_N,
                    long scale = 0x0100);

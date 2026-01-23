@@ -500,8 +500,8 @@ unsigned short Get_Build_Frame_Y(void const* dataptr) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented *
  *=============================================================================================*/
-unsigned short Get_Build_Frame_Width(void const* dataptr) {
-  if (dataptr) {
+unsigned short Get_Build_Frame_Width(const void* dataptr) {
+  if (dataptr != nullptr) {
     return static_cast<KeyFrameHeaderType const*>(dataptr)->width;
   }
   return 0;

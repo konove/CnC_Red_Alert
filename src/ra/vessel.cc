@@ -108,7 +108,6 @@
 #include "ra/weapon.h"
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
-#include "tech/rect.h"
 
 /***********************************************************************************************
  * VesselClass::VesselClass -- Constructor for vessel class objects. *

@@ -92,6 +92,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdlib>
 
 #include "ra/abstract.h"
 #include "ra/anim.h"
@@ -134,6 +135,7 @@
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/shape.h"
+#include "sdllib/include/ww_win.h"
 #include "sdllib/include/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"

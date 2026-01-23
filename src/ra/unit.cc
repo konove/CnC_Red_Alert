@@ -163,7 +163,6 @@
 #include "sdllib/include/shape.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-#include "tech/rect.h"
 
 /***********************************************************************************************
  * Recoil_Adjust -- Adjust pixel values in direction specified. *

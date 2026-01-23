@@ -34,7 +34,9 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 /*
 *********************************** Types ***********************************
@@ -120,6 +122,7 @@ extern char* _ShapeBuffer;
 ---------------------------------- shape.c ----------------------------------
 */
 int Extract_Shape_Count(void const* buffer);
+int Extract_Shape_Count(std::span<const std::byte> span);
 void* Extract_Shape(void const* buffer, int shape);
 
 /*
