@@ -297,7 +297,7 @@ long CCFileClass::Size() {
   **	If the file is not available as a stand alone file, then search for it
   *in the *	mixfiles in order to get its size.
   */
-  if (!CDFileClass::Is_Available()) {
+  if (!CDFileClass::Do_Is_Available(AvailabilityCheck::kQuick)) {
     if (auto loc = MFCD::Offset(File_Name())) {
       return loc->size;
     }
@@ -416,7 +416,8 @@ int CCFileClass::Open(int rights) {
   **	of whether it also exists in RAM. This is slower, but allows
   **	upgrade files to work.
   */
-  if (rights & WRITE || CDFileClass::Is_Available()) {
+  if (rights & WRITE ||
+      CDFileClass::Do_Is_Available(AvailabilityCheck::kQuick)) {
     return CDFileClass::Open(rights);
   }
 

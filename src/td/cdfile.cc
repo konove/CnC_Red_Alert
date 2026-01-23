@@ -359,7 +359,7 @@ char const* CDFileClass::Set_Name(char const* filename) {
   *same if there is *	no multi-drive search path.
   */
   RawFileClass::Set_Name(filename);
-  if (IsDisabled || !First || RawFileClass::Is_Available()) {
+  if (IsDisabled || !First || RawFileClass::Do_Is_Available(AvailabilityCheck::kQuick)) {
     return File_Name();
   }
 
@@ -387,7 +387,7 @@ char const* CDFileClass::Set_Name(char const* filename) {
     *process will continue.
     */
     RawFileClass::Set_Name(path);
-    if (RawFileClass::Is_Available()) {
+    if (RawFileClass::Do_Is_Available(AvailabilityCheck::kQuick)) {
       return File_Name();
     }
 

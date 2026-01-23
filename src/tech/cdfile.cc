@@ -270,7 +270,7 @@ char const* CDFileClass::Set_Name(char const* filename) {
   // If the file system is disabled, no search paths exist, or the file
   // was found locally, return the current result immediately.
   if (is_disabled_ || search_paths_.empty() ||
-      BufferIOFileClass::Is_Available()) {
+      BufferIOFileClass::Do_Is_Available(AvailabilityCheck::kQuick)) {
     return File_Name();
   }
 
@@ -283,7 +283,7 @@ char const* CDFileClass::Set_Name(char const* filename) {
 
     // Check availability on this specific drive/path.
     BufferIOFileClass::Set_Name(full_path.c_str());
-    if (BufferIOFileClass::Is_Available()) {
+    if (BufferIOFileClass::Do_Is_Available(AvailabilityCheck::kQuick)) {
       return File_Name();
     }
   }

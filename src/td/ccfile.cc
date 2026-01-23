@@ -339,7 +339,7 @@ int CCFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) {
   if (MixFileClass::Offset(File_Name())) {
     return true;
   }
-  return CDFileClass::Is_Available();
+  return CDFileClass::Do_Is_Available(AvailabilityCheck::kQuick);
 }
 
 /***********************************************************************************************
@@ -415,7 +415,8 @@ int CCFileClass::Open(int rights) {
   **	of whether it also exists in RAM. This is slower, but allows
   **	upgrade files to work.
   */
-  if (rights & WRITE || CDFileClass::Is_Available()) {
+  if (rights & WRITE ||
+      CDFileClass::Do_Is_Available(AvailabilityCheck::kQuick)) {
     return CDFileClass::Open(rights);
   }
 
