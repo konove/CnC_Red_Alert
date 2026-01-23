@@ -570,7 +570,7 @@ void Fill_In_Data() {
   **	Since the sidebar starts up activated, adjust the home start position so
   *that *	the right edge of the map will still be visible.
   */
-  if (!Debug_Map) {
+  if (!MapEditorActive) {
     Map.Activate(1);
     //		if (Session.Type == GAME_NORMAL) {
     Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
@@ -2383,7 +2383,7 @@ bool Read_Scenario_INI(char* fname, bool) {
     **	(Must be done after all objects are read in from the INI)
     */
     if (Session.Options.AIPlayers + Session.Players.Count() < Rule.MaxPlayers &&
-        !Debug_Map) {
+        !MapEditorActive) {
       Remove_AI_Players();
     }
 
@@ -2393,7 +2393,7 @@ bool Read_Scenario_INI(char* fname, bool) {
     **	a whole bunch of units.  Session.Options.UnitCount is the total # of
     *units *	to create.
     */
-    if (!Debug_Map) {
+    if (!MapEditorActive) {
       int save_init = ScenarioInit;  // turn ScenarioInit off
       ScenarioInit = 0;
       Create_Units(ini.Get_Bool("Basic", "Official", false));

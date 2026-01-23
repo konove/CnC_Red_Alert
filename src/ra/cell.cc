@@ -510,7 +510,7 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
   **	purposes. In normal game mode, all overlays are not buildable.
   */
   if (Overlay != OVERLAY_NONE &&
-      (Overlay == OVERLAY_FLAG_SPOT || !Debug_Map ||
+      (Overlay == OVERLAY_FLAG_SPOT || !MapEditorActive ||
        OverlayTypeClass::As_Reference(Overlay).IsWall)) {
     return false;
   }
@@ -1023,7 +1023,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       /*
       **	Set up the remap table for this icon.
       */
-      if (Debug_Map && Debug_Passable) {
+      if (MapEditorActive && Debug_Passable) {
         if (::Ground[Land].Cost[0] == 0 ||
             (Cell_Occupier() != nullptr &&
              Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
@@ -1057,7 +1057,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       *draw before the placement cursor, but after drawing the *	objects
       *in the cell.
       */
-      if (Debug_Map && CurrentCell == Cell_Number()) {
+      if (MapEditorActive && CurrentCell == Cell_Number()) {
         LogicPage->Draw_Rect(x + Map.TacPixelX, y + Map.TacPixelY,
                              Map.TacPixelX + x + CELL_PIXEL_W - 1,
                              Map.TacPixelY + y + CELL_PIXEL_H - 1, YELLOW);
@@ -1088,7 +1088,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       }
 
 #ifdef SCENARIO_EDITOR
-      if (Debug_Map) {
+      if (MapEditorActive) {
         /*
         **	Draw the cell's Trigger mnemonic, if it has a trigger
         */
@@ -1168,7 +1168,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         }
 
 #ifdef SCENARIO_EDITOR
-        if (Debug_Map && Map.PendingObject) {
+        if (MapEditorActive && Map.PendingObject) {
           switch (Map.PendingObject->What_Am_I()) {
             /*
             **	Draw a template:
@@ -1313,7 +1313,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     /*
     **	Draw any objects that happen to be in or overlapping this cell.
     */
-    for (index = 0; index < count; index++) {
+    for (int index = 0; index < count; index++) {
       object = optr[index];
       int xx, yy;
       if (object->IsToDisplay &&
@@ -1322,13 +1322,12 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           Map.Coord_To_Pixel(object->Render_Coord(), xx, yy)) {
         if (_Calc_Partial_Window(x, y, xx, yy)) {
           object->Draw_It(xx, yy, WINDOW_PARTIAL);
-          if (Debug_Map) {
+          // IsToDisplay clearing moved to frame end in DisplayClass::Draw_It
+          // to prevent flickering when render rate exceeds logic tick rate.
+          if (MapEditorActive) {
             object->IsToDisplay = true;
-          } else {
-            object->IsToDisplay = false;
           }
         }
-        object->IsToDisplay = false;
       }
     }
     BEnd(BENCH_OBJECTS);

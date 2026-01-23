@@ -158,7 +158,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
             0x00E0 * RESFACTOR, 0x00C0 * RESFACTOR, 0x00A0 * RESFACTOR,
             0x0080 * RESFACTOR, 0x0060 * RESFACTOR, 0x0040 * RESFACTOR,
             0x0020 * RESFACTOR, 0x0010 * RESFACTOR, 0x0008 * RESFACTOR};
-        if (Debug_Map) {
+        if (MapEditorActive) {
           rate = Options.ScrollRate + 1;
         } else {
           rate = 8 - Inertia;
@@ -201,7 +201,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           if (Keyboard->Down(KN_LMOUSE) || IsAutoScroll) {
             distance = _rate[rate];
 
-            if (Debug_Map) {
+            if (MapEditorActive) {
               Scroll_Map(direction, distance, true);
               Counter = SCROLL_DELAY;
             } else {
@@ -217,7 +217,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         }
       }
 
-      if (!Debug_Map && !player_scrolled) {
+      if (!MapEditorActive && !player_scrolled) {
         if (!Counter) {
           Inertia--;
           if (Inertia < 0) Inertia++;

@@ -332,7 +332,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
     }
 
     ShapeFlags_Type flags = SHAPE_NORMAL;
-    if (IsSelected && Debug_Map) flags = flags | SHAPE_FADING;
+    if (IsSelected && MapEditorActive) flags = flags | SHAPE_FADING;
 
     /*
     **Terrain is always theater specific so flag it as such for Build_Frame

@@ -105,7 +105,7 @@ TabClass::TabClass()
 void TabClass::Draw_It(bool complete) {
   SidebarClass::Draw_It(complete);
 
-  if (Debug_Map) {
+  if (MapEditorActive) {
     return;
   }
 

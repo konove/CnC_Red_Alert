@@ -346,7 +346,7 @@ void SidebarClass::Init_IO() {
   /*
   ** Add the sidebar's buttons only if we're not in editor mode.
   */
-  if (!Debug_Map) {
+  if (!MapEditorActive) {
     Repair.IsSticky = true;
     Repair.ID = BUTTON_REPAIR;
     Repair.X = 0x1f2 / 2 * RESFACTOR;
@@ -692,7 +692,7 @@ bool SidebarClass::Add(RTTIType type, int id) {
   /*
   ** Add the sidebar only if we're not in editor mode.
   */
-  if (!Debug_Map) {
+  if (!MapEditorActive) {
     int column = Which_Column(type);
 
     if (Column[column].Add(type, id)) {
@@ -770,7 +770,7 @@ void SidebarClass::Draw_It(bool complete) {
 
   BStart(BENCH_SIDEBAR);
 
-  if (IsSidebarActive && (IsToRedraw || complete) && !Debug_Map) {
+  if (IsSidebarActive && (IsToRedraw || complete) && !MapEditorActive) {
     IsToRedraw = false;
 
     if (LogicPage->Lock()) {
@@ -847,17 +847,17 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
     Activate(-1);
   }
 #else
-  if (!Debug_Map) {
+  if (!MapEditorActive) {
     Activate(1);  // Force the sidebar always on in Win95 mode
   }
 #endif  // WIN32
-  if (!Debug_Map) {
+  if (!MapEditorActive) {
     Column[0].AI(input, x, y);
     Column[1].AI(input, x, y);
   }
 
 #ifdef NEVER
-  if (IsSidebarActive && !Debug_Map) {
+  if (IsSidebarActive && !MapEditorActive) {
     if (input == KN_DOWN) {
       int scr = 0;
       scr |= Column[0].Scroll(false);
@@ -1859,7 +1859,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
 bool SidebarClass::StripClass::Recalc() {
   int ok;
 
-  if (Debug_Map || !BuildableCount) {
+  if (MapEditorActive || !BuildableCount) {
     return false;
   }
 

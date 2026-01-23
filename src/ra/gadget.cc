@@ -452,7 +452,7 @@ KeyNumType GadgetClass::Input() {
 
 #ifdef WIN32
 #ifdef CHEAT_KEYS
-  if (key == KN_K && !Debug_Map && (Debug_Flag || Debug_Playtest)) {
+  if (key == KN_K && !MapEditorActive && (Debug_Flag || Debug_Playtest)) {
     /*
     ** time to create a screen shot using the PCX code (if it works)
     */

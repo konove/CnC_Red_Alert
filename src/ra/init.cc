@@ -586,7 +586,7 @@ bool Select_Game(bool /*fade*/) {
   /*
   **	Main menu processing; only do this if we're not in editor mode.
   */
-  if (!Debug_Map) {
+  if (!MapEditorActive) {
     /*
     **	Menu selection processing loop
     */
@@ -1310,7 +1310,7 @@ bool Select_Game(bool /*fade*/) {
     }
   } else {
     /*
-    ** For Debug_Map (editor) mode to load scenario
+    ** For MapEditorActive (editor) mode to load scenario
     */
     Scen.Set_Scenario_Name("SCG01EA.INI");
   }
@@ -1374,7 +1374,7 @@ bool Select_Game(bool /*fade*/) {
   *one. *	Skip this if we've already loaded a save-game.
   */
   if (!gameloaded && !Session.LoadGame) {
-    //		if (Debug_Map) {
+    //		if (MapEditorActive) {
     //			Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario,
     // Scen.ScenPlayer, Scen.ScenDir, SCEN_VAR_A); 		}  else {
     //			Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario,
@@ -1458,7 +1458,7 @@ bool Select_Game(bool /*fade*/) {
   /*
   ** Sidebar is always active in hi-res.
   */
-  if (!Debug_Map) {
+  if (!MapEditorActive) {
     Map.Activate(1);
   }
   Map.Flag_To_Redraw();
@@ -1611,7 +1611,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
   Whom = HOUSE_GOOD;
   Special.Init();
 
-  Debug_Map = false;
+  MapEditorActive = false;
   Debug_Unshroud = false;
 
   for (int index = 1; index < argc; index++) {
@@ -1665,7 +1665,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     optr = &EditorCodes[0];
     while (*optr) {
       if (*optr++ == ob) {
-        Debug_Map = true;
+        MapEditorActive = true;
         Debug_Unshroud = true;
         Debug_Flag = true;
         Debug_Playtest = true;

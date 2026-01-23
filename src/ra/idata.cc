@@ -1278,7 +1278,7 @@ void InfantryTypeClass::One_Time() {
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
 int InfantryTypeClass::Full_Name() const {
-  if (Debug_Map || !IsNominal || Rule.IsNamed || Type == INFANTRY_C10 ||
+  if (MapEditorActive || !IsNominal || Rule.IsNamed || Type == INFANTRY_C10 ||
       Type == INFANTRY_DELPHI || Type == INFANTRY_EINSTEIN) {
     return TechnoTypeClass::Full_Name();
   }

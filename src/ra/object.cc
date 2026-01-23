@@ -1114,11 +1114,11 @@ bool ObjectClass::Select() {
   assert(this != nullptr);
   assert(IsActive);
 
-  if (!Debug_Map && (IsSelected || !Class_Of().IsSelectable)) {
+  if (!MapEditorActive && (IsSelected || !Class_Of().IsSelectable)) {
     return false;
   }
 
-  if (!Debug_Map && Can_Player_Move() && Is_Techno() &&
+  if (!MapEditorActive && Can_Player_Move() && Is_Techno() &&
       dynamic_cast<TechnoClass*>(this)->IsALoaner) {
     return false;
   }
@@ -1188,7 +1188,7 @@ bool ObjectClass::Render(bool forced)  // const
   int x, y;
   COORDINATE coord = Render_Coord();
 
-  if (Debug_Map || Debug_Unshroud ||
+  if (MapEditorActive || Debug_Unshroud ||
       ((forced || IsToDisplay) && IsDown && !IsInLimbo)) {
     IsToDisplay = false;
 
@@ -1203,7 +1203,7 @@ bool ObjectClass::Render(bool forced)  // const
       **	Draw the trigger attached to the object. Draw_It is window-
       **	relative, so add the window's x-coord to 'x'.
       */
-      if (Debug_Map && Trigger.Is_Valid()) {
+      if (MapEditorActive && Trigger.Is_Valid()) {
         Fancy_Text_Print(Trigger->Class->IniName, x + (WinX), y,
                          &ColorRemaps[PCOLOR_RED], TBLACK,
                          TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);

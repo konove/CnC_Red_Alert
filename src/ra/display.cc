@@ -336,7 +336,7 @@ void DisplayClass::Init_IO() {
   /*
   ** Re-attach our buttons to the main map button list, only in non-edit mode.
   */
-  if (!Debug_Map) {
+  if (!MapEditorActive) {
     TacButton.Zap();
     Add_A_Button(TacButton);
   }
@@ -702,7 +702,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const* object,
   /*
   ** In editor mode, the proximity check always passes.
   */
-  if (Debug_Map) {
+  if (MapEditorActive) {
     return true;
   }
 
@@ -2051,21 +2051,22 @@ void DisplayClass::Draw_It(bool forced) {
           ObjectClass* ptr = Layer[layer][index];
 
 #ifdef SORTDRAW
-          /*
-          **	Techno objects are drawn as part of the cell redraw process
-          *since techno *	objects in the ground layer are handled by the
-          *Occupier and Overlapper *	pointer lists.
-          */
-          if (!Debug_Map && ptr->Is_Techno() && layer == LAYER_GROUND &&
-              ((TechnoClass*)ptr)->Visual_Character() == VISUAL_NORMAL)
-            continue;
+          // Objects with IsFootprint are rendered by cell SORTDRAW. Skip them
+          // to avoid double-rendering, except cloaked Techno (cells skip
+          // those).
+          if (!MapEditorActive && layer == LAYER_GROUND) {
+            bool rendered_by_cells = ptr->Class_Of().IsFootprint;
+            if (rendered_by_cells && ptr->Is_Techno()) {
+              // Cloaked/invisible techno objects are NOT rendered by cells.
+              const auto* techno = dynamic_cast<TechnoClass*>(ptr);
+              rendered_by_cells = techno->Visual_Character() == VISUAL_NORMAL;
+            }
+            if (rendered_by_cells) {
+              continue;
+            }
+          }
 #endif
 
-          //					if (ptr->What_Am_I() ==
-          // RTTI_ANIM && *((AnimClass*)ptr) >= ANIM_CORPSE1 &&
-          //*((AnimClass*)ptr) <= ANIM_CORPSE3) {
-          // continue;
-          //					}
           assert(ptr->IsActive);
           ptr->Render(forced);
         }
@@ -2083,8 +2084,13 @@ void DisplayClass::Draw_It(bool forced) {
     HidPage.Unlock();
 
 #ifdef SORTDRAW
-    for (int index = 0; index < Layer[LAYER_GROUND].Count(); index++) {
-      Layer[LAYER_GROUND][index]->IsToDisplay = false;
+    // Clear IsToDisplay for ALL layers at frame end. Objects don't clear
+    // IsToDisplay during Render() to allow multiple renders per frame,
+    // preventing flickering when render rate exceeds logic tick rate.
+    for (LayerType layer = LAYER_FIRST; layer < LAYER_COUNT; ++layer) {
+      for (int index = 0; index < Layer[layer].Count(); ++index) {
+        Layer[layer][index]->IsToDisplay = false;
+      }
     }
 #endif
 
@@ -2110,7 +2116,7 @@ void DisplayClass::Draw_It(bool forced) {
     * 0xFF00FF00 to strip off the lepton coordinates, but leave the *	cell
     * coordinates.
     */
-    if (Debug_Map && PendingObjectPtr) {
+    if (MapEditorActive && PendingObjectPtr) {
       PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
           Cell_Coord(ZoneCell + ZoneOffset));
       PendingObjectPtr->Render(true);

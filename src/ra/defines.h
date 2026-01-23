@@ -202,8 +202,9 @@
 #endif
 
 // Test to see if partial object drawing is any faster.
-#define PARTIAL
-// #define	SORTDRAW
+// #define PARTIAL
+
+#define SORTDRAW
 
 /**********************************************************************
 **	If the scenario editor to to be active in this build then uncomment

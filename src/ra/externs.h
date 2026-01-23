@@ -95,7 +95,7 @@ extern bool Debug_Cheat;
 extern bool Debug_Remap;
 extern bool Debug_Flag;
 extern bool Debug_Lose;
-extern bool Debug_Map;
+extern bool MapEditorActive;
 extern bool Debug_Win;
 extern bool Debug_Icon;
 extern bool Debug_Passable;

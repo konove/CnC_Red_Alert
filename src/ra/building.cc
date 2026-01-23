@@ -2500,7 +2500,8 @@ void BuildingClass::Grand_Opening(bool captured) {
     **	Tiberium Refineries get a free harvester. Add a harvester to the
     **	reinforcement list at this time.
     */
-    if (*this == STRUCT_REFINERY && !ScenarioInit && !captured && !Debug_Map &&
+    if (*this == STRUCT_REFINERY && !ScenarioInit && !captured &&
+        !MapEditorActive &&
         (!House->IsHuman || PurchasePrice == 0 ||
          PurchasePrice > Class->Raw_Cost())) {
       CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_S));
@@ -3256,7 +3257,7 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType) const {
     return Map[cell].Is_Clear_To_Build(Class->Speed) ? MOVE_OK : MOVE_NO;
   }
 
-  if (!Debug_Map && ScenarioInit == 0 && Session.Type == GAME_NORMAL &&
+  if (!MapEditorActive && ScenarioInit == 0 && Session.Type == GAME_NORMAL &&
       House->IsPlayerControl && !Map[cell].IsMapped) {
     return MOVE_NO;
   }
@@ -4379,7 +4380,7 @@ void BuildingClass::Enter_Idle_Mode(bool initial) {
   */
   MissionType mission = MISSION_GUARD;
 
-  if (!initial || ScenarioInit || Debug_Map) {
+  if (!initial || ScenarioInit || MapEditorActive) {
     Begin_Mode(BSTATE_IDLE);
     mission = MISSION_GUARD;
   } else {

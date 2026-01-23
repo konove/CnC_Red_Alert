@@ -4217,7 +4217,6 @@ void AircraftClass::Movement_AI() {
  *=============================================================================================*/
 void AircraftClass::Rotation_AI() {
   if (PrimaryFacing.Is_Rotating()) {
-    Mark(MARK_CHANGE_REDRAW);
     if (PrimaryFacing.Rotation_Adjust(Class->ROT)) {
       Mark(MARK_CHANGE_REDRAW);
     }
@@ -4226,7 +4225,6 @@ void AircraftClass::Rotation_AI() {
     SecondaryFacing = PrimaryFacing;
   }
   if (SecondaryFacing.Is_Rotating()) {
-    Mark(MARK_CHANGE_REDRAW);
     if (SecondaryFacing.Rotation_Adjust(Class->ROT)) {
       Mark(MARK_CHANGE_REDRAW);
     }

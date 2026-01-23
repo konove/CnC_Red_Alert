@@ -3787,7 +3787,7 @@ COORDINATE BuildingTypeClass::Coord_Fixup(COORDINATE coord) const {
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Full_Name() const {
-  if (Debug_Map || Rule.IsNamed || *this < STRUCT_V01 || *this > STRUCT_V37) {
+  if (MapEditorActive || Rule.IsNamed || *this < STRUCT_V01 || *this > STRUCT_V37) {
     return TechnoTypeClass::Full_Name();
   }
   return TXT_CIVILIAN_BUILDING;

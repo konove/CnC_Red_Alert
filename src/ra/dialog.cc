@@ -997,7 +997,7 @@ void Draw_Caption(char const* text, int x, int y, int w) {
   **	Draw the caption.
   */
   if (text != nullptr && *text != '\0') {
-    if (Debug_Map) {
+    if (MapEditorActive) {
       Fancy_Text_Print(text, w / 2 + x, 2 * RESFACTOR + y,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | TPF_EFNT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);

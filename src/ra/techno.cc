@@ -3163,7 +3163,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     /*
     **	Perform a quick legality check to see if firing can occur.
     */
-    if (Debug_Map || !Target_Legal(target)) {
+    if (MapEditorActive || !Target_Legal(target)) {
       return nullptr;
     }
 
@@ -4287,13 +4287,13 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
 
     if (Techno_Type_Class()->IsInvisible && IsOwnedByPlayer)
       return VISUAL_NORMAL;
-    if (Techno_Type_Class()->IsInvisible && !IsOwnedByPlayer && !Debug_Map)
+    if (Techno_Type_Class()->IsInvisible && !IsOwnedByPlayer && !MapEditorActive)
       return VISUAL_HIDDEN;
 
     /*
     **	When uncloaked or in map editor mode, always draw the object normally.
     */
-    if (Cloak == UNCLOAKED || Debug_Map) return VISUAL_NORMAL;
+    if (Cloak == UNCLOAKED || MapEditorActive) return VISUAL_NORMAL;
 
     /*
     **	A cloaked unit will not be visible at all unless it is owned

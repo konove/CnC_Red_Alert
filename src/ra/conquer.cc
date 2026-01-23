@@ -327,7 +327,7 @@ void Main_Game(int argc, char* argv[]) {
       /*
       **	Non-scenario-editor-mode: call the game's main loop
       */
-      if (!Debug_Map) {
+      if (!MapEditorActive) {
         TimeQuake = PendingTimeQuake;
         PendingTimeQuake = false;
         if (Main_Loop()) {
@@ -969,19 +969,19 @@ void Keyboard_Process(KeyNumType& input) {
   /*
   **	Handle the bookmark hotkeys.
   */
-  if (input != 0 && plain == Options.KeyBookmark1 && !Debug_Map) {
+  if (input != 0 && plain == Options.KeyBookmark1 && !MapEditorActive) {
     Handle_View(0, action);
     input = KN_NONE;
   }
-  if (input != 0 && plain == Options.KeyBookmark2 && !Debug_Map) {
+  if (input != 0 && plain == Options.KeyBookmark2 && !MapEditorActive) {
     Handle_View(1, action);
     input = KN_NONE;
   }
-  if (input != 0 && plain == Options.KeyBookmark3 && !Debug_Map) {
+  if (input != 0 && plain == Options.KeyBookmark3 && !MapEditorActive) {
     Handle_View(2, action);
     input = KN_NONE;
   }
-  if (input != 0 && plain == Options.KeyBookmark4 && !Debug_Map) {
+  if (input != 0 && plain == Options.KeyBookmark4 && !MapEditorActive) {
     Handle_View(3, action);
     input = KN_NONE;
   }
@@ -2537,7 +2537,7 @@ void Go_Editor(bool flag) {
   **	Go into Scenario Editor mode
   */
   if (flag) {
-    Debug_Map = true;
+    MapEditorActive = true;
     Debug_Unshroud = true;
 
     /*
@@ -2570,7 +2570,7 @@ void Go_Editor(bool flag) {
     /*
     **	Go into normal game mode
     */
-    Debug_Map = false;
+    MapEditorActive = false;
     Debug_Unshroud = false;
 
     /*
@@ -2842,7 +2842,7 @@ void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
   /*
   ** Don't play movies in editor mode
   */
-  if (Debug_Map) {
+  if (MapEditorActive) {
     return;
   }
 #ifdef CHEAT_KEYS

@@ -115,7 +115,7 @@ bool Debug_Icon = false;
 bool Debug_Flag = false;
 bool Debug_Lose = false;
 bool Debug_Win = false;
-bool Debug_Map = false;       // true = map editor mode
+bool MapEditorActive = false;  // true = scenario/map editor is active
 bool Debug_Passable = false;  // true = show passable/impassable terrain
 bool Debug_Unshroud = false;  // true = hide the shroud
 bool Debug_Threat = false;

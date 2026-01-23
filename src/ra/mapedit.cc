@@ -233,7 +233,7 @@ void MapEditClass::Init_IO() {
   /*
   **	For normal game mode, jump to the parent's Init routine.
   */
-  if (!Debug_Map) {
+  if (!MapEditorActive) {
     MouseClass::Init_IO();
 
   } else {
@@ -437,7 +437,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*
       ** If we're in editor mode & Changed is set, prompt for saving changes
       */
-      if (Debug_Map && Changed) {
+      if (MapEditorActive && Changed) {
         rc = WWMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
         HidPage.Clear();
         Flag_To_Redraw(true);
@@ -454,13 +454,13 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
             input = KN_NONE;
           } else {
             Changed = 0;
-            Go_Editor(!Debug_Map);
+            Go_Editor(!MapEditorActive);
           }
         } else {
           /*
           **	User doesn't want to save
           */
-          Go_Editor(!Debug_Map);
+          Go_Editor(!MapEditorActive);
         }
       } else {
         /*
@@ -468,11 +468,11 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ** changes above, they won't keep coming back to haunt us with continual
         ** Save Changes? prompts!)
         */
-        if (!Debug_Map) {
+        if (!MapEditorActive) {
           Changed = 0;
         }
         BaseGauge->Set_Value(Scen.Percent);
-        Go_Editor(!Debug_Map);
+        Go_Editor(!MapEditorActive);
       }
     }
   }
@@ -480,7 +480,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
   /*
   **	For normal game mode, jump to the parent's AI routine.
   */
-  if (!Debug_Map) {
+  if (!MapEditorActive) {
     MouseClass::AI(input, x, y);
     return;
   }
@@ -1365,7 +1365,7 @@ void MapEditClass::Draw_It(bool forced) {
 
   MouseClass::Draw_It(forced);
 
-  if (!Debug_Map) {
+  if (!MapEditorActive) {
     return;
   }
 
@@ -1658,7 +1658,7 @@ void MapEditClass::Main_Menu() {
           }
         }
         Changed = 0;
-        Debug_Map = false;
+        MapEditorActive = false;
         Start_Scenario(Scen.ScenarioName);
         return;
     }
@@ -1861,7 +1861,7 @@ void MapEditClass::Fatal(int txt) {
 }
 
 bool MapEditClass::Scroll_Map(DirType facing, int& distance, bool really) {
-  if (Debug_Map) {
+  if (MapEditorActive) {
     /*
     ** The popup gadgets require the entire map to be redrawn if we scroll.
     */

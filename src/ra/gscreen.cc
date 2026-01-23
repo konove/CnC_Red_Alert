@@ -405,7 +405,7 @@ void GScreenClass::Render() {
     /*
     ** Draw the Editor's buttons
     */
-    if (Debug_Map) {
+    if (MapEditorActive) {
       if (Buttons) {
         Buttons->Draw_All();
       }
