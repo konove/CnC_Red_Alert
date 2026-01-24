@@ -274,7 +274,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
         case ANIM_TREX_DIE:
         case ANIM_TRIC_DIE:
         case ANIM_ATOM_BLAST:
-          transtable = Map.UnitShadow;
+          transtable = MouseClass::UnitShadow;
           break;
       }
 
@@ -283,9 +283,9 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
       *to see if it *	should use the white or normal translucent tables.
       */
       if (!transtable && Class->IsWhiteTrans)
-        transtable = Map.WhiteTranslucentTable;
+        transtable = MouseClass::WhiteTranslucentTable;
       if (!transtable && Class->IsTranslucent)
-        transtable = Map.TranslucentTable;
+        transtable = MouseClass::TranslucentTable;
 
       /*
       **	Set the shape flags to properly take into account any fading or
@@ -294,7 +294,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
       ShapeFlags_Type flags = SHAPE_CENTER | SHAPE_WIN_REL;
       if (IsAlternate) {
         flags = flags | SHAPE_FADING;
-        remap = Map.RemapTables[HOUSE_GOOD][0];
+        remap = MouseClass::RemapTables[HOUSE_GOOD][0];
       }
       if (transtable) flags = flags | SHAPE_GHOST;
 

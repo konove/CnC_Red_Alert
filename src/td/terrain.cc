@@ -399,8 +399,8 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
 
     IsTheaterShape = true;
     CC_Draw_Shape(shapedata, shapenum, x, y, window,
-                  flags | SHAPE_WIN_REL | SHAPE_GHOST, Map.FadingLight,
-                  Map.UnitShadow);
+                  flags | SHAPE_WIN_REL | SHAPE_GHOST, MouseClass::FadingLight,
+                  MouseClass::UnitShadow);
     IsTheaterShape = false;
   }
 }

@@ -1206,7 +1206,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     if (i < 68) {
       CC_Draw_Shape(factptr, shapenum, 0, 0, WINDOW_MAIN,
                     SHAPE_FADING | SHAPE_WIN_REL, ScoreRemapBldg,
-                    Map.UnitShadow);
+                    MouseClass::UnitShadow);
     }
 
     /*
@@ -1240,7 +1240,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
                       (i >> 1) % ramboclass->DoControls[DO_WALK].Count,
                   i + 32, 40, WINDOW_MAIN,
                   SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
-                  ScoreRemapYellow, Map.UnitShadow);
+                  ScoreRemapYellow, MouseClass::UnitShadow);
     SysMemPage.Blit(*PseudoSeenBuff, 0, 0, BUILDING_X, BUILDING_Y,
                     320 - BUILDING_X, 48);
 
@@ -1819,7 +1819,7 @@ void Draw_InfantryMan(int index) {
   CC_Draw_Shape(InfantryMan[index].shapefile, stage, InfantryMan[index].xpos,
                 InfantryMan[index].ypos, WINDOW_MAIN,
                 SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
-                InfantryMan[index].remap, Map.UnitShadow);
+                InfantryMan[index].remap, MouseClass::UnitShadow);
   /*
   ** see if it's time to run a new anim
   */

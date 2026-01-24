@@ -3489,7 +3489,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             if (Session.Play && DoList[j].Type == EventClass::EXIT) {
               hptr->IsHuman = false;
               hptr->IQ = Rule.MaxIQ;
-              hptr->Computer_Paranoid();
+              HouseClass::Computer_Paranoid();
               port::SafeCopy(hptr->IniName, Text_String(TXT_COMPUTER));
               Session.NumPlayers--;
             }
@@ -3914,8 +3914,8 @@ static void Compute_Game_CRC() {
   //	Map Layers
   //------------------------------------------------------------------------
   for (i = 0; i < LAYER_COUNT; i++) {
-    for (j = 0; j < Map.Layer[i].Count(); j++) {
-      objp = Map.Layer[i][j];
+    for (j = 0; j < MouseClass::Layer[i].Count(); j++) {
+      objp = MouseClass::Layer[i][j];
       Add_CRC(&GameCRC, static_cast<int>(objp->Coord) +
                             static_cast<int>(objp->What_Am_I()));
     }
@@ -4157,8 +4157,8 @@ static void Print_CRCs(EventClass* ev) {
   GameCRC = 0;
   for (i = 0; i < LAYER_COUNT; i++) {
     fprintf(fp, ">>>> MAP LAYER %d <<<<\n", i);
-    for (j = 0; j < Map.Layer[i].Count(); j++) {
-      objp = Map.Layer[i][j];
+    for (j = 0; j < MouseClass::Layer[i].Count(); j++) {
+      objp = MouseClass::Layer[i][j];
       Add_CRC(&GameCRC, static_cast<int>(objp->Coord) +
                             static_cast<int>(objp->What_Am_I()));
       fprintf(fp, "Object %d: %x ", j, objp->Coord);

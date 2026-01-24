@@ -420,7 +420,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   if (Visual_Character() <= VISUAL_DARKEN) {
     CC_Draw_Shape(shapefile, shapenum, x + 1, y + 2, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-                  Map.FadingShade, nullptr);
+                  MouseClass::FadingShade, nullptr);
   }
 
   /*
@@ -461,19 +461,20 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
       short yy = y - Altitude;
       FacingType face = Dir_Facing(SecondaryFacing);
       Move_Point(xx, yy, SecondaryFacing.Current(), _stretch[face]);
-      CC_Draw_Shape(Class->RRotorData, shapenum, xx, yy - 2, window, flags,
-                    nullptr, Map.UnitShadow);
+      CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
+                    flags, nullptr, MouseClass::UnitShadow);
 
       Move_Point(xx, yy, SecondaryFacing.Current() + DIR_S, _stretch[face] * 2);
-      CC_Draw_Shape(Class->LRotorData, shapenum, xx, yy - 2, window, flags,
-                    nullptr, Map.UnitShadow);
+      CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
+                    flags, nullptr, MouseClass::UnitShadow);
 
     } else {
       /*
       **	Single rotor centered about shape.
       */
-      CC_Draw_Shape(Class->RRotorData, shapenum, x, y - Altitude - 2, window,
-                    flags, nullptr, Map.UnitShadow);
+      CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, x,
+                    y - Altitude - 2, window, flags, nullptr,
+                    MouseClass::UnitShadow);
     }
   }
 

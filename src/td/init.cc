@@ -733,8 +733,8 @@ bool Init_Game(int, char*[]) {
 }
 
 void Uninit_Game() {
-  delete Map.ShadowPage;
-  Map.ShadowPage = nullptr;
+  delete MouseClass::ShadowPage;
+  MouseClass::ShadowPage = nullptr;
   Map.Free_Cells();
 
   delete[] static_cast<char*>(SpeechBuffer);

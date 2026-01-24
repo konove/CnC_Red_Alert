@@ -2396,7 +2396,7 @@ unsigned char const* HouseClass::Remap_Table(bool blushing,
                                              RemapType remap) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (blushing) return &Map.FadingLight[0];
+  if (blushing) return &MouseClass::FadingLight[0];
 
   if (remap == REMAP_NONE) return nullptr;
 

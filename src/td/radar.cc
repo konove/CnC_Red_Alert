@@ -309,7 +309,7 @@ bool RadarClass::Radar_Activate(int control) {
 
     case 2:
       if (GameToPlay == GAME_NORMAL) {
-        Map.Zoom.Disable();
+        MouseClass::Zoom.Disable();
       }
       IsRadarActive = false;
       IsRadarActivating = false;
@@ -318,7 +318,7 @@ bool RadarClass::Radar_Activate(int control) {
 
     case 3:
       if (GameToPlay == GAME_NORMAL) {
-        Map.Zoom.Enable();
+        MouseClass::Zoom.Enable();
       }
       IsRadarActive = true;
       IsRadarActivating = false;

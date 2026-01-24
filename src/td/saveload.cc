@@ -249,7 +249,7 @@ bool Save_Game(int id, char* descr) {
   }
 
   for (i = 0; i < LAYER_COUNT; i++) {
-    if (!Map.Layer[i].Save(file)) {
+    if (!MouseClass::Layer[i].Save(file)) {
       file.Close();
       Decode_All_Pointers();
       return false;
@@ -462,7 +462,7 @@ bool Load_Game(int id) {
     return false;
   }
   for (i = 0; i < LAYER_COUNT; i++) {
-    if (!Map.Layer[i].Load(file)) {
+    if (!MouseClass::Layer[i].Load(file)) {
       file.Close();
       return false;
     }
@@ -737,7 +737,7 @@ void Code_All_Pointers() {
   */
   Logic.Code_Pointers();
   for (i = 0; i < LAYER_COUNT; i++) {
-    Map.Layer[i].Code_Pointers();
+    MouseClass::Layer[i].Code_Pointers();
   }
 
   /*
@@ -819,7 +819,7 @@ void Decode_All_Pointers() {
   */
   Logic.Decode_Pointers();
   for (i = 0; i < LAYER_COUNT; i++) {
-    Map.Layer[i].Decode_Pointers();
+    MouseClass::Layer[i].Decode_Pointers();
   }
 
   /*

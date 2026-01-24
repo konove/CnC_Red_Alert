@@ -1211,7 +1211,8 @@ GameType Select_Serial_Dialog() {
                 DialString = settings->CallWaitString;
               } else {
                 DialString =
-                    Session.CallWaitStrings[settings->CallWaitStringIndex];
+                    SessionClass::CallWaitStrings[settings
+                                                      ->CallWaitStringIndex];
               }
               DialString += Session.PhoneBook[Session.CurPhoneIdx]->Number;
 
@@ -2165,7 +2166,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   cwaitstr_index = tempsettings.CallWaitStringIndex;
   for (i = 0; i < CALL_WAIT_STRINGS_NUM; i++) {
     if (i == CALL_WAIT_CUSTOM) {
-      std::string item_str = Session.CallWaitStrings[i];
+      std::string item_str = SessionClass::CallWaitStrings[i];
       size_t dash_pos = item_str.find('-');
       if (dash_pos != std::string::npos) {
         pos = static_cast<int>(dash_pos) + 2;
@@ -2175,9 +2176,10 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
       }
     } else if (i == cwaitstr_index) {
-      port::SafeCopy(cwaitstrbuf, Session.CallWaitStrings[i], CWAITSTRBUF_MAX);
+      port::SafeCopy(cwaitstrbuf, SessionClass::CallWaitStrings[i],
+                     CWAITSTRBUF_MAX);
     }
-    cwaitstrlist.Add_Item(Session.CallWaitStrings[i]);
+    cwaitstrlist.Add_Item(SessionClass::CallWaitStrings[i]);
   }
 
   cwaitstrlist.Set_Selected_Index(cwaitstr_index);
@@ -2783,7 +2785,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         tempsettings.InitStringIndex = initstr_index;
         tempsettings.CallWaitStringIndex = cwaitstr_index;
 
-        item = Session.CallWaitStrings[CALL_WAIT_CUSTOM];
+        item = SessionClass::CallWaitStrings[CALL_WAIT_CUSTOM];
         temp = strchr(item, '-');
         if (temp) {
           pos = static_cast<int>(temp - item) + 2;

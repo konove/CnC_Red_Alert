@@ -993,10 +993,10 @@ bool SidebarClass::Activate(int control) {
       Column[1].Activate();
       Background.Zap();
       Add_A_Button(Background);
-      Map.RadarButton.Zap();
-      Add_A_Button(Map.RadarButton);
-      Map.PowerButton.Zap();
-      Add_A_Button(Map.PowerButton);
+      RadarButton.Zap();
+      Add_A_Button(RadarButton);
+      PowerButton.Zap();
+      Add_A_Button(PowerButton);
     } else {
       Help_Text(TXT_NONE);
       Set_View_Dimensions(0, Map.Get_Tab_Height());
@@ -1006,8 +1006,8 @@ bool SidebarClass::Activate(int control) {
       Remove_A_Button(Background);
       Column[0].Deactivate();
       Column[1].Deactivate();
-      Remove_A_Button(Map.RadarButton);
-      Remove_A_Button(Map.PowerButton);
+      Remove_A_Button(RadarButton);
+      Remove_A_Button(PowerButton);
     }
 
     /*
@@ -1809,7 +1809,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           **
           */
           if (Flasher == index && Fetch_Stage() & 0x01) {
-            remapper = Map.FadingLight;
+            remapper = FadingLight;
           }
 
         } else {

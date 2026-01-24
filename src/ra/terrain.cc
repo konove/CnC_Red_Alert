@@ -339,8 +339,8 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
     */
     IsTheaterShape = true;
     CC_Draw_Shape(shapedata, shapenum, x, y, window,
-                  flags | SHAPE_WIN_REL | SHAPE_GHOST, Map.FadingLight,
-                  Map.UnitShadow);
+                  flags | SHAPE_WIN_REL | SHAPE_GHOST, MouseClass::FadingLight,
+                  MouseClass::UnitShadow);
     IsTheaterShape = false;
   }
 }
@@ -389,7 +389,8 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
   offset = Occupy_List();
   while (*offset != REFRESH_EOL) {
     if (Class->IsWaterBased) {
-      if (!Map[static_cast<CELL>(cell + *offset++)].Is_Clear_To_Build(SPEED_FLOAT)) {
+      if (!Map[static_cast<CELL>(cell + *offset++)].Is_Clear_To_Build(
+              SPEED_FLOAT)) {
         return MOVE_NO;
       }
     } else {

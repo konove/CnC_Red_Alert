@@ -1940,7 +1940,7 @@ void HouseClass::Make_Enemy(HousesType house) {
  *=============================================================================================*/
 unsigned char const* HouseClass::Remap_Table(bool blushing, bool unit) const {
   Validate();
-  if (blushing) return &Map.FadingLight[0];
+  if (blushing) return &MouseClass::FadingLight[0];
 
   /*
   ** For normal game play, return the TypeClass's remap table for this

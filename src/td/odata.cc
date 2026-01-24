@@ -733,8 +733,8 @@ short const* OverlayTypeClass::Occupy_List(bool) const {
 unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
   unsigned char* icon =
       (unsigned char*)Get_Radar_Data();  // Get pointer to radar icons
-  icon += data * 9 + 2;                // move icon ptr to correct icon
-  return icon;                         // Return the correct icon
+  icon += data * 9 + 2;                  // move icon ptr to correct icon
+  return icon;                           // Return the correct icon
 }
 
 #ifdef SCENARIO_EDITOR
@@ -863,7 +863,7 @@ void OverlayTypeClass::Draw_It(int x, int y, int data) const {
   CC_Draw_Shape(Get_Image_Data(), data, Map.TacPixelX + x + (CELL_PIXEL_W >> 1),
                 Map.TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
                 SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
-                Map.UnitShadow);
+                MouseClass::UnitShadow);
 }
 
 /***********************************************************************************************

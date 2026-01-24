@@ -1031,7 +1031,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
                       WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
-                      Map.UnitShadow);
+                      MouseClass::UnitShadow);
         IsTheaterShape = false;
       }
 
@@ -1089,10 +1089,10 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         **	Draw the hash-mark cursor:
         */
         if (Map.ProximityCheck && Is_Generally_Clear()) {
-          LogicPage->Draw_Stamp(Map.TransIconset, 0, x, y, nullptr,
+          LogicPage->Draw_Stamp(MouseClass::TransIconset, 0, x, y, nullptr,
                                 WINDOW_TACTICAL);
         } else {
-          LogicPage->Draw_Stamp(Map.TransIconset, 2, x, y, nullptr,
+          LogicPage->Draw_Stamp(MouseClass::TransIconset, 2, x, y, nullptr,
                                 WINDOW_TACTICAL);
         }
 
@@ -1145,10 +1145,11 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       if (IsFlagged) {
         void const* remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
-        CC_Draw_Shape(
-            MixFileClass::Retrieve("FLAGFLY.SHP"), Frame % 14,
-            x + ICON_PIXEL_W / 2, y + ICON_PIXEL_H / 2, WINDOW_TACTICAL,
-            SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, remap, Map.UnitShadow);
+        CC_Draw_Shape(MixFileClass::Retrieve("FLAGFLY.SHP"), Frame % 14,
+                      x + ICON_PIXEL_W / 2, y + ICON_PIXEL_H / 2,
+                      WINDOW_TACTICAL,
+                      SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, remap,
+                      MouseClass::UnitShadow);
       }
     }
   }
@@ -2044,9 +2045,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 cellptr->IsVisible = false;
               }
             }
-            for (int index = 0; index < Map.Layer[LAYER_GROUND].Count();
+            for (int index = 0; index < MouseClass::Layer[LAYER_GROUND].Count();
                  index++) {
-              ObjectClass* object = Map.Layer[LAYER_GROUND][index];
+              ObjectClass* object = MouseClass::Layer[LAYER_GROUND][index];
               if (object && object->Is_Techno() &&
                   dynamic_cast<TechnoClass*>(object)->House == PlayerPtr) {
                 object->Look();
@@ -2232,8 +2233,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         case CLOAK:
           new AnimClass(ANIM_CRATE_STEALTH, Cell_Coord());
-          for (index = 0; index < Map.Layer[LAYER_GROUND].Count(); index++) {
-            ObjectClass* obj = Map.Layer[LAYER_GROUND][index];
+          for (index = 0; index < MouseClass::Layer[LAYER_GROUND].Count();
+               index++) {
+            ObjectClass* obj = MouseClass::Layer[LAYER_GROUND][index];
 
             if (obj && obj->Is_Techno() &&
                 Distance(Cell_Coord(), obj->Center_Coord()) < 0x0300) {

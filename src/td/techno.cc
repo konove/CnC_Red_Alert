@@ -878,7 +878,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
       /*
       **	Draw the outline of the bargraph.
       */
-      draw_window.Remap(xx + 1, yy + 1, width - 1, 3 - 1, Map.FadingShade);
+      draw_window.Remap(xx + 1, yy + 1, width - 1, 3 - 1,
+                        MouseClass::FadingShade);
       draw_window.Draw_Rect(xx, yy, xx + width - 1, yy + 3, BLACK);
 
       /*
@@ -1499,8 +1500,9 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     **	Now scan through the entire ground layer. This is painful, but what
     *other *	choice is there?
     */
-    for (int index = 0; index < Map.Layer[LAYER_GROUND].Count(); index++) {
-      ObjectClass const* object = Map.Layer[LAYER_GROUND][index];
+    for (int index = 0; index < MouseClass::Layer[LAYER_GROUND].Count();
+         index++) {
+      ObjectClass const* object = MouseClass::Layer[LAYER_GROUND][index];
 
       int value = 0;
       if (object->Is_Techno() &&
@@ -2955,17 +2957,17 @@ void TechnoClass::Techno_Draw_Object(void const* shapefile, int shapenum, int x,
         CC_Draw_Shape(
             shapefile, shapenum, x, y, window,
             SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR,
-            nullptr, Map.FadingShade);
+            nullptr, MouseClass::FadingShade);
       } else {
         CC_Draw_Shape(shapefile, shapenum, x, y, window,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,
-                      remap, Map.UnitShadow);
+                      remap, MouseClass::UnitShadow);
       }
       if (visual == VISUAL_DARKEN) {
         CC_Draw_Shape(
             shapefile, shapenum, x, y, window,
             SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, remap,
-            Map.FadingShade);
+            MouseClass::FadingShade);
       }
     }
     if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
@@ -3763,7 +3765,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
         }
         object = object->Next;
       }
-      CC_Draw_Shape(Class_Of().PipShapes, pip, x + index * 3, y, window,
+      CC_Draw_Shape(ObjectTypeClass::PipShapes, pip, x + index * 3, y, window,
                     SHAPE_CENTER | SHAPE_WIN_REL);
     }
 
@@ -3774,8 +3776,9 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
     */
     int pips = Pip_Count();
     for (int index = 0; index < Class_Of().Max_Pips(); index++) {
-      CC_Draw_Shape(Class_Of().PipShapes, index < pips ? PIP_FULL : PIP_EMPTY,
-                    x + index * 3, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+      CC_Draw_Shape(ObjectTypeClass::PipShapes,
+                    index < pips ? PIP_FULL : PIP_EMPTY, x + index * 3, y,
+                    window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
   }
 
@@ -3783,7 +3786,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
   **	Display whether this unit is a leader unit or not.
   */
   if (IsLeader) {
-    CC_Draw_Shape(Class_Of().PipShapes, PIP_PRIMARY, x - 2, y - 3, window,
+    CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_PRIMARY, x - 2, y - 3, window,
                   /*SHAPE_CENTER|*/ SHAPE_WIN_REL);
   }
 }

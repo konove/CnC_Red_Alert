@@ -588,8 +588,8 @@ void ChronalVortexClass::Attack() {
   /*
   ** First scan - find any object directly above the vortex.
   */
-  for (unsigned i = 0; i < Map.Layer[LAYER_GROUND].Count(); i++) {
-    ObjectClass* obj = Map.Layer[LAYER_GROUND][i];
+  for (unsigned i = 0; i < MouseClass::Layer[LAYER_GROUND].Count(); i++) {
+    ObjectClass* obj = MouseClass::Layer[LAYER_GROUND][i];
 
     if (obj->Is_Techno() && obj->Strength > 0) {
       distance = Distance(obj->Center_Coord(), here);
@@ -616,8 +616,8 @@ void ChronalVortexClass::Attack() {
   int chance = Random_Pick(0, 1000);
   if (chance > Frame - LastAttackFrame) return;
 
-  for (int i = 0; i < Map.Layer[LAYER_GROUND].Count(); i++) {
-    ObjectClass* obj = Map.Layer[LAYER_GROUND][i];
+  for (int i = 0; i < MouseClass::Layer[LAYER_GROUND].Count(); i++) {
+    ObjectClass* obj = MouseClass::Layer[LAYER_GROUND][i];
 
     if (obj && obj->Is_Techno()) {
       distance = Distance(obj->Center_Coord(), Position);

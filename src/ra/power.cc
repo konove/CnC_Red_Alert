@@ -178,7 +178,7 @@ void PowerClass::Draw_It(bool complete) {
 
         if (FlashTimer > 1 && (FlashTimer % 3 & 0x01) != 0) {
           flags = flags | SHAPE_FADING;
-          remap = Map.FadingRed;
+          remap = FadingRed;
         }
 
         //				LogicPage->Fill_Rect(POWER_X, POWER_Y,
@@ -200,14 +200,12 @@ void PowerClass::Draw_It(bool complete) {
         **	of power demands.
         */
         int bottom = (POWER_Y + POWER_HEIGHT - 1) * RESFACTOR;
-        int power_height =
-            PowerHeight == DesiredPowerHeight
-                ? PowerHeight + _modtable[PowerBounce] * PowerDir
-                : PowerHeight;
-        int drain_height =
-            DrainHeight == DesiredDrainHeight
-                ? DrainHeight + _modtable[DrainBounce] * DrainDir
-                : DrainHeight;
+        int power_height = PowerHeight == DesiredPowerHeight
+                               ? PowerHeight + _modtable[PowerBounce] * PowerDir
+                               : PowerHeight;
+        int drain_height = DrainHeight == DesiredDrainHeight
+                               ? DrainHeight + _modtable[DrainBounce] * DrainDir
+                               : DrainHeight;
         power_height = Bound(power_height, 0, POWER_HEIGHT - 2);
         drain_height = Bound(drain_height, 0, POWER_HEIGHT - 2);
 
@@ -419,8 +417,7 @@ int PowerClass::Power_Height(int value) {
   ** Adjust the retval to factor in the remainder
   */
   if (value) {
-    retval = retval +
-             (POWER_HEIGHT - 2 - retval) / POWER_STEP_FACTOR * value /
+    retval = retval + (POWER_HEIGHT - 2 - retval) / POWER_STEP_FACTOR * value /
                           POWER_STEP_LEVEL;
   }
 
@@ -458,11 +455,9 @@ int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
   */
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   if (PlayerPtr->Power_Fraction() < 1 && PlayerPtr->Power > 0) {
-    Map.Help_Text(TXT_POWER_OUTPUT_LOW, -1, -1,
-                  Get_Color_Scheme()->Color);
+    Map.Help_Text(TXT_POWER_OUTPUT_LOW, -1, -1, Get_Color_Scheme()->Color);
   } else {
-    Map.Help_Text(TXT_POWER_OUTPUT, -1, -1,
-                  Get_Color_Scheme()->Color);
+    Map.Help_Text(TXT_POWER_OUTPUT, -1, -1, Get_Color_Scheme()->Color);
   }
   GadgetClass::Action(flags, key);
   return true;

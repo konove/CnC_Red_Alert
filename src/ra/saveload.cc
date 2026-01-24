@@ -248,7 +248,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   if (!save_net) Call_Back();
 
   for (int i = 0; i < LAYER_COUNT; i++) {
-    Map.Layer[i].Save(pipe);
+    MouseClass::Layer[i].Save(pipe);
   }
 
   if (!save_net) Call_Back();
@@ -722,7 +722,7 @@ bool Load_Game(int id) {
   }
 
   for (i = 0; i < LAYER_COUNT; i++) {
-    Map.Layer[i].Load(straw);
+    MouseClass::Layer[i].Load(straw);
   }
 
   Call_Back();
@@ -1198,7 +1198,7 @@ void Code_All_Pointers() {
   */
   Logic.Code_Pointers();
   for (i = 0; i < LAYER_COUNT; i++) {
-    Map.Layer[i].Code_Pointers();
+    MouseClass::Layer[i].Code_Pointers();
   }
 
   /*
@@ -1279,7 +1279,7 @@ void Decode_All_Pointers() {
   */
   Logic.Decode_Pointers();
   for (int i = 0; i < LAYER_COUNT; i++) {
-    Map.Layer[i].Decode_Pointers();
+    MouseClass::Layer[i].Decode_Pointers();
   }
 
   /*

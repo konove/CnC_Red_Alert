@@ -290,7 +290,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
         transtable = DisplayClass::WhiteTranslucentTable;
       if (transtable == nullptr && Class->IsTranslucent)
         transtable = DisplayClass::TranslucentTable;
-      if (Class->Type == ANIM_ATOM_BLAST) transtable = Map.UnitShadow;
+      if (Class->Type == ANIM_ATOM_BLAST) transtable = MouseClass::UnitShadow;
 
       /*
       **	Set the shape flags to properly take into account any fading or

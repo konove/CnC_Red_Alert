@@ -1232,7 +1232,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
       /*
       **	Draw the outline of the bargraph.
       */
-      draw_window.Remap(xx + 1, yy + 1, width - 1, 3 - 1, Map.FadingShade);
+      draw_window.Remap(xx + 1, yy + 1, width - 1, 3 - 1,
+                        MouseClass::FadingShade);
       draw_window.Draw_Rect(xx, yy, xx + width - 1, yy + 3, BLACK);
 
       /*
@@ -2380,8 +2381,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       **	Now scan through the entire ground layer. This is painful, but
       *what other *	choice is there?
       */
-      for (int index = 0; index < Map.Layer[LAYER_GROUND].Count(); index++) {
-        ObjectClass const* object = Map.Layer[LAYER_GROUND][index];
+      for (int index = 0; index < MouseClass::Layer[LAYER_GROUND].Count();
+           index++) {
+        ObjectClass const* object = MouseClass::Layer[LAYER_GROUND][index];
 
         int value = 0;
         if (object->Is_Techno() &&
@@ -4355,7 +4357,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     if (shapefile != nullptr) {
       VisualType visual = Visual_Character();
       void const* remap = Remap_Table();
-      void const* shadow = Map.UnitShadow;
+      void const* shadow = MouseClass::UnitShadow;
 
       /*
       **	Create a minimum shape rectangle if one hasn't already been
@@ -4380,7 +4382,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       }
 
       if (Height > 0) {
-        shadow = Map.UnitShadowAir;
+        shadow = MouseClass::UnitShadowAir;
       }
 
       y -= Lepton_To_Pixel(Height);
@@ -4444,7 +4446,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       case VISUAL_DARKEN:
         CC_Draw_Shape(shapefile, shapenum, x, y, window,
                       SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL, remap,
-                      Map.FadingShade, rotation, scale);
+                      MouseClass::FadingShade, rotation, scale);
         break;
 
       case VISUAL_SHADOWY:
@@ -4452,7 +4454,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         CC_Draw_Shape(
             shapefile, shapenum, x, y, window,
             SHAPE_PREDATOR | SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,
-            nullptr, Map.FadingShade, rotation, scale);
+            nullptr, MouseClass::FadingShade, rotation, scale);
         break;
 
       case VISUAL_HIDDEN:
@@ -5569,7 +5571,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
           }
           object = object->Next;
         }
-        CC_Draw_Shape(Class_Of().PipShapes, pip, x + index * 3, y, window,
+        CC_Draw_Shape(ObjectTypeClass::PipShapes, pip, x + index * 3, y, window,
                       SHAPE_CENTER | SHAPE_WIN_REL);
       }
 
@@ -5611,8 +5613,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
               graypips--;
             }
           }
-          CC_Draw_Shape(Class_Of().PipShapes, shape, x + index * 3, y, window,
-                        SHAPE_CENTER | SHAPE_WIN_REL);
+          CC_Draw_Shape(ObjectTypeClass::PipShapes, shape, x + index * 3, y,
+                        window, SHAPE_CENTER | SHAPE_WIN_REL);
         }
       }
       /*
@@ -5640,8 +5642,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
                 break;
             }
           }
-          CC_Draw_Shape(Class_Of().PipShapes, shape, x + index * 3, y, window,
-                        SHAPE_CENTER | SHAPE_WIN_REL);
+          CC_Draw_Shape(ObjectTypeClass::PipShapes, shape, x + index * 3, y,
+                        window, SHAPE_CENTER | SHAPE_WIN_REL);
         }
       } else {
         bool building = false;
@@ -5662,10 +5664,10 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         for (int index = 0; index < (building ? 5 : Class_Of().Max_Pips());
              index++) {
           if (building) {
-            CC_Draw_Shape(Class_Of().PipShapes, pip, x, y - index * 3, window,
-                          SHAPE_CENTER | SHAPE_WIN_REL);
+            CC_Draw_Shape(ObjectTypeClass::PipShapes, pip, x, y - index * 3,
+                          window, SHAPE_CENTER | SHAPE_WIN_REL);
           } else {
-            CC_Draw_Shape(Class_Of().PipShapes,
+            CC_Draw_Shape(ObjectTypeClass::PipShapes,
                           index < pips ? PIP_FULL : PIP_EMPTY, x + index * 3, y,
                           window, SHAPE_CENTER | SHAPE_WIN_REL);
           }
@@ -5683,7 +5685,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	Special hack to display a red pip on the medic.
     */
     if (What_Am_I() == RTTI_INFANTRY && Combat_Damage() < 0) {
-      CC_Draw_Shape(Class_Of().PipShapes, PIP_MEDIC, x + 8, y, window,
+      CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_MEDIC, x + 8, y, window,
                     SHAPE_CENTER | SHAPE_WIN_REL);
     }
 
@@ -5698,7 +5700,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
           prishape = PIP_PRI;
         }
       }
-      CC_Draw_Shape(Class_Of().PipShapes, prishape, x - 2, y - 3, window,
+      CC_Draw_Shape(ObjectTypeClass::PipShapes, prishape, x - 2, y - 3, window,
                     /*SHAPE_CENTER|*/ SHAPE_WIN_REL);
     }
 
@@ -5714,15 +5716,15 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       if (Class_Of().Max_Pips()) yval -= 4;
       if (group == 10) group = 0;
 
-      CC_Draw_Shape(Class_Of().PipShapes, PIP_NUMBERS + group, x + 2, y + yval,
-                    window, SHAPE_CENTER | SHAPE_WIN_REL);
+      CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_NUMBERS + group, x + 2,
+                    y + yval, window, SHAPE_CENTER | SHAPE_WIN_REL);
 
       /*
       ** If this unit is part of a formation, draw an 'F' after the group
       ** number.
       */
       if (((FootClass*)this)->XFormOffset != 0x80000000UL) {
-        CC_Draw_Shape(Class_Of().PipShapes, PIP_LETTERF, x + 8, y + yval,
+        CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_LETTERF, x + 8, y + yval,
                       window, SHAPE_CENTER | SHAPE_WIN_REL);
       }
     }
@@ -5753,8 +5755,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       */
       if (((BuildingClass*)this)->Class->IsFake) {
         if (spiedby || IsOwnedByPlayer) {
-          CC_Draw_Shape(Class_Of().PipShapes, PIP_DECOY, x, y - 16, window,
-                        SHAPE_WIN_REL);
+          CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_DECOY, x, y - 16,
+                        window, SHAPE_WIN_REL);
         }
       }
       /*
@@ -5779,8 +5781,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
           while (money) {
             int xdigit = money % 10;
             money /= 10;
-            CC_Draw_Shape(Class_Of().PipShapes, PIP_NUMBERS + xdigit, startx,
-                          y - 6, window, SHAPE_CENTER | SHAPE_WIN_REL);
+            CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_NUMBERS + xdigit,
+                          startx, y - 6, window, SHAPE_CENTER | SHAPE_WIN_REL);
             startx -= 6;
           }
         }

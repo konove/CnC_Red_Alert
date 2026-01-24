@@ -1618,7 +1618,7 @@ bool Main_Loop() {
   ** layer in the same way, and any processing done that's based on
   ** the order of this layer will sync on different machines.
   */
-  Map.Layer[LAYER_GROUND].Sort();
+  MouseClass::Layer[LAYER_GROUND].Sort();
 
   //	Heap_Dump_Check( "Before Logic.AI" );
 
@@ -2763,7 +2763,7 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
           (SHAPE_FADING | SHAPE_PREDATOR)) {
         flags = flags & ~(SHAPE_FADING | SHAPE_PREDATOR);
         flags = flags | SHAPE_GHOST;
-        ghostdata = Map.SpecialGhost;
+        ghostdata = MouseClass::SpecialGhost;
       }
 
       predoffset = Frame;

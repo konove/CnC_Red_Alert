@@ -1383,9 +1383,9 @@ bool UnitClass::Unload_Hovercraft_Process() {
             Transmit_Message(RADIO_UNLOAD);
           }
           Mark(MARK_DOWN);
-          Map.Layer[LAYER_GROUND].Sort();
-          Map.Layer[LAYER_GROUND].Sort();
-          Map.Layer[LAYER_GROUND].Sort();
+          MouseClass::Layer[LAYER_GROUND].Sort();
+          MouseClass::Layer[LAYER_GROUND].Sort();
+          MouseClass::Layer[LAYER_GROUND].Sort();
           return false;
         }
         /*
@@ -2055,7 +2055,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
     CC_Draw_Shape(MixFileClass::Retrieve("FLAGFLY.SHP"), Frame % 14, x, y,
                   window, SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
                   HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
-                  Map.UnitShadow);
+                  MouseClass::UnitShadow);
   }
 
   TarComClass::Draw_It(x, y, window);

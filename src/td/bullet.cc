@@ -544,7 +544,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   if (Altitude) {
     CC_Draw_Shape(shapeptr, shapenum, x, y, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-                  nullptr, Map.FadingShade);
+                  nullptr, MouseClass::FadingShade);
     y -= Lepton_To_Pixel(Altitude);
   }
 
@@ -556,7 +556,8 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
     flags = SHAPE_GHOST;
   }
   CC_Draw_Shape(shapeptr, shapenum, x, y, window,
-                flags | SHAPE_CENTER | SHAPE_WIN_REL, nullptr, Map.UnitShadow);
+                flags | SHAPE_CENTER | SHAPE_WIN_REL, nullptr,
+                MouseClass::UnitShadow);
 }
 
 /***********************************************************************************************

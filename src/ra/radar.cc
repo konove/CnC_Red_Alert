@@ -492,9 +492,9 @@ void RadarClass::Draw_It(bool forced) {
 
   if (IsRadarActivating || IsRadarDeactivating || IsRadarJammed) {
     Radar_Anim();
-    Map.Repair.Draw_Me(true);
-    Map.Upgrade.Draw_Me(true);
-    Map.Zoom.Draw_Me(true);
+    MouseClass::Repair.Draw_Me(true);
+    MouseClass::Upgrade.Draw_Me(true);
+    MouseClass::Zoom.Draw_Me(true);
     IsToRedraw = false;
     BEnd(BENCH_RADAR);
     return;
@@ -602,9 +602,9 @@ void RadarClass::Draw_It(bool forced) {
         FullRedraw = false;
         IsToRedraw = false;
 
-        Map.Repair.Draw_Me(true);
-        Map.Upgrade.Draw_Me(true);
-        Map.Zoom.Draw_Me(true);
+        MouseClass::Repair.Draw_Me(true);
+        MouseClass::Upgrade.Draw_Me(true);
+        MouseClass::Zoom.Draw_Me(true);
 
         if (oldpage == &SeenBuff) {
           Hide_Mouse();
@@ -640,9 +640,9 @@ void RadarClass::Draw_It(bool forced) {
             TPF_CENTER | TPF_TEXT | TPF_DROPSHADOW);
       }
 
-      Map.Repair.Draw_Me(true);
-      Map.Upgrade.Draw_Me(true);
-      Map.Zoom.Draw_Me(true);
+      MouseClass::Repair.Draw_Me(true);
+      MouseClass::Upgrade.Draw_Me(true);
+      MouseClass::Zoom.Draw_Me(true);
     }
   }
   BEnd(BENCH_RADAR);
@@ -2307,9 +2307,9 @@ bool RadarClass::Draw_House_Info() {
                 SHAPE_NORMAL);
   y = RadY + RadOffY + 2 * RESFACTOR;
 
-  Map.Repair.Draw_Me(true);
-  Map.Upgrade.Draw_Me(true);
-  Map.Zoom.Draw_Me(true);
+  MouseClass::Repair.Draw_Me(true);
+  MouseClass::Upgrade.Draw_Me(true);
+  MouseClass::Zoom.Draw_Me(true);
 
   Fancy_Text_Print(TXT_SPY_INFO, RadX + RadOffX + 6 * RESFACTOR, y,
                    &ColorRemaps[PCOLOR_GREY], TBLACK,
@@ -2498,9 +2498,9 @@ void RadarClass::Draw_Names() {
     y += 6 * RESFACTOR + 1;
   }
 
-  Map.Repair.Draw_Me(true);
-  Map.Upgrade.Draw_Me(true);
-  Map.Zoom.Draw_Me(true);
+  MouseClass::Repair.Draw_Me(true);
+  MouseClass::Upgrade.Draw_Me(true);
+  MouseClass::Zoom.Draw_Me(true);
 }
 
 void RadarClass::Activate_Pulse() {
