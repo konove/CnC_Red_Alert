@@ -731,7 +731,7 @@ int NullModemClass::Service() {
   own buffer.
   ------------------------------------------------------------------------*/
   RXCount += SerialPort->Read_From_Serial_Port(
-      (unsigned char*)(RXBuf + RXCount), static_cast<int>(RXSize - RXCount));
+      (unsigned char*)(RXBuf + RXCount), RXSize - RXCount);
 
   //	if (RXCount){
   // char port[128];

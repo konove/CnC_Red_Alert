@@ -140,7 +140,7 @@ void HelpClass::Init_Clear() {
  *=============================================================================================*/
 short const* HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer) {
-    static_cast<short&>(OverlapList[0]) = REFRESH_EOL;
+    OverlapList[0] = REFRESH_EOL;
   }
   return OverlapList;
 }
@@ -332,8 +332,7 @@ void HelpClass::Set_Text(int text) {
       if (DrawX < TacPixelX + 1) DrawX = TacPixelX + 1;
       if (DrawY < TacPixelY + 1) DrawY = TacPixelY + 1;
     }
-    memcpy(OverlapList,
-           Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY),
+    memcpy(OverlapList, Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY),
            sizeof(OverlapList));
     *&OverlapList[ARRAY_SIZE(OverlapList) - 1] = REFRESH_EOL;
   }

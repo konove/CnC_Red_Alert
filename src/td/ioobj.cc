@@ -1402,7 +1402,7 @@ void FactoryClass::Code_Pointers() {
     Object = (TechnoClass*)Object->As_Target();
   }
 
-  static_cast<HouseClass*&>(House) = (HouseClass*)House->Class->House;
+  House = (HouseClass*)House->Class->House;
 
   StageClass::Code_Pointers();
 }
@@ -1427,8 +1427,7 @@ void FactoryClass::Decode_Pointers() {
     Check_Ptr((void*)Object, __FILE__, __LINE__);
   }
 
-  static_cast<HouseClass*&>(House) =
-      HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
+  House = HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
   Check_Ptr((void*)House, __FILE__, __LINE__);
 
   StageClass::Decode_Pointers();
@@ -2009,7 +2008,7 @@ void TechnoClass::Code_Pointers() {
   /*
   ------------------------------ Code 'House' ------------------------------
   */
-  static_cast<HouseClass*&>(House) = (HouseClass*)House->Class->House;
+  House = (HouseClass*)House->Class->House;
 
   FlasherClass::Code_Pointers();
   StageClass::Code_Pointers();
@@ -2037,8 +2036,7 @@ void TechnoClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'House' -----------------------------
   */
-  static_cast<HouseClass*&>(House) =
-      HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
+  House = HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
   Check_Ptr((void*)House, __FILE__, __LINE__);
 
   FlasherClass::Decode_Pointers();

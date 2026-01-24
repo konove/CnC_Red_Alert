@@ -301,7 +301,7 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 void FootClass::Set_Speed(int speed) {
   speed &= 0xFF;
-  static_cast<unsigned char&>(Speed) = speed;
+  Speed = speed;
 }
 
 /***********************************************************************************************

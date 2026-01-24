@@ -2874,13 +2874,13 @@ DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
 
   CELL center = Coord_Cell(Center_Coord());
   for (int sweep = FACING_N; sweep < FACING_S; sweep++) {
-    moveto = Adjacent_Cell(center, static_cast<FacingType>(FACING_S + sweep));
+    moveto = Adjacent_Cell(center, FACING_S + sweep);
     if (Map.In_Radar(moveto) &&
         (Coord_Cell(object->Center_Coord()) == moveto ||
          Map[moveto].Is_Clear_To_Move(SPEED_FOOT, false, false)))
       return DIR_N;
 
-    moveto = Adjacent_Cell(center, static_cast<FacingType>(FACING_S - sweep));
+    moveto = Adjacent_Cell(center, FACING_S - sweep);
     if (Map.In_Radar(moveto) &&
         (Coord_Cell(object->Center_Coord()) == moveto ||
          Map[moveto].Is_Clear_To_Move(SPEED_FOOT, false, false)))

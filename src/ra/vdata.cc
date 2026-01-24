@@ -222,11 +222,11 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, char const* ininame,
                                  bool is_eight, bool is_nominal,
                                  bool is_turret_equipped, int rotation,
                                  int toffset)
-    : TechnoTypeClass(RTTI_VESSELTYPE, static_cast<int>(type), name, ininame, REMAP_NORMAL,
-                      verticaloffset, primaryoffset, primarylateral,
-                      secondaryoffset, secondarylateral, is_nominal, false,
-                      true, true, false, false, false, is_turret_equipped, true,
-                      true, rotation, SPEED_FLOAT),
+    : TechnoTypeClass(RTTI_VESSELTYPE, static_cast<int>(type), name, ininame,
+                      REMAP_NORMAL, verticaloffset, primaryoffset,
+                      primarylateral, secondaryoffset, secondarylateral,
+                      is_nominal, false, true, true, false, false, false,
+                      is_turret_equipped, true, true, rotation, SPEED_FLOAT),
       IsPieceOfEight(is_eight),
       Type(type),
       TurretOffset(toffset),
@@ -545,7 +545,7 @@ void VesselTypeClass::One_Time() {
                         .string();
     uclass.SetBorrowedImage(MFCD::RetrieveData(fullname));
 
-    static_cast<int&>(uclass.MaxSize) = 26;
+    uclass.MaxSize = 26;
   }
 }
 

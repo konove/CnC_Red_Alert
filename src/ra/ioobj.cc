@@ -314,7 +314,7 @@ void FactoryClass::Code_Pointers() {
     Object = (TechnoClass*)Object->As_Target();
   }
 
-  static_cast<HouseClass*&>(House) = (HouseClass*)House->Class->House;
+  House = (HouseClass*)House->Class->House;
 }
 
 /***********************************************************************************************
@@ -337,8 +337,7 @@ void FactoryClass::Decode_Pointers() {
     assert(Object != nullptr);
   }
 
-  static_cast<HouseClass*&>(House) =
-      HouseClass::As_Pointer(static_cast<HousesType>((intptr_t)House));
+  House = HouseClass::As_Pointer(static_cast<HousesType>((intptr_t)House));
   assert(House != nullptr);
 }
 

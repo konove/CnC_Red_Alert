@@ -2167,7 +2167,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
         case TEMPLATE_BRIDGE_3A:
         case TEMPLATE_BRIDGE_3B:
           ttype++;
-          new TemplateClass(static_cast<TemplateType>(ttype), cell);
+          new TemplateClass(ttype, cell);
           break;
       }
 

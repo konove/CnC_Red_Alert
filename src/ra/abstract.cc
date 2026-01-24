@@ -151,7 +151,7 @@ AbstractTypeClass::AbstractTypeClass(RTTIType rtti, int id, int name,
                                      char const* ini)
     : RTTI(rtti), ID(id), FullName(name) {
   strncpy(IniName, ini, sizeof(IniName));
-  static_cast<char&>(IniName[sizeof(IniName) - 1]) = '\0';
+  IniName[sizeof(IniName) - 1] = '\0';
 }
 
 /***********************************************************************************************

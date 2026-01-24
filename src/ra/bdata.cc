@@ -3112,7 +3112,7 @@ void BuildingTypeClass::One_Time() {
 
       auto fullname =
           std::filesystem::path(buffer).replace_extension(".SHP").string();
-      const_cast<void const*&>(building.CameoData) = MFCD::Retrieve(fullname);
+      building.CameoData = MFCD::Retrieve(fullname);
     }
 
     /*
@@ -3123,7 +3123,7 @@ void BuildingTypeClass::One_Time() {
             .replace_extension(".SHP")
             .string();
     void const* dataptr = MFCD::Retrieve(fullname);
-    const_cast<void const*&>(building.BuildupData) = dataptr;
+    building.BuildupData = dataptr;
     if (dataptr != nullptr) {
       int timedelay = 1;
       int count = Get_Build_Frame_Count(dataptr);
@@ -3359,8 +3359,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
                                          "MAKE")
                        .replace_extension(Theaters[theater].Suffix)
                        .string();
-        static_cast<void const*&>(classptr->BuildupData) =
-            MFCD::Retrieve(fullname);
+        classptr->BuildupData = MFCD::Retrieve(fullname);
         if (classptr->BuildupData) {
           int timedelay = 1;
           int count = Get_Build_Frame_Count(classptr->BuildupData);
@@ -3787,7 +3786,8 @@ COORDINATE BuildingTypeClass::Coord_Fixup(COORDINATE coord) const {
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Full_Name() const {
-  if (MapEditorActive || Rule.IsNamed || *this < STRUCT_V01 || *this > STRUCT_V37) {
+  if (MapEditorActive || Rule.IsNamed || *this < STRUCT_V01 ||
+      *this > STRUCT_V37) {
     return TechnoTypeClass::Full_Name();
   }
   return TXT_CIVILIAN_BUILDING;

@@ -48,7 +48,7 @@ int AbstractClass::Distance(const TARGET target) const {
 AbstractTypeClass::AbstractTypeClass(const int name, char const* ini) {
   Name = name;
   strncpy(IniName, ini, sizeof(IniName));
-  static_cast<char&>(IniName[sizeof(IniName) - 1]) = '\0';
+  IniName[sizeof(IniName) - 1] = '\0';
 }
 
 RTTIType AbstractTypeClass::What_Am_I() const { return RTTI_ABSTRACTTYPE; }

@@ -525,12 +525,11 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
 #ifdef VIC
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
-    static_cast<int&>(Class->Stages) =
-        Get_Build_Frame_Count(Class->Get_Image_Data());
+    Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
     IsTheaterShape = false;
   }
   if (Class->LoopEnd == -1) {
-    static_cast<int&>(Class->LoopEnd) = Class->Stages;
+    Class->LoopEnd = Class->Stages;
   }
   if (Class->IsNormalized) {
     Set_Rate(Options.Normalize_Delay(Class->Delay));
@@ -694,12 +693,11 @@ void AnimClass::AI() {
 
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
-    static_cast<int&>(Class->Stages) =
-        Get_Build_Frame_Count(Class->Get_Image_Data());
+    Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
     IsTheaterShape = false;
   }
   if (Class->LoopEnd == -1) {
-    static_cast<int&>(Class->LoopEnd) = Class->Stages;
+    Class->LoopEnd = Class->Stages;
   }
 
   if (Delay) {
@@ -710,12 +708,11 @@ void AnimClass::AI() {
   } else {
     if (Class->Stages == -1) {
       IsTheaterShape = Class->IsTheater;
-      static_cast<int&>(Class->Stages) =
-          Get_Build_Frame_Count(Class->Get_Image_Data());
+      Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
       IsTheaterShape = false;
     }
     if (Class->LoopEnd == -1) {
-      static_cast<int&>(Class->LoopEnd) = Class->Stages;
+      Class->LoopEnd = Class->Stages;
     }
 
     /*
@@ -788,12 +785,11 @@ void AnimClass::AI() {
 
             if (Class->Stages == -1) {
               IsTheaterShape = Class->IsTheater;
-              static_cast<int&>(Class->Stages) =
-                  Get_Build_Frame_Count(Class->Get_Image_Data());
+              Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
               IsTheaterShape = false;
             }
             if (Class->LoopEnd == -1) {
-              static_cast<int&>(Class->LoopEnd) = Class->Stages;
+              Class->LoopEnd = Class->Stages;
             }
 
             IsToDelete = false;

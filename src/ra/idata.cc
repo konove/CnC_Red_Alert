@@ -1250,9 +1250,9 @@ void InfantryTypeClass::One_Time() {
 #ifndef NDEBUG
     RawFileClass ifile(fullname.c_str());
     if (ifile.Is_Available()) {
-      static_cast<void const*&>(uclass->CameoData) = Load_Alloc_Data(ifile);
+      uclass->CameoData = Load_Alloc_Data(ifile);
     } else {
-      static_cast<void const*&>(uclass->CameoData) = MFCD::Retrieve(fullname);
+      uclass->CameoData = MFCD::Retrieve(fullname);
     }
 #else
     ((void const*&)uclass->CameoData) = MFCD::Retrieve(fullname);

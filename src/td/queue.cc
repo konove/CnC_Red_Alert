@@ -4227,7 +4227,7 @@ static void Print_Framesync_Values(long curframe, unsigned long max_ahead,
     Mono_Printf("%4d", static_cast<int>(my_sent));
 
     Mono_Set_Cursor(35, 14);
-    Mono_Printf("%2d", static_cast<int>(DesiredFrameRate));
+    Mono_Printf("%2d", DesiredFrameRate);
   }
 #else
   curframe = curframe;

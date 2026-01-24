@@ -255,8 +255,8 @@ AircraftTypeClass::AircraftTypeClass(
     bool is_stealthy, bool is_selectable, bool is_legal_target,
     bool is_insignificant, bool is_immune, StructType building,
     int landingspeed, int rotation, MissionType deforder)
-    : TechnoTypeClass(RTTI_AIRCRAFTTYPE, static_cast<int>(airtype), name, ininame,
-                      REMAP_NORMAL, verticaloffset, primaryoffset,
+    : TechnoTypeClass(RTTI_AIRCRAFTTYPE, static_cast<int>(airtype), name,
+                      ininame, REMAP_NORMAL, verticaloffset, primaryoffset,
                       primarylateral, primaryoffset, primarylateral, false,
                       is_stealthy, is_selectable, is_legal_target,
                       is_insignificant, is_immune, false, false, true, true,
@@ -385,7 +385,7 @@ void AircraftTypeClass::One_Time() {
 
     // Load cameo icon: "<GraphicName>ICON.SHP"
     auto cameo_file = std::string(uclass.Graphic_Name()) + "ICON.SHP";
-    const_cast<void const*&>(uclass.CameoData) = MFCD::Retrieve(cameo_file);
+    uclass.CameoData = MFCD::Retrieve(cameo_file);
 
     // Load aircraft shape: "<GraphicName>.SHP"
     auto shape_file = std::string(uclass.Graphic_Name()) + ".SHP";

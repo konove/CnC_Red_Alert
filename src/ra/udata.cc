@@ -1052,9 +1052,9 @@ void UnitTypeClass::One_Time() {
 #ifndef NDEBUG
     RawFileClass datafile(fullname.c_str());
     if (datafile.Is_Available()) {
-      static_cast<void const*&>(uclass.CameoData) = Load_Alloc_Data(datafile);
+      uclass.CameoData = Load_Alloc_Data(datafile);
     } else {
-      static_cast<void const*&>(uclass.CameoData) = MFCD::Retrieve(fullname);
+      uclass.CameoData = MFCD::Retrieve(fullname);
     }
 #else
     ((void const*&)uclass.CameoData) = MFCD::Retrieve(fullname);
@@ -1089,7 +1089,7 @@ void UnitTypeClass::One_Time() {
           std::max(largest, static_cast<int>(Get_Build_Frame_Height(ptr)));
     }
 
-    static_cast<int&>(uclass.MaxSize) = std::max(largest, 8);
+    uclass.MaxSize = std::max(largest, 8);
   }
 
   /*
