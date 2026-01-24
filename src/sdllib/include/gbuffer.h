@@ -704,7 +704,7 @@ inline void GraphicViewPortClass::Remap(int sx, int sy, int width, int height,
 }
 
 inline void GraphicViewPortClass::Remap(void* remap) {
-  return Remap(0, 0, Width, Height, remap);
+  Remap(0, 0, Width, Height, remap);
 }
 
 inline int GraphicViewPortClass::Get_Pitch() { return Pitch; }
