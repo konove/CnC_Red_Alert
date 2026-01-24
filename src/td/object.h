@@ -89,7 +89,6 @@ class ObjectClass : public AbstractClass {
   */
   unsigned IsToDisplay : 1;
 
- public:
   /*
   **	An object in the game may be valid yet held in a state of "limbo". Units
   *are in such *	a state if they are being transported or are otherwise

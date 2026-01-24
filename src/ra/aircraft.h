@@ -203,7 +203,6 @@ class AircraftClass : public FootClass, public FlyClass {
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 
- public:
   /*
   **	This is the facing used for the body of the aircraft. Typically, this is
   *the same *	as the PrimaryFacing, but in the case of helicopters, it can be
@@ -258,7 +257,6 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   unsigned char Jitter;
 
- private:
   /*
   **	This timer controls when the aircraft will reveal the terrain around
   *itself. *	When this timer expires and this aircraft has a sight range,

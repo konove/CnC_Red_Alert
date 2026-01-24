@@ -82,7 +82,6 @@ class GaugeClass : public ControlClass {
   */
   int ClickDiff;
 
- protected:
   virtual void Draw_Thumb();
   int Action(unsigned flags, KeyNumType& key) override;
   virtual int Pixel_To_Value(int pixel);
