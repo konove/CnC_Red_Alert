@@ -1708,13 +1708,12 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
       if (NavCom != static_cast<TARGET>(param)) {
         if (::As_Target(Coord_Cell(Coord)) == static_cast<TARGET>(param)) {
           return RADIO_YEA_NOW_WHAT;
-        } else {
-          if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
-            Assign_Mission(MISSION_MOVE);
-          }
-          Assign_Destination(static_cast<TARGET>(param));
-          Shorten_Mission_Timer();
         }
+        if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
+          Assign_Mission(MISSION_MOVE);
+        }
+        Assign_Destination(static_cast<TARGET>(param));
+        Shorten_Mission_Timer();
       }
       return RADIO_ROGER;
 

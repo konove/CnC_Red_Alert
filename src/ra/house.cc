@@ -3100,19 +3100,16 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
               Map.PendingHouse = HOUSE_NONE;
             }
             return true;
-          } else {
-            if (this == PlayerPtr) {
-              Speak(VOX_DEPLOY);
-            }
+          }
+          if (this == PlayerPtr) {
+            Speak(VOX_DEPLOY);
           }
           builder->Transmit_Message(RADIO_OVER_OUT);
         }
         return false;
-
-      } else {
-        // Play a bad sound here?
-        return false;
       }
+      // Play a bad sound here?
+      return false;
     }
   }
 

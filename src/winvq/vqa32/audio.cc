@@ -545,35 +545,34 @@ long CopyAudio(VQAHandleP* vqap) {
 
     SDL_UnlockAudioDevice(config->AudioDeviceID);
     return 0;
-  } else {
-    /* Compute length of each piece */
-    len1 = config->AudioBufSize - audio->AudBufPos;
-    len2 = audio->TempBufLen - len1;
-
-    /* Copy 1st piece into end of Audio Buffer */
-    memcpy(audio->Buffer + audio->AudBufPos, audio->TempBuf, len1);
-
-    /* Copy 2nd piece into start of Audio Buffer */
-    memcpy(audio->Buffer, audio->TempBuf + len1, len2);
-
-    /* Adjust load position */
-    audio->AudBufPos = len2;
-
-    /* Mark buffer as empty */
-    audio->TempBufLen = 0;
-
-    /* Set blocks to loaded */
-    for (i = startblock; i < audio->NumAudBlocks; i++) {
-      audio->IsLoaded[i] = 1;
-    }
-
-    for (i = 0; i < endblock; i++) {
-      audio->IsLoaded[i] = 1;
-    }
-
-    SDL_UnlockAudioDevice(config->AudioDeviceID);
-    return 0;
   }
+  /* Compute length of each piece */
+  len1 = config->AudioBufSize - audio->AudBufPos;
+  len2 = audio->TempBufLen - len1;
+
+  /* Copy 1st piece into end of Audio Buffer */
+  memcpy(audio->Buffer + audio->AudBufPos, audio->TempBuf, len1);
+
+  /* Copy 2nd piece into start of Audio Buffer */
+  memcpy(audio->Buffer, audio->TempBuf + len1, len2);
+
+  /* Adjust load position */
+  audio->AudBufPos = len2;
+
+  /* Mark buffer as empty */
+  audio->TempBufLen = 0;
+
+  /* Set blocks to loaded */
+  for (i = startblock; i < audio->NumAudBlocks; i++) {
+    audio->IsLoaded[i] = 1;
+  }
+
+  for (i = 0; i < endblock; i++) {
+    audio->IsLoaded[i] = 1;
+  }
+
+  SDL_UnlockAudioDevice(config->AudioDeviceID);
+  return 0;
 }
 
 void VQA_PauseAudio() {

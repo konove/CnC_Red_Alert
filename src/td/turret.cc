@@ -129,11 +129,10 @@ bool TurretClass::Ok_To_Move(DirType dir) {
   if (Class->IsLockTurret) {
     if (IsRotating) {
       return false;
-    } else {
-      if (SecondaryFacing.Difference(dir)) {
-        SecondaryFacing.Set_Desired(dir);
-        return false;
-      }
+    }
+    if (SecondaryFacing.Difference(dir)) {
+      SecondaryFacing.Set_Desired(dir);
+      return false;
     }
   }
   return true;
@@ -449,9 +448,8 @@ DirType TurretClass::Fire_Direction() const {
                                   64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {
         return static_cast<DirType>(SecondaryFacing - (DirType)adj);
-      } else {
-        return SecondaryFacing + static_cast<DirType>(adj);
       }
+      return SecondaryFacing + static_cast<DirType>(adj);
     }
     return SecondaryFacing.Current();
   }

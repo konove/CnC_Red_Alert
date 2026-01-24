@@ -285,9 +285,8 @@ bool IPXConnClass::Start_Listening() {
   if (IPX_Start_Listening95()) {
     Listening = 1;
     return true;
-  } else {
-    return false;
   }
+  return false;
 
 #else
 
@@ -378,10 +377,9 @@ bool IPXConnClass::Stop_Listening() {
   if (Winsock.Get_Connected()) {
     Listening = 0;
     return true;
-  } else {
-    IPX_Shut_Down95();
-    Close_Socket(Socket);
   }
+  IPX_Shut_Down95();
+  Close_Socket(Socket);
 
 #else  // NOT_FOR_WIN95
 
@@ -426,9 +424,8 @@ int IPXConnClass::Send(char* buf, int buflen) {
   ------------------------------------------------------------------------*/
   if (Immed_Set) {
     return Send_To(buf, buflen, &Address, ImmediateAddress);
-  } else {
-    return Send_To(buf, buflen, &Address, nullptr);
   }
+  return Send_To(buf, buflen, &Address, nullptr);
 
 } /* end of Send */
 
@@ -633,8 +630,8 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
     }
   }
 
-  return IPX_Send_Packet95(&send_address[0], (unsigned char*)buf, buflen,
-                           net, node);
+  return IPX_Send_Packet95(&send_address[0], (unsigned char*)buf, buflen, net,
+                           node);
 }
 
 /***************************************************************************
@@ -686,7 +683,6 @@ int IPXConnClass::Broadcast(char* buf, int buflen) {
     Winsock.Write(buf, buflen);
 #endif  // VIRTUAL_SUBNET_SERVER
     return true;
-  } else {
-    return IPX_Broadcast_Packet95((unsigned char*)buf, buflen);
   }
+  return IPX_Broadcast_Packet95((unsigned char*)buf, buflen);
 }

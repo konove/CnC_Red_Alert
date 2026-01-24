@@ -711,9 +711,8 @@ void MessageListClass::Set_Edit_Focus() {
 bool MessageListClass::Has_Edit_Focus() {
   if (IsEdit) {
     return EditLabel->Has_Focus();
-  } else {
-    return false;
   }
+  return false;
 }
 
 /***************************************************************************

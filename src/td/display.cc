@@ -2506,15 +2506,14 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
         if (cell < 1) {
           cell = Coord_Cell(TacticalCoord);
           return cell;
-        } else {
-          if ((*this)[cell].Cell_Techno()) {
-            for (int radius = 1; radius < 7; radius++) {
-              CELL newcell = Coord_Cell(
-                  Coord_Scatter(Cell_Coord(cell), radius << 8, true));
-              if (In_Radar(newcell) && !(*this)[newcell].Cell_Techno()) {
-                cell = newcell;
-                break;
-              }
+        }
+        if ((*this)[cell].Cell_Techno()) {
+          for (int radius = 1; radius < 7; radius++) {
+            CELL newcell =
+                Coord_Cell(Coord_Scatter(Cell_Coord(cell), radius << 8, true));
+            if (In_Radar(newcell) && !(*this)[newcell].Cell_Techno()) {
+              cell = newcell;
+              break;
             }
           }
         }

@@ -1002,212 +1002,207 @@ bool DriveClass::Start_Of_Move() {
     */
     Do_Turn(dir);
     return true;
+  }
+  /* NOTE:  Beyond this point, actual track assignment can begin.
+   **
+   **	If the cell to move into is impassable (probably for some unexpected
+   **	reason), then abort the path list and set the speed to zero. The
+   ** next time this routine is called, a new path will be generated.
+   */
+  destcell = Coord_Cell(dest);
+  Mark(MARK_UP);
+  MoveType cando = Can_Enter_Cell(destcell, facing);
+  Mark(MARK_DOWN);
 
-  } else {
-    /* NOTE:  Beyond this point, actual track assignment can begin.
-    **
-    **	If the cell to move into is impassable (probably for some unexpected
-    **	reason), then abort the path list and set the speed to zero. The
-    ** next time this routine is called, a new path will be generated.
+  if (cando != MOVE_OK) {
+    if (Mission == MISSION_MOVE && House->IsHuman &&
+        Distance(NavCom) < 0x0200) {
+      Assign_Destination(kTargetNone);
+    }
+
+    /*
+    **	If a temporary friendly object is blocking the path, then cause
+    *it to *	get out of the way.
     */
-    destcell = Coord_Cell(dest);
-    Mark(MARK_UP);
-    MoveType cando = Can_Enter_Cell(destcell, facing);
-    Mark(MARK_DOWN);
+    if (cando == MOVE_TEMP) {
+      bool old = Special.IsScatter;
+      Special.IsScatter = true;
+      Map[destcell].Incoming(0, true);
+      Special.IsScatter = old;
+    }
 
-    if (cando != MOVE_OK) {
-      if (Mission == MISSION_MOVE && House->IsHuman &&
-          Distance(NavCom) < 0x0200) {
-        Assign_Destination(kTargetNone);
-      }
+    /*
+    **	If a cloaked object is blocking, then shimmer the cell.
+    */
+    if (cando == MOVE_CLOAK) {
+      Map[destcell].Shimmer();
+    }
 
-      /*
-      **	If a temporary friendly object is blocking the path, then cause
-      *it to *	get out of the way.
-      */
-      if (cando == MOVE_TEMP) {
-        bool old = Special.IsScatter;
-        Special.IsScatter = true;
-        Map[destcell].Incoming(0, true);
-        Special.IsScatter = old;
-      }
+    Stop_Driver();
+    if (cando != MOVE_MOVING_BLOCK) {
+      Path[0] = FACING_NONE;  // Path is blocked!
+    }
 
-      /*
-      **	If a cloaked object is blocking, then shimmer the cell.
-      */
-      if (cando == MOVE_CLOAK) {
-        Map[destcell].Shimmer();
-      }
-
-      Stop_Driver();
-      if (cando != MOVE_MOVING_BLOCK) {
-        Path[0] = FACING_NONE;  // Path is blocked!
-      }
-
-      /*
-      ** If blocked by a moving block then just exit start of move and
-      ** try again next tick.
-      */
-      if (cando == MOVE_DESTROYABLE) {
-        if (Map[destcell].Cell_Object()) {
-          if (!House->Is_Ally(Map[destcell].Cell_Object())) {
-            Override_Mission(MISSION_ATTACK,
-                             Map[destcell].Cell_Object()->As_Target(),
-                             kTargetNone);
-          }
-        } else {
-          if (Map[destcell].Overlay != OVERLAY_NONE &&
-              OverlayTypeClass::As_Reference(Map[destcell].Overlay).IsWall) {
-            Override_Mission(MISSION_ATTACK, ::As_Target(destcell),
-                             kTargetNone);
-          }
+    /*
+    ** If blocked by a moving block then just exit start of move and
+    ** try again next tick.
+    */
+    if (cando == MOVE_DESTROYABLE) {
+      if (Map[destcell].Cell_Object()) {
+        if (!House->Is_Ally(Map[destcell].Cell_Object())) {
+          Override_Mission(MISSION_ATTACK,
+                           Map[destcell].Cell_Object()->As_Target(),
+                           kTargetNone);
         }
       } else {
-        if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
+        if (Map[destcell].Overlay != OVERLAY_NONE &&
+            OverlayTypeClass::As_Reference(Map[destcell].Overlay).IsWall) {
+          Override_Mission(MISSION_ATTACK, ::As_Target(destcell), kTargetNone);
+        }
       }
-      IsNewNavCom = false;
+    } else {
+      if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
+    }
+    IsNewNavCom = false;
+    TrackNumber = -1;
+    return true;
+  }
+
+  /*
+  **	Determine the speed that the unit can travel to the desired square.
+  */
+  ground = Map[destcell].Land_Type();
+  speed = Ground[ground].Cost[Class->Speed];
+  if (!speed) speed = 128;
+
+#ifdef NEVER
+  /*
+  **	Set the jiggle flag if the terrain would cause the unit
+  **	to jiggle when travelled over.
+  */
+  BaseF &= ~BASEF_JIGGLE;
+  if (Ground[ground].Jiggle) {
+    BaseF |= BASEF_JIGGLE;
+  }
+#endif
+
+  /*
+  **	A damaged unit has a reduced speed.
+  */
+  if (Class->MaxStrength >> 1 > Strength) {
+    speed -= speed >> 2;  // Three quarters speed.
+  }
+  if (speed != Speed /* || !SpeedAdd*/) {
+    Set_Speed(speed);  // Full speed.
+  }
+
+  /*
+  **	Adjust speed depending on distance to ultimate movement target. The
+  **	further away the target is, the faster the vehicle will travel.
+  */
+  int dist = Distance(NavCom);
+  if (dist < 0x0200) {
+    speed = Fixed_To_Cardinal(speed, 0x00A0);
+  } else {
+    if (dist < 0x0700) {
+      speed = Fixed_To_Cardinal(speed, 0x00D0);
+    }
+  }
+
+  /*
+  **	Reserve the destination cell so that it won't become
+  **	occupied AS this unit is moving into it.
+  */
+  if (cando != MOVE_OK) {
+    Path[0] = FACING_NONE;  // Path is blocked!
+    TrackNumber = -1;
+    dest = 0;
+  } else {
+    Overrun_Square(Coord_Cell(dest), true);
+
+    /*
+    **	Determine which track to use (based on recorded path).
+    */
+    FacingType nextface = Path[1];
+    if (nextface == FACING_NONE) nextface = facing;
+
+    IsOnShortTrack = false;
+    TrackNumber = facing * FACING_COUNT + nextface;
+    if (TrackControl[TrackNumber].Track == 0) {
+      Path[0] = FACING_NONE;
       TrackNumber = -1;
       return true;
     }
-
-    /*
-    **	Determine the speed that the unit can travel to the desired square.
-    */
-    ground = Map[destcell].Land_Type();
-    speed = Ground[ground].Cost[Class->Speed];
-    if (!speed) speed = 128;
-
-#ifdef NEVER
-    /*
-    **	Set the jiggle flag if the terrain would cause the unit
-    **	to jiggle when travelled over.
-    */
-    BaseF &= ~BASEF_JIGGLE;
-    if (Ground[ground].Jiggle) {
-      BaseF |= BASEF_JIGGLE;
-    }
-#endif
-
-    /*
-    **	A damaged unit has a reduced speed.
-    */
-    if (Class->MaxStrength >> 1 > Strength) {
-      speed -= speed >> 2;  // Three quarters speed.
-    }
-    if (speed != Speed /* || !SpeedAdd*/) {
-      Set_Speed(speed);  // Full speed.
-    }
-
-    /*
-    **	Adjust speed depending on distance to ultimate movement target. The
-    **	further away the target is, the faster the vehicle will travel.
-    */
-    int dist = Distance(NavCom);
-    if (dist < 0x0200) {
-      speed = Fixed_To_Cardinal(speed, 0x00A0);
-    } else {
-      if (dist < 0x0700) {
-        speed = Fixed_To_Cardinal(speed, 0x00D0);
-      }
-    }
-
-    /*
-    **	Reserve the destination cell so that it won't become
-    **	occupied AS this unit is moving into it.
-    */
-    if (cando != MOVE_OK) {
-      Path[0] = FACING_NONE;  // Path is blocked!
-      TrackNumber = -1;
-      dest = 0;
-    } else {
-      Overrun_Square(Coord_Cell(dest), true);
-
+    if (TrackControl[TrackNumber].Flag & F_D) {
       /*
-      **	Determine which track to use (based on recorded path).
+      **	If the middle cell of a two cell track contains a crate,
+      **	the check for goodies before movement starts.
       */
-      FacingType nextface = Path[1];
-      if (nextface == FACING_NONE) nextface = facing;
-
-      IsOnShortTrack = false;
-      TrackNumber = facing * FACING_COUNT + nextface;
-      if (TrackControl[TrackNumber].Track == 0) {
-        Path[0] = FACING_NONE;
-        TrackNumber = -1;
-        return true;
+      if (!Map[destcell].Goodie_Check(this)) {
+        cando = MOVE_NO;
       } else {
-        if (TrackControl[TrackNumber].Flag & F_D) {
-          /*
-          **	If the middle cell of a two cell track contains a crate,
-          **	the check for goodies before movement starts.
-          */
-          if (!Map[destcell].Goodie_Check(this)) {
-            cando = MOVE_NO;
-          } else {
-            dest = Adjacent_Cell(dest, nextface);
-            destcell = Coord_Cell(dest);
-            cando = Can_Enter_Cell(destcell);
-          }
-
-          if (cando != MOVE_OK) {
-            /*
-            **	If a temporary friendly object is blocking the path, then cause
-            *it to *	get out of the way.
-            */
-            if (cando == MOVE_TEMP) {
-              bool old = Special.IsScatter;
-              Special.IsScatter = true;
-              Map[destcell].Incoming(0, true);
-              Special.IsScatter = old;
-            }
-
-            /*
-            **	If a cloaked object is blocking, then shimmer the cell.
-            */
-            if (cando == MOVE_CLOAK) {
-              Map[destcell].Shimmer();
-            }
-
-            Path[0] = FACING_NONE;  // Path is blocked!
-            TrackNumber = -1;
-            dest = 0;
-            if (cando == MOVE_DESTROYABLE) {
-              if (Map[destcell].Cell_Object()) {
-                if (!House->Is_Ally(Map[destcell].Cell_Object())) {
-                  Override_Mission(MISSION_ATTACK,
-                                   Map[destcell].Cell_Object()->As_Target(),
-                                   kTargetNone);
-                }
-              } else {
-                if (Map[destcell].Overlay != OVERLAY_NONE &&
-                    OverlayTypeClass::As_Reference(Map[destcell].Overlay)
-                        .IsWall) {
-                  Override_Mission(MISSION_ATTACK, ::As_Target(destcell),
-                                   kTargetNone);
-                }
-              }
-              IsNewNavCom = false;
-              TrackIndex = 0;
-              return true;
-            }
-          } else {
-            memmove(&Path[0], &Path[2], CONQUER_PATH_MAX - 2);
-            Path[CONQUER_PATH_MAX - 2] = FACING_NONE;
-            IsPlanningToLook = true;
-          }
-        } else {
-          memmove(&Path[0], &Path[1], CONQUER_PATH_MAX - 1);
-        }
-        Path[CONQUER_PATH_MAX - 1] = FACING_NONE;
+        dest = Adjacent_Cell(dest, nextface);
+        destcell = Coord_Cell(dest);
+        cando = Can_Enter_Cell(destcell);
       }
-    }
 
-    IsNewNavCom = false;
-    TrackIndex = 0;
-    if (!Start_Driver(dest)) {
-      TrackNumber = -1;
-      Path[0] = FACING_NONE;
-      Set_Speed(0);
+      if (cando != MOVE_OK) {
+        /*
+        **	If a temporary friendly object is blocking the path, then cause
+        *it to *	get out of the way.
+        */
+        if (cando == MOVE_TEMP) {
+          bool old = Special.IsScatter;
+          Special.IsScatter = true;
+          Map[destcell].Incoming(0, true);
+          Special.IsScatter = old;
+        }
+
+        /*
+        **	If a cloaked object is blocking, then shimmer the cell.
+        */
+        if (cando == MOVE_CLOAK) {
+          Map[destcell].Shimmer();
+        }
+
+        Path[0] = FACING_NONE;  // Path is blocked!
+        TrackNumber = -1;
+        dest = 0;
+        if (cando == MOVE_DESTROYABLE) {
+          if (Map[destcell].Cell_Object()) {
+            if (!House->Is_Ally(Map[destcell].Cell_Object())) {
+              Override_Mission(MISSION_ATTACK,
+                               Map[destcell].Cell_Object()->As_Target(),
+                               kTargetNone);
+            }
+          } else {
+            if (Map[destcell].Overlay != OVERLAY_NONE &&
+                OverlayTypeClass::As_Reference(Map[destcell].Overlay).IsWall) {
+              Override_Mission(MISSION_ATTACK, ::As_Target(destcell),
+                               kTargetNone);
+            }
+          }
+          IsNewNavCom = false;
+          TrackIndex = 0;
+          return true;
+        }
+      } else {
+        memmove(&Path[0], &Path[2], CONQUER_PATH_MAX - 2);
+        Path[CONQUER_PATH_MAX - 2] = FACING_NONE;
+        IsPlanningToLook = true;
+      }
+    } else {
+      memmove(&Path[0], &Path[1], CONQUER_PATH_MAX - 1);
     }
+    Path[CONQUER_PATH_MAX - 1] = FACING_NONE;
+  }
+
+  IsNewNavCom = false;
+  TrackIndex = 0;
+  if (!Start_Driver(dest)) {
+    TrackNumber = -1;
+    Path[0] = FACING_NONE;
+    Set_Speed(0);
   }
   return false;
 }

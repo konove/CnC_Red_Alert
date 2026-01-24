@@ -299,93 +299,93 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
       sy += yinc;
     }
     return 0;
-  } else {  // else we walk in X
-    Error = 0;
-    // start at left top corner in src and dest
+  }
+  // else we walk in X
+  Error = 0;
+  // start at left top corner in src and dest
 
+  sx = 0;
+  sy = 0;
+
+  dx = 0;
+  dy = 0;
+
+  dest = MAKE_PTR(destvp, rx + dx, ry + dy);
+
+  src = MAKE_PTR(srcvp, x + sx, y + sy);
+
+  // this gets added to error each inc of x
+  // when error is > 1 then inc y!
+  int xinc = 1;
+  if (Deltax < 0) {
+    Deltax = -Deltax;
+    xinc = -1;
+  }
+  int yinc = 1;
+  if (Deltay < 0) {
+    Deltay = -Deltay;
+    buffwid2 = -buffwid2;
+    sy = sy + h - 1;
+    yinc = -1;
+  }
+
+  Decimal = (Deltay << shift) / Deltax;
+  // this is the ratios between the source width and the dest width
+  // as the rectangle rotates the actual size changes!
+
+  int DeltaW = (w << shift) / Deltax;
+  int Error2 = 0;
+  for (int r = 0; r < h; r++) {
     sx = 0;
-    sy = 0;
+
+    // now we walk across the side calculating each rotated point
+    // along the side
+    // the use delta formula to walk in x and y in destination space
+    // always walking in the x in the source!
+    // figure out rotated location to start
+
+    rx = ((sx - halfws) * ca - (sy - halfhs) * sa) >> shift;
+    rx += halfwd;
+    ry = ((sx - halfws) * sa + (sy - halfhs) * ca) >> shift;
+    ry += halfhd;
+    // this is the other side of the box
+
+    int x2 = ((sx + w - halfws) * ca - (sy - halfhs) * sa) >> shift;
+
+    x2 += halfwd;
+
+    int diff = x2 - rx;
 
     dx = 0;
     dy = 0;
 
-    dest = MAKE_PTR(destvp, rx + dx, ry + dy);
+    if (xinc == -1) {
+      diff = -diff;
+    }
 
     src = MAKE_PTR(srcvp, x + sx, y + sy);
 
-    // this gets added to error each inc of x
-    // when error is > 1 then inc y!
-    int xinc = 1;
-    if (Deltax < 0) {
-      Deltax = -Deltax;
-      xinc = -1;
-    }
-    int yinc = 1;
-    if (Deltay < 0) {
-      Deltay = -Deltay;
-      buffwid2 = -buffwid2;
-      sy = sy + h - 1;
-      yinc = -1;
-    }
+    dest = MAKE_PTR(destvp, rx + dx, ry + dy);
+    Error = 0;
+    Error2 = 0;
+    char* baseptr = src;
 
-    Decimal = (Deltay << shift) / Deltax;
-    // this is the ratios between the source width and the dest width
-    // as the rectangle rotates the actual size changes!
-
-    int DeltaW = (w << shift) / Deltax;
-    int Error2 = 0;
-    for (int r = 0; r < h; r++) {
-      sx = 0;
-
-      // now we walk across the side calculating each rotated point
-      // along the side
-      // the use delta formula to walk in x and y in destination space
-      // always walking in the x in the source!
-      // figure out rotated location to start
-
-      rx = ((sx - halfws) * ca - (sy - halfhs) * sa) >> shift;
-      rx += halfwd;
-      ry = ((sx - halfws) * sa + (sy - halfhs) * ca) >> shift;
-      ry += halfhd;
-      // this is the other side of the box
-
-      int x2 = ((sx + w - halfws) * ca - (sy - halfhs) * sa) >> shift;
-
-      x2 += halfwd;
-
-      int diff = x2 - rx;
-
-      dx = 0;
-      dy = 0;
-
-      if (xinc == -1) {
-        diff = -diff;
+    while (diff--) {
+      char c = *src;
+      // transparency
+      if (c) *dest = *src;
+      Error2 += DeltaW;
+      rx++;
+      dest += xinc;
+      Error += Decimal;
+      src = baseptr + (Error2 >> shift);
+      if (Error >= fixpoint1) {
+        Error -= fixpoint1;
+        if (*src) *dest = *src;
+        dest += buffwid2;
       }
-
-      src = MAKE_PTR(srcvp, x + sx, y + sy);
-
-      dest = MAKE_PTR(destvp, rx + dx, ry + dy);
-      Error = 0;
-      Error2 = 0;
-      char* baseptr = src;
-
-      while (diff--) {
-        char c = *src;
-        // transparency
-        if (c) *dest = *src;
-        Error2 += DeltaW;
-        rx++;
-        dest += xinc;
-        Error += Decimal;
-        src = baseptr + (Error2 >> shift);
-        if (Error >= fixpoint1) {
-          Error -= fixpoint1;
-          if (*src) *dest = *src;
-          dest += buffwid2;
-        }
-      }
-      sy += yinc;
     }
+    sy += yinc;
   }
   return 0;
 }

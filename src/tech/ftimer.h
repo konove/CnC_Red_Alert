@@ -126,7 +126,6 @@ template <class T>
 inline BasicTimerClass<T>::BasicTimerClass(unsigned long set)
     : Started(Timer() - set) {}
 
-
 template <class T>
 inline unsigned long BasicTimerClass<T>::Value() const {
   return Timer() - Started;
@@ -442,7 +441,6 @@ template <class T>
 inline CDTimerClass<T>::CDTimerClass(unsigned long set)
     : BasicTimerClass<T>(0), DelayTime(set) {}
 
-
 /***********************************************************************************************
  * CDTimerClass<T>::Value -- Fetches the current value of the countdown timer. *
  *                                                                                             *
@@ -465,9 +463,8 @@ inline unsigned long CDTimerClass<T>::Value() const {
     unsigned long value = BasicTimerClass<T>::Value();
     if (value < remain) {
       return remain - value;
-    } else {
-      return 0;
     }
+    return 0;
   }
   return remain;
 }
@@ -496,9 +493,8 @@ inline CDTimerClass<T>::operator unsigned long() const {
     unsigned long value = BasicTimerClass<T>::Value();
     if (value < remain) {
       return remain - value;
-    } else {
-      return 0;
     }
+    return 0;
   }
   return remain;
 }
@@ -527,9 +523,8 @@ inline unsigned long CDTimerClass<T>::operator()() const {
     unsigned long value = BasicTimerClass<T>::Value();
     if (value < remain) {
       return remain - value;
-    } else {
-      return 0;
     }
+    return 0;
   }
   return remain;
 }

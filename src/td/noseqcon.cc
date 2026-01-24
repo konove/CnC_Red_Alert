@@ -206,11 +206,10 @@ int NonSequencedConnClass::Send_Packet(void* buf, int buflen, int ack_req) {
       NumSendNoAck++;
     }
     return true;
-  } else {
-    // Smart_Printf( "Packet not Queued ID %d \n", ((CommHeaderType
-    // *)PacketBuf)->PacketID );
-    return false;
   }
+  // Smart_Printf( "Packet not Queued ID %d \n", ((CommHeaderType
+  // *)PacketBuf)->PacketID );
+  return false;
 }
 
 /***************************************************************************
@@ -291,7 +290,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
   /*------------------------------------------------------------------------
   Handle an incoming PACKET_DATA_NOACK packet
   ------------------------------------------------------------------------*/
-  else if (packet->Code == PACKET_DATA_NOACK) {
+  if (packet->Code == PACKET_DATA_NOACK) {
     /*---------------------------------------------------------------------
     If there's only one slot left, don't tie up the queue with this packet
     ---------------------------------------------------------------------*/
@@ -318,7 +317,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
   /*------------------------------------------------------------------------
   Handle an incoming PACKET_DATA_ACK packet
   ------------------------------------------------------------------------*/
-  else if (packet->Code == PACKET_DATA_ACK) {
+  if (packet->Code == PACKET_DATA_ACK) {
     // Smart_Printf( "Looking at ID %d, LastSeqID=%d \n", packet->PacketID,
     // LastSeqID );
     /*....................................................................
@@ -425,10 +424,8 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     Send((char*)&ackpacket, sizeof(CommHeaderType));
 
     return true;
-
-  } else {
-    // Smart_Printf( "invalid packet type %d \n", packet->Code );
   }
+  // Smart_Printf( "invalid packet type %d \n", packet->Code );
 
   return false;
 }
@@ -491,7 +488,7 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
       /*..................................................................
       If this is a DATA_NOACK packet, who cares what the ID is?
       ..................................................................*/
-      else if (entry_data->Code == PACKET_DATA_NOACK) {
+      if (entry_data->Code == PACKET_DATA_NOACK) {
         rec_entry->IsRead = 1;
 
         packetlen = rec_entry->BufLen - sizeof(CommHeaderType);
@@ -655,9 +652,8 @@ int NonSequencedConnClass::Service_Send_Queue() {
   if (bad_conn) {
     // Smart_Printf( "Connection going bad!!! \n" );
     return false;
-  } else {
-    return true;
   }
+  return true;
 }
 
 /***************************************************************************

@@ -576,9 +576,8 @@ int DynamicVectorClass<T>::Delete(T const& object) {
   int index = ID(object);
   if (index != -1) {
     return Delete(index);
-  } else {
-    return false;
   }
+  return false;
 }
 
 // workaround for DynamicVectorClass<int>, nobody call this please

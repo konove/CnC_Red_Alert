@@ -267,17 +267,16 @@ int Read_Game_Options(char* name) {
 
   if (name && !file.Is_Available()) {
     return 0;
+  }
+  if (name) {
+    buffer = new char[8192];  // INI staging buffer pointer.
+    memset(buffer, '\0', 8192);
+    file.Read(buffer, 8192 - 1);
+    file.Close();
   } else {
-    if (name) {
-      buffer = new char[8192];  // INI staging buffer pointer.
-      memset(buffer, '\0', 8192);
-      file.Read(buffer, 8192 - 1);
-      file.Close();
-    } else {
 #ifdef _WIN32
-      buffer = DDEServer.Get_MPlayer_Game_Info();
+    buffer = DDEServer.Get_MPlayer_Game_Info();
 #endif
-    }
   }
 
   /*------------------------------------------------------------------------

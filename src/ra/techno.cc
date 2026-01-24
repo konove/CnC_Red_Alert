@@ -1110,13 +1110,11 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
           */
           if (Health_Ratio() < Rule.ConditionGreen) {
             return RADIO_ROGER;
-          } else {
-            Strength = Techno_Type_Class()->MaxStrength;
-            return RADIO_ALL_DONE;
           }
-        } else {
-          return RADIO_CANT;
+          Strength = Techno_Type_Class()->MaxStrength;
+          return RADIO_ALL_DONE;
         }
+        return RADIO_CANT;
       }
       return RADIO_NEGATIVE;
 
@@ -3491,13 +3489,11 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
                    object->What_Am_I() == RTTI_BUILDING &&
                    ((BuildingClass*)object)->Class->IsCaptureable)) {
                 return ACTION_ATTACK;
-              } else {
-                if (!Can_Player_Move()) {
-                  return ACTION_NONE;
-                } else {
-                  return ACTION_ATTACK;
-                }
               }
+              if (!Can_Player_Move()) {
+                return ACTION_NONE;
+              }
+              return ACTION_ATTACK;
             }
           }
         }
@@ -4287,7 +4283,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
 
     if (Techno_Type_Class()->IsInvisible && IsOwnedByPlayer)
       return VISUAL_NORMAL;
-    if (Techno_Type_Class()->IsInvisible && !IsOwnedByPlayer && !MapEditorActive)
+    if (Techno_Type_Class()->IsInvisible && !IsOwnedByPlayer &&
+        !MapEditorActive)
       return VISUAL_HIDDEN;
 
     /*

@@ -471,9 +471,8 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
 SendQueueType* CommBufferClass::Get_Send(int index) {
   if (SendQueue[SendIndex[index]].IsActive == 0) {
     return nullptr;
-  } else {
-    return &SendQueue[SendIndex[index]];
   }
+  return &SendQueue[SendIndex[index]];
 
 } /* end of Get_Send */
 
@@ -666,9 +665,8 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index,
 ReceiveQueueType* CommBufferClass::Get_Receive(int index) {
   if (ReceiveQueue[ReceiveIndex[index]].IsActive == 0) {
     return nullptr;
-  } else {
-    return &ReceiveQueue[ReceiveIndex[index]];
   }
+  return &ReceiveQueue[ReceiveIndex[index]];
 
 } /* end of Get_Receive */
 

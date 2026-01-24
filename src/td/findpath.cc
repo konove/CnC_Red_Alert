@@ -125,7 +125,9 @@ typedef enum {
 /*-------------------------------------------------------------------------*/
 static bool DrawPath;
 
-inline FacingType Opposite(FacingType face) { return static_cast<FacingType>(face ^ 4); }
+inline FacingType Opposite(FacingType face) {
+  return static_cast<FacingType>(face ^ 4);
+}
 
 static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
                                    int overide = 0) {
@@ -209,8 +211,10 @@ static CELL StartLocation;
  *   10/28/1994 SKB : Created.                                             *
  *=========================================================================*/
 int Point_Relative_To_Line(int x, int z, int x1, int z1, int x2, int z2) {
-  return (static_cast<long>(x) - static_cast<long>(x2)) * (static_cast<long>(z1) - static_cast<long>(z2)) -
-         (static_cast<long>(z) - static_cast<long>(z2)) * (static_cast<long>(x1) - static_cast<long>(x2));
+  return (static_cast<long>(x) - static_cast<long>(x2)) *
+             (static_cast<long>(z1) - static_cast<long>(z2)) -
+         (static_cast<long>(z) - static_cast<long>(z2)) *
+             (static_cast<long>(x1) - static_cast<long>(x2));
 }
 
 /***************************************************************************
@@ -363,9 +367,8 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
       */
       if (path->LastOverlap == cell) {
         return false;
-      } else {
-        path->LastOverlap = cell;
       }
+      path->LastOverlap = cell;
 
       CELL pos = path->Start;
       int newlen = 0;
@@ -417,8 +420,8 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
     ** and the cost.
     */
     int cpos = path->Length++;
-    path->Command[cpos] = dir;         // save of the direction we moved
-    path->Cost += cost;                // figure new cost for cell
+    path->Command[cpos] = dir;       // save of the direction we moved
+    path->Cost += cost;              // figure new cost for cell
     path->Overlap[pos] |= 1 << bit;  // mark the we have entered point
   }
   return true;
@@ -694,9 +697,8 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
               next == dest) {
             Draw_Cell_Point(next, true, threat_stage);
             break;
-          } else {
-            Draw_Cell_Point(next, false, threat_stage);
           }
+          Draw_Cell_Point(next, false, threat_stage);
 
           /*
           **	If we reached destination while in this loop, we
@@ -1019,9 +1021,8 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
             newdir = Next_Direction(newdir, search);
             newcell = Adjacent_Cell(oldcell, newdir);
             break;
-          } else {
-            Draw_Cell_Point(checkcell, false, threat_stage);
           }
+          Draw_Cell_Point(checkcell, false, threat_stage);
         }
 
         /*
@@ -1052,7 +1053,8 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         ** because we could be trying to escape from a culdesack!
         */
         if (forcefail && path->Length > 0 &&
-            static_cast<FacingType>(newdir ^ 4) == path->Command[path->Length - 1]) {
+            static_cast<FacingType>(newdir ^ 4) ==
+                path->Command[path->Length - 1]) {
           // ST - 12/18/96 5:15PM		if (forcefail &&
           // (FacingType)(newdir ^ 4) == path->Command[path->Length - 1]) {
           forcefail = false;
@@ -1212,8 +1214,9 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   */
 #ifdef DIAGONAL
   static FacingType _trans[FACING_COUNT] = {
-      static_cast<FacingType>(0),  static_cast<FacingType>(0), static_cast<FacingType>(1),
-      static_cast<FacingType>(2),  static_cast<FacingType>(3), static_cast<FacingType>(-2),
+      static_cast<FacingType>(0),  static_cast<FacingType>(0),
+      static_cast<FacingType>(1),  static_cast<FacingType>(2),
+      static_cast<FacingType>(3),  static_cast<FacingType>(-2),
       static_cast<FacingType>(-1), static_cast<FacingType>(0)};  // Smoothing.
 #else
   static FacingType _trans[FACING_COUNT] = {
@@ -1298,8 +1301,9 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
           **	Diagonal optimizations are always only 45
           **	degree adjustments.
           */
-          newdir = Next_Direction(
-              *cmd1, newcmd < FACING_N ? static_cast<FacingType>(-1) : static_cast<FacingType>(1));
+          newdir = Next_Direction(*cmd1, newcmd < FACING_N
+                                             ? static_cast<FacingType>(-1)
+                                             : static_cast<FacingType>(1));
 
           /*
           **	Diagonal 90 degree changes can be smoothed, although

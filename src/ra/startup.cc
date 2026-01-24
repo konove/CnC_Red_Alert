@@ -420,10 +420,9 @@ int main(int argc, char* argv[])
       } while (ReadyToQuit == 1);
 
       return EXIT_SUCCESS;
-    } else {
-      puts(TEXT_SETUP_FIRST);
-      Keyboard->Get();
     }
+    puts(TEXT_SETUP_FIRST);
+    Keyboard->Get();
 
     if (WindowsTimer) {
       delete WindowsTimer;

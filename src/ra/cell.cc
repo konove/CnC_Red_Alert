@@ -216,9 +216,8 @@ int CellClass::Cell_Color(bool override) const {
   }
   if (LastTheater == THEATER_SNOW) {
     return SnowColor[Land_Type()];
-  } else {
-    return GroundColor[Land_Type()];
   }
+  return GroundColor[Land_Type()];
 }
 
 /***********************************************************************************************
@@ -536,15 +535,11 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
     }
 
     return Ground[Land_Type()].Build;
-
-  } else {
-    if (Ground[Land_Type()].Cost[loco] == fixed(0)) {
-      //		if (::Ground[Land_Type()].Cost[SPEED_TRACK] == fixed(0))
-      //{
-      return false;
-    }
-    return true;
   }
+  if (Ground[Land_Type()].Cost[loco] == fixed(0)) {
+    return false;
+  }
+  return true;
 }
 
 /***********************************************************************************************

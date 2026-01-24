@@ -4647,10 +4647,8 @@ void* Hires_Load(char* name) {
     return_ptr = new char[length];
     file.Read(return_ptr, length);
     return return_ptr;
-
-  } else {
-    return nullptr;
   }
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -4916,13 +4914,12 @@ void Enable_Secret_Units() {
 }
 
 bool Force_Scenario_Available(const char* szName) {
-  //	Calls Force_CD_Available based on type of scenario. szName is assumed to
+  // Calls Force_CD_Available based on type of scenario. szName is assumed to
   // be an official scenario here.
   if (Is_Mission_Counterstrike((char*)szName)) {
-    //		debugprint( "Force_Scenario_Available requiring disk 4...\n" );
     return Force_CD_Available(4);
-  } else if (Is_Mission_Aftermath((char*)szName)) {
-    //		debugprint( "Force_Scenario_Available requiring disk 3...\n" );
+  }
+  if (Is_Mission_Aftermath((char*)szName)) {
     return Force_CD_Available(3);
   }
   return true;

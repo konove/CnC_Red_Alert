@@ -238,9 +238,8 @@ bool SuperClass::Discharged(bool player) {
     if (IsOneTime) {
       IsOneTime = false;
       return Remove();
-    } else {
-      Recharge(player);
     }
+    Recharge(player);
   }
   return false;
 }
@@ -278,11 +277,10 @@ bool SuperClass::AI(bool player) {
           Speak(VoxRecharge);
         }
         return true;
-      } else {
-        if (Anim_Stage() != OldStage) {
-          OldStage = Anim_Stage();
-          return true;
-        }
+      }
+      if (Anim_Stage() != OldStage) {
+        OldStage = Anim_Stage();
+        return true;
       }
     }
   }

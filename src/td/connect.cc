@@ -187,9 +187,8 @@ int ConnectionClass::Service() {
 
   if (Service_Send_Queue() && Service_Receive_Queue()) {
     return 1;
-  } else {
-    return 0;
   }
+  return 0;
 
 } /* end of Service */
 
@@ -218,7 +217,8 @@ unsigned long ConnectionClass::Time() {
   unsigned long msec;
 
   ftime(&mytime);
-  msec = static_cast<unsigned long>(mytime.time) * 1000L + static_cast<unsigned long>(mytime.millitm);
+  msec = static_cast<unsigned long>(mytime.time) * 1000L +
+         static_cast<unsigned long>(mytime.millitm);
   return msec / 100 * 6;
 #endif
 
@@ -245,7 +245,6 @@ unsigned long ConnectionClass::Time() {
 char* ConnectionClass::Command_Name(int command) {
   if (command >= 0 && command < PACKET_COUNT) {
     return Commands[command];
-  } else {
-    return nullptr;
   }
+  return nullptr;
 }

@@ -1106,9 +1106,9 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
   //------------------------------------------------------------------------
   //	Another system asking what player I am
   //------------------------------------------------------------------------
-  else if (packet->Command == NET_QUERY_PLAYER &&
-           !strcmp(packet->Name, Session.GameName) &&
-           strlen(Session.GameName) > 0 && Session.NetStealth == 0) {
+  if (packet->Command == NET_QUERY_PLAYER &&
+      !strcmp(packet->Name, Session.GameName) && strlen(Session.GameName) > 0 &&
+      Session.NetStealth == 0) {
     memset(&mypacket, 0, sizeof(GlobalPacketType));  // changed DRD 9/26
 
     mypacket.Command = NET_ANSWER_PLAYER;
@@ -1280,7 +1280,7 @@ bool Remote_Connect() {
     //.....................................................................
     //	0 = user has joined an existing game; save values & return
     //.....................................................................
-    else if (rc == 0) {
+    if (rc == 0) {
       Session.Write_MultiPlayer_Settings();
       Session.NetStealth = stealth;
       Session.NetOpen = 0;
@@ -1291,7 +1291,7 @@ bool Remote_Connect() {
     //.....................................................................
     //	1 = user requests New Network Game
     //.....................................................................
-    else if (rc == 1) {
+    if (rc == 1) {
       //..................................................................
       //	Pop up the New Network Game dialog; if user selects OK, return
       //	'true'; otherwise, return to the Join Dialog.
@@ -1302,8 +1302,6 @@ bool Remote_Connect() {
         Session.NetOpen = 0;
 
         return true;
-      } else {
-        continue;
       }
     }
   }
@@ -2630,11 +2628,10 @@ static int Net_Join_Dialog() {
                                            sizeof(Session.ScenarioFileName),
                                            1)) {
             break;
-          } else {
-            /*
-            ** Make sure we dont time-out because of the download
-            */
           }
+          /*
+           ** Make sure we dont time-out because of the download
+           */
         }
 
         Ipx.Set_Timing(30, static_cast<unsigned long>(-1), 600);
@@ -4648,8 +4645,8 @@ static int Net_New_Dialog() {
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
           break;
-
-        } else if (index < 0 || index >= playerlist.Count()) {
+        }
+        if (index < 0 || index >= playerlist.Count()) {
           Session.Messages.Add_Message(nullptr, 0,
                                        Text_String(TXT_SELECT_PLAYER_REJECT),
                                        PCOLOR_BROWN, TPF_TEXT, 1200);
@@ -5292,7 +5289,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
   //------------------------------------------------------------------------
   if (Process_Global_Packet(&Session.GPacket, &Session.GAddress) != 0) {
     return EV_NONE;
-  } else if (Session.GPacket.Command == NET_QUERY_JOIN) {
+  }
+  if (Session.GPacket.Command == NET_QUERY_JOIN) {
     //------------------------------------------------------------------------
     //	NET_QUERY_JOIN:
     //------------------------------------------------------------------------
@@ -5340,7 +5338,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     //.....................................................................
     //	Reject if there are too many players
     //.....................................................................
-    else if (Session.Players.Count() >= Session.MaxPlayers && !resend) {
+    if (Session.Players.Count() >= Session.MaxPlayers && !resend) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
       Session.GPacket.Command = NET_REJECT_JOIN;
       Session.GPacket.Reject.Why = static_cast<int>(REJECT_GAME_FULL);
@@ -5353,8 +5351,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     **	Don't allow joining if the rules.ini file doesn't appear to
     * match.
     */
-    else if (Session.GPacket.PlayerInfo.CheatCheck != RuleINI.Get_Unique_ID() &&
-             !resend) {
+    if (Session.GPacket.PlayerInfo.CheatCheck != RuleINI.Get_Unique_ID() &&
+        !resend) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
       Session.GPacket.Command = NET_REJECT_JOIN;
       Session.GPacket.Reject.Why = static_cast<int>(REJECT_MISMATCH);
@@ -5367,7 +5365,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     //	If this packet is NOT a resend, accept the player.  Grant him
     // the 	requested color if possible.
     //.....................................................................
-    else if (!resend) {
+    if (!resend) {
       //..................................................................
       //	Check the player's version range against our own, to see if
       // there's an overlap region
@@ -5412,7 +5410,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //..................................................................
       // Reject player if his version is too new
       //..................................................................
-      else if (version == 0xffffffff) {
+      if (version == 0xffffffff) {
         memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
         Session.GPacket.Command = NET_REJECT_JOIN;
         Session.GPacket.Reject.Why = static_cast<int>(REJECT_VERSION_TOO_NEW);
@@ -5424,9 +5422,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       // If the player is accepted, our mutually-accepted version may be
       // different; set the CommProtocol accordingly.
       //..................................................................
-      else {
-        Session.CommProtocol = VerNum.Version_Protocol(version);
-      }
+      Session.CommProtocol = VerNum.Version_Protocol(version);
 
       //..................................................................
       //	Add node to the Vector list
@@ -7848,9 +7844,8 @@ static int Net_Fake_New_Dialog() {
             player_joined = true;
             join_timer.Set(3 * 60, true);
             break;
-          } else {
-            if (join_timer.Time()) break;
           }
+          if (join_timer.Time()) break;
 
           //...............................................................
           //	If a new player has joined in the last second, don't allow
@@ -8802,11 +8797,10 @@ static int Net_Fake_Join_Dialog() {
                                              sizeof(Session.ScenarioFileName),
                                              1)) {
               break;
-            } else {
-              /*
-              ** Make sure we dont time-out because of the download
-              */
             }
+            /*
+             ** Make sure we dont time-out because of the download
+             */
           }
         } else {
           /*
@@ -9171,9 +9165,8 @@ bool Client_Remote_Connect() {
 
   if (rc == -1) {
     return false;
-  } else {
-    return true;
   }
+  return true;
 
 } /* end of Client_Remote_Connect */
 

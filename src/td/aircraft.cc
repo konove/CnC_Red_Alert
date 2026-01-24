@@ -1187,7 +1187,7 @@ int AircraftClass::Mission_Unload() {
       /*
       **	Fly to destination.
       */
-      case FLY_TO_LZ:
+      case FLY_TO_LZ: {
         if (Is_LZ_Clear(NavCom)) {
           int distance = Process_Fly_To(true);
 
@@ -1198,15 +1198,13 @@ int AircraftClass::Mission_Unload() {
               Status = LAND_ON_LZ;
             }
             return 1;
-          } else {
-            SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
-            return 5;
           }
-        } else {
-          Status = SEARCH_FOR_LZ;
+          SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
+          return 5;
         }
+        Status = SEARCH_FOR_LZ;
         break;
-
+      }
       /*
       **	Landing phase. Just delay until landing is complete. At that
       *time, *	transition to the unloading phase.
@@ -2847,9 +2845,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
     if (bestval != -1) {
       if (Random_Pick(0, 1) == 0) {
         return ::As_Target(bestcell);
-      } else {
-        return ::As_Target(best2cell);
       }
+      return ::As_Target(best2cell);
     }
   }
   return kTargetNone;
@@ -3008,10 +3005,9 @@ int AircraftClass::Mission_Enter() {
             Status = LANDING;
           }
           break;
-        } else {
-          SecondaryFacing.Set_Desired(
-              ::Direction(Fire_Coord(0), As_Coord(NavCom)));
         }
+        SecondaryFacing.Set_Desired(
+            ::Direction(Fire_Coord(0), As_Coord(NavCom)));
         return 3;
       }
       break;

@@ -805,9 +805,8 @@ TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
 char const* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   if (order <= TMISSION_NONE || order >= TMISSION_COUNT) {
     return "None";
-  } else {
-    return TMissions[order];
   }
+  return TMissions[order];
 }
 
 /***************************************************************************

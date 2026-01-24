@@ -692,9 +692,8 @@ bool Read_Bin_Init(char* buffer, int length) {
 int Read_Bin_Length(char* buffer) {
   if (buffer != ReadBinBuffer) {
     return -1;
-  } else {
-    return ReadBinBufferMax;
   }
+  return ReadBinBufferMax;
 }
 
 bool Read_Bin_Num(void* num, int length, char* buffer) {
@@ -703,34 +702,31 @@ bool Read_Bin_Num(void* num, int length, char* buffer) {
   if (buffer != ReadBinBuffer || length <= 0 || length > 4 ||
       ReadBinBufferPos + length >= ReadBinBufferLen) {
     return false;
-  } else {
-    ptr = ReadBinBuffer + ReadBinBufferPos;
-    memcpy(num, ptr, length);
-    ReadBinBufferPos += length;
-
-    if (ReadBinBufferPos > ReadBinBufferMax) {
-      ReadBinBufferMax = ReadBinBufferPos;
-    }
-
-    return true;
   }
+  ptr = ReadBinBuffer + ReadBinBufferPos;
+  memcpy(num, ptr, length);
+  ReadBinBufferPos += length;
+
+  if (ReadBinBufferPos > ReadBinBufferMax) {
+    ReadBinBufferMax = ReadBinBufferPos;
+  }
+
+  return true;
 }
 
 int Read_Bin_Pos(char* buffer) {
   if (buffer != ReadBinBuffer) {
     return -1;
-  } else {
-    return ReadBinBufferPos;
   }
+  return ReadBinBufferPos;
 }
 
 int Read_Bin_PosSet(unsigned int pos, char* buffer) {
   if (buffer != ReadBinBuffer) {
     return -1;
-  } else {
-    ReadBinBufferPos = pos;
-    return ReadBinBufferPos;
   }
+  ReadBinBufferPos = pos;
+  return ReadBinBufferPos;
 }
 
 bool Read_Bin_String(char* string, char* buffer) {
@@ -739,22 +735,20 @@ bool Read_Bin_String(char* string, char* buffer) {
 
   if (buffer != ReadBinBuffer || ReadBinBufferPos >= ReadBinBufferLen) {
     return false;
-  } else {
-    ptr = ReadBinBuffer + ReadBinBufferPos;
-    length = static_cast<unsigned char>(*ptr++);
-    if (ReadBinBufferPos + length + 2 <= ReadBinBufferLen) {
-      memcpy(string, ptr, static_cast<unsigned int>(length + 1));
-      ReadBinBufferPos += length + 2;
-
-      if (ReadBinBufferPos > ReadBinBufferMax) {
-        ReadBinBufferMax = ReadBinBufferPos;
-      }
-
-      return true;
-    } else {
-      return false;
-    }
   }
+  ptr = ReadBinBuffer + ReadBinBufferPos;
+  length = static_cast<unsigned char>(*ptr++);
+  if (ReadBinBufferPos + length + 2 <= ReadBinBufferLen) {
+    memcpy(string, ptr, static_cast<unsigned int>(length + 1));
+    ReadBinBufferPos += length + 2;
+
+    if (ReadBinBufferPos > ReadBinBufferMax) {
+      ReadBinBufferMax = ReadBinBufferPos;
+    }
+
+    return true;
+  }
+  return false;
 }
 
 char* Write_Bin_Buffer() { return WriteBinBuffer; }
@@ -770,9 +764,8 @@ bool Write_Bin_Init(char* buffer, int length) {
 int Write_Bin_Length(char* buffer) {
   if (buffer != WriteBinBuffer) {
     return -1;
-  } else {
-    return WriteBinBufferMax;
   }
+  return WriteBinBufferMax;
 }
 
 bool Write_Bin_Num(void* num, int length, char* buffer) {
@@ -781,34 +774,31 @@ bool Write_Bin_Num(void* num, int length, char* buffer) {
   if (buffer != WriteBinBuffer || length <= 0 || length > 4 ||
       WriteBinBufferPos + length > WriteBinBufferLen) {
     return false;
-  } else {
-    ptr = WriteBinBuffer + WriteBinBufferPos;
-    memcpy(ptr, num, length);
-    WriteBinBufferPos += length;
-
-    if (WriteBinBufferPos > WriteBinBufferMax) {
-      WriteBinBufferMax = WriteBinBufferPos;
-    }
-
-    return true;
   }
+  ptr = WriteBinBuffer + WriteBinBufferPos;
+  memcpy(ptr, num, length);
+  WriteBinBufferPos += length;
+
+  if (WriteBinBufferPos > WriteBinBufferMax) {
+    WriteBinBufferMax = WriteBinBufferPos;
+  }
+
+  return true;
 }
 
 int Write_Bin_Pos(char* buffer) {
   if (buffer != WriteBinBuffer) {
     return -1;
-  } else {
-    return WriteBinBufferPos;
   }
+  return WriteBinBufferPos;
 }
 
 int Write_Bin_PosSet(unsigned int pos, char* buffer) {
   if (buffer != WriteBinBuffer) {
     return -1;
-  } else {
-    WriteBinBufferPos = pos;
-    return WriteBinBufferPos;
   }
+  WriteBinBufferPos = pos;
+  return WriteBinBufferPos;
 }
 
 bool Write_Bin_String(char* string, int length, char* buffer) {
@@ -817,16 +807,15 @@ bool Write_Bin_String(char* string, int length, char* buffer) {
   if (buffer != WriteBinBuffer || length < 0 || length > 255 ||
       WriteBinBufferPos + length + 2 > WriteBinBufferLen) {
     return false;
-  } else {
-    ptr = WriteBinBuffer + WriteBinBufferPos;
-    *ptr++ = static_cast<char>(length);
-    memcpy(ptr, string, length + 1);
-    WriteBinBufferPos += length + 2;
-
-    if (WriteBinBufferPos > WriteBinBufferMax) {
-      WriteBinBufferMax = WriteBinBufferPos;
-    }
-
-    return true;
   }
+  ptr = WriteBinBuffer + WriteBinBufferPos;
+  *ptr++ = static_cast<char>(length);
+  memcpy(ptr, string, length + 1);
+  WriteBinBufferPos += length + 2;
+
+  if (WriteBinBufferPos > WriteBinBufferMax) {
+    WriteBinBufferMax = WriteBinBufferPos;
+  }
+
+  return true;
 }

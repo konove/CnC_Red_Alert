@@ -3829,9 +3829,8 @@ int BuildingClass::Mission_Attack() {
           Set_Stage(0);
           Status = SAM_RISING;
           return 1;
-        } else {
-          Assign_Mission(MISSION_GUARD);
         }
+        Assign_Mission(MISSION_GUARD);
         break;
 
       /*
@@ -4232,14 +4231,13 @@ int BuildingClass::Mission_Repair() {
             Assign_Mission(MISSION_GUARD);
             Contact_With_Whom()->Assign_Mission(MISSION_GUARD);
             return 1;
-          } else {
-            int time = Bound(
-                Fixed_To_Cardinal(TICKS_PER_SECOND, House->Power_Fraction()), 0,
-                TICKS_PER_SECOND);
-            time = TICKS_PER_SECOND * 3 - time;
-            IsReadyToCommence = false;
-            return time;
           }
+          int time = Bound(
+              Fixed_To_Cardinal(TICKS_PER_SECOND, House->Power_Fraction()), 0,
+              TICKS_PER_SECOND);
+          time = TICKS_PER_SECOND * 3 - time;
+          IsReadyToCommence = false;
+          return time;
         }
         break;
     }

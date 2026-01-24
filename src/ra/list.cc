@@ -295,33 +295,31 @@ int ListClass::Action(unsigned flags, KeyNumType& key) {
     flags &= ~LEFTRELEASE;
     ControlClass::Action(flags, key);
     return true;
-  } else {
+  }
+  /*
+   ** Handle keyboard events here.
+   */
+  if (flags & KEYBOARD) {
     /*
-    ** Handle keyboard events here.
+    **	Process the keyboard character. If indicated, consume this
+    *keyboard event *	so that the edit gadget ID number is not returned.
     */
-    if (flags & KEYBOARD) {
-      /*
-      **	Process the keyboard character. If indicated, consume this
-      *keyboard event *	so that the edit gadget ID number is not returned.
-      */
-      if (key == KN_UP) {
-        Step_Selected_Index(-1);
-        key = KN_NONE;
-      } else if (key == KN_DOWN) {
-        Step_Selected_Index(1);
-        key = KN_NONE;
-      } else {
-        flags &= ~KEYBOARD;
-      }
-
+    if (key == KN_UP) {
+      Step_Selected_Index(-1);
+      key = KN_NONE;
+    } else if (key == KN_DOWN) {
+      Step_Selected_Index(1);
+      key = KN_NONE;
     } else {
-      int index = Get_Mouse_Y() - (Y + 1);
-      index = index / LineHeight;
-      SelectedIndex = CurrentTopIndex + index;
-      SelectedIndex =
-          std::min(SelectedIndex, static_cast<int>(List.Count()) - 1);
-      if (SelectedIndex == -1) SelectedIndex = 0;
+      flags &= ~KEYBOARD;
     }
+
+  } else {
+    int index = Get_Mouse_Y() - (Y + 1);
+    index = index / LineHeight;
+    SelectedIndex = CurrentTopIndex + index;
+    SelectedIndex = std::min(SelectedIndex, static_cast<int>(List.Count()) - 1);
+    if (SelectedIndex == -1) SelectedIndex = 0;
   }
   return ControlClass::Action(flags, key);
 }

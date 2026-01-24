@@ -349,14 +349,13 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
         Detach_This_From_All(As_Target(), true);
         delete this;
         return true;
-      } else {
-        /*
-        **	Reset event data so that the event will
-        **	repeat as necessary.
-        */
-        Class->Event1.Reset(Event1);
-        Class->Event2.Reset(Event2);
       }
+      /*
+       **	Reset event data so that the event will
+       **	repeat as necessary.
+       */
+      Class->Event1.Reset(Event1);
+      Class->Event2.Reset(Event2);
     }
   }
 

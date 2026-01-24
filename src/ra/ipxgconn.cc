@@ -440,14 +440,12 @@ int IPXGlobalConnClass::Send(char* buf, int buflen, void* extrabuf, int) {
   /*------------------------------------------------------------------------
   Otherwise, send it
   ------------------------------------------------------------------------*/
-  else {
-    if (IsBridge && !memcmp(addr, BridgeNet, 4)) {
-      rc = Send_To(buf, buflen, addr, BridgeNode);
-    } else {
-      rc = Send_To(buf, buflen, addr, nullptr);
-    }
-    return rc;
+  if (IsBridge && !memcmp(addr, BridgeNet, 4)) {
+    rc = Send_To(buf, buflen, addr, BridgeNode);
+  } else {
+    rc = Send_To(buf, buflen, addr, nullptr);
   }
+  return rc;
 
 } /* end of Send */
 

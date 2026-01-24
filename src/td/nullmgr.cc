@@ -932,10 +932,10 @@ int NullModemClass::Service() {
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
 int NullModemClass::Num_Send() {
-  if (Connection)
+  if (Connection) {
     return Connection->Queue->Num_Send();
-  else
-    return 0;
+  }
+  return 0;
 
 } /* end of Num_Send */
 
@@ -952,10 +952,10 @@ int NullModemClass::Num_Send() {
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
 int NullModemClass::Num_Receive() {
-  if (Connection)
+  if (Connection) {
     return Connection->Queue->Num_Receive();
-  else
-    return 0;
+  }
+  return 0;
 
 } /* end of Num_Receive */
 
@@ -972,10 +972,10 @@ int NullModemClass::Num_Receive() {
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
 unsigned long NullModemClass::Response_Time() {
-  if (Connection)
+  if (Connection) {
     return Connection->Queue->Avg_Response_Time();
-  else
-    return 0;
+  }
+  return 0;
 
 } /* end of Response_Time */
 

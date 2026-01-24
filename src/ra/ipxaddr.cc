@@ -301,9 +301,8 @@ int IPXAddressClass::Is_Broadcast() {
       NodeAddress[2] == 0xff && NodeAddress[3] == 0xff &&
       NodeAddress[4] == 0xff && NodeAddress[5] == 0xff) {
     return 1;
-  } else {
-    return 0;
   }
+  return 0;
 
 } /* end of Is_Broadcast */
 
@@ -341,22 +340,17 @@ int IPXAddressClass::operator==(IPXAddressClass& addr) {
        addr.NetworkNumber[2] == 0 && addr.NetworkNumber[3] == 0)) {
     if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0) {
       return 1;
-    } else {
-      return 0;
     }
-
+    return 0;
   }
   //------------------------------------------------------------------------
   //	Otherwise, compare both the Network Numbers and Node Addresses
   //------------------------------------------------------------------------
-  else {
-    if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0 &&
-        memcmp(NetworkNumber, addr.NetworkNumber, 4) == 0) {
-      return 1;
-    } else {
-      return 0;
-    }
+  if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0 &&
+      memcmp(NetworkNumber, addr.NetworkNumber, 4) == 0) {
+    return 1;
   }
+  return 0;
 
 } /* end of operator== */
 
@@ -394,21 +388,17 @@ int IPXAddressClass::operator!=(IPXAddressClass& addr) {
        addr.NetworkNumber[2] == 0 && addr.NetworkNumber[3] == 0)) {
     if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0) {
       return 0;
-    } else {
-      return 1;
     }
+    return 1;
   }
   //------------------------------------------------------------------------
   //	Otherwise, compare both the Network Numbers and Node Addresses
   //------------------------------------------------------------------------
-  else {
-    if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0 &&
-        memcmp(NetworkNumber, addr.NetworkNumber, 4) == 0) {
-      return 0;
-    } else {
-      return 1;
-    }
+  if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0 &&
+      memcmp(NetworkNumber, addr.NetworkNumber, 4) == 0) {
+    return 0;
   }
+  return 1;
 
 } /* end of operator!= */
 

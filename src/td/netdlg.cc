@@ -389,24 +389,23 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
       Ipx.Send_Global_Message(&mypacket, sizeof(GlobalPacketType), 1, address);
     }
     return true;
-  } else {
-    /*
-    ----------------- Another system asking what player I am -----------------
-    */
-    if (packet->Command == NET_QUERY_PLAYER &&
-        !strcmp(packet->Name, MPlayerGameName) &&
-        strlen(MPlayerGameName) > 0 && NetStealth == 0) {
-      memset(packet, 0, sizeof(GlobalPacketType));
+  }
+  /*
+      ----------------- Another system asking what player I am -----------------
+      */
+  if (packet->Command == NET_QUERY_PLAYER &&
+      !strcmp(packet->Name, MPlayerGameName) && strlen(MPlayerGameName) > 0 &&
+      NetStealth == 0) {
+    memset(packet, 0, sizeof(GlobalPacketType));
 
-      mypacket.Command = NET_ANSWER_PLAYER;
-      port::SafeCopy(mypacket.Name, MPlayerName);
-      mypacket.PlayerInfo.House = MPlayerHouse;
-      mypacket.PlayerInfo.Color = MPlayerColorIdx;
-      mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(MPlayerGameName);
+    mypacket.Command = NET_ANSWER_PLAYER;
+    port::SafeCopy(mypacket.Name, MPlayerName);
+    mypacket.PlayerInfo.House = MPlayerHouse;
+    mypacket.PlayerInfo.Color = MPlayerColorIdx;
+    mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(MPlayerGameName);
 
-      Ipx.Send_Global_Message(&mypacket, sizeof(GlobalPacketType), 1, address);
-      return true;
-    }
+    Ipx.Send_Global_Message(&mypacket, sizeof(GlobalPacketType), 1, address);
+    return true;
   }
   return false;
 }
@@ -448,7 +447,8 @@ void Destroy_Connection(int id, int error) {
 
   if (strlen(txt)) {
     Messages.Add_Message(
-        txt, MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
+        txt,
+        MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }
@@ -488,7 +488,8 @@ void Destroy_Connection(int id, int error) {
   if (MPlayerCount == 1) {
     sprintf(txt, "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Messages.Add_Message(
-        txt, MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
+        txt,
+        MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }
@@ -561,36 +562,32 @@ bool Remote_Connect() {
       NetStealth = stealth;
       NetOpen = 0;
       return false;
-    } else {
-      /*---------------------------------------------------------------------
-      0 = user has joined an existing game; save values & return
-      ---------------------------------------------------------------------*/
-      if (rc == 0) {
+    }
+    /*---------------------------------------------------------------------
+          0 = user has joined an existing game; save values & return
+          ---------------------------------------------------------------------*/
+    if (rc == 0) {
+      Write_MultiPlayer_Settings();
+      NetStealth = stealth;
+      NetOpen = 0;
+
+      return true;
+    }
+    /*---------------------------------------------------------------------
+          1 = user requests New Network Game
+          ---------------------------------------------------------------------*/
+    if (rc == 1) {
+      /*..................................................................
+      Pop up the New Network Game dialog; if user selects OK, return
+      'true'; otherwise, return to the Join Dialog.
+      ..................................................................*/
+      if (Net_New_Dialog()) {
         Write_MultiPlayer_Settings();
+        NetOpen = 0;
         NetStealth = stealth;
         NetOpen = 0;
 
         return true;
-      } else {
-        /*---------------------------------------------------------------------
-        1 = user requests New Network Game
-        ---------------------------------------------------------------------*/
-        if (rc == 1) {
-          /*..................................................................
-          Pop up the New Network Game dialog; if user selects OK, return
-          'true'; otherwise, return to the Join Dialog.
-          ..................................................................*/
-          if (Net_New_Dialog()) {
-            Write_MultiPlayer_Settings();
-            NetOpen = 0;
-            NetStealth = stealth;
-            NetOpen = 0;
-
-            return true;
-          } else {
-            continue;
-          }
-        }
       }
     }
   }
@@ -705,11 +702,7 @@ bool Client_Remote_Connect() {
   NetStealth = stealth;
   NetOpen = 0;
 
-  if (rc == -1) {
-    return false;
-  } else {
-    return true;
-  }
+  return rc != -1;
 }
 
 /***********************************************************************************************
@@ -800,8 +793,8 @@ static int Net_Join_Dialog() {
   Dialog & button dimensions
   ........................................................................*/
   /* ###Change collision detected! C:\PROJECTS\CODE\NETDLG.CPP... */
-  int d_dialog_w = 287 * factor;                       // dialog width
-  int d_dialog_h = 198 * factor;                       // dialog height
+  int d_dialog_w = 287 * factor;                     // dialog width
+  int d_dialog_h = 198 * factor;                     // dialog height
   int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
@@ -1104,8 +1097,8 @@ static int Net_Join_Dialog() {
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            TXT_GAMES, d_gamelist_x + d_gamelist_w / 2,
-            d_gamelist_y - d_txt6_h, CC_GREEN, TBLACK,
+            TXT_GAMES, d_gamelist_x + d_gamelist_w / 2, d_gamelist_y - d_txt6_h,
+            CC_GREEN, TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
@@ -1232,10 +1225,10 @@ static int Net_Join_Dialog() {
           ............................................................*/
           p = Text_String(TXT_COUNT);
           sprintf(txt, "%s %d", p, MPlayerUnitCount);
-          Fancy_Text_Print(
-              txt, d_dialog_x + d_dialog_w / 4 - String_Pixel_Width(p),
-              d_msg3_y, CC_GREEN, TBLACK,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(txt,
+                           d_dialog_x + d_dialog_w / 4 - String_Pixel_Width(p),
+                           d_msg3_y, CC_GREEN, TBLACK,
+                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           p = Text_String(TXT_LEVEL);
           if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -1243,11 +1236,11 @@ static int Net_Join_Dialog() {
           } else {
             sprintf(txt, "%s **", p);
           }
-          Fancy_Text_Print(txt,
-                           d_dialog_x + d_dialog_w - d_dialog_w / 4 -
-                               String_Pixel_Width(p),
-                           d_msg3_y, CC_GREEN, TBLACK,
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(
+              txt,
+              d_dialog_x + d_dialog_w - d_dialog_w / 4 - String_Pixel_Width(p),
+              d_msg3_y, CC_GREEN, TBLACK,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Bases
@@ -1258,10 +1251,10 @@ static int Net_Join_Dialog() {
           } else {
             sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
           }
-          Fancy_Text_Print(
-              txt, d_dialog_x + d_dialog_w / 4 - String_Pixel_Width(p),
-              d_msg4_y, CC_GREEN, TBLACK,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(txt,
+                           d_dialog_x + d_dialog_w / 4 - String_Pixel_Width(p),
+                           d_msg4_y, CC_GREEN, TBLACK,
+                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Tiberium
@@ -1273,10 +1266,10 @@ static int Net_Join_Dialog() {
             sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
           }
 
-          Fancy_Text_Print(
-              txt, d_dialog_x + d_dialog_w / 4 - String_Pixel_Width(p),
-              d_msg5_y, CC_GREEN, TBLACK,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(txt,
+                           d_dialog_x + d_dialog_w / 4 - String_Pixel_Width(p),
+                           d_msg5_y, CC_GREEN, TBLACK,
+                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Goody boxes
@@ -1288,11 +1281,11 @@ static int Net_Join_Dialog() {
             sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
           }
 
-          Fancy_Text_Print(txt,
-                           d_dialog_x + d_dialog_w - d_dialog_w / 4 -
-                               String_Pixel_Width(p),
-                           d_msg4_y, CC_GREEN, TBLACK,
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(
+              txt,
+              d_dialog_x + d_dialog_w - d_dialog_w / 4 - String_Pixel_Width(p),
+              d_msg4_y, CC_GREEN, TBLACK,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Computer AI players
@@ -1308,11 +1301,11 @@ static int Net_Join_Dialog() {
               sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
             }
           }
-          Fancy_Text_Print(txt,
-                           d_dialog_x + d_dialog_w - d_dialog_w / 4 -
-                               String_Pixel_Width(p),
-                           d_msg5_y, CC_GREEN, TBLACK,
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(
+              txt,
+              d_dialog_x + d_dialog_w - d_dialog_w / 4 - String_Pixel_Width(p),
+              d_msg5_y, CC_GREEN, TBLACK,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         } else {
           /*...............................................................
@@ -1596,8 +1589,7 @@ static int Net_Join_Dialog() {
               sent_so_far = 0;
               magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
               message_length = strlen(Messages.Get_Edit_Buf());
-              crc =
-                  static_cast<unsigned short>(
+              crc = static_cast<unsigned short>(
                   CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
               while (sent_so_far < message_length) {
@@ -1911,8 +1903,7 @@ static int Net_Join_Dialog() {
 
           tmp_id[i] = id;
 
-          Ipx.Create_Connection(id, Players[i]->Name,
-                                &Players[i]->Address);
+          Ipx.Create_Connection(id, Players[i]->Name, &Players[i]->Address);
         } else {
           tmp_id[i] = MPlayerLocalID;
         }
@@ -2149,11 +2140,10 @@ static int Request_To_Join(char* playername, int join_index,
   if (Games[join_index]->Game.Version > v) {
     CCMessageBox().Process(TXT_YOURGAME_OUTDATED);
     return false;
-  } else {
-    if (Games[join_index]->Game.Version < v) {
-      CCMessageBox().Process(TXT_DESTGAME_OUTDATED);
-      return false;
-    }
+  }
+  if (Games[join_index]->Game.Version < v) {
+    CCMessageBox().Process(TXT_DESTGAME_OUTDATED);
+    return false;
   }
 
   /*
@@ -2721,8 +2711,8 @@ static int Net_New_Dialog() {
   ........................................................................*/
   // D_DIALOG_W = 281;
   // // dialog width
-  int d_dialog_w = 287 * factor;                       // dialog width
-  int d_dialog_h = 177 * factor;                       // dialog height
+  int d_dialog_w = 287 * factor;                     // dialog width
+  int d_dialog_h = 177 * factor;                     // dialog height
   int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
@@ -2814,8 +2804,7 @@ static int Net_New_Dialog() {
   int d_cancel_w = 45 * factor;
 #endif
   int d_cancel_h = 9 * factor;
-  int d_cancel_x =
-      d_dialog_cx + d_margin2 + d_goodies_w / 2 - d_cancel_w / 2;
+  int d_cancel_x = d_dialog_cx + d_margin2 + d_goodies_w / 2 - d_cancel_w / 2;
   int d_cancel_y = d_ghosts_y + d_ghosts_h + d_margin1;
 
   int d_message_w = d_dialog_w - d_margin1 * 2;
@@ -3253,12 +3242,11 @@ static int Net_New_Dialog() {
           CCMessageBox().Process(TXT_CANT_REJECT_SELF, TXT_OOPS);
           display = REDRAW_ALL;
           break;
-        } else {
-          if (index < 0 || index >= playerlist.Count()) {
-            CCMessageBox().Process(TXT_SELECT_PLAYER_REJECT, TXT_OOPS);
-            display = REDRAW_ALL;
-            break;
-          }
+        }
+        if (index < 0 || index >= playerlist.Count()) {
+          CCMessageBox().Process(TXT_SELECT_PLAYER_REJECT, TXT_OOPS);
+          display = REDRAW_ALL;
+          break;
         }
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
@@ -3878,153 +3866,150 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   ------------------------------------------------------------------------*/
   if (Process_Global_Packet(&GPacket, &GAddress) != 0) {
     return EV_NONE;
-  } else
+  }
 
-    /*------------------------------------------------------------------------
-    NET_QUERY_JOIN:
-    ------------------------------------------------------------------------*/
-    if (GPacket.Command == NET_QUERY_JOIN) {
-      /*.....................................................................
-      See if this name is unique:
-      - If the name matches, but the address is different, reject this player
-      - If the name & address match, this packet must be a re-send of a
-        prevous request; in this case, do nothing.  The other player must have
-        received my CONFIRM_JOIN packet (since it was sent with an ACK
-        required), so we can ignore this resend.
-      .....................................................................*/
-      found = 0;
-      resend = 0;
-      for (i = 0; i < Players.Count(); i++) {
-        if (!strcmp(Players[i]->Name, GPacket.Name)) {
-          if (Players[i]->Address != GAddress) {
-            found = 1;
-          } else {
-            resend = 1;
-          }
-          break;
-        }
-      }
-      if (!strcmp(MPlayerName, GPacket.Name)) {
-        found = 1;
-      }
-
-      /*.....................................................................
-      Reject if name is a duplicate, or if there are too many players:
-      .....................................................................*/
-      if (found || (Players.Count() >= MPlayerMax - 1 && !resend)) {
-        memset(&GPacket, 0, sizeof(GlobalPacketType));
-
-        GPacket.Command = NET_REJECT_JOIN;
-
-        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 1,
-                                &GAddress);
-      }
-
-      /*.....................................................................
-      If this packet is NOT a resend, accept the player.  Grant him the
-      requested color if possible.
-      .....................................................................*/
-      else if (!resend) {
-        /*..................................................................
-        Add node to the Vector list
-        ..................................................................*/
-        who = new NodeNameType;
-        port::SafeCopy(who->Name, GPacket.Name);
-        who->Address = GAddress;
-        who->Player.House = GPacket.PlayerInfo.House;
-        Players.Add(who);
-
-        /*..................................................................
-        Set player's color; if requested color isn't used, give it to him;
-        otherwise, give him the 1st available color.  Mark the color we
-        give him as used.
-        ..................................................................*/
-        if (ColorUsed[GPacket.PlayerInfo.Color] == 0) {
-          who->Player.Color = GPacket.PlayerInfo.Color;
+  /*------------------------------------------------------------------------
+  NET_QUERY_JOIN:
+  ------------------------------------------------------------------------*/
+  if (GPacket.Command == NET_QUERY_JOIN) {
+    /*.....................................................................
+    See if this name is unique:
+    - If the name matches, but the address is different, reject this player
+    - If the name & address match, this packet must be a re-send of a
+      prevous request; in this case, do nothing.  The other player must have
+      received my CONFIRM_JOIN packet (since it was sent with an ACK
+      required), so we can ignore this resend.
+    .....................................................................*/
+    found = 0;
+    resend = 0;
+    for (i = 0; i < Players.Count(); i++) {
+      if (!strcmp(Players[i]->Name, GPacket.Name)) {
+        if (Players[i]->Address != GAddress) {
+          found = 1;
         } else {
-          for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-            if (ColorUsed[i] == 0) {
-              who->Player.Color = i;
-              break;
-            }
+          resend = 1;
+        }
+        break;
+      }
+    }
+    if (!strcmp(MPlayerName, GPacket.Name)) {
+      found = 1;
+    }
+
+    /*.....................................................................
+    Reject if name is a duplicate, or if there are too many players:
+    .....................................................................*/
+    if (found || (Players.Count() >= MPlayerMax - 1 && !resend)) {
+      memset(&GPacket, 0, sizeof(GlobalPacketType));
+
+      GPacket.Command = NET_REJECT_JOIN;
+
+      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 1, &GAddress);
+    }
+
+    /*.....................................................................
+    If this packet is NOT a resend, accept the player.  Grant him the
+    requested color if possible.
+    .....................................................................*/
+    else if (!resend) {
+      /*..................................................................
+      Add node to the Vector list
+      ..................................................................*/
+      who = new NodeNameType;
+      port::SafeCopy(who->Name, GPacket.Name);
+      who->Address = GAddress;
+      who->Player.House = GPacket.PlayerInfo.House;
+      Players.Add(who);
+
+      /*..................................................................
+      Set player's color; if requested color isn't used, give it to him;
+      otherwise, give him the 1st available color.  Mark the color we
+      give him as used.
+      ..................................................................*/
+      if (ColorUsed[GPacket.PlayerInfo.Color] == 0) {
+        who->Player.Color = GPacket.PlayerInfo.Color;
+      } else {
+        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
+          if (ColorUsed[i] == 0) {
+            who->Player.Color = i;
+            break;
           }
         }
-        ColorUsed[who->Player.Color] = 1;
+      }
+      ColorUsed[who->Player.Color] = 1;
 
-        /*..................................................................
-        Add player name to the list box
-        ..................................................................*/
-        item = new char[MPLAYER_NAME_MAX + 4];
-        if (GPacket.PlayerInfo.House == HOUSE_GOOD) {
-          sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_G_D_I));
-        } else {
-          sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_N_O_D));
-        }
-        playerlist->Add_Item(item, MPlayerTColors[who->Player.Color]);
+      /*..................................................................
+      Add player name to the list box
+      ..................................................................*/
+      item = new char[MPLAYER_NAME_MAX + 4];
+      if (GPacket.PlayerInfo.House == HOUSE_GOOD) {
+        sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_G_D_I));
+      } else {
+        sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_N_O_D));
+      }
+      playerlist->Add_Item(item, MPlayerTColors[who->Player.Color]);
 
-        /*..................................................................
-        Send a confirmation packet
-        ..................................................................*/
-        memset(&GPacket, 0, sizeof(GlobalPacketType));
+      /*..................................................................
+      Send a confirmation packet
+      ..................................................................*/
+      memset(&GPacket, 0, sizeof(GlobalPacketType));
 
-        GPacket.Command = NET_CONFIRM_JOIN;
-        port::SafeCopy(GPacket.Name, MPlayerName);
-        GPacket.PlayerInfo.House = who->Player.House;
-        GPacket.PlayerInfo.Color = who->Player.Color;
+      GPacket.Command = NET_CONFIRM_JOIN;
+      port::SafeCopy(GPacket.Name, MPlayerName);
+      GPacket.PlayerInfo.House = who->Player.House;
+      GPacket.PlayerInfo.Color = who->Player.Color;
 
-        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 1,
-                                &GAddress);
+      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 1, &GAddress);
 
-        retval = EV_NEW_PLAYER;
+      retval = EV_NEW_PLAYER;
+    }
+  }
+
+  /*------------------------------------------------------------------------
+  NET_SIGN_OFF: Another system is signing off: search for that system in
+  the player list, & remove it if found
+  ------------------------------------------------------------------------*/
+  else if (GPacket.Command == NET_SIGN_OFF) {
+    for (i = 0; i < Players.Count(); i++) {
+      /*
+      ....................... Name found; remove it ......................
+      */
+      if (!strcmp(Players[i]->Name, GPacket.Name) &&
+          Players[i]->Address == GAddress) {
+        /*...............................................................
+        Remove from the list box
+        ...............................................................*/
+        item = (char*)playerlist->Get_Item(i + 1);
+        playerlist->Remove_Item(item);
+        playerlist->Flag_To_Redraw();
+        delete[] item;
+        /*...............................................................
+        Mark his color as available
+        ...............................................................*/
+        ColorUsed[Players[i]->Player.Color] = 0;
+        /*...............................................................
+        Delete from the Vector list
+        ...............................................................*/
+        Players.Delete(Players[i]);
+        break;
       }
     }
+  }
 
-    /*------------------------------------------------------------------------
-    NET_SIGN_OFF: Another system is signing off: search for that system in
-    the player list, & remove it if found
-    ------------------------------------------------------------------------*/
-    else if (GPacket.Command == NET_SIGN_OFF) {
-      for (i = 0; i < Players.Count(); i++) {
-        /*
-        ....................... Name found; remove it ......................
-        */
-        if (!strcmp(Players[i]->Name, GPacket.Name) &&
-            Players[i]->Address == GAddress) {
-          /*...............................................................
-          Remove from the list box
-          ...............................................................*/
-          item = (char*)playerlist->Get_Item(i + 1);
-          playerlist->Remove_Item(item);
-          playerlist->Flag_To_Redraw();
-          delete[] item;
-          /*...............................................................
-          Mark his color as available
-          ...............................................................*/
-          ColorUsed[Players[i]->Player.Color] = 0;
-          /*...............................................................
-          Delete from the Vector list
-          ...............................................................*/
-          Players.Delete(Players[i]);
-          break;
-        }
-      }
-    }
-
-    /*------------------------------------------------------------------------
-    NET_MESSAGE: Someone is sending us a message
-    ------------------------------------------------------------------------*/
-    else if (GPacket.Command == NET_MESSAGE) {
-      sprintf(txt, Text_String(TXT_FROM), GPacket.Name, GPacket.Message.Buf);
-      magic_number =
-          *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
-      crc =
-          *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
-      color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
-      Messages.Add_Message(txt, MPlayerTColors[color],
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                           1200, magic_number, crc);
-      retval = EV_MESSAGE;
-    }
+  /*------------------------------------------------------------------------
+  NET_MESSAGE: Someone is sending us a message
+  ------------------------------------------------------------------------*/
+  else if (GPacket.Command == NET_MESSAGE) {
+    sprintf(txt, Text_String(TXT_FROM), GPacket.Name, GPacket.Message.Buf);
+    magic_number =
+        *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
+    crc = *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
+    color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
+    Messages.Add_Message(txt, MPlayerTColors[color],
+                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
+                         magic_number, crc);
+    retval = EV_MESSAGE;
+  }
 
   return retval;
 }
@@ -4224,8 +4209,8 @@ extern bool Spawn_WChat(bool can_launch);
 static int Net_Fake_New_Dialog() {
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
-  int d_dialog_w = 120 * factor;                       // dialog width
-  int d_dialog_h = 80 * factor;                        // dialog height
+  int d_dialog_w = 120 * factor;                     // dialog width
+  int d_dialog_h = 80 * factor;                      // dialog height
   int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
@@ -4551,9 +4536,8 @@ static int Net_Fake_New_Dialog() {
             player_joined = true;
             join_timer.Set(3 * 60, true);
             break;
-          } else {
-            if (join_timer.Time()) break;
           }
+          if (join_timer.Time()) break;
 
           CCDebugString("C&C95 - Join timer expired\n");
 
@@ -4804,8 +4788,8 @@ static int Net_Fake_Join_Dialog() {
   Dialog & button dimensions
   ........................................................................*/
   /* ###Change collision detected! C:\PROJECTS\CODE\NETDLG.CPP... */
-  int d_dialog_w = 120 * factor;                       // dialog width
-  int d_dialog_h = 80 * factor;                        // dialog height
+  int d_dialog_w = 120 * factor;                     // dialog width
+  int d_dialog_h = 80 * factor;                      // dialog height
   int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
@@ -5372,8 +5356,7 @@ static int Net_Fake_Join_Dialog() {
 
           tmp_id[i] = id;
 
-          Ipx.Create_Connection(id, Players[i]->Name,
-                                &Players[i]->Address);
+          Ipx.Create_Connection(id, Players[i]->Name, &Players[i]->Address);
         } else {
           tmp_id[i] = MPlayerLocalID;
         }

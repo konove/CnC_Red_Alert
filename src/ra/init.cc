@@ -929,6 +929,7 @@ bool Select_Game(bool /*fade*/) {
               *code.
               */
               case GAME_INTERNET:  //	ajw		No longer hit.
+              {
                 if (Special.IsFromWChat) {
 #ifndef PORTABLE
                   /*
@@ -1044,61 +1045,56 @@ bool Select_Game(bool /*fade*/) {
                       WWDebugString(
                           "RA95 - Server_Remote_Connect returned success.\n");
                       break;
-                    } else {
-                      /*
-                      ** We failed to connect to the other player
-                      */
-#ifdef WINSOCK_IPX
-                      delete PacketTransport;
-                      PacketTransport = nullptr;
-#else   // WINSOCK_IPX
-                      Winsock.Close();
-#endif  // WINSOCK_IPX
-                      Session.Type = GAME_NORMAL;
-                      selection = SEL_NONE;
-#ifdef _WIN32
-                      DDEServer.Delete_MPlayer_Game_Info();  // Make sure we
-                                                             // dont go round in
-                                                             // an infinite loop
-#endif
-                      break;
                     }
-                  } else {
-                    WWDebugString(
-                        "RA95 - About to call Client_Remote_Connect.\n");
-                    if (Client_Remote_Connect()) {
-                      WWDebugString(
-                          "RA95 - Client_Remote_Connect returned success.\n");
-                      break;
-                    } else {
-                      /*
-                      ** We failed to connect to the other player
-                      */
+/*
+ ** We failed to connect to the other player
+ */
 #ifdef WINSOCK_IPX
-                      delete PacketTransport;
-                      PacketTransport = nullptr;
+                    delete PacketTransport;
+                    PacketTransport = nullptr;
 #else   // WINSOCK_IPX
-                      Winsock.Close();
+                    Winsock.Close();
 #endif  // WINSOCK_IPX
-                      Session.Type = GAME_NORMAL;
-                      selection = SEL_NONE;
-#ifdef _WIN32
-                      DDEServer.Delete_MPlayer_Game_Info();  // Make sure we
-                                                             // dont go round in
-                                                             // an infinite loop
-#endif
-                      break;
-                    }
-                  }
-
-                } else {
-                  Session.Type = Select_MPlayer_Game();
-                  if (Session.Type == GAME_NORMAL) {  // 'Cancel'
-                    display = true;
+                    Session.Type = GAME_NORMAL;
                     selection = SEL_NONE;
+#ifdef _WIN32
+                    DDEServer.Delete_MPlayer_Game_Info();  // Make sure we
+                                                           // dont go round in
+                                                           // an infinite loop
+#endif
+                    break;
                   }
+                  WWDebugString(
+                      "RA95 - About to call Client_Remote_Connect.\n");
+                  if (Client_Remote_Connect()) {
+                    WWDebugString(
+                        "RA95 - Client_Remote_Connect returned success.\n");
+                    break;
+                  }
+/*
+ ** We failed to connect to the other player
+ */
+#ifdef WINSOCK_IPX
+                  delete PacketTransport;
+                  PacketTransport = nullptr;
+#else   // WINSOCK_IPX
+                  Winsock.Close();
+#endif  // WINSOCK_IPX
+                  Session.Type = GAME_NORMAL;
+                  selection = SEL_NONE;
+#ifdef _WIN32
+                  DDEServer.Delete_MPlayer_Game_Info();  // Make sure we
+                                                         // dont go round in
+                                                         // an infinite loop
+#endif
+                  break;
                 }
-                break;
+                Session.Type = Select_MPlayer_Game();
+                if (Session.Type == GAME_NORMAL) {  // 'Cancel'
+                  display = true;
+                  selection = SEL_NONE;
+                }
+              } break;
 
 #endif  // WIN32
 #endif  //	!WOLAPI_INTEGRATION

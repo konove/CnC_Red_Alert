@@ -795,7 +795,6 @@ ActionType VesselClass::What_Action(ObjectClass const* object) const {
               cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
               cell->Flag.Occupy.Monolith ||
               (cell->Flag.Composite & 0x01F) == 0x01F) {
-            continue;
           } else {
             found = true;
           }
@@ -1036,9 +1035,8 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
   if (*this == VESSEL_CARRIER) {
     if (!How_Many() || Arm) {
       return FIRE_REARM;
-    } else {
-      return FIRE_OK;
     }
+    return FIRE_OK;
   }
   FireErrorType fire = DriveClass::Can_Fire(target, which);
   if (*this == VESSEL_DD) {
@@ -1104,12 +1102,11 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     if (weapon->Bullet->IsAntiSub) {
       if (!isseatarget) {
         return FIRE_CANT;
-      } else {
-        if (Is_Target_Vessel(target) && *As_Vessel(target) != VESSEL_SS &&
-            *As_Vessel(target) != VESSEL_MISSILESUB) {
-          if (!Is_Target_Vessel(target) || !weapon->Bullet->IsSubSurface) {
-            return FIRE_CANT;
-          }
+      }
+      if (Is_Target_Vessel(target) && *As_Vessel(target) != VESSEL_SS &&
+          *As_Vessel(target) != VESSEL_MISSILESUB) {
+        if (!Is_Target_Vessel(target) || !weapon->Bullet->IsSubSurface) {
+          return FIRE_CANT;
         }
       }
     } else {
@@ -1435,13 +1432,12 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
           Transmit_Message(RADIO_HELLO, from);
           Transmit_Message(RADIO_MOVE_HERE, param);
           return RADIO_ROGER;
-        } else {
-          /*
-          **	This causes the potential passenger to think that all is ok and
-          *to *	hold on for a bit.
-          */
-          return RADIO_ROGER;
         }
+        /*
+         **	This causes the potential passenger to think that all is ok and
+         *to *	hold on for a bit.
+         */
+        return RADIO_ROGER;
       }
 
       /*
@@ -1713,10 +1709,9 @@ int VesselClass::Mission_Unload() {
             Do_Turn(dir);
             Status = MANEUVERING;
             return 1;
-          } else {
-            if (!How_Many()) {  // don't break out if still carrying passengers
-              Assign_Mission(MISSION_GUARD);
-            }
+          }
+          if (!How_Many()) {  // don't break out if still carrying passengers
+            Assign_Mission(MISSION_GUARD);
           }
           break;
 

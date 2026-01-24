@@ -369,18 +369,16 @@ int IPXGlobalConnClass::Send(char* buf, int buflen) {
   ------------------------------------------------------------------------*/
   if (addr->Is_Broadcast()) {
     return Broadcast(buf, buflen);
-  } else {
-    /*------------------------------------------------------------------------
-    Otherwise, send it
-    ------------------------------------------------------------------------*/
-    if (IsBridge && !memcmp(addr, BridgeNet, 4)) {
-      rc = Send_To(buf, buflen, &((GlobalHeaderType*)buf)->Address,
-                   BridgeNode);
-    } else {
-      rc = Send_To(buf, buflen, &((GlobalHeaderType*)buf)->Address, nullptr);
-    }
-    return rc;
   }
+  /*------------------------------------------------------------------------
+      Otherwise, send it
+      ------------------------------------------------------------------------*/
+  if (IsBridge && !memcmp(addr, BridgeNet, 4)) {
+    rc = Send_To(buf, buflen, &((GlobalHeaderType*)buf)->Address, BridgeNode);
+  } else {
+    rc = Send_To(buf, buflen, &((GlobalHeaderType*)buf)->Address, nullptr);
+  }
+  return rc;
 
 } /* end of Send */
 

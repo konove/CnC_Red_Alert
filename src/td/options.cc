@@ -445,7 +445,8 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
   */
   for (index = 0; index < 256; index++) {
     if (/*index == LTGREEN ||*/ index == 255) {
-      memcpy(&static_cast<char*>(newpal)[index * 3], &static_cast<char*>(oldpal)[index * 3], 3);
+      memcpy(&static_cast<char*>(newpal)[index * 3],
+             &static_cast<char*>(oldpal)[index * 3], 3);
     } else {
       r = static_cast<char*>(oldpal)[index * 3 + 0];
       g = static_cast<char*>(oldpal)[index * 3 + 1];
@@ -507,9 +508,8 @@ void OptionsClass::Load_Settings() {
   CCFileClass file("CONQUER.INI");
   if (!file.Is_Available()) {
     return;
-  } else {
-    file.Read(buffer, _ShapeBufferSize - 1);
   }
+  file.Read(buffer, _ShapeBufferSize - 1);
   file.Close();
 
   /*

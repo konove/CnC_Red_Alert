@@ -634,9 +634,8 @@ bool INIClass::Put_TextBlock(char const* section, char const* text) {
 
         if (count == 0) {
           break;
-        } else {
-          buffer[count] = '\0';
         }
+        buffer[count] = '\0';
       }
 
       strtrim(buffer);
@@ -975,12 +974,11 @@ int INIClass::Get_String(char const* section, char const* entry,
   if (defvalue == nullptr) {
     buffer[0] = '\0';
     return 0;
-  } else {
-    if (buffer != defvalue) strncpy(buffer, defvalue, size);
-    buffer[size - 1] = '\0';
-    strtrim(buffer);
-    return strlen(buffer);
   }
+  if (buffer != defvalue) strncpy(buffer, defvalue, size);
+  buffer[size - 1] = '\0';
+  strtrim(buffer);
+  return strlen(buffer);
 }
 
 /***********************************************************************************************
@@ -1002,11 +1000,7 @@ int INIClass::Get_String(char const* section, char const* entry,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool INIClass::Put_Bool(char const* section, char const* entry, bool value) {
-  if (value) {
-    return Put_String(section, entry, "yes");
-  } else {
-    return Put_String(section, entry, "no");
-  }
+  return Put_String(section, entry, value ? "yes" : "no");
 }
 
 /***********************************************************************************************

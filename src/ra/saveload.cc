@@ -1514,9 +1514,8 @@ static int Reconcile_Players() {
   //
   if (Session.NumPlayers == Session.Players.Count()) {
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 /***************************************************************************

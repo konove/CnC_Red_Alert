@@ -1082,9 +1082,8 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
     COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return i->Unlimbo(coord, DIR_E);
-    } else {
-      delete i;
     }
+    delete i;
   }
   return false;
 }

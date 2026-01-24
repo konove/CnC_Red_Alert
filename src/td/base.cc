@@ -330,13 +330,7 @@ bool BaseClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool BaseClass::Is_Built(int index) {
-  if (Get_Building(index) != nullptr) {
-    return true;
-  } else {
-    return false;
-  }
-}
+bool BaseClass::Is_Built(int index) { return Get_Building(index) != nullptr; }
 
 /***********************************************************************************************
  * BaseClass::Get_Building -- Returns ptr to the built building for the given
@@ -390,13 +384,7 @@ BuildingClass* BaseClass::Get_Building(int index) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool BaseClass::Is_Node(BuildingClass* obj) {
-  if (Get_Node(obj) != nullptr) {
-    return true;
-  } else {
-    return false;
-  }
-}
+bool BaseClass::Is_Node(BuildingClass* obj) { return Get_Node(obj) != nullptr; }
 
 /***********************************************************************************************
  * BaseClass::Get_Node -- Returns ptr to the node corresponding to given object

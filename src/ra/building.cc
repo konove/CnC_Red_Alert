@@ -3379,9 +3379,8 @@ int BuildingClass::Mission_Guard() {
 
     if (*this == STRUCT_REPAIR) {
       return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
-    } else {
-      return MissionControl[Mission].Normal_Delay() * 3 + Random_Pick(0, 2);
     }
+    return MissionControl[Mission].Normal_Delay() * 3 + Random_Pick(0, 2);
   }
   return MissionControl[Mission].AA_Delay() + Random_Pick(0, 2);
 }
@@ -3692,14 +3691,13 @@ int BuildingClass::Mission_Attack() {
           Assign_Mission(MISSION_GUARD);
           Commence();
           return 1;
-        } else {
-          if (!PrimaryFacing.Is_Rotating()) {
-            DirType facing = Direction(TarCom);
-            if (PrimaryFacing.Difference(facing)) {
-              PrimaryFacing.Set_Desired(facing);
-            } else {
-              Status = SAM_FIRING;
-            }
+        }
+        if (!PrimaryFacing.Is_Rotating()) {
+          DirType facing = Direction(TarCom);
+          if (PrimaryFacing.Difference(facing)) {
+            PrimaryFacing.Set_Desired(facing);
+          } else {
+            Status = SAM_FIRING;
           }
         }
         return 1;
@@ -4076,17 +4074,12 @@ int BuildingClass::Mission_Repair() {
             Assign_Mission(MISSION_GUARD);
             Contact_With_Whom()->Assign_Mission(MISSION_GUARD);
             return 1;
-          } else {
-            fixed pfrac = Saturate(House->Power_Fraction(), 1);
-            if (pfrac < fixed::_1_2) pfrac = fixed::_1_2;
-            int time = Inverse(pfrac) * Rule.ReloadRate * TICKS_PER_MINUTE;
-            //						int time =
-            // Bound((int)(TICKS_PER_SECOND * Saturate(House->Power_Fraction(),
-            // 1)), 0, TICKS_PER_SECOND);
-            // time = (TICKS_PER_SECOND*3) - time;
-            IsReadyToCommence = false;
-            return time;
           }
+          fixed pfrac = Saturate(House->Power_Fraction(), 1);
+          if (pfrac < fixed::_1_2) pfrac = fixed::_1_2;
+          int time = Inverse(pfrac) * Rule.ReloadRate * TICKS_PER_MINUTE;
+          IsReadyToCommence = false;
+          return time;
         }
         break;
 

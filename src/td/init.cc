@@ -1351,56 +1351,51 @@ bool Select_Game(bool fade) {
                     DLOG(INFO)
                         << "C&C95 - Server_Remote_Connect returned success.";
                     break;
-                  } else {
-                    /*
-                    ** We failed to connect to the other player
-                    *
-                    *   SEND FAILURE PACKET TO WCHAT HERE !!!!!
-                    *
-                    */
-                    Winsock.Close();
-                    GameToPlay = GAME_NORMAL;
-                    selection = SEL_NONE;
-#ifdef _WIN32
-                    DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont
-                                                           // go round in an
-                                                           // infinite loop
-#endif
-                    // Special.IsFromWChat = false;
-                    break;
                   }
-                } else {
-                  DLOG(INFO) << "C&C95 - About to call Client_Remote_Connect.";
-                  if (Client_Remote_Connect()) {
-                    DLOG(INFO)
-                        << "C&C95 - Client_Remote_Connect returned success.";
-                    break;
-                  } else {
-                    /*
-                    ** We failed to connect to the other player
-                    *
-                    *   SEND FAILURE PACKET TO WCHAT HERE !!!!!
-                    *
-                    */
-                    Winsock.Close();
-                    GameToPlay = GAME_NORMAL;
-                    selection = SEL_NONE;
-#ifdef _WIN32
-                    DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont
-                                                           // go round in an
-                                                           // infinite loop
-#endif
-                    // Special.IsFromWChat = false;
-                    break;
-                  }
-                }
-
-              } else {
-                GameToPlay = Select_MPlayer_Game();
-                if (GameToPlay == GAME_NORMAL) {  // 'Cancel'
-                  display = true;
+                  /*
+                   ** We failed to connect to the other player
+                   *
+                   *   SEND FAILURE PACKET TO WCHAT HERE !!!!!
+                   *
+                   */
+                  Winsock.Close();
+                  GameToPlay = GAME_NORMAL;
                   selection = SEL_NONE;
+#ifdef _WIN32
+                  DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont
+                                                         // go round in an
+                                                         // infinite loop
+#endif
+                  // Special.IsFromWChat = false;
+                  break;
                 }
+                DLOG(INFO) << "C&C95 - About to call Client_Remote_Connect.";
+                if (Client_Remote_Connect()) {
+                  DLOG(INFO)
+                      << "C&C95 - Client_Remote_Connect returned success.";
+                  break;
+                }
+                /*
+                 ** We failed to connect to the other player
+                 *
+                 *   SEND FAILURE PACKET TO WCHAT HERE !!!!!
+                 *
+                 */
+                Winsock.Close();
+                GameToPlay = GAME_NORMAL;
+                selection = SEL_NONE;
+#ifdef _WIN32
+                DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont
+                                                       // go round in an
+                                                       // infinite loop
+#endif
+                // Special.IsFromWChat = false;
+                break;
+              }
+              GameToPlay = Select_MPlayer_Game();
+              if (GameToPlay == GAME_NORMAL) {  // 'Cancel'
+                display = true;
+                selection = SEL_NONE;
               }
               break;
 

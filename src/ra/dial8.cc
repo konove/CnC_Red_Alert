@@ -196,27 +196,23 @@ int Dial8Class::Action(unsigned flags, KeyNumType& key) {
       OldFacing = Facing;
       ControlClass::Action(flags, key);
       return true;
-
-    } else {
-      /*
-      **	Dial hasn't moved; kill the event & return
-      */
-      key = KN_NONE;
-      ControlClass::Action(0, key);
-      return true;
     }
-
-  } else {
     /*
-    **	Otherwise, no events have occurred; kill the event if it's a
-    *LEFTRELEASE, *	and return
-    */
-    if (flags & LEFTRELEASE) {
-      key = KN_NONE;
-      is_sel = 0;
-    }
-    return ControlClass::Action(0, key);
+     **	Dial hasn't moved; kill the event & return
+     */
+    key = KN_NONE;
+    ControlClass::Action(0, key);
+    return true;
   }
+  /*
+   **	Otherwise, no events have occurred; kill the event if it's a
+   *LEFTRELEASE, *	and return
+   */
+  if (flags & LEFTRELEASE) {
+    key = KN_NONE;
+    is_sel = 0;
+  }
+  return ControlClass::Action(0, key);
 }
 
 /***************************************************************************

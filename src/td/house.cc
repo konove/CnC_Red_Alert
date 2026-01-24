@@ -1956,13 +1956,12 @@ unsigned char const* HouseClass::Remap_Table(bool blushing, bool unit) const {
     }
 
     return Class->RemapTable;
-  } else {
-    /*
-    ** For multiplayer games, return the remap table for this exact house
-    *instance.
-    */
-    return RemapTable;
   }
+  /*
+   ** For multiplayer games, return the remap table for this exact house
+   *instance.
+   */
+  return RemapTable;
 }
 
 /***********************************************************************************************
@@ -2567,20 +2566,17 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
                 Map.PendingHouse = HOUSE_NONE;
               }
               return true;
-            } else {
-              if (this == PlayerPtr) {
-                Speak(VOX_DEPLOY);
-              }
+            }
+            if (this == PlayerPtr) {
+              Speak(VOX_DEPLOY);
             }
             builder->Transmit_Message(RADIO_OVER_OUT);
           }
         }
         return false;
-
-      } else {
-        // Play a bad sound here?
-        return false;
       }
+      // Play a bad sound here?
+      return false;
     }
   }
 
@@ -4211,9 +4207,8 @@ int HouseClass::Power_Fraction() const {
   if (Power) {
     if (Drain) {
       return Cardinal_To_Fixed(Drain, Power);
-    } else {
-      return 0x0100;
     }
+    return 0x0100;
   }
   return 0;
 }

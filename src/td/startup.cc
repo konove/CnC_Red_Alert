@@ -454,7 +454,8 @@ int main(int argc, char* argv[])
         VisiblePage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
                          GBC_VISIBLE | GBC_VIDEOMEM);
 #ifdef PORTABLE
-        HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0, static_cast<GBC_Enum>(0));
+        HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
+                        static_cast<GBC_Enum>(0));
 #else
         /*
         ** Check that we really got a video memory page. Failure is fatal.
@@ -565,8 +566,7 @@ int main(int argc, char* argv[])
       ** See if we should run the intro
       */
       CCDebugString("C&C95 - Reading CONQUER.INI.\n");
-      char* buffer =
-          static_cast<char*>(
+      char* buffer = static_cast<char*>(
           Alloc(64000, MEM_NORMAL));  //(char *)HidPage.Get_Buffer();
       cfile.Read(buffer, cfile.Size());
       buffer[cfile.Size()] = '\0';
@@ -656,20 +656,18 @@ int main(int argc, char* argv[])
       // Reset_Video_Mode();
       // Stop_Profiler();
       return EXIT_SUCCESS;
-
-    } else {
+    }
 #ifdef GERMAN
-      puts("Bitte erst das SETUP-Programm starten.\n");
+    puts("Bitte erst das SETUP-Programm starten.\n");
 #else
 #ifdef FRENCH
-      puts("Lancez d'abord le programme de configuration SETUP.\n");
+    puts("Lancez d'abord le programme de configuration SETUP.\n");
 #else
-      puts("Run SETUP program first.");
-      puts("\n");
+    puts("Run SETUP program first.");
+    puts("\n");
 #endif
-      Kbd.Get();
+    Kbd.Get();
 #endif
-    }
 
     //		Remove_Keyboard_Interrupt();
     if (WindowsTimer) {

@@ -1545,14 +1545,13 @@ bool UnitClass::Try_To_Deploy() {
           }
           delete this;
           return true;
-        } else {
-          /*
-          **	Could not deploy the construction yard at this location! Just
-          *revert *	back to normal "just sitting there" mode and await
-          *further instructions.
-          */
-          delete building;
         }
+        /*
+         **	Could not deploy the construction yard at this location! Just
+         *revert *	back to normal "just sitting there" mode and await
+         *further instructions.
+         */
+        delete building;
       }
       Mark(MARK_DOWN);
       IsDeploying = false;
@@ -2168,35 +2167,34 @@ bool UnitClass::Goto_Tiberium(int rad) {
     CELL center = Coord_Cell(Center_Coord());
     if (Map[center].Land_Type() == LAND_TIBERIUM) {
       return true;
-    } else {
-      /*
-      **	Perform a ring search outward from the center.
-      */
-      for (int radius = 1; radius < rad; radius++) {
-        for (int x = -radius; x <= radius; x++) {
-          CELL cell = center;
-          if (Tiberium_Check(cell, x, -radius)) {
-            Assign_Destination(::As_Target(cell));
-            return false;
-          }
+    }
+    /*
+     **	Perform a ring search outward from the center.
+     */
+    for (int radius = 1; radius < rad; radius++) {
+      for (int x = -radius; x <= radius; x++) {
+        CELL cell = center;
+        if (Tiberium_Check(cell, x, -radius)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
+        }
 
-          cell = center;
-          if (Tiberium_Check(cell, x, +radius)) {
-            Assign_Destination(::As_Target(cell));
-            return false;
-          }
+        cell = center;
+        if (Tiberium_Check(cell, x, +radius)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
+        }
 
-          cell = center;
-          if (Tiberium_Check(cell, -radius, x)) {
-            Assign_Destination(::As_Target(cell));
-            return false;
-          }
+        cell = center;
+        if (Tiberium_Check(cell, -radius, x)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
+        }
 
-          cell = center;
-          if (Tiberium_Check(cell, +radius, x)) {
-            Assign_Destination(::As_Target(cell));
-            return false;
-          }
+        cell = center;
+        if (Tiberium_Check(cell, +radius, x)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
         }
       }
     }
@@ -2351,9 +2349,8 @@ int UnitClass::Mission_Unload() {
             Do_Turn(dir);
             Status = MANEUVERING;
             return 1;
-          } else {
-            Assign_Mission(MISSION_GUARD);
           }
+          Assign_Mission(MISSION_GUARD);
           break;
 
         case MANEUVERING:
@@ -2419,9 +2416,8 @@ int UnitClass::Mission_Unload() {
             Do_Turn(dir);
             Status = MANEUVERING;
             return 1;
-          } else {
-            Assign_Mission(MISSION_GUARD);
           }
+          Assign_Mission(MISSION_GUARD);
           break;
 
         case MANEUVERING:
@@ -2537,9 +2533,8 @@ int UnitClass::Mission_Unload() {
             Do_Turn(dir);
             Status = MANEUVERING;
             return 1;
-          } else {
-            Assign_Mission(MISSION_GUARD);
           }
+          Assign_Mission(MISSION_GUARD);
           break;
 
         case MANEUVERING:
@@ -2757,31 +2752,30 @@ int UnitClass::Mission_Harvest() {
         Set_Stage(0);
         Status = HARVESTING;
         return 1;
-      } else {
+      }
+      /*
+       **	If the harvester isn't on Tiberium and it is not heading toward
+       *Tiberium, then *	force it to go into guard mode. This will
+       *prevent the harvester from repeatedly *	searching for Tiberium.
+       */
+      if (!Target_Legal(NavCom)) {
         /*
-        **	If the harvester isn't on Tiberium and it is not heading toward
-        *Tiberium, then *	force it to go into guard mode. This will
-        *prevent the harvester from repeatedly *	searching for Tiberium.
+        **	If the archive target is legal, then head there since it is
+        *presumed *	that the archive target points to the last place it
+        *harvested at. This might *	solve the case where the harvester gets
+        *stuck and can't find Tiberium just because *	it is greater than 32
+        *squares away.
         */
-        if (!Target_Legal(NavCom)) {
-          /*
-          **	If the archive target is legal, then head there since it is
-          *presumed *	that the archive target points to the last place it
-          *harvested at. This might *	solve the case where the harvester gets
-          *stuck and can't find Tiberium just because *	it is greater than 32
-          *squares away.
-          */
-          if (Target_Legal(ArchiveTarget)) {
-            Assign_Destination(ArchiveTarget);
-          } else {
-            Status = GOINGTOIDLE;
-            IsUseless = true;
-            House->IsTiberiumShort = true;
-            return TICKS_PER_SECOND * 7;
-          }
+        if (Target_Legal(ArchiveTarget)) {
+          Assign_Destination(ArchiveTarget);
         } else {
-          IsUseless = false;
+          Status = GOINGTOIDLE;
+          IsUseless = true;
+          House->IsTiberiumShort = true;
+          return TICKS_PER_SECOND * 7;
         }
+      } else {
+        IsUseless = false;
       }
       break;
 
@@ -3907,9 +3901,8 @@ InfantryType UnitClass::Crew_Type() const {
   if (Class->PrimaryWeapon == nullptr) {
     if (Percent_Chance(50)) {
       return INFANTRY_C1;
-    } else {
-      return INFANTRY_C7;
     }
+    return INFANTRY_C7;
   }
   return DriveClass::Crew_Type();
 }
@@ -3999,9 +3992,8 @@ DirType UnitClass::Fire_Direction() const {
                                   64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {
         return SecondaryFacing - static_cast<DirType>(adj);
-      } else {
-        return SecondaryFacing + static_cast<DirType>(adj);
       }
+      return SecondaryFacing + static_cast<DirType>(adj);
     }
     return SecondaryFacing.Current();
   }
@@ -4034,11 +4026,10 @@ bool UnitClass::Ok_To_Move(DirType dir) const {
   if (Class->IsLockTurret) {
     if (IsRotating) {
       return false;
-    } else {
-      if (SecondaryFacing.Difference(dir)) {
-        ((UnitClass*)this)->SecondaryFacing.Set_Desired(dir);
-        return false;
-      }
+    }
+    if (SecondaryFacing.Difference(dir)) {
+      ((UnitClass*)this)->SecondaryFacing.Set_Desired(dir);
+      return false;
     }
   }
   return true;

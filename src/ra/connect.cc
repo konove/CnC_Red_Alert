@@ -252,10 +252,8 @@ int ConnectionClass::Send_Packet(void* buf, int buflen, int ack_req) {
       NumSendNoAck++;
     }
     return 1;
-  } else {
-    return 0;
   }
-
+  return 0;
 } /* end of Send_Packet */
 
 /***************************************************************************
@@ -330,7 +328,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
   /*------------------------------------------------------------------------
   Handle an incoming PACKET_DATA_NOACK packet
   ------------------------------------------------------------------------*/
-  else if (packet->Code == PACKET_DATA_NOACK) {
+  if (packet->Code == PACKET_DATA_NOACK) {
     /*.....................................................................
     If there's only one slot left, don't tie up the queue with this packet
     .....................................................................*/
@@ -353,7 +351,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
   /*------------------------------------------------------------------------
   Handle an incoming PACKET_DATA_ACK packet
   ------------------------------------------------------------------------*/
-  else if (packet->Code == PACKET_DATA_ACK) {
+  if (packet->Code == PACKET_DATA_ACK) {
     /*.....................................................................
     If this is a packet requires an ACK, and it's ID is older than our
     "oldest" ID, we know it's a resend; send an ACK, but don't queue it
@@ -518,7 +516,7 @@ int ConnectionClass::Get_Packet(void* buf, int* buflen) {
       /*..................................................................
       If this is a DATA_NOACK packet, who cares what the ID is?
       ..................................................................*/
-      else if (entry_data->Code == PACKET_DATA_NOACK) {
+      if (entry_data->Code == PACKET_DATA_NOACK) {
         rec_entry->IsRead = 1;
 
         packetlen = rec_entry->BufLen - sizeof(CommHeaderType);
@@ -566,9 +564,8 @@ int ConnectionClass::Service() {
   ------------------------------------------------------------------------*/
   if (Service_Send_Queue() && Service_Receive_Queue()) {
     return 1;
-  } else {
-    return 0;
   }
+  return 0;
 
 } /* end of Service */
 
@@ -696,9 +693,8 @@ int ConnectionClass::Service_Send_Queue() {
   ------------------------------------------------------------------------*/
   if (bad_conn) {
     return 0;
-  } else {
-    return 1;
   }
+  return 1;
 
 } /* end of Service_Send_Queue */
 
@@ -797,7 +793,8 @@ unsigned long ConnectionClass::Time() {
   If the Westwood library isn't being used, use the DOS timer.
   ------------------------------------------------------------------------*/
   ftime(&mytime);
-  msec = static_cast<unsigned long>(mytime.time) * 1000L + static_cast<unsigned long>(mytime.millitm);
+  msec = static_cast<unsigned long>(mytime.time) * 1000L +
+         static_cast<unsigned long>(mytime.millitm);
   return msec / 100 * 6;
 
 #endif
@@ -825,9 +822,8 @@ unsigned long ConnectionClass::Time() {
 char* ConnectionClass::Command_Name(int command) {
   if (command >= 0 && command < PACKET_COUNT) {
     return Commands[command];
-  } else {
-    return nullptr;
   }
+  return nullptr;
 
 } /* end of Command_Name */
 

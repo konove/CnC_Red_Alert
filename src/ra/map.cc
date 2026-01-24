@@ -2148,137 +2148,136 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       Shake_The_Screen(3);
 
       return true;
-    } else {
-      /*
-      ** All this code is for the multi-part bridges.
-      */
-      if (ttype >= TEMPLATE_BRIDGE_1A && ttype <= TEMPLATE_BRIDGE_3E) {
-        int icon = cellptr->TIcon;
-        int w = TemplateTypeClass::As_Reference(ttype).Width;
-        int h = TemplateTypeClass::As_Reference(ttype).Height;
+    }
+    /*
+     ** All this code is for the multi-part bridges.
+     */
+    if (ttype >= TEMPLATE_BRIDGE_1A && ttype <= TEMPLATE_BRIDGE_3E) {
+      int icon = cellptr->TIcon;
+      int w = TemplateTypeClass::As_Reference(ttype).Width;
+      int h = TemplateTypeClass::As_Reference(ttype).Height;
 
-        cell -= icon % w;
-        cell -= MAP_CELL_W * (icon / w);
-        switch (ttype) {
-          case TEMPLATE_BRIDGE_1A:
-          case TEMPLATE_BRIDGE_1B:
-          case TEMPLATE_BRIDGE_2A:
-          case TEMPLATE_BRIDGE_2B:
+      cell -= icon % w;
+      cell -= MAP_CELL_W * (icon / w);
+      switch (ttype) {
+        case TEMPLATE_BRIDGE_1A:
+        case TEMPLATE_BRIDGE_1B:
+        case TEMPLATE_BRIDGE_2A:
+        case TEMPLATE_BRIDGE_2B:
+        case TEMPLATE_BRIDGE_3A:
+        case TEMPLATE_BRIDGE_3B:
+          ttype++;
+          new TemplateClass(static_cast<TemplateType>(ttype), cell);
+          break;
+      }
+
+      /*
+      ** If we were a middle piece that just got blown up, update the
+      ** adjoining pieces to make sure they're shaped properly.
+      */
+      if (ttype == TEMPLATE_BRIDGE_3C) {
+        // check the template below us, at x-1, y+1
+        CELL cell2 = cell + (MAP_CELL_W - 1);
+        CellClass* celptr = &(*this)[cell2];
+        if (celptr->TType == TEMPLATE_BRIDGE_3C) {
+          // It was also destroyed.  Update us and it.
+          new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
+                            cell);
+          new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3E),
+                            cell2);
+        }
+
+        // Now check the template above us, at x+1, y-1.
+        cell2 = cell - (MAP_CELL_W - 1);
+        celptr = &(*this)[cell2];
+        if (celptr->TType == TEMPLATE_BRIDGE_3C) {
+          if (cellptr->TType == TEMPLATE_BRIDGE_3D) {
+            // if we're already one-sided, turn us to all water
+            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
+                              cell);
+          } else {
+            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3E),
+                              cell);
+          }
+          new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
+                            cell2);
+        }
+        Map.Zone_Reset(MZONEF_ALL);
+      }
+
+      /*
+      ** If we're an end bridge piece, update the adjoining piece to
+      ** be the proper shape.
+      */
+      if (cellptr->TType == TEMPLATE_BRIDGE_1C) {
+        Scen.BridgeCount--;
+        Scen.IsBridgeChanged = true;
+
+        // Point to the template below us, x-1, y+2
+        CELL cell2 = cell + MAP_CELL_W * 2 - 1;
+        switch ((*this)[cell2].TType) {
           case TEMPLATE_BRIDGE_3A:
           case TEMPLATE_BRIDGE_3B:
-            ttype++;
-            new TemplateClass(static_cast<TemplateType>(ttype), cell);
-            break;
-        }
-
-        /*
-        ** If we were a middle piece that just got blown up, update the
-        ** adjoining pieces to make sure they're shaped properly.
-        */
-        if (ttype == TEMPLATE_BRIDGE_3C) {
-          // check the template below us, at x-1, y+1
-          CELL cell2 = cell + (MAP_CELL_W - 1);
-          CellClass* celptr = &(*this)[cell2];
-          if (celptr->TType == TEMPLATE_BRIDGE_3C) {
-            // It was also destroyed.  Update us and it.
-            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
-                              cell);
+          case TEMPLATE_BRIDGE_3C:
             new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3E),
                               cell2);
-          }
-
-          // Now check the template above us, at x+1, y-1.
-          cell2 = cell - (MAP_CELL_W - 1);
-          celptr = &(*this)[cell2];
-          if (celptr->TType == TEMPLATE_BRIDGE_3C) {
-            if (cellptr->TType == TEMPLATE_BRIDGE_3D) {
-              // if we're already one-sided, turn us to all water
-              new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
-                                cell);
-            } else {
-              new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3E),
-                                cell);
-            }
-            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
+            break;
+          case TEMPLATE_BRIDGE_3D:
+            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
                               cell2);
-          }
-          Map.Zone_Reset(MZONEF_ALL);
+            break;
         }
-
-        /*
-        ** If we're an end bridge piece, update the adjoining piece to
-        ** be the proper shape.
-        */
-        if (cellptr->TType == TEMPLATE_BRIDGE_1C) {
-          Scen.BridgeCount--;
-          Scen.IsBridgeChanged = true;
-
-          // Point to the template below us, x-1, y+2
-          CELL cell2 = cell + MAP_CELL_W * 2 - 1;
+      } else {
+        if (cellptr->TType == TEMPLATE_BRIDGE_2C) {
+          // Point to the template above us, x+2, y-1
+          CELL cell2 = cell - (MAP_CELL_W - 2);
           switch ((*this)[cell2].TType) {
             case TEMPLATE_BRIDGE_3A:
             case TEMPLATE_BRIDGE_3B:
             case TEMPLATE_BRIDGE_3C:
-              new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3E),
+              new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
                                 cell2);
               break;
-            case TEMPLATE_BRIDGE_3D:
+            case TEMPLATE_BRIDGE_3E:
               new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
                                 cell2);
               break;
           }
-        } else {
-          if (cellptr->TType == TEMPLATE_BRIDGE_2C) {
-            // Point to the template above us, x+2, y-1
-            CELL cell2 = cell - (MAP_CELL_W - 2);
-            switch ((*this)[cell2].TType) {
-              case TEMPLATE_BRIDGE_3A:
-              case TEMPLATE_BRIDGE_3B:
-              case TEMPLATE_BRIDGE_3C:
-                new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
-                                  cell2);
-                break;
-              case TEMPLATE_BRIDGE_3E:
-                new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
-                                  cell2);
-                break;
-            }
-          }
         }
-        if (cellptr->TType == TEMPLATE_BRIDGE_1C ||
-            cellptr->TType == TEMPLATE_BRIDGE_2C ||
-            (cellptr->TType >= TEMPLATE_BRIDGE_3C &&
-             cellptr->TType <= TEMPLATE_BRIDGE_3E)) {
-          int x, y, tdata = 0;
-          for (y = 0; y < h; y++) {
-            for (x = 0; x < w; x++) {
-              CellClass* ptr = &(*this)[static_cast<CELL>(cell + x)];
-              if (ptr->TType == cellptr->TType ||
-                  ptr->Land_Type() == LAND_RIVER ||
-                  ptr->Land_Type() == LAND_WATER) {
-                Detach_This_From_All(As_Target(static_cast<CELL>(cell + tdata)),
-                                     true);
+      }
+      if (cellptr->TType == TEMPLATE_BRIDGE_1C ||
+          cellptr->TType == TEMPLATE_BRIDGE_2C ||
+          (cellptr->TType >= TEMPLATE_BRIDGE_3C &&
+           cellptr->TType <= TEMPLATE_BRIDGE_3E)) {
+        int x, y, tdata = 0;
+        for (y = 0; y < h; y++) {
+          for (x = 0; x < w; x++) {
+            CellClass* ptr = &(*this)[static_cast<CELL>(cell + x)];
+            if (ptr->TType == cellptr->TType ||
+                ptr->Land_Type() == LAND_RIVER ||
+                ptr->Land_Type() == LAND_WATER) {
+              Detach_This_From_All(As_Target(static_cast<CELL>(cell + tdata)),
+                                   true);
 
-                ObjectClass* obj = ptr->Cell_Occupier();
-                while (obj != nullptr) {
-                  ObjectClass* next = obj->Next;
-                  if (obj->Is_Techno()) {
-                    int damage = obj->Strength;
-                    obj->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
-                  }
-                  obj = next;
+              ObjectClass* obj = ptr->Cell_Occupier();
+              while (obj != nullptr) {
+                ObjectClass* next = obj->Next;
+                if (obj->Is_Techno()) {
+                  int damage = obj->Strength;
+                  obj->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
                 }
+                obj = next;
               }
-              tdata++;
             }
-            cell += MAP_CELL_W;
+            tdata++;
           }
-          Shake_The_Screen(3);
-          Map.Zone_Reset(MZONEF_ALL);
-          return true;
+          cell += MAP_CELL_W;
         }
         Shake_The_Screen(3);
+        Map.Zone_Reset(MZONEF_ALL);
+        return true;
       }
+      Shake_The_Screen(3);
     }
   }
   return false;

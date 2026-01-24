@@ -163,9 +163,8 @@ bool BufferIOFileClass::Cache(long size, void* ptr) {
     //
     if (size || ptr) {
       return false;
-    } else {
-      return true;
     }
+    return true;
   }
 
   if (Is_Available()) {
@@ -367,12 +366,10 @@ bool BufferIOFileClass::Commit() {
 
       IsChanged = false;
       return true;
-    } else {
-      return false;
     }
-  } else {
     return false;
   }
+  return false;
 }
 
 /***********************************************************************************************

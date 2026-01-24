@@ -413,9 +413,8 @@ void TeamClass::AI() {
       Target = ::As_Target(dest);
       Coordinate_Move();
       return;
-    } else {
-      Center = 0;
     }
+    Center = 0;
   }
 
   /*

@@ -596,9 +596,8 @@ int IPXManagerClass::Num_Connections() {
 int IPXManagerClass::Connection_ID(int index) {
   if (index >= 0 && index < NumConnections) {
     return Connection[index]->ID;
-  } else {
-    return IPXConnClass::CONNECTION_NONE;
   }
+  return IPXConnClass::CONNECTION_NONE;
 }
 
 /***************************************************************************
@@ -855,32 +854,30 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
 #endif  // VIRTUAL_SUBNET_SERVER
 
     return true;
-
-  } else {
-    /*------------------------------------------------------------------------
-    Send the message to the specified connection
-    ------------------------------------------------------------------------*/
-    connect_idx = Connection_Index(conn_id);
-    if (connect_idx == IPXConnClass::CONNECTION_NONE) {
-      SendOverflows++;
-      return false;
-    }
-
-    /*.....................................................................
-    Check for room in the connection
-    .....................................................................*/
-    if (Connection[connect_idx]->Queue->Num_Send() ==
-        Connection[connect_idx]->Queue->Max_Send()) {
-      SendOverflows++;
-      return false;
-    }
-
-    /*.....................................................................
-    Send the packet to that connection
-    .....................................................................*/
-    Connection[connect_idx]->Send_Packet(buf, buflen, ack_req);
-    return true;
   }
+  /*------------------------------------------------------------------------
+      Send the message to the specified connection
+      ------------------------------------------------------------------------*/
+  connect_idx = Connection_Index(conn_id);
+  if (connect_idx == IPXConnClass::CONNECTION_NONE) {
+    SendOverflows++;
+    return false;
+  }
+
+  /*.....................................................................
+  Check for room in the connection
+  .....................................................................*/
+  if (Connection[connect_idx]->Queue->Num_Send() ==
+      Connection[connect_idx]->Queue->Max_Send()) {
+    SendOverflows++;
+    return false;
+  }
+
+  /*.....................................................................
+  Send the packet to that connection
+  .....................................................................*/
+  Connection[connect_idx]->Send_Packet(buf, buflen, ack_req);
+  return true;
 }
 
 /***************************************************************************
@@ -1347,21 +1344,19 @@ int IPXManagerClass::Private_Num_Send(int id) {
     i = Connection_Index(id);
     if (i != IPXConnClass::CONNECTION_NONE) {
       return Connection[i]->Queue->Num_Send();
-    } else {
-      return false;
     }
-  } else {
-    /*------------------------------------------------------------------------
-    Otherwise, return the max # of all connections
-    ------------------------------------------------------------------------*/
-    maxnum = 0;
-    for (i = 0; i < NumConnections; i++) {
-      if (Connection[i]->Queue->Num_Send() > maxnum) {
-        maxnum = Connection[i]->Queue->Num_Send();
-      }
-    }
-    return maxnum;
+    return false;
   }
+  /*------------------------------------------------------------------------
+      Otherwise, return the max # of all connections
+      ------------------------------------------------------------------------*/
+  maxnum = 0;
+  for (i = 0; i < NumConnections; i++) {
+    if (Connection[i]->Queue->Num_Send() > maxnum) {
+      maxnum = Connection[i]->Queue->Num_Send();
+    }
+  }
+  return maxnum;
 }
 
 /***************************************************************************
@@ -1399,20 +1394,18 @@ int IPXManagerClass::Private_Num_Receive(int id) {
     i = Connection_Index(id);
     if (i != IPXConnClass::CONNECTION_NONE) {
       return Connection[i]->Queue->Num_Receive();
-    } else {
-      return 0;
     }
-  } else {
-    /*------------------------------------------------------------------------
-    Otherwise, return the max # of all connections
-    ------------------------------------------------------------------------*/
-    maxnum = 0;
-    for (i = 0; i < NumConnections; i++) {
-      if (Connection[i]->Queue->Num_Receive() > maxnum)
-        maxnum = Connection[i]->Queue->Num_Receive();
-    }
-    return maxnum;
+    return 0;
   }
+  /*------------------------------------------------------------------------
+      Otherwise, return the max # of all connections
+      ------------------------------------------------------------------------*/
+  maxnum = 0;
+  for (i = 0; i < NumConnections; i++) {
+    if (Connection[i]->Queue->Num_Receive() > maxnum)
+      maxnum = Connection[i]->Queue->Num_Receive();
+  }
+  return maxnum;
 }
 
 /***************************************************************************
@@ -1504,9 +1497,8 @@ unsigned long IPXManagerClass::Response_Time() {
 unsigned long IPXManagerClass::Global_Response_Time() {
   if (GlobalChannel) {
     return GlobalChannel->Queue->Avg_Response_Time();
-  } else {
-    return 0;
   }
+  return 0;
 }
 
 /***************************************************************************
@@ -1575,9 +1567,8 @@ void* IPXManagerClass::Oldest_Send() {
         if (packet->Code == ConnectionClass::PACKET_DATA_ACK &&
             send_entry->IsACK == 0) {
           break;
-        } else {
-          send_entry = nullptr;
         }
+        send_entry = nullptr;
       }
     }
 

@@ -313,9 +313,8 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   CCFileClass file(fname);
   if (!file.Is_Available()) {
     return false;
-  } else {
-    file.Read(buffer, _ShapeBufferSize - 1);
   }
+  file.Read(buffer, _ShapeBufferSize - 1);
 
   /*
   ** Init the Scenario CRC value

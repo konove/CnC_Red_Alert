@@ -195,25 +195,9 @@ bool bSpecialAftermathScenario(const char* szScenarioDescription);
  *   8/2/96      ST : Win32 support added                                  *
  *=========================================================================*/
 int Init_Null_Modem(SerialSettingsType* settings) {
-#ifdef WIN32
-  if (NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
-                     settings->Baud, 0, 8, 1, settings->HardwareFlowControl)) {
-    return true;
-  } else {
-    return false;
-  }
-
-#else   // WIN32
-  if (NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
-                     settings->Baud, 'N', 8, 1,
-                     settings->HardwareFlowControl)) {
-    NullModem.Change_IRQ_Priority(settings->IRQ);
-
-    return (true);
-  } else {
-    return (false);
-  }
-#endif  // WIN32
+  return NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
+                        settings->Baud, 0, 8, 1,
+                        settings->HardwareFlowControl) != 0;
 }
 
 /***************************************************************************
@@ -6197,12 +6181,11 @@ int Com_Show_Scenario_Dialog() {
                         sizeof(Session.ScenarioFileName), 0)) {
                   rc = false;
                   break;
-                } else {
-                  /*
-                  ** Make sure we dont time-out because of the download
-                  */
-                  lastmsgtime = TickCount;
                 }
+                /*
+                 ** Make sure we dont time-out because of the download
+                 */
+                lastmsgtime = TickCount;
               }
             } else {
               /*

@@ -719,16 +719,15 @@ void InfantryClass::Per_Cell_Process(bool center) {
       tech->Captured(House);
       delete this;
       return;
-    } else {
-      // #ifdef NEVER
-      if (!Target_Legal(NavCom)) {
-        Enter_Idle_Mode();
-        if (Map[Coord_Cell(Coord)].Cell_Building()) {
-          Scatter(0, true);
-        }
-      }
-      // #endif
     }
+    // #ifdef NEVER
+    if (!Target_Legal(NavCom)) {
+      Enter_Idle_Mode();
+      if (Map[Coord_Cell(Coord)].Cell_Building()) {
+        Scatter(0, true);
+      }
+    }
+    // #endif
   }
 
   /*
@@ -2676,9 +2675,8 @@ COORDINATE InfantryClass::Fire_Coord(int) const {
   Validate();
   if (Class->Type == INFANTRY_E4) {
     return Coord;  // special case for flame thrower guy
-  } else {
-    return Coord_Add(Coord, XYP_COORD(0, -5));
   }
+  return Coord_Add(Coord, XYP_COORD(0, -5));
 }
 
 /***************************************************************************

@@ -112,13 +112,11 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
         if (op_code == 0x80) {
           /* Return # of destination bytes written. */
           return static_cast<unsigned long>(dest_ptr - (unsigned char*)dest);
-
-        } else {
-          /* Do a medium copy from source. */
-          count = op_code & 0x3f;
-
-          while (count--) *dest_ptr++ = *source_ptr++;
         }
+        /* Do a medium copy from source. */
+        count = op_code & 0x3f;
+
+        while (count--) *dest_ptr++ = *source_ptr++;
 
       } else {
         if (op_code == 0xfe) {

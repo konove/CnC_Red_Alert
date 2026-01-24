@@ -1661,9 +1661,8 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
     COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return i->Unlimbo(coord, DIR_E);
-    } else {
-      delete i;
     }
+    delete i;
   }
   return false;
 }
@@ -1814,8 +1813,7 @@ void InfantryTypeClass::One_Time() {
     auto fullname = std::filesystem::path(uclass->IniName)
                         .replace_extension(".SHP")
                         .string();
-    (void const*&)uclass->ImageData =
-        MixFileClass::Retrieve(fullname.c_str());
+    (void const*&)uclass->ImageData = MixFileClass::Retrieve(fullname.c_str());
 
     /*
     **	The small build image icon sized shapes are always generic.
@@ -1828,8 +1826,7 @@ void InfantryTypeClass::One_Time() {
     }
     fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    (void const*&)uclass->CameoData =
-        MixFileClass::Retrieve(fullname.c_str());
+    (void const*&)uclass->CameoData = MixFileClass::Retrieve(fullname.c_str());
   }
 }
 

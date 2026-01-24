@@ -2389,9 +2389,8 @@ bool RadarClass::Draw_House_Info() {
     Fancy_Text_Print(txt, RadX + RadOffX, y, color, BLACK, style);
 #endif
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 /***********************************************************************************************

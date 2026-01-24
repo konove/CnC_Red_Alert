@@ -166,16 +166,17 @@ void* Open_Animation(char const* file_name, char* user_buffer,
     target_buffer_size = 0L;
   } else {
     anim_flags |= WSA_TARGET_IN_BUFFER;
-    target_buffer_size =
-        static_cast<unsigned long>(file_header.pixel_width) * file_header.pixel_height;
+    target_buffer_size = static_cast<unsigned long>(file_header.pixel_width) *
+                         file_header.pixel_height;
   }
 
   // NOTE:"THIS IS A BAD THING. SINCE sizeof(SysAnimHeaderType) CHANGED, THE
   // ANIMATE.EXE UTILITY DID NOT KNOW I UPDATED IT, IT ADDS IT TO
   // largest_frame_size BEFORE SAVING IT TO THE FILE.  THIS MEANS I HAVE TO ADD
   // THESE charS ON NOW FOR IT TO WORK.
-  delta_buffer_size = static_cast<unsigned long>(file_header.largest_frame_size) +
-                      EXTRA_charS_ANIMATE_NOT_KNOW_ABOUT;
+  delta_buffer_size =
+      static_cast<unsigned long>(file_header.largest_frame_size) +
+      EXTRA_charS_ANIMATE_NOT_KNOW_ABOUT;
   min_buffer_size = target_buffer_size + delta_buffer_size;
   max_buffer_size = min_buffer_size + file_buffer_size;
 
@@ -257,8 +258,7 @@ void* Open_Animation(char const* file_name, char* user_buffer,
   sys_header->pixel_height = file_header.pixel_height;
   sys_header->anim_mem_size = user_buffer_size;
   sys_header->delta_buffer = delta_buffer;
-  sys_header->largest_frame_size =
-      static_cast<unsigned short>(
+  sys_header->largest_frame_size = static_cast<unsigned short>(
       delta_buffer_size - sizeof(SysAnimHeaderType));
 
   std::snprintf(sys_header->file_name, sizeof(sys_header->file_name), "%s",
@@ -393,8 +393,7 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
   //
   if (sys_header->flags & WSA_TARGET_IN_BUFFER) {
     // Get a pointer to the frame in animation buffer.
-    frame_buffer =
-        static_cast<char*>(
+    frame_buffer = static_cast<char*>(
         Add_Long_To_Pointer(sys_header, sizeof(SysAnimHeaderType)));
     direct_to_dest = false;
   } else {
@@ -795,10 +794,10 @@ static unsigned long Get_Resident_Frame_Offset(char* file_buffer, int frame) {
 
   // Return the offset into RAM for the frame.
   lptr += frame;
-  if (*lptr)
+  if (*lptr) {
     return *lptr - (frame0_size + WSA_FILE_HEADER_SIZE);
-  else
-    return 0L;
+  }
+  return 0L;
 }
 
 static unsigned long Get_File_Frame_Offset(int file_handle, int frame,
@@ -836,8 +835,7 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
         Get_Resident_Frame_Offset(sys_header->file_buffer, curr_frame + 1) -
         frame_offset;
 
-    data_ptr =
-        static_cast<char*>(
+    data_ptr = static_cast<char*>(
         Add_Long_To_Pointer(sys_header->file_buffer, frame_offset));
     delta_back = static_cast<char*>(Add_Long_To_Pointer(
         delta_back, sys_header->largest_frame_size - frame_data_size));

@@ -261,31 +261,30 @@ int ListClass::Action(unsigned flags, KeyNumType& key) {
     flags &= ~LEFTRELEASE;
     ControlClass::Action(flags, key);
     return true;
-  } else {
-    /*	--------------------------------------------------
-    **			Handle keyboard events here.
+  }
+  /*	--------------------------------------------------
+   **			Handle keyboard events here.
+   */
+  if (flags & KEYBOARD) {
+    /*
+    **	Process the keyboard character. If indicated, consume this
+    *keyboard event *	so that the edit gadget ID number is not returned.
     */
-    if (flags & KEYBOARD) {
-      /*
-      **	Process the keyboard character. If indicated, consume this
-      *keyboard event *	so that the edit gadget ID number is not returned.
-      */
-      if (key == KN_UP) {
-        Step_Selected_Index(-1);
-        key = KN_NONE;
-      } else if (key == KN_DOWN) {
-        Step_Selected_Index(1);
-        key = KN_NONE;
-      } else {
-        flags &= ~KEYBOARD;
-      }
-
+    if (key == KN_UP) {
+      Step_Selected_Index(-1);
+      key = KN_NONE;
+    } else if (key == KN_DOWN) {
+      Step_Selected_Index(1);
+      key = KN_NONE;
     } else {
-      int index = Get_Mouse_Y() - (Y + 1);
-      index = index / LineHeight;
-      SelectedIndex = CurrentTopIndex + index;
-      SelectedIndex = std::min<int>(SelectedIndex, List.Count() - 1);
+      flags &= ~KEYBOARD;
     }
+
+  } else {
+    int index = Get_Mouse_Y() - (Y + 1);
+    index = index / LineHeight;
+    SelectedIndex = CurrentTopIndex + index;
+    SelectedIndex = std::min<int>(SelectedIndex, List.Count() - 1);
   }
   return ControlClass::Action(flags, key);
 }
@@ -661,8 +660,8 @@ void ListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
                             Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(List[index], x, y, selected ? BLUE : WHITE,
-                            TBLACK, TextFlags, width, Tabs);
+    Conquer_Clip_Text_Print(List[index], x, y, selected ? BLUE : WHITE, TBLACK,
+                            TextFlags, width, Tabs);
   }
 }
 

@@ -317,7 +317,8 @@ void Send_Statistics_Packet() {
     /*
     ** AI Players (On/Off)
     */
-    stats.Add_Field(FIELD_AI_PLAYERS, static_cast<unsigned long>(Session.Options.AIPlayers));
+    stats.Add_Field(FIELD_AI_PLAYERS,
+                    static_cast<unsigned long>(Session.Options.AIPlayers));
 
     /*
     ** Shadow regrowth enabled
@@ -391,9 +392,8 @@ void Send_Statistics_Packet() {
           if (player1) {
             player2 = ptr;
             break;
-          } else {
-            player1 = ptr;
           }
+          player1 = ptr;
         }
       }
 
@@ -537,7 +537,8 @@ void Send_Statistics_Packet() {
     **
     ** Passed from WChat
     */
-    stats.Add_Field(FIELD_START_TIME, static_cast<long>(PlanetWestwoodStartTime));
+    stats.Add_Field(FIELD_START_TIME,
+                    static_cast<long>(PlanetWestwoodStartTime));
 
     /*
     ** Game duration (seconds).
@@ -549,7 +550,8 @@ void Send_Statistics_Packet() {
     */
     long divisor = GameEndTime / 60;
     if (divisor != 0) {
-      stats.Add_Field(FIELD_FRAME_RATE, static_cast<long>(Frame) / (GameEndTime / 60));
+      stats.Add_Field(FIELD_FRAME_RATE,
+                      static_cast<long>(Frame) / (GameEndTime / 60));
     } else {
       stats.Add_Field(FIELD_FRAME_RATE, 0l);
     }
@@ -631,7 +633,8 @@ void Send_Statistics_Packet() {
 #else
     for (int house = 0; house < 2; house++) {
 #endif
-      player = HouseClass::As_Pointer(static_cast<HousesType>(house + HOUSE_MULTI1));
+      player =
+          HouseClass::As_Pointer(static_cast<HousesType>(house + HOUSE_MULTI1));
 
 #ifdef WOLAPI_INTEGRATION
       if (!player) continue;
@@ -668,8 +671,9 @@ void Send_Statistics_Packet() {
       ** Player color
       */
       field_player_color[3] = '1' + static_cast<char>(house);
-      stats.Add_Field(field_player_color,
-                      static_cast<unsigned char>(player->Class->House - HOUSE_MULTI1));
+      stats.Add_Field(
+          field_player_color,
+          static_cast<unsigned char>(player->Class->House - HOUSE_MULTI1));
 
       /*
       ** Player end credits.

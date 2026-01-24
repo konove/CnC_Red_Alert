@@ -165,9 +165,8 @@ int Init_Null_Modem(SerialSettingsType* settings) {
   if (NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
                      settings->Baud, 0, 8, 1, settings->HardwareFlowControl)) {
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 /***************************************************************************
@@ -843,7 +842,8 @@ void Destroy_Null_Connection(int id, int error) {
 
   if (strlen(txt)) {
     Messages.Add_Message(
-        txt, MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
+        txt,
+        MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }
@@ -877,7 +877,8 @@ void Destroy_Null_Connection(int id, int error) {
   if (MPlayerCount == 1) {
     sprintf(txt, "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Messages.Add_Message(
-        txt, MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
+        txt,
+        MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }

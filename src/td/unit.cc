@@ -1387,17 +1387,16 @@ bool UnitClass::Unload_Hovercraft_Process() {
           Map.Layer[LAYER_GROUND].Sort();
           Map.Layer[LAYER_GROUND].Sort();
           return false;
-        } else {
-          /*
-          **	If the attached object cannot unload because the desired
-          *destination *	cell is impassable, then abort the landing. This
-          *is faked by pretending *	that the unload was successful. The
-          *controlling routine will cause *	the transport to leave.
-          */
-          Mark(MARK_DOWN);
-          return false;
-          //					return(true);
         }
+        /*
+         **	If the attached object cannot unload because the desired
+         *destination *	cell is impassable, then abort the landing. This
+         *is faked by pretending *	that the unload was successful. The
+         *controlling routine will cause *	the transport to leave.
+         */
+        Mark(MARK_DOWN);
+        return false;
+        //					return(true);
       }
 
       Mark(MARK_DOWN);
@@ -1547,14 +1546,13 @@ bool UnitClass::Try_To_Deploy() {
           Stun();
           delete this;
           return true;
-        } else {
-          /*
-          **	Could not deploy the construction yard at this location! Just
-          *revert *	back to normal "just sitting there" mode and await
-          *further instructions.
-          */
-          delete building;
         }
+        /*
+         **	Could not deploy the construction yard at this location! Just
+         *revert *	back to normal "just sitting there" mode and await
+         *further instructions.
+         */
+        delete building;
       }
       Mark(MARK_DOWN);
       IsDeploying = false;
@@ -2108,35 +2106,34 @@ bool UnitClass::Goto_Tiberium() {
     CELL center = Coord_Cell(Center_Coord());
     if (Map[center].Land_Type() == LAND_TIBERIUM) {
       return true;
-    } else {
-      /*
-      **	Perform a ring search outward from the center.
-      */
-      for (int radius = 1; radius < 32; radius++) {
-        for (int x = -radius; x <= radius; x++) {
-          CELL cell = center;
-          if (Tiberium_Check(cell, x, -radius)) {
-            Assign_Destination(::As_Target(cell));
-            return false;
-          }
+    }
+    /*
+     **	Perform a ring search outward from the center.
+     */
+    for (int radius = 1; radius < 32; radius++) {
+      for (int x = -radius; x <= radius; x++) {
+        CELL cell = center;
+        if (Tiberium_Check(cell, x, -radius)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
+        }
 
-          cell = center;
-          if (Tiberium_Check(cell, x, +radius)) {
-            Assign_Destination(::As_Target(cell));
-            return false;
-          }
+        cell = center;
+        if (Tiberium_Check(cell, x, +radius)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
+        }
 
-          cell = center;
-          if (Tiberium_Check(cell, -radius, x)) {
-            Assign_Destination(::As_Target(cell));
-            return false;
-          }
+        cell = center;
+        if (Tiberium_Check(cell, -radius, x)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
+        }
 
-          cell = center;
-          if (Tiberium_Check(cell, +radius, x)) {
-            Assign_Destination(::As_Target(cell));
-            return false;
-          }
+        cell = center;
+        if (Tiberium_Check(cell, +radius, x)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
         }
       }
     }
@@ -2227,9 +2224,8 @@ int UnitClass::Mission_Unload() {
             Do_Turn(dir);
             Status = MANEUVERING;
             return 1;
-          } else {
-            Assign_Mission(MISSION_GUARD);
           }
+          Assign_Mission(MISSION_GUARD);
           break;
 
         case MANEUVERING:
@@ -2398,16 +2394,15 @@ int UnitClass::Mission_Harvest() {
         Set_Stage(0);
         Status = HARVESTING;
         return 1;
-      } else {
-        /*
-        **	If the harvester isn't on Tiberium and it is not heading toward
-        *Tiberium, then *	force it to go into guard mode. This will
-        *prevent the harvester from repeatedly *	searching for Tiberium.
-        */
-        if (!Target_Legal(NavCom)) {
-          Status = GOINGTOIDLE;
-          return TICKS_PER_SECOND * 15;
-        }
+      }
+      /*
+       **	If the harvester isn't on Tiberium and it is not heading toward
+       *Tiberium, then *	force it to go into guard mode. This will
+       *prevent the harvester from repeatedly *	searching for Tiberium.
+       */
+      if (!Target_Legal(NavCom)) {
+        Status = GOINGTOIDLE;
+        return TICKS_PER_SECOND * 15;
       }
       break;
 
@@ -3936,9 +3931,8 @@ InfantryType UnitClass::Crew_Type() const {
   if (Class->Primary == WEAPON_NONE) {
     if (Random_Pick(0, 1) == 0) {
       return INFANTRY_C1;
-    } else {
-      return INFANTRY_C7;
     }
+    return INFANTRY_C7;
   }
   return TarComClass::Crew_Type();
 }

@@ -559,9 +559,8 @@ void Read_MultiPlayer_Settings() {
   CCFileClass file("CONQUER.INI");
   if (!file.Is_Available()) {
     return;
-  } else {
-    file.Read(buffer, _ShapeBufferSize - 1);
   }
+  file.Read(buffer, _ShapeBufferSize - 1);
   file.Close();
 
   if (!Special.IsFromWChat) {
@@ -830,8 +829,7 @@ void Read_MultiPlayer_Settings() {
   if (PlaybackGame) {
     TrapFrame = WWGetPrivateProfileInt("SyncBug", "Frame", 0x7fffffff, buffer);
 
-    TrapObjType =
-        static_cast<RTTIType>(
+    TrapObjType = static_cast<RTTIType>(
         WWGetPrivateProfileInt("SyncBug", "Type", RTTI_NONE, buffer));
     WWGetPrivateProfileString("SyncBug", "Type", "NONE", buf, 80, buffer);
     if (!stricmp(buf, "AIRCRAFT"))
@@ -1260,8 +1258,8 @@ int Surrender_Dialog() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 170 * factor;                       // dialog width
-  int d_dialog_h = 53 * factor;                        // dialog height
+  int d_dialog_w = 170 * factor;                     // dialog width
+  int d_dialog_h = 53 * factor;                      // dialog height
   int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // centered x-coord
   int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // coord of x-center

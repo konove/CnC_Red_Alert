@@ -612,10 +612,9 @@ int AircraftTypeClass::Repair_Step() const { return REPAIR_STEP; }
 int AircraftTypeClass::Max_Pips() const {
   if (IsTransporter) {
     return Max_Passengers();
-  } else {
-    if (Primary != WEAPON_NONE) {
-      return 5;
-    }
+  }
+  if (Primary != WEAPON_NONE) {
+    return 5;
   }
   return 0;
 }

@@ -243,9 +243,8 @@ bool SuperClass::Discharged(bool player) {
     if (IsOneTime) {
       IsOneTime = false;
       return Remove();
-    } else {
-      Recharge(player);
     }
+    Recharge(player);
   }
   return false;
 }

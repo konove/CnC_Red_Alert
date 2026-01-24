@@ -221,11 +221,7 @@ bool BaseClass::Save(Pipe& file) const {
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 bool BaseClass::Is_Built(int index) const {
-  if (Get_Building(index) != nullptr) {
-    return true;
-  } else {
-    return false;
-  }
+  return Get_Building(index) != nullptr;
 }
 
 /***********************************************************************************************
@@ -307,11 +303,7 @@ BuildingClass* BaseClass::Get_Building(int index) const {
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 bool BaseClass::Is_Node(BuildingClass const* obj) {
-  if (Get_Node(obj) != nullptr) {
-    return true;
-  } else {
-    return false;
-  }
+  return Get_Node(obj) != nullptr;
 }
 
 /***********************************************************************************************

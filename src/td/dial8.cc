@@ -184,8 +184,7 @@ int Dial8Class::Action(unsigned flags, KeyNumType& key) {
     /*
     **	Get new dial position (0-255)
     */
-    Direction =
-        Desired_Facing8(FaceX, FaceY, Get_Mouse_X(), Get_Mouse_Y());
+    Direction = Desired_Facing8(FaceX, FaceY, Get_Mouse_X(), Get_Mouse_Y());
 
     /*
     **	Convert to Facing value (0-7).
@@ -199,27 +198,23 @@ int Dial8Class::Action(unsigned flags, KeyNumType& key) {
       OldFacing = Facing;
       ControlClass::Action(flags, key);
       return true;
-
-    } else {
-      /*
-      **	Dial hasn't moved; kill the event & return
-      */
-      key = KN_NONE;
-      ControlClass::Action(0, key);
-      return true;
     }
-
-  } else {
     /*
-    **	Otherwise, no events have occurred; kill the event if it's a
-    *LEFTRELEASE, *	and return
-    */
-    if (flags & LEFTRELEASE) {
-      key = KN_NONE;
-      is_sel = 0;
-    }
-    return ControlClass::Action(0, key);
+     **	Dial hasn't moved; kill the event & return
+     */
+    key = KN_NONE;
+    ControlClass::Action(0, key);
+    return true;
   }
+  /*
+   **	Otherwise, no events have occurred; kill the event if it's a
+   *LEFTRELEASE, *	and return
+   */
+  if (flags & LEFTRELEASE) {
+    key = KN_NONE;
+    is_sel = 0;
+  }
+  return ControlClass::Action(0, key);
 }
 
 /***************************************************************************

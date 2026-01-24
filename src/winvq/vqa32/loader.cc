@@ -630,9 +630,8 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
-          } else {
-            vqabuf->Flags &= ~VQADATF_LSLEEP;
           }
+          vqabuf->Flags &= ~VQADATF_LSLEEP;
 
           /* Load an uncompressed audio frame. */
           if (Load_SND0(vqa_handle_p, iffsize) != 0) {
@@ -652,9 +651,8 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
-          } else {
-            vqabuf->Flags &= ~VQADATF_LSLEEP;
           }
+          vqabuf->Flags &= ~VQADATF_LSLEEP;
 
           /* Load an uncompressed audio frame. */
           if (Load_SND0(vqa_handle_p, iffsize) != 0) {
@@ -680,9 +678,8 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
-          } else {
-            vqabuf->Flags &= ~VQADATF_LSLEEP;
           }
+          vqabuf->Flags &= ~VQADATF_LSLEEP;
 
           /* Load a compressed audio frame. */
           if (Load_SND1(vqa_handle_p, iffsize) != 0) {
@@ -702,9 +699,8 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
-          } else {
-            vqabuf->Flags &= ~VQADATF_LSLEEP;
           }
+          vqabuf->Flags &= ~VQADATF_LSLEEP;
 
           /* Load a compressed audio frame. */
           if (Load_SND1(vqa_handle_p, iffsize) != 0) {
@@ -730,9 +726,8 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
-          } else {
-            vqabuf->Flags &= ~VQADATF_LSLEEP;
           }
+          vqabuf->Flags &= ~VQADATF_LSLEEP;
 
           /* Load a compressed audio frame. */
           if (Load_SND2(vqa_handle_p, iffsize) != 0) {
@@ -752,9 +747,8 @@ long VQA_LoadFrame(VQAHandle* vqa) {
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
             vqabuf->Flags |= VQADATF_LSLEEP;
             return VQAERR_SLEEPING;
-          } else {
-            vqabuf->Flags &= ~VQADATF_LSLEEP;
           }
+          vqabuf->Flags &= ~VQADATF_LSLEEP;
 
           /* Load a compressed audio frame. */
           if (Load_SND2(vqa_handle_p, iffsize) != 0) {
@@ -2004,9 +1998,8 @@ static long Load_SND0(VQAHandleP* vqap, unsigned long iffsize) {
     if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_SEEK,
                         (void*)SEEK_CUR, padsize)) {
       return VQAERR_SEEK;
-    } else {
-      return 0;
     }
+    return 0;
   }
 
   /* Read large startup chunk directly into AudioBuf */
@@ -2024,12 +2017,11 @@ static long Load_SND0(VQAHandleP* vqap, unsigned long iffsize) {
     }
 
     return 0;
-  } else {
-    /*  Read data into TempBuf */
-    if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ,
-                        audio->TempBuf, padsize)) {
-      return VQAERR_READ;
-    }
+  }
+  /*  Read data into TempBuf */
+  if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_READ,
+                      audio->TempBuf, padsize)) {
+    return VQAERR_READ;
   }
 
   /* Set the TempBufLen */
@@ -2085,9 +2077,8 @@ static long Load_SND1(VQAHandleP* vqap, unsigned long iffsize) {
     if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_SEEK,
                         (void*)SEEK_CUR, padsize)) {
       return VQAERR_SEEK;
-    } else {
-      return 0;
     }
+    return 0;
   }
 
   /* Read the ZAP audio frame header. */
@@ -2203,9 +2194,8 @@ static long Load_SND2(VQAHandleP* vqap, unsigned long iffsize) {
     if (vqap->IOHandler(static_cast<VQAHandle*>(vqap), VQACMD_SEEK,
                         (void*)SEEK_CUR, padsize)) {
       return VQAERR_SEEK;
-    } else {
-      return 0;
     }
+    return 0;
   }
 
   uncomp_size = iffsize * (audio->BitsPerSample / 4);

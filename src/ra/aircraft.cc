@@ -1087,9 +1087,8 @@ short const* AircraftClass::Overlap_List(bool redraw) const {
 
     if (*this == AIRCRAFT_BADGER) {
       return _listbadger;
-    } else {
-      return _list;
     }
+    return _list;
   }
   return Class->Overlap_List();
 }
@@ -1133,141 +1132,135 @@ int AircraftClass::Mission_Unload() {
   if (Class->IsFixedWing) {
     Assign_Target(NavCom);
     return Mission_Hunt();
+  }
+  enum { SEARCH_FOR_LZ, FLY_TO_LZ, LAND_ON_LZ, UNLOAD_PASSENGERS, TAKE_OFF };
 
-  } else {
-    enum { SEARCH_FOR_LZ, FLY_TO_LZ, LAND_ON_LZ, UNLOAD_PASSENGERS, TAKE_OFF };
-
-    switch (Status) {
-      /*
-      **	Search for an appropriate destination spot if one isn't already
-      *assigned.
-      */
-      case SEARCH_FOR_LZ:
-        if (Height == 0 &&
-            (Target_Legal(NavCom) || Coord == As_Coord(NavCom))) {
-          Status = UNLOAD_PASSENGERS;
-        } else {
-          if (!Is_LZ_Clear(NavCom)) {
-            FootClass* foot = Attached_Object();
-            if (foot != nullptr && foot->Team &&
-                foot->Team->Class->Origin != -1) {
-              Assign_Destination(
-                  ::As_Target(Scen.Waypoint[foot->Team->Class->Origin]));
-            } else {
-              Assign_Destination(
-                  New_LZ(::As_Target(Scen.Waypoint[WAYPT_REINF])));
-              if (Team.Is_Valid()) {
-                Team->Assign_Mission_Target(NavCom);
-              }
-            }
+  switch (Status) {
+    /*
+    **	Search for an appropriate destination spot if one isn't already
+    *assigned.
+    */
+    case SEARCH_FOR_LZ:
+      if (Height == 0 && (Target_Legal(NavCom) || Coord == As_Coord(NavCom))) {
+        Status = UNLOAD_PASSENGERS;
+      } else {
+        if (!Is_LZ_Clear(NavCom)) {
+          FootClass* foot = Attached_Object();
+          if (foot != nullptr && foot->Team &&
+              foot->Team->Class->Origin != -1) {
+            Assign_Destination(
+                ::As_Target(Scen.Waypoint[foot->Team->Class->Origin]));
           } else {
-            if (Height == FLIGHT_LEVEL) {
-              Status = FLY_TO_LZ;
-            } else {
-              Status = TAKE_OFF;
+            Assign_Destination(New_LZ(::As_Target(Scen.Waypoint[WAYPT_REINF])));
+            if (Team.Is_Valid()) {
+              Team->Assign_Mission_Target(NavCom);
             }
-          }
-        }
-        break;
-
-      /*
-      **	Fly to destination.
-      */
-      case FLY_TO_LZ:
-        if (Is_LZ_Clear(NavCom)) {
-          int distance = Process_Fly_To(true, NavCom);
-
-          if (distance < 0x0100) {
-            SecondaryFacing.Set_Desired(Pose_Dir());
-
-            if (distance < 0x0010) {
-              Status = LAND_ON_LZ;
-            }
-            return 1;
-          } else {
-            SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
-            return 5;
           }
         } else {
-          Status = SEARCH_FOR_LZ;
-        }
-        break;
-
-      /*
-      **	Landing phase. Just delay until landing is complete. At that
-      *time, *	transition to the unloading phase.
-      */
-      case LAND_ON_LZ:
-        if (IsTakingOff) {
-          Status = TAKE_OFF;
-        } else {
-          if (Process_Landing()) {
-            Status = UNLOAD_PASSENGERS;
-          }
-        }
-        return 1;
-
-      /*
-      **	Hold while unloading passengers. When passengers are unloaded
-      *the order for this *	transport gets changed to MISSION_RETREAT.
-      */
-      case UNLOAD_PASSENGERS:
-        if (!IsTethered) {
-          if (Is_Something_Attached()) {
-            FootClass* unit = Detach_Object();
-
-            /*
-            **	First thing is to lift the transport off of the map so that the
-            *unlimbo *	process for the passengers is more likely to succeed.
-            */
-            Map.Pick_Up(Coord_Cell(Coord), this);
-
-            if (!Exit_Object(unit)) {
-              delete unit;
-            }
-
-            /*
-            **	Restore the transport back down on the map.
-            */
-            Map.Place_Down(Coord_Cell(Coord), this);
-
-            if (!Is_Something_Attached()) {
-              Enter_Idle_Mode();
-            }
-
+          if (Height == FLIGHT_LEVEL) {
+            Status = FLY_TO_LZ;
           } else {
-            Enter_Idle_Mode();
+            Status = TAKE_OFF;
           }
         }
-        break;
-
-      /*
-      **	Aircraft is now taking off. Once the aircraft reaches flying
-      *altitude then it *	will either take off or look for another landing
-      *spot to try again.
-      */
-      case TAKE_OFF: {
-        if (Process_Take_Off()) {
-          if (Is_Something_Attached()) {
-            Status = SEARCH_FOR_LZ;
-
-            /*
-            **	Break off radio contact with the helipad it is taking off from.
-            */
-            if (In_Radio_Contact() &&
-                Map[Coord].Cell_Building() == Contact_With_Whom()) {
-              Transmit_Message(RADIO_OVER_OUT);
-            }
-          } else {
-            Enter_Idle_Mode();
-          }
-        }
-        return 1;
       }
+      break;
 
-      default:
-        break;
+    /*
+    **	Fly to destination.
+    */
+    case FLY_TO_LZ: {
+      if (Is_LZ_Clear(NavCom)) {
+        int distance = Process_Fly_To(true, NavCom);
+
+        if (distance < 0x0100) {
+          SecondaryFacing.Set_Desired(Pose_Dir());
+
+          if (distance < 0x0010) {
+            Status = LAND_ON_LZ;
+          }
+          return 1;
+        }
+        SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
+        return 5;
+      }
+      Status = SEARCH_FOR_LZ;
+    } break;
+
+    /*
+    **	Landing phase. Just delay until landing is complete. At that
+    *time, *	transition to the unloading phase.
+    */
+    case LAND_ON_LZ:
+      if (IsTakingOff) {
+        Status = TAKE_OFF;
+      } else {
+        if (Process_Landing()) {
+          Status = UNLOAD_PASSENGERS;
+        }
+      }
+      return 1;
+
+    /*
+    **	Hold while unloading passengers. When passengers are unloaded
+    *the order for this *	transport gets changed to MISSION_RETREAT.
+    */
+    case UNLOAD_PASSENGERS:
+      if (!IsTethered) {
+        if (Is_Something_Attached()) {
+          FootClass* unit = Detach_Object();
+
+          /*
+          **	First thing is to lift the transport off of the map so that the
+          *unlimbo *	process for the passengers is more likely to succeed.
+          */
+          Map.Pick_Up(Coord_Cell(Coord), this);
+
+          if (!Exit_Object(unit)) {
+            delete unit;
+          }
+
+          /*
+          **	Restore the transport back down on the map.
+          */
+          Map.Place_Down(Coord_Cell(Coord), this);
+
+          if (!Is_Something_Attached()) {
+            Enter_Idle_Mode();
+          }
+
+        } else {
+          Enter_Idle_Mode();
+        }
+      }
+      break;
+
+    /*
+    **	Aircraft is now taking off. Once the aircraft reaches flying
+    *altitude then it *	will either take off or look for another landing
+    *spot to try again.
+    */
+    case TAKE_OFF: {
+      if (Process_Take_Off()) {
+        if (Is_Something_Attached()) {
+          Status = SEARCH_FOR_LZ;
+
+          /*
+          **	Break off radio contact with the helipad it is taking off from.
+          */
+          if (In_Radio_Contact() &&
+              Map[Coord].Cell_Building() == Contact_With_Whom()) {
+            Transmit_Message(RADIO_OVER_OUT);
+          }
+        } else {
+          Enter_Idle_Mode();
+        }
+      }
+      return 1;
     }
+
+    default:
+      break;
   }
   return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
 }
@@ -3142,9 +3135,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
     if (bestval != -1) {
       if (Percent_Chance(50)) {
         return ::As_Target(bestcell);
-      } else {
-        return ::As_Target(best2cell);
       }
+      return ::As_Target(best2cell);
     }
   }
   return TARGET_NONE;
@@ -3398,32 +3390,27 @@ int AircraftClass::Mission_Enter() {
             Status = LANDING;
           }
           return 1;
-
-        } else {
-          if (distance < 0x0080) {
-            if (Target_Legal(TarCom)) {
-              SecondaryFacing.Set_Desired(Direction(TarCom));
-            } else {
-              SecondaryFacing.Set_Desired(Pose_Dir());
-            }
-
-            if (Is_Target_Vessel(NavCom) && !In_Radio_Contact()) {
-              Enter_Idle_Mode();
-              break;
-            }
-            if (distance < 0x0010) {
-              Status = LANDING;
-              if (Is_Target_Vessel(NavCom) && As_Vessel(NavCom)->NavCom) {
-                Status = TRAVEL;
-              }
-            }
-            break;
-          } else {
-            SecondaryFacing.Set_Desired(Direction(NavCom));
-            //						SecondaryFacing.Set_Desired(::Direction(Fire_Coord(0),
-            // As_Coord(NavCom)));
-          }
         }
+        if (distance < 0x0080) {
+          if (Target_Legal(TarCom)) {
+            SecondaryFacing.Set_Desired(Direction(TarCom));
+          } else {
+            SecondaryFacing.Set_Desired(Pose_Dir());
+          }
+
+          if (Is_Target_Vessel(NavCom) && !In_Radio_Contact()) {
+            Enter_Idle_Mode();
+            break;
+          }
+          if (distance < 0x0010) {
+            Status = LANDING;
+            if (Is_Target_Vessel(NavCom) && As_Vessel(NavCom)->NavCom) {
+              Status = TRAVEL;
+            }
+          }
+          break;
+        }
+        SecondaryFacing.Set_Desired(Direction(NavCom));
         return 3;
       }
       break;

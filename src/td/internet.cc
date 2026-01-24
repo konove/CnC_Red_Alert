@@ -256,17 +256,16 @@ int Read_Game_Options(char* name) {
 
   if (name && !file.Is_Available()) {
     return 0;
+  }
+  if (name) {
+    buffer = new char[8192];  // INI staging buffer pointer.
+    memset(buffer, '\0', 8192);
+    file.Read(buffer, 8192 - 1);
+    file.Close();
   } else {
-    if (name) {
-      buffer = new char[8192];  // INI staging buffer pointer.
-      memset(buffer, '\0', 8192);
-      file.Read(buffer, 8192 - 1);
-      file.Close();
-    } else {
 #ifdef _WIN32
-      buffer = DDEServer.Get_MPlayer_Game_Info();
+    buffer = DDEServer.Get_MPlayer_Game_Info();
 #endif
-    }
   }
 
   /*------------------------------------------------------------------------
@@ -277,8 +276,7 @@ int Read_Game_Options(char* name) {
   port::SafeCopy(MPlayerGameName, MPlayerName);
   MPlayerColorIdx = WWGetPrivateProfileInt("Options", "Color", 0, buffer);
   MPlayerPrefColor = MPlayerColorIdx;
-  MPlayerHouse =
-      static_cast<HousesType>(
+  MPlayerHouse = static_cast<HousesType>(
       WWGetPrivateProfileInt("Options", "Side", HOUSE_GOOD, buffer));
 
   MPlayerCredits = WWGetPrivateProfileInt("Options", "Credits", 0, buffer);
@@ -678,8 +676,8 @@ bool Do_The_Internet_Menu_Thang() {
   /*
   ** Dialog & button dimensions
   */
-  int d_dialog_w = 120 * factor;                       // dialog width
-  int d_dialog_h = 80 * factor;                        // dialog height
+  int d_dialog_w = 120 * factor;                     // dialog width
+  int d_dialog_h = 80 * factor;                      // dialog height
   int d_dialog_x = (320 * factor - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y = (200 * factor - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;     // center x-coord
@@ -766,11 +764,10 @@ bool Do_The_Internet_Menu_Thang() {
                                  TXT_CANCEL)) {
         LogicPage->Clear();
         return false;
-      } else {
-        LogicPage->Clear();
-        Spawn_Registration_App();
-        return false;
       }
+      LogicPage->Clear();
+      Spawn_Registration_App();
+      return false;
     }
   }
 

@@ -289,10 +289,9 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
       if (IsTheaterShape) {
         return TheaterShapeBufferStart +
                (unsigned long)*(KeyFrameSlots[keyfr->y] + framenumber);
-      } else {
-        return BigShapeBufferStart +
-               (unsigned long)*(KeyFrameSlots[keyfr->y] + framenumber);
       }
+      return BigShapeBufferStart +
+             (unsigned long)*(KeyFrameSlots[keyfr->y] + framenumber);
     }
   }
 
@@ -415,39 +414,35 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
       }
       Length = length;
       return return_value;
-
-    } else {
-      return_value = BigShapeBufferPtr;
-      temp_shape_ptr =
-          BigShapeBufferPtr + keyfr->height + sizeof(ShapeHeaderType);
-      /*
-      ** align the actual shape data
-      */
-      if (3 & (uintptr_t)temp_shape_ptr) {
-        temp_shape_ptr = (char*)((uintptr_t)(temp_shape_ptr + 3) & ~3);
-      }
-      memcpy(temp_shape_ptr, buffptr, length);
-      ((ShapeHeaderType*)BigShapeBufferPtr)->draw_flags =
-          -1;  // Flag that headers need to be generated
-      ((ShapeHeaderType*)BigShapeBufferPtr)->shape_data =
-          temp_shape_ptr -
-          (uintptr_t)BigShapeBufferStart;  // pointer to old raw shape data
-      ((ShapeHeaderType*)BigShapeBufferPtr)->shape_buffer =
-          0;  // Normal Big Shape Buffer
-      *(KeyFrameSlots[keyfr->y] + framenumber) =
-          BigShapeBufferPtr - (uintptr_t)BigShapeBufferStart;
-      BigShapeBufferPtr = (char*)(length + (uintptr_t)temp_shape_ptr);
-      // Align the next shape
-      if (3 & (uintptr_t)BigShapeBufferPtr) {
-        BigShapeBufferPtr = (char*)((uintptr_t)(BigShapeBufferPtr + 3) & ~3);
-      }
-      Length = length;
-      return return_value;
     }
-
-  } else {
-    return buffptr;
+    return_value = BigShapeBufferPtr;
+    temp_shape_ptr =
+        BigShapeBufferPtr + keyfr->height + sizeof(ShapeHeaderType);
+    /*
+    ** align the actual shape data
+    */
+    if (3 & (uintptr_t)temp_shape_ptr) {
+      temp_shape_ptr = (char*)((uintptr_t)(temp_shape_ptr + 3) & ~3);
+    }
+    memcpy(temp_shape_ptr, buffptr, length);
+    ((ShapeHeaderType*)BigShapeBufferPtr)->draw_flags =
+        -1;  // Flag that headers need to be generated
+    ((ShapeHeaderType*)BigShapeBufferPtr)->shape_data =
+        temp_shape_ptr -
+        (uintptr_t)BigShapeBufferStart;  // pointer to old raw shape data
+    ((ShapeHeaderType*)BigShapeBufferPtr)->shape_buffer =
+        0;  // Normal Big Shape Buffer
+    *(KeyFrameSlots[keyfr->y] + framenumber) =
+        BigShapeBufferPtr - (uintptr_t)BigShapeBufferStart;
+    BigShapeBufferPtr = (char*)(length + (uintptr_t)temp_shape_ptr);
+    // Align the next shape
+    if (3 & (uintptr_t)BigShapeBufferPtr) {
+      BigShapeBufferPtr = (char*)((uintptr_t)(BigShapeBufferPtr + 3) & ~3);
+    }
+    Length = length;
+    return return_value;
   }
+  return buffptr;
 }
 
 /***********************************************************************************************

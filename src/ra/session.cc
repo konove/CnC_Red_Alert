@@ -518,9 +518,8 @@ bool SessionClass::Am_I_Master() {
     if (hptr->IsHuman) {
       if (PlayerPtr == hptr) {
         return true;
-      } else {
-        return false;
       }
+      return false;
     }
   }
 

@@ -390,9 +390,8 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
     */
     if (AttachCount > 0) {
       return false;
-    } else {
-      IsPersistant = VOLATILE;
     }
+    IsPersistant = VOLATILE;
   }
 
   /*
@@ -582,9 +581,8 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
     */
     if (AttachCount > 0) {
       return false;
-    } else {
-      IsPersistant = VOLATILE;
     }
+    IsPersistant = VOLATILE;
   }
 
   /*

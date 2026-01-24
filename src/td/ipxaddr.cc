@@ -298,15 +298,11 @@ void IPXAddressClass::Get_Address(IPXHeaderType* header) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 bool IPXAddressClass::Is_Broadcast() {
-  if (NetworkNumber[0] == 0xff && NetworkNumber[1] == 0xff &&
-      NetworkNumber[2] == 0xff && NetworkNumber[3] == 0xff &&
-      NodeAddress[0] == 0xff && NodeAddress[1] == 0xff &&
-      NodeAddress[2] == 0xff && NodeAddress[3] == 0xff &&
-      NodeAddress[4] == 0xff && NodeAddress[5] == 0xff) {
-    return true;
-  } else {
-    return false;
-  }
+  return NetworkNumber[0] == 0xff && NetworkNumber[1] == 0xff &&
+         NetworkNumber[2] == 0xff && NetworkNumber[3] == 0xff &&
+         NodeAddress[0] == 0xff && NodeAddress[1] == 0xff &&
+         NodeAddress[2] == 0xff && NodeAddress[3] == 0xff &&
+         NodeAddress[4] == 0xff && NodeAddress[5] == 0xff;
 }
 
 /***************************************************************************
@@ -341,23 +337,13 @@ int IPXAddressClass::operator==(IPXAddressClass& addr) {
        NetworkNumber[2] == 0 && NetworkNumber[3] == 0) ||
       (addr.NetworkNumber[0] == 0 && addr.NetworkNumber[1] == 0 &&
        addr.NetworkNumber[2] == 0 && addr.NetworkNumber[3] == 0)) {
-    if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0) {
-      return true;
-    } else {
-      return false;
-    }
-
-  } else {
-    /*------------------------------------------------------------------------
-    Otherwise, compare both the Network Numbers and Node Addresses
-    ------------------------------------------------------------------------*/
-    if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0 &&
-        memcmp(NetworkNumber, addr.NetworkNumber, 4) == 0) {
-      return true;
-    } else {
-      return false;
-    }
+    return memcmp(NodeAddress, addr.NodeAddress, 6) == 0;
   }
+  /*------------------------------------------------------------------------
+      Otherwise, compare both the Network Numbers and Node Addresses
+      ------------------------------------------------------------------------*/
+  return memcmp(NodeAddress, addr.NodeAddress, 6) == 0 &&
+         memcmp(NetworkNumber, addr.NetworkNumber, 4) == 0;
 }
 
 /***************************************************************************
@@ -392,22 +378,13 @@ int IPXAddressClass::operator!=(IPXAddressClass& addr) {
        NetworkNumber[2] == 0 && NetworkNumber[3] == 0) ||
       (addr.NetworkNumber[0] == 0 && addr.NetworkNumber[1] == 0 &&
        addr.NetworkNumber[2] == 0 && addr.NetworkNumber[3] == 0)) {
-    if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0) {
-      return false;
-    } else {
-      return true;
-    }
-  } else {
-    /*------------------------------------------------------------------------
-    Otherwise, compare both the Network Numbers and Node Addresses
-    ------------------------------------------------------------------------*/
-    if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0 &&
-        memcmp(NetworkNumber, addr.NetworkNumber, 4) == 0) {
-      return false;
-    } else {
-      return true;
-    }
+    return memcmp(NodeAddress, addr.NodeAddress, 6) != 0;
   }
+  /*------------------------------------------------------------------------
+      Otherwise, compare both the Network Numbers and Node Addresses
+      ------------------------------------------------------------------------*/
+  return memcmp(NodeAddress, addr.NodeAddress, 6) != 0 ||
+         memcmp(NetworkNumber, addr.NetworkNumber, 4) != 0;
 }
 
 /***************************************************************************

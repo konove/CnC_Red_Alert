@@ -286,10 +286,9 @@ int IPXConnClass::Start_Listening() {
   if (PacketTransport->Start_Listening()) {
     Listening = 1;
     return true;
-  } else {
-    Close_Socket(Socket);
-    return false;
   }
+  Close_Socket(Socket);
+  return false;
 
 #else
   if (Winsock.Get_Connected()) return (true);
@@ -463,9 +462,8 @@ int IPXConnClass::Send(char* buf, int buflen, void*, int) {
   ------------------------------------------------------------------------*/
   if (Immed_Set) {
     return Send_To(buf, buflen, &Address, ImmediateAddress);
-  } else {
-    return Send_To(buf, buflen, &Address, nullptr);
   }
+  return Send_To(buf, buflen, &Address, nullptr);
 
 } /* end of Send */
 

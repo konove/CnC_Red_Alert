@@ -534,7 +534,8 @@ void Map_Selection() {
 
   Theme.Queue_Song(THEME_MAP1);
 
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
+  PseudoSeenBuff =
+      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
 
   /*
   ** Extra graphic buffer to draw text into
@@ -547,30 +548,28 @@ void Map_Selection() {
   /*
   ** Now start the process where we fade the gray earth in.
   */
-  greyearth = Open_Animation(
-      "GREYERTH.WSA", nullptr, 0,
-      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, localpalette);
-  greyearth2 = Open_Animation(
-      "E-BWTOCL.WSA", nullptr, 0,
-      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, grey2palette);
+  greyearth =
+      Open_Animation("GREYERTH.WSA", nullptr, 0,
+                     WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, localpalette);
+  greyearth2 =
+      Open_Animation("E-BWTOCL.WSA", nullptr, 0,
+                     WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, grey2palette);
 
   /*
   ** Load the spinning-globe anim
   */
   if (house == HOUSE_GOOD) {
     anim = Open_Animation("HEARTH_E.WSA", nullptr, 0,
-                          WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
-                          Palette);
-    progress = Open_Animation(
-        lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA", nullptr, 0,
-        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
+                          WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
+    progress =
+        Open_Animation(lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA", nullptr, 0,
+                       WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
   } else {
     anim = Open_Animation("HEARTH_A.WSA", nullptr, 0,
-                          WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
-                          Palette);
-    progress = Open_Animation(
-        lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA", nullptr, 0,
-        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
+                          WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
+    progress =
+        Open_Animation(lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA", nullptr, 0,
+                       WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
   }
 
   void const* appear1 = MixFileClass::Retrieve("APPEAR1.AUD");
@@ -1096,9 +1095,8 @@ void Map_Selection() {
             Play_Sample(world2, 255, Options.Normalize_Sound(90));
             done = 1;
             break;
-          } else {
-            Play_Sample(scold1, 255, Options.Normalize_Sound(90));
           }
+          Play_Sample(scold1, 255, Options.Normalize_Sound(90));
         }
       }
     }
@@ -1149,7 +1147,7 @@ void Map_Selection() {
     ** the palette down
     */
     CCFileClass("DARK_E.PAL").Read(localpalette, 768);
-//		Load_Data("DARK_E.PAL", localpalette, 768);
+    //		Load_Data("DARK_E.PAL", localpalette, 768);
     InterpolationPaletteChanged = true;
     InterpolationPalette = localpalette;
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);

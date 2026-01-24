@@ -690,8 +690,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
 
           if (*this == INFANTRY_SPY) {
             int housespy = 1 << House->Class->House;
-            //						tech->House->IsSpied =
-            // true;
 
             if (tech->Trigger.Is_Valid()) {
               tech->Trigger->Spring(TEVENT_SPIED, this);
@@ -732,16 +730,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
                   */
                   if (IsOwnedByPlayer || bldg->IsOwnedByPlayer)
                     Speak(VOX_MONEY_STOLEN);
-#ifdef OBSOLETE
-                  long capacity = bldg->Class->Capacity * 256;
-                  capacity /= (bldg->House->Tiberium + 1);
-                  int bldgcap = bldg->Class->Capacity;
-
-                  long cash = (bldgcap * 256) / (capacity + 1);
-                  if (cash > (bldgcap / 2)) cash = bldgcap / 2;
-#else
                   long cash = bldg->House->Available_Money() / 2;
-#endif
                   bldg->House->Spend_Money(cash);
                   House->Refund_Money(cash);
                 }
@@ -752,112 +741,12 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         BEnd(BENCH_PCP);
         delete this;
         return;
-
-      } else {
-#ifdef OBSOLETE
-        // are we trying to repair a bridge?
-        if (Is_Target_Cell(TarCom)) {
-          CELL cell = Coord_Cell(Coord);
-          if (cell == ::As_Cell(NavCom)) {
-            TemplateType tt = cellptr->TType;
-            int icon = cellptr->TIcon;
-            int w = TemplateTypeClass::As_Reference(cellptr->TType).Width;
-            int h = TemplateTypeClass::As_Reference(cellptr->TType).Height;
-
-            cell -= icon % w;
-            cell -= MAP_CELL_W * (icon / w);
-            if (tt == TEMPLATE_BRIDGE1D || tt == TEMPLATE_BRIDGE2D) {
-              new TemplateClass(TemplateType(cellptr->TType - 1), cell);
-              Map.Zone_Reset(MZONEF_ALL);
-              delete this;
-              return;
-            } else {
-              // Trying to repair multi-segment bridge.  Look for the
-              // start tile, then fix it, and determine the direction to
-              // go in and repair it all that way.
-              TemplateType newtt = TEMPLATE_BRIDGE_1A;
-              int xmov = -1;  // coords to move to for next template
-              int ymov = 2;
-              bool valid = false;
-              switch (tt) {
-                case TEMPLATE_BRIDGE_1B:
-                case TEMPLATE_BRIDGE_1C:
-                  valid = true;
-                  break;
-                case TEMPLATE_BRIDGE_2B:
-                case TEMPLATE_BRIDGE_2C:
-                  newtt = TEMPLATE_BRIDGE_2A;
-                  xmov = 2;
-                  ymov = -1;
-                  valid = true;
-                  break;
-                case TEMPLATE_BRIDGE_3C:
-                case TEMPLATE_BRIDGE_3D:
-                  newtt = TEMPLATE_BRIDGE_3A;
-                  valid = true;
-                  break;
-                case TEMPLATE_BRIDGE_3E:
-                  newtt = TEMPLATE_BRIDGE_3A;
-                  xmov = 2;
-                  ymov = -1;
-                  valid = true;
-                  break;
-              }
-
-              // Did we find a valid repairable bridge piece?
-              if (valid) {
-                bool doing = true;
-                while (doing) {
-                  new TemplateClass(TemplateType(newtt), cell);
-                  cell += (MAP_CELL_W * ymov) + xmov;
-                  if (xmov < 0) {
-                    xmov = -1;
-                    ymov = 1;
-                  } else {
-                    xmov = 1;
-                    ymov = -1;
-                  }
-                  cellptr = &Map[cell];
-                  tt = cellptr->TType;
-                  if ((tt >= TEMPLATE_BRIDGE_3B && tt <= TEMPLATE_BRIDGE_3F) ||
-                      tt == TEMPLATE_BRIDGE_1B || tt == TEMPLATE_BRIDGE_1C ||
-                      tt == TEMPLATE_BRIDGE_2B || tt == TEMPLATE_BRIDGE_2C) {
-                    if (tt >= TEMPLATE_BRIDGE_3B) {
-                      newtt = TEMPLATE_BRIDGE_3A;
-                    } else {
-                      if (tt < TEMPLATE_BRIDGE_2A) {
-                        newtt = TEMPLATE_BRIDGE_1A;
-                      } else {
-                        newtt = TEMPLATE_BRIDGE_2A;
-                      }
-                    }
-                    icon = cellptr->TIcon;
-                    w = TemplateTypeClass::As_Reference(cellptr->TType).Width;
-                    h = TemplateTypeClass::As_Reference(cellptr->TType).Height;
-
-                    cell -= icon % w;
-                    cell -= MAP_CELL_W * (icon / w);
-                  } else {
-                    doing = false;
-                  }
-                }
-                Map.Zone_Reset(MZONEF_ALL);
-                delete this;
-                return;
-              }
-            }
-          }
-        } else {
-#endif
-          if (!Target_Legal(NavCom)) {
-            Enter_Idle_Mode();
-            if (Map[Coord].Cell_Building()) {
-              Scatter(0, true);
-            }
-          }
-#ifdef OBSOLETE
+      }
+      if (!Target_Legal(NavCom)) {
+        Enter_Idle_Mode();
+        if (Map[Coord].Cell_Building()) {
+          Scatter(0, true);
         }
-#endif
       }
     }
 
@@ -897,28 +786,27 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         Scatter(building->Center_Coord(), true, true);  // RUN AWAY!
         BEnd(BENCH_PCP);
         return;
-      } else {
-        if (::As_Target(Coord_Cell(Center_Coord())) == NavCom) {
-          Explosion_Damage(Coord, Rule.BridgeStrength, this, WARHEAD_HE);
+      }
+      if (::As_Target(Coord_Cell(Center_Coord())) == NavCom) {
+        Explosion_Damage(Coord, Rule.BridgeStrength, this, WARHEAD_HE);
 
-          Stop_Driver();
-          Scatter(Adjacent_Cell(Coord, PrimaryFacing), true, true);
-          Assign_Mission(MISSION_MOVE);
+        Stop_Driver();
+        Scatter(Adjacent_Cell(Coord, PrimaryFacing), true, true);
+        Assign_Mission(MISSION_MOVE);
 
-          if (!Target_Legal(NavCom) ||
-              Map[As_Cell(NavCom)].Land_Type() == LAND_WATER) {
-            Mark(MARK_DOWN);  // Needed only so that Tanya will get destroyed by
-                              // the explosion.
-          }
-          Explosion_Damage(Coord, Rule.BridgeStrength, nullptr, WARHEAD_HE);
-          Explosion_Damage(Coord, Rule.BridgeStrength, nullptr, WARHEAD_HE);
-          if (!IsActive) {
-            BEnd(BENCH_PCP);
-            return;
-          }
-
-          Mark(MARK_DOWN);
+        if (!Target_Legal(NavCom) ||
+            Map[As_Cell(NavCom)].Land_Type() == LAND_WATER) {
+          Mark(MARK_DOWN);  // Needed only so that Tanya will get destroyed by
+                            // the explosion.
         }
+        Explosion_Damage(Coord, Rule.BridgeStrength, nullptr, WARHEAD_HE);
+        Explosion_Damage(Coord, Rule.BridgeStrength, nullptr, WARHEAD_HE);
+        if (!IsActive) {
+          BEnd(BENCH_PCP);
+          return;
+        }
+
+        Mark(MARK_DOWN);
       }
     }
 
@@ -993,7 +881,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     }
     Look(true);
 
-#if 1
     /*
     **	If after all is said and done, the unit finishes its move on an
     *impassable cell, then *	it must presume that it is in the case of a unit
@@ -1008,7 +895,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
       Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
       return;
     }
-#endif
   }
 
   if (IsActive) {
@@ -1386,13 +1272,12 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
         if (*dynamic_cast<BuildingClass*>(obj) == STRUCT_AVMINE) {
           obj = obj->Next;
           continue;
-        } else {
-          if (!Rule.IsMineAware ||
-              !dynamic_cast<BuildingClass*>(obj)->House->Is_Ally(House)) {
-            if (*dynamic_cast<BuildingClass*>(obj) == STRUCT_APMINE) {
-              obj = obj->Next;
-              continue;
-            }
+        }
+        if (!Rule.IsMineAware ||
+            !dynamic_cast<BuildingClass*>(obj)->House->Is_Ally(House)) {
+          if (*dynamic_cast<BuildingClass*>(obj) == STRUCT_APMINE) {
+            obj = obj->Next;
+            continue;
           }
         }
       }
@@ -1613,42 +1498,40 @@ short const* InfantryClass::Overlap_List(bool) const
     return Coord_Spillage_List(
         Coord, 24 + (Doing == DO_DOG_MAUL ? 40 : 0) +
                    (Doing >= DO_GUN_DEATH && Doing <= DO_FIRE_DEATH ? 40 : 0));
-  } else {
-    /*
-    **	The default infantry rectangle will be as large as the largest shape the
-    *infantry *	can be.
-    */
+  }
+  /*
+   **	The default infantry rectangle will be as large as the largest shape the
+   *infantry *	can be.
+   */
 
 #ifdef PARTIAL
-    Rect rect(-16, -24, 32, 36);
+  Rect rect(-16, -24, 32, 36);
 
-    /*
-    **	If this is for a visual change redraw, then the overlap list will be
-    *based *	on the actual dimensions of the shape data. If the dimensions
-    *have already *	been calculated then use them, otherwise, use the
-    *default large rectangle *	previously created.
-    */
-    if (Height == 0 && !IsSelected && redraw &&
-        Class->DimensionData != nullptr) {
-      int shapenum = Shape_Number();
-      if (!Class->DimensionData[shapenum].Is_Valid()) {
-        Class->DimensionData[shapenum] =
-            Shape_Dimensions(Get_Image_Data(), shapenum);
-      }
-      rect = Class->DimensionData[shapenum];
-      rect.Y += 4;
-      rect.X -= 2;
+  /*
+  **	If this is for a visual change redraw, then the overlap list will be
+  *based *	on the actual dimensions of the shape data. If the dimensions
+  *have already *	been calculated then use them, otherwise, use the
+  *default large rectangle *	previously created.
+  */
+  if (Height == 0 && !IsSelected && redraw && Class->DimensionData != nullptr) {
+    int shapenum = Shape_Number();
+    if (!Class->DimensionData[shapenum].Is_Valid()) {
+      Class->DimensionData[shapenum] =
+          Shape_Dimensions(Get_Image_Data(), shapenum);
     }
-    return Coord_Spillage_List(Coord, rect, true);
+    rect = Class->DimensionData[shapenum];
+    rect.Y += 4;
+    rect.X -= 2;
+  }
+  return Coord_Spillage_List(Coord, rect, true);
 #else
 
-    static Rect rect(-16, -24, 32, 36);
-    return (Coord_Spillage_List(Coord, rect, true));
+  static Rect rect(-16, -24, 32, 36);
+  return (Coord_Spillage_List(Coord, rect, true));
 #endif
 
-    //		return(Coord_Spillage_List(Coord, 24 /*+ ((Doing > DO_WALK ||
-    // IsSelected)?12:0)*/ ));
-  }
+  //		return(Coord_Spillage_List(Coord, 24 /*+ ((Doing > DO_WALK ||
+  // IsSelected)?12:0)*/ ));
 }
 
 /***********************************************************************************************
@@ -2807,13 +2690,12 @@ ActionType InfantryClass::What_Action(ObjectClass const* object) const {
           return ACTION_NO_GREPAIR;
         }
         return ACTION_GREPAIR;
-      } else {
-        if (bldg->Class->IsCaptureable) {
-          if (bldg->Health_Ratio() <= EngineerCaptureLevel) {
-            return ACTION_CAPTURE;
-          }
-          return ACTION_DAMAGE;
+      }
+      if (bldg->Class->IsCaptureable) {
+        if (bldg->Health_Ratio() <= EngineerCaptureLevel) {
+          return ACTION_CAPTURE;
         }
+        return ACTION_DAMAGE;
       }
     }
   }
@@ -2885,9 +2767,8 @@ ActionType InfantryClass::What_Action(ObjectClass const* object) const {
     if (obj->Class->IsRepairable) {
       //		if (*obj != STRUCT_BARREL && *obj != STRUCT_BARREL3) {
       return ACTION_SABOTAGE;
-    } else {
-      return ACTION_ATTACK;
     }
+    return ACTION_ATTACK;
   }
 
   /*

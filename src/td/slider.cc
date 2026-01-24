@@ -238,18 +238,16 @@ int SliderClass::Action(unsigned flags, KeyNumType& key) {
       GaugeClass::Action(0, key);
       key = KN_NONE;
       return true;
-    } else {
-      if (mouse > edge + ThumbStart + ThumbSize) {
-        Bump(false);
-        GaugeClass::Action(0, key);
-        key = KN_NONE;
-        return true;
-      } else {
-        GaugeClass::Action(flags, key);
-        key = KN_NONE;
-        return true;
-      }
     }
+    if (mouse > edge + ThumbStart + ThumbSize) {
+      Bump(false);
+      GaugeClass::Action(0, key);
+      key = KN_NONE;
+      return true;
+    }
+    GaugeClass::Action(flags, key);
+    key = KN_NONE;
+    return true;
   }
 
   /*

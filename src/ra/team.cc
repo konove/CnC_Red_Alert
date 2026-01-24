@@ -645,9 +645,8 @@ void TeamClass::AI() {
       Target = ::As_Target(dest);
       Coordinate_Move();
       return;
-    } else {
-      Zone = TARGET_NONE;
     }
+    Zone = TARGET_NONE;
   }
 
   /*
@@ -2310,15 +2309,13 @@ bool TeamClass::Coordinate_Conscript(FootClass* unit) {
         unit->Assign_Destination(Zone);
       }
       return true;
-
-    } else {
-      /*
-      **	This unit has gotten close enough to the team center so that it
-      *is *	now considered initiated. An initiated unit is considered when
-      *calculating *	the center of the team.
-      */
-      unit->IsInitiated = true;
     }
+    /*
+     **	This unit has gotten close enough to the team center so that it
+     *is *	now considered initiated. An initiated unit is considered when
+     *calculating *	the center of the team.
+     */
+    unit->IsInitiated = true;
   }
   return false;
 }
