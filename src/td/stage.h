@@ -98,8 +98,8 @@ class StageClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() { return; }
-  void Decode_Pointers() { return; }
+  void Code_Pointers() {}
+  void Decode_Pointers() {}
 };
 
 #endif
