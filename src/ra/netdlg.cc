@@ -7736,7 +7736,6 @@ static int Net_Fake_New_Dialog() {
     Ipx.Mono_Debug_Print(-1, 0);
 #endif
 
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -7746,7 +7745,7 @@ static int Net_Fake_New_Dialog() {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
+
     //.....................................................................
     //	Refresh display if needed
     //.....................................................................
@@ -8001,15 +8000,9 @@ static int Net_Fake_New_Dialog() {
         }
 
         Session.GPacket.ScenarioInfo.FileLength = file.Size();
-#ifdef WOLAPI_INTEGRATION
         port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
-#else
-        port::SafeCopy(
-            Session.GPacket.ScenarioInfo.ShortFileName,
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
-#endif
         strncpy((char*)Session.GPacket.ScenarioInfo.FileDigest,
                 Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
                 sizeof(Session.GPacket.ScenarioInfo.FileDigest));
@@ -8521,7 +8514,6 @@ static int Net_Fake_Join_Dialog() {
   //	Processing loop
   //------------------------------------------------------------------------
   while (process) {
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -8531,7 +8523,7 @@ static int Net_Fake_Join_Dialog() {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
+
     //.....................................................................
     //	Refresh display if needed
     //.....................................................................
