@@ -214,8 +214,7 @@ class TTimerClass : public BasicTimerClass<T> {
 };
 
 template <class T>
-TTimerClass<T>::TTimerClass(NoInitClass const& x)
-    : BasicTimerClass<T>(x) {}
+TTimerClass<T>::TTimerClass(NoInitClass const& x) : BasicTimerClass<T>(x) {}
 
 /***********************************************************************************************
  * TTimerClass<T>::TTimerClass -- Constructor for timer class object. *
@@ -418,8 +417,7 @@ class CDTimerClass : public BasicTimerClass<T> {
 };
 
 template <class T>
-CDTimerClass<T>::CDTimerClass(NoInitClass const& x)
-    : BasicTimerClass<T>(x) {}
+CDTimerClass<T>::CDTimerClass(NoInitClass const& x) : BasicTimerClass<T>(x) {}
 
 /***********************************************************************************************
  * CDTimerClass<T>::CDTimerClass -- Constructor for count down timer. *

@@ -138,8 +138,7 @@ GadgetClass* NullModemClass::Commands;  // button list
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 NullModemClass::NullModemClass(int numsend, int numreceive, int maxlen,
-                               unsigned short magicnum)
-    : ConnManClass() {
+                               unsigned short magicnum) {
   /*------------------------------------------------------------------------
   Init Port to NULL; we haven't opened Greenleaf yet.
   ------------------------------------------------------------------------*/

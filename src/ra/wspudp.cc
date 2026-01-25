@@ -91,7 +91,7 @@ typedef int socklen_t;
  *                                                                                             *
  * HISTORY: * 8/5/97 12:11PM ST : Created *
  *=============================================================================================*/
-UDPInterfaceClass::UDPInterfaceClass() : WinsockInterfaceClass() {}
+UDPInterfaceClass::UDPInterfaceClass() {}
 
 /***********************************************************************************************
  * UDPIC::~UDPInterfaceClass -- UDPInterface class destructor *
@@ -186,8 +186,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   ** Bind our UDP socket to our UDP port number
   */
   addr.sin_family = AF_INET;
-  addr.sin_port =
-      htons(static_cast<unsigned short>(PlanetWestwoodPortNumber));
+  addr.sin_port = htons(static_cast<unsigned short>(PlanetWestwoodPortNumber));
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if (bind(Socket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {

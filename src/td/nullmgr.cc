@@ -71,7 +71,6 @@
 #include "sdllib/include/wwstd.h"
 #include "td/combuf.h"
 #include "td/connect.h"
-#include "td/connmgr.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
@@ -143,8 +142,7 @@ GadgetClass* NullModemClass::Commands;  // button list
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 NullModemClass::NullModemClass(int numsend, int numreceive, int maxlen,
-                               unsigned short magicnum)
-    : ConnManClass() {
+                               unsigned short magicnum) {
   /*------------------------------------------------------------------------
   Init Port to NULL; we haven't opened Greenleaf yet.
   ------------------------------------------------------------------------*/

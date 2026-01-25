@@ -130,12 +130,7 @@ void CCFileClass::Error(int, int, char const*) {
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
 CCFileClass::CCFileClass(char const* filename)
-    : CDFileClass(),
-      FromDisk(false),
-      Pointer(nullptr),
-      Position(0),
-      Length(0),
-      Start(0) {
+    : FromDisk(false), Pointer(nullptr), Position(0), Length(0), Start(0) {
   Set_Name(filename);
 }
 

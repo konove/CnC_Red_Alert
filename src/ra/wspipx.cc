@@ -70,7 +70,7 @@
  *                                                                                             *
  * HISTORY: * 8/4/97 11:41AM ST : Created *
  *=============================================================================================*/
-IPXInterfaceClass::IPXInterfaceClass() : WinsockInterfaceClass() {
+IPXInterfaceClass::IPXInterfaceClass() {
   /*
   ** Set the net and node addressed to their default values.
   */
