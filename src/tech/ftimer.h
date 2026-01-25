@@ -101,7 +101,7 @@ class BasicTimerClass {
 };
 
 template <class T>
-inline BasicTimerClass<T>::BasicTimerClass(NoInitClass const&) {}
+BasicTimerClass<T>::BasicTimerClass(NoInitClass const&) {}
 
 /***********************************************************************************************
  * BasicTimerClass<T>::BasicTimerClass -- Constructor for basic timer class. *
@@ -123,11 +123,11 @@ inline BasicTimerClass<T>::BasicTimerClass(NoInitClass const&) {}
 // lint -esym(1403,BasicTimerClass<class FrameTimerClass>::Timer)
 // lint -esym(1403,BasicTimerClass<class SystemTimerClass>::Timer)
 template <class T>
-inline BasicTimerClass<T>::BasicTimerClass(unsigned long set)
+BasicTimerClass<T>::BasicTimerClass(unsigned long set)
     : Started(Timer() - set) {}
 
 template <class T>
-inline unsigned long BasicTimerClass<T>::Value() const {
+unsigned long BasicTimerClass<T>::Value() const {
   return Timer() - Started;
 }
 
@@ -148,7 +148,7 @@ inline unsigned long BasicTimerClass<T>::Value() const {
  * HISTORY: * 02/05/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline BasicTimerClass<T>::operator unsigned long() const {
+BasicTimerClass<T>::operator unsigned long() const {
   return Timer() - Started;
 }
 
@@ -169,7 +169,7 @@ inline BasicTimerClass<T>::operator unsigned long() const {
  * HISTORY: * 02/05/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline unsigned long BasicTimerClass<T>::operator()() const {
+unsigned long BasicTimerClass<T>::operator()() const {
   return Timer() - Started;
 }
 
@@ -214,7 +214,7 @@ class TTimerClass : public BasicTimerClass<T> {
 };
 
 template <class T>
-inline TTimerClass<T>::TTimerClass(NoInitClass const& x)
+TTimerClass<T>::TTimerClass(NoInitClass const& x)
     : BasicTimerClass<T>(x) {}
 
 /***********************************************************************************************
@@ -233,7 +233,7 @@ inline TTimerClass<T>::TTimerClass(NoInitClass const& x)
  * HISTORY: * 02/05/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline TTimerClass<T>::TTimerClass(unsigned long set)
+TTimerClass<T>::TTimerClass(unsigned long set)
     : BasicTimerClass<T>(set), Accumulated(0) {}
 
 /***********************************************************************************************
@@ -252,7 +252,7 @@ inline TTimerClass<T>::TTimerClass(unsigned long set)
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline unsigned long TTimerClass<T>::Value() const {
+unsigned long TTimerClass<T>::Value() const {
   unsigned long value = Accumulated;
   if (this->Started != 0xFFFFFFFFU) {
     value += BasicTimerClass<T>::Value();
@@ -277,7 +277,7 @@ inline unsigned long TTimerClass<T>::Value() const {
  * HISTORY: * 02/05/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline TTimerClass<T>::operator unsigned long() const {
+TTimerClass<T>::operator unsigned long() const {
   unsigned long value = Accumulated;
   if (this->Started != 0xFFFFFFFFU) {
     value += BasicTimerClass<T>::Value();
@@ -303,7 +303,7 @@ inline TTimerClass<T>::operator unsigned long() const {
  * HISTORY: * 02/05/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline unsigned long TTimerClass<T>::operator()() const {
+unsigned long TTimerClass<T>::operator()() const {
   unsigned long value = Accumulated;
   if (this->Started != 0xFFFFFFFFU) {
     value += BasicTimerClass<T>::Value();
@@ -371,7 +371,7 @@ void TTimerClass<T>::Start() {
  * HISTORY: * 02/06/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline bool TTimerClass<T>::Is_Active() const {
+bool TTimerClass<T>::Is_Active() const {
   return this->Started != 0xFFFFFFFFU;
 }
 
@@ -418,7 +418,7 @@ class CDTimerClass : public BasicTimerClass<T> {
 };
 
 template <class T>
-inline CDTimerClass<T>::CDTimerClass(NoInitClass const& x)
+CDTimerClass<T>::CDTimerClass(NoInitClass const& x)
     : BasicTimerClass<T>(x) {}
 
 /***********************************************************************************************
@@ -438,7 +438,7 @@ inline CDTimerClass<T>::CDTimerClass(NoInitClass const& x)
  * HISTORY: * 02/06/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline CDTimerClass<T>::CDTimerClass(unsigned long set)
+CDTimerClass<T>::CDTimerClass(unsigned long set)
     : BasicTimerClass<T>(0), DelayTime(set) {}
 
 /***********************************************************************************************
@@ -457,7 +457,7 @@ inline CDTimerClass<T>::CDTimerClass(unsigned long set)
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline unsigned long CDTimerClass<T>::Value() const {
+unsigned long CDTimerClass<T>::Value() const {
   unsigned long remain = DelayTime;
   if (this->Started != 0xFFFFFFFFU) {
     unsigned long value = BasicTimerClass<T>::Value();
@@ -487,7 +487,7 @@ inline unsigned long CDTimerClass<T>::Value() const {
  * HISTORY: * 02/06/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline CDTimerClass<T>::operator unsigned long() const {
+CDTimerClass<T>::operator unsigned long() const {
   unsigned long remain = DelayTime;
   if (this->Started != 0xFFFFFFFFU) {
     unsigned long value = BasicTimerClass<T>::Value();
@@ -517,7 +517,7 @@ inline CDTimerClass<T>::operator unsigned long() const {
  * HISTORY: * 02/06/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline unsigned long CDTimerClass<T>::operator()() const {
+unsigned long CDTimerClass<T>::operator()() const {
   unsigned long remain = DelayTime;
   if (this->Started != 0xFFFFFFFFU) {
     unsigned long value = BasicTimerClass<T>::Value();
@@ -590,7 +590,7 @@ void CDTimerClass<T>::Start() {
  * HISTORY: * 02/06/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline bool CDTimerClass<T>::Is_Active() const {
+bool CDTimerClass<T>::Is_Active() const {
   return this->Started != 0xFFFFFFFFU;
 }
 

@@ -31,7 +31,7 @@ enum BlitFlags {
 };
 
 // the one in jshell isn't const enough
-inline constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
+constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
   return static_cast<BlitFlags>((int)t1 | (int)t2);
 }
 
@@ -95,11 +95,10 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
 // single helper that handles all combinations
 // templated on flags to avoid writing every combination
 template <int flags>
-inline void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
-                        uint8_t* dst_offset, int src_adjust_width,
-                        int dst_adjust_width, uint8_t* Translucent,
-                        uint8_t* IsTranslucent, int FadingNum,
-                        uint8_t* FadingTable) {
+void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
+                 uint8_t* dst_offset, int src_adjust_width,
+                 int dst_adjust_width, uint8_t* Translucent,
+                 uint8_t* IsTranslucent, int FadingNum, uint8_t* FadingTable) {
   do {
     // original asm unrolled this 32 times
     for (int x = 0; x < pixel_count; x++) {
