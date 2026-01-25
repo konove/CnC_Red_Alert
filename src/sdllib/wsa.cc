@@ -376,7 +376,9 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
     return false;
   }
 
-  if (view.Lock() != true) return false;
+  if (!view.Lock()) {
+    return false;
+  }
 
   // Decide if we are going to a page or a viewport (part of a buffer).
   dest_width = view.Get_Width() + view.Get_XAdd() + view.Get_Pitch();

@@ -285,7 +285,7 @@ bool RadarClass::Radar_Activate(int control) {
     ** Toggle the state of the radar map on or off.
     */
     case -1: {
-      int temp = IsRadarActive == false;
+      int temp = !static_cast<bool>(IsRadarActive);
       if (temp) {
         Radar_Activate(1);
       } else {
@@ -302,7 +302,7 @@ bool RadarClass::Radar_Activate(int control) {
           Sound_Effect(VOC_RADAR_OFF);
           IsRadarDeactivating = true;
           IsRadarActive = false;
-          if (IsRadarActivating == true) {
+          if (static_cast<bool>(IsRadarActivating)) {
             IsRadarActivating = false;
           } else {
             RadarAnimFrame = RADAR_ACTIVATED_FRAME;
@@ -318,7 +318,7 @@ bool RadarClass::Radar_Activate(int control) {
         if (!IsRadarActivating && !IsRadarActive) {
           Sound_Effect(VOC_RADAR_ON);
           IsRadarActivating = true;
-          if (IsRadarDeactivating == true) {
+          if (static_cast<bool>(IsRadarDeactivating)) {
             IsRadarDeactivating = false;
           } else {
             if (DoesRadarExist) {
@@ -990,10 +990,7 @@ bool RadarClass::Is_Zoomable() const {
   int xfactor = RadIWidth / MapCellWidth;
   int yfactor = RadIHeight / MapCellHeight;
   int factor = std::max(std::min(xfactor, yfactor), 1);
-  if (factor == 3) {
-    return false;
-  }
-  return true;
+  return factor != 3;
 }
 
 /***********************************************************************************************
@@ -1286,7 +1283,7 @@ void RadarClass::Cursor_Cell(CELL cell, int value) {
       /*
       **	If we are erasing then erase the cell.
       */
-      if (value == false) {
+      if (!static_cast<bool>(value)) {
         Plot_Radar_Pixel(cell);
       }
     }
@@ -2199,8 +2196,8 @@ bool RadarClass::Cell_On_Radar(CELL cell) {
   if (!IsZoomed) {
     return true;
   }
-  return !(Cell_X(cell) - RadarX > RadarCellWidth ||
-           Cell_Y(cell) - RadarY > RadarCellHeight);
+  return Cell_X(cell) - RadarX <= RadarCellWidth &&
+         Cell_Y(cell) - RadarY <= RadarCellHeight;
 }
 
 /***********************************************************************************************

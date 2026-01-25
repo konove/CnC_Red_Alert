@@ -109,13 +109,13 @@ static int Select_To_Entry(int select, unsigned long bitfield, int index) {
   int placement;
 
   if (bitfield == 0xFFFFFFFFL) /* if all bits are set	*/
-    return select;           /*		then it as is		*/
+    return select;             /*		then it as is		*/
 
-  placement = 0;                                /* current pos zero		*/
-  while (select) {                              /* while still ones		*/
+  placement = 0;                              /* current pos zero		*/
+  while (select) {                            /* while still ones		*/
     if (bitfield & 1L << (placement + index)) /* if this flagged then	*/
-      select--;                                 /* decrement counter		*/
-    placement++;                                /* and we moved a place	*/
+      select--;                               /* decrement counter		*/
+    placement++;                              /* and we moved a place	*/
   }
   while (!(bitfield & 1L << (placement + index))) {
     placement++;
@@ -236,8 +236,8 @@ void Setup_Menu(int menu, char const* text[], unsigned long field, int index,
   int *menuptr, lp;
   int menuy, menux, idx, item, num, drawy;
 
-  menuptr = &MenuList[menu][0];    /* get pointer to menu	*/
-  menuy = WinY + menuptr[MENUY];   /* get the absolute 		*/
+  menuptr = &MenuList[menu][0];  /* get pointer to menu	*/
+  menuy = WinY + menuptr[MENUY]; /* get the absolute 		*/
   menux = WinX + menuptr[MENUX]; /*		coords of menu		*/
   item = Select_To_Entry(menuptr[MSELECTED], field, index);
   num = menuptr[ITEMSHIGH];
@@ -247,10 +247,9 @@ void Setup_Menu(int menu, char const* text[], unsigned long field, int index,
   for (lp = 0; lp < num; lp++) {
     idx = Select_To_Entry(lp, field, index);
     drawy = menuy + lp * FontHeight + lp * skip;
-    Plain_Text_Print(
-        text[idx], menux, drawy,
-        menuptr[idx == item && MenuUpdate ? HILITE : NORMCOL], TBLACK,
-        TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(text[idx], menux, drawy,
+                     menuptr[idx == item && MenuUpdate ? HILITE : NORMCOL],
+                     TBLACK, TPF_8POINT | TPF_DROPSHADOW);
     //		if ((idx==item) && (MenuUpdate ))
     //			Text_Print(text[idx], menux, drawy, menuptr[HILITE],
     // TBLACK);
@@ -277,7 +276,7 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
   menuskip = FontHeight + MenuSkip; /* calc new font height	*/
   halfskip = MenuSkip >> 1;         /* adjustment for menus	*/
 
-  menuy = WinY + menuptr[MENUY];   /* get the absolute 		*/
+  menuy = WinY + menuptr[MENUY]; /* get the absolute 		*/
   menux = WinX + menuptr[MENUX]; /*		coords of menu		*/
   normcol = menuptr[NORMCOL];
   litcol = menuptr[HILITE];
@@ -306,7 +305,7 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
   **	out the new selected item, and continue forward.
   */
   mx1 = WinX + menuptr[MENUX] * FontWidth; /* get menu coords
-                                                */
+                                            */
   my1 = WinY + menuptr[MENUY] -
         halfskip; /*		from the menu		*/
   mx2 = mx1 + menuptr[ITEMWIDTH] * FontWidth -
@@ -889,7 +888,7 @@ int Main_Menu(unsigned long) {
 
           break;
         }
-        if (Is_Counterstrike_Installed() == true) {
+        if (Is_Counterstrike_Installed()) {
           if ((Keyboard->Down(KN_LSHIFT) || Keyboard->Down(KN_RSHIFT)) &&
               Coordinates_In_Region(Keyboard->MouseQX, Keyboard->MouseQY,
                                     260 * RESFACTOR, 0, 320 * RESFACTOR,

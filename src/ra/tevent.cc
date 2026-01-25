@@ -180,9 +180,10 @@ void EventChoiceClass::Draw_It(int, int x, int y, int width, int height,
     Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
                             _tabs);
   } else {
-    Conquer_Clip_Text_Print(Description(), x, y,
-                            selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
-                            TBLACK, flags, width, _tabs);
+    Conquer_Clip_Text_Print(
+        Description(), x, y,
+        selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
+        TBLACK, flags, width, _tabs);
   }
 }
 
@@ -256,23 +257,16 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   */
   switch (Event) {
     case TEVENT_GLOBAL_SET:
-      if (!Scen.GlobalFlags[Data.Value]) return false;
-      return true;
+      return Scen.GlobalFlags[Data.Value];
 
     case TEVENT_GLOBAL_CLEAR:
-      if (Scen.GlobalFlags[Data.Value]) return false;
-      return true;
+      return !Scen.GlobalFlags[Data.Value];
 
     case TEVENT_MISSION_TIMER_EXPIRED:
-      //			if (MissionSuspend == -1 || MissionTimer != 0)
-      // return(false);
-      if (!Scen.MissionTimer.Is_Active() || Scen.MissionTimer != 0)
-        return false;
-      return true;
+      return Scen.MissionTimer.Is_Active() && Scen.MissionTimer == 0;
 
     case TEVENT_TIME:
-      if (td.Timer != 0) return false;
-      return true;
+      return td.Timer == 0;
   }
 
   /*
@@ -366,8 +360,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Ensure that there are no fake structures left.
       */
       case TEVENT_FAKES_DESTROYED:
-        if (hptr->BScan & (STRUCTF_FAKECONST | STRUCTF_FAKEWEAP))
-          return false;
+        if (hptr->BScan & (STRUCTF_FAKECONST | STRUCTF_FAKEWEAP)) return false;
         break;
 
       /*

@@ -272,11 +272,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
   *normal rearm times apply -- this is *	what is desired for non two
   *shooters.
   */
-  if (Class->IsTwoShooter) {
-    IsSecondShot = false;
-  } else {
-    IsSecondShot = true;
-  }
+  IsSecondShot = Class->IsTwoShooter == 0;
   Ammo = Class->MaxAmmo;
   AttacksRemaining = 3;
   Altitude = FLIGHT_LEVEL;

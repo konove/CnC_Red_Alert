@@ -76,7 +76,7 @@
 SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
                          int belong_to_list)
     : GaugeClass(id, x, y, w, h) {
-  BelongToList = belong_to_list ? true : false;
+  BelongToList = belong_to_list != 0;
 
   PlusGadget = nullptr;
   MinusGadget = nullptr;

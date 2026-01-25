@@ -841,7 +841,7 @@ static void Assign_Houses() {
   **	For all houses not assigned to a player, set them up for computer use
   */
   for (i = 0; i < MPlayerMax; i++) {
-    if (house_used[i] == false) {
+    if (!house_used[i]) {
       /*
       **	Set the house, preferred house (GDI/NOD), and color; get a
       *pointer *	to the house instance
@@ -850,7 +850,7 @@ static void Assign_Houses() {
       pref_house = static_cast<HousesType>(IRandom(0, 1) + (int)HOUSE_GOOD);
       for (;;) {
         color = Random_Pick(REMAP_FIRST, REMAP_LAST);
-        if (color_used[color] == false) {
+        if (!color_used[color]) {
           break;
         }
       }
@@ -904,7 +904,7 @@ static void Remove_AI_Players() {
   for (i = 0; i < MAX_PLAYERS; i++) {
     house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
-    if (housep->IsHuman == false) {
+    if (!static_cast<bool>(housep->IsHuman)) {
       housep->Clobber_All();
     }
   }

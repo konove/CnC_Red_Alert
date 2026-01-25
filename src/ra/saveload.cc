@@ -806,16 +806,12 @@ bool Load_Game(int id) {
     *different from *	a regular mission, examining of the scenario name is the
     *only way to tell.
     */
-    if (toupper(Scen.ScenarioName[0]) == 'S' &&
-        toupper(Scen.ScenarioName[1]) == 'C' &&
-        toupper(Scen.ScenarioName[2]) == 'A' &&
-        toupper(Scen.ScenarioName[3]) == '0' &&
-        toupper(Scen.ScenarioName[5]) == 'E' &&
-        toupper(Scen.ScenarioName[6]) == 'A') {
-      AntsEnabled = true;
-    } else {
-      AntsEnabled = false;
-    }
+    AntsEnabled = toupper(Scen.ScenarioName[0]) == 'S' &&
+                  toupper(Scen.ScenarioName[1]) == 'C' &&
+                  toupper(Scen.ScenarioName[2]) == 'A' &&
+                  toupper(Scen.ScenarioName[3]) == '0' &&
+                  toupper(Scen.ScenarioName[5]) == 'E' &&
+                  toupper(Scen.ScenarioName[6]) == 'A';
 
     if (Scen.Scenario == 1) {
       RequiredCD = -1;
@@ -1512,10 +1508,7 @@ static int Reconcile_Players() {
   // If all went well, our Session.NumPlayers value should now equal the value
   // from the saved game, minus any players we removed.
   //
-  if (Session.NumPlayers == Session.Players.Count()) {
-    return true;
-  }
-  return false;
+  return Session.NumPlayers == Session.Players.Count();
 }
 
 /***************************************************************************

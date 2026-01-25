@@ -161,10 +161,7 @@ bool BufferIOFileClass::Cache(long size, void* ptr) {
     //
     // if trying to cache again with size or ptr fail
     //
-    if (size || ptr) {
-      return false;
-    }
-    return true;
+    return size == 0 && ptr == nullptr;
   }
 
   if (Is_Available()) {

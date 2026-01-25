@@ -131,9 +131,7 @@ WeaponTypeClass::~WeaponTypeClass() {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-void* WeaponTypeClass::operator new(size_t) throw() {
-  return Weapons.Alloc();
-}
+void* WeaponTypeClass::operator new(size_t) throw() { return Weapons.Alloc(); }
 
 /***********************************************************************************************
  * WeaponTypeClass::operator delete -- Returns weapon type object back to
@@ -216,8 +214,9 @@ bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
     IsElectric = ini.Get_Bool(Name(), "Charges", IsElectric);
     IsTurboBoosted = ini.Get_Bool(Name(), "TurboBoost", IsTurboBoosted);
 
-    WarheadType wtype =
-        WarheadPtr != nullptr ? static_cast<WarheadType>(WarheadPtr->ID) : WARHEAD_NONE;
+    WarheadType wtype = WarheadPtr != nullptr
+                            ? static_cast<WarheadType>(WarheadPtr->ID)
+                            : WARHEAD_NONE;
     wtype = ini.Get_WarheadType(Name(), "Warhead", wtype);
     if (wtype != WARHEAD_NONE) {
       WarheadPtr = WarheadTypeClass::As_Pointer(wtype);
@@ -322,8 +321,5 @@ ThreatType WeaponTypeClass::Allowed_Threats() const {
 }
 
 bool WeaponTypeClass::Is_Wall_Destroyer() const {
-  if (WarheadPtr != nullptr && WarheadPtr->IsWallDestroyer) {
-    return true;
-  }
-  return false;
+  return WarheadPtr != nullptr && WarheadPtr->IsWallDestroyer;
 }

@@ -428,10 +428,7 @@ T IndexClass<T>::Fetch_Index(int id) const {
  *=============================================================================================*/
 template <class T>
 bool IndexClass<T>::Is_Archive_Same(int id) const {
-  if (Archive != nullptr && Archive->ID == id) {
-    return true;
-  }
-  return false;
+  return Archive != nullptr && Archive->ID == id;
 }
 
 /***********************************************************************************************

@@ -54,7 +54,7 @@ class GaugeClass : public ControlClass {
   virtual int Set_Maximum(int value);
   virtual int Set_Value(int value);
   virtual int Get_Value() const { return CurValue; }
-  virtual void Use_Thumb(int value) { HasThumb = value ? true : false; }
+  virtual void Use_Thumb(int value) { HasThumb = value != 0; }
 
   virtual int Thumb_Pixels() { return 8; }
 

@@ -4354,12 +4354,12 @@ static int Net_New_Dialog() {
       if (!strcmp(Session.Scenarios[i]->Description(), EngMisStr[j])) {
         // ajw Added Aftermath installed checks (before, it was
         // assumed). Add mission if it's available to us.
-        if (!((Is_Mission_Counterstrike(
-                   (char*)Session.Scenarios[i]->Get_Filename()) &&
-               !Is_Counterstrike_Installed()) ||
-              (Is_Mission_Aftermath(
-                   (char*)Session.Scenarios[i]->Get_Filename()) &&
-               !Is_Aftermath_Installed())))
+        if ((!Is_Mission_Counterstrike(
+                 (char*)Session.Scenarios[i]->Get_Filename()) ||
+             Is_Counterstrike_Installed()) &&
+            (!Is_Mission_Aftermath(
+                 (char*)Session.Scenarios[i]->Get_Filename()) ||
+             Is_Aftermath_Installed()))
 #if defined(GERMAN) || defined(FRENCH)
           scenariolist.Add_Item(EngMisStr[j + 1]);
 #else
@@ -4374,12 +4374,12 @@ static int Net_New_Dialog() {
       // assumed). Added officialness check. Add mission if
       // it's available to us.
       if (!Session.Scenarios[i]->Get_Official() ||
-          !((Is_Mission_Counterstrike(
-                 (char*)Session.Scenarios[i]->Get_Filename()) &&
-             !Is_Counterstrike_Installed()) ||
-            (Is_Mission_Aftermath(
-                 (char*)Session.Scenarios[i]->Get_Filename()) &&
-             !Is_Aftermath_Installed()))) {
+          ((!Is_Mission_Counterstrike(
+                (char*)Session.Scenarios[i]->Get_Filename()) ||
+            Is_Counterstrike_Installed()) &&
+           (!Is_Mission_Aftermath(
+                (char*)Session.Scenarios[i]->Get_Filename()) ||
+            Is_Aftermath_Installed()))) {
         scenariolist.Add_Item(Session.Scenarios[i]->Description());
       }
     }
@@ -9155,10 +9155,7 @@ bool Client_Remote_Connect() {
   Session.NetStealth = stealth;
   Session.NetOpen = 0;
 
-  if (rc == -1) {
-    return false;
-  }
-  return true;
+  return rc != -1;
 
 } /* end of Client_Remote_Connect */
 

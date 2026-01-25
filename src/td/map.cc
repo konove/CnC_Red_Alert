@@ -1104,7 +1104,7 @@ void MapClass::Logic() {
     int tries = 1;
     if (Special.IsTFast || GameToPlay != GAME_NORMAL) tries = 2;
     TiberiumScan = 0;
-    IsForwardScan = IsForwardScan == false;
+    IsForwardScan = !static_cast<bool>(IsForwardScan);
 
     /*
     **	Growth logic.

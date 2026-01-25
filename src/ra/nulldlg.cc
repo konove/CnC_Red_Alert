@@ -3414,12 +3414,12 @@ int Com_Scenario_Dialog(bool skirmish) {
       if (!strcmp(Session.Scenarios[i]->Description(), EngMisStr[j])) {
         // ajw Added Aftermath installed checks (before, it was
         // assumed). Add mission if it's available to us.
-        if (!((Is_Mission_Counterstrike(
-                   (char*)Session.Scenarios[i]->Get_Filename()) &&
-               !Is_Counterstrike_Installed()) ||
-              (Is_Mission_Aftermath(
-                   (char*)Session.Scenarios[i]->Get_Filename()) &&
-               !Is_Aftermath_Installed())))
+        if ((!Is_Mission_Counterstrike(
+                 (char*)Session.Scenarios[i]->Get_Filename()) ||
+             Is_Counterstrike_Installed()) &&
+            (!Is_Mission_Aftermath(
+                 (char*)Session.Scenarios[i]->Get_Filename()) ||
+             Is_Aftermath_Installed()))
 #if defined(GERMAN) || defined(FRENCH)
           scenariolist.Add_Item(EngMisStr[j + 1]);
 #else
@@ -3433,12 +3433,12 @@ int Com_Scenario_Dialog(bool skirmish) {
       // assumed). Added officialness check. Add mission if
       // it's available to us.
       if (!Session.Scenarios[i]->Get_Official() ||
-          !((Is_Mission_Counterstrike(
-                 (char*)Session.Scenarios[i]->Get_Filename()) &&
-             !Is_Counterstrike_Installed()) ||
-            (Is_Mission_Aftermath(
-                 (char*)Session.Scenarios[i]->Get_Filename()) &&
-             !Is_Aftermath_Installed())))
+          ((!Is_Mission_Counterstrike(
+                (char*)Session.Scenarios[i]->Get_Filename()) ||
+            Is_Counterstrike_Installed()) &&
+           (!Is_Mission_Aftermath(
+                (char*)Session.Scenarios[i]->Get_Filename()) ||
+            Is_Aftermath_Installed())))
         scenariolist.Add_Item(Session.Scenarios[i]->Description());
     }
   }

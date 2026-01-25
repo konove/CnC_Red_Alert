@@ -5009,7 +5009,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
   CHECK_EQ(Houses.ID(this), ID);
 
   bool shuffle =
-      !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
+      (Frame <= TICKS_PER_MINUTE || CurBuildings) && !Percent_Chance(33);
   bool forced = CurBuildings == 0;
   int index;
   for (index = 0; index < Aircraft.Count(); index++) {
@@ -7203,7 +7203,7 @@ void HouseClass::Write_INI(CCINIClass& ini) {
         ini.Put_Int(name, "IQ", p->Control.IQ);
       }
 
-      if (p->IsPlayerControl != false && p != PlayerPtr) {
+      if (static_cast<bool>(p->IsPlayerControl) && p != PlayerPtr) {
         ini.Put_Bool(name, "PlayerControl", p->IsPlayerControl);
       }
 
@@ -7445,11 +7445,7 @@ bool HouseClass::Is_Allowed_To_Ally(HousesType house) const {
   **	Alliance is not allowed if there wouldn't be any enemies left to
   **	fight.
   */
-  if (housecount == allycount + 1) {
-    return false;
-  }
-
-  return true;
+  return housecount != allycount + 1;
 }
 
 /***********************************************************************************************

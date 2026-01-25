@@ -354,8 +354,9 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
     }
   }
 
-  Sound_Effect(voc, static_cast<VolType>(Fixed_To_Cardinal(distance, Options.Volume)),
-               variation, pan_value);
+  Sound_Effect(
+      voc, static_cast<VolType>(Fixed_To_Cardinal(distance, Options.Volume)),
+      variation, pan_value);
 }
 
 /***********************************************************************************************
@@ -421,9 +422,9 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   **	If the sound data pointer is not null, then presume that it is valid.
   */
   if (ptr) {
-    return Play_Sample(
-        ptr, Fixed_To_Cardinal(SoundEffectName[voc].Priority, volume),
-        volume, pan_value);
+    return Play_Sample(ptr,
+                       Fixed_To_Cardinal(SoundEffectName[voc].Priority, volume),
+                       volume, pan_value);
   }
   return -1;
 }
@@ -630,9 +631,6 @@ void Stop_Speaking() {
  *=============================================================================================*/
 bool Is_Speaking() {
   Speak_AI();
-  if (SampleType != 0 &&
-      (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer))) {
-    return true;
-  }
-  return false;
+  return SampleType != 0 &&
+         (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer));
 }

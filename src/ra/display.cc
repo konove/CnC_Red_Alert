@@ -809,7 +809,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const* object,
   if (retval == -1) retval = false;
 
   if (house == PlayerPtr->Class->House) {
-    PassedProximity = retval != false;
+    PassedProximity = static_cast<bool>(retval);
   }
 
   /*
@@ -1013,11 +1013,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
     if (In_Radar(cell)) {
       cellptr = &(*this)[cell];
       cellptr->Redraw_Objects();
-      if (on) {
-        cellptr->IsCursorHere = true;
-      } else {
-        cellptr->IsCursorHere = false;
-      }
+      cellptr->IsCursorHere = on;
     }
   }
 
@@ -1727,10 +1723,10 @@ void DisplayClass::Draw_It(bool forced) {
       /*
       ** Work out which map edges need to be redrawn
       */
-      bool redraw_right = oldx < 0 ? true : false;   // Right hand edge
-      bool redraw_left = oldx > 0 ? true : false;    // Left hand edge
-      bool redraw_bottom = oldy < 0 ? true : false;  // Bottom edge
-      bool redraw_top = oldy > 0 ? true : false;     // Top edge
+      bool redraw_right = oldx < 0;   // Right hand edge
+      bool redraw_left = oldx > 0;    // Left hand edge
+      bool redraw_bottom = oldy < 0;  // Bottom edge
+      bool redraw_top = oldy > 0;     // Top edge
 
       /*
       **	Blit any replicable block to avoid having to drawstamp.
@@ -3528,7 +3524,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             *formation *	so if a selected object isn't of a FootClass
             *type then it can't be *	a formation move.
             */
-            if (tobject->Is_Foot() == false) {
+            if (!tobject->Is_Foot()) {
               FormMove = false;
               break;
             }
@@ -3927,7 +3923,7 @@ void DisplayClass::Sell_Mode_Control(int control) {
       break;
 
     case -1:
-      mode = IsSellMode == false;
+      mode = !static_cast<bool>(IsSellMode);
       break;
 
     case 1:
@@ -3969,7 +3965,7 @@ void DisplayClass::Repair_Mode_Control(int control) {
       break;
 
     case -1:
-      mode = IsRepairMode == false;
+      mode = !static_cast<bool>(IsRepairMode);
       break;
 
     case 1:

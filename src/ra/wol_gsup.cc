@@ -3639,19 +3639,18 @@ bool bSpecialAftermathScenario(const char* szScenarioDescription) {
   //	Returns true if szScenarioDescription matches one of the descriptions
   // for Aftermath multiplayer 	scenarios that have special Aftermath-only units
   //*embedded* within them.
-  if (strcmp(szScenarioDescription, "Booby Traps (Mega 8 players)") == 0 ||
-      strcmp(szScenarioDescription,
-             "Central Conflict Extreme (Mega 8 players)") == 0 ||
-      strcmp(szScenarioDescription, "Circles of Death (Mega 8 players)") == 0 ||
-      strcmp(szScenarioDescription, "Holy Grounds (Mega 8 players)") == 0 ||
-      strcmp(szScenarioDescription, "Island Wars Extreme (Mega 8 players)") ==
-          0 ||
-      strcmp(szScenarioDescription,
-             "King of the Hills Extreme (Mega 8 players)") == 0 ||
-      strcmp(szScenarioDescription, "The Hills Have Eyes (Mega 8 players)") ==
-          0)
-    return true;
-  return false;
+  return strcmp(szScenarioDescription, "Booby Traps (Mega 8 players)") == 0 ||
+         strcmp(szScenarioDescription,
+                "Central Conflict Extreme (Mega 8 players)") == 0 ||
+         strcmp(szScenarioDescription, "Circles of Death (Mega 8 players)") ==
+             0 ||
+         strcmp(szScenarioDescription, "Holy Grounds (Mega 8 players)") == 0 ||
+         strcmp(szScenarioDescription,
+                "Island Wars Extreme (Mega 8 players)") == 0 ||
+         strcmp(szScenarioDescription,
+                "King of the Hills Extreme (Mega 8 players)") == 0 ||
+         strcmp(szScenarioDescription,
+                "The Hills Have Eyes (Mega 8 players)") == 0;
 }
 
 //***********************************************************************************************

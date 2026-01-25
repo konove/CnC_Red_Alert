@@ -911,9 +911,6 @@ void Stop_Speaking() {
  *=============================================================================================*/
 bool Is_Speaking() {
   Speak_AI();
-  if (!Debug_Quiet && SampleType != 0 &&
-      (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer))) {
-    return true;
-  }
-  return false;
+  return !Debug_Quiet && SampleType != 0 &&
+         (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer));
 }

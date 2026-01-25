@@ -218,11 +218,7 @@ void Check_From_WChat(char* wchat_name) {
       return;
     }
 
-    if (strchr(key_string, '1')) {
-      PlanetWestwoodIsHost = true;
-    } else {
-      PlanetWestwoodIsHost = false;
-    }
+    PlanetWestwoodIsHost = strchr(key_string, '1') != nullptr;
 
     Special.IsFromWChat = true;
   }

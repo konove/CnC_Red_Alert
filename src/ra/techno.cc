@@ -410,13 +410,9 @@ bool TechnoClass::Can_Teleport_Here(CELL cell) const {
   **	cell is impassable, then it can't be teleported there.
   */
   TechnoTypeClass const* ttype = Techno_Type_Class();
-  if (!Map[cell].Is_Clear_To_Move(
-          ttype->Speed, true, true, -1,
-          ttype->Speed == SPEED_FLOAT ? MZONE_WATER : MZONE_NORMAL)) {
-    return false;
-  }
-
-  return true;
+  return Map[cell].Is_Clear_To_Move(
+      ttype->Speed, true, true, -1,
+      ttype->Speed == SPEED_FLOAT ? MZONE_WATER : MZONE_NORMAL);
 }
 
 /***********************************************************************************************
@@ -2951,7 +2947,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         */
         ObjectClass* object = As_Object(target);
         if (object != nullptr &&
-            (object->IsActive == false || object->Strength == 0)) {
+            (!static_cast<bool>(object->IsActive) || object->Strength == 0)) {
           target = TARGET_NONE;
         }
       }
@@ -3238,7 +3234,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
 
       Arm = Rearm_Delay(IsSecondShot, which);
       if (tclass.Is_Two_Shooter()) {
-        IsSecondShot = IsSecondShot == false;
+        IsSecondShot = !static_cast<bool>(IsSecondShot);
       }
 
       /*
@@ -3659,11 +3655,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   bool TechnoClass::Can_Player_Fire() const {
     assert(IsActive);
 
-    if (House->IsPlayerControl && Is_Techno() &&
-        Techno_Type_Class()->PrimaryWeapon != nullptr) {
-      return true;
-    }
-    return false;
+    return House->IsPlayerControl && Is_Techno() &&
+           Techno_Type_Class()->PrimaryWeapon != nullptr;
   }
 
   /***********************************************************************************************
@@ -6288,11 +6281,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    * HISTORY: * 07/29/1996 JLB : Created. *
    *=============================================================================================*/
   bool TechnoTypeClass::Is_Two_Shooter() const {
-    if (PrimaryWeapon != nullptr &&
-        (PrimaryWeapon == SecondaryWeapon || PrimaryWeapon->Burst > 1)) {
-      return true;
-    }
-    return false;
+    return PrimaryWeapon != nullptr &&
+           (PrimaryWeapon == SecondaryWeapon || PrimaryWeapon->Burst > 1);
   }
 
   /***********************************************************************************************

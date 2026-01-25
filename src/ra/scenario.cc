@@ -488,7 +488,7 @@ bool Read_Scenario(char* name) {
       ** Find out if the CD in the current drive is the Aftermath disc.
       */
       int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
-      if (!(Using_DVD() && cd_index == 5) && cd_index != 3) {
+      if ((!Using_DVD() || cd_index != 5) && cd_index != 3) {
         GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
         RequiredCD = 3;
         if (!Force_CD_Available(RequiredCD)) {  // force Aftermath CD in drive.
@@ -2085,7 +2085,7 @@ bool Read_Scenario_INI(char* fname, bool) {
     // up.
 
     int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
-    if (!(Using_DVD() && cd_index == 5) && cd_index != RequiredCD) {
+    if ((!Using_DVD() || cd_index != 5) && cd_index != RequiredCD) {
       if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
         SeenPage.Clear();
       }
@@ -2633,7 +2633,7 @@ void Assign_Houses() {
     //.....................................................................
     while (1) {
       color = Random_Pick(0, 7);
-      if (color_used[color] == false) {
+      if (!static_cast<bool>(color_used[color])) {
         break;
       }
     }
@@ -2699,7 +2699,7 @@ static void Remove_AI_Players() {
   for (i = 0; i < MAX_PLAYERS; i++) {
     house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
-    if (housep->IsHuman == false) {
+    if (!static_cast<bool>(housep->IsHuman)) {
       aicount++;
       if (aicount > Session.Options.AIPlayers) {
         housep->Clobber_All();

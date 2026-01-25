@@ -178,8 +178,8 @@ static SmudgeTypeClass const Bibx3(SMUDGE_BIB3, "BIB3", TXT_BIB, 2,
 SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, char const* ininame,
                                  int fullname, int width, int height,
                                  bool isbib, bool iscrater)
-    : ObjectTypeClass(RTTI_SMUDGETYPE, static_cast<int>(smudge), false, true, false, false,
-                      true, true, false, fullname, ininame),
+    : ObjectTypeClass(RTTI_SMUDGETYPE, static_cast<int>(smudge), false, true,
+                      false, false, true, true, false, fullname, ininame),
       Type(smudge),
       Width(width),
       Height(height),
@@ -429,10 +429,7 @@ void SmudgeTypeClass::Prep_For_Add() {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType) const {
-  if (new SmudgeClass(Type, Cell_Coord(cell))) {
-    return true;
-  }
-  return false;
+  return new SmudgeClass(Type, Cell_Coord(cell)) != nullptr;
 }
 
 /***********************************************************************************************

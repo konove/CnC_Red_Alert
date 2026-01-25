@@ -2532,8 +2532,7 @@ void FootClass::AI() {
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
 bool FootClass::Is_On_Priority_Mission() const {
-  if (Mission == MISSION_ENTER) return true;
-  return false;
+  return Mission == MISSION_ENTER;
 }
 
 /***********************************************************************************************

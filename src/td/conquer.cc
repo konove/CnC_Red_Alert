@@ -1256,12 +1256,8 @@ void Call_Back() {
               if (!NetProtect) {
                 msg_ok = true;
               } else {
-                if (GPacket.Message.NameCRC ==
-                    Compute_Name_CRC(MPlayerGameName)) {
-                  msg_ok = true;
-                } else {
-                  msg_ok = false;
-                }
+                msg_ok = GPacket.Message.NameCRC ==
+                         Compute_Name_CRC(MPlayerGameName);
               }
 
               if (msg_ok) {

@@ -982,7 +982,7 @@ bool SidebarClass::Activate(int control) {
   */
   switch (control) {
     case -1:
-      IsSidebarActive = IsSidebarActive == false;
+      IsSidebarActive = !static_cast<bool>(IsSidebarActive);
       break;
 
     case 1:

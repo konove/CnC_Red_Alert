@@ -797,10 +797,7 @@ void OverlayTypeClass::Prep_For_Add() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool OverlayTypeClass::Create_And_Place(CELL cell, HousesType) const {
-  if (new OverlayClass(Type, cell)) {
-    return true;
-  }
-  return false;
+  return new OverlayClass(Type, cell) != nullptr;
 }
 
 /***********************************************************************************************

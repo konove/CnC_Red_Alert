@@ -578,11 +578,7 @@ int main(int argc, char* argv[])
       char tempbuff[5];
       WWGetPrivateProfileString("Intro", "PlayIntro", "Yes", tempbuff, 4,
                                 buffer);
-      if (stricmp(tempbuff, "No") == 0 || SpawnedFromWChat) {
-        Special.IsFromInstall = false;
-      } else {
-        Special.IsFromInstall = true;
-      }
+      Special.IsFromInstall = stricmp(tempbuff, "No") != 0 && !SpawnedFromWChat;
       SlowPalette = WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer);
 
 #ifdef DEMO

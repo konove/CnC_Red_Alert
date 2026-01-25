@@ -174,7 +174,8 @@ void CellClass::Decode_Pointers() {
 
   for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
     if (Overlappers[index] != nullptr) {
-      Overlappers[index] = As_Object(static_cast<TARGET>((intptr_t)Overlappers[index]));
+      Overlappers[index] =
+          As_Object(static_cast<TARGET>((intptr_t)Overlappers[index]));
       assert(Overlappers[index] != nullptr);
     }
   }
@@ -352,9 +353,7 @@ bool MouseClass::Save(Pipe& file) const {
     cellptr++;
   }
 
-  if (count != 0) return false;
-
-  return true;
+  return count == 0;
 }
 
 /***********************************************************************************************
@@ -410,7 +409,8 @@ void DisplayClass::Decode_Pointers() {
   *here *	either.  These have to be done as last-minute fixups.
   */
   if (PendingObjectPtr) {
-    PendingObjectPtr = As_Object(static_cast<TARGET>((intptr_t)PendingObjectPtr));
+    PendingObjectPtr =
+        As_Object(static_cast<TARGET>((intptr_t)PendingObjectPtr));
     assert(PendingObjectPtr != nullptr);
   }
 

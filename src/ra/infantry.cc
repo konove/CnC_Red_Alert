@@ -249,11 +249,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
   *normal rearm times apply -- this is *	what is desired for non two
   *shooters.
   */
-  if (Class->Is_Two_Shooter()) {
-    IsSecondShot = false;
-  } else {
-    IsSecondShot = true;
-  }
+  IsSecondShot = !Class->Is_Two_Shooter();
   Strength = Class->MaxStrength;
 
   /*
@@ -1981,11 +1977,7 @@ bool InfantryClass::Stop_Driver() {
     }
   }
 
-  if (Can_Enter_Cell(Coord_Cell(Coord)) == MOVE_OK) {
-    IsZoneCheat = false;
-  } else {
-    IsZoneCheat = true;
-  }
+  IsZoneCheat = Can_Enter_Cell(Coord_Cell(Coord)) != MOVE_OK;
 
   return FootClass::Stop_Driver();
 }

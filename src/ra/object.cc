@@ -1694,7 +1694,7 @@ bool ObjectClass::Mark(MarkType mark) {
     ** Handle adding or removing the object in the cells' overlap lists
     */
     if (mark == MARK_OVERLAP_UP) {
-      if (IsDown == true) {
+      if (static_cast<bool>(IsDown)) {
         if (Class_Of().IsFootprint) {
           Map.Overlap_Up(Coord_Cell(Coord), this);
         }
@@ -1703,7 +1703,7 @@ bool ObjectClass::Mark(MarkType mark) {
       }
     }
     if (mark == MARK_OVERLAP_DOWN) {
-      if (IsDown == true) {
+      if (static_cast<bool>(IsDown)) {
         if (Class_Of().IsFootprint) {
           Map.Overlap_Down(Coord_Cell(Coord), this);
         }

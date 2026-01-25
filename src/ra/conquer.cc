@@ -1785,12 +1785,8 @@ void IPX_Call_Back() {
             if (!Session.NetProtect) {
               msg_ok = true;
             } else {
-              if (Session.GPacket.Message.NameCRC ==
-                  Compute_Name_CRC(Session.GameName)) {
-                msg_ok = true;
-              } else {
-                msg_ok = false;
-              }
+              msg_ok = Session.GPacket.Message.NameCRC ==
+                       Compute_Name_CRC(Session.GameName);
             }
 
             if (msg_ok) {

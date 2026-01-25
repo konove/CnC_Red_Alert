@@ -988,11 +988,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
     if (In_Radar(cell)) {
       cellptr = &(*this)[cell];
       cellptr->Redraw_Objects();
-      if (on) {
-        cellptr->IsCursorHere = true;
-      } else {
-        cellptr->IsCursorHere = false;
-      }
+      cellptr->IsCursorHere = on;
     }
   }
 
@@ -1847,10 +1843,10 @@ void DisplayClass::Draw_It(bool forced) {
       /*
       ** Work out which map edges need to be redrawn
       */
-      bool redraw_right = oldx < 0 ? true : false;   // Right hand edge
-      bool redraw_left = oldx > 0 ? true : false;    // Left hand edge
-      bool redraw_bottom = oldy < 0 ? true : false;  // Bottom edge
-      bool redraw_top = oldy > 0 ? true : false;     // Top edge
+      bool redraw_right = oldx < 0;   // Right hand edge
+      bool redraw_left = oldx > 0;    // Left hand edge
+      bool redraw_bottom = oldy < 0;  // Bottom edge
+      bool redraw_top = oldy > 0;     // Top edge
 
       // Colour_Debug(2);
       /*
@@ -3637,7 +3633,7 @@ void DisplayClass::Sell_Mode_Control(int control) {
       break;
 
     case -1:
-      mode = IsSellMode == false;
+      mode = !static_cast<bool>(IsSellMode);
       break;
 
     case 1:
@@ -3679,7 +3675,7 @@ void DisplayClass::Repair_Mode_Control(int control) {
       break;
 
     case -1:
-      mode = IsRepairMode == false;
+      mode = !static_cast<bool>(IsRepairMode);
       break;
 
     case 1:

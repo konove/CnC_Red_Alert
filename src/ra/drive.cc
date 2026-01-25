@@ -1630,13 +1630,7 @@ void DriveClass::Lay_Track() {
 void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
   assert(IsActive);
 
-  int value;
-
-  if (type == MARK_UP) {
-    value = false;
-  } else {
-    value = true;
-  }
+  const bool value = type != MARK_UP;
 
   if (headto) {
     if (!IsOnShortTrack && TrackNumber != -1) {

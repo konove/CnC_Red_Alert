@@ -649,11 +649,7 @@ int NonSequencedConnClass::Service_Send_Queue() {
   /*------------------------------------------------------------------------
   If the connection is going bad, return an error
   ------------------------------------------------------------------------*/
-  if (bad_conn) {
-    // Smart_Printf( "Connection going bad!!! \n" );
-    return false;
-  }
-  return true;
+  return bad_conn == 0;
 }
 
 /***************************************************************************

@@ -1311,7 +1311,7 @@ bool ObjectClass::Mark(MarkType mark) {
     */
     if (mark == MARK_CHANGE) {
       if (IsToDisplay) return false;
-      if (IsDown == true) {
+      if (static_cast<bool>(IsDown)) {
         Mark_For_Redraw();
         return true;
       }
@@ -1322,14 +1322,14 @@ bool ObjectClass::Mark(MarkType mark) {
     ** Handle adding or removing the object in the cells' overlap lists
     */
     if (mark == MARK_OVERLAP_UP) {
-      if (IsDown == true) {
+      if (static_cast<bool>(IsDown)) {
         Map.Overlap_Up(Coord_Cell(Coord), this);
         Mark_For_Redraw();
         return true;
       }
     }
     if (mark == MARK_OVERLAP_DOWN) {
-      if (IsDown == true) {
+      if (static_cast<bool>(IsDown)) {
         Map.Overlap_Down(Coord_Cell(Coord), this);
         Mark_For_Redraw();
         return true;

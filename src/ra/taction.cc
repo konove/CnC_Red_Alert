@@ -220,9 +220,10 @@ void ActionChoiceClass::Draw_It(int, int x, int y, int width, int height,
     Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
                             _tabs);
   } else {
-    Conquer_Clip_Text_Print(Description(), x, y,
-                            selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
-                            TBLACK, flags, width, _tabs);
+    Conquer_Clip_Text_Print(
+        Description(), x, y,
+        selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
+        TBLACK, flags, width, _tabs);
   }
 }
 
@@ -467,11 +468,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	build bases and units.
     */
     case TACTION_BASE_BUILDING:
-      if (Data.Bool) {
-        hptr->IsBaseBuilding = true;
-      } else {
-        hptr->IsBaseBuilding = false;
-      }
+      hptr->IsBaseBuilding = Data.Bool;
       break;
 
     /*
@@ -868,9 +865,7 @@ TActionType Action_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-char const* Name_From_Action(TActionType action) {
-  return ActionText[action];
-}
+char const* Name_From_Action(TActionType action) { return ActionText[action]; }
 
 /***********************************************************************************************
  * Action_Needs -- Figures out what data an action object needs. *

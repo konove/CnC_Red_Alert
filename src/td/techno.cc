@@ -1881,7 +1881,8 @@ void TechnoClass::Assign_Target(TARGET target) {
       **	Make sure that the target is not already dead.
       */
       ObjectClass* object = As_Object(target);
-      if (object && (object->IsActive == false || object->Strength == 0)) {
+      if (object &&
+          (!static_cast<bool>(object->IsActive) || object->Strength == 0)) {
         target = kTargetNone;
       }
     }
@@ -2023,7 +2024,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     }
     Arm = Rearm_Delay(IsSecondShot);
     if (tclass.IsTwoShooter) {
-      IsSecondShot = IsSecondShot == false;
+      IsSecondShot = !static_cast<bool>(IsSecondShot);
     }
 
     /*
@@ -2327,11 +2328,8 @@ bool TechnoClass::Can_Player_Move() const { return PlayerPtr == House; }
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Can_Player_Fire() const {
-  if (House->IsHuman && Is_Techno() &&
-      Techno_Type_Class()->Primary != WEAPON_NONE) {
-    return true;
-  }
-  return false;
+  return House->IsHuman && Is_Techno() &&
+         Techno_Type_Class()->Primary != WEAPON_NONE;
 }
 
 /***********************************************************************************************

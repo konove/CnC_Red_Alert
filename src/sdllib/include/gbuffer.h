@@ -429,12 +429,7 @@ inline bool GraphicViewPortClass::Lock() {
  * HISTORY: * 09-19-95 02:20pm ST : Created * 10/09/1995     : Moved actually
  *functionality to GraphicBuffer                            *
  *=============================================================================================*/
-inline bool GraphicViewPortClass::Unlock() {
-  bool unlock = GraphicBuff->Unlock();
-  if (!unlock) return false;
-
-  return true;
-}
+inline bool GraphicViewPortClass::Unlock() { return GraphicBuff->Unlock(); }
 
 /***************************************************************************
  * GVPC::GET_OFFSET -- Get offset for virtual view port class instance     *

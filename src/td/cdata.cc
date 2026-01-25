@@ -383,8 +383,7 @@ static TemplateTypeClass const Shore11(TEMPLATE_SHORE11,
 static TemplateTypeClass const Shore12(TEMPLATE_SHORE12,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "SH12", TXT_WATER, LAND_WATER, 3, 3,
-                                       LAND_BEACH,
-                                       _slope000001001);
+                                       LAND_BEACH, _slope000001001);
 static TemplateTypeClass const Shore13(TEMPLATE_SHORE13,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "SH13", TXT_WATER, LAND_WATER, 3, 3,
@@ -396,8 +395,7 @@ static TemplateTypeClass const Shore14(TEMPLATE_SHORE14,
 static TemplateTypeClass const Shore15(TEMPLATE_SHORE15,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "SH15", TXT_WATER, LAND_ROCK, 3, 3,
-                                       LAND_BEACH,
-                                       _slope000000101);
+                                       LAND_BEACH, _slope000000101);
 static TemplateTypeClass const Shore16(TEMPLATE_SHORE16,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "SH16", TXT_WATER, LAND_ROCK, 3, 2,
@@ -462,8 +460,7 @@ static TemplateTypeClass const Shore33(TEMPLATE_SHORE33,
 static TemplateTypeClass const Shore34(TEMPLATE_SHORE34,
                                        THEATERF_TEMPERATE | THEATERF_WINTER,
                                        "SH34", TXT_WATER, LAND_CLEAR, 3, 3,
-                                       LAND_WATER,
-                                       _slope001001001);
+                                       LAND_WATER, _slope001001001);
 static TemplateTypeClass const Shore35(TEMPLATE_SHORE35,
                                        THEATERF_TEMPERATE | THEATERF_WINTER,
                                        "SH35", TXT_WATER, LAND_CLEAR, 3, 3,
@@ -965,33 +962,37 @@ static TemplateTypeClass const Falls2(TEMPLATE_FALLS2,
 static TemplateTypeClass const Bridge1(TEMPLATE_BRIDGE1,
                                        THEATERF_WINTER | THEATERF_TEMPERATE,
                                        "BRIDGE1", TXT_RIVER, LAND_WATER, 4, 4,
-                                       LAND_CLEAR,
-                                       _slope00110010010011);
+                                       LAND_CLEAR, _slope00110010010011);
 static TemplateTypeClass const Bridge1d(TEMPLATE_BRIDGE1D,
                                         THEATERF_WINTER | THEATERF_TEMPERATE,
                                         "BRIDGE1D", TXT_RIVER, LAND_WATER, 4, 4,
+                                        LAND_CLEAR, _slope00110000000011);
+static TemplateTypeClass const Bridge2(TEMPLATE_BRIDGE2,
+                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       "BRIDGE2", TXT_RIVER, LAND_WATER, 5, 5,
+                                       LAND_CLEAR,
+                                       _slope1100001000001000001100011);
+static TemplateTypeClass const Bridge2d(TEMPLATE_BRIDGE2D,
+                                        THEATERF_WINTER | THEATERF_TEMPERATE,
+                                        "BRIDGE2D", TXT_RIVER, LAND_WATER, 5, 5,
                                         LAND_CLEAR,
-                                        _slope00110000000011);
-static TemplateTypeClass const Bridge2(
-    TEMPLATE_BRIDGE2, THEATERF_WINTER | THEATERF_TEMPERATE, "BRIDGE2",
-    TXT_RIVER, LAND_WATER, 5, 5, LAND_CLEAR,
-    _slope1100001000001000001100011);
-static TemplateTypeClass const Bridge2d(
-    TEMPLATE_BRIDGE2D, THEATERF_WINTER | THEATERF_TEMPERATE, "BRIDGE2D",
-    TXT_RIVER, LAND_WATER, 5, 5, LAND_CLEAR,
-    _slope1100000000000000001100011);
-static TemplateTypeClass const Bridge3(
-    TEMPLATE_BRIDGE3, THEATERF_DESERT, "BRIDGE3", TXT_RIVER, LAND_WATER, 6, 5,
-    LAND_CLEAR, _slope00011010010100100001000011);
-static TemplateTypeClass const Bridge3d(
-    TEMPLATE_BRIDGE3D, THEATERF_DESERT, "BRIDGE3D", TXT_RIVER, LAND_WATER, 6, 5,
-    LAND_CLEAR, _slope00011010000100000001000011);
-static TemplateTypeClass const Bridge4(
-    TEMPLATE_BRIDGE4, THEATERF_DESERT, "BRIDGE4", TXT_RIVER, LAND_WATER, 6, 4,
-    LAND_CLEAR, _slope01000000100000010000001);
-static TemplateTypeClass const Bridge4d(
-    TEMPLATE_BRIDGE4D, THEATERF_DESERT, "BRIDGE4D", TXT_RIVER, LAND_WATER, 6, 4,
-    LAND_CLEAR, _slope01000000000000000000001);
+                                        _slope1100000000000000001100011);
+static TemplateTypeClass const Bridge3(TEMPLATE_BRIDGE3, THEATERF_DESERT,
+                                       "BRIDGE3", TXT_RIVER, LAND_WATER, 6, 5,
+                                       LAND_CLEAR,
+                                       _slope00011010010100100001000011);
+static TemplateTypeClass const Bridge3d(TEMPLATE_BRIDGE3D, THEATERF_DESERT,
+                                        "BRIDGE3D", TXT_RIVER, LAND_WATER, 6, 5,
+                                        LAND_CLEAR,
+                                        _slope00011010000100000001000011);
+static TemplateTypeClass const Bridge4(TEMPLATE_BRIDGE4, THEATERF_DESERT,
+                                       "BRIDGE4", TXT_RIVER, LAND_WATER, 6, 4,
+                                       LAND_CLEAR,
+                                       _slope01000000100000010000001);
+static TemplateTypeClass const Bridge4d(TEMPLATE_BRIDGE4D, THEATERF_DESERT,
+                                        "BRIDGE4D", TXT_RIVER, LAND_WATER, 6, 4,
+                                        LAND_CLEAR,
+                                        _slope01000000000000000000001);
 
 TemplateTypeClass const* const TemplateTypeClass::Pointers[TEMPLATE_COUNT] = {
     &Clear,     // TEMPLATE_CLEAR1
@@ -1449,10 +1450,7 @@ void TemplateTypeClass::Prep_For_Add() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool TemplateTypeClass::Create_And_Place(CELL cell, HousesType) const {
-  if (new TemplateClass(Type, cell)) {
-    return true;
-  }
-  return false;
+  return new TemplateClass(Type, cell) != nullptr;
 }
 
 /***********************************************************************************************

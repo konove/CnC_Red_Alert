@@ -2581,7 +2581,7 @@ void BuildingClass::Repair(int control) {
 
   switch (control) {
     case -1:
-      IsRepairing = IsRepairing == false;
+      IsRepairing = !static_cast<bool>(IsRepairing);
       break;
 
     case 1:
@@ -3290,8 +3290,7 @@ bool BuildingClass::Can_Demolish() const {
 
   if (Class->Get_Buildup_Data() && BState != BSTATE_CONSTRUCTION &&
       Mission != MISSION_DECONSTRUCTION && Mission != MISSION_CONSTRUCTION) {
-    if (*this == STRUCT_REFINERY && Is_Something_Attached()) return false;
-    return true;
+    return *this != STRUCT_REFINERY || !Is_Something_Attached();
   }
   return false;
 }
@@ -5462,7 +5461,7 @@ void BuildingClass::Repair_AI() {
   **	If it is repairing, then apply any repair effects as necessary.
   */
   if (IsRepairing && Frame % (Rule.RepairRate * TICKS_PER_MINUTE) == 0) {
-    IsWrenchVisible = IsWrenchVisible == false;
+    IsWrenchVisible = !static_cast<bool>(IsWrenchVisible);
     Mark(MARK_CHANGE);
     int cost = Class->Repair_Cost();
     int step = Class->Repair_Step();

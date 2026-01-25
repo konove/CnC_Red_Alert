@@ -292,8 +292,7 @@ void SmudgeTypeClass::Init(TheaterType theater) {
       auto fullname = std::filesystem::path(smudge.IniName)
                           .replace_extension(Theaters[theater].Suffix)
                           .string();
-      (void const*&)smudge.ImageData =
-          MixFileClass::Retrieve(fullname.c_str());
+      (void const*&)smudge.ImageData = MixFileClass::Retrieve(fullname.c_str());
     }
   }
 }
@@ -378,10 +377,7 @@ void SmudgeTypeClass::Prep_For_Add() {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType) const {
-  if (new SmudgeClass(Type, Cell_Coord(cell))) {
-    return true;
-  }
-  return false;
+  return new SmudgeClass(Type, Cell_Coord(cell)) != nullptr;
 }
 
 /***********************************************************************************************

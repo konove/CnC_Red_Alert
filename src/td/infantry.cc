@@ -323,11 +323,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
   *normal rearm times apply -- this is *	what is desired for non two
   *shooters.
   */
-  if (Class->IsTwoShooter) {
-    IsSecondShot = false;
-  } else {
-    IsSecondShot = true;
-  }
+  IsSecondShot = Class->IsTwoShooter == 0;
   Doing = DO_NOTHING;
   Fear = 0;  // Starts completely brave.
   IsProne = false;

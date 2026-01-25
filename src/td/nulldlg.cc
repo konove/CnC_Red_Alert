@@ -162,11 +162,9 @@ static SerialSettingsType* DialSettings;
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 int Init_Null_Modem(SerialSettingsType* settings) {
-  if (NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
-                     settings->Baud, 0, 8, 1, settings->HardwareFlowControl)) {
-    return true;
-  }
-  return false;
+  return NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
+                        settings->Baud, 0, 8, 1,
+                        settings->HardwareFlowControl) != 0;
 }
 
 /***************************************************************************

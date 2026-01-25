@@ -326,7 +326,7 @@ bool Init_Game(int, char*[]) {
   //  Aftermath runtime change 9/29/98
   //	This is safe to do, as only rules for aftermath units are included in
   // this ini.
-  if (Is_Aftermath_Installed() == true) {
+  if (Is_Aftermath_Installed()) {
     CCFileClass fc("AFTRMATH.INI");
     if (AftermathINI.Load(fc, false)) {
       Rule.Process(AftermathINI);
@@ -3341,15 +3341,12 @@ bool Determine_If_Using_DVD() {
   // use it throughout the 	session. Else we won't check for it again and
   // will always ask for CDs.
   if (Is_DVD_Installed()) {
-    if (Force_CD_Available(5)) {
-      bUsingDVD = true;
-    } else {
-      //	User hit cancel. Allow things to progress normally. They will be
-      // prompted for 	a Red Alert disk as usual.
-      bUsingDVD = false;
-    }
-  } else
+    // User hit cancel. Allow things to progress normally. They will be
+    // prompted for a Red Alert disk as usual.
+    bUsingDVD = Force_CD_Available(5);
+  } else {
     bUsingDVD = false;
+  }
 
   return bUsingDVD;
 }

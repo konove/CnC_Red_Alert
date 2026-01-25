@@ -516,10 +516,7 @@ bool SessionClass::Am_I_Master() {
     house = static_cast<HousesType>((int)HOUSE_MULTI1 + i);
     hptr = HouseClass::As_Pointer(house);
     if (hptr->IsHuman) {
-      if (PlayerPtr == hptr) {
-        return true;
-      }
-      return false;
+      return PlayerPtr == hptr;
     }
   }
 

@@ -106,10 +106,7 @@ ProgressBarClass::ProgressBarClass(int x, int y, int width, int height,
  *                                                                                             *
  * HISTORY: * 08/16/1996 JLB : Created. *
  *=============================================================================================*/
-bool ProgressBarClass::Is_Horizontal() const {
-  if (Width > Height) return true;
-  return false;
-}
+bool ProgressBarClass::Is_Horizontal() const { return Width > Height; }
 
 /***********************************************************************************************
  * ProgressBarClass::Update -- Update the value and redraw as necessary. *

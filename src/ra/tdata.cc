@@ -326,16 +326,14 @@ static TerrainTypeClass const Clump4Class(
     XYP_COORD(44, 49),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "TC04", TXT_TREE, _List000011101000,
-    _List111000010110);
+    "TC04", TXT_TREE, _List000011101000, _List111000010110);
 
 static TerrainTypeClass const Clump5Class(
     TERRAIN_CLUMP5, THEATERF_TEMPERATE | THEATERF_SNOW,
     XYP_COORD(49, 58),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "TC05", TXT_TREE, _List001011100110,
-    _List110000011001);
+    "TC05", TXT_TREE, _List001011100110, _List110000011001);
 
 /***********************************************************************************************
  * TerrainTypeClass::TerrainTypeClass -- The general constructor for the terrain
@@ -357,8 +355,8 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
                                    bool is_water, char const* ininame,
                                    int fullname, short const* occupy,
                                    short const* overlap)
-    : ObjectTypeClass(RTTI_TERRAINTYPE, static_cast<int>(terrain), true, true, false, false,
-                      true, is_immune, true, fullname, ininame),
+    : ObjectTypeClass(RTTI_TERRAINTYPE, static_cast<int>(terrain), true, true,
+                      false, false, true, is_immune, true, fullname, ininame),
       Type(terrain),
       CenterBase(centerbase),
       Theater(theater),
@@ -624,10 +622,7 @@ void TerrainTypeClass::Prep_For_Add() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool TerrainTypeClass::Create_And_Place(CELL cell, HousesType) const {
-  if (new TerrainClass(Type, cell)) {
-    return true;
-  }
-  return false;
+  return new TerrainClass(Type, cell) != nullptr;
 }
 
 /***********************************************************************************************

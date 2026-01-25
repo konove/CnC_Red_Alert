@@ -168,13 +168,13 @@ int ToggleClass::Action(unsigned flags, KeyNumType& key) {
     flags &= ~LEFTPRESS;
     ControlClass::Action(flags, key);
     key = KN_NONE;  // erase the event
-    return true;  // stop processing other buttons now
+    return true;    // stop processing other buttons now
   }
 
   if (flags & LEFTRELEASE) {
     if (IsPressed) {
       if (IsToggleType && overbutton) {
-        IsOn = IsOn == false;
+        IsOn = !static_cast<bool>(IsOn);
       }
       IsPressed = false;
       Flag_To_Redraw();

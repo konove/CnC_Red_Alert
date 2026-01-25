@@ -324,11 +324,7 @@ DriveClass::DriveClass(UnitType classid, HousesType house)
   *normal rearm times apply -- this is *	what is desired for non two
   *shooters.
   */
-  if (Class->IsTwoShooter) {
-    IsSecondShot = false;
-  } else {
-    IsSecondShot = true;
-  }
+  IsSecondShot = Class->IsTwoShooter == 0;
   IsHarvesting = false;
   IsTurretLockedDown = false;
   IsOnShortTrack = false;
@@ -1528,11 +1524,7 @@ void DriveClass::Lay_Track() {
 void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
   int value;
 
-  if (type == MARK_UP) {
-    value = false;
-  } else {
-    value = true;
-  }
+  value = type != MARK_UP;
 
   if (headto) {
     if (!IsOnShortTrack && TrackNumber != -1) {

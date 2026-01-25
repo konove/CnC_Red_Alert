@@ -548,9 +548,7 @@ int LoadOptionsClass::Process() {
 
   Clear_List(&listbtn);
 
-  if (cancel) return false;
-
-  return true;
+  return !cancel;
 }
 
 /***********************************************************************************************

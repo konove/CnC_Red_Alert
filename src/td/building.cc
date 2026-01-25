@@ -1151,7 +1151,7 @@ void BuildingClass::AI() {
   */
   if (IsRepairing) {
     if (Frame % 15 == 0) {
-      IsWrenchVisible = IsWrenchVisible == false;
+      IsWrenchVisible = !static_cast<bool>(IsWrenchVisible);
       Mark(MARK_CHANGE);
       int cost = Class->Repair_Cost();
       int step = Class->Repair_Step();
@@ -1576,11 +1576,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
         **	remembering of this fact. The finale uses this information to
         **	play the correct movie.
         */
-        if (*this == STRUCT_TEMPLE && warhead == WARHEAD_PB) {
-          TempleIoned = true;
-        } else {
-          TempleIoned = false;
-        }
+        TempleIoned = *this == STRUCT_TEMPLE && warhead == WARHEAD_PB;
         break;
 
       case RESULT_HALF:
@@ -2723,7 +2719,7 @@ void BuildingClass::Repair(int control) {
   Validate();
   switch (control) {
     case -1:
-      IsRepairing = IsRepairing == false;
+      IsRepairing = !static_cast<bool>(IsRepairing);
       break;
 
     case 1:
@@ -3494,8 +3490,7 @@ bool BuildingClass::Can_Demolish() const {
   Validate();
   if (Class->Get_Buildup_Data() && BState != BSTATE_CONSTRUCTION &&
       !Mission != MISSION_DECONSTRUCTION && Mission != MISSION_CONSTRUCTION) {
-    if (*this == STRUCT_REFINERY && Is_Something_Attached()) return false;
-    return true;
+    return *this != STRUCT_REFINERY || !Is_Something_Attached();
   }
   return false;
 }
