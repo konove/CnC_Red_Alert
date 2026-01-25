@@ -131,7 +131,6 @@ extern bool PalettesRead;
 extern unsigned PaletteCounter;
 extern int AllDone;
 extern bool InMovie;
-extern WinTimerClass* WindowsTimer;
 extern WWMouseClass* WWMouse;
 extern GraphicBufferClass HiddenPage;
 #define SeenPage SeenBuff
@@ -174,7 +173,6 @@ extern VoxType SpeakQueue;
 extern bool PlayerWins;
 extern bool PlayerLoses;
 extern bool PlayerRestarts;
-extern std::uint64_t Frame;
 extern VoxType SpeechRecord[2];
 extern void* SpeechBuffer[2];
 extern int PreserveVQAScreen;
@@ -364,8 +362,8 @@ extern int LogLevel;
 extern unsigned long LogLevelTime[MAX_LOG_LEVEL];
 extern unsigned long LogLastTime;
 
-extern class DynamicVectorClass<EventChoiceClass> test2;
-extern class DynamicVectorClass<ActionChoiceClass> test3;
+extern DynamicVectorClass<EventChoiceClass> test2;
+extern DynamicVectorClass<ActionChoiceClass> test3;
 
 extern bool LogDump_Print;
 

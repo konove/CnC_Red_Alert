@@ -58,11 +58,11 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "ra/abstract.h"
 #include "ra/ccptr.h"
 #include "ra/coord.h"
 #include "ra/display.h"
 #include "ra/externs.h"
+#include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"

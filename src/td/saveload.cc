@@ -69,6 +69,7 @@
 #include "td/conquer.h"
 #include "td/externs.h"
 #include "td/factory.h"
+#include "td/globals.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"

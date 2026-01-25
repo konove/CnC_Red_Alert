@@ -74,7 +74,6 @@
 #include <cstring>
 
 #include "port/safe_string.h"
-#include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/base.h"
@@ -88,6 +87,7 @@
 #include "ra/compat.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
+#include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/egos.h"

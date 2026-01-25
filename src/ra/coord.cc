@@ -57,7 +57,6 @@
 
 #include <algorithm>
 
-#include "ra/abstract.h"
 #include "ra/const.h"
 #include "ra/display.h"
 #include "ra/inline.h"
@@ -299,8 +298,10 @@ short const* Coord_Spillage_List(COORDINATE coord, Rect const& rect,
   LEPTON_COMPOSITE starty;
   LEPTON_COMPOSITE endx;
   LEPTON_COMPOSITE endy;
-  startx.Raw = static_cast<int>(x) + static_cast<short>(Pixel_To_Lepton(rect.X));
-  starty.Raw = static_cast<int>(y) + static_cast<short>(Pixel_To_Lepton(rect.Y));
+  startx.Raw =
+      static_cast<int>(x) + static_cast<short>(Pixel_To_Lepton(rect.X));
+  starty.Raw =
+      static_cast<int>(y) + static_cast<short>(Pixel_To_Lepton(rect.Y));
   endx.Raw = startx.Raw + Pixel_To_Lepton(rect.Width - 1);
   endy.Raw = starty.Raw + Pixel_To_Lepton(rect.Height - 1);
 

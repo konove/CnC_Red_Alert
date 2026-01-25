@@ -128,6 +128,7 @@
 #include "td/facing.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
+#include "td/globals.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"

@@ -52,6 +52,7 @@
 #include "sdllib/include/wsa.h"
 #include "td/defines.h"
 #include "td/externs.h"
+#include "td/globals.h"
 
 #define SUBFRAMEOFFS 7  // 3 1/2 frame offsets loaded (2 offsets/frame)
 

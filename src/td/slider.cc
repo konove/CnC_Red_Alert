@@ -56,7 +56,7 @@
 #include "sdllib/include/ww_mouse.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
+#include "td/globals.h"
 #include "td/jshell.h"
 #include "td/mixfile.h"
 

@@ -94,7 +94,6 @@
 #include <cassert>
 #include <cstdlib>
 
-#include "ra/abstract.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -106,6 +105,7 @@
 #include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/foot.h"
+#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"

@@ -52,6 +52,7 @@
 #include "td/dialog.h"
 #include "td/externs.h"
 #include "td/gadget.h"
+#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/slider.h"
@@ -115,8 +116,7 @@ void VisualControlsClass::Process() {
   /*
   **	Centers options button.
   */
-  optionsbtn.X =
-      option_x + (option_width - optionsbtn.Width - 15 * RESFACTOR);
+  optionsbtn.X = option_x + (option_width - optionsbtn.Width - 15 * RESFACTOR);
   resetbtn.X = option_x + 15 * RESFACTOR;
 
   resetbtn.Add_Tail(optionsbtn);
@@ -243,8 +243,8 @@ void VisualControlsClass::Process() {
       */
       for (int i = 0; i < sizeof(_titles) / sizeof(_titles[0]); i++) {
         Fancy_Text_Print(
-            _titles[i], slider_x - 8 * RESFACTOR,
-            text_y + i * slider_y_spacing, CC_GREEN, TBLACK,
+            _titles[i], slider_x - 8 * RESFACTOR, text_y + i * slider_y_spacing,
+            CC_GREEN, TBLACK,
             TPF_6PT_GRAD | TPF_RIGHT | TPF_NOSHADOW |
                 (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));
       }

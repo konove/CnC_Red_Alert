@@ -48,6 +48,7 @@
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/house.h"

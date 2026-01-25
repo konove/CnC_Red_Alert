@@ -44,7 +44,7 @@
 
 #include <algorithm>
 
-#include "ra/abstract.h"
+#include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 

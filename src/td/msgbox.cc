@@ -56,6 +56,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"
+#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/text.h"
@@ -127,13 +128,11 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     **	Build the button list.
     */
     bheight = FontHeight + FontYSpacing + 2 * factor;
-    bwidth =
-        std::max<int>(String_Pixel_Width(b1txt) + 8 * factor, 30 * factor);
+    bwidth = std::max<int>(String_Pixel_Width(b1txt) + 8 * factor, 30 * factor);
 
     if (b2txt) {
       numbuttons = 2;
-      bwidth =
-          std::max<int>(String_Pixel_Width(b2txt) + 8 * factor, bwidth);
+      bwidth = std::max<int>(String_Pixel_Width(b2txt) + 8 * factor, bwidth);
 
       if (b3txt) {
         numbuttons = 3;
@@ -247,8 +246,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     /*
     **	Draw the caption.
     */
-    Fancy_Text_Print(buffer, x + 20 * factor, y + 25 * factor, CC_GREEN,
-                     TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    Fancy_Text_Print(buffer, x + 20 * factor, y + 25 * factor, CC_GREEN, TBLACK,
+                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
   }
 #endif
@@ -295,8 +294,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           /*
           **	Draw the caption.
           */
-          Fancy_Text_Print(buffer, x + 20 * factor, y + 25 * factor,
-                           CC_GREEN, TBLACK,
+          Fancy_Text_Print(buffer, x + 20 * factor, y + 25 * factor, CC_GREEN,
+                           TBLACK,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
         }

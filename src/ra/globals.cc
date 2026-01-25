@@ -116,8 +116,8 @@ bool Debug_Flag = false;
 bool Debug_Lose = false;
 bool Debug_Win = false;
 bool MapEditorActive = false;  // true = scenario/map editor is active
-bool Debug_Passable = false;  // true = show passable/impassable terrain
-bool Debug_Unshroud = false;  // true = hide the shroud
+bool Debug_Passable = false;   // true = show passable/impassable terrain
+bool Debug_Unshroud = false;   // true = hide the shroud
 bool Debug_Threat = false;
 bool Debug_Find_Path = false;
 bool Debug_Check_Map = false;  // true = validate the map each frame
@@ -262,7 +262,6 @@ fixed EngineerDamage = 0x55;       // Amount of damage an engineer does
 fixed EngineerCaptureLevel =
     0x40;  // Building damage level before engineer can capture
 
-#ifdef WIN32
 unsigned short Hard_Error_Occured = 0;
 WWMouseClass* WWMouse = nullptr;
 GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, nullptr);
@@ -271,9 +270,6 @@ int ScreenWidth = 640;
 int ScreenHeight = 400;
 GraphicBufferClass ModeXBuff;
 bool InMovie = false;  // Are we currently playing a VQ movie?
-#ifndef PORTABLE
-HANDLE hInstance;
-#endif
 int AllDone;
 
 /***************************************************************************
@@ -281,8 +277,6 @@ int AllDone;
 **
 */
 bool GameInFocus = false;
-
-#endif
 
 /***************************************************************************
 **	Encryption keys.

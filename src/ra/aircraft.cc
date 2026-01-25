@@ -112,7 +112,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "ra/abstract.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/bullet.h"

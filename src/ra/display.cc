@@ -108,7 +108,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"

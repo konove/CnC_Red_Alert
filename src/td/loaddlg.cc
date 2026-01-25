@@ -64,6 +64,7 @@
 #include "td/dialog.h"
 #include "td/edit.h"
 #include "td/externs.h"
+#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/init.h"
 #include "td/jshell.h"
@@ -682,8 +683,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   /*
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
-  qsort(&Files[0], Files.Count(), sizeof(class FileEntryClass*),
-        Compare);
+  qsort(&Files[0], Files.Count(), sizeof(class FileEntryClass*), Compare);
 
   /*
   ** Now add every file's name to the list box

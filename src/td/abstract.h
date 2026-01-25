@@ -45,12 +45,6 @@
 #include "td/inline.h"
 #include "tech/noinit.h"
 
-DirType Direction(CELL cell1, CELL cell2);
-DirType Direction(COORDINATE coord1, COORDINATE coord2);
-int Distance(COORDINATE coord1, COORDINATE coord2);
-int Distance(CELL coord1, CELL coord2);
-COORDINATE As_Coord(TARGET target);
-
 class AbstractClass {
  public:
   /*
@@ -94,9 +88,7 @@ class AbstractClass {
   DirType Direction(COORDINATE coord) const {
     return ::Direction(Center_Coord(), coord);
   }
-  DirType Direction(TARGET target) const {
-    return ::Direction(Center_Coord(), As_Coord(target));
-  }
+  DirType Direction(TARGET target) const;
   DirType Direction(CELL cell) const {
     return ::Direction(Coord_Cell(Center_Coord()), cell);
   }

@@ -68,7 +68,7 @@
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
+#include "td/globals.h"
 #include "td/jshell.h"
 
 GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)

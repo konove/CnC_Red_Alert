@@ -60,6 +60,7 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
+#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/interpal.h"

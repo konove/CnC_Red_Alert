@@ -57,6 +57,7 @@
 #include "td/dialog.h"
 #include "td/externs.h"
 #include "td/gadget.h"
+#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/list.h"
@@ -475,13 +476,12 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
     }
 
     Conquer_Clip_Text_Print(
-        static_cast<char*>(Add_Long_To_Pointer(List[index], 1)), x, y,
-                            CC_GREEN, TBLACK, flags, width, Tabs);
+        static_cast<char*>(Add_Long_To_Pointer(List[index], 1)), x, y, CC_GREEN,
+        TBLACK, flags, width, Tabs);
 
   } else {
     Conquer_Clip_Text_Print(
         static_cast<char*>(Add_Long_To_Pointer(List[index], 1)), x, y,
-                            selected ? BLUE : WHITE, TBLACK, TextFlags, width,
-                            Tabs);
+        selected ? BLUE : WHITE, TBLACK, TextFlags, width, Tabs);
   }
 }

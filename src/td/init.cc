@@ -103,7 +103,6 @@
 #include "td/scenario.h"
 #include "td/special.h"
 #include "td/tcpip.h"
-#include "td/text.h"
 #include "td/theme.h"
 #include "td/type.h"
 #include "tech/crc.h"

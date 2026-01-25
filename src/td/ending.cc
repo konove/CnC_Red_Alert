@@ -54,6 +54,7 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
+#include "td/globals.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
@@ -148,7 +149,8 @@ void Nod_Ending() {
   Score.Presentation();
 
   oldfont = Set_Font(ScoreFontPtr);
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
+  PseudoSeenBuff =
+      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
   TextPrintBuffer = new GraphicBufferClass(
       SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
   TextPrintBuffer->Clear();

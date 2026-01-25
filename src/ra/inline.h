@@ -85,7 +85,6 @@
 #include <cstdlib>
 #include <iterator>
 
-#include "ra/abstract.h"
 #include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -115,7 +114,8 @@
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline int Lepton_To_Pixel(LEPTON lepton) {
-  return (static_cast<int>((signed short)lepton) * ICON_PIXEL_W + ICON_LEPTON_W / 2) /
+  return (static_cast<int>((signed short)lepton) * ICON_PIXEL_W +
+          ICON_LEPTON_W / 2) /
          ICON_LEPTON_W;
 }
 
@@ -438,9 +438,11 @@ inline COORDINATE XYP_Coord(int x, int y) {
 inline COORDINATE Cell_Coord(CELL cell) {
   COORD_COMPOSITE coord;
 
-  coord.Sub.X.Sub.Cell = static_cast<unsigned char>(((CELL_COMPOSITE&)cell).Sub.X);
+  coord.Sub.X.Sub.Cell =
+      static_cast<unsigned char>(((CELL_COMPOSITE&)cell).Sub.X);
   coord.Sub.X.Sub.Lepton = static_cast<unsigned char>((CELL_LEPTON_W / 2));
-  coord.Sub.Y.Sub.Cell = static_cast<unsigned char>(((CELL_COMPOSITE&)cell).Sub.Y);
+  coord.Sub.Y.Sub.Cell =
+      static_cast<unsigned char>(((CELL_COMPOSITE&)cell).Sub.Y);
   coord.Sub.Y.Sub.Lepton = static_cast<unsigned char>((CELL_LEPTON_W / 2));
   return coord.Coord;
 }
@@ -530,9 +532,11 @@ inline COORDINATE Coord_Whole(COORDINATE coord) {
 inline COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2) {
   COORD_COMPOSITE coord;
 
-  coord.Sub.X.Raw = static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.X.Raw +
+  coord.Sub.X.Raw =
+      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.X.Raw +
                           (int)(short)((COORD_COMPOSITE&)coord2).Sub.X.Raw);
-  coord.Sub.Y.Raw = static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.Y.Raw +
+  coord.Sub.Y.Raw =
+      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.Y.Raw +
                           (int)(short)((COORD_COMPOSITE&)coord2).Sub.Y.Raw);
   return coord.Coord;
 }
@@ -558,9 +562,11 @@ inline COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2) {
 inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
   COORD_COMPOSITE coord;
 
-  coord.Sub.X.Raw = static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.X.Raw -
+  coord.Sub.X.Raw =
+      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.X.Raw -
                           (int)(short)((COORD_COMPOSITE&)coord2).Sub.X.Raw);
-  coord.Sub.Y.Raw = static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.Y.Raw -
+  coord.Sub.Y.Raw =
+      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.Y.Raw -
                           (int)(short)((COORD_COMPOSITE&)coord2).Sub.Y.Raw);
   return coord.Coord;
 }
@@ -584,10 +590,12 @@ inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
   COORD_COMPOSITE coord;
 
-  coord.Sub.X.Raw = static_cast<LEPTON>(((int)((COORD_COMPOSITE&)coord1).Sub.X.Raw +
+  coord.Sub.X.Raw =
+      static_cast<LEPTON>(((int)((COORD_COMPOSITE&)coord1).Sub.X.Raw +
                            (int)((COORD_COMPOSITE&)coord2).Sub.X.Raw) /
                           2);
-  coord.Sub.Y.Raw = static_cast<LEPTON>(((int)((COORD_COMPOSITE&)coord1).Sub.Y.Raw +
+  coord.Sub.Y.Raw =
+      static_cast<LEPTON>(((int)((COORD_COMPOSITE&)coord1).Sub.Y.Raw +
                            (int)((COORD_COMPOSITE&)coord2).Sub.Y.Raw) /
                           2);
   return coord.Coord;
@@ -733,29 +741,6 @@ inline DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
 }
 
 /***********************************************************************************************
- * Direction -- Calculates the DirType from one cell to another. *
- *                                                                                             *
- *    This routine will calculate the facing to get from one cell to another.
- *Since dealing    * with cells is much less precise than with coordinates, the
- *return value is only          * accurate to 8 facings. *
- *                                                                                             *
- * INPUT:   cell1 -- The cell to calculate the DirType from. *
- *                                                                                             *
- *          cell2 -- The cell to calculate the DirType to. *
- *                                                                                             *
- * OUTPUT:  Returns with the DirType to get from the first cell to the second. *
- *                                                                                             *
- * WARNINGS:   The return value is only accurate to the 8 primary compass rose
- *directions.     *
- *                                                                                             *
- * HISTORY: * 08/26/1996 JLB : Created. *
- *=============================================================================================*/
-inline DirType Direction(CELL cell1, CELL cell2) {
-  return Desired_Facing8(Cell_X(cell1), Cell_Y(cell1), Cell_X(cell2),
-                         Cell_Y(cell2));
-}
-
-/***********************************************************************************************
  * Adjacent_Cell -- Calculate the adjacent cell in the direction specified. *
  *                                                                                             *
  *    This will coerce the coordinate specified so that it will refer to the
@@ -773,7 +758,8 @@ inline DirType Direction(CELL cell1, CELL cell2) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir) {
-  return Coord_Snap(Coord_Add(AdjacentCoord[static_cast<int>(dir) & 0x07], coord));
+  return Coord_Snap(
+      Coord_Add(AdjacentCoord[static_cast<int>(dir) & 0x07], coord));
 }
 
 /***********************************************************************************************

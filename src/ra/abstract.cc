@@ -93,6 +93,10 @@ void AbstractClass::Debug_Dump(MonoClass* mono) const {
 }
 #endif
 
+DirType AbstractClass::Direction(const TARGET target) const {
+  return ::Direction(Center_Coord(), As_Coord(target));
+}
+
 /***********************************************************************************************
  * AbstractClass::Distance -- Determines distance to target. *
  *                                                                                             *

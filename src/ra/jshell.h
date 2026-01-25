@@ -46,6 +46,7 @@
 #include <vector>
 
 #include "ra/compat.h"
+#include "ra/globals.h"
 #include "ra/palette.h"
 #include "sdllib/include/buffer.h"
 #include "sdllib/include/iff.h"
@@ -348,30 +349,16 @@ extern void outport(int port, unsigned short data);
 **	Timer objects that fetch the appropriate timer value according to
 **	the type of timer they are.
 */
-extern std::uint64_t Frame;
 class FrameTimerClass {
  public:
   std::uint64_t operator()() const { return Frame; }
   operator std::uint64_t() const { return Frame; }
 };
 
-#ifndef WIN32
-extern bool TimerSystemOn;
-extern "C" {
-std::uint64_t Get_System_Tick_Count();
-std::uint64_t Get_User_Tick_Count();
-}
-// bool Init_Timer_System(unsigned int freq, int partial=false);
-bool Remove_Timer_System();
-#else
-extern WinTimerClass* WindowsTimer;
-#endif
-
 #ifndef SYSTEM_TIMER_CLASS
 #define SYSTEM_TIMER_CLASS
 class SystemTimerClass {
  public:
-#ifdef WIN32
   std::uint64_t operator()() const {
     if (!WindowsTimer) return 0;
     return WindowsTimer->Get_System_Tick_Count();
@@ -380,10 +367,6 @@ class SystemTimerClass {
     if (!WindowsTimer) return 0;
     return WindowsTimer->Get_System_Tick_Count();
   }
-#else
-  std::uint64_t operator()() const { return (Get_System_Tick_Count()); };
-  operator std::uint64_t() const { return (Get_System_Tick_Count()); };
-#endif
 };
 #endif
 

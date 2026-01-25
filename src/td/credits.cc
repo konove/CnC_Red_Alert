@@ -68,6 +68,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"
+#include "td/globals.h"
 #include "td/house.h"
 #include "td/jshell.h"
 #include "td/mouse.h"

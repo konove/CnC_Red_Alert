@@ -44,7 +44,6 @@
 
 #include <algorithm>
 
-#include "ra/abstract.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/defines.h"

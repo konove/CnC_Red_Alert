@@ -53,6 +53,7 @@
 #include "td/event.h"
 #include "td/externs.h"
 #include "td/gadget.h"
+#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/msgbox.h"
@@ -80,8 +81,8 @@ void GameControlsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 232 * factor;                               // dialog width
-  int d_dialog_h = 141 * factor;                               // dialog height
+  int d_dialog_w = 232 * factor;                             // dialog width
+  int d_dialog_h = 141 * factor;                             // dialog height
   int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y =
       (SeenBuff.Get_Height() - d_dialog_h) / 2;   // centered y-coord
@@ -99,8 +100,7 @@ void GameControlsClass::Process() {
   int d_scroll_w = d_dialog_w - 20 * factor;
   int d_scroll_h = 6 * factor;
   int d_scroll_x = d_dialog_x + 10 * factor;
-  int d_scroll_y =
-      d_speed_y + d_speed_h + d_txt6_h + d_margin1 * 2 + d_txt6_h;
+  int d_scroll_y = d_speed_y + d_speed_h + d_txt6_h + d_margin1 * 2 + d_txt6_h;
 
   int d_visual_w = d_dialog_w - 40 * factor;
   int d_visual_h = 9 * factor;

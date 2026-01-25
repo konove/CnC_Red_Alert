@@ -96,7 +96,6 @@
 #include <cassert>
 #include <cstring>
 
-#include "ra/abstract.h"
 #include "ra/building.h"
 #include "ra/cell.h"
 #include "ra/coord.h"

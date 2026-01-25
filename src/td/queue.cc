@@ -100,6 +100,7 @@
 #include "td/externs.h"
 #include "td/facing.h"
 #include "td/ftimer.h"
+#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"

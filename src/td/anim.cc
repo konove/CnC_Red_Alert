@@ -74,6 +74,7 @@
 #include "td/coord.h"
 #include "td/defines.h"
 #include "td/externs.h"
+#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/inline.h"

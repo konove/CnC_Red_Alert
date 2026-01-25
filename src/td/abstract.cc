@@ -30,6 +30,10 @@
 #include "td/target.h"
 #include "td/type.h"
 
+DirType AbstractClass::Direction(TARGET target) const {
+  return ::Direction(Center_Coord(), As_Coord(target));
+}
+
 int AbstractClass::Distance(const TARGET target) const {
   const BuildingClass* obj = As_Building(target);
   int dist = Distance(As_Coord(target));

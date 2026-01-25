@@ -62,7 +62,6 @@
 #include <cstddef>
 
 #include "port/ex_string.h"
-#include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/ccptr.h"

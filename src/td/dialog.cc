@@ -63,6 +63,7 @@
 #include "td/compat.h"
 #include "td/conquer.h"
 #include "td/externs.h"
+#include "td/globals.h"
 #include "td/mixfile.h"
 #include "td/text.h"
 
@@ -558,8 +559,7 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
         break;
     }
 
-    if (x < SeenBuff.Get_Width() &&
-        y < SeenBuff.Get_Height()) {
+    if (x < SeenBuff.Get_Width() && y < SeenBuff.Get_Height()) {
       LogicPage->Print(tempstr, x, y, fore, back);
     }
   }

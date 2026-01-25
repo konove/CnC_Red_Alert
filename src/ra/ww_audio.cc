@@ -52,7 +52,6 @@
 
 #include "absl/log/log.h"
 #include "port/ex_string.h"
-#include "ra/abstract.h"
 #include "ra/ccfile.h"
 #include "ra/coord.h"
 #include "ra/defines.h"

@@ -55,7 +55,6 @@
 
 #include "td/target.h"
 
-#include "td/abstract.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/building.h"

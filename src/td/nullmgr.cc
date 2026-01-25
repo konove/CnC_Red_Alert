@@ -77,6 +77,7 @@
 #include "td/dialog.h"
 #include "td/externs.h"
 #include "td/gadget.h"
+#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/init.h"
 #include "td/jshell.h"

@@ -56,8 +56,6 @@
 #include "td/type.h"
 #include "tech/noinit.h"
 
-extern COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2);
-
 class DisplayClass : public MapClass {
  public:
   /*

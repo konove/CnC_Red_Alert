@@ -66,6 +66,7 @@
 #include "td/externs.h"
 #include "td/gadget.h"
 #include "td/gamedlg.h"
+#include "td/globals.h"
 #include "td/init.h"
 #include "td/jshell.h"
 #include "td/loaddlg.h"
@@ -303,17 +304,17 @@ void GameOptionsClass::Process() {
                        DKGREY, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT,
                        ScenarioName, VersionText);
 #else
-      Fancy_Text_Print("%s\rV.%d%s",
-                       ((WindowList[WINDOW_EDITOR][WINDOWX] +
-                         WindowList[WINDOW_EDITOR][WINDOWWIDTH])
-                        << 3) -
-                           3 * resfactor,
-                       WindowList[WINDOW_EDITOR][WINDOWY] +
-                           WindowList[WINDOW_EDITOR][WINDOWHEIGHT] -
-                           (GameToPlay == GAME_NORMAL ? 32 * resfactor
-                                                        : 24 * resfactor),
-                       DKGREY, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT,
-                       ScenarioName, Version_Number(), VersionText);
+      Fancy_Text_Print(
+          "%s\rV.%d%s",
+          ((WindowList[WINDOW_EDITOR][WINDOWX] +
+            WindowList[WINDOW_EDITOR][WINDOWWIDTH])
+           << 3) -
+              3 * resfactor,
+          WindowList[WINDOW_EDITOR][WINDOWY] +
+              WindowList[WINDOW_EDITOR][WINDOWHEIGHT] -
+              (GameToPlay == GAME_NORMAL ? 32 * resfactor : 24 * resfactor),
+          DKGREY, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
+          Version_Number(), VersionText);
 #endif
 
       buttons->Draw_All();
@@ -623,10 +624,11 @@ void Draw_Caption(int text, int x, int y, int w) {
   **	Draw the filigree at the corners of the dialog.
   */
   if (option != OPTION_NONE) {
-    CC_Draw_Shape(MixFileClass::Retrieve("OPTIONS.SHP"), option, x + 12,
-                  y + 11, WINDOW_MAIN, SHAPE_CENTER);
-    CC_Draw_Shape(MixFileClass::Retrieve("OPTIONS.SHP"), static_cast<int>(option) + 1,
-                  x + w - 14, y + 11, WINDOW_MAIN, SHAPE_CENTER);
+    CC_Draw_Shape(MixFileClass::Retrieve("OPTIONS.SHP"), option, x + 12, y + 11,
+                  WINDOW_MAIN, SHAPE_CENTER);
+    CC_Draw_Shape(MixFileClass::Retrieve("OPTIONS.SHP"),
+                  static_cast<int>(option) + 1, x + w - 14, y + 11, WINDOW_MAIN,
+                  SHAPE_CENTER);
   }
 
   /*

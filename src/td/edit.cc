@@ -60,6 +60,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"
+#include "td/globals.h"
 #include "td/jshell.h"
 
 /***********************************************************************************************
@@ -259,7 +260,8 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
       flags = 0;
 
     } else {
-      KeyASCIIType ascii = static_cast<KeyASCIIType>(Keyboard::To_ASCII(key) & 0x00ff);
+      KeyASCIIType ascii =
+          static_cast<KeyASCIIType>(Keyboard::To_ASCII(key) & 0x00ff);
 
       /*
       ** Allow numeric keypad presses to map to ascii numbers
@@ -425,8 +427,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       /*
       **	Don't add a character if the length is greater than edit width.
       */
-      if (String_Pixel_Width(String) + Char_Pixel_Width(ascii) >=
-          Width - 2) {
+      if (String_Pixel_Width(String) + Char_Pixel_Width(ascii) >= Width - 2) {
         break;
       }
 

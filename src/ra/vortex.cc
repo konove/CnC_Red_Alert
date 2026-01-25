@@ -66,13 +66,14 @@
 #include <algorithm>
 #include <cstdio>
 
-#include "ra/abstract.h"
 #include "ra/building.h"
 #include "ra/ccfile.h"
 #include "ra/cell.h"
 #include "ra/conquer.h"
+#include "ra/coord.h"
 #include "ra/display.h"
 #include "ra/externs.h"
+#include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/layer.h"

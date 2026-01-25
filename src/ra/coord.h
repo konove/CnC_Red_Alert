@@ -14,7 +14,6 @@ COORDINATE Coord_Move(COORDINATE start, DirType facing,
                       unsigned short distance);
 COORDINATE Coord_Scatter(COORDINATE coord, unsigned distance,
                          bool lock = false);
-DirType Direction(CELL cell1, CELL cell2);
 DirType Direction(COORDINATE coord1, COORDINATE coord2);
 DirType Direction256(COORDINATE coord1, COORDINATE coord2);
 DirType Direction8(COORDINATE coord1, COORDINATE coord2);

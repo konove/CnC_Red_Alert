@@ -60,6 +60,7 @@
 #include "td/display_constants.h"
 #include "td/externs.h"
 #include "td/gadget.h"
+#include "td/globals.h"
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mouse.h"

@@ -129,7 +129,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/base.h"

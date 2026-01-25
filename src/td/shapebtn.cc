@@ -48,7 +48,7 @@
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"
-#include "td/externs.h"
+#include "td/globals.h"
 #include "td/keyframe.h"
 
 /***********************************************************************************************

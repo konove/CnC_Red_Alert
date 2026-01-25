@@ -42,6 +42,8 @@
 
 #include <cstdint>
 
+#include "ra/defines.h"
+
 // Enumerations of the facing values returned from Desired_Facing().
 typedef enum DirType : uint8_t {
   DIR_MIN = 0,
@@ -73,5 +75,12 @@ inline DirType operator-(DirType f1, int f2) {
 // Function prototypes.
 DirType Desired_Facing8(int x1, int y1, int x2, int y2);
 DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty);
+
+// Calculates the DirType from one cell to another (8-direction accuracy).
+inline DirType Direction(CELL cell1, CELL cell2) {
+  return Desired_Facing8(
+      ((CELL_COMPOSITE&)cell1).Sub.X, ((CELL_COMPOSITE&)cell1).Sub.Y,
+      ((CELL_COMPOSITE&)cell2).Sub.X, ((CELL_COMPOSITE&)cell2).Sub.Y);
+}
 
 #endif

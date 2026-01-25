@@ -56,14 +56,13 @@
 #include "td/dialog.h"
 #include "td/externs.h"
 #include "td/gadget.h"
+#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/text.h"
 #include "td/textbtn.h"
 
-bool ConfirmationClass::Process(int text) {
-  return Process(Text_String(text));
-}
+bool ConfirmationClass::Process(int text) { return Process(Text_String(text)); }
 
 /***********************************************************************************************
  * ConfirmationClass::Process -- Handles all the options graphic interface. *

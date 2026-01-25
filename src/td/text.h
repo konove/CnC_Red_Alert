@@ -2,8 +2,8 @@
 #define CNC_RED_ALERT_TD_TEXT_H_
 
 #include "td/conquer.h"
+#include "td/externs.h"
 
-extern char const* SystemStrings;
 char* Extract_String(void const* data, int string);
 
 inline char const* Text_String(int string) {

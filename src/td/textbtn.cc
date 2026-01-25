@@ -56,7 +56,7 @@
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/dialog.h"
-#include "td/externs.h"
+#include "td/globals.h"
 #include "td/jshell.h"
 #include "td/text.h"
 
