@@ -252,20 +252,6 @@ inline int First_True_Bit(void const* array) {
   }
 }
 inline int First_False_Bit(void const* array) {
-  /*
-  #pragma aux First_False_Bit parm [esi] \
-          modify [esi ebx] \
-          value [eax]		= 				\
-          "mov	eax,-32"					\
-          "again:"							\
-          "add	eax,32"					\
-          "mov	ebx,[esi]"				\
-          "not	ebx"						\
-          "add	esi,4"					\
-          "bsf	ebx,ebx"					\
-          "jz	again"					\
-          "add	eax,ebx"
-  */
   const uint32_t* array32 = (const uint32_t*)array;
   int off = 0;
   while (true) {
@@ -281,68 +267,15 @@ inline int First_False_Bit(void const* array) {
   }
 }
 
-#ifdef OBSOLETE
-extern int Bound(int original, int min, int max);
-#pragma aux Bound parm[eax][ebx]                       \
-    [ecx] modify[eax] value[eax] =                     \
-                                "cmp	ebx,ecx"          \
-                                "jl	okorder"           \
-                                "xchg	ebx,ecx"         \
-                                "okorder: cmp	eax,ebx" \
-                                "jg	okmin"             \
-                                "mov	eax,ebx"          \
-                                "okmin: cmp	eax,ecx"   \
-                                "jl	okmax"             \
-                                "mov	eax,ecx"          \
-                                "okmax:"
-
-extern unsigned Bound(unsigned original, unsigned min, unsigned max);
-#pragma aux Bound parm[eax][ebx]                       \
-    [ecx] modify[eax] value[eax] =                     \
-                                "cmp	ebx,ecx"          \
-                                "jb	okorder"           \
-                                "xchg	ebx,ecx"         \
-                                "okorder: cmp	eax,ebx" \
-                                "ja	okmin"             \
-                                "mov	eax,ebx"          \
-                                "okmin: cmp	eax,ecx"   \
-                                "jb	okmax"             \
-                                "mov	eax,ecx"          \
-                                "okmax:"
-#endif
-
 unsigned Fixed_To_Cardinal(unsigned base, unsigned fixed);
-#pragma aux Fixed_To_Cardinal parm[eax]               \
-    [edx] modify[edx] value[eax] =                    \
-                                "mul	edx"             \
-                                "add	eax,080h"        \
-                                "test	eax,0FF000000h" \
-                                "jz	ok"               \
-                                "mov	eax,000FFFFFFh"  \
-                                "ok:"                 \
-                                "shr	eax,8"
-
 unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
-#pragma aux Cardinal_To_Fixed parm[ebx]       \
-    [eax] modify[edx] value[eax] =            \
-                                "or	ebx,ebx"  \
-                                "jz	fini"     \
-                                "shl	eax,8"   \
-                                "xor	edx,edx" \
-                                "div	ebx"     \
-                                "fini:"
 
 #ifndef OUTPORTB
 #define OUTPORTB
-extern void outportb(int port, unsigned char data);
-#pragma aux outportb parm[edx][al] = "out	dx,al"
 
+extern void outportb(int port, unsigned char data);
 extern void outport(int port, unsigned short data);
-#pragma aux outport parm[edx][ax] =           \
-                                  "out	dx,al" \
-                                  "inc	dx"    \
-                                  "mov	al,ah" \
-                                  "out	dx,al"
+
 #endif
 
 /*

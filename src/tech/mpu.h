@@ -58,10 +58,5 @@
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 unsigned long Get_CPU_Clock(unsigned long& high);
-#ifndef __BORLANDC__
-#pragma aux Get_CPU_Clock parm[esi] modify[edx] value[eax] =            \
-                                                          "db 0fh,031h" \
-                                                          "mov [esi],edx"
-#endif
 
 #endif
