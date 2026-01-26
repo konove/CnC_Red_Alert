@@ -110,7 +110,7 @@ class NullModemConnClass : public ConnectionClass {
   /*.....................................................................
   This routine computes a CRC value for the given buffer.
   .....................................................................*/
-  static int Compute_CRC(char* buf, int buflen);
+  static int Compute_CRC(const char* buf, int buflen);
 
   /*.....................................................................
   This routine returns the number of bytes extra added the packet

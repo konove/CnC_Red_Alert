@@ -346,7 +346,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
 
   bool Is_Window_Surface() const { return WindowTexture != nullptr; }
   void Update_Window_Surface(bool end_frame);
-  void Update_Palette(std::uint8_t* palette);
+  void Update_Palette(const std::uint8_t* palette);
   const void* Get_Palette() const;
 
   // Render paletted frame data with SDL texture scaling (for VQA movies, etc.)

@@ -42,11 +42,11 @@
  *
  ****************************************************************************/
 
-void UnVQ_4x2(unsigned char* codebook, unsigned char* pointers,
+void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
               unsigned char* buffer, unsigned long blocksperrow,
               unsigned long numrows, unsigned long bufwidth);
 
-void UnVQ_4x4(unsigned char* codebook, unsigned char* pointers,
+void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
               unsigned char* buffer, unsigned long blocksperrow,
               unsigned long numrows, unsigned long bufwidth);
 

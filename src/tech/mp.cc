@@ -2007,7 +2007,7 @@ void XMP_Mod_Mult_Clear(int precision) {
 **      three MULTUNITs at dividend by the upper two MULTUNITs of the
 **      modulus.
 */
-unsigned short mp_quo_digit(unsigned short* dividend) {
+unsigned short mp_quo_digit(const unsigned short* dividend) {
   unsigned long q, q0, q1, q2;
 
   /*

@@ -97,7 +97,8 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
   // blit from paletted surface
   SDL_Surface* tmp_surf;
   SDL_LockTextureToSurface(window_tex, nullptr, &tmp_surf);
-  SDL_BlitSurface(static_cast<SDL_Surface*>(PaletteSurface), nullptr, tmp_surf, nullptr);
+  SDL_BlitSurface(static_cast<SDL_Surface*>(PaletteSurface), nullptr, tmp_surf,
+                  nullptr);
   SDL_UnlockTexture(window_tex);
 
   // copy to screen
@@ -109,7 +110,7 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
   SDL_Event_Loop();
 }
 
-void GraphicBufferClass::Update_Palette(uint8_t* palette) {
+void GraphicBufferClass::Update_Palette(const uint8_t* palette) {
   auto sdl_pal = static_cast<SDL_Surface*>(PaletteSurface)->format->palette;
 
   bool changed = false;

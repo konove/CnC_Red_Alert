@@ -220,10 +220,12 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                           unsigned short* their_recv);
 static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
                                          int first_time);
-static int Can_Advance(ConnManClass* net, int max_ahead, long* their_frame,
-                       unsigned short* their_sent, unsigned short* their_recv);
+static int Can_Advance(ConnManClass* net, int max_ahead,
+                       const long* their_frame,
+                       const unsigned short* their_sent,
+                       const unsigned short* their_recv);
 static int Process_Reconnect_Dialog(
-    CDTimerClass<SystemTimerClass>* timeout_timer, long* their_frame,
+    CDTimerClass<SystemTimerClass>* timeout_timer, const long* their_frame,
     int num_conn, int reconn, int fresh);
 static int Handle_Timeout(ConnManClass* net, long* their_frame,
                           unsigned short* their_sent,
@@ -2144,8 +2146,10 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Can_Advance(ConnManClass* net, int max_ahead, long* their_frame,
-                       unsigned short* their_sent, unsigned short* their_recv) {
+static int Can_Advance(ConnManClass* net, int max_ahead,
+                       const long* their_frame,
+                       const unsigned short* their_sent,
+                       const unsigned short* their_recv) {
   long their_oldest_frame;  // other players' oldest frame #
   int count_ok;             // true = my cmd count matches theirs
   int i;
@@ -2215,7 +2219,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead, long* their_frame,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Process_Reconnect_Dialog(
-    CDTimerClass<SystemTimerClass>* timeout_timer, long* their_frame,
+    CDTimerClass<SystemTimerClass>* timeout_timer, const long* their_frame,
     int num_conn, int reconn, int fresh) {
   static int displayed_time = 0;  // time value currently displayed
   int new_time;

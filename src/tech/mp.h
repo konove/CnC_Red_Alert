@@ -108,7 +108,7 @@ int xmp_stage_modulus(const uint32_t* n_modulus, int precision);
 int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
                  const uint32_t* multiplier, int precision);
 void XMP_Mod_Mult_Clear(int precision);
-unsigned short mp_quo_digit(unsigned short* dividend);
+unsigned short mp_quo_digit(const unsigned short* dividend);
 int xmp_exponent_mod(uint32_t* expout, const uint32_t* expin,
                      const uint32_t* exponent_ptr, const uint32_t* modulus,
                      int precision);
@@ -160,7 +160,8 @@ inline void XMP_Set_Bit(uint32_t* r, unsigned bit) {
 }
 
 inline bool XMP_Test_Bit(const uint32_t* r, unsigned bit) {
-  return r[bit >> LOG_UNITSIZE] & static_cast<uint32_t>(1) << (bit & UNITSIZE - 1);
+  return r[bit >> LOG_UNITSIZE] & static_cast<uint32_t>(1)
+                                      << (bit & UNITSIZE - 1);
 }
 
 // Misc functions.

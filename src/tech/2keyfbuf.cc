@@ -60,7 +60,7 @@ inline int Make_Code(int x, int y, int w, int h) {
 static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
                                ShapeHeaderType* headers, int flags,
                                uint8_t* /*Translucent*/,
-                               uint8_t* IsTranslucent) {
+                               const uint8_t* IsTranslucent) {
   headers->draw_flags =
       flags & (SHAPE_TRANS | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST);
   auto ptr = (uint8_t*)headers + sizeof(ShapeHeaderType);
@@ -97,8 +97,9 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
 template <int flags>
 void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
                  uint8_t* dst_offset, int src_adjust_width,
-                 int dst_adjust_width, uint8_t* Translucent,
-                 uint8_t* IsTranslucent, int FadingNum, uint8_t* FadingTable) {
+                 int dst_adjust_width, const uint8_t* Translucent,
+                 const uint8_t* IsTranslucent, int FadingNum,
+                 const uint8_t* FadingTable) {
   do {
     // original asm unrolled this 32 times
     for (int x = 0; x < pixel_count; x++) {

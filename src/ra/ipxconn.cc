@@ -612,7 +612,7 @@ void IPXConnClass::Close_Socket(unsigned short /*socket*/) {
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
-                          NetNodeType immed) {
+                          const NetNodeType immed) {
 #ifdef WINSOCK_IPX
 
   assert(immed == nullptr);

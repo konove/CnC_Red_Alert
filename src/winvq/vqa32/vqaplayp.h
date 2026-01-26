@@ -117,7 +117,8 @@ typedef struct _ZAPHeader {
  */
 struct VQACBNode {
   std::vector<unsigned char> BufferStorage;
-  unsigned char* Buffer = nullptr;  // Points into BufferStorage for compatibility
+  unsigned char* Buffer =
+      nullptr;  // Points into BufferStorage for compatibility
   VQACBNode* Next = nullptr;
   unsigned long Flags = 0;
   unsigned long CBOffset = 0;
@@ -391,9 +392,10 @@ struct VQAAudio {
 struct VQAData {
   long (*Draw_Frame)(VQAHandle* vqa) = nullptr;
 
-  void __cdecl (*UnVQ)(unsigned char* codebook, unsigned char* pointers,
-                       unsigned char* buffer, unsigned long blocksperrow,
-                       unsigned long numrows, unsigned long bufwidth) = nullptr;
+  void __cdecl (*UnVQ)(const unsigned char* codebook,
+                       const unsigned char* pointers, unsigned char* buffer,
+                       unsigned long blocksperrow, unsigned long numrows,
+                       unsigned long bufwidth) = nullptr;
 
   // RAII storage for nodes - these vectors own the node objects
   std::vector<std::unique_ptr<VQACBNode>> CBNodes;

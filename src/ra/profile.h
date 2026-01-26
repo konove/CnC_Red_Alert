@@ -20,18 +20,18 @@ unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
 
 char* Read_Bin_Buffer();
 bool Read_Bin_Init(char* buffer, int length);
-int Read_Bin_Length(char* buffer);
-bool Read_Bin_Num(void* num, int length, char* buffer);
-int Read_Bin_Pos(char* buffer);
-int Read_Bin_PosSet(unsigned int pos, char* buffer);
-bool Read_Bin_String(char* string, char* buffer);
+int Read_Bin_Length(const char* buffer);
+bool Read_Bin_Num(void* num, int length, const char* buffer);
+int Read_Bin_Pos(const char* buffer);
+int Read_Bin_PosSet(unsigned int pos, const char* buffer);
+bool Read_Bin_String(char* string, const char* buffer);
 
 char* Write_Bin_Buffer();
-bool Write_Bin_Init(char* buffer, int length);
-int Write_Bin_Length(char* buffer);
-bool Write_Bin_Num(void* num, int length, char* buffer);
-int Write_Bin_Pos(char* buffer);
-int Write_Bin_PosSet(unsigned int pos, char* buffer);
-bool Write_Bin_String(char* string, int length, char* buffer);
+bool Write_Bin_Init(const char* buffer, int length);
+int Write_Bin_Length(const char* buffer);
+bool Write_Bin_Num(void* num, int length, const char* buffer);
+int Write_Bin_Pos(const char* buffer);
+int Write_Bin_PosSet(unsigned int pos, const char* buffer);
+bool Write_Bin_String(char* string, int length, const char* buffer);
 
 #endif  // CNC_RED_ALERT_RA_PROFILE_H_

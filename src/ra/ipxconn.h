@@ -136,7 +136,7 @@ class IPXConnClass : public ConnectionClass {
   static int Open_Socket(unsigned short socket);
   static void Close_Socket(unsigned short socket);
   static int Send_To(char* buf, int buflen, IPXAddressClass* address,
-                     NetNodeType immed);
+                     const NetNodeType immed);
   static int Broadcast(char* buf, int buflen);
 
   /*.....................................................................

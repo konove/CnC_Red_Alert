@@ -205,7 +205,8 @@ int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
   Send the data
   ------------------------------------------------------------------------*/
 #ifdef WIN32
-  SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, static_cast<int>(sendlen));
+  SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf,
+                                   static_cast<int>(sendlen));
   return true;
 
 #else   // WIN32
@@ -239,7 +240,7 @@ int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Compute_CRC(char* buf, int buflen) {
+int NullModemConnClass::Compute_CRC(const char* buf, int buflen) {
   unsigned int sum, hibit;
 
   sum = 0;

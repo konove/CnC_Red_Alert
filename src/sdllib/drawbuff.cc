@@ -156,7 +156,8 @@ long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
     if (code1 & 0b0001) dst_y1 = vp_dst->Get_Height();
   }
 
-  auto src_offset = static_cast<uint8_t*>(Buffer) + src_x0 + src_y0 * pixel_width;
+  auto src_offset =
+      static_cast<uint8_t*>(Buffer) + src_x0 + src_y0 * pixel_width;
 
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_area;
@@ -304,7 +305,8 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
 
 bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
                             int dst_x, int dst_y, int src_w, int src_h,
-                            int dst_w, int dst_h, bool trans, char* remap) {
+                            int dst_w, int dst_h, bool trans,
+                            const char* remap) {
   // Check for scale error when to or from size 0,0
   if (dst_w == 0 || dst_h == 0 || src_w == 0 || src_h == 0) return true;
 

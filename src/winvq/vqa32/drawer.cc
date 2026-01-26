@@ -86,7 +86,8 @@ static void Prepare_Frame(VQAData* vqabuf);
 
 static long DrawFrame_Buffer(VQAHandle* vqa);
 
-static void __cdecl UnVQ_Nop(unsigned char* codebook, unsigned char* pointers,
+static void __cdecl UnVQ_Nop(const unsigned char* codebook,
+                             const unsigned char* pointers,
                              unsigned char* buffer, unsigned long blocksperrow,
                              unsigned long numrows, unsigned long bufwidth);
 
@@ -698,6 +699,7 @@ static long DrawFrame_Buffer(VQAHandle* vqa) {
  *
  ****************************************************************************/
 
-static void UnVQ_Nop(unsigned char* /*codebook*/, unsigned char* /*pointers*/,
+static void UnVQ_Nop(const unsigned char* /*codebook*/,
+                     const unsigned char* /*pointers*/,
                      unsigned char* /*buffer*/, unsigned long /*blocksperrow*/,
                      unsigned long /*numrows*/, unsigned long /*bufwidth*/) {}

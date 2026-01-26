@@ -664,14 +664,14 @@ bool Read_Bin_Init(char* buffer, int length) {
   return true;
 }
 
-int Read_Bin_Length(char* buffer) {
+int Read_Bin_Length(const char* buffer) {
   if (buffer != ReadBinBuffer) {
     return -1;
   }
   return ReadBinBufferMax;
 }
 
-bool Read_Bin_Num(void* num, int length, char* buffer) {
+bool Read_Bin_Num(void* num, int length, const char* buffer) {
   char* ptr;
 
   if (buffer != ReadBinBuffer || length <= 0 || length > 4 ||
@@ -689,14 +689,14 @@ bool Read_Bin_Num(void* num, int length, char* buffer) {
   return true;
 }
 
-int Read_Bin_Pos(char* buffer) {
+int Read_Bin_Pos(const char* buffer) {
   if (buffer != ReadBinBuffer) {
     return -1;
   }
   return ReadBinBufferPos;
 }
 
-int Read_Bin_PosSet(unsigned int pos, char* buffer) {
+int Read_Bin_PosSet(unsigned int pos, const char* buffer) {
   if (buffer != ReadBinBuffer) {
     return -1;
   }
@@ -704,7 +704,7 @@ int Read_Bin_PosSet(unsigned int pos, char* buffer) {
   return ReadBinBufferPos;
 }
 
-bool Read_Bin_String(char* string, char* buffer) {
+bool Read_Bin_String(char* string, const char* buffer) {
   char* ptr;
   unsigned char length;
 
@@ -736,14 +736,14 @@ bool Write_Bin_Init(char* buffer, int length) {
   return true;
 }
 
-int Write_Bin_Length(char* buffer) {
+int Write_Bin_Length(const char* buffer) {
   if (buffer != WriteBinBuffer) {
     return -1;
   }
   return WriteBinBufferMax;
 }
 
-bool Write_Bin_Num(void* num, int length, char* buffer) {
+bool Write_Bin_Num(void* num, int length, const char* buffer) {
   char* ptr;
 
   if (buffer != WriteBinBuffer || length <= 0 || length > 4 ||
@@ -761,14 +761,14 @@ bool Write_Bin_Num(void* num, int length, char* buffer) {
   return true;
 }
 
-int Write_Bin_Pos(char* buffer) {
+int Write_Bin_Pos(const char* buffer) {
   if (buffer != WriteBinBuffer) {
     return -1;
   }
   return WriteBinBufferPos;
 }
 
-int Write_Bin_PosSet(unsigned int pos, char* buffer) {
+int Write_Bin_PosSet(unsigned int pos, const char* buffer) {
   if (buffer != WriteBinBuffer) {
     return -1;
   }
@@ -776,7 +776,7 @@ int Write_Bin_PosSet(unsigned int pos, char* buffer) {
   return WriteBinBufferPos;
 }
 
-bool Write_Bin_String(char* string, int length, char* buffer) {
+bool Write_Bin_String(char* string, int length, const char* buffer) {
   char* ptr;
 
   if (buffer != WriteBinBuffer || length < 0 || length > 255 ||

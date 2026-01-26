@@ -197,7 +197,8 @@ int NullModemConnClass::Send(char* buf, int buflen) {
   if (Winsock.Get_Connected() || GameToPlay == GAME_INTERNET) {
     Winsock.Write(SendBuf, static_cast<int>(sendlen));
   } else {
-    SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, static_cast<int>(sendlen));
+    SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf,
+                                     static_cast<int>(sendlen));
   }
 #else
   SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, (int)sendlen);
@@ -232,7 +233,7 @@ int NullModemConnClass::Send(char* buf, int buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Compute_CRC(char* buf, int buflen) {
+int NullModemConnClass::Compute_CRC(const char* buf, int buflen) {
   unsigned int sum, hibit;
 
   sum = 0;

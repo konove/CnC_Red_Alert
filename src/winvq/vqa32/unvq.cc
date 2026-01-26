@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-void UnVQ_4x2(unsigned char* codebook, unsigned char* pointers,
+void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
               unsigned char* buffer, unsigned long blocksperrow,
               unsigned long numrows, unsigned long bufwidth) {
   // Compute the offset to the next row of blocks
@@ -48,7 +48,7 @@ void UnVQ_4x2(unsigned char* codebook, unsigned char* pointers,
   } while (src_ptr < data_end);
 }
 
-void UnVQ_4x4(unsigned char* codebook, unsigned char* pointers,
+void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
               unsigned char* buffer, unsigned long blocksperrow,
               unsigned long numrows, unsigned long bufwidth) {
   // Compute the offset to the next row of blocks
