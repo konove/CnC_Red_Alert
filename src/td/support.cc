@@ -1,5 +1,6 @@
 #include "td/support.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstdint>
 #include <cstring>
@@ -24,7 +25,7 @@ void* Conquer_Build_Fading_Table(void const* palette, void* dest, int color,
   if (!palette || !dest) return dest;
 
   // Fractions above 255 become 255.
-  if (frac > 255) frac = 255;
+  frac = std::min(frac, 255);
 
   // Record the target gun values.
   auto* pal8 = (uint8_t*)palette;

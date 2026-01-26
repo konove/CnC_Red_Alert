@@ -50,6 +50,7 @@
 
 #include "ra/dialog.h"
 
+#include <algorithm>
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
@@ -320,9 +321,7 @@ int Format_Window_String(char* string, int maxlinelen, int& width,
     /*
     **	Record the largest width of the worst case string.
     */
-    if (linelen > width) {
-      width = linelen;
-    }
+    width = std::max(linelen, width);
 
     /*
     **	Force a break at the end of the line.
@@ -568,7 +567,8 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y,
   /*
   **	Change the current font palette according to the dropshadow flags.
   */
-  shadow = flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_LIGHTSHADOW);
+  shadow =
+      flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_LIGHTSHADOW);
   switch (shadow) {
     /*
     **	The text is rendered plain.
@@ -647,8 +647,7 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y,
         break;
     }
 
-    if (x < LogicPage->Get_Width() &&
-        y < LogicPage->Get_Height()) {
+    if (x < LogicPage->Get_Width() && y < LogicPage->Get_Height()) {
       LogicPage->Print(text, x, y, forecolor, back);
       //			LogicPage->Print(text, x, y, fore->Color, back);
     }
@@ -1007,11 +1006,9 @@ void Draw_Caption(char const* text, int x, int y, int w) {
                        TPF_CENTER | TPF_TEXT);
       int length = String_Pixel_Width(text);
       LogicPage->Draw_Line(
-          x + w / 2 - length / 2,
-                           y + FontHeight + FontYSpacing + 8 * RESFACTOR,
-                           x + w / 2 + length / 2,
-                           y + FontHeight + FontYSpacing + 8 * RESFACTOR,
-                           GadgetClass::Get_Color_Scheme()->Box);
+          x + w / 2 - length / 2, y + FontHeight + FontYSpacing + 8 * RESFACTOR,
+          x + w / 2 + length / 2, y + FontHeight + FontYSpacing + 8 * RESFACTOR,
+          GadgetClass::Get_Color_Scheme()->Box);
     }
   }
 }

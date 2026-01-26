@@ -4,6 +4,8 @@
 #include <SDL_stdinc.h>
 #include <SDL_timer.h>
 
+#include <algorithm>
+
 bool TimerSystemOn = false;
 
 static Uint32 TimerCallback(Uint32 interval, void* param) {
@@ -64,11 +66,7 @@ long CountDownTimerClass::Set(long value, bool start) {
 }
 
 long CountDownTimerClass::Time() {
-  long ticks = DelayTime - TimerClass::Time();
-
-  if (ticks < 0) ticks = 0;
-
-  return ticks;
+  return std::max<long>(DelayTime - TimerClass::Time(), 0);
 }
 
 WinTimerClass::WinTimerClass(std::uint32_t freq, bool /*partial*/) {

@@ -35,6 +35,8 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
 
 extern "C" {
@@ -95,7 +97,7 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
       count = (op_code >> 4) + 3;
 
       // clamp to decompressed size
-      if (count > dest_end - dest_ptr) count = dest_end - dest_ptr;
+      count = std::min<std::ptrdiff_t>(count, dest_end - dest_ptr);
 
       // not possible to write any more, and if we try to read more we might
       // fault
@@ -128,7 +130,7 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
           source_ptr += 3;
 
           // clamp to decompressed size
-          if (count > dest_end - dest_ptr) count = dest_end - dest_ptr;
+          count = std::min<std::ptrdiff_t>(count, dest_end - dest_ptr);
 
           copy_ptr =
               dest_ptr + 4 - (reinterpret_cast<uintptr_t>(dest_ptr) & 0x3);

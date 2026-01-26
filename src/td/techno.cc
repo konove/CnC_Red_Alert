@@ -3285,9 +3285,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const* enemy) {
             defender[lp] = static_cast<FootClass*>(infantry);
             continue;
           }
-          if (value[lp] < newweakest) {
-            newweakest = value[lp];
-          }
+          newweakest = std::min(value[lp], newweakest);
         }
         weakest = newweakest;
       }
@@ -3346,9 +3344,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const* enemy) {
             defender[lp] = static_cast<FootClass*>(unit);
             continue;
           }
-          if (value[lp] < newweakest) {
-            newweakest = value[lp];
-          }
+          newweakest = std::min(value[lp], newweakest);
         }
         weakest = newweakest;
       }

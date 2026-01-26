@@ -643,9 +643,7 @@ COORDINATE ObjectClass::Fire_Coord(int) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Record_The_Kill(TechnoClass*) {
-  assert(IsActive);
-}
+void ObjectClass::Record_The_Kill(TechnoClass*) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Do_Shimmer -- Shimmers this object if it is cloaked. *
@@ -664,9 +662,7 @@ void ObjectClass::Record_The_Kill(TechnoClass*) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Do_Shimmer() {
-  assert(IsActive);
-}
+void ObjectClass::Do_Shimmer() { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Exit_Object -- Causes the specified object to leave this object.
@@ -709,9 +705,7 @@ int ObjectClass::Exit_Object(TechnoClass*) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Hidden() {
-  assert(IsActive);
-}
+void ObjectClass::Hidden() { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Look -- Called when this object needs to reveal terrain. *
@@ -732,9 +726,7 @@ void ObjectClass::Hidden() {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Look(bool) {
-  assert(IsActive);
-}
+void ObjectClass::Look(bool) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Active_Click_With -- Dispatches action on the object specified.
@@ -778,9 +770,7 @@ void ObjectClass::Active_Click_With(ActionType, ObjectClass*) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Active_Click_With(ActionType, CELL) {
-  assert(IsActive);
-}
+void ObjectClass::Active_Click_With(ActionType, CELL) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Clicked_As_Target -- Triggers target selection animation. *
@@ -797,9 +787,7 @@ void ObjectClass::Active_Click_With(ActionType, CELL) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Clicked_As_Target(int) {
-  assert(IsActive);
-}
+void ObjectClass::Clicked_As_Target(int) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::In_Range -- Determines if the coordinate is within weapon range.
@@ -867,9 +855,7 @@ int ObjectClass::Weapon_Range(int) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Scatter(COORDINATE, bool, bool) {
-  assert(IsActive);
-}
+void ObjectClass::Scatter(COORDINATE, bool, bool) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Catch_Fire -- Called when animation is attached to this object.
@@ -911,9 +897,7 @@ bool ObjectClass::Catch_Fire() {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Fire_Out() {
-  assert(IsActive);
-}
+void ObjectClass::Fire_Out() { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Value -- Fetches the target value of this object. *
@@ -978,9 +962,7 @@ MissionType ObjectClass::Get_Mission() const {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Repair(int) {
-  assert(IsActive);
-}
+void ObjectClass::Repair(int) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Sell_Back -- Sells the object -- if possible. *
@@ -1000,9 +982,7 @@ void ObjectClass::Repair(int) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Sell_Back(int) {
-  assert(IsActive);
-}
+void ObjectClass::Sell_Back(int) { assert(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::Move -- Moves (by force) the object in the desired direction. *
@@ -1530,9 +1510,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
           What_Am_I() == RTTI_AIRCRAFT) {
         Clicked_As_Target(7);
         Strength -= damage;
-        if (Strength > maxstrength) {
-          Strength = maxstrength;
-        }
+        Strength = std::min<int>(Strength, maxstrength);
       }
       return RESULT_NONE;
     }

@@ -1322,9 +1322,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
           case RTTI_UNIT:
             if (dynamic_cast<UnitClass*>(obj)->IsDriving ||
                 Target_Legal(dynamic_cast<UnitClass*>(obj)->NavCom)) {
-              if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
+              retval = std::max(retval, MOVE_MOVING_BLOCK);
             } else {
-              if (retval < MOVE_TEMP) retval = MOVE_TEMP;
+              retval = std::max(retval, MOVE_TEMP);
             }
             break;
 
@@ -1381,11 +1381,11 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
               }
               // otherwise, fall thru.
             default:
-              if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
+              retval = std::max(retval, MOVE_DESTROYABLE);
               break;
           }
         } else {
-          if (retval < MOVE_CLOAK) retval = MOVE_CLOAK;
+          retval = std::max(retval, MOVE_CLOAK);
         }
       }
       //			}
@@ -1435,13 +1435,11 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   if (cellptr->InfType != HOUSE_NONE) {
     if (House->Is_Ally(cellptr->InfType)) {
       if ((cellptr->Flag.Composite & 0x1F) == 0x1f) {
-        if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
+        retval = std::max(retval, MOVE_MOVING_BLOCK);
       }
     } else {
       if (Combat_Damage() > 0) {
-        if (retval < MOVE_DESTROYABLE) {
-          retval = MOVE_DESTROYABLE;
-        }
+        retval = std::max(retval, MOVE_DESTROYABLE);
       } else {
         return MOVE_NO;
       }

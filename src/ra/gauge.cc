@@ -44,6 +44,8 @@
 
 #include "ra/gauge.h"
 
+#include <algorithm>
+
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -363,9 +365,7 @@ void GaugeClass::Draw_Thumb() {
     x = Value_To_Pixel(MaxValue) - 2;
   }
 
-  if (x < X) {
-    x = X;
-  }
+  x = std::max(x, X);
 
   if (IsHorizontal) {
     Draw_Box(x, Y, 4, Height, BOXSTYLE_RAISED, true);

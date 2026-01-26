@@ -403,9 +403,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
             **	Copy the entry into the return buffer.
             */
             len = static_cast<int>(altworkptr - workptr);
-            if (len > retlen - 1) {
-              len = retlen - 1;
-            }
+            len = std::min(len, retlen - 1);
 
             if (retbuffer) {
               memcpy(retbuffer, workptr, len);

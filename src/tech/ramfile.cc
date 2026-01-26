@@ -51,6 +51,7 @@
 
 #include "tech/ramfile.h"
 
+#include <algorithm>
 #include <cstring>
 
 /***********************************************************************************************
@@ -338,12 +339,8 @@ long RAMFileClass::Seek(long pos, int dir) {
       break;
   }
 
-  if (Offset < 0) Offset = 0;
-  if (Offset > maxoffset) Offset = maxoffset;
-
-  if (Offset > Length) {
-    Length = Offset;
-  }
+  Offset = std::clamp(Offset, 0, maxoffset);
+  Length = std::max(Offset, Length);
 
   return Offset;
 }
@@ -404,9 +401,7 @@ long RAMFileClass::Write(void const* buffer, long size) {
   memmove(&Buffer[Offset], buffer, towrite);
   Offset += towrite;
 
-  if (Offset > Length) {
-    Length = Offset;
-  }
+  Length = std::max(Offset, Length);
 
   if (hasopened) {
     Close();

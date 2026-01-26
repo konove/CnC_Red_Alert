@@ -2237,7 +2237,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             int minunits = 1000;
             bool found = false;
             unsigned long minutes = Score.ElapsedTime / TIMER_MINUTE;
-            if (minutes > 100) minutes = 100;
+            minutes = std::min<unsigned long>(minutes, 100);
             if (Random_Pick(0, 100 - static_cast<int>(minutes)) == 0) {
               for (i = 0;
                    i < Session.Players.Count() + Session.Options.AIPlayers;

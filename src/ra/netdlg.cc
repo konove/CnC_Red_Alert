@@ -1776,7 +1776,7 @@ static int Net_Join_Dialog() {
     */
     if (messages_have_focus) {
       if (name_edt.Has_Focus()) {
-        if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+        display = std::max(display, REDRAW_MESSAGE);
         messages_have_focus = false;
       }
     } else {
@@ -1790,7 +1790,7 @@ static int Net_Join_Dialog() {
     */
     if (gamelist.Is_To_Redraw() && housebtn.IsDropped) {
       housebtn.Collapse();
-      if (display < REDRAW_BACKGROUND) display = REDRAW_BACKGROUND;
+      display = std::max(display, REDRAW_BACKGROUND);
     }
 
 #ifdef WIN32
@@ -4950,7 +4950,7 @@ static int Net_New_Dialog() {
       }
       // All scenarios now allowable for download,
       // regardless of if CS scen. or 126x126 scen.
-      if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+      display = std::max(display, REDRAW_PARMS);
       transmit = 1;
     } else if (whahoppa == EV_MESSAGE) {
       display = REDRAW_MESSAGE;

@@ -636,8 +636,7 @@ void ScoreClass::Presentation() {
   economy = std::min(economy, 150);
 
   int total = uspoints * leadership / 100 + uspoints * economy / 100;
-  if (total < -9999) total = -9999;
-  total = std::min(total, 99999);
+  total = std::clamp(total, -9999, 99999);
 
   Keyboard->Clear();
   for (i = 0; i <= 130; i++) {
@@ -1353,25 +1352,24 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
 
   do {
     add = 5;
-    if (PlayerPtr->Available_Money() - i > 100) add += 15;
-    if (PlayerPtr->Available_Money() - i > 500) add += 30;
-    if (PlayerPtr->Available_Money() - i > 1000)
+    if (PlayerPtr->Available_Money() - i > 100) {
+      add += 15;
+    }
+    if (PlayerPtr->Available_Money() - i > 500) {
+      add += 30;
+    }
+    if (PlayerPtr->Available_Money() - i > 1000) {
       add += PlayerPtr->Available_Money() / 40;
-    if (add < minval) add = minval;
+    }
+    add = std::max(add, minval);
     i += add;
 
-    if (i < 0) i = 0;
+    i = std::max(i, 0);
 
     Set_Font_Palette(pal);
     Count_Up_Print("%d", i, PlayerPtr->Available_Money(), _credpx[house],
                    _credpy[house]);
     Call_Back_Delay(2);
-    /*BG		if (Keyboard->Check()) {
-                            Count_Up_Print("%d", PlayerPtr->Available_Money(),
-       PlayerPtr->Available_Money(), _credpx[house], _credpy[house]);
-                            Keyboard->Clear();
-                            break;
-                    }*/
   } while (i < PlayerPtr->Available_Money());
 
   delete ScoreObjs[credobj];
@@ -1781,8 +1779,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
  *   04/13/1995 BWG : Created.                                             *
  *=========================================================================*/
 void Call_Back_Delay(int time) {
-  if (time < 0) time = 0;
-  if (time > 60) time = 60;
+  time = std::clamp(time, 0, 60);
   CDTimerClass<SystemTimerClass> cd;
   CDTimerClass<SystemTimerClass> callbackcd = 0;
 

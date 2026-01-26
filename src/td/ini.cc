@@ -1465,9 +1465,7 @@ static int Furthest_Cell(CELL* ref_cells, int num_ref_cells, CELL* test_cells,
     mindist = 0xffff;
     for (j = 0; j < num_ref_cells; j++) {
       dist = Distance(test_cells[i], ref_cells[j]);
-      if (dist <= mindist) {
-        mindist = dist;
-      }
+      mindist = std::min(dist, mindist);
     }
 
     /*.....................................................................
@@ -1521,14 +1519,10 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
   xdist = IRandom(0, maxdist);
   if (IRandom(0, 1) == 0) {
     x += xdist;
-    if (x > xmax) {
-      x = xmax;
-    }
+    x = std::min(x, xmax);
   } else {
     x -= xdist;
-    if (x < xmin) {
-      x = xmin;
-    }
+    x = std::max(x, xmin);
   }
 
   /*------------------------------------------------------------------------
@@ -1537,14 +1531,10 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
   ydist = IRandom(0, maxdist);
   if (IRandom(0, 1) == 0) {
     y += ydist;
-    if (y > ymax) {
-      y = ymax;
-    }
+    y = std::min(y, ymax);
   } else {
     y -= ydist;
-    if (y < ymin) {
-      y = ymin;
-    }
+    y = std::max(y, ymin);
   }
 
   return XY_Cell(x, y);
@@ -1625,11 +1615,7 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
   /*------------------------------------------------------------------------
   Clip to the map
   ------------------------------------------------------------------------*/
-  if (x > xmax) x = xmax;
-  if (x < xmin) x = xmin;
-
-  if (y > ymax) y = ymax;
-  if (y < ymin) y = ymin;
-
+  x = std::clamp(x, xmin, xmax);
+  y = std::clamp(y, ymin, ymax);
   return XY_Cell(x, y);
 }

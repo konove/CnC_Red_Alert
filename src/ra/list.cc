@@ -241,9 +241,7 @@ void ListClass::Remove_Item(int index) {
     */
     if (SelectedIndex >= List.Count()) {
       SelectedIndex--;
-      if (SelectedIndex < 0) {
-        SelectedIndex = 0;
-      }
+      SelectedIndex = std::max(SelectedIndex, 0);
     }
 
     /*
@@ -251,8 +249,10 @@ void ListClass::Remove_Item(int index) {
     */
     if (CurrentTopIndex >= List.Count()) {
       CurrentTopIndex--;
-      if (CurrentTopIndex < 0) CurrentTopIndex = 0;
-      if (IsScrollActive) ScrollGadget.Step(1);
+      CurrentTopIndex = std::max(CurrentTopIndex, 0);
+      if (IsScrollActive) {
+        ScrollGadget.Step(1);
+      }
     }
   }
 }

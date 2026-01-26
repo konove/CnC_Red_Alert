@@ -750,7 +750,7 @@ void ScoreClass::Presentation() {
   if (!leadership) leadership++;
   leadership = Cardinal_To_Fixed(GKilled + GBKilled + leadership, leadership);
   leadership = Fixed_To_Cardinal(100, leadership);
-  if (leadership > 100) leadership = 100;
+  leadership = std::min<unsigned int>(leadership, 100);
 
   /*
   **	Determine efficiency rating.
@@ -762,7 +762,7 @@ void ScoreClass::Presentation() {
   if (!efficiency) efficiency++;
   efficiency = Fixed_To_Cardinal(100, efficiency);
 
-  if (efficiency > 100) efficiency = 100;
+  efficiency = std::min<unsigned int>(efficiency, 100);
   /*
   ** Calculate total score
   */
@@ -1521,12 +1521,16 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
 
   do {
     add = 5;
-    if (PlayerPtr->Available_Money() - i > 100) add += 15;
-    if (PlayerPtr->Available_Money() - i > 1000) add += 30;
-    if (add < min) add = min;
+    if (PlayerPtr->Available_Money() - i > 100) {
+      add += 15;
+    }
+    if (PlayerPtr->Available_Money() - i > 1000) {
+      add += 30;
+    }
+    add = std::max(add, min);
     i += add;
 
-    if (i < 0) i = 0;
+    i = std::max(i, 0);
 
     Set_Font_Palette(pal);
     Count_Up_Print("%d", i, PlayerPtr->Available_Money(), _credpx[house],

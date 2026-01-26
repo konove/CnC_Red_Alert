@@ -4896,9 +4896,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
               defender[lp] = static_cast<FootClass*>(infantry);
               continue;
             }
-            if (value[lp] < newweakest) {
-              newweakest = value[lp];
-            }
+            newweakest = std::min(value[lp], newweakest);
           }
           weakest = newweakest;
         }
@@ -4984,11 +4982,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
               defender[lp] = static_cast<FootClass*>(unit);
               continue;
             }
-            if (value[lp] < newweakest) {
-              //					if (value[count] <
-              // newweakest) {
-              newweakest = value[lp];
-            }
+            newweakest = std::min(value[lp], newweakest);
           }
           weakest = newweakest;
         }

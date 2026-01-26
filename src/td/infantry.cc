@@ -520,9 +520,8 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
       case WARHEAD_FEEDME:
         if (source) {
           source->Strength += 30;
-          if (source->Strength > source->Class_Of().MaxStrength) {
-            source->Strength = source->Class_Of().MaxStrength;
-          }
+          source->Strength =
+              std::min<int>(source->Strength, source->Class_Of().MaxStrength);
         }
         // Fall thru to WARHEAD_SA:
 
@@ -1655,9 +1654,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
             case RTTI_UNIT:
               if (dynamic_cast<UnitClass*>(obj)->IsDriving ||
                   Target_Legal(dynamic_cast<UnitClass*>(obj)->NavCom)) {
-                if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
+                retval = std::max(retval, MOVE_MOVING_BLOCK);
               } else {
-                if (retval < MOVE_TEMP) retval = MOVE_TEMP;
+                retval = std::max(retval, MOVE_TEMP);
               }
               break;
 
@@ -1698,18 +1697,18 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
                 if (dynamic_cast<TerrainClass*>(obj)->Class->IsFlammable &&
                     BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
                             .Warhead == WARHEAD_FIRE) {
-                  if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
+                  retval = std::max(retval, MOVE_DESTROYABLE);
                 } else {
                   return MOVE_NO;
                 }
                 break;
 
               default:
-                if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
+                retval = std::max(retval, MOVE_DESTROYABLE);
                 break;
             }
           } else {
-            if (retval < MOVE_CLOAK) retval = MOVE_CLOAK;
+            retval = std::max(retval, MOVE_CLOAK);
           }
         }
       }
@@ -1743,11 +1742,11 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   if (cellptr->InfType != HOUSE_NONE) {
     if (House->Is_Ally(cellptr->InfType)) {
       if ((cellptr->Flag.Composite & 0x1F) == 0x1f) {
-        if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
+        retval = std::max(retval, MOVE_MOVING_BLOCK);
       }
     } else {
       if (Class->Primary != WEAPON_NONE) {
-        if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
+        retval = std::max(retval, MOVE_DESTROYABLE);
       } else {
         return MOVE_NO;
       }

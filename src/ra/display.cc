@@ -887,8 +887,8 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   int x = Cell_X(pos + ZoneOffset);
   int y = Cell_Y(pos + ZoneOffset);
 
-  if (x < Coord_XCell(TacticalCoord)) x = Coord_XCell(TacticalCoord);
-  if (y < Coord_YCell(TacticalCoord)) y = Coord_YCell(TacticalCoord);
+  x = std::max<int>(x, Coord_XCell(TacticalCoord));
+  y = std::max<int>(y, Coord_YCell(TacticalCoord));
   if (x + w >= Coord_XCell(TacticalCoord) + Lepton_To_Cell(TacLeptonWidth))
     x = Coord_XCell(TacticalCoord) + Lepton_To_Cell(TacLeptonWidth) - w;
   if (y + h >= Coord_YCell(TacticalCoord) + Lepton_To_Cell(TacLeptonHeight))
@@ -1758,8 +1758,8 @@ void DisplayClass::Draw_It(bool forced) {
         forced = true;
       }
 
-      if (oldx < 0) oldx = 0;
-      if (oldy < 0) oldy = 0;
+      oldx = std::max(oldx, 0);
+      oldy = std::max(oldy, 0);
 
       /*
       ** Record new map position for future reference.
@@ -4116,10 +4116,10 @@ void DisplayClass::Center_Map(COORDINATE center) {
 
   if (centerit) {
     x = x - static_cast<int>(TacLeptonWidth) / 2;
-    if (x < Cell_To_Lepton(MapCellX)) x = Cell_To_Lepton(MapCellX);
+    x = std::max<int>(x, Cell_To_Lepton(MapCellX));
 
     y = y - static_cast<int>(TacLeptonHeight) / 2;
-    if (y < Cell_To_Lepton(MapCellY)) y = Cell_To_Lepton(MapCellY);
+    y = std::max<int>(y, Cell_To_Lepton(MapCellY));
 
     Set_Tactical_Position(XY_Coord(x, y));
   }

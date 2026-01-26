@@ -409,9 +409,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
             **	Copy the entry into the return buffer.
             */
             len = static_cast<int>(altworkptr - workptr);
-            if (len > dest_len - 1) {
-              len = dest_len - 1;
-            }
+            len = std::min(len, dest_len - 1);
 
             if (dest) {
               memcpy(dest, workptr, len);
@@ -682,9 +680,7 @@ bool Read_Bin_Num(void* num, int length, const char* buffer) {
   memcpy(num, ptr, length);
   ReadBinBufferPos += length;
 
-  if (ReadBinBufferPos > ReadBinBufferMax) {
-    ReadBinBufferMax = ReadBinBufferPos;
-  }
+  ReadBinBufferMax = std::max(ReadBinBufferPos, ReadBinBufferMax);
 
   return true;
 }
@@ -717,9 +713,7 @@ bool Read_Bin_String(char* string, const char* buffer) {
     memcpy(string, ptr, static_cast<unsigned int>(length + 1));
     ReadBinBufferPos += length + 2;
 
-    if (ReadBinBufferPos > ReadBinBufferMax) {
-      ReadBinBufferMax = ReadBinBufferPos;
-    }
+    ReadBinBufferMax = std::max(ReadBinBufferPos, ReadBinBufferMax);
 
     return true;
   }
@@ -754,9 +748,7 @@ bool Write_Bin_Num(void* num, int length, const char* buffer) {
   memcpy(ptr, num, length);
   WriteBinBufferPos += length;
 
-  if (WriteBinBufferPos > WriteBinBufferMax) {
-    WriteBinBufferMax = WriteBinBufferPos;
-  }
+  WriteBinBufferMax = std::max(WriteBinBufferPos, WriteBinBufferMax);
 
   return true;
 }
@@ -788,9 +780,7 @@ bool Write_Bin_String(char* string, int length, const char* buffer) {
   memcpy(ptr, string, length + 1);
   WriteBinBufferPos += length + 2;
 
-  if (WriteBinBufferPos > WriteBinBufferMax) {
-    WriteBinBufferMax = WriteBinBufferPos;
-  }
+  WriteBinBufferMax = std::max(WriteBinBufferPos, WriteBinBufferMax);
 
   return true;
 }

@@ -3448,7 +3448,7 @@ static int Net_New_Dialog() {
       case KN_ESC:
         if (Messages.Get_Edit_Buf() != nullptr) {
           Messages.Input(input);
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
           break;
         }
       case BUTTON_CANCEL | KN_BUTTON:
@@ -3514,7 +3514,7 @@ static int Net_New_Dialog() {
 
             credit_edt.Clear_Focus();
             credit_edt.Flag_To_Redraw();
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            display = std::max(display, REDRAW_MESSAGE);
 
             break;
           }
@@ -3533,7 +3533,7 @@ static int Net_New_Dialog() {
         Manage the message system (get rid of old messages)
         ...............................................................*/
         if (Messages.Manage()) {
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
         }
 
         /*...............................................................
@@ -3553,7 +3553,7 @@ static int Net_New_Dialog() {
         If 'Input' returned 2, it means redraw the message display.
         ...............................................................*/
         else if (i == 2) {
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
         }
 
         /*...............................................................
@@ -3628,7 +3628,7 @@ static int Net_New_Dialog() {
             magic_number++;
             sent_so_far += actual_message_size;  // COMPAT_MESSAGE_LENGTH-5;
           }
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
         }
     }
 
@@ -3652,7 +3652,7 @@ static int Net_New_Dialog() {
       transmit = 1;
     } else {
       if (whahoppa == EV_MESSAGE) {
-        if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+        display = std::max(display, REDRAW_MESSAGE);
       }
     }
 

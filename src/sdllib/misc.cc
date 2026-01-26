@@ -1,5 +1,6 @@
 #include "sdllib/include/misc.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -48,7 +49,7 @@ void* Build_Fading_Table(void const* palette, void* dest, long int color,
   if (!palette || !dest) return dest;
 
   // Fractions above 255 become 255.
-  if (frac > 255) frac = 255;
+  frac = std::min<long>(frac, 255);
 
   // Record the target gun values.
   const auto* pal8 = (uint8_t*)palette;
@@ -128,7 +129,7 @@ int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height) {
   } else if (*x + dw > width) {
     *x -= *x + dw - width;
 
-    if (*x < 0) *x = 0;
+    *x = std::max(*x, 0);
 
     ret = 1;
   }
@@ -139,7 +140,7 @@ int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height) {
   } else if (*y + dh > height) {
     *y -= *y + dh - height;
 
-    if (*y < 0) *y = 0;
+    *y = std::max(*y, 0);
 
     ret = 1;
   }
@@ -222,11 +223,11 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
 
   // Set v = Max(r,g,b) to find dominant primary color.
   *v = r > g ? r : g;
-  if (b > *v) *v = b;
+  *v = std::max(b, *v);
 
   // Set m = min(r,g,b) to find amount of white.
   m = r < g ? r : g;
-  if (b < m) m = b;
+  m = std::min(b, m);
 
   // Determine the normalized saturation.
   if (*v != 0) {

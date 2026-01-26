@@ -72,6 +72,7 @@
  *=========================================================================*/
 #include "td/combuf.h"
 
+#include <algorithm>
 #include <cstring>
 
 CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen) {
@@ -623,7 +624,7 @@ void CommBufferClass::Add_Delay(unsigned long delay) {
     MeanDelay = DelaySum / NumDelay;
   }
 
-  if (delay > MaxDelay) MaxDelay = delay;
+  MaxDelay = std::max(delay, MaxDelay);
 
 } /* end of Add_Delay */
 

@@ -1575,7 +1575,7 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
         port::SafeCopy(compress_text, settings->Compression
                                           ? Text_String(TXT_ON)
                                           : Text_String(TXT_OFF));
-        if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+        display = std::max(display, REDRAW_BUTTONS);
         break;
 
       case BUTTON_ERROR_CORRECTION | KN_BUTTON:
@@ -1583,7 +1583,7 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
         port::SafeCopy(correction_text, settings->ErrorCorrection
                                             ? Text_String(TXT_ON)
                                             : Text_String(TXT_OFF));
-        if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+        display = std::max(display, REDRAW_BUTTONS);
         break;
 
       case BUTTON_HARDWARE_FLOW_CONTROL | KN_BUTTON:
@@ -1591,7 +1591,7 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
         port::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
                                              ? Text_String(TXT_ON)
                                              : Text_String(TXT_OFF));
-        if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+        display = std::max(display, REDRAW_BUTTONS);
         break;
 
       case BUTTON_DEFAULT | KN_BUTTON:
@@ -1611,7 +1611,7 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
                                              ? Text_String(TXT_ON)
                                              : Text_String(TXT_OFF));
 
-        if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+        display = std::max(display, REDRAW_BUTTONS);
         break;
 
       case BUTTON_OK | KN_BUTTON:
@@ -3379,14 +3379,9 @@ int Com_Scenario_Dialog(bool skirmish) {
   aiplayersgauge.Set_Maximum(maxp);
 
   if (skirmish) {
-    if (Session.Options.AIPlayers > 7) {
-      Session.Options.AIPlayers = 7;
-    }
-    Session.Options.AIPlayers = std::max(Session.Options.AIPlayers, 1);
+    Session.Options.AIPlayers = std::clamp(Session.Options.AIPlayers, 1, 7);
   } else {
-    if (Session.Options.AIPlayers > 6) {
-      Session.Options.AIPlayers = 6;
-    }
+    Session.Options.AIPlayers = std::min(Session.Options.AIPlayers, 6);
   }
 
   aiplayersgauge.Set_Value(Session.Options.AIPlayers - (skirmish ? 1 : 0));
@@ -3518,7 +3513,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           if (loadfile.Is_Available()) {
             loadbtn.Add_Tail(*commands);
           }
-          if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+          display = std::max(display, REDRAW_BUTTONS);
         }
       }
 
@@ -3530,13 +3525,13 @@ int Com_Scenario_Dialog(bool skirmish) {
       if (!skirmish) {
         if (messages_have_focus) {
           if (name_edt.Has_Focus()) {
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            display = std::max(display, REDRAW_MESSAGE);
             messages_have_focus = false;
           }
         } else {
           if (!name_edt.Has_Focus()) {
             messages_have_focus = true;
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            display = std::max(display, REDRAW_MESSAGE);
             Session.Messages.Set_Edit_Focus();
           }
         }
@@ -3762,7 +3757,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             Session.PrefColor = static_cast<PlayerColorType>(
                 (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
             Session.ColorIdx = Session.PrefColor;
-            if (display < REDRAW_COLORS) display = REDRAW_COLORS;
+            display = std::max(display, REDRAW_COLORS);
 
             name_edt.Set_Color(
                 &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
@@ -3847,7 +3842,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           Session.Options.UnitCount =
               countgauge.Get_Value() +
               SessionClass::CountMin[Session.Options.Bases];
-          if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+          display = std::max(display, REDRAW_PARMS);
           if (housebtn.IsDropped) {
             housebtn.Collapse();
             display = REDRAW_BACKGROUND;
@@ -3863,7 +3858,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           if (BuildLevel >
               MPLAYER_BUILD_LEVEL_MAX)  // if it's pegged, max it out
             BuildLevel = MPLAYER_BUILD_LEVEL_MAX;
-          if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+          display = std::max(display, REDRAW_PARMS);
           if (housebtn.IsDropped) {
             housebtn.Collapse();
             display = REDRAW_BACKGROUND;
@@ -3877,7 +3872,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         case BUTTON_CREDITS | KN_BUTTON:
           Session.Options.Credits = creditsgauge.Get_Value();
           Session.Options.Credits = (Session.Options.Credits + 250) / 500 * 500;
-          if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+          display = std::max(display, REDRAW_PARMS);
           if (housebtn.IsDropped) {
             housebtn.Collapse();
             display = REDRAW_BACKGROUND;
@@ -3907,7 +3902,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                                      (skirmish ? 1 : 0));
           }
           transmit = true;
-          if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+          display = std::max(display, REDRAW_PARMS);
 
           if (housebtn.IsDropped) {
             housebtn.Collapse();
@@ -3971,7 +3966,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           }
 
           transmit = true;
-          if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+          display = std::max(display, REDRAW_PARMS);
           if (housebtn.IsDropped) {
             housebtn.Collapse();
             display = REDRAW_BACKGROUND;
@@ -4024,7 +4019,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         default:
           if (!skirmish) {
             if (Session.Messages.Manage()) {
-              if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+              display = std::max(display, REDRAW_MESSAGE);
             }
 
             /*...............................................................
@@ -4090,7 +4085,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                                             : Session.ColorIdx,
                                         TPF_TEXT, nullptr, '_', d_message_w);
 
-              if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+              display = std::max(display, REDRAW_MESSAGE);
             } /* end of send message */
           }
           break;
@@ -4242,7 +4237,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         if (event->Type <= EventClass::FRAMEINFO) {
           if (TickCount - lastredrawtime > PACKET_REDRAW_TIME) {
             lastredrawtime = TickCount;
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            display = std::max(display, REDRAW_MESSAGE);
           }
         } else {
           switch (ReceivePacket.Command) {
@@ -4277,7 +4272,7 @@ int Com_Scenario_Dialog(bool skirmish) {
               TheirHouse = ReceivePacket.ScenarioInfo.House;
               transmit = true;
 
-              if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+              display = std::max(display, REDRAW_MESSAGE);
 
               //.........................................................
               // "Clip" the other system's version range to our own
@@ -4412,7 +4407,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                   TPF_TEXT, -1);
 
               Sound_Effect(VOC_INCOMING_MESSAGE);
-              if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+              display = std::max(display, REDRAW_MESSAGE);
 
               break;
 
@@ -4432,7 +4427,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             // print msg waiting for opponent
             //
             case SERIAL_SCORE_SCREEN:
-              if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+              display = std::max(display, REDRAW_MESSAGE);
               break;
 
             default:
@@ -4553,9 +4548,8 @@ int Com_Scenario_Dialog(bool skirmish) {
       if (!skirmish) {
         SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
         if (theirresponsetime != 10000) {
-          if (SendPacket.ScenarioInfo.ResponseTime < theirresponsetime) {
-            SendPacket.ScenarioInfo.ResponseTime = theirresponsetime;
-          }
+          SendPacket.ScenarioInfo.ResponseTime = std::max<unsigned long>(
+              SendPacket.ScenarioInfo.ResponseTime, theirresponsetime);
         }
       }
 
@@ -5282,13 +5276,13 @@ int Com_Show_Scenario_Dialog() {
     */
     if (messages_have_focus) {
       if (name_edt.Has_Focus()) {
-        if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+        display = std::max(display, REDRAW_MESSAGE);
         messages_have_focus = false;
       }
     } else {
       if (!name_edt.Has_Focus()) {
         messages_have_focus = true;
-        if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+        display = std::max(display, REDRAW_MESSAGE);
         Session.Messages.Set_Edit_Focus();
       }
     }
@@ -5496,7 +5490,7 @@ int Com_Show_Scenario_Dialog() {
         Session.Messages.Set_Edit_Focus();
       } else {
         messages_have_focus = false;
-        if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+        display = std::max(display, REDRAW_MESSAGE);
       }
     }
 
@@ -5542,7 +5536,7 @@ int Com_Show_Scenario_Dialog() {
           Session.Messages.Set_Edit_Color(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                               ? PCOLOR_REALLY_BLUE
                                               : Session.ColorIdx);
-          if (display < REDRAW_COLORS) display = REDRAW_COLORS;
+          display = std::max(display, REDRAW_COLORS);
           port::SafeCopy(Session.Handle, namebuf);
           transmit = true;
           if (housebtn.IsDropped) {
@@ -5561,7 +5555,7 @@ int Com_Show_Scenario_Dialog() {
                                        Text_String(TXT_ONLY_HOST_CAN_MODIFY),
                                        PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
           if (housebtn.IsDropped) {
             housebtn.Collapse();
             display = REDRAW_BACKGROUND;
@@ -5626,7 +5620,7 @@ int Com_Show_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       default:
         if (Session.Messages.Manage()) {
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
         }
 
         /*...............................................................
@@ -5688,7 +5682,7 @@ int Com_Show_Scenario_Dialog() {
                                         ? PCOLOR_REALLY_BLUE
                                         : Session.ColorIdx,
                                     TPF_TEXT, nullptr, '_', d_message_w);
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
         }
         break;
     }
@@ -5795,7 +5789,7 @@ int Com_Show_Scenario_Dialog() {
         if (TickCount - lastredrawtime > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount;
           oppscorescreen = true;
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
           parms_received = true;
         }
       } else {
@@ -5822,7 +5816,7 @@ int Com_Show_Scenario_Dialog() {
           ..................................................................*/
           case SERIAL_GAME_OPTIONS:
             oppscorescreen = false;
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            display = std::max(display, REDRAW_MESSAGE);
             parms_received = true;
 
             port::SafeCopy(TheirName, ReceivePacket.Name);
@@ -5847,7 +5841,7 @@ int Com_Show_Scenario_Dialog() {
                                    ? PCOLOR_REALLY_BLUE
                                    : Session.ColorIdx]);
               name_edt.Flag_To_Redraw();
-              if (display < REDRAW_COLORS) display = REDRAW_COLORS;
+              display = std::max(display, REDRAW_COLORS);
               if (housebtn.IsDropped) {
                 housebtn.Collapse();
                 display = REDRAW_BACKGROUND;
@@ -5908,7 +5902,7 @@ int Com_Show_Scenario_Dialog() {
             */
             if (strcmp(Session.Options.ScenarioDescription,
                        ReceivePacket.ScenarioInfo.Scenario)) {
-              if (display < REDRAW_BACKGROUND) display = REDRAW_BACKGROUND;
+              display = std::max(display, REDRAW_BACKGROUND);
             }
 
             /*...............................................................
@@ -6251,7 +6245,7 @@ int Com_Show_Scenario_Dialog() {
                 TPF_TEXT, -1);
 
             Sound_Effect(VOC_INCOMING_MESSAGE);
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            display = std::max(display, REDRAW_MESSAGE);
             break;
 
           //
@@ -6266,7 +6260,7 @@ int Com_Show_Scenario_Dialog() {
           //
           case SERIAL_SCORE_SCREEN:
             oppscorescreen = true;
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            display = std::max(display, REDRAW_MESSAGE);
             parms_received = true;
             break;
 

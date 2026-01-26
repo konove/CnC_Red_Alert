@@ -56,6 +56,7 @@
 
 #include "ra/msglist.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstdio>
 #include <cstring>
@@ -630,10 +631,7 @@ int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
     min_chars = 10;
 
     while (width >= Width - 8) {
-      max_chars = strlen(msg);
-      if (max_chars < min_chars) {
-        max_chars = min_chars;
-      }
+      max_chars = std::max<int>(strlen(msg), min_chars);
 
       Trim_Message(nullptr, msg, min_chars, max_chars, 0);
 
@@ -655,10 +653,7 @@ int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
   //------------------------------------------------------------------------
   else {
     min_chars = strlen(msg) + strlen(txt) - MaxChars;
-    max_chars = strlen(msg);
-    if (max_chars < min_chars) {
-      max_chars = min_chars;
-    }
+    max_chars = std::max<int>(strlen(msg), min_chars);
     Trim_Message(nullptr, msg, min_chars, max_chars, 0);
     port::SafeCopy(msg, txt, MAX_MESSAGE_LENGTH);
   }
@@ -1277,9 +1272,7 @@ int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
   }
 
   len = strlen(src);
-  if (max_chars > len) {
-    max_chars = len;
-  }
+  max_chars = std::min(max_chars, len);
 
   //------------------------------------------------------------------------
   // find 1st available white space; if there is none, just trim off

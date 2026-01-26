@@ -3175,14 +3175,10 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
   xdist = Random_Pick(0, maxdist);
   if (Percent_Chance(50)) {
     x += xdist;
-    if (x > xmax) {
-      x = xmax;
-    }
+    x = std::min(x, xmax);
   } else {
     x -= xdist;
-    if (x < xmin) {
-      x = xmin;
-    }
+    x = std::max(x, xmin);
   }
 
   /*
@@ -3191,14 +3187,10 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
   ydist = Random_Pick(0, maxdist);
   if (Percent_Chance(50)) {
     y += ydist;
-    if (y > ymax) {
-      y = ymax;
-    }
+    y = std::min(y, ymax);
   } else {
     y -= ydist;
-    if (y < ymin) {
-      y = ymin;
-    }
+    y = std::max(y, ymin);
   }
 
   return XY_Cell(x, y);
@@ -3279,11 +3271,8 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
   /*
   **	Clip to the map
   */
-  if (x > xmax) x = xmax;
-  if (x < xmin) x = xmin;
-
-  if (y > ymax) y = ymax;
-  if (y < ymin) y = ymin;
+  x = std::clamp(x, xmin, xmax);
+  y = std::clamp(y, ymin, ymax);
 
   return XY_Cell(x, y);
 }

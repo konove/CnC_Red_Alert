@@ -47,6 +47,7 @@
 
 #include "td/init.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstdint>
 #include <cstdio>
@@ -2861,10 +2862,7 @@ long Obfuscate(char const* string) {
   **	This is necessary to support the cypher process that occurs later.
   */
   if (length < 16 || length & 0x03) {
-    int maxlen = 16;
-    if ((length + 3 & 0x00FC) > maxlen) {
-      maxlen = length + 3 & 0x00FC;
-    }
+    int maxlen = std::max(length + 3 & 0x00FC, 16);
     int index;
     for (index = length; index < maxlen; index++) {
       buffer[index] = 'A' + (('?' ^ buffer[index - length]) + index) % 26;

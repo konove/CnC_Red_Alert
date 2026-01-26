@@ -171,9 +171,7 @@ void GameOptionsClass::Process() {
     TextButtonClass* g = new TextButtonClass(_constants[index].ID, text,
                                              TPF_6PT_GRAD | TPF_NOSHADOW, 0, y);
 
-    if (g->Width > maxwidth) {
-      maxwidth = g->Width;
-    }
+    maxwidth = std::max(g->Width, maxwidth);
     if (!buttons) {
       buttons = g;
     } else {

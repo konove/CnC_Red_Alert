@@ -2716,9 +2716,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
               new BulletClass(BULLET_NUKE_DOWN, As_Target(cell), nullptr, 200,
                               WARHEAD_NUKE, MPH_VERY_FAST);
           if (bullet) {
-            int celly = Cell_Y(cell);
-            celly -= 15;
-            if (celly < 1) celly = 1;
+            int celly = std::max(Cell_Y(cell) - 15, 1);
             COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), celly));
             if (!bullet->Unlimbo(start, DIR_S)) {
               delete bullet;
@@ -4687,21 +4685,15 @@ int HouseClass::Expert_AI() {
       maxaircraft /= enemycount;
     }
 
-    if (Control.MaxBuilding < maxbuilding + 10) {
-      Control.MaxBuilding = maxbuilding + 10;
-    }
-    if (Control.MaxUnit < maxunit + 10) {
-      Control.MaxUnit = maxunit + 10;
-    }
-    if (Control.MaxInfantry < maxinfantry + 10) {
-      Control.MaxInfantry = maxinfantry + 10;
-    }
-    if (Control.MaxVessel < maxvessel + 10) {
-      Control.MaxVessel = maxvessel + 10;
-    }
-    if (Control.MaxAircraft < maxaircraft + 10) {
-      Control.MaxAircraft = maxaircraft + 10;
-    }
+    Control.MaxBuilding =
+        std::max<unsigned int>(Control.MaxBuilding, maxbuilding + 10);
+    Control.MaxUnit = std::max<unsigned int>(Control.MaxUnit, maxunit + 10);
+    Control.MaxInfantry =
+        std::max<unsigned int>(Control.MaxInfantry, maxinfantry + 10);
+    Control.MaxVessel =
+        std::max<unsigned int>(Control.MaxVessel, maxvessel + 10);
+    Control.MaxAircraft =
+        std::max<unsigned int>(Control.MaxAircraft, maxaircraft + 10);
   }
 
   /*
@@ -7730,15 +7722,10 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
   *it to *	the legal map area.
   */
   if (!Map.In_Radar(cell)) {
-    int x = Cell_X(cell);
-    int y = Cell_Y(cell);
-
-    if (x < Map.MapCellX) x = Map.MapCellX;
-    if (y < Map.MapCellY) y = Map.MapCellY;
-    if (x >= Map.MapCellX + Map.MapCellWidth)
-      x = Map.MapCellX + Map.MapCellWidth - 1;
-    if (y >= Map.MapCellY + Map.MapCellHeight)
-      y = Map.MapCellY + Map.MapCellHeight - 1;
+    int x = std::clamp(Cell_X(cell), Map.MapCellX,
+                       Map.MapCellX + Map.MapCellWidth - 1);
+    int y = std::clamp(Cell_Y(cell), Map.MapCellY,
+                       Map.MapCellY + Map.MapCellHeight - 1);
     cell = XY_Cell(x, y);
   }
   return cell;

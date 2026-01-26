@@ -48,6 +48,7 @@
 
 #include "version.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <string>
@@ -594,12 +595,12 @@ unsigned long VersionClass::Clip_Version(unsigned long minver,
   //------------------------------------------------------------------------
   // Clip the lower range value
   //------------------------------------------------------------------------
-  if (minver > MinClipVer) MinClipVer = minver;
+  MinClipVer = std::max(minver, MinClipVer);
 
   //------------------------------------------------------------------------
   // Clip the upper range value
   //------------------------------------------------------------------------
-  if (maxver < MaxClipVer) MaxClipVer = maxver;
+  MaxClipVer = std::min(maxver, MaxClipVer);
 
   //------------------------------------------------------------------------
   // Return the highest version supported by the newly-adjusted range.

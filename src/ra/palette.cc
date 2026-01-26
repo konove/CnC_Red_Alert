@@ -1,5 +1,6 @@
 #include "ra/palette.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -26,9 +27,7 @@ void PaletteClass::Set(int fade, void (*callback)()) {
     PaletteClass fade_palette;
 
     while (true) {
-      int cur_time = TickCount.Value() - start_time;
-
-      if (cur_time > fade) cur_time = fade;
+      int cur_time = std::min<int>(TickCount.Value() - start_time, fade);
 
       const unsigned char* old_ptr = CurrentPalette;
       const unsigned char* new_ptr = *this;
@@ -41,11 +40,12 @@ void PaletteClass::Set(int fade, void (*callback)()) {
       }
 
       Do_Set_Palette(fade_palette);
-      if (callback) callback();
-#ifdef PORTABLE
-      else  // make sure we actually display the fade
+      if (callback) {
+        callback();
+      } else {
+        // make sure we actually display the fade
         Video_End_Frame();
-#endif
+      }
 
       if (cur_time == fade) break;
     }

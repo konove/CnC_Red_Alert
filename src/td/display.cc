@@ -860,16 +860,12 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   int x = Cell_X(pos + ZoneOffset);
   int y = Cell_Y(pos + ZoneOffset);
 
-  if (x < Coord_XCell(TacticalCoord)) x = Coord_XCell(TacticalCoord);
-  //	if (x < TacMapX) x = TacMapX;
-  if (y < Coord_YCell(TacticalCoord)) y = Coord_YCell(TacticalCoord);
-  //	if (y < TacMapY) y = TacMapY;
-  if (x + w >= Coord_XCell(TacticalCoord) + Lepton_To_Cell(TacLeptonWidth))
-    x = Coord_XCell(TacticalCoord) + Lepton_To_Cell(TacLeptonWidth) - w;
-  //	if (x+w >= TacMapX+TacWidth) x = TacMapX+TacWidth-w;
-  if (y + h >= Coord_YCell(TacticalCoord) + Lepton_To_Cell(TacLeptonHeight))
-    x = Coord_YCell(TacticalCoord) + Lepton_To_Cell(TacLeptonHeight) - h;
-  //	if (y+h >= TacMapY+TacHeight) y = TacMapY+TacHeight-h;
+  x = std::clamp<int>(
+      x, Coord_XCell(TacticalCoord),
+      Coord_XCell(TacticalCoord) + Lepton_To_Cell(TacLeptonWidth) - w);
+  y = std::clamp<int>(
+      y, Coord_YCell(TacticalCoord),
+      Coord_YCell(TacticalCoord) + Lepton_To_Cell(TacLeptonHeight) - h);
   pos = XY_Cell(x, y) - ZoneOffset;
 
   /*
@@ -1881,8 +1877,8 @@ void DisplayClass::Draw_It(bool forced) {
         forced = true;
       }
 
-      if (oldx < 0) oldx = 0;
-      if (oldy < 0) oldy = 0;
+      oldx = std::max(oldx, 0);
+      oldy = std::max(oldy, 0);
 
       /*
       ** Record new map position for future reference.
@@ -3587,19 +3583,10 @@ void DisplayClass::Compute_Start_Pos() {
   /*
   **	Clip the computed x,y cell coords to the map's size.
   */
-  if (x < MapCellX) {
-    x = MapCellX;
-  }
-  if (x + Lepton_To_Cell(TacLeptonWidth) > MapCellX + MapCellWidth) {
-    x = MapCellX + MapCellWidth - Lepton_To_Cell(TacLeptonWidth);
-  }
-
-  if (y < MapCellY) {
-    y = MapCellY;
-  }
-  if (y + Lepton_To_Cell(TacLeptonHeight) > MapCellY + MapCellHeight) {
-    y = MapCellY + MapCellHeight - Lepton_To_Cell(TacLeptonHeight);
-  }
+  x = std::clamp<long>(
+      x, MapCellX, MapCellX + MapCellWidth - Lepton_To_Cell(TacLeptonWidth));
+  y = std::clamp<long>(
+      y, MapCellY, MapCellY + MapCellHeight - Lepton_To_Cell(TacLeptonHeight));
 
   /*
   **	Set our TacticalCell

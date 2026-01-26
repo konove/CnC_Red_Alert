@@ -285,9 +285,7 @@ long CCFileClass::Seek(long pos, int dir) {
       default:
         break;
     }
-    Position += pos;
-    if (Position < 0) Position = 0;
-    if (Position > Length) Position = Length;
+    Position = std::clamp<long>(Position + pos, 0, Length);
     return Position;
   }
   return CDFileClass::Seek(pos, dir);

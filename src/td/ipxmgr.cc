@@ -69,6 +69,8 @@
 
 #include "td/ipxmgr.h"
 
+#include <algorithm>
+
 #include "td/combuf.h"
 #include "td/connect.h"
 #include "td/defines.h"
@@ -1352,9 +1354,7 @@ int IPXManagerClass::Private_Num_Send(int id) {
       ------------------------------------------------------------------------*/
   maxnum = 0;
   for (i = 0; i < NumConnections; i++) {
-    if (Connection[i]->Queue->Num_Send() > maxnum) {
-      maxnum = Connection[i]->Queue->Num_Send();
-    }
+    maxnum = std::max(Connection[i]->Queue->Num_Send(), maxnum);
   }
   return maxnum;
 }
@@ -1402,8 +1402,7 @@ int IPXManagerClass::Private_Num_Receive(int id) {
       ------------------------------------------------------------------------*/
   maxnum = 0;
   for (i = 0; i < NumConnections; i++) {
-    if (Connection[i]->Queue->Num_Receive() > maxnum)
-      maxnum = Connection[i]->Queue->Num_Receive();
+    maxnum = std::max(Connection[i]->Queue->Num_Receive(), maxnum);
   }
   return maxnum;
 }
@@ -1470,7 +1469,7 @@ unsigned long IPXManagerClass::Response_Time() {
   for (i = 0; i < NumConnections; i++) {
 #endif  // VIRTUAL_SUBNET_SERVER
     resp = Connection[i]->Queue->Avg_Response_Time();
-    if (resp > maxresp) maxresp = resp;
+    maxresp = std::max(resp, maxresp);
   }
 
   return maxresp;

@@ -62,7 +62,7 @@ void Socket_Select() {
     FD_SET(sock.socket, &read_set);
     if (sock.check_write) FD_SET(sock.socket, &write_set);
     FD_SET(sock.socket, &err_set);
-    if (sock.socket > max_fd) max_fd = sock.socket;
+    max_fd = std::max(sock.socket, max_fd);
   }
 
   timeval timeout;

@@ -1626,7 +1626,7 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
                                              ? Text_String(TXT_ON)
                                              : Text_String(TXT_OFF));
 
-        if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+        display = std::max(display, REDRAW_BUTTONS);
         break;
 
       case BUTTON_OK | KN_BUTTON:
@@ -3796,7 +3796,7 @@ int Com_Scenario_Dialog() {
         if (!ready_to_go) {
           MPlayerUnitCount =
               countgauge.Get_Value() + MPlayerCountMin[MPlayerBases];
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
           transmit = 1;
         }
         break;
@@ -3810,7 +3810,7 @@ int Com_Scenario_Dialog() {
           if (BuildLevel >
               MPLAYER_BUILD_LEVEL_MAX)  // if it's pegged, max it out
             BuildLevel = MPLAYER_BUILD_LEVEL_MAX;
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
           transmit = 1;
         }
         break;
@@ -3974,7 +3974,7 @@ int Com_Scenario_Dialog() {
         if (!ready_to_go) {
           if (Messages.Get_Edit_Buf() != nullptr) {
             Messages.Input(input);
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            display = std::max(display, REDRAW_MESSAGE);
             break;
           }
         }
@@ -4004,7 +4004,7 @@ int Com_Scenario_Dialog() {
             Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
                               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                               txt, d_message_w - 70 * factor);
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            display = std::max(display, REDRAW_MESSAGE);
 
             credit_edt.Clear_Focus();
             credit_edt.Flag_To_Redraw();
@@ -4023,7 +4023,7 @@ int Com_Scenario_Dialog() {
         Manage the message system (get rid of old messages)
         ...............................................................*/
         if (Messages.Manage()) {
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
         }
 
         /*...............................................................
@@ -4042,7 +4042,7 @@ int Com_Scenario_Dialog() {
         If 'Input' returned 2, it means redraw the message display.
         ...............................................................*/
         else if (i == 2) {
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
         }
 
         /*...............................................................
@@ -4114,7 +4114,7 @@ int Com_Scenario_Dialog() {
             sent_so_far += actual_message_size;  // COMPAT_MESSAGE_LENGTH-5;
           }
 
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          display = std::max(display, REDRAW_MESSAGE);
         } /* end of send message */
 
     } /* end of input processing */
@@ -4450,9 +4450,8 @@ int Com_Scenario_Dialog() {
       //			Smart_Printf( "Did not receive their response
       // time!!!!!!!\n" ); 			Get_Key();
     } else {
-      if (SendPacket.ResponseTime < theirresponsetime) {
-        SendPacket.ResponseTime = theirresponsetime;
-      }
+      SendPacket.ResponseTime =
+          std::max(SendPacket.ResponseTime, theirresponsetime);
     }
 
     //

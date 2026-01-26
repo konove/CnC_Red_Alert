@@ -41,6 +41,8 @@
 #ifndef FTIMER_H
 #define FTIMER_H
 
+#include <algorithm>
+
 #include "td/globals.h"
 #include "tech/noinit.h"
 
@@ -77,9 +79,7 @@ class TCountDownTimerClass {
   bool Active() const { return Started != -1; }
   int Expired() const { return Time() == 0; }
   long Time() const {
-    long remain = DelayTime - (Frame - Started);
-    if (remain < 0) remain = 0;
-    return remain;
+    return std::max<long>(DelayTime - (Frame - Started), 0);
   }  // Fetch current count down value.
 
  protected:

@@ -55,6 +55,7 @@
 
 #include "tech/bfiofile.h"
 
+#include <algorithm>
 #include <cerrno>
 #include <cstring>
 
@@ -613,22 +614,16 @@ long BufferIOFileClass::Write(void const* buffer, long size) {
           BufferChangeBeg = BufferPos;
           BufferChangeEnd = BufferPos;
         } else {
-          if (BufferChangeBeg > BufferPos) {
-            BufferChangeBeg = BufferPos;
-          }
+          BufferChangeBeg = std::min(BufferChangeBeg, BufferPos);
         }
 
         BufferPos += sizetowrite;
 
-        if (BufferChangeEnd < BufferPos) {
-          BufferChangeEnd = BufferPos;
-        }
+        BufferChangeEnd = std::max(BufferChangeEnd, BufferPos);
 
         FilePos = BufferFilePos + BufferPos;
 
-        if (FileSize < FilePos) {
-          FileSize = FilePos;
-        }
+        FileSize = std::max(FileSize, FilePos);
 
         //
         // end of buffer reached?
@@ -838,13 +833,8 @@ long BufferIOFileClass::Seek(long pos, int dir) {
 
     FilePos += pos;
 
-    if (FilePos < 0) {
-      FilePos = 0;
-    }
-
-    if (FilePos > FileSize) {
-      FilePos = FileSize;
-    }
+    FilePos = std::max<long>(FilePos, 0);
+    FilePos = std::min(FilePos, FileSize);
 
     if (FileSize <= BufferSize) {
       BufferPos = FilePos;

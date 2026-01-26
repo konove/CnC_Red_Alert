@@ -338,8 +338,8 @@ void HelpClass::Set_Text(int text) {
       if (DrawY + FontHeight > bottom) {
         DrawY -= DrawY + FontHeight - bottom;
       }
-      if (DrawX < TacPixelX + 1) DrawX = TacPixelX + 1;
-      if (DrawY < TacPixelY + 1) DrawY = TacPixelY + 1;
+      DrawX = std::max(DrawX, TacPixelX + 1);
+      DrawY = std::max(DrawY, TacPixelY + 1);
     }
     int lines = Cost ? 2 : 1;
     memcpy(OverlapList,

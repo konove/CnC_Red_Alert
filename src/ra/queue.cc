@@ -1453,9 +1453,8 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
     if (Session.Players[i]->Player.ProcessTime == -1) {
       return;
     }
-    if (Session.Players[i]->Player.ProcessTime > highest_ticks) {
-      highest_ticks = Session.Players[i]->Player.ProcessTime;
-    }
+    highest_ticks =
+        std::max(Session.Players[i]->Player.ProcessTime, highest_ticks);
   }
 
   //
@@ -1700,16 +1699,12 @@ static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
   //........................................................................
   // Make sure we aren't sending more events than are in the OutList
   //........................................................................
-  if (cap > OutList.Count) {
-    cap = OutList.Count;
-  }
+  cap = std::min(cap, OutList.Count);
 
   //........................................................................
   // Make sure we don't send so many events that our DoList fills up
   //........................................................................
-  if (cap > MAX_EVENTS * 64 - DoList.Count) {
-    cap = MAX_EVENTS * 64 - DoList.Count;
-  }
+  cap = std::min(cap, MAX_EVENTS * 64 - DoList.Count);
 
   //
   // 10/21/96 5:12PM - ST
@@ -2167,8 +2162,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
   //------------------------------------------------------------------------
   their_oldest_frame = Frame + 1000;
   for (i = 0; i < net->Num_Connections(); i++) {
-    if (their_frame[i] < their_oldest_frame)
-      their_oldest_frame = their_frame[i];
+    their_oldest_frame = std::min(their_frame[i], their_oldest_frame);
   }
 
   //------------------------------------------------------------------------

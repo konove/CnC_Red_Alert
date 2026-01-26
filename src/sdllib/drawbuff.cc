@@ -1,5 +1,6 @@
 #include "sdllib/include/drawbuff.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <utility>
@@ -789,8 +790,8 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
   if (sy > dy) std::swap(sy, dy);
 
   // clamp to bounds
-  if (sx < 0) sx = 0;
-  if (sy < 0) sy = 0;
+  sx = std::max(sx, 0);
+  sy = std::max(sy, 0);
 
   if (dx >= vp_dst->Get_Width()) dx = vp_dst->Get_Width() - 1;
   if (dy >= vp_dst->Get_Height()) dy = vp_dst->Get_Height() - 1;
@@ -919,9 +920,9 @@ void GraphicViewPortClass::Attach(GraphicBufferClass* graphic_buff, int x,
   if (this == Get_Graphic_Buffer()) return;
 
   // clamp bounds
-  if (x < 0) x = 0;
+  x = std::max(x, 0);
   if (x >= graphic_buff->Get_Width()) x = graphic_buff->Get_Width() - 1;
-  if (y < 0) y = 0;
+  y = std::max(y, 0);
   if (y >= graphic_buff->Get_Height()) y = graphic_buff->Get_Height() - 1;
 
   if (x + w > graphic_buff->Get_Width()) w = graphic_buff->Get_Width() - x;

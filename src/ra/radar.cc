@@ -1660,10 +1660,10 @@ void RadarClass::AI(KeyNumType& input, int x, int y) {
   */
   if (!IsRadarActivating && !IsRadarDeactivating && IsRadarJammed) {
     RadarAnimFrame++;
-    if (RadarAnimFrame < RADAR_ACTIVATED_FRAME)
+    RadarAnimFrame = std::max<int>(RadarAnimFrame, RADAR_ACTIVATED_FRAME);
+    if (RadarAnimFrame > 3 + RADAR_ACTIVATED_FRAME) {
       RadarAnimFrame = RADAR_ACTIVATED_FRAME;
-    if (RadarAnimFrame > 3 + RADAR_ACTIVATED_FRAME)
-      RadarAnimFrame = RADAR_ACTIVATED_FRAME;
+    }
     IsToRedraw = true;
     Flag_To_Redraw(false);
   }
@@ -2259,7 +2259,7 @@ bool RadarClass::Spy_Next_House() {
     house = firsthouse;
   }
 
-  if (house < firsthouse) house = firsthouse;
+  house = std::max(house, firsthouse);
 
   while (house < maxhouse && !tospy) {
     HouseClass* hptr = HouseClass::As_Pointer(house);

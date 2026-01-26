@@ -52,6 +52,7 @@
 
 #include "ra/combuf.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 
@@ -714,10 +715,7 @@ void CommBufferClass::Add_Delay(unsigned long delay) {
     MeanDelay = DelaySum / NumDelay;
   }
 
-  if (delay > MaxDelay) {
-    MaxDelay = delay;
-  }
-
+  MaxDelay = std::max(delay, MaxDelay);
 } /* end of Add_Delay */
 
 /***************************************************************************

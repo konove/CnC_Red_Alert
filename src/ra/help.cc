@@ -329,8 +329,8 @@ void HelpClass::Set_Text(int text) {
       if (DrawY + 10 * RESFACTOR > bottom) {
         DrawY -= DrawY + 10 * RESFACTOR - bottom;
       }
-      if (DrawX < TacPixelX + 1) DrawX = TacPixelX + 1;
-      if (DrawY < TacPixelY + 1) DrawY = TacPixelY + 1;
+      DrawX = std::max(DrawX, TacPixelX + 1);
+      DrawY = std::max(DrawY, TacPixelY + 1);
     }
     memcpy(OverlapList, Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY),
            sizeof(OverlapList));

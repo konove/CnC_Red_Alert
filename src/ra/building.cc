@@ -4224,9 +4224,7 @@ int BuildingClass::Mission_Missile() {
               new BulletClass(BULLET_NUKE_DOWN, ::As_Target(House->NukeDest),
                               this, 200, WARHEAD_NUKE, MPH_VERY_FAST);
           if (bullet) {
-            int celly = Cell_Y(House->NukeDest);
-            celly -= 64;
-            if (celly < 1) celly = 1;
+            int celly = std::max(Cell_Y(House->NukeDest) - 64, 1);
             COORDINATE start =
                 Cell_Coord(XY_Cell(Cell_X(House->NukeDest), celly));
             if (!bullet->Unlimbo(start, DIR_S)) {

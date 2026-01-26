@@ -73,6 +73,7 @@
 
 #include <fcntl.h>
 
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
@@ -1069,10 +1070,10 @@ void Toggle_Formation() {
       if (setform) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-        if (xc < minx) minx = xc;
-        if (xc > maxx) maxx = xc;
-        if (yc < miny) miny = yc;
-        if (yc > maxy) maxy = yc;
+        minx = std::min(xc, minx);
+        maxx = std::max(xc, maxx);
+        miny = std::min(yc, miny);
+        maxy = std::max(yc, maxy);
         if (obj->Class->MaxSpeed < TeamMaxSpeed[team]) {
           TeamMaxSpeed[team] = obj->Class->MaxSpeed;
           TeamSpeed[team] = obj->Class->Speed;
@@ -1091,13 +1092,11 @@ void Toggle_Formation() {
       if (setform) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-        if (xc < minx) minx = xc;
-        if (xc > maxx) maxx = xc;
-        if (yc < miny) miny = yc;
-        if (yc > maxy) maxy = yc;
-        if (obj->Class->MaxSpeed < TeamMaxSpeed[team]) {
-          TeamMaxSpeed[team] = obj->Class->MaxSpeed;
-        }
+        minx = std::min(xc, minx);
+        maxx = std::max(xc, maxx);
+        miny = std::min(yc, miny);
+        maxy = std::max(yc, maxy);
+        TeamMaxSpeed[team] = std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
       } else {
         obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000);
       }
@@ -1112,13 +1111,11 @@ void Toggle_Formation() {
       if (setform) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-        if (xc < minx) minx = xc;
-        if (xc > maxx) maxx = xc;
-        if (yc < miny) miny = yc;
-        if (yc > maxy) maxy = yc;
-        if (obj->Class->MaxSpeed < TeamMaxSpeed[team]) {
-          TeamMaxSpeed[team] = obj->Class->MaxSpeed;
-        }
+        minx = std::min(xc, minx);
+        maxx = std::max(xc, maxx);
+        miny = std::min(yc, miny);
+        maxy = std::max(yc, maxy);
+        TeamMaxSpeed[team] = std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
       } else {
         obj->XFormOffset = obj->YFormOffset = 0x80000000UL;
       }
@@ -3903,10 +3900,10 @@ void Handle_Team(int team, int action) {
             obj->Mark(MARK_CHANGE);
             long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
             long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-            if (xc < minx) minx = xc;
-            if (xc > maxx) maxx = xc;
-            if (yc < miny) miny = yc;
-            if (yc > maxy) maxy = yc;
+            minx = std::min(xc, minx);
+            maxx = std::max(xc, maxx);
+            miny = std::min(yc, miny);
+            maxy = std::max(yc, maxy);
             if (obj->Class->MaxSpeed < TeamMaxSpeed[team]) {
               TeamMaxSpeed[team] = obj->Class->MaxSpeed;
               TeamSpeed[team] = obj->Class->Speed;
@@ -3924,10 +3921,10 @@ void Handle_Team(int team, int action) {
             obj->Mark(MARK_CHANGE);
             long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
             long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-            if (xc < minx) minx = xc;
-            if (xc > maxx) maxx = xc;
-            if (yc < miny) miny = yc;
-            if (yc > maxy) maxy = yc;
+            minx = std::min(xc, minx);
+            maxx = std::max(xc, maxx);
+            miny = std::min(yc, miny);
+            maxy = std::max(yc, maxy);
             if (obj->Class->MaxSpeed < TeamMaxSpeed[team]) {
               TeamMaxSpeed[team] = obj->Class->MaxSpeed;
               TeamSpeed[team] = obj->Class->Speed;
@@ -3945,13 +3942,12 @@ void Handle_Team(int team, int action) {
             obj->Mark(MARK_CHANGE);
             long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
             long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-            if (xc < minx) minx = xc;
-            if (xc > maxx) maxx = xc;
-            if (yc < miny) miny = yc;
-            if (yc > maxy) maxy = yc;
-            if (obj->Class->MaxSpeed < TeamMaxSpeed[team]) {
-              TeamMaxSpeed[team] = obj->Class->MaxSpeed;
-            }
+            minx = std::min(xc, minx);
+            maxx = std::max(xc, maxx);
+            miny = std::min(yc, miny);
+            maxy = std::max(yc, maxy);
+            TeamMaxSpeed[team] =
+                std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
           }
         }
       }

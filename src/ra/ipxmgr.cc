@@ -69,6 +69,7 @@
 
 #include "ra/ipxmgr.h"
 
+#include <algorithm>
 #include <cassert>
 
 #include "port/safe_string.h"
@@ -1427,9 +1428,7 @@ int IPXManagerClass::Private_Num_Send(int id) {
   //------------------------------------------------------------------------
   maxnum = 0;
   for (i = 0; i < NumConnections; i++) {
-    if (Connection[i]->Queue->Num_Send() > maxnum) {
-      maxnum = Connection[i]->Queue->Num_Send();
-    }
+    maxnum = std::max(Connection[i]->Queue->Num_Send(), maxnum);
   }
   return maxnum;
 
@@ -1479,9 +1478,7 @@ int IPXManagerClass::Private_Num_Receive(int id) {
   //------------------------------------------------------------------------
   maxnum = 0;
   for (i = 0; i < NumConnections; i++) {
-    if (Connection[i]->Queue->Num_Receive() > maxnum) {
-      maxnum = Connection[i]->Queue->Num_Receive();
-    }
+    maxnum = std::max(Connection[i]->Queue->Num_Receive(), maxnum);
   }
   return maxnum;
 
@@ -1534,20 +1531,12 @@ void IPXManagerClass::Set_Socket(unsigned short socket) {
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 unsigned long IPXManagerClass::Response_Time() {
-  unsigned long resp;
   unsigned long maxresp = 0;
-  int i;
-
-  for (i = 0; i < NumConnections; i++) {
-    resp = Connection[i]->Queue->Avg_Response_Time();
-    if (resp > maxresp) {
-      maxresp = resp;
-    }
+  for (int i = 0; i < NumConnections; i++) {
+    maxresp = std::max(Connection[i]->Queue->Avg_Response_Time(), maxresp);
   }
-
   return maxresp;
-
-} /* end of Response_Time */
+}
 
 /***************************************************************************
  * IPXManagerClass::Global_Response_Time -- Returns Avg Response Time      *

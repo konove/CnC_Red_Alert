@@ -58,6 +58,7 @@
 
 #include "tech/rawfile.h"
 
+#include <algorithm>
 #include <cerrno>
 #include <cstdio>
 #include <string>
@@ -499,9 +500,7 @@ long RawFileClass::Seek(long pos, int dir) {
   if (BiasLength != -1) {
     switch (dir) {
       case SEEK_SET:
-        if (pos > BiasLength) {
-          pos = BiasLength;
-        }
+        pos = std::min<long>(pos, BiasLength);
         pos += BiasStart;
         break;
 

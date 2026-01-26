@@ -1228,9 +1228,7 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
     if (TheirProcessTime[i] == -1) {
       return;
     }
-    if (TheirProcessTime[i] > highest_ticks) {
-      highest_ticks = TheirProcessTime[i];
-    }
+    highest_ticks = std::max(TheirProcessTime[i], highest_ticks);
   }
 
   //
@@ -1464,16 +1462,12 @@ static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
   //........................................................................
   // Make sure we aren't sending more events than are in the OutList
   //........................................................................
-  if (cap > OutList.Count) {
-    cap = OutList.Count;
-  }
+  cap = std::min(cap, OutList.Count);
 
   //........................................................................
   // Make sure we don't send so many events that our DoList fills up
   //........................................................................
-  if (cap > MAX_EVENTS * 8 - DoList.Count) {
-    cap = MAX_EVENTS * 8 - DoList.Count;
-  }
+  cap = std::min(cap, MAX_EVENTS * 8 - DoList.Count);
 
   /*
   ** No cap for internet game
@@ -1660,9 +1654,8 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
   //	Extract the other player's CommandCount.  This count will include
   //	the commands in this packet, if there are any.
   //------------------------------------------------------------------------
-  if (event->Data.FrameInfo.CommandCount > their_sent[index]) {
-    their_sent[index] = event->Data.FrameInfo.CommandCount;
-  }
+  their_sent[index] =
+      std::max(event->Data.FrameInfo.CommandCount, their_sent[index]);
 
   //------------------------------------------------------------------------
   //	If this packet was not a FRAMESYNC packet:
@@ -1893,8 +1886,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
   //------------------------------------------------------------------------
   their_oldest_frame = Frame + 1000;
   for (i = 0; i < net->Num_Connections(); i++) {
-    if (their_frame[i] < their_oldest_frame)
-      their_oldest_frame = their_frame[i];
+    their_oldest_frame = std::min(their_frame[i], their_oldest_frame);
   }
 
   //------------------------------------------------------------------------

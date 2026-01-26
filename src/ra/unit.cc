@@ -3059,12 +3059,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
         if (whead->IsWallDestroyer ||
             (whead->IsWoodDestroyer && optr->IsWooden)) {
-          //					if (!House->IsHuman &&
-          //! House->Is_Ally(cellptr->Owner)) {
-          if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
-          //					} else {
-          //						return(MOVE_NO);
-          //					}
+          retval = std::max(retval, MOVE_DESTROYABLE);
         } else {
           return MOVE_NO;
         }
@@ -3139,7 +3134,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
           if (face == techface && Distance(obj) <= 0x1FF) {
             return MOVE_NO;
           }
-          if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
+          retval = std::max(retval, MOVE_MOVING_BLOCK);
         } else {
           if (obj->What_Am_I() == RTTI_BUILDING) return MOVE_NO;
 
@@ -3150,7 +3145,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
           if (Map[Coord].Zones[Class->MZone] != cellptr->Zones[Class->MZone])
             return MOVE_NO;
 
-          if (retval < MOVE_TEMP) retval = MOVE_TEMP;
+          retval = std::max(retval, MOVE_TEMP);
         }
       } else {
         /*
@@ -3193,14 +3188,14 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
 #endif
 
               default:
-                if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
+                retval = std::max(retval, MOVE_DESTROYABLE);
                 break;
             }
           } else {
             crushable = true;
           }
         } else {
-          if (retval < MOVE_CLOAK) retval = MOVE_CLOAK;
+          retval = std::max(retval, MOVE_CLOAK);
         }
       }
     }

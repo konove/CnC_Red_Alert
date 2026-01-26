@@ -46,6 +46,7 @@
 
 #include "ra/abstract.h"
 
+#include <algorithm>
 #include <cstring>
 
 #include "ra/building.h"
@@ -125,7 +126,7 @@ int AbstractClass::Distance(TARGET target) const {
   */
   if (obj) {
     dist -= (obj->Class->Width() + obj->Class->Height()) * (0x100 / 4);
-    if (dist < 0) dist = 0;
+    dist = std::max(dist, 0);
   }
 
   /*

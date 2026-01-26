@@ -50,6 +50,7 @@
 
 #include "td/dialog.h"
 
+#include <algorithm>
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
@@ -218,9 +219,7 @@ int Format_Window_String(char* string, int maxlinelen, int& width,
     /*
     **	Record the largest width of the worst case string.
     */
-    if (linelen > width) {
-      width = linelen;
-    }
+    width = std::max(linelen, width);
 
     /*
     **	Force a break at the end of the line.
