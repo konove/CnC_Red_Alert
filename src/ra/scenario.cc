@@ -72,6 +72,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string>
+#include <string_view>
 
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -142,7 +144,6 @@
 #include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
-#include "sdllib/include/shape.h"
 #include "sdllib/include/ww_audio.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
@@ -360,7 +361,6 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 bool Start_Scenario(char* name, bool briefing) {
-  // BG	Theme.Queue_Song(THEME_QUIET);
   Theme.Stop();
   IsTanyaDead = SaveTanya;
   if (!Read_Scenario(name)) {
@@ -422,7 +422,7 @@ bool Start_Scenario(char* name, bool briefing) {
     while (Get_Mouse_State()) {
       Show_Mouse();
     }
-    Restate_Mission(Scen.ScenarioName, TXT_OK, TXT_NONE);
+    Restate_Mission();
   }
 
   if (briefing) {
@@ -1282,62 +1282,52 @@ void Do_Restart() {
   Map.Render();
 }
 
-/***********************************************************************************************
- * Restate_Mission -- Handles restating the mission objective. *
- *                                                                                             *
- *    This routine will display the mission objective (as text). It will also
- *give the         * option to redisplay the mission briefing video. *
- *                                                                                             *
- * INPUT:   name  -- The scenario name. This is the unique identifier for the
- *scenario         * briefing text as it appears in the "MISSION.INI" file. *
- *                                                                                             *
- * OUTPUT:  Returns the response from the dialog. This will either be 1 if the
- *video was       * requested, or 0 if the return to game options button was
- *selected.                 *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/23/1995 JLB : Created. * 08/06/1995 JLB : Uses preloaded
- *briefing text.                                            *
- *=============================================================================================*/
-bool Restate_Mission(char const* name, int button1, int button2) {
-  if (name) {
-    bool brief = true;
-    char buffer[25];
-    if (Scen.BriefMovie != VQ_NONE) {
-      sprintf(buffer, "%s.VQA", VQName[Scen.BriefMovie]);
-    }
-
-    if (Scen.BriefMovie == VQ_NONE || !CCFileClass(buffer).Is_Available()) {
-      button2 = TXT_OK;
-      button1 = TXT_NONE;
-      brief = false;
-    }
-
-    /*
-    **	If mission object text was found, then display it.
-    */
-    if (strlen(Scen.BriefingText)) {
-      port::SafeCopy(_ShapeBuffer, Scen.BriefingText, _ShapeBufferSize);
-      BlackPalette.Set(FADE_PALETTE_MEDIUM, Call_Back);
-      if (BGMessageBox(_ShapeBuffer, button2, button1)) {
-        return true;
-      }
-      if (!brief) return true;
-      return false;
-    }
+BriefingAction Restate_Mission() {
+  if (std::string_view(Scen.ScenarioName).empty() ||
+      std::string_view(Scen.BriefingText).empty()) {
+    return BriefingAction::kResume;
   }
-  return false;
+
+  // Check if briefing video is available.
+  bool has_video = false;
+  if (Scen.BriefMovie != VQ_NONE) {
+    const auto video_filename = std::string(VQName[Scen.BriefMovie]) + ".VQA";
+    has_video = CCFileClass(video_filename.c_str()).Is_Available();
+  }
+
+  // Choose buttons based on video availability.
+  const int resume_btn = has_video ? TXT_RESUME_MISSION : TXT_OK;
+  const int video_btn = has_video ? TXT_VIDEO : TXT_NONE;
+
+  // Display mission briefing.
+  const int clicked =
+      ShowBriefingMessageBox(Scen.BriefingText, resume_btn, video_btn);
+  if (clicked == video_btn && has_video) {
+    return BriefingAction::kPlayVideo;
+  }
+
+  return BriefingAction::kResume;
 }
 
-#define BUTTON_1 1
-#define BUTTON_2 2
-#define BUTTON_3 3
-#define BUTTON_FLAG 0x8000
-bool BGMessageBox(char const* msg, int btn1, int btn2) {
-#define BUFFSIZE 511
-  char buffer[BUFFSIZE];
-  bool retval = false;
+static constexpr int kButton1 = 1;
+static constexpr int kButton2 = 2;
+static constexpr int kButton3 = 3;
+static constexpr int kButtonFlag = 0x8000;
+
+// Maximum characters to display per page of briefing text.
+static constexpr size_t kMaxCharsPerPage = 512;
+
+int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
+                           bool fade_to_black) {
+  if (fade_to_black) {
+    BlackPalette.Set(FADE_PALETTE_MEDIUM, Call_Back);
+  }
+
+  int retval = 0;
+
+  // Track which text ID each button position represents after shifting.
+  int left_btn_text_id = left_btn;
+  int right_btn_text_id = right_btn;
   bool process;      // loop while true
   KeyNumType input;  // user input
   int selection;
@@ -1348,8 +1338,8 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
   int realval[5];
   int morebutton = 3;  // which button says "more": 2 or 3?
 
-  const char* b1txt = Text_String(btn1);
-  const char* b2txt = Text_String(btn2);
+  const char* b1txt = Text_String(left_btn);
+  const char* b2txt = Text_String(right_btn);
 #ifdef FRENCH
   const char* b3txt = "SUITE";
 #else
@@ -1364,17 +1354,10 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
 
   GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_TYPE]);
 
-  /*
-  ** If the message won't be needing the 'more' button, get rid of it.
-  */
-  if (strlen(msg) <= BUFFSIZE - 1) {
+  // If the message fits on one page, hide the "MORE" button.
+  if (msg.size() < kMaxCharsPerPage) {
     b3txt = "";
   }
-
-#if defined(WIN32) && !defined(PORTABLE)
-  GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),
-                                    VisiblePage.Get_Height(), (void*)nullptr);
-#endif
 
   /*
   ** If there's no text for button one, zero it out.
@@ -1382,6 +1365,7 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
   if (*b1txt == '\0') {
     b1txt = b2txt;
     b2txt = "";
+    left_btn_text_id = right_btn;  // Button 1 now shows right_btn's text.
     if (*b1txt == '\0') {
       b1txt = nullptr;
     }
@@ -1447,21 +1431,21 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
     }
   }
 
-  /*
-  **	Determine the dimensions of the text to be used for the dialog box.
-  **	These dimensions will control how the dialog box looks.
-  */
-  buffer[BUFFSIZE - 1] = 0;
-  int buffend = BUFFSIZE - 1;
-  port::SafeCopy(buffer, msg, BUFFSIZE - 1);
-  /*
-  ** Scan through the string to see if it got clipped, and if so, we'll
-  ** trim it back to the last space so it'll clip on a word.
-  */
-  if (strlen(buffer) != strlen(msg)) {
-    while (buffer[buffend] != ' ') buffend--;
-    buffer[buffend] = 0;
+  // Determine the portion of text to display on this page.
+  // If text is longer than one page, truncate at the last space.
+  std::string_view page_text = msg.substr(0, kMaxCharsPerPage - 1);
+  if (page_text.size() < msg.size()) {
+    size_t last_space = page_text.rfind(' ');
+    if (last_space != std::string_view::npos) {
+      page_text = page_text.substr(0, last_space);
+    }
   }
+
+  // Buffer for Format_Window_String which modifies the string for word wrap.
+  char buffer[kMaxCharsPerPage];
+  // Copy to mutable buffer for Format_Window_String (which inserts newlines).
+  page_text.copy(buffer, page_text.size());
+  buffer[page_text.size()] = '\0';
   Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[PCOLOR_TYPE], TBLACK,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   int width;
@@ -1481,15 +1465,15 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
   **	Initialize the button structures. All are initialized, even though one
   *(or none) may *	actually be added to the button list.
   */
-  TextButtonClass button1(BUTTON_1, b1txt, TPF_BUTTON,
+  TextButtonClass button1(kButton1, b1txt, TPF_BUTTON,
                           x + (numbuttons == 1 ? (width - bwidth) >> 1 : 10),
                           y + height - (bheight + 5), bwidth);
 
-  TextButtonClass button2(BUTTON_2, b2txt, TPF_BUTTON,
+  TextButtonClass button2(kButton2, b2txt, TPF_BUTTON,
                           x + width - (bwidth + 10), y + height - (bheight + 5),
                           bwidth);
 
-  TextButtonClass button3(BUTTON_3, b3txt, TPF_BUTTON, 0,
+  TextButtonClass button3(kButton3, b3txt, TPF_BUTTON, 0,
                           y + height - (bheight + 5));
   button3.X = x + ((width - button3.Width) >> 1);
 
@@ -1502,19 +1486,19 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
   if (numbuttons) {
     buttonlist = &button1;
     buttons[0] = &button1;
-    realval[0] = BUTTON_1;
+    realval[0] = kButton1;
     if (numbuttons > 2) {
       button3.Add(*buttonlist);
       buttons[1] = &button3;
-      realval[1] = BUTTON_3;
+      realval[1] = kButton3;
       button2.Add(*buttonlist);
       buttons[2] = &button2;
-      realval[2] = BUTTON_2;
+      realval[2] = kButton2;
       buttons[curbutton]->Turn_On();
     } else if (numbuttons == 2) {
       button2.Add(*buttonlist);
       buttons[1] = &button2;
-      realval[1] = BUTTON_2;
+      realval[1] = kButton2;
       buttons[curbutton]->Turn_On();
     }
   }
@@ -1525,37 +1509,20 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
   Hide_Mouse();
 
   PaletteClass temp;
-#if RESFACTOR == 2
   char* filename = "SOVPAPER.PCX";
   if (PlayerPtr->Class->House != HOUSE_USSR &&
       PlayerPtr->Class->House != HOUSE_UKRAINE) {
     filename = "ALIPAPER.PCX";
   }
   Load_Title_Screen(filename, &HidPage, temp);
-#else
-  char* filename = "SOVPAPER.CPS";
-  if (PlayerPtr->Class->House != HOUSE_USSR &&
-      PlayerPtr->Class->House != HOUSE_UKRAINE) {
-    filename = "ALIPAPER.CPS";
-  }
-  CCFileClass fc(filename);
-  Load_Uncompress(fc, *HidPage.Get_Graphic_Buffer(),
-                  *HidPage.Get_Graphic_Buffer(), temp);
-#endif
   HidPage.Blit(SeenPage);
-
-#if defined(WIN32) && !defined(PORTABLE)
-  VisiblePage.Blit(seen_buff_save);
-#endif
 
   static unsigned char _scorepal[] = {0, 1, 12, 13,  4,   5,   6,  7,
                                       8, 9, 10, 255, 252, 253, 14, 248};
   Set_Font_Palette(_scorepal);
   temp.Set(FADE_PALETTE_MEDIUM, Call_Back);
 
-  /*
-  **	Main Processing Loop.
-  */
+  // Main Processing Loop.
 
   int bufindex = 0;
 
@@ -1565,20 +1532,6 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
   int xprint = x + 20;
   int yprint = y + 25;
   do {
-#if defined(WIN32) && !defined(PORTABLE)
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      Hide_Mouse();
-      seen_buff_save.Blit(VisiblePage);
-      display = true;
-      Show_Mouse();
-    }
-#endif
     char bufprint[2];
     bufprint[1] = 0;
     bufprint[0] = buffer[bufindex];
@@ -1589,18 +1542,11 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
     } else {
       if (bufprint[0] != 20) {
         SeenPage.Print(bufprint, xprint, yprint, TBLACK, TBLACK);
-#if defined(WIN32) && !defined(PORTABLE)
-        seen_buff_save.Print(bufprint, xprint, yprint, TBLACK, TBLACK);
-#endif
         xprint += Char_Pixel_Width(bufprint[0]);
       }
     }
     if (bufprint[0] == '\r' || bufprint[0] == '@') {
-#ifdef WIN32
       Play_Sample(briefsnd, 255, Options.Normalize_Volume(135));
-#else
-      Play_Sample(briefsnd, 255, Options.Normalize_Volume(45));
-#endif
       CDTimerClass<SystemTimerClass> cd;
       cd = 5;
       do {
@@ -1616,46 +1562,22 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
     process = true;
     pressed = false;
     while (process) {
-#if defined(WIN32) && !defined(PORTABLE)
-      /*
-      ** If we have just received input focus again after running in the
-      *background then
-      ** we need to redraw.
-      */
-      if (AllSurfaces.SurfacesRestored) {
-        AllSurfaces.SurfacesRestored = false;
-        Hide_Mouse();
-        seen_buff_save.Blit(VisiblePage);
-        display = true;
-        Show_Mouse();
-      }
-#endif
-
       if (display) {
         display = false;
 
         Hide_Mouse();
-
-        /*
-        **	Redraw the buttons.
-        */
-        if (buttonlist) {
-          buttonlist->Draw_All();
-        }
+        // Redraw the buttons.
+        buttonlist->Draw_All();
         Show_Mouse();
       }
 
-      /*
-      **	Invoke game callback.
-      */
+      // Invoke game callback.
       Call_Back();
 
-      /*
-      **	Fetch and process input.
-      */
+      // Fetch and process input.
       input = buttonlist->Input();
       switch (input) {
-        case BUTTON_1 | BUTTON_FLAG:
+        case kButton1 | kButtonFlag:
           selection = realval[0];
           pressed = true;
           break;
@@ -1670,12 +1592,12 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
           }
           break;
 
-        case BUTTON_2 | BUTTON_FLAG:
-          selection = BUTTON_2;
+        case kButton2 | kButtonFlag:
+          selection = kButton2;
           pressed = true;
           break;
 
-        case BUTTON_3 | BUTTON_FLAG:
+        case kButton3 | kButtonFlag:
           selection = realval[1];
           pressed = true;
           break;
@@ -1711,27 +1633,25 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
           break;
 
         case KN_RETURN:
-          selection = curbutton + BUTTON_1;
+          selection = curbutton + kButton1;
           pressed = true;
           break;
 
-        /*
-        **	Check 'input' to see if it's the 1st char of button text
-        */
+        // Check 'input' to see if it's the 1st char of button text
         default:
           if (b1char == toupper(Keyboard->To_ASCII(
                             static_cast<KeyNumType>(input & 0xFF)))) {
-            selection = BUTTON_1;
+            selection = kButton1;
             pressed = true;
           } else if (b2txt != nullptr &&
                      b2char == toupper(Keyboard->To_ASCII(
                                    static_cast<KeyNumType>(input & 0xFF)))) {
-            selection = BUTTON_2;
+            selection = kButton2;
             pressed = true;
           } else if (b3txt != nullptr &&
                      b3char == toupper(Keyboard->To_ASCII(
                                    static_cast<KeyNumType>(input & 0xFF)))) {
-            selection = BUTTON_3;
+            selection = kButton3;
             pressed = true;
           }
           break;
@@ -1739,17 +1659,17 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
 
       if (pressed) {
         switch (selection) {
-          case BUTTON_1:
+          case kButton1:
             retval = 1;
             process = false;
             break;
 
-          case BUTTON_2:
+          case kButton2:
             retval = 0;
             process = false;
             break;
 
-          case BUTTON_3:
+          case kButton3:
             retval = 2;
             process = false;
             break;
@@ -1758,28 +1678,25 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
         pressed = false;
       }
     }
-
   } else {
     Keyboard->Clear();
   }
 
-  if (retval == morebutton - 1 && strlen(msg) > BUFFSIZE - 1) {
-    retval = BGMessageBox(msg + buffend + 1, btn1, btn2);
+  // Handle MORE button - recurse to show next page (no fade on subsequent
+  // pages).
+  if (retval == morebutton - 1 && msg.size() > page_text.size()) {
+    return ShowBriefingMessageBox(msg.substr(page_text.size() + 1), left_btn,
+                                  right_btn, /*fade_to_black=*/false);
   }
+
   /*
   ** Restore the screen.
   */
   Hide_Mouse();
-  /*
-  ** Now set the palette, depending on if we're going to show the video or
-  ** go back to the main menu.
-  */
+  // Now set the palette, depending on if we're going to show the video or
+  // go back to the main menu.
   switch (retval) {
     case 0:
-      //			BlackPalette.Set(FADE_PALETTE_MEDIUM,
-      // Call_Back); 			SeenPage.Clear();
-      ////			CCPalette.Set();
-      //			break;
     case 1:
       BlackPalette.Set(FADE_PALETTE_MEDIUM, Call_Back);
       SeenPage.Clear();
@@ -1791,7 +1708,8 @@ bool BGMessageBox(char const* msg, int btn1, int btn2) {
 
   GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_DIALOG_BLUE]);
 
-  return retval;
+  // Convert internal button index to the text ID that was clicked.
+  return retval == 1 ? left_btn_text_id : right_btn_text_id;
 }
 
 /***********************************************************************************************

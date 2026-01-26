@@ -333,12 +333,13 @@ void GameOptionsClass::Process() {
                        Version_Name());
 
 #else
-      Fancy_Text_Print("%s\rV%s", OptionX + OptionWidth - 25 * RESFACTOR,
-                       OptionY + OptionHeight -
-                           (Session.Type == GAME_NORMAL ? 32 * RESFACTOR : 24 * RESFACTOR),
-                       GadgetClass::Get_Color_Scheme(), TBLACK,
-                       TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Scen.ScenarioName,
-                       Version_Name());
+      Fancy_Text_Print(
+          "%s\rV%s", OptionX + OptionWidth - 25 * RESFACTOR,
+          OptionY + OptionHeight -
+              (Session.Type == GAME_NORMAL ? 32 * RESFACTOR : 24 * RESFACTOR),
+          GadgetClass::Get_Color_Scheme(), TBLACK,
+          TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Scen.ScenarioName,
+          Version_Name());
 #endif
 
       buttons->Draw_All();
@@ -444,29 +445,18 @@ void GameOptionsClass::Process() {
       switch (selection) {
         case BUTTON_RESTATE:
           display = true;
-          if (!Restate_Mission(Scen.ScenarioName, TXT_VIDEO,
-                               TXT_RESUME_MISSION /*KOTXT_OPTIONS*/)) {
+          if (Restate_Mission() == BriefingAction::kPlayVideo) {
             BreakoutAllowed = true;
             Play_Movie(Scen.BriefMovie);
-
-            BlackPalette.Adjust(0x08, WhitePalette);
-            BlackPalette.Set();
-            BlackPalette.Adjust(0xFF);
-            BlackPalette.Set();
-            GamePalette.Set();
-
-            Map.Flag_To_Redraw(true);
             Theme.Queue_Song(THEME_PICK_ANOTHER);
-            process = false;
-          } else {
-            BlackPalette.Adjust(0x08, WhitePalette);
-            BlackPalette.Set();
-            BlackPalette.Adjust(0xFF);
-            BlackPalette.Set();
-            GamePalette.Set();
-            Map.Flag_To_Redraw(true);
-            process = false;
           }
+          BlackPalette.Adjust(0x08, WhitePalette);
+          BlackPalette.Set();
+          BlackPalette.Adjust(0xFF);
+          BlackPalette.Set();
+          GamePalette.Set();
+          Map.Flag_To_Redraw(true);
+          process = false;
           break;
 
         case BUTTON_LOAD:

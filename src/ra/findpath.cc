@@ -148,12 +148,12 @@ inline FacingType Opposite(FacingType face) {
   return static_cast<FacingType>(face ^ 4);
 }
 
-inline static FacingType Next_Direction(FacingType facing, FacingType dir) {
-  facing = facing + dir;
+static FacingType Next_Direction(FacingType current, FacingType delta) {
+  current = current + delta;
 #ifndef DIAGONAL
-  facing = (FacingType)(facing & 0x06);
+  current = (FacingType)(current & 0x06);
 #endif
-  return facing;
+  return current;
 }
 
 /*=========================================================================*/

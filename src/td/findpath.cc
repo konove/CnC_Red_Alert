@@ -155,12 +155,13 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
   }
 }
 
-inline static FacingType Next_Direction(FacingType facing, FacingType dir) {
-  facing = facing + dir;
+static FacingType Next_Direction(const FacingType current,
+                                 const FacingType delta) {
+  FacingType result = current + delta;
 #ifndef DIAGONAL
-  facing = (FacingType)(facing & 0x06);
+  result = static_cast<FacingType>(result & 0x06);
 #endif
-  return facing;
+  return result;
 }
 
 /*=========================================================================*/

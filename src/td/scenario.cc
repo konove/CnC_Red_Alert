@@ -708,7 +708,7 @@ void Do_Restart() {
  * HISTORY: * 06/23/1995 JLB : Created. * 08/06/1995 JLB : Uses preloaded
  *briefing text.                                            *
  *=============================================================================================*/
-bool Restate_Mission(char const* name, int button1, int button2) {
+bool Restate_Mission(char const* name, int right_btn, int left_btn) {
   if (name) {
 #ifdef JAPANESE
     char fname[14];
@@ -717,7 +717,7 @@ bool Restate_Mission(char const* name, int button1, int button2) {
 
     if (CCFileClass(fname).Is_Available()) {
       CCMessageBox box(TXT_NONE, true);
-      return (box.Process(fname, button1, button2));
+      return (box.Process(fname, right_btn, left_btn));
     }
 #else
     /*
@@ -733,8 +733,8 @@ bool Restate_Mission(char const* name, int button1, int button2) {
     CCFileClass file1(buffer);
     CCFileClass file2(buffer1);
     if (!file1.Is_Available() && !file2.Is_Available()) {
-      button1 = TXT_OK;
-      button2 = TXT_NONE;
+      right_btn = TXT_OK;
+      left_btn = TXT_NONE;
       brief = false;
     }
 #endif
@@ -751,7 +751,7 @@ bool Restate_Mission(char const* name, int button1, int button2) {
       bool hidden = Get_Mouse_State();
       if (hidden) Show_Mouse();
 
-      if (CCMessageBox(TXT_OBJECTIVE).Process(_buff, button1, button2)) {
+      if (CCMessageBox(TXT_OBJECTIVE).Process(_buff, right_btn, left_btn)) {
         if (hidden) Hide_Mouse();
         return true;
       }

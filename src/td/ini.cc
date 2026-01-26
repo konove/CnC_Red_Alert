@@ -101,8 +101,8 @@ static void Assign_Houses();
 static void Remove_AI_Players();
 static void Create_Units();
 static void Sort_Cells(CELL* cells, int numcells, CELL* outcells);
-static int Furthest_Cell(CELL* cells, int numcells, CELL* tcells,
-                         int numtcells);
+static int Furthest_Cell(CELL* ref_cells, int num_ref_cells, CELL* test_cells,
+                         int num_test_cells);
 static CELL Clip_Scatter(CELL cell, int maxdist);
 static CELL Clip_Move(CELL cell, FacingType facing, int dist);
 
@@ -1439,13 +1439,13 @@ static void Sort_Cells(CELL* cells, int numcells, CELL* outcells) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 BRR : Created. *
  *=============================================================================================*/
-static int Furthest_Cell(CELL* cells, int numcells, CELL* tcells,
-                         int numtcells) {
+static int Furthest_Cell(CELL* ref_cells, int num_ref_cells, CELL* test_cells,
+                         int num_test_cells) {
   int i;
   int j;
-  int mindist;     // minimum distance a 'tcell' is from a 'cell'
-  int maxmindist;  // the highest mindist value of all tcells
-  int maxmin_idx;  // index of the tcell with largest mindist
+  int mindist;     // minimum distance a test_cell is from a ref_cell
+  int maxmindist;  // the highest mindist value of all test_cells
+  int maxmin_idx;  // index of the test_cell with largest mindist
   int dist;        // working distance measure
 
   /*------------------------------------------------------------------------
@@ -1456,22 +1456,22 @@ static int Furthest_Cell(CELL* cells, int numcells, CELL* tcells,
 
   /*------------------------------------------------------------------------
   Loop through all test cells, finding the furthest one from all entries in
-  the 'cells' array
+  the ref_cells array
   ------------------------------------------------------------------------*/
-  for (i = 0; i < numtcells; i++) {
+  for (i = 0; i < num_test_cells; i++) {
     /*.....................................................................
-    Find the 'cell' closest to this 'tcell'
+    Find the ref_cell closest to this test_cell
     .....................................................................*/
     mindist = 0xffff;
-    for (j = 0; j < numcells; j++) {
-      dist = Distance(tcells[i], cells[j]);
+    for (j = 0; j < num_ref_cells; j++) {
+      dist = Distance(test_cells[i], ref_cells[j]);
       if (dist <= mindist) {
         mindist = dist;
       }
     }
 
     /*.....................................................................
-    If this tcell is further away than the others, save its distance &
+    If this test_cell is further away than the others, save its distance &
     index value
     .....................................................................*/
     if (mindist >= maxmindist) {

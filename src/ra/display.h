@@ -73,7 +73,7 @@
 #define SIDE_BAR_TAC_WIDTH 10
 #define SIDE_BAR_TAC_HEIGHT 8
 
-extern COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2);
+extern COORDINATE Coord_Add(COORDINATE a, COORDINATE b);
 
 class DisplayClass : public MapClass {
  public:

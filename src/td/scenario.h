@@ -13,6 +13,6 @@ void Do_Lose();
 void Do_Win();
 void Do_Restart();
 void Fill_In_Data();
-bool Restate_Mission(char const* name, int button1, int button2);
+bool Restate_Mission(char const* name, int right_btn, int left_btn);
 
 #endif  // CNC_RED_ALERT_TD_SCENARIO_H_

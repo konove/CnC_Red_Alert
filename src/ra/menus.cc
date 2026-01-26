@@ -78,7 +78,8 @@
 
 static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                  int iny2);
-static int Select_To_Entry(int select, unsigned long bitfield, int index);
+static int Select_To_Entry(int selection, unsigned long enabled_mask,
+                           int start_bit);
 static void Flash_Line(char const* text, int xpix, int ypix, unsigned nfgc,
                        unsigned hfgc, unsigned bgc);
 
@@ -87,41 +88,38 @@ int UnknownKey;
 static int MenuUpdate = 1;
 static int MenuSkip;
 
-/*=========================================================================*/
-/*	SELECT_TO_ENTRY:
- */
-/*																									*/
-/*		This routine converts a selection to the correct string entry.
- * It	   */
-/*	does this by search through a long bitfield starting at position index
- */
-/*	until it finds the correct conversion to entries.
- */
-/*																									*/
-/*	INPUTS:	int selection from menu, long the bit field to search, int
- */
-/*				the starting index within the bit field.
- */
-/*	RETURNS:	int the index into the table of entries
- */
-/*=========================================================================*/
-static int Select_To_Entry(int select, unsigned long bitfield, int index) {
-  int placement;
-
-  if (bitfield == 0xFFFFFFFFL) /* if all bits are set	*/
-    return select;             /*		then it as is		*/
-
-  placement = 0;                              /* current pos zero		*/
-  while (select) {                            /* while still ones		*/
-    if (bitfield & 1L << (placement + index)) /* if this flagged then	*/
-      select--;                               /* decrement counter		*/
-    placement++;                              /* and we moved a place	*/
-  }
-  while (!(bitfield & 1L << (placement + index))) {
-    placement++;
+// Converts a menu selection (0-based index of visible items) to the
+// corresponding table entry index, skipping disabled entries.
+//
+// Example: enabled_mask = 0b1011, start_bit = 0
+//   Bit positions:  3  2  1  0
+//   Enabled:        1  0  1  1   (entries 0, 1, 3 enabled; entry 2 disabled)
+//   Visible menu:  [0][1][2]     (3 visible items)
+//
+//   selection=0 -> entry_index=0 (first enabled)
+//   selection=1 -> entry_index=1 (second enabled)
+//   selection=2 -> entry_index=3 (third enabled, skips disabled entry 2)
+static int Select_To_Entry(int selection, const unsigned long enabled_mask,
+                           const int start_bit) {
+  if (enabled_mask == 0xFFFFFFFFL) {
+    return selection;  // All entries enabled, direct mapping.
   }
 
-  return placement; /* return the position	*/
+  // Count through enabled bits until we've passed 'selection' enabled entries.
+  int entry_index = 0;
+  while (selection) {
+    if (enabled_mask & 1L << (entry_index + start_bit)) {
+      selection--;
+    }
+    entry_index++;
+  }
+
+  // Skip any disabled entries at current position.
+  while (!(enabled_mask & 1L << (entry_index + start_bit))) {
+    entry_index++;
+  }
+
+  return entry_index;
 }
 
 /*=========================================================================*/

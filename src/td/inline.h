@@ -58,25 +58,26 @@ inline CELL XY_Cell(int x, int y) { return static_cast<CELL>(y << 6 | x); }
 inline COORDINATE XY_Coord(int x, int y) {
   return static_cast<COORDINATE>(MakeLong(y, x));
 }
-inline int Coord_X(COORDINATE coord) { return static_cast<short>(LowWord(coord)); }
-inline int Coord_Y(COORDINATE coord) { return static_cast<short>(HighWord(coord)); }
+inline int Coord_X(COORDINATE coord) {
+  return static_cast<short>(LowWord(coord));
+}
+inline int Coord_Y(COORDINATE coord) {
+  return static_cast<short>(HighWord(coord));
+}
 inline int Cell_X(CELL cell) { return static_cast<int>((unsigned)cell & 0x3F); }
 inline int Cell_Y(CELL cell) { return static_cast<int>((unsigned)cell >> 6); }
 inline int Dir_Diff(DirType dir1, DirType dir2) {
   return *(signed char*)&dir2 - *(signed char*)&dir1;
 }
-inline CELL Coord_XLepton(COORDINATE coord) {
-  return *(unsigned char*)&coord;
-}
+inline CELL Coord_XLepton(COORDINATE coord) { return *(unsigned char*)&coord; }
 inline CELL Coord_YLepton(COORDINATE coord) {
   return *((unsigned char*)&coord + 2);
 }
 // inline COORD CellXY_Coord(unsigned x, unsigned y) {return
 // (COORD)(MAKE_LONG(y<<8, x<<8));}
-inline COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2) {
-  return static_cast<COORDINATE>(
-      MakeLong(*((short*)&coord1 + 1) + *((short*)&coord2 + 1),
-               *(short*)&coord1 + *(short*)&coord2));
+inline COORDINATE Coord_Add(COORDINATE a, COORDINATE b) {
+  return static_cast<COORDINATE>(MakeLong(*((short*)&a + 1) + *((short*)&b + 1),
+                                          *(short*)&a + *(short*)&b));
 }
 inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
   return static_cast<COORDINATE>(

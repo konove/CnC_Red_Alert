@@ -529,15 +529,15 @@ inline COORDINATE Coord_Whole(COORDINATE coord) {
  *                                                                                             *
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
-inline COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2) {
+inline COORDINATE Coord_Add(COORDINATE a, COORDINATE b) {
   COORD_COMPOSITE coord;
 
   coord.Sub.X.Raw =
-      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.X.Raw +
-                          (int)(short)((COORD_COMPOSITE&)coord2).Sub.X.Raw);
+      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)a).Sub.X.Raw +
+                          (int)(short)((COORD_COMPOSITE&)b).Sub.X.Raw);
   coord.Sub.Y.Raw =
-      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)coord1).Sub.Y.Raw +
-                          (int)(short)((COORD_COMPOSITE&)coord2).Sub.Y.Raw);
+      static_cast<LEPTON>((int)(short)((COORD_COMPOSITE&)a).Sub.Y.Raw +
+                          (int)(short)((COORD_COMPOSITE&)b).Sub.Y.Raw);
   return coord.Coord;
 }
 

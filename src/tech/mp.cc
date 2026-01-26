@@ -149,7 +149,8 @@ int XMP_DER_Length_Encode(unsigned long length, unsigned char* output) {
   if (length <= SCHAR_MAX) {
     output[header_length++] = static_cast<unsigned char>(length);
   } else {
-    output[header_length++] = static_cast<unsigned char>(_Byte_Precision(length) | 0x80);
+    output[header_length++] =
+        static_cast<unsigned char>(_Byte_Precision(length) | 0x80);
     for (int byte_counter = _Byte_Precision(length); byte_counter;
          --byte_counter) {
       output[header_length++] =
@@ -280,7 +281,8 @@ unsigned XMP_Encode(unsigned char* to, unsigned tobytes, uint32_t const* from,
 
   const unsigned char* fptr =
       (const unsigned char*)from + std::min(tobytes, frombytes);
-  for (index = 0; index < static_cast<int>(std::min(tobytes, frombytes)); index++) {
+  for (index = 0; index < static_cast<int>(std::min(tobytes, frombytes));
+       index++) {
     *to++ = *--fptr;
   }
 
@@ -1057,7 +1059,8 @@ bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
 
   precision *= 2;
   while (precision--) {
-    uint32_t x = static_cast<uint32_t>(*left_number_ptr) - static_cast<uint32_t>(*right_number_ptr) -
+    uint32_t x = static_cast<uint32_t>(*left_number_ptr) -
+                 static_cast<uint32_t>(*right_number_ptr) -
                  static_cast<uint32_t>(borrow);
     right_number_ptr++;
     left_number_ptr++;
@@ -1100,7 +1103,8 @@ bool XMP_Sub_Int(uint32_t* result, const uint32_t* left_number,
 
   precision *= 2;
   while (precision--) {
-    uint32_t x = static_cast<uint32_t>(*left_number_ptr) - right_number - borrow;
+    uint32_t x =
+        static_cast<uint32_t>(*left_number_ptr) - right_number - borrow;
     left_number_ptr++;
     *result_ptr++ = static_cast<unsigned short>(x);
     borrow = (1L << 16 & x) != 0L;
@@ -2011,21 +2015,25 @@ unsigned short mp_quo_digit(unsigned short* dividend) {
    * The last terms of q1 and q2 perform upward rounding, which is
    * needed to guarantee that the result not be too small.
    */
-  q1 = (dividend[-2] ^ SEMI_MASK) * static_cast<unsigned long>(_reciprical_high_digit) +
+  q1 = (dividend[-2] ^ SEMI_MASK) *
+           static_cast<unsigned long>(_reciprical_high_digit) +
        _reciprical_high_digit;
-  q2 = (dividend[-1] ^ SEMI_MASK) * static_cast<unsigned long>(_reciprical_low_digit) +
+  q2 = (dividend[-1] ^ SEMI_MASK) *
+           static_cast<unsigned long>(_reciprical_low_digit) +
        (1L << 16);
   q0 = (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the middle significant product group.   */
-  q1 = (dividend[-1] ^ SEMI_MASK) * static_cast<unsigned long>(_reciprical_high_digit);
-  q2 = (dividend[0] ^ SEMI_MASK) * static_cast<unsigned long>(_reciprical_low_digit);
+  q1 = (dividend[-1] ^ SEMI_MASK) *
+       static_cast<unsigned long>(_reciprical_high_digit);
+  q2 = (dividend[0] ^ SEMI_MASK) *
+       static_cast<unsigned long>(_reciprical_low_digit);
   q = (q0 >> 16) + (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the most significant term and add in the others */
-  q = (q >> (16 - 2)) +
-      (((dividend[0] ^ SEMI_MASK) * static_cast<unsigned long>(_reciprical_high_digit))
-       << 1);
+  q = (q >> (16 - 2)) + (((dividend[0] ^ SEMI_MASK) *
+                          static_cast<unsigned long>(_reciprical_high_digit))
+                         << 1);
   q >>= _modulus_shift;
 
   /*      Prevent overflow and then wipe out the intermediate results. */
@@ -2103,6 +2111,7 @@ int xmp_exponent_mod(uint32_t* expout, const uint32_t* expin,
     XMP_Mod_Mult(product, expout, expout, limited_precision);
 
     if (*exponent_ptr & high_bit_mask) {
+      // NOLINTNEXTLINE(*-suspicious-call-argument)
       XMP_Mod_Mult(expout, product, expin, limited_precision);
     } else {
       XMP_Move(expout, product, limited_precision);

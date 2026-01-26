@@ -420,72 +420,67 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
           */
           workptr++;
         }
-      } else {
+      }
+      // No entry was specified, so build a list of all entries. 'workptr' is at
+      // 1st entry after section name 'next' is next bracket, or end of file
+      retval = workptr;
+
+      if (retbuffer) {
         /*
-        **	No entry was specified, so build a list of all entries.
-        **	'workptr' is at 1st entry after section name
-        **	'next' is next bracket, or end of file
+        **	Keep accumulating the identifier strings in the retbuffer.
         */
-        retval = workptr;
+        while (workptr && workptr < next) {
+          altworkptr = strchr(workptr, '=');  // find '='
 
-        if (retbuffer) {
-          /*
-          **	Keep accumulating the identifier strings in the retbuffer.
-          */
-          while (workptr && workptr < next) {
-            altworkptr = strchr(workptr, '=');  // find '='
+          if (altworkptr && altworkptr < next) {
+            int length;  // Length of ID string.
 
-            if (altworkptr && altworkptr < next) {
-              int length;  // Length of ID string.
+            length = static_cast<int>(altworkptr - workptr);
 
-              length = static_cast<int>(altworkptr - workptr);
-
-              /*
-              **	Make sure we don't write past the end of the retbuffer;
-              **	add '3' for the 3 NULL's at the end
-              */
-              if (retbuffer - orig_retbuf + length + 3 < retlen) {
-                memcpy(retbuffer, workptr, length);  // copy entry name
-                *(retbuffer + length) = '\0';        // NULL-terminate it
-                strtrim(retbuffer);                  // trim spaces
-                retbuffer += strlen(retbuffer) + 1;  // next pos in dest buf
-              } else {
-                break;
-              }
-
-              /*
-              **	Advance the work pointer to the start of the next line
-              **	by skipping the end of line character.
-              */
-              workptr = strchr(altworkptr, '\n');
-              if (!workptr) {
-                break;
-              }
-              workptr++;
+            /*
+            **	Make sure we don't write past the end of the retbuffer;
+            **	add '3' for the 3 NULL's at the end
+            */
+            if (retbuffer - orig_retbuf + length + 3 < retlen) {
+              memcpy(retbuffer, workptr, length);  // copy entry name
+              *(retbuffer + length) = '\0';        // NULL-terminate it
+              strtrim(retbuffer);                  // trim spaces
+              retbuffer += strlen(retbuffer) + 1;  // next pos in dest buf
             } else {
-              /*
-              **	If no '=', break out of loop
-              */
               break;
             }
-          }
 
-          /*
-          **	Final trailing terminator. Make double sure the double
-          **	trailing null is added.
-          */
-          *retbuffer++ = '\0';
-          *retbuffer++ = '\0';
+            /*
+            **	Advance the work pointer to the start of the next line
+            **	by skipping the end of line character.
+            */
+            workptr = strchr(altworkptr, '\n');
+            if (!workptr) {
+              break;
+            }
+            workptr++;
+          } else {
+            /*
+            **	If no '=', break out of loop
+            */
+            break;
+          }
         }
-        break;
+
+        /*
+        **	Final trailing terminator. Make double sure the double
+        **	trailing null is added.
+        */
+        *retbuffer++ = '\0';
+        *retbuffer = '\0';
       }
-    } else {
-      /*
-      **	Section name not found; go to the next bracket & try again
-      **	Advance past '[' and keep scanning.
-      */
-      workptr++;
+      break;
     }
+    /*
+     **	Section name not found; go to the next bracket & try again
+     **	Advance past '[' and keep scanning.
+     */
+    workptr++;
   }
 
   return retval;

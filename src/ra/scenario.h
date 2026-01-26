@@ -40,6 +40,8 @@
 #ifndef SCENARIO_H
 #define SCENARIO_H
 
+#include <string_view>
+
 #include "port/ex_string.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
@@ -345,7 +347,24 @@ void Do_Lose();
 void Do_Win();
 void Do_Restart();
 void Fill_In_Data();
-bool Restate_Mission(char const* name, int button1, int button2);
-bool BGMessageBox(char const* text, int button1, int button2);
+
+// Result of displaying the mission briefing dialog.
+enum class BriefingAction {
+  kPlayVideo,  // User requested to watch the briefing video.
+  kResume,     // User chose to resume/continue without video.
+};
+
+// Displays the mission briefing text and optionally offers to replay the
+// briefing video.
+//
+// If a briefing video is available, shows "Video" and "Resume" buttons.
+// If no video exists, shows only an "OK" button.
+BriefingAction Restate_Mission();
+
+// Shows a briefing message box with up to two buttons. Long text is
+// automatically paginated with a "MORE" button. Fades to black on first page.
+// Returns the text ID of the button that was clicked (left_btn or right_btn).
+int ShowBriefingMessageBox(std::string_view text, int left_btn, int right_btn,
+                           bool fade_to_black = true);
 
 #endif

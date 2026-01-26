@@ -253,7 +253,7 @@ static bool RefillStream(ChannelState& chan) {
   return true;
 }
 
-static void ResetStream(ChannelState& chan, AUDHeaderType* header) {
+static void ResetStream(ChannelState& chan, const AUDHeaderType* header) {
   int channels = header->Flags & AUD_FLAG_STEREO ? 2 : 1;
   int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
 
@@ -509,7 +509,7 @@ int Play_Sample_Handle(void const* sample, int priority, int volume,
   if (id == -1 || !sample) return -1;
 
   // play it
-  auto header = (AUDHeaderType*)sample;
+  auto header = static_cast<const AUDHeaderType*>(sample);
   int channels = header->Flags & AUD_FLAG_STEREO ? 2 : 1;
   int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
 
@@ -622,9 +622,7 @@ bool Start_Primary_Sound_Buffer(bool /*forced*/) {
   return true;
 }
 
-void Stop_Primary_Sound_Buffer() {
-  SDL_PauseAudioDevice(AudioDevice, true);
-}
+void Stop_Primary_Sound_Buffer() { SDL_PauseAudioDevice(AudioDevice, true); }
 
 uint32_t Get_Audio_Device() { return AudioDevice; }
 
