@@ -268,7 +268,6 @@ Checks: '*,
          -readability-math-missing-parentheses,
          -readability-misleading-indentation,
          -readability-named-parameter,
-         -readability-qualified-auto,
          -readability-uppercase-literal-suffix,
          '
 WarningsAsErrors: '*'

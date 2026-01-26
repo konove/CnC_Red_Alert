@@ -45,7 +45,7 @@ static WWMouseClass* _Mouse = nullptr;
 
   int dst_w = src_w * scale;
   int dst_h = src_h * scale;
-  auto dst = new uint8_t[dst_w * dst_h];
+  auto* dst = new uint8_t[dst_w * dst_h];
 
   for (int y = 0; y < dst_h; ++y) {
     int src_y = y / scale;
@@ -100,7 +100,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
     return;
   }
 
-  const auto cursor_shape = static_cast<Shape_Type*>(cursor);
+  const auto* cursor_shape = static_cast<Shape_Type*>(cursor);
 
   if (cursor_shape->Width == 0 || cursor_shape->OriginalHeight == 0 ||
       cursor_shape->Width > MaxWidth ||
@@ -115,15 +115,15 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   }
 
   // Shape data is LCW compressed starting at byte 10 (after the header).
-  auto decompressed_data = new uint8_t[cursor_shape->DataLength];
+  auto* decompressed_data = new uint8_t[cursor_shape->DataLength];
   LCW_Uncompress(static_cast<uint8_t*>(cursor) + 10, decompressed_data,
                  cursor_shape->DataLength);
 
   // After LCW decompression, the shape is still RLE encoded.
-  auto inptr = decompressed_data;
+  auto* inptr = decompressed_data;
 
   int remaining = cursor_shape->Width * cursor_shape->OriginalHeight;
-  auto outptr = MouseCursor.data();
+  auto* outptr = MouseCursor.data();
 
   // Pre-zero buffer: RLE decoding may not write every pixel explicitly.
   memset(MouseCursor.data(), 0, remaining);
@@ -183,7 +183,8 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
 
   if (WindowBuffer) {
     // Sync cursor palette with game palette. Index 0 is transparent.
-    auto window_pal = static_cast<const SDL_Palette*>(WindowBuffer->Get_Palette());
+    const auto* window_pal =
+        static_cast<const SDL_Palette*>(WindowBuffer->Get_Palette());
     SDL_SetPaletteColors(sdl_surf->format->palette, window_pal->colors + 1, 1,
                          255);
     sdl_surf->format->palette->colors[0].a = 0;
@@ -258,7 +259,8 @@ void WWMouseClass::Update_Palette() {
 
   PaletteDirty = false;
 
-  auto window_pal = static_cast<const SDL_Palette*>(WindowBuffer->Get_Palette());
+  const auto* window_pal =
+      static_cast<const SDL_Palette*>(WindowBuffer->Get_Palette());
   SDL_SetPaletteColors(sdl_surface_->format->palette, window_pal->colors + 1, 1,
                        255);
 

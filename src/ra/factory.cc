@@ -317,7 +317,7 @@ bool FactoryClass::Set(TechnoTypeClass const& object, HouseClass& house) {
   */
   if (!house.IsHuman && Object != nullptr &&
       Object->What_Am_I() == RTTI_BUILDING) {
-    if (const auto building_class = dynamic_cast<BuildingClass*>(Object);
+    if (auto* building_class = dynamic_cast<BuildingClass*>(Object);
         building_class != nullptr) {
       building_class->IsToRebuild = true;
     }

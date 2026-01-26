@@ -32,7 +32,7 @@ typedef struct {
   int32_t Map;        // Icon map offset (if present).
 } IControl_Type_Old;
 
-void Init_Stamps(void const* icon_ptr) {
+void Init_Stamps(const void* icon_ptr) {
   // Verify legality of parameter.
   if (!icon_ptr) return;
 
@@ -42,7 +42,7 @@ void Init_Stamps(void const* icon_ptr) {
   LastIconset = icon_ptr;
 
   // Record number of icons in set.
-  auto control = (IControl_Type*)icon_ptr;
+  auto* control = (IControl_Type*)icon_ptr;
   IconCount = control->Count;
 
   // Record width of icon.
@@ -57,7 +57,7 @@ void Init_Stamps(void const* icon_ptr) {
   // hack to detect old format
   // (these fields are actually Size in that case)
   if (!control->MapHeight || control->MapWidth > 256) {
-    auto old = (IControl_Type_Old*)control;
+    auto* old = (IControl_Type_Old*)control;
     MapPtr = (uint8_t*)icon_ptr + old->Map;
     StampPtr = (uint8_t*)icon_ptr + old->Icons;
     IsTrans = (uint8_t*)icon_ptr + old->TransFlag;
@@ -92,7 +92,7 @@ void Buffer_Draw_Stamp_Clip(void const* thisptr, void const* icondata, int icon,
   int iheight = IconHeight;
 
   // Fetch pointer to start of icon's data.
-  auto ptr = StampPtr + icon * IconSize;
+  auto* ptr = StampPtr + icon * IconSize;
 
   // Update the clipping window coordinates to be valid maxes instead of width &
   // height , and change the coordinates to be window-relative
@@ -140,9 +140,9 @@ void Buffer_Draw_Stamp_Clip(void const* thisptr, void const* icondata, int icon,
   bool doremap = remap != nullptr;
 
   // Get pointer to position to render icon.
-  auto vp_dst = (GraphicViewPortClass*)thisptr;
+  auto* vp_dst = (GraphicViewPortClass*)thisptr;
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
-  auto dst_offset = vp_dst->Get_Offset() + x_pixel + y_pixel * dst_area;
+  auto* dst_offset = vp_dst->Get_Offset() + x_pixel + y_pixel * dst_area;
 
   // Determine row modulo for advancing to next line.
   int modulo = vp_dst->Get_Width() - iwidth;

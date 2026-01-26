@@ -89,7 +89,7 @@ MixFileClass* MixFileClass::Register(char const* filename) {
   }
 
   // Create new instance
-  const auto mix = new MixFileClass(filename);
+  auto* mix = new MixFileClass(filename);
 
   // Register in linked list
   if (First == nullptr) {
@@ -102,7 +102,7 @@ MixFileClass* MixFileClass::Register(char const* filename) {
 
 // Finds the mixfile by name and deletes it. The destructor handles list
 // removal.
-bool MixFileClass::Unregister(char const* filename) {
+bool MixFileClass::Unregister(const char* filename) {
   MixFileClass* mix = Finder(filename);
   if (mix) {
     delete mix;  // Destructor handles list removal

@@ -72,7 +72,7 @@
 // The returned buffer layout is: [int index][null-terminated string]
 // Caller takes ownership and must delete[] the returned pointer.
 static char* CreateIndexedListItem(int index, const std::string& str) {
-  const auto data = new char[sizeof(int) + str.size() + 1];
+  auto* data = new char[sizeof(int) + str.size() + 1];
   std::memcpy(data, &index, sizeof(int));
   std::memcpy(data + sizeof(int), str.c_str(), str.size() + 1);
   return data;

@@ -10,11 +10,11 @@ void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
 
   // Compute the end address of the pointer data
   auto entries = numrows * blocksperrow;
-  auto data_end = pointers + entries;
+  const auto* data_end = pointers + entries;
 
-  auto src_ptr = pointers;
-  auto dst_ptr = buffer;
-  auto dst_ptr_start = dst_ptr;
+  const auto* src_ptr = pointers;
+  auto* dst_ptr = buffer;
+  auto* dst_ptr_start = dst_ptr;
 
   // Drawing loop
   do {
@@ -56,11 +56,11 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
 
   // Compute the end address of the pointer data
   auto entries = numrows * blocksperrow;
-  auto data_end = pointers + entries;
+  const auto* data_end = pointers + entries;
 
-  auto src_ptr = pointers;
-  auto dst_ptr = buffer;
-  auto dst_ptr_start = dst_ptr;
+  const auto* src_ptr = pointers;
+  auto* dst_ptr = buffer;
+  auto* dst_ptr_start = dst_ptr;
 
   // Drawing loop
   do {

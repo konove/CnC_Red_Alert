@@ -30,32 +30,32 @@ void* IO_Open_File(const char* filename, int mode) {
 }
 
 void IO_Close_File(void* handle) {
-  auto file = static_cast<FILE*>(handle);
+  auto* file = static_cast<FILE*>(handle);
   fclose(file);
 }
 
 bool IO_Read_File(void* handle, void* buffer, size_t count,
                   size_t& actual_read) {
-  auto file = static_cast<FILE*>(handle);
+  auto* file = static_cast<FILE*>(handle);
   actual_read = fread(buffer, 1, count, file);
   return ferror(file) == 0;
 }
 
 bool IO_Write_File(void* handle, const void* buffer, size_t count,
                    size_t& actual_written) {
-  auto file = static_cast<FILE*>(handle);
+  auto* file = static_cast<FILE*>(handle);
   actual_written = fwrite(buffer, 1, count, file);
   return ferror(file) == 0;
 }
 
 size_t IO_Seek_File(void* handle, size_t offset, int origin) {
-  auto file = static_cast<FILE*>(handle);
+  auto* file = static_cast<FILE*>(handle);
   fseek(file, offset, origin);
   return ftell(file);
 }
 
 size_t IO_Get_File_Size(void* handle) {
-  auto file = static_cast<FILE*>(handle);
+  auto* file = static_cast<FILE*>(handle);
   long pos = ftell(file);
 
   fseek(file, 0, SEEK_END);
@@ -145,7 +145,7 @@ uint64_t Disk_Space_Available() {
 #else
 
 static bool Update_Find_Result(FindFileState& state) {
-  const auto glob_buf = static_cast<glob_t*>(state.data);
+  auto* const glob_buf = static_cast<glob_t*>(state.data);
   struct stat stat_buf;
 
   // Iterate through paths until we find a valid file or run out of items
@@ -179,7 +179,7 @@ static bool Update_Find_Result(FindFileState& state) {
 }
 
 bool Find_First_File(const char* path_glob, FindFileState& state) {
-  auto glob_buf = new glob_t;
+  auto* glob_buf = new glob_t;
   int ret = glob(path_glob, GLOB_MARK, nullptr, glob_buf);
 
   // also search for lowercase filenames
@@ -210,7 +210,7 @@ bool Find_First_File(const char* path_glob, FindFileState& state) {
 bool Find_Next_File(FindFileState& state) {
   // increment offset
   state.offset++;
-  auto glob_buf = static_cast<glob_t*>(state.data);
+  auto* glob_buf = static_cast<glob_t*>(state.data);
 
   if (!glob_buf) return 2;
 
@@ -226,7 +226,7 @@ bool Find_Next_File(FindFileState& state) {
 
 void End_Find_File(FindFileState& state) {
   if (state.data) {
-    auto glob_buf = static_cast<glob_t*>(state.data);
+    auto* glob_buf = static_cast<glob_t*>(state.data);
     globfree(glob_buf);
     delete glob_buf;
     state.data = nullptr;

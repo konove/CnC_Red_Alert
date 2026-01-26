@@ -81,7 +81,7 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
     Destroy_VQA_Texture();
   }
 
-  auto window_tex = static_cast<SDL_Texture*>(WindowTexture);
+  auto* window_tex = static_cast<SDL_Texture*>(WindowTexture);
 
   if (!end_frame) {
     if (!RedrawTimer)
@@ -111,7 +111,7 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
 }
 
 void GraphicBufferClass::Update_Palette(const uint8_t* palette) {
-  auto sdl_pal = static_cast<SDL_Surface*>(PaletteSurface)->format->palette;
+  auto* sdl_pal = static_cast<SDL_Surface*>(PaletteSurface)->format->palette;
 
   bool changed = false;
 

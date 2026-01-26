@@ -643,7 +643,7 @@ void EventClass::Execute() {
     case MEGAMISSION_F:
       techno = Data.MegaMission_F.Whom.As_Techno();
       if (techno != nullptr && techno->IsActive && techno->Is_Foot()) {
-        auto foot_class = dynamic_cast<FootClass*>(techno);
+        auto* foot_class = dynamic_cast<FootClass*>(techno);
         foot_class->IsFormationMove = true;
         foot_class->FormationSpeed = Data.MegaMission_F.Speed;
         foot_class->FormationMaxSpeed = Data.MegaMission_F.MaxSpeed;
@@ -702,7 +702,7 @@ void EventClass::Execute() {
           techno->Transmit_Message(RADIO_OVER_OUT);
         }
         if (techno->Is_Foot()) {
-          auto foot_class = dynamic_cast<FootClass*>(techno);
+          auto* foot_class = dynamic_cast<FootClass*>(techno);
           if (!formation) foot_class->IsFormationMove = false;
           if (foot_class->Team) {
             foot_class->Team->Remove(foot_class);

@@ -27,14 +27,14 @@ void* Conquer_Build_Fading_Table(void const* palette, void* dest, int color,
   if (frac > 255) frac = 255;
 
   // Record the target gun values.
-  auto pal8 = (uint8_t*)palette;
+  auto* pal8 = (uint8_t*)palette;
   targetred = pal8[color * 3 + 0];
   targetgreen = pal8[color * 3 + 0];
   targetblue = pal8[color * 3 + 0];
 
   // Main loop
 
-  auto dptr = static_cast<uint8_t*>(dest);
+  auto* dptr = static_cast<uint8_t*>(dest);
 
   // Transparent black never gets remapped.
   *dptr++ = 0;
@@ -60,7 +60,7 @@ void* Conquer_Build_Fading_Table(void const* palette, void* dest, int color,
     matchcolor = color;  // Default color (self).
     matchvalue = -1;     // Ridiculous match value init.
 
-    auto palptr = pal8 + ALLOWED_START * 3;
+    auto* palptr = pal8 + ALLOWED_START * 3;
 
     for (int color_index = ALLOWED_START; color_index < 256; color_index++) {
       int compval = 0;

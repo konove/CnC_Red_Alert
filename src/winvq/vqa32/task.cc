@@ -101,8 +101,8 @@ VQAHandle::~VQAHandle() = default;
  ****************************************************************************/
 
 VQAHandle* VQA_Alloc() {
-  auto vqa = new VQAHandleP{};  // {} zero-initializes all members
-  return vqa;                   // Automatic upcast to VQAHandle*
+  auto* vqa = new VQAHandleP{};  // {} zero-initializes all members
+  return vqa;                    // Automatic upcast to VQAHandle*
 }
 
 /****************************************************************************
@@ -249,7 +249,8 @@ long VQA_Play(VQAHandle* vqa, long mode) {
     }
 
     /* Initialize the timer */
-    auto i = vqabuf->Drawer.CurFrame->FrameNum * VQA_TIMETICKS / config->DrawRate;
+    auto i =
+        vqabuf->Drawer.CurFrame->FrameNum * VQA_TIMETICKS / config->DrawRate;
 
     VQA_SetTimer(dynamic_cast<VQAHandleP*>(vqa), i, config->TimerMethod);
     vqabuf->StartTime = VQA_GetTime(dynamic_cast<VQAHandleP*>(vqa));
@@ -332,8 +333,7 @@ long VQA_Play(VQAHandle* vqa, long mode) {
             if (rc == VQAERR_EOF) {
               break;
             }
-            if ((vqabuf->Flags & VQADATF_LDONE) != 0 &&
-                rc == VQAERR_NOBUFFER) {
+            if ((vqabuf->Flags & VQADATF_LDONE) != 0 && rc == VQAERR_NOBUFFER) {
               vqabuf->Flags |= VQADATF_DDONE;
             }
 

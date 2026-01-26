@@ -381,7 +381,7 @@ long VQA_Open(VQAHandle* vqa, char const* filename, VQAConfig* config) {
  ****************************************************************************/
 
 void VQA_Close(VQAHandle* vqa) {
-  auto vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
+  auto* vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
   /* Shutdown audio/timing system. */
   if (vqa_handle_p->Config.OptionFlags & VQAOPTF_AUDIO) {
     VQA_CloseAudio(vqa_handle_p);

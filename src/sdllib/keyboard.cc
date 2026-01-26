@@ -118,7 +118,7 @@ int WWKeyboardClass::Down(int key) {
   }
 
   int numkeys;
-  auto keys = SDL_GetKeyboardState(&numkeys);
+  const auto* keys = SDL_GetKeyboardState(&numkeys);
 
   if (key < numkeys) return keys[key];
 
@@ -165,12 +165,12 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
 int WWKeyboardClass::Buff_Get() {
   while (!Check()) {
   }  // wait for key in buffer
-  int temp = Buffer[Head];               // get key out of the buffer
-  int newhead = Head;                    // save off head for manipulation
-  if (Is_Mouse_Key(temp)) {              // if key is a mouse then
+  int temp = Buffer[Head];             // get key out of the buffer
+  int newhead = Head;                  // save off head for manipulation
+  if (Is_Mouse_Key(temp)) {            // if key is a mouse then
     MouseQX = Buffer[Head + 1 & 255];  //		get the x and y pos
     MouseQY = Buffer[Head + 2 & 255];  //		from the buffer
-    newhead += 3;                        //		adjust head forward
+    newhead += 3;                      //		adjust head forward
   } else
     newhead += 1;  //		adjust head forward
 

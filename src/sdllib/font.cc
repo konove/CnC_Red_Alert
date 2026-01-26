@@ -111,8 +111,8 @@ unsigned int String_Pixel_Width(char const* string) {
   return largest;
 }
 
-void Set_Font_Palette_Range(void const* palette, int start_idx, int end_idx) {
-  auto palette8 = (uint8_t*)palette;
+void Set_Font_Palette_Range(const void* palette, int start_idx, int end_idx) {
+  auto* palette8 = (uint8_t*)palette;
 
   start_idx &= 0xF;
   end_idx &= 0xF;
@@ -121,8 +121,8 @@ void Set_Font_Palette_Range(void const* palette, int start_idx, int end_idx) {
 
   int num_cols = end_idx - start_idx + 1;
 
-  auto lo = ColorXlat + start_idx;
-  auto hi = ColorXlat + start_idx * 16;
+  auto* lo = ColorXlat + start_idx;
+  auto* hi = ColorXlat + start_idx * 16;
 
   do {
     int col = *palette8++;

@@ -101,11 +101,11 @@ static unsigned StreamConvScale = 1 << 15;
 static void VQA_Audio_Callback(uint8_t* stream, int len) {
   // called from SDL audio callback
   if (!VQAP) return;
-  auto audio = &VQAP->VQABuf->Audio;
+  auto* audio = &VQAP->VQABuf->Audio;
   if (!(audio->Flags & VQAAUDF_ISPLAYING) || VQAAudioPaused || !SDLStream)
     return;
 
-  auto config = &VQAP->Config;
+  auto* config = &VQAP->Config;
 
   while (SDL_AudioStreamAvailable(SDLStream) < len) {
     SDL_AudioStreamPut(SDLStream, audio->Buffer + audio->PlayPosition,
@@ -290,7 +290,7 @@ long VQA_OpenAudio(VQAHandleP* vqap, void* /*window*/) {
   // setup audio stream
   if (SDLStream) SDL_FreeAudioStream(SDLStream);
 
-  auto spec = static_cast<SDL_AudioSpec*>(config->AudioSpec);
+  auto* spec = static_cast<SDL_AudioSpec*>(config->AudioSpec);
 
   SDLStream = SDL_NewAudioStream(
       audio->BitsPerSample == 16 ? AUDIO_S16 : AUDIO_S8, audio->Channels,

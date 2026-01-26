@@ -51,14 +51,14 @@ void* Build_Fading_Table(void const* palette, void* dest, long int color,
   if (frac > 255) frac = 255;
 
   // Record the target gun values.
-  auto pal8 = (uint8_t*)palette;
+  const auto* pal8 = (uint8_t*)palette;
   targetred = pal8[color * 3 + 0];
   targetgreen = pal8[color * 3 + 0];
   targetblue = pal8[color * 3 + 0];
 
   // Main loop
 
-  auto dptr = static_cast<uint8_t*>(dest);
+  auto* dptr = static_cast<uint8_t*>(dest);
 
   // Transparent black never gets remapped.
   *dptr++ = 0;
@@ -83,7 +83,7 @@ void* Build_Fading_Table(void const* palette, void* dest, long int color,
     matchcolor = color;  // Default color (self).
     matchvalue = -1;     // Ridiculous match value init.
 
-    auto palptr = pal8 + 3;
+    const auto* palptr = pal8 + 3;
 
     for (int color_index = 1; color_index < 256; color_index++) {
       if (color_index != remap_index) {
@@ -176,7 +176,7 @@ int IRandom(int minval, int maxval) {
 
 uint8_t Random() {
   // mmm
-  auto r = (uint8_t*)&RandNumb;
+  auto* r = (uint8_t*)&RandNumb;
 
   uint8_t tmp = r[0] >> 1;
   int c = tmp & 1;

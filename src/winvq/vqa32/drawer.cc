@@ -187,7 +187,7 @@ long VQA_GetPaletteSize(VQAHandle* vqa) {
 void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
                         unsigned long width, unsigned long height, long xpos,
                         long ypos) {
-  const auto vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
+  auto* const vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
   /* Dereference commonly used data members for quick access. */
   VQAHeader* header = &vqa_handle_p->Header;
   VQADrawer* drawer = &vqa_handle_p->VQABuf->Drawer;
@@ -604,7 +604,7 @@ static long DrawFrame_Buffer(VQAHandle* vqa) {
   long slowpal;
   unsigned char* buff;
 
-  const auto vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
+  auto* vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
   /* Dereference data members for quicker access. */
   VQAConfig* config = &vqa_handle_p->Config;
   VQAData* vqabuf = vqa_handle_p->VQABuf;

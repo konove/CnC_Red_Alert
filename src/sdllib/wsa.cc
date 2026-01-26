@@ -519,7 +519,7 @@ int Get_Animation_Frame_Count(void* handle) {
 }
 
 unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
-  auto udelta = (uint8_t*)delta_ptr;
+  auto* udelta = (uint8_t*)delta_ptr;
 
   // top_loop
   while (true) {
@@ -581,8 +581,8 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
 
 void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
                                          int nextrow, int copy) {
-  auto source_ptr = static_cast<uint8_t*>(target);
-  auto udelta = static_cast<uint8_t*>(delta);
+  auto* source_ptr = static_cast<uint8_t*>(target);
+  auto* udelta = static_cast<uint8_t*>(delta);
 
   int x = 0;
 

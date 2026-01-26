@@ -122,7 +122,7 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
                                     uint8_t* in_ptr) {
   int prev_sample = 0x80;  // Previous sample (starting value).
 
-  auto in_end = in_ptr + block_size;
+  const auto* in_end = in_ptr + block_size;
 
   uint8_t sample_buf[4];
 
@@ -271,7 +271,7 @@ static void ResetStream(ChannelState& chan, const AUDHeaderType* header) {
 
 static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
   memset(stream, 0, len);
-  auto stream16 = (int16_t*)stream;
+  auto* stream16 = (int16_t*)stream;
 
   // let VQA do its thing
   if (ExtraCallback) ExtraCallback(stream, len);
@@ -308,13 +308,13 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
     int stream_len = SDL_AudioStreamGet(chan.stream, MixBuffer, len);
 
     // mix into buffer
-    auto mix16 = (int16_t*)MixBuffer;
+    auto* mix16 = (int16_t*)MixBuffer;
     for (int s = 0; s < stream_len / sizeof(int16_t); s++)
       stream16[s] += (mix16[s] * chan.volume) >> 15;
   }
 }
 
-int File_Stream_Sample_Vol(char const* filename, int volume,
+int File_Stream_Sample_Vol(const char* filename, int volume,
                            bool /*real_time_start*/) {
   int id = Get_Free_Sample_Handle(0xFF);
 
@@ -509,7 +509,7 @@ int Play_Sample_Handle(void const* sample, int priority, int volume,
   if (id == -1 || !sample) return -1;
 
   // play it
-  auto header = static_cast<const AUDHeaderType*>(sample);
+  const auto* header = static_cast<const AUDHeaderType*>(sample);
   int channels = header->Flags & AUD_FLAG_STEREO ? 2 : 1;
   int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
 
