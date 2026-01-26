@@ -263,7 +263,6 @@ COORDINATE ObjectClass::Exit_Coord() const { return Center_Coord(); }
  * HISTORY: * 02/07/1996 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::AI() {
-  assert(this != nullptr);
   assert(IsActive);
 
   /*
@@ -324,7 +323,6 @@ void ObjectClass::AI() {
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType ObjectClass::What_Action(ObjectClass const*) const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return ACTION_NONE;
@@ -351,7 +349,6 @@ ActionType ObjectClass::What_Action(ObjectClass const*) const {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType ObjectClass::What_Action(CELL) const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return ACTION_NONE;
@@ -374,7 +371,6 @@ ActionType ObjectClass::What_Action(CELL) const {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 LayerType ObjectClass::In_Which_Layer() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   if (Height < FLIGHT_LEVEL - FLIGHT_LEVEL / 3) {
@@ -401,7 +397,6 @@ LayerType ObjectClass::In_Which_Layer() const {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 int ObjectClass::Get_Ownable() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return HOUSEF_ALLIES | HOUSEF_SOVIET | HOUSEF_OTHERS;
@@ -423,7 +418,6 @@ int ObjectClass::Get_Ownable() const {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Can_Repair() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return false;
@@ -445,7 +439,6 @@ bool ObjectClass::Can_Repair() const {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Can_Demolish() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return false;
@@ -468,7 +461,6 @@ bool ObjectClass::Can_Demolish() const {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Can_Player_Fire() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return false;
@@ -491,7 +483,6 @@ bool ObjectClass::Can_Player_Fire() const {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Can_Player_Move() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return false;
@@ -515,7 +506,6 @@ bool ObjectClass::Can_Player_Move() const {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE ObjectClass::Target_Coord() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return Coord_Add(XY_Coord(0, -Height), Center_Coord());
@@ -539,7 +529,6 @@ COORDINATE ObjectClass::Target_Coord() const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE ObjectClass::Center_Coord() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return Coord;
@@ -561,7 +550,6 @@ COORDINATE ObjectClass::Center_Coord() const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE ObjectClass::Render_Coord() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return Center_Coord();
@@ -585,7 +573,6 @@ COORDINATE ObjectClass::Render_Coord() const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE ObjectClass::Docking_Coord() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return Center_Coord();
@@ -610,7 +597,6 @@ COORDINATE ObjectClass::Docking_Coord() const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE ObjectClass::Sort_Y() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return Coord;
@@ -636,7 +622,6 @@ COORDINATE ObjectClass::Sort_Y() const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE ObjectClass::Fire_Coord(int) const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return Coord;
@@ -659,7 +644,6 @@ COORDINATE ObjectClass::Fire_Coord(int) const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Record_The_Kill(TechnoClass*) {
-  assert(this != nullptr);
   assert(IsActive);
 }
 
@@ -681,7 +665,6 @@ void ObjectClass::Record_The_Kill(TechnoClass*) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Do_Shimmer() {
-  assert(this != nullptr);
   assert(IsActive);
 }
 
@@ -706,7 +689,6 @@ void ObjectClass::Do_Shimmer() {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 int ObjectClass::Exit_Object(TechnoClass*) {
-  assert(this != nullptr);
   assert(IsActive);
   return 0;
 }
@@ -728,7 +710,6 @@ int ObjectClass::Exit_Object(TechnoClass*) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Hidden() {
-  assert(this != nullptr);
   assert(IsActive);
 }
 
@@ -752,7 +733,6 @@ void ObjectClass::Hidden() {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Look(bool) {
-  assert(this != nullptr);
   assert(IsActive);
 }
 
@@ -778,7 +758,6 @@ void ObjectClass::Look(bool) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Active_Click_With(ActionType, ObjectClass*) {
-  assert(this != nullptr);
   assert(IsActive);
 }
 
@@ -800,7 +779,6 @@ void ObjectClass::Active_Click_With(ActionType, ObjectClass*) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Active_Click_With(ActionType, CELL) {
-  assert(this != nullptr);
   assert(IsActive);
 }
 
@@ -820,7 +798,6 @@ void ObjectClass::Active_Click_With(ActionType, CELL) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Clicked_As_Target(int) {
-  assert(this != nullptr);
   assert(IsActive);
 }
 
@@ -845,7 +822,6 @@ void ObjectClass::Clicked_As_Target(int) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::In_Range(COORDINATE, int) const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return false;
@@ -868,7 +844,6 @@ bool ObjectClass::In_Range(COORDINATE, int) const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 int ObjectClass::Weapon_Range(int) const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return 0;
@@ -893,7 +868,6 @@ int ObjectClass::Weapon_Range(int) const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Scatter(COORDINATE, bool, bool) {
-  assert(this != nullptr);
   assert(IsActive);
 }
 
@@ -916,7 +890,6 @@ void ObjectClass::Scatter(COORDINATE, bool, bool) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Catch_Fire() {
-  assert(this != nullptr);
   assert(IsActive);
 
   return false;
@@ -939,7 +912,6 @@ bool ObjectClass::Catch_Fire() {
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Fire_Out() {
-  assert(this != nullptr);
   assert(IsActive);
 }
 
@@ -963,7 +935,6 @@ void ObjectClass::Fire_Out() {
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
 int ObjectClass::Value() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return 0;
@@ -986,7 +957,6 @@ int ObjectClass::Value() const {
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
 MissionType ObjectClass::Get_Mission() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return MISSION_NONE;
@@ -1009,7 +979,6 @@ MissionType ObjectClass::Get_Mission() const {
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Repair(int) {
-  assert(this != nullptr);
   assert(IsActive);
 }
 
@@ -1032,7 +1001,6 @@ void ObjectClass::Repair(int) {
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Sell_Back(int) {
-  assert(this != nullptr);
   assert(IsActive);
 }
 
@@ -1053,7 +1021,6 @@ void ObjectClass::Sell_Back(int) {
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Move(FacingType facing) {
-  assert(this != nullptr);
   assert(IsActive);
 
   COORDINATE coord;
@@ -1082,7 +1049,6 @@ void ObjectClass::Move(FacingType facing) {
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Unselect() {
-  assert(this != nullptr);
   assert(IsActive);
 
   if (IsSelected) {
@@ -1111,7 +1077,6 @@ void ObjectClass::Unselect() {
  *Adds to head or tail depending on leader type flag.                      *
  *=============================================================================================*/
 bool ObjectClass::Select() {
-  assert(this != nullptr);
   assert(IsActive);
 
   if (!MapEditorActive && (IsSelected || !Class_Of().IsSelectable)) {
@@ -1182,7 +1147,6 @@ bool ObjectClass::Select() {
  *=============================================================================================*/
 bool ObjectClass::Render(bool forced)  // const
 {
-  assert(this != nullptr);
   assert(IsActive);
 
   int x, y;
@@ -1287,7 +1251,6 @@ void ObjectClass::Debug_Dump(MonoClass* mono) const {
  *unit only.                                           *
  *=============================================================================================*/
 void ObjectClass::Mark_For_Redraw() {
-  assert(this != nullptr);
   assert(IsActive);
 
   if (!IsToDisplay) {
@@ -1319,7 +1282,6 @@ void ObjectClass::Mark_For_Redraw() {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Limbo() {
-  assert(this != nullptr);
   assert(IsActive);
 
   if (GameActive && !IsInLimbo) {
@@ -1366,7 +1328,6 @@ bool ObjectClass::Limbo() {
  **
  *=============================================================================================*/
 bool ObjectClass::Unlimbo(COORDINATE coord, DirType) {
-  assert(this != nullptr);
   assert(IsActive);
   if (GameActive && IsInLimbo && !IsDown) {
     if (ScenarioInit ||
@@ -1438,7 +1399,6 @@ void ObjectClass::Detach(TARGET target, bool) {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Detach_All(bool all) {
-  assert(this != nullptr);
   assert(IsActive);
 
   /*
@@ -1476,7 +1436,6 @@ void ObjectClass::Detach_All(bool all) {
  *=============================================================================================*/
 RadioMessageType ObjectClass::Receive_Message(RadioClass*,
                                               RadioMessageType message, long&) {
-  assert(this != nullptr);
   assert(IsActive);
 
   switch (message) {
@@ -1530,7 +1489,6 @@ RadioMessageType ObjectClass::Receive_Message(RadioClass*,
 ResultType ObjectClass::Take_Damage(int& damage, int distance,
                                     WarheadType warhead, TechnoClass* source,
                                     bool forced) {
-  assert(this != nullptr);
   assert(IsActive);
 
   ResultType result = RESULT_NONE;
@@ -1672,7 +1630,6 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Mark(MarkType mark) {
-  assert(this != nullptr);
   assert(IsActive);
 
   if (!IsInLimbo && IsActive) {
@@ -1792,7 +1749,6 @@ void ObjectClass::Init() { CurrentObject.Clear(); }
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Revealed(HouseClass* house) {
-  assert(this != nullptr);
   assert(IsActive);
 
   return house != nullptr;
@@ -1815,7 +1771,6 @@ bool ObjectClass::Revealed(HouseClass* house) {
  * HISTORY: * 02/07/1996 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Paradrop(COORDINATE coord) {
-  assert(this != nullptr);
   assert(IsActive);
 
   Height = FLIGHT_LEVEL;

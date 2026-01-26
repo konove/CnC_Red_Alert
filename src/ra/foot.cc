@@ -298,7 +298,6 @@ void FootClass::Set_Speed(int speed) {
  *Performs low level check before processing.                              *
  *=============================================================================================*/
 bool FootClass::Mark(MarkType mark) {
-  assert(this != nullptr);
   assert(IsActive);
 
   if (TechnoClass::Mark(mark)) {

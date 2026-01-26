@@ -885,7 +885,6 @@ COORDINATE BulletClass::Target_Coord() const {
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BulletClass::Sort_Y() const {
-  assert(this != nullptr);
   assert(IsActive);
 
   return Coord_Move(Coord, DIR_S, CELL_LEPTON_H / 2);
