@@ -592,7 +592,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     if (*this == STRUCT_WEAP || *this == STRUCT_FAKEWEAP) {
       int shapenum = Door_Stage();
       if (Health_Ratio() <= Rule.ConditionYellow) shapenum += 4;
-      Techno_Draw_Object(Class->WarFactoryOverlay, shapenum, x, y, window);
+      Techno_Draw_Object(BuildingTypeClass::WarFactoryOverlay, shapenum, x, y,
+                         window);
     }
 
     /*

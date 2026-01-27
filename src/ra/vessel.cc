@@ -451,7 +451,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
 
       switch (Class->Type) {
         case VESSEL_CA:
-          shapefile = Class->TurretShapes;
+          shapefile = TechnoTypeClass::TurretShapes;
           shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
           Class->Turret_Adjust(turdir, xx, yy);
           Techno_Draw_Object(shapefile, shapenum, xx, yy, window);
@@ -462,13 +462,13 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
           break;
 
         case VESSEL_DD:
-          shapefile = Class->SamShapes;
+          shapefile = TechnoTypeClass::SamShapes;
           shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
         case VESSEL_PT:
-          shapefile = Class->MGunShapes;
+          shapefile = TechnoTypeClass::MGunShapes;
           shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
           Class->Turret_Adjust(turdir, xx, yy);
           break;

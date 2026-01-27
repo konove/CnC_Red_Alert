@@ -2805,7 +2805,7 @@ static BuildingTypeClass const ClassLarva2(
     List1,            // OCCUPYLIST:	List of active foundation squares.
     nullptr           // OVERLAPLIST:List of overlap cell offset.
 );
-void const* BuildingTypeClass::WarFactoryOverlay;
+const void* BuildingTypeClass::WarFactoryOverlay;
 void const* LightningShapes;
 
 /***********************************************************************************************

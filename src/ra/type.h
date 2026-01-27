@@ -809,7 +809,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   /*
   **	Special overlay for the weapons factory.
   */
-  static void const* WarFactoryOverlay;
+  static const void* WarFactoryOverlay;
 
  private:
   /*

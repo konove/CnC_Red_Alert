@@ -1915,9 +1915,10 @@ int UnitClass::Shape_Number() const {
       unsigned stage = Fetch_Stage();
       if (stage >= ARRAY_SIZE(Class->Harvester_Load_List))
         stage = ARRAY_SIZE(Class->Harvester_Load_List) - 1;
-      shapenum = 32 +
-                 (BodyShape[facing] + 2) / 4 * Class->Harvester_Load_Count +
-                 Class->Harvester_Load_List[stage];
+      shapenum =
+          32 +
+          (BodyShape[facing] + 2) / 4 * UnitTypeClass::Harvester_Load_Count +
+          UnitTypeClass::Harvester_Load_List[stage];
     } else {
       /*
       ** If the harvester's dumping a load of ore, show that animation
@@ -1932,7 +1933,7 @@ int UnitClass::Shape_Number() const {
         } else {
           if (stage >= ARRAY_SIZE(Class->Harvester_Dump_List))
             stage = ARRAY_SIZE(Class->Harvester_Dump_List) - 1;
-          shapenum = Class->Harvester_Dump_List[stage] + 96;
+          shapenum = UnitTypeClass::Harvester_Dump_List[stage] + 96;
         }
       } else {
         shapenum = BodyShape[facing];
