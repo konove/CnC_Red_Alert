@@ -262,7 +262,7 @@
 ** This define enables a special additional foreign-version-number
 ** after the other version number, for display purposes only.
 */
-#if !defined(ENGLISH)
+#ifndef ENGLISH
 #define FOREIGN_VERSION
 #define FOREIGN_VERSION_NUMBER 7
 #endif

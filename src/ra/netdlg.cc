@@ -5690,7 +5690,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
 
     w = std::max(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
 
-#if defined(WOLAPI_INTEGRATION)
+#ifdef WOLAPI_INTEGRATION
     char szNewCancelMessage[300];
     sprintf(szNewCancelMessage, "%s%s", buf3, TXT_WOL_CANCELMEANSFORFEIT);
 
@@ -5725,7 +5725,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
                      y + d_margin * 2 + d_txt6_h + d_margin, scheme, TBLACK,
                      TPF_CENTER | TPF_TEXT);
 
-#if defined(WOLAPI_INTEGRATION)
+#ifdef WOLAPI_INTEGRATION
     if (Session.Type == GAME_INTERNET && pWolapi &&
         pWolapi->GameInfoCurrent.bTournament)
       Fancy_Text_Print(szNewCancelMessage, 160 * RESFACTOR,

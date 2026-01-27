@@ -50,8 +50,8 @@
 */
 #include "ra/connect.h"
 #ifdef PORTABLE
-typedef void* HANDLE;
-#elif defined(WIN32)
+using HANDLE = void*;
+#elifdef WIN32
 #include <windows.h>
 #else
 #include "commlib.h"

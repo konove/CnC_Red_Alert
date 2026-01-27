@@ -640,7 +640,7 @@ unsigned long VersionClass::Min_Version() {
   return (Version_Number());
 #else
 
-#if defined(WOLAPI_INTEGRATION)
+#ifdef WOLAPI_INTEGRATION
 
   //	Note! I'm no longer using MIN_VERSION, MAX_VERSION, or VERSION_RA_300!
   //	But no time to do three full rebuilds right now, so I'm not deleting

@@ -2218,7 +2218,7 @@ void Init_Random() {
   int ms = Get_Time_Ms();
   CryptRandom.Seed_Byte(ms);
   // grab some more bits from somewhere?
-#elif defined(WIN32)
+#elifdef WIN32
 
   /*
   **	Gather some "random" bits from the system timer. Actually, only the

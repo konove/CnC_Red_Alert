@@ -868,7 +868,7 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   //	Frame-sync'ing: wait until it's OK to advance to the next frame.
   //------------------------------------------------------------------------
-#if defined(WOLAPI_INTEGRATION)
+#ifdef WOLAPI_INTEGRATION
   int iFramesyncTimeout;
   if (Session.Type == GAME_INTERNET && pWolapi &&
       pWolapi->GameInfoCurrent.iPlayerCount > 2)

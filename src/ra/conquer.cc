@@ -159,7 +159,7 @@
 #include "tech/rgb.h"
 #include "winvq/vqa32/vqaplay.h"
 
-#if defined(WOLAPI_INTEGRATION)
+#ifdef WOLAPI_INTEGRATION
 // #include "WolDebug.h"
 #include "WolStrng.h"
 #include "WolapiOb.h"

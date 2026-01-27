@@ -19,15 +19,14 @@ enum class BuildVersion {
 // Current build version (mutually exclusive by design)
 #ifdef INTERNAL_VERSION
 inline constexpr BuildVersion kBuildVersion = BuildVersion::Internal;
-#elif defined(PLAYTEST_VERSION)
+#elifdef PLAYTEST_VERSION
 inline constexpr BuildVersion kBuildVersion = BuildVersion::Playtest;
 #else
 inline constexpr BuildVersion kBuildVersion = BuildVersion::Release;
 #endif
 
 // Convenience helpers for backward compatibility
-inline constexpr bool kReleaseVersion =
-    kBuildVersion == BuildVersion::Release;
+inline constexpr bool kReleaseVersion = kBuildVersion == BuildVersion::Release;
 inline constexpr bool kPlaytestVersion =
     kBuildVersion == BuildVersion::Playtest;
 inline constexpr bool kInternalVersion =

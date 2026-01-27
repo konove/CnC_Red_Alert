@@ -257,7 +257,7 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
   }
 }
 
-#if defined(WIN32)
+#ifdef WIN32
 /***************************************************************************
  * INTERPOLATE_2X_SCALE                                                    *
  *                                                                         *

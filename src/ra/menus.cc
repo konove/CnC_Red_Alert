@@ -765,7 +765,7 @@ int Main_Menu(unsigned long) {
     if (input != 0) {
 #ifdef PORTABLE
       CryptRandom.Seed_Byte(Get_Time_Ms());
-#elif defined(WIN32)
+#elifdef WIN32
       SYSTEMTIME t;
       GetSystemTime(&t);
       CryptRandom.Seed_Byte(t.wMilliseconds);

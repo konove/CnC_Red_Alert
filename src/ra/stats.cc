@@ -401,7 +401,7 @@ void Send_Statistics_Packet() {
       int completion = -1;
 
       if (player1 && player2) {  //	Can this ever fail?		ajw
-#if defined(WOLAPI_INTEGRATION)
+#ifdef WOLAPI_INTEGRATION
         //	Send IP addresses of both players.
         NetNumType net;
         NetNodeType node;
