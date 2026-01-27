@@ -141,9 +141,15 @@ class List;
 template <class T>
 class Node : public GenericNode {
  public:
-  List<T>* Main_List() const { return static_cast<List<T>*>(GenericNode::Main_List()); }
+  List<T>* Main_List() const {
+    return static_cast<List<T>*>(GenericNode::Main_List());
+  }
   T* Next() const { return static_cast<T*>(GenericNode::Next()); }
   T* Prev() const { return static_cast<T*>(GenericNode::Prev()); }
+
+ private:
+  Node() = default;
+  friend T;
 };
 
 /*
