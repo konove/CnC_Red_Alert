@@ -41,13 +41,18 @@
 
 #include "ra/logic.h"
 
+#include <algorithm>
+
 #include "ra/anim.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
+#include "ra/debug.h"
 #include "ra/externs.h"
 #include "ra/factory.h"
 #include "ra/heap.h"
 #include "ra/house.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
@@ -69,7 +74,6 @@
 
 static unsigned FramesPerSecond = 0;
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * LogicClass::Debug_Dump -- Displays logic class status to the mono screen. *
  *                                                                                             *
@@ -87,133 +91,129 @@ static unsigned FramesPerSecond = 0;
  *value.                                                  *
  *=============================================================================================*/
 void LogicClass::Debug_Dump(MonoClass* mono) const {
-#define RECORDCOUNT 40
-#define RECORDHEIGHT 21
-  static int _framecounter = 0;
+  if constexpr (config::kCheatKeysEnabled) {
+    constexpr int kRecordHeight = 21;
 
-  static bool first = true;
-  if (first) {
-    first = false;
-    mono->Set_Cursor(0, 0);
-    mono->Print(Text_String(TXT_DEBUG_STRESS));
+    static bool first = true;
+    if (first) {
+      first = false;
+      mono->Set_Cursor(0, 0);
+      mono->Print(Text_String(TXT_DEBUG_STRESS));
+    }
+
+    mono->Set_Cursor(1, 1);
+    mono->Printf("%ld", (long)Scen.Timer);
+    mono->Set_Cursor(10, 1);
+    mono->Printf("%3d", FramesPerSecond);
+    mono->Set_Cursor(1, 3);
+    mono->Printf("%02d:%02d:%02d", Scen.Timer / TICKS_PER_HOUR,
+                 (Scen.Timer % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
+                 (Scen.Timer % TICKS_PER_MINUTE) / TICKS_PER_SECOND);
+
+    mono->Set_Cursor(1, 11);
+    mono->Printf("%3d", Units.Count());
+    mono->Set_Cursor(1, 12);
+    mono->Printf("%3d", Infantry.Count());
+    mono->Set_Cursor(1, 13);
+    mono->Printf("%3d", Aircraft.Count());
+    mono->Set_Cursor(1, 14);
+    mono->Printf("%3d", Vessels.Count());
+    mono->Set_Cursor(1, 15);
+    mono->Printf("%3d", Buildings.Count());
+    mono->Set_Cursor(1, 16);
+    mono->Printf("%3d", Terrains.Count());
+    mono->Set_Cursor(1, 17);
+    mono->Printf("%3d", Bullets.Count());
+    mono->Set_Cursor(1, 18);
+    mono->Printf("%3d", Anims.Count());
+    mono->Set_Cursor(1, 19);
+    mono->Printf("%3d", Teams.Count());
+    mono->Set_Cursor(1, 20);
+    mono->Printf("%3d", Triggers.Count());
+    mono->Set_Cursor(1, 21);
+    mono->Printf("%3d", TriggerTypes.Count());
+    mono->Set_Cursor(1, 22);
+    mono->Printf("%3d", Factories.Count());
+
+    SpareTicks = std::min(SpareTicks, (long)TIMER_SECOND);
+
+    /*
+    **	CPU utilization record.
+    */
+    mono->Sub_Window(15, 1, 6, 11);
+    mono->Scroll();
+    mono->Set_Cursor(0, 10);
+    mono->Printf("%3d%%", ((TIMER_SECOND - SpareTicks) * 100) / TIMER_SECOND);
+
+    /*
+    **	Update the frame rate log.
+    */
+    mono->Sub_Window(22, 1, 6, 11);
+    mono->Scroll();
+    mono->Set_Cursor(0, 10);
+    mono->Printf("%4d", FramesPerSecond);
+
+    /*
+    **	Update the findpath calc record.
+    */
+    mono->Sub_Window(50, 1, 6, 11);
+    mono->Scroll();
+    mono->Set_Cursor(0, 10);
+    mono->Printf("%4d", PathCount);
+    PathCount = 0;
+
+    /*
+    **	Update the cell redraw record.
+    */
+    mono->Sub_Window(29, 1, 6, 11);
+    mono->Scroll();
+    mono->Set_Cursor(0, 10);
+    mono->Printf("%5d", CellCount);
+    CellCount = 0;
+
+    /*
+    **	Update the target scan record.
+    */
+    mono->Sub_Window(36, 1, 6, 11);
+    mono->Scroll();
+    mono->Set_Cursor(0, 10);
+    mono->Printf("%5d", TargetScan);
+    TargetScan = 0;
+
+    /*
+    **	Sidebar redraw record.
+    */
+    mono->Sub_Window(43, 1, 6, 11);
+    mono->Scroll();
+    mono->Set_Cursor(0, 10);
+    mono->Printf("%5d", SidebarRedraws);
+    SidebarRedraws = 0;
+
+    /*
+    **	Update the CPU utilization chart.
+    */
+    mono->Sub_Window(15, 13, 63, 10);
+    mono->Pan(1);
+    mono->Sub_Window(15, 13, 64, 10);
+    int graph = kRecordHeight * fixed(TIMER_SECOND - SpareTicks, TIMER_SECOND);
+    for (int row = 1; row < kRecordHeight; row += 2) {
+      static unsigned char _barchar[4] = {' ', 220, 0, 219};
+      char str[2];
+      int index = 0;
+
+      index |= (graph >= row) ? 0x01 : 0x00;
+      index |= (graph >= row + 1) ? 0x02 : 0x00;
+
+      str[1] = '\0';
+      str[0] = _barchar[index];
+      mono->Text_Print(str, 62, 9 - (row / 2));
+    }
+    mono->Sub_Window();
+
+    SpareTicks = 0;
+    FramesPerSecond = 0;
   }
-
-  // mono->Set_Cursor(0,0);mono->Printf("%d", AllowVoice);
-
-  _framecounter++;
-  mono->Set_Cursor(1, 1);
-  mono->Printf("%ld", (long)Scen.Timer);
-  mono->Set_Cursor(10, 1);
-  mono->Printf("%3d", FramesPerSecond);
-  mono->Set_Cursor(1, 3);
-  mono->Printf("%02d:%02d:%02d", Scen.Timer / TICKS_PER_HOUR,
-               (Scen.Timer % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
-               (Scen.Timer % TICKS_PER_MINUTE) / TICKS_PER_SECOND);
-
-  mono->Set_Cursor(1, 11);
-  mono->Printf("%3d", Units.Count());
-  mono->Set_Cursor(1, 12);
-  mono->Printf("%3d", Infantry.Count());
-  mono->Set_Cursor(1, 13);
-  mono->Printf("%3d", Aircraft.Count());
-  mono->Set_Cursor(1, 14);
-  mono->Printf("%3d", Vessels.Count());
-  mono->Set_Cursor(1, 15);
-  mono->Printf("%3d", Buildings.Count());
-  mono->Set_Cursor(1, 16);
-  mono->Printf("%3d", Terrains.Count());
-  mono->Set_Cursor(1, 17);
-  mono->Printf("%3d", Bullets.Count());
-  mono->Set_Cursor(1, 18);
-  mono->Printf("%3d", Anims.Count());
-  mono->Set_Cursor(1, 19);
-  mono->Printf("%3d", Teams.Count());
-  mono->Set_Cursor(1, 20);
-  mono->Printf("%3d", Triggers.Count());
-  mono->Set_Cursor(1, 21);
-  mono->Printf("%3d", TriggerTypes.Count());
-  mono->Set_Cursor(1, 22);
-  mono->Printf("%3d", Factories.Count());
-
-  SpareTicks = min((long)SpareTicks, (long)TIMER_SECOND);
-
-  /*
-  **	CPU utilization record.
-  */
-  mono->Sub_Window(15, 1, 6, 11);
-  mono->Scroll();
-  mono->Set_Cursor(0, 10);
-  mono->Printf("%3d%%", ((TIMER_SECOND - SpareTicks) * 100) / TIMER_SECOND);
-
-  /*
-  **	Update the frame rate log.
-  */
-  mono->Sub_Window(22, 1, 6, 11);
-  mono->Scroll();
-  mono->Set_Cursor(0, 10);
-  mono->Printf("%4d", FramesPerSecond);
-
-  /*
-  **	Update the findpath calc record.
-  */
-  mono->Sub_Window(50, 1, 6, 11);
-  mono->Scroll();
-  mono->Set_Cursor(0, 10);
-  mono->Printf("%4d", PathCount);
-  PathCount = 0;
-
-  /*
-  **	Update the cell redraw record.
-  */
-  mono->Sub_Window(29, 1, 6, 11);
-  mono->Scroll();
-  mono->Set_Cursor(0, 10);
-  mono->Printf("%5d", CellCount);
-  CellCount = 0;
-
-  /*
-  **	Update the target scan record.
-  */
-  mono->Sub_Window(36, 1, 6, 11);
-  mono->Scroll();
-  mono->Set_Cursor(0, 10);
-  mono->Printf("%5d", TargetScan);
-  TargetScan = 0;
-
-  /*
-  **	Sidebar redraw record.
-  */
-  mono->Sub_Window(43, 1, 6, 11);
-  mono->Scroll();
-  mono->Set_Cursor(0, 10);
-  mono->Printf("%5d", SidebarRedraws);
-  SidebarRedraws = 0;
-
-  /*
-  **	Update the CPU utilization chart.
-  */
-  mono->Sub_Window(15, 13, 63, 10);
-  mono->Pan(1);
-  mono->Sub_Window(15, 13, 64, 10);
-  int graph = RECORDHEIGHT * fixed(TIMER_SECOND - SpareTicks, TIMER_SECOND);
-  for (int row = 1; row < RECORDHEIGHT; row += 2) {
-    static char _barchar[4] = {' ', 220, 0, 219};
-    char str[2];
-    int index = 0;
-
-    index |= (graph >= row) ? 0x01 : 0x00;
-    index |= (graph >= row + 1) ? 0x02 : 0x00;
-
-    str[1] = '\0';
-    str[0] = _barchar[index];
-    mono->Text_Print(str, 62, 9 - (row / 2));
-  }
-  mono->Sub_Window();
-
-  SpareTicks = 0;
-  FramesPerSecond = 0;
 }
-#endif
 
 /***********************************************************************************************
  * LogicClass::AI -- Handles AI logic processing for game objects. *
@@ -326,8 +326,7 @@ void LogicClass::AI() {
         obj->Strength) {
       int damage = obj->Class_Of().MaxStrength * Rule.QuakeDamagePercent;
       if (TimeQuakeCenter) {
-        if (Distance(obj->As_Target(), TimeQuakeCenter) / 256 <
-            MTankDistance) {
+        if (Distance(obj->As_Target(), TimeQuakeCenter) / 256 < MTankDistance) {
           switch (obj->What_Am_I()) {
             case RTTI_INFANTRY:
               damage = QuakeInfantryDamage;

@@ -61,10 +61,18 @@
 
 #include "ra/gadget.h"
 
+#include <cstdio>
+
+#include "ra/config.h"
 #include "ra/control.h"
 #include "ra/externs.h"
+#include "ra/filepcx.h"
+#include "ra/globals.h"
 #include "ra/jshell.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_mouse.h"
+#include "tech/cdfile.h"
 
 /*
 **	This records the current gadget the the gadget system is "stuck on".
@@ -450,35 +458,33 @@ KeyNumType GadgetClass::Input() {
     key = Keyboard->Get();
   }
 
-#ifdef WIN32
-#ifdef CHEAT_KEYS
-  if (key == KN_K && !MapEditorActive && (Debug_Flag || Debug_Playtest)) {
-    /*
-    ** time to create a screen shot using the PCX code (if it works)
-    */
-    if (!Debug_MotionCapture) {
-      GraphicBufferClass temp_page(
-          SeenBuff.Get_Width(), SeenBuff.Get_Height(), NULL,
-          SeenBuff.Get_Width() * SeenBuff.Get_Height());
-      CDFileClass file;
-      char filename[30];
+  if constexpr (config::kCheatKeysEnabled) {
+    if (key == KN_K && !MapEditorActive && (Debug_Flag || Debug_Playtest)) {
+      /*
+      ** time to create a screen shot using the PCX code (if it works)
+      */
+      if (!Debug_MotionCapture) {
+        GraphicBufferClass temp_page(
+            SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
+            SeenBuff.Get_Width() * SeenBuff.Get_Height());
+        CDFileClass file;
+        char filename[30];
 
-      //			Hide_Mouse();
-      SeenBuff.Blit(temp_page);
-      //			Show_Mouse();
-      for (int lp = 0; lp < 99; lp++) {
-        sprintf(filename, "scrsht%02d.pcx", lp);
-        file.Set_Name(filename);
-        if (!file.Is_Available()) break;
+        //			Hide_Mouse();
+        SeenBuff.Blit(temp_page);
+        //			Show_Mouse();
+        for (int lp = 0; lp < 99; lp++) {
+          sprintf(filename, "scrsht%02d.pcx", lp);
+          file.Set_Name(filename);
+          if (!file.Is_Available()) break;
+        }
+
+        file.Cache(200000);
+        Write_PCX_File(file, temp_page, &GamePalette);
+        Sound_Effect(VOC_BEEP);
       }
-
-      file.Cache(200000);
-      Write_PCX_File(file, temp_page, &GamePalette);
-      Sound_Effect(VOC_BEEP);
     }
   }
-#endif
-#endif
 
   /*
   **	For mouse button clicks, the mouse position is actually held in the

@@ -136,8 +136,10 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
+#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/drive.h"
@@ -179,10 +181,6 @@
 #include "ra/ww_audio.h"
 #include "sdllib/include/shape.h"
 #include "tech/fixed.h"
-
-#ifdef CHEAT_KEYS
-#include "ra/debug.h"
-#endif  // CHEAT_KEYS
 
 enum SAMState {
   SAM_READY,  // Launcher can be facing any direction tracking targets.
@@ -478,7 +476,6 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
   return TechnoClass::Receive_Message(from, message, param);
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * BuildingClass::Debug_Dump -- Displays building status to the monochrome
  *screen.             *
@@ -496,35 +493,36 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Debug_Dump(MonoClass *mono) const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  if constexpr (config::kCheatKeysEnabled) {
+    assert(Buildings.ID(this) == ID);
+    assert(IsActive);
 
-  mono->Set_Cursor(0, 0);
-  mono->Print(Text_String(TXT_DEBUG_BUILDING));
-  mono->Fill_Attrib(66, 13, 12, 1,
-                    IsRepairing ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(66, 14, 12, 1,
-                    IsToRebuild ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(66, 15, 12, 1,
-                    IsAllowedToSell ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(66, 16, 12, 1,
-                    IsCharging ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(66, 17, 12, 1,
-                    IsCharged ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(66, 18, 12, 1,
-                    IsJamming ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(66, 19, 12, 1,
-                    IsJammed ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Set_Cursor(0, 0);
+    mono->Print(Text_String(TXT_DEBUG_BUILDING));
+    mono->Fill_Attrib(66, 13, 12, 1,
+                      IsRepairing ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 14, 12, 1,
+                      IsToRebuild ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 15, 12, 1,
+                      IsAllowedToSell ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 16, 12, 1,
+                      IsCharging ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 17, 12, 1,
+                      IsCharged ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 18, 12, 1,
+                      IsJamming ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 19, 12, 1,
+                      IsJammed ? MonoClass::INVERSE : MonoClass::NORMAL);
 
-  mono->Set_Cursor(1, 11);
-  if (Factory) {
-    mono->Printf("%s %d%%", Factory->Get_Object()->Class_Of().IniName,
-                 (100 * Factory->Completion()) / FactoryClass::STEP_COUNT);
+    mono->Set_Cursor(1, 11);
+    if (Factory) {
+      mono->Printf("%s %d%%", Factory->Get_Object()->Class_Of().IniName,
+                   (100 * Factory->Completion()) / FactoryClass::STEP_COUNT);
+    }
+
+    TechnoClass::Debug_Dump(mono);
   }
-
-  TechnoClass::Debug_Dump(mono);
 }
-#endif
 
 /***********************************************************************************************
  * BuildingClass::Draw_It -- Displays the building at the location specified. *

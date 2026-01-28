@@ -40,7 +40,46 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifdef CHEAT_KEYS
+#include "ra/debug.h"
+
+#include <algorithm>
+#include <cstdio>
+
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/combat.h"
+#include "ra/coord.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/face.h"
+#include "ra/globals.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/logic.h"
+#include "ra/map.h"
+#include "ra/monoc.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/super.h"
+#include "ra/techno.h"
+#include "ra/type.h"
+#include "ra/vector.h"
+#include "ra/vector_dynamic.h"
+#include "ra/vortex.h"
+#include "ra/weapon.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "tech/bench.h"
+#include "tech/ftimer.h"
 
 static CDTimerClass<SystemTimerClass> DebugTimer;
 
@@ -67,7 +106,9 @@ void Debug_Key(unsigned input) {
   static int map_width = -1;
   static int map_height = -1;
 
-  if (!input || input & KN_BUTTON) return;
+  if (!input || input & KN_BUTTON) {
+    return;
+  }
 
   /*
   **	Processing of normal keystrokes.
@@ -86,37 +127,9 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-#ifdef WIN32
       case KN_J:
         Debug_MotionCapture = true;
         break;
-
-#ifdef OBSOLETE
-      case KN_K:
-        /*
-        ** time to create a screen shot using the PCX code (if it works)
-        */
-        if (!Debug_MotionCapture) {
-          GraphicBufferClass temp_page(
-              SeenBuff.Get_Width(), SeenBuff.Get_Height(), NULL,
-              SeenBuff.Get_Width() * SeenBuff.Get_Height());
-          CDFileClass file;
-          char filename[30];
-
-          SeenBuff.Blit(temp_page);
-          for (int lp = 0; lp < 99; lp++) {
-            sprintf(filename, "scrsht%02d.pcx", lp);
-            file.Set_Name(filename);
-            if (!file.Is_Available()) break;
-          }
-
-          file.Cache(200000);
-          Write_PCX_File(file, temp_page, &GamePalette);
-          Sound_Effect(VOC_BEEP);
-        }
-        break;
-#endif
-#endif
 
       case KN_P: {
         for (SpecialWeaponType spc = SPC_FIRST; spc < SPC_COUNT; spc++) {
@@ -156,11 +169,11 @@ void Debug_Key(unsigned input) {
         int damage = 1000;
         new AnimClass(Combat_Anim(damage, warhead, Map[coord].Land_Type()),
                       coord);
-        Explosion_Damage(coord, damage, NULL, warhead);
+        Explosion_Damage(coord, damage, nullptr, warhead);
       } break;
 
       case KN_C:
-        Debug_Cheat = (Debug_Cheat == false);
+        Debug_Cheat = !Debug_Cheat;
         PlayerPtr->IsRecalcNeeded = true;
 
         /*
@@ -274,7 +287,7 @@ void Debug_Key(unsigned input) {
 
       case KN_V:
       case KN_F3:
-        Debug_Icon = (Debug_Icon == false);
+        Debug_Icon = !Debug_Icon;
         Map.Flag_To_Redraw(true);
         break;
 
@@ -299,7 +312,9 @@ void Debug_Key(unsigned input) {
               (TechnoTypeClass const&)CurrentObject[0]->Class_Of();
           int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
-          if (ttype.PrimaryWeapon != NULL) weapon = ttype.PrimaryWeapon->Range;
+          if (ttype.PrimaryWeapon != nullptr) {
+            weapon = ttype.PrimaryWeapon->Range;
+          }
           Set_Logic_Page(SeenBuff);
           COORDINATE center = CurrentObject[0]->Center_Coord();
           COORDINATE center2 = CurrentObject[0]->Fire_Coord(0);
@@ -322,7 +337,7 @@ void Debug_Key(unsigned input) {
         break;
 
       case ((int)KN_F4 | (int)KN_CTRL_BIT):
-        Debug_Unshroud = (Debug_Unshroud == false);
+        Debug_Unshroud = !Debug_Unshroud;
         Map.Flag_To_Redraw(true);
         break;
 
@@ -363,7 +378,7 @@ static char const* Bench_Time(BenchType btype) {
   if (roottime != 0 && rootcount != 0) {
     percent = ((count * time) * 99) / (roottime * rootcount);
   }
-  if (percent > 99) percent = 99;
+  percent = std::min(percent, 99);
   sprintf(buffer, "%-2d%% %7d", percent, time);
   return (buffer);
 }
@@ -394,13 +409,13 @@ static void Benchmarks(MonoClass* mono) {
     mono->Clear();
     mono->Set_Cursor(0, 0);
     mono->Print(Text_String(TXT_DEBUG_PERFORMANCE));
-    if (Benches == NULL) {
+    if (Benches == nullptr) {
       mono->Set_Cursor(20, 15);
       mono->Printf(TXT_NO_PENTIUM);
     }
   }
 
-  if (Benches != NULL) {
+  if (Benches != nullptr) {
     mono->Set_Cursor(1, 2);
     mono->Printf("%s", Bench_Time(BENCH_FINDPATH));
     mono->Set_Cursor(1, 4);
@@ -477,7 +492,7 @@ static void Benchmarks(MonoClass* mono) {
  *=============================================================================================*/
 #define UPDATE_INTERVAL TIMER_SECOND
 void Self_Regulate() {
-  static ObjectClass* _lastobject = 0;
+  static ObjectClass* _lastobject = nullptr;
   static bool _first = true;
 
   if (DebugTimer == 0) {
@@ -516,7 +531,7 @@ void Self_Regulate() {
             _lastobject = CurrentObject[0];
           }
           if (_lastobject && !_lastobject->IsActive) {
-            _lastobject = 0;
+            _lastobject = nullptr;
           }
           if (_lastobject) {
             _lastobject->Debug_Dump(mono);
@@ -544,7 +559,7 @@ void Self_Regulate() {
             _lastobject = CurrentObject[0];
           }
           if (_lastobject && !_lastobject->IsActive) {
-            _lastobject = 0;
+            _lastobject = nullptr;
           }
           if (_lastobject && _lastobject->Is_Techno()) {
             ((TechnoClass*)_lastobject)->House->Debug_Dump(mono);
@@ -559,4 +574,3 @@ void Self_Regulate() {
     }
   }
 }
-#endif

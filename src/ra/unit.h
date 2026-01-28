@@ -50,6 +50,7 @@
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/jshell.h"
+#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/techno.h"
@@ -149,7 +150,7 @@ class UnitClass : public DriveClass {
   bool Goto_Clear_Spot();
   bool Try_To_Deploy();
   void Scatter(COORDINATE threat, bool forced = false,
-                       bool nokidding = false) override;
+               bool nokidding = false) override;
 
   bool Tiberium_Check(CELL& center, int x, int y);
   bool Flag_Attach(HousesType house);
@@ -207,8 +208,8 @@ class UnitClass : public DriveClass {
   **	Combat related.
   */
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source = nullptr,
-                                 bool forced = false) override;
+                         TechnoClass* source = nullptr,
+                         bool forced = false) override;
   BulletClass* Fire_At(TARGET target, int which = 0) override;
 
   /*
@@ -222,9 +223,8 @@ class UnitClass : public DriveClass {
   */
   TARGET Greatest_Threat(ThreatType threat) override;  // const;
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
-  RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           long& param) override;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
   void AI() override;
   int Mission_Guard_Area() override;
   int Mission_Unload() override;
@@ -238,12 +238,10 @@ class UnitClass : public DriveClass {
   void Reload_AI();
   bool Edge_Of_World_AI();
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*
+  **	Scenario and debug support.
+  */
+  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	Movement and animation.
@@ -254,7 +252,7 @@ class UnitClass : public DriveClass {
   int Offload_Tiberium_Bail() override;
   void Enter_Idle_Mode(bool initial = false) override;
   MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType facing = FACING_NONE) const override;
+                          FacingType facing = FACING_NONE) const override;
   void Per_Cell_Process(PCPType why) override;
   void Exit_Repair();
   void Shroud_Regen();

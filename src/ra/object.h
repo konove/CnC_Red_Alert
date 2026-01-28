@@ -45,6 +45,7 @@
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/jshell.h"
+#include "ra/monoc.h"
 #include "tech/fixed.h"
 #include "tech/noinit.h"
 
@@ -264,12 +265,10 @@ class ObjectClass : public AbstractClass {
   virtual void Code_Pointers();
   virtual void Decode_Pointers();
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*
+  **	Scenario and debug support.
+  */
+  void Debug_Dump(MonoClass* mono) const override;
   virtual void Move(FacingType);
 
   enum { FLIGHT_LEVEL = 256 };

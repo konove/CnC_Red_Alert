@@ -92,6 +92,7 @@
 #include "ra/config.h"
 #include "ra/const.h"
 #include "ra/coord.h"
+#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/event.h"
@@ -186,9 +187,7 @@ extern bool Is_Mission_Aftermath(char* file_name);
 extern bool Is_Mission_Counterstrike(char* file_name);
 extern void Do_Draw();
 
-#ifdef CHEAT_KEYS
 bool bNoMovies = false;
-#endif
 
 /****************************************
 **	Function prototypes for this module **
@@ -202,10 +201,7 @@ extern "C" {
 bool UseOldShapeDraw = false;
 }
 
-#ifdef CHEAT_KEYS
-void Dump_Heap_Pointers();
 void Error_In_Heap_Pointers(char* string);
-#endif
 static void Do_Record_Playback();
 
 void Toggle_Formation();
@@ -593,25 +589,24 @@ void Keyboard_Process(KeyNumType& input) {
   KeyNumType key = plain;
 #endif
 
-#ifdef CHEAT_KEYS
+  if constexpr (config::kCheatKeysEnabled) {
+    if (Debug_Flag) {
+      HousesType h;
 
-  if (Debug_Flag) {
-    HousesType h;
+      switch (int(input)) {
+        case (int(KN_M) | int(KN_SHIFT_BIT)):
+        case (int(KN_M) | int(KN_ALT_BIT)):
+        case (int(KN_M) | int(KN_CTRL_BIT)):
+          for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+            Houses.Ptr(h)->Refund_Money(10000);
+          }
+          break;
 
-    switch (int(input)) {
-      case int(int(KN_M) | int(KN_SHIFT_BIT)):
-      case int(int(KN_M) | int(KN_ALT_BIT)):
-      case int(int(KN_M) | int(KN_CTRL_BIT)):
-        for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-          Houses.Ptr(h)->Refund_Money(10000);
-        }
-        break;
-
-      default:
-        break;
+        default:
+          break;
+      }
     }
   }
-#endif
 
   if constexpr (config::kVirginCheatKeysEnabled) {
     if (Debug_Playtest && input == (KN_W | KN_ALT_BIT)) {
@@ -620,32 +615,28 @@ void Keyboard_Process(KeyNumType& input) {
     }
   }
 
-#ifdef CHEAT_KEYS
-#ifdef WIN32
-  if (Debug_Playtest && input == (KA_W | KN_ALT_BIT)) {
-#else
-  if (Debug_Playtest && input == (KN_W | KN_ALT_BIT)) {
-#endif
-    PlayerPtr->Blockage = false;
-    PlayerPtr->Flag_To_Win();
-  }
+  if constexpr (config::kCheatKeysEnabled) {
+    if (Debug_Playtest && input == (KA_W | KN_ALT_BIT)) {
+      PlayerPtr->Blockage = false;
+      PlayerPtr->Flag_To_Win();
+    }
 
-  if ((Debug_Flag || Debug_Playtest) && plain == KN_F4) {
-    if (Session.Type == GAME_NORMAL) {
-      Debug_Unshroud = (Debug_Unshroud == false);
-      Map.Flag_To_Redraw(true);
+    if ((Debug_Flag || Debug_Playtest) && plain == KN_F4) {
+      if (Session.Type == GAME_NORMAL) {
+        Debug_Unshroud = !Debug_Unshroud;
+        Map.Flag_To_Redraw(true);
+      }
+    }
+
+    if (Debug_Flag && input == KN_SLASH) {
+      if (Session.Type != GAME_NORMAL) {
+        SpecialDialog = SDLG_SPECIAL;
+        input = KN_NONE;
+      } else {
+        Special_Dialog();
+      }
     }
   }
-
-  if (Debug_Flag && input == KN_SLASH) {
-    if (Session.Type != GAME_NORMAL) {
-      SpecialDialog = SDLG_SPECIAL;
-      input = KN_NONE;
-    } else {
-      Special_Dialog();
-    }
-  }
-#endif
 
   /*
   **	Process prerecorded team selection. This will be an additive select
@@ -986,11 +977,11 @@ void Keyboard_Process(KeyNumType& input) {
     input = KN_NONE;
   }
 
-#ifdef CHEAT_KEYS
-  if (input != 0 && Debug_Flag && input && (input & KN_RLSE_BIT) == 0) {
-    Debug_Key(input);
+  if constexpr (config::kCheatKeysEnabled) {
+    if (input != 0 && Debug_Flag && input && (input & KN_RLSE_BIT) == 0) {
+      Debug_Key(input);
+    }
   }
-#endif
 }
 
 void Toggle_Formation() {
@@ -2190,13 +2181,12 @@ bool Main_Loop() {
   }
 #endif
 
-#ifdef CHEAT_KEYS
-
-  /*
-  **	Update the running status debug display.
-  */
-  Self_Regulate();
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    /*
+     **	Update the running status debug display.
+     */
+    Self_Regulate();
+  }
 
   BStart(BENCH_GAME_FRAME);
 
@@ -3008,9 +2998,9 @@ bool PlayMpegMovie(const char* name) {
   CCFileClass file;
   const char* filename;
 
-#ifdef CHEAT_KEYS
-  if (bNoMovies) return true;
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    if (bNoMovies) return true;
+  }
 
   sprintf(path, "movies\\%.8s.%.3s", name, "mpg");
   filename = file.Set_Name(path);

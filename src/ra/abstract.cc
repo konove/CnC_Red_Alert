@@ -47,19 +47,18 @@
 #include "ra/abstract.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cstring>
 
 #include "ra/building.h"
 #include "ra/ccptr.h"
+#include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/target.h"
 #include "ra/type.h"
-
-#ifdef CHEAT_KEYS
-#include "ra/inline.h"
-#endif  // CHEAT_KEYS
 
 /***********************************************************************************************
  * AbstractClass::Debug_Dump -- Display debug information to mono screen. *
@@ -76,23 +75,23 @@
  *                                                                                             *
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 void AbstractClass::Debug_Dump(MonoClass* mono) const {
-  assert(IsActive);
+  if constexpr (config::kCheatKeysEnabled) {
+    assert(IsActive);
 
-  mono->Set_Cursor(11, 5);
-  mono->Printf("%08X", As_Target());
-  mono->Set_Cursor(20, 1);
-  mono->Printf("%08X", Coord);
-  mono->Set_Cursor(29, 1);
-  mono->Printf("%3d", Height);
-  if (Owner() != HOUSE_NONE) {
-    mono->Set_Cursor(1, 3);
-    mono->Printf("%-18s",
-                 Text_String(HouseTypeClass::As_Reference(Owner()).FullName));
+    mono->Set_Cursor(11, 5);
+    mono->Printf("%08X", As_Target());
+    mono->Set_Cursor(20, 1);
+    mono->Printf("%08X", Coord);
+    mono->Set_Cursor(29, 1);
+    mono->Printf("%3d", Height);
+    if (Owner() != HOUSE_NONE) {
+      mono->Set_Cursor(1, 3);
+      mono->Printf("%-18s",
+                   Text_String(HouseTypeClass::As_Reference(Owner()).FullName));
+    }
   }
 }
-#endif
 
 DirType AbstractClass::Direction(const TARGET target) const {
   return ::Direction(Center_Coord(), As_Coord(target));

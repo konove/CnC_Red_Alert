@@ -43,11 +43,8 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "tech/noinit.h"
-
-#ifdef CHEAT_KEYS
 #include "ra/monoc.h"
-#endif  // CHEAT_KEYS
+#include "tech/noinit.h"
 
 /*
 **	This class is the base class for all game objects that have an existence
@@ -97,12 +94,10 @@ class AbstractClass {
   TARGET As_Target() const { return Build_Target(RTTI, ID); }
   RTTIType What_Am_I() const { return RTTI; }
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
+  /*
+  **	Scenario and debug support.
+  */
   virtual void Debug_Dump(MonoClass* mono) const;
-#endif
 
   /*
   **	Coordinate query support functions.

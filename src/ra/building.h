@@ -49,6 +49,7 @@
 #include "ra/factory.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
+#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/techno.h"
@@ -346,12 +347,10 @@ class BuildingClass : public TechnoClass {
   void Enter_Idle_Mode(bool initial = false) override;
   void Remove_Gap_Effect();
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
-#endif
+  /*
+  **	Scenario and debug support.
+  */
+  void Debug_Dump(MonoClass *mono) const override;
 
   /*
   **	File I/O.

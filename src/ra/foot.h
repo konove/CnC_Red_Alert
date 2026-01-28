@@ -45,6 +45,7 @@
 #include "ra/face.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
+#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/target.h"
@@ -338,12 +339,10 @@ class FootClass : public TechnoClass {
   int Mission_Hunt() override;
   int Mission_Guard_Area() override;
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*
+   **	Scenario and debug support.
+   */
+  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	Movement and animation.

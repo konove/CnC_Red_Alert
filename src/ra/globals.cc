@@ -282,9 +282,7 @@ bool GameInFocus = false;
 **	Encryption keys.
 */
 PKey FastKey;
-#ifdef CHEAT_KEYS
 PKey SlowKey;
-#endif
 
 /***************************************************************************
 **	This is where the name overrides for the units will reside.

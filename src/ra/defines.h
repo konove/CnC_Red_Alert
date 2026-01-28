@@ -60,9 +60,11 @@
 **	Release version -- no editor or cheat keys -- all debugging info
 *removed.
 */
-// #define INTERNAL_VERSION
-// #define PLAYTEST_VERSION
+// Build version controlled via .env file (see .env.example)
+// Defaults to Release if nothing defined
+#if !defined(INTERNAL_VERSION) && !defined(PLAYTEST_VERSION)
 #define RELEASE_VERSION
+#endif
 
 /**********************************************************************
 ** ColinM

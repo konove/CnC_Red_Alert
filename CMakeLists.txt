@@ -52,6 +52,9 @@ endif ()
 # Include What You Use integration (automatically enabled/disabled by STRICT_CHECKS)
 include(cmake/IWYU.cmake)
 
+# Development .env file support (disabled in Release builds)
+include(cmake/DotEnv.cmake)
+
 if (ENABLE_IWYU AND IWYU_PATH)
     set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE "${IWYU_COMMAND}")
 endif ()

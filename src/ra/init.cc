@@ -134,10 +134,12 @@
 #include "sdllib/include/ww_audio.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/bench.h"
 #include "tech/buff.h"
 #include "tech/crc.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "tech/mpu.h"
 #include "tech/pk.h"
 #include "tech/ramfile.h"
 #include "tech/random.h"
@@ -156,9 +158,7 @@
 
 RemapControlType SidebarScheme;
 
-#ifdef CHEAT_KEYS
 extern bool bNoMovies;
-#endif
 
 /****************************************
 **	Function prototypes for this module **
@@ -242,15 +242,15 @@ static void Load_Prolog_Page() {
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 bool Init_Game(int, char*[]) {
-/*
-**	Allocate the benchmark tracking objects only if the machine and
-**	compile flags indicate.
-*/
-#ifdef CHEAT_KEYS
-  if (Processor() >= 2) {
-    Benches = new Benchmark[BENCH_COUNT];
+  /*
+  **	Allocate the benchmark tracking objects only if the machine and
+  **	compile flags indicate.
+  */
+  if constexpr (config::kCheatKeysEnabled) {
+    if (Processor() >= 2) {
+      Benches = new Benchmark[BENCH_COUNT];
+    }
   }
-#endif
 
   /*
   **	Initialize the encryption keys.
@@ -1705,16 +1705,15 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
     if (processed) continue;
 
-#ifdef CHEAT_KEYS
-    /*
-    **	Scenario Editor Mode
-    */
-    if (stricmp(string, "-CHECKMAP") == 0) {
-      Debug_Check_Map = true;
-      continue;
+    if constexpr (config::kCheatKeysEnabled) {
+      /*
+      **	Scenario Editor Mode
+      */
+      if (stricmp(string, "-CHECKMAP") == 0) {
+        Debug_Check_Map = true;
+        continue;
+      }
     }
-
-#endif
 
     /*
     **	File search path override.
@@ -1832,10 +1831,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     **	Enable TEN
     */
     if (strstr(string, "TEN")) {
-#ifdef CHEAT_KEYS
-      Debug_Flag = true;
-      MonoClass::Enable();
-#endif
+      if constexpr (config::kCheatKeysEnabled) {
+        Debug_Flag = true;
+        MonoClass::Enable();
+      }
 
       Session.Type = GAME_TEN;
       Special.IsFromInstall = false;
@@ -1866,10 +1865,10 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     **	Enable MPATH
     */
     if (strstr(string, "MPATH")) {
-#ifdef CHEAT_KEYS
-      Debug_Flag = true;
-      MonoClass::Enable();
-#endif
+      if constexpr (config::kCheatKeysEnabled) {
+        Debug_Flag = true;
+        MonoClass::Enable();
+      }
 
       Session.Type = GAME_MPATH;
       Special.IsFromInstall = false;
@@ -1916,11 +1915,11 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
 #endif
 
-#ifdef CHEAT_KEYS
-    if (strstr(string, "-NOMOVIES")) {
-      bNoMovies = true;
+    if constexpr (config::kCheatKeysEnabled) {
+      if (strstr(string, "-NOMOVIES")) {
+        bNoMovies = true;
+      }
     }
-#endif
 
     /*
     ** Disable mouse grabbing for debugging

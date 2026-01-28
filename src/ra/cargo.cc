@@ -43,12 +43,12 @@
 
 #include "ra/cargo.h"
 
+#include "config.h"
 #include "ra/foot.h"
 #include "ra/jshell.h"
 #include "ra/object.h"
 #include "ra/techno.h"
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * CargoClass::Debug_Dump -- Displays the cargo value to the monochrome screen.
  **
@@ -65,12 +65,13 @@
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void CargoClass::Debug_Dump(MonoClass* mono) const {
-  if (How_Many()) {
-    mono->Set_Cursor(63, 3);
-    mono->Printf("(%d)%04X", How_Many(), Attached_Object());
+  if constexpr (config::kCheatKeysEnabled) {
+    if (How_Many()) {
+      mono->Set_Cursor(63, 3);
+      mono->Printf("(%d)%04X", How_Many(), Attached_Object());
+    }
   }
 }
-#endif
 
 /***********************************************************************************************
  * CargoClass::Attach -- Add unit to cargo hold. *

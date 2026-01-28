@@ -41,6 +41,7 @@
 #define CARGO_H
 
 #include "ra/house.h"
+#include "ra/monoc.h"
 #include "tech/noinit.h"
 
 /****************************************************************************
@@ -53,15 +54,13 @@ class CargoClass {
   */
   CargoClass() : Quantity(0), CargoHold(nullptr) {}
   CargoClass(NoInitClass const&) {}
-  ~CargoClass() { CargoHold = nullptr; }
+  virtual ~CargoClass() { CargoHold = nullptr; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
 
-#ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass* mono) const;
-#endif
+  virtual void Debug_Dump(MonoClass* mono) const;
   void AI() {}
 
   int How_Many() const { return Quantity; }

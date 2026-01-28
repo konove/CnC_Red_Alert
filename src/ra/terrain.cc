@@ -70,6 +70,7 @@
 
 #include "ra/anim.h"
 #include "ra/cell.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
 #include "ra/externs.h"
@@ -511,7 +512,6 @@ void TerrainClass::AI() {
   }
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * TerrainClass::Debug_Dump -- Displays the status of the terrain object. *
  *                                                                                             *
@@ -527,12 +527,13 @@ void TerrainClass::AI() {
  * HISTORY: * 09/27/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Debug_Dump(MonoClass* mono) const {
-  assert(Terrains.ID(this) == ID);
-  assert(IsActive);
+  if constexpr (config::kCheatKeysEnabled) {
+    assert(Terrains.ID(this) == ID);
+    assert(IsActive);
 
-  ObjectClass::Debug_Dump(mono);
+    ObjectClass::Debug_Dump(mono);
+  }
 }
-#endif
 
 /***********************************************************************************************
  * TerrainClass::Unlimbo -- Unlimbo terrain object onto the map. *

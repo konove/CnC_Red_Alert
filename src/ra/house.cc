@@ -163,8 +163,11 @@
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/cell.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
+#include "ra/const.h"
 #include "ra/coord.h"
+#include "ra/debug.h"
 #include "ra/display.h"
 #include "ra/drive.h"
 #include "ra/externs.h"
@@ -362,8 +365,6 @@ DiffType HouseClass::Assign_Handicap(DiffType handicap) {
   return old;
 }
 
-#ifdef CHEAT_KEYS
-
 void HouseClass::Print_Zone_Stats(int x, int y, ZoneType zone,
                                   MonoClass* mono) const {
   mono->Set_Cursor(x, y);
@@ -387,194 +388,195 @@ void HouseClass::Print_Zone_Stats(int x, int y, ZoneType zone,
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Debug_Dump(MonoClass* mono) const {
-  mono->Set_Cursor(0, 0);
-  mono->Print(Text_String(TXT_DEBUG_HOUSE));
+  if constexpr (config::kCheatKeysEnabled) {
+    mono->Set_Cursor(0, 0);
+    mono->Print(Text_String(TXT_DEBUG_HOUSE));
 
-  mono->Set_Cursor(1, 1);
-  mono->Printf("[%d]%14.14s", Class->House, Name());
-  mono->Set_Cursor(20, 1);
-  mono->Printf("[%d]%13.13s", ActLike,
-               HouseTypeClass::As_Reference(ActLike).Name());
-  mono->Set_Cursor(39, 1);
-  mono->Printf("%2d", Control.TechLevel);
-  mono->Set_Cursor(45, 1);
-  mono->Printf("%2d", Difficulty);
-  mono->Set_Cursor(52, 1);
-  mono->Printf("%2d", State);
-  mono->Set_Cursor(58, 1);
-  mono->Printf("%2d", Blockage);
-  mono->Set_Cursor(65, 1);
-  mono->Printf("%2d", IQ);
-  mono->Set_Cursor(72, 1);
-  mono->Printf("%5d", (long)RepairTimer);
+    mono->Set_Cursor(1, 1);
+    mono->Printf("[%d]%14.14s", Class->House, Name());
+    mono->Set_Cursor(20, 1);
+    mono->Printf("[%d]%13.13s", ActLike,
+                 HouseTypeClass::As_Reference(ActLike).Name());
+    mono->Set_Cursor(39, 1);
+    mono->Printf("%2d", Control.TechLevel);
+    mono->Set_Cursor(45, 1);
+    mono->Printf("%2d", Difficulty);
+    mono->Set_Cursor(52, 1);
+    mono->Printf("%2d", State);
+    mono->Set_Cursor(58, 1);
+    mono->Printf("%2d", Blockage);
+    mono->Set_Cursor(65, 1);
+    mono->Printf("%2d", IQ);
+    mono->Set_Cursor(72, 1);
+    mono->Printf("%5d", (long)RepairTimer);
 
-  mono->Set_Cursor(1, 3);
-  mono->Printf("%08X", AScan);
-  mono->Set_Cursor(10, 3);
-  mono->Printf(
-      "%8.8s",
-      (BuildAircraft == AIRCRAFT_NONE)
-          ? " "
-          : AircraftTypeClass::As_Reference(BuildAircraft).Graphic_Name());
-  mono->Set_Cursor(21, 3);
-  mono->Printf("%3d", CurAircraft);
-  mono->Set_Cursor(27, 3);
-  mono->Printf("%8d", Credits);
-  mono->Set_Cursor(37, 3);
-  mono->Printf("%5d", Power);
-  mono->Set_Cursor(45, 3);
-  mono->Printf("%04X", RadarSpied);
-  mono->Set_Cursor(52, 3);
-  mono->Printf("%5d", PointTotal);
-  mono->Set_Cursor(62, 3);
-  mono->Printf("%5d", (long)TeamTime);
-  mono->Set_Cursor(71, 3);
-  mono->Printf("%5d", (long)AlertTime);
+    mono->Set_Cursor(1, 3);
+    mono->Printf("%08X", AScan);
+    mono->Set_Cursor(10, 3);
+    mono->Printf(
+        "%8.8s",
+        (BuildAircraft == AIRCRAFT_NONE)
+            ? " "
+            : AircraftTypeClass::As_Reference(BuildAircraft).Graphic_Name());
+    mono->Set_Cursor(21, 3);
+    mono->Printf("%3d", CurAircraft);
+    mono->Set_Cursor(27, 3);
+    mono->Printf("%8d", Credits);
+    mono->Set_Cursor(37, 3);
+    mono->Printf("%5d", Power);
+    mono->Set_Cursor(45, 3);
+    mono->Printf("%04X", RadarSpied);
+    mono->Set_Cursor(52, 3);
+    mono->Printf("%5d", PointTotal);
+    mono->Set_Cursor(62, 3);
+    mono->Printf("%5d", (long)TeamTime);
+    mono->Set_Cursor(71, 3);
+    mono->Printf("%5d", (long)AlertTime);
 
-  mono->Set_Cursor(1, 5);
-  mono->Printf("%08X", BScan);
-  mono->Set_Cursor(10, 5);
-  mono->Printf(
-      "%8.8s",
-      (BuildStructure == STRUCT_NONE)
-          ? " "
-          : BuildingTypeClass::As_Reference(BuildStructure).Graphic_Name());
-  mono->Set_Cursor(21, 5);
-  mono->Printf("%3d", CurBuildings);
-  mono->Set_Cursor(27, 5);
-  mono->Printf("%8d", Tiberium);
-  mono->Set_Cursor(37, 5);
-  mono->Printf("%5d", Drain);
-  mono->Set_Cursor(44, 5);
-  mono->Printf("%16.16s", QuarryName[PreferredTarget]);
-  mono->Set_Cursor(62, 5);
-  mono->Printf("%5d", (long)TriggerTime);
-  mono->Set_Cursor(71, 5);
-  mono->Printf("%5d", (long)BorrowedTime);
+    mono->Set_Cursor(1, 5);
+    mono->Printf("%08X", BScan);
+    mono->Set_Cursor(10, 5);
+    mono->Printf(
+        "%8.8s",
+        (BuildStructure == STRUCT_NONE)
+            ? " "
+            : BuildingTypeClass::As_Reference(BuildStructure).Graphic_Name());
+    mono->Set_Cursor(21, 5);
+    mono->Printf("%3d", CurBuildings);
+    mono->Set_Cursor(27, 5);
+    mono->Printf("%8d", Tiberium);
+    mono->Set_Cursor(37, 5);
+    mono->Printf("%5d", Drain);
+    mono->Set_Cursor(44, 5);
+    mono->Printf("%16.16s", QuarryName[PreferredTarget]);
+    mono->Set_Cursor(62, 5);
+    mono->Printf("%5d", (long)TriggerTime);
+    mono->Set_Cursor(71, 5);
+    mono->Printf("%5d", (long)BorrowedTime);
 
-  mono->Set_Cursor(1, 7);
-  mono->Printf("%08X", UScan);
-  mono->Set_Cursor(10, 7);
-  mono->Printf("%8.8s",
-               (BuildUnit == UNIT_NONE)
-                   ? " "
-                   : UnitTypeClass::As_Reference(BuildUnit).Graphic_Name());
-  mono->Set_Cursor(21, 7);
-  mono->Printf("%3d", CurUnits);
-  mono->Set_Cursor(27, 7);
-  mono->Printf("%8d", Control.InitialCredits);
-  mono->Set_Cursor(38, 7);
-  mono->Printf("%5d", UnitsLost);
-  mono->Set_Cursor(44, 7);
-  mono->Printf("%08X", Allies);
-  mono->Set_Cursor(71, 7);
-  mono->Printf("%5d", (long)Attack);
+    mono->Set_Cursor(1, 7);
+    mono->Printf("%08X", UScan);
+    mono->Set_Cursor(10, 7);
+    mono->Printf("%8.8s",
+                 (BuildUnit == UNIT_NONE)
+                     ? " "
+                     : UnitTypeClass::As_Reference(BuildUnit).Graphic_Name());
+    mono->Set_Cursor(21, 7);
+    mono->Printf("%3d", CurUnits);
+    mono->Set_Cursor(27, 7);
+    mono->Printf("%8d", Control.InitialCredits);
+    mono->Set_Cursor(38, 7);
+    mono->Printf("%5d", UnitsLost);
+    mono->Set_Cursor(44, 7);
+    mono->Printf("%08X", Allies);
+    mono->Set_Cursor(71, 7);
+    mono->Printf("%5d", (long)Attack);
 
-  mono->Set_Cursor(1, 9);
-  mono->Printf("%08X", IScan);
-  mono->Set_Cursor(10, 9);
-  mono->Printf(
-      "%8.8s",
-      (BuildInfantry == INFANTRY_NONE)
-          ? " "
-          : InfantryTypeClass::As_Reference(BuildInfantry).Graphic_Name());
-  mono->Set_Cursor(21, 9);
-  mono->Printf("%3d", CurInfantry);
-  mono->Set_Cursor(27, 9);
-  mono->Printf("%8d", Capacity);
-  mono->Set_Cursor(38, 9);
-  mono->Printf("%5d", BuildingsLost);
-  mono->Set_Cursor(45, 9);
-  mono->Printf("%4d", Radius / CELL_LEPTON_W);
-  mono->Set_Cursor(71, 9);
-  mono->Printf("%5d", (long)AITimer);
+    mono->Set_Cursor(1, 9);
+    mono->Printf("%08X", IScan);
+    mono->Set_Cursor(10, 9);
+    mono->Printf(
+        "%8.8s",
+        (BuildInfantry == INFANTRY_NONE)
+            ? " "
+            : InfantryTypeClass::As_Reference(BuildInfantry).Graphic_Name());
+    mono->Set_Cursor(21, 9);
+    mono->Printf("%3d", CurInfantry);
+    mono->Set_Cursor(27, 9);
+    mono->Printf("%8d", Capacity);
+    mono->Set_Cursor(38, 9);
+    mono->Printf("%5d", BuildingsLost);
+    mono->Set_Cursor(45, 9);
+    mono->Printf("%4d", Radius / CELL_LEPTON_W);
+    mono->Set_Cursor(71, 9);
+    mono->Printf("%5d", (long)AITimer);
 
-  mono->Set_Cursor(1, 11);
-  mono->Printf("%08X", VScan);
-  mono->Set_Cursor(10, 11);
-  mono->Printf("%8.8s",
-               (BuildVessel == VESSEL_NONE)
-                   ? " "
-                   : VesselTypeClass::As_Reference(BuildVessel).Graphic_Name());
-  mono->Set_Cursor(21, 11);
-  mono->Printf("%3d", CurVessels);
-  mono->Set_Cursor(54, 11);
-  mono->Printf("%04X", Coord_Cell(Center));
-  mono->Set_Cursor(71, 11);
-  mono->Printf("%5d", (long)DamageTime);
+    mono->Set_Cursor(1, 11);
+    mono->Printf("%08X", VScan);
+    mono->Set_Cursor(10, 11);
+    mono->Printf(
+        "%8.8s",
+        (BuildVessel == VESSEL_NONE)
+            ? " "
+            : VesselTypeClass::As_Reference(BuildVessel).Graphic_Name());
+    mono->Set_Cursor(21, 11);
+    mono->Printf("%3d", CurVessels);
+    mono->Set_Cursor(54, 11);
+    mono->Printf("%04X", Coord_Cell(Center));
+    mono->Set_Cursor(71, 11);
+    mono->Printf("%5d", (long)DamageTime);
 
-  for (int index = 0; index < ARRAY_SIZE(Scen.GlobalFlags); index++) {
-    mono->Set_Cursor(1 + index, 15);
-    if (Scen.GlobalFlags[index] != 0) {
-      mono->Print("1");
-    } else {
-      mono->Print("0");
+    for (int index = 0; index < ARRAY_SIZE(Scen.GlobalFlags); index++) {
+      mono->Set_Cursor(1 + index, 15);
+      if (Scen.GlobalFlags[index] != 0) {
+        mono->Print("1");
+      } else {
+        mono->Print("0");
+      }
+      if (index >= 24) break;
     }
-    if (index >= 24) break;
+    if (Enemy != HOUSE_NONE) {
+      mono->Set_Cursor(53, 15);
+      mono->Printf("[%d]%21.21s", Enemy,
+                   HouseTypeClass::As_Reference(Enemy).Name());
+    }
+
+    Print_Zone_Stats(27, 11, ZONE_NORTH, mono);
+    Print_Zone_Stats(27, 13, ZONE_CORE, mono);
+    Print_Zone_Stats(27, 15, ZONE_SOUTH, mono);
+    Print_Zone_Stats(1, 13, ZONE_WEST, mono);
+    Print_Zone_Stats(53, 13, ZONE_EAST, mono);
+
+    mono->Fill_Attrib(1, 17, 12, 1,
+                      IsActive ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(1, 18, 12, 1,
+                      IsHuman ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(1, 19, 12, 1,
+                      IsPlayerControl ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(1, 20, 12, 1,
+                      IsAlerted ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(1, 21, 12, 1,
+                      IsDiscovered ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(1, 22, 12, 1,
+                      IsMaxedOut ? MonoClass::INVERSE : MonoClass::NORMAL);
+
+    mono->Fill_Attrib(14, 17, 12, 1,
+                      IsDefeated ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(14, 18, 12, 1,
+                      IsToDie ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(14, 19, 12, 1,
+                      IsToWin ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(14, 20, 12, 1,
+                      IsToLose ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(14, 21, 12, 1,
+                      IsCivEvacuated ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(14, 22, 12, 1,
+                      IsRecalcNeeded ? MonoClass::INVERSE : MonoClass::NORMAL);
+
+    mono->Fill_Attrib(27, 17, 12, 1,
+                      IsVisionary ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(27, 18, 12, 1,
+                      IsTiberiumShort ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(27, 19, 12, 1,
+                      IsSpied ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(27, 20, 12, 1,
+                      IsThieved ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(27, 21, 12, 1,
+                      IsGPSActive ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(27, 22, 12, 1,
+                      IsStarted ? MonoClass::INVERSE : MonoClass::NORMAL);
+
+    mono->Fill_Attrib(40, 17, 12, 1,
+                      IsResigner ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(40, 18, 12, 1,
+                      IsGiverUpper ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(
+        40, 19, 12, 1,
+        IsBuiltSomething ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(40, 20, 12, 1,
+                      IsBaseBuilding ? MonoClass::INVERSE : MonoClass::NORMAL);
   }
-  if (Enemy != HOUSE_NONE) {
-    char const* name = "";
-    name = HouseClass::As_Pointer(Enemy)->Name();
-    mono->Set_Cursor(53, 15);
-    mono->Printf("[%d]%21.21s", Enemy,
-                 HouseTypeClass::As_Reference(Enemy).Name());
-  }
-
-  Print_Zone_Stats(27, 11, ZONE_NORTH, mono);
-  Print_Zone_Stats(27, 13, ZONE_CORE, mono);
-  Print_Zone_Stats(27, 15, ZONE_SOUTH, mono);
-  Print_Zone_Stats(1, 13, ZONE_WEST, mono);
-  Print_Zone_Stats(53, 13, ZONE_EAST, mono);
-
-  mono->Fill_Attrib(1, 17, 12, 1,
-                    IsActive ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(1, 18, 12, 1,
-                    IsHuman ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(1, 19, 12, 1,
-                    IsPlayerControl ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(1, 20, 12, 1,
-                    IsAlerted ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(1, 21, 12, 1,
-                    IsDiscovered ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(1, 22, 12, 1,
-                    IsMaxedOut ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-  mono->Fill_Attrib(14, 17, 12, 1,
-                    IsDefeated ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(14, 18, 12, 1,
-                    IsToDie ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(14, 19, 12, 1,
-                    IsToWin ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(14, 20, 12, 1,
-                    IsToLose ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(14, 21, 12, 1,
-                    IsCivEvacuated ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(14, 22, 12, 1,
-                    IsRecalcNeeded ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-  mono->Fill_Attrib(27, 17, 12, 1,
-                    IsVisionary ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(27, 18, 12, 1,
-                    IsTiberiumShort ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(27, 19, 12, 1,
-                    IsSpied ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(27, 20, 12, 1,
-                    IsThieved ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(27, 21, 12, 1,
-                    IsGPSActive ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(27, 22, 12, 1,
-                    IsStarted ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-  mono->Fill_Attrib(40, 17, 12, 1,
-                    IsResigner ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(40, 18, 12, 1,
-                    IsGiverUpper ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(40, 19, 12, 1,
-                    IsBuiltSomething ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(40, 20, 12, 1,
-                    IsBaseBuilding ? MonoClass::INVERSE : MonoClass::NORMAL);
 }
-#endif
 
 /***********************************************************************************************
  * HouseClass::new -- Allocator for a house class. *
@@ -1002,12 +1004,12 @@ bool HouseClass::Can_Build(ObjectTypeClass const* type,
   }
 
   int level = Control.TechLevel;
-#ifdef CHEAT_KEYS
-  if (Debug_Cheat) {
-    level = 98;
-    pre = 0;
+  if constexpr (config::kCheatKeysEnabled) {
+    if (Debug_Cheat) {
+      level = 98;
+      pre = 0;
+    }
   }
-#endif
 
   /*
   **	See if the prerequisite requirements have been met.

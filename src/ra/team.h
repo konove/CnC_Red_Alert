@@ -218,7 +218,7 @@ class TeamClass : public AbstractClass {
   void* operator new(size_t, void* ptr) throw() { return ptr; }
   static void Init();
   static void Suspend_Teams(int priority, HouseClass const* house);
-  void Debug_Dump(MonoClass* mono) const;
+  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

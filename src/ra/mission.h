@@ -43,6 +43,7 @@
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
+#include "ra/monoc.h"
 #include "ra/object.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
@@ -78,12 +79,10 @@ class MissionClass : public ObjectClass {
   explicit MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {}
   ~MissionClass() override {}
 
-/*---------------------------------------------------------------------
-**	Member function prototypes.
-*/
-#ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*---------------------------------------------------------------------
+  **	Member function prototypes.
+  */
+  void Debug_Dump(MonoClass* mono) const override;
 
   void Shorten_Mission_Timer() { Timer = 0; }
   MissionType Get_Mission() const override;

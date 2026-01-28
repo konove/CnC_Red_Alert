@@ -69,18 +69,27 @@
 #include <cstring>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
+#include "ra/const.h"
 #include "ra/defines.h"
+#include "ra/dialog.h"
 #include "ra/externs.h"
+#include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/mission.h"
 #include "ra/target.h"
 #include "ra/team.h"
 #include "ra/type.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/wwstd.h"
 
 TeamMissionClass TeamMissions[TMISSION_COUNT] = {
     {TMISSION_ATTACK},     {TMISSION_ATT_WAYPT},    {TMISSION_FORMATION},
@@ -93,7 +102,6 @@ TeamMissionClass TeamMissions[TMISSION_COUNT] = {
 
 int atoh(char* str);
 
-#if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
 /***********************************************************************************************
  * TeamTypeClass::Draw_It -- Display the team type in a list box. *
  *                                                                                             *
@@ -111,28 +119,30 @@ int atoh(char* str);
  *=============================================================================================*/
 void TeamTypeClass::Draw_It(int, int x, int y, int width, int height,
                             bool selected, TextPrintType flags) const {
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
-  static int _tabs[] = {35, 60, 80, 100};
-  if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
-    if (selected) {
-      flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
-    } else {
-      if (!(flags & TPF_USE_GRAD_PAL)) {
-        flags = flags | TPF_MEDIUM_COLOR;
+  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+    RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+    static int _tabs[] = {35, 60, 80, 100};
+    if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
+      if (selected) {
+        flags = flags | TPF_BRIGHT_COLOR;
+        LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1,
+                             scheme->Shadow);
+      } else {
+        if (!(flags & TPF_USE_GRAD_PAL)) {
+          flags = flags | TPF_MEDIUM_COLOR;
+        }
       }
-    }
 
-    Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
-                            _tabs);
-  } else {
-    Conquer_Clip_Text_Print(Description(), x, y,
-                            (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                      : &ColorRemaps[PCOLOR_GREY]),
-                            TBLACK, flags, width, _tabs);
+      Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
+                              _tabs);
+    } else {
+      Conquer_Clip_Text_Print(Description(), x, y,
+                              (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
+                                        : &ColorRemaps[PCOLOR_GREY]),
+                              TBLACK, flags, width, _tabs);
+    }
   }
 }
-#endif
 
 /*
 ********************************** Globals **********************************
@@ -1448,7 +1458,6 @@ int atoh(char* str) {
 
 #endif
 
-#if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
 /***********************************************************************************************
  * TeamTypeClass::Member_Description -- Builds a member description string. *
  *                                                                                             *
@@ -1467,32 +1476,35 @@ int atoh(char* str) {
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
 char const* TeamTypeClass::Member_Description() const {
-  static char buffer[128];
+  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+    static char buffer[128];
 
-  buffer[0] = '\0';
+    buffer[0] = '\0';
 
-  /*
-  **	Fill in class & count for all classes
-  */
-  for (int index = 0; index < ClassCount; index++) {
-    char txt[10];
+    /*
+    **	Fill in class & count for all classes
+    */
+    for (int index = 0; index < ClassCount; index++) {
+      char txt[10];
 
-    strcat(buffer, Members[index].Class->IniName);
-    strcat(buffer, ":");
+      port::SafeAppend(buffer, Members[index].Class->IniName);
+      port::SafeAppend(buffer, ":");
 
-    sprintf(txt, "%d", Members[index].Quantity);
-    strcat(buffer, txt);
+      sprintf(txt, "%d", Members[index].Quantity);
+      port::SafeAppend(buffer, txt);
 
-    if (index < ClassCount - 1) {
-      strcat(buffer, ",");
+      if (index < ClassCount - 1) {
+        port::SafeAppend(buffer, ",");
+      }
     }
-  }
 
-  if (strlen(buffer) > 25) {
-    strcpy(&buffer[25 - 3], "...");
-  }
+    if (strlen(buffer) > 25) {
+      port::SafeCopy(&buffer[25 - 3], "...", 4);
+    }
 
-  return (buffer);
+    return (buffer);
+  }
+  return "";
 }
 
 /***********************************************************************************************
@@ -1511,26 +1523,29 @@ char const* TeamTypeClass::Member_Description() const {
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
 char const* TeamTypeClass::Description() const {
-  static char _buffer[128];
-  char extra = ' ';
-  char loc[3];
+  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+    static char _buffer[128];
+    char extra = ' ';
+    char loc[3];
 
-  loc[0] = loc[1] = loc[2] = 0;
-  if (IsAutocreate) extra = '*';
-  if (Origin > -1) {
-    //	if (Origin != -1) {
-    if (Origin < 26) {
-      loc[0] = 'A' + Origin;
-    } else {
-      loc[0] = Origin / 26 + 'A' - 1;
-      loc[1] = Origin % 26 + 'A';
+    loc[0] = loc[1] = loc[2] = 0;
+    if (IsAutocreate) extra = '*';
+    if (Origin > -1) {
+      //	if (Origin != -1) {
+      if (Origin < 26) {
+        loc[0] = 'A' + Origin;
+      } else {
+        loc[0] = Origin / 26 + 'A' - 1;
+        loc[1] = Origin % 26 + 'A';
+      }
     }
-  }
 
-  sprintf(_buffer, "%s\t%s\t%c%s\t%d\t%s", IniName,
-          HouseTypeClass::As_Reference(House).Suffix, extra, loc, MissionCount,
-          Member_Description());
-  return (_buffer);
+    sprintf(_buffer, "%s\t%s\t%c%s\t%d\t%s", IniName,
+            HouseTypeClass::As_Reference(House).Suffix, extra, loc,
+            MissionCount, Member_Description());
+    return (_buffer);
+  }
+  return "";
 }
 
 /***********************************************************************************************
@@ -1552,44 +1567,46 @@ char const* TeamTypeClass::Description() const {
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
 char const* TeamMissionClass::Description(int index) const {
-  static char buffer[64];
+  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+    static char buffer[64];
 
-  sprintf(buffer, "%d\t%s", index, TeamTypeClass::Name_From_Mission(Mission));
+    sprintf(buffer, "%d\t%s", index, TeamTypeClass::Name_From_Mission(Mission));
 
-  switch (TeamMission_Needs(Mission)) {
-    case NEED_MISSION:
-      strcat(buffer, MissionClass::Mission_Name(Data.Mission));
-      break;
+    switch (TeamMission_Needs(Mission)) {
+      case NEED_MISSION:
+        port::SafeAppend(buffer, MissionClass::Mission_Name(Data.Mission));
+        break;
 
-    case NEED_FORMATION:
-      strcat(buffer, FormationName[Data.Quarry]);
-      break;
+      case NEED_FORMATION:
+        port::SafeAppend(buffer, FormationName[Data.Quarry]);
+        break;
 
-    case NEED_NUMBER:
-      sprintf(&buffer[strlen(buffer)], "%d", Data.Value);
-      break;
+      case NEED_NUMBER:
+        sprintf(&buffer[strlen(buffer)], "%d", Data.Value);
+        break;
 
-    case NEED_HEX_NUMBER:
-      sprintf(&buffer[strlen(buffer)], "%x", Data.Value);
-      break;
+      case NEED_HEX_NUMBER:
+        sprintf(&buffer[strlen(buffer)], "%x", Data.Value);
+        break;
 
-    case NEED_QUARRY:
-      strcat(buffer, QuarryName[Data.Quarry]);
-      break;
+      case NEED_QUARRY:
+        port::SafeAppend(buffer, QuarryName[Data.Quarry]);
+        break;
 
-    case NEED_WAYPOINT:
-      if (Data.Value < 26) {
-        sprintf(&buffer[strlen(buffer)], "%c", Data.Value + 'A');
-      } else {
-        sprintf(&buffer[strlen(buffer)], "%c%c", (Data.Value / 26) + 'A' - 1,
-                (Data.Value % 26) + 'A');
-      }
-      break;
+      case NEED_WAYPOINT:
+        if (Data.Value < 26) {
+          sprintf(&buffer[strlen(buffer)], "%c", Data.Value + 'A');
+        } else {
+          sprintf(&buffer[strlen(buffer)], "%c%c", (Data.Value / 26) + 'A' - 1,
+                  (Data.Value % 26) + 'A');
+        }
+        break;
+    }
+
+    return (buffer);
   }
-
-  return (buffer);
+  return "";
 }
-#endif
 
 /***********************************************************************************************
  * TeamTypeClass::Detach -- Detach the specified target from this team type. *
@@ -1787,7 +1804,8 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   */
   MissionCount = atoi(strtok(nullptr, ","));
   for (int index = 0; index < MissionCount; index++) {
-    MissionList[index].Mission = static_cast<TeamMissionType>(atoi(strtok(nullptr, ",:")));
+    MissionList[index].Mission =
+        static_cast<TeamMissionType>(atoi(strtok(nullptr, ",:")));
     MissionList[index].Data.Value = atoi(strtok(nullptr, ",:"));
   }
 

@@ -40,23 +40,40 @@
 #ifndef MPU_H
 #define MPU_H
 
-/***********************************************************************************************
- * Get_CPU_Clock -- Fetches the current CPU clock time. *
- *                                                                                             *
- *    This routine will return the internal Pentium clock accumulator. This
- *accumulator is     * incremented every clock tick. Since this clock value can
- *get very very large, the value  * returned is in 64 bits. The low half is
- *returned directly, the high half is stored in    * location specified. *
- *                                                                                             *
- * INPUT:   high  -- Reference to the high value of the 64 bit clock number. *
- *                                                                                             *
- * OUTPUT:  Returns with the low half of the CPU clock value. *
- *                                                                                             *
- * WARNINGS:   This instruction is only available on Pentium or later
- *processors.              *
- *                                                                                             *
- * HISTORY: * 07/17/1996 JLB : Created. *
- *=============================================================================================*/
-unsigned long Get_CPU_Clock(unsigned long& high);
+#include <cstdint>
+
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || \
+    defined(_M_IX86)
+#ifdef _MSC_VER
+#include <intrin.h>
+#else
+#include <x86intrin.h>
+#endif
+
+// Returns the CPU timestamp counter (TSC) value.
+inline uint64_t Get_CPU_Clock() { return __rdtsc(); }
+
+#else
+// Fallback for non-x86 platforms (e.g., ARM, WebAssembly).
+#include <chrono>
+
+inline uint64_t Get_CPU_Clock() {
+  return static_cast<uint64_t>(
+      std::chrono::steady_clock::now().time_since_epoch().count());
+}
+#endif
+
+// Legacy interface - returns low 32 bits, stores high 32 bits in 'high'.
+inline unsigned long Get_CPU_Clock(unsigned long& high) {
+  uint64_t tsc = Get_CPU_Clock();
+  high = tsc >> 32;
+  return tsc;
+}
+
+// Processor type constants (legacy).
+constexpr int kProc80586 = 2;  // Pentium and later
+
+// Returns the processor type. All modern CPUs return kProc80586.
+inline int Processor() { return kProc80586; }
 
 #endif

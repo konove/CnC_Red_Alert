@@ -168,6 +168,7 @@
 #include "ra/ccini.h"
 #include "ra/cell.h"
 #include "ra/combat.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -612,7 +613,6 @@ COORDINATE TechnoClass::Fire_Coord(int which) const {
   return coord;
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * TechnoClass::Debug_Dump -- Displays the base class data to the monochrome
  *screen.           *
@@ -630,73 +630,74 @@ COORDINATE TechnoClass::Fire_Coord(int which) const {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Debug_Dump(MonoClass* mono) const {
-  assert(IsActive);
-  mono->Set_Cursor(10, 7);
-  mono->Printf("%2d", Fetch_Rate());
-  mono->Set_Cursor(14, 7);
-  mono->Printf("%2d", Fetch_Stage());
-  mono->Set_Cursor(49, 1);
-  mono->Printf("%3d", Ammo);
-  mono->Set_Cursor(71, 1);
-  mono->Printf("$%4d", PurchasePrice);
-  mono->Set_Cursor(54, 1);
-  mono->Printf("%3d", (long)Arm);
-  if (Is_Something_Attached()) {
-    mono->Set_Cursor(1, 5);
-    mono->Printf("%08X", Attached_Object());
-  }
-  if (Target_Legal(TarCom)) {
-    mono->Set_Cursor(29, 3);
-    mono->Printf("%08X", TarCom);
-  }
-  if (Target_Legal(SuspendedTarCom)) {
-    mono->Set_Cursor(38, 3);
-    mono->Printf("%08X", SuspendedTarCom);
-  }
-  if (Target_Legal(ArchiveTarget)) {
-    mono->Set_Cursor(69, 5);
-    mono->Printf("%08X", ArchiveTarget);
-  }
-  mono->Set_Cursor(47, 3);
-  mono->Printf("%02X:%02X", PrimaryFacing.Current(), PrimaryFacing.Desired());
-  mono->Set_Cursor(64, 1);
-  mono->Printf("%d(%d)", Cloak, CloakingDevice);
+  if constexpr (config::kCheatKeysEnabled) {
+    assert(IsActive);
+    mono->Set_Cursor(10, 7);
+    mono->Printf("%2d", Fetch_Rate());
+    mono->Set_Cursor(14, 7);
+    mono->Printf("%2d", Fetch_Stage());
+    mono->Set_Cursor(49, 1);
+    mono->Printf("%3d", Ammo);
+    mono->Set_Cursor(71, 1);
+    mono->Printf("$%4d", PurchasePrice);
+    mono->Set_Cursor(54, 1);
+    mono->Printf("%3d", Arm);
+    if (Is_Something_Attached()) {
+      mono->Set_Cursor(1, 5);
+      mono->Printf("%08X", Attached_Object());
+    }
+    if (Target_Legal(TarCom)) {
+      mono->Set_Cursor(29, 3);
+      mono->Printf("%08X", TarCom);
+    }
+    if (Target_Legal(SuspendedTarCom)) {
+      mono->Set_Cursor(38, 3);
+      mono->Printf("%08X", SuspendedTarCom);
+    }
+    if (Target_Legal(ArchiveTarget)) {
+      mono->Set_Cursor(69, 5);
+      mono->Printf("%08X", ArchiveTarget);
+    }
+    mono->Set_Cursor(47, 3);
+    mono->Printf("%02X:%02X", PrimaryFacing.Current(), PrimaryFacing.Desired());
+    mono->Set_Cursor(64, 1);
+    mono->Printf("%d(%d)", Cloak, CloakingDevice.Fetch_Stage());
 
-  mono->Fill_Attrib(14, 15, 12, 1,
-                    IsUseless ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(14, 16, 12, 1,
-                    IsTickedOff ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(14, 17, 12, 1,
-                    IsCloakable ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(27, 13, 12, 1,
-                    IsLeader ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(27, 14, 12, 1,
-                    IsALoaner ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(27, 15, 12, 1,
-                    IsLocked ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(27, 16, 12, 1,
-                    IsInRecoilState ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(27, 17, 12, 1,
-                    IsTethered ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(40, 13, 12, 1,
-                    IsOwnedByPlayer ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(
-      40, 14, 12, 1,
-      IsDiscoveredByPlayer ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(
-      40, 15, 12, 1,
-      IsDiscoveredByComputer ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(40, 16, 12, 1,
-                    IsALemon ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Set_Cursor(47, 17);
-  mono->Printf("%3d", (long)IronCurtainCountDown);
-  mono->Fill_Attrib(
-      40, 17, 12, 1,
-      IronCurtainCountDown > 0 ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(14, 15, 12, 1,
+                      IsUseless ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(14, 16, 12, 1,
+                      IsTickedOff ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(14, 17, 12, 1,
+                      IsCloakable ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(27, 13, 12, 1,
+                      IsLeader ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(27, 14, 12, 1,
+                      IsALoaner ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(27, 15, 12, 1,
+                      IsLocked ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(27, 16, 12, 1,
+                      IsInRecoilState ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(27, 17, 12, 1,
+                      IsTethered ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(40, 13, 12, 1,
+                      IsOwnedByPlayer ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(
+        40, 14, 12, 1,
+        IsDiscoveredByPlayer ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(
+        40, 15, 12, 1,
+        IsDiscoveredByComputer ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(40, 16, 12, 1,
+                      IsALemon ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Set_Cursor(47, 17);
+    mono->Printf("%3d", (long)IronCurtainCountDown);
+    mono->Fill_Attrib(
+        40, 17, 12, 1,
+        IronCurtainCountDown > 0 ? MonoClass::INVERSE : MonoClass::NORMAL);
 
-  RadioClass::Debug_Dump(mono);
+    RadioClass::Debug_Dump(mono);
+  }
 }
-#endif
 
 /***********************************************************************************************
  * TechnoClass::TechnoClass -- Default constructor for techno objects. *

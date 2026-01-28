@@ -82,9 +82,11 @@
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/cell.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/coord.h"
+#include "ra/debug.h"
 #include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/foot.h"
@@ -499,7 +501,6 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
   }
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * VesselClass::Debug_Dump -- Dumps the vessel status information to the mono
  *monitor.         *
@@ -517,22 +518,23 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselClass::Debug_Dump(MonoClass* mono) const {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  if constexpr (config::kCheatKeysEnabled) {
+    assert(Vessels.ID(this) == ID);
+    assert(IsActive);
 
-  mono->Set_Cursor(0, 0);
-  mono->Print(Text_String(TXT_DEBUG_SHIP));
-  mono->Set_Cursor(47, 5);
-  mono->Printf("%02X:%02X", SecondaryFacing.Current(),
-               SecondaryFacing.Desired());
+    mono->Set_Cursor(0, 0);
+    mono->Print(Text_String(TXT_DEBUG_SHIP));
+    mono->Set_Cursor(47, 5);
+    mono->Printf("%02X:%02X", SecondaryFacing.Current(),
+                 SecondaryFacing.Desired());
 
-  mono->Fill_Attrib(66, 13, 12, 1,
-                    IsSelfRepairing ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(66, 14, 12, 1,
-                    IsToSelfRepair ? MonoClass::INVERSE : MonoClass::NORMAL);
-  DriveClass::Debug_Dump(mono);
+    mono->Fill_Attrib(66, 13, 12, 1,
+                      IsSelfRepairing ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 14, 12, 1,
+                      IsToSelfRepair ? MonoClass::INVERSE : MonoClass::NORMAL);
+    DriveClass::Debug_Dump(mono);
+  }
 }
-#endif
 
 /***********************************************************************************************
  * VesselClass::Overlap_List -- Fetches the overlap list for this vessel object.

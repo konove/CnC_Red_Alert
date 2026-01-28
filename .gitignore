@@ -3,3 +3,4 @@
 /strict-build
 /strict-build.*
 /.idea
+.env

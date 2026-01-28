@@ -72,6 +72,7 @@
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
+#include "ra/config.h"
 #include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/display.h"
@@ -475,7 +476,6 @@ DriveClass::DriveClass(RTTIType rtti, int id, HousesType house)
       TrackNumber(-1),
       TrackIndex(0) {}
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * DriveClass::Debug_Dump -- Displays status information to monochrome screen. *
  *                                                                                             *
@@ -492,13 +492,14 @@ DriveClass::DriveClass(RTTIType rtti, int id, HousesType house)
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Debug_Dump(MonoClass* mono) const {
-  assert(IsActive);
+  if constexpr (config::kCheatKeysEnabled) {
+    assert(IsActive);
 
-  mono->Fill_Attrib(66, 14, 12, 1,
-                    IsMoebius ? MonoClass::INVERSE : MonoClass::NORMAL);
-  FootClass::Debug_Dump(mono);
+    mono->Fill_Attrib(66, 14, 12, 1,
+                      IsMoebius ? MonoClass::INVERSE : MonoClass::NORMAL);
+    FootClass::Debug_Dump(mono);
+  }
 }
-#endif
 
 /***********************************************************************************************
  * DriveClass::Smooth_Turn -- Handles the low level coord calc for smooth turn

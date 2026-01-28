@@ -61,8 +61,10 @@
 #include <sstream>
 #include <string>
 
+#include "absl/log/log.h"
 #include "port/safe_string.h"
 #include "ra/combuf.h"
+#include "ra/config.h"
 #include "ra/connect.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -1042,7 +1044,6 @@ void NullModemClass::Configure_Debug(int, int type_offset, int type_size,
                                        namecount);
 }
 
-#ifdef CHEAT_KEYS
 /***************************************************************************
  * Mono_Debug_Print -- Debug output routine                                *
  *                                                                         *
@@ -1063,17 +1064,19 @@ void NullModemClass::Configure_Debug(int, int type_offset, int type_size,
  *   05/02/1995 BRR : Created.                                             *
  *=========================================================================*/
 void NullModemClass::Mono_Debug_Print(int, int refresh) {
-  if (!Connection) return;
+  if constexpr (config::kCheatKeysEnabled) {
+    if (!Connection) return;
 
-  Connection->Queue->Mono_Debug_Print(refresh);
+    Connection->Queue->Mono_Debug_Print(refresh);
 
-  DLOG(INFO) << "Serial Port Queues: "
-             << "AvgResponseTime=" << Connection->Queue->Avg_Response_Time()
-             << " CRCErrors=" << CRCErrors << " SendOverflows=" << SendOverflows
-             << " ReceiveOverflows=" << ReceiveOverflows
-             << " NumSend=" << Num_Send() << " NumReceive=" << Num_Receive();
+    DLOG(INFO) << "Serial Port Queues: "
+               << "AvgResponseTime=" << Connection->Queue->Avg_Response_Time()
+               << " CRCErrors=" << CRCErrors
+               << " SendOverflows=" << SendOverflows
+               << " ReceiveOverflows=" << ReceiveOverflows
+               << " NumSend=" << Num_Send() << " NumReceive=" << Num_Receive();
+  }
 } /* end of Mono_Debug_Print */
-#endif
 
 /***************************************************************************
  * NullModemClass::Detect_Modem -- Detects and initializes the modem       *

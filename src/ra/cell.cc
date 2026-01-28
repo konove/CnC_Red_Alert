@@ -94,6 +94,7 @@
 #include <cassert>
 #include <cstdlib>
 
+#include "config.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -102,6 +103,7 @@
 #include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
+#include "ra/dialog.h"
 #include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/foot.h"
@@ -133,6 +135,7 @@
 #include "ra/vortex.h"
 #include "ra/ww_audio.h"
 #include "sdllib/include/drawbuff.h"
+#include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/ww_win.h"
@@ -974,7 +977,6 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     void* remap = nullptr;
 #ifdef SCENARIO_EDITOR
     TemplateTypeClass* tptr;
-    //		TriggerClass * trig;
     int i;
     char waypt[3];
 #endif
@@ -992,11 +994,15 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       icon = Clear_Icon();
     }
 
-#ifdef CHEAT_KEYS
-    /*
-    **	Draw the stamp of the template.
-    */
-    if (Debug_Icon) {
+    bool draw_debug_icon = false;
+    if constexpr (config::kCheatKeysEnabled) {
+      draw_debug_icon = Debug_Icon;
+    }
+
+    if (draw_debug_icon) {
+      /*
+      **	Draw debug cell visualization instead of normal terrain.
+      */
       CELL cell = Cell_Number();
       LogicPage->Fill_Rect(Map.TacPixelX + x, Map.TacPixelY + y,
                            Map.TacPixelX + x + ICON_PIXEL_W - 1,
@@ -1007,15 +1013,10 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           "%02X%02X\r%d%d%d\r%d %d", Map.TacPixelX + x + (ICON_PIXEL_W >> 1),
           Map.TacPixelY + y, &GreyScheme, TBLACK,
           TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW,
-          Cell_Y(cell), Cell_X(cell),
-          //(CurrentObject.Count() && CurrentObject[0]->Is_Techno()) ?
-          //((TechnoClass *)CurrentObject[0])->House->Which_Zone(cell) : -1,
-          Zones[MZONE_NORMAL], Zones[MZONE_CRUSHER], Zones[MZONE_DESTROYER],
-          Overlay, OverlayData);
+          Cell_Y(cell), Cell_X(cell), Zones[MZONE_NORMAL], Zones[MZONE_CRUSHER],
+          Zones[MZONE_DESTROYER], Overlay, OverlayData);
       FontXSpacing += 2;
     } else {
-#endif
-
 #ifdef SCENARIO_EDITOR
       /*
       **	Set up the remap table for this icon.
@@ -1146,10 +1147,6 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
             BuildingClass* obj =
                 dynamic_cast<BuildingClass*>(Map.PendingObjectPtr);
             loco = obj->Class->Speed;
-            //					if (*obj == STRUCT_SUB_PEN ||
-            //*obj == STRUCT_SHIP_YARD ||
-            //*obj == STRUCT_FAKE_PEN || *obj == STRUCT_FAKE_YARD) loco =
-            // SPEED_FLOAT;
           }
         }
 
@@ -1176,6 +1173,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
             case RTTI_TEMPLATETYPE:
               tptr = (TemplateTypeClass*)Map.PendingObject;
               if (tptr->Get_Image_Data()) {
+                CELL cell = Cell_Number();
                 icon = (Cell_X(cell) - Cell_X(Map.ZoneCell + Map.ZoneOffset)) +
                        (Cell_Y(cell) - Cell_Y(Map.ZoneCell + Map.ZoneOffset)) *
                            tptr->Width;
@@ -1222,10 +1220,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, flag_remap,
                       DisplayClass::UnitShadow);
       }
-
-#ifdef CHEAT_KEYS
     }
-#endif
     BEnd(BENCH_CELL);
   }
 

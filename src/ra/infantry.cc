@@ -106,8 +106,10 @@
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/combat.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
+#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/facing.h"
@@ -135,10 +137,6 @@
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
 #include "tech/rect.h"
-
-#ifdef CHEAT_KEYS
-#include "ra/debug.h"
-#endif  // CHEAT_KEYS
 
 int const InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
                                            5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3,
@@ -173,7 +171,6 @@ DoStruct const InfantryClass::MasterDoControls[DO_COUNT] = {
     {false, false, false, 2},  // DO_DOG_MAUL
 };
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * InfantryClass::Debug_Dump -- Displays debug information about infantry unit.
  **
@@ -191,27 +188,28 @@ DoStruct const InfantryClass::MasterDoControls[DO_COUNT] = {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Debug_Dump(MonoClass* mono) const {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  if constexpr (config::kCheatKeysEnabled) {
+    assert(Infantry.ID(this) == ID);
+    assert(IsActive);
 
-  mono->Set_Cursor(0, 0);
+    mono->Set_Cursor(0, 0);
 
-  mono->Print(Text_String(TXT_DEBUG_INFANTRY));
-  mono->Set_Cursor(1, 11);
-  mono->Printf("%3d", Doing);
-  mono->Set_Cursor(8, 11);
-  mono->Printf("%3d", Fear);
+    mono->Print(Text_String(TXT_DEBUG_INFANTRY));
+    mono->Set_Cursor(1, 11);
+    mono->Printf("%3d", Doing);
+    mono->Set_Cursor(8, 11);
+    mono->Printf("%3d", Fear);
 
-  mono->Fill_Attrib(66, 13, 12, 1,
-                    IsTechnician ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(66, 14, 12, 1,
-                    IsStoked ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(66, 15, 12, 1,
-                    IsProne ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 13, 12, 1,
+                      IsTechnician ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 14, 12, 1,
+                      IsStoked ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 15, 12, 1,
+                      IsProne ? MonoClass::INVERSE : MonoClass::NORMAL);
 
-  FootClass::Debug_Dump(mono);
+    FootClass::Debug_Dump(mono);
+  }
 }
-#endif
 
 /***********************************************************************************************
  * InfantryClass::InfantryClass -- The constructor for infantry objects. *

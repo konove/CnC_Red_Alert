@@ -40,6 +40,7 @@
 #ifndef FLASHER_H
 #define FLASHER_H
 
+#include "ra/monoc.h"
 #include "tech/noinit.h"
 
 class FlasherClass {
@@ -65,9 +66,7 @@ class FlasherClass {
   FlasherClass(NoInitClass const&) {}
   ~FlasherClass() {}
 
-#ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass* mono) const;
-#endif
+  virtual void Debug_Dump(MonoClass* mono) const;
   bool Process();
 };
 

@@ -57,6 +57,7 @@
 #include <cassert>
 
 #include "port/ex_string.h"
+#include "ra/config.h"
 #include "ra/const.h"
 #include "ra/externs.h"
 
@@ -164,7 +165,6 @@ MissionType MissionClass::Get_Mission() const {
   return Mission == MISSION_NONE ? MissionQueue : Mission;
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * MissionClass::Debug_Dump -- Dumps status values to mono screen. *
  *                                                                                             *
@@ -180,20 +180,21 @@ MissionType MissionClass::Get_Mission() const {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void MissionClass::Debug_Dump(MonoClass* mono) const {
-  assert(IsActive);
+  if constexpr (config::kCheatKeysEnabled) {
+    assert(IsActive);
 
-  mono->Set_Cursor(1, 9);
-  mono->Printf("%-14s", MissionClass::Mission_Name(Mission));
-  mono->Set_Cursor(16, 9);
-  mono->Printf("%-12s", MissionClass::Mission_Name(MissionQueue));
-  mono->Set_Cursor(1, 7);
-  mono->Printf("%3d", Timer.Value());
-  mono->Set_Cursor(6, 7);
-  mono->Printf("%2d", Status);
+    mono->Set_Cursor(1, 9);
+    mono->Printf("%-14s", MissionClass::Mission_Name(Mission));
+    mono->Set_Cursor(16, 9);
+    mono->Printf("%-12s", MissionClass::Mission_Name(MissionQueue));
+    mono->Set_Cursor(1, 7);
+    mono->Printf("%3d", Timer.Value());
+    mono->Set_Cursor(6, 7);
+    mono->Printf("%2d", Status);
 
-  ObjectClass::Debug_Dump(mono);
+    ObjectClass::Debug_Dump(mono);
+  }
 }
-#endif
 
 /***********************************************************************************************
  * MissionClass::AI -- Processes order script. *

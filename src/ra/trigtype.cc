@@ -60,6 +60,7 @@
 #include "ra/trigtype.h"
 
 #include <cassert>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <format>
@@ -68,10 +69,17 @@
 
 #include "port/ex_string.h"
 #include "ra/ccptr.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
+#include "ra/dialog.h"
 #include "ra/externs.h"
+#include "ra/gadget.h"
 #include "ra/heap.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * TriggerTypeClass::TriggerTypeClass -- Constructor for trigger class object. *
@@ -1673,7 +1681,6 @@ bool TriggerTypeClass::Edit() {
 }
 #endif
 
-#if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
 /***********************************************************************************************
  * TriggerTypeClass::Description -- Build a text description of the trigger
  *type.              *
@@ -1692,90 +1699,89 @@ bool TriggerTypeClass::Edit() {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 char const* TriggerTypeClass::Description() const {
-  static char _buffer[128];
+  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+    static char _buffer[128];
 
-  char special;
-  switch (EventControl) {
-    case MULTI_AND:
-      special = '&';
-      break;
+    char special;
+    switch (EventControl) {
+      case MULTI_AND:
+        special = '&';
+        break;
 
-    case MULTI_OR:
-      special = '|';
-      break;
+      case MULTI_OR:
+        special = '|';
+        break;
 
-    case MULTI_LINKED:
-      special = '=';
-      break;
+      case MULTI_LINKED:
+        special = '=';
+        break;
 
-    default:
-      special = '.';
-      break;
+      default:
+        special = '.';
+        break;
+    }
+
+    char special2 = '.';
+    if (ActionControl == MULTI_AND) {
+      special2 = '&';
+    }
+
+    char tbuf[32];
+    char const* added = "";
+    switch (Event_Needs(Event1.Event)) {
+      case NEED_NUMBER:
+        sprintf(tbuf, "%d", Event1.Data.Value);
+        added = tbuf;
+        break;
+
+      case NEED_UNIT:
+        added = Text_String(
+            UnitTypeClass::As_Reference(Event1.Data.Unit).Full_Name());
+        break;
+
+      case NEED_AIRCRAFT:
+        added = Text_String(
+            AircraftTypeClass::As_Reference(Event1.Data.Aircraft).Full_Name());
+        break;
+
+      case NEED_STRUCTURE:
+        added = Text_String(
+            BuildingTypeClass::As_Reference(Event1.Data.Structure).Full_Name());
+        break;
+
+      case NEED_INFANTRY:
+        added = Text_String(
+            InfantryTypeClass::As_Reference(Event1.Data.Infantry).Full_Name());
+        break;
+
+      case NEED_WAYPOINT:
+        if (Event1.Data.Value < 26) {
+          sprintf(tbuf, "'%c'", Event1.Data.Value + 'A');
+        } else {
+          sprintf(tbuf, "'%c%c'", (Event1.Data.Value / 26) + 'A' - 1,
+                  (Event1.Data.Value % 26) + 'A');
+        }
+        added = tbuf;
+        break;
+
+      default:
+        break;
+    }
+
+    /*
+    **	Persistence indicator value.
+    */
+    char pers = 'V';
+    if (IsPersistant == SEMIPERSISTANT) pers = 'S';
+    if (IsPersistant == PERSISTANT) pers = 'P';
+
+    sprintf(_buffer, "%4.4s\t %s %c%c%c  %s%s", IniName,
+            HouseTypeClass::As_Reference(House).Suffix, pers, special, special2,
+            Name_From_Event(Event1.Event), added);
+    return (_buffer);
   }
-
-  char special2 = '.';
-  if (ActionControl == MULTI_AND) {
-    special2 = '&';
-  }
-
-  char tbuf[32];
-  char const* added = "";
-  switch (Event_Needs(Event1.Event)) {
-    case NEED_NUMBER:
-      sprintf(tbuf, "%d", Event1.Data.Value);
-      added = tbuf;
-      break;
-
-    case NEED_UNIT:
-      added = Text_String(
-          UnitTypeClass::As_Reference(Event1.Data.Unit).Full_Name());
-      ;
-      break;
-
-    case NEED_AIRCRAFT:
-      added = Text_String(
-          AircraftTypeClass::As_Reference(Event1.Data.Aircraft).Full_Name());
-      ;
-      break;
-
-    case NEED_STRUCTURE:
-      added = Text_String(
-          BuildingTypeClass::As_Reference(Event1.Data.Structure).Full_Name());
-      break;
-
-    case NEED_INFANTRY:
-      added = Text_String(
-          InfantryTypeClass::As_Reference(Event1.Data.Infantry).Full_Name());
-      break;
-
-    case NEED_WAYPOINT:
-      if (Event1.Data.Value < 26) {
-        sprintf(tbuf, "'%c'", Event1.Data.Value + 'A');
-      } else {
-        sprintf(tbuf, "'%c%c'", (Event1.Data.Value / 26) + 'A' - 1,
-                (Event1.Data.Value % 26) + 'A');
-      }
-      added = tbuf;
-      break;
-
-    default:
-      break;
-  }
-
-  /*
-  **	Persistence indicator value.
-  */
-  char pers = 'V';
-  if (IsPersistant == SEMIPERSISTANT) pers = 'S';
-  if (IsPersistant == PERSISTANT) pers = 'P';
-
-  sprintf(_buffer, "%4.4s\t %s %c%c%c  %s%s", IniName,
-          HouseTypeClass::As_Reference(House).Suffix, pers, special, special2,
-          Name_From_Event(Event1.Event), added);
-  return (_buffer);
+  return "";
 }
-
-#endif
 
 /***********************************************************************************************
  * TriggerTypeClass::Attaches_To -- Determines what trigger can attach to. *
@@ -1994,7 +2000,6 @@ void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
   Action2.Build_INI_Entry(buffer);
 }
 
-#if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
 /***********************************************************************************************
  * TriggerTypeClass::Draw_It -- Draws this trigger as if it were a line in a
  *list box.         *
@@ -2025,28 +2030,30 @@ void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
  *=============================================================================================*/
 void TriggerTypeClass::Draw_It(int, int x, int y, int width, int height,
                                bool selected, TextPrintType flags) const {
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
-  static int _tabs[] = {13, 40};
-  if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
-    if (selected) {
-      flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
-    } else {
-      if (!(flags & TPF_USE_GRAD_PAL)) {
-        flags = flags | TPF_MEDIUM_COLOR;
+  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+    RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+    static int _tabs[] = {13, 40};
+    if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
+      if (selected) {
+        flags = flags | TPF_BRIGHT_COLOR;
+        LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1,
+                             scheme->Shadow);
+      } else {
+        if (!(flags & TPF_USE_GRAD_PAL)) {
+          flags = flags | TPF_MEDIUM_COLOR;
+        }
       }
-    }
 
-    Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
-                            _tabs);
-  } else {
-    Conquer_Clip_Text_Print(Description(), x, y,
-                            (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                      : &ColorRemaps[PCOLOR_GREY]),
-                            TBLACK, flags, width, _tabs);
+      Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
+                              _tabs);
+    } else {
+      Conquer_Clip_Text_Print(Description(), x, y,
+                              (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
+                                        : &ColorRemaps[PCOLOR_GREY]),
+                              TBLACK, flags, width, _tabs);
+    }
   }
 }
-#endif
 
 /***********************************************************************************************
  * TriggerTypeClass::Init -- Initialize the trigger type object management

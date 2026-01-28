@@ -95,10 +95,10 @@ class TriggerClass {
   **	Utility routines
   */
   TARGET As_Target() const;
-  char const* Description() const;
+  const char* Description() const;
   void Draw_It(int, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  char const* Name() const { return Class->Name(); }
+  const char* Name() const { return Class->Name(); }
 
   /*
   **	Overloaded operators

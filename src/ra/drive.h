@@ -44,6 +44,7 @@
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/jshell.h"
+#include "ra/monoc.h"
 #include "tech/ftimer.h"
 #include "tech/noinit.h"
 
@@ -117,9 +118,7 @@ class DriveClass : public FootClass {
   void Per_Cell_Process(PCPType why) override;
   virtual bool Ok_To_Move(DirType) const;
   void AI() override;
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  void Debug_Dump(MonoClass* mono) const override;
   void Force_Track(int track, COORDINATE coord);
   bool Stop_Driver() override;
 
@@ -149,9 +148,9 @@ class DriveClass : public FootClass {
 
  private:
   typedef struct {
-    char Track;                         // Which track to use.
-    char StartTrack;                    // Track when starting from stand-still.
-    DirType Facing;                     // Facing when track has been completed.
+    char Track;             // Which track to use.
+    char StartTrack;        // Track when starting from stand-still.
+    DirType Facing;         // Facing when track has been completed.
     TrackControlType Flag;  // List processing flag bits.
   } TurnTrackType;
 

@@ -118,9 +118,11 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/coord.h"
+#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
@@ -2110,7 +2112,6 @@ int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest) {
   return distance;
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * AircraftClass::Debug_Dump -- Displays the status of the aircraft to the mono
  *monitor.       *
@@ -2127,17 +2128,18 @@ int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest) {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Debug_Dump(MonoClass* mono) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  if constexpr (config::kCheatKeysEnabled) {
+    assert(Aircraft.ID(this) == ID);
+    assert(IsActive);
 
-  mono->Set_Cursor(0, 0);
-  mono->Print(Text_String(TXT_DEBUG_AIRCRAFT));
-  mono->Set_Cursor(1, 11);
-  mono->Printf("%3d", AttacksRemaining);
+    mono->Set_Cursor(0, 0);
+    mono->Print(Text_String(TXT_DEBUG_AIRCRAFT));
+    mono->Set_Cursor(1, 11);
+    mono->Printf("%3d", AttacksRemaining);
 
-  FootClass::Debug_Dump(mono);
+    FootClass::Debug_Dump(mono);
+  }
 }
-#endif
 
 /***********************************************************************************************
  * AircraftClass::Active_Click_With -- Handles clicking over specified object. *

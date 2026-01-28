@@ -42,6 +42,7 @@
 
 #include "ra/defines.h"
 #include "ra/layer.h"
+#include "ra/monoc.h"
 
 /***********************************************************************************************
 **	Game logic processing is controlled by this class. The graphic and AI
@@ -52,8 +53,6 @@ class LogicClass : public LayerClass {
  public:
   void AI();
   void Detach(TARGET target, bool all = true);
-#ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const;
-#endif
 };
 #endif

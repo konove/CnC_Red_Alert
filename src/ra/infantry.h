@@ -39,6 +39,7 @@
 
 #ifndef INFANTRY_H
 #define INFANTRY_H
+
 #include <cstddef>
 
 #include "ra/bullet.h"
@@ -50,6 +51,7 @@
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/jshell.h"
+#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/techno.h"
 #include "ra/type.h"
@@ -212,12 +214,10 @@ class InfantryClass : public FootClass {
   void Doing_AI();
   void Movement_AI();
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*
+  **	Scenario and debug support.
+  */
+  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

@@ -87,6 +87,7 @@
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/compat.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/coord.h"
@@ -148,6 +149,7 @@
 #include "sdllib/include/ww_audio.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/rawfile.h"
 
 static void Remove_AI_Players();
 static void Create_Units(bool official);
@@ -2362,69 +2364,69 @@ bool Read_Scenario_INI(char* fname, bool) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. * 05/11/1995 JLB : Updates movie data. *
  *=============================================================================================*/
-void Write_Scenario_INI(char* /*fname*/) {
-#ifdef CHEAT_KEYS
-  //	CCFileClass file(fname);
+void Write_Scenario_INI(char* fname) {
+  if constexpr (config::kCheatKeysEnabled) {
+    CCFileClass file(fname);
 
-  CCINIClass ini;
+    CCINIClass ini;
 
-  /*
-  **	Preload the old scenario if it is present because there may
-  **	be some fields in the INI that are processed but not written
-  **	out. Preloading the scenario will preserve these manually
-  **	maintained entries.
-  */
-  if (CCFileClass(fname).Is_Available()) {
-    ini.Load(CCFileClass(fname), true);
+    /*
+    **	Preload the old scenario if it is present because there may
+    **	be some fields in the INI that are processed but not written
+    **	out. Preloading the scenario will preserve these manually
+    **	maintained entries.
+    */
+    if (file.Is_Available()) {
+      ini.Load(file, true);
+    }
+
+    static char const* const BASIC = "Basic";
+    ini.Clear(BASIC);
+    ini.Put_String(BASIC, "Name", Scen.Description);
+    ini.Put_VQType(BASIC, "Intro", Scen.IntroMovie);
+    ini.Put_VQType(BASIC, "Brief", Scen.BriefMovie);
+    ini.Put_VQType(BASIC, "Win", Scen.WinMovie);
+    ini.Put_VQType(BASIC, "Lose", Scen.LoseMovie);
+    ini.Put_VQType(BASIC, "Action", Scen.ActionMovie);
+    ini.Put_HousesType(BASIC, "Player", PlayerPtr->Class->House);
+    ini.Put_ThemeType(BASIC, "Theme", Scen.TransitTheme);
+    ini.Put_Fixed(BASIC, "CarryOverMoney", Scen.CarryOverPercent);
+    ini.Put_Bool(BASIC, "ToCarryOver", Scen.IsToCarryOver);
+    ini.Put_Bool(BASIC, "ToInherit", Scen.IsToInherit);
+    ini.Put_Bool(BASIC, "TimerInherit", Scen.IsInheritTimer);
+    ini.Put_Bool(BASIC, "CivEvac", Scen.IsTanyaEvac);
+    ini.Put_Int(BASIC, "NewINIFormat", 3);
+    ini.Put_Int(BASIC, "CarryOverCap", Scen.CarryOverCap / 100);
+    ini.Put_Bool(BASIC, "EndOfGame", Scen.IsEndOfGame);
+    ini.Put_Bool(BASIC, "NoSpyPlane", Scen.IsNoSpyPlane);
+    ini.Put_Bool(BASIC, "SkipScore", Scen.IsSkipScore);
+    ini.Put_Bool(BASIC, "OneTimeOnly", Scen.IsOneTimeOnly);
+    ini.Put_Bool(BASIC, "SkipMapSelect", Scen.IsNoMapSel);
+    ini.Put_Bool(BASIC, "Official", true);
+    ini.Put_Bool(BASIC, "FillSilos", Scen.IsMoneyTiberium);
+    ini.Put_Bool(BASIC, "TruckCrate", Scen.IsTruckCrate);
+    ini.Put_Int(BASIC, "Percent", Scen.Percent);
+
+    HouseClass::Write_INI(ini);
+    TeamTypeClass::Write_INI(ini);
+    TriggerTypeClass::Write_INI(ini);
+    Map.Write_INI(ini);
+    TerrainClass::Write_INI(ini);
+    UnitClass::Write_INI(ini);
+    VesselClass::Write_INI(ini);
+    InfantryClass::Write_INI(ini);
+    BuildingClass::Write_INI(ini);
+    Base.Write_INI(ini);
+    OverlayClass::Write_INI(ini);
+    SmudgeClass::Write_INI(ini);
+
+    if (strlen(Scen.BriefingText)) {
+      ini.Put_TextBlock("Briefing", Scen.BriefingText);
+    }
+    //	sprintf(fname, "%s.INI", root);
+    RawFileClass rawfile(fname);
+    ini.Save(rawfile, true);
   }
-
-  static char const* const BASIC = "Basic";
-  ini.Clear(BASIC);
-  ini.Put_String(BASIC, "Name", Scen.Description);
-  ini.Put_VQType(BASIC, "Intro", Scen.IntroMovie);
-  ini.Put_VQType(BASIC, "Brief", Scen.BriefMovie);
-  ini.Put_VQType(BASIC, "Win", Scen.WinMovie);
-  ini.Put_VQType(BASIC, "Lose", Scen.LoseMovie);
-  ini.Put_VQType(BASIC, "Action", Scen.ActionMovie);
-  ini.Put_HousesType(BASIC, "Player", PlayerPtr->Class->House);
-  ini.Put_ThemeType(BASIC, "Theme", Scen.TransitTheme);
-  ini.Put_Fixed(BASIC, "CarryOverMoney", Scen.CarryOverPercent);
-  ini.Put_Bool(BASIC, "ToCarryOver", Scen.IsToCarryOver);
-  ini.Put_Bool(BASIC, "ToInherit", Scen.IsToInherit);
-  ini.Put_Bool(BASIC, "TimerInherit", Scen.IsInheritTimer);
-  ini.Put_Bool(BASIC, "CivEvac", Scen.IsTanyaEvac);
-  ini.Put_Int(BASIC, "NewINIFormat", 3);
-  ini.Put_Int(BASIC, "CarryOverCap", Scen.CarryOverCap / 100);
-  ini.Put_Bool(BASIC, "EndOfGame", Scen.IsEndOfGame);
-  ini.Put_Bool(BASIC, "NoSpyPlane", Scen.IsNoSpyPlane);
-  ini.Put_Bool(BASIC, "SkipScore", Scen.IsSkipScore);
-  ini.Put_Bool(BASIC, "OneTimeOnly", Scen.IsOneTimeOnly);
-  ini.Put_Bool(BASIC, "SkipMapSelect", Scen.IsNoMapSel);
-  ini.Put_Bool(BASIC, "Official", true);
-  ini.Put_Bool(BASIC, "FillSilos", Scen.IsMoneyTiberium);
-  ini.Put_Bool(BASIC, "TruckCrate", Scen.IsTruckCrate);
-  ini.Put_Int(BASIC, "Percent", Scen.Percent);
-
-  HouseClass::Write_INI(ini);
-  TeamTypeClass::Write_INI(ini);
-  TriggerTypeClass::Write_INI(ini);
-  Map.Write_INI(ini);
-  TerrainClass::Write_INI(ini);
-  UnitClass::Write_INI(ini);
-  VesselClass::Write_INI(ini);
-  InfantryClass::Write_INI(ini);
-  BuildingClass::Write_INI(ini);
-  Base.Write_INI(ini);
-  OverlayClass::Write_INI(ini);
-  SmudgeClass::Write_INI(ini);
-
-  if (strlen(Scen.BriefingText)) {
-    ini.Put_TextBlock("Briefing", Scen.BriefingText);
-  }
-  //	sprintf(fname, "%s.INI", root);
-  RawFileClass rawfile(fname);
-  ini.Save(rawfile, true);
-#endif
 }
 
 /***********************************************************************************************

@@ -43,6 +43,7 @@
 #include "ra/defines.h"
 #include "ra/globals.h"
 #include "ra/mission.h"
+#include "ra/monoc.h"
 #include "ra/object.h"
 #include "tech/noinit.h"
 
@@ -96,9 +97,7 @@ class RadioClass : public MissionClass {
                                             RadioClass* to = nullptr);
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
                                             RadioClass* to);
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  void Debug_Dump(MonoClass* mono) const override;
   bool Limbo() override;
 
   /*

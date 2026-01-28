@@ -90,6 +90,8 @@
 #include "ra/aircraft.h"
 #include "ra/building.h"
 #include "ra/cell.h"
+#include "ra/config.h"
+#include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/display.h"
 #include "ra/externs.h"
@@ -203,7 +205,6 @@ static inline bool _Is_It_Playing(FootClass const* object) {
   return true;
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * TeamClass::Debug_Dump -- Displays debug information about the team. *
  *                                                                                             *
@@ -220,39 +221,40 @@ static inline bool _Is_It_Playing(FootClass const* object) {
  * HISTORY: * 03/11/1996 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Debug_Dump(MonoClass* mono) const {
-  mono->Set_Cursor(1, 20);
-  mono->Printf("%8.8s", Class->IniName);
-  mono->Set_Cursor(10, 20);
-  mono->Printf("%3d", Total);
-  mono->Set_Cursor(17, 20);
-  mono->Printf("%3d", Quantity[Class->ID]);
-  if (CurrentMission != -1) {
-    mono->Set_Cursor(1, 22);
-    mono->Printf("%-29s", Class->MissionList[CurrentMission].Description(
-                              CurrentMission));
+  if constexpr (config::kCheatKeysEnabled) {
+    mono->Set_Cursor(1, 20);
+    mono->Printf("%8.8s", Class->IniName);
+    mono->Set_Cursor(10, 20);
+    mono->Printf("%3d", Total);
+    mono->Set_Cursor(17, 20);
+    mono->Printf("%3d", Quantity[Class->ID]);
+    if (CurrentMission != -1) {
+      mono->Set_Cursor(1, 22);
+      mono->Printf("%-29s", Class->MissionList[CurrentMission].Description(
+                                CurrentMission));
+    }
+    mono->Set_Cursor(40, 20);
+    mono->Printf("%-10s", FormationName[Formation]);
+    mono->Set_Cursor(22, 20);
+    mono->Printf("%08X", Zone);
+    mono->Set_Cursor(31, 20);
+    mono->Printf("%08X", Target);
+
+    mono->Fill_Attrib(53, 20, 12, 1,
+                      IsUnderStrength ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(53, 21, 12, 1,
+                      IsFullStrength ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(53, 22, 12, 1,
+                      IsHasBeen ? MonoClass::INVERSE : MonoClass::NORMAL);
+
+    mono->Fill_Attrib(66, 20, 12, 1,
+                      IsMoving ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 21, 12, 1,
+                      IsForcedActive ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Fill_Attrib(66, 22, 12, 1,
+                      IsReforming ? MonoClass::INVERSE : MonoClass::NORMAL);
   }
-  mono->Set_Cursor(40, 20);
-  mono->Printf("%-10s", FormationName[Formation]);
-  mono->Set_Cursor(22, 20);
-  mono->Printf("%08X", Zone);
-  mono->Set_Cursor(31, 20);
-  mono->Printf("%08X", Target);
-
-  mono->Fill_Attrib(53, 20, 12, 1,
-                    IsUnderStrength ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(53, 21, 12, 1,
-                    IsFullStrength ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(53, 22, 12, 1,
-                    IsHasBeen ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-  mono->Fill_Attrib(66, 20, 12, 1,
-                    IsMoving ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(66, 21, 12, 1,
-                    IsForcedActive ? MonoClass::INVERSE : MonoClass::NORMAL);
-  mono->Fill_Attrib(66, 22, 12, 1,
-                    IsReforming ? MonoClass::INVERSE : MonoClass::NORMAL);
 }
-#endif
 
 /***********************************************************************************************
  * TeamClass::Init -- Initializes the team objects for scenario preparation. *

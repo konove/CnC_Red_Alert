@@ -50,6 +50,7 @@
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/jshell.h"
+#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/techno.h"
@@ -120,13 +121,12 @@ class VesselClass : public DriveClass {
   void LST_Close_Door();
   COORDINATE Fire_Coord(int which) const override;
   MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType from = FACING_NONE) const override;
+                          FacingType from = FACING_NONE) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   short const* Overlap_List(bool redraw = false) const override;
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
-  RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           long& param) override;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
   void AI() override;
   void Per_Cell_Process(PCPType why) override;
   void Assign_Destination(TARGET target) override;
@@ -153,12 +153,10 @@ class VesselClass : public DriveClass {
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*
+  **	Scenario and debug support.
+  */
+  void Debug_Dump(MonoClass* mono) const override;
 
  protected:
   /*

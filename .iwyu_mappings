@@ -35,6 +35,10 @@
   # Project-specific mappings
   { "include": ["\"function.h\"", "public", "\"function.h\"", "public"] },
 
+  # x86 intrinsics
+  { "symbol": ["__rdtsc", "private", "<x86intrin.h>", "public"] },
+  { "symbol": ["__rdtsc", "private", "<intrin.h>", "public"] },
+
   # Windows compatibility stubs
   { "include": ["\"fakesock.h\"", "public", "\"fakesock.h\"", "public"] },
   { "include": ["\"wsproto.h\"", "public", "\"wsproto.h\"", "public"] },

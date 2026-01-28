@@ -54,20 +54,27 @@
 #include <cassert>
 
 #include "ra/cell.h"
+#include "ra/config.h"
+#include "ra/dialog.h"
 #include "ra/externs.h"
+#include "ra/gadget.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
+#include "ra/monoc.h"
 #include "ra/mouse.h"
+#include "ra/scenario.h"
 #include "ra/taction.h"
 #include "ra/target.h"
 #include "ra/tracker.h"
 #include "ra/vector_dynamic.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/wwstd.h"
 #include "tech/ftimer.h"
 
-#if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
 /***********************************************************************************************
  * TriggerClass::Description -- Fetch a one line ASCII description of the
  *trigger.             *
@@ -103,28 +110,30 @@ char const* TriggerClass::Description() const { return (Class->Description()); }
  *=============================================================================================*/
 void TriggerClass::Draw_It(int, int x, int y, int width, int height,
                            bool selected, TextPrintType flags) const {
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
-  static int _tabs[] = {13, 40};
-  if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
-    if (selected) {
-      flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
-    } else {
-      if (!(flags & TPF_USE_GRAD_PAL)) {
-        flags = flags | TPF_MEDIUM_COLOR;
+  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+    RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+    static int _tabs[] = {13, 40};
+    if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
+      if (selected) {
+        flags = flags | TPF_BRIGHT_COLOR;
+        LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1,
+                             scheme->Shadow);
+      } else {
+        if (!(flags & TPF_USE_GRAD_PAL)) {
+          flags = flags | TPF_MEDIUM_COLOR;
+        }
       }
-    }
 
-    Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
-                            _tabs);
-  } else {
-    Conquer_Clip_Text_Print(Description(), x, y,
-                            (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                      : &ColorRemaps[PCOLOR_GREY]),
-                            TBLACK, flags, width, _tabs);
+      Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
+                              _tabs);
+    } else {
+      Conquer_Clip_Text_Print(Description(), x, y,
+                              (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
+                                        : &ColorRemaps[PCOLOR_GREY]),
+                              TBLACK, flags, width, _tabs);
+    }
   }
 }
-#endif
 
 /***********************************************************************************************
  * TriggerClass::TriggerClass -- constructor *
@@ -331,17 +340,17 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
     **	necessary.
     */
     if (ok) {
-#ifdef CHEAT_KEYS
-      MonoArray[DMONO_STRESS].Sub_Window(61, 1, 17, 11);
-      MonoArray[DMONO_STRESS].Scroll();
-      MonoArray[DMONO_STRESS].Sub_Window(61, 1, 18, 11);
-      MonoArray[DMONO_STRESS].Set_Cursor(0, 10);
-      MonoArray[DMONO_STRESS].Printf(
-          "%02d:%02d:%02d-%s", Scen.Timer / TICKS_PER_HOUR,
-          (Scen.Timer % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
-          (Scen.Timer % TICKS_PER_MINUTE) / TICKS_PER_SECOND, Class->IniName);
-      MonoArray[DMONO_STRESS].Sub_Window();
-#endif
+      if constexpr (config::kCheatKeysEnabled) {
+        MonoArray[DMONO_STRESS].Sub_Window(61, 1, 17, 11);
+        MonoArray[DMONO_STRESS].Scroll();
+        MonoArray[DMONO_STRESS].Sub_Window(61, 1, 18, 11);
+        MonoArray[DMONO_STRESS].Set_Cursor(0, 10);
+        MonoArray[DMONO_STRESS].Printf(
+            "%02d:%02d:%02d-%s", Scen.Timer / TICKS_PER_HOUR,
+            (Scen.Timer % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
+            (Scen.Timer % TICKS_PER_MINUTE) / TICKS_PER_SECOND, Class->IniName);
+        MonoArray[DMONO_STRESS].Sub_Window();
+      }
 
       if (Class->IsPersistant == TriggerTypeClass::VOLATILE ||
           (Class->IsPersistant == TriggerTypeClass::SEMIPERSISTANT &&

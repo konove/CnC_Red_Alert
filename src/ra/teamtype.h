@@ -84,10 +84,8 @@ typedef enum TeamMissionType {
 */
 class TeamMissionClass {
  public:
-#if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
   char const* Description(int index) const;
-  operator const char*() const { return (Description(0)); };
-#endif
+  operator const char*() const { return Description(0); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags);
 
@@ -170,11 +168,9 @@ class TeamTypeClass : public AbstractTypeClass {
                                                  long vtypes, bool alerted);
   static TeamTypeClass* From_Name(char const* name);
   bool Edit();
-#if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
   char const* Member_Description() const;
   char const* Description() const;
-  operator const char*() const { return (Description()); };
-#endif
+  operator const char*() const { return (Description()); }
 
   /*
   **	If this teamtype object is active, then this flag will be true.
