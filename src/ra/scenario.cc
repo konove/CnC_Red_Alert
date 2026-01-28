@@ -109,6 +109,7 @@
 #include "ra/link.h"
 #include "ra/logic.h"
 #include "ra/map.h"
+#include "ra/mapsel.h"
 #include "ra/mouse.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -959,7 +960,7 @@ void Do_Win() {
         Scen.ScenarioName[6] = 'B';
       }
     } else {
-      Scen.Set_Scenario_Name(Map_Selection());
+      Scen.Set_Scenario_Name(Map_Selection().c_str());
     }
 
     Keyboard->Clear();

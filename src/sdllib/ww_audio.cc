@@ -44,6 +44,10 @@ static const int8_t ww_4bitdecode[] = {-9, -8, -6, -5, -4, -3, -2, -1,
 SFX_Type SoundType;
 Sample_Type SampleType;
 
+// When true, hints audio system to minimize CPU usage during animation
+// playback. Set around map reveals and score screen animations to prevent
+// audio processing from causing frame drops.
+// NOTE: Not used in the current SDL audio implementation.
 int StreamLowImpact;
 
 static int ScoreVolume = 255;

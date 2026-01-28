@@ -158,7 +158,6 @@ extern ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
 void Multi_Score_Presentation();
 
-char const* Map_Selection();
 void Bit_It_In(int x, int y, int w, int h, GraphicBufferClass* src,
                GraphicBufferClass* dest, int delay = 0, int dagger = 0);
 void Call_Back_Delay(int time);

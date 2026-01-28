@@ -1780,7 +1780,6 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
  *=========================================================================*/
 void Call_Back_Delay(int time) {
   time = std::clamp(time, 0, 60);
-  CDTimerClass<SystemTimerClass> cd;
   CDTimerClass<SystemTimerClass> callbackcd = 0;
 
   if (!ControlQ) {
@@ -1789,23 +1788,23 @@ void Call_Back_Delay(int time) {
       Keyboard->Clear();
     }
   }
-  if (ControlQ) time = 0;
+  if (ControlQ) {
+    time = 0;
+  }
 
-  cd = time;
+  const CDTimerClass<SystemTimerClass> cd{static_cast<unsigned long>(time)};
   StreamLowImpact = true;
   do {
     if (callbackcd == 0) {
       Call_Back();
       callbackcd = TIMER_SECOND / 4;
-    }
-#ifdef PORTABLE
-    else {
-      if (SoundType) Sound_Callback();
+    } else {
+      if (SoundType) {
+        Sound_Callback();
+      }
       Video_End_Frame();
     }
-#endif
     Animate_Score_Objs();
-
   } while (cd);
   StreamLowImpact = false;
 }

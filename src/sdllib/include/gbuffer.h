@@ -363,8 +363,6 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   void* VQATexture = nullptr;  // SDL_Texture* for low-res content scaling
   int VQATextureWidth = 0;
   int VQATextureHeight = 0;
-  bool VQAFrameRendered = false;       // Set when Render_Scaled_Frame presents
-  std::uint32_t VQALastFrameTime = 0;  // SDL tick when last VQA frame rendered
 };
 
 extern GraphicBufferClass* WindowBuffer;

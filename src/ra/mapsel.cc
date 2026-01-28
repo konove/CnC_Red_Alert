@@ -16,34 +16,21 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/MAPSEL.CPP 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : MAPSEL.CPP *
- *                                                                                             *
- *                   Programmer : Barry W. Green *
- *                                                                                             *
- *                   Start Date : April 17, 1995 *
- *                                                                                             *
- *                  Last Update : April 27, 1995   [BWG] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * Bit_It_In -- Pixel fade graphic copy. * Map_Selection -- Starts
- *the whole process of selecting next map to go to                  *
- *   Print_Statistics -- Prints statistics on country selected *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Map selection screen for campaign progression.
+//
+// Between missions, players choose their next objective by clicking on one of
+// several highlighted locations on a map of Europe. Each scenario offers 1-3
+// possible next missions (branching campaign paths). The Allied and Soviet
+// campaigns use different map coordinates.
 
-#include <cstdio>
+#include "ra/mapsel.h"
+
 #include <cstring>
+#include <format>
+#include <string>
+#include <tuple>
+#include <utility>
 
-#include "port/ex_string.h"
-#include "port/safe_string.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -72,16 +59,18 @@
 #include "tech/ftimer.h"
 #include "tech/rgb.h"
 
-void Cycle_Call_Back_Delay(int time, PaletteClass& pal);
-extern int ControlQ;
+// Scenario filenames for the secret ant missions (Easter egg campaign).
+// Index 0 is unused; missions are numbered 1-4.
+const char* ant_missions[] = {nullptr, "SCA01EA.INI", "SCA02EA.INI",
+                              "SCA03EA.INI", "SCA04EA.INI"};
 
-int Mouse_Over_Spot(int house, int scenario);
-void Set_Mouse(MouseType shape, int& start, int& count, int& delay, int& xspot,
-               int& yspot);
-// VG for ant mission progression
-const char* antmission[] = {nullptr, "SCA01EA.INI", "SCA02EA.INI",
-                            "SCA03EA.INI", "SCA04EA.INI"};
+// Scenario variant suffixes. Each mission can have up to 3 variants (A/B/C)
+// representing different map layouts or objectives for the same mission number.
+constexpr char kScenarioVariants[] = "ABC";
 
+// Clickable hotspot coordinates for each scenario's mission choices.
+// Dimensions: [house: Allied=0/Soviet=1][scenario: 0-13][choice: 0-2]
+// Coordinates are in 320x200 logical pixels. {-1, -1} marks unused slots.
 struct point {
   int x;
   int y;
@@ -115,107 +104,137 @@ struct point {
                                 {{32, 156}, {46, 171}, {-1, -1}},
                                 {{108, 97}, {-1, -1}, {-1, -1}}}};
 
-/***********************************************************************************************
- * Map_Selection -- Starts the whole process of selecting next map to go to *
- *                                                                                             *
- *                                                                                             *
- * INPUT: *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/18/1996 BWG : Created. *
- *=============================================================================================*/
-char const* Map_Selection() {
-  static char scenarioname[_MAX_FNAME + _MAX_EXT];
+// Animates the pulsing highlight on clickable map locations.
+// Palette entry 254 cycles between dim and bright to draw attention.
+// TODO(konove): Seems to be not working.
+void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
+  static CDTimerClass<SystemTimerClass> _ftimer;
+  static bool _up = false;
+  static int val = 255;
 
+  while (time--) {
+    if (_ftimer.Value() > 0) {
+      _ftimer = TIMER_SECOND / 6;
+
+      // Oscillate brightness between 0x20 (dim) and 150 (bright).
+      constexpr int kStepRate = 20;
+      if (_up) {
+        val += kStepRate;
+        if (val > 150) {
+          val = 150;
+          _up = false;
+        }
+      } else {
+        val -= kStepRate;
+        if (val < 0x20) {
+          val = 0x20;
+          _up = true;
+        }
+      }
+
+      // Blend white toward black based on current brightness level.
+      pal[254] = GamePalette[WHITE];
+      pal[254].Adjust(val, kBlackColor);
+
+      pal.Set();
+    }
+    Call_Back_Delay(/*time=*/1);
+  }
+}
+
+// Returns which mission choice (0-2) the mouse is hovering over, or -1 if none.
+// Each hotspot is a 12x10 pixel rectangle at the coordinates in MapCoords.
+int Mouse_Over_Spot(const int is_soviet, const int scenario) {
+  int retval = -1;
+  for (int choice = 0;
+       choice < 3 && MapCoords[is_soviet][scenario][choice].x != -1; choice++) {
+    const int mouse_x = Get_Mouse_X() / RESFACTOR;
+    const int mouse_y = Get_Mouse_Y() / RESFACTOR;
+    if (mouse_x >= MapCoords[is_soviet][scenario][choice].x &&
+        mouse_y >= MapCoords[is_soviet][scenario][choice].y &&
+        mouse_x <= MapCoords[is_soviet][scenario][choice].x + 11 &&
+        mouse_y <= MapCoords[is_soviet][scenario][choice].y + 9) {
+      retval = choice;
+      break;
+    }
+  }
+  return retval;
+}
+
+std::string Map_Selection() {
   if (AntsEnabled) {
-    port::SafeCopy(scenarioname, Scen.ScenarioName);
-    char buf[10];
-    sprintf(buf, "%02d", Scen.Scenario + 1);
-    memcpy(&scenarioname[3], buf, 2);
-    return scenarioname;
+    std::string scenario_name = Scen.ScenarioName;
+    scenario_name.replace(3, 2, std::format("{:02d}", Scen.Scenario + 1));
+    return scenario_name;
   }
 
-  char _filename[] = "MSAA.WSA";
-  int house = PlayerPtr->Class->House == HOUSE_USSR ||
-              PlayerPtr->Class->House == HOUSE_UKRAINE;
+  // Build map selection animation filename. Format: MSxY.WSA where
+  // MS=Map Selection, x=side (A=Allied, S=Soviet), Y=scenario letter (A-N for
+  // scenarios 0-13). WSA = Westwood Studios Animation format.
+  std::string file_name = "MSAA.WSA";
+  const int is_soviet = PlayerPtr->Class->House == HOUSE_USSR ||
+                        PlayerPtr->Class->House == HOUSE_UKRAINE;
 
-  _filename[2] = house ? 'S' : 'A';
-  _filename[3] = Scen.Scenario + 'A';
-  PaletteClass mappalette;
+  file_name[2] = is_soviet ? 'S' : 'A';
+  file_name[3] = Scen.Scenario + 'A';
+  PaletteClass map_palette;
 
-  int scenario = Scen.Scenario;
-  int selection;
+  int selection = 0;
   static CDTimerClass<SystemTimerClass> timer;
-  int start = 0;
-  int count = 0;
-  int delay = 0;
-  int xspot = 0;
-  int yspot = 0;
 
-  void const* appear1 = MFCD::Retrieve("MAPWIPE2.AUD");
-  void const* bleep11 = MFCD::Retrieve("BLEEP11.AUD");
-  void const* country4 = MFCD::Retrieve("MAPWIPE5.AUD");
-  void const* toney7 = MFCD::Retrieve("TONEY7.AUD");
-  void const* bleep17 = MFCD::Retrieve("BLEEP17.AUD");
+  const void* appear1 = MFCD::Retrieve("MAPWIPE2.AUD");
+  const void* bleep11 = MFCD::Retrieve("BLEEP11.AUD");
+  const void* country4 = MFCD::Retrieve("MAPWIPE5.AUD");
+  const void* toney7 = MFCD::Retrieve("TONEY7.AUD");
+  const void* bleep17 = MFCD::Retrieve("BLEEP17.AUD");
 
-  void const* scold1 = MFCD::Retrieve("TONEY4.AUD");
-  void const* country1 = MFCD::Retrieve("TONEY10.AUD");
+  const void* scold1 = MFCD::Retrieve("TONEY4.AUD");
+  const void* country1 = MFCD::Retrieve("TONEY10.AUD");
 
-#if RESFACTOR == 2
-  GraphicBufferClass* pseudoseenbuff =
+  auto* pseudo_seen_buf =
       new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
-#endif
 
-  //	fixed oldvolume = Options.ScoreVolume;
-  //	Options.Set_Score_Volume(fixed(4, 10));
   Theme.Queue_Song(THEME_MAP);
 
   void* anim = Open_Animation(
-      _filename, nullptr, 0L,
-      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, mappalette);
+      file_name.c_str(), /*user_buffer=*/nullptr, /*user_buffer_size=*/0L,
+      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, map_palette);
 
   Keyboard->Clear();
-  SeenPage.Clear();
-  mappalette.Set(FADE_PALETTE_FAST, Call_Back);
+  SeenBuff.Clear();
+  map_palette.Set(FADE_PALETTE_FAST, Call_Back);
 
-#if RESFACTOR == 2
-  pseudoseenbuff->Clear();
-  Animate_Frame(anim, *pseudoseenbuff, 1);
-  for (int x = 0; x < 256; x++)
+  pseudo_seen_buf->Clear();
+  Animate_Frame(anim, *pseudo_seen_buf, /*frame_number=*/1);
+  // Initialize palette interpolation as identity mapping (no blending).
+  // Each row x maps all 256 entries to color x.
+  for (int x = 0; x < 256; x++) {
     memset(&PaletteInterpolationTable[x][0], x, 256);
-  Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
-#else
-  HidPage.Clear();
-  Animate_Frame(anim, HidPage, 1);
-  HidPage.Blit(SeenPage);
-#endif
+  }
+  Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, nullptr);
 
-  int frame = 1;
+  // Play the map reveal animation with synchronized sound effects.
   StreamLowImpact = true;
   Play_Sample(appear1, 255, Options.Normalize_Volume(170));
-  while (frame < Get_Animation_Frame_Count(anim)) {
-#if RESFACTOR == 2
-    Animate_Frame(anim, *pseudoseenbuff, frame++);
-    Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
-#else
-    Animate_Frame(anim, SeenPage, frame++);
-#endif
-    Call_Back_Delay(2);
+  for (int frame = 1; frame < Get_Animation_Frame_Count(anim); frame++) {
+    Animate_Frame(anim, *pseudo_seen_buf, frame);
+    Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, nullptr);
+    Call_Back_Delay(/*time=*/2);
+    // Sound effects timed to specific animation frames.
     switch (frame) {
-      case 16:
+      case 15:
         Play_Sample(bleep11, 255, Options.Normalize_Volume(170));
         break;
-      case 30:
+      case 29:
         Play_Sample(country4, 255, Options.Normalize_Volume(170));
         break;
-      case 51:
+      case 50:
         Play_Sample(toney7, 255, Options.Normalize_Volume(170));
         break;
-      case 61:
+      case 60:
         Play_Sample(bleep17, 255, Options.Normalize_Volume(170));
+        break;
+      default:
         break;
     }
   }
@@ -225,40 +244,37 @@ char const* Map_Selection() {
   Show_Mouse();
   Keyboard->Clear();
 
-  bool done = 0;
-  MouseType shape = MOUSE_NORMAL;
-  while (!done) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
+  bool mission_selected = false;
+  int cursor_frame = 0;
+  while (!mission_selected) {
+    // Redraw after regaining window focus (surfaces may have been
+    // invalidated while the game was in the background).
     if (AllSurfaces.SurfacesRestored) {
       AllSurfaces.SurfacesRestored = false;
-#if RESFACTOR == 2
-      Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
-#endif
+      Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, nullptr);
     }
-    Cycle_Call_Back_Delay(1, mappalette);
-    int choice = Mouse_Over_Spot(house, scenario);
-    if (choice == -1) {
-      shape = MOUSE_NORMAL;
-    } else {
-      shape = MOUSE_CAN_ATTACK;
-    }
+    Cycle_Call_Back_Delay(1, map_palette);
+    const int choice = Mouse_Over_Spot(is_soviet, Scen.Scenario);
+    const bool hovering_over_choice = choice != -1;
 
-    Set_Mouse(shape, start, count, delay, xspot, yspot);
+    // Cursor animation parameters: normal cursor is static, targeting cursor
+    // has 8 frames. Hotspot is top-left for normal, centered for crosshairs.
+    const auto [start, count, delay] =
+        hovering_over_choice ? std::tuple{21, 8, 4} : std::tuple{0, 1, 0};
+    const auto [hotspot_x, hotspot_y] =
+        hovering_over_choice ? std::pair{14, 11} : std::pair{0, 0};
     if (timer == 0) {
-      frame++;
-      frame %= count;
+      cursor_frame++;
+      cursor_frame %= count;
       timer = delay;
-      Set_Mouse_Cursor(xspot, yspot,
-                       Extract_Shape(MouseClass::MouseShapes, start + frame));
+      Set_Mouse_Cursor(
+          hotspot_x, hotspot_y,
+          Extract_Shape(MouseClass::MouseShapes, start + cursor_frame));
     }
     if (Keyboard->Check()) {
       if ((Keyboard->Get() & 0x10FF) == KN_LMOUSE) {
-        if (choice != -1) {
-          done = 1;
+        if (hovering_over_choice) {
+          mission_selected = true;
           selection = choice;
           Play_Sample(country1, 255, Options.Normalize_Volume(170));
         } else {
@@ -270,120 +286,31 @@ char const* Map_Selection() {
 
   Hide_Mouse();
 
-  /*
-  ** Restore the mouse to normal shape before leaving this routine.
-  */
-  Set_Mouse(MOUSE_NORMAL, start, count, delay, xspot, yspot);
-  Set_Mouse_Cursor(xspot, yspot, Extract_Shape(MouseClass::MouseShapes, start));
+  // Restore normal cursor before returning.
+  Set_Mouse_Cursor(0, 0, Extract_Shape(MouseClass::MouseShapes, 0));
 
   Keyboard->Clear();
-  //	BlackPalette.Set(FADE_PALETTE_SLOW, Call_Back);
-  //	SeenPage.Clear();
 
   Fancy_Text_Print(TXT_STAND_BY, 160 * RESFACTOR, 190 * RESFACTOR,
                    GadgetClass::Get_Color_Scheme(), TBLACK,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
 
-  /*
-  **	Create the new scenario filename from the selection. The filename is
-  **	derived from the previous filename but it has the scenario number
-  **	incremented and the chosen variation set.
-  */
-
-  // V.G. added so Ant Missions would progress
+  // Build the next scenario filename. Format: SCxNNEV.INI where x=campaign,
+  // NN=scenario number (01-14), E=side (E=Allied, usually), V=variant (A/B/C).
+  // Ant missions (ScenarioName[2]=='A') use a separate filename table.
+  std::string scenario_name;
   if (Scen.ScenarioName[2] == 'A') {
     int antnum = Scen.Scenario++;
-    if (antnum > 4) antnum = 1;
-    port::SafeCopy(scenarioname, antmission[antnum]);
+    if (antnum > 4) {
+      antnum = 1;
+    }
+    scenario_name = ant_missions[antnum];
   } else {
-    port::SafeCopy(scenarioname, Scen.ScenarioName);
-    char buf[10];
-    sprintf(buf, "%02d", Scen.Scenario + 1);
-    memcpy(&scenarioname[3], buf, 2);
-    scenarioname[6] = 'A' + selection;
+    scenario_name = Scen.ScenarioName;
+    scenario_name.replace(3, 2, std::format("{:02d}", Scen.Scenario + 1));
+    scenario_name[6] = kScenarioVariants[selection];
   }
   Theme.Fade_Out();
-  //	Options.Set_Score_Volume(oldvolume);
 
-  //	Scen.ScenVar = (ScenarioVarType)selection;
-  // Mono_Printf("Chose variant %d  \n", selection);
-  return scenarioname;
-}
-
-int Mouse_Over_Spot(int house, int scenario) {
-  int retval = -1;
-  for (int selection = 0;
-       selection < 3 && MapCoords[house][scenario][selection].x != -1;
-       selection++) {
-    int mousex = Get_Mouse_X() / RESFACTOR;
-    int mousey = Get_Mouse_Y() / RESFACTOR;
-    if (mousex >= MapCoords[house][scenario][selection].x &&
-        mousey >= MapCoords[house][scenario][selection].y &&
-        mousex <= MapCoords[house][scenario][selection].x + 11 &&
-        mousey <= MapCoords[house][scenario][selection].y + 9) {
-      retval = selection;
-      break;
-    }
-  }
-  return retval;
-}
-
-void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
-  static CDTimerClass<SystemTimerClass> _ftimer;
-  static bool _up = false;
-  static int val = 255;
-
-  while (time--) {
-    /*
-    **	Process the fading white color.
-    */
-    if (!_ftimer) {
-      _ftimer = TIMER_SECOND / 6;
-
-#define STEP_RATE 20
-      if (_up) {
-        val += STEP_RATE;
-        if (val > 150) {
-          val = 150;
-          _up = false;
-        }
-      } else {
-        val -= STEP_RATE;
-        if (val < 0x20) {
-          val = 0x20;
-          _up = true;
-        }
-      }
-
-      /*
-      **	Set the pulse color as the proportional value between white and
-      *the *	minimum value for pulsing.
-      */
-      pal[254] = GamePalette[WHITE];
-      pal[254].Adjust(val, kBlackColor);
-
-      pal.Set();
-    }
-    Call_Back_Delay(1);
-  }
-}
-
-void Set_Mouse(MouseType shape, int& start, int& count, int& delay, int& xspot,
-               int& yspot) {
-  switch (shape) {
-    case MOUSE_NORMAL:
-      start = 0;
-      count = 1;
-      delay = 0;
-      xspot = 0;
-      yspot = 0;
-      break;
-    default:
-      start = 21;
-      count = 8;
-      delay = 4;
-      xspot = 14;
-      yspot = 11;
-      break;
-  }
+  return scenario_name;
 }

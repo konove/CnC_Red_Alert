@@ -43,6 +43,11 @@ bool GraphicBufferClass::Unlock() {
   if (!LockCount) {
     SDL_UnlockSurface(static_cast<SDL_Surface*>(PaletteSurface));
     Offset = nullptr;
+    // Content was drawn to PaletteSurface - clear VQA texture to switch back
+    // to normal rendering mode
+    if (VQATexture) {
+      Destroy_VQA_Texture();
+    }
     Update_Window_Surface(false);
   }
 
@@ -50,35 +55,25 @@ bool GraphicBufferClass::Unlock() {
 }
 
 void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
-  // If VQA is active, check if it's still rendering frames
-  if (VQAFrameRendered) {
-    // If no VQA frame has been rendered in 100ms, assume VQA playback ended
-    Uint32 now = SDL_GetTicks();
-    if (now - VQALastFrameTime > 100) {
-      Destroy_VQA_Texture();  // This also clears VQAFrameRendered
-    } else {
-      if (RedrawTimer) {
-        SDL_RemoveTimer(RedrawTimer);
-        RedrawTimer = 0;
-      }
-
-      if (!end_frame) {
-        return;  // Just skip timer setup during VQA
-      }
-
-      // Present the VQA frame
-      SDL_RenderClear(SDLRenderer);
-      SDL_RenderCopy(SDLRenderer, static_cast<SDL_Texture*>(VQATexture),
-                     nullptr, nullptr);
-      SDL_RenderPresent(SDLRenderer);
-      SDL_Event_Loop();
-      return;
-    }
-  }
-
-  // VQA is done - clean up the texture if it exists
+  // If VQA texture exists, keep presenting it (for animations like map select
+  // that need to preserve the last frame indefinitely)
   if (VQATexture) {
-    Destroy_VQA_Texture();
+    if (RedrawTimer) {
+      SDL_RemoveTimer(RedrawTimer);
+      RedrawTimer = 0;
+    }
+
+    if (!end_frame) {
+      return;  // Just skip timer setup during VQA
+    }
+
+    // Present the VQA frame
+    SDL_RenderClear(SDLRenderer);
+    SDL_RenderCopy(SDLRenderer, static_cast<SDL_Texture*>(VQATexture), nullptr,
+                   nullptr);
+    SDL_RenderPresent(SDLRenderer);
+    SDL_Event_Loop();
+    return;
   }
 
   auto* window_tex = static_cast<SDL_Texture*>(WindowTexture);
@@ -190,10 +185,6 @@ void GraphicBufferClass::Render_Scaled_Frame(const uint8_t* paletted_data,
   }
   SDL_UnlockTexture(static_cast<SDL_Texture*>(VQATexture));
 
-  // Mark VQA as active - Update_Window_Surface will present VQATexture
-  VQAFrameRendered = true;
-  VQALastFrameTime = SDL_GetTicks();
-
   // Trigger immediate present via Update_Window_Surface
   Update_Window_Surface(true);
 }
@@ -205,5 +196,4 @@ void GraphicBufferClass::Destroy_VQA_Texture() {
     VQATextureWidth = 0;
     VQATextureHeight = 0;
   }
-  VQAFrameRendered = false;
 }
