@@ -118,6 +118,7 @@
 #include <cstring>
 
 #include "ra/anim.h"
+#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"

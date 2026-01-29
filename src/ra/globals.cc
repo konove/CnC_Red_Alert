@@ -597,10 +597,6 @@ PaletteClass ScorePalette;
 QueueClass<EventClass, MAX_EVENTS> OutList;
 QueueClass<EventClass, MAX_EVENTS * 64> DoList;
 
-#ifdef MIRROR_QUEUE
-QueueClass<EventClass, (MAX_EVENTS * 64)> MirrorList;
-#endif
-
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
 */

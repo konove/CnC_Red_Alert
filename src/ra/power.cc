@@ -48,6 +48,7 @@
 
 #include "ra/power.h"
 
+#include "ra/bench_util.h"
 #include "ra/conquer.h"
 #include "ra/externs.h"
 #include "ra/house.h"

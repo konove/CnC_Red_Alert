@@ -60,6 +60,7 @@
 #include <cstring>
 
 #include "ra/anim.h"
+#include "ra/bench_util.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/display.h"
@@ -294,7 +295,8 @@ RulesClass::RulesClass()
   QuakeInfantryDamage = 0;
   QuakeDelay = 120;
   ChronoTankDuration = 0x300;
-  EngineerDamage = static_cast<fixed>(1) / static_cast<fixed>(3);  // Amount of damage an engineer does
+  EngineerDamage = static_cast<fixed>(1) /
+                   static_cast<fixed>(3);  // Amount of damage an engineer does
   EngineerCaptureLevel =
       ConditionRed;  // Building damage level before engineer can capture
   CarrierLaunchDelay = 60;

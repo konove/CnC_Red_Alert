@@ -96,6 +96,7 @@
 #include <new>
 #include <string>
 
+#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"

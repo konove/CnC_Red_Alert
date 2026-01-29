@@ -52,6 +52,7 @@
 
 #include "ra/gscreen.h"
 
+#include "ra/bench_util.h"
 #include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"

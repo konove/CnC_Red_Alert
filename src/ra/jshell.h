@@ -179,11 +179,6 @@ T Bound(T original, T minval, T maxval) {
   if (original < minval) return minval;
   if (original > maxval) return maxval;
   return original;
-};
-
-template <class T>
-T _rotl(T X, int n) {
-  return (T)(X << n | X >> (sizeof(T) * 8 - n));
 }
 
 /*

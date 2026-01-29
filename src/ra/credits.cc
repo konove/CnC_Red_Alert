@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <cstdlib>
 
+#include "ra/bench_util.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"

@@ -57,6 +57,7 @@
 #include <cassert>
 
 #include "port/ex_string.h"
+#include "ra/bench_util.h"
 #include "ra/config.h"
 #include "ra/const.h"
 #include "ra/externs.h"

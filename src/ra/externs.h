@@ -240,10 +240,6 @@ extern TFixedIHeapClass<WarheadTypeClass> Warheads;
 extern QueueClass<EventClass, MAX_EVENTS> OutList;
 extern QueueClass<EventClass, MAX_EVENTS * 64> DoList;
 
-#ifdef MIRROR_QUEUE
-extern QueueClass<EventClass, (MAX_EVENTS * 64)> MirrorList;
-#endif
-
 extern DynamicVectorClass<ObjectClass*> CurrentObject;
 extern DynamicVectorClass<TriggerClass*> LogicTriggers;
 extern DynamicVectorClass<TriggerClass*> MapTriggers;

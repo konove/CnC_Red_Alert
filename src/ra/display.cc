@@ -109,6 +109,7 @@
 #include <cstring>
 
 #include "ra/aircraft.h"
+#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"

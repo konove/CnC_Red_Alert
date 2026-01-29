@@ -81,10 +81,12 @@
 #include <filesystem>
 #include <string>
 
+#include "absl/log/log.h"
 #include "jshell/rotbmp.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
+#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccfile.h"
 #include "ra/ccptr.h"
@@ -2781,6 +2783,11 @@ void Free_Interpolated_Palettes() {
   }
 }
 
+extern void Suspend_Audio_Thread();
+extern void Resume_Audio_Thread();
+
+extern GraphicBufferClass VQ640;
+
 /***********************************************************************************************
  * Play_Movie -- Plays a VQ movie. *
  *                                                                                             *
@@ -2801,73 +2808,28 @@ void Free_Interpolated_Palettes() {
  *                                                                                             *
  * HISTORY: * 12/19/1994 JLB : Created. *
  *=============================================================================================*/
-#ifdef WIN32
-extern void Suspend_Audio_Thread();
-extern void Resume_Audio_Thread();
+void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
+  DLOG(INFO) << "Play_Movie: " << name;
 
-#ifdef MOVIE640
-extern GraphicBufferClass VQ640;
-#endif
-#endif
-void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
-#ifdef MPEGMOVIE
-  // theme = theme;
-  // clrscrn = clrscrn;
-  if (Using_DVD()) {
-    if (PlayMpegMovie(name)) return;
-  }
-#endif
-
-#ifdef CHEAT_KEYS
-//	Mono_Printf("Movie: %s\n", name);
-#endif  // CHEAT_KEYS
-  /*
-  ** Don't play movies in editor mode
-  */
   if (MapEditorActive) {
     return;
   }
-#ifdef CHEAT_KEYS
-//	Mono_Printf("A\n");
-#endif  // CHEAT_KEYS
-  /*
-  ** Don't play movies in multiplayer mode
-  */
   if (Session.Type != GAME_NORMAL) {
     return;
   }
-#ifdef CHEAT_KEYS
-// Mono_Printf("b\n");
-#endif  // CHEAT_KEYS
 
   if (name) {
     auto fullname =
         std::filesystem::path(name).replace_extension(".VQA").string();
-#ifdef WIN32
     auto palname =
         std::filesystem::path(name).replace_extension(".VQP").string();
-#endif  // WIN32
-#ifdef CHEAT_KEYS
-//			Mono_Set_Cursor(0, 0);Mono_Printf("[%s]", fullname);
-#endif
-
     if (!CCFileClass(fullname.c_str()).Is_Available()) {
-#ifdef CHEAT_KEYS
-//		 Mono_Printf("fullname: %s\n", fullname);
-#endif  // CHEAT_KEYS
+      DLOG(WARNING) << "Play_Movie: file not found: " << fullname;
       return;
     }
-    /*
-    **	Reset the anim control structure.
-    */
     Anim_Init();
 
-    /*
-    **	Prepare to play a movie. First hide the mouse and stop any score that is
-    *playing. *	While the score (if any) is fading to silence, fade the palette
-    *to black as well. *	When the palette has finished fading, wait until
-    *the score has finished fading *	before launching the movie.
-    */
+    // Fade audio and video to black before launching the VQA player.
     Hide_Mouse();
     Theme.Queue_Song(theme);
     if (PreserveVQAScreen == 0 && !clrscrn) {
@@ -2883,8 +2845,6 @@ void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
 
     VQAHandle* vqa = nullptr;
 
-#ifdef WIN32
-#ifdef MOVIE640
     if (IsVQ640) {
       AnimControl.ImageWidth = 640;
       AnimControl.ImageHeight = 400;
@@ -2894,8 +2854,6 @@ void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
       AnimControl.ImageHeight = 200;
       AnimControl.ImageBuf = SysMemPage.Get_Offset();
     }
-#endif
-#endif
 
     if (!Debug_Quiet && Get_Digi_Handle() != -1) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
@@ -2909,65 +2867,34 @@ void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
 
       if (VQA_Open(vqa, fullname.c_str(), &AnimControl) == 0) {
         Brokeout = false;
-#ifdef WIN32
-// Suspend_Audio_Thread();
-#ifdef MOVIE640
         if (!IsVQ640) {
           Load_Interpolated_Palettes(palname.c_str());
         }
-#else
-        Load_Interpolated_Palettes(palname.c_str());
-#endif
-        // Set_Palette(BlackPalette);
         SysMemPage.Clear();
         InMovie = true;
-#endif  // WIN32
         VQA_Play(vqa, VQAMODE_RUN);
         VQA_Close(vqa);
-#ifdef WIN32
-        // Resume_Audio_Thread();
         InMovie = false;
-#ifdef MOVIE640
         if (!IsVQ640) {
           Free_Interpolated_Palettes();
         }
-#else
-        Free_Interpolated_Palettes();
-#endif
         IsVQ640 = false;
-#ifndef PORTABLE
-        Set_Primary_Buffer_Format();
-#endif
-#endif  // WIN32
 
-        /*
-        **	Any movie that ends prematurely must have the screen
-        **	cleared to avoid any unexpected palette glitches.
-        */
+        // Early exit leaves the palette in an inconsistent state.
         if (Brokeout) {
           clrscrn = true;
           VisiblePage.Clear();
           Brokeout = false;
         }
       } else {
-#ifndef NDEBUG
-        bool error = true;
-        assert(error);
-#endif
+        DLOG(FATAL) << "VQA_Play failed unexpectedly";
       }
-
       VQA_Free(vqa);
     } else {
-      assert(vqa != nullptr);
+      DLOG(FATAL) << "VQA_Alloc returned nullptr";
     }
-#ifdef CHEAT_KEYS
-// Mono_Printf("d");
-#endif  // CHEAT_KEYS
-    /*
-    **	Presume that the screen is left in a garbage state as well as the
-    *palette *	being in an unknown condition. Recover from this by clearing the
-    *screen and *	forcing the palette to black.
-    */
+
+    // The VQA player may leave the framebuffer and palette dirty.
     if (clrscrn) {
       VisiblePage.Clear();
       BlackPalette.Adjust(0x08, WhitePalette);
@@ -4777,18 +4704,6 @@ void List_Copy(short const* source, int len, short* dest) {
     len--;
   }
 }
-
-#if 0
-//
-// Boy, this function sure is crummy
-//
-void Crummy(int crumb1, int crumb2)
-{
-	if (Debug_Check_Map && Debug_Heap_Dump) {
-		Mono_Printf("Hi, I'm Crummy.  And so are these: %d, %d\n",crumb1,crumb2);
-	}
-}
-#endif
 
 /***********************************************************************************************
  * Game_Registry_Key -- Returns pointer to string containing the registry subkey

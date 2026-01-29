@@ -104,6 +104,7 @@
 #include <cstring>
 
 #include "ra/anim.h"
+#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/combat.h"
 #include "ra/config.h"

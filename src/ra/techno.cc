@@ -164,6 +164,7 @@
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
+#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
@@ -641,7 +642,7 @@ void TechnoClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(71, 1);
     mono->Printf("$%4d", PurchasePrice);
     mono->Set_Cursor(54, 1);
-    mono->Printf("%3d", Arm);
+    mono->Printf("%3lu", Arm.Value());
     if (Is_Something_Attached()) {
       mono->Set_Cursor(1, 5);
       mono->Printf("%08X", Attached_Object());

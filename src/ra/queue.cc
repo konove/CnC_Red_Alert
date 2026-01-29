@@ -77,7 +77,6 @@
  ** Init_Queue_Mono -- inits mono display                                 *
  *   Update_Queue_Mono -- updates mono display                             *
  *   Print_Framesync_Values -- displays frame-sync variables               *
- *   Check_Mirror -- Checks mirror memory                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "ra/queue.h"
 
@@ -274,7 +273,6 @@ extern void Keyboard_Process(KeyNumType& input);
 void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
                                 long* their_frame, unsigned short* their_sent,
                                 unsigned short* their_recv);
-void Check_Mirror();
 
 /***************************************************************************
  * Queue_Mission -- Queue a mega mission event.                            *
@@ -465,9 +463,6 @@ static void Queue_AI_Normal() {
     OutList.First().IsExecuted = false;
     if (!DoList.Add(OutList.First())) {
     }
-#ifdef MIRROR_QUEUE
-    MirrorList.Add(OutList.First());
-#endif
     OutList.Next();
   }
 
@@ -2581,9 +2576,6 @@ int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
     if (!DoList.Add(OutList.First())) {
       return size;
     }
-#ifdef MIRROR_QUEUE
-    MirrorList.Add(OutList.First());
-#endif
 
     //.....................................................................
     // Add event to the send packet
@@ -2818,9 +2810,6 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
     if (!DoList.Add(OutList.First())) {
       break;
     }
-#ifdef MIRROR_QUEUE
-    MirrorList.Add(OutList.First());
-#endif
 
     //---------------------------------------------------------------------
     // Compress the event into the send packet buffer
@@ -3035,9 +3024,6 @@ int Extract_Uncompressed_Events(void* buf, int bufsize) {
         }
         return -1;
       }
-#ifdef MIRROR_QUEUE
-      MirrorList.Add(*event);
-#endif
 
       //..................................................................
       // Keep count of how many events we add to the queue
@@ -3180,9 +3166,6 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
               if (!DoList.Add(eventdata)) {
                 return -1;
               }
-#ifdef MIRROR_QUEUE
-              MirrorList.Add(eventdata);
-#endif
 
               //......................................................
               // Keep count of how many events we add to the queue
@@ -3218,9 +3201,6 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
         }
         return -1;
       }
-#ifdef MIRROR_QUEUE
-      MirrorList.Add(eventdata);
-#endif
 
       //..................................................................
       // Keep count of how many events we add to the queue
@@ -3307,8 +3287,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
   int index;
   int check_crc;
 
-  Check_Mirror();
-
 #if (TIMING_FIX)
   //
   // If MPlayerMaxAhead is recomputed such that it increases, the systems
@@ -3326,9 +3304,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
         DoList[j].Frame > NewMaxAheadFrame1 &&
         DoList[j].Frame < NewMaxAheadFrame2) {
       DoList[j].Frame = NewMaxAheadFrame2;
-#ifdef MIRROR_QUEUE
-      MirrorList[j].Frame = NewMaxAheadFrame2;
-#endif
     }
   }
 #endif
@@ -3571,9 +3546,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
         //	Mark this event as executed.
         //...............................................................
         DoList[j].IsExecuted = 1;
-#ifdef MIRROR_QUEUE
-        MirrorList[j].IsExecuted = 1;
-#endif
       }
     }
   }
@@ -3620,9 +3592,6 @@ static void Clean_DoList(ConnManClass* net) {
     //.....................................................................
     if (DoList.First().IsExecuted || Frame > DoList.First().Frame) {
       DoList.Next();
-#ifdef MIRROR_QUEUE
-      MirrorList.Next();
-#endif
     } else {
       break;
     }
@@ -3787,9 +3756,6 @@ static void Queue_Playback() {
           sizeof(EventClass)) {
         event.IsExecuted = 0;
         DoList.Add(event);
-#ifdef MIRROR_QUEUE
-        MirrorList.Add(event);
-#endif
       } else {
         ok = 0;
         break;
@@ -4527,93 +4493,5 @@ void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
 
   fclose(fp);
 }
-
-/***************************************************************************
- * Check_Mirror -- Checks mirror memory                                    *
- *                                                                         *
- * INPUT:                                                                  *
- *		none.
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   10/14/1996 BRR : Created.                                             *
- *=========================================================================*/
-void Check_Mirror() {
-#ifdef MIRROR_QUEUE
-  int i;
-  char txt[80];
-  unsigned long* ptr;
-  int found_5s = 0;
-
-  ptr = (unsigned long*)(DoList.Get_Array());
-  for (i = 0;
-       i < (MAX_EVENTS * 64 * sizeof(EventClass)) / sizeof(unsigned long);
-       i++) {
-    if (ptr[i] == 0x55555555) {
-      sprintf(txt, "55555555 found in DoList! Addr:%p", &(ptr[i]));
-      WWMessageBox().Process(txt);
-      found_5s = 1;
-    }
-  }
-
-  ptr = (unsigned long*)(MirrorList.Get_Array());
-  for (i = 0;
-       i < (MAX_EVENTS * 64 * sizeof(EventClass)) / sizeof(unsigned long);
-       i++) {
-    if (ptr[i] == 0x55555555) {
-      sprintf(txt, "55555555 found in MirrorList! Addr:%p", &(ptr[i]));
-      WWMessageBox().Process(txt);
-      found_5s = 1;
-    }
-  }
-
-  ptr = (unsigned long*)(DoList.Get_Array());
-  for (i = 0;
-       i < (MAX_EVENTS * 64 * sizeof(EventClass)) / sizeof(unsigned long);
-       i++) {
-    if (ptr[i] == 0xAAAAAAAA) {
-      sprintf(txt, "AAAAAAAA found in DoList! Addr:%p", &(ptr[i]));
-      WWMessageBox().Process(txt);
-      found_5s = 1;
-    }
-  }
-
-  ptr = (unsigned long*)(MirrorList.Get_Array());
-  for (i = 0;
-       i < (MAX_EVENTS * 64 * sizeof(EventClass)) / sizeof(unsigned long);
-       i++) {
-    if (ptr[i] == 0xAAAAAAAA) {
-      sprintf(txt, "AAAAAAAA found in MirrorList! Addr:%p", &(ptr[i]));
-      WWMessageBox().Process(txt);
-      found_5s = 1;
-    }
-  }
-
-  for (i = 0; i < DoList.Count; i++) {
-    if (memcmp(&DoList[i], &MirrorList[i], sizeof(EventClass)) != 0) {
-      sprintf(txt, "Queue Memory Trashed!  Head:%d Tail:%d, Addr:%p or %p",
-              DoList.Get_Head(), DoList.Get_Tail(), DoList.Get_Array() + i,
-              MirrorList.Get_Array() + i);
-      WWMessageBox().Process(txt);
-      // Prog_End();
-      Emergency_Exit(0);
-    }
-  }
-
-  if (found_5s) {
-    // Prog_End();
-    Emergency_Exit(0);
-  }
-
-#endif
-}  // end of Check_Mirror
 
 /*************************** end of queue.cpp ******************************/

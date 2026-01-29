@@ -85,6 +85,7 @@
 #include "absl/log/check.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "ra/bench_util.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/compat.h"

@@ -515,9 +515,6 @@ bool Select_Game(bool /*fade*/) {
   */
   GameActive = true;
   DoList.Init();
-#ifdef MIRROR_QUEUE
-  MirrorList.Init();
-#endif
   OutList.Init();
   Frame = 0;
   Scen.MissionTimer = 0;
@@ -1936,54 +1933,34 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       string += strlen("-X");
       while (*string) {
         char code = *string++;
-        switch (toupper(code)) {
-#ifdef CHEAT_KEYS
-          /*
-          **	Monochrome debug screen enable.
-          */
-          case 'M':
-            MonoClass::Enable();
-            break;
+        char upper = toupper(code);
 
-          /*
-          **	Inert weapons -- no units take damage.
-          */
-          case 'I':
-            Special.IsInert = true;
-            break;
+        if constexpr (config::kCheatKeysEnabled) {
+          switch (upper) {
+            case 'M':
+              MonoClass::Enable();
+              continue;
+            case 'I':
+              Special.IsInert = true;
+              continue;
+            case 'H':
+              Special.IsSpeedBuild = true;
+              continue;
+            case 'X':
+              Session.Record = 1;
+              continue;
+            case 'Y':
+              Session.Play = 1;
+              continue;
+            case 'P':
+              Debug_Print_Events = true;
+              continue;
+            default:
+              break;
+          }
+        }
 
-          /*
-          **	Hussled recharge timer.
-          */
-          case 'H':
-            Special.IsSpeedBuild = true;
-            break;
-
-          /*
-          **	"Record" a multi-player game
-          */
-          case 'X':
-            Session.Record = 1;
-            break;
-
-          /*
-          **	"Play Back" a multi-player game
-          */
-          case 'Y':
-            Session.Play = 1;
-            break;
-
-          /*
-          **	Print lots of debug stuff about events & packets
-          */
-          case 'P':
-            Debug_Print_Events = true;
-            break;
-#endif
-
-          /*
-          **	Quiet mode override control.
-          */
+        switch (upper) {
           case 'Q':
             Debug_Quiet = true;
             break;
@@ -3197,7 +3174,8 @@ static void Init_Bulk_Data() {
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
 static void Init_Keys() {
-  RAMFileClass file((void*)Keys, strlen(Keys));
+  std::string keys = GetKeys();
+  RAMFileClass file(keys.data(), keys.size());
   INIClass ini;
   ini.Load(file);
 

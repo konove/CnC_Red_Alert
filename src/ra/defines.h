@@ -217,16 +217,6 @@
 #endif
 
 /**********************************************************************
-**	This define enables the full set of cheat keys and special
-**	command line options.
-*/
-#if defined(INTERNAL_VERSION) || defined(PLAYTEST_VERSION)
-#define CHEAT_KEYS
-#endif
-
-// VIRGIN_CHEAT_KEYS migrated to config::kVirginCheatKeysEnabled in config.h
-
-/**********************************************************************
 **	If this is defined, then the network code will be enabled.
 */
 #define NETWORK
@@ -243,14 +233,6 @@
 ** MPATH at the same time.
 */
 #define TEN 0
-
-/**********************************************************************
-**	If this is defined, the DoList is "mirrored", for memory trasher
-** detection.
-*/
-#ifdef CHEAT_KEYS
-// #define MIRROR_QUEUE
-#endif
 
 /**********************************************************************
 **	This define tells the Version Number class to use the date/time-based
@@ -2616,16 +2598,6 @@ typedef enum BenchType {
   BENCH_COUNT,
   BENCH_FIRST = 0
 } BenchType;
-
-#ifdef CHEAT_KEYS
-#define BStart(a) \
-  if (Benches != NULL) Benches[a].Begin()
-#define BEnd(a) \
-  if (Benches != NULL) Benches[a].End()
-#else
-#define BStart(a)
-#define BEnd(a)
-#endif
 
 /**********************************************************************
 **	Working MCGA colors that give a pleasing effect for beveled edges and

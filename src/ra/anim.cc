@@ -63,6 +63,7 @@
 #include <cstddef>
 
 #include "port/ex_string.h"
+#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"

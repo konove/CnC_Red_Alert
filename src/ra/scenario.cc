@@ -75,10 +75,12 @@
 #include <string>
 #include <string_view>
 
+#include "absl/log/log.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/base.h"
+#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/carry.h"
@@ -1149,9 +1151,7 @@ void Do_Lose() {
   Hide_Mouse();
   VisiblePage.Clear();
   Show_Mouse();
-#ifdef CHEAT_KEYS
-//	Mono_Printf("Trying to play lose movie\n");
-#endif  // CHEAT_KEYS
+  DLOG(INFO) << "Trying to play lose movie";
   Play_Movie(Scen.LoseMovie);
 
   /*

@@ -44,6 +44,7 @@
 #include <algorithm>
 
 #include "ra/anim.h"
+#include "ra/bench_util.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"

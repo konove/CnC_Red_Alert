@@ -96,6 +96,7 @@
 
 #include "config.h"
 #include "ra/anim.h"
+#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/combat.h"

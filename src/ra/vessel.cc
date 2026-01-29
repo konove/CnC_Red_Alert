@@ -80,6 +80,7 @@
 
 #include "ra/aircraft.h"
 #include "ra/anim.h"
+#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/cell.h"
 #include "ra/config.h"

@@ -1,6 +1,9 @@
 #ifndef CNC_RED_ALERT_RA_CONST_H_
 #define CNC_RED_ALERT_RA_CONST_H_
 
+#include <string>
+
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "sdllib/include/wwstd.h"
@@ -157,7 +160,7 @@ constexpr unsigned char Pixel2Lepton[24] = {
 **	in the indexed direction.
 */
 constexpr CELL AdjacentCell[FACING_COUNT] = {
-    -MAP_CELL_W,      // North
+    -MAP_CELL_W,        // North
     -(MAP_CELL_W - 1),  // North East
     1,                  // East
     MAP_CELL_W + 1,     // South East
@@ -588,22 +591,17 @@ constexpr unsigned char RemapEmber[256] = {
     CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
     CEC};
 
-// char const Keys[] =
-//	"[PublicKey]\n"
-//	"1=AgkCbXo9sKMHOBk=\n"
-// #ifdef CHEAT_KEYS
-//	"[PrivateKey]\n"
-//	"1=AggxFU55vc7LYQ==\n"
-// #endif
-//	"\n";
-
-constexpr char Keys[] =
-    "[PublicKey]\n"
-    "1=AihRvNoIbTn85FZRYNZRcT+i6KpU+maCsEqr3Q5q+LDB5tH7Tz2qQ38V\n"
-#ifdef CHEAT_KEYS
-    "[PrivateKey]\n"
-    "1=AigKVje8mROcR8QixnxUEF5b29Curkq01DNDWCdOG99XBqH79OaCiTCB\n"
-#endif
-    "\n";
+inline std::string GetKeys() {
+  std::string keys =
+      "[PublicKey]\n"
+      "1=AihRvNoIbTn85FZRYNZRcT+i6KpU+maCsEqr3Q5q+LDB5tH7Tz2qQ38V\n";
+  if constexpr (config::kCheatKeysEnabled) {
+    keys +=
+        "[PrivateKey]\n"
+        "1=AigKVje8mROcR8QixnxUEF5b29Curkq01DNDWCdOG99XBqH79OaCiTCB\n";
+  }
+  keys += "\n";
+  return keys;
+}
 
 #endif  // CNC_RED_ALERT_RA_CONST_H_

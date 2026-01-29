@@ -58,6 +58,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "ra/bench_util.h"
 #include "ra/ccptr.h"
 #include "ra/coord.h"
 #include "ra/display.h"
