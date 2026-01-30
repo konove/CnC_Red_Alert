@@ -60,26 +60,44 @@
  *   MapEditClass::Fatal -- exits with error message                       *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifdef SCENARIO_EDITOR
+#include "td/mapedit.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <type_traits>
+
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/base.h"
+#include "td/building.h"
+#include "td/cell.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/facing.h"
+#include "td/globals.h"
+#include "td/house.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/menus.h"
+#include "td/mission.h"
+#include "td/msgbox.h"
+#include "td/profile.h"
+#include "td/scenario.h"
+#include "td/target.h"
+#include "td/techno.h"
+#include "td/text.h"
+#include "td/unit.h"
+#include "td/vector.h"
 
 /*
 ****************************** Globals/Externs ******************************
 */
-/*...........................................................................
-Array of all missions supported by the map editor
-...........................................................................*/
-MissionType MapEditClass::MapEditMissions[] = {
-    MISSION_GUARD,  MISSION_STICKY, MISSION_HARVEST, MISSION_GUARD_AREA,
-    MISSION_RETURN, MISSION_AMBUSH, MISSION_HUNT,    MISSION_SLEEP,
-};
-#define NUM_EDIT_MISSIONS                  \
-  (sizeof(MapEditClass::MapEditMissions) / \
-   sizeof(MapEditClass::MapEditMissions[0]))
-
-/*...........................................................................
-For menu processing
-...........................................................................*/
-extern int UnknownKey;  // in menus.cpp
 
 char MapEditClass::HealthBuf[20];
 
@@ -106,14 +124,14 @@ MapEditClass::MapEditClass() {
   ObjCount = 0;
   LastChoice = 0;
   LastHouse = HOUSE_GOOD;
-  GrabbedObject = 0;
+  GrabbedObject = nullptr;
   for (int i = 0; i < NUM_EDIT_CLASSES; i++) {
     NumType[i] = 0;
     TypeOffset[i] = 0;
   }
   Waypoint[WAYPT_HOME] = 0;
   CurrentCell = 0;
-  CurTrigger = NULL;
+  CurTrigger = nullptr;
   Changed = 0;
   LMouseDown = 0;
   BaseBuilding = 0;
@@ -196,8 +214,8 @@ void MapEditClass::One_Time() {
       POPUP_MISSION_H, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP"));
 
-  for (int i = 0; i < NUM_EDIT_MISSIONS; i++) {
-    MissionList->Add_Item(MissionClass::Mission_Name(MapEditMissions[i]));
+  for (auto mission : MapEditMissions) {
+    MissionList->Add_Item(MissionClass::Mission_Name(mission));
   }
 
   /*........................................................................
@@ -261,7 +279,7 @@ void MapEditClass::Init_IO() {
     /*------------------------------------------------------------------------
     For editor mode, add the map area to the button input list
     ------------------------------------------------------------------------*/
-    Buttons = 0;
+    Buttons = nullptr;
     Add_A_Button(*BaseGauge);
     Add_A_Button(*BaseLabel);
     Add_A_Button(*MapArea);
@@ -664,7 +682,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     F6 = toggle passable/impassable display
     ---------------------------------------------------------------------*/
     case KN_F6:
-      Debug_Passable = (Debug_Passable == false);
+      Debug_Passable = !Debug_Passable;
       HiddenPage.Clear();
       Flag_To_Redraw(true);
       input = KN_NONE;
@@ -714,43 +732,41 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           Stop_Trigger_Placement();
           input = KN_NONE;
           break;
-        } else {
-          rc = CCMessageBox().Process("Exit Scenario Editor?", TXT_YES, TXT_NO);
+        }
+        rc = CCMessageBox().Process("Exit Scenario Editor?", TXT_YES, TXT_NO);
+        HiddenPage.Clear();
+        Flag_To_Redraw(true);
+        Render();
+
+        /*
+        .......... User doesn't want to exit; return to editor ..........
+        */
+        if (rc == 1) {
+          input = KN_NONE;
+          break;
+        }
+
+        /*
+        ................. If changed, prompt for saving .................
+        */
+        if (Changed) {
+          rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
           HiddenPage.Clear();
           Flag_To_Redraw(true);
           Render();
 
           /*
-          .......... User doesn't want to exit; return to editor ..........
+          ..................... User wants to save .....................
           */
-          if (rc == 1) {
-            input = KN_NONE;
-            break;
-          }
-
-          /*
-          ................. If changed, prompt for saving .................
-          */
-          if (Changed) {
-            rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-            HiddenPage.Clear();
-            Flag_To_Redraw(true);
-            Render();
-
+          if (rc == 0) {
             /*
-            ..................... User wants to save .....................
+            .............. If save cancelled, abort exit ..............
             */
-            if (rc == 0) {
-              /*
-              .............. If save cancelled, abort exit ..............
-              */
-              if (Save_Scenario() != 0) {
-                input = KN_NONE;
-                break;
-              } else {
-                Changed = 0;
-              }
+            if (Save_Scenario() != 0) {
+              input = KN_NONE;
+              break;
             }
+            Changed = 0;
           }
         }
       }
@@ -1065,8 +1081,6 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
             */
             if (CurrentObject.Count() &&
                 ((TickCount.Time() - LastClickTime) < 15)) {
-              ;  // stub
-
             } else {
               /*
               ................ Single-click: select object .................
@@ -1093,7 +1107,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         -------------------------- Left Button UP --------------------------
         */
         LMouseDown = 0;
-        GrabbedObject = 0;
+        GrabbedObject = nullptr;
         input = KN_NONE;
       }
       break;
@@ -1124,7 +1138,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ........................ Delete trigger .........................
         */
         if (CurrentObject[0]->Trigger) {
-          CurrentObject[0]->Trigger = NULL;
+          CurrentObject[0]->Trigger = nullptr;
         } else {
           /*
           ** If the current object is part of the AI's Base, remove it
@@ -1160,7 +1174,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         if (CurrentCell) {
           if ((*this)[CurrentCell].IsTrigger) {
             (*this)[CurrentCell].IsTrigger = 0;
-            CellTriggers[CurrentCell] = NULL;
+            CellTriggers[CurrentCell] = nullptr;
             /*
             ...................... Force a redraw ........................
             */
@@ -1417,7 +1431,7 @@ bool MapEditClass::Mouse_Moved() {
   static int old_mx = 0;
   static int old_my = 0;
   static CELL old_zonecell = 0;
-  const ObjectTypeClass* objtype = NULL;
+  const ObjectTypeClass* objtype = nullptr;
   bool retcode = false;
 
   /*
@@ -1455,11 +1469,7 @@ bool MapEditClass::Mouse_Moved() {
     /*
     ................ Others: mouse moved only if cell changed ................
     */
-    if (old_zonecell != ZoneCell) {
-      retcode = true;
-    } else {
-      retcode = false;
-    }
+    retcode = old_zonecell != ZoneCell;
   }
 
   old_mx = Get_Mouse_X();
@@ -1500,7 +1510,7 @@ void MapEditClass::Main_Menu() {
   _menus[5] = "Scenario Options";
   _menus[6] = "AI Options";
   _menus[7] = "Play Scenario";
-  _menus[8] = NULL;
+  _menus[8] = nullptr;
 
   /*
   ----------------------------- Main Menu loop -----------------------------
@@ -1540,9 +1550,8 @@ void MapEditClass::Main_Menu() {
           if (rc == 0) {
             if (Save_Scenario() != 0) {
               break;
-            } else {
-              Changed = 0;
             }
+            Changed = 0;
           }
         }
         if (New_Scenario() == 0) {
@@ -1564,9 +1573,8 @@ void MapEditClass::Main_Menu() {
           if (rc == 0) {
             if (Save_Scenario() != 0) {
               break;
-            } else {
-              Changed = 0;
             }
+            Changed = 0;
           }
         }
         if (Load_Scenario() == 0) {
@@ -1636,9 +1644,8 @@ void MapEditClass::Main_Menu() {
           if (rc == 0) {
             if (Save_Scenario() != 0) {
               break;
-            } else {
-              Changed = 0;
             }
+            Changed = 0;
           }
         }
         Changed = 0;
@@ -1684,7 +1691,7 @@ void MapEditClass::AI_Menu() {
   _menus[2] = "Edit Triggers";
   _menus[3] = "Import Teams";
   _menus[4] = "Edit Teams";
-  _menus[5] = NULL;
+  _menus[5] = nullptr;
 
   /*
   ----------------------------- Main Menu loop -----------------------------
@@ -1873,8 +1880,6 @@ bool MapEditClass::Scroll_Map(DirType facing, int& distance, bool really) {
 
 void MapEditClass::Detach(ObjectClass* object) {
   if (GrabbedObject == object) {
-    GrabbedObject = 0;
+    GrabbedObject = nullptr;
   }
 }
-
-#endif

@@ -43,7 +43,38 @@
  *   MapEditClass::Team_Members -- Team members dialog                     *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifdef SCENARIO_EDITOR
+#include <algorithm>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "port/safe_string.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
+#include "td/conquer.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/edit.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/jshell.h"
+#include "td/list.h"
+#include "td/mapedit.h"
+#include "td/msgbox.h"
+#include "td/teamtype.h"
+#include "td/textbtn.h"
+#include "td/type.h"
 
 /***************************************************************************
  * MapEditClass::Handle_Teams -- main team-dialog-handling function        *
@@ -83,52 +114,52 @@ void MapEditClass::Handle_Teams(char const* caption) {
     */
     if (rc == 0) {
       break;
+    }
+    /*
+          ............................... 'Edit'
+       ................................
+          */
+    if (rc == 1 && CurTeam) {
+      if (Edit_Team() == 0) {
+        Changed = 1;
+      }
     } else {
       /*
-      ............................... 'Edit' ................................
+      ................................ 'New' ................................
       */
-      if (rc == 1 && CurTeam) {
-        if (Edit_Team() == 0) {
-          Changed = 1;
-        }
-      } else {
+      if (rc == 2) {
         /*
-        ................................ 'New' ................................
+        ........................ Create a new team .........................
         */
-        if (rc == 2) {
+        CurTeam = new TeamTypeClass();
+        if (CurTeam) {
           /*
-          ........................ Create a new team .........................
+          ................... delete it if user cancels ...................
           */
-          CurTeam = new TeamTypeClass();
-          if (CurTeam) {
-            /*
-            ................... delete it if user cancels ...................
-            */
-            if (Edit_Team() == -1) {
-              delete CurTeam;
-              CurTeam = NULL;
-            } else {
-              Changed = 1;
-            }
+          if (Edit_Team() == -1) {
+            delete CurTeam;
+            CurTeam = nullptr;
           } else {
-            /*
-            ................. Unable to create; issue warning ..................
-            */
-            CCMessageBox().Process("No more teams available.");
-            HiddenPage.Clear();
-            Flag_To_Redraw(true);
-            Render();
+            Changed = 1;
           }
         } else {
           /*
-          .............................. 'Delete'
-          ...............................
+          ................. Unable to create; issue warning ..................
           */
-          if (rc == 3) {
-            if (CurTeam) {
-              CurTeam->Remove();
-              CurTeam = NULL;
-            }
+          CCMessageBox().Process("No more teams available.");
+          HiddenPage.Clear();
+          Flag_To_Redraw(true);
+          Render();
+        }
+      } else {
+        /*
+        .............................. 'Delete'
+        ...............................
+        */
+        if (rc == 3) {
+          if (CurTeam) {
+            CurTeam->Remove();
+            CurTeam = nullptr;
           }
         }
       }
@@ -235,7 +266,7 @@ int MapEditClass::Select_Team(char const* caption) {
   ........................................................................*/
   RedrawType display;                // requested redraw level
   bool process;                      // loop while true
-  char* teamtext[TEAMTYPE_MAX + 1];  // text for defined teams
+  char* teamtext[kTeamTypeMax + 1];  // text for defined teams
   KeyNumType input;                  // user input
   bool edit_team = false;            // true = user wants to edit
   bool new_team = false;             // true = user wants to new
@@ -250,7 +281,7 @@ int MapEditClass::Select_Team(char const* caption) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands = NULL;  // the button list
+  GadgetClass* commands = nullptr;  // the button list
 
   ListClass teamlist(TEAM_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -292,16 +323,19 @@ int MapEditClass::Select_Team(char const* caption) {
     */
     // teamtext[i] = (char *)HidPage.Get_Graphic_Buffer()->Get_Buffer() +
     // TEAMTXT_LEN * i;
-    teamtext[i] = new char[255];
+    constexpr int kTeamNameSize = 255;
+    teamtext[i] = new char[kTeamNameSize];
 
     /*
     ........................ Fill in name & house .........................
     */
-    strcpy(teamtext[i], TeamTypes.Ptr(i)->IniName);
-    strcat(teamtext[i], "\t");
-    strcat(teamtext[i],
-           HouseTypeClass::As_Reference(TeamTypes.Ptr(i)->House).Suffix);
-    strcat(teamtext[i], "\t");
+    port::SafeCopy(teamtext[i], TeamTypes.Ptr(i)->IniName, kTeamNameSize);
+    port::SafeAppend(teamtext[i], "\t", kTeamNameSize);
+    port::SafeAppend(
+        teamtext[i],
+        HouseTypeClass::As_Reference(TeamTypes.Ptr(i)->House).Suffix,
+        kTeamNameSize);
+    port::SafeAppend(teamtext[i], "\t", kTeamNameSize);
 
     /*
     ................ Fill in class & count for all classes ................
@@ -317,11 +351,11 @@ int MapEditClass::Select_Team(char const* caption) {
       ..................................................................*/
       if (strlen(txt) + strlen(teamtext[i]) + 6 < TEAMTXT_LEN) {
         if (j > 0) {
-          strcat(teamtext[i], ", ");
+          port::SafeAppend(teamtext[i], ", ", kTeamNameSize);
         }
-        strcat(teamtext[i], txt);
+        port::SafeAppend(teamtext[i], txt, kTeamNameSize);
       } else {
-        strcat(teamtext[i], "...");
+        port::SafeAppend(teamtext[i], "...", kTeamNameSize);
         break;
       }
     }
@@ -343,7 +377,7 @@ int MapEditClass::Select_Team(char const* caption) {
   ....................... Set CurTeam if it isn't ..........................
   */
   if (TeamTypes.Count() == 0) {
-    CurTeam = NULL;
+    CurTeam = nullptr;
   } else {
     if (!CurTeam) {
       CurTeam = TeamTypes.Ptr(def_idx);
@@ -376,7 +410,7 @@ int MapEditClass::Select_Team(char const* caption) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -888,7 +922,7 @@ int MapEditClass::Edit_Team() {
   /*
   ........................... Copy team's state ............................
   */
-  strcpy(name_buf, CurTeam->IniName);
+  port::SafeCopy(name_buf, CurTeam->IniName);
   sprintf(recr_buf, "%d", CurTeam->RecruitPriority);
   sprintf(maxnum_buf, "%d", CurTeam->MaxAllowed);
   sprintf(initnum_buf, "%d", CurTeam->InitNum);
@@ -1004,7 +1038,7 @@ int MapEditClass::Edit_Team() {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -1208,17 +1242,11 @@ int MapEditClass::Edit_Team() {
           */
           if (input == (BUTTON_ADD | KN_BUTTON)) {
             i = missionlist2.Current_Index() + 1;
-            if (i < 0) {
-              i = 0;
-            }
-            if (i > missioncount) {
-              i = missioncount;
-            }
+            i = std::max(i, 0);
+            i = std::min(i, missioncount);
           } else {
             i = missionlist2.Current_Index();
-            if (i < 0) {
-              i = 0;
-            }
+            i = std::max(i, 0);
             if (i >= missioncount && missioncount > 0) {
               i = missioncount - 1;
             }
@@ -1288,9 +1316,7 @@ int MapEditClass::Edit_Team() {
           */
           if (i >= missioncount) {
             i--;
-            if (i < 0) {
-              i = 0;
-            }
+            i = std::max(i, 0);
             missionlist2.Set_Selected_Index(i);
           }
         }
@@ -1656,9 +1682,7 @@ int MapEditClass::Team_Members(HousesType house) {
   //
   dlg_h = (D_MARGIN + D_TXT6_H + D_MARGIN + (numrows * D_ROW_H) + D_MARGIN +
            D_TXT6_H + D_MARGIN + D_OK_H + D_MARGIN);
-  if (dlg_h > 400) {
-    dlg_h = 400;
-  }
+  dlg_h = std::min(dlg_h, 400);
   dlg_y = (400 - dlg_h) / 2;
   dlg_picture_top = dlg_y + D_MARGIN + D_TXT6_H + D_MARGIN;
   msg_y =
@@ -1702,7 +1726,7 @@ int MapEditClass::Team_Members(HousesType house) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -2080,5 +2104,3 @@ void MapEditClass::Build_Mission_List(
     list->Add_Item(missionbuf[i]);
   }
 }
-
-#endif

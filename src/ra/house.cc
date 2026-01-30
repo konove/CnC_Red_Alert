@@ -181,6 +181,7 @@
 #include "ra/ipxmgr.h"
 #include "ra/logic.h"
 #include "ra/map.h"
+#include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/msglist.h"
 #include "ra/radar.h"

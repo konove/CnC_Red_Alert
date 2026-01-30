@@ -39,7 +39,31 @@
  *   MapEditClass::Team_Members -- user picks makeup of a team             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifdef SCENARIO_EDITOR
+#include "ra/ccptr.h"
+#include "ra/conquer.h"
+#include "ra/control.h"
+#include "ra/debug.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/globals.h"
+#include "ra/heap.h"
+#include "ra/jshell.h"
+#include "ra/list.h"
+#include "ra/mapedit.h"
+#include "ra/msgbox.h"
+#include "ra/teamtype.h"
+#include "ra/textbtn.h"
+#include "ra/tracker.h"
+#include "ra/type.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
+#include "tech/ftimer.h"
 
 /***************************************************************************
  * MapEditClass::Handle_Teams -- main team-dialog-handling function        *
@@ -79,59 +103,58 @@ void MapEditClass::Handle_Teams(char const* caption) {
     */
     if (rc == 0) {
       break;
+    }
+    /*
+     **	'Edit'
+     */
+    if (rc == 1 && CurTeam) {
+      if (CurTeam->Edit()) {
+        Changed = 1;
+      }
+      HidPage.Clear();
+      Flag_To_Redraw(true);
+      Render();
     } else {
       /*
-      **	'Edit'
+      **	'New'
       */
-      if (rc == 1 && CurTeam) {
-        if (CurTeam->Edit()) {
-          Changed = 1;
-        }
-        HidPage.Clear();
-        Flag_To_Redraw(true);
-        Render();
-      } else {
+      if (rc == 2) {
         /*
-        **	'New'
+        **	Create a new team
         */
-        if (rc == 2) {
+        CurTeam = new TeamTypeClass();
+        if (CurTeam) {
           /*
-          **	Create a new team
+          **	delete it if user cancels
           */
-          CurTeam = new TeamTypeClass();
-          if (CurTeam) {
-            /*
-            **	delete it if user cancels
-            */
-            if (!CurTeam->Edit()) {
-              delete CurTeam;
-              CurTeam = NULL;
-            } else {
-              Changed = 1;
-            }
-            HidPage.Clear();
-            Flag_To_Redraw(true);
-            Render();
+          if (!CurTeam->Edit()) {
+            delete CurTeam;
+            CurTeam = nullptr;
           } else {
-            /*
-            **	Unable to create; issue warning
-            */
-            WWMessageBox().Process("No more teams available.");
-            HidPage.Clear();
-            Flag_To_Redraw(true);
-            Render();
+            Changed = 1;
           }
+          HidPage.Clear();
+          Flag_To_Redraw(true);
+          Render();
         } else {
           /*
-          **	'Delete'
+          **	Unable to create; issue warning
           */
-          if (rc == 3) {
-            if (CurTeam) {
-              Detach_This_From_All(CurTeam->As_Target(), true);
-              delete CurTeam;
-              // CurTeam->Remove();
-              CurTeam = NULL;
-            }
+          WWMessageBox().Process("No more teams available.");
+          HidPage.Clear();
+          Flag_To_Redraw(true);
+          Render();
+        }
+      } else {
+        /*
+        **	'Delete'
+        */
+        if (rc == 3) {
+          if (CurTeam) {
+            Detach_This_From_All(CurTeam->As_Target(), true);
+            delete CurTeam;
+            // CurTeam->Remove();
+            CurTeam = nullptr;
           }
         }
       }
@@ -236,12 +259,11 @@ int MapEditClass::Select_Team(char const*) {
   bool new_team = false;                  // true = user wants to new
   bool del_team = false;                  // true = user wants to new
   static int tabs[] = {35, 60, 80, 100};  // list box tab stops
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   **	Buttons
   */
-  GadgetClass* commands = NULL;  // the button list
+  GadgetClass* commands = nullptr;  // the button list
 
   TListClass<CCPtr<TeamTypeClass> > teamlist(
       TEAM_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
@@ -270,7 +292,7 @@ int MapEditClass::Select_Team(char const*) {
 
   PNBubble_Sort(&teamlist[0], teamlist.Count());
 
-  if (!CurTeam || !CurTeam->IsActive) CurTeam = NULL;
+  if (!CurTeam || !CurTeam->IsActive) CurTeam = nullptr;
 
   if (CurTeam) {
     teamlist.Set_Selected_Index(CurTeam);
@@ -484,7 +506,6 @@ int MapEditClass::Team_Members(HousesType house) {
   const TechnoTypeClass** teamclass;  // array of team classes
   int* teamcount;                     // array of class counts
   int numcols;                        // # units displayed horizontally
-  int numrows;                        // # units displayed vertically
 
   /*
   **	Dialog dimensions.
@@ -598,7 +619,6 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Compute picture rows & cols.
   */
   numcols = (D_DIALOG_W - 16) / D_PICTURE_W;
-  numrows = (maxclasses + numcols - 1) / numcols;
 
   /*
   **	Dialog's height = top margin + label + picture rows + margin + label +
@@ -918,7 +938,7 @@ void MapEditClass::Draw_Member(TechnoTypeClass const* ptr, int index, int quant,
 
   Hide_Mouse();
   Draw_Box(x, y, D_PICTURE_W, D_PICTURE_H, BOXSTYLE_DOWN, true);
-  ptr->Display(WinW / 2, WinH >> 1, WINDOW_EDITOR, house);
+  ptr->Display(ScreenWidth / 2, ScreenHeight / 2, WINDOW_EDITOR, house);
   if (quant > 0) {
     Fancy_Text_Print("%d", x + 1, y + 1, scheme, TBLACK,
                      TPF_8POINT | TPF_DROPSHADOW, quant);
@@ -927,5 +947,3 @@ void MapEditClass::Draw_Member(TechnoTypeClass const* ptr, int index, int quant,
   }
   Show_Mouse();
 }
-
-#endif

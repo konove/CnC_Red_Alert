@@ -48,7 +48,7 @@
 #include "td/globals.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/special.h"
 #include "td/type.h"

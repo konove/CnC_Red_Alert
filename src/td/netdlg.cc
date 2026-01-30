@@ -155,7 +155,7 @@
 #include "td/ipxmgr.h"
 #include "td/jshell.h"
 #include "td/list.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/mplayer.h"
 #include "td/msgbox.h"
 #include "td/msglist.h"

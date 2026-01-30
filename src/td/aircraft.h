@@ -27,6 +27,7 @@
 #include "td/fly.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
+#include "td/monoc.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/techno.h"
@@ -133,12 +134,10 @@ class AircraftClass : public FootClass, public FlyClass {
                                    long& param) override;
   void Scatter(COORDINATE threat, bool forced = false) override;
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*
+   **	Scenario and debug support.
+   */
+  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

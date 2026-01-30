@@ -69,7 +69,7 @@
 #include "td/init.h"
 #include "td/jshell.h"
 #include "td/list.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/msgbox.h"
 #include "td/palette.h"
 #include "td/saveload.h"

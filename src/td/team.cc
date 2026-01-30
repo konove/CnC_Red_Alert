@@ -77,7 +77,7 @@
 #include "td/infantry.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/target.h"
 #include "td/teamtype.h"
@@ -88,12 +88,12 @@
 /*
 **	This array records the number of teams in existance of each type.
 */
-unsigned char TeamClass::Number[TEAMTYPE_MAX];
+unsigned char TeamClass::Number[kTeamTypeMax];
 
 /*
 **	This array records the success rating of each of the team types.
 */
-unsigned char TeamClass::Success[TEAMTYPE_MAX];
+unsigned char TeamClass::Success[kTeamTypeMax];
 
 /*
 ** This contains the value of the Virtual Function Table Pointer
@@ -115,8 +115,8 @@ void* TeamClass::VTable;
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int TeamClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Teams.ID(this);
@@ -125,10 +125,10 @@ int TeamClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * TeamClass::Init -- Initializes the team objects for scenario preparation. *

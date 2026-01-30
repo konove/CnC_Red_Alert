@@ -43,6 +43,7 @@
 
 #include "td/defines.h"
 #include "td/foot.h"
+#include "td/monoc.h"
 #include "td/type.h"
 #include "tech/noinit.h"
 
@@ -115,9 +116,7 @@ class DriveClass : public FootClass {
   void Per_Cell_Process(bool center) override;
   virtual bool Ok_To_Move(DirType) const;
   void AI() override;
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  void Debug_Dump(MonoClass* mono) const override;
   void Force_Track(int track, COORDINATE coord);
   int Tiberium_Load() const override;
 
@@ -154,9 +153,9 @@ class DriveClass : public FootClass {
   // #define	F_S	0x10	// Is this a 90 degree turn?
 
   typedef struct {
-    char Track;                         // Which track to use.
-    char StartTrack;                    // Track when starting from stand-still.
-    DirType Facing;                     // Facing when track has been completed.
+    char Track;             // Which track to use.
+    char StartTrack;        // Track when starting from stand-still.
+    DirType Facing;         // Facing when track has been completed.
     TrackControlType Flag;  // List processing flag bits.
   } TurnTrackType;
 
@@ -167,9 +166,9 @@ class DriveClass : public FootClass {
 
   typedef struct {
     TrackType const* Track;  // Pointer to track list.
-    int Jump;   // Index where track jumping is allowed.
-    int Entry;  // Entry point if jumping to this track.
-    int Cell;   // Per cell process should occur at this index.
+    int Jump;                // Index where track jumping is allowed.
+    int Entry;               // Entry point if jumping to this track.
+    int Cell;                // Per cell process should occur at this index.
   } RawTrackType;
 
   /*

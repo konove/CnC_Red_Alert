@@ -109,20 +109,20 @@ void* TeamTypeClass::VTable;
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int TeamTypeClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = TeamTypes.ID(this);
-  if (num < 0 || num >= TEAMTYPE_MAX) {
+  if (num < 0 || num >= kTeamTypeMax) {
     Validate_Error("TEAMTYPE");
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***************************************************************************
  * TeamTypeClass::TeamTypeClass -- class constructor                       *

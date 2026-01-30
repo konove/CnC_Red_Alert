@@ -76,6 +76,7 @@
 #include "td/ini.h"
 #include "td/layer.h"
 #include "td/logic.h"
+#include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/overlay.h"
@@ -1242,7 +1243,7 @@ void Dump()
 
 	fprintf(fp,"------------------ TeamTypes --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",TeamTypes.ActiveCount);
-	for (i = 0; i < TEAMTYPE_MAX; i++) {
+	for (i = 0; i < kTeamTypeMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d Name:%s\n",i,TeamTypes[i].IsActive,
 			TeamTypes[i].Get_Name());
 	}

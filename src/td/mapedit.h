@@ -54,6 +54,8 @@
 #ifndef MAPEDIT_H
 #define MAPEDIT_H
 
+#include <array>
+
 #include "sdllib/include/keyboard.h"
 #include "td/control.h"
 #include "td/defines.h"
@@ -77,12 +79,14 @@ This is the maximum # of ObjectTypeClasses the editor has to deal with.
 ...........................................................................*/
 enum MapEdit1Enum {
   MAX_EDIT_OBJECTS =  // max # of ObjectTypeClasses allowed
-  static_cast<int>(TEMPLATE_COUNT) + static_cast<int>(OVERLAY_COUNT) + static_cast<int>(SMUDGE_COUNT) +
-  static_cast<int>(TERRAIN_COUNT) + static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) +
+  static_cast<int>(TEMPLATE_COUNT) + static_cast<int>(OVERLAY_COUNT) +
+  static_cast<int>(SMUDGE_COUNT) + static_cast<int>(TERRAIN_COUNT) +
+  static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) +
   static_cast<int>(AIRCRAFT_COUNT) + static_cast<int>(STRUCT_COUNT),
 
   MAX_TEAM_CLASSES =  // max # ObjectTypeClasses for a team
-  static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) + static_cast<int>(AIRCRAFT_COUNT),
+  static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) +
+  static_cast<int>(AIRCRAFT_COUNT),
 
   //	NUM_EDIT_MISSIONS = 6,			// # missions that can be
   // assigned an object
@@ -326,9 +330,9 @@ class MapEditClass : public MouseClass {
   /*.....................................................................
   Bitfields for flags & such
   .....................................................................*/
-  int Changed : 1;       // 1 = changes are unsaved
-  int LMouseDown : 1;    // 1 = left mouse is held down
-  int BaseBuilding : 1;  // 1 = we're in base-building mode
+  unsigned int Changed : 1;       // 1 = changes are unsaved
+  unsigned int LMouseDown : 1;    // 1 = left mouse is held down
+  unsigned int BaseBuilding : 1;  // 1 = we're in base-building mode
 
   /*.....................................................................
   Variables for pre-building a base
@@ -353,7 +357,10 @@ class MapEditClass : public MouseClass {
   static char HealthBuf[20];
   GaugeClass* BaseGauge;
   TextLabelClass* BaseLabel;
-  static MissionType MapEditMissions[];
+  static constexpr std::array MapEditMissions = {
+      MISSION_GUARD,  MISSION_STICKY, MISSION_HARVEST, MISSION_GUARD_AREA,
+      MISSION_RETURN, MISSION_AMBUSH, MISSION_HUNT,    MISSION_SLEEP,
+  };
 };
 
 #endif

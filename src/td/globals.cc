@@ -69,9 +69,9 @@
 #include "td/ipxgconn.h"
 #include "td/ipxmgr.h"
 #include "td/logic.h"
+#include "td/mapedit.h"
 #include "td/mixfile.h"
 #include "td/monoc.h"
-#include "td/mouse.h"
 #include "td/msglist.h"
 #include "td/nodename.h"
 #include "td/nullmgr.h"
@@ -308,11 +308,7 @@ ThemeClass Theme;
 /***************************************************************************
 **	This is the main control class for the map.
 */
-#ifdef SCENARIO_EDITOR
 MapEditClass Map;
-#else
-MouseClass Map;
-#endif
 
 /**************************************************************************
 **	The running game score is handled by this class (and member functions).
@@ -384,12 +380,10 @@ bool GameActive;
 */
 long LParam;
 
-#ifdef SCENARIO_EDITOR
 /***************************************************************************
 ** The currently-selected cell for the Scenario Editor
 */
 CELL CurrentCell = 0;
-#endif
 
 /***************************************************************************
 **	Most of the text in the game will use the six point font. These are the

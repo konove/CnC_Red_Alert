@@ -51,7 +51,7 @@
 #include "ra/externs.h"
 #include "ra/globals.h"
 #include "ra/jshell.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
@@ -80,8 +80,7 @@ void const* TabClass::TabShape = nullptr;
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-TabClass::TabClass()
-    : FlasherTimer(0), IsToRedraw(false), MoneyFlashTimer(0) {}
+TabClass::TabClass() : FlasherTimer(0), IsToRedraw(false), MoneyFlashTimer(0) {}
 
 /***********************************************************************************************
  * TabClass::Draw_It -- Displays the tab buttons as necessary. *
@@ -151,8 +150,8 @@ void TabClass::Draw_It(bool complete) {
       TabClass::Hilite_Tab(1);
 #endif  // WIN32
     } else {
-      CC_Draw_Shape(TabShape, 0, width - EVA_WIDTH * RESFACTOR, 0,
-                    WINDOW_MAIN, SHAPE_NORMAL);
+      CC_Draw_Shape(TabShape, 0, width - EVA_WIDTH * RESFACTOR, 0, WINDOW_MAIN,
+                    SHAPE_NORMAL);
       Fancy_Text_Print(
           TXT_TAB_SIDEBAR, width - EVA_WIDTH / 2 * RESFACTOR, 0,
           &ColorRemaps[PCOLOR_GREY], TBLACK,
@@ -237,8 +236,8 @@ void TabClass::Hilite_Tab(int tab) {
  *JLB : Handles new scrolling option. *
  *=============================================================================================*/
 void TabClass::AI(KeyNumType& input, int x, int y) {
-  if (y >= 0 && y < TAB_HEIGHT * RESFACTOR &&
-      x < SeenBuff.Get_Width() - 1 && x > 0) {
+  if (y >= 0 && y < TAB_HEIGHT * RESFACTOR && x < SeenBuff.Get_Width() - 1 &&
+      x > 0) {
     bool ok = false;
 
     /*

@@ -55,7 +55,39 @@
  *   MapEditClass::Build_Base_To -- builds the AI base to the given percent*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifdef SCENARIO_EDITOR
+#include <algorithm>
+
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
+#include "td/base.h"
+#include "td/building.h"
+#include "td/cell.h"
+#include "td/conquer.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/display_constants.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mapedit.h"
+#include "td/msgbox.h"
+#include "td/object.h"
+#include "td/techno.h"
+#include "td/textbtn.h"
+#include "td/trigger.h"
+#include "td/type.h"
+#include "td/vector.h"
 
 /***************************************************************************
  * MapEditClass::Placement_Dialog -- adds an object to the scenario        *
@@ -458,7 +490,7 @@ int MapEditClass::Placement_Dialog() {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -494,7 +526,8 @@ int MapEditClass::Placement_Dialog() {
         Change_Window((int)WINDOW_EDITOR);
         Draw_Box(D_PICTURE_X, D_PICTURE_Y, D_PICTURE_W, D_PICTURE_H,
                  BOXSTYLE_GREEN_DOWN, true);
-        curobj->Display(WinW << 2, WinH >> 1, WINDOW_EDITOR, LastHouse);
+        curobj->Display(ScreenWidth << 2, ScreenHeight >> 1, WINDOW_EDITOR,
+                        LastHouse);
 
         /*
         ........................ Erase the grid .........................
@@ -895,14 +928,13 @@ void MapEditClass::Start_Placement() {
     House specified in the Base object
   ------------------------------------------------------------------------*/
   if (!BaseBuilding) {
-    if (LastChoice >= ObjCount) LastChoice = ObjCount - 1;
+    LastChoice = std::min(LastChoice, ObjCount - 1);
     PendingObject = Objects[LastChoice];
     PendingHouse = LastHouse;
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(LastHouse));
   } else {
-    if (LastChoice < TypeOffset[7]) LastChoice = TypeOffset[7];
-    if (LastChoice >= ObjCount) LastChoice = ObjCount - 1;
+    LastChoice = std::clamp(LastChoice, TypeOffset[7], ObjCount - 1);
     PendingObject = Objects[LastChoice];
     PendingHouse = LastHouse = Base.House;
     PendingObjectPtr =
@@ -917,7 +949,7 @@ void MapEditClass::Start_Placement() {
     HiddenPage.Clear();
     Flag_To_Redraw(true);
     Render();
-    PendingObject = NULL;
+    PendingObject = nullptr;
     if (BaseBuilding) Cancel_Base_Building();
     return;
   }
@@ -1068,10 +1100,10 @@ int MapEditClass::Place_Object() {
         /*
         ......................... Set flags etc .........................
         */
-        PendingObjectPtr = 0;
-        PendingObject = 0;
+        PendingObjectPtr = nullptr;
+        PendingObject = nullptr;
         PendingHouse = HOUSE_NONE;
-        Set_Cursor_Shape(0);
+        Set_Cursor_Shape(nullptr);
         // ScenarioInit--;
         TotalValue = Overpass();
         Flag_To_Redraw(false);
@@ -1104,13 +1136,13 @@ int MapEditClass::Place_Object() {
       obj_coord =
           Closest_Free_Spot(Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
     } else {
-      obj_coord = NULL;
+      obj_coord = 0;
     }
 
     /*
     ................ No free spots; don't place the object ................
     */
-    if (obj_coord == NULL) {
+    if (obj_coord == 0) {
       // ScenarioInit--;
       return (-1);
     }
@@ -1122,10 +1154,10 @@ int MapEditClass::Place_Object() {
       ((InfantryClass*)PendingObjectPtr)->Set_Occupy_Bit(obj_coord);
       //			Map[Coord_Cell(obj_coord)].Flag.Composite |=
       //				(1 << CellClass::Spot_Index(obj_coord));
-      PendingObjectPtr = 0;
-      PendingObject = 0;
+      PendingObjectPtr = nullptr;
+      PendingObject = nullptr;
       PendingHouse = HOUSE_NONE;
-      Set_Cursor_Shape(0);
+      Set_Cursor_Shape(nullptr);
       // ScenarioInit--;
       return (0);
     }
@@ -1156,10 +1188,10 @@ int MapEditClass::Place_Object() {
       Base.Nodes.Add(node);
     }
 
-    PendingObjectPtr = 0;
-    PendingObject = 0;
+    PendingObjectPtr = nullptr;
+    PendingObject = nullptr;
     PendingHouse = HOUSE_NONE;
-    Set_Cursor_Shape(0);
+    Set_Cursor_Shape(nullptr);
     // ScenarioInit--;
     return (0);
   }
@@ -1187,14 +1219,14 @@ void MapEditClass::Cancel_Placement() {
   ---------------------- Delete the placement object -----------------------
   */
   delete PendingObjectPtr;
-  PendingObject = 0;
-  PendingObjectPtr = 0;
+  PendingObject = nullptr;
+  PendingObjectPtr = nullptr;
   PendingHouse = HOUSE_NONE;
 
   /*
   -------------------------- Restore cursor shape --------------------------
   */
-  Set_Cursor_Shape(0);
+  Set_Cursor_Shape(nullptr);
 
   /*
   ----------------- Redraw the map to erase old leftovers ------------------
@@ -1226,8 +1258,8 @@ void MapEditClass::Cancel_Placement() {
  *=========================================================================*/
 void MapEditClass::Place_Next() {
   delete PendingObjectPtr;
-  PendingObjectPtr = NULL;
-  PendingObject = NULL;
+  PendingObjectPtr = nullptr;
+  PendingObject = nullptr;
 
   /*
   ------------------ Loop until we create a valid object -------------------
@@ -1274,7 +1306,7 @@ void MapEditClass::Place_Next() {
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(PendingHouse));
     if (!PendingObjectPtr) {
-      PendingObject = NULL;
+      PendingObject = nullptr;
     }
   }
 
@@ -1282,7 +1314,7 @@ void MapEditClass::Place_Next() {
   ------------------------ Set the new cursor shape ------------------------
   */
   Set_Cursor_Pos();
-  Set_Cursor_Shape(0);
+  Set_Cursor_Shape(nullptr);
   Set_Cursor_Shape(PendingObject->Occupy_List());
 
   /*
@@ -1315,8 +1347,8 @@ void MapEditClass::Place_Next() {
  *=========================================================================*/
 void MapEditClass::Place_Prev() {
   delete PendingObjectPtr;
-  PendingObjectPtr = NULL;
-  PendingObject = NULL;
+  PendingObjectPtr = nullptr;
+  PendingObject = nullptr;
 
   /*
   ------------------ Loop until we create a valid object -------------------
@@ -1361,7 +1393,7 @@ void MapEditClass::Place_Prev() {
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(PendingHouse));
     if (!PendingObjectPtr) {
-      PendingObject = NULL;
+      PendingObject = nullptr;
     }
   }
 
@@ -1369,7 +1401,7 @@ void MapEditClass::Place_Prev() {
   ------------------------ Set the new cursor shape ------------------------
   */
   Set_Cursor_Pos();
-  Set_Cursor_Shape(0);
+  Set_Cursor_Shape(nullptr);
   Set_Cursor_Shape(PendingObject->Occupy_List());
 
   /*
@@ -1407,8 +1439,8 @@ void MapEditClass::Place_Next_Category() {
   }
 
   delete PendingObjectPtr;
-  PendingObjectPtr = NULL;
-  PendingObject = NULL;
+  PendingObjectPtr = nullptr;
+  PendingObject = nullptr;
 
   /*
   ------------------ Go to next category in Objects list -------------------
@@ -1445,7 +1477,7 @@ void MapEditClass::Place_Next_Category() {
     .................. If this one failed, try the next ...................
     */
     if (!PendingObjectPtr) {
-      PendingObject = NULL;
+      PendingObject = nullptr;
       LastChoice++;
       if (LastChoice == ObjCount) {
         LastChoice = 0;
@@ -1457,7 +1489,7 @@ void MapEditClass::Place_Next_Category() {
   ------------------------ Set the new cursor shape ------------------------
   */
   Set_Cursor_Pos();
-  Set_Cursor_Shape(0);
+  Set_Cursor_Shape(nullptr);
   Set_Cursor_Shape(PendingObject->Occupy_List());
 
   /*
@@ -1495,8 +1527,8 @@ void MapEditClass::Place_Prev_Category() {
   }
 
   delete PendingObjectPtr;
-  PendingObjectPtr = NULL;
-  PendingObject = NULL;
+  PendingObjectPtr = nullptr;
+  PendingObject = nullptr;
 
   /*
   ------------------ Go to prev category in Objects list -------------------
@@ -1546,7 +1578,7 @@ void MapEditClass::Place_Prev_Category() {
     .................. If this one failed, try the next ...................
     */
     if (!PendingObjectPtr) {
-      PendingObject = NULL;
+      PendingObject = nullptr;
       LastChoice--;
       if (LastChoice < 0) {
         LastChoice = ObjCount - 1;
@@ -1558,7 +1590,7 @@ void MapEditClass::Place_Prev_Category() {
   ------------------------ Set the new cursor shape ------------------------
   */
   Set_Cursor_Pos();
-  Set_Cursor_Shape(0);
+  Set_Cursor_Shape(nullptr);
   Set_Cursor_Shape(PendingObject->Occupy_List());
 
   /*
@@ -1586,8 +1618,8 @@ void MapEditClass::Place_Prev_Category() {
  *=========================================================================*/
 void MapEditClass::Place_Home() {
   delete PendingObjectPtr;
-  PendingObjectPtr = NULL;
-  PendingObject = NULL;
+  PendingObjectPtr = nullptr;
+  PendingObject = nullptr;
 
   /*
   ** Don't allow this command if we're building a base; the only valid
@@ -1621,7 +1653,7 @@ void MapEditClass::Place_Home() {
     .................. If this one failed, try the next ...................
     */
     if (!PendingObjectPtr) {
-      PendingObject = NULL;
+      PendingObject = nullptr;
       LastChoice++;
       if (LastChoice == ObjCount) {
         LastChoice = 0;
@@ -1633,7 +1665,7 @@ void MapEditClass::Place_Home() {
   ------------------------ Set the new cursor shape ------------------------
   */
   Set_Cursor_Pos();
-  Set_Cursor_Shape(0);
+  Set_Cursor_Shape(nullptr);
   Set_Cursor_Shape(PendingObject->Occupy_List());
 
   /*
@@ -1774,7 +1806,7 @@ void MapEditClass::Start_Trigger_Placement() {
  *   12/01/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Stop_Trigger_Placement() {
-  CurTrigger = NULL;
+  CurTrigger = nullptr;
   Set_Default_Mouse(MOUSE_NORMAL);
   Override_Mouse_Shape(MOUSE_NORMAL);
 }
@@ -1795,7 +1827,7 @@ void MapEditClass::Stop_Trigger_Placement() {
  *   12/01/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Place_Trigger() {
-  ObjectClass* object = NULL;  // Generic object clicked on.
+  ObjectClass* object = nullptr;  // Generic object clicked on.
   int x, y;
   CELL cell;  // Cell that was selected.
 
@@ -1971,5 +2003,3 @@ void MapEditClass::Build_Base_To(int percent) {
 
   // ScenarioInit--;
 }
-
-#endif

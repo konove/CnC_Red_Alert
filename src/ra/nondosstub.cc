@@ -30,7 +30,7 @@
 #include "ra/externs.h"
 #include "ra/graphics_loader.h"
 #include "ra/interpal.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/palette.h"
 #include "ra/theme.h"
 #include "sdllib/include/gbuffer.h"

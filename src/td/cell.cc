@@ -111,6 +111,7 @@
 #include "td/jshell.h"
 #include "td/layer.h"
 #include "td/logic.h"
+#include "td/mapedit.h"
 #include "td/mixfile.h"
 #include "td/mouse.h"
 #include "td/object.h"
@@ -142,8 +143,8 @@
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int CellClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Cell_Number();
@@ -152,10 +153,10 @@ int CellClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * CellClass::CellClass -- Constructor for cell objects. *

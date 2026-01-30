@@ -46,7 +46,7 @@
 
 #include "td/foot.h"
 #include "td/object.h"
-#ifdef CHEAT_KEYS
+
 /***********************************************************************************************
  * CargoClass::Debug_Dump -- Displays the cargo value to the monochrome screen.
  **
@@ -63,12 +63,13 @@
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void CargoClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   if (How_Many()) {
     mono->Set_Cursor(63, 3);
     mono->Printf("(%d)%04X", How_Many(), Attached_Object());
   }
-}
 #endif
+}
 
 /***********************************************************************************************
  * CargoClass::Attach -- Add unit to cargo hold. *

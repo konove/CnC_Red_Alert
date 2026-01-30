@@ -60,7 +60,7 @@
 #include "td/externs.h"
 #include "td/heap.h"
 #include "td/inline.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/profile.h"
 #include "td/special.h"
 #include "td/vector.h"
@@ -89,8 +89,8 @@ OverlayClass::OverlayClass() : Class(nullptr) { ToOwn = HOUSE_NONE; };
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int OverlayClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Overlays.ID(this);
@@ -99,10 +99,10 @@ int OverlayClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * OverlayClass::Init -- Resets the overlay object system. *
@@ -298,11 +298,9 @@ bool OverlayClass::Mark(MarkType mark) {
                 *whether this *	concrete is in an odd or even row.
                 */
                 if (Cell_X(cell) & 0x01) {
-                  newcell =
-                      Adjacent_Cell(cellptr->Cell_Number(), FACING_W);
+                  newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_W);
                 } else {
-                  newcell =
-                      Adjacent_Cell(cellptr->Cell_Number(), FACING_E);
+                  newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_E);
                 }
                 if (Map[newcell].Overlay != OVERLAY_CONCRETE) {
                   Class->Create_And_Place(newcell);

@@ -42,6 +42,7 @@
 #define TARCOM_H
 
 #include "td/defines.h"
+#include "td/monoc.h"
 #include "td/turret.h"
 #include "tech/noinit.h"
 
@@ -61,12 +62,10 @@ class TarComClass : public TurretClass {
   TarComClass(NoInitClass const& x) : TurretClass(x) {}
   ~TarComClass() override;
 
-/*---------------------------------------------------------------------
-**	Member function prototypes.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*---------------------------------------------------------------------
+   **	Member function prototypes.
+   */
+  void Debug_Dump(MonoClass* mono) const override;
   void AI() override;
   //		virtual bool Target_Something_Nearby(ThreatType
   // rangmatters=THREAT_NORMAL);

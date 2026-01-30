@@ -52,10 +52,12 @@
  *- - - - - - - */
 
 #include <algorithm>
+#include <cstddef>
 #include <filesystem>
 #include <string>
 
 #include "port/ex_string.h"
+#include "sdllib/include/shape.h"
 #include "td/building.h"
 #include "td/ccfile.h"
 #include "td/conquer.h"
@@ -67,6 +69,7 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/keyframe.h"
+#include "td/mapedit.h"
 #include "td/mixfile.h"
 #include "td/object.h"
 #include "td/rand.h"
@@ -1359,7 +1362,6 @@ UnitType UnitTypeClass::From_Name(char const* name) {
   return UNIT_NONE;
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * UnitTypeClass::Display -- Displays a generic unit shape. *
  *                                                                                             *
@@ -1409,12 +1411,11 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void UnitTypeClass::Prep_For_Add() {
   for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
-    if (As_Reference(index).Get_Image_Data() != NULL) {
+    if (As_Reference(index).Get_Image_Data() != nullptr) {
       Map.Add_To_List(&As_Reference(index));
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * UnitTypeClass::One_Time -- Performs one time processing for unit type class
@@ -1453,8 +1454,7 @@ void UnitTypeClass::One_Time() {
       }
       auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      (void const*&)uclass.CameoData =
-          MixFileClass::Retrieve(fullname.c_str());
+      (void const*&)uclass.CameoData = MixFileClass::Retrieve(fullname.c_str());
     }
 
     /*
@@ -1474,8 +1474,10 @@ void UnitTypeClass::One_Time() {
       if (index == UNIT_MLRS || index == UNIT_MSAM) {
         largest = 26;
       } else {
-        largest = std::max(largest, static_cast<int>(Get_Build_Frame_Width(ptr)));
-        largest = std::max(largest, static_cast<int>(Get_Build_Frame_Height(ptr)));
+        largest =
+            std::max(largest, static_cast<int>(Get_Build_Frame_Width(ptr)));
+        largest =
+            std::max(largest, static_cast<int>(Get_Build_Frame_Height(ptr)));
       }
     }
 

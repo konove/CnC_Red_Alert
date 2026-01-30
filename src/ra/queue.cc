@@ -111,6 +111,7 @@
 #include "ra/jshell.h"
 #include "ra/layer.h"
 #include "ra/logic.h"
+#include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/monoc.h"
 #include "ra/mouse.h"

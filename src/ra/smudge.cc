@@ -59,7 +59,7 @@
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/map.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;
 
@@ -128,8 +128,7 @@ void SmudgeClass::operator delete(void* ptr) {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
-    : ObjectClass(RTTI_SMUDGE, Smudges.ID(this)),
-      Class(SmudgeTypes.Ptr(type)) {
+    : ObjectClass(RTTI_SMUDGE, Smudges.ID(this)), Class(SmudgeTypes.Ptr(type)) {
   if (pos != -1) {
     ToOwn = house;
     if (!Unlimbo(pos)) {

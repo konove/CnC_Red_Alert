@@ -116,10 +116,11 @@
 #include "ra/jshell.h"
 #include "ra/layer.h"
 #include "ra/logic.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
 #include "ra/rules.h"
+#include "ra/scenario.h"
 #include "ra/score.h"
 #include "ra/session.h"
 #include "ra/super.h"
@@ -127,6 +128,8 @@
 #include "ra/techno.h"
 #include "ra/terrain.h"
 #include "ra/tracker.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/utracker.h"
@@ -976,11 +979,6 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     TemplateTypeClass const* ttype = nullptr;
     int icon;  // The icon number to use from the template set.
     void* remap = nullptr;
-#ifdef SCENARIO_EDITOR
-    TemplateTypeClass* tptr;
-    int i;
-    char waypt[3];
-#endif
 
     CellCount++;
 
@@ -1018,24 +1016,24 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           Zones[MZONE_DESTROYER], Overlay, OverlayData);
       FontXSpacing += 2;
     } else {
-#ifdef SCENARIO_EDITOR
-      /*
-      **	Set up the remap table for this icon.
-      */
-      if (MapEditorActive && Debug_Passable) {
-        if (::Ground[Land].Cost[0] == 0 ||
-            (Cell_Occupier() != nullptr &&
-             Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
-          remap = DisplayClass::FadingRed;
-        } else {
-          if (::Ground[Land].Cost[0] > fixed(1, 3)) {  // pretty passable
-            remap = DisplayClass::FadingGreen;
+      if constexpr (config::kScenarioEditorEnabled) {
+        /*
+        **	Set up the remap table for this icon.
+        */
+        if (MapEditorActive && Debug_Passable) {
+          if (::Ground[Land].Cost[0] == 0 ||
+              (Cell_Occupier() != nullptr &&
+               Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
+            remap = DisplayClass::FadingRed;
           } else {
-            remap = DisplayClass::FadingYellow;  // moderately passable
+            if (::Ground[Land].Cost[0] > fixed(1, 3)) {  // pretty passable
+              remap = DisplayClass::FadingGreen;
+            } else {
+              remap = DisplayClass::FadingYellow;  // moderately passable
+            }
           }
         }
       }
-#endif
 
       /*
       **	This is the underlying terrain icon.
@@ -1049,19 +1047,19 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         }
       }
 
-#ifdef SCENARIO_EDITOR
-      /*
-      **	Draw the map editor's "current" cell. This is the cell that can
-      *be *	assigned attributes such as tag labels. *	This must be
-      *draw before the placement cursor, but after drawing the *	objects
-      *in the cell.
-      */
-      if (MapEditorActive && CurrentCell == Cell_Number()) {
-        LogicPage->Draw_Rect(x + Map.TacPixelX, y + Map.TacPixelY,
-                             Map.TacPixelX + x + CELL_PIXEL_W - 1,
-                             Map.TacPixelY + y + CELL_PIXEL_H - 1, YELLOW);
+      if constexpr (config::kScenarioEditorEnabled) {
+        /*
+        **	Draw the map editor's "current" cell. This is the cell that can
+        **	be assigned attributes such as tag labels. This must be drawn
+        **	before the placement cursor, but after drawing the objects in
+        * the *	cell.
+        */
+        if (MapEditorActive && CurrentCell == Cell_Number()) {
+          LogicPage->Draw_Rect(x + Map.TacPixelX, y + Map.TacPixelY,
+                               Map.TacPixelX + x + CELL_PIXEL_W - 1,
+                               Map.TacPixelY + y + CELL_PIXEL_H - 1, YELLOW);
+        }
       }
-#endif
 
       /*
       **	Redraw any smudge.
@@ -1086,52 +1084,54 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         IsTheaterShape = false;
       }
 
-#ifdef SCENARIO_EDITOR
-      if (MapEditorActive) {
-        /*
-        **	Draw the cell's Trigger mnemonic, if it has a trigger
-        */
-        if (Trigger.Is_Valid()) {
-          Fancy_Text_Print(Trigger->Class->IniName, x + Map.TacPixelX,
-                           y + Map.TacPixelY, &ColorRemaps[PCOLOR_RED], TBLACK,
-                           TPF_EFNT | TPF_FULLSHADOW);
-        }
+      if constexpr (config::kScenarioEditorEnabled) {
+        if (MapEditorActive) {
+          /*
+          **	Draw the cell's Trigger mnemonic, if it has a trigger
+          */
+          if (Trigger.Is_Valid()) {
+            Fancy_Text_Print(Trigger->Class->IniName, x + Map.TacPixelX,
+                             y + Map.TacPixelY, &ColorRemaps[PCOLOR_RED],
+                             TBLACK, TPF_EFNT | TPF_FULLSHADOW);
+          }
 
-        /*
-        **	Draw the cell's Waypoint designation if there is one.
-        */
-        if (IsWaypoint) {
-          for (i = 0; i < WAYPT_HOME; i++) {
-            if (Scen.Waypoint[i] == Cell_Number()) {
-              if (i < 26) {
-                waypt[0] = 'A' + i;
-                waypt[1] = 0;
-              } else {
-                waypt[0] = 'A' + (i / 26) - 1;
-                waypt[1] = 'A' + (i % 26);
-                waypt[2] = 0;
+          /*
+          **	Draw the cell's Waypoint designation if there is one.
+          */
+          if (IsWaypoint) {
+            char waypt[3];
+            for (int i = 0; i < WAYPT_HOME; i++) {
+              if (Scen.Waypoint[i] == Cell_Number()) {
+                if (i < 26) {
+                  waypt[0] = 'A' + i;
+                  waypt[1] = 0;
+                } else {
+                  waypt[0] = 'A' + (i / 26) - 1;
+                  waypt[1] = 'A' + (i % 26);
+                  waypt[2] = 0;
+                }
+                Fancy_Text_Print(waypt, Map.TacPixelX + x + CELL_PIXEL_W / 2,
+                                 Map.TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
+                                 &ColorRemaps[PCOLOR_RED], TBLACK,
+                                 TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
+                break;
               }
-              Fancy_Text_Print(waypt, Map.TacPixelX + x + CELL_PIXEL_W / 2,
-                               Map.TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
-                               &ColorRemaps[PCOLOR_RED], TBLACK,
-                               TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
-              break;
             }
-          }
-          if (Scen.Waypoint[WAYPT_HOME] == Cell_Number()) {
-            Fancy_Text_Print(
-                "Home", Map.TacPixelX + x, Map.TacPixelY + y + (CELL_PIXEL_H)-7,
-                &ColorRemaps[PCOLOR_GREY], TBLACK, TPF_EFNT | TPF_FULLSHADOW);
-          }
-          if (Scen.Waypoint[WAYPT_REINF] == Cell_Number()) {
-            Fancy_Text_Print("Reinf", Map.TacPixelX + x,
-                             Map.TacPixelY + y + (CELL_PIXEL_H)-7,
-                             &ColorRemaps[PCOLOR_GREY], TBLACK,
-                             TPF_EFNT | TPF_FULLSHADOW);
+            if (Scen.Waypoint[WAYPT_HOME] == Cell_Number()) {
+              Fancy_Text_Print("Home", Map.TacPixelX + x,
+                               Map.TacPixelY + y + (CELL_PIXEL_H)-7,
+                               &ColorRemaps[PCOLOR_GREY], TBLACK,
+                               TPF_EFNT | TPF_FULLSHADOW);
+            }
+            if (Scen.Waypoint[WAYPT_REINF] == Cell_Number()) {
+              Fancy_Text_Print("Reinf", Map.TacPixelX + x,
+                               Map.TacPixelY + y + (CELL_PIXEL_H)-7,
+                               &ColorRemaps[PCOLOR_GREY], TBLACK,
+                               TPF_EFNT | TPF_FULLSHADOW);
+            }
           }
         }
       }
-#endif
 
       /*
       **	Draw the placement cursor:
@@ -1162,51 +1162,54 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                                 WINDOW_TACTICAL);
         }
 
-#ifdef SCENARIO_EDITOR
-        if (MapEditorActive && Map.PendingObject) {
-          switch (Map.PendingObject->What_Am_I()) {
-            /*
-            **	Draw a template:
-            **	- Compute the icon offset of this cell for this template, using
-            **	  ZoneCell+ZoneOffset to get the upper-left corner of the
-            *placement *	  cursor *	- Draw the icon
-            */
-            case RTTI_TEMPLATETYPE:
-              tptr = (TemplateTypeClass*)Map.PendingObject;
-              if (tptr->Get_Image_Data()) {
-                CELL cell = Cell_Number();
-                icon = (Cell_X(cell) - Cell_X(Map.ZoneCell + Map.ZoneOffset)) +
-                       (Cell_Y(cell) - Cell_Y(Map.ZoneCell + Map.ZoneOffset)) *
-                           tptr->Width;
-                LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y,
-                                      nullptr, WINDOW_TACTICAL);
+        if constexpr (config::kScenarioEditorEnabled) {
+          if (MapEditorActive && Map.PendingObject) {
+            switch (Map.PendingObject->What_Am_I()) {
+              /*
+              **	Draw a template:
+              **	- Compute the icon offset of this cell for this
+              * template, *	  using ZoneCell+ZoneOffset to get the
+              * upper-left corner of *	  the placement cursor *	- Draw
+              * the icon
+              */
+              case RTTI_TEMPLATETYPE: {
+                auto* tptr = (TemplateTypeClass*)Map.PendingObject;
+                if (tptr->Get_Image_Data()) {
+                  CELL cell = Cell_Number();
+                  icon =
+                      (Cell_X(cell) - Cell_X(Map.ZoneCell + Map.ZoneOffset)) +
+                      (Cell_Y(cell) - Cell_Y(Map.ZoneCell + Map.ZoneOffset)) *
+                          tptr->Width;
+                  LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y,
+                                        nullptr, WINDOW_TACTICAL);
+                }
+                break;
               }
-              break;
 
-            /*
-            **	Draw an overlay; just use the existing 'OverlayData' even though
-            **	it means nothing.
-            */
-            case RTTI_OVERLAYTYPE:
-              OverlayTypeClass::As_Reference(
-                  ((OverlayTypeClass*)Map.PendingObject)->Type)
-                  .Draw_It(x, y, OverlayData);
-              break;
+              /*
+              **	Draw an overlay; just use the existing 'OverlayData'
+              * even *	though it means nothing.
+              */
+              case RTTI_OVERLAYTYPE:
+                OverlayTypeClass::As_Reference(
+                    ((OverlayTypeClass*)Map.PendingObject)->Type)
+                    .Draw_It(x, y, OverlayData);
+                break;
 
-            /*
-            **	Draw a smudge
-            */
-            case RTTI_SMUDGETYPE:
-              SmudgeTypeClass::As_Reference(
-                  ((SmudgeTypeClass*)Map.PendingObject)->Type)
-                  .Draw_It(x, y, 0);
-              break;
+              /*
+              **	Draw a smudge
+              */
+              case RTTI_SMUDGETYPE:
+                SmudgeTypeClass::As_Reference(
+                    ((SmudgeTypeClass*)Map.PendingObject)->Type)
+                    .Draw_It(x, y, 0);
+                break;
 
-            default:
-              break;
+              default:
+                break;
+            }
           }
         }
-#endif
       }
 
       /*

@@ -81,6 +81,7 @@
 #include "ra/keyframe.h"
 #include "ra/logic.h"
 #include "ra/map.h"
+#include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/palette.h"

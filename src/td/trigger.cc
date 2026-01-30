@@ -83,7 +83,7 @@
 #include "td/infantry.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/profile.h"
 #include "td/super.h"
@@ -145,8 +145,8 @@ static const char* ActionText[TriggerClass::ACTION_COUNT + 1] = {
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int TriggerClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Triggers.ID(this);
@@ -155,10 +155,10 @@ int TriggerClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * TriggerClass::Event_Need_Object -- Determines if the specified event requires

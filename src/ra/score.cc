@@ -68,7 +68,7 @@
 #include "ra/inline.h"
 #include "ra/interpal.h"
 #include "ra/logic.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/nullmgr.h"
 #include "ra/object.h"
 #include "ra/palette.h"

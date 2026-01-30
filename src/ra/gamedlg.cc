@@ -50,7 +50,7 @@
 #include "ra/goptions.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/msgbox.h"
 #include "ra/options.h"
 #include "ra/queue.h"
@@ -90,8 +90,8 @@ void GameControlsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 232 * RESFACTOR;                            // dialog width
-  int d_dialog_h = 141 * RESFACTOR;                            // dialog height
+  int d_dialog_w = 232 * RESFACTOR;                          // dialog width
+  int d_dialog_h = 141 * RESFACTOR;                          // dialog height
   int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y =
       (SeenBuff.Get_Height() - d_dialog_h) / 2;   // centered y-coord
@@ -118,8 +118,7 @@ void GameControlsClass::Process() {
   int d_scroll_y = d_speed_y + d_speed_h + d_txt6_h + (d_margin1 * 2) +
                    d_txt6_h - GERMAN_OFFSET_Y;
 #else
-  int d_scroll_y =
-      d_speed_y + d_speed_h + d_txt6_h + d_margin1 * 2 + d_txt6_h;
+  int d_scroll_y = d_speed_y + d_speed_h + d_txt6_h + d_margin1 * 2 + d_txt6_h;
 #endif
 
   int d_visual_w = d_dialog_w - 40 * RESFACTOR;
@@ -339,11 +338,11 @@ void GameControlsClass::Process() {
                        scheme, TBLACK, style);
 
       Fancy_Text_Print(TXT_SLOWER, d_scroll_x,
-                       d_scroll_y + d_scroll_h + 1 * RESFACTOR, scheme,
-                       TBLACK, TPF_TEXT);
+                       d_scroll_y + d_scroll_h + 1 * RESFACTOR, scheme, TBLACK,
+                       TPF_TEXT);
       Fancy_Text_Print(TXT_FASTER, d_scroll_x + d_scroll_w,
-                       d_scroll_y + d_scroll_h + 1 * RESFACTOR, scheme,
-                       TBLACK, TPF_TEXT | TPF_RIGHT);
+                       d_scroll_y + d_scroll_h + 1 * RESFACTOR, scheme, TBLACK,
+                       TPF_TEXT | TPF_RIGHT);
 
       commands->Draw_All();
 

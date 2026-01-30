@@ -150,7 +150,7 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/keyframe.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/overlay.h"
 #include "td/power.h"
@@ -212,8 +212,8 @@ void *BuildingClass::VTable;
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int BuildingClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Buildings.ID(this);
@@ -222,10 +222,10 @@ int BuildingClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * BuildingClass::Receive_Message -- Handle an incoming message to the building.
@@ -453,7 +453,6 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
   return TechnoClass::Receive_Message(from, message, param);
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * BuildingClass::Debug_Dump -- Displays building status to the monochrome
  *screen.             *
@@ -471,6 +470,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Debug_Dump(MonoClass *mono) const {
+#ifdef CHEAT_KEYS
   Validate();
   mono->Set_Cursor(0, 0);
   mono->Print(
@@ -535,8 +535,8 @@ void BuildingClass::Debug_Dump(MonoClass *mono) const {
   mono->Printf("%2d", Arm);
 
   TechnoClass::Debug_Dump(mono);
-}
 #endif
+}
 
 /***********************************************************************************************
  * BuildingClass::Draw_It -- Displays the building at the location specified. *

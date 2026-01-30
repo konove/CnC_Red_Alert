@@ -41,6 +41,7 @@
 #ifndef STAGE_H
 #define STAGE_H
 
+#include "td/monoc.h"
 #include "tech/noinit.h"
 
 class StageClass {
@@ -65,6 +66,7 @@ class StageClass {
   unsigned char Rate;
 
  public:
+  virtual ~StageClass() = default;
   StageClass() {
     StageTimer = 0;
     Stage = 0;
@@ -88,12 +90,10 @@ class StageClass {
     }
     return false;
   }
-#ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass* mono) const {
+  virtual void Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(56, 7);
     mono->Printf("%3d[%d]", Stage, Rate);
   }
-#endif
 
   /*
   **	File I/O.

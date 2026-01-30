@@ -76,12 +76,10 @@ class MissionClass : public ObjectClass {
   MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {}
   ~MissionClass() override {}
 
-/*---------------------------------------------------------------------
-**	Member function prototypes.
-*/
-#ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*---------------------------------------------------------------------
+  **	Member function prototypes.
+  */
+  void Debug_Dump(MonoClass* mono) const override;
 
   MissionType Get_Mission() const override;
   virtual void Assign_Mission(MissionType mission);

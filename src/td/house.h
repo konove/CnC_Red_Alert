@@ -46,6 +46,7 @@
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"
+#include "td/monoc.h"
 #include "td/object.h"
 #include "td/region.h"
 #include "td/super.h"
@@ -439,9 +440,7 @@ class HouseClass {
   bool Is_Ally(HousesType house) const;
   bool Is_Ally(HouseClass const* house) const;
   bool Is_Ally(ObjectClass const* object) const;
-#ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const;
-#endif
   void AI();
   bool Can_Build(StructType structure, HousesType house) const;
   bool Can_Build(InfantryType infantry, HousesType house) const;

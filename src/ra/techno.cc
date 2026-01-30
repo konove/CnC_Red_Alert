@@ -184,6 +184,7 @@
 #include "ra/keyframe.h"
 #include "ra/layer.h"
 #include "ra/map.h"
+#include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/mouse.h"
 #include "ra/queue.h"

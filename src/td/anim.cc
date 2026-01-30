@@ -81,6 +81,7 @@
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/logic.h"
+#include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/palette.h"
@@ -111,8 +112,8 @@ void* AnimClass::VTable;
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int AnimClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Anims.ID(this);
@@ -121,10 +122,10 @@ int AnimClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * Shorten_Attached_Anims -- Reduces attached animation durations. *

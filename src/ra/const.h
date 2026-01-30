@@ -40,6 +40,7 @@ constexpr long EditorCodes[] = {static_cast<long>(0xA2C09326),  // Erik Yeo
                                 static_cast<long>(0xDE07154D),  // Adam Isgreen
                                 static_cast<long>(0x0E07B213),  // Steve Tall
                                 static_cast<long>(0x16B170B1),  // Joe Bostic
+                                static_cast<long>(0x7DDFF824),  // PASSWORD
                                 0L};
 
 /***********************************************************************************************
@@ -56,11 +57,9 @@ constexpr char const* Missions[MISSION_COUNT] = {
 /***************************************************************************
 **	Special weapon names.
 */
-#ifdef SCENARIO_EDITOR
 constexpr char const* SpecialWeaponName[SPC_COUNT] = {
     "Sonar Pulse",  "Nuclear Missile", "Chronosphere", "Parachute Bomb",
     "Paratroopers", "Recon Plane",     "Iron Curtain", "GPS Satellite"};
-#endif
 constexpr int SpecialWeaponHelp[SPC_COUNT] = {
     TXT_SONAR_PULSE,   TXT_NUCLEAR_BOMB, TXT_CHRONOSHIFT, TXT_PARA_BOMB,
     TXT_PARA_INFANTRY, TXT_SPY_MISSION,  TXT_INVUL,       TXT_GPS_SATELLITE};

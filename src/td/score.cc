@@ -78,6 +78,7 @@
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/logic.h"
+#include "td/mapedit.h"
 #include "td/mixfile.h"
 #include "td/mouse.h"
 #include "td/nullmgr.h"

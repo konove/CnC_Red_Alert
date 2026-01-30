@@ -64,6 +64,7 @@ class EditClass : public ControlClass {
   void Set_Color(RemapControlType* color) { Color = color; }
 
   void Set_Read_Only(int rdonly) { IsReadOnly = rdonly; }
+  int Get_Max_Length() const { return MaxLength; }
 
  protected:
   /*

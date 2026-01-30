@@ -55,8 +55,8 @@
 #include "td/goptions.h"
 #include "td/inline.h"
 #include "td/jshell.h"
+#include "td/mapedit.h"
 #include "td/mixfile.h"
-#include "td/mouse.h"
 #include "td/special.h"
 
 /***************************************************************************

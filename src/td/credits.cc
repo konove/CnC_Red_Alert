@@ -71,7 +71,7 @@
 #include "td/globals.h"
 #include "td/house.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/tab.h"
 
 CreditClass::CreditClass() {

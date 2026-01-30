@@ -72,7 +72,7 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/inline.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/profile.h"
 #include "td/type.h"

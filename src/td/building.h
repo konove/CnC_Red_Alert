@@ -48,6 +48,7 @@
 #include "td/factory.h"
 #include "td/ftimer.h"
 #include "td/house.h"
+#include "td/monoc.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/techno.h"
@@ -282,12 +283,10 @@ class BuildingClass : public TechnoClass {
   int Mission_Missile() override;
   void Enter_Idle_Mode(bool initial = false) override;
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
-#endif
+  /*
+  **	Scenario and debug support.
+  */
+  void Debug_Dump(MonoClass *mono) const override;
 
   /*
   **	File I/O.

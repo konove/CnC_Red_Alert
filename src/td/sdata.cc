@@ -297,7 +297,6 @@ void SmudgeTypeClass::Init(TheaterType theater) {
   }
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * SmudgeTypeClass::Display -- Draws a generic version of this smudge type. *
  *                                                                                             *
@@ -356,7 +355,6 @@ void SmudgeTypeClass::Prep_For_Add() {
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * SmudgeTypeClass::Create_And_Place -- Creates and places on map, a smudge

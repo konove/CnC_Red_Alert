@@ -42,6 +42,7 @@
 #define LOGIC_H
 
 #include "td/layer.h"
+#include "td/monoc.h"
 
 /***********************************************************************************************
 **	Game logic processing is controlled by this class. The graphic and AI
@@ -51,8 +52,6 @@
 class LogicClass : public LayerClass {
  public:
   void AI();
-#ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const;
-#endif
 };
 #endif

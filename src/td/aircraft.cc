@@ -134,6 +134,7 @@
 #include "td/infantry.h"
 #include "td/inline.h"
 #include "td/jshell.h"
+#include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/profile.h"
@@ -1905,7 +1906,6 @@ int AircraftClass::Process_Fly_To(bool slowdown) {
   return distance;
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * AircraftClass::Debug_Dump -- Displays the status of the aircraft to the mono
  *monitor.       *
@@ -1922,6 +1922,7 @@ int AircraftClass::Process_Fly_To(bool slowdown) {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   Validate();
   mono->Set_Cursor(0, 0);
   mono->Print(
@@ -1979,8 +1980,8 @@ void AircraftClass::Debug_Dump(MonoClass* mono) const {
   mono->Text_Print("X", 16 + (IsLanding ? 2 : 0), 12);
   mono->Text_Print("X", 16 + (IsTakingOff ? 2 : 0), 13);
   FootClass::Debug_Dump(mono);
-}
 #endif
+}
 
 /***********************************************************************************************
  * AircraftClass::Active_Click_With -- Handles clicking over specified object. *

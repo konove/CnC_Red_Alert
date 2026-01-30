@@ -67,7 +67,7 @@
 #include "ra/foot.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
 #include "sdllib/include/memflag.h"

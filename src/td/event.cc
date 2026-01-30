@@ -69,7 +69,7 @@
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/msglist.h"
 #include "td/object.h"
 #include "td/special.h"

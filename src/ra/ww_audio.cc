@@ -62,7 +62,7 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
 

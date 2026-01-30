@@ -157,7 +157,7 @@
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"

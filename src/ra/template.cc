@@ -54,7 +54,7 @@
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/map.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "sdllib/include/tile.h"
 
 /***********************************************************************************************

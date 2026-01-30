@@ -56,7 +56,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/session.h"
 #include "tech/lcwpipe.h"
 #include "tech/lcwstraw.h"

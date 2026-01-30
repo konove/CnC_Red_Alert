@@ -61,6 +61,7 @@
 #include "ra/externs.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
+#include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/scenario.h"
@@ -261,11 +262,7 @@ bool MouseClass::Load(Straw& file) {
   ** in editor mode, none of the map editor object is read in.
   */
   file.Get(this, sizeof(*this));
-#ifdef SCENARIO_EDITOR
   new (this) MapEditClass(NoInitClass());
-#else
-  new (this) MouseClass(NoInitClass());
-#endif
 
   /*
   ** Reallocate the cell array

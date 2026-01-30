@@ -87,6 +87,7 @@
 #include "td/heap.h"
 #include "td/jshell.h"
 #include "td/keyframe.h"
+#include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/profile.h"
 #include "td/target.h"
@@ -117,8 +118,8 @@ void* TerrainClass::VTable;
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int TerrainClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Terrains.ID(this);
@@ -127,10 +128,10 @@ int TerrainClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * TerrainClass::~TerrainClass -- Default destructor for terrain class objects.
@@ -601,7 +602,6 @@ void TerrainClass::AI() {
   }
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * TerrainClass::Debug_Dump -- Displays the status of the terrain object. *
  *                                                                                             *
@@ -617,10 +617,11 @@ void TerrainClass::AI() {
  * HISTORY: * 09/27/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   Validate();
   ObjectClass::Debug_Dump(mono);
-}
 #endif
+}
 
 /***********************************************************************************************
  * TerrainClass::Unlimbo -- Unlimbo terrain object onto the map. *

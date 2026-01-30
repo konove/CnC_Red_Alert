@@ -64,6 +64,7 @@
 #include "ra/teamtype.h"
 
 #include <cassert>
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -72,24 +73,37 @@
 #include "port/safe_string.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
+#include "ra/checkbox.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
+#include "ra/control.h"
+#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
+#include "ra/drop.h"
+#include "ra/edit.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/list.h"
+#include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/target.h"
 #include "ra/team.h"
+#include "ra/textbtn.h"
+#include "ra/trigtype.h"
 #include "ra/type.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/readline.h"
 
 TeamMissionClass TeamMissions[TMISSION_COUNT] = {
     {TMISSION_ATTACK},     {TMISSION_ATT_WAYPT},    {TMISSION_FORMATION},
@@ -590,7 +604,6 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
   return NEED_NONE;
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * TeamMissionClass::Draw_It -- Draws a team mission list box entry. *
  *                                                                                             *
@@ -724,7 +737,7 @@ bool TeamTypeClass::Edit() {
   /*
   **	Dialog variables:
   */
-  ControlClass* commands = 0;
+  ControlClass* commands = nullptr;
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
@@ -734,7 +747,7 @@ bool TeamTypeClass::Edit() {
   EditClass name_edt(BUTTON_NAME, name_buf, sizeof(name_buf),
                      TPF_EFNT | TPF_NOSHADOW, D_NAME_X, D_NAME_Y, ED_WIDTH, 9,
                      EditClass::ALPHANUMERIC);
-  strcpy(name_buf, IniName);
+  port::SafeCopy(name_buf, IniName);
   commands = &name_edt;
 
   /*
@@ -951,7 +964,7 @@ bool TeamTypeClass::Edit() {
       BUTTON_MISSION2, missionlist1.X + 60, missionlist1.Y + 22, 240, 8 * 7,
       TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
-  for (index = 0; index < MissionCount; index++) {
+  for (int index = 0; index < MissionCount; index++) {
     missionlist2.Add_Item(new TeamMissionClass(MissionList[index]));
     //		missionlist2.Add_Item(&TeamMissions[MissionList[index].Mission]);
   }
@@ -1143,8 +1156,10 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_QUARRY:
-              strcpy(qlist.Get_Text(),
-                     QuarryName[missionlist2.Current_Item()->Data.Quarry]);
+              port::SafeCopy(
+                  qlist.Get_Text(),
+                  QuarryName[missionlist2.Current_Item()->Data.Quarry],
+                  qlist.Get_Max_Length());
               break;
 
             case NEED_WAYPOINT:
@@ -1200,7 +1215,6 @@ bool TeamTypeClass::Edit() {
               if (*((arg_edt.Get_Text()) + 1)) {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
                 tm->Data.Value += toupper(*((arg_edt.Get_Text()) + 1)) - 'A';
-                ;
               }
               if ((unsigned)tm->Data.Value >= WAYPT_HOME) {
                 tm->Data.Value = 0;
@@ -1247,11 +1261,9 @@ bool TeamTypeClass::Edit() {
 
             case NEED_WAYPOINT:
               tm->Data.Value = toupper(*arg_edt.Get_Text()) - 'A';
-              ;
               if (*((arg_edt.Get_Text()) + 1)) {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
                 tm->Data.Value += toupper(*((arg_edt.Get_Text()) + 1)) - 'A';
-                ;
               }
               if ((unsigned)tm->Data.Value >= WAYPT_HOME) {
                 tm->Data.Value = 0;
@@ -1357,9 +1369,9 @@ bool TeamTypeClass::Edit() {
       case BUTTON_OK | KN_BUTTON:
         strtrim(name_edt.Get_Text());
         if (strlen(name_edt.Get_Text()) != 0) {
-          strcpy(IniName, name_edt.Get_Text());
+          port::SafeCopy(IniName, name_edt.Get_Text());
         } else {
-          strcpy(IniName, "----");
+          port::SafeCopy(IniName, "----");
         }
 
         IsRoundAbout = roundbtn.IsOn;
@@ -1378,7 +1390,7 @@ bool TeamTypeClass::Edit() {
         }
 
         MissionCount = missionlist2.Count();
-        for (index = 0; index < MissionCount; index++) {
+        for (int index = 0; index < MissionCount; index++) {
           MissionList[index].Data.Value = 0;  // Clears extra bits.
           MissionList[index] = *missionlist2[index];
         }
@@ -1455,8 +1467,6 @@ int atoh(char* str) {
   }
   return (retval);
 }
-
-#endif
 
 /***********************************************************************************************
  * TeamTypeClass::Member_Description -- Builds a member description string. *

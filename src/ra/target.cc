@@ -76,7 +76,7 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/map.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/overlay.h"
 #include "ra/smudge.h"
 #include "ra/team.h"

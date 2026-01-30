@@ -44,6 +44,7 @@
 #include <cstddef>
 
 #include "td/defines.h"
+#include "td/monoc.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/tarcom.h"
@@ -165,12 +166,10 @@ class UnitClass : public TarComClass {
   int Mission_Move() override;
   FireErrorType Can_Fire(TARGET, int which) const override;
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*
+  **	Scenario and debug support.
+  */
+  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	Movement and animation.

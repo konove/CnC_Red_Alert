@@ -55,7 +55,7 @@
 #include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/queue.h"
 #include "td/textbtn.h"
 

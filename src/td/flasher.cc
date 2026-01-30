@@ -41,7 +41,9 @@
  *- - - - - - - */
 
 #include "td/flasher.h"
-#ifdef CHEAT_KEYS
+
+#include "td/monoc.h"
+
 /***********************************************************************************************
  * FlasherClass::Debug_Dump -- Displays current status to the monochrome screen.
  **
@@ -59,10 +61,11 @@
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void FlasherClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   mono->Set_Cursor(50, 7);
   mono->Printf("%2d", FlashCount);
-}
 #endif
+}
 
 /***********************************************************************************************
  * FlasherClass::Process -- Performs the logic processing for the flashing

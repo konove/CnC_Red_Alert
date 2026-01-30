@@ -55,7 +55,7 @@
 #include "ra/goptions.h"
 #include "ra/init.h"
 #include "ra/jshell.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/palette.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"

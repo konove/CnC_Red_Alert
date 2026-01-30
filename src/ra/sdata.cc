@@ -62,14 +62,17 @@
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/defines.h"
+#include "ra/display.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/smudge.h"
 #include "ra/type.h"
 #include "sdllib/include/shape.h"
+#include "sdllib/include/ww_win.h"
 
 static SmudgeTypeClass const Crater1(
     SMUDGE_CRATER1, "CR1", TXT_CRATER, 1,
@@ -349,7 +352,6 @@ void SmudgeTypeClass::Init(TheaterType theater) {
   }
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * SmudgeTypeClass::Display -- Draws a generic version of this smudge type. *
  *                                                                                             *
@@ -374,7 +376,7 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
   y += WindowList[window][WINDOWY];
 
   IsTheaterShape = true;  // Smudges are theater specific
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     for (int w = 0; w < Width; w++) {
       for (int h = 0; h < Height; h++) {
         CC_Draw_Shape(ptr, w + (h * Width), x + w * ICON_PIXEL_W,
@@ -408,7 +410,6 @@ void SmudgeTypeClass::Prep_For_Add() {
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * SmudgeTypeClass::Create_And_Place -- Creates and places on map, a smudge

@@ -77,7 +77,7 @@
 #include "td/init.h"
 #include "td/ipxmgr.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/msglist.h"
 #include "td/nulldlg.h"
 #include "td/phone.h"

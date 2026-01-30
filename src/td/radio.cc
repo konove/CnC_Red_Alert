@@ -88,7 +88,6 @@ char const* RadioClass::Messages[RADIO_COUNT] = {
     "Take this punch! You... You...",
     "Fancy a little fisticuffs, eh?"};
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * RadioClass::Debug_Dump -- Displays the current status of the radio to the
  *mono monitor.     *
@@ -104,6 +103,7 @@ char const* RadioClass::Messages[RADIO_COUNT] = {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void RadioClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   mono->Set_Cursor(34, 5);
   mono->Printf(Messages[LastMessage]);
   if (Radio) {
@@ -111,8 +111,8 @@ void RadioClass::Debug_Dump(MonoClass* mono) const {
     mono->Printf("%04X", Radio->As_Target());
   }
   MissionClass::Debug_Dump(mono);
-}
 #endif
+}
 
 /***********************************************************************************************
  * RadioClass::Receive_Message -- Handles receipt of a radio message. *

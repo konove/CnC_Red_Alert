@@ -89,6 +89,7 @@
 #include "td/jshell.h"
 #include "td/loaddlg.h"
 #include "td/logic.h"
+#include "td/mapedit.h"
 #include "td/menus.h"
 #include "td/mixfile.h"
 #include "td/monoc.h"
@@ -206,7 +207,7 @@ bool Init_Game(int, char*[]) {
   DLOG(INFO) << "C&C95 - About to enter Triggers.Set_Heap";
   Triggers.Set_Heap(TRIGGER_MAX);
   DLOG(INFO) << "C&C95 - About to enter TeamTypes.Set_Heap";
-  TeamTypes.Set_Heap(TEAMTYPE_MAX);
+  TeamTypes.Set_Heap(kTeamTypeMax);
   DLOG(INFO) << "C&C95 - About to enter Teams.Set_Heap";
   Teams.Set_Heap(TEAM_MAX);
   DLOG(INFO) << "C&C95 - About to enter Houses.Set_Heap";

@@ -84,7 +84,7 @@
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/logic.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/msgbox.h"
 #include "td/object.h"
 #include "td/overlay.h"

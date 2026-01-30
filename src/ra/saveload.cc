@@ -84,6 +84,7 @@
 #include "ra/layer.h"
 #include "ra/link.h"
 #include "ra/logic.h"
+#include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/overlay.h"

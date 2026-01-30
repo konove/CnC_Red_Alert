@@ -40,9 +40,110 @@
  *- - - - - - - */
 
 #include "td/debug.h"
-#ifdef CHEAT_KEYS
+
+#include <unistd.h>
+
+#include <cstdio>
+
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_audio.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/aircraft.h"
+#include "td/anim.h"
+#include "td/building.h"
+#include "td/combat.h"
+#include "td/const.h"
+#include "td/coord.h"
+#include "td/defines.h"
+#include "td/ending.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/jshell.h"
+#include "td/logic.h"
+#include "td/mapedit.h"
+#include "td/monoc.h"
+#include "td/object.h"
+#include "td/palette.h"
+#include "td/team.h"
+#include "td/techno.h"
+#include "td/type.h"
+#include "td/vector.h"
+#include "tech/pcx_file.h"
 
 extern bool ScreenRecording;
+
+/***********************************************************************************************
+ * Self_Regulate -- Regulates the logic timer to result in smooth animation *
+ *                                                                                             *
+ *    The self regulation process checks the number of frames displayed * per
+ *second and from this determines the amount of time to devote * to internal
+ *logic processing. By adjusting the time allotted to                          *
+ *    internal processing, smooth animation can be maintained. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   In order for this routine to work properly it MUST be * called
+ *every display loop.                                                      *
+ *                                                                                             *
+ * HISTORY: * 07/31/1991 JLB : Created. * 07/05/1994 JLB : Handles new
+ *monochrome system.                                           *
+ *=============================================================================================*/
+#define UPDATE_INTERVAL TIMER_SECOND
+void Self_Regulate() {
+  static CountDownTimerClass DebugTimer(BT_SYSTEM);
+  static ObjectClass* _lastobject = nullptr;
+
+  if (!DebugTimer.Time()) {
+    DebugTimer.Set(UPDATE_INTERVAL);
+
+    if (MonoClass::Is_Enabled()) {
+      MonoClass* mono = MonoClass::Get_Current();
+      mono->Set_Default_Attribute(2);
+
+      switch (MonoPage) {
+        case 0:
+          mono = &MonoArray[0];
+          mono->Clear();
+
+          /*
+          **	Display the status of the currently selected object.
+          */
+          if (CurrentObject.Count()) {
+            _lastobject = CurrentObject[0];
+          }
+          if (_lastobject && !_lastobject->IsActive) {
+            _lastobject = nullptr;
+          }
+          if (_lastobject) {
+            _lastobject->Debug_Dump(mono);
+          }
+          Logic.Debug_Dump(mono);
+          mono->Set_Cursor(0, 20);
+          mono->Printf(
+              "Heap size:%10ld \r"
+              "Largest:  %10ld \r"
+              "Ttl Free: %10ld \r"
+              "Frag:     %10ld \r",
+              Heap_Size(MEM_NORMAL), Ram_Free(MEM_NORMAL),
+              Total_Ram_Free(MEM_NORMAL),
+              Total_Ram_Free(MEM_NORMAL) - Ram_Free(MEM_NORMAL));
+          *MonoClass::Get_Current() = *mono;
+          break;
+      }
+
+      MonoArray[MonoPage] = *mono;
+    }
+  }
+}
 
 /***********************************************************************************************
  * Debug_Key -- Debug mode keyboard processing. *
@@ -94,7 +195,7 @@ void Debug_Key(unsigned input) {
         */
         {
           GraphicBufferClass temp_page(
-              SeenBuff.Get_Width(), SeenBuff.Get_Height(), NULL,
+              SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
               SeenBuff.Get_Width() * SeenBuff.Get_Height());
           char filename[30];
 
@@ -156,7 +257,7 @@ void Debug_Key(unsigned input) {
         new AnimClass(ANIM_ART_EXP1,
                       Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
         Explosion_Damage(Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()), 250,
-                         NULL, WARHEAD_HE);
+                         nullptr, WARHEAD_HE);
         break;
 
       case KN_Z:
@@ -166,7 +267,7 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_C:
-        Debug_Cheat = (Debug_Cheat == false);
+        Debug_Cheat = !Debug_Cheat;
         PlayerPtr->IsRecalcNeeded = true;
         PlayerPtr->Add_Nuke_Piece();
         PlayerPtr->Add_Nuke_Piece();
@@ -526,7 +627,7 @@ void Debug_Key(unsigned input) {
 #endif
 
       case KN_F3:
-        Debug_Icon = (Debug_Icon == false);
+        Debug_Icon = !Debug_Icon;
         Map.Flag_To_Redraw(true);
         break;
 
@@ -535,7 +636,7 @@ void Debug_Key(unsigned input) {
       */
       case KN_F4:
         if (GameToPlay == GAME_NORMAL) {
-          Debug_Unshroud = (Debug_Unshroud == false);
+          Debug_Unshroud = !Debug_Unshroud;
           Map.Flag_To_Redraw(true);
         }
         break;
@@ -575,7 +676,7 @@ void Debug_Key(unsigned input) {
         break;
 
       case ((int)KN_F4 | (int)KN_CTRL_BIT):
-        Debug_Unshroud = (Debug_Unshroud == false);
+        Debug_Unshroud = !Debug_Unshroud;
         Map.Flag_To_Redraw(true);
         break;
 
@@ -606,70 +707,3 @@ void Debug_Key(unsigned input) {
     }
   }
 }
-
-/***********************************************************************************************
- * Self_Regulate -- Regulates the logic timer to result in smooth animation *
- *                                                                                             *
- *    The self regulation process checks the number of frames displayed * per
- *second and from this determines the amount of time to devote * to internal
- *logic processing. By adjusting the time allotted to                          *
- *    internal processing, smooth animation can be maintained. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   In order for this routine to work properly it MUST be * called
- *every display loop.                                                      *
- *                                                                                             *
- * HISTORY: * 07/31/1991 JLB : Created. * 07/05/1994 JLB : Handles new
- *monochrome system.                                           *
- *=============================================================================================*/
-#define UPDATE_INTERVAL TIMER_SECOND
-void Self_Regulate() {
-  static CountDownTimerClass DebugTimer(BT_SYSTEM);
-  static ObjectClass* _lastobject = 0;
-
-  if (!DebugTimer.Time()) {
-    DebugTimer.Set(UPDATE_INTERVAL);
-
-    if (MonoClass::Is_Enabled()) {
-      MonoClass* mono = MonoClass::Get_Current();
-      mono->Set_Default_Attribute(2);
-
-      switch (MonoPage) {
-        case 0:
-          mono = &MonoArray[0];
-          mono->Clear();
-
-          /*
-          **	Display the status of the currently selected object.
-          */
-          if (CurrentObject.Count()) {
-            _lastobject = CurrentObject[0];
-          }
-          if (_lastobject && !_lastobject->IsActive) {
-            _lastobject = 0;
-          }
-          if (_lastobject) {
-            _lastobject->Debug_Dump(mono);
-          }
-          Logic.Debug_Dump(mono);
-          mono->Set_Cursor(0, 20);
-          mono->Printf(
-              "Heap size:%10ld \r"
-              "Largest:  %10ld \r"
-              "Ttl Free: %10ld \r"
-              "Frag:     %10ld \r",
-              Heap_Size(MEM_NORMAL), Ram_Free(MEM_NORMAL),
-              Total_Ram_Free(MEM_NORMAL),
-              Total_Ram_Free(MEM_NORMAL) - Ram_Free(MEM_NORMAL));
-          *MonoClass::Get_Current() = *mono;
-          break;
-      }
-
-      MonoArray[MonoPage] = *mono;
-    }
-  }
-}
-#endif

@@ -129,6 +129,7 @@
 #include "ra/conquer.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
+#include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/globals.h"
@@ -139,7 +140,7 @@
 #include "ra/jshell.h"
 #include "ra/logic.h"
 #include "ra/map.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/radio.h"
 #include "ra/rules.h"
 #include "ra/target.h"
@@ -151,6 +152,8 @@
 #include "ra/type.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
 #include "session.h"
 #include "tech/fixed.h"
 #include "tech/rawfile.h"
@@ -1144,17 +1147,17 @@ bool ObjectClass::Render(bool forced)  // const
       */
       Draw_It(x, y, WINDOW_TACTICAL);
 
-#ifdef SCENARIO_EDITOR
-      /*
-      **	Draw the trigger attached to the object. Draw_It is window-
-      **	relative, so add the window's x-coord to 'x'.
-      */
-      if (MapEditorActive && Trigger.Is_Valid()) {
-        Fancy_Text_Print(Trigger->Class->IniName, x + (WinX), y,
-                         &ColorRemaps[PCOLOR_RED], TBLACK,
-                         TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
+      if constexpr (config::kScenarioEditorEnabled) {
+        /*
+        **	Draw the trigger attached to the object. Draw_It is window-
+        **	relative, so add the window's x-coord to 'x'.
+        */
+        if (MapEditorActive && Trigger.Is_Valid()) {
+          Fancy_Text_Print(Trigger->Class->IniName, x + (WinX), y,
+                           &ColorRemaps[PCOLOR_RED], TBLACK,
+                           TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
+        }
       }
-#endif
 
       return true;
     }

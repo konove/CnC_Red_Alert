@@ -70,9 +70,11 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/type.h"
 #include "ra/vessel.h"
+#include "sdllib/include/shape.h"
 
 // Submarine
 static VesselTypeClass const VesselSubmarine(
@@ -401,12 +403,11 @@ BuildingClass* VesselTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-#ifdef SCENARIO_EDITOR
 void VesselTypeClass::Display(int x, int y, WindowNumberType window,
                               HousesType) const {
   int shape = 0;
   void const* ptr = Get_Cameo_Data();
-  if (ptr == NULL) {
+  if (ptr == nullptr) {
     ptr = Get_Image_Data();
     shape = Rotation / 6;
   }
@@ -431,12 +432,11 @@ void VesselTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void VesselTypeClass::Prep_For_Add() {
   for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
-    if (As_Reference(index).Get_Image_Data() != NULL) {
+    if (As_Reference(index).Get_Image_Data() != nullptr) {
       Map.Add_To_List(&As_Reference(index));
     }
   }
 }
-#endif  // SCENARIO_EDITOR
 
 /***********************************************************************************************
  * VesselTypeClass::Create_One_Of -- Creates a vessel object that matches this

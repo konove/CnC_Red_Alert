@@ -41,6 +41,7 @@
 #ifndef CARGO_H
 #define CARGO_H
 
+#include "td/monoc.h"
 #include "tech/noinit.h"
 
 class FootClass;
@@ -63,9 +64,7 @@ class CargoClass {
   **	Member function prototypes.
   */
 
-#ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass* mono) const;
-#endif
+  virtual void Debug_Dump(MonoClass* mono) const;
   void AI() {}
 
   int How_Many() const { return Quantity; }

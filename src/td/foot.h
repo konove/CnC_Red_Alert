@@ -43,6 +43,7 @@
 
 #include "td/defines.h"
 #include "td/ftimer.h"
+#include "td/monoc.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/target.h"
@@ -209,9 +210,8 @@ class FootClass : public TechnoClass {
   */
   bool Basic_Path();
 
-  RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           long& param) override;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
   bool Can_Demolish() const override;
 
   /*
@@ -249,7 +249,7 @@ class FootClass : public TechnoClass {
   */
   void Stun() override;
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source = nullptr) override;
+                         TechnoClass* source = nullptr) override;
   void Death_Announcement(TechnoClass const* source = nullptr) const override;
 
   /*
@@ -270,12 +270,10 @@ class FootClass : public TechnoClass {
   int Mission_Timed_Hunt() override;
   int Mission_Guard_Area() override;
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*
+  **	Scenario and debug support.
+  */
+  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	Movement and animation.
@@ -287,7 +285,7 @@ class FootClass : public TechnoClass {
   MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const override;
   int Optimize_Moves(PathType* path, MoveType threshhold);
   void Override_Mission(MissionType mission, TARGET tarcom,
-                                TARGET navcom) override;
+                        TARGET navcom) override;
   bool Restore_Mission() override;
 
   /*

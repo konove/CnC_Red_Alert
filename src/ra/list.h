@@ -40,16 +40,25 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include <algorithm>
 #include <cstddef>
 
+#include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
+#include "ra/dialog.h"
 #include "ra/gadget.h"
+#include "ra/globals.h"
+#include "ra/jshell.h"
 #include "ra/link.h"
 #include "ra/shapebtn.h"
 #include "ra/slider.h"
 #include "ra/vector_dynamic.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/font.h"
 #include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 // Scrollable list box widget similar to a Windows ListBox control.
 // Displays a list of text items with support for selection, scrolling, and tab
@@ -151,31 +160,30 @@ class ListClass : public ControlClass {
   int CurrentTopIndex;
 };
 
-#ifdef NEVER
 template <class T>
 class TListClass : public ControlClass {
  public:
   TListClass(int id, int x, int y, int w, int h, TextPrintType flags,
              void const* up, void const* down);
   TListClass(TListClass<T> const& list);
-  virtual ~TListClass();
-  T operator[](int index) const { return (List[index]); };
-  T& operator[](int index) { return (List[index]); };
+  ~TListClass() override;
+  T operator[](int index) const { return (List[index]); }
+  T& operator[](int index) { return (List[index]); }
 
   virtual int Add_Item(T text);
   virtual int Add_Scroll_Bar();
   virtual void Insert_Item(T item);
   virtual void Bump(int up);
-  virtual int Count() const { return List.Count(); };
+  virtual int Count() const { return List.Count(); }
   virtual int Current_Index() const;
   virtual T Current_Item() const;
-  virtual int Draw_Me(int forced);
+  int Draw_Me(int forced) override;
   virtual int Step_Selected_Index(int forward);
-  virtual void Flag_To_Redraw();
-  virtual T Get_Item(int index) const { return (List[index]); };
+  void Flag_To_Redraw() override;
+  virtual T Get_Item(int index) const { return (List[index]); }
 
-  virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
-                            ControlClass& whom);
+  void Peer_To_Peer(unsigned flags, KeyNumType& key,
+                    ControlClass& whom) override;
   virtual void Remove_Item(T);
   virtual void Remove_Index(int);
   virtual int Remove_Scroll_Bar();
@@ -184,19 +192,19 @@ class TListClass : public ControlClass {
   virtual void Set_Tabs(int const* tabs);
   virtual int Set_View_Index(int index);
   virtual void Step(int up);
-  virtual void Set_Position(int x, int y);
+  void Set_Position(int x, int y) override;
 
   /*
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  virtual LinkClass& Add(LinkClass& object);
-  virtual LinkClass& Add_Tail(LinkClass& object);
-  virtual LinkClass& Add_Head(LinkClass& object);
-  virtual GadgetClass* Remove();
+  LinkClass& Add(LinkClass& object) override;
+  LinkClass& Add_Tail(LinkClass& object) override;
+  LinkClass& Add_Head(LinkClass& object) override;
+  GadgetClass* Remove() override;
 
  protected:
-  virtual int Action(unsigned flags, KeyNumType& key);
+  int Action(unsigned flags, KeyNumType& key) override;
 
   /*
   **	This controls what the text looks like. It uses the basic TPF_ flags
@@ -255,7 +263,7 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h,
       DownGadget(0, down, x + w, y + h),
       ScrollGadget(0, x + w, y, 0, h, true),
       TextFlags(flags),
-      Tabs(0),
+      Tabs(nullptr),
       IsScrollActive(false),
       SelectedIndex(0),
       CurrentTopIndex(0) {
@@ -267,15 +275,15 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h,
   UpGadget.X -= UpGadget.Width;
   DownGadget.X -= DownGadget.Width;
   DownGadget.Y -= DownGadget.Height;
-  ScrollGadget.X -= max(UpGadget.Width, DownGadget.Width);
+  ScrollGadget.X -= std::max(UpGadget.Width, DownGadget.Width);
   ScrollGadget.Y = Y + UpGadget.Height;
   ScrollGadget.Height -= UpGadget.Height + DownGadget.Height;
-  ScrollGadget.Width = max(UpGadget.Width, DownGadget.Width);
+  ScrollGadget.Width = std::max(UpGadget.Width, DownGadget.Width);
 
   /*
   **	Set the list box to a default state.
   */
-  this->Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TextFlags);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TextFlags);
   LineHeight = FontHeight + FontYSpacing - 1;
   LineCount = (h - 1) / LineHeight;
 }
@@ -305,10 +313,10 @@ void TListClass<T>::Set_Position(int x, int y) {
   UpGadget.Y = y;
   DownGadget.X = x + Width - DownGadget.Width;
   DownGadget.Y = y + Height - DownGadget.Height;
-  ScrollGadget.X = x + Width - max(UpGadget.Width, DownGadget.Width);
+  ScrollGadget.X = x + Width - std::max(UpGadget.Width, DownGadget.Width);
   ScrollGadget.Y = y + UpGadget.Height;
   ScrollGadget.Height = Height - (UpGadget.Height + DownGadget.Height);
-  ScrollGadget.Width = max(UpGadget.Width, DownGadget.Width);
+  ScrollGadget.Width = std::max(UpGadget.Width, DownGadget.Width);
 }
 
 template <class T>
@@ -386,9 +394,7 @@ void TListClass<T>::Remove_Index(int index) {
     */
     if (SelectedIndex >= List.Count()) {
       SelectedIndex--;
-      if (SelectedIndex < 0) {
-        SelectedIndex = 0;
-      }
+      SelectedIndex = std::max(SelectedIndex, 0);
     }
 
     /*
@@ -396,7 +402,7 @@ void TListClass<T>::Remove_Index(int index) {
     */
     if (CurrentTopIndex >= List.Count()) {
       CurrentTopIndex--;
-      if (CurrentTopIndex < 0) CurrentTopIndex = 0;
+      CurrentTopIndex = std::max(CurrentTopIndex, 0);
       if (IsScrollActive) ScrollGadget.Step(1);
     }
   }
@@ -414,31 +420,30 @@ int TListClass<T>::Action(unsigned flags, KeyNumType& key) {
     flags &= (~LEFTRELEASE);
     ControlClass::Action(flags, key);
     return (true);
-  } else {
+  }
+  /*
+   ** Handle keyboard events here.
+   */
+  if (flags & KEYBOARD) {
     /*
-    ** Handle keyboard events here.
+    **	Process the keyboard character. If indicated, consume this
+    *keyboard event *	so that the edit gadget ID number is not returned.
     */
-    if (flags & KEYBOARD) {
-      /*
-      **	Process the keyboard character. If indicated, consume this
-      *keyboard event *	so that the edit gadget ID number is not returned.
-      */
-      if (key == KN_UP) {
-        Step_Selected_Index(-1);
-        key = KN_NONE;
-      } else if (key == KN_DOWN) {
-        Step_Selected_Index(1);
-        key = KN_NONE;
-      } else {
-        flags &= ~KEYBOARD;
-      }
-
+    if (key == KN_UP) {
+      Step_Selected_Index(-1);
+      key = KN_NONE;
+    } else if (key == KN_DOWN) {
+      Step_Selected_Index(1);
+      key = KN_NONE;
     } else {
-      int index = Get_Mouse_Y() - (Y + 1);
-      index = index / LineHeight;
-      SelectedIndex = CurrentTopIndex + index;
-      SelectedIndex = min(SelectedIndex, List.Count() - 1);
+      flags &= ~KEYBOARD;
     }
+
+  } else {
+    int index = Get_Mouse_Y() - (Y + 1);
+    index = index / LineHeight;
+    SelectedIndex = CurrentTopIndex + index;
+    SelectedIndex = std::min<int>(SelectedIndex, List.Count() - 1);
   }
   return (ControlClass::Action(flags, key));
 }
@@ -449,11 +454,11 @@ int TListClass<T>::Draw_Me(int forced) {
     /*
     **	Turn off the mouse.
     */
-    if (LogicPage == &this->SeenBuff) {
+    if (LogicPage == &SeenBuff) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
-    this->Draw_Box(X, Y, Width, Height, BOXSTYLE_BOX, true);
+    Draw_Box(X, Y, Width, Height, BOXSTYLE_BOX, true);
 
     /*
     **	Draw List.
@@ -481,7 +486,7 @@ int TListClass<T>::Draw_Me(int forced) {
     /*
     **	Turn on the mouse.
     */
-    if (LogicPage == &this->SeenBuff) {
+    if (LogicPage == &SeenBuff) {
       Conditional_Show_Mouse();
     }
     return (true);
@@ -554,7 +559,7 @@ void TListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType&,
 
 template <class T>
 int TListClass<T>::Set_View_Index(int index) {
-  index = Bound(index, 0, List.Count() - LineCount);
+  index = std::clamp<int>(index, 0, List.Count() - LineCount);
   if (index != CurrentTopIndex) {
     CurrentTopIndex = index;
     Flag_To_Redraw();
@@ -776,6 +781,4 @@ void TListClass<T>::Set_Selected_Index(T text) {
     }
   }
 }
-#endif
-
 #endif

@@ -53,13 +53,14 @@
 #include "ra/gscreen.h"
 
 #include "ra/bench_util.h"
+#include "ra/config.h"
 #include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/msglist.h"
 #include "ra/session.h"
 #include "sdllib/include/ww_mouse.h"
@@ -402,16 +403,16 @@ void GScreenClass::Render() {
 
     if (Buttons) Buttons->Draw_All(false);
 
-#ifdef SCENARIO_EDITOR
-    /*
-    ** Draw the Editor's buttons
-    */
-    if (MapEditorActive) {
-      if (Buttons) {
-        Buttons->Draw_All();
+    if constexpr (config::kScenarioEditorEnabled) {
+      /*
+      ** Draw the Editor's buttons
+      */
+      if (MapEditorActive) {
+        if (Buttons) {
+          Buttons->Draw_All();
+        }
       }
     }
-#endif
     /*
     ** Draw the multiplayer message system to the Hidpage at this point.
     ** This way, they'll Blit along with the rest of the map.

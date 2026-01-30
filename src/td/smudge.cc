@@ -60,7 +60,7 @@
 #include "td/externs.h"
 #include "td/heap.h"
 #include "td/inline.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/profile.h"
 #include "td/vector.h"
 
@@ -86,8 +86,8 @@ HousesType SmudgeClass::ToOwn = HOUSE_NONE;
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int SmudgeClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Smudges.ID(this);
@@ -96,10 +96,10 @@ int SmudgeClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * SmudgeClass::operator new -- Creator of smudge objects. *

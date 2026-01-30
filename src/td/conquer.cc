@@ -112,6 +112,7 @@
 #include "td/keyframe.h"
 #include "td/layer.h"
 #include "td/logic.h"
+#include "td/mapedit.h"
 #include "td/mixfile.h"
 #include "td/monoc.h"
 #include "td/mouse.h"
@@ -164,11 +165,7 @@ extern "C" {
 bool UseOldShapeDraw = false;
 }
 
-#ifdef CHEAT_KEYS
-void Heap_Dump_Check(char* string);
-void Dump_Heap_Pointers();
 void Error_In_Heap_Pointers(char* string);
-#endif
 static void Do_Record_Playback();
 extern void Register_Game_Start_Time();
 extern void Register_Game_End_Time();
@@ -1740,7 +1737,6 @@ bool Main_Loop() {
   return !GameActive;
 }
 
-#ifdef SCENARIO_EDITOR
 /***************************************************************************
  * Map_Edit_Loop -- a mini-main loop for map edit mode only                *
  *                                                                         *
@@ -1855,8 +1851,6 @@ void Go_Editor(bool flag) {
     Map.Render();
   }
 }
-
-#endif
 
 #if (0)
 #define VQ_THREAD_BUFFER_SIZE 1024 * 1024
@@ -3217,8 +3211,8 @@ void Handle_View(int view, int action) {
   }
 }
 
-#ifdef CHEAT_KEYS
 void Heap_Dump_Check(char* string) {
+#ifdef CHEAT_KEYS
 #if 0
 	struct _heapinfo h_info;
 	int heap_status;
@@ -3299,9 +3293,11 @@ void Heap_Dump_Check(char* string) {
 #endif
 
   //	Debug_Heap_Dump = false;
+#endif
 }
 
 void Dump_Heap_Pointers() {
+#ifdef CHEAT_KEYS
   char *ptr, *lptr, *nptr, *cptr, *dptr, *wlptr, *nlptr, *aptr, *clptr;
   int numallocs, numfrees, sizefree;
   static char _freeorused[2][5] = {"FREE", "USED"};
@@ -3509,12 +3505,14 @@ void Dump_Heap_Pointers() {
 
     ptr = nptr;
   }
+#endif
 }
 
 void Error_In_Heap_Pointers(char* string) {
+#ifdef CHEAT_KEYS
   Smart_Printf("Error in Heap for %s\n", string);
-}
 #endif
+}
 
 // #ifndef ROR_NOT_READY
 // #define ROR_NOT_READY 21

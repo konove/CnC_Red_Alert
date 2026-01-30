@@ -350,9 +350,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   void const* Get_Image_Data() const { return ImageData; }
   void const* Get_Radar_Data() const { return RadarIcon; }
 
-#ifdef SCENARIO_EDITOR
   virtual void Display(int, int, WindowNumberType, HousesType) const {}
-#endif
 
   static void const* SelectShapes;
   static void const* PipShapes;
@@ -715,7 +713,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   short const* Occupy_List(bool placement = false) const override;
   short const* Overlap_List() const override;
   BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
-                                          HousesType house) const override;
+                                  HousesType house) const override;
   virtual void const* Get_Buildup_Data() const { return BuildupData; }
 
   int Raw_Cost() const override;
@@ -723,10 +721,8 @@ class BuildingTypeClass : public TechnoTypeClass {
   int Repair_Step() const override;
   bool Bib_And_Offset(SmudgeType& bib, CELL& cell) const;
 
-#ifdef SCENARIO_EDITOR
-  virtual void Display(int x, int y, WindowNumberType window,
-                       HousesType house) const;
-#endif
+  void Display(int x, int y, WindowNumberType window,
+               HousesType house) const override;
 
  private:
   /*
@@ -917,16 +913,14 @@ class UnitTypeClass : public TechnoTypeClass {
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   short const* Occupy_List(bool placement = false) const override;
   BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
-                                          HousesType house) const override;
+                                  HousesType house) const override;
   int Max_Pips() const override;
 
   int Repair_Cost() const override;
   int Repair_Step() const override;
 
-#ifdef SCENARIO_EDITOR
-  virtual void Display(int x, int y, WindowNumberType window,
-                       HousesType house) const;
-#endif
+  void Display(int x, int y, WindowNumberType window,
+               HousesType house) const override;
 
   /*
   **	This is a pointer to the wake shape (as needed by the gunboat).
@@ -1029,13 +1023,11 @@ class InfantryTypeClass : public TechnoTypeClass {
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   short const* Occupy_List(bool placement = false) const override;
   BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
-                                          HousesType house) const override;
+                                  HousesType house) const override;
   int Full_Name() const override;
 
-#ifdef SCENARIO_EDITOR
-  virtual void Display(int x, int y, WindowNumberType window,
-                       HousesType house) const;
-#endif
+  void Display(int x, int y, WindowNumberType window,
+               HousesType house) const override;
 };
 
 /***************************************************************************
@@ -1265,10 +1257,8 @@ class TerrainTypeClass : public ObjectTypeClass {
   short const* Occupy_List(bool placement = false) const override;
   short const* Overlap_List() const override;
 
-#ifdef SCENARIO_EDITOR
-  virtual void Display(int x, int y, WindowNumberType window,
-                       HousesType house = HOUSE_NONE) const;
-#endif
+  void Display(int x, int y, WindowNumberType window,
+               HousesType house = HOUSE_NONE) const override;
 
  private:
   short const* Occupy;
@@ -1333,14 +1323,13 @@ class TemplateTypeClass : public ObjectTypeClass {
   COORDINATE Coord_Fixup(COORDINATE coord) const override {
     return coord & 0xFF00FF00L;
   }
-  bool Create_And_Place(CELL cell, HousesType house = HOUSE_NONE) const override;
+  bool Create_And_Place(CELL cell,
+                        HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass*) const override;
   short const* Occupy_List(bool placement = false) const override;
 
-#ifdef SCENARIO_EDITOR
-  virtual void Display(int x, int y, WindowNumberType window,
-                       HousesType house = HOUSE_NONE) const;
-#endif
+  void Display(int x, int y, WindowNumberType window,
+               HousesType house = HOUSE_NONE) const override;
 
  private:
   static TemplateTypeClass const* const Pointers[TEMPLATE_COUNT];
@@ -1578,13 +1567,11 @@ class AircraftTypeClass : public TechnoTypeClass {
   short const* Occupy_List(bool placement = false) const override;
   short const* Overlap_List() const override;
   BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
-                                          HousesType house) const override;
+                                  HousesType house) const override;
   int Max_Pips() const override;
 
-#ifdef SCENARIO_EDITOR
-  virtual void Display(int x, int y, WindowNumberType window,
-                       HousesType house) const;
-#endif
+  void Display(int x, int y, WindowNumberType window,
+               HousesType house) const override;
 
   static void const* LRotorData;
   static void const* RRotorData;
@@ -1691,16 +1678,15 @@ class OverlayTypeClass : public ObjectTypeClass {
   COORDINATE Coord_Fixup(COORDINATE coord) const override {
     return coord & 0xFF00FF00L;
   }
-  bool Create_And_Place(CELL cell, HousesType house = HOUSE_NONE) const override;
+  bool Create_And_Place(CELL cell,
+                        HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass*) const override;
   short const* Occupy_List(bool placement = false) const override;
   virtual void Draw_It(int x, int y, int data) const;
   virtual unsigned char* Radar_Icon(int data) const;
 
-#ifdef SCENARIO_EDITOR
-  virtual void Display(int x, int y, WindowNumberType window,
-                       HousesType house = HOUSE_NONE) const;
-#endif
+  void Display(int x, int y, WindowNumberType window,
+               HousesType house = HOUSE_NONE) const override;
 
  private:
   static OverlayTypeClass const* const Pointers[OVERLAY_COUNT];
@@ -1757,16 +1743,15 @@ class SmudgeTypeClass : public ObjectTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
-  bool Create_And_Place(CELL cell, HousesType house = HOUSE_NONE) const override;
+  bool Create_And_Place(CELL cell,
+                        HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass*) const override;
   short const* Occupy_List(bool placement = false) const override;
   short const* Overlap_List() const override { return Occupy_List(); }
   virtual void Draw_It(int x, int y, int data) const;
 
-#ifdef SCENARIO_EDITOR
-  virtual void Display(int x, int y, WindowNumberType window,
-                       HousesType house = HOUSE_NONE) const;
-#endif
+  void Display(int x, int y, WindowNumberType window,
+               HousesType house = HOUSE_NONE) const override;
 
  private:
   static SmudgeTypeClass const* const Pointers[SMUDGE_COUNT];

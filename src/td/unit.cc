@@ -140,6 +140,7 @@
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/layer.h"
+#include "td/mapedit.h"
 #include "td/mixfile.h"
 #include "td/mouse.h"
 #include "td/object.h"
@@ -177,20 +178,21 @@ void* UnitClass::VTable;
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int UnitClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Units.ID(this);
   if (num < 0 || num >= UNIT_MAX) {
     Validate_Error("UNIT");
     return (0);
-  } else
+  } else {
     return (1);
-}
+  }
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * Recoil_Adjust -- Adjust pixel values in direction specified. *
@@ -284,7 +286,6 @@ TARGET UnitClass::As_Target() const {
   return Build_Target(KIND_UNIT, Units.ID(this));
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * UnitClass::Debug_Dump -- Displays the status of the unit to the mono monitor.
  **
@@ -301,6 +302,7 @@ TARGET UnitClass::As_Target() const {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   Validate();
   mono->Set_Cursor(0, 0);
   mono->Print(
@@ -349,8 +351,8 @@ void UnitClass::Debug_Dump(MonoClass* mono) const {
   CargoClass::Debug_Dump(mono);
   MissionClass::Debug_Dump(mono);
   TarComClass::Debug_Dump(mono);
-}
 #endif
+}
 
 /***********************************************************************************************
  * UnitClass::Sort_Y -- Give Y coordinate sort value for unit. *

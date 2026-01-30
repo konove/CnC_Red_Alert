@@ -51,6 +51,7 @@
  *Allocates a template type from special heap.           *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+
 #include <cstddef>
 #include <filesystem>
 #include <span>
@@ -61,15 +62,20 @@
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/defines.h"
+#include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/template.h"
 #include "ra/type.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
 #include "sdllib/include/iconcach.h"
+#include "sdllib/include/ww_win.h"
 
 static TemplateTypeClass const Empty(TEMPLATE_CLEAR1,
                                      THEATERF_TEMPERATE | THEATERF_SNOW |
@@ -1779,7 +1785,6 @@ void TemplateTypeClass::Init(TheaterType theater) {
   }
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * TemplateTypeClass::Display -- Displays a generic representation of template.
  **
@@ -1803,8 +1808,8 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
   int index;
   bool scale;  // Should the template be half sized?
 
-  w = Bound(Width, 1, 13);
-  h = Bound(Height, 1, 8);
+  w = Bound(static_cast<int>(Width), 1, 13);
+  h = Bound(static_cast<int>(Height), 1, 8);
   scale = (w > 3 || h > 3);
   if (scale) {
     x -= (w * ICON_PIXEL_W) / 4;
@@ -1862,7 +1867,6 @@ void TemplateTypeClass::Prep_For_Add() {
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * TemplateTypeClass::Create_And_Place -- Creates and places a template object

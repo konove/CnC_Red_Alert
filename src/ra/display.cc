@@ -114,6 +114,7 @@
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/compat.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/coord.h"
@@ -127,7 +128,7 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/logic.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/msglist.h"
 #include "ra/palette.h"
 #include "ra/queue.h"
@@ -2103,21 +2104,23 @@ void DisplayClass::Draw_It(bool forced) {
     */
     CellRedraw.assign(CellRedraw.size(), false);
 
-#ifdef SCENARIO_EDITOR
-    /*
-    **	If we're placing an object (PendingObject is non-nullptr), and that
-    * object *	is NOT an icon, smudge, or overlay, draw it here. *	Terrain,
-    * Buildings & Aircraft aren't drawn at the cell's center coord; *	they're
-    * drawn at the upper left coord, so I have to AND the coord value *	with
-    * 0xFF00FF00 to strip off the lepton coordinates, but leave the *	cell
-    * coordinates.
-    */
-    if (MapEditorActive && PendingObjectPtr) {
-      PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
-          Cell_Coord(ZoneCell + ZoneOffset));
-      PendingObjectPtr->Render(true);
+    if constexpr (config::kScenarioEditorEnabled) {
+      /*
+      **	If we're placing an object (PendingObject is non-nullptr), and
+      * that
+      ** object is NOT an icon, smudge, or overlay, draw it here.
+      **	Terrain, Buildings & Aircraft aren't drawn at the cell's center
+      * coord; *	they're drawn at the upper left coord, so I have to AND
+      * the coord
+      ** value with 0xFF00FF00 to strip off the lepton coordinates, but leave
+      ** the cell coordinates.
+      */
+      if (MapEditorActive && PendingObjectPtr) {
+        PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
+            Cell_Coord(ZoneCell + ZoneOffset));
+        PendingObjectPtr->Render(true);
+      }
     }
-#endif
     BEnd(BENCH_TACTICAL);
   }
 }

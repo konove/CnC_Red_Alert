@@ -54,7 +54,7 @@
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/loaddlg.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"

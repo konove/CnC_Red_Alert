@@ -107,7 +107,7 @@
 #include "td/infantry.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/queue.h"
 #include "td/radio.h"
@@ -214,7 +214,6 @@ FootClass::FootClass(HousesType house) : TechnoClass(house), Speed(0) {
   House->CurUnits++;
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * FootClass::Debug_Dump -- Displays the status of the FootClass to the mono
  *monitor.          *
@@ -233,6 +232,7 @@ FootClass::FootClass(HousesType house) : TechnoClass(house), Speed(0) {
  *special case.                                           *
  *=============================================================================================*/
 void FootClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   static char const* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
 #define Path_To_String(a) _p2c[((std::abs((int)a + 1)) % 9)]
 
@@ -275,8 +275,8 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
     mono->Text_Print("X", 16 + (IsPlanningToLook ? 2 : 0), 16);
   }
   TechnoClass::Debug_Dump(mono);
-}
 #endif
+}
 
 /***********************************************************************************************
  * FootClass::Set_Speed -- Initiate unit movement physics. *

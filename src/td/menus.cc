@@ -44,11 +44,17 @@
 
 #include "td/menus.h"
 
+#include <algorithm>
+#include <cctype>
+#include <cstddef>
+
+#include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/timer.h"
 #include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
 #include "sdllib/include/wwstd.h"
 #include "td/compat.h"
 #include "td/conquer.h"
@@ -61,8 +67,8 @@
 #include "td/goptions.h"
 #include "td/init.h"
 #include "td/jshell.h"
+#include "td/mapedit.h"
 #include "td/textbtn.h"
-#ifdef SCENARIO_EDITOR
 
 static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                  int iny2);
@@ -369,10 +375,10 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
     *selection of *					that entry.
     */
     default:
-      for (idx = 0; idx < menuptr[ITEMSHIGH]; idx++) {
-        if (toupper(*(text[Select_To_Entry(idx, field, index)])) ==
+      for (int menu_item = 0; menu_item < menuptr[ITEMSHIGH]; menu_item++) {
+        if (toupper(*(text[Select_To_Entry(menu_item, field, index)])) ==
             toupper(Keyboard::To_ASCII((KeyNumType)(key & 0x0FF)))) {
-          newitem = select = idx;
+          newitem = select = menu_item;
           break;
         }
       }
@@ -488,7 +494,7 @@ int Do_Menu(char const** strings, bool blue) {
   UnknownKey = 0;
   while (selection == -1) {
     Call_Back();
-    selection = Check_Menu(0, strings, NULL, 0xFFL, 0);
+    selection = Check_Menu(0, strings, nullptr, 0xFFL, 0);
     if (UnknownKey != 0 || UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
         UnknownKey == KN_RMOUSE)
       break;
@@ -501,7 +507,6 @@ int Do_Menu(char const** strings, bool blue) {
   Map.Flag_To_Redraw(true);
   return (selection);
 }
-#endif
 
 /***************************************************************************
  * Main_Menu -- Menu processing                                            *

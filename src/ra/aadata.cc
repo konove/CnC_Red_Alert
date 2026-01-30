@@ -68,8 +68,10 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
+#include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/type.h"
+#include "sdllib/include/shape.h"
 
 void const* AircraftTypeClass::LRotorData = nullptr;
 void const* AircraftTypeClass::RRotorData = nullptr;
@@ -417,7 +419,6 @@ ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
   return new AircraftClass(Type, house->Class->House);
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * AircraftTypeClass::Prep_For_Add -- Prepares the scenario editor for adding an
  *aircraft objec*
@@ -472,7 +473,6 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
   }
   CC_Draw_Shape(ptr, shape, x, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
 }
-#endif
 
 /***********************************************************************************************
  * AircraftTypeClass::Occupy_List -- Returns with occupation list for landed

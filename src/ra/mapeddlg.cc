@@ -45,7 +45,61 @@
  *   MapEditClass::Size_Map -- lets user set size & location of map        *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifdef SCENARIO_EDITOR
+#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "port/ex_string.h"
+#include "port/safe_string.h"
+#include "ra/base.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/checkbox.h"
+#include "ra/cheklist.h"
+#include "ra/compat.h"
+#include "ra/conquer.h"
+#include "ra/const.h"
+#include "ra/control.h"
+#include "ra/coord.h"
+#include "ra/debug.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/drop.h"
+#include "ra/edit.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/globals.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/ini.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/list.h"
+#include "ra/map.h"
+#include "ra/mapedit.h"
+#include "ra/mplayer.h"
+#include "ra/msgbox.h"
+#include "ra/object.h"
+#include "ra/palette.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/session.h"
+#include "ra/slider.h"
+#include "ra/statbtn.h"
+#include "ra/terrain.h"
+#include "ra/tevent.h"
+#include "ra/textbtn.h"
+#include "ra/theme.h"
+#include "ra/tracker.h"
+#include "ra/trigtype.h"
+#include "ra/type.h"
+#include "ra/vector_dynamic.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 /***************************************************************************
  * MapEditClass::New_Scenario -- creates a new scenario                    *
@@ -246,7 +300,7 @@ int MapEditClass::Load_Scenario() {
     Clear_Vector(&Session.Players);
 
     who = new NodeNameType;
-    strcpy(who->Name, Session.Handle);
+    port::SafeCopy(who->Name, Session.Handle);
     who->Player.House = Session.House;
     who->Player.Color = Session.ColorIdx;
     Session.Players.Add(who);
@@ -549,7 +603,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Buttons
     */
-    ControlClass* commands = NULL;  // the button list
+    ControlClass* commands = nullptr;  // the button list
     EditClass editbtn(BUTTON_SCENARIO, scen_buf, 5, TPF_EFNT | TPF_NOSHADOW,
                       D_SCEN_X, D_SCEN_Y, D_SCEN_W, D_SCEN_H,
                       EditClass::ALPHANUMERIC);
@@ -1007,7 +1061,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Buttons
     */
-    ControlClass* commands = NULL;
+    ControlClass* commands = nullptr;
 
     TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_EBUTTON, D_OK_X, D_OK_Y,
                           D_OK_W, D_OK_H);
@@ -1185,7 +1239,7 @@ int MapEditClass::Load_Scenario() {
             */
             for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
               occupier = (*this)[cell].Cell_Occupier();
-              if (occupier == NULL) {
+              if (occupier == nullptr) {
                 color = GroundColor[(*this)[cell].Land_Type()];
                 LogicPage->Put_Pixel(D_BORD_X1 + Cell_X(cell) + 1,
                                      D_BORD_Y1 + Cell_Y(cell) + 1, color);
@@ -1414,18 +1468,14 @@ int MapEditClass::Load_Scenario() {
               if (map_x1 > map_x2 - 2) {
                 map_x1 = map_x2 - 2;
               } else {
-                if (map_x1 < D_BORD_X1 + 2) {
-                  map_x1 = D_BORD_X1 + 2;
-                }
+                map_x1 = std::max(map_x1, D_BORD_X1 + 2);
               }
 
               map_y1 += delta2;
               if (map_y1 > map_y2 - 2) {
                 map_y1 = map_y2 - 2;
               } else {
-                if (map_y1 < D_BORD_Y1 + 2) {
-                  map_y1 = D_BORD_Y1 + 2;
-                }
+                map_y1 = std::max(map_y1, D_BORD_Y1 + 2);
               }
               display = REDRAW_MAP;
               mx = Get_Mouse_X();
@@ -1440,18 +1490,14 @@ int MapEditClass::Load_Scenario() {
               if (map_x2 < map_x1 + 2) {
                 map_x2 = map_x1 + 2;
               } else {
-                if (map_x2 > D_BORD_X2 - 2) {
-                  map_x2 = D_BORD_X2 - 2;
-                }
+                map_x2 = std::min(map_x2, D_BORD_X2 - 2);
               }
 
               map_y1 += delta2;
               if (map_y1 > map_y2 - 2) {
                 map_y1 = map_y2 - 2;
               } else {
-                if (map_y1 < D_BORD_Y1 + 2) {
-                  map_y1 = D_BORD_Y1 + 2;
-                }
+                map_y1 = std::max(map_y1, D_BORD_Y1 + 2);
               }
               display = REDRAW_MAP;
               mx = Get_Mouse_X();
@@ -1466,18 +1512,14 @@ int MapEditClass::Load_Scenario() {
               if (map_x2 < map_x1 + 2) {
                 map_x2 = map_x1 + 2;
               } else {
-                if (map_x2 > D_BORD_X2 - 2) {
-                  map_x2 = D_BORD_X2 - 2;
-                }
+                map_x2 = std::min(map_x2, D_BORD_X2 - 2);
               }
 
               map_y2 += delta2;
               if (map_y2 < map_y1 + 2) {
                 map_y2 = map_y1 + 2;
               } else {
-                if (map_y2 > D_BORD_Y2 - 2) {
-                  map_y2 = D_BORD_Y2 - 2;
-                }
+                map_y2 = std::min(map_y2, D_BORD_Y2 - 2);
               }
               display = REDRAW_MAP;
               mx = Get_Mouse_X();
@@ -1492,18 +1534,14 @@ int MapEditClass::Load_Scenario() {
               if (map_x1 > map_x2 - 2) {
                 map_x1 = map_x2 - 2;
               } else {
-                if (map_x1 < D_BORD_X1 + 2) {
-                  map_x1 = D_BORD_X1 + 2;
-                }
+                map_x1 = std::max(map_x1, D_BORD_X1 + 2);
               }
 
               map_y2 += delta2;
               if (map_y2 < map_y1 + 2) {
                 map_y2 = map_y1 + 2;
               } else {
-                if (map_y2 > D_BORD_Y2 - 2) {
-                  map_y2 = D_BORD_Y2 - 2;
-                }
+                map_y2 = std::min(map_y2, D_BORD_Y2 - 2);
               }
               display = REDRAW_MAP;
               mx = Get_Mouse_X();
@@ -1678,7 +1716,7 @@ int MapEditClass::Load_Scenario() {
     */
     Set_Logic_Page(SeenBuff);
 
-    ControlClass* commands = NULL;  // the button list
+    ControlClass* commands = nullptr;  // the button list
 
     /*
     **	Theater choice drop down list.
@@ -1695,7 +1733,7 @@ int MapEditClass::Load_Scenario() {
     theaterbtn.Set_Selected_Index(orig_theater);
 
     char description[DESCRIP_MAX] = "";
-    strcpy(description, Scen.Description);
+    port::SafeCopy(description, Scen.Description);
     EditClass desc(BUTTON_DESCRIPTION, description, sizeof(description),
                    TPF_EFNT | TPF_NOSHADOW,
                    theaterbtn.X + theaterbtn.Width + 15, theaterbtn.Y, 160);
@@ -1837,7 +1875,7 @@ int MapEditClass::Load_Scenario() {
                            intro.Y, 50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
     briefing.Add_Item("<none>");
-    for (v = VQ_FIRST; v < VQ_COUNT; v++) {
+    for (VQType v = VQ_FIRST; v < VQ_COUNT; v++) {
       briefing.Add_Item(VQName[v]);
     }
     briefing.Set_Selected_Index((int)Scen.BriefMovie + 1);
@@ -1848,7 +1886,7 @@ int MapEditClass::Load_Scenario() {
         briefing.X + briefing.Width + 10, briefing.Y, 50, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
     action.Add_Item("<none>");
-    for (v = VQ_FIRST; v < VQ_COUNT; v++) {
+    for (VQType v = VQ_FIRST; v < VQ_COUNT; v++) {
       action.Add_Item(VQName[v]);
     }
     action.Set_Selected_Index((int)Scen.ActionMovie + 1);
@@ -1859,7 +1897,7 @@ int MapEditClass::Load_Scenario() {
                       action.Y, 50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
                       MFCD::Retrieve("EBTN-DN.SHP"));
     win.Add_Item("<none>");
-    for (v = VQ_FIRST; v < VQ_COUNT; v++) {
+    for (VQType v = VQ_FIRST; v < VQ_COUNT; v++) {
       win.Add_Item(VQName[v]);
     }
     win.Set_Selected_Index((int)Scen.WinMovie + 1);
@@ -1870,7 +1908,7 @@ int MapEditClass::Load_Scenario() {
                        50, 7 * 10, MFCD::Retrieve("EBTN-UP.SHP"),
                        MFCD::Retrieve("EBTN-DN.SHP"));
     lose.Add_Item("<none>");
-    for (v = VQ_FIRST; v < VQ_COUNT; v++) {
+    for (VQType v = VQ_FIRST; v < VQ_COUNT; v++) {
       lose.Add_Item(VQName[v]);
     }
     lose.Set_Selected_Index((int)Scen.LoseMovie + 1);
@@ -1882,7 +1920,7 @@ int MapEditClass::Load_Scenario() {
                        D_DIALOG_Y + 105, 55, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
                        MFCD::Retrieve("EBTN-UP.SHP"),
                        MFCD::Retrieve("EBTN-DN.SHP"));
-    for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
       housebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
     housebtn.Set_Selected_Index(PlayerPtr->Class->House);
@@ -1895,7 +1933,7 @@ int MapEditClass::Load_Scenario() {
         BUTTON_BASE, basetext, sizeof(basetext), TPF_EFNT | TPF_NOSHADOW,
         D_DIALOG_X + 15 * RESFACTOR, D_DIALOG_Y + 80, 65, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-    for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
       basebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
     if (Base.House != HOUSE_NONE) {
@@ -1959,7 +1997,6 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Source of ground delivery reinforcements.
     */
-    char sourcetext[25] = "";
     ListClass sourcebtn(BUTTON_SOURCE, housebtn.X + housebtn.Width + 15,
                         maxunit.Y + 20, 100, 7 * 4, TPF_EFNT | TPF_NOSHADOW,
                         MFCD::Retrieve("EBTN-UP.SHP"),
@@ -1987,7 +2024,7 @@ int MapEditClass::Load_Scenario() {
                           housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
                           MFCD::Retrieve("EBTN-UP.SHP"),
                           MFCD::Retrieve("EBTN-DN.SHP"));
-    for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
       allies.Add_Item(HouseTypeClass::As_Reference(h).IniName);
       if (hdata[house].Allies & (1L << h)) {
         allies.Check_Item(h, true);
@@ -2002,7 +2039,7 @@ int MapEditClass::Load_Scenario() {
                            housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
                            MFCD::Retrieve("EBTN-UP.SHP"),
                            MFCD::Retrieve("EBTN-DN.SHP"));
-    for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
       control.Add_Item(HouseTypeClass::As_Reference(h).IniName);
       if (HouseClass::As_Pointer(h)->IsPlayerControl) {
         control.Check_Item(h, true);
@@ -2082,7 +2119,7 @@ int MapEditClass::Load_Scenario() {
         techlevel.Set_Value(hstatic->TechLevel);
         sourcebtn.Set_Selected_Index(hstatic->Edge);
         maxunit.Set_Value(hstatic->MaxUnit + hstatic->MaxInfantry);
-        for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+        for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
           allies.Check_Item(h, hstatic->Allies & (1L << h));
         }
         smarties.Set_Value(hstatic->IQ);
@@ -2333,7 +2370,7 @@ int MapEditClass::Load_Scenario() {
         hstatic->MaxUnit = maxunit.Get_Value() / 2;
         hstatic->MaxInfantry = maxunit.Get_Value() / 2;
         hstatic->IQ = smarties.Get_Value();
-        for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+        for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
           if (allies.Is_Checked(h)) {
             hstatic->Allies |= (1L << h);
           } else {
@@ -2360,17 +2397,12 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Copy the dialog data back into the appropriate game data locations.
     */
-    for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
       HouseClass* hptr = HouseClass::As_Pointer(h);
-      if (hptr != NULL) {
+      if (hptr != nullptr) {
         hptr->Control = hdata[h];
         hptr->Allies = hdata[h].Allies;
-
-        if (control.Is_Checked(h)) {
-          hptr->IsPlayerControl = true;
-        } else {
-          hptr->IsPlayerControl = false;
-        }
+        hptr->IsPlayerControl = control.Is_Checked(h);
       }
     }
     PlayerPtr->IsPlayerControl = true;
@@ -2428,7 +2460,7 @@ int MapEditClass::Load_Scenario() {
         *compatible *	with this theater, delete the terrain object.
         */
         terrain = (*this)[i].Cell_Terrain();
-        if (terrain != NULL) {
+        if (terrain != nullptr) {
           theater_mask = terrain->Class->Theater;
           if ((theater_mask & (1 << theater)) == 0) {
             delete terrain;
@@ -2533,7 +2565,7 @@ int MapEditClass::Load_Scenario() {
           */
           if (!CurTrigger->Edit()) {
             delete CurTrigger;
-            CurTrigger = NULL;
+            CurTrigger = nullptr;
           } else {
             Changed = 1;
           }
@@ -2560,7 +2592,7 @@ int MapEditClass::Load_Scenario() {
           Detach_This_From_All(CurTrigger->As_Target(), true);
           delete CurTrigger;
           // CurTrigger->Remove();
-          CurTrigger = NULL;
+          CurTrigger = nullptr;
           Changed = 1;
         }
       }
@@ -2572,7 +2604,7 @@ int MapEditClass::Load_Scenario() {
     */
     if (CurTrigger &&
         !(CurTrigger->Attaches_To() & (ATTACH_OBJECT | ATTACH_CELL))) {
-      CurTrigger = NULL;
+      CurTrigger = nullptr;
     }
   }
 
@@ -2676,7 +2708,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Buttons
     */
-    ControlClass* commands = NULL;  // the button list
+    ControlClass* commands = nullptr;  // the button list
 
     TListClass<CCPtr<TriggerTypeClass> > triggerlist(
         TRIGGER_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
@@ -2716,7 +2748,7 @@ int MapEditClass::Load_Scenario() {
     **	Set CurTrigger if it isn't
     */
     if (TriggerTypes.Count() == 0) {
-      CurTrigger = NULL;
+      CurTrigger = nullptr;
     } else {
       CurTrigger = triggerlist.Current_Item();
       //		if (!CurTrigger) {
@@ -2809,5 +2841,3 @@ int MapEditClass::Load_Scenario() {
     if (del_trig) return (3);
     return (0);
   }
-
-#endif

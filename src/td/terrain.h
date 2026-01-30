@@ -45,6 +45,7 @@
 
 #include "td/defines.h"
 #include "td/inline.h"
+#include "td/monoc.h"
 #include "td/object.h"
 #include "td/stage.h"
 #include "td/techno.h"
@@ -103,7 +104,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   bool Unlimbo(COORDINATE coord, DirType dir = DIR_N) override;
   bool Limbo() override;
   MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType facing = FACING_NONE) const override;
+                          FacingType facing = FACING_NONE) const override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -124,7 +125,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   void Fire_Out() override;
   bool Catch_Fire() override;
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source) override;
+                         TechnoClass* source) override;
   TARGET As_Target() const override;
 
   /*
@@ -132,12 +133,10 @@ class TerrainClass : public ObjectClass, public StageClass {
   */
   void AI() override;
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*
+   **	Scenario and debug support.
+   */
+  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

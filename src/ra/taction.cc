@@ -75,7 +75,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/msglist.h"
 #include "ra/object.h"
 #include "ra/palette.h"

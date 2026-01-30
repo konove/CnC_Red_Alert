@@ -50,7 +50,7 @@
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/logic.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/target.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"

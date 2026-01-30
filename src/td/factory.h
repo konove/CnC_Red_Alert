@@ -50,11 +50,11 @@
 #include "tech/noinit.h"
 #include "tech/wwfile.h"
 
-class FactoryClass : private StageClass {
+class FactoryClass : StageClass {
  public:
   FactoryClass();
   FactoryClass(NoInitClass const& x) : StageClass(x) {}
-  ~FactoryClass();
+  ~FactoryClass() override;
   void* operator new(size_t size) throw();
   void* operator new(size_t, void* ptr) throw() { return ptr; }
   void operator delete(void* ptr);

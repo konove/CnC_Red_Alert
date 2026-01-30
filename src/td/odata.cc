@@ -64,6 +64,7 @@
 #include "td/externs.h"
 #include "td/house.h"
 #include "td/jshell.h"
+#include "td/mapedit.h"
 #include "td/mixfile.h"
 #include "td/mouse.h"
 #include "td/object.h"
@@ -737,7 +738,6 @@ unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
   return icon;                           // Return the correct icon
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * OverlayTypeClass::Display -- Displays a generic representation of overlay. *
  *                                                                                             *
@@ -795,7 +795,6 @@ void OverlayTypeClass::Prep_For_Add() {
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * OverlayTypeClass::Create_And_Place -- Creates and places a overlay object on

@@ -117,8 +117,8 @@
 #include "ra/keyframe.h"
 #include "ra/language.h"
 #include "ra/logic.h"
+#include "ra/mapedit.h"
 #include "ra/monoc.h"
-#include "ra/mouse.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
@@ -317,67 +317,19 @@ void Main_Game(int argc, char* argv[]) {
     }
 #endif  // WIN32
 
-#ifdef SCENARIO_EDITOR
-    /*
-    **	Scenario-editor version of main-loop processing
-    */
     for (;;) {
-      /*
-      **	Non-scenario-editor-mode: call the game's main loop
-      */
-      if (!MapEditorActive) {
-        TimeQuake = PendingTimeQuake;
-        PendingTimeQuake = false;
-        if (Main_Loop()) {
-          break;
-        }
-
-        if (SpecialDialog != SDLG_NONE) {
-          switch (SpecialDialog) {
-            case SDLG_SPECIAL:
-              Map.Help_Text(TXT_NONE);
-              Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-              Special_Dialog();
-              Map.Revert_Mouse_Shape();
-              SpecialDialog = SDLG_NONE;
-              break;
-
-            case SDLG_OPTIONS:
-              Map.Help_Text(TXT_NONE);
-              Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-              Options.Process();
-              Map.Revert_Mouse_Shape();
-              SpecialDialog = SDLG_NONE;
-              break;
-
-            case SDLG_SURRENDER:
-              Map.Help_Text(TXT_NONE);
-              Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-              if (Surrender_Dialog(TXT_SURRENDER)) {
-                PlayerPtr->Flag_To_Lose();
-              }
-              SpecialDialog = SDLG_NONE;
-              Map.Revert_Mouse_Shape();
-              break;
-
-            default:
-              break;
+      if constexpr (config::kScenarioEditorEnabled) {
+        if (MapEditorActive) {
+          /*
+          **	Scenario-editor-mode: call the editor's main loop
+          */
+          if (Map_Edit_Loop()) {
+            break;
           }
-        }
-      } else {
-        /*
-        **	Scenario-editor-mode: call the editor's main loop
-        */
-        if (Map_Edit_Loop()) {
-          break;
+          continue;
         }
       }
-    }
-#else
-    /*
-    **	Non-editor version of main-loop processing
-    */
-    for (;;) {
+
       TimeQuake = PendingTimeQuake;
       PendingTimeQuake = false;
       /*
@@ -389,9 +341,9 @@ void Main_Game(int argc, char* argv[]) {
 
       /*
       **	If the SpecialDialog flag is set, invoke the given special
-      *dialog. *	This must be done outside the main loop, since the
-      *dialog will call *	Main_Loop(), allowing the game to run in the
-      *background.
+      **	dialog. This must be done outside the main loop, since the
+      **	dialog will call Main_Loop(), allowing the game to run in the
+      **	background.
       */
       if (SpecialDialog != SDLG_NONE) {
         switch (SpecialDialog) {
@@ -415,37 +367,21 @@ void Main_Game(int argc, char* argv[]) {
             Map.Help_Text(TXT_NONE);
             Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
             if (Surrender_Dialog(TXT_SURRENDER)) {
-              OutList.Add(EventClass(EventClass::DESTRUCT));
+              if constexpr (config::kScenarioEditorEnabled) {
+                PlayerPtr->Flag_To_Lose();
+              } else {
+                OutList.Add(EventClass(EventClass::DESTRUCT));
+              }
             }
             SpecialDialog = SDLG_NONE;
             Map.Revert_Mouse_Shape();
             break;
 
-            /*ifdef FIXIT_VERSION_3		//	Stalemate games.
-                                                    case SDLG_PROPOSE_DRAW:
-                                                            Map.Help_Text(TXT_NONE);
-                                                            Map.Override_Mouse_Shape(MOUSE_NORMAL,
-            false); if (Surrender_Dialog(TXT_WOL_PROPOSE_DRAW)) {
-                                                                    OutList.Add(EventClass(EventClass::PROPOSE_DRAW));
-                                                            }
-                                                            SpecialDialog =
-            SDLG_NONE; Map.Revert_Mouse_Shape(); break;
-
-                                                    case SDLG_ACCEPT_DRAW:
-                                                            Map.Help_Text(TXT_NONE);
-                                                            Map.Override_Mouse_Shape(MOUSE_NORMAL,
-            false); if (Surrender_Dialog(TXT_WOL_ACCEPT_DRAW)) {
-                                                                    OutList.Add(EventClass(EventClass::ACCEPT_DRAW));
-                                                            }
-                                                            SpecialDialog =
-            SDLG_NONE; Map.Revert_Mouse_Shape(); break; #endif
-            */
           default:
             break;
         }
       }
     }
-#endif
 
 #ifdef WIN32
     /*
@@ -2452,7 +2388,6 @@ bool Main_Loop() {
   return !GameActive;
 }
 
-#ifdef SCENARIO_EDITOR
 /***************************************************************************
  * Map_Edit_Loop -- a mini-main loop for map edit mode only                *
  *                                                                         *
@@ -2575,8 +2510,6 @@ void Go_Editor(bool flag) {
     Map.Render();
   }
 }
-
-#endif
 
 /***********************************************************************************************
  * MixFileHandler -- Handles VQ file access. *

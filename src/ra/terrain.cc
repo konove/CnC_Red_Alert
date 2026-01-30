@@ -79,6 +79,7 @@
 #include "ra/jshell.h"
 #include "ra/keyframe.h"
 #include "ra/map.h"
+#include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"

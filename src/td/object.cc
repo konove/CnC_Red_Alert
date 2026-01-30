@@ -113,8 +113,8 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/logic.h"
+#include "td/mapedit.h"
 #include "td/mixfile.h"
-#include "td/mouse.h"
 #include "td/radio.h"
 #include "td/special.h"
 #include "td/target.h"
@@ -828,7 +828,6 @@ bool ObjectClass::Render(bool forced) {
   return false;
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * ObjectClass::Debug_Dump -- Displays status of the object class to the mono
  *monitor.         *
@@ -845,6 +844,7 @@ bool ObjectClass::Render(bool forced) {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   mono->Text_Print("X", 16 + (IsToDisplay ? 2 : 0), 18);
   mono->Text_Print("X", 16 + (IsActive ? 2 : 0), 3);
   mono->Text_Print("X", 16 + (IsInLimbo ? 2 : 0), 4);
@@ -855,8 +855,8 @@ void ObjectClass::Debug_Dump(MonoClass* mono) const {
   mono->Printf("[%04X]", As_Target());
   mono->Set_Cursor(20, 3);
   mono->Printf("%2d[%d]", Strength, Class_Of().MaxStrength);
-}
 #endif
+}
 
 /***********************************************************************************************
  * ObjectTypeClass::Occupy_List -- Returns with simple occupation list for

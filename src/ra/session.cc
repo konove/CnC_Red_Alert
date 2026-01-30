@@ -75,7 +75,7 @@
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/queue.h"
 #include "ra/unit.h"
 #include "ra/vector.h"

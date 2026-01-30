@@ -78,6 +78,7 @@
 #include "ra/jshell.h"
 #include "ra/layer.h"
 #include "ra/map.h"
+#include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/target.h"
 #include "ra/techno.h"

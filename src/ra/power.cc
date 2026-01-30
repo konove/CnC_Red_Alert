@@ -52,7 +52,7 @@
 #include "ra/conquer.h"
 #include "ra/externs.h"
 #include "ra/house.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/shape.h"

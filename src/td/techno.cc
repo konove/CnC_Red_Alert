@@ -164,6 +164,7 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/layer.h"
+#include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/queue.h"
@@ -396,7 +397,6 @@ int TechnoTypeClass::Repair_Cost() const { return 0; }
  *=============================================================================================*/
 int TechnoTypeClass::Repair_Step() const { return 0; }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * TechnoClass::Debug_Dump -- Displays the base class data to the monochrome
  *screen.           *
@@ -414,6 +414,7 @@ int TechnoTypeClass::Repair_Step() const { return 0; }
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   mono->Set_Cursor(0, 0);
   mono->Printf("(%04X)p=%d,d=%d", House->Power_Fraction(), House->Power,
                House->Drain);
@@ -436,8 +437,8 @@ void TechnoClass::Debug_Dump(MonoClass* mono) const {
   FlasherClass::Debug_Dump(mono);
   StageClass::Debug_Dump(mono);
   RadioClass::Debug_Dump(mono);
-}
 #endif
+}
 
 /***********************************************************************************************
  * TechnoClass::TechnoClass -- Default constructor for techno objects. *

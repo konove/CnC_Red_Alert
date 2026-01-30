@@ -36,7 +36,7 @@
 #include "sdllib/include/ww_mouse.h"
 #include "td/conquer.h"
 #include "td/interpal.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/palette.h"
 #include "td/theme.h"
 

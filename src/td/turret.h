@@ -46,6 +46,7 @@
 #include "td/drive.h"
 #include "td/facing.h"
 #include "td/ftimer.h"
+#include "td/monoc.h"
 #include "tech/noinit.h"
 
 class TurretClass : public DriveClass {
@@ -62,9 +63,7 @@ class TurretClass : public DriveClass {
   */
   FacingClass SecondaryFacing;
 
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  void Debug_Dump(MonoClass* mono) const override;
   bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
 
   /*

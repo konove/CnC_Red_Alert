@@ -72,6 +72,7 @@
 #include "td/heap.h"
 #include "td/inline.h"
 #include "td/jshell.h"
+#include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/target.h"
@@ -102,8 +103,8 @@ void* BulletClass::VTable;
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int BulletClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Bullets.ID(this);
@@ -112,10 +113,10 @@ int BulletClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * BulletClass::BulletClass -- Default constructor for bullet objects. *

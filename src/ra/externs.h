@@ -49,6 +49,7 @@
 #include "ra/infantry.h"
 #include "ra/ipxmgr.h"
 #include "ra/logic.h"
+#include "ra/mapedit.h"
 #include "ra/mixfile.h"
 #include "ra/mouse.h"
 #include "ra/overlay.h"
@@ -70,10 +71,6 @@
 #include "sdllib/include/playcd.h"
 #include "tech/bench.h"
 #include "tech/rndstraw.h"
-
-#ifdef SCENARIO_EDITOR
-#include "ra/mapedit.h"
-#endif
 
 extern char _staging_buffer[32000];
 extern "C" {
@@ -182,11 +179,7 @@ extern bool Brokeout;
 extern GameOptionsClass Options;
 
 extern LogicClass Logic;
-#ifdef SCENARIO_EDITOR
 extern MapEditClass Map;
-#else
-extern MouseClass Map;
-#endif
 extern ScoreClass Score;
 extern MonoClass MonoArray[DMONO_COUNT];
 extern MFCD* TheaterData;
@@ -320,9 +313,7 @@ extern bool bAftermathMultiplayer;  //	Is multiplayer game being played with
 
 extern bool bAutoSonarPulse;
 
-#ifdef SCENARIO_EDITOR
 extern CELL CurrentCell;
-#endif
 
 class SessionClass;
 extern SessionClass Session;

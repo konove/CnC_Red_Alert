@@ -223,7 +223,7 @@ class TeamClass : public AbstractClass {
   **	This is a record of the current number of active teams of each
   **	type. It can range from zero to MaxAllowed.
   */
-  static unsigned char Number[TEAMTYPE_MAX];
+  static unsigned char Number[kTeamTypeMax];
 
  private:
   /*
@@ -261,7 +261,7 @@ class TeamClass : public AbstractClass {
   **	to have been successfully completed. Teams with greater success
   **	will be created more than the others.
   */
-  static unsigned char Success[TEAMTYPE_MAX];
+  static unsigned char Success[kTeamTypeMax];
 
   /*
   ** This contains the value of the Virtual Function Table Pointer

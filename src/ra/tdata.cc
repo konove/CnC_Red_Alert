@@ -66,9 +66,11 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/terrain.h"
 #include "ra/type.h"
+#include "sdllib/include/shape.h"
 
 static short const _List000011101000[] = {
     MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2, MAP_CELL_W * 2, REFRESH_EOL};
@@ -557,7 +559,6 @@ TerrainType TerrainTypeClass::From_Name(char const* name) {
   return TERRAIN_NONE;
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * TerrainTypeClass::Display -- Display a generic terrain object. *
  *                                                                                             *
@@ -604,7 +605,6 @@ void TerrainTypeClass::Prep_For_Add() {
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * TerrainTypeClass::Create_And_Place -- Creates and places terrain object on

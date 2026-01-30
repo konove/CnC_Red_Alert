@@ -46,8 +46,8 @@ void* __cdecl Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags);
 void __cdecl Free(void const* pointer);
 void* __cdecl Resize_Alloc(void const* original_ptr,
                            unsigned long new_size_in_bytes);
-long __cdecl Ram_Free(MemoryFlagType flag);
-long __cdecl Total_Ram_Free(MemoryFlagType flag);
+long Ram_Free(MemoryFlagType flag);
+long Total_Ram_Free(MemoryFlagType flag);
 long __cdecl Heap_Size(MemoryFlagType flag);
 
 extern unsigned long __cdecl MinRam;  // Record of least memory at worst case.

@@ -700,7 +700,6 @@ TerrainType TerrainTypeClass::From_Name(char const* name) {
   return TERRAIN_NONE;
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * TerrainTypeClass::Display -- Display a generic terrain object. *
  *                                                                                             *
@@ -745,7 +744,6 @@ void TerrainTypeClass::Prep_For_Add() {
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * TerrainTypeClass::Create_And_Place -- Creates and places terrain object on

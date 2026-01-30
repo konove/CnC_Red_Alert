@@ -75,10 +75,11 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/rules.h"
 #include "ra/type.h"
+#include "sdllib/include/shape.h"
 #include "tech/rawfile.h"
 
 static DoInfoStruct DogDoControls[DO_COUNT] = {
@@ -1113,7 +1114,6 @@ short const* InfantryTypeClass::Occupy_List(bool) const {
   return &_list[0];
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * InfantryTypeClass::Display -- Displays a generic infantry object. *
  *                                                                                             *
@@ -1141,7 +1141,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
   if (house != HOUSE_NONE) {
     int shape = 0;
     void const* ptr = Get_Cameo_Data();
-    if (ptr == NULL) {
+    if (ptr == nullptr) {
       ptr = Get_Image_Data();
       shape = 2;
     }
@@ -1171,7 +1171,6 @@ void InfantryTypeClass::Prep_For_Add() {
     Map.Add_To_List(&As_Reference(index));
   }
 }
-#endif
 
 /***********************************************************************************************
  * InfantryTypeClass::From_Name -- Converts an ASCII name into an infantry type

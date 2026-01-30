@@ -81,7 +81,7 @@
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/overlay.h"
 #include "td/special.h"
@@ -336,7 +336,6 @@ DriveClass::DriveClass(UnitType classid, HousesType house)
   Strength = Class->MaxStrength;
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * DriveClass::Debug_Dump -- Displays status information to monochrome screen. *
  *                                                                                             *
@@ -353,6 +352,7 @@ DriveClass::DriveClass(UnitType classid, HousesType house)
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   mono->Set_Cursor(33, 7);
   mono->Printf("%2d:%2d", TrackNumber, TrackIndex);
   mono->Text_Print("X", 16 + (IsTurretLockedDown ? 2 : 0), 10);
@@ -360,8 +360,8 @@ void DriveClass::Debug_Dump(MonoClass* mono) const {
   mono->Set_Cursor(41, 7);
   mono->Printf("%d", Fixed_To_Cardinal(100, Tiberium_Load()));
   FootClass::Debug_Dump(mono);
-}
 #endif
+}
 
 /***********************************************************************************************
  * DriveClass::Exit_Map -- Give the unit a movement order to exit the map. *

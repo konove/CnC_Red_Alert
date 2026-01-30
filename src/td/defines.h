@@ -1764,22 +1764,22 @@ typedef enum TextPrintType {
 *these *	maximums never exceed the maximum value for the "ID" element in
 *the *	object class.
 */
-#define AIRCRAFT_MAX 30       // Lasts for minutes.
-#define ANIM_MAX 50           // Lasts only a few seconds.
-#define BUILDING_MAX 300      // Lasts for hours.
-#define BULLET_MAX 40         // Lasts several seconds.
-#define FACTORY_MAX 20        // Lasts a few minutes.
-#define HOUSE_MAX 12          // Lasts entire scenario.
-#define INFANTRY_MAX 300      // Lasts for minutes.
-#define OVERLAY_MAX 1         // Very transitory.
-#define REINFORCEMENT_MAX 50  // Maximum number of reinforcements.
-#define SMUDGE_MAX 1          // Very transitory.
-#define TEAM_MAX 60           // Lasts forever.
-#define TEMPLATE_MAX 1        // Very transitory.
-#define TERRAIN_MAX 300       // Lasts for hours or eternity.
-#define TRIGGER_MAX 40        // Lasts forever.
-#define UNIT_MAX 300          // Lasts for minutes.
-#define TEAMTYPE_MAX 40       // Lasts forever.
+#define AIRCRAFT_MAX 30           // Lasts for minutes.
+#define ANIM_MAX 50               // Lasts only a few seconds.
+#define BUILDING_MAX 300          // Lasts for hours.
+#define BULLET_MAX 40             // Lasts several seconds.
+#define FACTORY_MAX 20            // Lasts a few minutes.
+#define HOUSE_MAX 12              // Lasts entire scenario.
+#define INFANTRY_MAX 300          // Lasts for minutes.
+#define OVERLAY_MAX 1             // Very transitory.
+#define REINFORCEMENT_MAX 50      // Maximum number of reinforcements.
+#define SMUDGE_MAX 1              // Very transitory.
+#define TEAM_MAX 60               // Lasts forever.
+#define TEMPLATE_MAX 1            // Very transitory.
+#define TERRAIN_MAX 300           // Lasts for hours or eternity.
+#define TRIGGER_MAX 40            // Lasts forever.
+#define UNIT_MAX 300              // Lasts for minutes.
+constexpr int kTeamTypeMax = 40;  // Lasts forever.
 
 // Save filename description.
 #define DESCRIP_MAX 44  // 40 chars + CR + LF + CTRL-Z + NULL

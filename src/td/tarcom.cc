@@ -67,7 +67,6 @@
 
 TarComClass::~TarComClass() {}
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * TarComClass::Debug_Dump -- Displays the status of the tarcom class to the
  *mono screen.      *
@@ -84,9 +83,10 @@ TarComClass::~TarComClass() {}
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void TarComClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   TurretClass::Debug_Dump(mono);
-}
 #endif
+}
 
 /***********************************************************************************************
  * TarComClass::AI -- Handles the logical AI for the tarcom class. *

@@ -43,6 +43,7 @@
 
 #include "td/abstract.h"
 #include "td/defines.h"
+#include "td/monoc.h"
 #include "tech/noinit.h"
 
 class TechnoClass;
@@ -244,12 +245,10 @@ class ObjectClass : public AbstractClass {
   virtual void Code_Pointers();
   virtual void Decode_Pointers();
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
+  /*
+  **	Scenario and debug support.
+  */
   virtual void Debug_Dump(MonoClass* mono) const;
-#endif
   virtual void Move(FacingType);
 };
 

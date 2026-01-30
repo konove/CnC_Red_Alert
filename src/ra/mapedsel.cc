@@ -43,7 +43,38 @@
  *   MapEditClass::Select_Object -- selects an object for processing       *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifdef SCENARIO_EDITOR
+#include <array>
+#include <cstdio>
+#include <type_traits>
+
+#include "ra/base.h"
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/conquer.h"
+#include "ra/control.h"
+#include "ra/coord.h"
+#include "ra/defines.h"
+#include "ra/dial8.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/facing.h"
+#include "ra/gauge.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/list.h"
+#include "ra/mapedit.h"
+#include "ra/object.h"
+#include "ra/techno.h"
+#include "ra/textbtn.h"
+#include "ra/txtlabel.h"
+#include "ra/type.h"
+#include "ra/vector.h"
+#include "ra/vector_dynamic.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "tech/fixed.h"
 
 /***************************************************************************
  * Select_Object -- selects an object for processing                       *
@@ -61,7 +92,7 @@
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
 int MapEditClass::Select_Object() {
-  ObjectClass* object = NULL;  // Generic object clicked on.
+  ObjectClass* object = nullptr;  // Generic object clicked on.
   int x, y;
   CELL cell;  // Cell that was selected.
   int rc = 0;
@@ -262,7 +293,7 @@ void MapEditClass::Select_Next() {
  *   04/30/1996 JLB : Revamped for new buttons and stuff.                  *
  *=========================================================================*/
 void MapEditClass::Popup_Controls() {
-  const TechnoTypeClass* objtype = NULL;
+  const TechnoTypeClass* objtype = nullptr;
   HousesType owner;   // object's current owner
   int mission_index;  // object's current mission
   int strength;       // object's 0-255 strength value
@@ -315,7 +346,7 @@ void MapEditClass::Popup_Controls() {
   */
   owner = CurrentObject[0]->Owner();
   mission_index = 0;
-  for (i = 0; i < NUM_EDIT_MISSIONS; i++) {
+  for (i = 0; i < MapEditMissions.size(); i++) {
     if (CurrentObject[0]->Get_Mission() == MapEditMissions[i]) {
       mission_index = i;
     }
@@ -449,7 +480,7 @@ int MapEditClass::Move_Grabbed_Object() {
       */
       ((InfantryClass*)GrabbedObject)->Clear_Occupy_Bit(GrabbedObject->Coord);
     } else {
-      new_coord = NULL;
+      new_coord = 0;
     }
 
   } else {
@@ -467,10 +498,10 @@ int MapEditClass::Move_Grabbed_Object() {
     **	Try to place object at new coordinate
     */
     if (GrabbedObject->Can_Enter_Cell(Coord_Cell(new_coord)) != MOVE_OK) {
-      new_coord = NULL;
+      new_coord = 0;
     }
   }
-  if (new_coord != NULL) {
+  if (new_coord != 0) {
     /*
     ** If this object is part of the AI's Base list, change the coordinate
     ** in the Base's Node list.
@@ -546,7 +577,7 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   /*
   **	Verify that the target house exists
   */
-  if (HouseClass::As_Pointer(newhouse) == NULL) {
+  if (HouseClass::As_Pointer(newhouse) == nullptr) {
     return (false);
   }
 
@@ -570,5 +601,3 @@ bool MapEditClass::Change_House(HousesType newhouse) {
 
   return (true);
 }
-
-#endif

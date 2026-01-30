@@ -96,9 +96,7 @@ int MissionClass::Mission_Stop() { return TICKS_PER_SECOND * 30; };
 int MissionClass::Mission_Unload() { return TICKS_PER_SECOND * 30; };
 int MissionClass::Mission_Enter() { return TICKS_PER_SECOND * 30; };
 int MissionClass::Mission_Construction() { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Deconstruction() {
-  return TICKS_PER_SECOND * 30;
-};
+int MissionClass::Mission_Deconstruction() { return TICKS_PER_SECOND * 30; };
 int MissionClass::Mission_Repair() { return TICKS_PER_SECOND * 30; };
 int MissionClass::Mission_Missile() { return TICKS_PER_SECOND * 30; };
 
@@ -143,7 +141,6 @@ MissionType MissionClass::Get_Mission() const {
   return Mission == MISSION_NONE ? MissionQueue : Mission;
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * MissionClass::Debug_Dump -- Dumps status values to mono screen. *
  *                                                                                             *
@@ -159,6 +156,7 @@ MissionType MissionClass::Get_Mission() const {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void MissionClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   mono->Set_Cursor(21, 1);
   mono->Printf("%5.5s[%4.4s]", MissionClass::Mission_Name(Mission),
                MissionClass::Mission_Name(MissionQueue));
@@ -169,8 +167,8 @@ void MissionClass::Debug_Dump(MonoClass* mono) const {
   mono->Printf("%2d", Status);
 
   ObjectClass::Debug_Dump(mono);
-}
 #endif
+}
 
 /***********************************************************************************************
  * MissionClass::AI -- Processes order script. *

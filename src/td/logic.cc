@@ -41,6 +41,9 @@
 
 #include "td/logic.h"
 
+#include <algorithm>
+#include <cstring>
+
 #include "rand.h"
 #include "td/aircraft.h"
 #include "td/building.h"
@@ -48,11 +51,12 @@
 #include "td/externs.h"
 #include "td/factory.h"
 #include "td/ftimer.h"
+#include "td/globals.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/team.h"
 #include "td/type.h"
@@ -60,8 +64,6 @@
 #include "td/vector.h"
 
 static unsigned FramesPerSecond = 0;
-
-#ifdef CHEAT_KEYS
 
 static unsigned TotalFrames;
 static unsigned FPSDivider = 1;
@@ -88,7 +90,6 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
   static struct {
     int Graphic;
   } _record[RECORDCOUNT];
-  static int _framecounter = 0;
 
   TotalFrames += FramesPerSecond;
   AverageFramesPerSecond = TotalFrames / FPSDivider++;
@@ -110,7 +111,6 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
       "                                                      \r"
       "ĴSpare CPU Time\r");
 
-  _framecounter++;
   mono->Set_Cursor(70, 10);
   mono->Printf("%ld", Frame);
   if (ScenarioInit) {
@@ -153,7 +153,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
   /*
   **	Fill in the data for the current frame's performance record.
   */
-  SpareTicks = std::min((long)SpareTicks, (long)TIMER_SECOND);
+  SpareTicks = std::min(SpareTicks, (long)TIMER_SECOND);
   _record[RECORDCOUNT - 1].Graphic = Fixed_To_Cardinal(
       RECORDHEIGHT, Cardinal_To_Fixed(TIMER_SECOND, SpareTicks));
 
@@ -162,7 +162,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
   */
   for (int column = 0; column < RECORDCOUNT; column++) {
     for (int row = 1; row < RECORDHEIGHT; row += 2) {
-      static char _barchar[4] = {' ', 220, 0, 219};
+      static unsigned char _barchar[4] = {' ', 220, 0, 219};
       char str[2];
       int index = 0;
 
@@ -178,7 +178,6 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
   SpareTicks = 0;
   FramesPerSecond = 0;
 }
-#endif
 
 /***********************************************************************************************
  * LogicClass::AI -- Handles AI logic processing for game objects. *

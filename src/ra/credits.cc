@@ -53,7 +53,7 @@
 #include "ra/globals.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/scenario.h"
 #include "ra/tab.h"
 #include "ra/ww_audio.h"

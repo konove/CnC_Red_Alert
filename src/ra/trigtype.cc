@@ -60,6 +60,7 @@
 #include "ra/trigtype.h"
 
 #include <cassert>
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -68,17 +69,30 @@
 #include <utility>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
+#include "ra/const.h"
+#include "ra/control.h"
+#include "ra/debug.h"
 #include "ra/dialog.h"
+#include "ra/drop.h"
+#include "ra/edit.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/teamtype.h"
+#include "ra/textbtn.h"
+#include "ra/theme.h"
+#include "ra/ww_audio.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
@@ -192,7 +206,6 @@ void TriggerTypeClass::Detach(TARGET target, bool) {
   Action2.Detach(target);
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * TriggerTypeClass::Edit -- Edit the trigger type through the scenario editor.
  **
@@ -325,14 +338,13 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Dialog variables:
   */
-  bool cancel = false;  // true = user cancels
-  int i;                // loop counter
+  int i;  // loop counter
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   **	Buttons
   */
-  ControlClass* commands = NULL;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   /*
   **	List of events allowed.
@@ -548,7 +560,7 @@ bool TriggerTypeClass::Edit() {
                             ED_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
                             MFCD::Retrieve("EBTN-DN.SHP"));
 
-  for (index = 0; index < TriggerTypes.Count(); index++) {
+  for (int index = 0; index < TriggerTypes.Count(); index++) {
     trtype1list.Add_Item(TriggerTypes.Ptr(index)->IniName);
     trtype2list.Add_Item(TriggerTypes.Ptr(index)->IniName);
   }
@@ -1410,7 +1422,7 @@ bool TriggerTypeClass::Edit() {
         break;
 
       case BUTTON_ACTION | KN_BUTTON:
-        actionflag = (actionflag == false);
+        actionflag = !actionflag;
         display = true;
         break;
 
@@ -1679,7 +1691,6 @@ bool TriggerTypeClass::Edit() {
   }
   return (false);
 }
-#endif
 
 /***********************************************************************************************
  * TriggerTypeClass::Description -- Build a text description of the trigger

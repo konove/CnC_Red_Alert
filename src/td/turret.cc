@@ -82,7 +82,6 @@ TurretClass::TurretClass(UnitType classid, HousesType house)
   Reload = 0;
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * TurretClass::Debug_Dump -- Debug printing of turret values. *
  *                                                                                             *
@@ -98,14 +97,15 @@ TurretClass::TurretClass(UnitType classid, HousesType house)
  * HISTORY: * 05/12/1994 JLB : Created. *
  *=============================================================================================*/
 void TurretClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   mono->Set_Cursor(36, 3);
   mono->Printf("%02X:%02X", SecondaryFacing.Current(),
                SecondaryFacing.Desired());
   mono->Set_Cursor(28, 7);
   mono->Printf("%2d", Arm);
   DriveClass::Debug_Dump(mono);
-}
 #endif
+}
 
 /***********************************************************************************************
  * TurretClass::Ok_To_Move -- Queries whether the vehicle can move. *

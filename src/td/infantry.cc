@@ -123,7 +123,7 @@
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/profile.h"
 #include "td/radio.h"
@@ -208,8 +208,8 @@ DoStruct const InfantryClass::MasterDoControls[DO_COUNT] = {
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int InfantryClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Infantry.ID(this);
@@ -218,12 +218,11 @@ int InfantryClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * InfantryClass::Debug_Dump -- Displays debug information about infantry unit.
  **
@@ -241,6 +240,7 @@ int InfantryClass::Validate() const {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Debug_Dump(MonoClass* mono) const {
+#ifdef CHEAT_KEYS
   Validate();
   mono->Set_Cursor(0, 0);
   mono->Print(
@@ -292,8 +292,8 @@ void InfantryClass::Debug_Dump(MonoClass* mono) const {
   mono->Set_Cursor(41, 7);
   mono->Printf("%2d", Doing);
   FootClass::Debug_Dump(mono);
-}
 #endif
+}
 
 InfantryClass::InfantryClass()
     : Class(nullptr) {};  // Default constructor does nothing.

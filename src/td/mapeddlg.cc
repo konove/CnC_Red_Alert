@@ -49,7 +49,52 @@
  *   MapEditClass::Import_Teams -- lets user import teams                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifdef SCENARIO_EDITOR
+#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "port/safe_string.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/base.h"
+#include "td/ccfile.h"
+#include "td/cell.h"
+#include "td/cheklist.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/display_constants.h"
+#include "td/edit.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/ini.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/list.h"
+#include "td/mapedit.h"
+#include "td/mplayer.h"
+#include "td/msgbox.h"
+#include "td/object.h"
+#include "td/palette.h"
+#include "td/profile.h"
+#include "td/scenario.h"
+#include "td/teamtype.h"
+#include "td/terrain.h"
+#include "td/textbtn.h"
+#include "td/trigger.h"
+#include "td/type.h"
+#include "td/vector.h"
 
 /***************************************************************************
  * MapEditClass::New_Scenario -- creates a new scenario                    *
@@ -504,7 +549,7 @@ int MapEditClass::Pick_Scenario(char const* caption, int* scen_nump,
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = NULL;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   EditClass editbtn(BUTTON_SCENARIO, scen_buf, 5,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_SCEN_X,
@@ -669,7 +714,7 @@ int MapEditClass::Pick_Scenario(char const* caption, int* scen_nump,
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -952,7 +997,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = NULL;
+  ControlClass* commands = nullptr;
 
   TextButtonClass okbtn(
       BUTTON_OK, TXT_OK,
@@ -1005,7 +1050,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -1126,7 +1171,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         ...............................................................*/
         for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
           occupier = (*this)[cell].Cell_Occupier();
-          if (occupier == NULL) {
+          if (occupier == nullptr) {
             color = Ground[(*this)[cell].Land_Type()].Color;
             LogicPage->Put_Pixel(D_BORD_X1 + Cell_X(cell) + 1,
                                  D_BORD_Y1 + Cell_Y(cell) + 1, color);
@@ -1348,22 +1393,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           */
           if (grabbed == 1) {
             map_x1 += delta1;
-            if (map_x1 > map_x2 - 2) {
-              map_x1 = map_x2 - 2;
-            } else {
-              if (map_x1 < D_BORD_X1 + 2) {
-                map_x1 = D_BORD_X1 + 2;
-              }
-            }
-
+            map_x1 = std::clamp(map_x1, D_BORD_X1 + 2, map_x2 - 2);
             map_y1 += delta2;
-            if (map_y1 > map_y2 - 2) {
-              map_y1 = map_y2 - 2;
-            } else {
-              if (map_y1 < D_BORD_Y1 + 2) {
-                map_y1 = D_BORD_Y1 + 2;
-              }
-            }
+            map_y1 = std::clamp(map_y1, D_BORD_Y1 + 2, map_y2 - 2);
             display = REDRAW_MAP;
             mx = Get_Mouse_X();
             my = Get_Mouse_Y();
@@ -1374,22 +1406,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           */
           if (grabbed == 2) {
             map_x2 += delta1;
-            if (map_x2 < map_x1 + 2) {
-              map_x2 = map_x1 + 2;
-            } else {
-              if (map_x2 > D_BORD_X2 - 2) {
-                map_x2 = D_BORD_X2 - 2;
-              }
-            }
-
+            map_x2 = std::clamp(map_x2, map_x1 + 2, D_BORD_X2 - 2);
             map_y1 += delta2;
-            if (map_y1 > map_y2 - 2) {
-              map_y1 = map_y2 - 2;
-            } else {
-              if (map_y1 < D_BORD_Y1 + 2) {
-                map_y1 = D_BORD_Y1 + 2;
-              }
-            }
+            map_y1 = std::clamp(map_y1, D_BORD_Y1 + 2, map_y2 - 2);
             display = REDRAW_MAP;
             mx = Get_Mouse_X();
             my = Get_Mouse_Y();
@@ -1400,22 +1419,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           */
           if (grabbed == 3) {
             map_x2 += delta1;
-            if (map_x2 < map_x1 + 2) {
-              map_x2 = map_x1 + 2;
-            } else {
-              if (map_x2 > D_BORD_X2 - 2) {
-                map_x2 = D_BORD_X2 - 2;
-              }
-            }
-
+            map_x2 = std::clamp(map_x2, map_x1 + 2, D_BORD_X2 - 2);
             map_y2 += delta2;
-            if (map_y2 < map_y1 + 2) {
-              map_y2 = map_y1 + 2;
-            } else {
-              if (map_y2 > D_BORD_Y2 - 2) {
-                map_y2 = D_BORD_Y2 - 2;
-              }
-            }
+            map_y2 = std::clamp(map_y2, map_y1 + 2, D_BORD_Y2 - 2);
             display = REDRAW_MAP;
             mx = Get_Mouse_X();
             my = Get_Mouse_Y();
@@ -1426,22 +1432,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           */
           if (grabbed == 4) {
             map_x1 += delta1;
-            if (map_x1 > map_x2 - 2) {
-              map_x1 = map_x2 - 2;
-            } else {
-              if (map_x1 < D_BORD_X1 + 2) {
-                map_x1 = D_BORD_X1 + 2;
-              }
-            }
-
+            map_x1 = std::clamp(map_x1, D_BORD_X1 + 2, map_x2 - 2);
             map_y2 += delta2;
-            if (map_y2 < map_y1 + 2) {
-              map_y2 = map_y1 + 2;
-            } else {
-              if (map_y2 > D_BORD_Y2 - 2) {
-                map_y2 = D_BORD_Y2 - 2;
-              }
-            }
+            map_y2 = std::clamp(map_y2, map_y1 + 2, D_BORD_Y2 - 2);
             display = REDRAW_MAP;
             mx = Get_Mouse_X();
             my = Get_Mouse_Y();
@@ -1708,7 +1701,7 @@ int MapEditClass::Scenario_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = NULL;  // the button list
+  ControlClass* commands = nullptr;  // the button list
   ListClass theaterbtn(
       LIST_THEATER, D_THEATER_X, D_THEATER_Y, D_THEATER_W, D_THEATER_H,
       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -1876,7 +1869,7 @@ int MapEditClass::Scenario_Dialog() {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -2210,7 +2203,7 @@ void MapEditClass::Handle_Triggers() {
         */
         if (Edit_Trigger() == -1) {
           delete CurTrigger;
-          CurTrigger = NULL;
+          CurTrigger = nullptr;
         } else {
           Changed = 1;
         }
@@ -2232,7 +2225,7 @@ void MapEditClass::Handle_Triggers() {
     if (rc == 3) {
       if (CurTrigger) {
         CurTrigger->Remove();
-        CurTrigger = NULL;
+        CurTrigger = nullptr;
         Changed = 1;
       }
     }
@@ -2244,7 +2237,7 @@ void MapEditClass::Handle_Triggers() {
   ------------------------------------------------------------------------*/
   if (CurTrigger) {
     if (!TriggerClass::Event_Need_Object(CurTrigger->Event)) {
-      CurTrigger = NULL;
+      CurTrigger = nullptr;
     }
   }
 }
@@ -2362,7 +2355,7 @@ int MapEditClass::Select_Trigger() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = NULL;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   ListClass triggerlist(TRIGGER_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -2409,7 +2402,8 @@ int MapEditClass::Select_Trigger() {
     .....................................................................*/
     // trigtext[i] = (char *)HidPage.Get_Graphic_Buffer()->Get_Buffer() + 60 *
     // i;
-    trigtext[i] = new char[255];
+    constexpr int kTrigTextSize = 255;
+    trigtext[i] = new char[kTrigTextSize];
     sprintf(trigtext[i], "%s\t%s\t%s\t", Triggers.Ptr(i)->Get_Name(),
             TriggerClass::Name_From_Event(Triggers.Ptr(i)->Event),
             TriggerClass::Name_From_Action(Triggers.Ptr(i)->Action));
@@ -2419,24 +2413,27 @@ int MapEditClass::Select_Trigger() {
     */
     if (TriggerClass::Event_Need_House(Triggers.Ptr(i)->Event)) {
       if (Triggers.Ptr(i)->House != HOUSE_NONE) {
-        strcat(trigtext[i],
-               HouseTypeClass::As_Reference(Triggers.Ptr(i)->House).Suffix);
+        port::SafeAppend(
+            trigtext[i],
+            HouseTypeClass::As_Reference(Triggers.Ptr(i)->House).Suffix,
+            kTrigTextSize);
       } else {
-        strcat(trigtext[i], "!!!");
+        port::SafeAppend(trigtext[i], "!!!", kTrigTextSize);
       }
     } else {
-      strcat(trigtext[i], "   ");
+      port::SafeAppend(trigtext[i], "   ", kTrigTextSize);
     }
 
     /*
     .......................... Add the team name ..........................
     */
-    strcat(trigtext[i], "\t");
+    port::SafeAppend(trigtext[i], "\t", kTrigTextSize);
     if (TriggerClass::Action_Need_Team(Triggers.Ptr(i)->Action)) {
       if (Triggers.Ptr(i)->Team) {
-        strcat(trigtext[i], Triggers.Ptr(i)->Team->IniName);
+        port::SafeAppend(trigtext[i], Triggers.Ptr(i)->Team->IniName,
+                         kTrigTextSize);
       } else {
-        strcat(trigtext[i], "!!!");
+        port::SafeAppend(trigtext[i], "!!!", kTrigTextSize);
       }
     }
 
@@ -2460,7 +2457,7 @@ int MapEditClass::Select_Trigger() {
   ....................... Set CurTrigger if it isn't .......................
   */
   if (Triggers.Count() == 0) {
-    CurTrigger = NULL;
+    CurTrigger = nullptr;
   } else {
     if (!CurTrigger) {
       CurTrigger = Triggers.Ptr(def_idx);
@@ -2493,7 +2490,7 @@ int MapEditClass::Select_Trigger() {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -2792,7 +2789,7 @@ int MapEditClass::Edit_Trigger() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = NULL;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   ListClass eventlist(EVENT_LIST, D_EVENT_X, D_EVENT_Y, D_EVENT_W, D_EVENT_H,
                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -2892,7 +2889,7 @@ int MapEditClass::Edit_Trigger() {
   if (action_idx == TriggerClass::ACTION_NONE)
     action_idx = TriggerClass::ACTION_FIRST;
 
-  strcpy(namebuf, CurTrigger->Get_Name());  // Name
+  port::SafeCopy(namebuf, CurTrigger->Get_Name());  // Name
   name_edt.Set_Text(namebuf, 5);
 
   if (TriggerClass::Event_Need_Data(event_idx)) {
@@ -2949,7 +2946,7 @@ int MapEditClass::Edit_Trigger() {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -2992,13 +2989,13 @@ int MapEditClass::Edit_Trigger() {
             "Name", D_NAME_X - 5, D_NAME_Y, CC_GREEN, TBLACK,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        if ((EventType)event_idx == EVENT_CREDITS) {  // use 'Data' for Credits
+        if (event_idx == EVENT_CREDITS) {  // use 'Data' for Credits
           Fancy_Text_Print(
               "Credits", D_DATA_X - 5, D_DATA_Y, CC_GREEN, TBLACK,
               TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         } else {
-          if ((EventType)event_idx == EVENT_TIME) {  // use 'Data' for Time
+          if (event_idx == EVENT_TIME) {  // use 'Data' for Time
             Fancy_Text_Print(
                 "1/10 Min", D_DATA_X - 5, D_DATA_Y, CC_GREEN, TBLACK,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -3218,9 +3215,8 @@ int MapEditClass::Edit_Trigger() {
 
   if (cancel) {
     return (-1);
-  } else {
-    return (0);
   }
+  return (0);
 }
 
 /***************************************************************************
@@ -3325,7 +3321,7 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = NULL;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   CheckListClass triggerlist(
       TRIGGER_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
@@ -3357,9 +3353,8 @@ int MapEditClass::Import_Triggers() {
     file.Close();
     delete[] inibuf;
     return (-1);
-  } else {
-    file.Read(inibuf, 30000 - 1);
   }
+  file.Read(inibuf, 30000 - 1);
   file.Close();
 
   /*........................................................................
@@ -3367,7 +3362,7 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   len = strlen(inibuf) + 2;
   tbuffer = inibuf + len;
-  WWGetPrivateProfileString(TriggerClass::INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(TriggerClass::INI_Name(), nullptr, nullptr, tbuffer,
                             30000 - len, inibuf);
 
   /*........................................................................
@@ -3378,17 +3373,18 @@ int MapEditClass::Import_Triggers() {
   - Add a ptr to the INI entry name to our 'trignames' list
   ........................................................................*/
   while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(TriggerClass::INI_Name(), tbuffer, NULL, buf,
+    WWGetPrivateProfileString(TriggerClass::INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, inibuf);
-    item = new char[60];
+    constexpr int kItemSize = 60;
+    item = new char[kItemSize];
 
     /*
     ** Parse the INI entry
     */
     eventptr = strtok(buf, ",");
-    actionptr = strtok(NULL, ",");
-    strtok(NULL, ",");
-    houseptr = strtok(NULL, ",");
+    actionptr = strtok(nullptr, ",");
+    strtok(nullptr, ",");
+    houseptr = strtok(nullptr, ",");
 
     /*
     ** Generate the descriptive string
@@ -3402,12 +3398,13 @@ int MapEditClass::Import_Triggers() {
             TriggerClass::Event_From_Name(eventptr))) {
       HousesType house = HouseTypeClass::From_Name(houseptr);
       if (house != HOUSE_NONE) {
-        strcat(item, HouseTypeClass::As_Reference(house).Suffix);
+        port::SafeAppend(item, HouseTypeClass::As_Reference(house).Suffix,
+                         kItemSize);
       } else {
-        strcat(item, "!!!");
+        port::SafeAppend(item, "!!!", kItemSize);
       }
     } else {
-      strcat(item, "   ");
+      port::SafeAppend(item, "   ", kItemSize);
     }
 
     /*
@@ -3447,7 +3444,7 @@ int MapEditClass::Import_Triggers() {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -3527,8 +3524,8 @@ int MapEditClass::Import_Triggers() {
       ** and fill it in.
       */
       if (triggerlist.Is_Checked(i)) {
-        WWGetPrivateProfileString(TriggerClass::INI_Name(), tbuffer, NULL, buf,
-                                  sizeof(buf) - 1, inibuf);
+        WWGetPrivateProfileString(TriggerClass::INI_Name(), tbuffer, nullptr,
+                                  buf, sizeof(buf) - 1, inibuf);
 
         trigger = new TriggerClass();
         trigger->Fill_In(tbuffer, buf);
@@ -3555,9 +3552,8 @@ int MapEditClass::Import_Triggers() {
 
   if (cancel) {
     return (-1);
-  } else {
-    return (0);
   }
+  return (0);
 }
 
 /***************************************************************************
@@ -3663,7 +3659,7 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = NULL;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   CheckListClass teamlist(TEAM_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -3695,9 +3691,8 @@ int MapEditClass::Import_Teams() {
     file.Close();
     delete[] inibuf;
     return (-1);
-  } else {
-    file.Read(inibuf, 30000 - 1);
   }
+  file.Read(inibuf, 30000 - 1);
 
   file.Close();
   /*........................................................................
@@ -3705,8 +3700,8 @@ int MapEditClass::Import_Teams() {
   ........................................................................*/
   len = strlen(inibuf) + 2;
   tbuffer = inibuf + len;
-  WWGetPrivateProfileString(TeamTypeClass::INI_Name(), NULL, NULL, tbuffer,
-                            30000 - len, inibuf);
+  WWGetPrivateProfileString(TeamTypeClass::INI_Name(), nullptr, nullptr,
+                            tbuffer, 30000 - len, inibuf);
 
   /*........................................................................
   For each entry in the INI section:
@@ -3716,18 +3711,19 @@ int MapEditClass::Import_Teams() {
   - Add a ptr to the INI entry name to our 'teamnames' list
   ........................................................................*/
   while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(TeamTypeClass::INI_Name(), tbuffer, NULL, buf,
+    WWGetPrivateProfileString(TeamTypeClass::INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, inibuf);
-    item = new char[60];
+    constexpr int kItemSize = 60;
+    item = new char[kItemSize];
 
     /*
     ** Parse the INI entry
     */
     houseptr = strtok(buf, ",");
     for (i = 0; i < 9; i++) {
-      strtok(NULL, ",");
+      strtok(nullptr, ",");
     }
-    numclasses = atoi(strtok(NULL, ","));
+    numclasses = atoi(strtok(nullptr, ","));
 
     /*
     ** Generate the descriptive string
@@ -3735,17 +3731,18 @@ int MapEditClass::Import_Teams() {
     sprintf(item, " %s\t", tbuffer);
     HousesType house = HouseTypeClass::From_Name(houseptr);
     if (house != HOUSE_NONE) {
-      strcat(item, HouseTypeClass::As_Reference(house).Suffix);
+      port::SafeAppend(item, HouseTypeClass::As_Reference(house).Suffix,
+                       kItemSize);
     } else {
-      strcat(item, "!!!");
+      port::SafeAppend(item, "!!!", kItemSize);
     }
-    strcat(item, "\t");
+    port::SafeAppend(item, "\t", kItemSize);
 
-    classptr = strtok(NULL, ",");
+    classptr = strtok(nullptr, ",");
     for (i = 0; i < numclasses; i++) {
-      if (strlen(item) + strlen(classptr) < 60) {
-        strcat(item, classptr);
-        classptr = strtok(NULL, ",");
+      if (strlen(item) + strlen(classptr) < kItemSize) {
+        port::SafeAppend(item, classptr, kItemSize);
+        classptr = strtok(nullptr, ",");
       } else {
         break;
       }
@@ -3787,7 +3784,7 @@ int MapEditClass::Import_Teams() {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -3867,8 +3864,8 @@ int MapEditClass::Import_Teams() {
       ** and fill it in.
       */
       if (teamlist.Is_Checked(i)) {
-        WWGetPrivateProfileString(TeamTypeClass::INI_Name(), tbuffer, NULL, buf,
-                                  sizeof(buf) - 1, inibuf);
+        WWGetPrivateProfileString(TeamTypeClass::INI_Name(), tbuffer, nullptr,
+                                  buf, sizeof(buf) - 1, inibuf);
 
         team = new TeamTypeClass();
         team->Fill_In(tbuffer, buf);
@@ -3892,9 +3889,6 @@ int MapEditClass::Import_Teams() {
 
   if (cancel) {
     return (-1);
-  } else {
-    return (0);
   }
+  return (0);
 }
-
-#endif

@@ -55,7 +55,7 @@
 #include "td/externs.h"
 #include "td/globals.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/queue.h"
 #include "td/sidebar.h"
 #include "td/special.h"

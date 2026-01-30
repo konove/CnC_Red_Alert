@@ -45,6 +45,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "port/ex_string.h"
 #include "ra/compat.h"
 #include "ra/globals.h"
 #include "ra/palette.h"

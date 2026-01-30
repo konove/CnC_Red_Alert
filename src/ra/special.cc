@@ -60,7 +60,6 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
-#include "ra/mouse.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
 #include "ra/session.h"
@@ -239,7 +238,8 @@ void Special_Dialog(bool simple) {
 
       default:
         int index = (input & ~KN_BUTTON) - 100;
-        if (static_cast<unsigned>(index) < sizeof(_options) / sizeof(_options[0])) {
+        if (static_cast<unsigned>(index) <
+            sizeof(_options) / sizeof(_options[0])) {
           _options[index].Setting = _options[index].Button->IsOn;
         }
         break;

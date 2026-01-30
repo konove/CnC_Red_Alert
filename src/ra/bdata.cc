@@ -91,12 +91,13 @@
 #include "ra/jshell.h"
 #include "ra/keyframe.h"
 #include "ra/map.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/rules.h"
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "sdllib/include/shape.h"
 #include "tech/fixed.h"
 
 #define FATSHIP
@@ -3187,7 +3188,6 @@ StructType BuildingTypeClass::From_Name(char const* name) {
   return STRUCT_NONE;
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * BuildingTypeClass::Display -- Renders a generic view of building. *
  *                                                                                             *
@@ -3240,7 +3240,6 @@ void BuildingTypeClass::Prep_For_Add() {
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * BuildingTypeClass::Create_And_Place -- Creates and places a building object

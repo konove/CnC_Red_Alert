@@ -40,9 +40,12 @@
 #ifndef DROP_H
 #define DROP_H
 
+#include <cstring>
+
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/edit.h"
+#include "ra/keyframe.h"
 #include "ra/link.h"
 #include "ra/list.h"
 #include "ra/shapebtn.h"
@@ -68,9 +71,7 @@ class DropListClass : public EditClass {
   void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) override;
   void Clear_Focus() override;
   virtual int Count() const { return List.Count(); }
-  virtual char const* Get_Item(int index) const {
-    return List.Get_Item(index);
-  }
+  virtual char const* Get_Item(int index) const { return List.Get_Item(index); }
 
 #ifdef WOLAPI_INTEGRATION
   virtual void Flag_To_Redraw();
@@ -105,38 +106,37 @@ class DropListClass : public EditClass {
   ListClass List;
 };
 
-#ifdef NEVER
 template <class T>
 class TDropListClass : public EditClass {
  public:
   TDropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
                  int y, int w, int h, void const* up, void const* down);
   TDropListClass(TDropListClass<T> const& list);
-  virtual ~TDropListClass() {};
+  ~TDropListClass() override {}
 
-  T operator[](int index) const { return (List[index]); };
-  T& operator[](int index) { return (List[index]); };
+  T operator[](int index) const { return (List[index]); }
+  T& operator[](int index) { return (List[index]); }
 
-  virtual TDropListClass<T>& Add(LinkClass& object);
-  virtual TDropListClass<T>& Add_Tail(LinkClass& object);
-  virtual TDropListClass<T>& Add_Head(LinkClass& object);
-  virtual TDropListClass<T>* Remove();
-  void Zap();
+  TDropListClass& Add(LinkClass& object) override;
+  TDropListClass& Add_Tail(LinkClass& object) override;
+  TDropListClass& Add_Head(LinkClass& object) override;
+  TDropListClass* Remove() override;
+  void Zap() override;
 
   virtual int Add_Item(T text);
   virtual T Current_Item();
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(T item);
-  virtual void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom);
-  virtual void Clear_Focus();
-  virtual int Count() const { return (List.Count()); };
-  virtual T Get_Item(int index) const { return (List.Get_Item(index)); };
+  void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) override;
+  void Clear_Focus() override;
+  virtual int Count() const { return (List.Count()); }
+  virtual T Get_Item(int index) const { return (List.Get_Item(index)); }
 
   void Expand();
   void Collapse();
 
-  virtual void Set_Position(int x, int y);
+  void Set_Position(int x, int y) override;
 
   TDropListClass<T>& operator=(TDropListClass<T> const& list);
 
@@ -162,15 +162,17 @@ class TDropListClass : public EditClass {
 };
 
 template <class T>
-TDropListClass<T>::TDropListClass(int id, char* text, int max_len,
-                                  TextPrintType flags, int x, int y, int w,
-                                  int h, void const* up, void const* down)
+TDropListClass<T>::TDropListClass(
+    int id,
+    char* text,  // NOLINT(readability-non-const-parameter)
+    int max_len, TextPrintType flags, int x, int y, int w, int h,
+    void const* up, void const* down)
     : EditClass(id, text, max_len, flags, x, y, w, 9, ALPHANUMERIC),
       IsDropped(false),
       ListHeight(h),
       DropButton(0, down, x + w, y),
-      List(0, x, y + this->Get_Build_Frame_Height(down),
-           w + this->Get_Build_Frame_Width(down), h, flags, up, down) {
+      List(0, x, y + Get_Build_Frame_Height(down),
+           w + Get_Build_Frame_Width(down), h, flags, up, down) {
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
 }
@@ -311,8 +313,7 @@ TDropListClass<T>::TDropListClass(TDropListClass<T> const& list)
 template <class T>
 void TDropListClass<T>::Set_Position(int x, int y) {
   EditClass::Set_Position(x, y);
-  List.Set_Position(
-      x, y + this->Get_Build_Frame_Height(DropButton.Get_Shape_Data()));
+  List.Set_Position(x, y + Get_Build_Frame_Height(DropButton.Get_Shape_Data()));
   DropButton.Set_Position(x + Width, y);
 }
 
@@ -325,6 +326,4 @@ void TDropListClass<T>::Set_Selected_Index(T text) {
     }
   }
 }
-#endif
-
 #endif

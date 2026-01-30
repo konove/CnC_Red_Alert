@@ -48,7 +48,7 @@
 #include "ra/externs.h"
 #include "ra/inline.h"
 #include "ra/map.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/overlay.h"
 #include "ra/rules.h"
 #include "tech/fixed.h"

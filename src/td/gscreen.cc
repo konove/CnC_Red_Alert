@@ -54,6 +54,8 @@
 
 #include "td/gscreen.h"
 
+#include <cstdio>
+
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_mouse.h"
 #include "td/defines.h"
@@ -63,8 +65,10 @@
 #include "td/globals.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/mouse.h"
+#include "td/mapedit.h"
 #include "td/msglist.h"
+#include "td/palette.h"
+#include "tech/pcx_file.h"
 
 GadgetClass* GScreenClass::Buttons = nullptr;
 
@@ -418,8 +422,6 @@ void GScreenClass::Render() {
   }
 }
 
-#ifdef CHEAT_KEYS
-
 #define MAX_SCREENS_SAVED 30 * 15  // Enough for 30 seconds @ 15 fps
 
 GraphicBufferClass* ScreenList[MAX_SCREENS_SAVED];
@@ -430,7 +432,7 @@ void Add_Current_Screen() {
   if (ScreenRecording) {
     ScreenList[CurrentScreen] = new GraphicBufferClass;
     ScreenList[CurrentScreen]->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(),
-                                    NULL, 0, (GBC_Enum)0);
+                                    nullptr, 0, (GBC_Enum)0);
     SeenBuff.Blit(*ScreenList[CurrentScreen]);
 
     CurrentScreen++;
@@ -439,8 +441,7 @@ void Add_Current_Screen() {
       char filename[20];
       for (int i = 0; i < MAX_SCREENS_SAVED; i++) {
         sprintf(filename, "SCRN%04d.PCX", i);
-        Write_PCX_File(filename, *ScreenList[i],
-                       (unsigned char*)CurrentPalette);
+        Write_PCX_File(filename, *ScreenList[i], CurrentPalette);
         delete ScreenList[i];
       }
 
@@ -449,8 +450,6 @@ void Add_Current_Screen() {
     }
   }
 }
-
-#endif  // CHEAT_KEYS
 
 extern bool CanVblankSync;
 

@@ -70,6 +70,7 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
@@ -717,7 +718,6 @@ unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
   return icon;                                // Return the correct icon
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * OverlayTypeClass::Display -- Displays a generic representation of overlay. *
  *                                                                                             *
@@ -736,7 +736,7 @@ unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
  *=============================================================================================*/
 void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
                                HousesType) const {
-  if (Get_Image_Data() != NULL) {
+  if (Get_Image_Data() != nullptr) {
     int frame = 0;
 
     if (IsTiberium) {
@@ -772,14 +772,13 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
 void OverlayTypeClass::Prep_For_Add() {
   for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
     OverlayTypeClass const& overlay = As_Reference(index);
-    if (overlay.Get_Image_Data() != NULL && !overlay.IsWall &&
+    if (overlay.Get_Image_Data() != nullptr && !overlay.IsWall &&
         (!overlay.IsTiberium || index == OVERLAY_GOLD1 ||
          index == OVERLAY_GEMS1)) {
       Map.Add_To_List(&overlay);
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * OverlayTypeClass::Create_And_Place -- Creates and places a overlay object on

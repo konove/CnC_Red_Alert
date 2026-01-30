@@ -53,6 +53,8 @@
 #ifndef MAPEDIT_H
 #define MAPEDIT_H
 
+#include <array>
+
 #include "ra/ccini.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -75,12 +77,14 @@
 */
 enum MapEdit1Enum {
   MAX_EDIT_OBJECTS =  // max # of ObjectTypeClasses allowed
-  static_cast<int>(TEMPLATE_COUNT) + static_cast<int>(OVERLAY_COUNT) + static_cast<int>(SMUDGE_COUNT) +
-  static_cast<int>(TERRAIN_COUNT) + static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) +
+  static_cast<int>(TEMPLATE_COUNT) + static_cast<int>(OVERLAY_COUNT) +
+  static_cast<int>(SMUDGE_COUNT) + static_cast<int>(TERRAIN_COUNT) +
+  static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) +
   static_cast<int>(VESSEL_COUNT) + static_cast<int>(STRUCT_COUNT),
 
   MAX_TEAM_CLASSES =  // max # ObjectTypeClasses for a team
-  static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) + static_cast<int>(AIRCRAFT_COUNT),
+  static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) +
+  static_cast<int>(AIRCRAFT_COUNT),
 
   //	NUM_EDIT_MISSIONS = 6,			// # missions that can be
   // assigned an object
@@ -201,7 +205,7 @@ class MapEditClass : public MouseClass {
   void Read_INI(CCINIClass& ini) override;
   virtual void Write_INI(CCINIClass& ini);
   void Detach(ObjectClass* object) override;
-  void Detach(TARGET target, bool all = true) {
+  void Detach(const TARGET target, const bool all = true) {
     MouseClass::Detach(target, all);
   }
   void Clear_List();
@@ -353,7 +357,11 @@ class MapEditClass : public MouseClass {
   static char HealthBuf[20];
   GaugeClass* BaseGauge;
   TextLabelClass* BaseLabel;
-  static MissionType MapEditMissions[];
+  static constexpr std::array MapEditMissions = {
+      MISSION_GUARD,   MISSION_STICKY,     MISSION_HARMLESS,
+      MISSION_HARVEST, MISSION_GUARD_AREA, MISSION_RETURN,
+      MISSION_AMBUSH,  MISSION_HUNT,       MISSION_SLEEP,
+  };
 };
 
 #endif

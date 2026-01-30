@@ -49,6 +49,7 @@
 #include "td/facing.h"
 #include "td/flasher.h"
 #include "td/house.h"
+#include "td/monoc.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/stage.h"
@@ -292,12 +293,10 @@ class TechnoClass : public RadioClass,
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    long& param) override;
 
-/*
-**	Scenario and debug support.
-*/
-#ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass* mono) const;
-#endif
+  /*
+   **	Scenario and debug support.
+   */
+  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

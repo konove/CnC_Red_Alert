@@ -56,6 +56,7 @@
 #include <string>
 
 #include "port/ex_string.h"
+#include "sdllib/include/shape.h"
 #include "td/building.h"
 #include "td/ccfile.h"
 #include "td/cell.h"
@@ -69,8 +70,8 @@
 #include "td/infantry.h"
 #include "td/inline.h"
 #include "td/jshell.h"
+#include "td/mapedit.h"
 #include "td/mixfile.h"
-#include "td/mouse.h"
 #include "td/object.h"
 #include "td/special.h"
 #include "td/type.h"
@@ -1692,7 +1693,6 @@ short const* InfantryTypeClass::Occupy_List(bool) const {
   return &_list[0];
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * InfantryTypeClass::Display -- Displays a generic infantry object. *
  *                                                                                             *
@@ -1750,7 +1750,6 @@ void InfantryTypeClass::Prep_For_Add() {
     Map.Add_To_List(&As_Reference(index));
   }
 }
-#endif
 
 /***********************************************************************************************
  * InfantryTypeClass::From_Name -- Converts an ASCII name into an infantry type

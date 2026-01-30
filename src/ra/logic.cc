@@ -55,7 +55,7 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/mouse.h"
+#include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"

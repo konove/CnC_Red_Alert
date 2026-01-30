@@ -415,7 +415,6 @@ ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
   return new AircraftClass(Type, house->Class->House);
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * AircraftTypeClass::Prep_For_Add -- Prepares the scenario editor for adding an
  *aircraft objec*
@@ -472,7 +471,6 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
                 SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
                 HouseClass::As_Pointer(house)->Remap_Table(false, true));
 }
-#endif
 
 /***********************************************************************************************
  * AircraftTypeClass::Occupy_List -- Returns with occupation list for landed

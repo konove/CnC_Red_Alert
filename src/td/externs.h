@@ -58,6 +58,7 @@
 #include "td/infantry.h"
 #include "td/ipxmgr.h"
 #include "td/logic.h"
+#include "td/mapedit.h"
 #include "td/mixfile.h"
 #include "td/monoc.h"
 #include "td/msglist.h"
@@ -77,10 +78,6 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "winvq/vqa32/vqaplay.h"
-
-#ifdef SCENARIO_EDITOR
-#include "td/mapedit.h"
-#endif
 
 #ifdef JAPANESE
 extern bool ForceEnglish;
@@ -145,12 +142,7 @@ extern CELL Views[4];
 extern GameOptionsClass Options;
 
 extern LogicClass Logic;
-#ifdef SCENARIO_EDITOR
 extern MapEditClass Map;
-#else
-class MouseClass;
-extern MouseClass Map;
-#endif
 extern ScoreClass Score;
 extern MonoClass MonoArray[MonoClass::MAX_MONO_PAGES];
 extern MixFileClass* ScoreMix;
@@ -232,9 +224,7 @@ extern char ScenarioName[_MAX_FNAME + _MAX_EXT];
 extern unsigned BuildLevel;
 extern unsigned long ScenarioCRC;
 
-#ifdef SCENARIO_EDITOR
 extern CELL CurrentCell;
-#endif
 
 extern GameType GameToPlay;
 

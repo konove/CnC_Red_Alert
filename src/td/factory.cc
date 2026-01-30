@@ -90,8 +90,8 @@
 #include "td/techno.h"
 #include "td/type.h"
 
-#ifdef CHEAT_KEYS
 int FactoryClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Factories.ID(this);
@@ -100,10 +100,10 @@ int FactoryClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * FactoryClass::FactoryClass -- Default constructor for factory objects. *

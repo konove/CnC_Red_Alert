@@ -57,6 +57,7 @@
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"
+#include "td/externs.h"
 #include "td/house.h"
 #include "td/jshell.h"
 #include "td/mixfile.h"
@@ -1349,7 +1350,6 @@ void TemplateTypeClass::Init(TheaterType theater) {
   }
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * TemplateTypeClass::Display -- Displays a generic representation of template.
  **
@@ -1391,12 +1391,12 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
 
   for (index = 0; index < w * h; index++) {
     if (map[index] != 0xFF) {
-      HidPage.Draw_Stamp(Get_Image_Data(), index, 0, 0, NULL, WINDOW_MAIN);
+      HidPage.Draw_Stamp(Get_Image_Data(), index, 0, 0, nullptr, WINDOW_MAIN);
       if (scale) {
         HidPage.Scale(
             (*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W / 2)),
             y + ((index / w) * (ICON_PIXEL_H / 2)), ICON_PIXEL_W, ICON_PIXEL_H,
-            ICON_PIXEL_W / 2, ICON_PIXEL_H / 2, (char*)NULL);
+            ICON_PIXEL_W / 2, ICON_PIXEL_H / 2, nullptr);
 
       } else {
         HidPage.Blit((*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W)),
@@ -1432,7 +1432,6 @@ void TemplateTypeClass::Prep_For_Add() {
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * TemplateTypeClass::Create_And_Place -- Creates and places a template object

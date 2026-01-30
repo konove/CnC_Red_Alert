@@ -75,9 +75,11 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/keyframe.h"
+#include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/type.h"
 #include "ra/unit.h"
+#include "sdllib/include/shape.h"
 #include "tech/rawfile.h"
 
 /*
@@ -961,7 +963,6 @@ UnitType UnitTypeClass::From_Name(char const* name) {
   return UNIT_NONE;
 }
 
-#ifdef SCENARIO_EDITOR
 /***********************************************************************************************
  * UnitTypeClass::Display -- Displays a generic unit shape. *
  *                                                                                             *
@@ -985,7 +986,7 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
                             HousesType) const {
   int shape = 0;
   void const* ptr = Get_Cameo_Data();
-  if (ptr == NULL) {
+  if (ptr == nullptr) {
     ptr = Get_Image_Data();
     shape = Rotation / 6;
   }
@@ -1009,12 +1010,11 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void UnitTypeClass::Prep_For_Add() {
   for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
-    if (As_Reference(index).Get_Image_Data() != NULL) {
+    if (As_Reference(index).Get_Image_Data() != nullptr) {
       Map.Add_To_List(&As_Reference(index));
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * UnitTypeClass::One_Time -- Performs one time processing for unit type class

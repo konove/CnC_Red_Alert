@@ -146,6 +146,7 @@
 #include "td/ipxmgr.h"
 #include "td/jshell.h"
 #include "td/logic.h"
+#include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/mplayer.h"
 #include "td/msglist.h"
@@ -183,8 +184,8 @@
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
 int HouseClass::Validate() const {
+#ifdef CHEAT_KEYS
   int num;
 
   num = Houses.ID(this);
@@ -193,10 +194,10 @@ int HouseClass::Validate() const {
     return (0);
   } else
     return (1);
-}
 #else
-#define Validate()
+  return 1;
 #endif
+}
 
 /***********************************************************************************************
  * HouseClass::operator HousesType -- Conversion to HousesType operator. *
@@ -265,7 +266,6 @@ void HouseClass::One_Time() {
   //	}
 }
 
-#ifdef CHEAT_KEYS
 /***********************************************************************************************
  * HouseClass::Debug_Dump -- Dumps the house status data to the mono screen. *
  *                                                                                             *
@@ -281,8 +281,11 @@ void HouseClass::One_Time() {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Debug_Dump(MonoClass*) const { Validate(); }
+void HouseClass::Debug_Dump(MonoClass*) const {
+#ifdef CHEAT_KEYS
+  Validate();
 #endif
+}
 
 /***********************************************************************************************
  * HouseClass::new -- Allocator for a house class. *
