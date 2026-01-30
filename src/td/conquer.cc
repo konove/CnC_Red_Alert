@@ -66,6 +66,7 @@
 #include "td/conquer.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <string>
@@ -92,7 +93,9 @@
 #include "td/bullet.h"
 #include "td/ccfile.h"
 #include "td/compat.h"
+#include "td/config.h"
 #include "td/const.h"
+#include "td/debug.h"
 #include "td/defines.h"
 #include "td/display.h"
 #include "td/event.h"
@@ -204,7 +207,6 @@ bool InMainLoop = false;
  *                                                                                             *
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
-extern int TotalLocks;
 extern bool Spawn_WChat(bool can_launch);
 extern bool SpawnedFromWChat;
 void Main_Game(int argc, char* argv[]) {
@@ -263,20 +265,79 @@ void Main_Game(int argc, char* argv[]) {
 
     InMainLoop = true;
 
-#ifdef SCENARIO_EDITOR
-    /*
-    **	Scenario-editor version of main-loop processing
-    */
-    for (;;) {
+    if constexpr (config::kScenarioEditorEnabled) {
       /*
-      **	Non-scenario-editor-mode: call the game's main loop
+      **	Scenario-editor version of main-loop processing
       */
-      if (!Debug_Map) {
-        TotalLocks = 0;
+      for (;;) {
+        /*
+        **	Non-scenario-editor-mode: call the game's main loop
+        */
+        if (!Debug_Map) {
+          if (Main_Loop()) {
+            break;
+          }
+
+          if (SpecialDialog != SDLG_NONE) {
+            // Stop_Profiler();
+            switch (SpecialDialog) {
+              case SDLG_SPECIAL:
+                Map.Help_Text(TXT_NONE);
+                Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
+                Special_Dialog();
+                Map.Revert_Mouse_Shape();
+                SpecialDialog = SDLG_NONE;
+                break;
+
+              case SDLG_OPTIONS:
+                Map.Help_Text(TXT_NONE);
+                Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
+                Options.Process();
+                Map.Revert_Mouse_Shape();
+                SpecialDialog = SDLG_NONE;
+                break;
+
+              case SDLG_SURRENDER:
+                Map.Help_Text(TXT_NONE);
+                Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
+                if (Surrender_Dialog()) {
+                  OutList.Add(EventClass(EventClass::DESTRUCT));
+                }
+                SpecialDialog = SDLG_NONE;
+                Map.Revert_Mouse_Shape();
+                break;
+
+              default:
+                break;
+            }
+          }
+        } else {
+          /*
+          **	Scenario-editor-mode: call the editor's main loop
+          */
+          if (Map_Edit_Loop()) {
+            break;
+          }
+        }
+      }
+    } else {
+      /*
+      **	Non-editor version of main-loop processing
+      */
+      for (;;) {
+        /*
+        **	Call the game's main loop
+        */
         if (Main_Loop()) {
           break;
         }
 
+        /*
+        **	If the SpecialDialog flag is set, invoke the given special
+        *dialog. *	This must be done outside the main loop, since the
+        *dialog will call *	Main_Loop(), allowing the game to run in the
+        *background.
+        */
         if (SpecialDialog != SDLG_NONE) {
           // Stop_Profiler();
           switch (SpecialDialog) {
@@ -310,71 +371,8 @@ void Main_Game(int argc, char* argv[]) {
               break;
           }
         }
-      } else {
-        /*
-        **	Scenario-editor-mode: call the editor's main loop
-        */
-        if (Map_Edit_Loop()) {
-          break;
-        }
       }
     }
-#else
-    /*
-    **	Non-editor version of main-loop processing
-    */
-    for (;;) {
-      /*
-      **	Call the game's main loop
-      */
-#ifndef PORTABLE
-      TotalLocks = 0;
-#endif
-      if (Main_Loop()) {
-        break;
-      }
-
-      /*
-      **	If the SpecialDialog flag is set, invoke the given special
-      *dialog. *	This must be done outside the main loop, since the
-      *dialog will call *	Main_Loop(), allowing the game to run in the
-      *background.
-      */
-      if (SpecialDialog != SDLG_NONE) {
-        // Stop_Profiler();
-        switch (SpecialDialog) {
-          case SDLG_SPECIAL:
-            Map.Help_Text(TXT_NONE);
-            Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-            Special_Dialog();
-            Map.Revert_Mouse_Shape();
-            SpecialDialog = SDLG_NONE;
-            break;
-
-          case SDLG_OPTIONS:
-            Map.Help_Text(TXT_NONE);
-            Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-            Options.Process();
-            Map.Revert_Mouse_Shape();
-            SpecialDialog = SDLG_NONE;
-            break;
-
-          case SDLG_SURRENDER:
-            Map.Help_Text(TXT_NONE);
-            Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-            if (Surrender_Dialog()) {
-              OutList.Add(EventClass(EventClass::DESTRUCT));
-            }
-            SpecialDialog = SDLG_NONE;
-            Map.Revert_Mouse_Shape();
-            break;
-
-          default:
-            break;
-        }
-      }
-    }
-#endif
     // Stop_Profiler();
     InMainLoop = false;
 
@@ -520,28 +518,27 @@ void Keyboard_Process(KeyNumType& input) {
   KeyNumType plain = static_cast<KeyNumType>(
       input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT | WWKEY_CTRL_BIT));
 
-#ifdef CHEAT_KEYS
+  if constexpr (config::kCheatKeysEnabled) {
+    if (Debug_Flag) {
+      switch (input) {
+        case (int)KN_M | (int)KN_SHIFT_BIT:
+        case (int)KN_M | (int)KN_ALT_BIT:
+        case (int)KN_M | (int)KN_CTRL_BIT:
+          PlayerPtr->Credits += 10000;
+          break;
 
-  if (Debug_Flag) {
-    switch (input) {
-      case (int)KN_M | (int)KN_SHIFT_BIT:
-      case (int)KN_M | (int)KN_ALT_BIT:
-      case (int)KN_M | (int)KN_CTRL_BIT:
-        PlayerPtr->Credits += 10000;
-        break;
-
-      default:
-        break;
+        default:
+          break;
+      }
     }
   }
-#endif
 
-#ifdef VIRGIN_CHEAT_KEYS
-  if (Debug_Playtest && input == (KN_W | KN_ALT_BIT)) {
-    PlayerPtr->Blockage = false;
-    PlayerPtr->Flag_To_Win();
+  if constexpr (config::kVirginCheatKeysEnabled) {
+    if (Debug_Playtest && input == (KN_W | KN_ALT_BIT)) {
+      PlayerPtr->Blockage = false;
+      PlayerPtr->Flag_To_Win();
+    }
   }
-#endif
 
   // #ifdef CHEAT_KEYS
   if (/*Debug_Playtest && */ input == (KN_W | KN_ALT_BIT)) {
@@ -622,14 +619,14 @@ void Keyboard_Process(KeyNumType& input) {
       Map.Flag_To_Redraw(true);
       break;
 
-#ifdef CHEAT_KEYS
     /*
     **	Toggle free scrolling mode.
     */
     case VK_F:
-      Options.IsFreeScroll = (Options.IsFreeScroll == false);
+      if constexpr (config::kCheatKeysEnabled) {
+        Options.IsFreeScroll = !static_cast<bool>(Options.IsFreeScroll);
+      }
       break;
-#endif
 
     /*
     **	If the "N" key is pressed, then select the next object.
@@ -790,11 +787,11 @@ void Keyboard_Process(KeyNumType& input) {
   }
 #endif
 
-#ifdef CHEAT_KEYS
-  if (Debug_Flag && input && (input & KN_RLSE_BIT) == 0) {
-    Debug_Key(input);
+  if constexpr (config::kCheatKeysEnabled) {
+    if (Debug_Flag && input && (input & KN_RLSE_BIT) == 0) {
+      Debug_Key(input);
+    }
   }
-#endif
 }
 
 #ifndef DEMO
@@ -1552,14 +1549,14 @@ bool Main_Loop() {
   }
 #endif
 
-#ifdef CHEAT_KEYS
-  Heap_Dump_Check("After Trap");
+  if constexpr (config::kCheatKeysEnabled) {
+    Heap_Dump_Check("After Trap");
 
-  /*
-  **	Update the running status debug display.
-  */
-  Self_Regulate();
-#endif
+    /*
+    **	Update the running status debug display.
+    */
+    Self_Regulate();
+  }
 
   /*
   **	If there is no theme playing, but it looks like one is required, then
@@ -2353,10 +2350,10 @@ void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
         std::filesystem::path(name).replace_extension(".VQA").string();
     auto palname =
         std::filesystem::path(name).replace_extension(".VQP").string();
-#ifdef CHEAT_KEYS
-    Mono_Set_Cursor(0, 0);
-    Mono_Printf("[%s]", fullname);
-#endif
+    if constexpr (config::kCheatKeysEnabled) {
+      Mono_Set_Cursor(0, 0);
+      Mono_Printf("[%s]", fullname.c_str());
+    }
 
     /*
     **	Reset the anim control structure.
@@ -3212,21 +3209,19 @@ void Handle_View(int view, int action) {
 }
 
 void Heap_Dump_Check(char* string) {
-#ifdef CHEAT_KEYS
+  if constexpr (config::kCheatKeysEnabled) {
 #if 0
 	struct _heapinfo h_info;
 	int heap_status;
 #endif
 
-  if (!Debug_Trap_Check_Heap) {  // check the heap?
-    return;
-  }
+    if (!Debug_Trap_Check_Heap) {  // check the heap?
+      return;
+    }
 
-  //	Debug_Heap_Dump = true;
+    //	Debug_Heap_Dump = true;
 
-  Smart_Printf("%s\n", string);
-
-  Dump_Heap_Pointers();
+    Smart_Printf("%s\n", string);
 
 #if 0
 	heap_status = _heapset( 0xee );
@@ -3292,226 +3287,14 @@ void Heap_Dump_Check(char* string) {
 #endif
 #endif
 
-  //	Debug_Heap_Dump = false;
-#endif
-}
-
-void Dump_Heap_Pointers() {
-#ifdef CHEAT_KEYS
-  char *ptr, *lptr, *nptr, *cptr, *dptr, *wlptr, *nlptr, *aptr, *clptr;
-  int numallocs, numfrees, sizefree;
-  static char _freeorused[2][5] = {"FREE", "USED"};
-
-  ptr = (char*)__nheapbeg;
-
-  while (ptr) {
-    if (Debug_Heap_Dump) {
-      Smart_Printf("%p pre header\n", (ptr - 8));
-      Hex_Dump_Data((ptr - 8), 0x08);
-
-      Smart_Printf("%p header\n", ptr);
-      Hex_Dump_Data(ptr, 0x30);
-    }
-
-    dptr = (char*)*(int*)(ptr + 0x0c);
-
-    sizefree = *(int*)(ptr + 0x14);
-    numallocs = *(int*)(ptr + 0x18);
-    numfrees = *(int*)(ptr + 0x1c);
-
-    cptr = (char*)*(int*)(ptr + 0x24);
-    lptr = (char*)*(int*)(ptr + 0x28);
-
-    if (((int)cptr & 0xff000000) || ((int)dptr & 0xff000000) ||
-        ((int)lptr & 0xff000000)) {
-      Error_In_Heap_Pointers("local free heap ptrs too large");
-    }
-
-    if (Debug_Heap_Dump) {
-      if (lptr != dptr || lptr != cptr || cptr != dptr) {
-        Smart_Printf("The pointers are different!!\n");
-      }
-    }
-
-    nptr = (char*)*(int*)(ptr + 8);  // next block
-
-    if (((int)nptr & 0xFF000000)) {
-      Error_In_Heap_Pointers("next block ptr too large");
-    }
-
-    if (lptr != (ptr + 0x20)) {
-      if (!(*((int*)(ptr + 0x20)))) {  // allocated
-        aptr = (ptr + 0x2c);
-
-        while (aptr < lptr) {
-          if ((*(int*)(aptr)) == -1) {
-            //						Smart_Printf( "end alloc
-            // chain %p.\n", aptr );
-            // Hex_Dump_Data( aptr, 0x10);
-            break;
-          }
-
-          if (Debug_Heap_Dump) {
-            Smart_Printf("%p chain %s, size %X.\n", aptr,
-                         _freeorused[((*aptr) & 1)],
-                         ((*(int*)(aptr)) & 0xfffffffe));
-            Hex_Dump_Data(aptr, 0x10);
-          }
-
-          if (((*(int*)(aptr)) & 0xff000000)) {
-            Error_In_Heap_Pointers("alloc block size way too large");
-          }
-
-          aptr += ((*(int*)(aptr)) & 0xfffffffe);
-
-          if (((int)aptr & 0xff000000)) {
-            Error_In_Heap_Pointers("next alloc block ptr way too large");
-          }
-
-          numallocs--;
-
-          if (aptr > lptr) {
-            Error_In_Heap_Pointers("next alloc block ptr too large");
-          }
-        }
-      } else {
-        if (sizefree != -1) {
-          sizefree -= ((*(int*)(ptr + 0x20)) & 0xfffffffe);
-        }
-        numfrees--;
-      }
-
-      wlptr = lptr;
-
-      while (wlptr != (ptr + 0x20)) {
-        if (Debug_Heap_Dump) {
-          Smart_Printf("%p link %s, size %X.\n", wlptr,
-                       _freeorused[((*wlptr) & 1)],
-                       ((*(int*)(wlptr)) & 0xfffffffe));
-          Hex_Dump_Data(wlptr, 0x10);
-        }
-
-        nlptr = (char*)*(int*)(wlptr + 8);
-
-        if (!(*((int*)(wlptr)))) {  // allocated
-          aptr = (wlptr + 0x0c);
-        } else {
-          if (sizefree != -1) {
-            sizefree -= ((*(int*)(wlptr)) & 0xfffffffe);
-          }
-          numfrees--;
-
-          aptr = (wlptr + ((*(int*)(wlptr)) & 0xfffffffe));
-        }
-
-        if (nlptr == (ptr + 0x20)) {
-          clptr = nptr;
-        } else {
-          clptr = nlptr;
-        }
-
-        while (aptr < clptr) {
-          if ((*(int*)(aptr)) == -1) {
-            //						Smart_Printf( "end alloc
-            // chain %p.\n", aptr );
-            // Hex_Dump_Data( aptr, 0x10);
-            break;
-          }
-
-          if (Debug_Heap_Dump) {
-            Smart_Printf("%p chain %s, size %X.\n", aptr,
-                         _freeorused[((*aptr) & 1)],
-                         ((*(int*)(aptr)) & 0xfffffffe));
-            Hex_Dump_Data(aptr, 0x10);
-          }
-
-          if (((*(int*)(aptr)) & 0xff000000)) {
-            Error_In_Heap_Pointers("alloc block size way too large");
-          }
-
-          aptr += ((*(int*)(aptr)) & 0xfffffffe);
-
-          if (((int)aptr & 0xff000000)) {
-            Error_In_Heap_Pointers("next alloc block ptr way too large");
-          }
-
-          numallocs--;
-
-          if (aptr > clptr) {
-            Error_In_Heap_Pointers("next alloc block ptr too large");
-          }
-        }
-
-        wlptr = nlptr;
-      }
-    } else {
-      //			Smart_Printf( "only link %s, size %X.\n",
-      //				_freeorused[ ((*lptr) & 1) ],
-      //				((*(int *)(lptr)) & 0xfffffffe) );
-
-      if (!(*((int*)(lptr)))) {  // allocated
-        aptr = (ptr + 0x2c);
-
-        while (aptr < nptr) {
-          if ((*(int*)(aptr)) == -1) {
-            //						Smart_Printf( "end alloc
-            // chain %p.\n", aptr );
-            // Hex_Dump_Data( aptr, 0x10);
-            break;
-          }
-
-          if (Debug_Heap_Dump) {
-            Smart_Printf("%p chain %s, size %X.\n", aptr,
-                         _freeorused[((*aptr) & 1)],
-                         ((*(int*)(aptr)) & 0xfffffffe));
-            Hex_Dump_Data(aptr, 0x10);
-          }
-
-          if (((*(int*)(aptr)) & 0xff000000)) {
-            Error_In_Heap_Pointers("alloc block size way too large");
-          }
-
-          aptr += ((*(int*)(aptr)) & 0xfffffffe);
-
-          if (((int)aptr & 0xff000000)) {
-            Error_In_Heap_Pointers("next alloc block ptr way too large");
-          }
-
-          numallocs--;
-
-          if (aptr > nptr) {
-            Error_In_Heap_Pointers("next alloc block ptr too large");
-          }
-        }
-      } else {
-        if (sizefree != -1) {
-          sizefree -= ((*(int*)(ptr + 0x20)) & 0xfffffffe);
-        }
-        numfrees--;
-      }
-    }
-
-    if (sizefree != 0 && sizefree != -1) {
-      Smart_Printf("sizefree left over %X.\n", sizefree);
-    }
-
-    if (numallocs != 0) {
-      Smart_Printf("numallocs unaccounted for %d.\n", numallocs);
-    }
-
-    if (numfrees != 0) {
-      Smart_Printf("numfrees unaccounted for %d.\n", numfrees);
-    }
-
-    ptr = nptr;
+    //	Debug_Heap_Dump = false;
   }
-#endif
 }
 
 void Error_In_Heap_Pointers(char* string) {
-#ifdef CHEAT_KEYS
-  Smart_Printf("Error in Heap for %s\n", string);
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    Smart_Printf("Error in Heap for %s\n", string);
+  }
 }
 
 // #ifndef ROR_NOT_READY
@@ -3830,12 +3613,12 @@ bool Force_CD_Available(int cd) {
  *                                                                                             *
  * HISTORY: * 08/15/1995 BRR : Created. *
  *=============================================================================================*/
-void Validate_Error(char* /*name*/) {
-#ifdef CHEAT_KEYS
-  Prog_End();
-  printf("%s object error!\n", name);
-  exit(0);
-#endif
+void Validate_Error(char* name) {
+  if constexpr (config::kCheatKeysEnabled) {
+    Prog_End();
+    printf("%s object error!\n", name);
+    exit(0);
+  }
 }
 
 /***********************************************************************************************

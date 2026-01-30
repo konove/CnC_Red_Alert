@@ -246,22 +246,22 @@ void CellClass::Code_Pointers() {
 void CellClass::Decode_Pointers() {
   if (OccupierPtr) {
     OccupierPtr = As_Object(static_cast<TARGET>((uintptr_t)OccupierPtr));
-    Check_Ptr((void*)OccupierPtr, __FILE__, __LINE__);
+    Check_Ptr(OccupierPtr);
   }
 
   if (Overlappers[0]) {
     Overlappers[0] = As_Object(static_cast<TARGET>((uintptr_t)Overlappers[0]));
-    Check_Ptr((void*)Overlapper[0], __FILE__, __LINE__);
+    Check_Ptr(Overlappers[0]);
   }
 
   if (Overlappers[1]) {
     Overlappers[1] = As_Object(static_cast<TARGET>((uintptr_t)Overlappers[1]));
-    Check_Ptr((void*)Overlapper[1], __FILE__, __LINE__);
+    Check_Ptr(Overlappers[1]);
   }
 
   if (Overlappers[2]) {
     Overlappers[2] = As_Object(static_cast<TARGET>((uintptr_t)Overlappers[2]));
-    Check_Ptr((void*)Overlapper[2], __FILE__, __LINE__);
+    Check_Ptr(Overlappers[2]);
   }
 
   /*
@@ -270,7 +270,7 @@ void CellClass::Decode_Pointers() {
   if (IsTrigger) {
     CellTriggers[Cell_Number()] =
         As_Trigger(static_cast<TARGET>((uintptr_t)CellTriggers[Cell_Number()]));
-    Check_Ptr((void*)CellTriggers[Cell_Number()], __FILE__, __LINE__);
+    Check_Ptr(CellTriggers[Cell_Number()]);
   }
 }
 
@@ -353,11 +353,7 @@ bool MouseClass::Load(FileClass& file) {
   int size;
   file.Read(&size, sizeof(size));
   file.Read(this, sizeof(*this));
-#ifdef SCENARIO_EDITOR
   new (this) MapEditClass(NoInitClass());
-#else
-  new (this) MouseClass(NoInitClass());
-#endif
 
   /*
   ** Reallocate the cell array
@@ -792,8 +788,9 @@ void DisplayClass::Decode_Pointers() {
   *here *	either.  These have to be done as last-minute fixups.
   */
   if (PendingObjectPtr) {
-    PendingObjectPtr = As_Object(static_cast<TARGET>((intptr_t)PendingObjectPtr));
-    Check_Ptr((void*)PendingObjectPtr, __FILE__, __LINE__);
+    PendingObjectPtr =
+        As_Object(static_cast<TARGET>((intptr_t)PendingObjectPtr));
+    Check_Ptr(PendingObjectPtr);
   }
 
   /*

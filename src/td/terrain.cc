@@ -80,6 +80,7 @@
 #include "td/cell.h"
 #include "td/combat.h"
 #include "td/compat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/externs.h"
 #include "td/globals.h"
@@ -119,18 +120,18 @@ void* TerrainClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int TerrainClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Terrains.ID(this);
-  if (num < 0 || num >= TERRAIN_MAX) {
-    Validate_Error("TERRAIN");
-    return (0);
-  } else
+    num = Terrains.ID(this);
+    if (num < 0 || num >= TERRAIN_MAX) {
+      Validate_Error("TERRAIN");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************
@@ -617,10 +618,10 @@ void TerrainClass::AI() {
  * HISTORY: * 09/27/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  Validate();
-  ObjectClass::Debug_Dump(mono);
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    Validate();
+    ObjectClass::Debug_Dump(mono);
+  }
 }
 
 /***********************************************************************************************

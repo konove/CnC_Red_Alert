@@ -131,6 +131,7 @@
 #include "td/bullet.h"
 #include "td/cell.h"
 #include "td/compat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/coord.h"
@@ -213,18 +214,18 @@ void *BuildingClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int BuildingClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Buildings.ID(this);
-  if (num < 0 || num >= BUILDING_MAX) {
-    Validate_Error("BUILDING");
-    return (0);
-  } else
+    num = Buildings.ID(this);
+    if (num < 0 || num >= BUILDING_MAX) {
+      Validate_Error("BUILDING");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************
@@ -470,72 +471,88 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Debug_Dump(MonoClass *mono) const {
-#ifdef CHEAT_KEYS
-  Validate();
-  mono->Set_Cursor(0, 0);
-  mono->Print(
-      "┌Name:──────────────┬Mission:───┬TarCom:┬───────┬Radio:┬Coord:"
-      "──┬────────┬St:─┐\n"
-      "│                   │           │       │       │      │        │       "
-      " │    │\n"
-      "├──────────────┬N┬Y┬Health:─┬───┴─┬Turret:┬─────┴┬─Building:──┬Cargo:"
-      "────┴────┤\n"
-      "│Active........│ │ │        │     │       │      │            │         "
-      "      │\n"
-      "│Limbo.........│ │ "
-      "├────────┴─────┴───────┴──────┴────────────┴───────────────┤\n"
-      "│Owned.........│ │ │Last Message:                                       "
-      "      │\n"
-      "│Discovered....│ │ "
-      "├Timer:┬Arm:┬──────┬Tiberium:┬Flash:┬Stage:┬───────────────┘\n"
-      "│Selected......│ │ │      │    │      │         │      │      │         "
-      "       \n"
-      "│Teathered.....│ │ ├──────┴────┴──────┴─────────┴──────┴──────┘         "
-      "       \n"
-      "│Locked on Map.│ │ │                                                    "
-      "       \n"
-      "│Is A Loaner...│ │ │                                                    "
-      "       \n"
-      "│              │ │ │                                                    "
-      "       \n"
-      "│              │ │ │                                                    "
-      "       \n"
-      "│              │ │ │                                                    "
-      "       \n"
-      "│Repairing.....│ │ │                                                    "
-      "       \n"
-      "│              │ │ │                                                    "
-      "       \n"
-      "│              │ │ │                                                    "
-      "       \n"
-      "│Recoiling.....│ │ │                                                    "
-      "       \n"
-      "│To Display....│ │ │                                                    "
-      "       \n"
-      "└──────────────┴─┴─┘                                                    "
-      "       \n");
-  mono->Set_Cursor(1, 1);
-  mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
-  mono->Set_Cursor(35, 3);
-  mono->Printf("%02X:%02X", PrimaryFacing.Current(), PrimaryFacing.Desired());
-  mono->Set_Cursor(50, 3);
-  if (Factory) {
-    mono->Printf(Factory->Get_Object()->Class_Of().IniName);
-    mono->Printf(" ");
-    mono->Printf("%d%%", Factory->Completion());
-  } else {
-    mono->Printf("(empty)");
+  if constexpr (config::kCheatKeysEnabled) {
+    Validate();
+    mono->Set_Cursor(0, 0);
+    mono->Print(
+        "┌Name:──────────────┬Mission:───┬TarCom:┬───────┬Radio:┬Coord:"
+        "──┬────────┬St:─┐\n"
+        "│                   │           │       │       │      │        │     "
+        "  "
+        " │    │\n"
+        "├──────────────┬N┬Y┬Health:─┬───┴─┬Turret:┬─────┴┬─Building:──┬Cargo:"
+        "────┴────┤\n"
+        "│Active........│ │ │        │     │       │      │            │       "
+        "  "
+        "      │\n"
+        "│Limbo.........│ │ "
+        "├────────┴─────┴───────┴──────┴────────────┴───────────────┤\n"
+        "│Owned.........│ │ │Last Message:                                     "
+        "  "
+        "      │\n"
+        "│Discovered....│ │ "
+        "├Timer:┬Arm:┬──────┬Tiberium:┬Flash:┬Stage:┬───────────────┘\n"
+        "│Selected......│ │ │      │    │      │         │      │      │       "
+        "  "
+        "       \n"
+        "│Teathered.....│ │ ├──────┴────┴──────┴─────────┴──────┴──────┘       "
+        "  "
+        "       \n"
+        "│Locked on Map.│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Is A Loaner...│ │ │                                                  "
+        "  "
+        "       \n"
+        "│              │ │ │                                                  "
+        "  "
+        "       \n"
+        "│              │ │ │                                                  "
+        "  "
+        "       \n"
+        "│              │ │ │                                                  "
+        "  "
+        "       \n"
+        "│Repairing.....│ │ │                                                  "
+        "  "
+        "       \n"
+        "│              │ │ │                                                  "
+        "  "
+        "       \n"
+        "│              │ │ │                                                  "
+        "  "
+        "       \n"
+        "│Recoiling.....│ │ │                                                  "
+        "  "
+        "       \n"
+        "│To Display....│ │ │                                                  "
+        "  "
+        "       \n"
+        "└──────────────┴─┴─┘                                                  "
+        "  "
+        "       \n");
+    mono->Set_Cursor(1, 1);
+    mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
+    mono->Set_Cursor(35, 3);
+    mono->Printf("%02X:%02X", PrimaryFacing.Current(), PrimaryFacing.Desired());
+    mono->Set_Cursor(50, 3);
+    if (Factory) {
+      mono->Printf(Factory->Get_Object()->Class_Of().IniName);
+      mono->Printf(" ");
+      mono->Printf("%d%%", Factory->Completion());
+    } else {
+      mono->Printf("(empty)");
+    }
+
+    mono->Text_Print("X", 16 + (IsRepairing ? 2 : 0), 14);
+    //	mono->Set_Cursor(44, 3);mono->Printf("%d", SAM);
+    mono->Set_Cursor(34, 1);
+    mono->Printf("%04X", TarCom);
+    mono->Set_Cursor(28, 7);
+    mono->Printf("%2d", Arm);
+
+    TechnoClass::Debug_Dump(mono);
   }
-
-  mono->Text_Print("X", 16 + (IsRepairing ? 2 : 0), 14);
-  //	mono->Set_Cursor(44, 3);mono->Printf("%d", SAM);
-  mono->Set_Cursor(34, 1);
-  mono->Printf("%04X", TarCom);
-  mono->Set_Cursor(28, 7);
-  mono->Printf("%2d", Arm);
-
-  TechnoClass::Debug_Dump(mono);
-#endif
 }
 
 /***********************************************************************************************

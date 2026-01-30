@@ -642,7 +642,6 @@ char* CC_Get_Shape_Filename(void const* shapeptr);
 void CC_Add_Shape_To_Global(void const* shapeptr, char* filename, char code);
 void Bubba_Print(char* format, ...);
 void Heap_Dump_Check(char* string);
-void Dump_Heap_Pointers();
 void* Hires_Load(char* name);
 void Shake_The_Screen(int shakes);
 void Rebuild_Interpolated_Palette(unsigned char* interpal);

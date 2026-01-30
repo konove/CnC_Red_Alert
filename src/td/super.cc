@@ -71,6 +71,7 @@
 #include "td/super.h"
 
 #include "td/audio.h"
+#include "td/config.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"
@@ -197,15 +198,15 @@ bool SuperClass::Recharge(bool player) {
   if (IsPresent && !IsReady) {
     IsSuspended = false;
     OldStage = -1;
-#ifdef CHEAT_KEYS
-    if (Special.IsSpeedBuild) {
-      Control = 1;
+    if constexpr (config::kCheatKeysEnabled) {
+      if (Special.IsSpeedBuild) {
+        Control = 1;
+      } else {
+        Control = RechargeTime;
+      }
     } else {
       Control = RechargeTime;
     }
-#else
-    Control = RechargeTime;
-#endif
     if (player && VoxCharging != VOX_NONE) {
       Speak(VoxCharging);
     }

@@ -70,6 +70,7 @@
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/compat.h"
+#include "td/config.h"
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
@@ -352,15 +353,15 @@ DriveClass::DriveClass(UnitType classid, HousesType house)
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  mono->Set_Cursor(33, 7);
-  mono->Printf("%2d:%2d", TrackNumber, TrackIndex);
-  mono->Text_Print("X", 16 + (IsTurretLockedDown ? 2 : 0), 10);
-  //	mono->Text_Print("X", 16 + (IsOnShortTrack?2:0), 11);
-  mono->Set_Cursor(41, 7);
-  mono->Printf("%d", Fixed_To_Cardinal(100, Tiberium_Load()));
-  FootClass::Debug_Dump(mono);
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    mono->Set_Cursor(33, 7);
+    mono->Printf("%2d:%2d", TrackNumber, TrackIndex);
+    mono->Text_Print("X", 16 + (IsTurretLockedDown ? 2 : 0), 10);
+    //	mono->Text_Print("X", 16 + (IsOnShortTrack?2:0), 11);
+    mono->Set_Cursor(41, 7);
+    mono->Printf("%d", Fixed_To_Cardinal(100, Tiberium_Load()));
+    FootClass::Debug_Dump(mono);
+  }
 }
 
 /***********************************************************************************************

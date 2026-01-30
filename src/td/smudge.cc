@@ -57,6 +57,8 @@
 #include "td/abstract.h"
 #include "td/cell.h"
 #include "td/compat.h"
+#include "td/config.h"
+#include "td/conquer.h"
 #include "td/externs.h"
 #include "td/heap.h"
 #include "td/inline.h"
@@ -87,18 +89,18 @@ HousesType SmudgeClass::ToOwn = HOUSE_NONE;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int SmudgeClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Smudges.ID(this);
-  if (num < 0 || num >= SMUDGE_MAX) {
-    Validate_Error("SMUDGE");
-    return (0);
-  } else
+    num = Smudges.ID(this);
+    if (num < 0 || num >= SMUDGE_MAX) {
+      Validate_Error("SMUDGE");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************

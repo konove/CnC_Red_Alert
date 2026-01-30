@@ -60,6 +60,8 @@
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "td/compat.h"
+#include "td/config.h"
+#include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/heap.h"
@@ -110,18 +112,18 @@ void* TeamTypeClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int TeamTypeClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = TeamTypes.ID(this);
-  if (num < 0 || num >= kTeamTypeMax) {
-    Validate_Error("TEAMTYPE");
-    return (0);
-  } else
+    num = TeamTypes.ID(this);
+    if (num < 0 || num >= kTeamTypeMax) {
+      Validate_Error("TEAMTYPE");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***************************************************************************

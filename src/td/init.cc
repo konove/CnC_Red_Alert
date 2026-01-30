@@ -71,6 +71,7 @@
 #include "sdllib/include/wwstd.h"
 #include "td/ccfile.h"
 #include "td/compat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
@@ -979,28 +980,25 @@ bool Select_Game(bool fade) {
         }
 
         Set_Logic_Page(SeenBuff);
-#ifdef VIRGIN_CHEAT_KEYS
-        Fancy_Text_Print("V.%d%s", SeenBuff.Get_Width() - 1,
-                         SeenBuff.Get_Height() - 10, DKGREY, TBLACK,
-                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                         Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
-//				Fancy_Text_Print("V.%d%s%02d", 319, 190, DKGREY,
-// TBLACK, TPF_6POINT|TPF_FULLSHADOW|TPF_RIGHT, Version_Number(), VersionText,
-// FOREIGN_VERSION_NUMBER);
-#else
-
+        if constexpr (config::kVirginCheatKeysEnabled) {
+          Fancy_Text_Print(
+              "V.%d%s", SeenBuff.Get_Width() - 1, SeenBuff.Get_Height() - 10,
+              DKGREY, TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+              Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
+        } else {
 #ifdef DEMO
-        Version_Number();
-        Fancy_Text_Print("DEMO V%s", SeenBuff.Get_Width() - 1,
-                         SeenBuff.Get_Height() - 10, DKGREY, TBLACK,
-                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, VersionText);
+          Version_Number();
+          Fancy_Text_Print("DEMO V%s", SeenBuff.Get_Width() - 1,
+                           SeenBuff.Get_Height() - 10, DKGREY, TBLACK,
+                           TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                           VersionText);
 #else
-        Fancy_Text_Print("V.%d%s", SeenBuff.Get_Width() - 1,
-                         SeenBuff.Get_Height() - 10, DKGREY, TBLACK,
-                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                         Version_Number(), VersionText);
+          Fancy_Text_Print("V.%d%s", SeenBuff.Get_Width() - 1,
+                           SeenBuff.Get_Height() - 10, DKGREY, TBLACK,
+                           TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                           Version_Number(), VersionText);
 #endif
-#endif
+        }
         display = false;
         Show_Mouse();
       }
@@ -2084,11 +2082,11 @@ bool Parse_Command_Line(int argc, char* argv[]) {
         Special.IsDifficult = true;
         break;
 
-#ifdef VIRGIN_CHEAT_KEYS
       case PARM_PLAYTEST:
-        Debug_Playtest = true;
+        if constexpr (config::kVirginCheatKeysEnabled) {
+          Debug_Playtest = true;
+        }
         break;
-#endif
 
 #ifdef PARM_CHEATERIK
       case PARM_CHEATERIK:
@@ -2177,16 +2175,15 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
     if (processed) continue;
 
-#ifdef CHEAT_KEYS
-    /*
-    **	Scenario Editor Mode
-    */
-    if (stricmp(string, "-CHECKMAP") == 0) {
-      Debug_Check_Map = true;
-      continue;
+    if constexpr (config::kCheatKeysEnabled) {
+      /*
+      **	Scenario Editor Mode
+      */
+      if (stricmp(string, "-CHECKMAP") == 0) {
+        Debug_Check_Map = true;
+        continue;
+      }
     }
-
-#endif
 
     /*
     **	Older version override.
@@ -2320,23 +2317,23 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       continue;
     }
 
-#ifdef CHEAT_KEYS
-    /*
-    **	Allow solo net play
-    */
-    if (stricmp(string, "-HANSOLO") == 0) {
-      MPlayerSolo = true;
-      continue;
-    }
+    if constexpr (config::kCheatKeysEnabled) {
+      /*
+      **	Allow solo net play
+      */
+      if (stricmp(string, "-HANSOLO") == 0) {
+        MPlayerSolo = true;
+        continue;
+      }
 
-    /*
-    **	Specify the random number seed (for debugging)
-    */
-    if (strstr(string, "-SEED")) {
-      CustomSeed = (unsigned short)(atoi(string + strlen("SEED")));
-      continue;
+      /*
+      **	Specify the random number seed (for debugging)
+      */
+      if (strstr(string, "-SEED")) {
+        CustomSeed = (unsigned short)(atoi(string + strlen("SEED")));
+        continue;
+      }
     }
-#endif
 
 #ifdef NEVER
     /*
@@ -2376,28 +2373,31 @@ bool Parse_Command_Line(int argc, char* argv[]) {
             break;
 #endif
 
-#ifdef CHEAT_KEYS
           /*
           **	Monochrome debug screen enable.
           */
           case 'M':
-            Special.IsMonoEnabled = true;
+            if constexpr (config::kCheatKeysEnabled) {
+              Special.IsMonoEnabled = true;
+            }
             break;
 
           /*
           **	Inert weapons -- no units take damage.
           */
           case 'I':
-            Special.IsInert = true;
+            if constexpr (config::kCheatKeysEnabled) {
+              Special.IsInert = true;
+            }
             break;
-#endif
 
-#ifdef CHEAT_KEYS
           /*
           **	Hussled recharge timer.
           */
           case 'H':
-            Special.IsSpeedBuild = true;
+            if constexpr (config::kCheatKeysEnabled) {
+              Special.IsSpeedBuild = true;
+            }
             break;
 
           /*
@@ -2408,23 +2408,28 @@ bool Parse_Command_Line(int argc, char* argv[]) {
           ** each write, so the recording survives a crash.
           */
           case 'S':
-            SuperRecord = 1;
+            if constexpr (config::kCheatKeysEnabled) {
+              SuperRecord = 1;
+            }
             break;
 
           /*
           **	"Record" a multi-player game
           */
           case 'X':
-            RecordGame = 1;
+            if constexpr (config::kCheatKeysEnabled) {
+              RecordGame = 1;
+            }
             break;
 
           /*
           **	"Play Back" a multi-player game
           */
           case 'Y':
-            PlaybackGame = 1;
+            if constexpr (config::kCheatKeysEnabled) {
+              PlaybackGame = 1;
+            }
             break;
-#endif
 
 #ifdef ONHOLD
           /*
@@ -2442,15 +2447,15 @@ bool Parse_Command_Line(int argc, char* argv[]) {
             Debug_Quiet = true;
             break;
 
-#ifdef CHEAT_KEYS
           /*
           **	Target selection by human opponent (network/modem play) will
           **	be visible to the player?
           */
           case 'V':
-            Special.IsVisibleTarget = true;
+            if constexpr (config::kCheatKeysEnabled) {
+              Special.IsVisibleTarget = true;
+            }
             break;
-#endif
 
           default:
 #ifdef GERMAN

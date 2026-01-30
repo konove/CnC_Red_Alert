@@ -58,6 +58,7 @@
 
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_mouse.h"
+#include "td/config.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/externs.h"
@@ -395,16 +396,16 @@ void GScreenClass::Render() {
 
     if (Buttons) Buttons->Draw_All(false);
 
-#ifdef SCENARIO_EDITOR
-    /*
-    ** Draw the Editor's buttons
-    */
-    if (Debug_Map) {
-      if (Buttons) {
-        Buttons->Draw_All();
+    if constexpr (config::kScenarioEditorEnabled) {
+      /*
+      ** Draw the Editor's buttons
+      */
+      if (Debug_Map) {
+        if (Buttons) {
+          Buttons->Draw_All();
+        }
       }
     }
-#endif
     /*
     ** Draw the multiplayer message system to the Hidpage at this point.
     ** This way, they'll Blit along with the rest of the map.
@@ -473,8 +474,8 @@ void GScreenClass::Blit_Display() {
   WWMouse->Draw_Mouse(&HidPage);
   HidPage.Blit(SeenBuff, 0, 0, 0, 0, HidPage.Get_Width(), HidPage.Get_Height(),
                false);
-#ifdef CHEAT_KEYS
-  Add_Current_Screen();
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    Add_Current_Screen();
+  }
   WWMouse->Erase_Mouse(&HidPage, false);
 }

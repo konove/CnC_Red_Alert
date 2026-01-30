@@ -67,6 +67,7 @@
 #include "td/mission.h"
 
 #include "port/ex_string.h"
+#include "td/config.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"
@@ -156,18 +157,18 @@ MissionType MissionClass::Get_Mission() const {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void MissionClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  mono->Set_Cursor(21, 1);
-  mono->Printf("%5.5s[%4.4s]", MissionClass::Mission_Name(Mission),
-               MissionClass::Mission_Name(MissionQueue));
-  //	mono->Text_Print(MissionClass::Mission_Name(Mission), 21, 1);
-  mono->Set_Cursor(20, 7);
-  mono->Printf("%2d", (long)Timer);
-  mono->Set_Cursor(74, 1);
-  mono->Printf("%2d", Status);
+  if constexpr (config::kCheatKeysEnabled) {
+    mono->Set_Cursor(21, 1);
+    mono->Printf("%5.5s[%4.4s]", MissionClass::Mission_Name(Mission),
+                 MissionClass::Mission_Name(MissionQueue));
+    //	mono->Text_Print(MissionClass::Mission_Name(Mission), 21, 1);
+    mono->Set_Cursor(20, 7);
+    mono->Printf("%2d", (long)Timer);
+    mono->Set_Cursor(74, 1);
+    mono->Printf("%2d", Status);
 
-  ObjectClass::Debug_Dump(mono);
-#endif
+    ObjectClass::Debug_Dump(mono);
+  }
 }
 
 /***********************************************************************************************

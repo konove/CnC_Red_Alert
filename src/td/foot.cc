@@ -95,6 +95,7 @@
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"
+#include "td/config.h"
 #include "td/const.h"
 #include "td/coord.h"
 #include "td/defines.h"
@@ -232,50 +233,50 @@ FootClass::FootClass(HousesType house) : TechnoClass(house), Speed(0) {
  *special case.                                           *
  *=============================================================================================*/
 void FootClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  static char const* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
+  if constexpr (config::kCheatKeysEnabled) {
+    static char const* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
 #define Path_To_String(a) _p2c[((std::abs((int)a + 1)) % 9)]
 
-  /*
-  **	Display the common data for all objects that inherity from FootClass.
-  */
-  mono->Set_Cursor(63, 7);
-  if (Team) {
-    mono->Printf("%s(%d)", Team->Class->IniName, Teams.ID(Team));
-  } else {
-    mono->Printf("(none)");
-  }
-  mono->Set_Cursor(73, 7);
-  mono->Printf("%04X", ArchiveTarget);
-  mono->Set_Cursor(42, 1);
-  mono->Printf("%04X", NavCom);
-  mono->Set_Cursor(44, 3);
-  mono->Printf("%d", Speed);
+    /*
+    **	Display the common data for all objects that inherity from FootClass.
+    */
+    mono->Set_Cursor(63, 7);
+    if (Team) {
+      mono->Printf("%s(%d)", Team->Class->IniName, Teams.ID(Team));
+    } else {
+      mono->Printf("(none)");
+    }
+    mono->Set_Cursor(73, 7);
+    mono->Printf("%04X", ArchiveTarget);
+    mono->Set_Cursor(42, 1);
+    mono->Printf("%04X", NavCom);
+    mono->Set_Cursor(44, 3);
+    mono->Printf("%d", Speed);
 
-  /*
-  **	Although aircraft inherit from FootClass, some of the variables are not
-  **	used and thus should not be displayed.
-  */
-  if (What_Am_I() != RTTI_AIRCRAFT) {
-    mono->Set_Cursor(50, 3);
-    mono->Printf("%s%s%s%s%s%s%s%s%s%s%s%s", Path_To_String(Path[0]),
-                 Path_To_String(Path[1]), Path_To_String(Path[2]),
-                 Path_To_String(Path[3]), Path_To_String(Path[4]),
-                 Path_To_String(Path[5]), Path_To_String(Path[6]),
-                 Path_To_String(Path[7]), Path_To_String(Path[8]),
-                 Path_To_String(Path[9]), Path_To_String(Path[10]),
-                 Path_To_String(Path[11]), Path_To_String(Path[12]));
+    /*
+    **	Although aircraft inherit from FootClass, some of the variables are not
+    **	used and thus should not be displayed.
+    */
+    if (What_Am_I() != RTTI_AIRCRAFT) {
+      mono->Set_Cursor(50, 3);
+      mono->Printf("%s%s%s%s%s%s%s%s%s%s%s%s", Path_To_String(Path[0]),
+                   Path_To_String(Path[1]), Path_To_String(Path[2]),
+                   Path_To_String(Path[3]), Path_To_String(Path[4]),
+                   Path_To_String(Path[5]), Path_To_String(Path[6]),
+                   Path_To_String(Path[7]), Path_To_String(Path[8]),
+                   Path_To_String(Path[9]), Path_To_String(Path[10]),
+                   Path_To_String(Path[11]), Path_To_String(Path[12]));
 
-    mono->Set_Cursor(65, 1);
-    mono->Printf("%08lX", Head_To_Coord());
-    mono->Text_Print("X", 16 + (IsDeploying ? 2 : 0), 12);
-    mono->Text_Print("X", 16 + (IsRotating ? 2 : 0), 13);
-    mono->Text_Print("X", 16 + (IsDriving ? 2 : 0), 15);
-    mono->Text_Print("X", 16 + (IsFiring ? 2 : 0), 14);
-    mono->Text_Print("X", 16 + (IsPlanningToLook ? 2 : 0), 16);
+      mono->Set_Cursor(65, 1);
+      mono->Printf("%08lX", Head_To_Coord());
+      mono->Text_Print("X", 16 + (IsDeploying ? 2 : 0), 12);
+      mono->Text_Print("X", 16 + (IsRotating ? 2 : 0), 13);
+      mono->Text_Print("X", 16 + (IsDriving ? 2 : 0), 15);
+      mono->Text_Print("X", 16 + (IsFiring ? 2 : 0), 14);
+      mono->Text_Print("X", 16 + (IsPlanningToLook ? 2 : 0), 16);
+    }
+    TechnoClass::Debug_Dump(mono);
   }
-  TechnoClass::Debug_Dump(mono);
-#endif
 }
 
 /***********************************************************************************************

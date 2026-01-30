@@ -48,6 +48,7 @@
 */
 #include "td/radio.h"
 
+#include "td/config.h"
 #include "td/defines.h"
 #include "td/globals.h"
 #include "td/mission.h"
@@ -103,15 +104,15 @@ char const* RadioClass::Messages[RADIO_COUNT] = {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void RadioClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  mono->Set_Cursor(34, 5);
-  mono->Printf(Messages[LastMessage]);
-  if (Radio) {
-    mono->Set_Cursor(50, 1);
-    mono->Printf("%04X", Radio->As_Target());
+  if constexpr (config::kCheatKeysEnabled) {
+    mono->Set_Cursor(34, 5);
+    mono->Printf(Messages[LastMessage]);
+    if (Radio) {
+      mono->Set_Cursor(50, 1);
+      mono->Printf("%04X", Radio->As_Target());
+    }
+    MissionClass::Debug_Dump(mono);
   }
-  MissionClass::Debug_Dump(mono);
-#endif
 }
 
 /***********************************************************************************************

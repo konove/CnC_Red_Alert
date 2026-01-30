@@ -191,6 +191,7 @@ class MapEditClass : public MouseClass {
   ............................. mapedit.cpp .............................
   */
   MapEditClass();
+  MapEditClass(const NoInitClass& x) : MouseClass(x) {}
   void One_Time() override;  // One-time init
   void Init_IO() override;   // Inits button list
   void AI(KeyNumType& input, int x, int y) override;

@@ -118,6 +118,7 @@
 #include "td/bullet.h"
 #include "td/cell.h"
 #include "td/compat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/coord.h"
@@ -168,18 +169,18 @@ void* AircraftClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int AircraftClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Aircraft.ID(this);
-  if (num < 0 || num >= AIRCRAFT_MAX) {
-    Validate_Error("AIRCRAFT");
-    return (0);
-  } else
+    num = Aircraft.ID(this);
+    if (num < 0 || num >= AIRCRAFT_MAX) {
+      Validate_Error("AIRCRAFT");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************
@@ -1922,65 +1923,80 @@ int AircraftClass::Process_Fly_To(bool slowdown) {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  Validate();
-  mono->Set_Cursor(0, 0);
-  mono->Print(
-      "┌Name:──────────────┬Mission:───┬TarCom:┬NavCom:┬Radio:┬Coord:"
-      "──┬Altitude┬St:─┐\n"
-      "│                   │           │       │       │      │        │       "
-      " │    │\n"
-      "├──────────────┬N┬Y┬Health:─┬Fdir:┬─Bdir:─┬Speed:┬─────┴──────┬Cargo:"
-      "────┴────┤\n"
-      "│Active........│ │ │        │     │       │      │            │         "
-      "      │\n"
-      "│Limbo.........│ │ "
-      "├────────┴─────┴───────┴──────┴────────────┴───────────────┤\n"
-      "│Owned.........│ │ │Last Message:                                       "
-      "      │\n"
-      "│Discovered....│ │ "
-      "├Timer:┬Arm:┬──────┬─────────┬Flash:┬Stage:┬Team:────┬Arch:┤\n"
-      "│Selected......│ │ │      │    │      │         │      │      │         "
-      "│     │\n"
-      "│Teathered.....│ │ "
-      "├──────┴────┴──────┴─────────┴──────┴──────┴─────────┴─────┘\n"
-      "│Locked on Map.│ │ │                                                    "
-      "       \n"
-      "│              │ │ │                                                    "
-      "       \n"
-      "│Is A Loaner...│ │ │                                                    "
-      "       \n"
-      "│Is Landing....│ │ │                                                    "
-      "       \n"
-      "│Is Taking Off.│ │ │                                                    "
-      "       \n"
-      "│              │ │ │                                                    "
-      "       \n"
-      "│              │ │ │                                                    "
-      "       \n"
-      "│              │ │ │                                                    "
-      "       \n"
-      "│Recoiling.....│ │ │                                                    "
-      "       \n"
-      "│To Display....│ │ │                                                    "
-      "       \n"
-      "└──────────────┴─┴─┘                                                    "
-      "       \n");
-  mono->Set_Cursor(1, 1);
-  mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
-  mono->Set_Cursor(36, 3);
-  mono->Printf("%02X:%02X", SecondaryFacing.Current(),
-               SecondaryFacing.Desired());
-  mono->Set_Cursor(42, 1);
-  mono->Printf("%04X", NavCom);
-  mono->Set_Cursor(66, 1);
-  mono->Printf("%d", Altitude);
-  mono->Set_Cursor(44, 3);
-  mono->Printf("%d", Get_Speed());
-  mono->Text_Print("X", 16 + (IsLanding ? 2 : 0), 12);
-  mono->Text_Print("X", 16 + (IsTakingOff ? 2 : 0), 13);
-  FootClass::Debug_Dump(mono);
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    Validate();
+    mono->Set_Cursor(0, 0);
+    mono->Print(
+        "┌Name:──────────────┬Mission:───┬TarCom:┬NavCom:┬Radio:┬Coord:"
+        "──┬Altitude┬St:─┐\n"
+        "│                   │           │       │       │      │        │     "
+        "  "
+        " │    │\n"
+        "├──────────────┬N┬Y┬Health:─┬Fdir:┬─Bdir:─┬Speed:┬─────┴──────┬Cargo:"
+        "────┴────┤\n"
+        "│Active........│ │ │        │     │       │      │            │       "
+        "  "
+        "      │\n"
+        "│Limbo.........│ │ "
+        "├────────┴─────┴───────┴──────┴────────────┴───────────────┤\n"
+        "│Owned.........│ │ │Last Message:                                     "
+        "  "
+        "      │\n"
+        "│Discovered....│ │ "
+        "├Timer:┬Arm:┬──────┬─────────┬Flash:┬Stage:┬Team:────┬Arch:┤\n"
+        "│Selected......│ │ │      │    │      │         │      │      │       "
+        "  "
+        "│     │\n"
+        "│Teathered.....│ │ "
+        "├──────┴────┴──────┴─────────┴──────┴──────┴─────────┴─────┘\n"
+        "│Locked on Map.│ │ │                                                  "
+        "  "
+        "       \n"
+        "│              │ │ │                                                  "
+        "  "
+        "       \n"
+        "│Is A Loaner...│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Is Landing....│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Is Taking Off.│ │ │                                                  "
+        "  "
+        "       \n"
+        "│              │ │ │                                                  "
+        "  "
+        "       \n"
+        "│              │ │ │                                                  "
+        "  "
+        "       \n"
+        "│              │ │ │                                                  "
+        "  "
+        "       \n"
+        "│Recoiling.....│ │ │                                                  "
+        "  "
+        "       \n"
+        "│To Display....│ │ │                                                  "
+        "  "
+        "       \n"
+        "└──────────────┴─┴─┘                                                  "
+        "  "
+        "       \n");
+    mono->Set_Cursor(1, 1);
+    mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
+    mono->Set_Cursor(36, 3);
+    mono->Printf("%02X:%02X", SecondaryFacing.Current(),
+                 SecondaryFacing.Desired());
+    mono->Set_Cursor(42, 1);
+    mono->Printf("%04X", NavCom);
+    mono->Set_Cursor(66, 1);
+    mono->Printf("%d", Altitude);
+    mono->Set_Cursor(44, 3);
+    mono->Printf("%d", Get_Speed());
+    mono->Text_Print("X", 16 + (IsLanding ? 2 : 0), 12);
+    mono->Text_Print("X", 16 + (IsTakingOff ? 2 : 0), 13);
+    FootClass::Debug_Dump(mono);
+  }
 }
 
 /***********************************************************************************************

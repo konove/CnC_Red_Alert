@@ -119,9 +119,11 @@
 #include "td/anim.h"
 #include "td/audio.h"
 #include "td/building.h"
+#include "td/cargo.h"
 #include "td/cell.h"
 #include "td/combat.h"
 #include "td/compat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/coord.h"
@@ -141,6 +143,7 @@
 #include "td/keyframe.h"
 #include "td/layer.h"
 #include "td/mapedit.h"
+#include "td/mission.h"
 #include "td/mixfile.h"
 #include "td/mouse.h"
 #include "td/object.h"
@@ -179,19 +182,18 @@ void* UnitClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int UnitClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Units.ID(this);
-  if (num < 0 || num >= UNIT_MAX) {
-    Validate_Error("UNIT");
-    return (0);
-  } else {
+    num = Units.ID(this);
+    if (num < 0 || num >= UNIT_MAX) {
+      Validate_Error("UNIT");
+      return (0);
+    }
     return (1);
+  } else {
+    return 1;
   }
-#else
-  return 1;
-#endif
 }
 
 /***********************************************************************************************
@@ -302,56 +304,72 @@ TARGET UnitClass::As_Target() const {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  Validate();
-  mono->Set_Cursor(0, 0);
-  mono->Print(
-      "┌Name:──────────────┬Mission:───┬TarCom:┬NavCom:┬Radio:┬Coord:──┬HeadTo:"
-      "─┬St:─┐\n"
-      "│                   │           │       │       │      │        │       "
-      " │    │\n"
-      "├──────────────┬N┬Y┬Health:─┬Body:┬Turret:┬Speed:┬Path:┴──────┬Cargo:"
-      "────┴────┤\n"
-      "│Active........│ │ │        │     │       │      │            │         "
-      "      │\n"
-      "│Limbo.........│ │ "
-      "├────────┴─────┴───────┴──────┴────────────┴───────────────┤\n"
-      "│Owned.........│ │ │Last Message:                                       "
-      "      │\n"
-      "│Discovered....│ │ "
-      "├Timer:┬Arm:┬Track:┬Tiberium:┬Flash:┬Stage:┬Team:────┬Arch:┤\n"
-      "│Selected......│ │ │      │    │      │         │      │      │         "
-      "│     │\n"
-      "│Teathered.....│ │ "
-      "├──────┴────┴──────┴─────────┴──────┴──────┴─────────┴─────┘\n"
-      "│Locked on Map.│ │ │                                                    "
-      "       \n"
-      "│Turret Locked.│ │ │                                                    "
-      "       \n"
-      "│Is A Loaner...│ │ │                                                    "
-      "       \n"
-      "│Deploying.....│ │ │                                                    "
-      "       \n"
-      "│Rotating......│ │ │                                                    "
-      "       \n"
-      "│Firing........│ │ │                                                    "
-      "       \n"
-      "│Driving.......│ │ │                                                    "
-      "       \n"
-      "│To Look.......│ │ │                                                    "
-      "       \n"
-      "│Recoiling.....│ │ │                                                    "
-      "       \n"
-      "│To Display....│ │ │                                                    "
-      "       \n"
-      "└──────────────┴─┴─┘                                                    "
-      "       \n");
-  mono->Set_Cursor(1, 1);
-  mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
-  CargoClass::Debug_Dump(mono);
-  MissionClass::Debug_Dump(mono);
-  TarComClass::Debug_Dump(mono);
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    Validate();
+    mono->Set_Cursor(0, 0);
+    mono->Print(
+        "┌Name:──────────────┬Mission:───┬TarCom:┬NavCom:┬Radio:┬Coord:"
+        "──┬HeadTo:"
+        "─┬St:─┐\n"
+        "│                   │           │       │       │      │        │     "
+        "  "
+        " │    │\n"
+        "├──────────────┬N┬Y┬Health:─┬Body:┬Turret:┬Speed:┬Path:┴──────┬Cargo:"
+        "────┴────┤\n"
+        "│Active........│ │ │        │     │       │      │            │       "
+        "  "
+        "      │\n"
+        "│Limbo.........│ │ "
+        "├────────┴─────┴───────┴──────┴────────────┴───────────────┤\n"
+        "│Owned.........│ │ │Last Message:                                     "
+        "  "
+        "      │\n"
+        "│Discovered....│ │ "
+        "├Timer:┬Arm:┬Track:┬Tiberium:┬Flash:┬Stage:┬Team:────┬Arch:┤\n"
+        "│Selected......│ │ │      │    │      │         │      │      │       "
+        "  "
+        "│     │\n"
+        "│Teathered.....│ │ "
+        "├──────┴────┴──────┴─────────┴──────┴──────┴─────────┴─────┘\n"
+        "│Locked on Map.│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Turret Locked.│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Is A Loaner...│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Deploying.....│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Rotating......│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Firing........│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Driving.......│ │ │                                                  "
+        "  "
+        "       \n"
+        "│To Look.......│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Recoiling.....│ │ │                                                  "
+        "  "
+        "       \n"
+        "│To Display....│ │ │                                                  "
+        "  "
+        "       \n"
+        "└──────────────┴─┴─┘                                                  "
+        "  "
+        "       \n");
+    mono->Set_Cursor(1, 1);
+    mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
+    CargoClass::Debug_Dump(mono);
+    MissionClass::Debug_Dump(mono);
+    TarComClass::Debug_Dump(mono);
+  }
 }
 
 /***********************************************************************************************

@@ -62,10 +62,11 @@
 
 #include <cstring>
 
-#include "rand.h"
 #include "td/abstract.h"
 #include "td/aircraft.h"
 #include "td/building.h"
+#include "td/config.h"
+#include "td/conquer.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/externs.h"
@@ -79,6 +80,7 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/object.h"
+#include "td/rand.h"
 #include "td/target.h"
 #include "td/teamtype.h"
 #include "td/techno.h"
@@ -116,18 +118,18 @@ void* TeamClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int TeamClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Teams.ID(this);
-  if (num < 0 || num >= TEAM_MAX) {
-    Validate_Error("TEAM");
-    return (0);
-  } else
+    num = Teams.ID(this);
+    if (num < 0 || num >= TEAM_MAX) {
+      Validate_Error("TEAM");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************

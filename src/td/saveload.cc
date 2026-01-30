@@ -853,7 +853,7 @@ void Decode_All_Pointers() {
       ScenPlayer = SCEN_PLAYER_JP;
       break;
   }
-  Check_Ptr(PlayerPtr, __FILE__, __LINE__);
+  Check_Ptr(PlayerPtr);
 
   Set_Scenario_Name(ScenarioName, Scenario, ScenPlayer, ScenDir, ScenVar);
 
@@ -863,7 +863,7 @@ void Decode_All_Pointers() {
   for (i = 0; i < CurrentObject.Count(); i++) {
     CurrentObject[i] =
         As_Object(static_cast<TARGET>((uintptr_t)CurrentObject[i]));
-    Check_Ptr(CurrentObject[i], __FILE__, __LINE__);
+    Check_Ptr(CurrentObject[i]);
   }
 
   /*
@@ -872,7 +872,7 @@ void Decode_All_Pointers() {
   */
   if (Map.PendingObjectPtr) {
     Map.PendingObject = &Map.PendingObjectPtr->Class_Of();
-    Check_Ptr((void*)Map.PendingObject, __FILE__, __LINE__);
+    Check_Ptr(Map.PendingObject);
     Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
   } else {
     Map.PendingObject = nullptr;

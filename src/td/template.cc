@@ -62,6 +62,8 @@
 #include "td/abstract.h"
 #include "td/cell.h"
 #include "td/compat.h"
+#include "td/config.h"
+#include "td/conquer.h"
 #include "td/externs.h"
 #include "td/heap.h"
 #include "td/inline.h"
@@ -91,18 +93,18 @@ void* TemplateClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int TemplateClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Templates.ID(this);
-  if (num < 0 || num >= TEMPLATE_MAX) {
-    Validate_Error("TEMPLATE");
-    return (0);
-  } else
+    num = Templates.ID(this);
+    if (num < 0 || num >= TEMPLATE_MAX) {
+      Validate_Error("TEMPLATE");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************

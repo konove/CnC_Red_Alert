@@ -74,6 +74,8 @@
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/compat.h"
+#include "td/config.h"
+#include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/ftimer.h"
@@ -146,18 +148,18 @@ static const char* ActionText[TriggerClass::ACTION_COUNT + 1] = {
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int TriggerClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Triggers.ID(this);
-  if (num < 0 || num >= TRIGGER_MAX) {
-    Validate_Error("TRIGGER");
-    return (0);
-  } else
+    num = Triggers.ID(this);
+    if (num < 0 || num >= TRIGGER_MAX) {
+      Validate_Error("TRIGGER");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************

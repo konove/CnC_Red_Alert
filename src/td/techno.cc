@@ -148,6 +148,7 @@
 #include "td/bullet.h"
 #include "td/cargo.h"
 #include "td/cell.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"
@@ -414,30 +415,30 @@ int TechnoTypeClass::Repair_Step() const { return 0; }
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  mono->Set_Cursor(0, 0);
-  mono->Printf("(%04X)p=%d,d=%d", House->Power_Fraction(), House->Power,
-               House->Drain);
-  //	mono->Set_Cursor(0,0);mono->Printf("(%d)", House->Blockage);
-  mono->Text_Print("X", 16 + (IsALoaner ? 2 : 0), 11);
-  mono->Text_Print("X", 16 + (IsLocked ? 2 : 0), 9);
+  if constexpr (config::kCheatKeysEnabled) {
+    mono->Set_Cursor(0, 0);
+    mono->Printf("(%04X)p=%d,d=%d", House->Power_Fraction(), House->Power,
+                 House->Drain);
+    //	mono->Set_Cursor(0,0);mono->Printf("(%d)", House->Blockage);
+    mono->Text_Print("X", 16 + (IsALoaner ? 2 : 0), 11);
+    mono->Text_Print("X", 16 + (IsLocked ? 2 : 0), 9);
 
-  mono->Text_Print("X", 16 + (IsInRecoilState ? 2 : 0), 17);
-  mono->Text_Print("X", 16 + (IsTethered ? 2 : 0), 8);
-  mono->Text_Print("X", 16 + (IsOwnedByPlayer ? 2 : 0), 5);
-  mono->Text_Print("X", 16 + (IsDiscoveredByPlayer ? 2 : 0), 6);
-  //	mono->Text_Print("X", 16 + (IsALemon?2:0), 9);
-  mono->Set_Cursor(28, 7);
-  mono->Printf("%2d", Arm);
-  mono->Set_Cursor(34, 1);
-  mono->Printf("%04X", TarCom);
-  mono->Set_Cursor(29, 3);
-  mono->Printf("%02X", PrimaryFacing.Current());
+    mono->Text_Print("X", 16 + (IsInRecoilState ? 2 : 0), 17);
+    mono->Text_Print("X", 16 + (IsTethered ? 2 : 0), 8);
+    mono->Text_Print("X", 16 + (IsOwnedByPlayer ? 2 : 0), 5);
+    mono->Text_Print("X", 16 + (IsDiscoveredByPlayer ? 2 : 0), 6);
+    //	mono->Text_Print("X", 16 + (IsALemon?2:0), 9);
+    mono->Set_Cursor(28, 7);
+    mono->Printf("%2d", Arm);
+    mono->Set_Cursor(34, 1);
+    mono->Printf("%04X", TarCom);
+    mono->Set_Cursor(29, 3);
+    mono->Printf("%02X", PrimaryFacing.Current());
 
-  FlasherClass::Debug_Dump(mono);
-  StageClass::Debug_Dump(mono);
-  RadioClass::Debug_Dump(mono);
-#endif
+    FlasherClass::Debug_Dump(mono);
+    StageClass::Debug_Dump(mono);
+    RadioClass::Debug_Dump(mono);
+  }
 }
 
 /***********************************************************************************************

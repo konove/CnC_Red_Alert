@@ -128,6 +128,7 @@
 #include "td/bullet.h"
 #include "td/cell.h"
 #include "td/combat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/coord.h"
@@ -185,18 +186,18 @@
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int HouseClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Houses.ID(this);
-  if (num < 0 || num >= HOUSE_MAX) {
-    Validate_Error("HOUSE");
-    return (0);
-  } else
+    num = Houses.ID(this);
+    if (num < 0 || num >= HOUSE_MAX) {
+      Validate_Error("HOUSE");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************
@@ -282,9 +283,9 @@ void HouseClass::One_Time() {
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Debug_Dump(MonoClass*) const {
-#ifdef CHEAT_KEYS
-  Validate();
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    Validate();
+  }
 }
 
 /***********************************************************************************************
@@ -1845,14 +1846,14 @@ void HouseClass::Make_Ally(HousesType house) {
 
     Allies |= 1 << house;
 
-#ifdef CHEAT_KEYS
-    if (Debug_Flag) {
-      HouseClass* enemy = HouseClass::As_Pointer(house);
-      if (enemy && !enemy->Is_Ally(this)) {
-        enemy->Make_Ally(Class->House);
+    if constexpr (config::kCheatKeysEnabled) {
+      if (Debug_Flag) {
+        HouseClass* enemy = HouseClass::As_Pointer(house);
+        if (enemy && !enemy->Is_Ally(this)) {
+          enemy->Make_Ally(Class->House);
+        }
       }
     }
-#endif
 
     if ((Debug_Flag || GameToPlay != GAME_NORMAL) && !ScenarioInit) {
       char buffer[80];

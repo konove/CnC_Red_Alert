@@ -63,6 +63,7 @@
 #include "td/anim.h"
 #include "td/cell.h"
 #include "td/combat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/coord.h"
 #include "td/defines.h"
@@ -104,18 +105,18 @@ void* BulletClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int BulletClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Bullets.ID(this);
-  if (num < 0 || num >= BULLET_MAX) {
-    Validate_Error("BULLET");
-    return (0);
-  } else
+    num = Bullets.ID(this);
+    if (num < 0 || num >= BULLET_MAX) {
+      Validate_Error("BULLET");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************

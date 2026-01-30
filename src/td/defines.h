@@ -72,45 +72,18 @@
 #define NEWMENU
 #endif
 
-/**********************************************************************
-**	If the scenario editor to to be active in this build then uncomment
-**	the following #define line.
-*/
-// #define SCENARIO_EDITOR
-
-/**********************************************************************
-**	This define enables the full set of cheat keys and special
-**	command line options.
-*/
-// #define CHEAT_KEYS
-
-/**********************************************************************
-**	If this is defined, the special Virgin limited cheat keys
-**	are enabled. This allows the "cheat" parameter and then only
-**	allows the ALT-W to win the mission.
-*/
-// #define VIRGIN_CHEAT_KEYS
+// SCENARIO_EDITOR, CHEAT_KEYS, and VIRGIN_CHEAT_KEYS are now constexpr
+// flags in td/config.h (config::kScenarioEditorEnabled,
+// config::kCheatKeysEnabled, config::kVirginCheatKeysEnabled).
 
 /**********************************************************************
 **	Optional parameter control for special options.
+**	These are hash constants used as case labels -- always defined.
 */
 // #define	PARM_6PLAYER		0x5D9F6F24		// "6"
 #define PARM_6PLAYER 0x9CAFC93B  // Alternate 6 player keyphrase.
 
-/*
-**	Enable the set of limited cheat key options.
-*/
-#ifdef VIRGIN_CHEAT_KEYS
-#define PARM_PLAYTEST 0xF7DDC227  // "PLAYTEST"
-#endif
-
-/*
-**	Enable the full set of cheat key options.
-*/
-#ifdef CHEAT_KEYS
-#ifndef PARM_PLAYTEST
-#define PARM_PLAYTEST 0xF7DDC227  // "PLAYTEST"
-#endif
+#define PARM_PLAYTEST 0xF7DDC227      // "PLAYTEST"
 #define PARM_CHEATDAVID 0xBE79088C    // Cheat keys for David Dettmer
 #define PARM_CHEATERIK 0x9F38A19D     // Cheat keys for Erik Yeo
 #define PARM_EDITORERIK 0xC2AA509B    //	Map editor for Erik Yeo
@@ -121,7 +94,6 @@
 #define PARM_EDITORBILL 0x7E7C4CCA    //	"-EDITOR"
 #define PARM_CHEATMIKE 0x00532693     // Mike Lightner
 #define PARM_CHEATADAM 0xDFABC23A     // Adam Isgreen
-#endif
 
 // #define	PARM_CHEAT		0x6F4BE7CA		// "CHEAT"
 // #define	PARM_EDITOR		0x7E7C4CCA		//

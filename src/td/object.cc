@@ -102,8 +102,10 @@
 #include "td/bullet.h"
 #include "td/cell.h"
 #include "td/combat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"
+#include "td/dialog.h"
 #include "td/externs.h"
 #include "td/foot.h"
 #include "td/globals.h"
@@ -811,16 +813,16 @@ bool ObjectClass::Render(bool forced) {
       */
       Draw_It(x, y, WINDOW_TACTICAL);
 
-#ifdef SCENARIO_EDITOR
-      /*
-      **	Draw the trigger attached to the object. Draw_It is window-
-      **	relative, so add the window's x-coord to 'x'.
-      */
-      if (Debug_Map && Trigger) {
-        Fancy_Text_Print(Trigger->Get_Name(), x + (WinX << 3), y, PINK, TBLACK,
-                         TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
+      if constexpr (config::kScenarioEditorEnabled) {
+        /*
+        **	Draw the trigger attached to the object. Draw_It is window-
+        **	relative, so add the window's x-coord to 'x'.
+        */
+        if (Debug_Map && Trigger) {
+          Fancy_Text_Print(Trigger->Get_Name(), x + (WinX << 3), y, PINK,
+                           TBLACK, TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
+        }
       }
-#endif
 
       return true;
     }
@@ -844,18 +846,18 @@ bool ObjectClass::Render(bool forced) {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  mono->Text_Print("X", 16 + (IsToDisplay ? 2 : 0), 18);
-  mono->Text_Print("X", 16 + (IsActive ? 2 : 0), 3);
-  mono->Text_Print("X", 16 + (IsInLimbo ? 2 : 0), 4);
-  mono->Text_Print("X", 16 + (IsSelected ? 2 : 0), 7);
-  mono->Set_Cursor(56, 1);
-  mono->Printf("%08lX", Coord);
-  mono->Set_Cursor(14, 1);
-  mono->Printf("[%04X]", As_Target());
-  mono->Set_Cursor(20, 3);
-  mono->Printf("%2d[%d]", Strength, Class_Of().MaxStrength);
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    mono->Text_Print("X", 16 + (IsToDisplay ? 2 : 0), 18);
+    mono->Text_Print("X", 16 + (IsActive ? 2 : 0), 3);
+    mono->Text_Print("X", 16 + (IsInLimbo ? 2 : 0), 4);
+    mono->Text_Print("X", 16 + (IsSelected ? 2 : 0), 7);
+    mono->Set_Cursor(56, 1);
+    mono->Printf("%08lX", Coord);
+    mono->Set_Cursor(14, 1);
+    mono->Printf("[%04X]", As_Target());
+    mono->Set_Cursor(20, 3);
+    mono->Printf("%2d[%d]", Strength, Class_Of().MaxStrength);
+  }
 }
 
 /***********************************************************************************************

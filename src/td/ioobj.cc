@@ -256,7 +256,7 @@ void TeamTypeClass::Decode_Pointers() {
   */
   for (int i = 0; i < ClassCount; i++) {
     Class[i] = Target_To_TechnoType(static_cast<TARGET>((uintptr_t)Class[i]));
-    Check_Ptr((void*)Class[i], __FILE__, __LINE__);
+    Check_Ptr((void*)Class[i]);
   }
 }
 
@@ -343,10 +343,10 @@ void TeamClass::Decode_Pointers() {
   ------------------- Decode Class & House for this team -------------------
   */
   (TeamTypeClass*&)Class = As_TeamType(static_cast<TARGET>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
   (HouseClass*&)House =
       HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
-  Check_Ptr((void*)House, __FILE__, __LINE__);
+  Check_Ptr(House);
 
   /*
   -------------------------- Decode the 'Member' ---------------------------
@@ -370,7 +370,7 @@ void TeamClass::Decode_Pointers() {
         break;
     }
 
-    Check_Ptr((void*)Member, __FILE__, __LINE__);
+    Check_Ptr(Member);
   }
 }
 
@@ -454,7 +454,7 @@ void TriggerClass::Code_Pointers() {
 void TriggerClass::Decode_Pointers() {
   if (Team) {
     Team = As_TeamType(static_cast<TARGET>((uintptr_t)Team));
-    Check_Ptr((void*)Team, __FILE__, __LINE__);
+    Check_Ptr(Team);
   }
 }
 
@@ -537,7 +537,7 @@ void AircraftClass::Decode_Pointers() {
   */
   (AircraftTypeClass const*&)Class = &AircraftTypeClass::As_Reference(
       static_cast<AircraftType>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -632,14 +632,14 @@ void AnimClass::Decode_Pointers() {
   */
   (AnimTypeClass const*&)Class =
       &AnimTypeClass::As_Reference(static_cast<AnimType>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
 
   /*
   ---------------------------- Decode 'Object' -----------------------------
   */
   if (Object) {
     Object = As_Object(static_cast<TARGET>((uintptr_t)Object));
-    Check_Ptr((void*)Object, __FILE__, __LINE__);
+    Check_Ptr(Object);
   }
 
   /*
@@ -736,14 +736,14 @@ void BuildingClass::Decode_Pointers() {
   */
   (BuildingTypeClass const*&)Class = &BuildingTypeClass::As_Reference(
       static_cast<StructType>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
 
   /*------------------------------------------------------------------------
   Decode the Factory value, subtracting off the '1' we added when coding it
   ------------------------------------------------------------------------*/
   if (Factory) {
     Factory = Factories.Raw_Ptr((intptr_t)Factory - 1);
-    Check_Ptr((void*)Factory, __FILE__, __LINE__);
+    Check_Ptr(Factory);
   }
 
   /*
@@ -837,14 +837,14 @@ void BulletClass::Decode_Pointers() {
   */
   (BulletTypeClass const*&)Class =
       &BulletTypeClass::As_Reference(static_cast<BulletType>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
 
   /*
   ---------------------------- Decode 'Payback' ----------------------------
   */
   if (Payback) {
     Payback = As_Techno(static_cast<TARGET>((uintptr_t)Payback));
-    Check_Ptr((void*)Payback, __FILE__, __LINE__);
+    Check_Ptr(Payback);
   }
 
   /*
@@ -933,7 +933,7 @@ void InfantryClass::Decode_Pointers() {
   */
   (InfantryTypeClass const*&)Class = &InfantryTypeClass::As_Reference(
       static_cast<InfantryType>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1019,7 +1019,7 @@ void OverlayClass::Decode_Pointers() {
   */
   (OverlayTypeClass const*&)Class = &OverlayTypeClass::As_Reference(
       static_cast<OverlayType>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1105,7 +1105,7 @@ void SmudgeClass::Decode_Pointers() {
   */
   (SmudgeTypeClass const*&)Class =
       &SmudgeTypeClass::As_Reference(static_cast<SmudgeType>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1191,7 +1191,7 @@ void TemplateClass::Decode_Pointers() {
   */
   (TemplateTypeClass const*&)Class = &TemplateTypeClass::As_Reference(
       static_cast<TemplateType>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1278,7 +1278,7 @@ void TerrainClass::Decode_Pointers() {
   */
   (TerrainTypeClass const*&)Class = &TerrainTypeClass::As_Reference(
       static_cast<TerrainType>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1424,11 +1424,11 @@ void FactoryClass::Code_Pointers() {
 void FactoryClass::Decode_Pointers() {
   if (Object) {
     Object = As_Techno(static_cast<TARGET>((uintptr_t)Object));
-    Check_Ptr((void*)Object, __FILE__, __LINE__);
+    Check_Ptr(Object);
   }
 
   House = HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
-  Check_Ptr((void*)House, __FILE__, __LINE__);
+  Check_Ptr(House);
 
   StageClass::Decode_Pointers();
 }
@@ -1553,7 +1553,7 @@ void LayerClass::Decode_Pointers() {
   for (int i = 0; i < Count(); i++) {
     target = static_cast<TARGET>((uintptr_t)(*this)[i]);
     (*this)[i] = As_Object(target);
-    Check_Ptr((*this)[i], __FILE__, __LINE__);
+    Check_Ptr((*this)[i]);
   }
 }
 
@@ -1630,7 +1630,7 @@ void HouseClass::Decode_Pointers() {
   */
   (HouseTypeClass const*&)Class =
       &HouseTypeClass::As_Reference(static_cast<HousesType>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
 }
 
 /***********************************************************************************************
@@ -1873,7 +1873,7 @@ void DriveClass::Decode_Pointers() {
   */
   (UnitTypeClass const*&)Class =
       &UnitTypeClass::As_Reference(static_cast<UnitType>((uintptr_t)Class));
-  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  Check_Ptr(Class);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1924,12 +1924,12 @@ void FootClass::Code_Pointers() {
 void FootClass::Decode_Pointers() {
   if (Team) {
     Team = As_Team(static_cast<TARGET>((uintptr_t)Team));
-    Check_Ptr((void*)Team, __FILE__, __LINE__);
+    Check_Ptr(Team);
   }
 
   if (Member) {
     Member = dynamic_cast<FootClass*>(As_Techno((TARGET)(uintptr_t)Member));
-    Check_Ptr((void*)Member, __FILE__, __LINE__);
+    Check_Ptr(Member);
   }
 
   TechnoClass::Decode_Pointers();
@@ -1982,7 +1982,7 @@ void RadioClass::Decode_Pointers() {
   */
   if (Radio) {
     Radio = As_Techno(static_cast<TARGET>((uintptr_t)Radio));
-    Check_Ptr((void*)Radio, __FILE__, __LINE__);
+    Check_Ptr((void*)Radio);
   }
 
   MissionClass::Decode_Pointers();
@@ -2037,7 +2037,7 @@ void TechnoClass::Decode_Pointers() {
   ----------------------------- Decode 'House' -----------------------------
   */
   House = HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
-  Check_Ptr((void*)House, __FILE__, __LINE__);
+  Check_Ptr((void*)House);
 
   FlasherClass::Decode_Pointers();
   StageClass::Decode_Pointers();
@@ -2127,7 +2127,7 @@ void CargoClass::Decode_Pointers() {
   if (CargoHold) {
     CargoHold =
         dynamic_cast<FootClass*>(As_Techno((TARGET)(uintptr_t)CargoHold));
-    Check_Ptr((void*)CargoHold, __FILE__, __LINE__);
+    Check_Ptr((void*)CargoHold);
   }
 }
 
@@ -2208,11 +2208,11 @@ void ObjectClass::Code_Pointers() {
 void ObjectClass::Decode_Pointers() {
   if (Next) {
     Next = As_Object(static_cast<TARGET>((uintptr_t)Next));
-    Check_Ptr((void*)Next, __FILE__, __LINE__);
+    Check_Ptr((void*)Next);
   }
 
   if (Trigger) {
     Trigger = As_Trigger(static_cast<TARGET>((uintptr_t)Trigger));
-    Check_Ptr((void*)Trigger, __FILE__, __LINE__);
+    Check_Ptr((void*)Trigger);
   }
 }

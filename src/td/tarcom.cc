@@ -57,6 +57,7 @@
 #include "td/tarcom.h"
 
 #include "td/audio.h"
+#include "td/config.h"
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/facing.h"
@@ -83,9 +84,9 @@ TarComClass::~TarComClass() {}
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void TarComClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  TurretClass::Debug_Dump(mono);
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    TurretClass::Debug_Dump(mono);
+  }
 }
 
 /***********************************************************************************************

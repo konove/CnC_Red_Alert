@@ -67,11 +67,20 @@
 */
 #include "td/gadget.h"
 
+#include <unistd.h>
+
+#include <cstdio>
+
+#include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/ww_mouse.h"
+#include "td/config.h"
 #include "td/control.h"
+#include "td/globals.h"
 #include "td/jshell.h"
 #include "td/link.h"
+#include "td/palette.h"
+#include "tech/pcx_file.h"
 
 GadgetClass* GadgetClass::StuckOn = nullptr;
 
@@ -436,32 +445,30 @@ KeyNumType GadgetClass::Input() {
     key = Keyboard::Get();
   }
 
-#ifdef SCENARIO_EDITOR
+  if constexpr (config::kScenarioEditorEnabled) {
+    if (key == KN_K) {
+      /*
+      ** time to create a screen shot using the PCX code (if it works)
+      */
+      GraphicBufferClass temp_page(
+          SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
+          SeenBuff.Get_Width() * SeenBuff.Get_Height());
+      char filename[30];
 
-  if (key == KN_K) {
-    /*
-    ** time to create a screen shot using the PCX code (if it works)
-    */
-    GraphicBufferClass temp_page(SeenBuff.Get_Width(), SeenBuff.Get_Height(),
-                                 NULL,
-                                 SeenBuff.Get_Width() * SeenBuff.Get_Height());
-    char filename[30];
-
-    SeenBuff.Blit(temp_page);
-    for (int lp = 0; lp < 99; lp++) {
-      if (lp < 10) {
-        sprintf(filename, "scrsht0%d.pcx", lp);
-      } else {
-        sprintf(filename, "scrsht%d.pcx", lp);
+      SeenBuff.Blit(temp_page);
+      for (int lp = 0; lp < 99; lp++) {
+        if (lp < 10) {
+          sprintf(filename, "scrsht0%d.pcx", lp);
+        } else {
+          sprintf(filename, "scrsht%d.pcx", lp);
+        }
+        if (access(filename, F_OK) == -1) break;
       }
-      if (access(filename, F_OK) == -1) break;
+
+      Write_PCX_File(filename, temp_page, (unsigned char*)CurrentPalette);
+      // Map.Place_Random_Crate();
     }
-
-    Write_PCX_File(filename, temp_page, (unsigned char*)CurrentPalette);
-    // Map.Place_Random_Crate();
   }
-
-#endif  // SCENARIO_EDITOR
 
   /*
   **	For mouse button clicks, the mouse position is actually held in the

@@ -42,6 +42,7 @@
 
 #include "td/flasher.h"
 
+#include "td/config.h"
 #include "td/monoc.h"
 
 /***********************************************************************************************
@@ -61,10 +62,10 @@
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void FlasherClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  mono->Set_Cursor(50, 7);
-  mono->Printf("%2d", FlashCount);
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    mono->Set_Cursor(50, 7);
+    mono->Printf("%2d", FlashCount);
+  }
 }
 
 /***********************************************************************************************

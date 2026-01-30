@@ -80,6 +80,8 @@
 #include <algorithm>
 #include <cstddef>
 
+#include "td/config.h"
+#include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
@@ -91,18 +93,18 @@
 #include "td/type.h"
 
 int FactoryClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Factories.ID(this);
-  if (num < 0 || num >= FACTORY_MAX) {
-    Validate_Error("FACTORY");
-    return (0);
-  } else
+    num = Factories.ID(this);
+    if (num < 0 || num >= FACTORY_MAX) {
+      Validate_Error("FACTORY");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************

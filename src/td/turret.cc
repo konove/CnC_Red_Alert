@@ -54,6 +54,7 @@
 #include <algorithm>
 #include <cstdlib>
 
+#include "td/config.h"
 #include "td/const.h"
 #include "td/coord.h"
 #include "td/inline.h"
@@ -97,14 +98,14 @@ TurretClass::TurretClass(UnitType classid, HousesType house)
  * HISTORY: * 05/12/1994 JLB : Created. *
  *=============================================================================================*/
 void TurretClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  mono->Set_Cursor(36, 3);
-  mono->Printf("%02X:%02X", SecondaryFacing.Current(),
-               SecondaryFacing.Desired());
-  mono->Set_Cursor(28, 7);
-  mono->Printf("%2d", Arm);
-  DriveClass::Debug_Dump(mono);
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    mono->Set_Cursor(36, 3);
+    mono->Printf("%02X:%02X", SecondaryFacing.Current(),
+                 SecondaryFacing.Desired());
+    mono->Set_Cursor(28, 7);
+    mono->Printf("%2d", Arm);
+    DriveClass::Debug_Dump(mono);
+  }
 }
 
 /***********************************************************************************************

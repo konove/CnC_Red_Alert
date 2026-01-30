@@ -111,6 +111,7 @@
 #include "td/ccfile.h"
 #include "td/cell.h"
 #include "td/compat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/coord.h"
@@ -2089,21 +2090,21 @@ void DisplayClass::Draw_It(bool forced) {
     CellRedraw.assign(CellRedraw.size(), false);
     // Colour_Debug(0);
 
-#ifdef SCENARIO_EDITOR
-    /*
-    **	If we're placing an object (PendingObject is non-NULL), and that object
-    **	is NOT an icon, smudge, or overlay, draw it here.
-    **	Terrain, Buildings & Aircraft aren't drawn at the cell's center coord;
-    **	they're drawn at the upper left coord, so I have to AND the coord value
-    **	with 0xFF00FF00 to strip off the lepton coordinates, but leave the
-    **	cell coordinates.
-    */
-    if (Debug_Map && PendingObjectPtr) {
-      PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
-          Cell_Coord(ZoneCell + ZoneOffset));
-      PendingObjectPtr->Render(true);
+    if constexpr (config::kScenarioEditorEnabled) {
+      /*
+      **	If we're placing an object (PendingObject is non-NULL), and that
+      * object *	is NOT an icon, smudge, or overlay, draw it here.
+      **	Terrain, Buildings & Aircraft aren't drawn at the cell's center
+      * coord; *	they're drawn at the upper left coord, so I have to AND
+      * the coord value *	with 0xFF00FF00 to strip off the lepton
+      * coordinates, but leave the *	cell coordinates.
+      */
+      if (Debug_Map && PendingObjectPtr) {
+        PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
+            Cell_Coord(ZoneCell + ZoneOffset));
+        PendingObjectPtr->Render(true);
+      }
     }
-#endif
   }
 }
 

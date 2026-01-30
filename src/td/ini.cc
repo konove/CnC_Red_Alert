@@ -59,7 +59,6 @@
 #include <cstring>
 
 #include "port/ex_string.h"
-#include "rand.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/shape.h"
 #include "td/base.h"
@@ -67,6 +66,7 @@
 #include "td/ccfile.h"
 #include "td/cell.h"
 #include "td/compat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -82,6 +82,7 @@
 #include "td/overlay.h"
 #include "td/profile.h"
 #include "td/queue.h"
+#include "td/rand.h"
 #include "td/scenario.h"
 #include "td/smudge.h"
 #include "td/special.h"
@@ -648,109 +649,109 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. * 05/11/1995 JLB : Updates movie data. *
  *=============================================================================================*/
-void Write_Scenario_Ini(char* /*root*/) {
-#ifdef CHEAT_KEYS
-  char* buffer;                       // Scenario.ini staging buffer pointer.
-  char fname[_MAX_FNAME + _MAX_EXT];  // full scenario name
-  HousesType house;
-  CCFileClass file;
+void Write_Scenario_Ini(char* root) {
+  if constexpr (config::kCheatKeysEnabled) {
+    char* buffer;                       // Scenario.ini staging buffer pointer.
+    char fname[_MAX_FNAME + _MAX_EXT];  // full scenario name
+    HousesType house;
+    CCFileClass file;
 
-  /*
-  **	Get a working pointer to the INI staging buffer. Make sure that the
-  *buffer *	starts cleared out of any data.
-  */
-  buffer = (char*)_ShapeBuffer;
-  memset(buffer, '\0', _ShapeBufferSize);
+    /*
+    **	Get a working pointer to the INI staging buffer. Make sure that the
+    *buffer *	starts cleared out of any data.
+    */
+    buffer = _ShapeBuffer;
+    memset(buffer, '\0', _ShapeBufferSize);
 
-  switch (ScenPlayer) {
-    case SCEN_PLAYER_GDI:
-      house = HOUSE_GOOD;
-      break;
+    switch (ScenPlayer) {
+      case SCEN_PLAYER_GDI:
+        house = HOUSE_GOOD;
+        break;
 
-    case SCEN_PLAYER_NOD:
-      house = HOUSE_BAD;
-      break;
+      case SCEN_PLAYER_NOD:
+        house = HOUSE_BAD;
+        break;
 
-    case SCEN_PLAYER_JP:
-      house = HOUSE_JP;
-      break;
+      case SCEN_PLAYER_JP:
+        house = HOUSE_JP;
+        break;
 
-    default:
-      house = HOUSE_MULTI1;
-      break;
+      default:
+        house = HOUSE_MULTI1;
+        break;
+    }
+
+    /*
+    **	Create scenario filename and clear the buffer to empty.
+    */
+    sprintf(fname, "%s.INI", root);
+    file.Set_Name(fname);
+    if (file.Is_Available()) {
+      //		file.Open(READ);
+      file.Read(buffer, _ShapeBufferSize - 1);
+      //		file.Close();
+    } else {
+      sprintf(buffer, "; Scenario %d control for house %s.\r\n", Scenario,
+              HouseTypeClass::As_Reference(house).IniName);
+    }
+
+    WWWritePrivateProfileString("Basic", "Intro", IntroMovie, buffer);
+    WWWritePrivateProfileString("Basic", "Brief", BriefMovie, buffer);
+    WWWritePrivateProfileString("Basic", "Win", WinMovie, buffer);
+    WWWritePrivateProfileString("Basic", "Lose", LoseMovie, buffer);
+    WWWritePrivateProfileString("Basic", "Action", ActionMovie, buffer);
+    WWWritePrivateProfileString("Basic", "Player", PlayerPtr->Class->IniName,
+                                buffer);
+    WWWritePrivateProfileString("Basic", "Theme", Theme.Base_Name(TransitTheme),
+                                buffer);
+    WWWritePrivateProfileInt("Basic", "BuildLevel", BuildLevel, buffer);
+    WWWritePrivateProfileInt("Basic", "CarryOverMoney",
+                             Fixed_To_Cardinal(100, CarryOverPercent), buffer);
+    WWWritePrivateProfileInt("Basic", "CarryOverCap", CarryOverCap, buffer);
+
+    TeamTypeClass::Write_INI(buffer, true);
+    TriggerClass::Write_INI(buffer, true);
+    Map.Write_INI(buffer);
+    Map.Write_Binary(root);
+    HouseClass::Write_INI(buffer);
+    UnitClass::Write_INI(buffer);
+    InfantryClass::Write_INI(buffer);
+    BuildingClass::Write_INI(buffer);
+    TerrainClass::Write_INI(buffer);
+    OverlayClass::Write_INI(buffer);
+    SmudgeClass::Write_INI(buffer);
+
+    Base.Write_INI(buffer);
+
+    /*
+    **	Write the scenario data out to a file.
+    */
+    //	file.Open(WRITE);
+    file.Write(buffer, strlen(buffer));
+    //	file.Close();
+
+    /*
+    **	Now update the Master INI file, containing the master list of triggers &
+    *teams
+    */
+    memset(buffer, '\0', _ShapeBufferSize);
+
+    file.Set_Name("MASTER.INI");
+    if (file.Is_Available()) {
+      //		file.Open(READ);
+      file.Read(buffer, _ShapeBufferSize - 1);
+      //		file.Close();
+    } else {
+      sprintf(buffer, "; Master Trigger & Team List.\r\n");
+    }
+
+    TeamTypeClass::Write_INI(buffer, false);
+    TriggerClass::Write_INI(buffer, false);
+
+    //	file.Open(WRITE);
+    file.Write(buffer, strlen(buffer));
+    //	file.Close();
   }
-
-  /*
-  **	Create scenario filename and clear the buffer to empty.
-  */
-  sprintf(fname, "%s.INI", root);
-  file.Set_Name(fname);
-  if (file.Is_Available()) {
-    //		file.Open(READ);
-    file.Read(buffer, _ShapeBufferSize - 1);
-    //		file.Close();
-  } else {
-    sprintf(buffer, "; Scenario %d control for house %s.\r\n", Scenario,
-            HouseTypeClass::As_Reference(house).IniName);
-  }
-
-  WWWritePrivateProfileString("Basic", "Intro", IntroMovie, buffer);
-  WWWritePrivateProfileString("Basic", "Brief", BriefMovie, buffer);
-  WWWritePrivateProfileString("Basic", "Win", WinMovie, buffer);
-  WWWritePrivateProfileString("Basic", "Lose", LoseMovie, buffer);
-  WWWritePrivateProfileString("Basic", "Action", ActionMovie, buffer);
-  WWWritePrivateProfileString("Basic", "Player", PlayerPtr->Class->IniName,
-                              buffer);
-  WWWritePrivateProfileString("Basic", "Theme", Theme.Base_Name(TransitTheme),
-                              buffer);
-  WWWritePrivateProfileInt("Basic", "BuildLevel", BuildLevel, buffer);
-  WWWritePrivateProfileInt("Basic", "CarryOverMoney",
-                           Fixed_To_Cardinal(100, CarryOverPercent), buffer);
-  WWWritePrivateProfileInt("Basic", "CarryOverCap", CarryOverCap, buffer);
-
-  TeamTypeClass::Write_INI(buffer, true);
-  TriggerClass::Write_INI(buffer, true);
-  Map.Write_INI(buffer);
-  Map.Write_Binary(root);
-  HouseClass::Write_INI(buffer);
-  UnitClass::Write_INI(buffer);
-  InfantryClass::Write_INI(buffer);
-  BuildingClass::Write_INI(buffer);
-  TerrainClass::Write_INI(buffer);
-  OverlayClass::Write_INI(buffer);
-  SmudgeClass::Write_INI(buffer);
-
-  Base.Write_INI(buffer);
-
-  /*
-  **	Write the scenario data out to a file.
-  */
-  //	file.Open(WRITE);
-  file.Write(buffer, strlen(buffer));
-  //	file.Close();
-
-  /*
-  **	Now update the Master INI file, containing the master list of triggers &
-  *teams
-  */
-  memset(buffer, '\0', _ShapeBufferSize);
-
-  file.Set_Name("MASTER.INI");
-  if (file.Is_Available()) {
-    //		file.Open(READ);
-    file.Read(buffer, _ShapeBufferSize - 1);
-    //		file.Close();
-  } else {
-    sprintf(buffer, "; Master Trigger & Team List.\r\n");
-  }
-
-  TeamTypeClass::Write_INI(buffer, false);
-  TriggerClass::Write_INI(buffer, false);
-
-  //	file.Open(WRITE);
-  file.Write(buffer, strlen(buffer));
-//	file.Close();
-#endif
 }
 
 /***********************************************************************************************

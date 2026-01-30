@@ -108,6 +108,7 @@
 #include "td/cell.h"
 #include "td/combat.h"
 #include "td/compat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/coord.h"
@@ -209,18 +210,18 @@ DoStruct const InfantryClass::MasterDoControls[DO_COUNT] = {
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int InfantryClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Infantry.ID(this);
-  if (num < 0 || num >= INFANTRY_MAX) {
-    Validate_Error("INFANTRY");
-    return (0);
-  } else
+    num = Infantry.ID(this);
+    if (num < 0 || num >= INFANTRY_MAX) {
+      Validate_Error("INFANTRY");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************
@@ -240,59 +241,75 @@ int InfantryClass::Validate() const {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Debug_Dump(MonoClass* mono) const {
-#ifdef CHEAT_KEYS
-  Validate();
-  mono->Set_Cursor(0, 0);
-  mono->Print(
-      "┌Name:──────────────┬Mission:───┬TarCom:┬NavCom:┬Radio:┬Coord:──┬HeadTo:"
-      "─┬St:─┐\n"
-      "│                   │           │       │       │      │        │       "
-      " │    │\n"
-      "├──────────────┬N┬Y┬Health:─┬Body:┬Turret:┬Speed:┬Path:┴──────┬Cargo:"
-      "────┴────┤\n"
-      "│Active........│ │ │        │     │       │      │            │         "
-      "      │\n"
-      "│Limbo.........│ │ "
-      "├────────┴─────┴───────┴──────┴────────────┴───────────────┤\n"
-      "│Owned.........│ │ │Last Message:                                       "
-      "      │\n"
-      "│Discovered....│ │ "
-      "├Timer:┬Arm:┬Track:┬Tiberium:┬Flash:┬Stage:┬Team:────┬Arch:┤\n"
-      "│Selected......│ │ │      │    │      │         │      │      │         "
-      "│     │\n"
-      "│Teathered.....│ │ "
-      "├──────┴────┴──────┴─────────┴──────┴──────┴─────────┴─────┘\n"
-      "│Locked on Map.│ │ │                                                    "
-      "       \n"
-      "│Is Prone......│ │ │                                                    "
-      "       \n"
-      "│Is A Loner....│ │ │                                                    "
-      "       \n"
-      "│Deploying.....│ │ │                                                    "
-      "       \n"
-      "│Rotating......│ │ │                                                    "
-      "       \n"
-      "│Firing........│ │ │                                                    "
-      "       \n"
-      "│Driving.......│ │ │                                                    "
-      "       \n"
-      "│To Look.......│ │ │                                                    "
-      "       \n"
-      "│Recoiling.....│ │ │                                                    "
-      "       \n"
-      "│To Display....│ │ │                                                    "
-      "       \n"
-      "└──────────────┴─┴─┘                                                    "
-      "       \n");
-  mono->Set_Cursor(1, 1);
-  mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
-  mono->Text_Print("X", 16 + (IsProne ? 2 : 0), 10);
-  mono->Set_Cursor(33, 7);
-  mono->Printf("%2d", Fear);
-  mono->Set_Cursor(41, 7);
-  mono->Printf("%2d", Doing);
-  FootClass::Debug_Dump(mono);
-#endif
+  if constexpr (config::kCheatKeysEnabled) {
+    Validate();
+    mono->Set_Cursor(0, 0);
+    mono->Print(
+        "┌Name:──────────────┬Mission:───┬TarCom:┬NavCom:┬Radio:┬Coord:"
+        "──┬HeadTo:"
+        "─┬St:─┐\n"
+        "│                   │           │       │       │      │        │     "
+        "  "
+        " │    │\n"
+        "├──────────────┬N┬Y┬Health:─┬Body:┬Turret:┬Speed:┬Path:┴──────┬Cargo:"
+        "────┴────┤\n"
+        "│Active........│ │ │        │     │       │      │            │       "
+        "  "
+        "      │\n"
+        "│Limbo.........│ │ "
+        "├────────┴─────┴───────┴──────┴────────────┴───────────────┤\n"
+        "│Owned.........│ │ │Last Message:                                     "
+        "  "
+        "      │\n"
+        "│Discovered....│ │ "
+        "├Timer:┬Arm:┬Track:┬Tiberium:┬Flash:┬Stage:┬Team:────┬Arch:┤\n"
+        "│Selected......│ │ │      │    │      │         │      │      │       "
+        "  "
+        "│     │\n"
+        "│Teathered.....│ │ "
+        "├──────┴────┴──────┴─────────┴──────┴──────┴─────────┴─────┘\n"
+        "│Locked on Map.│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Is Prone......│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Is A Loner....│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Deploying.....│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Rotating......│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Firing........│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Driving.......│ │ │                                                  "
+        "  "
+        "       \n"
+        "│To Look.......│ │ │                                                  "
+        "  "
+        "       \n"
+        "│Recoiling.....│ │ │                                                  "
+        "  "
+        "       \n"
+        "│To Display....│ │ │                                                  "
+        "  "
+        "       \n"
+        "└──────────────┴─┴─┘                                                  "
+        "  "
+        "       \n");
+    mono->Set_Cursor(1, 1);
+    mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
+    mono->Text_Print("X", 16 + (IsProne ? 2 : 0), 10);
+    mono->Set_Cursor(33, 7);
+    mono->Printf("%2d", Fear);
+    mono->Set_Cursor(41, 7);
+    mono->Printf("%2d", Doing);
+    FootClass::Debug_Dump(mono);
+  }
 }
 
 InfantryClass::InfantryClass()

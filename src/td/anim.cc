@@ -70,6 +70,7 @@
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/combat.h"
+#include "td/config.h"
 #include "td/conquer.h"
 #include "td/coord.h"
 #include "td/defines.h"
@@ -113,18 +114,18 @@ void* AnimClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 int AnimClass::Validate() const {
-#ifdef CHEAT_KEYS
-  int num;
+  if constexpr (config::kCheatKeysEnabled) {
+    int num;
 
-  num = Anims.ID(this);
-  if (num < 0 || num >= ANIM_MAX) {
-    Validate_Error("ANIM");
-    return (0);
-  } else
+    num = Anims.ID(this);
+    if (num < 0 || num >= ANIM_MAX) {
+      Validate_Error("ANIM");
+      return (0);
+    }
     return (1);
-#else
-  return 1;
-#endif
+  } else {
+    return 1;
+  }
 }
 
 /***********************************************************************************************
