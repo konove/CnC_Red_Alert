@@ -772,7 +772,6 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       }
       Prog_End();
       exit(0);
-      break;
 
     /*---------------------------------------------------------------------
     LEFT = go to previous placement object

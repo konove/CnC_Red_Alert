@@ -94,6 +94,5 @@ void SDL_Event_Handler(SDL_Event* event) {
       HiddenPage.Un_Init();
 
       exit(0);
-      break;
   }
 }

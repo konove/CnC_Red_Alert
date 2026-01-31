@@ -90,7 +90,6 @@ void SDL_Event_Handler(SDL_Event* event) {
 
       fflush(stdout);
       exit(0);
-      break;
   }
 }
 
