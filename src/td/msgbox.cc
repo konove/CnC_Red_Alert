@@ -111,9 +111,15 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
-  if (b1txt && *b1txt == '\0') b1txt = nullptr;
-  if (b2txt && *b2txt == '\0') b2txt = nullptr;
-  if (b3txt && *b3txt == '\0') b3txt = nullptr;
+  if (b1txt && *b1txt == '\0') {
+    b1txt = nullptr;
+  }
+  if (b2txt && *b2txt == '\0') {
+    b2txt = nullptr;
+  }
+  if (b3txt && *b3txt == '\0') {
+    b3txt = nullptr;
+  }
 
   /*
   **	Examine the optional button parameters. Fetch the width and starting

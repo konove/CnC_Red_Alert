@@ -551,7 +551,9 @@ BuildingClass* AircraftTypeClass::Who_Can_Build_Me(bool, bool legal,
         1L << building->ActLike & Ownable &&
         (!legal || building->House->Can_Build(Type, building->ActLike)) &&
         building->Class->ToBuild == RTTI_AIRCRAFTTYPE) {
-      if (building->IsLeader) return building;
+      if (building->IsLeader) {
+        return building;
+      }
       anybuilding = building;
     }
   }

@@ -3,7 +3,9 @@
 char* Extract_String(const void* data, int string) {
   const unsigned short int* ptr;
 
-  if (!data || string < 0) return nullptr;
+  if (!data || string < 0) {
+    return nullptr;
+  }
 
   ptr = static_cast<const unsigned short int*>(data);
 
@@ -11,7 +13,9 @@ char* Extract_String(const void* data, int string) {
   int numstrings = ptr[0] / 2;
 
   // don't index past the end (might happen if expansion files missing)
-  if (string >= numstrings) return nullptr;
+  if (string >= numstrings) {
+    return nullptr;
+  }
 
   return (char*)data + ptr[string];
 }

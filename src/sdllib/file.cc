@@ -17,14 +17,15 @@
 void* IO_Open_File(const char* filename, int mode) {
   const char* mode_str;
 
-  if (mode == READ)
+  if (mode == READ) {
     mode_str = "rb";
-  else if (mode == WRITE)
+  } else if (mode == WRITE) {
     mode_str = "wb";
-  else if (mode == (READ | WRITE))
+  } else if (mode == (READ | WRITE)) {
     mode_str = "w+b";
-  else
+  } else {
     return nullptr;
+  }
 
   return fopen(filename, mode_str);
 }
@@ -76,10 +77,13 @@ static bool Update_Find_Result(FindFileState& state, WIN32_FIND_DATA& data) {
   bool success = true;
   while (success && (data.dwFileAttributes &
                      (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_HIDDEN |
-                      FILE_ATTRIBUTE_SYSTEM)))
+                      FILE_ATTRIBUTE_SYSTEM))) {
     success = FindNextFile((HANDLE)state.data, &data);
+  }
 
-  if (!success) return false;
+  if (!success) {
+    return false;
+  }
 
   state.name = strdup(data.cFileName);
 
@@ -95,7 +99,9 @@ bool Find_First_File(const char* path_glob, FindFileState& state) {
   WIN32_FIND_DATA data;
   auto handle = FindFirstFile(path_glob, &data);
 
-  if (handle == INVALID_HANDLE_VALUE) return false;
+  if (handle == INVALID_HANDLE_VALUE) {
+    return false;
+  }
 
   state.data = handle;
 
@@ -138,7 +144,9 @@ void End_Find_File(FindFileState& state) {
 
 uint64_t Disk_Space_Available() {
   ULARGE_INTEGER space;
-  if (GetDiskFreeSpaceEx(NULL, &space, NULL, NULL)) return space.QuadPart;
+  if (GetDiskFreeSpaceEx(NULL, &space, NULL, NULL)) {
+    return space.QuadPart;
+  }
 
   return 0;
 }
@@ -187,7 +195,9 @@ bool Find_First_File(const char* path_glob, FindFileState& state) {
     std::string lower_glob = absl::AsciiStrToLower(path_glob);
     int ret2 =
         glob(lower_glob.c_str(), GLOB_MARK | GLOB_APPEND, nullptr, glob_buf);
-    if (ret2 != GLOB_NOMATCH) ret = ret2;
+    if (ret2 != GLOB_NOMATCH) {
+      ret = ret2;
+    }
   }
 
   if (ret) {
@@ -212,7 +222,9 @@ bool Find_Next_File(FindFileState& state) {
   state.offset++;
   auto* glob_buf = static_cast<glob_t*>(state.data);
 
-  if (!glob_buf) return 2;
+  if (!glob_buf) {
+    return 2;
+  }
 
   if (!Update_Find_Result(state)) {
     globfree(glob_buf);
@@ -236,9 +248,13 @@ void End_Find_File(FindFileState& state) {
 uint64_t Disk_Space_Available() {
   struct statvfs fsbuf;
   char path[1024];
-  if (!getcwd(path, 1000)) return 0;
+  if (!getcwd(path, 1000)) {
+    return 0;
+  }
 
-  if (statvfs(path, &fsbuf) < 0) return 0;
+  if (statvfs(path, &fsbuf) < 0) {
+    return 0;
+  }
 
   return fsbuf.f_bavail * fsbuf.f_bsize;
 }

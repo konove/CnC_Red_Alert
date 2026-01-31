@@ -334,7 +334,9 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
     }
 
     ShapeFlags_Type flags = SHAPE_NORMAL;
-    if (IsSelected && MapEditorActive) flags = flags | SHAPE_FADING;
+    if (IsSelected && MapEditorActive) {
+      flags = flags | SHAPE_FADING;
+    }
 
     /*
     **Terrain is always theater specific so flag it as such for Build_Frame
@@ -386,7 +388,9 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
   const short* offset;  // Pointer to cell offset list.
 
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+    return MOVE_NO;
+  }
 
   offset = Occupy_List();
   while (*offset != REFRESH_EOL) {

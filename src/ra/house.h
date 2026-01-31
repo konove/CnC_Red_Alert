@@ -693,11 +693,15 @@ class HouseClass {
   bool Flag_To_Lose();
   void Make_Ally(HousesType house);
   void Make_Ally(ObjectClass* object) {
-    if (object) Make_Ally(object->Owner());
+    if (object) {
+      Make_Ally(object->Owner());
+    }
   }
   void Make_Enemy(HousesType house);
   void Make_Enemy(ObjectClass* object) {
-    if (object) Make_Enemy(object->Owner());
+    if (object) {
+      Make_Enemy(object->Owner());
+    }
   }
   bool Is_Ally(HousesType house) const;
   bool Is_Ally(const HouseClass* house) const;
@@ -911,16 +915,22 @@ class HouseClass {
 
   int QuantityB(int index) { return BQuantity[index]; }
   int QuantityU(int index) {
-    if (index >= UNIT_RA_COUNT) index -= UNIT_RA_COUNT;
+    if (index >= UNIT_RA_COUNT) {
+      index -= UNIT_RA_COUNT;
+    }
     return UQuantity[index];
   }
   int QuantityI(int index) {
-    if (index >= INFANTRY_RA_COUNT) index -= INFANTRY_RA_COUNT;
+    if (index >= INFANTRY_RA_COUNT) {
+      index -= INFANTRY_RA_COUNT;
+    }
     return IQuantity[index];
   }
   int QuantityA(int index) { return AQuantity[index]; }
   int QuantityV(int index) {
-    if (index >= VESSEL_RA_COUNT) index -= VESSEL_RA_COUNT;
+    if (index >= VESSEL_RA_COUNT) {
+      index -= VESSEL_RA_COUNT;
+    }
     return VQuantity[index];
   }
 };

@@ -657,7 +657,9 @@ int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
   }
 
   rc = Connection->Send_Packet(buf, buflen, ack_req);
-  if (!rc) SendOverflows++;
+  if (!rc) {
+    SendOverflows++;
+  }
 
   return rc;
 
@@ -967,7 +969,9 @@ unsigned long NullModemClass::Response_Time() {
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
 void NullModemClass::Reset_Response_Time() {
-  if (Connection) Connection->Queue->Reset_Response_Time();
+  if (Connection) {
+    Connection->Queue->Reset_Response_Time();
+  }
 
 } /* end of Reset_Response_Time */
 
@@ -1039,9 +1043,10 @@ void* NullModemClass::Oldest_Send() {
 void NullModemClass::Configure_Debug(int, int type_offset, int type_size,
                                      char** names, int namestart,
                                      int namecount) {
-  if (Connection)
+  if (Connection) {
     Connection->Queue->Configure_Debug(type_offset, type_size, names, namestart,
                                        namecount);
+  }
 }
 
 /***************************************************************************
@@ -1065,7 +1070,9 @@ void NullModemClass::Configure_Debug(int, int type_offset, int type_size,
  *=========================================================================*/
 void NullModemClass::Mono_Debug_Print(int, int refresh) {
   if constexpr (config::kCheatKeysEnabled) {
-    if (!Connection) return;
+    if (!Connection) {
+      return;
+    }
 
     Connection->Queue->Mono_Debug_Print(refresh);
 
@@ -1210,7 +1217,9 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
 
     while (std::getline(tokenStream, token, '|')) {
       // Handle consecutive delimiters
-      if (token.empty()) continue;
+      if (token.empty()) {
+        continue;
+      }
 
       status = Send_Modem_Command(token.c_str(), '\r', buffer, 81, 3000, 1);
 
@@ -1229,7 +1238,9 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     // Captures context to access 'buffer' and other necessary variables.
     auto sendInitCommand = [&](const char* cmdSuffix, int errorMsgId,
                                int timeout = DEFAULT_TIMEOUT) -> bool {
-      if (!cmdSuffix) return true;  // Nothing to send, proceed.
+      if (!cmdSuffix) {
+        return true;  // Nothing to send, proceed.
+      }
 
       std::string fullCommand = "AT";
       fullCommand += cmdSuffix;
@@ -1282,8 +1293,9 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   status = Send_Modem_Command("ATS0=0", '\r', buffer, 81, DEFAULT_TIMEOUT,
                               INIT_COMMAND_RETRIES);
   if (status != MODEM_CMD_OK) {
-    if (WWMessageBox().Process(TXT_ERROR_NO_DISABLE, TXT_IGNORE, TXT_CANCEL))
+    if (WWMessageBox().Process(TXT_ERROR_NO_DISABLE, TXT_IGNORE, TXT_CANCEL)) {
       return false;
+    }
     error_count++;
   }
 
@@ -1640,7 +1652,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     /*.....................................................................
     Process input
     .....................................................................*/
-    if (!Input) Input = Commands->Input();
+    if (!Input) {
+      Input = Commands->Input();
+    }
     switch (Input) {
       case KN_ESC:
       case BUTTON_CANCEL | KN_BUTTON:

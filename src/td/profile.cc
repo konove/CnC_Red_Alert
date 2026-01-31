@@ -296,7 +296,9 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
       **	for 2 newlines in a row & step backward.
       */
       if (workptr - profile > 4) {
-        if (*(workptr - 1) == '\n' && *(workptr - 3) == '\n') workptr -= 2;
+        if (*(workptr - 1) == '\n' && *(workptr - 3) == '\n') {
+          workptr -= 2;
+        }
       }
 
       /*
@@ -394,7 +396,9 @@ char* WWGetPrivateProfileString(const char* section, const char* entry,
               /*
               **	Just return if there's no entry past the '='.
               */
-              if (workptr >= altworkptr) return retval;
+              if (workptr >= altworkptr) {
+                return retval;
+              }
 
               workptr++;  // Skip the whitespace
             }

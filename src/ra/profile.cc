@@ -232,7 +232,9 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
   */
   if (dest) {
     dest[0] = '\0';
-    if (dest_len > 1 || dest_len == 0) dest[1] = '\0';
+    if (dest_len > 1 || dest_len == 0) {
+      dest[1] = '\0';
+    }
     if (def) {
       strncpy(dest, def, dest_len);
     }
@@ -302,7 +304,9 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
       **	for 2 newlines in a row & step backward.
       */
       if (workptr - ini_data > 4) {
-        if (*(workptr - 1) == '\n' && *(workptr - 3) == '\n') workptr -= 2;
+        if (*(workptr - 1) == '\n' && *(workptr - 3) == '\n') {
+          workptr -= 2;
+        }
       }
 
       /*
@@ -400,7 +404,9 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
               /*
               **	Just return if there's no entry past the '='.
               */
-              if (workptr >= altworkptr) return (char*)retval;
+              if (workptr >= altworkptr) {
+                return (char*)retval;
+              }
 
               workptr++;  // Skip the whitespace
             }

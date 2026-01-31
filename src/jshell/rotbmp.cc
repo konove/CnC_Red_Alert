@@ -149,7 +149,9 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
         dest = MAKE_PTR(destvp, rx + dx, ry - dy);
         for (r = 0; r < w; r++) {
           // transparency
-          if (*src) *dest = *src;
+          if (*src) {
+            *dest = *src;
+          }
           src++;
           dest -= buffwid2;
         }
@@ -169,7 +171,9 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
         dest = MAKE_PTR(destvp, rx - dx, ry + dy);
         for (r = 0; r < w; r++) {
           // transparency
-          if (*src) *dest = *src;
+          if (*src) {
+            *dest = *src;
+          }
           src++;
           dest += buffwid2;
         }
@@ -190,7 +194,9 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
         dest = MAKE_PTR(destvp, rx - x, ry - y);
         for (x = 0; x < w; x++) {
           // transparency
-          if (*src) *dest = *src;
+          if (*src) {
+            *dest = *src;
+          }
           dest--;
           src++;
         }
@@ -202,7 +208,9 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
         dest = MAKE_PTR(destvp, rx + x, ry + y);
         for (x = 0; x < w; x++) {
           // transparency
-          if (*src) *dest = *src;
+          if (*src) {
+            *dest = *src;
+          }
           dest++;
           src++;
         }
@@ -284,7 +292,9 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
       while (diff--) {
         char c = *src;
         // transparency
-        if (c) *dest = *src;
+        if (c) {
+          *dest = *src;
+        }
         Error2 += DeltaH;
         dest += buffwid2;
         Error += Decimal;
@@ -292,7 +302,9 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
         // this is time to inc x in src y in dest
         if (Error >= fixpoint1) {
           Error -= fixpoint1;
-          if (*src) *dest = *src;
+          if (*src) {
+            *dest = *src;
+          }
           dest += xinc;
         }
       }
@@ -373,7 +385,9 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
     while (diff--) {
       char c = *src;
       // transparency
-      if (c) *dest = *src;
+      if (c) {
+        *dest = *src;
+      }
       Error2 += DeltaW;
       rx++;
       dest += xinc;
@@ -381,7 +395,9 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
       src = baseptr + (Error2 >> shift);
       if (Error >= fixpoint1) {
         Error -= fixpoint1;
-        if (*src) *dest = *src;
+        if (*src) {
+          *dest = *src;
+        }
         dest += buffwid2;
       }
     }

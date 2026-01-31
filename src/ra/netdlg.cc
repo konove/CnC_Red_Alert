@@ -1160,7 +1160,9 @@ void Destroy_Connection(int id, int error) {
   //	Do nothing if the house isn't human.
   //------------------------------------------------------------------------
   housep = HouseClass::As_Pointer(static_cast<HousesType>(id));
-  if (!housep || !housep->IsHuman) return;
+  if (!housep || !housep->IsHuman) {
+    return;
+  }
 
   //------------------------------------------------------------------------
   //	Create a message to display to the user
@@ -2622,8 +2624,9 @@ static int Net_Join_Dialog() {
         } else {
           Session.Options.ScenarioIndex = 1;  // We dont care what it
                                               // is as long as it isnt -1
-          if (bSpecialAftermathScenario(Session.Options.ScenarioDescription))
+          if (bSpecialAftermathScenario(Session.Options.ScenarioDescription)) {
             break;
+          }
 
           if (!Get_Scenario_File_From_Host(Session.ScenarioFileName,
                                            sizeof(Session.ScenarioFileName),
@@ -3431,8 +3434,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   //------------------------------------------------------------------------
   rc = Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                               &Session.GAddress, &Session.GProductID);
-  if (!rc || Session.GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER0)
+  if (!rc || Session.GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER0) {
     return EV_NONE;
+  }
 
   //------------------------------------------------------------------------
   //	If we're joined in a game, handle the packet in a standard way;
@@ -4360,12 +4364,13 @@ static int Net_New_Dialog() {
              Is_Counterstrike_Installed()) &&
             (!Is_Mission_Aftermath(
                  (char*)Session.Scenarios[i]->Get_Filename()) ||
-             Is_Aftermath_Installed()))
+             Is_Aftermath_Installed())) {
 #if defined(GERMAN) || defined(FRENCH)
           scenariolist.Add_Item(EngMisStr[j + 1]);
 #else
           scenariolist.Add_Item(EngMisStr[j]);
 #endif
+        }
 
         break;
       }
@@ -4678,9 +4683,8 @@ static int Net_New_Dialog() {
       //	User adjusts build level
       //..................................................................
       case BUTTON_LEVEL | KN_BUTTON:
-        BuildLevel = levelgauge.Get_Value() + 1;
-        if (BuildLevel > MPLAYER_BUILD_LEVEL_MAX)  // if it's pegged, max it out
-          BuildLevel = MPLAYER_BUILD_LEVEL_MAX;
+        BuildLevel =
+            std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
         transmit = 1;
         display = REDRAW_PARMS;
         break;
@@ -5092,10 +5096,11 @@ static int Net_New_Dialog() {
     // been 	received.
     //.....................................................................
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
-    if (load_game)
+    if (load_game) {
       Session.GPacket.Command = NET_LOADGAME;
-    else
+    } else {
       Session.GPacket.Command = NET_GO;
+    }
     Session.GPacket.ResponseTime.OneWay = Session.MaxAhead;
     for (i = 1; i < Session.Players.Count(); i++) {
       Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
@@ -5151,8 +5156,9 @@ static int Net_New_Dialog() {
     } while (num_responses < Session.Players.Count() - 1 && response_timer);
 
     if (Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official()) {
-      if (!Force_Scenario_Available(Scen.ScenarioName))
+      if (!Force_Scenario_Available(Scen.ScenarioName)) {
         Emergency_Exit(EXIT_FAILURE);
+      }
     }
 
     /*
@@ -5367,22 +5373,12 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       // indicating presence of Aftermath expansion.
       bool bGuestHasAftermath =
           Session.GPacket.PlayerInfo.MinVersion & 0x80000000;
-      if (bGuestHasAftermath)
-        //				debugprint( "Host hears guest say 'I
-        // have Aftermath'\n" );
-        ;
-      else {
-        //				debugprint( "Host hears guest say 'I
-        // don't have Aftermath'\n" );
-        if (bAftermathMultiplayer) {
-          //					debugprint( "Host decides this
-          // is no longer an Aftermath game!\n" );
-          bAftermathMultiplayer = false;
-        }
+      if (!bGuestHasAftermath && bAftermathMultiplayer) {
+        bAftermathMultiplayer = false;
       }
 
       Session.GPacket.PlayerInfo.MinVersion &=
-          ~0x80000000;  //	Strip special bit.
+          ~0x80000000;  // Strip special bit.
       version = VerNum.Clip_Version(Session.GPacket.PlayerInfo.MinVersion,
                                     Session.GPacket.PlayerInfo.MaxVersion);
 
@@ -5720,14 +5716,15 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
 
 #ifdef WOLAPI_INTEGRATION
     if (Session.Type == GAME_INTERNET && pWolapi &&
-        pWolapi->GameInfoCurrent.bTournament)
+        pWolapi->GameInfoCurrent.bTournament) {
       Fancy_Text_Print(szNewCancelMessage, 160 * RESFACTOR,
                        y + (d_margin * 2) + (d_txt6_h + d_margin) * 2, scheme,
                        TBLACK, TPF_CENTER | TPF_TEXT);
-    else
+    } else {
       Fancy_Text_Print(buf3, 160 * RESFACTOR,
                        y + (d_margin * 2) + (d_txt6_h + d_margin) * 2, scheme,
                        TBLACK, TPF_CENTER | TPF_TEXT);
+    }
 #else
     Fancy_Text_Print(buf3, 160 * RESFACTOR,
                      y + d_margin * 2 + (d_txt6_h + d_margin) * 2, scheme,
@@ -7403,7 +7400,9 @@ void Start_Logging() {
   time_t t;
 
   fp = fopen("NETPLAY.LOG", "at");
-  if (!fp) return;
+  if (!fp) {
+    return;
+  }
 
   /*
   **	Print game header
@@ -7464,7 +7463,9 @@ void Log_Message(char* msg) {
   FILE* fp;
 
   fp = fopen("NETPLAY.LOG", "at");
-  if (!fp) return;
+  if (!fp) {
+    return;
+  }
 
   fprintf(fp, "%s (Frame:%d)\n", msg, Frame);
   fclose(fp);
@@ -7837,7 +7838,9 @@ static int Net_Fake_New_Dialog() {
             join_timer.Set(3 * 60, true);
             break;
           }
-          if (join_timer.Time()) break;
+          if (join_timer.Time()) {
+            break;
+          }
 
           //...............................................................
           //	If a new player has joined in the last second, don't allow
@@ -8084,10 +8087,11 @@ static int Net_Fake_New_Dialog() {
     // been 	received.
     //.....................................................................
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
-    if (load_game)
+    if (load_game) {
       Session.GPacket.Command = NET_LOADGAME;
-    else
+    } else {
       Session.GPacket.Command = NET_GO;
+    }
     Session.GPacket.ResponseTime.OneWay = Session.MaxAhead;
     for (i = 1; i < Session.Players.Count(); i++) {
       Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
@@ -8665,7 +8669,9 @@ static int Net_Fake_Join_Dialog() {
     if (event == EV_STATE_CHANGE) {
       display = REDRAW_ALL;
       if (joinstate == JOIN_GAME_START || joinstate == JOIN_GAME_START_LOAD) {
-        if (joinstate == JOIN_GAME_START_LOAD) load_game = 1;
+        if (joinstate == JOIN_GAME_START_LOAD) {
+          load_game = 1;
+        }
 
         bool ready_packet_was_sent = false;
 
@@ -8775,8 +8781,10 @@ static int Net_Fake_Join_Dialog() {
           } else {
             Session.Options.ScenarioIndex = 1;  // We dont care what it
                                                 // is as long as it isnt -1
-            if (bSpecialAftermathScenario(Session.Options.ScenarioDescription))
+            if (bSpecialAftermathScenario(
+                    Session.Options.ScenarioDescription)) {
               break;
+            }
 
             if (!Get_Scenario_File_From_Host(Session.ScenarioFileName,
                                              sizeof(Session.ScenarioFileName),

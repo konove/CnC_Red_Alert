@@ -312,7 +312,9 @@ int CommBufferClass::Queue_Send(void* buf, int buflen, void* extrabuf,
   //------------------------------------------------------------------------
   //	Error if no room in the queue
   //------------------------------------------------------------------------
-  if (SendCount == MaxSend || buflen > MaxPacketSize) return 0;
+  if (SendCount == MaxSend || buflen > MaxPacketSize) {
+    return 0;
+  }
 
   //------------------------------------------------------------------------
   //	Find an empty slot
@@ -324,7 +326,9 @@ int CommBufferClass::Queue_Send(void* buf, int buflen, void* extrabuf,
       break;
     }
   }
-  if (index == -1) return 0;
+  if (index == -1) {
+    return 0;
+  }
 
   //------------------------------------------------------------------------
   //	Set entry flags
@@ -521,7 +525,9 @@ int CommBufferClass::Queue_Receive(void* buf, int buflen, void* extrabuf,
       break;
     }
   }
-  if (index == -1) return 0;
+  if (index == -1) {
+    return 0;
+  }
 
   //------------------------------------------------------------------------
   //	Set entry flags
@@ -707,7 +713,9 @@ void CommBufferClass::Add_Delay(unsigned long delay) {
   if (NumDelay == 256) {
     DelaySum -= MeanDelay;
     DelaySum += delay;
-    if ((DelaySum & 0x00ff) > 127) roundoff = 1;
+    if ((DelaySum & 0x00ff) > 127) {
+      roundoff = 1;
+    }
     MeanDelay = (DelaySum >> 8) + roundoff;
   } else {
     NumDelay++;

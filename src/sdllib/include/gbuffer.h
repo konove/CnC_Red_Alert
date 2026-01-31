@@ -405,7 +405,9 @@ inline bool GraphicViewPortClass::Get_IsDirectDraw() {
  *=============================================================================================*/
 inline bool GraphicViewPortClass::Lock() {
   bool lock = GraphicBuff->Lock();
-  if (!lock) return false;
+  if (!lock) {
+    return false;
+  }
 
   if (this != GraphicBuff) {
     Attach(GraphicBuff, XPos, YPos, Width, Height);

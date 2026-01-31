@@ -680,12 +680,16 @@ void Do_Lose() {
 void Do_Restart() {
   bool hidden = Get_Mouse_State();
 
-  if (hidden) Show_Mouse();
+  if (hidden) {
+    Show_Mouse();
+  }
   CCMessageBox().Process(TXT_RESTARTING, TXT_NONE);
   Map.Set_Default_Mouse(MOUSE_NORMAL);
   Keyboard::Clear();
   Start_Scenario(ScenarioName, false);
-  if (hidden) Hide_Mouse();
+  if (hidden) {
+    Hide_Mouse();
+  }
   Keyboard::Clear();
   Map.Render();
 }
@@ -749,14 +753,22 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
       // port::SafeCopy(_ShapeBuffer, BriefingText);
 
       bool hidden = Get_Mouse_State();
-      if (hidden) Show_Mouse();
+      if (hidden) {
+        Show_Mouse();
+      }
 
       if (CCMessageBox(TXT_OBJECTIVE).Process(_buff, right_btn, left_btn)) {
-        if (hidden) Hide_Mouse();
+        if (hidden) {
+          Hide_Mouse();
+        }
         return true;
       }
-      if (hidden) Hide_Mouse();
-      if (!brief) return true;
+      if (hidden) {
+        Hide_Mouse();
+      }
+      if (!brief) {
+        return true;
+      }
       return false;
     }
 #endif

@@ -152,16 +152,22 @@ int LZWStraw::Get(void* destbuf, int slen) {
       Counter -= len;
       total += len;
     }
-    if (slen == 0) break;
+    if (slen == 0) {
+      break;
+    }
 
     if (Control == DECOMPRESS) {
       int incount = Straw::Get(&BlockHeader, sizeof(BlockHeader));
-      if (incount != sizeof(BlockHeader)) break;
+      if (incount != sizeof(BlockHeader)) {
+        break;
+      }
 
       void* ptr =
           &source_buffer_[BlockSize + SafetyMargin - BlockHeader.CompCount];
       incount = Straw::Get(ptr, BlockHeader.CompCount);
-      if (incount != BlockHeader.CompCount) break;
+      if (incount != BlockHeader.CompCount) {
+        break;
+      }
 
       LZW_Uncompress(Buffer(ptr), Buffer(source_buffer_));
       Counter = BlockHeader.UncompCount;

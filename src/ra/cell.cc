@@ -388,7 +388,9 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
     return ptr;
   }
   ptr = Cell_Terrain();
-  if (ptr) return ptr;
+  if (ptr) {
+    return ptr;
+  }
   return ptr;
 }
 
@@ -497,7 +499,9 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
   /*
   **	During scenario initialization, passability is always guaranteed.
   */
-  if (ScenarioInit) return true;
+  if (ScenarioInit) {
+    return true;
+  }
 
   /*
   **	If there is an object there, then don't allow building.
@@ -584,7 +588,9 @@ void CellClass::Recalc_Attributes() {
   */
   if (Overlay != OVERLAY_NONE) {
     Land = OverlayTypeClass::As_Reference(Overlay).Land;
-    if (Land != LAND_CLEAR) return;
+    if (Land != LAND_CLEAR) {
+      return;
+    }
   }
 
   /*
@@ -623,7 +629,9 @@ void CellClass::Occupy_Down(ObjectClass* object) {
 
   ObjectClass* optr;
 
-  if (object == nullptr) return;
+  if (object == nullptr) {
+    return;
+  }
 
   /*
   **	Always add buildings to the end of the occupation chain. This is
@@ -698,7 +706,9 @@ void CellClass::Occupy_Up(ObjectClass* object) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
   assert(object != nullptr && object->IsActive);
 
-  if (object == nullptr) return;
+  if (object == nullptr) {
+    return;
+  }
 
   ObjectClass* optr =
       Cell_Occupier();  // Working pointer to the objects in the chain.
@@ -765,12 +775,18 @@ void CellClass::Overlap_Down(ObjectClass* object) {
 
   ObjectClass** ptr = nullptr;
 
-  if (!object) return;
+  if (!object) {
+    return;
+  }
 
   int index;
   for (index = 0; index < ARRAY_SIZE(Overlappers); index++) {
-    if (Overlappers[index] == object) return;
-    if (!Overlappers[index]) ptr = &Overlappers[index];
+    if (Overlappers[index] == object) {
+      return;
+    }
+    if (!Overlappers[index]) {
+      ptr = &Overlappers[index];
+    }
   }
 
   /*
@@ -791,7 +807,9 @@ void CellClass::Overlap_Down(ObjectClass* object) {
       }
     }
   }
-  if (ptr) *ptr = object;
+  if (ptr) {
+    *ptr = object;
+  }
 
   /*
   **	If being placed down on a visible square, then flag this
@@ -915,23 +933,31 @@ static bool _Calc_Partial_Window(int cellx, int celly, int& drawx, int& drawy) {
     pw -= tx - px;
     px = tx;
   }
-  if (pw < 1) return (false);
+  if (pw < 1) {
+    return (false);
+  }
 
   if (py < ty) {
     ph -= ty - py;
     py = ty;
   }
-  if (ph < 1) return (false);
+  if (ph < 1) {
+    return (false);
+  }
 
   if (px + pw > tx + tw) {
     pw -= (px + pw) - (tx + tw);
   }
-  if (pw < 1) return (false);
+  if (pw < 1) {
+    return (false);
+  }
 
   if (py + ph > ty + th) {
     ph -= (py + ph) - (ty + th);
   }
-  if (ph < 1) return (false);
+  if (ph < 1) {
+    return (false);
+  }
 
   drawx = drawx - (px - tx);
   drawy = drawy - (py - ty);
@@ -941,8 +967,12 @@ static bool _Calc_Partial_Window(int cellx, int celly, int& drawx, int& drawy) {
 static int _ocompare(const void* left, const void* right) {
   COORDINATE lcoord = (*((ObjectClass**)left))->Sort_Y();
   COORDINATE rcoord = (*((ObjectClass**)right))->Sort_Y();
-  if (lcoord < rcoord) return (-1);
-  if (lcoord > rcoord) return (1);
+  if (lcoord < rcoord) {
+    return (-1);
+  }
+  if (lcoord > rcoord) {
+    return (1);
+  }
   return (0);
 }
 #endif
@@ -1245,7 +1275,9 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     int count = 0;
     ObjectClass* object = Cell_Occupier();
     while (object != nullptr) {
-      if (!object->IsActive) break;
+      if (!object->IsActive) {
+        break;
+      }
       optr[count] = object;
       object->IsToDisplay = true;
       object = object->Next;
@@ -1790,8 +1822,12 @@ int CellClass::Spot_Index(COORDINATE coord) {
   *organized *	from left to right, top to bottom.
   */
   int index = 0;
-  if (Coord_X(rel) > 0x80) index |= 0x01;
-  if (Coord_Y(rel) > 0x80) index |= 0x02;
+  if (Coord_X(rel) > 0x80) {
+    index |= 0x01;
+  }
+  if (Coord_Y(rel) > 0x80) {
+    index |= 0x02;
+  }
   return index + 1;
 }
 
@@ -1977,8 +2013,9 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
 
   const CellClass* ptr = this + AdjacentCell[face];
   if (static_cast<unsigned>(Cell_Number()) + AdjacentCell[face] >=
-      MAP_CELL_TOTAL)
+      MAP_CELL_TOTAL) {
     return *this;
+  }
   return *ptr;
 }
 
@@ -2000,7 +2037,9 @@ void CellClass::Adjust_Threat(HousesType house, int threat_value) {
   int region = Map.Cell_Region(Cell_Number());
 
   for (HousesType lp = HOUSE_FIRST; lp < HOUSE_COUNT; lp++) {
-    if (lp == house) continue;
+    if (lp == house) {
+      continue;
+    }
 
     HouseClass* house_ptr = HouseClass::As_Pointer(lp);
     if (house_ptr && (!house_ptr->IsHuman || !house_ptr->Is_Ally(house))) {
@@ -2164,7 +2203,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
       int share_count = 0;
       for (powerup = CRATE_FIRST; powerup < CRATE_COUNT; powerup++) {
         share_count += CrateShares[powerup];
-        if (pick <= share_count) break;
+        if (pick <= share_count) {
+          break;
+        }
       }
       assert(powerup != CRATE_COUNT);
 
@@ -2174,29 +2215,39 @@ bool CellClass::Goodie_Check(FootClass* object) {
       */
       switch (powerup) {
         case CRATE_UNIT:
-          if (object->House->CurUnits > 50) powerup = CRATE_MONEY;
+          if (object->House->CurUnits > 50) {
+            powerup = CRATE_MONEY;
+          }
           break;
 
         case CRATE_SQUAD:
-          if (object->House->CurInfantry > 100) powerup = CRATE_MONEY;
+          if (object->House->CurInfantry > 100) {
+            powerup = CRATE_MONEY;
+          }
           break;
 
         case CRATE_DARKNESS:
-          if (object->House->IsGPSActive) powerup = CRATE_MONEY;
+          if (object->House->IsGPSActive) {
+            powerup = CRATE_MONEY;
+          }
           break;
 
         case CRATE_ARMOR:
-          if (object->ArmorBias != 1) powerup = CRATE_MONEY;
+          if (object->ArmorBias != 1) {
+            powerup = CRATE_MONEY;
+          }
           break;
 
         case CRATE_SPEED:
-          if (object->SpeedBias != 1 || object->What_Am_I() == RTTI_AIRCRAFT)
+          if (object->SpeedBias != 1 || object->What_Am_I() == RTTI_AIRCRAFT) {
             powerup = CRATE_MONEY;
+          }
           break;
 
         case CRATE_FIREPOWER:
-          if (object->FirepowerBias != 1 || !object->Is_Weapon_Equipped())
+          if (object->FirepowerBias != 1 || !object->Is_Weapon_Equipped()) {
             powerup = CRATE_MONEY;
+          }
           break;
 
         case CRATE_REVEAL:
@@ -2210,7 +2261,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
           break;
 
         case CRATE_CLOAK:
-          if (object->IsCloakable) powerup = CRATE_MONEY;
+          if (object->IsCloakable) {
+            powerup = CRATE_MONEY;
+          }
           break;
 
           //				case CRATE_HEAL_BASE:
@@ -2592,10 +2645,14 @@ bool CellClass::Goodie_Check(FootClass* object) {
             fixed val = dynamic_cast<TechnoClass*>(obj)->ArmorBias *
                         Inverse(fixed(CrateData[powerup], 256));
             dynamic_cast<TechnoClass*>(obj)->ArmorBias = val;
-            if (obj->Owner() == PlayerPtr->Class->House) tospeak = true;
+            if (obj->Owner() == PlayerPtr->Class->House) {
+              tospeak = true;
+            }
           }
         }
-        if (tospeak) Speak(VOX_UPGRADE_ARMOR);
+        if (tospeak) {
+          Speak(VOX_UPGRADE_ARMOR);
+        }
         break;
 
       case CRATE_SPEED:
@@ -2611,10 +2668,14 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
             fixed val = foot->SpeedBias * fixed(CrateData[powerup], 256);
             foot->SpeedBias = val;
-            if (foot->IsOwnedByPlayer) tospeak = true;
+            if (foot->IsOwnedByPlayer) {
+              tospeak = true;
+            }
           }
         }
-        if (tospeak) Speak(VOX_UPGRADE_SPEED);
+        if (tospeak) {
+          Speak(VOX_UPGRADE_SPEED);
+        }
         break;
 
       case CRATE_FIREPOWER:
@@ -2628,10 +2689,14 @@ bool CellClass::Goodie_Check(FootClass* object) {
             fixed val = dynamic_cast<TechnoClass*>(obj)->FirepowerBias *
                         fixed(CrateData[powerup], 256);
             dynamic_cast<TechnoClass*>(obj)->FirepowerBias = val;
-            if (obj->Owner() == PlayerPtr->Class->House) tospeak = true;
+            if (obj->Owner() == PlayerPtr->Class->House) {
+              tospeak = true;
+            }
           }
         }
-        if (tospeak) Speak(VOX_UPGRADE_FIREPOWER);
+        if (tospeak) {
+          Speak(VOX_UPGRADE_FIREPOWER);
+        }
         break;
 
       case CRATE_INVULN:
@@ -2910,19 +2975,28 @@ bool CellClass::Is_Bridge_Here() const {
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Can_Tiberium_Grow() const {
-  if (!Rule.IsTGrowth) return false;
-
-  if (Session.Type != GAME_NORMAL) {
-    if (!Session.Options.Tiberium) return false;
+  if (!Rule.IsTGrowth) {
+    return false;
   }
 
-  if (Land_Type() != LAND_TIBERIUM) return false;
+  if (Session.Type != GAME_NORMAL) {
+    if (!Session.Options.Tiberium) {
+      return false;
+    }
+  }
 
-  if (OverlayData >= 11) return false;
+  if (Land_Type() != LAND_TIBERIUM) {
+    return false;
+  }
+
+  if (OverlayData >= 11) {
+    return false;
+  }
 
   if (Overlay != OVERLAY_GOLD1 && Overlay != OVERLAY_GOLD2 &&
-      Overlay != OVERLAY_GOLD3 && Overlay != OVERLAY_GOLD4)
+      Overlay != OVERLAY_GOLD3 && Overlay != OVERLAY_GOLD4) {
     return false;
+  }
 
   return true;
 }
@@ -2945,19 +3019,28 @@ bool CellClass::Can_Tiberium_Grow() const {
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Can_Tiberium_Spread() const {
-  if (!Rule.IsTSpread) return false;
-
-  if (Session.Type != GAME_NORMAL) {
-    if (!Session.Options.Tiberium) return false;
+  if (!Rule.IsTSpread) {
+    return false;
   }
 
-  if (Land_Type() != LAND_TIBERIUM) return false;
+  if (Session.Type != GAME_NORMAL) {
+    if (!Session.Options.Tiberium) {
+      return false;
+    }
+  }
 
-  if (OverlayData <= 6) return false;
+  if (Land_Type() != LAND_TIBERIUM) {
+    return false;
+  }
+
+  if (OverlayData <= 6) {
+    return false;
+  }
 
   if (Overlay != OVERLAY_GOLD1 && Overlay != OVERLAY_GOLD2 &&
-      Overlay != OVERLAY_GOLD3 && Overlay != OVERLAY_GOLD4)
+      Overlay != OVERLAY_GOLD3 && Overlay != OVERLAY_GOLD4) {
     return false;
+  }
 
   return true;
 }
@@ -3002,7 +3085,9 @@ bool CellClass::Grow_Tiberium() {
  *=============================================================================================*/
 bool CellClass::Spread_Tiberium(bool forced) {
   if (!forced) {
-    if (!Can_Tiberium_Spread()) return false;
+    if (!Can_Tiberium_Spread()) {
+      return false;
+    }
   }
   FacingType offset = Random_Pick(FACING_N, FACING_NW);
   for (FacingType index = FACING_N; index < FACING_COUNT; index++) {
@@ -3034,9 +3119,13 @@ bool CellClass::Spread_Tiberium(bool forced) {
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Can_Tiberium_Germinate() const {
-  if (!Map.In_Radar(Cell_Number())) return false;
+  if (!Map.In_Radar(Cell_Number())) {
+    return false;
+  }
 
-  if (Is_Bridge_Here()) return false;
+  if (Is_Bridge_Here()) {
+    return false;
+  }
 
   /*
   **	Don't allow Tiberium to grow on a cell with a building unless that
@@ -3044,11 +3133,17 @@ bool CellClass::Can_Tiberium_Germinate() const {
   *else the location of the *	building will be revealed.
   */
   const BuildingClass* building = Cell_Building();
-  if (building != nullptr && !building->Class->IsInvisible) return false;
+  if (building != nullptr && !building->Class->IsInvisible) {
+    return false;
+  }
 
-  if (!Ground[Land_Type()].Build) return false;
+  if (!Ground[Land_Type()].Build) {
+    return false;
+  }
 
-  if (Overlay != OVERLAY_NONE) return false;
+  if (Overlay != OVERLAY_NONE) {
+    return false;
+  }
 
   return true;
 }

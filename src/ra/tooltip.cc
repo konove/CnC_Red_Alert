@@ -44,12 +44,14 @@ ToolTipClass::ToolTipClass(GadgetClass* pGadget, const char* szText, int xShow,
 
 {
   if (szText) {
-    if (strlen(szText) > TOOLTIPTEXT_MAX_LEN)
+    if (strlen(szText) > TOOLTIPTEXT_MAX_LEN) {
       strcpy(szTip, "Tooltip too long!");
-    else
+    } else {
       strcpy(szTip, szText);
-  } else
+    }
+  } else {
     *szTip = 0;
+  }
 
   Set_Font(TypeFontPtr);
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
@@ -61,9 +63,12 @@ ToolTipClass::ToolTipClass(GadgetClass* pGadget, const char* szText, int xShow,
   if (!bIconList) {
     pSaveRect =
         new char[wShow * hShow];  //	Else it is reallocated on every draw.
-    if (bRightAlign) this->xShow -= wShow;
-  } else
+    if (bRightAlign) {
+      this->xShow -= wShow;
+    }
+  } else {
     pSaveRect = NULL;
+  }
 
   //	bIconList is true if tooltips appear for individual line items in an
   // iconlist. 	szText in this case is ignored. 	yShow is the y position
@@ -75,12 +80,13 @@ ToolTipClass* ToolTipClass::GetToolTipHit() {
   //	Returns 'this' if the mouse is over gadget bound to tooltip.
   //	Otherwise calls the same function in the next tooltip in the list of
   // which *this is a part.
-  if (bGadgetHit())
+  if (bGadgetHit()) {
     return this;
-  else if (next)
+  } else if (next) {
     return next->GetToolTipHit();
-  else
+  } else {
     return nullptr;
+  }
 }
 
 //***********************************************************************************************
@@ -102,10 +108,14 @@ void ToolTipClass::Move(int xShow, int yShow) {
   }
   this->xShow = xShow;
   if (!bIconList) {
-    if (bRightAlign) this->xShow -= wShow;
+    if (bRightAlign) {
+      this->xShow -= wShow;
+    }
   }
   this->yShow = yShow;
-  if (bRestoreShow) Show();
+  if (bRestoreShow) {
+    Show();
+  }
 }
 
 //***********************************************************************************************
@@ -138,7 +148,9 @@ void ToolTipClass::Show() {
                        TPF_TYPE);  //	Required before String_Pixel_Width()
                                    // call, for god's sake.
       wShowUse = String_Pixel_Width(szTipUse) + 2;
-      if (bRightAlign) xShowUse -= wShowUse;
+      if (bRightAlign) {
+        xShowUse -= wShowUse;
+      }
       delete[] pSaveRect;
       pSaveRect = new char[wShowUse * hShow];
       bLastShowNoText = false;
@@ -214,7 +226,8 @@ bool ToolTipClass::bOverDifferentLine() const {
   //	bIconList must be true if this is being used.
   //	Returns true if the iconlist line that the mouse is over is different
   // than the last time Show() was called.
-  return static_cast<IconListClass*>(pGadget)->IndexUnderMouse() != iLastIconListIndex;
+  return static_cast<IconListClass*>(pGadget)->IndexUnderMouse() !=
+         iLastIconListIndex;
 }
 
 //***********************************************************************************************
@@ -237,15 +250,17 @@ bool SaveSurfaceRect(int xRect, int yRect, int wRect, int hRect, char* pBits,
         draw_window.Get_Pitch() +
         draw_window.Get_Width();  //	Meaning of "Pitch" in this class seems
                                   // to mean the eol skip.
-    const char* pLineSurf =
-        static_cast<char*>(draw_window.Get_Offset()) + xRect + yRect * iPitchSurf;
+    const char* pLineSurf = static_cast<char*>(draw_window.Get_Offset()) +
+                            xRect + yRect * iPitchSurf;
     char* pLineSave = pBits;
 
     //	ajw - Should copy DWORDs here instead for speed.
     for (int y = 0; y != hRect; y++) {
       const char* pSurf = pLineSurf;
       char* pSave = pLineSave;
-      for (int x = 0; x != wRect; x++) *pSave++ = *pSurf++;
+      for (int x = 0; x != wRect; x++) {
+        *pSave++ = *pSurf++;
+      }
 
       pLineSurf += iPitchSurf;
       pLineSave += wRect;
@@ -272,15 +287,17 @@ bool RestoreSurfaceRect(int xRect, int yRect, int wRect, int hRect,
         draw_window.Get_Pitch() +
         draw_window.Get_Width();  //	Meaning of "Pitch" in this class seems
                                   // to mean the eol skip.
-    char* pLineSurf =
-        static_cast<char*>(draw_window.Get_Offset()) + xRect + yRect * iPitchSurf;
+    char* pLineSurf = static_cast<char*>(draw_window.Get_Offset()) + xRect +
+                      yRect * iPitchSurf;
     const char* pLineSave = pBits;
 
     //	ajw - Should copy DWORDs here instead for speed.
     for (int y = 0; y != hRect; y++) {
       char* pSurf = pLineSurf;
       const char* pSave = pLineSave;
-      for (int x = 0; x != wRect; x++) *pSurf++ = *pSave++;
+      for (int x = 0; x != wRect; x++) {
+        *pSurf++ = *pSave++;
+      }
 
       pLineSurf += iPitchSurf;
       pLineSave += wRect;

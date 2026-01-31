@@ -109,7 +109,7 @@ class CommBufferClass {
                    int* extralen = nullptr);
   int Num_Send() { return SendCount; }  // # entries in queue
   int Max_Send() { return MaxSend; }    // max # send queue entries
-  SendQueueType* Get_Send(int index);     // random access to queue
+  SendQueueType* Get_Send(int index);   // random access to queue
   unsigned long Send_Total() { return SendTotal; }
 
   /*
@@ -121,7 +121,7 @@ class CommBufferClass {
                       void* extrabuf = nullptr, int* extralen = nullptr);
   int Num_Receive() { return ReceiveCount; }  // # entries in queue
   int Max_Receive() { return MaxReceive; }    // max # recv queue entries
-  ReceiveQueueType* Get_Receive(int index);     // random access to queue
+  ReceiveQueueType* Get_Receive(int index);   // random access to queue
   unsigned long Receive_Total() { return ReceiveTotal; }
 
   /*

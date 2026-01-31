@@ -112,8 +112,8 @@ class CommQueueClass {
   int Queue_Send(void* buf, int buflen);     // add to Send queue
   int UnQueue_Send(void* buf, int* buflen);  // remove from Send queue
   SendQueueType* Next_Send();                // ptr to next avail entry
-  int Num_Send() { return SendCount; }     // # entries in queue
-  int Max_Send() { return MaxSend; }       // max # send queue entries
+  int Num_Send() { return SendCount; }       // # entries in queue
+  int Max_Send() { return MaxSend; }         // max # send queue entries
   SendQueueType* Get_Send(int index);        // random access to queue
   unsigned long Send_Total() { return SendTotal; }
 
@@ -123,8 +123,8 @@ class CommQueueClass {
   int Queue_Receive(void* buf, int buflen);     // add to Receive queue
   int UnQueue_Receive(void* buf, int* buflen);  // remove from Receive queue
   ReceiveQueueType* Next_Receive();             // ptr to next avail entry
-  int Num_Receive() { return ReceiveCount; }  // # entries in queue
-  int Max_Receive() { return MaxReceive; }    // max # recv queue entries
+  int Num_Receive() { return ReceiveCount; }    // # entries in queue
+  int Max_Receive() { return MaxReceive; }      // max # recv queue entries
   ReceiveQueueType* Get_Receive(int index);     // random access to queue
   unsigned long Receive_Total() { return ReceiveTotal; }
 

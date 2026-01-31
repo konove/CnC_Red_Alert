@@ -201,9 +201,10 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, const TPoint2D& pt,
       // The inner loop steps across the rectangle
       for (i = 0; i < f_deltax; i++) {
         pixel = bmp.Data[pixpos];  // read pixel
-        if (pixel)
+        if (pixel) {
           static_cast<unsigned char*>(Get_Buffer())[scrpos] =
               pixel;  // draw if not transparent
+        }
         //				if (pixel) Data[scrpos]=pixel;	//draw
         // if not transparent
         pxerror += bmp.Width;  // update position in bitmap
@@ -214,7 +215,9 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, const TPoint2D& pt,
         scrpos += f_xstep;  // step to next screen pos
         f_error += f_deltay;
         if (f_error > f_deltax) {
-          if (pixel) static_cast<unsigned char*>(Get_Buffer())[scrpos] = pixel;
+          if (pixel) {
+            static_cast<unsigned char*>(Get_Buffer())[scrpos] = pixel;
+          }
           f_error -= f_deltax;
           scrpos += f_ystep;
         }
@@ -248,9 +251,10 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, const TPoint2D& pt,
       // The inner loop steps across the rectangle
       for (i = 0; i < f_deltay; i++) {
         pixel = bmp.Data[pixpos];  // read pixel
-        if (pixel)
+        if (pixel) {
           static_cast<unsigned char*>(Get_Buffer())[scrpos] =
-              pixel;           // draw if not transparent
+              pixel;  // draw if not transparent
+        }
         pxerror += bmp.Width;  // update position in bitmap
         while (pxerror > f_deltay) {
           pixpos++;
@@ -260,7 +264,9 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, const TPoint2D& pt,
         scrpos += f_ystep;  // step to next screen pos
         f_error += f_deltax;
         if (f_error > f_deltay) {
-          if (pixel) static_cast<unsigned char*>(Get_Buffer())[scrpos] = pixel;
+          if (pixel) {
+            static_cast<unsigned char*>(Get_Buffer())[scrpos] = pixel;
+          }
           f_error -= f_deltay;
           scrpos += f_xstep;
         }

@@ -149,9 +149,11 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
   memmove(palcopy, palette, sizeof(PaletteClass));
   pal = (RGB*)palcopy;
   for (int palindex = 0; palindex < 256; palindex++) {
-    pal->red = static_cast<unsigned char>(pal->red << 2);      // | (pal->red>>6));
-    pal->green = static_cast<unsigned char>(pal->green << 2);  // | (pal->green>>6));
-    pal->blue = static_cast<unsigned char>(pal->blue << 2);    // | (pal->blue>>6));
+    pal->red = static_cast<unsigned char>(pal->red << 2);  // | (pal->red>>6));
+    pal->green =
+        static_cast<unsigned char>(pal->green << 2);  // | (pal->green>>6));
+    pal->blue =
+        static_cast<unsigned char>(pal->blue << 2);  // | (pal->blue>>6));
     pal++;
   }
 

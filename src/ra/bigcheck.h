@@ -38,7 +38,9 @@ class BigCheckBoxClass : public ToggleClass {
       : ToggleClass(id, x, y, w, h), TextFlags(TextFlags) {
     szCaption = new char[strlen(szCaptionIn) + 1];
     strcpy(szCaption, szCaptionIn);
-    if (bInitiallyChecked) Turn_On();
+    if (bInitiallyChecked) {
+      Turn_On();
+    }
     IsToggleType = 1;
   }
   virtual ~BigCheckBoxClass() { delete[] szCaption; }

@@ -864,7 +864,9 @@ inline const char* Text_String(int string) {
     return NameOverride[-(string + 1)];
   }
 
-  if (string < 1000) return Extract_String(SystemStrings, string);
+  if (string < 1000) {
+    return Extract_String(SystemStrings, string);
+  }
   return Extract_String(DebugStrings, string - 1000);
 }
 
@@ -984,9 +986,13 @@ inline bool Sim_Percent_Chance(int percent) {
  *=============================================================================================*/
 inline int Distance(int x1, int y1, int x2, int y2) {
   int diff1 = y1 - y2;
-  if (diff1 < 0) diff1 = -diff1;
+  if (diff1 < 0) {
+    diff1 = -diff1;
+  }
   int diff2 = x1 - x2;
-  if (diff2 < 0) diff2 = -diff2;
+  if (diff2 < 0) {
+    diff2 = -diff2;
+  }
   if (diff1 > diff2) {
     return diff1 + static_cast<unsigned>(diff2) / 2;
   }

@@ -265,7 +265,9 @@ void MouseClass::AI(KeyNumType& input, int x, int y) {
 
     if (!IsSmall || control->SmallFrame != -1) {
       int baseframe = IsSmall ? control->SmallFrame : control->StartFrame;
-      if (baseframe == -1) baseframe = control->StartFrame;
+      if (baseframe == -1) {
+        baseframe = control->StartFrame;
+      }
       Set_Mouse_Cursor(control->X, control->Y,
                        Extract_Shape(MouseShapes, baseframe + Frame));
     }

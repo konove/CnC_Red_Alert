@@ -232,7 +232,11 @@ long OpenMixEntry(MIXHandle* mix, char* name) {
  ****************************************************************************/
 
 int compfunc(void const* ptr1, void const* ptr2) {
-  if (((MIXSubBlock*)ptr1)->CRC < ((MIXSubBlock*)ptr2)->CRC) return -1;
-  if (((MIXSubBlock*)ptr1)->CRC > ((MIXSubBlock*)ptr2)->CRC) return 1;
+  if (((MIXSubBlock*)ptr1)->CRC < ((MIXSubBlock*)ptr2)->CRC) {
+    return -1;
+  }
+  if (((MIXSubBlock*)ptr1)->CRC > ((MIXSubBlock*)ptr2)->CRC) {
+    return 1;
+  }
   return (0);
 }

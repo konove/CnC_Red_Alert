@@ -139,31 +139,39 @@ int LCWStraw::Get(void* destbuf, int slen) {
       if (Control == DECOMPRESS) {
         memmove(destbuf, &Buffer[BlockHeader.UncompCount - Counter], len);
       } else {
-        memmove(
-            destbuf,
-            &Buffer2[BlockHeader.CompCount + sizeof(BlockHeader) - Counter],
-            len);
+        memmove(destbuf,
+                &Buffer2[BlockHeader.CompCount + sizeof(BlockHeader) - Counter],
+                len);
       }
       destbuf = static_cast<char*>(destbuf) + len;
       slen -= len;
       Counter -= len;
       total += len;
     }
-    if (slen == 0) break;
+    if (slen == 0) {
+      break;
+    }
 
     if (Control == DECOMPRESS) {
       int incount = Straw::Get(&BlockHeader, sizeof(BlockHeader));
-      if (incount != sizeof(BlockHeader)) break;
+      if (incount != sizeof(BlockHeader)) {
+        break;
+      }
 
       void* ptr = &Buffer[BlockSize + SafetyMargin - BlockHeader.CompCount];
       incount = Straw::Get(ptr, BlockHeader.CompCount);
-      if (incount != BlockHeader.CompCount) break;
+      if (incount != BlockHeader.CompCount) {
+        break;
+      }
 
       LCW_Uncomp(ptr, Buffer);
       Counter = BlockHeader.UncompCount;
     } else {
-      BlockHeader.UncompCount = static_cast<unsigned short>(Straw::Get(Buffer, BlockSize));
-      if (BlockHeader.UncompCount == 0) break;
+      BlockHeader.UncompCount =
+          static_cast<unsigned short>(Straw::Get(Buffer, BlockSize));
+      if (BlockHeader.UncompCount == 0) {
+        break;
+      }
       BlockHeader.CompCount = static_cast<unsigned short>(LCW_Comp(
           Buffer, &Buffer2[sizeof(BlockHeader)], BlockHeader.UncompCount));
       memmove(Buffer2, &BlockHeader, sizeof(BlockHeader));

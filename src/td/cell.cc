@@ -429,7 +429,9 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
     return ptr;
   }
   ptr = Cell_Terrain();
-  if (ptr) return ptr;
+  if (ptr) {
+    return ptr;
+  }
   return ptr;
 }
 
@@ -507,7 +509,9 @@ void CellClass::Redraw_Objects(bool forced) {
  *=============================================================================================*/
 bool CellClass::Is_Generally_Clear() const {
   Validate();
-  if (ScenarioInit) return true;
+  if (ScenarioInit) {
+    return true;
+  }
   if (Flag.Composite || IsFlagged || Cell_Occupier()) {
     return false;
   }
@@ -569,7 +573,9 @@ void CellClass::Recalc_Attributes() {
   */
   if (Overlay != OVERLAY_NONE) {
     Land = OverlayTypeClass::As_Reference(Overlay).Land;
-    if (Land != LAND_CLEAR) return;
+    if (Land != LAND_CLEAR) {
+      return;
+    }
   }
 
   /*
@@ -640,7 +646,9 @@ void CellClass::Occupy_Down(ObjectClass* object) {
       if (optr == object) {
         return;
       }
-      if (!optr->Next) break;
+      if (!optr->Next) {
+        break;
+      }
       optr = optr->Next;
     }
   }
@@ -715,7 +723,9 @@ void CellClass::Occupy_Up(ObjectClass* object) {
         object->Next = nullptr;
         break;
       }
-      if (!optr->Next) break;
+      if (!optr->Next) {
+        break;
+      }
       optr = optr->Next;
     }
   }
@@ -771,11 +781,17 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   Validate();
   ObjectClass** ptr = nullptr;
 
-  if (!object) return;
+  if (!object) {
+    return;
+  }
   for (int index = 0; index < sizeof(Overlappers) / sizeof(Overlappers[0]);
        index++) {
-    if (Overlappers[index] == object) return;
-    if (!Overlappers[index]) ptr = &Overlappers[index];
+    if (Overlappers[index] == object) {
+      return;
+    }
+    if (!Overlappers[index]) {
+      ptr = &Overlappers[index];
+    }
   }
 
   /*
@@ -797,7 +813,9 @@ void CellClass::Overlap_Down(ObjectClass* object) {
       }
     }
   }
-  if (ptr) *ptr = object;
+  if (ptr) {
+    *ptr = object;
+  }
 
   /*
   **	If being placed down on a visible square, then flag this
@@ -1616,8 +1634,12 @@ int CellClass::Spot_Index(COORDINATE coord) {
   *organized *	from left to right, top to bottom.
   */
   int index = 0;
-  if (Coord_X(rel) > 0x80) index |= 0x01;
-  if (Coord_Y(rel) > 0x80) index |= 0x02;
+  if (Coord_X(rel) > 0x80) {
+    index |= 0x01;
+  }
+  if (Coord_Y(rel) > 0x80) {
+    index |= 0x02;
+  }
   return index + 1;
 }
 
@@ -1798,7 +1820,9 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
   }
 
   const CellClass* ptr = this + AdjacentCell[face];
-  if (ptr->Cell_Number() & 0xF000) return *this;
+  if (ptr->Cell_Number() & 0xF000) {
+    return *this;
+  }
   return *ptr;
   //	return(*(this + AdjacentCell[face]));
 }
@@ -1820,7 +1844,9 @@ void CellClass::Adjust_Threat(HousesType house, int threat_value) {
   int region = Map.Cell_Region(Cell_Number());
 
   for (HousesType lp = HOUSE_FIRST; lp < HOUSE_COUNT; lp++) {
-    if (lp == house) continue;
+    if (lp == house) {
+      continue;
+    }
 
     HouseClass* house_ptr = HouseClass::As_Pointer(lp);
     if (house_ptr && (!house_ptr->IsHuman || !house_ptr->Is_Ally(house))) {
@@ -1987,14 +2013,21 @@ bool CellClass::Goodie_Check(FootClass* object) {
           what = _what[Random_Pick(
               0, static_cast<int>(sizeof(_what) / sizeof(_what[0]) - 1))];
 
-          if (what == REVEAL && object->House->IsVisionary) what = -1;
-          if (what == AIR_STRIKE && object->House->AirStrike.Is_Present())
+          if (what == REVEAL && object->House->IsVisionary) {
             what = -1;
-          if (what == NUKE_MISSILE && object->House->NukeStrike.Is_Present())
+          }
+          if (what == AIR_STRIKE && object->House->AirStrike.Is_Present()) {
             what = -1;
-          if (what == ION_BLAST && object->House->IonCannon.Is_Present())
+          }
+          if (what == NUKE_MISSILE && object->House->NukeStrike.Is_Present()) {
             what = -1;
-          if (what == CLOAK && object->IsCloakable) what = -1;
+          }
+          if (what == ION_BLAST && object->House->IonCannon.Is_Present()) {
+            what = -1;
+          }
+          if (what == CLOAK && object->IsCloakable) {
+            what = -1;
+          }
         }
       }
 
@@ -2107,8 +2140,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
             if (utype != UNIT_MCV || MPlayerBases) {
               utp = &UnitTypeClass::As_Reference(utype);
               if (utp->IsCrateGoodie && utp->Ownable & 1 << object->Owner() &&
-                  utp->Level <= BuildLevel + 2)
+                  utp->Level <= BuildLevel + 2) {
                 break;
+              }
               utp = nullptr;
             }
           }

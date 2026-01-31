@@ -205,8 +205,9 @@ void Send_Statistics_Packet() {
 #ifndef INTERNET_OFF  // Denzil 5/4/98
 
 #ifdef WOLAPI_INTEGRATION
-  if (!pWolapi)  //	Should no longer ever happen.
+  if (!pWolapi) {  //	Should no longer ever happen.
     return;
+  }
 #endif
 
   PacketClass stats;
@@ -463,11 +464,12 @@ void Send_Statistics_Packet() {
           if (ConnectionLost) {
 #ifdef WOLAPI_INTEGRATION
             if (bReconnectDialogCancelled) {
-              if (Session.Players[0]->Player.ID == HOUSE_MULTI1)
+              if (Session.Players[0]->Player.ID == HOUSE_MULTI1) {
                 //	I am player1.
                 completion = COMPLETION_PLAYER_2_WON_BY_DISCONNECTION;
-              else
+              } else {
                 completion = COMPLETION_PLAYER_1_WON_BY_DISCONNECTION;
+              }
             } else {
               completion = COMPLETION_CONNECTION_LOST;
               if (pWolapi->bDisconnectPingingCompleted) {
@@ -638,7 +640,9 @@ void Send_Statistics_Packet() {
           HouseClass::As_Pointer(static_cast<HousesType>(house + HOUSE_MULTI1));
 
 #ifdef WOLAPI_INTEGRATION
-      if (!player) continue;
+      if (!player) {
+        continue;
+      }
 #endif
 
       /*
@@ -657,10 +661,11 @@ void Send_Statistics_Packet() {
 #ifdef WOLAPI_INTEGRATION
       //	Whether or not this player was taken over by the computer, due
       // to his quitting the game.
-      if (strcmp(player->IniName, player->InitialName))
+      if (strcmp(player->IniName, player->InitialName)) {
         stats.Add_Field(FIELD_COMPUTERTOOKOVER, (unsigned char)1);
-      else
+      } else {
         stats.Add_Field(FIELD_COMPUTERTOOKOVER, (unsigned char)0);
+      }
 #endif
       /*
       ** Player team. (NOD or GDI)

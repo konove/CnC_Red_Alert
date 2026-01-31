@@ -472,7 +472,9 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
   ** If we have been provided an illegal place to store our final moves
   ** then forget it.
   */
-  if (!final_moves) return nullptr;
+  if (!final_moves) {
+    return nullptr;
+  }
 
   BStart(BENCH_FINDPATH);
 
@@ -570,7 +572,9 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
       **	If the impassable location is actually the destination,
       **	then stop here and consider this "good enough".
       */
-      if (next == dest) break;
+      if (next == dest) {
+        break;
+      }
 
       /*
       **	We could not move to the next cell, so follow through the
@@ -631,7 +635,9 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
           }
         }
 
-        if (restart_outer_loop) break;
+        if (restart_outer_loop) {
+          break;
+        }
 
         /*
         **	Try to find a path to the passable position by following
@@ -667,7 +673,9 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
         **	cannot be reached by normal means. Scan forward looking for
         **	the other side of the "doughnut".
         */
-        if (left || right) break;
+        if (left || right) {
+          break;
+        }
 
         /*
         **	If no path can be found to the intermediate cell, then
@@ -708,9 +716,13 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
         } while (Passable_Cell(next, newdir, threat, threshhold));
       }
 
-      if (restart_outer_loop) continue;
+      if (restart_outer_loop) {
+        continue;
+      }
 
-      if (!left && !right) break;
+      if (!left && !right) {
+        break;
+      }
 
       /*
       **	We found a path around the impassable locations, so figure out
@@ -816,7 +828,9 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
   targetx = Cell_X(target);
   targety = Cell_Y(target);
 
-  if (!path) return false;
+  if (!path) {
+    return false;
+  }
   path->LastOverlap = -1;
   path->LastFixup = -1;
 
@@ -1088,7 +1102,9 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   /*
   **	Abort if there is any illegal parameter.
   */
-  if (!path || !path->Command) return 0;
+  if (!path || !path->Command) {
+    return 0;
+  }
 
   /*
   **	Optimization loop -- start scanning with the
@@ -1097,7 +1113,9 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   */
   path->Command[path->Length] = END;  // Force end of list.
 
-  if (path->Length == 0) return 0;
+  if (path->Length == 0) {
+    return 0;
+  }
 
   cell = path->Start;
   if (path->Length > 1) {
@@ -1129,7 +1147,9 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	one command.
       */
       newcmd = *cmd2 - *cmd1;
-      if (newcmd < FACING_N) newcmd = newcmd + FACING_COUNT;
+      if (newcmd < FACING_N) {
+        newcmd = newcmd + FACING_COUNT;
+      }
       newcmd = _trans[newcmd];
 
       /*
@@ -1294,10 +1314,13 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
                              MoveType threshhold) {
   MoveType move = Can_Enter_Cell(cell, face);
 
-  if (move < MOVE_MOVING_BLOCK && Distance(Cell_Coord(cell)) > 0x0100)
+  if (move < MOVE_MOVING_BLOCK && Distance(Cell_Coord(cell)) > 0x0100) {
     threshhold = MOVE_MOVING_BLOCK;
+  }
 
-  if (move > threshhold) return 0;
+  if (move > threshhold) {
+    return 0;
+  }
 
   if (Session.Type == GAME_NORMAL) {
     if (threat != -1) {
@@ -1305,7 +1328,9 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
           THREAT_THRESHOLD * CELL_LEPTON_W) {
         //			if (Map.Cell_Distance(cell, DestLocation) >
         // THREAT_THRESHOLD) {
-        if (Map.Cell_Threat(cell, Owner()) > threat) return 0;
+        if (Map.Cell_Threat(cell, Owner()) > threat) {
+          return 0;
+        }
       }
     }
   }

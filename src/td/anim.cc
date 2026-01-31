@@ -232,7 +232,9 @@ COORDINATE AnimClass::Center_Coord() const {
  *=============================================================================================*/
 bool AnimClass::Render(bool forced) {
   Validate();
-  if (Delay) return false;
+  if (Delay) {
+    return false;
+  }
   IsToDisplay = true;
   return ObjectClass::Render(forced);
 }
@@ -285,10 +287,12 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
       **	If the translucent table hasn't been determined yet, then check
       *to see if it *	should use the white or normal translucent tables.
       */
-      if (!transtable && Class->IsWhiteTrans)
+      if (!transtable && Class->IsWhiteTrans) {
         transtable = MouseClass::WhiteTranslucentTable;
-      if (!transtable && Class->IsTranslucent)
+      }
+      if (!transtable && Class->IsTranslucent) {
         transtable = MouseClass::TranslucentTable;
+      }
 
       /*
       **	Set the shape flags to properly take into account any fading or
@@ -299,7 +303,9 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
         flags = flags | SHAPE_FADING;
         remap = MouseClass::RemapTables[HOUSE_GOOD][0];
       }
-      if (transtable) flags = flags | SHAPE_GHOST;
+      if (transtable) {
+        flags = flags | SHAPE_GHOST;
+      }
 
       /*
       **	Draw the animation shape.
@@ -670,7 +676,9 @@ AnimClass::~AnimClass() {
       */
       int index;
       for (index = 0; index < Anims.Count(); index++) {
-        if (Anims.Ptr(index)->Object == to) break;
+        if (Anims.Ptr(index)->Object == to) {
+          break;
+        }
       }
 
       /*
@@ -806,7 +814,9 @@ void AnimClass::AI() {
         *then start the loop *	but if not, then proceed into the animation
         *termination handler.
         */
-        if (Loops) Loops--;
+        if (Loops) {
+          Loops--;
+        }
         if (Loops) {
           Set_Stage(Class->LoopStart);
         } else {
@@ -856,7 +866,9 @@ void AnimClass::AI() {
  *=============================================================================================*/
 void AnimClass::Attach_To(ObjectClass* obj) {
   Validate();
-  if (!obj) return;
+  if (!obj) {
+    return;
+  }
 
   obj->Mark(MARK_OVERLAP_UP);
   obj->IsAnimAttached = true;
@@ -984,7 +996,9 @@ void AnimClass::Middle() {
         }
       }
 
-      if (!building) building = dynamic_cast<BuildingClass*>(backup);
+      if (!building) {
+        building = dynamic_cast<BuildingClass*>(backup);
+      }
     }
 
     int radius = 3;
@@ -1011,7 +1025,9 @@ void AnimClass::Middle() {
           continue;
         }
         CELL tcell = XY_Cell(xpos, ypos);
-        if (!Map.In_Radar(tcell)) continue;
+        if (!Map.In_Radar(tcell)) {
+          continue;
+        }
 
         int damage = rawdamage / (std::abs(radius) / 2 + 1);
         Explosion_Damage(Cell_Coord(tcell), damage, building, WARHEAD_FIRE);
@@ -1109,7 +1125,9 @@ void AnimClass::Middle() {
           }
         }
 
-        if (!building) building = dynamic_cast<BuildingClass*>(backup);
+        if (!building) {
+          building = dynamic_cast<BuildingClass*>(backup);
+        }
       }
       Explosion_Damage(Center_Coord(), 600, building, WARHEAD_PB);
     } break;

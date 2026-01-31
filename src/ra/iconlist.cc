@@ -54,7 +54,9 @@ IconListClass::IconListClass(int id, int x, int y, int w, int h,
   bDoAlloc = bResponsibleForStringAlloc;
   //	iSelectionType = 0 for no selection shown, 1 for normal ListClass
   // selection, 2 for n multiple selections
-  if (iSelectionType < 0 || iSelectionType > 2) iSelectionType = 1;
+  if (iSelectionType < 0 || iSelectionType > 2) {
+    iSelectionType = 1;
+  }
   iSelectType = iSelectionType;
   //	If iMaxItemsSaved is 0, there is no limit to the number of text lines.
   // The list can grow forever. 	Otherwise items are deleted from the
@@ -67,12 +69,15 @@ IconListClass::IconListClass(int id, int x, int y, int w, int h,
 IconListClass::~IconListClass() {
   //	Delete the IconList_ItemExtras structs created to hold extra info on
   // each item.
-  for (int i = 0; i < ExtrasList.Count(); i++)
+  for (int i = 0; i < ExtrasList.Count(); i++) {
     delete (IconList_ItemExtras*)ExtrasList[i];
+  }
 
   if (bDoAlloc) {
     //	Delete all alloc'ed strings.
-    for (int i = 0; i < List.Count(); i++) delete[] (char*)List[i];
+    for (int i = 0; i < List.Count(); i++) {
+      delete[] (char*)List[i];
+    }
   }
 }
 
@@ -245,12 +250,14 @@ int IconListClass::Add_Item(
         char* szText = new char[2];
         strcpy(szText, " ");
         return ListClass::Add_Item(szText);
-      } else
+      } else {
         //	Cannot add entry, as text is blank and ListClass::Add_Item will
         // do nothing. 	The Icon we want will not show up.
         return List.Count() - 1;
-    } else
+      }
+    } else {
       return ListClass::Add_Item(text);
+    }
   }
 }
 
@@ -327,7 +334,9 @@ int IconListClass::Add_Item(
 
 //***********************************************************************************************
 void IconListClass::Remove_Item(const char* text) {
-  if (text) Remove_Item(List.ID(text));
+  if (text) {
+    Remove_Item(List.ID(text));
+  }
 }
 
 //***********************************************************************************************
@@ -335,9 +344,10 @@ void IconListClass::Remove_Item(int index) {
   if ((unsigned)index < List.Count()) {
     delete (IconList_ItemExtras*)ExtrasList[index];
     ExtrasList.Delete(index);
-    if (bDoAlloc)
+    if (bDoAlloc) {
       //	Delete alloc'ed string.
       delete[] (char*)List[index];
+    }
     ListClass::Remove_Item(index);
 
     //	I should probably put this in ListClass:Remove_Item(), as it seems
@@ -346,7 +356,9 @@ void IconListClass::Remove_Item(int index) {
     // appropriate...
     if (SelectedIndex >= index) {
       SelectedIndex--;
-      if (SelectedIndex < 0) SelectedIndex = 0;
+      if (SelectedIndex < 0) {
+        SelectedIndex = 0;
+      }
     }
   }
 }
@@ -382,7 +394,7 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
   //	ajw If I end up needing to use SHAPEs for icons, figure out shape width
   // here and offset x.
   bool bIconsPresent = false;
-  for (int iIcon = 0; iIcon != 3; iIcon++)
+  for (int iIcon = 0; iIcon != 3; iIcon++) {
     if (pExtras->pIcon[iIcon] && pExtras->IconKind[iIcon] == ICON_DIB) {
       //	Push text over to accommodate icon.
       int iWidthIcon = PREICONGAP + DIBWidth((char*)pExtras->pIcon[iIcon]);
@@ -390,6 +402,7 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
       width -= iWidthIcon;
       bIconsPresent = true;
     }
+  }
   if (bIconsPresent) {
     xText += ICONTEXTGAP;
     width -= ICONTEXTGAP;
@@ -423,7 +436,9 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
         break;
     }
     //	Restore Tabs.
-    if (Tabs) Tabs = TabsSave;
+    if (Tabs) {
+      Tabs = TabsSave;
+    }
   } else {
     //	Use different color remapping.
     //	This is largely copied straight from ListClass::Draw_Entry()...
@@ -460,31 +475,35 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
       int tab = *Tabs - (xText - x);
       Conquer_Clip_Text_Print(List[index], xText, y, pRemap, TBLACK, flags,
                               width, &tab);
-    } else
+    } else {
       Conquer_Clip_Text_Print(List[index], xText, y, pRemap, TBLACK, flags,
                               width, NULL);
+    }
   }
 
   //	Draw fixed position icon.
   if (pExtras->FixedIcon.pIcon) {
-    if (pExtras->FixedIcon.IconKind == ICON_SHAPE)
+    if (pExtras->FixedIcon.IconKind == ICON_SHAPE) {
       CC_Draw_Shape(pExtras->FixedIcon.pIcon, 0, x + pExtras->FixedIcon.xOffset,
                     y + pExtras->FixedIcon.yOffset, WINDOW_MAIN, SHAPE_NORMAL);
+    }
     //	Put similar code in here for shapes if used...
-    else
+    else {
       CC_Draw_DIB((char*)pExtras->FixedIcon.pIcon,
                   x + pExtras->FixedIcon.xOffset,
                   y + pExtras->FixedIcon.yOffset, pExtras->FixedIcon.iWidth,
                   WINDOW_MAIN);
+    }
   }
 
   //	Draw variable position left-of-text icons.
   for (iIcon = 0; iIcon != 3; iIcon++) {
     if (pExtras->pIcon[iIcon]) {
       x += PREICONGAP;
-      if (pExtras->IconKind[iIcon] == ICON_SHAPE)
+      if (pExtras->IconKind[iIcon] == ICON_SHAPE) {
         CC_Draw_Shape(pExtras->pIcon[iIcon], 0, x, y, WINDOW_MAIN,
                       SHAPE_NORMAL);
+      }
       //	Put similar code in here for shapes if used...
       else {
         CC_Draw_DIB((char*)pExtras->pIcon[iIcon], x, y, 9999, WINDOW_MAIN);
@@ -504,9 +523,10 @@ int IconListClass::Action(unsigned flags, KeyNumType& key) {
         index = index / LineHeight;
         int iSelected = CurrentTopIndex + index;
         iSelected = min(iSelected, List.Count() - 1);
-        if (iSelected >= 0)
+        if (iSelected >= 0) {
           ((IconList_ItemExtras*)ExtrasList[iSelected])->bMultiSelected =
               !((IconList_ItemExtras*)ExtrasList[iSelected])->bMultiSelected;
+        }
       }
     }
   }
@@ -527,16 +547,18 @@ void IconListClass::Show_Last_Item() {
 
 //***********************************************************************************************
 bool IconListClass::bItemIsMultiSelected(int index) const {
-  if (index < ExtrasList.Count() && index > -1)
+  if (index < ExtrasList.Count() && index > -1) {
     return ((IconList_ItemExtras*)ExtrasList[index])->bMultiSelected;
-  else
+  } else {
     return false;
+  }
 }
 
 //***********************************************************************************************
 void IconListClass::MultiSelect(int index, bool bSelect) {
-  if (index < ExtrasList.Count() && index > -1)
+  if (index < ExtrasList.Count() && index > -1) {
     ((IconList_ItemExtras*)ExtrasList[index])->bMultiSelected = bSelect;
+  }
 }
 
 //***********************************************************************************************
@@ -563,8 +585,9 @@ void IconListClass::Set_Item_ExtraDataString(int index,
       //	Copy special data string into new extradata string.
       pItemExtra->szExtraData = new char[strlen(szNewString) + 1];
       strcpy(pItemExtra->szExtraData, szNewString);
-    } else
+    } else {
       pItemExtra->szExtraData = NULL;
+    }
   }
 }
 
@@ -572,35 +595,39 @@ void IconListClass::Set_Item_ExtraDataString(int index,
 void* IconListClass::Get_Item_ExtraDataPtr(int index) const {
   //	Returns the hidden "extra data" void pointer that can be associated with
   // each item. 	This is NULL if no value was assigned.
-  if (index < ExtrasList.Count() && index > -1)
+  if (index < ExtrasList.Count() && index > -1) {
     return ((IconList_ItemExtras*)ExtrasList[index])->pvExtraData;
-  else
+  } else {
     return NULL;
+  }
 }
 
 //***********************************************************************************************
 void IconListClass::Set_Item_ExtraDataPtr(int index, void* pNewValue) {
   //	Sets the hidden "extra data" void pointer that can be associated with
   // each item.
-  if (index < ExtrasList.Count() && index > -1)
+  if (index < ExtrasList.Count() && index > -1) {
     ((IconList_ItemExtras*)ExtrasList[index])->pvExtraData = pNewValue;
+  }
 }
 
 //***********************************************************************************************
 const IconList_ItemExtras* IconListClass::Get_ItemExtras(int index) const {
-  if (index < ExtrasList.Count() && index > -1)
+  if (index < ExtrasList.Count() && index > -1) {
     return (IconList_ItemExtras*)ExtrasList[index];
-  else
+  } else {
     return NULL;
+  }
 }
 
 //***********************************************************************************************
 const char* IconListClass::Get_Item_Help(int index) const {
   //	Returns pointer to the string allocated for tooltip help.
-  if (index < ExtrasList.Count() && index > -1)
+  if (index < ExtrasList.Count() && index > -1) {
     return ((IconList_ItemExtras*)ExtrasList[index])->szHelp;
-  else
+  } else {
     return NULL;
+  }
 }
 
 //***********************************************************************************************
@@ -609,13 +636,16 @@ void IconListClass::Clear() {
 
   //	Delete the IconList_ItemExtras structs created to hold extra info on
   // each item.
-  for (int i = 0; i < ExtrasList.Count(); i++)
+  for (int i = 0; i < ExtrasList.Count(); i++) {
     delete (IconList_ItemExtras*)ExtrasList[i];
+  }
   ExtrasList.Clear();
 
   if (bDoAlloc) {
     //	Delete all alloc'ed strings.
-    for (int i = 0; i < List.Count(); i++) delete[] (char*)List[i];
+    for (int i = 0; i < List.Count(); i++) {
+      delete[] (char*)List[i];
+    }
   }
 
   List.Clear();
@@ -625,16 +655,18 @@ void IconListClass::Clear() {
 
 //***********************************************************************************************
 RemapControlType* IconListClass::Get_Item_Color(int index) {
-  if (index < ExtrasList.Count() && index > -1)
+  if (index < ExtrasList.Count() && index > -1) {
     return ((IconList_ItemExtras*)ExtrasList[index])->pColorRemap;
-  else
+  } else {
     return NULL;
+  }
 }
 
 //***********************************************************************************************
 void IconListClass::Set_Item_Color(int index, RemapControlType* pColorRemap) {
-  if (index < ExtrasList.Count() && index > -1)
+  if (index < ExtrasList.Count() && index > -1) {
     ((IconList_ItemExtras*)ExtrasList[index])->pColorRemap = pColorRemap;
+  }
 }
 
 //***********************************************************************************************
@@ -642,7 +674,9 @@ int IconListClass::Find(const char* szItemToFind) {
   //	Returns -1 if szItemToFind is not found as the text BEGINNING one of the
   // list entries, else index of item. 	Compare is case-sensitive.
   for (int i = 0; i < List.Count(); i++) {
-    if (strncmp(List[i], szItemToFind, strlen(szItemToFind)) == 0) return i;
+    if (strncmp(List[i], szItemToFind, strlen(szItemToFind)) == 0) {
+      return i;
+    }
   }
   return -1;
 }
@@ -652,7 +686,9 @@ int IconListClass::FindColor(RemapControlType* pColorRemap) {
   //	Returns -1 if no items of specified color are found, else first index.
   // Assumes colorptr == colorptr is a valid equality test.
   for (int i = 0; i < List.Count(); i++) {
-    if (Get_Item_Color(i) == pColorRemap) return i;
+    if (Get_Item_Color(i) == pColorRemap) {
+      return i;
+    }
   }
   return -1;
 }
@@ -660,7 +696,9 @@ int IconListClass::FindColor(RemapControlType* pColorRemap) {
 //***********************************************************************************************
 bool IconListClass::Set_Item(unsigned int index, const char* szText) {
   //	Resets the text string allocated for an item.
-  if (!bDoAlloc || index >= List.Count()) return false;
+  if (!bDoAlloc || index >= List.Count()) {
+    return false;
+  }
 
   //	Delete alloc'ed string.
   delete[] (char*)List[index];
@@ -678,7 +716,9 @@ bool IconListClass::Set_Item(unsigned int index, const char* szText) {
 //***********************************************************************************************
 bool IconListClass::Set_Icon(unsigned int index, unsigned int iIconNumber,
                              void* pIcon, ICONKIND IconKind) {
-  if (index >= List.Count()) return false;
+  if (index >= List.Count()) {
+    return false;
+  }
 
   //	Sets one of the left-aligned icons.
   ((IconList_ItemExtras*)ExtrasList[index])->pIcon[iIconNumber] = pIcon;
@@ -689,7 +729,9 @@ bool IconListClass::Set_Icon(unsigned int index, unsigned int iIconNumber,
 //***********************************************************************************************
 int IconListClass::GetRealWidth()  //	sigh
 {
-  if (IsScrollActive) return Width + ScrollGadget.Width;
+  if (IsScrollActive) {
+    return Width + ScrollGadget.Width;
+  }
   return Width;
 }
 
@@ -720,7 +762,9 @@ int IconListClass::IndexUnderMouse() {
   // known to be over the iconlist.
   int index = Get_Mouse_Y() - (Y + 1);
   index = index / LineHeight + CurrentTopIndex;
-  if (index > List.Count() - 1 || index < 0) return -1;
+  if (index > List.Count() - 1 || index < 0) {
+    return -1;
+  }
   return index;
 }
 
@@ -751,7 +795,9 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
   height = 0;
 
   // In no string was passed in, then there are no lines.
-  if (!string) return (0);
+  if (!string) {
+    return (0);
+  }
 
   // While there are more letters left divide the line up.
   while (*string) {
@@ -782,12 +828,13 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
         //	Go back one char from over-the-end point and add in a break
         // there.
         string = stringOverEnd - 1;
-        if (iExtraChars > 0)
+        if (iExtraChars > 0) {
           iExtraChars--;  //	One less to make use of later.
-        else
+        } else {
           //	We've used up all our extras characters.
           //	Put in a break below by wiping out a valid char here.
           szReturn--;
+        }
       } else {
         //	Back up szReturn to same location.
         szReturn -= (stringOverEnd - string);
@@ -825,7 +872,9 @@ void CC_Draw_DIB(const char* pDIB, int xDest, int yDest, int iWidth,
 
     int iSrcPitch = (iWidthDIB + 3) & ~3;
 
-    if (iWidth > iWidthDIB) iWidth = iWidthDIB;
+    if (iWidth > iWidthDIB) {
+      iWidth = iWidthDIB;
+    }
 
     GraphicViewPortClass draw_window(
         LogicPage->Get_Graphic_Buffer(),

@@ -543,7 +543,9 @@ void TeamClass::AI() {
       case TMISSION_ATTACKBASE:
         if (!Target_Legal(MissionTarget)) {
           Assign_Mission_Target(Member->Greatest_Threat(THREAT_BUILDINGS));
-          if (!Target_Legal(MissionTarget)) IsNextMission = true;
+          if (!Target_Legal(MissionTarget)) {
+            IsNextMission = true;
+          }
         }
         Coordinate_Attack();
         break;
@@ -552,7 +554,9 @@ void TeamClass::AI() {
         if (!Target_Legal(MissionTarget)) {
           Assign_Mission_Target(
               Member->Greatest_Threat(THREAT_VEHICLES | THREAT_INFANTRY));
-          if (!Target_Legal(MissionTarget)) IsNextMission = true;
+          if (!Target_Legal(MissionTarget)) {
+            IsNextMission = true;
+          }
         }
         Coordinate_Attack();
         break;
@@ -560,7 +564,9 @@ void TeamClass::AI() {
       case TMISSION_ATTACKCIVILIANS:
         if (!Target_Legal(MissionTarget)) {
           Assign_Mission_Target(Member->Greatest_Threat(THREAT_CIVILIANS));
-          if (!Target_Legal(MissionTarget)) IsNextMission = true;
+          if (!Target_Legal(MissionTarget)) {
+            IsNextMission = true;
+          }
         }
         Coordinate_Attack();
         break;
@@ -569,7 +575,9 @@ void TeamClass::AI() {
       case TMISSION_RAMPAGE:
         if (!Target_Legal(MissionTarget)) {
           Assign_Mission_Target(Member->Greatest_Threat(THREAT_NORMAL));
-          if (!Target_Legal(MissionTarget)) IsNextMission = true;
+          if (!Target_Legal(MissionTarget)) {
+            IsNextMission = true;
+          }
         }
         Coordinate_Attack();
         break;
@@ -1299,7 +1307,9 @@ bool TeamClass::Lagging_Units() {
   ** If the IsLagging bit is not set, then obviously there are no lagging
   ** units.
   */
-  if (!IsLagging) return false;
+  if (!IsLagging) {
+    return false;
+  }
 
   /*
   **	Scan through all of the units, searching for units who are having

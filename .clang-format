@@ -2,3 +2,4 @@
 Language: Cpp
 BasedOnStyle: Google
 InsertNewlineAtEOF: true
+InsertBraces: true

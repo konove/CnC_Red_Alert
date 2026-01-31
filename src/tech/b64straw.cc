@@ -100,7 +100,9 @@ int Base64Straw::Get(void* source, int slen) {
       source = static_cast<char*>(source) + len;
       total += len;
     }
-    if (slen == 0) break;
+    if (slen == 0) {
+      break;
+    }
 
     /*
     **	More bytes are needed, so fetch and process another base 64 block.
@@ -111,7 +113,9 @@ int Base64Straw::Get(void* source, int slen) {
     } else {
       Counter = Base64_Decode(from, incount, to, tosize);
     }
-    if (Counter == 0) break;
+    if (Counter == 0) {
+      break;
+    }
   }
 
   return total;

@@ -75,18 +75,24 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
         line_flags = BLIT_TRANSPARENT;
         trans_count++;  // keep track of number of transparent pixels
       } else {
-        if (flags & SHAPE_PREDATOR) line_flags |= BLIT_PREDATOR;
+        if (flags & SHAPE_PREDATOR) {
+          line_flags |= BLIT_PREDATOR;
+        }
 
-        if (flags & SHAPE_GHOST && IsTranslucent[pixel] != 0xFF)
+        if (flags & SHAPE_GHOST && IsTranslucent[pixel] != 0xFF) {
           line_flags |= BLIT_GHOST;
+        }
 
-        if (flags & SHAPE_FADING) line_flags |= BLIT_FADING;
+        if (flags & SHAPE_FADING) {
+          line_flags |= BLIT_FADING;
+        }
       }
     } while (--x_count);
 
     // all pixels in the line were transparent so we dont need to draw it at all
-    if (line_flags & BLIT_TRANSPARENT && trans_count == pixel_width)
+    if (line_flags & BLIT_TRANSPARENT && trans_count == pixel_width) {
       line_flags = BLIT_SKIP;
+    }
 
     *ptr++ = line_flags;
   } while (--pixel_height != 0);
@@ -119,13 +125,16 @@ void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
 
         if (flags & BLIT_GHOST) {
           uint8_t is_trans = IsTranslucent[pixel];
-          if (is_trans != 0xFF)  // is it a translucent color?
+          if (is_trans != 0xFF) {  // is it a translucent color?
             pixel = Translucent[is_trans << 8 | *dst_offset];
+          }
         }
 
         if (flags & BLIT_FADING) {
           // run color through fading table
-          for (int f = 0; f < FadingNum; f++) pixel = FadingTable[pixel];
+          for (int f = 0; f < FadingNum; f++) {
+            pixel = FadingTable[pixel];
+          }
         }
 
         *dst_offset = pixel;
@@ -141,7 +150,9 @@ void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
 extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
                                      GraphicViewPortClass& dest, int flags,
                                      ...) {
-  if (!src) return 0;
+  if (!src) {
+    return 0;
+  }
 
   uint8_t* IsTranslucent = nullptr;
   uint8_t* Translucent = nullptr;
@@ -178,10 +189,12 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
     y -= h / 2;
   }
 
-  if (flags & SHAPE_TRANS) jflags |= BLIT_TRANSPARENT;
+  if (flags & SHAPE_TRANS) {
+    jflags |= BLIT_TRANSPARENT;
+  }
 
-  if (flags & SHAPE_GHOST)  // are we ghosting this shape
-  {
+  if (flags & SHAPE_GHOST) {
+    // are we ghosting this shape
     jflags |= BLIT_GHOST;
     IsTranslucent = va_arg(args, uint8_t*);
     Translucent = IsTranslucent + 256;
@@ -219,7 +232,9 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
     FadingNum = va_arg(args, int) & 0x3F;
     jflags |= BLIT_FADING;
 
-    if (!FadingNum) flags &= ~SHAPE_FADING;  // don't fade
+    if (!FadingNum) {
+      flags &= ~SHAPE_FADING;  // don't fade
+    }
 
     // ShapeJumpTableAddress[4] = Single_Line_Single_Fade
     // ShapeJumpTableAddress[5] = Single_Line_Single_Fade_Trans
@@ -237,18 +252,20 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
 
     offset <<= 1;
 
-    if (offset < 0)
+    if (offset < 0) {
       offset = -offset & PRED_MASK | 0xFFFFFF00;  // will be ffffff00-ffffff0E
-    else
+    } else {
       offset &= PRED_MASK;
+    }
 
     BFPredOffset = offset;
     BFPartialCount = 0;   // clear the partial count
     BFPartialPred = 256;  // init partial to off
 
-    for (int off = 0; off < 8; off++)
+    for (int off = 0; off < 8; off++) {
       BFPredNegTable[off + 8] = BFPredNegTable[off] + dest.Get_Width() +
                                 dest.Get_XAdd() + dest.Get_Pitch();
+    }
   }
 
   // is this a partial pred?
@@ -307,7 +324,9 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   int dst_adjust_width = dst_area - (dst_x1 - dst_x0);
 
   if (!use_new_draw) {
-    if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) return 0;
+    if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+      return 0;
+    }
 
     int pixel_count = dst_x1 - dst_x0;
     int line_count = dst_y1 - dst_y0;

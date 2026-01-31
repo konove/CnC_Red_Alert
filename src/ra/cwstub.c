@@ -16,16 +16,17 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <process.h>
+
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
-#include <process.h>
-#include <cerrno>
 #include <cstring>
 
-char *dos4g_path() {
-  static char *paths_to_check[] = {"DOS4GPATH", "PATH"};
+char* dos4g_path() {
+  static char* paths_to_check[] = {"DOS4GPATH", "PATH"};
   static char fullpath[80];
-  char *dos4gpath;
+  char* dos4gpath;
   int i;
 
   /* If DOS4GPATH points to an executable file name, don't bother
@@ -46,8 +47,8 @@ char *dos4g_path() {
   return ("dos4gw.exe");
 }
 
-main(int argc, char *argv[]) {
-  char *av[4];
+main(int argc, char* argv[]) {
+  char* av[4];
   auto char cmdline[128];
 
   av[0] = dos4g_path();    /* Locate the DOS/4GW loader */

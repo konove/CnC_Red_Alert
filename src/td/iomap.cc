@@ -143,7 +143,9 @@ bool CellClass::Load(FileClass& file) {
   */
   if (rc) {
     if (IsTrigger) {
-      if (file.Read(&trig, sizeof(void*)) != sizeof(void*)) return false;
+      if (file.Read(&trig, sizeof(void*)) != sizeof(void*)) {
+        return false;
+      }
       CellTriggers[Cell_Number()] = trig;
     }
   }
@@ -177,7 +179,9 @@ bool CellClass::Save(FileClass& file) {
   if (rc) {
     if (IsTrigger) {
       trig = CellTriggers[Cell_Number()];
-      if (file.Write(&trig, sizeof(void*)) != sizeof(void*)) return false;
+      if (file.Write(&trig, sizeof(void*)) != sizeof(void*)) {
+        return false;
+      }
     }
   }
 
@@ -207,18 +211,21 @@ void CellClass::Code_Pointers() {
 
   if (Overlappers[0] && Overlappers[0]->IsActive) {
     Overlappers[0] = (ObjectClass*)Overlappers[0]->As_Target();
-  } else
+  } else {
     Overlappers[0] = nullptr;
+  }
 
   if (Overlappers[1] && Overlappers[1]->IsActive) {
     Overlappers[1] = (ObjectClass*)Overlappers[1]->As_Target();
-  } else
+  } else {
     Overlappers[1] = nullptr;
+  }
 
   if (Overlappers[2] && Overlappers[2]->IsActive) {
     Overlappers[2] = (ObjectClass*)Overlappers[2]->As_Target();
-  } else
+  } else {
     Overlappers[2] = nullptr;
+  }
 
   /*
   ------------------------ Convert trigger pointer -------------------------
@@ -314,7 +321,9 @@ bool MouseClass::Load(FileClass& file) {
   disk will be over-written when initialization occurs.  This code must
   go in the most-derived Map class.
   ------------------------------------------------------------------------*/
-  if (file.Read(&Theater, sizeof(Theater)) != sizeof(Theater)) return false;
+  if (file.Read(&Theater, sizeof(Theater)) != sizeof(Theater)) {
+    return false;
+  }
 
   /*
   ** Remove any old theater specific uncompressed shapes
@@ -376,9 +385,13 @@ bool MouseClass::Load(FileClass& file) {
   ------------------------------- Read cells -------------------------------
   */
   for (index = 0; index < count; index++) {
-    if (file.Read(&cell, sizeof(cell)) != sizeof(cell)) return false;
+    if (file.Read(&cell, sizeof(cell)) != sizeof(cell)) {
+      return false;
+    }
 
-    if (!(*this)[cell].Load(file)) return false;
+    if (!(*this)[cell].Load(file)) {
+      return false;
+    }
   }
 
   return true;
@@ -402,9 +415,13 @@ bool MouseClass::Save(FileClass& file) {
   /*
   -------------------------- Save Theater >first< --------------------------
   */
-  if (file.Write(&Theater, sizeof(Theater)) != sizeof(Theater)) return false;
+  if (file.Write(&Theater, sizeof(Theater)) != sizeof(Theater)) {
+    return false;
+  }
 
-  if (!Write_Object(this, sizeof(MouseClass), file)) return false;
+  if (!Write_Object(this, sizeof(MouseClass), file)) {
+    return false;
+  }
 
   /*
   ---------------------- Record current file position ----------------------
@@ -414,7 +431,9 @@ bool MouseClass::Save(FileClass& file) {
   /*
   ---------------------- write out placeholder bytes -----------------------
   */
-  if (file.Write(&count, sizeof(count)) != sizeof(count)) return false;
+  if (file.Write(&count, sizeof(count)) != sizeof(count)) {
+    return false;
+  }
 
   /*
   ------------------------ Save cells that need it -------------------------
@@ -422,11 +441,15 @@ bool MouseClass::Save(FileClass& file) {
   count = 0;
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if ((*this)[cell].Should_Save()) {
-      if (file.Write(&cell, sizeof(cell)) != sizeof(cell)) return false;
+      if (file.Write(&cell, sizeof(cell)) != sizeof(cell)) {
+        return false;
+      }
 
       count++;
 
-      if (!(*this)[cell].Save(file)) return false;
+      if (!(*this)[cell].Save(file)) {
+        return false;
+      }
     }
   }
 
@@ -435,7 +458,9 @@ bool MouseClass::Save(FileClass& file) {
   */
   file.Seek(pos, SEEK_SET);
 
-  if (file.Write(&count, sizeof(count)) != sizeof(count)) return false;
+  if (file.Write(&count, sizeof(count)) != sizeof(count)) {
+    return false;
+  }
 
   file.Seek(0, SEEK_END);
 

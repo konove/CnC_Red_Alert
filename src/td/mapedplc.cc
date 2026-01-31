@@ -587,7 +587,9 @@ int MapEditClass::Placement_Dialog() {
         i = 0;
         for (typeindex = 0; typeindex < NUM_EDIT_CLASSES; typeindex++) {
           i += NumType[typeindex];
-          if (LastChoice < i) break;
+          if (LastChoice < i) {
+            break;
+          }
         }
         templatebtn.Turn_Off();
         overlaybtn.Turn_Off();
@@ -950,7 +952,9 @@ void MapEditClass::Start_Placement() {
     Flag_To_Redraw(true);
     Render();
     PendingObject = nullptr;
-    if (BaseBuilding) Cancel_Base_Building();
+    if (BaseBuilding) {
+      Cancel_Base_Building();
+    }
     return;
   }
 
@@ -1363,9 +1367,13 @@ void MapEditClass::Place_Prev() {
     ** If we're building a base, wrap at the 1st building.
     */
     if (!BaseBuilding) {
-      if (LastChoice < 0) LastChoice = ObjCount - 1;
+      if (LastChoice < 0) {
+        LastChoice = ObjCount - 1;
+      }
     } else {
-      if (LastChoice < TypeOffset[7]) LastChoice = ObjCount - 1;
+      if (LastChoice < TypeOffset[7]) {
+        LastChoice = ObjCount - 1;
+      }
     }
 
     /*

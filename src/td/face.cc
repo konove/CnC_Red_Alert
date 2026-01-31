@@ -178,7 +178,9 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   **	has the added bonus of ensuring that checking for division
   **	by zero is not needed in the following section.
   */
-  if (xdiff == 0 && ydiff == 0) return static_cast<DirType>(0xFF);
+  if (xdiff == 0 && ydiff == 0) {
+    return static_cast<DirType>(0xFF);
+  }
 
   /*
   **	Determine which of the two direction offsets it bigger. The

@@ -197,8 +197,12 @@ void TabClass::AI(KeyNumType& input, int x, int y) {
     if (ok) {
       if (input == KN_LMOUSE) {
         int sel = -1;
-        if (x < Eva_Width) sel = 0;
-        if (x > width - Eva_Width) sel = 1;
+        if (x < Eva_Width) {
+          sel = 0;
+        }
+        if (x > width - Eva_Width) {
+          sel = 1;
+        }
         if (sel >= 0) {
           Set_Active(sel);
           input = KN_NONE;

@@ -373,8 +373,9 @@ void SoundControlsClass::Process() {
       */
       case SLIDER_MUSIC | KN_BUTTON:
         Options.Set_Score_Volume(fixed(music.Get_Value(), 256), true);
-        if (Session.Type != GAME_NORMAL)
+        if (Session.Type != GAME_NORMAL) {
           Options.MultiScoreVolume = Options.ScoreVolume;
+        }
         break;
 
       /*

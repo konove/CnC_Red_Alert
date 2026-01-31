@@ -337,7 +337,9 @@ int MapEditClass::Save_Scenario() {
     HiddenPage.Clear();
     Flag_To_Redraw(true);
     Render();
-    if (rc == 1) return (-1);
+    if (rc == 1) {
+      return (-1);
+    }
   }
 
   /*
@@ -874,7 +876,9 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*
   ------------------------- If cancel, just return -------------------------
   */
-  if (cancel) return (-1);
+  if (cancel) {
+    return (-1);
+  }
 
   /*
   ------------------------ Save selections & return ------------------------
@@ -1827,18 +1831,34 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ...................... Init GDI Edge button states .......................
   */
-  if (gdi_edge == SOURCE_NORTH) gdinbtn.Turn_On();
-  if (gdi_edge == SOURCE_EAST) gdiebtn.Turn_On();
-  if (gdi_edge == SOURCE_SOUTH) gdisbtn.Turn_On();
-  if (gdi_edge == SOURCE_WEST) gdiwbtn.Turn_On();
+  if (gdi_edge == SOURCE_NORTH) {
+    gdinbtn.Turn_On();
+  }
+  if (gdi_edge == SOURCE_EAST) {
+    gdiebtn.Turn_On();
+  }
+  if (gdi_edge == SOURCE_SOUTH) {
+    gdisbtn.Turn_On();
+  }
+  if (gdi_edge == SOURCE_WEST) {
+    gdiwbtn.Turn_On();
+  }
 
   /*
   ...................... Init NOD Edge button states .......................
   */
-  if (nod_edge == SOURCE_NORTH) nodnbtn.Turn_On();
-  if (nod_edge == SOURCE_EAST) nodebtn.Turn_On();
-  if (nod_edge == SOURCE_SOUTH) nodsbtn.Turn_On();
-  if (nod_edge == SOURCE_WEST) nodwbtn.Turn_On();
+  if (nod_edge == SOURCE_NORTH) {
+    nodnbtn.Turn_On();
+  }
+  if (nod_edge == SOURCE_EAST) {
+    nodebtn.Turn_On();
+  }
+  if (nod_edge == SOURCE_SOUTH) {
+    nodsbtn.Turn_On();
+  }
+  if (nod_edge == SOURCE_WEST) {
+    nodwbtn.Turn_On();
+  }
 
   /*
   .......................... Init credits buffers ..........................
@@ -2178,7 +2198,9 @@ void MapEditClass::Handle_Triggers() {
     /*
     ............................. 'OK'; break .............................
     */
-    if (rc == 0) break;
+    if (rc == 0) {
+      break;
+    }
 
     /*
     ............................... 'Edit' ................................
@@ -2580,9 +2602,15 @@ int MapEditClass::Select_Trigger() {
     delete[] trigtext[i];
   }
 
-  if (edit_trig) return (1);
-  if (new_trig) return (2);
-  if (del_trig) return (3);
+  if (edit_trig) {
+    return (1);
+  }
+  if (new_trig) {
+    return (2);
+  }
+  if (del_trig) {
+    return (3);
+  }
   return (0);
 }
 
@@ -2883,11 +2911,14 @@ int MapEditClass::Edit_Trigger() {
   ....................... Set default button states ........................
   */
   event_idx = CurTrigger->Event;  // event list
-  if (event_idx == EVENT_NONE) event_idx = EVENT_FIRST;
+  if (event_idx == EVENT_NONE) {
+    event_idx = EVENT_FIRST;
+  }
 
   action_idx = CurTrigger->Action;  // action list
-  if (action_idx == TriggerClass::ACTION_NONE)
+  if (action_idx == TriggerClass::ACTION_NONE) {
     action_idx = TriggerClass::ACTION_FIRST;
+  }
 
   port::SafeCopy(namebuf, CurTrigger->Get_Name());  // Name
   name_edt.Set_Text(namebuf, 5);
@@ -3051,8 +3082,9 @@ int MapEditClass::Edit_Trigger() {
         neutralbtn.Add_Tail(*commands);
         Set_House_Buttons(house, commands, BUTTON_GDI);
       }
-      if (TriggerClass::Action_Need_Team(action_idx))
+      if (TriggerClass::Action_Need_Team(action_idx)) {
         teambtn.Add_Tail(*commands);
+      }
 
       /*
       ........................ Redraw the buttons ........................
@@ -3474,7 +3506,9 @@ int MapEditClass::Import_Triggers() {
       /*
       ........................ Redraw the buttons ........................
       */
-      if (display >= REDRAW_BUTTONS) commands->Flag_List_To_Redraw();
+      if (display >= REDRAW_BUTTONS) {
+        commands->Flag_List_To_Redraw();
+      }
       Show_Mouse();
       display = REDRAW_NONE;
     }
@@ -3530,8 +3564,9 @@ int MapEditClass::Import_Triggers() {
         trigger = new TriggerClass();
         trigger->Fill_In(tbuffer, buf);
 
-        if (trigger->House != HOUSE_NONE)
+        if (trigger->House != HOUSE_NONE) {
           HouseTriggers[trigger->House].Add(trigger);
+        }
       }
 
       tbuffer += strlen(tbuffer) + 1;
@@ -3814,7 +3849,9 @@ int MapEditClass::Import_Teams() {
       /*
       ........................ Redraw the buttons ........................
       */
-      if (display >= REDRAW_BUTTONS) commands->Flag_List_To_Redraw();
+      if (display >= REDRAW_BUTTONS) {
+        commands->Flag_List_To_Redraw();
+      }
       Show_Mouse();
       display = REDRAW_NONE;
     }

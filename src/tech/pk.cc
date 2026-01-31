@@ -248,7 +248,9 @@ void PKey::Generate(Straw& random, int bits, PKey& fastkey, PKey& slowkey) {
     **	Compare the pre and post processing buffer. A match indicates
     **	a valid key pair.
     */
-    if (memcmp(before, after, fastkey.Plain_Block_Size()) == 0) break;
+    if (memcmp(before, after, fastkey.Plain_Block_Size()) == 0) {
+      break;
+    }
   }
 }
 

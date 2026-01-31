@@ -163,16 +163,22 @@ WORD FAR SaveDIB(HDIB hDib, LPSTR lpFileName) {
   DWORD dwDIBSize;
   DWORD dwError;  // Error return from MyWrite
 
-  if (!hDib) return ERR_INVALIDHANDLE;
+  if (!hDib) {
+    return ERR_INVALIDHANDLE;
+  }
   fh = OpenFile(lpFileName, &of, OF_CREATE | OF_READWRITE);
-  if (fh == -1) return ERR_OPEN;
+  if (fh == -1) {
+    return ERR_OPEN;
+  }
 
   /*
    * Get a pointer to the DIB memory, the first of which contains
    * a BITMAPINFO structure
    */
   lpBI = (LPBITMAPINFOHEADER)GlobalLock(hDib);
-  if (!lpBI) return ERR_LOCK;
+  if (!lpBI) {
+    return ERR_LOCK;
+  }
 
   // Check to see if we're dealing with an OS/2 DIB.  If so, don't
   // save it because our functions aren't written to deal with these
@@ -254,10 +260,11 @@ WORD FAR SaveDIB(HDIB hDib, LPSTR lpFileName) {
   GlobalUnlock(hDib);
   _lclose(fh);
 
-  if (dwError == 0)
+  if (dwError == 0) {
     return ERR_OPEN;  // oops, something happened in the write
-  else
+  } else {
     return 0;  // Success code
+  }
 }
 
 /*************************************************************************
@@ -332,7 +339,9 @@ HANDLE ReadDIBFile(int hFile) {
   hDIB = GlobalAlloc(GMEM_MOVEABLE,
                      (DWORD)(sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD)));
 
-  if (!hDIB) return NULL;
+  if (!hDIB) {
+    return NULL;
+  }
 
   lpbi = (LPBITMAPINFOHEADER)GlobalLock(hDIB);
   if (!lpbi) {
@@ -343,17 +352,20 @@ HANDLE ReadDIBFile(int hFile) {
   // read the BITMAPFILEHEADER from our file
 
   if (sizeof(BITMAPFILEHEADER) !=
-      _lread(hFile, (LPSTR)&bmfHeader, sizeof(BITMAPFILEHEADER)))
+      _lread(hFile, (LPSTR)&bmfHeader, sizeof(BITMAPFILEHEADER))) {
     goto ErrExit;
+  }
 
-  if (bmfHeader.bfType != 0x4d42) /* 'BM' */
+  if (bmfHeader.bfType != 0x4d42) { /* 'BM' */
     goto ErrExit;
+  }
 
   // read the BITMAPINFOHEADER
 
   if (sizeof(BITMAPINFOHEADER) !=
-      _lread(hFile, (LPSTR)lpbi, sizeof(BITMAPINFOHEADER)))
+      _lread(hFile, (LPSTR)lpbi, sizeof(BITMAPINFOHEADER))) {
     goto ErrExit;
+  }
 
   // Check to see that it's a Windows DIB -- an OS/2 DIB would cause
   // strange problems with the rest of the DIB API since the fields
@@ -362,7 +374,9 @@ HANDLE ReadDIBFile(int hFile) {
   //
   // If it's not a Windows DIB (e.g. if biSize is wrong), return NULL.
 
-  if (lpbi->biSize == sizeof(BITMAPCOREHEADER)) goto ErrExit;
+  if (lpbi->biSize == sizeof(BITMAPCOREHEADER)) {
+    goto ErrExit;
+  }
 
   // Now determine the size of the color table and read it.  Since the
   // bitmap bits are offset in the file by bfOffBits, we need to do some
@@ -372,12 +386,15 @@ HANDLE ReadDIBFile(int hFile) {
   nNumColors = (UINT)lpbi->biClrUsed;
   if (!nNumColors) {
     // no color table for 24-bit, default size otherwise
-    if (lpbi->biBitCount != 24)
+    if (lpbi->biBitCount != 24) {
       nNumColors = 1 << lpbi->biBitCount; /* standard size table */
+    }
   }
 
   // fill in some default values if they are zero
-  if (lpbi->biClrUsed == 0) lpbi->biClrUsed = nNumColors;
+  if (lpbi->biClrUsed == 0) {
+    lpbi->biClrUsed = nNumColors;
+  }
 
   if (lpbi->biSizeImage == 0) {
     lpbi->biSizeImage =
@@ -390,10 +407,11 @@ HANDLE ReadDIBFile(int hFile) {
   hDIBtmp = GlobalReAlloc(
       hDIB, lpbi->biSize + nNumColors * sizeof(RGBQUAD) + lpbi->biSizeImage, 0);
 
-  if (!hDIBtmp)            // can't resize buffer for loading
+  if (!hDIBtmp) {          // can't resize buffer for loading
     goto ErrExitNoUnlock;  // MPB
-  else
+  } else {
     hDIB = hDIBtmp;
+  }
 
   lpbi = (LPBITMAPINFOHEADER)GlobalLock(hDIB);
 
@@ -407,9 +425,13 @@ HANDLE ReadDIBFile(int hFile) {
   // directly following the color table in the file.  Use the value in
   // bfOffBits to seek the bits.
 
-  if (bmfHeader.bfOffBits != 0L) _llseek(hFile, bmfHeader.bfOffBits, SEEK_SET);
+  if (bmfHeader.bfOffBits != 0L) {
+    _llseek(hFile, bmfHeader.bfOffBits, SEEK_SET);
+  }
 
-  if (MyRead(hFile, (LPSTR)lpbi + offBits, lpbi->biSizeImage)) goto OKExit;
+  if (MyRead(hFile, (LPSTR)lpbi + offBits, lpbi->biSizeImage)) {
+    goto OKExit;
+  }
 
 ErrExit:
   GlobalUnlock(hDIB);
@@ -448,7 +470,9 @@ BOOL MyRead(int hFile, LPSTR lpBuffer, DWORD dwSize) {
 
   while (dwSize) {
     nBytes = (int)(dwSize > (DWORD)32767 ? 32767 : LOWORD(dwSize));
-    if (_lread(hFile, (LPSTR)lpInBuf, nBytes) != (WORD)nBytes) return false;
+    if (_lread(hFile, (LPSTR)lpInBuf, nBytes) != (WORD)nBytes) {
+      return false;
+    }
     dwSize -= nBytes;
     lpInBuf += nBytes;
   }
@@ -481,14 +505,17 @@ DWORD PASCAL MyWrite(int iFileHandle, VOID FAR* lpBuffer, DWORD dwBytes) {
    */
 
   while (dwBytes > 32767) {
-    if (_lwrite(iFileHandle, (LPSTR)hpBuffer, (WORD)32767) != 32767) return 0;
+    if (_lwrite(iFileHandle, (LPSTR)hpBuffer, (WORD)32767) != 32767) {
+      return 0;
+    }
     dwBytes -= 32767;
     hpBuffer += 32767;
   }
 
   /* Write out the last chunk (which is < 32767 bytes) */
-  if (_lwrite(iFileHandle, (LPSTR)hpBuffer, (WORD)dwBytes) != (WORD)dwBytes)
+  if (_lwrite(iFileHandle, (LPSTR)hpBuffer, (WORD)dwBytes) != (WORD)dwBytes) {
     return 0;
+  }
   return dwBytesTmp;
 }
 
@@ -585,12 +612,15 @@ HDIB LoadDIB_FromMemory(const unsigned char* pData, DWORD dwBitsSize) {
   nNumColors = (UINT)lpbi->biClrUsed;
   if (!nNumColors) {
     // no color table for 24-bit, default size otherwise
-    if (lpbi->biBitCount != 24)
+    if (lpbi->biBitCount != 24) {
       nNumColors = 1 << lpbi->biBitCount; /* standard size table */
+    }
   }
 
   // fill in some default values if they are zero
-  if (lpbi->biClrUsed == 0) lpbi->biClrUsed = nNumColors;
+  if (lpbi->biClrUsed == 0) {
+    lpbi->biClrUsed = nNumColors;
+  }
 
   //	debugprint( "biSizeImage is %i. I would say it was %i, because the bpp
   // is %i.\n", lpbi->biSizeImage, ((((lpbi->biWidth * (DWORD)lpbi->biBitCount)
@@ -613,8 +643,9 @@ HDIB LoadDIB_FromMemory(const unsigned char* pData, DWORD dwBitsSize) {
   {
     //		debugprint( "LoadDIB_FromMemory error: realloc failed\n" );
     goto ErrExitNoUnlock;  // MPB
-  } else
+  } else {
     hDIB = hDIBtmp;
+  }
 
   lpbi = (LPBITMAPINFOHEADER)GlobalLock(hDIB);
 
@@ -632,9 +663,10 @@ HDIB LoadDIB_FromMemory(const unsigned char* pData, DWORD dwBitsSize) {
   // directly following the color table in the file.  Use the value in
   // bfOffBits to seek the bits.
 
-  if (bmfHeader.bfOffBits != 0L)
+  if (bmfHeader.bfOffBits != 0L) {
     //		_llseek(hFile, bmfHeader.bfOffBits, SEEK_SET);
     pData = pDataStart + bmfHeader.bfOffBits;
+  }
 
   //	debugprint( "bmfHeader.bfOffBits is %i\n", bmfHeader.bfOffBits );
 

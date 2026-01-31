@@ -201,7 +201,9 @@ void Choose_Movie(WindowHandle window_handle) {
       int last_file = 0;
       for (i = 0; i < open_file_dlg.nMaxFile; i++) {
         if (path_filename[i] == 0 || path_filename[i] == ' ') {
-          if (!(i - last_file)) break;
+          if (!(i - last_file)) {
+            break;
+          }
           memcpy(&temp_file[0], &path_filename[last_file], i - last_file);
           temp_file[i - last_file] = 0;
           if (last_file) {
@@ -517,7 +519,9 @@ void Interpolate_2X_Scale(GraphicBufferClass* source,
   ** Lock video surfaces if requred
   */
   if (source->Get_IsDirectDraw()) {
-    if (!source->Lock()) return;
+    if (!source->Lock()) {
+      return;
+    }
     source_locked = TRUE;
   }
   if (dest->Get_IsDirectDraw()) {
@@ -547,8 +551,12 @@ void Interpolate_2X_Scale(GraphicBufferClass* source,
   Asm_Interpolate(src_ptr, dest_ptr, source->Get_Height(), src_width,
                   dest_width);
 
-  if (source_locked) source->Unlock();
-  if (dest_locked) dest->Unlock();
+  if (source_locked) {
+    source->Unlock();
+  }
+  if (dest_locked) {
+    dest->Unlock();
+  }
 
   return;
 }

@@ -446,7 +446,9 @@ BuildingClass* As_Building(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 bool Target_Legal(TARGET target) {
-  if (!Target_Legal(target)) return (false);
+  if (!Target_Legal(target)) {
+    return (false);
+  }
 
   ObjectClass* obj = As_Object(target);
   if (obj) {

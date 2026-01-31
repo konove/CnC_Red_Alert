@@ -228,11 +228,11 @@ class BuildingClass : public TechnoClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  void *operator new(size_t size) noexcept;
-  void *operator new(size_t, void *ptr) noexcept { return ptr; }
-  void operator delete(void *ptr);
+  void* operator new(size_t size) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void operator delete(void* ptr);
   BuildingClass(StructType type, HousesType house);
-  BuildingClass(const NoInitClass &x)
+  BuildingClass(const NoInitClass& x)
       : TechnoClass(x), Class(x), Factory(x), CountDown(x), PlacementDelay(x) {}
   ~BuildingClass() override;
   operator StructType() const { return Class->Type; }
@@ -243,7 +243,7 @@ class BuildingClass : public TechnoClass {
   static void Init();
 
   TARGET Target_Scan();
-  const BuildingTypeClass::AnimControlType *Fetch_Anim_Control() {
+  const BuildingTypeClass::AnimControlType* Fetch_Anim_Control() {
     return &Class->Anims[BState];
   }
 
@@ -251,19 +251,19 @@ class BuildingClass : public TechnoClass {
   **	Query functions.
   */
   int Value() const override;
-  const void *Get_Image_Data() const override;
+  const void* Get_Image_Data() const override;
   int How_Many_Survivors() const override;
   DirType Turret_Facing() const override;
-  CELL Find_Exit_Cell(const TechnoClass *techno) const override;
+  CELL Find_Exit_Cell(const TechnoClass* techno) const override;
   InfantryType Crew_Type() const override;
   int Pip_Count() const override;
   bool Can_Player_Move() const override;
-  ActionType What_Action(const ObjectClass *target) const override;
+  ActionType What_Action(const ObjectClass* target) const override;
   ActionType What_Action(CELL cell) const override;
   bool Can_Demolish() const override;
-  const ObjectTypeClass &Class_Of() const override { return *Class; }
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
   DirType Fire_Direction() const override;
-  const short *Overlap_List(bool redraw = false) const override;
+  const short* Overlap_List(bool redraw = false) const override;
   int Shape_Number() const;
   int Power_Output() const;
   CELL Check_Point(CheckPointType cp) const;
@@ -293,8 +293,8 @@ class BuildingClass : public TechnoClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual const void *Remap_Table();
-  int Exit_Object(TechnoClass *base) override;
+  virtual const void* Remap_Table();
+  int Exit_Object(TechnoClass* base) override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void Fire_Out() override;
@@ -303,19 +303,19 @@ class BuildingClass : public TechnoClass {
   /*
   **	User I/O.
   */
-  void Active_Click_With(ActionType action, ObjectClass *object) override;
+  void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, CELL cell) override;
 
   /*
   **	Combat related.
   */
-  void Death_Announcement(const TechnoClass *source = nullptr) const override;
+  void Death_Announcement(const TechnoClass* source = nullptr) const override;
   FireErrorType Can_Fire(TARGET, int which) const override;
   TARGET Greatest_Threat(ThreatType threat) override;  // const;
-  ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                         TechnoClass *source = nullptr,
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                         TechnoClass* source = nullptr,
                          bool forced = false) override;
-  bool Captured(HouseClass *newowner) override;
+  bool Captured(HouseClass* newowner) override;
   void Update_Radar_Spied();
 
   /*
@@ -326,15 +326,15 @@ class BuildingClass : public TechnoClass {
   void Factory_AI();
   void Repair_AI();
   void Animation_AI();
-  bool Revealed(HouseClass *house) override;
+  bool Revealed(HouseClass* house) override;
   void Repair(int control) override;
   void Sell_Back(int control) override;
-  RadioMessageType Receive_Message(RadioClass *from, RadioMessageType message,
-                                   long &param) override;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
   void AI() override;
   void Assign_Target(TARGET target) override;
   virtual bool Toggle_Primary();
-  bool Flush_For_Placement(TechnoClass *techno, CELL cell);
+  bool Flush_For_Placement(TechnoClass* techno, CELL cell);
 
   int Mission_Unload() override;
   int Mission_Repair() override;
@@ -350,16 +350,16 @@ class BuildingClass : public TechnoClass {
   /*
   **	Scenario and debug support.
   */
-  void Debug_Dump(MonoClass *mono) const override;
+  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.
   */
-  static void Read_INI(CCINIClass &ini);
-  static void Write_INI(CCINIClass &ini);
-  static const char *INI_Name() { return "STRUCTURES"; }
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  static void Read_INI(CCINIClass& ini);
+  static void Write_INI(CCINIClass& ini);
+  static const char* INI_Name() { return "STRUCTURES"; }
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
 
  private:
   void Drop_Debris(TARGET source = TARGET_NONE);

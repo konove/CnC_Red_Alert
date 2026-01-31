@@ -208,7 +208,9 @@ void Choose_Side() {
 #endif
   Keyboard::Clear();
 
-  while (Get_Mouse_State()) Show_Mouse();
+  while (Get_Mouse_State()) {
+    Show_Mouse();
+  }
 
   while (endframe != frame || (speechplaying && Is_Sample_Playing(speech))) {
     Animate_Frame(anim, SysMemPage, frame++);
@@ -232,13 +234,18 @@ void Choose_Side() {
     /* keep the mouse hidden until the letters are thru printing */
     if (!lettersdone) {
       lettersdone = true;
-      for (int i = 0; i < MAXSCOREOBJS; i++)
-        if (ScoreObjs[i]) lettersdone = 0;
+      for (int i = 0; i < MAXSCOREOBJS; i++) {
+        if (ScoreObjs[i]) {
+          lettersdone = 0;
+        }
+      }
       if (lettersdone) {
         Show_Mouse();
       }
     }
-    if (frame >= Get_Animation_Frame_Count(anim)) frame = 0;
+    if (frame >= Get_Animation_Frame_Count(anim)) {
+      frame = 0;
+    }
     if (Keyboard::Check() && endframe == 255) {
       if ((Keyboard::Get() & 0x10FF) == KN_LMOUSE) {
         if (_Kbd->MouseQY > 48 * RESFACTOR && _Kbd->MouseQY < 150 * RESFACTOR) {
@@ -323,11 +330,12 @@ void Choose_Side() {
   Set_Primary_Buffer_Format();
 #endif
   /* get rid of all the animating objects */
-  for (int i = 0; i < MAXSCOREOBJS; i++)
+  for (int i = 0; i < MAXSCOREOBJS; i++) {
     if (ScoreObjs[i]) {
       delete ScoreObjs[i];
       ScoreObjs[i] = nullptr;
     }
+  }
 
   if (Whom == HOUSE_GOOD) {
     /*

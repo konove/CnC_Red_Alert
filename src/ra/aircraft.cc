@@ -178,12 +178,16 @@ static bool _Counts_As_Civ_Evac(const ObjectClass* candidate) {
   /*
   **	If the candidate pointer is missing, then return with failure code.
   */
-  if (candidate == nullptr) return false;
+  if (candidate == nullptr) {
+    return false;
+  }
 
   /*
   **	Only infantry objects can be considered for civilian evacuation action.
   */
-  if (candidate->What_Am_I() != RTTI_INFANTRY) return false;
+  if (candidate->What_Am_I() != RTTI_INFANTRY) {
+    return false;
+  }
 
   /*
   **	Working infantry object pointer.
@@ -196,26 +200,33 @@ static bool _Counts_As_Civ_Evac(const ObjectClass* candidate) {
   *some missions.
   */
   if (*inf == INFANTRY_EINSTEIN || *inf == INFANTRY_GENERAL ||
-      *inf == INFANTRY_DELPHI || *inf == INFANTRY_CHAN)
+      *inf == INFANTRY_DELPHI || *inf == INFANTRY_CHAN) {
     return true;
+  }
 
   /*
   **	Consider Tanya to be part of the civilian evacuation logic if the
   *scenario is *	specially flagged for this.
   */
-  if (Scen.IsTanyaEvac && *inf == INFANTRY_TANYA) return true;
+  if (Scen.IsTanyaEvac && *inf == INFANTRY_TANYA) {
+    return true;
+  }
 
   /*
   **	If the infantry is not a civilian, then it isn't allowed to be a
   *civilian evacuation.
   */
-  if (!inf->Class->IsCivilian) return false;
+  if (!inf->Class->IsCivilian) {
+    return false;
+  }
 
   /*
   **	Technicians look like civilians, but are not considered a legal
   *evacuation candidate.
   */
-  if (inf->IsTechnician) return false;
+  if (inf->IsTechnician) {
+    return false;
+  }
 
   /*
   **	All tests pass, so return the success of the infantry as a civilian
@@ -459,7 +470,9 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	Verify the legality of the unit class.
   */
   const void* shapefile = Get_Image_Data();
-  if (!shapefile) return;
+  if (!shapefile) {
+    return;
+  }
 
   int shapenum = Shape_Number();
 
@@ -840,7 +853,9 @@ int AircraftClass::Mission_Hunt() {
       case REGROUP:
         if (Ammo == 0) {
           AttacksRemaining = 0;
-          if (Team.Is_Valid()) Team->Remove(this);
+          if (Team.Is_Valid()) {
+            Team->Remove(this);
+          }
           Enter_Idle_Mode();
         }
 
@@ -849,11 +864,15 @@ int AircraftClass::Mission_Hunt() {
              Class->PrimaryWeapon->IsCamera) ||
             (!AttacksRemaining && !Is_Something_Attached())) {
           if (IsALoaner) {
-            if (Team) Team->Remove(this);
+            if (Team) {
+              Team->Remove(this);
+            }
             Assign_Mission(MISSION_RETREAT);
             Commence();
           } else {
-            if (!Team.Is_Valid()) Enter_Idle_Mode();
+            if (!Team.Is_Valid()) {
+              Enter_Idle_Mode();
+            }
           }
           Commence();
         } else {
@@ -866,7 +885,9 @@ int AircraftClass::Mission_Hunt() {
     }
   } else {
     if (!Ammo) {
-      if (Team) Team->Remove(this);
+      if (Team) {
+        Team->Remove(this);
+      }
       Enter_Idle_Mode();
     } else {
       if (!Target_Legal(TarCom)) {
@@ -1289,9 +1310,13 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
-  if (!Target_Legal(target)) return false;
+  if (!Target_Legal(target)) {
+    return false;
+  }
   CELL cell = As_Cell(target);
-  if (!Map.In_Radar(cell)) return false;
+  if (!Map.In_Radar(cell)) {
+    return false;
+  }
 
   /*
   **	If the requested landing location is occupied, then only consider that
@@ -1301,7 +1326,9 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
   */
   ObjectClass* object = Map[cell].Cell_Object();
   if (object) {
-    if (object == this) return true;
+    if (object == this) {
+      return true;
+    }
 
     if (In_Radio_Contact() && Contact_With_Whom() == object) {
       return true;
@@ -1309,7 +1336,9 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
     return false;
   }
 
-  if (!Map[cell].Is_Clear_To_Move(SPEED_TRACK, false, false)) return false;
+  if (!Map[cell].Is_Clear_To_Move(SPEED_TRACK, false, false)) {
+    return false;
+  }
 
   return true;
 }
@@ -1447,7 +1476,9 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   FacingType face;
   for (face = FACING_N; face < FACING_COUNT; face++) {
     cell = Adjacent_Cell(Coord_Cell(Coord), _toface[face]);
-    if (unit->Can_Enter_Cell(cell) == MOVE_OK) break;
+    if (unit->Can_Enter_Cell(cell) == MOVE_OK) {
+      break;
+    }
   }
 
   // Should perform a check here to see if no cell could be found.
@@ -1709,7 +1740,9 @@ int AircraftClass::Mission_Move() {
             BuildingClass* building = Find_Docking_Bay(Class->Building, false);
             if (!Class->IsFixedWing) {
               int dist = 0x7FFFFFFF;
-              if (building) dist = Distance(building);
+              if (building) {
+                dist = Distance(building);
+              }
               for (int index = 0; index < Vessels.Count(); index++) {
                 VesselClass* ship = Vessels.Ptr(index);
                 if (ship != nullptr && *ship == VESSEL_CARRIER &&
@@ -1912,7 +1945,9 @@ void AircraftClass::Enter_Idle_Mode(bool) {
           Team->Remove(this);
         }
       }
-      if (Team.Is_Valid()) return;
+      if (Team.Is_Valid()) {
+        return;
+      }
 
       /*
       **	Weapon equipped helicopters that run out of ammo and were
@@ -2004,7 +2039,9 @@ void AircraftClass::Enter_Idle_Mode(bool) {
             **	If it can fight, then give it fighting orders.
             */
             if (Ammo == 0) {
-              if (Team.Is_Valid()) Team->Remove(this);
+              if (Team.Is_Valid()) {
+                Team->Remove(this);
+              }
               mission = MISSION_RETREAT;
             } else {
               if (!Team.Is_Valid()) {
@@ -2019,7 +2056,9 @@ void AircraftClass::Enter_Idle_Mode(bool) {
             BuildingClass* building = Find_Docking_Bay(Class->Building, false);
             if (!Class->IsFixedWing) {
               int dist = 0x7FFFFFFF;
-              if (building) dist = Distance(building);
+              if (building) {
+                dist = Distance(building);
+              }
               for (int index = 0; index < Vessels.Count(); index++) {
                 VesselClass* ship = Vessels.Ptr(index);
                 if (ship != nullptr && *ship == VESSEL_CARRIER &&
@@ -2047,7 +2086,9 @@ void AircraftClass::Enter_Idle_Mode(bool) {
             }
           }
         } else {
-          if (Team) return;
+          if (Team) {
+            return;
+          }
 
           Assign_Destination(Good_LZ());
           mission = MISSION_MOVE;
@@ -2084,7 +2125,9 @@ int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest) {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
-  if (Class->IsFixedWing) slowdown = false;
+  if (Class->IsFixedWing) {
+    slowdown = false;
+  }
 
   COORDINATE coord;
   if (Is_Target_Building(dest)) {
@@ -2701,9 +2744,12 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
 
   switch (message) {
     case RADIO_PREPARED:
-      if (Target_Legal(TarCom)) return RADIO_NEGATIVE;
-      if ((Height == 0 && Ammo == Class->MaxAmmo) || (Height > 0 && Ammo > 0))
+      if (Target_Legal(TarCom)) {
+        return RADIO_NEGATIVE;
+      }
+      if ((Height == 0 && Ammo == Class->MaxAmmo) || (Height > 0 && Ammo > 0)) {
         return RADIO_ROGER;
+      }
       return RADIO_NEGATIVE;
 
     /*
@@ -2831,8 +2877,9 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
     */
     case RADIO_CAN_LOAD:
       if (Class->Max_Passengers() == 0 || from == nullptr ||
-          !House->Is_Ally(from->Owner()))
+          !House->Is_Ally(from->Owner())) {
         return RADIO_STATIC;
+      }
       if (/*!In_Radio_Contact() &&*/ How_Many() < Class->Max_Passengers()) {
         return RADIO_ROGER;
       }
@@ -2879,14 +2926,16 @@ DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
     moveto = Adjacent_Cell(center, FACING_S + sweep);
     if (Map.In_Radar(moveto) &&
         (Coord_Cell(object->Center_Coord()) == moveto ||
-         Map[moveto].Is_Clear_To_Move(SPEED_FOOT, false, false)))
+         Map[moveto].Is_Clear_To_Move(SPEED_FOOT, false, false))) {
       return DIR_N;
+    }
 
     moveto = Adjacent_Cell(center, FACING_S - sweep);
     if (Map.In_Radar(moveto) &&
         (Coord_Cell(object->Center_Coord()) == moveto ||
-         Map[moveto].Is_Clear_To_Move(SPEED_FOOT, false, false)))
+         Map[moveto].Is_Clear_To_Move(SPEED_FOOT, false, false))) {
       return DIR_N;
+    }
   }
   return DIR_N;
 }
@@ -3039,7 +3088,9 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
-  if (!Map.In_Radar(cell)) return MOVE_NO;
+  if (!Map.In_Radar(cell)) {
+    return MOVE_NO;
+  }
 
   CellClass* cellptr = &Map[cell];
 
@@ -3050,7 +3101,9 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
       (((TechnoClass*)occupier)->Cloak != CLOAKED && ScenarioInit == 0 &&
        (occupier->What_Am_I() != RTTI_BUILDING ||
         !((BuildingClass*)occupier)->Class->IsInvisible))) {
-    if (!cellptr->Is_Clear_To_Move(SPEED_TRACK, false, false)) return MOVE_NO;
+    if (!cellptr->Is_Clear_To_Move(SPEED_TRACK, false, false)) {
+      return MOVE_NO;
+    }
   }
 
   if (Session.Type == GAME_NORMAL && IsOwnedByPlayer && !cellptr->IsMapped) {
@@ -3123,7 +3176,9 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
           }
         }
       }
-      if (bestval != -1) break;
+      if (bestval != -1) {
+        break;
+      }
     }
 
     if (best2val == -1) {
@@ -3211,7 +3266,9 @@ int AircraftClass::Pip_Count() const {
   } else {
     if (Ammo) {
       retval = Class->Max_Pips() * fixed(Ammo, Class->MaxAmmo);
-      if (!retval) retval = 1;
+      if (!retval) {
+        retval = 1;
+      }
     }
   }
   return retval;
@@ -3434,7 +3491,9 @@ int AircraftClass::Mission_Enter() {
             break;
 
           case RADIO_ATTACH:
-            if (Contact_With_Whom()->What_Am_I() != RTTI_VESSEL) Limbo();
+            if (Contact_With_Whom()->What_Am_I() != RTTI_VESSEL) {
+              Limbo();
+            }
             Contact_With_Whom()->Attach(this);
             break;
 
@@ -3620,12 +3679,16 @@ void AircraftClass::Scatter(COORDINATE, bool, bool) {
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (!MissionControl[Mission].IsScatter) return;
+  if (!MissionControl[Mission].IsScatter) {
+    return;
+  }
 
   /*
   **	Fixed wing aircraft never scatter.
   */
-  if (Class->IsFixedWing) return;
+  if (Class->IsFixedWing) {
+    return;
+  }
 
   if (IsLanding || Height == 0) {
     IsLanding = false;
@@ -3673,11 +3736,15 @@ int AircraftClass::Mission_Guard() {
       Assign_Destination(::As_Target(Coord_Cell(Coord)));
       Assign_Mission(MISSION_MOVE);
     } else {
-      if (!Team.Is_Valid()) Enter_Idle_Mode();
+      if (!Team.Is_Valid()) {
+        Enter_Idle_Mode();
+      }
     }
     return 1;
   }
-  if (House->IsHuman) return MissionControl[Mission].Normal_Delay();
+  if (House->IsHuman) {
+    return MissionControl[Mission].Normal_Delay();
+  }
 
   /*
   **	If the aircraft is very badly damaged, then it will search for a
@@ -3709,7 +3776,9 @@ int AircraftClass::Mission_Guard() {
       BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
       if (!Class->IsFixedWing) {
         int dist = 0x7FFFFFFF;
-        if (building) dist = Distance(building);
+        if (building) {
+          dist = Distance(building);
+        }
         for (int index = 0; index < Vessels.Count(); index++) {
           VesselClass* ship = Vessels.Ptr(index);
           if (ship != nullptr && *ship == VESSEL_CARRIER && !ship->IsInLimbo &&
@@ -3793,10 +3862,14 @@ int AircraftClass::Mission_Guard_Area() {
   assert(IsActive);
 
   if (Height == FLIGHT_LEVEL) {
-    if (!Team.Is_Valid()) Enter_Idle_Mode();
+    if (!Team.Is_Valid()) {
+      Enter_Idle_Mode();
+    }
     return 1;
   }
-  if (House->IsHuman) return TICKS_PER_SECOND;
+  if (House->IsHuman) {
+    return TICKS_PER_SECOND;
+  }
 
   if (Height == 0 && !In_Radio_Contact()) {
     Scatter(0, true);
@@ -3924,7 +3997,9 @@ FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
   *under the *	aircraft is generally clear.
   */
   if (camera || (fudge && Passenger && Is_Something_Attached())) {
-    if (Arm != 0) return FIRE_REARM;
+    if (Arm != 0) {
+      return FIRE_REARM;
+    }
 
     if (Distance(target) < (camera ? 0x0380 : 0x0200) &&
         Map.In_Radar(Coord_Cell(Center_Coord()))) {
@@ -3983,7 +4058,9 @@ bool AircraftClass::Landing_Takeoff_AI() {
 
     if (IsLanding) {
       Mark(MARK_UP);
-      if (Height) Height -= Pixel_To_Lepton(1);
+      if (Height) {
+        Height -= Pixel_To_Lepton(1);
+      }
       if (Height <= 0) {
         Height = 0;
         IsLanding = false;
@@ -4123,7 +4200,9 @@ bool AircraftClass::Edge_Of_World_AI() {
           obj->House->IsCivEvacuated = true;
         }
 
-        if (obj->Team.Is_Valid()) obj->Team->IsLeaveMap = true;
+        if (obj->Team.Is_Valid()) {
+          obj->Team->IsLeaveMap = true;
+        }
 
 #ifdef OLD
         /*
@@ -4257,7 +4336,9 @@ void AircraftClass::Per_Cell_Process(PCPType why) {
  *=============================================================================================*/
 void AircraftClass::Assign_Destination(TARGET dest) {
   assert(IsActive);
-  if (dest == NavCom) return;
+  if (dest == NavCom) {
+    return;
+  }
 
   if (Target_Legal(dest) && Class->IsFixedWing &&
       (IsLanding || (Target_Legal(NavCom) && dest != NavCom))) {

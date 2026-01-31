@@ -153,15 +153,33 @@ void CreditClass::Graphic_Logic(bool forced) {
       **	Speak mission timer reminders.
       */
       VoxType vox = VOX_NONE;
-      if (Scen.MissionTimer == 1 * TICKS_PER_MINUTE) vox = VOX_TIME_1;
-      if (Scen.MissionTimer == 2 * TICKS_PER_MINUTE) vox = VOX_TIME_2;
-      if (Scen.MissionTimer == 3 * TICKS_PER_MINUTE) vox = VOX_TIME_3;
-      if (Scen.MissionTimer == 4 * TICKS_PER_MINUTE) vox = VOX_TIME_4;
-      if (Scen.MissionTimer == 5 * TICKS_PER_MINUTE) vox = VOX_TIME_5;
-      if (Scen.MissionTimer == 10 * TICKS_PER_MINUTE) vox = VOX_TIME_10;
-      if (Scen.MissionTimer == 20 * TICKS_PER_MINUTE) vox = VOX_TIME_20;
-      if (Scen.MissionTimer == 30 * TICKS_PER_MINUTE) vox = VOX_TIME_30;
-      if (Scen.MissionTimer == 40 * TICKS_PER_MINUTE) vox = VOX_TIME_40;
+      if (Scen.MissionTimer == 1 * TICKS_PER_MINUTE) {
+        vox = VOX_TIME_1;
+      }
+      if (Scen.MissionTimer == 2 * TICKS_PER_MINUTE) {
+        vox = VOX_TIME_2;
+      }
+      if (Scen.MissionTimer == 3 * TICKS_PER_MINUTE) {
+        vox = VOX_TIME_3;
+      }
+      if (Scen.MissionTimer == 4 * TICKS_PER_MINUTE) {
+        vox = VOX_TIME_4;
+      }
+      if (Scen.MissionTimer == 5 * TICKS_PER_MINUTE) {
+        vox = VOX_TIME_5;
+      }
+      if (Scen.MissionTimer == 10 * TICKS_PER_MINUTE) {
+        vox = VOX_TIME_10;
+      }
+      if (Scen.MissionTimer == 20 * TICKS_PER_MINUTE) {
+        vox = VOX_TIME_20;
+      }
+      if (Scen.MissionTimer == 30 * TICKS_PER_MINUTE) {
+        vox = VOX_TIME_30;
+      }
+      if (Scen.MissionTimer == 40 * TICKS_PER_MINUTE) {
+        vox = VOX_TIME_40;
+      }
       if (vox != VOX_NONE) {
         Speak(vox);
         Map.FlasherTimer = 7;
@@ -218,7 +236,9 @@ void CreditClass::Graphic_Logic(bool forced) {
 void CreditClass::AI(bool forced) {
   static int _last = 0;
 
-  if (!forced && Frame == _last) return;
+  if (!forced && Frame == _last) {
+    return;
+  }
   _last = Frame;
 
   Credits = PlayerPtr->Available_Money();
@@ -233,14 +253,20 @@ void CreditClass::AI(bool forced) {
     Map.Flag_To_Redraw(false);
   }
 
-  if (Current == Credits) return;
+  if (Current == Credits) {
+    return;
+  }
 
   if (forced) {
     IsAudible = false;
     Current = Credits;
   } else {
-    if (Countdown) Countdown--;
-    if (Countdown) return;
+    if (Countdown) {
+      Countdown--;
+    }
+    if (Countdown) {
+      return;
+    }
 
     /*
     **	Determine the amount to change the display toward the
@@ -259,7 +285,9 @@ void CreditClass::AI(bool forced) {
     //		adder >>= 4;
     //		adder >>= 5;
     adder = Bound(adder, 1, 71 + 72);
-    if (Current > Credits) adder = -adder;
+    if (Current > Credits) {
+      adder = -adder;
+    }
     Current += adder;
     if (Current - adder != Current) {
       IsAudible = true;

@@ -125,7 +125,9 @@ long AudioZap(void* source, void* dest, long size) {
     max4 = MIN(63 + 1, size);
 
     for (i = 0; i < max4; i++) {
-      if (previous != *s4++) break;
+      if (previous != *s4++) {
+        break;
+      }
     }
 
     /* When there is a code transition, terminate any run of raw

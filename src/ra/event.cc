@@ -703,7 +703,9 @@ void EventClass::Execute() {
         }
         if (techno->Is_Foot()) {
           auto* foot_class = dynamic_cast<FootClass*>(techno);
-          if (!formation) foot_class->IsFormationMove = false;
+          if (!formation) {
+            foot_class->IsFormationMove = false;
+          }
           if (foot_class->Team) {
             foot_class->Team->Remove(foot_class);
           }

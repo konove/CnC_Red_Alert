@@ -316,7 +316,9 @@ TriggerClass::TriggerClass() {
  *=============================================================================================*/
 TriggerClass::~TriggerClass() {
   if (GameActive && House != HOUSE_NONE && Action == ACTION_ALLOWWIN) {
-    if (Houses.Ptr(House)->Blockage) Houses.Ptr(House)->Blockage--;
+    if (Houses.Ptr(House)->Blockage) {
+      Houses.Ptr(House)->Blockage--;
+    }
     Houses.Ptr(House)->BorrowedTime = TICKS_PER_SECOND * 4;
   }
 }
@@ -418,13 +420,16 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
     case ACTION_WINLOSE:
       switch (event) {
         case EVENT_DESTROYED:
-          if (!PlayerPtr->IsToWin || PlayerPtr->Blockage > 0)
+          if (!PlayerPtr->IsToWin || PlayerPtr->Blockage > 0) {
             PlayerPtr->Flag_To_Lose();
+          }
           success = true;
           break;
 
         case EVENT_PLAYER_ENTERED:
-          if (!PlayerPtr->IsToLose) PlayerPtr->Flag_To_Win();
+          if (!PlayerPtr->IsToLose) {
+            PlayerPtr->Flag_To_Win();
+          }
           success = true;
           break;
 
@@ -516,7 +521,9 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
       break;
   }
 
-  if (!success && Event == EVENT_TIME) Data = 1;
+  if (!success && Event == EVENT_TIME) {
+    Data = 1;
+  }
 
   /*
   **	Remove trigger from the game.
@@ -698,7 +705,9 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
       break;
   }
 
-  if (!success && Event == EVENT_TIME) Data = 1;
+  if (!success && Event == EVENT_TIME) {
+    Data = 1;
+  }
 
   /*
   **	Remove trigger from the game.
@@ -884,7 +893,9 @@ bool TriggerClass::Spring(EventType event, HousesType house, long data) {
       break;
   }
 
-  if (!success && Event == EVENT_TIME) Data = 1;
+  if (!success && Event == EVENT_TIME) {
+    Data = 1;
+  }
 
   /*
   **	Remove trigger from the game.
@@ -1045,8 +1056,9 @@ void TriggerClass::Read_INI(char* buffer) {
     // EVENT_PLAYER_ENTERED) { 		if (Event_Need_House(trigger->Event) &&
     //! Event_Need_Object(trigger->Event)) {
     if (trigger->House != HOUSE_NONE) {
-      if (trigger->Action == ACTION_ALLOWWIN)
+      if (trigger->Action == ACTION_ALLOWWIN) {
         HouseClass::As_Pointer(trigger->House)->Blockage++;
+      }
       HouseTriggers[trigger->House].Add(trigger);
       trigger->AttachCount++;
     }
@@ -1377,7 +1389,9 @@ static void Do_All_To_Hunt() {
     UnitClass* unit = Units.Ptr(index);
 
     if (!unit->House->IsHuman && unit->IsDown && !unit->IsInLimbo) {
-      if (unit->Team) unit->Team->Remove(unit);
+      if (unit->Team) {
+        unit->Team->Remove(unit);
+      }
       unit->Assign_Mission(MISSION_HUNT);
     }
   }
@@ -1386,7 +1400,9 @@ static void Do_All_To_Hunt() {
     InfantryClass* infantry = Infantry.Ptr(index);
 
     if (!infantry->House->IsHuman && infantry->IsDown && !infantry->IsInLimbo) {
-      if (infantry->Team) infantry->Team->Remove(infantry);
+      if (infantry->Team) {
+        infantry->Team->Remove(infantry);
+      }
       infantry->Assign_Mission(MISSION_HUNT);
     }
   }

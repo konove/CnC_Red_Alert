@@ -990,19 +990,19 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
     ini.Get_String("SyncBug", "Type", "NONE", buf, 80);
 
-    if (!stricmp(buf, "AIRCRAFT"))
+    if (!stricmp(buf, "AIRCRAFT")) {
       TrapObjType = RTTI_AIRCRAFT;
-    else if (!stricmp(buf, "ANIM"))
+    } else if (!stricmp(buf, "ANIM")) {
       TrapObjType = RTTI_ANIM;
-    else if (!stricmp(buf, "BUILDING"))
+    } else if (!stricmp(buf, "BUILDING")) {
       TrapObjType = RTTI_BUILDING;
-    else if (!stricmp(buf, "BULLET"))
+    } else if (!stricmp(buf, "BULLET")) {
       TrapObjType = RTTI_BULLET;
-    else if (!stricmp(buf, "INFANTRY"))
+    } else if (!stricmp(buf, "INFANTRY")) {
       TrapObjType = RTTI_INFANTRY;
-    else if (!stricmp(buf, "UNIT"))
+    } else if (!stricmp(buf, "UNIT")) {
       TrapObjType = RTTI_UNIT;
-    else {
+    } else {
       TrapObjType = RTTI_NONE;
     }
 

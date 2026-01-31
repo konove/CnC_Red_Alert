@@ -201,8 +201,9 @@ static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
 int Find_Menu_Items(int maxitems, unsigned long field, char index) {
   int loop, ctr;
 
-  if (field == 0xFFFFFFFFL) /* if all bits are set	*/
-    return (maxitems);      /* then maxitems set		*/
+  if (field == 0xFFFFFFFFL) { /* if all bits are set	*/
+    return (maxitems);        /* then maxitems set		*/
+  }
 
   for (loop = ctr = 0; loop < maxitems; loop++) { /* loop through items	*/
     if (field & (1L << (loop + index))) {         /* if the bit is set		*/
@@ -320,13 +321,15 @@ int Check_Menu(int menu, const char* text[], char*, long field, int index) {
   switch (key) {
     case KN_UP:            /* if the key moves up	*/
       newitem--;           /* 	new item up one	*/
-      if (newitem < 0)     /* if invalid new item	*/
+      if (newitem < 0) {   /* if invalid new item	*/
         newitem = maxitem; /* put at list bottom	*/
+      }
       break;
-    case KN_DOWN:            /* if key moves down		*/
-      newitem++;             /*		new item down one	*/
-      if (newitem > maxitem) /* if new item past 		*/
-        newitem = 0;         /*		list end, clear	*/
+    case KN_DOWN:              /* if key moves down		*/
+      newitem++;               /*		new item down one	*/
+      if (newitem > maxitem) { /* if new item past 		*/
+        newitem = 0;           /*		list end, clear	*/
+      }
       break;
     case KN_HOME:  /* if top of list key 	*/
     case KN_PGUP:  /*		is selected then	*/
@@ -439,7 +442,9 @@ int Do_Menu(const char** strings, bool) {
   const char** ptr;  // Working menu text pointer.
   int selection;     // Selection from user.
 
-  if (!strings) return -1;
+  if (!strings) {
+    return -1;
+  }
   Set_Logic_Page(SeenBuff);
   Keyboard->Clear();
 
@@ -600,19 +605,25 @@ int Main_Menu(unsigned long) {
 
   int ystep = 14 * RESFACTOR;
   if (bExpansionCS) {
-    if (bExpansionAM)
+    if (bExpansionAM) {
       ystep = 12 * RESFACTOR;
-    else
+    } else {
       ystep = 13 * RESFACTOR;
-  } else if (bExpansionAM)
+    }
+  } else if (bExpansionAM) {
     ystep = 13 * RESFACTOR;
+  }
 
   TextButtonClass expandbtnCS(BUTTON_EXPAND, TXT_WOL_CS_MISSIONS, TPF_BUTTON,
                               d_start_x, starty, d_start_w, d_start_h);
-  if (bExpansionCS) starty += ystep;
+  if (bExpansionCS) {
+    starty += ystep;
+  }
   TextButtonClass expandbtnAM(BUTTON_EXPAND_AM, TXT_WOL_AM_MISSIONS, TPF_BUTTON,
                               d_start_x, starty, d_start_w, d_start_h);
-  if (bExpansionAM) starty += ystep;
+  if (bExpansionAM) {
+    starty += ystep;
+  }
 
   TextButtonClass startbtn(BUTTON_START, TXT_START_NEW_GAME, TPF_BUTTON,
                            d_start_x, starty, d_start_w, d_start_h);
@@ -652,8 +663,12 @@ int Main_Menu(unsigned long) {
   **	Create the list
   */
   commands = &startbtn;
-  if (bExpansionCS) expandbtnCS.Add_Tail(*commands);
-  if (bExpansionAM) expandbtnAM.Add_Tail(*commands);
+  if (bExpansionCS) {
+    expandbtnCS.Add_Tail(*commands);
+  }
+  if (bExpansionAM) {
+    expandbtnAM.Add_Tail(*commands);
+  }
   // #if defined(MPEGMOVIE) // Denzil 6/26/98 Video settings
   //	moviebutton.Add_Tail(*commands);
   // #endif
@@ -836,14 +851,17 @@ int Main_Menu(unsigned long) {
             curbutton = max_buttons - 1;
             break;
           case 0:
-            if (!bExpansionCS) curbutton = max_buttons - 1;
+            if (!bExpansionCS) {
+              curbutton = max_buttons - 1;
+            }
             break;
           case 1:
             if (!bExpansionAM) {
-              if (bExpansionCS)
+              if (bExpansionCS) {
                 curbutton = 0;
-              else
+              } else {
                 curbutton = max_buttons - 1;
+              }
             }
             break;
         }
@@ -856,14 +874,16 @@ int Main_Menu(unsigned long) {
         buttons[curbutton]->Flag_To_Redraw();
         curbutton++;
         if (curbutton == max_buttons) {
-          if (bExpansionCS)
+          if (bExpansionCS) {
             curbutton = 0;
-          else if (bExpansionAM)
+          } else if (bExpansionAM) {
             curbutton = 1;
-          else
+          } else {
             curbutton = 2;
-        } else if (curbutton == 1 && !bExpansionAM)
+          }
+        } else if (curbutton == 1 && !bExpansionAM) {
           curbutton = 2;
+        }
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;

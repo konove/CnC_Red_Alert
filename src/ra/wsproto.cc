@@ -146,7 +146,9 @@ void WinsockInterfaceClass::Close() {
   /*
   ** If we never initialised the class in the first place then just return
   */
-  if (!WinsockInitialised) return;
+  if (!WinsockInitialised) {
+    return;
+  }
 
   /*
   ** Cancel any outstaning asyncronous events
@@ -310,7 +312,9 @@ bool WinsockInterfaceClass::Init() {
   /*
   ** Just return true if we are already set up
   */
-  if (WinsockInitialised) return true;
+  if (WinsockInitialised) {
+    return true;
+  }
 
 #ifdef _WIN32
   /*
@@ -393,7 +397,9 @@ int WinsockInterfaceClass::Read(void* buffer, int& buffer_len, void* address,
   /*
   ** If there are no available packets then return 0
   */
-  if (InBuffers.Count() == 0) return 0;
+  if (InBuffers.Count() == 0) {
+    return 0;
+  }
 
   /*
   ** Get the oldest packet for reading
@@ -578,8 +584,8 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
   /*
   ** Specify the size of the receive buffer.
   */
-  int err = setsockopt(Socket, SOL_SOCKET, SO_RCVBUF,
-                       &socket_receive_buffer_size, 4);
+  int err =
+      setsockopt(Socket, SOL_SOCKET, SO_RCVBUF, &socket_receive_buffer_size, 4);
   if (err == INVALID_SOCKET) {
     char out[128];
     sprintf(out,
@@ -592,8 +598,8 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
   /*
   ** Specify the size of the send buffer.
   */
-  err = setsockopt(Socket, SOL_SOCKET, SO_SNDBUF,
-                   &socket_transmit_buffer_size, 4);
+  err = setsockopt(Socket, SOL_SOCKET, SO_SNDBUF, &socket_transmit_buffer_size,
+                   4);
   if (err == INVALID_SOCKET) {
     char out[128];
     sprintf(out,

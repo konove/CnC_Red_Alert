@@ -266,7 +266,9 @@ char* PacketClass::Create_Comms_Packet(int& size) {
  *========================================================================*/
 FieldClass* PacketClass::Find_Field(const char* id) {
   for (FieldClass* current = Head; current; current = current->Next) {
-    if (strncmp(id, current->ID, 4) == 0) return current;
+    if (strncmp(id, current->ID, 4) == 0) {
+      return current;
+    }
   }
   return nullptr;
 }

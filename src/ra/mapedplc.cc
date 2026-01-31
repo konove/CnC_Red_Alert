@@ -470,7 +470,9 @@ int MapEditClass::Placement_Dialog() {
       i = 0;
       for (typeindex = 0; typeindex < NUM_EDIT_CLASSES; typeindex++) {
         i += NumType[typeindex];
-        if (LastChoice < i) break;
+        if (LastChoice < i) {
+          break;
+        }
       }
       templatebtn.Turn_Off();
       overlaybtn.Turn_Off();
@@ -1349,7 +1351,9 @@ void MapEditClass::Place_Prev_Category() {
   }
 
   i--;
-  if (i < 0) i = ObjCount - 1;
+  if (i < 0) {
+    i = ObjCount - 1;
+  }
   LastChoice = i;
 
   /*
@@ -1363,7 +1367,9 @@ void MapEditClass::Place_Prev_Category() {
   }
 
   i++;
-  if (i >= ObjCount) i = 0;
+  if (i >= ObjCount) {
+    i = 0;
+  }
   LastChoice = i;
 
   /*

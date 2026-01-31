@@ -111,7 +111,9 @@ class VesselClass : public DriveClass {
   bool Edge_Of_World_AI();
   void Repair_AI();
   DirType Turret_Facing() const override {
-    if (Class->IsTurretEquipped) return SecondaryFacing.Current();
+    if (Class->IsTurretEquipped) {
+      return SecondaryFacing.Current();
+    }
     return PrimaryFacing.Current();
   }
   bool Start_Driver(COORDINATE& headto) override;

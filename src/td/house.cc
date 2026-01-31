@@ -500,25 +500,40 @@ HouseClass::~HouseClass() {
 bool HouseClass::Can_Build(const TechnoTypeClass* type,
                            HousesType house) const {
   Validate();
-  if (!type || !type->IsBuildable || !(1L << house & type->Ownable))
+  if (!type || !type->IsBuildable || !(1L << house & type->Ownable)) {
     return false;
+  }
 
   /*
   **	The computer can always build everthing.
   */
-  if (!IsHuman) return true;
+  if (!IsHuman) {
+    return true;
+  }
 
   /*
   **	Perform some equivalency fixups for the building existance flags.
   */
   long flags = ActiveBScan;
   int pre = type->Pre;
-  if (flags & STRUCTF_ADVANCED_POWER) flags |= STRUCTF_POWER;
-  if (flags & STRUCTF_HAND) flags |= STRUCTF_BARRACKS;
-  if (flags & STRUCTF_OBELISK) flags |= STRUCTF_ATOWER;
-  if (flags & STRUCTF_TEMPLE) flags |= STRUCTF_EYE;
-  if (flags & STRUCTF_AIRSTRIP) flags |= STRUCTF_WEAP;
-  if (flags & STRUCTF_SAM) flags |= STRUCTF_HELIPAD;
+  if (flags & STRUCTF_ADVANCED_POWER) {
+    flags |= STRUCTF_POWER;
+  }
+  if (flags & STRUCTF_HAND) {
+    flags |= STRUCTF_BARRACKS;
+  }
+  if (flags & STRUCTF_OBELISK) {
+    flags |= STRUCTF_ATOWER;
+  }
+  if (flags & STRUCTF_TEMPLE) {
+    flags |= STRUCTF_EYE;
+  }
+  if (flags & STRUCTF_AIRSTRIP) {
+    flags |= STRUCTF_WEAP;
+  }
+  if (flags & STRUCTF_SAM) {
+    flags |= STRUCTF_HELIPAD;
+  }
 
   /*
   **	Multiplayer game uses a different legality check for building.
@@ -638,7 +653,9 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
     level = 1;
   }
 
-  if (Debug_Cheat) level = 98;
+  if (Debug_Cheat) {
+    level = 98;
+  }
   return (pre & flags) == pre && type->Scenario <= level;
 }
 
@@ -1100,7 +1117,9 @@ void HouseClass::AI() {
       *cannon.
       */
       if (IonCannon.Remove()) {
-        if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+        if (this == PlayerPtr) {
+          Map.Column[1].Flag_To_Redraw();
+        }
         IsRecalcNeeded = true;
       }
     } else {
@@ -1116,7 +1135,9 @@ void HouseClass::AI() {
       *affect *	the sidebar, then flag the sidebar to be redrawn.
       */
       if (IonCannon.AI(this == PlayerPtr)) {
-        if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+        if (this == PlayerPtr) {
+          Map.Column[1].Flag_To_Redraw();
+        }
       }
     }
 
@@ -1161,7 +1182,9 @@ void HouseClass::AI() {
       */
       if (NukeStrike.Remove(true)) {
         IsRecalcNeeded = true;
-        if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+        if (this == PlayerPtr) {
+          Map.Column[1].Flag_To_Redraw();
+        }
       }
     } else {
       /*
@@ -1176,7 +1199,9 @@ void HouseClass::AI() {
       *affect *	the sidebar, then flag the sidebar to be redrawn.
       */
       if (NukeStrike.AI(this == PlayerPtr)) {
-        if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+        if (this == PlayerPtr) {
+          Map.Column[1].Flag_To_Redraw();
+        }
       }
     }
 
@@ -1211,7 +1236,9 @@ void HouseClass::AI() {
   */
   if (AirStrike.Is_Present()) {
     if (AirStrike.AI(this == PlayerPtr)) {
-      if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+      if (this == PlayerPtr) {
+        Map.Column[1].Flag_To_Redraw();
+      }
     }
 
     /*
@@ -1625,9 +1652,13 @@ int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
 void HouseClass::Silo_Redraw_Check(long oldtib, long oldcap) {
   Validate();
   int oldratio = 0;
-  if (oldcap) oldratio = oldtib * 5 / oldcap;
+  if (oldcap) {
+    oldratio = oldtib * 5 / oldcap;
+  }
   int newratio = 0;
-  if (Capacity) newratio = Tiberium * 5 / Capacity;
+  if (Capacity) {
+    newratio = Tiberium * 5 / Capacity;
+  }
 
   if (oldratio != newratio) {
     for (int index = 0; index < Buildings.Count(); index++) {
@@ -1743,7 +1774,9 @@ void HouseClass::Write_INI(char* buffer) {
       char sbuffer[100] = "";
       for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
         if (p->Is_Ally(house)) {
-          if (!first) port::SafeAppend(sbuffer, ",");
+          if (!first) {
+            port::SafeAppend(sbuffer, ",");
+          }
           port::SafeAppend(sbuffer, As_Pointer(house)->Class->IniName);
           first = false;
         }
@@ -1842,7 +1875,9 @@ void HouseClass::Make_Ally(HousesType house) {
     **	If in normal game play but the house is defeated, then don't allow the
     *ally *	key to work.
     */
-    if (!ScenarioInit && (IsDefeated || house == HOUSE_JP)) return;
+    if (!ScenarioInit && (IsDefeated || house == HOUSE_JP)) {
+      return;
+    }
 
     Allies |= 1 << house;
 
@@ -1944,7 +1979,9 @@ void HouseClass::Make_Enemy(HousesType house) {
  *=============================================================================================*/
 const unsigned char* HouseClass::Remap_Table(bool blushing, bool unit) const {
   Validate();
-  if (blushing) return &MouseClass::FadingLight[0];
+  if (blushing) {
+    return &MouseClass::FadingLight[0];
+  }
 
   /*
   ** For normal game play, return the TypeClass's remap table for this
@@ -2084,7 +2121,9 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   /*
   **	Check for legality of the production object type suggested.
   */
-  if (!factory) return PROD_ILLEGAL;
+  if (!factory) {
+    return PROD_ILLEGAL;
+  }
 
   /*
   **	If the house is already busy producing the requested object, then
@@ -2092,10 +2131,14 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   */
   if (*factory != -1) {
     fptr = Factories.Raw_Ptr(*factory);
-    if (fptr->Is_Building()) return PROD_CANT;
+    if (fptr->Is_Building()) {
+      return PROD_CANT;
+    }
   } else {
     fptr = new FactoryClass();
-    if (!fptr) return PROD_CANT;
+    if (!fptr) {
+      return PROD_CANT;
+    }
     *factory = Factories.ID(fptr);
     result = tech ? fptr->Set(*tech, *this) : fptr->Set(id, *this);
   }
@@ -2165,20 +2208,26 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   /*
   **	Check for legality of the production object type suggested.
   */
-  if (!factory) return PROD_ILLEGAL;
+  if (!factory) {
+    return PROD_ILLEGAL;
+  }
 
   /*
   **	If the house is already busy producing the requested object, then
   **	return with this failure code.
   */
-  if (*factory == -1) return PROD_CANT;
+  if (*factory == -1) {
+    return PROD_CANT;
+  }
 
   /*
   **	Create the factory pointer object.
   **	If the factory could not be created, then report this error condition.
   */
   FactoryClass* fptr = Factories.Raw_Ptr(*factory);
-  if (!fptr) return PROD_CANT;
+  if (!fptr) {
+    return PROD_CANT;
+  }
 
   /*
   **	Actually suspend the production.
@@ -2247,18 +2296,24 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   /*
   **	Check for legality of the production object type suggested.
   */
-  if (!factory) return PROD_ILLEGAL;
+  if (!factory) {
+    return PROD_ILLEGAL;
+  }
 
   /*
   **	If there is no factory to abandon, then return with a failure code.
   */
-  if (*factory == -1) return PROD_CANT;
+  if (*factory == -1) {
+    return PROD_CANT;
+  }
 
   /*
   **	Fetch the factory pointer object.
   */
   FactoryClass* fptr = Factories.Raw_Ptr(*factory);
-  if (!fptr) return PROD_CANT;
+  if (!fptr) {
+    return PROD_CANT;
+  }
 
   /*
   **	Tell the sidebar that it needs to be redrawn because of this.
@@ -2357,7 +2412,9 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
     case SPC_ION_CANNON:
       if (IonCannon.Is_Ready()) {
         anim = new AnimClass(ANIM_ION_CANNON, Cell_Coord(cell));
-        if (anim) anim->Owner = Class->House;
+        if (anim) {
+          anim->Owner = Class->House;
+        }
         if (this == PlayerPtr) {
           Map.IsTargettingMode = false;
         }
@@ -2408,7 +2465,9 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           **	Only in the multiplayer version can the nuclear bomb be
           **	sent from some off screen source.
           */
-          if (GameToPlay == GAME_NORMAL) return false;
+          if (GameToPlay == GAME_NORMAL) {
+            return false;
+          }
 
           /*
           **	Since no launch site was found, just bring the missile in
@@ -2696,7 +2755,9 @@ void HouseClass::Init_Ion_Cannon(SpecialControlType control) {
   if (!(first_time && IonCannonPresent)) {
     if (IonCannonPresent && IonOneTimeFlag) {
       IonOneTimeFlag = false;
-      if (this == PlayerPtr) Map.Recalc();
+      if (this == PlayerPtr) {
+        Map.Recalc();
+      }
       return;
     }
 
@@ -2727,7 +2788,9 @@ void HouseClass::Init_Ion_Cannon(bool first_time, bool one_time_effect) {
   if (!(first_time && IonCannonPresent)) {
     if (IonCannonPresent && IonOneTimeFlag) {
       IonOneTimeFlag = false;
-      if (this == PlayerPtr) Map.Recalc();
+      if (this == PlayerPtr) {
+        Map.Recalc();
+      }
       return;
     }
 
@@ -2863,7 +2926,9 @@ void HouseClass::Init_Nuke_Bomb(bool first_time, bool one_time_effect) {
   if (!first_time || !NukePresent) {
     if (NukePresent && NukeOneTimeFlag) {
       NukeOneTimeFlag = false;
-      if (this == PlayerPtr) Map.Recalc();
+      if (this == PlayerPtr) {
+        Map.Recalc();
+      }
       return;
     }
 
@@ -3133,7 +3198,9 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         if (!Special.IsEasy && !IsHuman && ActiveBScan & STRUCTF_REFINERY &&
             !(UScan & UNITF_HARVESTER)) {
           techno = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
-          if (techno->Scenario <= BuildLevel) break;
+          if (techno->Scenario <= BuildLevel) {
+            break;
+          }
           techno = nullptr;
         }
 
@@ -3512,7 +3579,9 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
               break;
             }
             rot++;
-            if (rot > FACING_NW) rot = FACING_N;
+            if (rot > FACING_NW) {
+              rot = FACING_N;
+            }
           }
         } else {
           /*
@@ -3529,7 +3598,9 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
               break;
             }
             rot--;
-            if (rot < FACING_N) rot = FACING_NW;
+            if (rot < FACING_N) {
+              rot = FACING_NW;
+            }
           }
         }
       }
@@ -3688,7 +3759,9 @@ void HouseClass::MPlayer_Defeated() {
   for (i = 0; i < MPlayerMax; i++) {
     hptr = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + i));
     if (hptr && hptr->IsDefeated == 0) {
-      if (hptr->IsHuman) num_humans++;
+      if (hptr->IsHuman) {
+        num_humans++;
+      }
       num_alive++;
     }
   }
@@ -3703,7 +3776,9 @@ void HouseClass::MPlayer_Defeated() {
     Get a pointer to this house
     .....................................................................*/
     hptr = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + i));
-    if (!hptr || hptr->IsDefeated) continue;
+    if (!hptr || hptr->IsDefeated) {
+      continue;
+    }
 
     /*.....................................................................
     Loop through all houses; if there's one left alive that this house
@@ -3711,18 +3786,24 @@ void HouseClass::MPlayer_Defeated() {
     .....................................................................*/
     for (j = 0; j < MPlayerMax; j++) {
       hptr2 = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + j));
-      if (!hptr2) continue;
+      if (!hptr2) {
+        continue;
+      }
       if (!hptr2->IsDefeated && !hptr->Is_Ally(hptr2)) {
         all_allies = 0;
         break;
       }
     }
-    if (!all_allies) break;
+    if (!all_allies) {
+      break;
+    }
   }
   /*........................................................................
   If all houses left are allies, set 'num_alive' to 1; game over.
   ........................................................................*/
-  if (all_allies) num_alive = 1;
+  if (all_allies) {
+    num_alive = 1;
+  }
 
   /*------------------------------------------------------------------------
   If there's only one human player left or no humans left, the game is over:
@@ -3791,8 +3872,9 @@ void HouseClass::MPlayer_Defeated() {
         ...............................................................*/
         MPlayerScore[score_index[i]].Wins = 0;
         port::SafeCopy(MPlayerScore[score_index[i]].Name, MPlayerNames[i]);
-        for (j = 0; j < MAX_MULTI_GAMES; j++)
+        for (j = 0; j < MAX_MULTI_GAMES; j++) {
           MPlayerScore[score_index[i]].Kills[j] = -1;
+        }
       }
 
       /*..................................................................
@@ -4237,7 +4319,9 @@ int HouseClass::Power_Fraction() const {
  *=============================================================================================*/
 bool HouseClass::Has_Nuke_Device() {
   Validate();
-  if (GameToPlay != GAME_NORMAL || !IsHuman) return true;
+  if (GameToPlay != GAME_NORMAL || !IsHuman) {
+    return true;
+  }
   return (NukePieces & 0x07) == 0x07;
 }
 

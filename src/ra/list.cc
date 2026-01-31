@@ -319,7 +319,9 @@ int ListClass::Action(unsigned flags, KeyNumType& key) {
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min(SelectedIndex, static_cast<int>(List.Count()) - 1);
-    if (SelectedIndex == -1) SelectedIndex = 0;
+    if (SelectedIndex == -1) {
+      SelectedIndex = 0;
+    }
   }
   return ControlClass::Action(flags, key);
 }

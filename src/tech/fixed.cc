@@ -130,7 +130,9 @@ fixed::fixed(const char* ascii) {
     }
 
     const char* fracpart = strchr(ascii, '.');
-    if (fracpart) fracpart++;
+    if (fracpart) {
+      fracpart++;
+    }
     if (fracpart) {
       int frac = atoi(fracpart);
 
@@ -166,7 +168,9 @@ fixed::fixed(const char* ascii) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 int fixed::To_ASCII(char* buffer, int maxlen) const {
-  if (buffer == nullptr) return 0;
+  if (buffer == nullptr) {
+    return 0;
+  }
 
   /*
   **	Determine the whole and fractional parts of the number. The fractional
@@ -213,7 +217,9 @@ int fixed::To_ASCII(char* buffer, int maxlen) const {
   *buffer.
   */
   int len = strlen(tbuffer);
-  if (len < maxlen - 1) return len;
+  if (len < maxlen - 1) {
+    return len;
+  }
   return maxlen - 1;
 }
 

@@ -431,11 +431,15 @@ class HouseClass {
   bool Flag_To_Lose();
   void Make_Ally(HousesType house);
   void Make_Ally(ObjectClass* object) {
-    if (object) Make_Ally(object->Owner());
+    if (object) {
+      Make_Ally(object->Owner());
+    }
   }
   void Make_Enemy(HousesType house);
   void Make_Enemy(ObjectClass* object) {
-    if (object) Make_Enemy(object->Owner());
+    if (object) {
+      Make_Enemy(object->Owner());
+    }
   }
   bool Is_Ally(HousesType house) const;
   bool Is_Ally(const HouseClass* house) const;

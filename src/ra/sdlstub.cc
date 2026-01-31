@@ -25,7 +25,9 @@ void WWDebugString(const char* /*string*/) {}
 void Check_For_Focus_Loss() {
   if (!GameInFocus) {
     SDL_Event_Loop();
-    if (GameInFocus) VQA_ResumeAudio();
+    if (GameInFocus) {
+      VQA_ResumeAudio();
+    }
   }
 }
 void Memory_Error_Handler() {
@@ -68,7 +70,9 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
 }
 
 void SDL_Event_Handler(SDL_Event* event) {
-  if (Keyboard->Event_Handler(event)) return;
+  if (Keyboard->Event_Handler(event)) {
+    return;
+  }
 
   switch (event->type) {
     case SDL_WINDOWEVENT: {

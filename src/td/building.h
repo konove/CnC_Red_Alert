@@ -68,14 +68,14 @@
 */
 class BuildingClass : public TechnoClass {
  public:
-  const BuildingTypeClass *const Class;
+  const BuildingTypeClass* const Class;
   operator StructType() const { return Class->Type; }
 
   /*
   **	If this building is in the process of producing something, then this
   **	will point to the factory manager.
   */
-  FactoryClass *Factory;
+  FactoryClass* Factory;
 
   /*
   **	This is the house that originally owned this factory. Objects buildable
@@ -173,12 +173,12 @@ class BuildingClass : public TechnoClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  void *operator new(size_t size) noexcept;
-  void *operator new(size_t, void *ptr) noexcept { return ptr; }
-  void operator delete(void *ptr);
+  void* operator new(size_t size) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
+  void operator delete(void* ptr);
   BuildingClass() : Class(nullptr) {}
   BuildingClass(StructType type, HousesType house);
-  BuildingClass(const NoInitClass &x)
+  BuildingClass(const NoInitClass& x)
       : TechnoClass(x), Class(Class), CountDown(x), PlacementDelay(x) {}
   ~BuildingClass() override;
   RTTIType What_Am_I() const override { return RTTI_BUILDING; }
@@ -189,21 +189,21 @@ class BuildingClass : public TechnoClass {
   static void Init();
 
   TARGET Target_Scan();
-  const BuildingTypeClass::AnimControlType *Fetch_Anim_Control() {
+  const BuildingTypeClass::AnimControlType* Fetch_Anim_Control() {
     return &Class->Anims[BState];
   }
 
   /*
   **	Query functions.
   */
-  CELL Find_Exit_Cell(const TechnoClass *techno) const override;
+  CELL Find_Exit_Cell(const TechnoClass* techno) const override;
   InfantryType Crew_Type() const override;
   int Pip_Count() const override;
   bool Can_Player_Move() const override { return false; }
-  ActionType What_Action(ObjectClass *target) override;
+  ActionType What_Action(ObjectClass* target) override;
   ActionType What_Action(CELL cell) const override;
   bool Can_Demolish() const override;
-  const ObjectTypeClass &Class_Of() const override { return *Class; }
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
   int Refund_Amount() const override;
   DirType Fire_Direction() const override;
   int Power_Output() const;
@@ -234,8 +234,8 @@ class BuildingClass : public TechnoClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  const void *Remap_Table() override;
-  int Exit_Object(TechnoClass *base) override;
+  const void* Remap_Table() override;
+  int Exit_Object(TechnoClass* base) override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark) override;
   void Look(bool incremental = false) override;
@@ -245,33 +245,33 @@ class BuildingClass : public TechnoClass {
   /*
   **	User I/O.
   */
-  void Active_Click_With(ActionType action, ObjectClass *object) override;
+  void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, CELL cell) override;
 
   /*
   **	Combat related.
   */
-  void Death_Announcement(const TechnoClass *source = nullptr) const override;
+  void Death_Announcement(const TechnoClass* source = nullptr) const override;
   FireErrorType Can_Fire(TARGET, int which) const override;
   TARGET Greatest_Threat(ThreatType threat) const override;
-  ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                         TechnoClass *source = nullptr) override;
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                         TechnoClass* source = nullptr) override;
   TARGET As_Target() const override;
-  bool Captured(HouseClass *newowner) override;
+  bool Captured(HouseClass* newowner) override;
 
   /*
   **	AI.
   */
   void Hidden() override;
-  bool Revealed(HouseClass *house) override;
+  bool Revealed(HouseClass* house) override;
   void Repair(int control) override;
   void Sell_Back(int control) override;
-  RadioMessageType Receive_Message(RadioClass *from, RadioMessageType message,
-                                   long &param) override;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
   void AI() override;
   void Assign_Target(TARGET target) override;
   virtual bool Toggle_Primary();
-  bool Flush_For_Placement(TechnoClass *techno, CELL cell);
+  bool Flush_For_Placement(TechnoClass* techno, CELL cell);
 
   int Mission_Unload() override;
   int Mission_Repair() override;
@@ -286,16 +286,16 @@ class BuildingClass : public TechnoClass {
   /*
   **	Scenario and debug support.
   */
-  void Debug_Dump(MonoClass *mono) const override;
+  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.
   */
-  static void Read_INI(char *buffer);
-  static void Write_INI(char *buffer);
-  static const char *INI_Name() { return "STRUCTURES"; }
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  static void Read_INI(char* buffer);
+  static void Write_INI(char* buffer);
+  static const char* INI_Name() { return "STRUCTURES"; }
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   void Code_Pointers() override;
   void Decode_Pointers() override;
   void Update_Specials();
@@ -307,14 +307,14 @@ class BuildingClass : public TechnoClass {
 
  private:
   void Drop_Debris(TARGET source = kTargetNone);
-  BulletClass *Fire_At(TARGET target, int which) override;
+  BulletClass* Fire_At(TARGET target, int which) override;
 
   static const COORDINATE CenterOffset[BSIZE_COUNT];
 
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif

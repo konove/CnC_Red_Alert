@@ -188,7 +188,9 @@ void ScoreTimeClass::Update() {
 #endif
   if (!Timer) {
     Timer = TimerReset;
-    if (++Stage >= MaxStage) Stage = 0;
+    if (++Stage >= MaxStage) {
+      Stage = 0;
+    }
     oldpage = LogicPage;
     Set_Logic_Page(SeenBuff);
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
@@ -219,7 +221,9 @@ void ScoreCredsClass::Update() {
 #endif
   if (!Timer) {
     Timer = TimerReset;
-    if (++Stage >= MaxStage) Stage = 0;
+    if (++Stage >= MaxStage) {
+      Stage = 0;
+    }
     oldpage = LogicPage;
     Set_Logic_Page(SeenBuff);
 #ifdef WIN32
@@ -349,7 +353,9 @@ void ScoreScaleClass::Update() {
     } else {
       Set_Font_Palette(Palette);
       for (int i = 0; i < MAXSCOREOBJS; i++) {
-        if (ScoreObjs[i] == this) ScoreObjs[i] = nullptr;
+        if (ScoreObjs[i] == this) {
+          ScoreObjs[i] = nullptr;
+        }
       }
       HidPage.Print((char*)DataPtr, XPos, YPos, TBLACK, TBLACK);
       HidPage.Blit(SeenPage, XPos, YPos, XPos, YPos, 6 * RESFACTOR,
@@ -619,7 +625,9 @@ void ScoreClass::Presentation() {
       break;
   }
 
-  if (!leadership) leadership++;
+  if (!leadership) {
+    leadership++;
+  }
   leadership = 100 * fixed(leadership, house ? NKilled + NBKilled + leadership
                                              : GKilled + GBKilled + leadership);
   leadership = std::min(150, leadership);
@@ -654,7 +662,9 @@ void ScoreClass::Presentation() {
 #else
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(40));
 #endif
-    if (i >= 30 && i >= leadership && i - 30 >= economy) break;
+    if (i >= 30 && i >= leadership && i - 30 >= economy) {
+      break;
+    }
     // BG		if (Keyboard->Check()) break;
   }
   Count_Up_Print("%3d%%", leadership, leadership, 244, 26);
@@ -678,7 +688,9 @@ void ScoreClass::Presentation() {
   Call_Back_Delay(60);
   // BG	}
 
-  if (house) Show_Credits(house, _greenpal);
+  if (house) {
+    Show_Credits(house, _greenpal);
+  }
 
   /*BG	if (!Keyboard->Check()) */ Call_Back_Delay(60);
 
@@ -778,7 +790,9 @@ void ScoreClass::Presentation() {
 
   Keyboard->Clear();
 
-  if (!house) Show_Credits(house, _greenpal);
+  if (!house) {
+    Show_Credits(house, _greenpal);
+  }
   /*
   ** Hall of fame display and processing
   */
@@ -818,14 +832,17 @@ void ScoreClass::Presentation() {
   ** remove their data, move everyone down a notch, and set index = where
   ** their info goes
   */
-  if (hallfame[NUMFAMENAMES - 1].score >= total)
+  if (hallfame[NUMFAMENAMES - 1].score >= total) {
     hallfame[NUMFAMENAMES - 1].score = 0;
+  }
   int index;
   for (index = 0; index < NUMFAMENAMES; index++) {
     if (total > hallfame[index].score) {
-      if (index < NUMFAMENAMES - 1)
-        for (i = NUMFAMENAMES - 1; i > index; i--)
+      if (index < NUMFAMENAMES - 1) {
+        for (i = NUMFAMENAMES - 1; i > index; i--) {
           hallfame[i] = hallfame[i - 1];
+        }
+      }
       hallfame[index].score = total;
       hallfame[index].level = Scen.Scenario;
       hallfame[index].name[0] = 0;  // blank out the name
@@ -887,11 +904,12 @@ void ScoreClass::Presentation() {
   Keyboard->Clear();
 
   /* get rid of all the animating objects */
-  for (i = 0; i < MAXSCOREOBJS; i++)
+  for (i = 0; i < MAXSCOREOBJS; i++) {
     if (ScoreObjs[i]) {
       delete ScoreObjs[i];
       ScoreObjs[i] = nullptr;
     }
+  }
   BlackPalette.Set(FADE_PALETTE_FAST, nullptr);
   VisiblePage.Clear();
   Show_Mouse();
@@ -1099,7 +1117,9 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   int gdikilled = gkilled, nodkilled = nkilled;
 
   maxval = std::max(gdikilled, nodkilled);
-  if (!maxval) maxval = 1;
+  if (!maxval) {
+    maxval = 1;
+  }
 
   gdikilled = gdikilled * SIZEGBAR / maxval;
   nodkilled = nodkilled * SIZEGBAR / maxval;
@@ -1109,7 +1129,9 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   }
 
   maxval = std::max(gdikilled, nodkilled);
-  if (!maxval) maxval = 1;
+  if (!maxval) {
+    maxval = 1;
+  }
 
   // Draw the white-flash shape on the hidpage
   Set_Logic_Page(HidPage);
@@ -1225,7 +1247,9 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   nodkilled = NKilled;
   maxval = std::max(gdikilled, nodkilled);
 
-  if (!maxval) maxval = 1;
+  if (!maxval) {
+    maxval = 1;
+  }
   if (gdikilled > MAX_BAR_X - BARGRAPH_X ||
       nodkilled > MAX_BAR_X - BARGRAPH_X) {
     gdikilled = gdikilled * (MAX_BAR_X - BARGRAPH_X) / maxval;
@@ -1233,7 +1257,9 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   }
 
   maxval = std::max(gdikilled, nodkilled);
-  if (!maxval) maxval = 1;
+  if (!maxval) {
+    maxval = 1;
+  }
 
   /*
   ** Initialize a bunch of objects for the infantrymen who pose for the bar
@@ -1393,7 +1419,9 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
 void ScoreClass::Print_Minutes(int minutes) {
   char str[20];
   if (minutes >= 60) {
-    if (minutes / 60 > 9) minutes = 9 * 60 + 59;
+    if (minutes / 60 > 9) {
+      minutes = 9 * 60 + 59;
+    }
     sprintf(str, Text_String(TXT_SCORE_TIMEFORMAT1), minutes / 60,
             minutes % 60);
   } else {
@@ -1492,7 +1520,9 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
       ** turn it into a space instead.
       */
       if (key == KA_BACKSPACE && index == MAX_FAMENAME_LENGTH - 2) {
-        if (str[index] && str[index] != 32) key = 32;
+        if (str[index] && str[index] != 32) {
+          key = 32;
+        }
       }
       if (key == KA_BACKSPACE) {  // if (key == KN_BACKSPACE) {
         if (index) {
@@ -1515,7 +1545,9 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
       } else if (key != KA_RETURN) {  // else if (key != KN_RETURN &&
                                       // key!=KN_KEYPAD_RETURN) {
         ascii = key;                  // ascii = KN_To_KA(key);
-        if (ascii >= 'a' && ascii <= 'z') ascii -= 'a' - 'A';
+        if (ascii >= 'a' && ascii <= 'z') {
+          ascii -= 'a' - 'A';
+        }
         if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
           HidPage.Blit(SeenPage, (xpos + index * 6) * RESFACTOR,
                        (ypos - 100) * RESFACTOR, (xpos + index * 6) * RESFACTOR,
@@ -1540,9 +1572,13 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
 #endif
           objindex = Alloc_Object(
               new ScoreScaleClass(str + index, xpos + index * 6, ypos, pal));
-          while (ScoreObjs[objindex]) Call_Back_Delay(1);
+          while (ScoreObjs[objindex]) {
+            Call_Back_Delay(1);
+          }
 
-          if (index < MAX_FAMENAME_LENGTH - 2) index++;
+          if (index < MAX_FAMENAME_LENGTH - 2) {
+            index++;
+          }
         }
       }
     }
@@ -1621,7 +1657,9 @@ void Draw_InfantryMen() {
   /*
   ** Then draw all the infantrymen on the clean hidpage
   */
-  for (k = 0; k < NUMINFANTRYMEN; k++) Draw_InfantryMan(k);
+  for (k = 0; k < NUMINFANTRYMEN; k++) {
+    Draw_InfantryMan(k);
+  }
   /*
   ** They'll all be blitted over to the seenpage after the graphs are drawn
   */
@@ -1645,7 +1683,9 @@ void Draw_InfantryMan(int index) {
   int stage;
 
   /* If the infantryman's dead, just abort this function */
-  if (InfantryMan[index].anim == -1) return;
+  if (InfantryMan[index].anim == -1) {
+    return;
+  }
 
   stage = InfantryMan[index].stage +
           InfantryMan[index].Class->DoControls[InfantryMan[index].anim].Frame;
@@ -1883,8 +1923,9 @@ void Multi_Score_Presentation() {
 #if RESFACTOR == 2
   pseudoseenbuff->Clear();
   Animate_Frame(anim, *pseudoseenbuff, 1);
-  for (int x = 0; x < 256; x++)
+  for (int x = 0; x < 256; x++) {
     memset(&PaletteInterpolationTable[x][0], x, 256);
+  }
   Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
 #else
   Animate_Frame(anim, HidPage, 1);
@@ -1987,11 +2028,12 @@ void Multi_Score_Presentation() {
   Cycle_Wait_Click(false);
 
   /* get rid of all the animating objects */
-  for (i = 0; i < MAXSCOREOBJS; i++)
+  for (i = 0; i < MAXSCOREOBJS; i++) {
     if (ScoreObjs[i]) {
       delete ScoreObjs[i];
       ScoreObjs[i] = nullptr;
     }
+  }
 
   Theme.Queue_Song(THEME_NONE);
 

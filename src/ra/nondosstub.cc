@@ -58,14 +58,18 @@ void output(short, short) {}
 void Focus_Loss() {
   Theme.Suspend();
   Stop_Primary_Sound_Buffer();
-  if (WWMouse) WWMouse->Clear_Cursor_Clip();
+  if (WWMouse) {
+    WWMouse->Clear_Cursor_Clip();
+  }
 }
 
 void Focus_Restore() {
   Restore_Cached_Icons();
   Map.Flag_To_Redraw(true);
   Start_Primary_Sound_Buffer(true);
-  if (WWMouse) WWMouse->Set_Cursor_Clip();
+  if (WWMouse) {
+    WWMouse->Set_Cursor_Clip();
+  }
 #ifndef PORTABLE
   VisiblePage.Clear();
   HiddenPage.Clear();

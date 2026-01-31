@@ -152,7 +152,9 @@ void DropListClass::Collapse() {
 }
 
 DropListClass& DropListClass::operator=(const DropListClass& list) {
-  if (this == &list) return *this;
+  if (this == &list) {
+    return *this;
+  }
   EditClass::operator=(list);
   List = list.List;
   IsDropped = list.IsDropped;
@@ -192,7 +194,9 @@ void DropListClass::Set_Selected_Index(const char* text) {
 
 #ifdef WOLAPI_INTEGRATION
 void DropListClass::Flag_To_Redraw() {
-  if (IsDropped) List.Flag_To_Redraw();
+  if (IsDropped) {
+    List.Flag_To_Redraw();
+  }
   EditClass::Flag_To_Redraw();
 }
 #endif

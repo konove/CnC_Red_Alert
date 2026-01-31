@@ -35,7 +35,9 @@ void CCDebugString(const char* /*string*/) {}
 void Check_For_Focus_Loss() {
   if (!GameInFocus) {
     SDL_Event_Loop();
-    if (GameInFocus) VQA_ResumeAudio();
+    if (GameInFocus) {
+      VQA_ResumeAudio();
+    }
   }
 }
 
@@ -63,7 +65,9 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
 }
 
 void SDL_Event_Handler(SDL_Event* event) {
-  if (Kbd.Event_Handler(event)) return;
+  if (Kbd.Event_Handler(event)) {
+    return;
+  }
 
   switch (event->type) {
     case SDL_WINDOWEVENT: {
@@ -164,7 +168,9 @@ void Shake_Screen(int shakes) {
         break;
     }
 #ifdef PORTABLE
-    while (x == TickCount.Time()) Video_End_Frame();
+    while (x == TickCount.Time()) {
+      Video_End_Frame();
+    }
 #else
     while (x == TickCount);
 #endif

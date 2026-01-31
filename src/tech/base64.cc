@@ -261,7 +261,9 @@ int Base64_Decode(const void* source, int slen, void* dest, int dlen) {
       /*
       **	An unrecognized character is skipped.
       */
-      if (code == BAD) continue;
+      if (code == BAD) {
+        continue;
+      }
 
       /*
       **	The "=" character signifies the end of data regardless of what

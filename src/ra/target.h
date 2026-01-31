@@ -155,47 +155,69 @@ class xTargetClass {
   **	type of object indicated.
   */
   TriggerTypeClass* As_TriggerType() const {
-    if (*this == RTTI_TRIGGERTYPE) return (TriggerTypeClass*)As_TypeClass();
+    if (*this == RTTI_TRIGGERTYPE) {
+      return (TriggerTypeClass*)As_TypeClass();
+    }
     return nullptr;
   }
   TeamTypeClass* As_TeamType() const {
-    if (*this == RTTI_TEAMTYPE) return (TeamTypeClass*)As_TypeClass();
+    if (*this == RTTI_TEAMTYPE) {
+      return (TeamTypeClass*)As_TypeClass();
+    }
     return nullptr;
   }
   TerrainClass* As_Terrain() const {
-    if (*this == RTTI_TERRAIN) return (TerrainClass*)As_Abstract();
+    if (*this == RTTI_TERRAIN) {
+      return (TerrainClass*)As_Abstract();
+    }
     return nullptr;
   }
   BulletClass* As_Bullet() const {
-    if (*this == RTTI_BULLET) return (BulletClass*)As_Abstract();
+    if (*this == RTTI_BULLET) {
+      return (BulletClass*)As_Abstract();
+    }
     return nullptr;
   }
   AnimClass* As_Anim() const {
-    if (*this == RTTI_ANIM) return (AnimClass*)As_Abstract();
+    if (*this == RTTI_ANIM) {
+      return (AnimClass*)As_Abstract();
+    }
     return nullptr;
   }
   TeamClass* As_Team() const {
-    if (*this == RTTI_TEAM) return (TeamClass*)As_Abstract();
+    if (*this == RTTI_TEAM) {
+      return (TeamClass*)As_Abstract();
+    }
     return nullptr;
   }
   InfantryClass* As_Infantry() const {
-    if (*this == RTTI_INFANTRY) return (InfantryClass*)As_Techno();
+    if (*this == RTTI_INFANTRY) {
+      return (InfantryClass*)As_Techno();
+    }
     return nullptr;
   }
   UnitClass* As_Unit() const {
-    if (*this == RTTI_UNIT) return (UnitClass*)As_Techno();
+    if (*this == RTTI_UNIT) {
+      return (UnitClass*)As_Techno();
+    }
     return nullptr;
   }
   BuildingClass* As_Building() const {
-    if (*this == RTTI_BUILDING) return (BuildingClass*)As_Techno();
+    if (*this == RTTI_BUILDING) {
+      return (BuildingClass*)As_Techno();
+    }
     return nullptr;
   }
   AircraftClass* As_Aircraft() const {
-    if (*this == RTTI_AIRCRAFT) return (AircraftClass*)As_Techno();
+    if (*this == RTTI_AIRCRAFT) {
+      return (AircraftClass*)As_Techno();
+    }
     return nullptr;
   }
   VesselClass* As_Vessel() const {
-    if (*this == RTTI_VESSEL) return (VesselClass*)As_Techno();
+    if (*this == RTTI_VESSEL) {
+      return (VesselClass*)As_Techno();
+    }
     return nullptr;
   }
 };

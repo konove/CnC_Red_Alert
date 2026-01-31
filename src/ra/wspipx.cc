@@ -188,8 +188,9 @@ bool IPXInterfaceClass::Open_Socket(SOCKET /*socketnum*/) {
   ** If Winsock is not initialised then do it now.
   */
   if (!WinsockInitialised) {
-    if (!Init()) return (false);
-    ;
+    if (!Init()) {
+      return (false);
+    };
   }
 
   IPXSocketNumber = socketnum;
@@ -331,7 +332,9 @@ long IPXInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
   /*
   ** We only handle IPX events.
   */
-  if (message != WM_IPXASYNCEVENT) return (1);
+  if (message != WM_IPXASYNCEVENT) {
+    return (1);
+  }
 
   switch (WSAGETSELECTEVENT(lParam)) {
     /*

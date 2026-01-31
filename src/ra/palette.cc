@@ -16,7 +16,9 @@ PaletteClass PaletteClass::CurrentPalette;
 unsigned char* CurrentPalette = PaletteClass::CurrentPalette;
 
 PaletteClass::PaletteClass(const RGBClass& col) {
-  for (int i = 0; i < COLOR_COUNT; i++) data_[i] = col;
+  for (int i = 0; i < COLOR_COUNT; i++) {
+    data_[i] = col;
+  }
 }
 
 void PaletteClass::Set(int fade, void (*callback)()) {
@@ -47,7 +49,9 @@ void PaletteClass::Set(int fade, void (*callback)()) {
         Video_End_Frame();
       }
 
-      if (cur_time == fade) break;
+      if (cur_time == fade) {
+        break;
+      }
     }
   }
 
@@ -80,7 +84,9 @@ int PaletteClass::Closest_Color(const RGBClass& col) const {
         std::abs(col.Green_Component() - data_[i].Green_Component()) +
         std::abs(col.Blue_Component() - data_[i].Blue_Component());
 
-    if (new_diff == 0) return i;
+    if (new_diff == 0) {
+      return i;
+    }
 
     if (new_diff < diff) {
       index = i;

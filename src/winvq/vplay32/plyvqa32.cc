@@ -257,7 +257,9 @@ void main(long argc, char** argv) {
   SetVideoMode(TEXT);
 
 #if (CAPTIONS)
-  if (myconfig.CapFont != NULL) free(myconfig.CapFont);
+  if (myconfig.CapFont != NULL) {
+    free(myconfig.CapFont);
+  }
 #endif
 
   Usage(0);

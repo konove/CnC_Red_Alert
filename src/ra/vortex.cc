@@ -151,7 +151,9 @@ ChronalVortexClass::~ChronalVortexClass() {
  * HISTORY: * 8/29/96 4:27PM ST : Created *
  *=============================================================================================*/
 void ChronalVortexClass::Appear(COORDINATE coordinate) {
-  if (Active) return;
+  if (Active) {
+    return;
+  }
 
   /*
   ** Adjust the given coordinate so the vortex appears in a central position
@@ -287,7 +289,9 @@ void ChronalVortexClass::Show() {
  * HISTORY: * 8/29/96 4:32PM ST : Created *
  *=============================================================================================*/
 void ChronalVortexClass::Stop() {
-  if (Active) Active = false;
+  if (Active) {
+    Active = false;
+  }
 }
 
 /***********************************************************************************************
@@ -444,7 +448,9 @@ void ChronalVortexClass::AI() {
             }
           }
         } else {
-          if (AnimateFrame == VORTEX_FRAMES / 2) Attack();
+          if (AnimateFrame == VORTEX_FRAMES / 2) {
+            Attack();
+          }
         }
       }
       Animate++;
@@ -485,22 +491,30 @@ void ChronalVortexClass::Movement() {
   */
   if (x > CELL_LEPTON_W * (Map.MapCellX + Map.MapCellWidth - 4)) {
     newpick = false;
-    if (DesiredXDir > 0) DesiredXDir = -DesiredXDir;
+    if (DesiredXDir > 0) {
+      DesiredXDir = -DesiredXDir;
+    }
   }
 
   if (y > CELL_LEPTON_H * (Map.MapCellY + Map.MapCellHeight - 4)) {
     newpick = false;
-    if (DesiredYDir > 0) DesiredYDir = -DesiredYDir;
+    if (DesiredYDir > 0) {
+      DesiredYDir = -DesiredYDir;
+    }
   }
 
   if (x < CELL_LEPTON_W * Map.MapCellX + 2 * CELL_LEPTON_W) {
     newpick = false;
-    if (DesiredXDir < 0) DesiredXDir = -DesiredXDir;
+    if (DesiredXDir < 0) {
+      DesiredXDir = -DesiredXDir;
+    }
   }
 
   if (y < CELL_LEPTON_H * Map.MapCellY + 2 * CELL_LEPTON_W) {
     newpick = false;
-    if (DesiredYDir < 0) DesiredYDir = -DesiredYDir;
+    if (DesiredYDir < 0) {
+      DesiredYDir = -DesiredYDir;
+    }
   }
 
   /*
@@ -508,15 +522,31 @@ void ChronalVortexClass::Movement() {
   *shutting down or *	appearing in which case the direction tends towards 0.
   */
   if (State == STATE_ROTATE || Hidden) {
-    if (XDir < DesiredXDir) XDir++;
-    if (XDir > DesiredXDir) XDir--;
-    if (YDir < DesiredYDir) YDir++;
-    if (YDir > DesiredYDir) YDir--;
+    if (XDir < DesiredXDir) {
+      XDir++;
+    }
+    if (XDir > DesiredXDir) {
+      XDir--;
+    }
+    if (YDir < DesiredYDir) {
+      YDir++;
+    }
+    if (YDir > DesiredYDir) {
+      YDir--;
+    }
   } else {
-    if (XDir > 0) XDir -= Speed / 8;
-    if (XDir < 0) XDir += Speed / 8;
-    if (YDir > 0) YDir -= Speed / 8;
-    if (YDir < 0) YDir += Speed / 8;
+    if (XDir > 0) {
+      XDir -= Speed / 8;
+    }
+    if (XDir < 0) {
+      XDir += Speed / 8;
+    }
+    if (YDir > 0) {
+      YDir -= Speed / 8;
+    }
+    if (YDir < 0) {
+      YDir += Speed / 8;
+    }
   }
 
   /*
@@ -545,7 +575,9 @@ void ChronalVortexClass::Set_Target(ObjectClass* target) {
   if (Active) {
     ZapFrame = 0;
     TargetObject = TARGET_NONE;
-    if (target != nullptr) TargetObject = target->As_Target();
+    if (target != nullptr) {
+      TargetObject = target->As_Target();
+    }
     LastAttackFrame = Frame;
     TargetDistance =
         target != nullptr ? Distance(target->Center_Coord(), Position) : 0;
@@ -606,7 +638,9 @@ void ChronalVortexClass::Attack() {
   /*
   ** If we found something to attack then just return
   */
-  if (!Target_Legal(TargetObject)) return;
+  if (!Target_Legal(TargetObject)) {
+    return;
+  }
 
   /*
   ** Scan through all ground level objects.
@@ -616,7 +650,9 @@ void ChronalVortexClass::Attack() {
   */
 
   int chance = Random_Pick(0, 1000);
-  if (chance > Frame - LastAttackFrame) return;
+  if (chance > Frame - LastAttackFrame) {
+    return;
+  }
 
   for (int i = 0; i < MouseClass::Layer[LAYER_GROUND].Count(); i++) {
     ObjectClass* obj = MouseClass::Layer[LAYER_GROUND][i];
@@ -700,7 +736,9 @@ void ChronalVortexClass::Zap_Target() {
     /*
     ** Vortex might pretend to go away after zapping the target.
     */
-    if (Random_Pick(0, 2) == 2) Hide();
+    if (Random_Pick(0, 2) == 2) {
+      Hide();
+    }
   }
 }
 

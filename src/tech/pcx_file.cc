@@ -76,7 +76,9 @@ int Write_PCX_File(char* name, GraphicViewPortClass& pic,
 
   // Open file name
   file_handle = Open_File(name, WRITE);
-  if (file_handle == -1) return false;
+  if (file_handle == -1) {
+    return false;
+  }
 
   header.width = pic.Get_Width() - 1;
   header.height = pic.Get_Height() - 1;
@@ -88,9 +90,10 @@ int Write_PCX_File(char* name, GraphicViewPortClass& pic,
   ptr = (char*)Graphic_Buffer->Get_Buffer();
   ptr += ((pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos());
 
-  for (i = 0; i < header.height + 1; i++)
+  for (i = 0; i < header.height + 1; i++) {
     Write_Pcx_ScanLine(file_handle, header.byte_per_line,
                        ptr + i * VP_Scan_Line);
+  }
 
   Mem_Copy(palette, palcopy, 256 * 3);
   pal = (RGB*)palcopy;

@@ -664,7 +664,9 @@ void TerrainTypeClass::Init(TheaterType theater) {
             MixFileClass::Retrieve(fullname.c_str());
 
         IsTheaterShape = true;
-        if (terrain.RadarIcon) delete[] (char*)terrain.RadarIcon;
+        if (terrain.RadarIcon) {
+          delete[] (char*)terrain.RadarIcon;
+        }
         (const void*&)terrain.RadarIcon =
             Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3);
         IsTheaterShape = false;
@@ -785,14 +787,18 @@ ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass*) const {
 }
 
 const short* TerrainTypeClass::Occupy_List(bool) const {
-  if (Occupy) return Occupy;
+  if (Occupy) {
+    return Occupy;
+  }
 
   static const short _simple[1] = {REFRESH_EOL};
   return &_simple[0];
 }
 
 const short* TerrainTypeClass::Overlap_List() const {
-  if (Overlap) return Overlap;
+  if (Overlap) {
+    return Overlap;
+  }
 
   static const short _simple[1] = {REFRESH_EOL};
   return &_simple[0];

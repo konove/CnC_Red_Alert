@@ -529,8 +529,9 @@ int MapEditClass::Move_Grabbed_Object() {
     ** in the Base's Node list.
     */
     if (GrabbedObject->What_Am_I() == RTTI_BUILDING &&
-        Base.Get_Node((BuildingClass*)GrabbedObject))
+        Base.Get_Node((BuildingClass*)GrabbedObject)) {
       Base.Get_Node((BuildingClass*)GrabbedObject)->Coord = new_coord;
+    }
 
     GrabbedObject->Coord = new_coord;
     retval = 0;

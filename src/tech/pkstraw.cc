@@ -189,7 +189,9 @@ int PKStraw::Get(void* source, int length) {
       *indicates *	a major data flow error -- just return with no action
       *performed.
       */
-      if (got != Encrypted_Key_Length()) return 0;
+      if (got != Encrypted_Key_Length()) {
+        return 0;
+      }
 
       /*
       **	Decrypt the blowfish key and then activate the blowfish straw
@@ -266,7 +268,9 @@ int PKStraw::Get(void* source, int length) {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 int PKStraw::Encrypted_Key_Length() const {
-  if (CipherKey == nullptr) return 0;
+  if (CipherKey == nullptr) {
+    return 0;
+  }
   return CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
          CipherKey->Crypt_Block_Size();
 }
@@ -291,7 +295,9 @@ int PKStraw::Encrypted_Key_Length() const {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 int PKStraw::Plain_Key_Length() const {
-  if (CipherKey == nullptr) return 0;
+  if (CipherKey == nullptr) {
+    return 0;
+  }
   return CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
          CipherKey->Plain_Block_Size();
 }

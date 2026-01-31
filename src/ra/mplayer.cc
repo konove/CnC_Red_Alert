@@ -365,7 +365,9 @@ GameType Select_MPlayer_Game() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton--;
-        if (curbutton < 0) curbutton = num_of_buttons - 1;
+        if (curbutton < 0) {
+          curbutton = num_of_buttons - 1;
+        }
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
@@ -374,7 +376,9 @@ GameType Select_MPlayer_Game() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton++;
-        if (curbutton > num_of_buttons - 1) curbutton = 0;
+        if (curbutton > num_of_buttons - 1) {
+          curbutton = 0;
+        }
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
@@ -395,7 +399,9 @@ GameType Select_MPlayer_Game() {
       buttons[curbutton]->Turn_Off();
       buttons[curbutton]->Flag_To_Redraw();
       curbutton = selection - BUTTON_MODEMSERIAL;
-      if (selection == BUTTON_CANCEL && !Ipx.Is_IPX()) curbutton--;
+      if (selection == BUTTON_CANCEL && !Ipx.Is_IPX()) {
+        curbutton--;
+      }
       buttons[curbutton]->Turn_On();
       buttons[curbutton]->IsPressed = true;
       buttons[curbutton]->Draw_Me(true);
@@ -625,7 +631,9 @@ static void Garble_Message(char* buf) {
   //------------------------------------------------------------------------
   p = buf + strlen(buf) - 1;
   while (1) {
-    if (p < buf) break;
+    if (p < buf) {
+      break;
+    }
     if (p[0] == '!' || p[0] == '.' || p[0] == '?') {
       p--;
     } else {
@@ -673,7 +681,9 @@ static void Garble_Message(char* buf) {
     }
     strcat(buf, words[j]);
     words[j] = NULL;
-    if (i < numwords - 1) strcat(buf, " ");
+    if (i < numwords - 1) {
+      strcat(buf, " ");
+    }
   }
   strcat(buf, punct);
 

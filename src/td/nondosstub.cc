@@ -93,7 +93,9 @@ void Focus_Loss() {
   }
   Theme.Stop();
   Stop_Primary_Sound_Buffer();
-  if (WWMouse) WWMouse->Clear_Cursor_Clip();
+  if (WWMouse) {
+    WWMouse->Clear_Cursor_Clip();
+  }
 }
 
 void Focus_Restore() {
@@ -106,7 +108,9 @@ void Focus_Restore() {
     OldTheme = THEME_NONE;
   }
 
-  if (WWMouse) WWMouse->Set_Cursor_Clip();
+  if (WWMouse) {
+    WWMouse->Set_Cursor_Clip();
+  }
 #ifndef PORTABLE
   VisiblePage.Clear();
   HiddenPage.Clear();

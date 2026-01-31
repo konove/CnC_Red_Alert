@@ -52,7 +52,9 @@ class CCPtr {
   CCPtr(T* ptr);
 
   operator T*() const {
-    if (ID == -1) return nullptr;
+    if (ID == -1) {
+      return nullptr;
+    }
     assert(Heap != nullptr && ID < Heap->Length());
     return static_cast<T*>((*Heap)[ID]);
   }
@@ -61,7 +63,9 @@ class CCPtr {
     return *static_cast<T*>((*Heap)[ID]);
   }
   T* operator->() const {
-    if (ID == -1) return nullptr;
+    if (ID == -1) {
+      return nullptr;
+    }
     assert(Heap != nullptr && ID < Heap->Length());
     return static_cast<T*>((*Heap)[ID]);
   }

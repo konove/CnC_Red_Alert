@@ -59,7 +59,9 @@ MCIMovie::~MCIMovie() {
   Close();
 
   // Free name
-  if (mName != NULL) free(mName);
+  if (mName != NULL) {
+    free(mName);
+  }
 }
 
 /****************************************************************************
@@ -87,11 +89,15 @@ bool MCIMovie::Open(const char* name, const char* device) {
   Close();
 
   // Copy the movie name for our use
-  if (mName != NULL) free(mName);
+  if (mName != NULL) {
+    free(mName);
+  }
 
   mName = strdup(name);
 
-  if (device == NULL) device = "mpegvideo";
+  if (device == NULL) {
+    device = "mpegvideo";
+  }
 
   // Setup open parameters
   memset((void*)&mOpenParm, 0, sizeof(mOpenParm));
@@ -160,7 +166,9 @@ bool MCIMovie::Open(const char* name, const char* device) {
 bool MCIMovie::Play(HWND window) {
   MCIERROR rc;
 
-  if (mDeviceID == 0) return false;
+  if (mDeviceID == 0) {
+    return false;
+  }
 
   // Provide window for playback
   if (AttachWindow(window)) {
@@ -200,9 +208,13 @@ bool MCIMovie::Play(HWND window) {
  ****************************************************************************/
 
 bool MCIMovie::Pause() {
-  if (mDeviceID == 0) return false;
+  if (mDeviceID == 0) {
+    return false;
+  }
 
-  if (mciSendCommand(mDeviceID, MCI_PAUSE, 0, (DWORD)NULL)) return false;
+  if (mciSendCommand(mDeviceID, MCI_PAUSE, 0, (DWORD)NULL)) {
+    return false;
+  }
 
   return true;
 }
@@ -224,7 +236,9 @@ bool MCIMovie::Pause() {
 bool MCIMovie::Close() {
   MCIERROR rc;
 
-  if (mDeviceID == 0) return false;
+  if (mDeviceID == 0) {
+    return false;
+  }
 
   rc = mciSendCommand(mDeviceID, MCI_CLOSE, 0, (DWORD)NULL);
   mDeviceID = 0;
@@ -256,7 +270,9 @@ bool MCIMovie::SizeDestination() {
   MCI_DGV_PUT_PARMS putParm;
   RECT rect;
 
-  if (mMCIWindow == NULL) return false;
+  if (mMCIWindow == NULL) {
+    return false;
+  }
 
   GetClientRect(mMCIWindow, &rect);
   ClientToScreen(mMCIWindow, (LPPOINT)&rect);

@@ -185,7 +185,9 @@ void Check_From_WChat(char* wchat_name) {
                               sizeof(key_string), ini_file);
 
     if (!strcmp(key_string, default_string)) {
-      if (wchat_name) delete[] ini_file;
+      if (wchat_name) {
+        delete[] ini_file;
+      }
       return;
     }
     port::SafeCopy(PlanetWestwoodIPAddress, key_string);
@@ -199,7 +201,9 @@ void Check_From_WChat(char* wchat_name) {
                               sizeof(key_string), ini_file);
 
     if (!strcmp(key_string, default_string)) {
-      if (wchat_name) delete[] ini_file;
+      if (wchat_name) {
+        delete[] ini_file;
+      }
       return;
     }
 
@@ -214,7 +218,9 @@ void Check_From_WChat(char* wchat_name) {
                               sizeof(key_string), ini_file);
 
     if (!strcmp(key_string, default_string)) {
-      if (wchat_name) delete[] ini_file;
+      if (wchat_name) {
+        delete[] ini_file;
+      }
       return;
     }
 
@@ -223,7 +229,9 @@ void Check_From_WChat(char* wchat_name) {
     Special.IsFromWChat = true;
   }
 
-  if (wchat_name) delete[] ini_file;
+  if (wchat_name) {
+    delete[] ini_file;
+  }
 }
 #endif  //	!WOLAPI_INTEGRATION
 
@@ -423,7 +431,9 @@ int Read_Game_Options(char* name) {
   Session.FrameSendRate = WChatSendRate =
       WWGetPrivateProfileInt("Timing", "SendRate", 3, buffer);
 
-  if (name) delete[] buffer;
+  if (name) {
+    delete[] buffer;
+  }
   return 1;
 }
 #endif  //	!WOLAPI_INTEGRATION
@@ -512,13 +522,19 @@ bool Is_User_WChat_Registered(char* /*buffer*/, int /*buffer_len*/) {
   user_handle_size = sizeof(user_handle);
 
   key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", false);
-  if (!key) return (false);
+  if (!key) {
+    return (false);
+  }
 
   key = Get_Registry_Sub_Key(key, "Westwood", true);
-  if (!key) return (false);
+  if (!key) {
+    return (false);
+  }
 
   key = Get_Registry_Sub_Key(key, "InetReg", true);
-  if (!key) return (false);
+  if (!key) {
+    return (false);
+  }
 
   if (RegQueryValueEx(key, "UserName", NULL, NULL, (unsigned char*)user_handle,
                       &user_handle_size) != ERROR_SUCCESS) {
@@ -618,7 +634,9 @@ bool Spawn_WChat(bool /*can_launch*/) {
   /*
   ** Fail if we aren't allowed to launch wchat and we couldnt find its window.
   */
-  if (!can_launch) return (false);
+  if (!can_launch) {
+    return (false);
+  }
 
   /*
   ** Find where WChat was installed to
@@ -628,13 +646,19 @@ bool Spawn_WChat(bool /*can_launch*/) {
   DWORD wchat_loc_size = 256;
 
   key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", false);
-  if (!key) return (false);
+  if (!key) {
+    return (false);
+  }
 
   key = Get_Registry_Sub_Key(key, "Westwood", true);
-  if (!key) return (false);
+  if (!key) {
+    return (false);
+  }
 
   key = Get_Registry_Sub_Key(key, "WChat", true);
-  if (!key) return (false);
+  if (!key) {
+    return (false);
+  }
 
   // key = Get_Registry_Sub_Key (key, "UserName", true);
   // if (!key) return (false);
@@ -720,13 +744,19 @@ bool Spawn_Registration_App() {
   DWORD inetreg_loc_size = 256;
 
   key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", false);
-  if (!key) return (false);
+  if (!key) {
+    return (false);
+  }
 
   key = Get_Registry_Sub_Key(key, "Westwood", true);
-  if (!key) return (false);
+  if (!key) {
+    return (false);
+  }
 
   key = Get_Registry_Sub_Key(key, "InetReg", true);
-  if (!key) return (false);
+  if (!key) {
+    return (false);
+  }
 
   if (RegQueryValueEx(key, "InstallPath", NULL, NULL,
                       (unsigned char*)inetreg_loc,

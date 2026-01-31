@@ -573,9 +573,15 @@ void Keyboard_Process(KeyNumType& input) {
   **	CTRL or ALT key is held down.
   */
   int action = 0;
-  if (input & WWKEY_SHIFT_BIT) action = 1;
-  if (input & WWKEY_ALT_BIT) action = 3;
-  if (input & WWKEY_CTRL_BIT) action = 2;
+  if (input & WWKEY_SHIFT_BIT) {
+    action = 1;
+  }
+  if (input & WWKEY_ALT_BIT) {
+    action = 3;
+  }
+  if (input & WWKEY_CTRL_BIT) {
+    action = 2;
+  }
 
   switch (KN_To_VK(plain)) {
     /*
@@ -895,8 +901,12 @@ static void Message_Input(KeyNumType& input) {
   /*
   ** Function key input is meaningless beyond this point
   */
-  if (input >= KN_F1 && input <= KN_F10) return;
-  if (input >= KN_F11 && input <= KN_F12) return;
+  if (input >= KN_F1 && input <= KN_F10) {
+    return;
+  }
+  if (input >= KN_F11 && input <= KN_F12) {
+    return;
+  }
 
   /*
   **	Process message-system input; send the message out if RETURN is hit.
@@ -1323,7 +1333,9 @@ void Call_Back() {
 const char* Language_Name(const char* basename) {
   static char _fullname[_MAX_FNAME + _MAX_EXT];
 
-  if (!basename) return nullptr;
+  if (!basename) {
+    return nullptr;
+  }
 
   sprintf(_fullname, "%s.ENG", basename);
   return _fullname;
@@ -1519,7 +1531,9 @@ bool Main_Loop() {
   /*
   ** I think I'm gonna cry if this makes it work
   */
-  if (Get_Mouse_State()) Show_Mouse();
+  if (Get_Mouse_State()) {
+    Show_Mouse();
+  }
 
   /*
   ** Call the focus loss handler
@@ -1656,7 +1670,9 @@ bool Main_Loop() {
   /*
   **	Perform any win/lose code as indicated by the global control flags.
   */
-  if (EndCountDown) EndCountDown--;
+  if (EndCountDown) {
+    EndCountDown--;
+  }
 
   /*
   **	Check for player wins or loses according to global event flag.
@@ -1715,16 +1731,26 @@ bool Main_Loop() {
   */
   if (Debug_Check_Map) {
     if (!Map.Validate()) {
-#ifdef GERMAN
-      if (CCMessageBox().Process("Kartenfehler!", "Halt", "Weiter") == 0)
-#else
-#ifdef FRENCH
-      if (CCMessageBox().Process("Erreur de carte!", "Stop", "Continuer") == 0)
-#else
-      if (CCMessageBox().Process("Map Error!", "Stop", "Continue") == 0)
-#endif
-#endif
+      const char* error_msg;
+      const char* stop_msg;
+      const char* continue_msg;
+      if constexpr (config::kBuildLanguage == config::BuildLanguage::German) {
+        error_msg = "Kartenfehler!";
+        stop_msg = "Halt";
+        continue_msg = "Weiter";
+      } else if constexpr (config::kBuildLanguage ==
+                           config::BuildLanguage::French) {
+        error_msg = "Erreur de carte!";
+        stop_msg = "Stop";
+        continue_msg = "Continuer";
+      } else {
+        error_msg = "Map Error!";
+        stop_msg = "Stop";
+        continue_msg = "Continue";
+      }
+      if (CCMessageBox().Process(error_msg, stop_msg, continue_msg) == 0) {
         GameActive = false;
+      }
       Map.Validate();  // give debugger a chance to catch it
     }
   }
@@ -1914,11 +1940,15 @@ unsigned long __stdcall Thread_Read(void* file) {
     left_to_read -= read_this_time;
 
     head = VQThreadBlockHead;
-    if (head < VQThreadBlockTail) head += VQ_THREAD_BUFFER_SIZE;
+    if (head < VQThreadBlockTail) {
+      head += VQ_THREAD_BUFFER_SIZE;
+    }
     sleep_time = head - VQThreadBlockTail;
     sleep_time = sleep_time / (VQ_THREAD_BUFFER_CHUNK / 32);
     sleep_time += 2;
-    if (sleep_time < 1) sleep_time = 1;
+    if (sleep_time < 1) {
+      sleep_time = 1;
+    }
     Sleep(sleep_time);
   }
 
@@ -1970,9 +2000,12 @@ int VQ_Thread_Read(CCFileClass* file, void* buffer, long bytes) {
   VQThreadBlockTail &= VQ_THREAD_BUFFER_SIZE - 1;
 
   unsigned long head = VQThreadBlockHead;
-  if (head < VQThreadBlockTail) head += VQ_THREAD_BUFFER_SIZE;
-  if (head - VQThreadBlockTail < VQ_THREAD_BUFFER_CHUNK && !ThreadReading)
+  if (head < VQThreadBlockTail) {
+    head += VQ_THREAD_BUFFER_SIZE;
+  }
+  if (head - VQThreadBlockTail < VQ_THREAD_BUFFER_CHUNK && !ThreadReading) {
     Read_VQ_Thread_Block(file);
+  }
 
   VQBytesRead += bytes_to_read;
   return (bytes_to_read);
@@ -2027,7 +2060,9 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
       error = VQ_Thread_Read(file, buffer, nbytes);
       // error = (file->Read(buffer, (unsigned short)nbytes) != (unsigned
       // short)nbytes);
-      if (error == nbytes) error = 0;
+      if (error == nbytes) {
+        error = 0;
+      }
       break;
 
     /*
@@ -2269,7 +2304,9 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   } else {
     for (start_palette = 0; start_palette < ARRAY_SIZE(InterpolatedPalettes);
          start_palette++) {
-      if (!InterpolatedPalettes[start_palette]) break;
+      if (!InterpolatedPalettes[start_palette]) {
+        break;
+      }
     }
   }
 
@@ -2541,7 +2578,9 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
   /*
   **	If there is no shape file, then there can be no radar icon imagery.
   */
-  if (!shapefile) return nullptr;
+  if (!shapefile) {
+    return nullptr;
+  }
 
   /*
   ** Get the pixel width and height of the frame we built.  This will
@@ -2562,14 +2601,18 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
   ** If we have been told to build as many frames as possible, then
   ** find out how many frames there are to build.
   */
-  if (frames == -1) frames = Get_Build_Frame_Count(shapefile);
+  if (frames == -1) {
+    frames = Get_Build_Frame_Count(shapefile);
+  }
 
   /*
   ** Allocate a position to store our icons.  If the alloc fails then
   ** we dont add these icons to the set.
   **/
   buffer = new char[icon_width * icon_height * 9 * frames + 2];
-  if (!buffer) return nullptr;
+  if (!buffer) {
+    return nullptr;
+  }
 
   /*
   ** Save off the return value so that we can return it to the calling
@@ -2605,7 +2648,9 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
                   pixel = *static_cast<char*>(Add_Long_To_Pointer(
                       ptr,
                       (gety - _offy[lp]) * pixel_width + getx - _offx[lp]));
-                  if (pixel == LTGREEN) pixel = 0;
+                  if (pixel == LTGREEN) {
+                    pixel = 0;
+                  }
                   if (pixel) {
                     break;
                   }
@@ -2665,13 +2710,16 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
           for (int x = xpos; x < xpos + width; x++) {
             LogicPage->Put_Pixel(x, y, *shape_pointer++);
 
-            if (shape_pointer == line_end) shape_pointer = shape_save;
+            if (shape_pointer == line_end) {
+              shape_pointer = shape_save;
+            }
           }
 
           shape_pointer = line_end;
 
-          if (shape_pointer == shape_end)
+          if (shape_pointer == shape_end) {
             shape_pointer -= source_width * source_height;
+          }
         }
 
         LogicPage->Unlock();
@@ -3021,7 +3069,9 @@ long VQ_Call_Back(unsigned char*, long) {
 long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
 #ifdef PORTABLE
   // vsync while waiting for frame
-  if (event == VQAEVENT_SYNC) Video_End_Frame();
+  if (event == VQAEVENT_SYNC) {
+    Video_End_Frame();
+  }
 #endif
   return 0;
 }
@@ -3157,22 +3207,34 @@ void Handle_Team(int team, int action) {
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
-          if (obj->Group == team) obj->Group = -1;
-          if (obj->IsSelected) obj->Group = team;
+          if (obj->Group == team) {
+            obj->Group = -1;
+          }
+          if (obj->IsSelected) {
+            obj->Group = team;
+          }
         }
       }
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
-          if (obj->Group == team) obj->Group = -1;
-          if (obj->IsSelected) obj->Group = team;
+          if (obj->Group == team) {
+            obj->Group = -1;
+          }
+          if (obj->IsSelected) {
+            obj->Group = team;
+          }
         }
       }
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
-          if (obj->Group == team) obj->Group = -1;
-          if (obj->IsSelected) obj->Group = team;
+          if (obj->Group == team) {
+            obj->Group = -1;
+          }
+          if (obj->IsSelected) {
+            obj->Group = team;
+          }
         }
       }
       break;
@@ -3362,7 +3424,9 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
         ** Match the volume label to the list of known C&C volume labels.
         */
         for (int i = 0; i < num_volumes; i++) {
-          if (!stricmp(_volid[i], volume_name)) return (i);
+          if (!stricmp(_volid[i], volume_name)) {
+            return (i);
+          }
         }
       } else {
         if (count++) {
@@ -3376,7 +3440,9 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
       *return
       ** immediately if the error is ROR_NOT_READY
       */
-      if (GetLastError() != ROR_NOT_READY || !timer.Time()) return (-1);
+      if (GetLastError() != ROR_NOT_READY || !timer.Time()) {
+        return (-1);
+      }
     }
   } while (true);
 #endif
@@ -3423,7 +3489,9 @@ bool Force_CD_Available(int cd) {
   ** If the required CD is set to -2 then it means that the file is present
   ** on the local hard drive and we shouldn't have to worry about it.
   */
-  if (cd == -2) return true;
+  if (cd == -2) {
+    return true;
+  }
 
   /*
   ** Find out if the CD in the current drive is the one we are looking for
@@ -3506,7 +3574,9 @@ bool Force_CD_Available(int cd) {
       /*
       ** A new disc has become available so break
       */
-      if (new_cd_drive) break;
+      if (new_cd_drive) {
+        break;
+      }
 
       /*
       ** Increase the timeout for subsequent drive searches.
@@ -3558,7 +3628,9 @@ bool Force_CD_Available(int cd) {
         InMainLoop = old_in_main_loop;
         return false;
       }
-      while (hidden--) Hide_Mouse();
+      while (hidden--) {
+        Hide_Mouse();
+      }
       Set_Palette(_palette);
       Set_Font(font);
       Mem_Copy(_hold, Get_Font_Palette_Ptr(), 256);
@@ -3723,7 +3795,9 @@ static void Do_Record_Playback() {
       all objects as they're loaded.
       ..................................................................*/
       RecordFile.Read(&sum2, sizeof(sum2));
-      if (sum2 != sum) Unselect_All();
+      if (sum2 != sum) {
+        Unselect_All();
+      }
 
       AllowVoice = true;
 

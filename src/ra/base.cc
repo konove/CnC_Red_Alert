@@ -251,7 +251,9 @@ BuildingClass* BaseClass::Get_Building(int index) const {
   // Helper lambda to check if a candidate object matches our criteria.
   // Returns the cast pointer if successful, nullptr otherwise.
   auto check_candidate = [&](ObjectClass* candidate) -> BuildingClass* {
-    if (!candidate) return nullptr;
+    if (!candidate) {
+      return nullptr;
+    }
 
     // 1. Fast RTTI Check: Is it actually a building?
     if (candidate->What_Am_I() != RTTI_BUILDING) {

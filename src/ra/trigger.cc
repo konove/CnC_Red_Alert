@@ -193,8 +193,9 @@ TriggerClass::~TriggerClass() {
 
   if (GameActive && Class->House != HOUSE_NONE &&
       Class->Action1.Action == TACTION_ALLOWWIN) {
-    if (Houses.Ptr(Class->House)->Blockage)
+    if (Houses.Ptr(Class->House)->Blockage) {
       Houses.Ptr(Class->House)->Blockage--;
+    }
     Houses.Ptr(Class->House)->BorrowedTime = TICKS_PER_SECOND * 4;
   }
   ID = -1;
@@ -317,8 +318,12 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
     bool ok = false;
     HousesType hh = Class->House;
     if (Class->EventControl == MULTI_LINKED) {
-      if (e1 || forced) ok |= Class->Action1(hh, obj, ID, cell);
-      if (e2 && !forced) ok |= Class->Action2(hh, obj, ID, cell);
+      if (e1 || forced) {
+        ok |= Class->Action1(hh, obj, ID, cell);
+      }
+      if (e2 && !forced) {
+        ok |= Class->Action2(hh, obj, ID, cell);
+      }
     } else {
       switch (Class->ActionControl) {
         case MULTI_ONLY:
@@ -332,7 +337,9 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
           break;
       }
     }
-    if (!IsActive) return true;
+    if (!IsActive) {
+      return true;
+    }
 
     /*
     **	If at least one action was performed, then consider this
@@ -453,7 +460,9 @@ TARGET TriggerClass::As_Target() const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
-  if (!trigtype) return nullptr;
+  if (!trigtype) {
+    return nullptr;
+  }
 
   for (int index = 0; index < Triggers.Count(); index++) {
     if (trigtype == Triggers.Ptr(index)->Class) {

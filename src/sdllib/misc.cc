@@ -31,7 +31,9 @@ void Wait_Blit() {
 void Delay(int duration) {
   auto target = WindowsTimer->Get_System_Tick_Count() + duration;
 
-  while (WindowsTimer->Get_System_Tick_Count() < target) Video_End_Frame();
+  while (WindowsTimer->Get_System_Tick_Count() < target) {
+    Video_End_Frame();
+  }
 }
 
 void* Build_Fading_Table(const void* palette, void* dest, long int color,
@@ -46,7 +48,9 @@ void* Build_Fading_Table(const void* palette, void* dest, long int color,
 
   // If the source palette is NULL, then just return with current fading table
   // pointer.
-  if (!palette || !dest) return dest;
+  if (!palette || !dest) {
+    return dest;
+  }
 
   // Fractions above 255 become 255.
   frac = std::min<long>(frac, 255);

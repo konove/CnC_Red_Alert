@@ -169,7 +169,9 @@ int NullModemConnClass::Send(char* buf, int buflen) {
   /*------------------------------------------------------------------------
   Error if we haven't been properly initialized
   ------------------------------------------------------------------------*/
-  if (PortHandle == nullptr) return false;
+  if (PortHandle == nullptr) {
+    return false;
+  }
 
   /*------------------------------------------------------------------------
   Package the data into the Send Buffer

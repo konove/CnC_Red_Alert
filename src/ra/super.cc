@@ -154,7 +154,9 @@ bool SuperClass::Enable(bool onetime, bool player, bool quiet) {
     IsPresent = true;
     IsOneTime = onetime;
     bool retval = Recharge(player && !quiet);
-    if (quiet) Suspend(true);
+    if (quiet) {
+      Suspend(true);
+    }
     return retval;
   }
   return false;

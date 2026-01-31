@@ -139,33 +139,41 @@ int LZOStraw::Get(void* destbuf, int slen) {
       if (Control == DECOMPRESS) {
         memmove(destbuf, &Buffer[BlockHeader.UncompCount - Counter], len);
       } else {
-        memmove(
-            destbuf,
-            &Buffer2[BlockHeader.CompCount + sizeof(BlockHeader) - Counter],
-            len);
+        memmove(destbuf,
+                &Buffer2[BlockHeader.CompCount + sizeof(BlockHeader) - Counter],
+                len);
       }
       destbuf = static_cast<char*>(destbuf) + len;
       slen -= len;
       Counter -= len;
       total += len;
     }
-    if (slen == 0) break;
+    if (slen == 0) {
+      break;
+    }
 
     if (Control == DECOMPRESS) {
       int incount = Straw::Get(&BlockHeader, sizeof(BlockHeader));
-      if (incount != sizeof(BlockHeader)) break;
+      if (incount != sizeof(BlockHeader)) {
+        break;
+      }
 
       char* staging_buffer = new char[BlockHeader.CompCount];
       incount = Straw::Get(staging_buffer, BlockHeader.CompCount);
-      if (incount != BlockHeader.CompCount) break;
+      if (incount != BlockHeader.CompCount) {
+        break;
+      }
       unsigned int length = sizeof(Buffer);
       lzo1x_decompress((unsigned char*)staging_buffer, BlockHeader.CompCount,
                        (unsigned char*)Buffer, &length, nullptr);
       delete[] staging_buffer;
       Counter = BlockHeader.UncompCount;
     } else {
-      BlockHeader.UncompCount = static_cast<unsigned short>(Straw::Get(Buffer, BlockSize));
-      if (BlockHeader.UncompCount == 0) break;
+      BlockHeader.UncompCount =
+          static_cast<unsigned short>(Straw::Get(Buffer, BlockSize));
+      if (BlockHeader.UncompCount == 0) {
+        break;
+      }
       char* dictionary = new char[64 * 1024];
       unsigned int length = sizeof(Buffer2) - sizeof(BlockHeader);
       lzo1x_1_compress((unsigned char*)Buffer, BlockHeader.UncompCount,

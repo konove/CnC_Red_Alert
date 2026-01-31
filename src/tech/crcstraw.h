@@ -65,7 +65,6 @@ class CRCStraw : public Straw {
 
  protected:
   CrcEngine crc_;
-
 };
 
 #endif

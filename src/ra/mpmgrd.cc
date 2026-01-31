@@ -202,7 +202,9 @@ int MPlayerManClass::Create_Connection(int id, char* name, int address) {
 int MPlayerManClass::Delete_Connection(int id) {
   int i;
   int idx = Connection_Index(id);
-  if (idx == -1) return 0;
+  if (idx == -1) {
+    return 0;
+  }
 
   for (i = idx; i < _nConnections - 1; i++) {
     _Connections[i] = _Connections[i + 1];

@@ -212,7 +212,9 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (MissionControl[Mission].IsParalyzed) return;
+  if (MissionControl[Mission].IsParalyzed) {
+    return;
+  }
 
   if ((What_Am_I() != RTTI_UNIT ||
        !dynamic_cast<UnitClass*>(this)->IsDumping) &&
@@ -579,7 +581,9 @@ void DriveClass::Assign_Destination(TARGET target) {
   **	Abort early if there is anything wrong with the parameters
   **	or the unit already is assigned the specified destination.
   */
-  if (target == NavCom) return;
+  if (target == NavCom) {
+    return;
+  }
 
   /*
   **	For harvesting type vehicles, it might go into a dock and unload
@@ -663,7 +667,9 @@ bool DriveClass::While_Moving() {
   MPHType maxspeed = static_cast<MPHType>(std::min(
       Techno_Type_Class()->MaxSpeed * SpeedBias * House->GroundspeedBias,
       (int)MPH_LIGHT_SPEED));
-  if (IsFormationMove) maxspeed = FormationMaxSpeed;
+  if (IsFormationMove) {
+    maxspeed = FormationMaxSpeed;
+  }
 
   int actual;  // Working movement addition value.
   if (What_Am_I() == RTTI_UNIT &&
@@ -763,7 +769,9 @@ bool DriveClass::While_Moving() {
                 IsDriving = true;
                 Per_Cell_Process(PCP_END);
                 IsDriving = false;
-                if (!IsActive) return false;
+                if (!IsActive) {
+                  return false;
+                }
                 if (Start_Driver(c)) {
                   Set_Speed(oldspeed);
                   memmove(&Path[0], &Path[1], CONQUER_PATH_MAX - 1);
@@ -805,7 +813,9 @@ bool DriveClass::While_Moving() {
         */
         Mark(MARK_DOWN);
         Per_Cell_Process(PCP_END);
-        if (!IsActive) return false;
+        if (!IsActive) {
+          return false;
+        }
         Mark(MARK_UP);
 
         break;
@@ -956,7 +966,9 @@ bool DriveClass::Start_Of_Move() {
           Distance(NavCom) < Rule.CloseEnoughDistance &&
           (Mission == MISSION_MOVE || Mission == MISSION_GUARD_AREA)) {
         Assign_Destination(TARGET_NONE);
-        if (!IsActive) return false;
+        if (!IsActive) {
+          return false;
+        }
       } else {
         /*
         **	If a basic path could not be found, but the immediate move
@@ -990,8 +1002,12 @@ bool DriveClass::Start_Of_Move() {
           TryTryAgain--;
         } else {
           Assign_Destination(TARGET_NONE);
-          if (!IsActive) return false;
-          if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
+          if (!IsActive) {
+            return false;
+          }
+          if (IsNewNavCom) {
+            Sound_Effect(VOC_SCOLD);
+          }
           IsNewNavCom = false;
         }
       }
@@ -1004,7 +1020,9 @@ bool DriveClass::Start_Of_Move() {
       */
       if (!Target_Legal(NavCom) && Target_Legal(TarCom) && !In_Range(TarCom)) {
         IsScanLimited = true;
-        if (Team.Is_Valid()) Team->Scan_Limit();
+        if (Team.Is_Valid()) {
+          Team->Scan_Limit();
+        }
         Assign_Target(TARGET_NONE);
       }
 
@@ -1082,7 +1100,9 @@ bool DriveClass::Start_Of_Move() {
     if (Mission == MISSION_MOVE /*KO&& House->IsHuman */ &&
         Distance(NavCom) < Rule.CloseEnoughDistance) {
       Assign_Destination(TARGET_NONE);
-      if (!IsActive) return false;  // BG
+      if (!IsActive) {
+        return false;  // BG
+      }
     }
 
     /*
@@ -1123,7 +1143,9 @@ bool DriveClass::Start_Of_Move() {
         }
       }
     } else {
-      if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
+      if (IsNewNavCom) {
+        Sound_Effect(VOC_SCOLD);
+      }
     }
     IsNewNavCom = false;
     TrackNumber = -1;
@@ -1137,8 +1159,12 @@ bool DriveClass::Start_Of_Move() {
   speed = Ground[ground].Cost[Techno_Type_Class()->Speed] * 256;
 
   /* change speed if it's related to a team move */
-  if (IsFormationMove) speed = Ground[ground].Cost[FormationSpeed] * 256;
-  if (!speed) speed = 128;
+  if (IsFormationMove) {
+    speed = Ground[ground].Cost[FormationSpeed] * 256;
+  }
+  if (!speed) {
+    speed = 128;
+  }
 
 #ifdef NEVER
   /*
@@ -1176,7 +1202,9 @@ bool DriveClass::Start_Of_Move() {
     **	Determine which track to use (based on recorded path).
     */
     FacingType nextface = Path[1];
-    if (nextface == FACING_NONE) nextface = facing;
+    if (nextface == FACING_NONE) {
+      nextface = facing;
+    }
 
     IsOnShortTrack = false;
     TrackNumber = facing * FACING_COUNT + static_cast<int>(nextface);
@@ -1192,14 +1220,20 @@ bool DriveClass::Start_Of_Move() {
       */
       if (!Map[destcell].Goodie_Check(this)) {
         cando = MOVE_NO;
-        if (!IsActive) return false;
+        if (!IsActive) {
+          return false;
+        }
       } else {
-        if (!IsActive) return false;
+        if (!IsActive) {
+          return false;
+        }
         dest = Adjacent_Cell(dest, nextface);
         destcell = Coord_Cell(dest);
         cando = Can_Enter_Cell(destcell);
       }
-      if (!IsActive) return false;
+      if (!IsActive) {
+        return false;
+      }
 
       if (cando != MOVE_OK) {
         /*
@@ -1286,7 +1320,9 @@ void DriveClass::AI() {
   assert(IsActive);
 
   FootClass::AI();
-  if (!IsActive || Height > 0) return;
+  if (!IsActive || Height > 0) {
+    return;
+  }
 
   /*
   ** Is this a unit that's been teleported using the chronosphere, and if so,
@@ -1312,14 +1348,20 @@ void DriveClass::AI() {
     **	Perform the movement accumulation.
     */
     While_Moving();
-    if (!IsActive) return;
+    if (!IsActive) {
+      return;
+    }
     if (TrackNumber == -1 && (Target_Legal(NavCom) || Path[0] != FACING_NONE) &&
         (What_Am_I() != RTTI_UNIT ||
          !dynamic_cast<UnitClass*>(this)->IsDumping)) {
       Start_Of_Move();
-      if (!IsActive) return;
+      if (!IsActive) {
+        return;
+      }
       While_Moving();
-      if (!IsActive) return;
+      if (!IsActive) {
+        return;
+      }
     }
 
   } else {
@@ -1344,7 +1386,9 @@ void DriveClass::AI() {
 #endif
       if (!IsRotating) {
         Per_Cell_Process(PCP_ROTATION);
-        if (!IsActive) return;
+        if (!IsActive) {
+          return;
+        }
       }
 
     } else {
@@ -1367,9 +1411,13 @@ void DriveClass::AI() {
             Assign_Destination(TARGET_NONE);
           } else {
             Start_Of_Move();
-            if (!IsActive) return;
+            if (!IsActive) {
+              return;
+            }
             While_Moving();
-            if (!IsActive) return;
+            if (!IsActive) {
+              return;
+            }
           }
         } else {
           Stop_Driver();
@@ -1468,7 +1516,9 @@ void DriveClass::Fixup_Path(PathType* path) {
       PrimaryFacing.Difference(static_cast<DirType>(path->Command[0] << 5)) >>
       5;
 
-  if (!facediff) return;
+  if (!facediff) {
+    return;
+  }
 
   if (Dir_Facing(PrimaryFacing) & FACING_NE) {
     ptr = &_dpath[static_cast<FacingType>(std::abs(facediff)) - FACING_NE]
@@ -1606,7 +1656,9 @@ void DriveClass::Lay_Track() {
                                            TrackNW_SE, TrackN_S,   TrackNE_SW,
                                            TrackE_W,   TrackNW_SE};
 
-  if (!(ClassF & CLASSF_TRACKS)) return;
+  if (!(ClassF & CLASSF_TRACKS)) {
+    return;
+  }
 
   Icon_Install(Coord_Cell(Coord), _trackdirs[Facing_To_8(BodyFacing)]);
 #endif

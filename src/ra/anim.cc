@@ -115,7 +115,9 @@
  *=============================================================================================*/
 AnimType Anim_From_Name(const char* name) {
 #ifdef VIC
-  if (name == nullptr) return ANIM_NONE;
+  if (name == nullptr) {
+    return ANIM_NONE;
+  }
 
   for (AnimType anim = ANIM_FIRST; anim < ANIM_COUNT; anim++) {
     if (stricmp(AnimTypeClass::As_Reference(anim).IniName, name) == 0) {
@@ -243,7 +245,9 @@ bool AnimClass::Render(bool forced)  // const
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
-  if (Delay) return false;
+  if (Delay) {
+    return false;
+  }
   if (Map[Center_Coord()].IsVisible) {
     IsToDisplay = true;
   }
@@ -288,18 +292,24 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	If the translucent table hasn't been determined yet, then check
       *to see if it *	should use the white or normal translucent tables.
       */
-      if (transtable == nullptr && Class->IsWhiteTrans)
+      if (transtable == nullptr && Class->IsWhiteTrans) {
         transtable = DisplayClass::WhiteTranslucentTable;
-      if (transtable == nullptr && Class->IsTranslucent)
+      }
+      if (transtable == nullptr && Class->IsTranslucent) {
         transtable = DisplayClass::TranslucentTable;
-      if (Class->Type == ANIM_ATOM_BLAST) transtable = MouseClass::UnitShadow;
+      }
+      if (Class->Type == ANIM_ATOM_BLAST) {
+        transtable = MouseClass::UnitShadow;
+      }
 
       /*
       **	Set the shape flags to properly take into account any fading or
       *ghosting *	table necessary.
       */
       ShapeFlags_Type flags = SHAPE_CENTER | SHAPE_WIN_REL;
-      if (transtable != nullptr) flags = flags | SHAPE_GHOST;
+      if (transtable != nullptr) {
+        flags = flags | SHAPE_GHOST;
+      }
 
       /*
       **	Draw the animation shape.
@@ -608,8 +618,9 @@ AnimClass::~AnimClass() {
       */
       int index;
       for (index = 0; index < Anims.Count(); index++) {
-        if (Anims.Ptr(index) != this && Anims.Ptr(index)->xObject == xObject)
+        if (Anims.Ptr(index) != this && Anims.Ptr(index)->xObject == xObject) {
           break;
+        }
       }
 
       /*
@@ -772,7 +783,9 @@ void AnimClass::AI() {
         *then start the loop *	but if not, then proceed into the animation
         *termination handler.
         */
-        if (Loops) Loops--;
+        if (Loops) {
+          Loops--;
+        }
         if (Loops) {
           Set_Stage(Class->LoopStart);
         } else {
@@ -835,7 +848,9 @@ void AnimClass::Attach_To(ObjectClass* obj) {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
-  if (obj == nullptr) return;
+  if (obj == nullptr) {
+    return;
+  }
   assert(obj->IsActive);
 
   obj->Mark(MARK_OVERLAP_UP);
@@ -1091,7 +1106,9 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
       }
     }
 
-    if (building == nullptr) building = dynamic_cast<BuildingClass*>(backup);
+    if (building == nullptr) {
+      building = dynamic_cast<BuildingClass*>(backup);
+    }
   }
 
   int radius;

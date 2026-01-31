@@ -218,7 +218,9 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         sprintf(szText, TXT_WOL_DOWNLOADTIME, pDownloadSink->iTimeLeft / 60,
                 pDownloadSink->iTimeLeft % 60);
         StatTime.Set_Text(szText);
-        if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+        if (display < REDRAW_BUTTONS) {
+          display = REDRAW_BUTTONS;
+        }
       }
       if (pDownloadSink->bFlagStatusUpdate) {
         pDownloadSink->bFlagStatusUpdate = false;
@@ -240,14 +242,18 @@ bool WOL_Download_Dialog(IDownload* pDownload,
             // update!\n" );
             break;
         }
-        if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+        if (display < REDRAW_BUTTONS) {
+          display = REDRAW_BUTTONS;
+        }
       }
       if (pDownloadSink->bFlagQueryResume) {
         if (pDownloadSink->bResumed) {
           char szTitleNew[200];
           sprintf(szTitleNew, TXT_WOL_DOWNLOADRESUMED, szTitle);
           StatTitle.Set_Text(szTitleNew);
-          if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+          if (display < REDRAW_BUTTONS) {
+            display = REDRAW_BUTTONS;
+          }
         }
       }
 

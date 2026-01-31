@@ -165,7 +165,9 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
   ........................................................................*/
   NumConnections = 0;
   CurConnection = 0;
-  for (i = 0; i < CONNECT_MAX; i++) Connection[i] = nullptr;
+  for (i = 0; i < CONNECT_MAX; i++) {
+    Connection[i] = nullptr;
+  }
   GlobalChannel = nullptr;
 
   SendOverflows = 0;
@@ -304,7 +306,9 @@ int IPXManagerClass::Init() {
     /*------------------------------------------------------------------------
     Allocate real-mode memory
     ------------------------------------------------------------------------*/
-    if (!Alloc_RealMode_Mem()) return false;
+    if (!Alloc_RealMode_Mem()) {
+      return false;
+    }
     RealMemAllocd = 1;
   }
 
@@ -313,7 +317,9 @@ int IPXManagerClass::Init() {
   ------------------------------------------------------------------------*/
   GlobalChannel = new IPXGlobalConnClass(Glb_NumPackets, Glb_NumPackets,
                                          Glb_MaxPacketLen, ProductID);
-  if (!GlobalChannel) return false;
+  if (!GlobalChannel) {
+    return false;
+  }
   GlobalChannel->Init();
   GlobalChannel->Set_Retry_Delta(RetryDelta);
   GlobalChannel->Set_Max_Retries(MaxRetries);
@@ -330,7 +336,9 @@ int IPXManagerClass::Init() {
   Start Listening
   ------------------------------------------------------------------------*/
   if (!(GameToPlay == GAME_INTERNET)) {
-    if (!IPXConnClass::Start_Listening()) return false;
+    if (!IPXConnClass::Start_Listening()) {
+      return false;
+    }
   }
 
   Listening = 1;
@@ -451,12 +459,16 @@ bool IPXManagerClass::Create_Connection(int id, char* name,
   /*
   ----------------------- Error if IPX not installed -----------------------
   */
-  if (!IPXStatus) return false;
+  if (!IPXStatus) {
+    return false;
+  }
 
   /*
   ------------------------- Error if no more room --------------------------
   */
-  if (NumConnections == CONNECT_MAX) return false;
+  if (NumConnections == CONNECT_MAX) {
+    return false;
+  }
 
   /*
   ------------------------- Create new connection --------------------------
@@ -464,7 +476,9 @@ bool IPXManagerClass::Create_Connection(int id, char* name,
   Connection[NumConnections] =
       new IPXConnClass(Pvt_NumPackets, Pvt_NumPackets, Pvt_MaxPacketLen,
                        ProductID, address, id, name);
-  if (!Connection[NumConnections]) return false;
+  if (!Connection[NumConnections]) {
+    return false;
+  }
 
   Connection[NumConnections]->Init();
   Connection[NumConnections]->Set_Retry_Delta(RetryDelta);
@@ -501,12 +515,16 @@ bool IPXManagerClass::Delete_Connection(int id) {
   /*
   ----------------------- Error if IPX not installed -----------------------
   */
-  if (!IPXStatus) return false;
+  if (!IPXStatus) {
+    return false;
+  }
 
   /*
   ------------------- Error if no connections to delete --------------------
   */
-  if (NumConnections == 0) return false;
+  if (NumConnections == 0) {
+    return false;
+  }
 
   /*
   ---------------------- Loop through all connections ----------------------
@@ -527,7 +545,9 @@ bool IPXManagerClass::Delete_Connection(int id) {
       ......................... Adjust counters ..........................
       */
       NumConnections--;
-      if (CurConnection >= NumConnections) CurConnection = 0;
+      if (CurConnection >= NumConnections) {
+        CurConnection = 0;
+      }
       return true;
     }
   }
@@ -687,7 +707,9 @@ int IPXManagerClass::Connection_Index(int id) {
   int i;
 
   for (i = 0; i < NumConnections; i++) {
-    if (Connection[i]->ID == id) return i;
+    if (Connection[i]->ID == id) {
+      return i;
+    }
   }
 
   return IPXConnClass::CONNECTION_NONE;
@@ -723,10 +745,14 @@ int IPXManagerClass::Send_Global_Message(void* buf, int buflen, int ack_req,
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
-  if (!IPXStatus || !Listening) return false;
+  if (!IPXStatus || !Listening) {
+    return false;
+  }
 
   rc = GlobalChannel->Send_Packet(buf, buflen, address, ack_req);
-  if (!rc) SendOverflows++;
+  if (!rc) {
+    SendOverflows++;
+  }
 
   return rc;
 }
@@ -759,7 +785,9 @@ int IPXManagerClass::Get_Global_Message(void* buf, int* buflen,
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
-  if (!IPXStatus || !Listening) return false;
+  if (!IPXStatus || !Listening) {
+    return false;
+  }
 
   return GlobalChannel->Get_Packet(buf, buflen, address, product_id);
 }
@@ -794,7 +822,9 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
-  if (!IPXStatus || !Listening || NumConnections == 0) return false;
+  if (!IPXStatus || !Listening || NumConnections == 0) {
+    return false;
+  }
 
   /*------------------------------------------------------------------------
   Send the message to all connections
@@ -914,7 +944,9 @@ int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
-  if (!IPXStatus || !Listening || NumConnections == 0) return false;
+  if (!IPXStatus || !Listening || NumConnections == 0) {
+    return false;
+  }
 
 #ifdef VIRTUAL_SUBNET_SERVER
   if (Winsock.Get_Connected()) {
@@ -926,11 +958,12 @@ int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
   Safety check: ensure CurConnection is in range.
   ------------------------------------------------------------------------*/
 #ifdef VIRTUAL_SUBNET_SERVER
-  if (CurConnection >= NumConnections - vss)
+  if (CurConnection >= NumConnections - vss) {
 #else   // VIRTUAL_SUBNET_SERVER
-  if (CurConnection >= NumConnections)
+  if (CurConnection >= NumConnections) {
 #endif  // VIRTUAL_SUBNET_SERVER
     CurConnection = 0;
+  }
 
   /*------------------------------------------------------------------------
   Scan all connections for a received packet, starting with 'CurConnection'
@@ -951,11 +984,12 @@ int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
     .....................................................................*/
     CurConnection++;
 #ifdef VIRTUAL_SUBNET_SERVER
-    if (CurConnection >= NumConnections - vss)
+    if (CurConnection >= NumConnections - vss) {
 #else   // VIRTUAL_SUBNET_SERVER
-    if (CurConnection >= NumConnections)
+    if (CurConnection >= NumConnections) {
 #endif  // VIRTUAL_SUBNET_SERVER
       CurConnection = 0;
+    }
 
     /*.....................................................................
     If we got a packet, return the connection ID
@@ -1055,8 +1089,9 @@ int IPXManagerClass::Service() {
         /*..................................................................
         Put the packet in the Global Queue
         ..................................................................*/
-        if (!GlobalChannel->Receive_Packet(packet, packetlen, &address))
+        if (!GlobalChannel->Receive_Packet(packet, packetlen, &address)) {
           ReceiveOverflows++;
+        }
       } else {
         if (packet->MagicNumber == ProductID) {
           /*..................................................................
@@ -1069,8 +1104,9 @@ int IPXManagerClass::Service() {
 #else   // VIRTUAL_SUBNET_SERVER
             if (Connection[i]->Address == address) {
 #endif  // VIRTUAL_SUBNET_SERVER
-              if (!Connection[i]->Receive_Packet(packet, packetlen))
+              if (!Connection[i]->Receive_Packet(packet, packetlen)) {
                 ReceiveOverflows++;
+              }
               break;
             }
           }
@@ -1104,8 +1140,9 @@ int IPXManagerClass::Service() {
         /*..................................................................
         Put the packet in the Global Queue
         ..................................................................*/
-        if (!GlobalChannel->Receive_Packet(packet, packetlen, &address))
+        if (!GlobalChannel->Receive_Packet(packet, packetlen, &address)) {
           ReceiveOverflows++;
+        }
       } else {
         if (packet->MagicNumber == ProductID) {
           /*..................................................................
@@ -1113,8 +1150,9 @@ int IPXManagerClass::Service() {
           ..................................................................*/
           for (i = 0; i < NumConnections; i++) {
             if (Connection[i]->Address == address) {
-              if (!Connection[i]->Receive_Packet(packet, packetlen))
+              if (!Connection[i]->Receive_Packet(packet, packetlen)) {
                 ReceiveOverflows++;
+              }
               break;
             }
           }
@@ -1130,7 +1168,9 @@ int IPXManagerClass::Service() {
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
-  if (!IPXStatus || !Listening) return (false);
+  if (!IPXStatus || !Listening) {
+    return (false);
+  }
 
   /*------------------------------------------------------------------------
   Loop until there are no more packets to process.
@@ -1140,7 +1180,9 @@ int IPXManagerClass::Service() {
     Check the BufferFlags for the "current" buffer; if it's empty,
     break; out of the loop.
     .....................................................................*/
-    if (BufferFlags[CurIndex] == 0) break;
+    if (BufferFlags[CurIndex] == 0) {
+      break;
+    }
 
     /*.....................................................................
     Compute the length of the packet (byte-swap the length in the IPX hdr)
@@ -1163,8 +1205,9 @@ int IPXManagerClass::Service() {
       /*..................................................................
       Put the packet in the Global Queue
       ..................................................................*/
-      if (!GlobalChannel->Receive_Packet(packet, packetlen, &address))
+      if (!GlobalChannel->Receive_Packet(packet, packetlen, &address)) {
         ReceiveOverflows++;
+      }
     } else {
       if (packet->MagicNumber == ProductID) {
         /*..................................................................
@@ -1172,8 +1215,9 @@ int IPXManagerClass::Service() {
         ..................................................................*/
         for (i = 0; i < NumConnections; i++) {
           if (Connection[i]->Address == address) {
-            if (!Connection[i]->Receive_Packet(packet, packetlen))
+            if (!Connection[i]->Receive_Packet(packet, packetlen)) {
               ReceiveOverflows++;
+            }
             break;
           }
         }
@@ -1225,7 +1269,9 @@ int IPXManagerClass::Service() {
     }
   }
 
-  if (rc) BadConnection = IPXConnClass::CONNECTION_NONE;
+  if (rc) {
+    BadConnection = IPXConnClass::CONNECTION_NONE;
+  }
 
   return rc;
 
@@ -1277,7 +1323,9 @@ int IPXManagerClass::Global_Num_Send() {
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
-  if (!IPXStatus || !Listening) return 0;
+  if (!IPXStatus || !Listening) {
+    return 0;
+  }
 
   return GlobalChannel->Queue->Num_Send();
 
@@ -1306,7 +1354,9 @@ int IPXManagerClass::Global_Num_Receive() {
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
-  if (!IPXStatus || !Listening) return 0;
+  if (!IPXStatus || !Listening) {
+    return 0;
+  }
 
   return GlobalChannel->Queue->Num_Receive();
 
@@ -1337,7 +1387,9 @@ int IPXManagerClass::Private_Num_Send(int id) {
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
-  if (!IPXStatus || !Listening || NumConnections == 0) return false;
+  if (!IPXStatus || !Listening || NumConnections == 0) {
+    return false;
+  }
 
   /*------------------------------------------------------------------------
   If connection ID specified, return that connection's # of packets
@@ -1385,7 +1437,9 @@ int IPXManagerClass::Private_Num_Receive(int id) {
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
-  if (!IPXStatus || !Listening || NumConnections == 0) return 0;
+  if (!IPXStatus || !Listening || NumConnections == 0) {
+    return 0;
+  }
 
   /*------------------------------------------------------------------------
   If connection ID specified, return that connection's # of packets
@@ -1526,7 +1580,9 @@ void IPXManagerClass::Reset_Response_Time() {
     Connection[i]->Queue->Reset_Response_Time();
   }
 
-  if (GlobalChannel) GlobalChannel->Queue->Reset_Response_Time();
+  if (GlobalChannel) {
+    GlobalChannel->Queue->Reset_Response_Time();
+  }
 
 } /* end of Reset_Response_Time */
 
@@ -1679,10 +1735,11 @@ void IPXManagerClass::Mono_Debug_Print(int /*index*/, int /*refresh*/) {
   char txt[80];
   int i;
 
-  if (index == -1)
+  if (index == -1) {
     GlobalChannel->Queue->Mono_Debug_Print(refresh);
-  else if (Connection[index])
+  } else if (Connection[index]) {
     Connection[index]->Queue->Mono_Debug_Print(refresh);
+  }
 
   if (refresh) {
     Mono_Set_Cursor(20, 1);
@@ -1763,8 +1820,9 @@ int IPXManagerClass::Alloc_RealMode_Mem() {
   NumBufs = Glb_NumPackets + (Pvt_NumPackets * CONNECT_MAX);
 
   PacketLen = Glb_MaxPacketLen + sizeof(GlobalHeaderType);
-  if (Pvt_MaxPacketLen + sizeof(CommHeaderType) > PacketLen)
+  if (Pvt_MaxPacketLen + sizeof(CommHeaderType) > PacketLen) {
     PacketLen = Pvt_MaxPacketLen + sizeof(CommHeaderType);
+  }
 
   FullPacketLen = PacketLen + sizeof(IPXHeaderType);
 
@@ -1786,7 +1844,9 @@ int IPXManagerClass::Alloc_RealMode_Mem() {
          sizeof(ECBType) +            // SendECB
          FullPacketLen +              // SendHeader & SendBuf
          NumBufs;                     // BufferFlags
-  if (size > 65535) return (false);
+  if (size > 65535) {
+    return (false);
+  }
 
   /*------------------------------------------------------------------------
   Allocate DOS memory for the ECB, IPXHeader & packet buffers:
@@ -1898,7 +1958,9 @@ int IPXManagerClass::Alloc_RealMode_Mem() {
   /*------------------------------------------------------------------------
   Init state of all buffers to empty
   ------------------------------------------------------------------------*/
-  for (i = 0; i < NumBufs; i++) BufferFlags[i] = 0;
+  for (i = 0; i < NumBufs; i++) {
+    BufferFlags[i] = 0;
+  }
 
   /*------------------------------------------------------------------------
   Check the start & end markers in the real-mode memory area

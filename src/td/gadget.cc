@@ -462,7 +462,9 @@ KeyNumType GadgetClass::Input() {
         } else {
           sprintf(filename, "scrsht%d.pcx", lp);
         }
-        if (access(filename, F_OK) == -1) break;
+        if (access(filename, F_OK) == -1) {
+          break;
+        }
       }
 
       Write_PCX_File(filename, temp_page, (unsigned char*)CurrentPalette);
@@ -761,7 +763,9 @@ int GadgetClass::Is_List_To_Redraw() {
   GadgetClass* gadget = this;
 
   while (gadget != nullptr) {
-    if (gadget->IsToRepaint) return true;
+    if (gadget->IsToRepaint) {
+      return true;
+    }
     gadget = gadget->Get_Next();
   }
   return false;

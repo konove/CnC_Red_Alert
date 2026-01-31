@@ -423,7 +423,9 @@ void RadarClass::Draw_It(bool forced) {
   /*
   **	Don't perform any rendering if none is requested.
   */
-  if (!forced && !IsToRedraw && !FullRedraw) return;
+  if (!forced && !IsToRedraw && !FullRedraw) {
+    return;
+  }
 
   BStart(BENCH_RADAR);
 
@@ -541,11 +543,15 @@ void RadarClass::Draw_It(bool forced) {
                   if ((*this)[cell].IsPlot) {
                     PixelStack[PixelPtr++] = cell;
                     IsToRedraw = true;
-                    if (PixelPtr == PIXELSTACK) break;
+                    if (PixelPtr == PIXELSTACK) {
+                      break;
+                    }
                   }
                 }
               }
-              if (PixelPtr == PIXELSTACK) break;
+              if (PixelPtr == PIXELSTACK) {
+                break;
+              }
             }
           } else {
             PixelPtr = 0;
@@ -673,8 +679,9 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   ** If the cell is occupied by a terrain type, add it to the sortable
   ** list.
   */
-  if (obj && obj->What_Am_I() == RTTI_TERRAIN)
+  if (obj && obj->What_Am_I() == RTTI_TERRAIN) {
     list[listidx++] = dynamic_cast<TerrainClass*>(obj);
+  }
 
   /*
   ** Now loop through all the occupiers and add them to the list if they
@@ -682,14 +689,17 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   */
   for (lp = 0; lp < ARRAY_SIZE(Map[cell].Overlappers); lp++) {
     obj = Map[cell].Overlappers[lp];
-    if (obj && obj->What_Am_I() == RTTI_TERRAIN)
+    if (obj && obj->What_Am_I() == RTTI_TERRAIN) {
       list[listidx++] = dynamic_cast<TerrainClass*>(obj);
+    }
   }
 
   /*
   ** If there are no entries in our list then just get out.
   */
-  if (!listidx) return;
+  if (!listidx) {
+    return;
+  }
 
   /*
   **	If there is terrain in this cell then draw a dark pixel to
@@ -720,7 +730,9 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   */
   for (lp = 0; lp < listidx; lp++) {
     unsigned char* icon = list[lp]->Radar_Icon(cell);
-    if (!icon) continue;
+    if (!icon) {
+      continue;
+    }
     Buffer_To_Page(0, 0, 3, 3, icon, _IconStage);
     _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
                      (char*)&FadingBrighten[0]);
@@ -817,7 +829,9 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
 
     if (otype->IsRadarVisible) {
       unsigned char* icon = otype->Radar_Icon((*this)[cell].OverlayData);
-      if (!icon) return;
+      if (!icon) {
+        return;
+      }
 #ifdef WIN32
       Buffer_To_Page(0, 0, 3, 3, icon, _IconStage);
       if (otype->IsTiberium) {
@@ -839,7 +853,9 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
 #else
       for (int lpy = 0; lpy < size; lpy++) {
         for (int lpx = 0; lpx < size; lpx++) {
-          if (size == 1) icon += 4;
+          if (size == 1) {
+            icon += 4;
+          }
           if (*icon) {
             if (otype->IsTiberium) {
               if (size == 1) {
@@ -1018,7 +1034,9 @@ bool RadarClass::Is_Zoomable() const {
  *   04/17/1995 PWG : Created. * 04/18/1995 PWG : Created. *
  *=============================================================================================*/
 void RadarClass::Plot_Radar_Pixel(CELL cell) {
-  if (cell == -1) cell = 1;
+  if (cell == -1) {
+    cell = 1;
+  }
 
   int x, y;  // Coordinate of cell location.
 
@@ -1187,7 +1205,9 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) const {
   /*
   ** If radar is not active the click could have been on a radar point
   */
-  if (!IsRadarActive || !Map.IsSidebarActive) return 0;
+  if (!IsRadarActive || !Map.IsSidebarActive) {
+    return 0;
+  }
 
   x -= RadX + RadOffX;
   y -= RadY + RadOffY;
@@ -1382,7 +1402,9 @@ void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y) {
 bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
   unsigned short jam = 1 << house->Class->House;
   (*this)[cell].Jammed |= jam;
-  if (house != PlayerPtr) Shroud_Cell(cell /*KO, shadeit*/);
+  if (house != PlayerPtr) {
+    Shroud_Cell(cell /*KO, shadeit*/);
+  }
   Radar_Pixel(cell);
   return true;
 }
@@ -1453,8 +1475,9 @@ void RadarClass::Radar_Cursor(int forced) {
   ** just skip the redraw process.
   */
   if (tac_cell != -1 && _last_pos == tac_cell &&
-      _last_frame == SpecialRadarFrame && !forced)
+      _last_frame == SpecialRadarFrame && !forced) {
     return;
+  }
 
   if (_last_pos != -1) {
     /*
@@ -1562,9 +1585,13 @@ void RadarClass::Radar_Anim() {
   /*
   ** Do nothing if we're in player-name mode
   */
-  if (IsPlayerNames) return;
+  if (IsPlayerNames) {
+    return;
+  }
 
-  if (!Map.IsSidebarActive) return;
+  if (!Map.IsSidebarActive) {
+    return;
+  }
 
 #ifdef WIN32
   GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
@@ -1969,8 +1996,12 @@ void RadarClass::Set_Radar_Position(CELL cell) {
       int radw = RadarCellWidth - std::abs(radx);   // Replicable width.
       int radh = RadarCellHeight - std::abs(rady);  // Replicable height.
 
-      if (radw < 1) forced = true;
-      if (radh < 1) forced = true;
+      if (radw < 1) {
+        forced = true;
+      }
+      if (radh < 1) {
+        forced = true;
+      }
 
       if (!forced && (radw != RadarWidth || radh != RadarHeight)) {
         /*
@@ -2193,7 +2224,9 @@ void RadarClass::Set_Tactical_Position(COORDINATE coord) {
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::Cell_On_Radar(CELL cell) {
-  if (static_cast<unsigned>(cell) > MAP_CELL_TOTAL) return false;
+  if (static_cast<unsigned>(cell) > MAP_CELL_TOTAL) {
+    return false;
+  }
 
   if (!IsZoomed) {
     return true;
@@ -2443,7 +2476,9 @@ void RadarClass::Draw_Names() {
        house++) {
     ptr = HouseClass::As_Pointer(house);
 
-    if (!ptr) continue;
+    if (!ptr) {
+      continue;
+    }
 
     /*
     **	Decode this house's color
@@ -2561,7 +2596,9 @@ bool RadarClass::Is_Radar_Existing() {
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::Get_Jammed() {
-  if (PlayerPtr->IsGPSActive) return false;
+  if (PlayerPtr->IsGPSActive) {
+    return false;
+  }
   return IsRadarJammed;
 }
 

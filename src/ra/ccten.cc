@@ -365,7 +365,9 @@ void Destroy_TEN_Connection(int /*id*/, int /*error*/) {
   //	Do nothing if the house isn't human.
   //------------------------------------------------------------------------
   housep = HouseClass::As_Pointer((HousesType)id);
-  if (!housep || !housep->IsHuman) return;
+  if (!housep || !housep->IsHuman) {
+    return;
+  }
 
   /*------------------------------------------------------------------------
   Create a message to display to the user

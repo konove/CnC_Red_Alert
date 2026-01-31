@@ -232,11 +232,13 @@ int GaugeClass::Draw_Me(int forced) {
       int middle = Value_To_Pixel(CurValue);
       int color = Get_Color_Scheme()->Bright;
       if (IsHorizontal) {
-        if (middle >= X + 1)
+        if (middle >= X + 1) {
           LogicPage->Fill_Rect(X + 1, Y + 1, middle, Y + Height - 2, color);
+        }
       } else {
-        if (middle >= Y + 1)
+        if (middle >= Y + 1) {
           LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, middle, color);
+        }
       }
     }
 

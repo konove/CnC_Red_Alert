@@ -136,8 +136,9 @@ void DriveClass::Do_Turn(DirType dir) {
     } else {
       PrimaryFacing.Set_Desired(dir);
       if (Special.IsJurassic && AreThingiesEnabled &&
-          What_Am_I() == RTTI_UNIT && this->Class->IsPieceOfEight)
+          What_Am_I() == RTTI_UNIT && this->Class->IsPieceOfEight) {
         PrimaryFacing.Set_Current(dir);
+      }
     }
   }
 }
@@ -296,7 +297,9 @@ void DriveClass::Overrun_Square(CELL cell, bool threaten) {
           object = object->Next;
         }
       }
-      if (crushed) Do_Uncloak();
+      if (crushed) {
+        Do_Uncloak();
+      }
     }
   }
 }
@@ -485,7 +488,9 @@ void DriveClass::Assign_Destination(TARGET target) {
   **	Abort early if there is anything wrong with the parameters
   **	or the unit already is assigned the specified destination.
   */
-  if (target == NavCom) return;
+  if (target == NavCom) {
+    return;
+  }
 
 #ifdef NEVER
   UnitClass* tunit;  // Destination unit pointer.
@@ -934,7 +939,9 @@ bool DriveClass::Start_Of_Move() {
           TryTryAgain--;
         } else {
           Assign_Destination(kTargetNone);
-          if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
+          if (IsNewNavCom) {
+            Sound_Effect(VOC_SCOLD);
+          }
           IsNewNavCom = false;
         }
       }
@@ -1058,7 +1065,9 @@ bool DriveClass::Start_Of_Move() {
         }
       }
     } else {
-      if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
+      if (IsNewNavCom) {
+        Sound_Effect(VOC_SCOLD);
+      }
     }
     IsNewNavCom = false;
     TrackNumber = -1;
@@ -1070,7 +1079,9 @@ bool DriveClass::Start_Of_Move() {
   */
   ground = Map[destcell].Land_Type();
   speed = Ground[ground].Cost[Class->Speed];
-  if (!speed) speed = 128;
+  if (!speed) {
+    speed = 128;
+  }
 
 #ifdef NEVER
   /*
@@ -1121,7 +1132,9 @@ bool DriveClass::Start_Of_Move() {
     **	Determine which track to use (based on recorded path).
     */
     FacingType nextface = Path[1];
-    if (nextface == FACING_NONE) nextface = facing;
+    if (nextface == FACING_NONE) {
+      nextface = facing;
+    }
 
     IsOnShortTrack = false;
     TrackNumber = facing * FACING_COUNT + nextface;
@@ -1239,11 +1252,15 @@ void DriveClass::AI() {
     **	Perform the movement accumulation.
     */
     While_Moving();
-    if (!IsActive) return;
+    if (!IsActive) {
+      return;
+    }
     if (TrackNumber == -1 && (Target_Legal(NavCom) || Path[0] != FACING_NONE)) {
       Start_Of_Move();
       While_Moving();
-      if (!IsActive) return;
+      if (!IsActive) {
+        return;
+      }
     }
 
   } else {
@@ -1259,7 +1276,9 @@ void DriveClass::AI() {
       }
       if (!IsRotating) {
         Per_Cell_Process(true);
-        if (!IsActive) return;
+        if (!IsActive) {
+          return;
+        }
       }
 
     } else {
@@ -1272,7 +1291,9 @@ void DriveClass::AI() {
         if (Target_Legal(NavCom) || Path[0] != FACING_NONE) {
           Start_Of_Move();
           While_Moving();
-          if (!IsActive) return;
+          if (!IsActive) {
+            return;
+          }
         } else {
           Stop_Driver();
         }
@@ -1363,7 +1384,9 @@ void DriveClass::Fixup_Path(PathType* path) {
       PrimaryFacing.Difference(static_cast<DirType>(path->Command[0] << 5)) >>
       5;
 
-  if (!facediff) return;
+  if (!facediff) {
+    return;
+  }
 
   if (Dir_Facing(PrimaryFacing) & FACING_NE) {
     ptr = &_dpath[static_cast<FacingType>(std::abs(facediff)) - FACING_NE]
@@ -1499,7 +1522,9 @@ void DriveClass::Lay_Track() {
                                            TrackNW_SE, TrackN_S,   TrackNE_SW,
                                            TrackE_W,   TrackNW_SE};
 
-  if (!(ClassF & CLASSF_TRACKS)) return;
+  if (!(ClassF & CLASSF_TRACKS)) {
+    return;
+  }
 
   Icon_Install(Coord_Cell(Coord), _trackdirs[Facing_To_8(BodyFacing)]);
 #endif

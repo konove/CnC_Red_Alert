@@ -2175,7 +2175,7 @@ static const AnimTypeClass ChemBall(
     VOC_FLAMER1,     // Sound effect to play.
     ANIM_NONE);
 
-const AnimTypeClass *const AnimTypeClass::Pointers[ANIM_COUNT] = {
+const AnimTypeClass* const AnimTypeClass::Pointers[ANIM_COUNT] = {
     &FBall1,       &Grenade,      &Frag1,        &Frag3,        &VehHit1,
     &VehHit2,      &VehHit3,      &ArtExp1,      &Napalm1,      &Napalm2,
     &Napalm3,      &SmokePuff,    &Piff,         &PiffPiff,     &FlameN,
@@ -2214,7 +2214,7 @@ const AnimTypeClass *const AnimTypeClass::Pointers[ANIM_COUNT] = {
  *                                                                                             *
  * HISTORY: * 08/23/1994 JLB : Created. *
  *=============================================================================================*/
-AnimTypeClass::AnimTypeClass(AnimType anim, const char *name, int size,
+AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
                              int biggest, bool isnormal, bool iswhitetrans,
                              bool isscorcher, bool iscrater, bool issticky,
                              bool ground, bool istrans, bool isflame,
@@ -2267,9 +2267,9 @@ void AnimTypeClass::One_Time() {
 
     RawFileClass file(fullname.c_str());
     if (file.Is_Available()) {
-      (const void *&)As_Reference(index).ImageData = Load_Alloc_Data(file);
+      (const void*&)As_Reference(index).ImageData = Load_Alloc_Data(file);
     } else {
-      (const void *&)As_Reference(index).ImageData =
+      (const void*&)As_Reference(index).ImageData =
           MixFileClass::Retrieve(fullname.c_str());
     }
   }

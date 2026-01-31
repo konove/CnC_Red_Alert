@@ -1614,7 +1614,9 @@ BuildingClass* UnitTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         1L << building->ActLike & Ownable &&
         (!legal || building->House->Can_Build(Type, building->ActLike)) &&
         (intheory || !building->In_Radio_Contact())) {
-      if (building->IsLeader) return building;
+      if (building->IsLeader) {
+        return building;
+      }
       anybuilding = building;
     }
   }

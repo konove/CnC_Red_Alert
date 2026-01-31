@@ -90,13 +90,17 @@
  *=============================================================================================*/
 int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
                   int distance) {
-  if (!damage) return damage;
+  if (!damage) {
+    return damage;
+  }
 
   /*
   **	If there is no raw damage value to start with, then
   **	there can be no modified damage either.
   */
-  if (Special.IsInert || !damage || warhead == WARHEAD_NONE) return 0;
+  if (Special.IsInert || !damage || warhead == WARHEAD_NONE) {
+    return 0;
+  }
 
   /*
   **	Negative damage (i.e., heal) is always applied full strength, but only
@@ -104,8 +108,12 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   */
   if (damage < 0) {
     if (distance < 0x008) {
-      if (warhead != WARHEAD_MECHANICAL && armor == ARMOR_NONE) return damage;
-      if (warhead == WARHEAD_MECHANICAL && armor != ARMOR_NONE) return damage;
+      if (warhead != WARHEAD_MECHANICAL && armor == ARMOR_NONE) {
+        return damage;
+      }
+      if (warhead == WARHEAD_MECHANICAL && armor != ARMOR_NONE) {
+        return damage;
+      }
     }
     return 0;
   }
@@ -181,14 +189,18 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   int range;                 // Damage effect radius.
   int count;                 // Number of vehicle IDs in list.
 
-  if (!strength || Special.IsInert || warhead == WARHEAD_NONE) return;
+  if (!strength || Special.IsInert || warhead == WARHEAD_NONE) {
+    return;
+  }
 
   const WarheadTypeClass* whead = WarheadTypeClass::As_Pointer(warhead);
   //	WarheadTypeClass const * whead = &Warheads[warhead];
   //	range = ICON_LEPTON_W*2;
   range = ICON_LEPTON_W + (ICON_LEPTON_W >> 1);
   cell = Coord_Cell(coord);
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+    return;
+  }
 
   CellClass* cellptr = &Map[cell];
   ObjectClass* impacto = cellptr->Cell_Occupier();
@@ -220,11 +232,15 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
       if (!object->IsToDamage && object != source) {
         object->IsToDamage = true;
         objects[count++] = object;
-        if (count >= ARRAY_SIZE(objects)) break;
+        if (count >= ARRAY_SIZE(objects)) {
+          break;
+        }
       }
       object = object->Next;
     }
-    if (count >= ARRAY_SIZE(objects)) break;
+    if (count >= ARRAY_SIZE(objects)) {
+      break;
+    }
   }
 
   /*
@@ -361,27 +377,36 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
       return ANIM_PIFF;
 
     case 4:
-      if (land == LAND_NONE) return ANIM_FLAK;
+      if (land == LAND_NONE) {
+        return ANIM_FLAK;
+      }
       //	Fixed math error
-      if (land == LAND_WATER)
+      if (land == LAND_WATER) {
         return _waterlist[(ARRAY_SIZE(_waterlist) - 1) *
                           fixed(std::min(damage, 90), 90)];
+      }
       return _aplist[(ARRAY_SIZE(_aplist) - 1) *
                      fixed(std::min(damage, 90), 90)];
 
     case 5:
-      if (land == LAND_NONE) return ANIM_FLAK;
-      if (land == LAND_WATER)
+      if (land == LAND_NONE) {
+        return ANIM_FLAK;
+      }
+      if (land == LAND_WATER) {
         return _waterlist[(ARRAY_SIZE(_waterlist) - 1) *
                           fixed(std::min(damage, 130), 130)];
+      }
       return _helist[(ARRAY_SIZE(_helist) - 1) *
                      fixed(std::min(damage, 130), 130)];
 
     case 3:
-      if (land == LAND_NONE) return ANIM_FLAK;
-      if (land == LAND_WATER)
+      if (land == LAND_NONE) {
+        return ANIM_FLAK;
+      }
+      if (land == LAND_WATER) {
         return _waterlist[(ARRAY_SIZE(_waterlist) - 1) *
                           fixed(std::min(damage, 150), 150)];
+      }
       return _firelist[(ARRAY_SIZE(_firelist) - 1) *
                        fixed(std::min(damage, 150), 150)];
 
@@ -441,7 +466,9 @@ void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int rawdamage,
         continue;
       }
       CELL tcell = XY_Cell(xpos, ypos);
-      if (!Map.In_Radar(tcell)) continue;
+      if (!Map.In_Radar(tcell)) {
+        continue;
+      }
 
       int dist_from_center =
           Distance(XY_Coord(x + cell_radius, y + cell_radius),

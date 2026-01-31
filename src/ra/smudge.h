@@ -76,7 +76,9 @@ class SmudgeClass : public ObjectClass {
   SmudgeClass(const NoInitClass& x) : ObjectClass(x), Class(x) {}
   operator SmudgeType() const { return Class->Type; }
   ~SmudgeClass() override {
-    if (GameActive) SmudgeClass::Limbo();
+    if (GameActive) {
+      SmudgeClass::Limbo();
+    }
     Class = nullptr;
   }
 

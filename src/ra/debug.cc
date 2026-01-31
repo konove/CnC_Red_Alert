@@ -369,11 +369,15 @@ static const char* Bench_Time(BenchType btype) {
   static char buffer[32];
 
   int rootcount = Benches[BENCH_GAME_FRAME].Count();
-  if (rootcount == 0) rootcount = 1;
+  if (rootcount == 0) {
+    rootcount = 1;
+  }
   int roottime = Benches[BENCH_GAME_FRAME].Value();
   int count = Benches[btype].Count();
   int time = Benches[btype].Value();
-  if (count > 0 && count * time > roottime * rootcount) time = roottime / count;
+  if (count > 0 && count * time > roottime * rootcount) {
+    time = roottime / count;
+  }
   int percent = 0;
   if (roottime != 0 && rootcount != 0) {
     percent = ((count * time) * 99) / (roottime * rootcount);
@@ -466,8 +470,9 @@ static void Benchmarks(MonoClass* mono) {
     mono->Printf("%7d", Benches[BENCH_SCENARIO].Value());
 
     for (BenchType index = BENCH_FIRST; index < BENCH_COUNT; index++) {
-      if (index != BENCH_RULES && index != BENCH_SCENARIO)
+      if (index != BENCH_RULES && index != BENCH_SCENARIO) {
         Benches[index].Reset();
+      }
     }
   }
 }

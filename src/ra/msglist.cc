@@ -214,11 +214,8 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
   MessageX = x;
   MessageY = y;
 
-  MaxMessages = max_msg;
-  if (MaxMessages > MAX_NUM_MESSAGES) MaxMessages = MAX_NUM_MESSAGES;
-
-  MaxChars = maxchars;
-  if (MaxChars > MAX_MESSAGE_LENGTH) MaxChars = MAX_MESSAGE_LENGTH;
+  MaxMessages = std::min(max_msg, MAX_NUM_MESSAGES);
+  MaxChars = std::min(maxchars, MAX_MESSAGE_LENGTH);
 
   Height = height;
 
@@ -397,14 +394,18 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   if (MaxMessages > 0 && Num_Messages() + 1 > MaxMessages) {
     txtlabel = MessageList;
 
-    if (txtlabel == nullptr) return nullptr;
+    if (txtlabel == nullptr) {
+      return nullptr;
+    }
 
     //.....................................................................
     //	Remove this message from the list; mark its buffer as being available.
     //.....................................................................
     MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
     for (i = 0; i < MAX_NUM_MESSAGES; i++) {
-      if (txtlabel->Text == MessageBuffers[i]) BufferAvail[i] = 1;
+      if (txtlabel->Text == MessageBuffers[i]) {
+        BufferAvail[i] = 1;
+      }
     }
     delete txtlabel;
   }
@@ -686,7 +687,9 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
  * HISTORY: * 10/19/96 4:41PM ST : Created *
  *=============================================================================================*/
 void MessageListClass::Set_Edit_Focus() {
-  if (IsEdit) EditLabel->Set_Focus();
+  if (IsEdit) {
+    EditLabel->Set_Focus();
+  }
 }
 
 /***********************************************************************************************
@@ -750,7 +753,9 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
     txtlabel = MessageList;
     MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
     for (i = 0; i < MAX_NUM_MESSAGES; i++) {
-      if (txtlabel->Text == MessageBuffers[i]) BufferAvail[i] = 1;
+      if (txtlabel->Text == MessageBuffers[i]) {
+        BufferAvail[i] = 1;
+      }
     }
     delete txtlabel;
   }

@@ -212,7 +212,9 @@ const LinkClass& LinkClass::Head_Of_List() const {
   const LinkClass* link = this;
   while (link->Prev) {
     link = link->Prev;
-    if (link == this) break;  // Safety check
+    if (link == this) {
+      break;  // Safety check
+    }
   }
   return *link;
 }
@@ -235,7 +237,9 @@ const LinkClass& LinkClass::Tail_Of_List() const {
   const LinkClass* link = this;
   while (link->Next) {
     link = link->Next;
-    if (link == this) break;  // Safety check
+    if (link == this) {
+      break;  // Safety check
+    }
   }
   return *link;
 }

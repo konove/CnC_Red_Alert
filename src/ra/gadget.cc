@@ -476,7 +476,9 @@ KeyNumType GadgetClass::Input() {
         for (int lp = 0; lp < 99; lp++) {
           sprintf(filename, "scrsht%02d.pcx", lp);
           file.Set_Name(filename);
-          if (!file.Is_Available()) break;
+          if (!file.Is_Available()) {
+            break;
+          }
         }
 
         file.Cache(200000);

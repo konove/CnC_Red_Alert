@@ -81,7 +81,9 @@ void Benchmark::Reset() {
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
 void Benchmark::Begin(bool reset) {
-  if (reset) Reset();
+  if (reset) {
+    Reset();
+  }
   Clock = 0;
 }
 

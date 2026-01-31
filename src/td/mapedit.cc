@@ -946,8 +946,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ...............................................................*/
         cell = Waypoint[waypt_idx];
         if (cell != -1) {
-          if (Waypoint[WAYPT_HOME] != cell && Waypoint[WAYPT_REINF] != cell)
+          if (Waypoint[WAYPT_HOME] != cell && Waypoint[WAYPT_REINF] != cell) {
             (*this)[cell].IsWaypoint = 0;
+          }
           Flag_Cell(cell);
         }
         Waypoint[waypt_idx] = CurrentCell;
@@ -1002,7 +1003,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         clear that waypoint.
         ...............................................................*/
         for (i = 0; i < 26; i++) {
-          if (Waypoint[i] == CurrentCell) Waypoint[i] = -1;
+          if (Waypoint[i] == CurrentCell) {
+            Waypoint[i] = -1;
+          }
         }
 
         /*...............................................................
@@ -1012,9 +1015,10 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         for (i = 0; i < MAX_PLAYERS; i++) {
           house = (HousesType)(HOUSE_MULTI1 + i);
           if (HouseClass::As_Pointer(house) &&
-              CurrentCell == HouseClass::As_Pointer(house)->FlagHome)
+              CurrentCell == HouseClass::As_Pointer(house)->FlagHome) {
             HouseClass::As_Pointer(house)->Flag_Remove(As_Target(CurrentCell),
                                                        true);
+          }
         }
 
         /*...............................................................
@@ -1022,8 +1026,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         waypoint designation.
         ...............................................................*/
         if (Waypoint[WAYPT_HOME] != CurrentCell &&
-            Waypoint[WAYPT_REINF] != CurrentCell)
+            Waypoint[WAYPT_REINF] != CurrentCell) {
           (*this)[CurrentCell].IsWaypoint = 0;
+        }
         Changed = 1;
         Flag_Cell(CurrentCell);
       }
@@ -1731,7 +1736,9 @@ void MapEditClass::AI_Menu() {
       ......................... Import Triggers ..........................
       */
       case 1:
-        if (Import_Triggers() == 0) process = false;
+        if (Import_Triggers() == 0) {
+          process = false;
+        }
         break;
 
       /*
@@ -1752,7 +1759,9 @@ void MapEditClass::AI_Menu() {
       ........................... Import Teams ...........................
       */
       case 3:
-        if (Import_Teams() == 0) process = false;
+        if (Import_Teams() == 0) {
+          process = false;
+        }
         break;
 
       /*

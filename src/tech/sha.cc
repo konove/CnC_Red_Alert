@@ -72,14 +72,18 @@
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 void SHAEngine::Process_Partial(const void*& data, long& length) {
-  if (length == 0 || data == nullptr) return;
+  if (length == 0 || data == nullptr) {
+    return;
+  }
 
   /*
   **	If there is no partial buffer and the source is greater than
   **	a source block size, then partial processing is unnecessary.
   **	Bail out in this case.
   */
-  if (PartialCount == 0 && length >= SRC_BLOCK_SIZE) return;
+  if (PartialCount == 0 && length >= SRC_BLOCK_SIZE) {
+    return;
+  }
 
   /*
   **	Attach as many bytes as possible from the source data into
@@ -132,7 +136,9 @@ void SHAEngine::Hash(const void* data, long length) {
   /*
   **	If there is no more source data to process, then bail. Speed reasons.
   */
-  if (length == 0) return;
+  if (length == 0) {
+    return;
+  }
 
   /*
   **	First process all the whole blocks available in the source data.

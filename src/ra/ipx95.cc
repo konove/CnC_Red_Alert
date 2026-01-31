@@ -102,7 +102,9 @@ bool WindowsNT = false;
  *=============================================================================================*/
 bool Load_IPX_Dll() {
   Get_OS_Version();
-  if (WindowsNT) return false;
+  if (WindowsNT) {
+    return false;
+  }
 
   SetErrorMode(SEM_NOOPENFILEERRORBOX);
   IpxDllInstance = LoadLibrary("THIPX32.DLL");

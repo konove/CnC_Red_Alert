@@ -238,7 +238,9 @@ void ListClass::Remove_Item(const char* text) {
     if (CurrentTopIndex >= List.Count()) {
       CurrentTopIndex--;
       CurrentTopIndex = std::max(CurrentTopIndex, 0);
-      if (IsScrollActive) ScrollGadget.Step(1);
+      if (IsScrollActive) {
+        ScrollGadget.Step(1);
+      }
     }
   }
 }
@@ -406,7 +408,9 @@ void ListClass::Step(int up) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 const char* ListClass::Get_Item(int index) const {
-  if (List.Count() == 0) return nullptr;
+  if (List.Count() == 0) {
+    return nullptr;
+  }
 
   index = std::min<int>(index, List.Count() - 1);
   return List[index];

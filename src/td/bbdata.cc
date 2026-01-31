@@ -495,7 +495,7 @@ static const BulletTypeClass ClassTRexBite(
 **	This is the array of pointers to the static data associated with
 **	each bullet (projectile) type.
 */
-const BulletTypeClass *const BulletTypeClass::Pointers[BULLET_COUNT] = {
+const BulletTypeClass* const BulletTypeClass::Pointers[BULLET_COUNT] = {
     &ClassSniper,      //	BULLET_SNIPER
     &ClassBullet,      //	BULLET_BULLET
     &ClassAPDS,        //	BULLET_APDS
@@ -533,7 +533,7 @@ const BulletTypeClass *const BulletTypeClass::Pointers[BULLET_COUNT] = {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 BulletTypeClass::BulletTypeClass(
-    BulletType type, const char *ininame, bool is_high, bool is_homing,
+    BulletType type, const char* ininame, bool is_high, bool is_homing,
     bool is_arcing, bool is_dropping, bool is_invisible,
     bool is_proximity_armed, bool is_flame_equipped, bool is_fueled,
     bool is_faceless, bool is_inaccurate, bool is_translucent,
@@ -584,7 +584,7 @@ void BulletTypeClass::One_Time() {
   **	Load the bullet shapes.
   */
   for (index = BULLET_FIRST; index < BULLET_COUNT; index++) {
-    const BulletTypeClass &bullet = As_Reference(index);
+    const BulletTypeClass& bullet = As_Reference(index);
 
     if (!bullet.IsInvisible) {
       auto fullname = std::filesystem::path(bullet.IniName)
@@ -594,9 +594,9 @@ void BulletTypeClass::One_Time() {
       RawFileClass file(fullname.c_str());
 
       if (file.Is_Available()) {
-        (const void *&)bullet.ImageData = Load_Alloc_Data(file);
+        (const void*&)bullet.ImageData = Load_Alloc_Data(file);
       } else {
-        (const void *&)bullet.ImageData =
+        (const void*&)bullet.ImageData =
             MixFileClass::Retrieve(fullname.c_str());
       }
     }

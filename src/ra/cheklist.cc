@@ -326,7 +326,9 @@ int CheckListClass::Action(unsigned flags, KeyNumType& key) {
  *=========================================================================*/
 void CheckListClass::Draw_Entry(int index, int x, int y, int width,
                                 int selected) {
-  if (index >= Count()) return;
+  if (index >= Count()) {
+    return;
+  }
 
   CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
 

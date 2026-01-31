@@ -590,8 +590,12 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
   /*
   **	Units that are off-map cannot sight.
   */
-  if (!In_Radar(cell)) return;
-  if (!sightrange || sightrange > 10) return;
+  if (!In_Radar(cell)) {
+    return;
+  }
+  if (!sightrange || sightrange > 10) {
+    return;
+  }
 
   /*
   **	Determine logical cell coordinate for center scan point.
@@ -624,11 +628,17 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
     **	Determine if the map edge has been wrapped. If so,
     **	then don't process the cell.
     */
-    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) continue;
+    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) {
+      continue;
+    }
     xdiff = Cell_X(newcell) - xx;
     xdiff = std::abs(xdiff);
-    if (xdiff > sightrange) continue;
-    if (Distance(newcell, cell) > sightrange) continue;
+    if (xdiff > sightrange) {
+      continue;
+    }
+    if (Distance(newcell, cell) > sightrange) {
+      continue;
+    }
 
     /*
     **	Map the cell. For incremental scans, then update
@@ -666,8 +676,12 @@ int MapClass::Cell_Distance(CELL cell1, CELL cell2) {
   x = Cell_X(cell1) - Cell_X(cell2);
   y = Cell_Y(cell1) - Cell_Y(cell2);
 
-  if (x < 0) x = -x;
-  if (y < 0) y = -y;
+  if (x < 0) {
+    x = -x;
+  }
+  if (y < 0) {
+    y = -y;
+  }
 
   if (x > y) {
     return x + (y >> 1);
@@ -694,7 +708,9 @@ int MapClass::Cell_Distance(CELL cell1, CELL cell2) {
  *Speeded up.                                                              *
  *=============================================================================================*/
 bool MapClass::In_Radar(CELL cell) const {
-  if (cell & 0xF000) return false;
+  if (cell & 0xF000) {
+    return false;
+  }
   return static_cast<unsigned>(Cell_X(cell) - MapCellX) <
              static_cast<unsigned>(MapCellWidth) &&
          static_cast<unsigned>(Cell_Y(cell) - MapCellY) <
@@ -721,7 +737,9 @@ bool MapClass::In_Radar(CELL cell) const {
  * HISTORY: * 07/31/1994 JLB : Created. *
  *=============================================================================================*/
 void MapClass::Place_Down(CELL cell, ObjectClass* object) {
-  if (!object) return;
+  if (!object) {
+    return;
+  }
 
   const short* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
@@ -762,7 +780,9 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
  * HISTORY: * 07/31/1994 JLB : Created. *
  *=============================================================================================*/
 void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
-  if (!object) return;
+  if (!object) {
+    return;
+  }
 
   const short* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
@@ -803,7 +823,9 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
  * HISTORY: * 07/12/1995 BRR : Created. *
  *=============================================================================================*/
 void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
-  if (!object) return;
+  if (!object) {
+    return;
+  }
 
   const short* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
@@ -833,7 +855,9 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
  * HISTORY: * 07/12/1995 BRR : Created. *
  *=============================================================================================*/
 void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
-  if (!object) return;
+  if (!object) {
+    return;
+  }
 
   const short* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
@@ -930,7 +954,9 @@ bool MapClass::Read_Binary(const char* root, unsigned long* crc)
       unsigned char TIcon;  // Template icon number.
     } temp;
 
-    if (file.Read(&temp, sizeof(temp)) != sizeof(temp)) break;
+    if (file.Read(&temp, sizeof(temp)) != sizeof(temp)) {
+      break;
+    }
     if (temp.TType == static_cast<TemplateType>(255)) {
       temp.TType = TEMPLATE_NONE;
     }
@@ -1054,7 +1080,9 @@ void MapClass::Logic() {
   /*
   **	Bail early if there is no allowed growth or spread of Tiberium.
   */
-  if (!Special.IsTGrowth && !Special.IsTSpread) return;
+  if (!Special.IsTGrowth && !Special.IsTSpread) {
+    return;
+  }
 
   /*
   **	Scan another block of the map in order to accumulate the potential
@@ -1064,7 +1092,9 @@ void MapClass::Logic() {
   int index;
   for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {
     CELL cell = index;
-    if (!IsForwardScan) cell = MAP_CELL_TOTAL - 1 - index;
+    if (!IsForwardScan) {
+      cell = MAP_CELL_TOTAL - 1 - index;
+    }
     CellClass* ptr = &(*this)[cell];
 
     if (Special.IsTGrowth && ptr->Land_Type() == LAND_TIBERIUM &&
@@ -1085,7 +1115,9 @@ void MapClass::Logic() {
             ptr->OverlayData > 6 ||
         (terrain && terrain->Class->IsTiberiumSpawn)) {
       int tries = 1;
-      if (terrain) tries = 3;
+      if (terrain) {
+        tries = 3;
+      }
       for (int i = 0; i < tries; i++) {
         if (TiberiumSpreadCount <
             sizeof(TiberiumSpread) / sizeof(TiberiumSpread[0])) {
@@ -1096,13 +1128,17 @@ void MapClass::Logic() {
       }
     }
     subcount--;
-    if (!subcount) break;
+    if (!subcount) {
+      break;
+    }
   }
   TiberiumScan = index;
 
   if (TiberiumScan >= MAP_CELL_TOTAL) {
     int tries = 1;
-    if (Special.IsTFast || GameToPlay != GAME_NORMAL) tries = 2;
+    if (Special.IsTFast || GameToPlay != GAME_NORMAL) {
+      tries = 2;
+    }
     TiberiumScan = 0;
     IsForwardScan = !static_cast<bool>(IsForwardScan);
 
@@ -1157,7 +1193,9 @@ void MapClass::Logic() {
                   newcell->OverlayData = 1;
                   break;
               }
-              if (found) break;
+              if (found) {
+                break;
+              }
             }
           }
         }
@@ -1285,7 +1323,9 @@ int MapClass::Validate() {
     .....................................................................*/
     ttype = (*this)[cell].TType;
     ticon = (*this)[cell].TIcon;
-    if (ttype >= TEMPLATE_COUNT && ttype != TEMPLATE_NONE) return false;
+    if (ttype >= TEMPLATE_COUNT && ttype != TEMPLATE_NONE) {
+      return false;
+    }
 
     /*.....................................................................
     To validate the icon value, we have to get a copy of the template's
@@ -1299,27 +1339,34 @@ int MapClass::Validate() {
       Mem_Copy(Get_Icon_Set_Map(tclass->Get_Image_Data()), map,
                tclass->Width * tclass->Height);
       if (ticon < 0 || ticon >= tclass->Width * tclass->Height ||
-          map[ticon] == 0xff)
+          map[ticon] == 0xff) {
         return false;
+      }
     }
 
     /*.....................................................................
     Validate Overlay
     .....................................................................*/
     overlay = (*this)[cell].Overlay;
-    if (overlay < OVERLAY_NONE || overlay >= OVERLAY_COUNT) return false;
+    if (overlay < OVERLAY_NONE || overlay >= OVERLAY_COUNT) {
+      return false;
+    }
 
     /*.....................................................................
     Validate Smudge
     .....................................................................*/
     smudge = (*this)[cell].Smudge;
-    if (smudge < SMUDGE_NONE || smudge >= SMUDGE_COUNT) return false;
+    if (smudge < SMUDGE_NONE || smudge >= SMUDGE_COUNT) {
+      return false;
+    }
 
     /*.....................................................................
     Validate LandType
     .....................................................................*/
     land = (*this)[cell].Land_Type();
-    if (land < LAND_CLEAR || land >= LAND_COUNT) return false;
+    if (land < LAND_CLEAR || land >= LAND_COUNT) {
+      return false;
+    }
 
     /*.....................................................................
     Validate Occupier
@@ -1328,8 +1375,9 @@ int MapClass::Validate() {
     if (obj) {
       if ((uintptr_t)obj & 0xff000000 || (uintptr_t)obj->Next & 0xff000000 ||
           (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
-          static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)
+          static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095) {
         return false;
+      }
     }
 
     /*.....................................................................
@@ -1340,8 +1388,9 @@ int MapClass::Validate() {
       if (obj) {
         if ((uintptr_t)obj & 0xff000000 || (uintptr_t)obj->Next & 0xff000000 ||
             (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
-            static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)
+            static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095) {
           return false;
+        }
       }
     }
   }
@@ -1408,7 +1457,9 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
           int d = -1;
           if (o->What_Am_I() == RTTI_BUILDING) {
             d = Distance(coord, Cell_Coord(newcell));
-            if (d > 0x00B5) d = -1;
+            if (d > 0x00B5) {
+              d = -1;
+            }
           } else {
             d = Distance(coord, o->Center_Coord());
           }

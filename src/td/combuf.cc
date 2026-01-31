@@ -267,7 +267,9 @@ int CommBufferClass::Queue_Send(void* buf, int buflen) {
   /*
   --------------------- Error if no room in the queue ----------------------
   */
-  if (SendCount == MaxSend) return 0;
+  if (SendCount == MaxSend) {
+    return 0;
+  }
 
   /*
   -------------------------- Find an empty slot ----------------------------
@@ -342,7 +344,9 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index) {
   /*
   --------------------- Error if no entry to retrieve ----------------------
   */
-  if (SendCount == 0 || SendQueue[SendIndex[index]].IsActive == 0) return 0;
+  if (SendCount == 0 || SendQueue[SendIndex[index]].IsActive == 0) {
+    return 0;
+  }
 
   /*
   ---------------------- Copy the data from the entry ----------------------
@@ -616,7 +620,9 @@ void CommBufferClass::Add_Delay(unsigned long delay) {
   if (NumDelay == 256) {
     DelaySum -= MeanDelay;
     DelaySum += delay;
-    if ((DelaySum & 0x00ff) > 127) roundoff = 1;
+    if ((DelaySum & 0x00ff) > 127) {
+      roundoff = 1;
+    }
     MeanDelay = (DelaySum >> 8) + roundoff;
   } else {
     NumDelay++;

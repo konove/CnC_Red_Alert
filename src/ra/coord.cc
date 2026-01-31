@@ -64,10 +64,14 @@ const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
           !no_center || offset != 0) {
         *ptr++ = offset;
         count++;
-        if (count + 2 >= ARRAY_SIZE(offsets)) break;
+        if (count + 2 >= ARRAY_SIZE(offsets)) {
+          break;
+        }
       }
     }
-    if (count + 2 >= ARRAY_SIZE(offsets)) break;
+    if (count + 2 >= ARRAY_SIZE(offsets)) {
+      break;
+    }
   }
 
   *ptr = REFRESH_EOL;
@@ -87,7 +91,9 @@ COORDINATE Coord_Scatter(const COORDINATE coord, const unsigned distance,
   COORDINATE result = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX), distance);
 
   // If the move overflowed the valid coordinate range, discard it.
-  if (result & HIGH_COORD_MASK) result = coord;
+  if (result & HIGH_COORD_MASK) {
+    result = coord;
+  }
 
   if (lock) {
     result = Coord_Snap(result);
@@ -170,17 +176,30 @@ const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
     const int bottom = y + maxsize;
 
     computed_offsets[index++] = 0;
-    if (left < 0) computed_offsets[index++] = -1;
-    if (right >= ICON_PIXEL_W) computed_offsets[index++] = 1;
-    if (top < 0) computed_offsets[index++] = -MAP_CELL_W;
-    if (bottom >= ICON_PIXEL_H) computed_offsets[index++] = MAP_CELL_W;
-    if (left < 0 && top < 0) computed_offsets[index++] = -(MAP_CELL_W + 1);
-    if (right >= ICON_PIXEL_W && bottom >= ICON_PIXEL_H)
+    if (left < 0) {
+      computed_offsets[index++] = -1;
+    }
+    if (right >= ICON_PIXEL_W) {
+      computed_offsets[index++] = 1;
+    }
+    if (top < 0) {
+      computed_offsets[index++] = -MAP_CELL_W;
+    }
+    if (bottom >= ICON_PIXEL_H) {
+      computed_offsets[index++] = MAP_CELL_W;
+    }
+    if (left < 0 && top < 0) {
+      computed_offsets[index++] = -(MAP_CELL_W + 1);
+    }
+    if (right >= ICON_PIXEL_W && bottom >= ICON_PIXEL_H) {
       computed_offsets[index++] = MAP_CELL_W + 1;
-    if (left < 0 && bottom >= ICON_PIXEL_H)
+    }
+    if (left < 0 && bottom >= ICON_PIXEL_H) {
       computed_offsets[index++] = MAP_CELL_W - 1;
-    if (right >= ICON_PIXEL_H && top < 0)
+    }
+    if (right >= ICON_PIXEL_H && top < 0) {
       computed_offsets[index++] = -(MAP_CELL_W - 1);
+    }
     computed_offsets[index] = REFRESH_EOL;
     return &computed_offsets[0];
   }
@@ -190,10 +209,18 @@ const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
 
   x = Coord_XLepton(coord) - 0x0080;
   y = Coord_YLepton(coord) - 0x0080;
-  if (y > spill_threshold) index |= 0x08;   // Spilling South.
-  if (y < -spill_threshold) index |= 0x04;  // Spilling North.
-  if (x > spill_threshold) index |= 0x02;   // Spilling East.
-  if (x < -spill_threshold) index |= 0x01;  // Spilling West.
+  if (y > spill_threshold) {
+    index |= 0x08;  // Spilling South.
+  }
+  if (y < -spill_threshold) {
+    index |= 0x04;  // Spilling North.
+  }
+  if (x > spill_threshold) {
+    index |= 0x02;  // Spilling East.
+  }
+  if (x < -spill_threshold) {
+    index |= 0x01;  // Spilling West.
+  }
 
   return &kFacingOffsets[kSpillToFacing[index]][0];
 }

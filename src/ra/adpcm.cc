@@ -43,7 +43,9 @@ unsigned long sosCODECDecompressData(_SOS_COMPRESS_INFO* info,
   fastindex = (unsigned int)info->dwSampleIndex;
   sample = info->dwPredicted;
 
-  if (!numbytes) goto SkipLoop;
+  if (!numbytes) {
+    goto SkipLoop;
+  }
 
   do {
     // First nibble
@@ -51,16 +53,24 @@ unsigned long sosCODECDecompressData(_SOS_COMPRESS_INFO* info,
     fastindex += token & 0x0f;
     sample += DiffTable[fastindex];
     fastindex = IndexTable[fastindex];
-    if (sample > 32767L) sample = 32767L;
-    if (sample < -32768L) sample = -32768L;
+    if (sample > 32767L) {
+      sample = 32767L;
+    }
+    if (sample < -32768L) {
+      sample = -32768L;
+    }
     *outbuff++ = (unsigned short)sample;
 
     // Second nibble
     fastindex += token >> 4;
     sample += DiffTable[fastindex];
     fastindex = IndexTable[fastindex];
-    if (sample > 32767L) sample = 32767L;
-    if (sample < -32768L) sample = -32768L;
+    if (sample > 32767L) {
+      sample = 32767L;
+    }
+    if (sample < -32768L) {
+      sample = -32768L;
+    }
     *outbuff++ = (unsigned short)sample;
   } while (--numbytes);
 

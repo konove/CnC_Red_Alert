@@ -85,7 +85,9 @@ class GenericNode {
     node->Unlink();
     node->NextNode = NextNode;
     node->PrevNode = this;
-    if (NextNode) NextNode->PrevNode = node;
+    if (NextNode) {
+      NextNode->PrevNode = node;
+    }
     NextNode = node;
   }
 

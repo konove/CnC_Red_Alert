@@ -168,20 +168,22 @@ void SoundControlsClass::Process() {
   **	Stop playing button.
   */
   char filename[30];
-  if (factor == 1)
+  if (factor == 1) {
     strcpy(filename, "BTN-ST.SHP");
-  else
+  } else {
     strcpy(filename, "BTN-STH.SHP");
+  }
   ShapeButtonClass stopbtn(BUTTON_STOP, MixFileClass::Retrieve(filename),
                            Option_X + Stop_X, Option_Y + Stop_Y);
 
   /*
   **	Start playing button.
   */
-  if (factor == 1)
+  if (factor == 1) {
     strcpy(filename, "BTN-PL.SHP");
-  else
+  } else {
     strcpy(filename, "BTN-PLH.SHP");
+  }
 
   ShapeButtonClass playbtn(BUTTON_PLAY, MixFileClass::Retrieve(filename),
                            Option_X + Play_X, Option_Y + Play_Y);

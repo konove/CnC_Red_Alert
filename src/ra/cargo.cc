@@ -93,7 +93,9 @@ void CargoClass::Attach(FootClass* object) {
   /*
   **	If there is no object, then no action is necessary.
   */
-  if (object == nullptr) return;
+  if (object == nullptr) {
+    return;
+  }
 
   object->Limbo();
 
@@ -106,7 +108,9 @@ void CargoClass::Attach(FootClass* object) {
   */
   ObjectClass* o = object->Next;
   while (o != nullptr) {
-    if (o->Next == static_cast<void*>(nullptr)) break;
+    if (o->Next == static_cast<void*>(nullptr)) {
+      break;
+    }
     o = o->Next;
   }
   if (o != nullptr) {

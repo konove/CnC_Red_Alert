@@ -18,7 +18,9 @@ HANDLE WinModemClass::Serial_Port_Open(const char* /*device_name*/,
   sp_port* port;
   sp_return result = sp_get_port_by_name(device_name, &port);
 
-  if (result != SP_OK) return NULL;
+  if (result != SP_OK) {
+    return NULL;
+  }
 
   // open
   result = sp_open(port, SP_MODE_READ_WRITE);
@@ -121,7 +123,9 @@ int WinModemClass::Read_From_Serial_Port(unsigned char* /*dest_ptr*/,
 void WinModemClass::Write_To_Serial_Port(unsigned char* /*buffer*/,
                                          int /*length*/) {
 #ifdef LIBSERIALPORT
-  if (PortHandle) sp_blocking_write((sp_port*)PortHandle, buffer, length, 0);
+  if (PortHandle) {
+    sp_blocking_write((sp_port*)PortHandle, buffer, length, 0);
+  }
 #endif
 }
 

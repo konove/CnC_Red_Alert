@@ -292,7 +292,9 @@ int MapEditClass::Select_Team(const char*) {
 
   PNBubble_Sort(&teamlist[0], teamlist.Count());
 
-  if (!CurTeam || !CurTeam->IsActive) CurTeam = nullptr;
+  if (!CurTeam || !CurTeam->IsActive) {
+    CurTeam = nullptr;
+  }
 
   if (CurTeam) {
     teamlist.Set_Selected_Index(CurTeam);
@@ -386,9 +388,15 @@ int MapEditClass::Select_Team(const char*) {
   Flag_To_Redraw(true);
   Render();
 
-  if (edit_team) return (1);
-  if (new_team) return (2);
-  if (del_team) return (3);
+  if (edit_team) {
+    return (1);
+  }
+  if (new_team) {
+    return (2);
+  }
+  if (del_team) {
+    return (3);
+  }
   return (0);
 }
 
@@ -890,7 +898,9 @@ int MapEditClass::Team_Members(HousesType house) {
   Flag_To_Redraw(true);
   Render();
 
-  if (cancel) return (-1);
+  if (cancel) {
+    return (-1);
+  }
   return (0);
 }
 

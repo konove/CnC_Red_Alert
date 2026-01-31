@@ -113,7 +113,7 @@ class NullModemClass : public ConnManClass {
   void Shutdown();
 
   void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
-                          unsigned long timeout) override;
+                  unsigned long timeout) override;
 
   /*
   **	This is how the application sends & receives messages.
@@ -125,7 +125,7 @@ class NullModemClass : public ConnManClass {
   ** These are for compatibility
   */
   int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
-                                   int = CONNECTION_NONE) override {
+                           int = CONNECTION_NONE) override {
     return Send_Message(buf, buflen, ack_req);
   }
   int Get_Private_Message(void* buf, int* buflen, int*) override {
@@ -148,7 +148,7 @@ class NullModemClass : public ConnManClass {
   void Reset_Response_Time() override;
   void* Oldest_Send();
   void Configure_Debug(int index, int offset, int size, char** names,
-                               int maxnames) override;
+                       int maxnames) override;
   void Mono_Debug_Print(int index, int refresh = 0) override;
 
   /*

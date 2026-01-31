@@ -35,8 +35,12 @@
 
 template <class T>
 int Compare(const T* obj1, const T* obj2) {
-  if (*obj1 < *obj2) return -1;
-  if (*obj1 > *obj2) return 1;
+  if (*obj1 < *obj2) {
+    return -1;
+  }
+  if (*obj1 > *obj2) {
+    return 1;
+  }
   return 0;
 };
 
@@ -194,7 +198,9 @@ bool MixFileClass::Cache(const char* filename) {
 // Seeks past the FileHeader and SubBlock index to reach the data. Returns
 // immediately if already cached.
 bool MixFileClass::Cache() {
-  if (Data) return true;
+  if (Data) {
+    return true;
+  }
 
   Data = new char[DataSize];
   if (Data) {
@@ -247,10 +253,12 @@ void MixFileClass::Free() {
 
 // Comparison function for bsearch() on SubBlock CRC values.
 int compfunc(const void* ptr1, const void* ptr2) {
-  if (*static_cast<const int32_t*>(ptr1) < *static_cast<const int32_t*>(ptr2))
+  if (*static_cast<const int32_t*>(ptr1) < *static_cast<const int32_t*>(ptr2)) {
     return -1;
-  if (*static_cast<const int32_t*>(ptr1) > *static_cast<const int32_t*>(ptr2))
+  }
+  if (*static_cast<const int32_t*>(ptr1) > *static_cast<const int32_t*>(ptr2)) {
     return 1;
+  }
   return 0;
 }
 
@@ -262,7 +270,9 @@ bool MixFileClass::Offset(const char* filename, void** realptr,
                           MixFileClass** mixfile, long* offset, long* size) {
   MixFileClass* ptr;
 
-  if (!filename) return false;
+  if (!filename) {
+    return false;
+  }
 
   // Compute CRC of uppercase filename for index lookup.
   long crc = CrcEngine::Compute(absl::AsciiStrToUpper(filename));
@@ -278,10 +288,18 @@ bool MixFileClass::Offset(const char* filename, void** realptr,
     block = static_cast<SubBlock*>(
         bsearch(&key, ptr->Buffer, ptr->Count, sizeof(SubBlock), compfunc));
     if (block) {
-      if (mixfile) *mixfile = ptr;
-      if (size) *size = block->Size;
-      if (realptr) *realptr = nullptr;
-      if (offset) *offset = block->Offset;
+      if (mixfile) {
+        *mixfile = ptr;
+      }
+      if (size) {
+        *size = block->Size;
+      }
+      if (realptr) {
+        *realptr = nullptr;
+      }
+      if (offset) {
+        *offset = block->Offset;
+      }
       if (realptr && ptr->Data) {
         *realptr = Add_Long_To_Pointer(ptr->Data, block->Offset);
       }

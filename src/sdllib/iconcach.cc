@@ -34,10 +34,14 @@ typedef struct {
 
 void Init_Stamps(const void* icon_ptr) {
   // Verify legality of parameter.
-  if (!icon_ptr) return;
+  if (!icon_ptr) {
+    return;
+  }
 
   // Don't initialize if already initialized to this set (speed reasons).
-  if (LastIconset == icon_ptr) return;
+  if (LastIconset == icon_ptr) {
+    return;
+  }
 
   LastIconset = icon_ptr;
 
@@ -76,16 +80,24 @@ void Init_Stamps(const void* icon_ptr) {
 void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
                             int x_pixel, int y_pixel, const void* remap,
                             int min_x, int min_y, int max_x, int max_y) {
-  if (!icondata) return;
+  if (!icondata) {
+    return;
+  }
 
   // Initialize the stamp data if necessary.
-  if (icondata != LastIconset) Init_Stamps(icondata);
+  if (icondata != LastIconset) {
+    Init_Stamps(icondata);
+  }
 
   // Determine if the icon number requested is actually in the set.
   // Perform the logical icon to actual icon number remap if necessary.
-  if (MapPtr) icon = MapPtr[icon];
+  if (MapPtr) {
+    icon = MapPtr[icon];
+  }
 
-  if (icon >= IconCount) return;
+  if (icon >= IconCount) {
+    return;
+  }
 
   // Setup some working variables.
   int iwidth = IconWidth;
@@ -103,10 +115,14 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
 
   // See if the icon is within the clipping window
   // First, verify that the icon position is less than the maximums
-  if (x_pixel >= max_x || y_pixel >= max_y) return;
+  if (x_pixel >= max_x || y_pixel >= max_y) {
+    return;
+  }
 
   // Now verify that the icon position is >= the minimums
-  if (x_pixel + IconWidth < min_x || y_pixel + IconHeight < min_y) return;
+  if (x_pixel + IconWidth < min_x || y_pixel + IconHeight < min_y) {
+    return;
+  }
 
   // Now, clip the x, y, width, and height variables to be within the
   // clipping rectangle
@@ -131,9 +147,13 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
     y_pixel = min_y;
   }
 
-  if (y_pixel + iheight > max_y) iheight = max_y - y_pixel;
+  if (y_pixel + iheight > max_y) {
+    iheight = max_y - y_pixel;
+  }
 
-  if (!iwidth || !iheight) return;
+  if (!iwidth || !iheight) {
+    return;
+  }
 
   // If the remap table pointer passed in is NULL, then flag this condition
   // so that the faster (non-remapping) icon draw loop will be used.
@@ -152,7 +172,9 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
     do {
       for (int x = 0; x < iwidth; x++) {
         uint8_t pixel = ((uint8_t*)remap)[*ptr++];
-        if (pixel) *dst_offset = pixel;
+        if (pixel) {
+          *dst_offset = pixel;
+        }
         dst_offset++;
       }
 
@@ -166,7 +188,9 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
     do {
       for (int x = 0; x < iwidth; x++) {
         uint8_t pixel = *ptr++;
-        if (pixel) *dst_offset = pixel;
+        if (pixel) {
+          *dst_offset = pixel;
+        }
         dst_offset++;
       }
 

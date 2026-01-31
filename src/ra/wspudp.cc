@@ -220,7 +220,9 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   uint32_t** addresses = (uint32_t**)host_info->h_addr_list;
 
   for (;;) {
-    if (!*addresses) break;
+    if (!*addresses) {
+      break;
+    }
 
     uint32_t address = **addresses++;
     // address = ntohl (address);
@@ -345,7 +347,9 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
         *away.
         */
         for (int i = 0; i < LocalAddresses.Count(); i++) {
-          if (!memcmp(LocalAddresses[i], &addr.sin_addr.s_addr, 4)) return;
+          if (!memcmp(LocalAddresses[i], &addr.sin_addr.s_addr, 4)) {
+            return;
+          }
         }
 
         /*
@@ -439,7 +443,9 @@ long UDPInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
   /*
   ** We only handle UDP events.
   */
-  if (message != WM_UDPASYNCEVENT) return (1);
+  if (message != WM_UDPASYNCEVENT) {
+    return (1);
+  }
 
   /*
   ** Handle UDP packet events
@@ -480,7 +486,9 @@ long UDPInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
         *away.
         */
         for (int i = 0; i < LocalAddresses.Count(); i++) {
-          if (!memcmp(LocalAddresses[i], &addr.sin_addr.s_addr, 4)) return (0);
+          if (!memcmp(LocalAddresses[i], &addr.sin_addr.s_addr, 4)) {
+            return (0);
+          }
         }
 
         /*
@@ -515,7 +523,9 @@ long UDPInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
       /*
       ** If there are no packets waiting to be sent then bail.
       */
-      if (OutBuffers.Count() == 0) return (0);
+      if (OutBuffers.Count() == 0) {
+        return (0);
+      }
       int packetnum = 0;
 
       /*

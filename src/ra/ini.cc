@@ -207,8 +207,12 @@ bool INIClass::Load(Straw& file)
   */
   while (!end_of_file) {
     Read_Line(file, buffer, sizeof(buffer), end_of_file);
-    if (end_of_file) return false;
-    if (buffer[0] == '[' && strchr(buffer, ']') != nullptr) break;
+    if (end_of_file) {
+      return false;
+    }
+    if (buffer[0] == '[' && strchr(buffer, ']') != nullptr) {
+      break;
+    }
   }
 
   /*
@@ -217,7 +221,9 @@ bool INIClass::Load(Straw& file)
   while (!end_of_file) {
     buffer[0] = ' ';
     char* ptr = strchr(buffer, ']');
-    if (ptr) *ptr = '\0';
+    if (ptr) {
+      *ptr = '\0';
+    }
     strtrim(buffer);
     INISection* secptr = new INISection(strdup(buffer));
     if (secptr == nullptr) {
@@ -235,21 +241,27 @@ bool INIClass::Load(Straw& file)
       **	care of it.
       */
       int len = Read_Line(file, buffer, sizeof(buffer), end_of_file);
-      if (buffer[0] == '[' && strchr(buffer, ']') != nullptr) break;
+      if (buffer[0] == '[' && strchr(buffer, ']') != nullptr) {
+        break;
+      }
 
       /*
       **	Determine if this line is a comment or blank line. Throw it out
       *if it is.
       */
       Strip_Comments(buffer);
-      if (len == 0 || buffer[0] == ';' || buffer[0] == '=') continue;
+      if (len == 0 || buffer[0] == ';' || buffer[0] == '=') {
+        continue;
+      }
 
       /*
       **	The line isn't an obvious comment. Make sure that there is the
       *"=" character *	at an appropriate spot.
       */
       char* divider = strchr(buffer, '=');
-      if (!divider) continue;
+      if (!divider) {
+        continue;
+      }
 
       /*
       **	Split the line into entry and value sections. Be sure to catch
@@ -257,10 +269,14 @@ bool INIClass::Load(Straw& file)
       */
       *divider++ = '\0';
       strtrim(buffer);
-      if (!strlen(buffer)) continue;
+      if (!strlen(buffer)) {
+        continue;
+      }
 
       strtrim(divider);
-      if (!strlen(divider)) continue;
+      if (!strlen(divider)) {
+        continue;
+      }
 
       INIEntry* entryptr = new INIEntry(strdup(buffer), strdup(divider));
       if (entryptr == nullptr) {
@@ -478,7 +494,9 @@ const char* INIClass::Get_Entry(const char* section, int index) const {
     INIEntry* entryptr = secptr->EntryList.First();
 
     while (entryptr != nullptr && entryptr->Is_Valid()) {
-      if (index == 0) return entryptr->Entry;
+      if (index == 0) {
+        return entryptr->Entry;
+      }
       index--;
       entryptr = entryptr->Next();
     }
@@ -509,7 +527,9 @@ const char* INIClass::Get_Entry(const char* section, int index) const {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
-  if (section == nullptr || block == nullptr || len < 1) return false;
+  if (section == nullptr || block == nullptr || len < 1) {
+    return false;
+  }
 
   Clear(section);
 
@@ -525,7 +545,9 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
 
     int length = bstraw.Get(buffer, sizeof(buffer) - 1);
     buffer[length] = '\0';
-    if (length == 0) break;
+    if (length == 0) {
+      break;
+    }
 
     sprintf(sbuffer, "%d", counter);
     Put_String(section, sbuffer, buffer);
@@ -562,7 +584,9 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 int INIClass::Get_UUBlock(const char* section, void* block, int len) const {
-  if (section == nullptr) return 0;
+  if (section == nullptr) {
+    return 0;
+  }
 
   Base64Pipe b64pipe(Base64Pipe::DECODE);
   BufferPipe bpipe(block, len);
@@ -605,7 +629,9 @@ int INIClass::Get_UUBlock(const char* section, void* block, int len) const {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool INIClass::Put_TextBlock(const char* section, const char* text) {
-  if (section == nullptr) return false;
+  if (section == nullptr) {
+    return false;
+  }
 
   Clear(section);
 
@@ -628,7 +654,9 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
         while (count) {
           char c = buffer[count];
 
-          if (isspace(c)) break;
+          if (isspace(c)) {
+            break;
+          }
           count--;
         }
 
@@ -673,10 +701,14 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 int INIClass::Get_TextBlock(const char* section, char* buffer, int len) const {
-  if (len <= 0) return 0;
+  if (len <= 0) {
+    return 0;
+  }
 
   buffer[0] = '\0';
-  if (len <= 1) return 0;
+  if (len <= 1) {
+    return 0;
+  }
 
   int elen = Entry_Count(section);
   int total = 0;
@@ -696,7 +728,9 @@ int INIClass::Get_TextBlock(const char* section, char* buffer, int len) const {
     total += partial;
     buffer += partial;
     len -= partial;
-    if (len <= 1) break;
+    if (len <= 1) {
+      break;
+    }
   }
   return total;
 }
@@ -777,7 +811,9 @@ int INIClass::Get_Int(const char* section, const char* entry,
   /*
   **	Verify that the parameters are nominally correct.
   */
-  if (section == nullptr || entry == nullptr) return defvalue;
+  if (section == nullptr || entry == nullptr) {
+    return defvalue;
+  }
 
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr && entryptr->Value != nullptr) {
@@ -852,7 +888,9 @@ int INIClass::Get_Hex(const char* section, const char* entry,
   /*
   **	Verify that the parameters are nominally correct.
   */
-  if (section == nullptr || entry == nullptr) return defvalue;
+  if (section == nullptr || entry == nullptr) {
+    return defvalue;
+  }
 
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr && entryptr->Value != nullptr) {
@@ -882,13 +920,17 @@ int INIClass::Get_Hex(const char* section, const char* entry,
  *=============================================================================================*/
 bool INIClass::Put_String(const char* section, const char* entry,
                           const char* string) {
-  if (section == nullptr || entry == nullptr) return false;
+  if (section == nullptr || entry == nullptr) {
+    return false;
+  }
 
   INISection* secptr = Find_Section(section);
 
   if (secptr == nullptr) {
     secptr = new INISection(strdup(section));
-    if (secptr == nullptr) return false;
+    if (secptr == nullptr) {
+      return false;
+    }
     SectionList.Add_Tail(secptr);
     SectionIndex.Add_Index(secptr->Index_ID(), secptr);
   }
@@ -953,8 +995,9 @@ int INIClass::Get_String(const char* section, const char* entry,
   if (buffer != nullptr && size > 0) {
     buffer[0] = '\0';
   }
-  if (buffer == nullptr || !size || section == nullptr || entry == nullptr)
+  if (buffer == nullptr || !size || section == nullptr || entry == nullptr) {
     return 0;
+  }
 
   /*
   **	Fetch the entry string if it is present. If not, then the normal default
@@ -975,7 +1018,9 @@ int INIClass::Get_String(const char* section, const char* entry,
     buffer[0] = '\0';
     return 0;
   }
-  if (buffer != defvalue) strncpy(buffer, defvalue, size);
+  if (buffer != defvalue) {
+    strncpy(buffer, defvalue, size);
+  }
   buffer[size - 1] = '\0';
   strtrim(buffer);
   return strlen(buffer);
@@ -1033,7 +1078,9 @@ bool INIClass::Get_Bool(const char* section, const char* entry,
   /*
   **	Verify that the parameters are nominally correct.
   */
-  if (section == nullptr || entry == nullptr) return defvalue;
+  if (section == nullptr || entry == nullptr) {
+    return defvalue;
+  }
 
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr && entryptr->Value != nullptr) {

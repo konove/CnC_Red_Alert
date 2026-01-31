@@ -239,7 +239,9 @@ bool Init_Network() {
   This call allocates all necessary queue buffers, allocates Real-mode
   memory, and commands IPX to start listening on the Global Channel.
   ------------------------------------------------------------------------*/
-  if (!Ipx.Init()) return false;
+  if (!Ipx.Init()) {
+    return false;
+  }
 
   /*------------------------------------------------------------------------
   Allocate our "meta-packet" buffer
@@ -1046,7 +1048,9 @@ static int Net_Join_Dialog() {
                       GlobalPacketNames, 11);
   Ipx.Mono_Debug_Print(-1, 1);
 #endif
-  while (Get_Mouse_State() > 0) Show_Mouse();
+  while (Get_Mouse_State() > 0) {
+    Show_Mouse();
+  }
 
   /*
   ---------------------------- Processing loop -----------------------------
@@ -1148,7 +1152,9 @@ static int Net_Join_Dialog() {
           joinbtn.Add_Tail(*commands);
           newbtn.Add_Tail(*commands);
         }
-        if (joinstate == JOIN_CONFIRMED) sendbtn.Add_Tail(*commands);
+        if (joinstate == JOIN_CONFIRMED) {
+          sendbtn.Add_Tail(*commands);
+        }
       }
       /*
       .......................... Redraw buttons ..........................
@@ -1338,7 +1344,9 @@ static int Net_Join_Dialog() {
       - otherwise, select that color
       ------------------------------------------------------------------*/
       case KN_LMOUSE:
-        if (joinstate > JOIN_NOTHING) break;
+        if (joinstate > JOIN_NOTHING) {
+          break;
+        }
         if (_Kbd->MouseQX > cbox_x[0] &&
             _Kbd->MouseQX < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
             _Kbd->MouseQY > d_color_y &&
@@ -1503,7 +1511,9 @@ static int Net_Join_Dialog() {
             break;
           }
         }
-        if (found) break;
+        if (found) {
+          break;
+        }
         /*
         .................... Save player & game name ....................
         */
@@ -2010,7 +2020,9 @@ static void Clear_Game_List(ListClass* gamelist) {
   /*------------------------------------------------------------------------
   Clear the 'Games' Vector
   ------------------------------------------------------------------------*/
-  for (i = 0; i < Games.Count(); i++) delete Games[i];
+  for (i = 0; i < Games.Count(); i++) {
+    delete Games[i];
+  }
 
   Games.Clear();
 
@@ -2054,7 +2066,9 @@ static void Clear_Player_List(ListClass* playerlist) {
   /*------------------------------------------------------------------------
   Clear the 'Players' Vector
   ------------------------------------------------------------------------*/
-  for (i = 0; i < Players.Count(); i++) delete Players[i];
+  for (i = 0; i < Players.Count(); i++) {
+    delete Players[i];
+  }
 
   Players.Clear();
 
@@ -2217,9 +2231,10 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
     If the user specified a remote server address, broadcast over that
     network, too.
     .....................................................................*/
-    if (IsBridge)
+    if (IsBridge) {
       Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0,
                               &BridgeNet);
+    }
   }
 
   /*------------------------------------------------------------------------
@@ -2242,9 +2257,10 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
     If the user specified a remote server address, broadcast over that
     network, too.
     .....................................................................*/
-    if (IsBridge)
+    if (IsBridge) {
       Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0,
                               &BridgeNet);
+    }
   }
 
 } /* end of Send_Join_Queries */
@@ -2309,16 +2325,18 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   If there is no incoming packet, just return
   ------------------------------------------------------------------------*/
   rc = Ipx.Get_Global_Message(&GPacket, &GPacketlen, &GAddress, &GProductID);
-  if (!rc || GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER)
+  if (!rc || GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER) {
     return EV_NONE;
+  }
 
   /*------------------------------------------------------------------------
   If we're joined in a game, handle the packet in a standard way; otherwise,
   don't answer standard queries.
   ------------------------------------------------------------------------*/
   if (*joinstate == JOIN_CONFIRMED &&
-      Process_Global_Packet(&GPacket, &GAddress) != 0)
+      Process_Global_Packet(&GPacket, &GAddress) != 0) {
     return EV_NONE;
+  }
 
   /*------------------------------------------------------------------------
   NET_ANSWER_GAME:  Another system is answering our GAME query, so add that
@@ -2351,7 +2369,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           address into our Game slot, since the guy responding to this
           must be game owner.
           ............................................................*/
-          if (Games[i]->Game.IsOpen) Games[i]->Address = GAddress;
+          if (Games[i]->Game.IsOpen) {
+            Games[i]->Address = GAddress;
+          }
         }
         break;
       }
@@ -2417,8 +2437,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     .....................................................................*/
     i = gamelist->Current_Index();
     if (Games.Count() &&
-        GPacket.PlayerInfo.NameCRC != Compute_Name_CRC(Games[i]->Name))
+        GPacket.PlayerInfo.NameCRC != Compute_Name_CRC(Games[i]->Name)) {
       found = 1;
+    }
 
     /*
     ** Dont add this player if its really me! (hack, hack)
@@ -2533,8 +2554,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       } else {
         ScenarioIdx = -1;
         for (i = 0; i < MPlayerFilenum.Count(); i++) {
-          if (GPacket.ScenarioInfo.Scenario == MPlayerFilenum[i])
+          if (GPacket.ScenarioInfo.Scenario == MPlayerFilenum[i]) {
             ScenarioIdx = i;
+          }
         }
       }
 
@@ -2606,7 +2628,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         Players.Delete(Players[i]);
         playerlist->Flag_To_Redraw();
 
-        if (retcode == EV_NONE) retcode = EV_PLAYER_SIGNOFF;
+        if (retcode == EV_NONE) {
+          retcode = EV_PLAYER_SIGNOFF;
+        }
       }
     }
   }
@@ -3095,7 +3119,9 @@ static int Net_New_Dialog() {
 
   Load_Title_Page(true);
   Set_Palette(Palette);
-  while (Get_Mouse_State() > 0) Show_Mouse();
+  while (Get_Mouse_State() > 0) {
+    Show_Mouse();
+  }
 
   /*
   ---------------------------- Processing loop -----------------------------
@@ -3281,9 +3307,8 @@ static int Net_New_Dialog() {
       User adjusts build level
       ------------------------------------------------------------------*/
       case BUTTON_LEVEL | KN_BUTTON:
-        BuildLevel = levelgauge.Get_Value() + 1;
-        if (BuildLevel > MPLAYER_BUILD_LEVEL_MAX)  // if it's pegged, max it out
-          BuildLevel = MPLAYER_BUILD_LEVEL_MAX;
+        BuildLevel = std::min<unsigned int>(levelgauge.Get_Value() + 1,
+                                            MPLAYER_BUILD_LEVEL_MAX);
 
         Hide_Mouse();
         LogicPage->Fill_Rect(d_level_x + d_level_w + 2 * factor, d_level_y,
@@ -3428,7 +3453,9 @@ static int Net_New_Dialog() {
         a chance to know about this new guy)
         ...............................................................*/
         i = std::max<int>(Ipx.Global_Response_Time() * 2, 60);
-        while (TickCount.Time() - ok_timer < i) Ipx.Service();
+        while (TickCount.Time() - ok_timer < i) {
+          Ipx.Service();
+        }
 
         /*...............................................................
         If there are at least 2 players, go ahead & play; error otherwise
@@ -3744,7 +3771,9 @@ static int Net_New_Dialog() {
       /*..................................................................
       Wait for all the ACK's to come in.
       ..................................................................*/
-      while (Ipx.Global_Num_Send() > 0) Ipx.Service();
+      while (Ipx.Global_Num_Send() > 0) {
+        Ipx.Service();
+      }
     }
 
     /*.....................................................................
@@ -4405,7 +4434,9 @@ static int Net_Fake_New_Dialog() {
 #endif  // VIRTUAL_SUBNET_SERVER
 
   CCDebugString("C&C95 - About to reveal mouse\n");
-  while (Get_Mouse_State() > 0) Show_Mouse();
+  while (Get_Mouse_State() > 0) {
+    Show_Mouse();
+  }
 
   /*
   ---------------------------- Processing loop -----------------------------
@@ -4537,7 +4568,9 @@ static int Net_Fake_New_Dialog() {
             join_timer.Set(3 * 60, true);
             break;
           }
-          if (join_timer.Time()) break;
+          if (join_timer.Time()) {
+            break;
+          }
 
           CCDebugString("C&C95 - Join timer expired\n");
 
@@ -4547,7 +4580,9 @@ static int Net_Fake_New_Dialog() {
           a chance to know about this new guy)
           ...............................................................*/
           i = std::max<int>(Ipx.Global_Response_Time() * 2, 120);
-          while (TickCount.Time() - ok_timer < i) Ipx.Service();
+          while (TickCount.Time() - ok_timer < i) {
+            Ipx.Service();
+          }
 
           /*...............................................................
           If there are at least 2 players, go ahead & play; error otherwise
@@ -4675,7 +4710,9 @@ static int Net_Fake_New_Dialog() {
       /*..................................................................
       Wait for all the ACK's to come in.
       ..................................................................*/
-      while (Ipx.Global_Num_Send() > 0) Ipx.Service();
+      while (Ipx.Global_Num_Send() > 0) {
+        Ipx.Service();
+      }
     }
 
     /*.....................................................................
@@ -4950,7 +4987,9 @@ static int Net_Fake_Join_Dialog() {
   ---------------------------- Init Mono Output ----------------------------
   */
   CCDebugString("C&C95 - About to reveal mouse\n");
-  while (Get_Mouse_State() > 0) Show_Mouse();
+  while (Get_Mouse_State() > 0) {
+    Show_Mouse();
+  }
 
   /*
   ---------------------------- Processing loop -----------------------------

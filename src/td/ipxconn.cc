@@ -119,7 +119,9 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
   /*------------------------------------------------------------------------
   Save the values passed in
   ------------------------------------------------------------------------*/
-  if (address) Address = *address;
+  if (address) {
+    Address = *address;
+  }
   ID = id;
   port::SafeCopy(Name, name);
 
@@ -137,8 +139,9 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
       bridge address the "official" way
       .....................................................................*/
       if (ConnectionNum != 0) {
-        if (IPX_Get_Local_Target(net, node, Socket, ImmediateAddress) != 0)
+        if (IPX_Get_Local_Target(net, node, Socket, ImmediateAddress) != 0) {
           memcpy(ImmediateAddress, node, 6);
+        }
       } else {
         /*.....................................................................
         Otherwise, use the destination node address as the ImmediateAddress, and
@@ -275,12 +278,16 @@ void IPXConnClass::Configure(unsigned short socket, int conn_num,
 bool IPXConnClass::Start_Listening() {
 #ifndef NOT_FOR_WIN95
 
-  if (Winsock.Get_Connected()) return true;
+  if (Winsock.Get_Connected()) {
+    return true;
+  }
 
   /*------------------------------------------------------------------------
   Open the Socket
   ------------------------------------------------------------------------*/
-  if (!Open_Socket(Socket)) return false;
+  if (!Open_Socket(Socket)) {
+    return false;
+  }
 
   if (IPX_Start_Listening95()) {
     Listening = 1;
@@ -299,12 +306,16 @@ bool IPXConnClass::Start_Listening() {
   /*------------------------------------------------------------------------
   Don't do a thing unless we've been configured, and we're not listening.
   ------------------------------------------------------------------------*/
-  if (Configured == 0 || Listening == 1) return (false);
+  if (Configured == 0 || Listening == 1) {
+    return (false);
+  }
 
   /*------------------------------------------------------------------------
   Open the Socket
   ------------------------------------------------------------------------*/
-  if (!Open_Socket(Socket)) return (false);
+  if (!Open_Socket(Socket)) {
+    return (false);
+  }
 
   /*------------------------------------------------------------------------
   Clear the ECB & header
@@ -370,7 +381,9 @@ bool IPXConnClass::Stop_Listening() {
   /*------------------------------------------------------------------------
   Don't do anything unless we're already Listening.
   ------------------------------------------------------------------------*/
-  if (Listening == 0) return false;
+  if (Listening == 0) {
+    return false;
+  }
 
 #ifndef NOT_FOR_WIN95
 
@@ -514,7 +527,9 @@ void IPXConnClass::Close_Socket(unsigned short socket) {
   that isn't open.  You'll regret it forever (or until at least until you're
   through rebooting, which, if you're on a Pentium is the same thing).
   ------------------------------------------------------------------------*/
-  if (SocketOpen == 1) IPX_Close_Socket(socket);
+  if (SocketOpen == 1) {
+    IPX_Close_Socket(socket);
+  }
 
   SocketOpen = 0;
 

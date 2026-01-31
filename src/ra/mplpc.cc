@@ -57,7 +57,9 @@ void GetGameDef(void* gameDef, int* len) {
   PostWindowsMessage();
 
   // wait for return
-  while ((n = MGenGetNode(REC_QUEUE)) == 0) Yield();
+  while ((n = MGenGetNode(REC_QUEUE)) == 0) {
+    Yield();
+  }
 
   r = (LPCReturn*)n->rtqDatum;
 
@@ -86,7 +88,9 @@ int LPCGetMPAddr() {
 
   PostWindowsMessage();
 
-  while ((n = MGenGetNode(REC_QUEUE)) == 0) Yield();
+  while ((n = MGenGetNode(REC_QUEUE)) == 0) {
+    Yield();
+  }
 
   r = (LPCReturn*)n->rtqDatum;
 
@@ -110,7 +114,9 @@ void NullLPC() {
 
   PostWindowsMessage();
 
-  while ((n = MGenGetNode(REC_QUEUE)) == 0) Yield();
+  while ((n = MGenGetNode(REC_QUEUE)) == 0) {
+    Yield();
+  }
 
   MGenMoveTo(REC_QUEUE, IDLE_QUEUE);
 }

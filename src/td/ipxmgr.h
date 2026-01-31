@@ -186,7 +186,7 @@ class IPXManagerClass : public ConnManClass {
   int Init();
   int Is_IPX();
   void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
-                          unsigned long timeout) override;
+                  unsigned long timeout) override;
   void Set_Bridge(NetNumType bridge);
 
   /*.....................................................................
@@ -210,7 +210,7 @@ class IPXManagerClass : public ConnManClass {
                          unsigned short* product_id);
 
   int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
-                                   int conn_id = CONNECTION_NONE) override;
+                           int conn_id = CONNECTION_NONE) override;
   int Get_Private_Message(void* buf, int* buflen, int* conn_id) override;
 
   /*.....................................................................
@@ -257,7 +257,7 @@ class IPXManagerClass : public ConnManClass {
   Debug routines
   .....................................................................*/
   void Configure_Debug(int index, int offset, int size, char** names,
-                               int maxnames) override;
+                       int maxnames) override;
   void Mono_Debug_Print(int index, int refresh = 0) override;
 
   /*

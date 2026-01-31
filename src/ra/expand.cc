@@ -381,7 +381,9 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     port::SafeCopy(buffer, TestNames2[index]);
     port::SafeCopy(buffer2, TestNames2[index]);
 #endif
-    if (buffer[0] == 0) break;
+    if (buffer[0] == 0) {
+      break;
+    }
 
     port::SafeAppend(buffer, ".INI");
     port::SafeAppend(buffer2, ".INI");
@@ -389,10 +391,11 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     Scen.Scenario = index;
     file.Set_Name(buffer);
     bool bOk;
-    if (index < 36)
+    if (index < 36) {
       bOk = bCounterstrike;
-    else
+    } else {
       bOk = !bCounterstrike;
+    }
 
     if (bOk && file.Is_Available()) {
       EObjectClass* obj = new EObjectClass;
@@ -474,10 +477,11 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       CCPalette.Set();
 
       Dialog_Box(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
-      if (bCounterstrike)
+      if (bCounterstrike) {
         Draw_Caption(TXT_WOL_CS_MISSIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
-      else
+      } else {
         Draw_Caption(TXT_WOL_AM_MISSIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
+      }
       buttons->Draw_All();
       Show_Mouse();
     }

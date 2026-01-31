@@ -177,10 +177,11 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
           for (int i = 0; i < 2; i++, deltacodes >>= 4) {
             prev_sample += ww_4bitdecode[deltacodes & 0xF];
 
-            if (prev_sample < 0)
+            if (prev_sample < 0) {
               prev_sample = 0;
-            else if (prev_sample > 0xFF)
+            } else if (prev_sample > 0xFF) {
               prev_sample = 0xFF;
+            }
 
             sample_buf[i] = prev_sample;
           }
@@ -198,10 +199,11 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
           for (int i = 0; i < 4; i++, deltacodes >>= 2) {
             prev_sample += ww_2bitdecode[deltacodes & 3];
 
-            if (prev_sample < 0)
+            if (prev_sample < 0) {
               prev_sample = 0;
-            else if (prev_sample > 0xFF)
+            } else if (prev_sample > 0xFF) {
               prev_sample = 0xFF;
+            }
 
             sample_buf[i] = prev_sample;
           }
@@ -226,7 +228,9 @@ static bool RefillStream(ChannelState& chan) {
   uint32_t max_update =
       ObtainedSpec.samples;  // assume the target rate is not lower
 
-  if (chan.offset == chan.length) return false;
+  if (chan.offset == chan.length) {
+    return false;
+  }
 
   int samples_to_gen = std::min(max_update, chan.length - chan.offset);
   // read blocks until we have enough samples
@@ -240,19 +244,22 @@ static bool RefillStream(ChannelState& chan) {
     {
       SDL_AudioStreamPut(chan.stream, chan.in_ptr, block_in_size);
       chan.in_ptr += block_in_size;
-    } else if (chan.compression == SCOMP_SOS)  // ADPCM
+    } else if (chan.compression == SCOMP_SOS) {  // ADPCM
       chan.in_ptr = DecodeADPCMBlock(chan, block_in_size, chan.in_ptr);
-    else if (chan.compression == SCOMP_WESTWOOD)
+    } else if (chan.compression == SCOMP_WESTWOOD) {
       chan.in_ptr = DecodeWestwoodBlock(chan, block_in_size, chan.in_ptr);
-    else
+    } else {
       return false;  // shouldn't happen, but...
+    }
 
     chan.offset += block_out_size / (chan.bits / 8);
     samples_to_gen -= block_out_size / (chan.bits / 8);
   }
 
   // written all data, flush the stream
-  if (chan.offset == chan.length) SDL_AudioStreamFlush(chan.stream);
+  if (chan.offset == chan.length) {
+    SDL_AudioStreamFlush(chan.stream);
+  }
 
   return true;
 }
@@ -264,13 +271,16 @@ static void ResetStream(ChannelState& chan, const AUDHeaderType* header) {
   // re-allocate stream if needed
   if (channels != chan.channels || bits != chan.bits ||
       header->Rate != chan.sample_rate) {
-    if (chan.stream) SDL_FreeAudioStream(chan.stream);
+    if (chan.stream) {
+      SDL_FreeAudioStream(chan.stream);
+    }
 
     chan.stream = SDL_NewAudioStream(
         bits == 16 ? AUDIO_S16 : AUDIO_U8, channels, header->Rate,
         ObtainedSpec.format, ObtainedSpec.channels, ObtainedSpec.freq);
-  } else
+  } else {
     SDL_AudioStreamClear(chan.stream);
+  }
 }
 
 static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
@@ -278,10 +288,14 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
   auto* stream16 = (int16_t*)stream;
 
   // let VQA do its thing
-  if (ExtraCallback) ExtraCallback(stream, len);
+  if (ExtraCallback) {
+    ExtraCallback(stream, len);
+  }
 
   for (auto& chan : Channels) {
-    if (!chan.playing) continue;
+    if (!chan.playing) {
+      continue;
+    }
 
     // put more data into stream if needed
     // unless it's a file, we do that elsewhere
@@ -313,8 +327,9 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
 
     // mix into buffer
     auto* mix16 = (int16_t*)MixBuffer;
-    for (int s = 0; s < stream_len / sizeof(int16_t); s++)
+    for (int s = 0; s < stream_len / sizeof(int16_t); s++) {
       stream16[s] += (mix16[s] * chan.volume) >> 15;
+    }
   }
 }
 
@@ -322,12 +337,16 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
                            bool /*real_time_start*/) {
   int id = Get_Free_Sample_Handle(0xFF);
 
-  if (id == -1) return -1;
+  if (id == -1) {
+    return -1;
+  }
 
   // try to open file and get header
   int handle = Open_File(filename, READ);
 
-  if (handle < 0) return -1;
+  if (handle < 0) {
+    return -1;
+  }
 
   AUDHeaderType header;
 
@@ -384,7 +403,9 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
 void Sound_Callback() {
   // update file stream
   for (auto& chan : Channels) {
-    if (chan.file_handle == -1) continue;
+    if (chan.file_handle == -1) {
+      continue;
+    }
 
     if (!chan.playing) {
       // clean up file
@@ -398,7 +419,9 @@ void Sound_Callback() {
     // (not that it's a problem on any modern system, but still)
     int max_buf = SDL_AUDIO_BITSIZE(ObtainedSpec.format) / 8 *
                   ObtainedSpec.channels * ObtainedSpec.freq;
-    if (SDL_AudioStreamAvailable(chan.stream) >= max_buf) continue;
+    if (SDL_AudioStreamAvailable(chan.stream) >= max_buf) {
+      continue;
+    }
 
     uint16_t block_header[4];
     if (Read_File(chan.file_handle, block_header, 8) != 8) {
@@ -469,7 +492,9 @@ void Sound_End() {
 }
 
 void Stop_Sample(int handle) {
-  if (handle < 0 || handle >= MAX_SFX) return;
+  if (handle < 0 || handle >= MAX_SFX) {
+    return;
+  }
 
   SDL_LockAudioDevice(AudioDevice);
 
@@ -484,13 +509,17 @@ void Stop_Sample(int handle) {
 }
 
 bool Sample_Status(int handle) {
-  if (handle < 0) return false;
+  if (handle < 0) {
+    return false;
+  }
   return Channels[handle].playing;
 }
 
 bool Is_Sample_Playing(const void* sample) {
   for (int i = 0; i < MAX_SFX; i++) {
-    if (Channels[i].sample == sample && Sample_Status(i)) return true;
+    if (Channels[i].sample == sample && Sample_Status(i)) {
+      return true;
+    }
   }
 
   return false;
@@ -498,7 +527,9 @@ bool Is_Sample_Playing(const void* sample) {
 
 void Stop_Sample_Playing(const void* sample) {
   for (int i = 0; i < MAX_SFX; i++) {
-    if (Channels[i].sample == sample) Stop_Sample(i);
+    if (Channels[i].sample == sample) {
+      Stop_Sample(i);
+    }
   }
 }
 
@@ -510,7 +541,9 @@ int Play_Sample(const void* sample, int priority, int volume,
 
 int Play_Sample_Handle(const void* sample, int priority, int volume,
                        signed short /*panloc*/, int id) {
-  if (id == -1 || !sample) return -1;
+  if (id == -1 || !sample) {
+    return -1;
+  }
 
   // play it
   const auto* header = static_cast<const AUDHeaderType*>(sample);
@@ -572,8 +605,9 @@ int Set_Score_Vol(int volume) {
       if (ScoreVolume) {
         chan.raw_volume = chan.raw_volume / old * ScoreVolume;
         chan.volume = Calculate_Volume(chan.raw_volume);
-      } else
+      } else {
         chan.playing = false;
+      }
     }
   }
 
@@ -598,17 +632,23 @@ int Get_Free_Sample_Handle(int priority) {
   // find free channel
   int id;
   for (id = MAX_SFX - 1; id >= 0; id--) {
-    if (!Channels[id].playing) break;
+    if (!Channels[id].playing) {
+      break;
+    }
   }
 
   if (id < 0) {
     // look for lower priority channel instead
     for (id = 0; id < MAX_SFX; id++) {
-      if (Channels[id].priority < priority) break;
+      if (Channels[id].priority < priority) {
+        break;
+      }
     }
 
     // no channel found, give up
-    if (id == MAX_SFX) return -1;
+    if (id == MAX_SFX) {
+      return -1;
+    }
 
     Stop_Sample(id);
   }
@@ -641,7 +681,9 @@ static long Sample_Read(int fh, void* buffer, size_t size) {
   void* outbuffer;         // Pointer to start of raw data.
   long actual_bytes_read;  // Actual bytes read in, including header
 
-  if (!buffer || fh == kInvalidHandle || size <= sizeof(RawHeader)) return 0;
+  if (!buffer || fh == kInvalidHandle || size <= sizeof(RawHeader)) {
+    return 0;
+  }
 
   size -= sizeof(RawHeader);
   outbuffer = Add_Long_To_Pointer(buffer, sizeof(RawHeader));
@@ -657,14 +699,18 @@ void* Load_Sample(const char* filename) {
   long size;
   int fh;
 
-  if (!filename || !Find_File(filename)) return nullptr;
+  if (!filename || !Find_File(filename)) {
+    return nullptr;
+  }
 
   fh = Open_File(filename, READ);
   if (fh != kInvalidHandle) {
     size = File_Size(fh) + sizeof(AUDHeaderType);
     buffer = Alloc(size, MEM_NORMAL);
 
-    if (buffer) Sample_Read(fh, buffer, size);
+    if (buffer) {
+      Sample_Read(fh, buffer, size);
+    }
 
     Close_File(fh);
   }

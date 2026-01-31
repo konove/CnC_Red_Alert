@@ -87,9 +87,7 @@ inline bool Is_Target_Trigger(TARGET a) {
 inline bool Is_Target_Infantry(TARGET a) {
   return Target_Kind(a) == KIND_INFANTRY;
 }
-inline bool Is_Target_Bullet(TARGET a) {
-  return Target_Kind(a) == KIND_BULLET;
-}
+inline bool Is_Target_Bullet(TARGET a) { return Target_Kind(a) == KIND_BULLET; }
 inline bool Is_Target_Terrain(TARGET a) {
   return Target_Kind(a) == KIND_TERRAIN;
 }

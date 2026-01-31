@@ -155,7 +155,9 @@ int WOL_Main() {
             //					debugprint(
             //"RESULT_WOLGSUP_FATALERROR from game setup dialog.\n" );
             // Fatal( "RESULT_WOLGSUP_FATALERROR from game setup dialog.\n" );
-            if (pWolapi->pChatSink->bConnected) pWolapi->Logout();
+            if (pWolapi->pChatSink->bConnected) {
+              pWolapi->Logout();
+            }
             bKeepGoing = false;
             break;
         }
@@ -245,7 +247,9 @@ void HandleDLLFail() {
 
   char szPath[_MAX_PATH + 1];
   ::GetSystemDirectory(szPath, _MAX_PATH);
-  if (*szPath && szPath[strlen(szPath) - 1] != '\\') strcat(szPath, "\\");
+  if (*szPath && szPath[strlen(szPath) - 1] != '\\') {
+    strcat(szPath, "\\");
+  }
 
   strcat(szPath, "oleaut32.dll");
 
@@ -254,10 +258,11 @@ void HandleDLLFail() {
 
   //	debugprint( "HandleDLLFail(): filesize of oleaut32 is %i\n",
   // wfd.nFileSizeLow );
-  if (handle != INVALID_HANDLE_VALUE && wfd.nFileSizeLow <= 232720)
+  if (handle != INVALID_HANDLE_VALUE && wfd.nFileSizeLow <= 232720) {
     WWMessageBox().Process(TXT_WOL_DLLERROR_GETIE3);
-  else
+  } else {
     WWMessageBox().Process(TXT_WOL_DLLERROR_CALLUS);
+  }
 
   FindClose(handle);
 

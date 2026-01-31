@@ -222,7 +222,9 @@ RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
   /*
   **	If there is no target for the radio message, then always return static.
   */
-  if (to == nullptr) return RADIO_STATIC;
+  if (to == nullptr) {
+    return RADIO_STATIC;
+  }
 
   /*
   **	Handle some special case processing that occurs when certain messages

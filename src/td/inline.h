@@ -186,9 +186,13 @@ inline int Distance(COORDINATE coord1, COORDINATE coord2) {
   int diff1, diff2;
 
   diff1 = Coord_Y(coord1) - Coord_Y(coord2);
-  if (diff1 < 0) diff1 = -diff1;
+  if (diff1 < 0) {
+    diff1 = -diff1;
+  }
   diff2 = Coord_X(coord1) - Coord_X(coord2);
-  if (diff2 < 0) diff2 = -diff2;
+  if (diff2 < 0) {
+    diff2 = -diff2;
+  }
   if (diff1 > diff2) {
     return diff1 + (diff2 >> 1);
   }
@@ -214,9 +218,13 @@ inline int Distance(CELL coord1, CELL coord2) {
   int diff1, diff2;
 
   diff1 = Cell_Y(coord1) - Cell_Y(coord2);
-  if (diff1 < 0) diff1 = -diff1;
+  if (diff1 < 0) {
+    diff1 = -diff1;
+  }
   diff2 = Cell_X(coord1) - Cell_X(coord2);
-  if (diff2 < 0) diff2 = -diff2;
+  if (diff2 < 0) {
+    diff2 = -diff2;
+  }
   if (diff1 > diff2) {
     return diff1 + (diff2 >> 1);
   }

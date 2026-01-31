@@ -113,7 +113,9 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
   /*------------------------------------------------------------------------
   Save the values passed in
   ------------------------------------------------------------------------*/
-  if (address) Address = *address;
+  if (address) {
+    Address = *address;
+  }
   ID = id;
   port::SafeCopy(Name, name);
 
@@ -278,7 +280,9 @@ int IPXConnClass::Start_Listening() {
   /*
   ** Open the socket.
   */
-  if (!Open_Socket(Socket)) return false;
+  if (!Open_Socket(Socket)) {
+    return false;
+  }
 
   /*
   ** start listening on the socket.
@@ -291,12 +295,16 @@ int IPXConnClass::Start_Listening() {
   return false;
 
 #else
-  if (Winsock.Get_Connected()) return (true);
+  if (Winsock.Get_Connected()) {
+    return (true);
+  }
 
   /*------------------------------------------------------------------------
   Open the Socket
   ------------------------------------------------------------------------*/
-  if (!Open_Socket(Socket)) return (false);
+  if (!Open_Socket(Socket)) {
+    return (false);
+  }
 
   if (IPX_Start_Listening95()) {
     Listening = 1;
@@ -392,7 +400,9 @@ int IPXConnClass::Start_Listening() {
  *=========================================================================*/
 int IPXConnClass::Stop_Listening() {
 #ifdef WINSOCK_IPX
-  if (PacketTransport) PacketTransport->Stop_Listening();
+  if (PacketTransport) {
+    PacketTransport->Stop_Listening();
+  }
   Listening = 0;
 
   //	All done.
@@ -737,7 +747,9 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
   /*------------------------------------------------------------------------
   Wait for send to complete
   ------------------------------------------------------------------------*/
-  while (SendECB->InUse) Let_IPX_Breath();
+  while (SendECB->InUse) {
+    Let_IPX_Breath();
+  }
 
   if (SendECB->CompletionCode != 0) {
     return (0);

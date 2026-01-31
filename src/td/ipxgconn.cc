@@ -318,8 +318,9 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
     */
     packet = (GlobalHeaderType*)rec_entry->Buffer;
     packetlen = rec_entry->BufLen - sizeof(GlobalHeaderType);
-    if (packetlen > 0)
+    if (packetlen > 0) {
       memcpy(buf, rec_entry->Buffer + sizeof(GlobalHeaderType), packetlen);
+    }
     *buflen = packetlen;
     *address = packet->Address;
     *product_id = packet->ProductID;
@@ -417,13 +418,17 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
   Get a pointer to the next received entry
   ------------------------------------------------------------------------*/
   rec_entry = Queue->Get_Receive(0);
-  if (rec_entry == nullptr) return 1;
+  if (rec_entry == nullptr) {
+    return 1;
+  }
 
   /*------------------------------------------------------------------------
   If this packet doesn't require an ACK, mark it as ACK'd.
   ------------------------------------------------------------------------*/
   packet_hdr = (GlobalHeaderType*)rec_entry->Buffer;
-  if (packet_hdr->Header.Code == PACKET_DATA_NOACK) rec_entry->IsACK = 1;
+  if (packet_hdr->Header.Code == PACKET_DATA_NOACK) {
+    rec_entry->IsACK = 1;
+  }
 
   /*------------------------------------------------------------------------
   If this packet hasn't been ACK'd, send an ACK:
@@ -450,8 +455,9 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
   queue.
   ------------------------------------------------------------------------*/
   if (rec_entry != nullptr && rec_entry->IsRead && rec_entry->IsACK &&
-      Queue->Num_Receive() > 1)
+      Queue->Num_Receive() > 1) {
     Queue->UnQueue_Receive(nullptr, nullptr, 0);
+  }
 
   return 1;
 

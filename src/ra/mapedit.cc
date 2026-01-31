@@ -909,7 +909,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
             if (wayname[1] >= 'A' && wayname[1] <= 'Z') {
               waynm = (waynm + 1) * 26 + (wayname[1] - 'A');
             }
-            if (waynm < WAYPT_HOME) Update_Waypoint(waynm);
+            if (waynm < WAYPT_HOME) {
+              Update_Waypoint(waynm);
+            }
           }
         }
       }
@@ -965,7 +967,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         **	clear that waypoint.
         */
         for (i = 0; i < WAYPT_HOME; i++) {
-          if (Scen.Waypoint[i] == CurrentCell) Scen.Waypoint[i] = -1;
+          if (Scen.Waypoint[i] == CurrentCell) {
+            Scen.Waypoint[i] = -1;
+          }
         }
 
         /*
@@ -975,9 +979,10 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         for (i = 0; i < MAX_PLAYERS; i++) {
           house = (HousesType)(HOUSE_MULTI1 + i);
           if (HouseClass::As_Pointer(house) &&
-              CurrentCell == HouseClass::As_Pointer(house)->FlagHome)
+              CurrentCell == HouseClass::As_Pointer(house)->FlagHome) {
             HouseClass::As_Pointer(house)->Flag_Remove(As_Target(CurrentCell),
                                                        true);
+          }
         }
 
         /*
@@ -985,8 +990,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         **	waypoint designation.
         */
         if (Scen.Waypoint[WAYPT_HOME] != CurrentCell &&
-            Scen.Waypoint[WAYPT_REINF] != CurrentCell)
+            Scen.Waypoint[WAYPT_REINF] != CurrentCell) {
           (*this)[CurrentCell].IsWaypoint = 0;
+        }
         Changed = 1;
         Flag_Cell(CurrentCell);
       }
@@ -1663,7 +1669,9 @@ void MapEditClass::Main_Menu() {
           HidPage.Clear();
           Flag_To_Redraw(true);
           Render();
-          if (rc == 2) return;
+          if (rc == 2) {
+            return;
+          }
           if (rc == 0) {
             if (Save_Scenario() != 0) {
               break;
@@ -2072,7 +2080,9 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
   }
 
   Map.Flag_To_Redraw(true);
-  if (cancel) return (false);
+  if (cancel) {
+    return (false);
+  }
 
   return (true);
 }

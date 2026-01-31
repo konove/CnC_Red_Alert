@@ -232,15 +232,19 @@ int GaugeClass::Draw_Me(int forced) {
       int middle = Value_To_Pixel(CurValue);
       int color = CC_BRIGHT_GREEN;
       if (IsHorizontal) {
-        if (middle >= X + 1)
+        if (middle >= X + 1) {
           LogicPage->Fill_Rect(X + 1, Y + 1, middle, Y + Height - 2, color);
+        }
       } else {
-        if (middle >= Y + 1)
+        if (middle >= Y + 1) {
           LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, middle, color);
+        }
       }
     }
 
-    if (HasThumb) Draw_Thumb();
+    if (HasThumb) {
+      Draw_Thumb();
+    }
 
     /*
     =================== Display the mouse ===================
@@ -505,7 +509,9 @@ int TriColorGaugeClass::Draw_Me(int forced) {
       }
     }
 
-    if (HasThumb) Draw_Thumb();
+    if (HasThumb) {
+      Draw_Thumb();
+    }
 
     /*
     =================== Display the mouse ===================

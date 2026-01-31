@@ -425,14 +425,20 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       /*
       **	Don't add a character if the length is already at maximum.
       */
-      if (Length >= MaxLength) break;
+      if (Length >= MaxLength) {
+        break;
+      }
 
       /*
       **	Invisible characters are never added to the string. This is
       **	especially true for spaces at the beginning of the string.
       */
-      if (!isgraph(ascii) && ascii != ' ') break;
-      if (ascii == ' ' && Length == 0) break;
+      if (!isgraph(ascii) && ascii != ' ') {
+        break;
+      }
+      if (ascii == ' ' && Length == 0) {
+        break;
+      }
 
       /*
       **	If this is an upper case only edit gadget, then force the

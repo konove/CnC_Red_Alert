@@ -44,21 +44,24 @@ SimpleEditDlgClass::SimpleEditDlgClass(int iDialogWidth, const char* szTitle,
   if (szTitle) {
     this->szTitle = new char[strlen(szTitle) + 1];
     strcpy(this->szTitle, szTitle);
-  } else
+  } else {
     this->szTitle = NULL;
+  }
 
   if (szPrompt) {
     this->szPrompt = new char[strlen(szPrompt) + 1];
     strcpy(this->szPrompt, szPrompt);
-  } else
+  } else {
     this->szPrompt = NULL;  //	I wouldn't try this ... not totally implemented.
+  }
 
   if (szPrompt2) {
     this->szPrompt2 = new char[strlen(szPrompt2) + 1];
     strcpy(this->szPrompt2, szPrompt2);
-  } else
+  } else {
     this->szPrompt2 = NULL;  //	This is the flag for whether or not there is a
                              // second edit box.
+  }
 
   *szEdit = 0;
   *szEdit2 = 0;
@@ -102,7 +105,9 @@ const char* SimpleEditDlgClass::Show() {
   int d_dialog_w = iDialogWidth;
   int d_dialog_h = szPrompt2 ? (29 * RESFACTOR) + 2 * d_gap_y + 2 * y_margin
                              : (19 * RESFACTOR) + d_gap_y + 2 * y_margin;
-  if (szTitle) d_dialog_h += 10 * RESFACTOR + 2 * d_gap_y;
+  if (szTitle) {
+    d_dialog_h += 10 * RESFACTOR + 2 * d_gap_y;
+  }
   int d_dialog_x = (((320 * RESFACTOR) - d_dialog_w) / 2);
   int d_dialog_y = (((200 * RESFACTOR) - d_dialog_h) / 2);
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
@@ -225,9 +230,13 @@ const char* SimpleEditDlgClass::Show() {
   */
   commands = &OkBtn;
   CancelBtn.Add_Tail(*commands);
-  if (szMiddleButton) MiddleBtn.Add_Tail(*commands);
+  if (szMiddleButton) {
+    MiddleBtn.Add_Tail(*commands);
+  }
   EditBox.Add_Tail(*commands);
-  if (szPrompt2) EditBox2.Add_Tail(*commands);
+  if (szPrompt2) {
+    EditBox2.Add_Tail(*commands);
+  }
   EditBox.Set_Focus();
 
   /*
@@ -265,7 +274,9 @@ const char* SimpleEditDlgClass::Show() {
       Hide_Mouse();
       if (display) {
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-        if (szTitle) Draw_Caption(szTitle, d_dialog_x, d_dialog_y, d_dialog_w);
+        if (szTitle) {
+          Draw_Caption(szTitle, d_dialog_x, d_dialog_y, d_dialog_w);
+        }
       }
 
       /*
@@ -274,9 +285,10 @@ const char* SimpleEditDlgClass::Show() {
       if (display) {
         Fancy_Text_Print(szPrompt, d_prompt_x, d_prompt_y,
                          GadgetClass::Get_Color_Scheme(), TBLACK, TPF_TEXT);
-        if (szPrompt2)
+        if (szPrompt2) {
           Fancy_Text_Print(szPrompt2, d_prompt2_x, d_prompt2_y,
                            GadgetClass::Get_Color_Scheme(), TBLACK, TPF_TEXT);
+        }
 
         commands->Flag_List_To_Redraw();
       }

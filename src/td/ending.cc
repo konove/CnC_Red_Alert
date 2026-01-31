@@ -205,7 +205,9 @@ void Nod_Ending() {
     }
     Call_Back_Delay(1);
     if (!Keyboard::Check()) {
-      if (!Is_Sample_Playing(loopie6m)) Play_Sample(loopie6m, 255, 128);
+      if (!Is_Sample_Playing(loopie6m)) {
+        Play_Sample(loopie6m, 255, 128);
+      }
     } else {
       if (Is_Sample_Playing(kanefinl)) {
         Clear_KeyBuffer();
@@ -216,18 +218,23 @@ void Nod_Ending() {
           int mousey = _Kbd->MouseQY;
           if (mousey >= 22 * RESFACTOR && mousey <= 177 * RESFACTOR) {
             done = true;
-            if (mousex < 160 * RESFACTOR && mousey < 100 * RESFACTOR)
+            if (mousex < 160 * RESFACTOR && mousey < 100 * RESFACTOR) {
               selection = 2;
-            if (mousex < 160 * RESFACTOR && mousey >= 100 * RESFACTOR)
+            }
+            if (mousex < 160 * RESFACTOR && mousey >= 100 * RESFACTOR) {
               selection = 3;
-            if (mousex >= 160 * RESFACTOR && mousey >= 100 * RESFACTOR)
+            }
+            if (mousex >= 160 * RESFACTOR && mousey >= 100 * RESFACTOR) {
               selection = 4;
+            }
           }
         }
       }
     }
   }
-  if (mouseshown) Hide_Mouse();
+  if (mouseshown) {
+    Hide_Mouse();
+  }
 #ifdef NOT_FOR_WIN95
   delete satpic;
 #else
@@ -235,11 +242,12 @@ void Nod_Ending() {
 #endif  // NOT_FOR_WIN95
 
   /* get rid of all the animating objects */
-  for (int i = 0; i < MAXSCOREOBJS; i++)
+  for (int i = 0; i < MAXSCOREOBJS; i++) {
     if (ScoreObjs[i]) {
       delete ScoreObjs[i];
       ScoreObjs[i] = nullptr;
     }
+  }
   // erase the "choose a target" text
   SeenBuff.Fill_Rect(0, 180 * RESFACTOR, 319 * RESFACTOR, 199 * RESFACTOR, 0);
   TextPrintBuffer->Fill_Rect(0, 180 * RESFACTOR, 319 * RESFACTOR,

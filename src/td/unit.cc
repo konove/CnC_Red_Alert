@@ -421,7 +421,9 @@ void UnitClass::AI() {
 
   TarComClass::AI();
 
-  if (!IsActive) return;
+  if (!IsActive) {
+    return;
+  }
 
   /*
   **	Delete this unit if it finds itself off the edge of the map and it is in
@@ -512,7 +514,9 @@ void UnitClass::AI() {
   ** stages here
   */
   if (Class->IsAnimating) {
-    if (!Fetch_Rate()) Set_Rate(2);
+    if (!Fetch_Rate()) {
+      Set_Rate(2);
+    }
     Graphic_Logic();
     if (Fetch_Stage() >= Get_Build_Frame_Count(Class->Get_Image_Data()) - 1) {
       Set_Stage(0);
@@ -584,7 +588,9 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
         IsFiring = true;
         cf = FIRE_BUSY;
       } else {
-        if (Fetch_Stage() < 4) cf = FIRE_BUSY;
+        if (Fetch_Stage() < 4) {
+          cf = FIRE_BUSY;
+        }
       }
     }
   }
@@ -771,7 +777,9 @@ bool UnitClass::Unlimbo(COORDINATE coord, DirType dir) {
     /*
     **	If it starts off the edge of the map, then it already starts cloaked.
     */
-    if (IsCloakable && !IsLocked) Cloak = CLOAKED;
+    if (IsCloakable && !IsLocked) {
+      Cloak = CLOAKED;
+    }
 
     /*
     **	Units default to no special animation.
@@ -919,7 +927,9 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
             } else {
               i->Assign_Mission(MISSION_GUARD);
             }
-            if (select) i->Select();
+            if (select) {
+              i->Select();
+            }
           } else {
             delete i;
           }
@@ -930,7 +940,9 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         while (Is_Something_Attached()) {
           FootClass* object = Detach_Object();
 
-          if (!object) break;  // How can this happen?
+          if (!object) {
+            break;  // How can this happen?
+          }
 
           /*
           **	Only infantry can run from a destroyed vehicle. Even then, it is
@@ -941,7 +953,9 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
             // Random_Pick(5,
             //(int)((InfantryClass*)object)->Class->MaxStrength/2);
             object->Scatter(0, true);
-            if (select) object->Select();
+            if (select) {
+              object->Select();
+            }
           } else {
             object->Record_The_Kill(source);
             delete object;
@@ -974,7 +988,9 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         *this != UNIT_RAPT) {
       AnimClass* anim =
           new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
-      if (anim) anim->Attach_To(this);
+      if (anim) {
+        anim->Attach_To(this);
+      }
     }
 
     /*
@@ -985,7 +1001,9 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         AnimClass* anim = new AnimClass(
             ANIM_ON_FIRE_MED,
             Coord_Add(Coord, XYP_Coord(Random_Pick(0, 16) - 8, -2)));
-        if (anim) anim->Attach_To(this);
+        if (anim) {
+          anim->Attach_To(this);
+        }
       }
     }
 
@@ -1117,7 +1135,9 @@ UnitClass::~UnitClass() {
 
     Limbo();
   }
-  if (GameActive && Team) Team->Remove(this);
+  if (GameActive && Team) {
+    Team->Remove(this);
+  }
 }
 
 /***********************************************************************************************
@@ -1143,7 +1163,9 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   Reload = 0;
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
-  if (Class->IsAnimating) Set_Rate(Options.Normalize_Delay(3));
+  if (Class->IsAnimating) {
+    Set_Rate(Options.Normalize_Delay(3));
+  }
 
   /*
   ** Keep count of the number of units created.
@@ -1361,7 +1383,9 @@ bool UnitClass::Unload_Hovercraft_Process() {
           while (Attached_Object()) {
             FootClass* u = Detach_Object();
 
-            if (!first && !secondary) secondary = u;
+            if (!first && !secondary) {
+              secondary = u;
+            }
             first = false;
 
             /*
@@ -1392,7 +1416,9 @@ bool UnitClass::Unload_Hovercraft_Process() {
             ScenarioInit--;
             count++;
           }
-          if (secondary) unit = secondary;
+          if (secondary) {
+            unit = secondary;
+          }
 
           /*
           **	Establish radio contact bond with the transport
@@ -1710,7 +1736,9 @@ void UnitClass::Per_Cell_Process(bool center) {
   */
   if (center && IsDeploying) {
     Try_To_Deploy();
-    if (!IsActive) return;  // Unit no longer exists -- bail.
+    if (!IsActive) {
+      return;  // Unit no longer exists -- bail.
+    }
   }
 
   /*
@@ -1871,7 +1899,9 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   **	Verify the legality of the unit class.
   */
   shapefile = Class->Get_Image_Data();
-  if (!shapefile) return;
+  if (!shapefile) {
+    return;
+  }
 
   /*
   **	If drawing of this unit is not explicitly prohibited, then proceed
@@ -1919,8 +1949,12 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
         CC_Draw_Shape(UnitTypeClass::WakeShapes, shapestart + Fetch_Stage() % 6,
                       xx - 1, yy + 3, window, SHAPE_CENTER | SHAPE_WIN_REL);
 
-        if (Health_Ratio() < 0x0080) shapenum += 32;
-        if (Health_Ratio() < 0x0040) shapenum += 32;
+        if (Health_Ratio() < 0x0080) {
+          shapenum += 32;
+        }
+        if (Health_Ratio() < 0x0040) {
+          shapenum += 32;
+        }
 
       } else {
         /*
@@ -1947,12 +1981,17 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
         }
         if (Class->IsPieceOfEight) {
           shapenum = 0;
-          if (facing) shapenum = BodyShape[24 + facing];
-          if (IsDriving) shapenum = Fetch_Stage() + 16 + shapenum * 8;
-          if (IsFiring)
+          if (facing) {
+            shapenum = BodyShape[24 + facing];
+          }
+          if (IsDriving) {
+            shapenum = Fetch_Stage() + 16 + shapenum * 8;
+          }
+          if (IsFiring) {
             shapenum =
                 Fetch_Stage() + 80 +
                 shapenum * (*this == UNIT_TREX || *this == UNIT_RAPT ? 8 : 12);
+          }
         } else {
           /*
           **	Door opening and closing animation must be handled carefully.
@@ -2017,8 +2056,12 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
       **	ammo remaining.
       */
       if (*this == UNIT_MSAM) {
-        if (Ammo == 0) shapenum += 64;
-        if (Ammo == 1) shapenum += 32;
+        if (Ammo == 0) {
+          shapenum += 64;
+        }
+        if (Ammo == 1) {
+          shapenum += 32;
+        }
       }
 
       /*
@@ -2061,7 +2104,9 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
                                x1, y1)) {
           u->Draw_It(x1, y1, WINDOW_TACTICAL);
         }
-        if (!u->Next) break;
+        if (!u->Next) {
+          break;
+        }
         u = dynamic_cast<TechnoClass*>(u->Next);
       }
     }
@@ -2104,10 +2149,18 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
   **	If the specified offset from the origin will cause it
   **	to spill past the map edge, then abort this cell check.
   */
-  if (Cell_X(center) + x < Map.MapCellX) return false;
-  if (Cell_X(center) + x >= Map.MapCellX + Map.MapCellWidth) return false;
-  if (Cell_Y(center) + y < Map.MapCellY) return false;
-  if (Cell_Y(center) + y >= Map.MapCellY + Map.MapCellHeight) return false;
+  if (Cell_X(center) + x < Map.MapCellX) {
+    return false;
+  }
+  if (Cell_X(center) + x >= Map.MapCellX + Map.MapCellWidth) {
+    return false;
+  }
+  if (Cell_Y(center) + y < Map.MapCellY) {
+    return false;
+  }
+  if (Cell_Y(center) + y >= Map.MapCellY + Map.MapCellHeight) {
+    return false;
+  }
 
   center = XY_Cell(Cell_X(center) + x, Cell_Y(center) + y);
 
@@ -2185,7 +2238,9 @@ bool UnitClass::Harvesting() {
   /*
   **	Keep waiting if still heading toward a spot to harvest.
   */
-  if (Target_Legal(NavCom)) return true;
+  if (Target_Legal(NavCom)) {
+    return true;
+  }
 
   if (Tiberium_Load() < 0x0100 && ptr->Land_Type() == LAND_TIBERIUM) {
     /*
@@ -2400,7 +2455,9 @@ int UnitClass::Mission_Harvest() {
   **	A non-harvesting type unit will just sit still if it is given the
   *harvest mission. This *	allows combat units to act "brain dead".
   */
-  if (!Class->IsToHarvest) return TICKS_PER_SECOND * 30;
+  if (!Class->IsToHarvest) {
+    return TICKS_PER_SECOND * 30;
+  }
 
   switch (Status) {
     /*
@@ -2713,8 +2770,12 @@ MoveBitType UnitClass::Blocking_Object(const TechnoClass* techno,
       *purposes, *	but not so for all other cases.
       */
       if (techno->Cloak == CLOAKED) {
-        if (House == techno->House) return (MOVE_BIT_NO);
-        if (IsFindPath) return (MOVE_BIT_OK);
+        if (House == techno->House) {
+          return (MOVE_BIT_NO);
+        }
+        if (IsFindPath) {
+          return (MOVE_BIT_OK);
+        }
         return (MOVE_BIT_CLOAK);
       }
 
@@ -2758,13 +2819,17 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
   Validate();
   const CellClass* cellptr = &Map[cell];
 
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+    return MOVE_NO;
+  }
 
   /*
   **	The gunboat can always move. This prevents it from trying to move around
   *possible hover *	craft blockage.
   */
-  if (*this == UNIT_GUNBOAT) return MOVE_OK;
+  if (*this == UNIT_GUNBOAT) {
+    return MOVE_OK;
+  }
 
   /*
   **	Moving off the edge of the map is not allowed unless
@@ -2858,7 +2923,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
           }
           retval = std::max(retval, MOVE_MOVING_BLOCK);
         } else {
-          if (obj->What_Am_I() == RTTI_BUILDING) return MOVE_NO;
+          if (obj->What_Am_I() == RTTI_BUILDING) {
+            return MOVE_NO;
+          }
           retval = std::max(retval, MOVE_TEMP);
         }
       } else {
@@ -2878,7 +2945,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
             **	Any non-allied blockage is considered impassible if the unit
             **	is not equipped with a weapon.
             */
-            if (Class->Primary == WEAPON_NONE) return MOVE_NO;
+            if (Class->Primary == WEAPON_NONE) {
+              return MOVE_NO;
+            }
 
             /*
             **	Some kinds of terrain are considered destroyable if the unit is
@@ -3541,9 +3610,11 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
   cell = Coord_Cell(Coord) + ExitRepair[Dir_Facing(PrimaryFacing.Current())];
-  if (Can_Enter_Cell(cell) == MOVE_OK) found = true;
+  if (Can_Enter_Cell(cell) == MOVE_OK) {
+    found = true;
+  }
 
-  if (!found)
+  if (!found) {
     for (i = 0; i < 8; i++) {
       cell = Coord_Cell(Coord) + ExitRepair[i];
       if (Can_Enter_Cell(cell) == MOVE_OK) {
@@ -3551,6 +3622,7 @@ void UnitClass::Exit_Repair() {
         break;
       }
     }
+  }
   if (found) {
     Assign_Mission(MISSION_MOVE);
     Assign_Destination(::As_Target(cell));
@@ -3716,7 +3788,9 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     if (face == FACING_S) {
       value -= 100;
     }
-    if (face == FACING_SW || face == FACING_SE) value += 64;
+    if (face == FACING_SW || face == FACING_SE) {
+      value += 64;
+    }
 
     /*
     **	If the value for the potiential cell is greater than the last recorded

@@ -110,13 +110,15 @@ class fixed {
     return *this;
   }
   fixed& operator/=(const fixed& rvalue) {
-    if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256)
+    if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256) {
       Data.Raw = static_cast<unsigned short>((int)Data.Raw * 256 / rvalue);
+    }
     return *this;
   }
   fixed& operator/=(int rvalue) {
-    if (rvalue)
+    if (rvalue) {
       Data.Raw = static_cast<unsigned short>((unsigned)Data.Raw / rvalue);
+    }
     return *this;
   }
   fixed& operator+=(const fixed& rvalue) {
@@ -148,15 +150,17 @@ class fixed {
   //{return(fixed(*this) /= rvalue);}
   const fixed operator/(const fixed& rvalue) const {
     fixed temp = *this;
-    if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256)
+    if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256) {
       temp.Data.Raw = static_cast<unsigned short>((int)temp.Data.Raw * 256 /
                                                   rvalue.Data.Raw);
+    }
     return temp;
   }
   const int operator/(int rvalue) const {
-    if (rvalue)
+    if (rvalue) {
       return (static_cast<unsigned>(Data.Raw) + 256 / 2) /
              (static_cast<unsigned>(rvalue) * 256);
+    }
     return *this;
   }
   //		const fixed operator + (fixed const & rvalue) const
@@ -249,7 +253,9 @@ class fixed {
     return rvalue * lvalue;
   }
   friend const int operator/(int lvalue, const fixed& rvalue) {
-    if (rvalue.Data.Raw == 0 || rvalue.Data.Raw == 256) return lvalue;
+    if (rvalue.Data.Raw == 0 || rvalue.Data.Raw == 256) {
+      return lvalue;
+    }
     return (static_cast<unsigned>(lvalue * 256) + 256 / 2) / rvalue.Data.Raw;
   }
   friend const int operator+(int lvalue, const fixed& rvalue) {
@@ -308,23 +314,30 @@ class fixed {
   }
   void Round_Down() { Data.Composite.Fraction = 0; }
   void Round() {
-    if (Data.Composite.Fraction >= 256 / 2) Round_Up();
+    if (Data.Composite.Fraction >= 256 / 2) {
+      Round_Up();
+    }
     Round_Down();
   }
   void Saturate(unsigned capvalue) {
-    if (Data.Raw > capvalue * 256)
+    if (Data.Raw > capvalue * 256) {
       Data.Raw = static_cast<unsigned short>(capvalue * 256);
+    }
   }
   void Saturate(const fixed& capvalue) {
-    if (*this > capvalue) *this = capvalue;
+    if (*this > capvalue) {
+      *this = capvalue;
+    }
   }
   void Sub_Saturate(unsigned capvalue) {
-    if (Data.Raw >= capvalue * 256)
+    if (Data.Raw >= capvalue * 256) {
       Data.Raw = static_cast<unsigned short>(capvalue * 256 - 1);
+    }
   }
   void Sub_Saturate(const fixed& capvalue) {
-    if (*this >= capvalue)
+    if (*this >= capvalue) {
       Data.Raw = static_cast<unsigned short>(capvalue.Data.Raw - 1);
+    }
   }
   void Inverse() { *this = fixed(1) / *this; }
 

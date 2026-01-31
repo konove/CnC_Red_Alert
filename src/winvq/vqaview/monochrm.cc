@@ -188,7 +188,9 @@ static void Monochrome_Output(char* string) {
         pca++;
         colCur++;
 
-        if (colCur < CCOLMAX) break;
+        if (colCur < CCOLMAX) {
+          break;
+        }
 
         // fall through to handle LF
 

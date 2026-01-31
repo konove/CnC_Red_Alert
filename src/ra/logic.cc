@@ -253,28 +253,38 @@ void LogicClass::AI() {
     **	Global changed trigger event might be triggered.
     */
     if (Scen.IsGlobalChanged) {
-      if (trig->Spring(TEVENT_GLOBAL_SET)) continue;
-      if (trig->Spring(TEVENT_GLOBAL_CLEAR)) continue;
+      if (trig->Spring(TEVENT_GLOBAL_SET)) {
+        continue;
+      }
+      if (trig->Spring(TEVENT_GLOBAL_CLEAR)) {
+        continue;
+      }
     }
 
     /*
     **	Bridge change event.
     */
     if (Scen.IsBridgeChanged) {
-      if (trig->Spring(TEVENT_ALL_BRIDGES_DESTROYED)) continue;
+      if (trig->Spring(TEVENT_ALL_BRIDGES_DESTROYED)) {
+        continue;
+      }
     }
 
     /*
     **	General time expire trigger events can be sprung without warning.
     */
-    if (trig->Spring(TEVENT_TIME)) continue;
+    if (trig->Spring(TEVENT_TIME)) {
+      continue;
+    }
 
     /*
     **	The mission timer expiration trigger event might spring if the timer is
     *active *	but at a value of zero.
     */
     if (Scen.MissionTimer.Is_Active() && Scen.MissionTimer == 0) {
-      if (trig->Spring(TEVENT_MISSION_TIMER_EXPIRED)) continue;
+      if (trig->Spring(TEVENT_MISSION_TIMER_EXPIRED)) {
+        continue;
+      }
     }
   }
 

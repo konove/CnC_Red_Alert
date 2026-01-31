@@ -336,7 +336,9 @@ GameType Select_MPlayer_Game() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton--;
-        if (curbutton < 0) curbutton = number_of_buttons - 1;
+        if (curbutton < 0) {
+          curbutton = number_of_buttons - 1;
+        }
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
@@ -345,14 +347,18 @@ GameType Select_MPlayer_Game() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton++;
-        if (curbutton > number_of_buttons - 1) curbutton = 0;
+        if (curbutton > number_of_buttons - 1) {
+          curbutton = 0;
+        }
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
 
       case KN_RETURN:
         selection = curbutton + BUTTON_MODEMSERIAL;
-        if (!ipx_avail) selection--;
+        if (!ipx_avail) {
+          selection--;
+        }
         pressed = true;
         break;
 
@@ -832,19 +838,19 @@ void Read_MultiPlayer_Settings() {
     TrapObjType = static_cast<RTTIType>(
         WWGetPrivateProfileInt("SyncBug", "Type", RTTI_NONE, buffer));
     WWGetPrivateProfileString("SyncBug", "Type", "NONE", buf, 80, buffer);
-    if (!stricmp(buf, "AIRCRAFT"))
+    if (!stricmp(buf, "AIRCRAFT")) {
       TrapObjType = RTTI_AIRCRAFT;
-    else if (!stricmp(buf, "ANIM"))
+    } else if (!stricmp(buf, "ANIM")) {
       TrapObjType = RTTI_ANIM;
-    else if (!stricmp(buf, "BUILDING"))
+    } else if (!stricmp(buf, "BUILDING")) {
       TrapObjType = RTTI_BUILDING;
-    else if (!stricmp(buf, "BULLET"))
+    } else if (!stricmp(buf, "BULLET")) {
       TrapObjType = RTTI_BULLET;
-    else if (!stricmp(buf, "INFANTRY"))
+    } else if (!stricmp(buf, "INFANTRY")) {
       TrapObjType = RTTI_INFANTRY;
-    else if (!stricmp(buf, "UNIT"))
+    } else if (!stricmp(buf, "UNIT")) {
       TrapObjType = RTTI_UNIT;
-    else {
+    } else {
       TrapObjType = RTTI_NONE;
     }
 
@@ -1185,7 +1191,9 @@ static void Garble_Message(char* buf) {
   ------------------------------------------------------------------------*/
   p = buf + strlen(buf) - 1;
   while (1) {
-    if (p < buf) break;
+    if (p < buf) {
+      break;
+    }
     if (p[0] == '!' || p[0] == '.' || p[0] == '?') {
       p--;
     } else {
@@ -1233,7 +1241,9 @@ static void Garble_Message(char* buf) {
     }
     port::SafeAppend(buf, words[j], MAX_MESSAGE_LENGTH);
     words[j] = nullptr;
-    if (i < numwords - 1) port::SafeAppend(buf, " ", MAX_MESSAGE_LENGTH);
+    if (i < numwords - 1) {
+      port::SafeAppend(buf, " ", MAX_MESSAGE_LENGTH);
+    }
   }
   port::SafeAppend(buf, punct, MAX_MESSAGE_LENGTH);
 }

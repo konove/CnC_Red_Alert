@@ -294,7 +294,9 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+    return MOVE_NO;
+  }
 
   const CellClass* cellptr = &Map[cell];
 
@@ -419,7 +421,9 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	Verify the legality of the unit class.
   */
   const void* shapefile = Get_Image_Data();
-  if (shapefile == nullptr) return;
+  if (shapefile == nullptr) {
+    return;
+  }
 
   /*
   **	If drawing of this unit is not explicitly prohibited, then proceed
@@ -733,7 +737,9 @@ void VesselClass::Per_Cell_Process(PCPType why) {
         whom = Map[cell].Cell_Building();
         if (whom != NULL &&
             (*whom == STRUCT_SHIP_YARD || *whom == STRUCT_SUB_PEN)) {
-          if (IsOwnedByPlayer) Speak(VOX_REPAIRING);
+          if (IsOwnedByPlayer) {
+            Speak(VOX_REPAIRING);
+          }
           IsSelfRepairing = true;
           IsToSelfRepair = false;
           break;
@@ -787,7 +793,7 @@ ActionType VesselClass::What_Action(const ObjectClass* object) const {
     } else {
       // check to see if the transporter can unload.
       bool found = 0;
-      if (*this != VESSEL_CARRIER)
+      if (*this != VESSEL_CARRIER) {
         for (FacingType face = FACING_N; face < FACING_COUNT && !found;
              face++) {
           CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
@@ -801,6 +807,7 @@ ActionType VesselClass::What_Action(const ObjectClass* object) const {
             found = true;
           }
         }
+      }
       if (!found) {
         action = ACTION_NONE;
       }
@@ -827,7 +834,9 @@ ActionType VesselClass::What_Action(const ObjectClass* object) const {
   **	If it doesn't know what to do with the object, then just
   **	say it can't move there.
   */
-  if (action == ACTION_NONE) action = ACTION_NOMOVE;
+  if (action == ACTION_NONE) {
+    action = ACTION_NOMOVE;
+  }
 
   return action;
 }
@@ -1002,7 +1011,9 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
         *this != VESSEL_SS && *this != VESSEL_MISSILESUB) {
       AnimClass* anim =
           new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
-      if (anim != nullptr) anim->Attach_To(this);
+      if (anim != nullptr) {
+        anim->Attach_To(this);
+      }
     }
   }
   return res;
@@ -1364,8 +1375,9 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
     */
     case RADIO_CAN_LOAD:
       if (Class->Max_Passengers() == 0 || from == nullptr ||
-          !House->Is_Ally(from->Owner()))
+          !House->Is_Ally(from->Owner())) {
         return RADIO_STATIC;
+      }
       if (How_Many() < Class->Max_Passengers()) {
         if (*this == VESSEL_CARRIER && from->What_Am_I() == RTTI_AIRCRAFT) {
           return RADIO_ROGER;
@@ -1608,7 +1620,9 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
     if (face == FACING_S) {
       value -= 100;
     }
-    if (face == FACING_SW || face == FACING_SE) value += 64;
+    if (face == FACING_SW || face == FACING_SE) {
+      value += 64;
+    }
 #endif
     /*
     **	If the value for the potential cell is greater than the last recorded
@@ -1743,7 +1757,9 @@ int VesselClass::Mission_Unload() {
             /*
             **	Don't do anything if still in radio contact.
             */
-            if (In_Radio_Contact()) return TICKS_PER_SECOND;
+            if (In_Radio_Contact()) {
+              return TICKS_PER_SECOND;
+            }
 
             FootClass* passenger = Detach_Object();
 
@@ -1844,7 +1860,9 @@ void VesselClass::Assign_Destination(TARGET target) {
   **	Abort early if there is anything wrong with the parameters
   **	or the unit already is assigned the specified destination.
   */
-  if (target == NavCom) return;
+  if (target == NavCom) {
+    return;
+  }
 
   /*
   **	Transport vehicles must tell all passengers that are about to load, that
@@ -1998,8 +2016,9 @@ void VesselClass::Read_INI(CCINIClass& ini) {
           if (vessel->Unlimbo(coord, dir)) {
             vessel->Strength =
                 vessel->Class->MaxStrength * fixed(strength, 256);
-            if (vessel->Strength > vessel->Class->MaxStrength - 3)
+            if (vessel->Strength > vessel->Class->MaxStrength - 3) {
               vessel->Strength = vessel->Class->MaxStrength;
+            }
             //						vessel->Strength =
             // Fixed_To_Cardinal(vessel->Class->MaxStrength, strength);
             if (Session.Type == GAME_NORMAL || vessel->House->IsHuman) {
@@ -2240,7 +2259,9 @@ void VesselClass::Combat_AI() {
  *=============================================================================================*/
 bool VesselClass::Edge_Of_World_AI() {
   if (!IsDriving && !Map.In_Radar(Coord_Cell(Coord)) && IsLocked) {
-    if (Team.Is_Valid()) Team->IsLeaveMap = true;
+    if (Team.Is_Valid()) {
+      Team->IsLeaveMap = true;
+    }
     Stun();
     delete this;
     return true;
@@ -2276,7 +2297,9 @@ void VesselClass::Repair_AI() {
         if (Strength >= Class->MaxStrength) {
           Strength = Class->MaxStrength;
           IsSelfRepairing = IsToSelfRepair = false;
-          if (IsOwnedByPlayer) Speak(VOX_UNIT_REPAIRED);
+          if (IsOwnedByPlayer) {
+            Speak(VOX_UNIT_REPAIRED);
+          }
         }
       }
     }
@@ -2317,7 +2340,9 @@ BulletClass* VesselClass::Fire_At(TARGET target, int which) {
       passenger->Assign_Target(TarCom);
       passenger->Commence();
       // If we've launched our last aircraft, discontinue attacking.
-      if (!How_Many()) Assign_Target(TARGET_NONE);
+      if (!How_Many()) {
+        Assign_Target(TARGET_NONE);
+      }
     }
   } else {
     return DriveClass::Fire_At(target, which);

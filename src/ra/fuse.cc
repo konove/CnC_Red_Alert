@@ -123,7 +123,9 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
   /*
   **	Always decrement the fuse timer.
   */
-  if (Timer) Timer--;
+  if (Timer) {
+    Timer--;
+  }
 
   /*
   **	If the arming countdown has not expired, then do nothing.
@@ -134,10 +136,14 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
     /*
     **	If the timer has run out, then the warhead explodes.
     */
-    if (!Timer) return true;
+    if (!Timer) {
+      return true;
+    }
 
     proximity = Distance(newlocation, HeadTo);
-    if (proximity < 0x0010) return true;
+    if (proximity < 0x0010) {
+      return true;
+    }
     if (proximity < ICON_LEPTON_W && proximity > Proximity) {
       return true;
     }

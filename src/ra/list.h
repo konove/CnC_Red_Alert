@@ -403,7 +403,9 @@ void TListClass<T>::Remove_Index(int index) {
     if (CurrentTopIndex >= List.Count()) {
       CurrentTopIndex--;
       CurrentTopIndex = std::max(CurrentTopIndex, 0);
-      if (IsScrollActive) ScrollGadget.Step(1);
+      if (IsScrollActive) {
+        ScrollGadget.Step(1);
+      }
     }
   }
 }

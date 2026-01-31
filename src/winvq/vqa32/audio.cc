@@ -100,10 +100,13 @@ static unsigned StreamConvScale = 1 << 15;
 
 static void VQA_Audio_Callback(uint8_t* stream, int len) {
   // called from SDL audio callback
-  if (!VQAP) return;
-  auto* audio = &VQAP->VQABuf->Audio;
-  if (!(audio->Flags & VQAAUDF_ISPLAYING) || VQAAudioPaused || !SDLStream)
+  if (!VQAP) {
     return;
+  }
+  auto* audio = &VQAP->VQABuf->Audio;
+  if (!(audio->Flags & VQAAUDF_ISPLAYING) || VQAAudioPaused || !SDLStream) {
+    return;
+  }
 
   auto* config = &VQAP->Config;
 
@@ -288,7 +291,9 @@ long VQA_OpenAudio(VQAHandleP* vqap, void* /*window*/) {
   }
 
   // setup audio stream
-  if (SDLStream) SDL_FreeAudioStream(SDLStream);
+  if (SDLStream) {
+    SDL_FreeAudioStream(SDLStream);
+  }
 
   auto* spec = static_cast<SDL_AudioSpec*>(config->AudioSpec);
 
@@ -354,7 +359,9 @@ void VQA_CloseAudio(VQAHandleP* vqap) {
 
   // don't remove the callback if open was called multiple times
   OpenCount--;
-  if (OpenCount) return;
+  if (OpenCount) {
+    return;
+  }
 
   // unregister our audio callback
   // and make sure we're not in it

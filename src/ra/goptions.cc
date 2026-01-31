@@ -178,23 +178,27 @@ void GameOptionsClass::Process() {
       if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
           Session.Players.Count() == 2) {
         if (Scen.bLocalProposesDraw) {
-          if (!Scen.bOtherProposesDraw)
+          if (!Scen.bOtherProposesDraw) {
             g = new TextButtonClass(BUTTON_DRAW, TXT_WOL_RETRACT_DRAW,
                                     TPF_BUTTON, 0, y);
-          else
+          } else {
             continue;  //	Game will end now anyway.
+          }
         } else {
-          if (!Scen.bOtherProposesDraw)
+          if (!Scen.bOtherProposesDraw) {
             g = new TextButtonClass(BUTTON_DRAW, TXT_WOL_PROPOSE_DRAW,
                                     TPF_BUTTON, 0, y);
-          else
+          } else {
             g = new TextButtonClass(BUTTON_DRAW, TXT_WOL_ACCEPT_DRAW,
                                     TPF_BUTTON, 0, y);
+          }
         }
-      } else
+      } else {
         continue;
-    } else
+      }
+    } else {
       g = new TextButtonClass(_constants[index].ID, text, TPF_BUTTON, 0, y);
+    }
 
     maxwidth = std::max(g->Width, maxwidth);
     if (buttons == nullptr) {
@@ -210,7 +214,9 @@ void GameOptionsClass::Process() {
   ** BG: In skirmish mode, there is no 'restate' button, so we have to
   **     backtrack through the list to find the last valid button.
   */
-  while (!buttonsel[curbutton - 1]) curbutton--;
+  while (!buttonsel[curbutton - 1]) {
+    curbutton--;
+  }
 
   buttonsel[curbutton - 1]->Turn_On();
 
@@ -402,7 +408,9 @@ void GameOptionsClass::Process() {
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         do {
           curbutton--;
-          if (curbutton < 1) curbutton = num_buttons;
+          if (curbutton < 1) {
+            curbutton = num_buttons;
+          }
         } while (!buttonsel[curbutton - 1]);
 
         buttonsel[curbutton - 1]->Turn_On();
@@ -414,7 +422,9 @@ void GameOptionsClass::Process() {
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         do {
           curbutton++;
-          if (curbutton > num_buttons) curbutton = 1;
+          if (curbutton > num_buttons) {
+            curbutton = 1;
+          }
         } while (!buttonsel[curbutton - 1]);
 
         buttonsel[curbutton - 1]->Turn_On();
@@ -531,15 +541,17 @@ void GameOptionsClass::Process() {
               if (Surrender_Dialog(TXT_WOL_PROPOSE_DRAW_CONFIRM)) {
                 OutList.Add(EventClass(EventClass::PROPOSE_DRAW));
                 process = false;
-              } else
+              } else {
                 display = true;
+              }
             } else {
               //	Accept a draw?
               if (Surrender_Dialog(TXT_WOL_ACCEPT_DRAW_CONFIRM)) {
                 OutList.Add(EventClass(EventClass::PROPOSE_DRAW));
                 process = false;
-              } else
+              } else {
                 display = true;
+              }
             }
           }
           break;

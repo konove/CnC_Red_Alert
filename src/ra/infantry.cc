@@ -397,7 +397,9 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
   ** damage gets upped to max.
   */
 
-  if (res == RESULT_NONE) return res;
+  if (res == RESULT_NONE) {
+    return res;
+  }
 
   if (res == RESULT_DESTROYED) {
     if (*this == INFANTRY_TANYA) {
@@ -455,7 +457,9 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
       case 5:
         Sound_Effect(sound, Coord);
         AnimType anim = ANIM_ELECT_DIE;
-        if (Class->IsDog) anim = ANIM_DOG_ELECT_DIE;
+        if (Class->IsDog) {
+          anim = ANIM_DOG_ELECT_DIE;
+        }
         new AnimClass(anim, Coord);
         delthis = true;
         break;
@@ -498,8 +502,12 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
       *more *	quickly if the infantry is damaged.
       */
       int morefear = FEAR_ANXIOUS;
-      if (Health_Ratio() > Rule.ConditionRed) morefear /= 2;
-      if (Health_Ratio() > Rule.ConditionYellow) morefear /= 2;
+      if (Health_Ratio() > Rule.ConditionRed) {
+        morefear /= 2;
+      }
+      if (Health_Ratio() > Rule.ConditionYellow) {
+        morefear /= 2;
+      }
       Fear = static_cast<FearType>(
           std::min((int)Fear + morefear, int(FEAR_MAXIMUM)));
     }
@@ -530,7 +538,9 @@ int InfantryClass::Shape_Number() const {
   *and whether it *	is prone.
   */
   DoType doit = Doing;
-  if (doit == DO_NOTHING) doit = DO_STAND_READY;
+  if (doit == DO_NOTHING) {
+    doit = DO_STAND_READY;
+  }
 
   /*
   **	The infantry shape is always modulo the number of animation frames
@@ -591,7 +601,9 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   const void* shapefile = Get_Image_Data();
 
-  if (shapefile == nullptr) return;
+  if (shapefile == nullptr) {
+    return;
+  }
 
   y += 4;
   x -= 2;
@@ -638,7 +650,9 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     if (Mission == MISSION_CAPTURE) {
       TechnoClass* tech = cellptr->Cell_Building();
 
-      if (tech == nullptr) tech = cellptr->Cell_Techno();
+      if (tech == nullptr) {
+        tech = cellptr->Cell_Techno();
+      }
       if (tech != nullptr &&
           (tech->As_Target() == NavCom || tech->As_Target() == TarCom)) {
         if (*this == INFANTRY_RENOVATOR) {
@@ -689,7 +703,9 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               tech->Trigger->Spring(TEVENT_SPIED, this);
             }
 
-            if (IsOwnedByPlayer) Speak(VOX_BUILDING_INFILTRATED);
+            if (IsOwnedByPlayer) {
+              Speak(VOX_BUILDING_INFILTRATED);
+            }
 
             tech->Mark(MARK_OVERLAP_UP);
             tech->SpiedBy |= housespy;
@@ -722,8 +738,9 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
                   ** then give the thief up to half the capacity of the
                   ** storage facility.
                   */
-                  if (IsOwnedByPlayer || bldg->IsOwnedByPlayer)
+                  if (IsOwnedByPlayer || bldg->IsOwnedByPlayer) {
                     Speak(VOX_MONEY_STOLEN);
+                  }
                   long cash = bldg->House->Available_Money() / 2;
                   bldg->House->Spend_Money(cash);
                   House->Refund_Money(cash);
@@ -1093,7 +1110,9 @@ void InfantryClass::AI() {
     return;
   }
 
-  if (IsUnloading) Mark(MARK_CHANGE_REDRAW);
+  if (IsUnloading) {
+    Mark(MARK_CHANGE_REDRAW);
+  }
 
   /*
   **	Infantry that are not on the ground should always be redrawn. Such is
@@ -1127,8 +1146,9 @@ void InfantryClass::AI() {
   */
   if (!IsFiring && !IsFalling && !IsDriving &&
       (Doing == DO_NOTHING || MasterDoControls[Doing].Interrupt)) {
-    if (Mission == MISSION_NONE && MissionQueue == MISSION_NONE)
+    if (Mission == MISSION_NONE && MissionQueue == MISSION_NONE) {
       Enter_Idle_Mode();
+    }
     Commence();
   }
 
@@ -1192,7 +1212,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   /*
   ** If we are moving into an illegal cell, then we can't do that.
   */
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+    return MOVE_NO;
+  }
 
   /*
   **	If moving off the edge of the map, then consider that an illegal move.
@@ -1352,7 +1374,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
           **	Any non-allied blockage is considered impassible if the infantry
           **	is not equipped with a weapon.
           */
-          if (Combat_Damage() <= 0) return MOVE_NO;
+          if (Combat_Damage() <= 0) {
+            return MOVE_NO;
+          }
 
           /*
           **	Some kinds of terrain are considered destroyable if the infantry
@@ -1364,7 +1388,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
 #ifdef OBSOLETE
               if (((TerrainClass*)obj)->Class->Armor == ARMOR_WOOD &&
                   Class->PrimaryWeapon->WarheadPtr->IsWoodDestroyer) {
-                if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
+                if (retval < MOVE_DESTROYABLE) {
+                  retval = MOVE_DESTROYABLE;
+                }
               } else {
                 return (MOVE_NO);
               }
@@ -1783,32 +1809,41 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   /*
   **	A unit that is in the process of going somewhere will never scatter.
   */
-  if (IsDriving) forced = false;
+  if (IsDriving) {
+    forced = false;
+  }
 
   /*
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (!MissionControl[Mission].IsScatter && !forced) return;
+  if (!MissionControl[Mission].IsScatter && !forced) {
+    return;
+  }
 
   /*
   **	If the infantry is currently engaged in legitimate combat, then don't
   **	scatter unless forced to.
   */
-  if (!Class->IsFraidyCat && Target_Legal(TarCom) && !forced) return;
+  if (!Class->IsFraidyCat && Target_Legal(TarCom) && !forced) {
+    return;
+  }
 
   /*
   **	Don't scatter if performing an action that can't be interrupted.
   */
-  if (Doing != DO_NOTHING && !MasterDoControls[Doing].Interrupt) return;
+  if (Doing != DO_NOTHING && !MasterDoControls[Doing].Interrupt) {
+    return;
+  }
 
   /*
   **	For human players, don't scatter the infantry, if the special
   **	flag has not been enabled that allows infantry scatter.
   */
   if (!Rule.IsScatter && !nokidding && House->IsHuman && !forced &&
-      !Team.Is_Valid())
+      !Team.Is_Valid()) {
     return;
+  }
 
   if (forced || Class->IsFraidyCat /*|| !(Random_Pick(1, 4) == 1)*/) {
     FacingType toface;
@@ -1836,8 +1871,12 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
       newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
       if (Map.In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
-        if (altcell == 0) altcell = newcell;
-        if (!Map[newcell].Is_Bridge_Here()) break;
+        if (altcell == 0) {
+          altcell = newcell;
+        }
+        if (!Map[newcell].Is_Bridge_Here()) {
+          break;
+        }
         //				Assign_Mission(MISSION_MOVE);
         //				Assign_Destination(::As_Target(newcell));
       }
@@ -2021,7 +2060,9 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
   **	If the infantry started moving, then fixup the occupation bits.
   */
   if (headto && FootClass::Start_Driver(headto)) {
-    if (!IsActive) return false;
+    if (!IsActive) {
+      return false;
+    }
 
     /*
     **	Remove the occupation bit from the infantry's current location.
@@ -2279,7 +2320,9 @@ void InfantryClass::Response_Select() {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
-  if (!AllowVoice) return;
+  if (!AllowVoice) {
+    return;
+  }
 
   if (Class->IsCivilian && *this != INFANTRY_EINSTEIN) {
     VocType response = VOC_NONE;
@@ -2399,7 +2442,9 @@ void InfantryClass::Response_Move() {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
-  if (!AllowVoice) return;
+  if (!AllowVoice) {
+    return;
+  }
 
   if (Class->IsCivilian && *this != INFANTRY_EINSTEIN) {
     VocType response;
@@ -2527,7 +2572,9 @@ void InfantryClass::Response_Attack() {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
-  if (!AllowVoice) return;
+  if (!AllowVoice) {
+    return;
+  }
 
   if (Class->IsCivilian && *this != INFANTRY_EINSTEIN) {
     VocType response;
@@ -2765,7 +2812,9 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
   if (action == ACTION_NONE && object->What_Am_I() == RTTI_BUILDING &&
       House->IsPlayerControl) {
     StructType blah = *(BuildingClass*)object;
-    if (blah == STRUCT_AVMINE || blah == STRUCT_APMINE) return ACTION_MOVE;
+    if (blah == STRUCT_AVMINE || blah == STRUCT_APMINE) {
+      return ACTION_MOVE;
+    }
   }
 
   /*
@@ -2849,7 +2898,9 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
   **	If it doesn't know what to do with the object, then just
   **	say it can't move there.
   */
-  if (action == ACTION_NONE) action = ACTION_NOMOVE;
+  if (action == ACTION_NONE) {
+    action = ACTION_NOMOVE;
+  }
 
   return action;
 }
@@ -3113,9 +3164,13 @@ ActionType InfantryClass::What_Action(CELL cell) const {
       ** passable, return that this is a capturable cell.
       */
       if (Map[cell].Land_Type() == LAND_ROCK) {
-        if (tt == TEMPLATE_BRIDGE_3C) return (ACTION_CAPTURE);
+        if (tt == TEMPLATE_BRIDGE_3C) {
+          return (ACTION_CAPTURE);
+        }
 
-        if (tt == TEMPLATE_BRIDGE_3C) return (ACTION_CAPTURE);
+        if (tt == TEMPLATE_BRIDGE_3C) {
+          return (ACTION_CAPTURE);
+        }
         int y = Cell_Y(cell);
         if (y) {
           LandType above = Map[(CELL)(cell - (MAP_CELL_W - 1))].Land_Type();
@@ -3263,8 +3318,9 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           if (infantry->Unlimbo(coord, dir)) {
             infantry->Strength =
                 infantry->Class_Of().MaxStrength * fixed(strength, 256);
-            if (infantry->Strength > infantry->Class->MaxStrength - 3)
+            if (infantry->Strength > infantry->Class->MaxStrength - 3) {
               infantry->Strength = infantry->Class->MaxStrength;
+            }
             //						infantry->Strength =
             // Fixed_To_Cardinal(infantry->Class_Of().MaxStrength, strength);
             if (Session.Type == GAME_NORMAL || infantry->House->IsHuman) {
@@ -3412,7 +3468,9 @@ bool InfantryClass::Edge_Of_World_AI() {
   **	Delete this unit if it finds itself off the edge of the map and it is in
   **	guard or other static mission mode.
   */
-  if (Team.Is_Valid() && IsLocked) Team->IsLeaveMap = true;
+  if (Team.Is_Valid() && IsLocked) {
+    Team->IsLeaveMap = true;
+  }
 
   if (!Team.Is_Valid() && Mission == MISSION_GUARD &&
       !Map.In_Radar(Coord_Cell(Coord))) {
@@ -3503,7 +3561,9 @@ void InfantryClass::Firing_AI() {
     **	been completed, the firing animation stops.
     */
     int firestage = Class->FireLaunch;
-    if (IsProne) firestage = Class->ProneLaunch;
+    if (IsProne) {
+      firestage = Class->ProneLaunch;
+    }
 
     if (IsFiring && Fetch_Stage() == firestage) {
       Fire_At(TarCom, primary);
@@ -3737,7 +3797,9 @@ void InfantryClass::Movement_AI() {
                 if (TryTryAgain) {
                   TryTryAgain--;
                 } else {
-                  if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
+                  if (IsNewNavCom) {
+                    Sound_Effect(VOC_SCOLD);
+                  }
                   IsNewNavCom = false;
 
                   /*
@@ -3804,12 +3866,16 @@ void InfantryClass::Movement_AI() {
 
           Path[0] = FACING_NONE;
           Stop_Driver();
-          if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
+          if (IsNewNavCom) {
+            Sound_Effect(VOC_SCOLD);
+          }
           IsNewNavCom = false;
 
         } else {
           if (Start_Driver(acoord)) {
-            if (!IsActive) return;
+            if (!IsActive) {
+              return;
+            }
             PrimaryFacing.Set(Direction8(Center_Coord(), Head_To_Coord()));
             if (IsFormationMove) {
               Set_Speed(Ground[Map[Coord].Land_Type()].Cost[FormationSpeed] *
@@ -3852,10 +3918,14 @@ void InfantryClass::Movement_AI() {
         Path[sizeof(Path) / sizeof(Path[0]) - 1] = FACING_NONE;
         Coord = Head_To_Coord();
         Per_Cell_Process(PCP_END);
-        if (!IsActive || IsInLimbo) return;
+        if (!IsActive || IsInLimbo) {
+          return;
+        }
 
         Stop_Driver();
-        if (!IsActive || IsInLimbo) return;
+        if (!IsActive || IsInLimbo) {
+          return;
+        }
 
         if (Coord_Cell(Coord) == As_Cell(NavCom)) {
           NavCom = TARGET_NONE;
@@ -3897,7 +3967,9 @@ void InfantryClass::Movement_AI() {
             std::min(Class->MaxSpeed * SpeedBias * House->GroundspeedBias,
                      int(MPH_LIGHT_SPEED)));
 
-        if (IsFormationMove) maxspeed = FormationMaxSpeed;
+        if (IsFormationMove) {
+          maxspeed = FormationMaxSpeed;
+        }
 
         Coord = Coord_Move(Coord, Direction(Head_To_Coord()),
                            maxspeed * fixed(movespeed, 256));

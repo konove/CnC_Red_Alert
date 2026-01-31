@@ -224,7 +224,9 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
       mono->Printf("%08X", SuspendedNavCom);
     }
 
-    if (Team) Team->Debug_Dump(mono);
+    if (Team) {
+      Team->Debug_Dump(mono);
+    }
     if (Group != 255) {
       mono->Set_Cursor(59, 1);
       mono->Printf("%d", Group);
@@ -309,8 +311,9 @@ bool FootClass::Mark(MarkType mark) {
 
 #ifndef PARTIAL
     if (In_Which_Layer() != LAYER_GROUND &&
-        (mark == MARK_UP || mark == MARK_DOWN))
+        (mark == MARK_UP || mark == MARK_DOWN)) {
       mark = MARK_CHANGE;
+    }
 #endif
 
     /*
@@ -382,8 +385,10 @@ bool FootClass::Basic_Path() {
           Map.Nearby_Location(cell, Techno_Type_Class()->Speed,
                               Map[Coord].Zones[Techno_Type_Class()->MZone],
                               Techno_Type_Class()->MZone);
-      if (cell2 != 0 && ::Distance(Cell_Coord(cell), Cell_Coord(cell2)) < dist)
+      if (cell2 != 0 &&
+          ::Distance(Cell_Coord(cell), Cell_Coord(cell2)) < dist) {
         cell = cell2;
+      }
     }
 
     if (What_Am_I() == RTTI_INFANTRY) {
@@ -460,7 +465,9 @@ bool FootClass::Basic_Path() {
         *this *	a total failure.
         */
         PathThreshhold++;
-        if (PathThreshhold > maxtype) break;
+        if (PathThreshhold > maxtype) {
+          break;
+        }
       }
 
 #ifdef NEVER
@@ -519,7 +526,9 @@ bool FootClass::Basic_Path() {
     }
 
     PathDelay = Rule.PathDelay * TICKS_PER_MINUTE;
-    if (Path[0] != FACING_NONE) return true;
+    if (Path[0] != FACING_NONE) {
+      return true;
+    }
 
     /*
     **	If a basic path couldn't be determined, then abort the navigation
@@ -820,7 +829,9 @@ bool FootClass::Start_Driver(COORDINATE& headto) {
     if (Map[headto].Goodie_Check(this)) {
       return true;
     }
-    if (!IsActive) return false;
+    if (!IsActive) {
+      return false;
+    }
 
     HeadToCoord = 0;
     IsDriving = false;
@@ -985,7 +996,9 @@ void FootClass::Approach_Target() {
             }
           }
         }
-        if (found) break;
+        if (found) {
+          break;
+        }
       }
 
       /*
@@ -1489,7 +1502,9 @@ void FootClass::Per_Cell_Process(PCPType why) {
       TriggerClass* trigger = Map[Coord].Trigger;
       if (trigger != nullptr) {
         trigger->Spring(TEVENT_PLAYER_ENTERED, this, Coord_Cell(Coord));
-        if (!IsActive) return;
+        if (!IsActive) {
+          return;
+        }
       }
 
       /*
@@ -1504,7 +1519,9 @@ void FootClass::Per_Cell_Process(PCPType why) {
               (trigger->Class->EventControl != MULTI_ONLY &&
                trigger->Class->Event2.Event == TEVENT_CROSS_HORIZONTAL)) {
             trigger->Spring(TEVENT_CROSS_HORIZONTAL, this, Coord_Cell(Coord));
-            if (!IsActive) return;
+            if (!IsActive) {
+              return;
+            }
           }
         }
       }
@@ -1519,7 +1536,9 @@ void FootClass::Per_Cell_Process(PCPType why) {
               (trigger->Class->EventControl != MULTI_ONLY &&
                trigger->Class->Event2.Event == TEVENT_CROSS_VERTICAL)) {
             trigger->Spring(TEVENT_CROSS_VERTICAL, this, Coord_Cell(Coord));
-            if (!IsActive) return;
+            if (!IsActive) {
+              return;
+            }
           }
         }
       }
@@ -1536,7 +1555,9 @@ void FootClass::Per_Cell_Process(PCPType why) {
           if (Map[trigger->Cell].Zones[Techno_Type_Class()->MZone] ==
               Map[Coord].Zones[Techno_Type_Class()->MZone]) {
             trigger->Spring(TEVENT_ENTERS_ZONE, this, Coord_Cell(Coord));
-            if (!IsActive) return;
+            if (!IsActive) {
+              return;
+            }
           }
         }
       }
@@ -1545,7 +1566,9 @@ void FootClass::Per_Cell_Process(PCPType why) {
       **	If any of these triggers cause this unit to be destroyed, then
       **	stop all further processing for this unit.
       */
-      if (!IsActive) return;
+      if (!IsActive) {
+        return;
+      }
     }
 
 #ifdef OBSOLETE
@@ -1664,7 +1687,9 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     *repair *	is possible.
     */
     case RADIO_REPAIR:
-      if (Target_Legal(NavCom)) return RADIO_NEGATIVE;
+      if (Target_Legal(NavCom)) {
+        return RADIO_NEGATIVE;
+      }
       break;
 
     /*
@@ -1869,7 +1894,9 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   **	If the target specified is not legal, then it cannot be attacked. Always
   *return *	zero in this case.
   */
-  if (!Target_Legal(tarcom)) return 0;
+  if (!Target_Legal(tarcom)) {
+    return 0;
+  }
 
   /*
   ** If the unit is already assigned to destroy the tarcom then we need
@@ -2343,7 +2370,9 @@ void FootClass::Queue_Navigation_List(TARGET target) {
   if (Target_Legal(target)) {
     int count;
     for (count = 0; count < ARRAY_SIZE(NavQueue); count++) {
-      if (!Target_Legal(NavQueue[count])) break;
+      if (!Target_Legal(NavQueue[count])) {
+        break;
+      }
     }
 
     /*
@@ -2416,7 +2445,9 @@ bool FootClass::Is_Allowed_To_Leave_Map() const {
   /*
   **	If the unit hasn't entered the map yet, then don't allow leave the game.
   */
-  if (!IsLocked) return false;
+  if (!IsLocked) {
+    return false;
+  }
 
   /*
   **	A unit that isn't marked as a loaner is a gift to the player. Such
@@ -2424,8 +2455,9 @@ bool FootClass::Is_Allowed_To_Leave_Map() const {
   *it special permision.
   */
   if (!IsALoaner && Mission != MISSION_RETREAT &&
-      (!Team.Is_Valid() || !Team->Is_Leaving_Map()))
+      (!Team.Is_Valid() || !Team->Is_Leaving_Map())) {
     return false;
+  }
 
   return true;
 }

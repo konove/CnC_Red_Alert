@@ -235,7 +235,9 @@ int SequencedConnClass::Receive_Packet(void* buf, int buflen) {
   --------------------------- Check the magic # ----------------------------
   */
   packet = (CommHeaderType*)buf;
-  if (packet->MagicNumber != MagicNum) return (false);
+  if (packet->MagicNumber != MagicNum) {
+    return (false);
+  }
 
   /*------------------------------------------------------------------------
   Process the packet based on its Code
@@ -419,7 +421,9 @@ int SequencedConnClass::Service_Send_Queue() {
   ......................... Get ptr to data to send ........................
   */
   send_entry = Queue->Next_Send();
-  if (send_entry == NULL) return (true);
+  if (send_entry == NULL) {
+    return (true);
+  }
 
   /*
   ------------------ If ACK has been received, unqueue it ------------------
@@ -467,7 +471,9 @@ int SequencedConnClass::Service_Send_Queue() {
         it will just be removed from the queue.
         ...............................................................*/
         packet_hdr = (CommHeaderType*)send_entry->Buffer;
-        if (packet_hdr->Code == PACKET_DATA_NOACK) send_entry->IsACK = 1;
+        if (packet_hdr->Code == PACKET_DATA_NOACK) {
+          send_entry->IsACK = 1;
+        }
       }
 
 #ifdef DEBUG_SEQ
@@ -485,11 +491,13 @@ int SequencedConnClass::Service_Send_Queue() {
       /*..................................................................
       Perform error detection, based on either MaxRetries or Timeout
       ..................................................................*/
-      if (MaxRetries != -1 && send_entry->SendCount > MaxRetries)
+      if (MaxRetries != -1 && send_entry->SendCount > MaxRetries) {
         return (false);
+      }
       if (Timeout != -1 &&
-          send_entry->LastTime - send_entry->FirstTime > Timeout)
+          send_entry->LastTime - send_entry->FirstTime > Timeout) {
         return (false);
+      }
     }
   }
 
@@ -524,13 +532,17 @@ int SequencedConnClass::Service_Receive_Queue() {
   Get a pointer to the next received entry
   ------------------------------------------------------------------------*/
   rec_entry = Queue->Next_Receive();
-  if (rec_entry == NULL) return (true);
+  if (rec_entry == NULL) {
+    return (true);
+  }
 
   /*------------------------------------------------------------------------
   If this packet doesn't require an ACK, mark it as ACK'd.
   ------------------------------------------------------------------------*/
   packet_hdr = (CommHeaderType*)(rec_entry->Buffer);
-  if (packet_hdr->Code == PACKET_DATA_NOACK) rec_entry->IsACK = 1;
+  if (packet_hdr->Code == PACKET_DATA_NOACK) {
+    rec_entry->IsACK = 1;
+  }
 
   /*------------------------------------------------------------------------
   If this packet hasn't been ACK'd, send an ACK:

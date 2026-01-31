@@ -627,7 +627,9 @@ static void Queue_AI_Normal() {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Queue_AI_Multiplayer() {
-  if (Session.Type == GAME_SKIRMISH) return;
+  if (Session.Type == GAME_SKIRMISH) {
+    return;
+  }
 
   //........................................................................
   // Enums:
@@ -725,7 +727,9 @@ static void Queue_AI_Multiplayer() {
     }
     my_sent = 0;
     skip_crc = 32;
-    for (i = 0; i < 32; i++) CRC[i] = 0;
+    for (i = 0; i < 32; i++) {
+      CRC[i] = 0;
+    }
 
     //.....................................................................
     // If we've loaded a saved game:
@@ -735,10 +739,11 @@ static void Queue_AI_Multiplayer() {
     //   rather than scenario INI files
     //.....................................................................
     if (Session.LoadGame) {
-      if (Session.EmergencySave)
+      if (Session.EmergencySave) {
         ScenarioCRC = 0;
-      else
+      } else {
         ScenarioCRC = GameCRC;
+      }
     }
 
     //.....................................................................
@@ -777,7 +782,9 @@ static void Queue_AI_Multiplayer() {
     //	waiting for MIX files to load; we would have fallen through, but
     //	their frame # would still be -1).
     //.....................................................................
-    for (i = 0; i < MAX_PLAYERS - 1; i++) their_frame[i] = 0;
+    for (i = 0; i < MAX_PLAYERS - 1; i++) {
+      their_frame[i] = 0;
+    }
 
     //.....................................................................
     //	Reset the network response time computation, now that we're both
@@ -867,11 +874,12 @@ static void Queue_AI_Multiplayer() {
 #ifdef WOLAPI_INTEGRATION
   int iFramesyncTimeout;
   if (Session.Type == GAME_INTERNET && pWolapi &&
-      pWolapi->GameInfoCurrent.iPlayerCount > 2)
+      pWolapi->GameInfoCurrent.iPlayerCount > 2) {
     //	Shortened resync timeout for non-2 player games.
     iFramesyncTimeout = 5 * 60;  //	One minute.
-  else
+  } else {
     iFramesyncTimeout = FRAMESYNC_TIMEOUT;
+  }
 
   rc = Wait_For_Players(
       0, net, (Session.MaxAhead << 3),
@@ -1077,8 +1085,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
         //	At this point, begin wolapi "disconnect pinging", if
         // appropriate.
         if (Session.Type == GAME_INTERNET && pWolapi &&
-            pWolapi->GameInfoCurrent.bTournament)
+            pWolapi->GameInfoCurrent.bTournament) {
           pWolapi->Init_DisconnectPinging();
+        }
 #endif
       }
 
@@ -1093,8 +1102,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
 #ifdef WOLAPI_INTEGRATION
       //	Continue wolapi "disconnect pinging", if appropriate.
       if (Session.Type == GAME_INTERNET && pWolapi &&
-          pWolapi->bDoingDisconnectPinging)
+          pWolapi->bDoingDisconnectPinging) {
         pWolapi->Pump_DisconnectPinging();
+      }
 #endif
     }
 
@@ -1294,7 +1304,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       WWMouse->Erase_Mouse(&HidPage, true);
 #endif  // WIN32
       Map.Input(input, x, y);
-      if (input) Keyboard_Process(input);
+      if (input) {
+        Keyboard_Process(input);
+      }
       Map.Render();
     }
 
@@ -2084,8 +2096,10 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
   //........................................................................
   event = (EventClass*)multi_packet_buf;
 
-  if (event->Type <= EventClass::EMPTY || event->Type >= EventClass::LAST_EVENT)
+  if (event->Type <= EventClass::EMPTY ||
+      event->Type >= EventClass::LAST_EVENT) {
     return RC_SERIAL_PROCESSED;
+  }
 
   if (event->ID == PlayerPtr->ID) {
     return RC_HUNG_UP;
@@ -2785,7 +2799,9 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
     // Will the next event exceed the size of the buffer?  If so,
     // stop compressing.
     //.....................................................................
-    if (size + storedsize > bufsize) break;
+    if (size + storedsize > bufsize) {
+      break;
+    }
 
     //.....................................................................
     // Set the event's frame delay (this is protocol-dependent)
@@ -3341,7 +3357,9 @@ static int Execute_DoList(int max_houses, HousesType base_house,
     //	Loop through all events
     //.....................................................................
     for (j = 0; j < DoList.Count; j++) {
-      if (net) Update_Queue_Mono(net, 6);
+      if (net) {
+        Update_Queue_Mono(net, 6);
+      }
 
       //..................................................................
       //	If this event was from the currently-executing player ID, and
@@ -3583,7 +3601,9 @@ static void Clean_DoList(ConnManClass* net) {
   while (DoList.Count) {
     Keyboard->Check();
 
-    if (net) Update_Queue_Mono(net, 7);
+    if (net) {
+      Update_Queue_Mono(net, 7);
+    }
 
     //.....................................................................
     //	Discard events that have been executed, OR it's too late to execute.
@@ -4128,39 +4148,40 @@ static void Print_CRCs(EventClass* ev) {
                             static_cast<int>(objp->What_Am_I()));
       fprintf(fp, "Object %d: %x ", j, objp->Coord);
 
-      if (objp->What_Am_I() == RTTI_AIRCRAFT)
+      if (objp->What_Am_I() == RTTI_AIRCRAFT) {
         fprintf(fp, "Aircraft  (Type:%d) ",
                 static_cast<AircraftType>(*(AircraftClass*)objp));
-      else if (objp->What_Am_I() == RTTI_ANIM)
+      } else if (objp->What_Am_I() == RTTI_ANIM) {
         fprintf(fp, "Anim      (Type:%d) ",
                 static_cast<AnimType>(*(AnimClass*)objp));
-      else if (objp->What_Am_I() == RTTI_BUILDING)
+      } else if (objp->What_Am_I() == RTTI_BUILDING) {
         fprintf(fp, "Building  (Type:%d) ",
                 static_cast<StructType>(*(BuildingClass*)objp));
-      else if (objp->What_Am_I() == RTTI_BULLET)
+      } else if (objp->What_Am_I() == RTTI_BULLET) {
         fprintf(fp, "Bullet    (Type:%d) ",
                 static_cast<BulletType>(*(BulletClass*)objp));
-      else if (objp->What_Am_I() == RTTI_INFANTRY)
+      } else if (objp->What_Am_I() == RTTI_INFANTRY) {
         fprintf(fp, "Infantry  (Type:%d) ",
                 static_cast<InfantryType>(*(InfantryClass*)objp));
-      else if (objp->What_Am_I() == RTTI_OVERLAY)
+      } else if (objp->What_Am_I() == RTTI_OVERLAY) {
         fprintf(fp, "Overlay   (Type:%d) ",
                 static_cast<OverlayType>(*(OverlayClass*)objp));
-      else if (objp->What_Am_I() == RTTI_SMUDGE)
+      } else if (objp->What_Am_I() == RTTI_SMUDGE) {
         fprintf(fp, "Smudge    (Type:%d) ",
                 static_cast<SmudgeType>(*(SmudgeClass*)objp));
-      else if (objp->What_Am_I() == RTTI_TEMPLATE)
+      } else if (objp->What_Am_I() == RTTI_TEMPLATE) {
         fprintf(fp, "Template  (Type:%d) ",
                 static_cast<TemplateType>(*(TemplateClass*)objp));
-      else if (objp->What_Am_I() == RTTI_TERRAIN)
+      } else if (objp->What_Am_I() == RTTI_TERRAIN) {
         fprintf(fp, "Terrain   (Type:%d) ",
                 static_cast<TerrainType>(*(TerrainClass*)objp));
-      else if (objp->What_Am_I() == RTTI_UNIT)
+      } else if (objp->What_Am_I() == RTTI_UNIT) {
         fprintf(fp, "Unit      (Type:%d) ",
                 static_cast<UnitType>(*(UnitClass*)objp));
-      else if (objp->What_Am_I() == RTTI_VESSEL)
+      } else if (objp->What_Am_I() == RTTI_VESSEL) {
         fprintf(fp, "Vessel    (Type:%d) ",
                 static_cast<VesselType>(*(VesselClass*)objp));
+      }
 
       house = objp->Owner();
       if (house != HOUSE_NONE) {
@@ -4184,36 +4205,37 @@ static void Print_CRCs(EventClass* ev) {
                           static_cast<int>(objp->What_Am_I()));
     fprintf(fp, "Object %d: %x ", i, objp->Coord);
 
-    if (objp->What_Am_I() == RTTI_AIRCRAFT)
+    if (objp->What_Am_I() == RTTI_AIRCRAFT) {
       fprintf(fp, "Aircraft  (Type:%d) ",
               static_cast<AircraftType>(*(AircraftClass*)objp));
-    else if (objp->What_Am_I() == RTTI_ANIM)
+    } else if (objp->What_Am_I() == RTTI_ANIM) {
       fprintf(fp, "Anim      (Type:%d) ",
               static_cast<AnimType>(*(AnimClass*)objp));
-    else if (objp->What_Am_I() == RTTI_BUILDING)
+    } else if (objp->What_Am_I() == RTTI_BUILDING) {
       fprintf(fp, "Building  (Type:%d) ",
               static_cast<StructType>(*(BuildingClass*)objp));
-    else if (objp->What_Am_I() == RTTI_BULLET)
+    } else if (objp->What_Am_I() == RTTI_BULLET) {
       fprintf(fp, "Bullet    (Type:%d) ",
               static_cast<BulletType>(*(BulletClass*)objp));
-    else if (objp->What_Am_I() == RTTI_INFANTRY)
+    } else if (objp->What_Am_I() == RTTI_INFANTRY) {
       fprintf(fp, "Infantry  (Type:%d) ",
               static_cast<InfantryType>(*(InfantryClass*)objp));
-    else if (objp->What_Am_I() == RTTI_OVERLAY)
+    } else if (objp->What_Am_I() == RTTI_OVERLAY) {
       fprintf(fp, "Overlay   (Type:%d) ",
               static_cast<OverlayType>(*(OverlayClass*)objp));
-    else if (objp->What_Am_I() == RTTI_SMUDGE)
+    } else if (objp->What_Am_I() == RTTI_SMUDGE) {
       fprintf(fp, "Smudge    (Type:%d) ",
               static_cast<SmudgeType>(*(SmudgeClass*)objp));
-    else if (objp->What_Am_I() == RTTI_TEMPLATE)
+    } else if (objp->What_Am_I() == RTTI_TEMPLATE) {
       fprintf(fp, "Template  (Type:%d) ",
               static_cast<TemplateType>(*(TemplateClass*)objp));
-    else if (objp->What_Am_I() == RTTI_TERRAIN)
+    } else if (objp->What_Am_I() == RTTI_TERRAIN) {
       fprintf(fp, "Terrain   (Type:%d) ",
               static_cast<TerrainType>(*(TerrainClass*)objp));
-    else if (objp->What_Am_I() == RTTI_UNIT)
+    } else if (objp->What_Am_I() == RTTI_UNIT) {
       fprintf(fp, "Unit      (Type:%d) ",
               static_cast<UnitType>(*(UnitClass*)objp));
+    }
 
     house = objp->Owner();
     if (house != HOUSE_NONE) {
@@ -4291,7 +4313,9 @@ static void Init_Queue_Mono(ConnManClass* /*net*/) {
   // Enable mono output for our stuff; we must Disable it before we return
   // control to the engine.
   //------------------------------------------------------------------------
-  if (IsMono) MonoClass::Enable();
+  if (IsMono) {
+    MonoClass::Enable();
+  }
 
   if (net->Num_Connections() > 0) {
     //.....................................................................

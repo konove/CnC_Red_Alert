@@ -113,7 +113,9 @@ VOID* __cdecl Extract_Shape(const VOID* buffer, int shape) {
   /*
   ----------------------- Return if invalid argument -----------------------
   */
-  if (!buffer || shape < 0 || shape >= block->NumShapes) return (NULL);
+  if (!buffer || shape < 0 || shape >= block->NumShapes) {
+    return (NULL);
+  }
 
   offset = block->Offsets[shape];
 
@@ -152,14 +154,18 @@ void Focus_Loss() {
   }
   Theme.Stop();
   Stop_Primary_Sound_Buffer();
-  if (WWMouse) WWMouse->Clear_Cursor_Clip();
+  if (WWMouse) {
+    WWMouse->Clear_Cursor_Clip();
+  }
 }
 
 void Focus_Restore() {
   Restore_Cached_Icons();
   Map.Flag_To_Redraw(true);
   Start_Primary_Sound_Buffer(true);
-  if (WWMouse) WWMouse->Set_Cursor_Clip();
+  if (WWMouse) {
+    WWMouse->Set_Cursor_Clip();
+  }
   VisiblePage.Clear();
   HiddenPage.Clear();
 }
@@ -287,7 +293,9 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
         Shutdown_Network();
 #endif
         CCDebugString("C&C95 - Kill the Winsock stuff.\n");
-        if (Winsock.Get_Connected()) Winsock.Close();
+        if (Winsock.Get_Connected()) {
+          Winsock.Close();
+        }
         CCDebugString("C&C95 - Call ExitProcess.\n");
         ExitProcess(0);
       }
@@ -744,14 +752,17 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
 
   CCFileClass file_handle(name);
 
-  if (!file_handle.Is_Available()) return NULL;
+  if (!file_handle.Is_Available()) {
+    return NULL;
+  }
 
   file_handle.Open(READ);
 
   file_handle.Read(&header, sizeof(PCX_HEADER));
 
-  if (header.id != 10 && header.version != 5 && header.pixelsize != 8)
+  if (header.id != 10 && header.version != 5 && header.pixelsize != 8) {
     return NULL;
+  }
 
   width = header.width - header.x + 1;
   height = header.height - header.y + 1;
@@ -761,10 +772,14 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
     i = Size / width;
     height = std::min(i - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
-    if (!(pic && pic->Get_Buffer())) return NULL;
+    if (!(pic && pic->Get_Buffer())) {
+      return NULL;
+    }
   } else {
     pic = new GraphicBufferClass(width, height, NULL, width * (height + 4));
-    if (!(pic && pic->Get_Buffer())) return NULL;
+    if (!(pic && pic->Get_Buffer())) {
+      return NULL;
+    }
   }
 
   buffer = static_cast<char*>(pic->Get_Buffer());
@@ -787,8 +802,12 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
       }
     }
 
-    if (i == width) rle = READ_CHAR();
-    if (rle > 192) rle = READ_CHAR();
+    if (i == width) {
+      rle = READ_CHAR();
+    }
+    if (rle > 192) {
+      rle = READ_CHAR();
+    }
 
   } else {
     for (i = 0; i < width * height;) {

@@ -116,7 +116,9 @@
 static int _Byte_Precision(unsigned long value) {
   int byte_count;
   for (byte_count = sizeof(value); byte_count; byte_count--) {
-    if (value >> ((byte_count - 1) * 8)) break;
+    if (value >> ((byte_count - 1) * 8)) {
+      break;
+    }
   }
   return byte_count;
 }
@@ -231,9 +233,13 @@ void XMP_DER_Decode(uint32_t* result, const unsigned char* input,
       byte_count = *input++;
     } else {
       int length = *input++ & 0x7f;
-      if (length > 2) return;
+      if (length > 2) {
+        return;
+      }
       byte_count = *input++;
-      if (length > 1) byte_count = byte_count << 8 | *input++;
+      if (length > 1) {
+        byte_count = byte_count << 8 | *input++;
+      }
     }
     if (byte_count <= precision * sizeof(uint32_t)) {
       XMP_Signed_Decode(result, input, byte_count, precision);
@@ -321,7 +327,9 @@ unsigned XMP_Encode(unsigned char* to, const uint32_t* from, int precision) {
   unsigned char* const end = (unsigned char*)from;
   for (number_ptr = static_cast<unsigned char*>(end) + precision - 1;
        number_ptr > static_cast<unsigned char*>(end); number_ptr--) {
-    if (*number_ptr != filler) break;
+    if (*number_ptr != filler) {
+      break;
+    }
   }
 
   unsigned index = 0;
@@ -461,7 +469,9 @@ int XMP_Significance(const uint32_t* number, int precision) {
 
   number += precision;
   do {
-    if (*--number) break;
+    if (*--number) {
+      break;
+    }
   } while (--precision);
   return precision;
 }
@@ -487,7 +497,9 @@ void XMP_Inc(uint32_t* number, int precision) {
   assert(precision > 0);
 
   do {
-    if (++*number) break;
+    if (++*number) {
+      break;
+    }
     number++;
   } while (--precision);
 }
@@ -513,7 +525,9 @@ void XMP_Dec(uint32_t* number, int precision) {
 
   do {
     *number -= 1;
-    if (*number != ~static_cast<uint32_t>(0)) break;
+    if (*number != ~static_cast<uint32_t>(0)) {
+      break;
+    }
     number++;
   } while (--precision);
 }
@@ -591,7 +605,9 @@ void XMP_Shift_Right_Bits(uint32_t* number, int bits, int precision) {
   assert(bits >= 0);
   assert(precision > 0);
 
-  if (bits == 0) return; /* shift zero bits is a no-op */
+  if (bits == 0) {
+    return; /* shift zero bits is a no-op */
+  }
 
   /*
   **	If the shift is by whole bytes, then the shift operation can
@@ -677,7 +693,9 @@ void XMP_Shift_Left_Bits(uint32_t* number, int bits, int precision) {
   assert(bits >= 0);
   assert(precision > 0);
 
-  if (bits == 0) return; /* shift zero bits is a no-op */
+  if (bits == 0) {
+    return; /* shift zero bits is a no-op */
+  }
 
   /*
   **	If the shift is by whole bytes, then the shift operation can
@@ -767,7 +785,9 @@ bool XMP_Rotate_Left(uint32_t* number, bool carry, int precision) {
   while (precision--) {
     bool temp = (*number & UPPER_MOST_BIT) != 0;
     *number = *number << 1;
-    if (carry) *number = *number + 1;
+    if (carry) {
+      *number = *number + 1;
+    }
     carry = temp;
     number++;
   }
@@ -847,7 +867,9 @@ unsigned XMP_Count_Bits(const uint32_t* number, int precision) {
   assert(precision > 0);
 
   int sub_precision = XMP_Significance(number, precision);
-  if (!sub_precision) return 0;
+  if (!sub_precision) {
+    return 0;
+  }
   int total_bit_count = XMP_Digits_To_Bits(sub_precision);
   number += sub_precision - 1;
   uint32_t high_bit_mask = UPPER_MOST_BIT;
@@ -882,7 +904,9 @@ int XMP_Count_Bytes(const uint32_t* number, int precision) {
   unsigned char* ptr = (unsigned char*)number;
   int count = 0;
   for (unsigned index = 0; index < precision * sizeof(uint32_t); index++) {
-    if (!*ptr) break;
+    if (!*ptr) {
+      break;
+    }
     count++;
     ptr++;
   }
@@ -935,8 +959,12 @@ int XMP_Compare(const uint32_t* left_number, const uint32_t* right_number,
   left_number += precision - 1;
   right_number += precision - 1;
   do {
-    if (*left_number < *right_number) return -1;
-    if (*left_number > *right_number) return 1;
+    if (*left_number < *right_number) {
+      return -1;
+    }
+    if (*left_number > *right_number) {
+      return 1;
+    }
     left_number--;
     right_number--;
   } while (--precision);
@@ -1151,7 +1179,9 @@ int XMP_Unsigned_Mult(uint32_t* prod, const uint32_t* multiplicand,
   int total_bit_count = XMP_Count_Bits(multiplier, precision);
   uint32_t high_bit_mask = XMP_Bits_To_Mask(total_bit_count);
   int sub_precision = XMP_Bits_To_Digits(total_bit_count);
-  if (!sub_precision) return 0;
+  if (!sub_precision) {
+    return 0;
+  }
   multiplier += sub_precision;
 
   while (total_bit_count--) {
@@ -1337,7 +1367,9 @@ int XMP_Signed_Mult(uint32_t* prod, const uint32_t* multiplicand,
 unsigned short XMP_Unsigned_Div_Int(uint32_t* quotient,
                                     const uint32_t* dividend,
                                     unsigned short divisor, int precision) {
-  if (!divisor) return 0; /* zero divisor means divide error */
+  if (!divisor) {
+    return 0; /* zero divisor means divide error */
+  }
 
   unsigned short remainder = 0;
 
@@ -1347,7 +1379,9 @@ unsigned short XMP_Unsigned_Div_Int(uint32_t* quotient,
   int digit_precision = XMP_Bits_To_Digits(total_bit_count);
   const uint32_t* dividend_ptr = dividend + (digit_precision - 1);
 
-  if (!digit_precision) return 0;
+  if (!digit_precision) {
+    return 0;
+  }
 
   uint32_t high_bit_mask = XMP_Bits_To_Mask(total_bit_count);
   uint32_t* quotient_ptr = quotient + (digit_precision - 1);
@@ -1355,7 +1389,9 @@ unsigned short XMP_Unsigned_Div_Int(uint32_t* quotient,
   while (total_bit_count--) {
     remainder <<= 1;
 
-    if (*dividend_ptr & high_bit_mask) remainder++;
+    if (*dividend_ptr & high_bit_mask) {
+      remainder++;
+    }
 
     if (remainder >= divisor) {
       remainder -= divisor;
@@ -1402,14 +1438,18 @@ int XMP_Unsigned_Div(uint32_t* remainder, uint32_t* quotient,
                      const uint32_t* dividend, const uint32_t* divisor,
                      int precision) {
   // check for divide by zero.
-  if (XMP_Test_Eq_Int(divisor, 0, precision)) return -1;
+  if (XMP_Test_Eq_Int(divisor, 0, precision)) {
+    return -1;
+  }
 
   XMP_Init(remainder, 0, precision);
   XMP_Init(quotient, 0, precision);
 
   int total_bit_count = XMP_Count_Bits(dividend, precision);
   int digit_precision = XMP_Bits_To_Digits(total_bit_count);
-  if (!digit_precision) return 0;
+  if (!digit_precision) {
+    return 0;
+  }
 
   const uint32_t* dividend_ptr = dividend + (digit_precision - 1);
   uint32_t* quotient_ptr = quotient + (digit_precision - 1);
@@ -1566,8 +1606,9 @@ void XMP_Inverse_A_Mod_B(uint32_t* result, const uint32_t* number,
 int XMP_Reciprocal(uint32_t* quotient, const uint32_t* divisor, int precision) {
   uint32_t remainder[MAX_UNIT_PRECISION];
 
-  if (XMP_Test_Eq_Int(divisor, 0, precision))
+  if (XMP_Test_Eq_Int(divisor, 0, precision)) {
     return -1; /* zero divisor means divide error */
+  }
 
   XMP_Init(remainder, 0, precision);
   XMP_Init(quotient, 0, precision);
@@ -1631,9 +1672,13 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
   /*
   **	No string or zero length is considered '0'.
   */
-  if (!str) return;
+  if (!str) {
+    return;
+  }
   int i = strlen(str);
-  if (i == 0) return;
+  if (i == 0) {
+    return;
+  }
 
   unsigned short radix;          /* base 2-16 */
   switch (toupper(str[i - 1])) { /* classify radix select suffix character */
@@ -1659,18 +1704,24 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
   }
 
   bool minus = *str == '-';
-  if (minus) str++;
+  if (minus) {
+    str++;
+  }
 
   uint32_t c;
   while ((c = static_cast<unsigned char>(*str++)) != 0) {
-    if (c == ',') continue; /* allow commas in number */
+    if (c == ',') {
+      continue; /* allow commas in number */
+    }
 
     /*
     **	If not a hexadecimal (highest base) uint32_t then it is
     **	clearly the end of the processable string. Bail out
     **	of the scan loop.
     */
-    if (!isxdigit(static_cast<char>(c))) break;
+    if (!isxdigit(static_cast<char>(c))) {
+      break;
+    }
 
     /*
     **	Convert the character into an integer number 0 through 15.
@@ -1686,7 +1737,9 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
     **	know that further processing should stop. This is the
     **	end of the number string.
     */
-    if (c >= radix) break; /* scan terminated by any non-uint32_t */
+    if (c >= radix) {
+      break; /* scan terminated by any non-uint32_t */
+    }
 
     XMP_Unsigned_Mult_Int(mpn, mpn, radix, precision);
     XMP_Add_Int(mpn, mpn, c, 0, precision);
@@ -2092,7 +2145,9 @@ int xmp_exponent_mod(uint32_t* expout, const uint32_t* expin,
 
   int total_bit_count = XMP_Count_Bits(exponent_ptr, limited_precision);
   int sub_precision = XMP_Bits_To_Digits(total_bit_count);
-  if (!sub_precision) return 0;
+  if (!sub_precision) {
+    return 0;
+  }
   uint32_t high_bit_mask = XMP_Bits_To_Mask(total_bit_count);
   exponent_ptr += sub_precision - 1;
 
@@ -2156,8 +2211,12 @@ void memrev(char* buffer, size_t length) {
 }
 
 int pfunc(const void* pkey, const void* base) {
-  if (*(unsigned short*)pkey < *(unsigned short*)base) return -1;
-  if (*(unsigned short*)pkey > *(unsigned short*)base) return 1;
+  if (*(unsigned short*)pkey < *(unsigned short*)base) {
+    return -1;
+  }
+  if (*(unsigned short*)pkey > *(unsigned short*)base) {
+    return 1;
+  }
   return 0;
 }
 
@@ -2182,8 +2241,12 @@ bool XMP_Is_Small_Prime(const uint32_t* candidate, int precision) {
   **	If the number is too large for comparison to the known small primes
   *table, then *	bail immediately.
   */
-  if (XMP_Significance(candidate, precision) > 1) return false;
-  if (*candidate > primeTable[ARRAY_SIZE(primeTable) - 1]) return false;
+  if (XMP_Significance(candidate, precision) > 1) {
+    return false;
+  }
+  if (*candidate > primeTable[ARRAY_SIZE(primeTable) - 1]) {
+    return false;
+  }
 
   unsigned long* ptr = static_cast<unsigned long*>(
       bsearch(&candidate, &primeTable[0], ARRAY_SIZE(primeTable),
@@ -2214,8 +2277,9 @@ bool XMP_Small_Divisors_Test(const uint32_t* candidate, int precision) {
 
   for (unsigned i = 0; i < ARRAY_SIZE(primeTable); i++) {
     if (XMP_Unsigned_Div_Int(quotient, candidate, primeTable[i], precision) ==
-        0)
+        0) {
       return false;
+    }
   }
   return true;
 }
@@ -2261,7 +2325,9 @@ bool XMP_Fermat_Test(const uint32_t* candidate_prime, unsigned rounds,
 
     xmp_exponent_mod(result, small_prime, term, candidate_prime, precision);
 
-    if (!XMP_Test_Eq_Int(result, 1, precision)) return false;
+    if (!XMP_Test_Eq_Int(result, 1, precision)) {
+      return false;
+    }
   }
   return true;
 }
@@ -2436,27 +2502,35 @@ bool XMP_Is_Prime(const uint32_t* prime, int precision) {
   /*
   **	Even numbers are ALWAYS not prime.
   */
-  if (!(*prime & 0x01)) return false;
+  if (!(*prime & 0x01)) {
+    return false;
+  }
 
   /*
   **	Compare the prime number against the exhaustive list of prime
   **	numbers below 14 bits in size. If it finds a match, then
   **	the number is a known prime.
   */
-  if (XMP_Is_Small_Prime(prime, precision)) return true;
+  if (XMP_Is_Small_Prime(prime, precision)) {
+    return true;
+  }
 
   /*
   **	Perform the small divisors test. This is not exhaustive, but
   **	will weed out a large percentage of non-prime numbers.
   */
-  if (!XMP_Small_Divisors_Test(prime, precision)) return false;
+  if (!XMP_Small_Divisors_Test(prime, precision)) {
+    return false;
+  }
 
   /*
   **	Perform Fermat's Little Theorum on the candidate prime. Run
   **	the theorum for several rounds to ensure a high degree of
   **	confidence.
   */
-  if (!XMP_Fermat_Test(prime, 2, precision)) return false;
+  if (!XMP_Fermat_Test(prime, 2, precision)) {
+    return false;
+  }
 
   /*
   **	If all of the above tests have not confirmed primality nor

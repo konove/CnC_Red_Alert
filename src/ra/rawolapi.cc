@@ -178,8 +178,9 @@ STDMETHODIMP RAChatEventSink::OnPageSend(HRESULT hRes) {
   //	debugprint( ">>> OnPageSend got: %i ", hRes );
   DebugChatDef(hRes);
 
-  if (hRes != CHAT_S_PAGE_NOTHERE && hRes != CHAT_S_PAGE_OFF && hRes != S_OK)
+  if (hRes != CHAT_S_PAGE_NOTHERE && hRes != CHAT_S_PAGE_OFF && hRes != S_OK) {
     hRes = E_FAIL;
+  }
 
   hresRequestPageResult = hRes;
 
@@ -194,15 +195,16 @@ STDMETHODIMP RAChatEventSink::OnPaged(HRESULT, User* pUser, LPCSTR szMessage) {
   char* szPrint = new char[strlen((char*)pUser->name) + strlen(szMessage) +
                            strlen(TXT_WOL_ONPAGE)];
   sprintf(szPrint, TXT_WOL_ONPAGE, (char*)pUser->name, szMessage);
-  if (!pOwner->bInGame)
+  if (!pOwner->bInGame) {
     pOwner->PrintMessage(szPrint, WOLCOLORREMAP_PAGE);
-  else {
+  } else {
     Session.Messages.Add_Message(
         NULL, 0, szPrint, PCOLOR_GOLD,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         Rule.MessageDelay * TICKS_PER_MINUTE);
-    if (!pOwner->bFreezeExternalPager)
+    if (!pOwner->bFreezeExternalPager) {
       strcpy(pOwner->szExternalPager, (char*)pUser->name);
+    }
     Map.Flag_To_Redraw(true);
   }
 
@@ -219,10 +221,13 @@ STDMETHODIMP RAChatEventSink::OnFind(HRESULT hRes, Channel* pChannel) {
   DebugChatDef(hRes);
 
   if (hRes != CHAT_S_FIND_NOTHERE && hRes != CHAT_S_FIND_NOCHAN &&
-      hRes != CHAT_S_FIND_OFF && hRes != S_OK)
+      hRes != CHAT_S_FIND_OFF && hRes != S_OK) {
     hRes = E_FAIL;
+  }
 
-  if (hRes == S_OK) OnFindChannel = *pChannel;
+  if (hRes == S_OK) {
+    OnFindChannel = *pChannel;
+  }
 
   hresRequestFindResult = hRes;
 
@@ -451,12 +456,20 @@ void RAChatEventSink::InsertUserSorted(User* pUserNew) {
 
 //***********************************************************************************************
 bool operator<(const User& u1, const User& u2) {
-  if (u1.flags & CHAT_USER_CHANNELOWNER && !(u2.flags & CHAT_USER_CHANNELOWNER))
+  if (u1.flags & CHAT_USER_CHANNELOWNER &&
+      !(u2.flags & CHAT_USER_CHANNELOWNER)) {
     return true;
-  if (!(u1.flags & CHAT_USER_CHANNELOWNER) && u2.flags & CHAT_USER_CHANNELOWNER)
+  }
+  if (!(u1.flags & CHAT_USER_CHANNELOWNER) &&
+      u2.flags & CHAT_USER_CHANNELOWNER) {
     return false;
-  if (u1.flags & CHAT_USER_VOICE && !(u2.flags & CHAT_USER_VOICE)) return true;
-  if (!(u1.flags & CHAT_USER_VOICE) && u2.flags & CHAT_USER_VOICE) return false;
+  }
+  if (u1.flags & CHAT_USER_VOICE && !(u2.flags & CHAT_USER_VOICE)) {
+    return true;
+  }
+  if (!(u1.flags & CHAT_USER_VOICE) && u2.flags & CHAT_USER_VOICE) {
+    return false;
+  }
   return (_stricmp((char*)u1.name, (char*)u2.name) < 0);
 }
 
@@ -520,8 +533,9 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel*,
             }
           } else {
             pUserPrevious->next = pUserSearch->next;
-            if (!pUserPrevious->next)
+            if (!pUserPrevious->next) {
               pUserTail = pUserPrevious;  //	New list tail.
+            }
           }
           //	Destroy removed user.
           delete pUserSearch;
@@ -573,8 +587,9 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT, Channel*,
         szMessage[2] == 106 && szMessage[3] == 119) {
       if (strlen(szMessage) > 4) {
         int i = atoi(szMessage + 4);
-        if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds)
+        if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
           Speak((VoxType)i);
+        }
         char* szPrint = new char[strlen((char*)pUserSender->name) + 16];
         sprintf(szPrint, "%s!", (char*)pUserSender->name);
         pOwner->PrintMessage(szPrint, WOLCOLORREMAP_LOCALMACHINEMESS);
@@ -595,7 +610,9 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT, Channel*,
 STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT, User* pUserSender,
                                                LPCSTR szMessage) {
   //	Ignore private messages sent to myself by myself.
-  if (pUserSender->flags & CHAT_USER_MYSELF) return S_OK;
+  if (pUserSender->flags & CHAT_USER_MYSELF) {
+    return S_OK;
+  }
 
   if (*szMessage) {
     char ci1[] =
@@ -624,8 +641,9 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT, User* pUserSender,
           szMessage[2] == 106 && szMessage[3] == 119) {
         if (strlen(szMessage) > 4) {
           int i = atoi(szMessage + 4);
-          if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds)
+          if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
             Speak((VoxType)i);
+          }
         }
       } else {
         char* szPrint = new char[strlen((char*)pUserSender->name) +
@@ -652,10 +670,13 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT, User* pUserSender,
 
 //***********************************************************************************************
 bool RAChatEventSink::bSpecialMessage(const char* szMessage) {
-  if (strlen(szMessage) < 9) return false;
-  if (szMessage[0] != 33 || szMessage[1] != 97 || szMessage[2] != 106 ||
-      szMessage[3] != 119)
+  if (strlen(szMessage) < 9) {
     return false;
+  }
+  if (szMessage[0] != 33 || szMessage[1] != 97 || szMessage[2] != 106 ||
+      szMessage[3] != 119) {
+    return false;
+  }
   SYSTEMTIME SysTime;
   ::GetSystemTime(&SysTime);
   char szCode[5];
@@ -687,11 +708,11 @@ STDMETHODIMP RAChatEventSink::OnNetStatus(HRESULT hRes) {
       bRequestLogoutWait = false;
     } else {
       //	Uh oh. We got disconnected unexpectedly.
-      if (pOwner->bInGame)
+      if (pOwner->bInGame) {
         //	Set flag for wolapi destruction if connection is lost during
         // game.
         pOwner->bConnectionDown = true;
-      else {
+      } else {
         if (!pOwner->bSelfDestruct) {
           //	Set flag for wolapi destruction.
           WWMessageBox().Process(TXT_WOL_WOLAPIGONE);
@@ -802,10 +823,11 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT, Channel* pChannelListIn) {
 
   //	bRequestChannelListWait = false;
 
-  if (bRequestChannelListForLobbiesWait)
+  if (bRequestChannelListForLobbiesWait) {
     bRequestChannelListForLobbiesWait = false;
-  else
+  } else {
     pOwner->OnChannelList();
+  }
 
   return S_OK;
 }
@@ -871,8 +893,9 @@ STDMETHODIMP RAChatEventSink::OnUpdateList(HRESULT hRes, Update* pUpdateList) {
   //	debugprint( ">>> OnUpdateList got: " );
   DebugChatDef(hRes);
 
-  if (!pUpdateList)  //	Shouldn't happen.
+  if (!pUpdateList) {  //	Shouldn't happen.
     return S_OK;
+  }
 
   //	Count the updates.
   int iUpdates = 0;
@@ -886,14 +909,16 @@ STDMETHODIMP RAChatEventSink::OnUpdateList(HRESULT hRes, Update* pUpdateList) {
 
   if (WWMessageBox().Process(TXT_WOL_PATCHQUESTION, TXT_YES, TXT_NO) == 0) {
     //	Get the updates. (I ignore the concept of "optional" downloads here.)
-    if (DownloadUpdates(pUpdateList, iUpdates))
+    if (DownloadUpdates(pUpdateList, iUpdates)) {
       pOwner->hresPatchResults = PATCHDOWNLOADED;
-    else
+    } else {
       pOwner->hresPatchResults = PATCHAVOIDED;
-  } else
+    }
+  } else {
     //	User says don't do the download.
     //	Set flag to tell WolapiObject what has happened.
     pOwner->hresPatchResults = PATCHAVOIDED;
+  }
 
   return S_OK;
 }
@@ -1009,20 +1034,21 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
       strstr(szMessage, "<<dies>>") || strstr(szMessage, "<<dying>>") ||
       strstr(szMessage, "<<groan>>") || strstr(szMessage, "<<died>>")) {
     int i = rand() % 30;
-    if (i == 0)
+    if (i == 0) {
       Sound_Effect(VOC_DOG_HURT);
-    else if (i == 1)
+    } else if (i == 1) {
       Sound_Effect(VOC_ANTDIE);
-    else
+    } else {
       Sound_Effect((VocType)(VOC_SCREAM1 + rand() % 9));
+    }
   } else if (strstr(szMessage, "<<whines>>") ||
              strstr(szMessage, "<<whining>>") ||
              strstr(szMessage, "<<bitching>>") ||
-             strstr(szMessage, "<<whine>>"))
+             strstr(szMessage, "<<whine>>")) {
     Sound_Effect(VOC_DOG_WHINE);
-  else if (strstr(szMessage, "<<shoots>>") ||
-           strstr(szMessage, "<<shooting>>") ||
-           strstr(szMessage, "<<shoot>>") || strstr(szMessage, "<<shot>>")) {
+  } else if (strstr(szMessage, "<<shoots>>") ||
+             strstr(szMessage, "<<shooting>>") ||
+             strstr(szMessage, "<<shoot>>") || strstr(szMessage, "<<shot>>")) {
     switch (rand() % 6) {
       case 0:
         Sound_Effect(VOC_CANNON1);
@@ -1094,11 +1120,11 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
         break;
     }
   } else if (strstr(szMessage, "<<incredible>>") ||
-             strstr(szMessage, "<<adam>>") || strstr(szMessage, "<<Adam>>"))
+             strstr(szMessage, "<<adam>>") || strstr(szMessage, "<<Adam>>")) {
     Sound_Effect(VOC_E_OK);
-  else if (strstr(szMessage, "<<coming>>") ||
-           strstr(szMessage, "<<on my way>>") ||
-           strstr(szMessage, "<<moving out>>")) {
+  } else if (strstr(szMessage, "<<coming>>") ||
+             strstr(szMessage, "<<on my way>>") ||
+             strstr(szMessage, "<<moving out>>")) {
     switch (rand() % 5) {
       case 0:
         Sound_Effect(VOC_SPY_ONWAY);
@@ -1116,38 +1142,39 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
         Sound_Effect(VOC_THIEF_MOVEOUT);
         break;
     }
-  } else if (strstr(szMessage, "<<water>>"))
+  } else if (strstr(szMessage, "<<water>>")) {
     Sound_Effect(VOC_SPLASH);
-  else if (strstr(szMessage, "<<charging>>") ||
-           strstr(szMessage, "<<powering>>"))
+  } else if (strstr(szMessage, "<<charging>>") ||
+             strstr(szMessage, "<<powering>>")) {
     Sound_Effect(VOC_TESLA_POWER_UP);
-  else if (strstr(szMessage, "<<zap>>") || strstr(szMessage, "<<zaps>>"))
+  } else if (strstr(szMessage, "<<zap>>") || strstr(szMessage, "<<zaps>>")) {
     Sound_Effect(VOC_TESLA_ZAP);
-  else if (strstr(szMessage, "<<torpedo>>") ||
-           strstr(szMessage, "<<torpedoes>>"))
+  } else if (strstr(szMessage, "<<torpedo>>") ||
+             strstr(szMessage, "<<torpedoes>>")) {
     Sound_Effect(VOC_TORPEDO);
-  else if (strstr(szMessage, "<<appears>>") ||
-           strstr(szMessage, "<<surfaces>>") ||
-           strstr(szMessage, "<<emerges>>"))
+  } else if (strstr(szMessage, "<<appears>>") ||
+             strstr(szMessage, "<<surfaces>>") ||
+             strstr(szMessage, "<<emerges>>")) {
     Sound_Effect(VOC_SUBSHOW);
-  else if (strstr(szMessage, "<<bark>>") || strstr(szMessage, "<<barks>>"))
+  } else if (strstr(szMessage, "<<bark>>") || strstr(szMessage, "<<barks>>")) {
     Sound_Effect(VOC_DOG_BARK);
-  else if (strstr(szMessage, "<<growl>>") || strstr(szMessage, "<<growls>>"))
+  } else if (strstr(szMessage, "<<growl>>") ||
+             strstr(szMessage, "<<growls>>")) {
     Sound_Effect(VOC_DOG_GROWL2);
-  else if (strstr(szMessage, "<<chronoshift>>") ||
-           strstr(szMessage, "<<disappears>>"))
+  } else if (strstr(szMessage, "<<chronoshift>>") ||
+             strstr(szMessage, "<<disappears>>")) {
     Sound_Effect(VOC_CHRONO);
-  else if (strstr(szMessage, "<<crumble>>") ||
-           strstr(szMessage, "<<crumbles>>") ||
-           strstr(szMessage, "<<collapse>>") ||
-           strstr(szMessage, "<<collapses>>"))
+  } else if (strstr(szMessage, "<<crumble>>") ||
+             strstr(szMessage, "<<crumbles>>") ||
+             strstr(szMessage, "<<collapse>>") ||
+             strstr(szMessage, "<<collapses>>")) {
     Sound_Effect(VOC_CRUMBLE);
-  else if (strstr(szMessage, "<<sell>>") || strstr(szMessage, "<<sells>>") ||
-           strstr(szMessage, "<<cash>>") || strstr(szMessage, "<<money>>"))
+  } else if (strstr(szMessage, "<<sell>>") || strstr(szMessage, "<<sells>>") ||
+             strstr(szMessage, "<<cash>>") || strstr(szMessage, "<<money>>")) {
     Sound_Effect(VOC_CASHTURN);
-  else if (strstr(szMessage, "<<heal>>") || strstr(szMessage, "<<heals>>"))
+  } else if (strstr(szMessage, "<<heal>>") || strstr(szMessage, "<<heals>>")) {
     Sound_Effect(VOC_HEAL);
-  else if (strstr(szMessage, "<<missile>>")) {
+  } else if (strstr(szMessage, "<<missile>>")) {
     switch (rand() % 3) {
       case 0:
         Sound_Effect(VOC_MISSILE_1);
@@ -1166,7 +1193,9 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
 STDMETHODIMP RAChatEventSink::OnPrivateAction(HRESULT, User* pUserSender,
                                               LPCSTR szMessage) {
   //	Ignore private messages sent to myself by myself.
-  if (pUserSender->flags & CHAT_USER_MYSELF) return S_OK;
+  if (pUserSender->flags & CHAT_USER_MYSELF) {
+    return S_OK;
+  }
 
   if (*szMessage) {
     char* szPrint =
@@ -1176,7 +1205,9 @@ STDMETHODIMP RAChatEventSink::OnPrivateAction(HRESULT, User* pUserSender,
     pOwner->PrintMessage(szPrint, WOLCOLORREMAP_ACTION);
     delete[] szPrint;
     //	Easter egg related.
-    if (pOwner->bEggSounds) ActionEggSound(szMessage);
+    if (pOwner->bEggSounds) {
+      ActionEggSound(szMessage);
+    }
   }
   return S_OK;
 }
@@ -1192,7 +1223,9 @@ STDMETHODIMP RAChatEventSink::OnPublicAction(HRESULT, Channel*,
     pOwner->PrintMessage(szPrint, WOLCOLORREMAP_ACTION);
     delete[] szPrint;
     //	Easter egg related.
-    if (pOwner->bEggSounds) ActionEggSound(szMessage);
+    if (pOwner->bEggSounds) {
+      ActionEggSound(szMessage);
+    }
   }
   return S_OK;
 }
@@ -1207,11 +1240,12 @@ STDMETHODIMP RAChatEventSink::OnPrivateGameOptions(HRESULT, User* pUser,
   strcpy(szRequestCopy, szRequest);
 
   if (pOwner->pGSupDlg) {
-    if (pOwner->pGSupDlg->bHost)
+    if (pOwner->pGSupDlg->bHost) {
       pOwner->pGSupDlg->ProcessGuestRequest(pUser, szRequestCopy);
-    else
+    } else {
       pOwner->pGSupDlg->ProcessInform(
           szRequestCopy);  //	Must be private message to guest from game host.
+    }
   }
   //	else
   //		debugprint( "OnPrivateGameOptions bizarreness.\n" );
@@ -1295,7 +1329,9 @@ unsigned long RAChatEventSink::GetPlayerGameIP(const char* szPlayerName) const {
   //	Returns ipaddr value of player if found in pGameUserList, else 0.
   User* pUser = pGameUserList;
   while (pUser) {
-    if (_stricmp((char*)pUser->name, szPlayerName) == 0) return pUser->ipaddr;
+    if (_stricmp((char*)pUser->name, szPlayerName) == 0) {
+      return pUser->ipaddr;
+    }
     pUser = pUser->next;
   }
   return 0;
@@ -1416,7 +1452,9 @@ unsigned long RAChatEventSink::GetUserIP(const char* szName) const {
   //	Find szName in list.
   User* pUser = pUserIPList;
   while (pUser) {
-    if (_stricmp((char*)pUser->name, szName) == 0) return pUser->ipaddr;
+    if (_stricmp((char*)pUser->name, szName) == 0) {
+      return pUser->ipaddr;
+    }
     pUser = pUser->next;
   }
   return 0;
@@ -1461,19 +1499,21 @@ STDMETHODIMP RAChatEventSink::OnUserFlags(HRESULT hRes, LPCSTR name,
       if (!pUserPrior) {
         //	User was head of list.
         pUserList = pUserSearch->next;
-        if (pUserSearch == pUserTail)
+        if (pUserSearch == pUserTail) {
           //	User was also tail of list.
           pUserTail = NULL;
-        else
+        } else {
           pUserSearch->next = NULL;
+        }
       } else {
         //	User was not head of list.
         pUserPrior->next = pUserSearch->next;
-        if (pUserSearch == pUserTail)
+        if (pUserSearch == pUserTail) {
           //	User was tail of list.
           pUserTail = pUserPrior;
-        else
+        } else {
           pUserSearch->next = NULL;
+        }
       }
       InsertUserSorted(pUserSearch);
 
@@ -1745,22 +1785,24 @@ STDMETHODIMP RANetUtilEventSink::OnPing(HRESULT hRes, int time,
 
     if (ip == pOwner->TournamentOpponentIP) {
       //	This is the result of the opponent ping.
-      if (time != -1)
+      if (time != -1) {
         pOwner->DisconnectPingResult_Opponent[pOwner->iDisconnectPingCurrent] =
             PING_GOOD;
-      else
+      } else {
         pOwner->DisconnectPingResult_Opponent[pOwner->iDisconnectPingCurrent] =
             PING_BAD;
+      }
       //			debugprint( "Set ping #%i for Opponent\n",
       // pOwner->iDisconnectPingCurrent );
     } else {
       //	This is the result of the game server ping.
-      if (time != -1)
+      if (time != -1) {
         pOwner->DisconnectPingResult_Server[pOwner->iDisconnectPingCurrent] =
             PING_GOOD;
-      else
+      } else {
         pOwner->DisconnectPingResult_Server[pOwner->iDisconnectPingCurrent] =
             PING_BAD;
+      }
       //			debugprint( "Set ping #%i for Server\n",
       // pOwner->iDisconnectPingCurrent );
     }
@@ -1786,10 +1828,11 @@ unsigned int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) {
   // 0. 	Slow linear search. 	If bRankRA, returns RA rank, else
   // returns AM rank. 	debugprint( "GetUserRank: Asked for %s, ", szName );
   Ladder* pLad;
-  if (bRankRA)
+  if (bRankRA) {
     pLad = pLadderList;
-  else
+  } else {
     pLad = pLadderListAM;
+  }
 
   while (pLad) {
     //		debugprint( "  comparing %s\n", (char*)pLad->login_name );
@@ -1961,8 +2004,9 @@ int iChannelLobbyNumber(const unsigned char* szChannelName) {
     //		debugprint( " ^ iChannelLobbyNumber returning atoi of %s\n",
     // szNum );
     return atoi(szNum);
-  } else
+  } else {
     return -1;
+  }
 }
 
 //***********************************************************************************************

@@ -976,7 +976,9 @@ void SidebarClass::Recalc() {
 bool SidebarClass::Activate(int control) {
   bool old = IsSidebarActive;
 
-  if (Session.Play) return old;
+  if (Session.Play) {
+    return old;
+  }
 
   /*
   **	Determine the new state of the sidebar.
@@ -1399,10 +1401,14 @@ bool SidebarClass::StripClass::Add(RTTIType type, int id) {
  *=============================================================================================*/
 bool SidebarClass::StripClass::Scroll(bool up) {
   if (up) {
-    if (!TopIndex) return false;
+    if (!TopIndex) {
+      return false;
+    }
     Scroller--;
   } else {
-    if (TopIndex + MAX_VISIBLE >= BuildableCount) return false;
+    if (TopIndex + MAX_VISIBLE >= BuildableCount) {
+      return false;
+    }
     Scroller++;
   }
   return true;

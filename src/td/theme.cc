@@ -284,7 +284,9 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
 void ThemeClass::Queue_Song(ThemeType theme) {
   if (ScoresPresent && SampleType && !Debug_Quiet &&
       (Pending == THEME_NONE || Pending == THEME_PICK_ANOTHER)) {
-    if (!Options.ScoreVolume && theme != THEME_NONE) return;
+    if (!Options.ScoreVolume && theme != THEME_NONE) {
+      return;
+    }
 
     Pending = theme;
     Fade_Sample(Current, THEME_DELAY);
@@ -464,7 +466,9 @@ bool ThemeClass::Is_Allowed(ThemeType index) const {
   }
 #endif
 
-  if (index == THEME_NONE) return true;
+  if (index == THEME_NONE) {
+    return true;
+  }
 
   return _themes[index].Available &&
          (_themes[index].Normal ||

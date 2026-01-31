@@ -165,7 +165,9 @@ int CDFileClass::Set_Search_Drives(char* pathlist) {
   /*
   **	If there is no pathlist to add, then just return.
   */
-  if (!pathlist) return 0;
+  if (!pathlist) {
+    return 0;
+  }
 
   /*
   ** Save the path as it was passed in so we can parse it again later.
@@ -230,8 +232,12 @@ int CDFileClass::Set_Search_Drives(char* pathlist) {
     */
     ptr = strtok(nullptr, ";");
   }
-  if (!found) return 1;
-  if (empty) return 2;
+  if (!found) {
+    return 1;
+  }
+  if (empty) {
+    return 2;
+  }
   return 0;
 }
 

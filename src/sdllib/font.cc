@@ -95,7 +95,9 @@ unsigned int String_Pixel_Width(const char* string) {
   int width;        // Working accumulator of string width.
   int largest = 0;  // Largest recorded width of the string.
 
-  if (!string) return 0;
+  if (!string) {
+    return 0;
+  }
 
   width = 0;
   while (*string) {
@@ -117,7 +119,9 @@ void Set_Font_Palette_Range(const void* palette, int start_idx, int end_idx) {
   start_idx &= 0xF;
   end_idx &= 0xF;
 
-  if (end_idx < start_idx) return;
+  if (end_idx < start_idx) {
+    return;
+  }
 
   int num_cols = end_idx - start_idx + 1;
 

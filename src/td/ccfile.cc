@@ -224,7 +224,9 @@ long CCFileClass::Read(void* buffer, long size) {
       Mem_Copy(Add_Long_To_Pointer(Pointer, Position), buffer, size);
       Position += size;
     }
-    if (opened) Close();
+    if (opened) {
+      Close();
+    }
     return size;
   }
 
@@ -241,12 +243,16 @@ long CCFileClass::Read(void* buffer, long size) {
       size = CDFileClass::Read(buffer, size);
       Position += size;
     }
-    if (opened) Close();
+    if (opened) {
+      Close();
+    }
     return size;
   }
 
   long s = CDFileClass::Read(buffer, size);
-  if (opened) Close();
+  if (opened) {
+    Close();
+  }
   return s;
 }
 
@@ -307,7 +313,9 @@ long CCFileClass::Seek(long pos, int dir) {
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
 long CCFileClass::Size() {
-  if (Pointer || FromDisk) return Length;
+  if (Pointer || FromDisk) {
+    return Length;
+  }
 
   return CDFileClass::Size();
 }
@@ -354,7 +362,9 @@ int CCFileClass::Is_Open() const {
   **	If the file is part of a cached file, then return that it is opened. A
   *closed file *	doesn't have a valid pointer.
   */
-  if (Pointer) return true;
+  if (Pointer) {
+    return true;
+  }
   return CDFileClass::Is_Open();
 }
 

@@ -79,7 +79,9 @@ class INIClass {
   bool Is_Loaded() const { return !SectionList.Is_Empty(); }
   int Size() const;
   bool Is_Present(const char* section, const char* entry = nullptr) const {
-    if (entry == nullptr) return Find_Section(section) != nullptr;
+    if (entry == nullptr) {
+      return Find_Section(section) != nullptr;
+    }
     return Find_Entry(section, entry) != nullptr;
   }
 

@@ -432,7 +432,9 @@ void BulletClass::AI() {
         **	Certain projectiles loose strength when they travel.
         */
         if (*this == BULLET_BULLET) {
-          if (Strength > 5) Strength--;
+          if (Strength > 5) {
+            Strength--;
+          }
         }
 
       } else {
@@ -463,7 +465,9 @@ void BulletClass::AI() {
             AircraftClass* object = As_Aircraft(TarCom);
 
             int str = Strength;
-            if (object) object->Take_Damage(str, 0, Class->Warhead, Payback);
+            if (object) {
+              object->Take_Damage(str, 0, Class->Warhead, Payback);
+            }
           }
         }
 
@@ -510,14 +514,18 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   *are actually *	invisible) and flame thrower flames (which are rendered
   *as an animation instead of a projectile).
   */
-  if (Class->IsInvisible) return;
+  if (Class->IsInvisible) {
+    return;
+  }
 
   /*
   **	If there is no shape loaded for this object, then
   **	it obviously can't be rendered -- just bail.
   */
   const void* shapeptr = Class->Get_Image_Data();
-  if (!shapeptr) return;
+  if (!shapeptr) {
+    return;
+  }
 
   /*
   **	Get the basic shape number for this projectile.
@@ -728,7 +736,9 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	target.
     */
     int speed = Class->MaxSpeed;
-    if (speed == MPH_LIGHT_SPEED) speed = MPH_IMMOBILE;
+    if (speed == MPH_LIGHT_SPEED) {
+      speed = MPH_IMMOBILE;
+    }
     if (Class->IsArcing) {
       speed = Class->MaxSpeed + (Distance(tcoord) >> 5);
 

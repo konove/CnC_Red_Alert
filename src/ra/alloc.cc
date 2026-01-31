@@ -261,9 +261,9 @@ void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
     } else {
       segread(&sregs);
       int386x(0x31, &regs, &regs, &sregs);
-      if (regs.x.cflag)
+      if (regs.x.cflag) {
         retval = NULL;
-      else {
+      } else {
 #if (LONG_ALIGNMENT)
         longptr = (long*)(((regs.x.eax & 0xFFFF) << 4) + 4);
 #else
@@ -277,7 +277,9 @@ void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
 
   // If the alloc failed then we need to signify a memory error.
   if (retval == NULL) {
-    if (Memory_Error != NULL) Memory_Error();
+    if (Memory_Error != NULL) {
+      Memory_Error();
+    }
     return NULL;
   }
 
@@ -440,8 +442,9 @@ void Free(const void* pointer) {
       long* longptr = ((long*)byteptr) - 1;
       DPMI_Unlock(pointer, *longptr);
       pointer = (void*)longptr;
-    } else
+    } else {
       pointer = (void*)byteptr;
+    }
 
 #if (LOGGING)
     int val = _heapchk();
@@ -491,7 +494,9 @@ void* Resize_Alloc(void* original_ptr, unsigned long new_size_in_bytes) {
   /* ReAlloc the space */
   temp = (unsigned long*)realloc(temp, new_size_in_bytes);
   if (temp == NULL) {
-    if (Memory_Error != NULL) Memory_Error();
+    if (Memory_Error != NULL) {
+      Memory_Error();
+    }
     return NULL;
   }
 

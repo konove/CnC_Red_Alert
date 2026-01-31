@@ -134,7 +134,9 @@ int RandomClass::operator()(int minval, int maxval) {
   **	the number to return is actually implicit from the
   **	parameters.
   */
-  if (minval == maxval) return minval;
+  if (minval == maxval) {
+    return minval;
+  }
 
   /*
   **	Ensure that the min and max range values are in proper order.

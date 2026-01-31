@@ -139,10 +139,14 @@ MPGSettings::MPGSettings(FileClass& file) : mDeviceName(nullptr) {
  ****************************************************************************/
 
 MPGSettings::~MPGSettings() {
-  if (mDeviceName) free(mDeviceName);
+  if (mDeviceName) {
+    free(mDeviceName);
+  }
 
 #ifdef MCIMPEG
-  if (mMCIDevices) delete[] mMCIDevices;
+  if (mMCIDevices) {
+    delete[] mMCIDevices;
+  }
 #endif
 }
 
@@ -163,11 +167,15 @@ MPGSettings::~MPGSettings() {
  ****************************************************************************/
 
 void MPGSettings::SetDeviceName(const char* deviceName) {
-  if (mDeviceName) free(mDeviceName);
+  if (mDeviceName) {
+    free(mDeviceName);
+  }
 
   mDeviceName = nullptr;
 
-  if (deviceName) mDeviceName = strdup(deviceName);
+  if (deviceName) {
+    mDeviceName = strdup(deviceName);
+  }
 }
 
 bool MPGSettings::Save(FileClass& file) {
@@ -329,7 +337,9 @@ void MPGSettings::Dialog() {
 #endif
 
   // Save original device selection
-  if (GetDeviceName()) origDevice = strdup(GetDeviceName());
+  if (GetDeviceName()) {
+    origDevice = strdup(GetDeviceName());
+  }
 
   //------------------------------------------------------------------------
   //	Main Processing Loop
@@ -369,7 +379,9 @@ void MPGSettings::Dialog() {
       }
 
       //	Redraw buttons
-      if (display >= REDRAW_BUTTONS) commands->Flag_List_To_Redraw();
+      if (display >= REDRAW_BUTTONS) {
+        commands->Flag_List_To_Redraw();
+      }
 
       Show_Mouse();
       display = REDRAW_NONE;
@@ -401,7 +413,9 @@ void MPGSettings::Dialog() {
         buttons[curbutton]->Flag_To_Redraw();
         curbutton--;
 
-        if (curbutton < 0) curbutton = (num_of_buttons - 1);
+        if (curbutton < 0) {
+          curbutton = (num_of_buttons - 1);
+        }
 
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
@@ -412,7 +426,9 @@ void MPGSettings::Dialog() {
         buttons[curbutton]->Flag_To_Redraw();
         curbutton++;
 
-        if (curbutton > (num_of_buttons - 1)) curbutton = 0;
+        if (curbutton > (num_of_buttons - 1)) {
+          curbutton = 0;
+        }
 
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
@@ -495,7 +511,9 @@ void MPGSettings::Dialog() {
     }
   }
 
-  if (origDevice) free(origDevice);
+  if (origDevice) {
+    free(origDevice);
+  }
 }
 
 #ifdef MCIMPEG

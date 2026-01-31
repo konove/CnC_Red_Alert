@@ -1392,7 +1392,9 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   /*
   ** If there's no text for button three, zero it out.
   */
-  if (*b3txt == '\0') b3txt = nullptr;
+  if (*b3txt == '\0') {
+    b3txt = nullptr;
+  }
 
   Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[PCOLOR_TYPE], TBLACK,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
@@ -2712,7 +2714,9 @@ static void Create_Units(bool official) {
   **	Compute allowed # units
   */
   tot_units = Session.Options.UnitCount * 2 / 3;
-  if (u_limit == 0) tot_units = 0;
+  if (u_limit == 0) {
+    tot_units = 0;
+  }
 
   /*
   **	Init # of each category to 0
@@ -2948,7 +2952,7 @@ static void Create_Units(bool official) {
         **	Create an Ally unit
         */
         if (hptr->ActLike != HOUSE_USSR && hptr->ActLike != HOUSE_UKRAINE) {
-          for (k = 0; k < 2; k++)
+          for (k = 0; k < 2; k++) {
             if (utable[i].AllyType[k] != UNIT_NONE) {
               obj = new UnitClass(utable[i].AllyType[k], house);
               if (!Scan_Place_Object(obj, centerpt)) {
@@ -2961,11 +2965,12 @@ static void Create_Units(bool official) {
                 }
               }
             }
+          }
         } else {
           /*
           **	Create a Soviet unit
           */
-          for (k = 0; k < 2; k++)
+          for (k = 0; k < 2; k++) {
             if (utable[i].SovietType[k] != UNIT_NONE) {
               obj = new UnitClass(utable[i].SovietType[k], house);
               if (!Scan_Place_Object(obj, centerpt)) {
@@ -2978,6 +2983,7 @@ static void Create_Units(bool official) {
                 }
               }
             }
+          }
         }
       }
     }
@@ -3283,7 +3289,9 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
 void Disect_Scenario_Name(const char* name, int& scenario,
                           ScenarioPlayerType& player, ScenarioDirType& dir,
                           ScenarioVarType& var) {
-  if (name == nullptr) return;
+  if (name == nullptr) {
+    return;
+  }
 
   /*
   **	Fetch the scenario number.

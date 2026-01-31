@@ -309,7 +309,9 @@ void SmudgeClass::Read_INI(CCINIClass& ini) {
         int data = 0;
         CELL cell = atoi(ptr);
         ptr = strtok(nullptr, ",");
-        if (ptr != nullptr) data = atoi(ptr);
+        if (ptr != nullptr) {
+          data = atoi(ptr);
+        }
         new SmudgeClass(smudge, Cell_Coord(cell));
         if (Map[cell].Smudge == smudge && data != 0) {
           Map[cell].SmudgeData = data;

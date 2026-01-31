@@ -393,7 +393,9 @@ static struct {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 VocType Voc_From_Name(const char* name) {
-  if (name == nullptr) return VOC_NONE;
+  if (name == nullptr) {
+    return VOC_NONE;
+  }
 
   for (VocType voc = VOC_FIRST; voc < VOC_COUNT; voc++) {
     if (stricmp(name, SoundEffectName[voc].Name) == 0) {
@@ -420,7 +422,9 @@ VocType Voc_From_Name(const char* name) {
  * HISTORY: * 05/06/1996 JLB : Created. *
  *=============================================================================================*/
 const char* Voc_Name(VocType voc) {
-  if (voc == VOC_NONE) return "none";
+  if (voc == VOC_NONE) {
+    return "none";
+  }
   return SoundEffectName[voc].Name;
 }
 
@@ -783,7 +787,9 @@ static VoxType CurrentVoice = VOX_NONE;
  * HISTORY: * 06/01/1996 JLB : Created. *
  *=============================================================================================*/
 const char* Speech_Name(VoxType speech) {
-  if (speech == VOX_NONE) return "none";
+  if (speech == VOX_NONE) {
+    return "none";
+  }
   return Speech[speech];
 }
 
@@ -829,7 +835,9 @@ void Speak(VoxType voice) {
  *=============================================================================================*/
 void Speak_AI() {
   static int _index = 0;
-  if (Debug_Quiet || SampleType == 0) return;
+  if (Debug_Quiet || SampleType == 0) {
+    return;
+  }
 
   if (!Is_Sample_Playing(SpeechBuffer[_index])) {
     CurrentVoice = VOX_NONE;
@@ -840,7 +848,9 @@ void Speak_AI() {
       */
       const void* speech = nullptr;
       for (int index = 0; index < ARRAY_SIZE(SpeechRecord); index++) {
-        if (SpeechRecord[index] == SpeakQueue) break;
+        if (SpeechRecord[index] == SpeakQueue) {
+          break;
+        }
       }
 
       /*

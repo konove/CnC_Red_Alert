@@ -370,7 +370,9 @@ int Test_Null_Modem() {
                    TBLACK, TPF_TEXT);
 
   commands->Draw_All();
-  while (Get_Mouse_State() > 0) Show_Mouse();
+  while (Get_Mouse_State() > 0) {
+    Show_Mouse();
+  }
 
 #ifdef _WIN32
   /*
@@ -415,7 +417,9 @@ int Test_Null_Modem() {
     if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
       if (ReceivePacket.Command == SERIAL_CONNECT) {
         starttime = TickCount;
-        while (TickCount - starttime < 30) NullModem.Service();
+        while (TickCount - starttime < 30) {
+          NullModem.Service();
+        }
         process = false;
         retval = 2;
         break;
@@ -444,7 +448,9 @@ int Test_Null_Modem() {
       if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
         if (ReceivePacket.Command == SERIAL_CONNECT) {
           starttime = TickCount;
-          while (TickCount - starttime < 30) NullModem.Service();
+          while (TickCount - starttime < 30) {
+            NullModem.Service();
+          }
 
           //
           // whoever has the highest time is the host
@@ -520,7 +526,9 @@ int Test_Null_Modem() {
       if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
         if (ReceivePacket.Command == SERIAL_CONNECT) {
           starttime = TickCount;
-          while (TickCount - starttime < 30) NullModem.Service();
+          while (TickCount - starttime < 30) {
+            NullModem.Service();
+          }
 
           //
           // whoever has the highest time is the host
@@ -792,7 +800,9 @@ static int Reconnect_Null_Modem() {
         SendPacket.ID = Session.ColorIdx;
         NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
         starttime = TickCount;
-        while (TickCount - starttime < 60) NullModem.Service();
+        while (TickCount - starttime < 60) {
+          NullModem.Service();
+        }
         retval = true;
         process = false;
       }
@@ -844,7 +854,9 @@ void Destroy_Null_Connection(int id, int error) {
   **	Do nothing if the house isn't human.
   */
   housep = HouseClass::As_Pointer(static_cast<HousesType>(id));
-  if (!housep || !housep->IsHuman) return;
+  if (!housep || !housep->IsHuman) {
+    return;
+  }
 
   /*
   **	Create a message to display to the user
@@ -1154,7 +1166,9 @@ GameType Select_Serial_Dialog() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton--;
-        if (curbutton < 0) curbutton = NUM_OF_BUTTONS - 1;
+        if (curbutton < 0) {
+          curbutton = NUM_OF_BUTTONS - 1;
+        }
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
@@ -1163,7 +1177,9 @@ GameType Select_Serial_Dialog() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton++;
-        if (curbutton > NUM_OF_BUTTONS - 1) curbutton = 0;
+        if (curbutton > NUM_OF_BUTTONS - 1) {
+          curbutton = 0;
+        }
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
@@ -3415,12 +3431,13 @@ int Com_Scenario_Dialog(bool skirmish) {
              Is_Counterstrike_Installed()) &&
             (!Is_Mission_Aftermath(
                  (char*)Session.Scenarios[i]->Get_Filename()) ||
-             Is_Aftermath_Installed()))
+             Is_Aftermath_Installed())) {
 #if defined(GERMAN) || defined(FRENCH)
           scenariolist.Add_Item(EngMisStr[j + 1]);
 #else
           scenariolist.Add_Item(EngMisStr[j]);
 #endif
+        }
         break;
       }
     }
@@ -3434,8 +3451,9 @@ int Com_Scenario_Dialog(bool skirmish) {
             Is_Counterstrike_Installed()) &&
            (!Is_Mission_Aftermath(
                 (char*)Session.Scenarios[i]->Get_Filename()) ||
-            Is_Aftermath_Installed())))
+            Is_Aftermath_Installed()))) {
         scenariolist.Add_Item(Session.Scenarios[i]->Description());
+      }
     }
   }
 
@@ -3468,11 +3486,14 @@ int Com_Scenario_Dialog(bool skirmish) {
   Load_Title_Page(true);
   CCPalette.Set();
 
-  if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
+  if (strlen(ModemRXString) > 36) {
+    ModemRXString[36] = 0;
+  }
 
-  if (strlen(ModemRXString) > 0)
+  if (strlen(ModemRXString) > 0) {
     Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN,
                                  TPF_TEXT, -1);
+  }
 
   ModemRXString[0] = '\0';
 
@@ -3855,10 +3876,8 @@ int Com_Scenario_Dialog(bool skirmish) {
         User adjusts build level
         ------------------------------------------------------------------*/
         case BUTTON_LEVEL | KN_BUTTON:
-          BuildLevel = levelgauge.Get_Value() + 1;
-          if (BuildLevel >
-              MPLAYER_BUILD_LEVEL_MAX)  // if it's pegged, max it out
-            BuildLevel = MPLAYER_BUILD_LEVEL_MAX;
+          BuildLevel =
+              std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
           display = std::max(display, REDRAW_PARMS);
           if (housebtn.IsDropped) {
             housebtn.Collapse();
@@ -3934,7 +3953,9 @@ int Com_Scenario_Dialog(bool skirmish) {
                   SessionClass::CountMax[0] - SessionClass::CountMin[0],
                   SessionClass::CountMax[1] - SessionClass::CountMin[1]);
             } else {
-              if (!skirmish) optionlist.Check_Item(4, false);
+              if (!skirmish) {
+                optionlist.Check_Item(4, false);
+              }
               Session.Options.UnitCount = Rescale(
                   Session.Options.UnitCount - SessionClass::CountMin[1],
                   SessionClass::CountMax[1] - SessionClass::CountMin[1],
@@ -3990,7 +4011,9 @@ int Com_Scenario_Dialog(bool skirmish) {
             WWMessageBox().Process(TXT_ONLY_ONE, TXT_OOPS, TXT_NONE);
             display = REDRAW_ALL;
           }
-          if (input == (BUTTON_LOAD | KN_BUTTON)) load_game = true;
+          if (input == (BUTTON_LOAD | KN_BUTTON)) {
+            load_game = true;
+          }
           break;
 
         /*------------------------------------------------------------------
@@ -4240,7 +4263,9 @@ int Com_Scenario_Dialog(bool skirmish) {
             ..................................................................*/
             case SERIAL_SIGN_OFF:
               starttime = TickCount;
-              while (TickCount - starttime < 60) NullModem.Service();
+              while (TickCount - starttime < 60) {
+                NullModem.Service();
+              }
               WWMessageBox().Process(TXT_USER_SIGNED_OFF);
 
               // to skip the other system not responding msg
@@ -4594,8 +4619,9 @@ int Com_Scenario_Dialog(bool skirmish) {
             if (ReceivePacket.Command == SERIAL_READY_TO_GO) {
               if (Session.Scenarios[Session.Options.ScenarioIndex]
                       ->Get_Official()) {
-                if (!Force_Scenario_Available(Scen.ScenarioName))
+                if (!Force_Scenario_Available(Scen.ScenarioName)) {
                   Emergency_Exit(EXIT_FAILURE);
+                }
               }
               break;
             }
@@ -4620,8 +4646,9 @@ int Com_Scenario_Dialog(bool skirmish) {
 
               if (Session.Scenarios[Session.Options.ScenarioIndex]
                       ->Get_Official()) {
-                if (!Force_Scenario_Available(Scen.ScenarioName))
+                if (!Force_Scenario_Available(Scen.ScenarioName)) {
                   Emergency_Exit(EXIT_FAILURE);
+                }
               }
 
               Send_Remote_File(Scen.ScenarioName, 0);
@@ -4636,7 +4663,9 @@ int Com_Scenario_Dialog(bool skirmish) {
         NullModem.Init_Send_Queue();
       }
 
-      if (retry_setup) continue;
+      if (retry_setup) {
+        continue;
+      }
 
     } else {
       if (!recsignedoff) {
@@ -4673,7 +4702,9 @@ int Com_Scenario_Dialog(bool skirmish) {
         }
       }
 
-      if (!skirmish) Shutdown_Modem();
+      if (!skirmish) {
+        Shutdown_Modem();
+      }
     }
   }
 
@@ -5234,11 +5265,14 @@ int Com_Show_Scenario_Dialog() {
   CCPalette.Set();
 
   // TODO(konove): This is ugly and just for printing a message.
-  if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
+  if (strlen(ModemRXString) > 36) {
+    ModemRXString[36] = 0;
+  }
 
-  if (strlen(ModemRXString) > 0)
+  if (strlen(ModemRXString) > 0) {
     Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN,
                                  TPF_TEXT, -1);
+  }
 
   ModemRXString[0] = '\0';
 
@@ -5518,7 +5552,9 @@ int Com_Show_Scenario_Dialog() {
           sure we can't pick that color.
           .........................................................*/
           if (parms_received) {
-            if (Session.PrefColor == TheirColor) break;
+            if (Session.PrefColor == TheirColor) {
+              break;
+            }
           }
           Session.ColorIdx = Session.PrefColor;
 
@@ -5793,7 +5829,9 @@ int Com_Show_Scenario_Dialog() {
           ..................................................................*/
           case SERIAL_SIGN_OFF:
             starttime = TickCount;
-            while (TickCount - starttime < 60) NullModem.Service();
+            while (TickCount - starttime < 60) {
+              NullModem.Service();
+            }
             WWMessageBox().Process(TXT_USER_SIGNED_OFF);
 
             // to skip the other system not responding msg
@@ -6163,8 +6201,9 @@ int Com_Show_Scenario_Dialog() {
                 }
               } else {
                 if (bSpecialAftermathScenario(
-                        Session.Options.ScenarioDescription))
+                        Session.Options.ScenarioDescription)) {
                   break;
+                }
                 if (!Get_Scenario_File_From_Host(
                         Session.ScenarioFileName,
                         sizeof(Session.ScenarioFileName), 0)) {
@@ -6215,7 +6254,9 @@ int Com_Show_Scenario_Dialog() {
 
             process = false;
             rc = true;
-            if (ReceivePacket.Command == SERIAL_LOADGAME) load_game = true;
+            if (ReceivePacket.Command == SERIAL_LOADGAME) {
+              load_game = true;
+            }
             break;
 
           /*..................................................................
@@ -6729,7 +6770,9 @@ static int Phone_Dialog() {
         /*...............................................................
         Do nothing if no entry is selected.
         ...............................................................*/
-        if (Session.CurPhoneIdx == -1) break;
+        if (Session.CurPhoneIdx == -1) {
+          break;
+        }
 
         /*...............................................................
         Allocate a new entry & copy the currently-selected entry into it
@@ -6772,7 +6815,9 @@ static int Phone_Dialog() {
         /*...............................................................
         Do nothing if no entry is selected.
         ...............................................................*/
-        if (Session.CurPhoneIdx == -1) break;
+        if (Session.CurPhoneIdx == -1) {
+          break;
+        }
 
         /*...............................................................
         Delete the current item & rebuild the phone listbox

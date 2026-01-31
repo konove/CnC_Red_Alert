@@ -542,7 +542,9 @@ int IPX_Get_Internet_Address(int connection_number,
   /*------------------------------------------------------------------------
   Error if invalid connection is given
   ------------------------------------------------------------------------*/
-  if (connection_number == 0) return (-1);
+  if (connection_number == 0) {
+    return (-1);
+  }
 
   /*------------------------------------------------------------------------
   Allocate DOS memory to store the buffers passed to the interrupt
@@ -674,7 +676,9 @@ int IPX_Get_User_ID(int connection_number, char* user_id) {
   /*------------------------------------------------------------------------
   Error if invalid connection is given
   ------------------------------------------------------------------------*/
-  if (connection_number == 0) return (-1);
+  if (connection_number == 0) {
+    return (-1);
+  }
 
   /*------------------------------------------------------------------------
   Allocate DOS memory to store the buffers passed to the interrupt

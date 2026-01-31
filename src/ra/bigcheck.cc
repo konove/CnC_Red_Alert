@@ -31,19 +31,21 @@ int BigCheckBoxClass::Draw_Me(int forced) {
     Hide_Mouse();
 
     if (!IsOn) {
-      if (!IsDisabled)
+      if (!IsDisabled) {
         CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 0, X, Y, WINDOW_MAIN,
                       SHAPE_NORMAL);
-      else
+      } else {
         CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 2, X, Y, WINDOW_MAIN,
                       SHAPE_NORMAL);
+      }
     } else {
-      if (!IsDisabled)
+      if (!IsDisabled) {
         CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 1, X, Y, WINDOW_MAIN,
                       SHAPE_NORMAL);
-      else
+      } else {
         CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 3, X, Y, WINDOW_MAIN,
                       SHAPE_NORMAL);
+      }
     }
 
     TextPrintType flags = TextFlags;

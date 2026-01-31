@@ -154,13 +154,17 @@ int FixedHeapClass::Set_Heap(int count, void* buffer) {
   **	If there is no size to the objects in the heap, then this block memory
   **	handler can NEVER function. Return with a failure condition.
   */
-  if (!Size) return false;
+  if (!Size) {
+    return false;
+  }
 
   /*
   **	If there is no count specified, then this indicates that the heap should
   **	be disabled.
   */
-  if (!count) return true;
+  if (!count) {
+    return true;
+  }
 
   /*
   **	Initialize the free boolean vector and the buffer for the actual
@@ -384,7 +388,9 @@ int FixedIHeapClass::Set_Heap(int count, void* buffer) {
   if (FixedHeapClass::Set_Heap(count, buffer)) {
     ActivePointers.Resize(count);
 
-    if (reuse_buf) IsAllocated = true;
+    if (reuse_buf) {
+      IsAllocated = true;
+    }
     return true;
   }
   return false;

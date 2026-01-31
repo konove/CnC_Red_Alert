@@ -415,7 +415,9 @@ T Generate_Prime(Straw& rng, int pbits, const T*) {
     while (rtQ.HasZero() || rtP.HasZero() || !q.IsPrime() || !p.IsPrime()) {
       q += 2;
       p += 4;
-      if (q > maxQ) break;
+      if (q > maxQ) {
+        break;
+      }
 
       rtQ.Increment(2);
       rtP.Increment(4);

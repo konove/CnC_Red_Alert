@@ -514,7 +514,9 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
       } else {
         mono->Print("0");
       }
-      if (index >= 24) break;
+      if (index >= 24) {
+        break;
+      }
     }
     if (Enemy != HOUSE_NONE) {
       mono->Set_Cursor(53, 15);
@@ -936,7 +938,9 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   **	An object with a prohibited tech level availability will never be
   *allowed, regardless *	of who requests it.
   */
-  if (dynamic_cast<const TechnoTypeClass*>(type)->Level == -1) return false;
+  if (dynamic_cast<const TechnoTypeClass*>(type)->Level == -1) {
+    return false;
+  }
 
   /*
   ** If this is a CounterStrike II-only unit, and we're playing a multiplayer
@@ -946,13 +950,19 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   if (!NewUnitsEnabled) {
     switch (type->What_Am_I()) {
       case RTTI_INFANTRYTYPE:
-        if (((InfantryTypeClass*)type)->ID >= INFANTRY_RA_COUNT) return false;
+        if (((InfantryTypeClass*)type)->ID >= INFANTRY_RA_COUNT) {
+          return false;
+        }
         break;
       case RTTI_UNITTYPE:
-        if (((UnitTypeClass*)type)->ID >= UNIT_RA_COUNT) return false;
+        if (((UnitTypeClass*)type)->ID >= UNIT_RA_COUNT) {
+          return false;
+        }
         break;
       case RTTI_VESSELTYPE:
-        if (((VesselTypeClass*)type)->ID >= VESSEL_RA_COUNT) return false;
+        if (((VesselTypeClass*)type)->ID >= VESSEL_RA_COUNT) {
+          return false;
+        }
         break;
       default:
         break;
@@ -962,7 +972,9 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   /*
   **	The computer can always build everything.
   */
-  if (!IsHuman && Session.Type == GAME_NORMAL) return true;
+  if (!IsHuman && Session.Type == GAME_NORMAL) {
+    return true;
+  }
 
   /*
   **	Special hack to get certain objects to exist for both sides in the game.
@@ -994,14 +1006,17 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   /*
   **	Advanced power also serves as a prerequisite for normal power.
   */
-  if (flags & STRUCTF_ADVANCED_POWER) flags |= STRUCTF_POWER;
+  if (flags & STRUCTF_ADVANCED_POWER) {
+    flags |= STRUCTF_POWER;
+  }
 
   /*
   **	Either tech center counts as a prerequisite.
   */
   if (Session.Type != GAME_NORMAL) {
-    if ((flags & (STRUCTF_SOVIET_TECH | STRUCTF_ADVANCED_TECH)) != 0)
+    if ((flags & (STRUCTF_SOVIET_TECH | STRUCTF_ADVANCED_TECH)) != 0) {
       flags |= STRUCTF_SOVIET_TECH | STRUCTF_ADVANCED_TECH;
+    }
   }
 
   int level = Control.TechLevel;
@@ -1335,7 +1350,9 @@ void HouseClass::AI() {
             }
             if (!iCount) {
               for (int i = 0; i != VESSEL_RA_COUNT; ++i) {
-                if (i != VESSEL_SS) iCount += VQuantity[i];
+                if (i != VESSEL_SS) {
+                  iCount += VQuantity[i];
+                }
               }
               if (!iCount) {
                 //	Do the ping.
@@ -1523,7 +1540,9 @@ void HouseClass::Super_Weapon_Handler() {
       *change.
       */
       if (super->AI(this == PlayerPtr)) {
-        if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+        if (this == PlayerPtr) {
+          Map.Column[1].Flag_To_Redraw();
+        }
       }
 
       /*
@@ -1560,7 +1579,9 @@ void HouseClass::Super_Weapon_Handler() {
       *facility.
       */
       if (SuperWeapon[SPC_GPS].Remove()) {
-        if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+        if (this == PlayerPtr) {
+          Map.Column[1].Flag_To_Redraw();
+        }
         IsRecalcNeeded = true;
       }
     } else {
@@ -1570,7 +1591,9 @@ void HouseClass::Super_Weapon_Handler() {
       if (SuperWeapon[SPC_GPS].Is_Ready()) {
         SuperWeapon[SPC_GPS].Discharged(this == PlayerPtr);
         if (SuperWeapon[SPC_GPS].Remove()) {
-          if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+          if (this == PlayerPtr) {
+            Map.Column[1].Flag_To_Redraw();
+          }
         }
         IsRecalcNeeded = true;
         for (int index = 0; index < Buildings.Count(); index++) {
@@ -1748,7 +1771,9 @@ void HouseClass::Super_Weapon_Handler() {
       *pen. *	Note that this will not remove the one time created sonar pulse.
       */
       if (SuperWeapon[SPC_SONAR_PULSE].Remove()) {
-        if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+        if (this == PlayerPtr) {
+          Map.Column[1].Flag_To_Redraw();
+        }
         IsRecalcNeeded = true;
       }
     }
@@ -1811,7 +1836,9 @@ void HouseClass::Super_Weapon_Handler() {
   if (SuperWeapon[SPC_SPY_MISSION].Is_Present()) {
     if ((ActiveBScan & STRUCTF_AIRSTRIP) == 0) {
       if (SuperWeapon[SPC_SPY_MISSION].Remove()) {
-        if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+        if (this == PlayerPtr) {
+          Map.Column[1].Flag_To_Redraw();
+        }
         IsRecalcNeeded = true;
       }
     } else {
@@ -1836,7 +1863,9 @@ void HouseClass::Super_Weapon_Handler() {
   if (SuperWeapon[SPC_PARA_BOMB].Is_Present()) {
     if ((ActiveBScan & STRUCTF_AIRSTRIP) == 0) {
       if (SuperWeapon[SPC_PARA_BOMB].Remove()) {
-        if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+        if (this == PlayerPtr) {
+          Map.Column[1].Flag_To_Redraw();
+        }
         IsRecalcNeeded = true;
       }
     } else {
@@ -1859,7 +1888,9 @@ void HouseClass::Super_Weapon_Handler() {
   if (SuperWeapon[SPC_PARA_INFANTRY].Is_Present()) {
     if ((ActiveBScan & STRUCTF_AIRSTRIP) == 0) {
       if (SuperWeapon[SPC_PARA_INFANTRY].Remove()) {
-        if (this == PlayerPtr) Map.Column[1].Flag_To_Redraw();
+        if (this == PlayerPtr) {
+          Map.Column[1].Flag_To_Redraw();
+        }
         IsRecalcNeeded = true;
       }
     } else {
@@ -2109,9 +2140,13 @@ void HouseClass::Silo_Redraw_Check(long oldtib, long oldcap) {
   CHECK_EQ(Houses.ID(this), ID);
 
   int oldratio = 0;
-  if (oldcap) oldratio = oldtib * 5 / oldcap;
+  if (oldcap) {
+    oldratio = oldtib * 5 / oldcap;
+  }
   int newratio = 0;
-  if (Capacity) newratio = Tiberium * 5 / Capacity;
+  if (Capacity) {
+    newratio = Tiberium * 5 / Capacity;
+  }
 
   if (oldratio != newratio) {
     for (int index = 0; index < Buildings.Count(); index++) {
@@ -2399,9 +2434,13 @@ const unsigned char* HouseClass::Remap_Table(bool blushing,
                                              RemapType remap) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (blushing) return &MouseClass::FadingLight[0];
+  if (blushing) {
+    return &MouseClass::FadingLight[0];
+  }
 
-  if (remap == REMAP_NONE) return nullptr;
+  if (remap == REMAP_NONE) {
+    return nullptr;
+  }
 
   return ColorRemaps[RemapColor].RemapTable;
 }
@@ -2507,7 +2546,9 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
     }
   } else {
     fptr = new FactoryClass();
-    if (!fptr) return PROD_CANT;
+    if (!fptr) {
+      return PROD_CANT;
+    }
     Set_Factory(type, fptr);
     result = fptr->Set(*tech, *this);
   }
@@ -2554,7 +2595,9 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   **	If the house is already busy producing the requested object, then
   **	return with this failure code.
   */
-  if (fptr == nullptr) return PROD_CANT;
+  if (fptr == nullptr) {
+    return PROD_CANT;
+  }
 
   /*
   **	Actually suspend the production.
@@ -2596,7 +2639,9 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   /*
   **	If there is no factory to abandon, then return with a failure code.
   */
-  if (fptr == nullptr) return PROD_CANT;
+  if (fptr == nullptr) {
+    return PROD_CANT;
+  }
 
   /*
   **	Tell the sidebar that it needs to be redrawn because of this.
@@ -2951,7 +2996,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       // Don't allow a vortex if the teleportation was due to a chrono tank.
       if (tech && tech->IsActive &&
           (tech->What_Am_I() != RTTI_UNIT ||
-           *dynamic_cast<UnitClass*>(tech) != UNIT_CHRONOTANK))
+           *dynamic_cast<UnitClass*>(tech) != UNIT_CHRONOTANK)) {
         if (!ChronalVortex.Is_Active() &&
             Percent_Chance(Rule.VortexChance * 100)) {
           int x = Random_Pick(0, Map.MapCellWidth - 1);
@@ -2964,6 +3009,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           //						ChronalVortex.Appear(Cell_Coord(cell));
           //					}
         }
+      }
 
       break;
     }
@@ -3360,8 +3406,12 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(RTTIType objecttype,
     case RTTI_INFANTRY:
     case RTTI_INFANTRYTYPE:
       if (BuildInfantry != INFANTRY_NONE) {
-        if (kennel && BuildInfantry != INFANTRY_DOG) return nullptr;
-        if (!kennel && BuildInfantry == INFANTRY_DOG) return nullptr;
+        if (kennel && BuildInfantry != INFANTRY_DOG) {
+          return nullptr;
+        }
+        if (!kennel && BuildInfantry == INFANTRY_DOG) {
+          return nullptr;
+        }
         return &InfantryTypeClass::As_Reference(BuildInfantry);
       }
       return nullptr;
@@ -3662,7 +3712,9 @@ void HouseClass::MPlayer_Defeated() {
     **	Get a pointer to this house
     */
     hptr = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + i));
-    if (!hptr || hptr->IsDefeated) continue;
+    if (!hptr || hptr->IsDefeated) {
+      continue;
+    }
 
     /*
     **	Loop through all houses; if there's one left alive that this house
@@ -3851,8 +3903,9 @@ void HouseClass::Tally_Score() {
       */
       Session.Score[score_index].Wins = 0;
       port::SafeCopy(Session.Score[score_index].Name, hptr->IniName);
-      for (j = 0; j < MAX_MULTI_GAMES; j++)
+      for (j = 0; j < MAX_MULTI_GAMES; j++) {
         Session.Score[score_index].Kills[j] = -1;
+      }
     }
 
     /*
@@ -4144,7 +4197,9 @@ void HouseClass::Init_Data(PlayerColorType color, HousesType house,
 fixed HouseClass::Power_Fraction() const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (Power >= Drain || Drain == 0) return 1;
+  if (Power >= Drain || Drain == 0) {
+    return 1;
+  }
 
   if (Power) {
     return fixed(Power, Drain);
@@ -4363,19 +4418,25 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
     int diff;
 
     diff = zoneinfo.AntiAir - ZoneInfo[z].AirDefense;
-    if (z == ZONE_CORE) diff /= 2;
+    if (z == ZONE_CORE) {
+      diff /= 2;
+    }
     if (diff > 0) {
       zonerating[z] += std::min(antiair, diff);
     }
 
     diff = zoneinfo.AntiArmor - ZoneInfo[z].ArmorDefense;
-    if (z == ZONE_CORE) diff /= 2;
+    if (z == ZONE_CORE) {
+      diff /= 2;
+    }
     if (diff > 0) {
       zonerating[z] += std::min(antiarmor, diff);
     }
 
     diff = zoneinfo.AntiInfantry - ZoneInfo[z].InfantryDefense;
-    if (z == ZONE_CORE) diff /= 2;
+    if (z == ZONE_CORE) {
+      diff /= 2;
+    }
     if (diff > 0) {
       zonerating[z] += std::min(antiinfantry, diff);
     }
@@ -4408,7 +4469,9 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   for (int zz = 0; zz < ARRAY_SIZE(_zones); zz++) {
     ZoneType tryzone = _zones[(zz + start) % ARRAY_SIZE(_zones)];
     zcell = Find_Cell_In_Zone(building, tryzone);
-    if (zcell) return zcell;
+    if (zcell) {
+      return zcell;
+    }
   }
 
   return 0;
@@ -4493,10 +4556,18 @@ void HouseClass::Recalc_Center() {
       LEPTON top = Cell_To_Lepton(Map.MapCellY + 10);
       LEPTON right = Cell_To_Lepton(Map.MapCellX + Map.MapCellWidth - 10);
       LEPTON bottom = Cell_To_Lepton(Map.MapCellY + Map.MapCellHeight - 10);
-      if (x < left) x = left;
-      if (x > right) x = right;
-      if (y < top) y = top;
-      if (y > bottom) y = bottom;
+      if (x < left) {
+        x = left;
+      }
+      if (x > right) {
+        x = right;
+      }
+      if (y < top) {
+        y = top;
+      }
+      if (y > bottom) {
+        y = bottom;
+      }
 #endif
 
       Center = XY_Coord(x, y);
@@ -4854,7 +4925,9 @@ UrgencyType HouseClass::Check_Build_Power() const {
     /*
     **	Very low power condition is considered a higher priority.
     */
-    if (frac < fixed::_3_4) urgency = URGENCY_MEDIUM;
+    if (frac < fixed::_3_4) {
+      urgency = URGENCY_MEDIUM;
+    }
 
     /*
     **	When under attack and there is a need for power in defense,
@@ -5358,7 +5431,9 @@ int HouseClass::AI_Base_Defense() {
 int HouseClass::AI_Building() {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (BuildStructure != STRUCT_NONE) return TICKS_PER_SECOND;
+  if (BuildStructure != STRUCT_NONE) {
+    return TICKS_PER_SECOND;
+  }
 
   if (Session.Type == GAME_NORMAL && Base.House == Class->House) {
     BaseNodeClass* node = Base.Next_Buildable();
@@ -5741,8 +5816,12 @@ int HouseClass::AI_Building() {
 int HouseClass::AI_Unit() {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (BuildUnit != UNIT_NONE) return TICKS_PER_SECOND;
-  if (CurUnits >= Control.MaxUnit) return TICKS_PER_SECOND;
+  if (BuildUnit != UNIT_NONE) {
+    return TICKS_PER_SECOND;
+  }
+  if (CurUnits >= Control.MaxUnit) {
+    return TICKS_PER_SECOND;
+  }
 
   /*
   **	A computer controlled house will try to build a replacement
@@ -5880,7 +5959,9 @@ int HouseClass::AI_Unit() {
 
 int HouseClass::AI_Vessel() {
   CHECK_EQ(Houses.ID(this), ID);
-  if (BuildVessel != VESSEL_NONE) return TICKS_PER_SECOND;
+  if (BuildVessel != VESSEL_NONE) {
+    return TICKS_PER_SECOND;
+  }
 
   if (CurVessels >= Control.MaxVessel) {
     return TICKS_PER_SECOND;
@@ -6014,8 +6095,12 @@ int HouseClass::AI_Vessel() {
 int HouseClass::AI_Infantry() {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (BuildInfantry != INFANTRY_NONE) return TICKS_PER_SECOND;
-  if (CurInfantry >= Control.MaxInfantry) return TICKS_PER_SECOND;
+  if (BuildInfantry != INFANTRY_NONE) {
+    return TICKS_PER_SECOND;
+  }
+  if (CurInfantry >= Control.MaxInfantry) {
+    return TICKS_PER_SECOND;
+  }
 
   if (Session.Type == GAME_NORMAL) {
     int counter[INFANTRY_COUNT];
@@ -6143,7 +6228,9 @@ int HouseClass::AI_Infantry() {
         // ajw 9/28/98 This looks like a potential bug.
         // It is prob. for save game format compatibility.
         int clipindex = index;
-        if (clipindex >= INFANTRY_RA_COUNT) clipindex -= INFANTRY_RA_COUNT;
+        if (clipindex >= INFANTRY_RA_COUNT) {
+          clipindex -= INFANTRY_RA_COUNT;
+        }
         if ((enemy != nullptr &&
              enemy->IQuantity[clipindex] > IQuantity[clipindex]) ||
             Available_Money() > Rule.InfantryReserve ||
@@ -6229,8 +6316,12 @@ int HouseClass::AI_Aircraft() {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (!IsHuman && IQ >= Rule.IQAircraft) {
-    if (BuildAircraft != AIRCRAFT_NONE) return TICKS_PER_SECOND;
-    if (CurAircraft >= Control.MaxAircraft) return TICKS_PER_SECOND;
+    if (BuildAircraft != AIRCRAFT_NONE) {
+      return TICKS_PER_SECOND;
+    }
+    if (CurAircraft >= Control.MaxAircraft) {
+      return TICKS_PER_SECOND;
+    }
 
     if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_LONGBOW),
                   ActLike) &&
@@ -6368,7 +6459,9 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
       CurInfantry--;
       if (!((InfantryClass*)techno)->IsTechnician) {
         type = dynamic_cast<const InfantryTypeClass&>(techno->Class_Of()).Type;
-        if (type >= INFANTRY_RA_COUNT) type -= INFANTRY_RA_COUNT;
+        if (type >= INFANTRY_RA_COUNT) {
+          type -= INFANTRY_RA_COUNT;
+        }
         IQuantity[type]--;
       }
       break;
@@ -6376,14 +6469,18 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
     case RTTI_UNIT:
       CurUnits--;
       type = dynamic_cast<const UnitTypeClass&>(techno->Class_Of()).Type;
-      if (type >= UNIT_RA_COUNT) type -= UNIT_RA_COUNT;
+      if (type >= UNIT_RA_COUNT) {
+        type -= UNIT_RA_COUNT;
+      }
       UQuantity[type]--;
       break;
 
     case RTTI_VESSEL:
       CurVessels--;
       type = dynamic_cast<const VesselTypeClass&>(techno->Class_Of()).Type;
-      if (type >= VESSEL_RA_COUNT) type -= VESSEL_RA_COUNT;
+      if (type >= VESSEL_RA_COUNT) {
+        type -= VESSEL_RA_COUNT;
+      }
       VQuantity[type]--;
       break;
 
@@ -6447,7 +6544,9 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
           dynamic_cast<const InfantryTypeClass&>(techno->Class_Of()).Type;
       if (!((InfantryClass*)techno)->IsTechnician) {
         quant = infantry;
-        if (quant >= INFANTRY_RA_COUNT) quant -= INFANTRY_RA_COUNT;
+        if (quant >= INFANTRY_RA_COUNT) {
+          quant -= INFANTRY_RA_COUNT;
+        }
         IQuantity[quant]++;
         if (!dynamic_cast<const InfantryTypeClass&>(techno->Class_Of())
                  .IsCivilian &&
@@ -6462,7 +6561,9 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       CurUnits++;
       unit = dynamic_cast<const UnitTypeClass&>(techno->Class_Of()).Type;
       quant = unit;
-      if (quant >= UNIT_RA_COUNT) quant -= UNIT_RA_COUNT;
+      if (quant >= UNIT_RA_COUNT) {
+        quant -= UNIT_RA_COUNT;
+      }
       UQuantity[quant]++;
       UScan |= 1L << unit;
       if (Session.Type == GAME_INTERNET) {
@@ -6474,7 +6575,9 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       CurVessels++;
       vessel = dynamic_cast<const VesselTypeClass&>(techno->Class_Of()).Type;
       quant = vessel;
-      if (quant >= VESSEL_RA_COUNT) quant -= VESSEL_RA_COUNT;
+      if (quant >= VESSEL_RA_COUNT) {
+        quant -= VESSEL_RA_COUNT;
+      }
       VQuantity[quant]++;
       VScan |= 1L << vessel;
       if (Session.Type == GAME_INTERNET) {
@@ -6549,7 +6652,9 @@ int* HouseClass::Factory_Counter(RTTIType rtti) {
  * HISTORY: * 07/16/1996 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Active_Remove(const TechnoClass* techno) {
-  if (techno == nullptr) return;
+  if (techno == nullptr) {
+    return;
+  }
 
   if (techno->What_Am_I() == RTTI_BUILDING) {
     int* fptr = Factory_Counter(((BuildingClass*)techno)->Class->ToBuild);
@@ -6575,7 +6680,9 @@ void HouseClass::Active_Remove(const TechnoClass* techno) {
  * HISTORY: * 07/16/1996 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Active_Add(const TechnoClass* techno) {
-  if (techno == nullptr) return;
+  if (techno == nullptr) {
+    return;
+  }
 
   if (techno->What_Am_I() == RTTI_BUILDING) {
     int* fptr = Factory_Counter(((BuildingClass*)techno)->Class->ToBuild);
@@ -6604,16 +6711,28 @@ void HouseClass::Active_Add(const TechnoClass* techno) {
 ZoneType HouseClass::Which_Zone(COORDINATE coord) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (coord == 0) return ZONE_NONE;
+  if (coord == 0) {
+    return ZONE_NONE;
+  }
 
   int distance = Distance(Center, coord);
-  if (distance <= Radius) return ZONE_CORE;
-  if (distance > Radius * 4) return ZONE_NONE;
+  if (distance <= Radius) {
+    return ZONE_CORE;
+  }
+  if (distance > Radius * 4) {
+    return ZONE_NONE;
+  }
 
   DirType facing = Direction(Center, coord);
-  if (facing < DIR_NE || facing > DIR_NW) return ZONE_NORTH;
-  if (facing >= DIR_NE && facing < DIR_SE) return ZONE_EAST;
-  if (facing >= DIR_SE && facing < DIR_SW) return ZONE_SOUTH;
+  if (facing < DIR_NE || facing > DIR_NW) {
+    return ZONE_NORTH;
+  }
+  if (facing >= DIR_NE && facing < DIR_SE) {
+    return ZONE_EAST;
+  }
+  if (facing >= DIR_SE && facing < DIR_SW) {
+    return ZONE_SOUTH;
+  }
   return ZONE_WEST;
 }
 
@@ -6636,7 +6755,9 @@ ZoneType HouseClass::Which_Zone(COORDINATE coord) const {
 ZoneType HouseClass::Which_Zone(const ObjectClass* object) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (!object) return ZONE_NONE;
+  if (!object) {
+    return ZONE_NONE;
+  }
   return Which_Zone(object->Center_Coord());
 }
 
@@ -6872,9 +6993,13 @@ TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const {
         unit->House->Which_Zone(unit) == ZONE_NONE) {
       int val = Distance(coord, unit->Center_Coord());
 
-      if (unit->Anti_Air()) val *= 2;
+      if (unit->Anti_Air()) {
+        val *= 2;
+      }
 
-      if (*unit == UNIT_HARVESTER) val /= 2;
+      if (*unit == UNIT_HARVESTER) {
+        val /= 2;
+      }
 
       if (value == 0 || val < value) {
         value = val;
@@ -7109,12 +7234,16 @@ void HouseClass::Read_INI(CCINIClass& ini) {
         ini.Get_Int(hname, "MaxInfantry", p->Control.MaxInfantry);
     p->Control.MaxVessel =
         ini.Get_Int(hname, "MaxVessel", p->Control.MaxVessel);
-    if (p->Control.MaxVessel == 0) p->Control.MaxVessel = p->Control.MaxUnit;
+    if (p->Control.MaxVessel == 0) {
+      p->Control.MaxVessel = p->Control.MaxUnit;
+    }
     p->Control.InitialCredits = ini.Get_Int(hname, "Credits", 0) * 100;
     p->Credits = p->Control.InitialCredits;
 
     int iq = ini.Get_Int(hname, "IQ", 0);
-    if (iq > Rule.MaxIQ) iq = 1;
+    if (iq > Rule.MaxIQ) {
+      iq = 1;
+    }
     p->IQ = p->Control.IQ = iq;
 
     p->Control.Edge = ini.Get_SourceType(hname, "Edge", SOURCE_NORTH);
@@ -7160,7 +7289,9 @@ void HouseClass::Write_INI(CCINIClass& ini) {
       const char* name = p->Class->IniName;
 
       ini.Clear(name);
-      if (i >= HOUSE_MULTI1) continue;
+      if (i >= HOUSE_MULTI1) {
+        continue;
+      }
 
       if (p->Control.InitialCredits != control.InitialCredits) {
         ini.Put_Int(name, "Credits",
@@ -7326,7 +7457,9 @@ void HouseClass::Do_All_To_Hunt() const {
     UnitClass* unit = Units.Ptr(index);
 
     if (unit->House == this && unit->IsDown && !unit->IsInLimbo) {
-      if (unit->Team) unit->Team->Remove(unit);
+      if (unit->Team) {
+        unit->Team->Remove(unit);
+      }
       unit->Assign_Mission(MISSION_HUNT);
     }
   }
@@ -7335,7 +7468,9 @@ void HouseClass::Do_All_To_Hunt() const {
     InfantryClass* infantry = Infantry.Ptr(index);
 
     if (infantry->House == this && infantry->IsDown && !infantry->IsInLimbo) {
-      if (infantry->Team) infantry->Team->Remove(infantry);
+      if (infantry->Team) {
+        infantry->Team->Remove(infantry);
+      }
       infantry->Assign_Mission(MISSION_HUNT);
     }
   }
@@ -7344,7 +7479,9 @@ void HouseClass::Do_All_To_Hunt() const {
     VesselClass* vessel = Vessels.Ptr(index);
 
     if (vessel->House == this && vessel->IsDown && !vessel->IsInLimbo) {
-      if (vessel->Team) vessel->Team->Remove(vessel);
+      if (vessel->Team) {
+        vessel->Team->Remove(vessel);
+      }
       vessel->Assign_Mission(MISSION_HUNT);
     }
   }
@@ -7353,7 +7490,9 @@ void HouseClass::Do_All_To_Hunt() const {
     AircraftClass* aircraft = Aircraft.Ptr(index);
 
     if (aircraft->House == this && aircraft->IsDown && !aircraft->IsInLimbo) {
-      if (aircraft->Team) aircraft->Team->Remove(aircraft);
+      if (aircraft->Team) {
+        aircraft->Team->Remove(aircraft);
+      }
       aircraft->Assign_Mission(MISSION_HUNT);
     }
   }
@@ -7582,7 +7721,9 @@ void HouseClass::Update_Spied_Power_Plants() {
  *=============================================================================================*/
 CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
                                    ZoneType zone) const {
-  if (techno == nullptr) return 0;
+  if (techno == nullptr) {
+    return 0;
+  }
 
   int bestval = -1;
   int bestcell = 0;
@@ -7660,7 +7801,9 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       maxdist =
           std::min(Radius * 3, Coord_Y(Center) - Cell_To_Lepton(Map.MapCellY) -
                                    CELL_LEPTON_H);
-      if (maxdist < 0) break;
+      if (maxdist < 0) {
+        break;
+      }
       coord = Coord_Move(Center,
                          Random_Pick(DIR_N, DIR_E) - static_cast<DirType>(32),
                          Random_Pick(std::min(Radius * 2, maxdist),
@@ -7671,7 +7814,9 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       maxdist =
           std::min(Radius * 3, Cell_To_Lepton(Map.MapCellX + Map.MapCellWidth) -
                                    Coord_X(Center) - CELL_LEPTON_W);
-      if (maxdist < 0) break;
+      if (maxdist < 0) {
+        break;
+      }
       coord = Coord_Move(Center, Random_Pick(DIR_NE, DIR_SE),
                          Random_Pick(std::min(Radius * 2, maxdist),
                                      std::min(Radius * 3, maxdist)));
@@ -7681,7 +7826,9 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       maxdist = std::min(Radius * 3,
                          Cell_To_Lepton(Map.MapCellY + Map.MapCellHeight) -
                              Coord_Y(Center) - CELL_LEPTON_H);
-      if (maxdist < 0) break;
+      if (maxdist < 0) {
+        break;
+      }
       coord = Coord_Move(Center, Random_Pick(DIR_SE, DIR_SW),
                          Random_Pick(std::min(Radius * 2, maxdist),
                                      std::min(Radius * 3, maxdist)));
@@ -7691,7 +7838,9 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       maxdist =
           std::min(Radius * 3, Coord_X(Center) - Cell_To_Lepton(Map.MapCellX) -
                                    CELL_LEPTON_W);
-      if (maxdist < 0) break;
+      if (maxdist < 0) {
+        break;
+      }
       coord = Coord_Move(Center, Random_Pick(DIR_SW, DIR_NW),
                          Random_Pick(std::min(Radius * 2, maxdist),
                                      std::min(Radius * 3, maxdist)));

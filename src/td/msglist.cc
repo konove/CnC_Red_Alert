@@ -47,6 +47,7 @@
 
 #include "td/msglist.h"
 
+#include <algorithm>
 #include <cstring>
 
 #include "port/safe_string.h"
@@ -165,11 +166,8 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars,
   MessageX = x;
   MessageY = y;
 
-  MaxMessages = max_msg;
-  if (MaxMessages > MAX_NUM_MESSAGES) MaxMessages = MAX_NUM_MESSAGES;
-
-  MaxChars = maxchars;
-  if (MaxChars > MAX_MESSAGE_LENGTH) MaxChars = MAX_MESSAGE_LENGTH;
+  MaxMessages = std::min(max_msg, MAX_NUM_MESSAGES);
+  MaxChars = std::min(maxchars, MAX_MESSAGE_LENGTH);
 
   Height = height;
   EditLabel = nullptr;
@@ -328,16 +326,21 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
     If the top label is the edit label, go to the next one; if there is
     no next one, just return.
     .....................................................................*/
-    if (txtlabel == EditLabel)
+    if (txtlabel == EditLabel) {
       txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
-    if (txtlabel == nullptr) return nullptr;
+    }
+    if (txtlabel == nullptr) {
+      return nullptr;
+    }
 
     /*.....................................................................
     Remove this message from the list; mark its buffer as being available.
     .....................................................................*/
     MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
     for (i = 0; i < MAX_NUM_MESSAGES; i++) {
-      if (txtlabel->Text == MessageBuffers[i]) BufferAvail[i] = 1;
+      if (txtlabel->Text == MessageBuffers[i]) {
+        BufferAvail[i] = 1;
+      }
     }
     delete txtlabel;
 
@@ -474,7 +477,9 @@ TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
   /*------------------------------------------------------------------------
   Do nothing if we're already in "edit" mode
   ------------------------------------------------------------------------*/
-  if (EditLabel) return nullptr;
+  if (EditLabel) {
+    return nullptr;
+  }
 
   /*------------------------------------------------------------------------
   Initialize the buffer positions; add a new label to the label list.
@@ -486,10 +491,11 @@ TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
   /*------------------------------------------------------------------------
   Save our edit buffer pointer.
   ------------------------------------------------------------------------*/
-  if (EditLabel)
+  if (EditLabel) {
     EditBuf = EditLabel->Text;
-  else
+  } else {
     EditBuf = nullptr;
+  }
 
   return EditLabel;
 }
@@ -510,7 +516,9 @@ TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 char* MessageListClass::Get_Edit_Buf() {
-  if (!EditBuf) return nullptr;
+  if (!EditBuf) {
+    return nullptr;
+  }
 
   return EditBuf + EditInitPos;
 }
@@ -563,7 +571,9 @@ int MessageListClass::Manage() {
       next = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
       MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
       for (i = 0; i < MAX_NUM_MESSAGES; i++) {
-        if (txtlabel->Text == MessageBuffers[i]) BufferAvail[i] = 1;
+        if (txtlabel->Text == MessageBuffers[i]) {
+          BufferAvail[i] = 1;
+        }
       }
       delete txtlabel;
       changed = 1;
@@ -617,14 +627,17 @@ int MessageListClass::Input(KeyNumType& input) {
   /*------------------------------------------------------------------------
   Do nothing if nothing to do.
   ------------------------------------------------------------------------*/
-  if (input == KN_NONE) return 0;
+  if (input == KN_NONE) {
+    return 0;
+  }
 
   /*------------------------------------------------------------------------
   Leave mouse events alone.
   ------------------------------------------------------------------------*/
   if ((input & ~KN_RLSE_BIT) == KN_LMOUSE ||
-      (input & ~KN_RLSE_BIT) == KN_RMOUSE)
+      (input & ~KN_RLSE_BIT) == KN_RMOUSE) {
     return 0;
+  }
 
   /*------------------------------------------------------------------------
   If we're in 'edit mode', handle keys

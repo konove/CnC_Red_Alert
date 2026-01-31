@@ -22,7 +22,9 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
 
   // If the source palette is NULL, then just return with current fading table
   // pointer.
-  if (!palette || !dest) return dest;
+  if (!palette || !dest) {
+    return dest;
+  }
 
   // Fractions above 255 become 255.
   frac = std::min(frac, 255);
@@ -95,7 +97,9 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
 
   // Fill the remainder of the remap table with values
   // that will remap the color to itself.
-  for (; remap_index < 256; remap_index++) *dptr++ = remap_index;
+  for (; remap_index < 256; remap_index++) {
+    *dptr++ = remap_index;
+  }
 
   return dest;
 }

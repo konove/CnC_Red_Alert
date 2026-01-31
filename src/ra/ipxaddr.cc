@@ -193,7 +193,9 @@ void IPXAddressClass::Set_Address(NetNumType net, NetNodeType node) {
 void IPXAddressClass::Set_Address(IPXHeaderType* header) {
 #ifdef WINSOCK_IPX
   ProtocolEnum protocol = PROTOCOL_IPX;
-  if (PacketTransport) protocol = PacketTransport->Get_Protocol();
+  if (PacketTransport) {
+    protocol = PacketTransport->Get_Protocol();
+  }
 
   switch (protocol) {
     case PROTOCOL_IPX:

@@ -585,12 +585,16 @@ unsigned long VersionClass::Clip_Version(unsigned long minver,
   //------------------------------------------------------------------------
   // If the given range is outside & above our own, return an error.
   //------------------------------------------------------------------------
-  if (minver > MaxClipVer) return 0xffffffff;
+  if (minver > MaxClipVer) {
+    return 0xffffffff;
+  }
 
   //------------------------------------------------------------------------
   // If the given range is outside & below our own, return an error.
   //------------------------------------------------------------------------
-  if (maxver < MinClipVer) return 0;
+  if (maxver < MinClipVer) {
+    return 0;
+  }
 
   //------------------------------------------------------------------------
   // Clip the lower range value

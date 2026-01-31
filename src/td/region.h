@@ -61,10 +61,11 @@ class RegionClass {
 
   void Reset_Threat() { Threat = 0; }
   void Adjust_Threat(int threat, int neg) {
-    if (neg)
+    if (neg) {
       Threat -= threat;
-    else
+    } else {
       Threat += threat;
+    }
   }
   int Threat_Value() const { return Threat; }
 

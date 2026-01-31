@@ -57,7 +57,9 @@ int Read_Line(FileClass& file, char* buffer, int len, bool& eof) {
 }
 
 int Read_Line(Straw& file, char* buffer, int len, bool& eof) {
-  if (len == 0 || buffer == nullptr) return 0;
+  if (len == 0 || buffer == nullptr) {
+    return 0;
+  }
 
   int count = 0;
   for (;;) {
@@ -68,7 +70,9 @@ int Read_Line(Straw& file, char* buffer, int len, bool& eof) {
       break;
     }
 
-    if (c == '\x0A') break;
+    if (c == '\x0A') {
+      break;
+    }
     if (c != '\x0D' && count + 1 < len) {
       buffer[count++] = c;
     }

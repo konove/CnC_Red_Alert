@@ -432,7 +432,9 @@ void Show_Who_Was_Responsible() {
   **  If the text starts after column 40 it will be right justified.
   */
   CCFileClass creditsfile("credits.txt");
-  if (!creditsfile.Is_Available()) return;
+  if (!creditsfile.Is_Available()) {
+    return;
+  }
   char* credits = new char[creditsfile.Size() + 1];
   creditsfile.Read(credits, creditsfile.Size());
 
@@ -524,19 +526,25 @@ void Show_Who_Was_Responsible() {
               break;
 
             case 32:
-              if (lastchar == 32) gotendstr = true;
+              if (lastchar == 32) {
+                gotendstr = true;
+              }
               endcolumn++;
               break;
 
             default:
               endcolumn++;
           }
-          if (strparse >= cptr + length) gotendstr = true;
+          if (strparse >= cptr + length) {
+            gotendstr = true;
+          }
 
           lastchar = ch;
         } while (!gotendstr);
 
-        if (strparse >= cptr + length) break;
+        if (strparse >= cptr + length) {
+          break;
+        }
 
         /*
         ** Strip off any trailing space.
@@ -844,7 +852,9 @@ void Show_Who_Was_Responsible() {
 #if (0)
       if (key == KN_Z) {
         speed--;
-        if (speed < 1) speed = 1;
+        if (speed < 1) {
+          speed = 1;
+        }
         time = TickCount;
         frame = 0;
       }

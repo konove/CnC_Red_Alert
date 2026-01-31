@@ -85,7 +85,6 @@ class Base64Straw : public Straw {
   *scratch buffer.
   */
   char PBuffer[3];
-
 };
 
 #endif

@@ -196,7 +196,9 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
   *just
   ** return failure.
   */
-  if (!response_timer) return false;
+  if (!response_timer) {
+    return false;
+  }
 
   //	debugprint( "about to download '%s'\n", return_name );
 
@@ -324,7 +326,9 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
   /*
   ** If the file already exists then delete it and re-create it.
   */
-  if (save_file.Is_Available()) save_file.Delete();
+  if (save_file.Is_Available()) {
+    save_file.Delete();
+  }
 
   /*
   ** Open the file for write

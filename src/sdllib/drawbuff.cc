@@ -26,8 +26,9 @@ inline int Make_Code(int x, int y, int w, int h) {
 void Buffer_Put_Pixel(void* thisptr, int x, int y, unsigned char color) {
   auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
-  if (x < 0 || y < 0 || x >= vp_dst->Get_Width() || y >= vp_dst->Get_Height())
+  if (x < 0 || y < 0 || x >= vp_dst->Get_Width() || y >= vp_dst->Get_Height()) {
     return;
+  }
 
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + x + y * dst_area;
@@ -38,8 +39,9 @@ void Buffer_Put_Pixel(void* thisptr, int x, int y, unsigned char color) {
 int Buffer_Get_Pixel(void* thisptr, int x, int y) {
   auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
-  if (x < 0 || y < 0 || x >= vp_dst->Get_Width() || y >= vp_dst->Get_Height())
+  if (x < 0 || y < 0 || x >= vp_dst->Get_Width() || y >= vp_dst->Get_Height()) {
     return 0;
+  }
 
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + x + y * dst_area;
@@ -82,8 +84,9 @@ long Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel, int pixel_width,
                         vp_src->Get_Height() + 1);
 
   // outside
-  if (code0 & code1)
+  if (code0 & code1) {
     return 0;  // i'm not sure this actually has a return value...
+  }
 
   if (code0 | code1) {
     // apply clip
@@ -91,12 +94,16 @@ long Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel, int pixel_width,
       dst_x0 -= src_x0;
       src_x0 = 0;
     }
-    if (code1 & 0b0100) src_x1 = vp_src->Get_Width();
+    if (code1 & 0b0100) {
+      src_x1 = vp_src->Get_Width();
+    }
     if (code0 & 0b0010) {
       dst_y0 -= src_x0;
       src_y0 = 0;
     }
-    if (code1 & 0b0001) src_y1 = vp_src->Get_Height();
+    if (code1 & 0b0001) {
+      src_y1 = vp_src->Get_Height();
+    }
   }
 
   int src_area = vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
@@ -105,9 +112,13 @@ long Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel, int pixel_width,
   auto* dst_offset =
       static_cast<uint8_t*>(buff) + dst_x0 + dst_y0 * pixel_width;
 
-  if (src_x1 <= src_x0 || src_y1 <= src_y0) return true;
+  if (src_x1 <= src_x0 || src_y1 <= src_y0) {
+    return true;
+  }
 
-  if (src_offset == dst_offset) return true;
+  if (src_offset == dst_offset) {
+    return true;
+  }
 
   int pixel_count = src_x1 - src_x0;
   int line_count = src_y1 - src_y0;
@@ -141,8 +152,9 @@ long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
                         vp_dst->Get_Height() + 1);
 
   // outside
-  if (code0 & code1)
+  if (code0 & code1) {
     return 0;  // i'm not sure this actually has a return value...
+  }
 
   if (code0 | code1) {
     // apply clip
@@ -150,12 +162,16 @@ long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
       src_x0 -= dst_x0;
       dst_x0 = 0;
     }
-    if (code1 & 0b0100) dst_x1 = vp_dst->Get_Width();
+    if (code1 & 0b0100) {
+      dst_x1 = vp_dst->Get_Width();
+    }
     if (code0 & 0b0010) {
       src_y0 -= dst_x0;
       dst_y0 = 0;
     }
-    if (code1 & 0b0001) dst_y1 = vp_dst->Get_Height();
+    if (code1 & 0b0001) {
+      dst_y1 = vp_dst->Get_Height();
+    }
   }
 
   auto* src_offset =
@@ -164,9 +180,13 @@ long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_area;
 
-  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) return true;
+  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+    return true;
+  }
 
-  if (src_offset == dst_offset) return true;
+  if (src_offset == dst_offset) {
+    return true;
+  }
 
   int pixel_count = dst_x1 - dst_x0;
   int line_count = dst_y1 - dst_y0;
@@ -201,14 +221,24 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
                         vp_src->Get_Height() + 1);
 
   // outside
-  if (code0 & code1) return true;
+  if (code0 & code1) {
+    return true;
+  }
 
   if (code0 | code1) {
     // apply clip
-    if (code0 & 0b1000) src_x0 = 0;
-    if (code1 & 0b0100) src_x1 = vp_src->Get_Width();
-    if (code0 & 0b0010) src_y0 = 0;
-    if (code1 & 0b0001) src_y1 = vp_src->Get_Height();
+    if (code0 & 0b1000) {
+      src_x0 = 0;
+    }
+    if (code1 & 0b0100) {
+      src_x1 = vp_src->Get_Width();
+    }
+    if (code0 & 0b0010) {
+      src_y0 = 0;
+    }
+    if (code1 & 0b0001) {
+      src_y1 = vp_src->Get_Height();
+    }
   }
 
   // clip dest
@@ -222,8 +252,9 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
                     vp_dst->Get_Height() + 1);
 
   // outside
-  if (code0 & code1)
+  if (code0 & code1) {
     return true;  // i'm not sure this actually has a return value...
+  }
 
   if (code0 | code1) {
     // apply clip
@@ -251,9 +282,13 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_area;
 
-  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) return true;
+  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+    return true;
+  }
 
-  if (src_offset == dst_offset) return true;
+  if (src_offset == dst_offset) {
+    return true;
+  }
 
   int pixel_count = src_x1 - src_x0;
   int line_count = src_y1 - src_y0;
@@ -266,7 +301,9 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
       dst_offset += dst_area * (line_count - 1);
       do {
         for (int x = 0; x < pixel_count; x++) {
-          if (src_offset[x]) dst_offset[x] = src_offset[x];
+          if (src_offset[x]) {
+            dst_offset[x] = src_offset[x];
+          }
         }
         src_offset -= src_area;
         dst_offset -= dst_area;
@@ -287,7 +324,9 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
       // copy transparent lines
       do {
         for (int x = 0; x < pixel_count; x++) {
-          if (src_offset[x]) dst_offset[x] = src_offset[x];
+          if (src_offset[x]) {
+            dst_offset[x] = src_offset[x];
+          }
         }
         src_offset += src_area;
         dst_offset += dst_area;
@@ -310,7 +349,9 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
                             int dst_w, int dst_h, bool trans,
                             const char* remap) {
   // Check for scale error when to or from size 0,0
-  if (dst_w == 0 || dst_h == 0 || src_w == 0 || src_h == 0) return true;
+  if (dst_w == 0 || dst_h == 0 || src_w == 0 || src_h == 0) {
+    return true;
+  }
 
   auto* vp_src = static_cast<GraphicViewPortClass*>(thisptr);
   auto* vp_dst = static_cast<GraphicViewPortClass*>(dest);
@@ -332,7 +373,9 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
                         vp_src->Get_Height() + 1);
 
   // outside
-  if (code0 & code1) return true;
+  if (code0 & code1) {
+    return true;
+  }
 
   if (code0 | code1) {
     // apply clip
@@ -360,7 +403,9 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
                     vp_dst->Get_Height() + 1);
 
   // outside
-  if (code0 & code1) return true;
+  if (code0 & code1) {
+    return true;
+  }
 
   if (code0 | code1) {
     // apply clip
@@ -397,7 +442,9 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
 
   int dx_frac = (src_w << 16) / dst_w;
 
-  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) return true;
+  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+    return true;
+  }
 
   int counter_y = dst_y1 - dst_y0;
   int pixel_count = dst_x1 - dst_x0;
@@ -410,7 +457,9 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       do {
         uint8_t pixel = src_offset[x >> 16];
 
-        if (pixel) *out = remap[pixel];
+        if (pixel) {
+          *out = remap[pixel];
+        }
 
         x += dx_frac;
         out++;
@@ -434,7 +483,9 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       do {
         uint8_t pixel = src_offset[x >> 16];
 
-        if (pixel) *out = pixel;
+        if (pixel) {
+          *out = pixel;
+        }
 
         x += dx_frac;
         out++;
@@ -502,7 +553,9 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
                   int bcolor) {
   auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
-  if (!str) return 0;
+  if (!str) {
+    return 0;
+  }
 
   int start_x = x;
   auto* font = (uint8_t*)FontPtr;  // this could use a struct
@@ -512,7 +565,9 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
   int bufferwidth = vpwidth + vp_dst->Get_XAdd() + vp_dst->Get_Pitch();
   auto* curline = vp_dst->Get_Offset() + bufferwidth * y;
 
-  if (!FontPtr) return 0;
+  if (!FontPtr) {
+    return 0;
+  }
 
   uint16_t infoblock_off = *(uint16_t*)(font + FONTINFOBLOCK);
   uint16_t offsetblock_off = *(uint16_t*)(font + FONTOFFSETBLOCK);
@@ -526,7 +581,9 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
 
   uint8_t maxheight = infoblock[FONTINFOMAXHEIGHT];
   y = maxheight + y;
-  if (y > vpheight) return 0;
+  if (y > vpheight) {
+    return 0;
+  }
 
   // setup colours
   ColorXlat[1] = fcolor;
@@ -539,7 +596,9 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
     auto* startdraw = next_ptr;
 
     char ch = *str++;
-    if (!ch) return (long)startdraw;
+    if (!ch) {
+      return (long)startdraw;
+    }
 
     if (ch == '\n' || ch == '\r' ||
         x + widthblock[ch] + FontXSpacing > vpwidth) {
@@ -547,15 +606,21 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
       int line_height = maxheight + FontYSpacing;
 
       // check bounds
-      if (vpheight < y + line_height) break;
+      if (vpheight < y + line_height) {
+        break;
+      }
 
       curline += bufferwidth * line_height;
       y = y + line_height;
       x = 0;
-      if (ch != '\n') x = start_x;
+      if (ch != '\n') {
+        x = start_x;
+      }
       next_ptr = curline + x;
 
-      if (ch == '\n' || ch == '\r') continue;
+      if (ch == '\n' || ch == '\r') {
+        continue;
+      }
     }
 
     int char_w = widthblock[ch];
@@ -571,9 +636,9 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
 
     // top blank area
     if (topblank != 0) {
-      if (ColorXlat[0] == 0)  // transparent
+      if (ColorXlat[0] == 0) {  // transparent
         startdraw = startdraw + topblank * bufferwidth;
-      else {
+      } else {
         do {
           int x_count = char_w;
           do {
@@ -594,14 +659,18 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
         do {
           uint8_t b = *char_data++;
           int col = ColorXlat[b & 0xF];
-          if (col != 0) *startdraw = col;
+          if (col != 0) {
+            *startdraw = col;
+          }
 
           startdraw++;
           x_count--;
 
           if (x_count) {
             int col = ColorXlat[b & 0xF0];
-            if (col != 0) *startdraw = col;
+            if (col != 0) {
+              *startdraw = col;
+            }
 
             startdraw++;
             x_count--;
@@ -638,7 +707,9 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
   int code0 = Make_Code(sx, sy, width, height);
   int code1 = Make_Code(dx, dy, width, height);
 
-  if (code0 & code1) return;
+  if (code0 & code1) {
+    return;
+  }
 
   if (code0) {
     if (code0 & 0b1000)  // left
@@ -657,11 +728,15 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
 
     if (code0 & 0b0010)  // top
     {
-      if (dy != sy) sx = sx + -sy * (dx - sx) / (dy - sy);
+      if (dy != sy) {
+        sx = sx + -sy * (dx - sx) / (dy - sy);
+      }
       sy = 0;
     } else if (code0 & 0b0001)  // bottom
     {
-      if (dy != sy) sx = sx + (height - 1 - sy) * (dx - sx) / (dy - sy);
+      if (dy != sy) {
+        sx = sx + (height - 1 - sy) * (dx - sx) / (dy - sy);
+      }
       sy = height - 1;
     }
   }
@@ -669,21 +744,29 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
   if (code1) {
     if (code1 & 0b1000)  // left
     {
-      if (sx != dx) dy = dy + -dx * (sy - dy) / (sx - dx);
+      if (sx != dx) {
+        dy = dy + -dx * (sy - dy) / (sx - dx);
+      }
       dx = 0;
     } else if (code1 & 0b0100)  // right
     {
-      if (sx != dx) dy = dy + (width - 1 - dx) * (sy - dy) / (sx - dx);
+      if (sx != dx) {
+        dy = dy + (width - 1 - dx) * (sy - dy) / (sx - dx);
+      }
       dx = width - 1;
     }
 
     if (code1 & 0b0010)  // top
     {
-      if (sy != dy) dx = dx + -dy * (sx - dx) / (sy - dy);
+      if (sy != dy) {
+        dx = dx + -dy * (sx - dx) / (sy - dy);
+      }
       dy = 0;
     } else if (code1 & 0b0001)  // bottom
     {
-      if (sy != dy) dx = dx + (height - 1 - dy) * (sx - dx) / (sy - dy);
+      if (sy != dy) {
+        dx = dx + (height - 1 - dy) * (sx - dx) / (sy - dy);
+      }
       dy = height - 1;
     }
   }
@@ -694,12 +777,16 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
 
   if (y_dist == 0) {
     // horizontal
-    if (dx < sx) std::swap(dx, sx);
+    if (dx < sx) {
+      std::swap(dx, sx);
+    }
 
     int count = dx - sx + 1;
     auto* ptr = vp_dst->Get_Offset() + sx + bpr * sy;
     if (count < 16) {
-      for (; count != 0; count--) *ptr++ = color;
+      for (; count != 0; count--) {
+        *ptr++ = color;
+      }
     } else {
       // align
       while (((uintptr_t)ptr & 3) != 0) {
@@ -710,13 +797,16 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
       // 32-bit fill
       uint32_t color32 = color | color << 8 | color << 16 | color << 24;
       auto* ptr32 = (uint32_t*)ptr;
-      for (int count32 = count >> 2; count32 != 0; count32--)
+      for (int count32 = count >> 2; count32 != 0; count32--) {
         *ptr32++ = color32;
+      }
 
       ptr = (uint8_t*)ptr32;
 
       // draw remainder
-      for (count = count & 3; count != 0; count--) *ptr++ = color;
+      for (count = count & 3; count != 0; count--) {
+        *ptr++ = color;
+      }
     }
 
     return;
@@ -756,7 +846,9 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
     int accum = y_dist >> 1;
     while (true) {
       *ptr = color;
-      if (--count == 0) break;
+      if (--count == 0) {
+        break;
+      }
       ptr += bpr;
 
       accum -= x_dist;
@@ -770,7 +862,9 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
     int accum = x_dist >> 1;
     while (true) {
       *ptr = color;
-      if (--count == 0) break;
+      if (--count == 0) {
+        break;
+      }
       ptr = ptr + step;
 
       accum -= y_dist;
@@ -786,18 +880,28 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
                       unsigned char color) {
   auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
-  if (sx > dx) std::swap(sx, dx);
-  if (sy > dy) std::swap(sy, dy);
+  if (sx > dx) {
+    std::swap(sx, dx);
+  }
+  if (sy > dy) {
+    std::swap(sy, dy);
+  }
 
   // clamp to bounds
   sx = std::max(sx, 0);
   sy = std::max(sy, 0);
 
-  if (dx >= vp_dst->Get_Width()) dx = vp_dst->Get_Width() - 1;
-  if (dy >= vp_dst->Get_Height()) dy = vp_dst->Get_Height() - 1;
+  if (dx >= vp_dst->Get_Width()) {
+    dx = vp_dst->Get_Width() - 1;
+  }
+  if (dy >= vp_dst->Get_Height()) {
+    dy = vp_dst->Get_Height() - 1;
+  }
 
   // nothing to fill
-  if (dx < sx || dy < sy) return;
+  if (dx < sx || dy < sy) {
+    return;
+  }
 
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + sx + sy * dst_area;
@@ -814,7 +918,9 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
 
 void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
                   void* remap) {
-  if (!remap) return;
+  if (!remap) {
+    return;
+  }
 
   auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
@@ -830,20 +936,32 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
                         vp_dst->Get_Height() + 1);
 
   // outside
-  if (code0 & code1) return;
+  if (code0 & code1) {
+    return;
+  }
 
   if (code0 | code1) {
     // apply clip
-    if (code0 & 0b1000) dst_x0 = 0;
-    if (code1 & 0b0100) dst_x1 = vp_dst->Get_Width();
-    if (code0 & 0b0010) dst_y0 = 0;
-    if (code1 & 0b0001) dst_y1 = vp_dst->Get_Height();
+    if (code0 & 0b1000) {
+      dst_x0 = 0;
+    }
+    if (code1 & 0b0100) {
+      dst_x1 = vp_dst->Get_Width();
+    }
+    if (code0 & 0b0010) {
+      dst_y0 = 0;
+    }
+    if (code1 & 0b0001) {
+      dst_y1 = vp_dst->Get_Height();
+    }
   }
 
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_area;
 
-  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) return;
+  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+    return;
+  }
 
   int pixel_count = dst_x1 - dst_x0;
   int line_count = dst_y1 - dst_y0;
@@ -871,14 +989,24 @@ int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height) {
   int code1 = Make_Code(x1, y1, width + 1, height + 1);
 
   // outside
-  if (code0 & code1) return -1;
+  if (code0 & code1) {
+    return -1;
+  }
 
   if (code0 | code1) {
     // apply clip
-    if (code0 & 0b1000) x0 = 0;
-    if (code1 & 0b0100) x1 = width;
-    if (code0 & 0b0010) y0 = 0;
-    if (code1 & 0b0001) y1 = height;
+    if (code0 & 0b1000) {
+      x0 = 0;
+    }
+    if (code1 & 0b0100) {
+      x1 = width;
+    }
+    if (code0 & 0b0010) {
+      y0 = 0;
+    }
+    if (code1 & 0b0001) {
+      y1 = height;
+    }
 
     *x = x0;
     *y = y0;
@@ -917,17 +1045,27 @@ void GraphicViewPortClass::Draw_Rect(int sx, int sy, int dx, int dy,
 
 void GraphicViewPortClass::Attach(GraphicBufferClass* graphic_buff, int x,
                                   int y, int w, int h) {
-  if (this == Get_Graphic_Buffer()) return;
+  if (this == Get_Graphic_Buffer()) {
+    return;
+  }
 
   // clamp bounds
   x = std::max(x, 0);
-  if (x >= graphic_buff->Get_Width()) x = graphic_buff->Get_Width() - 1;
+  if (x >= graphic_buff->Get_Width()) {
+    x = graphic_buff->Get_Width() - 1;
+  }
   y = std::max(y, 0);
-  if (y >= graphic_buff->Get_Height()) y = graphic_buff->Get_Height() - 1;
+  if (y >= graphic_buff->Get_Height()) {
+    y = graphic_buff->Get_Height() - 1;
+  }
 
-  if (x + w > graphic_buff->Get_Width()) w = graphic_buff->Get_Width() - x;
+  if (x + w > graphic_buff->Get_Width()) {
+    w = graphic_buff->Get_Width() - x;
+  }
 
-  if (y + h > graphic_buff->Get_Height()) h = graphic_buff->Get_Height() - y;
+  if (y + h > graphic_buff->Get_Height()) {
+    h = graphic_buff->Get_Height() - y;
+  }
 
   /*======================================================================*/
   /* Get a pointer to the top left edge of the buffer.
@@ -997,5 +1135,7 @@ void GraphicBufferClass::Un_Init() {
 }
 
 void Video_End_Frame() {
-  if (WindowBuffer) WindowBuffer->Update_Window_Surface(true);
+  if (WindowBuffer) {
+    WindowBuffer->Update_Window_Surface(true);
+  }
 }

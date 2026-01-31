@@ -103,9 +103,15 @@ class SHAEngine {
   };
 
   uint32_t Get_Constant(int index) const {
-    if (index < 20) return K1;
-    if (index < 40) return K2;
-    if (index < 60) return K3;
+    if (index < 20) {
+      return K1;
+    }
+    if (index < 40) {
+      return K2;
+    }
+    if (index < 60) {
+      return K3;
+    }
     return K4;
   }
 
@@ -130,9 +136,15 @@ class SHAEngine {
   }
 
   uint32_t Do_Function(int index, uint32_t X, uint32_t Y, uint32_t Z) const {
-    if (index < 20) return Function1(X, Y, Z);
-    if (index < 40) return Function2(X, Y, Z);
-    if (index < 60) return Function3(X, Y, Z);
+    if (index < 20) {
+      return Function1(X, Y, Z);
+    }
+    if (index < 40) {
+      return Function2(X, Y, Z);
+    }
+    if (index < 60) {
+      return Function3(X, Y, Z);
+    }
     return Function4(X, Y, Z);
   }
 

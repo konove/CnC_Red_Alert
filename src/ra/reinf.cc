@@ -160,11 +160,15 @@ bool _Need_To_Take(const AircraftClass* air) {
       if ((*airptr == AIRCRAFT_YAK || *airptr == AIRCRAFT_MIG) &&
           airptr->IsOwnedByPlayer && !airptr->IsALoaner && airptr != air) {
         deficit -= 1;
-        if (deficit == 0) break;
+        if (deficit == 0) {
+          break;
+        }
       }
     }
 
-    if (deficit > 0) return true;
+    if (deficit > 0) {
+      return true;
+    }
   }
   return false;
 }
@@ -390,7 +394,9 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   /*
   **	perform some preliminary checks for validity.
   */
-  if (!teamtype || !teamtype->ClassCount) return false;
+  if (!teamtype || !teamtype->ClassCount) {
+    return false;
+  }
 
   /*
   **	HACK ALERT!
@@ -509,7 +515,9 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
           break;
         }
       }
-      if (adj < FACING_COUNT) continue;
+      if (adj < FACING_COUNT) {
+        continue;
+      }
       newcell = -1;
     }
     ScenarioInit--;
@@ -616,7 +624,9 @@ bool Create_Special_Reinforcement(HouseClass* house,
       }
 
       bool ok = Do_Reinforcements(team);
-      if (!ok) delete team;
+      if (!ok) {
+        delete team;
+      }
       return ok;
     }
   }
@@ -682,7 +692,9 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ScenarioInit++;
     TechnoClass* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
     ScenarioInit--;
-    if (!obj) return sub;
+    if (!obj) {
+      return sub;
+    }
 
     /*
     ** Flying objects always have the IsALoaner bit set.

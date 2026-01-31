@@ -294,19 +294,25 @@ void ThemeClass::Queue_Song(ThemeType theme) {
   /*
   **	If there is no score file present, then abort.
   */
-  if (!ScoresPresent) return;
+  if (!ScoresPresent) {
+    return;
+  }
 
   /*
   **	If there is no sound driver or sounds have been specifically
   **	turned off, then abort.
   */
-  if (SampleType == 0 || Debug_Quiet) return;
+  if (SampleType == 0 || Debug_Quiet) {
+    return;
+  }
 
   /*
   **	If the current score volumne is set to silent, then there is no need to
   *play the *	specified theme.
   */
-  if (Options.ScoreVolume == 0) return;
+  if (Options.ScoreVolume == 0) {
+    return;
+  }
 
   /*
   **	If the pending theme is available to be set and the specified theme is
@@ -474,17 +480,23 @@ int ThemeClass::Still_Playing() const {
  *playlist checking.                                     *
  *=============================================================================================*/
 bool ThemeClass::Is_Allowed(ThemeType index) const {
-  if (static_cast<unsigned>(index) >= THEME_COUNT) return true;
+  if (static_cast<unsigned>(index) >= THEME_COUNT) {
+    return true;
+  }
 
   /*
   **	If the theme is not present, then it certainly isn't allowed.
   */
-  if (!_themes[index].Available) return false;
+  if (!_themes[index].Available) {
+    return false;
+  }
 
   /*
   **	Only normal themes (playable during battle) are considered allowed.
   */
-  if (!_themes[index].Normal) return false;
+  if (!_themes[index].Normal) {
+    return false;
+  }
 
   /*
   **	If the theme is not allowed to be played by the player's house, then
@@ -492,15 +504,17 @@ bool ThemeClass::Is_Allowed(ThemeType index) const {
   *then presume this test *	passes.
   */
   if (PlayerPtr != nullptr &&
-      (1 << PlayerPtr->ActLike & _themes[index].Owner) == 0)
+      (1 << PlayerPtr->ActLike & _themes[index].Owner) == 0) {
     return false;
+  }
 
   /*
   **	If the scenario doesn't allow this theme yet, then return the failure
   *flag. The *	scenario check only makes sense for solo play.
   */
-  if (Session.Type == GAME_NORMAL && Scen.Scenario < _themes[index].Scenario)
+  if (Session.Type == GAME_NORMAL && Scen.Scenario < _themes[index].Scenario) {
     return false;
+  }
 
   /*
   **	Since all tests passed, return with the "is allowed" flag.

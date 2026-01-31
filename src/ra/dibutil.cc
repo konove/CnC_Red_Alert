@@ -108,16 +108,17 @@ HDIB FAR CreateDIB(DWORD dwWidth, DWORD dwHeight, WORD wBitCount) {
   DWORD dwBytesPerLine;  // Number of bytes per scanline
 
   // Make sure bits per pixel is valid
-  if (wBitCount <= 1)
+  if (wBitCount <= 1) {
     wBitCount = 1;
-  else if (wBitCount <= 4)
+  } else if (wBitCount <= 4) {
     wBitCount = 4;
-  else if (wBitCount <= 8)
+  } else if (wBitCount <= 8) {
     wBitCount = 8;
-  else if (wBitCount <= 24)
+  } else if (wBitCount <= 24) {
     wBitCount = 24;
-  else
+  } else {
     wBitCount = 4;  // set default value to 4 if parameter is bogus
+  }
 
   // initialize BITMAPINFOHEADER
   bi.biSize = sizeof(BITMAPINFOHEADER);
@@ -224,10 +225,11 @@ DWORD FAR DIBWidth(LPCSTR lpDIB) {
   lpbmc = (LPBITMAPCOREHEADER)lpDIB;
 
   /* return the DIB width if it is a Win 3.0 DIB */
-  if (lpbmi->biSize == sizeof(BITMAPINFOHEADER))
+  if (lpbmi->biSize == sizeof(BITMAPINFOHEADER)) {
     return lpbmi->biWidth;
-  else /* it is an OS/2 DIB, so return its width */
+  } else { /* it is an OS/2 DIB, so return its width */
     return (DWORD)lpbmc->bcWidth;
+  }
 }
 
 /*************************************************************************
@@ -264,10 +266,11 @@ DWORD FAR DIBHeight(LPCSTR lpDIB) {
   lpbmc = (LPBITMAPCOREHEADER)lpDIB;
 
   /* return the DIB height if it is a Win 3.0 DIB */
-  if (lpbmi->biSize == sizeof(BITMAPINFOHEADER))
+  if (lpbmi->biSize == sizeof(BITMAPINFOHEADER)) {
     return lpbmi->biHeight;
-  else /* it is an OS/2 DIB, so return its height */
+  } else { /* it is an OS/2 DIB, so return its height */
     return (DWORD)lpbmc->bcHeight;
+  }
 }
 
 /*************************************************************************
@@ -297,10 +300,11 @@ DWORD FAR DIBHeight(LPCSTR lpDIB) {
 
 WORD FAR PaletteSize(LPCSTR lpDIB) {
   /* calculate the size required by the palette */
-  if (IS_WIN30_DIB(lpDIB))
+  if (IS_WIN30_DIB(lpDIB)) {
     return (WORD FAR)(DIBNumColors(lpDIB) * sizeof(RGBQUAD));
-  else
+  } else {
     return (WORD FAR)(DIBNumColors(lpDIB) * sizeof(RGBTRIPLE));
+  }
 }
 
 /*************************************************************************
@@ -341,16 +345,19 @@ WORD FAR DIBNumColors(LPCSTR lpDIB) {
     DWORD dwClrUsed;
 
     dwClrUsed = ((LPBITMAPINFOHEADER)lpDIB)->biClrUsed;
-    if (dwClrUsed) return (WORD)dwClrUsed;
+    if (dwClrUsed) {
+      return (WORD)dwClrUsed;
+    }
   }
 
   /*  Calculate the number of colors in the color table based on
    *  the number of bits per pixel for the DIB.
    */
-  if (IS_WIN30_DIB(lpDIB))
+  if (IS_WIN30_DIB(lpDIB)) {
     wBitCount = ((LPBITMAPINFOHEADER)lpDIB)->biBitCount;
-  else
+  } else {
     wBitCount = ((LPBITMAPCOREHEADER)lpDIB)->bcBitCount;
+  }
 
   /* return number of colors based on bits per pixel */
   switch (wBitCount) {
@@ -407,7 +414,9 @@ HPALETTE FAR CreateDIBPalette(HDIB hDIB) {
 
   /* if handle to DIB is invalid, return NULL */
 
-  if (!hDIB) return NULL;
+  if (!hDIB) {
+    return NULL;
+  }
 
   /* lock DIB memory block and get a pointer to it */
   lpbi = (LPSTR)GlobalLock(hDIB);
@@ -534,7 +543,9 @@ HBITMAP FAR DIBToBitmap(HDIB hDIB, HPALETTE hPal) {
 
   /* if invalid handle, return NULL */
 
-  if (!hDIB) return NULL;
+  if (!hDIB) {
+    return NULL;
+  }
 
   /* lock memory block and get a pointer to it */
   lpDIBHdr = (LPSTR)GlobalLock(hDIB);
@@ -551,7 +562,9 @@ HBITMAP FAR DIBToBitmap(HDIB hDIB, HPALETTE hPal) {
   }
 
   /* select and realize palette */
-  if (hPal) hOldPal = SelectPalette(hDC, hPal, false);
+  if (hPal) {
+    hOldPal = SelectPalette(hDC, hPal, false);
+  }
   RealizePalette(hDC);
 
   /* create bitmap from DIB info. and bits */
@@ -559,7 +572,9 @@ HBITMAP FAR DIBToBitmap(HDIB hDIB, HPALETTE hPal) {
                            lpDIBBits, (LPBITMAPINFO)lpDIBHdr, DIB_RGB_COLORS);
 
   /* restore previous palette */
-  if (hOldPal) SelectPalette(hDC, hOldPal, false);
+  if (hOldPal) {
+    SelectPalette(hDC, hOldPal, false);
+  }
 
   /* clean up */
   ReleaseDC(NULL, hDC);
@@ -606,26 +621,33 @@ HDIB FAR BitmapToDIB(HBITMAP hBitmap, HPALETTE hPal) {
 
   /* check if bitmap handle is valid */
 
-  if (!hBitmap) return NULL;
+  if (!hBitmap) {
+    return NULL;
+  }
 
   /* fill in BITMAP structure, return NULL if it didn't work */
-  if (!GetObject(hBitmap, sizeof(bm), (LPSTR)&bm)) return NULL;
+  if (!GetObject(hBitmap, sizeof(bm), (LPSTR)&bm)) {
+    return NULL;
+  }
 
   /* if no palette is specified, use default palette */
-  if (hPal == NULL) hPal = GetStockObject(DEFAULT_PALETTE);
+  if (hPal == NULL) {
+    hPal = GetStockObject(DEFAULT_PALETTE);
+  }
 
   /* calculate bits per pixel */
   biBits = (WORD)(bm.bmPlanes * bm.bmBitsPixel);
 
   /* make sure bits per pixel is valid */
-  if (biBits <= 1)
+  if (biBits <= 1) {
     biBits = 1;
-  else if (biBits <= 4)
+  } else if (biBits <= 4) {
     biBits = 4;
-  else if (biBits <= 8)
+  } else if (biBits <= 8) {
     biBits = 8;
-  else /* if greater than 8-bit, force to 24-bit */
+  } else { /* if greater than 8-bit, force to 24-bit */
     biBits = 24;
+  }
 
   /* initialize BITMAPINFOHEADER */
   bi.biSize = sizeof(BITMAPINFOHEADER);
@@ -679,15 +701,16 @@ HDIB FAR BitmapToDIB(HBITMAP hBitmap, HPALETTE hPal) {
   GlobalUnlock(hDIB);
 
   /* if the driver did not fill in the biSizeImage field, make one up */
-  if (bi.biSizeImage == 0)
+  if (bi.biSizeImage == 0) {
     bi.biSizeImage = WIDTHBYTES((DWORD)bm.bmWidth * biBits) * bm.bmHeight;
+  }
 
   /* realloc the buffer big enough to hold all the bits */
   dwLen = bi.biSize + PaletteSize((LPSTR)&bi) + bi.biSizeImage;
   h = GlobalReAlloc(hDIB, dwLen, 0);
-  if (h)
+  if (h) {
     hDIB = h;
-  else {
+  } else {
     /* clean up and return NULL */
     GlobalFree(hDIB);
     hDIB = NULL;
@@ -760,7 +783,9 @@ int FAR PalEntriesOnDevice(HDC hDC) {
   /*  For non-palette devices, we'll use the # of system
    *  colors for our palette size.
    */
-  if (!nColors) nColors = GetDeviceCaps(hDC, NUMCOLORS);
+  if (!nColors) {
+    nColors = GetDeviceCaps(hDC, NUMCOLORS);
+  }
   assert(nColors);
   return nColors;
 }
@@ -802,7 +827,9 @@ HPALETTE FAR GetSystemPalette() {
   /* Find out how many palette entries we want. */
 
   hDC = GetDC(NULL);
-  if (!hDC) return NULL;
+  if (!hDC) {
+    return NULL;
+  }
   nColors = PalEntriesOnDevice(hDC);  // Number of palette entries
 
   /* Allocate room for the palette and lock it. */
@@ -810,7 +837,9 @@ HPALETTE FAR GetSystemPalette() {
       GlobalAlloc(GHND, sizeof(LOGPALETTE) + nColors * sizeof(PALETTEENTRY));
 
   /* if we didn't get a logical palette, return NULL */
-  if (!hLogPal) return NULL;
+  if (!hLogPal) {
+    return NULL;
+  }
 
   /* get a pointer to the logical palette */
   lpLogPal = (LPLOGPALETTE)GlobalLock(hLogPal);
@@ -881,7 +910,9 @@ HANDLE AllocRoomForDIB(BITMAPINFOHEADER bi, HBITMAP hBitmap) {
   hDIB = GlobalAlloc(GHND, dwLen);
 
   /* Check that DIB handle is valid */
-  if (!hDIB) return NULL;
+  if (!hDIB) {
+    return NULL;
+  }
 
   /* Set up the BITMAPINFOHEADER in the newly allocated global memory,
    * then call GetDIBits() with lpBits = NULL to have it fill in the
@@ -898,9 +929,10 @@ HANDLE AllocRoomForDIB(BITMAPINFOHEADER bi, HBITMAP hBitmap) {
   /* If the driver did not fill in the biSizeImage field,
    * fill it in -- NOTE: this is a bug in the driver!
    */
-  if (lpbi->biSizeImage == 0)
+  if (lpbi->biSizeImage == 0) {
     lpbi->biSizeImage =
         WIDTHBYTES((DWORD)lpbi->biWidth * lpbi->biBitCount) * lpbi->biHeight;
+  }
 
   /* Get the size of the memory block we need */
   dwLen = lpbi->biSize + PaletteSize((LPSTR)&bi) + lpbi->biSizeImage;
@@ -910,9 +942,9 @@ HANDLE AllocRoomForDIB(BITMAPINFOHEADER bi, HBITMAP hBitmap) {
 
   /* ReAlloc the buffer big enough to hold all the bits */
   hTemp = GlobalReAlloc(hDIB, dwLen, 0);
-  if (hTemp)
+  if (hTemp) {
     return hTemp;
-  else {
+  } else {
     /* Else free memory block and return failure */
     GlobalFree(hDIB);
     return NULL;
@@ -973,7 +1005,9 @@ HDIB FAR ChangeDIBFormat(HDIB hDIB, WORD wBitCount, DWORD dwCompression) {
   DWORD DIBComp, NewComp;   // DIB compression, new compression
 
   /* Check for a valid DIB handle */
-  if (!hDIB) return NULL;
+  if (!hDIB) {
+    return NULL;
+  }
 
   /* Get the old DIB's bits per pixel and compression format */
   lpbi = (LPBITMAPINFOHEADER)GlobalLock(hDIB);
@@ -987,34 +1021,41 @@ HDIB FAR ChangeDIBFormat(HDIB hDIB, WORD wBitCount, DWORD dwCompression) {
   if (wBitCount == 0) {
     NewBPP = DIBBPP;
     if ((dwCompression == BI_RLE4 && NewBPP == 4) ||
-        (dwCompression == BI_RLE8 && NewBPP == 8) || (dwCompression == BI_RGB))
+        (dwCompression == BI_RLE8 && NewBPP == 8) ||
+        (dwCompression == BI_RGB)) {
       NewComp = dwCompression;
-    else
+    } else {
       return NULL;
+    }
   } else if (wBitCount == 1 && dwCompression == BI_RGB) {
     NewBPP = wBitCount;
     NewComp = BI_RGB;
   } else if (wBitCount == 4) {
     NewBPP = wBitCount;
-    if (dwCompression == BI_RGB || dwCompression == BI_RLE4)
+    if (dwCompression == BI_RGB || dwCompression == BI_RLE4) {
       NewComp = dwCompression;
-    else
+    } else {
       return NULL;
+    }
   } else if (wBitCount == 8) {
     NewBPP = wBitCount;
-    if (dwCompression == BI_RGB || dwCompression == BI_RLE8)
+    if (dwCompression == BI_RGB || dwCompression == BI_RLE8) {
       NewComp = dwCompression;
-    else
+    } else {
       return NULL;
+    }
   } else if (wBitCount == 24 && dwCompression == BI_RGB) {
     NewBPP = wBitCount;
     NewComp = BI_RGB;
-  } else
+  } else {
     return NULL;
+  }
 
   /* Save the old DIB's palette */
   hPal = CreateDIBPalette(hDIB);
-  if (!hPal) return NULL;
+  if (!hPal) {
+    return NULL;
+  }
 
   /* Convert old DIB to a bitmap */
   hBitmap = DIBToBitmap(hDIB, hPal);
@@ -1041,7 +1082,9 @@ HDIB FAR ChangeDIBFormat(HDIB hDIB, WORD wBitCount, DWORD dwCompression) {
 
   /* Go allocate room for the new DIB */
   hNewDIB = AllocRoomForDIB(bi, hBitmap);
-  if (!hNewDIB) return NULL;
+  if (!hNewDIB) {
+    return NULL;
+  }
 
   /* Get a pointer to the new DIB */
   lpbi = (LPBITMAPINFOHEADER)GlobalLock(hNewDIB);
@@ -1065,8 +1108,9 @@ HDIB FAR ChangeDIBFormat(HDIB hDIB, WORD wBitCount, DWORD dwCompression) {
   RealizePalette(hDC);
   ReleaseDC(NULL, hDC);
 
-  if (hNewDIB) /* Unlock the new DIB's memory block */
+  if (hNewDIB) { /* Unlock the new DIB's memory block */
     GlobalUnlock(hNewDIB);
+  }
 
   DeleteObject(hBitmap);
   DeleteObject(hPal);
@@ -1127,7 +1171,9 @@ HDIB FAR ChangeBitmapFormat(HBITMAP hBitmap, WORD wBitCount,
   DWORD NewComp;            // New compression format
 
   /* Check for a valid bitmap handle */
-  if (!hBitmap) return NULL;
+  if (!hBitmap) {
+    return NULL;
+  }
 
   /* Validate wBitCount and dwCompression
    * They must match correctly (i.e., BI_RLE4 and 4 BPP or
@@ -1135,32 +1181,36 @@ HDIB FAR ChangeBitmapFormat(HBITMAP hBitmap, WORD wBitCount,
    */
   if (wBitCount == 0) {
     NewComp = dwCompression;
-    if (NewComp == BI_RLE4)
+    if (NewComp == BI_RLE4) {
       NewBPP = 4;
-    else if (NewComp == BI_RLE8)
+    } else if (NewComp == BI_RLE8) {
       NewBPP = 8;
-    else /* Not enough info */
+    } else { /* Not enough info */
       return NULL;
+    }
   } else if (wBitCount == 1 && dwCompression == BI_RGB) {
     NewBPP = wBitCount;
     NewComp = BI_RGB;
   } else if (wBitCount == 4) {
     NewBPP = wBitCount;
-    if (dwCompression == BI_RGB || dwCompression == BI_RLE4)
+    if (dwCompression == BI_RGB || dwCompression == BI_RLE4) {
       NewComp = dwCompression;
-    else
+    } else {
       return NULL;
+    }
   } else if (wBitCount == 8) {
     NewBPP = wBitCount;
-    if (dwCompression == BI_RGB || dwCompression == BI_RLE8)
+    if (dwCompression == BI_RGB || dwCompression == BI_RLE8) {
       NewComp = dwCompression;
-    else
+    } else {
       return NULL;
+    }
   } else if (wBitCount == 24 && dwCompression == BI_RGB) {
     NewBPP = wBitCount;
     NewComp = BI_RGB;
-  } else
+  } else {
     return NULL;
+  }
 
   /* Get info about the bitmap */
   GetObject(hBitmap, sizeof(BITMAP), (LPSTR)&Bitmap);
@@ -1180,7 +1230,9 @@ HDIB FAR ChangeBitmapFormat(HBITMAP hBitmap, WORD wBitCount,
 
   /* Go allocate room for the new DIB */
   hNewDIB = AllocRoomForDIB(bi, hBitmap);
-  if (!hNewDIB) return NULL;
+  if (!hNewDIB) {
+    return NULL;
+  }
 
   /* Get a pointer to the new DIB */
   lpbi = (LPBITMAPINFOHEADER)GlobalLock(hNewDIB);

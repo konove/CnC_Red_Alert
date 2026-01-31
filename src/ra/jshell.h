@@ -85,7 +85,9 @@ struct KeyboardClass : public WWKeyboardClass {
     return ((KeyASCIIType)KN_To_KA(key));
   };
   void Clear() {
-    if (IsLibrary) Clear_KeyBuffer();
+    if (IsLibrary) {
+      Clear_KeyBuffer();
+    }
   };
   int Down(KeyNumType key) { return (Key_Down(key)); };
 #else
@@ -177,8 +179,12 @@ long swap(long, long);
 // TODO(konove): Replace with std::clamp
 template <class T>
 T Bound(T original, T minval, T maxval) {
-  if (original < minval) return minval;
-  if (original > maxval) return maxval;
+  if (original < minval) {
+    return minval;
+  }
+  if (original > maxval) {
+    return maxval;
+  }
   return original;
 }
 
@@ -202,10 +208,11 @@ inline void Set_Bit(void* array, int bit, int value) {
           "bts	[esi+ebx*4],ecx"		\
           "ok:"
   */
-  if (value)
+  if (value) {
     ((uint32_t*)array)[(unsigned)bit >> 5] |= 1 << (bit & 0x1F);
-  else
+  } else {
     ((uint32_t*)array)[(unsigned)bit >> 5] &= ~(1 << (bit & 0x1F));
+  }
 }
 
 inline int Get_Bit(const void* array, int bit) {
@@ -239,10 +246,14 @@ inline int First_True_Bit(const void* array) {
     uint32_t v = *array32++;
 #ifdef _MSC_VER
     DWORD pos;
-    if (_BitScanForward(&pos, v)) return off + pos;
+    if (_BitScanForward(&pos, v)) {
+      return off + pos;
+    }
 #else
     int pos = __builtin_ffs(v);
-    if (pos) return off + pos - 1;
+    if (pos) {
+      return off + pos - 1;
+    }
 #endif
     off += 32;
   }
@@ -254,10 +265,14 @@ inline int First_False_Bit(const void* array) {
     uint32_t v = *array32++;
 #ifdef _MSC_VER
     DWORD pos;
-    if (_BitScanForward(&pos, ~v)) return off + pos;
+    if (_BitScanForward(&pos, ~v)) {
+      return off + pos;
+    }
 #else
     int pos = __builtin_ffs(~v);
-    if (pos) return off + pos - 1;
+    if (pos) {
+      return off + pos - 1;
+    }
 #endif
     off += 32;
   }
@@ -286,11 +301,15 @@ class FrameTimerClass {
 class SystemTimerClass {
  public:
   std::uint64_t operator()() const {
-    if (!WindowsTimer) return 0;
+    if (!WindowsTimer) {
+      return 0;
+    }
     return WindowsTimer->Get_System_Tick_Count();
   }
   operator std::uint64_t() const {
-    if (!WindowsTimer) return 0;
+    if (!WindowsTimer) {
+      return 0;
+    }
     return WindowsTimer->Get_System_Tick_Count();
   }
 };
@@ -300,11 +319,15 @@ class UserTimerClass {
  public:
 #ifdef WIN32
   std::uint64_t operator()() const {
-    if (!WindowsTimer) return 0;
+    if (!WindowsTimer) {
+      return 0;
+    }
     return WindowsTimer->Get_User_Tick_Count();
   }
   operator std::uint64_t() const {
-    if (!WindowsTimer) return 0;
+    if (!WindowsTimer) {
+      return 0;
+    }
     return WindowsTimer->Get_User_Tick_Count();
   }
 #else

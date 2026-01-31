@@ -87,7 +87,9 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   **	If there is no raw damage value to start with, then
   **	there can be no modified damage either.
   */
-  if (Special.IsInert || !damage || warhead == WARHEAD_NONE) return 0;
+  if (Special.IsInert || !damage || warhead == WARHEAD_NONE) {
+    return 0;
+  }
 
   const WarheadTypeClass* whead = &Warheads[warhead];
 
@@ -150,12 +152,16 @@ void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass* source,
   int index;
   int count;  // Number of vehicle IDs in list.
 
-  if (!strength || Special.IsInert || warhead == WARHEAD_NONE) return;
+  if (!strength || Special.IsInert || warhead == WARHEAD_NONE) {
+    return;
+  }
 
   const WarheadTypeClass* whead = &Warheads[warhead];
   range = ICON_LEPTON_W + (ICON_LEPTON_W >> 1);
   cell = Coord_Cell(coord);
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+    return;
+  }
   //	if (!Map.In_Radar(cell)) return;
 
   CellClass* cellptr = &Map[cell];
@@ -188,11 +194,15 @@ void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass* source,
       if (!object->IsToDamage && object != source) {
         object->IsToDamage = true;
         objects[count++] = object;
-        if (count >= sizeof(objects) / sizeof(objects[0])) break;
+        if (count >= sizeof(objects) / sizeof(objects[0])) {
+          break;
+        }
       }
       object = object->Next;
     }
-    if (count >= sizeof(objects) / sizeof(objects[0])) break;
+    if (count >= sizeof(objects) / sizeof(objects[0])) {
+      break;
+    }
   }
 
   /*

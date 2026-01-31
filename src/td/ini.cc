@@ -519,7 +519,9 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
     WWGetPrivateProfileString("Briefing", buff, "", stage,
                               sizeof(BriefingText) - strlen(BriefingText) - 1,
                               buffer);
-    if (strlen(stage) == 0) break;
+    if (strlen(stage) == 0) {
+      break;
+    }
     // Really old and ugly code - refactor.
     // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
     strcat(stage, " ");
@@ -548,7 +550,9 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
       WWGetPrivateProfileString(root, buff, "", work,
                                 sizeof(BriefingText) - strlen(BriefingText) - 1,
                                 _ShapeBuffer);
-      if (strlen(work) == 0) break;
+      if (strlen(work) == 0) {
+        break;
+      }
       // Really old and ugly code - refactor.
       // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
       strcat(work, " ");
@@ -876,11 +880,15 @@ static void Assign_Houses() {
   */
   for (house = HOUSE_MULTI1; house < HOUSE_MULTI1 + MPlayerMax; house++) {
     housep = HouseClass::As_Pointer(house);
-    if (housep->IsHuman) continue;
+    if (housep->IsHuman) {
+      continue;
+    }
 
     for (house2 = HOUSE_MULTI1; house2 < HOUSE_MULTI1 + MPlayerMax; house2++) {
       housep2 = HouseClass::As_Pointer(house2);
-      if (housep2->IsHuman) continue;
+      if (housep2->IsHuman) {
+        continue;
+      }
       housep->Make_Ally(house2);
     }
   }
@@ -1012,10 +1020,14 @@ static void Create_Units() {
   For the current BuildLevel, find the max allowable index into the tables
   ------------------------------------------------------------------------*/
   for (i = 0; i < NUM_UNIT_CATEGORIES; i++) {
-    if (BuildLevel >= utable[i].MinLevel) u_limit = i;
+    if (BuildLevel >= utable[i].MinLevel) {
+      u_limit = i;
+    }
   }
   for (i = 0; i < NUM_INFANTRY_CATEGORIES; i++) {
-    if (BuildLevel >= utable[i].MinLevel) i_limit = i;
+    if (BuildLevel >= utable[i].MinLevel) {
+      i_limit = i;
+    }
   }
 
   /*------------------------------------------------------------------------
@@ -1030,7 +1042,9 @@ static void Create_Units() {
   /*........................................................................
   Init # of each category to 0
   ........................................................................*/
-  for (i = 0; i <= u_limit; i++) num_units[i] = 0;
+  for (i = 0; i <= u_limit; i++) {
+    num_units[i] = 0;
+  }
 
   /*........................................................................
   Increment # of each category, until we've used up all units
@@ -1039,7 +1053,9 @@ static void Create_Units() {
   for (i = 0; i < tot_units; i++) {
     num_units[j]++;
     j++;
-    if (j > u_limit) j = 0;
+    if (j > u_limit) {
+      j = 0;
+    }
   }
 
   /*........................................................................
@@ -1050,7 +1066,9 @@ static void Create_Units() {
   /*........................................................................
   Init # of each category to 0
   ........................................................................*/
-  for (i = 0; i <= i_limit; i++) num_infantry[i] = 0;
+  for (i = 0; i <= i_limit; i++) {
+    num_infantry[i] = 0;
+  }
 
   /*........................................................................
   Increment # of each category, until we've used up all infantry
@@ -1059,7 +1077,9 @@ static void Create_Units() {
   for (i = 0; i < tot_infantry; i++) {
     num_infantry[j]++;
     j++;
-    if (j > i_limit) j = 0;
+    if (j > i_limit) {
+      j = 0;
+    }
   }
 
   /*------------------------------------------------------------------------
@@ -1092,7 +1112,9 @@ static void Create_Units() {
     Get a pointer to this house; if there is none, go to the next house
     .....................................................................*/
     hptr = HouseClass::As_Pointer(h);
-    if (!hptr) continue;
+    if (!hptr) {
+      continue;
+    }
 
     /*.....................................................................
     Pick a random waypoint; if the chosen waypoint isn't valid, try again.
@@ -1115,7 +1137,9 @@ static void Create_Units() {
       if (try_count > 200) {
         while (1) {
           centroid = IRandom(0, MAP_CELL_TOTAL - 1);
-          if (Map.In_Radar(centroid)) break;
+          if (Map.In_Radar(centroid)) {
+            break;
+          }
         }
         break;
       }
@@ -1348,13 +1372,17 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
         If this is our second try at this distance, add a random scatter
         to the desired cell, so our units aren't all aligned along spokes.
         ...............................................................*/
-        if (tryval > 0) newcell = Clip_Scatter(newcell, 1);
+        if (tryval > 0) {
+          newcell = Clip_Scatter(newcell, 1);
+        }
 
         /*...............................................................
         If, by randomly scattering, we've chosen the exact center, skip
         it & try another direction.
         ...............................................................*/
-        if (newcell == cell) skipit = true;
+        if (newcell == cell) {
+          skipit = true;
+        }
 
         if (!skipit) {
           /*............................................................
@@ -1372,7 +1400,9 @@ int Scan_Place_Object(ObjectClass* obj, CELL cell) {
         }
 
         rot++;
-        if (rot > FACING_NW) rot = FACING_N;
+        if (rot > FACING_NW) {
+          rot = FACING_N;
+        }
       }
     }
   }

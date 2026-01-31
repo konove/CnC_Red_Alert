@@ -330,7 +330,9 @@ int Test_Null_Modem() {
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   commands->Draw_All();
-  while (Get_Mouse_State() > 0) Show_Mouse();
+  while (Get_Mouse_State() > 0) {
+    Show_Mouse();
+  }
 
 #ifdef _WIN32
   /*
@@ -377,7 +379,9 @@ int Test_Null_Modem() {
         // Smart_Printf( "Received SERIAL_CONNECT %d, ID %d \n",
         // ReceivePacket.Seed, ReceivePacket.ID );
         starttime = TickCount.Time();
-        while (TickCount.Time() - starttime < 30) NullModem.Service();
+        while (TickCount.Time() - starttime < 30) {
+          NullModem.Service();
+        }
         process = false;
         retval = 2;
         break;
@@ -410,7 +414,9 @@ int Test_Null_Modem() {
           // Smart_Printf( "Received2 SERIAL_CONNECT %d, ID %d \n",
           // ReceivePacket.Seed, ReceivePacket.ID );
           starttime = TickCount.Time();
-          while (TickCount.Time() - starttime < 30) NullModem.Service();
+          while (TickCount.Time() - starttime < 30) {
+            NullModem.Service();
+          }
 
           //
           // whoever has the highest time is the host
@@ -491,7 +497,9 @@ int Test_Null_Modem() {
           // Smart_Printf( "Received3 SERIAL_CONNECT %d, ID %d \n",
           // ReceivePacket.Seed, ReceivePacket.ID );
           starttime = TickCount.Time();
-          while (TickCount.Time() - starttime < 30) NullModem.Service();
+          while (TickCount.Time() - starttime < 30) {
+            NullModem.Service();
+          }
 
           //
           // whoever has the highest time is the host
@@ -764,7 +772,9 @@ static int Reconnect_Null_Modem() {
         SendPacket.ID = MPlayerLocalID;
         NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
         starttime = TickCount.Time();
-        while (TickCount.Time() - starttime < 60) NullModem.Service();
+        while (TickCount.Time() - starttime < 60) {
+          NullModem.Service();
+        }
         retval = true;
         process = false;
       }
@@ -1163,7 +1173,9 @@ GameType Select_Serial_Dialog() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton--;
-        if (curbutton < 0) curbutton = NUM_OF_BUTTONS - 1;
+        if (curbutton < 0) {
+          curbutton = NUM_OF_BUTTONS - 1;
+        }
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
@@ -1172,7 +1184,9 @@ GameType Select_Serial_Dialog() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton++;
-        if (curbutton > NUM_OF_BUTTONS - 1) curbutton = 0;
+        if (curbutton > NUM_OF_BUTTONS - 1) {
+          curbutton = 0;
+        }
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
         break;
@@ -3495,12 +3509,15 @@ int Com_Scenario_Dialog() {
   Load_Title_Page(true);
   Set_Palette(Palette);
 
-  if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
+  if (strlen(ModemRXString) > 36) {
+    ModemRXString[36] = 0;
+  }
 
-  if (strlen(ModemRXString) > 0)
+  if (strlen(ModemRXString) > 0) {
     Messages.Add_Message(ModemRXString, CC_TAN,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                          0, 0);
+  }
 
   ModemRXString[0] = '\0';
 
@@ -3519,7 +3536,9 @@ int Com_Scenario_Dialog() {
   NullModem.Reset_Response_Time();  // clear response time
   theirresponsetime = 10000;        // initialize to an invalid value
   timingtime = lastmsgtime = lastredrawtime = TickCount.Time();
-  while (Get_Mouse_State() > 0) Show_Mouse();
+  while (Get_Mouse_State() > 0) {
+    Show_Mouse();
+  }
 
   while (process) {
     /*
@@ -3806,10 +3825,8 @@ int Com_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case BUTTON_LEVEL | KN_BUTTON:
         if (!ready_to_go) {
-          BuildLevel = levelgauge.Get_Value() + 1;
-          if (BuildLevel >
-              MPLAYER_BUILD_LEVEL_MAX)  // if it's pegged, max it out
-            BuildLevel = MPLAYER_BUILD_LEVEL_MAX;
+          BuildLevel = std::min<unsigned int>(levelgauge.Get_Value() + 1,
+                                              MPLAYER_BUILD_LEVEL_MAX);
           display = std::max(display, REDRAW_MESSAGE);
           transmit = 1;
         }
@@ -3989,7 +4006,9 @@ int Com_Scenario_Dialog() {
       Default: manage the inter-player messages
       ------------------------------------------------------------------*/
       default:
-        if (ready_to_go) break;
+        if (ready_to_go) {
+          break;
+        }
 
         /*...............................................................
         F4/SEND/'M' = send a message
@@ -4254,7 +4273,9 @@ int Com_Scenario_Dialog() {
           case SERIAL_SIGN_OFF:
             // Smart_Printf( "received sign off\n" );
             starttime = TickCount.Time();
-            while (TickCount.Time() - starttime < 60) NullModem.Service();
+            while (TickCount.Time() - starttime < 60) {
+              NullModem.Service();
+            }
             CCMessageBox().Process(TXT_USER_SIGNED_OFF);
 
             // to skip the other system not responding msg
@@ -4776,12 +4797,15 @@ int Com_Show_Scenario_Dialog() {
   Load_Title_Page(true);
   Set_Palette(Palette);
 
-  if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
+  if (strlen(ModemRXString) > 36) {
+    ModemRXString[36] = 0;
+  }
 
-  if (strlen(ModemRXString) > 0)
+  if (strlen(ModemRXString) > 0) {
     Messages.Add_Message(ModemRXString, CC_TAN,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                          0, 0);
+  }
 
   ModemRXString[0] = '\0';
 
@@ -4799,7 +4823,9 @@ int Com_Show_Scenario_Dialog() {
   */
   NullModem.Reset_Response_Time();  // clear response time
   timingtime = lastmsgtime = lastredrawtime = TickCount.Time();
-  while (Get_Mouse_State() > 0) Show_Mouse();
+  while (Get_Mouse_State() > 0) {
+    Show_Mouse();
+  }
 
   while (process) {
     /*
@@ -5106,7 +5132,9 @@ int Com_Show_Scenario_Dialog() {
             sure we can't pick that color.
             .........................................................*/
             if (parms_received) {
-              if (MPlayerPrefColor == TheirColor) break;
+              if (MPlayerPrefColor == TheirColor) {
+                break;
+              }
             }
             MPlayerColorIdx = MPlayerPrefColor;
 
@@ -5406,7 +5434,9 @@ int Com_Show_Scenario_Dialog() {
           ..................................................................*/
           case SERIAL_SIGN_OFF:
             starttime = TickCount.Time();
-            while (TickCount.Time() - starttime < 60) NullModem.Service();
+            while (TickCount.Time() - starttime < 60) {
+              NullModem.Service();
+            }
             CCMessageBox().Process(TXT_USER_SIGNED_OFF);
 
             // to skip the other system not responding msg
@@ -5439,7 +5469,9 @@ int Com_Show_Scenario_Dialog() {
               transmittime = 0;
 
               MPlayerColorIdx = TheirColor + 1;
-              if (MPlayerColorIdx >= 6) MPlayerColorIdx = 0;
+              if (MPlayerColorIdx >= 6) {
+                MPlayerColorIdx = 0;
+              }
               name_edt.Set_Color(MPlayerTColors[MPlayerColorIdx]);
               name_edt.Flag_To_Redraw();
               display = REDRAW_COLORS;
@@ -5473,7 +5505,9 @@ int Com_Show_Scenario_Dialog() {
             ...............................................................*/
             ScenarioIdx = -1;
             for (i = 0; i < MPlayerFilenum.Count(); i++) {
-              if (ReceivePacket.Scenario == MPlayerFilenum[i]) ScenarioIdx = i;
+              if (ReceivePacket.Scenario == MPlayerFilenum[i]) {
+                ScenarioIdx = i;
+              }
             }
 
             /*...............................................................
@@ -6048,7 +6082,9 @@ static int Phone_Dialog() {
         /*...............................................................
         Do nothing if no entry is selected.
         ...............................................................*/
-        if (CurPhoneIdx == -1) break;
+        if (CurPhoneIdx == -1) {
+          break;
+        }
 
         /*...............................................................
         Allocate a new entry & copy the currently-selected entry into it
@@ -6089,7 +6125,9 @@ static int Phone_Dialog() {
         /*...............................................................
         Do nothing if no entry is selected.
         ...............................................................*/
-        if (CurPhoneIdx == -1) break;
+        if (CurPhoneIdx == -1) {
+          break;
+        }
 
         /*...............................................................
         Delete the current item & rebuild the phone listbox
@@ -7380,7 +7418,9 @@ int Com_Fake_Scenario_Dialog() {
           ..................................................................*/
           case (SERIAL_SIGN_OFF):
             starttime = TickCount.Time();
-            while (TickCount.Time() - starttime < 60) NullModem.Service();
+            while (TickCount.Time() - starttime < 60) {
+              NullModem.Service();
+            }
             CCMessageBox().Process(TXT_USER_SIGNED_OFF);
 
             // to skip the other system not responding msg
@@ -7841,7 +7881,9 @@ int Com_Show_Fake_Scenario_Dialog() {
           ..................................................................*/
           case (SERIAL_SIGN_OFF):
             starttime = TickCount.Time();
-            while ((TickCount.Time() - starttime) < 60) NullModem.Service();
+            while ((TickCount.Time() - starttime) < 60) {
+              NullModem.Service();
+            }
             CCMessageBox().Process(TXT_USER_SIGNED_OFF);
 
             // to skip the other system not responding msg
@@ -7893,7 +7935,9 @@ int Com_Show_Fake_Scenario_Dialog() {
             ...............................................................*/
             ScenarioIdx = -1;
             for (i = 0; i < MPlayerFilenum.Count(); i++) {
-              if (ReceivePacket.Scenario == MPlayerFilenum[i]) ScenarioIdx = i;
+              if (ReceivePacket.Scenario == MPlayerFilenum[i]) {
+                ScenarioIdx = i;
+              }
             }
 
             /*...............................................................

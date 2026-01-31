@@ -67,7 +67,9 @@ static int Get_Display_Scale() {
   int display_index = 0;
   if (MainWindow) {
     int idx = SDL_GetWindowDisplayIndex(static_cast<SDL_Window*>(MainWindow));
-    if (idx >= 0) display_index = idx;
+    if (idx >= 0) {
+      display_index = idx;
+    }
   }
 
   SDL_DisplayMode mode;
@@ -78,8 +80,12 @@ static int Get_Display_Scale() {
   constexpr int kLogicalHeight = 500;
   constexpr int kMaxScale = 4;
   int scale = mode.h / kLogicalHeight;
-  if (scale < 1) return 1;
-  if (scale > kMaxScale) return kMaxScale;
+  if (scale < 1) {
+    return 1;
+  }
+  if (scale > kMaxScale) {
+    return kMaxScale;
+  }
   return scale;
 }
 
@@ -207,13 +213,19 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
 // 0.
 
 void WWMouseClass::Hide_Mouse() {
-  if (!State++) SDL_ShowCursor(SDL_DISABLE);
+  if (!State++) {
+    SDL_ShowCursor(SDL_DISABLE);
+  }
 }
 
 void WWMouseClass::Show_Mouse() {
-  if (!State) return;
+  if (!State) {
+    return;
+  }
   if (--State == 0) {
-    if (PaletteDirty) Update_Palette();
+    if (PaletteDirty) {
+      Update_Palette();
+    }
     SDL_ShowCursor(SDL_ENABLE);
   }
 }
@@ -249,7 +261,9 @@ void WWMouseClass::Clear_Cursor_Clip() {
 // SDL bakes palette colors into the cursor at creation time, so we must
 // recreate the cursor whenever the game palette changes.
 void WWMouseClass::Update_Palette() {
-  if (!WindowBuffer || !sdl_surface_) return;
+  if (!WindowBuffer || !sdl_surface_) {
+    return;
+  }
 
   if (State) {
     // Defer update until cursor is shown again.
@@ -281,23 +295,33 @@ void WWMouseClass::Update_Pos(int x, int y) {
 // C-style API for legacy game code. These delegate to the singleton.
 
 void Hide_Mouse() {
-  if (_Mouse) _Mouse->Hide_Mouse();
+  if (_Mouse) {
+    _Mouse->Hide_Mouse();
+  }
 }
 
 void Show_Mouse() {
-  if (_Mouse) _Mouse->Show_Mouse();
+  if (_Mouse) {
+    _Mouse->Show_Mouse();
+  }
 }
 
 void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2) {
-  if (_Mouse) _Mouse->Conditional_Hide_Mouse(x1, y1, x2, y2);
+  if (_Mouse) {
+    _Mouse->Conditional_Hide_Mouse(x1, y1, x2, y2);
+  }
 }
 
 void Conditional_Show_Mouse() {
-  if (_Mouse) _Mouse->Conditional_Show_Mouse();
+  if (_Mouse) {
+    _Mouse->Conditional_Show_Mouse();
+  }
 }
 
 int Get_Mouse_State() {
-  if (_Mouse) return _Mouse->Get_Mouse_State();
+  if (_Mouse) {
+    return _Mouse->Get_Mouse_State();
+  }
   return 0;
 }
 
@@ -308,19 +332,27 @@ void Set_Mouse_Cursor(int hotx, int hoty, void* cursor) {
 }
 
 int Get_Mouse_X() {
-  if (_Mouse) return _Mouse->Get_Mouse_X();
+  if (_Mouse) {
+    return _Mouse->Get_Mouse_X();
+  }
   return 0;
 }
 
 int Get_Mouse_Y() {
-  if (_Mouse) return _Mouse->Get_Mouse_Y();
+  if (_Mouse) {
+    return _Mouse->Get_Mouse_Y();
+  }
   return 0;
 }
 
 void Update_Mouse_Palette() {
-  if (_Mouse) _Mouse->Update_Palette();
+  if (_Mouse) {
+    _Mouse->Update_Palette();
+  }
 }
 
 void Update_Mouse_Pos(int x, int y) {
-  if (_Mouse) _Mouse->Update_Pos(x, y);
+  if (_Mouse) {
+    _Mouse->Update_Pos(x, y);
+  }
 }

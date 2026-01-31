@@ -186,7 +186,9 @@ void CloseTarga(TGAHandle* tga) {
   /* Ensure valid handle. */
   if (tga) {
     /* Close the file if it is open. */
-    if (tga->fh != -1) close(tga->fh);
+    if (tga->fh != -1) {
+      close(tga->fh);
+    }
 
     /* Free TGAHandle */
     free(tga);

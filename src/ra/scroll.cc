@@ -112,8 +112,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
     bool noscroll = false;
 
     if (!noscroll) {
-      bool at_screen_edge =
-          y <= 0 || x <= 0 || x >= SeenBuff.Get_Width() - 1 ||
+      bool at_screen_edge = y <= 0 || x <= 0 || x >= SeenBuff.Get_Width() - 1 ||
                             y >= SeenBuff.Get_Height() - 1;
 
       /*
@@ -128,19 +127,26 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           **	cardinal directions over the diagonals.
           */
           int altx = x;
-          if (altx < 50 * RESFACTOR) altx -= 50 * RESFACTOR - altx;
+          if (altx < 50 * RESFACTOR) {
+            altx -= 50 * RESFACTOR - altx;
+          }
           altx = std::max(altx, 0);
-          if (altx > (320 - 50) * RESFACTOR)
+          if (altx > (320 - 50) * RESFACTOR) {
             altx += altx - (320 - 50) * RESFACTOR;
+          }
           altx = std::min(altx, 320 * RESFACTOR);
           if (altx > 50 * RESFACTOR && altx < (320 - 50) * RESFACTOR) {
             altx += (320 / 2 * RESFACTOR - altx) / 2;
           }
 
           int alty = y;
-          if (alty < 50 * RESFACTOR) alty -= 50 * RESFACTOR - alty;
+          if (alty < 50 * RESFACTOR) {
+            alty -= 50 * RESFACTOR - alty;
+          }
           alty = std::max(alty, 0);
-          if (alty > 150 * RESFACTOR) alty += alty - 150 * RESFACTOR;
+          if (alty > 150 * RESFACTOR) {
+            alty += alty - 150 * RESFACTOR;
+          }
           alty = std::min(alty, 200 * RESFACTOR);
 
           direction = Desired_Facing256(320 / 2 * RESFACTOR,
@@ -176,8 +182,8 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         //				rate = Bound(rate-3, 0, 4);
         //			}
         if (Keyboard->Down(KN_RMOUSE)) {
-          rate =
-              Bound(rate + 1, 4, static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
+          rate = Bound(rate + 1, 4,
+                       static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
         }
 
         /*
@@ -190,9 +196,11 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         int distance = _rate[rate] / 2;
 
         if (!Scroll_Map(direction, distance, false)) {
-          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_NO_N + control), false);
+          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_NO_N + control),
+                               false);
         } else {
-          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_N + control), false);
+          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_N + control),
+                               false);
 
           /*
           **	If the mouse button is pressed or auto scrolling is active, then
@@ -220,7 +228,9 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
       if (!MapEditorActive && !player_scrolled) {
         if (!Counter) {
           Inertia--;
-          if (Inertia < 0) Inertia++;
+          if (Inertia < 0) {
+            Inertia++;
+          }
           Counter = SCROLL_DELAY;
         }
       }

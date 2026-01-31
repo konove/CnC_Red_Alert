@@ -503,7 +503,9 @@ bool FootClass::Basic_Path() {
           if (path && path->Cost) {
             memcpy(&path1, path, sizeof(path1));
             found1 = true;
-            if (path1.Cost < 5) break;
+            if (path1.Cost < 5) {
+              break;
+            }
           }
         } else {
           path = Find_Path(cell, &workpath2[0], sizeof(workpath2), move);
@@ -546,7 +548,9 @@ bool FootClass::Basic_Path() {
 #endif
 
     PathDelay = PATH_DELAY;
-    if (Path[0] != FACING_NONE) return true;
+    if (Path[0] != FACING_NONE) {
+      return true;
+    }
 
     /*
     **	If a basic path couldn't be determined, then abort the navigation
@@ -954,7 +958,9 @@ void FootClass::Approach_Target() {
             }
           }
         }
-        if (found) break;
+        if (found) {
+          break;
+        }
       }
 
       /*
@@ -1019,7 +1025,9 @@ int FootClass::Mission_Guard_Area() {
     Coord = As_Coord(ArchiveTarget);
     Target_Something_Nearby(THREAT_AREA);
     Coord = old;
-    if (Target_Legal(TarCom)) return 1;
+    if (Target_Legal(TarCom)) {
+      return 1;
+    }
   } else {
     Approach_Target();
   }
@@ -1497,7 +1505,9 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     *repair *	is possible.
     */
     case RADIO_REPAIR:
-      if (Target_Legal(NavCom)) return RADIO_NEGATIVE;
+      if (Target_Legal(NavCom)) {
+        return RADIO_NEGATIVE;
+      }
       break;
 
     /*
@@ -1578,7 +1588,9 @@ int FootClass::Mission_Enter() {
   */
   if (!In_Radio_Contact()) {
     TechnoClass* techno = As_Techno(ArchiveTarget);
-    if (!techno) techno = As_Techno(NavCom);
+    if (!techno) {
+      techno = As_Techno(NavCom);
+    }
     if (techno) {
       /*
       **	If the transport is already in radio contact, do nothing. Try to
@@ -1642,7 +1654,9 @@ void FootClass::Assign_Destination(TARGET target) { NavCom = target; }
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 void FootClass::Detach_All(bool all) {
-  if (Team) Team->Remove(this);
+  if (Team) {
+    Team->Remove(this);
+  }
   Team = nullptr;
 
   TechnoClass::Detach_All(all);
@@ -1672,7 +1686,9 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   **	If the target specified is not legal, then it cannot be attacked. Always
   *return *	zero in this case.
   */
-  if (!Target_Legal(tarcom)) return 0;
+  if (!Target_Legal(tarcom)) {
+    return 0;
+  }
 
   /*
   ** If the unit is already assigned to destroy the tarcom then we need
@@ -1749,10 +1765,14 @@ void FootClass::Death_Announcement(const TechnoClass* source) const {
       if (What_Am_I() == RTTI_INFANTRY &&
           dynamic_cast<const InfantryTypeClass&>(Class_Of()).IsCivilian &&
           !((InfantryClass*)this)->IsTechnician) {
-        if (Options.IsDeathAnnounce) Speak(VOX_DEAD_CIV);
+        if (Options.IsDeathAnnounce) {
+          Speak(VOX_DEAD_CIV);
+        }
       } else {
         if (House != PlayerPtr && GameToPlay != GAME_NORMAL) {
-          if (Options.IsDeathAnnounce) Speak(VOX_ENEMY_UNIT);
+          if (Options.IsDeathAnnounce) {
+            Speak(VOX_ENEMY_UNIT);
+          }
         } else {
           if (House == PlayerPtr || Options.IsDeathAnnounce) {
             if (!Options.IsDeathAnnounce) {

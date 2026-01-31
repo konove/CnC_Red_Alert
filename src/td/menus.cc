@@ -103,14 +103,17 @@ static int MenuSkip;
 static int Select_To_Entry(int select, unsigned long bitfield, int index) {
   int placement;
 
-  if (bitfield == 0xFFFFFFFFL) /* if all bits are set	*/
-    return (select);           /*		then it as is		*/
+  if (bitfield == 0xFFFFFFFFL) { /* if all bits are set	*/
+    return (select);             /*		then it as is		*/
+  }
 
-  placement = 0;                                /* current pos zero		*/
-  while (select) {                              /* while still ones		*/
-    if (bitfield & (1L << (placement + index))) /* if this flagged then	*/
-      select--;                                 /* decrement counter		*/
-    placement++;                                /* and we moved a place	*/
+  placement = 0;                                  /* current pos zero		*/
+  while (select) {                                /* while still ones		*/
+    if (bitfield & (1L << (placement + index))) { /* if this flagged then
+                                                   */
+      select--;                                   /* decrement counter		*/
+    }
+    placement++; /* and we moved a place	*/
   }
   while (!(bitfield & (1L << (placement + index)))) {
     placement++;
@@ -198,8 +201,9 @@ static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
 int Find_Menu_Items(int maxitems, unsigned long field, char index) {
   int loop, ctr;
 
-  if (field == 0xFFFFFFFFL) /* if all bits are set	*/
-    return (maxitems);      /* then maxitems set		*/
+  if (field == 0xFFFFFFFFL) { /* if all bits are set	*/
+    return (maxitems);        /* then maxitems set		*/
+  }
 
   for (loop = ctr = 0; loop < maxitems; loop++) { /* loop through items	*/
     if (field & (1L << (loop + index))) {         /* if the bit is set		*/
@@ -324,13 +328,15 @@ int Check_Menu(int menu, const char* text[], char*, long field, int index) {
   switch (key) {
     case KN_UP:            /* if the key moves up	*/
       newitem--;           /* 	new item up one	*/
-      if (newitem < 0)     /* if invalid new item	*/
+      if (newitem < 0) {   /* if invalid new item	*/
         newitem = maxitem; /* put at list bottom	*/
+      }
       break;
-    case KN_DOWN:            /* if key moves down		*/
-      newitem++;             /*		new item down one	*/
-      if (newitem > maxitem) /* if new item past 		*/
-        newitem = 0;         /*		list end, clear	*/
+    case KN_DOWN:              /* if key moves down		*/
+      newitem++;               /*		new item down one	*/
+      if (newitem > maxitem) { /* if new item past 		*/
+        newitem = 0;           /*		list end, clear	*/
+      }
       break;
     case KN_HOME:  /* if top of list key 	*/
     case KN_PGUP:  /*		is selected then	*/
@@ -443,7 +449,9 @@ int Do_Menu(const char** strings, bool blue) {
   const char** ptr;  // Working menu text pointer.
   int selection;     // Selection from user.
 
-  if (!strings) return (-1);
+  if (!strings) {
+    return (-1);
+  }
   Set_Logic_Page(SeenBuff);
   Keyboard::Clear();
 
@@ -497,8 +505,9 @@ int Do_Menu(const char** strings, bool blue) {
     Call_Back();
     selection = Check_Menu(0, strings, nullptr, 0xFFL, 0);
     if (UnknownKey != 0 || UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
-        UnknownKey == KN_RMOUSE)
+        UnknownKey == KN_RMOUSE) {
       break;
+    }
   }
   Keyboard::Clear();
   Hide_Mouse();
@@ -628,12 +637,16 @@ int Main_Menu(unsigned long timeout) {
   int ystep = 15 * RESFACTOR;
 #endif  // BONUS_MISSIONS
 
-  if (expansions) ystep -= 2 * RESFACTOR;
+  if (expansions) {
+    ystep -= 2 * RESFACTOR;
+  }
   TextButtonClass expandbtn(
       BUTTON_EXPAND, TXT_NEW_MISSIONS,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_START_X,
       starty, D_START_W, D_START_H);
-  if (expansions) starty += ystep;
+  if (expansions) {
+    starty += ystep;
+  }
 
   TextButtonClass startbtn(
       BUTTON_START, TXT_START_NEW_GAME,
@@ -809,7 +822,9 @@ int Main_Menu(unsigned long timeout) {
 
   Fancy_Text_Print(TXT_NONE, 0, 0, CC_GREEN, TBLACK,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-  while (Get_Mouse_State() > 0) Show_Mouse();
+  while (Get_Mouse_State() > 0) {
+    Show_Mouse();
+  }
 
   /*
   **	Main Processing Loop.

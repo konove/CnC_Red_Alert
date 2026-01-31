@@ -596,8 +596,12 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
   /*
   **	Units that are off-map cannot sight.
   */
-  if (!In_Radar(cell)) return;
-  if (!sightrange || sightrange > 10) return;
+  if (!In_Radar(cell)) {
+    return;
+  }
+  if (!sightrange || sightrange > 10) {
+    return;
+  }
 
   /*
   **	Determine logical cell coordinate for center scan point.
@@ -630,13 +634,18 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
     **	Determine if the map edge has been wrapped. If so,
     **	then don't process the cell.
     */
-    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) continue;
+    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) {
+      continue;
+    }
     xdiff = Cell_X(newcell) - xx;
     xdiff = std::abs(xdiff);
-    if (xdiff > sightrange) continue;
-    if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
-        sightrange * CELL_LEPTON_W)
+    if (xdiff > sightrange) {
       continue;
+    }
+    if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
+        sightrange * CELL_LEPTON_W) {
+      continue;
+    }
 
     /*
     **	Map the cell. For incremental scans, then update
@@ -676,8 +685,12 @@ void MapClass::Shroud_From(CELL cell, int sightrange) {
   /*
   **	Units that are off-map cannot sight.
   */
-  if (!In_Radar(cell)) return;
-  if (!sightrange || sightrange > Rule.GapShroudRadius) return;
+  if (!In_Radar(cell)) {
+    return;
+  }
+  if (!sightrange || sightrange > Rule.GapShroudRadius) {
+    return;
+  }
 
   /*
   **	Determine logical cell coordinate for center scan point.
@@ -704,13 +717,18 @@ void MapClass::Shroud_From(CELL cell, int sightrange) {
     **	Determine if the map edge has been wrapped. If so,
     **	then don't process the cell.
     */
-    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) continue;
+    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) {
+      continue;
+    }
     xdiff = Cell_X(newcell) - xx;
     xdiff = std::abs(xdiff);
-    if (xdiff > sightrange) continue;
-    if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
-        sightrange * CELL_LEPTON_W)
+    if (xdiff > sightrange) {
       continue;
+    }
+    if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
+        sightrange * CELL_LEPTON_W) {
+      continue;
+    }
 
     /*
     **	Shroud the cell.
@@ -745,7 +763,9 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
   /*
   **	Units that are off-map cannot jam.
   */
-  if (!jamrange || jamrange > Rule.GapShroudRadius) return;
+  if (!jamrange || jamrange > Rule.GapShroudRadius) {
+    return;
+  }
 
   /*
   **	Determine logical cell coordinate for center scan point.
@@ -772,13 +792,18 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
     **	Determine if the map edge has been wrapped. If so,
     **	then don't process the cell.
     */
-    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) continue;
+    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) {
+      continue;
+    }
     xdiff = Cell_X(newcell) - xx;
     xdiff = std::abs(xdiff);
-    if (xdiff > jamrange) continue;
-    if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
-        jamrange * CELL_LEPTON_W)
+    if (xdiff > jamrange) {
       continue;
+    }
+    if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
+        jamrange * CELL_LEPTON_W) {
+      continue;
+    }
 
     /*
     **	Jam the cell. For incremental scans, then update
@@ -885,7 +910,9 @@ void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass* house) {
   /*
   **	Units that are off-map cannot jam.
   */
-  if (!jamrange || jamrange > Rule.GapShroudRadius) return;
+  if (!jamrange || jamrange > Rule.GapShroudRadius) {
+    return;
+  }
 
   /*
   **	Determine logical cell coordinate for center scan point.
@@ -912,13 +939,18 @@ void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass* house) {
     **	Determine if the map edge has been wrapped. If so,
     **	then don't process the cell.
     */
-    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) continue;
+    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) {
+      continue;
+    }
     xdiff = Cell_X(newcell) - xx;
     xdiff = std::abs(xdiff);
-    if (xdiff > jamrange) continue;
-    if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
-        jamrange * CELL_LEPTON_W)
+    if (xdiff > jamrange) {
       continue;
+    }
+    if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
+        jamrange * CELL_LEPTON_W) {
+      continue;
+    }
 
     /*
     **	Jam the cell. For incremental scans, then update
@@ -952,23 +984,27 @@ bool MapClass::In_Radar(CELL cell) const {
   **	If the cell value is WAY out of range, then it obviously can't be part
   *of the game *	playfield.
   */
-  if (static_cast<unsigned>(cell) > MAP_CELL_TOTAL) return false;
+  if (static_cast<unsigned>(cell) > MAP_CELL_TOTAL) {
+    return false;
+  }
 
   /*
   **	If the cell is off the left or right edge of the playfield, then return
   *the "not in *	radar" flag.
   */
   if (static_cast<unsigned>(Cell_X(cell) - MapCellX) >=
-      static_cast<unsigned>(MapCellWidth))
+      static_cast<unsigned>(MapCellWidth)) {
     return false;
+  }
 
   /*
   **	If the cell is off the top or bottom edge of the playfield, then return
   *the "not in *	radar" flag.
   */
   if (static_cast<unsigned>(Cell_Y(cell) - MapCellY) >=
-      static_cast<unsigned>(MapCellHeight))
+      static_cast<unsigned>(MapCellHeight)) {
     return false;
+  }
 
   return true;
 }
@@ -993,7 +1029,9 @@ bool MapClass::In_Radar(CELL cell) const {
  * HISTORY: * 07/31/1994 JLB : Created. *
  *=============================================================================================*/
 void MapClass::Place_Down(CELL cell, ObjectClass* object) {
-  if (!object) return;
+  if (!object) {
+    return;
+  }
 
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
@@ -1040,7 +1078,9 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
  * HISTORY: * 07/31/1994 JLB : Created. *
  *=============================================================================================*/
 void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
-  if (!object) return;
+  if (!object) {
+    return;
+  }
 
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
@@ -1087,7 +1127,9 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
  * HISTORY: * 07/12/1995 BRR : Created. *
  *=============================================================================================*/
 void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
-  if (!object) return;
+  if (!object) {
+    return;
+  }
 
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
@@ -1122,7 +1164,9 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
  * HISTORY: * 07/12/1995 BRR : Created. *
  *=============================================================================================*/
 void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
-  if (!object) return;
+  if (!object) {
+    return;
+  }
 
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
@@ -1299,7 +1343,9 @@ void MapClass::Logic() {
   /*
   **	Bail early if there is no allowed growth or spread of Tiberium.
   */
-  if (!Rule.IsTGrowth && !Rule.IsTSpread) return;
+  if (!Rule.IsTGrowth && !Rule.IsTSpread) {
+    return;
+  }
 
   /*
   **	Scan another block of the map in order to accumulate the potential
@@ -1352,7 +1398,9 @@ void MapClass::Logic() {
     }
 
     subcount--;
-    if (subcount == 0) break;
+    if (subcount == 0) {
+      break;
+    }
   }
   TiberiumScan = index;
 
@@ -1453,7 +1501,9 @@ bool MapClass::Place_Random_Crate() {
   */
   int crateindex = 0;
   for (crateindex = 0; crateindex < ARRAY_SIZE(Crates); crateindex++) {
-    if (!Crates[crateindex].Is_Valid()) break;
+    if (!Crates[crateindex].Is_Valid()) {
+      break;
+    }
   }
   if (crateindex == ARRAY_SIZE(Crates)) {
     return false;
@@ -1553,7 +1603,9 @@ int MapClass::Validate() {
     */
     ttype = (*this)[cell].TType;
     ticon = (*this)[cell].TIcon;
-    if (ttype >= TEMPLATE_COUNT && ttype != TEMPLATE_NONE) return false;
+    if (ttype >= TEMPLATE_COUNT && ttype != TEMPLATE_NONE) {
+      return false;
+    }
 
     /*
     **	To validate the icon value, we have to get a copy of the template's
@@ -1692,7 +1744,9 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
           int d = -1;
           if (o->What_Am_I() == RTTI_BUILDING) {
             d = Distance(coord, Cell_Coord(newcell));
-            if (d > 0x00B5) d = -1;
+            if (d > 0x00B5) {
+              d = -1;
+            }
           } else {
             d = Distance(coord, o->Center_Coord());
           }
@@ -1859,7 +1913,9 @@ int MapClass::Zone_Span(CELL cell, int zone, MZoneType check) {
       **	zone marking. This eliminates redundant processing and allows
       *this *	routine to be called for illegal cells without causing an error.
       */
-      if (xbegin == Cell_X(cell)) return 0;
+      if (xbegin == Cell_X(cell)) {
+        return 0;
+      }
 
       /*
       **	Otherwise break out of the left scan since a boundary was
@@ -1971,7 +2027,9 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
           topten[count++] = newcell;
         }
       }
-      if (count == ARRAY_SIZE(topten)) break;
+      if (count == ARRAY_SIZE(topten)) {
+        break;
+      }
 
       if (x <= right && radius <= bottom) {
         newcell = XY_Cell(xx + x, yy + radius);
@@ -1981,10 +2039,14 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
           topten[count++] = newcell;
         }
       }
-      if (count == ARRAY_SIZE(topten)) break;
+      if (count == ARRAY_SIZE(topten)) {
+        break;
+      }
     }
 
-    if (count == ARRAY_SIZE(topten)) break;
+    if (count == ARRAY_SIZE(topten)) {
+      break;
+    }
 
     /*
     **	Scan the left and right columns of the "box".
@@ -1998,7 +2060,9 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
           topten[count++] = newcell;
         }
       }
-      if (count == ARRAY_SIZE(topten)) break;
+      if (count == ARRAY_SIZE(topten)) {
+        break;
+      }
 
       if (y <= bottom && radius <= right) {
         newcell = XY_Cell(xx + radius, yy + y);
@@ -2008,10 +2072,14 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
           topten[count++] = newcell;
         }
       }
-      if (count == ARRAY_SIZE(topten)) break;
+      if (count == ARRAY_SIZE(topten)) {
+        break;
+      }
     }
 
-    if (count > 0) break;
+    if (count > 0) {
+      break;
+    }
   }
 
   if (count > 0) {

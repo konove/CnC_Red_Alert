@@ -288,7 +288,9 @@ void TDropListClass<T>::Collapse() {
 
 template <class T>
 TDropListClass<T>& TDropListClass<T>::operator=(const TDropListClass<T>& list) {
-  if (this == &list) return (*this);
+  if (this == &list) {
+    return (*this);
+  }
   EditClass::operator=(list);
   List = list.List;
   IsDropped = list.IsDropped;

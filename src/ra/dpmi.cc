@@ -49,7 +49,9 @@
 
 void DOSSegmentClass::Swap(DOSSegmentClass& src, int soffset,
                            DOSSegmentClass& dest, int doffset, int size) {
-  if (!size) return;
+  if (!size) {
+    return;
+  }
 
   unsigned short ssel = src.Selector;
   unsigned short dsel = dest.Selector;
@@ -90,7 +92,9 @@ void DOSSegmentClass::Swap(DOSSegmentClass& src, int soffset,
     "inc	esi"             \
     "loop	again" parm[esi][edi][ecx] modify[ax];
 
-  if (!size) return;
+  if (!size) {
+    return;
+  }
   dss_swap((char*)(src.Selector + soffset), (char*)(dest.Selector + doffset),
            size);
 }
@@ -110,7 +114,9 @@ void DOSSegmentClass::Copy(DOSSegmentClass& src, int soffset,
     "rep		movsb"            \
     "copskip2:" parm[esi edi ecx] modify[ebx];
 
-  if (!size) return;
+  if (!size) {
+    return;
+  }
   dss_copy((char*)(src.Selector + soffset), (char*)(dest.Selector + doffset),
            size);
 }
@@ -131,7 +137,9 @@ void DOSSegmentClass::Copy_To(void* source, int dest, int size) {
     "rep		movsb"             \
     "cop2skip2:" parm[esi edi ecx] modify[ebx];
 
-  if (!size) return;
+  if (!size) {
+    return;
+  }
   dss_copy_to(src, (void*)(Selector + dest), size);
 }
 #endif
@@ -151,7 +159,9 @@ void DOSSegmentClass::Copy_From(void* dest, int source, int size) {
     "rep		movsb"             \
     "copfskip2:" parm[edi esi ecx] modify[ebx];
 
-  if (!size) return;
+  if (!size) {
+    return;
+  }
   dss_copy_from(dest, (void*)(Selector + source), size);
 }
 #endif

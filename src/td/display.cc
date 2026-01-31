@@ -617,7 +617,9 @@ const short* DisplayClass::Text_Overlap_List(const char* text, int x, int y,
       CELL lr = Click_Cell_Calc(
           x + len - 1, Bound(y + height, TacPixelY, SeenBuff.Get_Height() - 1));
 
-      if (ul == -1) ul = Click_Cell_Calc(x, y);
+      if (ul == -1) {
+        ul = Click_Cell_Calc(x, y);
+      }
       //			if (lr == -1) lr = Click_Cell_Calc(x+len, y);
 
       if (ul != -1 && lr != -1) {
@@ -733,7 +735,9 @@ void DisplayClass::Set_Cursor_Shape(const short* list) {
     int w, h;
     static short _list[50];
 
-    for (int i = 0; !i || list[i - 1] != REFRESH_EOL; i++) _list[i] = list[i];
+    for (int i = 0; !i || list[i - 1] != REFRESH_EOL; i++) {
+      _list[i] = list[i];
+    }
     CursorSize = _list;
     Get_Occupy_Dimensions(w, h, CursorSize);
     ZoneOffset = -(h / 2 * MAP_CELL_W + w / 2);
@@ -792,7 +796,9 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
     for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
       CELL newcell = Adjacent_Cell(cell, facing);
 
-      if (!In_Radar(cell)) return false;
+      if (!In_Radar(cell)) {
+        return false;
+      }
 
       TechnoClass* base = (*this)[newcell].Cell_Techno();
 
@@ -873,7 +879,9 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   ** This checks to see if NO animation or drawing is to occur and, if so,
   **	exits.
   */
-  if (pos == ZoneCell) return pos;
+  if (pos == ZoneCell) {
+    return pos;
+  }
 
   prevpos = ZoneCell;
 
@@ -973,7 +981,9 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   const CELL* ptr;
   CellClass* cellptr;
 
-  if (pos == -1) return;
+  if (pos == -1) {
+    return;
+  }
 
   /*
   **	For every cell in the CursorSize list, invoke its Redraw_Objects and
@@ -1351,28 +1361,46 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
   **	If the distance is invalid then no further checking is required. Bail
   **	with a no-can-do flag.
   */
-  if (distance == 0) return false;
+  if (distance == 0) {
+    return false;
+  }
   FacingType crude = Dir_Facing(facing);
 
   if (Coord_X(TacticalCoord) == Cell_To_Lepton(MapCellX) && crude != FACING_W) {
-    if (crude == FACING_SW) facing = DIR_S;
-    if (crude == FACING_NW) facing = DIR_N;
+    if (crude == FACING_SW) {
+      facing = DIR_S;
+    }
+    if (crude == FACING_NW) {
+      facing = DIR_N;
+    }
   }
   if (Coord_Y(TacticalCoord) == Cell_To_Lepton(MapCellY) && crude != FACING_N) {
-    if (crude == FACING_NW) facing = DIR_W;
-    if (crude == FACING_NE) facing = DIR_E;
+    if (crude == FACING_NW) {
+      facing = DIR_W;
+    }
+    if (crude == FACING_NE) {
+      facing = DIR_E;
+    }
   }
   if (Coord_X(TacticalCoord) + TacLeptonWidth ==
           Cell_To_Lepton(MapCellX + MapCellWidth) &&
       crude != FACING_E) {
-    if (crude == FACING_NE) facing = DIR_N;
-    if (crude == FACING_SE) facing = DIR_S;
+    if (crude == FACING_NE) {
+      facing = DIR_N;
+    }
+    if (crude == FACING_SE) {
+      facing = DIR_S;
+    }
   }
   if (Coord_Y(TacticalCoord) + TacLeptonHeight ==
           Cell_To_Lepton(MapCellY + MapCellHeight) &&
       crude != FACING_S) {
-    if (crude == FACING_SE) facing = DIR_E;
-    if (crude == FACING_SW) facing = DIR_W;
+    if (crude == FACING_SE) {
+      facing = DIR_E;
+    }
+    if (crude == FACING_SW) {
+      facing = DIR_W;
+    }
   }
 
   /*
@@ -1411,7 +1439,9 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
   **	If the new coordinate is the same as the old, then no scrolling would
   *occur.
   */
-  if (!distance || coord == TacticalCoord) return false;
+  if (!distance || coord == TacticalCoord) {
+    return false;
+  }
 
   /*
   **	Since the new coordinate is different than the old one, possibly adjust
@@ -1486,7 +1516,9 @@ int DisplayClass::Cell_Shadow(CELL cell) {
   **	problem of accessing cells off the top or bottom of the map and into
   **	who-knows-what memory.
   */
-  if (static_cast<unsigned>(Cell_Y(cell) - 1) >= MAP_CELL_H - 2) return -2;
+  if (static_cast<unsigned>(Cell_Y(cell) - 1) >= MAP_CELL_H - 2) {
+    return -2;
+  }
 
   bool rightedge = Cell_X(cell) == MAP_CELL_W - 1;
 
@@ -1498,13 +1530,21 @@ int DisplayClass::Cell_Shadow(CELL cell) {
     */
     index = 0;
     cellptr--;
-    if (cellptr->IsMapped) index |= 0x08;
+    if (cellptr->IsMapped) {
+      index |= 0x08;
+    }
     cellptr += MAP_CELL_W + 1;
-    if (cellptr->IsMapped) index |= 0x04;
+    if (cellptr->IsMapped) {
+      index |= 0x04;
+    }
     cellptr -= MAP_CELL_W - 1;
-    if (cellptr->IsMapped) index |= 0x02;
+    if (cellptr->IsMapped) {
+      index |= 0x02;
+    }
     cellptr -= MAP_CELL_W + 1;
-    if (cellptr->IsMapped) index |= 0x01;
+    if (cellptr->IsMapped) {
+      index |= 0x01;
+    }
     value = CardShadow[index];
 
     /*
@@ -1514,13 +1554,21 @@ int DisplayClass::Cell_Shadow(CELL cell) {
     if (value == -2) {
       index = 0;
       cellptr--;
-      if (cellptr->IsMapped) index |= 0x08;
+      if (cellptr->IsMapped) {
+        index |= 0x08;
+      }
       cellptr += MAP_CELL_W * 2;
-      if (cellptr->IsMapped) index |= 0x04;
+      if (cellptr->IsMapped) {
+        index |= 0x04;
+      }
       cellptr += 2;
-      if (!rightedge && cellptr->IsMapped) index |= 0x02;
+      if (!rightedge && cellptr->IsMapped) {
+        index |= 0x02;
+      }
       cellptr -= MAP_CELL_W * 2;
-      if (cellptr->IsMapped) index |= 0x01;
+      if (cellptr->IsMapped) {
+        index |= 0x01;
+      }
       value = DiagShadow[index];
     }
 
@@ -1551,7 +1599,9 @@ int DisplayClass::Cell_Shadow(CELL cell) {
  *pointer to HouseClass.                                             *
  *=============================================================================================*/
 bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
-  if (house != PlayerPtr || cell >= static_cast<CELL>(Size)) return false;
+  if (house != PlayerPtr || cell >= static_cast<CELL>(Size)) {
+    return false;
+  }
 
   /*
   **	Don't bother remapping this cell if it is already mapped.
@@ -1581,7 +1631,9 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
     c = Adjacent_Cell(cell, dir);
 
     // don't crash
-    if (c < 0 || c >= Size) continue;
+    if (c < 0 || c >= Size) {
+      continue;
+    }
 
     if (c != cell && !(*this)[c].IsMapped) {
       shadow = Cell_Shadow(c);
@@ -1672,7 +1724,9 @@ bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) {
  * HISTORY: * 03/27/1995 BWG : Created. *
  *=============================================================================================*/
 bool DisplayClass::Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) {
-  if (!source || !dest) return false;
+  if (!source || !dest) {
+    return false;
+  }
 
   int x1 = Coord_X(source);
   int y1 = Coord_Y(source);
@@ -1683,10 +1737,18 @@ bool DisplayClass::Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) {
   int top = Coord_Y(TacticalCoord);
   int bottom = Coord_Y(TacticalCoord) + TacLeptonHeight;
 
-  if (x1 < left && x2 < left) return false;
-  if (x1 > right && x2 > right) return false;
-  if (y1 < top && y2 < top) return false;
-  if (y1 > bottom && y2 > bottom) return false;
+  if (x1 < left && x2 < left) {
+    return false;
+  }
+  if (x1 > right && x2 > right) {
+    return false;
+  }
+  if (y1 < top && y2 < top) {
+    return false;
+  }
+  if (y1 > bottom && y2 > bottom) {
+    return false;
+  }
 
   x1 = Bound(x1, left, right);
   x2 = Bound(x2, left, right);
@@ -1834,8 +1896,12 @@ void DisplayClass::Draw_It(bool forced) {
       int oldh = Lepton_To_Pixel(TacLeptonHeight) -
                  std::abs(oldy);  // Replicable height.
 
-      if (oldw < 1) forced = true;
-      if (oldh < 1) forced = true;
+      if (oldw < 1) {
+        forced = true;
+      }
+      if (oldh < 1) {
+        forced = true;
+      }
 
       /*
       ** Work out which map edges need to be redrawn
@@ -1922,7 +1988,9 @@ void DisplayClass::Draw_It(bool forced) {
                     Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1) +
                         TacPixelY);
 
-                if (c > 0) (*this)[c].Redraw_Objects(true);
+                if (c > 0) {
+                  (*this)[c].Redraw_Objects(true);
+                }
               }
             }
           }
@@ -1944,7 +2012,9 @@ void DisplayClass::Draw_It(bool forced) {
                     Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1) +
                         TacPixelY);
 
-                if (c > 0) (*this)[c].Redraw_Objects(true);
+                if (c > 0) {
+                  (*this)[c].Redraw_Objects(true);
+                }
               }
             }
           }
@@ -1964,7 +2034,9 @@ void DisplayClass::Draw_It(bool forced) {
                     Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1) +
                         TacPixelY);
 
-                if (c > 0) (*this)[c].Redraw_Objects(true);
+                if (c > 0) {
+                  (*this)[c].Redraw_Objects(true);
+                }
               }
             }
           }
@@ -1986,7 +2058,9 @@ void DisplayClass::Draw_It(bool forced) {
                     Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1) +
                         TacPixelY);
 
-                if (c > 0) (*this)[c].Redraw_Objects(true);
+                if (c > 0) {
+                  (*this)[c].Redraw_Objects(true);
+                }
               }
             }
           }
@@ -2311,9 +2385,15 @@ ObjectClass* DisplayClass::Next_Object(ObjectClass* object) {
         dynamic_cast<TechnoClass*>(obj)->IsDiscoveredByPlayer &&
         obj->Class_Of().IsSelectable &&
         obj->Owner() == PlayerPtr->Class->House) {
-      if (!firstobj) firstobj = obj;
-      if (foundmatch) return obj;
-      if (object == obj) foundmatch = true;
+      if (!firstobj) {
+        firstobj = obj;
+      }
+      if (foundmatch) {
+        return obj;
+      }
+      if (object == obj) {
+        foundmatch = true;
+      }
     }
   }
   return firstobj;
@@ -2354,9 +2434,15 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) {
         dynamic_cast<TechnoClass*>(obj)->IsDiscoveredByPlayer &&
         obj->Class_Of().IsSelectable &&
         obj->Owner() == PlayerPtr->Class->House) {
-      if (!firstobj) firstobj = obj;
-      if (foundmatch) return obj;
-      if (object == obj) foundmatch = true;
+      if (!firstobj) {
+        firstobj = obj;
+      }
+      if (foundmatch) {
+        return obj;
+      }
+      if (object == obj) {
+        foundmatch = true;
+      }
     }
   }
   return firstobj;
@@ -2434,8 +2520,9 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
         for (y = 0; y < MapCellHeight; y++) {
           for (x = 0; x < MapCellWidth; x++) {
             if ((*this)[XY_Cell(MapCellX + x, MapCellY + y)].Land_Type() !=
-                LAND_WATER)
+                LAND_WATER) {
               break;
+            }
           }
           if (x == MapCellWidth) {
             return XY_Cell(MapCellX + MapCellWidth, MapCellY + y);
@@ -2451,10 +2538,13 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
         for (x = 0; x < MapCellWidth; x++) {
           cell = XY_Cell(MapCellX + (x + index) % MapCellWidth, MapCellY - 1);
           if ((*this)[cell].Is_Generally_Clear() &&
-              (*this)[cell + MAP_CELL_W].Is_Generally_Clear())
+              (*this)[cell + MAP_CELL_W].Is_Generally_Clear()) {
             break;
+          }
         }
-        if (x == MapCellWidth) return 0;
+        if (x == MapCellWidth) {
+          return 0;
+        }
         break;
 
       case SOURCE_EAST:
@@ -2463,10 +2553,13 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
           cell = XY_Cell(MapCellX + MapCellWidth,
                          MapCellY + (y + index) % MapCellHeight);
           if ((*this)[cell].Is_Generally_Clear() &&
-              (*this)[cell - 1].Is_Generally_Clear())
+              (*this)[cell - 1].Is_Generally_Clear()) {
             break;
+          }
         }
-        if (y == MapCellHeight) return 0;
+        if (y == MapCellHeight) {
+          return 0;
+        }
         break;
 
       case SOURCE_SOUTH:
@@ -2475,10 +2568,13 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
           cell = XY_Cell(MapCellX + (x + index) % MapCellWidth,
                          MapCellY + MapCellHeight);
           if ((*this)[cell].Is_Generally_Clear() &&
-              (*this)[cell - MAP_CELL_W].Is_Generally_Clear())
+              (*this)[cell - MAP_CELL_W].Is_Generally_Clear()) {
             break;
+          }
         }
-        if (x == MapCellWidth) return 0;
+        if (x == MapCellWidth) {
+          return 0;
+        }
         break;
 
       case SOURCE_WEST:
@@ -2486,10 +2582,13 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
         for (y = 0; y < MapCellHeight; y++) {
           cell = XY_Cell(MapCellX - 1, MapCellY + (y + index) % MapCellHeight);
           if ((*this)[cell].Is_Generally_Clear() &&
-              (*this)[cell + 1].Is_Generally_Clear())
+              (*this)[cell + 1].Is_Generally_Clear()) {
             break;
+          }
         }
-        if (y == MapCellHeight) return 0;
+        if (y == MapCellHeight) {
+          return 0;
+        }
         break;
 
       /*
@@ -2547,11 +2646,13 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
           CELL newcell = 0;
 
           if ((*this)[XY_Cell(x + MapCellX, MapCellHeight + MapCellY)]
-                  .Land_Type() != LAND_WATER)
+                  .Land_Type() != LAND_WATER) {
             continue;
+          }
           if ((*this)[XY_Cell(x + MapCellX, MapCellHeight + MapCellY - 1)]
-                  .Land_Type() != LAND_WATER)
+                  .Land_Type() != LAND_WATER) {
             continue;
+          }
           for (y = MapCellHeight; y >= 0; y--) {
             newcell = XY_Cell(x + MapCellX, y + MapCellY);
             if ((*this)[newcell].Cell_Techno()) {
@@ -2746,21 +2847,29 @@ void DisplayClass::Refresh_Band() {
     for (int y = y1; y <= y2 + CELL_PIXEL_H; y += CELL_PIXEL_H) {
       cell = Click_Cell_Calc(
           x1, Bound(y, 0, TacPixelY + Lepton_To_Pixel(TacLeptonHeight)));
-      if (cell != -1) (*this)[cell].Redraw_Objects();
+      if (cell != -1) {
+        (*this)[cell].Redraw_Objects();
+      }
 
       cell = Click_Cell_Calc(
           x2, Bound(y, 0, TacPixelY + Lepton_To_Pixel(TacLeptonHeight)));
-      if (cell != -1) (*this)[cell].Redraw_Objects();
+      if (cell != -1) {
+        (*this)[cell].Redraw_Objects();
+      }
     }
 
     for (int x = x1; x <= x2 + CELL_PIXEL_W; x += CELL_PIXEL_W) {
       cell = Click_Cell_Calc(
           Bound(x, 0, TacPixelX + Lepton_To_Pixel(TacLeptonWidth)), y1);
-      if (cell != -1) (*this)[cell].Redraw_Objects();
+      if (cell != -1) {
+        (*this)[cell].Redraw_Objects();
+      }
 
       cell = Click_Cell_Calc(
           Bound(x, 0, TacPixelX + Lepton_To_Pixel(TacLeptonWidth)), y2);
-      if (cell != -1) (*this)[cell].Redraw_Objects();
+      if (cell != -1) {
+        (*this)[cell].Redraw_Objects();
+      }
     }
   }
 }
@@ -2806,7 +2915,9 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     x = Get_Mouse_X();
     y = Get_Mouse_Y();
 
-    if (x == 0 || y == 199 || x == 319) edge = true;
+    if (x == 0 || y == 199 || x == 319) {
+      edge = true;
+    }
   }
   COORDINATE coord = Map.Pixel_To_Coord(x, y);
   CELL cell = Coord_Cell(coord);
@@ -3704,30 +3815,38 @@ bool DisplayClass::In_View(CELL cell) {
   COORDINATE tcoord = TacticalCoord & 0xFF00FF00L;
 
   if (static_cast<unsigned>(Coord_X(coord) - Coord_X(tcoord)) >
-      TacLeptonWidth + 255)
+      TacLeptonWidth + 255) {
     return false;
+  }
   if (static_cast<unsigned>(Coord_Y(coord) - Coord_Y(tcoord)) >
-      TacLeptonHeight + 255)
+      TacLeptonHeight + 255) {
     return false;
+  }
   return true;
 
 #ifdef OBSOLETE
   int fudgex = Coord_XLepton(TacticalCoord) ? -1 : 0;
   int fudgey = Coord_YLepton(TacticalCoord) ? -1 : 0;
   if ((unsigned)(Cell_X(cell) - Coord_XCell(TacticalCoord)) >
-      Lepton_To_Cell(TacLeptonWidth) + fudgex)
+      Lepton_To_Cell(TacLeptonWidth) + fudgex) {
     return (false);
+  }
   if ((unsigned)(Cell_Y(cell) - Coord_YCell(TacticalCoord)) >
-      Lepton_To_Cell(TacLeptonHeight) + fudgey)
+      Lepton_To_Cell(TacLeptonHeight) + fudgey) {
     return (false);
+  }
   return (true);
 #endif
 
 #ifdef OBSOLETE
   cell -= TacticalCell;
 
-  if (Cell_X(cell) >= TacWidth + (TacPartialX ? 1 : 0)) return (false);
-  if (Cell_Y(cell) >= TacHeight + (TacPartialY ? 1 : 0)) return (false);
+  if (Cell_X(cell) >= TacWidth + (TacPartialX ? 1 : 0)) {
+    return (false);
+  }
+  if (Cell_Y(cell) >= TacHeight + (TacPartialY ? 1 : 0)) {
+    return (false);
+  }
   return (true);
 #endif
 }

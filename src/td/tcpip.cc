@@ -141,7 +141,9 @@ void TcpipManagerClass::Close() {
   /*
   ** If we never initialised the class in the first place then just return
   */
-  if (!WinsockInitialised) return;
+  if (!WinsockInitialised) {
+    return;
+  }
 
 #ifdef _WIN32
   /*
@@ -199,7 +201,9 @@ bool TcpipManagerClass::Init() {
   /*
   ** Just return true if we are already set up
   */
-  if (WinsockInitialised) return true;
+  if (WinsockInitialised) {
+    return true;
+  }
 
 #ifdef _WIN32
   /*

@@ -1915,7 +1915,9 @@ BuildingClass* InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         (!legal || building->House->Can_Build(Type, building->ActLike)) &&
         (intheory || !building->In_Radio_Contact())) {
       anybuilding = building;
-      if (building->IsLeader) return building;
+      if (building->IsLeader) {
+        return building;
+      }
     }
   }
   return anybuilding;

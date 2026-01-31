@@ -61,10 +61,14 @@ class Transmuter {
   */
   virtual void Attach(Transmuter* transmuter) { Output = transmuter; }
   virtual void Flush() {
-    if (Output) Output->Flush();
+    if (Output) {
+      Output->Flush();
+    }
   }
   virtual void Put(const void* input, unsigned length) {
-    if (Output) Output->Put(input, length);
+    if (Output) {
+      Output->Put(input, length);
+    }
   }
 
  protected:
@@ -81,7 +85,9 @@ class FileTransmuter {
   virtual void Attach(FileClass* file) { OutputFile = file; }
   virtual void Flush() {}
   virtual void Put(const void* input, unsigned length) {
-    if (OutputFile) OutputFile->Write(input, length);
+    if (OutputFile) {
+      OutputFile->Write(input, length);
+    }
   }
 
  protected:

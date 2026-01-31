@@ -297,7 +297,9 @@ class ObjectTypeClass : public AbstractTypeClass {
            RTTI == RTTI_VESSELTYPE || RTTI == RTTI_AIRCRAFTTYPE;
   }
   const char* Graphic_Name() const {
-    if (GraphicName[0] != '\0') return GraphicName;
+    if (GraphicName[0] != '\0') {
+      return GraphicName;
+    }
     return Name();
   }
   virtual int Max_Pips() const;

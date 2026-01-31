@@ -25,9 +25,13 @@ static std::forward_list<SocketInfo>::iterator Find_Socket(int socket) {
 }
 
 bool Socket_Register_Select(int socket, SocketCallback callback, void* data) {
-  if (!callback) return false;
+  if (!callback) {
+    return false;
+  }
 
-  if (Find_Socket(socket) != Sockets.end()) return false;
+  if (Find_Socket(socket) != Sockets.end()) {
+    return false;
+  }
 
   // add to list
   SocketInfo info;
@@ -46,7 +50,9 @@ void Socket_Unregister_Select(int socket) {
 
 void Socket_Check_Write(int socket, bool check) {
   auto it = Find_Socket(socket);
-  if (it != Sockets.end()) it->check_write = check;
+  if (it != Sockets.end()) {
+    it->check_write = check;
+  }
 }
 
 void Socket_Select() {
@@ -60,7 +66,9 @@ void Socket_Select() {
 
   for (auto& sock : Sockets) {
     FD_SET(sock.socket, &read_set);
-    if (sock.check_write) FD_SET(sock.socket, &write_set);
+    if (sock.check_write) {
+      FD_SET(sock.socket, &write_set);
+    }
     FD_SET(sock.socket, &err_set);
     max_fd = std::max(sock.socket, max_fd);
   }

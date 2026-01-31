@@ -271,7 +271,9 @@ bool OverlayClass::Mark(MarkType mark) {
             **	Increment the global crate counter. This is used to regulate
             **	the crate generation.
             */
-            if (Class->IsCrate) CrateCount++;
+            if (Class->IsCrate) {
+              CrateCount++;
+            }
 
             /*
             **	Don't show the squish unless the gross flag is active.

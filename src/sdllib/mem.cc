@@ -11,15 +11,21 @@ void Force_VM_Page_In(void* /*buffer*/, int /*length*/) {}
 void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
   void* ptr = new char[bytes_to_alloc];
 
-  if (!ptr && Memory_Error) Memory_Error();
+  if (!ptr && Memory_Error) {
+    Memory_Error();
+  }
 
-  if (ptr && flags & MEM_CLEAR) memset(ptr, 0, bytes_to_alloc);
+  if (ptr && flags & MEM_CLEAR) {
+    memset(ptr, 0, bytes_to_alloc);
+  }
 
   return ptr;
 }
 
 void Free(const void* pointer) {
-  if (pointer) delete[] (char*)pointer;
+  if (pointer) {
+    delete[] (char*)pointer;
+  }
 }
 
 void Mem_Copy(const void* source, void* dest, unsigned long bytes_to_copy) {
@@ -30,7 +36,9 @@ void* Resize_Alloc(void* original_ptr, unsigned long new_size_in_bytes) {
   // NOLINTNEXTLINE(cppcoreguidelines-no-malloc) - Legacy memory allocation API
   void* ptr = realloc(original_ptr, new_size_in_bytes);
 
-  if (!ptr && Memory_Error) Memory_Error();
+  if (!ptr && Memory_Error) {
+    Memory_Error();
+  }
 
   return ptr;
 }

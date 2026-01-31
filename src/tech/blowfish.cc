@@ -215,7 +215,9 @@ int BlowfishEngine::Encrypt(const void* plaintext, int length,
   if (plaintext == nullptr || length == 0) {
     return 0;
   }
-  if (cyphertext == nullptr) cyphertext = (void*)plaintext;
+  if (cyphertext == nullptr) {
+    cyphertext = (void*)plaintext;
+  }
 
   if (IsKeyed) {
     /*
@@ -281,7 +283,9 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
   if (cyphertext == nullptr || length == 0) {
     return 0;
   }
-  if (plaintext == nullptr) plaintext = (void*)cyphertext;
+  if (plaintext == nullptr) {
+    plaintext = (void*)cyphertext;
+  }
 
   if (IsKeyed) {
     /*

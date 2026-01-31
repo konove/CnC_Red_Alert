@@ -94,13 +94,17 @@ int BlowStraw::Get(void* source, int slen) {
       slen -= sublen;
       total += sublen;
     }
-    if (slen == 0) break;
+    if (slen == 0) {
+      break;
+    }
 
     /*
     **	Fetch and encrypt/decrypt the next block.
     */
     int incount = Straw::Get(Buffer, sizeof(Buffer));
-    if (incount == 0) break;
+    if (incount == 0) {
+      break;
+    }
 
     /*
     **	Only full blocks are processed. Partial blocks are

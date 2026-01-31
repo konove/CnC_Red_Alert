@@ -457,7 +457,9 @@ int DynamicVectorClass<T>::Resize(unsigned newsize, const T* array) {
 template <class T>
 int DynamicVectorClass<T>::ID(const T& ptr) {
   for (size_t index = 0; index < Count(); index++) {
-    if ((*this)[index] == ptr) return index;
+    if ((*this)[index] == ptr) {
+      return index;
+    }
   }
   return -1;
 }

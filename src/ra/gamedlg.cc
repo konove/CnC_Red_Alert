@@ -230,7 +230,9 @@ void GameControlsClass::Process() {
   visual_btn.Add_Tail(*commands);
   sound_btn.Add_Tail(*commands);
 #ifdef WOLAPI_INTEGRATION
-  if (bShowWolapi) wol_btn.Add_Tail(*commands);
+  if (bShowWolapi) {
+    wol_btn.Add_Tail(*commands);
+  }
 #endif
   /*
   **	Init button states
@@ -420,8 +422,9 @@ void GameControlsClass::Process() {
         curbutton--;
 #ifdef WOLAPI_INTEGRATION
         if (!bShowWolapi) {
-          if (curbutton == BUTTON_WOLAPI - BUTTON_FIRST)
+          if (curbutton == BUTTON_WOLAPI - BUTTON_FIRST) {
             curbutton--;  //	Skip over missing button.
+          }
         }
 #endif
         if (curbutton < 0) {
@@ -444,8 +447,9 @@ void GameControlsClass::Process() {
         curbutton++;
 #ifdef WOLAPI_INTEGRATION
         if (!bShowWolapi) {
-          if (curbutton == BUTTON_WOLAPI - BUTTON_FIRST)
+          if (curbutton == BUTTON_WOLAPI - BUTTON_FIRST) {
             curbutton++;  //	Skip over missing button.
+          }
         }
 #endif
         if (curbutton > BUTTON_COUNT - BUTTON_FIRST - 1) {

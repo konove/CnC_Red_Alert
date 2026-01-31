@@ -347,7 +347,9 @@ const char* Fetch_Password(int caption, int message, int btext) {
   KeyNumType input;  // user input
   TextButtonClass ok;
 
-  if (btext == TXT_NONE) btext = TXT_OK;
+  if (btext == TXT_NONE) {
+    btext = TXT_OK;
+  }
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
@@ -513,7 +515,9 @@ int Fetch_Difficulty(bool amath) {
   // stuff.
   if (amath) {
     int index = 0;
-    while (buffer[index] && buffer[index] != '.') index++;
+    while (buffer[index] && buffer[index] != '.') {
+      index++;
+    }
     if (buffer[index] == '.') {
       buffer[index + 1] = 0;
     }

@@ -89,7 +89,9 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
         FuseClass(x),
         PrimaryFacing(x) {}
   ~BulletClass() override {
-    if (GameActive) BulletClass::Limbo();
+    if (GameActive) {
+      BulletClass::Limbo();
+    }
   }
   RTTIType What_Am_I() const override { return RTTI_BULLET; }
 

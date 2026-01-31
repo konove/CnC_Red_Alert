@@ -162,7 +162,9 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
   CellType cell;
   char oldattrib = Attrib;
 
-  if (!Enabled || !w || !h) return;
+  if (!Enabled || !w || !h) {
+    return;
+  }
 
   cell.Attribute = attrib;
 
@@ -234,7 +236,9 @@ void MonoClass::Set_Cursor(int x, int y) {
 #ifdef FIX_ME_LATER
   int pos = (y * COLUMNS) + x;
 
-  if (!Enabled) return;
+  if (!Enabled) {
+    return;
+  }
 
   X = (char)(x % COLUMNS);
   Y = (char)(y % LINES);
@@ -287,7 +291,9 @@ void MonoClass::Clear() {
   CellType cell;
   //	int	offset;
 
-  if (!Enabled) return;
+  if (!Enabled) {
+    return;
+  }
 
   Set_Cursor(0, 0);
 
@@ -322,7 +328,9 @@ void MonoClass::Clear() {
 void MonoClass::Scroll(int lines) {
   CellType cell;
 
-  if (!Enabled || lines <= 0) return;
+  if (!Enabled || lines <= 0) {
+    return;
+  }
 
   memmove((void*)((long)MonoSegment + Offset(0, 0)),
           (void*)((long)MonoSegment + Offset(0, lines)),
@@ -371,7 +379,9 @@ void MonoClass::Printf(const char* text, ...) {
   */
   char buffer[256];
 
-  if (!Enabled) return;
+  if (!Enabled) {
+    return;
+  }
 
   va_start(va, text);
   vsprintf(buffer, text, va);
@@ -392,7 +402,9 @@ void MonoClass::Printf(int text, ...) {
   */
   char buffer[256];
 
-  if (!Enabled) return;
+  if (!Enabled) {
+    return;
+  }
 
   va_start(va, text);
   vsprintf(buffer, Text_String(text), va);
@@ -424,7 +436,9 @@ void MonoClass::Print(const char* ptr) {
   const char* text;
   CellType cell;
 
-  if (!ptr || !Enabled) return;
+  if (!ptr || !Enabled) {
+    return;
+  }
 
   text = ptr;
   cell.Attribute = Attrib;
@@ -590,7 +604,9 @@ MonoClass& MonoClass::operator=(const MonoClass& src) {
 void MonoClass::View() {
   MonoClass* displace;  // The page that is being displaced.
 
-  if (Get_Current() == this) return;
+  if (Get_Current() == this) {
+    return;
+  }
 
   /*
   **	If the visible page is already assigned to a real monochrome page

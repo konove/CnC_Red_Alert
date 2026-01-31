@@ -418,7 +418,9 @@ int LoadOptionsClass::Process() {
       */
       case BUTTON_LOAD | KN_BUTTON:
         game_idx = listbtn.Current_Index();
-        if (game_idx < 0 || game_idx >= Files.Count()) break;
+        if (game_idx < 0 || game_idx >= Files.Count()) {
+          break;
+        }
         game_num = Files[game_idx]->Num;
         if (Files[game_idx]->Valid) {
           /*
@@ -478,7 +480,9 @@ int LoadOptionsClass::Process() {
           display = true;
           break;
         }
-        if (game_idx < 0 || game_idx >= Files.Count()) break;
+        if (game_idx < 0 || game_idx >= Files.Count()) {
+          break;
+        }
 
         game_num = Files[game_idx]->Num;
         if (!Save_Game(game_num, game_descr)) {
@@ -511,7 +515,9 @@ int LoadOptionsClass::Process() {
       */
       case BUTTON_DELETE | KN_BUTTON:
         game_idx = listbtn.Current_Index();
-        if (game_idx < 0 || game_idx >= Files.Count()) break;
+        if (game_idx < 0 || game_idx >= Files.Count()) {
+          break;
+        }
         game_num = Files[game_idx]->Num;
         if (WWMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
             0) {
@@ -731,7 +737,9 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
           break;
         }
       }
-      if (id == -1) break;  // if ID not found, use this one
+      if (id == -1) {
+        break;  // if ID not found, use this one
+      }
     }
 
     if (Files.Count() > 0) {
@@ -793,7 +801,11 @@ int LoadOptionsClass::Compare(const void* p1, const void* p2) {
   fe1 = *(class FileEntryClass**)p1;
   fe2 = *(class FileEntryClass**)p2;
 
-  if (fe1->DateTime > fe2->DateTime) return -1;
-  if (fe1->DateTime < fe2->DateTime) return 1;
+  if (fe1->DateTime > fe2->DateTime) {
+    return -1;
+  }
+  if (fe1->DateTime < fe2->DateTime) {
+    return 1;
+  }
   return 0;
 }

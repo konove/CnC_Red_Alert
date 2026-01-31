@@ -110,7 +110,9 @@ const Rect Rect::Intersect(const Rect& rectangle, int* x, int* y) const {
   **	Both rectangles must be valid or else no intersection can occur. In such
   **	a case, return an illegal rectangle.
   */
-  if (!Is_Valid() || !rectangle.Is_Valid()) return rect;
+  if (!Is_Valid() || !rectangle.Is_Valid()) {
+    return rect;
+  }
 
   /*
   **	The rectangle spills past the left edge.
@@ -119,7 +121,9 @@ const Rect Rect::Intersect(const Rect& rectangle, int* x, int* y) const {
     r.Width -= X - r.X;
     r.X = X;
   }
-  if (r.Width < 1) return rect;
+  if (r.Width < 1) {
+    return rect;
+  }
 
   /*
   **	The rectangle spills past top edge.
@@ -128,7 +132,9 @@ const Rect Rect::Intersect(const Rect& rectangle, int* x, int* y) const {
     r.Height -= Y - r.Y;
     r.Y = Y;
   }
-  if (r.Height < 1) return rect;
+  if (r.Height < 1) {
+    return rect;
+  }
 
   /*
   **	The rectangle spills past the right edge.
@@ -136,7 +142,9 @@ const Rect Rect::Intersect(const Rect& rectangle, int* x, int* y) const {
   if (r.X + r.Width > X + Width) {
     r.Width -= r.X + r.Width - (X + Width);
   }
-  if (r.Width < 1) return rect;
+  if (r.Width < 1) {
+    return rect;
+  }
 
   /*
   **	The rectangle spills past the bottom edge.
@@ -144,7 +152,9 @@ const Rect Rect::Intersect(const Rect& rectangle, int* x, int* y) const {
   if (r.Y + r.Height > Y + Height) {
     r.Height -= r.Y + r.Height - (Y + Height);
   }
-  if (r.Height < 1) return rect;
+  if (r.Height < 1) {
+    return rect;
+  }
 
   /*
   **	Adjust Height relative draw position according to Height new rectangle

@@ -90,7 +90,9 @@ int LCW_Uncomp(const void* source, void* dest, unsigned long) {
       copy_ptr = dest_ptr - (static_cast<unsigned>(*source_ptr++) +
                              ((static_cast<unsigned>(op_code) & 0x0f) << 8));
 
-      while (count--) *dest_ptr++ = *copy_ptr++;
+      while (count--) {
+        *dest_ptr++ = *copy_ptr++;
+      }
 
     } else {
       if (!(op_code & 0x40)) {
@@ -101,7 +103,9 @@ int LCW_Uncomp(const void* source, void* dest, unsigned long) {
         /* Do a medium copy from source. */
         count = op_code & 0x3f;
 
-        while (count--) *dest_ptr++ = *source_ptr++;
+        while (count--) {
+          *dest_ptr++ = *source_ptr++;
+        }
 
       } else {
         if (op_code == 0xfe) {
@@ -114,7 +118,9 @@ int LCW_Uncomp(const void* source, void* dest, unsigned long) {
 
           copy_ptr = dest_ptr + 4 - ((uintptr_t)dest_ptr & 0x3);
           count -= copy_ptr - dest_ptr;
-          while (dest_ptr < copy_ptr) *dest_ptr++ = data;
+          while (dest_ptr < copy_ptr) {
+            *dest_ptr++ = data;
+          }
 
           word_dest_ptr = (unsigned*)dest_ptr;
 
@@ -127,7 +133,9 @@ int LCW_Uncomp(const void* source, void* dest, unsigned long) {
           }
 
           copy_ptr = dest_ptr + (count & 0x3);
-          while (dest_ptr < copy_ptr) *dest_ptr++ = data;
+          while (dest_ptr < copy_ptr) {
+            *dest_ptr++ = data;
+          }
 
         } else {
           if (op_code == 0xff) {
@@ -138,7 +146,9 @@ int LCW_Uncomp(const void* source, void* dest, unsigned long) {
                        (static_cast<unsigned>(*(source_ptr + 3)) << 8);
             source_ptr += 4;
 
-            while (count--) *dest_ptr++ = *copy_ptr++;
+            while (count--) {
+              *dest_ptr++ = *copy_ptr++;
+            }
 
           } else {
             /* Do a medium copy from destination. */
@@ -147,7 +157,9 @@ int LCW_Uncomp(const void* source, void* dest, unsigned long) {
                        (static_cast<unsigned>(*(source_ptr + 1)) << 8);
             source_ptr += 2;
 
-            while (count--) *dest_ptr++ = *copy_ptr++;
+            while (count--) {
+              *dest_ptr++ = *copy_ptr++;
+            }
           }
         }
       }

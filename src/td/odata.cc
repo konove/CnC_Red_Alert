@@ -897,7 +897,9 @@ void OverlayTypeClass::Init(TheaterType theater) {
           MixFileClass::Retrieve(fullname.c_str());
 
       IsTheaterShape = overlay.IsTheater;
-      if (overlay.RadarIcon) delete[] (char*)overlay.RadarIcon;
+      if (overlay.RadarIcon) {
+        delete[] (char*)overlay.RadarIcon;
+      }
       (const void*&)overlay.RadarIcon =
           Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3);
       IsTheaterShape = false;

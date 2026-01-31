@@ -394,7 +394,9 @@ void GScreenClass::Render() {
     // }
     Draw_It(IsToRedraw);
 
-    if (Buttons) Buttons->Draw_All(false);
+    if (Buttons) {
+      Buttons->Draw_All(false);
+    }
 
     if constexpr (config::kScenarioEditorEnabled) {
       /*

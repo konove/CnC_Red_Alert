@@ -381,7 +381,9 @@ InfantryClass::~InfantryClass() {
   if (GameActive && Class) {
     Limbo();
   }
-  if (GameActive && Team) Team->Remove(this);
+  if (GameActive && Team) {
+    Team->Remove(this);
+  }
 }
 
 /***********************************************************************************************
@@ -487,7 +489,9 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
     res = std::max(res, newres);
   }
 
-  if (res == RESULT_NONE) return res;
+  if (res == RESULT_NONE) {
+    return res;
+  }
 
   if (res == RESULT_DESTROYED) {
     Death_Announcement(source);
@@ -596,12 +600,16 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
 
       switch (warhead) {
         case WARHEAD_FIST:
-          if (damage == Infantry_Punch_Damage[1]) addval++;
+          if (damage == Infantry_Punch_Damage[1]) {
+            addval++;
+          }
           Do_Action((DoType)((int)DO_PUNCH_HIT1 + addval), true);
           break;
 
         case WARHEAD_FOOT:
-          if (damage == Infantry_Kick_Damage[1]) addval++;
+          if (damage == Infantry_Kick_Damage[1]) {
+            addval++;
+          }
           Do_Action((DoType)((int)DO_KICK_HIT1 + addval), true);
           break;
       }
@@ -615,7 +623,9 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
         }
       } else {
         int morefear = FEAR_ANXIOUS;
-        if (Health_Ratio() > 0x0080) morefear /= 4;
+        if (Health_Ratio() > 0x0080) {
+          morefear /= 4;
+        }
         Fear = std::min(static_cast<int>(Fear) + morefear, FEAR_MAXIMUM);
       }
 #ifdef BOXING
@@ -653,7 +663,9 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   **	Verify the legality of the unit class.
   */
   shapefile = Class->Get_Image_Data();
-  if (!shapefile) return;
+  if (!shapefile) {
+    return;
+  }
 
   y += 4;
   x -= 2;
@@ -674,7 +686,9 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   *and whether it *	is prone.
   */
   DoType doit = Doing;
-  if (doit == DO_NOTHING) doit = DO_STAND_READY;
+  if (doit == DO_NOTHING) {
+    doit = DO_STAND_READY;
+  }
 
   shapenum = Class->DoControls[doit].Count;
   shapenum = Fetch_Stage() % std::max(shapenum, 1);
@@ -685,7 +699,9 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
 
 #ifdef BOXING
   // BG hack to get him to face right when he's supposed to.
-  if (IsBoxing && BodyFacing < 128) shapenum += 47;
+  if (IsBoxing && BodyFacing < 128) {
+    shapenum += 47;
+  }
 #endif
 
   /*
@@ -1069,7 +1085,9 @@ void InfantryClass::AI() {
   Validate();
   FootClass::AI();
 
-  if (IsUnloading) Mark(MARK_CHANGE);
+  if (IsUnloading) {
+    Mark(MARK_CHANGE);
+  }
 
   /*
   **	Special hack to make sure that if this infantry is in firing animation,
@@ -1235,12 +1253,16 @@ void InfantryClass::AI() {
   **	been completed, the firing animation stops.
   */
   int firestage = Class->FireLaunch;
-  if (IsProne) firestage = Class->ProneLaunch;
+  if (IsProne) {
+    firestage = Class->ProneLaunch;
+  }
 
 #ifdef BOXING
   if (IsBoxing) {
     firestage = 1;
-    if (Doing == DO_KICK) firestage = 2;
+    if (Doing == DO_KICK) {
+      firestage = 2;
+    }
   }
 #endif
 
@@ -1374,7 +1396,9 @@ void InfantryClass::AI() {
               if (TryTryAgain) {
                 TryTryAgain--;
               } else {
-                if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
+                if (IsNewNavCom) {
+                  Sound_Effect(VOC_SCOLD);
+                }
                 IsNewNavCom = false;
               }
             }
@@ -1419,7 +1443,9 @@ void InfantryClass::AI() {
 
           Path[0] = FACING_NONE;
           Stop_Driver();
-          if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
+          if (IsNewNavCom) {
+            Sound_Effect(VOC_SCOLD);
+          }
           IsNewNavCom = false;
 
         } else {
@@ -1451,7 +1477,9 @@ void InfantryClass::AI() {
         Stop_Driver();
         Per_Cell_Process(true);
 
-        if (!IsActive || IsInLimbo) return;
+        if (!IsActive || IsInLimbo) {
+          return;
+        }
 
         if (Coord_Cell(Coord) == As_Cell(NavCom)) {
           NavCom = kTargetNone;
@@ -1552,7 +1580,9 @@ MoveBitType InfantryClass::Blocking_Object(const TechnoClass* techno,
       *purposes, *	but not so for all other cases.
       */
       if (techno->Cloak == CLOAKED) {
-        if (IsFindPath) return (MOVEF_OK);
+        if (IsFindPath) {
+          return (MOVEF_OK);
+        }
         return (MOVEF_CLOAK);
       }
 
@@ -1591,7 +1621,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   /*
   ** If we are moving into an illegal cell, then we can't do that.
   */
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+    return MOVE_NO;
+  }
 
   /*
   **	If moving off the edge of the map, then consider that an illegal move.
@@ -1702,7 +1734,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
             **	Any non-allied blockage is considered impassible if the infantry
             **	is not equipped with a weapon.
             */
-            if (Class->Primary == WEAPON_NONE) return MOVE_NO;
+            if (Class->Primary == WEAPON_NONE) {
+              return MOVE_NO;
+            }
 
             /*
             **	Some kinds of terrain are considered destroyable if the infantry
@@ -1837,22 +1871,29 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   */
   if (IsBoxing) {
     if ((Doing >= DO_PUNCH_HIT1 && Doing <= DO_KICK_DEATH) ||
-        (Doing == DO_ON_GUARD))
+        (Doing == DO_ON_GUARD)) {
       return FIRE_BUSY;
-    if (Arm) return (FIRE_BUSY);  // don't let fire if still re-arming
+    }
+    if (Arm) {
+      return (FIRE_BUSY);  // don't let fire if still re-arming
+    }
   }
 #endif
 
   /*
   **	Don't allow firing if the turret is not ready.
   */
-  if (IsFiring) return FIRE_REARM;
+  if (IsFiring) {
+    return FIRE_REARM;
+  }
 
 #ifdef OBSOLETE
   const WeaponTypeClass* weapon =
       (which == 0) ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 
-  if (weapon->Fires == BULLET_FLAME && IsProne) return (FIRE_ILLEGAL);
+  if (weapon->Fires == BULLET_FLAME && IsProne) {
+    return (FIRE_ILLEGAL);
+  }
 #endif
 
   /*
@@ -2061,24 +2102,32 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
   /*
   **	A unit that is in the process of going somewhere will never scatter.
   */
-  if (IsDriving || Target_Legal(NavCom)) forced = false;
+  if (IsDriving || Target_Legal(NavCom)) {
+    forced = false;
+  }
 
   /*
   **	If the infantry is currently engaged in legitimate combat, then don't
   **	scatter unless forced to.
   */
-  if (!Class->IsFraidyCat && Target_Legal(TarCom) && !forced) return;
+  if (!Class->IsFraidyCat && Target_Legal(TarCom) && !forced) {
+    return;
+  }
 
   /*
   **	Don't scatter if performing an action that can't be interrupted.
   */
-  if (Doing != DO_NOTHING && !MasterDoControls[Doing].Interrupt) return;
+  if (Doing != DO_NOTHING && !MasterDoControls[Doing].Interrupt) {
+    return;
+  }
 
   /*
   **	For human players, don't scatter the infantry, if the special
   **	flag has not been enabled that allows infantry scatter.
   */
-  if (!Special.IsScatter && House->IsHuman && !forced && !Team) return;
+  if (!Special.IsScatter && House->IsHuman && !forced && !Team) {
+    return;
+  }
 
   if (forced || Class->IsFraidyCat /*|| !(Random_Pick(1, 4) == 1)*/) {
     FacingType toface;
@@ -2722,7 +2771,9 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
   switch (message) {
     case RADIO_OVER_OUT:
 #ifdef BOXING
-      if (IsBoxing) Do_Action(DO_READY_WEAPON);
+      if (IsBoxing) {
+        Do_Action(DO_READY_WEAPON);
+      }
 #endif
       break;
 
@@ -2732,7 +2783,9 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
     */
     case RADIO_PREPARE_TO_BOX:
 #ifdef BOXING
-      if (IsBoxing) break;
+      if (IsBoxing) {
+        break;
+      }
 #endif
       if (Contact_With_Whom() == from) {
         Do_Action(DO_ON_GUARD, true);
@@ -2748,8 +2801,9 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
       damage = Infantry_Kick_Damage[Random_Pick(
           0, static_cast<int>(sizeof(Infantry_Kick_Damage) /
                               sizeof(Infantry_Kick_Damage[0])))];
-      if (Take_Damage(damage, 0, WARHEAD_FOOT, this) == RESULT_DESTROYED)
+      if (Take_Damage(damage, 0, WARHEAD_FOOT, this) == RESULT_DESTROYED) {
         return RADIO_STATIC;
+      }
       return RADIO_ROGER;
 
     /*
@@ -2759,8 +2813,9 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
       damage = Infantry_Punch_Damage[Random_Pick(
           0, static_cast<int>(sizeof(Infantry_Punch_Damage) /
                               sizeof(Infantry_Punch_Damage[0])))];
-      if (Take_Damage(damage, 0, WARHEAD_FIST, this) == RESULT_DESTROYED)
+      if (Take_Damage(damage, 0, WARHEAD_FIST, this) == RESULT_DESTROYED) {
         return RADIO_STATIC;
+      }
       return RADIO_ROGER;
   }
   return FootClass::Receive_Message(from, message, param);

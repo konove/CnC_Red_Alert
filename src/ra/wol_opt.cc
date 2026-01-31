@@ -148,9 +148,9 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     /*
     **	Invoke game callback.
     */
-    if (!bCalledFromGame)
+    if (!bCalledFromGame) {
       Call_Back();
-    else {
+    } else {
       if (Main_Loop())  //	Game ended on us in the background.
       {
         process = false;
@@ -187,7 +187,9 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (Get_Mouse_State()) Show_Mouse();
+    while (Get_Mouse_State()) {
+      Show_Mouse();
+    }
     //	Be nice to other apps.
     Sleep(50);
 
@@ -206,7 +208,9 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
       bEscapeDown = false;
     }
     if ((::GetAsyncKeyState(VK_RETURN) & 0x8000)) {
-      if (!bIgnoreReturnDown) bReturnDown = true;
+      if (!bIgnoreReturnDown) {
+        bReturnDown = true;
+      }
     } else {
       bIgnoreReturnDown = false;
       if (bReturnDown) {

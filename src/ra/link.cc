@@ -136,7 +136,9 @@ void LinkClass::Zap() {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 LinkClass& LinkClass::operator=(const LinkClass& link) {
-  if (&link == this) return *this;
+  if (&link == this) {
+    return *this;
+  }
 
   Remove();
   Add((LinkClass&)link);
@@ -197,7 +199,9 @@ LinkClass& LinkClass::Head_Of_List() {
   LinkClass* link = this;
   while (link->Prev) {
     link = link->Prev;
-    if (link == this) break;  // Safety check
+    if (link == this) {
+      break;  // Safety check
+    }
   }
   return *link;
 }
@@ -220,7 +224,9 @@ LinkClass& LinkClass::Tail_Of_List() {
   LinkClass* link = this;
   while (link->Next) {
     link = link->Next;
-    if (link == this) break;  // Safety check
+    if (link == this) {
+      break;  // Safety check
+    }
   }
   return *link;
 }

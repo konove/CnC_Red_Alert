@@ -571,7 +571,9 @@ void Speak(VoxType voice) {
  *=============================================================================================*/
 void Speak_AI() {
   static VoxType _last = VOX_NONE;
-  if (SampleType == 0) return;
+  if (SampleType == 0) {
+    return;
+  }
 
   if (!Is_Sample_Playing(SpeechBuffer)) {
     CurrentVoice = VOX_NONE;

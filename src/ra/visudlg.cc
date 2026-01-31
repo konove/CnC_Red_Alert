@@ -118,8 +118,7 @@ void VisualControlsClass::Process() {
   /*
   **	Centers options button.
   */
-  optionsbtn.X =
-      option_x + (option_width - optionsbtn.Width - 17 * RESFACTOR);
+  optionsbtn.X = option_x + (option_width - optionsbtn.Width - 17 * RESFACTOR);
   resetbtn.X = option_x + 17 * RESFACTOR;
 
   resetbtn.Add_Tail(optionsbtn);

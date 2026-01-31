@@ -166,7 +166,9 @@ class UnitClass : public DriveClass {
   bool Should_Crush_It(const TechnoClass* it) const;
   int Credit_Load() const;
   DirType Turret_Facing() const override {
-    if (Class->IsTurretEquipped) return SecondaryFacing.Current();
+    if (Class->IsTurretEquipped) {
+      return SecondaryFacing.Current();
+    }
     return PrimaryFacing.Current();
   }
   int Shape_Number() const;

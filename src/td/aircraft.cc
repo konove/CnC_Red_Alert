@@ -383,7 +383,9 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   **	Verify the legality of the unit class.
   */
   shapefile = Class->Get_Image_Data();
-  if (!shapefile) return;
+  if (!shapefile) {
+    return;
+  }
   shapenum = BodyShape[facing];
 
   /*
@@ -765,7 +767,9 @@ void AircraftClass::AI() {
     LayerType layer = In_Which_Layer();
 
     if (IsLanding) {
-      if (Altitude) Altitude--;
+      if (Altitude) {
+        Altitude--;
+      }
       if (!Altitude) {
         IsLanding = false;
         Set_Speed(0);
@@ -1287,13 +1291,19 @@ int AircraftClass::Mission_Unload() {
  *=============================================================================================*/
 bool AircraftClass::Is_LZ_Clear(TARGET target) const {
   Validate();
-  if (!Target_Legal(target)) return false;
+  if (!Target_Legal(target)) {
+    return false;
+  }
   CELL cell = As_Cell(target);
-  if (!Map.In_Radar(cell)) return false;
+  if (!Map.In_Radar(cell)) {
+    return false;
+  }
 
   ObjectClass* object = Map[cell].Cell_Object();
   if (object) {
-    if (object == this) return true;
+    if (object == this) {
+      return true;
+    }
 
     if (In_Radio_Contact() && Contact_With_Whom() == object) {
       return true;
@@ -1301,7 +1311,9 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
     return false;
   }
 
-  if (!Map[cell].Is_Generally_Clear()) return false;
+  if (!Map[cell].Is_Generally_Clear()) {
+    return false;
+  }
 
   return true;
 }
@@ -1325,7 +1337,9 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
  *=============================================================================================*/
 LayerType AircraftClass::In_Which_Layer() const {
   Validate();
-  if (Class->IsFixedWing) return LAYER_TOP;
+  if (Class->IsFixedWing) {
+    return LAYER_TOP;
+  }
 
   if (Altitude < FLIGHT_LEVEL - FLIGHT_LEVEL / 3) {
     return LAYER_GROUND;
@@ -1460,7 +1474,9 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   FacingType face;
   for (face = FACING_N; face < FACING_COUNT; face++) {
     cell = Adjacent_Cell(Coord_Cell(Coord), _toface[face]);
-    if (unit->Can_Enter_Cell(cell) == MOVE_OK) break;
+    if (unit->Can_Enter_Cell(cell) == MOVE_OK) {
+      break;
+    }
   }
 
   // Should perform a check here to see if no cell could be found.
@@ -1833,7 +1849,9 @@ void AircraftClass::Enter_Idle_Mode(bool) {
           }
         }
       } else {
-        if (Team) return;
+        if (Team) {
+          return;
+        }
 
         Assign_Destination(Good_LZ());
         mission = MISSION_MOVE;
@@ -2496,10 +2514,13 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
   Validate();
   switch (message) {
     case RADIO_PREPARED:
-      if (Target_Legal(TarCom)) return RADIO_NEGATIVE;
+      if (Target_Legal(TarCom)) {
+        return RADIO_NEGATIVE;
+      }
       if ((Altitude == 0 && Ammo == Class->MaxAmmo) ||
-          (Altitude > 0 && Ammo > 0))
+          (Altitude > 0 && Ammo > 0)) {
         return RADIO_ROGER;
+      }
       return RADIO_NEGATIVE;
 
     /*
@@ -2661,13 +2682,15 @@ DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
   for (int sweep = FACING_N; sweep < FACING_S; sweep++) {
     moveto = Adjacent_Cell(center, FACING_S + sweep);
     if (Map.In_Radar(moveto) && (Coord_Cell(object->Center_Coord()) == moveto ||
-                                 Map[moveto].Is_Generally_Clear()))
+                                 Map[moveto].Is_Generally_Clear())) {
       return DIR_N;
+    }
 
     moveto = Adjacent_Cell(center, FACING_S - sweep);
     if (Map.In_Radar(moveto) && (Coord_Cell(object->Center_Coord()) == moveto ||
-                                 Map[moveto].Is_Generally_Clear()))
+                                 Map[moveto].Is_Generally_Clear())) {
       return DIR_N;
+    }
   }
   return DIR_N;
 }
@@ -2771,7 +2794,9 @@ bool AircraftClass::Process_Landing() {
  *=============================================================================================*/
 MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
   Validate();
-  if (!Map.In_Radar(cell)) return MOVE_NO;
+  if (!Map.In_Radar(cell)) {
+    return MOVE_NO;
+  }
 
   CellClass* cellptr = &Map[cell];
 
@@ -2779,11 +2804,14 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
       dynamic_cast<TechnoClass*>(cellptr->Cell_Occupier())
           ->House->Is_Ally(House) ||
       dynamic_cast<TechnoClass*>(cellptr->Cell_Occupier())->Cloak != CLOAKED) {
-    if (!cellptr->Is_Generally_Clear()) return MOVE_NO;
+    if (!cellptr->Is_Generally_Clear()) {
+      return MOVE_NO;
+    }
   }
 
-  if (GameToPlay == GAME_NORMAL && IsOwnedByPlayer && !cellptr->IsVisible)
+  if (GameToPlay == GAME_NORMAL && IsOwnedByPlayer && !cellptr->IsVisible) {
     return MOVE_NO;
+  }
 
   return MOVE_OK;
 }
@@ -2832,7 +2860,9 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
           }
         }
       }
-      if (bestval != -1) break;
+      if (bestval != -1) {
+        break;
+      }
     }
 
     if (best2val == -1) {
@@ -2917,7 +2947,9 @@ int AircraftClass::Pip_Count() const {
     if (Ammo) {
       retval = Cardinal_To_Fixed(Class->MaxAmmo, Ammo);
       retval = Fixed_To_Cardinal(Class->Max_Pips(), retval);
-      if (!retval) retval = 1;
+      if (!retval) {
+        retval = 1;
+      }
     }
   }
   return retval;
@@ -3160,7 +3192,9 @@ AircraftClass::~AircraftClass() {
     Limbo();
   }
 
-  if (GameActive && Class && Team) Team->Remove(this);
+  if (GameActive && Class && Team) {
+    Team->Remove(this);
+  }
 }
 
 /***********************************************************************************************
@@ -3233,7 +3267,9 @@ int AircraftClass::Rearm_Delay(bool second) const {
  *=============================================================================================*/
 int AircraftClass::Threat_Range(int control) const {
   Validate();
-  if (control == -1) return -1;
+  if (control == -1) {
+    return -1;
+  }
 
   int range = 20 * ICON_LEPTON_W;
   if (control == 1) {
@@ -3282,7 +3318,9 @@ int AircraftClass::Mission_Guard() {
     }
     return 1;
   }
-  if (House->IsHuman) return TICKS_PER_SECOND;
+  if (House->IsHuman) {
+    return TICKS_PER_SECOND;
+  }
 
   /*
   **	Special case to force the GDI helicopter to be brain dead in the Nod
@@ -3379,7 +3417,9 @@ int AircraftClass::Mission_Guard_Area() {
     Enter_Idle_Mode();
     return 1;
   }
-  if (House->IsHuman) return TICKS_PER_SECOND;
+  if (House->IsHuman) {
+    return TICKS_PER_SECOND;
+  }
 
   if (Altitude == 0 && !In_Radio_Contact()) {
     Scatter(0, true);

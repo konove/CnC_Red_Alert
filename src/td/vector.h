@@ -80,26 +80,26 @@
 template <class T>
 class VectorClass {
  public:
-  VectorClass(const NoInitClass &) {}
-  VectorClass(unsigned size = 0, const T *array = nullptr);
-  VectorClass(const VectorClass &);  // Copy constructor.
+  VectorClass(const NoInitClass&) {}
+  VectorClass(unsigned size = 0, const T* array = nullptr);
+  VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
 
-  T &operator[](size_t index) { return Vector[index]; }
-  const T &operator[](size_t index) const { return Vector[index]; }
-  virtual VectorClass &operator=(const VectorClass &);
-  virtual int operator==(const VectorClass &) const;
-  virtual int Resize(unsigned newsize, const T *array = nullptr);
+  T& operator[](size_t index) { return Vector[index]; }
+  const T& operator[](size_t index) const { return Vector[index]; }
+  virtual VectorClass& operator=(const VectorClass&);
+  virtual int operator==(const VectorClass&) const;
+  virtual int Resize(unsigned newsize, const T* array = nullptr);
   virtual void Clear();
   unsigned Length() const { return VectorMax; }
-  virtual int ID(const T *ptr);  // Pointer based identification.
-  virtual int ID(const T &ptr);  // Value based identification.
+  virtual int ID(const T* ptr);  // Pointer based identification.
+  virtual int ID(const T& ptr);  // Value based identification.
 
  protected:
   /*
   **	This is a pointer to the allocated vector array of elements.
   */
-  T *Vector;
+  T* Vector;
 
   /*
   **	This is the maximum number of elements allowed in this vector.
@@ -126,10 +126,10 @@ class VectorClass {
 template <class T>
 class DynamicVectorClass : public VectorClass<T> {
  public:
-  DynamicVectorClass(unsigned size = 0, const T *array = nullptr);
+  DynamicVectorClass(unsigned size = 0, const T* array = nullptr);
 
   // Change maximum size of vector.
-  int Resize(unsigned newsize, const T *array = nullptr) override;
+  int Resize(unsigned newsize, const T* array = nullptr) override;
 
   // Resets and frees the vector array.
   void Clear() override {
@@ -141,11 +141,11 @@ class DynamicVectorClass : public VectorClass<T> {
   size_t Count() const { return ActiveCount; }
 
   // Add object to vector (growing as necessary).
-  int Add(const T &object);
-  int Add_Head(const T &object);
+  int Add(const T& object);
+  int Add_Head(const T& object);
 
   // Delete object just like this from vector.
-  int Delete(const T &object);
+  int Delete(const T& object);
 
   // Delete object at this vector index.
   int Delete(int index);
@@ -159,8 +159,8 @@ class DynamicVectorClass : public VectorClass<T> {
   // Fetch current growth step rate.
   int Growth_Step() { return GrowthStep; }
 
-  int ID(const T *ptr) override { return VectorClass<T>::ID(ptr); }
-  int ID(const T &ptr) override;
+  int ID(const T* ptr) override { return VectorClass<T>::ID(ptr); }
+  int ID(const T& ptr) override;
 
  protected:
   /*

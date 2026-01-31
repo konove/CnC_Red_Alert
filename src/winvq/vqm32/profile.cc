@@ -286,11 +286,15 @@ long GetINIString(char const* section, char const* entry, char const* def,
     }
 
     /* Skip comments */
-    if (txt[0] == ';') continue;
+    if (txt[0] == ';') {
+      continue;
+    }
 
     /* Parse a section name */
     if (txt[0] == '[') {
-      if (!memicmp(secname, txt, len)) break;
+      if (!memicmp(secname, txt, len)) {
+        break;
+      }
     }
   }
 
@@ -305,7 +309,9 @@ long GetINIString(char const* section, char const* entry, char const* def,
     }
 
     /* Skip comments */
-    if (txt[0] == ';') continue;
+    if (txt[0] == ';') {
+      continue;
+    }
 
     /* Return if start of next section reached */
     if (txt[0] == '[') {
@@ -321,7 +327,9 @@ long GetINIString(char const* section, char const* entry, char const* def,
       workptr = strchr(txt, '=');
 
       /* Return if not found */
-      if (workptr == nullptr) return (retval);
+      if (workptr == nullptr) {
+        return (retval);
+      }
 
       /* Skip past '=' */
       workptr++;
@@ -332,7 +340,9 @@ long GetINIString(char const* section, char const* entry, char const* def,
       }
 
       /* Return if no string left */
-      if ((*workptr) == 0) return (retval);
+      if ((*workptr) == 0) {
+        return (retval);
+      }
 
       strtrim(workptr);
       strcpy(retbuffer, workptr);

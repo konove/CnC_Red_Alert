@@ -367,9 +367,13 @@ bool TriggerTypeClass::Edit() {
   PBubble_Sort(&event1list[0], event1list.Count());
   PBubble_Sort(&event2list[0], event2list.Count());
 
-  if (Event1.Event == TEVENT_NONE) Event1.Event = TEVENT_FIRST;
+  if (Event1.Event == TEVENT_NONE) {
+    Event1.Event = TEVENT_FIRST;
+  }
   event1list.Set_Selected_Index(&EventChoices[Event1.Event]);
-  if (Event2.Event == TEVENT_NONE) Event2.Event = TEVENT_FIRST;
+  if (Event2.Event == TEVENT_NONE) {
+    Event2.Event = TEVENT_FIRST;
+  }
   event2list.Set_Selected_Index(&EventChoices[Event2.Event]);
 
   /*
@@ -393,9 +397,13 @@ bool TriggerTypeClass::Edit() {
   PBubble_Sort(&action1list[0], action1list.Count());
   PBubble_Sort(&action2list[0], action2list.Count());
 
-  if (Action1.Action == ACTION_NONE) Action1.Action = TACTION_FIRST;
+  if (Action1.Action == ACTION_NONE) {
+    Action1.Action = TACTION_FIRST;
+  }
   action1list.Set_Selected_Index(&ActionChoices[Action1.Action]);
-  if (Action2.Action == ACTION_NONE) Action2.Action = TACTION_FIRST;
+  if (Action2.Action == ACTION_NONE) {
+    Action2.Action = TACTION_FIRST;
+  }
   action2list.Set_Selected_Index(&ActionChoices[Action2.Action]);
 
   /*
@@ -974,7 +982,9 @@ bool TriggerTypeClass::Edit() {
   for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
-  if (House == HOUSE_NONE) House = HOUSE_GOOD;
+  if (House == HOUSE_NONE) {
+    House = HOUSE_GOOD;
+  }
   housebtn.Set_Selected_Index(House);
 
   /*
@@ -1783,8 +1793,12 @@ const char* TriggerTypeClass::Description() const {
     **	Persistence indicator value.
     */
     char pers = 'V';
-    if (IsPersistant == SEMIPERSISTANT) pers = 'S';
-    if (IsPersistant == PERSISTANT) pers = 'P';
+    if (IsPersistant == SEMIPERSISTANT) {
+      pers = 'S';
+    }
+    if (IsPersistant == PERSISTANT) {
+      pers = 'P';
+    }
 
     sprintf(_buffer, "%4.4s\t %s %c%c%c  %s%s", IniName,
             HouseTypeClass::As_Reference(House).Suffix, pers, special, special2,

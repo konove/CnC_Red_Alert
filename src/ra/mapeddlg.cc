@@ -329,10 +329,11 @@ int MapEditClass::Load_Scenario() {
     if (Read_Scenario_INI(Scen.ScenarioName) == 0) {
       if (Scen.Scenario < 20 && Scen.ScenarioName[2] == 'G') {
         WWMessageBox().Process("Please insert Red Alert CD1");
-      } else if (Scen.Scenario < 20 && Scen.ScenarioName[2] == 'U')
+      } else if (Scen.Scenario < 20 && Scen.ScenarioName[2] == 'U') {
         WWMessageBox().Process("Please insert Red Alert CD2");
-      else
+      } else {
         WWMessageBox().Process("Unable to read scenario!");
+      }
       HidPage.Clear();
       Flag_To_Redraw(true);
       Render();
@@ -2537,7 +2538,9 @@ int MapEditClass::Load_Scenario() {
       /*
       **	'OK'; break
       */
-      if (rc == 0) break;
+      if (rc == 0) {
+        break;
+      }
 
       /*
       **	'Edit'
@@ -2836,8 +2839,14 @@ int MapEditClass::Load_Scenario() {
     Flag_To_Redraw(true);
     Render();
 
-    if (edit_trig) return (1);
-    if (new_trig) return (2);
-    if (del_trig) return (3);
+    if (edit_trig) {
+      return (1);
+    }
+    if (new_trig) {
+      return (2);
+    }
+    if (del_trig) {
+      return (3);
+    }
     return (0);
   }

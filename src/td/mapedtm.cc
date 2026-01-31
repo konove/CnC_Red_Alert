@@ -459,7 +459,9 @@ int MapEditClass::Select_Team(const char* caption) {
     switch (input) {
       case (TEAM_LIST | KN_BUTTON):
         def_idx = teamlist.Current_Index();
-        if (def_idx < TeamTypes.Count()) CurTeam = TeamTypes.Ptr(def_idx);
+        if (def_idx < TeamTypes.Count()) {
+          CurTeam = TeamTypes.Ptr(def_idx);
+        }
         break;
 
       case (BUTTON_EDIT | KN_BUTTON):
@@ -496,9 +498,15 @@ int MapEditClass::Select_Team(const char* caption) {
   for (i = 0; i < TeamTypes.Count(); i++) {
     delete[] teamtext[i];
   }
-  if (edit_team) return (1);
-  if (new_team) return (2);
-  if (del_team) return (3);
+  if (edit_team) {
+    return (1);
+  }
+  if (new_team) {
+    return (2);
+  }
+  if (del_team) {
+    return (3);
+  }
   return (0);
 }
 
@@ -1970,7 +1978,9 @@ int MapEditClass::Team_Members(HousesType house) {
   delete[] teamclass;
   delete[] teamcount;
 
-  if (cancel) return (-1);
+  if (cancel) {
+    return (-1);
+  }
   return (0);
 }
 

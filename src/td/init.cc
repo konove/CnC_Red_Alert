@@ -300,7 +300,9 @@ bool Init_Game(int, char*[]) {
 
   DLOG(INFO) << "C&C95 - About to set palette";
   memset(BlackPalette, 0x01, 768);
-  if (!Special.IsFromInstall) Set_Palette(BlackPalette);
+  if (!Special.IsFromInstall) {
+    Set_Palette(BlackPalette);
+  }
   memset(BlackPalette, 0, 768);
   if (!Special.IsFromInstall) {
     Set_Palette(BlackPalette);
@@ -463,7 +465,9 @@ bool Init_Game(int, char*[]) {
   if (Find_First_File("SC*.MIX", state)) {
     do {
       // don't cache scores
-      if (stricmp(state.name, "scores.mix") == 0) continue;
+      if (stricmp(state.name, "scores.mix") == 0) {
+        continue;
+      }
 
       MixFileClass::Register(state.name);
       MixFileClass::Cache(state.name);
@@ -493,7 +497,9 @@ bool Init_Game(int, char*[]) {
 #ifdef DEMO
   MixFileClass::Register("DEMO.MIX");
   if (CCFileClass("DEMOM.MIX").Is_Available()) {
-    if (!MoviesMix) MoviesMix = MixFileClass::Register("DEMOM.MIX");
+    if (!MoviesMix) {
+      MoviesMix = MixFileClass::Register("DEMOM.MIX");
+    }
     ScoresPresent = true;
     ThemeClass::Scan();
   }
@@ -505,14 +511,16 @@ bool Init_Game(int, char*[]) {
   MixFileClass::Register("TRANSIT.MIX");
 
   DLOG(INFO) << "C&C95 - About to register GENERAL.MIX";
-  if (!GeneralMix)
+  if (!GeneralMix) {
     GeneralMix = MixFileClass::Register("GENERAL.MIX");  // Never cached.
+  }
 
   //	if (CCFileClass("MOVIES.MIX").Is_Available()) {
   DLOG(INFO) << "C&C95 - About to register MOVIES.MIX";
-  if (!MoviesMix)
+  if (!MoviesMix) {
     MoviesMix = MixFileClass::Register("MOVIES.MIX");  // Never cached.
                                                        //	}
+  }
 
 #if (0)
 
@@ -587,7 +595,9 @@ bool Init_Game(int, char*[]) {
   **	Play the introduction movies.
   */
   DLOG(INFO) << "C&C95 - About to play the intro movie";
-  if (!Special.IsFromInstall && !Special.IsFromWChat) Play_Intro(true);
+  if (!Special.IsFromInstall && !Special.IsFromWChat) {
+    Play_Intro(true);
+  }
 
   /*
   **	Wait for a VSync; during the vertical blank, set the game palette & blit
@@ -692,7 +702,9 @@ bool Init_Game(int, char*[]) {
   Map.Set_Default_Mouse(MOUSE_NORMAL, false);
   Show_Mouse();
   // #ifdef FIX_ME_LATER
-  while (Get_Mouse_State() > 0) Show_Mouse();
+  while (Get_Mouse_State() > 0) {
+    Show_Mouse();
+  }
   // #endif //FIX_ME_LATER
   Call_Back();
 
@@ -933,8 +945,9 @@ bool Select_Game(bool fade) {
         Load_Recording_Values();
         process = false;
         Theme.Fade_Out();
-      } else
+      } else {
         PlaybackGame = false;
+      }
     }
 
     /*
@@ -1838,8 +1851,12 @@ static void Play_Intro(bool for_real) {
     if (!Debug_Flag) {
       _counter = 0;
     } else {
-      if (playright) _counter++;
-      if (_counter == -1) _counter = 0;
+      if (playright) {
+        _counter++;
+      }
+      if (_counter == -1) {
+        _counter = 0;
+      }
     }
     Hide_Mouse();
     Play_Movie(_names[_counter], THEME_NONE);
@@ -2173,7 +2190,9 @@ bool Parse_Command_Line(int argc, char* argv[]) {
         processed = false;
         break;
     }
-    if (processed) continue;
+    if (processed) {
+      continue;
+    }
 
     if constexpr (config::kCheatKeysEnabled) {
       /*
@@ -2558,7 +2577,9 @@ void Parse_INI_File() {
 
   WWGetPrivateProfileString(section, entry, "", buf, sizeof(buf), buffer);
 
-  if (!stricmp(buf, name)) AreThingiesEnabled = true;
+  if (!stricmp(buf, name)) {
+    AreThingiesEnabled = true;
+  }
 
   memset(section, 0, sizeof(section));
   memset(entry, 0, sizeof(entry));
@@ -2834,7 +2855,9 @@ void Load_Recording_Values() {
 long Obfuscate(const char* string) {
   char buffer[128];
 
-  if (!string) return 0;
+  if (!string) {
+    return 0;
+  }
   memset(buffer, '\xA5', sizeof(buffer));
 
   /*

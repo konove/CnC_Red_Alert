@@ -143,7 +143,9 @@ inline int XMP_Bits_To_Digits(int bits) {
 }
 
 inline uint32_t XMP_Bits_To_Mask(int bits) {
-  if (!bits) return 0;
+  if (!bits) {
+    return 0;
+  }
   return 1 << ((bits - 1) % UNITSIZE);
 }
 

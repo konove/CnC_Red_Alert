@@ -174,7 +174,9 @@ int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
   Error if we haven't been properly initialized
   ------------------------------------------------------------------------*/
 #ifdef WIN32
-  if (PortHandle == nullptr) return false;
+  if (PortHandle == nullptr) {
+    return false;
+  }
 
 #else   // WIN32
   int status;

@@ -92,7 +92,9 @@ void CargoClass::Attach(FootClass* object) {
   /*
   **	If there is no object, then no action is necessary.
   */
-  if (!object) return;
+  if (!object) {
+    return;
+  }
 
   object->Limbo();
 
@@ -105,7 +107,9 @@ void CargoClass::Attach(FootClass* object) {
   */
   ObjectClass* o = object->Next;
   while (o) {
-    if (!o->Next) break;
+    if (!o->Next) {
+      break;
+    }
     o = o->Next;
   }
   if (o) {

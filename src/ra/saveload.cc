@@ -172,52 +172,90 @@ static void Put_All(Pipe& pipe, int save_net) {
   /*
   **	Save the map.  The map must be saved first, since it saves the Theater.
   */
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Map.Save(pipe);
 
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
 
   /*
   **	Save all game objects.  This code saves every object that's stored in a
   **	TFixedIHeap class.
   */
   Houses.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   TeamTypes.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Teams.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   TriggerTypes.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Triggers.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Aircraft.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Anims.Save(pipe);
 
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
 
   Buildings.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Bullets.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Infantry.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Overlays.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Smudges.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Templates.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Terrains.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Units.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Factories.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   Vessels.Save(pipe);
 
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
 
   /*
   **	Save the Logic & Map layers
@@ -230,14 +268,18 @@ static void Put_All(Pipe& pipe, int save_net) {
     TARGET target = MapTriggers[index]->As_Target();
     pipe.Put(&target, sizeof(target));
   }
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   count = LogicTriggers.Count();
   pipe.Put(&count, sizeof(count));
   for (int index = 0; index < LogicTriggers.Count(); index++) {
     TARGET target = LogicTriggers[index]->As_Target();
     pipe.Put(&target, sizeof(target));
   }
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
   for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
     count = HouseTriggers[h].Count();
     pipe.Put(&count, sizeof(count));
@@ -246,25 +288,33 @@ static void Put_All(Pipe& pipe, int save_net) {
       pipe.Put(&target, sizeof(target));
     }
   }
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
 
   for (int i = 0; i < LAYER_COUNT; i++) {
     MouseClass::Layer[i].Save(pipe);
   }
 
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
 
   /*
   **	Save the Score
   */
   pipe.Put(&Score, sizeof(Score));
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
 
   /*
   **	Save the AI Base
   */
   Base.Save(pipe);
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
 
   /*
   **	Save out the carry over list (if present). First see how
@@ -277,13 +327,17 @@ static void Put_All(Pipe& pipe, int save_net) {
     cptr = dynamic_cast<const CarryoverClass*>(cptr->Get_Next());
   }
 
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
 
   /*
   **	Save out the number of objects in the list.
   */
   pipe.Put(&carry_count, sizeof(carry_count));
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
 
   /*
   **	Now write out the objects themselves.
@@ -294,14 +348,18 @@ static void Put_All(Pipe& pipe, int save_net) {
     object_to_write =
         dynamic_cast<const CarryoverClass*>(object_to_write->Get_Next());
   }
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
 
   /*
   **	Save miscellaneous variables.
   */
   Save_Misc_Values(pipe);
 
-  if (!save_net) Call_Back();
+  if (!save_net) {
+    Call_Back();
+  }
 
   /*
   **	Save multiplayer values
@@ -568,8 +626,9 @@ bool Load_Game(int id) {
   sha.Get_From(fstraw);
   for (;;) {
     if (sha.Get(_staging_buffer, sizeof(_staging_buffer)) !=
-        sizeof(_staging_buffer))
+        sizeof(_staging_buffer)) {
       break;
+    }
   }
   char actual[20];
   sha.Result(actual);
@@ -627,7 +686,9 @@ bool Load_Game(int id) {
         if (Expansion_AM_Present()) {
           int current_drive = CCFileClass::Get_CD_Drive();
           int index = Get_CD_Index(current_drive, 1 * 60);
-          if (index == 3) cd = 3;
+          if (index == 3) {
+            cd = 3;
+          }
         }
       }
       if (Is_Mission_Aftermath(Scen.ScenarioName)) {
@@ -1435,7 +1496,9 @@ static int Reconcile_Players() {
   /*
   **	If there are no players, there's nothing to do.
   */
-  if (Session.Players.Count() == 0) return true;
+  if (Session.Players.Count() == 0) {
+    return true;
+  }
 
   /*
   **	Make sure every name we're connected to can be found in a House
@@ -1454,7 +1517,9 @@ static int Reconcile_Players() {
         break;
       }
     }
-    if (!found) return false;
+    if (!found) {
+      return false;
+    }
   }
 
   //

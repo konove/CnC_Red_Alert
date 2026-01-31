@@ -107,9 +107,15 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
                                     VisiblePage.Get_Height(), (void*)NULL);
 #endif
 
-  if (b1txt != nullptr && *b1txt == '\0') b1txt = nullptr;
-  if (b2txt != nullptr && *b2txt == '\0') b2txt = nullptr;
-  if (b3txt != nullptr && *b3txt == '\0') b3txt = nullptr;
+  if (b1txt != nullptr && *b1txt == '\0') {
+    b1txt = nullptr;
+  }
+  if (b2txt != nullptr && *b2txt == '\0') {
+    b2txt = nullptr;
+  }
+  if (b3txt != nullptr && *b3txt == '\0') {
+    b3txt = nullptr;
+  }
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
 
@@ -158,8 +164,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   height += numbuttons == 0 ? 40 * RESFACTOR : 60 * RESFACTOR;
 
   // make sure dialog is wide enough for the buttons
-  if (bwidth * numbuttons + 40 * RESFACTOR > width)
-    width = bwidth * numbuttons + 40 * RESFACTOR;
+  width = std::max(bwidth * numbuttons + 40 * RESFACTOR, width);
 
   int x = (SeenBuff.Get_Width() - width) / 2;
   int y = (SeenBuff.Get_Height() - height) / 2;

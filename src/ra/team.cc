@@ -141,8 +141,9 @@ static inline bool _Is_It_Breathing(const FootClass* object) {
   **	If the object is not present or appears to be dead, then it
   **	certainly isn't an active member of the team.
   */
-  if (object == nullptr || !object->IsActive || object->Strength == 0)
+  if (object == nullptr || !object->IsActive || object->Strength == 0) {
     return false;
+  }
 
   /*
   **	If the object is in limbo, then it isn't an active team member either.
@@ -151,7 +152,9 @@ static inline bool _Is_It_Breathing(const FootClass* object) {
   *members are considered active because they need to *	be given special orders
   *and treatment.
   */
-  if (!ScenarioInit && object->IsInLimbo) return false;
+  if (!ScenarioInit && object->IsInLimbo) {
+    return false;
+  }
 
   /*
   **	Nothing eliminated this object from being considered an active member of
@@ -185,7 +188,9 @@ static inline bool _Is_It_Playing(const FootClass* object) {
   **	If the object is not active, then it certainly can be a participating
   *member of the *	team.
   */
-  if (!_Is_It_Breathing(object)) return false;
+  if (!_Is_It_Breathing(object)) {
+    return false;
+  }
 
   /*
   **	Only members that have been "Initiated" are considered "playing"
@@ -194,8 +199,9 @@ static inline bool _Is_It_Playing(const FootClass* object) {
   *catch up to the team even while the initiated team members *	carry out their
   *team specific orders.
   */
-  if (!object->IsInitiated && object->What_Am_I() != RTTI_AIRCRAFT)
+  if (!object->IsInitiated && object->What_Am_I() != RTTI_AIRCRAFT) {
     return false;
+  }
 
   /*
   **	If it reaches this point, then nothing appears to disqualify the
@@ -582,7 +588,9 @@ void TeamClass::AI() {
             TriggerClass* trig = LogicTriggers[index];
             if (trig->Spring(TEVENT_LEAVES_MAP)) {
               index--;
-              if (LogicTriggers.Count() == 0) break;
+              if (LogicTriggers.Count() == 0) {
+                break;
+              }
             }
           }
         }
@@ -722,7 +730,9 @@ void TeamClass::AI() {
         TriggerClass* trig = LogicTriggers[index];
         if (trig->Spring(TEVENT_LEAVES_MAP)) {
           index--;
-          if (LogicTriggers.Count() == 0) break;
+          if (LogicTriggers.Count() == 0) {
+            break;
+          }
         }
       }
     }
@@ -925,10 +935,14 @@ void TeamClass::AI() {
 bool TeamClass::Add(FootClass* obj) {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
-  if (!obj) return false;
+  if (!obj) {
+    return false;
+  }
 
   int typeindex;
-  if (!Can_Add(obj, typeindex)) return false;
+  if (!Can_Add(obj, typeindex)) {
+    return false;
+  }
 
   /*
   **	All is ok to add the object to the team, but if the object is already
@@ -1434,7 +1448,9 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
   **	If there are no members of the team, then there can be no center point
   *of the team.
   */
-  if (team_member == nullptr) return;
+  if (team_member == nullptr) {
+    return;
+  }
 
   /*
   **	If the team is supposed to follow a nearby friendly unit, then the
@@ -1446,7 +1462,9 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     **	First pick a member of the team. The closest friendly object to that
     *member *	will be picked.
     */
-    if (!team_member) return;
+    if (!team_member) {
+      return;
+    }
 
     const FootClass* closest = nullptr;  // Current closest friendly object.
     int distance = -1;  // Record of last closest distance calc.
@@ -1706,8 +1724,9 @@ void TeamClass::Coordinate_Attack() {
         const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
         if (unit->What_Am_I() != RTTI_UNIT ||
             *dynamic_cast<UnitClass*>(unit) != UNIT_CHRONOTANK ||
-            mission->Mission != TMISSION_SPY)
+            mission->Mission != TMISSION_SPY) {
           Target = 0;  // invalidize the target so it'll go to next mission.
+        }
       }
     }
   }
@@ -1938,8 +1957,9 @@ void TeamClass::Coordinate_Move() {
           }
           if (unit->What_Am_I() == RTTI_INFANTRY &&
               dynamic_cast<const InfantryClass*>(unit)->Class->IsDog) {
-            if (Target_Legal(unit->TarCom))
+            if (Target_Legal(unit->TarCom)) {
               stray = unit->Techno_Type_Class()->ThreatRange;
+            }
             if (Target_Legal(unit->TarCom) &&
                 unit->Distance(unit->TarCom) > stray) {
               unit->Assign_Target(TARGET_NONE);
@@ -2066,13 +2086,17 @@ bool TeamClass::Lagging_Units() {
   // BG: HACK - if it's in a formation move, then disable the check for
   //  VG added NULL check 	 laggers, 'cause they're all moving
   //  simultaneously.
-  if (unit != nullptr && unit->IsFormationMove) IsLagging = false;
+  if (unit != nullptr && unit->IsFormationMove) {
+    IsLagging = false;
+  }
 
   /*
   ** If the IsLagging bit is not set, then obviously there are no lagging
   ** units.
   */
-  if (!IsLagging) return false;
+  if (!IsLagging) {
+    return false;
+  }
 
   /*
   **	Scan through all of the units, searching for units who are having
@@ -2752,7 +2776,9 @@ int TeamClass::TMission_Attack() {
       default:
         break;
     }
-    if (!Target_Legal(MissionTarget)) IsNextMission = true;
+    if (!Target_Legal(MissionTarget)) {
+      IsNextMission = true;
+    }
   }
   Coordinate_Attack();
   return 1;
@@ -2789,8 +2815,9 @@ int TeamClass::TMission_Spy() {
           *dynamic_cast<UnitClass*>(member) == UNIT_CHRONOTANK) {
         bool finished = true;
         while (member) {
-          if (!dynamic_cast<UnitClass*>(member)->MoebiusCountDown)
+          if (!dynamic_cast<UnitClass*>(member)->MoebiusCountDown) {
             finished = false;
+          }
           member = member->Member;
         }
 
@@ -3040,7 +3067,9 @@ FootClass* TeamClass::Fetch_A_Leader() const {
   *member and *	is equipped with a weapon.
   */
   while (leader != nullptr) {
-    if (_Is_It_Playing(leader) && leader->Is_Weapon_Equipped()) break;
+    if (_Is_It_Playing(leader) && leader->Is_Weapon_Equipped()) {
+      break;
+    }
     leader = leader->Member;
   }
 

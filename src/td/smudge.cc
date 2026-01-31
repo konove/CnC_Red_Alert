@@ -315,7 +315,9 @@ void SmudgeClass::Read_INI(char* buffer) {
         int data = 0;
         CELL cell = atoi(ptr);
         ptr = strtok(nullptr, ",");
-        if (ptr) data = atoi(ptr);
+        if (ptr) {
+          data = atoi(ptr);
+        }
         new SmudgeClass(smudge, Cell_Coord(cell));
         if (Map[cell].Smudge == smudge && data) {
           Map[cell].SmudgeData = data;

@@ -72,7 +72,9 @@ class TemplateClass : public ObjectClass {
   TemplateClass(TemplateType type, CELL pos = -1);
   TemplateClass(const NoInitClass& x) : ObjectClass(x), Class(x) {}
   ~TemplateClass() override {
-    if (GameActive) TemplateClass::Limbo();
+    if (GameActive) {
+      TemplateClass::Limbo();
+    }
     Class = nullptr;
   }
   operator TemplateType() const { return Class->Type; }

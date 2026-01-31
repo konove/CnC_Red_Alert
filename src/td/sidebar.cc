@@ -950,7 +950,9 @@ bool SidebarClass::Activate(int control) {
   int sidex = SeenBuff.Get_Width() - SideBarWidth;
   int sidewidth = SeenBuff.Get_Width() - sidex;
 
-  if (PlaybackGame) return old;
+  if (PlaybackGame) {
+    return old;
+  }
 
   /*
   **	Determine the new state of the sidebar.
@@ -1331,8 +1333,12 @@ static int sortfunc(const void* ptr1, const void* ptr2) {
   int i1 = 0;
   int i2 = 0;
 
-  if (p1) i1 = p1->What_Am_I() * 2;
-  if (p2) i2 = p2->What_Am_I() * 2;
+  if (p1) {
+    i1 = p1->What_Am_I() * 2;
+  }
+  if (p2) {
+    i2 = p2->What_Am_I() * 2;
+  }
 
   /*
   **	Walls should be sorted after the regular buildings.
@@ -1434,7 +1440,9 @@ bool SidebarClass::StripClass::Scroll(bool up) {
     Scroller++;
   }
 #ifdef NEVER
-  if (BuildableCount <= MAX_VISIBLE) return (false);
+  if (BuildableCount <= MAX_VISIBLE) {
+    return (false);
+  }
 
   /*
   **	Top of list is moving toward lower ordered entries in the object list.
@@ -1442,12 +1450,16 @@ bool SidebarClass::StripClass::Scroll(bool up) {
   *the actual object images are *	scrolling downward.
   */
   if (up) {
-    if (!TopIndex) return (false);
+    if (!TopIndex) {
+      return (false);
+    }
 
     TopIndex--;
     Slid = 0;
   } else {
-    if (TopIndex + MAX_VISIBLE >= BuildableCount) return (false);
+    if (TopIndex + MAX_VISIBLE >= BuildableCount) {
+      return (false);
+    }
 
     Slid = ObjectHeight;
   }

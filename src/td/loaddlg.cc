@@ -637,7 +637,9 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     fdata = new FileEntryClass;
 
     fdata->Descr[0] = '\0';
-    if (!ok) port::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
+    if (!ok) {
+      port::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
+    }
     strncat(fdata->Descr, descr,
             sizeof(fdata->Descr) - strlen(fdata->Descr) - 1);
     fdata->Valid = ok;
@@ -672,7 +674,9 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
           break;
         }
       }
-      if (id == -1) break;  // if ID not found, use this one
+      if (id == -1) {
+        break;  // if ID not found, use this one
+      }
     }
 
     Files[0]->Num = i;  // set the empty slot's ID
@@ -730,7 +734,11 @@ int LoadOptionsClass::Compare(const void* p1, const void* p2) {
   fe1 = *(class FileEntryClass**)p1;
   fe2 = *(class FileEntryClass**)p2;
 
-  if (fe1->DateTime > fe2->DateTime) return -1;
-  if (fe1->DateTime < fe2->DateTime) return 1;
+  if (fe1->DateTime > fe2->DateTime) {
+    return -1;
+  }
+  if (fe1->DateTime < fe2->DateTime) {
+    return 1;
+  }
   return 0;
 }

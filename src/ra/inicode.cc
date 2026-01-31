@@ -347,7 +347,9 @@ bool Read_Scenario_INI_Write_INB(char* root, bool fresh) {
     sprintf(buff, "%d", index++);
     *stage = '\0';
     WWGetPrivateProfileString("Briefing", buff, "", stage, 255, buffer);
-    if (strlen(stage) == 0) break;
+    if (strlen(stage) == 0) {
+      break;
+    }
     strcat(stage, " ");
     stage += strlen(stage);
   }

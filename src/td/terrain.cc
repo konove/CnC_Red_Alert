@@ -398,7 +398,9 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
     }
 
     ShapeFlags_Type flags = SHAPE_NORMAL;
-    if (IsSelected && Debug_Map) flags = flags | SHAPE_FADING;
+    if (IsSelected && Debug_Map) {
+      flags = flags | SHAPE_FADING;
+    }
 
     IsTheaterShape = true;
     CC_Draw_Shape(shapedata, shapenum, x, y, window,
@@ -453,7 +455,9 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
   Validate();
   const short* offset;  // Pointer to cell offset list.
 
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+    return MOVE_NO;
+  }
 
   offset = Occupy_List();
   while (*offset != REFRESH_EOL) {
@@ -820,7 +824,9 @@ void TerrainClass::Read_INI(char* buffer) {
     if (terrain != TERRAIN_NONE) {
       tptr = new TerrainClass(terrain, cell);
       tptr->Trigger = TriggerClass::As_Pointer(strtok(nullptr, ","));
-      if (tptr->Trigger) tptr->Trigger->AttachCount++;
+      if (tptr->Trigger) {
+        tptr->Trigger->AttachCount++;
+      }
     }
     tbuffer += strlen(tbuffer) + 1;
   }

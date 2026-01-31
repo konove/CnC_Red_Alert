@@ -599,8 +599,9 @@ bool Select_Game(bool /*fade*/) {
         Load_Recording_Values(Session.RecordFile);
         process = false;
         Theme.Fade_Out();
-      } else
+      } else {
         Session.Play = false;
+      }
     }
 
     while (process) {
@@ -634,7 +635,9 @@ bool Select_Game(bool /*fade*/) {
       /*
       **	Display menu and fetch selection from player.
       */
-      if (Special.IsFromInstall) selection = SEL_START_NEW_GAME;
+      if (Special.IsFromInstall) {
+        selection = SEL_START_NEW_GAME;
+      }
 
 #ifndef WOLAPI_INTEGRATION
 #if defined(_WIN32) && !defined(INTERNET_OFF)  // Denzil 5/1/98 - Internet play
@@ -666,8 +669,9 @@ bool Select_Game(bool /*fade*/) {
 #endif
 
 #ifdef WOLAPI_INTEGRATION
-      if (pWolapi)
+      if (pWolapi) {
         selection = SEL_MULTIPLAYER_GAME;  //	We are returning from a game.
+      }
 #endif
 
       if (selection == SEL_NONE) {
@@ -1100,7 +1104,9 @@ bool Select_Game(bool /*fade*/) {
 #ifdef WOLAPI_INTEGRATION
           }  //	if( !pWolapi )
 
-          if (pWolapi) Session.Type = GAME_INTERNET;
+          if (pWolapi) {
+            Session.Type = GAME_INTERNET;
+          }
 #endif
           // debugprint( "Session.Type = %i\n", Session.Type );
           switch (Session.Type) {
@@ -1120,7 +1126,9 @@ bool Select_Game(bool /*fade*/) {
 
 #ifdef WOLAPI_INTEGRATION  //	implies also WINSOCK_IPX
             case GAME_INTERNET:
-              if (PacketTransport) delete PacketTransport;
+              if (PacketTransport) {
+                delete PacketTransport;
+              }
               PacketTransport = new UDPInterfaceClass;
               assert(PacketTransport != nullptr);
               if (PacketTransport->Init()) {
@@ -1352,10 +1360,11 @@ bool Select_Game(bool /*fade*/) {
         Fatal("pWolapi is null on internet game!");
       }
       // if( pWolapi->bEnableNewAftermathUnits )
-      if (bAftermathMultiplayer)
+      if (bAftermathMultiplayer) {
         NewUnitsEnabled = true;
-      else
+      } else {
         NewUnitsEnabled = SecretUnitsEnabled = false;
+      }
       //			debugprint( "Internet game: NewUnitsEnabled =
       //%i\n", NewUnitsEnabled );
       break;
@@ -1391,7 +1400,9 @@ bool Select_Game(bool /*fade*/) {
     if (!Start_Scenario(Scen.ScenarioName)) {
       return false;
     }
-    if (Special.IsFromInstall) Show_Mouse();
+    if (Special.IsFromInstall) {
+      Show_Mouse();
+    }
     Special.IsFromInstall = false;
   }
 
@@ -1501,10 +1512,18 @@ static void Play_Intro(bool sequenced) {
 
   Keyboard->Clear();
   if (sequenced) {
-    if (_counter <= VQ_FIRST) _counter = VQ_COUNT;
-    if (_counter == VQ_COUNT) _counter--;
-    if (_counter == VQ_REDINTRO) _counter--;
-    if (_counter == VQ_TITLE) _counter--;
+    if (_counter <= VQ_FIRST) {
+      _counter = VQ_COUNT;
+    }
+    if (_counter == VQ_COUNT) {
+      _counter--;
+    }
+    if (_counter == VQ_REDINTRO) {
+      _counter--;
+    }
+    if (_counter == VQ_TITLE) {
+      _counter--;
+    }
     Hide_Mouse();
     VisiblePage.Clear();
     Show_Mouse();
@@ -1700,7 +1719,9 @@ bool Parse_Command_Line(int argc, char* argv[]) {
         processed = false;
         break;
     }
-    if (processed) continue;
+    if (processed) {
+      continue;
+    }
 
     if constexpr (config::kCheatKeysEnabled) {
       /*
@@ -2012,7 +2033,9 @@ bool Parse_Command_Line(int argc, char* argv[]) {
 long Obfuscate(const char* string) {
   char buffer[128];
 
-  if (!string) return 0;
+  if (!string) {
+    return 0;
+  }
   memset(buffer, '\xA5', sizeof(buffer));
 
   /*
@@ -2522,7 +2545,9 @@ static void Init_Expansion_Files() {
     do {
       // scores shouldn't be loaded here but may be found if main has been
       // extracted
-      if (stricmp(state.name, "scores.mix") == 0) continue;
+      if (stricmp(state.name, "scores.mix") == 0) {
+        continue;
+      }
       // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
       // self-registering
       new MFCD(state.name, &FastKey);
@@ -2883,8 +2908,9 @@ static void Init_Secondary_Mixfiles() {
   ConquerMix = new MFCD("CONQUER.MIX", &FastKey);  // Cached.
   //	new MFCD("TRANSIT.MIX", &FastKey);
 
-  if (GeneralMix == nullptr)
+  if (GeneralMix == nullptr) {
     GeneralMix = new MFCD("GENERAL.MIX", &FastKey);  // Never cached.
+  }
 
   if (CCFileClass("MOVIES1.MIX").Is_Available()) {
     MoviesMix = new MFCD("MOVIES1.MIX", &FastKey);  // Never cached.
@@ -3073,7 +3099,9 @@ static void Init_Mouse() {
     const void* temp_mouse_shapes = MFCD::Retrieve("MOUSE.SHP");
     if (temp_mouse_shapes) {
       Set_Mouse_Cursor(0, 0, Extract_Shape(temp_mouse_shapes, 0));
-      while (Get_Mouse_State() > 1) Show_Mouse();
+      while (Get_Mouse_State() > 1) {
+        Show_Mouse();
+      }
     }
   } else {
     char buffer[255];
@@ -3088,7 +3116,9 @@ static void Init_Mouse() {
 
   Map.Set_Default_Mouse(MOUSE_NORMAL, false);
   Show_Mouse();
-  while (Get_Mouse_State() > 1) Show_Mouse();
+  while (Get_Mouse_State() > 1) {
+    Show_Mouse();
+  }
   Call_Back();
   Hide_Mouse();
 }
@@ -3292,15 +3322,17 @@ bool Is_DVD_Installed() {
   bool bInstalled;
   HKEY hKey;
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ,
-                   &hKey) != ERROR_SUCCESS)
+                   &hKey) != ERROR_SUCCESS) {
     return false;
+  }
   DWORD dwValue;
   DWORD dwBufSize = sizeof(DWORD);
   if (RegQueryValueEx(hKey, "DVD", 0, nullptr, (LPBYTE)&dwValue, &dwBufSize) !=
-      ERROR_SUCCESS)
+      ERROR_SUCCESS) {
     bInstalled = false;
-  else
+  } else {
     bInstalled = (bool)dwValue;  //	(Presumably true, if it's there...)
+  }
 
   RegCloseKey(hKey);
 

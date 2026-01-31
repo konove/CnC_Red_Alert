@@ -305,7 +305,9 @@ VESAModeInfo* SetVESAMode(long mode) {
         r.x.ebx = mode;
         int386(0x10, &r, &r);
 
-        if (r.x.eax != 0x004F) vminfo = NULL;
+        if (r.x.eax != 0x004F) {
+          vminfo = NULL;
+        }
       }
 
 #else  /* __WATCOMC__ */

@@ -255,7 +255,9 @@ bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 WeaponType Weapon_From_Name(const char* name) {
-  if (!name) return WEAPON_NONE;
+  if (!name) {
+    return WEAPON_NONE;
+  }
 
   for (int index = 0; index < Weapons.Count(); index++) {
     if (stricmp(Weapons.Ptr(index)->Name(), name) == 0) {
@@ -282,7 +284,9 @@ WeaponType Weapon_From_Name(const char* name) {
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 ArmorType Armor_From_Name(const char* name) {
-  if (!name) return ARMOR_NONE;
+  if (!name) {
+    return ARMOR_NONE;
+  }
 
   for (ArmorType index = ARMOR_FIRST; index < ARMOR_COUNT; index++) {
     if (stricmp(ArmorName[index], name) == 0) {

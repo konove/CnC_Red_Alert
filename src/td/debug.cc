@@ -166,7 +166,9 @@ void Debug_Key(unsigned input) {
   static int map_width = -1;
   static int map_height = -1;
 
-  if (!input || input & KN_BUTTON) return;
+  if (!input || input & KN_BUTTON) {
+    return;
+  }
 
   /*
   **	Processing of normal keystrokes.
@@ -175,10 +177,11 @@ void Debug_Key(unsigned input) {
     switch (input) {
       case KN_L:
         extern int NetMonoMode, NewMonoMode;
-        if (NetMonoMode)
+        if (NetMonoMode) {
           NetMonoMode = 0;
-        else
+        } else {
           NetMonoMode = 1;
+        }
         NewMonoMode = 1;
         break;
 
@@ -206,7 +209,9 @@ void Debug_Key(unsigned input) {
             } else {
               sprintf(filename, "scrsht%d.pcx", lp);
             }
-            if (access(filename, F_OK) == -1) break;
+            if (access(filename, F_OK) == -1) {
+              break;
+            }
           }
 
           Write_PCX_File(filename, temp_page, (unsigned char*)CurrentPalette);
@@ -485,7 +490,9 @@ void Debug_Key(unsigned input) {
           // Get facing #1.
           LogicPage->Print("Facing #1 (0-7)?", 0, 0, WHITE, BLACK);
           input = Keyboard::Get();
-          if (input == KA_ESC) break;
+          if (input == KA_ESC) {
+            break;
+          }
           input -= KA_0;
           input = Bound(input, 0, 7);
           //						input = std::max(input,
@@ -497,7 +504,9 @@ void Debug_Key(unsigned input) {
           // Get facing #2.
           LogicPage->Print("Facing #2 (0-7)?", 0, 10, WHITE, BLACK);
           input = Keyboard::Get();
-          if (input == KA_ESC) break;
+          if (input == KA_ESC) {
+            break;
+          }
           input -= KA_0;
           input = Bound(input, 0, 7);
           //						input = std::max(input,
@@ -526,7 +535,9 @@ void Debug_Key(unsigned input) {
             }
           }
           input = Keyboard::Get();
-          if (input == KA_ESC) break;
+          if (input == KA_ESC) {
+            break;
+          }
         }
 
         Map.Flag_To_Redraw(true);
@@ -652,8 +663,9 @@ void Debug_Key(unsigned input) {
               (const TechnoTypeClass&)CurrentObject[0]->Class_Of();
           int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
-          if (ttype.Primary != WEAPON_NONE)
+          if (ttype.Primary != WEAPON_NONE) {
             weapon = Weapons[ttype.Primary].Range;
+          }
           Set_Logic_Page(SeenBuff);
           COORDINATE center = CurrentObject[0]->Center_Coord();
           COORDINATE center2 = CurrentObject[0]->Fire_Coord(0);
@@ -695,13 +707,15 @@ void Debug_Key(unsigned input) {
         break;
 
       case ((int)KN_F9 | (int)KN_CTRL_BIT):
-        if (HouseClass::As_Pointer(HOUSE_GOOD))
+        if (HouseClass::As_Pointer(HOUSE_GOOD)) {
           (HouseClass::As_Pointer(HOUSE_GOOD))->Blowup_All();
+        }
         break;
 
       case ((int)KN_F10 | (int)KN_CTRL_BIT):
-        if (HouseClass::As_Pointer(HOUSE_BAD))
+        if (HouseClass::As_Pointer(HOUSE_BAD)) {
           (HouseClass::As_Pointer(HOUSE_BAD))->Blowup_All();
+        }
         break;
 #endif
     }

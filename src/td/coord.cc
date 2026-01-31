@@ -144,15 +144,30 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
     int bottom = y + maxsize;
 
     _manual[index++] = 0;
-    if (left < 0) _manual[index++] = -1;
-    if (right >= ICON_PIXEL_W) _manual[index++] = 1;
-    if (top < 0) _manual[index++] = -MAP_CELL_W;
-    if (bottom >= ICON_PIXEL_H) _manual[index++] = MAP_CELL_W;
-    if (left < 0 && top < 0) _manual[index++] = -(MAP_CELL_W + 1);
-    if (right >= ICON_PIXEL_W && bottom >= ICON_PIXEL_H)
+    if (left < 0) {
+      _manual[index++] = -1;
+    }
+    if (right >= ICON_PIXEL_W) {
+      _manual[index++] = 1;
+    }
+    if (top < 0) {
+      _manual[index++] = -MAP_CELL_W;
+    }
+    if (bottom >= ICON_PIXEL_H) {
+      _manual[index++] = MAP_CELL_W;
+    }
+    if (left < 0 && top < 0) {
+      _manual[index++] = -(MAP_CELL_W + 1);
+    }
+    if (right >= ICON_PIXEL_W && bottom >= ICON_PIXEL_H) {
       _manual[index++] = MAP_CELL_W + 1;
-    if (left < 0 && bottom >= ICON_PIXEL_H) _manual[index++] = MAP_CELL_W - 1;
-    if (right >= ICON_PIXEL_H && top < 0) _manual[index++] = -(MAP_CELL_W - 1);
+    }
+    if (left < 0 && bottom >= ICON_PIXEL_H) {
+      _manual[index++] = MAP_CELL_W - 1;
+    }
+    if (right >= ICON_PIXEL_H && top < 0) {
+      _manual[index++] = -(MAP_CELL_W - 1);
+    }
     _manual[index] = REFRESH_EOL;
     return &_manual[0];
   }
@@ -164,10 +179,18 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
 
   x = Coord_XLepton(coord) - 0x0080;
   y = Coord_YLepton(coord) - 0x0080;
-  if (y > posval) index |= 0x08;   // Spilling South.
-  if (y < -posval) index |= 0x04;  // Spilling North.
-  if (x > posval) index |= 0x02;   // Spilling East.
-  if (x < -posval) index |= 0x01;  // Spilling West.
+  if (y > posval) {
+    index |= 0x08;  // Spilling South.
+  }
+  if (y < -posval) {
+    index |= 0x04;  // Spilling North.
+  }
+  if (x > posval) {
+    index |= 0x02;  // Spilling East.
+  }
+  if (x < -posval) {
+    index |= 0x01;  // Spilling West.
+  }
 
   return &_MoveSpillage[_SpillTable[index]][0];
 }
@@ -226,7 +249,9 @@ COORDINATE Coord_Scatter(COORDINATE coord, unsigned distance, bool lock) {
 
   newcoord = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX), distance);
 
-  if (newcoord & 0xC000C000L) newcoord = coord;
+  if (newcoord & 0xC000C000L) {
+    newcoord = coord;
+  }
 
   if (lock) {
     newcoord = Coord_Snap(newcoord);
@@ -305,7 +330,9 @@ void Move_Point(short& x, short& y, DirType dir, unsigned short distance) {
 }
 
 unsigned int Cardinal_To_Fixed(unsigned base, unsigned cardinal) {
-  if (!base) return 0xFFFF;
+  if (!base) {
+    return 0xFFFF;
+  }
 
   return (cardinal << 8) / base;
 }
@@ -313,7 +340,9 @@ unsigned int Cardinal_To_Fixed(unsigned base, unsigned cardinal) {
 unsigned int Fixed_To_Cardinal(unsigned base, unsigned fixed) {
   unsigned ret = base * fixed + 0x80;
 
-  if (ret & 0xFF000000) return 0xFFFF;
+  if (ret & 0xFF000000) {
+    return 0xFFFF;
+  }
 
   return ret >> 8;
 }

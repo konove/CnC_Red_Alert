@@ -807,7 +807,9 @@ void BulletClass::Code_Pointers() {
   /*
   ----------------------------- Code 'Payback' -----------------------------
   */
-  if (Payback) Payback = (TechnoClass*)Payback->As_Target();
+  if (Payback) {
+    Payback = (TechnoClass*)Payback->As_Target();
+  }
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1494,15 +1496,18 @@ bool LayerClass::Save(FileClass& file) {
   ------------------------- Save # array elements --------------------------
   */
   count = Count();
-  if (file.Write(&count, sizeof(count)) != sizeof(count)) return false;
+  if (file.Write(&count, sizeof(count)) != sizeof(count)) {
+    return false;
+  }
 
   /*
   --------------------------- Save all elements ----------------------------
   */
   for (i = 0; i < count; i++) {
     ptr = (*this)[i];
-    if (file.Write(&ptr, sizeof(ObjectClass*)) != sizeof(ObjectClass*))
+    if (file.Write(&ptr, sizeof(ObjectClass*)) != sizeof(ObjectClass*)) {
       return false;
+    }
   }
 
   return true;
@@ -1898,7 +1903,9 @@ void DriveClass::Decode_Pointers() {
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void FootClass::Code_Pointers() {
-  if (Team) Team = (TeamClass*)Team->As_Target();
+  if (Team) {
+    Team = (TeamClass*)Team->As_Target();
+  }
 
   if (Member) {
     Member = (FootClass*)Member->As_Target();

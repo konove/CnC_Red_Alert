@@ -3942,7 +3942,9 @@ void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
 int BuildingTypeClass::Legal_Placement(CELL pos) const {
   const short* offset;  // Pointer to cell offset list.
 
-  if (pos == -1) return false;
+  if (pos == -1) {
+    return false;
+  }
 
 #ifdef NEVER
   /*
@@ -3976,7 +3978,9 @@ int BuildingTypeClass::Legal_Placement(CELL pos) const {
   offset = Occupy_List(true);
   while (*offset != REFRESH_EOL) {
     CELL cell = pos + *offset++;
-    if (!Map.In_Radar(cell)) return false;
+    if (!Map.In_Radar(cell)) {
+      return false;
+    }
     if (!Map[cell].Is_Generally_Clear()) {
       return false;
     }

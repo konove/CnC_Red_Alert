@@ -218,7 +218,9 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   DeleteBtn.Add_Tail(*commands);
   NameEdit.Set_Focus();
 
-  if (NickList.Count() == 0) DeleteBtn.Disable();
+  if (NickList.Count() == 0) {
+    DeleteBtn.Disable();
+  }
 
   /*
   **	Main Processing Loop.
@@ -283,7 +285,9 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (Get_Mouse_State()) Show_Mouse();
+    while (Get_Mouse_State()) {
+      Show_Mouse();
+    }
     //	Be nice to other apps.
     Sleep(50);
 
@@ -332,10 +336,11 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     //			debugprint( "input: %i\n", input );
 
     if (bTabKeyPressedHack) {
-      if (NameEdit.Has_Focus())
+      if (NameEdit.Has_Focus()) {
         PassEdit.Set_Focus();
-      else
+      } else {
         NameEdit.Set_Focus();
+      }
       NameEdit.Flag_To_Redraw();
       PassEdit.Flag_To_Redraw();
     }
@@ -405,7 +410,9 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
               iReturn = -1;
               break;
           }
-          if (bBreak) break;
+          if (bBreak) {
+            break;
+          }
         }
 
         //	RequestConnection()...
@@ -549,10 +556,11 @@ bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
       bPushSlot1 = false;
       break;
     case S_OK:
-      if (*szNick == 0)
+      if (*szNick == 0) {
         bPushSlot1 = false;  //	We can use this blank slot.
-      else if (strcmp(szNick, szNickToSave) == 0)
+      } else if (strcmp(szNick, szNickToSave) == 0) {
         bPushSlot1 = false;  //	We can use this slot as the name is the same.
+      }
       break;
   }
 

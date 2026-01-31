@@ -248,7 +248,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
     td.IsTripped = true;
   }
 
-  if (td.IsTripped) return true;
+  if (td.IsTripped) {
+    return true;
+  }
 
   /*
   **	Triggers based on the game's global environment such as time or
@@ -300,7 +302,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   */
   if (Event == TEVENT_PLAYER_ENTERED || Event == TEVENT_CROSS_HORIZONTAL ||
       Event == TEVENT_CROSS_VERTICAL || Event == TEVENT_ENTERS_ZONE) {
-    if (!object || object->Owner() != Data.House) return false;
+    if (!object || object->Owner() != Data.House) {
+      return false;
+    }
     td.IsTripped = true;
     return true;
   }
@@ -309,7 +313,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   **	Check for all bridges destroyed condition.
   */
   if (Event == TEVENT_ALL_BRIDGES_DESTROYED) {
-    if (Scen.BridgeCount) return false;
+    if (Scen.BridgeCount) {
+      return false;
+    }
     td.IsTripped = true;
     return true;
   }
@@ -337,14 +343,18 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
             break;
           }
         }
-        if (index == Teams.Count()) return false;
+        if (index == Teams.Count()) {
+          return false;
+        }
         break;
 
       /*
       **	Credits must be equal or greater to the value specified.
       */
       case TEVENT_CREDITS:
-        if (hptr->Available_Money() < Data.Value) return false;
+        if (hptr->Available_Money() < Data.Value) {
+          return false;
+        }
         break;
 
       /*
@@ -352,29 +362,36 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       */
       case TEVENT_NOFACTORIES:
         if (hptr->BScan & (STRUCTF_AIRSTRIP | STRUCTF_TENT | STRUCTF_WEAP |
-                           STRUCTF_BARRACKS | STRUCTF_CONST))
+                           STRUCTF_BARRACKS | STRUCTF_CONST)) {
           return false;
+        }
         break;
 
       /*
       **	Ensure that there are no fake structures left.
       */
       case TEVENT_FAKES_DESTROYED:
-        if (hptr->BScan & (STRUCTF_FAKECONST | STRUCTF_FAKEWEAP)) return false;
+        if (hptr->BScan & (STRUCTF_FAKECONST | STRUCTF_FAKEWEAP)) {
+          return false;
+        }
         break;
 
       /*
       **	A civilian must have been evacuated.
       */
       case TEVENT_EVAC_CIVILIAN:
-        if (!hptr->IsCivEvacuated) return false;
+        if (!hptr->IsCivEvacuated) {
+          return false;
+        }
         break;
 
       /*
       **	Verify that the structure has been built.
       */
       case TEVENT_BUILDING_EXISTS:
-        if ((hptr->ActiveBScan & 1 << Data.Structure) == 0) return false;
+        if ((hptr->ActiveBScan & 1 << Data.Structure) == 0) {
+          return false;
+        }
         //				if (hptr->Get_Quantity(Data.Structure)
         //== 0) return(false);
         break;
@@ -383,7 +400,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the structure has been built.
       */
       case TEVENT_BUILD:
-        if (hptr->JustBuiltStructure != Data.Structure) return false;
+        if (hptr->JustBuiltStructure != Data.Structure) {
+          return false;
+        }
         td.IsTripped = true;
         break;
 
@@ -391,7 +410,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the unit has been built.
       */
       case TEVENT_BUILD_UNIT:
-        if (hptr->JustBuiltUnit != Data.Unit) return false;
+        if (hptr->JustBuiltUnit != Data.Unit) {
+          return false;
+        }
         td.IsTripped = true;
         break;
 
@@ -399,7 +420,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the infantry has been built.
       */
       case TEVENT_BUILD_INFANTRY:
-        if (hptr->JustBuiltInfantry != Data.Infantry) return false;
+        if (hptr->JustBuiltInfantry != Data.Infantry) {
+          return false;
+        }
         td.IsTripped = true;
         break;
 
@@ -407,7 +430,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the aircraft has been built.
       */
       case TEVENT_BUILD_AIRCRAFT:
-        if (hptr->JustBuiltAircraft != Data.Aircraft) return false;
+        if (hptr->JustBuiltAircraft != Data.Aircraft) {
+          return false;
+        }
         td.IsTripped = true;
         break;
 
@@ -416,14 +441,18 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       *destroyed.
       */
       case TEVENT_NBUILDINGS_DESTROYED:
-        if (hptr->BuildingsLost < Data.Value) return false;
+        if (hptr->BuildingsLost < Data.Value) {
+          return false;
+        }
         break;
 
       /*
       **	Verify that the specified number of units have been destroyed.
       */
       case TEVENT_NUNITS_DESTROYED:
-        if (hptr->UnitsLost < Data.Value) return false;
+        if (hptr->UnitsLost < Data.Value) {
+          return false;
+        }
         break;
 
       default:
@@ -435,7 +464,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   if (hptr) {
     switch (Event) {
       case TEVENT_LOW_POWER:
-        if (hptr->Power_Fraction() >= 1) return false;
+        if (hptr->Power_Fraction() >= 1) {
+          return false;
+        }
         break;
 
         //			case TEVENT_SPIED:
@@ -443,21 +474,27 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         //				break;
 
       case TEVENT_THIEVED:
-        if (!hptr->IsThieved) return false;
+        if (!hptr->IsThieved) {
+          return false;
+        }
         break;
 
       /*
       **	Verify that the house has been discovered.
       */
       case TEVENT_HOUSE_DISCOVERED:
-        if (!hptr->IsDiscovered) return false;
+        if (!hptr->IsDiscovered) {
+          return false;
+        }
         break;
 
       /*
       **	Verify that all buildings have been destroyed.
       */
       case TEVENT_BUILDINGS_DESTROYED:
-        if (hptr->ActiveBScan) return false;
+        if (hptr->ActiveBScan) {
+          return false;
+        }
         break;
 
       /*
@@ -465,7 +502,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	exceptions.
       */
       case TEVENT_UNITS_DESTROYED:
-        if (hptr->ActiveUScan | hptr->ActiveIScan) return false;
+        if (hptr->ActiveUScan | hptr->ActiveIScan) {
+          return false;
+        }
         break;
 
       /*
@@ -473,8 +512,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       */
       case TEVENT_ALL_DESTROYED:
         if (hptr->ActiveBScan | hptr->ActiveUScan | hptr->ActiveIScan |
-            hptr->ActiveVScan)
+            hptr->ActiveVScan) {
           return false;
+        }
         break;
 
       default:
@@ -533,7 +573,9 @@ void TEventClass::Read_INI() {
     case 1:
       token = strtok(nullptr, ",");
       Event = TEVENT_NONE;
-      if (token) Event = static_cast<TEventType>(atoi(token));
+      if (token) {
+        Event = static_cast<TEventType>(atoi(token));
+      }
 
       token = strtok(nullptr, ",");
       Team = nullptr;

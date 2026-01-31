@@ -205,7 +205,9 @@ long CCFileClass::Read(void* buffer, long size) {
       // size);
       Position += size;
     }
-    if (opened) Close();
+    if (opened) {
+      Close();
+    }
     return size;
   }
 
@@ -214,7 +216,9 @@ long CCFileClass::Read(void* buffer, long size) {
   /*
   **	If the file was opened by this routine, then close it at this time.
   */
-  if (opened) Close();
+  if (opened) {
+    Close();
+  }
 
   /*
   **	Return with the number of bytes read.
@@ -291,7 +295,9 @@ long CCFileClass::Size() {
   **	If the file is resident, the the size is already known. Just return the
   *size in this *	case.
   */
-  if (Is_Resident()) return Data.Get_Size();
+  if (Is_Resident()) {
+    return Data.Get_Size();
+  }
 
   /*
   **	If the file is not available as a stand alone file, then search for it
@@ -326,7 +332,9 @@ int CCFileClass::Do_Is_Available(AvailabilityCheck mode) {
   /*
   **	A file that is open is presumed available.
   */
-  if (Is_Open()) return true;
+  if (Is_Open()) {
+    return true;
+  }
 
   /*
   **	A file that is part of a mixfile is also presumed available.
@@ -361,7 +369,9 @@ int CCFileClass::Is_Open() const {
   **	If the file is part of a cached file, then return that it is opened. A
   *closed file *	doesn't have a valid pointer.
   */
-  if (Is_Resident()) return true;
+  if (Is_Resident()) {
+    return true;
+  }
 
   /*
   **	Otherwise, go to a lower level to determine if the file is open.

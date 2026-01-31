@@ -24,7 +24,9 @@ static Uint32 Force_Redraw_Timer(Uint32 /*interval*/, void*) {
 }
 
 bool GraphicBufferClass::Lock() {
-  if (!PaletteSurface) return true;
+  if (!PaletteSurface) {
+    return true;
+  }
 
   if (!LockCount) {
     SDL_LockSurface(static_cast<SDL_Surface*>(PaletteSurface));
@@ -36,7 +38,9 @@ bool GraphicBufferClass::Lock() {
 }
 
 bool GraphicBufferClass::Unlock() {
-  if (!PaletteSurface || !LockCount) return true;
+  if (!PaletteSurface || !LockCount) {
+    return true;
+  }
 
   LockCount--;
 
@@ -125,7 +129,9 @@ void GraphicBufferClass::Update_Palette(const uint8_t* palette) {
     sdl_pal->colors[i].b = new_b;
   }
 
-  if (!changed) return;
+  if (!changed) {
+    return;
+  }
 
   // make sure it gets updated
   SDL_SetPaletteColors(sdl_pal, sdl_pal->colors, 0, sdl_pal->ncolors);

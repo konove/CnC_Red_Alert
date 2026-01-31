@@ -133,10 +133,11 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
                               d_gaugeplayers_y, d_gaugeplayers_w,
                               d_gaugeplayers_h);
 
-  if (pWO->bEgg8Player)
+  if (pWO->bEgg8Player) {
     PlayerCountGauge.Set_Maximum(6);
-  else
+  } else {
     PlayerCountGauge.Set_Maximum(2);
+  }
   PlayerCountGauge.Set_Value(cgiReturn.iPlayerMax - 2);
 
   BigCheckBoxClass TournamentCheck(
@@ -161,9 +162,13 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
                             TPF_6PT_GRAD | TPF_NOSHADOW,
                             cgiReturn.GameKind == CREATEGAMEINFO::AMGAME);
 
-  if (!Is_Counterstrike_Installed()) CS_Check.Disable();
+  if (!Is_Counterstrike_Installed()) {
+    CS_Check.Disable();
+  }
 
-  if (!Is_Aftermath_Installed()) AM_Check.Disable();
+  if (!Is_Aftermath_Installed()) {
+    AM_Check.Disable();
+  }
 
   /*
   **	Initialize.
@@ -232,7 +237,9 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (Get_Mouse_State()) Show_Mouse();
+    while (Get_Mouse_State()) {
+      Show_Mouse();
+    }
     //	Be nice to other apps.
     Sleep(50);
 
@@ -307,9 +314,10 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           CS_Check.Turn_Off();
           AM_Check.Turn_Off();
           cgiReturn.GameKind = CREATEGAMEINFO::RAGAME;
-        } else
+        } else {
           //	Box was unchecked. Has no effect.
           RA_Check.Turn_On();
+        }
         break;
       case (CHECK_CS | KN_BUTTON):
         if (CS_Check.IsOn) {
@@ -317,9 +325,10 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           RA_Check.Turn_Off();
           AM_Check.Turn_Off();
           cgiReturn.GameKind = CREATEGAMEINFO::CSGAME;
-        } else
+        } else {
           //	Box was unchecked. Has no effect.
           CS_Check.Turn_On();
+        }
         break;
       case (CHECK_AM | KN_BUTTON):
         if (AM_Check.IsOn) {
@@ -327,9 +336,10 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           RA_Check.Turn_Off();
           CS_Check.Turn_Off();
           cgiReturn.GameKind = CREATEGAMEINFO::AMGAME;
-        } else
+        } else {
           //	Box was unchecked. Has no effect.
           AM_Check.Turn_On();
+        }
         break;
 
       default:
@@ -346,10 +356,12 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
         new SimpleEditDlgClass(300, TXT_WOL_CREATEPRIVGAMETITLE,
                                TXT_WOL_PASSPROMPT, WOL_CHANKEY_LEN_MAX);
     pWO->bPump_In_Call_Back = true;
-    if (strcmp(pEditDlg->Show(), Text_String(TXT_OK)) == 0 && *pEditDlg->szEdit)
+    if (strcmp(pEditDlg->Show(), Text_String(TXT_OK)) == 0 &&
+        *pEditDlg->szEdit) {
       strcpy(cgiReturn.szPassword, pEditDlg->szEdit);
-    else
+    } else {
       cgiReturn.bCreateGame = false;  //	Cancel creation.
+    }
     pWO->bPump_In_Call_Back = false;
   }
 

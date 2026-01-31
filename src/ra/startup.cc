@@ -243,10 +243,12 @@ int main(int argc, char* argv[])
     //		debugprint( "Found WolapiInstallComplete in registry\n" );
     //	Setup has finished. Delete the setup exe and remove reg key.
     if (bWOLSetupFile) {
-      if (DeleteFile("wolsetup.exe"))
+      if (DeleteFile("wolsetup.exe")) {
         RegDeleteValue(hKey, "WolapiInstallComplete");
-    } else
+      }
+    } else {
       RegDeleteValue(hKey, "WolapiInstallComplete");
+    }
   }
   RegCloseKey(hKey);
 
@@ -255,8 +257,9 @@ int main(int argc, char* argv[])
   // be present for this version (Aftermath mix files provide the 	string
   // overrides that the 1.08 separate conquer.eng did before Aftermath).
   // Delete conquer.eng if it's found.
-  if (FindFirstFile("conquer.eng", &wfd) != INVALID_HANDLE_VALUE)
+  if (FindFirstFile("conquer.eng", &wfd) != INVALID_HANDLE_VALUE) {
     DeleteFile("conquer.eng");
+  }
 
 #endif
 
@@ -320,7 +323,9 @@ int main(int argc, char* argv[])
       Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
       SoundOn = Audio_Init(MainWindow, 16, false, 11025 * 2, 0);
 
-      if (!InitDDraw()) return EXIT_FAILURE;
+      if (!InitDDraw()) {
+        return EXIT_FAILURE;
+      }
 
       Options.Adjust_Variables_For_Resolution();
 
@@ -396,10 +401,14 @@ int main(int argc, char* argv[])
       Main_Game(argc, argv);
 
 #ifdef MPEGMOVIE  // Denzil 6/15/98
-      if (MpgSettings != NULL) delete MpgSettings;
+      if (MpgSettings != NULL) {
+        delete MpgSettings;
+      }
 
 #ifdef MCIMPEG
-      if (MciMovie != NULL) delete MciMovie;
+      if (MciMovie != NULL) {
+        delete MciMovie;
+      }
 #endif
 #endif
 
@@ -472,7 +481,9 @@ bool InitDDraw() {
     HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0, GBC_NONE);
   }
 
-  if (ScreenHeight == 480) ScreenHeight = 400;
+  if (ScreenHeight == 480) {
+    ScreenHeight = 400;
+  }
 
   int yoff = VisiblePage.Get_Height() == 480 ? 40 : 0;
 

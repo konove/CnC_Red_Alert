@@ -134,20 +134,26 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           **	cardinal directions over the diagonals.
           */
           int altx = x;
-          if (altx < 50) altx -= (50 - altx) * 2;
+          if (altx < 50) {
+            altx -= (50 - altx) * 2;
+          }
           altx = std::max(altx, 0);
-          if (altx > SeenBuff.Get_Width() - 50)
+          if (altx > SeenBuff.Get_Width() - 50) {
             altx += (altx - (SeenBuff.Get_Width() - 50)) * 2;
+          }
           altx = std::min(altx, SeenBuff.Get_Width());
           if (altx > 50 && altx < SeenBuff.Get_Width() - 50) {
             altx += (SeenBuff.Get_Width() / 2 - altx) / 2;
           }
 
           int alty = y;
-          if (alty < 50) alty -= 50 - alty;
+          if (alty < 50) {
+            alty -= 50 - alty;
+          }
           alty = std::max(alty, 0);
-          if (alty > SeenBuff.Get_Height() - 50)
+          if (alty > SeenBuff.Get_Height() - 50) {
             alty += alty - (SeenBuff.Get_Height() - 50);
+          }
           alty = std::min(alty, SeenBuff.Get_Height());
 
           direction = Desired_Facing256(SeenBuff.Get_Width() / 2,
@@ -179,8 +185,8 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         //				rate = Bound(rate-3, 0, 4);
         //			}
         if (Keyboard::Down(KN_RMOUSE)) {
-          rate =
-              Bound(rate + 1, 4, static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
+          rate = Bound(rate + 1, 4,
+                       static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
         }
 
         /*
@@ -195,9 +201,11 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         int distance = _rate[rate] / 2;
 
         if (!Scroll_Map(direction, distance, false)) {
-          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_NO_N + control), false);
+          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_NO_N + control),
+                               false);
         } else {
-          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_N + control), false);
+          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_N + control),
+                               false);
 
           /*
           **	If the mouse button is pressed or auto scrolling is active, then
@@ -217,7 +225,9 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
       if (!player_scrolled) {
         if (Counter.Time() == 0) {
           Inertia--;
-          if (Inertia < 0) Inertia++;
+          if (Inertia < 0) {
+            Inertia++;
+          }
           Counter.Set(SCROLL_DELAY);
         }
       }

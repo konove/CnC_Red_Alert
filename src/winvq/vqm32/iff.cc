@@ -205,10 +205,11 @@ long ReadForm(IFFHandle* iff, FormHeader* form) {
     iff->scan = 4;
     error = 0;
   } else {
-    if (error == -1)
+    if (error == -1) {
       error = IFFERR_READ;
-    else if (error == 0)
+    } else if (error == 0) {
       error = IFFERR_EOF;
+    }
   }
 
   return (error);

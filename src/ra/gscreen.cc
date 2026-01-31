@@ -173,7 +173,9 @@ void GScreenClass::Init_Clear() {
   /*
   ** Clear the ShadowPage & HidPage to force a complete shadow blit.
   */
-  if (ShadowPage) ShadowPage->Clear();
+  if (ShadowPage) {
+    ShadowPage->Clear();
+  }
 
   HidPage.Clear();
 
@@ -401,7 +403,9 @@ void GScreenClass::Render() {
 
     Draw_It(IsToRedraw);
 
-    if (Buttons) Buttons->Draw_All(false);
+    if (Buttons) {
+      Buttons->Draw_All(false);
+    }
 
     if constexpr (config::kScenarioEditorEnabled) {
       /*

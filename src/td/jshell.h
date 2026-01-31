@@ -123,12 +123,13 @@ inline void Set_Bit(void* array, int bit, int value) {
           "bts	[esi+ebx*4],ecx"		\
           "ok:"
   */
-  if (value)
+  if (value) {
     static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] |=
         1 << (bit & 0x1F);
-  else
+  } else {
     static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] &=
         ~(1 << (bit & 0x1F));
+  }
 }
 
 inline int Get_Bit(const void* array, int bit) {
@@ -164,10 +165,14 @@ inline int First_True_Bit(const void* array) {
     uint32_t v = *array32++;
 #ifdef _MSC_VER
     DWORD pos;
-    if (_BitScanForward(&pos, v)) return off + pos;
+    if (_BitScanForward(&pos, v)) {
+      return off + pos;
+    }
 #else
     int pos = __builtin_ffs(v);
-    if (pos) return off + pos - 1;
+    if (pos) {
+      return off + pos - 1;
+    }
 #endif
     off += 32;
   }
@@ -180,10 +185,14 @@ inline int First_False_Bit(const void* array) {
     uint32_t v = *array32++;
 #ifdef _MSC_VER
     DWORD pos;
-    if (_BitScanForward(&pos, ~v)) return off + pos;
+    if (_BitScanForward(&pos, ~v)) {
+      return off + pos;
+    }
 #else
     int pos = __builtin_ffs(~v);
-    if (pos) return off + pos - 1;
+    if (pos) {
+      return off + pos - 1;
+    }
 #endif
     off += 32;
   }

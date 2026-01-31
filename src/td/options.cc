@@ -438,7 +438,9 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
   unsigned h, s, v;
   unsigned r, g, b;
 
-  if (!oldpal || !newpal) return;
+  if (!oldpal || !newpal) {
+    return;
+  }
 
   /*
   **	Adjust for palette.

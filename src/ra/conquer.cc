@@ -584,13 +584,25 @@ void Keyboard_Process(KeyNumType& input) {
   */
   int action = 0;
 #ifdef WIN32
-  if (input & WWKEY_SHIFT_BIT) action = 1;
-  if (input & WWKEY_ALT_BIT) action = 3;
-  if (input & WWKEY_CTRL_BIT) action = 2;
+  if (input & WWKEY_SHIFT_BIT) {
+    action = 1;
+  }
+  if (input & WWKEY_ALT_BIT) {
+    action = 3;
+  }
+  if (input & WWKEY_CTRL_BIT) {
+    action = 2;
+  }
 #else
-  if (input & KN_SHIFT_BIT) action = 1;
-  if (input & KN_ALT_BIT) action = 3;
-  if (input & KN_CTRL_BIT) action = 2;
+  if (input & KN_SHIFT_BIT) {
+    action = 1;
+  }
+  if (input & KN_ALT_BIT) {
+    action = 3;
+  }
+  if (input & KN_CTRL_BIT) {
+    action = 2;
+  }
 #endif
 
   /*
@@ -706,7 +718,9 @@ void Keyboard_Process(KeyNumType& input) {
             building->House == PlayerPtr && *building == STRUCT_CONST) {
           Unselect_All();
           building->Select();
-          if (building->IsLeader) break;
+          if (building->IsLeader) {
+            break;
+          }
         }
       }
     }
@@ -988,7 +1002,9 @@ void Toggle_Formation() {
     }
   }
 
-  if (team == -1) return;
+  if (team == -1) {
+    return;
+  }
   /*
   ** Now that we have a team, let's go set (or clear) the formation offsets.
   */
@@ -1312,10 +1328,11 @@ static void Message_Input(KeyNumType& input) {
     if (copy_input == KN_ESC) {
       Map.Flag_To_Redraw(true);
 #ifdef WOLAPI_INTEGRATION
-      if (pWolapi)
+      if (pWolapi) {
         //	Just in case user was responding to a page from outside the
         // game, and we had frozen the "szExternalPager".
         pWolapi->bFreezeExternalPager = false;
+      }
 #endif
     } else {
       Map.Flag_To_Redraw(false);
@@ -1884,7 +1901,9 @@ void MPATH_Call_Back() {
 const char* Language_Name(const char* basename) {
   static char _fullname[_MAX_FNAME + _MAX_EXT];
 
-  if (!basename) return nullptr;
+  if (!basename) {
+    return nullptr;
+  }
 
   sprintf(_fullname, "%s.ENG", basename);
   return _fullname;
@@ -2088,7 +2107,9 @@ bool Main_Loop() {
 
   Mono_Set_Cursor(0, 0);
 
-  if (!GameActive) return !GameActive;
+  if (!GameActive) {
+    return !GameActive;
+  }
 
 #ifdef WIN32
   /*
@@ -2150,9 +2171,10 @@ bool Main_Loop() {
     if (Session.Play) {
       FrameTimer = 0;
     } else {
-      if (!Session.DesiredFrameRate)
+      if (!Session.DesiredFrameRate) {
         Session.DesiredFrameRate =
             60;  //	A division by zero was happening (very rare).
+      }
       framedelay = TIMER_SECOND / Session.DesiredFrameRate;
       FrameTimer = framedelay;
     }
@@ -2676,7 +2698,9 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   } else {
     for (start_palette = 0; start_palette < ARRAY_SIZE(InterpolatedPalettes);
          start_palette++) {
-      if (!InterpolatedPalettes[start_palette]) break;
+      if (!InterpolatedPalettes[start_palette]) {
+        break;
+      }
     }
   }
 
@@ -2860,7 +2884,9 @@ bool PlayMpegMovie(const char* name) {
   const char* filename;
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (bNoMovies) return true;
+    if (bNoMovies) {
+      return true;
+    }
   }
 
   sprintf(path, "movies\\%.8s.%.3s", name, "mpg");
@@ -2878,7 +2904,9 @@ bool PlayMpegMovie(const char* name) {
   }
 
   // Stop theme music
-  if (Misc_Focus_Loss_Function) Misc_Focus_Loss_Function();
+  if (Misc_Focus_Loss_Function) {
+    Misc_Focus_Loss_Function();
+  }
 
   // Release primary surface
   VisiblePage.Un_Init();
@@ -2923,7 +2951,9 @@ bool PlayMpegMovie(const char* name) {
         MpgSetCallback(MpegCallback, nullptr);
         MpgPlay(filename, DirectDrawObject, primary, &rect);
 
-        if (primary) primary->Release();
+        if (primary) {
+          primary->Release();
+        }
       }
 
       DirectDrawObject->SetDisplayMode(ScreenWidth, ScreenHeight, 8);
@@ -3072,7 +3102,9 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
   /*
   **	If there is no shape file, then there can be no radar icon imagery.
   */
-  if (!shapefile) return nullptr;
+  if (!shapefile) {
+    return nullptr;
+  }
 
 #if (0)
   CCPalette.Set();
@@ -3099,7 +3131,9 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
   ** If we have been told to build as many frames as possible, then
   ** find out how many frames there are to build.
   */
-  if (frames == -1) frames = Get_Build_Frame_Count(shapefile);
+  if (frames == -1) {
+    frames = Get_Build_Frame_Count(shapefile);
+  }
 
   /*
   ** Allocate a position to store our icons.  If the alloc fails then
@@ -3157,7 +3191,9 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
                                    ((gety - _offy[lp]) * pixel_width) + getx -
                                        _offx[lp]);
 #endif  // WIN32
-                  if (pixel == LTGREEN) pixel = 0;
+                  if (pixel == LTGREEN) {
+                    pixel = 0;
+                  }
                   if (pixel) {
                     break;
                   }
@@ -3574,7 +3610,9 @@ long VQ_Call_Back(unsigned char*, long) {
 long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
 #ifdef PORTABLE
   // vsync while waiting for frame
-  if (event == VQAEVENT_SYNC) Video_End_Frame();
+  if (event == VQAEVENT_SYNC) {
+    Video_End_Frame();
+  }
 #endif
   return 0;
 }
@@ -3739,7 +3777,9 @@ void Handle_Team(int team, int action) {
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
-          if (obj->Group == team) obj->Group = 0xFF;
+          if (obj->Group == team) {
+            obj->Group = 0xFF;
+          }
           if (obj->IsSelected) {
             obj->Group = team;
             obj->Mark(MARK_CHANGE);
@@ -3760,7 +3800,9 @@ void Handle_Team(int team, int action) {
       for (index = 0; index < Vessels.Count(); index++) {
         VesselClass* obj = Vessels.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
-          if (obj->Group == team) obj->Group = -1;
+          if (obj->Group == team) {
+            obj->Group = -1;
+          }
           if (obj->IsSelected) {
             obj->Group = team;
             obj->Mark(MARK_CHANGE);
@@ -3781,7 +3823,9 @@ void Handle_Team(int team, int action) {
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
-          if (obj->Group == team) obj->Group = 0xFF;
+          if (obj->Group == team) {
+            obj->Group = 0xFF;
+          }
           if (obj->IsSelected) {
             obj->Group = team;
             obj->Mark(MARK_CHANGE);
@@ -3799,7 +3843,9 @@ void Handle_Team(int team, int action) {
       for (index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
-          if (obj->Group == team) obj->Group = 0xFF;
+          if (obj->Group == team) {
+            obj->Group = 0xFF;
+          }
           if (obj->IsSelected) {
             obj->Group = team;
             obj->Mark(MARK_CHANGE);
@@ -3840,8 +3886,12 @@ void Handle_Team(int team, int action) {
       for (index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
-          if (obj->Group == team) obj->Group = 0xFF;
-          if (obj->IsSelected) obj->Group = team;
+          if (obj->Group == team) {
+            obj->Group = 0xFF;
+          }
+          if (obj->IsSelected) {
+            obj->Group = team;
+          }
           if (obj->Group == team && obj->IsSelected) {
 #if (1)
             obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000);
@@ -3969,13 +4019,16 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
         ** Match the volume label to the list of known C&C volume labels.
         */
         for (int i = 0; i < _Num_Volumes; i++) {
-          if (!stricmp(_CD_Volume_Label[i], volume_name)) return (i);
+          if (!stricmp(_CD_Volume_Label[i], volume_name)) {
+            return (i);
+          }
         }
       } else {
-        if (!count)
+        if (!count) {
           count++;
-        else
+        } else {
           return -1;
+        }
       }
     } else {
       /*
@@ -3984,11 +4037,15 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
       *return
       ** immediately if the error is ROR_NOT_READY
       */
-      if (!timer.Time()) return -1;
+      if (!timer.Time()) {
+        return -1;
+      }
 
       int val = GetLastError();
 
-      if (val != ROR_NOT_READY) return -1;
+      if (val != ROR_NOT_READY) {
+        return -1;
+      }
     }
   }
 #endif
@@ -4061,7 +4118,9 @@ bool Force_CD_Available(int cd_desired)  //	ajw
   ** If the required CD is set to -2 then it means that the file is present
   ** on the local hard drive and we shouldn't have to worry about it.
   */
-  if (cd_desired == CD_LOCAL) return true;
+  if (cd_desired == CD_LOCAL) {
+    return true;
+  }
 
   /*
   ** Find out if the CD in the current drive is the one we are looking for
@@ -4085,8 +4144,9 @@ bool Force_CD_Available(int cd_desired)  //	ajw
     if (cd_desired == CD_CS_OR_AM) {
       // If the current cd is CS or AM then change request to whatever
       // is present.
-      if (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH)
+      if (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH) {
         cd_desired = cd_current;
+      }
     }
     // If the current CD is requested or any CD will work
     if (cd_desired == cd_current || cd_desired == CD_ANY) {
@@ -4133,8 +4193,9 @@ bool Force_CD_Available(int cd_desired)  //	ajw
         if (cd_desired == CD_CS_OR_AM) {
           // If the cd is CS or AM then change request to whatever
           // is present.
-          if (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH)
+          if (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH) {
             cd_desired = cd_current;
+          }
         }
         // If the cd is present or any cd will work
         if (cd_desired == cd_current || cd_desired == CD_ANY) {
@@ -4174,8 +4235,9 @@ bool Force_CD_Available(int cd_desired)  //	ajw
           if (cd_desired == CD_CS_OR_AM) {
             // If the cd is CS or AM then change request to whatever
             // is present.
-            if (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH)
+            if (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH) {
               cd_desired = cd_current;
+            }
           }
 
           if (cd_desired == cd_current || cd_desired == CD_ANY) {
@@ -4192,7 +4254,9 @@ bool Force_CD_Available(int cd_desired)  //	ajw
       /*
       ** A new disc has become available so break
       */
-      if (new_cd_drive) break;
+      if (new_cd_drive) {
+        break;
+      }
 
       /*
       ** Increase the timeout for subsequent drive searches.
@@ -4203,7 +4267,9 @@ bool Force_CD_Available(int cd_desired)  //	ajw
       **	Prompt to insert the CD into the drive.
       */
       // V.Grippi
-      if (cd_desired == CD_CS_OR_AM) cd_desired = CD_AFTERMATH;
+      if (cd_desired == CD_CS_OR_AM) {
+        cd_desired = CD_AFTERMATH;
+      }
 
       if (cd_desired == CD_DVD) {
 #ifdef FRENCH
@@ -4251,16 +4317,22 @@ bool Force_CD_Available(int cd_desired)  //	ajw
 
       Keyboard->Clear();
 
-      while (Get_Mouse_State()) Show_Mouse();
+      while (Get_Mouse_State()) {
+        Show_Mouse();
+      }
 
       if (WWMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {
         Set_Logic_Page(oldpage);
-        while (hidden--) Hide_Mouse();
+        while (hidden--) {
+          Hide_Mouse();
+        }
         return false;
       }
 
-      while (hidden--) Hide_Mouse();
+      while (hidden--) {
+        Hide_Mouse();
+      }
       Set_Font(font);
       Set_Logic_Page(oldpage);
     }
@@ -4275,7 +4347,9 @@ bool Force_CD_Available(int cd_desired)  //	ajw
   **	If it broke out of the query for CD-ROM loop, then this means that the
   **	CD-ROM has been inserted.
   */
-  if (cd_desired == 4) cd_desired--;
+  if (cd_desired == 4) {
+    cd_desired--;
+  }
 
   //	ajw - Added condition of cd_desired != 5 to the following if.
   //	Reason: This was triggering before Init_Secondary_Mixfiles(), which was
@@ -4298,10 +4372,11 @@ bool Force_CD_Available(int cd_desired)  //	ajw
     MainMix = new MFCD("MAIN.MIX", &FastKey);
     assert(MainMix != nullptr);
     //		ConquerMix = new MFCD("CONQUER.MIX", &FastKey);
-    if (CCFileClass("MOVIES1.MIX").Is_Available())
+    if (CCFileClass("MOVIES1.MIX").Is_Available()) {
       MoviesMix = new MFCD("MOVIES1.MIX", &FastKey);
-    else
+    } else {
       MoviesMix = new MFCD("MOVIES2.MIX", &FastKey);
+    }
     assert(MoviesMix != nullptr);
     GeneralMix = new MFCD("GENERAL.MIX", &FastKey);
     ScoreMix = new MFCD("SCORES.MIX", &FastKey);
@@ -4506,7 +4581,9 @@ void* Hires_Load(char* name) {
 CrateType Crate_From_Name(const char* name) {
   if (name != nullptr) {
     for (CrateType crate = CRATE_FIRST; crate < CRATE_COUNT; crate++) {
-      if (stricmp(name, CrateNames[crate]) == 0) return crate;
+      if (stricmp(name, CrateNames[crate]) == 0) {
+        return crate;
+      }
     }
   }
   return CRATE_MONEY;
@@ -4584,7 +4661,9 @@ void Shake_The_Screen(int shakes) {
         break;
     }
 #ifdef PORTABLE
-    while (x == TickCount) Video_End_Frame();
+    while (x == TickCount) {
+      Video_End_Frame();
+    }
 #else
     while (x == TickCount);
 #endif
@@ -4626,7 +4705,9 @@ void List_Copy(const short* source, int len, short* dest) {
 
   while (len > 0) {
     *dest = *source;
-    if (*dest == REFRESH_EOL) break;
+    if (*dest == REFRESH_EOL) {
+      break;
+    }
     dest++;
     source++;
     len--;
@@ -4674,15 +4755,17 @@ bool Is_Counterstrike_Installed() {
   if (!bAlreadyChecked) {
     HKEY hKey;
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ,
-                     &hKey) != ERROR_SUCCESS)
+                     &hKey) != ERROR_SUCCESS) {
       return false;
+    }
     DWORD dwValue;
     DWORD dwBufSize = sizeof(DWORD);
     if (RegQueryValueEx(hKey, "CStrikeInstalled", 0, nullptr, (LPBYTE)&dwValue,
-                        &dwBufSize) != ERROR_SUCCESS)
+                        &dwBufSize) != ERROR_SUCCESS) {
       bInstalled = false;
-    else
+    } else {
       bInstalled = (bool)dwValue;  //	(Presumably true, if it's there...)
+    }
 
     RegCloseKey(hKey);
     bAlreadyChecked = true;
@@ -4706,15 +4789,17 @@ bool Is_Aftermath_Installed() {
   if (!bAlreadyChecked) {
     HKEY hKey;
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ,
-                     &hKey) != ERROR_SUCCESS)
+                     &hKey) != ERROR_SUCCESS) {
       return false;
+    }
     DWORD dwValue;
     DWORD dwBufSize = sizeof(DWORD);
     if (RegQueryValueEx(hKey, "AftermathInstalled", 0, nullptr,
-                        (LPBYTE)&dwValue, &dwBufSize) != ERROR_SUCCESS)
+                        (LPBYTE)&dwValue, &dwBufSize) != ERROR_SUCCESS) {
       bInstalled = false;
-    else
+    } else {
       bInstalled = (bool)dwValue;  //	(Presumably true, if it's there...)
+    }
 
     RegCloseKey(hKey);
     bAlreadyChecked = true;

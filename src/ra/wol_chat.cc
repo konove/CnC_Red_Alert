@@ -232,10 +232,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   TextButtonClass BackBtn(BUTTON_BACK, TXT_WOL_BACK, TPF_BUTTON, d_back_x,
                           d_back_y, d_back_w);
   char* szRecordToStartWith;
-  if (pWO->bShowRankRA)
+  if (pWO->bShowRankRA) {
     szRecordToStartWith = pWO->szMyRecord;
-  else
+  } else {
     szRecordToStartWith = pWO->szMyRecordAM;
+  }
   StaticButtonClass chatlistTitle(0, szRecordToStartWith, TPF_TYPE,
                                   d_chatlist_x + 2, d_chatlist_y - 13,
                                   d_chatlist_w - 4, 12);
@@ -376,9 +377,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     pWO->RestoreChat();
     pWO->DeleteSavedChat();
 
-    if (pWO->bReturningAfterGame)
+    if (pWO->bReturningAfterGame) {
       pWO->RejoinLobbyAfterGame();
-    else {
+    } else {
       if (pWO->pChatSink->bGotKickedTrigger) {
         //	We got kicked out of a game setup.
         WOL_PrintMessage(chatlist, TXT_WOL_YOUWEREKICKEDFROMGAME,
@@ -395,18 +396,20 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       pWO->OnEnteringChatChannel(
           szChannelToJoin, false,
           iChannelLobbyNumber((unsigned char*)szChannelToJoin));
-    } else
+    } else {
       //	Will never happen presumably, if games are always entered via a
       // lobby chat channel.
       pWO->EnterLevel_Top();
+    }
 
     pWO->iLobbyReturnAfterGame = -1;
 
     if (pWO->bReturningAfterGame) {
       Sound_Effect(WOLSOUND_LOGIN);
       pWO->bReturningAfterGame = false;
-    } else
+    } else {
       Sound_Effect(WOLSOUND_EXITGAME);
+    }
   }
 
   //	Cause a refresh of szMyRecord, the string showing my win/loss record.
@@ -451,7 +454,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
       //	Special post-callback processing...
       if (pWO->bSelfDestruct) {
-        if (pWO->pChatSink->bConnected) pWO->Logout();
+        if (pWO->pChatSink->bConnected) {
+          pWO->Logout();
+        }
         rc = -1;  //	As if the user logged himself out.
         process = false;
         break;
@@ -472,10 +477,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         display = REDRAW_ALL;
       }
       if (pWO->bMyRecordUpdated) {
-        if (pWO->bShowRankRA)
+        if (pWO->bShowRankRA) {
           chatlistTitle.Set_Text(pWO->szMyRecord);
-        else
+        } else {
           chatlistTitle.Set_Text(pWO->szMyRecordAM);
+        }
         pWO->bMyRecordUpdated = false;
       }
       if (pWO->bChannelListTitleUpdated) {
@@ -636,7 +642,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (Get_Mouse_State()) Show_Mouse();
+    while (Get_Mouse_State()) {
+      Show_Mouse();
+    }
     //	Be nice to other apps.
     Sleep(50);
 
@@ -693,8 +701,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           }
         }
       } else {
-        if (pToolTipHitLast && pToolTipHitLast->bShowing)
+        if (pToolTipHitLast && pToolTipHitLast->bShowing) {
           pToolTipHitLast->Unshow();
+        }
         pToolTipHitLast = pToolTipHit;
         timeToolTipAppear = ::timeGetTime() + TOOLTIPDELAY;
       }
@@ -730,10 +739,13 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       case (BUTTON_EXPANDCHANNELS | KN_BUTTON):
         if (OnExpandChannelList(chanlist, userlist)) {
           //	Hide userlist.
-          if (ExpandUserBtn.Get_Next() == &userlist) userlist.Remove();
+          if (ExpandUserBtn.Get_Next() == &userlist) {
+            userlist.Remove();
+          }
           //	Ensure chanlist is visible.
-          if (ExpandChanBtn.Get_Next() != &chanlist)
+          if (ExpandChanBtn.Get_Next() != &chanlist) {
             chanlist.Add(ExpandChanBtn);
+          }
           //	Move userlist expand button.
           ExpandUserBtn.Set_Position(ExpandUserBtn.X,
                                      chanlist.Y + chanlist.Height);
@@ -745,8 +757,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           ExpandUserBtn.Set_Shape(pShpExpand);
         } else {
           //	Show userlist.
-          if (ExpandUserBtn.Get_Next() != &userlist)
+          if (ExpandUserBtn.Get_Next() != &userlist) {
             userlist.Add(ExpandUserBtn);
+          }
           //	Move userlist expand button.
           ExpandUserBtn.Set_Position(ExpandUserBtn.X, userlist.Y - 14);
           TTipUserExpand.Move(ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
@@ -766,17 +779,21 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       case (BUTTON_EXPANDUSERS | KN_BUTTON):
         if (OnExpandUserList(chanlist, userlist)) {
           //	Hide chanlist controls.
-          if (ExpandChanBtn.Get_Next() == &chanlist) chanlist.Remove();
+          if (ExpandChanBtn.Get_Next() == &chanlist) {
+            chanlist.Remove();
+          }
           //	Ensure userlist is visible.
-          if (ExpandUserBtn.Get_Next() != &userlist)
+          if (ExpandUserBtn.Get_Next() != &userlist) {
             userlist.Add(ExpandUserBtn);
+          }
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpExpand);
           ExpandUserBtn.Set_Shape(pShpUnexpand);
         } else {
           //	Show chanlist.
-          if (ExpandChanBtn.Get_Next() != &chanlist)
+          if (ExpandChanBtn.Get_Next() != &chanlist) {
             chanlist.Add(ExpandChanBtn);
+          }
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpExpand);
           ExpandUserBtn.Set_Shape(pShpExpand);
@@ -933,8 +950,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         if (WWMessageBox().Process(TXT_WOL_CONFIRMLOGOUT, TXT_YES, TXT_NO) ==
             0) {
           if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
-              pWO->CurrentLevel == WOL_LEVEL_INLOBBY)
+              pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
             ExitChatChannel(pWO);
+          }
           pWO->Logout();
           rc = -1;
           process = false;
@@ -998,7 +1016,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
   }  // end of while
 
-  if (pToolTipHitLast && pToolTipHitLast->bShowing) pToolTipHitLast->Unshow();
+  if (pToolTipHitLast && pToolTipHitLast->bShowing) {
+    pToolTipHitLast->Unshow();
+  }
 
   /*
           //------------------------------------------------------------------------
@@ -1028,7 +1048,9 @@ void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
 void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
                       RemapControlType* pColorRemap) {
   ILTarget.Add_Item(szText, NULL, NULL, ICON_SHAPE, NULL, NULL, pColorRemap);
-  if (!ILTarget.bScrollBeingDragged()) ILTarget.Show_Last_Item();
+  if (!ILTarget.bScrollBeingDragged()) {
+    ILTarget.Show_Last_Item();
+  }
 }
 
 //***********************************************************************************************
@@ -1080,21 +1102,23 @@ bool OnExpandUserList(IconListClass& chanlist, IconListClass& userlist) {
 //***********************************************************************************************
 void ResizeChannelList(IconListClass& chanlist, bool bExpand) {
   //	If bExpand, makes list big, else normal size.
-  if (bExpand)
+  if (bExpand) {
     chanlist.Resize(d_chanlist_x, d_chanlist_y, d_chanlist_w,
                     d_userlist_y + d_userlist_h - 15 - d_chanlist_y);
-  else
+  } else {
     chanlist.Resize(d_chanlist_x, d_chanlist_y, d_chanlist_w, d_chanlist_h);
+  }
 }
 
 //***********************************************************************************************
 void ResizeUserList(IconListClass& userlist, bool bExpand) {
   //	If bExpand, makes list big, else normal size.
-  if (bExpand)
+  if (bExpand) {
     userlist.Resize(d_userlist_x, d_chanlist_y + 15, d_userlist_w,
                     d_userlist_y + d_userlist_h - (d_chanlist_y + 15));
-  else
+  } else {
     userlist.Resize(d_userlist_x, d_userlist_y, d_userlist_w, d_userlist_h);
+  }
 }
 
 //***********************************************************************************************
@@ -1140,7 +1164,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     //	It is possible to enter a game channel while currently in a chat
     // channel. (A lobby, presumably.)
     if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
-        pWO->CurrentLevel == WOL_LEVEL_INLOBBY)
+        pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
       if (!pWO->ExitChatChannelForGameChannel()) {
         *pWO->szChannelReturnOnGameEnterFail = 0;
         //				debugprint(
@@ -1148,6 +1172,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
         pWO->bSelfDestruct = true;
         return false;
       }
+    }
   }
 
   /*	The following doesn't work because the needpw field is not currently
@@ -1166,7 +1191,9 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
 
   //	Set password automatically for our lobbies, if trying to join one.
   int iLobby = iChannelLobbyNumber(pChannel->name);
-  if (iLobby != -1) strcpy((char*)pChannel->key, LOBBYPASSWORD);
+  if (iLobby != -1) {
+    strcpy((char*)pChannel->key, LOBBYPASSWORD);
+  }
 
   char szSuccessfulPassword[WOL_PASSWORD_LEN + 5];
   *szSuccessfulPassword = 0;
@@ -1243,18 +1270,20 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
   }
 
   if (!bGame) {
-    if (hRes == S_OK)
+    if (hRes == S_OK) {
       return pWO->OnEnteringChatChannel((char*)pChannel->name, false, iLobby);
-    else
+    } else {
       return false;
+    }
   } else {
     if (hRes == S_OK) {
       *pWO->szChannelReturnOnGameEnterFail = 0;
       //	Return later to the lobby of the channel creator - which was
       // saved in the channel itself.
       pWO->iLobbyReturnAfterGame = pChannel->reserved & 0x00FFFFFF;
-      if (pWO->iLobbyReturnAfterGame == 0x00FFFFFF)
+      if (pWO->iLobbyReturnAfterGame == 0x00FFFFFF) {
         pWO->iLobbyReturnAfterGame = -1;
+      }
       CREATEGAMEINFO CreateGameInfo;
       //	Not all of these values are currently used during setup.
       CreateGameInfo.bCreateGame = false;
@@ -1325,12 +1354,14 @@ void CreateChatChannel(WolapiObject* pWO) {
         *pEditDlg->szEdit) {
       pWO->bPump_In_Call_Back = false;
       if (*pEditDlg->szEdit2) {
-        if (pWO->ChannelCreate(pEditDlg->szEdit, pEditDlg->szEdit2))
+        if (pWO->ChannelCreate(pEditDlg->szEdit, pEditDlg->szEdit2)) {
           pWO->OnEnteringChatChannel(pEditDlg->szEdit, true, -1);
+        }
       } else {
         //	Create public channel.
-        if (pWO->ChannelCreate(pEditDlg->szEdit, NULL))
+        if (pWO->ChannelCreate(pEditDlg->szEdit, NULL)) {
           pWO->OnEnteringChatChannel(pEditDlg->szEdit, true, -1);
+        }
       }
     }
     pWO->bPump_In_Call_Back = false;
@@ -1345,7 +1376,7 @@ bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi) {
   sprintf(szNewChannelName, "%s's_game", pWO->szMyName);
 
   if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
-      pWO->CurrentLevel == WOL_LEVEL_INLOBBY)
+      pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
     if (!pWO->ExitChatChannelForGameChannel()) {
       *pWO->szChannelReturnOnGameEnterFail = 0;
       //			debugprint( "ExitChatChannelForGameChannel in
@@ -1353,17 +1384,19 @@ bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi) {
       pWO->bSelfDestruct = true;
       return false;
     }
+  }
 
   const char* szKey;
-  if (*cgi.szPassword)
+  if (*cgi.szPassword) {
     szKey = cgi.szPassword;
-  else
+  } else {
     szKey = NULL;
+  }
 
   if (pWO->ChannelCreate(szNewChannelName, szKey, true, cgi.iPlayerMax,
-                         cgi.bTournament, pWO->iLobbyLast, cgi.GameKind))
+                         cgi.bTournament, pWO->iLobbyLast, cgi.GameKind)) {
     pWO->OnEnteringGameChannel(szNewChannelName, true, cgi);
-  else {
+  } else {
     pWO->OnFailedToEnterGameChannel();
     //		debugprint( "CreateGameChannel fail" );
     return false;
@@ -1379,7 +1412,9 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
   //	Takes whatever action necessary due to user selecting iIndex from
   // chanlist. 	Returns true if user selected to enter a game channel, else
   // false.
-  if (iIndex < 0) return false;
+  if (iIndex < 0) {
+    return false;
+  }
 
   //	debugprint( "iIndex %i\n", iIndex );
 
@@ -1533,7 +1568,9 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
 bool bLinkInList(const LinkClass* pListHead, const LinkClass* pLinkToFind) {
   const LinkClass* pLink = pListHead;
   while (pLink) {
-    if (pLink == pLinkToFind) return true;
+    if (pLink == pLinkToFind) {
+      return true;
+    }
     pLink = pLink->Get_Next();
   }
   return false;

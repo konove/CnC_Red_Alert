@@ -660,7 +660,9 @@ int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
   }
 
   rc = Connection->Send_Packet(buf, buflen, ack_req);
-  if (!rc) SendOverflows++;
+  if (!rc) {
+    SendOverflows++;
+  }
 
   return rc;
 
@@ -991,7 +993,9 @@ unsigned long NullModemClass::Response_Time() {
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
 void NullModemClass::Reset_Response_Time() {
-  if (Connection) Connection->Queue->Reset_Response_Time();
+  if (Connection) {
+    Connection->Queue->Reset_Response_Time();
+  }
 
 } /* end of Reset_Response_Time */
 
@@ -1060,8 +1064,9 @@ void* NullModemClass::Oldest_Send() {
  *=========================================================================*/
 void NullModemClass::Configure_Debug(int, int offset, int size, char** names,
                                      int maxnames) {
-  if (Connection)
+  if (Connection) {
     Connection->Queue->Configure_Debug(offset, size, names, maxnames);
+  }
 }
 
 /***************************************************************************
@@ -1083,7 +1088,9 @@ void NullModemClass::Configure_Debug(int, int offset, int size, char** names,
  *   05/02/1995 BRR : Created.                                             *
  *=========================================================================*/
 void NullModemClass::Mono_Debug_Print(int, int refresh) {
-  if (!Connection) return;
+  if (!Connection) {
+    return;
+  }
 
   Connection->Queue->Mono_Debug_Print(refresh);
 
@@ -1315,8 +1322,9 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                                     DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL))
+                                     TXT_CANCEL)) {
             return false;
+          }
         }
       }
     } else {
@@ -1330,8 +1338,9 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                                     DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL))
+                                     TXT_CANCEL)) {
             return false;
+          }
         }
       }
     }
@@ -1346,8 +1355,9 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL))
+                                     TXT_CANCEL)) {
             return false;
+          }
         }
       }
     } else {
@@ -1357,8 +1367,9 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL))
+                                     TXT_CANCEL)) {
             return false;
+          }
         }
       }
     }
@@ -1373,8 +1384,9 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE,
-                                     TXT_IGNORE, TXT_CANCEL))
+                                     TXT_IGNORE, TXT_CANCEL)) {
             return false;
+          }
         }
       }
     } else {
@@ -1384,8 +1396,9 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE,
-                                     TXT_IGNORE, TXT_CANCEL))
+                                     TXT_IGNORE, TXT_CANCEL)) {
             return false;
+          }
         }
       }
     }
@@ -1396,8 +1409,9 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   status = Send_Modem_Command("ATS0=0", '\r', buffer, 81, DEFAULT_TIMEOUT,
                               INIT_COMMAND_RETRIES);
   if (status != MODEM_CMD_OK) {
-    if (CCMessageBox().Process(TXT_ERROR_NO_DISABLE, TXT_IGNORE, TXT_CANCEL))
+    if (CCMessageBox().Process(TXT_ERROR_NO_DISABLE, TXT_IGNORE, TXT_CANCEL)) {
       return false;
+    }
     error_count++;
   }
 
@@ -1600,7 +1614,9 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
     ............................ Process input ............................
     */
     CCDebugString("C&C95 - About to check for keyboard input.\n");
-    if (!Input) Input = Commands->Input();
+    if (!Input) {
+      Input = Commands->Input();
+    }
 
     switch (Input) {
       case KN_ESC:
@@ -1810,7 +1826,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     /*
     ............................ Process input ............................
     */
-    if (!Input) Input = Commands->Input();
+    if (!Input) {
+      Input = Commands->Input();
+    }
     switch (Input) {
       case KN_ESC:
       case BUTTON_CANCEL | KN_BUTTON:

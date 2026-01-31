@@ -21,8 +21,12 @@
 //***********************************************************************************************
 BMP8::~BMP8() {
   // free resources
-  if (hBitmap) ::DeleteObject(hBitmap);
-  if (hPal) ::DeleteObject(hPal);
+  if (hBitmap) {
+    ::DeleteObject(hBitmap);
+  }
+  if (hPal) {
+    ::DeleteObject(hPal);
+  }
 }
 
 //***********************************************************************************************
@@ -46,11 +50,14 @@ bool BMP8::Init(const char* szFile, HWND hWnd) {
   this->hWnd = hWnd;
 
   //	Retrieve a handle identifying the file.
-  HANDLE hFile = ::CreateFile(szFile, GENERIC_READ, FILE_SHARE_READ,
-                              static_cast<LPSECURITY_ATTRIBUTES>(NULL), OPEN_EXISTING,
-                              FILE_ATTRIBUTE_READONLY, static_cast<HANDLE>(NULL));
+  HANDLE hFile =
+      ::CreateFile(szFile, GENERIC_READ, FILE_SHARE_READ,
+                   static_cast<LPSECURITY_ATTRIBUTES>(NULL), OPEN_EXISTING,
+                   FILE_ATTRIBUTE_READONLY, static_cast<HANDLE>(NULL));
 
-  if (!hFile) return false;
+  if (!hFile) {
+    return false;
+  }
 
   // Retrieve the BITMAPFILEHEADER structure.
   ::ReadFile(hFile, &bitmapHeader, sizeof(BITMAPFILEHEADER), &dwRead,
@@ -65,7 +72,8 @@ bool BMP8::Init(const char* szFile, HWND hWnd) {
       GHND, sizeof(BITMAPINFOHEADER) +
                 (1 << bitmapInfoHeader.biBitCount) * sizeof(RGBQUAD));
 
-  LPBITMAPINFO lpHeaderMem = static_cast<LPBITMAPINFO>(::GlobalLock(infoHeaderMem));
+  LPBITMAPINFO lpHeaderMem =
+      static_cast<LPBITMAPINFO>(::GlobalLock(infoHeaderMem));
 
   // Load BITMAPINFOHEADER into the BITMAPINFO structure.
   lpHeaderMem->bmiHeader.biSize = bitmapInfoHeader.biSize;
@@ -114,9 +122,13 @@ bool BMP8::Init(const char* szFile, HWND hWnd) {
   // Create a bitmap from the data stored in the .BMP file.
   hdc = ::GetDC(hWnd);
   select = ::SelectPalette(hdc, hPal, 0);
-  if (!select) return false;
+  if (!select) {
+    return false;
+  }
   realize = ::RealizePalette(hdc);
-  if (realize == GDI_ERROR) return false;
+  if (realize == GDI_ERROR) {
+    return false;
+  }
 
   hBMP = ::CreateDIBitmap(hdc, &bitmapInfoHeader, CBM_INIT, lpvBits,
                           lpHeaderMem, DIB_RGB_COLORS);
@@ -127,7 +139,9 @@ bool BMP8::Init(const char* szFile, HWND hWnd) {
   ::GlobalUnlock(hmem2);
   ::CloseHandle(hFile);
 
-  if (!hBMP) return false;
+  if (!hBMP) {
+    return false;
+  }
 
   return true;
 }
@@ -159,7 +173,7 @@ bit8 BMP8::drawBmp() {
   HDC hdcMem = CreateCompatibleDC(ps.hdc);
   SelectObject(hdcMem, BitmapHandle_);
   BITMAP bm;
-  GetObject(BitmapHandle_, sizeof(BITMAP), LPSTR&bm);
+  GetObject(BitmapHandle_, sizeof(BITMAP), LPSTR & bm);
 
   /// for non-stretching version
   ///////BitBlt(ps.hdc, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);

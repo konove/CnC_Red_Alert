@@ -142,25 +142,37 @@ void RawFileClass::Error(int error, int canretry, const char* filename) {
   **	Add the text explaining the valid actions to take.
   */
   if (canretry) {
-    if (GraphicMode == TXT_MODE) strcat(message, "\n");
+    if (GraphicMode == TXT_MODE) {
+      strcat(message, "\n");
+    }
 #ifdef GERMAN
     strcat(message, " Beliebige Taste drücken für erneuten Versuch.");
-    if (GraphicMode == TXT_MODE) strcat(message, "\n");
+    if (GraphicMode == TXT_MODE) {
+      strcat(message, "\n");
+    }
     strcat(message, " <ESC> drücken, um das Programm zu verlassen.");
 #else
 #ifdef FRENCH
     strcat(message, " Appuyez sur une touche pour recommencer.");
-    if (GraphicMode == TXT_MODE) strcat(message, "\n");
+    if (GraphicMode == TXT_MODE) {
+      strcat(message, "\n");
+    }
     strcat(message, " Appuyez sur Echap pour quitter le programme.");
 #else
     strcat(message, " Press any key to retry.");
-    if (GraphicMode == TXT_MODE) strcat(message, "\n");
+    if (GraphicMode == TXT_MODE) {
+      strcat(message, "\n");
+    }
     strcat(message, " Press <ESC> to exit program.");
 #endif
 #endif
-    if (GraphicMode == TXT_MODE) strcat(message, "\n");
+    if (GraphicMode == TXT_MODE) {
+      strcat(message, "\n");
+    }
   } else {
-    if (GraphicMode == TXT_MODE) strcat(message, "\n");
+    if (GraphicMode == TXT_MODE) {
+      strcat(message, "\n");
+    }
 #ifdef GERMAN
     strcat(message, " Beliebige Taste drücken, um das Programm zu verlassen.");
 #else
@@ -170,7 +182,9 @@ void RawFileClass::Error(int error, int canretry, const char* filename) {
     strcat(message, " Press any key to exit program.");
 #endif
 #endif
-    if (GraphicMode == TXT_MODE) strcat(message, "\n");
+    if (GraphicMode == TXT_MODE) {
+      strcat(message, "\n");
+    }
   }
 
   /*
@@ -359,7 +373,9 @@ const char* RawFileClass::Set_Name(const char* filename) {
     Allocated = false;
   }
 
-  if (!filename) return nullptr;
+  if (!filename) {
+    return nullptr;
+  }
 
   size_t len = strlen(filename) + 1;
   char* name_copy = new (std::nothrow) char[len];
@@ -444,7 +460,9 @@ int RawFileClass::Open(int rights) {
     */
 #ifdef PORTABLE
     Handle = IO_Open_File(Filename, rights);
-    if (!Handle) return false;
+    if (!Handle) {
+      return false;
+    }
 #else
     Hard_Error_Occured = 0;
     switch (rights) {
@@ -559,7 +577,9 @@ int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
 
       if (file) {
         // if successful, replace the filename with the working one
-        if (Allocated) delete[] Filename;
+        if (Allocated) {
+          delete[] Filename;
+        }
 
         static_cast<const char*&>(Filename) = lower_name;
         Allocated = true;
@@ -568,7 +588,9 @@ int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
       }
     }
 
-    if (!file) return false;
+    if (!file) {
+      return false;
+    }
 #else
     Hard_Error_Occured = 0;
     open_failed = _dos_open(Filename, O_RDONLY | SH_DENYNO, &file);
@@ -787,7 +809,9 @@ long RawFileClass::Read(void* buffer, long size) {
         buffer = Add_Long_To_Pointer(buffer, actual);
         bytesread += actual;
         size -= actual;
-        if (actual != desired) break;  // No more data?
+        if (actual != desired) {
+          break;  // No more data?
+        }
       }
     }
   }
@@ -796,7 +820,9 @@ long RawFileClass::Read(void* buffer, long size) {
   **	Close the file if it was opened by this routine and return
   **	the actual number of bytes read into the buffer.
   */
-  if (opened) Close();
+  if (opened) {
+    Close();
+  }
   return bytesread;
 }
 
@@ -1096,7 +1122,9 @@ int RawFileClass::Delete() {
   }
 
 #ifdef PORTABLE
-  if (!IO_Delete_File(Filename)) return false;
+  if (!IO_Delete_File(Filename)) {
+    return false;
+  }
 #else
   /*
   **	Repetitively try to delete the file if possible. Either return with
@@ -1130,7 +1158,9 @@ int RawFileClass::Delete() {
       *exit with this *	fact. It should have been caught earlier, but in any
       *case, this is a legal *	condition.
       */
-      if (errno == ENOENT) break;
+      if (errno == ENOENT) {
+        break;
+      }
 
       /*
       **	The only way it can reach this point is if DOS indicates that

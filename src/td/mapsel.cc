@@ -674,16 +674,25 @@ void Map_Selection() {
   int frame = 1;
 
   while (frame < Get_Animation_Frame_Count(anim)) {
-    if (frame == 16 || frame == 33 || frame == 44 || frame == 70 || frame == 73)
+    if (frame == 16 || frame == 33 || frame == 44 || frame == 70 ||
+        frame == 73) {
       Play_Sample(text2, 255, Options.Normalize_Sound(90));
-    if (frame == 21 || frame == 27)
+    }
+    if (frame == 21 || frame == 27) {
       Play_Sample(target1, 255, Options.Normalize_Sound(90));
-    if (frame == 45 || frame == 47 || frame == 49)
+    }
+    if (frame == 45 || frame == 47 || frame == 49) {
       Play_Sample(beepy6, 255, Options.Normalize_Sound(90));
-    if (frame == 51) Play_Sample(world2, 255, Options.Normalize_Sound(90));
-    if (frame == 70 || frame == 72)
+    }
+    if (frame == 51) {
+      Play_Sample(world2, 255, Options.Normalize_Sound(90));
+    }
+    if (frame == 70 || frame == 72) {
       Play_Sample(beepy2, 255, Options.Normalize_Sound(90));
-    if (frame == 74) Play_Sample(target2, 255, Options.Normalize_Sound(110));
+    }
+    if (frame == 74) {
+      Play_Sample(target2, 255, Options.Normalize_Sound(110));
+    }
 
     // the HEARTH_* animations don't have the text, but the EARTH_* ones do
     // (they're the same resolution, but the H are only available with
@@ -872,7 +881,9 @@ void Map_Selection() {
   Animate_Frame(progress, SysMemPage, startframe + 2);
   Bit_It_In_Scale(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, &SeenBuff, 1, 1);
   backpage.Blit(SysMemPage, 0, 0, xcoord, 11, 20 * 6, 8);
-  if (!lastscenario) Call_Back_Delay(85);
+  if (!lastscenario) {
+    Call_Back_Delay(85);
+  }
 //	Set_Font(oldfont);
 #ifdef FRENCH
   PseudoSeenBuff->Fill_Rect(xcoord, 12, xcoord + 6 * 16 + 10, 20, BLACK);
@@ -949,9 +960,15 @@ void Map_Selection() {
   for (frame = 0;
        frame < (lastscenario ? Get_Animation_Frame_Count(progress) - 4 : 13);
        frame++) {
-    if (!frame) Play_Sample(beepy3, 255, Options.Normalize_Sound(90));
-    if (frame == 2) Play_Sample(beepy3, 255, Options.Normalize_Sound(90));
-    if (frame == 6) Play_Sample(newtarg1, 255, Options.Normalize_Sound(90));
+    if (!frame) {
+      Play_Sample(beepy3, 255, Options.Normalize_Sound(90));
+    }
+    if (frame == 2) {
+      Play_Sample(beepy3, 255, Options.Normalize_Sound(90));
+    }
+    if (frame == 6) {
+      Play_Sample(newtarg1, 255, Options.Normalize_Sound(90));
+    }
 
     if (lastscenario) {
       switch (frame) {
@@ -1059,7 +1076,9 @@ void Map_Selection() {
   } else {
     CCFileClass f(lastscenario ? "CLICK_SA.CPS" : "CLICK_A.CPS");
     Load_Uncompress(f, SysMemPage, SysMemPage, nullptr);
-    if (lastscenario) attackxcoord = 200;
+    if (lastscenario) {
+      attackxcoord = 200;
+    }
   }
 
   //	Set_Font(ScoreFontPtr);
@@ -1070,7 +1089,9 @@ void Map_Selection() {
   Alloc_Object(
       new ScorePrintClass(TXT_MAP_TO_ATTACK, attackxcoord, 170, _greenpal));
   Cycle_Call_Back_Delay(24, progresspalette);
-  while (Get_Mouse_State() > 0) Show_Mouse();
+  while (Get_Mouse_State() > 0) {
+    Show_Mouse();
+  }
 
   Keyboard::Clear();
   while (!done) {
@@ -1088,7 +1109,9 @@ void Map_Selection() {
           ** Special hack for Egypt the second time through
           */
           if (CountryArray[scenario].CountryColor[ScenDir][selection] == 0xA0) {
-            if (color == 0x80 || color == 0x81) color = 0xA0;
+            if (color == 0x80 || color == 0x81) {
+              color = 0xA0;
+            }
           }
 
           if (CountryArray[scenario].CountryColor[ScenDir][selection] ==
@@ -1317,7 +1340,9 @@ void Print_Statistics(int country, int xpos, int ypos) {
     if (country > 30) {
       country = 15;  // hack for 2nd time in Egypt
     } else {
-      if (country >= 15) country++;  // hack to account for Egypt
+      if (country >= 15) {
+        country++;  // hack to account for Egypt
+      }
     }
     country++;
 
@@ -1388,11 +1413,12 @@ void Print_Statistics(int country, int xpos, int ypos) {
   int done = 0;
   while (!done) {
     done = 1;
-    for (int x = 0; x < MAXSCOREOBJS; x++)
+    for (int x = 0; x < MAXSCOREOBJS; x++) {
       if (ScoreObjs[x]) {
         done = 0;
         Call_Back_Delay(1);
       }
+    }
   }
   Keyboard::Clear();
   while (Keyboard::Check()) {
@@ -1458,10 +1484,12 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
   destx >>= 3;
   w >>= 3;
 
-  for (xindex = 0; xindex < w; xindex++)
+  for (xindex = 0; xindex < w; xindex++) {
     _xindex[xindex] = xindex; /* init the index array */
-  for (yindex = 0; yindex < h; yindex++)
+  }
+  for (yindex = 0; yindex < h; yindex++) {
     _yindex[yindex] = yindex; /* init the index array */
+  }
 
   /*
   **	Shuffle the X indexes around a bit.  This gives it
@@ -1500,7 +1528,9 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
       x = _xindex[xindex];
       y = _yindex[tempy];
       tempy++;
-      if (tempy >= h) tempy = 0;
+      if (tempy >= h) {
+        tempy = 0;
+      }
       src->Blit(*dest, (srcx + x) << 3, srcy + (y << 1), (destx + x) << 3,
                 desty + (y << 1), 1 << 3, 2);
     }
@@ -1537,8 +1567,12 @@ void Cycle_Call_Back_Delay(int time, unsigned char* pal) {
 }
 
 int LowMedHiStr(int percentage) {
-  if (percentage < 30) return TXT_MAP_LMH0;
-  if (percentage < 70) return TXT_MAP_LMH1;
+  if (percentage < 30) {
+    return TXT_MAP_LMH0;
+  }
+  if (percentage < 70) {
+    return TXT_MAP_LMH1;
+  }
   return TXT_MAP_LMH2;
 }
 
@@ -1582,9 +1616,13 @@ void Bit_It_In_Scale(int x, int y, int w, int h, GraphicBufferClass* src,
   xindex = static_cast<short int*>(ScaleBuffer);
   yindex = xindex + 320;
 
-  for (i = 0; i < w; i++) xindex[i] = i; /* init the index array */
-  for (i = 0; i < h; i++) yindex[i] = i; /* init the index array */
-  for (i = 0; i < w; i++) {              /* shuffle the indexes */
+  for (i = 0; i < w; i++) {
+    xindex[i] = i; /* init the index array */
+  }
+  for (i = 0; i < h; i++) {
+    yindex[i] = i; /* init the index array */
+  }
+  for (i = 0; i < w; i++) { /* shuffle the indexes */
     k = IRandom(0, w - 1);
     m = i;
     n = xindex[k];
@@ -1616,13 +1654,15 @@ void Bit_It_In_Scale(int x, int y, int w, int h, GraphicBufferClass* src,
         k = x + xindex[i];
         m = y + yindex[j1];
         j1++;
-        if (j1 >= h) j1 = 0;
+        if (j1 >= h) {
+          j1 = 0;
+        }
 
         Buffer_Put_Pixel(dest, k, m, Buffer_Get_Pixel(src, k, m));
         // n=src->Get_Pixel(k,m);
         // dest->Put_Pixel(k,m,n);
       }
-      if (dagger)
+      if (dagger) {
         for (int q = j; q >= 0; q--) {
           Buffer_Put_Pixel(dest, 160 - (j - q), q,
                            Buffer_Get_Pixel(src, 160 - (j - q), q));
@@ -1631,6 +1671,7 @@ void Bit_It_In_Scale(int x, int y, int w, int h, GraphicBufferClass* src,
           // dest->Put_Pixel(160-(j-q),q,src->Get_Pixel(160-(j-q),q));
           // dest->Put_Pixel(160+(j-q),q,src->Get_Pixel(160+(j-q),q));
         }
+      }
     }
     src->Unlock();
     dest->Unlock();

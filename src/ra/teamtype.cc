@@ -452,7 +452,9 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house, long,
       maxnum = 0;
     }
 
-    if (choicecount >= ARRAY_SIZE(choices)) break;
+    if (choicecount >= ARRAY_SIZE(choices)) {
+      break;
+    }
 
     if (ttype != nullptr && ttype->House == house->Class->House &&
         ttype->Number < maxnum) {
@@ -761,7 +763,9 @@ bool TeamTypeClass::Edit() {
   for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
-  if (House == HOUSE_NONE) House = HOUSE_GOOD;
+  if (House == HOUSE_NONE) {
+    House = HOUSE_GOOD;
+  }
   housebtn.Set_Selected_Index(House);
   housebtn.Add(*commands);
 
@@ -1539,7 +1543,9 @@ const char* TeamTypeClass::Description() const {
     char loc[3];
 
     loc[0] = loc[1] = loc[2] = 0;
-    if (IsAutocreate) extra = '*';
+    if (IsAutocreate) {
+      extra = '*';
+    }
     if (Origin > -1) {
       //	if (Origin != -1) {
       if (Origin < 26) {
@@ -1804,7 +1810,9 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
       Members[index].Quantity = atoi(p2);
     } else {
       ClassCount--;
-      if (index == 0) break;
+      if (index == 0) {
+        break;
+      }
       index--;
     }
   }

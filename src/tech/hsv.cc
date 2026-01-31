@@ -105,14 +105,20 @@ void HSVClass::Adjust(int ratio, const HSVClass& hsv) {
  *=============================================================================================*/
 int HSVClass::Difference(const HSVClass& hsv) const {
   int hue = static_cast<int>(Hue) - static_cast<int>(hsv.Hue);
-  if (hue < 0) hue = -hue;
+  if (hue < 0) {
+    hue = -hue;
+  }
 
   int saturation =
       static_cast<int>(Saturation) - static_cast<int>(hsv.Saturation);
-  if (saturation < 0) saturation = -saturation;
+  if (saturation < 0) {
+    saturation = -saturation;
+  }
 
   int value = static_cast<int>(Value) - static_cast<int>(hsv.Value);
-  if (value < 0) value = -value;
+  if (value < 0) {
+    value = -value;
+  }
 
   return hue * hue + saturation * saturation + value * value;
 }

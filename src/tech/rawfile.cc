@@ -260,13 +260,17 @@ int RawFileClass::Open(int rights) {
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
 int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
-  if (Filename_.empty()) return false;
+  if (Filename_.empty()) {
+    return false;
+  }
 
   /*
   **	If the file is already open, then is must have already passed the
   *availability check. *	Return true in this case.
   */
-  if (Is_Open()) return true;
+  if (Is_Open()) {
+    return true;
+  }
 
   // If this is a blocking check, then go through the normal open channels,
   // since those channels ensure that the file must exist.
@@ -295,7 +299,9 @@ int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
       }
     }
 
-    if (!Handle) return false;
+    if (!Handle) {
+      return false;
+    }
     break;
   }
 
@@ -403,7 +409,9 @@ long RawFileClass::Read(void* buffer, long size) {
   **	Close the file if it was opened by this routine and return
   **	the actual number of bytes read into the buffer.
   */
-  if (opened) Close();
+  if (opened) {
+    Close();
+  }
   return bytesread;
 }
 
@@ -672,7 +680,9 @@ int RawFileClass::Delete() {
       return false;
     }
 
-    if (!IO_Delete_File(Filename_.c_str())) return false;
+    if (!IO_Delete_File(Filename_.c_str())) {
+      return false;
+    }
     break;
   }
 

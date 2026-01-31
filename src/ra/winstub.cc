@@ -200,7 +200,9 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       VisiblePage.Un_Init();
       HiddenPage.Un_Init();
       AllSurfaces.Release();
-      if (!InDebugger) Reset_Video_Mode();
+      if (!InDebugger) {
+        Reset_Video_Mode();
+      }
       Stop_Profiler();
       PostQuitMessage(0);
 
@@ -219,7 +221,9 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
         case 0:
           Shutdown_Network();
 #ifndef WINSOCK_IPX
-          if (Winsock.Get_Connected()) Winsock.Close();
+          if (Winsock.Get_Connected()) {
+            Winsock.Close();
+          }
           /*
           ** Free the THIPX32 dll
           */
@@ -242,7 +246,9 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
           ** Free the THIPX32 dll
           */
 
-          if (Winsock.Get_Connected()) Winsock.Close();
+          if (Winsock.Get_Connected()) {
+            Winsock.Close();
+          }
 #endif  // WINSOCK_IPX
           ReadyToQuit = 2;
           break;
@@ -251,7 +257,9 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
 
     case WM_ACTIVATEAPP:
       GameInFocus = (BOOL)wParam;
-      if (!GameInFocus) Focus_Loss();
+      if (!GameInFocus) {
+        Focus_Loss();
+      }
       AllSurfaces.Set_Surface_Focus(GameInFocus);
       AllSurfaces.Restore_Surfaces();
       //			if (GameInFocus) {
@@ -584,7 +592,9 @@ void Assert_Failure(char* expression, int line, char* file) {
   sprintf(assertbuf, "assert '%s' failed at line %d in module %s.\n",
           expression, line, file);
 
-  if (!MonoClass::Is_Enabled()) MonoClass::Enable();
+  if (!MonoClass::Is_Enabled()) {
+    MonoClass::Enable();
+  }
 
   Mono_Clear_Screen();
   Mono_Printf("%s", assertbuf);

@@ -26,7 +26,9 @@ bool WWKeyboardClass::Check() {
   // poll for events, return key if any pressed
   SDL_Event_Loop();
 
-  if (Head == Tail) return false;
+  if (Head == Tail) {
+    return false;
+  }
 
   return Buffer[Head];
 }
@@ -62,13 +64,21 @@ bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
     //
     // Set the proper bits for whatever the key we got is.
     //
-    if (keymod & KMOD_SHIFT) vk_key |= WWKEY_SHIFT_BIT;
+    if (keymod & KMOD_SHIFT) {
+      vk_key |= WWKEY_SHIFT_BIT;
+    }
 
-    if (keymod & KMOD_CTRL) vk_key |= WWKEY_CTRL_BIT;
+    if (keymod & KMOD_CTRL) {
+      vk_key |= WWKEY_CTRL_BIT;
+    }
 
-    if (keymod & KMOD_ALT) vk_key |= WWKEY_ALT_BIT;
+    if (keymod & KMOD_ALT) {
+      vk_key |= WWKEY_ALT_BIT;
+    }
   }
-  if (release) vk_key |= WWKEY_RLS_BIT;
+  if (release) {
+    vk_key |= WWKEY_RLS_BIT;
+  }
 
   //
   // Finally use the put command to enter the key into the keyboard
@@ -78,13 +88,17 @@ bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
 }
 
 int WWKeyboardClass::To_ASCII(int num) {
-  if (num & WWKEY_RLS_BIT) return 0;
+  if (num & WWKEY_RLS_BIT) {
+    return 0;
+  }
 
   // this isn't great but we can't do much better without rewriting everything
   // to use textinput events (SDL3 would allow passing the mods in)
   int key = SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(num & 0xFF));
 
-  if (key <= SDLK_z) return key;
+  if (key <= SDLK_z) {
+    return key;
+  }
 
   return 0;
 }
@@ -120,7 +134,9 @@ int WWKeyboardClass::Down(int key) {
   int numkeys;
   const auto* keys = SDL_GetKeyboardState(&numkeys);
 
-  if (key < numkeys) return keys[key];
+  if (key < numkeys) {
+    return keys[key];
+  }
 
   return 0;
 }
@@ -135,12 +151,13 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
     case SDL_MOUSEBUTTONDOWN:
     case SDL_MOUSEBUTTONUP: {
       int button = event->button.button;
-      if (button == SDL_BUTTON_RIGHT)
+      if (button == SDL_BUTTON_RIGHT) {
         button = VK_RBUTTON;
-      else if (button == SDL_BUTTON_MIDDLE)
+      } else if (button == SDL_BUTTON_MIDDLE) {
         button = VK_MBUTTON;
-      else if (button != SDL_BUTTON_LEFT)  // left == 1, which is the same
+      } else if (button != SDL_BUTTON_LEFT) {  // left == 1, which is the same
         return false;
+      }
 
       Put_Key_Message(button, event->button.state == SDL_RELEASED);
       Put(event->button.x);
@@ -171,8 +188,9 @@ int WWKeyboardClass::Buff_Get() {
     MouseQX = Buffer[Head + 1 & 255];  //		get the x and y pos
     MouseQY = Buffer[Head + 2 & 255];  //		from the buffer
     newhead += 3;                      //		adjust head forward
-  } else
+  } else {
     newhead += 1;  //		adjust head forward
+  }
 
   newhead &= 255;
   Head = newhead;

@@ -246,10 +246,11 @@ void WOL_GameSetupDialog::Initialize() {
   d_house_y = d_color_y;  // + 36;	//d_dialog_y + ( 7 * RESFACTOR ) +
                           // d_txt6_h + (2*RESFACTOR);
 
-  if (bHost)
+  if (bHost) {
     d_disc_w = 365;  // d_dialog_w - (d_margin1 * 2) - 20*RESFACTOR;
-  else
+  } else {
     d_disc_w = d_dialog_w - (d_margin1 * 2);
+  }
   d_disc_x = d_dialog_x + d_margin1;
   d_disc_y = 205;  // d_dialog_y + d_dialog_h - ( 65 + d_disc_h );
   d_disc_h = 337 - d_disc_y;
@@ -433,7 +434,9 @@ void WOL_GameSetupDialog::Initialize() {
   pToolTip = pToolTip->next;
   pToolTip->next = NULL;
 
-  if (bHost) pTextBtnAcceptStart->Disable();
+  if (bHost) {
+    pTextBtnAcceptStart->Disable();
+  }
 
   //	pStaticDescrip is no longer used - can't get the bloody thing to clip
   // text. You'd think a StaticButton control would.
@@ -491,11 +494,12 @@ void WOL_GameSetupDialog::Initialize() {
   if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::CSGAME ||
       pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME ||
       (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::RAGAME &&
-       Is_Aftermath_Installed() && !pWO->GameInfoCurrent.bTournament))
+       Is_Aftermath_Installed() && !pWO->GameInfoCurrent.bTournament)) {
     //	Place user tab in the third tab position. (It may still not be present.)
     iScenarioUserTabPos = d_scenariolist_x + TABSPACING * 2;
-  else
+  } else {
     iScenarioUserTabPos = d_scenariolist_x + TABSPACING;
+  }
 
   pShpBtnScenarioUser =
       new ShapeButtonClass(BUTTON_SCENARIO_USER, MFCD::Retrieve("tabus.shp"),
@@ -564,10 +568,12 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
   bool bRetractHouseDropDown = false;
 
-  if (!pWO->OnEnteringGameSetup())  //	Gets a userlist setup, among other
-                                    // things.
+  if (!pWO->OnEnteringGameSetup()) {  //	Gets a userlist setup, among
+                                      // other
+                                      // things.
     strcpy(szNameOfHostWhoJustBailedOnUs,
            TXT_WOL_THEGAMEHOST);  //	Will cause immediate exit.
+  }
 
   //	If I'm not already listed with a color, give myself a color.
   //	(I may have already received my assigned color from the game host.)
@@ -578,12 +584,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   PlayerColorType Color = PlayerColorTypeOf(pColorRemap);
 
   //	debugprint( "Starting up, I see myself as color %i\n", Color );
-  if (Color == PCOLOR_NONE)
+  if (Color == PCOLOR_NONE) {
     SetPlayerColor(
         pWO->szMyName,
         ColorNextAvailable());  //	Unless I'm host, this will be changed
                                 // quite immediately, 	but nice to have it be a
                                 // valid value until then.
+  }
 
   DWORD dwTimeNextPlayerPing = ::timeGetTime() + PING_AND_DISPLAY_WAIT;
   DWORD dwTimeNextPingDisplay =
@@ -599,9 +606,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //	If we have not already received a param update from a host, set default
   // param values.
   if (!bParamsReceived) {
-    if (!bHost)
+    if (!bHost) {
       //	Accept button disabled until first params arrive.
       pTextBtnAcceptStart->Disable();
+    }
 
     Special.IsCaptureTheFlag =
         Rule.IsMPCaptureTheFlag;  //	Ugh. Use of "Special" global.
@@ -892,7 +900,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //			debugprint( "About to trigger game start.\n" );
       TriggerGameStart(szTriggerGameStartInfo);
     } else if (pWO->bSelfDestruct) {
-      if (pWO->pChatSink->bConnected) pWO->Logout();
+      if (pWO->pChatSink->bConnected) {
+        pWO->Logout();
+      }
       bProcess = false;
       ResultReturn =
           RESULT_WOLGSUP_LOGOUT;  //	As if the user logged himself out.
@@ -901,15 +911,17 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     if (bExitForGameTrigger) {
       //	We are now exiting to go into a game.
       bProcess = false;
-      if (bHost)
+      if (bHost) {
         ResultReturn = RESULT_WOLGSUP_STARTGAMEHOST;
-      else
+      } else {
         ResultReturn = RESULT_WOLGSUP_STARTGAME;
+      }
       //			debugprint( "About to exit game setup dialog for
       // game.\n" );
-      if (!ExitGameChannel())
+      if (!ExitGameChannel()) {
         ResultReturn =
             RESULT_WOLGSUP_FATALERROR;  //	Return with an error value.
+      }
       break;
     }
 
@@ -933,8 +945,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       dwTimeNextParamRefresh = ::timeGetTime() + PARAMREFRESHWAIT;
     }
 
-    if (!bProcess)  //	Avoid redrawing if we're about to bail.
+    if (!bProcess) {  //	Avoid redrawing if we're about to bail.
       break;
+    }
 
     //
     // If we have just received input focus again after running in the
@@ -954,7 +967,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       bRetractHouseDropDown = false;
       if (pDropListHouse->IsDropped) {
         pDropListHouse->Collapse();
-        if (display < REDRAW_BACKGROUND) display = REDRAW_BACKGROUND;
+        if (display < REDRAW_BACKGROUND) {
+          display = REDRAW_BACKGROUND;
+        }
       }
     }
     //		if( pILDisc->Is_To_Redraw() )
@@ -978,10 +993,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //	Redraw backgound & dialog box
       //..................................................................
       if (display >= REDRAW_BACKGROUND) {
-        if (pToolTipHitLast && pToolTipHitLast->bShowing)
+        if (pToolTipHitLast && pToolTipHitLast->bShowing) {
           pToolTipHitLast->Unshow();
+        }
 
-        if (pDropListHouse->IsDropped) pDropListHouse->Collapse();
+        if (pDropListHouse->IsDropped) {
+          pDropListHouse->Collapse();
+        }
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
@@ -991,10 +1009,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
                          d_playerlist_y - d_txt6_h, scheme, TBLACK,
                          TPF_TEXT | TPF_CENTER);
-        if (bHost)
+        if (bHost) {
           Fancy_Text_Print(TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w,
                            d_scenariolist_y - 12, scheme, TBLACK,
                            TPF_TYPE | TPF_RIGHT);
+        }
         //				else
         //					Fancy_Text_Print(
         // TXT_SCENARIO_COLON, d_scenariolist_x + (d_scenariolist_w / 2),
@@ -1170,14 +1189,16 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           const char* pDIB;
 
           if (bOfficial) {
-            if (Is_Mission_Counterstrike(szScenarioFileName))
+            if (Is_Mission_Counterstrike(szScenarioFileName)) {
               pDIB = pWO->OldRAGameTypeInfos[1].pDIB;
-            else if (Is_Mission_Aftermath(szScenarioFileName))
+            } else if (Is_Mission_Aftermath(szScenarioFileName)) {
               pDIB = pWO->OldRAGameTypeInfos[2].pDIB;
-            else
+            } else {
               pDIB = pWO->OldRAGameTypeInfos[0].pDIB;
-          } else
+            }
+          } else {
             pDIB = pWO->DibIconInfos[DIBICON_USER].pDIB;
+          }
 
           DrawScenarioDescripIcon(pDIB);
         } else {
@@ -1222,7 +1243,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (Get_Mouse_State()) Show_Mouse();
+    while (Get_Mouse_State()) {
+      Show_Mouse();
+    }
     //	Be nice to other apps.
     Sleep(50);
 
@@ -1232,8 +1255,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     if ((::GetAsyncKeyState(KN_LMOUSE) & 0x8000) ||
         (::GetAsyncKeyState(KN_RMOUSE) & 0x8000)) {
       timeToolTipAppear = ::timeGetTime() + TOOLTIPDELAY;
-      if (pToolTipHitLast && pToolTipHitLast->bShowing)
+      if (pToolTipHitLast && pToolTipHitLast->bShowing) {
         pToolTipHitLast->Unshow();
+      }
     }
 
     input = commands->Input();
@@ -1256,8 +1280,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           pToolTipHit->Show();
         }
       } else {
-        if (pToolTipHitLast && pToolTipHitLast->bShowing)
+        if (pToolTipHitLast && pToolTipHitLast->bShowing) {
           pToolTipHitLast->Unshow();
+        }
         pToolTipHitLast = pToolTipHit;
         timeToolTipAppear = ::timeGetTime() + TOOLTIPDELAY;
       }
@@ -1300,7 +1325,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
               WOL_PrintMessage(*pILDisc, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
                                WOLCOLORREMAP_LOCALMACHINEMESS);
               Sound_Effect(WOLSOUND_ERROR);
-              if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+              if (display < REDRAW_MESSAGE) {
+                display = REDRAW_MESSAGE;
+              }
               break;
             }
           }
@@ -1406,10 +1433,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                                                 }
                                         }
         */
-        if (pDropListHouse->IsDropped)
+        if (pDropListHouse->IsDropped) {
           bRetractHouseDropDown = true;
-        else if (display < REDRAW_BACKGROUND)
+        } else if (display < REDRAW_BACKGROUND) {
           display = REDRAW_BACKGROUND;  //	Droplist already got contracted.
+        }
 
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
@@ -1449,10 +1477,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             Session.Options.ScenarioIndex = iSelectedScenIndex;
             bInformParamChange = true;
             if (!pILScens->SetSelectType(
-                    1))  //	Hack to deal with ListClass "highlighting
-                         // nothing" problem.
+                    1)) {  //	Hack to deal with ListClass "highlighting
+                           // nothing" problem.
               //	SelectType was 0 before call.
               pILScens->Flag_To_Redraw();
+            }
             //						pStaticDescrip->Set_Text(
             // pILScens->Get_Item( pILScens->Current_Index() ), false );
             strcpy(szScenarioNameDisplay,
@@ -1472,7 +1501,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             pGaugeCount->Get_Value() +
             SessionClass::CountMin[Session.Options.Bases];
         bInformParamChange = true;
-        if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+        if (display < REDRAW_PARMS) {
+          display = REDRAW_PARMS;
+        }
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
 
@@ -1481,10 +1512,14 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       case (BUTTON_LEVEL | KN_BUTTON):
         BuildLevel = pGaugeLevel->Get_Value() + 1;
-        if (BuildLevel > MPLAYER_BUILD_LEVEL_MAX)  // if it's pegged, max it out
+        if (BuildLevel >
+            MPLAYER_BUILD_LEVEL_MAX) {  // if it's pegged, max it out
           BuildLevel = MPLAYER_BUILD_LEVEL_MAX;
+        }
         bInformParamChange = true;
-        if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+        if (display < REDRAW_PARMS) {
+          display = REDRAW_PARMS;
+        }
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
 
@@ -1496,7 +1531,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         Session.Options.Credits = pGaugeCredits->Get_Value();
         Session.Options.Credits = ((Session.Options.Credits + 250) / 500) * 500;
         bInformParamChange = true;
-        if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+        if (display < REDRAW_PARMS) {
+          display = REDRAW_PARMS;
+        }
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
 
@@ -1515,7 +1552,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           pGaugeAIPlayers->Set_Value(Session.Options.AIPlayers);
         }
         bInformParamChange = true;
-        if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+        if (display < REDRAW_PARMS) {
+          display = REDRAW_PARMS;
+        }
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
 
@@ -1569,7 +1608,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         bSlowUnitBuildRate = pCheckListOptions->Is_Checked(5);
 
         bInformParamChange = true;
-        if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+        if (display < REDRAW_PARMS) {
+          display = REDRAW_PARMS;
+        }
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
 
@@ -1589,8 +1630,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             // and will set ourselves to unaccepted, which will match the
             // unaccepted state on the server. 	Upshot - We can ignore messages
             // from the server telling us that we, ourself, accepted.
-            if (pToolTipHitLast && pToolTipHitLast->bShowing)
+            if (pToolTipHitLast && pToolTipHitLast->bShowing) {
               pToolTipHitLast->Unshow();
+            }
             pTextBtnAcceptStart->Disable();
             if (SetPlayerAccepted(
                     pWO->szMyName,
@@ -1651,7 +1693,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //				break;
 
       case (KN_ESC):
-        if (pDropListHouse->IsDropped) bRetractHouseDropDown = true;
+        if (pDropListHouse->IsDropped) {
+          bRetractHouseDropDown = true;
+        }
         break;
 
       case (BUTTON_LEAVE | KN_BUTTON):
@@ -1671,7 +1715,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     Call_Back();
   }
 
-  if (pToolTipHitLast && pToolTipHitLast->bShowing) pToolTipHitLast->Unshow();
+  if (pToolTipHitLast && pToolTipHitLast->bShowing) {
+    pToolTipHitLast->Unshow();
+  }
 
   pWO->ClearListPtrs();
   pWO->pGSupDlg = NULL;
@@ -1715,10 +1761,11 @@ void WOL_GameSetupDialog::SetSpecialControlStates() {
   }
   pGaugeAIPlayers->Set_Value(Session.Options.AIPlayers);
 
-  if (bAftermathUnits)
+  if (bAftermathUnits) {
     pCheckAftermathUnits->Turn_On();
-  else
+  } else {
     pCheckAftermathUnits->Turn_Off();
+  }
 }
 
 #define DRAWTABDOWN Turn_On()
@@ -1847,12 +1894,14 @@ void WOL_GameSetupDialog::BindControls(bool bBind) {
       if (!pWO->GameInfoCurrent.bTournament) {
         pShpBtnScenarioUser->Zap();
       }
-      if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::CSGAME)
+      if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::CSGAME) {
         pShpBtnScenarioCS->Zap();
-      else if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME ||
-               (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::RAGAME &&
-                Is_Aftermath_Installed() && !pWO->GameInfoCurrent.bTournament))
+      } else if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME ||
+                 (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::RAGAME &&
+                  Is_Aftermath_Installed() &&
+                  !pWO->GameInfoCurrent.bTournament)) {
         pShpBtnScenarioAM->Zap();
+      }
       pILScens->Zap();
     }
     //		pStaticDescrip->Zap();
@@ -1882,7 +1931,9 @@ void WOL_GameSetupDialog::ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind) {
 
   //	Puts us into mode where we are viewing a particular gamekind of scenario
   // list.
-  if (ScenKindCurrent == ScenKind) return;
+  if (ScenKindCurrent == ScenKind) {
+    return;
+  }
 
   //	Reorder tab buttons.
   BindControls(false);
@@ -1918,8 +1969,9 @@ void WOL_GameSetupDialog::ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind) {
   if (bFoundCurrentSelection) {
     pILScens->SetSelectType(1);  //	Regular selection.
     pILScens->Set_Selected_Index(iSelect);
-  } else
+  } else {
     pILScens->SetSelectType(0);  //	Invisible selection.
+  }
 
   //	display = REDRAW_ALL;
   pILScens->Flag_To_Redraw();
@@ -1934,7 +1986,9 @@ bool WOL_GameSetupDialog::ExitGameChannel() {
   //	debugprint( "ExitGameChannel \n" );
   if (pDropListHouse->IsDropped) {
     pDropListHouse->Collapse();
-    if (display < REDRAW_BACKGROUND) display = REDRAW_BACKGROUND;
+    if (display < REDRAW_BACKGROUND) {
+      display = REDRAW_BACKGROUND;
+    }
   }
   if (!pWO->ChannelLeave()) {
     pWO->GenericErrorMessage();
@@ -1971,7 +2025,9 @@ void WOL_GameSetupDialog::SetPlayerColor(const char* szName,
   if (strcmp(pWO->szMyName, szName) == 0) {
     //	I am the player involved.
     Session.ColorIdx = Color;
-    if (display < REDRAW_COLORS) display = REDRAW_COLORS;
+    if (display < REDRAW_COLORS) {
+      display = REDRAW_COLORS;
+    }
   }
   pILPlayers->Set_Item_Color(
       iItem,
@@ -2049,7 +2105,9 @@ bool WOL_GameSetupDialog::SetPlayerAccepted(const char* szName,
 bool WOL_GameSetupDialog::IveAccepted() {
   //	Returns true if I am marked as "accepted".
   int iItem = pILPlayers->Find(pWO->szMyName);
-  if (iItem == -1) return false;
+  if (iItem == -1) {
+    return false;
+  }
   return pWO->bItemMarkedAccepted(iItem);
 }
 
@@ -2086,7 +2144,9 @@ void WOL_GameSetupDialog::ResetReadyToGo() {
 bool WOL_GameSetupDialog::bPlayerReadyToGo(const char* szName) {
   //	Returns true if player is marked as "ready to go".
   int iItem = pILPlayers->Find(szName);
-  if (iItem == -1) return false;
+  if (iItem == -1) {
+    return false;
+  }
   return pWO->bItemMarkedReadyToGo(iItem);
 }
 
@@ -2159,8 +2219,9 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
         InformAboutPlayerAccept((char*)pUser->name, NULL);
         //	We may be ready to start a game now.
         if (bAllGuestsAccept()) {
-          if (pToolTipHitLast && pToolTipHitLast->bShowing)
+          if (pToolTipHitLast && pToolTipHitLast->bShowing) {
             pToolTipHitLast->Unshow();
+          }
           pTextBtnAcceptStart->Enable();
         }
       } else {
@@ -2183,9 +2244,10 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
         //"WOL_GAMEOPT_REQSTART response", WOLCOLORREMAP_LOCALMACHINEMESS );
         //			WOL_PrintMessage( *pILDisc, (char*)pUser->name,
         // WOLCOLORREMAP_LOCALMACHINEMESS );
-        if (bWaitingToStart)
+        if (bWaitingToStart) {
           //	If all responses are in, start the game!
           GuestIsReadyToPlay((char*)pUser->name, "ready");
+        }
         //			else
         //				debugprint( "Ignoring - I am no longer
         // waiting to start a game.\n" );
@@ -2202,9 +2264,10 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
         // WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO from '%s'.\n",
         // (char*)pUser->name
         //);
-        if (bWaitingToStart)
+        if (bWaitingToStart) {
           //	If all responses are in, start the game!
           GuestIsReadyToPlay((char*)pUser->name, "need scenario");
+        }
         //			else
         //				debugprint( "Ignoring - I am no longer
         // waiting to start a game.\n" );
@@ -2270,7 +2333,9 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
       case WOL_GAMEOPT_INFPARAMS:
         //	Game params have changed.
         bParamsReceived = true;
-        if (!AcceptParams(szInform)) bLeaveDueToRulesMismatchTrigger = true;
+        if (!AcceptParams(szInform)) {
+          bLeaveDueToRulesMismatchTrigger = true;
+        }
         SetSpecialControlStates();
         // pILScens->Set_Selected_Index( Session.Options.ScenarioIndex );
         display = REDRAW_ALL;
@@ -2307,12 +2372,13 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
           //	Send ack back to host.
           char szSend[20];
           //	Make sure we have the scenario.
-          if (!bNeedScenarioDownload())
+          if (!bNeedScenarioDownload()) {
             sprintf(szSend, "%02u %06u", WOL_GAMEOPT_REQSTART,
                     nGuestLastParamID);
-          else
+          } else {
             sprintf(szSend, "%02u %06u", WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO,
                     nGuestLastParamID);
+          }
           pWO->SendGameOpt(szSend, pUserHost);
           //	Enter waiting mode.
           bWaitingToStart = true;
@@ -2323,7 +2389,9 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
           // dialogs to stop accepting characters. 	This is to fix a minor
           // glitch: guests can keep typing into a "page" dialog editbox after
           // the 	"Launching game..." message has appeared on top of it.
-          if (pWO->bPump_In_Call_Back) disable_current_msgbox = true;
+          if (pWO->bPump_In_Call_Back) {
+            disable_current_msgbox = true;
+          }
         } else {
           //				debugprint( "Impossible arose on
           // WOL_GAMEOPT_INFSTART.\n" );
@@ -2344,7 +2412,9 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         //	If we are in a modal dialog, we must have arrived here through
         // Call_Back()'s PumpMessages. Set global that will 	force a cancel
         // out of the dialog.
-        if (pWO->bPump_In_Call_Back) cancel_current_msgbox = true;
+        if (pWO->bPump_In_Call_Back) {
+          cancel_current_msgbox = true;
+        }
         break;
       case WOL_GAMEOPT_INFGO:
         //	Host says start game right now.
@@ -2352,7 +2422,9 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         //	If we are in a modal dialog, we must have arrived here through
         // Call_Back()'s PumpMessages. Set global that will 	force a cancel
         // out of the dialog.
-        if (pWO->bPump_In_Call_Back) cancel_current_msgbox = true;
+        if (pWO->bPump_In_Call_Back) {
+          cancel_current_msgbox = true;
+        }
         break;
       default:
         //			debugprint( "Unhandled value of %i in
@@ -2481,7 +2553,9 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
 
   //	Read in length of following string.
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   int iLen = atoi(szToken);
   //	Set string pointer to start of string (length is 3 digits).
   szRemaining = szToken + 4;
@@ -2497,11 +2571,15 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   // szRemaining );
 
   szToken = strtok(szRemaining, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Session.ScenarioFileLength = atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   strcpy(Session.ScenarioFileName, szToken);
 
   //	//	Read in length of following string.
@@ -2512,7 +2590,9 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   //	Method changed.
   //	Check if there is a digest.
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   iLen = atoi(
       szToken);  //	1 or 0, indicating if there is a digest following.
   if (iLen) {
@@ -2531,96 +2611,142 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
     szToken =
         strtok(NULL, szDelimiter);  //	(Digests can't have spaces in the them.)
                                     // debugprint( "digest: '%s'\n", szToken );
-    if (!szToken) return false;
+    if (!szToken) {
+      return false;
+    }
     strncpy(Session.ScenarioDigest, szToken, sizeof(Session.ScenarioDigest));
   }
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Session.ScenarioIsOfficial = (bool)atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Session.Options.Credits = atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Session.Options.Bases = atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Session.Options.Tiberium = atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Session.Options.Goodies = atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   BuildLevel = atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Session.Options.UnitCount = atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Session.Options.AIPlayers = atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Seed = atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Special.IsShadowGrow = (atoi(szToken) == 0) ? 0 : 1;
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Special.IsSpeedBuild = (atoi(szToken) == 0) ? 0 : 1;
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Special.IsFromInstall = (atoi(szToken) == 0) ? 0 : 1;
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Special.IsCaptureTheFlag = (atoi(szToken) == 0) ? 0 : 1;
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Special.IsInert = (atoi(szToken) == 0) ? 0 : 1;
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Special.IsThreePoint = (atoi(szToken) == 0) ? 0 : 1;
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Special.IsTGrowth = (atoi(szToken) == 0) ? 0 : 1;
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Special.IsTSpread = (atoi(szToken) == 0) ? 0 : 1;
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   Options.GameSpeed = atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   //	"Version"	= atoi( szToken );
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   bAftermathUnits = (bool)atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   bSlowUnitBuildRate = (bool)atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
-  if (!szToken) return false;
+  if (!szToken) {
+    return false;
+  }
   int iRulesID = atoi(szToken);
 
   szToken = strtok(NULL, szDelimiter);
@@ -2672,16 +2798,19 @@ bool operator==(const GAMEPARAMS& gp1, const GAMEPARAMS& gp2) {
 
 //***********************************************************************************************
 bool operator==(const GlobalPacketType& gp1, const GlobalPacketType& gp2) {
-  if (strcmp(gp1.ScenarioInfo.Scenario, gp2.ScenarioInfo.Scenario) != 0)
+  if (strcmp(gp1.ScenarioInfo.Scenario, gp2.ScenarioInfo.Scenario) != 0) {
     return false;
+  }
   if (strcmp(gp1.ScenarioInfo.ShortFileName, gp2.ScenarioInfo.ShortFileName) !=
-      0)
+      0) {
     return false;
+  }
   //	Digest is not null-terminated...
   if (strncmp((const char*)gp1.ScenarioInfo.FileDigest,
               (const char*)gp2.ScenarioInfo.FileDigest,
-              sizeof(gp1.ScenarioInfo.FileDigest)) != 0)
+              sizeof(gp1.ScenarioInfo.FileDigest)) != 0) {
     return false;
+  }
 
   if (gp1.ScenarioInfo.FileLength == gp2.ScenarioInfo.FileLength &&
       gp1.ScenarioInfo.OfficialScenario == gp2.ScenarioInfo.OfficialScenario &&
@@ -2709,8 +2838,9 @@ bool operator==(const GlobalPacketType& gp1, const GlobalPacketType& gp2) {
       gp1.ScenarioInfo.Special.IsTSpread ==
           gp2.ScenarioInfo.Special.IsTSpread &&
       gp1.ScenarioInfo.GameSpeed == gp2.ScenarioInfo.GameSpeed &&
-      gp1.ScenarioInfo.Version == gp2.ScenarioInfo.Version)
+      gp1.ScenarioInfo.Version == gp2.ScenarioInfo.Version) {
     return true;
+  }
 
   return false;
 }
@@ -2780,7 +2910,9 @@ void Debug_GlobalPacketType( const GlobalPacketType& gp1 )
 //***********************************************************************************************
 PlayerColorType PlayerColorTypeOf(RemapControlType* pColorRemap) {
   for (PlayerColorType pcolor = PCOLOR_FIRST; pcolor < PCOLOR_COUNT; pcolor++) {
-    if (&ColorRemaps[pcolor] == pColorRemap) return pcolor;
+    if (&ColorRemaps[pcolor] == pColorRemap) {
+      return pcolor;
+    }
   }
   return PCOLOR_NONE;
 }
@@ -2821,8 +2953,9 @@ bool WOL_GameSetupDialog::InformAboutPlayerColor(const char* szName,
     //		debugprint( "Bad Color for %s in InformAboutPlayerColor.\n",
     // szName );
     *szSend = 0;
-  } else
+  } else {
     sprintf(szSend, "%02u %02u %s", WOL_GAMEOPT_INFCOLOR, Color, szName);
+  }
 
   return pWO->SendGameOpt(szSend, pUserPriv);
 }
@@ -2847,9 +2980,10 @@ bool WOL_GameSetupDialog::InformAboutPlayerHouse(const char* szName,
     //		debugprint( "Bad House for %s in InformAboutPlayerHouse.\n",
     // szName );
     *szSend = 0;
-  } else
+  } else {
     sprintf(szSend, "%02u %06u %02u %s", WOL_GAMEOPT_INFHOUSE, nHostLastParamID,
             (short)House, szName);
+  }
 
   return pWO->SendGameOpt(szSend, pUserPriv);
 }
@@ -3050,8 +3184,9 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
       //	SetPlayerHouse may call strtok, so we can't use the strtok(
       // NULL, option... in the next call.
       szRemaining += 5;
-    } else
+    } else {
       szRemaining += 2;  //	Advance past "0 ".
+    }
 
     //	Acceptedness must be false. No need for it in message.
     //		//	Read acceptedness.
@@ -3086,13 +3221,17 @@ void WOL_GameSetupDialog::ClearAllAccepts() {
   // debugprint( "ClearAllAccepts()\n" );
   for (int i = 0; i < pILPlayers->Count(); i++) {
     User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
-    if (pUser && !(pUser->flags &
-                   CHAT_USER_CHANNELOWNER))  //	pUser null if this is an "early
-                                             // insertion" entry on startup
+    if (pUser &&
+        !(pUser->flags &
+          CHAT_USER_CHANNELOWNER)) {  //	pUser null if this is an "early
+                                      // insertion" entry on startup
       pWO->MarkItemAccepted(i, false);
+    }
   }
 
-  if (pToolTipHitLast && pToolTipHitLast->bShowing) pToolTipHitLast->Unshow();
+  if (pToolTipHitLast && pToolTipHitLast->bShowing) {
+    pToolTipHitLast->Unshow();
+  }
 
   if (bHost) {
     pTextBtnAcceptStart->Disable();
@@ -3104,8 +3243,9 @@ void WOL_GameSetupDialog::ClearAllAccepts() {
       BindControls(true);
       ResetReadyToGo();
       display = REDRAW_ALL;
-    } else
+    } else {
       pTextBtnAcceptStart->Flag_To_Redraw();
+    }
   } else {
     pTextBtnAcceptStart->Enable();
     pTextBtnAcceptStart->Flag_To_Redraw();
@@ -3115,7 +3255,9 @@ void WOL_GameSetupDialog::ClearAllAccepts() {
 //***********************************************************************************************
 bool WOL_GameSetupDialog::bAllGuestsAccept() {
   for (int i = 0; i < pILPlayers->Count(); i++) {
-    if (!pWO->bItemMarkedAccepted(i)) return false;
+    if (!pWO->bItemMarkedAccepted(i)) {
+      return false;
+    }
   }
   return true;
 }
@@ -3255,7 +3397,9 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	If we are in a modal dialog, we must have arrived here through
   // Call_Back()'s PumpMessages. Set global that will 	force a cancel out of
   // the dialog.
-  if (pWO->bPump_In_Call_Back) cancel_current_msgbox = true;
+  if (pWO->bPump_In_Call_Back) {
+    cancel_current_msgbox = true;
+  }
 
   bHostWaitingForGoTrigger = false;
   bExitForGameTrigger = true;
@@ -3293,10 +3437,11 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   //	UnitBuildPenalty = WWGetPrivateProfileInt ("Options", "BuildRate", 100,
   // buffer);
-  if (bSlowUnitBuildRate)
+  if (bSlowUnitBuildRate) {
     UnitBuildPenalty = 250;
-  else
+  } else {
     UnitBuildPenalty = 100;
+  }
 
   // PlanetWestwoodGameID = WWGetPrivateProfileInt("Internet", "GameID", 0,
   // buffer);
@@ -3350,8 +3495,9 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   // of guests to occur.
 
   //	Clear colors in list.
-  for (int iItem = 0; iItem < pILPlayers->Count(); iItem++)
+  for (int iItem = 0; iItem < pILPlayers->Count(); iItem++) {
     pILPlayers->Set_Item_Color(iItem, &ColorRemaps[PCOLOR_NONE]);
+  }
 
   //	Parse szGoMessage to iterate through players.
   char szDelimiter[] = " ";
@@ -3651,8 +3797,9 @@ int ScenarioIndex_From_Filename(const char* szScenarioFilename) {
   // no match found.
   for (int index = 0; index < Session.Scenarios.Count(); index++) {
     if (stricmp(szScenarioFilename, Session.Scenarios[index]->Get_Filename()) ==
-        0)
+        0) {
       return index;
+    }
   }
   return -1;
 }

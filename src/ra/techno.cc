@@ -442,7 +442,9 @@ bool TechnoClass::Can_Teleport_Here(CELL cell) const {
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
 int TechnoClass::What_Weapon_Should_I_Use(TARGET target) const {
-  if (!Target_Legal(target)) return 0;
+  if (!Target_Legal(target)) {
+    return 0;
+  }
 
   /*
   **	Fetch the armor of the candidate target object. Presume that if the
@@ -462,28 +464,40 @@ int TechnoClass::What_Weapon_Should_I_Use(TARGET target) const {
   */
   int w1 = 0;
   const WeaponTypeClass* wptr = ttype->PrimaryWeapon;
-  if (wptr != nullptr && wptr->WarheadPtr != nullptr)
+  if (wptr != nullptr && wptr->WarheadPtr != nullptr) {
     w1 = wptr->WarheadPtr->Modifier[armor] * 1000;
-  if (In_Range(target, 0)) w1 *= 2;
+  }
+  if (In_Range(target, 0)) {
+    w1 *= 2;
+  }
   FireErrorType ok = Can_Fire(target, 0);
-  if (ok == FIRE_CANT || ok == FIRE_ILLEGAL) w1 = 0;
+  if (ok == FIRE_CANT || ok == FIRE_ILLEGAL) {
+    w1 = 0;
+  }
 
   /*
   **	Calculate a similar value for the secondary weapon.
   */
   int w2 = 0;
   wptr = ttype->SecondaryWeapon;
-  if (wptr != nullptr && wptr->WarheadPtr != nullptr)
+  if (wptr != nullptr && wptr->WarheadPtr != nullptr) {
     w2 = wptr->WarheadPtr->Modifier[armor] * 1000;
-  if (In_Range(target, 1)) w2 *= 2;
+  }
+  if (In_Range(target, 1)) {
+    w2 *= 2;
+  }
   ok = Can_Fire(target, 1);
-  if (ok == FIRE_CANT || ok == FIRE_ILLEGAL) w2 = 0;
+  if (ok == FIRE_CANT || ok == FIRE_ILLEGAL) {
+    w2 = 0;
+  }
 
   /*
   **	Return with the weapon identifier that should be used to fire upon the
   **	candidate target.
   */
-  if (w2 > w1) return 1;
+  if (w2 > w1) {
+    return 1;
+  }
   return 0;
 }
 
@@ -790,9 +804,15 @@ int TechnoClass::Time_To_Build() const {
   **	Adjust the time to build based on the power output of the owning house.
   */
   fixed power = House->Power_Fraction();
-  if (power > 1) power = 1;
-  if (power < 1 && power > fixed::_3_4) power = fixed::_3_4;
-  if (power < fixed::_1_2) power = fixed::_1_2;
+  if (power > 1) {
+    power = 1;
+  }
+  if (power < 1 && power > fixed::_3_4) {
+    power = fixed::_3_4;
+  }
+  if (power < fixed::_1_2) {
+    power = fixed::_1_2;
+  }
   power.Inverse();
   val *= power;
 
@@ -868,9 +888,13 @@ bool TechnoClass::Is_Visible_On_Radar() const {
 bool TechnoClass::Revealed(HouseClass* house) {
   assert(IsActive);
 
-  if (house == PlayerPtr && IsDiscoveredByPlayer) return false;
+  if (house == PlayerPtr && IsDiscoveredByPlayer) {
+    return false;
+  }
   if (house != PlayerPtr) {
-    if (IsDiscoveredByComputer) return false;
+    if (IsDiscoveredByComputer) {
+      return false;
+    }
     IsDiscoveredByComputer = true;
   }
 
@@ -932,7 +956,9 @@ bool TechnoClass::Revealed(HouseClass* house) {
 void TechnoClass::Hidden() {
   assert(IsActive);
 
-  if (!IsDiscoveredByPlayer) return;
+  if (!IsDiscoveredByPlayer) {
+    return;
+  }
   if (!House->IsHuman) {
     IsDiscoveredByPlayer = false;
   }
@@ -1064,7 +1090,9 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
     **	Handle reloading one ammo point for this unit.
     */
     case RADIO_RELOAD:
-      if (Ammo == Techno_Type_Class()->MaxAmmo) return RADIO_NEGATIVE;
+      if (Ammo == Techno_Type_Class()->MaxAmmo) {
+        return RADIO_NEGATIVE;
+      }
       /*BG*/ Mark(MARK_CHANGE_REDRAW);
       Ammo++;
       return RADIO_ROGER;
@@ -1449,8 +1477,9 @@ bool TechnoClass::In_Range(COORDINATE coord, int which) const {
 fixed TechnoClass::Area_Modify(CELL cell) const {
   //	assert(Techno_Type_Class()->PrimaryWeapon != nullptr);
   if (Techno_Type_Class()->PrimaryWeapon == nullptr ||
-      !Techno_Type_Class()->PrimaryWeapon->IsSupressed)
+      !Techno_Type_Class()->PrimaryWeapon->IsSupressed) {
     return 1;
+  }
 
   int crange = Lepton_To_Cell(Rule.SupressRadius);
   fixed odds = 1;
@@ -1462,8 +1491,12 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
     for (int x = -radius; x <= radius; x++) {
       CELL newcell;
 
-      if (Cell_X(cell) + x < Map.MapCellX) continue;
-      if (Cell_X(cell) + x >= Map.MapCellX + Map.MapCellWidth) continue;
+      if (Cell_X(cell) + x < Map.MapCellX) {
+        continue;
+      }
+      if (Cell_X(cell) + x >= Map.MapCellX + Map.MapCellWidth) {
+        continue;
+      }
 
       if (Cell_Y(cell) - radius >= Map.MapCellY) {
         newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) - radius);
@@ -1488,8 +1521,12 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
     for (int y = -(radius - 1); y < radius; y++) {
       CELL newcell;
 
-      if (Cell_Y(cell) + y < Map.MapCellY) continue;
-      if (Cell_Y(cell) + y >= Map.MapCellY + Map.MapCellHeight) continue;
+      if (Cell_Y(cell) + y < Map.MapCellY) {
+        continue;
+      }
+      if (Cell_Y(cell) + y >= Map.MapCellY + Map.MapCellHeight) {
+        continue;
+      }
 
       if (Cell_X(cell) - radius >= Map.MapCellX) {
         newcell = XY_Cell(Cell_X(cell) - radius, Cell_Y(cell) + y);
@@ -1961,10 +1998,13 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         if (tentative->Is_Techno()) {
           if (Combat_Damage() < 0) {
             if (tentative->Health_Ratio() < Rule.ConditionGreen &&
-                House->Is_Ally(tentative))
+                House->Is_Ally(tentative)) {
               break;
+            }
           } else {
-            if (!House->Is_Ally(tentative)) break;
+            if (!House->Is_Ally(tentative)) {
+              break;
+            }
           }
         }
       }
@@ -2160,19 +2200,32 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	qualify with this mask, then we KNOW that it shouldn't be considered.
     */
     int mask = 0;
-    if (method & THREAT_CIVILIANS)
+    if (method & THREAT_CIVILIANS) {
       mask |= 1 << RTTI_BUILDING | 1 << RTTI_INFANTRY | 1 << RTTI_UNIT;
-    if (method & THREAT_AIR) mask |= 1 << RTTI_AIRCRAFT;
-    if (method & THREAT_CAPTURE) mask |= 1 << RTTI_BUILDING;
+    }
+    if (method & THREAT_AIR) {
+      mask |= 1 << RTTI_AIRCRAFT;
+    }
+    if (method & THREAT_CAPTURE) {
+      mask |= 1 << RTTI_BUILDING;
+    }
     if (method &
         (THREAT_CIVILIANS | THREAT_BUILDINGS | THREAT_FACTORIES | THREAT_POWER |
-         THREAT_FAKES | THREAT_BASE_DEFENSE | THREAT_TIBERIUM))
+         THREAT_FAKES | THREAT_BASE_DEFENSE | THREAT_TIBERIUM)) {
       mask |= 1 << RTTI_BUILDING;
-    if (method & (THREAT_CIVILIANS | THREAT_INFANTRY | THREAT_BASE_DEFENSE))
+    }
+    if (method & (THREAT_CIVILIANS | THREAT_INFANTRY | THREAT_BASE_DEFENSE)) {
       mask |= 1 << RTTI_INFANTRY;
-    if (method & THREAT_VEHICLES) mask |= 1 << RTTI_UNIT;
-    if (method & THREAT_BASE_DEFENSE) mask |= 1 << RTTI_BUILDING;
-    if (method & THREAT_BOATS) mask |= 1 << RTTI_VESSEL;
+    }
+    if (method & THREAT_VEHICLES) {
+      mask |= 1 << RTTI_UNIT;
+    }
+    if (method & THREAT_BASE_DEFENSE) {
+      mask |= 1 << RTTI_BUILDING;
+    }
+    if (method & THREAT_BOATS) {
+      mask |= 1 << RTTI_VESSEL;
+    }
 
     /*
     **	Limit area target scans use a method where the actual map cells are
@@ -2248,8 +2301,12 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         for (int x = -radius; x <= radius; x++) {
           CELL newcell;
 
-          if (Cell_X(cell) + x < Map.MapCellX) continue;
-          if (Cell_X(cell) + x >= Map.MapCellX + Map.MapCellWidth) continue;
+          if (Cell_X(cell) + x < Map.MapCellX) {
+            continue;
+          }
+          if (Cell_X(cell) + x >= Map.MapCellX + Map.MapCellWidth) {
+            continue;
+          }
 
           if (Cell_Y(cell) - radius >= Map.MapCellY) {
             newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) - radius);
@@ -2292,8 +2349,12 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         for (int y = -(radius - 1); y < radius; y++) {
           CELL newcell;
 
-          if (Cell_Y(cell) + y < Map.MapCellY) continue;
-          if (Cell_Y(cell) + y >= Map.MapCellY + Map.MapCellHeight) continue;
+          if (Cell_Y(cell) + y < Map.MapCellY) {
+            continue;
+          }
+          if (Cell_Y(cell) + y >= Map.MapCellY + Map.MapCellHeight) {
+            continue;
+          }
 
           if (Cell_X(cell) - radius >= Map.MapCellX) {
             newcell = XY_Cell(Cell_X(cell) - radius, Cell_Y(cell) + y);
@@ -2480,7 +2541,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     CargoClass::AI();
     RadioClass::AI();
 
-    if (!IsActive || (Height > 0 && What_Am_I() != RTTI_AIRCRAFT)) return;
+    if (!IsActive || (Height > 0 && What_Am_I() != RTTI_AIRCRAFT)) {
+      return;
+    }
 
     DoorClass::AI();
 
@@ -2578,7 +2641,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       */
       if (Cloak == UNCLOAKED) {
 #ifdef PREDATOR
-        if (IsOwnedByPlayer) Mark(MARK_CHANGE);
+        if (IsOwnedByPlayer) {
+          Mark(MARK_CHANGE);
+        }
 #endif
         CloakingDevice.Graphic_Logic();
         if (Is_Ready_To_Cloak()) {
@@ -2859,7 +2924,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     /*
     **	Don't allow firing if still rearming.
     */
-    if (Arm != 0) return FIRE_REARM;
+    if (Arm != 0) {
+      return FIRE_REARM;
+    }
 
     /*
     **	The target must be within range in order to allow firing.
@@ -2935,7 +3002,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   void TechnoClass::Assign_Target(TARGET target) {
     assert(IsActive);
 
-    if (target == TarCom) return;
+    if (target == TarCom) {
+      return;
+    }
 
     if (!Target_Legal(target)) {
       target = TARGET_NONE;
@@ -3155,7 +3224,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	If this object doesn't have a weapon, then it is obvious that firing
     **	cannot ever succeed. Return with failure flag.
     */
-    if (weapon == nullptr) return nullptr;
+    if (weapon == nullptr) {
+      return nullptr;
+    }
 
     const BulletTypeClass& btype = *weapon->Bullet;
 
@@ -3553,7 +3624,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	Disable recognizing the <CTRL> key forced fire option when dealing with
     *buildings.
     */
-    if (What_Am_I() == RTTI_BUILDING) ctrldown = false;
+    if (What_Am_I() == RTTI_BUILDING) {
+      ctrldown = false;
+    }
 
     /*
     **	Disable recognizing the <CTRL> key forced fire option when dealing with
@@ -3562,7 +3635,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     if (What_Am_I() == RTTI_VESSEL) {
       const WeaponTypeClass* weapon =
           ((VesselClass*)this)->Class->PrimaryWeapon;
-      if (weapon && weapon->Bullet->IsSubSurface) ctrldown = false;
+      if (weapon && weapon->Bullet->IsSubSurface) {
+        ctrldown = false;
+      }
     }
 
     if (cellptr->Overlay != OVERLAY_NONE) {
@@ -4025,11 +4100,17 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     /*
     **	Handle any trigger event associated with this object.
     */
-    if (Trigger.Is_Valid() && source) Trigger->Spring(TEVENT_ATTACKED, this);
+    if (Trigger.Is_Valid() && source) {
+      Trigger->Spring(TEVENT_ATTACKED, this);
+    }
 
-    if (Trigger.Is_Valid() && source) Trigger->Spring(TEVENT_DISCOVERED, this);
+    if (Trigger.Is_Valid() && source) {
+      Trigger->Spring(TEVENT_DISCOVERED, this);
+    }
 
-    if (Trigger.Is_Valid()) Trigger->Spring(TEVENT_DESTROYED, this);
+    if (Trigger.Is_Valid()) {
+      Trigger->Spring(TEVENT_DESTROYED, this);
+    }
 
     if (source != nullptr) {
       Crew.Made_A_Kill();
@@ -4105,7 +4186,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         }
 
         House->UnitsLost++;
-        if (source != nullptr) source->House->UnitsKilled[Owner()]++;
+        if (source != nullptr) {
+          source->House->UnitsKilled[Owner()]++;
+        }
 
         /*
         ** If the map is displaying the multiplayer player names & their
@@ -4281,39 +4364,57 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   VisualType TechnoClass::Visual_Character(bool raw) const {
     assert(IsActive);
 
-    if (Techno_Type_Class()->IsInvisible && IsOwnedByPlayer)
+    if (Techno_Type_Class()->IsInvisible && IsOwnedByPlayer) {
       return VISUAL_NORMAL;
+    }
     if (Techno_Type_Class()->IsInvisible && !IsOwnedByPlayer &&
-        !MapEditorActive)
+        !MapEditorActive) {
       return VISUAL_HIDDEN;
+    }
 
     /*
     **	When uncloaked or in map editor mode, always draw the object normally.
     */
-    if (Cloak == UNCLOAKED || MapEditorActive) return VISUAL_NORMAL;
+    if (Cloak == UNCLOAKED || MapEditorActive) {
+      return VISUAL_NORMAL;
+    }
 
     /*
     **	A cloaked unit will not be visible at all unless it is owned
     **	by the player.
     */
     if (Cloak == CLOAKED) {
-      if (!raw && IsOwnedByPlayer) return VISUAL_SHADOWY;
+      if (!raw && IsOwnedByPlayer) {
+        return VISUAL_SHADOWY;
+      }
       return VISUAL_HIDDEN;
     }
 
     int stage = CloakingDevice.Fetch_Stage();
-    if (Cloak == UNCLOAKING) stage = MAX_UNCLOAK_STAGE - stage;
+    if (Cloak == UNCLOAKING) {
+      stage = MAX_UNCLOAK_STAGE - stage;
+    }
     if (stage <= 0) {
       return VISUAL_NORMAL;
     }
 
     stage = fixed(stage, MAX_UNCLOAK_STAGE) * 256;
 
-    if (stage < 0x0040) return VISUAL_INDISTINCT;
-    if (stage < 0x0080) return VISUAL_DARKEN;
-    if (stage < 0x00C0) return VISUAL_SHADOWY;
-    if (!raw && IsOwnedByPlayer) return VISUAL_SHADOWY;
-    if (stage < 0x00FF) return VISUAL_RIPPLE;
+    if (stage < 0x0040) {
+      return VISUAL_INDISTINCT;
+    }
+    if (stage < 0x0080) {
+      return VISUAL_DARKEN;
+    }
+    if (stage < 0x00C0) {
+      return VISUAL_SHADOWY;
+    }
+    if (!raw && IsOwnedByPlayer) {
+      return VISUAL_SHADOWY;
+    }
+    if (stage < 0x00FF) {
+      return VISUAL_RIPPLE;
+    }
     return VISUAL_HIDDEN;
   }
 
@@ -4633,7 +4734,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	Threat range means nothing if scanning the whole map. In such a case,
     *just *	return with the same control flag specified.
     */
-    if (control == -1) return -1;
+    if (control == -1) {
+      return -1;
+    }
 
     /*
     **	If simple guard range is requested, then return "0" since
@@ -4732,8 +4835,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	Don't overreact if this building can defend itself.
     */
     if (Session.Type == GAME_NORMAL &&
-        Techno_Type_Class()->PrimaryWeapon != nullptr)
+        Techno_Type_Class()->PrimaryWeapon != nullptr) {
       return;
+    }
 
     /*
     ** If the enemy is not an infantry or a unit there is not much we can
@@ -4779,8 +4883,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         if (!infantry->Is_Weapon_Equipped() ||
             (infantry->Mission != MISSION_NONE &&
              !MissionControl[infantry->Mission].IsRecruitable &&
-             Session.Type == GAME_NORMAL))
+             Session.Type == GAME_NORMAL)) {
           continue;
+        }
         //					(Mission != MISSION_GUARD_AREA
         //|| Session.Type == GAME_NORMAL)) continue;
 
@@ -4797,8 +4902,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         **	Don't try to help if the building is on another planet.
         */
         if (Map[infantry->Center_Coord()].Zones[infantry->Class->MZone] !=
-            Map[Center_Coord()].Zones[infantry->Class->MZone])
+            Map[Center_Coord()].Zones[infantry->Class->MZone]) {
           continue;
+        }
 
         /*
         ** Find the amount of threat that this unit can apply to the
@@ -4868,8 +4974,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         if (!unit->Is_Weapon_Equipped() ||
             (unit->Mission != MISSION_NONE &&
              !MissionControl[unit->Mission].IsRecruitable &&
-             Session.Type == GAME_NORMAL))
+             Session.Type == GAME_NORMAL)) {
           continue;
+        }
 
         /*
         **	Don't allow a response if it doesn't have a weapon that will
@@ -4884,8 +4991,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         **	Don't try to help if the building is on another planet.
         */
         if (Map[unit->Center_Coord()].Zones[unit->Class->MZone] !=
-            Map[Center_Coord()].Zones[unit->Class->MZone])
+            Map[Center_Coord()].Zones[unit->Class->MZone]) {
           continue;
+        }
 
         /*
         ** Find the amount of threat that this unit can apply to the
@@ -5003,7 +5111,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     /*
     **	If there is no source of the damage, then retaliation cannot occur.
     */
-    if (source == nullptr) return false;
+    if (source == nullptr) {
+      return false;
+    }
 
     /*
     **	If the mission precludes retaliation, then don't retaliate.
@@ -5025,12 +5135,16 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	If the source of the damage is an ally, then retaliation shouldn't
     **	occur either.
     */
-    if (House->Is_Ally(source)) return false;
+    if (House->Is_Ally(source)) {
+      return false;
+    }
 
     /*
     **	Only objects that have a damaging weapon are allowed to retaliate.
     */
-    if (Combat_Damage() <= 0 || !Is_Weapon_Equipped()) return false;
+    if (Combat_Damage() <= 0 || !Is_Weapon_Equipped()) {
+      return false;
+    }
 
     /*
     **	If this is not equipped with a weapon that can attack the molester, then
@@ -5048,16 +5162,18 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     *of attacking. *	Dogs must be attacked using normal target processing.
     */
     if (source->What_Am_I() == RTTI_INFANTRY &&
-        ((InfantryClass*)source)->Class->IsDog)
+        ((InfantryClass*)source)->Class->IsDog) {
       return false;
+    }
 
     /*
     **	Don't allow retaliation if it isn't equipped with a weapon that can deal
     *with the threat.
     */
     if (source->What_Am_I() == RTTI_AIRCRAFT &&
-        !ttype->PrimaryWeapon->Bullet->IsAntiAircraft)
+        !ttype->PrimaryWeapon->Bullet->IsAntiAircraft) {
       return false;
+    }
 
     /*
     **	Tanya is not allowed to retaliate against buildings in the normal sense
@@ -5078,8 +5194,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     if (House->IsHuman && !Rule.IsSmartDefense &&
         (What_Am_I() != RTTI_INFANTRY ||
          *(InfantryClass*)this != INFANTRY_TANYA ||
-         source->What_Am_I() != RTTI_INFANTRY))
+         source->What_Am_I() != RTTI_INFANTRY)) {
       return false;
+    }
 
     /*
     **	If this object is part of a team that prevents retaliation then don't
@@ -5117,7 +5234,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
               weapon->WarheadPtr->Modifier[Techno_Type_Class()->Armor];
         }
       }
-      if (source_val <= current_val) return false;
+      if (source_val <= current_val) {
+        return false;
+      }
     }
 
     /*
@@ -5651,8 +5770,12 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       int yval = -1;
       int group = ((FootClass*)this)->Group + 1;
 
-      if (Class_Of().Max_Pips()) yval -= 4;
-      if (group == 10) group = 0;
+      if (Class_Of().Max_Pips()) {
+        yval -= 4;
+      }
+      if (group == 10) {
+        group = 0;
+      }
 
       CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_NUMBERS + group, x + 2,
                     y + yval, window, SHAPE_CENTER | SHAPE_WIN_REL);
@@ -5711,7 +5834,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
           int digits;
           int factor = 10;
           for (digits = 1; digits < 9; digits++) {
-            if (money < factor) break;
+            if (money < factor) {
+              break;
+            }
             factor *= 10;
           }
 
@@ -5911,7 +6036,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     assert(IsActive);
 
     if (Is_Weapon_Equipped()) {
-      if (!Techno_Type_Class()->PrimaryWeapon->Bullet->IsAntiGround) return 0;
+      if (!Techno_Type_Class()->PrimaryWeapon->Bullet->IsAntiGround) {
+        return 0;
+      }
 
       const WeaponTypeClass* weapon = Techno_Type_Class()->PrimaryWeapon;
       const BulletTypeClass* bullet = weapon->Bullet;
@@ -5953,7 +6080,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     assert(IsActive);
 
     if (Is_Weapon_Equipped()) {
-      if (!Techno_Type_Class()->PrimaryWeapon->Bullet->IsAntiGround) return 0;
+      if (!Techno_Type_Class()->PrimaryWeapon->Bullet->IsAntiGround) {
+        return 0;
+      }
 
       const WeaponTypeClass* weapon = Techno_Type_Class()->PrimaryWeapon;
       const BulletTypeClass* bullet = weapon->Bullet;
@@ -6363,7 +6492,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   }
 
   int TechnoTypeClass::Legal_Placement(CELL pos) const {
-    if (pos == -1) return 0;
+    if (pos == -1) {
+      return 0;
+    }
 
     /*
     **	Normal buildings must check to see that every foundation square is free
@@ -6375,7 +6506,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
 
     while (offset != nullptr && *offset != REFRESH_EOL) {
       CELL cell = pos + *offset++;
-      if (!Map.In_Radar(cell)) return false;
+      if (!Map.In_Radar(cell)) {
+        return false;
+      }
       if (build) {
         if (!Map[cell].Is_Clear_To_Build(Speed)) {
           return 0;

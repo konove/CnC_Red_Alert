@@ -1327,8 +1327,12 @@ bool InfantryTypeClass::Read_INI(CCINIClass& ini) {
     IsCapture = ini.Get_Bool(Name(), "Infiltrate", IsCapture);
     IsBomber = ini.Get_Bool(Name(), "C4", IsBomber);
     IsDog = ini.Get_Bool(Name(), "IsCanine", IsDog);
-    if (IsBomber) IsCapture = true;
-    if (IsDog) IsLeader = false;
+    if (IsBomber) {
+      IsCapture = true;
+    }
+    if (IsDog) {
+      IsLeader = false;
+    }
     return true;
   }
   return false;

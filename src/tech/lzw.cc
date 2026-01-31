@@ -71,7 +71,9 @@ int LZWEngine::Compress(const Buffer& input, const Buffer& output) {
     **	can be written out.
     */
     unsigned char character;
-    if (instraw.Get(&character, sizeof(character)) == 0) break;
+    if (instraw.Get(&character, sizeof(character)) == 0) {
+      break;
+    }
 
     /*
     **	See if there is a match for the current code and current
@@ -138,9 +140,13 @@ int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
   CodeType new_code;
   CodeType next_code = FIRST_CODE;
   for (;;) {
-    if (instraw.Get(&new_code, sizeof(new_code)) == 0) break;
+    if (instraw.Get(&new_code, sizeof(new_code)) == 0) {
+      break;
+    }
 
-    if (new_code == END_OF_STREAM) break;
+    if (new_code == END_OF_STREAM) {
+      break;
+    }
 
     /*
     ** This code checks for the CHARACTER+STRING+CHARACTER+STRING+CHARACTER
@@ -206,7 +212,9 @@ int LZWEngine::Find_Child_Node(CodeType parent_code, char child_character) {
     **	Stop searching if an unused index is found since this means that
     **	a match doesn't exist in the table at all.
     */
-    if (dict[hash_index].Is_Unused()) break;
+    if (dict[hash_index].Is_Unused()) {
+      break;
+    }
 
     /*
     **	Bump the hash index to another value such that sequential bumps
@@ -346,7 +354,9 @@ static int Find_Child_Node(CodeType parent_code, char child_character) {
     **	Stop searching if an unused index is found since this means that
     **	a match doesn't exist in the table at all.
     */
-    if (dict[hash_index].Is_Unused()) break;
+    if (dict[hash_index].Is_Unused()) {
+      break;
+    }
 
     /*
     **	Bump the hash index to another value such that sequential bumps
@@ -413,7 +423,9 @@ int LZW_Compress(Buffer& inbuff, Buffer& outbuff) {
   for (;;) {
     char character;
 
-    if (input.Get(&character, sizeof(character)) == 0) break;
+    if (input.Get(&character, sizeof(character)) == 0) {
+      break;
+    }
 
     int index = Find_Child_Node(string_code, character);
 
@@ -465,7 +477,9 @@ int LZW_Uncompress(Buffer& inbuff, Buffer& outbuff) {
   CodeType new_code;
   CodeType next_code = FIRST_CODE;
   for (;;) {
-    if (input.Get(&new_code, sizeof(new_code)) == 0) break;
+    if (input.Get(&new_code, sizeof(new_code)) == 0) {
+      break;
+    }
 
     /*
     ** This code checks for the CHARACTER+STRING+CHARACTER+STRING+CHARACTER

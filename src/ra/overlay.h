@@ -73,7 +73,9 @@ class OverlayClass : public ObjectClass {
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
   OverlayClass(const NoInitClass& x) : ObjectClass(x), Class(x) {}
   ~OverlayClass() override {
-    if (GameActive) OverlayClass::Limbo();
+    if (GameActive) {
+      OverlayClass::Limbo();
+    }
     Class = nullptr;
   }
   operator OverlayType() const { return Class->Type; }

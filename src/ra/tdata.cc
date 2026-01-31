@@ -662,7 +662,9 @@ ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass*) const {
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
 const short* TerrainTypeClass::Occupy_List(bool) const {
-  if (Occupy != nullptr) return Occupy;
+  if (Occupy != nullptr) {
+    return Occupy;
+  }
 
   static const short _simple[1] = {REFRESH_EOL};
   return &_simple[0];
@@ -688,7 +690,9 @@ const short* TerrainTypeClass::Occupy_List(bool) const {
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
 const short* TerrainTypeClass::Overlap_List() const {
-  if (Overlap != nullptr) return Overlap;
+  if (Overlap != nullptr) {
+    return Overlap;
+  }
 
   static const short _simple[1] = {REFRESH_EOL};
   return &_simple[0];

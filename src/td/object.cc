@@ -714,16 +714,21 @@ void ObjectClass::Unselect() {
  *Adds to head or tail depending on leader type flag.                      *
  *=============================================================================================*/
 bool ObjectClass::Select() {
-  if (!Debug_Map && (IsSelected || !Class_Of().IsSelectable)) return false;
+  if (!Debug_Map && (IsSelected || !Class_Of().IsSelectable)) {
+    return false;
+  }
 
   if (Can_Player_Move() && Is_Techno() &&
-      dynamic_cast<TechnoClass*>(this)->IsALoaner)
+      dynamic_cast<TechnoClass*>(this)->IsALoaner) {
     return false;
+  }
 
   /*
   **	Don't allow selection of object when in building placement mode.
   */
-  if (Map.PendingObject) return false;
+  if (Map.PendingObject) {
+    return false;
+  }
 
   /*
   **	If selecting an object of a different house than the player's, make sure
@@ -794,7 +799,9 @@ bool ObjectClass::Render(bool forced) {
                                  foot->Path[0] + FACING_S & FACING_NW);
             Map.Coord_To_Pixel(Cell_Coord(cell), oldx, oldy);
             for (int index = 0; index < CONQUER_PATH_MAX; index++) {
-              if (foot->Path[index] == FACING_NONE) break;
+              if (foot->Path[index] == FACING_NONE) {
+                break;
+              }
               cell = Adjacent_Cell(cell, foot->Path[index]);
               if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
                 LogicPage->Draw_Line(oldx, 8 + oldy, x, 8 + y, BLACK);
@@ -1211,7 +1218,9 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     *point.
     */
     damage = Modify_Damage(damage, warhead, Class_Of().Armor, distance);
-    if (!damage) return RESULT_NONE;
+    if (!damage) {
+      return RESULT_NONE;
+    }
 
     /*
     **	At this point, we KNOW that at least light damage has occurred.
@@ -1312,7 +1321,9 @@ bool ObjectClass::Mark(MarkType mark) {
     **	this game frame.
     */
     if (mark == MARK_CHANGE) {
-      if (IsToDisplay) return false;
+      if (IsToDisplay) {
+        return false;
+      }
       if (static_cast<bool>(IsDown)) {
         Mark_For_Redraw();
         return true;
@@ -1347,8 +1358,9 @@ bool ObjectClass::Mark(MarkType mark) {
       threat = tech->Risk();
       house = tech->Owner();
       cell = Coord_Cell(Coord);
-    } else
+    } else {
       tech = nullptr;
+    }
 
     /*
     **	Marking down is only successful if the object isn't already

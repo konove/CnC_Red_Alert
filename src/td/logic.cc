@@ -246,8 +246,9 @@ void LogicClass::AI() {
     if (unit->IsLocked && (GameToPlay != GAME_NORMAL || !unit->House->IsHuman ||
                            unit->IsDiscoveredByPlayer)) {
       unit->House->NewUScan |= 1L << unit->Class->Type;
-      if (!unit->IsInLimbo)
+      if (!unit->IsInLimbo) {
         unit->House->NewActiveUScan |= 1L << unit->Class->Type;
+      }
     }
   }
   for (index = 0; index < Infantry.Count(); index++) {
@@ -256,8 +257,9 @@ void LogicClass::AI() {
         (GameToPlay != GAME_NORMAL || !infantry->House->IsHuman ||
          infantry->IsDiscoveredByPlayer)) {
       infantry->House->NewIScan |= 1L << infantry->Class->Type;
-      if (!infantry->IsInLimbo)
+      if (!infantry->IsInLimbo) {
         infantry->House->NewActiveIScan |= 1L << infantry->Class->Type;
+      }
     }
   }
   for (index = 0; index < Aircraft.Count(); index++) {
@@ -266,8 +268,9 @@ void LogicClass::AI() {
         (GameToPlay != GAME_NORMAL || !aircraft->House->IsHuman ||
          aircraft->IsDiscoveredByPlayer)) {
       aircraft->House->NewAScan |= 1L << aircraft->Class->Type;
-      if (!aircraft->IsInLimbo)
+      if (!aircraft->IsInLimbo) {
         aircraft->House->NewActiveAScan |= 1L << aircraft->Class->Type;
+      }
     }
   }
   for (index = 0; index < Buildings.Count(); index++) {
@@ -276,8 +279,9 @@ void LogicClass::AI() {
         (GameToPlay != GAME_NORMAL || !building->House->IsHuman ||
          building->IsDiscoveredByPlayer)) {
       building->House->NewBScan |= 1L << building->Class->Type;
-      if (!building->IsInLimbo)
+      if (!building->IsInLimbo) {
         building->House->NewActiveBScan |= 1L << building->Class->Type;
+      }
     }
   }
 

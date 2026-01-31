@@ -47,9 +47,7 @@
 
 #include "td/ipx.h"
 
-int IPX_Open_Socket(unsigned short socket) {
-  return IPX_Open_Socket95(socket);
-}
+int IPX_Open_Socket(unsigned short socket) { return IPX_Open_Socket95(socket); }
 
 int IPX_Close_Socket(unsigned short socket) {
   IPX_Close_Socket95(socket);

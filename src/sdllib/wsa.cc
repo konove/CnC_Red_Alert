@@ -292,16 +292,19 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     // loop back to the beginning.
     //
     if (Get_Resident_Frame_Offset(sys_header->file_buffer,
-                                  sys_header->total_frames + 1))
+                                  sys_header->total_frames + 1)) {
       anim_flags |= WSA_RESIDENT;
-    else
+    } else {
       anim_flags |= WSA_LINEAR_ONLY | WSA_RESIDENT;
+    }
   } else {  // buffer cannot handle max_size of buffer
 
-    if (Get_File_Frame_Offset(fh, sys_header->total_frames + 1, palette_adjust))
+    if (Get_File_Frame_Offset(fh, sys_header->total_frames + 1,
+                              palette_adjust)) {
       anim_flags |= WSA_FILE;
-    else
+    } else {
       anim_flags |= WSA_LINEAR_ONLY | WSA_FILE;
+    }
     ////
     sys_header->file_buffer = nullptr;
   }
@@ -540,7 +543,9 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
         int count = udelta[0] | udelta[1] << 8;  // get word code
         udelta += 2;
 
-        if (!count) return 0;  // long count of zero means stop
+        if (!count) {
+          return 0;  // long count of zero means stop
+        }
 
         if (count & 0x8000) {
           if (count & 0x4000) {
@@ -560,10 +565,12 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
               source_ptr++;
             } while (--count);
           }
-        } else  // LONGSKIP
+        } else {  // LONGSKIP
           source_ptr += count;
-      } else  // SHORTSKIP
+        }
+      } else {  // SHORTSKIP
         source_ptr += b;
+      }
     } else {
       // SHORTDUMP
       int count = b;
@@ -614,7 +621,9 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
           int count = udelta[0] | udelta[1] << 8;  // get word code
           udelta += 2;
 
-          if (!count) return;  // long count of zero means stop
+          if (!count) {
+            return;  // long count of zero means stop
+          }
 
           if (count & 0x8000) {
             if (count & 0x4000) {
@@ -710,7 +719,9 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
           int count = udelta[0] | udelta[1] << 8;  // get word code
           udelta += 2;
 
-          if (!count) return;  // long count of zero means stop
+          if (!count) {
+            return;  // long count of zero means stop
+          }
 
           if (count & 0x8000) {
             if (count & 0x4000) {

@@ -114,8 +114,12 @@ int FileStraw::Get(void* source, int slen) {
   if (Valid_File() && source != nullptr && slen > 0) {
     if (!File->Is_Open()) {
       HasOpened = true;
-      if (!File->Is_Available()) return 0;
-      if (!File->Open(READ)) return 0;
+      if (!File->Is_Available()) {
+        return 0;
+      }
+      if (!File->Open(READ)) {
+        return 0;
+      }
     }
 
     return File->Read(source, slen);

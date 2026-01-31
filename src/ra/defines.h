@@ -208,7 +208,6 @@
 
 #define SORTDRAW
 
-
 /**********************************************************************
 **	If this is defined, then the network code will be enabled.
 */

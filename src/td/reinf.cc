@@ -82,7 +82,9 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   /*
   **	preform some preliminary checks for validity.
   */
-  if (!teamtype || !teamtype->ClassCount) return false;
+  if (!teamtype || !teamtype->ClassCount) {
+    return false;
+  }
 
   /*
   **	Create the controlling team. All the objects are grouped
@@ -92,7 +94,9 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   TeamClass* team = nullptr;
   if (teamtype->MissionCount) {
     team = new TeamClass(teamtype, HouseClass::As_Pointer(teamtype->House));
-    if (!team) return false;
+    if (!team) {
+      return false;
+    }
     team->Force_Active();
   }
 
@@ -282,9 +286,13 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     case SOURCE_WEST: {
       eface = static_cast<FacingType>(source << 1);  // Facing to enter map.
 
-      if (airtransport) ScenarioInit++;
+      if (airtransport) {
+        ScenarioInit++;
+      }
       cell = Map.Calculated_Cell(source, teamtype->House);
-      if (airtransport) ScenarioInit--;
+      if (airtransport) {
+        ScenarioInit--;
+      }
       CELL newcell = cell;
 
       FootClass* o = dynamic_cast<FootClass*>(object->Next);
@@ -331,7 +339,9 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
               break;
             }
           }
-          if (adj < FACING_COUNT) continue;
+          if (adj < FACING_COUNT) {
+            continue;
+          }
           newcell = -1;
         }
 
@@ -410,14 +420,18 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
 
         thisone = next;
       }
-      if (!placed && team) delete team;
+      if (!placed && team) {
+        delete team;
+      }
 
       /*
       **	Fixes bug that can happen if the reinforcement cannot be
       *created. *	This prevent "phantom" teams and team types from being
       *left around.
       */
-      if (GameToPlay == GAME_NORMAL && !placed) return false;
+      if (GameToPlay == GAME_NORMAL && !placed) {
+        return false;
+      }
 
     } break;
 
@@ -628,7 +642,9 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ScenarioInit++;
     TechnoClass* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
     ScenarioInit--;
-    if (!obj) return sub;
+    if (!obj) {
+      return sub;
+    }
 
     /*
     ** Flying objects always have the IsALoaner bit set.

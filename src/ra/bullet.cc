@@ -377,7 +377,9 @@ void BulletClass::AI() {
 
   ObjectClass::AI();
 
-  if (!IsActive) return;
+  if (!IsActive) {
+    return;
+  }
 
   /*
   **	Ballistic objects are handled here.
@@ -456,7 +458,9 @@ void BulletClass::AI() {
         if (bullet) {
           int celly = Cell_Y(Payback->House->NukeDest);
           celly -= 15;
-          if (celly < 1) celly = 1;
+          if (celly < 1) {
+            celly = 1;
+          }
           COORDINATE start =
               Cell_Coord(XY_Cell(Cell_X(Payback->House->NukeDest), celly));
           if (!bullet->Unlimbo(start, DIR_S)) {
@@ -576,14 +580,18 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
   *are actually *	invisible) and flame thrower flames (which are rendered
   *as an animation instead of a projectile).
   */
-  if (Class->IsInvisible) return;
+  if (Class->IsInvisible) {
+    return;
+  }
 
   /*
   **	If there is no shape loaded for this object, then
   **	it obviously can't be rendered -- just bail.
   */
   const void* shapeptr = Get_Image_Data();
-  if (shapeptr == nullptr) return;
+  if (shapeptr == nullptr) {
+    return;
+  }
 
   /*
   **	Get the basic shape number for this projectile.
@@ -787,7 +795,9 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	target.
     */
     int speed = MaxSpeed;
-    if (speed == MPH_LIGHT_SPEED) speed = MPH_IMMOBILE;
+    if (speed == MPH_LIGHT_SPEED) {
+      speed = MPH_IMMOBILE;
+    }
     if (Class->IsArcing) {
       speed = MaxSpeed + Distance(tcoord) / 32;
 
@@ -1023,7 +1033,9 @@ void BulletClass::Bullet_Explodes(bool forced) {
   if (!Is_Target_Aircraft(TarCom) ||
       As_Aircraft(TarCom)->In_Which_Layer() == LAYER_GROUND) {
     Explosion_Damage(Coord, Strength, Payback, Warhead);
-    if (!IsActive) return;
+    if (!IsActive) {
+      return;
+    }
 
   } else {
     /*
@@ -1034,7 +1046,9 @@ void BulletClass::Bullet_Explodes(bool forced) {
       AircraftClass* object = As_Aircraft(TarCom);
 
       int str = Strength;
-      if (object) object->Take_Damage(str, 0, Warhead, Payback);
+      if (object) {
+        object->Take_Damage(str, 0, Warhead, Payback);
+      }
     }
   }
 

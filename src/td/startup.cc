@@ -358,7 +358,9 @@ int main(int argc, char* argv[])
               (INIT_FREE_DISK_SPACE) / (1024 * 1024));
       MessageBox(NULL, disk_space_message, "Command & Conquer",
                  MB_ICONEXCLAMATION | MB_OK);
-      if (WindowsTimer) delete WindowsTimer;
+      if (WindowsTimer) {
+        delete WindowsTimer;
+      }
       return (EXIT_FAILURE);
 #endif
 #ifdef FRENCH
@@ -369,7 +371,9 @@ int main(int argc, char* argv[])
               (INIT_FREE_DISK_SPACE) / (1024 * 1024));
       MessageBox(NULL, disk_space_message, "Command & Conquer",
                  MB_ICONEXCLAMATION | MB_OK);
-      if (WindowsTimer) delete WindowsTimer;
+      if (WindowsTimer) {
+        delete WindowsTimer;
+      }
       return (EXIT_FAILURE);
 #endif
 #if !(FRENCH | GERMAN)
@@ -379,7 +383,9 @@ int main(int argc, char* argv[])
           "memory and save games. Do you want to play C&C anyway?",
           "Command & Conquer", MB_ICONQUESTION | MB_YESNO);
       if (reply == IDNO) {
-        if (WindowsTimer) delete WindowsTimer;
+        if (WindowsTimer) {
+          delete WindowsTimer;
+        }
         return (EXIT_FAILURE);
       }
 
@@ -475,8 +481,12 @@ int main(int argc, char* argv[])
           MessageBox(MainWindow,
                      Text_String(TXT_UNABLE_TO_ALLOCATE_PRIMARY_VIDEO_BUFFER),
                      "Command & Conquer", MB_ICONEXCLAMATION | MB_OK);
-          if (WindowsTimer) delete WindowsTimer;
-          if (Palette) delete[] Palette;
+          if (WindowsTimer) {
+            delete WindowsTimer;
+          }
+          if (Palette) {
+            delete[] Palette;
+          }
           return (EXIT_FAILURE);
         }
 
@@ -531,7 +541,9 @@ int main(int argc, char* argv[])
 #endif
       }
 
-      if (ScreenHeight == 480) ScreenHeight = 400;
+      if (ScreenHeight == 480) {
+        ScreenHeight = 400;
+      }
 
       int yoff = VisiblePage.Get_Height() == 480 ? 40 : 0;
 

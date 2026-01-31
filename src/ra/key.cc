@@ -146,7 +146,9 @@ bool WWKeyboardClass::Is_Mouse_Key(unsigned short key) {
  *=============================================================================================*/
 unsigned short WWKeyboardClass::Check() const {
   ((WWKeyboardClass*)this)->Fill_Buffer_From_System();
-  if (Is_Buffer_Empty()) return false;
+  if (Is_Buffer_Empty()) {
+    return false;
+  }
   return Peek_Element();
 }
 
@@ -315,8 +317,9 @@ char WWKeyboardClass::To_ASCII(unsigned short key) {
   int scancode = 0;
 
   scancode = MapVirtualKey(key & 0xFF, 0);
-  result = ToAscii((UINT)(key & 0xFF), static_cast<UINT>(scancode), static_cast<PBYTE>(KeyState),
-                   static_cast<LPWORD>(buffer), static_cast<UINT>(0));
+  result = ToAscii((UINT)(key & 0xFF), static_cast<UINT>(scancode),
+                   static_cast<PBYTE>(KeyState), static_cast<LPWORD>(buffer),
+                   static_cast<UINT>(0));
 
   /*
   **	Restore the KeyState buffer back to pristine condition.

@@ -70,7 +70,9 @@ class SmudgeClass : public ObjectClass {
   SmudgeClass() : Class(nullptr) {}
   operator SmudgeType() const { return Class->Type; }
   ~SmudgeClass() override {
-    if (GameActive) SmudgeClass::Limbo();
+    if (GameActive) {
+      SmudgeClass::Limbo();
+    }
   }
   RTTIType What_Am_I() const override { return RTTI_SMUDGE; }
 

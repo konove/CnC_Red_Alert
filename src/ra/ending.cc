@@ -114,7 +114,9 @@ void Nod_Ending() {
     }
     Call_Back_Delay(1);
     if (!Keyboard->Check()) {
-      if (!Is_Sample_Playing(loopie6m)) Play_Sample(loopie6m, 255, 128);
+      if (!Is_Sample_Playing(loopie6m)) {
+        Play_Sample(loopie6m, 255, 128);
+      }
     } else {
       if (Is_Sample_Playing(kanefinl)) {
         Clear_KeyBuffer();
@@ -125,23 +127,32 @@ void Nod_Ending() {
           int mousey = MouseQY;
           if (mousey >= 22 && mousey <= 177) {
             done++;
-            if (mousex < 160 && mousey < 100) selection = 2;
-            if (mousex < 160 && mousey >= 100) selection = 3;
-            if (mousex >= 160 && mousey >= 100) selection = 4;
+            if (mousex < 160 && mousey < 100) {
+              selection = 2;
+            }
+            if (mousex < 160 && mousey >= 100) {
+              selection = 3;
+            }
+            if (mousex >= 160 && mousey >= 100) {
+              selection = 4;
+            }
           }
         }
       }
     }
   }
-  if (mouseshown) Hide_Mouse();
+  if (mouseshown) {
+    Hide_Mouse();
+  }
   delete satpic;
 
   /* get rid of all the animating objects */
-  for (int i = 0; i < MAXSCOREOBJS; i++)
+  for (int i = 0; i < MAXSCOREOBJS; i++) {
     if (ScoreObjs[i]) {
       delete ScoreObjs[i];
       ScoreObjs[i] = 0;
     }
+  }
   // erase the "choose a target" text
   SeenBuff.Fill_Rect(0, 180, 319, 199, 0);
 

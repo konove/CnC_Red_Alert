@@ -1038,9 +1038,13 @@ void ObjectClass::Unselect() {
 
   if (IsSelected) {
     CurrentObject.Delete(this);
-    if (In_Which_Layer() == LAYER_GROUND) Mark(MARK_OVERLAP_UP);
+    if (In_Which_Layer() == LAYER_GROUND) {
+      Mark(MARK_OVERLAP_UP);
+    }
     IsSelected = false;
-    if (In_Which_Layer() == LAYER_GROUND) Mark(MARK_OVERLAP_DOWN);
+    if (In_Which_Layer() == LAYER_GROUND) {
+      Mark(MARK_OVERLAP_DOWN);
+    }
   }
 }
 
@@ -1108,9 +1112,13 @@ bool ObjectClass::Select() {
     CurrentObject.Add(this);
   }
 
-  if (In_Which_Layer() == LAYER_GROUND) Mark(MARK_OVERLAP_UP);
+  if (In_Which_Layer() == LAYER_GROUND) {
+    Mark(MARK_OVERLAP_UP);
+  }
   IsSelected = true;
-  if (In_Which_Layer() == LAYER_GROUND) Mark(MARK_OVERLAP_DOWN);
+  if (In_Which_Layer() == LAYER_GROUND) {
+    Mark(MARK_OVERLAP_DOWN);
+  }
   return true;
 }
 
@@ -1504,7 +1512,9 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
         }
       }
     }
-    if (damage == 0) return RESULT_NONE;
+    if (damage == 0) {
+      return RESULT_NONE;
+    }
 
     /*
     ** Are we healing/repairing?  If so, add strength, but in
@@ -1558,8 +1568,9 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
         if (this->Is_Techno()) {
           if (this ==
               As_Object(
-                  dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport))
+                  dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport)) {
             dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport = 0;
+          }
         }
         Detach_All();
         break;
@@ -1622,7 +1633,9 @@ bool ObjectClass::Mark(MarkType mark) {
     **	this game frame.
     */
     if (mark == MARK_CHANGE || mark == MARK_CHANGE_REDRAW) {
-      if (IsToDisplay && mark != MARK_CHANGE_REDRAW) return false;
+      if (IsToDisplay && mark != MARK_CHANGE_REDRAW) {
+        return false;
+      }
       if (IsDown) {
         Mark_For_Redraw();
         return true;
@@ -2112,12 +2125,16 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         InfantryTypeClass* me = (InfantryTypeClass*)this;
         if (me->IsDog) {
           if (*building == STRUCT_KENNEL) {
-            if (building->IsLeader) return building;
+            if (building->IsLeader) {
+              return building;
+            }
             anybuilding = building;
           }
         } else {
           if (*building != STRUCT_KENNEL) {
-            if (building->IsLeader) return building;
+            if (building->IsLeader) {
+              return building;
+            }
             anybuilding = building;
           }
         }
@@ -2130,12 +2147,16 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
           AircraftTypeClass* air = (AircraftTypeClass*)this;
           if ((*building == STRUCT_HELIPAD && !air->IsFixedWing) ||
               (*building == STRUCT_AIRSTRIP && air->IsFixedWing)) {
-            if (building->IsLeader) return building;
+            if (building->IsLeader) {
+              return building;
+            }
             anybuilding = building;
           }
 
         } else {
-          if (building->IsLeader) return building;
+          if (building->IsLeader) {
+            return building;
+          }
           anybuilding = building;
         }
       }

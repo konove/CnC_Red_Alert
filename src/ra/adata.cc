@@ -2234,7 +2234,9 @@ void AnimTypeClass::Init(TheaterType theater) {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 const char* Anim_Name(AnimType anim) {
-  if (anim == ANIM_NONE) return "";
+  if (anim == ANIM_NONE) {
+    return "";
+  }
 
   return AnimTypeClass::As_Reference(anim).IniName;
 }

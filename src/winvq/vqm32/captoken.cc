@@ -158,7 +158,9 @@ long BuildCaptions(char* name, char* buffer) {
       string[strlen(string) - 1] = 0;
 
       /* Ignore comment lines. */
-      if (string[0] == ';') continue;
+      if (string[0] == ';') {
+        continue;
+      }
 
       ptr = strtok(string, "=");
 

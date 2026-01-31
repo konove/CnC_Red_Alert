@@ -61,7 +61,9 @@ unsigned int MCI::GetDeviceCount() {
   rc = mciSendCommand(MCI_ALL_DEVICE_ID, MCI_SYSINFO,
                       MCI_WAIT | MCI_SYSINFO_QUANTITY, (DWORD)&sysInfo);
 
-  if (rc) return 0;
+  if (rc) {
+    return 0;
+  }
 
   return count;
 }
@@ -95,7 +97,9 @@ bool MCI::GetDeviceName(unsigned int item, char* buffer) {
   rc = mciSendCommand(MCI_ALL_DEVICE_ID, MCI_SYSINFO,
                       MCI_WAIT | MCI_SYSINFO_NAME, (DWORD)&sysInfo);
 
-  if (rc) return false;
+  if (rc) {
+    return false;
+  }
 
   return true;
 }
@@ -123,7 +127,9 @@ bool MCI::GetProductName(MCIDEVICEID id, char* buffer) {
 
   rc = mciSendCommand(id, MCI_INFO, MCI_WAIT | MCI_INFO_PRODUCT, (DWORD)&info);
 
-  if (rc) return false;
+  if (rc) {
+    return false;
+  }
 
   return true;
 }
@@ -152,7 +158,9 @@ MCIDEVICEID MCI::OpenDevice(const char* name) {
 
   rc = mciSendCommand(0, MCI_OPEN, MCI_WAIT | MCI_OPEN_TYPE, (DWORD)&open);
 
-  if (rc) return 0;
+  if (rc) {
+    return 0;
+  }
 
   return (open.wDeviceID);
 }
@@ -162,7 +170,9 @@ void MCI::CloseDevice(MCIDEVICEID id) {
 
   close.dwCallback = (DWORD)NULL;
 
-  if (id) mciSendCommand(id, MCI_CLOSE, MCI_WAIT, (DWORD)&close);
+  if (id) {
+    mciSendCommand(id, MCI_CLOSE, MCI_WAIT, (DWORD)&close);
+  }
 }
 
 /****************************************************************************
@@ -185,38 +195,49 @@ bool MCI::GetDeviceDescription(const char* name, MCIDevice* caps) {
   // Copy the name
   strncpy(caps->name, name, 63);
 
-  if ((id = OpenDevice(name)) == 0) return false;
+  if ((id = OpenDevice(name)) == 0) {
+    return false;
+  }
 
   // Get device product name
   GetProductName(id, caps->description);
 
   // Get device type
-  if (GetCapability(id, MCI_GETDEVCAPS_DEVICE_TYPE, &result))
+  if (GetCapability(id, MCI_GETDEVCAPS_DEVICE_TYPE, &result)) {
     caps->type = result;
+  }
 
-  if (GetCapability(id, MCI_GETDEVCAPS_CAN_EJECT, &result))
+  if (GetCapability(id, MCI_GETDEVCAPS_CAN_EJECT, &result)) {
     caps->canEject = ((result) ? true : false);
+  }
 
-  if (GetCapability(id, MCI_GETDEVCAPS_CAN_PLAY, &result))
+  if (GetCapability(id, MCI_GETDEVCAPS_CAN_PLAY, &result)) {
     caps->canPlay = ((result) ? true : false);
+  }
 
-  if (GetCapability(id, MCI_GETDEVCAPS_CAN_RECORD, &result))
+  if (GetCapability(id, MCI_GETDEVCAPS_CAN_RECORD, &result)) {
     caps->canRecord = ((result) ? true : false);
+  }
 
-  if (GetCapability(id, MCI_GETDEVCAPS_CAN_SAVE, &result))
+  if (GetCapability(id, MCI_GETDEVCAPS_CAN_SAVE, &result)) {
     caps->canSave = ((result) ? true : false);
+  }
 
-  if (GetCapability(id, MCI_GETDEVCAPS_COMPOUND_DEVICE, &result))
+  if (GetCapability(id, MCI_GETDEVCAPS_COMPOUND_DEVICE, &result)) {
     caps->usesDevElem = ((result) ? true : false);
+  }
 
-  if (GetCapability(id, MCI_GETDEVCAPS_HAS_AUDIO, &result))
+  if (GetCapability(id, MCI_GETDEVCAPS_HAS_AUDIO, &result)) {
     caps->hasAudio = ((result) ? true : false);
+  }
 
-  if (GetCapability(id, MCI_GETDEVCAPS_HAS_VIDEO, &result))
+  if (GetCapability(id, MCI_GETDEVCAPS_HAS_VIDEO, &result)) {
     caps->hasVideo = ((result) ? true : false);
+  }
 
-  if (GetCapability(id, MCI_GETDEVCAPS_USES_FILES, &result))
+  if (GetCapability(id, MCI_GETDEVCAPS_USES_FILES, &result)) {
     caps->reqElemFile = ((result) ? true : false);
+  }
 
   CloseDevice(id);
 
@@ -245,7 +266,9 @@ bool MCI::GetCapability(MCIDEVICEID id, unsigned long capItem,
   rc = mciSendCommand(id, MCI_GETDEVCAPS, MCI_WAIT | MCI_GETDEVCAPS_ITEM,
                       (DWORD)&devCaps);
 
-  if (rc) return false;
+  if (rc) {
+    return false;
+  }
 
   *result = devCaps.dwReturn;
   return true;
@@ -285,7 +308,9 @@ const char* MCI::GetDeviceTypeName(unsigned long type) {
   int i = 0;
 
   while (_deviceTypeNames[i].typeID != 0) {
-    if (_deviceTypeNames[i].typeID == type) return _deviceTypeNames[i].typeName;
+    if (_deviceTypeNames[i].typeID == type) {
+      return _deviceTypeNames[i].typeName;
+    }
 
     i++;
   }
@@ -324,7 +349,9 @@ bool MCI::EnumerateDevices(MCIEnumCB* callback, void* context) {
     memset(&device, 0, sizeof(device));
 
     if (GetDeviceDescription(name, &device)) {
-      if (!callback(&device, context)) break;
+      if (!callback(&device, context)) {
+        break;
+      }
     }
   }
 

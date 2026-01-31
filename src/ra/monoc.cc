@@ -161,7 +161,9 @@ MonoClass::~MonoClass() { PageUsage[Page] = nullptr; }
  * HISTORY: * 06/05/1996 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::Pan(int cols) {
-  if (cols == 0) return;
+  if (cols == 0) {
+    return;
+  }
 
   if (abs(cols) >= SubW) {
     Clear();
@@ -224,8 +226,12 @@ void MonoClass::Sub_Window(int x, int y, int w, int h) {
   x = std::max(x, 0);
   y = std::min(y, LINES - 1);
   y = std::max(y, 0);
-  if (w == -1) w = COLUMNS - x;
-  if (h == -1) h = LINES - y;
+  if (w == -1) {
+    w = COLUMNS - x;
+  }
+  if (h == -1) {
+    h = LINES - y;
+  }
 
   /*
   **	Assign the new sub-region.
@@ -276,7 +282,9 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, MonoAttribute attrib,
   CellType cell;
   MonoAttribute oldattrib = Attrib;
 
-  if (!Enabled || !w || !h) return;
+  if (!Enabled || !w || !h) {
+    return;
+  }
 
   x = std::min(x, SubW);
   x = std::max(x, 0);
@@ -355,7 +363,9 @@ void MonoClass::Set_Cursor(int x, int y) {
   X = x;
   Y = y;
 
-  if (!Enabled) return;
+  if (!Enabled) {
+    return;
+  }
 
   /*
   **	Update the visible cursor position only if the this mono page is the
@@ -384,7 +394,9 @@ void MonoClass::Set_Cursor(int x, int y) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::Clear() {
-  if (!Enabled) return;
+  if (!Enabled) {
+    return;
+  }
 
   Set_Cursor(0, 0);
 
@@ -423,8 +435,9 @@ void MonoClass::Clear() {
 void MonoClass::Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib) {
   if (!w || !h || static_cast<unsigned>(x) >= SubW ||
       static_cast<unsigned>(h) >= SubH || static_cast<unsigned>(x) + w > SubW ||
-      static_cast<unsigned>(y) + h > SubH)
+      static_cast<unsigned>(y) + h > SubH) {
     return;
+  }
 
   for (int rows = y; rows < y + h; rows++) {
     for (int cols = x; cols < x + w; cols++) {
@@ -451,7 +464,9 @@ void MonoClass::Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::Scroll(int lines) {
-  if (!Enabled || lines <= 0) return;
+  if (!Enabled || lines <= 0) {
+    return;
+  }
 
   if (abs(lines) >= SubH) {
     Clear();
@@ -514,7 +529,9 @@ void MonoClass::Printf(const char* text, ...) {
   */
   char buffer[256];
 
-  if (!Enabled) return;
+  if (!Enabled) {
+    return;
+  }
 
   va_start(va, text);
   vsprintf(buffer, text, va);
@@ -552,7 +569,9 @@ void MonoClass::Printf(int text, ...) {
   */
   char buffer[256];
 
-  if (!Enabled) return;
+  if (!Enabled) {
+    return;
+  }
 
   va_start(va, text);
   vsprintf(buffer, Text_String(text), va);
@@ -582,7 +601,9 @@ void MonoClass::Print(const char* ptr) {
   const char* text;
   CellType cell;
 
-  if (!ptr || !Enabled) return;
+  if (!ptr || !Enabled) {
+    return;
+  }
 
   text = ptr;
   cell.Attribute = Attrib;
@@ -773,7 +794,9 @@ MonoClass& MonoClass::operator=(const MonoClass& src) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::View() {
-  if (Get_Current() == this) return;
+  if (Get_Current() == this) {
+    return;
+  }
 
   /*
   **	If the visible page is already assigned to a real monochrome page
