@@ -2736,13 +2736,13 @@ int MapEditClass::Load_Scenario() {
     **	Fill in the list box
     */
     for (i = 0; i < TriggerTypes.Count(); i++) {
-      triggerlist.Add_Item(TriggerTypes.Ptr(i));
+      triggerlist.Add_Item(CCPtr<TriggerTypeClass>(TriggerTypes.Ptr(i)));
     }
 
     PNBubble_Sort(&triggerlist[0], triggerlist.Count());
 
     if (CurTrigger) {
-      triggerlist.Set_Selected_Index(CurTrigger);
+      triggerlist.Set_Selected_Index(CCPtr<TriggerTypeClass>(CurTrigger));
     } else {
       triggerlist.Set_Selected_Index(0);
     }

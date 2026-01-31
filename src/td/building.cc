@@ -2152,8 +2152,6 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
   **	will drive/walk to the adjacent free cell.
   */
   switch (base->What_Am_I()) {
-    CELL cell;
-
     case RTTI_AIRCRAFT:
       if (!In_Radio_Contact()) {
         AircraftClass* air = dynamic_cast<AircraftClass*>(base);
@@ -2170,6 +2168,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
       } else {
         AircraftClass* air = dynamic_cast<AircraftClass*>(base);
 
+        CELL cell;
         if (Cell_X(Coord_Cell(Center_Coord())) - Map.MapCellX <
             Map.MapCellWidth / 2) {
           cell = XY_Cell(Map.MapCellX - 1,
@@ -2338,13 +2337,8 @@ void BuildingClass::Update_Buildables() {
   Validate();
   if (House == PlayerPtr && !IsInLimbo && IsDiscoveredByPlayer) {
     switch (Class->ToBuild) {
-      StructType i;
-      UnitType u;
-      InfantryType f;
-      AircraftType a;
-
       case RTTI_BUILDINGTYPE:
-        for (i = STRUCT_FIRST; i < STRUCT_COUNT; i++) {
+        for (StructType i = STRUCT_FIRST; i < STRUCT_COUNT; i++) {
           if (PlayerPtr->Can_Build(i, ActLike)) {
             //						if
             //(BuildingTypeClass::As_Reference(i).Who_Can_Build_Me(true, true,
@@ -2356,7 +2350,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_UNITTYPE:
-        for (u = UNIT_FIRST; u < UNIT_COUNT; u++) {
+        for (UnitType u = UNIT_FIRST; u < UNIT_COUNT; u++) {
           if (PlayerPtr->Can_Build(u, ActLike)) {
             //						if
             //(UnitTypeClass::As_Reference(u).Who_Can_Build_Me(true, true,
@@ -2368,7 +2362,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_INFANTRYTYPE:
-        for (f = INFANTRY_FIRST; f < INFANTRY_COUNT; f++) {
+        for (InfantryType f = INFANTRY_FIRST; f < INFANTRY_COUNT; f++) {
           if (PlayerPtr->Can_Build(f, ActLike)) {
             //						if
             //(InfantryTypeClass::As_Reference(f).Who_Can_Build_Me(true, true,
@@ -2380,7 +2374,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_AIRCRAFTTYPE:
-        for (a = AIRCRAFT_FIRST; a < AIRCRAFT_COUNT; a++) {
+        for (AircraftType a = AIRCRAFT_FIRST; a < AIRCRAFT_COUNT; a++) {
           if (PlayerPtr->Can_Build(a, ActLike)) {
             //						if
             //(AircraftTypeClass::As_Reference(a).Who_Can_Build_Me(true, true,

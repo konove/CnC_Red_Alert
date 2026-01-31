@@ -1703,8 +1703,6 @@ int AircraftClass::Mission_Move() {
     enum { TAKE_OFF, FLY_TOWARD_TARGET };
 
     switch (Status) {
-      int distance;
-
       case TAKE_OFF:
 
         /*
@@ -1726,9 +1724,9 @@ int AircraftClass::Mission_Move() {
         }
         return 1;
 
-      case FLY_TOWARD_TARGET:
+      case FLY_TOWARD_TARGET: {
         PrimaryFacing.Set_Desired(Direction(NavCom));
-        distance = Distance(NavCom);
+        int distance = Distance(NavCom);
 
         if (distance < 0x00C0) {
           MissionType mission = MISSION_GUARD;
@@ -1792,7 +1790,7 @@ int AircraftClass::Mission_Move() {
           }
           return 1;
         }
-        break;
+      } break;
 
       default:
         break;

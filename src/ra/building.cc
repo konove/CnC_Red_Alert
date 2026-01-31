@@ -2268,13 +2268,12 @@ void BuildingClass::Update_Buildables() {
   assert(IsActive);
 
   if (House == PlayerPtr && !IsInLimbo && IsDiscoveredByPlayer) {
+    StructType i;
+    UnitType u;
+    InfantryType f;
+    AircraftType a;
+    VesselType v;
     switch (Class->ToBuild) {
-      StructType i;
-      UnitType u;
-      InfantryType f;
-      AircraftType a;
-      VesselType v;
-
       case RTTI_VESSELTYPE:
         for (v = VESSEL_FIRST; v < VESSEL_COUNT; v++) {
           if (PlayerPtr->Can_Build(&VesselTypeClass::As_Reference(v),
@@ -2731,7 +2730,6 @@ ActionType BuildingClass::What_Action(const ObjectClass* object) const {
   ActionType action = TechnoClass::What_Action(object);
 
   if (action == ACTION_SELF) {
-    int index;
     if (Class->Is_Factory() && PlayerPtr == House &&
         *House->Factory_Counter(Class->ToBuild) > 1) {
       switch (Class->ToBuild) {
@@ -2739,7 +2737,7 @@ ActionType BuildingClass::What_Action(const ObjectClass* object) const {
         case RTTI_INFANTRY:
           action = ACTION_NONE;
           if (*this == STRUCT_KENNEL) {
-            for (index = 0; index < Buildings.Count(); index++) {
+            for (int index = 0; index < Buildings.Count(); index++) {
               BuildingClass* bldg = Buildings.Ptr(index);
               if (bldg != this && bldg->Owner() == Owner() &&
                   *bldg == STRUCT_KENNEL) {
@@ -2748,7 +2746,7 @@ ActionType BuildingClass::What_Action(const ObjectClass* object) const {
               }
             }
           } else {
-            for (index = 0; index < Buildings.Count(); index++) {
+            for (int index = 0; index < Buildings.Count(); index++) {
               BuildingClass* bldg = Buildings.Ptr(index);
               if (bldg != this && bldg->Owner() == Owner() &&
                   bldg->Class->ToBuild == RTTI_INFANTRYTYPE &&

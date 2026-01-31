@@ -287,7 +287,7 @@ int MapEditClass::Select_Team(const char*) {
   **	Fill in team names
   */
   for (int index = 0; index < TeamTypes.Count(); index++) {
-    teamlist.Add_Item(TeamTypes.Ptr(index));
+    teamlist.Add_Item(CCPtr<TeamTypeClass>(TeamTypes.Ptr(index)));
   }
 
   PNBubble_Sort(&teamlist[0], teamlist.Count());
@@ -297,7 +297,7 @@ int MapEditClass::Select_Team(const char*) {
   }
 
   if (CurTeam) {
-    teamlist.Set_Selected_Index(CurTeam);
+    teamlist.Set_Selected_Index(CCPtr<TeamTypeClass>(CurTeam));
     CurTeam = teamlist.Current_Item();
   } else {
     teamlist.Set_Selected_Index(0);
