@@ -41,8 +41,8 @@ endif ()
 
 if (STRICT_CHECKS)
     set(CMAKE_CXX_CLANG_TIDY
-        "clang-tidy"
-        "--header-filter=${CMAKE_SOURCE_DIR}/src/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*"
+            "clang-tidy"
+            "--header-filter=${CMAKE_SOURCE_DIR}/src/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*"
     )
     message(STATUS "Strict checks enabled (clang-tidy + warnings)")
 else ()
@@ -108,6 +108,7 @@ else ()
                     -Wno-unsafe-buffer-usage
                     -Wno-sign-conversion
                     -Wno-old-style-cast
+                    -Wno-padded
             )
         endif ()
     else ()
