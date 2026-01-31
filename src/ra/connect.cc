@@ -47,9 +47,8 @@
 
 #include "ra/connect.h"
 
-#include <sys/timeb.h>
-
 #include <cstring>
+#include <ctime>
 
 /*
 ********************************* Globals ***********************************
@@ -767,39 +766,12 @@ int ConnectionClass::Service_Receive_Queue() {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 unsigned long ConnectionClass::Time() {
-  static struct timeb mytime;  // DOS time
-  unsigned long msec;
-
-#ifdef WWLIB32_H
-
-  /*------------------------------------------------------------------------
-  If the Westwood timer system has been activated, use TickCount's value
-  ------------------------------------------------------------------------*/
-  if (TimerSystemOn) {
-    return (TickCount);  // Westwood Library time
-  }
-  /*------------------------------------------------------------------------
-  Otherwise, use the DOS timer
-  ------------------------------------------------------------------------*/
-  else {
-    ftime(&mytime);
-    msec = (unsigned long)mytime.time * 1000L + (unsigned long)mytime.millitm;
-    return ((msec / 100) * 6);
-  }
-
-#else
-
-  /*------------------------------------------------------------------------
-  If the Westwood library isn't being used, use the DOS timer.
-  ------------------------------------------------------------------------*/
-  ftime(&mytime);
-  msec = static_cast<unsigned long>(mytime.time) * 1000L +
-         static_cast<unsigned long>(mytime.millitm);
+  timespec ts;
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  const unsigned long msec =
+      static_cast<unsigned long>(ts.tv_sec) * 1000L + ts.tv_nsec / 1000000L;
   return msec / 100 * 6;
-
-#endif
-
-} /* end of Time */
+}
 
 /***************************************************************************
  * ConnectionClass::Command_Name -- returns name for given packet command  *
