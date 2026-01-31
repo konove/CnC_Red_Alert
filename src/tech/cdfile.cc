@@ -58,7 +58,7 @@ std::string CDFileClass::raw_path_;
 int CDFileClass::current_cd_drive_ = 0;
 int CDFileClass::last_cd_drive_ = 0;
 
-CDFileClass::CDFileClass(char const* filename) : is_disabled_(false) {
+CDFileClass::CDFileClass(const char* filename) : is_disabled_(false) {
   CDFileClass::Set_Name(filename);
 }
 
@@ -261,7 +261,7 @@ void CDFileClass::Clear_Search_Drives() { search_paths_.clear(); }
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-char const* CDFileClass::Set_Name(char const* filename) {
+const char* CDFileClass::Set_Name(const char* filename) {
   // Try to find the file in the current directory first.
   // This preserves the optimization of checking the local filesystem before
   // iterating through the CD/Network search paths.
@@ -320,7 +320,7 @@ char const* CDFileClass::Set_Name(char const* filename) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(char const* filename, int rights) {
+int CDFileClass::Open(const char* filename, int rights) {
   CDFileClass::Close();
 
   /*

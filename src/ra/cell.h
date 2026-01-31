@@ -213,10 +213,10 @@ class CellClass {
 
   //----------------------------------------------------------------
   CellClass();
-  CellClass(NoInitClass const& x) : Trigger(x) {}
+  CellClass(const NoInitClass& x) : Trigger(x) {}
   ~CellClass() { OccupierPtr = nullptr; }
 
-  int operator==(CellClass const& cell) const { return &cell == this; }
+  int operator==(const CellClass& cell) const { return &cell == this; }
 
   /*
   **	Query functions.
@@ -232,9 +232,10 @@ class CellClass {
   COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
   COORDINATE Free_Spot() const { return Closest_Free_Spot(Cell_Coord()); }
   CellClass& Adjacent_Cell(FacingType face) {
-    return (CellClass&)(*static_cast<CellClass const*>(this)).Adjacent_Cell(face);
+    return (CellClass&)(*static_cast<const CellClass*>(this))
+        .Adjacent_Cell(face);
   }
-  CellClass const& Adjacent_Cell(FacingType face) const;
+  const CellClass& Adjacent_Cell(FacingType face) const;
   InfantryClass* Cell_Infantry() const;
   LandType Land_Type() const { return Land; }
   ObjectClass* Cell_Find_Object(RTTIType rtti) const;
@@ -299,10 +300,10 @@ class CellClass {
                 bool nokidding = false);
   void Adjust_Threat(HousesType house, int threat_value);
 
-  int operator!=(CellClass const&) const { return 0; }
+  int operator!=(const CellClass&) const { return 0; }
 
  private:
-  CellClass(CellClass const&);
+  CellClass(const CellClass&);
 
   LandType Land;  // The land type of this cell.
 };

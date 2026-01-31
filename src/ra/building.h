@@ -232,7 +232,7 @@ class BuildingClass : public TechnoClass {
   void *operator new(size_t, void *ptr) noexcept { return ptr; }
   void operator delete(void *ptr);
   BuildingClass(StructType type, HousesType house);
-  BuildingClass(NoInitClass const &x)
+  BuildingClass(const NoInitClass &x)
       : TechnoClass(x), Class(x), Factory(x), CountDown(x), PlacementDelay(x) {}
   ~BuildingClass() override;
   operator StructType() const { return Class->Type; }
@@ -243,7 +243,7 @@ class BuildingClass : public TechnoClass {
   static void Init();
 
   TARGET Target_Scan();
-  BuildingTypeClass::AnimControlType const *Fetch_Anim_Control() {
+  const BuildingTypeClass::AnimControlType *Fetch_Anim_Control() {
     return &Class->Anims[BState];
   }
 
@@ -251,19 +251,19 @@ class BuildingClass : public TechnoClass {
   **	Query functions.
   */
   int Value() const override;
-  void const *Get_Image_Data() const override;
+  const void *Get_Image_Data() const override;
   int How_Many_Survivors() const override;
   DirType Turret_Facing() const override;
-  CELL Find_Exit_Cell(TechnoClass const *techno) const override;
+  CELL Find_Exit_Cell(const TechnoClass *techno) const override;
   InfantryType Crew_Type() const override;
   int Pip_Count() const override;
   bool Can_Player_Move() const override;
-  ActionType What_Action(ObjectClass const *target) const override;
+  ActionType What_Action(const ObjectClass *target) const override;
   ActionType What_Action(CELL cell) const override;
   bool Can_Demolish() const override;
-  ObjectTypeClass const &Class_Of() const override { return *Class; }
+  const ObjectTypeClass &Class_Of() const override { return *Class; }
   DirType Fire_Direction() const override;
-  short const *Overlap_List(bool redraw = false) const override;
+  const short *Overlap_List(bool redraw = false) const override;
   int Shape_Number() const;
   int Power_Output() const;
   CELL Check_Point(CheckPointType cp) const;
@@ -293,7 +293,7 @@ class BuildingClass : public TechnoClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void const *Remap_Table();
+  virtual const void *Remap_Table();
   int Exit_Object(TechnoClass *base) override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
@@ -309,7 +309,7 @@ class BuildingClass : public TechnoClass {
   /*
   **	Combat related.
   */
-  void Death_Announcement(TechnoClass const *source = nullptr) const override;
+  void Death_Announcement(const TechnoClass *source = nullptr) const override;
   FireErrorType Can_Fire(TARGET, int which) const override;
   TARGET Greatest_Threat(ThreatType threat) override;  // const;
   ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
@@ -357,14 +357,14 @@ class BuildingClass : public TechnoClass {
   */
   static void Read_INI(CCINIClass &ini);
   static void Write_INI(CCINIClass &ini);
-  static char const *INI_Name() { return "STRUCTURES"; }
+  static const char *INI_Name() { return "STRUCTURES"; }
   bool Load(Straw &file);
   bool Save(Pipe &file) const;
 
  private:
   void Drop_Debris(TARGET source = TARGET_NONE);
 
-  static COORDINATE const CenterOffset[BSIZE_COUNT];
+  static const COORDINATE CenterOffset[BSIZE_COUNT];
 };
 
 #endif

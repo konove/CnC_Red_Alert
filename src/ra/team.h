@@ -203,8 +203,8 @@ class TeamClass : public AbstractClass {
   CCPtr<TriggerClass> Trigger;
 
   //------------------------------------------------------------
-  TeamClass(TeamTypeClass const* team = nullptr, HouseClass* owner = nullptr);
-  TeamClass(NoInitClass const& x)
+  TeamClass(const TeamTypeClass* team = nullptr, HouseClass* owner = nullptr);
+  TeamClass(const NoInitClass& x)
       : AbstractClass(x),
         Class(x),
         House(x),
@@ -217,7 +217,7 @@ class TeamClass : public AbstractClass {
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   static void Init();
-  static void Suspend_Teams(int priority, HouseClass const* house);
+  static void Suspend_Teams(int priority, const HouseClass* house);
   void Debug_Dump(MonoClass* mono) const override;
 
   /*
@@ -274,7 +274,7 @@ class TeamClass : public AbstractClass {
   void Coordinate_Do();
   void Calc_Center(TARGET& center, TARGET& obj_center) const;
   int Recruit(int typeindex);
-  bool Is_A_Member(void const* who) const;
+  bool Is_A_Member(const void* who) const;
   bool Lagging_Units();
   FootClass* Fetch_A_Leader() const;
 

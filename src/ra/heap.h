@@ -82,15 +82,17 @@ class FixedHeapClass {
   int Length() const { return TotalCount; }
   int Avail() const { return TotalCount - ActiveCount; }
 
-  virtual int ID(void const* pointer) const;
+  virtual int ID(const void* pointer) const;
   virtual int Set_Heap(int count, void* buffer = nullptr);
   virtual void* Allocate();
   virtual void Clear();
   virtual int Free(void* pointer);
   virtual int Free_All();
 
-  void* operator[](int index) { return static_cast<char*>(Buffer) + index * Size; }
-  void const* operator[](int index) const {
+  void* operator[](int index) {
+    return static_cast<char*>(Buffer) + index * Size;
+  }
+  const void* operator[](int index) const {
     return static_cast<char*>(Buffer) + index * Size;
   }
 
@@ -129,10 +131,10 @@ class FixedHeapClass {
 
  private:
   // The assignment operator is not supported.
-  FixedHeapClass& operator=(FixedHeapClass const&);
+  FixedHeapClass& operator=(const FixedHeapClass&);
 
   // The copy constructor is not supported.
-  FixedHeapClass(FixedHeapClass const&);
+  FixedHeapClass(const FixedHeapClass&);
 };
 
 // Type-safe wrapper around FixedHeapClass that provides automatic type
@@ -145,14 +147,16 @@ class TFixedHeapClass : public FixedHeapClass {
   TFixedHeapClass() : FixedHeapClass(sizeof(T)) {}
   ~TFixedHeapClass() override {}
 
-  int ID(T const* pointer) const override {
+  int ID(const T* pointer) const override {
     return FixedHeapClass::ID(pointer);
   }
   virtual T* Alloc() { return static_cast<T*>(FixedHeapClass::Allocate()); }
   int Free(T* pointer) override { return FixedHeapClass::Free(pointer); }
 
-  T& operator[](int index) { return *static_cast<T*>((char*)Buffer + index * Size); }
-  T const& operator[](int index) const {
+  T& operator[](int index) {
+    return *static_cast<T*>((char*)Buffer + index * Size);
+  }
+  const T& operator[](int index) const {
     return *static_cast<T*>((char*)Buffer + index * Size);
   }
 };
@@ -172,11 +176,11 @@ class FixedIHeapClass : public FixedHeapClass {
   void Clear() override;
   int Free(void* pointer) override;
   int Free_All() override;
-  virtual int Logical_ID(void const* pointer) const;
+  virtual int Logical_ID(const void* pointer) const;
   virtual int Logical_ID(int id) const { return Logical_ID((*this)[id]); }
 
   virtual void* Active_Ptr(int index) { return ActivePointers[index]; }
-  virtual void const* Active_Ptr(int index) const {
+  virtual const void* Active_Ptr(int index) const {
     return ActivePointers[index];
   }
 
@@ -198,10 +202,10 @@ class TFixedIHeapClass : public FixedIHeapClass {
   TFixedIHeapClass() : FixedIHeapClass(sizeof(T)) {}
   ~TFixedIHeapClass() override {}
 
-  virtual int ID(T const* pointer) const {
+  virtual int ID(const T* pointer) const {
     return FixedIHeapClass::ID(pointer);
   }
-  virtual int Logical_ID(T const* pointer) const {
+  virtual int Logical_ID(const T* pointer) const {
     return FixedIHeapClass::Logical_ID(pointer);
   }
   int Logical_ID(int id) const override {
@@ -215,8 +219,12 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual void Code_Pointers();
   virtual void Decode_Pointers();
 
-  virtual T* Ptr(std::size_t index) const { return static_cast<T*>(ActivePointers[index]); }
-  virtual T* Raw_Ptr(std::size_t index) { return static_cast<T*>((*this)[index]); }
+  virtual T* Ptr(std::size_t index) const {
+    return static_cast<T*>(ActivePointers[index]);
+  }
+  virtual T* Raw_Ptr(std::size_t index) {
+    return static_cast<T*>((*this)[index]);
+  }
 };
 
 #endif

@@ -65,7 +65,7 @@ class TeamClass : public AbstractClass {
   /*
   **	This specifies the type of team this is.
   */
-  TeamTypeClass const* const Class;
+  const TeamTypeClass* const Class;
 
   /*
   **	This specifies the owner of this team.
@@ -178,8 +178,8 @@ class TeamClass : public AbstractClass {
     Member = nullptr;
     IsAltered = true;
   }
-  TeamClass(TeamTypeClass const* team, HouseClass* owner);
-  TeamClass(NoInitClass const& x)
+  TeamClass(const TeamTypeClass* team, HouseClass* owner);
+  TeamClass(const NoInitClass& x)
       : AbstractClass(x),
         Class(Class),
         House(House),
@@ -245,7 +245,7 @@ class TeamClass : public AbstractClass {
   //		void Control(FootClass *, bool initial=false);
   void Calc_Center(CELL& center, CELL& obj_center) const;
   int Recruit(int typeindex);
-  bool Is_A_Member(void const* who) const;
+  bool Is_A_Member(const void* who) const;
   bool Lagging_Units();
 
   /*

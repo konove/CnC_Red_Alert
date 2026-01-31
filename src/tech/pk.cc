@@ -67,7 +67,7 @@
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-PKey::PKey(void const* exponent, void const* modulus) {
+PKey::PKey(const void* exponent, const void* modulus) {
   Modulus.DERDecode((unsigned char*)modulus);
   Exponent.DERDecode((unsigned char*)exponent);
   BitPrecision = Modulus.BitCount() - 1;
@@ -275,7 +275,7 @@ void PKey::Generate(Straw& random, int bits, PKey& fastkey, PKey& slowkey) {
  *                                                                                             *
  * HISTORY: * 07/05/1996 JLB : Created. *
  *=============================================================================================*/
-int PKey::Encrypt(void const* source, int slen, void* dest) const {
+int PKey::Encrypt(const void* source, int slen, void* dest) const {
   int total = 0;
 
   /*
@@ -326,7 +326,7 @@ int PKey::Encrypt(void const* source, int slen, void* dest) const {
  *                                                                                             *
  * HISTORY: * 07/05/1996 JLB : Created. *
  *=============================================================================================*/
-int PKey::Decrypt(void const* source, int slen, void* dest) const {
+int PKey::Decrypt(const void* source, int slen, void* dest) const {
   int total = 0;
   BigInt temp;
 

@@ -103,7 +103,7 @@ void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
 extern "C" {
 #endif
 
-void* Build_Fading_Table(void const* palette, void* dest, long int color,
+void* Build_Fading_Table(const void* palette, void* dest, long int color,
                          long int frac);
 
 extern int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height);

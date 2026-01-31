@@ -51,7 +51,7 @@
 class MouseClass : public ScrollClass {
  public:
   MouseClass();
-  MouseClass(NoInitClass const& x) : ScrollClass(x) {}
+  MouseClass(const NoInitClass& x) : ScrollClass(x) {}
 
   /*
   ** Initialization
@@ -109,7 +109,7 @@ class MouseClass : public ScrollClass {
   /*
   **	This points to the loaded mouse shapes.
   */
-  static void const* MouseShapes;
+  static const void* MouseShapes;
 
   /*
   **	The mouse shape is controlled by these variables. These

@@ -350,7 +350,7 @@ void MissionClass::Assign_Mission(MissionType order) {
  * HISTORY: * 10/07/1992 JLB : Created. * 04/22/1994 JLB : Converted to static
  *member function.                                     *
  *=============================================================================================*/
-MissionType MissionClass::Mission_From_Name(char const* name) {
+MissionType MissionClass::Mission_From_Name(const char* name) {
   MissionType order;
 
   if (name) {
@@ -379,7 +379,7 @@ MissionType MissionClass::Mission_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-char const* MissionClass::Mission_Name(MissionType mission) {
+const char* MissionClass::Mission_Name(MissionType mission) {
   return mission == MISSION_NONE ? "None" : Missions[mission];
 }
 
@@ -434,7 +434,7 @@ bool MissionClass::Restore_Mission() {
 **	a unit can have. The system initiated orders have no use for the ASCII
 *name *	associated, but they are listed here for completeness sake.
 */
-char const* MissionClass::Missions[MISSION_COUNT] = {
+const char* MissionClass::Missions[MISSION_COUNT] = {
     "Sleep",  "Attack",   "Move",         "Retreat", "Guard",
     "Sticky", "Enter",    "Capture",      "Harvest", "Area Guard",
     "Return", "Stop",     "Ambush",       "Hunt",    "Timed Hunt",

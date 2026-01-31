@@ -483,7 +483,7 @@ int MapEditClass::Load_Scenario() {
    *   09/04/1996 JLB : Simplified                                           *
    *=========================================================================*/
   int MapEditClass::Pick_Scenario(
-      char const* caption, int& scen_nump, ScenarioPlayerType& playerp,
+      const char* caption, int& scen_nump, ScenarioPlayerType& playerp,
       ScenarioDirType& dirp, ScenarioVarType& varp) {
     /*
     **	Dialog & button dimensions

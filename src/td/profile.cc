@@ -88,7 +88,7 @@ bool Read_Private_Config_Struct(char* profile, NewConfigType* config) {
  * HISTORY:                                                                *
  *   08/05/1992 JLB : Created.                                             *
  *=========================================================================*/
-unsigned WWGetPrivateProfileHex(char const* section, char const* entry,
+unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 char* profile) {
   char buffer[MAX_ENTRY_SIZE];  // Integer staging buffer.
   unsigned card;
@@ -125,7 +125,7 @@ unsigned WWGetPrivateProfileHex(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 08/05/1992 JLB : Created. *
  *=============================================================================================*/
-int WWGetPrivateProfileInt(char const* section, char const* entry, int def,
+int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
                            char* profile) {
   char buffer[16];  // Integer staging buffer.
 
@@ -163,7 +163,7 @@ int WWGetPrivateProfileInt(char const* section, char const* entry, int def,
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-bool WWWritePrivateProfileInt(char const* section, char const* entry, int value,
+bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
                               char* profile) {
   char buffer[250];  // Working section buffer.
 
@@ -210,8 +210,8 @@ bool WWWritePrivateProfileInt(char const* section, char const* entry, int value,
  *                                                                                             *
  * HISTORY: * 08/05/1992 JLB : Created. *
  *=============================================================================================*/
-char* WWGetPrivateProfileString(char const* section, char const* entry,
-                                char const* def, char* retbuffer, int retlen,
+char* WWGetPrivateProfileString(const char* section, const char* entry,
+                                const char* def, char* retbuffer, int retlen,
                                 char* profile) {
   char *workptr,      // Working pointer into profile block.
       *altworkptr;    // Alternate work pointer.
@@ -498,8 +498,8 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-bool WWWritePrivateProfileString(char const* section, char const* entry,
-                                 char const* string, char* profile) {
+bool WWWritePrivateProfileString(const char* section, const char* entry,
+                                 const char* string, char* profile) {
   char buffer[250];  // Working section buffer
   char* offset;
   char* next;  // ptr to next section

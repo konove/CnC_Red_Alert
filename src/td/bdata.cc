@@ -91,15 +91,15 @@
 #define MCW MAP_CELL_W
 
 #define XYCELL(x, y) (y * MAP_CELL_W + x)
-static short const ExitPyle[] = {
+static const short ExitPyle[] = {
     XYCELL(1, 2),  XYCELL(2, 2),  XYCELL(0, 2),  XYCELL(-1, 2), XYCELL(-1, -1),
     XYCELL(0, -1), XYCELL(1, -1), XYCELL(2, -1), XYCELL(2, -1), XYCELL(-1, 0),
     XYCELL(2, 0),  XYCELL(2, 1),  XYCELL(-1, 1), REFRESH_EOL};
-static short const ExitHand[] = {
+static const short ExitHand[] = {
     XYCELL(2, 3),  XYCELL(1, 3),  XYCELL(0, 3), XYCELL(2, 2),  XYCELL(-1, 3),
     XYCELL(-1, 2), XYCELL(0, 0),  XYCELL(1, 0), XYCELL(-1, 0), XYCELL(2, 0),
     XYCELL(2, 1),  XYCELL(-1, 1), REFRESH_EOL};
-static short const ExitWeap[] = {XYCELL(-1, 3), XYCELL(0, 3), XYCELL(-1, 2),
+static const short ExitWeap[] = {XYCELL(-1, 3), XYCELL(0, 3), XYCELL(-1, 2),
                                  XYCELL(1, 3),
                                  //	XYCELL(0,0),
                                  //	XYCELL(1,0),
@@ -108,60 +108,60 @@ static short const ExitWeap[] = {XYCELL(-1, 3), XYCELL(0, 3), XYCELL(-1, 2),
                                  //	XYCELL(3,0),
                                  XYCELL(-1, 1), XYCELL(3, 1), XYCELL(3, 2),
                                  XYCELL(3, 3), XYCELL(2, 3), REFRESH_EOL};
-static short const ExitAirstrip[] = {
+static const short ExitAirstrip[] = {
     XYCELL(-1, -1), XYCELL(-1, 0), XYCELL(-1, 1), XYCELL(-1, 2), XYCELL(0, -1),
     XYCELL(0, 2),   XYCELL(1, -1), XYCELL(1, 2),  XYCELL(2, -1), XYCELL(2, 2),
     XYCELL(3, -1),  XYCELL(3, 2),  XYCELL(4, -1), XYCELL(4, 0),  XYCELL(4, 1),
     XYCELL(4, 2),   REFRESH_EOL};
 
-static short const OListSAM[] = {-MCW, -(MCW - 1), REFRESH_EOL};
-static short const List32[] = {0, 1, 2, MCW, MCW + 1, MCW + 2, REFRESH_EOL};
-static short const List22_0011[] = {MCW, MCW + 1, REFRESH_EOL};
-static short const List22_1100[] = {0, 1, REFRESH_EOL};
-static short const ListFix[] = {1,       MCW,           MCW + 1,
+static const short OListSAM[] = {-MCW, -(MCW - 1), REFRESH_EOL};
+static const short List32[] = {0, 1, 2, MCW, MCW + 1, MCW + 2, REFRESH_EOL};
+static const short List22_0011[] = {MCW, MCW + 1, REFRESH_EOL};
+static const short List22_1100[] = {0, 1, REFRESH_EOL};
+static const short ListFix[] = {1,       MCW,           MCW + 1,
                                 MCW + 2, MCW + MCW + 1, REFRESH_EOL};
-static short const StoreList[] = {0, 1, REFRESH_EOL};
-static short const List2[] = {0, 1, MCW + 1, MCW, REFRESH_EOL};
-static short const List42[] = {0,       1,       2,       3,          MCW,
+static const short StoreList[] = {0, 1, REFRESH_EOL};
+static const short List2[] = {0, 1, MCW + 1, MCW, REFRESH_EOL};
+static const short List42[] = {0,       1,       2,       3,          MCW,
                                MCW + 1, MCW + 2, MCW + 3, REFRESH_EOL};
-static short const ListWestwood[] = {1,       2,       3,          MCW + 1,
+static const short ListWestwood[] = {1,       2,       3,          MCW + 1,
                                      MCW + 2, MCW + 3, REFRESH_EOL};
-static short const OListWestwood[] = {0, MCW, REFRESH_EOL};
-static short const ComList[] = {0, MCW, MCW + 1, REFRESH_EOL};
-static short const List21[] = {0, 1, REFRESH_EOL};
-static short const ListWeap[] = {(MCW * 1),  MCW * 1 + 1, MCW * 1 + 2,
+static const short OListWestwood[] = {0, MCW, REFRESH_EOL};
+static const short ComList[] = {0, MCW, MCW + 1, REFRESH_EOL};
+static const short List21[] = {0, 1, REFRESH_EOL};
+static const short ListWeap[] = {(MCW * 1),  MCW * 1 + 1, MCW * 1 + 2,
                                  (MCW * 2),  MCW * 2 + 1, MCW * 2 + 2,
                                  REFRESH_EOL};
-static short const List12[] = {MCW, REFRESH_EOL};
-static short const ListHand[] = {MCW, MCW + 1, MCW * 2 + 1, REFRESH_EOL};
-static short const ListTmpl[] = {MCW,         MCW + 1,     MCW + 2,    MCW * 2,
+static const short List12[] = {MCW, REFRESH_EOL};
+static const short ListHand[] = {MCW, MCW + 1, MCW * 2 + 1, REFRESH_EOL};
+static const short ListTmpl[] = {MCW,         MCW + 1,     MCW + 2,    MCW * 2,
                                  MCW * 2 + 1, MCW * 2 + 2, REFRESH_EOL};
-static short const List0011[] = {(MCW * 1), MCW * 1 + 1, REFRESH_EOL};
-static short const List1101[] = {0, 1, MCW * 1 + 1, REFRESH_EOL};
-static short const List11[] = {0, 1, REFRESH_EOL};
-static short const List1[] = {0, REFRESH_EOL};
-static short const List1100[] = {0, 1, REFRESH_EOL};
-static short const List0010[] = {MCW, REFRESH_EOL};
-static short const List1000[] = {0, REFRESH_EOL};
-static short const List0100[] = {1, REFRESH_EOL};
-static short const List0111[] = {1, (MCW * 1), MCW * 1 + 1, REFRESH_EOL};
+static const short List0011[] = {(MCW * 1), MCW * 1 + 1, REFRESH_EOL};
+static const short List1101[] = {0, 1, MCW * 1 + 1, REFRESH_EOL};
+static const short List11[] = {0, 1, REFRESH_EOL};
+static const short List1[] = {0, REFRESH_EOL};
+static const short List1100[] = {0, 1, REFRESH_EOL};
+static const short List0010[] = {MCW, REFRESH_EOL};
+static const short List1000[] = {0, REFRESH_EOL};
+static const short List0100[] = {1, REFRESH_EOL};
+static const short List0111[] = {1, (MCW * 1), MCW * 1 + 1, REFRESH_EOL};
 // static short const List1111[] = {0, 1, (MCW*1), (MCW*1)+1, REFRESH_EOL};
-static short const List1011[] = {0, (MCW * 1), MCW * 1 + 1, REFRESH_EOL};
-static short const List010111000[] = {1, (MCW * 1), MCW * 1 + 1, MCW * 1 + 2,
+static const short List1011[] = {0, (MCW * 1), MCW * 1 + 1, REFRESH_EOL};
+static const short List010111000[] = {1, (MCW * 1), MCW * 1 + 1, MCW * 1 + 2,
                                       REFRESH_EOL};
-static short const List101000111[] = {0,           2,           (MCW * 2),
+static const short List101000111[] = {0,           2,           (MCW * 2),
                                       MCW * 2 + 1, MCW * 2 + 2, REFRESH_EOL};
 
-static short const OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, REFRESH_EOL};
-static short const OListWeap[] = {0, 1, 2, REFRESH_EOL};
-static short const OComList[] = {1, REFRESH_EOL};
-static short const OList12[] = {0, REFRESH_EOL};
-static short const OListHand[] = {0, 1, MCW * 2, MCW * 1, REFRESH_EOL};
-static short const OListTmpl[] = {0, 1, 2, REFRESH_EOL};
+static const short OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, REFRESH_EOL};
+static const short OListWeap[] = {0, 1, 2, REFRESH_EOL};
+static const short OComList[] = {1, REFRESH_EOL};
+static const short OList12[] = {0, REFRESH_EOL};
+static const short OListHand[] = {0, 1, MCW * 2, MCW * 1, REFRESH_EOL};
+static const short OListTmpl[] = {0, 1, 2, REFRESH_EOL};
 
 /***************************************************************************
  */
-static BuildingTypeClass const ClassTemple(
+static const BuildingTypeClass ClassTemple(
     STRUCT_TEMPLE,
     TXT_TEMPLE,       // NAME:			Short name of the structure.
     "TMPL",           // NAME:			Short name of the structure.
@@ -211,7 +211,7 @@ static BuildingTypeClass const ClassTemple(
     OListTmpl        // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassEye(
+static const BuildingTypeClass ClassEye(
     STRUCT_EYE,
     TXT_EYE,          // NAME:			Short name of the structure.
     "EYE",            // NAME:			Short name of the structure.
@@ -261,7 +261,7 @@ static BuildingTypeClass const ClassEye(
     OComList     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassWeapon(
+static const BuildingTypeClass ClassWeapon(
     STRUCT_WEAP,
     TXT_WEAPON_FACTORY,  // NAME:			Short name of the
                          // structure.
@@ -318,7 +318,7 @@ static BuildingTypeClass const ClassWeapon(
     OListWeap        // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassGTower(
+static const BuildingTypeClass ClassGTower(
     STRUCT_GTOWER,
     TXT_GUARD_TOWER,   // NAME:			Short name of the structure.
     "GTWR",            // NAME:			Short name of the structure.
@@ -369,7 +369,7 @@ static BuildingTypeClass const ClassGTower(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassATower(
+static const BuildingTypeClass ClassATower(
     STRUCT_ATOWER,
     TXT_AGUARD_TOWER,  // NAME:			Short name of the structure.
     "ATWR",            // NAME:			Short name of the structure.
@@ -420,7 +420,7 @@ static BuildingTypeClass const ClassATower(
     OList12          // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassObelisk(
+static const BuildingTypeClass ClassObelisk(
     STRUCT_OBELISK,
     TXT_OBELISK,      // NAME:			Short name of the structure.
     "OBLI",           // NAME:			Short name of the structure.
@@ -470,7 +470,7 @@ static BuildingTypeClass const ClassObelisk(
     OList12          // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassTurret(
+static const BuildingTypeClass ClassTurret(
     STRUCT_TURRET,
     TXT_TURRET,        // NAME:			Short name of the structure.
     "GUN",             // NAME:			Short name of the structure.
@@ -528,7 +528,7 @@ static BuildingTypeClass const ClassTurret(
     nullptr       // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassConst(
+static const BuildingTypeClass ClassConst(
     STRUCT_CONST,
     TXT_CONST_YARD,     // NAME:			Short name of the structure.
     "FACT",             // NAME:			Short name of the structure.
@@ -578,7 +578,7 @@ static BuildingTypeClass const ClassConst(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassRefinery(
+static const BuildingTypeClass ClassRefinery(
     STRUCT_REFINERY,
     TXT_REFINERY,     // NAME:			Short name of the structure.
     "PROC",           // NAME:			Short name of the structure.
@@ -628,7 +628,7 @@ static BuildingTypeClass const ClassRefinery(
     List101000111   // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassStorage(
+static const BuildingTypeClass ClassStorage(
     STRUCT_STORAGE,
     TXT_STORAGE,       // NAME:			Short name of the structure.
     "SILO",            // NAME:			Short name of the structure.
@@ -680,7 +680,7 @@ static BuildingTypeClass const ClassStorage(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassHelipad(
+static const BuildingTypeClass ClassHelipad(
     STRUCT_HELIPAD,
     TXT_HELIPAD,        // NAME:			Short name of the structure.
     "HPAD",             // NAME:			Short name of the structure.
@@ -730,7 +730,7 @@ static BuildingTypeClass const ClassHelipad(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassCommand(
+static const BuildingTypeClass ClassCommand(
     STRUCT_RADAR,
     TXT_COMMAND,       // NAME:			Short name of the structure.
     "HQ",              // NAME:			Short name of the structure.
@@ -780,7 +780,7 @@ static BuildingTypeClass const ClassCommand(
     OComList     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassSAM(
+static const BuildingTypeClass ClassSAM(
     STRUCT_SAM,
     TXT_SAM,           // NAME:			Short name of the structure.
     "SAM",             // NAME:			Short name of the structure.
@@ -830,7 +830,7 @@ static BuildingTypeClass const ClassSAM(
     OListSAM      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassAirStrip(
+static const BuildingTypeClass ClassAirStrip(
     STRUCT_AIRSTRIP,
     TXT_AIRSTRIP,      // NAME:			Short name of the structure.
     "AFLD",            // NAME:			Short name of the structure.
@@ -880,7 +880,7 @@ static BuildingTypeClass const ClassAirStrip(
     nullptr        // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassPower(
+static const BuildingTypeClass ClassPower(
     STRUCT_POWER,
     TXT_POWER,        // NAME:			Short name of the structure.
     "NUKE",           // NAME:			Short name of the structure.
@@ -930,7 +930,7 @@ static BuildingTypeClass const ClassPower(
     List0100     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassAdvancedPower(
+static const BuildingTypeClass ClassAdvancedPower(
     STRUCT_ADVANCED_POWER,
     TXT_ADVANCED_POWER,  // NAME:			Short name of the
                          // structure.
@@ -981,7 +981,7 @@ static BuildingTypeClass const ClassAdvancedPower(
     List0100     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassHospital(
+static const BuildingTypeClass ClassHospital(
     STRUCT_HOSPITAL,
     TXT_HOSPITAL,      // NAME:			Short name of the structure.
     "HOSP",            // NAME:			Short name of the structure.
@@ -1031,7 +1031,7 @@ static BuildingTypeClass const ClassHospital(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassBioLab(
+static const BuildingTypeClass ClassBioLab(
     STRUCT_BIO_LAB,
     TXT_BIO_LAB,       // NAME:			Short name of the structure.
     "BIO",             // NAME:			Short name of the structure.
@@ -1081,7 +1081,7 @@ static BuildingTypeClass const ClassBioLab(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassBarracks(
+static const BuildingTypeClass ClassBarracks(
     STRUCT_BARRACKS,
     TXT_BARRACKS,       // NAME:			Short name of the structure.
     "PYLE",             // NAME:			Short name of the structure.
@@ -1131,7 +1131,7 @@ static BuildingTypeClass const ClassBarracks(
     List22_0011   // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassHand(
+static const BuildingTypeClass ClassHand(
     STRUCT_HAND,
     TXT_HAND,           // NAME:			Short name of the structure.
     "HAND",             // NAME:			Short name of the structure.
@@ -1181,7 +1181,7 @@ static BuildingTypeClass const ClassHand(
     OListHand    // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassTanker(
+static const BuildingTypeClass ClassTanker(
     STRUCT_TANKER,
     TXT_TANKER,       // NAME:			Short name of the structure.
     "ARCO",           // NAME:			Short name of the structure.
@@ -1231,7 +1231,7 @@ static BuildingTypeClass const ClassTanker(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassRepair(
+static const BuildingTypeClass ClassRepair(
     STRUCT_REPAIR,
     TXT_FIX_IT,       // NAME:			Short name of the structure.
     "FIX",            // NAME:			Short name of the structure.
@@ -1282,7 +1282,7 @@ static BuildingTypeClass const ClassRepair(
 );
 
 #ifdef OBSOLETE
-static BuildingTypeClass const ClassRoad(
+static const BuildingTypeClass ClassRoad(
     STRUCT_ROAD,
     TXT_ROAD,         // NAME:			Short name of the structure.
     "ROAD",           // NAME:			Short name of the structure.
@@ -1329,13 +1329,13 @@ static BuildingTypeClass const ClassRoad(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     NULL,        // Preferred exit cell list.
-    (short const*)
+    (const short*)
         List1,          // OCCUPYLIST:	List of active foundation squares.
-    (short const*)NULL  // OVERLAPLIST:List of overlap cell offset.
+    (const short*)NULL  // OVERLAPLIST:List of overlap cell offset.
 );
 #endif
 
-static BuildingTypeClass const ClassV01(
+static const BuildingTypeClass ClassV01(
     STRUCT_V01,
     TXT_CIV1,         // NAME:			Short name of the structure.
     "V01",            // NAME:			Short name of the structure.
@@ -1385,7 +1385,7 @@ static BuildingTypeClass const ClassV01(
     List1100     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV02(
+static const BuildingTypeClass ClassV02(
     STRUCT_V02,
     TXT_CIV2,         // NAME:			Short name of the structure.
     "V02",            // NAME:			Short name of the structure.
@@ -1435,7 +1435,7 @@ static BuildingTypeClass const ClassV02(
     List1100     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV03(
+static const BuildingTypeClass ClassV03(
     STRUCT_V03,
     TXT_CIV3,         // NAME:			Short name of the structure.
     "V03",            // NAME:			Short name of the structure.
@@ -1485,7 +1485,7 @@ static BuildingTypeClass const ClassV03(
     List1000     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV04(
+static const BuildingTypeClass ClassV04(
     STRUCT_V04,
     TXT_CIV4,         // NAME:			Short name of the structure.
     "V04",            // NAME:			Short name of the structure.
@@ -1535,7 +1535,7 @@ static BuildingTypeClass const ClassV04(
     List1100     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV05(
+static const BuildingTypeClass ClassV05(
     STRUCT_V05,
     TXT_CIV5,         // NAME:			Short name of the structure.
     "V05",            // NAME:			Short name of the structure.
@@ -1585,7 +1585,7 @@ static BuildingTypeClass const ClassV05(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV06(
+static const BuildingTypeClass ClassV06(
     STRUCT_V06,
     TXT_CIV6,         // NAME:			Short name of the structure.
     "V06",            // NAME:			Short name of the structure.
@@ -1635,7 +1635,7 @@ static BuildingTypeClass const ClassV06(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV07(
+static const BuildingTypeClass ClassV07(
     STRUCT_V07,
     TXT_CIV7,         // NAME:			Short name of the structure.
     "V07",            // NAME:			Short name of the structure.
@@ -1685,7 +1685,7 @@ static BuildingTypeClass const ClassV07(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV08(
+static const BuildingTypeClass ClassV08(
     STRUCT_V08,
     TXT_CIV8,         // NAME:			Short name of the structure.
     "V08",            // NAME:			Short name of the structure.
@@ -1735,7 +1735,7 @@ static BuildingTypeClass const ClassV08(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV09(
+static const BuildingTypeClass ClassV09(
     STRUCT_V09,
     TXT_CIV9,         // NAME:			Short name of the structure.
     "V09",            // NAME:			Short name of the structure.
@@ -1785,7 +1785,7 @@ static BuildingTypeClass const ClassV09(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV10(
+static const BuildingTypeClass ClassV10(
     STRUCT_V10,
     TXT_CIV10,        // NAME:			Short name of the structure.
     "V10",            // NAME:			Short name of the structure.
@@ -1835,7 +1835,7 @@ static BuildingTypeClass const ClassV10(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV11(
+static const BuildingTypeClass ClassV11(
     STRUCT_V11,
     TXT_CIV11,        // NAME:			Short name of the structure.
     "V11",            // NAME:			Short name of the structure.
@@ -1885,7 +1885,7 @@ static BuildingTypeClass const ClassV11(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV12(
+static const BuildingTypeClass ClassV12(
     STRUCT_V12,
     TXT_CIV12,        // NAME:			Short name of the structure.
     "V12",            // NAME:			Short name of the structure.
@@ -1935,7 +1935,7 @@ static BuildingTypeClass const ClassV12(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV13(
+static const BuildingTypeClass ClassV13(
     STRUCT_V13,
     TXT_CIV13,        // NAME:			Short name of the structure.
     "V13",            // NAME:			Short name of the structure.
@@ -1985,7 +1985,7 @@ static BuildingTypeClass const ClassV13(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV14(
+static const BuildingTypeClass ClassV14(
     STRUCT_V14,
     TXT_CIV14,        // NAME:			Short name of the structure.
     "V14",            // NAME:			Short name of the structure.
@@ -2035,7 +2035,7 @@ static BuildingTypeClass const ClassV14(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV15(
+static const BuildingTypeClass ClassV15(
     STRUCT_V15,
     TXT_CIV15,        // NAME:			Short name of the structure.
     "V15",            // NAME:			Short name of the structure.
@@ -2085,7 +2085,7 @@ static BuildingTypeClass const ClassV15(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV16(
+static const BuildingTypeClass ClassV16(
     STRUCT_V16,
     TXT_CIV16,        // NAME:			Short name of the structure.
     "V16",            // NAME:			Short name of the structure.
@@ -2135,7 +2135,7 @@ static BuildingTypeClass const ClassV16(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV17(
+static const BuildingTypeClass ClassV17(
     STRUCT_V17,
     TXT_CIV17,        // NAME:			Short name of the structure.
     "V17",            // NAME:			Short name of the structure.
@@ -2185,7 +2185,7 @@ static BuildingTypeClass const ClassV17(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV18(
+static const BuildingTypeClass ClassV18(
     STRUCT_V18,
     TXT_CIV18,        // NAME:			Short name of the structure.
     "V18",            // NAME:			Short name of the structure.
@@ -2235,7 +2235,7 @@ static BuildingTypeClass const ClassV18(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV19(
+static const BuildingTypeClass ClassV19(
     STRUCT_PUMP,
     TXT_PUMP,         // NAME:			Short name of the structure.
     "V19",            // NAME:			Short name of the structure.
@@ -2285,7 +2285,7 @@ static BuildingTypeClass const ClassV19(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV20(
+static const BuildingTypeClass ClassV20(
     STRUCT_V20,
     TXT_CIV20,        // NAME:			Short name of the structure.
     "V20",            // NAME:			Short name of the structure.
@@ -2335,7 +2335,7 @@ static BuildingTypeClass const ClassV20(
     List1100     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV21(
+static const BuildingTypeClass ClassV21(
     STRUCT_V21,
     TXT_CIV21,        // NAME:			Short name of the structure.
     "V21",            // NAME:			Short name of the structure.
@@ -2385,7 +2385,7 @@ static BuildingTypeClass const ClassV21(
     List0010     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV22(
+static const BuildingTypeClass ClassV22(
     STRUCT_V22,
     TXT_CIV22,        // NAME:			Short name of the structure.
     "V22",            // NAME:			Short name of the structure.
@@ -2435,7 +2435,7 @@ static BuildingTypeClass const ClassV22(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV23(
+static const BuildingTypeClass ClassV23(
     STRUCT_V23,
     TXT_CIV23,        // NAME:			Short name of the structure.
     "V23",            // NAME:			Short name of the structure.
@@ -2485,7 +2485,7 @@ static BuildingTypeClass const ClassV23(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV24(
+static const BuildingTypeClass ClassV24(
     STRUCT_V24,
     TXT_CIV24,        // NAME:			Short name of the structure.
     "V24",            // NAME:			Short name of the structure.
@@ -2535,7 +2535,7 @@ static BuildingTypeClass const ClassV24(
     List1100     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV25(
+static const BuildingTypeClass ClassV25(
     STRUCT_V25,
     TXT_CIV25,        // NAME:			Short name of the structure.
     "V25",            // NAME:			Short name of the structure.
@@ -2585,7 +2585,7 @@ static BuildingTypeClass const ClassV25(
     List1000     // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV26(
+static const BuildingTypeClass ClassV26(
     STRUCT_V26,
     TXT_CIV26,        // NAME:			Short name of the structure.
     "V26",            // NAME:			Short name of the structure.
@@ -2635,7 +2635,7 @@ static BuildingTypeClass const ClassV26(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV27(
+static const BuildingTypeClass ClassV27(
     STRUCT_V27,
     TXT_CIV27,        // NAME:			Short name of the structure.
     "V27",            // NAME:			Short name of the structure.
@@ -2685,7 +2685,7 @@ static BuildingTypeClass const ClassV27(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV28(
+static const BuildingTypeClass ClassV28(
     STRUCT_V28,
     TXT_CIV28,        // NAME:			Short name of the structure.
     "V28",            // NAME:			Short name of the structure.
@@ -2735,7 +2735,7 @@ static BuildingTypeClass const ClassV28(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV29(
+static const BuildingTypeClass ClassV29(
     STRUCT_V29,
     TXT_CIV29,        // NAME:			Short name of the structure.
     "V29",            // NAME:			Short name of the structure.
@@ -2785,7 +2785,7 @@ static BuildingTypeClass const ClassV29(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV30(
+static const BuildingTypeClass ClassV30(
     STRUCT_V30,
     TXT_CIV30,        // NAME:			Short name of the structure.
     "V30",            // NAME:			Short name of the structure.
@@ -2835,7 +2835,7 @@ static BuildingTypeClass const ClassV30(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV31(
+static const BuildingTypeClass ClassV31(
     STRUCT_V31,
     TXT_CIV31,        // NAME:			Short name of the structure.
     "V31",            // NAME:			Short name of the structure.
@@ -2885,7 +2885,7 @@ static BuildingTypeClass const ClassV31(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV32(
+static const BuildingTypeClass ClassV32(
     STRUCT_V32,
     TXT_CIV32,        // NAME:			Short name of the structure.
     "V32",            // NAME:			Short name of the structure.
@@ -2935,7 +2935,7 @@ static BuildingTypeClass const ClassV32(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV33(
+static const BuildingTypeClass ClassV33(
     STRUCT_V33,
     TXT_CIV33,        // NAME:			Short name of the structure.
     "V33",            // NAME:			Short name of the structure.
@@ -2985,7 +2985,7 @@ static BuildingTypeClass const ClassV33(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV34(
+static const BuildingTypeClass ClassV34(
     STRUCT_V34,
     TXT_CIV34,        // NAME:			Short name of the structure.
     "V34",            // NAME:			Short name of the structure.
@@ -3035,7 +3035,7 @@ static BuildingTypeClass const ClassV34(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV35(
+static const BuildingTypeClass ClassV35(
     STRUCT_V35,
     TXT_CIV35,        // NAME:			Short name of the structure.
     "V35",            // NAME:			Short name of the structure.
@@ -3085,7 +3085,7 @@ static BuildingTypeClass const ClassV35(
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
 
-static BuildingTypeClass const ClassV36(
+static const BuildingTypeClass ClassV36(
     STRUCT_V36,
     TXT_CIV36,        // NAME:			Short name of the structure.
     "V36",            // NAME:			Short name of the structure.
@@ -3134,7 +3134,7 @@ static BuildingTypeClass const ClassV36(
     List1,       // OCCUPYLIST:	List of active foundation squares.
     nullptr      // OVERLAPLIST:List of overlap cell offset.
 );
-static BuildingTypeClass const ClassV37(
+static const BuildingTypeClass ClassV37(
     STRUCT_V37,
     TXT_CIV37,        // NAME:			Short name of the structure.
     "V37",            // NAME:			Short name of the structure.
@@ -3183,7 +3183,7 @@ static BuildingTypeClass const ClassV37(
     ListWestwood,  // OCCUPYLIST:	List of active foundation squares.
     OListWestwood  // OVERLAPLIST:List of overlap cell offset.
 );
-static BuildingTypeClass const ClassMission(
+static const BuildingTypeClass ClassMission(
     STRUCT_MISSION,
     TXT_CIVMISS,      // NAME:			Short name of the structure.
     "MISS",           // NAME:			Short name of the structure.
@@ -3235,7 +3235,7 @@ static BuildingTypeClass const ClassMission(
 );
 
 // Sandbag wall
-static BuildingTypeClass const Sandbag(
+static const BuildingTypeClass Sandbag(
     STRUCT_SANDBAG_WALL,
     TXT_SANDBAG_WALL,  // NAME:			Short name of the structure.
     "SBAG",            // NAME:			Short name of the structure.
@@ -3285,7 +3285,7 @@ static BuildingTypeClass const Sandbag(
     nullptr          // OVERLAPLIST:List of overlap cell offset.
 );
 // Cyclone fence
-static BuildingTypeClass const Cyclone(
+static const BuildingTypeClass Cyclone(
     STRUCT_CYCLONE_WALL,
     TXT_CYCLONE_WALL,  // NAME:			Short name of the structure.
     "CYCL",            // NAME:			Short name of the structure.
@@ -3335,7 +3335,7 @@ static BuildingTypeClass const Cyclone(
     nullptr          // OVERLAPLIST:List of overlap cell offset.
 );
 // Brick wall
-static BuildingTypeClass const Brick(
+static const BuildingTypeClass Brick(
     STRUCT_BRICK_WALL,
     TXT_BRICK_WALL,   // NAME:			Short name of the structure.
     "BRIK",           // NAME:			Short name of the structure.
@@ -3385,7 +3385,7 @@ static BuildingTypeClass const Brick(
     nullptr          // OVERLAPLIST:List of overlap cell offset.
 );
 // Barbwire wall
-static BuildingTypeClass const Barbwire(
+static const BuildingTypeClass Barbwire(
     STRUCT_BARBWIRE_WALL,
     TXT_BARBWIRE_WALL,  // NAME:			Short name of the
                         // structure.
@@ -3437,7 +3437,7 @@ static BuildingTypeClass const Barbwire(
     nullptr          // OVERLAPLIST:List of overlap cell offset.
 );
 // Wood wall
-static BuildingTypeClass const Wood(
+static const BuildingTypeClass Wood(
     STRUCT_WOOD_WALL,
     TXT_WOOD_WALL,    // NAME:			Short name of the structure.
     "WOOD",           // NAME:			Short name of the structure.
@@ -3487,7 +3487,7 @@ static BuildingTypeClass const Wood(
     nullptr          // OVERLAPLIST:List of overlap cell offset.
 );
 
-BuildingTypeClass const* const BuildingTypeClass::Pointers[STRUCT_COUNT] = {
+const BuildingTypeClass* const BuildingTypeClass::Pointers[STRUCT_COUNT] = {
     &ClassWeapon,         //	STRUCT_WEAP
     &ClassGTower,         //	STRUCT_GTOWER
     &ClassATower,         //	STRUCT_ATOWER
@@ -3559,7 +3559,7 @@ BuildingTypeClass const* const BuildingTypeClass::Pointers[STRUCT_COUNT] = {
     &Wood,      //	STRUCT_WOOD_WALL
 };
 
-void const* WarFactoryOverlay;
+const void* WarFactoryOverlay;
 
 /***********************************************************************************************
  * BuildingTypeClass::BuildingTypeClass -- This is the constructor for the
@@ -3576,7 +3576,7 @@ void const* WarFactoryOverlay;
  * HISTORY: * 07/29/1994 JLB : Created. *
  *=============================================================================================*/
 BuildingTypeClass::BuildingTypeClass(
-    StructType type, int name, char const* ininame, COORDINATE exitpoint,
+    StructType type, int name, const char* ininame, COORDINATE exitpoint,
     unsigned char level, long pre, bool is_scanner, bool is_regulated,
     bool is_bibbed, bool is_nominal, bool is_wall, bool is_factory,
     bool is_captureable, bool is_flammable, bool is_simpledamage,
@@ -3588,7 +3588,7 @@ BuildingTypeClass::BuildingTypeClass(
     int scenario, int risk, int reward, int ownable, WeaponType primary,
     WeaponType secondary, ArmorType armor, unsigned long canenter,
     unsigned capacity, int power, int drain, BSizeType size,
-    short const* exitlist, short const* sizelist, short const* overlap)
+    const short* exitlist, const short* sizelist, const short* overlap)
     : TechnoTypeClass(name, ininame, level, pre, false, is_scanner, is_nominal,
                       false, is_flammable, false, is_stealthy, is_selectable,
                       is_legal_target, is_insignificant, is_immune, is_theater,
@@ -3694,7 +3694,7 @@ void BuildingTypeClass::One_Time() {
   };
 
   for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
-    BuildingTypeClass const& building = As_Reference(sindex);
+    const BuildingTypeClass& building = As_Reference(sindex);
 
     /*
     **	Fetch the sidebar cameo image for this building.
@@ -3708,7 +3708,7 @@ void BuildingTypeClass::One_Time() {
       }
       auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      (void const*&)building.CameoData =
+      (const void*&)building.CameoData =
           MixFileClass::Retrieve(fullname.c_str());
     }
 
@@ -3718,8 +3718,8 @@ void BuildingTypeClass::One_Time() {
     std::string filename = std::string(building.IniName) + "MAKE";
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    void const* dataptr = MixFileClass::Retrieve(fullname.c_str());
-    (void const*&)building.BuildupData = dataptr;
+    const void* dataptr = MixFileClass::Retrieve(fullname.c_str());
+    (const void*&)building.BuildupData = dataptr;
     if (dataptr) {
       int timedelay = 1;
       int count = Get_Build_Frame_Count(dataptr);
@@ -3735,7 +3735,7 @@ void BuildingTypeClass::One_Time() {
     fullname = std::filesystem::path(building.IniName)
                    .replace_extension(".SHP")
                    .string();
-    (void const*&)building.ImageData = MixFileClass::Retrieve(fullname.c_str());
+    (const void*&)building.ImageData = MixFileClass::Retrieve(fullname.c_str());
   }
 
   // Try to load weap2.shp
@@ -3747,7 +3747,7 @@ void BuildingTypeClass::One_Time() {
   */
   for (unsigned index = 0; index < sizeof(_anims) / sizeof(_anims[0]);
        index++) {
-    BuildingTypeClass const* b = &As_Reference(_anims[index].Class);
+    const BuildingTypeClass* b = &As_Reference(_anims[index].Class);
     if (b) {
       b->Init_Anim(_anims[index].Stage, _anims[index].Start,
                    _anims[index].Length, _anims[index].Rate);
@@ -3771,7 +3771,7 @@ void BuildingTypeClass::One_Time() {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/02/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-StructType BuildingTypeClass::From_Name(char const* name) {
+StructType BuildingTypeClass::From_Name(const char* name) {
   if (name) {
     for (StructType classid = STRUCT_FIRST; classid < STRUCT_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
@@ -3803,7 +3803,7 @@ StructType BuildingTypeClass::From_Name(char const* name) {
  *=============================================================================================*/
 void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType house) const {
-  void const* ptr = Get_Cameo_Data();
+  const void* ptr = Get_Cameo_Data();
   if (!ptr) {
     ptr = Get_Image_Data();
   }
@@ -3940,7 +3940,7 @@ void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
  *Converted to building type class member function.                        *
  *=============================================================================================*/
 int BuildingTypeClass::Legal_Placement(CELL pos) const {
-  short const* offset;  // Pointer to cell offset list.
+  const short* offset;  // Pointer to cell offset list.
 
   if (pos == -1) return false;
 
@@ -4049,20 +4049,20 @@ BuildingClass* BuildingTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
 void BuildingTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
-      BuildingTypeClass const* classptr = &As_Reference(sindex);
+      const BuildingTypeClass* classptr = &As_Reference(sindex);
 
       if (classptr->IsTheater) {
         auto fullname = std::filesystem::path(classptr->IniName)
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        (void const*&)classptr->ImageData =
+        (const void*&)classptr->ImageData =
             MixFileClass::Retrieve(fullname.c_str());
       }
 
       if (Get_Resolution_Factor()) {
-        void const* cameo_ptr;
+        const void* cameo_ptr;
 
-        (void const*&)classptr->CameoData = nullptr;
+        (const void*&)classptr->CameoData = nullptr;
         const auto filename =
             std::string(classptr->IniName).substr(0, 4) + "ICNH";
 
@@ -4072,7 +4072,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
 
         cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
         if (cameo_ptr) {
-          (void const*&)classptr->CameoData = cameo_ptr;
+          (const void*&)classptr->CameoData = cameo_ptr;
         }
       }
     }
@@ -4126,7 +4126,7 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-BuildingTypeClass const& BuildingTypeClass::As_Reference(StructType type) {
+const BuildingTypeClass& BuildingTypeClass::As_Reference(StructType type) {
   return *Pointers[type];
 }
 
@@ -4147,7 +4147,7 @@ BuildingTypeClass const& BuildingTypeClass::As_Reference(StructType type) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-short const* BuildingTypeClass::Occupy_List(bool placement) const {
+const short* BuildingTypeClass::Occupy_List(bool placement) const {
   SmudgeType bib = SMUDGE_NONE;
   CELL cell = 0;
 
@@ -4172,14 +4172,14 @@ short const* BuildingTypeClass::Occupy_List(bool placement) const {
       cell = MAP_CELL_W;
     }
 
-    SmudgeTypeClass const& smudge = SmudgeTypeClass::As_Reference(bib);
+    const SmudgeTypeClass& smudge = SmudgeTypeClass::As_Reference(bib);
     static short _list[25];
     short* dest = &_list[0];
 
     /*
     **	Copy the bib overlap list into the working buffer.
     */
-    short const* src = smudge.Occupy_List();
+    const short* src = smudge.Occupy_List();
     while (*src != REFRESH_EOL) {
       *dest++ = *src++ + cell;
     }
@@ -4200,7 +4200,7 @@ short const* BuildingTypeClass::Occupy_List(bool placement) const {
     return OccupyList;
   }
 
-  static short const _templap[] = {REFRESH_EOL};
+  static const short _templap[] = {REFRESH_EOL};
   return &_templap[0];
 }
 
@@ -4221,12 +4221,12 @@ short const* BuildingTypeClass::Occupy_List(bool placement) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-short const* BuildingTypeClass::Overlap_List() const {
+const short* BuildingTypeClass::Overlap_List() const {
   if (OverlapList) {
     return OverlapList;
   }
 
-  static short const _templap[] = {REFRESH_EOL};
+  static const short _templap[] = {REFRESH_EOL};
   return &_templap[0];
 }
 

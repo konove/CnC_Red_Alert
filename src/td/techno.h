@@ -205,7 +205,7 @@ class TechnoClass : public RadioClass,
   */
   TechnoClass();
   TechnoClass(HousesType house);
-  TechnoClass(NoInitClass const& x)
+  TechnoClass(const NoInitClass& x)
       : RadioClass(x),
         FlasherClass(x),
         StageClass(x),
@@ -219,14 +219,14 @@ class TechnoClass : public RadioClass,
   **	Query functions.
   */
   virtual int Refund_Amount() const;
-  virtual CELL Find_Exit_Cell(TechnoClass const* techno) const;
+  virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
   virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly) const;
   virtual int Threat_Range(int control) const;
   virtual InfantryType Crew_Type() const;
-  TechnoTypeClass const* Techno_Type_Class() const {
-    return dynamic_cast<TechnoTypeClass const*>(&Class_Of());
+  const TechnoTypeClass* Techno_Type_Class() const {
+    return dynamic_cast<const TechnoTypeClass*>(&Class_Of());
   }
-  CELL Nearby_Location(TechnoClass const* from = nullptr) const;
+  CELL Nearby_Location(const TechnoClass* from = nullptr) const;
   unsigned char Get_Ownable() const override;
   bool Can_Player_Fire() const override;
   bool Can_Player_Move() const override;
@@ -259,16 +259,16 @@ class TechnoClass : public RadioClass,
   /*
   **	Combat related.
   */
-  void Base_Is_Attacked(TechnoClass const* enemy);
+  void Base_Is_Attacked(const TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun();
   bool In_Range(COORDINATE coord, int which = 0) const override;
   virtual bool In_Range(TARGET target, int which = 0) const;
-  virtual bool In_Range(ObjectClass const* target, int which = 0) const;
+  virtual bool In_Range(const ObjectClass* target, int which = 0) const;
   virtual void Death_Announcement(
-      TechnoClass const* source = nullptr) const = 0;
+      const TechnoClass* source = nullptr) const = 0;
   virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType threat) const;
   virtual void Assign_Target(TARGET target);
@@ -281,9 +281,9 @@ class TechnoClass : public RadioClass,
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source) override;
   bool Evaluate_Cell(ThreatType method, int mask, CELL cell, int range,
-                     TechnoClass const** object, int& value) const;
+                     const TechnoClass** object, int& value) const;
   bool Evaluate_Object(ThreatType method, int mask, int range,
-                       TechnoClass const* object, int& value) const;
+                       const TechnoClass* object, int& value) const;
 
   /*
   **	AI.
@@ -308,9 +308,9 @@ class TechnoClass : public RadioClass,
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void const* Remap_Table();
+  virtual const void* Remap_Table();
   VisualType Visual_Character(bool raw = false);
-  void Techno_Draw_Object(void const* shapefile, int shapenum, int x, int y,
+  void Techno_Draw_Object(const void* shapefile, int shapenum, int x, int y,
                           WindowNumberType window);
   void Draw_It(int x, int y, WindowNumberType window) override;
   virtual void Draw_Pips(int x, int y, WindowNumberType window);
@@ -340,7 +340,7 @@ class TechnoClass : public RadioClass,
   **	Facing translation tables that fix the flaw with 3D studio when
   **	it renders 45 degree angles.
   */
-  static int const BodyShape[32];
+  static const int BodyShape[32];
   //		static int const TurretShape[32];
 };
 

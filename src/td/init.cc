@@ -173,7 +173,7 @@ extern bool SpawnedFromWChat;
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 bool Init_Game(int, char*[]) {
-  void const* temp_mouse_shapes;
+  const void* temp_mouse_shapes;
 
 #ifndef PORTABLE
   DLOG(INFO) << "C&C95 - About to load reslib.dll";
@@ -345,9 +345,9 @@ bool Init_Game(int, char*[]) {
   */
   if (RawFileClass(Language_Name("CONQUER")).Is_Available()) {
     RawFileClass rf(Language_Name("CONQUER"));
-    SystemStrings = static_cast<char const*>(Load_Alloc_Data(rf));
+    SystemStrings = static_cast<const char*>(Load_Alloc_Data(rf));
   } else {
-    SystemStrings = static_cast<char const*>(
+    SystemStrings = static_cast<const char*>(
         MixFileClass::Retrieve(Language_Name("CONQUER")));
   }
 
@@ -2588,7 +2588,7 @@ int Version_Number() {
   static int version;
   static char* date = __DATE__;
   static char* time = __TIME__;
-  static char const* months = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
+  static const char* months = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
 
   if (!initialized) {
     char* ptr;
@@ -2831,7 +2831,7 @@ void Load_Recording_Values() {
  *                                                                                             *
  * HISTORY: * 08/19/1995 JLB : Created. *
  *=============================================================================================*/
-long Obfuscate(char const* string) {
+long Obfuscate(const char* string) {
   char buffer[128];
 
   if (!string) return 0;

@@ -83,13 +83,13 @@ struct IconList_ItemExtras {
 class IconListClass : public ListClass {
  public:
   IconListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                void const* up, void const* down,
+                const void* up, const void* down,
                 bool bResponsibleForStringAlloc = false, int iSelectionType = 1,
                 int iMaxItemsSaved = 0);
   //		IconListClass( const IconListClass& list );
   virtual ~IconListClass();
 
-  virtual int Add_Item(char const* text);
+  virtual int Add_Item(const char* text);
   virtual int Add_Item(const char* text, const char* szHelp, void* pIcon0,
                        ICONKIND IconKind0, const char* szExtraDataString = NULL,
                        void* pvExtraDataPtr = NULL,
@@ -123,7 +123,7 @@ class IconListClass : public ListClass {
 
   //		virtual void Peer_To_Peer(unsigned flags, KeyNumType & key,
   // ControlClass & whom);
-  virtual void Remove_Item(char const* text);
+  virtual void Remove_Item(const char* text);
   virtual void Remove_Item(int);
   //		virtual int  Remove_Scroll_Bar();
   //		virtual void Set_Selected_Index(int index);

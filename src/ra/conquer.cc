@@ -631,7 +631,7 @@ void Keyboard_Process(KeyNumType& input) {
   if (key != 0 && key == Options.KeyStop) {
     if (CurrentObject.Count()) {
       for (index = 0; index < CurrentObject.Count(); index++) {
-        ObjectClass const* tech = CurrentObject[index];
+        const ObjectClass* tech = CurrentObject[index];
 
         if (tech != nullptr &&
             (tech->Can_Player_Move() ||
@@ -649,7 +649,7 @@ void Keyboard_Process(KeyNumType& input) {
   if (key != 0 && key == Options.KeyGuard) {
     if (CurrentObject.Count()) {
       for (index = 0; index < CurrentObject.Count(); index++) {
-        ObjectClass const* tech = CurrentObject[index];
+        const ObjectClass* tech = CurrentObject[index];
 
         if (tech != nullptr && tech->Can_Player_Move() &&
             tech->Can_Player_Fire()) {
@@ -666,7 +666,7 @@ void Keyboard_Process(KeyNumType& input) {
   if (key != 0 && key == Options.KeyScatter) {
     if (CurrentObject.Count()) {
       for (index = 0; index < CurrentObject.Count(); index++) {
-        ObjectClass const* tech = CurrentObject[index];
+        const ObjectClass* tech = CurrentObject[index];
 
         if (tech != nullptr && tech->Can_Player_Move()) {
           OutList.Add(EventClass(EventClass::SCATTER, TargetClass(tech)));
@@ -1881,7 +1881,7 @@ void MPATH_Call_Back() {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-char const* Language_Name(char const* basename) {
+const char* Language_Name(const char* basename) {
   static char _fullname[_MAX_FNAME + _MAX_EXT];
 
   if (!basename) return nullptr;
@@ -1905,7 +1905,7 @@ char const* Language_Name(char const* basename) {
  *                                                                                             *
  * HISTORY: * 04/17/1994 JLB : Created. *
  *=============================================================================================*/
-SourceType Source_From_Name(char const* name) {
+SourceType Source_From_Name(const char* name) {
   if (name) {
     for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; source++) {
       if (stricmp(SourceName[source], name) == 0) {
@@ -1931,7 +1931,7 @@ SourceType Source_From_Name(char const* name) {
  *                                                                         						  *
  * HISTORY: * 11/15/1994 BR : Created. *
  *=============================================================================================*/
-char const* Name_From_Source(SourceType source) {
+const char* Name_From_Source(SourceType source) {
   if (static_cast<unsigned>(source) < SOURCE_COUNT) {
     return SourceName[source];
   }
@@ -1953,7 +1953,7 @@ char const* Name_From_Source(SourceType source) {
  *                                                                                             *
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
-TheaterType Theater_From_Name(char const* name) {
+TheaterType Theater_From_Name(const char* name) {
   TheaterType index;
 
   if (name) {
@@ -2660,7 +2660,7 @@ unsigned PaletteCounter;
  *                                                                                             *
  * HISTORY: * 5/7/96 9:49AM ST : Created *
  *=============================================================================================*/
-int Load_Interpolated_Palettes(char const* filename, bool add) {
+int Load_Interpolated_Palettes(const char* filename, bool add) {
   int num_palettes = 0;
   int i;
   int start_palette;
@@ -2946,7 +2946,7 @@ MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user) {
 
   switch (cmd) {
     case MPGCMD_ERROR:
-      WWMessageBox().Process((char const*)data);
+      WWMessageBox().Process((const char*)data);
       break;
 
     case MPGCMD_INIT:
@@ -3059,7 +3059,7 @@ std::string Fading_Table_Name(const char* base, TheaterType theater) {
  * HISTORY: * 04/12/1995 PWG : Created. * 05/10/1995 JLB : Handles a null
  *shapefile pointer.                                        *
  *=============================================================================================*/
-std::unique_ptr<char[]> Get_Radar_Icon(void const* shapefile, int shapenum,
+std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
                                        int frames, int zoomfactor) {
   static int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   static int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
@@ -3214,9 +3214,9 @@ std::unique_ptr<char[]> Get_Radar_Icon(void const* shapefile, int shapenum,
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
+void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
-                   void const* fadingdata, void const* ghostdata,
+                   const void* fadingdata, const void* ghostdata,
                    DirType rotation, long scale) {
   int predoffset;
   void* shape_pointer;
@@ -3333,7 +3333,7 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
 
 void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
                    int y, WindowNumberType window, ShapeFlags_Type flags,
-                   void const* fadingdata, void const* ghostdata,
+                   const void* fadingdata, const void* ghostdata,
                    DirType rotation, long scale) {
   CC_Draw_Shape(shapefile.data(), shapenum, x, y, window, flags, fadingdata,
                 ghostdata, rotation, scale);
@@ -3360,7 +3360,7 @@ void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
  *                                                                                             *
  * HISTORY: * 07/22/1996 JLB : Created. *
  *=============================================================================================*/
-Rect const Shape_Dimensions(void const* shapedata, int shapenum) {
+const Rect Shape_Dimensions(const void* shapedata, int shapenum) {
   Rect rect;
 
   if (shapedata == nullptr || shapenum < 0 ||
@@ -3472,7 +3472,7 @@ Rect const Shape_Dimensions(void const* shapedata, int shapenum) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id) {
+const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
   switch (type) {
     case RTTI_UNITTYPE:
     case RTTI_UNIT:
@@ -3948,7 +3948,7 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
   for (;;) {
     sprintf(buffer, "%c:\\", 'A' + cd_drive);
 
-    if (GetVolumeInformation((char const*)buffer, &volume_name[0],
+    if (GetVolumeInformation((const char*)buffer, &volume_name[0],
                              (unsigned long)sizeof(volume_name), nullptr,
                              (DWORD*)&filename_length, (DWORD*)&misc_dword,
                              (char*)nullptr, (unsigned long)0)) {
@@ -4035,19 +4035,19 @@ bool Force_CD_Available(int cd_desired)  //	ajw
   static int _last = -1;
   static void* font;
 #ifdef FRENCH
-  static char const* _cd_name[] = {
+  static const char* _cd_name[] = {
       "ALERTE ROUGE CD1",   "ALERTE ROUGE CD2", "CD Missions Taiga",
       "CD Missions M.A.D.", "ALERTE ROUGE DVD",
   };
 #endif
 #ifdef GERMAN
-  static char const* _cd_name[] = {
+  static const char* _cd_name[] = {
       "ALARMSTUFE ROT CD1", "ALARMSTUFE ROT CD2", "CD Gegenangriff einlegen",
       "CD TRANS einlegen",  "ALARMSTUFE ROT DVD",
   };
 #endif
 #ifdef ENGLISH
-  static char const* _cd_name[] = {
+  static const char* _cd_name[] = {
       "RED ALERT DISK 1", "RED ALERT DISK 2", "CounterStrike CD",
       "Aftermath CD",     "RED ALERT DVD",
   };
@@ -4503,7 +4503,7 @@ void* Hires_Load(char* name) {
  *                                                                                             *
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
-CrateType Crate_From_Name(char const* name) {
+CrateType Crate_From_Name(const char* name) {
   if (name != nullptr) {
     for (CrateType crate = CRATE_FIRST; crate < CRATE_COUNT; crate++) {
       if (stricmp(name, CrateNames[crate]) == 0) return crate;
@@ -4528,7 +4528,7 @@ CrateType Crate_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
-int Owner_From_Name(char const* text) {
+int Owner_From_Name(const char* text) {
   int ownable = 0;
   if (stricmp(text, "soviet") == 0) {
     ownable |= HOUSEF_SOVIET;
@@ -4619,7 +4619,7 @@ void Shake_The_Screen(int shakes) {
  *                                                                                             *
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
-void List_Copy(short const* source, int len, short* dest) {
+void List_Copy(const short* source, int len, short* dest) {
   if (dest == nullptr || dest == nullptr) {
     return;
   }

@@ -68,7 +68,7 @@ class ScrollClass : public HelpClass {
 
  public:
   ScrollClass();
-  ScrollClass(NoInitClass const& x) : HelpClass(x) {}
+  ScrollClass(const NoInitClass& x) : HelpClass(x) {}
 
   bool Set_Autoscroll(int control);
 

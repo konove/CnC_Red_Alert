@@ -2,13 +2,13 @@
 #define CNC_RED_ALERT_TD_KEYFRAME_H_
 
 int Get_Last_Frame_Length();
-void* Build_Frame(void const* dataptr, unsigned short framenumber,
+void* Build_Frame(const void* dataptr, unsigned short framenumber,
                   void* buffptr);
-unsigned short Get_Build_Frame_Count(void const* dataptr);
-unsigned short Get_Build_Frame_X(void const* dataptr);
-unsigned short Get_Build_Frame_Y(void const* dataptr);
-unsigned short Get_Build_Frame_Width(void const* dataptr);
-unsigned short Get_Build_Frame_Height(void const* dataptr);
-bool Get_Build_Frame_Palette(void const* dataptr, void* palette);
+unsigned short Get_Build_Frame_Count(const void* dataptr);
+unsigned short Get_Build_Frame_X(const void* dataptr);
+unsigned short Get_Build_Frame_Y(const void* dataptr);
+unsigned short Get_Build_Frame_Width(const void* dataptr);
+unsigned short Get_Build_Frame_Height(const void* dataptr);
+bool Get_Build_Frame_Palette(const void* dataptr, void* palette);
 
 #endif  // CNC_RED_ALERT_TD_KEYFRAME_H_

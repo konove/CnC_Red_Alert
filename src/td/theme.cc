@@ -130,7 +130,7 @@ ThemeClass::ThemeControl ThemeClass::_themes[THEME_COUNT] = {
  *                                                                                             *
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
-char const* ThemeClass::Base_Name(ThemeType theme) const {
+const char* ThemeClass::Base_Name(ThemeType theme) const {
   if (theme != THEME_NONE) {
     return _themes[theme].Name;
   }
@@ -171,7 +171,7 @@ ThemeClass::ThemeClass() {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-char const* ThemeClass::Full_Name(ThemeType theme) const {
+const char* ThemeClass::Full_Name(ThemeType theme) const {
   if (theme != THEME_NONE) {
     return Text_String(_themes[theme].Fullname);
   }
@@ -350,7 +350,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. * 05/09/1995 JLB : Theme variation
  *support.                                                 *
  *=============================================================================================*/
-char const* ThemeClass::Theme_File_Name(ThemeType theme) {
+const char* ThemeClass::Theme_File_Name(ThemeType theme) {
   if (_themes[theme].Variation && Special.IsVariation) {
     static auto name = std::filesystem::path(_themes[theme].Name)
                            .replace_extension(".VAR")
@@ -496,7 +496,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) const {
  *                                                                                             *
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
-ThemeType ThemeClass::From_Name(char const* name) {
+ThemeType ThemeClass::From_Name(const char* name) {
   if (name && strlen(name) > 0) {
     /*
     **	First search for an exact name match with the filename

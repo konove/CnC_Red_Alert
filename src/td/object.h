@@ -134,13 +134,13 @@ class ObjectClass : public AbstractClass {
   **	Constructor & destructors.
   */
   ObjectClass();
-  ObjectClass(NoInitClass const& x) : AbstractClass(x) {}
+  ObjectClass(const NoInitClass& x) : AbstractClass(x) {}
   ~ObjectClass() override {}
   virtual RTTIType What_Am_I() const;
-  int operator<(ObjectClass const& object) const {
+  int operator<(const ObjectClass& object) const {
     return Sort_Y() < object.Sort_Y();
   }
-  int operator>(ObjectClass const& object) const {
+  int operator>(const ObjectClass& object) const {
     return Sort_Y() > object.Sort_Y();
   }
 
@@ -158,7 +158,7 @@ class ObjectClass : public AbstractClass {
   virtual bool Is_Infantry() const;
   virtual bool Is_Techno() const;
   virtual unsigned char Get_Ownable() const;
-  virtual ObjectTypeClass const& Class_Of() const = 0;
+  virtual const ObjectTypeClass& Class_Of() const = 0;
   virtual int Full_Name() const;
   virtual bool Can_Repair() const;
   virtual bool Can_Demolish() const;
@@ -193,8 +193,8 @@ class ObjectClass : public AbstractClass {
   virtual void Do_Shimmer();
   virtual int Exit_Object(TechnoClass*);
   virtual bool Render(bool forced);
-  virtual short const* Occupy_List(bool placement = false) const;
-  virtual short const* Overlap_List() const;
+  virtual const short* Occupy_List(bool placement = false) const;
+  virtual const short* Overlap_List() const;
   virtual unsigned Health_Ratio() const;
   virtual void Draw_It(int x, int y, WindowNumberType) = 0;
   virtual void Hidden();

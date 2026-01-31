@@ -60,7 +60,7 @@
 #include "ra/type.h"
 #include "tech/fixed.h"
 
-static HouseTypeClass const HouseEngland(
+static const HouseTypeClass HouseEngland(
     HOUSE_ENGLAND,
     "England",     //	NAME:			House name.
     TXT_ENGLAND,   // FULLNAME:	Translated house name.
@@ -70,7 +70,7 @@ static HouseTypeClass const HouseEngland(
     'E'            // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseGermany(
+static const HouseTypeClass HouseGermany(
     HOUSE_GERMANY,
     "Germany",    //	NAME:			House name.
     TXT_GERMANY,  // FULLNAME:	Translated house name.
@@ -80,7 +80,7 @@ static HouseTypeClass const HouseGermany(
     'G'           // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseFrance(
+static const HouseTypeClass HouseFrance(
     HOUSE_FRANCE,
     "France",     //	NAME:			House name.
     TXT_FRANCE,   // FULLNAME:	Translated house name.
@@ -90,7 +90,7 @@ static HouseTypeClass const HouseFrance(
     'F'           // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseUkraine(
+static const HouseTypeClass HouseUkraine(
     HOUSE_UKRAINE,
     "Ukraine",      //	NAME:			House name.
     TXT_UKRAINE,    // FULLNAME:	Translated house name.
@@ -100,7 +100,7 @@ static HouseTypeClass const HouseUkraine(
     'K'             // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseUSSR(
+static const HouseTypeClass HouseUSSR(
     HOUSE_USSR,
     "USSR",      //	NAME:			House name.
     TXT_USSR,    // FULLNAME:	Translated house name.
@@ -110,7 +110,7 @@ static HouseTypeClass const HouseUSSR(
     'U'          // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseGreece(
+static const HouseTypeClass HouseGreece(
     HOUSE_GREECE,
     "Greece",       //	NAME:			House name.
     TXT_GREECE,     // FULLNAME:	Translated house name.
@@ -120,7 +120,7 @@ static HouseTypeClass const HouseGreece(
     'G'             // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseTurkey(
+static const HouseTypeClass HouseTurkey(
     HOUSE_TURKEY,
     "Turkey",      //	NAME:			House name.
     TXT_TURKEY,    // FULLNAME:	Translated house name.
@@ -130,7 +130,7 @@ static HouseTypeClass const HouseTurkey(
     'T'            // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseSpain(
+static const HouseTypeClass HouseSpain(
     HOUSE_SPAIN,
     "Spain",      //	NAME:			House name.
     TXT_SPAIN,    // FULLNAME:	Translated house name.
@@ -140,7 +140,7 @@ static HouseTypeClass const HouseSpain(
     'S'           // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseGood(
+static const HouseTypeClass HouseGood(
     HOUSE_GOOD,
     "GoodGuy",      //	NAME:			House name.
     TXT_GOODGUY,    // FULLNAME:	Translated house name.
@@ -150,7 +150,7 @@ static HouseTypeClass const HouseGood(
     'G'             // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseBad(
+static const HouseTypeClass HouseBad(
     HOUSE_BAD,
     "BadGuy",    //	NAME:			House name.
     TXT_BADGUY,  // FULLNAME:	Translated house name.
@@ -160,7 +160,7 @@ static HouseTypeClass const HouseBad(
     'B'          // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseCivilian(
+static const HouseTypeClass HouseCivilian(
     HOUSE_NEUTRAL,
     "Neutral",     //	NAME:			House name.
     TXT_CIVILIAN,  // FULLNAME:	Translated house name.
@@ -170,7 +170,7 @@ static HouseTypeClass const HouseCivilian(
     'C'            // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseJP(
+static const HouseTypeClass HouseJP(
     HOUSE_JP,
     "Special",    //	NAME:			House name.
     TXT_JP,       // FULLNAME:	Translated house name.
@@ -180,7 +180,7 @@ static HouseTypeClass const HouseJP(
     'J'           // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti1(
+static const HouseTypeClass HouseMulti1(
     HOUSE_MULTI1,
     "Multi1",      //	NAME:			House name.
     TXT_CIVILIAN,  // FULLNAME:	Translated house name.
@@ -190,7 +190,7 @@ static HouseTypeClass const HouseMulti1(
     'M'            // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti2(
+static const HouseTypeClass HouseMulti2(
     HOUSE_MULTI2,
     "Multi2",       //	NAME:			House name.
     TXT_CIVILIAN,   // FULLNAME:	Translated house name.
@@ -200,7 +200,7 @@ static HouseTypeClass const HouseMulti2(
     'M'             // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti3(
+static const HouseTypeClass HouseMulti3(
     HOUSE_MULTI3,
     "Multi3",      //	NAME:			House name.
     TXT_CIVILIAN,  // FULLNAME:	Translated house name.
@@ -210,7 +210,7 @@ static HouseTypeClass const HouseMulti3(
     'M'            // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti4(
+static const HouseTypeClass HouseMulti4(
     HOUSE_MULTI4,
     "Multi4",      //	NAME:			House name.
     TXT_CIVILIAN,  // FULLNAME:	Translated house name.
@@ -220,7 +220,7 @@ static HouseTypeClass const HouseMulti4(
     'M'            // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti5(
+static const HouseTypeClass HouseMulti5(
     HOUSE_MULTI5,
     "Multi5",       //	NAME:			House name.
     TXT_CIVILIAN,   // FULLNAME:	Translated house name.
@@ -230,7 +230,7 @@ static HouseTypeClass const HouseMulti5(
     'M'             // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti6(
+static const HouseTypeClass HouseMulti6(
     HOUSE_MULTI6,
     "Multi6",      //	NAME:			House name.
     TXT_CIVILIAN,  // FULLNAME:	Translated house name.
@@ -240,7 +240,7 @@ static HouseTypeClass const HouseMulti6(
     'M'            // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti7(
+static const HouseTypeClass HouseMulti7(
     HOUSE_MULTI7,
     "Multi7",      //	NAME:			House name.
     TXT_CIVILIAN,  // FULLNAME:	Translated house name.
@@ -250,7 +250,7 @@ static HouseTypeClass const HouseMulti7(
     'M'            // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti8(
+static const HouseTypeClass HouseMulti8(
     HOUSE_MULTI8,
     "Multi8",      //	NAME:			House name.
     TXT_CIVILIAN,  // FULLNAME:	Translated house name.
@@ -261,7 +261,7 @@ static HouseTypeClass const HouseMulti8(
 );
 
 #ifdef OBSOLETE
-HouseTypeClass const* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
+const HouseTypeClass* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
     &HouseSpain,    &HouseGreece, &HouseUSSR,   &HouseEngland, &HouseUkraine,
     &HouseGermany,  &HouseFrance, &HouseTurkey, &HouseGood,    &HouseBad,
     &HouseCivilian, &HouseJP,     &HouseMulti1, &HouseMulti2,  &HouseMulti3,
@@ -283,8 +283,8 @@ HouseTypeClass const* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
  *                                                                                             *
  * HISTORY: * 06/21/1994 JLB : Created. *
  *=============================================================================================*/
-HouseTypeClass::HouseTypeClass(HousesType house, char const* ini, int fullname,
-                               char const* ext, int lemon,
+HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
+                               const char* ext, int lemon,
                                PlayerColorType remapcolor, char prefix)
     : AbstractTypeClass(RTTI_HOUSETYPE, house, fullname, ini),
       //	RTTI(RTTI_HOUSETYPE),
@@ -404,7 +404,7 @@ void HouseTypeClass::Init_Heap() {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/21/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-HousesType HouseTypeClass::From_Name(char const* name) {
+HousesType HouseTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
       if (stricmp(As_Reference(house).IniName, name) == 0) {
@@ -464,7 +464,7 @@ HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned char const* HouseTypeClass::Remap_Table() const {
+const unsigned char* HouseTypeClass::Remap_Table() const {
   return ColorRemaps[RemapColor].RemapTable;
 }
 

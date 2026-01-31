@@ -308,8 +308,8 @@ void Debug_Key(unsigned input) {
       */
       case KN_F7:
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
-          TechnoTypeClass const& ttype =
-              (TechnoTypeClass const&)CurrentObject[0]->Class_Of();
+          const TechnoTypeClass& ttype =
+              (const TechnoTypeClass&)CurrentObject[0]->Class_Of();
           int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
           if (ttype.PrimaryWeapon != nullptr) {
@@ -365,7 +365,7 @@ void Debug_Key(unsigned input) {
  *                                                                                             *
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-static char const* Bench_Time(BenchType btype) {
+static const char* Bench_Time(BenchType btype) {
   static char buffer[32];
 
   int rootcount = Benches[BENCH_GAME_FRAME].Count();

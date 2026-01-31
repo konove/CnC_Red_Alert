@@ -810,7 +810,7 @@ void ChronalVortexClass::Render() {
 
     sprintf(fname, "HOLE%04d.lut", frame);
 
-    void const* lut_ptr = MFCD::Retrieve(fname);
+    const void* lut_ptr = MFCD::Retrieve(fname);
     if (lut_ptr) {
       /*
       ** Build a representation of the area of the screen where the vortex will
@@ -828,7 +828,7 @@ void ChronalVortexClass::Render() {
       CELL yc = Coord_YCell(Position);
       CellClass* cellptr;
       CELL cell;
-      TemplateTypeClass const* ttype = nullptr;
+      const TemplateTypeClass* ttype = nullptr;
       int icon;  // The icon number to use from the template set.
 
       GraphicViewPortClass* oldpage = Set_Logic_Page(RenderBuffer);
@@ -893,7 +893,7 @@ void ChronalVortexClass::Render() {
             **	Draw the overlay object.
             */
             if (cellptr->Overlay != OVERLAY_NONE) {
-              OverlayTypeClass const& otype =
+              const OverlayTypeClass& otype =
                   OverlayTypeClass::As_Reference(cellptr->Overlay);
               IsTheaterShape = static_cast<bool>(
                   otype.IsTheater);  // Tell Build_Frame if this overlay is
@@ -1110,7 +1110,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:53PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Build_Fading_Table(PaletteClass const& palette,
+void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
                                             void* dest, int color, int frac) {
   if (dest) {
     unsigned char* ptr = static_cast<unsigned char*>(dest);

@@ -410,7 +410,7 @@ bool TcpipManagerClass::Add_Client() {
   ** when this is complete or when it times out.
   */
   Async = WSAAsyncGetHostByAddr(MainWindow, WM_HOSTBYADDRESS,
-                                (char const*)&addr.sin_addr, 4, PF_INET,
+                                (const char*)&addr.sin_addr, 4, PF_INET,
                                 &HostBuff[0], MAXGETHOSTSTRUCT);
 
   /*

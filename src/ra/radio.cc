@@ -54,7 +54,7 @@
 **	These are the text representations of the radio messages that can be
 *transmitted.
 */
-char const* RadioClass::Messages[RADIO_COUNT] = {
+const char* RadioClass::Messages[RADIO_COUNT] = {
     "static (no message)",
     "Roger.",
     "Come in.",

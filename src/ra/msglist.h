@@ -139,10 +139,10 @@ class MessageListClass {
   void Init(int x, int y, int max_msg, int maxchars, int height, int edit_x,
             int edit_y, int overflow_on, int over_start, int over_end,
             int width = 640);
-  TextLabelClass* Add_Message(char const* name, int id, char const* txt,
+  TextLabelClass* Add_Message(const char* name, int id, const char* txt,
                               PlayerColorType color, TextPrintType style,
                               int timeout);
-  int Concat_Message(char const* name, int id, char const* txt, int timeout);
+  int Concat_Message(const char* name, int id, const char* txt, int timeout);
 
   //.....................................................................
   // Message access utility routines

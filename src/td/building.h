@@ -68,7 +68,7 @@
 */
 class BuildingClass : public TechnoClass {
  public:
-  BuildingTypeClass const *const Class;
+  const BuildingTypeClass *const Class;
   operator StructType() const { return Class->Type; }
 
   /*
@@ -178,7 +178,7 @@ class BuildingClass : public TechnoClass {
   void operator delete(void *ptr);
   BuildingClass() : Class(nullptr) {}
   BuildingClass(StructType type, HousesType house);
-  BuildingClass(NoInitClass const &x)
+  BuildingClass(const NoInitClass &x)
       : TechnoClass(x), Class(Class), CountDown(x), PlacementDelay(x) {}
   ~BuildingClass() override;
   RTTIType What_Am_I() const override { return RTTI_BUILDING; }
@@ -189,21 +189,21 @@ class BuildingClass : public TechnoClass {
   static void Init();
 
   TARGET Target_Scan();
-  BuildingTypeClass::AnimControlType const *Fetch_Anim_Control() {
+  const BuildingTypeClass::AnimControlType *Fetch_Anim_Control() {
     return &Class->Anims[BState];
   }
 
   /*
   **	Query functions.
   */
-  CELL Find_Exit_Cell(TechnoClass const *techno) const override;
+  CELL Find_Exit_Cell(const TechnoClass *techno) const override;
   InfantryType Crew_Type() const override;
   int Pip_Count() const override;
   bool Can_Player_Move() const override { return false; }
   ActionType What_Action(ObjectClass *target) override;
   ActionType What_Action(CELL cell) const override;
   bool Can_Demolish() const override;
-  ObjectTypeClass const &Class_Of() const override { return *Class; }
+  const ObjectTypeClass &Class_Of() const override { return *Class; }
   int Refund_Amount() const override;
   DirType Fire_Direction() const override;
   int Power_Output() const;
@@ -234,7 +234,7 @@ class BuildingClass : public TechnoClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  void const *Remap_Table() override;
+  const void *Remap_Table() override;
   int Exit_Object(TechnoClass *base) override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark) override;
@@ -251,7 +251,7 @@ class BuildingClass : public TechnoClass {
   /*
   **	Combat related.
   */
-  void Death_Announcement(TechnoClass const *source = nullptr) const override;
+  void Death_Announcement(const TechnoClass *source = nullptr) const override;
   FireErrorType Can_Fire(TARGET, int which) const override;
   TARGET Greatest_Threat(ThreatType threat) const override;
   ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
@@ -293,7 +293,7 @@ class BuildingClass : public TechnoClass {
   */
   static void Read_INI(char *buffer);
   static void Write_INI(char *buffer);
-  static char const *INI_Name() { return "STRUCTURES"; }
+  static const char *INI_Name() { return "STRUCTURES"; }
   bool Load(FileClass &file);
   bool Save(FileClass &file);
   void Code_Pointers() override;
@@ -309,7 +309,7 @@ class BuildingClass : public TechnoClass {
   void Drop_Debris(TARGET source = kTargetNone);
   BulletClass *Fire_At(TARGET target, int which) override;
 
-  static COORDINATE const CenterOffset[BSIZE_COUNT];
+  static const COORDINATE CenterOffset[BSIZE_COUNT];
 
   /*
   ** This contains the value of the Virtual Function Table Pointer

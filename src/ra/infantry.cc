@@ -139,7 +139,7 @@
 #include "tech/fixed.h"
 #include "tech/rect.h"
 
-int const InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
+const int InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
                                            5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3,
                                            2, 2, 2, 2, 1, 1, 1, 1, 1, 0};
 
@@ -148,7 +148,7 @@ int const InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
 **	specifies the frame rate as well as if the animation can be aborted.
 */
 // interruptible, mobile, randomstart, rate
-DoStruct const InfantryClass::MasterDoControls[DO_COUNT] = {
+const DoStruct InfantryClass::MasterDoControls[DO_COUNT] = {
     {true, false, false, 0},   // DO_STAND_READY
     {true, false, false, 0},   // DO_STAND_GUARD
     {true, false, false, 0},   // DO_PRONE
@@ -589,7 +589,7 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) const {
   *imagery for it. If *	there is no shape image, then it certainly can't be
   *drawn -- bail.
   */
-  void const* shapefile = Get_Image_Data();
+  const void* shapefile = Get_Image_Data();
 
   if (shapefile == nullptr) return;
 
@@ -1061,7 +1061,7 @@ void InfantryClass::Assign_Target(TARGET target) {
   *destination to the *	target specified.
   */
   if (!Target_Legal(NavCom) && Class->IsCapture && !Is_Weapon_Equipped()) {
-    BuildingClass const* building = As_Building(target);
+    const BuildingClass* building = As_Building(target);
     if (building != nullptr && building->Class->IsCaptureable) {
       Assign_Destination(target);
     }
@@ -1208,7 +1208,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   **	in it.
   */
   if (cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const& otype =
+    const OverlayTypeClass& otype =
         OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (otype.IsCrate && House &&
@@ -1478,9 +1478,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 #ifdef PARTIAL
-short const* InfantryClass::Overlap_List(bool redraw) const
+const short* InfantryClass::Overlap_List(bool redraw) const
 #else
-short const* InfantryClass::Overlap_List(bool) const
+const short* InfantryClass::Overlap_List(bool) const
 #endif
 {
   assert(Infantry.ID(this) == ID);
@@ -2655,7 +2655,7 @@ void InfantryClass::Response_Attack() {
  *                                                                                             *
  * HISTORY: * 03/01/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType InfantryClass::What_Action(ObjectClass const* object) const {
+ActionType InfantryClass::What_Action(const ObjectClass* object) const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
   assert(object != nullptr);
@@ -2671,7 +2671,7 @@ ActionType InfantryClass::What_Action(ObjectClass const* object) const {
   */
   if (*this == INFANTRY_RENOVATOR && object->What_Am_I() == RTTI_BUILDING &&
       House->IsPlayerControl) {
-    BuildingClass const* bldg = (BuildingClass*)object;
+    const BuildingClass* bldg = (BuildingClass*)object;
     if (bldg->Class->IsRepairable) {
       if (House->Is_Ally(bldg)) {
         if (bldg->Health_Ratio() == 1) {
@@ -2748,7 +2748,7 @@ ActionType InfantryClass::What_Action(ObjectClass const* object) const {
   */
   if (Class->IsBomber && action == ACTION_ATTACK &&
       object->What_Am_I() == RTTI_BUILDING) {
-    BuildingClass const* obj = (BuildingClass*)object;
+    const BuildingClass* obj = (BuildingClass*)object;
     /*
     ** Hack: Tanya should shoot barrels, bomb other structures.
     */
@@ -2820,7 +2820,7 @@ ActionType InfantryClass::What_Action(ObjectClass const* object) const {
         if (object->What_Am_I() == RTTI_BUILDING) {
           CELL cell = As_Cell(object->As_Target());
           int targzone = Map[As_Cell(As_Target())].Zones[Class->MZone];
-          short const* list =
+          const short* list =
               ((BuildingClass*)object)->Class->Occupy_List(false);
           bool found = false;
           while (*list != REFRESH_EOL && !found) {
@@ -3160,7 +3160,7 @@ ActionType InfantryClass::What_Action(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-ObjectTypeClass const& InfantryClass::Class_Of() const {
+const ObjectTypeClass& InfantryClass::Class_Of() const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -3196,7 +3196,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
 
   int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
-    char const* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.Get_Entry(INI_Name(), index);
 
     /*
     **	Get an infantry entry
@@ -3924,7 +3924,7 @@ void InfantryClass::Movement_AI() {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-void const* InfantryClass::Get_Image_Data() const {
+const void* InfantryClass::Get_Image_Data() const {
   if (!IsOwnedByPlayer && *this == INFANTRY_SPY) {
     return MFCD::Retrieve("E1.SHP");
   }

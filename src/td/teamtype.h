@@ -94,7 +94,7 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Constructor/Destructor
   */
   TeamTypeClass();
-  TeamTypeClass(NoInitClass const& x) : AbstractTypeClass(x) {}
+  TeamTypeClass(const NoInitClass& x) : AbstractTypeClass(x) {}
   virtual ~TeamTypeClass() {}
 
   /*
@@ -109,7 +109,7 @@ class TeamTypeClass : public AbstractTypeClass {
   void Fill_In(char* name, char* entry);
   static void Write_INI(char* buffer, bool refresh);
   static void Read_Old_INI(char* buffer);
-  static char const* INI_Name() { return "TeamTypes"; }
+  static const char* INI_Name() { return "TeamTypes"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   void Code_Pointers();
@@ -130,9 +130,9 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Utility routines
   */
-  static char const* Name_From_Mission(TeamMissionType order);
-  static TeamMissionType Mission_From_Name(char const* name);
-  static TeamTypeClass const* Suggested_New_Team(HouseClass* house, long utypes,
+  static const char* Name_From_Mission(TeamMissionType order);
+  static TeamMissionType Mission_From_Name(const char* name);
+  static const TeamTypeClass* Suggested_New_Team(HouseClass* house, long utypes,
                                                  long itypes, bool alerted);
 
   TARGET As_Target() const;
@@ -244,7 +244,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Array of object types comprising the team
   */
-  TechnoTypeClass const* Class[MAX_TEAM_CLASSCOUNT];
+  const TechnoTypeClass* Class[MAX_TEAM_CLASSCOUNT];
 
   /*
   **	Desired # of each type of object comprising the team
@@ -252,7 +252,7 @@ class TeamTypeClass : public AbstractTypeClass {
   unsigned char DesiredNum[MAX_TEAM_CLASSCOUNT];
 
  private:
-  static char const* TMissions[TMISSION_COUNT];
+  static const char* TMissions[TMISSION_COUNT];
 
   /*
   ** This contains the value of the Virtual Function Table Pointer

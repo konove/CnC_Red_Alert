@@ -268,7 +268,7 @@ void VesselClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-ObjectTypeClass const& VesselClass::Class_Of() const {
+const ObjectTypeClass& VesselClass::Class_Of() const {
   assert(IsActive);
 
   return *Class;
@@ -296,7 +296,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 
-  CellClass const* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map[cell];
 
   /*
   **	Moving off the edge of the map is not allowed unless
@@ -418,7 +418,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Verify the legality of the unit class.
   */
-  void const* shapefile = Get_Image_Data();
+  const void* shapefile = Get_Image_Data();
   if (shapefile == nullptr) return;
 
   /*
@@ -552,7 +552,7 @@ void VesselClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-short const* VesselClass::Overlap_List(bool redraw) const {
+const short* VesselClass::Overlap_List(bool redraw) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -775,7 +775,7 @@ void VesselClass::Per_Cell_Process(PCPType why) {
  *                                                                                             *
  * HISTORY: * 04/16/1996 BWG : Created. *
  *=============================================================================================*/
-ActionType VesselClass::What_Action(ObjectClass const* object) const {
+ActionType VesselClass::What_Action(const ObjectClass* object) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -1045,7 +1045,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     Mono_Set_Cursor(0, 0);
   }
   if (fire == FIRE_OK || fire == FIRE_CLOAKED) {
-    WeaponTypeClass const* weapon =
+    const WeaponTypeClass* weapon =
         which == 0 ? Class->PrimaryWeapon : Class->SecondaryWeapon;
 
     /*
@@ -1962,7 +1962,7 @@ void VesselClass::Read_INI(CCINIClass& ini) {
 
   int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
-    char const* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.Get_Entry(INI_Name(), index);
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
     inhouse = HouseTypeClass::From_Name(strtok(buf, ","));

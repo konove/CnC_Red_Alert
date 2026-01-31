@@ -79,7 +79,7 @@
 #include "td/vector.h"
 #include "tech/wwfile.h"
 
-int BaseNodeClass::operator==(BaseNodeClass const& node) {
+int BaseNodeClass::operator==(const BaseNodeClass& node) {
   return Type == node.Type && Coord == node.Coord;
 }
 
@@ -94,7 +94,7 @@ int BaseNodeClass::operator==(BaseNodeClass const& node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator!=(BaseNodeClass const& node) {
+int BaseNodeClass::operator!=(const BaseNodeClass& node) {
   return Type != node.Type || Coord != node.Coord;
 }
 
@@ -109,7 +109,7 @@ int BaseNodeClass::operator!=(BaseNodeClass const& node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator>(BaseNodeClass const&) { return true; }
+int BaseNodeClass::operator>(const BaseNodeClass&) { return true; }
 
 /***********************************************************************************************
  * BaseClass::Read_INI -- INI reading routine *

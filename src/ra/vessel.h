@@ -92,7 +92,7 @@ class VesselClass : public DriveClass {
   CDTimerClass<FrameTimerClass> PulseCountDown;
 
   VesselClass(VesselType classid, HousesType house);
-  VesselClass(NoInitClass const& x)
+  VesselClass(const NoInitClass& x)
       : DriveClass(x), Class(x), SecondaryFacing(x) {}
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -102,7 +102,7 @@ class VesselClass : public DriveClass {
   static void Init();
 
   ~VesselClass() override;
-  ObjectTypeClass const& Class_Of() const override;
+  const ObjectTypeClass& Class_Of() const override;
 
   virtual MZoneType Zone_Check_Type() const { return MZONE_WATER; }
   int Shape_Number() const;
@@ -123,7 +123,7 @@ class VesselClass : public DriveClass {
   MoveType Can_Enter_Cell(CELL cell,
                           FacingType from = FACING_NONE) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
-  short const* Overlap_List(bool redraw = false) const override;
+  const short* Overlap_List(bool redraw = false) const override;
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    long& param) override;
@@ -137,7 +137,7 @@ class VesselClass : public DriveClass {
   FireErrorType Can_Fire(TARGET target, int which) const override;
 
   void Enter_Idle_Mode(bool initial = false) override;
-  ActionType What_Action(ObjectClass const* object) const override;
+  ActionType What_Action(const ObjectClass* object) const override;
   ActionType What_Action(CELL cell) const override;
   void Active_Click_With(ActionType action, CELL cell) override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
@@ -149,7 +149,7 @@ class VesselClass : public DriveClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "SHIPS"; }
+  static const char* INI_Name() { return "SHIPS"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 

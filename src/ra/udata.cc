@@ -93,7 +93,7 @@ const int UnitTypeClass::Harvester_Load_List[9] = {0, 1, 2, 3, 4, 5, 6, 7, 0};
 const int UnitTypeClass::Harvester_Load_Count = 8;
 
 // V2 rocket launcher
-static UnitTypeClass const UnitV2Launcher(
+static const UnitTypeClass UnitV2Launcher(
     UNIT_V2_LAUNCHER,
     TXT_V2_LAUNCHER,  // NAME:			Text name of this unit type.
     "V2RL",           // NAME:			Text name of this unit type.
@@ -124,7 +124,7 @@ static UnitTypeClass const UnitV2Launcher(
 );
 
 // Light tank
-static UnitTypeClass const UnitLTank(
+static const UnitTypeClass UnitLTank(
     UNIT_LTANK,
     TXT_LTANK,     // NAME:			Text name of this unit type.
     "1TNK",        // NAME:			Text name of this unit type.
@@ -155,7 +155,7 @@ static UnitTypeClass const UnitLTank(
 );
 
 // Heavy tank
-static UnitTypeClass const UnitMTank(
+static const UnitTypeClass UnitMTank(
     UNIT_MTANK,
     TXT_MTANK,     // NAME:			Text name of this unit type.
     "3TNK",        // NAME:			Text name of this unit type.
@@ -186,7 +186,7 @@ static UnitTypeClass const UnitMTank(
 );
 
 // Medium tank
-static UnitTypeClass const UnitMTank2(
+static const UnitTypeClass UnitMTank2(
     UNIT_MTANK2,
     TXT_MTANK2,    // NAME:			Text name of this unit type.
     "2TNK",        // NAME:			Text name of this unit type.
@@ -217,7 +217,7 @@ static UnitTypeClass const UnitMTank2(
 );
 
 // Mastadon tank
-static UnitTypeClass const UnitHTank(
+static const UnitTypeClass UnitHTank(
     UNIT_HTANK,
     TXT_HTANK,      // NAME:			Text name of this unit type.
     "4TNK",         // NAME:			Text name of this unit type.
@@ -248,7 +248,7 @@ static UnitTypeClass const UnitHTank(
 );
 
 // Mobile Radar Jammer
-static UnitTypeClass const UnitMRJammer(
+static const UnitTypeClass UnitMRJammer(
     UNIT_MRJ,
     TXT_MRJ,       // NAME:			Text name of this unit type.
     "MRJ",         // NAME:			Text name of this unit type.
@@ -279,7 +279,7 @@ static UnitTypeClass const UnitMRJammer(
 );
 
 // Mobile Gap Generator
-static UnitTypeClass const UnitMGG(
+static const UnitTypeClass UnitMGG(
     UNIT_MGG,
     TXT_MGG,       // NAME:			Text name of this unit type.
     "MGG",         // NAME:			Text name of this unit type.
@@ -310,7 +310,7 @@ static UnitTypeClass const UnitMGG(
 );
 
 // Artillery
-static UnitTypeClass const UnitArty(
+static const UnitTypeClass UnitArty(
     UNIT_ARTY,
     TXT_ARTY,       // NAME:			Text name of this unit type.
     "ARTY",         // NAME:			Text name of this unit type.
@@ -341,7 +341,7 @@ static UnitTypeClass const UnitArty(
 );
 
 // Harvester
-static UnitTypeClass const UnitHarvester(
+static const UnitTypeClass UnitHarvester(
     UNIT_HARVESTER,
     TXT_HARVESTER,    // NAME:			Text name of this unit type.
     "HARV",           // NAME:			Text name of this unit type.
@@ -372,7 +372,7 @@ static UnitTypeClass const UnitHarvester(
 );
 
 // Mobile construction vehicle
-static UnitTypeClass const UnitMCV(
+static const UnitTypeClass UnitMCV(
     UNIT_MCV,
     TXT_MCV,          // NAME:			Text name of this unit type.
     "MCV",            // NAME:			Text name of this unit type.
@@ -403,7 +403,7 @@ static UnitTypeClass const UnitMCV(
 );
 
 // Jeep (hummer)
-static UnitTypeClass const UnitJeep(
+static const UnitTypeClass UnitJeep(
     UNIT_JEEP,
     TXT_JEEP,      // NAME:			Text name of this unit type.
     "JEEP",        // NAME:			Text name of this unit type.
@@ -434,7 +434,7 @@ static UnitTypeClass const UnitJeep(
 );
 
 // Armored personnel carrier
-static UnitTypeClass const UnitAPC(
+static const UnitTypeClass UnitAPC(
     UNIT_APC,
     TXT_APC,       // NAME:			Text name of this unit type.
     "APC",         // NAME:			Text name of this unit type.
@@ -465,7 +465,7 @@ static UnitTypeClass const UnitAPC(
 );
 
 // Mine laying truck
-static UnitTypeClass const UnitMineLayer(
+static const UnitTypeClass UnitMineLayer(
     UNIT_MINELAYER,
     TXT_MINE_LAYER,  // NAME:			Text name of this unit type.
     "MNLY",          // NAME:			Text name of this unit type.
@@ -496,7 +496,7 @@ static UnitTypeClass const UnitMineLayer(
 );
 
 // Convoy Truck
-static UnitTypeClass const UnitConvoyTruck(
+static const UnitTypeClass UnitConvoyTruck(
     UNIT_TRUCK,
     TXT_TRUCK,     // NAME:			Text name of this unit type.
     "TRUK",        // NAME:			Text name of this unit type.
@@ -556,7 +556,7 @@ Report=none
 */
 
 // Warrior ant
-static UnitTypeClass const UnitAnt1(
+static const UnitTypeClass UnitAnt1(
     UNIT_ANT1,
     TXT_NONE,        // NAME:			Text name of this unit type.
     "ANT1",          // NAME:			Text name of this unit type.
@@ -585,7 +585,7 @@ static UnitTypeClass const UnitAnt1(
     0,            // Turret center offset along body centerline.
     MISSION_HUNT  // ORDERS:		Default order to give new unit.
 );
-static UnitTypeClass const UnitAnt2(
+static const UnitTypeClass UnitAnt2(
     UNIT_ANT2,
     TXT_NONE,        // NAME:			Text name of this unit type.
     "ANT2",          // NAME:			Text name of this unit type.
@@ -614,7 +614,7 @@ static UnitTypeClass const UnitAnt2(
     0,            // Turret center offset along body centerline.
     MISSION_HUNT  // ORDERS:		Default order to give new unit.
 );
-static UnitTypeClass const UnitAnt3(
+static const UnitTypeClass UnitAnt3(
     UNIT_ANT3,
     TXT_NONE,        // NAME:			Text name of this unit type.
     "ANT3",          // NAME:			Text name of this unit type.
@@ -645,7 +645,7 @@ static UnitTypeClass const UnitAnt3(
 );
 
 // Chrono Tank
-static UnitTypeClass const UnitChrono(
+static const UnitTypeClass UnitChrono(
     UNIT_CHRONOTANK,
     TXT_CHRONOTANK,  // NAME:			Text name of this unit type.
     "CTNK",          // NAME:			Text name of this unit type.
@@ -676,7 +676,7 @@ static UnitTypeClass const UnitChrono(
 );
 
 // Tesla Tank
-static UnitTypeClass const UnitTesla(
+static const UnitTypeClass UnitTesla(
     UNIT_TESLATANK,
     TXT_TESLATANK,  // NAME:			Text name of this unit type.
     "TTNK",         // NAME:			Text name of this unit type.
@@ -707,7 +707,7 @@ static UnitTypeClass const UnitTesla(
 );
 
 // M.A.D. Tank
-static UnitTypeClass const UnitMAD(
+static const UnitTypeClass UnitMAD(
     UNIT_MAD,
     TXT_MAD,       // NAME:			Text name of this unit type.
     "QTNK",        // NAME:			Text name of this unit type.
@@ -738,7 +738,7 @@ static UnitTypeClass const UnitMAD(
 );
 
 // Demolition Truck
-static UnitTypeClass const UnitDemoTruck(
+static const UnitTypeClass UnitDemoTruck(
     UNIT_DEMOTRUCK,
     TXT_DEMOTRUCK,  // NAME:			Text name of this unit type.
     "DTRK",         // NAME:			Text name of this unit type.
@@ -767,7 +767,7 @@ static UnitTypeClass const UnitDemoTruck(
     0,             // Turret center offset along body centerline.
     MISSION_GUARD  // ORDERS:		Default order to give new unit.
 );
-static UnitTypeClass const UnitPhase(
+static const UnitTypeClass UnitPhase(
     UNIT_PHASE,
     TXT_PHASETRANSPORT,  // NAME:			Text name of this unit
                          // type.
@@ -817,7 +817,7 @@ static UnitTypeClass const UnitPhase(
  * HISTORY: * 06/20/1994 JLB : Created. *
  *=============================================================================================*/
 UnitTypeClass::UnitTypeClass(
-    UnitType type, int name, char const* ininame, AnimType exp, RemapType remap,
+    UnitType type, int name, const char* ininame, AnimType exp, RemapType remap,
     int verticaloffset, int primaryoffset, int primarylateral,
     int secondaryoffset, int secondarylateral, bool is_goodie, bool is_nominal,
     bool is_crusher, bool is_harvest, bool is_stealthy, bool is_insignificant,
@@ -952,7 +952,7 @@ void UnitTypeClass::Init_Heap() {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/02/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-UnitType UnitTypeClass::From_Name(char const* name) {
+UnitType UnitTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (UnitType classid = UNIT_FIRST; classid < UNIT_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
@@ -985,7 +985,7 @@ UnitType UnitTypeClass::From_Name(char const* name) {
 void UnitTypeClass::Display(int x, int y, WindowNumberType window,
                             HousesType) const {
   int shape = 0;
-  void const* ptr = Get_Cameo_Data();
+  const void* ptr = Get_Cameo_Data();
   if (ptr == nullptr) {
     ptr = Get_Image_Data();
     shape = Rotation / 6;
@@ -1037,7 +1037,7 @@ void UnitTypeClass::One_Time() {
     UnitTypeClass& uclass = As_Reference(index);
     CCFileClass file;
 
-    void const* ptr;  // Shape pointer and set pointer.
+    const void* ptr;  // Shape pointer and set pointer.
 
     int largest = 0;
     //		if (uclass.Level != -1) {
@@ -1057,7 +1057,7 @@ void UnitTypeClass::One_Time() {
       uclass.CameoData = MFCD::Retrieve(fullname);
     }
 #else
-    ((void const*&)uclass.CameoData) = MFCD::Retrieve(fullname);
+    ((const void*&)uclass.CameoData) = MFCD::Retrieve(fullname);
 #endif
     //		}
 

@@ -42,7 +42,7 @@ class AircraftClass : public FootClass, public FlyClass {
   void operator delete(void*);
   operator AircraftType() const { return Class->Type; }
   AircraftClass() : Class(nullptr) {}
-  AircraftClass(NoInitClass const& x)
+  AircraftClass(const NoInitClass& x)
       : FootClass(x),
         FlyClass(x),
         Class(Class),
@@ -75,7 +75,7 @@ class AircraftClass : public FootClass, public FlyClass {
   MoveType Can_Enter_Cell(CELL cell,
                           FacingType facing = FACING_NONE) const override;
   LayerType In_Which_Layer() const override;
-  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
   ActionType What_Action(ObjectClass* target) override;
   ActionType What_Action(CELL cell) const override;
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
@@ -104,7 +104,7 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   int Exit_Object(TechnoClass*) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
-  short const* Overlap_List() const override;
+  const short* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   void Set_Speed(int speed) override;
 
@@ -144,7 +144,7 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name() { return "AIRCRAFT"; }
+  static const char* INI_Name() { return "AIRCRAFT"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   void Code_Pointers() override;
@@ -154,7 +154,7 @@ class AircraftClass : public FootClass, public FlyClass {
   int Validate() const;
 
   // This is a pointer to the class control structure for the aircraft.
-  AircraftTypeClass const* const Class;
+  const AircraftTypeClass* const Class;
 
   /*
   **	This is the facing used for the body of the aircraft. Typically, this is

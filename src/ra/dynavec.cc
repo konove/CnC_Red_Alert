@@ -71,7 +71,7 @@ template class DynamicVectorClass<RemapControlType*>;
 template class DynamicVectorClass<BaseNodeClass>;
 template class DynamicVectorClass<char*>;
 template class DynamicVectorClass<unsigned char*>;
-template class DynamicVectorClass<char const*>;
+template class DynamicVectorClass<const char*>;
 template class DynamicVectorClass<void*>;
 
 #ifdef WINSOCK_IPX

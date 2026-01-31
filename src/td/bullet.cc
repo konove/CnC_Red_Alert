@@ -240,7 +240,7 @@ BulletClass::BulletClass(BulletType id)
  * HISTORY: * 06/20/1994 JLB : Created. * 01/05/1995 JLB : Handles projectiles
  *with altitude.                                       *
  *=============================================================================================*/
-short const* BulletClass::Occupy_List() const {
+const short* BulletClass::Occupy_List() const {
   Validate();
   switch (*this) {
     case BULLET_FLAME:
@@ -516,7 +516,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   **	If there is no shape loaded for this object, then
   **	it obviously can't be rendered -- just bail.
   */
-  void const* shapeptr = Class->Get_Image_Data();
+  const void* shapeptr = Class->Get_Image_Data();
   if (!shapeptr) return;
 
   /*

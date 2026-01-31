@@ -45,14 +45,14 @@
 
 class ThemeClass {
  private:
-  static char const* Theme_File_Name(ThemeType theme);
+  static const char* Theme_File_Name(ThemeType theme);
 
   int Current;        // Handle to current score.
   ThemeType Score;    // Score number currently being played.
   ThemeType Pending;  // Score to play next.
 
   typedef struct {
-    char const* Name;  // Filename of score.
+    const char* Name;  // Filename of score.
     int Fullname;      // Text number for full score name.
     int Scenario;      // Scenario when it first becomes available.
     int Duration;      // Duration of theme in seconds.
@@ -69,11 +69,11 @@ class ThemeClass {
  public:
   ThemeClass();
 
-  ThemeType From_Name(char const* name);
+  ThemeType From_Name(const char* name);
   int Track_Length(ThemeType index);
   int Max_Themes() { return THEME_COUNT; }
-  char const* Full_Name(ThemeType index) const;
-  char const* Base_Name(ThemeType index) const;
+  const char* Full_Name(ThemeType index) const;
+  const char* Base_Name(ThemeType index) const;
   void AI();
   void Queue_Song(ThemeType index);
   int Play_Song(ThemeType index);

@@ -119,7 +119,7 @@ void Pipe::Put_To(Pipe* pipe) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int Pipe::Put(void const* source, int length) {
+int Pipe::Put(const void* source, int length) {
   if (ChainTo != nullptr) {
     return ChainTo->Put(source, length);
   }

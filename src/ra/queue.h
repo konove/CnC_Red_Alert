@@ -111,7 +111,7 @@ class QueueClass {
   **	This will add an object to the tail of the line. If there is no more
   *room to add *	the object, then false will be returned.
   */
-  int Add(T const&);
+  int Add(const T&);
 
   int Get_Head();
   int Get_Tail();
@@ -181,7 +181,7 @@ void QueueClass<T, size>::Init() {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-int QueueClass<T, size>::Add(T const& q) {
+int QueueClass<T, size>::Add(const T& q) {
   if (Count < size) {
     Array[Tail] = q;
     Tail = Tail + 1 & size - 1;

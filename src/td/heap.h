@@ -70,7 +70,7 @@ class FixedHeapClass {
   FixedHeapClass(int size);
   virtual ~FixedHeapClass();
 
-  virtual int ID(void const* pointer);
+  virtual int ID(const void* pointer);
   int Count() { return ActiveCount; }
   int Length() { return TotalCount; }
   int Avail() { return TotalCount - ActiveCount; }
@@ -82,7 +82,9 @@ class FixedHeapClass {
   virtual int Free_All();
 
  protected:
-  void* operator[](int index) { return static_cast<char*>(Buffer) + index * Size; }
+  void* operator[](int index) {
+    return static_cast<char*>(Buffer) + index * Size;
+  }
 
   /*
   **	If the memory block buffer was allocated by this class, then this flag
@@ -118,10 +120,10 @@ class FixedHeapClass {
 
  private:
   // The assignment operator is not supported.
-  FixedHeapClass& operator=(FixedHeapClass const&);
+  FixedHeapClass& operator=(const FixedHeapClass&);
 
   // The copy constructor is not supported.
-  FixedHeapClass(FixedHeapClass const&);
+  FixedHeapClass(const FixedHeapClass&);
 };
 
 /**************************************************************************
@@ -135,13 +137,15 @@ class TFixedHeapClass : public FixedHeapClass {
   TFixedHeapClass() : FixedHeapClass(sizeof(T)) {}
   ~TFixedHeapClass() override = default;
 
-  virtual int ID(T const* pointer) { return FixedHeapClass::ID(pointer); }
+  virtual int ID(const T* pointer) { return FixedHeapClass::ID(pointer); }
 
   virtual T* Alloc() { return static_cast<T*>(FixedHeapClass::Allocate()); }
   virtual int Free(T* pointer) { return FixedHeapClass::Free(pointer); }
 
  protected:
-  T& operator[](int index) { return *(static_cast<char*>(Buffer) + index * Size); }
+  T& operator[](int index) {
+    return *(static_cast<char*>(Buffer) + index * Size);
+  }
 };
 
 /**************************************************************************
@@ -183,7 +187,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
   TFixedIHeapClass() : FixedIHeapClass(sizeof(T)) {}
   ~TFixedIHeapClass() override = default;
 
-  virtual int ID(T const* pointer) { return FixedIHeapClass::ID(pointer); }
+  virtual int ID(const T* pointer) { return FixedIHeapClass::ID(pointer); }
   virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
   virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   int Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }

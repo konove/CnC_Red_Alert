@@ -63,12 +63,12 @@ class ColorListClass : public ListClass {
   } SelectStyleType;
 
   ColorListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                 void const* up, void const* down);
+                 const void* up, const void* down);
   ~ColorListClass() override;
 
-  virtual int Add_Item(char const* text, char color = WHITE);
+  virtual int Add_Item(const char* text, char color = WHITE);
   virtual int Add_Item(int text, char color = WHITE);
-  void Remove_Item(char const* text) override;
+  void Remove_Item(const char* text) override;
 
   virtual void Set_Selected_Style(SelectStyleType style, int color = -1);
 

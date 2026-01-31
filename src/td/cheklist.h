@@ -54,7 +54,7 @@ class CheckListClass : public ListClass {
   Constructor/Destructor
   ---------------------------------------------------------------------*/
   CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                 void const* up, void const* down);
+                 const void* up, const void* down);
   ~CheckListClass() override {}
 
   /*---------------------------------------------------------------------

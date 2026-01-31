@@ -48,7 +48,7 @@
 class CarryoverClass : public LinkClass {
  public:
   CarryoverClass(TechnoClass* techno = nullptr);
-  CarryoverClass(NoInitClass const& x) : LinkClass(x) {}
+  CarryoverClass(const NoInitClass& x) : LinkClass(x) {}
 
   bool Create() const;
 

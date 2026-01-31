@@ -73,12 +73,15 @@ void Socket_Select() {
 
   if (ready) {
     for (auto& sock : Sockets) {
-      if (FD_ISSET(sock.socket, &read_set))
+      if (FD_ISSET(sock.socket, &read_set)) {
         sock.callback(sock.socket, SOCKEV_READ, sock.data);
-      if (FD_ISSET(sock.socket, &write_set))
+      }
+      if (FD_ISSET(sock.socket, &write_set)) {
         sock.callback(sock.socket, SOCKEV_WRITE, sock.data);
-      if (FD_ISSET(sock.socket, &err_set))
+      }
+      if (FD_ISSET(sock.socket, &err_set)) {
         sock.callback(sock.socket, SOCKEV_ERROR, sock.data);
+      }
     }
   }
 }

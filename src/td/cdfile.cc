@@ -75,7 +75,7 @@ int __cdecl Is_Disk_Inserted(int disk) {
   return ret;
 }
 
-CDFileClass::CDFileClass(char const* filename) : IsDisabled(false) {
+CDFileClass::CDFileClass(const char* filename) : IsDisabled(false) {
   Set_Name(filename);
   memset(RawPath, 0, sizeof(RawPath));
 }
@@ -176,7 +176,7 @@ int CDFileClass::Set_Search_Drives(char* pathlist) {
     port::SafeAppend(RawPath, pathlist);
   }
 
-  char const* ptr = strtok(pathlist, ";");
+  const char* ptr = strtok(pathlist, ";");
   while (ptr) {
     if (strlen(ptr)) {
       char path[PATH_MAX];  // Working path buffer.
@@ -352,7 +352,7 @@ void CDFileClass::Clear_Search_Drives() {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-char const* CDFileClass::Set_Name(char const* filename) {
+const char* CDFileClass::Set_Name(const char* filename) {
   /*
   **	Try to find the file in the current directory first. If it can be found,
   *then *	just return with the normal file name setting process. Do the
@@ -430,7 +430,7 @@ char const* CDFileClass::Set_Name(char const* filename) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(char const* filename, int rights) {
+int CDFileClass::Open(const char* filename, int rights) {
   Close();
 
   /*

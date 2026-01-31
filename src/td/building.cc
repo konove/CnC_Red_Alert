@@ -184,7 +184,7 @@ enum SAMState {
 /***************************************************************************
 **	Center of building offset table.
 */
-COORDINATE const BuildingClass::CenterOffset[BSIZE_COUNT] = {
+const COORDINATE BuildingClass::CenterOffset[BSIZE_COUNT] = {
     0x00800080L, 0x008000FFL, 0x00FF0080L, 0x00FF00FFL,
     0x018000FFL, 0x00FF0180L, 0x01800180L,
 
@@ -272,14 +272,14 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
       switch (Class->Type) {
         case STRUCT_AIRSTRIP:
           if (from->What_Am_I() == RTTI_AIRCRAFT &&
-              *dynamic_cast<AircraftClass const *>(from) == AIRCRAFT_CARGO) {
+              *dynamic_cast<const AircraftClass *>(from) == AIRCRAFT_CARGO) {
             return RADIO_ROGER;
           }
           break;
 
         case STRUCT_HELIPAD:
           if (from->What_Am_I() == RTTI_AIRCRAFT &&
-              !dynamic_cast<AircraftClass const *>(from)->Class->IsFixedWing) {
+              !dynamic_cast<const AircraftClass *>(from)->Class->IsFixedWing) {
             return RADIO_ROGER;
           }
           break;
@@ -575,7 +575,7 @@ void BuildingClass::Debug_Dump(MonoClass *mono) const {
  *=============================================================================================*/
 void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  void const *shapefile;  // Pointer to loaded shape file.
+  const void *shapefile;  // Pointer to loaded shape file.
   int shapenum;
 
   shapenum = Fetch_Stage();
@@ -775,8 +775,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
 bool BuildingClass::Mark(MarkType mark) {
   Validate();
   if (TechnoClass::Mark(mark)) {
-    short const *offset = Overlap_List();
-    short const *occupy = Occupy_List();
+    const short *offset = Overlap_List();
+    const short *occupy = Occupy_List();
     CELL cell = Coord_Cell(Coord);
     SmudgeType bib;
 
@@ -876,7 +876,7 @@ bool BuildingClass::Mark(MarkType mark) {
 BulletClass *BuildingClass::Fire_At(TARGET target, int which) {
   Validate();
   BulletClass *bullet;  // Projectile.
-  WeaponTypeClass const *weapon =
+  const WeaponTypeClass *weapon =
       which == 0 ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 
   bullet = TechnoClass::Fire_At(target, which);
@@ -979,7 +979,7 @@ void BuildingClass::AI() {
       **	Check for animation end or if special case of MCV deconstructing
       *when it is allowed *	to convert back into an MCV.
       */
-      BuildingTypeClass::AnimControlType const *ctrl = Fetch_Anim_Control();
+      const BuildingTypeClass::AnimControlType *ctrl = Fetch_Anim_Control();
 
       /*
       **	When the last frame of the current animation sequence is
@@ -1025,7 +1025,7 @@ void BuildingClass::AI() {
   *pending mission.
   */
   if (toloop) {
-    BuildingTypeClass::AnimControlType const *ctrl = Fetch_Anim_Control();
+    const BuildingTypeClass::AnimControlType *ctrl = Fetch_Anim_Control();
     if (BState == BSTATE_CONSTRUCTION || BState == BSTATE_IDLE) {
       Set_Rate(Options.Normalize_Delay(ctrl->Rate));
     } else {
@@ -1092,7 +1092,7 @@ void BuildingClass::AI() {
   if (QueueBState != BSTATE_NONE) {
     if (BState != QueueBState) {
       BState = QueueBState;
-      BuildingTypeClass::AnimControlType const *ctrl = Fetch_Anim_Control();
+      const BuildingTypeClass::AnimControlType *ctrl = Fetch_Anim_Control();
       if (BState == BSTATE_CONSTRUCTION || BState == BSTATE_IDLE) {
         Set_Rate(Options.Normalize_Delay(ctrl->Rate));
       } else {
@@ -1268,7 +1268,7 @@ void BuildingClass::AI() {
         *starting it.
         */
         if (House->IsStarted && House->Available_Money() > 10) {
-          TechnoTypeClass const *techno =
+          const TechnoTypeClass *techno =
               House->Suggest_New_Object(Class->ToBuild);
 
           /*
@@ -1512,7 +1512,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
   if (this != source) {
     if (source) Base_Is_Attacked(source);
 
-    short const *offset = Occupy_List();
+    const short *offset = Occupy_List();
 
     /*
     **	SPECIAL CASE:
@@ -1885,7 +1885,7 @@ BuildingClass::~BuildingClass() {
  *=============================================================================================*/
 void BuildingClass::Drop_Debris(TARGET source) {
   Validate();
-  CELL const *offset;
+  const CELL *offset;
   CELL cell;
 
   /*
@@ -2116,8 +2116,8 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
   Validate();
   if (!base) return 0;
 
-  TechnoTypeClass const *ttype =
-      dynamic_cast<TechnoTypeClass const *>(&base->Class_Of());
+  const TechnoTypeClass *ttype =
+      dynamic_cast<const TechnoTypeClass *>(&base->Class_Of());
 
   /*
   **	A unit exiting a building is always considered to be "locked". That
@@ -2227,7 +2227,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
           if (cell) found = true;
 
 #ifdef OBSOLETE
-          CELL const *ptr;
+          const CELL *ptr;
           bool found = false;
 
           ptr = Class->ExitList;
@@ -2951,7 +2951,7 @@ void BuildingClass::Begin_Mode(BStateType bstate) {
   if (BState == BSTATE_NONE || bstate == BSTATE_CONSTRUCTION || ScenarioInit) {
     BState = bstate;
     QueueBState = BSTATE_NONE;
-    BuildingTypeClass::AnimControlType const *ctrl = Fetch_Anim_Control();
+    const BuildingTypeClass::AnimControlType *ctrl = Fetch_Anim_Control();
 
     int rate = ctrl->Rate;
     if (Class->IsRegulated && bstate != BSTATE_CONSTRUCTION) {
@@ -4497,7 +4497,7 @@ int BuildingClass::Pip_Count() const {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Death_Announcement(TechnoClass const *) const {
+void BuildingClass::Death_Announcement(const TechnoClass *) const {
   Validate();
   if (IsDiscoveredByPlayer || IsOwnedByPlayer) {
     if (House != PlayerPtr && GameToPlay != GAME_NORMAL) {
@@ -4565,7 +4565,7 @@ DirType BuildingClass::Fire_Direction() const {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void const *BuildingClass::Remap_Table() {
+const void *BuildingClass::Remap_Table() {
   Validate();
   return House->Remap_Table(IsBlushing, false);
 }
@@ -4861,7 +4861,7 @@ bool BuildingClass::Flush_For_Placement(TechnoClass *techno, CELL cell) {
   Validate();
   bool again = false;
   if (techno && cell > 0) {
-    short const *list = techno->Class_Of().Occupy_List(true);
+    const short *list = techno->Class_Of().Occupy_List(true);
 
     while (*list != REFRESH_EOL) {
       CELL newcell = cell + *list++;
@@ -4889,8 +4889,8 @@ void BuildingClass::Hidden() {
   TechnoClass::Hidden();
 }
 
-CELL BuildingClass::Find_Exit_Cell(TechnoClass const *techno) const {
-  CELL const *ptr;
+CELL BuildingClass::Find_Exit_Cell(const TechnoClass *techno) const {
+  const CELL *ptr;
   CELL origin = Coord_Cell(Coord);
 
   ptr = Class->ExitList;
@@ -4941,7 +4941,7 @@ bool BuildingClass::Passes_Proximity_Check(CELL homecell) {
   *adjacent *	cells to these are of friendly persuasion, then consider the
   *proximity check to *	have been a success.
   */
-  short const *ptr = Occupy_List(true);
+  const short *ptr = Occupy_List(true);
   while (*ptr != REFRESH_EOL) {
     CELL cell = homecell + *ptr++;
 

@@ -65,7 +65,7 @@ class DynamicVectorClass : public VectorClass<T> {
 // Implementation details only below here
 
 template <class T>
-DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T const* array)
+DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, const T* array)
     : VectorClass<T>(size, array) {
   GrowthStep = 10;
   ActiveCount = 0;
@@ -73,7 +73,7 @@ DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T const* array)
 
 // Resizes capacity. Truncates ActiveCount if new size is smaller.
 template <class T>
-bool DynamicVectorClass<T>::Resize(base::ssize newsize, T const* array) {
+bool DynamicVectorClass<T>::Resize(base::ssize newsize, const T* array) {
   if (VectorClass<T>::Resize(newsize, array)) {
     if (this->Length() < ActiveCount) {
       ActiveCount = this->Length();
@@ -86,7 +86,7 @@ bool DynamicVectorClass<T>::Resize(base::ssize newsize, T const* array) {
 // Appends object to end. Auto-grows if needed and allowed. Returns true on
 // success.
 template <class T>
-bool DynamicVectorClass<T>::Add(T const& object) {
+bool DynamicVectorClass<T>::Add(const T& object) {
   if (ActiveCount >= this->Length()) {
     if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
       if (!Resize(this->Length() + GrowthStep)) {
@@ -103,7 +103,7 @@ bool DynamicVectorClass<T>::Add(T const& object) {
 // Inserts object at index 0, shifting existing elements. Returns true on
 // success.
 template <class T>
-bool DynamicVectorClass<T>::Add_Head(T const& object) {
+bool DynamicVectorClass<T>::Add_Head(const T& object) {
   if (ActiveCount >= this->Length()) {
     if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
       if (!Resize(this->Length() + GrowthStep)) {

@@ -163,9 +163,9 @@
 **	Selected objects have a special marking box around them. This is the
 *shapes that are *	used for this purpose.
 */
-void const* ObjectTypeClass::SelectShapes = nullptr;
+const void* ObjectTypeClass::SelectShapes = nullptr;
 
-void const* ObjectTypeClass::PipShapes = nullptr;
+const void* ObjectTypeClass::PipShapes = nullptr;
 
 /***********************************************************************************************
  * ObjectClass::ObjectClass -- Default constructor for objects. *
@@ -213,7 +213,7 @@ ObjectClass::ObjectClass(RTTIType rtti, int id)
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-void const* ObjectClass::Get_Image_Data() const {
+const void* ObjectClass::Get_Image_Data() const {
   return Class_Of().Get_Image_Data();
 }
 
@@ -232,7 +232,7 @@ void const* ObjectClass::Get_Image_Data() const {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-char const* ObjectClass::Name() const { return Class_Of().Name(); }
+const char* ObjectClass::Name() const { return Class_Of().Name(); }
 
 /***********************************************************************************************
  * ObjectClass::Exit_Coord -- Return with the exit coordinate for this object. *
@@ -327,7 +327,7 @@ void ObjectClass::AI() {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(ObjectClass const*) const {
+ActionType ObjectClass::What_Action(const ObjectClass*) const {
   assert(IsActive);
 
   return ACTION_NONE;
@@ -1102,7 +1102,7 @@ bool ObjectClass::Select() {
       Unselect_All();
     }
   }
-  if (dynamic_cast<TechnoTypeClass const&>(Class_Of()).IsLeader) {
+  if (dynamic_cast<const TechnoTypeClass&>(Class_Of()).IsLeader) {
     CurrentObject.Add_Head(this);
   } else {
     CurrentObject.Add(this);
@@ -1810,10 +1810,10 @@ bool ObjectClass::Attach_Trigger(TriggerClass* trigger) {
 }
 
 // These can't be made inline (for various reasons).
-short const* ObjectClass::Occupy_List(bool placement) const {
+const short* ObjectClass::Occupy_List(bool placement) const {
   return Class_Of().Occupy_List(placement);
 };
-short const* ObjectClass::Overlap_List(bool) const {
+const short* ObjectClass::Overlap_List(bool) const {
   return Class_Of().Overlap_List();
 };
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
@@ -1849,7 +1849,7 @@ ObjectTypeClass::ObjectTypeClass(RTTIType rtti, int id, bool is_sentient,
                                  bool is_stealthy, bool is_selectable,
                                  bool is_legal_target, bool is_insignificant,
                                  bool is_immune, bool is_footprint, int name,
-                                 char const* ini)
+                                 const char* ini)
     : AbstractTypeClass(rtti, id, name, ini),
       IsCrushable(false),
       IsStealthy(is_stealthy),
@@ -1987,7 +1987,7 @@ int ObjectTypeClass::Time_To_Build() const { return 0; }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void const* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
+const void* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
 
 /***********************************************************************************************
  * ObjectTypeClass::Occupy_List -- Returns with simple occupation list for
@@ -2006,8 +2006,8 @@ void const* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-short const* ObjectTypeClass::Occupy_List(bool) const {
-  static short const _list[] = {0, REFRESH_EOL};
+const short* ObjectTypeClass::Occupy_List(bool) const {
+  static const short _list[] = {0, REFRESH_EOL};
   return _list;
 }
 
@@ -2029,8 +2029,8 @@ short const* ObjectTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-short const* ObjectTypeClass::Overlap_List() const {
-  static short const _list[] = {REFRESH_EOL};
+const short* ObjectTypeClass::Overlap_List() const {
+  static const short _list[] = {REFRESH_EOL};
   return _list;
 }
 

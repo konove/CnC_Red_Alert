@@ -84,7 +84,7 @@ extern int ControlQ;
 
 unsigned char CountryRemap[256];
 #ifdef OBSOLETE
-unsigned char const High16Remap[256] = {
+const unsigned char High16Remap[256] = {
     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB,
     0xFC, 0xFD, 0xFE, 0xFF, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7,
     0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF, 0xF0, 0xF1, 0xF2, 0xF3,
@@ -481,23 +481,23 @@ void Map_Selection() {
   int house = PlayerPtr->Class->House;
   int attackxcoord = 0;
 
-  static int const _countryx[] = {195, 217, 115, 167, 244, 97, 130, 142, 171,
+  static const int _countryx[] = {195, 217, 115, 167, 244, 97, 130, 142, 171,
                                   170, 139, 158, 180, 207, 177, 213, 201, 198,
                                   /* Nod countries */
                                   69, 82, 105, 119, 184, 149, 187, 130, 153,
                                   124, 162, 144, 145, 164, 166, 200, 201};
-  static int const _countryy[] = {35, 57, 82, 75, 93, 111, 108, 91, 100, 111,
+  static const int _countryy[] = {35, 57, 82, 75, 93, 111, 108, 91, 100, 111,
                                   120, 136, 136, 117, 158, 143, 167, 21,
                                   /* Nod countries */
                                   45, 80, 75, 76, 31, 64, 69, 89, 88, 106, 115,
                                   139, 168, 164, 183, 123, 154};
-  static char const _greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
+  static const char _greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
                                    0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
                                    0x44, 0x44, 0x44, 0x44};
-  static char const _othergreenpal[] = {0,    0x21, 0x22, 0x23, 0x24, 0x25,
+  static const char _othergreenpal[] = {0,    0x21, 0x22, 0x23, 0x24, 0x25,
                                         0x26, 0x26, 0x26, 0x26, 0x26, 0x26,
                                         0x26, 0x26, 0x26, 0x26};
-  static char const _regpal[] = {0, 1, 2,  3,  4,  5,  6,  7,
+  static const char _regpal[] = {0, 1, 2,  3,  4,  5,  6,  7,
                                  8, 9, 10, 11, 12, 13, 14, 15};
   GraphicBufferClass backpage(20 * 6, 8);
 
@@ -573,19 +573,19 @@ void Map_Selection() {
                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
   }
 
-  void const* appear1 = MixFileClass::Retrieve("APPEAR1.AUD");
-  void const* sfx4 = MixFileClass::Retrieve("SFX4.AUD");
-  void const* text2 = MixFileClass::Retrieve("TEXT2.AUD");
-  void const* target1 = MixFileClass::Retrieve("TARGET1.AUD");
-  void const* target2 = MixFileClass::Retrieve("TARGET2.AUD");
+  const void* appear1 = MixFileClass::Retrieve("APPEAR1.AUD");
+  const void* sfx4 = MixFileClass::Retrieve("SFX4.AUD");
+  const void* text2 = MixFileClass::Retrieve("TEXT2.AUD");
+  const void* target1 = MixFileClass::Retrieve("TARGET1.AUD");
+  const void* target2 = MixFileClass::Retrieve("TARGET2.AUD");
   //	void const * target3 = MixFileClass::Retrieve("TARGET3.AUD");
-  void const* newtarg1 = MixFileClass::Retrieve("NEWTARG1.AUD");
-  void const* beepy2 = MixFileClass::Retrieve("BEEPY2.AUD");
-  void const* beepy3 = MixFileClass::Retrieve("BEEPY3.AUD");
-  void const* beepy6 = MixFileClass::Retrieve("BEEPY6.AUD");
-  void const* world2 = MixFileClass::Retrieve("WORLD2.AUD");
-  void const* country1 = MixFileClass::Retrieve("COUNTRY1.AUD");
-  void const* scold1 = MixFileClass::Retrieve("SCOLD1.AUD");
+  const void* newtarg1 = MixFileClass::Retrieve("NEWTARG1.AUD");
+  const void* beepy2 = MixFileClass::Retrieve("BEEPY2.AUD");
+  const void* beepy3 = MixFileClass::Retrieve("BEEPY3.AUD");
+  const void* beepy6 = MixFileClass::Retrieve("BEEPY6.AUD");
+  const void* world2 = MixFileClass::Retrieve("WORLD2.AUD");
+  const void* country1 = MixFileClass::Retrieve("COUNTRY1.AUD");
+  const void* scold1 = MixFileClass::Retrieve("SCOLD1.AUD");
 
   SysMemPage.Clear();
   PseudoSeenBuff->Clear();
@@ -1111,7 +1111,7 @@ void Map_Selection() {
     /*
     ** Now it's time to highlight the country we're going to.
     */
-    void const* countryshape = MixFileClass::Retrieve(
+    const void* countryshape = MixFileClass::Retrieve(
         house == HOUSE_GOOD ? "COUNTRYE.SHP" : "COUNTRYA.SHP");
 
     Hide_Mouse();
@@ -1223,14 +1223,14 @@ void Map_Selection() {
 void Print_Statistics(int country, int xpos, int ypos) {
   int index, newx;
   void* oldfont;
-  static int const _gdistatnames[] = {
+  static const int _gdistatnames[] = {
       TXT_MAP_GDISTAT0, TXT_MAP_GDISTAT1, TXT_MAP_GDISTAT2, TXT_MAP_GDISTAT3,
       TXT_MAP_GDISTAT4, TXT_MAP_GDISTAT5, TXT_MAP_GDISTAT6};
-  static int const _nodstatnames[] = {
+  static const int _nodstatnames[] = {
       TXT_MAP_GDISTAT0, TXT_MAP_NODSTAT0, TXT_MAP_GDISTAT2,
       TXT_MAP_GDISTAT3, TXT_MAP_NODSTAT1, TXT_MAP_NODSTAT2,
       TXT_MAP_GDISTAT5, TXT_MAP_NODSTAT3, TXT_MAP_NODSTAT4};
-  static int const _countryname[] = {
+  static const int _countryname[] = {
       TXT_MAP_COUNTRYNAME0,  TXT_MAP_COUNTRYNAME1,  TXT_MAP_COUNTRYNAME2,
       TXT_MAP_COUNTRYNAME3,  TXT_MAP_COUNTRYNAME4,  TXT_MAP_COUNTRYNAME5,
       TXT_MAP_COUNTRYNAME6,  TXT_MAP_COUNTRYNAME7,  TXT_MAP_COUNTRYNAME8,
@@ -1244,17 +1244,17 @@ void Print_Statistics(int country, int xpos, int ypos) {
       TXT_MAP_COUNTRYNAME30, TXT_MAP_COUNTRYNAME31, TXT_MAP_COUNTRYNAME32,
       TXT_MAP_COUNTRYNAME33, TXT_MAP_COUNTRYNAME34};
 
-  static int const _govtnames[] = {
+  static const int _govtnames[] = {
       TXT_MAP_GOVT0, TXT_MAP_GOVT1, TXT_MAP_GOVT2,  TXT_MAP_GOVT3,
       TXT_MAP_GOVT4, TXT_MAP_GOVT5, TXT_MAP_GOVT6,  TXT_MAP_GOVT7,
       TXT_MAP_GOVT8, TXT_MAP_GOVT9, TXT_MAP_GOVT10, TXT_MAP_GOVT11};
-  static int const _armynames[] = {TXT_MAP_ARMY0, TXT_MAP_ARMY1, TXT_MAP_ARMY2,
+  static const int _armynames[] = {TXT_MAP_ARMY0, TXT_MAP_ARMY1, TXT_MAP_ARMY2,
                                    TXT_MAP_ARMY3, TXT_MAP_ARMY4, TXT_MAP_ARMY5};
-  static int const _military[] = {TXT_MAP_MILITARY0, TXT_MAP_MILITARY1,
+  static const int _military[] = {TXT_MAP_MILITARY0, TXT_MAP_MILITARY1,
                                   TXT_MAP_MILITARY2, TXT_MAP_MILITARY3,
                                   TXT_MAP_MILITARY4};
 
-  static char const _greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
+  static const char _greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
                                    0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
                                    0x44, 0x44, 0x44, 0x44};
   // static char const

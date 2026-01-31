@@ -20,7 +20,7 @@
 void Focus_Loss();
 void Focus_Restore();
 
-void WWDebugString(char const* /*string*/) {}
+void WWDebugString(const char* /*string*/) {}
 
 void Check_For_Focus_Loss() {
   if (!GameInFocus) {

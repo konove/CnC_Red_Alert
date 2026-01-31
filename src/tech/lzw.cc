@@ -51,7 +51,7 @@ void LZWEngine::Reset() {
   }
 }
 
-int LZWEngine::Compress(Buffer const& input, Buffer const& output) {
+int LZWEngine::Compress(const Buffer& input, const Buffer& output) {
   BufferStraw instraw(input);
   BufferPipe outpipe(output);
 
@@ -121,7 +121,7 @@ int LZWEngine::Compress(Buffer const& input, Buffer const& output) {
   return outcount;
 }
 
-int LZWEngine::Uncompress(Buffer const& input, Buffer const& output) {
+int LZWEngine::Uncompress(const Buffer& input, const Buffer& output) {
   int outcount = 0;
   BufferStraw instraw(input);
   BufferPipe outpipe(output);
@@ -177,7 +177,8 @@ int LZWEngine::Uncompress(Buffer const& input, Buffer const& output) {
 }
 
 int LZWEngine::Make_LZW_Hash(CodeType code, char character) {
-  return static_cast<int>((unsigned char)character) << (BITS - 8) ^ static_cast<int>(code);
+  return static_cast<int>((unsigned char)character) << (BITS - 8) ^
+         static_cast<int>(code);
 }
 
 int LZWEngine::Find_Child_Node(CodeType parent_code, char child_character) {
@@ -242,12 +243,12 @@ int LZWEngine::Decode_String(char* ptr, CodeType code) {
   return count;
 }
 
-int LZW_Uncompress(Buffer const& inbuff, Buffer const& outbuff) {
+int LZW_Uncompress(const Buffer& inbuff, const Buffer& outbuff) {
   LZWEngine lzw;
   return lzw.Uncompress(inbuff, outbuff);
 }
 
-int LZW_Compress(Buffer const& inbuff, Buffer const& outbuff) {
+int LZW_Compress(const Buffer& inbuff, const Buffer& outbuff) {
   LZWEngine lzw;
   return lzw.Compress(inbuff, outbuff);
 }

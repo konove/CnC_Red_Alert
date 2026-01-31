@@ -78,7 +78,7 @@ TFixedIHeapClass<WeaponTypeClass> Weapons;
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-WeaponTypeClass::WeaponTypeClass(char const* name)
+WeaponTypeClass::WeaponTypeClass(const char* name)
     : ID(Weapons.ID(this)),
       IniName(name),
       IsSupressed(false),
@@ -254,7 +254,7 @@ bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-WeaponType Weapon_From_Name(char const* name) {
+WeaponType Weapon_From_Name(const char* name) {
   if (!name) return WEAPON_NONE;
 
   for (int index = 0; index < Weapons.Count(); index++) {
@@ -281,7 +281,7 @@ WeaponType Weapon_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-ArmorType Armor_From_Name(char const* name) {
+ArmorType Armor_From_Name(const char* name) {
   if (!name) return ARMOR_NONE;
 
   for (ArmorType index = ARMOR_FIRST; index < ARMOR_COUNT; index++) {

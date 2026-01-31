@@ -71,7 +71,7 @@ IPXGetConnectionNumber95Type IPX_Get_Connection_Number95 = nullptr;
 IPXGetLocalTarget95 IPX_Get_Local_Target95 = nullptr;
 //}
 
-char const* FunctionNames[] = {"_IPX_Initialise",
+const char* FunctionNames[] = {"_IPX_Initialise",
                                "_IPX_Get_Outstanding_Buffer95",
                                "_IPX_Shut_Down95",
                                "_IPX_Send_Packet95",

@@ -86,7 +86,7 @@
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Should_Save() const {
-  static CellClass const _identity_cell;
+  static const CellClass _identity_cell;
 
   return memcmp(&_identity_cell, this, sizeof(*this)) != 0;
 }
@@ -324,7 +324,7 @@ bool MouseClass::Save(Pipe& file) const {
   **	Count how many cells will be saved.
   */
   int count = 0;
-  CellClass const* cellptr = &(*this)[static_cast<CELL>(0)];
+  const CellClass* cellptr = &(*this)[static_cast<CELL>(0)];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if (cellptr->Should_Save()) {
       count++;

@@ -246,8 +246,8 @@ int LoadOptionsClass::Process() {
   char game_descr[40] = {0};  // save-game description
   char fname[13];             // for generating filename to delete
 
-  void const* up_button;
-  void const* down_button;
+  const void* up_button;
+  const void* down_button;
 
   if (InMainLoop || factor == 1) {
     up_button = Hires_Retrieve("BTN-UP.SHP");

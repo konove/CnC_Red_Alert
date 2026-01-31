@@ -45,7 +45,7 @@
 #include "td/defines.h"
 #include "td/type.h"
 
-char const* SourceName[SOURCE_COUNT] = {
+const char* SourceName[SOURCE_COUNT] = {
     "North", "East",    "South",     "West",     "Shipping", "Beach",
     "Air",   "Visible", "EnemyBase", "HomeBase", "Ocean",
 };
@@ -55,7 +55,7 @@ char const* SourceName[SOURCE_COUNT] = {
 **	of the legal positions that an object in a cell may stop at. Only
 *infantry *	are allowed to stop at other than the center of the cell.
 */
-COORDINATE const StoppingCoordAbs[5] = {
+const COORDINATE StoppingCoordAbs[5] = {
     0x00800080L,  // center
     0x00400040L,  // upper left
     0x004000C0L,  // upper right
@@ -68,7 +68,7 @@ COORDINATE const StoppingCoordAbs[5] = {
 **
 **	bullet type				dmg,	rof,	range,	sound
 */
-WeaponTypeClass const Weapons[WEAPON_COUNT] = {
+const WeaponTypeClass Weapons[WEAPON_COUNT] = {
     {BULLET_SNIPER, 125, 40, 0x0580, VOC_SNIPER,
      ANIM_NONE},  //	WEAPON_RIFLE
     {BULLET_SPREADFIRE, 25, 50, 0x0400, VOC_MINI,
@@ -117,7 +117,7 @@ WeaponTypeClass const Weapons[WEAPON_COUNT] = {
 *defense table}
 **           -vs- {none, wood, aluminum, steel, concrete}
 */
-WarheadTypeClass const Warheads[WARHEAD_COUNT] = {
+const WarheadTypeClass Warheads[WARHEAD_COUNT] = {
     {2,
      false,
      false,
@@ -188,7 +188,7 @@ WarheadTypeClass const Warheads[WARHEAD_COUNT] = {
 *cell) *	value. This is used to convert pixel (screen) coordinates into
 *the underlying *	coordinate system.
 */
-unsigned char const Pixel2Lepton[24] = {
+const unsigned char Pixel2Lepton[24] = {
     0x00, 0x0B, 0x15, 0x20, 0x2B, 0x35, 0x40, 0x4B, 0x55, 0x60, 0x6B, 0x75,
     0x80, 0x8B, 0x95, 0xA0, 0xAB, 0xB5, 0xC0, 0xCB, 0xD5, 0xE0, 0xEB, 0xF5};
 
@@ -197,7 +197,7 @@ unsigned char const Pixel2Lepton[24] = {
 **	offset that, when added to another cell, will achieve the adjacent cell
 **	in the indexed direction.
 */
-CELL const AdjacentCell[FACING_COUNT] = {
+const CELL AdjacentCell[FACING_COUNT] = {
     -(MAP_CELL_W),      // North
     -(MAP_CELL_W - 1),  // North East
     1,                  // East
@@ -208,7 +208,7 @@ CELL const AdjacentCell[FACING_COUNT] = {
     -(MAP_CELL_W + 1)   // North West
 };
 
-COORDINATE const AdjacentCoord[FACING_COUNT] = {
+const COORDINATE AdjacentCoord[FACING_COUNT] = {
     0xFF000000L, 0xFF000100L, 0x00000100L, 0x01000100L,
     0x01000000L, 0x0100FF00L, 0x0000FF00L, 0xFF00FF00L};
 
@@ -218,7 +218,7 @@ COORDINATE const AdjacentCoord[FACING_COUNT] = {
 **	be converted to the CLOSEST appropriate facing, NOT rounded down to the
 **	nearest facing.
 */
-unsigned char const Facing8[256] = {
+const unsigned char Facing8[256] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -232,7 +232,7 @@ unsigned char const Facing8[256] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 #ifdef NEVER
-unsigned char const Facing16[256] = {
+const unsigned char Facing16[256] = {
     0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
     1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
     2,  2,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  4,
@@ -253,7 +253,7 @@ unsigned char const Facing16[256] = {
 **	This table incorporates a compensating factor for the distortion caused
 **	by 3D-Studio when it tries to render 45% angles.
 */
-unsigned char const Facing32[256] = {
+const unsigned char Facing32[256] = {
     0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,
     2,  2,  2,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  4,  4,  4,  4,  4,
     4,  5,  5,  5,  5,  5,  5,  5,  6,  6,  6,  6,  6,  6,  6,  7,  7,  7,  7,
@@ -270,7 +270,7 @@ unsigned char const Facing32[256] = {
     31, 31, 31, 0,  0,  0,  0,  0,  0};
 
 #ifdef OBSOLETE
-unsigned char const Facing32[256] = {
+const unsigned char Facing32[256] = {
     0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,
     2,  3,  3,  3,  3,  3,  3,  3,  3,  4,  4,  4,  4,  4,  4,  4,  4,  5,  5,
     5,  5,  5,  5,  5,  5,  6,  6,  6,  6,  6,  6,  6,  6,  7,  7,  7,  7,  7,
@@ -321,7 +321,7 @@ GroundType Ground[LAND_COUNT] = {
 /***************************************************************************
 **	These are the names of the theaters.
 */
-TheaterDataType const Theaters[THEATER_COUNT] = {
+const TheaterDataType Theaters[THEATER_COUNT] = {
     {"DESERT", "DESERT", "DES"},
     {"JUNGLE", "JUNGLE", "JUN"},
     {"TEMPERATE", "TEMPERAT", "TEM"},
@@ -331,7 +331,7 @@ TheaterDataType const Theaters[THEATER_COUNT] = {
 ** These are the remap tables that are used to convert the units/buildings
 **	into the other color schemes.
 */
-unsigned char const RemapYellow[256] = {
+const unsigned char RemapYellow[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,
     8,   9,   10,  11,  12,  13,  14,  15,  // 0..15
     16,  17,  18,  19,  20,  21,  22,  23,
@@ -366,7 +366,7 @@ unsigned char const RemapYellow[256] = {
     248, 249, 250, 251, 252, 253, 254, 255  // 240..255
 };
 
-unsigned char const RemapRed[256] = {
+const unsigned char RemapRed[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,
     8,   9,   10,  11,  12,  13,  14,  15,  // 0..15
     16,  17,  18,  19,  20,  21,  22,  23,
@@ -401,7 +401,7 @@ unsigned char const RemapRed[256] = {
     248, 249, 250, 251, 252, 253, 254, 255  // 240..255
 };
 
-unsigned char const RemapBlueGreen[256] = {
+const unsigned char RemapBlueGreen[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,
     8,   9,   10,  11,  12,  13,  14,  15,  // 0..15
     16,  17,  18,  19,  20,  21,  22,  23,
@@ -436,7 +436,7 @@ unsigned char const RemapBlueGreen[256] = {
     248, 249, 250, 251, 252, 253, 254, 255  // 240..255
 };
 
-unsigned char const RemapOrange[256] = {
+const unsigned char RemapOrange[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,
     8,   9,   10,  11,  12,  13,  14,  15,  // 0..15
     16,  17,  18,  19,  20,  21,  22,  23,
@@ -471,7 +471,7 @@ unsigned char const RemapOrange[256] = {
     248, 249, 250, 251, 252, 253, 254, 255  // 240..255
 };
 
-unsigned char const RemapGreen[256] = {
+const unsigned char RemapGreen[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,
     8,   9,   10,  11,  12,  13,  14,  15,  // 0..15
     16,  17,  18,  19,  20,  21,  22,  23,
@@ -506,7 +506,7 @@ unsigned char const RemapGreen[256] = {
     248, 249, 250, 251, 252, 253, 254, 255  // 240..255
 };
 
-unsigned char const RemapBlue[256] = {
+const unsigned char RemapBlue[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,
     8,   9,   10,  11,  12,  13,  14,  15,  // 0..15
     16,  17,  18,  19,  20,  21,  22,  23,
@@ -541,7 +541,7 @@ unsigned char const RemapBlue[256] = {
     248, 249, 250, 251, 252, 253, 254, 255  // 240..255
 };
 
-unsigned char const RemapNone[256] = {
+const unsigned char RemapNone[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,
     8,   9,   10,  11,  12,  13,  14,  15,  // 0..15
     16,  17,  18,  19,  20,  21,  22,  23,

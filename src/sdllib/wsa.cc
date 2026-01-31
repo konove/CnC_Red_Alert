@@ -85,7 +85,7 @@ static unsigned long Get_File_Frame_Offset(int file_handle, int frame,
 static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
                         char* dest_ptr, int dest_w);
 
-void* Open_Animation(char const* file_name, char* user_buffer,
+void* Open_Animation(const char* file_name, char* user_buffer,
                      long user_buffer_size, WSAOpenType user_flags,
                      unsigned char* palette) {
   int fh, anim_flags;

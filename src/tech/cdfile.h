@@ -47,7 +47,7 @@
 //   file.Open(READ);  // Searches C:\GameData, then CD drive
 class CDFileClass : public BufferIOFileClass {
  public:
-  explicit CDFileClass(char const* filename);
+  explicit CDFileClass(const char* filename);
   CDFileClass();
   ~CDFileClass() override = default;
 
@@ -56,8 +56,8 @@ class CDFileClass : public BufferIOFileClass {
   CDFileClass(CDFileClass&&) = delete;
   CDFileClass& operator=(CDFileClass&&) = delete;
 
-  char const* Set_Name(char const* filename) override;
-  int Open(char const* filename, int rights = READ) override;
+  const char* Set_Name(const char* filename) override;
+  int Open(const char* filename, int rights = READ) override;
   int Open(int rights = READ) override;
 
   void Searching(const bool on) { is_disabled_ = !on; }

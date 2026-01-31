@@ -75,7 +75,7 @@
 /*
 ********************************** Globals **********************************
 */
-char const* TeamTypeClass::TMissions[TMISSION_COUNT] = {
+const char* TeamTypeClass::TMissions[TMISSION_COUNT] = {
     "Attack Base",
     "Attack Units",
     "Attack Civil.",
@@ -287,7 +287,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   char* p1;                      // parsing pointer
   char* p2;                      // parsing pointer
   int i;                         // loop counter
-  TechnoTypeClass const* otype;  // ptr to type of object
+  const TechnoTypeClass* otype;  // ptr to type of object
   InfantryType i_id;             // infantry ID
   UnitType u_id;                 // unit ID
   AircraftType a_id;             // aircraft ID
@@ -445,7 +445,7 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
   int i;
   char buf[500];
   TeamTypeClass* team;
-  char const* hname;
+  const char* hname;
 
   /*------------------------------------------------------------------------
   First, clear out all existing teamtypes in the old-style format.
@@ -547,7 +547,7 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
   char* p1;             // parsing pointer
   char* p2;             // parsing pointer
   int index;
-  TechnoTypeClass const* otype;  // ptr to type of object
+  const TechnoTypeClass* otype;  // ptr to type of object
   InfantryType i_id;             // infantry ID
   UnitType u_id;                 // unit ID
   AircraftType a_id;             // infantry ID
@@ -775,7 +775,7 @@ void TeamTypeClass::Remove() {
  * HISTORY:                                                                *
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
+TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
   int order;
 
   if (name) {
@@ -804,7 +804,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
  * HISTORY:                                                                *
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
-char const* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
+const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   if (order <= TMISSION_NONE || order >= TMISSION_COUNT) {
     return "None";
   }
@@ -904,14 +904,14 @@ void TeamTypeClass::Destroy_All_Of() const {
  * HISTORY: * 07/13/1995 JLB : Created. * 07/21/1995 JLB : Will autocreate team
  *even if no members in field.                        *
  *=============================================================================================*/
-TeamTypeClass const* TeamTypeClass::Suggested_New_Team(HouseClass* house,
+const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
                                                        long utypes, long itypes,
                                                        bool alerted) {
-  TeamTypeClass const* best = nullptr;
+  const TeamTypeClass* best = nullptr;
   int bestvalue = 0;
 
   for (int index = 0; index < TeamTypes.Count(); index++) {
-    TeamTypeClass const* ttype = TeamTypes.Ptr(index);
+    const TeamTypeClass* ttype = TeamTypes.Ptr(index);
 
     if (ttype && ttype->House == house->Class->House &&
         TeamClass::Number[index] <

@@ -4,9 +4,9 @@
 #include "td/conquer.h"
 #include "td/externs.h"
 
-char* Extract_String(void const* data, int string);
+char* Extract_String(const void* data, int string);
 
-inline char const* Text_String(int string) {
+inline const char* Text_String(int string) {
   // can't find a conquer.eng that contains these
   switch (string) {
     case TXT_READING_IMAGE_DATA:

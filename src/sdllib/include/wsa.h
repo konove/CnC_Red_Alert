@@ -78,7 +78,7 @@ typedef enum {
  */
 /*=========================================================================*/
 
-void* Open_Animation(char const* file_name, char* user_buffer,
+void* Open_Animation(const char* file_name, char* user_buffer,
                      long user_buffer_size, WSAOpenType user_flags,
                      unsigned char* palette = nullptr);
 void Close_Animation(void* handle);

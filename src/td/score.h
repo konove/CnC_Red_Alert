@@ -82,22 +82,22 @@ class ScoreClass {
   void Print_Graph_Title(int, int);
   void Print_Minutes(int minutes);
   void Count_Up_Print(char* str, int percent, int max, int xpos, int ypos);
-  void Show_Credits(int house, unsigned char const pal[]);
-  void Do_GDI_Graph(void const* yellowptr, void const* redptr, int gdikilled,
+  void Show_Credits(int house, const unsigned char pal[]);
+  void Do_GDI_Graph(const void* yellowptr, const void* redptr, int gdikilled,
                     int nodkilled, int ypos);
   void Do_Nod_Casualties_Graph();
   void Do_Nod_Buildings_Graph();
-  void Input_Name(char str[], int xpos, int ypos, unsigned char const pal[]);
+  void Input_Name(char str[], int xpos, int ypos, const unsigned char pal[]);
 };
 
 class ScoreAnimClass {
  public:
-  ScoreAnimClass(int x, int y, void const* data);
+  ScoreAnimClass(int x, int y, const void* data);
   int XPos;
   int Stage;
   int YPos;
   CountDownTimerClass Timer;
-  void const* DataPtr;
+  const void* DataPtr;
   virtual void Update() {}
   virtual ~ScoreAnimClass() {}
 };
@@ -106,11 +106,11 @@ class ScoreCredsClass : public ScoreAnimClass {
  public:
   int MaxStage;
   int TimerReset;
-  void const* CashTurn;
-  void const* Clock1;
+  const void* CashTurn;
+  const void* Clock1;
 
   void Update() override;
-  ScoreCredsClass(int xpos, int ypos, void const* data, int max, int timer);
+  ScoreCredsClass(int xpos, int ypos, const void* data, int max, int timer);
   ~ScoreCredsClass() override {}
 };
 
@@ -119,18 +119,18 @@ class ScoreTimeClass : public ScoreAnimClass {
   int MaxStage;
   int TimerReset;
   void Update() override;
-  ScoreTimeClass(int xpos, int ypos, void const* data, int max, int timer);
+  ScoreTimeClass(int xpos, int ypos, const void* data, int max, int timer);
   ~ScoreTimeClass() override {}
 };
 
 class ScorePrintClass : public ScoreAnimClass {
  public:
   int Background;
-  void const* PrimaryPalette;
+  const void* PrimaryPalette;
   void Update() override;
-  ScorePrintClass(void const* string, int xpos, int ypos, void const* palette,
+  ScorePrintClass(const void* string, int xpos, int ypos, const void* palette,
                   int background = TBLACK);
-  ScorePrintClass(int string, int xpos, int ypos, void const* palette,
+  ScorePrintClass(int string, int xpos, int ypos, const void* palette,
                   int background = TBLACK);
   ~ScorePrintClass() override {}
 };
@@ -138,21 +138,21 @@ class ScorePrintClass : public ScoreAnimClass {
 class MultiStagePrintClass : public ScoreAnimClass {
  public:
   int Background;
-  void const* PrimaryPalette;
+  const void* PrimaryPalette;
   void Update() override;
-  MultiStagePrintClass(void const* string, int xpos, int ypos,
-                       void const* palette, int background = TBLACK);
-  MultiStagePrintClass(int string, int xpos, int ypos, void const* palette,
+  MultiStagePrintClass(const void* string, int xpos, int ypos,
+                       const void* palette, int background = TBLACK);
+  MultiStagePrintClass(int string, int xpos, int ypos, const void* palette,
                        int background = TBLACK);
   ~MultiStagePrintClass() override {}
 };
 
 class ScoreScaleClass : public ScoreAnimClass {
  public:
-  unsigned char const* Palette;
+  const unsigned char* Palette;
   void Update() override;
-  ScoreScaleClass(void const* data, int xpos, int ypos,
-                  unsigned char const pal[]);
+  ScoreScaleClass(const void* data, int xpos, int ypos,
+                  const unsigned char pal[]);
   ~ScoreScaleClass() override {}
 };
 

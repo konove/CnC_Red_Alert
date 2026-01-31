@@ -488,7 +488,7 @@ bool Sample_Status(int handle) {
   return Channels[handle].playing;
 }
 
-bool Is_Sample_Playing(void const* sample) {
+bool Is_Sample_Playing(const void* sample) {
   for (int i = 0; i < MAX_SFX; i++) {
     if (Channels[i].sample == sample && Sample_Status(i)) return true;
   }
@@ -496,19 +496,19 @@ bool Is_Sample_Playing(void const* sample) {
   return false;
 }
 
-void Stop_Sample_Playing(void const* sample) {
+void Stop_Sample_Playing(const void* sample) {
   for (int i = 0; i < MAX_SFX; i++) {
     if (Channels[i].sample == sample) Stop_Sample(i);
   }
 }
 
-int Play_Sample(void const* sample, int priority, int volume,
+int Play_Sample(const void* sample, int priority, int volume,
                 signed short panloc) {
   return Play_Sample_Handle(sample, priority, volume, panloc,
                             Get_Free_Sample_Handle(priority));
 }
 
-int Play_Sample_Handle(void const* sample, int priority, int volume,
+int Play_Sample_Handle(const void* sample, int priority, int volume,
                        signed short /*panloc*/, int id) {
   if (id == -1 || !sample) return -1;
 
@@ -652,7 +652,7 @@ static long Sample_Read(int fh, void* buffer, size_t size) {
   return actual_bytes_read;
 }
 
-void* Load_Sample(char const* filename) {
+void* Load_Sample(const char* filename) {
   void* buffer = nullptr;
   long size;
   int fh;
@@ -671,7 +671,7 @@ void* Load_Sample(char const* filename) {
   return buffer;
 }
 
-void Free_Sample(void const* sample) {
+void Free_Sample(const void* sample) {
   if (sample) {
     Stop_Sample_Playing(sample);
     Free(sample);

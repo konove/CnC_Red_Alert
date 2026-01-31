@@ -266,7 +266,7 @@ class PWEditClass : public EditClass {
       : EditClass(id, text, max_len, flags, x, y, w, h, ALPHANUMERIC) {}
 
  protected:
-  void Draw_Text(char const* text) override;
+  void Draw_Text(const char* text) override;
 };
 
 /***********************************************************************************************
@@ -285,7 +285,7 @@ class PWEditClass : public EditClass {
  *                                                                                             *
  * HISTORY: * 10/27/1995 JLB : Created. *
  *=============================================================================================*/
-void PWEditClass::Draw_Text(char const* text) {
+void PWEditClass::Draw_Text(const char* text) {
   char buffer[80];
 
   memset(buffer, '\0', sizeof(buffer));
@@ -341,7 +341,7 @@ void PWEditClass::Draw_Text(char const* text) {
  * HISTORY: * 10/27/1995 JLB : Created. *
  *=============================================================================================*/
 #define BUFFSIZE (511)
-char const* Fetch_Password(int caption, int message, int btext) {
+const char* Fetch_Password(int caption, int message, int btext) {
   char buffer[BUFFSIZE];
   bool process;      // loop while true
   KeyNumType input;  // user input
@@ -497,11 +497,11 @@ char const* Fetch_Password(int caption, int message, int btext) {
  * HISTORY: * 08/13/1996 JLB : Created. *
  *=============================================================================================*/
 int Fetch_Difficulty(bool amath) {
-  int const w = 250 * RESFACTOR;
-  int const h = 80 * RESFACTOR;
-  int const x = 320 * RESFACTOR / 2 - w / 2;
-  int const y = 200 * RESFACTOR / 2 - h / 2;
-  int const bwidth = 30 * RESFACTOR;
+  const int w = 250 * RESFACTOR;
+  const int h = 80 * RESFACTOR;
+  const int x = 320 * RESFACTOR / 2 - w / 2;
+  const int y = 200 * RESFACTOR / 2 - h / 2;
+  const int bwidth = 30 * RESFACTOR;
 
   /*
   **	Fill the description buffer with the description text. Break

@@ -136,7 +136,7 @@ class UnitClass : public DriveClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   UnitClass(UnitType classid, HousesType house);
-  UnitClass(NoInitClass const& x)
+  UnitClass(const NoInitClass& x)
       : DriveClass(x), Class(x), Reload(x), SecondaryFacing(x) {}
   operator UnitType() const { return Class->Type; }
   ~UnitClass() override;
@@ -144,7 +144,7 @@ class UnitClass : public DriveClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  ObjectTypeClass const& Class_Of() const override;
+  const ObjectTypeClass& Class_Of() const override;
   static void Init();
 
   bool Goto_Clear_Spot();
@@ -163,7 +163,7 @@ class UnitClass : public DriveClass {
   /*
   **	Query functions.
   */
-  bool Should_Crush_It(TechnoClass const* it) const;
+  bool Should_Crush_It(const TechnoClass* it) const;
   int Credit_Load() const;
   DirType Turret_Facing() const override {
     if (Class->IsTurretEquipped) return SecondaryFacing.Current();
@@ -193,14 +193,14 @@ class UnitClass : public DriveClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  short const* Overlap_List(bool redraw = false) const override;
+  const short* Overlap_List(bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
 
   /*
   **	User I/O.
   */
   ActionType What_Action(CELL cell) const override;
-  ActionType What_Action(ObjectClass const* object) const override;
+  ActionType What_Action(const ObjectClass* object) const override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, CELL cell) override;
 
@@ -262,7 +262,7 @@ class UnitClass : public DriveClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "UNITS"; }
+  static const char* INI_Name() { return "UNITS"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 };

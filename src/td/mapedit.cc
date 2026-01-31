@@ -390,7 +390,7 @@ void MapEditClass::Clear_List() {
  * HISTORY:                                                                *
  *   06/04/1994 JLB : Created.                                             *
  *=========================================================================*/
-bool MapEditClass::Add_To_List(ObjectTypeClass const* object) {
+bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
   /*
   **	Add the object if there's room.
   */
@@ -1350,9 +1350,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
  *   11/17/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Draw_It(bool forced) {
-  char const* label;
+  const char* label;
   char buf[40];
-  char const* tptr;
+  const char* tptr;
 
   MouseClass::Draw_It(forced);
 
@@ -1494,7 +1494,7 @@ bool MapEditClass::Mouse_Moved() {
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Main_Menu() {
-  char const* _menus[MAX_MAIN_MENU_NUM + 1];
+  const char* _menus[MAX_MAIN_MENU_NUM + 1];
   int selection;  // option the user picks
   bool process;   // menu stays up while true
   int rc;
@@ -1681,7 +1681,7 @@ void MapEditClass::Main_Menu() {
 void MapEditClass::AI_Menu() {
   int selection;  // option the user picks
   bool process;   // menu stays up while true
-  char const* _menus[MAX_AI_MENU_NUM + 1];
+  const char* _menus[MAX_AI_MENU_NUM + 1];
 
   /*
   -------------------------- Fill in menu strings --------------------------
@@ -1783,7 +1783,7 @@ void MapEditClass::AI_Menu() {
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
 bool MapEditClass::Verify_House(HousesType house,
-                                ObjectTypeClass const* objtype) {
+                                const ObjectTypeClass* objtype) {
   /*
   --------------- Verify that new house can own this object ----------------
   */
@@ -1807,7 +1807,7 @@ bool MapEditClass::Verify_House(HousesType house,
  *   11/23/1994 BR : Created.                                              *
  *=========================================================================*/
 HousesType MapEditClass::Cycle_House(HousesType curhouse,
-                                     ObjectTypeClass const* objtype) {
+                                     const ObjectTypeClass* objtype) {
   HousesType count;  // prevents an infinite loop
 
   /*------------------------------------------------------------------------

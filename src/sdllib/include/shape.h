@@ -121,9 +121,9 @@ extern char* _ShapeBuffer;
 /*
 ---------------------------------- shape.c ----------------------------------
 */
-int Extract_Shape_Count(void const* buffer);
+int Extract_Shape_Count(const void* buffer);
 int Extract_Shape_Count(std::span<const std::byte> span);
-void* Extract_Shape(void const* buffer, int shape);
+void* Extract_Shape(const void* buffer, int shape);
 
 /*
 ------------------------------- setshape.asm --------------------------------

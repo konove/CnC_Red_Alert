@@ -105,11 +105,11 @@ void Dialog_Box(int x, int y, int w, int h) {
  * HISTORY: * 05/28/1991 JLB : Created. * 05/30/1992 JLB : Embedded color codes.
  ** 07/31/1992 JLB : Depressed option added. *
  *=============================================================================================*/
-extern void CC_Texture_Fill(void const* shapefile, int shapenum, int xpos,
+extern void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos,
                             int ypos, int width, int height);
 
 void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
-  static BoxStyleType const ButtonColors[BOXSTYLE_COUNT] = {
+  static const BoxStyleType ButtonColors[BOXSTYLE_COUNT] = {
 
       // Filler, Shadow, Hilite, Corner colors
 
@@ -135,7 +135,7 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
 
   w--;
   h--;
-  BoxStyleType const& style = ButtonColors[up];
+  const BoxStyleType& style = ButtonColors[up];
 
   if (filled) {
     if (style.Filler == CC_GREEN_BKGD && RESFACTOR == 2) {
@@ -319,11 +319,11 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
  * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
-void Simple_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
+void Simple_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
                        unsigned back, TextPrintType flag) {
   static int yspace = 0;       // Y spacing adjustment for font.
   static int xspace = 0;       // Spacing adjustment for font.
-  void const* font = nullptr;  // Font to use.
+  const void* font = nullptr;  // Font to use.
 
   ////////////////#if (0)
   static unsigned char _textfontpal[16][16] = {
@@ -604,7 +604,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
     **	The text string must be locked since the vsprintf function doesn't know
     **	how to handle EMS pointers.
     */
-    char const* tptr = Text_String(text);
+    const char* tptr = Text_String(text);
     vsprintf(buffer, tptr, arg);
     va_end(arg);
 
@@ -643,7 +643,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
  *spacing in a more friendly manner.                        * 11/29/1994 JLB :
  *Separated actual draw action.                                            *
  *=============================================================================================*/
-void Fancy_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
+void Fancy_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
                       unsigned back, TextPrintType flag, ...) {
   char buffer[512];  // Working staging buffer.
   va_list arg;       // Argument list var.
@@ -701,9 +701,9 @@ void Fancy_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void Conquer_Clip_Text_Print(char const* text, unsigned x, unsigned y,
+void Conquer_Clip_Text_Print(const char* text, unsigned x, unsigned y,
                              unsigned fore, unsigned back, TextPrintType flag,
-                             unsigned width, int const* tabs) {
+                             unsigned width, const int* tabs) {
   char buffer[512];
 
   if (text) {

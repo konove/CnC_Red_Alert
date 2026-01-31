@@ -68,7 +68,7 @@ Buffer::Buffer(char* buffer, long size)
     : BufferPtr(buffer), Size(size), IsAllocated(false) {}
 
 // Alternate constructor for void const * pointer.
-Buffer::Buffer(void const* buffer, long size)
+Buffer::Buffer(const void* buffer, long size)
     : BufferPtr((void*)buffer), Size(size), IsAllocated(false) {}
 
 /***********************************************************************************************

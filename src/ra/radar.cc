@@ -120,9 +120,9 @@
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;
 
-void const* RadarClass::RadarAnim = nullptr;
-void const* RadarClass::RadarPulse = nullptr;
-void const* RadarClass::RadarFrame = nullptr;
+const void* RadarClass::RadarAnim = nullptr;
+const void* RadarClass::RadarPulse = nullptr;
+const void* RadarClass::RadarFrame = nullptr;
 
 static bool FullRedraw = false;
 
@@ -395,7 +395,7 @@ bool RadarClass::Radar_Activate(int control) {
 void RadarClass::Draw_It(bool forced) {
   DisplayClass::Draw_It(forced);
 
-  static char const* _hiresradarnames[] = {
+  static const char* _hiresradarnames[] = {
       "natoradr.shp",  // HOUSE_SPAIN,
       "natoradr.shp",  // HOUSE_GREECE,
       "ussrradr.shp",  // HOUSE_USSR,
@@ -407,7 +407,7 @@ void RadarClass::Draw_It(bool forced) {
       "natoradr.shp",  // HOUSE_GOOD
       "ussrradr.shp",  // HOUSE_BAD
   };
-  static char const* _frames[] = {
+  static const char* _frames[] = {
       "nradrfrm.shp",  // HOUSE_SPAIN,
       "nradrfrm.shp",  // HOUSE_GREECE,
       "uradrfrm.shp",  // HOUSE_USSR,
@@ -813,7 +813,7 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
 
   OverlayType overlay = (*this)[cell].Overlay;
   if (overlay != OVERLAY_NONE) {
-    OverlayTypeClass const* otype = &OverlayTypeClass::As_Reference(overlay);
+    const OverlayTypeClass* otype = &OverlayTypeClass::As_Reference(overlay);
 
     if (otype->IsRadarVisible) {
       unsigned char* icon = otype->Radar_Icon((*this)[cell].OverlayData);
@@ -1075,7 +1075,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     */
     if (color == TBLACK) {
       if (ZoomFactor > 1) {
-        void const* ptr = nullptr;
+        const void* ptr = nullptr;
         int icon;
 
         /*
@@ -1098,8 +1098,8 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
           icon = cellptr->Clear_Icon();
         }
 
-        IconsetClass const* iconset = static_cast<IconsetClass const*>(ptr);
-        unsigned char const* icondata = iconset->Icon_Data();
+        const IconsetClass* iconset = static_cast<const IconsetClass*>(ptr);
+        const unsigned char* icondata = iconset->Icon_Data();
 
         /*
         **	Convert the logical icon number into the actual icon number.
@@ -1909,7 +1909,7 @@ int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 01/01/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Refresh_Cells(CELL cell, short const* list) {
+void RadarClass::Refresh_Cells(CELL cell, const short* list) {
   if (*list == REFRESH_SIDEBAR) {
     IsToRedraw = true;
     Flag_To_Redraw(false);

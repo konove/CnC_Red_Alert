@@ -238,7 +238,7 @@ void TEventClass::Reset(TDEventClass& td) const {
  * HISTORY: * 11/28/1995 JLB : Created. *
  *=============================================================================================*/
 bool TEventClass::operator()(TDEventClass& td, TEventType event,
-                             HousesType house, ObjectClass const* object,
+                             HousesType house, const ObjectClass* object,
                              bool forced) {
   /*
   **	If this trigger event has been forced, then no further checks are
@@ -522,7 +522,7 @@ void TEventClass::Build_INI_Entry(std::string& buffer) const {
  * HISTORY: * 11/28/1995 JLB : Created. *
  *=============================================================================================*/
 void TEventClass::Read_INI() {
-  char const* token;
+  const char* token;
   switch (NewINIFormat) {
     default:
       Event = static_cast<TEventType>(atoi(strtok(nullptr, ",")));
@@ -631,7 +631,7 @@ NeedType Event_Needs(TEventType event) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-TEventType Event_From_Name(char const* name) {
+TEventType Event_From_Name(const char* name) {
   if (name) {
     for (TEventType i = TEVENT_NONE; i < TEVENT_COUNT; i++) {
       if (!stricmp(name, EventText[i])) {
@@ -654,7 +654,7 @@ TEventType Event_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-char const* Name_From_Event(TEventType event) { return EventText[event]; }
+const char* Name_From_Event(TEventType event) { return EventText[event]; }
 
 /***********************************************************************************************
  * Attaches_To -- Determines what event can be attached to. *

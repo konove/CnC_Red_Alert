@@ -48,7 +48,7 @@
 #include "tech/straw.h"
 
 template <class T>
-T Generate_Prime(Straw& rng, int pbits, T const*);
+T Generate_Prime(Straw& rng, int pbits, const T*);
 
 template <class T>
 T Gcd(const T& a, const T& n);
@@ -265,7 +265,7 @@ class Int {
     XMP_Abs(&reg[0], PRECISION);
     return *this;
   }
-  Int times_b_mod_c(Int const& multiplier, Int const& modulus) const {
+  Int times_b_mod_c(const Int& multiplier, const Int& modulus) const {
     Int result;
     Error = xmp_stage_modulus(modulus, PRECISION);
     Error = XMP_Mod_Mult(result, &reg[0], multiplier, PRECISION);
@@ -279,7 +279,7 @@ class Int {
     return result;
   }
 
-  static Int Unsigned_Mult(Int const& multiplicand, Int const& multiplier) {
+  static Int Unsigned_Mult(const Int& multiplicand, const Int& multiplier) {
     Int product;
     Error = XMP_Unsigned_Mult(&product.reg[0], &multiplicand.reg[0],
                               &multiplier.reg[0], PRECISION);
@@ -299,7 +299,7 @@ class Int {
     return result;
   }
 
-  static Int Decode_ASCII(char const* string) {
+  static Int Decode_ASCII(const char* string) {
     Int result;
     XMP_Decode_ASCII(string, result, PRECISION);
     return result;
@@ -329,7 +329,7 @@ class Int {
 
   // Friend helper functions.
   friend Int<PRECISION> Generate_Prime<>(Straw& rng, int pbits,
-                                         Int<PRECISION> const*);
+                                         const Int<PRECISION>*);
   friend Int<PRECISION> Gcd<>(const Int<PRECISION>& a, const Int<PRECISION>& b);
   //		friend bool NextPrime(Int<PRECISION> & p, const Int<PRECISION> &
   // max, bool blumInt=false); 		friend Int<PRECISION>
@@ -397,7 +397,7 @@ T Gcd(const T& a, const T& n) {
 }
 
 template <class T>
-T Generate_Prime(Straw& rng, int pbits, T const*) {
+T Generate_Prime(Straw& rng, int pbits, const T*) {
   T minQ = T(1UL) << static_cast<unsigned short>(pbits - (unsigned short)2);
   T maxQ = (T(1UL) << static_cast<unsigned short>(pbits - (unsigned short)1)) -
            static_cast<unsigned short>(1);

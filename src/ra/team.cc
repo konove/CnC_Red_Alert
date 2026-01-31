@@ -136,7 +136,7 @@
  *                                                                                             *
  * HISTORY: * 03/11/1996 JLB : Created. *
  *=============================================================================================*/
-static inline bool _Is_It_Breathing(FootClass const* object) {
+static inline bool _Is_It_Breathing(const FootClass* object) {
   /*
   **	If the object is not present or appears to be dead, then it
   **	certainly isn't an active member of the team.
@@ -180,7 +180,7 @@ static inline bool _Is_It_Breathing(FootClass const* object) {
  *                                                                                             *
  * HISTORY: * 03/11/1996 JLB : Created. *
  *=============================================================================================*/
-static inline bool _Is_It_Playing(FootClass const* object) {
+static inline bool _Is_It_Playing(const FootClass* object) {
   /*
   **	If the object is not active, then it certainly can be a participating
   *member of the *	team.
@@ -366,7 +366,7 @@ TeamClass::~TeamClass() {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-TeamClass::TeamClass(TeamTypeClass const* type, HouseClass* owner)
+TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
     : AbstractClass(RTTI_TEAM, Teams.ID(this)),
       Class((TeamTypeClass*)type),
       House(owner),
@@ -739,7 +739,7 @@ void TeamClass::AI() {
     IsNextMission = false;
     CurrentMission++;
     if (CurrentMission < Class->MissionCount) {
-      TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
+      const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
 
       TimeOut = mission->Data.Value * (TICKS_PER_MINUTE / 10);
       Target = TARGET_NONE;
@@ -807,7 +807,7 @@ void TeamClass::AI() {
     **	this case. If it has timed out then advance to the next
     **	mission in the list or disband the team.
     */
-    TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
+    const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
     //		FootClass	* member = Member;
 
     switch (mission->Mission) {
@@ -1428,7 +1428,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
   close_member = TARGET_NONE;
   center = TARGET_NONE;
 
-  FootClass const* team_member = Member;  // Working team member pointer.
+  const FootClass* team_member = Member;  // Working team member pointer.
 
   /*
   **	If there are no members of the team, then there can be no center point
@@ -1448,14 +1448,14 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     */
     if (!team_member) return;
 
-    FootClass const* closest = nullptr;  // Current closest friendly object.
+    const FootClass* closest = nullptr;  // Current closest friendly object.
     int distance = -1;  // Record of last closest distance calc.
 
     /*
     **	Scan through all vehicles.
     */
     for (int unit_index = 0; unit_index < Units.Count(); unit_index++) {
-      FootClass const* trial_unit = Units.Ptr(unit_index);
+      const FootClass* trial_unit = Units.Ptr(unit_index);
 
       if (_Is_It_Breathing(trial_unit) && trial_unit->House->Is_Ally(House) &&
           trial_unit->Team != this) {
@@ -1473,7 +1473,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     */
     for (int infantry_index = 0; infantry_index < Infantry.Count();
          infantry_index++) {
-      FootClass const* trial_infantry = Infantry.Ptr(infantry_index);
+      const FootClass* trial_infantry = Infantry.Ptr(infantry_index);
 
       if (_Is_It_Breathing(trial_infantry) &&
           trial_infantry->House->Is_Ally(House) &&
@@ -1491,7 +1491,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     **	Scan through all vessels.
     */
     for (int vessel_index = 0; vessel_index < Vessels.Count(); vessel_index++) {
-      FootClass const* trial_vessel = Vessels.Ptr(vessel_index);
+      const FootClass* trial_vessel = Vessels.Ptr(vessel_index);
 
       if (_Is_It_Breathing(trial_vessel) &&
           trial_vessel->House->Is_Ally(House) && trial_vessel->Team != this) {
@@ -1519,7 +1519,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     long y = 0;        // Accumulated Y coordinate.
     int dist = 0;      // Closest recorded distance to team target.
     int quantity = 0;  // Number of team members counted.
-    FootClass const* closest = nullptr;  // Closest member to target.
+    const FootClass* closest = nullptr;  // Closest member to target.
 
     /*
     **	Scan through all team members and accumulate the X and Y component of
@@ -1635,7 +1635,7 @@ void TeamClass::Took_Damage(FootClass*, ResultType result,
             TechnoClass* techno = As_Techno(Target);
 
             if (techno &&
-                dynamic_cast<TechnoTypeClass const&>(techno->Class_Of())
+                dynamic_cast<const TechnoTypeClass&>(techno->Class_Of())
                         .PrimaryWeapon != nullptr) {
               if (techno->In_Range(As_Coord(Zone), 0)) {
                 return;
@@ -1703,7 +1703,7 @@ void TeamClass::Coordinate_Attack() {
           tt != TEMPLATE_BRIDGE_2A && tt != TEMPLATE_BRIDGE_2B &&
           tt != TEMPLATE_BRIDGE_3A && tt != TEMPLATE_BRIDGE_3B) {
         FootClass* unit = Member;
-        TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
+        const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
         if (unit->What_Am_I() != RTTI_UNIT ||
             *dynamic_cast<UnitClass*>(unit) != UNIT_CHRONOTANK ||
             mission->Mission != TMISSION_SPY)
@@ -1716,7 +1716,7 @@ void TeamClass::Coordinate_Attack() {
     IsNextMission = true;
 
   } else {
-    TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
+    const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
 
     FootClass* unit = Member;
     while (unit != nullptr) {
@@ -1937,7 +1937,7 @@ void TeamClass::Coordinate_Move() {
             stray *= 3;
           }
           if (unit->What_Am_I() == RTTI_INFANTRY &&
-              dynamic_cast<InfantryClass const*>(unit)->Class->IsDog) {
+              dynamic_cast<const InfantryClass*>(unit)->Class->IsDog) {
             if (Target_Legal(unit->TarCom))
               stray = unit->Techno_Type_Class()->ThreatRange;
             if (Target_Legal(unit->TarCom) &&
@@ -2334,7 +2334,7 @@ bool TeamClass::Coordinate_Conscript(FootClass* unit) {
  * HISTORY:                                                                *
  *   05/16/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool TeamClass::Is_A_Member(void const* who) const {
+bool TeamClass::Is_A_Member(const void* who) const {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -2360,7 +2360,7 @@ bool TeamClass::Is_A_Member(void const* who) const {
  * HISTORY:                                                                *
  *   06/19/1995 PWG : Created.                                             *
  *=========================================================================*/
-void TeamClass::Suspend_Teams(int priority, HouseClass const* house) {
+void TeamClass::Suspend_Teams(int priority, const HouseClass* house) {
   for (int index = 0; index < Teams.Count(); index++) {
     TeamClass* team = Teams.Ptr(index);
 
@@ -2401,7 +2401,7 @@ bool TeamClass::Is_Leaving_Map() const {
   assert(Teams.ID(this) == ID);
 
   if (IsMoving && CurrentMission >= 0) {
-    TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
+    const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
 
     if (mission->Mission == TMISSION_MOVE &&
         !Map.In_Radar(Scen.Waypoint[mission->Data.Value])) {
@@ -2493,7 +2493,7 @@ void TeamClass::Scan_Limit() {
  *=============================================================================================*/
 int TeamClass::TMission_Formation() {
   FootClass* member = Member;
-  TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
+  const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
   Formation = mission->Data.Formation;
   int group = ID + 10;
   int xdir = 0;
@@ -2696,7 +2696,7 @@ int TeamClass::TMission_Formation() {
  *=============================================================================================*/
 int TeamClass::TMission_Attack() {
   if (!Target_Legal(MissionTarget) && Member != NULL) {
-    TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
+    const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
 
     /*
     **	Pick a team leader that has a weapon. Only in the case of no
@@ -2853,7 +2853,7 @@ int TeamClass::TMission_Follow() {
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
 int TeamClass::TMission_Loop() {
-  TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
+  const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
   CurrentMission = mission->Data.Value - 1;
   IsNextMission = true;
   return 1;
@@ -2903,7 +2903,7 @@ int TeamClass::TMission_Invulnerable() {
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
 int TeamClass::TMission_Set_Global() {
-  TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
+  const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
   Scen.Set_Global_To(mission->Data.Value, true);
   IsNextMission = true;
   return 1;
@@ -2933,7 +2933,7 @@ int TeamClass::TMission_Patrol() {
   **	cleared (probably because the object has been destroyed).
   */
   if (!Target_Legal(Target)) {
-    TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
+    const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
     if (static_cast<unsigned>(mission->Data.Value) < WAYPT_COUNT) {
       Assign_Mission_Target(::As_Target(Scen.Waypoint[mission->Data.Value]));
     }

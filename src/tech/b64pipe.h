@@ -60,7 +60,7 @@ class Base64Pipe : public Pipe {
   Base64Pipe& operator=(Base64Pipe&&) = delete;
 
   int Flush() override;
-  int Put(void const* source, int slen) override;
+  int Put(const void* source, int slen) override;
 
  private:
   /*

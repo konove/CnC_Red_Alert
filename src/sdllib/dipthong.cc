@@ -1,7 +1,7 @@
 #include "sdllib/include/dipthong.h"
 
-char* Extract_String(void const* data, int string) {
-  unsigned short int const* ptr;
+char* Extract_String(const void* data, int string) {
+  const unsigned short int* ptr;
 
   if (!data || string < 0) return nullptr;
 

@@ -307,7 +307,7 @@ void TActionClass::Read_INI() {
     case 0:
       Action = static_cast<TActionType>(atoi(strtok(nullptr, ",")));
 
-      char const* ptr = strtok(nullptr, ",");
+      const char* ptr = strtok(nullptr, ",");
       Team = TeamTypeClass::From_Name(ptr);
       assert(Action_Needs(Action) != NEED_TEAM || Team.Is_Valid());
 
@@ -430,7 +430,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Display a text message overlayed onto the tactical map.
     */
     case TACTION_TEXT_TRIGGER: {
-      char const* message =
+      const char* message =
           TutorialTextOffsets[Data.Value] == 0xFFFF
               ? nullptr
               : TutorialTextData + TutorialTextOffsets[Data.Value];
@@ -840,7 +840,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-TActionType Action_From_Name(char const* name) {
+TActionType Action_From_Name(const char* name) {
   if (name == nullptr) {
     return TACTION_NONE;
   }
@@ -865,7 +865,7 @@ TActionType Action_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-char const* Name_From_Action(TActionType action) { return ActionText[action]; }
+const char* Name_From_Action(TActionType action) { return ActionText[action]; }
 
 /***********************************************************************************************
  * Action_Needs -- Figures out what data an action object needs. *

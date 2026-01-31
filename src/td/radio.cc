@@ -54,7 +54,7 @@
 #include "td/mission.h"
 #include "td/techno.h"
 
-char const* RadioClass::Messages[RADIO_COUNT] = {
+const char* RadioClass::Messages[RADIO_COUNT] = {
     "hisssss",
     "Roger.",
     "Come in.",

@@ -63,7 +63,7 @@ class BufferPipe : public Pipe {
   BufferPipe(BufferPipe&&) = delete;
   BufferPipe& operator=(BufferPipe&&) = delete;
 
-  int Put(void const* source, int slen) override;
+  int Put(const void* source, int slen) override;
 
  private:
   Buffer BufferPtr;
@@ -88,7 +88,7 @@ class FilePipe : public Pipe {
   FilePipe(FilePipe&&) = delete;
   FilePipe& operator=(FilePipe&&) = delete;
 
-  int Put(void const* source, int slen) override;
+  int Put(const void* source, int slen) override;
   int End() override;
 
  private:

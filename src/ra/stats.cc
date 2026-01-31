@@ -238,7 +238,7 @@ void Send_Statistics_Packet() {
   static char field_player_crates_found[5] = {"CRA?"};
   static char field_player_harvested[5] = {"HRV?"};
 
-  static char const* houses[] = {
+  static const char* houses[] = {
       "SPA", "GRE", "USS", "ENG", "ITA", "GER", "FRA", "TKY", "GUD", "BAD",
       "CIV", "JP ", "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08"};
 
@@ -732,21 +732,21 @@ void Send_Statistics_Packet() {
       ** Number of units remaining to player
       */
       for (index = 0; index < Units.Count(); index++) {
-        UnitClass const* unit = Units.Ptr(index);
+        const UnitClass* unit = Units.Ptr(index);
         if (player == unit->House) {
           player->UnitTotals->Increment_Unit_Total(unit->Class->Type);
         }
       }
 
       for (index = 0; index < Infantry.Count(); index++) {
-        InfantryClass const* infantry = Infantry.Ptr(index);
+        const InfantryClass* infantry = Infantry.Ptr(index);
         if (player == infantry->House && !infantry->Class->IsCivilian) {
           player->InfantryTotals->Increment_Unit_Total(infantry->Class->Type);
         }
       }
 
       for (index = 0; index < Aircraft.Count(); index++) {
-        AircraftClass const* aircraft = Aircraft.Ptr(index);
+        const AircraftClass* aircraft = Aircraft.Ptr(index);
         if (player == aircraft->House) {  // &&	aircraft->Class->Type !=
                                           // AIRCRAFT_CARGO){
           player->AircraftTotals->Increment_Unit_Total(aircraft->Class->Type);
@@ -754,14 +754,14 @@ void Send_Statistics_Packet() {
       }
 
       for (index = 0; index < Buildings.Count(); index++) {
-        BuildingClass const* building = Buildings.Ptr(index);
+        const BuildingClass* building = Buildings.Ptr(index);
         if (player == building->House) {
           player->BuildingTotals->Increment_Unit_Total(building->Class->Type);
         }
       }
 
       for (index = 0; index < Vessels.Count(); index++) {
-        VesselClass const* vessel = Vessels.Ptr(index);
+        const VesselClass* vessel = Vessels.Ptr(index);
         if (player == vessel->House) {
           player->VesselTotals->Increment_Unit_Total(vessel->Class->Type);
         }

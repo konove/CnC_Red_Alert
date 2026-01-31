@@ -63,7 +63,7 @@ class FlasherClass {
     FlashCount = 0;
     IsBlushing = false;
   }
-  FlasherClass(NoInitClass const&) {}
+  FlasherClass(const NoInitClass&) {}
   ~FlasherClass() {}
 
   virtual void Debug_Dump(MonoClass* mono) const;

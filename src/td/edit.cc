@@ -337,7 +337,7 @@ void EditClass::Draw_Background() {
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void EditClass::Draw_Text(char const* text) {
+void EditClass::Draw_Text(const char* text) {
   if (FontPtr == GradFont6Ptr) {
     TextPrintType flags;
 

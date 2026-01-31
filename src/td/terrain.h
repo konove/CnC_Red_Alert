@@ -59,7 +59,7 @@
 */
 class TerrainClass : public ObjectClass, public StageClass {
  public:
-  TerrainTypeClass const* const Class;
+  const TerrainTypeClass* const Class;
   operator TerrainType() const { return Class->Type; }
 
   /*
@@ -70,7 +70,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   void operator delete(void* ptr);
   TerrainClass();
   TerrainClass(TerrainType id, CELL cell);
-  TerrainClass(NoInitClass const& x)
+  TerrainClass(const NoInitClass& x)
       : ObjectClass(x), Class(Class), StageClass(x) {}
   ~TerrainClass() override;
   RTTIType What_Am_I() const override { return RTTI_TERRAIN; }
@@ -85,7 +85,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   **	Query functions.
   */
-  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
@@ -143,7 +143,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name() { return "TERRAIN"; }
+  static const char* INI_Name() { return "TERRAIN"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   void Code_Pointers() override;

@@ -95,9 +95,9 @@ typedef enum TEventType {
   TEVENT_FIRST = 0
 } TEventType;
 
-TEventType Event_From_Name(char const* name);
+TEventType Event_From_Name(const char* name);
 NeedType Event_Needs(TEventType event);
-char const* Name_From_Event(TEventType event);
+const char* Name_From_Event(TEventType event);
 
 /*
 **	This holds the changable data that is associated with an event as
@@ -118,7 +118,7 @@ struct TDEventClass {
   CDTimerClass<FrameTimerClass> Timer;
 
   TDEventClass() : IsTripped(false), Timer(0) {}
-  TDEventClass(NoInitClass const& x) : Timer(x) {}
+  TDEventClass(const NoInitClass& x) : Timer(x) {}
 };
 
 /*
@@ -150,13 +150,13 @@ struct TEventClass {
 
   TEventClass() : Event(TEVENT_NONE) { Data.Value = 0; }
   TEventClass(TEventType event) : Event(event) { Data.Value = 0; }
-  TEventClass(NoInitClass const& x) : Team(x) {}
+  TEventClass(const NoInitClass& x) : Team(x) {}
 
   void Code_Pointers();
   void Decode_Pointers();
   void Reset(TDEventClass& td) const;
   bool operator()(TDEventClass& td, TEventType event, HousesType house,
-                  ObjectClass const* object, bool forced);
+                  const ObjectClass* object, bool forced);
   void Read_INI();
   void Build_INI_Entry(std::string& buffer) const;
 };
@@ -181,27 +181,27 @@ class EventChoiceClass {
   EventChoiceClass(TEventType event = TEVENT_NONE) : Event(event) {}
 
   operator TEventType() const { return Event; }
-  bool operator==(EventChoiceClass const& rvalue) const {
+  bool operator==(const EventChoiceClass& rvalue) const {
     return Event == rvalue.Event;
   }
-  bool operator!=(EventChoiceClass const& rvalue) const {
+  bool operator!=(const EventChoiceClass& rvalue) const {
     return Event != rvalue.Event;
   }
-  bool operator>(EventChoiceClass const& rvalue) const {
+  bool operator>(const EventChoiceClass& rvalue) const {
     return stricmp(Description(), rvalue.Description()) > 0;
   }
-  bool operator<(EventChoiceClass const& rvalue) const {
+  bool operator<(const EventChoiceClass& rvalue) const {
     return stricmp(Description(), rvalue.Description()) < 0;
   }
-  bool operator<=(EventChoiceClass const& rvalue) const {
+  bool operator<=(const EventChoiceClass& rvalue) const {
     return Event == rvalue.Event ||
            stricmp(Description(), rvalue.Description()) < 0;
   }
-  bool operator>=(EventChoiceClass const& rvalue) const {
+  bool operator>=(const EventChoiceClass& rvalue) const {
     return Event == rvalue.Event ||
            stricmp(Description(), rvalue.Description()) > 0;
   }
-  char const* Description() const { return Name_From_Event(Event); }
+  const char* Description() const { return Name_From_Event(Event); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
 

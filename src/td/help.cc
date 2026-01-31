@@ -76,7 +76,7 @@
 */
 short HelpClass::OverlapList[30] = {REFRESH_EOL};
 
-char const* HelpClass::HelpText;
+const char* HelpClass::HelpText;
 
 CountDownTimerClass HelpClass::CountDownTimer;
 
@@ -141,7 +141,7 @@ void HelpClass::Init_Clear() {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-short const* HelpClass::Overlap_List() const {
+const short* HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer.Time()) {
     OverlapList[0] = REFRESH_EOL;
   }

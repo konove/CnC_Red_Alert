@@ -7,7 +7,7 @@
 
 #include "sdllib/include/gbuffer.h"
 
-void* Conquer_Build_Fading_Table(void const* palette, void* dest, int color,
+void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
                                  int frac) {
   unsigned matchvalue;
   uint8_t targetred;

@@ -17,7 +17,7 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
 bool Load_Game(int id);
 bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
                  void* vtable);
-bool Save_Game(int id, char const* descr, bool bargraph = false);
+bool Save_Game(int id, const char* descr, bool bargraph = false);
 bool Write_Object(void* ptr, int class_size, FileClass& file);
 void Code_All_Pointers();
 void Decode_All_Pointers();

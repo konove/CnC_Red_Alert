@@ -69,7 +69,7 @@
 
 class InfantryClass : public FootClass {
  public:
-  InfantryTypeClass const* const Class;
+  const InfantryTypeClass* const Class;
   operator InfantryType() const { return Class->Type; }
 
   /*
@@ -131,7 +131,7 @@ class InfantryClass : public FootClass {
   void operator delete(void* ptr);
   InfantryClass();
   InfantryClass(InfantryType classid, HousesType house);
-  InfantryClass(NoInitClass const& x)
+  InfantryClass(const NoInitClass& x)
       : FootClass(x), Class(Class), Comment(x) {}
   ~InfantryClass() override;
   RTTIType What_Am_I() const override;
@@ -147,7 +147,7 @@ class InfantryClass : public FootClass {
   **	Query functions.
   */
   bool Is_Infantry() const override;
-  ObjectTypeClass const& Class_Of() const override;
+  const ObjectTypeClass& Class_Of() const override;
   int Full_Name() const override;
 
   /*
@@ -167,7 +167,7 @@ class InfantryClass : public FootClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  short const* Overlap_List() const override;
+  const short* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   void Look(bool incremental = false) override;
 
@@ -228,7 +228,7 @@ class InfantryClass : public FootClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name() { return "INFANTRY"; }
+  static const char* INI_Name() { return "INFANTRY"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   void Code_Pointers() override;
@@ -254,10 +254,10 @@ class InfantryClass : public FootClass {
   *special *	table is needed since several facing stages are reused and
   *flipped about the Y *	axis.
   */
-  static int const HumanShape[32];
+  static const int HumanShape[32];
 
  private:
-  static DoStruct const MasterDoControls[DO_COUNT];
+  static const DoStruct MasterDoControls[DO_COUNT];
 
   /*
   ** This contains the value of the Virtual Function Table Pointer

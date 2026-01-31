@@ -53,7 +53,7 @@
 class FactoryClass : StageClass {
  public:
   FactoryClass();
-  FactoryClass(NoInitClass const& x) : StageClass(x) {}
+  FactoryClass(const NoInitClass& x) : StageClass(x) {}
   ~FactoryClass() override;
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -74,8 +74,8 @@ class FactoryClass : StageClass {
   bool Has_Changed();
   bool Has_Completed();
   bool Is_Building() const { return Fetch_Rate() != 0; }
-  bool Set(TechnoTypeClass const& object, HouseClass& house);
-  bool Set(int const& type, HouseClass& house);
+  bool Set(const TechnoTypeClass& object, HouseClass& house);
+  bool Set(const int& type, HouseClass& house);
   bool Start();
   bool Suspend();
   int Completion();

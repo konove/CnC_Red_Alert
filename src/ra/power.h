@@ -52,7 +52,7 @@
 class PowerClass : public RadarClass {
  public:
   PowerClass();
-  PowerClass(NoInitClass const& x) : RadarClass(x), FlashTimer(x) {}
+  PowerClass(const NoInitClass& x) : RadarClass(x), FlashTimer(x) {}
 
   /*
   ** Initialization
@@ -62,7 +62,7 @@ class PowerClass : public RadarClass {
   void Init_Clear() override;  // Clears all to known state
   void Draw_It(bool complete = false) override;
   void AI(KeyNumType& input, int x, int y) override;
-  void Refresh_Cells(CELL cell, short const* list) override;
+  void Refresh_Cells(CELL cell, const short* list) override;
   void Flash_Power();
 
   unsigned IsToRedraw : 1;
@@ -130,8 +130,8 @@ class PowerClass : public RadarClass {
   /*
   **	Points to the shape to use for the "desired" power level indicator.
   */
-  static void const* PowerShape;
-  static void const* PowerBarShape;
+  static const void* PowerShape;
+  static const void* PowerBarShape;
 };
 
 #endif

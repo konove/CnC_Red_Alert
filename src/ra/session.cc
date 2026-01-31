@@ -142,7 +142,7 @@ char* SessionClass::SerialPacketNames[] = {
     "TIMING",  "SCORE_SCREEN", "LOADGAME", "LAST_COMMAND",
 };
 
-char const* SessionClass::DialMethodCheck[DIAL_METHODS] = {"T", "P"};
+const char* SessionClass::DialMethodCheck[DIAL_METHODS] = {"T", "P"};
 
 char* SessionClass::CallWaitStrings[CALL_WAIT_STRINGS_NUM] = {
     "*70,", "70#,", "1170,", "CUSTOM -                "};
@@ -1284,7 +1284,7 @@ void SessionClass::Read_Scenario_Descriptions() {
     int count = ini.Entry_Count("Missions");
     // debugprint( "Found %i missions in Missions.pkt\n", count );
     for (int index = 0; index < count; index++) {
-      char const* fname = ini.Get_Entry("Missions", index);
+      const char* fname = ini.Get_Entry("Missions", index);
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
       Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
@@ -1318,7 +1318,7 @@ void SessionClass::Read_Scenario_Descriptions() {
 
     int count = ini.Entry_Count("Missions");
     for (int index = 0; index < count; index++) {
-      char const* fname = ini.Get_Entry("Missions", index);
+      const char* fname = ini.Get_Entry("Missions", index);
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
 
@@ -1345,7 +1345,7 @@ void SessionClass::Read_Scenario_Descriptions() {
       int count = ini.Entry_Count("Missions");
       // debugprint( "Found %i missions in cstrike.pkt\n", count );
       for (int index = 0; index < count; index++) {
-        char const* fname = ini.Get_Entry("Missions", index);
+        const char* fname = ini.Get_Entry("Missions", index);
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
         Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
@@ -1372,7 +1372,7 @@ void SessionClass::Read_Scenario_Descriptions() {
       int count = ini.Entry_Count("Missions");
       // debugprint( "Found %i missions in aftmath.pkt\n", count );
       for (int index = 0; index < count; index++) {
-        char const* fname = ini.Get_Entry("Missions", index);
+        const char* fname = ini.Get_Entry("Missions", index);
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
         Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
@@ -1422,7 +1422,7 @@ void SessionClass::Read_Scenario_Descriptions() {
       ini.Load(file);
       int count = ini.Entry_Count("Missions");
       for (int index = 0; index < count; index++) {
-        char const* fname = ini.Get_Entry("Missions", index);
+        const char* fname = ini.Get_Entry("Missions", index);
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
         bool official = Is_Mission_126x126((char*)fname);
@@ -1471,7 +1471,7 @@ void SessionClass::Read_Scenario_Descriptions() {
     ini.Load(file2);
     int count = ini.Entry_Count("Missions");
     for (int index = 0; index < count; index++) {
-      char const* fname = ini.Get_Entry("Missions", index);
+      const char* fname = ini.Get_Entry("Missions", index);
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
       bool official = Is_Mission_126x126((char*)fname);
@@ -1733,8 +1733,8 @@ unsigned long SessionClass::Compute_Unique_ID() {
 
 }  // end of Compute_Unique_ID
 
-MultiMission::MultiMission(char const* filename, char const* description,
-                           char const* digest, bool official, bool expansion) {
+MultiMission::MultiMission(const char* filename, const char* description,
+                           const char* digest, bool official, bool expansion) {
   Set_Filename(filename);
   Set_Description(description);
   Set_Digest(digest);
@@ -1766,19 +1766,19 @@ void MultiMission::Draw_It(int, int x, int y, int width, int height,
   }
 }
 
-void MultiMission::Set_Description(char const* description) {
+void MultiMission::Set_Description(const char* description) {
   if (description != nullptr) {
     port::SafeCopy(ScenarioDescription, description);
   }
 }
 
-void MultiMission::Set_Filename(char const* filename) {
+void MultiMission::Set_Filename(const char* filename) {
   if (filename != nullptr) {
     port::SafeCopy(Filename, filename);
   }
 }
 
-void MultiMission::Set_Digest(char const* digest) {
+void MultiMission::Set_Digest(const char* digest) {
   if (digest != nullptr) {
     port::SafeCopy(Digest, digest);
   } else {

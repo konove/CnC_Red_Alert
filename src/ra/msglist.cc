@@ -329,8 +329,8 @@ void MessageListClass::Reset() {
  *   05/05/1995 BRR : Created.                                             *
  *   10/16/1996 JLB : Audio feedback added.                                *
  *=========================================================================*/
-TextLabelClass* MessageListClass::Add_Message(char const* name, int id,
-                                              char const* txt,
+TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
+                                              const char* txt,
                                               PlayerColorType color,
                                               TextPrintType style,
                                               int timeout) {
@@ -568,7 +568,7 @@ TextLabelClass* MessageListClass::Get_Label(int id) {
  * HISTORY:                                                                *
  *   11/07/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
+int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
                                      int timeout) {
   int min_chars;
   int max_chars;

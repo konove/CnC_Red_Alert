@@ -62,7 +62,7 @@ const int COLOR_BRIGHT_BAD = 127;      // RED;
 const int COLOR_NEUTRAL = 205;         // WHITE;
 const int COLOR_BRIGHT_NEUTRAL = 202;  // WHITE;
 
-static HouseTypeClass const HouseGood(
+static const HouseTypeClass HouseGood(
     HOUSE_GOOD,
     "GoodGuy",          //	NAME:			House name.
     TXT_GDI,            // FULLNAME:	Translated house name.
@@ -75,7 +75,7 @@ static HouseTypeClass const HouseGood(
     'G'                 // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseBad(
+static const HouseTypeClass HouseBad(
     HOUSE_BAD,
     "BadGuy",          //	NAME:			House name.
     TXT_NOD,           // FULLNAME:	Translated house name.
@@ -88,7 +88,7 @@ static HouseTypeClass const HouseBad(
     'B'                // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseCivilian(
+static const HouseTypeClass HouseCivilian(
     HOUSE_NEUTRAL,
     "Neutral",             //	NAME:			House name.
     TXT_CIVILIAN,          // FULLNAME:	Translated house name.
@@ -101,7 +101,7 @@ static HouseTypeClass const HouseCivilian(
     'C'                    // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseJP(
+static const HouseTypeClass HouseJP(
     HOUSE_JP,
     "Special",             //	NAME:			House name.
     TXT_JP,                // FULLNAME:	Translated house name.
@@ -114,7 +114,7 @@ static HouseTypeClass const HouseJP(
     'J'                    // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti1(
+static const HouseTypeClass HouseMulti1(
     HOUSE_MULTI1,
     "Multi1",              //	NAME:			House name.
     TXT_CIVILIAN,          // FULLNAME:	Translated house name.
@@ -127,7 +127,7 @@ static HouseTypeClass const HouseMulti1(
     'M'                    // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti2(
+static const HouseTypeClass HouseMulti2(
     HOUSE_MULTI2,
     "Multi2",              //	NAME:			House name.
     TXT_CIVILIAN,          // FULLNAME:	Translated house name.
@@ -140,7 +140,7 @@ static HouseTypeClass const HouseMulti2(
     'M'                    // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti3(
+static const HouseTypeClass HouseMulti3(
     HOUSE_MULTI3,
     "Multi3",              //	NAME:			House name.
     TXT_CIVILIAN,          // FULLNAME:	Translated house name.
@@ -153,7 +153,7 @@ static HouseTypeClass const HouseMulti3(
     'M'                    // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti4(
+static const HouseTypeClass HouseMulti4(
     HOUSE_MULTI4,
     "Multi4",              //	NAME:			House name.
     TXT_CIVILIAN,          // FULLNAME:	Translated house name.
@@ -166,7 +166,7 @@ static HouseTypeClass const HouseMulti4(
     'M'                    // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti5(
+static const HouseTypeClass HouseMulti5(
     HOUSE_MULTI5,
     "Multi5",              //	NAME:			House name.
     TXT_CIVILIAN,          // FULLNAME:	Translated house name.
@@ -179,7 +179,7 @@ static HouseTypeClass const HouseMulti5(
     'M'                    // VOICE:		Voice prefix character.
 );
 
-static HouseTypeClass const HouseMulti6(
+static const HouseTypeClass HouseMulti6(
     HOUSE_MULTI6,
     "Multi6",              //	NAME:			House name.
     TXT_CIVILIAN,          // FULLNAME:	Translated house name.
@@ -192,7 +192,7 @@ static HouseTypeClass const HouseMulti6(
     'M'                    // VOICE:		Voice prefix character.
 );
 
-HouseTypeClass const* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
+const HouseTypeClass* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
     &HouseGood,   &HouseBad,    &HouseCivilian, &HouseJP,     &HouseMulti1,
     &HouseMulti2, &HouseMulti3, &HouseMulti4,   &HouseMulti5, &HouseMulti6,
 };
@@ -219,10 +219,10 @@ HouseTypeClass const* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
  *                                                                                             *
  * HISTORY: * 06/21/1994 JLB : Created. *
  *=============================================================================================*/
-HouseTypeClass::HouseTypeClass(HousesType house, char const* ini, int fullname,
-                               char const* ext, int lemon, int color,
+HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
+                               const char* ext, int lemon, int color,
                                int bright_color, PlayerColorType remapcolor,
-                               unsigned char const* remap, char prefix) {
+                               const unsigned char* remap, char prefix) {
   RemapTable = remap;
   RemapColor = remapcolor;
   House = house;
@@ -252,7 +252,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, char const* ini, int fullname,
  * HISTORY: * 10/07/1992 JLB : Created. * 05/21/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-HousesType HouseTypeClass::From_Name(char const* name) {
+HousesType HouseTypeClass::From_Name(const char* name) {
   if (name) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
       if (stricmp(Pointers[house]->IniName, name) == 0) {
@@ -281,7 +281,8 @@ void HouseTypeClass::One_Time() {
   */
   if (Special.IsJurassic && AreThingiesEnabled) {
     (unsigned char&)HouseJP.Color = static_cast<unsigned char>(COLOR_BAD);
-    (unsigned char&)HouseJP.BrightColor = static_cast<unsigned char>(COLOR_BRIGHT_BAD);
+    (unsigned char&)HouseJP.BrightColor =
+        static_cast<unsigned char>(COLOR_BRIGHT_BAD);
   }
 }
 
@@ -299,6 +300,6 @@ void HouseTypeClass::One_Time() {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-HouseTypeClass const& HouseTypeClass::As_Reference(HousesType house) {
+const HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
   return *Pointers[house];
 }

@@ -120,7 +120,7 @@ class SidebarClass : public PowerClass {
   static void* SidebarBottomShape;  // Only used in Win95 version
 
   SidebarClass();
-  SidebarClass(NoInitClass const& x);
+  SidebarClass(const NoInitClass& x);
 
   /*
   ** Initialization
@@ -133,7 +133,7 @@ class SidebarClass : public PowerClass {
 
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete) override;
-  void Refresh_Cells(CELL cell, short const* list) override;
+  void Refresh_Cells(CELL cell, const short* list) override;
 
   void Zoom_Mode_Control();
   bool Abandon_Production(RTTIType type, int factory);
@@ -151,7 +151,7 @@ class SidebarClass : public PowerClass {
     class SelectClass : public ControlClass {
      public:
       SelectClass();
-      SelectClass(NoInitClass const& x) : ControlClass(x) {}
+      SelectClass(const NoInitClass& x) : ControlClass(x) {}
 
       void Set_Owner(StripClass& strip, int index);
 
@@ -164,8 +164,8 @@ class SidebarClass : public PowerClass {
 
    public:
     StripClass() {}
-    StripClass(InitClass const&);
-    StripClass(NoInitClass const&) {}
+    StripClass(const InitClass&);
+    StripClass(const NoInitClass&) {}
 
     bool Add(RTTIType type, int ID);
     bool Abandon_Production(int factory);
@@ -182,7 +182,7 @@ class SidebarClass : public PowerClass {
     void Deactivate();
     void Flag_To_Redraw();
     bool Factory_Link(int factory, RTTIType type, int id);
-    void const* Get_Special_Cameo(SpecialWeaponType type);
+    const void* Get_Special_Cameo(SpecialWeaponType type);
 
     /*
     **	File I/O.
@@ -335,13 +335,13 @@ class SidebarClass : public PowerClass {
     **	This points to the animation sequence of frames used to mark the passage
     *of time *	as an object is undergoing construction.
     */
-    static void const* ClockShapes;
+    static const void* ClockShapes;
 
     /*
     ** This points to the animation sequence which deals with special
     ** shapes which handle non-production based icons.
     */
-    static void const* SpecialShapes[SPC_COUNT];
+    static const void* SpecialShapes[SPC_COUNT];
 
     /*
     **	This is the last theater that the special palette remap table was loaded

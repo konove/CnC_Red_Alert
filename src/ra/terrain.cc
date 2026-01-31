@@ -315,7 +315,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  void const* shapedata;
+  const void* shapedata;
 
   shapedata = Get_Image_Data();
   if (shapedata) {
@@ -384,7 +384,7 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  short const* offset;  // Pointer to cell offset list.
+  const short* offset;  // Pointer to cell offset list.
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 
@@ -721,7 +721,7 @@ void TerrainClass::Read_INI(CCINIClass& ini) {
   int len = ini.Entry_Count(INI_Name());
 
   for (int index = 0; index < len; index++) {
-    char const* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.Get_Entry(INI_Name(), index);
     TerrainType terrain = ini.Get_TerrainType(INI_Name(), entry, TERRAIN_NONE);
     CELL cell = atoi(entry);
 

@@ -54,7 +54,7 @@ class CreditClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   CreditClass();
-  CreditClass(NoInitClass const&) {}
+  CreditClass(const NoInitClass &) {}
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

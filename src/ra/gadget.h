@@ -106,9 +106,9 @@ class GadgetClass : public LinkClass {
   } FlagEnum;
 
   GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky = false);
-  GadgetClass(NoInitClass const& x) : LinkClass(x) {}
+  GadgetClass(const NoInitClass& x) : LinkClass(x) {}
   GadgetClass() {}
-  GadgetClass(GadgetClass const& gadget) = default;
+  GadgetClass(const GadgetClass& gadget) = default;
   ~GadgetClass() override;
 
   /*

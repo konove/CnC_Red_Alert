@@ -84,7 +84,7 @@ typedef enum TeamMissionType {
 */
 class TeamMissionClass {
  public:
-  char const* Description(int index) const;
+  const char* Description(int index) const;
   operator const char*() const { return Description(0); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags);
@@ -105,7 +105,7 @@ class TeamMissionClass {
 class TeamMemberClass {
  public:
   int Quantity;                  // Number of objects desired for this type.
-  TechnoTypeClass const* Class;  // The type of object desired.
+  const TechnoTypeClass* Class;  // The type of object desired.
 };
 
 /*
@@ -119,7 +119,7 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Constructor/Destructor
   */
   TeamTypeClass();
-  TeamTypeClass(NoInitClass const& x) : AbstractTypeClass(x), Trigger(x) {}
+  TeamTypeClass(const NoInitClass& x) : AbstractTypeClass(x), Trigger(x) {}
   ~TeamTypeClass() override {}
 
   void* operator new(size_t);
@@ -138,7 +138,7 @@ class TeamTypeClass : public AbstractTypeClass {
   static void Read_INI(CCINIClass& ini);
   void Fill_In(char* name, char* entry);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "TeamTypes"; }
+  static const char* INI_Name() { return "TeamTypes"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
   void Code_Pointers();
@@ -147,7 +147,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	As_Pointer gets a pointer to the trigger object give its name
   */
-  static TeamTypeClass* As_Pointer(char const* name);
+  static TeamTypeClass* As_Pointer(const char* name);
 
   /*
   **	Processing routines
@@ -161,15 +161,15 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  static char const* Name_From_Mission(TeamMissionType order);
-  static TeamMissionType Mission_From_Name(char const* name);
-  static TeamTypeClass const* Suggested_New_Team(HouseClass* house, long atypes,
+  static const char* Name_From_Mission(TeamMissionType order);
+  static TeamMissionType Mission_From_Name(const char* name);
+  static const TeamTypeClass* Suggested_New_Team(HouseClass* house, long atypes,
                                                  long utypes, long itypes,
                                                  long vtypes, bool alerted);
-  static TeamTypeClass* From_Name(char const* name);
+  static TeamTypeClass* From_Name(const char* name);
   bool Edit();
-  char const* Member_Description() const;
-  char const* Description() const;
+  const char* Member_Description() const;
+  const char* Description() const;
   operator const char*() const { return (Description()); }
 
   /*
@@ -272,7 +272,7 @@ class TeamTypeClass : public AbstractTypeClass {
   int ClassCount;
   TeamMemberClass Members[MAX_TEAM_CLASSCOUNT];
 
-  static char const* TMissions[TMISSION_COUNT];
+  static const char* TMissions[TMISSION_COUNT];
 };
 
 NeedType TeamMission_Needs(TeamMissionType tmtype);

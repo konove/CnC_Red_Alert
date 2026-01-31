@@ -120,7 +120,7 @@ void PKPipe::Put_To(Pipe* pipe) {
  *                                                                                             *
  * HISTORY: * 07/07/1996 JLB : Created. *
  *=============================================================================================*/
-void PKPipe::Key(PKey const* key) {
+void PKPipe::Key(const PKey* key) {
   if (key == nullptr) {
     Flush();
     IsGettingKey = false;
@@ -155,7 +155,7 @@ void PKPipe::Key(PKey const* key) {
  *                                                                                             *
  * HISTORY: * 07/07/1996 JLB : Created. *
  *=============================================================================================*/
-int PKPipe::Put(void const* source, int length) {
+int PKPipe::Put(const void* source, int length) {
   /*
   **	If the parameter seem illegal, then pass the pipe request to the
   **	next pipe in the chain and let them deal with it.

@@ -61,7 +61,7 @@ class Pipe {
   virtual int End() { return Flush(); }
   virtual void Put_To(Pipe* pipe);
   void Put_To(Pipe& pipe) { Put_To(&pipe); }
-  virtual int Put(void const* source, int slen);
+  virtual int Put(const void* source, int slen);
 
   /*
   **	Pointer to the next pipe segment in the chain.

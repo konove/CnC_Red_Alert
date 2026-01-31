@@ -1088,28 +1088,28 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
  * HISTORY:                                                                *
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
-TARGET TechnoType_To_Target(TechnoTypeClass const* ptr) {
+TARGET TechnoType_To_Target(const TechnoTypeClass* ptr) {
   TARGET target;
 
   switch (ptr->What_Am_I()) {
     case RTTI_INFANTRYTYPE:
       target = Build_Target(KIND_INFANTRY,
-                            dynamic_cast<InfantryTypeClass const*>(ptr)->Type);
+                            dynamic_cast<const InfantryTypeClass*>(ptr)->Type);
       break;
 
     case RTTI_UNITTYPE:
       target = Build_Target(KIND_UNIT,
-                            dynamic_cast<UnitTypeClass const*>(ptr)->Type);
+                            dynamic_cast<const UnitTypeClass*>(ptr)->Type);
       break;
 
     case RTTI_AIRCRAFTTYPE:
       target = Build_Target(KIND_AIRCRAFT,
-                            dynamic_cast<AircraftTypeClass const*>(ptr)->Type);
+                            dynamic_cast<const AircraftTypeClass*>(ptr)->Type);
       break;
 
     case RTTI_BUILDINGTYPE:
       target = Build_Target(KIND_BUILDING,
-                            dynamic_cast<BuildingTypeClass const*>(ptr)->Type);
+                            dynamic_cast<const BuildingTypeClass*>(ptr)->Type);
       break;
 
     default:
@@ -1137,7 +1137,7 @@ TARGET TechnoType_To_Target(TechnoTypeClass const* ptr) {
  * HISTORY:                                                                *
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
-TechnoTypeClass const* Target_To_TechnoType(TARGET target) {
+const TechnoTypeClass* Target_To_TechnoType(TARGET target) {
   switch (Target_Kind(target)) {
     case KIND_INFANTRY:
       return &InfantryTypeClass::As_Reference(

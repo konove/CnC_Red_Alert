@@ -43,8 +43,8 @@ MemoryFlagType operator~(MemoryFlagType);
 
 /* Prototypes for functions defined in this file */
 void* cdecl Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags);
-void cdecl Free(void const* pointer);
-void* cdecl Resize_Alloc(void const* original_ptr,
+void cdecl Free(const void* pointer);
+void* cdecl Resize_Alloc(const void* original_ptr,
                          unsigned long new_size_in_bytes);
 long cdecl Ram_Free(MemoryFlagType flag);
 long cdecl Total_Ram_Free(MemoryFlagType flag);

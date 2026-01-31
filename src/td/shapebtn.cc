@@ -92,7 +92,7 @@ ShapeButtonClass::ShapeButtonClass() : ToggleClass(0, 0, 0, 0, 0) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-ShapeButtonClass::ShapeButtonClass(unsigned id, void const* shape, int x, int y)
+ShapeButtonClass::ShapeButtonClass(unsigned id, const void* shape, int x, int y)
     : ToggleClass(id, x, y, 0, 0) {
   Width = 0;
   Height = 0;
@@ -100,7 +100,7 @@ ShapeButtonClass::ShapeButtonClass(unsigned id, void const* shape, int x, int y)
   Set_Shape(shape);
 }
 
-void ShapeButtonClass::Set_Shape(void const* data) {
+void ShapeButtonClass::Set_Shape(const void* data) {
   ShapeData = data;
   if (ShapeData) {
     Width = Get_Build_Frame_Width(ShapeData);

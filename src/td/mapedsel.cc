@@ -338,7 +338,7 @@ void MapEditClass::Popup_Controls() {
     return;
   }
 
-  objtype = (TechnoTypeClass const*)&CurrentObject[0]->Class_Of();
+  objtype = (const TechnoTypeClass*)&CurrentObject[0]->Class_Of();
 
   /*
   ---------------------- Get object's current values -----------------------

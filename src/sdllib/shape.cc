@@ -6,7 +6,7 @@
 char* _ShapeBuffer;
 long _ShapeBufferSize;
 
-int Extract_Shape_Count(void const* buffer) {
+int Extract_Shape_Count(const void* buffer) {
   ShapeBlock_Type* block = (ShapeBlock_Type*)buffer;
   return block->NumShapes;
 }
@@ -15,7 +15,7 @@ int Extract_Shape_Count(const std::span<const std::byte> span) {
   return Extract_Shape_Count(span.data());
 }
 
-void* Extract_Shape(void const* buffer, int shape) {
+void* Extract_Shape(const void* buffer, int shape) {
   ShapeBlock_Type* block = (ShapeBlock_Type*)buffer;
   long offset;  // Offset of shape data, from start of block
   char* bytebuf = (char*)buffer;

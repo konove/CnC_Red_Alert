@@ -53,7 +53,7 @@ class CargoClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   CargoClass() : Quantity(0), CargoHold(nullptr) {}
-  CargoClass(NoInitClass const&) {}
+  CargoClass(const NoInitClass&) {}
   virtual ~CargoClass() { CargoHold = nullptr; }
 
   /*---------------------------------------------------------------------

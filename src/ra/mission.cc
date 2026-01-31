@@ -400,7 +400,7 @@ void MissionClass::Assign_Mission(MissionType order) {
  * HISTORY: * 10/07/1992 JLB : Created. * 04/22/1994 JLB : Converted to static
  *member function.                                     *
  *=============================================================================================*/
-MissionType MissionClass::Mission_From_Name(char const* name) {
+MissionType MissionClass::Mission_From_Name(const char* name) {
   MissionType order;
 
   if (name) {
@@ -429,7 +429,7 @@ MissionType MissionClass::Mission_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-char const* MissionClass::Mission_Name(MissionType mission) {
+const char* MissionClass::Mission_Name(MissionType mission) {
   if (mission != MISSION_NONE) {
     return Missions[mission];
   }
@@ -521,7 +521,7 @@ MissionControlClass::MissionControlClass()
       Rate(".016"),
       AARate(".016") {}
 
-char const* MissionControlClass::Name() const {
+const char* MissionControlClass::Name() const {
   if (Mission == MISSION_NONE) {
     return "<none>";
   }

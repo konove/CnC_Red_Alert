@@ -140,12 +140,12 @@ class ObjectClass : public AbstractClass {
   **	Constructor & destructors.
   */
   ObjectClass(RTTIType rtti, int id);
-  ObjectClass(NoInitClass const& x) : AbstractClass(x), Next(x), Trigger(x) {}
+  ObjectClass(const NoInitClass& x) : AbstractClass(x), Next(x), Trigger(x) {}
   ~ObjectClass() override { Next = nullptr; }
-  int operator<(ObjectClass const& object) const {
+  int operator<(const ObjectClass& object) const {
     return Sort_Y() < object.Sort_Y();
   }
-  int operator>(ObjectClass const& object) const {
+  int operator>(const ObjectClass& object) const {
     return Sort_Y() > object.Sort_Y();
   }
 
@@ -158,8 +158,8 @@ class ObjectClass : public AbstractClass {
   **	Query functions.
   */
   virtual bool Is_Players_Army() const { return false; }
-  virtual void const* Get_Image_Data() const;
-  virtual ActionType What_Action(ObjectClass const*) const;
+  virtual const void* Get_Image_Data() const;
+  virtual ActionType What_Action(const ObjectClass*) const;
   virtual ActionType What_Action(CELL) const;
   virtual LayerType In_Which_Layer() const;
   bool Is_Infantry() const { return RTTI == RTTI_INFANTRY; }
@@ -173,8 +173,8 @@ class ObjectClass : public AbstractClass {
            RTTI == RTTI_AIRCRAFT;
   }
   virtual int Get_Ownable() const;
-  virtual ObjectTypeClass const& Class_Of() const = 0;
-  char const* Name() const override;
+  virtual const ObjectTypeClass& Class_Of() const = 0;
+  const char* Name() const override;
   virtual int Full_Name() const;
   virtual bool Can_Repair() const;
   virtual bool Can_Demolish() const;
@@ -211,8 +211,8 @@ class ObjectClass : public AbstractClass {
   virtual void Do_Shimmer();
   virtual int Exit_Object(TechnoClass*);
   virtual bool Render(bool forced);  // const;
-  virtual short const* Occupy_List(bool placement = false) const;
-  virtual short const* Overlap_List(bool redraw = false) const;
+  virtual const short* Occupy_List(bool placement = false) const;
+  virtual const short* Overlap_List(bool redraw = false) const;
   virtual fixed Health_Ratio() const;
   virtual void Draw_It(int x, int y, WindowNumberType) const = 0;
   virtual void Hidden();

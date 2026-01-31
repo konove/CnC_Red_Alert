@@ -1862,7 +1862,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   }
 }
 
-void ScenarioClass::Set_Scenario_Name(char const* name) {
+void ScenarioClass::Set_Scenario_Name(const char* name) {
   if (name != nullptr) {
     port::SafeCopy(ScenarioName, name);
     ScenarioName[ARRAY_SIZE(ScenarioName) - 1] = '\0';
@@ -2380,7 +2380,7 @@ void Write_Scenario_INI(char* fname) {
       ini.Load(file, true);
     }
 
-    static char const* const BASIC = "Basic";
+    static const char* const BASIC = "Basic";
     ini.Clear(BASIC);
     ini.Put_String(BASIC, "Name", Scen.Description);
     ini.Put_VQType(BASIC, "Intro", Scen.IntroMovie);
@@ -3280,7 +3280,7 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
   return XY_Cell(x, y);
 }
 
-void Disect_Scenario_Name(char const* name, int& scenario,
+void Disect_Scenario_Name(const char* name, int& scenario,
                           ScenarioPlayerType& player, ScenarioDirType& dir,
                           ScenarioVarType& var) {
   if (name == nullptr) return;

@@ -91,7 +91,7 @@
  * HISTORY:                                                                *
  *   12/08/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Handle_Teams(char const* caption) {
+void MapEditClass::Handle_Teams(const char* caption) {
   int rc;
 
   /*------------------------------------------------------------------------
@@ -199,7 +199,7 @@ void MapEditClass::Handle_Teams(char const* caption) {
  * HISTORY:                                                                *
  *   12/08/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Select_Team(char const* caption) {
+int MapEditClass::Select_Team(const char* caption) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -1998,7 +1998,7 @@ int MapEditClass::Team_Members(HousesType house) {
  *                                                                                             *
  * HISTORY: * 07/02/1995 JLB : Created. *
  *=============================================================================================*/
-void MapEditClass::Draw_Member(TechnoTypeClass const* ptr, int index, int quant,
+void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
                                HousesType house, int pic_x, int pic_y) {
   int numcols = (D_DIALOG_W - 32) / D_PICTURE_W;
   int col = index % numcols;

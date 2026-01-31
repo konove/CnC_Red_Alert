@@ -139,7 +139,7 @@ extern bool Is_Mission_Aftermath(char* file_name);
 #define PACKET_CANCEL_TIMEOUT 900
 
 // extern char const *ForMisStr[];
-extern char const* EngMisStr[];
+extern const char* EngMisStr[];
 
 //
 // how much time (ticks) to go by before sending another packet
@@ -1840,7 +1840,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   static char custom_port[10 + MODEM_NAME_MAX] = {"CUSTOM - ????"};
 
 #ifndef WIN32  // No IRQ dialog in Win version
-  static char const* irqname[5] = {"2 / 9", "3 - [COM2 & 4]", "4 - [COM1 & 3]",
+  static const char* irqname[5] = {"2 / 9", "3 - [COM2 & 4]", "4 - [COM1 & 3]",
                                    "5", "CUSTOM - ??"};
 
   static int _irqidx[4] = {2, 1, 2, 1};
@@ -1848,14 +1848,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 #endif  // WIN32
 
 #ifdef WIN32
-  static char const* baudname[5] = {
+  static const char* baudname[5] = {
       "14400", "19200", "28800", "38400", "57600",
   };
 
   static char modemnames[10][MODEM_NAME_MAX];
 
 #else   // WIN32
-  static char const* baudname[5] = {"9600", "14400", "19200", "28800", "38400"};
+  static const char* baudname[5] = {"9600", "14400", "19200", "28800", "38400"};
 #endif  // WIN32
   /*
   ** Dialog variables
@@ -7673,7 +7673,7 @@ static void Modem_Echo(char c) {
 
 } /* end of Modem_Echo */
 
-void Smart_Printf(char const* format, ...) {
+void Smart_Printf(const char* format, ...) {
   va_list arglist;
   char buf[501];
 

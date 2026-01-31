@@ -268,7 +268,7 @@ void BulletClass::operator delete(void* ptr) {
  * HISTORY: * 06/20/1994 JLB : Created. * 01/05/1995 JLB : Handles projectiles
  *with altitude.                                       *
  *=============================================================================================*/
-short const* BulletClass::Occupy_List(bool) const {
+const short* BulletClass::Occupy_List(bool) const {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 
@@ -582,7 +582,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	If there is no shape loaded for this object, then
   **	it obviously can't be rendered -- just bail.
   */
-  void const* shapeptr = Get_Image_Data();
+  const void* shapeptr = Get_Image_Data();
   if (shapeptr == nullptr) return;
 
   /*
@@ -933,7 +933,7 @@ LayerType BulletClass::In_Which_Layer() const {
  *=============================================================================================*/
 bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
   coord = Coord;
-  CellClass const* cellptr = &Map[coord];
+  const CellClass* cellptr = &Map[coord];
 
   /*
   **	Check for impact on a wall or other high obstacle.
@@ -1050,7 +1050,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   **	Fetch the land type that the explosion will be upon. Special case for
   **	flying aircraft targets, their land type will be LAND_NONE.
   */
-  CellClass const* cellptr = &Map[Coord];
+  const CellClass* cellptr = &Map[Coord];
   LandType land = cellptr->Land_Type();
   if (Is_Target_Aircraft(TarCom) &&
       As_Aircraft(TarCom)->In_Which_Layer() == LAYER_TOP) {

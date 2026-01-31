@@ -99,7 +99,7 @@ class DriveClass : public FootClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   DriveClass(RTTIType rtti, int id, HousesType house);
-  DriveClass(NoInitClass const& x) : FootClass(x), MoebiusCountDown(x) {}
+  DriveClass(const NoInitClass& x) : FootClass(x), MoebiusCountDown(x) {}
   ~DriveClass() override {}
 
   /*---------------------------------------------------------------------
@@ -160,7 +160,7 @@ class DriveClass : public FootClass {
   } TrackType;
 
   typedef struct {
-    TrackType const* Track;  // Pointer to track list.
+    const TrackType* Track;  // Pointer to track list.
     int Jump;                // Index where track jumping is allowed.
     int Entry;               // Entry point if jumping to this track.
     int Cell;                // Per cell process should occur at this index.
@@ -191,21 +191,21 @@ class DriveClass : public FootClass {
   void Lay_Track();
   COORDINATE Smooth_Turn(COORDINATE adj, DirType& dir);
 
-  static TurnTrackType const TrackControl[67];
-  static RawTrackType const RawTracks[13];
-  static TrackType const Track13[];
-  static TrackType const Track12[];
-  static TrackType const Track11[];
-  static TrackType const Track10[];
-  static TrackType const Track9[];
-  static TrackType const Track8[];
-  static TrackType const Track7[];
-  static TrackType const Track6[];
-  static TrackType const Track5[];
-  static TrackType const Track4[];
-  static TrackType const Track3[];
-  static TrackType const Track2[];
-  static TrackType const Track1[24];
+  static const TurnTrackType TrackControl[67];
+  static const RawTrackType RawTracks[13];
+  static const TrackType Track13[];
+  static const TrackType Track12[];
+  static const TrackType Track11[];
+  static const TrackType Track10[];
+  static const TrackType Track9[];
+  static const TrackType Track8[];
+  static const TrackType Track7[];
+  static const TrackType Track6[];
+  static const TrackType Track5[];
+  static const TrackType Track4[];
+  static const TrackType Track3[];
+  static const TrackType Track2[];
+  static const TrackType Track1[24];
 };
 
 #endif

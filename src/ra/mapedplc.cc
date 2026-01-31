@@ -265,7 +265,7 @@ int MapEditClass::Placement_Dialog() {
   const ObjectTypeClass* curobj;  // Working object pointer.
   int x, y;                       // for drawing the grid
   KeyNumType input;               // user input
-  short const* occupy;            // ptr into object's OccupyList
+  const short* occupy;            // ptr into object's OccupyList
   int cell;                       // cell index for parsing OccupyList
   int i;
   int typeindex;  // index of class type
@@ -822,7 +822,7 @@ int MapEditClass::Place_Object() {
   CELL template_cell;        // cell being checked for template
   COORDINATE obj_coord;      // coord of occupier object
   int okflag;                // OK to place a template?
-  short const* occupy;       // ptr into template's OccupyList
+  const short* occupy;       // ptr into template's OccupyList
   ObjectClass* occupier;     // occupying object
   TemplateType save_ttype;   // for saving cell's TType
   unsigned char save_ticon;  // for saving cell's TIcon
@@ -1788,7 +1788,7 @@ void MapEditClass::Cancel_Base_Building() {
 void MapEditClass::Build_Base_To(int percent) {
   int i;
   int num_buildings;
-  BuildingTypeClass const* objtype;
+  const BuildingTypeClass* objtype;
   BuildingClass* obj;
 
   // ScenarioInit++;

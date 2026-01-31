@@ -76,7 +76,7 @@ bool ReadyToQuit = false;
  *   08/19/1993 SKB : Split drawshp.asm into several modules.              *
  *   05/25/1994 BR : Converted to 32-bit                                   *
  *=========================================================================*/
-int __cdecl Extract_Shape_Count(VOID const* buffer) {
+int __cdecl Extract_Shape_Count(const VOID* buffer) {
   ShapeBlock_Type* block = (ShapeBlock_Type*)buffer;
 
   return (block->NumShapes);
@@ -105,7 +105,7 @@ int __cdecl Extract_Shape_Count(VOID const* buffer) {
  *   08/19/1993 SKB : Split drawshp.asm into several modules.              *
  *   05/25/1994 BR : Converted to 32-bit                                   *
  *=========================================================================*/
-VOID* __cdecl Extract_Shape(VOID const* buffer, int shape) {
+VOID* __cdecl Extract_Shape(const VOID* buffer, int shape) {
   ShapeBlock_Type* block = (ShapeBlock_Type*)buffer;
   long offset;  // Offset of shape data, from start of block
   char* bytebuf = (char*)buffer;
@@ -499,7 +499,7 @@ HANDLE DebugFile = INVALID_HANDLE_VALUE;
  *                                                                                             *
  * HISTORY: * 10/28/96 12:48PM ST : Created *
  *=============================================================================================*/
-void CCDebugString(char const* string) {
+void CCDebugString(const char* string) {
 #if (0)
 
   char outstr[256];
@@ -660,7 +660,7 @@ void Memory_Error_Handler() {
   ExitProcess(0);
 }
 
-GraphicBufferClass* Read_PCX_File(char const* name, char* Palette, void* Buff,
+GraphicBufferClass* Read_PCX_File(const char* name, char* Palette, void* Buff,
                                   long Size);
 
 /***********************************************************************************************
@@ -677,7 +677,7 @@ GraphicBufferClass* Read_PCX_File(char const* name, char* Palette, void* Buff,
  * HISTORY: * 7/5/96 11:30AM ST : Created *
  *=============================================================================================*/
 
-void Load_Title_Screen(char const* name, GraphicViewPortClass* video_page,
+void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
                        unsigned char* palette) {
   GraphicBufferClass* load_buffer;
 
@@ -727,7 +727,7 @@ void Load_Title_Screen(char const* name, GraphicViewPortClass* video_page,
     file_ptr = pool;                   \
   }
 
-GraphicBufferClass* Read_PCX_File(char const* name, char* palette, void* Buff,
+GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
                                   long Size) {
   unsigned i, j;
   unsigned rle;

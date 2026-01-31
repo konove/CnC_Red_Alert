@@ -74,7 +74,7 @@
 static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                  int iny2);
 static int Select_To_Entry(int select, unsigned long bitfield, int index);
-static void Flash_Line(char const* text, int xpix, int ypix, unsigned nfgc,
+static void Flash_Line(const char* text, int xpix, int ypix, unsigned nfgc,
                        unsigned hfgc, unsigned bgc);
 
 int UnknownKey;
@@ -137,7 +137,7 @@ static int Select_To_Entry(int select, unsigned long bitfield, int index) {
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-static void Flash_Line(char const* text, int xpix, int ypix, unsigned nfgc,
+static void Flash_Line(const char* text, int xpix, int ypix, unsigned nfgc,
                        unsigned hfgc, unsigned bgc) {
   int loop;
 
@@ -226,7 +226,7 @@ int Find_Menu_Items(int maxitems, unsigned long field, char index) {
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-void Setup_Menu(int menu, char const* text[], unsigned long field, int index,
+void Setup_Menu(int menu, const char* text[], unsigned long field, int index,
                 int skip) {
   int *menuptr, lp;
   int menuy, menux, idx, item, num, drawy;
@@ -266,7 +266,7 @@ void Setup_Menu(int menu, char const* text[], unsigned long field, int index,
 /*	RETURNS:
  */
 /*=========================================================================*/
-int Check_Menu(int menu, char const* text[], char*, long field, int index) {
+int Check_Menu(int menu, const char* text[], char*, long field, int index) {
   int maxitem, select, key, menuy, menux;
   int mx1, mx2, my1, my2, tempy;
   int drawy, menuskip, halfskip;
@@ -437,10 +437,10 @@ int Check_Menu(int menu, char const* text[], char*, long field, int index) {
  * HISTORY:                                                                *
  *   05/16/1994 JLB : Created.                                             *
  *=========================================================================*/
-int Do_Menu(char const** strings, bool blue) {
+int Do_Menu(const char** strings, bool blue) {
   int count;         // Number of entries in this menu.
   int length;        // The width of the menu (in pixels).
-  char const** ptr;  // Working menu text pointer.
+  const char** ptr;  // Working menu text pointer.
   int selection;     // Selection from user.
 
   if (!strings) return (-1);

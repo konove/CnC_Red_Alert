@@ -84,8 +84,8 @@
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags, void const* up,
-                               void const* down)
+                               TextPrintType flags, const void* up,
+                               const void* down)
     : ListClass(id, x, y, w, h, flags, up, down), IsReadOnly(false) {}
 
 /***********************************************************************************************
@@ -123,12 +123,12 @@ CheckListClass::~CheckListClass() {
  *                                                                                             *
  * HISTORY: * 02/14/1996 JLB : Created. *
  *=============================================================================================*/
-int CheckListClass::Add_Item(char const* text) {
+int CheckListClass::Add_Item(const char* text) {
   CheckObject* obj = new CheckObject(text, false);
-  return ListClass::Add_Item((char const*)obj);
+  return ListClass::Add_Item((const char*)obj);
 }
 
-char const* CheckListClass::Current_Item() const {
+const char* CheckListClass::Current_Item() const {
   CheckObject* obj = (CheckObject*)ListClass::Current_Item();
   if (obj) {
     return obj->Text;
@@ -151,7 +151,7 @@ char const* CheckListClass::Current_Item() const {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-char const* CheckListClass::Get_Item(int index) const {
+const char* CheckListClass::Get_Item(int index) const {
   CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
   if (obj) {
     return obj->Text;
@@ -175,7 +175,7 @@ char const* CheckListClass::Get_Item(int index) const {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void CheckListClass::Remove_Item(char const* text) {
+void CheckListClass::Remove_Item(const char* text) {
   for (int index = 0; index < Count(); index++) {
     CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
     if (obj && stricmp(obj->Text, text) == 0) {
@@ -203,7 +203,7 @@ void CheckListClass::Remove_Item(char const* text) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void CheckListClass::Set_Selected_Index(char const* text) {
+void CheckListClass::Set_Selected_Index(const char* text) {
   for (int index = 0; index < Count(); index++) {
     CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
     if (obj && stricmp(obj->Text, text) == 0) {

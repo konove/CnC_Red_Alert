@@ -127,9 +127,9 @@
 #include "td/unit.h"
 #include "td/vector.h"
 
-void const* ObjectTypeClass::SelectShapes = nullptr;
+const void* ObjectTypeClass::SelectShapes = nullptr;
 
-void const* ObjectTypeClass::PipShapes = nullptr;
+const void* ObjectTypeClass::PipShapes = nullptr;
 
 bool ObjectClass::Is_Infantry() const { return false; }
 
@@ -154,7 +154,7 @@ ObjectTypeClass::ObjectTypeClass(bool is_sentient, bool is_flammable,
                                  bool is_crushable, bool is_stealthy,
                                  bool is_selectable, bool is_legal_target,
                                  bool is_insignificant, bool is_immune,
-                                 int name, char const* ini, ArmorType armor,
+                                 int name, const char* ini, ArmorType armor,
                                  unsigned short strength)
     : AbstractTypeClass(name, ini) {
   IsSentient = is_sentient;
@@ -287,7 +287,7 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool, bool, HousesType) const {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void const* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
+const void* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
 
 /***********************************************************************************************
  * ObjectClass::ObjectClass -- Default constructor for objects. *
@@ -735,7 +735,7 @@ bool ObjectClass::Select() {
       Unselect_All();
     }
   }
-  if (dynamic_cast<TechnoTypeClass const&>(Class_Of()).IsLeader) {
+  if (dynamic_cast<const TechnoTypeClass&>(Class_Of()).IsLeader) {
     CurrentObject.Add_Head(this);
   } else {
     CurrentObject.Add(this);
@@ -877,8 +877,8 @@ void ObjectClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-short const* ObjectTypeClass::Occupy_List(bool) const {
-  static short const _list[] = {0, REFRESH_EOL};
+const short* ObjectTypeClass::Occupy_List(bool) const {
+  static const short _list[] = {0, REFRESH_EOL};
   return _list;
 }
 
@@ -900,8 +900,8 @@ short const* ObjectTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-short const* ObjectTypeClass::Overlap_List() const {
-  static short const _list[] = {REFRESH_EOL};
+const short* ObjectTypeClass::Overlap_List() const {
+  static const short _list[] = {REFRESH_EOL};
   return _list;
 }
 
@@ -1413,10 +1413,10 @@ void ObjectClass::Init() { CurrentObject.Clear(); }
 bool ObjectClass::Revealed(HouseClass* house) { return house != nullptr; }
 
 // These can't be made inline (for various reasons).
-short const* ObjectClass::Occupy_List(bool placement) const {
+const short* ObjectClass::Occupy_List(bool placement) const {
   return Class_Of().Occupy_List(placement);
 };
-short const* ObjectClass::Overlap_List() const {
+const short* ObjectClass::Overlap_List() const {
   return Class_Of().Overlap_List();
 };
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {

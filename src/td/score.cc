@@ -112,12 +112,12 @@
 struct InfantryAnim {
   int xpos;
   int ypos;
-  void const* shapefile;
-  void const* remap;
+  const void* shapefile;
+  const void* remap;
   int anim;
   int stage;
   char delay;
-  InfantryTypeClass const* Class;
+  const InfantryTypeClass* Class;
 } InfantryMan[NUMINFANTRYMEN];
 void Draw_InfantryMen();
 void Draw_InfantryMan(int index);
@@ -129,7 +129,7 @@ void Cycle_Wait_Click();
 
 int ScorePass;
 
-void const* Beepy6;
+const void* Beepy6;
 
 int ControlQ;  // cheat key to skip past score/mapsel screens
 
@@ -167,7 +167,7 @@ unsigned char RemapCiv[256] = {
     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB,
     0xFC, 0xFD, 0xFE, 0xFF};
 
-unsigned char const ScoreRemapGrey[256] = {
+const unsigned char ScoreRemapGrey[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,
     8,   9,   10,  11,  12,  13,  14,  15,  // 0..15
     16,  17,  18,  19,  20,  176, 22,  208,
@@ -202,7 +202,7 @@ unsigned char const ScoreRemapGrey[256] = {
     248, 249, 250, 251, 252, 253, 254, 255  // 240..255
 };
 
-unsigned char const ScoreRemapYellow[256] = {
+const unsigned char ScoreRemapYellow[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,
     8,   9,   10,  11,  12,  13,  14,  15,  // 0..15
     16,  17,  18,  19,  20,  176, 22,  208,
@@ -237,7 +237,7 @@ unsigned char const ScoreRemapYellow[256] = {
     248, 249, 250, 251, 252, 253, 254, 255  // 240..255
 };
 
-unsigned char const ScoreRemapBldg[256] = {
+const unsigned char ScoreRemapBldg[256] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
     0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
     0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23,
@@ -260,7 +260,7 @@ unsigned char const ScoreRemapBldg[256] = {
     0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB,
     0xFC, 0xFD, 0xFE, 0xFF};
-unsigned char const ScoreRemapFBall[256] = {
+const unsigned char ScoreRemapFBall[256] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
     0x0C, 0x0D, 0x0E, 0x0F, 0xB0, 0xE5, 0x82, 0xE4, 0xE3, 0xE2, 0xB1, 0xD0,
     0xE1, 0xE0, 0xD1, 0xD2, 0xD3, 0xD4, 0xDF, 0xD5, 0x20, 0x21, 0x22, 0x23,
@@ -298,7 +298,7 @@ struct Fame {
 
 ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
-ScoreAnimClass::ScoreAnimClass(int x, int y, void const* data) {
+ScoreAnimClass::ScoreAnimClass(int x, int y, const void* data) {
   BlitList.Add(x * RESFACTOR, y * RESFACTOR, x * RESFACTOR, y * RESFACTOR,
                RESFACTOR * String_Pixel_Width((char*)data), 8 * RESFACTOR);
   XPos = x;
@@ -308,7 +308,7 @@ ScoreAnimClass::ScoreAnimClass(int x, int y, void const* data) {
   DataPtr = data;
 }
 
-ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, void const* data, int max,
+ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, const void* data, int max,
                                int timer)
     : ScoreAnimClass(xpos, ypos, data) {
   Stage = 0;
@@ -329,7 +329,7 @@ void ScoreTimeClass::Update() {
   }
 }
 
-ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, void const* data, int max,
+ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, const void* data, int max,
                                  int timer)
     : ScoreAnimClass(xpos, ypos, data) {
   Stage = 0;
@@ -360,15 +360,15 @@ void ScoreCredsClass::Update() {
 }
 
 ScorePrintClass::ScorePrintClass(int string, int xpos, int ypos,
-                                 void const* palette, int background)
+                                 const void* palette, int background)
     : ScoreAnimClass(xpos, ypos, Text_String(string)) {
   Background = background;
   PrimaryPalette = palette;
   Stage = 0;
 }
 
-ScorePrintClass::ScorePrintClass(void const* string, int xpos, int ypos,
-                                 void const* palette, int background)
+ScorePrintClass::ScorePrintClass(const void* string, int xpos, int ypos,
+                                 const void* palette, int background)
     : ScoreAnimClass(xpos, ypos, string) {
   Background = background;
   PrimaryPalette = palette;
@@ -404,7 +404,7 @@ void ScorePrintClass::Update() {
       /*
       ** Clear out the white letter overlay
       */
-      static char const _blackpal[] = {BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
+      static const char _blackpal[] = {BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
                                        BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
                                        BLACK, BLACK, BLACK, BLACK};
       Set_Font_Palette(_blackpal);
@@ -434,15 +434,15 @@ void ScorePrintClass::Update() {
 }
 
 MultiStagePrintClass::MultiStagePrintClass(int string, int xpos, int ypos,
-                                           void const* palette, int background)
+                                           const void* palette, int background)
     : ScoreAnimClass(xpos, ypos, Text_String(string)) {
   Background = background;
   PrimaryPalette = palette;
   Stage = 0;
 }
 
-MultiStagePrintClass::MultiStagePrintClass(void const* string, int xpos,
-                                           int ypos, void const* palette,
+MultiStagePrintClass::MultiStagePrintClass(const void* string, int xpos,
+                                           int ypos, const void* palette,
                                            int background)
     : ScoreAnimClass(xpos, ypos, string) {
   Background = background;
@@ -483,7 +483,7 @@ void MultiStagePrintClass::Update() {
         /*
         ** Clear out the white letter overlay
         */
-        static char const _blackpal[] = {
+        static const char _blackpal[] = {
             BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
             BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK};
         Set_Font_Palette(_blackpal);
@@ -515,8 +515,8 @@ void MultiStagePrintClass::Update() {
   }
 }
 
-ScoreScaleClass::ScoreScaleClass(void const* string, int xpos, int ypos,
-                                 unsigned char const palette[])
+ScoreScaleClass::ScoreScaleClass(const void* string, int xpos, int ypos,
+                                 const unsigned char palette[])
     : ScoreAnimClass(xpos, ypos, string) {
   Palette = &palette[0];
   Stage = 5;
@@ -638,36 +638,36 @@ void Enable_Uncompressed_Shapes();
 void ScoreClass::Presentation() {
   // static char const
   // _redpal[]={0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2A,0x2B,0x2C,0x2D,0x21,0x2F};
-  static unsigned char const _redpal[] = {0x20, 0x22, 0x24, 0x26, 0x28, 0x28,
+  static const unsigned char _redpal[] = {0x20, 0x22, 0x24, 0x26, 0x28, 0x28,
                                           0x28, 0x28, 0x28, 0x29, 0x2A, 0x2B,
                                           0x2C, 0x2D, 0x21, 0x2F};
-  static unsigned char const _greenpal[] = {0x10, 0x12, 0x14, 0x16, 0x18, 0x18,
+  static const unsigned char _greenpal[] = {0x10, 0x12, 0x14, 0x16, 0x18, 0x18,
                                             0x18, 0x18, 0x18, 0x19, 0x1A, 0x1B,
                                             0x1C, 0x1D, 0x10, 0x1F};
-  static unsigned char const _bluepal[] = {0x60, 0x62, 0x64, 0x66, 0x68, 0x68,
+  static const unsigned char _bluepal[] = {0x60, 0x62, 0x64, 0x66, 0x68, 0x68,
                                            0x68, 0x68, 0x68, 0x69, 0x6A, 0x6B,
                                            0x6C, 0x6D, 0x61, 0x6F};
   // static char const
   // _bluepal[]={0x60,0x61,0x62,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6A,0x6B,0x6C,0x6D,0x61,0x6F};
-  static unsigned char const _yellowpal[] = {0x0,  0x0, 0xEC, 0x0, 0xEB, 0x0,
+  static const unsigned char _yellowpal[] = {0x0,  0x0, 0xEC, 0x0, 0xEB, 0x0,
                                              0xEA, 0x0, 0xE9, 0x0, 0x0,  0x0,
                                              0x0,  0x0, 0xED, 0x0};
-  static int const _casuax[2] = {144, 146};
-  static int const _casuay[2] = {78, 90};
-  static int const _gditxx[2] = {150, 224};
-  static int const _gditxy[2] = {90, 90};
-  static int const _nodtxx[2] = {150, 224};
-  static int const _nodtxy[2] = {102, 102};
+  static const int _casuax[2] = {144, 146};
+  static const int _casuay[2] = {78, 90};
+  static const int _gditxx[2] = {150, 224};
+  static const int _gditxy[2] = {90, 90};
+  static const int _nodtxx[2] = {150, 224};
+  static const int _nodtxy[2] = {102, 102};
   //	static int _bargrx[2]={297,SCORETEXT_X+64};
   //	static int _bargry[2]={ 90,CASUALTY_Y + 2};
-  static int const _bldggy[2] = {138, 128};
-  static int const _bldgny[2] = {150, 140};
+  static const int _bldggy[2] = {138, 128};
+  static const int _bldgny[2] = {150, 140};
 
   //	int gdikilled, nodkilled, civkilled, max, i, k, shapenum;
   int i;
   int max;
-  void const* yellowptr;
-  void const* redptr;
+  const void* yellowptr;
+  const void* redptr;
   CCFileClass file("HALLFAME.DAT");
   struct Fame hallfame[NUMFAMENAMES];
   void *anim, *oldfont;
@@ -708,8 +708,8 @@ void ScoreClass::Presentation() {
 
   Set_Logic_Page(SysMemPage);
 
-  void const* country4 = MixFileClass::Retrieve("COUNTRY4.AUD");
-  void const* sfx4 = MixFileClass::Retrieve("SFX4.AUD");
+  const void* country4 = MixFileClass::Retrieve("COUNTRY4.AUD");
+  const void* sfx4 = MixFileClass::Retrieve("SFX4.AUD");
   Beepy6 = MixFileClass::Retrieve("BEEPY6.AUD");
 
   /*
@@ -812,11 +812,11 @@ void ScoreClass::Presentation() {
   /*
   ** Background's up, so now load various shapes and animations
   */
-  void const* timeshape = MixFileClass::Retrieve("TIME.SHP");
+  const void* timeshape = MixFileClass::Retrieve("TIME.SHP");
   ScoreObjs[0] = new ScoreTimeClass(233, 2, timeshape, 30, 4);
 
-  void const* hiscore1shape = MixFileClass::Retrieve("HISCORE1.SHP");
-  void const* hiscore2shape = MixFileClass::Retrieve("HISCORE2.SHP");
+  const void* hiscore1shape = MixFileClass::Retrieve("HISCORE1.SHP");
+  const void* hiscore2shape = MixFileClass::Retrieve("HISCORE2.SHP");
   ScoreObjs[1] = new ScoreTimeClass(4, 97, hiscore1shape, 10, 4);
   ScoreObjs[2] = new ScoreTimeClass(8, 172, hiscore2shape, 10, 4);
 
@@ -827,7 +827,7 @@ void ScoreClass::Presentation() {
     /*
     ** load the logo
     */
-    void const* logoptr = MixFileClass::Retrieve("LOGOS.SHP");
+    const void* logoptr = MixFileClass::Retrieve("LOGOS.SHP");
     CC_Draw_Shape(logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
                   nullptr);
 
@@ -1156,11 +1156,11 @@ void Cycle_Wait_Click() {
 
 void ScoreClass::Do_Nod_Buildings_Graph() {
   int shapenum;
-  InfantryTypeClass const* ramboclass;
+  const InfantryTypeClass* ramboclass;
 
-  void const* factptr = MixFileClass::Retrieve("FACT.SHP");
-  void const* rmboptr = MixFileClass::Retrieve("RMBO.SHP");
-  void const* fball1ptr = MixFileClass::Retrieve("FBALL1.SHP");
+  const void* factptr = MixFileClass::Retrieve("FACT.SHP");
+  const void* rmboptr = MixFileClass::Retrieve("RMBO.SHP");
+  const void* fball1ptr = MixFileClass::Retrieve("FBALL1.SHP");
   ramboclass = &InfantryTypeClass::As_Reference(INFANTRY_E5);
 
   /*
@@ -1290,7 +1290,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
  *   05/03/1995 BWG : Created.                                             *
  *=========================================================================*/
 
-void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
+void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
                               int gkilled, int nkilled, int ypos) {
   int i, max;
   int gdikilled = gkilled, nodkilled = nkilled;
@@ -1368,8 +1368,8 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
 void ScoreClass::Do_Nod_Casualties_Graph() {
   int i, gdikilled, nodkilled, civkilled, max;
 
-  void const* e1ptr = MixFileClass::Retrieve("E1.SHP");
-  void const* c1ptr = MixFileClass::Retrieve("C1.SHP");
+  const void* e1ptr = MixFileClass::Retrieve("E1.SHP");
+  const void* c1ptr = MixFileClass::Retrieve("C1.SHP");
 
   gdikilled = GKilled;
   nodkilled = NKilled;
@@ -1487,7 +1487,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   }
 }
 
-void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
+void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   static int _credsx[2] = {276, 276};
   static int _credsy[2] = {173, 58};
   static int _credpx[2] = {228, 236};
@@ -1504,7 +1504,7 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
   int credobj, i;
   int min, add;
 
-  void const* credshape = MixFileClass::Retrieve("CREDS.SHP");
+  const void* credshape = MixFileClass::Retrieve("CREDS.SHP");
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_ENDCRED, _credtx[house],
                                    _credty[house], pal));
@@ -1645,10 +1645,10 @@ void ScoreClass::Count_Up_Print(char* str, int percent, int max, int xpos,
  * HISTORY: * 05/15/1995 BWG : Created. *
  *=============================================================================================*/
 void ScoreClass::Input_Name(char str[], int xpos, int ypos,
-                            unsigned char const pal[]) {
+                            const unsigned char pal[]) {
   int key = 0, ascii = 0, index = 0;
 
-  void const* keystrok = MixFileClass::Retrieve("KEYSTROK.AUD");
+  const void* keystrok = MixFileClass::Retrieve("KEYSTROK.AUD");
 
   /*
   ** Ready the hidpage so it can restore background under zoomed letters
@@ -2026,26 +2026,26 @@ char* Int_Print(int a) {
  * HISTORY: * 06/11/1995  BWG: Created. *
  *=============================================================================================*/
 void Multi_Score_Presentation() {
-  static unsigned char const _cycleyellowpal[] = {
+  static const unsigned char _cycleyellowpal[] = {
       0x0,  0xec, 0xEb, 0xea, 0xE9, 0xe9, 0xE9, 0x0,
       0xE9, 0x0,  0x0,  0x0,  0x0,  0x0,  0xED, 0x0};
 
-  static unsigned char const _greenpal[] = {0x0,  0x12, 0x14, 0x16, 0x18, 0x18,
+  static const unsigned char _greenpal[] = {0x0,  0x12, 0x14, 0x16, 0x18, 0x18,
                                             0x18, 0x0,  0x18, 0x0,  0x0,  0x0,
                                             0x0,  0x0,  0x10, 0x0};
-  static unsigned char const _redpal[] = {0x0,  0x22, 0x24, 0x26, 0x28, 0x28,
+  static const unsigned char _redpal[] = {0x0,  0x22, 0x24, 0x26, 0x28, 0x28,
                                           0x28, 0x0,  0x28, 0x0,  0x0,  0x0,
                                           0x0,  0x0,  0x20, 0x0};
-  static unsigned char const _graypal[] = {0x0,  0xca, 0xCb, 0xcc, 0xCd, 0xcd,
+  static const unsigned char _graypal[] = {0x0,  0xca, 0xCb, 0xcc, 0xCd, 0xcd,
                                            0xCd, 0x0,  0xCD, 0x0,  0x0,  0x0,
                                            0x0,  0x0,  0xC8, 0x0};
-  static unsigned char const _orangepal[] = {0x0,  0xd1, 0xD2, 0xd3, 0xD4, 0xd4,
+  static const unsigned char _orangepal[] = {0x0,  0xd1, 0xD2, 0xd3, 0xD4, 0xd4,
                                              0xD4, 0x0,  0xD4, 0x0,  0x0,  0x0,
                                              0x0,  0x0,  0xD0, 0x0};
-  static unsigned char const _bluepal[] = {0x0,  0x2, 0x0a, 0xb, 0x0b, 0xb,
+  static const unsigned char _bluepal[] = {0x0,  0x2, 0x0a, 0xb, 0x0b, 0xb,
                                            0x0B, 0x0, 0x0B, 0x0, 0x0,  0x0,
                                            0x0,  0x0, 0x09, 0x0};
-  static unsigned char const _yellowpal[] = {0x0,  0x5,  0xee, 0xf1, 0xf2, 0xf2,
+  static const unsigned char _yellowpal[] = {0x0,  0x5,  0xee, 0xf1, 0xf2, 0xf2,
                                              0xF2, 0xf2, 0xF2, 0x0,  0x0,  0x0,
                                              0x0,  0x0,  0x7D, 0x0};
 
@@ -2062,13 +2062,13 @@ void Multi_Score_Presentation() {
   // static char const
   // _yellowpal[]={0x0,0x0,0x05,0x0,0xEE,0x0,0xF1,0x0,0xF2,0x0,0x0,0x0,0x0,0x0,0x7D,0x0};
 
-  static unsigned char const* _colors[] = {_yellowpal, _redpal,   _bluepal,
+  static const unsigned char* _colors[] = {_yellowpal, _redpal,   _bluepal,
                                            _orangepal, _greenpal, _graypal};
 
   int i, k;
   void *oldfont, *anim;
   int oldfontxspacing = FontXSpacing;
-  unsigned char const* pal;
+  const unsigned char* pal;
 
   FontXSpacing = 0;
   Map.Override_Mouse_Shape(MOUSE_NORMAL);

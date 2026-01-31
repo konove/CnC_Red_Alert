@@ -112,7 +112,7 @@ void TarComClass::AI() {
     *weapon can fire, then the *	failure code returned is that from the
     *primary weapon.
     */
-    WeaponTypeClass const* weapon = &Weapons[Class->Primary];
+    const WeaponTypeClass* weapon = &Weapons[Class->Primary];
     int primary = 0;
     FireErrorType ok = Can_Fire(TarCom, 0);
     if (ok != FIRE_OK) {

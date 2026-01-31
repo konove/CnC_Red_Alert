@@ -56,9 +56,9 @@ class BaseNodeClass {
  public:
   BaseNodeClass() {}
   BaseNodeClass(StructType building, CELL cell) : Type(building), Cell(cell) {}
-  int operator==(BaseNodeClass const& node);
-  int operator!=(BaseNodeClass const& node);
-  int operator>(BaseNodeClass const& node);
+  int operator==(const BaseNodeClass& node);
+  int operator!=(const BaseNodeClass& node);
+  int operator>(const BaseNodeClass& node);
 
   StructType Type;
   CELL Cell;
@@ -89,7 +89,7 @@ class BaseClass {
   */
   void Read_INI(CCINIClass& ini);
   void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "Base"; }
+  static const char* INI_Name() { return "Base"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
   virtual void Code_Pointers() {}
@@ -108,12 +108,12 @@ class BaseClass {
   /*
   ** Tells if the given building ptr is a node in this base's list.
   */
-  bool Is_Node(BuildingClass const* obj);
+  bool Is_Node(const BuildingClass* obj);
 
   /*
   ** Returns a pointer to the requested node.
   */
-  BaseNodeClass* Get_Node(BuildingClass const* obj);
+  BaseNodeClass* Get_Node(const BuildingClass* obj);
   BaseNodeClass* Get_Node(int index) { return &Nodes[index]; }
   BaseNodeClass* Get_Node(CELL cell);
 

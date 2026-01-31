@@ -47,13 +47,13 @@
 *necessary to accomplish this. *	The pad character lets the decoder know
 *of this condition and it will compensate *	accordingly.
 */
-static char const* const _pad = "=";
+static const char* const _pad = "=";
 
 /*
 **	This encoder translation table will convert a 6 bit number into an ASCII
 *character.
 */
-static char const* const _encoder =
+static const char* const _encoder =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /*
@@ -62,7 +62,7 @@ static char const* const _encoder =
 */
 #define BAD 0xFE  // Ignore this character in source data.
 #define END 0xFF  // Signifies premature end of input data.
-static unsigned char const _decoder[256] = {
+static const unsigned char _decoder[256] = {
     BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD,
     BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD,
     BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, 62,  BAD,
@@ -82,7 +82,7 @@ static unsigned char const _decoder[256] = {
     BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD,
     BAD};
 
-int const PacketChars = 4;
+const int PacketChars = 4;
 
 /*
 **	The packet type is used to construct and dissect the Base64 data blocks.
@@ -132,7 +132,7 @@ typedef union {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-int Base64_Encode(void const* source, int slen, void* dest, int dlen) {
+int Base64_Encode(const void* source, int slen, void* dest, int dlen) {
   /*
   **	Check the parameters for legality.
   */
@@ -146,7 +146,7 @@ int Base64_Encode(void const* source, int slen, void* dest, int dlen) {
   **	during the decode process).
   */
   int total = 0;
-  unsigned char const* sptr = static_cast<unsigned char const*>(source);
+  const unsigned char* sptr = static_cast<const unsigned char*>(source);
   unsigned char* dptr = static_cast<unsigned char*>(dest);
   while (slen > 0 && dlen >= PacketChars) {
     /*
@@ -232,7 +232,7 @@ int Base64_Encode(void const* source, int slen, void* dest, int dlen) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-int Base64_Decode(void const* source, int slen, void* dest, int dlen) {
+int Base64_Decode(const void* source, int slen, void* dest, int dlen) {
   /*
   **	Check the parameters for legality.
   */
@@ -241,7 +241,7 @@ int Base64_Decode(void const* source, int slen, void* dest, int dlen) {
   }
 
   int total = 0;
-  unsigned char const* sptr = static_cast<unsigned char const*>(source);
+  const unsigned char* sptr = static_cast<const unsigned char*>(source);
   unsigned char* dptr = static_cast<unsigned char*>(dest);
   while (slen > 0 && dlen > 0) {
     PacketType packet;

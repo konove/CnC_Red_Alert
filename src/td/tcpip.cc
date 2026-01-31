@@ -437,8 +437,7 @@ bool TcpipManagerClass::Add_Client() {
   ** Set options for this socket
   */
   setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, &delay, 4);
-  setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, &SocketReceiveBuffer,
-             4);
+  setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, &SocketReceiveBuffer, 4);
   setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDBUF, &SocketSendBuffer, 4);
 
   /*
@@ -454,7 +453,7 @@ bool TcpipManagerClass::Add_Client() {
   ** when this is complete or when it times out.
   */
   Async = WSAAsyncGetHostByAddr(MainWindow, WM_HOSTBYADDRESS,
-                                (char const*)&addr.sin_addr, 4, PF_INET,
+                                (const char*)&addr.sin_addr, 4, PF_INET,
                                 &HostBuff[0], MAXGETHOSTSTRUCT);
 
   /*

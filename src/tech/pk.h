@@ -62,10 +62,10 @@
 class PKey {
  public:
   PKey() : Modulus(0), Exponent(0), BitPrecision(0) {}
-  PKey(void const* exponent, void const* modulus);  // DER initialization.
+  PKey(const void* exponent, const void* modulus);  // DER initialization.
 
-  int Encrypt(void const* source, int slen, void* dest) const;
-  int Decrypt(void const* source, int slen, void* dest) const;
+  int Encrypt(const void* source, int slen, void* dest) const;
+  int Decrypt(const void* source, int slen, void* dest) const;
 
   static void Generate(Straw& random, int bits, PKey& fastkey, PKey& slowkey);
 

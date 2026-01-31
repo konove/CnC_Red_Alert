@@ -230,7 +230,7 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
       mono->Printf("%d", Group);
     }
 
-    static char const* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
+    static const char* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
     for (int index = 0; index < std::min(12, ARRAY_SIZE(Path)); index++) {
       mono->Set_Cursor(54 + index, 3);
       mono->Printf("%s",
@@ -742,9 +742,9 @@ int FootClass::Mission_Hunt() {
     Random_Animate();
   } else {
     if (What_Am_I() == RTTI_INFANTRY &&
-        (dynamic_cast<InfantryTypeClass const&>(Class_Of()).Type ==
+        (dynamic_cast<const InfantryTypeClass&>(Class_Of()).Type ==
              INFANTRY_RENOVATOR ||
-         dynamic_cast<InfantryTypeClass const&>(Class_Of()).Type ==
+         dynamic_cast<const InfantryTypeClass&>(Class_Of()).Type ==
              INFANTRY_THIEF)) {
       Assign_Destination(TarCom);
       Assign_Mission(MISSION_CAPTURE);
@@ -1367,7 +1367,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
         ** nearest cell using an expanding-radius box, and ignores cells
         ** off the edge of the map.
         */
-        CellClass const* cellptr = &Map[As_Cell(::As_Target(Center_Coord()))];
+        const CellClass* cellptr = &Map[As_Cell(::As_Target(Center_Coord()))];
         if (What_Am_I() != RTTI_AIRCRAFT) {
           if (Can_Enter_Cell(Coord_Cell(Center_Coord())) == MOVE_OK) {
             cell =
@@ -1448,7 +1448,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
         CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
 
         if (Map.In_Radar(cell)) {
-          TechnoClass const* techno = Map[cell].Cell_Techno();
+          const TechnoClass* techno = Map[cell].Cell_Techno();
 
           if (techno && !techno->House->Is_Ally(this) &&
               techno->Techno_Type_Class()->IsScanner) {
@@ -1468,10 +1468,10 @@ void FootClass::Per_Cell_Process(PCPType why) {
          !dynamic_cast<InfantryClass*>(this)->Class->IsDog)) {
       int primary = What_Weapon_Should_I_Use(TarCom);
       bool inrange = In_Range(TarCom, primary);
-      TechnoClass const* techno = As_Techno(TarCom);
+      const TechnoClass* techno = As_Techno(TarCom);
       if (techno != nullptr && techno->Is_Foot()) {
         inrange = In_Range(
-            dynamic_cast<FootClass const*>(techno)->Likely_Coord(), primary);
+            dynamic_cast<const FootClass*>(techno)->Likely_Coord(), primary);
       }
 
       if ((Mission == MISSION_RESCUE || Mission == MISSION_GUARD_AREA ||
@@ -1652,7 +1652,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     */
     case RADIO_ON_DEPOT:
       if (Map[Center_Coord()].Cell_Building() != nullptr) {
-        BuildingClass const* building = Map[Center_Coord()].Cell_Building();
+        const BuildingClass* building = Map[Center_Coord()].Cell_Building();
         if (*building == STRUCT_REPAIR) {
           return RADIO_ROGER;
         }
@@ -1939,7 +1939,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
  *                                                                                             *
  * HISTORY: * 07/01/1995 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Death_Announcement(TechnoClass const*) const {
+void FootClass::Death_Announcement(const TechnoClass*) const {
   assert(IsActive);
 
   if (IsOwnedByPlayer) {
@@ -2447,7 +2447,7 @@ bool FootClass::Is_Allowed_To_Leave_Map() const {
  *                                                                                             *
  * HISTORY: * 09/14/1996 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Is_Recruitable(HouseClass const* house) const {
+bool FootClass::Is_Recruitable(const HouseClass* house) const {
   /*
   **	If not of the correct house presuasion, then recruitment is not allowed.
   */

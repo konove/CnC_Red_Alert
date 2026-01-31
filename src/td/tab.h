@@ -49,7 +49,7 @@
 class TabClass : public SidebarClass {
  public:
   TabClass();
-  TabClass(NoInitClass const& x) : SidebarClass(x), Credits(x) {}
+  TabClass(const NoInitClass& x) : SidebarClass(x), Credits(x) {}
 
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete = false) override;
@@ -82,7 +82,7 @@ class TabClass : public SidebarClass {
  private:
   void Set_Active(int select);
 
-  static void const* TabShape;
+  static const void* TabShape;
 };
 
 #endif

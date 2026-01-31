@@ -135,7 +135,7 @@ void GDI_Ending() {
  * HISTORY: * 7/10/1995 BWG : Created. *
  *=============================================================================================*/
 void Nod_Ending() {
-  static unsigned char const _tanpal[] = {0x0,  0xED, 0xED, 0x2C, 0x2C, 0xFB,
+  static const unsigned char _tanpal[] = {0x0,  0xED, 0xED, 0x2C, 0x2C, 0xFB,
                                           0xFB, 0xFD, 0xFD, 0x0,  0x0,  0x0,
                                           0x0,  0x0,  0x52, 0x0};
 
@@ -144,7 +144,7 @@ void Nod_Ending() {
   char* satpic = new char[64000];
 #endif  // NOT_FOR_WIN95
   int oldfontxspacing = FontXSpacing;
-  void const* oldfont;
+  const void* oldfont;
 
   Score.Presentation();
 

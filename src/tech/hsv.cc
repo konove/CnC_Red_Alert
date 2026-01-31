@@ -44,7 +44,7 @@
 
 #include "tech/rgb.h"
 
-HSVClass const HSVClass::BlackColor(0, 0, 0);
+const HSVClass HSVClass::BlackColor(0, 0, 0);
 
 /***********************************************************************************************
  * HSVClass::Adjust -- Adjust an HSV color toward specified color. *
@@ -66,7 +66,7 @@ HSVClass const HSVClass::BlackColor(0, 0, 0);
  *                                                                                             *
  * HISTORY: * 02/20/1996 JLB : Created. *
  *=============================================================================================*/
-void HSVClass::Adjust(int ratio, HSVClass const& hsv) {
+void HSVClass::Adjust(int ratio, const HSVClass& hsv) {
   /*
   **	Ratio conversion is limited to 0 through 100%. This is
   **	the range of 0 to 255.
@@ -103,11 +103,12 @@ void HSVClass::Adjust(int ratio, HSVClass const& hsv) {
  *                                                                                             *
  * HISTORY: * 02/20/1996 JLB : Created. *
  *=============================================================================================*/
-int HSVClass::Difference(HSVClass const& hsv) const {
+int HSVClass::Difference(const HSVClass& hsv) const {
   int hue = static_cast<int>(Hue) - static_cast<int>(hsv.Hue);
   if (hue < 0) hue = -hue;
 
-  int saturation = static_cast<int>(Saturation) - static_cast<int>(hsv.Saturation);
+  int saturation =
+      static_cast<int>(Saturation) - static_cast<int>(hsv.Saturation);
   if (saturation < 0) saturation = -saturation;
 
   int value = static_cast<int>(Value) - static_cast<int>(hsv.Value);

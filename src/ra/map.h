@@ -55,13 +55,13 @@
 class MapClass : public GScreenClass {
  public:
   MapClass() {}
-  MapClass(NoInitClass const& x) : GScreenClass(x), Array(x) {}
+  MapClass(const NoInitClass& x) : GScreenClass(x), Array(x) {}
 
   /*
   ** Initialization
   */
-  void One_Time() override;     // Theater-specific inits
-  void Init_Clear() override;   // Clears all to known state
+  void One_Time() override;    // Theater-specific inits
+  void Init_Clear() override;  // Clears all to known state
   virtual void Alloc_Cells();  // Allocates buffers
   virtual void Free_Cells();   // Frees buffers
   virtual void Init_Cells();   // Frees buffers
@@ -134,12 +134,12 @@ class MapClass : public GScreenClass {
 
   CellClass& operator[](COORDINATE coord) { return Array[Coord_Cell(coord)]; }
   CellClass& operator[](CELL cell) { return Array[cell]; }
-  CellClass const& operator[](COORDINATE coord) const {
+  const CellClass& operator[](COORDINATE coord) const {
     return Array[Coord_Cell(coord)];
   }
-  CellClass const& operator[](CELL cell) const { return Array[cell]; }
-  int ID(CellClass const* ptr) { return Array.ID(ptr); }
-  int ID(CellClass const& ptr) { return Array.ID(ptr); }
+  const CellClass& operator[](CELL cell) const { return Array[cell]; }
+  int ID(const CellClass* ptr) { return Array.ID(ptr); }
+  int ID(const CellClass& ptr) { return Array.ID(ptr); }
 
  protected:
   /*
@@ -156,8 +156,8 @@ class MapClass : public GScreenClass {
   int YSize;
   int Size;
 
-  static int const RadiusCount[11];
-  static int const RadiusOffset[];
+  static const int RadiusCount[11];
+  static const int RadiusOffset[];
 
   /*
   **	This specifies the information for the various crates in the game.

@@ -77,10 +77,10 @@
 #include "td/type.h"
 #include "td/unit.h"
 
-void const* UnitTypeClass::WakeShapes = nullptr;
+const void* UnitTypeClass::WakeShapes = nullptr;
 
 // Visceroid
-static UnitTypeClass const UnitVisceroid(
+static const UnitTypeClass UnitVisceroid(
     UNIT_VICE,
     TXT_VISCEROID,  // NAME:			Text name of this unit type.
     "VICE",         // NAME:			Text name of this unit type.
@@ -133,7 +133,7 @@ static UnitTypeClass const UnitVisceroid(
 );
 
 // Flame tank
-static UnitTypeClass const UnitFTank(
+static const UnitTypeClass UnitFTank(
     UNIT_FTANK,
     TXT_FTANK,      // NAME:			Text name of this unit type.
     "FTNK",         // NAME:			Text name of this unit type.
@@ -185,7 +185,7 @@ static UnitTypeClass const UnitFTank(
 );
 
 // Stealth tank
-static UnitTypeClass const UnitSTank(
+static const UnitTypeClass UnitSTank(
     UNIT_STANK,
     TXT_STANK,      // NAME:			Text name of this unit type.
     "STNK",         // NAME:			Text name of this unit type.
@@ -237,7 +237,7 @@ static UnitTypeClass const UnitSTank(
 );
 
 // Light tank
-static UnitTypeClass const UnitLTank(
+static const UnitTypeClass UnitLTank(
     UNIT_LTANK,
     TXT_LTANK,     // NAME:			Text name of this unit type.
     "LTNK",        // NAME:			Text name of this unit type.
@@ -289,7 +289,7 @@ static UnitTypeClass const UnitLTank(
 );
 
 // Medium tank
-static UnitTypeClass const UnitMTank(
+static const UnitTypeClass UnitMTank(
     UNIT_MTANK,
     TXT_MTANK,     // NAME:			Text name of this unit type.
     "MTNK",        // NAME:			Text name of this unit type.
@@ -341,7 +341,7 @@ static UnitTypeClass const UnitMTank(
 );
 
 // Mastadon tank
-static UnitTypeClass const UnitHTank(
+static const UnitTypeClass UnitHTank(
     UNIT_HTANK,
     TXT_HTANK,       // NAME:			Text name of this unit type.
     "HTNK",          // NAME:			Text name of this unit type.
@@ -393,7 +393,7 @@ static UnitTypeClass const UnitHTank(
 );
 
 // Mobile HQ
-static UnitTypeClass const UnitMHQ(
+static const UnitTypeClass UnitMHQ(
     UNIT_MHQ,
     TXT_MHQ,       // NAME:			Text name of this unit type.
     "MHQ",         // NAME:			Text name of this unit type.
@@ -445,7 +445,7 @@ static UnitTypeClass const UnitMHQ(
 );
 
 // Landing craft
-static UnitTypeClass const UnitHover(
+static const UnitTypeClass UnitHover(
     UNIT_HOVER,
     TXT_HOVER,     // NAME:			Text name of this unit type.
     "LST",         // NAME:			Text name of this unit type.
@@ -498,7 +498,7 @@ static UnitTypeClass const UnitHover(
 );
 
 // Mobile sam launcher
-static UnitTypeClass const UnitSAM(
+static const UnitTypeClass UnitSAM(
     UNIT_MSAM,
     TXT_MSAM,        // NAME:			Text name of this unit type.
     "MLRS",          // NAME:			Text name of this unit type.
@@ -551,7 +551,7 @@ static UnitTypeClass const UnitSAM(
 );
 
 // Artillery
-static UnitTypeClass const UnitArty(
+static const UnitTypeClass UnitArty(
     UNIT_ARTY,
     TXT_ARTY,       // NAME:			Text name of this unit type.
     "ARTY",         // NAME:			Text name of this unit type.
@@ -603,7 +603,7 @@ static UnitTypeClass const UnitArty(
 );
 
 // Harvester
-static UnitTypeClass const UnitHarvester(
+static const UnitTypeClass UnitHarvester(
     UNIT_HARVESTER,
     TXT_HARVESTER,     // NAME:			Text name of this unit type.
     "HARV",            // NAME:			Text name of this unit type.
@@ -657,7 +657,7 @@ static UnitTypeClass const UnitHarvester(
 );
 
 // Mobile construction vehicle
-static UnitTypeClass const UnitMCV(
+static const UnitTypeClass UnitMCV(
     UNIT_MCV,
     TXT_MCV,      // NAME:			Text name of this unit type.
     "MCV",        // NAME:			Text name of this unit type.
@@ -709,7 +709,7 @@ static UnitTypeClass const UnitMCV(
 );
 
 // Jeep (hummer)
-static UnitTypeClass const UnitJeep(
+static const UnitTypeClass UnitJeep(
     UNIT_JEEP,
     TXT_JEEP,      // NAME:			Text name of this unit type.
     "JEEP",        // NAME:			Text name of this unit type.
@@ -761,7 +761,7 @@ static UnitTypeClass const UnitJeep(
 );
 
 // Buggy
-static UnitTypeClass const UnitBuggy(
+static const UnitTypeClass UnitBuggy(
     UNIT_BUGGY,
     TXT_DUNE_BUGGY,  // NAME:			Text name of this unit type.
     "BGGY",          // NAME:			Text name of this unit type.
@@ -813,7 +813,7 @@ static UnitTypeClass const UnitBuggy(
 );
 
 // Attack cycle
-static UnitTypeClass const UnitBike(
+static const UnitTypeClass UnitBike(
     UNIT_BIKE,
     TXT_BIKE,      // NAME:			Text name of this unit type.
     "BIKE",        // NAME:			Text name of this unit type.
@@ -869,7 +869,7 @@ static UnitTypeClass const UnitBike(
 );
 
 // Rocket launcher
-static UnitTypeClass const UnitMLRS(
+static const UnitTypeClass UnitMLRS(
     UNIT_MLRS,
     TXT_MLRS,       // NAME:			Text name of this unit type.
     "MSAM",         // NAME:			Text name of this unit type.
@@ -921,7 +921,7 @@ static UnitTypeClass const UnitMLRS(
 );
 
 // Armored personnel carrier
-static UnitTypeClass const UnitAPC(
+static const UnitTypeClass UnitAPC(
     UNIT_APC,
     TXT_APC,           // NAME:			Text name of this unit type.
     "APC",             // NAME:			Text name of this unit type.
@@ -973,7 +973,7 @@ static UnitTypeClass const UnitAPC(
 );
 
 // Gunboat
-static UnitTypeClass const UnitGunBoat(
+static const UnitTypeClass UnitGunBoat(
     UNIT_GUNBOAT,
     TXT_GUNBOAT,   // NAME:			Text name of this unit type.
     "BOAT",        // NAME:			Text name of this unit type.
@@ -1025,7 +1025,7 @@ static UnitTypeClass const UnitGunBoat(
 );
 
 // Triceratops
-static UnitTypeClass const UnitTric(
+static const UnitTypeClass UnitTric(
     UNIT_TRIC,
     TXT_TRIC,       // NAME:			Text name of this unit type.
     "TRIC",         // NAME:			Text name of this unit type.
@@ -1075,7 +1075,7 @@ static UnitTypeClass const UnitTric(
 );
 
 // Tyrannosaurus Rex
-static UnitTypeClass const UnitTrex(
+static const UnitTypeClass UnitTrex(
     UNIT_TREX,
     TXT_TREX,       // NAME:			Text name of this unit type.
     "TREX",         // NAME:			Text name of this unit type.
@@ -1125,7 +1125,7 @@ static UnitTypeClass const UnitTrex(
 );
 
 // Velociraptor
-static UnitTypeClass const UnitRapt(
+static const UnitTypeClass UnitRapt(
     UNIT_RAPT,
     TXT_RAPT,       // NAME:			Text name of this unit type.
     "RAPT",         // NAME:			Text name of this unit type.
@@ -1175,7 +1175,7 @@ static UnitTypeClass const UnitRapt(
 );
 
 // Stegosaurus
-static UnitTypeClass const UnitSteg(
+static const UnitTypeClass UnitSteg(
     UNIT_STEG,
     TXT_STEG,       // NAME:			Text name of this unit type.
     "STEG",         // NAME:			Text name of this unit type.
@@ -1228,7 +1228,7 @@ static UnitTypeClass const UnitSteg(
 **	This is the array of pointers to the static data associated with each
 **	vehicle type.
 */
-UnitTypeClass const* const UnitTypeClass::Pointers[UNIT_COUNT] = {
+const UnitTypeClass* const UnitTypeClass::Pointers[UNIT_COUNT] = {
     &UnitHTank,      //	UNIT_HTANK
     &UnitMTank,      //	UNIT_MTANK
     &UnitLTank,      //	UNIT_LTANK
@@ -1271,7 +1271,7 @@ UnitTypeClass const* const UnitTypeClass::Pointers[UNIT_COUNT] = {
  * HISTORY: * 06/20/1994 JLB : Created. *
  *=============================================================================================*/
 UnitTypeClass::UnitTypeClass(
-    UnitType type, int name, char const* ininame, AnimType exp,
+    UnitType type, int name, const char* ininame, AnimType exp,
     unsigned char level, long pre, bool is_goodie, bool is_leader,
     bool is_eight, bool is_nominal, bool is_transporter, bool is_crushable,
     bool is_crusher, bool is_harvest, bool is_stealthy, bool is_selectable,
@@ -1325,9 +1325,9 @@ UnitTypeClass::UnitTypeClass(
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-short const* UnitTypeClass::Occupy_List(bool) const {
-  static short const _simple[] = {0, REFRESH_EOL};
-  static short const _gun[] = {0, -1, 1, REFRESH_EOL};
+const short* UnitTypeClass::Occupy_List(bool) const {
+  static const short _simple[] = {0, REFRESH_EOL};
+  static const short _gun[] = {0, -1, 1, REFRESH_EOL};
 
   if (Type == UNIT_GUNBOAT) {
     return &_gun[0];
@@ -1351,7 +1351,7 @@ short const* UnitTypeClass::Occupy_List(bool) const {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/02/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-UnitType UnitTypeClass::From_Name(char const* name) {
+UnitType UnitTypeClass::From_Name(const char* name) {
   if (name) {
     for (UnitType classid = UNIT_FIRST; classid < UNIT_COUNT; classid++) {
       if (stricmp(Pointers[classid]->IniName, name) == 0) {
@@ -1384,7 +1384,7 @@ UnitType UnitTypeClass::From_Name(char const* name) {
 void UnitTypeClass::Display(int x, int y, WindowNumberType window,
                             HousesType house) const {
   int shape = 0;
-  void const* ptr = Get_Cameo_Data();
+  const void* ptr = Get_Cameo_Data();
   if (!ptr) {
     ptr = Get_Image_Data();
     shape = IsChunkyShape ? 0 : 5;
@@ -1435,11 +1435,11 @@ void UnitTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 void UnitTypeClass::One_Time() {
   for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
-    UnitTypeClass const& uclass = As_Reference(index);
+    const UnitTypeClass& uclass = As_Reference(index);
     CCFileClass file;
     int largest;  // Largest dimension of shape (so far).
 
-    void const* ptr;  // Shape pointer and set pointer.
+    const void* ptr;  // Shape pointer and set pointer.
 
     largest = 0;
     if (uclass.IsBuildable) {
@@ -1454,7 +1454,7 @@ void UnitTypeClass::One_Time() {
       }
       auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      (void const*&)uclass.CameoData = MixFileClass::Retrieve(fullname.c_str());
+      (const void*&)uclass.CameoData = MixFileClass::Retrieve(fullname.c_str());
     }
 
     /*
@@ -1469,7 +1469,7 @@ void UnitTypeClass::One_Time() {
       ptr = nullptr;
     }
 
-    (void const*&)uclass.ImageData = ptr;
+    (const void*&)uclass.ImageData = ptr;
     if (ptr) {
       if (index == UNIT_MLRS || index == UNIT_MSAM) {
         largest = 26;
@@ -1509,12 +1509,12 @@ void UnitTypeClass::One_Time() {
 void UnitTypeClass::Init(TheaterType theater) {
   if (Get_Resolution_Factor()) {
     if (theater != LastTheater) {
-      void const* cameo_ptr;
+      const void* cameo_ptr;
 
       for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
-        UnitTypeClass const& uclass = As_Reference(index);
+        const UnitTypeClass& uclass = As_Reference(index);
 
-        (void const*&)uclass.CameoData = nullptr;
+        (const void*&)uclass.CameoData = nullptr;
 
         if (uclass.IsBuildable) {
           auto fullname =
@@ -1523,7 +1523,7 @@ void UnitTypeClass::Init(TheaterType theater) {
                   .string();
           cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
           if (cameo_ptr) {
-            (void const*&)uclass.CameoData = cameo_ptr;
+            (const void*&)uclass.CameoData = cameo_ptr;
           }
         }
       }
@@ -1637,7 +1637,7 @@ BuildingClass* UnitTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-UnitTypeClass const& UnitTypeClass::As_Reference(UnitType type) {
+const UnitTypeClass& UnitTypeClass::As_Reference(UnitType type) {
   return *Pointers[type];
 }
 

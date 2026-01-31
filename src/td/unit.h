@@ -73,7 +73,7 @@ class UnitClass : public TarComClass {
   void operator delete(void* ptr);
   UnitClass() {}
   UnitClass(UnitType classid, HousesType house);
-  UnitClass(NoInitClass const& x) : TarComClass(x) {}
+  UnitClass(const NoInitClass& x) : TarComClass(x) {}
   operator UnitType() const { return Class->Type; }
   ~UnitClass() override;
   RTTIType What_Am_I() const override;
@@ -119,9 +119,9 @@ class UnitClass : public TarComClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  void const* Remap_Table() override;
+  const void* Remap_Table() override;
   void Look(bool incremental = false) override;
-  short const* Overlap_List() const override;
+  const short* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
 
   /*
@@ -188,7 +188,7 @@ class UnitClass : public TarComClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name() { return "UNITS"; }
+  static const char* INI_Name() { return "UNITS"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   void Code_Pointers() override;

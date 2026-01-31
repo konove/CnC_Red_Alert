@@ -131,7 +131,7 @@ inline void Set_Bit(void* array, int bit, int value) {
         ~(1 << (bit & 0x1F));
 }
 
-inline int Get_Bit(void const* array, int bit) {
+inline int Get_Bit(const void* array, int bit) {
   /*
           "mov	ebx,eax"					\
           "shr	ebx,5"					\
@@ -144,7 +144,7 @@ inline int Get_Bit(void const* array, int bit) {
       1 << (bit & 0x1F));
 }
 
-inline int First_True_Bit(void const* array) {
+inline int First_True_Bit(const void* array) {
   /*
   #pragma aux First_True_Bit parm [esi] \
           modify [esi ebx] \
@@ -173,7 +173,7 @@ inline int First_True_Bit(void const* array) {
   }
 }
 
-inline int First_False_Bit(void const* array) {
+inline int First_False_Bit(const void* array) {
   const uint32_t* array32 = static_cast<const uint32_t*>(array);
   int off = 0;
   while (true) {
@@ -197,7 +197,7 @@ unsigned Fixed_To_Cardinal(unsigned base, unsigned fixed);
 
 unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
 
-extern void Fatal(char const* message, ...);
+extern void Fatal(const char* message, ...);
 
 typedef struct {
   unsigned char SourceColor;
@@ -206,19 +206,19 @@ typedef struct {
   unsigned char reserved;
 } TLucentType;
 
-int Load_Picture(char const* filename, BufferClass& scratchbuf,
+int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType format);
-void* Small_Icon(void const* iconptr, int iconnum);
+void* Small_Icon(const void* iconptr, int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
 void* Load_Alloc_Data(FileClass& file);
 long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
                      BuffType& dest_buff, void* reserved_data);
 long Translucent_Table_Size(int count);
-void* Build_Translucent_Table(void const* palette, TLucentType const* control,
+void* Build_Translucent_Table(const void* palette, const TLucentType* control,
                               int count, void* buffer);
-void* Conquer_Build_Translucent_Table(void const* palette,
-                                      TLucentType const* control, int count,
+void* Conquer_Build_Translucent_Table(const void* palette,
+                                      const TLucentType* control, int count,
                                       void* buffer);
 
 #endif

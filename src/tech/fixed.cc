@@ -61,8 +61,7 @@ fixed::fixed(int numerator, int denominator) {
   if (denominator == 0) {
     Data.Raw = 0;
   } else {
-    Data.Raw =
-        static_cast<unsigned short>((unsigned)(numerator * 256) /
+    Data.Raw = static_cast<unsigned short>((unsigned)(numerator * 256) /
                                            (unsigned)denominator);
   }
 }
@@ -86,7 +85,7 @@ fixed::fixed(int numerator, int denominator) {
  *                                                                                             *
  * HISTORY: * 06/20/1996 JLB : Created. *
  *=============================================================================================*/
-fixed::fixed(char const* ascii) {
+fixed::fixed(const char* ascii) {
   /*
   **	If there is no valid pointer, then default to zero value. This takes
   *care of any *	compiler confusion that would call this routine when the
@@ -100,7 +99,7 @@ fixed::fixed(char const* ascii) {
   /*
   **	The whole part (if any) always starts with the first legal characters.
   */
-  char const* wholepart = ascii;
+  const char* wholepart = ascii;
 
   /*
   **	Skip any leading white space.
@@ -113,7 +112,7 @@ fixed::fixed(char const* ascii) {
   **	Determine if the number is expressed as a percentage. Detect this by
   **	seeing if there is a trailing "%" character.
   */
-  char const* tptr = ascii;
+  const char* tptr = ascii;
   while (isdigit(*tptr)) {
     tptr++;
   }
@@ -136,7 +135,7 @@ fixed::fixed(char const* ascii) {
       int frac = atoi(fracpart);
 
       int base = 1;
-      char const* fptr = fracpart;
+      const char* fptr = fracpart;
       while (isdigit(*fptr)) {
         fptr++;
         base *= 10;
@@ -235,7 +234,7 @@ int fixed::To_ASCII(char* buffer, int maxlen) const {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-char const* fixed::As_ASCII() const {
+const char* fixed::As_ASCII() const {
   static char buffer[32];
 
   To_ASCII(buffer, sizeof(buffer));

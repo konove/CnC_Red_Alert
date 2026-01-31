@@ -185,7 +185,7 @@ class CellClass {
   // Resets the cell to its default initial state.
   void Reset();
 
-  int operator==(CellClass const& cell) const { return &cell == this; }
+  int operator==(const CellClass& cell) const { return &cell == this; }
 
   /*
   **	Query functions.
@@ -200,9 +200,10 @@ class CellClass {
   bool Is_Generally_Clear() const;
   TARGET As_Target() const { return ::As_Target(Cell_Number()); }
   BuildingClass* Cell_Building() const;
-  CellClass const& Adjacent_Cell(FacingType face) const;
+  const CellClass& Adjacent_Cell(FacingType face) const;
   CellClass& Adjacent_Cell(FacingType face) {
-    return (CellClass&)(*static_cast<CellClass const*>(this)).Adjacent_Cell(face);
+    return (CellClass&)(*static_cast<const CellClass*>(this))
+        .Adjacent_Cell(face);
   }
   COORDINATE Cell_Coord() const;
   int Cell_Color(bool override = false) const;
@@ -257,12 +258,12 @@ class CellClass {
   void Incoming(COORDINATE threat = 0, bool forced = false);
   void Adjust_Threat(HousesType house, int threat_value);
 
-  int operator!=(CellClass const&) const { return 0; }
+  int operator!=(const CellClass&) const { return 0; }
 
   int Validate() const;
 
  private:
-  CellClass(CellClass const&) {}
+  CellClass(const CellClass&) {}
 
   LandType Land;  // The land type of this cell.
 };

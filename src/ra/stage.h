@@ -67,7 +67,7 @@ class StageClass {
 
  public:
   StageClass() : Stage(0), Timer(0), Rate(0) {}
-  StageClass(NoInitClass const& x) : Timer(x) {}
+  StageClass(const NoInitClass& x) : Timer(x) {}
 
   int Fetch_Stage() const { return Stage; }
   int Fetch_Rate() const { return Rate; }

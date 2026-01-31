@@ -65,7 +65,7 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int BufferPipe::Put(void const* source, int slen) {
+int BufferPipe::Put(const void* source, int slen) {
   int total = 0;
 
   if (Is_Valid() && source != nullptr && slen > 0) {
@@ -144,7 +144,7 @@ int FilePipe::End() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int FilePipe::Put(void const* source, int slen) {
+int FilePipe::Put(const void* source, int slen) {
   if (Valid_File() && source != nullptr && slen > 0) {
     if (!File->Is_Open()) {
       HasOpened = true;

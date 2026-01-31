@@ -47,7 +47,7 @@
 
 class SuperClass {
  public:
-  SuperClass(NoInitClass const& x) : Control(x) {}
+  SuperClass(const NoInitClass& x) : Control(x) {}
   SuperClass(int recharge = 0, VoxType charging = VOX_NONE,
              VoxType ready = VOX_NONE, VoxType impatient = VOX_NONE,
              VoxType suspend = VOX_NONE);

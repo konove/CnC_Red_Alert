@@ -44,8 +44,8 @@ void CC_Draw_DIB(const char* pDIB, int xDest, int yDest, int iWidth,
 
 //***********************************************************************************************
 IconListClass::IconListClass(int id, int x, int y, int w, int h,
-                             TextPrintType flags, void const* up,
-                             void const* down, bool bResponsibleForStringAlloc,
+                             TextPrintType flags, const void* up,
+                             const void* down, bool bResponsibleForStringAlloc,
                              int iSelectionType, int iMaxItemsSaved)
     : ListClass(id, x, y, w, h, flags, up, down) {
   //	If bResponsibleForStringAlloc, COPIES of strings are stored in the list.
@@ -91,7 +91,7 @@ IconListClass::~IconListClass() {
  * OUTPUT:     Returns new item index. * WARNINGS:   none * HISTORY: 07/07/1998
  *ajw : Created.                                                       *
  *=============================================================================================*/
-int IconListClass::Add_Item(char const* text) {
+int IconListClass::Add_Item(const char* text) {
   return Add_Item(text, NULL, NULL, ICON_SHAPE);
 }
 
@@ -326,7 +326,7 @@ int IconListClass::Add_Item(
 }
 
 //***********************************************************************************************
-void IconListClass::Remove_Item(char const* text) {
+void IconListClass::Remove_Item(const char* text) {
   if (text) Remove_Item(List.ID(text));
 }
 

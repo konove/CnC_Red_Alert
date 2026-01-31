@@ -53,7 +53,7 @@ class BufferStraw : public Straw {
   // Creates a non-owning view into the buffer.
   BufferStraw(const Buffer& buffer)
       : BufferPtr(buffer.Get_Buffer(), buffer.Get_Size()), Index(0) {}
-  BufferStraw(void const* buffer, int length)
+  BufferStraw(const void* buffer, int length)
       : BufferPtr((void*)buffer, length), Index(0) {}
   ~BufferStraw() override = default;
 

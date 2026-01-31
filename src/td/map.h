@@ -51,13 +51,13 @@
 class MapClass : public GScreenClass {
  public:
   MapClass() {}
-  MapClass(NoInitClass const& x) : GScreenClass(x) {}
+  MapClass(const NoInitClass& x) : GScreenClass(x) {}
 
   /*
   ** Initialization
   */
-  void One_Time() override;     // Theater-specific inits
-  void Init_Clear() override;   // Clears all to known state
+  void One_Time() override;    // Theater-specific inits
+  void Init_Clear() override;  // Clears all to known state
   virtual void Alloc_Cells();  // Allocates buffers
   virtual void Free_Cells();   // Frees buffers
   virtual void Init_Cells();   // Frees buffers
@@ -78,8 +78,8 @@ class MapClass : public GScreenClass {
   void Pick_Up(CELL cell, ObjectClass* object);
   void Overlap_Down(CELL cell, ObjectClass* object);
   void Overlap_Up(CELL cell, ObjectClass* object);
-  bool Read_Binary(char const* root, unsigned long* crc);
-  bool Write_Binary(char const* root);
+  bool Read_Binary(const char* root, unsigned long* crc);
+  bool Write_Binary(const char* root);
   bool Place_Random_Crate();
 
   long Overpass();
@@ -123,8 +123,8 @@ class MapClass : public GScreenClass {
   int YSize;
   int Size;
 
-  static int const RadiusCount[11];
-  static int const RadiusOffset[];
+  static const int RadiusCount[11];
+  static const int RadiusOffset[];
 
  private:
   friend class CellClass;

@@ -57,7 +57,7 @@ class TCountDownTimerClass {
   // Constructor.  Timers set before low level init has been done will not
   // be able to be 'Started' or 'on' until timer system is in place.
   TCountDownTimerClass(long set = 0) { Set(set); }
-  TCountDownTimerClass(NoInitClass const& x) {}
+  TCountDownTimerClass(const NoInitClass& x) {}
 
   // No destructor.
   ~TCountDownTimerClass() {}

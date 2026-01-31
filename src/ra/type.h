@@ -88,8 +88,8 @@ class AbstractTypeClass {
   */
   int FullName;
 
-  AbstractTypeClass(RTTIType rtti, int id, int name, char const* ini);
-  AbstractTypeClass(NoInitClass const&) {}
+  AbstractTypeClass(RTTIType rtti, int id, int name, const char* ini);
+  AbstractTypeClass(const NoInitClass&) {}
   virtual ~AbstractTypeClass() = default;
 
   RTTIType What_Am_I() const { return RTTI; }
@@ -97,8 +97,8 @@ class AbstractTypeClass {
 
   virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
   virtual int Full_Name() const;
-  char const* Name() const { return IniName; }
-  void Set_Name(char const* buf) const {
+  const char* Name() const { return IniName; }
+  void Set_Name(const char* buf) const {
     strncpy((char*)IniName, buf, sizeof(IniName));
     (char&)IniName[sizeof(IniName) - 1] = '\0';
   }
@@ -160,18 +160,18 @@ class HouseTypeClass : public AbstractTypeClass {
   fixed BuildSpeedBias;
 
   //------------------------------------------------------------------------
-  HouseTypeClass(NoInitClass const& x) : AbstractTypeClass(x) {}
-  HouseTypeClass(HousesType house, char const* ini, int fullname,
-                 char const* ext, int lemon, PlayerColorType remapcolor,
+  HouseTypeClass(const NoInitClass& x) : AbstractTypeClass(x) {}
+  HouseTypeClass(HousesType house, const char* ini, int fullname,
+                 const char* ext, int lemon, PlayerColorType remapcolor,
                  char prefix);
 
-  unsigned char const* Remap_Table() const;
+  const unsigned char* Remap_Table() const;
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
-  static HousesType From_Name(char const* name);
+  static HousesType From_Name(const char* name);
   static HouseTypeClass& As_Reference(HousesType house);
   static void One_Time();
   static void Init_Heap();
@@ -279,14 +279,14 @@ class ObjectTypeClass : public AbstractTypeClass {
   std::unique_ptr<char[]> RadarIcon;
 
   //--------------------------------------------------------------------
-  ObjectTypeClass(NoInitClass const& x) : AbstractTypeClass(x) {}
+  ObjectTypeClass(const NoInitClass& x) : AbstractTypeClass(x) {}
   ObjectTypeClass(RTTIType rtti, int id, bool is_sentient, bool is_stealthy,
                   bool is_selectable, bool is_legal_target,
                   bool is_insignificant, bool is_immune, bool is_footprint,
-                  int fullname, char const* name);
+                  int fullname, const char* name);
   ~ObjectTypeClass() override;
-  ObjectTypeClass(ObjectTypeClass const& other);
-  ObjectTypeClass& operator=(ObjectTypeClass const&) = delete;
+  ObjectTypeClass(const ObjectTypeClass& other);
+  ObjectTypeClass& operator=(const ObjectTypeClass&) = delete;
   ObjectTypeClass(ObjectTypeClass&&) = default;
   ObjectTypeClass& operator=(ObjectTypeClass&&) = default;
 
@@ -296,7 +296,7 @@ class ObjectTypeClass : public AbstractTypeClass {
     return RTTI == RTTI_INFANTRYTYPE || RTTI == RTTI_UNITTYPE ||
            RTTI == RTTI_VESSELTYPE || RTTI == RTTI_AIRCRAFTTYPE;
   }
-  char const* Graphic_Name() const {
+  const char* Graphic_Name() const {
     if (GraphicName[0] != '\0') return GraphicName;
     return Name();
   }
@@ -306,16 +306,16 @@ class ObjectTypeClass : public AbstractTypeClass {
   virtual int Cost_Of() const;
   virtual int Time_To_Build() const;
   virtual ObjectClass* Create_One_Of(HouseClass*) const = 0;
-  virtual short const* Occupy_List(bool placement = false) const;
-  virtual short const* Overlap_List() const;
+  virtual const short* Occupy_List(bool placement = false) const;
+  virtual const short* Overlap_List() const;
   virtual BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
                                           HousesType house) const;
-  virtual void const* Get_Cameo_Data() const;
+  virtual const void* Get_Cameo_Data() const;
 
   // Legacy API: returns raw pointer for backward compatibility.
-  void const* Get_Image_Data() const {
+  const void* Get_Image_Data() const {
     return std::visit(
-        [](auto&& d) -> void const* { return d.empty() ? nullptr : d.data(); },
+        [](auto&& d) -> const void* { return d.empty() ? nullptr : d.data(); },
         image_data_);
   }
 
@@ -340,8 +340,8 @@ class ObjectTypeClass : public AbstractTypeClass {
 
   virtual void Display(int, int, WindowNumberType, HousesType) const {}
 
-  static void const* SelectShapes;
-  static void const* PipShapes;
+  static const void* SelectShapes;
+  static const void* PipShapes;
 };
 
 /***************************************************************************
@@ -531,7 +531,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	This is the small icon image that is used to display the object in
   **	the sidebar for construction selection purposes.
   */
-  void const* CameoData;
+  const void* CameoData;
 
   /*
   **	The number of animation frames allotted to rotation is specified here.
@@ -551,8 +551,8 @@ class TechnoTypeClass : public ObjectTypeClass {
   /*
   **	These are the weapons that this techno object is armed with.
   */
-  WeaponTypeClass const* PrimaryWeapon;
-  WeaponTypeClass const* SecondaryWeapon;
+  const WeaponTypeClass* PrimaryWeapon;
+  const WeaponTypeClass* SecondaryWeapon;
 
   /*
   **	These specify the lepton offsets to locate the exact coordinate of the
@@ -572,8 +572,8 @@ class TechnoTypeClass : public ObjectTypeClass {
   int Points;
 
   //--------------------------------------------------------------------
-  TechnoTypeClass(NoInitClass const& x) : ObjectTypeClass(x) {}
-  TechnoTypeClass(RTTIType rtti, int id, int name, char const* ininame,
+  TechnoTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
+  TechnoTypeClass(RTTIType rtti, int id, int name, const char* ininame,
                   RemapType remap, int verticaloffset, int primaryoffset,
                   int primarylateral, int secondaryoffset, int secondarylateral,
                   bool is_nominal, bool is_stealthy, bool is_selectable,
@@ -587,7 +587,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   virtual int Max_Passengers() const { return MaxPassengers; }
   virtual int Repair_Cost() const;
   virtual int Repair_Step() const;
-  void const* Get_Cameo_Data() const override;
+  const void* Get_Cameo_Data() const override;
   int Cost_Of() const override;
   int Time_To_Build() const override;
   int Get_Ownable() const override;
@@ -596,10 +596,10 @@ class TechnoTypeClass : public ObjectTypeClass {
   /*
   **	This is a pointer to the wake shape (as needed by the gunboat).
   */
-  static void const* WakeShapes;
-  static void const* TurretShapes;
-  static void const* SamShapes;
-  static void const* MGunShapes;
+  static const void* WakeShapes;
+  static const void* TurretShapes;
+  static const void* SamShapes;
+  static const void* MGunShapes;
 };
 
 /***************************************************************************
@@ -704,7 +704,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   *that are *	more suitable than others. This list is here to inform the
   *system which *	directions those are.
   */
-  short const* ExitList;
+  const short* ExitList;
 
   /*
   **	This is the structure type identifier. It can serve as a unique
@@ -757,8 +757,8 @@ class BuildingTypeClass : public TechnoTypeClass {
   /*---------------------------------------------------------------------------
   **	This is the building type explicit constructor.
   */
-  BuildingTypeClass(NoInitClass const& x) : TechnoTypeClass(x) {}
-  BuildingTypeClass(StructType type, int name, char const* ininame,
+  BuildingTypeClass(const NoInitClass& x) : TechnoTypeClass(x) {}
+  BuildingTypeClass(StructType type, int name, const char* ininame,
                     FacingType foundation, COORDINATE exitpoint,
                     RemapType remap, int verticaloffset, int primaryoffset,
                     int primarylateral, bool is_fake, bool is_regulated,
@@ -767,8 +767,8 @@ class BuildingTypeClass : public TechnoTypeClass {
                     bool is_insignificant, bool is_theater,
                     bool is_turret_equipped, bool is_remappable,
                     RTTIType tobuild, DirType sframe, BSizeType size,
-                    short const* exitlist, short const* sizelist,
-                    short const* overlap);
+                    const short* exitlist, const short* sizelist,
+                    const short* overlap);
   operator StructType() const { return Type; }
 
   void* operator new(size_t) noexcept;
@@ -777,7 +777,7 @@ class BuildingTypeClass : public TechnoTypeClass {
 
   static void Init_Heap();
   static BuildingTypeClass& As_Reference(StructType type);
-  static StructType From_Name(char const* name);
+  static StructType From_Name(const char* name);
   static void Init(TheaterType theater);
   static void One_Time();
   static void Prep_For_Add();
@@ -794,9 +794,9 @@ class BuildingTypeClass : public TechnoTypeClass {
   void Dimensions(int& width, int& height) const override;
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  short const* Occupy_List(bool placement = false) const override;
-  short const* Overlap_List() const override;
-  virtual void const* Get_Buildup_Data() const { return BuildupData; }
+  const short* Occupy_List(bool placement = false) const override;
+  const short* Overlap_List() const override;
+  virtual const void* Get_Buildup_Data() const { return BuildupData; }
 
   bool Is_Factory() const { return ToBuild != RTTI_NONE; }
   int Raw_Cost() const override;
@@ -816,7 +816,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	are used to indicate the building's "footprint". This footprint is used
   **	to determine building placement legality and terrain passibility.
   */
-  short const* OccupyList;
+  const short* OccupyList;
 
   /*
   **	Buildings can often times overlap a cell but not actually "occupy" it
@@ -824,13 +824,13 @@ class BuildingTypeClass : public TechnoTypeClass {
   *indicate which *	cells the building has visual overlap but does not
   *occupy.
   */
-  short const* OverlapList;
+  const short* OverlapList;
 
   /*
   **	The construction animation graphic data pointer is
   **	pointed to by this element.
   */
-  void const* BuildupData;
+  const void* BuildupData;
 
   void Init_Anim(BStateType state, int start, int count, int rate) const;
 };
@@ -941,8 +941,8 @@ class UnitTypeClass : public TechnoTypeClass {
   /*
   **	This is the explicit unit class constructor.
   */
-  UnitTypeClass(NoInitClass const& x) : TechnoTypeClass(x) {}
-  UnitTypeClass(UnitType type, int name, char const* ininame, AnimType exp,
+  UnitTypeClass(const NoInitClass& x) : TechnoTypeClass(x) {}
+  UnitTypeClass(UnitType type, int name, const char* ininame, AnimType exp,
                 RemapType remap, int verticaloffset, int primaryoffset,
                 int primarylateral, int secondaryoffset, int secondarylateral,
                 bool is_goodie, bool is_nominal, bool is_crusher,
@@ -957,7 +957,7 @@ class UnitTypeClass : public TechnoTypeClass {
   void operator delete(void* ptr);
 
   static void Init_Heap();
-  static UnitType From_Name(char const* name);
+  static UnitType From_Name(const char* name);
   static UnitTypeClass& As_Reference(UnitType type);
   static void Init(TheaterType) {}
   static void One_Time();
@@ -1035,8 +1035,8 @@ class VesselTypeClass : public TechnoTypeClass {
   /*
   **	This is the explicit unit class constructor.
   */
-  VesselTypeClass(NoInitClass const& x) : TechnoTypeClass(x) {}
-  VesselTypeClass(VesselType type, int name, char const* ininame, AnimType exp,
+  VesselTypeClass(const NoInitClass& x) : TechnoTypeClass(x) {}
+  VesselTypeClass(VesselType type, int name, const char* ininame, AnimType exp,
                   int verticaloffset, int primaryoffset, int primarylateral,
                   int secondaryoffset, int secondarylateral, bool is_eight,
                   bool is_nominal, bool is_turret_equipped, int rotation,
@@ -1047,7 +1047,7 @@ class VesselTypeClass : public TechnoTypeClass {
   void operator delete(void* ptr);
 
   static void Init_Heap();
-  static VesselType From_Name(char const* name);
+  static VesselType From_Name(const char* name);
   static VesselTypeClass& As_Reference(VesselType type);
   static void Init(TheaterType) {}
   static void One_Time();
@@ -1057,7 +1057,7 @@ class VesselTypeClass : public TechnoTypeClass {
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   int Max_Pips() const override;
-  short const* Overlap_List() const override;
+  const short* Overlap_List() const override;
 
   void Turret_Adjust(DirType dir, int& x, int& y) const;
 
@@ -1143,7 +1143,7 @@ class InfantryTypeClass : public TechnoTypeClass {
   **	This is an array of the various animation frame data for the actions
   *that *	the infantry may perform.
   */
-  DoInfoStruct const* DoControls;
+  const DoInfoStruct* DoControls;
 
   /*
   **	There are certain units with special animation sequences built into the
@@ -1158,25 +1158,25 @@ class InfantryTypeClass : public TechnoTypeClass {
   ** used only in conjunction with the IsRemapOverride flag, and is
   ** primarily used for the civilians.
   */
-  unsigned char const* OverrideRemap;
+  const unsigned char* OverrideRemap;
 
   /*
   **	This is the explicit unit class constructor.
   */
-  InfantryTypeClass(NoInitClass const& x) : TechnoTypeClass(x) {}
-  InfantryTypeClass(InfantryType type, int name, char const* ininame,
+  InfantryTypeClass(const NoInitClass& x) : TechnoTypeClass(x) {}
+  InfantryTypeClass(InfantryType type, int name, const char* ininame,
                     int verticaloffset, int primaryoffset, bool is_female,
                     bool is_crawling, bool is_civilian, bool is_remap_override,
                     bool is_nominal, bool is_theater, PipEnum pip,
-                    DoInfoStruct const* controls, int firelaunch,
-                    int pronelaunch, unsigned char const* override_remap);
+                    const DoInfoStruct* controls, int firelaunch,
+                    int pronelaunch, const unsigned char* override_remap);
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
-  static InfantryType From_Name(char const* name);
+  static InfantryType From_Name(const char* name);
   static InfantryTypeClass& As_Reference(InfantryType type);
   static void Init(TheaterType) {}
   static void One_Time();
@@ -1186,7 +1186,7 @@ class InfantryTypeClass : public TechnoTypeClass {
   void Dimensions(int& width, int& height) const override;
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  short const* Occupy_List(bool placement = false) const override;
+  const short* Occupy_List(bool placement = false) const override;
   int Full_Name() const override;
 
   void Display(int x, int y, WindowNumberType window,
@@ -1248,8 +1248,8 @@ class AircraftTypeClass : public TechnoTypeClass {
   */
   int LandingSpeed;
 
-  AircraftTypeClass(NoInitClass const& x) : TechnoTypeClass(x) {}
-  AircraftTypeClass(AircraftType airtype, int name, char const* ininame,
+  AircraftTypeClass(const NoInitClass& x) : TechnoTypeClass(x) {}
+  AircraftTypeClass(AircraftType airtype, int name, const char* ininame,
                     int verticaloffset, int primaryoffset, int primarylateral,
                     bool is_fixedwing, bool is_rotorequipped,
                     bool is_rotorcustom, bool is_landable, bool is_stealthy,
@@ -1262,7 +1262,7 @@ class AircraftTypeClass : public TechnoTypeClass {
   void operator delete(void* ptr);
 
   static void Init_Heap();
-  static AircraftType From_Name(char const* name);
+  static AircraftType From_Name(const char* name);
   static AircraftTypeClass& As_Reference(AircraftType a);
   static void Init(TheaterType) {}
   static void One_Time();
@@ -1271,15 +1271,15 @@ class AircraftTypeClass : public TechnoTypeClass {
   void Dimensions(int& width, int& height) const override;
   bool Create_And_Place(CELL, HousesType) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  short const* Occupy_List(bool placement = false) const override;
-  short const* Overlap_List() const override;
+  const short* Occupy_List(bool placement = false) const override;
+  const short* Overlap_List() const override;
   int Max_Pips() const override;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house) const override;
 
-  static void const* LRotorData;
-  static void const* RRotorData;
+  static const void* LRotorData;
+  static const void* RRotorData;
 };
 
 /***************************************************************************
@@ -1433,8 +1433,8 @@ class BulletTypeClass : public ObjectTypeClass {
   int Tumble;
 
   //---------------------------------------------------------------------
-  BulletTypeClass(NoInitClass const& x) : ObjectTypeClass(x) {}
-  BulletTypeClass(char const* name);
+  BulletTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
+  BulletTypeClass(const char* name);
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
@@ -1483,17 +1483,17 @@ class TerrainTypeClass : public ObjectTypeClass {
   unsigned IsWaterBased : 1;
 
   //----------------------------------------------------------------
-  TerrainTypeClass(NoInitClass const& x) : ObjectTypeClass(x) {}
+  TerrainTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
   TerrainTypeClass(TerrainType terrain, int theater, COORDINATE centerbase,
-                   bool is_immune, bool is_water, char const* ininame,
-                   int fullname, short const* occupy, short const* overlap);
+                   bool is_immune, bool is_water, const char* ininame,
+                   int fullname, const short* occupy, const short* overlap);
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
-  static TerrainType From_Name(char const* name);
+  static TerrainType From_Name(const char* name);
   static TerrainTypeClass& As_Reference(TerrainType type);
   static void Init(TheaterType theater = THEATER_TEMPERATE);
   static void One_Time();
@@ -1502,15 +1502,15 @@ class TerrainTypeClass : public ObjectTypeClass {
   COORDINATE Coord_Fixup(COORDINATE coord) const override;
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass*) const override;
-  short const* Occupy_List(bool placement = false) const override;
-  short const* Overlap_List() const override;
+  const short* Occupy_List(bool placement = false) const override;
+  const short* Overlap_List() const override;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
 
  private:
-  short const* Occupy;
-  short const* Overlap;
+  const short* Occupy;
+  const short* Overlap;
 };
 
 /****************************************************************************
@@ -1539,8 +1539,8 @@ class TemplateTypeClass : public ObjectTypeClass {
   unsigned char Width, Height;
 
   //----------------------------------------------------------
-  TemplateTypeClass(NoInitClass const& x) : ObjectTypeClass(x) {}
-  TemplateTypeClass(TemplateType iconset, int theater, char const* ininame,
+  TemplateTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
+  TemplateTypeClass(TemplateType iconset, int theater, const char* ininame,
                     int fullname);
 
   void* operator new(size_t) noexcept;
@@ -1558,7 +1558,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass*) const override;
-  short const* Occupy_List(bool placement = false) const override;
+  const short* Occupy_List(bool placement = false) const override;
   LandType Land_Type(int icon) const;
 
   void Display(int x, int y, WindowNumberType window,
@@ -1715,8 +1715,8 @@ class AnimTypeClass : public ObjectTypeClass {
   AnimType ChainTo;
 
   //---------------------------------------------------------------------------
-  AnimTypeClass(NoInitClass const& x) : ObjectTypeClass(x) {}
-  AnimTypeClass(AnimType anim, char const* name, int size, int biggest,
+  AnimTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
+  AnimTypeClass(AnimType anim, const char* name, int size, int biggest,
                 bool istheater, bool isnormal, bool iswhite, bool isscorcher,
                 bool iscrater, bool issticky, bool ground, bool istrans,
                 bool isflame, fixed damage, int delaytime, int start,
@@ -1813,8 +1813,8 @@ class OverlayTypeClass : public ObjectTypeClass {
   unsigned IsRadarVisible : 1;
 
   //----------------------------------------------------------
-  OverlayTypeClass(NoInitClass const& x) : ObjectTypeClass(x) {}
-  OverlayTypeClass(OverlayType iconset, char const* ininame, int fullname,
+  OverlayTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
+  OverlayTypeClass(OverlayType iconset, const char* ininame, int fullname,
                    LandType ground, int damagelevels, int damagepoints,
                    bool isradarinvisible, bool iswooden, bool istarget,
                    bool iscrushable, bool istiberium, bool high, bool theater,
@@ -1825,7 +1825,7 @@ class OverlayTypeClass : public ObjectTypeClass {
   void operator delete(void* ptr);
 
   static void Init_Heap();
-  static OverlayType From_Name(char const* name);
+  static OverlayType From_Name(const char* name);
   static OverlayTypeClass& As_Reference(OverlayType type);
   static void Init(TheaterType);
   static void One_Time();
@@ -1835,7 +1835,7 @@ class OverlayTypeClass : public ObjectTypeClass {
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass*) const override;
-  short const* Occupy_List(bool placement = false) const override;
+  const short* Occupy_List(bool placement = false) const override;
   virtual void Draw_It(int x, int y, int data) const;
   virtual unsigned char* Radar_Icon(int data) const;
 
@@ -1877,8 +1877,8 @@ class SmudgeTypeClass : public ObjectTypeClass {
   unsigned IsBib : 1;
 
   //----------------------------------------------------------
-  SmudgeTypeClass(NoInitClass const& x) : ObjectTypeClass(x) {}
-  SmudgeTypeClass(SmudgeType smudge, char const* ininame, int fullname,
+  SmudgeTypeClass(const NoInitClass& x) : ObjectTypeClass(x) {}
+  SmudgeTypeClass(SmudgeType smudge, const char* ininame, int fullname,
                   int width, int height, bool isbib, bool iscrater);
 
   void* operator new(size_t) noexcept;
@@ -1886,7 +1886,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
   void operator delete(void* ptr);
 
   static void Init_Heap();
-  static SmudgeType From_Name(char const* name);
+  static SmudgeType From_Name(const char* name);
   static SmudgeTypeClass& As_Reference(SmudgeType type);
   static void Init(TheaterType);
   static void One_Time();
@@ -1895,8 +1895,8 @@ class SmudgeTypeClass : public ObjectTypeClass {
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass*) const override;
-  short const* Occupy_List(bool placement = false) const override;
-  short const* Overlap_List() const override { return Occupy_List(); }
+  const short* Occupy_List(bool placement = false) const override;
+  const short* Overlap_List() const override { return Occupy_List(); }
   virtual void Draw_It(int x, int y, int data) const;
 
   void Display(int x, int y, WindowNumberType window,

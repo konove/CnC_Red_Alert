@@ -62,7 +62,7 @@ class FlyClass {
     SpeedAdd = MPH_IMMOBILE;
     SpeedAccum = 0;
   }
-  FlyClass(NoInitClass const&) {}
+  FlyClass(const NoInitClass&) {}
   virtual ~FlyClass() = default;
 
   /*---------------------------------------------------------------------

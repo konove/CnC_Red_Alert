@@ -69,8 +69,8 @@
 #include "td/vector.h"
 
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags, void const* up,
-                               void const* down)
+                               TextPrintType flags, const void* up,
+                               const void* down)
     : ListClass(id, x, y, w, h, flags, up, down) {
   IsReadOnly = false;
 }

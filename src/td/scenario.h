@@ -8,11 +8,11 @@ bool Read_Scenario(char* root);
 bool Start_Scenario(char* root, bool briefing = true);
 HousesType Select_House();
 void Clear_Scenario();
-void Do_Briefing(char const* text);
+void Do_Briefing(const char* text);
 void Do_Lose();
 void Do_Win();
 void Do_Restart();
 void Fill_In_Data();
-bool Restate_Mission(char const* name, int right_btn, int left_btn);
+bool Restate_Mission(const char* name, int right_btn, int left_btn);
 
 #endif  // CNC_RED_ALERT_TD_SCENARIO_H_

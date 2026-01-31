@@ -60,7 +60,7 @@
 #include "td/sidebar.h"
 #include "td/special.h"
 
-void const* TabClass::TabShape = nullptr;
+const void* TabClass::TabShape = nullptr;
 
 /***********************************************************************************************
  * TabClass::TabClass -- Default construct for the tab button class. *

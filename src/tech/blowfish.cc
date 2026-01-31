@@ -110,7 +110,7 @@ BlowfishEngine::~BlowfishEngine() {
  *                                                                                             *
  * HISTORY: * 04/14/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowfishEngine::Submit_Key(void const* key, int length) {
+void BlowfishEngine::Submit_Key(const void* key, int length) {
   assert(length <= MAX_KEY_LENGTH);
 
   /*
@@ -136,7 +136,7 @@ void BlowfishEngine::Submit_Key(void const* key, int length) {
   **	into a long by using endian independent means.
   */
   int j = 0;
-  unsigned char const* key_ptr = static_cast<unsigned char const*>(key);
+  const unsigned char* key_ptr = static_cast<const unsigned char*>(key);
   unsigned long* p_ptr = &P_Encrypt[0];
   for (int index = 0; index < ROUNDS + 2; index++) {
     unsigned long data = 0;
@@ -210,7 +210,7 @@ void BlowfishEngine::Submit_Key(void const* key, int length) {
  *                                                                                             *
  * HISTORY: * 04/14/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowfishEngine::Encrypt(void const* plaintext, int length,
+int BlowfishEngine::Encrypt(const void* plaintext, int length,
                             void* cyphertext) {
   if (plaintext == nullptr || length == 0) {
     return 0;
@@ -276,7 +276,7 @@ int BlowfishEngine::Encrypt(void const* plaintext, int length,
  *                                                                                             *
  * HISTORY: * 04/14/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowfishEngine::Decrypt(void const* cyphertext, int length,
+int BlowfishEngine::Decrypt(const void* cyphertext, int length,
                             void* plaintext) {
   if (cyphertext == nullptr || length == 0) {
     return 0;
@@ -345,8 +345,8 @@ int BlowfishEngine::Decrypt(void const* cyphertext, int length,
  *                                                                                             *
  * HISTORY: * 04/19/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowfishEngine::Process_Block(void const* plaintext, void* cyphertext,
-                                   unsigned long const* ptable) {
+void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
+                                   const unsigned long* ptable) {
   /*
   **	Input the left and right halves of the source block such that
   **	the byte order is constant regardless of the endian
@@ -354,7 +354,7 @@ void BlowfishEngine::Process_Block(void const* plaintext, void* cyphertext,
   **	biased toward "big endian" architecture and some optimizations
   **	could be done for big endian processors in that case.
   */
-  unsigned char const* source = static_cast<unsigned char const*>(plaintext);
+  const unsigned char* source = static_cast<const unsigned char*>(plaintext);
   Int left;
   left.Char.C0 = *source++;
   left.Char.C1 = *source++;
@@ -442,12 +442,10 @@ void BlowfishEngine::Sub_Key_Encrypt(unsigned long& left,
 
   for (int index = 0; index < ROUNDS; index += 2) {
     l.Long ^= P_Encrypt[index];
-    r.Long ^=
-        (bf_S[0][l.Char.C0] + bf_S[1][l.Char.C1] ^ bf_S[2][l.Char.C2]) +
+    r.Long ^= (bf_S[0][l.Char.C0] + bf_S[1][l.Char.C1] ^ bf_S[2][l.Char.C2]) +
               bf_S[3][l.Char.C3];
     r.Long ^= P_Encrypt[index + 1];
-    l.Long ^=
-        (bf_S[0][r.Char.C0] + bf_S[1][r.Char.C1] ^ bf_S[2][r.Char.C2]) +
+    l.Long ^= (bf_S[0][r.Char.C0] + bf_S[1][r.Char.C1] ^ bf_S[2][r.Char.C2]) +
               bf_S[3][r.Char.C3];
   }
   left = r.Long ^ P_Encrypt[ROUNDS + 1];
@@ -462,13 +460,13 @@ void BlowfishEngine::Sub_Key_Encrypt(unsigned long& left,
 *painful.
 */
 
-unsigned long const BlowfishEngine::P_Init[ROUNDS + 2] = {
+const unsigned long BlowfishEngine::P_Init[ROUNDS + 2] = {
     0x243F6A88U, 0x85A308D3U, 0x13198A2EU, 0x03707344U, 0xA4093822U,
     0x299F31D0U, 0x082EFA98U, 0xEC4E6C89U, 0x452821E6U, 0x38D01377U,
     0xBE5466CFU, 0x34E90C6CU, 0xC0AC29B7U, 0xC97C50DDU, 0x3F84D5B5U,
     0xB5470917U, 0x9216D5D9U, 0x8979FB1BU};
 
-unsigned long const BlowfishEngine::S_Init[4][UCHAR_MAX + 1] = {
+const unsigned long BlowfishEngine::S_Init[4][UCHAR_MAX + 1] = {
     {
         0xD1310BA6U, 0x98DFB5ACU, 0x2FFD72DBU, 0xD01ADFB7U, 0xB8E1AFEDU,
         0x6A267E96U, 0xBA7C9045U, 0xF12C7F99U, 0x24A19947U, 0xB3916CF7U,

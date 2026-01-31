@@ -242,7 +242,7 @@ void LogicClass::AI() {
   *appropriate scan *	bits will be set for the owner house.
   */
   for (index = 0; index < Units.Count(); index++) {
-    UnitClass const* unit = Units.Ptr(index);
+    const UnitClass* unit = Units.Ptr(index);
     if (unit->IsLocked && (GameToPlay != GAME_NORMAL || !unit->House->IsHuman ||
                            unit->IsDiscoveredByPlayer)) {
       unit->House->NewUScan |= 1L << unit->Class->Type;
@@ -251,7 +251,7 @@ void LogicClass::AI() {
     }
   }
   for (index = 0; index < Infantry.Count(); index++) {
-    InfantryClass const* infantry = Infantry.Ptr(index);
+    const InfantryClass* infantry = Infantry.Ptr(index);
     if (infantry->IsLocked &&
         (GameToPlay != GAME_NORMAL || !infantry->House->IsHuman ||
          infantry->IsDiscoveredByPlayer)) {
@@ -261,7 +261,7 @@ void LogicClass::AI() {
     }
   }
   for (index = 0; index < Aircraft.Count(); index++) {
-    AircraftClass const* aircraft = Aircraft.Ptr(index);
+    const AircraftClass* aircraft = Aircraft.Ptr(index);
     if (aircraft->IsLocked &&
         (GameToPlay != GAME_NORMAL || !aircraft->House->IsHuman ||
          aircraft->IsDiscoveredByPlayer)) {
@@ -271,7 +271,7 @@ void LogicClass::AI() {
     }
   }
   for (index = 0; index < Buildings.Count(); index++) {
-    BuildingClass const* building = Buildings.Ptr(index);
+    const BuildingClass* building = Buildings.Ptr(index);
     if (building->IsLocked &&
         (GameToPlay != GAME_NORMAL || !building->House->IsHuman ||
          building->IsDiscoveredByPlayer)) {

@@ -260,7 +260,8 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
     } else {
 #ifdef WIN32
 
-      KeyASCIIType ascii = static_cast<KeyASCIIType>(Keyboard->To_ASCII(key) & 0xff);
+      KeyASCIIType ascii =
+          static_cast<KeyASCIIType>(Keyboard->To_ASCII(key) & 0xff);
 
       /*
       ** Allow numeric keypad presses to map to ascii numbers
@@ -338,7 +339,7 @@ void EditClass::Draw_Background() {
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void EditClass::Draw_Text(char const* text) {
+void EditClass::Draw_Text(const char* text) {
   TextPrintType flags;
 
   if (Has_Focus()) {

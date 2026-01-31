@@ -256,7 +256,7 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
   FireErrorType fire = DriveClass::Can_Fire(target, which);
 
   if (fire == FIRE_OK) {
-    WeaponTypeClass const* weapon =
+    const WeaponTypeClass* weapon =
         which == 0 ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 
     /*

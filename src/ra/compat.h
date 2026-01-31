@@ -105,23 +105,23 @@ typedef enum MenuIndexType {
 #define DKGRAY GREY
 #define LTGRAY LTGREY
 
-inline short Get_IconSet_MapWidth(void const* data) {
+inline short Get_IconSet_MapWidth(const void* data) {
   if (data) {
     return ((IControl_Type*)data)->MapWidth;
   }
   return 0;
 }
 
-inline short Get_IconSet_MapHeight(void const* data) {
+inline short Get_IconSet_MapHeight(const void* data) {
   if (data) {
     return ((IControl_Type*)data)->MapHeight;
   }
   return 0;
 }
 
-inline unsigned char const* Get_IconSet_ControlMap(void const* data) {
+inline const unsigned char* Get_IconSet_ControlMap(const void* data) {
   if (data) {
-    return (unsigned char const*)((char*)data +
+    return (const unsigned char*)((char*)data +
                                   ((IControl_Type*)data)->ColorMap);
   }
   return nullptr;
@@ -135,31 +135,31 @@ class IconsetClass : protected IControl_Type {
   int Map_Width() const { return MapWidth; }
   int Map_Height() const { return MapHeight; }
   unsigned char* Control_Map() { return (unsigned char*)this + ColorMap; }
-  unsigned char const* Control_Map() const {
-    return (unsigned char const*)this + ColorMap;
+  const unsigned char* Control_Map() const {
+    return (const unsigned char*)this + ColorMap;
   }
   int Icon_Count() const { return Count; }
   int Pixel_Width() const { return Width; }
   int Pixel_Height() const { return Height; }
   int Total_Size() const { return Size; }
-  unsigned char const* Palette_Data() const {
-    return (unsigned char const*)this + Palettes;
+  const unsigned char* Palette_Data() const {
+    return (const unsigned char*)this + Palettes;
   }
   unsigned char* Palette_Data() { return (unsigned char*)this + Palettes; }
-  unsigned char const* Icon_Data() const {
-    return (unsigned char const*)this + Icons;
+  const unsigned char* Icon_Data() const {
+    return (const unsigned char*)this + Icons;
   }
   unsigned char* Icon_Data() { return (unsigned char*)this + Icons; }
-  unsigned char const* Map_Data() const {
-    return (unsigned char const*)this + Map;
+  const unsigned char* Map_Data() const {
+    return (const unsigned char*)this + Map;
   }
   unsigned char* Map_Data() { return (unsigned char*)this + Map; }
-  unsigned char const* Remap_Data() const {
-    return (unsigned char const*)this + Remaps;
+  const unsigned char* Remap_Data() const {
+    return (const unsigned char*)this + Remaps;
   }
   unsigned char* Remap_Data() { return (unsigned char*)this + Remaps; }
-  unsigned char const* Trans_Data() const {
-    return (unsigned char const*)this + TransFlag;
+  const unsigned char* Trans_Data() const {
+    return (const unsigned char*)this + TransFlag;
   }
   unsigned char* Trans_Data() { return (unsigned char*)this + TransFlag; }
 
@@ -167,7 +167,7 @@ class IconsetClass : protected IControl_Type {
   **	Disallow these operations with an IconsetClass object.
   */
  private:
-  IconsetClass& operator=(IconsetClass const&);
+  IconsetClass& operator=(const IconsetClass&);
   IconsetClass();
   void* operator new(size_t);
 };

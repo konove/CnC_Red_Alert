@@ -9,7 +9,7 @@ char FontWidth;
 char FontHeight;
 char* FontWidthBlockPtr;
 
-void const* FontPtr;
+const void* FontPtr;
 
 // most of this table is because Buffer_Print doesn't do a shift...
 uint8_t ColorXlat[]{
@@ -62,9 +62,9 @@ uint8_t ColorXlat[]{
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-void* Set_Font(void const* fontptr) {
+void* Set_Font(const void* fontptr) {
   void* oldfont;
-  char const* blockptr;
+  const char* blockptr;
 
   oldfont = (void*)FontPtr;
 
@@ -91,7 +91,7 @@ int Char_Pixel_Width(char chr) {
          FontXSpacing;
 }
 
-unsigned int String_Pixel_Width(char const* string) {
+unsigned int String_Pixel_Width(const char* string) {
   int width;        // Working accumulator of string width.
   int largest = 0;  // Largest recorded width of the string.
 

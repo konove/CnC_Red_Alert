@@ -181,7 +181,7 @@ int XMP_DER_Length_Encode(unsigned long length, unsigned char* output) {
  *                                                                                             *
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
-int XMP_DER_Encode(uint32_t const* from, unsigned char* output, int precision) {
+int XMP_DER_Encode(const uint32_t* from, unsigned char* output, int precision) {
   assert(from != nullptr);
   assert(output != nullptr);
   assert(precision > 0);
@@ -218,7 +218,7 @@ int XMP_DER_Encode(uint32_t const* from, unsigned char* output, int precision) {
  *                                                                                             *
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
-void XMP_DER_Decode(uint32_t* result, unsigned char const* input,
+void XMP_DER_Decode(uint32_t* result, const unsigned char* input,
                     int precision) {
   assert(result != nullptr);
   assert(input != nullptr);
@@ -263,7 +263,7 @@ void XMP_DER_Decode(uint32_t* result, unsigned char const* input,
  *                                                                                             *
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned XMP_Encode(unsigned char* to, unsigned tobytes, uint32_t const* from,
+unsigned XMP_Encode(unsigned char* to, unsigned tobytes, const uint32_t* from,
                     int precision) {
   assert(to != nullptr);
   assert(from != nullptr);
@@ -309,7 +309,7 @@ unsigned XMP_Encode(unsigned char* to, unsigned tobytes, uint32_t const* from,
  *                                                                                             *
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned XMP_Encode(unsigned char* to, uint32_t const* from, int precision) {
+unsigned XMP_Encode(unsigned char* to, const uint32_t* from, int precision) {
   assert(to != nullptr);
   assert(from != nullptr);
   assert(precision > 0);
@@ -906,7 +906,7 @@ int XMP_Count_Bytes(const uint32_t* number, int precision) {
  *                                                                                             *
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
-void XMP_Move(uint32_t* dest, uint32_t const* source, int precision) {
+void XMP_Move(uint32_t* dest, const uint32_t* source, int precision) {
   memcpy(dest, source, precision * sizeof(uint32_t));
 }
 
@@ -1335,7 +1335,7 @@ int XMP_Signed_Mult(uint32_t* prod, const uint32_t* multiplicand,
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 unsigned short XMP_Unsigned_Div_Int(uint32_t* quotient,
-                                    uint32_t const* dividend,
+                                    const uint32_t* dividend,
                                     unsigned short divisor, int precision) {
   if (!divisor) return 0; /* zero divisor means divide error */
 
@@ -1345,7 +1345,7 @@ unsigned short XMP_Unsigned_Div_Int(uint32_t* quotient,
 
   int total_bit_count = XMP_Count_Bits(dividend, precision);
   int digit_precision = XMP_Bits_To_Digits(total_bit_count);
-  uint32_t const* dividend_ptr = dividend + (digit_precision - 1);
+  const uint32_t* dividend_ptr = dividend + (digit_precision - 1);
 
   if (!digit_precision) return 0;
 
@@ -1399,7 +1399,7 @@ unsigned short XMP_Unsigned_Div_Int(uint32_t* quotient,
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_Unsigned_Div(uint32_t* remainder, uint32_t* quotient,
-                     uint32_t const* dividend, uint32_t const* divisor,
+                     const uint32_t* dividend, const uint32_t* divisor,
                      int precision) {
   // check for divide by zero.
   if (XMP_Test_Eq_Int(divisor, 0, precision)) return -1;
@@ -1411,7 +1411,7 @@ int XMP_Unsigned_Div(uint32_t* remainder, uint32_t* quotient,
   int digit_precision = XMP_Bits_To_Digits(total_bit_count);
   if (!digit_precision) return 0;
 
-  uint32_t const* dividend_ptr = dividend + (digit_precision - 1);
+  const uint32_t* dividend_ptr = dividend + (digit_precision - 1);
   uint32_t* quotient_ptr = quotient + (digit_precision - 1);
 
   uint32_t high_bit_mask = XMP_Bits_To_Mask(total_bit_count);
@@ -1463,7 +1463,7 @@ int XMP_Unsigned_Div(uint32_t* remainder, uint32_t* quotient,
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Signed_Div(uint32_t* remainder, uint32_t* quotient,
-                    uint32_t const* dividend, uint32_t const* divisor,
+                    const uint32_t* dividend, const uint32_t* divisor,
                     int precision) {
   bool negative = false;
 
@@ -1518,8 +1518,8 @@ void XMP_Signed_Div(uint32_t* remainder, uint32_t* quotient,
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-void XMP_Inverse_A_Mod_B(uint32_t* result, uint32_t const* number,
-                         uint32_t const* modulus, int precision) {
+void XMP_Inverse_A_Mod_B(uint32_t* result, const uint32_t* number,
+                         const uint32_t* modulus, int precision) {
   uint32_t g[3][MAX_UNIT_PRECISION];
   XMP_Move(g[0], modulus, precision);
   XMP_Move(g[1], number, precision);
@@ -1619,7 +1619,7 @@ int XMP_Reciprocal(uint32_t* quotient, const uint32_t* divisor, int precision) {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-void XMP_Decode_ASCII(char const* str, uint32_t* mpn, int precision) {
+void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
   /*
   **	Initialize the multiprecision number to zero. From this point
   **	onward, this object can be manipulated as a regular number.
@@ -2289,7 +2289,7 @@ bool XMP_Fermat_Test(const uint32_t* candidate_prime, unsigned rounds,
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-bool XMP_Rabin_Miller_Test(Straw& rng, uint32_t const* w, int rounds,
+bool XMP_Rabin_Miller_Test(Straw& rng, const uint32_t* w, int rounds,
                            int precision) {
   uint32_t wminus1[MAX_UNIT_PRECISION] = {};
   XMP_Sub_Int(wminus1, w, 1, 0, precision);
@@ -2401,8 +2401,8 @@ void XMP_Randomize(uint32_t* result, Straw& rng, int total_bits,
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-void XMP_Randomize(uint32_t* result, Straw& rng, uint32_t const* minval,
-                   uint32_t const* maxval, int precision) {
+void XMP_Randomize(uint32_t* result, Straw& rng, const uint32_t* minval,
+                   const uint32_t* maxval, int precision) {
   uint32_t range[MAX_UNIT_PRECISION];
   XMP_Sub(range, maxval, minval, 0, precision);
   unsigned int bit_count = XMP_Count_Bits(range, precision);
@@ -2432,7 +2432,7 @@ void XMP_Randomize(uint32_t* result, Straw& rng, uint32_t const* minval,
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-bool XMP_Is_Prime(uint32_t const* prime, int precision) {
+bool XMP_Is_Prime(const uint32_t* prime, int precision) {
   /*
   **	Even numbers are ALWAYS not prime.
   */

@@ -316,7 +316,7 @@ static inline int _Scale_To_256(int val) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-LEPTON CCINIClass::Get_Lepton(char const* section, char const* entry,
+LEPTON CCINIClass::Get_Lepton(const char* section, const char* entry,
                               LEPTON defvalue) const {
   fixed result = Get_Fixed(section, entry, fixed(defvalue, CELL_LEPTON_W));
   return result * CELL_LEPTON_W;
@@ -340,7 +340,7 @@ LEPTON CCINIClass::Get_Lepton(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_Lepton(char const* section, char const* entry,
+bool CCINIClass::Put_Lepton(const char* section, const char* entry,
                             LEPTON value) {
   return Put_Fixed(section, entry, fixed(value, CELL_LEPTON_W));
 }
@@ -367,7 +367,7 @@ bool CCINIClass::Put_Lepton(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-MPHType CCINIClass::Get_MPHType(char const* section, char const* entry,
+MPHType CCINIClass::Get_MPHType(const char* section, const char* entry,
                                 MPHType defvalue) const {
   int val = Get_Int(section, entry, static_cast<int>(defvalue) * 100 / 256);
   return static_cast<MPHType>(_Scale_To_256(val));
@@ -393,7 +393,7 @@ MPHType CCINIClass::Get_MPHType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_MPHType(char const* section, char const* entry,
+bool CCINIClass::Put_MPHType(const char* section, const char* entry,
                              MPHType value) {
   return Put_Int(section, entry, static_cast<int>(value) * 100 / 256);
 }
@@ -422,7 +422,7 @@ bool CCINIClass::Put_MPHType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long CCINIClass::Get_Owners(char const* section, char const* entry,
+long CCINIClass::Get_Owners(const char* section, const char* entry,
                             long defvalue) const {
   char buffer[128];
   long ownable = defvalue;
@@ -459,7 +459,7 @@ long CCINIClass::Get_Owners(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_Owners(char const* section, char const* entry,
+bool CCINIClass::Put_Owners(const char* section, const char* entry,
                             long value) {
   std::string buffer;
   // Optimization: avoid repeated allocations for small strings
@@ -518,7 +518,7 @@ bool CCINIClass::Put_Owners(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-ArmorType CCINIClass::Get_ArmorType(char const* section, char const* entry,
+ArmorType CCINIClass::Get_ArmorType(const char* section, const char* entry,
                                     ArmorType defvalue) const {
   char buffer[128];
 
@@ -543,7 +543,7 @@ ArmorType CCINIClass::Get_ArmorType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_ArmorType(char const* section, char const* entry,
+bool CCINIClass::Put_ArmorType(const char* section, const char* entry,
                                ArmorType value) {
   return Put_String(section, entry, ArmorName[value]);
 }
@@ -571,7 +571,7 @@ bool CCINIClass::Put_ArmorType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-VocType CCINIClass::Get_VocType(char const* section, char const* entry,
+VocType CCINIClass::Get_VocType(const char* section, const char* entry,
                                 VocType defvalue) const {
   char buffer[128];
 
@@ -598,7 +598,7 @@ VocType CCINIClass::Get_VocType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_VocType(char const* section, char const* entry,
+bool CCINIClass::Put_VocType(const char* section, const char* entry,
                              VocType value) {
   if (value == VOC_NONE) {
     return Put_String(section, entry, "<none>");
@@ -627,7 +627,7 @@ bool CCINIClass::Put_VocType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-AnimType CCINIClass::Get_AnimType(char const* section, char const* entry,
+AnimType CCINIClass::Get_AnimType(const char* section, const char* entry,
                                   AnimType defvalue) const {
   char buffer[128];
 
@@ -655,7 +655,7 @@ AnimType CCINIClass::Get_AnimType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_AnimType(char const* section, char const* entry,
+bool CCINIClass::Put_AnimType(const char* section, const char* entry,
                               AnimType value) {
   if (value == ANIM_NONE) {
     return Put_String(section, entry, "<none>");
@@ -663,11 +663,11 @@ bool CCINIClass::Put_AnimType(char const* section, char const* entry,
   return Put_String(section, entry, Anim_Name(value));
 }
 
-UnitType CCINIClass::Get_UnitType(char const* section, char const* entry,
+UnitType CCINIClass::Get_UnitType(const char* section, const char* entry,
                                   UnitType defvalue) const {
   char buffer[128];
 
-  char const* def = "<none>";
+  const char* def = "<none>";
   if (defvalue != UNIT_NONE) {
     def = UnitTypeClass::As_Reference(defvalue).Name();
   }
@@ -675,7 +675,7 @@ UnitType CCINIClass::Get_UnitType(char const* section, char const* entry,
   return UnitTypeClass::From_Name(buffer);
 }
 
-bool CCINIClass::Put_UnitType(char const* section, char const* entry,
+bool CCINIClass::Put_UnitType(const char* section, const char* entry,
                               UnitType value) {
   if (value == UNIT_NONE) {
     return Put_String(section, entry, "<none>");
@@ -704,7 +704,7 @@ bool CCINIClass::Put_UnitType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-WeaponType CCINIClass::Get_WeaponType(char const* section, char const* entry,
+WeaponType CCINIClass::Get_WeaponType(const char* section, const char* entry,
                                       WeaponType defvalue) const {
   char buffer[128];
 
@@ -732,7 +732,7 @@ WeaponType CCINIClass::Get_WeaponType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_WeaponType(char const* section, char const* entry,
+bool CCINIClass::Put_WeaponType(const char* section, const char* entry,
                                 WeaponType value) {
   if (value == WEAPON_NONE) {
     return Put_String(section, entry, "<none>");
@@ -761,7 +761,7 @@ bool CCINIClass::Put_WeaponType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-WarheadType CCINIClass::Get_WarheadType(char const* section, char const* entry,
+WarheadType CCINIClass::Get_WarheadType(const char* section, const char* entry,
                                         WarheadType defvalue) const {
   char buffer[128];
 
@@ -793,7 +793,7 @@ WarheadType CCINIClass::Get_WarheadType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_WarheadType(char const* section, char const* entry,
+bool CCINIClass::Put_WarheadType(const char* section, const char* entry,
                                  WarheadType value) {
   if (value == WARHEAD_NONE) {
     return Put_String(section, entry, "<none>");
@@ -823,7 +823,7 @@ bool CCINIClass::Put_WarheadType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-OverlayType CCINIClass::Get_OverlayType(char const* section, char const* entry,
+OverlayType CCINIClass::Get_OverlayType(const char* section, const char* entry,
                                         OverlayType defvalue) const {
   char buffer[128];
 
@@ -851,7 +851,7 @@ OverlayType CCINIClass::Get_OverlayType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_OverlayType(char const* section, char const* entry,
+bool CCINIClass::Put_OverlayType(const char* section, const char* entry,
                                  OverlayType value) {
   assert(value != OVERLAY_NONE);
   return Put_String(section, entry,
@@ -879,7 +879,7 @@ bool CCINIClass::Put_OverlayType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-BulletType CCINIClass::Get_BulletType(char const* section, char const* entry,
+BulletType CCINIClass::Get_BulletType(const char* section, const char* entry,
                                       BulletType defvalue) const {
   char buffer[128];
 
@@ -915,7 +915,7 @@ BulletType CCINIClass::Get_BulletType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_BulletType(char const* section, char const* entry,
+bool CCINIClass::Put_BulletType(const char* section, const char* entry,
                                 BulletType value) {
   if (value == BULLET_NONE) {
     return Put_String(section, entry, "<none>");
@@ -948,7 +948,7 @@ bool CCINIClass::Put_BulletType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-HousesType CCINIClass::Get_HousesType(char const* section, char const* entry,
+HousesType CCINIClass::Get_HousesType(const char* section, const char* entry,
                                       HousesType defvalue) const {
   char buffer[128];
 
@@ -976,7 +976,7 @@ HousesType CCINIClass::Get_HousesType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_HousesType(char const* section, char const* entry,
+bool CCINIClass::Put_HousesType(const char* section, const char* entry,
                                 HousesType value) {
   return Put_String(section, entry, HouseTypeClass::As_Reference(value).Name());
 }
@@ -1002,7 +1002,7 @@ bool CCINIClass::Put_HousesType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-VQType CCINIClass::Get_VQType(char const* section, char const* entry,
+VQType CCINIClass::Get_VQType(const char* section, const char* entry,
                               VQType defvalue) const {
   char buffer[128];
 
@@ -1034,7 +1034,7 @@ VQType CCINIClass::Get_VQType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_VQType(char const* section, char const* entry,
+bool CCINIClass::Put_VQType(const char* section, const char* entry,
                             VQType value) {
   if (value == VQ_NONE) {
     return Put_String(section, entry, "<none>");
@@ -1063,7 +1063,7 @@ bool CCINIClass::Put_VQType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-TheaterType CCINIClass::Get_TheaterType(char const* section, char const* entry,
+TheaterType CCINIClass::Get_TheaterType(const char* section, const char* entry,
                                         TheaterType defvalue) const {
   char buffer[128];
 
@@ -1091,7 +1091,7 @@ TheaterType CCINIClass::Get_TheaterType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_TheaterType(char const* section, char const* entry,
+bool CCINIClass::Put_TheaterType(const char* section, const char* entry,
                                  TheaterType value) {
   return Put_String(section, entry, Theaters[value].Name);
 }
@@ -1114,8 +1114,8 @@ bool CCINIClass::Put_TheaterType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-TriggerTypeClass* CCINIClass::Get_TriggerType(char const* section,
-                                              char const* entry) const {
+TriggerTypeClass* CCINIClass::Get_TriggerType(const char* section,
+                                              const char* entry) const {
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
@@ -1143,7 +1143,7 @@ TriggerTypeClass* CCINIClass::Get_TriggerType(char const* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_TriggerType(char const* section, char const* entry,
+bool CCINIClass::Put_TriggerType(const char* section, const char* entry,
                                  TriggerTypeClass* value) {
   return Put_String(section, entry, value->Name());
 }
@@ -1167,7 +1167,7 @@ bool CCINIClass::Put_TriggerType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-ThemeType CCINIClass::Get_ThemeType(char const* section, char const* entry,
+ThemeType CCINIClass::Get_ThemeType(const char* section, const char* entry,
                                     ThemeType defvalue) const {
   char buffer[128];
 
@@ -1196,7 +1196,7 @@ ThemeType CCINIClass::Get_ThemeType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_ThemeType(char const* section, char const* entry,
+bool CCINIClass::Put_ThemeType(const char* section, const char* entry,
                                ThemeType value) {
   return Put_String(section, entry, Theme.Base_Name(value));
 }
@@ -1223,7 +1223,7 @@ bool CCINIClass::Put_ThemeType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-SourceType CCINIClass::Get_SourceType(char const* section, char const* entry,
+SourceType CCINIClass::Get_SourceType(const char* section, const char* entry,
                                       SourceType defvalue) const {
   char buffer[128];
 
@@ -1253,7 +1253,7 @@ SourceType CCINIClass::Get_SourceType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_SourceType(char const* section, char const* entry,
+bool CCINIClass::Put_SourceType(const char* section, const char* entry,
                                 SourceType value) {
   return Put_String(section, entry, SourceName[value]);
 }
@@ -1278,7 +1278,7 @@ bool CCINIClass::Put_SourceType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
-CrateType CCINIClass::Get_CrateType(char const* section, char const* entry,
+CrateType CCINIClass::Get_CrateType(const char* section, const char* entry,
                                     CrateType defvalue) const {
   char buffer[128];
 
@@ -1307,7 +1307,7 @@ CrateType CCINIClass::Get_CrateType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_CrateType(char const* section, char const* entry,
+bool CCINIClass::Put_CrateType(const char* section, const char* entry,
                                CrateType value) {
   return Put_String(section, entry, CrateNames[value]);
 }
@@ -1332,7 +1332,7 @@ bool CCINIClass::Put_CrateType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-TerrainType CCINIClass::Get_TerrainType(char const* section, char const* entry,
+TerrainType CCINIClass::Get_TerrainType(const char* section, const char* entry,
                                         TerrainType defvalue) const {
   char buffer[128];
 
@@ -1360,7 +1360,7 @@ TerrainType CCINIClass::Get_TerrainType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_TerrainType(char const* section, char const* entry,
+bool CCINIClass::Put_TerrainType(const char* section, const char* entry,
                                  TerrainType value) {
   return Put_String(section, entry,
                     TerrainTypeClass::As_Reference(value).Name());
@@ -1389,7 +1389,7 @@ bool CCINIClass::Put_TerrainType(char const* section, char const* entry,
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-long CCINIClass::Get_Buildings(char const* section, char const* entry,
+long CCINIClass::Get_Buildings(const char* section, const char* entry,
                                long defvalue) const {
   char buffer[128];
   long pre;

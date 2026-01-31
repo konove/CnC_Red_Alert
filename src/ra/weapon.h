@@ -55,15 +55,15 @@
 */
 class WeaponTypeClass {
  public:
-  WeaponTypeClass(char const* name);
-  WeaponTypeClass(NoInitClass const&) {}
+  WeaponTypeClass(const char* name);
+  WeaponTypeClass(const NoInitClass&) {}
   ~WeaponTypeClass();
 
   void* operator new(size_t) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
-  char const* Name() const { return IniName; }
+  const char* Name() const { return IniName; }
   bool Read_INI(CCINIClass& ini);
   static WeaponTypeClass* As_Pointer(WeaponType weapon);
   void Code_Pointers() {}
@@ -80,7 +80,7 @@ class WeaponTypeClass {
   /*
   **	This is the identifying name of this weapon.
   */
-  char const* IniName;
+  const char* IniName;
 
   /*
   **	Increase the weapon speed if the target is flying.
@@ -122,7 +122,7 @@ class WeaponTypeClass {
   *specified here. *	If this object does not fire anything, then this value
   *will be BULLET_NONE.
   */
-  BulletTypeClass const* Bullet;
+  const BulletTypeClass* Bullet;
 
   /*
   **	This is the damage (explosive load) to be assigned to the projectile
@@ -139,7 +139,7 @@ class WeaponTypeClass {
   /*
   **	Warhead to attach to the projectile.
   */
-  WarheadTypeClass const* WarheadPtr;
+  const WarheadTypeClass* WarheadPtr;
 
   /*
   **	Objects that fire (which can be buildings as well) will fire at a
@@ -168,7 +168,7 @@ class WeaponTypeClass {
   AnimType Anim;
 };
 
-WeaponType Weapon_From_Name(char const* name);
-ArmorType Armor_From_Name(char const* name);
+WeaponType Weapon_From_Name(const char* name);
+ArmorType Armor_From_Name(const char* name);
 
 #endif

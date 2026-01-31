@@ -457,10 +457,10 @@ void Debug_Key(unsigned input) {
 #define MAX_RADIUS 10
         COORDINATE coord;
         int x, y;
-        COORDINATE const* ptr;
+        const COORDINATE* ptr;
         int input;
         int f1, f2;
-        TurnTrackType const* track;
+        const TurnTrackType* track;
 
 #define XCENTER 160
 #define YCENTER 100
@@ -648,8 +648,8 @@ void Debug_Key(unsigned input) {
       */
       case KN_F7:
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
-          TechnoTypeClass const& ttype =
-              (TechnoTypeClass const&)CurrentObject[0]->Class_Of();
+          const TechnoTypeClass& ttype =
+              (const TechnoTypeClass&)CurrentObject[0]->Class_Of();
           int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
           if (ttype.Primary != WEAPON_NONE)

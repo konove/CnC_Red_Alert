@@ -10,7 +10,7 @@
 #include "td/config.h"
 #include "td/monoc.h"
 
-void* Conquer_Build_Fading_Table(void const* palette, void* dest, int color,
+void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
                                  int frac);
 void Fat_Put_Pixel(int x, int y, std::uint8_t color, int size,
                    GraphicViewPortClass&);

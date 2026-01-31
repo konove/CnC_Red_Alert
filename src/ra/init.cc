@@ -1631,7 +1631,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     /*
     **	Check to see if the parameter is a cheat enabling one.
     */
-    long const* optr = &CheatCodes[0];
+    const long* optr = &CheatCodes[0];
     while (*optr) {
       if (*optr++ == ob) {
         Debug_Playtest = true;
@@ -2009,7 +2009,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
  *                                                                                             *
  * HISTORY: * 08/19/1995 JLB : Created. *
  *=============================================================================================*/
-long Obfuscate(char const* string) {
+long Obfuscate(const char* string) {
   char buffer[128];
 
   if (!string) return 0;
@@ -3007,9 +3007,9 @@ static void Bootstrap() {
     strings.Read((void*)SystemStrings, strings.Size());
   } else {
     SystemStrings =
-        static_cast<char const*>(MFCD::Retrieve(Language_Name("CONQUER")));
+        static_cast<const char*>(MFCD::Retrieve(Language_Name("CONQUER")));
   }
-  DebugStrings = static_cast<char const*>(MFCD::Retrieve("DEBUG.ENG"));
+  DebugStrings = static_cast<const char*>(MFCD::Retrieve("DEBUG.ENG"));
 
   /*
   **	Default palette initialization.
@@ -3070,7 +3070,7 @@ static void Init_Mouse() {
   ShowCursor(false);
 #endif
   if (MouseInstalled) {
-    void const* temp_mouse_shapes = MFCD::Retrieve("MOUSE.SHP");
+    const void* temp_mouse_shapes = MFCD::Retrieve("MOUSE.SHP");
     if (temp_mouse_shapes) {
       Set_Mouse_Cursor(0, 0, Extract_Shape(temp_mouse_shapes, 0));
       while (Get_Mouse_State() > 1) Show_Mouse();

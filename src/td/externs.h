@@ -103,7 +103,7 @@ extern bool Debug_Smart_Print;
 extern bool Debug_Trap_Check_Heap;
 extern bool Debug_Instant_Build;
 
-extern void const* WarFactoryOverlay;
+extern const void* WarFactoryOverlay;
 
 /*
 **	Dynamic global variables (these change or are initialized at run time).
@@ -185,17 +185,17 @@ extern BaseClass Base;
 /*
 **	Loaded data file pointers.
 */
-extern void const* Green12FontPtr;
-extern void const* Green12GradFontPtr;
-extern void const* MapFontPtr;
-extern void const* VCRFontPtr;
-extern void const* Font3Ptr;
-extern void const* Font6Ptr;
-extern void const* Font8Ptr;
-extern void const* FontLEDPtr;
-extern void const* ScoreFontPtr;
-extern void const* GradFont6Ptr;
-extern char const* SystemStrings;
+extern const void* Green12FontPtr;
+extern const void* Green12GradFontPtr;
+extern const void* MapFontPtr;
+extern const void* VCRFontPtr;
+extern const void* Font3Ptr;
+extern const void* Font6Ptr;
+extern const void* Font8Ptr;
+extern const void* FontLEDPtr;
+extern const void* ScoreFontPtr;
+extern const void* GradFont6Ptr;
+extern const char* SystemStrings;
 
 /*
 **	Miscellaneous globals.
@@ -385,9 +385,9 @@ void Memory_Error_Handler();
 extern bool GameStatisticsPacketSent;
 extern bool ConnectionLost;
 extern bool InMainLoop;  // True if in game state rather than menu state
-void CCDebugString(char const* string);
+void CCDebugString(const char* string);
 extern void* PacketLater;
-void Load_Title_Screen(char const* name, GraphicViewPortClass* video_page,
+void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
                        unsigned char* palette);
 
 extern "C" {

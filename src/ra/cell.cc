@@ -592,7 +592,7 @@ void CellClass::Recalc_Attributes() {
   **	land type given the template type and icon number.
   */
   if (TType != TEMPLATE_NONE && TType != 255) {
-    TemplateTypeClass const* ttype = &TemplateTypeClass::As_Reference(TType);
+    const TemplateTypeClass* ttype = &TemplateTypeClass::As_Reference(TType);
     Land = ttype->Land_Type(TIcon);
     return;
   }
@@ -976,7 +976,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
   if (!objects) {
     BStart(BENCH_CELL);
 
-    TemplateTypeClass const* ttype = nullptr;
+    const TemplateTypeClass* ttype = nullptr;
     int icon;  // The icon number to use from the template set.
     void* remap = nullptr;
 
@@ -1072,7 +1072,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	Draw the overlay object.
       */
       if (Overlay != OVERLAY_NONE) {
-        OverlayTypeClass const& otype = OverlayTypeClass::As_Reference(Overlay);
+        const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
         IsTheaterShape =
             static_cast<bool>(otype.IsTheater);  // Tell Build_Frame if this
                                                  // overlay is theater specific
@@ -1216,7 +1216,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	Draw the flag if there is one located at this cell.
       */
       if (IsFlagged) {
-        void const* flag_remap =
+        const void* flag_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
         CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), Frame % 14,
                       x + ICON_PIXEL_W / 2, y + ICON_PIXEL_H / 2,
@@ -1708,7 +1708,7 @@ int CellClass::Reduce_Wall(int damage) {
 
   if (Overlay != OVERLAY_NONE) {
     bool destroyed = false;
-    OverlayTypeClass const& wall = OverlayTypeClass::As_Reference(Overlay);
+    const OverlayTypeClass& wall = OverlayTypeClass::As_Reference(Overlay);
 
     if (wall.IsWall) {
       /*
@@ -1968,14 +1968,14 @@ void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-CellClass const& CellClass::Adjacent_Cell(FacingType face) const {
+const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (static_cast<unsigned>(face) >= FACING_COUNT) {
     return *this;
   }
 
-  CellClass const* ptr = this + AdjacentCell[face];
+  const CellClass* ptr = this + AdjacentCell[face];
   if (static_cast<unsigned>(Cell_Number()) + AdjacentCell[face] >=
       MAP_CELL_TOTAL)
     return *this;
@@ -2396,7 +2396,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       **	Try to create a unit where the crate was.
       */
       case CRATE_UNIT: {
-        UnitTypeClass const* utp = nullptr;
+        const UnitTypeClass* utp = nullptr;
 
         /*
         **	Give the player an MCV if he has no base left but does have more
@@ -2824,7 +2824,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   **	purposes unless this is a wall crushing check or if the checking object
   **	can destroy walls.
   */
-  OverlayTypeClass const* overlay = nullptr;
+  const OverlayTypeClass* overlay = nullptr;
   if (Overlay != OVERLAY_NONE) {
     overlay = &OverlayTypeClass::As_Reference(Overlay);
   }
@@ -3043,7 +3043,7 @@ bool CellClass::Can_Tiberium_Germinate() const {
   *building is *	invisible. In such a case, the Tiberium must grow or
   *else the location of the *	building will be revealed.
   */
-  BuildingClass const* building = Cell_Building();
+  const BuildingClass* building = Cell_Building();
   if (building != nullptr && !building->Class->IsInvisible) return false;
 
   if (!Ground[Land_Type()].Build) return false;

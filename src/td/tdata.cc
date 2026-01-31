@@ -65,46 +65,46 @@
 // #define TREE_WEAK 400
 // #define TREE_STRONG 800
 
-static short const _List1[] = {0, REFRESH_EOL};
-static short const _List000010[] = {MAP_CELL_W + 1, REFRESH_EOL};
-static short const _List000011101000[] = {
+static const short _List1[] = {0, REFRESH_EOL};
+static const short _List000010[] = {MAP_CELL_W + 1, REFRESH_EOL};
+static const short _List000011101000[] = {
     MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2, MAP_CELL_W * 2, REFRESH_EOL};
-static short const _List00001[] = {4, REFRESH_EOL};
-static short const _List000110[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
-static short const _List000111[] = {MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2,
+static const short _List00001[] = {4, REFRESH_EOL};
+static const short _List000110[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
+static const short _List000111[] = {MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2,
                                     REFRESH_EOL};
-static short const _List001011100110[] = {2,
+static const short _List001011100110[] = {2,
                                           MAP_CELL_W,
                                           MAP_CELL_W + 1,
                                           MAP_CELL_W + 2,
                                           MAP_CELL_W * 2 + 1,
                                           MAP_CELL_W * 2 + 2,
                                           REFRESH_EOL};
-static short const _List0010[] = {MAP_CELL_W, REFRESH_EOL};
-static short const _List0011[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
-static short const _List001[] = {2, REFRESH_EOL};
-static short const _List010110[] = {1, MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
-static short const _List01[] = {1, REFRESH_EOL};
-static short const _List1001[] = {0, MAP_CELL_W + 1, REFRESH_EOL};
-static short const _List101001[] = {0, 2, MAP_CELL_W + 2, REFRESH_EOL};
-static short const _List10[] = {0, REFRESH_EOL};
-static short const _List110000011001[] = {
+static const short _List0010[] = {MAP_CELL_W, REFRESH_EOL};
+static const short _List0011[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
+static const short _List001[] = {2, REFRESH_EOL};
+static const short _List010110[] = {1, MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
+static const short _List01[] = {1, REFRESH_EOL};
+static const short _List1001[] = {0, MAP_CELL_W + 1, REFRESH_EOL};
+static const short _List101001[] = {0, 2, MAP_CELL_W + 2, REFRESH_EOL};
+static const short _List10[] = {0, REFRESH_EOL};
+static const short _List110000011001[] = {
     0, 1, MAP_CELL_W + 3, MAP_CELL_W * 2, MAP_CELL_W * 2 + 3, REFRESH_EOL};
-static short const _List110000[] = {0, 1, REFRESH_EOL};
-static short const _List110001[] = {0, 1, MAP_CELL_W + 2, REFRESH_EOL};
-static short const _List1100[] = {0, 1, REFRESH_EOL};
-static short const _List110110[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
+static const short _List110000[] = {0, 1, REFRESH_EOL};
+static const short _List110001[] = {0, 1, MAP_CELL_W + 2, REFRESH_EOL};
+static const short _List1100[] = {0, 1, REFRESH_EOL};
+static const short _List110110[] = {0, 1, MAP_CELL_W, MAP_CELL_W + 1,
                                     REFRESH_EOL};
-static short const _List1101[] = {0, 1, MAP_CELL_W + 1, REFRESH_EOL};
-static short const _List111000010110[] = {
+static const short _List1101[] = {0, 1, MAP_CELL_W + 1, REFRESH_EOL};
+static const short _List111000010110[] = {
     0,          1, 2, MAP_CELL_W + 3, MAP_CELL_W * 2 + 1, MAP_CELL_W * 2 + 2,
     REFRESH_EOL};
-static short const _List111001[] = {0, 1, 2, MAP_CELL_W + 2, REFRESH_EOL};
-static short const _List111101[] = {
+static const short _List111001[] = {0, 1, 2, MAP_CELL_W + 2, REFRESH_EOL};
+static const short _List111101[] = {
     0, 1, 2, MAP_CELL_W, MAP_CELL_W + 2, REFRESH_EOL};
-static short const _List11110[] = {0, 1, 2, 3, REFRESH_EOL};
+static const short _List11110[] = {0, 1, 2, 3, REFRESH_EOL};
 
-static TerrainTypeClass const Tree1Class(
+static const TerrainTypeClass Tree1Class(
     TERRAIN_TREE1, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(11, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -118,7 +118,7 @@ static TerrainTypeClass const Tree1Class(
     false,              // Is it immune to normal combat damage?
     "T01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
 
-static TerrainTypeClass const Tree2Class(
+static const TerrainTypeClass Tree2Class(
     TERRAIN_TREE2, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(11, 44),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -132,7 +132,7 @@ static TerrainTypeClass const Tree2Class(
     false,              // Is it immune to normal combat damage?
     "T02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
 
-static TerrainTypeClass const Tree3Class(
+static const TerrainTypeClass Tree3Class(
     TERRAIN_TREE3, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(12, 45),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -146,7 +146,7 @@ static TerrainTypeClass const Tree3Class(
     false,              // Is it immune to normal combat damage?
     "T03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
 
-static TerrainTypeClass const Tree4Class(
+static const TerrainTypeClass Tree4Class(
     TERRAIN_TREE4, THEATERF_DESERT,
     XYP_COORD(8, 9),  // Center base coordinate offset.
     false,            // Spawns Tiberium spontaneously?
@@ -160,7 +160,7 @@ static TerrainTypeClass const Tree4Class(
     false,            // Is it immune to normal combat damage?
     "T04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List1, nullptr);
 
-static TerrainTypeClass const Tree5Class(
+static const TerrainTypeClass Tree5Class(
     TERRAIN_TREE5, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(15, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -174,7 +174,7 @@ static TerrainTypeClass const Tree5Class(
     false,              // Is it immune to normal combat damage?
     "T05", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
 
-static TerrainTypeClass const Tree6Class(
+static const TerrainTypeClass Tree6Class(
     TERRAIN_TREE6, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(16, 37),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -188,7 +188,7 @@ static TerrainTypeClass const Tree6Class(
     false,              // Is it immune to normal combat damage?
     "T06", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
 
-static TerrainTypeClass const Tree7Class(
+static const TerrainTypeClass Tree7Class(
     TERRAIN_TREE7, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(15, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -202,7 +202,7 @@ static TerrainTypeClass const Tree7Class(
     false,              // Is it immune to normal combat damage?
     "T07", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
 
-static TerrainTypeClass const Tree8Class(
+static const TerrainTypeClass Tree8Class(
     TERRAIN_TREE8, THEATERF_WINTER | THEATERF_TEMPERATE | THEATERF_DESERT,
     XYP_COORD(14, 22),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -216,7 +216,7 @@ static TerrainTypeClass const Tree8Class(
     false,              // Is it immune to normal combat damage?
     "T08", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List10, _List01);
 
-static TerrainTypeClass const Tree9Class(
+static const TerrainTypeClass Tree9Class(
     TERRAIN_TREE9, THEATERF_DESERT,
     XYP_COORD(11, 22),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -230,7 +230,7 @@ static TerrainTypeClass const Tree9Class(
     false,              // Is it immune to normal combat damage?
     "T09", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List10, _List01);
 
-static TerrainTypeClass const Tree10Class(
+static const TerrainTypeClass Tree10Class(
     TERRAIN_TREE10, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(25, 43),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -244,7 +244,7 @@ static TerrainTypeClass const Tree10Class(
     false,              // Is it immune to normal combat damage?
     "T10", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0011, _List1100);
 
-static TerrainTypeClass const Tree11Class(
+static const TerrainTypeClass Tree11Class(
     TERRAIN_TREE11, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(23, 44),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -258,7 +258,7 @@ static TerrainTypeClass const Tree11Class(
     false,              // Is it immune to normal combat damage?
     "T11", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0011, _List1100);
 
-static TerrainTypeClass const Tree12Class(
+static const TerrainTypeClass Tree12Class(
     TERRAIN_TREE12, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(14, 36),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -272,7 +272,7 @@ static TerrainTypeClass const Tree12Class(
     false,              // Is it immune to normal combat damage?
     "T12", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
 
-static TerrainTypeClass const Tree13Class(
+static const TerrainTypeClass Tree13Class(
     TERRAIN_TREE13, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(19, 40),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -286,7 +286,7 @@ static TerrainTypeClass const Tree13Class(
     false,              // Is it immune to normal combat damage?
     "T13", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1101);
 
-static TerrainTypeClass const Tree14Class(
+static const TerrainTypeClass Tree14Class(
     TERRAIN_TREE14, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(19, 40),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -300,7 +300,7 @@ static TerrainTypeClass const Tree14Class(
     false,              // Is it immune to normal combat damage?
     "T14", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0011, _List1100);
 
-static TerrainTypeClass const Tree15Class(
+static const TerrainTypeClass Tree15Class(
     TERRAIN_TREE15, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(19, 40),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -314,7 +314,7 @@ static TerrainTypeClass const Tree15Class(
     false,              // Is it immune to normal combat damage?
     "T15", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0011, _List1100);
 
-static TerrainTypeClass const Tree16Class(
+static const TerrainTypeClass Tree16Class(
     TERRAIN_TREE16, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(13, 36),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -328,7 +328,7 @@ static TerrainTypeClass const Tree16Class(
     false,              // Is it immune to normal combat damage?
     "T16", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
 
-static TerrainTypeClass const Tree17Class(
+static const TerrainTypeClass Tree17Class(
     TERRAIN_TREE17, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(18, 44),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -342,7 +342,7 @@ static TerrainTypeClass const Tree17Class(
     false,              // Is it immune to normal combat damage?
     "T17", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1001);
 
-static TerrainTypeClass const Tree18Class(
+static const TerrainTypeClass Tree18Class(
     TERRAIN_TREE18, THEATERF_DESERT,
     XYP_COORD(33, 40),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -356,7 +356,7 @@ static TerrainTypeClass const Tree18Class(
     false,              // Is it immune to normal combat damage?
     "T18", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List000010, _List111101);
 
-static TerrainTypeClass const Split1Class(
+static const TerrainTypeClass Split1Class(
     TERRAIN_BLOSSOMTREE1, THEATERF_TEMPERATE | THEATERF_WINTER,
     XYP_COORD(18, 44),  // Center base coordinate offset.
     true,               // Spawns Tiberium spontaneously?
@@ -370,7 +370,7 @@ static TerrainTypeClass const Split1Class(
     true,               // Is it immune to normal combat damage?
     "SPLIT2", TXT_BLOSSOM_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1101);
 
-static TerrainTypeClass const Split2Class(
+static const TerrainTypeClass Split2Class(
     TERRAIN_BLOSSOMTREE2,
     THEATERF_TEMPERATE | THEATERF_WINTER | THEATERF_DESERT,
     XYP_COORD(18, 44),  // Center base coordinate offset.
@@ -385,7 +385,7 @@ static TerrainTypeClass const Split2Class(
     true,               // Is it immune to normal combat damage?
     "SPLIT3", TXT_BLOSSOM_TREE, TREE_NORMAL, ARMOR_WOOD, _List0010, _List1101);
 
-static TerrainTypeClass const Clump1Class(
+static const TerrainTypeClass Clump1Class(
     TERRAIN_CLUMP1, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(28, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -399,7 +399,7 @@ static TerrainTypeClass const Clump1Class(
     true,               // Is it immune to normal combat damage?
     "TC01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List000110, _List110001);
 
-static TerrainTypeClass const Clump2Class(
+static const TerrainTypeClass Clump2Class(
     TERRAIN_CLUMP2, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(38, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -413,7 +413,7 @@ static TerrainTypeClass const Clump2Class(
     true,               // Is it immune to normal combat damage?
     "TC02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List010110, _List101001);
 
-static TerrainTypeClass const Clump3Class(
+static const TerrainTypeClass Clump3Class(
     TERRAIN_CLUMP3, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(33, 35),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -427,7 +427,7 @@ static TerrainTypeClass const Clump3Class(
     true,               // Is it immune to normal combat damage?
     "TC03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List110110, _List001);
 
-static TerrainTypeClass const Clump4Class(
+static const TerrainTypeClass Clump4Class(
     TERRAIN_CLUMP4, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(44, 49),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -442,7 +442,7 @@ static TerrainTypeClass const Clump4Class(
     "TC04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List000011101000,
     _List111000010110);
 
-static TerrainTypeClass const Clump5Class(
+static const TerrainTypeClass Clump5Class(
     TERRAIN_CLUMP5, THEATERF_WINTER | THEATERF_TEMPERATE,
     XYP_COORD(49, 58),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -457,7 +457,7 @@ static TerrainTypeClass const Clump5Class(
     "TC05", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, _List001011100110,
     _List110000011001);
 
-static TerrainTypeClass const Rock1Class(
+static const TerrainTypeClass Rock1Class(
     TERRAIN_ROCK1, THEATERF_DESERT,
     XYP_COORD(33, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -471,7 +471,7 @@ static TerrainTypeClass const Rock1Class(
     true,               // Is it immune to normal combat damage?
     "ROCK1", TXT_ROCK, 1000, ARMOR_STEEL, _List0011, _List111001);
 
-static TerrainTypeClass const Rock2Class(
+static const TerrainTypeClass Rock2Class(
     TERRAIN_ROCK2, THEATERF_DESERT,
     XYP_COORD(24, 23),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -485,7 +485,7 @@ static TerrainTypeClass const Rock2Class(
     true,               // Is it immune to normal combat damage?
     "ROCK2", TXT_ROCK, 1000, ARMOR_STEEL, _List1100, _List001);
 
-static TerrainTypeClass const Rock3Class(
+static const TerrainTypeClass Rock3Class(
     TERRAIN_ROCK3, THEATERF_DESERT,
     XYP_COORD(20, 39),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -499,7 +499,7 @@ static TerrainTypeClass const Rock3Class(
     true,               // Is it immune to normal combat damage?
     "ROCK3", TXT_ROCK, 1000, ARMOR_STEEL, _List000110, _List110001);
 
-static TerrainTypeClass const Rock4Class(
+static const TerrainTypeClass Rock4Class(
     TERRAIN_ROCK4, THEATERF_DESERT,
     XYP_COORD(12, 20),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -513,7 +513,7 @@ static TerrainTypeClass const Rock4Class(
     true,               // Is it immune to normal combat damage?
     "ROCK4", TXT_ROCK, 1000, ARMOR_STEEL, _List10, _List01);
 
-static TerrainTypeClass const Rock5Class(
+static const TerrainTypeClass Rock5Class(
     TERRAIN_ROCK5, THEATERF_DESERT,
     XYP_COORD(17, 19),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -527,7 +527,7 @@ static TerrainTypeClass const Rock5Class(
     true,               // Is it immune to normal combat damage?
     "ROCK5", TXT_ROCK, 1000, ARMOR_STEEL, _List10, _List01);
 
-static TerrainTypeClass const Rock6Class(
+static const TerrainTypeClass Rock6Class(
     TERRAIN_ROCK6, THEATERF_DESERT,
     XYP_COORD(28, 40),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -541,7 +541,7 @@ static TerrainTypeClass const Rock6Class(
     true,               // Is it immune to normal combat damage?
     "ROCK6", TXT_ROCK, 1000, ARMOR_STEEL, _List000111, _List110000);
 
-static TerrainTypeClass const Rock7Class(
+static const TerrainTypeClass Rock7Class(
     TERRAIN_ROCK7, THEATERF_DESERT,
     XYP_COORD(57, 22),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
@@ -555,7 +555,7 @@ static TerrainTypeClass const Rock7Class(
     true,               // Is it immune to normal combat damage?
     "ROCK7", TXT_ROCK, 1000, ARMOR_STEEL, _List11110, _List00001);
 
-TerrainTypeClass const* const TerrainTypeClass::Pointers[TERRAIN_COUNT] = {
+const TerrainTypeClass* const TerrainTypeClass::Pointers[TERRAIN_COUNT] = {
     &Tree1Class,   //	TERRAIN_TREE1
     &Tree2Class,   //	TERRAIN_TREE2
     &Tree3Class,   //	TERRAIN_TREE3
@@ -611,9 +611,9 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
                                    bool is_flammable, bool is_crushable,
                                    bool is_selectable, bool is_legal_target,
                                    bool is_insignificant, bool is_immune,
-                                   char const* ininame, int fullname,
+                                   const char* ininame, int fullname,
                                    unsigned short strength, ArmorType armor,
-                                   short const* occupy, short const* overlap)
+                                   const short* occupy, const short* overlap)
     : ObjectTypeClass(true, is_flammable, is_crushable, true, is_selectable,
                       is_legal_target, is_insignificant, is_immune, fullname,
                       ininame, armor, strength) {
@@ -644,14 +644,14 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
 void TerrainTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (TerrainType index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
-      TerrainTypeClass const& terrain = As_Reference(index);
+      const TerrainTypeClass& terrain = As_Reference(index);
 
       /*
       **	Clear any existing shape pointer. All terrain is theater
       *specific, thus if *	it isn't loaded in this routine, it shouldn't
       *exist at all.
       */
-      (void const*&)terrain.ImageData = nullptr;
+      (const void*&)terrain.ImageData = nullptr;
 
       if (terrain.Theater & 1 << theater) {
         /*
@@ -660,12 +660,12 @@ void TerrainTypeClass::Init(TheaterType theater) {
         auto fullname = std::filesystem::path(terrain.IniName)
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        (void const*&)terrain.ImageData =
+        (const void*&)terrain.ImageData =
             MixFileClass::Retrieve(fullname.c_str());
 
         IsTheaterShape = true;
         if (terrain.RadarIcon) delete[] (char*)terrain.RadarIcon;
-        (void const*&)terrain.RadarIcon =
+        (const void*&)terrain.RadarIcon =
             Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3);
         IsTheaterShape = false;
       }
@@ -687,7 +687,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 05/16/1994 JLB : Created. *
  *=============================================================================================*/
-TerrainType TerrainTypeClass::From_Name(char const* name) {
+TerrainType TerrainTypeClass::From_Name(const char* name) {
   TerrainType index;
 
   if (name) {
@@ -784,16 +784,16 @@ ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass*) const {
   return new TerrainClass(Type, -1);
 }
 
-short const* TerrainTypeClass::Occupy_List(bool) const {
+const short* TerrainTypeClass::Occupy_List(bool) const {
   if (Occupy) return Occupy;
 
-  static short const _simple[1] = {REFRESH_EOL};
+  static const short _simple[1] = {REFRESH_EOL};
   return &_simple[0];
 }
 
-short const* TerrainTypeClass::Overlap_List() const {
+const short* TerrainTypeClass::Overlap_List() const {
   if (Overlap) return Overlap;
 
-  static short const _simple[1] = {REFRESH_EOL};
+  static const short _simple[1] = {REFRESH_EOL};
   return &_simple[0];
 }

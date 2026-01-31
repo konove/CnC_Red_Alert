@@ -80,7 +80,7 @@
  *                                                                                             *
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
-CCFileClass::CCFileClass(char const* filename) : Position(0) {
+CCFileClass::CCFileClass(const char* filename) : Position(0) {
   CCFileClass::Set_Name(filename);
 }
 
@@ -123,7 +123,7 @@ CCFileClass::CCFileClass() : Position(0) {}
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void CCFileClass::Error(int, int, char const*) {
+void CCFileClass::Error(int, int, const char*) {
   if (!Force_CD_Available(RequiredCD)) {
     // Prog_End();
     Emergency_Exit(EXIT_FAILURE);
@@ -147,7 +147,7 @@ void CCFileClass::Error(int, int, char const*) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-long CCFileClass::Write(void const* buffer, long size) {
+long CCFileClass::Write(const void* buffer, long size) {
   /*
   **	If this is part of a mixfile, then writing is not allowed. Error out
   *with a fatal *	message.
@@ -526,7 +526,7 @@ bool CCFileClass::Set_Date_Time(unsigned long datetime) {
 
 static CCFileClass Handles[10];
 
-int __cdecl Open_File(char const* file_name, int mode) {
+int __cdecl Open_File(const char* file_name, int mode) {
   for (int index = 0; index < ARRAY_SIZE(Handles); index++) {
     if (!Handles[index].Is_Open()) {
       if (Handles[index].Open(file_name, mode)) {
@@ -551,34 +551,34 @@ long __cdecl Read_File(int handle, void* buf, unsigned long bytes) {
   return 0;
 }
 
-long __cdecl Write_File(int handle, void const* buf, unsigned long bytes) {
+long __cdecl Write_File(int handle, const void* buf, unsigned long bytes) {
   if (handle != WWERROR && Handles[handle].Is_Open()) {
     return Handles[handle].Write(buf, bytes);
   }
   return 0;
 }
 
-int __cdecl Find_File(char const* file_name) {
+int __cdecl Find_File(const char* file_name) {
   CCFileClass file(file_name);
   return file.Is_Available();
 }
 
 #ifdef NEVER
-int __cdecl Delete_File(char const* file_name) {
+int __cdecl Delete_File(const char* file_name) {
   return (CCFileClass(file_name).Delete());
 }
 
-int __cdecl Create_File(char const* file_name) {
+int __cdecl Create_File(const char* file_name) {
   return (CCFileClass(file_name).Create());
 }
 
-unsigned long __cdecl Load_Data(char const* name, void* ptr,
+unsigned long __cdecl Load_Data(const char* name, void* ptr,
                                 unsigned long size) {
   return (CCFileClass(name).Read(ptr, size));
 }
 #endif
 
-void* __cdecl Load_Alloc_Data(char const* name, int) {
+void* __cdecl Load_Alloc_Data(const char* name, int) {
   CCFileClass file(name);
 
   return Load_Alloc_Data(file);
@@ -592,7 +592,7 @@ unsigned long __cdecl File_Size(int handle) {
 }
 
 #ifdef NEVER
-unsigned long __cdecl Write_Data(char const* name, void const* ptr,
+unsigned long __cdecl Write_Data(const char* name, const void* ptr,
                                  unsigned long size) {
   return (CCFileClass(name).Write(ptr, size));
 }
@@ -615,7 +615,7 @@ void __cdecl WWDOS_Init() {}
 
 void __cdecl WWDOS_Shutdown() {}
 
-int __cdecl Find_Disk_Number(char const*) { return (0); }
+int __cdecl Find_Disk_Number(const char*) { return (0); }
 #endif
 
 // unsigned long __cdecl Load_Uncompress(char const * file, BuffType

@@ -36,7 +36,7 @@ class WOLEditClass : public EditClass {
   virtual int Action(unsigned flags, KeyNumType& key);  //	Override of base
 
  protected:
-  virtual void Draw_Text(char const* text);  //	Override of base
+  virtual void Draw_Text(const char* text);  //	Override of base
 };
 
 #endif

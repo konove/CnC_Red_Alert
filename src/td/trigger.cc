@@ -1146,8 +1146,8 @@ void TriggerClass::Write_INI(char* buffer, bool refresh) {
   int index;
   char buf[128];
   TriggerClass* trigger;
-  char const* hname;
-  char const* tname;
+  const char* hname;
+  const char* tname;
 
   /*
   **	First, clear out all existing trigger data from the INI file.
@@ -1202,7 +1202,7 @@ void TriggerClass::Write_INI(char* buffer, bool refresh) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-TriggerClass* TriggerClass::As_Pointer(char const* name) {
+TriggerClass* TriggerClass::As_Pointer(const char* name) {
   if (name == nullptr) {
     return nullptr;
   }
@@ -1266,7 +1266,7 @@ void TriggerClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-EventType TriggerClass::Event_From_Name(char const* name) {
+EventType TriggerClass::Event_From_Name(const char* name) {
   int i;
 
   if (name == nullptr) {
@@ -1293,7 +1293,7 @@ EventType TriggerClass::Event_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-char const* TriggerClass::Name_From_Event(EventType event) {
+const char* TriggerClass::Name_From_Event(EventType event) {
   return EventText[event + 1];
 }
 
@@ -1308,7 +1308,7 @@ char const* TriggerClass::Name_From_Event(EventType event) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-TriggerClass::ActionType TriggerClass::Action_From_Name(char const* name) {
+TriggerClass::ActionType TriggerClass::Action_From_Name(const char* name) {
   int i;
 
   if (name == nullptr) {
@@ -1335,7 +1335,7 @@ TriggerClass::ActionType TriggerClass::Action_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-char const* TriggerClass::Name_From_Action(ActionType action) {
+const char* TriggerClass::Name_From_Action(ActionType action) {
   return ActionText[action + 1];
 }
 

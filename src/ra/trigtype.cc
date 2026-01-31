@@ -1709,7 +1709,7 @@ bool TriggerTypeClass::Edit() {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-char const* TriggerTypeClass::Description() const {
+const char* TriggerTypeClass::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     static char _buffer[128];
 
@@ -1738,7 +1738,7 @@ char const* TriggerTypeClass::Description() const {
     }
 
     char tbuf[32];
-    char const* added = "";
+    const char* added = "";
     switch (Event_Needs(Event1.Event)) {
       case NEED_NUMBER:
         sprintf(tbuf, "%d", Event1.Data.Value);
@@ -1857,7 +1857,7 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
 
   int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
-    char const* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.Get_Entry(INI_Name(), index);
 
     /*
     **	Create a new trigger.
@@ -2102,7 +2102,7 @@ void TriggerTypeClass::Init() { TriggerTypes.Free_All(); }
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-TriggerTypeClass* TriggerTypeClass::From_Name(char const* name) {
+TriggerTypeClass* TriggerTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (int index = 0; index < TriggerTypes.Count(); index++) {
       if (stricmp(TriggerTypes.Ptr(index)->Name(), name) == 0) {

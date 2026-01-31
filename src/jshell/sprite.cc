@@ -99,7 +99,7 @@ long _CosineTab[256] = {
  *
  ***************************************************************/
 
-void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
+void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, const TPoint2D& pt,
                                       long scale, unsigned char angle) {
   unsigned int scrpos;
   unsigned int temp;

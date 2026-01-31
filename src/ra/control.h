@@ -63,7 +63,7 @@
  *=========================================================================*/
 class ControlClass : public GadgetClass {
  public:
-  ControlClass(NoInitClass const& x) : GadgetClass(x) {}
+  ControlClass(const NoInitClass& x) : GadgetClass(x) {}
   ControlClass(unsigned id, int x, int y, int w, int h,
                unsigned flags = LEFTPRESS | RIGHTPRESS, int sticky = false);
 

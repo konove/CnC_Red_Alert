@@ -60,7 +60,7 @@
  * HISTORY: * 05/31/1994 JLB : Created. * 05/31/1994 JLB : Allows sorted insert.
  ** 01/02/1995 JLB : Fixed to work with EMSListOf template. *
  *=============================================================================================*/
-bool LayerClass::Submit(ObjectClass const* object, bool sort) {
+bool LayerClass::Submit(const ObjectClass* object, bool sort) {
   /*
   **	Add the object to the layer. Either at the end (if "sort" is false) or
   *at the *	appropriately sorted position.
@@ -116,7 +116,7 @@ void LayerClass::Sort() {
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-int LayerClass::Sorted_Add(ObjectClass const* const object) {
+int LayerClass::Sorted_Add(const ObjectClass* const object) {
   if (ActiveCount >= Length()) {
     if ((IsAllocated || !VectorMax) && GrowthStep > 0) {
       if (!Resize(Length() + GrowthStep)) {

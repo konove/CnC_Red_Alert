@@ -205,7 +205,7 @@ int RAMFileClass::Is_Open() const { return IsOpen; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Open(char const*, int access) { return Open(access); }
+int RAMFileClass::Open(const char*, int access) { return Open(access); }
 
 /***********************************************************************************************
  * RAMFileClass::Open -- Opens the RAM based file. *
@@ -381,7 +381,7 @@ long RAMFileClass::Size() { return Length; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long RAMFileClass::Write(void const* buffer, long size) {
+long RAMFileClass::Write(const void* buffer, long size) {
   if (Buffer == nullptr || buffer == nullptr || size == 0) {
     return 0;
   }

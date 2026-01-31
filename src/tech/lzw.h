@@ -46,8 +46,8 @@ class LZWEngine {
  public:
   LZWEngine();
 
-  int Compress(Buffer const& input, Buffer const& output);
-  int Uncompress(Buffer const& input, Buffer const& output);
+  int Compress(const Buffer& input, const Buffer& output);
+  int Uncompress(const Buffer& input, const Buffer& output);
 
   void Reset();
 
@@ -86,7 +86,7 @@ class LZWEngine {
   static int Make_LZW_Hash(CodeType code, char character);
 };
 
-int LZW_Compress(Buffer const& inbuff, Buffer const& outbuff);
-int LZW_Uncompress(Buffer const& inbuff, Buffer const& outbuff);
+int LZW_Compress(const Buffer& inbuff, const Buffer& outbuff);
+int LZW_Uncompress(const Buffer& inbuff, const Buffer& outbuff);
 
 #endif

@@ -64,7 +64,7 @@ class PKStraw : public Straw {
   int Get(void* source, int slen) override;
 
   // Submit key to be used for encryption/decryption.
-  void Key(PKey const* key);
+  void Key(const PKey* key);
 
  private:
   enum {
@@ -102,7 +102,7 @@ class PKStraw : public Straw {
   *is NULL, then *	the data passing through this segment will not be
   *modified.
   */
-  PKey const* CipherKey = nullptr;
+  const PKey* CipherKey = nullptr;
 
   /*
   **	This is the staging buffer for the block of data. This block must be as
@@ -122,7 +122,6 @@ class PKStraw : public Straw {
 
   int Encrypted_Key_Length() const;
   int Plain_Key_Length() const;
-
 };
 
 #endif

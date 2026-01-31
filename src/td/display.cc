@@ -162,11 +162,11 @@ unsigned char DisplayClass::FadingRed[256];
 unsigned char DisplayClass::TranslucentTable[(MAGIC_COL_COUNT + 1) * 256];
 unsigned char DisplayClass::WhiteTranslucentTable[(1 + 1) * 256];
 unsigned char DisplayClass::MouseTranslucentTable[(4 + 1) * 256];
-void const* DisplayClass::TransIconset;
+const void* DisplayClass::TransIconset;
 unsigned char DisplayClass::UnitShadow[(USHADOW_COL_COUNT + 1) * 256];
 unsigned char DisplayClass::SpecialGhost[2 * 256];
 
-void const* DisplayClass::ShadowShapes;
+const void* DisplayClass::ShadowShapes;
 unsigned char DisplayClass::ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
 
 /*
@@ -366,22 +366,22 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   char fullname[16];
   char iconname[16];
 #ifndef _RETRIEVE
-  static TLucentType const MouseCols[4] = {{BLACK, BLACK, 110, 0},
+  static const TLucentType MouseCols[4] = {{BLACK, BLACK, 110, 0},
                                            {WHITE, WHITE, 110, 0},
                                            {LTGREY, LTGREY, 110, 0},
                                            {DKGREY, DKGREY, 110, 0}};
-  static TLucentType const MagicCols[MAGIC_COL_COUNT] = {
+  static const TLucentType MagicCols[MAGIC_COL_COUNT] = {
       {32, 32, 110, 0},      {33, 33, 110, 0},       {34, 34, 110, 0},
       {35, 35, 110, 0},      {36, 36, 110, 0},       {37, 37, 110, 0},
       {38, 38, 110, 0},      {39, 39, 110, 0},       {BLACK, BLACK, 200, 0},
       {WHITE, BLACK, 40, 0}, {LTGREY, BLACK, 80, 0}, {DKGREY, BLACK, 140, 0}};
-  static TLucentType const WhiteCols[1] = {{1, WHITE, 80, 0}};
-  static TLucentType const ShadowCols[SHADOW_COL_COUNT] = {
+  static const TLucentType WhiteCols[1] = {{1, WHITE, 80, 0}};
+  static const TLucentType ShadowCols[SHADOW_COL_COUNT] = {
       {WHITE + 1, BLACK, 130, 0},
       {WHITE, BLACK, 170, 0},
       {LTGRAY, BLACK, 250, 0},
       {DKGRAY, BLACK, 250, 0}};
-  static TLucentType const UShadowCols[USHADOW_COL_COUNT] = {
+  static const TLucentType UShadowCols[USHADOW_COL_COUNT] = {
       {LTGREEN, BLACK, 130, 0}};
 #endif
 
@@ -423,7 +423,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   **	The fading palettes will have to be generated as well.
   */
   sprintf(fullname, "%s.PAL", Theaters[theater].Root);
-  void const* ptr = MixFileClass::Retrieve(fullname);
+  const void* ptr = MixFileClass::Retrieve(fullname);
   Mem_Copy(ptr, GamePalette, 768);
 
   Mem_Copy(GamePalette, OriginalPalette, 768);
@@ -587,7 +587,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
  * HISTORY: * 12/06/1994 JLB : Created. * 12/07/1994 JLB : Sidebar fixup. *
  *   08/13/1995 JLB : Optimized for variable sized help text. *
  *=============================================================================================*/
-short const* DisplayClass::Text_Overlap_List(char const* text, int x, int y,
+const short* DisplayClass::Text_Overlap_List(const char* text, int x, int y,
                                              int lines) {
   static short _list[30];
 
@@ -722,7 +722,7 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
  * HISTORY: * 06/03/1994 JLB : Created. * 06/26/1995 JLB : Puts placement cursor
  *into static buffer.                                *
  *=============================================================================================*/
-void DisplayClass::Set_Cursor_Shape(short const* list) {
+void DisplayClass::Set_Cursor_Shape(const short* list) {
   if (CursorSize) {
     Cursor_Mark(ZoneCell + ZoneOffset, false);
   }
@@ -766,8 +766,8 @@ void DisplayClass::Set_Cursor_Shape(short const* list) {
  * HISTORY: * 06/06/1994 JLB : Created. * 06/07/1994 JLB : Handles concrete
  *check.                                                  *
  *=============================================================================================*/
-bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const* object) {
-  short const* ptr;
+bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
+  const short* ptr;
 
   /*
   ** In editor mode, the proximity check always passes.
@@ -915,7 +915,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
  *                                                                                             *
  * HISTORY: * 03/31/1995 BRR : Created. *
  *=============================================================================================*/
-void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, short const* list) {
+void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const short* list) {
   int min_x = MAP_CELL_W;
   int max_x = -MAP_CELL_W;
   int min_y = MAP_CELL_H;
@@ -970,7 +970,7 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, short const* list) {
  *function.                                            *
  *=============================================================================================*/
 void DisplayClass::Cursor_Mark(CELL pos, bool on) {
-  CELL const* ptr;
+  const CELL* ptr;
   CellClass* cellptr;
 
   if (pos == -1) return;
@@ -1061,7 +1061,7 @@ void DisplayClass::AI(KeyNumType& input, int x, int y) {
  *system.                                                   * 05/31/1994 JLB :
  *Sorts object position if this is for the ground layer.                   *
  *=============================================================================================*/
-void DisplayClass::Submit(ObjectClass const* object, LayerType layer) {
+void DisplayClass::Submit(const ObjectClass* object, LayerType layer) {
   if (object) {
     Layer[layer].Submit(object, layer == LAYER_GROUND);
   }
@@ -1084,7 +1084,7 @@ void DisplayClass::Submit(ObjectClass const* object, LayerType layer) {
  * HISTORY: * 05/31/1994 JLB : Created. * 05/31/1994 JLB : Improved layer
  *system.                                                   *
  *=============================================================================================*/
-void DisplayClass::Remove(ObjectClass const* object, LayerType layer) {
+void DisplayClass::Remove(const ObjectClass* object, LayerType layer) {
   if (object) {
     Layer[layer].Delete((ObjectClass*)object);
   }
@@ -1307,7 +1307,7 @@ void DisplayClass::Write_INI(char* buffer) {
       /*
       **	Get cell trigger pointer.
       */
-      TriggerClass const* trig = CellTriggers[cell];
+      const TriggerClass* trig = CellTriggers[cell];
 
       /*
       **	Generate entry name.
@@ -1442,7 +1442,7 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. * 08/01/1994 JLB : Simplified. *
  *=============================================================================================*/
-void DisplayClass::Refresh_Cells(CELL cell, short const* list) {
+void DisplayClass::Refresh_Cells(CELL cell, const short* list) {
   if (*list == REFRESH_SIDEBAR) {
     list++;
   }
@@ -1476,9 +1476,9 @@ int DisplayClass::Cell_Shadow(CELL cell) {
   int index;
   int value = -1;
   CellClass* cellptr;
-  static char const CardShadow[16] = {-2, 0, 1,  2,  3, -1, 4,  -1,
+  static const char CardShadow[16] = {-2, 0, 1,  2,  3, -1, 4,  -1,
                                       5,  6, -1, -1, 7, -1, -1, -1};
-  static char const DiagShadow[16] = {-2, 8,  9,  -1, 10, -1, -1, -1,
+  static const char DiagShadow[16] = {-2, 8,  9,  -1, 10, -1, -1, -1,
                                       11, -1, -1, -1, -1, -1, -1, -1};
 
   /*
@@ -3207,7 +3207,7 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
       */
       text = object->Full_Name();
       if (object->Is_Techno() &&
-          !dynamic_cast<TechnoTypeClass const&>(object->Class_Of()).IsNominal) {
+          !dynamic_cast<const TechnoTypeClass&>(object->Class_Of()).IsNominal) {
         if (!PlayerPtr->Is_Ally(object)) {
           switch (object->What_Am_I()) {
             case RTTI_INFANTRY:

@@ -52,7 +52,7 @@
 class GScreenClass : public VectorClass<CellClass> {
  public:
   GScreenClass();
-  GScreenClass(NoInitClass const& x) : VectorClass<CellClass>(x) {}
+  GScreenClass(const NoInitClass& x) : VectorClass<CellClass>(x) {}
 
   /*
   ** Initialization

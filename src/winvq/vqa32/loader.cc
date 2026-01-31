@@ -137,7 +137,7 @@ void __cdecl Force_VM_Page_In(void* buffer, int length);
  ****************************************************************************/
 
 extern int VQAMovieDone;
-long VQA_Open(VQAHandle* vqa, char const* filename, VQAConfig* config) {
+long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
   VQAHandleP* vqap;
   VQAHeader* header;
   ChunkHeader chunk;

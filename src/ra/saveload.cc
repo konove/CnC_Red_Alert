@@ -271,10 +271,10 @@ static void Put_All(Pipe& pipe, int save_net) {
   **	many carry over objects are in the list.
   */
   int carry_count = 0;
-  CarryoverClass const* cptr = Carryover;
+  const CarryoverClass* cptr = Carryover;
   while (cptr != nullptr) {
     carry_count++;
-    cptr = dynamic_cast<CarryoverClass const*>(cptr->Get_Next());
+    cptr = dynamic_cast<const CarryoverClass*>(cptr->Get_Next());
   }
 
   if (!save_net) Call_Back();
@@ -288,11 +288,11 @@ static void Put_All(Pipe& pipe, int save_net) {
   /*
   **	Now write out the objects themselves.
   */
-  CarryoverClass const* object_to_write = Carryover;
+  const CarryoverClass* object_to_write = Carryover;
   while (object_to_write != nullptr) {
     pipe.Put(object_to_write, sizeof(*object_to_write));
     object_to_write =
-        dynamic_cast<CarryoverClass const*>(object_to_write->Get_Next());
+        dynamic_cast<const CarryoverClass*>(object_to_write->Get_Next());
   }
   if (!save_net) Call_Back();
 
@@ -352,7 +352,7 @@ static void Put_All(Pipe& pipe, int save_net) {
  *   12/28/1994 BR : Created.                                              *
  *   02/27/1996 JLB : Uses simpler game control value save operation.      *
  *=========================================================================*/
-bool Save_Game(int id, char const* descr, bool) {
+bool Save_Game(int id, const char* descr, bool) {
   char name[_MAX_FNAME + _MAX_EXT];
   unsigned scenario;
   HousesType house;

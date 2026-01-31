@@ -63,7 +63,7 @@ class BlowStraw : public Straw {
   int Get(void* source, int slen) override;
 
   // Submit key for blowfish engine.
-  void Key(void const* key, int length);
+  void Key(const void* key, int length);
 
  protected:
   /*

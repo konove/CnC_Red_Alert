@@ -249,7 +249,7 @@ class GraphicViewPortClass {
              char* remap = nullptr);
   bool Scale(GraphicViewPortClass& dest, char* remap);
 
-  unsigned long Print(char const* string, int x_pixel, int y_pixel, int fcolor,
+  unsigned long Print(const char* string, int x_pixel, int y_pixel, int fcolor,
                       int bcolor);
   unsigned long Print(int num, int x_pixel, int y_pixel, int fcol, int bcol);
 
@@ -265,8 +265,8 @@ class GraphicViewPortClass {
   void Remap(int sx, int sy, int width, int height, void* remap);
   void Remap(void* remap);
 
-  void Draw_Stamp(void const* icondata, int icon, int x_pixel, int y_pixel,
-                  void const* remap, int clip_window);
+  void Draw_Stamp(const void* icondata, int icon, int x_pixel, int y_pixel,
+                  const void* remap, int clip_window);
 
   //
   // New members to lock and unlock the direct draw video memory
@@ -341,7 +341,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   bool Lock();
   bool Unlock();
 
-  void Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt, long scale,
+  void Scale_Rotate(BitmapClass& bmp, const TPoint2D& pt, long scale,
                     unsigned char angle);
 
   bool Is_Window_Surface() const { return WindowTexture != nullptr; }
@@ -627,7 +627,7 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest,
                dest.Get_Height(), false, remap);
 }
 
-inline unsigned long GraphicViewPortClass::Print(char const* str, int x, int y,
+inline unsigned long GraphicViewPortClass::Print(const char* str, int x, int y,
                                                  int fcol, int bcol) {
   unsigned long return_code = 0;
   if (Lock()) {
@@ -650,9 +650,9 @@ inline unsigned long GraphicViewPortClass::Print(int num, int x, int y,
   return return_code;
 }
 
-inline void GraphicViewPortClass::Draw_Stamp(void const* icondata, int icon,
+inline void GraphicViewPortClass::Draw_Stamp(const void* icondata, int icon,
                                              int x_pixel, int y_pixel,
-                                             void const* remap,
+                                             const void* remap,
                                              int clip_window) {
   if (Lock()) {
 #ifdef TD

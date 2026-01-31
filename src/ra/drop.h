@@ -54,7 +54,7 @@
 class DropListClass : public EditClass {
  public:
   DropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
-                int y, int w, int h, void const* up, void const* down);
+                int y, int w, int h, const void* up, const void* down);
   ~DropListClass() override {}
 
   DropListClass& Add(LinkClass& object) override;
@@ -63,15 +63,15 @@ class DropListClass : public EditClass {
   DropListClass* Remove() override;
   void Zap() override;
 
-  virtual int Add_Item(char const* text);
-  virtual char const* Current_Item();
+  virtual int Add_Item(const char* text);
+  virtual const char* Current_Item();
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
-  virtual void Set_Selected_Index(char const* text);
+  virtual void Set_Selected_Index(const char* text);
   void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) override;
   void Clear_Focus() override;
   virtual int Count() const { return List.Count(); }
-  virtual char const* Get_Item(int index) const { return List.Get_Item(index); }
+  virtual const char* Get_Item(int index) const { return List.Get_Item(index); }
 
 #ifdef WOLAPI_INTEGRATION
   virtual void Flag_To_Redraw();
@@ -82,8 +82,8 @@ class DropListClass : public EditClass {
 
   void Set_Position(int x, int y) override;
 
-  DropListClass& operator=(DropListClass const& list);
-  DropListClass(DropListClass const& list);
+  DropListClass& operator=(const DropListClass& list);
+  DropListClass(const DropListClass& list);
 
   /*
   **	Indicates whether the list box has dropped down or not.
@@ -110,8 +110,8 @@ template <class T>
 class TDropListClass : public EditClass {
  public:
   TDropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
-                 int y, int w, int h, void const* up, void const* down);
-  TDropListClass(TDropListClass<T> const& list);
+                 int y, int w, int h, const void* up, const void* down);
+  TDropListClass(const TDropListClass<T>& list);
   ~TDropListClass() override {}
 
   T operator[](int index) const { return (List[index]); }
@@ -138,7 +138,7 @@ class TDropListClass : public EditClass {
 
   void Set_Position(int x, int y) override;
 
-  TDropListClass<T>& operator=(TDropListClass<T> const& list);
+  TDropListClass<T>& operator=(const TDropListClass<T>& list);
 
   /*
   **	Indicates whether the list box has dropped down or not.
@@ -166,7 +166,7 @@ TDropListClass<T>::TDropListClass(
     int id,
     char* text,  // NOLINT(readability-non-const-parameter)
     int max_len, TextPrintType flags, int x, int y, int w, int h,
-    void const* up, void const* down)
+    const void* up, const void* down)
     : EditClass(id, text, max_len, flags, x, y, w, 9, ALPHANUMERIC),
       IsDropped(false),
       ListHeight(h),
@@ -287,7 +287,7 @@ void TDropListClass<T>::Collapse() {
 }
 
 template <class T>
-TDropListClass<T>& TDropListClass<T>::operator=(TDropListClass<T> const& list) {
+TDropListClass<T>& TDropListClass<T>::operator=(const TDropListClass<T>& list) {
   if (this == &list) return (*this);
   EditClass::operator=(list);
   List = list.List;
@@ -300,7 +300,7 @@ TDropListClass<T>& TDropListClass<T>::operator=(TDropListClass<T> const& list) {
 }
 
 template <class T>
-TDropListClass<T>::TDropListClass(TDropListClass<T> const& list)
+TDropListClass<T>::TDropListClass(const TDropListClass<T>& list)
     : EditClass(list),
       IsDropped(list.IsDropped),
       ListHeight(list.ListHeight),

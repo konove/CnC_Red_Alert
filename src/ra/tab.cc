@@ -64,7 +64,7 @@
 #include "tech/fixed.h"
 #include "tech/rawfile.h"
 
-void const* TabClass::TabShape = nullptr;
+const void* TabClass::TabShape = nullptr;
 
 /***********************************************************************************************
  * TabClass::TabClass -- Default construct for the tab button class. *

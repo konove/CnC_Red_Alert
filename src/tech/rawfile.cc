@@ -90,7 +90,7 @@
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void RawFileClass::Error(int, int, char const*) {}
+void RawFileClass::Error(int, int, const char*) {}
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Simple constructor for a file object. *
@@ -109,7 +109,7 @@ void RawFileClass::Error(int, int, char const*) {}
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-RawFileClass::RawFileClass(char const* filename)
+RawFileClass::RawFileClass(const char* filename)
     : Rights(0),
       BiasStart(0),
       BiasLength(-1),
@@ -137,7 +137,7 @@ RawFileClass::RawFileClass(char const* filename)
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-char const* RawFileClass::Set_Name(char const* filename) {
+const char* RawFileClass::Set_Name(const char* filename) {
   if (filename == nullptr) {
     Filename_.clear();
     return nullptr;
@@ -170,7 +170,7 @@ char const* RawFileClass::Set_Name(char const* filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Open(char const* filename, int rights) {
+int RawFileClass::Open(const char* filename, int rights) {
   Set_Name(filename);
   return Open(rights);
 }
@@ -425,7 +425,7 @@ long RawFileClass::Read(void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Write(void const* buffer, long size) {
+long RawFileClass::Write(const void* buffer, long size) {
   long bytesread = 0;
   int opened = false;  // Was the file manually opened?
 

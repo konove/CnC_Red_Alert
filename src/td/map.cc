@@ -89,7 +89,7 @@
 #include "td/vector.h"
 
 #define MCW MAP_CELL_W
-int const MapClass::RadiusOffset[] = {
+const int MapClass::RadiusOffset[] = {
     /* 0  */ 0,
     /* 1  */ -MCW * 1 - 1,
     -MCW * 1 + 0,
@@ -401,7 +401,7 @@ int const MapClass::RadiusOffset[] = {
     MCW * 10 + 1,
 };
 
-int const MapClass::RadiusCount[11] = {1,   9,   21,  37,  61, 89,
+const int MapClass::RadiusCount[11] = {1,   9,   21,  37,  61, 89,
                                        121, 161, 205, 253, 309};
 
 CellClass* BlubCell;
@@ -584,7 +584,7 @@ void MapClass::Set_Map_Dimensions(int x, int y, int w, int h) {
  *=============================================================================================*/
 void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
   int xx;          // Center cell X coordinate (bounds checking).
-  int const* ptr;  // Offset pointer.
+  const int* ptr;  // Offset pointer.
   int count;       // Counter for number of offsets to process.
 
   /*
@@ -723,7 +723,7 @@ bool MapClass::In_Radar(CELL cell) const {
 void MapClass::Place_Down(CELL cell, ObjectClass* object) {
   if (!object) return;
 
-  short const* list = object->Occupy_List();
+  const short* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = cell + *list++;
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -764,7 +764,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
 void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
   if (!object) return;
 
-  short const* list = object->Occupy_List();
+  const short* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = cell + *list++;
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -805,7 +805,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
 void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
   if (!object) return;
 
-  short const* list = object->Overlap_List();
+  const short* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = cell + *list++;
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -835,7 +835,7 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
 void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
   if (!object) return;
 
-  short const* list = object->Overlap_List();
+  const short* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
     CELL newcell = cell + *list++;
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -894,9 +894,9 @@ long MapClass::Overpass() {
  *icons detected.                                       *
  *=============================================================================================*/
 #ifdef DEMO
-bool MapClass::Read_Binary(char const* root, unsigned long*)
+bool MapClass::Read_Binary(const char* root, unsigned long*)
 #else
-bool MapClass::Read_Binary(char const* root, unsigned long* crc)
+bool MapClass::Read_Binary(const char* root, unsigned long* crc)
 #endif
 {
   CCFileClass file;
@@ -904,7 +904,7 @@ bool MapClass::Read_Binary(char const* root, unsigned long* crc)
   int i;
   char* map;
   void* rawmap;
-  void const* shape;
+  const void* shape;
 
   /*
   **	Filename = INI name with BIN extension.
@@ -985,7 +985,7 @@ bool MapClass::Read_Binary(char const* root, unsigned long* crc)
  *                                                                                             *
  * HISTORY: * 11/14/1994 BR : Created. *
  *=============================================================================================*/
-bool MapClass::Write_Binary(char const* root) {
+bool MapClass::Write_Binary(const char* root) {
   CCFileClass* file;
   char fname[_MAX_FNAME + _MAX_EXT];
   int i;
@@ -1267,7 +1267,7 @@ int MapClass::Validate() {
   CELL cell;
   TemplateType ttype;
   unsigned char ticon;
-  TemplateTypeClass const* tclass;
+  const TemplateTypeClass* tclass;
   unsigned char map[13 * 8];
   OverlayType overlay;
   SmudgeType smudge;

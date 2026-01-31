@@ -74,90 +74,90 @@
 #include "sdllib/include/shape.h"
 #include "sdllib/include/ww_win.h"
 
-static SmudgeTypeClass const Crater1(
+static const SmudgeTypeClass Crater1(
     SMUDGE_CRATER1, "CR1", TXT_CRATER, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     true    // Is this a crater smudge?
 );
-static SmudgeTypeClass const Crater2(
+static const SmudgeTypeClass Crater2(
     SMUDGE_CRATER2, "CR2", TXT_CRATER, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     true    // Is this a crater smudge?
 );
-static SmudgeTypeClass const Crater3(
+static const SmudgeTypeClass Crater3(
     SMUDGE_CRATER3, "CR3", TXT_CRATER, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     true    // Is this a crater smudge?
 );
-static SmudgeTypeClass const Crater4(
+static const SmudgeTypeClass Crater4(
     SMUDGE_CRATER4, "CR4", TXT_CRATER, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     true    // Is this a crater smudge?
 );
-static SmudgeTypeClass const Crater5(
+static const SmudgeTypeClass Crater5(
     SMUDGE_CRATER5, "CR5", TXT_CRATER, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     true    // Is this a crater smudge?
 );
-static SmudgeTypeClass const Crater6(
+static const SmudgeTypeClass Crater6(
     SMUDGE_CRATER6, "CR6", TXT_CRATER, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     true    // Is this a crater smudge?
 );
-static SmudgeTypeClass const Scorch1(
+static const SmudgeTypeClass Scorch1(
     SMUDGE_SCORCH1, "SC1", TXT_SCORCH, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     false   // Is this a crater smudge?
 );
-static SmudgeTypeClass const Scorch2(
+static const SmudgeTypeClass Scorch2(
     SMUDGE_SCORCH2, "SC2", TXT_SCORCH, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     false   // Is this a crater smudge?
 );
-static SmudgeTypeClass const Scorch3(
+static const SmudgeTypeClass Scorch3(
     SMUDGE_SCORCH3, "SC3", TXT_SCORCH, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     false   // Is this a crater smudge?
 );
-static SmudgeTypeClass const Scorch4(
+static const SmudgeTypeClass Scorch4(
     SMUDGE_SCORCH4, "SC4", TXT_SCORCH, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     false   // Is this a crater smudge?
 );
-static SmudgeTypeClass const Scorch5(
+static const SmudgeTypeClass Scorch5(
     SMUDGE_SCORCH5, "SC5", TXT_SCORCH, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     false   // Is this a crater smudge?
 );
-static SmudgeTypeClass const Scorch6(
+static const SmudgeTypeClass Scorch6(
     SMUDGE_SCORCH6, "SC6", TXT_SCORCH, 1,
     1,      // Width and height of smudge (in icons).
     false,  // Is this a building bib?
     false   // Is this a crater smudge?
 );
 
-static SmudgeTypeClass const Bibx1(SMUDGE_BIB1, "BIB1", TXT_BIB, 4,
+static const SmudgeTypeClass Bibx1(SMUDGE_BIB1, "BIB1", TXT_BIB, 4,
                                    2,  // Width and height of smudge (in icons).
                                    true,  // Is this a building bib?
                                    false  // Is this a crater smudge?
 );
-static SmudgeTypeClass const Bibx2(SMUDGE_BIB2, "BIB2", TXT_BIB, 3,
+static const SmudgeTypeClass Bibx2(SMUDGE_BIB2, "BIB2", TXT_BIB, 3,
                                    2,  // Width and height of smudge (in icons).
                                    true,  // Is this a building bib?
                                    false  // Is this a crater smudge?
 );
-static SmudgeTypeClass const Bibx3(SMUDGE_BIB3, "BIB3", TXT_BIB, 2,
+static const SmudgeTypeClass Bibx3(SMUDGE_BIB3, "BIB3", TXT_BIB, 2,
                                    2,  // Width and height of smudge (in icons).
                                    true,  // Is this a building bib?
                                    false  // Is this a crater smudge?
@@ -178,7 +178,7 @@ static SmudgeTypeClass const Bibx3(SMUDGE_BIB3, "BIB3", TXT_BIB, 2,
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, char const* ininame,
+SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, const char* ininame,
                                  int fullname, int width, int height,
                                  bool isbib, bool iscrater)
     : ObjectTypeClass(RTTI_SMUDGETYPE, static_cast<int>(smudge), false, true,
@@ -284,7 +284,7 @@ void SmudgeTypeClass::Init_Heap() {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-SmudgeType SmudgeTypeClass::From_Name(char const* name) {
+SmudgeType SmudgeTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
@@ -312,7 +312,7 @@ SmudgeType SmudgeTypeClass::From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-short const* SmudgeTypeClass::Occupy_List(bool) const {
+const short* SmudgeTypeClass::Occupy_List(bool) const {
   static short _occupy[4 * 4];
   short* ptr = &_occupy[0];
 
@@ -370,7 +370,7 @@ void SmudgeTypeClass::Init(TheaterType theater) {
  *=============================================================================================*/
 void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
                               HousesType) const {
-  void const* ptr = Get_Image_Data();
+  const void* ptr = Get_Image_Data();
 
   x += WindowList[window][WINDOWX];
   y += WindowList[window][WINDOWY];
@@ -472,7 +472,7 @@ ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass*) const {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::Draw_It(int x, int y, int data) const {
-  void const* ptr = Get_Image_Data();
+  const void* ptr = Get_Image_Data();
   if (ptr != nullptr) {
     IsTheaterShape = true;  // Smudges are theater specific
     CC_Draw_Shape(ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);

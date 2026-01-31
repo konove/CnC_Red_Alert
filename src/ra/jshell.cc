@@ -80,9 +80,9 @@
  *                                                                                             *
  * HISTORY: * 05/11/1995 JLB : Created. *
  *=============================================================================================*/
-void* Small_Icon(void const* iconptr, int iconnum) {
+void* Small_Icon(const void* iconptr, int iconnum) {
   static unsigned char _icon[9];
-  IControl_Type const* iptr = static_cast<IControl_Type const*>(iconptr);
+  const IControl_Type* iptr = static_cast<const IControl_Type*>(iconptr);
   unsigned char* data;
 
   if (iconptr) {
@@ -147,7 +147,7 @@ void Set_Window(int window, int x, int y, int w, int h) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void Fatal(char const* message, ...) {
+void Fatal(const char* message, ...) {
   va_list va;
 
   va_start(va, message);
@@ -158,7 +158,7 @@ void Fatal(char const* message, ...) {
 }
 
 #ifdef NEVER
-void File_Fatal(char const* message) {
+void File_Fatal(const char* message) {
   // Prog_End();
   perror(message);
   Emergency_Exit(EXIT_FAILURE);
@@ -242,7 +242,8 @@ long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
   **	the buffer and decompressed at the beginning.
   */
   if (uncomp_buff.Get_Buffer() == dest_buff.Get_Buffer()) {
-    sptr = static_cast<char*>(sptr) + uncomp_buff.Get_Size() - (size + sizeof(header));
+    sptr = static_cast<char*>(sptr) + uncomp_buff.Get_Size() -
+           (size + sizeof(header));
   }
 
   /*
@@ -265,7 +266,7 @@ long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
   return size;
 }
 
-int Load_Picture(char const* filename, BufferClass& scratchbuf,
+int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType) {
   CCFileClass fc(filename);
@@ -351,10 +352,10 @@ long Translucent_Table_Size(int count) { return 256L + 256L * count; }
  *                                                                                             *
  * HISTORY: * 04/02/1994 JLB : Created. *
  *=============================================================================================*/
-void* Build_Translucent_Table(PaletteClass const& palette,
-                              TLucentType const* control, int count,
+void* Build_Translucent_Table(const PaletteClass& palette,
+                              const TLucentType* control, int count,
                               void* buffer) {
-  unsigned char const* table;  // Remap table pointer.
+  const unsigned char* table;  // Remap table pointer.
   int index;                   // Working color index.
 
   if (count && control && palette) {
@@ -409,10 +410,10 @@ void* Build_Translucent_Table(PaletteClass const& palette,
  *                                                                                             *
  * HISTORY: * 06/27/1994 JLB : Created. *
  *=============================================================================================*/
-void* Conquer_Build_Translucent_Table(PaletteClass const& palette,
-                                      TLucentType const* control, int count,
+void* Conquer_Build_Translucent_Table(const PaletteClass& palette,
+                                      const TLucentType* control, int count,
                                       void* buffer) {
-  unsigned char const* table;  // Remap table pointer.
+  const unsigned char* table;  // Remap table pointer.
 
   if (count && control) {
     if (!buffer) {
@@ -438,7 +439,7 @@ void* Conquer_Build_Translucent_Table(PaletteClass const& palette,
   return buffer;
 }
 
-void* Make_Fading_Table(PaletteClass const& palette, void* dest, int color,
+void* Make_Fading_Table(const PaletteClass& palette, void* dest, int color,
                         int frac) {
   if (dest) {
     unsigned char* ptr = static_cast<unsigned char*>(dest);
@@ -467,7 +468,7 @@ void* Make_Fading_Table(PaletteClass const& palette, void* dest, int color,
   return dest;
 }
 
-void* Conquer_Build_Fading_Table(PaletteClass const& palette, void* dest,
+void* Conquer_Build_Fading_Table(const PaletteClass& palette, void* dest,
                                  int color, int frac) {
   if (dest) {
     unsigned char* ptr = static_cast<unsigned char*>(dest);

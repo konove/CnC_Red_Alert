@@ -58,7 +58,7 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int SHAPipe::Put(void const* source, int slen) {
+int SHAPipe::Put(const void* source, int slen) {
   SHA.Hash(source, slen);
   return Pipe::Put(source, slen);
 }

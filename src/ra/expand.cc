@@ -254,11 +254,11 @@ struct EObjectClass {
 class EListClass : public ListClass {
  public:
   EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-             void const* up, void const* down)
+             const void* up, const void* down)
       : ListClass(id, x, y, w, h, flags, up, down) {}
 
   virtual int Add_Object(EObjectClass* obj) {
-    return ListClass::Add_Item((char const*)obj);
+    return ListClass::Add_Item((const char*)obj);
   }
   virtual EObjectClass* Get_Object(int index) const {
     return (EObjectClass*)ListClass::Get_Item(index);
@@ -271,12 +271,12 @@ class EListClass : public ListClass {
   void Draw_Entry(int index, int x, int y, int width, int selected) override;
 
  private:
-  int Add_Item(char const* text) override { return ListClass::Add_Item(text); }
+  int Add_Item(const char* text) override { return ListClass::Add_Item(text); }
   int Add_Item(int text) override { return ListClass::Add_Item(text); }
-  char const* Current_Item() const override {
+  const char* Current_Item() const override {
     return ListClass::Current_Item();
   }
-  virtual char const* Get_Item(int index) const {
+  virtual const char* Get_Item(int index) const {
     return ListClass::Get_Item(index);
   }
 };

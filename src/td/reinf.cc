@@ -114,7 +114,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
         airtransport = true;
       } else {
         watertransport =
-            dynamic_cast<UnitTypeClass const*>(teamtype->Class[index])->Type ==
+            dynamic_cast<const UnitTypeClass*>(teamtype->Class[index])->Type ==
             UNIT_HOVER;
       }
     } else {
@@ -138,7 +138,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       *shipping source.
       */
       if (teamtype->Class[0]->What_Am_I() == RTTI_UNITTYPE &&
-          dynamic_cast<UnitTypeClass const*>(teamtype->Class[0])->Type ==
+          dynamic_cast<const UnitTypeClass*>(teamtype->Class[0])->Type ==
               UNIT_GUNBOAT) {
         source = SOURCE_SHIPPING;
       } else {
@@ -163,7 +163,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   TechnoClass* transport = nullptr;
   TechnoClass* object = nullptr;
   for (int index = 0; index < teamtype->ClassCount; index++) {
-    TechnoTypeClass const* tclass = teamtype->Class[index];
+    const TechnoTypeClass* tclass = teamtype->Class[index];
 
     for (int sub = 0; sub < teamtype->DesiredNum[index]; sub++) {
       ScenarioInit++;
@@ -376,7 +376,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
             HouseClass::As_Pointer(teamtype->House)->Edge, teamtype->House);
         ScenarioInit--;
         if (*thisone == AIRCRAFT_CARGO) {
-          BuildingClass const* building =
+          const BuildingClass* building =
               thisone->Find_Docking_Bay(STRUCT_AIRSTRIP, false);
           if (building) {
             newcell = XY_Cell(Map.MapCellX + Map.MapCellWidth,
@@ -484,8 +484,8 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 bool Create_Special_Reinforcement(HouseClass* house,
-                                  TechnoTypeClass const* type,
-                                  TechnoTypeClass const* another,
+                                  const TechnoTypeClass* type,
+                                  const TechnoTypeClass* another,
                                   TeamMissionType mission, int argument) {
   if (house && type) {
     TeamTypeClass* team = new TeamTypeClass();
@@ -556,7 +556,7 @@ bool Create_Special_Reinforcement(HouseClass* house,
       if (mission == TMISSION_NONE) {
         if (another &&
             (another->What_Am_I() != RTTI_UNITTYPE ||
-             dynamic_cast<UnitTypeClass const*>(another)->Type != UNIT_HOVER)) {
+             dynamic_cast<const UnitTypeClass*>(another)->Type != UNIT_HOVER)) {
           team->MissionList[0].Mission = TMISSION_UNLOAD;
           team->MissionList[0].Argument = WAYPT_REINF;
         }

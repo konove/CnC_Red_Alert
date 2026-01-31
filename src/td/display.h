@@ -90,7 +90,7 @@ class DisplayClass : public MapClass {
   */
   CELL ZoneCell;
   short ZoneOffset;
-  short const* CursorSize;
+  const short* CursorSize;
   bool ProximityCheck;  // Is proximity check ok?
 
   /*
@@ -100,7 +100,7 @@ class DisplayClass : public MapClass {
   **	placing the building at the desired location.
   */
   ObjectClass* PendingObjectPtr;
-  ObjectTypeClass const* PendingObject;
+  const ObjectTypeClass* PendingObject;
   HousesType PendingHouse;
 
   static unsigned char FadingBrighten[256];
@@ -113,13 +113,13 @@ class DisplayClass : public MapClass {
   static unsigned char TranslucentTable[(MAGIC_COL_COUNT + 1) * 256];
   static unsigned char WhiteTranslucentTable[(1 + 1) * 256];
   static unsigned char MouseTranslucentTable[(4 + 1) * 256];
-  static void const* TransIconset;
+  static const void* TransIconset;
   static unsigned char UnitShadow[(USHADOW_COL_COUNT + 1) * 256];
   static unsigned char SpecialGhost[2 * 256];
 
   //-------------------------------------------------------------------------
   DisplayClass();
-  DisplayClass(NoInitClass const& x) : MapClass(x) {}
+  DisplayClass(const NoInitClass& x) : MapClass(x) {}
 
   virtual void Read_INI(char* buffer);
   void Write_INI(char* buffer);
@@ -148,7 +148,7 @@ class DisplayClass : public MapClass {
                          int = 0) {}
   virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(DirType facing, int& distance, bool really);
-  virtual void Refresh_Cells(CELL cell, short const* list);
+  virtual void Refresh_Cells(CELL cell, const short* list);
   virtual void Set_View_Dimensions(int x, int y, int width = -1,
                                    int height = -1);
 
@@ -157,9 +157,9 @@ class DisplayClass : public MapClass {
   */
   virtual void Put_Place_Back(TechnoClass*) {}  // Affects 'pending' system.
   void Cursor_Mark(CELL pos, bool on);
-  void Set_Cursor_Shape(short const* list);
+  void Set_Cursor_Shape(const short* list);
   CELL Set_Cursor_Pos(CELL pos = -1);
-  void Get_Occupy_Dimensions(int& w, int& h, short const* list);
+  void Get_Occupy_Dimensions(int& w, int& h, const short* list);
 
   /*
   **	Tactical map only functionality.
@@ -170,16 +170,16 @@ class DisplayClass : public MapClass {
   COORDINATE Pixel_To_Coord(int x, int y);
   bool Coord_To_Pixel(COORDINATE coord, int& x, int& y);
   bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest);
-  void Remove(ObjectClass const* object, LayerType layer);
-  void Submit(ObjectClass const* object, LayerType layer);
+  void Remove(const ObjectClass* object, LayerType layer);
+  void Submit(const ObjectClass* object, LayerType layer);
   CELL Calculated_Cell(SourceType dir, HousesType house);
   bool In_View(CELL cell);
-  bool Passes_Proximity_Check(ObjectTypeClass const* object);
+  bool Passes_Proximity_Check(const ObjectTypeClass* object);
   ObjectClass* Cell_Object(CELL cell, int x = 0, int y = 0);
   ObjectClass* Next_Object(ObjectClass* object);
   ObjectClass* Prev_Object(ObjectClass* object);
   int Cell_Shadow(CELL cell);
-  short const* Text_Overlap_List(char const* text, int x, int y, int lines = 1);
+  const short* Text_Overlap_List(const char* text, int x, int y, int lines = 1);
   bool Is_Spot_Free(COORDINATE coord) const;
   COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
   void Sell_Mode_Control(int control);
@@ -303,7 +303,7 @@ class DisplayClass : public MapClass {
   int BandX, BandY;
   int NewX, NewY;
 
-  static void const* ShadowShapes;
+  static const void* ShadowShapes;
   static unsigned char ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
 
   void Redraw_Icons(int draw_flags = 0);

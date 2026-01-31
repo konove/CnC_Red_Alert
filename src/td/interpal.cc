@@ -71,7 +71,7 @@ unsigned char* InterpolationPalette;
  * HISTORY: * 12/12/95 12:15PM ST : Created *
  *=============================================================================================*/
 
-void Read_Interpolation_Palette(char const* palette_file_name) {
+void Read_Interpolation_Palette(const char* palette_file_name) {
   CCFileClass palette_file(palette_file_name);
 
   if (palette_file.Is_Available()) {
@@ -97,7 +97,7 @@ void Read_Interpolation_Palette(char const* palette_file_name) {
  * HISTORY: * 12/12/95 12:15PM ST : Created *
  *=============================================================================================*/
 
-void Write_Interpolation_Palette(char const* palette_file_name) {
+void Write_Interpolation_Palette(const char* palette_file_name) {
   CCFileClass palette_file(palette_file_name);
 
   if (!palette_file.Is_Available()) {
@@ -203,7 +203,8 @@ void Create_Palette_Interpolation_Table() {
         }
       }
 
-      PaletteInterpolationTable[i][j] = static_cast<unsigned char>(index_of_closest_color);
+      PaletteInterpolationTable[i][j] =
+          static_cast<unsigned char>(index_of_closest_color);
     }
   }
 
@@ -271,7 +272,7 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
  *   01/2026     : Replaced with SDL texture scaling.                      *
  *=========================================================================*/
 void Interpolate_2X_Scale(GraphicBufferClass* source, GraphicViewPortClass*,
-                          char const*) {
+                          const char*) {
   // Render using SDL scaling - palette already set via Update_Palette
   source->Lock();
   WindowBuffer->Render_Scaled_Frame(source->Get_Offset(), source->Get_Width(),

@@ -72,7 +72,7 @@ bool ConfirmationClass::Process(int text) { return Process(Text_String(text)); }
  * INPUT:   	char *string - display in edit box. * OUTPUT:  	none * WARNINGS:
  *none * HISTORY:    12/31/1994 MML : Created. *
  *=============================================================================================*/
-bool ConfirmationClass::Process(char const* string) {
+bool ConfirmationClass::Process(const char* string) {
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   enum { NUM_OF_BUTTONS = 2 };

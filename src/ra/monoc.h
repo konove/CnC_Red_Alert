@@ -83,11 +83,11 @@ class MonoClass {
   void Set_Default_Attribute(MonoAttribute attrib) { Attrib = attrib; }
   void Clear();
   void Set_Cursor(int x, int y);
-  void Print(char const* text);
+  void Print(const char* text);
   void Print(int text);
-  void Printf(char const* text, ...);
+  void Printf(const char* text, ...);
   void Printf(int text, ...);
-  void Text_Print(char const* text, int x, int y,
+  void Text_Print(const char* text, int x, int y,
                   MonoAttribute attrib = NORMAL);
   void Text_Print(int text, int x, int y, MonoAttribute attrib = NORMAL);
   void View();
@@ -102,13 +102,13 @@ class MonoClass {
   **	Handles deep copies for the mono class objects. This performs what is
   *essentially *	a screen copy.
   */
-  MonoClass& operator=(MonoClass const&);
+  MonoClass& operator=(const MonoClass&);
 
   /*
   **	This merely makes a duplicate of the mono object into a newly created
   *mono *	object.
   */
-  MonoClass(MonoClass const&);
+  MonoClass(const MonoClass&);
 
  private:
   /*
@@ -158,7 +158,7 @@ class MonoClass {
     unsigned char BottomLeft;
     unsigned char LeftEdge;
   };
-  static BoxDataType const CharData[4];
+  static const BoxDataType CharData[4];
 
   /*
   **	Each cell is constructed of the actual character that is displayed and
@@ -182,8 +182,8 @@ class MonoClass {
   enum MonoClassPortEnums {
     CONTROL_PORT = 0x03B4,  // CRTC control register.
     DATA_PORT = 0x03B5,     // CRTC data register.
-    SIZE_OF_PAGE =
-        static_cast<int>(LINES) * static_cast<int>(COLUMNS) * sizeof(CellType)  // Entire page size.
+    SIZE_OF_PAGE = static_cast<int>(LINES) * static_cast<int>(COLUMNS) *
+                   sizeof(CellType)  // Entire page size.
   };
 
   /*
@@ -214,11 +214,11 @@ int Mono_Printf(int string, ...);
 #else
 extern void Mono_Set_Cursor(int x, int y);
 extern int Mono_Printf(int string, ...);
-extern int Mono_Printf(char const* string, ...);
+extern int Mono_Printf(const char* string, ...);
 extern void Mono_Clear_Screen();
-extern void Mono_Text_Print(void const* text, int x, int y, int attrib);
+extern void Mono_Text_Print(const void* text, int x, int y, int attrib);
 extern void Mono_Draw_Rect(int x, int y, int w, int h, int attrib, int thick);
-extern void Mono_Print(void const* text);
+extern void Mono_Print(const void* text);
 extern int Mono_X();
 extern int Mono_Y();
 #endif

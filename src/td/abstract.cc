@@ -49,7 +49,7 @@ int AbstractClass::Distance(const TARGET target) const {
 
 // Constructor for AbstractTypeClass.
 // Initializes the display name and INI identifier for this object type.
-AbstractTypeClass::AbstractTypeClass(const int name, char const* ini) {
+AbstractTypeClass::AbstractTypeClass(const int name, const char* ini) {
   Name = name;
   strncpy(IniName, ini, sizeof(IniName));
   IniName[sizeof(IniName) - 1] = '\0';

@@ -73,12 +73,12 @@ class INIClass {
   /*
   **	Erase all data within this INI file manager.
   */
-  bool Clear(char const* section = nullptr, char const* entry = nullptr);
+  bool Clear(const char* section = nullptr, const char* entry = nullptr);
 
-  int Line_Count(char const* section) const;
+  int Line_Count(const char* section) const;
   bool Is_Loaded() const { return !SectionList.Is_Empty(); }
   int Size() const;
-  bool Is_Present(char const* section, char const* entry = nullptr) const {
+  bool Is_Present(const char* section, const char* entry = nullptr) const {
     if (entry == nullptr) return Find_Section(section) != nullptr;
     return Find_Entry(section, entry) != nullptr;
   }
@@ -88,7 +88,7 @@ class INIClass {
   **	section is present.
   */
   int Section_Count() const;
-  bool Section_Present(char const* section) const {
+  bool Section_Present(const char* section) const {
     return Find_Section(section) != nullptr;
   }
 
@@ -96,35 +96,35 @@ class INIClass {
   **	Fetch the number of entries in a section or get a particular entry in a
   *section.
   */
-  int Entry_Count(char const* section) const;
-  char const* Get_Entry(char const* section, int index) const;
+  int Entry_Count(const char* section) const;
+  const char* Get_Entry(const char* section, int index) const;
 
   /*
   **	Get the various data types from the section and entry specified.
   */
-  int Get_String(char const* section, char const* entry, char const* defvalue,
+  int Get_String(const char* section, const char* entry, const char* defvalue,
                  char* buffer, int size) const;
-  int Get_Int(char const* section, char const* entry, int defvalue = 0) const;
-  int Get_Hex(char const* section, char const* entry, int defvalue = 0) const;
-  bool Get_Bool(char const* section, char const* entry,
+  int Get_Int(const char* section, const char* entry, int defvalue = 0) const;
+  int Get_Hex(const char* section, const char* entry, int defvalue = 0) const;
+  bool Get_Bool(const char* section, const char* entry,
                 bool defvalue = false) const;
-  int Get_TextBlock(char const* section, char* buffer, int len) const;
-  int Get_UUBlock(char const* section, void* buffer, int len) const;
+  int Get_TextBlock(const char* section, char* buffer, int len) const;
+  int Get_UUBlock(const char* section, void* buffer, int len) const;
   PKey Get_PKey(bool fast) const;
-  fixed Get_Fixed(char const* section, char const* entry, fixed defvalue) const;
+  fixed Get_Fixed(const char* section, const char* entry, fixed defvalue) const;
 
   /*
   **	Put a data type to the section and entry specified.
   */
-  bool Put_Fixed(char const* section, char const* entry, fixed value);
-  bool Put_String(char const* section, char const* entry, char const* string);
-  bool Put_Hex(char const* section, char const* entry, int number);
-  bool Put_Int(char const* section, char const* entry, int number,
+  bool Put_Fixed(const char* section, const char* entry, fixed value);
+  bool Put_String(const char* section, const char* entry, const char* string);
+  bool Put_Hex(const char* section, const char* entry, int number);
+  bool Put_Int(const char* section, const char* entry, int number,
                int format = 0);
-  bool Put_Bool(char const* section, char const* entry, bool value);
-  bool Put_TextBlock(char const* section, char const* text);
-  bool Put_UUBlock(char const* section, void const* block, int len);
-  bool Put_PKey(PKey const& key);
+  bool Put_Bool(const char* section, const char* entry, bool value);
+  bool Put_TextBlock(const char* section, const char* text);
+  bool Put_UUBlock(const char* section, const void* block, int len);
+  bool Put_PKey(const PKey& key);
 
  protected:
   enum { MAX_LINE_LENGTH = 128 };
@@ -159,7 +159,7 @@ class INIClass {
       Section = nullptr;
       EntryList.Delete();
     }
-    INIEntry* Find_Entry(char const* entry) const;
+    INIEntry* Find_Entry(const char* entry) const;
     int Index_ID() const { return CrcEngine::Compute(Section); }
 
     char* Section;
@@ -170,8 +170,8 @@ class INIClass {
   /*
   **	Utility routines to help find the appropriate section and entry objects.
   */
-  INISection* Find_Section(char const* section) const;
-  INIEntry* Find_Entry(char const* section, char const* entry) const;
+  INISection* Find_Section(const char* section) const;
+  INIEntry* Find_Entry(const char* section, const char* entry) const;
   static void Strip_Comments(char* buffer);
 
   /*

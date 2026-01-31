@@ -109,7 +109,7 @@ void __cdecl SetPalette(unsigned char* palette, long, unsigned long) {
   Set_Palette(palette);
 }
 
-GraphicBufferClass* Read_PCX_File(char const* name, char* Palette, void* Buff,
+GraphicBufferClass* Read_PCX_File(const char* name, char* Palette, void* Buff,
                                   long Size);
 void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
                        unsigned char* palette) {
@@ -192,7 +192,7 @@ class BufferedFileReader {
   size_t bytes_in_buffer_ = 0;
 };
 
-GraphicBufferClass* Read_PCX_File(char const* name, char* palette, void* Buff,
+GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
                                   long Size) {
   CCFileClass file_handle(name);
 

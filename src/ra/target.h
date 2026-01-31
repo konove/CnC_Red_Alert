@@ -80,17 +80,13 @@ inline bool Is_Target_TriggerType(TARGET a) {
 inline bool Is_Target_Infantry(TARGET a) {
   return Target_Kind(a) == RTTI_INFANTRY;
 }
-inline bool Is_Target_Bullet(TARGET a) {
-  return Target_Kind(a) == RTTI_BULLET;
-}
+inline bool Is_Target_Bullet(TARGET a) { return Target_Kind(a) == RTTI_BULLET; }
 inline bool Is_Target_Terrain(TARGET a) {
   return Target_Kind(a) == RTTI_TERRAIN;
 }
 inline bool Is_Target_Cell(TARGET a) { return Target_Kind(a) == RTTI_CELL; }
 inline bool Is_Target_Unit(TARGET a) { return Target_Kind(a) == RTTI_UNIT; }
-inline bool Is_Target_Vessel(TARGET a) {
-  return Target_Kind(a) == RTTI_VESSEL;
-}
+inline bool Is_Target_Vessel(TARGET a) { return Target_Kind(a) == RTTI_VESSEL; }
 inline bool Is_Target_Building(TARGET a) {
   return Target_Kind(a) == RTTI_BUILDING;
 }
@@ -127,7 +123,9 @@ class xTargetClass {
 
  public:
   // conversion operator to RTTIType
-  operator RTTIType() const { return static_cast<RTTIType>(Target.Sub.Exponent); }
+  operator RTTIType() const {
+    return static_cast<RTTIType>(Target.Sub.Exponent);
+  }
 
   // comparison operator
   int operator==(xTargetClass& tgt) {
@@ -215,7 +213,7 @@ class xTargetClass {
 class TargetClass : public xTargetClass {
  public:
   TargetClass() { Invalidate(); }
-  TargetClass(NoInitClass const&) {}
+  TargetClass(const NoInitClass&) {}
   TargetClass(RTTIType rtti, int id) {
     Target.Sub.Exponent = rtti;
     Target.Sub.Mantissa = id;
@@ -225,12 +223,12 @@ class TargetClass : public xTargetClass {
     Target.Sub.Mantissa = cell;
   }
   TargetClass(TARGET target);
-  TargetClass(AbstractClass const* ptr);
-  TargetClass(AbstractTypeClass const* ptr);
-  TargetClass(CellClass const* ptr);
+  TargetClass(const AbstractClass* ptr);
+  TargetClass(const AbstractTypeClass* ptr);
+  TargetClass(const CellClass* ptr);
 };
 
-TechnoTypeClass const* As_TechnoType(TARGET target);
+const TechnoTypeClass* As_TechnoType(TARGET target);
 COORDINATE As_Movement_Coord(TARGET target);
 AircraftClass* As_Aircraft(TARGET target);
 AnimClass* As_Animation(TARGET target);

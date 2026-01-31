@@ -287,7 +287,7 @@ PKey SlowKey;
 /***************************************************************************
 **	This is where the name overrides for the units will reside.
 */
-char const* NameOverride[25];
+const char* NameOverride[25];
 int NameIDOverride[25];
 
 /***************************************************************************
@@ -300,7 +300,7 @@ MissionControlClass MissionControl[MISSION_COUNT];
 **	There are various tutorial messages that can appear in the game. These
 **	are called upon by number and pointed to by this array.
 */
-char const* TutorialTextData;
+const char* TutorialTextData;
 uint16_t TutorialTextOffsets[225];
 
 /***************************************************************************
@@ -526,8 +526,8 @@ int BuildLevel = 10;  // Buildable level (1 = simplest)
 **	The various tutor and dialog messages are located in the data block
 **	referenced by this pointer.
 */
-char const* SystemStrings;
-char const* DebugStrings;
+const char* SystemStrings;
+const char* DebugStrings;
 
 /***************************************************************************
 **	The game plays as long as this var is true.
@@ -551,17 +551,17 @@ CELL CurrentCell = 0;
 **	pointers to the fonts. If it is NULL, then the font hasn't been loaded
 **	yet.
 */
-void const* Metal12FontPtr;  // Font for use on in-game tabs in hires
-void const* MapFontPtr;      // Standard very small font.
-void const* TypeFontPtr;     // Teletype font for mission briefings.
-void const* Font3Ptr;        // Standard very small font.
-void const* Font6Ptr;        // Standard small font.
-void const* EditorFont;      // Font used for scenario editor.
-void const* Font8Ptr;        // 8 point proportional.
-void const* FontLEDPtr;      // LED fixed point font.
-void const* VCRFontPtr;      // VCR font pointer.
-void const* ScoreFontPtr;    // font for score & map selection screens
-void const* GradFont6Ptr;    // gradient 6 point font pointer.
+const void* Metal12FontPtr;  // Font for use on in-game tabs in hires
+const void* MapFontPtr;      // Standard very small font.
+const void* TypeFontPtr;     // Teletype font for mission briefings.
+const void* Font3Ptr;        // Standard very small font.
+const void* Font6Ptr;        // Standard small font.
+const void* EditorFont;      // Font used for scenario editor.
+const void* Font8Ptr;        // 8 point proportional.
+const void* FontLEDPtr;      // LED fixed point font.
+const void* VCRFontPtr;      // VCR font pointer.
+const void* ScoreFontPtr;    // font for score & map selection screens
+const void* GradFont6Ptr;    // gradient 6 point font pointer.
 
 /***************************************************************************
 **	This is the house that the human player is currently playing.

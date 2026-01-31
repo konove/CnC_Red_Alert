@@ -66,8 +66,8 @@
 #include "td/mixfile.h"
 #include "td/radar.h"
 
-void const* PowerClass::PowerShape;
-void const* PowerClass::PowerBarShape;
+const void* PowerClass::PowerShape;
+const void* PowerClass::PowerBarShape;
 
 PowerClass::PowerButtonClass PowerClass::PowerButton;
 
@@ -379,7 +379,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
  *                                                                                             *
  * HISTORY: * 06/01/1995 JLB : Created. *
  *=============================================================================================*/
-void PowerClass::Refresh_Cells(CELL cell, short const* list) {
+void PowerClass::Refresh_Cells(CELL cell, const short* list) {
   if (*list == REFRESH_SIDEBAR) {
     IsToRedraw = true;
     Flag_To_Redraw(false);

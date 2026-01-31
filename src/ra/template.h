@@ -70,7 +70,7 @@ class TemplateClass : public ObjectClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   TemplateClass(TemplateType type, CELL pos = -1);
-  TemplateClass(NoInitClass const& x) : ObjectClass(x), Class(x) {}
+  TemplateClass(const NoInitClass& x) : ObjectClass(x), Class(x) {}
   ~TemplateClass() override {
     if (GameActive) TemplateClass::Limbo();
     Class = nullptr;
@@ -82,7 +82,7 @@ class TemplateClass : public ObjectClass {
   /*
   **	Query functions.
   */
-  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
   int Icon_Number(CELL cell);
 
   /*

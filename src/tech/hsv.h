@@ -49,7 +49,7 @@ class RGBClass;
 */
 class HSVClass {
  private:
-  static HSVClass const BlackColor;
+  static const HSVClass BlackColor;
 
  public:
   HSVClass() : Hue(0), Saturation(0), Value(0) {}
@@ -59,8 +59,8 @@ class HSVClass {
 
   enum { MAX_VALUE = 255 };
 
-  void Adjust(int ratio, HSVClass const& hsv);
-  int Difference(HSVClass const& hsv) const;
+  void Adjust(int ratio, const HSVClass& hsv);
+  int Difference(const HSVClass& hsv) const;
   int Hue_Component() const { return Hue; }
   int Saturation_Component() const { return Saturation; }
   int Value_Component() const { return Value; }

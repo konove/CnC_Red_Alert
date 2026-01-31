@@ -419,7 +419,7 @@ int MapEditClass::Save_Scenario() {
  * HISTORY:                                                                *
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Pick_Scenario(char const* caption, int* scen_nump,
+int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
                                 ScenarioPlayerType* playerp,
                                 ScenarioDirType* dirp, ScenarioVarType* varp,
                                 int multi) {

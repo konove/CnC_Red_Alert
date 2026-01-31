@@ -70,11 +70,11 @@
 #include "td/object.h"
 #include "td/type.h"
 
-void const* AircraftTypeClass::LRotorData = nullptr;
-void const* AircraftTypeClass::RRotorData = nullptr;
+const void* AircraftTypeClass::LRotorData = nullptr;
+const void* AircraftTypeClass::RRotorData = nullptr;
 
 // A-10 attack plane
-static AircraftTypeClass const AttackPlane(
+static const AircraftTypeClass AttackPlane(
     AIRCRAFT_A10,  // What kind of aircraft is this.
     TXT_A10,       // Translated text number for aircraft.
     "A10",         // INI name of aircraft.
@@ -114,7 +114,7 @@ static AircraftTypeClass const AttackPlane(
 );
 
 // Transport helicopter.
-static AircraftTypeClass const TransportHeli(
+static const AircraftTypeClass TransportHeli(
     AIRCRAFT_TRANSPORT,  // What kind of aircraft is this.
     TXT_TRANS,           // Translated text number for aircraft.
     "TRAN",              // INI name of aircraft.
@@ -154,7 +154,7 @@ static AircraftTypeClass const TransportHeli(
 );
 
 // Apache attach helicopter.
-static AircraftTypeClass const AttackHeli(
+static const AircraftTypeClass AttackHeli(
     AIRCRAFT_HELICOPTER,  // What kind of aircraft is this.
     TXT_HELI,             // Translated text number for aircraft.
     "HELI",               // INI name of aircraft.
@@ -194,7 +194,7 @@ static AircraftTypeClass const AttackHeli(
 );
 
 // Orca attack helicopter.
-static AircraftTypeClass const OrcaHeli(
+static const AircraftTypeClass OrcaHeli(
     AIRCRAFT_ORCA,    // What kind of aircraft is this.
     TXT_ORCA,         // Translated text number for aircraft.
     "ORCA",           // INI name of aircraft.
@@ -234,7 +234,7 @@ static AircraftTypeClass const OrcaHeli(
 );
 
 // C-17 transport plane.
-static AircraftTypeClass const CargoPlane(
+static const AircraftTypeClass CargoPlane(
     AIRCRAFT_CARGO,  // What kind of aircraft is this.
     TXT_C17,         // Translated text number for aircraft.
     "C17",           // INI name of aircraft.
@@ -273,7 +273,7 @@ static AircraftTypeClass const CargoPlane(
     MISSION_HUNT     // Default mission for aircraft.
 );
 
-AircraftTypeClass const* const AircraftTypeClass::Pointers[AIRCRAFT_COUNT] = {
+const AircraftTypeClass* const AircraftTypeClass::Pointers[AIRCRAFT_COUNT] = {
     &TransportHeli, &AttackPlane, &AttackHeli, &CargoPlane, &OrcaHeli,
 };
 
@@ -291,7 +291,7 @@ AircraftTypeClass const* const AircraftTypeClass::Pointers[AIRCRAFT_COUNT] = {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 AircraftTypeClass::AircraftTypeClass(
-    AircraftType airtype, int name, char const* ininame, unsigned char level,
+    AircraftType airtype, int name, const char* ininame, unsigned char level,
     long pre, bool is_leader, bool is_twoshooter, bool is_transporter,
     bool is_fixedwing, bool is_rotorequipped, bool is_rotorcustom,
     bool is_landable, bool is_crushable, bool is_stealthy, bool is_selectable,
@@ -334,7 +334,7 @@ AircraftTypeClass::AircraftTypeClass(
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-AircraftType AircraftTypeClass::From_Name(char const* name) {
+AircraftType AircraftTypeClass::From_Name(const char* name) {
   if (name) {
     for (AircraftType classid = AIRCRAFT_FIRST; classid < AIRCRAFT_COUNT;
          classid++) {
@@ -365,7 +365,7 @@ void AircraftTypeClass::One_Time() {
   AircraftType index;
 
   for (index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
-    AircraftTypeClass const& uclass = As_Reference(index);
+    const AircraftTypeClass& uclass = As_Reference(index);
 
     /*
     **	Fetch the supporting data files for the unit.
@@ -378,7 +378,7 @@ void AircraftTypeClass::One_Time() {
     }
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    (void const*&)uclass.CameoData = MixFileClass::Retrieve(fullname.c_str());
+    (const void*&)uclass.CameoData = MixFileClass::Retrieve(fullname.c_str());
 
     /*
     **	Generic shape for all houses load method.
@@ -387,7 +387,7 @@ void AircraftTypeClass::One_Time() {
                    .replace_extension(".SHP")
                    .string();
 
-    (void const*&)uclass.ImageData = MixFileClass::Retrieve(fullname.c_str());
+    (const void*&)uclass.ImageData = MixFileClass::Retrieve(fullname.c_str());
   }
 
   LRotorData = MixFileClass::Retrieve("LROTOR.SHP");
@@ -462,7 +462,7 @@ void AircraftTypeClass::Prep_For_Add() {
 void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType house) const {
   int shape = 0;
-  void const* ptr = Get_Cameo_Data();
+  const void* ptr = Get_Cameo_Data();
   if (!ptr) {
     ptr = Get_Image_Data();
     shape = 5;
@@ -488,8 +488,8 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const* AircraftTypeClass::Occupy_List(bool) const {
-  static short const _list[] = {0, REFRESH_EOL};
+const short* AircraftTypeClass::Occupy_List(bool) const {
+  static const short _list[] = {0, REFRESH_EOL};
   return _list;
 }
 
@@ -508,8 +508,8 @@ short const* AircraftTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const* AircraftTypeClass::Overlap_List() const {
-  static short const _list[] = {
+const short* AircraftTypeClass::Overlap_List() const {
+  static const short _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
       (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  REFRESH_EOL};
   return _list;
@@ -655,12 +655,12 @@ void AircraftTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     if (Get_Resolution_Factor()) {
       AircraftType index;
-      void const* cameo_ptr;
+      const void* cameo_ptr;
 
       for (index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
-        AircraftTypeClass const& uclass = As_Reference(index);
+        const AircraftTypeClass& uclass = As_Reference(index);
 
-        (void const*&)uclass.CameoData = nullptr;
+        (const void*&)uclass.CameoData = nullptr;
 
         const auto filename = std::string(uclass.IniName).substr(0, 4) + "ICNH";
 
@@ -670,7 +670,7 @@ void AircraftTypeClass::Init(TheaterType theater) {
 
         cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
         if (cameo_ptr) {
-          (void const*&)uclass.CameoData = cameo_ptr;
+          (const void*&)uclass.CameoData = cameo_ptr;
         }
       }
     }

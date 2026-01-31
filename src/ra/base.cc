@@ -83,7 +83,7 @@
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator==(BaseNodeClass const& node) {
+int BaseNodeClass::operator==(const BaseNodeClass& node) {
   return Type == node.Type && Cell == node.Cell;
 }
 
@@ -98,7 +98,7 @@ int BaseNodeClass::operator==(BaseNodeClass const& node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator!=(BaseNodeClass const& node) {
+int BaseNodeClass::operator!=(const BaseNodeClass& node) {
   return !(*this == node);
 }
 
@@ -113,7 +113,7 @@ int BaseNodeClass::operator!=(BaseNodeClass const& node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator>(BaseNodeClass const&) { return true; }
+int BaseNodeClass::operator>(const BaseNodeClass&) { return true; }
 
 /***********************************************************************************************
  * BaseClass::Load -- loads from a saved game file *
@@ -302,7 +302,7 @@ BuildingClass* BaseClass::Get_Building(int index) const {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool BaseClass::Is_Node(BuildingClass const* obj) {
+bool BaseClass::Is_Node(const BuildingClass* obj) {
   return Get_Node(obj) != nullptr;
 }
 
@@ -318,7 +318,7 @@ bool BaseClass::Is_Node(BuildingClass const* obj) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-BaseNodeClass* BaseClass::Get_Node(BuildingClass const* obj) {
+BaseNodeClass* BaseClass::Get_Node(const BuildingClass* obj) {
   for (int i = 0; i < Nodes.Count(); i++) {
     if (obj->Class->Type == Nodes[i].Type &&
         Coord_Cell(obj->Coord) == Nodes[i].Cell) {

@@ -74,7 +74,7 @@ class GenericNode {
   }
 
   GenericList* Main_List() const {
-    GenericNode const* node = this;
+    const GenericNode* node = this;
     while (node->PrevNode) {
       node = PrevNode;
     }
@@ -132,7 +132,7 @@ class GenericList {
 
  private:
   GenericList(GenericList& list);
-  GenericList& operator=(GenericList const&);
+  GenericList& operator=(const GenericList&);
 };
 
 /*

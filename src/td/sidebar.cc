@@ -173,12 +173,12 @@ SidebarClass::StripClass::SelectClass
 /*
 ** Shape data pointers
 */
-void const* SidebarClass::StripClass::LogoShapes;
-void const* SidebarClass::StripClass::ClockShapes;
-void const* SidebarClass::StripClass::SpecialShapes[3];
+const void* SidebarClass::StripClass::LogoShapes;
+const void* SidebarClass::StripClass::ClockShapes;
+const void* SidebarClass::StripClass::SpecialShapes[3];
 
-void const* SidebarClass::SidebarShape1;
-void const* SidebarClass::SidebarShape2;
+const void* SidebarClass::SidebarShape1;
+const void* SidebarClass::SidebarShape2;
 
 /***********************************************************************************************
  * SidebarClass::SidebarClass -- Default constructor for the sidebar. *
@@ -493,7 +493,7 @@ bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Refresh_Cells(CELL cell, short const* list) {
+void SidebarClass::Refresh_Cells(CELL cell, const short* list) {
   if (*list == REFRESH_SIDEBAR) {
     IsToRedraw = true;
     Column[0].IsToRedraw = true;
@@ -1035,7 +1035,7 @@ bool SidebarClass::Activate(int control) {
  *                                                                                             *
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::StripClass::StripClass(InitClass const&) {
+SidebarClass::StripClass::StripClass(const InitClass&) {
   IsScrollingDown = false;
   IsScrolling = false;
   IsBuilding = false;
@@ -1106,7 +1106,7 @@ void SidebarClass::StripClass::One_Time(int) {
  *                                                                                             *
  * HISTORY: * 05/19/1995 JLB : commented *
  *=============================================================================================*/
-void const* SidebarClass::StripClass::Get_Special_Cameo(int type) {
+const void* SidebarClass::StripClass::Get_Special_Cameo(int type) {
   return SpecialShapes[type];
 }
 
@@ -1199,7 +1199,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
  *=============================================================================================*/
 void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   static char* _file[3] = {"ION", "ATOM", "BOMB"};
-  void const* cameo_ptr;
+  const void* cameo_ptr;
 
   for (int lp = 0; lp < 3; lp++) {
     std::string filename;
@@ -1218,7 +1218,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   }
 
 #ifndef _RETRIEVE
-  static TLucentType const ClockCols[1] = {
+  static const TLucentType ClockCols[1] = {
       //			{LTGREEN, BLACK, 0, 0},
       {GREEN, LTGREY, 180, 0}};
 
@@ -1317,15 +1317,15 @@ void SidebarClass::StripClass::Deactivate() {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-static int sortfunc(void const* ptr1, void const* ptr2) {
+static int sortfunc(const void* ptr1, const void* ptr2) {
   SidebarClass::StripClass::BuildType* b1 =
       (SidebarClass::StripClass::BuildType*)ptr1;
   SidebarClass::StripClass::BuildType* b2 =
       (SidebarClass::StripClass::BuildType*)ptr2;
 
-  TechnoTypeClass const* p1 =
+  const TechnoTypeClass* p1 =
       Fetch_Techno_Type(b1->BuildableType, b1->BuildableID);
-  TechnoTypeClass const* p2 =
+  const TechnoTypeClass* p2 =
       Fetch_Techno_Type(b2->BuildableType, b2->BuildableID);
 
   int i1 = 0;
@@ -1690,9 +1690,9 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       bool completed = false;
       int stage = 0;
       bool darken = false;
-      void const* shapefile = nullptr;
+      const void* shapefile = nullptr;
       int shapenum = 0;
-      void const* remapper = nullptr;
+      const void* remapper = nullptr;
       FactoryClass* factory = nullptr;
       int index = i + TopIndex;
       int x = X;
@@ -1713,7 +1713,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       *underlying graphic there.
       */
       if (static_cast<unsigned>(index) < BuildableCount) {
-        ObjectTypeClass const* obj = nullptr;
+        const ObjectTypeClass* obj = nullptr;
         int spc = 0;
 
         if (Buildables[index].BuildableType != RTTI_SPECIAL) {
@@ -1940,7 +1940,7 @@ bool SidebarClass::StripClass::Recalc() {
   */
   bool redraw = false;
   for (int index = 0; index < BuildableCount; index++) {
-    TechnoTypeClass const* tech = Fetch_Techno_Type(
+    const TechnoTypeClass* tech = Fetch_Techno_Type(
         Buildables[index].BuildableType, Buildables[index].BuildableID);
     if (tech) {
       ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) !=
@@ -2121,7 +2121,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
   int fnumber = Strip->Buildables[index].Factory;
 
   FactoryClass* factory = nullptr;
-  ObjectTypeClass const* choice = nullptr;
+  const ObjectTypeClass* choice = nullptr;
   int spc = 0;
 
   /*

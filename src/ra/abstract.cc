@@ -152,7 +152,7 @@ int AbstractClass::Distance(TARGET target) const {
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
 AbstractTypeClass::AbstractTypeClass(RTTIType rtti, int id, int name,
-                                     char const* ini)
+                                     const char* ini)
     : RTTI(rtti), ID(id), FullName(name) {
   strncpy(IniName, ini, sizeof(IniName));
   IniName[sizeof(IniName) - 1] = '\0';

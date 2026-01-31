@@ -213,7 +213,7 @@ unsigned long VersionClass::Version_Number() {
 unsigned short VersionClass::Major_Version() {
 #ifdef DEV_VERSION
   static char* date = __DATE__;  // format: Mmm dd yyyy
-  static char const* months = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
+  static const char* months = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
   char buf[10];
   char* ptr;
   char* tok;
@@ -703,7 +703,7 @@ unsigned long VersionClass::Max_Version() {
 #endif  // DEV_VERSION
 }
 
-char const* Version_Name() {
+const char* Version_Name() {
   static std::string version;
 
   version = "3.03";

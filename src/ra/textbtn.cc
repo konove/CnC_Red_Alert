@@ -88,7 +88,7 @@
  *                                                                                             *
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
-TextButtonClass::TextButtonClass(unsigned id, char const* text,
+TextButtonClass::TextButtonClass(unsigned id, const char* text,
                                  TextPrintType style, int x, int y, int w,
                                  int h, int blackborder)
     : ToggleClass(id, x, y, w, h), String(text) {
@@ -230,7 +230,7 @@ int TextButtonClass::Draw_Me(int forced) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void TextButtonClass::Set_Text(char const* text, bool resize) {
+void TextButtonClass::Set_Text(const char* text, bool resize) {
   String = text;
   Flag_To_Redraw();
   if (resize && String) {
@@ -326,7 +326,7 @@ void TextButtonClass::Draw_Background() {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void TextButtonClass::Draw_Text(char const* text) {
+void TextButtonClass::Draw_Text(const char* text) {
   RemapControlType* scheme = Get_Color_Scheme();
 
   /*

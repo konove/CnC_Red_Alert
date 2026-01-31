@@ -71,7 +71,7 @@ bool CC95AlreadyRunning =
 extern HWND MainWindow;
 extern TimerClass GameTimer;
 extern bool GameTimerInUse;
-extern void CCDebugString(char const* string);
+extern void CCDebugString(const char* string);
 
 /***********************************************************************************************
  * DDE_Callback -- DDE server callback function *

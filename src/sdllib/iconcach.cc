@@ -8,7 +8,7 @@
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/tile.h"
 
-static void const* LastIconset = nullptr;
+static const void* LastIconset = nullptr;
 static uint8_t* StampPtr = nullptr;
 
 static uint8_t* IsTrans = nullptr;
@@ -73,8 +73,8 @@ void Init_Stamps(const void* icon_ptr) {
   }
 }
 
-void Buffer_Draw_Stamp_Clip(void const* thisptr, void const* icondata, int icon,
-                            int x_pixel, int y_pixel, void const* remap,
+void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
+                            int x_pixel, int y_pixel, const void* remap,
                             int min_x, int min_y, int max_x, int max_y) {
   if (!icondata) return;
 

@@ -75,7 +75,7 @@ BOOL RA95AlreadyRunning = false;  // Was there an instance of Red Alert 95
 extern HWND MainWindow;
 extern TimerClass GameTimer;
 extern bool GameTimerInUse;
-extern void WWDebugString(char const* string);
+extern void WWDebugString(const char* string);
 
 /***********************************************************************************************
  * DDE_Callback -- DDE server callback function *

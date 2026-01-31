@@ -84,10 +84,12 @@
  *                                                                                             *
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
-StaticButtonClass::StaticButtonClass(unsigned, char const* text,
+StaticButtonClass::StaticButtonClass(unsigned, const char* text,
                                      TextPrintType style, int x, int y, int w,
                                      int h)
-    : GadgetClass(x, y, w, h, static_cast<FlagEnum>(0)), String(nullptr), PrintFlags(style) {
+    : GadgetClass(x, y, w, h, static_cast<FlagEnum>(0)),
+      String(nullptr),
+      PrintFlags(style) {
   /*
   **	Make a duplicate of the string to display.
   */
@@ -180,7 +182,7 @@ int StaticButtonClass::Draw_Me(int forced) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void StaticButtonClass::Set_Text(char const* text, bool resize) {
+void StaticButtonClass::Set_Text(const char* text, bool resize) {
   if (String != nullptr) {
     delete[] String;
     String = nullptr;
@@ -254,7 +256,7 @@ void StaticButtonClass::Draw_Background() {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void StaticButtonClass::Draw_Text(char const* text) {
+void StaticButtonClass::Draw_Text(const char* text) {
   /*
   **	Display the text.
   */
@@ -268,7 +270,6 @@ void StaticButtonClass::Draw_Text(char const* text) {
       x += Width - 1;
     }
 
-    Fancy_Text_Print(text, x, Y, Get_Color_Scheme(), TBLACK,
-                     PrintFlags);
+    Fancy_Text_Print(text, x, Y, Get_Color_Scheme(), TBLACK, PrintFlags);
   }
 }

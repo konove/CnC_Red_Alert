@@ -55,7 +55,7 @@ template class VectorClass<BaseNodeClass>;
 template class VectorClass<CellClass>;
 template class VectorClass<char*>;
 template class VectorClass<unsigned char*>;
-template class VectorClass<char const*>;
+template class VectorClass<const char*>;
 template class VectorClass<void*>;
 template class VectorClass<unsigned char>;
 

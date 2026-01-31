@@ -96,7 +96,7 @@
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
 ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                     void const* up, void const* down)
+                     const void* up, const void* down)
     : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
       UpGadget(0, up, x + w, y),
       DownGadget(0, down, x + w, y + h),
@@ -127,7 +127,7 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
   LineCount = (h - 1) / LineHeight;
 }
 
-ListClass::ListClass(ListClass const& list)
+ListClass::ListClass(const ListClass& list)
     : ControlClass(list),
       TextFlags(list.TextFlags),
       Tabs(list.Tabs),
@@ -176,7 +176,7 @@ ListClass::~ListClass() { Remove_Scroll_Bar(); }
  * INPUT:      text  -- Pointer to the string to add to the list box. * OUTPUT:
  *none * WARNINGS:   none * HISTORY:    01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Add_Item(char const* text) {
+int ListClass::Add_Item(const char* text) {
   if (text) {
     List.Add(text);
     Flag_To_Redraw();
@@ -271,7 +271,7 @@ void ListClass::Remove_Item(int index) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Remove_Item(char const* text) {
+void ListClass::Remove_Item(const char* text) {
   if (text) {
     Remove_Item(List.ID(text));
   }
@@ -440,7 +440,7 @@ void ListClass::Step(int up) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-char const* ListClass::Get_Item(size_t index) const {
+const char* ListClass::Get_Item(size_t index) const {
   if (List.Count() == 0) {
     return nullptr;
   }
@@ -461,7 +461,7 @@ char const* ListClass::Get_Item(size_t index) const {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-char const* ListClass::Current_Item() const {
+const char* ListClass::Current_Item() const {
   if (List.Count() <= SelectedIndex) {
     return nullptr;
   }
@@ -663,7 +663,7 @@ int ListClass::Remove_Scroll_Bar() {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Set_Tabs(int const* tabs) { Tabs = tabs; }
+void ListClass::Set_Tabs(const int* tabs) { Tabs = tabs; }
 
 /***********************************************************************************************
  * ListClass::Draw_Entry -- Draws a list box text line as indicated. *
@@ -897,7 +897,7 @@ void ListClass::Flag_To_Redraw() {
   ControlClass::Flag_To_Redraw();
 }
 
-void ListClass::Set_Selected_Index(char const* text) {
+void ListClass::Set_Selected_Index(const char* text) {
   if (text && List.Count() > 0) {
     for (int index = 0; index < List.Count(); index++) {
       if (stricmp(List[index], text) == 0) {

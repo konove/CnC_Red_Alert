@@ -103,7 +103,7 @@
 #include "tech/lcwstraw.h"
 
 #define MCW MAP_CELL_W
-int const MapClass::RadiusOffset[] = {
+const int MapClass::RadiusOffset[] = {
     /* 0  */ 0,
     /* 1  */ -MCW * 1 - 1,
     -MCW * 1 + 0,
@@ -415,7 +415,7 @@ int const MapClass::RadiusOffset[] = {
     MCW * 10 + 1,
 };
 
-int const MapClass::RadiusCount[11] = {1,   9,   21,  37,  61, 89,
+const int MapClass::RadiusCount[11] = {1,   9,   21,  37,  61, 89,
                                        121, 161, 205, 253, 309};
 
 CellClass* BlubCell;
@@ -590,7 +590,7 @@ void MapClass::Set_Map_Dimensions(int x, int y, int w, int h) {
 void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
                           bool incremental) {
   int xx;          // Center cell X coordinate (bounds checking).
-  int const* ptr;  // Offset pointer.
+  const int* ptr;  // Offset pointer.
   int count;       // Counter for number of offsets to process.
 
   /*
@@ -670,7 +670,7 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
  *=============================================================================================*/
 void MapClass::Shroud_From(CELL cell, int sightrange) {
   int xx;          // Center cell X coordinate (bounds checking).
-  int const* ptr;  // Offset pointer.
+  const int* ptr;  // Offset pointer.
   int count;       // Counter for number of offsets to process.
 
   /*
@@ -739,7 +739,7 @@ void MapClass::Shroud_From(CELL cell, int sightrange) {
  *=============================================================================================*/
 void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
   int xx;          // Center cell X coordinate (bounds checking).
-  int const* ptr;  // Offset pointer.
+  const int* ptr;  // Offset pointer.
   int count;       // Counter for number of offsets to process.
 
   /*
@@ -879,7 +879,7 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
  *=============================================================================================*/
 void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass* house) {
   int xx;          // Center cell X coordinate (bounds checking).
-  int const* ptr;  // Offset pointer.
+  const int* ptr;  // Offset pointer.
   int count;       // Counter for number of offsets to process.
 
   /*
@@ -999,7 +999,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
       object->In_Which_Layer() == LAYER_GROUND) {
     short xlist[32];
     List_Copy(object->Occupy_List(), ARRAY_SIZE(xlist), xlist);
-    short const* list = xlist;
+    const short* list = xlist;
     while (*list != REFRESH_EOL) {
       CELL newcell = cell + *list++;
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -1046,7 +1046,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
       object->In_Which_Layer() == LAYER_GROUND) {
     short xlist[32];
     List_Copy(object->Occupy_List(), ARRAY_SIZE(xlist), xlist);
-    short const* list = xlist;
+    const short* list = xlist;
     while (*list != REFRESH_EOL) {
       CELL newcell = cell + *list++;
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -1093,7 +1093,7 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
       object->In_Which_Layer() == LAYER_GROUND) {
     short xlist[32];
     List_Copy(object->Overlap_List(), ARRAY_SIZE(xlist), xlist);
-    short const* list = xlist;
+    const short* list = xlist;
     while (*list != REFRESH_EOL) {
       CELL newcell = cell + *list++;
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -1128,7 +1128,7 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
       object->In_Which_Layer() == LAYER_GROUND) {
     short xlist[32];
     List_Copy(object->Overlap_List(), ARRAY_SIZE(xlist), xlist);
-    short const* list = xlist;
+    const short* list = xlist;
     while (*list != REFRESH_EOL) {
       CELL newcell = cell + *list++;
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
@@ -1535,7 +1535,7 @@ int MapClass::Validate() {
   CELL cell;
   TemplateType ttype;
   unsigned char ticon;
-  TemplateTypeClass const* tclass;
+  const TemplateTypeClass* tclass;
   unsigned char map[13 * 8];
   OverlayType overlay;
   SmudgeType smudge;
@@ -1957,7 +1957,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
   */
   for (int radius = 0; radius < MAP_CELL_W / 2; radius++) {
     CELL newcell;
-    CellClass const* cellptr;
+    const CellClass* cellptr;
 
     /*
     **	Scan the top and bottom rows of the "box".
@@ -2340,7 +2340,7 @@ int MapClass::Intact_Bridge_Count() const {
   **	Count all non-destroyed bridges on the map.
   */
   int count = 0;
-  CellClass const* cellptr = &(*this)[static_cast<CELL>(0)];
+  const CellClass* cellptr = &(*this)[static_cast<CELL>(0)];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     switch (cellptr->TType) {
       case TEMPLATE_BRIDGE1:

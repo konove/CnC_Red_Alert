@@ -108,7 +108,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   MultiStyleType ActionControl;
 
   TriggerTypeClass();
-  TriggerTypeClass(NoInitClass const& x)
+  TriggerTypeClass(const NoInitClass& x)
       : AbstractTypeClass(x), Event1(x), Event2(x), Action1(x), Action2(x) {}
   ~TriggerTypeClass() override = default;
 
@@ -129,7 +129,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   void Fill_In(char* name, char* entry);
   void Build_INI_Entry(std::string& buffer) const;
 
-  static char const* INI_Name() { return "Trigs"; }
+  static const char* INI_Name() { return "Trigs"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
   void Code_Pointers();
@@ -147,7 +147,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   void Detach(TARGET target, bool all = true);
   AttachType Attaches_To() const;
   TARGET As_Target() const;
-  static TriggerTypeClass* From_Name(char const* name);
+  static TriggerTypeClass* From_Name(const char* name);
   bool Edit();
   const char* Description() const;
   operator const char*() const { return Description(); }

@@ -73,7 +73,7 @@ class SmudgeClass : public ObjectClass {
   void operator delete(void* ptr);
   SmudgeClass(SmudgeType type, COORDINATE pos = 0xFFFFFFFFUL,
               HousesType house = HOUSE_NONE);
-  SmudgeClass(NoInitClass const& x) : ObjectClass(x), Class(x) {}
+  SmudgeClass(const NoInitClass& x) : ObjectClass(x), Class(x) {}
   operator SmudgeType() const { return Class->Type; }
   ~SmudgeClass() override {
     if (GameActive) SmudgeClass::Limbo();
@@ -87,11 +87,11 @@ class SmudgeClass : public ObjectClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "SMUDGE"; }
+  static const char* INI_Name() { return "SMUDGE"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 
-  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
   bool Mark(MarkType) override;
   void Draw_It(int, int, WindowNumberType) const override {}
 

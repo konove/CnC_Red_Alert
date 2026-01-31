@@ -68,30 +68,30 @@
 class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-            void const* up, void const* down);
-  ListClass(ListClass const& list);
+            const void* up, const void* down);
+  ListClass(const ListClass& list);
   ~ListClass() override;
 
-  virtual int Add_Item(char const* text);
+  virtual int Add_Item(const char* text);
   virtual int Add_Item(int text);
   virtual int Add_Scroll_Bar();
   virtual void Bump(int up);
   virtual int Count() const { return List.Count(); }
   virtual int Current_Index() const;
-  virtual char const* Current_Item() const;
+  virtual const char* Current_Item() const;
   int Draw_Me(int forced) override;
-  virtual char const* Get_Item(size_t index) const;
+  virtual const char* Get_Item(size_t index) const;
   virtual int Step_Selected_Index(int forward);
   void Flag_To_Redraw() override;
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
-  virtual void Remove_Item(char const* text);
+  virtual void Remove_Item(const char* text);
   virtual void Remove_Item(int);
   virtual int Remove_Scroll_Bar();
   virtual void Set_Selected_Index(int index);
-  virtual void Set_Selected_Index(char const* text);
-  virtual void Set_Tabs(int const* tabs);
+  virtual void Set_Selected_Index(const char* text);
+  virtual void Set_Tabs(const int* tabs);
   virtual int Set_View_Index(int index);
   virtual void Step(int up);
   void Set_Position(int x, int y) override;
@@ -120,14 +120,14 @@ class ListClass : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  int const* Tabs;
+  const int* Tabs;
 
   /*
   **	The actual list of text pointers is maintained by this list manager. The
   *pointers *	are stored in EMS. The text that is pointed to may also be in
   *EMS.
   */
-  DynamicVectorClass<char const*> List;
+  DynamicVectorClass<const char*> List;
 
   /*
   **	This is the total pixel height of a standard line of text. This is
@@ -164,8 +164,8 @@ template <class T>
 class TListClass : public ControlClass {
  public:
   TListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-             void const* up, void const* down);
-  TListClass(TListClass<T> const& list);
+             const void* up, const void* down);
+  TListClass(const TListClass<T>& list);
   ~TListClass() override;
   T operator[](int index) const { return (List[index]); }
   T& operator[](int index) { return (List[index]); }
@@ -189,7 +189,7 @@ class TListClass : public ControlClass {
   virtual int Remove_Scroll_Bar();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(T item);
-  virtual void Set_Tabs(int const* tabs);
+  virtual void Set_Tabs(const int* tabs);
   virtual int Set_View_Index(int index);
   virtual void Step(int up);
   void Set_Position(int x, int y) override;
@@ -217,7 +217,7 @@ class TListClass : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  int const* Tabs;
+  const int* Tabs;
 
   /*
   **	The actual list of text pointers is maintained by this list manager.
@@ -257,7 +257,7 @@ class TListClass : public ControlClass {
 
 template <class T>
 TListClass<T>::TListClass(int id, int x, int y, int w, int h,
-                          TextPrintType flags, void const* up, void const* down)
+                          TextPrintType flags, const void* up, const void* down)
     : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
       UpGadget(0, up, x + w, y),
       DownGadget(0, down, x + w, y + h),
@@ -289,7 +289,7 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h,
 }
 
 template <class T>
-TListClass<T>::TListClass(TListClass<T> const& list)
+TListClass<T>::TListClass(const TListClass<T>& list)
     : ControlClass(list),
       TextFlags(list.TextFlags),
       Tabs(list.Tabs),
@@ -639,7 +639,7 @@ int TListClass<T>::Remove_Scroll_Bar() {
 }
 
 template <class T>
-void TListClass<T>::Set_Tabs(int const* tabs) {
+void TListClass<T>::Set_Tabs(const int* tabs) {
   Tabs = tabs;
 }
 

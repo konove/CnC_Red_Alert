@@ -13,8 +13,8 @@ bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
                  void* vtable);
 bool Save_Game(int id, char* descr);
 bool Write_Object(void* ptr, int class_size, FileClass& file);
-TARGET TechnoType_To_Target(TechnoTypeClass const* ptr);
-TechnoTypeClass const* Target_To_TechnoType(TARGET target);
+TARGET TechnoType_To_Target(const TechnoTypeClass* ptr);
+const TechnoTypeClass* Target_To_TechnoType(TARGET target);
 void* Get_VTable(void* ptr, int base_size);
 void Code_All_Pointers();
 void Decode_All_Pointers();

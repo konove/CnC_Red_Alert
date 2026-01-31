@@ -708,7 +708,7 @@ void Do_Restart() {
  * HISTORY: * 06/23/1995 JLB : Created. * 08/06/1995 JLB : Uses preloaded
  *briefing text.                                            *
  *=============================================================================================*/
-bool Restate_Mission(char const* name, int right_btn, int left_btn) {
+bool Restate_Mission(const char* name, int right_btn, int left_btn) {
   if (name) {
 #ifdef JAPANESE
     char fname[14];

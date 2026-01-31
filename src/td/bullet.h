@@ -60,7 +60,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   *attributes *	for this bullet is located in the BulletTypeClass pointed to by
   *this variable.
   */
-  BulletTypeClass const* const Class;
+  const BulletTypeClass* const Class;
   operator BulletType() const { return Class->Type; }
 
   /*
@@ -82,7 +82,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   void operator delete(void* ptr);
   BulletClass();
   BulletClass(BulletType id);
-  BulletClass(NoInitClass const& x)
+  BulletClass(const NoInitClass& x)
       : ObjectClass(x),
         Class(Class),
         FlyClass(x),
@@ -101,13 +101,13 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   virtual void Assign_Target(TARGET target) { TarCom = target; }
   bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
   LayerType In_Which_Layer() const override { return LAYER_TOP; }
-  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
   void Detach(TARGET target, bool all) override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void AI() override;
-  virtual short const* Occupy_List() const;
-  short const* Overlap_List() const override { return Occupy_List(); }
+  virtual const short* Occupy_List() const;
+  const short* Overlap_List() const override { return Occupy_List(); }
   TARGET As_Target() const override;
 
   /*

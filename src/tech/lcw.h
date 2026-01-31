@@ -40,10 +40,10 @@
 #ifndef LCW_H
 #define LCW_H
 
-int LCW_Uncomp(void const* source, void* dest, unsigned long length = 0);
+int LCW_Uncomp(const void* source, void* dest, unsigned long length = 0);
 
 extern "C" {
-int __cdecl LCW_Comp(void const* source, void* dest, int length);
+int __cdecl LCW_Comp(const void* source, void* dest, int length);
 }
 
 #endif

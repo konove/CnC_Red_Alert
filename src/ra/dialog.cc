@@ -114,7 +114,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   */
   int cx = w / 2;
   int cy = h / 2;
-  void const* shapedata = MFCD::Retrieve("DD-BKGND.SHP");
+  const void* shapedata = MFCD::Retrieve("DD-BKGND.SHP");
 #if RESFACTOR == 2
   CC_Draw_Shape(shapedata, 0, cx - 312, cy - 192, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
@@ -218,7 +218,7 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
 
   // Filler, Shadow, Hilite, Corner colors
 
-  BoxStyleType const ButtonColors[BOXSTYLE_COUNT] = {
+  const BoxStyleType ButtonColors[BOXSTYLE_COUNT] = {
       {scheme->Background, scheme->Highlight, scheme->Shadow,
        scheme->Corners},  // Down
       {scheme->Background, scheme->Shadow, scheme->Highlight,
@@ -231,7 +231,7 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
 
   w--;
   h--;
-  BoxStyleType const& style = ButtonColors[up];
+  const BoxStyleType& style = ButtonColors[up];
 
   if (filled) {
     LogicPage->Fill_Rect(x, y, x + w, y + h, style.Filler);
@@ -408,12 +408,12 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
  * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
-void Simple_Text_Print(char const* text, unsigned x, unsigned y,
+void Simple_Text_Print(const char* text, unsigned x, unsigned y,
                        RemapControlType* fore, unsigned back,
                        TextPrintType flag) {
   static int yspace = 0;          // Y spacing adjustment for font.
   static int xspace = 0;          // Spacing adjustment for font.
-  void const* font = nullptr;     // Font to use.
+  const void* font = nullptr;     // Font to use.
   int shadow;                     // Requested shadow value.
   unsigned char fontpalette[16];  // Working font palette array.
   int forecolor;
@@ -693,7 +693,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType* fore,
     **	The text string must be locked since the vsprintf function doesn't know
     **	how to handle EMS pointers.
     */
-    char const* tptr = Text_String(text);
+    const char* tptr = Text_String(text);
     vsprintf(buffer, tptr, arg);
     va_end(arg);
 
@@ -732,7 +732,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType* fore,
  *spacing in a more friendly manner.                        * 11/29/1994 JLB :
  *Separated actual draw action.                                            *
  *=============================================================================================*/
-void Fancy_Text_Print(char const* text, unsigned x, unsigned y,
+void Fancy_Text_Print(const char* text, unsigned x, unsigned y,
                       RemapControlType* fore, unsigned back, TextPrintType flag,
                       ...) {
   char buffer[512];  // Working staging buffer.
@@ -791,9 +791,9 @@ void Fancy_Text_Print(char const* text, unsigned x, unsigned y,
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void Conquer_Clip_Text_Print(char const* text, unsigned x, unsigned y,
+void Conquer_Clip_Text_Print(const char* text, unsigned x, unsigned y,
                              RemapControlType* fore, unsigned back,
-                             TextPrintType flag, int width, int const* tabs) {
+                             TextPrintType flag, int width, const int* tabs) {
   char buffer[512];
 
   if (text) {
@@ -939,7 +939,7 @@ void Plain_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
  * HISTORY:                                                                *
  *   01/05/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Plain_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
+void Plain_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
                       unsigned back, TextPrintType flag, ...) {
   RemapControlType scheme;
 
@@ -991,7 +991,7 @@ void Draw_Caption(int text, int x, int y, int w) {
   Draw_Caption(Text_String(text), x, y, w);
 }
 
-void Draw_Caption(char const* text, int x, int y, int w) {
+void Draw_Caption(const char* text, int x, int y, int w) {
   /*
   **	Draw the caption.
   */

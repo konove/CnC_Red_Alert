@@ -97,7 +97,7 @@ class EditClass : public ControlClass {
 
   int Action(unsigned flags, KeyNumType& key) override;
   virtual void Draw_Background();
-  virtual void Draw_Text(char const* text);
+  virtual void Draw_Text(const char* text);
   virtual bool Handle_Key(KeyASCIIType ascii);
 
  private:

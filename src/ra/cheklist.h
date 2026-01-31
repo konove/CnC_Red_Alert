@@ -49,10 +49,10 @@
 
 class CheckObject {
  public:
-  CheckObject(char const* text = nullptr, bool checked = false)
+  CheckObject(const char* text = nullptr, bool checked = false)
       : Text(text), IsChecked(checked) {}
 
-  char const* Text;
+  const char* Text;
   bool IsChecked;
 };
 
@@ -62,16 +62,16 @@ class CheckListClass : public ListClass {
   **	Constructor/Destructor
   */
   CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                 void const* up, void const* down);
+                 const void* up, const void* down);
   ~CheckListClass() override;
 
   int Add_Item(int text) override { return ListClass::Add_Item(text); }
-  int Add_Item(char const* text) override;
-  char const* Current_Item() const override;
-  virtual char const* Get_Item(int index) const;
-  void Remove_Item(char const* text) override;
+  int Add_Item(const char* text) override;
+  const char* Current_Item() const override;
+  virtual const char* Get_Item(int index) const;
+  void Remove_Item(const char* text) override;
   void Remove_Item(int text) override { ListClass::Remove_Item(text); }
-  void Set_Selected_Index(char const* text) override;
+  void Set_Selected_Index(const char* text) override;
   void Set_Selected_Index(int index) override {
     ListClass::Set_Selected_Index(index);
   }

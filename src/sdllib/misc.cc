@@ -34,7 +34,7 @@ void Delay(int duration) {
   while (WindowsTimer->Get_System_Tick_Count() < target) Video_End_Frame();
 }
 
-void* Build_Fading_Table(void const* palette, void* dest, long int color,
+void* Build_Fading_Table(const void* palette, void* dest, long int color,
                          long int frac) {
   unsigned matchvalue;
   uint8_t targetred;

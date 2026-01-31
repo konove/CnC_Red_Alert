@@ -267,7 +267,7 @@ class FootClass : public TechnoClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  FootClass(NoInitClass const& x)
+  FootClass(const NoInitClass& x)
       : TechnoClass(x), Team(x), PathDelay(x), BaseAttackTimer(x) {}
   FootClass(RTTIType rtti, int id, HousesType house);
 
@@ -279,7 +279,7 @@ class FootClass : public TechnoClass {
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    long& param) override;
   bool Can_Demolish() const override;
-  bool Is_Recruitable(HouseClass const* house = nullptr) const;
+  bool Is_Recruitable(const HouseClass* house = nullptr) const;
   bool Is_On_Priority_Mission() const;
 
   /*
@@ -319,7 +319,7 @@ class FootClass : public TechnoClass {
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source = nullptr,
                          bool forced = false) override;
-  void Death_Announcement(TechnoClass const* source = nullptr) const override;
+  void Death_Announcement(const TechnoClass* source = nullptr) const override;
 
   /*
   **	AI.
@@ -376,7 +376,7 @@ class FootClass : public TechnoClass {
                     MoveType threshhold);
   PathType* Find_Path(CELL dest, FacingType* final_moves, int maxlen,
                       MoveType threshhold);
-  void Debug_Draw_Map(char const* txt, CELL start, CELL dest, bool pause);
+  void Debug_Draw_Map(const char* txt, CELL start, CELL dest, bool pause);
   void Debug_Draw_Path(PathType* path);
   bool Follow_Edge(CELL start, CELL target, PathType* path, FacingType search,
                    FacingType olddir, int threat, int threat_stage,

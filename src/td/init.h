@@ -3,7 +3,7 @@
 
 void Uninit_Game();
 void Load_Title_Page(bool visible = false);
-long Obfuscate(char const* string);
+long Obfuscate(const char* string);
 void Anim_Init();
 bool Init_Game(int argc, char* argv[]);
 bool Select_Game(bool fade = false);

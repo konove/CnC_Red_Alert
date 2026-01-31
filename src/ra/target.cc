@@ -91,7 +91,7 @@
 
 TargetClass::TargetClass(TARGET target) { Target.Target = target; }
 
-TargetClass::TargetClass(AbstractClass const* ptr) {
+TargetClass::TargetClass(const AbstractClass* ptr) {
   if (ptr != nullptr) {
     Target.Sub.Exponent = ptr->RTTI;
     Target.Sub.Mantissa = ptr->ID;
@@ -100,7 +100,7 @@ TargetClass::TargetClass(AbstractClass const* ptr) {
   }
 }
 
-TargetClass::TargetClass(AbstractTypeClass const* ptr) {
+TargetClass::TargetClass(const AbstractTypeClass* ptr) {
   if (ptr != nullptr) {
     Target.Sub.Exponent = ptr->RTTI;
     Target.Sub.Mantissa = ptr->ID;
@@ -109,7 +109,7 @@ TargetClass::TargetClass(AbstractTypeClass const* ptr) {
   }
 }
 
-TargetClass::TargetClass(CellClass const* ptr) {
+TargetClass::TargetClass(const CellClass* ptr) {
   if (ptr != nullptr) {
     Target.Sub.Exponent = RTTI_CELL;
     Target.Sub.Mantissa = ptr->ID;
@@ -811,7 +811,7 @@ TARGET As_Target(COORDINATE coord) {
  *                                                                                             *
  * HISTORY: * 07/16/1996 JLB : Created. *
  *=============================================================================================*/
-TechnoTypeClass const* As_TechnoType(TARGET target) {
+const TechnoTypeClass* As_TechnoType(TARGET target) {
   int val = Target_Value(target);
   switch (Target_Kind(target)) {
     case RTTI_INFANTRYTYPE:

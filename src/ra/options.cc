@@ -84,9 +84,9 @@
 #include "tech/rgb.h"
 
 #ifdef WIN32
-char const* const OptionsClass::HotkeyName = "WinHotkeys";
+const char* const OptionsClass::HotkeyName = "WinHotkeys";
 #else
-char const* const OptionsClass::HotkeyName = "DOSHotkeys";
+const char* const OptionsClass::HotkeyName = "DOSHotkeys";
 #endif
 
 /***********************************************************************************************
@@ -480,7 +480,7 @@ fixed OptionsClass::Get_Tint() const { return Tint; }
  * HISTORY: * 07/21/1994 JLB : Created. * 12/02/1995 JLB : Uses palette class
  *objects.                                              *
  *=============================================================================================*/
-void OptionsClass::Adjust_Palette(PaletteClass const& oldpal,
+void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
                                   PaletteClass& newpal, fixed brightness,
                                   fixed color, fixed tint,
                                   fixed contrast) const {
@@ -550,7 +550,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Read in the Options values
   */
-  static char const* const OPTIONS = "Options";
+  static const char* const OPTIONS = "Options";
   GameSpeed = ini.Get_Int(OPTIONS, "GameSpeed", GameSpeed);
   ScrollRate = ini.Get_Int(OPTIONS, "ScrollRate", ScrollRate);
   Set_Brightness(ini.Get_Fixed(OPTIONS, "Brightness", Brightness));
@@ -748,7 +748,7 @@ void OptionsClass::Save_Settings() {
   /*
   **	Save Options settings
   */
-  static char const* const OPTIONS = "Options";
+  static const char* const OPTIONS = "Options";
   ini.Put_Int(OPTIONS, "GameSpeed", GameSpeed);
   ini.Put_Int(OPTIONS, "ScrollRate", ScrollRate);
   ini.Put_Fixed(OPTIONS, "Brightness", Brightness);

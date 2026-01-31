@@ -114,7 +114,7 @@ LZWPipe::~LZWPipe() {
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LZWPipe::Put(void const* source, int slen) {
+int LZWPipe::Put(const void* source, int slen) {
   if (source == nullptr || slen < 1) {
     return Pipe::Put(source, slen);
   }
@@ -185,8 +185,7 @@ int LZWPipe::Put(void const* source, int slen) {
     *stored *	into the staging buffer until a full set has been accumulated.
     */
     if (Counter > 0) {
-      int tocopy =
-          slen < BlockSize - Counter ? slen : BlockSize - Counter;
+      int tocopy = slen < BlockSize - Counter ? slen : BlockSize - Counter;
       memmove(&source_buffer_[Counter], source, tocopy);
       source = (char*)source + tocopy;
       slen -= tocopy;

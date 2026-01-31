@@ -201,7 +201,7 @@ void Enable_Uncompressed_Shapes() {
   UseBigShapeBuffer = OriginalUseBigShapeBuffer;
 }
 
-void* Build_Frame(void const* dataptr, unsigned short framenumber,
+void* Build_Frame(const void* dataptr, unsigned short framenumber,
                   void* buffptr) {
   char* ptr;
   char* lockptr = nullptr;
@@ -504,23 +504,23 @@ void* Build_Frame(void const* dataptr, unsigned short framenumber,
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented. *
  *=============================================================================================*/
-unsigned short Get_Build_Frame_Count(void const* dataptr) {
+unsigned short Get_Build_Frame_Count(const void* dataptr) {
   if (dataptr) {
-    return static_cast<KeyFrameHeaderType const*>(dataptr)->frames;
+    return static_cast<const KeyFrameHeaderType*>(dataptr)->frames;
   }
   return 0;
 }
 
-unsigned short Get_Build_Frame_X(void const* dataptr) {
+unsigned short Get_Build_Frame_X(const void* dataptr) {
   if (dataptr) {
-    return static_cast<KeyFrameHeaderType const*>(dataptr)->x;
+    return static_cast<const KeyFrameHeaderType*>(dataptr)->x;
   }
   return 0;
 }
 
-unsigned short Get_Build_Frame_Y(void const* dataptr) {
+unsigned short Get_Build_Frame_Y(const void* dataptr) {
   if (dataptr) {
-    return static_cast<KeyFrameHeaderType const*>(dataptr)->y;
+    return static_cast<const KeyFrameHeaderType*>(dataptr)->y;
   }
   return 0;
 }
@@ -540,9 +540,9 @@ unsigned short Get_Build_Frame_Y(void const* dataptr) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented *
  *=============================================================================================*/
-unsigned short Get_Build_Frame_Width(void const* dataptr) {
+unsigned short Get_Build_Frame_Width(const void* dataptr) {
   if (dataptr) {
-    return static_cast<KeyFrameHeaderType const*>(dataptr)->width;
+    return static_cast<const KeyFrameHeaderType*>(dataptr)->width;
   }
   return 0;
 }
@@ -562,16 +562,16 @@ unsigned short Get_Build_Frame_Width(void const* dataptr) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented *
  *=============================================================================================*/
-unsigned short Get_Build_Frame_Height(void const* dataptr) {
+unsigned short Get_Build_Frame_Height(const void* dataptr) {
   if (dataptr) {
-    return static_cast<KeyFrameHeaderType const*>(dataptr)->height;
+    return static_cast<const KeyFrameHeaderType*>(dataptr)->height;
   }
   return 0;
 }
 
-bool Get_Build_Frame_Palette(void const* dataptr, void* palette) {
-  if (dataptr && static_cast<KeyFrameHeaderType const*>(dataptr)->flags & 1) {
-    char const* ptr = static_cast<char const*>(Add_Long_To_Pointer(
+bool Get_Build_Frame_Palette(const void* dataptr, void* palette) {
+  if (dataptr && static_cast<const KeyFrameHeaderType*>(dataptr)->flags & 1) {
+    const char* ptr = static_cast<const char*>(Add_Long_To_Pointer(
         dataptr, ((long)sizeof(unsigned long) << 1) *
                          ((KeyFrameHeaderType*)dataptr)->frames +
                      16 + sizeof(KeyFrameHeaderType)));

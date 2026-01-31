@@ -72,14 +72,14 @@ class RadioClass : public MissionClass {
   **	This is a text representation of all the possible radio messages. This
   **	text is used for monochrome debug printing.
   */
-  static char const* Messages[RADIO_COUNT];
+  static const char* Messages[RADIO_COUNT];
 
  public:
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
   RadioClass(RTTIType rtti, int id) : MissionClass(rtti, id), Radio(nullptr) {}
-  RadioClass(NoInitClass const& x) : MissionClass(x) {}
+  RadioClass(const NoInitClass& x) : MissionClass(x) {}
   ~RadioClass() override { Radio = nullptr; }
 
   /*---------------------------------------------------------------------

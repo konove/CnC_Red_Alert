@@ -89,7 +89,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   */
   if (Special.IsInert || !damage || warhead == WARHEAD_NONE) return 0;
 
-  WarheadTypeClass const* whead = &Warheads[warhead];
+  const WarheadTypeClass* whead = &Warheads[warhead];
 
   damage = Fixed_To_Cardinal(damage, whead->Modifier[armor]);
 
@@ -152,7 +152,7 @@ void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass* source,
 
   if (!strength || Special.IsInert || warhead == WARHEAD_NONE) return;
 
-  WarheadTypeClass const* whead = &Warheads[warhead];
+  const WarheadTypeClass* whead = &Warheads[warhead];
   range = ICON_LEPTON_W + (ICON_LEPTON_W >> 1);
   cell = Coord_Cell(coord);
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return;
@@ -235,7 +235,7 @@ void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass* source,
   cellptr = &Map[cell];
   cellptr->Reduce_Tiberium(strength / 10);
   if (cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const* optr =
+    const OverlayTypeClass* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (optr->IsWall) {

@@ -5,10 +5,10 @@
 #include "ra/teamtype.h"
 #include "ra/type.h"
 
-bool Do_Reinforcements(TeamTypeClass const* team);
+bool Do_Reinforcements(const TeamTypeClass* team);
 bool Create_Special_Reinforcement(HouseClass* house,
-                                  TechnoTypeClass const* type,
-                                  TechnoTypeClass const* another,
+                                  const TechnoTypeClass* type,
+                                  const TechnoTypeClass* another,
                                   TeamMissionType mission = TMISSION_NONE,
                                   int argument = 0);
 int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,

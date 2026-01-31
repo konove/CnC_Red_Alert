@@ -140,7 +140,7 @@
 #include "td/utracker.h"
 #include "td/vector.h"
 
-int const InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
+const int InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
                                            5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3,
                                            2, 2, 2, 2, 1, 1, 1, 1, 1, 0};
 
@@ -157,7 +157,7 @@ void* InfantryClass::VTable;
 **	specifies the frame rate as well as if the animation can be aborted.
 */
 // interruptable, mobile, randomstart, rate
-DoStruct const InfantryClass::MasterDoControls[DO_COUNT] = {
+const DoStruct InfantryClass::MasterDoControls[DO_COUNT] = {
     {true, false, false, 0},   // DO_STAND_READY
     {true, false, false, 0},   // DO_STAND_GUARD
     {true, false, false, 0},   // DO_PRONE
@@ -646,7 +646,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
  *=============================================================================================*/
 void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  void const* shapefile;  // Working shape file pointer.
+  const void* shapefile;  // Working shape file pointer.
   int facing = Facing_To_32(PrimaryFacing.Current());
 
   /*
@@ -1041,7 +1041,7 @@ void InfantryClass::Assign_Target(TARGET target) {
   */
   if (!Target_Legal(NavCom) && Class->IsCapture &&
       Class->Primary == WEAPON_NONE) {
-    BuildingClass const* building = As_Building(target);
+    const BuildingClass* building = As_Building(target);
     if (building && building->Class->IsCaptureable &&
         (GameToPlay != GAME_NORMAL ||
          *building != STRUCT_EYE && Scenario < 13)) {
@@ -1508,13 +1508,13 @@ void InfantryClass::AI() {
  * HISTORY:                                                                *
  *   06/08/1995 PWG : Created.                                             *
  *=========================================================================*/
-MoveBitType InfantryClass::Blocking_Object(TechnoClass const* techno,
+MoveBitType InfantryClass::Blocking_Object(const TechnoClass* techno,
                                            CELL cell) const {
   Validate();
   bool inf = (techno->What_Am_I() == RTTI_INFANTRY);
   bool unit = (techno->What_Am_I() == RTTI_UNIT) || inf;
 
-  CellClass const* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map[cell];
 
   if (House->Is_Ally(techno)) {
     /*
@@ -1606,7 +1606,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   **	in it.
   */
   if (cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const& otype =
+    const OverlayTypeClass& otype =
         OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (otype.IsCrate && !House->IsHuman) {
@@ -1802,7 +1802,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-short const* InfantryClass::Overlap_List() const {
+const short* InfantryClass::Overlap_List() const {
   Validate();
   // return(Coord_Spillage_List(Coord, 24 + ((IsSelected || Doing >
   // DO_WALK)?12:0)));
@@ -1849,7 +1849,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   if (IsFiring) return FIRE_REARM;
 
 #ifdef OBSOLETE
-  WeaponTypeClass const* weapon =
+  const WeaponTypeClass* weapon =
       (which == 0) ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 
   if (weapon->Fires == BULLET_FLAME && IsProne) return (FIRE_ILLEGAL);
@@ -2352,7 +2352,7 @@ bool InfantryClass::Limbo() {
 BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
   Validate();
   BulletClass* bullet = nullptr;
-  WeaponTypeClass const* weapon =
+  const WeaponTypeClass* weapon =
       which == 0 ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 
   IsFiring = false;
@@ -3228,7 +3228,7 @@ ActionType InfantryClass::What_Action(CELL cell) const {
   return FootClass::What_Action(cell);
 }
 
-ObjectTypeClass const& InfantryClass::Class_Of() const {
+const ObjectTypeClass& InfantryClass::Class_Of() const {
   Validate();
   return *Class;
 }

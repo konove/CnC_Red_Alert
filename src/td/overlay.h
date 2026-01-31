@@ -65,7 +65,7 @@ class OverlayClass : public ObjectClass {
   void operator delete(void* ptr);
   OverlayClass();
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
-  OverlayClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {}
+  OverlayClass(const NoInitClass& x) : ObjectClass(x), Class(Class) {}
   ~OverlayClass() override {
     if (GameActive) OverlayClass::Limbo();
   }
@@ -79,7 +79,7 @@ class OverlayClass : public ObjectClass {
   */
   static void Read_INI(char*);
   static void Write_INI(char*);
-  static char const* INI_Name() { return "OVERLAY"; }
+  static const char* INI_Name() { return "OVERLAY"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   void Code_Pointers() override;
@@ -89,7 +89,7 @@ class OverlayClass : public ObjectClass {
   **	Virtual support functionality.
   */
   bool Mark(MarkType) override;
-  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
   void Draw_It(int, int, WindowNumberType) override {}
 
   /*
@@ -108,7 +108,7 @@ class OverlayClass : public ObjectClass {
   /*
   **	This is a pointer to the overlay object's class.
   */
-  OverlayTypeClass const* const Class;
+  const OverlayTypeClass* const Class;
 
   /*
   ** This contains the value of the Virtual Function Table Pointer

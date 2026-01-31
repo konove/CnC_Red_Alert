@@ -32,7 +32,7 @@
 bool bTabKeyPressedHack = false;
 
 //***********************************************************************************************
-void WOLEditClass::Draw_Text(char const* text) {
+void WOLEditClass::Draw_Text(const char* text) {
   //	Only difference between this and EditClass: cursor shows up when
   //	string is at MaxLength.
 

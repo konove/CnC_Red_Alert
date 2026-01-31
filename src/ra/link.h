@@ -49,7 +49,7 @@
 */
 class LinkClass {
  public:
-  LinkClass(NoInitClass const&) {}
+  LinkClass(const NoInitClass&) {}
   LinkClass() : Next(nullptr), Prev(nullptr) {}
   virtual ~LinkClass();
 
@@ -63,8 +63,8 @@ class LinkClass {
   virtual void Zap();
   virtual LinkClass* Remove();
 
-  LinkClass& operator=(LinkClass const& link);  // Assignment operator.
-  LinkClass(LinkClass const& link);             // Copy constructor.
+  LinkClass& operator=(const LinkClass& link);  // Assignment operator.
+  LinkClass(const LinkClass& link);             // Copy constructor.
 
  private:
   /*

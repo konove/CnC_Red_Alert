@@ -58,7 +58,7 @@ class CCMessageBox {
               const char* b3txt = nullptr, bool preserve = false);
   int Process(int msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
               int b3txt = TXT_NONE, bool preserve = false);
-  int Process(char const* msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
+  int Process(const char* msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
               int b3txt = TXT_NONE, bool preserve = false);
 };
 

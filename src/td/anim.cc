@@ -257,11 +257,11 @@ bool AnimClass::Render(bool forced) {
 void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
   if (!IsInvisible) {
-    void const* shapefile = Class->Get_Image_Data();
+    const void* shapefile = Class->Get_Image_Data();
     if (shapefile) {
-      void const* transtable = nullptr;
+      const void* transtable = nullptr;
       int shapenum = Class->Start + Fetch_Stage();
-      void const* remap = nullptr;
+      const void* remap = nullptr;
 
       /*
       **	Some animations require special fixups.
@@ -349,9 +349,9 @@ bool AnimClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-short const* AnimClass::Overlap_List() const {
+const short* AnimClass::Overlap_List() const {
   Validate();
-  static short const OverlapN[] = {0,
+  static const short OverlapN[] = {0,
                                    -MAP_CELL_W,
                                    -(MAP_CELL_W + 1),
                                    -(MAP_CELL_W - 1),
@@ -359,7 +359,7 @@ short const* AnimClass::Overlap_List() const {
                                    -(2 * MAP_CELL_W - 1),
                                    -(2 * MAP_CELL_W + 1),
                                    REFRESH_EOL};
-  static short const OverlapNW[] = {0,
+  static const short OverlapNW[] = {0,
                                     -1,
                                     -MAP_CELL_W,
                                     -(MAP_CELL_W + 1),
@@ -367,9 +367,9 @@ short const* AnimClass::Overlap_List() const {
                                     -(MAP_CELL_W * 2 + 2),
                                     -(MAP_CELL_W * 2 + 1),
                                     REFRESH_EOL};
-  static short const OverlapW[] = {
+  static const short OverlapW[] = {
       0, -1, -2, -(MAP_CELL_W + 1), -(MAP_CELL_W + 2), REFRESH_EOL};
-  static short const OverlapSW[] = {0,
+  static const short OverlapSW[] = {0,
                                     -1,
                                     MAP_CELL_W,
                                     (MAP_CELL_W - 1),
@@ -377,7 +377,7 @@ short const* AnimClass::Overlap_List() const {
                                     (MAP_CELL_W * 2 - 2),
                                     (MAP_CELL_W * 2 - 1),
                                     REFRESH_EOL};
-  static short const OverlapS[] = {0,
+  static const short OverlapS[] = {0,
                                    MAP_CELL_W - 1,
                                    MAP_CELL_W,
                                    MAP_CELL_W + 1,
@@ -385,7 +385,7 @@ short const* AnimClass::Overlap_List() const {
                                    2 * MAP_CELL_W,
                                    2 * MAP_CELL_W - 1,
                                    REFRESH_EOL};
-  static short const OverlapSE[] = {0,
+  static const short OverlapSE[] = {0,
                                     1,
                                     MAP_CELL_W,
                                     (MAP_CELL_W + 1),
@@ -393,9 +393,9 @@ short const* AnimClass::Overlap_List() const {
                                     (MAP_CELL_W * 2 + 2),
                                     (MAP_CELL_W * 2 + 1),
                                     REFRESH_EOL};
-  static short const OverlapE[] = {
+  static const short OverlapE[] = {
       0, 1, 2, -(MAP_CELL_W - 1), -(MAP_CELL_W - 2), REFRESH_EOL};
-  static short const OverlapNE[] = {0,
+  static const short OverlapNE[] = {0,
                                     1,
                                     -MAP_CELL_W,
                                     -(MAP_CELL_W - 1),
@@ -403,7 +403,7 @@ short const* AnimClass::Overlap_List() const {
                                     -(MAP_CELL_W * 2 - 2),
                                     -(MAP_CELL_W * 2 - 1),
                                     REFRESH_EOL};
-  static short const OverlapIon[] = {
+  static const short OverlapIon[] = {
       -MAP_CELL_W * 7 - 1, (-MAP_CELL_W * 7), -MAP_CELL_W * 7 + 1,
       -MAP_CELL_W * 6 - 1, (-MAP_CELL_W * 6), -MAP_CELL_W * 6 + 1,
       -MAP_CELL_W * 5 - 1, (-MAP_CELL_W * 5), -MAP_CELL_W * 5 + 1,
@@ -414,7 +414,7 @@ short const* AnimClass::Overlap_List() const {
       -MAP_CELL_W * 0 - 1, (-MAP_CELL_W * 0), -MAP_CELL_W * 0 + 1,
       REFRESH_EOL};
 
-  static short const OverlapAtom[] = {
+  static const short OverlapAtom[] = {
       -MAP_CELL_W * 2 - 1, (-MAP_CELL_W * 2), -MAP_CELL_W * 2 + 1,
       -MAP_CELL_W * 1 - 1, (-MAP_CELL_W * 1), -MAP_CELL_W * 1 + 1,
       -MAP_CELL_W * 0 - 1, (-MAP_CELL_W * 0), -MAP_CELL_W * 0 + 1,
@@ -482,7 +482,7 @@ short const* AnimClass::Overlap_List() const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-short const* AnimClass::Occupy_List() const {
+const short* AnimClass::Occupy_List() const {
   Validate();
   static short _simple[] = {REFRESH_EOL};
 

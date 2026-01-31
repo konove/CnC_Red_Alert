@@ -59,7 +59,7 @@ class TarComClass : public TurretClass {
   TarComClass() {}
   TarComClass(UnitType classid, HousesType house)
       : TurretClass(classid, house) {}
-  TarComClass(NoInitClass const& x) : TurretClass(x) {}
+  TarComClass(const NoInitClass& x) : TurretClass(x) {}
   ~TarComClass() override;
 
   /*---------------------------------------------------------------------

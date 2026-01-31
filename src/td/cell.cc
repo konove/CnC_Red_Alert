@@ -579,14 +579,14 @@ void CellClass::Recalc_Attributes() {
   **	otherwise return the template's default type.
   */
   if (TType != TEMPLATE_NONE) {
-    TemplateTypeClass const* ttype = &TemplateTypeClass::As_Reference(TType);
+    const TemplateTypeClass* ttype = &TemplateTypeClass::As_Reference(TType);
 
     /*
     **	If there is an exception type list for the icons of this template, then
     **	find out if the current icon is one of them. If so, apply the exception
     **	ground type to the cell.
     */
-    char const* ptr = ttype->AltIcons;
+    const char* ptr = ttype->AltIcons;
     if (ptr) {
       int icon = TIcon;
 
@@ -899,7 +899,7 @@ InfantryClass* CellClass::Cell_Infantry() const {
  *=============================================================================================*/
 void CellClass::Draw_It(int x, int y, int draw_type) const {
   Validate();
-  TemplateTypeClass const* ttype = nullptr;
+  const TemplateTypeClass* ttype = nullptr;
   int icon;  // The icon number to use from the template set.
   CELL cell = Cell_Number();
   void* remap = nullptr;
@@ -1026,7 +1026,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       **	Draw the overlay object.
       */
       if (Overlay != OVERLAY_NONE) {
-        OverlayTypeClass const& otype = OverlayTypeClass::As_Reference(Overlay);
+        const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
         IsTheaterShape = static_cast<bool>(otype.IsTheater);
         CC_Draw_Shape(otype.Get_Image_Data(), OverlayData,
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
@@ -1146,7 +1146,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       **	Draw the flag if there is one located at this cell.
       */
       if (IsFlagged) {
-        void const* remap =
+        const void* remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
         CC_Draw_Shape(MixFileClass::Retrieve("FLAGFLY.SHP"), Frame % 14,
                       x + ICON_PIXEL_W / 2, y + ICON_PIXEL_H / 2,
@@ -1530,7 +1530,7 @@ int CellClass::Reduce_Wall(int damage) {
   Validate();
   if (Overlay != OVERLAY_NONE) {
     bool destroyed = false;
-    OverlayTypeClass const& wall = OverlayTypeClass::As_Reference(Overlay);
+    const OverlayTypeClass& wall = OverlayTypeClass::As_Reference(Overlay);
 
     if (wall.IsWall) {
       /*
@@ -1791,13 +1791,13 @@ void CellClass::Incoming(COORDINATE threat, bool forced) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-CellClass const& CellClass::Adjacent_Cell(FacingType face) const {
+const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
   Validate();
   if (static_cast<unsigned>(face) >= FACING_COUNT) {
     return *this;
   }
 
-  CellClass const* ptr = this + AdjacentCell[face];
+  const CellClass* ptr = this + AdjacentCell[face];
   if (ptr->Cell_Number() & 0xF000) return *this;
   return *ptr;
   //	return(*(this + AdjacentCell[face]));
@@ -2077,7 +2077,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	Try to create a unit where the crate was.
         */
         case UNIT: {
-          UnitTypeClass const* utp = nullptr;
+          const UnitTypeClass* utp = nullptr;
 
           /*
           **	Give the player an MCV if he has no base left but does have more

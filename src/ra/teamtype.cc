@@ -161,7 +161,7 @@ void TeamTypeClass::Draw_It(int, int x, int y, int width, int height,
 /*
 ********************************** Globals **********************************
 */
-char const* TeamTypeClass::TMissions[TMISSION_COUNT] = {
+const char* TeamTypeClass::TMissions[TMISSION_COUNT] = {
     "Attack...",
     "Attack Waypoint...",
     "Change Formation to...",
@@ -246,7 +246,7 @@ void TeamTypeClass::Init() { TeamTypes.Free_All(); }
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamTypeClass* TeamTypeClass::As_Pointer(char const* name) {
+TeamTypeClass* TeamTypeClass::As_Pointer(const char* name) {
   if (name) {
     for (int index = 0; index < TeamTypes.Count(); index++) {
       if (!stricmp(name, TeamTypes.Ptr(index)->IniName)) {
@@ -272,7 +272,7 @@ TeamTypeClass* TeamTypeClass::As_Pointer(char const* name) {
  * HISTORY:                                                                *
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
+TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
   if (name) {
     for (TeamMissionType order = TMISSION_FIRST; order < TMISSION_COUNT;
          order++) {
@@ -300,7 +300,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
  * HISTORY:                                                                *
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
-char const* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
+const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   assert(static_cast<unsigned>(order) < TMISSION_COUNT);
 
   return TMissions[order];
@@ -429,7 +429,7 @@ void TeamTypeClass::Destroy_All_Of() const {
  * HISTORY: * 07/13/1995 JLB : Created. * 07/21/1995 JLB : Will autocreate team
  *even if no members in field.                        *
  *=============================================================================================*/
-TeamTypeClass const* TeamTypeClass::Suggested_New_Team(HouseClass* house, long,
+const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house, long,
                                                        long, long, long,
                                                        bool alerted)
 // TeamTypeClass const * TeamTypeClass::Suggested_New_Team(HouseClass * house,
@@ -438,11 +438,11 @@ TeamTypeClass const* TeamTypeClass::Suggested_New_Team(HouseClass* house, long,
   //	TeamTypeClass const * best = nullptr;
   //	int bestvalue = 0;
 
-  TeamTypeClass const* choices[20];
+  const TeamTypeClass* choices[20];
   int choicecount = 0;
 
   for (int index = 0; index < TeamTypes.Count(); index++) {
-    TeamTypeClass const* ttype = TeamTypes.Ptr(index);
+    const TeamTypeClass* ttype = TeamTypes.Ptr(index);
 
     assert(ttype != nullptr);
 
@@ -533,7 +533,7 @@ TeamTypeClass const* TeamTypeClass::Suggested_New_Team(HouseClass* house, long,
  *                                                                                             *
  * HISTORY: * 01/26/1996 JLB : Created. *
  *=============================================================================================*/
-TeamTypeClass* TeamTypeClass::From_Name(char const* name) {
+TeamTypeClass* TeamTypeClass::From_Name(const char* name) {
   if (name) {
     for (int index = 0; index < TeamTypes.Count(); index++) {
       if (stricmp(name, TeamTypes.Ptr(index)->IniName) == 0) {
@@ -1485,7 +1485,7 @@ int atoh(char* str) {
  *                                                                                             *
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
-char const* TeamTypeClass::Member_Description() const {
+const char* TeamTypeClass::Member_Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     static char buffer[128];
 
@@ -1532,7 +1532,7 @@ char const* TeamTypeClass::Member_Description() const {
  *                                                                                             *
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
-char const* TeamTypeClass::Description() const {
+const char* TeamTypeClass::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     static char _buffer[128];
     char extra = ' ';
@@ -1576,7 +1576,7 @@ char const* TeamTypeClass::Description() const {
  *                                                                                             *
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
-char const* TeamMissionClass::Description(int index) const {
+const char* TeamMissionClass::Description(int index) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     static char buffer[64];
 
@@ -1675,7 +1675,7 @@ void TeamTypeClass::Read_INI(CCINIClass& ini) {
   for (int index = 0; index < len; index++) {
     team = new TeamTypeClass();
     if (team != nullptr) {
-      char const* entry = ini.Get_Entry(INI_Name(), index);
+      const char* entry = ini.Get_Entry(INI_Name(), index);
       ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
       team->Fill_In((char*)entry, buf);
     }
@@ -1762,7 +1762,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   for (int index = 0; index < ClassCount; index++) {
     char* p1 = strtok(nullptr, ",:");
     char* p2 = strtok(nullptr, ",:");
-    TechnoTypeClass const* otype = nullptr;
+    const TechnoTypeClass* otype = nullptr;
 
     /*
     **	See if this is an infantry name

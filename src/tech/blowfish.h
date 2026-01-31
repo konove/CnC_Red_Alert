@@ -62,10 +62,10 @@ class BlowfishEngine {
   BlowfishEngine(BlowfishEngine&&) = delete;
   BlowfishEngine& operator=(BlowfishEngine&&) = delete;
 
-  void Submit_Key(void const* key, int length);
+  void Submit_Key(const void* key, int length);
 
-  int Encrypt(void const* plaintext, int length, void* cyphertext);
-  int Decrypt(void const* cyphertext, int length, void* plaintext);
+  int Encrypt(const void* plaintext, int length, void* cyphertext);
+  int Decrypt(const void* cyphertext, int length, void* plaintext);
 
   /*
   **	This is the maximum key length supported.
@@ -77,8 +77,8 @@ class BlowfishEngine {
 
   void Sub_Key_Encrypt(unsigned long& left, unsigned long& right);
 
-  void Process_Block(void const* plaintext, void* cyphertext,
-                     unsigned long const* ptable);
+  void Process_Block(const void* plaintext, void* cyphertext,
+                     const unsigned long* ptable);
   void Initialize_Tables();
 
   enum {
@@ -92,8 +92,8 @@ class BlowfishEngine {
   **	filled with a number generated from pi. Thus they are not random but
   **	they don't hold a weak pattern either.
   */
-  static unsigned long const P_Init[static_cast<int>(ROUNDS) + 2];
-  static unsigned long const S_Init[4][UCHAR_MAX + 1];
+  static const unsigned long P_Init[static_cast<int>(ROUNDS) + 2];
+  static const unsigned long S_Init[4][UCHAR_MAX + 1];
 
   /*
   **	Permutation tables for encryption and decryption.

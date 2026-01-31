@@ -58,7 +58,7 @@ class SHAPipe : public Pipe {
   SHAPipe(SHAPipe&&) = delete;
   SHAPipe& operator=(SHAPipe&&) = delete;
 
-  int Put(void const* source, int slen) override;
+  int Put(const void* source, int slen) override;
 
   // Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
   int Result(void* result) const;

@@ -497,7 +497,7 @@ HouseClass::~HouseClass() {
  * HISTORY: * 07/04/1995 JLB : Created. * 08/12/1995 JLB : Updated for GDI
  *building sandbag walls in #9.                            *
  *=============================================================================================*/
-bool HouseClass::Can_Build(TechnoTypeClass const* type,
+bool HouseClass::Can_Build(const TechnoTypeClass* type,
                            HousesType house) const {
   Validate();
   if (!type || !type->IsBuildable || !(1L << house & type->Ownable))
@@ -538,7 +538,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   **	for the stealth tank in mission #11 only.
   */
   if (house == HOUSE_BAD && type->What_Am_I() == RTTI_UNITTYPE &&
-      dynamic_cast<UnitTypeClass const*>(type)->Type == UNIT_STANK &&
+      dynamic_cast<const UnitTypeClass*>(type)->Type == UNIT_STANK &&
       level == 11) {
     pre = STRUCTF_MISSION;
     level = type->Scenario;
@@ -549,7 +549,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   **	until mission #8.
   */
   if (house == HOUSE_GOOD && type->What_Am_I() == RTTI_INFANTRYTYPE &&
-      dynamic_cast<InfantryTypeClass const*>(type)->Type == INFANTRY_E3 &&
+      dynamic_cast<const InfantryTypeClass*>(type)->Type == INFANTRY_E3 &&
       level < 7) {
     return false;
   }
@@ -559,7 +559,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   **	and no sooner.
   */
   if (house == HOUSE_GOOD && type->What_Am_I() == RTTI_UNITTYPE &&
-      dynamic_cast<UnitTypeClass const*>(type)->Type == UNIT_MLRS &&
+      dynamic_cast<const UnitTypeClass*>(type)->Type == UNIT_MLRS &&
       level < 9) {
     return false;
   }
@@ -568,7 +568,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   **	Special case to disable the APC from the Nod player.
   */
   if (house == HOUSE_BAD && type->What_Am_I() == RTTI_UNITTYPE &&
-      dynamic_cast<UnitTypeClass const*>(type)->Type == UNIT_APC) {
+      dynamic_cast<const UnitTypeClass*>(type)->Type == UNIT_APC) {
     return false;
   }
 
@@ -577,8 +577,8 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   **	if GDI has captured the Nod construction yard.
   */
   if (type->What_Am_I() == RTTI_BUILDINGTYPE &&
-      (dynamic_cast<BuildingTypeClass const*>(type)->Type == STRUCT_TEMPLE ||
-       dynamic_cast<BuildingTypeClass const*>(type)->Type == STRUCT_OBELISK) &&
+      (dynamic_cast<const BuildingTypeClass*>(type)->Type == STRUCT_TEMPLE ||
+       dynamic_cast<const BuildingTypeClass*>(type)->Type == STRUCT_OBELISK) &&
       Class->House == HOUSE_GOOD) {
     return false;
   }
@@ -587,7 +587,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   **	Ensure that the rocket launcher tank cannot be built by Nod.
   */
   if (type->What_Am_I() == RTTI_UNITTYPE &&
-      dynamic_cast<UnitTypeClass const*>(type)->Type == UNIT_MLRS &&
+      dynamic_cast<const UnitTypeClass*>(type)->Type == UNIT_MLRS &&
       Class->House == HOUSE_BAD) {
     return false;
   }
@@ -597,7 +597,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   **	Nod has captured the GDI construction yard.
   */
   if (type->What_Am_I() == RTTI_BUILDINGTYPE &&
-      dynamic_cast<BuildingTypeClass const*>(type)->Type == STRUCT_EYE &&
+      dynamic_cast<const BuildingTypeClass*>(type)->Type == STRUCT_EYE &&
       Class->House == HOUSE_BAD) {
     return false;
   }
@@ -607,7 +607,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   */
   if (house == HOUSE_BAD && level >= 12 &&
       type->What_Am_I() == RTTI_BUILDINGTYPE &&
-      dynamic_cast<BuildingTypeClass const*>(type)->Type ==
+      dynamic_cast<const BuildingTypeClass*>(type)->Type ==
           STRUCT_ADVANCED_POWER) {
     level = type->Scenario;
   }
@@ -616,7 +616,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   **	Nod cannot build a helipad in the normal game.
   */
   if (house == HOUSE_BAD && type->What_Am_I() == RTTI_BUILDINGTYPE &&
-      dynamic_cast<BuildingTypeClass const*>(type)->Type == STRUCT_HELIPAD) {
+      dynamic_cast<const BuildingTypeClass*>(type)->Type == STRUCT_HELIPAD) {
     return false;
   }
 
@@ -625,7 +625,7 @@ bool HouseClass::Can_Build(TechnoTypeClass const* type,
   */
   if (house == HOUSE_GOOD && level < 8 &&
       type->What_Am_I() == RTTI_BUILDINGTYPE &&
-      dynamic_cast<BuildingTypeClass const*>(type)->Type ==
+      dynamic_cast<const BuildingTypeClass*>(type)->Type ==
           STRUCT_SANDBAG_WALL) {
     return false;
   }
@@ -870,7 +870,7 @@ void HouseClass::AI() {
     */
     int maxteams = Random_Pick(2, static_cast<int>((BuildLevel - 1) / 3 + 1));
     for (int index = 0; index < maxteams; index++) {
-      TeamTypeClass const* ttype = Suggested_New_Team(true);
+      const TeamTypeClass* ttype = Suggested_New_Team(true);
       if (ttype) {
         ScenarioInit++;
         ttype->Create_One_Of();
@@ -893,7 +893,7 @@ void HouseClass::AI() {
   ** (Use the same timer for some extra capture-the-flag logic.)
   */
   if (TeamTime.Expired()) {
-    TeamTypeClass const* ttype = Suggested_New_Team(false);
+    const TeamTypeClass* ttype = Suggested_New_Team(false);
     if (ttype) {
       ttype->Create_One_Of();
     }
@@ -1656,7 +1656,7 @@ void HouseClass::Silo_Redraw_Check(long oldtib, long oldcap) {
  *=============================================================================================*/
 void HouseClass::Read_INI(char* buffer) {
   HouseClass* p;      // Pointer to current player data.
-  char const* hname;  //	Pointer to house name.
+  const char* hname;  //	Pointer to house name.
   char buf[128];
 
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
@@ -1790,7 +1790,7 @@ bool HouseClass::Is_Ally(HousesType house) const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Is_Ally(HouseClass const* house) const {
+bool HouseClass::Is_Ally(const HouseClass* house) const {
   Validate();
   if (house) {
     return Is_Ally(house->Class->House);
@@ -1812,7 +1812,7 @@ bool HouseClass::Is_Ally(HouseClass const* house) const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Is_Ally(ObjectClass const* object) const {
+bool HouseClass::Is_Ally(const ObjectClass* object) const {
   Validate();
   if (object) {
     return Is_Ally(object->Owner());
@@ -1942,7 +1942,7 @@ void HouseClass::Make_Enemy(HousesType house) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned char const* HouseClass::Remap_Table(bool blushing, bool unit) const {
+const unsigned char* HouseClass::Remap_Table(bool blushing, bool unit) const {
   Validate();
   if (blushing) return &MouseClass::FadingLight[0];
 
@@ -1984,7 +1984,7 @@ unsigned char const* HouseClass::Remap_Table(bool blushing, bool unit) const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-TeamTypeClass const* HouseClass::Suggested_New_Team(bool alertcheck) {
+const TeamTypeClass* HouseClass::Suggested_New_Team(bool alertcheck) {
   Validate();
   return TeamTypeClass::Suggested_New_Team(this, UScan, IScan,
                                            IsAlerted && alertcheck);
@@ -2053,7 +2053,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   int* factory = nullptr;
   int result = true;
   FactoryClass* fptr;
-  TechnoTypeClass const* tech = Fetch_Techno_Type(type, id);
+  const TechnoTypeClass* tech = Fetch_Techno_Type(type, id);
 
   switch (type) {
     case RTTI_AIRCRAFT:
@@ -3112,10 +3112,10 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-TechnoTypeClass const* HouseClass::Suggest_New_Object(
+const TechnoTypeClass* HouseClass::Suggest_New_Object(
     RTTIType objecttype) const {
   Validate();
-  TechnoTypeClass const* techno = nullptr;
+  const TechnoTypeClass* techno = nullptr;
 
   switch (objecttype) {
     /*
@@ -3158,13 +3158,13 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
         for (int index = 0; index < Teams.Count(); index++) {
           TeamClass* tptr = Teams.Ptr(index);
           if (tptr) {
-            TeamTypeClass const* team = tptr->Class;
+            const TeamTypeClass* team = tptr->Class;
 
             if (/*team->IsReinforcable || */ !tptr->IsFullStrength &&
                 team->House == Class->House) {
               for (int subindex = 0; subindex < team->ClassCount; subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
-                  counter[dynamic_cast<UnitTypeClass const*>(
+                  counter[dynamic_cast<const UnitTypeClass*>(
                               team->Class[subindex])
                               ->Type] = 1;
                   //									counter[((UnitTypeClass
@@ -3182,14 +3182,14 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
         *whether there is a team active *	of that type.
         */
         for (int index = 0; index < TeamTypes.Count(); index++) {
-          TeamTypeClass const* team = TeamTypes.Ptr(index);
+          const TeamTypeClass* team = TeamTypes.Ptr(index);
           if (team) {
             if (team->House == Class->House && team->IsPrebuilt &&
                 (!team->IsAutocreate || IsAlerted)) {
               for (int subindex = 0; subindex < team->ClassCount; subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
                   int subtype =
-                      dynamic_cast<UnitTypeClass const*>(team->Class[subindex])
+                      dynamic_cast<const UnitTypeClass*>(team->Class[subindex])
                           ->Type;
                   counter[subtype] = std::max<int>(counter[subtype],
                                                    team->DesiredNum[subindex]);
@@ -3274,13 +3274,13 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
         for (int index = 0; index < Teams.Count(); index++) {
           TeamClass* tptr = Teams.Ptr(index);
           if (tptr) {
-            TeamTypeClass const* team = tptr->Class;
+            const TeamTypeClass* team = tptr->Class;
 
             if ((team->IsReinforcable || !tptr->IsFullStrength) &&
                 team->House == Class->House) {
               for (int subindex = 0; subindex < team->ClassCount; subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
-                  counter[dynamic_cast<InfantryTypeClass const*>(
+                  counter[dynamic_cast<const InfantryTypeClass*>(
                               team->Class[subindex])
                               ->Type] += team->DesiredNum[subindex] + 1;
                 }
@@ -3295,13 +3295,13 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(
         *whether there is a team active *	of that type.
         */
         for (int index = 0; index < TeamTypes.Count(); index++) {
-          TeamTypeClass const* team = TeamTypes.Ptr(index);
+          const TeamTypeClass* team = TeamTypes.Ptr(index);
           if (team) {
             if (team->House == Class->House && team->IsPrebuilt &&
                 (!team->IsAutocreate || IsAlerted)) {
               for (int subindex = 0; subindex < team->ClassCount; subindex++) {
                 if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
-                  int subtype = dynamic_cast<InfantryTypeClass const*>(
+                  int subtype = dynamic_cast<const InfantryTypeClass*>(
                                     team->Class[subindex])
                                     ->Type;
                   //									counter[subtype]
@@ -4261,7 +4261,7 @@ void HouseClass::Sell_Wall(CELL cell) {
     OverlayType overlay = Map[cell].Overlay;
 
     if (overlay != OVERLAY_NONE && Map[cell].Owner == Class->House) {
-      OverlayTypeClass const& optr = OverlayTypeClass::As_Reference(overlay);
+      const OverlayTypeClass& optr = OverlayTypeClass::As_Reference(overlay);
 
       if (optr.IsWall) {
         int cost = 0;

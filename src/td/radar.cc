@@ -121,7 +121,7 @@
 // void const * RadarClass::CoverShape;
 RadarClass::TacticalClass RadarClass::RadarButton;
 
-void const* RadarClass::RadarAnim = nullptr;
+const void* RadarClass::RadarAnim = nullptr;
 
 static bool FullRedraw = false;
 
@@ -665,7 +665,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
 void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
   OverlayType overlay = (*this)[cell].Overlay;
   if (overlay != OVERLAY_NONE) {
-    OverlayTypeClass const* otype = &OverlayTypeClass::As_Reference(overlay);
+    const OverlayTypeClass* otype = &OverlayTypeClass::As_Reference(overlay);
 
     if (otype->IsRadarVisible) {
       unsigned char* icon = otype->Radar_Icon((*this)[cell].OverlayData);
@@ -833,7 +833,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     */
     if (color == TBLACK) {
       if (ZoomFactor > 1) {
-        void const* ptr;
+        const void* ptr;
         int32_t offset;
         int icon;
 
@@ -1561,7 +1561,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 01/01/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Refresh_Cells(CELL cell, short const* list) {
+void RadarClass::Refresh_Cells(CELL cell, const short* list) {
   if (*list == REFRESH_SIDEBAR) {
     IsToRedraw = true;
     Flag_To_Redraw(false);

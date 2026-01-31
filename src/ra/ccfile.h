@@ -55,7 +55,7 @@
 */
 class CCFileClass : public CDFileClass {
  public:
-  CCFileClass(char const* filename);
+  CCFileClass(const char* filename);
   CCFileClass();
   ~CCFileClass() override { Position = 0; }
 
@@ -63,7 +63,7 @@ class CCFileClass : public CDFileClass {
 
   bool Is_Resident() const { return Data.Get_Buffer() != nullptr; }
   int Is_Open() const override;
-  int Open(char const* filename, int rights = READ) override {
+  int Open(const char* filename, int rights = READ) override {
     Set_Name(filename);
     return Open(rights);
   }
@@ -71,12 +71,12 @@ class CCFileClass : public CDFileClass {
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;
-  long Write(void const* buffer, long size) override;
+  long Write(const void* buffer, long size) override;
   void Close() override;
   unsigned long Get_Date_Time() override;
   bool Set_Date_Time(unsigned long datetime) override;
   void Error(int error, int canretry = false,
-             char const* filename = nullptr) override;
+             const char* filename = nullptr) override;
 
  protected:
   int Do_Is_Available(AvailabilityCheck mode) override;
@@ -106,8 +106,8 @@ class CCFileClass : public CDFileClass {
   long Position;
 
   // Force these to never be invoked.
-  CCFileClass const& operator=(CCFileClass const& c);
-  CCFileClass(CCFileClass const&);
+  const CCFileClass& operator=(const CCFileClass& c);
+  CCFileClass(const CCFileClass&);
 };
 
 #endif

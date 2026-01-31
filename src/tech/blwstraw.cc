@@ -142,7 +142,7 @@ int BlowStraw::Get(void* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowStraw::Key(void const* key, int length) {
+void BlowStraw::Key(const void* key, int length) {
   /*
   **	Create the blowfish engine if one isn't already present.
   */

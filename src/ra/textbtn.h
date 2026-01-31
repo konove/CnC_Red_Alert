@@ -46,25 +46,25 @@
 class TextButtonClass : public ToggleClass {
  public:
   TextButtonClass();
-  TextButtonClass(unsigned id, char const* text, TextPrintType style, int x,
+  TextButtonClass(unsigned id, const char* text, TextPrintType style, int x,
                   int y, int w = -1, int h = -1, int blackborder = false);
   TextButtonClass(unsigned id, int text, TextPrintType style, int x, int y,
                   int w = -1, int h = -1, int blackborder = false);
   int Draw_Me(int forced = false) override;
-  virtual void Set_Text(char const* text, bool resize = false);
+  virtual void Set_Text(const char* text, bool resize = false);
   virtual void Set_Text(int text, bool resize = false);
   virtual void Set_Style(TextPrintType style) { PrintFlags = style; }
 
  protected:
   virtual void Draw_Background();
-  virtual void Draw_Text(char const* text);
+  virtual void Draw_Text(const char* text);
 
   unsigned IsBlackBorder : 1;
 
   /*
   **	This points to a constant string that is used for the button's text.
   */
-  char const* String;
+  const char* String;
 
   /*
   **	This is the print flags to use when rendering this button's text.

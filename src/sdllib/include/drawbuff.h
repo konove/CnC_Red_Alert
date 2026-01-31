@@ -58,8 +58,8 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
                       unsigned char color);
 void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
                   void* remap);
-void Buffer_Draw_Stamp_Clip(void const* thisptr, void const* icondata, int icon,
-                            int x_pixel, int y_pixel, void const* remap, int,
+void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
+                            int x_pixel, int y_pixel, const void* remap, int,
                             int, int, int);
 }
 

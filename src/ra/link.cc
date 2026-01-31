@@ -66,7 +66,7 @@
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass::LinkClass(LinkClass const& link) : Next(nullptr), Prev(nullptr) {
+LinkClass::LinkClass(const LinkClass& link) : Next(nullptr), Prev(nullptr) {
   /*
   **	Add this object to the same list that the copy object
   **	resides in.
@@ -135,7 +135,7 @@ void LinkClass::Zap() {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass& LinkClass::operator=(LinkClass const& link) {
+LinkClass& LinkClass::operator=(const LinkClass& link) {
   if (&link == this) return *this;
 
   Remove();

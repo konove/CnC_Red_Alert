@@ -59,8 +59,8 @@ enum class AvailabilityCheck {
 class FileClass {
  public:
   virtual ~FileClass() {};
-  virtual char const* File_Name() const = 0;
-  virtual char const* Set_Name(char const* filename) = 0;
+  virtual const char* File_Name() const = 0;
+  virtual const char* Set_Name(const char* filename) = 0;
   virtual int Create() = 0;
   virtual int Delete() = 0;
 
@@ -74,15 +74,15 @@ class FileClass {
   }
 
   virtual int Is_Open() const = 0;
-  virtual int Open(char const* filename, int rights = READ) = 0;
+  virtual int Open(const char* filename, int rights = READ) = 0;
   virtual int Open(int rights = READ) = 0;
   virtual long Read(void* buffer, long size) = 0;
   virtual long Seek(long pos, int dir = SEEK_CUR) = 0;
   virtual long Size() = 0;
-  virtual long Write(void const* buffer, long size) = 0;
+  virtual long Write(const void* buffer, long size) = 0;
   virtual void Close() = 0;
 
-  operator char const*() { return File_Name(); };
+  operator const char*() { return File_Name(); };
 
  protected:
   virtual int Do_Is_Available(AvailabilityCheck mode) = 0;

@@ -375,7 +375,7 @@ bool AircraftClass::Unlimbo(COORDINATE coord, DirType dir) {
  *=============================================================================================*/
 void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  void const* shapefile;  // Working shape file pointer.
+  const void* shapefile;  // Working shape file pointer.
   int shapenum = 0;
   int facing = Facing_To_32(SecondaryFacing);
 
@@ -893,20 +893,20 @@ void AircraftClass::AI() {
     **	Transport helicopters must ensure that their passengers are properly
     **	considered "alive" by setting the appropriate scan bits.
     */
-    FootClass const* foot = Attached_Object();
+    const FootClass* foot = Attached_Object();
     while (foot) {
       switch (foot->What_Am_I()) {
         case RTTI_UNIT:
-          House->NewUScan |= (1L << ((UnitTypeClass const&)Class_Of()).Type);
+          House->NewUScan |= (1L << ((const UnitTypeClass&)Class_Of()).Type);
           break;
 
         case RTTI_INFANTRY:
           House->NewIScan |=
-              (1L << ((InfantryTypeClass const&)Class_Of()).Type);
+              (1L << ((const InfantryTypeClass&)Class_Of()).Type);
           break;
       }
 
-      foot = (FootClass const*)foot->Next;
+      foot = (const FootClass*)foot->Next;
     }
 #endif
   }
@@ -957,9 +957,9 @@ bool AircraftClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const* AircraftClass::Overlap_List() const {
+const short* AircraftClass::Overlap_List() const {
   Validate();
-  static short const _list[] = {-(MAP_CELL_W - 1),
+  static const short _list[] = {-(MAP_CELL_W - 1),
                                 -MAP_CELL_W,
                                 -(MAP_CELL_W + 1),
                                 -1,
@@ -1510,7 +1510,7 @@ BulletClass* AircraftClass::Fire_At(TARGET target, int which) {
     /*
     **	Play the sound effect associated with this weapon.
     */
-    WeaponTypeClass const* weapon =
+    const WeaponTypeClass* weapon =
         which == 0 ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
     Sound_Effect(weapon->Sound, Coord);
 

@@ -62,12 +62,12 @@ class ColorListClass : public ListClass {
   } SelectStyleType;
 
   ColorListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                 void const* up, void const* down);
+                 const void* up, const void* down);
   ~ColorListClass() override;
 
-  virtual int Add_Item(char const* text, RemapControlType* color = nullptr);
+  virtual int Add_Item(const char* text, RemapControlType* color = nullptr);
   virtual int Add_Item(int text, RemapControlType* color = nullptr);
-  void Remove_Item(char const* text) override;
+  void Remove_Item(const char* text) override;
 
   virtual void Set_Selected_Style(SelectStyleType style,
                                   RemapControlType* color = nullptr);

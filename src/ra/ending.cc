@@ -69,13 +69,13 @@ void GDI_Ending() {
  *=============================================================================================*/
 void Nod_Ending() {
 #ifdef NEVER
-  static char const _tanpal[] = {0x0,  0x0, 0xED, 0x0, 0x2C, 0x0, 0xFB, 0x0,
+  static const char _tanpal[] = {0x0,  0x0, 0xED, 0x0, 0x2C, 0x0, 0xFB, 0x0,
                                  0xFD, 0x0, 0x0,  0x0, 0x0,  0x0, 0x52, 0x0};
 
   char fname[12];
   char* satpic = new char[64000];
   int oldfontxspacing = FontXSpacing;
-  void const* oldfont;
+  const void* oldfont;
 
   Score.Presentation();
 

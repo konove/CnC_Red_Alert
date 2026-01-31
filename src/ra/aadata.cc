@@ -73,11 +73,11 @@
 #include "ra/type.h"
 #include "sdllib/include/shape.h"
 
-void const* AircraftTypeClass::LRotorData = nullptr;
-void const* AircraftTypeClass::RRotorData = nullptr;
+const void* AircraftTypeClass::LRotorData = nullptr;
+const void* AircraftTypeClass::RRotorData = nullptr;
 
 // Badger bomber
-static AircraftTypeClass const BadgerPlane(
+static const AircraftTypeClass BadgerPlane(
     AIRCRAFT_BADGER,  // What kind of aircraft is this.
     TXT_BADGER,       // Translated text number for aircraft.
     "BADR",           // INI name of aircraft.
@@ -100,7 +100,7 @@ static AircraftTypeClass const BadgerPlane(
 );
 
 // Photo recon plane.
-static AircraftTypeClass const U2Plane(
+static const AircraftTypeClass U2Plane(
     AIRCRAFT_U2,  // What kind of aircraft is this.
     TXT_U2,       // Translated text number for aircraft.
     "U2",         // INI name of aircraft.
@@ -123,7 +123,7 @@ static AircraftTypeClass const U2Plane(
 );
 
 // Mig attack aircraft.
-static AircraftTypeClass const MigPlane(
+static const AircraftTypeClass MigPlane(
     AIRCRAFT_MIG,     // What kind of aircraft is this.
     TXT_MIG,          // Translated text number for aircraft.
     "MIG",            // INI name of aircraft.
@@ -146,7 +146,7 @@ static AircraftTypeClass const MigPlane(
 );
 
 // Yak attack aircraft.
-static AircraftTypeClass const YakPlane(
+static const AircraftTypeClass YakPlane(
     AIRCRAFT_YAK,     // What kind of aircraft is this.
     TXT_YAK,          // Translated text number for aircraft.
     "YAK",            // INI name of aircraft.
@@ -169,7 +169,7 @@ static AircraftTypeClass const YakPlane(
 );
 
 // Transport helicopter.
-static AircraftTypeClass const TransportHeli(
+static const AircraftTypeClass TransportHeli(
     AIRCRAFT_TRANSPORT,  // What kind of aircraft is this.
     TXT_TRANS,           // Translated text number for aircraft.
     "TRAN",              // INI name of aircraft.
@@ -192,7 +192,7 @@ static AircraftTypeClass const TransportHeli(
 );
 
 // Longbow attack helicopter
-static AircraftTypeClass const AttackHeli(
+static const AircraftTypeClass AttackHeli(
     AIRCRAFT_LONGBOW,  // What kind of aircraft is this.
     TXT_HELI,          // Translated text number for aircraft.
     "HELI",            // INI name of aircraft.
@@ -215,7 +215,7 @@ static AircraftTypeClass const AttackHeli(
 );
 
 // Hind
-static AircraftTypeClass const OrcaHeli(
+static const AircraftTypeClass OrcaHeli(
     AIRCRAFT_HIND,   // What kind of aircraft is this.
     TXT_ORCA,        // Translated text number for aircraft.
     "HIND",          // INI name of aircraft.
@@ -251,7 +251,7 @@ static AircraftTypeClass const OrcaHeli(
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 AircraftTypeClass::AircraftTypeClass(
-    AircraftType airtype, int name, char const* ininame, int verticaloffset,
+    AircraftType airtype, int name, const char* ininame, int verticaloffset,
     int primaryoffset, int primarylateral, bool is_fixedwing,
     bool is_rotorequipped, bool is_rotorcustom, bool is_landable,
     bool is_stealthy, bool is_selectable, bool is_legal_target,
@@ -366,7 +366,7 @@ void AircraftTypeClass::Init_Heap() {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-AircraftType AircraftTypeClass::From_Name(char const* name) {
+AircraftType AircraftTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (AircraftType classid = AIRCRAFT_FIRST; classid < AIRCRAFT_COUNT;
          classid++) {
@@ -466,7 +466,7 @@ void AircraftTypeClass::Prep_For_Add() {
 void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType) const {
   int shape = 0;
-  void const* ptr = Get_Cameo_Data();
+  const void* ptr = Get_Cameo_Data();
   if (ptr == nullptr) {
     ptr = Get_Image_Data();
     shape = 5;
@@ -490,8 +490,8 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const* AircraftTypeClass::Occupy_List(bool) const {
-  static short const _list[] = {0, REFRESH_EOL};
+const short* AircraftTypeClass::Occupy_List(bool) const {
+  static const short _list[] = {0, REFRESH_EOL};
   return _list;
 }
 
@@ -510,8 +510,8 @@ short const* AircraftTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const* AircraftTypeClass::Overlap_List() const {
-  static short const _list[] = {
+const short* AircraftTypeClass::Overlap_List() const {
+  static const short _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
       (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  REFRESH_EOL};
   return _list;

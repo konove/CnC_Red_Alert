@@ -83,13 +83,13 @@ class AbstractClass {
   */
   AbstractClass(RTTIType rtti, int id)
       : RTTI(rtti), ID(id), Coord(0xFFFFFFFFL), Height(0) {}
-  AbstractClass(NoInitClass const& x) { x(); }
+  AbstractClass(const NoInitClass& x) { x(); }
   virtual ~AbstractClass() {}
 
   /*
   **	Query functions.
   */
-  virtual char const* Name() const { return ""; }
+  virtual const char* Name() const { return ""; }
   virtual HousesType Owner() const { return HOUSE_NONE; }
   TARGET As_Target() const { return Build_Target(RTTI, ID); }
   RTTIType What_Am_I() const { return RTTI; }
@@ -109,7 +109,7 @@ class AbstractClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  DirType Direction(AbstractClass const* object) const {
+  DirType Direction(const AbstractClass* object) const {
     return ::Direction(Center_Coord(), object->Target_Coord());
   }
   DirType Direction(COORDINATE coord) const {
@@ -123,7 +123,7 @@ class AbstractClass {
   int Distance(COORDINATE coord) const {
     return ::Distance(Center_Coord(), coord);
   }
-  int Distance(AbstractClass const* object) const {
+  int Distance(const AbstractClass* object) const {
     return ::Distance(Center_Coord(), object->Target_Coord());
   }
 

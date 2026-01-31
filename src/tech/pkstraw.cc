@@ -131,7 +131,7 @@ void PKStraw::Get_From(Straw* straw) {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-void PKStraw::Key(PKey const* key) {
+void PKStraw::Key(const PKey* key) {
   CipherKey = key;
   if (key != nullptr) {
     IsGettingKey = true;

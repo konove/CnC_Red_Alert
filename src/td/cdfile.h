@@ -58,12 +58,12 @@
 */
 class CDFileClass : public RawFileClass {
  public:
-  CDFileClass(char const* filename);
+  CDFileClass(const char* filename);
   CDFileClass();
   ~CDFileClass() override {}
 
-  char const* Set_Name(char const* filename) override;
-  int Open(char const* filename, int rights = READ) override;
+  const char* Set_Name(const char* filename) override;
+  int Open(const char* filename, int rights = READ) override;
   int Open(int rights = READ) override;
 
   void Searching(int on) { IsDisabled = !on; }
@@ -89,7 +89,7 @@ class CDFileClass : public RawFileClass {
   */
   typedef struct {
     void* Next;        // Pointer to next search record.
-    char const* Path;  // Pointer to path string.
+    const char* Path;  // Pointer to path string.
   } SearchDriveType;
 
   /*

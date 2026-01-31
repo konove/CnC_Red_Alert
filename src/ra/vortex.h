@@ -141,7 +141,7 @@ class ChronalVortexClass {
   /*
   ** Members for setting up the lookup tables.
   */
-  void Build_Fading_Table(PaletteClass const& palette, void* dest, int color,
+  void Build_Fading_Table(const PaletteClass& palette, void* dest, int color,
                           int frac);
   void Coordinate_Remap(GraphicViewPortClass* inbuffer, int x, int y, int width,
                         int height, unsigned char* remap_table);

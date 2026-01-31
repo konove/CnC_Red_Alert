@@ -714,7 +714,7 @@ void Keyboard_Process(KeyNumType& input) {
     case VK_S:
       if (CurrentObject.Count()) {
         for (int index = 0; index < CurrentObject.Count(); index++) {
-          ObjectClass const* tech = CurrentObject[index];
+          const ObjectClass* tech = CurrentObject[index];
 
           if (tech && (tech->Can_Player_Move() ||
                        (tech->Can_Player_Fire() &&
@@ -731,7 +731,7 @@ void Keyboard_Process(KeyNumType& input) {
     case VK_X:
       if (CurrentObject.Count()) {
         for (int index = 0; index < CurrentObject.Count(); index++) {
-          ObjectClass const* tech = CurrentObject[index];
+          const ObjectClass* tech = CurrentObject[index];
 
           if (tech && tech->Can_Player_Move()) {
             OutList.Add(EventClass(EventClass::SCATTER, tech->As_Target()));
@@ -746,7 +746,7 @@ void Keyboard_Process(KeyNumType& input) {
     case VK_G:
       if (CurrentObject.Count()) {
         for (int index = 0; index < CurrentObject.Count(); index++) {
-          ObjectClass const* tech = CurrentObject[index];
+          const ObjectClass* tech = CurrentObject[index];
 
           if (tech && tech->Can_Player_Move() && tech->Can_Player_Fire()) {
             OutList.Add(EventClass(tech->As_Target(), MISSION_GUARD_AREA));
@@ -1320,7 +1320,7 @@ void Call_Back() {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-char const* Language_Name(char const* basename) {
+const char* Language_Name(const char* basename) {
   static char _fullname[_MAX_FNAME + _MAX_EXT];
 
   if (!basename) return nullptr;
@@ -1344,7 +1344,7 @@ char const* Language_Name(char const* basename) {
  *                                                                                             *
  * HISTORY: * 04/17/1994 JLB : Created. *
  *=============================================================================================*/
-SourceType Source_From_Name(char const* name) {
+SourceType Source_From_Name(const char* name) {
   if (name) {
     for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; source++) {
       if (stricmp(SourceName[source], name) == 0) {
@@ -1370,7 +1370,7 @@ SourceType Source_From_Name(char const* name) {
  *                                                                         						  *
  * HISTORY: * 11/15/1994 BR : Created. *
  *=============================================================================================*/
-char const* Name_From_Source(SourceType source) {
+const char* Name_From_Source(SourceType source) {
   if (static_cast<unsigned>(source) < SOURCE_COUNT) {
     return SourceName[source];
   }
@@ -1392,7 +1392,7 @@ char const* Name_From_Source(SourceType source) {
  *                                                                                             *
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
-TheaterType Theater_From_Name(char const* name) {
+TheaterType Theater_From_Name(const char* name) {
   TheaterType index;
 
   if (name) {
@@ -2251,7 +2251,7 @@ unsigned char* InterpolatedPalettes[100];
 bool PalettesRead;
 unsigned PaletteCounter;
 
-int Load_Interpolated_Palettes(char const* filename, bool add) {
+int Load_Interpolated_Palettes(const char* filename, bool add) {
   int num_palettes = 0;
   int i;
   int start_palette;
@@ -2328,7 +2328,7 @@ extern bool InMovie;
 extern bool VQPaletteChange;
 extern void Suspend_Audio_Thread();
 extern void Resume_Audio_Thread();
-void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
+void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
   /*
   ** Don't play movies in editor mode
   */
@@ -2508,7 +2508,7 @@ void Unselect_All() {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-std::string Fading_Table_Name(char const* base, TheaterType theater) {
+std::string Fading_Table_Name(const char* base, TheaterType theater) {
   // Build filename: first character of theater root + base name + .MRF
   // extension
   const auto root = std::string(1, Theaters[theater].Root[0]) + base;
@@ -2527,7 +2527,7 @@ std::string Fading_Table_Name(char const* base, TheaterType theater) {
  * HISTORY: * 04/12/1995 PWG : Created. * 05/10/1995 JLB : Handles a null
  *shapefile pointer.                                        *
  *=============================================================================================*/
-void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
+const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
                            int zoomfactor) {
   static int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   static int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
@@ -2625,7 +2625,7 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
   return retval;
 }
 
-void CC_Texture_Fill(void const* shapefile, int shapenum, int xpos, int ypos,
+void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
                      int width, int height) {
   unsigned char* shape_pointer;
   // unsigned char	*shape_save;
@@ -2713,9 +2713,9 @@ void CC_Texture_Fill(void const* shapefile, int shapenum, int xpos, int ypos,
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
+void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
-                   void const* fadingdata, void const* ghostdata) {
+                   const void* fadingdata, const void* ghostdata) {
 #if (true)
   int predoffset;
   char* shape_pointer;
@@ -2813,7 +2813,7 @@ void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id) {
+const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
   switch (type) {
     case RTTI_UNITTYPE:
     case RTTI_UNIT:
@@ -3342,7 +3342,7 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
     sprintf(buffer, "%c:\\", 'A' + cd_drive);
 
     if (GetVolumeInformation(
-            (char const*)buffer, &volume_name[0], (unsigned long)128,
+            (const char*)buffer, &volume_name[0], (unsigned long)128,
             (unsigned long*)NULL, (unsigned long*)&filename_length,
             (unsigned long*)&misc_dword, (char*)NULL, (unsigned long)0)) {
       /*
@@ -3758,7 +3758,7 @@ static void Do_Record_Playback() {
  * HISTORY:                                                                *
  *   01/25/1996     : Created.                                             *
  *=========================================================================*/
-void const* Hires_Retrieve(const char* name) {
+const void* Hires_Retrieve(const char* name) {
   char filename[30];
 
   if (SeenBuff.Get_Width() != 320) {

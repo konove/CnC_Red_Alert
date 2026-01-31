@@ -67,7 +67,7 @@ void Force_VM_Page_In(void* buffer, int length);
 void* operator new(size_t size, MemoryFlagType flag);
 void* operator new[](size_t size, MemoryFlagType flag);
 void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags);
-void Free(void const* pointer);
+void Free(const void* pointer);
 void* Resize_Alloc(void* original_ptr, unsigned long new_size_in_bytes);
 long Ram_Free(MemoryFlagType flag);
 long Total_Ram_Free(MemoryFlagType flag);
@@ -86,11 +86,11 @@ inline void* operator new[](size_t size, MemoryFlagType flag) {
 /*=========================================================================*/
 
 extern "C" {
-void Mem_Copy(void const* source, void* dest, unsigned long bytes_to_copy);
+void Mem_Copy(const void* source, void* dest, unsigned long bytes_to_copy);
 }
 
-inline void* Add_Long_To_Pointer(void const* ptr, long size) {
-  return (void*)(static_cast<char const*>(ptr) + size);
+inline void* Add_Long_To_Pointer(const void* ptr, long size) {
+  return (void*)(static_cast<const char*>(ptr) + size);
 }
 
 extern void (*Memory_Error)();

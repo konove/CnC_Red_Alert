@@ -202,7 +202,7 @@ void Send_Statistics_Packet() {
   static char field_player_crates_found[5] = {"CRA?"};
   static char field_player_harvested[5] = {"HRV?"};
 
-  static char const* houses[] = {"GDI", "NOD", "NUT", "JUR", "M01",
+  static const char* houses[] = {"GDI", "NOD", "NUT", "JUR", "M01",
                                  "M02", "M03", "M04", "M05", "M06"};
 
   CCDebugString("C&C95 - In Send_Statistics_Packet.\n");
@@ -227,7 +227,8 @@ void Send_Statistics_Packet() {
     /*
     ** Start credits.
     */
-    stats.Add_Field(FIELD_START_CREDITS, static_cast<unsigned long>(MPlayerCredits));
+    stats.Add_Field(FIELD_START_CREDITS,
+                    static_cast<unsigned long>(MPlayerCredits));
 
     /*
     ** Bases (On/Off)
@@ -254,7 +255,8 @@ void Send_Statistics_Packet() {
     /*
     ** Start unit count
     */
-    stats.Add_Field(FIELD_START_UNIT_COUNT, static_cast<unsigned long>(MPlayerUnitCount));
+    stats.Add_Field(FIELD_START_UNIT_COUNT,
+                    static_cast<unsigned long>(MPlayerUnitCount));
 
     /*
     ** Tech level.
@@ -359,7 +361,8 @@ void Send_Statistics_Packet() {
     **
     ** Passed from WChat
     */
-    stats.Add_Field(FIELD_START_TIME, static_cast<long>(PlanetWestwoodStartTime));
+    stats.Add_Field(FIELD_START_TIME,
+                    static_cast<long>(PlanetWestwoodStartTime));
 
     /*
     ** Game duration (seconds).
@@ -442,7 +445,8 @@ void Send_Statistics_Packet() {
     /*
     ** Covert installed? (Yes/No)
     */
-    stats.Add_Field(FIELD_COVERT_PRESENT, static_cast<char>(Expansion_Present()));
+    stats.Add_Field(FIELD_COVERT_PRESENT,
+                    static_cast<char>(Expansion_Present()));
 
     CCDebugString("C&C95 - Adding house specific stats.\n");
     /*
@@ -469,8 +473,9 @@ void Send_Statistics_Packet() {
         ** Player color
         */
         field_player_color[3] = '1' + static_cast<char>(house);
-        stats.Add_Field(field_player_color,
-                        static_cast<unsigned char>(player->Class->House - HOUSE_MULTI1));
+        stats.Add_Field(
+            field_player_color,
+            static_cast<unsigned char>(player->Class->House - HOUSE_MULTI1));
 
         /*
         ** Player end credits.
@@ -523,21 +528,21 @@ void Send_Statistics_Packet() {
         ** Number of units remaining to player
         */
         for (index = 0; index < Units.Count(); index++) {
-          UnitClass const* unit = Units.Ptr(index);
+          const UnitClass* unit = Units.Ptr(index);
           if (unit->House == player) {
             player->UnitTotals->Increment_Unit_Total(unit->Class->Type);
           }
         }
 
         for (index = 0; index < Infantry.Count(); index++) {
-          InfantryClass const* infantry = Infantry.Ptr(index);
+          const InfantryClass* infantry = Infantry.Ptr(index);
           if (infantry->House == player && !infantry->Class->IsCivilian) {
             player->InfantryTotals->Increment_Unit_Total(infantry->Class->Type);
           }
         }
 
         for (index = 0; index < Aircraft.Count(); index++) {
-          AircraftClass const* aircraft = Aircraft.Ptr(index);
+          const AircraftClass* aircraft = Aircraft.Ptr(index);
           if (aircraft->House == player &&
               aircraft->Class->Type != AIRCRAFT_CARGO) {
             player->AircraftTotals->Increment_Unit_Total(aircraft->Class->Type);
@@ -545,7 +550,7 @@ void Send_Statistics_Packet() {
         }
 
         for (index = 0; index < Buildings.Count(); index++) {
-          BuildingClass const* building = Buildings.Ptr(index);
+          const BuildingClass* building = Buildings.Ptr(index);
           if (building->House == player) {
             player->BuildingTotals->Increment_Unit_Total(building->Class->Type);
           }

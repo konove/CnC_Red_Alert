@@ -93,7 +93,7 @@ bool TemplateClass::Mark(MarkType mark) {
   assert(IsActive);
 
   static bool noup = false;
-  void const* iset = Get_Image_Data();
+  const void* iset = Get_Image_Data();
   if (iset && ObjectClass::Mark(mark)) {
     void* map = Get_Icon_Set_Map(iset);
 

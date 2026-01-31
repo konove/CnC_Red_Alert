@@ -77,7 +77,7 @@
  *                                                                                             *
  * HISTORY: * 11/10/1995 DRD : Created. *
  *=============================================================================================*/
-BufferIOFileClass::BufferIOFileClass(char const* filename)
+BufferIOFileClass::BufferIOFileClass(const char* filename)
     : IsAllocated(false),
       IsOpen(false),
       IsDiskOpen(false),
@@ -388,7 +388,7 @@ bool BufferIOFileClass::Commit() {
  *                                                                                             *
  * HISTORY: * 11/15/1995 DRD : Created. *
  *=============================================================================================*/
-char const* BufferIOFileClass::Set_Name(char const* filename) {
+const char* BufferIOFileClass::Set_Name(const char* filename) {
   if (File_Name() && UseBuffer) {
     if (strcmp(filename, File_Name()) == 0) {
       return File_Name();
@@ -465,7 +465,7 @@ int BufferIOFileClass::Is_Open() const {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-int BufferIOFileClass::Open(char const* filename, int rights) {
+int BufferIOFileClass::Open(const char* filename, int rights) {
   Set_Name(filename);
   return BufferIOFileClass::Open(rights);
 }
@@ -548,7 +548,7 @@ int BufferIOFileClass::Open(int rights) {
  *                                                                                             *
  * HISTORY: * 11/15/1995 DRD : Created. *
  *=============================================================================================*/
-long BufferIOFileClass::Write(void const* buffer, long size) {
+long BufferIOFileClass::Write(const void* buffer, long size) {
   int opened = false;
 
   if (!Is_Open()) {

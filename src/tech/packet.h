@@ -69,28 +69,28 @@ class PacketClass {
   // These convenience functions allow us to add a field directly to the list
   // without having to worry about newing one first.
   //
-  void Add_Field(char const* field, char data) {
+  void Add_Field(const char* field, char data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(char const* field, unsigned char data) {
+  void Add_Field(const char* field, unsigned char data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(char const* field, short data) {
+  void Add_Field(const char* field, short data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(char const* field, unsigned short data) {
+  void Add_Field(const char* field, unsigned short data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(char const* field, long data) {
+  void Add_Field(const char* field, long data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(char const* field, unsigned long data) {
+  void Add_Field(const char* field, unsigned long data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(char const* field, const char* data) {
+  void Add_Field(const char* field, const char* data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(char const* field, void* data, int length) {
+  void Add_Field(const char* field, void* data, int length) {
     Add_Field(new FieldClass(field, data, length));
   }
 
@@ -98,15 +98,15 @@ class PacketClass {
   // These functions search for a field of a given name in the list and
   // return the data via a reference value.
   //
-  FieldClass* Find_Field(char const* id);
-  bool Get_Field(char const* id, char& data);
-  bool Get_Field(char const* id, unsigned char& data);
-  bool Get_Field(char const* id, short& data);
-  bool Get_Field(char const* id, unsigned short& data);
-  bool Get_Field(char const* id, long& data);
-  bool Get_Field(char const* id, unsigned long& data);
-  bool Get_Field(char const* id, char* data, std::size_t data_size);
-  bool Get_Field(char const* id, void* data, int& length);
+  FieldClass* Find_Field(const char* id);
+  bool Get_Field(const char* id, char& data);
+  bool Get_Field(const char* id, unsigned char& data);
+  bool Get_Field(const char* id, short& data);
+  bool Get_Field(const char* id, unsigned short& data);
+  bool Get_Field(const char* id, long& data);
+  bool Get_Field(const char* id, unsigned long& data);
+  bool Get_Field(const char* id, char* data, std::size_t data_size);
+  bool Get_Field(const char* id, void* data, int& length);
 
   char* Create_Comms_Packet(int& size);
 

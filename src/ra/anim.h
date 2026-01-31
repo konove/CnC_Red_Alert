@@ -66,7 +66,7 @@ class AnimClass : public ObjectClass, public StageClass {
  public:
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1);
-  AnimClass(NoInitClass const& x) : ObjectClass(x), Class(x), StageClass(x) {}
+  AnimClass(const NoInitClass& x) : ObjectClass(x), Class(x), StageClass(x) {}
   ~AnimClass() override;
 
   operator AnimType() const { return Class->Type; }
@@ -90,9 +90,9 @@ class AnimClass : public ObjectClass, public StageClass {
   COORDINATE Center_Coord() const override;
   COORDINATE Sort_Y() const override;
   LayerType In_Which_Layer() const override;
-  ObjectTypeClass const& Class_Of() const override { return *Class; }
-  short const* Occupy_List(bool = false) const override;
-  virtual short const* Overlap_List() const;
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  const short* Occupy_List(bool = false) const override;
+  virtual const short* Overlap_List() const;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   void AI() override;
   void Detach(TARGET target, bool all) override;
@@ -164,6 +164,6 @@ class AnimClass : public ObjectClass, public StageClass {
 };
 
 void Shorten_Attached_Anims(ObjectClass* obj);
-AnimType Anim_From_Name(char const* name);
+AnimType Anim_From_Name(const char* name);
 
 #endif

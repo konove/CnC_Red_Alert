@@ -68,28 +68,28 @@
 class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-            void const* up, void const* down);
+            const void* up, const void* down);
   ~ListClass() override;
 
   //		static ListClass * Create_One_Of(int id, int x, int y, int w,
   // int h, TextPrintType flags, void const * up, void const * down);
-  virtual int Add_Item(char const* text);
+  virtual int Add_Item(const char* text);
   virtual int Add_Item(int text);
   virtual int Add_Scroll_Bar();
   virtual void Bump(int up);
   virtual int Count() { return List.Count(); }
   virtual int Current_Index();
-  virtual char const* Current_Item();
+  virtual const char* Current_Item();
   int Draw_Me(int forced) override;
-  virtual char const* Get_Item(int index) const;
+  virtual const char* Get_Item(int index) const;
   virtual int Step_Selected_Index(int forward);
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
-                            ControlClass& whom) override;
-  virtual void Remove_Item(char const* text);
+                    ControlClass& whom) override;
+  virtual void Remove_Item(const char* text);
   virtual int Remove_Scroll_Bar();
   virtual void Set_Selected_Index(int index);
-  virtual void Set_Tabs(int const* tabs);
+  virtual void Set_Tabs(const int* tabs);
   virtual int Set_View_Index(int index);
   virtual void Step(int up);
 
@@ -117,14 +117,14 @@ class ListClass : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  int const* Tabs;
+  const int* Tabs;
 
   /*
   **	The actual list of text pointers is maintained by this list manager. The
   *pointers *	are stored in EMS. The text that is pointed to may also be in
   *EMS.
   */
-  DynamicVectorClass<char const*> List;
+  DynamicVectorClass<const char*> List;
   // EMSListOf<char const *> List;
 
   /*

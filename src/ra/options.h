@@ -149,13 +149,13 @@ class OptionsClass {
   KeyNumType KeyTeam9;
   KeyNumType KeyTeam10;
 
-  void Adjust_Palette(PaletteClass const& oldpal, PaletteClass& newpal,
+  void Adjust_Palette(const PaletteClass& oldpal, PaletteClass& newpal,
                       fixed brightness, fixed color, fixed tint,
                       fixed contrast) const;
 
  protected:
  private:
-  static char const* const HotkeyName;
+  static const char* const HotkeyName;
 };
 
 #endif

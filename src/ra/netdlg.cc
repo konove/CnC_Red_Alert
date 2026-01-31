@@ -251,7 +251,7 @@ typedef enum {
 } RejectType;
 
 #ifdef ENGLISH
-char const* EngMisStr[] = {"Coastal Influence (Med)",
+const char* EngMisStr[] = {"Coastal Influence (Med)",
                            "Middle Mayhem (Sm)",
                            "Equal Opportunity (Sm)",
                            "Marooned II (Med)",
@@ -488,7 +488,7 @@ char const* EngMisStr[] = {"Coastal Influence (Med)",
 #endif
 
 #ifdef GERMAN
-char const* EngMisStr[] = {
+const char* EngMisStr[] = {
 
     "A Path Beyond (Lg)", "Weg ins Jenseits (Gr)", "Central Conflict (Lg)",
     "Der zentrale Konflikt (Gr)", "Coastal Influence (Med)",
@@ -700,7 +700,7 @@ char const* EngMisStr[] = {
     nullptr};
 #endif
 #ifdef FRENCH
-char const* EngMisStr[] = {
+const char* EngMisStr[] = {
 
     "A Path Beyond (Lg)", "Le Passage (Max)", "Central Conflict (Lg)",
     "Conflit Central (Max)", "Coastal Influence (Med)",
@@ -1547,7 +1547,7 @@ static int Net_Join_Dialog() {
   JoinEventType event;                     // event from incoming packet
   int i;                                   // loop counter
   char txt[128];
-  char const* p;
+  const char* p;
   int parms_received = 0;  // 1 = game options received
   int found;
   NodeNameType* who;                              // node to add to Players
@@ -5615,7 +5615,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
   int id;
   char buf1[40] = {0};
   char buf2[40] = {0};
-  char const* buf3 = "";
+  const char* buf3 = "";
 
   int d_txt6_h = 6 * RESFACTOR + 1;
   int d_margin = 5 * RESFACTOR;

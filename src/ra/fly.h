@@ -59,7 +59,7 @@ class FlyClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   FlyClass() : SpeedAccum(0), SpeedAdd(MPH_IMMOBILE) {}
-  FlyClass(NoInitClass const&) {}
+  FlyClass(const NoInitClass&) {}
   ~FlyClass() {}
 
   /*---------------------------------------------------------------------

@@ -208,8 +208,8 @@ LinkClass* LinkClass::Get_Prev() const { return Prev; }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass const& LinkClass::Head_Of_List() const {
-  LinkClass const* link = this;
+const LinkClass& LinkClass::Head_Of_List() const {
+  const LinkClass* link = this;
   while (link->Prev) {
     link = link->Prev;
     if (link == this) break;  // Safety check
@@ -231,8 +231,8 @@ LinkClass const& LinkClass::Head_Of_List() const {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass const& LinkClass::Tail_Of_List() const {
-  LinkClass const* link = this;
+const LinkClass& LinkClass::Tail_Of_List() const {
+  const LinkClass* link = this;
   while (link->Next) {
     link = link->Next;
     if (link == this) break;  // Safety check

@@ -174,12 +174,12 @@ unsigned char DisplayClass::FadingRed[256];
 unsigned char DisplayClass::TranslucentTable[(MAGIC_COL_COUNT + 1) * 256];
 unsigned char DisplayClass::WhiteTranslucentTable[(1 + 1) * 256];
 unsigned char DisplayClass::MouseTranslucentTable[(4 + 1) * 256];
-void const* DisplayClass::TransIconset;
+const void* DisplayClass::TransIconset;
 unsigned char DisplayClass::UnitShadow[(USHADOW_COL_COUNT + 1) * 256];
 unsigned char DisplayClass::UnitShadowAir[(USHADOW_COL_COUNT + 1) * 256];
 unsigned char DisplayClass::SpecialGhost[2 * 256];
 
-void const* DisplayClass::ShadowShapes;
+const void* DisplayClass::ShadowShapes;
 unsigned char DisplayClass::ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
 
 /*
@@ -358,27 +358,27 @@ void DisplayClass::Init_IO() {
  *=============================================================================================*/
 void DisplayClass::Init_Theater(TheaterType theater) {
   char fullname[16];
-  static TLucentType const MouseCols[4] = {{BLACK, BLACK, 110, 0},
+  static const TLucentType MouseCols[4] = {{BLACK, BLACK, 110, 0},
                                            {WHITE, WHITE, 110, 0},
                                            {LTGREY, LTGREY, 110, 0},
                                            {DKGREY, DKGREY, 110, 0}};
-  static TLucentType const MagicCols[MAGIC_COL_COUNT] = {
+  static const TLucentType MagicCols[MAGIC_COL_COUNT] = {
       {32, 32, 110, 0},        {33, 33, 110, 0},       {34, 34, 110, 0},
       {35, 35, 110, 0},        {36, 36, 110, 0},       {37, 37, 110, 0},
       {38, 38, 110, 0},        {39, 39, 110, 0},       {BLACK, BLACK, 200, 0},
       {WHITE, BLACK, 40, 0},   {LTGREY, BLACK, 80, 0}, {DKGREY, BLACK, 140, 0},
       {LTGREEN, BLACK, 130, 0}};
-  static TLucentType const WhiteCols[1] = {{1, WHITE, 80, 0}};
-  static TLucentType const ShadowCols[SHADOW_COL_COUNT] = {
+  static const TLucentType WhiteCols[1] = {{1, WHITE, 80, 0}};
+  static const TLucentType ShadowCols[SHADOW_COL_COUNT] = {
       {WHITE + 1, BLACK, 130, 0},
       {WHITE, BLACK, 170, 0},
       {LTGRAY, BLACK, 250, 0},
       {DKGRAY, BLACK, 250, 0}};
-  static TLucentType const UShadowCols[USHADOW_COL_COUNT] = {
+  static const TLucentType UShadowCols[USHADOW_COL_COUNT] = {
       {LTGREEN, BLACK, 130, 0}};
-  static TLucentType const UShadowColsAir[USHADOW_COL_COUNT] = {
+  static const TLucentType UShadowColsAir[USHADOW_COL_COUNT] = {
       {LTGREEN, WHITE, 0, 0}};
-  static TLucentType const UShadowColsSnow[USHADOW_COL_COUNT] = {
+  static const TLucentType UShadowColsSnow[USHADOW_COL_COUNT] = {
       {LTGREEN, BLACK, 75, 0}};
 
   /*
@@ -414,7 +414,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   **	The fading palettes will have to be generated as well.
   */
   sprintf(fullname, "%s.PAL", Theaters[theater].Root);
-  PaletteClass const* ptr = (PaletteClass*)MFCD::Retrieve(fullname);
+  const PaletteClass* ptr = (PaletteClass*)MFCD::Retrieve(fullname);
   GamePalette = *ptr;
 
   OriginalPalette = GamePalette;
@@ -497,7 +497,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
  * HISTORY: * 12/06/1994 JLB : Created. * 12/07/1994 JLB : Sidebar fixup. *
  *   08/13/1995 JLB : Optimized for variable sized help text. *
  *=============================================================================================*/
-short const* DisplayClass::Text_Overlap_List(char const* text, int x,
+const short* DisplayClass::Text_Overlap_List(const char* text, int x,
                                              int y) const {
   static short _list[60];
   int count = ARRAY_SIZE(_list);
@@ -636,7 +636,7 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
  * HISTORY: * 06/03/1994 JLB : Created. * 06/26/1995 JLB : Puts placement cursor
  *into static buffer.                                *
  *=============================================================================================*/
-void DisplayClass::Set_Cursor_Shape(short const* list) {
+void DisplayClass::Set_Cursor_Shape(const short* list) {
   if (CursorSize) {
     Cursor_Mark(ZoneCell + ZoneOffset, false);
   }
@@ -689,10 +689,10 @@ void DisplayClass::Set_Cursor_Shape(short const* list) {
  *check.                                                  * 10/11/1994 BWG :
  *Added IsProximate check for ore refineries                               *
  *=============================================================================================*/
-bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const* object,
-                                          HousesType house, short const* list,
+bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
+                                          HousesType house, const short* list,
                                           CELL trycell) const {
-  short const* ptr;
+  const short* ptr;
   int retval = -1;
   bool noradar = false;
 
@@ -715,8 +715,8 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const* object,
     return true;
   }
 
-  BuildingTypeClass const* building =
-      dynamic_cast<BuildingTypeClass const*>(object);
+  const BuildingTypeClass* building =
+      dynamic_cast<const BuildingTypeClass*>(object);
 
   /*
   **	Scan through all cells that the building foundation would cover. If any
@@ -798,7 +798,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const* object,
           // we've found a building...
           if (newbase != nullptr && newbase->What_Am_I() == RTTI_BUILDING &&
               newbase->House->Class->House == house &&
-              dynamic_cast<BuildingClass const*>(newbase)->Class->IsBase) {
+              dynamic_cast<const BuildingClass*>(newbase)->Class->IsBase) {
             retval = true;
             break;
           }
@@ -945,7 +945,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
  * HISTORY: * 03/31/1995 BRR : Created. *
  *=============================================================================================*/
 void DisplayClass::Get_Occupy_Dimensions(int& w, int& h,
-                                         short const* list) const {
+                                         const short* list) const {
   int min_x = MAP_CELL_W;
   int max_x = -MAP_CELL_W;
   int min_y = MAP_CELL_H;
@@ -1000,7 +1000,7 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h,
  *function.                                            *
  *=============================================================================================*/
 void DisplayClass::Cursor_Mark(CELL pos, bool on) {
-  CELL const* ptr;
+  const CELL* ptr;
   CellClass* cellptr;
 
   if (pos == -1) return;
@@ -1091,7 +1091,7 @@ void DisplayClass::AI(KeyNumType& input, int x, int y) {
  *system.                                                   * 05/31/1994 JLB :
  *Sorts object position if this is for the ground layer.                   *
  *=============================================================================================*/
-void DisplayClass::Submit(ObjectClass const* object, LayerType layer) {
+void DisplayClass::Submit(const ObjectClass* object, LayerType layer) {
   if (object) {
     Layer[layer].Submit(object, layer == LAYER_GROUND);
   }
@@ -1114,7 +1114,7 @@ void DisplayClass::Submit(ObjectClass const* object, LayerType layer) {
  * HISTORY: * 05/31/1994 JLB : Created. * 05/31/1994 JLB : Improved layer
  *system.                                                   *
  *=============================================================================================*/
-void DisplayClass::Remove(ObjectClass const* object, LayerType layer) {
+void DisplayClass::Remove(const ObjectClass* object, LayerType layer) {
   assert(object != nullptr);
   assert(object->IsActive);
 
@@ -1287,7 +1287,7 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. * 08/01/1994 JLB : Simplified. *
  *=============================================================================================*/
-void DisplayClass::Refresh_Cells(CELL cell, short const* list) {
+void DisplayClass::Refresh_Cells(CELL cell, const short* list) {
   short tlist[36];
 
   if (*list == REFRESH_SIDEBAR) {
@@ -1323,7 +1323,7 @@ void DisplayClass::Refresh_Cells(CELL cell, short const* list) {
  *Converted to member function.                                            *
  *=============================================================================================*/
 int DisplayClass::Cell_Shadow(CELL cell) const {
-  static signed char const _shadow[256] = {
+  static const signed char _shadow[256] = {
       -1, 33, 2,  2,  34, 37, 2,  2,  4,  26, 6,  6,  4,  26, 6,  6,
       35, 45, 17, 17, 38, 41, 17, 17, 4,  26, 6,  6,  4,  26, 6,  6,
       8,  21, 10, 10, 27, 31, 10, 10, 12, 23, 14, 14, 12, 23, 14, 14,
@@ -1354,7 +1354,7 @@ int DisplayClass::Cell_Shadow(CELL cell) const {
   if (static_cast<unsigned>(Cell_Y(cell) - 1) >= MAP_CELL_H - 2) return -1;
   // if ((unsigned)(Cell_Y(cell)-1) > MAP_CELL_H-2) return(-2);
 
-  CellClass const* cellptr = &(*this)[cell];
+  const CellClass* cellptr = &(*this)[cell];
 
   /*
   **	Presume solid black if that is what is here already.
@@ -2951,15 +2951,15 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
       if (Map.IsTargettingMode == SPC_CHRONO2) {
         action = ACTION_CHRONO2;
         if (shadow) action = ACTION_NOMOVE;
-        ObjectClass const* tobject = As_Object(PlayerPtr->UnitToTeleport);
+        const ObjectClass* tobject = As_Object(PlayerPtr->UnitToTeleport);
 
         /*
         **	Determine if the object can be teleported to the destination
         *cell.
         */
         if (tobject != nullptr && tobject->Is_Techno()) {
-          TechnoClass const* uobject =
-              dynamic_cast<TechnoClass const*>(tobject);
+          const TechnoClass* uobject =
+              dynamic_cast<const TechnoClass*>(tobject);
           if (!uobject->Can_Teleport_Here(cell)) {
             //					if (((UnitClass
             //*)As_Object(PlayerPtr->UnitToTeleport))->Can_Enter_Cell(cell,
@@ -3370,7 +3370,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
       */
       text = object->Full_Name();
       if (object->Is_Techno() &&
-          !dynamic_cast<TechnoTypeClass const&>(object->Class_Of()).IsNominal) {
+          !dynamic_cast<const TechnoTypeClass&>(object->Class_Of()).IsNominal) {
         if (!dynamic_cast<TechnoClass*>(object)->House->Is_Ally(PlayerPtr)) {
           //				if (!PlayerPtr->Is_Ally(object)) {
           switch (object->What_Am_I()) {
@@ -3521,7 +3521,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           *formation
           */
           for (int index = 0; index < CurrentObject.Count(); index++) {
-            ObjectClass const* tobject = CurrentObject[index];
+            const ObjectClass* tobject = CurrentObject[index];
 
             /*
             **	Only moveable (i.e., FootClass) objects can ever be in a
@@ -3538,7 +3538,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             **	selected group, or it just plain has never been assigned a
             **	formation offset, then it can't be a formation move.
             */
-            FootClass const* foot = (FootClass*)tobject;
+            const FootClass* foot = (FootClass*)tobject;
             if (foot->Group != group || foot->XFormOffset == 0x80000000) {
               FormMove = false;
               break;
@@ -3560,7 +3560,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           */
           if (FormMove) {
             for (int index = 0; index < ::Logic.Count(); index++) {
-              ObjectClass const* obj = ::Logic[index];
+              const ObjectClass* obj = ::Logic[index];
 
               /*
               **	If the object is selected, then it has already been
@@ -3573,7 +3573,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
               */
               if (!obj->Is_Foot()) continue;
 
-              FootClass const* foot = (FootClass*)obj;
+              const FootClass* foot = (FootClass*)obj;
 
               /*
               **	Only consider objects that are owned by the player.
@@ -4251,7 +4251,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   /*
   **	Read the map dimensions.
   */
-  char const* const name = "Map";
+  const char* const name = "Map";
   int x = ini.Get_Int(name, "X", 1);
   int y = ini.Get_Int(name, "Y", 1);
   int w = ini.Get_Int(name, "Width", MAP_CELL_W - 2);
@@ -4330,7 +4330,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
     /*
     **	Get a cell trigger and cell assignment.
     */
-    char const* cellentry = ini.Get_Entry("CellTriggers", index);
+    const char* cellentry = ini.Get_Entry("CellTriggers", index);
     TriggerTypeClass* tp = ini.Get_TriggerType("CellTriggers", cellentry);
     CELL cell = atoi(cellentry);
 
@@ -4347,7 +4347,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   /*
   **	Read the map template data.
   */
-  static char const* const MAPPACK = "MapPack";
+  static const char* const MAPPACK = "MapPack";
   len = ini.Get_UUBlock(MAPPACK, _staging_buffer, sizeof(_staging_buffer));
   BufferStraw bstraw(_staging_buffer, len);
   Map.Read_Binary(bstraw);
@@ -4376,7 +4376,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   /*
   **	Save the map parameters.
   */
-  static char const* const NAME = "Map";
+  static const char* const NAME = "Map";
   ini.Clear(NAME);
   ini.Put_TheaterType(NAME, "Theater", Scen.Theater);
   ini.Put_Int(NAME, "X", MapCellX);
@@ -4387,7 +4387,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   /*
   **	Save the Waypoint entries.
   */
-  static char const* const WAYNAME = "Waypoints";
+  static const char* const WAYNAME = "Waypoints";
   ini.Clear(WAYNAME);
   for (int i = 0; i < WAYPT_COUNT; i++) {
     if (Scen.Waypoint[i] != -1) {
@@ -4399,7 +4399,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   /*
   **	Save the cell's triggers.
   */
-  static char const* const CELLTRIG = "CellTriggers";
+  static const char* const CELLTRIG = "CellTriggers";
   ini.Clear(CELLTRIG);
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if ((*this)[cell].Trigger.Is_Valid()) {
@@ -4421,7 +4421,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   /*
   **	Write the map template data out to the ini file.
   */
-  static char const* const MAPPACK = "MapPack";
+  static const char* const MAPPACK = "MapPack";
   BufferPipe bpipe(_staging_buffer, sizeof(_staging_buffer));
   int len = Map.Write_Binary(bpipe);
   ini.Clear(MAPPACK);

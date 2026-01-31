@@ -131,26 +131,26 @@ EZERO,                 // Non-error.
   */
   int Rights;
 
-  RawFileClass(char const* filename);
+  RawFileClass(const char* filename);
   RawFileClass();
-  RawFileClass(RawFileClass const& f);
-  RawFileClass& operator=(RawFileClass const& f);
+  RawFileClass(const RawFileClass& f);
+  RawFileClass& operator=(const RawFileClass& f);
   ~RawFileClass() override;
 
-  char const* File_Name() const override;
-  char const* Set_Name(char const* filename) override;
+  const char* File_Name() const override;
+  const char* Set_Name(const char* filename) override;
   int Create() override;
   int Delete() override;
   int Is_Open() const override;
-  int Open(char const* filename, int rights = READ) override;
+  int Open(const char* filename, int rights = READ) override;
   int Open(int rights = READ) override;
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;
-  long Write(void const* buffer, long size) override;
+  long Write(const void* buffer, long size) override;
   void Close() override;
   void Error(int error, int canretry = false,
-                     char const* filename = nullptr) override;
+             const char* filename = nullptr) override;
 
  protected:
   int Do_Is_Available(AvailabilityCheck mode) override;
@@ -176,7 +176,7 @@ EZERO,                 // Non-error.
   *either a *	constant or an allocated string as indicated by the "Allocated"
   *flag.
   */
-  char const* Filename;
+  const char* Filename;
 
   /*
   **	Filenames that were assigned as part of the construction process
@@ -207,7 +207,7 @@ object or NULL   *
  * HISTORY: *
 ;*   10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline char const* RawFileClass::File_Name() const { return Filename; }
+inline const char* RawFileClass::File_Name() const { return Filename; }
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Default constructor for a file object. *

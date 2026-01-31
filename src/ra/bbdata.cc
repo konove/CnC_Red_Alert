@@ -58,6 +58,7 @@
 #include "ra/jshell.h"
 #include "ra/type.h"
 #include "tech/rawfile.h"
+
 /***********************************************************************************************
  * BulletTypeClass::BulletTypeClass -- Constructor for bullet type objects. *
  *                                                                                             *
@@ -74,7 +75,7 @@
  * HISTORY: * 10/17/1994 JLB : Created. * 07/17/1996 JLB : Uses correct default
  *values.                                             *
  *=============================================================================================*/
-BulletTypeClass::BulletTypeClass(char const* name)
+BulletTypeClass::BulletTypeClass(const char* name)
     : ObjectTypeClass(RTTI_BULLETTYPE, BulletTypes.ID(this), true, true, false,
                       false, true, true, false, TXT_NONE, name),
       IsHigh(false),

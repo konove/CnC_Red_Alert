@@ -89,7 +89,7 @@ bool Expansion_Present() {
 class EListClass : public ListClass {
  public:
   EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-             void const* up, void const* down)
+             const void* up, const void* down)
       : ListClass(id, x, y, w, h, flags, up, down) {}
 
  protected:
@@ -130,8 +130,8 @@ bool Expansion_Dialog() {
 
   GadgetClass* buttons = nullptr;
 
-  void const* up_button;
-  void const* down_button;
+  const void* up_button;
+  const void* down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -298,8 +298,8 @@ bool Bonus_Dialog() {
 
   GadgetClass* buttons = nullptr;
 
-  void const* up_button;
-  void const* down_button;
+  const void* up_button;
+  const void* down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");

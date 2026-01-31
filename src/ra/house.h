@@ -75,7 +75,7 @@ class FactoryClass;
 class HouseStaticClass {
  public:
   HouseStaticClass();
-  HouseStaticClass(NoInitClass const&) {}
+  HouseStaticClass(const NoInitClass&) {}
 
   /*
   **	This value indicates the degree of smartness to assign to this house.
@@ -630,7 +630,7 @@ class HouseClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   HouseClass(HousesType house);
-  HouseClass(NoInitClass const& x)
+  HouseClass(const NoInitClass& x)
       : Class(x),
         Control(x),
         AlertTime(x),
@@ -660,12 +660,12 @@ class HouseClass {
   DiffType Assign_Handicap(DiffType handicap);
   TARGET Find_Juicy_Target(COORDINATE coord) const;
   void Print_Zone_Stats(int x, int y, ZoneType zone, MonoClass* mono) const;
-  CELL Where_To_Go(FootClass const* object) const;
+  CELL Where_To_Go(const FootClass* object) const;
   CELL Zone_Cell(ZoneType zone) const;
   ZoneType Which_Zone(COORDINATE coord) const;
-  ZoneType Which_Zone(ObjectClass const* object) const;
+  ZoneType Which_Zone(const ObjectClass* object) const;
   ZoneType Which_Zone(CELL cell) const;
-  CELL Find_Cell_In_Zone(TechnoClass const* techno, ZoneType zone) const;
+  CELL Find_Cell_In_Zone(const TechnoClass* techno, ZoneType zone) const;
   ProdFailType Begin_Production(RTTIType type, int id);
   ProdFailType Suspend_Production(RTTIType type);
   ProdFailType Abandon_Production(RTTIType type);
@@ -680,13 +680,13 @@ class HouseClass {
   COORDINATE Find_Build_Location(BuildingClass* building) const;
   BuildingClass* Find_Building(StructType type,
                                ZoneType zone = ZONE_NONE) const;
-  char const* Name() const { return Class->Name(); }
+  const char* Name() const { return Class->Name(); }
 
   bool Fire_Sale();
   bool Is_Hack_Prevented(RTTIType rtti, int value) const;
   bool Is_No_YakMig() const;
   int Expert_AI();
-  void Production_Begun(TechnoClass const* rtti);
+  void Production_Begun(const TechnoClass* rtti);
   void Sell_Wall(CELL cell);
   bool Flag_To_Die();
   bool Flag_To_Win();
@@ -700,8 +700,8 @@ class HouseClass {
     if (object) Make_Enemy(object->Owner());
   }
   bool Is_Ally(HousesType house) const;
-  bool Is_Ally(HouseClass const* house) const;
-  bool Is_Ally(ObjectClass const* object) const;
+  bool Is_Ally(const HouseClass* house) const;
+  bool Is_Ally(const ObjectClass* object) const;
   void Debug_Dump(MonoClass* mono) const;
   void AI();
   bool Can_Build(RTTIType rtti, int type, HousesType house) const;
@@ -710,16 +710,16 @@ class HouseClass {
   FactoryClass* Fetch_Factory(RTTIType rtti) const;
   void Set_Factory(RTTIType rtti, FactoryClass* factory);
 
-  bool Can_Build(ObjectTypeClass const* type, HousesType house) const;
+  bool Can_Build(const ObjectTypeClass* type, HousesType house) const;
 
   int Get_Quantity(AircraftType aircraft);
   int Get_Quantity(StructType building);
-  unsigned char const* Remap_Table(bool blushing = false,
+  const unsigned char* Remap_Table(bool blushing = false,
                                    RemapType remap = REMAP_NORMAL) const;
 
-  TechnoTypeClass const* Suggest_New_Object(RTTIType objectype,
+  const TechnoTypeClass* Suggest_New_Object(RTTIType objectype,
                                             bool kennel = false) const;
-  BuildingTypeClass const* Suggest_New_Building() const;
+  const BuildingTypeClass* Suggest_New_Building() const;
   void Recalc_Center();
   bool Does_Enemy_Building_Exist(StructType) const;
   void Harvested(unsigned tiberium);
@@ -735,12 +735,12 @@ class HouseClass {
   fixed Power_Fraction() const;
   fixed Tiberium_Fraction() const;
   void Begin_Production() { IsStarted = true; }
-  TeamTypeClass const* Suggested_New_Team(bool alertcheck = false);
+  const TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
   void Adjust_Threat(int region, int threat);
-  void Tracking_Remove(TechnoClass const* techno);
-  void Tracking_Add(TechnoClass const* techno);
-  void Active_Remove(TechnoClass const* techno);
-  void Active_Add(TechnoClass const* techno);
+  void Tracking_Remove(const TechnoClass* techno);
+  void Tracking_Add(const TechnoClass* techno);
+  void Active_Remove(const TechnoClass* techno);
+  void Active_Add(const TechnoClass* techno);
 
   UrgencyType Check_Attack() const;
   UrgencyType Check_Build_Power() const;
@@ -876,7 +876,7 @@ class HouseClass {
     StructType Structure;  // The type of building to produce.
 
     BuildChoiceClass(UrgencyType u, StructType s) : Urgency(u), Structure(s) {}
-    BuildChoiceClass(NoInitClass const&) {}
+    BuildChoiceClass(const NoInitClass&) {}
     int Save(Pipe&) const { return true; }
     int Load(Straw&) { return true; }
     void Code_Pointers() {}

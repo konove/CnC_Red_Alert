@@ -54,14 +54,14 @@ class GraphicViewPortClass;
 #define SIZE_OF_PALETTE 256
 
 // Palette interpolation functions
-void Read_Interpolation_Palette(char const* palette_file_name);
-void Write_Interpolation_Palette(char const* palette_file_name);
+void Read_Interpolation_Palette(const char* palette_file_name);
+void Write_Interpolation_Palette(const char* palette_file_name);
 void Increase_Palette_Luminance(unsigned char* InterpolationPalette,
                                 int RedPercentage, int GreenPercentage,
                                 int BluePercentage, unsigned cap);
 void Interpolate_2X_Scale(GraphicBufferClass* source,
                           GraphicViewPortClass* dest,
-                          char const* palette_file_name);
+                          const char* palette_file_name);
 
 // C linkage for assembly functions and global data
 extern "C" {

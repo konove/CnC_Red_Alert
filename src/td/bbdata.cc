@@ -54,7 +54,7 @@
 **	Detailed information about each class of bullet (projectile) in the
 *game.
 */
-static BulletTypeClass const ClassSniper(
+static const BulletTypeClass ClassSniper(
     BULLET_BULLET,
     "50cal",  // NAME:			Text name of this unit type.
     false,    // Flies over tall walls?
@@ -77,7 +77,7 @@ static BulletTypeClass const ClassSniper(
     ANIM_PIFF              // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassBullet(
+static const BulletTypeClass ClassBullet(
     BULLET_BULLET,
     "50cal",  // NAME:			Text name of this unit type.
     false,    // Flies over tall walls?
@@ -100,7 +100,7 @@ static BulletTypeClass const ClassBullet(
     ANIM_PIFF         // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassSpreadfire(
+static const BulletTypeClass ClassSpreadfire(
     BULLET_SPREADFIRE,
     "50cal",  // NAME:			Text name of this unit type.
     true,     // Flies over tall walls?
@@ -123,7 +123,7 @@ static BulletTypeClass const ClassSpreadfire(
     ANIM_PIFFPIFF     // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassAPDS(
+static const BulletTypeClass ClassAPDS(
     BULLET_APDS,
     "120mm",        // NAME:			Text name of this unit type.
     false,          // Flies over tall walls?
@@ -146,7 +146,7 @@ static BulletTypeClass const ClassAPDS(
     ANIM_VEH_HIT3   // Explosion to use upon impact.
 );
 
-static BulletTypeClass const Class120mm(
+static const BulletTypeClass Class120mm(
     BULLET_HE,
     "120mm",  // NAME:			Text name of this unit type.
     true,     // Flies over tall walls?
@@ -169,7 +169,7 @@ static BulletTypeClass const Class120mm(
     ANIM_ART_EXP1     // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassMissile(
+static const BulletTypeClass ClassMissile(
     BULLET_SSM,
     "DRAGON",    // NAME:			Text name of this unit type.
     true,        // Flies over tall walls?
@@ -192,7 +192,7 @@ static BulletTypeClass const ClassMissile(
     ANIM_FRAG1   // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassMissile2(
+static const BulletTypeClass ClassMissile2(
     BULLET_SSM2,
     "DRAGON",    // NAME:			Text name of this unit type.
     true,        // Flies over tall walls?
@@ -215,7 +215,7 @@ static BulletTypeClass const ClassMissile2(
     ANIM_FRAG1   // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassPatriot(
+static const BulletTypeClass ClassPatriot(
     BULLET_SAM,
     "MISSILE",      // NAME:			Text name of this unit type.
     true,           // Flies over tall walls?
@@ -238,7 +238,7 @@ static BulletTypeClass const ClassPatriot(
     ANIM_VEH_HIT1   // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassDragon(
+static const BulletTypeClass ClassDragon(
     BULLET_TOW,
     "DRAGON",      // NAME:			Text name of this unit type.
     true,          // Flies over tall walls?
@@ -261,7 +261,7 @@ static BulletTypeClass const ClassDragon(
     ANIM_VEH_HIT2  // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassFlame(
+static const BulletTypeClass ClassFlame(
     BULLET_FLAME,
     "FLAME",       // NAME:			Text name of this unit type.
     false,         // Flies over tall walls?
@@ -284,7 +284,7 @@ static BulletTypeClass const ClassFlame(
     ANIM_NONE      // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassChem(
+static const BulletTypeClass ClassChem(
     BULLET_CHEMSPRAY,
     "FLAME",     // NAME:			Text name of this unit type.
     false,       // Flies over tall walls?
@@ -307,7 +307,7 @@ static BulletTypeClass const ClassChem(
     ANIM_NONE    // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassNapalm(
+static const BulletTypeClass ClassNapalm(
     BULLET_NAPALM,
     "BOMBLET",  // NAME:			Text name of this unit type.
     true,       // Flies over tall walls?
@@ -330,7 +330,7 @@ static BulletTypeClass const ClassNapalm(
     ANIM_NAPALM2      // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassGrenade(
+static const BulletTypeClass ClassGrenade(
     BULLET_GRENADE,
     "BOMB",  // NAME:			Text name of this unit type.
     true,    // Flies over tall walls?
@@ -353,7 +353,7 @@ static BulletTypeClass const ClassGrenade(
     ANIM_VEH_HIT2     // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassLaser(
+static const BulletTypeClass ClassLaser(
     BULLET_LASER,
     "Laser",  // NAME:			Text name of this unit type.
     true,     // Flies over tall walls?
@@ -376,7 +376,7 @@ static BulletTypeClass const ClassLaser(
     ANIM_NONE         // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassNukeUp(
+static const BulletTypeClass ClassNukeUp(
     BULLET_NUKE_UP,
     "ATOMICUP",     // NAME:			Text name of this unit type.
     true,           // Flies over tall walls?
@@ -399,7 +399,7 @@ static BulletTypeClass const ClassNukeUp(
     ANIM_FRAG1      // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassNukeDown(
+static const BulletTypeClass ClassNukeDown(
     BULLET_NUKE_DOWN,
     "ATOMICDN",     // NAME:			Text name of this unit type.
     true,           // Flies over tall walls?
@@ -422,7 +422,7 @@ static BulletTypeClass const ClassNukeDown(
     ANIM_ATOM_BLAST  // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassHonestJohn(
+static const BulletTypeClass ClassHonestJohn(
     BULLET_HONEST_JOHN,
     "MISSILE",     // NAME:			Text name of this unit type.
     true,          // Flies over tall walls?
@@ -445,7 +445,7 @@ static BulletTypeClass const ClassHonestJohn(
     ANIM_NAPALM3   // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassHeadButt(
+static const BulletTypeClass ClassHeadButt(
     BULLET_HEADBUTT,
     "GORE",  // NAME:			Text name of this unit type.
     false,   // Flies over tall walls?
@@ -468,7 +468,7 @@ static BulletTypeClass const ClassHeadButt(
     ANIM_NONE          // Explosion to use upon impact.
 );
 
-static BulletTypeClass const ClassTRexBite(
+static const BulletTypeClass ClassTRexBite(
     BULLET_TREXBITE,
     "CHEW",  // NAME:			Text name of this unit type.
     false,   // Flies over tall walls?
@@ -495,7 +495,7 @@ static BulletTypeClass const ClassTRexBite(
 **	This is the array of pointers to the static data associated with
 **	each bullet (projectile) type.
 */
-BulletTypeClass const* const BulletTypeClass::Pointers[BULLET_COUNT] = {
+const BulletTypeClass *const BulletTypeClass::Pointers[BULLET_COUNT] = {
     &ClassSniper,      //	BULLET_SNIPER
     &ClassBullet,      //	BULLET_BULLET
     &ClassAPDS,        //	BULLET_APDS
@@ -533,7 +533,7 @@ BulletTypeClass const* const BulletTypeClass::Pointers[BULLET_COUNT] = {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 BulletTypeClass::BulletTypeClass(
-    BulletType type, char const* ininame, bool is_high, bool is_homing,
+    BulletType type, const char *ininame, bool is_high, bool is_homing,
     bool is_arcing, bool is_dropping, bool is_invisible,
     bool is_proximity_armed, bool is_flame_equipped, bool is_fueled,
     bool is_faceless, bool is_inaccurate, bool is_translucent,
@@ -584,7 +584,7 @@ void BulletTypeClass::One_Time() {
   **	Load the bullet shapes.
   */
   for (index = BULLET_FIRST; index < BULLET_COUNT; index++) {
-    BulletTypeClass const& bullet = As_Reference(index);
+    const BulletTypeClass &bullet = As_Reference(index);
 
     if (!bullet.IsInvisible) {
       auto fullname = std::filesystem::path(bullet.IniName)
@@ -594,9 +594,9 @@ void BulletTypeClass::One_Time() {
       RawFileClass file(fullname.c_str());
 
       if (file.Is_Available()) {
-        (void const*&)bullet.ImageData = Load_Alloc_Data(file);
+        (const void *&)bullet.ImageData = Load_Alloc_Data(file);
       } else {
-        (void const*&)bullet.ImageData =
+        (const void *&)bullet.ImageData =
             MixFileClass::Retrieve(fullname.c_str());
       }
     }

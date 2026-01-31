@@ -174,7 +174,7 @@
  *                                                                                             *
  * HISTORY: * 06/24/1996 JLB : Created. *
  *=============================================================================================*/
-static bool _Counts_As_Civ_Evac(ObjectClass const* candidate) {
+static bool _Counts_As_Civ_Evac(const ObjectClass* candidate) {
   /*
   **	If the candidate pointer is missing, then return with failure code.
   */
@@ -188,7 +188,7 @@ static bool _Counts_As_Civ_Evac(ObjectClass const* candidate) {
   /*
   **	Working infantry object pointer.
   */
-  InfantryClass const* inf = dynamic_cast<InfantryClass const*>(candidate);
+  const InfantryClass* inf = dynamic_cast<const InfantryClass*>(candidate);
 
   /*
   **	Certain infantry types will always be considered a civilian evacuation
@@ -458,7 +458,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Verify the legality of the unit class.
   */
-  void const* shapefile = Get_Image_Data();
+  const void* shapefile = Get_Image_Data();
   if (!shapefile) return;
 
   int shapenum = Shape_Number();
@@ -601,7 +601,7 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
 
   int counter = ini.Entry_Count(INI_Name());
   for (int index = 0; index < counter; index++) {
-    char const* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.Get_Entry(INI_Name(), index);
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf) - 1);
     inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
@@ -1010,11 +1010,11 @@ void AircraftClass::AI() {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const* AircraftClass::Overlap_List(bool redraw) const {
+const short* AircraftClass::Overlap_List(bool redraw) const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
-  static short const _list[] = {-(MAP_CELL_W - 1),
+  static const short _list[] = {-(MAP_CELL_W - 1),
                                 -MAP_CELL_W,
                                 -(MAP_CELL_W + 1),
                                 -1,
@@ -1031,7 +1031,7 @@ short const* AircraftClass::Overlap_List(bool redraw) const {
                                 -(MAP_CELL_W * 3 + 1),
                                 REFRESH_EOL};
 
-  static short const _listbadger[] = {-(MAP_CELL_W - 2),
+  static const short _listbadger[] = {-(MAP_CELL_W - 2),
                                       -(MAP_CELL_W - 1),
                                       -MAP_CELL_W,
                                       -(MAP_CELL_W + 1),
@@ -2262,7 +2262,7 @@ void AircraftClass::Player_Assign_Mission(MissionType mission, TARGET target,
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType AircraftClass::What_Action(ObjectClass const* target) const {
+ActionType AircraftClass::What_Action(const ObjectClass* target) const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3043,7 +3043,7 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
   CellClass* cellptr = &Map[cell];
 
-  ObjectClass const* occupier = cellptr->Cell_Occupier();
+  const ObjectClass* occupier = cellptr->Cell_Occupier();
 
   if (occupier == nullptr || !occupier->Is_Techno() ||
       ((TechnoClass*)occupier)->House->Is_Ally(House) ||
@@ -3319,7 +3319,7 @@ int AircraftClass::Mission_Enter() {
         int distance;
         TARGET togo;
 
-        BuildingClass const* building = As_Building(NavCom);
+        const BuildingClass* building = As_Building(NavCom);
         if (building) {
           togo = ::As_Target(building->Check_Point(CHECK_STACK));
         } else {
@@ -3341,7 +3341,7 @@ int AircraftClass::Mission_Enter() {
         TARGET togo;
 
         Set_Speed(200);
-        BuildingClass const* building = As_Building(NavCom);
+        const BuildingClass* building = As_Building(NavCom);
         if (building) {
           togo = ::As_Target(building->Check_Point(CHECK_DOWNWIND));
         } else {
@@ -3363,7 +3363,7 @@ int AircraftClass::Mission_Enter() {
         TARGET togo;
 
         Set_Speed(140);
-        BuildingClass const* building = As_Building(NavCom);
+        const BuildingClass* building = As_Building(NavCom);
         if (building) {
           togo = ::As_Target(building->Check_Point(CHECK_CROSSWIND));
         } else {

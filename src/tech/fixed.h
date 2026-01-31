@@ -90,36 +90,40 @@ class fixed {
   }
 
   // Constructor if ASCII image of number is known.
-  fixed(char const* ascii);
+  fixed(const char* ascii);
 
   // Convert to integer when implicitly required.
-  operator unsigned() const { return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256; }
+  operator unsigned() const {
+    return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256;
+  }
 
   /*
   **	The standard operators as they apply to in-place operation.
   */
-  fixed& operator*=(fixed const& rvalue) {
-    Data.Raw = static_cast<unsigned short>((int)Data.Raw * rvalue.Data.Raw / 256);
+  fixed& operator*=(const fixed& rvalue) {
+    Data.Raw =
+        static_cast<unsigned short>((int)Data.Raw * rvalue.Data.Raw / 256);
     return *this;
   }
   fixed& operator*=(int rvalue) {
     Data.Raw = static_cast<unsigned short>(Data.Raw * rvalue);
     return *this;
   }
-  fixed& operator/=(fixed const& rvalue) {
+  fixed& operator/=(const fixed& rvalue) {
     if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256)
       Data.Raw = static_cast<unsigned short>((int)Data.Raw * 256 / rvalue);
     return *this;
   }
   fixed& operator/=(int rvalue) {
-    if (rvalue) Data.Raw = static_cast<unsigned short>((unsigned)Data.Raw / rvalue);
+    if (rvalue)
+      Data.Raw = static_cast<unsigned short>((unsigned)Data.Raw / rvalue);
     return *this;
   }
-  fixed& operator+=(fixed const& rvalue) {
+  fixed& operator+=(const fixed& rvalue) {
     Data.Raw += rvalue.Data.Raw;
     return *this;
   }
-  fixed& operator-=(fixed const& rvalue) {
+  fixed& operator-=(const fixed& rvalue) {
     Data.Raw -= rvalue.Data.Raw;
     return *this;
   }
@@ -131,10 +135,9 @@ class fixed {
   */
   //		const fixed operator * (fixed const & rvalue) const
   //{return(fixed(*this) *= rvalue);}
-  const fixed operator*(fixed const& rvalue) const {
+  const fixed operator*(const fixed& rvalue) const {
     fixed temp = *this;
-    temp.Data.Raw =
-        static_cast<unsigned short>((int)temp.Data.Raw *
+    temp.Data.Raw = static_cast<unsigned short>((int)temp.Data.Raw *
                                                 (int)rvalue.Data.Raw / 256);
     return temp;
   }
@@ -143,22 +146,22 @@ class fixed {
   }
   //		const fixed operator / (fixed const & rvalue) const
   //{return(fixed(*this) /= rvalue);}
-  const fixed operator/(fixed const& rvalue) const {
+  const fixed operator/(const fixed& rvalue) const {
     fixed temp = *this;
     if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256)
-      temp.Data.Raw =
-          static_cast<unsigned short>((int)temp.Data.Raw * 256 /
+      temp.Data.Raw = static_cast<unsigned short>((int)temp.Data.Raw * 256 /
                                                   rvalue.Data.Raw);
     return temp;
   }
   const int operator/(int rvalue) const {
     if (rvalue)
-      return (static_cast<unsigned>(Data.Raw) + 256 / 2) / (static_cast<unsigned>(rvalue) * 256);
+      return (static_cast<unsigned>(Data.Raw) + 256 / 2) /
+             (static_cast<unsigned>(rvalue) * 256);
     return *this;
   }
   //		const fixed operator + (fixed const & rvalue) const
   //{return(fixed(*this) += rvalue);}
-  const fixed operator+(fixed const& rvalue) const {
+  const fixed operator+(const fixed& rvalue) const {
     fixed temp = *this;
     temp += rvalue;
     return temp;
@@ -168,7 +171,7 @@ class fixed {
   }
   //		const fixed operator - (fixed const & rvalue) const
   //{return(fixed(*this) -= rvalue);}
-  const fixed operator-(fixed const& rvalue) const {
+  const fixed operator-(const fixed& rvalue) const {
     fixed temp = *this;
     temp -= rvalue;
     return temp;
@@ -208,22 +211,22 @@ class fixed {
   /*
   **	The full set of comparison operators.
   */
-  bool operator==(fixed const& rvalue) const {
+  bool operator==(const fixed& rvalue) const {
     return Data.Raw == rvalue.Data.Raw;
   }
-  bool operator!=(fixed const& rvalue) const {
+  bool operator!=(const fixed& rvalue) const {
     return Data.Raw != rvalue.Data.Raw;
   }
-  bool operator<(fixed const& rvalue) const {
+  bool operator<(const fixed& rvalue) const {
     return Data.Raw < rvalue.Data.Raw;
   }
-  bool operator>(fixed const& rvalue) const {
+  bool operator>(const fixed& rvalue) const {
     return Data.Raw > rvalue.Data.Raw;
   }
-  bool operator<=(fixed const& rvalue) const {
+  bool operator<=(const fixed& rvalue) const {
     return Data.Raw <= rvalue.Data.Raw;
   }
-  bool operator>=(fixed const& rvalue) const {
+  bool operator>=(const fixed& rvalue) const {
     return Data.Raw >= rvalue.Data.Raw;
   }
   bool operator!() const { return Data.Raw == 0; }
@@ -242,56 +245,56 @@ class fixed {
   **	Friend functions to handle the alternate positioning of fixed and
   *integer parameters.
   */
-  friend const int operator*(int lvalue, fixed const& rvalue) {
+  friend const int operator*(int lvalue, const fixed& rvalue) {
     return rvalue * lvalue;
   }
-  friend const int operator/(int lvalue, fixed const& rvalue) {
+  friend const int operator/(int lvalue, const fixed& rvalue) {
     if (rvalue.Data.Raw == 0 || rvalue.Data.Raw == 256) return lvalue;
     return (static_cast<unsigned>(lvalue * 256) + 256 / 2) / rvalue.Data.Raw;
   }
-  friend const int operator+(int lvalue, fixed const& rvalue) {
+  friend const int operator+(int lvalue, const fixed& rvalue) {
     return rvalue + lvalue;
   }
-  friend const int operator-(int lvalue, fixed const& rvalue) {
+  friend const int operator-(int lvalue, const fixed& rvalue) {
     return (lvalue * 256 - rvalue.Data.Raw + 256 / 2) / 256;
   }
-  friend bool operator<(unsigned lvalue, fixed const& rvalue) {
+  friend bool operator<(unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 < rvalue.Data.Raw;
   }
-  friend bool operator>(unsigned lvalue, fixed const& rvalue) {
+  friend bool operator>(unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 > rvalue.Data.Raw;
   }
-  friend bool operator<=(unsigned lvalue, fixed const& rvalue) {
+  friend bool operator<=(unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 <= rvalue.Data.Raw;
   }
-  friend bool operator>=(unsigned lvalue, fixed const& rvalue) {
+  friend bool operator>=(unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 >= rvalue.Data.Raw;
   }
-  friend bool operator==(unsigned lvalue, fixed const& rvalue) {
+  friend bool operator==(unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 == rvalue.Data.Raw;
   }
-  friend bool operator!=(unsigned lvalue, fixed const& rvalue) {
+  friend bool operator!=(unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 != rvalue.Data.Raw;
   }
-  friend int operator*=(int& lvalue, fixed const& rvalue) {
+  friend int operator*=(int& lvalue, const fixed& rvalue) {
     lvalue = lvalue * rvalue;
     return lvalue;
   }
-  friend int operator/=(int& lvalue, fixed const& rvalue) {
+  friend int operator/=(int& lvalue, const fixed& rvalue) {
     lvalue = lvalue / rvalue;
     return lvalue;
   }
-  friend int operator+=(int& lvalue, fixed const& rvalue) {
+  friend int operator+=(int& lvalue, const fixed& rvalue) {
     lvalue = lvalue + rvalue;
     return lvalue;
   }
-  friend int operator-=(int& lvalue, fixed const& rvalue) {
+  friend int operator-=(int& lvalue, const fixed& rvalue) {
     lvalue = lvalue - rvalue;
     return lvalue;
   }
 
   // extra to help MSVC
-  friend const int operator*(unsigned short lvalue, fixed const& rvalue) {
+  friend const int operator*(unsigned short lvalue, const fixed& rvalue) {
     return rvalue * static_cast<int>(lvalue);
   }
 
@@ -312,15 +315,16 @@ class fixed {
     if (Data.Raw > capvalue * 256)
       Data.Raw = static_cast<unsigned short>(capvalue * 256);
   }
-  void Saturate(fixed const& capvalue) {
+  void Saturate(const fixed& capvalue) {
     if (*this > capvalue) *this = capvalue;
   }
   void Sub_Saturate(unsigned capvalue) {
     if (Data.Raw >= capvalue * 256)
       Data.Raw = static_cast<unsigned short>(capvalue * 256 - 1);
   }
-  void Sub_Saturate(fixed const& capvalue) {
-    if (*this >= capvalue) Data.Raw = static_cast<unsigned short>(capvalue.Data.Raw - 1);
+  void Sub_Saturate(const fixed& capvalue) {
+    if (*this >= capvalue)
+      Data.Raw = static_cast<unsigned short>(capvalue.Data.Raw - 1);
   }
   void Inverse() { *this = fixed(1) / *this; }
 
@@ -328,42 +332,42 @@ class fixed {
   **	Friend helper functions that work in the typical C fashion of passing
   *the object to *	be processed as a parameter to the function.
   */
-  friend const fixed Round_Up(fixed const& value) {
+  friend const fixed Round_Up(const fixed& value) {
     fixed temp = value;
     temp.Round_Up();
     return temp;
   }
-  friend const fixed Round_Down(fixed const& value) {
+  friend const fixed Round_Down(const fixed& value) {
     fixed temp = value;
     temp.Round_Down();
     return temp;
   }
-  friend const fixed Round(fixed const& value) {
+  friend const fixed Round(const fixed& value) {
     fixed temp = value;
     temp.Round();
     return temp;
   }
-  friend const fixed Saturate(fixed const& value, unsigned capvalue) {
+  friend const fixed Saturate(const fixed& value, unsigned capvalue) {
     fixed temp = value;
     temp.Saturate(capvalue);
     return temp;
   }
-  friend const fixed Saturate(fixed const& value, fixed const& capvalue) {
+  friend const fixed Saturate(const fixed& value, const fixed& capvalue) {
     fixed temp = value;
     temp.Saturate(capvalue);
     return temp;
   }
-  friend const fixed Sub_Saturate(fixed const& value, unsigned capvalue) {
+  friend const fixed Sub_Saturate(const fixed& value, unsigned capvalue) {
     fixed temp = value;
     temp.Sub_Saturate(capvalue);
     return temp;
   }
-  friend const fixed Sub_Saturate(fixed const& value, fixed const& capvalue) {
+  friend const fixed Sub_Saturate(const fixed& value, const fixed& capvalue) {
     fixed temp = value;
     temp.Sub_Saturate(capvalue);
     return temp;
   }
-  friend const fixed Inverse(fixed const& value) {
+  friend const fixed Inverse(const fixed& value) {
     fixed temp = value;
     temp.Inverse();
     return temp;
@@ -373,7 +377,7 @@ class fixed {
   **	Conversion of the fixed point number into an ASCII string.
   */
   int To_ASCII(char* buffer, int maxlen = -1) const;
-  char const* As_ASCII() const;
+  const char* As_ASCII() const;
 
   /*
   **	Helper constants that provide some convenient fixed point values.

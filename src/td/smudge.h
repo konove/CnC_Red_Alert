@@ -66,7 +66,7 @@ class SmudgeClass : public ObjectClass {
   void operator delete(void* ptr);
   SmudgeClass(SmudgeType type, COORDINATE pos = -1,
               HousesType house = HOUSE_NONE);
-  SmudgeClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {}
+  SmudgeClass(const NoInitClass& x) : ObjectClass(x), Class(Class) {}
   SmudgeClass() : Class(nullptr) {}
   operator SmudgeType() const { return Class->Type; }
   ~SmudgeClass() override {
@@ -81,13 +81,13 @@ class SmudgeClass : public ObjectClass {
   */
   static void Read_INI(char*);
   static void Write_INI(char*);
-  static char const* INI_Name() { return "SMUDGE"; }
+  static const char* INI_Name() { return "SMUDGE"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   void Code_Pointers() override;
   void Decode_Pointers() override;
 
-  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
   bool Mark(MarkType) override;
   void Draw_It(int, int, WindowNumberType) override {}
 
@@ -104,7 +104,7 @@ class SmudgeClass : public ObjectClass {
   /*
   **	This is a pointer to the template object's class.
   */
-  SmudgeTypeClass const* const Class;
+  const SmudgeTypeClass* const Class;
 
   /*
   ** This contains the value of the Virtual Function Table Pointer

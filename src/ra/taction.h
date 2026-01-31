@@ -99,8 +99,8 @@ typedef enum TActionType {
   TACTION_FIRST = 0
 } TActionType;
 
-TActionType Action_From_Name(char const* name);
-char const* Name_From_Action(TActionType action);
+TActionType Action_From_Name(const char* name);
+const char* Name_From_Action(TActionType action);
 NeedType Action_Needs(TActionType action);
 
 /*
@@ -131,7 +131,7 @@ struct TActionClass {
     Data.Theme = THEME_NONE;
     Data.Value = -1;
   }
-  TActionClass(NoInitClass const& x) : Team(x), Trigger(x) {}
+  TActionClass(const NoInitClass& x) : Team(x), Trigger(x) {}
 
   void Detach(TARGET target);
   void Code_Pointers();
@@ -147,27 +147,27 @@ class ActionChoiceClass {
   ActionChoiceClass(TActionType event = TACTION_NONE) : Action(event) {}
 
   operator TActionType() const { return Action; }
-  bool operator==(ActionChoiceClass const& rvalue) const {
+  bool operator==(const ActionChoiceClass& rvalue) const {
     return Action == rvalue.Action;
   }
-  bool operator!=(ActionChoiceClass const& rvalue) const {
+  bool operator!=(const ActionChoiceClass& rvalue) const {
     return Action != rvalue.Action;
   }
-  bool operator>(ActionChoiceClass const& rvalue) const {
+  bool operator>(const ActionChoiceClass& rvalue) const {
     return stricmp(Description(), rvalue.Description()) > 0;
   }
-  bool operator<(ActionChoiceClass const& rvalue) const {
+  bool operator<(const ActionChoiceClass& rvalue) const {
     return stricmp(Description(), rvalue.Description()) < 0;
   }
-  bool operator<=(ActionChoiceClass const& rvalue) const {
+  bool operator<=(const ActionChoiceClass& rvalue) const {
     return Action == rvalue.Action ||
            stricmp(Description(), rvalue.Description()) < 0;
   }
-  bool operator>=(ActionChoiceClass const& rvalue) const {
+  bool operator>=(const ActionChoiceClass& rvalue) const {
     return Action == rvalue.Action ||
            stricmp(Description(), rvalue.Description()) > 0;
   }
-  char const* Description() const { return Name_From_Action(Action); }
+  const char* Description() const { return Name_From_Action(Action); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
 

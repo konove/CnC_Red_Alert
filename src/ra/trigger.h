@@ -68,7 +68,7 @@ class TriggerClass {
   **	Constructor/Destructor
   */
   TriggerClass(TriggerTypeClass* trigtype = nullptr);
-  TriggerClass(NoInitClass const& x) : Class(x), Event1(x), Event2(x) {}
+  TriggerClass(const NoInitClass& x) : Class(x), Event1(x), Event2(x) {}
   ~TriggerClass();
 
   /*

@@ -128,7 +128,7 @@ class TriggerClass {
   **	Constructor/Destructor
   */
   TriggerClass();
-  TriggerClass(NoInitClass const& x) {}
+  TriggerClass(const NoInitClass& x) {}
   ~TriggerClass();
 
   /*
@@ -150,7 +150,7 @@ class TriggerClass {
   static void Read_INI(char* buffer);
   void Fill_In(char* name, char* entry);
   static void Write_INI(char* buffer, bool refresh);
-  static char const* INI_Name() { return "Triggers"; }
+  static const char* INI_Name() { return "Triggers"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   void Code_Pointers();
@@ -159,7 +159,7 @@ class TriggerClass {
   /*
   **	As_Pointer gets a pointer to the trigger object give the mnemonic
   */
-  static TriggerClass* As_Pointer(char const* name);
+  static TriggerClass* As_Pointer(const char* name);
 
   /*
   **	Data Access routines
@@ -172,8 +172,8 @@ class TriggerClass {
   //		void Set_House(HousesType house) {House = house;}
   //		long Get_Data() const {return(Data);}
   //		void Set_Data(long credits) {Data = credits;}
-  char const* Get_Name() const { return Name; }
-  void Set_Name(char const* buf) {
+  const char* Get_Name() const { return Name; }
+  void Set_Name(const char* buf) {
     strncpy(Name, buf, sizeof(Name));
     Name[sizeof(Name) - 1] = '\0';
   }
@@ -186,10 +186,10 @@ class TriggerClass {
   static bool Event_Need_House(EventType event);
   static bool Event_Need_Data(EventType event);
   static bool Action_Need_Team(ActionType action);
-  static EventType Event_From_Name(char const* name);
-  static char const* Name_From_Event(EventType event);
-  static ActionType Action_From_Name(char const* name);
-  static char const* Name_From_Action(ActionType action);
+  static EventType Event_From_Name(const char* name);
+  static const char* Name_From_Event(EventType event);
+  static ActionType Action_From_Name(const char* name);
+  static const char* Name_From_Action(ActionType action);
 
   /*
   **	Overloaded operators

@@ -113,7 +113,7 @@
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-AnimType Anim_From_Name(char const* name) {
+AnimType Anim_From_Name(const char* name) {
 #ifdef VIC
   if (name == nullptr) return ANIM_NONE;
 
@@ -278,11 +278,11 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
 
     IsTheaterShape = Class->IsTheater;
 
-    void const* shapefile = Get_Image_Data();
+    const void* shapefile = Get_Image_Data();
     if (shapefile != nullptr) {
-      void const* transtable = nullptr;
+      const void* transtable = nullptr;
       int shapenum = Class->Start + Fetch_Stage();
-      void const* remap = nullptr;
+      const void* remap = nullptr;
 
       /*
       **	If the translucent table hasn't been determined yet, then check
@@ -356,11 +356,11 @@ bool AnimClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-short const* AnimClass::Overlap_List() const {
+const short* AnimClass::Overlap_List() const {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
-  static short const OverlapAtom[] = {
+  static const short OverlapAtom[] = {
       -MAP_CELL_W * 2 - 1, (-MAP_CELL_W * 2), -MAP_CELL_W * 2 + 1,
       -MAP_CELL_W * 1 - 1, (-MAP_CELL_W * 1), -MAP_CELL_W * 1 + 1,
       -MAP_CELL_W * 0 - 1, (-MAP_CELL_W * 0), -MAP_CELL_W * 0 + 1,
@@ -369,7 +369,7 @@ short const* AnimClass::Overlap_List() const {
       REFRESH_EOL};
 
   if (IsToDelete) {
-    static short const _list[] = {REFRESH_EOL};
+    static const short _list[] = {REFRESH_EOL};
     return _list;
   }
 
@@ -417,7 +417,7 @@ short const* AnimClass::Overlap_List() const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-short const* AnimClass::Occupy_List(bool) const {
+const short* AnimClass::Occupy_List(bool) const {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);

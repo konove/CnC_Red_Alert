@@ -82,7 +82,7 @@
  *   06/03/1994 JLB : Converted to general purpose spillage functionality. *
  *   01/07/1995 JLB : Manually calculates spillage list for large objects. *
  *=============================================================================================*/
-short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
+const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   static const short _MoveSpillage[static_cast<int>(FACING_COUNT) + 1][5] = {
       {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
       {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
@@ -101,7 +101,7 @@ short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   //;	01 = below axis
   //;	10 = above axis
   //;	11 = undefined
-  static char const _SpillTable[16] = {8, 6, 2, -1, 0,  7,  1,  -1,
+  static const char _SpillTable[16] = {8, 6, 2, -1, 0,  7,  1,  -1,
                                        4, 5, 3, -1, -1, -1, -1, -1};
   int index = 0;
   int x, y;
@@ -111,7 +111,7 @@ short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   **	that covers a 5x5 square region.
   */
   if (maxsize > ICON_PIXEL_W * 2) {
-    static short const _gigundo[] = {
+    static const short _gigundo[] = {
         -(2 * MAP_CELL_W - 2), -(2 * MAP_CELL_W - 1),
         -(2 * MAP_CELL_W),     -(2 * MAP_CELL_W + 1),
         -(2 * MAP_CELL_W + 2), -(1 * MAP_CELL_W - 2),

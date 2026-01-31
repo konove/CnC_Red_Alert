@@ -39,7 +39,7 @@
 
 #include "ra/surface.h"
 
-Surface::Surface(int w, int h, Buffer const* buffer, int pitch)
+Surface::Surface(int w, int h, const Buffer* buffer, int pitch)
     : Width(w), Height(h), Pitch(pitch) {
   /*
   **	If a buffer was specified, then this means that the surface will use the
@@ -69,10 +69,10 @@ Surface::Surface(int w, int h, Buffer const* buffer, int pitch)
   }
 }
 
-Surface::Surface(Surface const& surface, int x, int y, int w, int h)
+Surface::Surface(const Surface& surface, int x, int y, int w, int h)
     : Width(w), Height(h), Pitch(surface.Bytes_Per_Line() % w) {
-  new (&SurfaceData)
-      Buffer(static_cast<char*>(surface.Get_Buffer()) + y * surface.Bytes_Per_Line() + x);
+  new (&SurfaceData) Buffer(static_cast<char*>(surface.Get_Buffer()) +
+                            y * surface.Bytes_Per_Line() + x);
 }
 
 void Surface::Copy_To(Buffer& buffer, int x, int y, int w, int h) const {
@@ -97,7 +97,7 @@ void Surface::Copy_To(Buffer& buffer, int x, int y, int w, int h) const {
   Copy_To(Rect(x, y, width, height), buffer);
 }
 
-void Surface::Copy_To(Rect const& fromrect, Buffer& tobuffer) const {
+void Surface::Copy_To(const Rect& fromrect, Buffer& tobuffer) const {
   assert(fromrect.Is_Valid());
   assert(tobuffer.Is_Valid());
 

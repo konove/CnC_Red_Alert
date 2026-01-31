@@ -63,7 +63,7 @@ class RadarClass : public DisplayClass {
   int RadPHeight;
 
   RadarClass();
-  RadarClass(NoInitClass const& x) : DisplayClass(x) {}
+  RadarClass(const NoInitClass& x) : DisplayClass(x) {}
 
   /*
   ** Initialization
@@ -75,7 +75,7 @@ class RadarClass : public DisplayClass {
   CELL Click_Cell_Calc(int x, int y) override;
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete = false) override;
-  void Refresh_Cells(CELL cell, short const* list) override;
+  void Refresh_Cells(CELL cell, const short* list) override;
   void Set_Map_Dimensions(int x, int y, int w, int h) override;
   //		virtual void Set_Tactical_Position(int x, int y, int leptonx=0,
   // int leptony=0); 		virtual void Set_Tactical_Position(CELL cell);
@@ -146,7 +146,7 @@ class RadarClass : public DisplayClass {
   unsigned SpecialRadarFrame : 3;
   unsigned RadarAnimFrame : 6;
 
-  static void const* RadarAnim;
+  static const void* RadarAnim;
 
   /*
   **	This gadget class is used for capturing input to the tactical map. All

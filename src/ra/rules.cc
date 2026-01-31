@@ -321,7 +321,7 @@ RulesClass::RulesClass()
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 static void Difficulty_Get(CCINIClass& ini, DifficultyClass& diff,
-                           char const* section) {
+                           const char* section) {
   if (ini.Is_Present(section)) {
     diff.FirepowerBias = ini.Get_Fixed(section, "FirePower", 1);
     diff.GroundspeedBias = ini.Get_Fixed(section, "Groundspeed", 1);
@@ -388,8 +388,8 @@ bool RulesClass::Process(CCINIClass& ini) {
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
 bool RulesClass::General(CCINIClass& ini) {
-  static char const* const GENERAL = "General";
-  static char const* const AFTERMATH = "Aftermath";
+  static const char* const GENERAL = "General";
+  static const char* const AFTERMATH = "Aftermath";
 
   if (ini.Is_Present(AFTERMATH)) {
     // debugprint( "NewUnitsEnabled previously %i\n", NewUnitsEnabled );
@@ -559,7 +559,7 @@ bool RulesClass::General(CCINIClass& ini) {
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
 bool RulesClass::MPlayer(CCINIClass& ini) {
-  static char const* const MPLAYER = "MultiplayerDefaults";
+  static const char* const MPLAYER = "MultiplayerDefaults";
   if (ini.Is_Present(MPLAYER)) {
     MPDefaultMoney = ini.Get_Int(MPLAYER, "Money", MPDefaultMoney);
     MPMaxMoney = ini.Get_Int(MPLAYER, "MaxMoney", MPMaxMoney);
@@ -589,7 +589,7 @@ bool RulesClass::MPlayer(CCINIClass& ini) {
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
 bool RulesClass::Recharge(CCINIClass& ini) {
-  static char const* const RECHARGE = "Recharge";
+  static const char* const RECHARGE = "Recharge";
   if (ini.Is_Present(RECHARGE)) {
     SonarTime = ini.Get_Fixed(RECHARGE, "Sonar", SonarTime);
     ChronoTime = ini.Get_Fixed(RECHARGE, "Chrono", ChronoTime);
@@ -624,7 +624,7 @@ bool RulesClass::Heap_Maximums(CCINIClass& ini) {
   /*
   **	Heap maximum values.
   */
-  static char const* const MAXIMUMS = "Maximums";
+  static const char* const MAXIMUMS = "Maximums";
   if (ini.Is_Present(MAXIMUMS)) {
     MaxPlayers = ini.Get_Int(MAXIMUMS, "Players", MaxPlayers);
     AircraftMax = ini.Get_Int(MAXIMUMS, "Aircraft", AircraftMax);
@@ -727,7 +727,7 @@ bool RulesClass::Heap_Maximums(CCINIClass& ini) {
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
 bool RulesClass::AI(CCINIClass& ini) {
-  static char const* const AI = "AI";
+  static const char* const AI = "AI";
   if (ini.Is_Present(AI)) {
     AttackInterval = ini.Get_Fixed(AI, "AttackInterval", AttackInterval);
     AttackDelay = ini.Get_Fixed(AI, "AttackDelay", AttackDelay);
@@ -782,7 +782,7 @@ bool RulesClass::AI(CCINIClass& ini) {
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
 bool RulesClass::Powerups(CCINIClass& ini) {
-  static char const* const POWERUPS = "Powerups";
+  static const char* const POWERUPS = "Powerups";
   if (ini.Is_Present(POWERUPS)) {
     for (CrateType crate = CRATE_FIRST; crate < CRATE_COUNT; crate++) {
       char buffer[128];
@@ -844,7 +844,7 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
   **	Fetch the movement characteristic data for terrain types.
   */
   for (LandType land = LAND_FIRST; land < LAND_COUNT; land++) {
-    static char const* _lands[LAND_COUNT] = {"Clear", "Road",  "Water",
+    static const char* _lands[LAND_COUNT] = {"Clear", "Road",  "Water",
                                              "Rock",  "Wall",  "Ore",
                                              "Beach", "Rough", "River"};
 
@@ -883,7 +883,7 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
  * HISTORY: * 08/11/1996 JLB : Created. *
  *=============================================================================================*/
 bool RulesClass::Themes(CCINIClass& ini) {
-  static char const* const THEMECONTROL = "ThemeControl";
+  static const char* const THEMECONTROL = "ThemeControl";
 
   if (ini.Is_Present(THEMECONTROL)) {
     for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
@@ -894,7 +894,7 @@ bool RulesClass::Themes(CCINIClass& ini) {
 
         ini.Get_String(THEMECONTROL, Theme.Base_Name(theme), "", buffer,
                        sizeof(buffer));
-        char const* token = strtok(buffer, ",");
+        const char* token = strtok(buffer, ",");
         if (token != nullptr) {
           scen = atoi(token);
         }
@@ -929,7 +929,7 @@ bool RulesClass::Themes(CCINIClass& ini) {
  * HISTORY: * 08/11/1996 JLB : Created. *
  *=============================================================================================*/
 bool RulesClass::IQ(CCINIClass& ini) {
-  static char const* const IQCONTROL = "IQ";
+  static const char* const IQCONTROL = "IQ";
   if (ini.Is_Present(IQCONTROL)) {
     MaxIQ = ini.Get_Int(IQCONTROL, "MaxIQLevels", MaxIQ);
     IQSuperWeapons = ini.Get_Int(IQCONTROL, "SuperWeapons", IQSuperWeapons);

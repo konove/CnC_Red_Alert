@@ -252,7 +252,7 @@ int FixedHeapClass::Free(void* pointer) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::ID(void const* pointer) {
+int FixedHeapClass::ID(const void* pointer) {
   if (pointer && Size) {
     return static_cast<int>(((char*)pointer - (char*)Buffer) / Size);
   }

@@ -308,7 +308,7 @@ void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
                         long ypos);
 
 /* File routines. */
-long VQA_Open(VQAHandle* vqa, char const* filename, VQAConfig* config);
+long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config);
 void VQA_Close(VQAHandle* vqa);
 long VQA_Play(VQAHandle* vqa, long mode);
 long VQA_SeekFrame(VQAHandle* vqa, long frame, long fromwhere);

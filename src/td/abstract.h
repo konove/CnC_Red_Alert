@@ -64,7 +64,7 @@ class AbstractClass {
   **	Constructor & destructors.
   */
   AbstractClass() { Coord = 0L; }
-  AbstractClass(NoInitClass const& x) { x(); }
+  AbstractClass(const NoInitClass& x) { x(); }
   virtual ~AbstractClass() {}
 
   /*
@@ -82,7 +82,7 @@ class AbstractClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  DirType Direction(AbstractClass const* object) const {
+  DirType Direction(const AbstractClass* object) const {
     return ::Direction(Center_Coord(), object->Target_Coord());
   }
   DirType Direction(COORDINATE coord) const {
@@ -99,7 +99,7 @@ class AbstractClass {
   int Distance(CELL cell) const {
     return ::Distance(Coord_Cell(Center_Coord()), cell);
   }
-  int Distance(AbstractClass const* object) const {
+  int Distance(const AbstractClass* object) const {
     return ::Distance(Center_Coord(), object->Target_Coord());
   }
 

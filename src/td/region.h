@@ -46,16 +46,16 @@
 class RegionClass {
  public:
   RegionClass() { Threat = 0; }
-  int operator!=(RegionClass const& region) {
+  int operator!=(const RegionClass& region) {
     return memcmp(this, &region, sizeof(RegionClass));
   }
-  int operator==(RegionClass const& region) {
+  int operator==(const RegionClass& region) {
     return !memcmp(this, &region, sizeof(RegionClass));
   }
-  int operator>(RegionClass const& region) {
+  int operator>(const RegionClass& region) {
     return memcmp(this, &region, sizeof(RegionClass)) > 0;
   }
-  int operator<(RegionClass const& region) {
+  int operator<(const RegionClass& region) {
     return memcmp(this, &region, sizeof(RegionClass)) < 0;
   }
 

@@ -76,7 +76,7 @@ class MissionClass : public ObjectClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   MissionClass(RTTIType rtti, int id);
-  explicit MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {}
+  explicit MissionClass(const NoInitClass& x) : ObjectClass(x), Timer(x) {}
   ~MissionClass() override {}
 
   /*---------------------------------------------------------------------
@@ -114,8 +114,8 @@ class MissionClass : public ObjectClass {
   virtual void Set_Mission(MissionType mission);
   static bool Is_Recruitable_Mission(MissionType mission);
 
-  static char const* Mission_Name(MissionType order);
-  static MissionType Mission_From_Name(char const* name);
+  static const char* Mission_Name(MissionType order);
+  static MissionType Mission_From_Name(const char* name);
   virtual void Override_Mission(MissionType mission, TARGET, TARGET);
   virtual bool Restore_Mission();
 
@@ -147,7 +147,7 @@ class MissionControlClass {
   */
   MissionType Mission;
 
-  char const* Name() const;
+  const char* Name() const;
 
   /*
   **	If the object should not be considered a threat when it

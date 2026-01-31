@@ -53,9 +53,9 @@
 class BaseNodeClass {
  public:
   BaseNodeClass() {}
-  int operator==(BaseNodeClass const& node);
-  int operator!=(BaseNodeClass const& node);
-  int operator>(BaseNodeClass const& node);
+  int operator==(const BaseNodeClass& node);
+  int operator!=(const BaseNodeClass& node);
+  int operator>(const BaseNodeClass& node);
 
   StructType Type;
   COORDINATE Coord;
@@ -83,7 +83,7 @@ class BaseClass {
   */
   void Read_INI(char* buffer);
   void Write_INI(char* buffer);
-  static char const* INI_Name() { return "Base"; }
+  static const char* INI_Name() { return "Base"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   virtual void Code_Pointers() {}

@@ -49,7 +49,7 @@
 class GScreenClass {
  public:
   GScreenClass();
-  GScreenClass(NoInitClass const&) {}
+  GScreenClass(const NoInitClass&) {}
 
   /*
   ** Initialization

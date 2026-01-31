@@ -77,7 +77,7 @@
 #include "sdllib/include/shape.h"
 
 // Submarine
-static VesselTypeClass const VesselSubmarine(
+static const VesselTypeClass VesselSubmarine(
     VESSEL_SS,
     TXT_SS,       // NAME:			Text name of this unit type.
     "SS",         // NAME:			Text name of this unit type.
@@ -95,7 +95,7 @@ static VesselTypeClass const VesselSubmarine(
 );
 
 // Destroyer
-static VesselTypeClass const VesselDestroyer(
+static const VesselTypeClass VesselDestroyer(
     VESSEL_DD,
     TXT_DD,       // NAME:			Text name of this unit type.
     "DD",         // NAME:			Text name of this unit type.
@@ -113,7 +113,7 @@ static VesselTypeClass const VesselDestroyer(
 );
 
 // Cruiser
-static VesselTypeClass const VesselCruiser(
+static const VesselTypeClass VesselCruiser(
     VESSEL_CA,
     TXT_CA,       // NAME:			Text name of this unit type.
     "CA",         // NAME:			Text name of this unit type.
@@ -131,7 +131,7 @@ static VesselTypeClass const VesselCruiser(
 );
 
 // Transport
-static VesselTypeClass const VesselTransport(
+static const VesselTypeClass VesselTransport(
     VESSEL_TRANSPORT,
     TXT_TRANSPORT,  // NAME:			Text name of this unit type.
     "LST",          // NAME:			Text name of this unit type.
@@ -149,7 +149,7 @@ static VesselTypeClass const VesselTransport(
 );
 
 // Gun Boat
-static VesselTypeClass const VesselPTBoat(
+static const VesselTypeClass VesselPTBoat(
     VESSEL_PT,
     TXT_PT,       // NAME:			Text name of this unit type.
     "PT",         // NAME:			Text name of this unit type.
@@ -167,7 +167,7 @@ static VesselTypeClass const VesselPTBoat(
 );
 
 // Missile Submarine
-static VesselTypeClass const VesselMissileSubmarine(
+static const VesselTypeClass VesselMissileSubmarine(
     VESSEL_MISSILESUB,
     TXT_MISSILESUB,  // NAME:			Text name of this unit type.
     "MSUB",          // NAME:			Text name of this unit type.
@@ -185,7 +185,7 @@ static VesselTypeClass const VesselMissileSubmarine(
 );
 
 // Transport
-static VesselTypeClass const VesselCarrier(
+static const VesselTypeClass VesselCarrier(
     VESSEL_CARRIER,
     TXT_CARRIER,  // NAME:			Text name of this unit type.
     "CARR",       // NAME:			Text name of this unit type.
@@ -217,7 +217,7 @@ static VesselTypeClass const VesselCarrier(
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created *
  *=============================================================================================*/
-VesselTypeClass::VesselTypeClass(VesselType type, int name, char const* ininame,
+VesselTypeClass::VesselTypeClass(VesselType type, int name, const char* ininame,
                                  AnimType exp, int verticaloffset,
                                  int primaryoffset, int primarylateral,
                                  int secondaryoffset, int secondarylateral,
@@ -406,7 +406,7 @@ BuildingClass* VesselTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
 void VesselTypeClass::Display(int x, int y, WindowNumberType window,
                               HousesType) const {
   int shape = 0;
-  void const* ptr = Get_Cameo_Data();
+  const void* ptr = Get_Cameo_Data();
   if (ptr == nullptr) {
     ptr = Get_Image_Data();
     shape = Rotation / 6;
@@ -609,8 +609,8 @@ void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-short const* VesselTypeClass::Overlap_List() const {
-  static short const _ship[] = {-3,
+const short* VesselTypeClass::Overlap_List() const {
+  static const short _ship[] = {-3,
                                 -2,
                                 -1,
                                 1,
@@ -652,7 +652,7 @@ short const* VesselTypeClass::Overlap_List() const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-VesselType VesselTypeClass::From_Name(char const* name) {
+VesselType VesselTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (VesselType classid = VESSEL_FIRST; classid < VESSEL_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {

@@ -68,7 +68,7 @@ class HouseClass {
   **	Pointer to the HouseTypeClass that this house is "owned" by.
   **	All constant data for a house type is stored in that class.
   */
-  HouseTypeClass const* const Class;
+  const HouseTypeClass* const Class;
 
   /*
   **	This is the house type that this house object should act like. This
@@ -365,7 +365,7 @@ class HouseClass {
   ** in the HousesTypeClass isn't used.  This variable is set to the remap
   ** table for the color the player wants to play.
   */
-  unsigned char const* RemapTable;
+  const unsigned char* RemapTable;
   PlayerColorType RemapColor;
   char Name[MPLAYER_NAME_MAX];
 
@@ -392,7 +392,7 @@ class HouseClass {
   void operator delete(void* ptr);
   HouseClass() : Class(nullptr) {}
   HouseClass(HousesType house);
-  HouseClass(NoInitClass const& x)
+  HouseClass(const NoInitClass& x)
       : Class(Class),
         FreeHarvester(x),
         IonCannon(x),
@@ -438,19 +438,19 @@ class HouseClass {
     if (object) Make_Enemy(object->Owner());
   }
   bool Is_Ally(HousesType house) const;
-  bool Is_Ally(HouseClass const* house) const;
-  bool Is_Ally(ObjectClass const* object) const;
+  bool Is_Ally(const HouseClass* house) const;
+  bool Is_Ally(const ObjectClass* object) const;
   void Debug_Dump(MonoClass* mono) const;
   void AI();
   bool Can_Build(StructType structure, HousesType house) const;
   bool Can_Build(InfantryType infantry, HousesType house) const;
   bool Can_Build(UnitType unit, HousesType) const;
   bool Can_Build(AircraftType aircraft, HousesType house) const;
-  bool Can_Build(TechnoTypeClass const* type, HousesType house) const;
-  unsigned char const* Remap_Table(bool blushing = false,
+  bool Can_Build(const TechnoTypeClass* type, HousesType house) const;
+  const unsigned char* Remap_Table(bool blushing = false,
                                    bool unit = false) const;
 
-  TechnoTypeClass const* Suggest_New_Object(RTTIType objectype) const;
+  const TechnoTypeClass* Suggest_New_Object(RTTIType objectype) const;
   bool Does_Enemy_Building_Exist(StructType) const;
   void Harvested(unsigned tiberium);
   long Available_Money() const;
@@ -465,7 +465,7 @@ class HouseClass {
     return !Tiberium ? 0 : Cardinal_To_Fixed(Capacity, Tiberium);
   }
   void Begin_Production() { IsStarted = true; }
-  TeamTypeClass const* Suggested_New_Team(bool alertcheck = false);
+  const TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
   void Adjust_Threat(int region, int threat);
 
   static void Init();

@@ -73,7 +73,7 @@ class DoorClass {
 
  public:
   DoorClass();
-  DoorClass(NoInitClass const& x) : Control(x) {}
+  DoorClass(const NoInitClass& x) : Control(x) {}
 
   bool Time_To_Redraw() { return IsToRedraw; }
   void Clear_Redraw_Flag() { IsToRedraw = false; }

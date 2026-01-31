@@ -172,8 +172,8 @@ SidebarClass::StripClass::SelectClass
 ** Shape data pointers
 */
 void* SidebarClass::StripClass::LogoShapes = nullptr;
-void const* SidebarClass::StripClass::ClockShapes;
-void const* SidebarClass::StripClass::SpecialShapes[SPC_COUNT];
+const void* SidebarClass::StripClass::ClockShapes;
+const void* SidebarClass::StripClass::SpecialShapes[SPC_COUNT];
 
 /***********************************************************************************************
  * SidebarClass::SidebarClass -- Default constructor for the sidebar. *
@@ -239,7 +239,7 @@ SidebarClass::SidebarClass()
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::SidebarClass(NoInitClass const& x) : PowerClass(x) {
+SidebarClass::SidebarClass(const NoInitClass& x) : PowerClass(x) {
   /*
   **	Set up the coordinates for the sidebar strips. These coordinates are for
   **	the upper left corner.
@@ -530,7 +530,7 @@ bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Refresh_Cells(CELL cell, short const* list) {
+void SidebarClass::Refresh_Cells(CELL cell, const short* list) {
   if (*list == REFRESH_SIDEBAR) {
     IsToRedraw = true;
     Column[0].IsToRedraw = true;
@@ -1061,7 +1061,7 @@ bool SidebarClass::Activate(int control) {
  *                                                                                             *
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::StripClass::StripClass(InitClass const&)
+SidebarClass::StripClass::StripClass(const InitClass&)
     : X(0),
       Y(0),
       ID(0),
@@ -1126,7 +1126,7 @@ void SidebarClass::StripClass::One_Time(int) {
  *                                                                                             *
  * HISTORY: * 05/19/1995 JLB : commented *
  *=============================================================================================*/
-void const* SidebarClass::StripClass::Get_Special_Cameo(
+const void* SidebarClass::StripClass::Get_Special_Cameo(
     SpecialWeaponType type) {
   if (static_cast<unsigned>(type) < SPC_COUNT) {
     return SpecialShapes[type];
@@ -1237,7 +1237,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   Reload_LogoShapes();
 
   if (theater != THEATER_NONE && theater != LastTheater) {
-    static TLucentType const ClockCols[1] = {
+    static const TLucentType ClockCols[1] = {
         {GREEN, BLACK, 100, 0}  //			{GREEN, LTGREY, 180, 0}
     };
 
@@ -1652,9 +1652,9 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       bool completed = false;
       int stage = 0;
       bool darken = false;
-      void const* shapefile = nullptr;
+      const void* shapefile = nullptr;
       int shapenum = 0;
-      void const* remapper = nullptr;
+      const void* remapper = nullptr;
       FactoryClass* factory = nullptr;
       int index = i + TopIndex;
       int x = X;
@@ -1675,7 +1675,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       *underlying graphic there.
       */
       if (static_cast<unsigned>(index) < BuildableCount) {
-        ObjectTypeClass const* obj = nullptr;
+        const ObjectTypeClass* obj = nullptr;
         SpecialWeaponType spc = SPC_NONE;
 
         if (Buildables[index].BuildableType != RTTI_SPECIAL) {
@@ -1687,7 +1687,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             **	type.
             */
             remapper = PlayerPtr->Remap_Table(
-                false, dynamic_cast<TechnoTypeClass const*>(obj)->Remap);
+                false, dynamic_cast<const TechnoTypeClass*>(obj)->Remap);
 
             /*
             **	If there is already a factory producing this kind of object,
@@ -1871,7 +1871,7 @@ bool SidebarClass::StripClass::Recalc() {
   */
   bool redraw = false;
   for (int index = 0; index < BuildableCount; index++) {
-    TechnoTypeClass const* tech = Fetch_Techno_Type(
+    const TechnoTypeClass* tech = Fetch_Techno_Type(
         Buildables[index].BuildableType, Buildables[index].BuildableID);
     if (tech != nullptr) {
       ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) !=
@@ -1987,7 +1987,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
   int fnumber = Strip->Buildables[index].Factory;
   RemapControlType* scheme = Get_Color_Scheme();
 
-  ObjectTypeClass const* choice = nullptr;
+  const ObjectTypeClass* choice = nullptr;
   SpecialWeaponType spc = SPC_NONE;
 
   /*

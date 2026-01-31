@@ -284,13 +284,13 @@ void SoundControlsClass::Process() {
     if (Theme.Is_Allowed(index)) {
       char buffer[100];
       int length = Theme.Track_Length(index);
-      char const* fullname = Theme.Full_Name(index);
+      const char* fullname = Theme.Full_Name(index);
 
       void* ptr = new char[sizeof(buffer)];
       if (ptr) {
         sprintf(static_cast<char*>(ptr), "%cTrack %d\t%d:%02d\t%s", index,
                 listbox.Count() + 1, length / 60, length % 60, fullname);
-        listbox.Add_Item(static_cast<char const*>(ptr));
+        listbox.Add_Item(static_cast<const char*>(ptr));
       }
 
       if (Theme.What_Is_Playing() == index) {
@@ -454,7 +454,7 @@ void SoundControlsClass::Process() {
   **	Free the items from the list box.
   */
   while (listbox.Count()) {
-    char const* ptr = listbox.Get_Item(0);
+    const char* ptr = listbox.Get_Item(0);
     listbox.Remove_Item(ptr);
     delete[] ptr;
   }

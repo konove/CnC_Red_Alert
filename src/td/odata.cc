@@ -71,7 +71,7 @@
 #include "td/overlay.h"
 #include "td/type.h"
 
-static OverlayTypeClass const Road(
+static const OverlayTypeClass Road(
     OVERLAY_ROAD,  // Overlay type number.
     "ROAD",        // INI name of overlay.
     TXT_CONCRETE,  // Full name of overlay.
@@ -88,7 +88,7 @@ static OverlayTypeClass const Road(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Concrete(
+static const OverlayTypeClass Concrete(
     OVERLAY_CONCRETE,  // Overlay type number.
     "CONC",            // INI name of overlay.
     TXT_CONCRETE,      // Full name of overlay.
@@ -105,7 +105,7 @@ static OverlayTypeClass const Concrete(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Sandbag(
+static const OverlayTypeClass Sandbag(
     OVERLAY_SANDBAG_WALL,  // Overlay type number.
     "SBAG",                // INI name of overlay.
     TXT_SANDBAG_WALL,      // Full name of overlay.
@@ -122,7 +122,7 @@ static OverlayTypeClass const Sandbag(
     true,   // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Cyclone(
+static const OverlayTypeClass Cyclone(
     OVERLAY_CYCLONE_WALL,  // Overlay type number.
     "CYCL",                // INI name of overlay.
     TXT_CYCLONE_WALL,      // Full name of overlay.
@@ -139,7 +139,7 @@ static OverlayTypeClass const Cyclone(
     true,   // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Brick(
+static const OverlayTypeClass Brick(
     OVERLAY_BRICK_WALL,  // Overlay type number.
     "BRIK",              // INI name of overlay.
     TXT_BRICK_WALL,      // Full name of overlay.
@@ -156,7 +156,7 @@ static OverlayTypeClass const Brick(
     true,   // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Barbwire(
+static const OverlayTypeClass Barbwire(
     OVERLAY_BARBWIRE_WALL,  // Overlay type number.
     "BARB",                 // INI name of overlay.
     TXT_BARBWIRE_WALL,      // Full name of overlay.
@@ -173,7 +173,7 @@ static OverlayTypeClass const Barbwire(
     true,   // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Wood(
+static const OverlayTypeClass Wood(
     OVERLAY_WOOD_WALL,  // Overlay type number.
     "WOOD",             // INI name of overlay.
     TXT_WOOD_WALL,      // Full name of overlay.
@@ -190,7 +190,7 @@ static OverlayTypeClass const Wood(
     true,   // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium1(
+static const OverlayTypeClass Tiberium1(
     OVERLAY_TIBERIUM1,  // Overlay type number.
     "TI1",              // INI name of overlay.
     TXT_TIBERIUM,       // Full name of overlay.
@@ -207,7 +207,7 @@ static OverlayTypeClass const Tiberium1(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium2(
+static const OverlayTypeClass Tiberium2(
     OVERLAY_TIBERIUM2,  // Overlay type number.
     "TI2",              // INI name of overlay.
     TXT_TIBERIUM,       // Full name of overlay.
@@ -224,7 +224,7 @@ static OverlayTypeClass const Tiberium2(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium3(
+static const OverlayTypeClass Tiberium3(
     OVERLAY_TIBERIUM3,  // Overlay type number.
     "TI3",              // INI name of overlay.
     TXT_TIBERIUM,       // Full name of overlay.
@@ -241,7 +241,7 @@ static OverlayTypeClass const Tiberium3(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium4(
+static const OverlayTypeClass Tiberium4(
     OVERLAY_TIBERIUM4,  // Overlay type number.
     "TI4",              // INI name of overlay.
     TXT_TIBERIUM,       // Full name of overlay.
@@ -258,7 +258,7 @@ static OverlayTypeClass const Tiberium4(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium5(
+static const OverlayTypeClass Tiberium5(
     OVERLAY_TIBERIUM5,  // Overlay type number.
     "TI5",              // INI name of overlay.
     TXT_TIBERIUM,       // Full name of overlay.
@@ -275,7 +275,7 @@ static OverlayTypeClass const Tiberium5(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium6(
+static const OverlayTypeClass Tiberium6(
     OVERLAY_TIBERIUM6,  // Overlay type number.
     "TI6",              // INI name of overlay.
     TXT_TIBERIUM,       // Full name of overlay.
@@ -292,7 +292,7 @@ static OverlayTypeClass const Tiberium6(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium7(
+static const OverlayTypeClass Tiberium7(
     OVERLAY_TIBERIUM7,  // Overlay type number.
     "TI7",              // INI name of overlay.
     TXT_TIBERIUM,       // Full name of overlay.
@@ -309,7 +309,7 @@ static OverlayTypeClass const Tiberium7(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium8(
+static const OverlayTypeClass Tiberium8(
     OVERLAY_TIBERIUM8,  // Overlay type number.
     "TI8",              // INI name of overlay.
     TXT_TIBERIUM,       // Full name of overlay.
@@ -326,7 +326,7 @@ static OverlayTypeClass const Tiberium8(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium9(
+static const OverlayTypeClass Tiberium9(
     OVERLAY_TIBERIUM9,  // Overlay type number.
     "TI9",              // INI name of overlay.
     TXT_TIBERIUM,       // Full name of overlay.
@@ -343,7 +343,7 @@ static OverlayTypeClass const Tiberium9(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium10(
+static const OverlayTypeClass Tiberium10(
     OVERLAY_TIBERIUM10,  // Overlay type number.
     "TI10",              // INI name of overlay.
     TXT_TIBERIUM,        // Full name of overlay.
@@ -360,7 +360,7 @@ static OverlayTypeClass const Tiberium10(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium11(
+static const OverlayTypeClass Tiberium11(
     OVERLAY_TIBERIUM11,  // Overlay type number.
     "TI11",              // INI name of overlay.
     TXT_TIBERIUM,        // Full name of overlay.
@@ -377,7 +377,7 @@ static OverlayTypeClass const Tiberium11(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Tiberium12(
+static const OverlayTypeClass Tiberium12(
     OVERLAY_TIBERIUM12,  // Overlay type number.
     "TI12",              // INI name of overlay.
     TXT_TIBERIUM,        // Full name of overlay.
@@ -394,7 +394,7 @@ static OverlayTypeClass const Tiberium12(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const Squish(
+static const OverlayTypeClass Squish(
     OVERLAY_SQUISH,  // Overlay type number.
     "SQUISH",        // INI name of overlay.
     TXT_SQUISH,      // Full name of overlay.
@@ -412,7 +412,7 @@ static OverlayTypeClass const Squish(
     false   // Is this a crate?
 );
 
-static OverlayTypeClass const V12(
+static const OverlayTypeClass V12(
     OVERLAY_V12,  // Overlay type number.
     "V12",        // INI name of overlay.
     TXT_CIV12,    // Full name of overlay.
@@ -429,7 +429,7 @@ static OverlayTypeClass const V12(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const V13(
+static const OverlayTypeClass V13(
     OVERLAY_V13,  // Overlay type number.
     "V13",        // INI name of overlay.
     TXT_CIV13,    // Full name of overlay.
@@ -446,7 +446,7 @@ static OverlayTypeClass const V13(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const V14(
+static const OverlayTypeClass V14(
     OVERLAY_V14,  // Overlay type number.
     "V14",        // INI name of overlay.
     TXT_CIV14,    // Full name of overlay.
@@ -463,7 +463,7 @@ static OverlayTypeClass const V14(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const V15(
+static const OverlayTypeClass V15(
     OVERLAY_V15,  // Overlay type number.
     "V15",        // INI name of overlay.
     TXT_CIV15,    // Full name of overlay.
@@ -480,7 +480,7 @@ static OverlayTypeClass const V15(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const V16(
+static const OverlayTypeClass V16(
     OVERLAY_V16,  // Overlay type number.
     "V16",        // INI name of overlay.
     TXT_CIV16,    // Full name of overlay.
@@ -497,7 +497,7 @@ static OverlayTypeClass const V16(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const V17(
+static const OverlayTypeClass V17(
     OVERLAY_V17,  // Overlay type number.
     "V17",        // INI name of overlay.
     TXT_CIV17,    // Full name of overlay.
@@ -514,7 +514,7 @@ static OverlayTypeClass const V17(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const V18(
+static const OverlayTypeClass V18(
     OVERLAY_V18,  // Overlay type number.
     "V18",        // INI name of overlay.
     TXT_CIV18,    // Full name of overlay.
@@ -531,7 +531,7 @@ static OverlayTypeClass const V18(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const FlagSpot(
+static const OverlayTypeClass FlagSpot(
     OVERLAY_FLAG_SPOT,  // Overlay type number.
     "FPLS",             // INI name of overlay.
     TXT_FLAG_SPOT,      // Full name of overlay.
@@ -548,7 +548,7 @@ static OverlayTypeClass const FlagSpot(
     false,  // Is this a wall type?
     false   // Is this a crate?
 );
-static OverlayTypeClass const WoodCrate(
+static const OverlayTypeClass WoodCrate(
     OVERLAY_WOOD_CRATE,  // Overlay type number.
     "WCRATE",            // INI name of overlay.
     TXT_WOOD_CRATE,      // Full name of overlay.
@@ -565,7 +565,7 @@ static OverlayTypeClass const WoodCrate(
     false,  // Is this a wall type?
     true    // Is this a crate?
 );
-static OverlayTypeClass const SteelCrate(
+static const OverlayTypeClass SteelCrate(
     OVERLAY_STEEL_CRATE,  // Overlay type number.
     "SCRATE",             // INI name of overlay.
     TXT_STEEL_CRATE,      // Full name of overlay.
@@ -583,7 +583,7 @@ static OverlayTypeClass const SteelCrate(
     true    // Is this a crate?
 );
 
-OverlayTypeClass const* const OverlayTypeClass::Pointers[OVERLAY_COUNT] = {
+const OverlayTypeClass* const OverlayTypeClass::Pointers[OVERLAY_COUNT] = {
     &Concrete,    //	OVERLAY_CONCRETE
     &Sandbag,     //	OVERLAY_SANDBAG_WALL
     &Cyclone,     //	OVERLAY_CYCLONE_WALL
@@ -629,7 +629,7 @@ OverlayTypeClass const* const OverlayTypeClass::Pointers[OVERLAY_COUNT] = {
  *                                                                                             *
  * HISTORY: * 07/29/1994 JLB : Created. *
  *=============================================================================================*/
-OverlayTypeClass::OverlayTypeClass(OverlayType iconset, char const* ininame,
+OverlayTypeClass::OverlayTypeClass(OverlayType iconset, const char* ininame,
                                    int fullname, LandType ground,
                                    int damagelevels, int damagepoints,
                                    bool isradarvisible, bool iswooden,
@@ -684,7 +684,7 @@ void OverlayTypeClass::One_Time() {}
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-OverlayType OverlayTypeClass::From_Name(char const* name) {
+OverlayType OverlayTypeClass::From_Name(const char* name) {
   if (name) {
     for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
@@ -712,7 +712,7 @@ OverlayType OverlayTypeClass::From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-short const* OverlayTypeClass::Occupy_List(bool) const {
+const short* OverlayTypeClass::Occupy_List(bool) const {
   static short _simple[] = {0, REFRESH_EOL};
 
   return _simple;
@@ -788,7 +788,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void OverlayTypeClass::Prep_For_Add() {
   for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
-    OverlayTypeClass const& overlay = As_Reference(index);
+    const OverlayTypeClass& overlay = As_Reference(index);
     if (overlay.Get_Image_Data() && !overlay.IsWall &&
         (!overlay.IsTiberium || index == OVERLAY_TIBERIUM1)) {
       Map.Add_To_List(&overlay);
@@ -881,7 +881,7 @@ void OverlayTypeClass::Draw_It(int x, int y, int data) const {
 void OverlayTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
-      OverlayTypeClass const& overlay = As_Reference(index);
+      const OverlayTypeClass& overlay = As_Reference(index);
       std::string fullname;  // Fully constructed iconset name.
 
       if (overlay.IsTheater) {
@@ -893,12 +893,12 @@ void OverlayTypeClass::Init(TheaterType theater) {
                        .replace_extension(".SHP")
                        .string();
       }
-      (void const*&)overlay.ImageData =
+      (const void*&)overlay.ImageData =
           MixFileClass::Retrieve(fullname.c_str());
 
       IsTheaterShape = overlay.IsTheater;
       if (overlay.RadarIcon) delete[] (char*)overlay.RadarIcon;
-      (void const*&)overlay.RadarIcon =
+      (const void*&)overlay.RadarIcon =
           Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3);
       IsTheaterShape = false;
     }

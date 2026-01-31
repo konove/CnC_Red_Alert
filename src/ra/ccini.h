@@ -64,72 +64,72 @@ class CCINIClass : public INIClass {
   int Save(FileClass& file, bool withdigest) const;
   int Save(Pipe& pipe, bool withdigest) const;
 
-  long Get_Buildings(char const* section, char const* entry,
+  long Get_Buildings(const char* section, const char* entry,
                      long defvalue) const;
-  UnitType Get_UnitType(char const* section, char const* entry,
+  UnitType Get_UnitType(const char* section, const char* entry,
                         UnitType defvalue) const;
-  AnimType Get_AnimType(char const* section, char const* entry,
+  AnimType Get_AnimType(const char* section, const char* entry,
                         AnimType defvalue) const;
-  ArmorType Get_ArmorType(char const* section, char const* entry,
+  ArmorType Get_ArmorType(const char* section, const char* entry,
                           ArmorType defvalue) const;
-  BulletType Get_BulletType(char const* section, char const* entry,
+  BulletType Get_BulletType(const char* section, const char* entry,
                             BulletType defvalue) const;
-  HousesType Get_HousesType(char const* section, char const* entry,
+  HousesType Get_HousesType(const char* section, const char* entry,
                             HousesType defvalue) const;
-  LEPTON Get_Lepton(char const* section, char const* entry,
+  LEPTON Get_Lepton(const char* section, const char* entry,
                     LEPTON defvalue) const;
-  MPHType Get_MPHType(char const* section, char const* entry,
+  MPHType Get_MPHType(const char* section, const char* entry,
                       MPHType defvalue) const;
-  OverlayType Get_OverlayType(char const* section, char const* entry,
+  OverlayType Get_OverlayType(const char* section, const char* entry,
                               OverlayType defvalue) const;
-  SourceType Get_SourceType(char const* section, char const* entry,
+  SourceType Get_SourceType(const char* section, const char* entry,
                             SourceType defvalue) const;
-  TerrainType Get_TerrainType(char const* section, char const* entry,
+  TerrainType Get_TerrainType(const char* section, const char* entry,
                               TerrainType defvalue) const;
-  TheaterType Get_TheaterType(char const* section, char const* entry,
+  TheaterType Get_TheaterType(const char* section, const char* entry,
                               TheaterType defvalue) const;
-  ThemeType Get_ThemeType(char const* section, char const* entry,
+  ThemeType Get_ThemeType(const char* section, const char* entry,
                           ThemeType defvalue) const;
-  TriggerTypeClass* Get_TriggerType(char const* section,
-                                    char const* entry) const;
-  VQType Get_VQType(char const* section, char const* entry,
+  TriggerTypeClass* Get_TriggerType(const char* section,
+                                    const char* entry) const;
+  VQType Get_VQType(const char* section, const char* entry,
                     VQType defvalue) const;
-  VocType Get_VocType(char const* section, char const* entry,
+  VocType Get_VocType(const char* section, const char* entry,
                       VocType defvalue) const;
-  WarheadType Get_WarheadType(char const* section, char const* entry,
+  WarheadType Get_WarheadType(const char* section, const char* entry,
                               WarheadType defvalue) const;
-  WeaponType Get_WeaponType(char const* section, char const* entry,
+  WeaponType Get_WeaponType(const char* section, const char* entry,
                             WeaponType defvalue) const;
-  long Get_Owners(char const* section, char const* entry, long defvalue) const;
-  CrateType Get_CrateType(char const* section, char const* entry,
+  long Get_Owners(const char* section, const char* entry, long defvalue) const;
+  CrateType Get_CrateType(const char* section, const char* entry,
                           CrateType defvalue) const;
 
-  bool Put_Buildings(char const* section, char const* entry,
+  bool Put_Buildings(const char* section, const char* entry,
                      std::int32_t value);
-  bool Put_AnimType(char const* section, char const* entry, AnimType value);
-  bool Put_UnitType(char const* section, char const* entry, UnitType value);
-  bool Put_ArmorType(char const* section, char const* entry, ArmorType value);
-  bool Put_BulletType(char const* section, char const* entry, BulletType value);
-  bool Put_HousesType(char const* section, char const* entry, HousesType value);
-  bool Put_Lepton(char const* section, char const* entry, LEPTON value);
-  bool Put_MPHType(char const* section, char const* entry, MPHType value);
-  bool Put_VQType(char const* section, char const* entry, VQType value);
-  bool Put_OverlayType(char const* section, char const* entry,
+  bool Put_AnimType(const char* section, const char* entry, AnimType value);
+  bool Put_UnitType(const char* section, const char* entry, UnitType value);
+  bool Put_ArmorType(const char* section, const char* entry, ArmorType value);
+  bool Put_BulletType(const char* section, const char* entry, BulletType value);
+  bool Put_HousesType(const char* section, const char* entry, HousesType value);
+  bool Put_Lepton(const char* section, const char* entry, LEPTON value);
+  bool Put_MPHType(const char* section, const char* entry, MPHType value);
+  bool Put_VQType(const char* section, const char* entry, VQType value);
+  bool Put_OverlayType(const char* section, const char* entry,
                        OverlayType value);
-  bool Put_Owners(char const* section, char const* entry, long value);
-  bool Put_SourceType(char const* section, char const* entry, SourceType value);
-  bool Put_TerrainType(char const* section, char const* entry,
+  bool Put_Owners(const char* section, const char* entry, long value);
+  bool Put_SourceType(const char* section, const char* entry, SourceType value);
+  bool Put_TerrainType(const char* section, const char* entry,
                        TerrainType value);
-  bool Put_TheaterType(char const* section, char const* entry,
+  bool Put_TheaterType(const char* section, const char* entry,
                        TheaterType value);
-  bool Put_ThemeType(char const* section, char const* entry, ThemeType value);
-  bool Put_TriggerType(char const* section, char const* entry,
+  bool Put_ThemeType(const char* section, const char* entry, ThemeType value);
+  bool Put_TriggerType(const char* section, const char* entry,
                        TriggerTypeClass* value);
-  bool Put_VocType(char const* section, char const* entry, VocType value);
-  bool Put_WarheadType(char const* section, char const* entry,
+  bool Put_VocType(const char* section, const char* entry, VocType value);
+  bool Put_WarheadType(const char* section, const char* entry,
                        WarheadType value);
-  bool Put_WeaponType(char const* section, char const* entry, WeaponType value);
-  bool Put_CrateType(char const* section, char const* entry, CrateType value);
+  bool Put_WeaponType(const char* section, const char* entry, WeaponType value);
+  bool Put_CrateType(const char* section, const char* entry, CrateType value);
 
   int Get_Unique_ID() const;
 

@@ -74,8 +74,8 @@
 #include "td/vector.h"
 
 ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags, void const* up,
-                               void const* down)
+                               TextPrintType flags, const void* up,
+                               const void* down)
     : ListClass(id, x, y, w, h, flags, up, down) {
   Style = SELECT_HIGHLIGHT;
   SelectColor = -1;
@@ -114,7 +114,7 @@ ColorListClass::~ColorListClass() { Colors.Clear(); }
  * HISTORY:                                                                *
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
-int ColorListClass::Add_Item(char const* text, char color) {
+int ColorListClass::Add_Item(const char* text, char color) {
   Colors.Add(color);
   return ListClass::Add_Item(text);
 }
@@ -154,7 +154,7 @@ int ColorListClass::Add_Item(int text, char color) {
  * HISTORY:                                                                *
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
-void ColorListClass::Remove_Item(char const* text) {
+void ColorListClass::Remove_Item(const char* text) {
   int index = List.ID(text);
   if (index != -1) {
     Colors.Delete(index);

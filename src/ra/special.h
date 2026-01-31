@@ -100,7 +100,7 @@ class SpecialClass {
 };
 
 void Special_Dialog(bool simple = false);
-char const* Fetch_Password(int caption, int message, int btext = TXT_OK);
+const char* Fetch_Password(int caption, int message, int btext = TXT_OK);
 int Fetch_Difficulty(bool amath = false);
 
 #endif

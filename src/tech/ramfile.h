@@ -54,23 +54,23 @@ class RAMFileClass : public FileClass {
   RAMFileClass(RAMFileClass&&) = delete;
   RAMFileClass& operator=(RAMFileClass&&) = delete;
 
-  char const* File_Name() const override { return "UNKNOWN"; }
-  char const* Set_Name(char const*) override { return File_Name(); }
+  const char* File_Name() const override { return "UNKNOWN"; }
+  const char* Set_Name(const char*) override { return File_Name(); }
   int Create() override;
   int Delete() override;
   int Is_Open() const override;
-  int Open(char const* filename, int access = READ) override;
+  int Open(const char* filename, int access = READ) override;
   int Open(int access = READ) override;
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;
-  long Write(void const* buffer, long size) override;
+  long Write(const void* buffer, long size) override;
   void Close() override;
   unsigned long Get_Date_Time() override { return 0; }
   bool Set_Date_Time(unsigned long) override { return true; }
-  void Error(int, int = false, char const* = nullptr) override {}
+  void Error(int, int = false, const char* = nullptr) override {}
 
-  operator char const*() { return File_Name(); }
+  operator const char*() { return File_Name(); }
 
  protected:
   int Do_Is_Available(AvailabilityCheck mode) override;

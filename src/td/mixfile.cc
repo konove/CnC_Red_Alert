@@ -34,7 +34,7 @@
 #include "tech/crc.h"
 
 template <class T>
-int Compare(T const* obj1, T const* obj2) {
+int Compare(const T* obj1, const T* obj2) {
   if (*obj1 < *obj2) return -1;
   if (*obj1 > *obj2) return 1;
   return 0;
@@ -44,7 +44,7 @@ int Compare(T const* obj1, T const* obj2) {
 MixFileClass* MixFileClass::First = nullptr;
 
 // Looks up the mixfile by name and delegates to the instance Free() method.
-bool MixFileClass::Free(char const* filename) {
+bool MixFileClass::Free(const char* filename) {
   MixFileClass* ptr = Finder(filename);
 
   if (ptr) {
@@ -81,7 +81,7 @@ MixFileClass::~MixFileClass() {
 
 // Factory method: returns existing instance if already registered, otherwise
 // creates a new MixFileClass and appends it to the global linked list.
-MixFileClass* MixFileClass::Register(char const* filename) {
+MixFileClass* MixFileClass::Register(const char* filename) {
   // Check if already registered
   MixFileClass* existing = Finder(filename);
   if (existing != nullptr) {
@@ -181,7 +181,7 @@ MixFileClass* MixFileClass::Finder(const char* filename) {
 }
 
 // Looks up the mixfile by name and delegates to the instance Cache() method.
-bool MixFileClass::Cache(char const* filename) {
+bool MixFileClass::Cache(const char* filename) {
   MixFileClass* mixer = Finder(filename);
 
   if (mixer) {
@@ -246,10 +246,10 @@ void MixFileClass::Free() {
 }
 
 // Comparison function for bsearch() on SubBlock CRC values.
-int compfunc(void const* ptr1, void const* ptr2) {
-  if (*static_cast<int32_t const*>(ptr1) < *static_cast<int32_t const*>(ptr2))
+int compfunc(const void* ptr1, const void* ptr2) {
+  if (*static_cast<const int32_t*>(ptr1) < *static_cast<const int32_t*>(ptr2))
     return -1;
-  if (*static_cast<int32_t const*>(ptr1) > *static_cast<int32_t const*>(ptr2))
+  if (*static_cast<const int32_t*>(ptr1) > *static_cast<const int32_t*>(ptr2))
     return 1;
   return 0;
 }
@@ -258,7 +258,7 @@ int compfunc(void const* ptr1, void const* ptr2) {
 // a binary search on each mixfile's SubBlock index. If found, populates the
 // output parameters. For uncached mixfiles, the offset is adjusted to include
 // the header and index size so it can be used for direct file seeks.
-bool MixFileClass::Offset(char const* filename, void** realptr,
+bool MixFileClass::Offset(const char* filename, void** realptr,
                           MixFileClass** mixfile, long* offset, long* size) {
   MixFileClass* ptr;
 

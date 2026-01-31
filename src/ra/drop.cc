@@ -48,7 +48,7 @@
 
 DropListClass::DropListClass(int id, char* text, int max_len,
                              TextPrintType flags, int x, int y, int w, int h,
-                             void const* up, void const* down)
+                             const void* up, const void* down)
     : EditClass(id, text, max_len, flags, x, y, w, 9 * RESFACTOR, ALPHANUMERIC),
       IsDropped(false),
       ListHeight(h),
@@ -91,13 +91,13 @@ DropListClass* DropListClass::Remove() {
   return dynamic_cast<DropListClass*>(EditClass::Remove());
 }
 
-int DropListClass::Add_Item(char const* text) {
+int DropListClass::Add_Item(const char* text) {
   port::SafeCopy(String, text, MaxLength);
   Flag_To_Redraw();
   return List.Add_Item(text);
 }
 
-char const* DropListClass::Current_Item() { return List.Current_Item(); }
+const char* DropListClass::Current_Item() { return List.Current_Item(); }
 
 int DropListClass::Current_Index() { return List.Current_Index(); }
 
@@ -151,7 +151,7 @@ void DropListClass::Collapse() {
   }
 }
 
-DropListClass& DropListClass::operator=(DropListClass const& list) {
+DropListClass& DropListClass::operator=(const DropListClass& list) {
   if (this == &list) return *this;
   EditClass::operator=(list);
   List = list.List;
@@ -163,7 +163,7 @@ DropListClass& DropListClass::operator=(DropListClass const& list) {
   return *this;
 }
 
-DropListClass::DropListClass(DropListClass const& list)
+DropListClass::DropListClass(const DropListClass& list)
     : EditClass(list),
       IsDropped(list.IsDropped),
       ListHeight(list.ListHeight),
@@ -179,7 +179,7 @@ void DropListClass::Set_Position(int x, int y) {
   DropButton.Set_Position(x + Width, y);
 }
 
-void DropListClass::Set_Selected_Index(char const* text) {
+void DropListClass::Set_Selected_Index(const char* text) {
   if (text) {
     for (int index = 0; index < Count(); index++) {
       if (stricmp(text, List.Get_Item(index)) == 0) {

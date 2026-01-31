@@ -99,20 +99,20 @@ VQAHandle* Open_Movie(char* name) {
  * HISTORY: * 5/08/1995 BWG : Created. *
  *=============================================================================================*/
 void Choose_Side() {
-  static unsigned char const _yellowpal[] = {0x0,  0xC9, 0xBA, 0x93, 0x61, 0xEE,
+  static const unsigned char _yellowpal[] = {0x0,  0xC9, 0xBA, 0x93, 0x61, 0xEE,
                                              0xee, 0x0,  0x0,  0x0,  0x0,  0x0,
                                              0x0,  0x0,  0x0,  0x0};
-  static unsigned char const _redpal[] = {0x0,  0xa8, 0xd9, 0xda, 0xe1, 0xd4,
+  static const unsigned char _redpal[] = {0x0,  0xa8, 0xd9, 0xda, 0xe1, 0xd4,
                                           0xDA, 0x0,  0xE1, 0x0,  0x0,  0x0,
                                           0x0,  0x0,  0xD4, 0x0};
-  static unsigned char const _graypal[] = {0x0,  0x17, 0x10, 0x12, 0x14, 0x1c,
+  static const unsigned char _graypal[] = {0x0,  0x17, 0x10, 0x12, 0x14, 0x1c,
                                            0x12, 0x1c, 0x14, 0x0,  0x0,  0x0,
                                            0x0,  0x0,  0x1C, 0x0};
 
   void* anim;
   VQAHandle *gdibrief = nullptr, *nodbrief = nullptr;
-  void const *staticaud, *oldfont;
-  void const *speechg, *speechn, *speech;
+  const void *staticaud, *oldfont;
+  const void *speechg, *speechn, *speech;
   int statichandle, speechplaying = 0;
   int oldfontxspacing = FontXSpacing;
   int setpalette = 0;
@@ -128,7 +128,8 @@ void Choose_Side() {
       SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
   TextPrintBuffer->Clear();
   BlitList.Clear();
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
+  PseudoSeenBuff =
+      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
   int frame = 0, endframe = 255, lettersdone = 0;
 
   Hide_Mouse();
@@ -163,8 +164,7 @@ void Choose_Side() {
   // anim = Open_Animation("CHOOSE.WSA",NULL,0L,(WSAOpenType)(WSA_OPEN_FROM_MEM
   // | WSA_OPEN_TO_PAGE),Palette);
   anim = Open_Animation("CHOOSE.WSA", nullptr, 0L,
-                        WSA_OPEN_FROM_DISK | WSA_OPEN_TO_PAGE,
-                        Palette);
+                        WSA_OPEN_FROM_DISK | WSA_OPEN_TO_PAGE, Palette);
   Call_Back();
 
   InterpolationPaletteChanged = true;
@@ -241,8 +241,7 @@ void Choose_Side() {
     if (frame >= Get_Animation_Frame_Count(anim)) frame = 0;
     if (Keyboard::Check() && endframe == 255) {
       if ((Keyboard::Get() & 0x10FF) == KN_LMOUSE) {
-        if (_Kbd->MouseQY > 48 * RESFACTOR &&
-            _Kbd->MouseQY < 150 * RESFACTOR) {
+        if (_Kbd->MouseQY > 48 * RESFACTOR && _Kbd->MouseQY < 150 * RESFACTOR) {
           if (_Kbd->MouseQX > 18 * RESFACTOR &&
               _Kbd->MouseQX < 148 * RESFACTOR) {
             // Chose GDI

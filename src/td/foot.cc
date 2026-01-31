@@ -234,7 +234,7 @@ FootClass::FootClass(HousesType house) : TechnoClass(house), Speed(0) {
  *=============================================================================================*/
 void FootClass::Debug_Dump(MonoClass* mono) const {
   if constexpr (config::kCheatKeysEnabled) {
-    static char const* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
+    static const char* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
 #define Path_To_String(a) _p2c[((std::abs((int)a + 1)) % 9)]
 
     /*
@@ -678,7 +678,7 @@ int FootClass::Mission_Hunt() {
     Random_Animate();
   } else {
     if (What_Am_I() == RTTI_INFANTRY &&
-        dynamic_cast<InfantryTypeClass const&>(Class_Of()).Type ==
+        dynamic_cast<const InfantryTypeClass&>(Class_Of()).Type ==
             INFANTRY_E7) {
       Assign_Destination(TarCom);
       Assign_Mission(MISSION_CAPTURE);
@@ -1375,7 +1375,7 @@ void FootClass::Per_Cell_Process(bool center) {
       CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
 
       if (Map.In_Radar(cell)) {
-        TechnoClass const* techno = Map[cell].Cell_Techno();
+        const TechnoClass* techno = Map[cell].Cell_Techno();
 
         if (techno && !House->Is_Ally(techno) &&
             techno->Techno_Type_Class()->IsScanner) {
@@ -1393,10 +1393,10 @@ void FootClass::Per_Cell_Process(bool center) {
   if (What_Am_I() != RTTI_UNIT ||
       *dynamic_cast<UnitClass*>(this) != UNIT_GUNBOAT) {
     bool inrange = In_Range(TarCom);
-    TechnoClass const* techno = As_Techno(TarCom);
+    const TechnoClass* techno = As_Techno(TarCom);
     if (techno && techno->What_Am_I() != RTTI_BUILDING) {
       inrange =
-          In_Range(dynamic_cast<FootClass const*>(techno)->Likely_Coord());
+          In_Range(dynamic_cast<const FootClass*>(techno)->Likely_Coord());
     }
 
     if (Target_Legal(TarCom) &&
@@ -1742,12 +1742,12 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
  *                                                                                             *
  * HISTORY: * 07/01/1995 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Death_Announcement(TechnoClass const* source) const {
+void FootClass::Death_Announcement(const TechnoClass* source) const {
   if (IsDiscoveredByPlayer || IsOwnedByPlayer) {
     if (!source || source->What_Am_I() != RTTI_INFANTRY ||
-        *dynamic_cast<InfantryClass const*>(source) != INFANTRY_RAMBO) {
+        *dynamic_cast<const InfantryClass*>(source) != INFANTRY_RAMBO) {
       if (What_Am_I() == RTTI_INFANTRY &&
-          dynamic_cast<InfantryTypeClass const&>(Class_Of()).IsCivilian &&
+          dynamic_cast<const InfantryTypeClass&>(Class_Of()).IsCivilian &&
           !((InfantryClass*)this)->IsTechnician) {
         if (Options.IsDeathAnnounce) Speak(VOX_DEAD_CIV);
       } else {

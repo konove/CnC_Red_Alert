@@ -79,7 +79,7 @@ class BasicTimerClass {
  public:
   // Constructor allows assignment as if class was integral 'long' type.
   BasicTimerClass(unsigned long set = 0);
-  BasicTimerClass(NoInitClass const&);
+  BasicTimerClass(const NoInitClass&);
   ~BasicTimerClass() = default;
   BasicTimerClass(const BasicTimerClass&) = default;
   BasicTimerClass& operator=(const BasicTimerClass&) = default;
@@ -101,7 +101,7 @@ class BasicTimerClass {
 };
 
 template <class T>
-BasicTimerClass<T>::BasicTimerClass(NoInitClass const&) {}
+BasicTimerClass<T>::BasicTimerClass(const NoInitClass&) {}
 
 /***********************************************************************************************
  * BasicTimerClass<T>::BasicTimerClass -- Constructor for basic timer class. *
@@ -184,7 +184,7 @@ class TTimerClass : public BasicTimerClass<T> {
  public:
   // Constructor allows assignment as if class was integral 'long' type.
   TTimerClass(unsigned long set = 0);
-  TTimerClass(NoInitClass const& x);
+  TTimerClass(const NoInitClass& x);
   ~TTimerClass() = default;
   TTimerClass(const TTimerClass&) = default;
   TTimerClass& operator=(const TTimerClass&) = default;
@@ -214,7 +214,7 @@ class TTimerClass : public BasicTimerClass<T> {
 };
 
 template <class T>
-TTimerClass<T>::TTimerClass(NoInitClass const& x) : BasicTimerClass<T>(x) {}
+TTimerClass<T>::TTimerClass(const NoInitClass& x) : BasicTimerClass<T>(x) {}
 
 /***********************************************************************************************
  * TTimerClass<T>::TTimerClass -- Constructor for timer class object. *
@@ -387,7 +387,7 @@ class CDTimerClass : public BasicTimerClass<T> {
  public:
   // Constructor allows assignment as if class was integral 'long' type.
   CDTimerClass(unsigned long set = 0);
-  CDTimerClass(NoInitClass const& x);
+  CDTimerClass(const NoInitClass& x);
   ~CDTimerClass() = default;
   CDTimerClass(const CDTimerClass&) = default;
   CDTimerClass& operator=(const CDTimerClass&) = default;
@@ -417,7 +417,7 @@ class CDTimerClass : public BasicTimerClass<T> {
 };
 
 template <class T>
-CDTimerClass<T>::CDTimerClass(NoInitClass const& x) : BasicTimerClass<T>(x) {}
+CDTimerClass<T>::CDTimerClass(const NoInitClass& x) : BasicTimerClass<T>(x) {}
 
 /***********************************************************************************************
  * CDTimerClass<T>::CDTimerClass -- Constructor for count down timer. *

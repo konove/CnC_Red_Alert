@@ -145,7 +145,7 @@ static bool _Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
  *                                                                                             *
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
-bool _Need_To_Take(AircraftClass const* air) {
+bool _Need_To_Take(const AircraftClass* air) {
   if (*air == AIRCRAFT_YAK || *air == AIRCRAFT_MIG) {
     int deficit = air->House->Get_Quantity(STRUCT_AIRSTRIP);
     //		int deficit = air->House->Get_Quantity(STRUCT_AIRSTRIP) -
@@ -156,7 +156,7 @@ bool _Need_To_Take(AircraftClass const* air) {
     *loaners.
     */
     for (int index = 0; index < Aircraft.Count(); index++) {
-      AircraftClass const* airptr = Aircraft.Ptr(index);
+      const AircraftClass* airptr = Aircraft.Ptr(index);
       if ((*airptr == AIRCRAFT_YAK || *airptr == AIRCRAFT_MIG) &&
           airptr->IsOwnedByPlayer && !airptr->IsALoaner && airptr != air) {
         deficit -= 1;
@@ -184,7 +184,7 @@ bool _Need_To_Take(AircraftClass const* air) {
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static FootClass* _Create_Group(TeamTypeClass const* teamtype) {
+static FootClass* _Create_Group(const TeamTypeClass* teamtype) {
   assert(teamtype != nullptr);
 
   TeamClass* team = new TeamClass(teamtype);
@@ -207,7 +207,7 @@ static FootClass* _Create_Group(TeamTypeClass const* teamtype) {
   FootClass* transport = nullptr;
   FootClass* object = nullptr;
   for (int index = 0; index < teamtype->ClassCount; index++) {
-    TechnoTypeClass const* tclass = teamtype->Members[index].Class;
+    const TechnoTypeClass* tclass = teamtype->Members[index].Class;
 
     for (int sub = 0; sub < teamtype->Members[index].Quantity; sub++) {
       ScenarioInit++;
@@ -227,7 +227,7 @@ static FootClass* _Create_Group(TeamTypeClass const* teamtype) {
         }
 
         if (temp->What_Am_I() == RTTI_AIRCRAFT &&
-            !_Need_To_Take(dynamic_cast<AircraftClass const*>(temp))) {
+            !_Need_To_Take(dynamic_cast<const AircraftClass*>(temp))) {
           temp->IsALoaner = true;
         }
 
@@ -314,12 +314,12 @@ static FootClass* _Create_Group(TeamTypeClass const* teamtype) {
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static bool _Consists_Only_Of_Infantry(FootClass const* first) {
+static bool _Consists_Only_Of_Infantry(const FootClass* first) {
   while (first != nullptr) {
     if (first->What_Am_I() != RTTI_INFANTRY) {
       return false;
     }
-    first = dynamic_cast<FootClass const*>((ObjectClass*)first->Next);
+    first = dynamic_cast<const FootClass*>((ObjectClass*)first->Next);
   }
   return true;
 }
@@ -384,7 +384,7 @@ static TechnoClass* _Who_Can_Pop_Out_Of(CELL origin) {
  *Announces reinforcements.                                                *
  *   02/15/1996 JLB : Recognizes team reinforcement location. *
  *=============================================================================================*/
-bool Do_Reinforcements(TeamTypeClass const* teamtype) {
+bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   assert(teamtype != nullptr);
 
   /*
@@ -571,8 +571,8 @@ bool Do_Reinforcements(TeamTypeClass const* teamtype) {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 bool Create_Special_Reinforcement(HouseClass* house,
-                                  TechnoTypeClass const* type,
-                                  TechnoTypeClass const* another,
+                                  const TechnoTypeClass* type,
+                                  const TechnoTypeClass* another,
                                   TeamMissionType mission, int argument) {
   assert(house != nullptr);
   assert(type != nullptr);
@@ -659,7 +659,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
   /*
   ** Get a pointer to the class of the object that we are going to create.
   */
-  TechnoTypeClass const* type =
+  const TechnoTypeClass* type =
       static_cast<TechnoTypeClass*>(&AircraftTypeClass::As_Reference(air));
 
   /*

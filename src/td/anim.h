@@ -66,7 +66,7 @@ class AnimClass : public ObjectClass, private StageClass {
   }  // Default constructor does nothing.
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1, bool alt = false);
-  AnimClass(NoInitClass const& x)
+  AnimClass(const NoInitClass& x)
       : ObjectClass(x), Class(Class), StageClass(x) {}
   ~AnimClass() override;
   operator AnimType() const { return Class->Type; }
@@ -86,9 +86,9 @@ class AnimClass : public ObjectClass, private StageClass {
   COORDINATE Center_Coord() const override;
   COORDINATE Sort_Y() const override;
   LayerType In_Which_Layer() const override;
-  ObjectTypeClass const& Class_Of() const override { return *Class; }
-  virtual short const* Occupy_List() const;
-  short const* Overlap_List() const override;
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  virtual const short* Occupy_List() const;
+  const short* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   void AI() override;
   TARGET As_Target() const override;
@@ -163,7 +163,7 @@ class AnimClass : public ObjectClass, private StageClass {
   /*
   **	This points to the type of animation object this is.
   */
-  AnimTypeClass const* const Class;
+  const AnimTypeClass* const Class;
 
   /*
   **	Is this animation in a temporary suspended state?  If so, then it won't

@@ -50,7 +50,7 @@
 class TabClass : public SidebarClass {
  public:
   TabClass();
-  TabClass(NoInitClass const& x)
+  TabClass(const NoInitClass& x)
       : SidebarClass(x), Credits(x), FlasherTimer(x), MoneyFlashTimer(x) {}
 
   void AI(KeyNumType& input, int x, int y) override;
@@ -80,7 +80,7 @@ class TabClass : public SidebarClass {
 
   CDTimerClass<FrameTimerClass> MoneyFlashTimer;
 
-  static void const* TabShape;
+  static const void* TabShape;
 };
 
 #endif

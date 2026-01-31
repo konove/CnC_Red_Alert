@@ -62,7 +62,7 @@
 /*
 **	This points to the loaded mouse shapes.
 */
-void const* MouseClass::MouseShapes;
+const void* MouseClass::MouseShapes;
 
 /*
 **	This is the timer that controls the mouse animation. It is always at a
@@ -115,7 +115,7 @@ void MouseClass::Revert_Mouse_Shape() {
 }
 
 void MouseClass::Mouse_Small(bool wwsmall) {
-  MouseStruct const* control = &MouseControl[CurrentMouseShape];
+  const MouseStruct* control = &MouseControl[CurrentMouseShape];
 
   if (IsSmall == wwsmall) {
     return;
@@ -159,7 +159,7 @@ void MouseClass::Mouse_Small(bool wwsmall) {
  *Added small control parameter.                                           *
  *=============================================================================================*/
 bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
-  MouseStruct const* control = &MouseControl[mouse];
+  const MouseStruct* control = &MouseControl[mouse];
   static bool startup = false;
   int baseshp;
 
@@ -223,7 +223,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
 void MouseClass::AI(KeyNumType& input, int x, int y) {
   //	bool doit = false;
   void* mouse_shape_ptr;
-  MouseStruct const* control = &MouseControl[CurrentMouseShape];
+  const MouseStruct* control = &MouseControl[CurrentMouseShape];
 
   if (control->FrameRate && Timer.Time() == 0) {
     Frame++;

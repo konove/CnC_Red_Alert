@@ -1753,7 +1753,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   CellClass* cellptr = &Map[cell];
   if (center && Class->Speed == SPEED_TRACK &&
       cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const* optr =
+    const OverlayTypeClass* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (optr->IsCrushable) {
@@ -1863,7 +1863,7 @@ void UnitClass::Per_Cell_Process(bool center) {
 void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
   int shapenum;           // Working shape number.
-  void const* shapefile;  // Working shape file pointer.
+  const void* shapefile;  // Working shape file pointer.
   int facing = Facing_To_32(PrimaryFacing.Current());
   int tfacing = Facing_To_32(SecondaryFacing.Current());
 
@@ -2608,9 +2608,9 @@ void UnitClass::Look(bool incremental) {
  * HISTORY: * 05/26/1994 JLB : Created. * 06/19/1994 JLB : Uses
  *Coord_Spillable_List function.                                      *
  *=============================================================================================*/
-short const* UnitClass::Overlap_List() const {
+const short* UnitClass::Overlap_List() const {
   Validate();
-  static short const _gunboat[] = {-3, -2, 2, 3, REFRESH_EOL};
+  static const short _gunboat[] = {-3, -2, 2, 3, REFRESH_EOL};
   int size;
 
   /*
@@ -2646,7 +2646,7 @@ short const* UnitClass::Overlap_List() const {
  *                                                                                             *
  * HISTORY: * 06/08/1995 PWG : Created. *
  *=============================================================================================*/
-MoveBitType UnitClass::Blocking_Object(TechnoClass const* techno,
+MoveBitType UnitClass::Blocking_Object(const TechnoClass* techno,
                                        CELL cell) const {
   Validate();
   /*
@@ -2654,7 +2654,7 @@ MoveBitType UnitClass::Blocking_Object(TechnoClass const* techno,
   */
   bool unit = (techno->What_Am_I() == RTTI_INFANTRY ||
                techno->What_Am_I() == RTTI_UNIT);
-  CellClass const* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map[cell];
 
   if (House->Is_Ally(techno)) {
     if (techno == Contact_With_Whom() && IsTethered) {
@@ -2669,9 +2669,9 @@ MoveBitType UnitClass::Blocking_Object(TechnoClass const* techno,
       if (((FootClass*)techno)->NavCom != kTargetNone) {
         int face = Dir_Facing(PrimaryFacing);
         int techface =
-            Dir_Facing(((FootClass const*)techno)->PrimaryFacing) ^ 4;
+            Dir_Facing(((const FootClass*)techno)->PrimaryFacing) ^ 4;
         if (face != techface &&
-            Distance((AbstractClass const*)techno) > 0x1FF) {
+            Distance((const AbstractClass*)techno) > 0x1FF) {
           return (MOVE_BIT_MOVING_BLOCK);
         } else {
           //					Mono_Printf("Move No!\r");
@@ -2756,7 +2756,7 @@ MoveBitType UnitClass::Blocking_Object(TechnoClass const* techno,
  *=============================================================================================*/
 MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
   Validate();
-  CellClass const* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map[cell];
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 
@@ -2781,7 +2781,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
   **	and return the appropriate flag. Other units treat walls as impassable.
   */
   if (cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const* optr =
+    const OverlayTypeClass* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (optr->IsCrate && !House->IsHuman) {
@@ -2790,7 +2790,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
     if (optr->IsWall) {
       if (Class->Primary != WEAPON_NONE) {
-        WarheadTypeClass const* whead =
+        const WarheadTypeClass* whead =
             &Warheads[BulletTypeClass::As_Reference(
                           Weapons[Class->Primary].Fires)
                           .Warhead];
@@ -2851,7 +2851,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
         if (is_moving) {
           int face = Dir_Facing(PrimaryFacing);
           int techface =
-              Dir_Facing(dynamic_cast<FootClass const*>(obj)->PrimaryFacing) ^
+              Dir_Facing(dynamic_cast<const FootClass*>(obj)->PrimaryFacing) ^
               4;
           if (face == techface && Distance(obj) <= 0x1FF) {
             return MOVE_NO;
@@ -3316,7 +3316,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
   **	Special return to friendly refinery action.
   */
   if (IsOwnedByPlayer && object->Is_Techno() &&
-      dynamic_cast<TechnoClass const*>(object)->House->Is_Ally(this)) {
+      dynamic_cast<const TechnoClass*>(object)->House->Is_Ally(this)) {
     if (object->What_Am_I() == RTTI_BUILDING &&
         ((UnitClass*)this)
                 ->Transmit_Message(RADIO_CAN_LOAD,
@@ -3536,7 +3536,7 @@ void UnitClass::Exit_Repair() {
   int i;
   CELL cell;
   bool found = false;
-  static short const ExitRepair[] = {
+  static const short ExitRepair[] = {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
@@ -3922,7 +3922,7 @@ void UnitClass::APC_Open_Door() {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void const* UnitClass::Remap_Table() {
+const void* UnitClass::Remap_Table() {
   Validate();
   if (*this == UNIT_MCV || *this == UNIT_HARVESTER) {
     return House->Remap_Table(IsBlushing, false);

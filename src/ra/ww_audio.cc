@@ -75,7 +75,7 @@ typedef enum {
 } ContextType;
 
 static struct {
-  char const* Name;   // Digitized voice file name.
+  const char* Name;   // Digitized voice file name.
   int Priority;       // Playback priority of this sample.
   ContextType Where;  // In what game context does this sample exist.
 } SoundEffectName[VOC_COUNT] = {
@@ -392,7 +392,7 @@ static struct {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-VocType Voc_From_Name(char const* name) {
+VocType Voc_From_Name(const char* name) {
   if (name == nullptr) return VOC_NONE;
 
   for (VocType voc = VOC_FIRST; voc < VOC_COUNT; voc++) {
@@ -419,7 +419,7 @@ VocType Voc_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 05/06/1996 JLB : Created. *
  *=============================================================================================*/
-char const* Voc_Name(VocType voc) {
+const char* Voc_Name(VocType voc) {
   if (voc == VOC_NONE) return "none";
   return SoundEffectName[voc].Name;
 }
@@ -536,7 +536,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
   **	Fetch a pointer to the sound effect data. Modify the sound as
   *appropriate and desired.
   */
-  char const* ext = ".AUD";
+  const char* ext = ".AUD";
   if (SoundEffectName[voc].Where == IN_VAR) {
     /*
     **	If there is no forced house, then use the current player
@@ -586,7 +586,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
   auto name = std::filesystem::path(SoundEffectName[voc].Name)
                   .replace_extension(ext)
                   .string();
-  void const* ptr = MFCD::Retrieve(name);
+  const void* ptr = MFCD::Retrieve(name);
 
   /*
   **	If the sound data pointer is not nullptr, then presume that it is valid.
@@ -602,7 +602,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
 /*
 **	This elaborates all the EVA speech voices.
 */
-static char const* Speech[VOX_COUNT] = {
+static const char* Speech[VOX_COUNT] = {
     "MISNWON1",  //	VOX_ACCOMPLISHED
                  // mission accomplished
     "MISNLST1",  //	VOX_FAIL
@@ -782,7 +782,7 @@ static VoxType CurrentVoice = VOX_NONE;
  *                                                                                             *
  * HISTORY: * 06/01/1996 JLB : Created. *
  *=============================================================================================*/
-char const* Speech_Name(VoxType speech) {
+const char* Speech_Name(VoxType speech) {
   if (speech == VOX_NONE) return "none";
   return Speech[speech];
 }
@@ -838,7 +838,7 @@ void Speak_AI() {
       **	Try to find a previously loaded copy of the EVA speech in one of
       *the *	speech buffers.
       */
-      void const* speech = nullptr;
+      const void* speech = nullptr;
       for (int index = 0; index < ARRAY_SIZE(SpeechRecord); index++) {
         if (SpeechRecord[index] == SpeakQueue) break;
       }

@@ -621,8 +621,8 @@ bool DriveClass::While_Moving() {
   }
 
   if (actual > PIXEL_LEPTON_W) {
-    TurnTrackType const* track;  // Track control pointer.
-    TrackType const* ptr;        // Pointer to coord offset values.
+    const TurnTrackType* track;  // Track control pointer.
+    const TrackType* ptr;        // Pointer to coord offset values.
     int tracknum;                // The track number being processed.
     FacingType nextface;         // Next facing queued in path.
     bool adj;                    // Is a turn coming up?
@@ -680,7 +680,7 @@ bool DriveClass::While_Moving() {
         */
         if (*this != UNIT_GUNBOAT && nextface != FACING_NONE && adj &&
             RawTracks[tracknum - 1].Jump == TrackIndex && TrackIndex) {
-          TurnTrackType const* newtrack;  // Proposed jump-to track.
+          const TurnTrackType* newtrack;  // Proposed jump-to track.
           int tnum;
 
           tnum = Dir_Facing(track->Facing) * FACING_COUNT + nextface;
@@ -1535,7 +1535,7 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
       */
       int tracknum = TrackControl[TrackNumber].Track;
       if (tracknum) {
-        TrackType const* ptr = RawTracks[tracknum - 1].Track;
+        const TrackType* ptr = RawTracks[tracknum - 1].Track;
         int cellidx = RawTracks[tracknum - 1].Cell;
         if (cellidx > -1) {
           DirType dir = ptr[cellidx].Facing;
@@ -1611,7 +1611,7 @@ bool DriveClass::Ok_To_Move(DirType) const { return true; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-ObjectTypeClass const& DriveClass::Class_Of() const { return *Class; }
+const ObjectTypeClass& DriveClass::Class_Of() const { return *Class; }
 
 /***************************************************************************
 **	Smooth turn track tables. These are coordinate offsets from the center
@@ -1632,7 +1632,7 @@ ObjectTypeClass const& DriveClass::Class_Of() const { return *Class; }
 **	Track 11= back up into refinery
 **	Track 12= drive out of refinery
 */
-DriveClass::TrackType const DriveClass::Track1[24] = {
+const DriveClass::TrackType DriveClass::Track1[24] = {
     {0x00F50000L, static_cast<DirType>(0)},
     {0x00EA0000L, static_cast<DirType>(0)},
     {0x00DF0000L, static_cast<DirType>(0)},
@@ -1658,7 +1658,7 @@ DriveClass::TrackType const DriveClass::Track1[24] = {
     {0x00030000L, static_cast<DirType>(0)},
     {0x00000000L, static_cast<DirType>(0)}};
 
-DriveClass::TrackType const DriveClass::Track2[] = {
+const DriveClass::TrackType DriveClass::Track2[] = {
     {0x00F8FF08L, static_cast<DirType>(32)},
     {0x00F0FF10L, static_cast<DirType>(32)},
     {0x00E8FF18L, static_cast<DirType>(32)},
@@ -1692,7 +1692,7 @@ DriveClass::TrackType const DriveClass::Track2[] = {
     {0x0008FFF8L, static_cast<DirType>(32)},
     {0x00000000L, static_cast<DirType>(32)}};
 
-DriveClass::TrackType const DriveClass::Track3[] = {
+const DriveClass::TrackType DriveClass::Track3[] = {
     {0x01F5FF00L, static_cast<DirType>(0)},
     {0x01EAFF00L, static_cast<DirType>(0)},
     {0x01DFFF00L, static_cast<DirType>(0)},
@@ -1749,7 +1749,7 @@ DriveClass::TrackType const DriveClass::Track3[] = {
     {0x0008FFF8L, static_cast<DirType>(32)},
     {0x00000000L, static_cast<DirType>(32)}};
 
-DriveClass::TrackType const DriveClass::Track4[] = {
+const DriveClass::TrackType DriveClass::Track4[] = {
     {0x00F5FF00L, static_cast<DirType>(0)},
     {0x00EBFF00L, static_cast<DirType>(0)},
     {0x00E0FF00L, static_cast<DirType>(0)},
@@ -1790,7 +1790,7 @@ DriveClass::TrackType const DriveClass::Track4[] = {
     {0x0000FFF5L, static_cast<DirType>(64)},
     {0x00000000L, static_cast<DirType>(64)}};
 
-DriveClass::TrackType const DriveClass::Track5[] = {
+const DriveClass::TrackType DriveClass::Track5[] = {
     {0xFFF8FE08L, static_cast<DirType>(32)},
     {0xFFF0FE10L, static_cast<DirType>(32)},
     {0xFFE8FE18L, static_cast<DirType>(32)},
@@ -1854,7 +1854,7 @@ DriveClass::TrackType const DriveClass::Track5[] = {
     {0xFFF8FFF8L, static_cast<DirType>(96)},
     {0x00000000L, static_cast<DirType>(96)}};
 
-DriveClass::TrackType const DriveClass::Track6[] = {
+const DriveClass::TrackType DriveClass::Track6[] = {
     {0x0100FE00L, static_cast<DirType>(32)},
     {0x00F8FE08L, static_cast<DirType>(32)},
     {0x00F0FE10L, static_cast<DirType>(32)},
@@ -1913,7 +1913,7 @@ DriveClass::TrackType const DriveClass::Track6[] = {
     {0x0000FFF5L, static_cast<DirType>(64)},
     {0x00000000L, static_cast<DirType>(64)}};
 
-DriveClass::TrackType const DriveClass::Track7[] = {
+const DriveClass::TrackType DriveClass::Track7[] = {
     {0x0006FFFFL, static_cast<DirType>(0)},
     {0x000CFFFEL, static_cast<DirType>(4)},
     {0x0011FFFCL, static_cast<DirType>(8)},
@@ -1943,7 +1943,7 @@ DriveClass::TrackType const DriveClass::Track7[] = {
     {0x0006FFFDL, static_cast<DirType>(32)},
     {0x00000000L, static_cast<DirType>(32)}};
 
-DriveClass::TrackType const DriveClass::Track8[] = {
+const DriveClass::TrackType DriveClass::Track8[] = {
     {0x0003FFFCL, static_cast<DirType>(32)},
     {0x0006FFF7L, static_cast<DirType>(36)},
     {0x000AFFF1L, static_cast<DirType>(40)},
@@ -1967,7 +1967,7 @@ DriveClass::TrackType const DriveClass::Track8[] = {
     {0x0000FFF9L, static_cast<DirType>(64)},
     {0x00000000L, static_cast<DirType>(64)}};
 
-DriveClass::TrackType const DriveClass::Track9[] = {
+const DriveClass::TrackType DriveClass::Track9[] = {
     {0xFFF50002L, static_cast<DirType>(0)},
     {0xFFEB0004L, static_cast<DirType>(2)},
     {0xFFE00006L, static_cast<DirType>(4)},
@@ -2000,7 +2000,7 @@ DriveClass::TrackType const DriveClass::Track9[] = {
     {0x0001FFF5L, static_cast<DirType>(64)},
     {0x00000000L, static_cast<DirType>(64)}};
 
-DriveClass::TrackType const DriveClass::Track10[] = {
+const DriveClass::TrackType DriveClass::Track10[] = {
     {0xFFF6000BL, static_cast<DirType>(32)},
     {0xFFF00015L, static_cast<DirType>(37)},
     {0xFFEB0020L, static_cast<DirType>(42)},
@@ -2030,7 +2030,7 @@ DriveClass::TrackType const DriveClass::Track10[] = {
     {0xFFF6FFF5L, static_cast<DirType>(96)},
     {0x00000000L, static_cast<DirType>(96)}};
 
-DriveClass::TrackType const DriveClass::Track11[] = {
+const DriveClass::TrackType DriveClass::Track11[] = {
     {0x01000000L, DIR_SW},    {0x00F30008L, DIR_SW},
     {0x00E50010L, DIR_SW_X1}, {0x00D60018L, DIR_SW_X1},
     {0x00C80020L, DIR_SW_X1}, {0x00B90028L, DIR_SW_X1},
@@ -2041,7 +2041,7 @@ DriveClass::TrackType const DriveClass::Track11[] = {
 
     {0x00000000L, DIR_SW_X2}};
 
-DriveClass::TrackType const DriveClass::Track12[] = {
+const DriveClass::TrackType DriveClass::Track12[] = {
     {0xFF550060L, DIR_SW_X2}, {0xFF640058L, DIR_SW_X2},
     {0xFF710050L, DIR_SW_X2}, {0xFF7F0048L, DIR_SW_X2},
     {0xFF8D0040L, DIR_SW_X2}, {0xFF9C0038L, DIR_SW_X2},
@@ -2054,7 +2054,7 @@ DriveClass::TrackType const DriveClass::Track12[] = {
 /*
 **	Drive out of weapon's factory.
 */
-DriveClass::TrackType const DriveClass::Track13[] = {
+const DriveClass::TrackType DriveClass::Track13[] = {
     {XYP_COORD(10, -21), static_cast<DirType>(DIR_SW - 10)},
     {XYP_COORD(10, -21), static_cast<DirType>(DIR_SW - 10)},
     {XYP_COORD(10, -20), static_cast<DirType>(DIR_SW - 10)},
@@ -2086,7 +2086,7 @@ DriveClass::TrackType const DriveClass::Track13[] = {
 *These *	are they. Each track can be interpreted differently but this is
 *controlled *	by the TrackControl structure elaborated elsewhere.
 */
-DriveClass::RawTrackType const DriveClass::RawTracks[13] = {
+const DriveClass::RawTrackType DriveClass::RawTracks[13] = {
     {Track1, -1, 0, -1},  {Track2, -1, 0, -1},  {Track3, 37, 12, 22},
     {Track4, 26, 11, 19}, {Track5, 45, 15, 31}, {Track6, 44, 16, 27},
     {Track7, -1, 0, -1},  {Track8, -1, 0, -1},  {Track9, -1, 0, -1},
@@ -2098,7 +2098,7 @@ DriveClass::RawTrackType const DriveClass::RawTracks[13] = {
 **	table determines which track to use and what modifying operations need
 **	be performed on the track data.
 */
-DriveClass::TurnTrackType const DriveClass::TrackControl[67] = {
+const DriveClass::TurnTrackType DriveClass::TrackControl[67] = {
     {1, 0, DIR_N, F_},                         //	0-0
     {3, 7, DIR_NE, F_D},                       //	0-1 (raw chart)
     {4, 9, DIR_E, F_D},                        //	0-2 (raw chart)

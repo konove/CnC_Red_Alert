@@ -95,7 +95,7 @@ void (*Memory_Error_Exit)(char* string) = NULL;
  *   06/23/1995 PWG : Created.                                             *
  *=========================================================================*/
 #include "winvq/vqm32/mono.h"
-void DPMI_Lock(VOID const* ptr, long const size) {
+void DPMI_Lock(const VOID* ptr, const long size) {
   union REGS regs;
   struct SREGS sregs;
 
@@ -138,7 +138,7 @@ void DPMI_Lock(VOID const* ptr, long const size) {
  * HISTORY:                                                                *
  *   06/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-void DPMI_Unlock(void const* ptr, long const size) {
+void DPMI_Unlock(const void* ptr, const long size) {
   union REGS regs;
   struct SREGS sregs;
 
@@ -365,7 +365,7 @@ void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
  * HISTORY:                                                                *
  *   05/25/1990     : Created.                                             *
  ***************************************************************************/
-void Free(void const* pointer) {
+void Free(const void* pointer) {
   union REGS regs;
   struct SREGS sregs;
 

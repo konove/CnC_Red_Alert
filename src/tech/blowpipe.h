@@ -58,10 +58,10 @@ class BlowPipe : public Pipe {
   }
   int Flush() override;
 
-  int Put(void const* source, int slen) override;
+  int Put(const void* source, int slen) override;
 
   // Submit key for blowfish engine.
-  void Key(void const* key, int length);
+  void Key(const void* key, int length);
 
  protected:
   /*

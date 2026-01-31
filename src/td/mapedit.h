@@ -202,12 +202,12 @@ class MapEditClass : public MouseClass {
   virtual void Write_INI(char* buffer);
   void Detach(ObjectClass* object) override;
   void Clear_List();
-  bool Add_To_List(ObjectTypeClass const* object);
+  bool Add_To_List(const ObjectTypeClass* object);
   void Main_Menu();
   void AI_Menu();
   bool Mouse_Moved();
-  bool Verify_House(HousesType house, ObjectTypeClass const* objtype);
-  HousesType Cycle_House(HousesType curhouse, ObjectTypeClass const* objtype);
+  bool Verify_House(HousesType house, const ObjectTypeClass* objtype);
+  HousesType Cycle_House(HousesType curhouse, const ObjectTypeClass* objtype);
   //		int Trigger_Needs_Team(TriggerClass *trigger);
   void Fatal(int txt);
 
@@ -217,7 +217,7 @@ class MapEditClass : public MouseClass {
   int New_Scenario();
   int Load_Scenario();
   int Save_Scenario();
-  int Pick_Scenario(char const* caption, int* scen_nump,
+  int Pick_Scenario(const char* caption, int* scen_nump,
                     ScenarioPlayerType* playerp, ScenarioDirType* dirp,
                     ScenarioVarType* varp, int multi);
   int Size_Map(int x, int y, int w, int h);
@@ -261,10 +261,10 @@ class MapEditClass : public MouseClass {
   /*
   ............................. mapedtm.cpp .............................
   */
-  void Draw_Member(TechnoTypeClass const* ptr, int index, int quant,
+  void Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
                    HousesType house, int pic_x, int pic_y);
-  void Handle_Teams(char const* caption);
-  int Select_Team(char const* caption);
+  void Handle_Teams(const char* caption);
+  int Select_Team(const char* caption);
   int Edit_Team();
   int Team_Members(HousesType house);
   void Build_Mission_List(int missioncount, TeamMissionStruct* missions,
@@ -284,7 +284,7 @@ class MapEditClass : public MouseClass {
   Array of all TypeClasses the user can add to the map; cleared by
   Clear_List(), added to by Add_To_List()
   .....................................................................*/
-  ObjectTypeClass const* Objects[MAX_EDIT_OBJECTS];
+  const ObjectTypeClass* Objects[MAX_EDIT_OBJECTS];
   int ObjCount;  // # of objects in the Objects array
 
   /*.....................................................................

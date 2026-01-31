@@ -57,14 +57,13 @@ class CRCPipe : public Pipe {
   CRCPipe(CRCPipe&&) = delete;
   CRCPipe& operator=(CRCPipe&&) = delete;
 
-  int Put(void const* source, int slen) override;
+  int Put(const void* source, int slen) override;
 
   // Fetch the CRC value.
   long Result() const;
 
  protected:
   CrcEngine crc_;
-
 };
 
 #endif

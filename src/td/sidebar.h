@@ -118,7 +118,7 @@ class SidebarClass : public PowerClass {
   };
 
   SidebarClass();
-  SidebarClass(NoInitClass const& x) : PowerClass(x) {}
+  SidebarClass(const NoInitClass& x) : PowerClass(x) {}
 
   /*
   ** Initialization
@@ -130,7 +130,7 @@ class SidebarClass : public PowerClass {
 
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete) override;
-  void Refresh_Cells(CELL cell, short const* list) override;
+  void Refresh_Cells(CELL cell, const short* list) override;
 
   bool Abandon_Production(RTTIType type, int factory);
   bool Activate(int control);
@@ -170,7 +170,7 @@ class SidebarClass : public PowerClass {
     int ButtonSpacingOffset;
 
     StripClass() {}
-    StripClass(InitClass const&);
+    StripClass(const InitClass&);
 
     bool Add(RTTIType type, int ID);
     bool Abandon_Production(int factory);
@@ -186,7 +186,7 @@ class SidebarClass : public PowerClass {
     void Deactivate();
     void Flag_To_Redraw();
     bool Factory_Link(int factory, RTTIType type, int id);
-    void const* Get_Special_Cameo(int type);
+    const void* Get_Special_Cameo(int type);
 
     /*
     **	File I/O.
@@ -328,19 +328,19 @@ class SidebarClass : public PowerClass {
     **	Pointer to the shape data for small versions of the logos. These are
     *used as *	placeholder pieces on the side bar.
     */
-    static void const* LogoShapes;
+    static const void* LogoShapes;
 
     /*
     **	This points to the animation sequence of frames used to mark the passage
     *of time *	as an object is undergoing construction.
     */
-    static void const* ClockShapes;
+    static const void* ClockShapes;
 
     /*
     ** This points to the animation sequence which deals with special
     ** shapes which handle non-production based icons.
     */
-    static void const* SpecialShapes[3];
+    static const void* SpecialShapes[3];
 
     /*
     **	This is the last theater that the special palette remap table was loaded
@@ -394,8 +394,8 @@ class SidebarClass : public PowerClass {
   /*
   **	Pointer to the shape data for the sidebar
   */
-  static void const* SidebarShape1;
-  static void const* SidebarShape2;
+  static const void* SidebarShape1;
+  static const void* SidebarShape2;
 
  private:
   bool Activate_Repair(int control);

@@ -79,8 +79,9 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
   auto* window_tex = static_cast<SDL_Texture*>(WindowTexture);
 
   if (!end_frame) {
-    if (!RedrawTimer)
+    if (!RedrawTimer) {
       RedrawTimer = SDL_AddTimer(1000 / 30, Force_Redraw_Timer, nullptr);
+    }
     return;
   }
 

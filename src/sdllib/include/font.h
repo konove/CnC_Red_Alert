@@ -64,7 +64,7 @@
  */
 /*=========================================================================*/
 
-void* Set_Font(void const* fontptr);
+void* Set_Font(const void* fontptr);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: FONT.CPP
@@ -72,7 +72,7 @@ void* Set_Font(void const* fontptr);
 /*=========================================================================*/
 
 int Char_Pixel_Width(char chr);
-unsigned int String_Pixel_Width(char const* string);
+unsigned int String_Pixel_Width(const char* string);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: TEXTPRNT.ASM
@@ -83,7 +83,7 @@ unsigned int String_Pixel_Width(char const* string);
 extern "C" {
 #endif
 
-void Set_Font_Palette_Range(void const* palette, int start_idx, int end_idx);
+void Set_Font_Palette_Range(const void* palette, int start_idx, int end_idx);
 
 #ifdef TD
 void* Get_Font_Palette_Ptr();
@@ -103,7 +103,7 @@ extern char FontWidth;
 extern char FontHeight;
 extern char* FontWidthBlockPtr;
 
-extern "C" void const* FontPtr;
+extern "C" const void* FontPtr;
 extern uint8_t ColorXlat[];
 
 #endif  // FONT_H

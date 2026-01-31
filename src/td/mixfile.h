@@ -36,19 +36,19 @@
 //   void* data = MixFileClass::Retrieve("sounds.aud");
 class MixFileClass : public LinkClass {
  public:
-  char const* Filename;  // Filename of mixfile.
+  const char* Filename;  // Filename of mixfile.
 
   ~MixFileClass() override;
 
   // Creates and registers a mixfile. Returns existing instance if already
   // registered, or nullptr on failure.
-  static MixFileClass* Register(char const* filename);
+  static MixFileClass* Register(const char* filename);
 
   // Removes and deletes a mixfile by name. Returns true if found.
-  static bool Unregister(char const* filename);
+  static bool Unregister(const char* filename);
 
   // Frees cached data for the named mixfile. Returns true if found.
-  static bool Free(char const* filename);
+  static bool Free(const char* filename);
 
   // Frees all registered mixfiles.
   static void Free_All();
@@ -60,19 +60,19 @@ class MixFileClass : public LinkClass {
   bool Cache();
 
   // Loads the named mixfile's raw data into RAM. Returns true on success.
-  static bool Cache(char const* filename);
+  static bool Cache(const char* filename);
 
   // Finds a file across all registered mixfiles. On success, outputs are set:
   // - realptr: pointer to data if cached, nullptr if on disk
   // - mixfile: the containing mixfile
   // - offset: byte offset from mixfile start (disk) or data block start (RAM)
   // - size: file size in bytes
-  static bool Offset(char const* filename, void** realptr = nullptr,
+  static bool Offset(const char* filename, void** realptr = nullptr,
                      MixFileClass** mixfile = nullptr, long* offset = nullptr,
                      long* size = nullptr);
 
   // Returns pointer to file data if cached in RAM, nullptr otherwise.
-  static void const* Retrieve(char const* filename);
+  static const void* Retrieve(const char* filename);
 
   struct SubBlock {
     int32_t CRC;     // CRC code for embedded file.
@@ -86,10 +86,10 @@ class MixFileClass : public LinkClass {
 
  private:
   // Use Register() factory instead of direct construction.
-  MixFileClass(char const* filename);
+  MixFileClass(const char* filename);
 
   // Searches registered mixfiles for one matching the filename suffix.
-  static MixFileClass* Finder(char const* filename);
+  static MixFileClass* Finder(const char* filename);
 
   long Offset(long crc, long* size = nullptr);
 

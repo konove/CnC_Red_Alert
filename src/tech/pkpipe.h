@@ -67,10 +67,10 @@ class PKPipe : public Pipe {
   void Put_To(Pipe& pipe) { Put_To(&pipe); }
 
   // Feed data through for processing.
-  int Put(void const* source, int length) override;
+  int Put(const void* source, int length) override;
 
   // Submit key for encryption/decryption.
-  void Key(PKey const* key);
+  void Key(const PKey* key);
 
  private:
   enum {
@@ -109,7 +109,7 @@ class PKPipe : public Pipe {
   *whichever *	process is performed, the opposite process must be performed
   *using the *	other key.
   */
-  PKey const* CipherKey = nullptr;
+  const PKey* CipherKey = nullptr;
 
   /*
   **	This is the staging buffer for the block of data. This block must be as
@@ -133,7 +133,6 @@ class PKPipe : public Pipe {
 
   int Encrypted_Key_Length() const;
   int Plain_Key_Length() const;
-
 };
 
 #endif

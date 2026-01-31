@@ -36,7 +36,7 @@
 #include "ra/wol_gsup.h"
 #include "ra/wsproto.h"
 
-extern char const* EngMisStr[];
+extern const char* EngMisStr[];
 
 bool Is_Mission_126x126(char* file_name);
 bool Is_Mission_Aftermath(char* file_name);

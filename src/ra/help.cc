@@ -71,7 +71,7 @@
 */
 short HelpClass::OverlapList[60] = {REFRESH_EOL};
 
-char const* HelpClass::HelpText;
+const char* HelpClass::HelpText;
 
 /***********************************************************************************************
  * HelpClass::HelpClass -- Default constructor for the help processor. *
@@ -138,7 +138,7 @@ void HelpClass::Init_Clear() {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-short const* HelpClass::Overlap_List() const {
+const short* HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer) {
     OverlapList[0] = REFRESH_EOL;
   }

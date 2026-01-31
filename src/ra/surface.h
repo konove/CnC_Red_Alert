@@ -55,17 +55,17 @@
 class Surface {
  public:
   Surface() : Width(0), Height(0), Pitch(0) {}
-  Surface(int w, int h, Buffer const* buffer = nullptr, int pitch = 0);
-  Surface(Surface const& surface, int x, int y, int w, int h);
+  Surface(int w, int h, const Buffer* buffer = nullptr, int pitch = 0);
+  Surface(const Surface& surface, int x, int y, int w, int h);
   virtual ~Surface() {}
 
   /*
   **	Basic manipulation routines for copying entire surfaces or
   **	a sub-region.
   */
-  void Copy_To(Rect const& fromrect, Surface& tosurface,
-               Rect const& torect) const;
-  void Copy_To(Rect const& fromrect, Buffer& tobuffer) const;
+  void Copy_To(const Rect& fromrect, Surface& tosurface,
+               const Rect& torect) const;
+  void Copy_To(const Rect& fromrect, Buffer& tobuffer) const;
 
   /*
   **	Convenience routines that make presumptions on what is desired so that a
@@ -74,7 +74,7 @@ class Surface {
   */
   void Copy_To(Buffer& buffer, int x = 0, int y = 0, int w = -1,
                int h = -1) const;
-  void Copy_From(Buffer const& buffer, int x = 0, int y = 0, int w = -1,
+  void Copy_From(const Buffer& buffer, int x = 0, int y = 0, int w = -1,
                  int h = -1);
 
   /*

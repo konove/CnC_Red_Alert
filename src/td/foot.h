@@ -201,7 +201,7 @@ class FootClass : public TechnoClass {
   */
   FootClass();
   ~FootClass() override;
-  FootClass(NoInitClass const& x)
+  FootClass(const NoInitClass& x)
       : TechnoClass(x), PathDelay(x), BaseAttackTimer(x) {}
   FootClass(HousesType house);
 
@@ -250,7 +250,7 @@ class FootClass : public TechnoClass {
   void Stun() override;
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source = nullptr) override;
-  void Death_Announcement(TechnoClass const* source = nullptr) const override;
+  void Death_Announcement(const TechnoClass* source = nullptr) const override;
 
   /*
   **	AI.

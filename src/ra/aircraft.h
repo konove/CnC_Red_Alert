@@ -80,7 +80,7 @@ class AircraftClass : public FootClass, public FlyClass {
   void operator delete(void*);
   operator AircraftType() const { return Class->Type; }
   AircraftClass(AircraftType classid, HousesType house);
-  AircraftClass(NoInitClass const& x)
+  AircraftClass(const NoInitClass& x)
       : FootClass(x),
         FlyClass(x),
         Class(x),
@@ -115,8 +115,8 @@ class AircraftClass : public FootClass, public FlyClass {
   int Shape_Number() const;
   MoveType Can_Enter_Cell(CELL cell,
                           FacingType facing = FACING_NONE) const override;
-  ObjectTypeClass const& Class_Of() const override { return *Class; }
-  ActionType What_Action(ObjectClass const* target) const override;
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  ActionType What_Action(const ObjectClass* target) const override;
   ActionType What_Action(CELL cell) const override;
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
   int Pip_Count() const override;
@@ -152,7 +152,7 @@ class AircraftClass : public FootClass, public FlyClass {
   void Look(bool incremental = false) override;
   void Draw_Rotors(int x, int y, WindowNumberType window) const;
   int Exit_Object(TechnoClass*) override;
-  short const* Overlap_List(bool redraw = false) const override;
+  const short* Overlap_List(bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   void Set_Speed(int speed) override;
 
@@ -196,7 +196,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	File I/O.
   */
   static void Read_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "AIRCRAFT"; }
+  static const char* INI_Name() { return "AIRCRAFT"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 

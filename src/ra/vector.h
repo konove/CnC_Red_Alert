@@ -33,13 +33,13 @@
 template <typename T>
 class VectorClass {
  public:
-  VectorClass(NoInitClass const&) {}
+  VectorClass(const NoInitClass&) {}
   VectorClass(base::ssize size = 0, const T* array = nullptr);
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
 
   T& operator[](base::ssize index) { return Vector[index]; }
-  T const& operator[](base::ssize index) const { return Vector[index]; }
+  const T& operator[](base::ssize index) const { return Vector[index]; }
   virtual VectorClass& operator=(const VectorClass&);  // Assignment operator.
   virtual bool operator==(const VectorClass&) const;   // Equality operator.
   virtual bool Resize(base::ssize newsize, const T* array = nullptr);
@@ -57,7 +57,7 @@ class VectorClass {
 // Implementation details only below here
 
 template <class T>
-VectorClass<T>::VectorClass(base::ssize size, T const* array)
+VectorClass<T>::VectorClass(base::ssize size, const T* array)
     : Vector(nullptr), VectorMax(size), IsAllocated(false) {
   if (size > 0) {
     if (array) {
@@ -76,13 +76,13 @@ VectorClass<T>::~VectorClass() {
 }
 
 template <class T>
-VectorClass<T>::VectorClass(VectorClass<T> const& vector)
+VectorClass<T>::VectorClass(const VectorClass<T>& vector)
     : Vector(nullptr), VectorMax(0), IsAllocated(false) {
   *this = vector;
 }
 
 template <class T>
-VectorClass<T>& VectorClass<T>::operator=(VectorClass<T> const& vector) {
+VectorClass<T>& VectorClass<T>::operator=(const VectorClass<T>& vector) {
   if (this != &vector) {
     Clear();
     VectorMax = vector.Length();
@@ -104,7 +104,7 @@ VectorClass<T>& VectorClass<T>::operator=(VectorClass<T> const& vector) {
 
 // Element-by-element comparison. Requires T to have operator!=.
 template <class T>
-bool VectorClass<T>::operator==(VectorClass<T> const& vector) const {
+bool VectorClass<T>::operator==(const VectorClass<T>& vector) const {
   if (VectorMax == vector.Length()) {
     for (base::ssize index = 0; index < VectorMax; index++) {
       if (Vector[index] != vector[index]) {
@@ -119,13 +119,13 @@ bool VectorClass<T>::operator==(VectorClass<T> const& vector) const {
 // Converts pointer to index via pointer arithmetic. Only valid for pointers
 // into this vector.
 template <class T>
-base::ssize VectorClass<T>::ID(T const* ptr) {
+base::ssize VectorClass<T>::ID(const T* ptr) {
   return ptr - &(*this)[0];
 }
 
 // Finds index of first element equal to object. Returns -1 if not found.
 template <class T>
-base::ssize VectorClass<T>::ID(T const& object) {
+base::ssize VectorClass<T>::ID(const T& object) {
   for (base::ssize index = 0; index < VectorMax; index++) {
     if ((*this)[index] == object) {
       return index;
@@ -148,7 +148,7 @@ void VectorClass<T>::Clear() {
 // Changes capacity, preserving existing elements up to new size.
 // If array is provided, uses placement new into that buffer.
 template <class T>
-bool VectorClass<T>::Resize(base::ssize newsize, T const* array) {
+bool VectorClass<T>::Resize(base::ssize newsize, const T* array) {
   if (newsize > 0) {
     T* newptr;
     if (!array) {

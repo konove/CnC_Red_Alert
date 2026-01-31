@@ -184,8 +184,8 @@ void Connect_MPATH() {
     D_MARGIN = 5,
   };
   static int x, y, w, h;
-  char const* buf1;
-  char const* buf2;
+  const char* buf1;
+  const char* buf2;
 
   int display = 0;
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();

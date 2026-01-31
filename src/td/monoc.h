@@ -116,11 +116,11 @@ class MonoClass {
   void Set_Default_Attribute(char attrib) { Attrib = attrib; }
   void Clear();
   void Set_Cursor(int x, int y);
-  void Print(char const* text);
+  void Print(const char* text);
   void Print(int text);
-  void Printf(char const* text, ...);
+  void Printf(const char* text, ...);
   void Printf(int text, ...);
-  void Text_Print(char const* text, int x, int y,
+  void Text_Print(const char* text, int x, int y,
                   char attrib = DEFAULT_ATTRIBUTE);
   void Text_Print(int text, int x, int y, char attrib = DEFAULT_ATTRIBUTE);
   void View();
@@ -131,13 +131,13 @@ class MonoClass {
   **	Handles deep copies for the mono class objects. This performs what is
   *essentially *	a screen copy.
   */
-  MonoClass& operator=(MonoClass const&);
+  MonoClass& operator=(const MonoClass&);
 
   /*
   **	This merely makes a duplicate of the mono object into a newly created
   *mono *	object.
   */
-  MonoClass(MonoClass const&);
+  MonoClass(const MonoClass&);
 
  private:
   char X;       // Cursor X position.
@@ -165,7 +165,7 @@ class MonoClass {
   /*
   ** This the the arrays of characters used for drawing boxes.
   */
-  static BoxDataType const CharData[4];
+  static const BoxDataType CharData[4];
 
   /*
   **	This array contains pointers to the monochrome objects that are assigned
@@ -185,11 +185,11 @@ class MonoClass {
 // extern int cdecl Mono_Printf(int string, ...);
 
 void Mono_Set_Cursor(int x, int y);
-int Mono_Printf(char const* string, ...);
+int Mono_Printf(const char* string, ...);
 void Mono_Clear_Screen();
-void Mono_Text_Print(void const* text, int x, int y, int attrib);
+void Mono_Text_Print(const void* text, int x, int y, int attrib);
 void Mono_Draw_Rect(int x, int y, int w, int h, int attrib, int thick);
-void Mono_Print(void const* text);
+void Mono_Print(const void* text);
 int Mono_X();
 int Mono_Y();
 

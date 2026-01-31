@@ -62,7 +62,7 @@
 #define TXT_SIZE_MAP 0x411             // Size Map
 #define TXT_TRUCK_CRATE 0x412          // Trucks drop crate when
 
-void Log_Event(char const* text, ...);
+void Log_Event(const char* text, ...);
 void Debug_Key(unsigned input);
 void Self_Regulate();
 

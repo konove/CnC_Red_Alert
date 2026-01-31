@@ -298,7 +298,7 @@ void SmudgeClass::Read_INI(CCINIClass& ini) {
 
   int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
-    char const* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.Get_Entry(INI_Name(), index);
     SmudgeType smudge;  // Smudge type.
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
@@ -346,7 +346,7 @@ void SmudgeClass::Write_INI(CCINIClass& ini) {
 
     ptr = &Map[index];
     if (ptr->Smudge != SMUDGE_NONE) {
-      SmudgeTypeClass const* stype =
+      const SmudgeTypeClass* stype =
           &SmudgeTypeClass::As_Reference(ptr->Smudge);
       if (!stype->IsBib) {
         char uname[10];

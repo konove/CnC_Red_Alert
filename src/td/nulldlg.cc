@@ -1927,8 +1927,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   DetectPortType dpstatus;
   char init_text[32];
 
-  void const* up_button;
-  void const* down_button;
+  const void* up_button;
+  const void* down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -3289,8 +3289,8 @@ int Com_Scenario_Dialog() {
   bool ready_to_go = false;
   CountDownTimerClass ready_time;
 
-  void const* up_button;
-  void const* down_button;
+  const void* up_button;
+  const void* down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -5817,8 +5817,8 @@ static int Phone_Dialog() {
   ........................................................................*/
   GadgetClass* commands;  // button list
 
-  void const* up_button;
-  void const* down_button;
+  const void* up_button;
+  const void* down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");

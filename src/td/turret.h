@@ -75,7 +75,7 @@ class TurretClass : public DriveClass {
  protected:
   TurretClass(UnitType classid, HousesType house);
   TurretClass() = default;
-  TurretClass(NoInitClass const& x)
+  TurretClass(const NoInitClass& x)
       : DriveClass(x), Reload(x), SecondaryFacing(x) {}
   ~TurretClass() override = default;
 

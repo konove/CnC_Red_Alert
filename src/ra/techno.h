@@ -254,7 +254,7 @@ class TechnoClass : public RadioClass,
   **	Constructors, Destructors, and overloaded operators.
   */
   TechnoClass(RTTIType rtti, int id, HousesType house = HOUSE_NONE);
-  TechnoClass(NoInitClass const& x)
+  TechnoClass(const NoInitClass& x)
       : RadioClass(x),
         FlasherClass(x),
         StageClass(x),
@@ -272,7 +272,7 @@ class TechnoClass : public RadioClass,
   /*
   **	Query functions.
   */
-  bool Is_Allowed_To_Retaliate(TechnoClass const* source) const;
+  bool Is_Allowed_To_Retaliate(const TechnoClass* source) const;
   bool Can_Teleport_Here(CELL cell) const;
   bool Is_In_Same_Zone(CELL cell) const;
   bool Is_Players_Army() const override;
@@ -280,7 +280,7 @@ class TechnoClass : public RadioClass,
   bool Is_Ready_To_Cloak() const;
   virtual int How_Many_Survivors() const;
   virtual DirType Turret_Facing() const { return PrimaryFacing.Current(); }
-  CELL Nearby_Location(TechnoClass const* from = nullptr) const;
+  CELL Nearby_Location(const TechnoClass* from = nullptr) const;
   TechnoTypeClass* Techno_Type_Class() const {
     return (TechnoTypeClass*)&Class_Of();
   }
@@ -291,9 +291,9 @@ class TechnoClass : public RadioClass,
   int Time_To_Build() const;
   int What_Weapon_Should_I_Use(TARGET target) const;
   ActionType What_Action(CELL cell) const override;
-  ActionType What_Action(ObjectClass const* target) const override;
+  ActionType What_Action(const ObjectClass* target) const override;
   virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly) const;
-  virtual CELL Find_Exit_Cell(TechnoClass const* techno) const;
+  virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
   COORDINATE Fire_Coord(int which) const override;
   virtual DirType Desired_Load_Dir(ObjectClass*, CELL& moveto) const;
   virtual DirType Fire_Direction() const;
@@ -330,16 +330,16 @@ class TechnoClass : public RadioClass,
   */
   fixed Area_Modify(CELL cell) const;
   virtual int Made_A_Kill() { return Crew.Made_A_Kill(); }
-  void Base_Is_Attacked(TechnoClass const* enemy);
+  void Base_Is_Attacked(const TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun();
   bool In_Range(COORDINATE coord, int which = 0) const override;
   virtual bool In_Range(TARGET target, int which = 0) const;
-  virtual bool In_Range(ObjectClass const* target, int which = 0) const;
+  virtual bool In_Range(const ObjectClass* target, int which = 0) const;
   virtual void Death_Announcement(
-      TechnoClass const* source = nullptr) const = 0;
+      const TechnoClass* source = nullptr) const = 0;
   virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
   virtual void Assign_Target(TARGET target);
@@ -353,10 +353,10 @@ class TechnoClass : public RadioClass,
                          TechnoClass* source = nullptr,
                          bool forced = false) override;
   bool Evaluate_Cell(ThreatType method, int mask, CELL cell, int range,
-                     TechnoClass const** object, int& value,
+                     const TechnoClass** object, int& value,
                      int zone = 0) const;
   bool Evaluate_Object(ThreatType method, int mask, int range,
-                       TechnoClass const* object, int& value,
+                       const TechnoClass* object, int& value,
                        int zone = -1) const;
   int Evaluate_Just_Cell(CELL cell) const;
   virtual bool Electric_Zap(TARGET target, int which,
@@ -390,7 +390,7 @@ class TechnoClass : public RadioClass,
   */
   // Returns the color remap table for rendering this object. Remappable
   // objects use their house color; non-remappable objects use gold.
-  virtual void const* Remap_Table() const;
+  virtual const void* Remap_Table() const;
   VisualType Visual_Character(bool raw = false) const;
 
   // Draws the object with appropriate remapping, cloaking, and shadow effects.
@@ -431,7 +431,7 @@ class TechnoClass : public RadioClass,
   **	Facing translation tables that fix the flaw with 3D studio when
   **	it renders 45 degree angles.
   */
-  static int const BodyShape[32];
+  static const int BodyShape[32];
 };
 
 #endif

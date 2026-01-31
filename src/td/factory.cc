@@ -351,7 +351,7 @@ bool FactoryClass::Has_Changed() {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Set(TechnoTypeClass const& object, HouseClass& house) {
+bool FactoryClass::Set(const TechnoTypeClass& object, HouseClass& house) {
   Validate();
   /*
   **	If there is any production currently in progress, abandon it.
@@ -400,7 +400,7 @@ bool FactoryClass::Set(TechnoTypeClass const& object, HouseClass& house) {
  *                                                                                             *
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Set(int const& type, HouseClass& house) {
+bool FactoryClass::Set(const int& type, HouseClass& house) {
   Validate();
   /*
   **	If there is any production currently in progress, abandon it.

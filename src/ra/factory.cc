@@ -290,7 +290,7 @@ bool FactoryClass::Has_Changed() {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Set(TechnoTypeClass const& object, HouseClass& house) {
+bool FactoryClass::Set(const TechnoTypeClass& object, HouseClass& house) {
   assert(Factories.ID(this) == ID);
 
   /*

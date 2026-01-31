@@ -253,7 +253,7 @@ int FixedHeapClass::Free(void* pointer) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::ID(void const* pointer) const {
+int FixedHeapClass::ID(const void* pointer) const {
   if (pointer && Size) {
     return static_cast<int>(((char*)pointer - (char*)Buffer) / Size);
   }
@@ -455,7 +455,7 @@ int FixedIHeapClass::Free(void* pointer) {
  *                                                                                             *
  * HISTORY: * 05/06/1996 JLB : Created. *
  *=============================================================================================*/
-int FixedIHeapClass::Logical_ID(void const* pointer) const {
+int FixedIHeapClass::Logical_ID(const void* pointer) const {
   if (pointer != nullptr) {
     for (int index = 0; index < Count(); index++) {
       if (Active_Ptr(index) == pointer) {

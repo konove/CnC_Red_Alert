@@ -442,20 +442,20 @@ typedef struct {
 */
 class MultiMission {
  public:
-  MultiMission(char const* filename = nullptr,
-               char const* description = nullptr, char const* digest = nullptr,
+  MultiMission(const char* filename = nullptr,
+               const char* description = nullptr, const char* digest = nullptr,
                bool official = true, bool expansion = false);
 
-  void Set_Description(char const* description);
-  void Set_Filename(char const* filename);
-  void Set_Digest(char const* digest);
+  void Set_Description(const char* description);
+  void Set_Filename(const char* filename);
+  void Set_Digest(const char* digest);
   void Set_Official(bool official);
   void Set_Expansion(bool expansion);
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  char const* Description() const { return ScenarioDescription; }
-  char const* Get_Filename() const { return Filename; }
-  char const* Get_Digest() const { return Digest; }
+  const char* Description() const { return ScenarioDescription; }
+  const char* Get_Filename() const { return Filename; }
+  const char* Get_Digest() const { return Digest; }
   bool Get_Official() { return IsOfficial; }
   bool Get_Expansion() {
     return IsExpansion;
@@ -683,7 +683,7 @@ class SessionClass {
 
   DynamicVectorClass<PhoneEntryClass*> PhoneBook;
   DynamicVectorClass<char*> InitStrings;
-  static char const* DialMethodCheck[DIAL_METHODS];
+  static const char* DialMethodCheck[DIAL_METHODS];
   static char* CallWaitStrings[CALL_WAIT_STRINGS_NUM];
 
   //.....................................................................

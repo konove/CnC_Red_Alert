@@ -186,7 +186,7 @@ TeamClass::~TeamClass() {
   }
 }
 
-TeamClass::TeamClass(TeamTypeClass const* type, HouseClass* owner)
+TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
     : Class(type), House(owner) {
   memset(Quantity, 0, sizeof(Quantity));
   IsAltered = true;
@@ -491,7 +491,7 @@ void TeamClass::AI() {
     IsNextMission = false;
     CurrentMission++;
     if (CurrentMission < Class->MissionCount) {
-      TeamMissionStruct const* mission = &Class->MissionList[CurrentMission];
+      const TeamMissionStruct* mission = &Class->MissionList[CurrentMission];
 
       TimeOut = mission->Argument * (TICKS_PER_MINUTE / 10);
       Target = kTargetNone;
@@ -538,7 +538,7 @@ void TeamClass::AI() {
     **	this case. If it has timed out then advance to the next
     **	mission in the list or disband the team.
     */
-    TeamMissionStruct const* mission = &Class->MissionList[CurrentMission];
+    const TeamMissionStruct* mission = &Class->MissionList[CurrentMission];
     switch (mission->Mission) {
       case TMISSION_ATTACKBASE:
         if (!Target_Legal(MissionTarget)) {
@@ -1090,7 +1090,7 @@ void TeamClass::Took_Damage(FootClass*, ResultType result,
             TechnoClass* techno = As_Techno(Target);
 
             if (techno &&
-                dynamic_cast<TechnoTypeClass const&>(techno->Class_Of())
+                dynamic_cast<const TechnoTypeClass&>(techno->Class_Of())
                         .Primary != WEAPON_NONE) {
               if (techno->In_Range(Cell_Coord(Center), 0)) {
                 return;
@@ -1438,7 +1438,7 @@ void TeamClass::Coordinate_Conscript(FootClass* unit) {
  * HISTORY:                                                                *
  *   05/16/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool TeamClass::Is_A_Member(void const* who) const {
+bool TeamClass::Is_A_Member(const void* who) const {
   Validate();
   FootClass* unit = Member;
   while (unit) {

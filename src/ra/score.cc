@@ -124,12 +124,12 @@ GraphicBufferClass* PseudoSeenBuff;
 struct InfantryAnim {
   int xpos;
   int ypos;
-  void const* shapefile;
-  void const* remap;
+  const void* shapefile;
+  const void* remap;
   int anim;
   int stage;
   char delay;
-  InfantryTypeClass const* Class;
+  const InfantryTypeClass* Class;
 } InfantryMan[NUMINFANTRYMEN];
 void Draw_InfantryMen();
 void Draw_InfantryMan(int index);
@@ -142,7 +142,7 @@ void Cycle_Wait_Click(bool cycle = true);
 void Disable_Uncompressed_Shapes();
 void Enable_Uncompressed_Shapes();
 
-void const* Beepy6;
+const void* Beepy6;
 int ControlQ;  // cheat key to skip past score/mapsel screens
 bool StillUpdating;
 
@@ -165,14 +165,14 @@ struct Fame {
 
 ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
-ScoreAnimClass::ScoreAnimClass(int x, int y, void const* data) {
+ScoreAnimClass::ScoreAnimClass(int x, int y, const void* data) {
   XPos = x * RESFACTOR;
   YPos = y * RESFACTOR;
   Timer = 0;
   DataPtr = data;
 }
 
-ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, void const* data, int maxval,
+ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, const void* data, int maxval,
                                int xtimer)
     : ScoreAnimClass(xpos, ypos, data) {
   Stage = 0;
@@ -201,7 +201,7 @@ void ScoreTimeClass::Update() {
   }
 }
 
-ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, void const* data,
+ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, const void* data,
                                  int maxval, int xtimer)
     : ScoreAnimClass(xpos, ypos, data) {
   Stage = 0;
@@ -238,15 +238,15 @@ void ScoreCredsClass::Update() {
 }
 
 ScorePrintClass::ScorePrintClass(int string, int xpos, int ypos,
-                                 void const* palette, int background)
+                                 const void* palette, int background)
     : ScoreAnimClass(xpos, ypos, Text_String(string)) {
   Background = background;
   PrimaryPalette = palette;
   Stage = 0;
 }
 
-ScorePrintClass::ScorePrintClass(void const* string, int xpos, int ypos,
-                                 void const* palette, int background)
+ScorePrintClass::ScorePrintClass(const void* string, int xpos, int ypos,
+                                 const void* palette, int background)
     : ScoreAnimClass(xpos, ypos, string) {
   Background = background;
   PrimaryPalette = palette;
@@ -307,8 +307,8 @@ void ScorePrintClass::Update() {
   }
 }
 
-ScoreScaleClass::ScoreScaleClass(void const* string, int xpos, int ypos,
-                                 unsigned char const palette[])
+ScoreScaleClass::ScoreScaleClass(const void* string, int xpos, int ypos,
+                                 const unsigned char palette[])
     : ScoreAnimClass(xpos, ypos, string) {
   Palette = &palette[0];
 #ifdef WIN32
@@ -392,36 +392,36 @@ int Alloc_Object(ScoreAnimClass* obj) {
  *                                                                                             *
  * HISTORY: * 05/02/1994     : Created. *
  *=============================================================================================*/
-static unsigned char const _bluepal[] = {0xC0, 0xC1, 0xC1, 0xC3, 0xC2, 0xC5,
+static const unsigned char _bluepal[] = {0xC0, 0xC1, 0xC1, 0xC3, 0xC2, 0xC5,
                                          0xC3, 0xC7, 0xC4, 0xC9, 0xCA, 0xCB,
                                          0xCC, 0xCD, 0xC0, 0xCF};
-static unsigned char const _greenpal[] = {0x70, 0x71, 0x7C, 0x73, 0x7D, 0x75,
+static const unsigned char _greenpal[] = {0x70, 0x71, 0x7C, 0x73, 0x7D, 0x75,
                                           0x7E, 0x77, 0x7F, 0x79, 0x7A, 0x7B,
                                           0x7C, 0x7D, 0x7C, 0x7F};
-static unsigned char const _redpal[] = {0xD0, 0xD1, 0xD7, 0xD3, 0xD9, 0xD5,
+static const unsigned char _redpal[] = {0xD0, 0xD1, 0xD7, 0xD3, 0xD9, 0xD5,
                                         0xDA, 0xD7, 0xDB, 0xD9, 0xDA, 0xDB,
                                         0xDC, 0xDD, 0xD6, 0xDF};
-static unsigned char const _yellowpal[] = {0x0,  0x0, 0xEC, 0x0, 0xEB, 0x0,
+static const unsigned char _yellowpal[] = {0x0,  0x0, 0xEC, 0x0, 0xEB, 0x0,
                                            0xEA, 0x0, 0xE9, 0x0, 0x0,  0x0,
                                            0x0,  0x0, 0xED, 0x0};
 void ScoreClass::Presentation() {
 #ifdef WIN32
 //	if (Keyboard != NULL) return;
 #endif
-  static int const _casuax[2] = {144, 150};
-  static int const _casuay[2] = {78, 78};
-  static int const _gditxy[2] = {90, 90};
+  static const int _casuax[2] = {144, 150};
+  static const int _casuay[2] = {78, 78};
+  static const int _gditxy[2] = {90, 90};
 
 #if defined(FRENCH) || defined(GERMAN)
-  static int const _gditxx[2] = {130, 150};
-  static int const _nodtxx[2] = {130, 150};
+  static const int _gditxx[2] = {130, 150};
+  static const int _nodtxx[2] = {130, 150};
 #else
-  static int const _gditxx[2] = {135, 150};
-  static int const _nodtxx[2] = {135, 150};
+  static const int _gditxx[2] = {135, 150};
+  static const int _nodtxx[2] = {135, 150};
 #endif
-  static int const _nodtxy[2] = {102, 102};
-  static int const _bldggy[2] = {138, 138};
-  static int const _bldgny[2] = {150, 150};
+  static const int _nodtxy[2] = {102, 102};
+  static const int _bldggy[2] = {138, 138};
+  static const int _bldgny[2] = {150, 150};
 
 #ifdef WIN32
   /*
@@ -434,8 +434,8 @@ void ScoreClass::Presentation() {
 #endif
 #endif
   int i;
-  void const* yellowptr;
-  void const* redptr;
+  const void* yellowptr;
+  const void* redptr;
   CCFileClass file(FAME_FILE_NAME);
   struct Fame hallfame[NUMFAMENAMES];
   void* oldfont;
@@ -465,8 +465,8 @@ void ScoreClass::Presentation() {
 #endif
   BlackPalette.Set();
 
-  void const* country4 = MFCD::Retrieve("COUNTRY4.AUD");
-  void const* sfx4 = MFCD::Retrieve("SFX4.AUD");
+  const void* country4 = MFCD::Retrieve("COUNTRY4.AUD");
+  const void* sfx4 = MFCD::Retrieve("SFX4.AUD");
   Beepy6 = MFCD::Retrieve("BEEPY6.AUD");
 
   /*
@@ -532,13 +532,13 @@ void ScoreClass::Presentation() {
   ** Background's up, so now load various shapes and animations
   */
 #if RESFACTOR == 2
-  void const* timeshape = MFCD::Retrieve("TIMEHR.SHP");
-  void const* hiscore1shape = MFCD::Retrieve("HISC1-HR.SHP");
-  void const* hiscore2shape = MFCD::Retrieve("HISC2-HR.SHP");
+  const void* timeshape = MFCD::Retrieve("TIMEHR.SHP");
+  const void* hiscore1shape = MFCD::Retrieve("HISC1-HR.SHP");
+  const void* hiscore2shape = MFCD::Retrieve("HISC2-HR.SHP");
 #else
-  void const* timeshape = MFCD::Retrieve("TIME.SHP");
-  void const* hiscore1shape = MFCD::Retrieve("HISCORE1.SHP");
-  void const* hiscore2shape = MFCD::Retrieve("HISCORE2.SHP");
+  const void* timeshape = MFCD::Retrieve("TIME.SHP");
+  const void* hiscore1shape = MFCD::Retrieve("HISCORE1.SHP");
+  const void* hiscore2shape = MFCD::Retrieve("HISCORE2.SHP");
 #endif
   ScoreObjs[0] = new ScoreTimeClass(238, 2, timeshape, 30, 4);
   ScoreObjs[1] = new ScoreTimeClass(4, 89, hiscore1shape, 10, 4);
@@ -840,7 +840,7 @@ void ScoreClass::Presentation() {
   Set_Logic_Page(SeenBuff);
 
   char maststr[NUMFAMENAMES * 32];
-  unsigned char const* pal;
+  const unsigned char* pal;
   for (i = 0; i < NUMFAMENAMES; i++) {
     pal = hallfame[i].side ? _redpal : _bluepal;
     Alloc_Object(new ScorePrintClass(hallfame[i].name, HALLFAME_X,
@@ -1078,7 +1078,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
  *   05/03/1995 BWG : Created.                                             *
  *=========================================================================*/
 
-void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
+void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
                               int gkilled, int nkilled, int ypos) {
   int i, maxval;
 #ifdef WIN32
@@ -1089,7 +1089,7 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
     int temp = gkilled;
     gkilled = nkilled;
     nkilled = temp;
-    void const* tempptr = yellowptr;
+    const void* tempptr = yellowptr;
     yellowptr = redptr;
     redptr = tempptr;
   }
@@ -1219,7 +1219,7 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
 void ScoreClass::Do_Nod_Casualties_Graph() {
   int i, gdikilled, nodkilled, maxval;
 
-  void const* e1ptr = MFCD::Retrieve("E1.SHP");
+  const void* e1ptr = MFCD::Retrieve("E1.SHP");
 
   gdikilled = GKilled;
   nodkilled = NKilled;
@@ -1313,7 +1313,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   }
 }
 
-void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
+void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   static int _credsx[2] = {276, 276};
   static int _credsy[2] = {173, 58};
   static int _credpx[2] = {228, 236};
@@ -1331,10 +1331,10 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
   int minval, add;
 
 #if RESFACTOR == 2
-  void const* credshape =
+  const void* credshape =
       MFCD::Retrieve(house ? "CREDSUHR.SHP" : "CREDSAHR.SHP");
 #else
-  void const* credshape = MFCD::Retrieve(house ? "CREDSU.SHP" : "CREDSA.SHP");
+  const void* credshape = MFCD::Retrieve(house ? "CREDSU.SHP" : "CREDSA.SHP");
 #endif
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_ENDCRED, _credtx[house],
@@ -1454,11 +1454,11 @@ void ScoreClass::Count_Up_Print(char* str, int percent, int maxval, int xpos,
  * HISTORY: * 05/15/1995 BWG : Created. *
  *=============================================================================================*/
 void ScoreClass::Input_Name(char str[], int xpos, int ypos,
-                            unsigned char const pal[]) {
+                            const unsigned char pal[]) {
   int key = 0;
   int ascii, index = 0;
 
-  void const* keystrok = MFCD::Retrieve("KEYSTROK.AUD");
+  const void* keystrok = MFCD::Retrieve("KEYSTROK.AUD");
 
   /*
   ** Ready the hidpage so it can restore background under zoomed letters

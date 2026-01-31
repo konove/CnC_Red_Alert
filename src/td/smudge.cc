@@ -365,7 +365,7 @@ void SmudgeClass::Write_INI(char* buffer) {
 
     ptr = &Map[index];
     if (ptr->Smudge != SMUDGE_NONE) {
-      SmudgeTypeClass const* stype =
+      const SmudgeTypeClass* stype =
           &SmudgeTypeClass::As_Reference(ptr->Smudge);
       if (!stype->IsBib) {
         sprintf(uname, "%03d", index);

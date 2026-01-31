@@ -72,7 +72,7 @@ TFixedIHeapClass<WarheadTypeClass> Warheads;
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-WarheadTypeClass::WarheadTypeClass(char const* name)
+WarheadTypeClass::WarheadTypeClass(const char* name)
     : ID(Warheads.ID(this)),
       IniName(name),
       SpreadFactor(1),

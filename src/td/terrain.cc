@@ -333,8 +333,8 @@ TerrainClass::TerrainClass(TerrainType type, CELL cell)
 bool TerrainClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark)) {
-    short const* overlap = Class->Overlap_List();
-    short const* occupy = Class->Occupy_List();
+    const short* overlap = Class->Overlap_List();
+    const short* occupy = Class->Occupy_List();
     CELL cell = Coord_Cell(Coord);
 
     switch (mark) {
@@ -379,7 +379,7 @@ bool TerrainClass::Mark(MarkType mark) {
  *=============================================================================================*/
 void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  void const* shapedata;
+  const void* shapedata;
 
   shapedata = Class->Get_Image_Data();
   if (shapedata) {
@@ -451,7 +451,7 @@ void TerrainClass::Init() {
  *=============================================================================================*/
 MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
   Validate();
-  short const* offset;  // Pointer to cell offset list.
+  const short* offset;  // Pointer to cell offset list.
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 

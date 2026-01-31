@@ -89,7 +89,7 @@ int BlowPipe::Flush() {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowPipe::Put(void const* source, int slen) {
+int BlowPipe::Put(const void* source, int slen) {
   if (source == nullptr || slen < 1) {
     return Pipe::Put(source, slen);
   }
@@ -179,7 +179,7 @@ int BlowPipe::Put(void const* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowPipe::Key(void const* key, int length) {
+void BlowPipe::Key(const void* key, int length) {
   /*
   **	Create the blowfish engine if one isn't already present.
   */

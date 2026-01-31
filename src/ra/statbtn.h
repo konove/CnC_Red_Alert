@@ -47,14 +47,14 @@
 class StaticButtonClass : public GadgetClass {
  public:
   StaticButtonClass();
-  StaticButtonClass(unsigned id, char const* text, TextPrintType style, int x,
+  StaticButtonClass(unsigned id, const char* text, TextPrintType style, int x,
                     int y, int w = -1, int h = -1);
   int Draw_Me(int forced = false) override;
-  virtual void Set_Text(char const* text, bool resize = false);
+  virtual void Set_Text(const char* text, bool resize = false);
 
  protected:
   virtual void Draw_Background();
-  virtual void Draw_Text(char const* text);
+  virtual void Draw_Text(const char* text);
 
   /*
   **	If a background is to be preserved for this button, then this will point

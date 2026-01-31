@@ -108,7 +108,7 @@ extern bool Debug_Trap_Check_Heap;
 extern bool Debug_Modem_Dump;
 extern bool Debug_Print_Events;
 
-extern void const* LightningShapes;
+extern const void* LightningShapes;
 
 extern int NewINIFormat;
 
@@ -119,7 +119,7 @@ extern bool SecretUnitsEnabled;
 extern int MTankDistance;
 extern int CarrierLaunchDelay;
 
-extern char const* NameOverride[25];
+extern const char* NameOverride[25];
 extern int NameIDOverride[25];
 
 extern bool GameInFocus;
@@ -141,7 +141,7 @@ extern GraphicBufferClass ModeXBuff;
 **	Dynamic global variables (these change or are initialized at run time).
 */
 extern MissionControlClass MissionControl[MISSION_COUNT];
-extern char const* TutorialTextData;
+extern const char* TutorialTextData;
 extern uint16_t TutorialTextOffsets[225];
 extern Buffer* TheaterBuffer;
 extern GetCDClass CDList;
@@ -266,19 +266,19 @@ extern fixed
 /*
 **	Loaded data file pointers.
 */
-extern void const* Metal12FontPtr;
-extern void const* MapFontPtr;
-extern void const* VCRFontPtr;
-extern void const* TypeFontPtr;
-extern void const* Font3Ptr;
-extern void const* Font6Ptr;
-extern void const* EditorFont;
-extern void const* Font8Ptr;
-extern void const* FontLEDPtr;
-extern void const* ScoreFontPtr;
-extern void const* GradFont6Ptr;
-extern char const* SystemStrings;
-extern char const* DebugStrings;
+extern const void* Metal12FontPtr;
+extern const void* MapFontPtr;
+extern const void* VCRFontPtr;
+extern const void* TypeFontPtr;
+extern const void* Font3Ptr;
+extern const void* Font6Ptr;
+extern const void* EditorFont;
+extern const void* Font8Ptr;
+extern const void* FontLEDPtr;
+extern const void* ScoreFontPtr;
+extern const void* GradFont6Ptr;
+extern const char* SystemStrings;
+extern const char* DebugStrings;
 
 /*
 **	Miscellaneous globals.
@@ -368,7 +368,7 @@ void Do_Vortex(int x, int y, int frame);
 extern bool ReadyToQuit;      // Are we about to exit cleanly
 extern bool InDebugger;       // Are we being run from a debugger
 void Memory_Error_Handler();  // Memory error handler function
-void WWDebugString(char const* string);
+void WWDebugString(const char* string);
 
 /*************************************************************
 ** Internet specific externs

@@ -100,7 +100,7 @@ extern GraphicBufferClass HidPage;
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void RawFileClass::Error(int error, int canretry, char const* filename) {
+void RawFileClass::Error(int error, int canretry, const char* filename) {
 #ifndef PORTABLE
   char message[256];  // Staging buffer for error message string.
 
@@ -208,7 +208,7 @@ void RawFileClass::Error(int error, int canretry, char const* filename) {
     void* background;             // Pointer to background saving buffer.
     GraphicBufferClass* oldpage;  // Copy of old logic page.
     int oldwindow;                // Copy of old window number.
-    void const* oldfont;          // Copy of old font pointer.
+    const void* oldfont;          // Copy of old font pointer.
     int oldspacing;               // Old font X spacing.
 
     /*
@@ -314,7 +314,7 @@ void RawFileClass::Error(int error, int canretry, char const* filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-RawFileClass::RawFileClass(char const* filename)
+RawFileClass::RawFileClass(const char* filename)
     :
 #ifdef PORTABLE
       Handle(nullptr),
@@ -352,7 +352,7 @@ RawFileClass::~RawFileClass() {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-char const* RawFileClass::Set_Name(char const* filename) {
+const char* RawFileClass::Set_Name(const char* filename) {
   if (Allocated) {
     delete[] Filename;
     Filename = nullptr;
@@ -394,7 +394,7 @@ char const* RawFileClass::Set_Name(char const* filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Open(char const* filename, int rights) {
+int RawFileClass::Open(const char* filename, int rights) {
   Set_Name(filename);
   return Open(rights);
 }
@@ -561,7 +561,7 @@ int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
         // if successful, replace the filename with the working one
         if (Allocated) delete[] Filename;
 
-        static_cast<char const*&>(Filename) = lower_name;
+        static_cast<const char*&>(Filename) = lower_name;
         Allocated = true;
       } else {
         delete[] lower_name;
@@ -818,7 +818,7 @@ long RawFileClass::Read(void* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Write(void const* buffer, long size) {
+long RawFileClass::Write(const void* buffer, long size) {
   long bytesread = 0;
   int opened = false;  // Was the file manually opened?
   int writeresult;

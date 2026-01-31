@@ -1839,7 +1839,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
   CellClass* cellptr = &Map[cell];
   if (Class->IsCrusher && cellptr->Overlay != OVERLAY_NONE) {
     //	if (Class->Speed == SPEED_TRACK && cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const* optr =
+    const OverlayTypeClass* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (optr->IsCrushable) {
@@ -2003,7 +2003,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   assert(IsActive);
 
   int shapenum;           // Working shape number.
-  void const* shapefile;  // Working shape file pointer.
+  const void* shapefile;  // Working shape file pointer.
   int tfacing = Dir_To_32(SecondaryFacing);
   DirType rotation = DIR_N;
   int scale = 0x0100;
@@ -2949,7 +2949,7 @@ int UnitClass::Mission_Hunt() {
  * HISTORY: * 05/26/1994 JLB : Created. * 06/19/1994 JLB : Uses
  *Coord_Spillable_List function.                                      *
  *=============================================================================================*/
-short const* UnitClass::Overlap_List(bool redraw) const {
+const short* UnitClass::Overlap_List(bool redraw) const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3018,7 +3018,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
   bool cancrush = false;
 
-  CellClass const* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map[cell];
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) return MOVE_NO;
 
@@ -3038,7 +3038,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
   **	and return the appropriate flag. Other units treat walls as impassable.
   */
   if (cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const* optr =
+    const OverlayTypeClass* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (optr->IsCrate && House &&
@@ -3060,7 +3060,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
       }
 
       if (!cancrush && Is_Weapon_Equipped()) {
-        WarheadTypeClass const* whead = Class->PrimaryWeapon->WarheadPtr;
+        const WarheadTypeClass* whead = Class->PrimaryWeapon->WarheadPtr;
 
         if (whead->IsWallDestroyer ||
             (whead->IsWoodDestroyer && optr->IsWooden)) {
@@ -3134,7 +3134,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
         if (is_moving) {
           int face = Dir_Facing(PrimaryFacing);
           int techface =
-              Dir_Facing(dynamic_cast<FootClass const*>(obj)->PrimaryFacing) ^
+              Dir_Facing(dynamic_cast<const FootClass*>(obj)->PrimaryFacing) ^
               4;
           if (face == techface && Distance(obj) <= 0x1FF) {
             return MOVE_NO;
@@ -3339,7 +3339,7 @@ bool UnitClass::Start_Driver(COORDINATE& headto) {
  *                                                                                             *
  * HISTORY: * 01/11/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType UnitClass::What_Action(ObjectClass const* object) const {
+ActionType UnitClass::What_Action(const ObjectClass* object) const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3427,7 +3427,7 @@ ActionType UnitClass::What_Action(ObjectClass const* object) const {
   **	Special return to friendly refinery action.
   */
   if (House->IsPlayerControl && object->Is_Techno() &&
-      dynamic_cast<TechnoClass const*>(object)->House->Is_Ally(this)) {
+      dynamic_cast<const TechnoClass*>(object)->House->Is_Ally(this)) {
     if (object->What_Am_I() == RTTI_BUILDING &&
         ((UnitClass*)this)
                 ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object) ==
@@ -3536,7 +3536,7 @@ void UnitClass::Exit_Repair() {
   int i;
   CELL cell;
   bool found = false;
-  static short const ExitRepair[] = {
+  static const short ExitRepair[] = {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
@@ -4063,7 +4063,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
   FireErrorType fire = DriveClass::Can_Fire(target, which);
 
   if (fire == FIRE_OK) {
-    WeaponTypeClass const* weapon =
+    const WeaponTypeClass* weapon =
         which == 0 ? Class->PrimaryWeapon : Class->SecondaryWeapon;
 
     /*
@@ -4131,7 +4131,7 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
   assert(Class);
 
   BulletClass* bullet = nullptr;
-  WeaponTypeClass const* weap =
+  const WeaponTypeClass* weap =
       which == 0 ? Class->PrimaryWeapon : Class->SecondaryWeapon;
   if (weap == nullptr) return nullptr;
 
@@ -4166,7 +4166,7 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-ObjectTypeClass const& UnitClass::Class_Of() const {
+const ObjectTypeClass& UnitClass::Class_Of() const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -4579,7 +4579,7 @@ void UnitClass::Read_INI(CCINIClass& ini) {
   int len = ini.Entry_Count(INI_Name());
 
   for (int index = 0; index < len; index++) {
-    char const* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.Get_Entry(INI_Name(), index);
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
 
@@ -4715,7 +4715,7 @@ int UnitClass::Credit_Load() const {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Should_Crush_It(TechnoClass const* it) const {
+bool UnitClass::Should_Crush_It(const TechnoClass* it) const {
   assert(IsActive);
 
   /*

@@ -69,7 +69,7 @@ typedef enum {
 } ContextType;
 
 static struct {
-  char const* Name;   // Digitized voice file name.
+  const char* Name;   // Digitized voice file name.
   int Priority;       // Playback priority of this sample.
   ContextType Where;  // In what game context does this sample exist.
 } SoundEffectName[VOC_COUNT] = {
@@ -388,7 +388,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   **	Fetch a pointer to the sound effect data. Modify the sound as
   *appropriate and desired.
   */
-  char const* ext = ".AUD";
+  const char* ext = ".AUD";
   if (Special.IsJuvenile && SoundEffectName[voc].Where == IN_JUV) {
     ext = ".JUV";
   } else {
@@ -416,7 +416,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   auto name = std::filesystem::path(SoundEffectName[voc].Name)
                   .replace_extension(ext)
                   .string();
-  void const* ptr = MixFileClass::Retrieve(name.c_str());
+  const void* ptr = MixFileClass::Retrieve(name.c_str());
 
   /*
   **	If the sound data pointer is not null, then presume that it is valid.
@@ -432,7 +432,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
 /*
 **	This elaborates all the EVA speech voices.
 */
-char const* Speech[VOX_COUNT] = {
+const char* Speech[VOX_COUNT] = {
     "ACCOM1",    //	mission accomplished
     "FAIL1",     //	your mission has failed
     "BLDG1",     //	unable to comply, building in progress

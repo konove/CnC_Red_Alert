@@ -528,7 +528,7 @@ int WWMessageBox::Process(int msg, int b1txt, int b2txt, int b3txt,
  *                                                                                             *
  * HISTORY: * 06/18/1995 JLB : Created. *
  *=============================================================================================*/
-int WWMessageBox::Process(char const* msg, int b1txt, int b2txt, int b3txt,
+int WWMessageBox::Process(const char* msg, int b1txt, int b2txt, int b3txt,
                           bool preserve) {
   return Process(msg, Text_String(b1txt), Text_String(b2txt),
                  Text_String(b3txt), preserve);

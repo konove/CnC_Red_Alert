@@ -54,7 +54,7 @@
 class HelpClass : public TabClass {
  public:
   HelpClass();
-  HelpClass(NoInitClass const& x) : TabClass(x) {}
+  HelpClass(const NoInitClass& x) : TabClass(x) {}
 
   /*
   ** Initialization
@@ -69,10 +69,10 @@ class HelpClass : public TabClass {
   void Help_Text(int text, int x = -1, int y = -1, int color = LTGREY,
                  bool quick = false) override;
   void Set_Cost(int cost);
-  short const* Overlap_List() const;
+  const short* Overlap_List() const;
 
  private:
-  static char const* HelpText;
+  static const char* HelpText;
   int HelpX;
   int HelpY;
   int HelpWidth;

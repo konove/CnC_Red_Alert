@@ -62,13 +62,13 @@
 #endif
 
 // These are actually implemented in the game, but used by audio and WSA
-int Open_File(char const* file_name, int mode);
+int Open_File(const char* file_name, int mode);
 void Close_File(int handle);
 long Read_File(int handle, void* buf, unsigned long bytes);
-long Write_File(int handle, void const* buf, unsigned long bytes);
+long Write_File(int handle, const void* buf, unsigned long bytes);
 unsigned long Seek_File(int handle, long offset, int starting);
 unsigned long File_Size(int handle);
-int Find_File(char const* file_name);
+int Find_File(const char* file_name);
 
 // low level IO implemented here
 void* IO_Open_File(const char* filename, int mode);

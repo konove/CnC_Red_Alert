@@ -61,7 +61,7 @@
 #include "tech/fixed.h"
 #include "tech/rawfile.h"
 
-static AnimTypeClass const AtomBomb(
+static const AnimTypeClass AtomBomb(
     ANIM_ATOM_BLAST,  // Animation number.
     "ATOMSFX",        // Data name of animation.
     72,               // Maximum dimension of animation.
@@ -85,7 +85,7 @@ static AnimTypeClass const AtomBomb(
     VOC_NONE,         // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const SputDoor(
+static const AnimTypeClass SputDoor(
     ANIM_SPUTDOOR,  // Animation number.
     "SPUTDOOR",     // Data name of animation.
     42,             // Maximum dimension of animation.
@@ -110,7 +110,7 @@ static AnimTypeClass const SputDoor(
     ANIM_NONE);
 
 // Electrocution death anim from Tesla coil
-static AnimTypeClass const ElectricDie(
+static const AnimTypeClass ElectricDie(
     ANIM_ELECT_DIE,  // Animation number.
     "ELECTRO",       // Data name of animation.
     16,              // Maximum dimension of animation.
@@ -135,7 +135,7 @@ static AnimTypeClass const ElectricDie(
     ANIM_FIRE_MED);
 
 // Electrocution death anim from Tesla coil for dog
-static AnimTypeClass const DogElectricDie(
+static const AnimTypeClass DogElectricDie(
     ANIM_DOG_ELECT_DIE,  // Animation number.
     "ELECTDOG",          // Data name of animation.
     17,                  // Maximum dimension of animation.
@@ -159,7 +159,7 @@ static AnimTypeClass const DogElectricDie(
     VOC_NONE,            // Sound effect to play.
     ANIM_FIRE_MED);
 
-static AnimTypeClass const SAMN(ANIM_SAM_N,  // Animation number.
+static const AnimTypeClass SAMN(ANIM_SAM_N,  // Animation number.
                                 "SAMFIRE",   // Data name of animation.
                                 55,          // Maximum dimension of animation.
                                 4,           // Biggest animation stage.
@@ -181,7 +181,7 @@ static AnimTypeClass const SAMN(ANIM_SAM_N,  // Animation number.
                                 0,       // Number of times the animation loops.
                                 VOC_NONE,  // Sound effect to play.
                                 ANIM_NONE);
-static AnimTypeClass const SAMNW(
+static const AnimTypeClass SAMNW(
     ANIM_SAM_NW,  // Animation number.
     "SAMFIRE",    // Data name of animation.
     55,           // Maximum dimension of animation.
@@ -204,7 +204,7 @@ static AnimTypeClass const SAMNW(
     0,            // Number of times the animation loops.
     VOC_NONE,     // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const SAMW(ANIM_SAM_W,  // Animation number.
+static const AnimTypeClass SAMW(ANIM_SAM_W,  // Animation number.
                                 "SAMFIRE",   // Data name of animation.
                                 55,          // Maximum dimension of animation.
                                 40,          // Biggest animation stage.
@@ -226,7 +226,7 @@ static AnimTypeClass const SAMW(ANIM_SAM_W,  // Animation number.
                                 0,       // Number of times the animation loops.
                                 VOC_NONE,  // Sound effect to play.
                                 ANIM_NONE);
-static AnimTypeClass const SAMSW(
+static const AnimTypeClass SAMSW(
     ANIM_SAM_SW,  // Animation number.
     "SAMFIRE",    // Data name of animation.
     55,           // Maximum dimension of animation.
@@ -249,7 +249,7 @@ static AnimTypeClass const SAMSW(
     0,            // Number of times the animation loops.
     VOC_NONE,     // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const SAMS(ANIM_SAM_S,  // Animation number.
+static const AnimTypeClass SAMS(ANIM_SAM_S,  // Animation number.
                                 "SAMFIRE",   // Data name of animation.
                                 55,          // Maximum dimension of animation.
                                 76,          // Biggest animation stage.
@@ -271,7 +271,7 @@ static AnimTypeClass const SAMS(ANIM_SAM_S,  // Animation number.
                                 0,       // Number of times the animation loops.
                                 VOC_NONE,  // Sound effect to play.
                                 ANIM_NONE);
-static AnimTypeClass const SAMSE(
+static const AnimTypeClass SAMSE(
     ANIM_SAM_SE,  // Animation number.
     "SAMFIRE",    // Data name of animation.
     55,           // Maximum dimension of animation.
@@ -294,7 +294,7 @@ static AnimTypeClass const SAMSE(
     0,            // Number of times the animation loops.
     VOC_NONE,     // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const SAME(ANIM_SAM_E,  // Animation number.
+static const AnimTypeClass SAME(ANIM_SAM_E,  // Animation number.
                                 "SAMFIRE",   // Data name of animation.
                                 55,          // Maximum dimension of animation.
                                 112,         // Biggest animation stage.
@@ -316,7 +316,7 @@ static AnimTypeClass const SAME(ANIM_SAM_E,  // Animation number.
                                 0,       // Number of times the animation loops.
                                 VOC_NONE,  // Sound effect to play.
                                 ANIM_NONE);
-static AnimTypeClass const SAMNE(
+static const AnimTypeClass SAMNE(
     ANIM_SAM_NE,  // Animation number.
     "SAMFIRE",    // Data name of animation.
     55,           // Maximum dimension of animation.
@@ -340,7 +340,7 @@ static AnimTypeClass const SAMNE(
     VOC_NONE,     // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const LZSmoke(
+static const AnimTypeClass LZSmoke(
     ANIM_LZ_SMOKE,  // Animation number.
     "SMOKLAND",     // Data name of animation.
     32,             // Maximum dimension of animation.
@@ -368,7 +368,7 @@ static AnimTypeClass const LZSmoke(
 **	Flammable object burning animations. Primarily used on trees and
 *buildings.
 */
-static AnimTypeClass const BurnSmall(
+static const AnimTypeClass BurnSmall(
     ANIM_BURN_SMALL,  // Animation number.
     "BURN-S",         // Data name of animation.
     11,               // Maximum dimension of animation.
@@ -391,7 +391,7 @@ static AnimTypeClass const BurnSmall(
     4,                // Number of times the animation loops.
     VOC_NONE,         // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const BurnMed(
+static const AnimTypeClass BurnMed(
     ANIM_BURN_MED,  // Animation number.
     "BURN-M",       // Data name of animation.
     14,             // Maximum dimension of animation.
@@ -414,7 +414,7 @@ static AnimTypeClass const BurnMed(
     4,              // Number of times the animation loops.
     VOC_NONE,       // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const BurnBig(
+static const AnimTypeClass BurnBig(
     ANIM_BURN_BIG,  // Animation number.
     "BURN-L",       // Data name of animation.
     23,             // Maximum dimension of animation.
@@ -442,7 +442,7 @@ static AnimTypeClass const BurnBig(
 **	Flammable object burning animations that trail into smoke. Used for
 **	buildings and the gunboat.
 */
-static AnimTypeClass const OnFireSmall(
+static const AnimTypeClass OnFireSmall(
     ANIM_ON_FIRE_SMALL,  // Animation number.
     "BURN-S",            // Data name of animation.
     11,                  // Maximum dimension of animation.
@@ -465,7 +465,7 @@ static AnimTypeClass const OnFireSmall(
     4,                   // Number of times the animation loops.
     VOC_NONE,            // Sound effect to play.
     ANIM_SMOKE_M);
-static AnimTypeClass const OnFireMed(
+static const AnimTypeClass OnFireMed(
     ANIM_ON_FIRE_MED,  // Animation number.
     "BURN-M",          // Data name of animation.
     14,                // Maximum dimension of animation.
@@ -488,7 +488,7 @@ static AnimTypeClass const OnFireMed(
     4,                 // Number of times the animation loops.
     VOC_NONE,          // Sound effect to play.
     ANIM_ON_FIRE_SMALL);
-static AnimTypeClass const OnFireBig(
+static const AnimTypeClass OnFireBig(
     ANIM_ON_FIRE_BIG,  // Animation number.
     "BURN-L",          // Data name of animation.
     23,                // Maximum dimension of animation.
@@ -511,7 +511,7 @@ static AnimTypeClass const OnFireBig(
     4,                 // Number of times the animation loops.
     VOC_NONE,          // Sound effect to play.
     ANIM_ON_FIRE_MED);
-static AnimTypeClass const Parachute(
+static const AnimTypeClass Parachute(
     ANIM_PARACHUTE,  // Animation number.
     "PARACH",        // Data name of animation.
     32,              // Maximum dimension of animation.
@@ -534,7 +534,7 @@ static AnimTypeClass const Parachute(
     15,              // Number of times the animation loops.
     VOC_NONE,        // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const ParaBomb(
+static const AnimTypeClass ParaBomb(
     ANIM_PARA_BOMB,  // Animation number.
     "PARABOMB",      // Data name of animation.
     32,              // Maximum dimension of animation.
@@ -558,7 +558,7 @@ static AnimTypeClass const ParaBomb(
     VOC_NONE,        // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const FBall1(
+static const AnimTypeClass FBall1(
     ANIM_FBALL1,   // Animation number.
     "FBALL1",      // Data name of animation.
     67,            // Maximum dimension of animation.
@@ -582,7 +582,7 @@ static AnimTypeClass const FBall1(
     VOC_KABOOM25,  // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Frag1(
+static const AnimTypeClass Frag1(
     ANIM_FRAG1,    // Animation number.
     "FRAG1",       // Data name of animation.
     45,            // Maximum dimension of animation.
@@ -606,7 +606,7 @@ static AnimTypeClass const Frag1(
     VOC_KABOOM30,  // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const VehHit1(
+static const AnimTypeClass VehHit1(
     ANIM_VEH_HIT1,  // Animation number.
     "VEH-HIT1",     // Data name of animation.
     30,             // Maximum dimension of animation.
@@ -630,7 +630,7 @@ static AnimTypeClass const VehHit1(
     VOC_KABOOM25,   // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const VehHit2(
+static const AnimTypeClass VehHit2(
     ANIM_VEH_HIT2,  // Animation number.
     "VEH-HIT2",     // Data name of animation.
     21,             // Maximum dimension of animation.
@@ -654,7 +654,7 @@ static AnimTypeClass const VehHit2(
     VOC_KABOOM12,   // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const VehHit3(
+static const AnimTypeClass VehHit3(
     ANIM_VEH_HIT3,  // Animation number.
     "VEH-HIT3",     // Data name of animation.
     19,             // Maximum dimension of animation.
@@ -678,7 +678,7 @@ static AnimTypeClass const VehHit3(
     VOC_KABOOM12,   // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const ArtExp1(
+static const AnimTypeClass ArtExp1(
     ANIM_ART_EXP1,  // Animation number.
     "ART-EXP1",     // Data name of animation.
     41,             // Maximum dimension of animation.
@@ -702,7 +702,7 @@ static AnimTypeClass const ArtExp1(
     VOC_KABOOM22,   // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Napalm1(
+static const AnimTypeClass Napalm1(
     ANIM_NAPALM1,      // Animation number.
     "NAPALM1",         // Data name of animation.
     21,                // Maximum dimension of animation.
@@ -726,7 +726,7 @@ static AnimTypeClass const Napalm1(
     VOC_FIRE_EXPLODE,  // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Napalm2(
+static const AnimTypeClass Napalm2(
     ANIM_NAPALM2,      // Animation number.
     "NAPALM2",         // Data name of animation.
     41,                // Maximum dimension of animation.
@@ -750,7 +750,7 @@ static AnimTypeClass const Napalm2(
     VOC_FIRE_EXPLODE,  // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Napalm3(
+static const AnimTypeClass Napalm3(
     ANIM_NAPALM3,     // Animation number.
     "NAPALM3",        // Data name of animation.
     78,               // Maximum dimension of animation.
@@ -774,7 +774,7 @@ static AnimTypeClass const Napalm3(
     VOC_FIRE_LAUNCH,  // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const SmokePuff(
+static const AnimTypeClass SmokePuff(
     ANIM_SMOKE_PUFF,  // Animation number.
     "SMOKEY",         // Data name of animation.
     24,               // Maximum dimension of animation.
@@ -798,7 +798,7 @@ static AnimTypeClass const SmokePuff(
     VOC_NONE,         // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const FireBallFade(
+static const AnimTypeClass FireBallFade(
     ANIM_FBALL_FADE,  // Animation number.
     "FB2",            // Data name of animation.
     24,               // Maximum dimension of animation.
@@ -822,7 +822,7 @@ static AnimTypeClass const FireBallFade(
     VOC_NONE,         // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Piff(ANIM_PIFF,  // Animation number.
+static const AnimTypeClass Piff(ANIM_PIFF,  // Animation number.
                                 "PIFF",     // Data name of animation.
                                 13,         // Maximum dimension of animation.
                                 1,          // Biggest animation stage.
@@ -845,7 +845,7 @@ static AnimTypeClass const Piff(ANIM_PIFF,  // Animation number.
                                 VOC_NONE,  // Sound effect to play.
                                 ANIM_NONE);
 
-static AnimTypeClass const PiffPiff(
+static const AnimTypeClass PiffPiff(
     ANIM_PIFFPIFF,  // Animation number.
     "PIFFPIFF",     // Data name of animation.
     20,             // Maximum dimension of animation.
@@ -869,7 +869,7 @@ static AnimTypeClass const PiffPiff(
     VOC_NONE,       // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Fire3(
+static const AnimTypeClass Fire3(
     ANIM_FIRE_SMALL,  // Animation number.
     "FIRE3",          // Data name of animation.
     23,               // Maximum dimension of animation.
@@ -893,7 +893,7 @@ static AnimTypeClass const Fire3(
     VOC_NONE,         // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Fire1(
+static const AnimTypeClass Fire1(
     ANIM_FIRE_MED2,  // Animation number.
     "FIRE1",         // Data name of animation.
     23,              // Maximum dimension of animation.
@@ -917,7 +917,7 @@ static AnimTypeClass const Fire1(
     VOC_NONE,        // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Fire4(
+static const AnimTypeClass Fire4(
     ANIM_FIRE_TINY,  // Animation number.
     "FIRE4",         // Data name of animation.
     7,               // Maximum dimension of animation.
@@ -941,7 +941,7 @@ static AnimTypeClass const Fire4(
     VOC_NONE,        // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Fire2(
+static const AnimTypeClass Fire2(
     ANIM_FIRE_MED,  // Animation number.
     "FIRE2",        // Data name of animation.
     23,             // Maximum dimension of animation.
@@ -965,7 +965,7 @@ static AnimTypeClass const Fire2(
     VOC_NONE,       // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const OilFieldBurn(
+static const AnimTypeClass OilFieldBurn(
     ANIM_OILFIELD_BURN,  // Animation number.
     "FLMSPT",            // Data name of animation.
     42,                  // Maximum dimension of animation.
@@ -989,7 +989,7 @@ static AnimTypeClass const OilFieldBurn(
     VOC_NONE,            // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Gunfire(
+static const AnimTypeClass Gunfire(
     ANIM_MUZZLE_FLASH,  // Animation number.
     "GUNFIRE",          // Data name of animation.
     16,                 // Maximum dimension of animation.
@@ -1013,7 +1013,7 @@ static AnimTypeClass const Gunfire(
     VOC_NONE,           // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const SmokeM(
+static const AnimTypeClass SmokeM(
     ANIM_SMOKE_M,  // Animation number.
     "SMOKE_M",     // Data name of animation.
     28,            // Maximum dimension of animation.
@@ -1040,7 +1040,7 @@ static AnimTypeClass const SmokeM(
 /*
 **	Mini-gun fire effect -- used by guard towers.
 */
-static AnimTypeClass const GUNN(ANIM_GUN_N,  // Animation number.
+static const AnimTypeClass GUNN(ANIM_GUN_N,  // Animation number.
                                 "MINIGUN",   // Data name of animation.
                                 18,          // Maximum dimension of animation.
                                 0,           // Biggest animation stage.
@@ -1062,7 +1062,7 @@ static AnimTypeClass const GUNN(ANIM_GUN_N,  // Animation number.
                                 0,  // Ending frame of loop back.
                                 VOC_NONE,  // Sound effect to play.
                                 ANIM_NONE);
-static AnimTypeClass const GUNNW(
+static const AnimTypeClass GUNNW(
     ANIM_GUN_NW,  // Animation number.
     "MINIGUN",    // Data name of animation.
     18,           // Maximum dimension of animation.
@@ -1085,7 +1085,7 @@ static AnimTypeClass const GUNNW(
     0,            // Ending frame of loop back.
     VOC_NONE,     // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const GUNW(ANIM_GUN_W,  // Animation number.
+static const AnimTypeClass GUNW(ANIM_GUN_W,  // Animation number.
                                 "MINIGUN",   // Data name of animation.
                                 18,          // Maximum dimension of animation.
                                 0,           // Biggest animation stage.
@@ -1107,7 +1107,7 @@ static AnimTypeClass const GUNW(ANIM_GUN_W,  // Animation number.
                                 0,   // Ending frame of loop back.
                                 VOC_NONE,  // Sound effect to play.
                                 ANIM_NONE);
-static AnimTypeClass const GUNSW(
+static const AnimTypeClass GUNSW(
     ANIM_GUN_SW,  // Animation number.
     "MINIGUN",    // Data name of animation.
     18,           // Maximum dimension of animation.
@@ -1130,7 +1130,7 @@ static AnimTypeClass const GUNSW(
     0,            // Ending frame of loop back.
     VOC_NONE,     // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const GUNS(ANIM_GUN_S,  // Animation number.
+static const AnimTypeClass GUNS(ANIM_GUN_S,  // Animation number.
                                 "MINIGUN",   // Data name of animation.
                                 18,          // Maximum dimension of animation.
                                 0,           // Biggest animation stage.
@@ -1152,7 +1152,7 @@ static AnimTypeClass const GUNS(ANIM_GUN_S,  // Animation number.
                                 0,   // Ending frame of loop back.
                                 VOC_NONE,  // Sound effect to play.
                                 ANIM_NONE);
-static AnimTypeClass const GUNSE(
+static const AnimTypeClass GUNSE(
     ANIM_GUN_SE,  // Animation number.
     "MINIGUN",    // Data name of animation.
     18,           // Maximum dimension of animation.
@@ -1175,7 +1175,7 @@ static AnimTypeClass const GUNSE(
     0,            // Ending frame of loop back.
     VOC_NONE,     // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const GUNE(ANIM_GUN_E,  // Animation number.
+static const AnimTypeClass GUNE(ANIM_GUN_E,  // Animation number.
                                 "MINIGUN",   // Data name of animation.
                                 18,          // Maximum dimension of animation.
                                 0,           // Biggest animation stage.
@@ -1197,7 +1197,7 @@ static AnimTypeClass const GUNE(ANIM_GUN_E,  // Animation number.
                                 0,   // Ending frame of loop back.
                                 VOC_NONE,  // Sound effect to play.
                                 ANIM_NONE);
-static AnimTypeClass const GUNNE(
+static const AnimTypeClass GUNNE(
     ANIM_GUN_NE,  // Animation number.
     "MINIGUN",    // Data name of animation.
     18,           // Maximum dimension of animation.
@@ -1220,7 +1220,7 @@ static AnimTypeClass const GUNNE(
     0,            // Ending frame of loop back.
     VOC_NONE,     // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const CDeviator(
+static const AnimTypeClass CDeviator(
     ANIM_CRATE_DEVIATOR,  // Animation number.
     "DEVIATOR",           // Data name of animation.
     48,                   // Maximum dimension of animation.
@@ -1245,7 +1245,7 @@ static AnimTypeClass const CDeviator(
     ANIM_NONE             // Follow up animation.
 );
 
-static AnimTypeClass const CrateArmor(
+static const AnimTypeClass CrateArmor(
     ANIM_CRATE_ARMOR,  // Animation number.
     "ARMOR",           // Data name of animation.
     48,                // Maximum dimension of animation.
@@ -1269,7 +1269,7 @@ static AnimTypeClass const CrateArmor(
     VOC_NONE,          // Sound effect to play.
     ANIM_NONE          // Follow up animation.
 );
-static AnimTypeClass const CrateSpeed(
+static const AnimTypeClass CrateSpeed(
     ANIM_CRATE_SPEED,  // Animation number.
     "SPEED",           // Data name of animation.
     48,                // Maximum dimension of animation.
@@ -1294,7 +1294,7 @@ static AnimTypeClass const CrateSpeed(
     ANIM_NONE          // Follow up animation.
 );
 
-static AnimTypeClass const CrateFPower(
+static const AnimTypeClass CrateFPower(
     ANIM_CRATE_FPOWER,  // Animation number.
     "FPOWER",           // Data name of animation.
     48,                 // Maximum dimension of animation.
@@ -1318,7 +1318,7 @@ static AnimTypeClass const CrateFPower(
     VOC_NONE,           // Sound effect to play.
     ANIM_NONE           // Follow up animation.
 );
-static AnimTypeClass const CrateTQuake(
+static const AnimTypeClass CrateTQuake(
     ANIM_CRATE_TQUAKE,  // Animation number.
     "TQUAKE",           // Data name of animation.
     48,                 // Maximum dimension of animation.
@@ -1343,7 +1343,7 @@ static AnimTypeClass const CrateTQuake(
     ANIM_NONE           // Follow up animation.
 );
 
-static AnimTypeClass const CDollar(
+static const AnimTypeClass CDollar(
     ANIM_CRATE_DOLLAR,  // Animation number.
     "DOLLAR",           // Data name of animation.
     48,                 // Maximum dimension of animation.
@@ -1367,7 +1367,7 @@ static AnimTypeClass const CDollar(
     VOC_NONE,           // Sound effect to play.
     ANIM_NONE           // Follow up animation.
 );
-static AnimTypeClass const CEarth(
+static const AnimTypeClass CEarth(
     ANIM_CRATE_EARTH,  // Animation number.
     "EARTH",           // Data name of animation.
     48,                // Maximum dimension of animation.
@@ -1391,7 +1391,7 @@ static AnimTypeClass const CEarth(
     VOC_NONE,          // Sound effect to play.
     ANIM_NONE          // Follow up animation.
 );
-static AnimTypeClass const CEmpulse(
+static const AnimTypeClass CEmpulse(
     ANIM_CRATE_EMPULSE,  // Animation number.
     "EMPULSE",           // Data name of animation.
     48,                  // Maximum dimension of animation.
@@ -1415,7 +1415,7 @@ static AnimTypeClass const CEmpulse(
     VOC_NONE,            // Sound effect to play.
     ANIM_NONE            // Follow up animation.
 );
-static AnimTypeClass const CInvun(
+static const AnimTypeClass CInvun(
     ANIM_CRATE_INVUN,  // Animation number.
     "INVUN",           // Data name of animation.
     48,                // Maximum dimension of animation.
@@ -1439,7 +1439,7 @@ static AnimTypeClass const CInvun(
     VOC_NONE,          // Sound effect to play.
     ANIM_NONE          // Follow up animation.
 );
-static AnimTypeClass const CMine(
+static const AnimTypeClass CMine(
     ANIM_CRATE_MINE,  // Animation number.
     "MINE",           // Data name of animation.
     48,               // Maximum dimension of animation.
@@ -1463,7 +1463,7 @@ static AnimTypeClass const CMine(
     VOC_NONE,         // Sound effect to play.
     ANIM_NONE         // Follow up animation.
 );
-static AnimTypeClass const CRapid(
+static const AnimTypeClass CRapid(
     ANIM_CRATE_RAPID,  // Animation number.
     "RAPID",           // Data name of animation.
     48,                // Maximum dimension of animation.
@@ -1487,7 +1487,7 @@ static AnimTypeClass const CRapid(
     VOC_NONE,          // Sound effect to play.
     ANIM_NONE          // Follow up animation.
 );
-static AnimTypeClass const CStealth(
+static const AnimTypeClass CStealth(
     ANIM_CRATE_STEALTH,  // Animation number.
     "STEALTH2",          // Data name of animation.
     48,                  // Maximum dimension of animation.
@@ -1511,7 +1511,7 @@ static AnimTypeClass const CStealth(
     VOC_NONE,            // Sound effect to play.
     ANIM_NONE            // Follow up animation.
 );
-static AnimTypeClass const ChronoBox(
+static const AnimTypeClass ChronoBox(
     ANIM_CHRONO_BOX,  // Animation number.
     "CHRONBOX",       // Data name of animation.
     48,               // Maximum dimension of animation.
@@ -1535,7 +1535,7 @@ static AnimTypeClass const ChronoBox(
     VOC_NONE,         // Sound effect to play.
     ANIM_NONE         // Follow up animation.
 );
-static AnimTypeClass const GPSBox(
+static const AnimTypeClass GPSBox(
     ANIM_GPS_BOX,  // Animation number.
     "GPSBOX",      // Data name of animation.
     48,            // Maximum dimension of animation.
@@ -1559,7 +1559,7 @@ static AnimTypeClass const GPSBox(
     VOC_NONE,      // Sound effect to play.
     ANIM_NONE      // Follow up animation.
 );
-static AnimTypeClass const InvulBox(
+static const AnimTypeClass InvulBox(
     ANIM_INVUL_BOX,  // Animation number.
     "INVULBOX",      // Data name of animation.
     48,              // Maximum dimension of animation.
@@ -1583,7 +1583,7 @@ static AnimTypeClass const InvulBox(
     VOC_NONE,        // Sound effect to play.
     ANIM_NONE        // Follow up animation.
 );
-static AnimTypeClass const ParaBox(
+static const AnimTypeClass ParaBox(
     ANIM_PARA_BOX,  // Animation number.
     "PARABOX",      // Data name of animation.
     48,             // Maximum dimension of animation.
@@ -1607,7 +1607,7 @@ static AnimTypeClass const ParaBox(
     VOC_NONE,       // Sound effect to play.
     ANIM_NONE       // Follow up animation.
 );
-static AnimTypeClass const SonarBox(
+static const AnimTypeClass SonarBox(
     ANIM_SONAR_BOX,  // Animation number.
     "SONARBOX",      // Data name of animation.
     48,              // Maximum dimension of animation.
@@ -1632,7 +1632,7 @@ static AnimTypeClass const SonarBox(
     ANIM_NONE        // Follow up animation.
 );
 
-static AnimTypeClass const CMissile(
+static const AnimTypeClass CMissile(
     ANIM_CRATE_MISSILE,  // Animation number.
     "MISSILE2",          // Data name of animation.
     48,                  // Maximum dimension of animation.
@@ -1657,7 +1657,7 @@ static AnimTypeClass const CMissile(
     ANIM_NONE            // Follow up animation.
 );
 
-static AnimTypeClass const MoveFlash(
+static const AnimTypeClass MoveFlash(
     ANIM_MOVE_FLASH,  // Animation number.
     "MOVEFLSH",       // Data name of animation.
     24,               // Maximum dimension of animation.
@@ -1682,7 +1682,7 @@ static AnimTypeClass const MoveFlash(
     ANIM_NONE         // Follow up animation.
 );
 
-static AnimTypeClass const Corpse1(
+static const AnimTypeClass Corpse1(
     ANIM_CORPSE1,  // Animation number.
     "CORPSE1",     // Data name of animation.
     24,            // Maximum dimension of animation.
@@ -1706,7 +1706,7 @@ static AnimTypeClass const Corpse1(
     VOC_NONE,      // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Corpse2(
+static const AnimTypeClass Corpse2(
     ANIM_CORPSE2,  // Animation number.
     "CORPSE2",     // Data name of animation.
     24,            // Maximum dimension of animation.
@@ -1730,7 +1730,7 @@ static AnimTypeClass const Corpse2(
     VOC_NONE,      // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Corpse3(
+static const AnimTypeClass Corpse3(
     ANIM_CORPSE3,  // Animation number.
     "CORPSE3",     // Data name of animation.
     24,            // Maximum dimension of animation.
@@ -1754,7 +1754,7 @@ static AnimTypeClass const Corpse3(
     VOC_NONE,      // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const Twinkle1(
+static const AnimTypeClass Twinkle1(
     ANIM_TWINKLE1,  // Animation number.
     "TWINKLE1",     // Data name of animation.
     8,              // Maximum dimension of animation.
@@ -1777,7 +1777,7 @@ static AnimTypeClass const Twinkle1(
     1,              // Number of times the animation loops.
     VOC_NONE,       // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const Twinkle2(
+static const AnimTypeClass Twinkle2(
     ANIM_TWINKLE2,  // Animation number.
     "TWINKLE2",     // Data name of animation.
     8,              // Maximum dimension of animation.
@@ -1800,7 +1800,7 @@ static AnimTypeClass const Twinkle2(
     1,              // Number of times the animation loops.
     VOC_NONE,       // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const Twinkle3(
+static const AnimTypeClass Twinkle3(
     ANIM_TWINKLE3,  // Animation number.
     "TWINKLE3",     // Data name of animation.
     8,              // Maximum dimension of animation.
@@ -1823,7 +1823,7 @@ static AnimTypeClass const Twinkle3(
     1,              // Number of times the animation loops.
     VOC_NONE,       // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const Flak(ANIM_FLAK,  // Animation number.
+static const AnimTypeClass Flak(ANIM_FLAK,  // Animation number.
                                 "FLAK",     // Data name of animation.
                                 8,          // Maximum dimension of animation.
                                 7,          // Biggest animation stage.
@@ -1845,7 +1845,7 @@ static AnimTypeClass const Flak(ANIM_FLAK,  // Animation number.
                                 1,   // Number of times the animation loops.
                                 VOC_NONE,  // Sound effect to play.
                                 ANIM_NONE);
-static AnimTypeClass const WaterExp1(
+static const AnimTypeClass WaterExp1(
     ANIM_WATER_EXP1,  // Animation number.
     "H2O_EXP1",       // Data name of animation.
     64,               // Maximum dimension of animation.
@@ -1868,7 +1868,7 @@ static AnimTypeClass const WaterExp1(
     1,                // Number of times the animation loops.
     VOC_SPLASH,       // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const WaterExp2(
+static const AnimTypeClass WaterExp2(
     ANIM_WATER_EXP2,  // Animation number.
     "H2O_EXP2",       // Data name of animation.
     40,               // Maximum dimension of animation.
@@ -1891,7 +1891,7 @@ static AnimTypeClass const WaterExp2(
     1,                // Number of times the animation loops.
     VOC_SPLASH,       // Sound effect to play.
     ANIM_NONE);
-static AnimTypeClass const WaterExp3(
+static const AnimTypeClass WaterExp3(
     ANIM_WATER_EXP3,  // Animation number.
     "H2O_EXP3",       // Data name of animation.
     32,               // Maximum dimension of animation.
@@ -1915,7 +1915,7 @@ static AnimTypeClass const WaterExp3(
     VOC_SPLASH,       // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const MineExp1(
+static const AnimTypeClass MineExp1(
     ANIM_MINE_EXP1,  // Animation number.
     "VEH-HIT2",      // Data name of animation.
     21,              // Maximum dimension of animation.
@@ -1939,7 +1939,7 @@ static AnimTypeClass const MineExp1(
     VOC_MINEBLOW,    // Sound effect to play.
     ANIM_NONE);
 
-static AnimTypeClass const AntDeath(
+static const AnimTypeClass AntDeath(
     ANIM_ANT_DEATH,  // Animation number.
     "ANTDIE",        // Data name of animation.
     28,              // Maximum dimension of animation.
@@ -1978,7 +1978,7 @@ static AnimTypeClass const AntDeath(
  *                                                                                             *
  * HISTORY: * 08/23/1994 JLB : Created. *
  *=============================================================================================*/
-AnimTypeClass::AnimTypeClass(AnimType anim, char const* name, int size,
+AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
                              int biggest, bool istheater, bool isnormal,
                              bool iswhitetrans, bool isscorcher, bool iscrater,
                              bool issticky, bool ground, bool istrans,
@@ -2233,7 +2233,7 @@ void AnimTypeClass::Init(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-char const* Anim_Name(AnimType anim) {
+const char* Anim_Name(AnimType anim) {
   if (anim == ANIM_NONE) return "";
 
   return AnimTypeClass::As_Reference(anim).IniName;

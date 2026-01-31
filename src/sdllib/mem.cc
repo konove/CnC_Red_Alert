@@ -18,11 +18,11 @@ void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
   return ptr;
 }
 
-void Free(void const* pointer) {
+void Free(const void* pointer) {
   if (pointer) delete[] (char*)pointer;
 }
 
-void Mem_Copy(void const* source, void* dest, unsigned long bytes_to_copy) {
+void Mem_Copy(const void* source, void* dest, unsigned long bytes_to_copy) {
   memcpy(dest, source, bytes_to_copy);
 }
 

@@ -30,7 +30,7 @@ bool ReadyToQuit = 0;
 void Focus_Loss();
 void Focus_Restore();
 
-void CCDebugString(char const* /*string*/) {}
+void CCDebugString(const char* /*string*/) {}
 
 void Check_For_Focus_Loss() {
   if (!GameInFocus) {

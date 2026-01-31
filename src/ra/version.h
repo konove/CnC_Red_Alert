@@ -195,7 +195,7 @@ class VersionClass {
   unsigned TextInit : 1;
 };
 
-char const* Version_Name();
+const char* Version_Name();
 
 #endif
 /************************** end of version.h *******************************/

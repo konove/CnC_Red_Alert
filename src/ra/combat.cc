@@ -110,7 +110,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
     return 0;
   }
 
-  WarheadTypeClass const* whead = WarheadTypeClass::As_Pointer(warhead);
+  const WarheadTypeClass* whead = WarheadTypeClass::As_Pointer(warhead);
   //	WarheadTypeClass const * whead = &Warheads[warhead];
 
   damage = damage * whead->Modifier[armor];
@@ -183,7 +183,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
 
   if (!strength || Special.IsInert || warhead == WARHEAD_NONE) return;
 
-  WarheadTypeClass const* whead = WarheadTypeClass::As_Pointer(warhead);
+  const WarheadTypeClass* whead = WarheadTypeClass::As_Pointer(warhead);
   //	WarheadTypeClass const * whead = &Warheads[warhead];
   //	range = ICON_LEPTON_W*2;
   range = ICON_LEPTON_W + (ICON_LEPTON_W >> 1);
@@ -255,7 +255,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   */
   cellptr = &Map[cell];
   if (cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const* optr =
+    const OverlayTypeClass* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (optr->IsTiberium && whead->IsTiberiumDestroyer) {
@@ -348,7 +348,7 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
       ANIM_WATER_EXP1,
   };
 
-  WarheadTypeClass const* wptr = WarheadTypeClass::As_Pointer(warhead);
+  const WarheadTypeClass* wptr = WarheadTypeClass::As_Pointer(warhead);
   //	WarheadTypeClass const * wptr = &Warheads[warhead];
   switch (wptr->ExplosionSet) {
     case 6:

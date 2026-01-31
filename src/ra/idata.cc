@@ -396,7 +396,7 @@ static DoInfoStruct EinsteinDoControls[DO_COUNT] = {
 };
 
 // Attack dogs
-static InfantryTypeClass const Dog(
+static const InfantryTypeClass Dog(
     INFANTRY_DOG,   // Infantry type number.
     TXT_GUARD_DOG,  // Translate name number for infantry type.
     "DOG",          // INI name for infantry.
@@ -416,7 +416,7 @@ static InfantryTypeClass const Dog(
 );
 
 // Minigunners
-static InfantryTypeClass const E1(
+static const InfantryTypeClass E1(
     INFANTRY_E1,  // Infantry type number.
     TXT_E1,       // Translate name number for infantry type.
     "E1",         // INI name for infantry.
@@ -436,7 +436,7 @@ static InfantryTypeClass const E1(
 );
 
 // Grenadiers
-static InfantryTypeClass const E2(
+static const InfantryTypeClass E2(
     INFANTRY_E2,  // Infantry type number.
     TXT_E2,       // Translate name number for infantry type.
     "E2",         // INI name for infantry.
@@ -456,7 +456,7 @@ static InfantryTypeClass const E2(
 );
 
 // Bazooka
-static InfantryTypeClass const E3(
+static const InfantryTypeClass E3(
     INFANTRY_E3,  // Infantry type number.
     TXT_E3,       // Translate name number for infantry type.
     "E3",         // INI name for infantry.
@@ -476,7 +476,7 @@ static InfantryTypeClass const E3(
 );
 
 // Flamethrower
-static InfantryTypeClass const E4(
+static const InfantryTypeClass E4(
     INFANTRY_E4,  // Infantry type number.
     TXT_E4,       // Translate name number for infantry type.
     "E4",         // INI name for infantry.
@@ -496,7 +496,7 @@ static InfantryTypeClass const E4(
 );
 
 // Renovator
-static InfantryTypeClass const E6(
+static const InfantryTypeClass E6(
     INFANTRY_RENOVATOR,  // Infantry type number.
     TXT_E6,              // Translate name number for infantry type.
     "E6",                // INI name for infantry.
@@ -516,7 +516,7 @@ static InfantryTypeClass const E6(
 );
 
 // Spy
-static InfantryTypeClass const E8(
+static const InfantryTypeClass E8(
     INFANTRY_SPY,  // Infantry type number.
     TXT_E8,        // Translate name number for infantry type.
     "SPY",         // INI name for infantry.
@@ -536,7 +536,7 @@ static InfantryTypeClass const E8(
 );
 
 // Thief
-static InfantryTypeClass const E9(
+static const InfantryTypeClass E9(
     INFANTRY_THIEF,  // Infantry type number.
     TXT_THIEF,       // Translate name number for infantry type.
     "THF",           // INI name for infantry.
@@ -556,7 +556,7 @@ static InfantryTypeClass const E9(
 );
 
 // Tanya
-static InfantryTypeClass const E7(
+static const InfantryTypeClass E7(
     INFANTRY_TANYA,  // Infantry type number.
     TXT_E7,          // Translate name number for infantry type.
     "E7",            // INI name for infantry.
@@ -575,7 +575,7 @@ static InfantryTypeClass const E7(
     nullptr  // pointer to override remap table
 );
 
-static InfantryTypeClass const Medic(
+static const InfantryTypeClass Medic(
     INFANTRY_MEDIC,  // Infantry type number.
     TXT_MEDIC,       // Translate name number for infantry type.
     "MEDI",          // INI name for infantry.
@@ -594,7 +594,7 @@ static InfantryTypeClass const Medic(
     nullptr  // pointer to override remap table
 );
 
-static InfantryTypeClass const General(
+static const InfantryTypeClass General(
     INFANTRY_GENERAL,  // Infantry type number.
     TXT_GENERAL,       // Translate name number for infantry type.
     "GNRL",            // INI name for infantry.
@@ -614,7 +614,7 @@ static InfantryTypeClass const General(
 );
 
 // Civilians
-static InfantryTypeClass const C1(
+static const InfantryTypeClass C1(
     INFANTRY_C1,   // Infantry type number.
     TXT_C1,        // Translate name number for infantry type.
     "C1",          // INI name for infantry.
@@ -633,7 +633,7 @@ static InfantryTypeClass const C1(
     nullptr  // pointer to override remap table
 );
 
-static InfantryTypeClass const C2(
+static const InfantryTypeClass C2(
     INFANTRY_C2,   // Infantry type number.
     TXT_C2,        // Translate name number for infantry type.
     "C2",          // INI name for infantry.
@@ -652,7 +652,7 @@ static InfantryTypeClass const C2(
     RemapCiv2  // pointer to override remap table
 );
 
-static InfantryTypeClass const C3(
+static const InfantryTypeClass C3(
     INFANTRY_C3,   // Infantry type number.
     TXT_C3,        // Translate name number for infantry type.
     "C3",          // INI name for infantry.
@@ -671,7 +671,7 @@ static InfantryTypeClass const C3(
     nullptr  // pointer to override remap table
 );
 
-static InfantryTypeClass const C4(
+static const InfantryTypeClass C4(
     INFANTRY_C4,   // Infantry type number.
     TXT_C4,        // Translate name number for infantry type.
     "C4",          // INI name for infantry.
@@ -690,7 +690,7 @@ static InfantryTypeClass const C4(
     RemapCiv4  // pointer to override remap table
 );
 
-static InfantryTypeClass const C5(
+static const InfantryTypeClass C5(
     INFANTRY_C5,   // Infantry type number.
     TXT_C5,        // Translate name number for infantry type.
     "C5",          // INI name for infantry.
@@ -709,7 +709,7 @@ static InfantryTypeClass const C5(
     RemapCiv5  // pointer to override remap table
 );
 
-static InfantryTypeClass const C6(
+static const InfantryTypeClass C6(
     INFANTRY_C6,   // Infantry type number.
     TXT_C6,        // Translate name number for infantry type.
     "C6",          // INI name for infantry.
@@ -728,7 +728,7 @@ static InfantryTypeClass const C6(
     RemapCiv6  // pointer to override remap table
 );
 
-static InfantryTypeClass const C7(
+static const InfantryTypeClass C7(
     INFANTRY_C7,   // Infantry type number.
     TXT_C7,        // Translate name number for infantry type.
     "C7",          // INI name for infantry.
@@ -747,7 +747,7 @@ static InfantryTypeClass const C7(
     RemapCiv7  // pointer to override remap table
 );
 
-static InfantryTypeClass const C8(
+static const InfantryTypeClass C8(
     INFANTRY_C8,   // Infantry type number.
     TXT_C8,        // Translate name number for infantry type.
     "C8",          // INI name for infantry.
@@ -766,7 +766,7 @@ static InfantryTypeClass const C8(
     RemapCiv8  // pointer to override remap table
 );
 
-static InfantryTypeClass const C9(
+static const InfantryTypeClass C9(
     INFANTRY_C9,   // Infantry type number.
     TXT_C9,        // Translate name number for infantry type.
     "C9",          // INI name for infantry.
@@ -786,7 +786,7 @@ static InfantryTypeClass const C9(
 );
 
 // Nikoomba
-static InfantryTypeClass const C10(
+static const InfantryTypeClass C10(
     INFANTRY_C10,  // Infantry type number.
     TXT_C10,       // Translate name number for infantry type.
     "C10",         // INI name for infantry.
@@ -805,7 +805,7 @@ static InfantryTypeClass const C10(
     RemapCiv10  // pointer to override remap table
 );
 
-static InfantryTypeClass const Einstein(
+static const InfantryTypeClass Einstein(
     INFANTRY_EINSTEIN,  // Infantry type number.
     TXT_EINSTEIN,       // Translate name number for infantry type.
     "EINSTEIN",         // INI name for infantry.
@@ -824,7 +824,7 @@ static InfantryTypeClass const Einstein(
     nullptr  // pointer to override remap table
 );
 
-static InfantryTypeClass const Delphi(
+static const InfantryTypeClass Delphi(
     INFANTRY_DELPHI,  // Infantry type number.
     TXT_DELPHI,       // Translate name number for infantry type.
     "DELPHI",         // INI name for infantry.
@@ -843,7 +843,7 @@ static InfantryTypeClass const Delphi(
     nullptr  // pointer to override remap table
 );
 
-static InfantryTypeClass const DrChan(
+static const InfantryTypeClass DrChan(
     INFANTRY_CHAN,  // Infantry type number.
     TXT_CHAN,       // Translate name number for infantry type.
     "CHAN",         // INI name for infantry.
@@ -863,7 +863,7 @@ static InfantryTypeClass const DrChan(
 );
 
 // Shock Trooper
-static InfantryTypeClass const ShockTrooper(
+static const InfantryTypeClass ShockTrooper(
     INFANTRY_SHOCK,    // Infantry type number.
     TXT_SHOCKTROOPER,  // Translate name number for infantry type.
     "SHOK",            // INI name for infantry.
@@ -882,7 +882,7 @@ static InfantryTypeClass const ShockTrooper(
     nullptr  // pointer to override remap table
 );
 
-static InfantryTypeClass const Mechanic(
+static const InfantryTypeClass Mechanic(
     INFANTRY_MECHANIC,  // Infantry type number.
     TXT_MECHANIC,       // Translate name number for infantry type.
     "MECH",             // INI name for infantry.
@@ -918,11 +918,11 @@ static InfantryTypeClass const Mechanic(
  * HISTORY: * 09/24/1994 JLB : Created. * 02/16/1996 JLB : Greatly simplified. *
  *=============================================================================================*/
 InfantryTypeClass::InfantryTypeClass(
-    InfantryType type, int name, char const* ininame, int verticaloffset,
+    InfantryType type, int name, const char* ininame, int verticaloffset,
     int primaryoffset, bool is_female, bool is_crawling, bool is_civilian,
     bool is_remap_override, bool is_nominal, bool is_theater, PipEnum pip,
-    DoInfoStruct const* control, int firelaunch, int pronelaunch,
-    unsigned char const* override_remap)
+    const DoInfoStruct* control, int firelaunch, int pronelaunch,
+    const unsigned char* override_remap)
     : TechnoTypeClass(RTTI_INFANTRYTYPE, static_cast<int>(type), name, ininame,
                       REMAP_NORMAL, verticaloffset, primaryoffset, 0x0000,
                       0x0000, 0x0000, is_nominal, true, true, true, false,
@@ -1108,8 +1108,8 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-short const* InfantryTypeClass::Occupy_List(bool) const {
-  static short const _list[] = {0, REFRESH_EOL};
+const short* InfantryTypeClass::Occupy_List(bool) const {
+  static const short _list[] = {0, REFRESH_EOL};
 
   return &_list[0];
 }
@@ -1140,7 +1140,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType house) const {
   if (house != HOUSE_NONE) {
     int shape = 0;
-    void const* ptr = Get_Cameo_Data();
+    const void* ptr = Get_Cameo_Data();
     if (ptr == nullptr) {
       ptr = Get_Image_Data();
       shape = 2;
@@ -1190,7 +1190,7 @@ void InfantryTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-InfantryType InfantryTypeClass::From_Name(char const* name) {
+InfantryType InfantryTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (InfantryType classid = INFANTRY_FIRST; classid < INFANTRY_COUNT;
          classid++) {
@@ -1254,7 +1254,7 @@ void InfantryTypeClass::One_Time() {
       uclass->CameoData = MFCD::Retrieve(fullname);
     }
 #else
-    ((void const*&)uclass->CameoData) = MFCD::Retrieve(fullname);
+    ((const void*&)uclass->CameoData) = MFCD::Retrieve(fullname);
 #endif
   }
 }

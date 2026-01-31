@@ -129,7 +129,7 @@ class InfantryClass : public FootClass {
   void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   InfantryClass(InfantryType classid, HousesType house);
-  InfantryClass(NoInitClass const& x) : FootClass(x), Class(x), Comment(x) {}
+  InfantryClass(const NoInitClass& x) : FootClass(x), Class(x), Comment(x) {}
   ~InfantryClass() override;
   operator InfantryType() const { return Class->Type; }
 
@@ -144,9 +144,9 @@ class InfantryClass : public FootClass {
   **	Query functions.
   */
   bool Is_Ready_To_Random_Animate() const override;
-  void const* Get_Image_Data() const override;
+  const void* Get_Image_Data() const override;
   int Shape_Number() const;
-  ObjectTypeClass const& Class_Of() const override;
+  const ObjectTypeClass& Class_Of() const override;
   int Full_Name() const override;
 
   /*
@@ -161,7 +161,7 @@ class InfantryClass : public FootClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  short const* Overlap_List(bool redraw = false) const override;
+  const short* Overlap_List(bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
 
   /*
@@ -178,7 +178,7 @@ class InfantryClass : public FootClass {
   /*
   **	Combat related.
   */
-  ActionType What_Action(ObjectClass const* object) const override;
+  ActionType What_Action(const ObjectClass* object) const override;
   ActionType What_Action(CELL cell) const override;
   BulletClass* Fire_At(TARGET target, int which) override;
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
@@ -224,7 +224,7 @@ class InfantryClass : public FootClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "INFANTRY"; }
+  static const char* INI_Name() { return "INFANTRY"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 
@@ -244,10 +244,10 @@ class InfantryClass : public FootClass {
   *special *	table is needed since several facing stages are reused and
   *flipped about the Y *	axis.
   */
-  static int const HumanShape[32];
+  static const int HumanShape[32];
 
  private:
-  static DoStruct const MasterDoControls[DO_COUNT];
+  static const DoStruct MasterDoControls[DO_COUNT];
 };
 
 #endif

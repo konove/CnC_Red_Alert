@@ -55,13 +55,13 @@
 */
 class CCFileClass : public CDFileClass {
  public:
-  CCFileClass(char const* filename);
+  CCFileClass(const char* filename);
   CCFileClass();
   ~CCFileClass() override = default;
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 
-  int Open(char const* filename, int rights = READ) override {
+  int Open(const char* filename, int rights = READ) override {
     Set_Name(filename);
     return Open(rights);
   }
@@ -70,10 +70,10 @@ class CCFileClass : public CDFileClass {
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;
-  long Write(void const* buffer, long size) override;
+  long Write(const void* buffer, long size) override;
   void Close() override;
   void Error(int error, int canretry = false,
-             char const* filename = nullptr) override;
+             const char* filename = nullptr) override;
 
  protected:
   int Do_Is_Available(AvailabilityCheck mode) override;
@@ -117,8 +117,8 @@ class CCFileClass : public CDFileClass {
   long Length;
 
   // Force these to never be invoked.
-  CCFileClass const operator=(CCFileClass const& c);
-  CCFileClass(CCFileClass const&) {}
+  const CCFileClass operator=(const CCFileClass& c);
+  CCFileClass(const CCFileClass&) {}
 };
 
 void WWDOS_Shutdown();

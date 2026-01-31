@@ -53,7 +53,7 @@
 */
 class BufferIOFileClass : public RawFileClass {
  public:
-  BufferIOFileClass(char const* filename);
+  BufferIOFileClass(const char* filename);
   BufferIOFileClass();
   ~BufferIOFileClass() override;
 
@@ -65,14 +65,14 @@ class BufferIOFileClass : public RawFileClass {
   bool Cache(long size = 0, void* ptr = nullptr);
   void Free();
   bool Commit();
-  char const* Set_Name(char const* filename) override;
+  const char* Set_Name(const char* filename) override;
   int Is_Open() const override;
-  int Open(char const* filename, int rights = READ) override;
+  int Open(const char* filename, int rights = READ) override;
   int Open(int rights = READ) override;
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;
-  long Write(void const* buffer, long size) override;
+  long Write(const void* buffer, long size) override;
   void Close() override;
 
   enum { MINIMUM_BUFFER_SIZE = 1024 };

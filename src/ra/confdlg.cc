@@ -43,9 +43,7 @@
 
 #include "ra/function.h"
 
-bool ConfirmationClass::Process(int text) {
-  return Process(Text_String(text));
-}
+bool ConfirmationClass::Process(int text) { return Process(Text_String(text)); }
 
 /***********************************************************************************************
  * ConfirmationClass::Process -- Handles all the options graphic interface. *
@@ -60,7 +58,7 @@ bool ConfirmationClass::Process(int text) {
  *                                                                                             *
  * HISTORY:    12/31/1994 MML : Created. *
  *=============================================================================================*/
-bool ConfirmationClass::Process(char const* string) {
+bool ConfirmationClass::Process(const char* string) {
   enum { NUM_OF_BUTTONS = 2 };
 
   char buffer[80 * 3];

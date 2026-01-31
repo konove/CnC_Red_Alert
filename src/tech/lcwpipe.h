@@ -56,7 +56,7 @@ class LCWPipe : public Pipe {
   ~LCWPipe() override;
 
   int Flush() override;
-  int Put(void const* source, int slen) override;
+  int Put(const void* source, int slen) override;
 
  private:
   /*

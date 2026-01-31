@@ -55,7 +55,7 @@ class FacingClass {
  public:
   FacingClass();
   FacingClass(DirType dir) { CurrentFacing = DesiredFacing = dir; }
-  FacingClass(NoInitClass const&) {}
+  FacingClass(const NoInitClass&) {}
 
   operator DirType() const { return CurrentFacing; }
 

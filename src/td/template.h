@@ -65,7 +65,7 @@ class TemplateClass : public ObjectClass {
   void operator delete(void* ptr);
   TemplateClass();
   TemplateClass(TemplateType type, CELL pos = -1);
-  TemplateClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {}
+  TemplateClass(const NoInitClass& x) : ObjectClass(x), Class(Class) {}
   ~TemplateClass() override {
     if (GameActive) TemplateClass::Limbo();
   }
@@ -77,7 +77,7 @@ class TemplateClass : public ObjectClass {
   /*
   **	Query functions.
   */
-  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  const ObjectTypeClass& Class_Of() const override { return *Class; }
   int Icon_Number(CELL cell);
 
   /*
@@ -105,7 +105,7 @@ class TemplateClass : public ObjectClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name() { return "TEMPLATE"; }
+  static const char* INI_Name() { return "TEMPLATE"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   void Code_Pointers() override;
@@ -120,7 +120,7 @@ class TemplateClass : public ObjectClass {
   /*
   **	This is a pointer to the template object's class.
   */
-  TemplateTypeClass const* const Class;
+  const TemplateTypeClass* const Class;
 
   /*
   ** This contains the value of the Virtual Function Table Pointer
