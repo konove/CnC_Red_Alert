@@ -582,8 +582,6 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
       } while (--count);
     }
   }
-
-  return 0;
 }
 
 void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
