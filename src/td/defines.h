@@ -64,10 +64,8 @@
 */
 #define BONUS_MISSIONS
 
-/**********************************************************************
-** Handle expansion scnearios as a set of single missions with all
-**	necessary information self contained within the mission file.
-*/
+// Handle expansion scenarios as a set of single missions with all necessary
+// information self-contained within the mission file.
 #ifndef DEMO
 #define NEWMENU
 #endif
@@ -81,17 +79,17 @@
 **	These are hash constants used as case labels -- always defined.
 */
 // #define	PARM_6PLAYER		0x5D9F6F24		// "6"
-#define PARM_6PLAYER 0x9CAFC93B  // Alternate 6 player keyphrase.
+#define PARM_6PLAYER 0x9CAFC93B  // "CROWDED" Alternate 6 player keyphrase.
 
 #define PARM_PLAYTEST 0xF7DDC227      // "PLAYTEST"
 #define PARM_CHEATDAVID 0xBE79088C    // Cheat keys for David Dettmer
-#define PARM_CHEATERIK 0x9F38A19D     // Cheat keys for Erik Yeo
-#define PARM_EDITORERIK 0xC2AA509B    //	Map editor for Erik Yeo
-#define PARM_CHEATPHIL 0x39D01821     // Cheat keys for Phil Gorrow
-#define PARM_CHEATJOE 0xABDD0362      // Cheat keys for Joe Bostic
+#define PARM_CHEATERIK 0x9F38A19D     // "SUPER" Cheat keys for Erik Yeo
+#define PARM_EDITORERIK 0xC2AA509B    // Map editor for Erik Yeo
+#define PARM_CHEATPHIL 0x39D01821     // "WIZARD" Cheat keys for Phil Gorrow
+#define PARM_CHEATJOE 0xABDD0362      // "OBWAN" Cheat keys for Joe Bostic
 #define PARM_CHEATBILL 0xB5B63531     // Cheat keys for Bill Randolph
 #define PARM_CHEAT_STEVET 0x2E7FE493  // Cheat keys for Steve Tall
-#define PARM_EDITORBILL 0x7E7C4CCA    //	"-EDITOR"
+#define PARM_EDITORBILL 0x7E7C4CCA    // "-EDITOR"
 #define PARM_CHEATMIKE 0x00532693     // Mike Lightner
 #define PARM_CHEATADAM 0xDFABC23A     // Adam Isgreen
 
@@ -102,28 +100,30 @@
 #define PARM_EASY 0x59E975CE  // "EASY" Enables easy mode.
 #define PARM_HARD 0xACFE9D13  // "HARD" Enables hard mode.
 
-#define PARM_INSTALL 0xD95C68A2   //	"FROMINSTALL"
-#define PARM_TRUENAME 0xB1A34435  // Enables true object names.
-#define PARM_3POINT 0x03552894    // Enable three point turns.
-#define PARM_SCORE 0x7FDE2C33     // Enables alternate themes.
-#define PARM_COMBAT 0xDC57C4B2    // Gives combat advantage to attacker.
+#define PARM_INSTALL 0xD95C68A2   // "FROMINSTALL"
+#define PARM_TRUENAME 0xB1A34435  // "TARBOSH" Enables true object names.
+#define PARM_3POINT 0x03552894    // "DANCING" Enable three point turns.
+#define PARM_SCORE 0x7FDE2C33     // "REMIX" Enables alternate themes.
+#define PARM_COMBAT 0xDC57C4B2  // "CHARGE!" Gives combat advantage to attacker.
 #define PARM_TREETARGET \
-  0x00AB6BEF                 // Allows targeting of trees without <CTRL> key.
-#define PARM_BIB 0xF7867BF0  // Disables building bibs.
-#define PARM_MCV 0x104DF10F  // MCV undeploys rather than sells.
+  0x00AB6BEF  // "LIGHTNING" Allows targeting of trees without <CTRL> key.
+#define PARM_BIB \
+  0xF7867BF0  // Disables building bibs. Original password unrecovered.
+#define PARM_MCV 0x104DF10F  // "TRANSFORMER" MCV undeploys rather than sells.
 #define PARM_HELIPAD \
-  0x53EBECBC  // Helipad can be purchased separately from helicopter.
-#define PARM_IQ 0x9E3881B8         // Smart self defense logic enable.
-#define PARM_SQUISH 0x4EA2FBDF     // Squish images for infantry bodies.
-#define PARM_HUMAN 0xACB58F61      // Human generated sound effects.
-#define PARM_SCROLLING 0xC084AE82  // Restricts scrolling over the tabs.
-// #define	PARM_SPECIAL		0xD18129F6		// Enables
-// special mode. #define	PARM_SPECIAL	0x2E84E394	//	#1
-// #define	PARM_SPECIAL	0x63CE7584	//	#2
-// #define	PARM_SPECIAL	0x85F110A5	//	#3
+  0x53EBECBC  // "A LA CARTE" Helipad purchased separately from helicopter.
+#define PARM_IQ 0x9E3881B8      // "SERGENT" Smart self defense logic enable.
+#define PARM_SQUISH 0x4EA2FBDF  // "PANCAKE" Squish images for infantry bodies.
+#define PARM_HUMAN 0xACB58F61   // "7TH GRADE" Human generated sound effects.
+#define PARM_SCROLLING \
+  0xC084AE82  // "RESTRICTED" Restricts scrolling over the tabs.
+// #define	PARM_SPECIAL		0xD18129F6		// "JURASSIC"
+// Enables special mode. #define	PARM_SPECIAL	0x2E84E394	//
+// #1 #define	PARM_SPECIAL	0x63CE7584	//	#2 #define
+// PARM_SPECIAL	0x85F110A5	//	#3
 /// #define	PARM_SPECIAL	0x7F65F13C	//	#4
 // #define	PARM_SPECIAL	0x431F5F61	//	#5
-#define PARM_SPECIAL 0x11CA05BB  //	#6 	funpark
+#define PARM_SPECIAL 0x11CA05BB  // "FUNPARK" #6
 // #define	PARM_SPECIAL	0xE0F651B9	//	#7
 // #define	PARM_SPECIAL	0x10B9683D	//	#8
 // #define	PARM_SPECIAL	0xEE1CD37D	//	#9
@@ -202,17 +202,17 @@ typedef enum RTTIType {
 #define VERSION_NUMBER 1
 #define RELEASE_NUMBER 01
 
-#define FAME_FILE_NAME "HALLFAME.DAT"
-
 /**********************************************************************
 **	Map controls. The map is composed of square elements called 'cells'.
 **	All larger elements are build upon these.
 */
 
-// Size of the map in cells. The width of the map must be a power
-//	of two. This is accomplished by setting the width by the number of
-//	bits it occupies. The number of meta-cells will be a subset of the
-//	cell width.
+/*
+Size of the map in cells. The width of the map must be a power of two.
+This
+is accomplished by setting the width by the number of bits it occupies. The
+number of meta-cells will be a subset of the cell width.
+*/
 #define MAP_CELL_MAX_X_BITS 6
 #define MAP_CELL_MAX_Y_BITS 6
 #define MAP_CELL_X_MASK (~(~0 << MAP_CELL_MAX_X_BITS))
@@ -250,14 +250,11 @@ typedef enum ProdFailType {
   PROD_CANT,     //	Faile because unable to comply (busy or occupied).
 } ProdFailType;
 
-/**********************************************************************
-**	These are the special weapons that can be used in the game. The common
-*thread *	with these weapons is that they are controlled through the
-*sidebar *	mechanism.
-*/
+// These are the special weapons that can be used in the game. The common thread
+// with these weapons is that they are controlled through the sidebar mechanism.
 typedef enum SpecialWeaponType {
   SPC_NONE,
-  SPC_ION_CANNON,    //	Partical beam from satalite (Akira effect).
+  SPC_ION_CANNON,    //	Particle beam from satellite (Akira effect).
   SPC_NUCLEAR_BOMB,  //	Tactical nuclear weapon.
   SPC_AIR_STRIKE     //	Conventional air strike.
 } SpecialWeaponType;

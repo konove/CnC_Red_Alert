@@ -1536,23 +1536,15 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           Session.Options.Bases = pCheckListOptions->Is_Checked(0);
           if (Session.Options.Bases) {
             Session.Options.UnitCount =
-                Fixed_To_Cardinal(
-                    SessionClass::CountMax[1] - SessionClass::CountMin[1],
-                    Cardinal_To_Fixed(
+                Rescale(Session.Options.UnitCount - SessionClass::CountMin[0],
                         SessionClass::CountMax[0] - SessionClass::CountMin[0],
-                        Session.Options.UnitCount -
-                            SessionClass::CountMin[0])) +
-                SessionClass::CountMin[1];
+                        SessionClass::CountMax[1] - SessionClass::CountMin[1]);
           } else {
             pCheckListOptions->Check_Item(3, false);
             Session.Options.UnitCount =
-                Fixed_To_Cardinal(
-                    SessionClass::CountMax[0] - SessionClass::CountMin[0],
-                    Cardinal_To_Fixed(
+                Rescale(Session.Options.UnitCount - SessionClass::CountMin[1],
                         SessionClass::CountMax[1] - SessionClass::CountMin[1],
-                        Session.Options.UnitCount -
-                            SessionClass::CountMin[1])) +
-                SessionClass::CountMin[0];
+                        SessionClass::CountMax[0] - SessionClass::CountMin[0]);
           }
           pGaugeCount->Set_Maximum(
               SessionClass::CountMax[Session.Options.Bases] -

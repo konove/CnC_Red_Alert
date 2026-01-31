@@ -92,6 +92,8 @@ class MyClass {
 CellClass* Get_Cell_At(int x, int y);
 
 // Function definition (.cc): HOW it works, not WHAT (don't repeat .h comment).
+// IMPORTANT: If a .cc file has a "what" comment on a function that belongs
+// in the .h declaration, MOVE it to the .h file—don't just delete it.
 
 // Variables: Document sentinel values.
 int max_units_;      // -1 means unlimited

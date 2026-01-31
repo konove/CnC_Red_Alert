@@ -263,9 +263,6 @@ inline int First_False_Bit(void const* array) {
   }
 }
 
-unsigned Fixed_To_Cardinal(unsigned base, unsigned fixed);
-unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
-
 #ifndef OUTPORTB
 #define OUTPORTB
 

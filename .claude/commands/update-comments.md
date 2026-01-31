@@ -19,6 +19,12 @@ provide context that isn't obvious from reading the code.
 
 ## For each comment, decide:
 
+### Move to `.h` if:
+
+- A `.cc` file has a "what" comment on a function definition that belongs on the declaration in the `.h` file
+- The `.h` declaration lacks documentation but the `.cc` definition has it — move the comment, don't delete it
+- This preserves documentation that would otherwise be lost when cleaning up `.cc` comments
+
 ### Remove if:
 
 - It restates what the code obviously does (`i++; // increment i`)
@@ -69,6 +75,8 @@ Follow the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide
 - Describe what the function does, its inputs, outputs, and any side effects
 - Don't repeat in the `.cpp` what's already documented in the `.h`
 - Implementation comments in `.cpp` should explain **how**, not restate **what**
+- **IMPORTANT:** If a `.cc` file has a useful comment on a function definition and the `.h` declaration has none, **move
+  the comment to the `.h` file** rather than deleting it. Never lose documentation by simply removing it.
 
 ### Variable Comments
 

@@ -109,7 +109,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "rand.h"
 #include "sdllib/include/shape.h"
 #include "td/abstract.h"
 #include "td/anim.h"
@@ -141,6 +140,7 @@
 #include "td/profile.h"
 #include "td/queue.h"
 #include "td/radio.h"
+#include "td/rand.h"
 #include "td/target.h"
 #include "td/team.h"
 #include "td/techno.h"
@@ -426,7 +426,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   **	Actually draw the root body of the unit.
   */
   Techno_Draw_Object(shapefile, shapenum, x, y - Altitude + jitter, window);
-  //	CC_Draw_Shape(shapefile, shapenum, x, (y-Altitude)+jitter, window,
+  // CC_Draw_Shape(shapefile, shapenum, x, (y-Altitude)+jitter, window,
   // SHAPE_FADING|SHAPE_CENTER|SHAPE_WIN_REL|SHAPE_GHOST,
   // House->Remap_Table(IsBlushing, true), Map.UnitShadow);
 
@@ -588,11 +588,11 @@ void AircraftClass::Write_INI(char* buffer) {
 
     unit = Aircraft.Ptr(index);
     if (!unit->IsInLimbo) {
-      sprintf(uname, "%03d", index);
-      sprintf(buf, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
-              unit->Class->IniName, unit->Health_Ratio(),
-              Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
-              Mission_Name(unit->Mission));
+      snprintf(uname, 10, "%03d", index);
+      snprintf(buf, 128, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
+               unit->Class->IniName, unit->Health_Ratio(),
+               Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
+               Mission_Name(unit->Mission));
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
     }
   }
@@ -688,7 +688,6 @@ int AircraftClass::Mission_Hunt() {
     } else {
       Assign_Mission(MISSION_ATTACK);
       return 1;
-      //			return(FootClass::Mission_Hunt());
     }
   }
   return TICKS_PER_SECOND;
@@ -861,12 +860,9 @@ void AircraftClass::AI() {
   *reinforcements is a good example of this.
   */
   if (!Map.In_Radar(Coord_Cell(Coord))) {
-    if (Mission == MISSION_RETREAT /*|| (*this == AIRCRAFT_CARGO && !Is_Something_Attached())*/) {
-      /*
-      **	Check to see if there are any civilians aboard. If so, then flag
-      *the house *	that the civilian evacuation trigger event has been
-      *fulfilled.
-      */
+    if (Mission == MISSION_RETREAT) {
+      // Check to see if there are any civilians aboard. If so, then flag the
+      // house that the civilian evacuation trigger event has been fulfilled.
       while (Is_Something_Attached()) {
         FootClass* obj = Detach_Object();
         if (obj->What_Am_I() == RTTI_INFANTRY &&
@@ -1002,11 +998,9 @@ short const* AircraftClass::Overlap_List() const {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Init() {
-  AircraftClass* ptr;
-
   Aircraft.Free_All();
 
-  ptr = new AircraftClass();
+  AircraftClass* ptr = new AircraftClass();
   VTable = ((void**)((char*)ptr + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
@@ -1130,13 +1124,7 @@ int AircraftClass::Mission_Unload() {
               } else {
                 Attach(unit);
               }
-
-              //							if
-              //(Is_Something_Attached()) {
-              // Status = PICK_AIRSTRIP;
-              //} else {
               Status = BUG_OUT;
-              //							}
             } else {
               Status = BUG_OUT;
             }
@@ -1163,10 +1151,8 @@ int AircraftClass::Mission_Unload() {
     };
 
     switch (Status) {
-      /*
-      **	Search for an appropriate destination spot if one isn't already
-      *assigned.
-      */
+      // Search for an appropriate destination spot if one isn't already
+      // assigned.
       case SEARCH_FOR_LZ:
         if (Altitude == 0 &&
             (Target_Legal(NavCom) || Coord == As_Coord(NavCom))) {

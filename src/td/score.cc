@@ -126,10 +126,13 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled);
 void Animate_Cursor(int pos, int ypos);
 void Animate_Score_Objs();
 void Cycle_Wait_Click();
+
 int ScorePass;
 
 void const* Beepy6;
+
 int ControlQ;  // cheat key to skip past score/mapsel screens
+
 bool StillUpdating;
 
 GraphicBufferClass* PseudoSeenBuff;
@@ -665,7 +668,7 @@ void ScoreClass::Presentation() {
   int max;
   void const* yellowptr;
   void const* redptr;
-  CCFileClass file(FAME_FILE_NAME);
+  CCFileClass file("HALLFAME.DAT");
   struct Fame hallfame[NUMFAMENAMES];
   void *anim, *oldfont;
   int oldfontxspacing = FontXSpacing;

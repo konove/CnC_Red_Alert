@@ -139,6 +139,7 @@
 #include "ra/cheklist.h"
 #include "ra/colrlist.h"
 #include "ra/conquer.h"
+#include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/drop.h"
@@ -4725,23 +4726,15 @@ static int Net_New_Dialog() {
           Session.Options.Bases = optionlist.Is_Checked(0);
           if (Session.Options.Bases) {
             Session.Options.UnitCount =
-                Fixed_To_Cardinal(
-                    SessionClass::CountMax[1] - SessionClass::CountMin[1],
-                    Cardinal_To_Fixed(
+                Rescale(Session.Options.UnitCount - SessionClass::CountMin[0],
                         SessionClass::CountMax[0] - SessionClass::CountMin[0],
-                        Session.Options.UnitCount -
-                            SessionClass::CountMin[0])) +
-                SessionClass::CountMin[1];
+                        SessionClass::CountMax[1] - SessionClass::CountMin[1]);
           } else {
             optionlist.Check_Item(3, false);
             Session.Options.UnitCount =
-                Fixed_To_Cardinal(
-                    SessionClass::CountMax[0] - SessionClass::CountMin[0],
-                    Cardinal_To_Fixed(
+                Rescale(Session.Options.UnitCount - SessionClass::CountMin[1],
                         SessionClass::CountMax[1] - SessionClass::CountMin[1],
-                        Session.Options.UnitCount -
-                            SessionClass::CountMin[1])) +
-                SessionClass::CountMin[0];
+                        SessionClass::CountMax[0] - SessionClass::CountMin[0]);
           }
           countgauge.Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
                                  SessionClass::CountMin[Session.Options.Bases]);

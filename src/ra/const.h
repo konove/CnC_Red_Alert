@@ -40,7 +40,7 @@ constexpr long EditorCodes[] = {static_cast<long>(0xA2C09326),  // Erik Yeo
                                 static_cast<long>(0xDE07154D),  // Adam Isgreen
                                 static_cast<long>(0x0E07B213),  // Steve Tall
                                 static_cast<long>(0x16B170B1),  // Joe Bostic
-                                static_cast<long>(0x7DDFF824),  // PASSWORD
+                                // static_cast<long>(0x7DDFF824),  // PASSWORD
                                 0L};
 
 /***********************************************************************************************
