@@ -1793,7 +1793,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     *boost *	the fake building's value.
     */
     if (method & THREAT_FAKES && otype == RTTI_BUILDING) {
-      switch (!dynamic_cast<BuildingTypeClass const*>(tclass)->Type) {
+      switch (dynamic_cast<const BuildingTypeClass*>(tclass)->Type) {
         case STRUCT_FAKECONST:
         case STRUCT_FAKEWEAP:
         case STRUCT_FAKE_YARD:
