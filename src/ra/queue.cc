@@ -1819,7 +1819,9 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   //------------------------------------------------------------------------
 
   net->Send_Private_Message(
-      &packet, offsetof(EventClass, Data) + size_of(EventClass, Data.FrameInfo),
+      &packet,
+      offsetof(EventClass, Data) +
+          sizeof(std::declval<EventClass>().Data.FrameInfo),
       0);
 }  // end of Send_FrameSync
 
@@ -2486,7 +2488,8 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
   if (Session.CommProtocol == COMM_PROTOCOL_SINGLE_NO_COMP) {
     size += sizeof(EventClass);
   } else {
-    size += offsetof(EventClass, Data) + size_of(EventClass, Data.FrameInfo);
+    size += offsetof(EventClass, Data) +
+            sizeof(std::declval<EventClass>().Data.FrameInfo);
   }
 
   //------------------------------------------------------------------------
@@ -3099,7 +3102,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
   // For the 1st packet only, this will include all info before the Data
   // union, plus the size of the FrameInfo structure, minus the EventType size.
   //------------------------------------------------------------------------
-  datasize = offsetof(EventClass, Data) + size_of(EventClass, Data.FrameInfo) -
+  datasize = offsetof(EventClass, Data) +
+             sizeof(std::declval<EventClass>().Data.FrameInfo) -
              sizeof(EventClass::EventType);
   event = (EventClass*)(static_cast<char*>(buf) + pos);
 
@@ -3248,7 +3252,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       // size of FRAMESYNC event - EventType size
       //..................................................................
       datasize = offsetof(EventClass, Data) +
-                 size_of(EventClass, Data.FrameInfo) -
+                 sizeof(std::declval<EventClass>().Data.FrameInfo) -
                  sizeof(EventClass::EventType);
     }
   }

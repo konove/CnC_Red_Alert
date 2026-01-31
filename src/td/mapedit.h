@@ -70,6 +70,7 @@
 #include "td/trigger.h"
 #include "td/txtlabel.h"
 #include "td/type.h"
+#include "tech/noinit.h"
 
 /*
 ********************************** Defines **********************************

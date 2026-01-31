@@ -39,6 +39,7 @@
 #define DEFINES_H
 
 #include <cstdint>
+#include <utility>
 
 #include "tech/fixed.h"
 
@@ -3322,8 +3323,6 @@ typedef enum OptionControlType {
 
   OPTION_COUNT
 } OptionControlType;
-
-#define size_of(typ, id) sizeof(((typ*)0)->id)
 
 #define MAX_LOG_LEVEL 10
 

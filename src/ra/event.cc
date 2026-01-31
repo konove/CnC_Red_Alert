@@ -97,39 +97,39 @@
 ** events.  This table must be kept current with the EventType enum.
 */
 unsigned char EventClass::EventLength[LAST_EVENT] = {
-    0,                                          // EMPTY
-    size_of(EventClass, Data.General),          // ALLY
-    size_of(EventClass, Data.MegaMission),      // MEGAMISSION
-    size_of(EventClass, Data.MegaMission_F),    // MEGAMISSION_F
-    size_of(EventClass, Data.Target),           // IDLE
-    size_of(EventClass, Data.Target),           // SCATTER
-    0,                                          // DESTRUCT
-    0,                                          // DEPLOY
-    size_of(EventClass, Data.Place),            // PLACE
-    0,                                          // OPTIONS
-    size_of(EventClass, Data.General),          // GAMESPEED
-    size_of(EventClass, Data.Specific),         // PRODUCE
-    size_of(EventClass, Data.Specific.Type),    // SUSPEND
-    size_of(EventClass, Data.Specific.Type),    // ABANDON
-    size_of(EventClass, Data.Target),           // PRIMARY
-    size_of(EventClass, Data.Special),          // SPECIAL_PLACE
-    0,                                          // EXIT
-    size_of(EventClass, Data.Anim),             // ANIMATION
-    size_of(EventClass, Data.Target),           // REPAIR
-    size_of(EventClass, Data.Target),           // SELL
-    size_of(EventClass, Data.SellCell),         // SELLCELL
-    size_of(EventClass, Data.Options),          // SPECIAL
-    0,                                          // FRAMESYNC
-    0,                                          // MESSAGE
-    size_of(EventClass, Data.FrameInfo.Delay),  // RESPONSE_TIME
-    size_of(EventClass, Data.FrameInfo),        // FRAMEINFO
-    0,                                          // SAVEGAME
-    size_of(EventClass, Data.NavCom),           // ARCHIVE
-    size_of(EventClass, Data.Variable.Size),    // ADDPLAYER
-    size_of(EventClass, Data.Timing),           // TIMING
-    size_of(EventClass, Data.ProcessTime),      // PROCESS_TIME
-    0,                                          // PROPOSE_DRAW
-    0,                                          // RETRACT_DRAW
+    0,                                                        // EMPTY
+    sizeof(std::declval<EventClass>().Data.General),          // ALLY
+    sizeof(std::declval<EventClass>().Data.MegaMission),      // MEGAMISSION
+    sizeof(std::declval<EventClass>().Data.MegaMission_F),    // MEGAMISSION_F
+    sizeof(std::declval<EventClass>().Data.Target),           // IDLE
+    sizeof(std::declval<EventClass>().Data.Target),           // SCATTER
+    0,                                                        // DESTRUCT
+    0,                                                        // DEPLOY
+    sizeof(std::declval<EventClass>().Data.Place),            // PLACE
+    0,                                                        // OPTIONS
+    sizeof(std::declval<EventClass>().Data.General),          // GAMESPEED
+    sizeof(std::declval<EventClass>().Data.Specific),         // PRODUCE
+    sizeof(std::declval<EventClass>().Data.Specific.Type),    // SUSPEND
+    sizeof(std::declval<EventClass>().Data.Specific.Type),    // ABANDON
+    sizeof(std::declval<EventClass>().Data.Target),           // PRIMARY
+    sizeof(std::declval<EventClass>().Data.Special),          // SPECIAL_PLACE
+    0,                                                        // EXIT
+    sizeof(std::declval<EventClass>().Data.Anim),             // ANIMATION
+    sizeof(std::declval<EventClass>().Data.Target),           // REPAIR
+    sizeof(std::declval<EventClass>().Data.Target),           // SELL
+    sizeof(std::declval<EventClass>().Data.SellCell),         // SELLCELL
+    sizeof(std::declval<EventClass>().Data.Options),          // SPECIAL
+    0,                                                        // FRAMESYNC
+    0,                                                        // MESSAGE
+    sizeof(std::declval<EventClass>().Data.FrameInfo.Delay),  // RESPONSE_TIME
+    sizeof(std::declval<EventClass>().Data.FrameInfo),        // FRAMEINFO
+    0,                                                        // SAVEGAME
+    sizeof(std::declval<EventClass>().Data.NavCom),           // ARCHIVE
+    sizeof(std::declval<EventClass>().Data.Variable.Size),    // ADDPLAYER
+    sizeof(std::declval<EventClass>().Data.Timing),           // TIMING
+    sizeof(std::declval<EventClass>().Data.ProcessTime),      // PROCESS_TIME
+    0,                                                        // PROPOSE_DRAW
+    0,                                                        // RETRACT_DRAW
 };
 
 char* EventClass::EventNames[LAST_EVENT] = {

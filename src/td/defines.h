@@ -41,6 +41,7 @@
 #define DEFINES_H
 
 #include <cstdint>
+#include <utility>
 
 #include "sdllib/include/wwstd.h"
 #include "td/special.h"
@@ -2609,6 +2610,6 @@ typedef enum OptionControlType {
 
 #define TOTAL_CRATE_TYPES 15
 
-#define size_of(typ, id) sizeof(((typ*)0)->id)
+#define size_of(typ, id) sizeof(std::declval<typ>().id)
 
 #endif

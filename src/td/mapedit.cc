@@ -980,7 +980,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         If there's a current object, attach the flag to it and clear the
         waypoint.
         ------------------------------------------------------------------*/
-        if (CurrentObject[0] != 0) {
+        if (CurrentObject[0] != nullptr) {
           waypt_idx = (KN_To_KA(input & 0xff) - KA_1);
           house = (HousesType)(HOUSE_MULTI1 + waypt_idx);
           if (HouseClass::As_Pointer(house) &&
