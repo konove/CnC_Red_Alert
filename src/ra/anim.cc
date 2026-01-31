@@ -196,7 +196,7 @@ COORDINATE AnimClass::Sort_Y() const {
  * AnimClass::Center_Coord -- Determine center of animation. *
  *                                                                                             *
  *    This support function will return the "center" of the animation. The
- *actual coordinate   * of the animation may be dependant on if the the
+ *actual coordinate   * of the animation may be dependent on if the
  *animation is attached to an object.      * In such a case, it must factor in
  *the object's location.                                 *
  *                                                                                             *
@@ -385,7 +385,7 @@ short const* AnimClass::Overlap_List() const {
     shapenum = std::min(shapenum, count - 1);
 
     if (Class->DimensionData == nullptr) {
-      Class->DimensionData = new Rect[count];
+      Class->DimensionData = std::make_unique<Rect[]>(count);
     }
     if (Class->DimensionData != nullptr &&
         !Class->DimensionData[shapenum].Is_Valid()) {

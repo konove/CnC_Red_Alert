@@ -882,7 +882,6 @@ void OverlayTypeClass::Init(TheaterType theater) {
 
       IsTheaterShape = overlay.IsTheater;  // Tell Build_Frame if this is a
                                            // theater specific shape
-      if (overlay.RadarIcon != nullptr) delete[] (char*)overlay.RadarIcon;
       overlay.RadarIcon = Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3);
       IsTheaterShape = false;
     }

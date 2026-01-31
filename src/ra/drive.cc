@@ -666,7 +666,8 @@ bool DriveClass::While_Moving() {
   if (IsFormationMove) maxspeed = FormationMaxSpeed;
 
   int actual;  // Working movement addition value.
-  if (dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
+  if (What_Am_I() == RTTI_UNIT &&
+      dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
     actual = SpeedAccum + static_cast<int>(maxspeed) / 2 * fixed(Speed, 256);
   } else {
     actual = SpeedAccum + maxspeed * fixed(Speed, 256);

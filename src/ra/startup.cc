@@ -45,6 +45,8 @@
 #include <cstring>
 #include <filesystem>
 
+#include "absl/log/globals.h"
+#include "absl/log/initialize.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -142,6 +144,9 @@ int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
 int main(int argc, char* argv[])
 #endif  // _WIN32
 {
+  absl::InitializeLog();
+  absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
+
   if (Ram_Free(MEM_NORMAL) < 7000000) {
     printf(TEXT_NO_RAM);
 
@@ -501,6 +506,49 @@ void __cdecl Prog_End() {
   if (WindowsTimer) {
     delete WindowsTimer;
     WindowsTimer = nullptr;
+  }
+
+  // Release owning members of ObjectTypeClass-derived objects in all global
+  // type heaps. The custom heap allocator (TFixedIHeapClass) never calls
+  // destructors when it frees its buffer, so RAII members (unique_ptr, variant
+  // holding vector) must be released explicitly before global destruction.
+  auto reset_object_type = [](ObjectTypeClass* obj) {
+    obj->DimensionData.reset();
+    obj->RadarIcon.reset();
+    obj->ClearImage();
+  };
+  for (int i = 0; i < AircraftTypes.Count(); i++) {
+    reset_object_type(AircraftTypes.Ptr(i));
+  }
+  for (int i = 0; i < AnimTypes.Count(); i++) {
+    reset_object_type(AnimTypes.Ptr(i));
+  }
+  for (int i = 0; i < BuildingTypes.Count(); i++) {
+    reset_object_type(BuildingTypes.Ptr(i));
+  }
+  for (int i = 0; i < BulletTypes.Count(); i++) {
+    reset_object_type(BulletTypes.Ptr(i));
+  }
+  for (int i = 0; i < InfantryTypes.Count(); i++) {
+    reset_object_type(InfantryTypes.Ptr(i));
+  }
+  for (int i = 0; i < OverlayTypes.Count(); i++) {
+    reset_object_type(OverlayTypes.Ptr(i));
+  }
+  for (int i = 0; i < SmudgeTypes.Count(); i++) {
+    reset_object_type(SmudgeTypes.Ptr(i));
+  }
+  for (int i = 0; i < TemplateTypes.Count(); i++) {
+    reset_object_type(TemplateTypes.Ptr(i));
+  }
+  for (int i = 0; i < TerrainTypes.Count(); i++) {
+    reset_object_type(TerrainTypes.Ptr(i));
+  }
+  for (int i = 0; i < UnitTypes.Count(); i++) {
+    reset_object_type(UnitTypes.Ptr(i));
+  }
+  for (int i = 0; i < VesselTypes.Count(); i++) {
+    reset_object_type(VesselTypes.Ptr(i));
   }
 }
 

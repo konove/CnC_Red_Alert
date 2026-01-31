@@ -48,7 +48,7 @@ template <class T>
 class CCPtr {
  public:
   CCPtr() : ID(-1) {}
-  CCPtr(NoInitClass const&) {}
+  CCPtr(const NoInitClass&) {}
   CCPtr(T* ptr);
 
   operator T*() const {
@@ -68,14 +68,14 @@ class CCPtr {
 
   bool Is_Valid() const { return ID != -1; }
 
-  bool operator==(CCPtr const& rvalue) const { return ID == rvalue.ID; }
-  bool operator!=(CCPtr const& rvalue) const { return ID != rvalue.ID; }
-  bool operator>(CCPtr const& rvalue) const;
-  bool operator<=(CCPtr const& rvalue) const { return rvalue > *this; }
-  bool operator<(CCPtr const& rvalue) const {
+  bool operator==(const CCPtr& rvalue) const { return ID == rvalue.ID; }
+  bool operator!=(const CCPtr& rvalue) const { return ID != rvalue.ID; }
+  bool operator>(const CCPtr& rvalue) const;
+  bool operator<=(const CCPtr& rvalue) const { return rvalue > *this; }
+  bool operator<(const CCPtr& rvalue) const {
     return *this != rvalue && rvalue > *this;
   }
-  bool operator>=(CCPtr const& rvalue) const {
+  bool operator>=(const CCPtr& rvalue) const {
     return *this == rvalue || rvalue > *this;
   }
 

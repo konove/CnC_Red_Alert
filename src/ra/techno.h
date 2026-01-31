@@ -388,11 +388,20 @@ class TechnoClass : public RadioClass,
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
+  // Returns the color remap table for rendering this object. Remappable
+  // objects use their house color; non-remappable objects use gold.
   virtual void const* Remap_Table() const;
   VisualType Visual_Character(bool raw = false) const;
-  void Techno_Draw_Object(void const* shapefile, int shapenum, int x, int y,
+
+  // Draws the object with appropriate remapping, cloaking, and shadow effects.
+  // Handles spy disguise (enemy spies render with the player's house colors),
+  // iron curtain visual overlay, and cloaking transparency stages. The
+  // `shapefile` must match the type class image data for dimension caching to
+  // work correctly. `scale` uses 24.8 fixed point (0x0100 = 1x).
+  void Techno_Draw_Object(const void* shapefile, int shapenum, int x, int y,
                           WindowNumberType window, DirType rotation = DIR_N,
                           int scale = 0x0100) const;
+
   void Draw_It(int x, int y, WindowNumberType window) const override;
   virtual void Draw_Pips(int x, int y, WindowNumberType window) const;
   void Hidden() override;

@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <utility>
 #include <variant>
@@ -272,12 +273,10 @@ class ObjectTypeClass : public AbstractTypeClass {
   *this *	data, the minimum number of cells will be redrawn when the
   *object changes shape.
   */
-  Rect* DimensionData;
+  std::unique_ptr<Rect[]> DimensionData;
 
-  /*
-  **	This points to the radar imagery for this object.
-  */
-  void const* RadarIcon;
+  // This points to the radar imagery for this object.
+  std::unique_ptr<char[]> RadarIcon;
 
   //--------------------------------------------------------------------
   ObjectTypeClass(NoInitClass const& x) : AbstractTypeClass(x) {}
@@ -286,6 +285,10 @@ class ObjectTypeClass : public AbstractTypeClass {
                   bool is_insignificant, bool is_immune, bool is_footprint,
                   int fullname, char const* name);
   ~ObjectTypeClass() override;
+  ObjectTypeClass(ObjectTypeClass const& other);
+  ObjectTypeClass& operator=(ObjectTypeClass const&) = delete;
+  ObjectTypeClass(ObjectTypeClass&&) = default;
+  ObjectTypeClass& operator=(ObjectTypeClass&&) = default;
 
   static void One_Time();
 
@@ -333,7 +336,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   // Clear image data.
   void ClearImage() { image_data_ = std::span<const std::byte>{}; }
 
-  void const* Get_Radar_Data() const { return RadarIcon; }
+  const void* Get_Radar_Data() const { return RadarIcon.get(); }
 
   virtual void Display(int, int, WindowNumberType, HousesType) const {}
 

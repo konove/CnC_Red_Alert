@@ -523,7 +523,6 @@ void TerrainTypeClass::Init(TheaterType theater) {
 
         IsTheaterShape =
             true;  // Let Build_Frame know that this is a theater specific shape
-        if (terrain.RadarIcon != nullptr) delete[] (char*)terrain.RadarIcon;
         terrain.RadarIcon = Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3);
         IsTheaterShape = false;
       }

@@ -105,7 +105,17 @@ target_compile_definitions(rasdl PRIVATE
         PORTABLE=1 # to indicate not windows or dos sometimes
 )
 apply_dotenv_settings(rasdl)
-target_link_libraries(rasdl PRIVATE tech jshell port sdllib vqa32 absl::check absl::log absl::status absl::statusor) # mpgdll wwipx32
+target_link_libraries(rasdl PRIVATE
+        tech
+        jshell
+        port
+        sdllib
+        vqa32
+        absl::check
+        absl::log
+        absl::log_initialize
+        absl::status
+        absl::statusor) # mpgdll wwipx32
 
 install(TARGETS rasdl)
 

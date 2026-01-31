@@ -79,6 +79,7 @@
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
+#include <memory>
 #include <string>
 
 #include "absl/log/log.h"
@@ -3058,15 +3059,15 @@ std::string Fading_Table_Name(const char* base, TheaterType theater) {
  * HISTORY: * 04/12/1995 PWG : Created. * 05/10/1995 JLB : Handles a null
  *shapefile pointer.                                        *
  *=============================================================================================*/
-void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
-                           int zoomfactor) {
+std::unique_ptr<char[]> Get_Radar_Icon(void const* shapefile, int shapenum,
+                                       int frames, int zoomfactor) {
   static int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   static int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   int lp, framelp;
   char pixel;
 
-  char* retval = nullptr;
   char* buffer = nullptr;
+  std::unique_ptr<char[]> result;
 
   /*
   **	If there is no shape file, then there can be no radar icon imagery.
@@ -3104,14 +3105,8 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
   ** Allocate a position to store our icons.  If the alloc fails then
   ** we don't add these icons to the set.
   **/
-  buffer = new char[icon_width * icon_height * 9 * frames + 2];
-  if (!buffer) return nullptr;
-
-  /*
-  ** Save off the return value so that we can return it to the calling
-  ** function.
-  */
-  retval = buffer;
+  result = std::make_unique<char[]>(icon_width * icon_height * 9 * frames + 2);
+  buffer = result.get();
   *buffer++ = static_cast<char>(icon_width);
   *buffer++ = static_cast<char>(icon_height);
   int val = 24 / zoomfactor;
@@ -3179,7 +3174,7 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
       buffer += icon_width * icon_height * 9;
     }
   }
-  return retval;
+  return result;
 }
 
 /***********************************************************************************************

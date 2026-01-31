@@ -45,6 +45,8 @@
 #include <cstring>
 #include <filesystem>
 
+#include "absl/log/globals.h"
+#include "absl/log/initialize.h"
 #include "port/ex_string.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/file.h"
@@ -166,6 +168,9 @@ int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
 int main(int argc, char* argv[])
 #endif  // WIN32
 {
+  absl::InitializeLog();
+  absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
+
   // Heap_Dump_Check( "first thing in main" );
   //	malloc(1);
 

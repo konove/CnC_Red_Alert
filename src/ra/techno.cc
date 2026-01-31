@@ -4314,36 +4314,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     return VISUAL_HIDDEN;
   }
 
-  /***********************************************************************************************
-   * TechnoClass::Techno_Draw_Object -- General purpose draw object routine. *
-   *                                                                                             *
-   *    This routine is used to draw the object. It will handle any remapping or
-   *cloaking        * effects required. This logic is isolated here since all
-   *techno object share the same     * render logic when it comes to remapping
-   *and cloaking.                                    *
-   *                                                                                             *
-   * INPUT:   shapefile   -- Pointer to the shape file that the shape will be
-   *drawn from.        *
-   *                                                                                             *
-   *          shapenum    -- The shape number of the object in the file to use.
-   **
-   *                                                                                             *
-   *          x,y         -- Center pixel coordinate to use for rendering this
-   *object.           *
-   *                                                                                             *
-   *          window      -- The clipping window to use when rendering. *
-   *                                                                                             *
-   *          rotation    -- The rotation of the object. *
-   *                                                                                             *
-   *          scale       -- The scaling factor to use (24.8 fixed point). *
-   *                                                                                             *
-   * OUTPUT:  none *
-   *                                                                                             *
-   * WARNINGS:   none *
-   *                                                                                             *
-   * HISTORY: * 07/08/1995 JLB : Created. * 01/11/1996 JLB : Added rotation and
-   *scaling.                                              *
-   *=============================================================================================*/
   void TechnoClass::Techno_Draw_Object(void const* shapefile, int shapenum,
                                        int x, int y, WindowNumberType window,
                                        DirType rotation, int scale) const {
@@ -4354,20 +4324,15 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       void const* remap = Remap_Table();
       void const* shadow = MouseClass::UnitShadow;
 
-      /*
-      **	Create a minimum shape rectangle if one hasn't already been
-      **	calculated and the shape file matches the one that the
-      **	class thinks it should be using. This check is necessary because
-      **	the dimension rectangle pointer is referenced from the type
-      *class *	object on the presumption that the shapefile pointer passed to
-      *this *	routine matches. If it doesn't match, then the wrong rectangle
-      *information *	will be stored into the type class object.
-      */
+      // Lazily cache per-frame bounding rectangles in the type class. Only do
+      // this when the shapefile matches the type's own image data, because the
+      // cache is shared across all instances of this type.
       TechnoTypeClass* ttype = Techno_Type_Class();
       if (shapefile == ttype->Get_Image_Data() &&
           shapenum < Get_Build_Frame_Count(shapefile) - 1) {
         if (ttype->DimensionData == nullptr) {
-          ttype->DimensionData = new Rect[Get_Build_Frame_Count(shapefile)];
+          ttype->DimensionData =
+              std::make_unique<Rect[]>(Get_Build_Frame_Count(shapefile));
         }
         if (ttype->DimensionData != nullptr &&
             !ttype->DimensionData[shapenum].Is_Valid()) {
@@ -4382,25 +4347,21 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
 
       y -= Lepton_To_Pixel(Height);
 
-      /*
-      ** If they're viewing a spy, and the spy belongs to some other house,
-      ** make it look like an infantryman from our house
-      */
+      // If they're viewing a spy, and the spy belongs to some other house, make
+      // it look like an infantryman from our house
       if (What_Am_I() == RTTI_INFANTRY) {
+        const auto* infantry = dynamic_cast<const InfantryClass*>(this);
         if (!IsOwnedByPlayer) {
-          if (*(InfantryClass*)this == INFANTRY_SPY)
+          if (*infantry == INFANTRY_SPY) {
             remap = PlayerPtr->Remap_Table();
+          }
         }
-        if (((InfantryClass*)this)->Class->IsRemapOverride) {
-          remap = ((InfantryClass*)this)->Class->OverrideRemap;
+        if (infantry->Class->IsRemapOverride) {
+          remap = infantry->Class->OverrideRemap;
         }
       }
 
-      /*
-      ** Check for the special visual effect for the iron curtain
-      */
       if (IronCurtainCountDown > 0) {
-        //			remap = RemapEmber;
         remap = DisplayClass::FadingRed;
       }
 
@@ -4459,21 +4420,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     }
   }
 
-  /***********************************************************************************************
-   * TechnoClass::Remap_Table -- Fetches the appropriate remap table to use. *
-   *                                                                                             *
-   *    This routine is used to fetch the appropriate remap table to use for
-   *this object.        *
-   *                                                                                             *
-   * INPUT:   none *
-   *                                                                                             *
-   * OUTPUT:  Returns with a pointer to the remap table to use for this object.
-   **
-   *                                                                                             *
-   * WARNINGS:   none *
-   *                                                                                             *
-   * HISTORY: * 07/08/1995 JLB : Created. *
-   *=============================================================================================*/
   void const* TechnoClass::Remap_Table() const {
     assert(IsActive);
 

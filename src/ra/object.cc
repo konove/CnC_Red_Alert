@@ -1860,9 +1860,7 @@ ObjectTypeClass::ObjectTypeClass(RTTIType rtti, int id, bool is_sentient,
       IsSentient(is_sentient),
       IsFootprint(is_footprint),
       Armor(ARMOR_NONE),
-      MaxStrength(0),
-      DimensionData(nullptr),
-      RadarIcon(nullptr) {}
+      MaxStrength(0) {}
 
 /***********************************************************************************************
  * ObjectTypeClass::~ObjectTypeClass -- Destructor for object type class.
@@ -1878,10 +1876,20 @@ ObjectTypeClass::ObjectTypeClass(RTTIType rtti, int id, bool is_sentient,
  *                                                                                             *
  * HISTORY: * 01/04/2026 : Created.                *
  *=============================================================================================*/
-ObjectTypeClass::~ObjectTypeClass() {
-  delete[] DimensionData;
-  DimensionData = nullptr;
-}
+ObjectTypeClass::ObjectTypeClass(const ObjectTypeClass& other)
+    : AbstractTypeClass(other),
+      IsCrushable(other.IsCrushable),
+      IsStealthy(other.IsStealthy),
+      IsSelectable(other.IsSelectable),
+      IsLegalTarget(other.IsLegalTarget),
+      IsInsignificant(other.IsInsignificant),
+      IsImmune(other.IsImmune),
+      IsSentient(other.IsSentient),
+      IsFootprint(other.IsFootprint),
+      Armor(other.Armor),
+      MaxStrength(other.MaxStrength) {}
+
+ObjectTypeClass::~ObjectTypeClass() {}
 
 /***********************************************************************************************
  * ObjectTypeClass::Max_Pips -- Fetches the maximum pips allowed for this
