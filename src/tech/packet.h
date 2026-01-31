@@ -114,7 +114,6 @@ class PacketClass {
   uint16_t Size;
   int16_t ID;
   FieldClass* Head;
-  FieldClass* Current;
 };
 
 #endif

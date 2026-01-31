@@ -72,7 +72,7 @@ class StageClass {
     Stage = 0;
     Rate = 0;
   }
-  StageClass(const NoInitClass& x) {}
+  StageClass(const NoInitClass&) {}
 
   int Fetch_Stage() const { return Stage; }
   int Fetch_Rate() const { return Rate; }

@@ -347,19 +347,7 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   The number & size of packet buffers in low memory
   .....................................................................*/
-  int NumBufs;        // # packet buffers allocated
-  int PacketLen;      // size of packet without IPX header
-  int FullPacketLen;  // size of packet including IPX header
-
-  /*.....................................................................
-  Selector & Segment of the DOS allocation;
-  Size of the allocation;
-  Ptr to the real-mode assembly data area
-  .....................................................................*/
-  unsigned short Selector;         // selector of DOS allocation pointer
-  unsigned short Segment;          // real-mode segment of DOS allocation
-  int RealMemSize;                 // size of real mode memory allocated
-  RealModeDataType* RealModeData;  // assembly routine & its data
+  int PacketLen;  // size of packet without IPX header
 
   /*.....................................................................
   This is a real-mode pointer to the address of the real-mode assembly
@@ -382,7 +370,6 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Current packet index & ptrs for parsing packets
   .....................................................................*/
-  int CurIndex;                 // Current packet index, for reading
   IPXHeaderType* CurHeaderBuf;  // Current packet ptr, for reading
   char* CurDataBuf;             // Current actual data ptr
 
@@ -392,12 +379,6 @@ class IPXManagerClass : public ConnManClass {
   ECBType* SendECB;           // ECB for sending
   IPXHeaderType* SendHeader;  // Header for sending
   char* SendBuf;              // buffer for sending
-
-  /*.....................................................................
-  Flags indicating whether a buffer contains data or not (1 = full)
-  The IPXManager must clear this flag; the real-mode routine will set it.
-  .....................................................................*/
-  char* BufferFlags;  // array of rx-buffer-avail flags
 
   /*.....................................................................
   Various Statistics

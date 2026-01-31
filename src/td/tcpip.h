@@ -156,9 +156,6 @@ class TcpipManagerClass {
   SOCKET ConnectSocket;
   SOCKET UDPSocket;
   IN_ADDR ClientIPAddress;
-  HANDLE Async;
-  char HostBuff[MAXGETHOSTSTRUCT];
-  char ClientName[128];
   char ReceiveBuffer[WS_RECEIVE_BUFFER_LEN];
   // char					InBuffer[WS_IN_BUFFER_LEN];
   // int					InBufferHead;
@@ -168,7 +165,6 @@ class TcpipManagerClass {
   // int					OutBufferTail;
   bool IsServer;
   bool Connected;
-  HostType Server;
   char HostAddress[IP_ADDRESS_MAX];
   ConnectStatusEnum ConnectStatus;
   bool UseUDP;

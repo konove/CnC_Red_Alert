@@ -93,13 +93,6 @@ class IPXInterfaceClass : public WinsockInterfaceClass {
   ** The id of the network cars in this machine.
   */
   unsigned char MyNode[6];
-
-  /*
-  ** The socket number to connect with. Normally this will be virgins reserved
-  *socket
-  ** number - VIRGIN_SOCKET (0x8813).
-  */
-  SOCKET IPXSocketNumber;
 };
 
 #endif

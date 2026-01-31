@@ -120,17 +120,8 @@ class WWMouseClass {
   int MaxWidth;
   int MaxHeight;
 
-  // Legacy conditional hide state (unused with hardware cursors).
-  int MouseCXLeft;
-  int MouseCYUpper;
-  int MouseCXRight;
-  int MouseCYLower;
-  char MCFlags;
-  char MCCount;
-
   // Tracks cursor identity to avoid redundant Set_Cursor work.
   char* PrevCursor;
-  int MouseUpdate;
 
   // Reference count for Hide/Show. Cursor visible when State == 0.
   int State;

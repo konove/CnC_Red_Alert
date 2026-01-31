@@ -82,7 +82,6 @@ PowerClass::PowerButtonClass PowerClass::PowerButton;
  *=============================================================================================*/
 PowerClass::PowerClass()
     : IsToRedraw(false),
-      IsActive(false),
       FlashTimer(0),
       RecordedDrain(-1),
       RecordedPower(-1),

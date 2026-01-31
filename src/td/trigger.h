@@ -128,7 +128,7 @@ class TriggerClass {
   **	Constructor/Destructor
   */
   TriggerClass();
-  TriggerClass(const NoInitClass& x) {}
+  TriggerClass(const NoInitClass&) {}
   ~TriggerClass();
 
   /*
