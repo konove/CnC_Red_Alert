@@ -1186,7 +1186,7 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void* TemplateTypeClass::operator new(size_t) throw() {
+void* TemplateTypeClass::operator new(size_t) noexcept {
   return TemplateTypes.Alloc();
 }
 

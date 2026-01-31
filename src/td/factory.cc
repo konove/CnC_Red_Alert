@@ -185,7 +185,7 @@ void FactoryClass::Init() { Factories.Free_All(); }
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-void* FactoryClass::operator new(size_t) throw() {
+void* FactoryClass::operator new(size_t) noexcept {
   void* ptr = Factories.Allocate();
   if (ptr) {
     static_cast<FactoryClass*>(ptr)->IsActive = true;

@@ -206,7 +206,7 @@ SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, char const* ininame,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* SmudgeTypeClass::operator new(size_t) throw() {
+void* SmudgeTypeClass::operator new(size_t) noexcept {
   return SmudgeTypes.Alloc();
 }
 

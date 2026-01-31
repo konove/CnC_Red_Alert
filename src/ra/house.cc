@@ -596,7 +596,7 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-void* HouseClass::operator new(size_t) throw() {
+void* HouseClass::operator new(size_t) noexcept {
   void* ptr = Houses.Allocate();
   if (ptr) {
     static_cast<HouseClass*>(ptr)->IsActive = true;

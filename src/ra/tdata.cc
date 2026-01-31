@@ -385,7 +385,7 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-void* TerrainTypeClass::operator new(size_t) throw() {
+void* TerrainTypeClass::operator new(size_t) noexcept {
   return TerrainTypes.Alloc();
 }
 

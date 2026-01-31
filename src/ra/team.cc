@@ -286,7 +286,7 @@ void TeamClass::Init() { Teams.Free_All(); }
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void* TeamClass::operator new(size_t) throw() {
+void* TeamClass::operator new(size_t) noexcept {
   void* ptr = Teams.Allocate();
   if (ptr != nullptr) {
     static_cast<TeamClass*>(ptr)->IsActive = true;

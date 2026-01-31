@@ -158,7 +158,7 @@ void TeamClass::Init() {
   delete ptr;
 }
 
-void* TeamClass::operator new(size_t) throw() {
+void* TeamClass::operator new(size_t) noexcept {
   void* ptr = Teams.Allocate();
   if (ptr) {
     static_cast<TeamClass*>(ptr)->IsActive = true;

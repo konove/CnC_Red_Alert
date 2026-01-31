@@ -460,7 +460,7 @@ void AnimClass::Init() { Anims.Free_All(); }
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void* AnimClass::operator new(size_t) throw() {
+void* AnimClass::operator new(size_t) noexcept {
   void* ptr = Anims.Allocate();
   if (ptr != nullptr) {
     static_cast<AnimClass*>(ptr)->IsActive = true;

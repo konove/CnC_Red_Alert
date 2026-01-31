@@ -306,7 +306,7 @@ InfantryClass::~InfantryClass() {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void* InfantryClass::operator new(size_t) throw() {
+void* InfantryClass::operator new(size_t) noexcept {
   void* ptr = Infantry.Allocate();
   if (ptr != nullptr) {
     static_cast<InfantryClass*>(ptr)->IsActive = true;

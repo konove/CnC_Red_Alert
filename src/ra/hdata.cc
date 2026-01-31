@@ -321,7 +321,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, char const* ini, int fullname,
  *                                                                                             *
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
-void* HouseTypeClass::operator new(size_t) throw() {
+void* HouseTypeClass::operator new(size_t) noexcept {
   return HouseTypes.Alloc();
 }
 

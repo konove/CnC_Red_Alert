@@ -1750,7 +1750,7 @@ void BuildingClass::Look(bool) {
  *allocation scheme                                               * 07/29/1994
  *JLB : Simplified. *
  *=============================================================================================*/
-void *BuildingClass::operator new(size_t) throw() {
+void *BuildingClass::operator new(size_t) noexcept {
   void *ptr = Buildings.Allocate();
   if (ptr) {
     static_cast<BuildingClass *>(ptr)->IsActive = true;

@@ -222,7 +222,7 @@ BulletClass::~BulletClass() {
  *                                                                                             *
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
-void* BulletClass::operator new(size_t) throw() {
+void* BulletClass::operator new(size_t) noexcept {
   void* ptr = Bullets.Allocate();
   if (ptr) {
     static_cast<BulletClass*>(ptr)->IsActive = true;

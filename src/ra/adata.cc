@@ -2024,7 +2024,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, char const* name, int size,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* AnimTypeClass::operator new(size_t) throw() { return AnimTypes.Alloc(); }
+void* AnimTypeClass::operator new(size_t) noexcept { return AnimTypes.Alloc(); }
 
 /***********************************************************************************************
  * AnimTypeClass::operator delete -- Returns an anim type class object back to

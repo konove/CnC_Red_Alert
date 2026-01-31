@@ -626,8 +626,8 @@ class HouseClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  void* operator new(size_t size) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t size) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   HouseClass(HousesType house);
   HouseClass(NoInitClass const& x)
@@ -871,7 +871,7 @@ class HouseClass {
   **	the house AI processing. Higher priority build requests take precidence.
   */
   struct BuildChoiceClass {
-    void* operator new(size_t, void* ptr) throw() { return ptr; }
+    void* operator new(size_t, void* ptr) noexcept { return ptr; }
     UrgencyType Urgency;   // The urgency of the build request
     StructType Structure;  // The type of building to produce.
 

@@ -214,8 +214,8 @@ class TeamClass : public AbstractClass {
         Member(x) {}
   ~TeamClass() override;
   void operator delete(void* ptr);
-  void* operator new(size_t size) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t size) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   static void Init();
   static void Suspend_Teams(int priority, HouseClass const* house);
   void Debug_Dump(MonoClass* mono) const override;

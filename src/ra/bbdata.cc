@@ -116,7 +116,7 @@ BulletTypeClass::BulletTypeClass(char const* name)
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void* BulletTypeClass::operator new(size_t) throw() {
+void* BulletTypeClass::operator new(size_t) noexcept {
   return BulletTypes.Alloc();
 }
 

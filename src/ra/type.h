@@ -167,8 +167,8 @@ class HouseTypeClass : public AbstractTypeClass {
 
   unsigned char const* Remap_Table() const;
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static HousesType From_Name(char const* name);
@@ -771,8 +771,8 @@ class BuildingTypeClass : public TechnoTypeClass {
                     short const* overlap);
   operator StructType() const { return Type; }
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -952,8 +952,8 @@ class UnitTypeClass : public TechnoTypeClass {
                 bool is_animating, bool is_jammer, bool is_gapper, int rotation,
                 int toffset, MissionType order);
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -1042,8 +1042,8 @@ class VesselTypeClass : public TechnoTypeClass {
                   bool is_nominal, bool is_turret_equipped, int rotation,
                   int toffset);
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -1171,8 +1171,8 @@ class InfantryTypeClass : public TechnoTypeClass {
                     DoInfoStruct const* controls, int firelaunch,
                     int pronelaunch, unsigned char const* override_remap);
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -1257,8 +1257,8 @@ class AircraftTypeClass : public TechnoTypeClass {
                     bool is_insignificant, bool is_immune, StructType building,
                     int landingspeed, int rotation, MissionType deforder);
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -1436,8 +1436,8 @@ class BulletTypeClass : public ObjectTypeClass {
   BulletTypeClass(NoInitClass const& x) : ObjectTypeClass(x) {}
   BulletTypeClass(char const* name);
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -1488,8 +1488,8 @@ class TerrainTypeClass : public ObjectTypeClass {
                    bool is_immune, bool is_water, char const* ininame,
                    int fullname, short const* occupy, short const* overlap);
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -1543,8 +1543,8 @@ class TemplateTypeClass : public ObjectTypeClass {
   TemplateTypeClass(TemplateType iconset, int theater, char const* ininame,
                     int fullname);
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -1724,8 +1724,8 @@ class AnimTypeClass : public ObjectTypeClass {
                 VocType sound, AnimType chainto);
 
   static void Init_Heap();
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static AnimTypeClass& As_Reference(AnimType type);
@@ -1820,8 +1820,8 @@ class OverlayTypeClass : public ObjectTypeClass {
                    bool iscrushable, bool istiberium, bool high, bool theater,
                    bool iswall, bool iscrate);
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();
@@ -1881,8 +1881,8 @@ class SmudgeTypeClass : public ObjectTypeClass {
   SmudgeTypeClass(SmudgeType smudge, char const* ininame, int fullname,
                   int width, int height, bool isbib, bool iscrater);
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   static void Init_Heap();

@@ -59,8 +59,8 @@ class WeaponTypeClass {
   WeaponTypeClass(NoInitClass const&) {}
   ~WeaponTypeClass();
 
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* pointer);
 
   char const* Name() const { return IniName; }

@@ -2898,7 +2898,7 @@ BuildingTypeClass::BuildingTypeClass(
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void* BuildingTypeClass::operator new(size_t) throw() {
+void* BuildingTypeClass::operator new(size_t) noexcept {
   return BuildingTypes.Alloc();
 }
 

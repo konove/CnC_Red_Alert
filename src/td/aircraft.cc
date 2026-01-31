@@ -219,7 +219,7 @@ TARGET AircraftClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void* AircraftClass::operator new(size_t) throw() {
+void* AircraftClass::operator new(size_t) noexcept {
   void* ptr = Aircraft.Allocate();
   if (ptr) {
     static_cast<AircraftClass*>(ptr)->IsActive = true;

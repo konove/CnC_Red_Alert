@@ -258,7 +258,7 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, char const* ininame,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* VesselTypeClass::operator new(size_t) throw() {
+void* VesselTypeClass::operator new(size_t) noexcept {
   return VesselTypes.Alloc();
 }
 

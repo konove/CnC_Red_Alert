@@ -131,7 +131,7 @@ WeaponTypeClass::~WeaponTypeClass() {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-void* WeaponTypeClass::operator new(size_t) throw() { return Weapons.Alloc(); }
+void* WeaponTypeClass::operator new(size_t) noexcept { return Weapons.Alloc(); }
 
 /***********************************************************************************************
  * WeaponTypeClass::operator delete -- Returns weapon type object back to

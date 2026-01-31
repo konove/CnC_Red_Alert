@@ -868,7 +868,7 @@ UnitTypeClass::UnitTypeClass(
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* UnitTypeClass::operator new(size_t) throw() { return UnitTypes.Alloc(); }
+void* UnitTypeClass::operator new(size_t) noexcept { return UnitTypes.Alloc(); }
 
 /***********************************************************************************************
  * UnitTypeClass::operator delete -- Return a unit type class object back to the

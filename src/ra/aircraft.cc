@@ -227,7 +227,7 @@ static bool _Counts_As_Civ_Evac(ObjectClass const* candidate) {
 // Allocates a new aircraft object from the free object pool.
 // Marks the allocated object as active by setting its IsActive flag to true.
 // Returns nullptr if no free objects are available in the pool.
-void* AircraftClass::operator new(size_t) throw() {
+void* AircraftClass::operator new(size_t) noexcept {
   void* ptr = Aircraft.Allocate();
   if (ptr) {
     static_cast<AircraftClass*>(ptr)->IsActive = true;

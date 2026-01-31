@@ -387,8 +387,8 @@ class HouseClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  void* operator new(size_t size) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t size) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
   HouseClass() : Class(nullptr) {}
   HouseClass(HousesType house);

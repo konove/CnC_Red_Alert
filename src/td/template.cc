@@ -355,7 +355,7 @@ bool TemplateClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-void* TemplateClass::operator new(size_t) throw() {
+void* TemplateClass::operator new(size_t) noexcept {
   void* ptr = Templates.Allocate();
   if (ptr) {
     static_cast<TemplateClass*>(ptr)->IsActive = true;

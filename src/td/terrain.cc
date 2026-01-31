@@ -253,7 +253,7 @@ TARGET TerrainClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-void* TerrainClass::operator new(size_t) throw() {
+void* TerrainClass::operator new(size_t) noexcept {
   void* ptr = Terrains.Allocate();
   if (ptr) {
     static_cast<TerrainClass*>(ptr)->IsActive = true;

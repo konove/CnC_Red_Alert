@@ -558,7 +558,7 @@ OverlayTypeClass::OverlayTypeClass(OverlayType iconset, char const* ininame,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* OverlayTypeClass::operator new(size_t) throw() {
+void* OverlayTypeClass::operator new(size_t) noexcept {
   return OverlayTypes.Alloc();
 }
 

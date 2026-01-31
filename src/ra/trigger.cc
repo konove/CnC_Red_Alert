@@ -382,7 +382,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void* TriggerClass::operator new(size_t) throw() {
+void* TriggerClass::operator new(size_t) noexcept {
   void* ptr = Triggers.Allocate();
   if (ptr) {
     static_cast<TriggerClass*>(ptr)->IsActive = true;

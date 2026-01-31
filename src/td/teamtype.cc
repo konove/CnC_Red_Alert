@@ -826,7 +826,7 @@ char const* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
  * HISTORY:                                                                *
  *   11/28/1994 BR : Created.                                              *
  *=========================================================================*/
-void* TeamTypeClass::operator new(size_t) throw() {
+void* TeamTypeClass::operator new(size_t) noexcept {
   void* ptr = TeamTypes.Allocate();
   if (ptr) {
     static_cast<TeamTypeClass*>(ptr)->IsActive = true;

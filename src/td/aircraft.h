@@ -37,8 +37,8 @@
 
 class AircraftClass : public FootClass, public FlyClass {
  public:
-  void* operator new(size_t) throw();
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t) noexcept;
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void*);
   operator AircraftType() const { return Class->Type; }
   AircraftClass() : Class(nullptr) {}

@@ -113,7 +113,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   ~TriggerTypeClass() override = default;
 
   void* operator new(size_t);
-  void* operator new(size_t, void* ptr) throw() { return ptr; }
+  void* operator new(size_t, void* ptr) noexcept { return ptr; }
   void operator delete(void* ptr);
 
   /*

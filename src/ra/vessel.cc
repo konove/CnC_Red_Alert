@@ -223,7 +223,7 @@ VesselClass::~VesselClass() {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-void* VesselClass::operator new(size_t) throw() {
+void* VesselClass::operator new(size_t) noexcept {
   void* ptr = Vessels.Alloc();
   if (ptr != nullptr) {
     static_cast<VesselClass*>(ptr)->IsActive = true;
