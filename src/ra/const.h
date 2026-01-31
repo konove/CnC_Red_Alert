@@ -46,9 +46,9 @@ constexpr long EditorCodes[] = {static_cast<long>(0xA2C09326),  // Erik Yeo
 /***********************************************************************************************
 **	Unit order names. These names correspond to the player selectable orders
 **	a unit can have. The system initiated orders have no use for the ASCII
-*name *	associated, but they are listed here for completeness sake.
+*name *	associated, but they are listed here for completeness’s sake.
 */
-constexpr char const* Missions[MISSION_COUNT] = {
+constexpr const char* Missions[MISSION_COUNT] = {
     "Sleep",   "Attack", "Move",    "QMove",   "Retreat",    "Guard",
     "Sticky",  "Enter",  "Capture", "Harvest", "Area Guard", "Return",
     "Stop",    "Ambush", "Hunt",    "Unload",  "Sabotage",   "Construction",
@@ -57,20 +57,20 @@ constexpr char const* Missions[MISSION_COUNT] = {
 /***************************************************************************
 **	Special weapon names.
 */
-constexpr char const* SpecialWeaponName[SPC_COUNT] = {
+constexpr const char* SpecialWeaponName[SPC_COUNT] = {
     "Sonar Pulse",  "Nuclear Missile", "Chronosphere", "Parachute Bomb",
     "Paratroopers", "Recon Plane",     "Iron Curtain", "GPS Satellite"};
 constexpr int SpecialWeaponHelp[SPC_COUNT] = {
     TXT_SONAR_PULSE,   TXT_NUCLEAR_BOMB, TXT_CHRONOSHIFT, TXT_PARA_BOMB,
     TXT_PARA_INFANTRY, TXT_SPY_MISSION,  TXT_INVUL,       TXT_GPS_SATELLITE};
-constexpr char const* SpecialWeaponFile[SPC_COUNT] = {
+constexpr const char* SpecialWeaponFile[SPC_COUNT] = {
     "SONR", "ATOM", "WARP", "PBMB", "PINF", "CAM", "INFX", "GPSS"};
 
 /***************************************************************************
 **	Type of quarry to search out and attack. These values are used for team
 **	attack missions.
 */
-constexpr char const* QuarryName[QUARRY_COUNT] = {
+constexpr const char* QuarryName[QUARRY_COUNT] = {
     "N/A",           "Anything",       "Buildings - any",  "Harvesters",
     "Infantry",      "Vehicles - any", "Ships - any",      "Factories",
     "Base Defenses", "Base Threats",   "Power Facilities", "Fake Buildings"};
@@ -78,7 +78,7 @@ constexpr char const* QuarryName[QUARRY_COUNT] = {
 /***************************************************************************
 **	These are the text names for the formation types.
 */
-constexpr char const* FormationName[FORMATION_COUNT] = {
+constexpr const char* FormationName[FORMATION_COUNT] = {
     "None",
 
     "Tight",       "Loose",      "Wedge North", "Wedge East",
@@ -87,29 +87,19 @@ constexpr char const* FormationName[FORMATION_COUNT] = {
 /***************************************************************************
 **	These are the ASCII names for the reinforcement sources.
 */
-constexpr char const* SourceName[SOURCE_COUNT] = {"North", "East", "South",
+constexpr const char* SourceName[SOURCE_COUNT] = {"North", "East", "South",
                                                   "West", "Air"};
 
 /***************************************************************************
 **	These are the text names for the various armor types a unit may possess.
 */
-constexpr char const* ArmorName[ARMOR_COUNT] = {"none", "wood", "light",
+constexpr const char* ArmorName[ARMOR_COUNT] = {"none", "wood", "light",
                                                 "heavy", "concrete"};
-
-#ifndef PORTABLE
-// HACK ALERT! This unused text string is here to stop Watcom from crashing.
-// There is some magic text heap length that causes a crash before the code
-// executes. This dummy string changes the text heap length enough to stop the
-// crash. Who knows why, but it works.
-char* __test__ =
-    "alskdfjlasdfjkajsdfkja;"
-    "sldjfklasj9awutreqjfnfdkvnldzlknvadsjgflkasdjfkajsdfas";
-#endif
 
 /***************************************************************************
 **	The list of VQ filenames.
 */
-constexpr char const* VQName[VQ_COUNT] = {
+constexpr const char* VQName[VQ_COUNT] = {
     "AAGUN",    "MIG",      "SFROZEN",  "AIRFIELD", "BATTLE",   "BMAP",
     "BOMBRUN",  "DPTHCHRG", "GRVESTNE", "MONTPASS", "MTNKFACT", "CRONTEST",
     "OILDRUM",  "ALLYEND",  "RADRRAID", "SHIPYARD", "SHORBOMB", "SITDUCK",
@@ -173,7 +163,7 @@ constexpr COORDINATE AdjacentCoord[FACING_COUNT] = {
     0xFF000000L, 0xFF000100L, 0x00000100L, 0x01000100L,
     0x01000000L, 0x0100FF00L, 0x0000FF00L, 0xFF00FF00L};
 
-constexpr char const* CrateNames[CRATE_COUNT] = {
+constexpr const char* CrateNames[CRATE_COUNT] = {
     "Money",           "Unit",         "ParaBomb", "HealBase",
     "Cloak",           "Explosion",    "Napalm",   "Squad",
     "Darkness",        "Reveal",       "Sonar",    "Armor",

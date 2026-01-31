@@ -50,6 +50,7 @@
 class GenericList;
 class GenericNode {
  public:
+  friend class GenericList;
   GenericNode() : NextNode(nullptr), PrevNode(nullptr) {}
   virtual ~GenericNode() { Unlink(); }
   GenericNode(GenericNode& node) { node.Link(this); }
@@ -104,6 +105,12 @@ class GenericNode {
 class GenericList {
  public:
   GenericList() { FirstNode.Link(&LastNode); }
+  ~GenericList() {
+    FirstNode.NextNode = nullptr;
+    FirstNode.PrevNode = nullptr;
+    LastNode.NextNode = nullptr;
+    LastNode.PrevNode = nullptr;
+  }
 
   GenericNode* First() const { return FirstNode.Next(); }
   GenericNode* Last() const { return LastNode.Prev(); }

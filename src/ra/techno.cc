@@ -162,7 +162,6 @@
 #include <cstring>
 
 #include "absl/log/check.h"
-
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
