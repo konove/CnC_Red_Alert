@@ -86,8 +86,8 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
   int dh = destvp->Get_Height();
   WPPOINT sp[4];
   WPPOINT dp[4];
-  sa = Sin256[a];
-  ca = Cos256[a];
+  sa = base::kSin256[a];
+  ca = base::kCos256[a];
   // get rectangle size
   x = 0;
   y = 0;

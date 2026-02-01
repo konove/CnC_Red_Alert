@@ -14,4 +14,4 @@ target_sources(jshell PUBLIC
         FILES ${JSHELL_HEADERS}
 )
 
-target_link_libraries(jshell sdllib port)
+target_link_libraries(jshell base sdllib port)
