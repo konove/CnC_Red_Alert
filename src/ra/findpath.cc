@@ -70,7 +70,7 @@
 #include "ra/mapedit.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
-#include "sdllib/include/memflag.h"
+#include "sdllib/memflag.h"
 #include "session.h"
 
 /*

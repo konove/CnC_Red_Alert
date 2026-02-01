@@ -65,8 +65,8 @@
 
 #include "port/ex_string.h"
 #include "rand.h"
-#include "sdllib/include/memflag.h"
-#include "sdllib/include/tile.h"
+#include "sdllib/memflag.h"
+#include "sdllib/tile.h"
 #include "td/ccfile.h"
 #include "td/cell.h"
 #include "td/compat.h"

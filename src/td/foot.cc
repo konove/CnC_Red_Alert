@@ -90,8 +90,8 @@
 #include <cstring>
 
 #include "rand.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/misc.h"
+#include "sdllib/ww_mouse.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"

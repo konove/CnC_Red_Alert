@@ -27,7 +27,7 @@
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/type.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 #include "tech/rect.h"
 #include "winvq/vqa32/vqaplay.h"
 

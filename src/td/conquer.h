@@ -21,7 +21,7 @@
 #include <cstdint>
 #include <string>
 
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 #include "td/defines.h"
 #include "winvq/vqa32/vqaplay.h"
 

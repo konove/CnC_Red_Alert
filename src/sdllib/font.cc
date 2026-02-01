@@ -1,4 +1,4 @@
-#include "sdllib/include/font.h"
+#include "sdllib/font.h"
 
 #include <algorithm>
 #include <cstdint>

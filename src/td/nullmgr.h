@@ -45,7 +45,7 @@
 /*
 ********************************* Includes **********************************
 */
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "td/connmgr.h"
 #include "td/defines.h"
 #include "td/gadget.h"

@@ -41,7 +41,7 @@
 
 #include <cstdlib>
 
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 
 struct WPPOINT {
   int x;

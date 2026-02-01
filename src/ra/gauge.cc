@@ -51,10 +51,10 @@
 #include "ra/dialog.h"
 #include "ra/globals.h"
 #include "ra/jshell.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 
 /***************************************************************************

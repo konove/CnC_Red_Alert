@@ -55,12 +55,12 @@
 #include <cstdio>
 #include <cstring>
 
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/timer.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/font.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"

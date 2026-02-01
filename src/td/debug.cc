@@ -45,14 +45,14 @@
 
 #include <cstdio>
 
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/memflag.h"
-#include "sdllib/include/timer.h"
-#include "sdllib/include/ww_audio.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/memflag.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_audio.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/building.h"

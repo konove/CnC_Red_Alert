@@ -44,8 +44,8 @@
 #include "ra/face.h"
 #include "ra/jshell.h"
 #include "ra/tab.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
 #include "tech/noinit.h"
 

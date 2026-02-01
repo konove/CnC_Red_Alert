@@ -79,7 +79,7 @@
 #include "ra/object.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 #include "tech/rawfile.h"
 
 /*

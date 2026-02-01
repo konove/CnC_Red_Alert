@@ -41,7 +41,7 @@
 #define CNC_RED_ALERT_RA_TOGGLE_H_
 
 #include "ra/control.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 
 /*
 **	This class handles gadgets that behave like the Windows buttons. That

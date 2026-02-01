@@ -46,7 +46,7 @@
 #include "ra/power.h"
 #include "ra/shapebtn.h"
 #include "ra/stage.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "tech/noinit.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"

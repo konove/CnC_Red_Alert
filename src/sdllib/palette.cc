@@ -1,7 +1,7 @@
 #include <cstdint>
 
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/ww_mouse.h"
 
 void Do_Set_Palette(void* palette) {
   if (WindowBuffer) {

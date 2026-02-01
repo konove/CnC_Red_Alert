@@ -49,9 +49,9 @@
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/vector.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/wwstd.h"
 
 /***************************************************************************
  * ColorListClass::ColorListClass -- class constructor                     *

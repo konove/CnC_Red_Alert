@@ -48,7 +48,7 @@
 #include <cstring>
 
 #include "port/safe_string.h"
-#include "sdllib/include/file.h"
+#include "sdllib/file.h"
 #include "td/function.h"
 
 #ifndef PATH_MAX

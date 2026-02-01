@@ -55,11 +55,11 @@
 #include <cstring>
 
 #include "port/safe_string.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/timer.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/misc.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/audio.h"

@@ -5,8 +5,8 @@
 #include <cstdlib>
 #include <source_location>
 
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/misc.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/misc.h"
 #include "td/config.h"
 #include "td/monoc.h"
 

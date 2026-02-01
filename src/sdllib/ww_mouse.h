@@ -30,7 +30,7 @@
 #include <memory>
 #include <vector>
 
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 
 class SDL_Cursor;
 class SDL_Surface;

@@ -43,7 +43,7 @@
 #ifndef CNC_RED_ALERT_SDLLIB_ICONCACH_H_
 #define CNC_RED_ALERT_SDLLIB_ICONCACH_H_
 
-#include "sdllib/include/tile.h"
+#include "sdllib/tile.h"
 
 #define ICON_WIDTH 24         // Icons must be this width to be cached
 #define ICON_HEIGHT 24        // Icons must be this height to be cached

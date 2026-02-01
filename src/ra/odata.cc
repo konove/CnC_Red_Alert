@@ -75,7 +75,7 @@
 #include "ra/object.h"
 #include "ra/overlay.h"
 #include "ra/type.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 
 static const OverlayTypeClass Sandbag(
     OVERLAY_SANDBAG_WALL,  // Overlay type number.

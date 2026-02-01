@@ -145,12 +145,12 @@
 #include "ra/weapon.h"
 #include "ra/wolstrng.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/ww_audio.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/font.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/ww_audio.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 #include "tech/rawfile.h"
 
 static void Remove_AI_Players();

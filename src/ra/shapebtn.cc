@@ -47,9 +47,9 @@
 #include "ra/defines.h"
 #include "ra/globals.h"
 #include "ra/keyframe.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/shape.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/shape.h"
+#include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************
  * ShapeButtonClass::ShapeButtonClass -- Default Constructor for a shape type

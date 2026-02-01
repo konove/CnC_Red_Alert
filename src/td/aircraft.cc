@@ -109,7 +109,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 #include "td/abstract.h"
 #include "td/anim.h"
 #include "td/audio.h"

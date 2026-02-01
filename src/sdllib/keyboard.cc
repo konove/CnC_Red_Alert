@@ -1,4 +1,4 @@
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 
 #include <SDL_events.h>
 #include <SDL_keyboard.h>
@@ -8,8 +8,8 @@
 
 #include <cstring>
 
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/ww_win.h"
 
 // Mask for modifier keys that affect gameplay input.
 // Excludes toggle modifiers (Caps Lock, Num Lock, Scroll Lock) so that their

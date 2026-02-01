@@ -51,11 +51,11 @@
 #include <cstring>
 
 #include "port/safe_string.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/timer.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/font.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"

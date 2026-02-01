@@ -57,7 +57,7 @@
 #ifndef CNC_RED_ALERT_TD_MSGLIST_H_
 #define CNC_RED_ALERT_TD_MSGLIST_H_
 
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "td/defines.h"
 #include "td/txtlabel.h"
 

@@ -40,7 +40,7 @@
 
 #include "ra/filepcx.h"
 #include "ra/palette.h"
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 #include "tech/wwfile.h"
 
 static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr);

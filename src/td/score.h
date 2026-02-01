@@ -43,9 +43,9 @@
 
 #include <cstring>
 
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/timer.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/timer.h"
+#include "sdllib/wwstd.h"
 #include "tech/wwfile.h"
 
 class ScoreClass {

@@ -55,7 +55,7 @@
 #include "ra/inline.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
-#include "sdllib/include/tile.h"
+#include "sdllib/tile.h"
 
 /***********************************************************************************************
  * TemplateClass::Init -- Resets the template object system. *

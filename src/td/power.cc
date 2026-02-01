@@ -51,10 +51,10 @@
 */
 #include "td/power.h"
 
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/shape.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/shape.h"
+#include "sdllib/ww_win.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"

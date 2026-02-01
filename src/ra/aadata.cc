@@ -71,7 +71,7 @@
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/type.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 
 const void* AircraftTypeClass::LRotorData = nullptr;
 const void* AircraftTypeClass::RRotorData = nullptr;

@@ -41,8 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_MOUSE_H_
 #define CNC_RED_ALERT_TD_MOUSE_H_
 
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/timer.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/timer.h"
 #include "td/defines.h"
 #include "td/scroll.h"
 #include "tech/noinit.h"

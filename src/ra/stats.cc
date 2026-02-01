@@ -63,7 +63,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/vessel.h"
-#include "sdllib/include/timer.h"
+#include "sdllib/timer.h"
 #include "tech/packet.h"
 
 #define FIELD_PACKET_TYPE "TYPE"

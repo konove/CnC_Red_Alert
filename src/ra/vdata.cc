@@ -74,7 +74,7 @@
 #include "ra/object.h"
 #include "ra/type.h"
 #include "ra/vessel.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 
 // Submarine
 static const VesselTypeClass VesselSubmarine(

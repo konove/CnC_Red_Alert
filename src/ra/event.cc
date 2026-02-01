@@ -84,7 +84,7 @@
 #include "ra/vessel.h"
 #include "ra/wolstrng.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 

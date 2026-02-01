@@ -56,7 +56,7 @@
 
 #include <array>
 
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/dial8.h"

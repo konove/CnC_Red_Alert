@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_TD_GLOBALS_H_
 #define CNC_RED_ALERT_TD_GLOBALS_H_
 
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 #include "td/special.h"
 
 extern long Frame;

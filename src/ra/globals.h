@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 
 extern std::uint64_t Frame;
 extern bool GameActive;

@@ -79,7 +79,7 @@
 #include "ra/object.h"
 #include "ra/rules.h"
 #include "ra/type.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 #include "tech/rawfile.h"
 
 static DoInfoStruct DogDoControls[DO_COUNT] = {

@@ -58,7 +58,7 @@
 #include <filesystem>
 
 #include "port/ex_string.h"
-#include "sdllib/include/ww_audio.h"
+#include "sdllib/ww_audio.h"
 #include "td/ccfile.h"
 #include "td/conquer.h"
 #include "td/externs.h"

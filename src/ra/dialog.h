@@ -2,7 +2,7 @@
 #define CNC_RED_ALERT_RA_DIALOG_H_
 
 #include "ra/defines.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/wwstd.h"
 
 void Draw_Caption(int text, int x, int y, int w);
 void Draw_Caption(const char* text, int x, int y, int w);

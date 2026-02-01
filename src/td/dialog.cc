@@ -56,11 +56,11 @@
 #include <cstring>
 
 #include "port/safe_string.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/font.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/ww_win.h"
 #include "td/compat.h"
 #include "td/conquer.h"
 #include "td/externs.h"

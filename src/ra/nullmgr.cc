@@ -78,13 +78,13 @@
 #include "ra/textbtn.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/modemreg.h"
-#include "sdllib/include/wincomm.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/font.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/misc.h"
+#include "sdllib/modemreg.h"
+#include "sdllib/wincomm.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 
 #ifdef _WIN32
 #include <windows.h>

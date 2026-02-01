@@ -109,12 +109,12 @@
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/shape.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/misc.h"
+#include "sdllib/shape.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 #include "tech/rawfile.h"
 
 // void const * RadarClass::CoverShape;

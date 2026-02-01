@@ -44,10 +44,10 @@
 #include "ra/compat.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 
 /***********************************************************************************************
  * CheckBoxClass::Draw_Me -- Draws the checkbox imagery. *

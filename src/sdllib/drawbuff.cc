@@ -1,14 +1,14 @@
-#include "sdllib/include/drawbuff.h"
+#include "sdllib/drawbuff.h"
 
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <utility>
 
-#include "sdllib/include/font.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/font.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/misc.h"
+#include "sdllib/ww_win.h"
 
 void* MainWindow;
 

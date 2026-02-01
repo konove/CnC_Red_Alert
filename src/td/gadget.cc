@@ -71,9 +71,9 @@
 
 #include <cstdio>
 
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/ww_mouse.h"
 #include "td/config.h"
 #include "td/control.h"
 #include "td/globals.h"

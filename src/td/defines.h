@@ -43,7 +43,7 @@
 #include <cstdint>
 #include <utility>
 
-#include "sdllib/include/wwstd.h"
+#include "sdllib/wwstd.h"
 #include "td/special.h"
 
 /**********************************************************************

@@ -44,7 +44,7 @@
 
 #include <cstring>
 
-#include "sdllib/include/wincomm.h"
+#include "sdllib/wincomm.h"
 
 /***************************************************************************
  * NullModemConnClass::NullModemConnClass -- class constructor             *

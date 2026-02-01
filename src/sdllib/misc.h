@@ -41,7 +41,7 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "sdllib/include/ww_win.h"
+#include "sdllib/ww_win.h"
 
 /*========================= C++ Routines ==================================*/
 

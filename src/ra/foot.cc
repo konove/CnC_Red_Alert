@@ -121,8 +121,8 @@
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/memflag.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/memflag.h"
+#include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************
  * FootClass::FootClass -- Default constructor for foot class objects. *

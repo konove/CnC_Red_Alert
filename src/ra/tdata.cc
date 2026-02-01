@@ -70,7 +70,7 @@
 #include "ra/object.h"
 #include "ra/terrain.h"
 #include "ra/type.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 
 static const short _List000011101000[] = {
     MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2, MAP_CELL_W * 2, REFRESH_EOL};

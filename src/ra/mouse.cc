@@ -51,9 +51,9 @@
 #include <cassert>
 
 #include "ra/externs.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/shape.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/shape.h"
+#include "sdllib/ww_mouse.h"
 
 /*
 **	This points to the loaded mouse shapes.

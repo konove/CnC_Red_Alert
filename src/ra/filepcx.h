@@ -42,8 +42,8 @@ Buff);
 #define CNC_RED_ALERT_RA_FILEPCX_H_
 
 #include "ra/palette.h"
-#include "sdllib/include/buffer.h"
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/buffer.h"
+#include "sdllib/gbuffer.h"
 #include "tech/wwfile.h"
 
 typedef struct {

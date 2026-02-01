@@ -44,7 +44,7 @@
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/keyframe.h"
-#include "sdllib/include/font.h"
+#include "sdllib/font.h"
 
 DropListClass::DropListClass(int id, char* text, int max_len,
                              TextPrintType flags, int x, int y, int w, int h,

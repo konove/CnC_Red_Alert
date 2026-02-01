@@ -45,7 +45,7 @@
 #include "ra/gadget.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "tech/noinit.h"
 
 class RadarClass : public DisplayClass {

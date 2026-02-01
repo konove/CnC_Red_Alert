@@ -71,8 +71,8 @@
 #include "ra/object.h"
 #include "ra/smudge.h"
 #include "ra/type.h"
-#include "sdllib/include/shape.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/shape.h"
+#include "sdllib/ww_win.h"
 
 static const SmudgeTypeClass Crater1(
     SMUDGE_CRATER1, "CR1", TXT_CRATER, 1,

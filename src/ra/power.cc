@@ -53,9 +53,9 @@
 #include "ra/externs.h"
 #include "ra/house.h"
 #include "ra/mapedit.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/shape.h"
 #include "tech/fixed.h"
 
 /*

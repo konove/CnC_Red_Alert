@@ -57,8 +57,8 @@
 #include "ra/scenario.h"
 #include "ra/tab.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 

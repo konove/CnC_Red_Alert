@@ -6,7 +6,7 @@
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/wwstd.h"
 
 extern int CrateShares[CRATE_COUNT];
 extern AnimType CrateAnims[CRATE_COUNT];

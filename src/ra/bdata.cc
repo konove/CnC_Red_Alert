@@ -97,7 +97,7 @@
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 #include "tech/fixed.h"
 
 #define FATSHIP

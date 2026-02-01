@@ -37,9 +37,9 @@
 
 #include "tech/pcx_file.h"
 
-#include "sdllib/include/file.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/memflag.h"
+#include "sdllib/file.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/memflag.h"
 
 static void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr);
 

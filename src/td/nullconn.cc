@@ -45,7 +45,7 @@
 
 #include <cstring>
 
-#include "sdllib/include/wincomm.h"
+#include "sdllib/wincomm.h"
 #include "td/connect.h"
 #include "td/defines.h"
 #include "td/externs.h"

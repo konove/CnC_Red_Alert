@@ -43,8 +43,8 @@
 
 #include <vector>
 
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/gadget.h"
 #include "td/house.h"

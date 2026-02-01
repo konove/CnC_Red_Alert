@@ -72,7 +72,7 @@
 #include <utility>
 #include <vector>
 
-#include "sdllib/include/ww_win.h"
+#include "sdllib/ww_win.h"
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"

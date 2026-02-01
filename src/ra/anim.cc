@@ -93,7 +93,7 @@
 #include "ra/type.h"
 #include "ra/vector.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 #include "tech/fixed.h"
 
 #define VIC 1

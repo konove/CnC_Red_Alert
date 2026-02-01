@@ -1,4 +1,4 @@
-#include "sdllib/include/misc.h"
+#include "sdllib/misc.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -6,8 +6,8 @@
 #include <cstdlib>
 
 #include "absl/log/check.h"
-#include "sdllib/include/timer.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_win.h"
 
 SurfaceMonitorClass AllSurfaces;
 

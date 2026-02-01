@@ -85,10 +85,10 @@
 #include "ra/type.h"
 #include "ra/vector.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/buffer.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/shape.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/buffer.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/shape.h"
+#include "sdllib/ww_win.h"
 #include "tech/rgb.h"
 
 /*

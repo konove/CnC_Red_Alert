@@ -43,7 +43,7 @@
 #include "ra/control.h"
 #include "ra/gauge.h"
 #include "ra/shapebtn.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 
 /***************************************************************************
  * SliderClass -- Like a Windows ListBox structure

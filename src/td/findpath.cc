@@ -58,10 +58,10 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/memflag.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/memflag.h"
+#include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"

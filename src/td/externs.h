@@ -42,7 +42,7 @@
 #define CNC_RED_ALERT_TD_EXTERNS_H_
 
 #include "port/ex_string.h"
-#include "sdllib/include/playcd.h"
+#include "sdllib/playcd.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/base.h"

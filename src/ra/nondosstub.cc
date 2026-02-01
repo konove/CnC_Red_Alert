@@ -33,10 +33,10 @@
 #include "ra/mapedit.h"
 #include "ra/palette.h"
 #include "ra/theme.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/iconcach.h"
-#include "sdllib/include/ww_audio.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/iconcach.h"
+#include "sdllib/ww_audio.h"
+#include "sdllib/ww_mouse.h"
 
 void output(short, short) {}
 

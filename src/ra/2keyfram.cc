@@ -45,9 +45,9 @@
 
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "sdllib/include/iff.h"
-#include "sdllib/include/memflag.h"
-#include "sdllib/include/wsa.h"
+#include "sdllib/iff.h"
+#include "sdllib/memflag.h"
+#include "sdllib/wsa.h"
 
 #define SUBFRAMEOFFS 7  // 3 1/2 frame offsets loaded (2 offsets/frame)
 

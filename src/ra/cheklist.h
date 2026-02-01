@@ -45,7 +45,7 @@
 
 #include "ra/defines.h"
 #include "ra/list.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 
 class CheckObject {
  public:

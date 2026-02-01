@@ -41,7 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_GAUGE_H_
 #define CNC_RED_ALERT_TD_GAUGE_H_
 
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "td/control.h"
 
 class GaugeClass : public ControlClass {

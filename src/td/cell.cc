@@ -87,11 +87,11 @@
 #include <cassert>
 #include <cstddef>
 
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/shape.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/font.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/shape.h"
+#include "sdllib/wwstd.h"
 #include "td/anim.h"
 #include "td/building.h"
 #include "td/combat.h"

@@ -52,7 +52,7 @@ typedef void* HANDLE;
 #define WM_USER 0x400
 #endif
 
-#include "sdllib/include/net_select.h"
+#include "sdllib/net_select.h"
 
 /*
 ** Misc defines

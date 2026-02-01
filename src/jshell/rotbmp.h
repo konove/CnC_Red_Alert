@@ -19,7 +19,7 @@
 #ifndef CNC_RED_ALERT_JSHELL_ROTBMP_H_
 #define CNC_RED_ALERT_JSHELL_ROTBMP_H_
 
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 
 #define MAKE_PTR(vp, x, y) \
   (char*)(vp->Get_Offset() + ((y) * (vp->Get_Width() + vp->Get_XAdd())) + (x))

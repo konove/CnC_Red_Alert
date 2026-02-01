@@ -64,12 +64,12 @@
 
 #include <algorithm>
 
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/font.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"

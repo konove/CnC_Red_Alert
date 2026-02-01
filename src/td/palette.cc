@@ -3,9 +3,9 @@
 #include <algorithm>
 #include <cstring>
 
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/timer.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_win.h"
 
 unsigned char CurrentPalette[3 * 256];
 

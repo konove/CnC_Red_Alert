@@ -11,10 +11,10 @@
 #include "ra/msgbox.h"
 #include "ra/nullconn.h"
 #include "ra/palette.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/misc.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/ww_win.h"
 #include "winvq/vqa32/vqaplay.h"
 
 void Focus_Loss();

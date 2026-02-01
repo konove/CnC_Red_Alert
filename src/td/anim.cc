@@ -63,8 +63,8 @@
 #include <cstdlib>
 
 #include "rand.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/misc.h"
+#include "sdllib/shape.h"
 #include "td/abstract.h"
 #include "td/audio.h"
 #include "td/building.h"

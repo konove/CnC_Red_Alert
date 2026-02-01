@@ -42,9 +42,9 @@
 
 #include "td/shapebtn.h"
 
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/shape.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/shape.h"
+#include "sdllib/ww_mouse.h"
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"

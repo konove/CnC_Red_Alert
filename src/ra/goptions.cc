@@ -68,11 +68,11 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/wolstrng.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/misc.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 
 bool RedrawOptionsMenu;
 

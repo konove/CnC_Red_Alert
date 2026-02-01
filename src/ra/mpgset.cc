@@ -35,7 +35,7 @@
 #ifdef DVD
 #include "ra/mpgset.h"
 
-#include "sdllib/include/misc.h"
+#include "sdllib/misc.h"
 
 #ifdef MCIMPEG
 bool EnumMCI(MCIDevice* desc, void* context);

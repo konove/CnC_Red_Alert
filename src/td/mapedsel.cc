@@ -49,9 +49,9 @@
 #include <ranges>
 #include <type_traits>
 
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/ww_mouse.h"
 #include "td/base.h"
 #include "td/building.h"
 #include "td/conquer.h"

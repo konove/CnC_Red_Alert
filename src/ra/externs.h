@@ -68,7 +68,7 @@
 #include "ra/version.h"
 #include "ra/vortex.h"
 #include "ra/warhead.h"
-#include "sdllib/include/playcd.h"
+#include "sdllib/playcd.h"
 #include "tech/bench.h"
 #include "tech/rndstraw.h"
 

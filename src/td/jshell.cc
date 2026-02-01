@@ -53,12 +53,12 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "sdllib/include/buffer.h"
-#include "sdllib/include/iff.h"
-#include "sdllib/include/memflag.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/tile.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/buffer.h"
+#include "sdllib/iff.h"
+#include "sdllib/memflag.h"
+#include "sdllib/misc.h"
+#include "sdllib/tile.h"
+#include "sdllib/ww_win.h"
 #include "support.h"
 #include "td/ccfile.h"
 #include "td/compat.h"

@@ -59,8 +59,8 @@
 #include <cstring>
 
 #include "port/ex_string.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/misc.h"
+#include "sdllib/shape.h"
 #include "td/base.h"
 #include "td/building.h"
 #include "td/ccfile.h"

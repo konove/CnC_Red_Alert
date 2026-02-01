@@ -61,8 +61,8 @@
 #include <algorithm>
 #include <cstdlib>
 
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/wwstd.h"
 #include "td/audio.h"
 #include "td/conquer.h"
 #include "td/defines.h"

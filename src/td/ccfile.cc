@@ -56,10 +56,10 @@
 // #include	<fcntl.h>
 // #include	<io.h>
 // #include	<dos.h>
-#include "sdllib/include/file.h"
-#include "sdllib/include/memflag.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/file.h"
+#include "sdllib/memflag.h"
+#include "sdllib/misc.h"
+#include "sdllib/wwstd.h"
 #include "td/ccfile.h"
 #include "td/compat.h"
 #include "td/conquer.h"

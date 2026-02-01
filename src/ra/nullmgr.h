@@ -45,7 +45,7 @@
 #include "ra/gadget.h"
 #include "ra/nullconn.h"
 #include "ra/session.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 
 /*
 ** Ugly hack: this string stores the string received from the modem

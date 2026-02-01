@@ -41,7 +41,7 @@
 #define CNC_RED_ALERT_RA_OPTIONS_H_
 
 #include "ra/palette.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "tech/fixed.h"
 
 class OptionsClass {

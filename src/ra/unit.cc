@@ -164,7 +164,7 @@
 #include "ra/warhead.h"
 #include "ra/weapon.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 

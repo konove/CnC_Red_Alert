@@ -58,7 +58,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "sdllib/include/tile.h"
+#include "sdllib/tile.h"
 #include "td/abstract.h"
 #include "td/cell.h"
 #include "td/compat.h"

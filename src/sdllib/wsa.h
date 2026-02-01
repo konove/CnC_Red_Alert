@@ -46,7 +46,7 @@
 #ifndef CNC_RED_ALERT_SDLLIB_WSA_H_
 #define CNC_RED_ALERT_SDLLIB_WSA_H_
 
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 
 typedef enum {
   WSA_NORMAL,              // Normal WSA animation

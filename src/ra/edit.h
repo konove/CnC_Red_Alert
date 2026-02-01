@@ -41,7 +41,7 @@
 #define CNC_RED_ALERT_RA_EDIT_H_
 #include "ra/control.h"
 #include "ra/defines.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 
 class EditClass : public ControlClass {
  public:

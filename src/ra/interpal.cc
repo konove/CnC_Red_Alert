@@ -50,7 +50,7 @@
 
 #include "ra/ccfile.h"
 #include "ra/compat.h"
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 
 bool InterpolationPaletteChanged = false;
 

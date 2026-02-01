@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_TD_DIALOG_H_
 #define CNC_RED_ALERT_TD_DIALOG_H_
 
-#include "sdllib/include/wwstd.h"
+#include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/jshell.h"
 

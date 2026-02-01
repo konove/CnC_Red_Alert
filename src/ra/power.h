@@ -45,7 +45,7 @@
 #include "ra/gadget.h"
 #include "ra/jshell.h"
 #include "ra/radar.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "tech/ftimer.h"
 #include "tech/noinit.h"
 

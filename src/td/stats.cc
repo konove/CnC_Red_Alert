@@ -44,8 +44,8 @@
 #include <cstdio>
 #include <cstring>
 
-#include "sdllib/include/shape.h"
-#include "sdllib/include/timer.h"
+#include "sdllib/shape.h"
+#include "sdllib/timer.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/ccfile.h"

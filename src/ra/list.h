@@ -54,11 +54,11 @@
 #include "ra/shapebtn.h"
 #include "ra/slider.h"
 #include "ra/vector_dynamic.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/font.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 
 // Scrollable list box widget similar to a Windows ListBox control.
 // Displays a list of text items with support for selection, scrolling, and tab

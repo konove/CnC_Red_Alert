@@ -41,7 +41,7 @@
 #define CNC_RED_ALERT_RA_CHECKBOX_H_
 
 #include "ra/toggle.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 
 class CheckBoxClass : public ToggleClass {
  public:

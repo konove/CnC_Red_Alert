@@ -84,7 +84,7 @@
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/target.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 #include "tech/fixed.h"
 
 /***********************************************************************************************

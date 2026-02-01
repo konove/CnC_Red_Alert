@@ -28,8 +28,8 @@
 
 **********************************************************************/
 
-#include "sdllib/include/bitmap.h"
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/bitmap.h"
+#include "sdllib/gbuffer.h"
 
 long _SineTab[256] = {
     0,    6,    12,   18,   25,   31,   37,   43,   49,   56,   62,   68,

@@ -41,7 +41,7 @@
 #define CNC_RED_ALERT_RA_CONTROL_H_
 
 #include "ra/gadget.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "tech/noinit.h"
 
 /***************************************************************************

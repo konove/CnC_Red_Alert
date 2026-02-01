@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_TECH_2KEYFBUF_H_
 #define CNC_RED_ALERT_TECH_2KEYFBUF_H_
 
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 
 extern "C" {
 long __cdecl Buffer_Frame_To_Page(int x, int y, int w, int h, void* Buffer,

@@ -48,7 +48,7 @@
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/palette.h"
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
 

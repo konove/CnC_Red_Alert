@@ -47,7 +47,7 @@
 
 #include <algorithm>
 
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 #include "td/ccfile.h"
 #include "td/compat.h"
 

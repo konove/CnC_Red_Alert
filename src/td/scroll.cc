@@ -44,9 +44,9 @@
 
 #include <algorithm>
 
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/timer.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/timer.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/face.h"

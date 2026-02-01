@@ -55,7 +55,7 @@
  *=============================================================================================*/
 #include "td/txtlabel.h"
 
-#include "sdllib/include/wwstd.h"
+#include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"

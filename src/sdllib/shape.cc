@@ -1,4 +1,4 @@
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 
 #include <cstddef>
 #include <span>

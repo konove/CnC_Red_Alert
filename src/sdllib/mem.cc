@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "sdllib/include/memflag.h"
+#include "sdllib/memflag.h"
 
 void (*Memory_Error)() = nullptr;
 void (*Memory_Error_Exit)(char* string) = nullptr;

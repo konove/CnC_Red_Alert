@@ -72,10 +72,10 @@
 #include "ra/object.h"
 #include "ra/template.h"
 #include "ra/type.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/iconcach.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/iconcach.h"
+#include "sdllib/ww_win.h"
 
 static const TemplateTypeClass Empty(TEMPLATE_CLEAR1,
                                      THEATERF_TEMPERATE | THEATERF_SNOW |

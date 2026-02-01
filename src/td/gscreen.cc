@@ -56,8 +56,8 @@
 
 #include <cstdio>
 
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/ww_mouse.h"
 #include "td/config.h"
 #include "td/defines.h"
 #include "td/display_constants.h"

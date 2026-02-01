@@ -44,7 +44,7 @@
 #ifndef CNC_RED_ALERT_RA_EGOS_H_
 #define CNC_RED_ALERT_RA_EGOS_H_
 #include "ra/defines.h"
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 
 class EgoClass {
  public:

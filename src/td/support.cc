@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <cstring>
 
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 
 void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
                                  int frac) {

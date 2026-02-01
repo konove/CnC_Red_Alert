@@ -67,7 +67,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/scenario.h"
-#include "sdllib/include/ww_audio.h"
+#include "sdllib/ww_audio.h"
 #include "session.h"
 #include "tech/fixed.h"
 

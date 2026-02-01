@@ -40,7 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_GAUGE_H_
 #define CNC_RED_ALERT_RA_GAUGE_H_
 #include "ra/control.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 
 class GaugeClass : public ControlClass {
  public:

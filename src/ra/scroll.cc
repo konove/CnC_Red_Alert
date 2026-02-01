@@ -49,7 +49,7 @@
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/inline.h"
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 
 #ifdef WIN32
 #define SCROLL_DELAY 1

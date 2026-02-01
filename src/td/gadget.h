@@ -85,7 +85,7 @@
 #ifndef CNC_RED_ALERT_TD_GADGET_H_
 #define CNC_RED_ALERT_TD_GADGET_H_
 
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "td/link.h"
 
 class ControlClass;

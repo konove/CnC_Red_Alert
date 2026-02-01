@@ -69,9 +69,9 @@
 
 #include <cstring>
 
-#include "sdllib/include/misc.h"
-#include "sdllib/include/shape.h"
-#include "sdllib/include/ww_audio.h"
+#include "sdllib/misc.h"
+#include "sdllib/shape.h"
+#include "sdllib/ww_audio.h"
 #include "td/audio.h"
 #include "td/ccfile.h"
 #include "td/compat.h"

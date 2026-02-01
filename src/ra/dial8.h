@@ -43,7 +43,7 @@
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 
 class Dial8Class : public ControlClass {
  public:

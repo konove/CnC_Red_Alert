@@ -51,7 +51,7 @@
 #include <filesystem>
 #include <ranges>
 
-#include "sdllib/include/file.h"
+#include "sdllib/file.h"
 
 std::vector<std::string> CDFileClass::search_paths_;
 std::string CDFileClass::raw_path_;

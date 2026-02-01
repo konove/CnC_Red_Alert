@@ -70,10 +70,10 @@
 #include "ra/jshell.h"
 #include "ra/txtlabel.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/font.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
 
 /**************************** Globals **************************************/

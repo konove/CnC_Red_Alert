@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_TD_RAND_H_
 #define CNC_RED_ALERT_TD_RAND_H_
 
-#include "sdllib/include/misc.h"
+#include "sdllib/misc.h"
 
 int Sim_IRandom(int minval, int maxval);
 int Sim_Random();

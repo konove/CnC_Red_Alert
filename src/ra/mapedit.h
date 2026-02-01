@@ -69,7 +69,7 @@
 #include "ra/textbtn.h"
 #include "ra/txtlabel.h"
 #include "ra/type.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "tech/noinit.h"
 
 /*

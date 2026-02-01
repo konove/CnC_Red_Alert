@@ -1,4 +1,4 @@
-#include "sdllib/include/iff.h"
+#include "sdllib/iff.h"
 
 #include <cstddef>
 #include <cstring>

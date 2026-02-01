@@ -42,8 +42,8 @@ Buff);
 #ifndef CNC_RED_ALERT_TECH_PCX_FILE_H_
 #define CNC_RED_ALERT_TECH_PCX_FILE_H_
 
-#include "sdllib/include/buffer.h"
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/buffer.h"
+#include "sdllib/gbuffer.h"
 
 typedef struct {
   char red;

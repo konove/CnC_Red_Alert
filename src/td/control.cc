@@ -71,7 +71,7 @@
  *=============================================================================================*/
 #include "td/control.h"
 
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "td/gadget.h"
 
 ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,

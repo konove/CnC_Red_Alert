@@ -96,7 +96,7 @@
 #define CNC_RED_ALERT_RA_MSGLIST_H_
 
 #include "ra/defines.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 
 //***************************************************************************
 // Defines

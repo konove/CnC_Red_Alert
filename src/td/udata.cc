@@ -57,7 +57,7 @@
 #include <string>
 
 #include "port/ex_string.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 #include "td/building.h"
 #include "td/ccfile.h"
 #include "td/conquer.h"

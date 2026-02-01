@@ -49,7 +49,7 @@
 #include "ra/link.h"
 #include "ra/list.h"
 #include "ra/shapebtn.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 
 class DropListClass : public EditClass {
  public:

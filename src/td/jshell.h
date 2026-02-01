@@ -44,10 +44,10 @@
 #include <algorithm>
 #include <cstdint>
 
-#include "sdllib/include/buffer.h"
-#include "sdllib/include/iff.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/buffer.h"
+#include "sdllib/iff.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/ww_mouse.h"
 #include "td/compat.h"
 #include "tech/wwfile.h"
 

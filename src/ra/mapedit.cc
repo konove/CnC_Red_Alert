@@ -95,9 +95,9 @@
 #include "ra/unit.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 

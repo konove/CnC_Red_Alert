@@ -6,8 +6,8 @@
 #include <cstdio>
 #include <cstring>
 
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/shape.h"
 
 // should match 2keyfram.cpp
 struct ShapeHeaderType {

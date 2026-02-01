@@ -82,14 +82,14 @@
 #include <filesystem>
 #include <string>
 
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/memflag.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/shape.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/memflag.h"
+#include "sdllib/misc.h"
+#include "sdllib/shape.h"
+#include "sdllib/ww_mouse.h"
+#include "sdllib/wwstd.h"
 #include "support.h"
 #include "td/audio.h"
 #include "td/cell.h"

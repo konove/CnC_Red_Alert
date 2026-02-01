@@ -42,7 +42,7 @@
 
 #include "ra/toggle.h"
 
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************
  * ToggleClass::ToggleClass -- Normal constructor for toggle button gadgets. *

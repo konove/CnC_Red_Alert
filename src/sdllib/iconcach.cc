@@ -1,12 +1,12 @@
-#include "sdllib/include/iconcach.h"
+#include "sdllib/iconcach.h"
 
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
 
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/tile.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/tile.h"
 
 static const void* LastIconset = nullptr;
 static uint8_t* StampPtr = nullptr;

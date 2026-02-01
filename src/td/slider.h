@@ -41,7 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_SLIDER_H_
 #define CNC_RED_ALERT_TD_SLIDER_H_
 
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "td/control.h"
 #include "td/gauge.h"
 #include "td/shapebtn.h"

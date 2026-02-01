@@ -63,7 +63,7 @@
 #include "ra/mapedit.h"
 #include "ra/msglist.h"
 #include "ra/session.h"
-#include "sdllib/include/ww_mouse.h"
+#include "sdllib/ww_mouse.h"
 
 GadgetClass* GScreenClass::Buttons = nullptr;
 

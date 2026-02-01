@@ -42,7 +42,7 @@
 
 #include "ra/help.h"
 #include "ra/jshell.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "tech/ftimer.h"
 #include "tech/noinit.h"
 

@@ -1,8 +1,8 @@
-#include "sdllib/include/wincomm.h"
+#include "sdllib/wincomm.h"
 
 #include <cstdio>
 
-#include "sdllib/include/modemreg.h"
+#include "sdllib/modemreg.h"
 
 #ifdef LIBSERIALPORT
 #include <libserialport.h>

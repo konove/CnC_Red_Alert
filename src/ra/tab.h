@@ -43,7 +43,7 @@
 #include "ra/credits.h"
 #include "ra/jshell.h"
 #include "ra/sidebar.h"
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "tech/ftimer.h"
 #include "tech/noinit.h"
 

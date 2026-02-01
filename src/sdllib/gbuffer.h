@@ -123,10 +123,10 @@
 #include <cstdint>
 #include <cstdio>
 
-#include "sdllib/include/bitmap.h"
-#include "sdllib/include/buffer.h"
-#include "sdllib/include/drawbuff.h"
-#include "sdllib/include/ww_win.h"
+#include "sdllib/bitmap.h"
+#include "sdllib/buffer.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/ww_win.h"
 
 //////////////////////////////////////////////////////////////////////////
 //

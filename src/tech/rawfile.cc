@@ -64,7 +64,7 @@
 #include <string>
 
 #include "absl/strings/ascii.h"
-#include "sdllib/include/file.h"
+#include "sdllib/file.h"
 
 /***********************************************************************************************
  * RawFileClass::Error -- Handles displaying a file error message. *

@@ -204,7 +204,7 @@
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/gbuffer.h"
+#include "sdllib/gbuffer.h"
 
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 

@@ -47,9 +47,9 @@
 #include <cstdio>
 #include <cstring>
 
-#include "sdllib/include/iff.h"
-#include "sdllib/include/memflag.h"
-#include "sdllib/include/wsa.h"
+#include "sdllib/iff.h"
+#include "sdllib/memflag.h"
+#include "sdllib/wsa.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"

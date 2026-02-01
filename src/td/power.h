@@ -41,7 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_POWER_H_
 #define CNC_RED_ALERT_TD_POWER_H_
 
-#include "sdllib/include/keyboard.h"
+#include "sdllib/keyboard.h"
 #include "td/defines.h"
 #include "td/gadget.h"
 #include "td/jshell.h"

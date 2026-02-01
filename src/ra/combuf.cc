@@ -58,7 +58,7 @@
 
 #include "ra/connect.h"
 #include "ra/monoc.h"
-#include "sdllib/include/wwlib32.h"
+#include "sdllib/wwlib32.h"
 
 /***************************************************************************
  * CommBufferClass::CommBufferClass -- class constructor *

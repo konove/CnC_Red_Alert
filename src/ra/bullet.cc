@@ -91,7 +91,7 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vessel.h"
-#include "sdllib/include/shape.h"
+#include "sdllib/shape.h"
 
 /***********************************************************************************************
  * BulletClass::BulletClass -- Bullet constructor. *

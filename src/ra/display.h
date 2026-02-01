@@ -32,8 +32,8 @@
 #include "ra/object.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "sdllib/include/keyboard.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/keyboard.h"
+#include "sdllib/wwstd.h"
 #include "tech/noinit.h"
 
 #define ICON_PIXEL_W 24
