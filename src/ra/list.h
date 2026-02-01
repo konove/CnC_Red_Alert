@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LIST_H
-#define LIST_H
+#ifndef CNC_RED_ALERT_RA_LIST_H_
+#define CNC_RED_ALERT_RA_LIST_H_
 
 #include <algorithm>
 #include <cstddef>
@@ -783,4 +783,4 @@ void TListClass<T>::Set_Selected_Index(T text) {
     }
   }
 }
-#endif
+#endif  // CNC_RED_ALERT_RA_LIST_H_

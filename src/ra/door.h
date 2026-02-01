@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef DOOR_H
-#define DOOR_H
+#ifndef CNC_RED_ALERT_RA_DOOR_H_
+#define CNC_RED_ALERT_RA_DOOR_H_
 #include "ra/stage.h"
 #include "tech/noinit.h"
 
@@ -88,4 +88,4 @@ class DoorClass {
   bool Is_Ready_To_Open() const;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_DOOR_H_

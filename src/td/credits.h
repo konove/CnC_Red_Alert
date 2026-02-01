@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CREDITS_H
-#define CREDITS_H
+#ifndef CNC_RED_ALERT_TD_CREDITS_H_
+#define CNC_RED_ALERT_TD_CREDITS_H_
 
 #include "../tech/noinit.h"
 
@@ -74,4 +74,4 @@ class CreditClass {
   int Countdown;  // Delay between ticks.
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_CREDITS_H_

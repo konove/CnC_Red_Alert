@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RNG_H
-#define RNG_H
+#ifndef CNC_RED_ALERT_RA_RNG_H_
+#define CNC_RED_ALERT_RA_RNG_H_
 
 /*
 **	This is an abstract interface class for a random number generator. It
@@ -51,4 +51,4 @@ class RandomNumberGenerator {
   virtual void Get_Block(void* output, unsigned int size) = 0;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_RNG_H_

@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SIDEBAR_H
-#define SIDEBAR_H
+#ifndef CNC_RED_ALERT_TD_SIDEBAR_H_
+#define CNC_RED_ALERT_TD_SIDEBAR_H_
 
 #include "sdllib/include/keyboard.h"
 #include "td/control.h"
@@ -409,4 +409,4 @@ class SidebarClass : public PowerClass {
   unsigned IsDemolishActive : 1;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_SIDEBAR_H_

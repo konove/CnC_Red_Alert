@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef HSV_H
-#define HSV_H
+#ifndef CNC_RED_ALERT_TECH_HSV_H_
+#define CNC_RED_ALERT_TECH_HSV_H_
 
 class RGBClass;
 
@@ -71,4 +71,4 @@ class HSVClass {
   unsigned char Value;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_HSV_H_

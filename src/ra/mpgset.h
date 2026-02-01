@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _MPGSETTINGS_H_
-#define _MPGSETTINGS_H_
+#ifndef CNC_RED_ALERT_RA_MPGSET_H_
+#define CNC_RED_ALERT_RA_MPGSET_H_
 
 #ifdef DVD
 #include "ra/mci.h"
@@ -44,4 +44,4 @@ class MPGSettings {
 };
 
 #endif  // DVD
-#endif  // _MPGSETTINGS_H_
+#endif  // CNC_RED_ALERT_RA_MPGSET_H_

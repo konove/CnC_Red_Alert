@@ -33,8 +33,8 @@
  * *
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef SESSION_H
-#define SESSION_H
+#ifndef CNC_RED_ALERT_TD_SESSION_H_
+#define CNC_RED_ALERT_TD_SESSION_H_
 
 #include "td/connect.h"
 #include "td/ipxaddr.h"
@@ -547,6 +547,6 @@ class SessionClass {
   int TrapCheckHeap;
 };
 
-#endif  // SESSION_H
+#endif  // CNC_RED_ALERT_TD_SESSION_H_
 
 /*************************** end of session.h ******************************/

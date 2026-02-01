@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TURRET_H
-#define TURRET_H
+#ifndef CNC_RED_ALERT_TD_TURRET_H_
+#define CNC_RED_ALERT_TD_TURRET_H_
 
 #include "td/bullet.h"
 #include "td/defines.h"
@@ -88,4 +88,4 @@ class TurretClass : public DriveClass {
   COORDINATE Fire_Coord(int which) const override;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TURRET_H_

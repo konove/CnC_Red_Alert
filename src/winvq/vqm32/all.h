@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMALL_H
-#define VQMALL_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_ALL_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_ALL_H_
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -54,4 +54,4 @@
 #include "winvq/vqm32/vesavid.h"
 #include "winvq/vqm32/video.h"
 
-#endif /* VQMALL_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_ALL_H_

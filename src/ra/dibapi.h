@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DIBAPI_H
-#define DIBAPI_H
+#ifndef CNC_RED_ALERT_RA_DIBAPI_H_
+#define CNC_RED_ALERT_RA_DIBAPI_H_
 /*
  *  dibapi.h
  *
@@ -143,4 +143,4 @@ WORD FAR SaveDIB(HDIB, LPSTR);
 //	ajw added
 HDIB LoadDIB_FromMemory(const unsigned char* pData, DWORD dwBitsSize);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_DIBAPI_H_

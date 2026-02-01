@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TERRAIN_H
-#define TERRAIN_H
+#ifndef CNC_RED_ALERT_TD_TERRAIN_H_
+#define CNC_RED_ALERT_TD_TERRAIN_H_
 
 #include <cstddef>
 
@@ -188,4 +188,4 @@ class TerrainClass : public ObjectClass, public StageClass {
   static void* VTable;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TERRAIN_H_

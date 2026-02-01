@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TRIGGER_H
-#define TRIGGER_H
+#ifndef CNC_RED_ALERT_TD_TRIGGER_H_
+#define CNC_RED_ALERT_TD_TRIGGER_H_
 
 #include <cstring>
 
@@ -268,4 +268,4 @@ class TriggerClass {
   char Name[5];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TRIGGER_H_

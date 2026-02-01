@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FTIMER_H
-#define FTIMER_H
+#ifndef CNC_RED_ALERT_TD_FTIMER_H_
+#define CNC_RED_ALERT_TD_FTIMER_H_
 
 #include <algorithm>
 
@@ -87,4 +87,4 @@ class TCountDownTimerClass {
   long DelayTime;  // Ticks remaining before countdown timer expires.
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_FTIMER_H_

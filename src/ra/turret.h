@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TURRET_H
-#define TURRET_H
+#ifndef CNC_RED_ALERT_RA_TURRET_H_
+#define CNC_RED_ALERT_RA_TURRET_H_
 
 #include "ra/drive.h"
 
@@ -57,4 +57,4 @@ class TurretClass : public DriveClass {
   ~TurretClass() override;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TURRET_H_

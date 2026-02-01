@@ -40,8 +40,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TXTLABEL_H
-#define TXTLABEL_H
+#ifndef CNC_RED_ALERT_TD_TXTLABEL_H_
+#define CNC_RED_ALERT_TD_TXTLABEL_H_
 
 #include "td/defines.h"
 #include "td/gadget.h"
@@ -75,4 +75,4 @@ class TextLabelClass : public GadgetClass {
   unsigned short CRC;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TXTLABEL_H_

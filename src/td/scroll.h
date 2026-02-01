@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SCROLL_H
-#define SCROLL_H
+#ifndef CNC_RED_ALERT_TD_SCROLL_H_
+#define CNC_RED_ALERT_TD_SCROLL_H_
 
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/timer.h"
@@ -92,4 +92,4 @@ class ScrollClass : public HelpClass {
   void Decode_Pointers() override;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_SCROLL_H_

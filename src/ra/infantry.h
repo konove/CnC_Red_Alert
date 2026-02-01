@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef INFANTRY_H
-#define INFANTRY_H
+#ifndef CNC_RED_ALERT_RA_INFANTRY_H_
+#define CNC_RED_ALERT_RA_INFANTRY_H_
 
 #include <cstddef>
 
@@ -250,4 +250,4 @@ class InfantryClass : public FootClass {
   static const DoStruct MasterDoControls[DO_COUNT];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_INFANTRY_H_

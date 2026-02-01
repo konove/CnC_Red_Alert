@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef EXTERNS_H
-#define EXTERNS_H
+#ifndef CNC_RED_ALERT_RA_EXTERNS_H_
+#define CNC_RED_ALERT_RA_EXTERNS_H_
 
 #include "ra/base.h"
 #include "ra/building.h"
@@ -423,4 +423,4 @@ extern MPGSettings* MpgSettings;
 
 #endif
 
-#endif
+#endif  // CNC_RED_ALERT_RA_EXTERNS_H_

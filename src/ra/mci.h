@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _MCI_H_
-#define _MCI_H_
+#ifndef CNC_RED_ALERT_RA_MCI_H_
+#define CNC_RED_ALERT_RA_MCI_H_
 /****************************************************************************
  *
  * FILE
@@ -103,4 +103,4 @@ class MCI {
 };
 
 #endif  // MCIMPEG
-#endif  // _MCI_H_
+#endif  // CNC_RED_ALERT_RA_MCI_H_

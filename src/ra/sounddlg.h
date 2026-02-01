@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SOUNDDLG_H
-#define SOUNDDLG_H
+#ifndef CNC_RED_ALERT_RA_SOUNDDLG_H_
+#define CNC_RED_ALERT_RA_SOUNDDLG_H_
 
 class SoundControlsClass {
   enum SoundControlsClassEnums {
@@ -111,4 +111,4 @@ class SoundControlsClass {
   void Process();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_SOUNDDLG_H_

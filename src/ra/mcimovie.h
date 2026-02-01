@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _MCIMOVIE_H_
-#define _MCIMOVIE_H_
+#ifndef CNC_RED_ALERT_RA_MCIMOVIE_H_
+#define CNC_RED_ALERT_RA_MCIMOVIE_H_
 
 #ifdef MCIMPEG
 #include <digitalv.h>
@@ -62,4 +62,4 @@ class MCIMovie {
 };
 
 #endif  // MCIMPEG
-#endif  // _MCIMOVIE_H_
+#endif  // CNC_RED_ALERT_RA_MCIMOVIE_H_

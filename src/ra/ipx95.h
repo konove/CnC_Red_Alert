@@ -43,9 +43,9 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef __stdcall
-#define __stdcall
-#endif
+#ifndef CNC_RED_ALERT_RA_IPX95_H_
+#define CNC_RED_ALERT_RA_IPX95_H_
+#endif  // CNC_RED_ALERT_RA_IPX95_H_
 
 /*
 ** Types for function pointers

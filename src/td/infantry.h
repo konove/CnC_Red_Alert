@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef INFANTRY_H
-#define INFANTRY_H
+#ifndef CNC_RED_ALERT_TD_INFANTRY_H_
+#define CNC_RED_ALERT_TD_INFANTRY_H_
 
 #include <cstddef>
 
@@ -265,4 +265,4 @@ class InfantryClass : public FootClass {
   static void* VTable;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_INFANTRY_H_

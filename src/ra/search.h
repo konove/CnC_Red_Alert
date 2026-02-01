@@ -55,8 +55,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SEARCH_H
-#define SEARCH_H
+#ifndef CNC_RED_ALERT_RA_SEARCH_H_
+#define CNC_RED_ALERT_RA_SEARCH_H_
 
 #ifndef __BORLANDC__
 #define _USERENTRY
@@ -649,4 +649,4 @@ const typename IndexClass<T>::NodeElement* IndexClass<T>::Search_For_Node(
                                      sizeof(IndexTable[0]), search_compfunc);
 }
 
-#endif
+#endif  // CNC_RED_ALERT_RA_SEARCH_H_

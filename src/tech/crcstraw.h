@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CRCSTRAW_H
-#define CRCSTRAW_H
+#ifndef CNC_RED_ALERT_TECH_CRCSTRAW_H_
+#define CNC_RED_ALERT_TECH_CRCSTRAW_H_
 
 #include "tech/crc.h"
 #include "tech/straw.h"
@@ -67,4 +67,4 @@ class CRCStraw : public Straw {
   CrcEngine crc_;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_CRCSTRAW_H_

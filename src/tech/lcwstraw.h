@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LCWSTRAW_H
-#define LCWSTRAW_H
+#ifndef CNC_RED_ALERT_TECH_LCWSTRAW_H_
+#define CNC_RED_ALERT_TECH_LCWSTRAW_H_
 
 #include "tech/straw.h"
 
@@ -101,4 +101,4 @@ class LCWStraw : public Straw {
   LCWStraw& operator=(LCWStraw&&) = delete;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_LCWSTRAW_H_

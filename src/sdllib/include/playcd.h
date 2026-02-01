@@ -36,8 +36,8 @@
  *                                                                         *
  *-------------------------------------------------------------------------*/
 
-#ifndef PLAYCD_H
-#define PLAYCD_H
+#ifndef CNC_RED_ALERT_SDLLIB_PLAYCD_H_
+#define CNC_RED_ALERT_SDLLIB_PLAYCD_H_
 
 /***************************************************************************
  * GetCDClass -- object which will return logical CD drive
@@ -111,4 +111,4 @@ inline int GetCDClass::Get_First_CD_Drive() {
 
 /***************************** End of Playcd.h ****************************/
 
-#endif  // PLAYCD_H
+#endif  // CNC_RED_ALERT_SDLLIB_PLAYCD_H_

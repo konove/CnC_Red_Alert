@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef DISPLAY_H
-#define DISPLAY_H
+#ifndef CNC_RED_ALERT_TD_DISPLAY_H_
+#define CNC_RED_ALERT_TD_DISPLAY_H_
 
 #include <vector>
 
@@ -320,4 +320,4 @@ class DisplayClass : public MapClass {
 #define CELL_BLIT_ONLY 1
 #define CELL_DRAW_ONLY 2
 
-#endif
+#endif  // CNC_RED_ALERT_TD_DISPLAY_H_

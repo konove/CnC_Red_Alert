@@ -51,8 +51,8 @@
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef IPXGLOBALCONN_H
-#define IPXGLOBALCONN_H
+#ifndef CNC_RED_ALERT_TD_IPXGCONN_H_
+#define CNC_RED_ALERT_TD_IPXGCONN_H_
 
 #include "td/connect.h"
 #include "td/ipx.h"
@@ -157,4 +157,4 @@ class IPXGlobalConnClass : public IPXConnClass {
   int Service_Receive_Queue() override;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_IPXGCONN_H_

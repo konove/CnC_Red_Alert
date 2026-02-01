@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SPECIAL_H
-#define SPECIAL_H
+#ifndef CNC_RED_ALERT_TD_SPECIAL_H_
+#define CNC_RED_ALERT_TD_SPECIAL_H_
 
 class SpecialClass {
  public:
@@ -243,4 +243,4 @@ class SpecialClass {
 
 void Special_Dialog();
 
-#endif
+#endif  // CNC_RED_ALERT_TD_SPECIAL_H_

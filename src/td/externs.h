@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef EXTERNS_H
-#define EXTERNS_H
+#ifndef CNC_RED_ALERT_TD_EXTERNS_H_
+#define CNC_RED_ALERT_TD_EXTERNS_H_
 
 #include "port/ex_string.h"
 #include "sdllib/include/playcd.h"
@@ -397,4 +397,4 @@ extern bool IsTheaterShape;
 extern void Reset_Theater_Shapes();
 extern TheaterType LastTheater;
 
-#endif
+#endif  // CNC_RED_ALERT_TD_EXTERNS_H_

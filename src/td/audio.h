@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef AUDIO_H
-#define AUDIO_H
+#ifndef CNC_RED_ALERT_TD_AUDIO_H_
+#define CNC_RED_ALERT_TD_AUDIO_H_
 
 #include "td/defines.h"
 
@@ -104,4 +104,4 @@ void Stop_Speaking();
 void Sound_Effect(VocType voc, COORDINATE coord = 0, int variation = 1);
 bool Is_Speaking();
 
-#endif
+#endif  // CNC_RED_ALERT_TD_AUDIO_H_

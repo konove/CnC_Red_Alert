@@ -37,22 +37,21 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LOGIC_H
-#define LOGIC_H
+#ifndef CNC_RED_ALERT_RA_LOGIC_H_
+#define CNC_RED_ALERT_RA_LOGIC_H_
 
 #include "ra/defines.h"
 #include "ra/layer.h"
 #include "ra/monoc.h"
 
-/***********************************************************************************************
-**	Game logic processing is controlled by this class. The graphic and AI
-*logic is handled *	separately so that on slower machines, the graphic
-*display is least affected.
-*/
+// Game logic processing is controlled by this class. The graphic and AI logic
+// is handled separately so that on slower machines, the graphic display is
+// least affected.
 class LogicClass : public LayerClass {
  public:
   void AI();
   void Detach(TARGET target, bool all = true);
   void Debug_Dump(MonoClass* mono) const;
 };
-#endif
+
+#endif  // CNC_RED_ALERT_RA_LOGIC_H_

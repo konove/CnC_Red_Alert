@@ -22,8 +22,8 @@
 
 #ifdef _DEBUG
 
-#ifndef __TRACEW95__
-#define __TRACEW95__
+#ifndef CNC_RED_ALERT_RA_W95TRACE_H_
+#define CNC_RED_ALERT_RA_W95TRACE_H_
 
 #include <windows.h>
 
@@ -52,6 +52,6 @@
 // function declarations
 void OutputDebugStringW95(LPCTSTR lpOutputString, ...);
 
-#endif  //__TRACEW95__
+#endif  // CNC_RED_ALERT_RA_W95TRACE_H_
 
 #endif  // _DEBUG

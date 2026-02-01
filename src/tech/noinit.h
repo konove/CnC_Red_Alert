@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_RA_NOINIT_H_
-#define CNC_RED_ALERT_RA_NOINIT_H_
+#ifndef CNC_RED_ALERT_TECH_NOINIT_H_
+#define CNC_RED_ALERT_TECH_NOINIT_H_
 
 // Tag type for constructors that skip member initialization.
 //
@@ -15,4 +15,4 @@ struct NoInitClass {
   void operator()() const {}
 };
 
-#endif  // CNC_RED_ALERT_RA_NOINIT_H_
+#endif  // CNC_RED_ALERT_TECH_NOINIT_H_

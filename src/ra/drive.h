@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef DRIVE_H
-#define DRIVE_H
+#ifndef CNC_RED_ALERT_RA_DRIVE_H_
+#define CNC_RED_ALERT_RA_DRIVE_H_
 
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -208,4 +208,4 @@ class DriveClass : public FootClass {
   static const TrackType Track1[24];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_DRIVE_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MONOC_Hx
-#define MONOC_Hx
+#ifndef CNC_RED_ALERT_RA_MONOC_H_
+#define CNC_RED_ALERT_RA_MONOC_H_
 
 class MonoClass {
  public:
@@ -223,4 +223,4 @@ extern int Mono_X();
 extern int Mono_Y();
 #endif
 
-#endif
+#endif  // CNC_RED_ALERT_RA_MONOC_H_

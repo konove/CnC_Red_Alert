@@ -20,8 +20,8 @@
 
 #ifdef WOLAPI_INTEGRATION
 
-#ifndef TOOLTIP_H
-#define TOOLTIP_H
+#ifndef CNC_RED_ALERT_RA_TOOLTIP_H_
+#define CNC_RED_ALERT_RA_TOOLTIP_H_
 
 #include "Gadget.h"
 
@@ -70,6 +70,6 @@ class ToolTipClass {
   int wLastShow;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TOOLTIP_H_
 
 #endif

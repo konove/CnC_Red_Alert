@@ -32,8 +32,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef PHONE_H
-#define PHONE_H
+#ifndef CNC_RED_ALERT_TD_PHONE_H_
+#define CNC_RED_ALERT_TD_PHONE_H_
 
 #include <cstring>
 
@@ -70,4 +70,4 @@ class PhoneEntryClass {
   char Number[PHONE_MAX_NUM] = {};  // phone #
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_PHONE_H_

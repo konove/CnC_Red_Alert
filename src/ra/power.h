@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef POWER_H
-#define POWER_H
+#ifndef CNC_RED_ALERT_RA_POWER_H_
+#define CNC_RED_ALERT_RA_POWER_H_
 
 #include "ra/defines.h"
 #include "ra/display.h"
@@ -132,4 +132,4 @@ class PowerClass : public RadarClass {
   static const void* PowerBarShape;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_POWER_H_

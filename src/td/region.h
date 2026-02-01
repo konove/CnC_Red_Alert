@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef REGION_H
-#define REGION_H
+#ifndef CNC_RED_ALERT_TD_REGION_H_
+#define CNC_RED_ALERT_TD_REGION_H_
 
 #include <cstring>
 
@@ -73,4 +73,4 @@ class RegionClass {
   long Threat;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_REGION_H_

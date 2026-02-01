@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef COMINIT_HEADER
-#define COMINIT_HEADER
+#ifndef CNC_RED_ALERT_RA_COMINIT_H_
+#define CNC_RED_ALERT_RA_COMINIT_H_
 
 //
 // Link with this to automatically initialize COM at startup
@@ -30,4 +30,4 @@ class ComInit {
   ~ComInit();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_COMINIT_H_

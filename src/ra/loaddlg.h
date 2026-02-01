@@ -40,8 +40,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LOADDLG_H
-#define LOADDLG_H
+#ifndef CNC_RED_ALERT_RA_LOADDLG_H_
+#define CNC_RED_ALERT_RA_LOADDLG_H_
 
 #include "ra/defines.h"
 #include "ra/list.h"
@@ -97,4 +97,4 @@ class LoadOptionsClass {
   DynamicVectorClass<FileEntryClass*> Files;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_LOADDLG_H_

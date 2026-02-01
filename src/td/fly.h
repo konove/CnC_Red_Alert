@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FLY_H
-#define FLY_H
+#ifndef CNC_RED_ALERT_TD_FLY_H_
+#define CNC_RED_ALERT_TD_FLY_H_
 
 #include "td/defines.h"
 #include "tech/noinit.h"
@@ -87,4 +87,4 @@ class FlyClass {
   MPHType SpeedAdd;     // Lepton add (per frame).
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_FLY_H_

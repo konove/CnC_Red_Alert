@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SCENARIO_H
-#define SCENARIO_H
+#ifndef CNC_RED_ALERT_RA_SCENARIO_H_
+#define CNC_RED_ALERT_RA_SCENARIO_H_
 
 #include <string_view>
 
@@ -367,4 +367,4 @@ BriefingAction Restate_Mission();
 int ShowBriefingMessageBox(std::string_view text, int left_btn, int right_btn,
                            bool fade_to_black = true);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_SCENARIO_H_

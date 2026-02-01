@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef COMPAT_H
-#define COMPAT_H
+#ifndef CNC_RED_ALERT_RA_COMPAT_H_
+#define CNC_RED_ALERT_RA_COMPAT_H_
 
 #include <cstddef>
 
@@ -172,4 +172,4 @@ class IconsetClass : protected IControl_Type {
   void* operator new(size_t);
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_COMPAT_H_

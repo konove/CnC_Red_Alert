@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LIST_H
-#define LIST_H
+#ifndef CNC_RED_ALERT_TD_LIST_H_
+#define CNC_RED_ALERT_TD_LIST_H_
 
 #include "sdllib/include/keyboard.h"
 #include "td/control.h"
@@ -158,4 +158,4 @@ class ListClass : public ControlClass {
   int CurrentTopIndex;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_LIST_H_

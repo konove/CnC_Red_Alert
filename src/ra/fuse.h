@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FUSE_H
-#define FUSE_H
+#ifndef CNC_RED_ALERT_RA_FUSE_H_
+#define CNC_RED_ALERT_RA_FUSE_H_
 
 #include "ra/defines.h"
 #include "tech/noinit.h"
@@ -92,4 +92,4 @@ class FuseClass {
 
 inline COORDINATE FuseClass::Fuse_Target() { return HeadTo; }
 
-#endif
+#endif  // CNC_RED_ALERT_RA_FUSE_H_

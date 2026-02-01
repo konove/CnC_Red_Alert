@@ -35,8 +35,8 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*/
 
-#ifndef DESCDLG_H
-#define DESCDLG_H
+#ifndef CNC_RED_ALERT_RA_DESCDLG_H_
+#define CNC_RED_ALERT_RA_DESCDLG_H_
 
 #include "ra/gadget.h"
 
@@ -63,4 +63,4 @@ class DescriptionClass {
   void Process(char* string);
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_DESCDLG_H_

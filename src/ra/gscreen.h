@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef GSCREEN_H
-#define GSCREEN_H
+#ifndef CNC_RED_ALERT_RA_GSCREEN_H_
+#define CNC_RED_ALERT_RA_GSCREEN_H_
 
 #include "ra/defines.h"
 #include "ra/gadget.h"
@@ -134,4 +134,4 @@ class GScreenClass {
   static GraphicBufferClass* ShadowPage;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_GSCREEN_H_

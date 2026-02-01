@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMVIDEO_H
-#define VQMVIDEO_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_VIDEO_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_VIDEO_H_
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -112,4 +112,4 @@ void __cdecl MCGA_Blit(unsigned char* buffer, unsigned char* screen,
 }
 #endif
 
-#endif /* VQMVIDEO_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_VIDEO_H_

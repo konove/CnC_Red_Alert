@@ -43,8 +43,8 @@
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef IPXCONN_H
-#define IPXCONN_H
+#ifndef CNC_RED_ALERT_TD_IPXCONN_H_
+#define CNC_RED_ALERT_TD_IPXCONN_H_
 
 /*
 ********************************* Includes **********************************
@@ -209,4 +209,4 @@ class IPXConnClass : public NonSequencedConnClass
   static int Listening;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_IPXCONN_H_

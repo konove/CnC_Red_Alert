@@ -34,8 +34,8 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef IFF_H
-#define IFF_H
+#ifndef CNC_RED_ALERT_SDLLIB_IFF_H_
+#define CNC_RED_ALERT_SDLLIB_IFF_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -91,4 +91,4 @@ extern unsigned long LCW_Uncompress(void* source, void* dest,
 #endif
 /*=========================================================================*/
 
-#endif  // IFF_H
+#endif  // CNC_RED_ALERT_SDLLIB_IFF_H_

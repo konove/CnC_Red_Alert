@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TARGET_H
-#define TARGET_H
+#ifndef CNC_RED_ALERT_TD_TARGET_H_
+#define CNC_RED_ALERT_TD_TARGET_H_
 
 #include "td/defines.h"
 #include "td/object.h"
@@ -197,4 +197,4 @@ UnitClass* As_Unit(TARGET target);
 inline bool Target_Legal(TARGET target) { return target != kTargetNone; };
 ObjectClass* As_Object(TARGET target);
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TARGET_H_

@@ -35,8 +35,8 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef __FIELD_H
-#define __FIELD_H
+#ifndef CNC_RED_ALERT_TECH_FIELD_H_
+#define CNC_RED_ALERT_TECH_FIELD_H_
 
 #define FIELD_HEADER_SIZE (sizeof(FieldClass) - (sizeof(void*) * 2))
 
@@ -77,4 +77,4 @@ class FieldClass {
   FieldClass* Next;         // pointer to the next field in the field list
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_FIELD_H_

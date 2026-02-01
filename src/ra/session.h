@@ -36,8 +36,8 @@
  **
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef SESSION_H
-#define SESSION_H
+#ifndef CNC_RED_ALERT_RA_SESSION_H_
+#define CNC_RED_ALERT_RA_SESSION_H_
 
 #include <cstdint>
 
@@ -726,6 +726,6 @@ class SessionClass {
 #endif  // MPATH
 };
 
-#endif  // SESSION_H
+#endif  // CNC_RED_ALERT_RA_SESSION_H_
 
 /*************************** end of session.h ******************************/

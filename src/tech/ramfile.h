@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RAMFILE_H
-#define RAMFILE_H
+#ifndef CNC_RED_ALERT_TECH_RAMFILE_H_
+#define CNC_RED_ALERT_TECH_RAMFILE_H_
 
 #include <cstdio>
 
@@ -113,4 +113,4 @@ class RAMFileClass : public FileClass {
   bool IsAllocated = false;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_RAMFILE_H_

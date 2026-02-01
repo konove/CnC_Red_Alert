@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef STAGE_H
-#define STAGE_H
+#ifndef CNC_RED_ALERT_RA_STAGE_H_
+#define CNC_RED_ALERT_RA_STAGE_H_
 
 #include "ra/jshell.h"
 #include "tech/ftimer.h"
@@ -88,4 +88,4 @@ class StageClass {
   }
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_STAGE_H_

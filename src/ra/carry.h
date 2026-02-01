@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CARRY_H
-#define CARRY_H
+#ifndef CNC_RED_ALERT_RA_CARRY_H_
+#define CNC_RED_ALERT_RA_CARRY_H_
 
 #include "ra/defines.h"
 #include "ra/link.h"
@@ -86,4 +86,4 @@ class CarryoverClass : public LinkClass {
   HousesType House;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CARRY_H_

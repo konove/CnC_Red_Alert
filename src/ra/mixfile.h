@@ -15,7 +15,8 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#pragma once
+#ifndef CNC_RED_ALERT_RA_MIXFILE_H_
+#define CNC_RED_ALERT_RA_MIXFILE_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -110,3 +111,5 @@ class MixFileClass : public Node<MixFileClass<T>> {
   // consistency.
   inline static List<MixFileClass> MixList;
 };
+
+#endif  // CNC_RED_ALERT_RA_MIXFILE_H_

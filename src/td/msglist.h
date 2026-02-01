@@ -54,8 +54,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef MSGLIST_H
-#define MSGLIST_H
+#ifndef CNC_RED_ALERT_TD_MSGLIST_H_
+#define CNC_RED_ALERT_TD_MSGLIST_H_
 
 #include "sdllib/include/keyboard.h"
 #include "td/defines.h"
@@ -117,4 +117,4 @@ class MessageListClass {
   static char BufferAvail[MAX_NUM_MESSAGES];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_MSGLIST_H_

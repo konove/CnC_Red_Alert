@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LZOSTRAW_H
-#define LZOSTRAW_H
+#ifndef CNC_RED_ALERT_TECH_LZOSTRAW_H_
+#define CNC_RED_ALERT_TECH_LZOSTRAW_H_
 
 #include "tech/straw.h"
 
@@ -101,4 +101,4 @@ class LZOStraw : public Straw {
   LZOStraw& operator=(LZOStraw&&) = delete;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_LZOSTRAW_H_

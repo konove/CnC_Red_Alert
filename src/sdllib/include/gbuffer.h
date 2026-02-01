@@ -117,8 +117,8 @@
  *   GVPC::Print -- stub function to print a long on a graphic view port   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef GBUFFER_H
-#define GBUFFER_H
+#ifndef CNC_RED_ALERT_SDLLIB_GBUFFER_H_
+#define CNC_RED_ALERT_SDLLIB_GBUFFER_H_
 
 #include <cstdint>
 #include <cstdio>
@@ -798,4 +798,4 @@ inline long BufferClass::To_Page(int x, int y, int w, int h,
   return return_code;
 }
 
-#endif
+#endif  // CNC_RED_ALERT_SDLLIB_GBUFFER_H_

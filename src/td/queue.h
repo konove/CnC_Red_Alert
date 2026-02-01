@@ -44,8 +44,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef CNC_RED_ALERT_TD_QUEUE_H_
+#define CNC_RED_ALERT_TD_QUEUE_H_
 
 #include "td/defines.h"
 #include "td/monoc.h"
@@ -275,4 +275,4 @@ bool Queue_Exit();
 void Queue_AI();
 void Add_CRC(unsigned long* crc, unsigned long val);
 
-#endif
+#endif  // CNC_RED_ALERT_TD_QUEUE_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef STATBTN_H
-#define STATBTN_H
+#ifndef CNC_RED_ALERT_RA_STATBTN_H_
+#define CNC_RED_ALERT_RA_STATBTN_H_
 
 #include "ra/defines.h"
 #include "ra/gadget.h"
@@ -73,4 +73,4 @@ class StaticButtonClass : public GadgetClass {
   TextPrintType PrintFlags;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_STATBTN_H_

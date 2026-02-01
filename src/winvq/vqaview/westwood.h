@@ -34,6 +34,9 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#ifndef CNC_RED_ALERT_WINVQ_VQAVIEW_WESTWOOD_H_
+#define CNC_RED_ALERT_WINVQ_VQAVIEW_WESTWOOD_H_
+
 #define BitmapHandle HBITMAP
 #define DCHandle HDC
 #define DIBPointer LPBITMAPINFOHEADER
@@ -57,3 +60,5 @@
 #define TRUE 1
 #define FALSE 0
 
+
+#endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_WESTWOOD_H_

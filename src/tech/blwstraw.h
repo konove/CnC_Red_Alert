@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BLWSTRAW_H
-#define BLWSTRAW_H
+#ifndef CNC_RED_ALERT_TECH_BLWSTRAW_H_
+#define CNC_RED_ALERT_TECH_BLWSTRAW_H_
 
 #include "tech/blowfish.h"
 #include "tech/straw.h"
@@ -85,4 +85,4 @@ class BlowStraw : public Straw {
   BlowStraw& operator=(BlowStraw&&) = delete;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_BLWSTRAW_H_

@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TAB_H
-#define TAB_H
+#ifndef CNC_RED_ALERT_TD_TAB_H_
+#define CNC_RED_ALERT_TD_TAB_H_
 
 #include "sdllib/include/keyboard.h"
 #include "td/credits.h"
@@ -85,4 +85,4 @@ class TabClass : public SidebarClass {
   static const void* TabShape;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TAB_H_

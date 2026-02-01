@@ -16,6 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef CNC_RED_ALERT_RA_WOL_GSUP_H_
+#define CNC_RED_ALERT_RA_WOL_GSUP_H_
+
 #ifdef WOLAPI_INTEGRATION
 
 //	wol_gsup.h			"WOL Game Setup Dialog"
@@ -372,3 +375,5 @@ class WOL_GameSetupDialog {
 };
 
 #endif
+
+#endif  // CNC_RED_ALERT_RA_WOL_GSUP_H_

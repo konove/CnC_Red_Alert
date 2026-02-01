@@ -36,8 +36,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MP_H
-#define MP_H
+#ifndef CNC_RED_ALERT_TECH_MP_H_
+#define CNC_RED_ALERT_TECH_MP_H_
 
 #include <cstdint>
 #include <cstdlib>
@@ -169,4 +169,4 @@ inline bool XMP_Test_Bit(const uint32_t* r, unsigned bit) {
 // Misc functions.
 void memrev(char* buffer, size_t length);
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_MP_H_

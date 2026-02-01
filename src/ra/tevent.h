@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TEVENT_H
-#define TEVENT_H
+#ifndef CNC_RED_ALERT_RA_TEVENT_H_
+#define CNC_RED_ALERT_RA_TEVENT_H_
 
 #include <string>
 
@@ -210,4 +210,4 @@ class EventChoiceClass {
 
 extern EventChoiceClass EventChoices[TEVENT_COUNT];
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TEVENT_H_

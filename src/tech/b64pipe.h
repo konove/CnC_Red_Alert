@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef B64PIPE_H
-#define B64PIPE_H
+#ifndef CNC_RED_ALERT_TECH_B64PIPE_H_
+#define CNC_RED_ALERT_TECH_B64PIPE_H_
 
 #include "tech/pipe.h"
 
@@ -88,4 +88,4 @@ class Base64Pipe : public Pipe {
   char PBuffer[3] = {};
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_B64PIPE_H_

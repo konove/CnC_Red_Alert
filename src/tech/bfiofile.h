@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BFIOFILE_H
-#define BFIOFILE_H
+#ifndef CNC_RED_ALERT_TECH_BFIOFILE_H_
+#define CNC_RED_ALERT_TECH_BFIOFILE_H_
 
 #include <cstdio>
 
@@ -102,4 +102,4 @@ class BufferIOFileClass : public RawFileClass {
   long TrueFileStart;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_BFIOFILE_H_

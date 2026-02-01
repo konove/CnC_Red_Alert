@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SUPER_H
-#define SUPER_H
+#ifndef CNC_RED_ALERT_TD_SUPER_H_
+#define CNC_RED_ALERT_TD_SUPER_H_
 
 #include "td/defines.h"
 #include "td/ftimer.h"
@@ -85,4 +85,4 @@ class SuperClass {
   enum { ANIMATION_STAGES = 102 };
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_SUPER_H_

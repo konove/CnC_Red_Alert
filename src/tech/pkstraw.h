@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef PKSTRAW_H
-#define PKSTRAW_H
+#ifndef CNC_RED_ALERT_TECH_PKSTRAW_H_
+#define CNC_RED_ALERT_TECH_PKSTRAW_H_
 
 #include "tech/blowfish.h"
 #include "tech/blwstraw.h"
@@ -124,4 +124,4 @@ class PKStraw : public Straw {
   int Plain_Key_Length() const;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_PKSTRAW_H_

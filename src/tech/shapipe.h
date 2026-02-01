@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SHAPIPE_H
-#define SHAPIPE_H
+#ifndef CNC_RED_ALERT_TECH_SHAPIPE_H_
+#define CNC_RED_ALERT_TECH_SHAPIPE_H_
 
 #include "tech/pipe.h"
 #include "tech/sha.h"
@@ -67,4 +67,4 @@ class SHAPipe : public Pipe {
   SHAEngine SHA;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_SHAPIPE_H_

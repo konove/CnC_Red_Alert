@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BLOWPIPE_H
-#define BLOWPIPE_H
+#ifndef CNC_RED_ALERT_TECH_BLOWPIPE_H_
+#define CNC_RED_ALERT_TECH_BLOWPIPE_H_
 
 #include "tech/blowfish.h"
 #include "tech/pipe.h"
@@ -83,4 +83,4 @@ class BlowPipe : public Pipe {
   BlowPipe& operator=(BlowPipe&&) = delete;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_BLOWPIPE_H_

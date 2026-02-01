@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef DPMI_Hx
-#define DPMI_Hx
+#ifndef CNC_RED_ALERT_RA_DPMI_H_
+#define CNC_RED_ALERT_RA_DPMI_H_
 #include <dos.h>
 #include <mem.h>
 
@@ -161,4 +161,4 @@ inline long DOSSegmentClass::Copy_DWord_From(int source) {
 }
 
 inline unsigned int DOSSegmentClass::Get_Selector() { return Selector; }
-#endif
+#endif  // CNC_RED_ALERT_RA_DPMI_H_

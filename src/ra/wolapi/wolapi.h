@@ -33,8 +33,8 @@
 #include "windows.h"
 #endif /*COM_NO_WINDOWS_H*/
 
-#ifndef __WOLAPI_h__
-#define __WOLAPI_h__
+#ifndef CNC_RED_ALERT_RA_WOLAPI_WOLAPI_H_
+#define CNC_RED_ALERT_RA_WOLAPI_WOLAPI_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -2909,4 +2909,4 @@ class DECLSPEC_UUID("8B938191-EF3F-11D1-9808-00609706FA0C") Chat2;
 }
 #endif
 
-#endif
+#endif  // CNC_RED_ALERT_RA_WOLAPI_WOLAPI_H_

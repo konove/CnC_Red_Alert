@@ -34,6 +34,9 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#ifndef CNC_RED_ALERT_WINVQ_VQAVIEW_GAMETIME_H_
+#define CNC_RED_ALERT_WINVQ_VQAVIEW_GAMETIME_H_
+
 //==========================================================================
 // PUBLIC FUNCTIONS
 //==========================================================================
@@ -65,3 +68,5 @@ class GameTimeClass {
 //==========================================================================
 
 extern GameTimeClass Game_Time;
+
+#endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_GAMETIME_H_

@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef EDIT_H
-#define EDIT_H
+#ifndef CNC_RED_ALERT_TD_EDIT_H_
+#define CNC_RED_ALERT_TD_EDIT_H_
 
 #include "sdllib/include/keyboard.h"
 #include "td/control.h"
@@ -104,4 +104,4 @@ class EditClass : public ControlClass {
   int IsReadOnly;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_EDIT_H_

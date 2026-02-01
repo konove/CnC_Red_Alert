@@ -34,6 +34,9 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#ifndef CNC_RED_ALERT_WINVQ_VQAVIEW_VQ_H_
+#define CNC_RED_ALERT_WINVQ_VQAVIEW_VQ_H_
+
 //==========================================================================
 // INCLUDES
 //==========================================================================
@@ -155,3 +158,5 @@ typedef struct {
   unsigned long file_offset;
   unsigned long file_size;
 } VQACacheHeader;
+
+#endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_VQ_H_

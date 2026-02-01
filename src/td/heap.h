@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef HEAP_H
-#define HEAP_H
+#ifndef CNC_RED_ALERT_TD_HEAP_H_
+#define CNC_RED_ALERT_TD_HEAP_H_
 
 #include <vector>
 
@@ -200,4 +200,4 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual T* Raw_Ptr(int index) { return static_cast<T*>((*this)[index]); }
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_HEAP_H_

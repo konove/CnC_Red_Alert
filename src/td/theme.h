@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef THEME_H
-#define THEME_H
+#ifndef CNC_RED_ALERT_TD_THEME_H_
+#define CNC_RED_ALERT_TD_THEME_H_
 
 #include "td/defines.h"
 
@@ -86,4 +86,4 @@ class ThemeClass {
   static void Scan();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_THEME_H_

@@ -34,6 +34,11 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#ifndef CNC_RED_ALERT_WINVQ_VQAVIEW_WWLIB_H_
+#define CNC_RED_ALERT_WINVQ_VQAVIEW_WWLIB_H_
+
 extern DirectDrawObjectPtr DirectDrawObject;
 extern DirectDrawPalettePtr PalettePtr;
 extern WindowHandle MainWindow;
+
+#endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_WWLIB_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SHAPEBTN_H
-#define SHAPEBTN_H
+#ifndef CNC_RED_ALERT_RA_SHAPEBTN_H_
+#define CNC_RED_ALERT_RA_SHAPEBTN_H_
 
 #include "ra/toggle.h"
 
@@ -65,4 +65,4 @@ class ShapeButtonClass : public ToggleClass {
   */
   const void* ShapeData;
 };
-#endif
+#endif  // CNC_RED_ALERT_RA_SHAPEBTN_H_

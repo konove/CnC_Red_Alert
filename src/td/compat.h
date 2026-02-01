@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef COMPAT_H
-#define COMPAT_H
+#ifndef CNC_RED_ALERT_TD_COMPAT_H_
+#define CNC_RED_ALERT_TD_COMPAT_H_
 
 #define BuffType BufferClass
 #define movmem(a, b, c) memmove(b, a, c)
@@ -160,4 +160,4 @@ extern int MouseQX;
 extern int MouseQY;
 }
 
-#endif
+#endif  // CNC_RED_ALERT_TD_COMPAT_H_

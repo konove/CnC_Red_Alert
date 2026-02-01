@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SMUDGE_H
-#define SMUDGE_H
+#ifndef CNC_RED_ALERT_TD_SMUDGE_H_
+#define CNC_RED_ALERT_TD_SMUDGE_H_
 
 #include <cstddef>
 
@@ -114,4 +114,4 @@ class SmudgeClass : public ObjectClass {
   static void* VTable;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_SMUDGE_H_

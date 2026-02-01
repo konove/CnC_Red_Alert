@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CRCPIPE_H
-#define CRCPIPE_H
+#ifndef CNC_RED_ALERT_TECH_CRCPIPE_H_
+#define CNC_RED_ALERT_TECH_CRCPIPE_H_
 
 #include "tech/crc.h"
 #include "tech/pipe.h"
@@ -66,4 +66,4 @@ class CRCPipe : public Pipe {
   CrcEngine crc_;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_CRCPIPE_H_

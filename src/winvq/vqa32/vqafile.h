@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQAFILE_H
-#define VQAFILE_H
+#ifndef CNC_RED_ALERT_WINVQ_VQA32_VQAFILE_H_
+#define CNC_RED_ALERT_WINVQ_VQA32_VQAFILE_H_
 /****************************************************************************
  *
  *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -175,4 +175,4 @@ struct VQAHeader {
 #define ID_CAP0 MAKE_ID('C', 'A', 'P', '0') /* Caption text */
 #define ID_EVA0 MAKE_ID('E', 'V', 'A', '0') /* EVA text */
 
-#endif /* VQAFILE_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAFILE_H_

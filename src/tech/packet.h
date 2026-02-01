@@ -39,8 +39,8 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef __PACKET_H
-#define __PACKET_H
+#ifndef CNC_RED_ALERT_TECH_PACKET_H_
+#define CNC_RED_ALERT_TECH_PACKET_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -116,4 +116,4 @@ class PacketClass {
   FieldClass* Head;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_PACKET_H_

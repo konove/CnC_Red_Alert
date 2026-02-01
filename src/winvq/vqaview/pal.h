@@ -34,6 +34,9 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#ifndef CNC_RED_ALERT_WINVQ_VQAVIEW_PAL_H_
+#define CNC_RED_ALERT_WINVQ_VQAVIEW_PAL_H_
+
 //==========================================================================
 // PUBLIC FUNCTIONS
 //==========================================================================
@@ -53,3 +56,5 @@ char CurrentPalette[SIZE_OF_PALETTE * 3];
 //==========================================================================
 
 #define COLOR_BLACK 0
+
+#endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_PAL_H_

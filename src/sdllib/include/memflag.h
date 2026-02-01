@@ -33,8 +33,8 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef MEMFLAG_H
-#define MEMFLAG_H
+#ifndef CNC_RED_ALERT_SDLLIB_MEMFLAG_H_
+#define CNC_RED_ALERT_SDLLIB_MEMFLAG_H_
 
 #include <cstddef>
 
@@ -96,4 +96,4 @@ inline void* Add_Long_To_Pointer(const void* ptr, long size) {
 extern void (*Memory_Error)();
 extern void (*Memory_Error_Exit)(char* string);
 
-#endif
+#endif  // CNC_RED_ALERT_SDLLIB_MEMFLAG_H_

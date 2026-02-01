@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SCREEN_H
-#define SCREEN_H
+#ifndef CNC_RED_ALERT_TD_SCREEN_H_
+#define CNC_RED_ALERT_TD_SCREEN_H_
 
 class ScreenClass {
   /*
@@ -65,4 +65,4 @@ class ScreenClass {
   unsigned char* BlackPalette;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_SCREEN_H_

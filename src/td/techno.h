@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TECHNO_H
-#define TECHNO_H
+#ifndef CNC_RED_ALERT_TD_TECHNO_H_
+#define CNC_RED_ALERT_TD_TECHNO_H_
 
 #include "td/bullet.h"
 #include "td/cargo.h"
@@ -344,4 +344,4 @@ class TechnoClass : public RadioClass,
   //		static int const TurretShape[32];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TECHNO_H_

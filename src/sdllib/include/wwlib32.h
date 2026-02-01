@@ -33,7 +33,7 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef WWLIB32_H
-#define WWLIB32_H
+#ifndef CNC_RED_ALERT_SDLLIB_WWLIB32_H_
+#define CNC_RED_ALERT_SDLLIB_WWLIB32_H_
 
-#endif  // WWLIB32_H
+#endif  // CNC_RED_ALERT_SDLLIB_WWLIB32_H_

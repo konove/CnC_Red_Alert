@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef GOPTIONS_H
-#define GOPTIONS_H
+#ifndef CNC_RED_ALERT_TD_GOPTIONS_H_
+#define CNC_RED_ALERT_TD_GOPTIONS_H_
 
 #include "td/options.h"
 
@@ -100,4 +100,4 @@ class GameOptionsClass : public OptionsClass {
 
 void Draw_Caption(int text, int x, int y, int w);
 
-#endif
+#endif  // CNC_RED_ALERT_TD_GOPTIONS_H_

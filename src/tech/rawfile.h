@@ -41,8 +41,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RAWFILE_Hx
-#define RAWFILE_Hx
+#ifndef CNC_RED_ALERT_TECH_RAWFILE_H_
+#define CNC_RED_ALERT_TECH_RAWFILE_H_
 
 #include <climits>
 #include <cstdio>
@@ -232,4 +232,4 @@ inline RawFileClass::~RawFileClass() {
  *=============================================================================================*/
 inline int RawFileClass::Is_Open() const { return Handle != nullptr; }
 
-#endif  // RAWFILE_Hx
+#endif  // CNC_RED_ALERT_TECH_RAWFILE_H_

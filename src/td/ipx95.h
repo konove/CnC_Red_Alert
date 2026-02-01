@@ -43,6 +43,9 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#ifndef CNC_RED_ALERT_TD_IPX95_H_
+#define CNC_RED_ALERT_TD_IPX95_H_
+
 extern "C" {
 extern bool __stdcall IPX_Initialise();
 extern bool __stdcall IPX_Get_Outstanding_Buffer95(unsigned char* buffer);
@@ -57,3 +60,5 @@ extern int __stdcall IPX_Get_Connection_Number95();
 extern int __stdcall IPX_Get_Local_Target95(unsigned char*, unsigned char*,
                                             unsigned short, unsigned char*);
 }
+
+#endif  // CNC_RED_ALERT_TD_IPX95_H_

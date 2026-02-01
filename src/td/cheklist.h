@@ -41,8 +41,8 @@
  *-------------------------------------------------------------------------*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CHEKLIST_H
-#define CHEKLIST_H
+#ifndef CNC_RED_ALERT_TD_CHEKLIST_H_
+#define CNC_RED_ALERT_TD_CHEKLIST_H_
 
 #include "sdllib/include/keyboard.h"
 #include "td/defines.h"
@@ -81,5 +81,5 @@ class CheckListClass : public ListClass {
   bool IsReadOnly;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_CHEKLIST_H_
 /************************** end of cheklist.h ******************************/

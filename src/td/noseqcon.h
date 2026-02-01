@@ -50,8 +50,8 @@
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef NONSEQCONN_H
-#define NONSEQCONN_H
+#ifndef CNC_RED_ALERT_TD_NOSEQCON_H_
+#define CNC_RED_ALERT_TD_NOSEQCON_H_
 
 /*
 ********************************* Includes **********************************
@@ -126,4 +126,4 @@ class NonSequencedConnClass : public ConnectionClass {
   unsigned long LastReadID;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_NOSEQCON_H_

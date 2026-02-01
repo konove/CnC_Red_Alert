@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef XPIPE_H
-#define XPIPE_H
+#ifndef CNC_RED_ALERT_TECH_XPIPE_H_
+#define CNC_RED_ALERT_TECH_XPIPE_H_
 
 #include "tech/buff.h"
 #include "tech/pipe.h"
@@ -98,4 +98,4 @@ class FilePipe : public Pipe {
   bool Valid_File() { return File != nullptr; }
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_XPIPE_H_

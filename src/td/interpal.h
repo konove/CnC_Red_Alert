@@ -43,8 +43,8 @@
  *                                                                                             *
  *=============================================================================================*/
 
-#ifndef INTERPAL_H
-#define INTERPAL_H
+#ifndef CNC_RED_ALERT_TD_INTERPAL_H_
+#define CNC_RED_ALERT_TD_INTERPAL_H_
 
 // Forward declarations
 class GraphicBufferClass;
@@ -74,4 +74,4 @@ void __cdecl Asm_Create_Palette_Interpolation_Table();
 // Global state
 extern bool InterpolationPaletteChanged;
 
-#endif  // INTERPAL_H
+#endif  // CNC_RED_ALERT_TD_INTERPAL_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FACE_H
-#define FACE_H
+#ifndef CNC_RED_ALERT_RA_FACE_H_
+#define CNC_RED_ALERT_RA_FACE_H_
 
 #include <cstdint>
 
@@ -83,4 +83,4 @@ inline DirType Direction(CELL cell1, CELL cell2) {
       ((CELL_COMPOSITE&)cell2).Sub.X, ((CELL_COMPOSITE&)cell2).Sub.Y);
 }
 
-#endif
+#endif  // CNC_RED_ALERT_RA_FACE_H_

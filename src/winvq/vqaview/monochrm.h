@@ -34,8 +34,8 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef MONOCHRM_H
-#define MONOCHRM_H
+#ifndef CNC_RED_ALERT_WINVQ_VQAVIEW_MONOCHRM_H_
+#define CNC_RED_ALERT_WINVQ_VQAVIEW_MONOCHRM_H_
 
 //==========================================================================
 // PUBLIC FUNCTIONS
@@ -44,4 +44,4 @@
 void Debug_Printf(char* format_string, ...);
 void Debug_Mono_Message(char* message);
 
-#endif
+#endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_MONOCHRM_H_

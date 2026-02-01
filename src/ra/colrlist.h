@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef COLORLIST_H
-#define COLORLIST_H
+#ifndef CNC_RED_ALERT_RA_COLRLIST_H_
+#define CNC_RED_ALERT_RA_COLRLIST_H_
 
 #include "ra/defines.h"
 #include "ra/list.h"
@@ -87,4 +87,4 @@ class ColorListClass : public ListClass {
   RemapControlType* SelectColor;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_COLRLIST_H_

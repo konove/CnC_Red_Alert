@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef EVENT_H
-#define EVENT_H
+#ifndef CNC_RED_ALERT_TD_EVENT_H_
+#define CNC_RED_ALERT_TD_EVENT_H_
 
 #include <cstring>
 
@@ -231,4 +231,4 @@ class EventClass {
   static char* EventNames[LAST_EVENT];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_EVENT_H_

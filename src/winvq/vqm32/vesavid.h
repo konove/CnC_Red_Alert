@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMVESAVID_H
-#define VQMVESAVID_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_VESAVID_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_VESAVID_H_
 /****************************************************************************
  *
  *         C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
@@ -174,4 +174,4 @@ VESAModeInfo* SetVESAMode(long mode);
 VESAModeInfo* ReadVESAModeInfo(long mode);
 void SetVESAWindow(long grain_num);
 
-#endif /* VQMVESAVID_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_VESAVID_H_

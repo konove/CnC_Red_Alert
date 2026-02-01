@@ -16,29 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/DISPLAY.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : DISPLAY.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : May 1, 1994 *
- *                                                                                             *
- *                  Last Update : May 1, 1994   [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
-#ifndef DISPLAY_H
-#define DISPLAY_H
+#ifndef CNC_RED_ALERT_RA_DISPLAY_H_
+#define CNC_RED_ALERT_RA_DISPLAY_H_
 
 #include <vector>
 
@@ -242,10 +221,8 @@ class DisplayClass : public MapClass {
   */
   COORDINATE DesiredTacticalCoord;
 
-  /*
-  **	If something in the tactical map is to be redrawn, this flag is set to
-  *true.
-  */
+  // If something in the tactical map is to be redrawn, this flag is set to
+  // true.
   unsigned IsToRedraw : 1;
 
   /*
@@ -341,4 +318,4 @@ class DisplayClass : public MapClass {
                                int zone, MZoneType mzone) const;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_DISPLAY_H_

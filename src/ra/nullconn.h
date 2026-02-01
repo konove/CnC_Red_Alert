@@ -42,8 +42,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef NULLCONN_H
-#define NULLCONN_H
+#ifndef CNC_RED_ALERT_RA_NULLCONN_H_
+#define CNC_RED_ALERT_RA_NULLCONN_H_
 
 /*
 ********************************* Includes **********************************
@@ -150,6 +150,6 @@ class NullModemConnClass : public ConnectionClass {
   char* SendBuf;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_NULLCONN_H_
 
 /************************** end of nullconn.h ******************************/

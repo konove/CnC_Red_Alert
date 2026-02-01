@@ -40,8 +40,8 @@
 #include "..\wwflat32\include\keyboard.h"
 #else
 
-#ifndef KEYBOARD_H
-#define KEYBOARD_H
+#ifndef CNC_RED_ALERT_RA_KEY_H_
+#define CNC_RED_ALERT_RA_KEY_H_
 
 #include <windows.h>
 
@@ -650,6 +650,6 @@ typedef enum KeyNumType {
 } KeyNumType;
 
 // extern WWKeyboardClass *_Kbd;
-#endif
+#endif  // CNC_RED_ALERT_RA_KEY_H_
 
 #endif

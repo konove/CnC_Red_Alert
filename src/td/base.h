@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BASE_H
-#define BASE_H
+#ifndef CNC_RED_ALERT_TD_BASE_H_
+#define CNC_RED_ALERT_TD_BASE_H_
 
 #include "td/building.h"
 #include "td/defines.h"
@@ -128,4 +128,4 @@ class BaseClass {
   HousesType House;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_BASE_H_

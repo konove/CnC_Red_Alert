@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef GSCREEN_H
-#define GSCREEN_H
+#ifndef CNC_RED_ALERT_TD_GSCREEN_H_
+#define CNC_RED_ALERT_TD_GSCREEN_H_
 
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
@@ -146,4 +146,4 @@ class GScreenClass : public VectorClass<CellClass> {
  private:
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_GSCREEN_H_

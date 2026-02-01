@@ -36,8 +36,8 @@
  **
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef VERSION_H
-#define VERSION_H
+#ifndef CNC_RED_ALERT_RA_VERSION_H_
+#define CNC_RED_ALERT_RA_VERSION_H_
 
 #define VERSION_RED_ALERT_104 0x00010000  // Shipped US version number
 #define VERSION_RED_ALERT_107 0x00011000  // Shipped Counterstrike number
@@ -197,5 +197,5 @@ class VersionClass {
 
 const char* Version_Name();
 
-#endif
+#endif  // CNC_RED_ALERT_RA_VERSION_H_
 /************************** end of version.h *******************************/

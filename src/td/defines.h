@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef CNC_RED_ALERT_TD_DEFINES_H_
+#define CNC_RED_ALERT_TD_DEFINES_H_
 
 #include <cstdint>
 #include <utility>
@@ -2612,4 +2612,4 @@ typedef enum OptionControlType {
 
 #define size_of(typ, id) sizeof(std::declval<typ>().id)
 
-#endif
+#endif  // CNC_RED_ALERT_TD_DEFINES_H_

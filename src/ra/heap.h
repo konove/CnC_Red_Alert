@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef HEAP_H
-#define HEAP_H
+#ifndef CNC_RED_ALERT_RA_HEAP_H_
+#define CNC_RED_ALERT_RA_HEAP_H_
 
 #include <cstddef>
 #include <vector>
@@ -227,4 +227,4 @@ class TFixedIHeapClass : public FixedIHeapClass {
   }
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_HEAP_H_

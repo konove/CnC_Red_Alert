@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef CNC_RED_ALERT_TD_OPTIONS_H_
+#define CNC_RED_ALERT_TD_OPTIONS_H_
 
 class OptionsClass {
  public:
@@ -101,4 +101,4 @@ class OptionsClass {
  private:
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_OPTIONS_H_

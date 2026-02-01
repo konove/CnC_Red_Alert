@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SPECIAL_H
-#define SPECIAL_H
+#ifndef CNC_RED_ALERT_RA_SPECIAL_H_
+#define CNC_RED_ALERT_RA_SPECIAL_H_
 
 #include "ra/conquer.h"
 
@@ -103,4 +103,4 @@ void Special_Dialog(bool simple = false);
 const char* Fetch_Password(int caption, int message, int btext = TXT_OK);
 int Fetch_Difficulty(bool amath = false);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_SPECIAL_H_

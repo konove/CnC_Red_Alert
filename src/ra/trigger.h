@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TRIGGER_H
-#define TRIGGER_H
+#ifndef CNC_RED_ALERT_RA_TRIGGER_H_
+#define CNC_RED_ALERT_RA_TRIGGER_H_
 
 #include <cstddef>
 
@@ -132,4 +132,4 @@ class TriggerClass {
 
 TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TRIGGER_H_

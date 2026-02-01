@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef CNC_RED_ALERT_RA_OBJECT_H_
+#define CNC_RED_ALERT_RA_OBJECT_H_
 
 #include "ra/abstract.h"
 #include "ra/ccptr.h"
@@ -274,4 +274,4 @@ class ObjectClass : public AbstractClass {
   enum { FLIGHT_LEVEL = 256 };
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_OBJECT_H_

@@ -31,8 +31,8 @@
  *                  Last Update : September 14, 1994   [IML]               *
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef SHAPE_H
-#define SHAPE_H
+#ifndef CNC_RED_ALERT_SDLLIB_SHAPE_H_
+#define CNC_RED_ALERT_SDLLIB_SHAPE_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -132,6 +132,6 @@ extern "C" {
 void Set_Shape_Buffer(void* buffer, int size);
 }
 
-#endif  // SHAPE_H
+#endif  // CNC_RED_ALERT_SDLLIB_SHAPE_H_
 
 /****************************** End of shape.h *****************************/

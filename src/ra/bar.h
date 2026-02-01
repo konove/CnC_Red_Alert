@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BAR_H
-#define BAR_H
+#ifndef CNC_RED_ALERT_RA_BAR_H_
+#define CNC_RED_ALERT_RA_BAR_H_
 
 #include "tech/fixed.h"
 
@@ -95,4 +95,4 @@ class ProgressBarClass {
   unsigned IsDrawn : 1;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_BAR_H_

@@ -41,8 +41,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RAWFILE_H
-#define RAWFILE_H
+#ifndef CNC_RED_ALERT_TD_RAWFILE_H_
+#define CNC_RED_ALERT_TD_RAWFILE_H_
 
 #include <climits>
 #include <cstdio>
@@ -265,4 +265,4 @@ inline int RawFileClass::Is_Open() const {
 #endif
 }
 
-#endif
+#endif  // CNC_RED_ALERT_TD_RAWFILE_H_

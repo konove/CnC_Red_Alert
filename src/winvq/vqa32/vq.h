@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQ_H
-#define VQ_H
+#ifndef CNC_RED_ALERT_WINVQ_VQA32_VQ_H_
+#define CNC_RED_ALERT_WINVQ_VQA32_VQ_H_
 /****************************************************************************
  *
  *        C O N F I D E N T I A L ---  W E S T W O O D   S T U D I O S
@@ -103,4 +103,4 @@ typedef struct _VQHeader {
   unsigned short pad[5];
 } VQHeader;
 
-#endif /* VQ_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQA32_VQ_H_

@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DRAWBUFF_H
-#define DRAWBUFF_H
+#ifndef CNC_RED_ALERT_SDLLIB_DRAWBUFF_H_
+#define CNC_RED_ALERT_SDLLIB_DRAWBUFF_H_
 
 class GraphicViewPortClass;
 
@@ -65,4 +65,4 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
 
 extern GraphicViewPortClass* LogicPage;
 extern bool AllowHardwareBlitFills;
-#endif
+#endif  // CNC_RED_ALERT_SDLLIB_DRAWBUFF_H_

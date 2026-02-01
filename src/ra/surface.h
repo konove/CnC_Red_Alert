@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SURFACE_H
-#define SURFACE_H
+#ifndef CNC_RED_ALERT_RA_SURFACE_H_
+#define CNC_RED_ALERT_RA_SURFACE_H_
 
 #include "ra/buff.h"
 #include "ra/rect.h"
@@ -116,4 +116,4 @@ class Surface {
   int Pitch;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_SURFACE_H_

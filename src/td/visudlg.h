@@ -38,8 +38,8 @@
  * Functions: *
  *---------------------------------------------------------------------------------------------*/
 
-#ifndef VISUDLG_H
-#define VISUDLG_H
+#ifndef CNC_RED_ALERT_TD_VISUDLG_H_
+#define CNC_RED_ALERT_TD_VISUDLG_H_
 
 class VisualControlsClass {
  private:
@@ -73,4 +73,4 @@ class VisualControlsClass {
   void Process();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_VISUDLG_H_

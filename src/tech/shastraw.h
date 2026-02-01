@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SHASTRAW_H
-#define SHASTRAW_H
+#ifndef CNC_RED_ALERT_TECH_SHASTRAW_H_
+#define CNC_RED_ALERT_TECH_SHASTRAW_H_
 
 #include "tech/sha.h"
 #include "tech/straw.h"
@@ -67,4 +67,4 @@ class SHAStraw : public Straw {
   SHAEngine SHA;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_SHASTRAW_H_

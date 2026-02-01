@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef B64STRAW_H
-#define B64STRAW_H
+#ifndef CNC_RED_ALERT_TECH_B64STRAW_H_
+#define CNC_RED_ALERT_TECH_B64STRAW_H_
 
 #include "tech/straw.h"
 
@@ -87,4 +87,4 @@ class Base64Straw : public Straw {
   char PBuffer[3];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_B64STRAW_H_

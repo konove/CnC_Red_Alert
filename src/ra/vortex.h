@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef VORTEX_H
-#define VORTEX_H
+#ifndef CNC_RED_ALERT_RA_VORTEX_H_
+#define CNC_RED_ALERT_RA_VORTEX_H_
 
 #define MAX_REMAP_SHADES \
   16  // Number of lookup tables required for vortex shading.
@@ -275,4 +275,4 @@ class ChronalVortexClass {
   GraphicBufferClass* RenderBuffer;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_VORTEX_H_

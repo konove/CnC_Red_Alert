@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CHECKBOX_H
-#define CHECKBOX_H
+#ifndef CNC_RED_ALERT_TD_CHECKBOX_H_
+#define CNC_RED_ALERT_TD_CHECKBOX_H_
 
 #include "td/toggle.h"
 
@@ -52,4 +52,4 @@ class CheckBoxClass : public ToggleClass {
  protected:
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_CHECKBOX_H_

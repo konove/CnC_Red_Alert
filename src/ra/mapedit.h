@@ -50,8 +50,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MAPEDIT_H
-#define MAPEDIT_H
+#ifndef CNC_RED_ALERT_RA_MAPEDIT_H_
+#define CNC_RED_ALERT_RA_MAPEDIT_H_
 
 #include <array>
 
@@ -364,4 +364,4 @@ class MapEditClass : public MouseClass {
   };
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_MAPEDIT_H_

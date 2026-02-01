@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SUPER_H
-#define SUPER_H
+#ifndef CNC_RED_ALERT_RA_SUPER_H_
+#define CNC_RED_ALERT_RA_SUPER_H_
 
 #include "ra/defines.h"
 #include "ra/jshell.h"
@@ -86,4 +86,4 @@ class SuperClass {
   enum { ANIMATION_STAGES = 54 };
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_SUPER_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RADIO_H
-#define RADIO_H
+#ifndef CNC_RED_ALERT_RA_RADIO_H_
+#define CNC_RED_ALERT_RA_RADIO_H_
 
 #include "ra/defines.h"
 #include "ra/globals.h"
@@ -107,4 +107,4 @@ class RadioClass : public MissionClass {
   void Decode_Pointers() override;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_RADIO_H_

@@ -43,8 +43,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef NULLCONN_H
-#define NULLCONN_H
+#ifndef CNC_RED_ALERT_TD_NULLCONN_H_
+#define CNC_RED_ALERT_TD_NULLCONN_H_
 
 /*
 ********************************* Includes **********************************
@@ -137,6 +137,6 @@ class NullModemConnClass : public NonSequencedConnClass {
   char* SendBuf;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_NULLCONN_H_
 
 /************************** end of nullconn.h ******************************/

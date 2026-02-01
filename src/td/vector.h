@@ -54,8 +54,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef CNC_RED_ALERT_TD_VECTOR_H_
+#define CNC_RED_ALERT_TD_VECTOR_H_
 
 #include <cstddef>
 
@@ -179,4 +179,4 @@ class DynamicVectorClass : public VectorClass<T> {
   int GrowthStep;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_VECTOR_H_

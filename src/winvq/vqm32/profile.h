@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMPROFILE_H
-#define VQMPROFILE_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_PROFILE_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_PROFILE_H_
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -47,4 +47,4 @@ long GetINIString(char const* section, char const* entry, char const* def,
 long Get_Frame_Pathname(char* inifile, long anim_frame, char* ext,
                         char* outbuf);
 
-#endif /* VQMPROFILE_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_PROFILE_H_

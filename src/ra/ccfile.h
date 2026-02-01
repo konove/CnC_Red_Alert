@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CCFILE_H
-#define CCFILE_H
+#ifndef CNC_RED_ALERT_RA_CCFILE_H_
+#define CNC_RED_ALERT_RA_CCFILE_H_
 
 #include <cstdio>
 
@@ -110,4 +110,4 @@ class CCFileClass : public CDFileClass {
   CCFileClass(const CCFileClass&);
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CCFILE_H_

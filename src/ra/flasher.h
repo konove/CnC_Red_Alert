@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FLASHER_H
-#define FLASHER_H
+#ifndef CNC_RED_ALERT_RA_FLASHER_H_
+#define CNC_RED_ALERT_RA_FLASHER_H_
 
 #include "ra/monoc.h"
 #include "tech/noinit.h"
@@ -70,4 +70,4 @@ class FlasherClass {
   bool Process();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_FLASHER_H_

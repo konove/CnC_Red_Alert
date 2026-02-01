@@ -78,8 +78,8 @@
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef IPXGLOBALCONN_H
-#define IPXGLOBALCONN_H
+#ifndef CNC_RED_ALERT_RA_IPXGCONN_H_
+#define CNC_RED_ALERT_RA_IPXGCONN_H_
 
 #include "ra/connect.h"
 #include "ra/ipx.h"
@@ -201,6 +201,6 @@ class IPXGlobalConnClass : public IPXConnClass {
   int LastRXIndex;                 // index of next avail pos
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_IPXGCONN_H_
 
 /*************************** end of ipxgconn.h *****************************/

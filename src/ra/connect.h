@@ -104,8 +104,8 @@
  **
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef CONNECTION_H
-#define CONNECTION_H
+#ifndef CNC_RED_ALERT_RA_CONNECT_H_
+#define CNC_RED_ALERT_RA_CONNECT_H_
 
 /*
 ********************************* Includes **********************************
@@ -284,6 +284,6 @@ class ConnectionClass {
   static char* Commands[PACKET_COUNT];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CONNECT_H_
 
 /**************************** end of connect.h *****************************/

@@ -39,8 +39,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TXTLABEL_H
-#define TXTLABEL_H
+#ifndef CNC_RED_ALERT_RA_TXTLABEL_H_
+#define CNC_RED_ALERT_RA_TXTLABEL_H_
 
 #include "ra/defines.h"
 #include "ra/gadget.h"
@@ -74,4 +74,4 @@ class TextLabelClass : public GadgetClass {
   int PixWidth;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TXTLABEL_H_

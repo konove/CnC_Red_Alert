@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CSTRAW_H
-#define CSTRAW_H
+#ifndef CNC_RED_ALERT_RA_CSTRAW_H_
+#define CNC_RED_ALERT_RA_CSTRAW_H_
 
 #include "ra/buff.h"
 #include "ra/straw.h"
@@ -66,4 +66,4 @@ class CacheStraw : public Straw {
   CacheStraw& operator=(const CacheStraw& pipe);
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CSTRAW_H_

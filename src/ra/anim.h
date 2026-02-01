@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef ANIM_H
-#define ANIM_H
+#ifndef CNC_RED_ALERT_RA_ANIM_H_
+#define CNC_RED_ALERT_RA_ANIM_H_
 
 #include <cstddef>
 
@@ -166,4 +166,4 @@ class AnimClass : public ObjectClass, public StageClass {
 void Shorten_Attached_Anims(ObjectClass* obj);
 AnimType Anim_From_Name(const char* name);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_ANIM_H_

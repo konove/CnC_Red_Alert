@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef AUDIO_H
-#define AUDIO_H
+#ifndef CNC_RED_ALERT_RA_WW_AUDIO_H_
+#define CNC_RED_ALERT_RA_WW_AUDIO_H_
 
 #include "ra/defines.h"
 #include "tech/fixed.h"
@@ -108,4 +108,4 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation = 1,
                   HousesType house = HOUSE_NONE);
 bool Is_Speaking();
 
-#endif
+#endif  // CNC_RED_ALERT_RA_WW_AUDIO_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FUNCTION_H
-#define FUNCTION_H
+#ifndef CNC_RED_ALERT_RA_FUNCTION_H_
+#define CNC_RED_ALERT_RA_FUNCTION_H_
 
 /*
 Map (screen) class heirarchy.
@@ -126,4 +126,4 @@ UnitTypeClass      │   BuildingTypeClass      │  VesselTypeClass
 #include "ra/mpmgrw.h"
 #endif
 
-#endif
+#endif  // CNC_RED_ALERT_RA_FUNCTION_H_

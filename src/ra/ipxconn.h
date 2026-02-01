@@ -42,8 +42,8 @@
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef IPXCONN_H
-#define IPXCONN_H
+#ifndef CNC_RED_ALERT_RA_IPXCONN_H_
+#define CNC_RED_ALERT_RA_IPXCONN_H_
 
 /*
 ********************************* Includes **********************************
@@ -198,6 +198,6 @@ class IPXConnClass : public ConnectionClass {
   static int Listening;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_IPXCONN_H_
 
 /*************************** end of ipxconn.h ******************************/

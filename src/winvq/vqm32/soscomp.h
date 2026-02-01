@@ -30,8 +30,8 @@
  *            Copyright (c) 1994,  HMI, Inc.  All Rights Reserved            *
  ****************************************************************************/
 
-#ifndef _SOS_COMPRESS
-#define _SOS_COMPRESS
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_SOSCOMP_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_SOSCOMP_H_
 
 #include <cstdint>
 
@@ -93,4 +93,4 @@ bool __cdecl DecompressVqaSosData(SosCompressInfo*, unsigned long);
 }
 #endif
 
-#endif
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_SOSCOMP_H_

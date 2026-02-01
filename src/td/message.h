@@ -16,6 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef CNC_RED_ALERT_TD_MESSAGE_H_
+#define CNC_RED_ALERT_TD_MESSAGE_H_
+
 #define MESSAGE_NONE 0              //
 #define MESSAGE_BUILD_WINDTRAP 1    // You must build a Windtrap
 #define MESSAGE_STRUCT_CONCRETE 2   // Concrete: Use concrete to
@@ -45,3 +48,5 @@
 #define MESSAGE_ADJACENT 26         // Structures must be placed
 #define MESSAGE_SEARCH4SPICE 27     // Search for spice fields to
 #define MESSAGE_SANDWORM 28         // Warning: Sandworms
+
+#endif  // CNC_RED_ALERT_TD_MESSAGE_H_

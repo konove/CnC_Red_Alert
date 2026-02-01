@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TILE_H
-#define TILE_H
+#ifndef CNC_RED_ALERT_SDLLIB_TILE_H_
+#define CNC_RED_ALERT_SDLLIB_TILE_H_
 
 #include <cstdint>
 
@@ -48,4 +48,4 @@ inline void* Get_Icon_Set_Map(const void* iconset) {
   return nullptr;
 }
 
-#endif  // TILE_H
+#endif  // CNC_RED_ALERT_SDLLIB_TILE_H_

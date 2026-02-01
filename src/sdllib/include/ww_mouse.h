@@ -23,8 +23,8 @@
 // must be recreated when the game palette changes since SDL bakes colors in
 // at cursor creation time.
 
-#ifndef CNC_RED_ALERT_SDLLIB_INCLUDE_WW_MOUSE_H_
-#define CNC_RED_ALERT_SDLLIB_INCLUDE_WW_MOUSE_H_
+#ifndef CNC_RED_ALERT_SDLLIB_WW_MOUSE_H_
+#define CNC_RED_ALERT_SDLLIB_WW_MOUSE_H_
 
 #include <cstdint>
 #include <memory>
@@ -147,4 +147,4 @@ int Get_Mouse_Y();
 void Update_Mouse_Palette();
 void Update_Mouse_Pos(int x, int y);
 
-#endif  // CNC_RED_ALERT_SDLLIB_INCLUDE_WW_MOUSE_H_
+#endif  // CNC_RED_ALERT_SDLLIB_WW_MOUSE_H_

@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SLIDER_H
-#define SLIDER_H
+#ifndef CNC_RED_ALERT_TD_SLIDER_H_
+#define CNC_RED_ALERT_TD_SLIDER_H_
 
 #include "sdllib/include/keyboard.h"
 #include "td/control.h"
@@ -114,4 +114,4 @@ class SliderClass : public GaugeClass {
   void Recalc_Thumb();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_SLIDER_H_

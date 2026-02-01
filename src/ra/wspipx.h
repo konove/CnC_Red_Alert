@@ -36,8 +36,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef WSPIPX_H
-#define WSPIPX_H
+#ifndef CNC_RED_ALERT_RA_WSPIPX_H_
+#define CNC_RED_ALERT_RA_WSPIPX_H_
 
 #include "ra/wsproto.h"
 
@@ -95,4 +95,4 @@ class IPXInterfaceClass : public WinsockInterfaceClass {
   unsigned char MyNode[6];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_WSPIPX_H_

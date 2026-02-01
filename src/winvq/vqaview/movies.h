@@ -37,6 +37,9 @@
  *   Draw_To_Buffer_Callback -- callback after draw VQA frame to buffer    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#ifndef CNC_RED_ALERT_WINVQ_VQAVIEW_MOVIES_H_
+#define CNC_RED_ALERT_WINVQ_VQAVIEW_MOVIES_H_
+
 //==========================================================================
 // PUBLIC FUNCTIONS
 //==========================================================================
@@ -69,3 +72,5 @@ extern void Create_Palette_Interpolation_Table();
 #define MOVIE_HEIGHT 200
 
 #endif
+
+#endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_MOVIES_H_

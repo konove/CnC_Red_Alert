@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CONTROL_H
-#define CONTROL_H
+#ifndef CNC_RED_ALERT_TD_CONTROL_H_
+#define CNC_RED_ALERT_TD_CONTROL_H_
 
 #include "sdllib/include/keyboard.h"
 #include "td/gadget.h"
@@ -93,4 +93,4 @@ class ControlClass : public GadgetClass {
   GadgetClass* Peer;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_CONTROL_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef INI_H
-#define INI_H
+#ifndef CNC_RED_ALERT_RA_INI_H_
+#define CNC_RED_ALERT_RA_INI_H_
 
 #include <cstdlib>
 
@@ -189,4 +189,4 @@ bool Read_Scenario_INI(char* root, bool fresh = true);
 int Scan_Place_Object(ObjectClass* obj, CELL cell);
 void Assign_Houses();
 
-#endif
+#endif  // CNC_RED_ALERT_RA_INI_H_

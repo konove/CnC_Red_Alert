@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef DROP_H
-#define DROP_H
+#ifndef CNC_RED_ALERT_RA_DROP_H_
+#define CNC_RED_ALERT_RA_DROP_H_
 
 #include <cstring>
 
@@ -328,4 +328,4 @@ void TDropListClass<T>::Set_Selected_Index(T text) {
     }
   }
 }
-#endif
+#endif  // CNC_RED_ALERT_RA_DROP_H_

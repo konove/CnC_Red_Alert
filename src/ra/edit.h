@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef EDIT_H
-#define EDIT_H
+#ifndef CNC_RED_ALERT_RA_EDIT_H_
+#define CNC_RED_ALERT_RA_EDIT_H_
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "sdllib/include/keyboard.h"
@@ -105,4 +105,4 @@ class EditClass : public ControlClass {
   int IsReadOnly;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_EDIT_H_

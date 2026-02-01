@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef PIPE_H
-#define PIPE_H
+#ifndef CNC_RED_ALERT_TECH_PIPE_H_
+#define CNC_RED_ALERT_TECH_PIPE_H_
 
 /*
 **	A "push through" pipe interface abstract class used for such purposes as
@@ -70,4 +70,4 @@ class Pipe {
   Pipe* ChainFrom = nullptr;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_PIPE_H_

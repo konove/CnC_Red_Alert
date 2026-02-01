@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LINK_H
-#define LINK_H
+#ifndef CNC_RED_ALERT_RA_LINK_H_
+#define CNC_RED_ALERT_RA_LINK_H_
 
 #include "tech/noinit.h"
 
@@ -74,4 +74,4 @@ class LinkClass {
   LinkClass* Prev;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_LINK_H_

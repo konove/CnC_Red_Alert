@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CCBUFF_H
-#define CCBUFF_H
+#ifndef CNC_RED_ALERT_TECH_BUFF_H_
+#define CNC_RED_ALERT_TECH_BUFF_H_
 
 /*
 **	A general purpose buffer pointer handler object. It holds not only the
@@ -83,4 +83,4 @@ class Buffer {
   bool IsAllocated;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_BUFF_H_

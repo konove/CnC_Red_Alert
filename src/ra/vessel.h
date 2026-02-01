@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef VESSEL_H
-#define VESSEL_H
+#ifndef CNC_RED_ALERT_RA_VESSEL_H_
+#define CNC_RED_ALERT_RA_VESSEL_H_
 
 #include <cstddef>
 
@@ -168,4 +168,4 @@ class VesselClass : public DriveClass {
   FacingClass SecondaryFacing;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_VESSEL_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef WWFILE_Hx
-#define WWFILE_Hx
+#ifndef CNC_RED_ALERT_TECH_WWFILE_H_
+#define CNC_RED_ALERT_TECH_WWFILE_H_
 
 #define YEAR(dt) (((dt & 0xFE000000) >> (9 + 16)) + 1980)
 #define MONTH(dt) ((dt & 0x01E00000) >> (5 + 16))
@@ -105,4 +105,4 @@ class FileClass {
   virtual int Do_Is_Available(AvailabilityCheck mode) = 0;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_WWFILE_H_

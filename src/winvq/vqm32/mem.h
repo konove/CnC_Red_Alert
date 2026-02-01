@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQAMEM_H
-#define VQAMEM_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_MEM_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_MEM_H_
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -53,4 +53,4 @@ void DPMI_Unlock(void const* ptr, long const size);
 #define DPMI_Unlock(a, b)
 #endif
 
-#endif /* VQAMEM_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_MEM_H_

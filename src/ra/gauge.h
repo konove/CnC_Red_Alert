@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef GAUGE_H
-#define GAUGE_H
+#ifndef CNC_RED_ALERT_RA_GAUGE_H_
+#define CNC_RED_ALERT_RA_GAUGE_H_
 #include "ra/control.h"
 #include "sdllib/include/keyboard.h"
 
@@ -100,4 +100,4 @@ class TriColorGaugeClass : public GaugeClass {
   int YellowLimit;  // maximum value for yellow
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_GAUGE_H_

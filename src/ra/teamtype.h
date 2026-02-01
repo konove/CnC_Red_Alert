@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TEAMTYPE_H
-#define TEAMTYPE_H
+#ifndef CNC_RED_ALERT_RA_TEAMTYPE_H_
+#define CNC_RED_ALERT_RA_TEAMTYPE_H_
 
 #include <cstddef>
 
@@ -277,4 +277,4 @@ class TeamTypeClass : public AbstractTypeClass {
 
 NeedType TeamMission_Needs(TeamMissionType tmtype);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TEAMTYPE_H_

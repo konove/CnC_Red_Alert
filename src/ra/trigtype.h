@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TRIGTYPE_H
-#define TRIGTYPE_H
+#ifndef CNC_RED_ALERT_RA_TRIGTYPE_H_
+#define CNC_RED_ALERT_RA_TRIGTYPE_H_
 
 #include <cstddef>
 #include <string>
@@ -155,4 +155,4 @@ class TriggerTypeClass : public AbstractTypeClass {
                TextPrintType flags) const;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TRIGTYPE_H_

@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BMP8_H
-#define BMP8_H
+#ifndef CNC_RED_ALERT_RA_BMP8_H_
+#define CNC_RED_ALERT_RA_BMP8_H_
 
 // #include<stdlib.h>
 // #include<stdio.h>
@@ -38,4 +38,4 @@ class BMP8 {
   HWND hWnd;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_BMP8_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TERRAIN_H
-#define TERRAIN_H
+#ifndef CNC_RED_ALERT_RA_TERRAIN_H_
+#define CNC_RED_ALERT_RA_TERRAIN_H_
 
 #include <cstddef>
 
@@ -164,4 +164,4 @@ class TerrainClass : public ObjectClass, public StageClass {
   unsigned IsCrumbling : 1;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TERRAIN_H_

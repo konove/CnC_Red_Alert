@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RNDSTRAW_H
-#define RNDSTRAW_H
+#ifndef CNC_RED_ALERT_TECH_RNDSTRAW_H_
+#define CNC_RED_ALERT_TECH_RNDSTRAW_H_
 
 #include "tech/random.h"
 #include "tech/straw.h"
@@ -90,4 +90,4 @@ class RandomStraw : public Straw {
   void Scramble_Seed();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_RNDSTRAW_H_

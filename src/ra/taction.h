@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef ACTION_H
-#define ACTION_H
+#ifndef CNC_RED_ALERT_RA_TACTION_H_
+#define CNC_RED_ALERT_RA_TACTION_H_
 
 #include <string>
 
@@ -176,4 +176,4 @@ class ActionChoiceClass {
 
 extern ActionChoiceClass ActionChoices[TACTION_COUNT];
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TACTION_H_

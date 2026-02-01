@@ -221,8 +221,8 @@
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CONNECTION_H
-#define CONNECTION_H
+#ifndef CNC_RED_ALERT_TD_CONNECT_H_
+#define CNC_RED_ALERT_TD_CONNECT_H_
 
 #define CONN_DEBUG 0
 
@@ -364,4 +364,4 @@ class ConnectionClass {
   static char* Commands[PACKET_COUNT];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_CONNECT_H_

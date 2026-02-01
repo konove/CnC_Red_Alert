@@ -35,8 +35,8 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef FILE_H
-#define FILE_H
+#ifndef CNC_RED_ALERT_SDLLIB_FILE_H_
+#define CNC_RED_ALERT_SDLLIB_FILE_H_
 
 #include <cstdint>
 #include <ctime>
@@ -101,4 +101,4 @@ void End_Find_File(FindFileState& state);
 
 uint64_t Disk_Space_Available();
 
-#endif
+#endif  // CNC_RED_ALERT_SDLLIB_FILE_H_

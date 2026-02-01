@@ -16,7 +16,12 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef CNC_RED_ALERT_WINVQ_VQAVIEW_VIDMODE_H_
+#define CNC_RED_ALERT_WINVQ_VQAVIEW_VIDMODE_H_
+
 #define VIDEO_MODE_WIDTH 640
 #define VIDEO_MODE_HEIGHT 480
 #define VIDEO_MODE_BITS_PER_PIXEL 8
 #define SIZE_OF_PALETTE 256
+
+#endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_VIDMODE_H_

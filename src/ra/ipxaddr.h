@@ -43,8 +43,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef IPXADDR_H
-#define IPXADDR_H
+#ifndef CNC_RED_ALERT_RA_IPXADDR_H_
+#define CNC_RED_ALERT_RA_IPXADDR_H_
 
 #include "ra/ipx.h"  // for NetNumType & NetNodeType
 
@@ -102,6 +102,6 @@ class IPXAddressClass {
   NetNodeType NodeAddress;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_IPXADDR_H_
 
 /**************************** end of ipxaddr.h *****************************/

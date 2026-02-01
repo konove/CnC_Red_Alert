@@ -81,8 +81,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef GADGET_H
-#define GADGET_H
+#ifndef CNC_RED_ALERT_RA_GADGET_H_
+#define CNC_RED_ALERT_RA_GADGET_H_
 
 #include "ra/defines.h"
 #include "ra/link.h"
@@ -245,4 +245,4 @@ class GadgetClass : public LinkClass {
   virtual int Clicked_On(KeyNumType& key, unsigned flags, int x, int y);
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_GADGET_H_

@@ -36,8 +36,8 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*/
 
-#ifndef CONFDLG_H
-#define CONFDLG_H
+#ifndef CNC_RED_ALERT_TD_CONFDLG_H_
+#define CNC_RED_ALERT_TD_CONFDLG_H_
 
 class ConfirmationClass {
  private:
@@ -52,4 +52,4 @@ class ConfirmationClass {
   bool Process(int text);
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_CONFDLG_H_

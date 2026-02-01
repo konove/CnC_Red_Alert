@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _MPGMOVIE_H_
-#define _MPGMOVIE_H_
+#ifndef CNC_RED_ALERT_RA_MOVIE_H_
+#define CNC_RED_ALERT_RA_MOVIE_H_
 /****************************************************************************
  *
  * FILE
@@ -72,4 +72,4 @@ DLLCALL void __stdcall MpgResume();
 DLLCALL void __stdcall MpgSetCallback(LPMPGCALLBACK callback, LPVOID user);
 }
 
-#endif  // _MPGMOVIE_H_
+#endif  // CNC_RED_ALERT_RA_MOVIE_H_

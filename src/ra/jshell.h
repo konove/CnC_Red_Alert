@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef JSHELL_H
-#define JSHELL_H
+#ifndef CNC_RED_ALERT_RA_JSHELL_H_
+#define CNC_RED_ALERT_RA_JSHELL_H_
 
 #include <cassert>
 #include <cstddef>
@@ -475,4 +475,4 @@ void* Make_Fading_Table(const PaletteClass& palette, void* dest, int color,
 
 void Fatal(const char* message, ...);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_JSHELL_H_

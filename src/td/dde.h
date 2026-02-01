@@ -54,8 +54,8 @@
 ***************************** Class defines *****************************
 */
 
-#ifndef __DDE_H
-#define __DDE_H
+#ifndef CNC_RED_ALERT_TD_DDE_H_
+#define CNC_RED_ALERT_TD_DDE_H_
 
 #include <ddeml.h>
 #include <windows.h>
@@ -176,4 +176,4 @@ class Instance_Class {
   BOOL dde_error;     // error flag
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_DDE_H_

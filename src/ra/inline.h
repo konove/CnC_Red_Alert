@@ -79,8 +79,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef INLINE_H
-#define INLINE_H
+#ifndef CNC_RED_ALERT_RA_INLINE_H_
+#define CNC_RED_ALERT_RA_INLINE_H_
 
 #include <cstdlib>
 #include <iterator>
@@ -999,4 +999,4 @@ inline int Distance(int x1, int y1, int x2, int y2) {
   return diff2 + static_cast<unsigned>(diff1) / 2;
 }
 
-#endif
+#endif  // CNC_RED_ALERT_RA_INLINE_H_

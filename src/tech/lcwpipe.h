@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LCWPIPE_H
-#define LCWPIPE_H
+#ifndef CNC_RED_ALERT_TECH_LCWPIPE_H_
+#define CNC_RED_ALERT_TECH_LCWPIPE_H_
 
 #include "tech/pipe.h"
 
@@ -101,4 +101,4 @@ class LCWPipe : public Pipe {
   LCWPipe& operator=(LCWPipe&&) = delete;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_LCWPIPE_H_

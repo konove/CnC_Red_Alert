@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CHECKBOX_H
-#define CHECKBOX_H
+#ifndef CNC_RED_ALERT_RA_CHECKBOX_H_
+#define CNC_RED_ALERT_RA_CHECKBOX_H_
 
 #include "ra/toggle.h"
 #include "sdllib/include/keyboard.h"
@@ -53,4 +53,4 @@ class CheckBoxClass : public ToggleClass {
  protected:
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CHECKBOX_H_

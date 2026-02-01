@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FLASHER_H
-#define FLASHER_H
+#ifndef CNC_RED_ALERT_TD_FLASHER_H_
+#define CNC_RED_ALERT_TD_FLASHER_H_
 
 #include "td/monoc.h"
 #include "tech/noinit.h"
@@ -75,4 +75,4 @@ class FlasherClass {
   void Decode_Pointers();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_FLASHER_H_

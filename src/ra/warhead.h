@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef WARHEAD_H
-#define WARHEAD_H
+#ifndef CNC_RED_ALERT_RA_WARHEAD_H_
+#define CNC_RED_ALERT_RA_WARHEAD_H_
 
 #include <cstddef>
 
@@ -123,4 +123,4 @@ class WarheadTypeClass {
   int InfantryDeath;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_WARHEAD_H_

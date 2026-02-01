@@ -35,8 +35,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef IPX_H
-#define IPX_H
+#ifndef CNC_RED_ALERT_RA_IPX_H_
+#define CNC_RED_ALERT_RA_IPX_H_
 
 /*
 ******************************** Structures *********************************
@@ -186,6 +186,6 @@ int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,
 int IPX_Cancel_Event(struct ECB* ecb_ptr);
 void Let_IPX_Breath();
 
-#endif
+#endif  // CNC_RED_ALERT_RA_IPX_H_
 
 /***************************** end of ipx.h ********************************/

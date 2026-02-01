@@ -33,8 +33,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef KEYBOARD_H
-#define KEYBOARD_H
+#ifndef CNC_RED_ALERT_SDLLIB_KEYBOARD_H_
+#define CNC_RED_ALERT_SDLLIB_KEYBOARD_H_
 
 union SDL_Event;
 
@@ -485,4 +485,4 @@ typedef enum KeyNumType {
   KN_BUTTON = WWKEY_BTN_BIT,
 } KeyNumType;
 
-#endif
+#endif  // CNC_RED_ALERT_SDLLIB_KEYBOARD_H_

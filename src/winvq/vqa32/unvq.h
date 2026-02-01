@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQAUNVQ_H
-#define VQAUNVQ_H
+#ifndef CNC_RED_ALERT_WINVQ_VQA32_UNVQ_H_
+#define CNC_RED_ALERT_WINVQ_VQA32_UNVQ_H_
 
 /****************************************************************************
  *
@@ -50,4 +50,4 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
               unsigned char* buffer, unsigned long blocksperrow,
               unsigned long numrows, unsigned long bufwidth);
 
-#endif /* VQAUNVQ_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQA32_UNVQ_H_

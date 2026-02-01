@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef WEAPON_H
-#define WEAPON_H
+#ifndef CNC_RED_ALERT_RA_WEAPON_H_
+#define CNC_RED_ALERT_RA_WEAPON_H_
 
 #include <cstddef>
 
@@ -171,4 +171,4 @@ class WeaponTypeClass {
 WeaponType Weapon_From_Name(const char* name);
 ArmorType Armor_From_Name(const char* name);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_WEAPON_H_

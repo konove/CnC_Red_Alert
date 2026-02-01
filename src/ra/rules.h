@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RULES_H
-#define RULES_H
+#ifndef CNC_RED_ALERT_RA_RULES_H_
+#define CNC_RED_ALERT_RA_RULES_H_
 
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -901,4 +901,4 @@ class RulesClass {
   LEPTON TiberiumLongScan;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_RULES_H_

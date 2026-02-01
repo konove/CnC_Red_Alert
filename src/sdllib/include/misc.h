@@ -34,8 +34,8 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef MISC_H
-#define MISC_H
+#ifndef CNC_RED_ALERT_SDLLIB_MISC_H_
+#define CNC_RED_ALERT_SDLLIB_MISC_H_
 
 #include <cstdint>
 #include <cstdlib>
@@ -115,4 +115,4 @@ extern int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height);
 
 /*=========================================================================*/
 
-#endif  // MISC_H
+#endif  // CNC_RED_ALERT_SDLLIB_MISC_H_

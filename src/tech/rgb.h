@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CNC_RED_ALERT_RA_RGB_H_
-#define CNC_RED_ALERT_RA_RGB_H_
+#ifndef CNC_RED_ALERT_TECH_RGB_H_
+#define CNC_RED_ALERT_TECH_RGB_H_
 
 #include <cstdint>
 
@@ -81,4 +81,4 @@ class RGBClass {
 // Common color constant - initialized at compile time.
 inline constexpr RGBClass kBlackColor(0, 0, 0);
 
-#endif  // CNC_RED_ALERT_RA_RGB_H_
+#endif  // CNC_RED_ALERT_TECH_RGB_H_

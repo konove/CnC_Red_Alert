@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BULLET_H
-#define BULLET_H
+#ifndef CNC_RED_ALERT_TD_BULLET_H_
+#define CNC_RED_ALERT_TD_BULLET_H_
 
 #include <cstddef>
 
@@ -167,4 +167,4 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   static void* VTable;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_BULLET_H_

@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef HELP_H
-#define HELP_H
+#ifndef CNC_RED_ALERT_TD_HELP_H_
+#define CNC_RED_ALERT_TD_HELP_H_
 
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/timer.h"
@@ -150,4 +150,4 @@ class HelpClass : public TabClass {
   };
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_HELP_H_

@@ -124,4 +124,4 @@ extern Sample_Type SampleType;
 
 extern int StreamLowImpact;
 
-#endif  // CNC_RED_ALERT_SDLLIB_AUDIO_H_
+#endif  // CNC_RED_ALERT_SDLLIB_WW_AUDIO_H_

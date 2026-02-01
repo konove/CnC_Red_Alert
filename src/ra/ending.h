@@ -37,10 +37,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef ENDING_H
-#define ENDING_H
+#ifndef CNC_RED_ALERT_RA_ENDING_H_
+#define CNC_RED_ALERT_RA_ENDING_H_
 
 void Nod_Ending();
 void GDI_Ending();
 
-#endif
+#endif  // CNC_RED_ALERT_RA_ENDING_H_

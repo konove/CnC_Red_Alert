@@ -38,8 +38,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef NULLMODEM_H
-#define NULLMODEM_H
+#ifndef CNC_RED_ALERT_RA_NULLMGR_H_
+#define CNC_RED_ALERT_RA_NULLMGR_H_
 
 #include "ra/connmgr.h"
 #include "ra/gadget.h"
@@ -220,6 +220,6 @@ class NullModemClass : public ConnManClass {
   int CRCErrors;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_NULLMGR_H_
 
 /*************************** end of nullmgr.h ******************************/

@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMPORTIO_H
-#define VQMPORTIO_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_PORTIO_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_PORTIO_H_
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -53,4 +53,4 @@ void __cdecl outp(unsigned short portid, short value);
 
 #endif /* __BORLANDC__ */
 
-#endif /* VQMPORTIO_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_PORTIO_H_

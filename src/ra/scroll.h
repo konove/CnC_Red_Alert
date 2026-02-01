@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SCROLL_H
-#define SCROLL_H
+#ifndef CNC_RED_ALERT_RA_SCROLL_H_
+#define CNC_RED_ALERT_RA_SCROLL_H_
 
 #include "ra/help.h"
 #include "ra/jshell.h"
@@ -79,4 +79,4 @@ class ScrollClass : public HelpClass {
   }
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_SCROLL_H_

@@ -36,11 +36,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef _WSPROTO_H
-#define _WSPROTO_H
+#ifndef CNC_RED_ALERT_RA__WSPROTO_H_
+#define CNC_RED_ALERT_RA__WSPROTO_H_
 
 class WinsockInterfaceClass;
 extern WinsockInterfaceClass*
     PacketTransport;  // The object for interfacing with Winsock
 
-#endif  //_WSPROTO_H
+#endif  // CNC_RED_ALERT_RA__WSPROTO_H_

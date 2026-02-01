@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef HOUSE_H
-#define HOUSE_H
+#ifndef CNC_RED_ALERT_TD_HOUSE_H_
+#define CNC_RED_ALERT_TD_HOUSE_H_
 
 #include <cstddef>
 
@@ -605,4 +605,4 @@ class HouseClass {
   TCountDownTimerClass SpeakMoneyDelay;
   TCountDownTimerClass SpeakMaxedDelay;
 };
-#endif
+#endif  // CNC_RED_ALERT_TD_HOUSE_H_

@@ -19,6 +19,9 @@
 /* $Header:   F:\projects\c&c0\vcs\code\wwalloc.h_v   4.9   07 May 1996 17:14:00
  * JOE_BOSTIC  $ */
 
+#ifndef CNC_RED_ALERT_RA_WWALLOC_H_
+#define CNC_RED_ALERT_RA_WWALLOC_H_
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -56,3 +59,5 @@ extern unsigned long cdecl MaxRam;  // Record of total allocated at worst case.
 #ifdef __cplusplus
 }
 #endif
+
+#endif  // CNC_RED_ALERT_RA_WWALLOC_H_

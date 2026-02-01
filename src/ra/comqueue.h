@@ -64,8 +64,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef COMQUEUE_H
-#define COMQUEUE_H
+#ifndef CNC_RED_ALERT_RA_COMQUEUE_H_
+#define CNC_RED_ALERT_RA_COMQUEUE_H_
 
 /*---------------------------------------------------------------------------
 This is one output queue entry
@@ -189,6 +189,6 @@ class CommQueueClass {
   int DebugMaxNames;  // max # of names in array
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_COMQUEUE_H_
 
 /*************************** end of comqueue.h *****************************/

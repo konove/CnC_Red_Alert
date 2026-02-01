@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef AIRCRAFT_H
-#define AIRCRAFT_H
+#ifndef CNC_RED_ALERT_RA_AIRCRAFT_H_
+#define CNC_RED_ALERT_RA_AIRCRAFT_H_
 
 #include <cstddef>
 
@@ -271,4 +271,4 @@ class AircraftClass : public FootClass, public FlyClass {
 
 bool Building_Check();
 
-#endif
+#endif  // CNC_RED_ALERT_RA_AIRCRAFT_H_

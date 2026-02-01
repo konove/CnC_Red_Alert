@@ -43,6 +43,9 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#ifndef CNC_RED_ALERT_TD_TCPIP_H_
+#define CNC_RED_ALERT_TD_TCPIP_H_
+
 #ifdef _WIN32
 #include <winsock.h>
 #else
@@ -218,3 +221,5 @@ struct tag tGameStatisticsStruct {
 extern GameStatisticsStruct GameStatistics;
 
 #endif  //(0)
+
+#endif  // CNC_RED_ALERT_TD_TCPIP_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef _LZW_H
-#define _LZW_H
+#ifndef CNC_RED_ALERT_TECH_LZW_H_
+#define CNC_RED_ALERT_TECH_LZW_H_
 
 #include "tech/buff.h"
 
@@ -89,4 +89,4 @@ class LZWEngine {
 int LZW_Compress(const Buffer& inbuff, const Buffer& outbuff);
 int LZW_Uncompress(const Buffer& inbuff, const Buffer& outbuff);
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_LZW_H_

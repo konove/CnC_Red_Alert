@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef ABSTRACT_H
-#define ABSTRACT_H
+#ifndef CNC_RED_ALERT_TD_ABSTRACT_H_
+#define CNC_RED_ALERT_TD_ABSTRACT_H_
 
 #include "td/defines.h"
 #include "td/inline.h"
@@ -116,4 +116,4 @@ class AbstractClass {
   virtual void AI() {}
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_ABSTRACT_H_

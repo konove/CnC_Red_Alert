@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef DOOR_H
-#define DOOR_H
+#ifndef CNC_RED_ALERT_TD_DOOR_H_
+#define CNC_RED_ALERT_TD_DOOR_H_
 
 #include "td/stage.h"
 #include "tech/noinit.h"
@@ -96,4 +96,4 @@ class DoorClass {
   void Decode_Pointers() {}
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_DOOR_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LAYER_H
-#define LAYER_H
+#ifndef CNC_RED_ALERT_RA_LAYER_H_
+#define CNC_RED_ALERT_RA_LAYER_H_
 
 #include "ra/vector_dynamic.h"
 #include "tech/pipe.h"
@@ -65,4 +65,4 @@ class LayerClass : public DynamicVectorClass<ObjectClass*> {
   virtual void Decode_Pointers();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_LAYER_H_

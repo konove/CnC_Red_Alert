@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef XSTRAW_H
-#define XSTRAW_H
+#ifndef CNC_RED_ALERT_TECH_XSTRAW_H_
+#define CNC_RED_ALERT_TECH_XSTRAW_H_
 
 #include "tech/buff.h"
 #include "tech/straw.h"
@@ -95,4 +95,4 @@ class FileStraw : public Straw {
   bool Valid_File() { return File != nullptr; }
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_XSTRAW_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MAP_H
-#define MAP_H
+#ifndef CNC_RED_ALERT_RA_MAP_H_
+#define CNC_RED_ALERT_RA_MAP_H_
 
 #include "ra/cell.h"
 #include "ra/coord.h"
@@ -192,4 +192,4 @@ class MapClass : public GScreenClass {
 
 int Coord_Spillage_Number(COORDINATE coord, int maxsize);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_MAP_H_

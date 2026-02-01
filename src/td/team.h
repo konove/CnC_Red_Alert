@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TEAM_H
-#define TEAM_H
+#ifndef CNC_RED_ALERT_TD_TEAM_H_
+#define CNC_RED_ALERT_TD_TEAM_H_
 
 #include <cstddef>
 
@@ -269,4 +269,4 @@ class TeamClass : public AbstractClass {
   static void* VTable;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TEAM_H_

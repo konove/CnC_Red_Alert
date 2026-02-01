@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FIXED_H
-#define FIXED_H
+#ifndef CNC_RED_ALERT_TECH_FIXED_H_
+#define CNC_RED_ALERT_TECH_FIXED_H_
 
 /*
 **	This is a very simple fixed point class that functions like a regular
@@ -411,4 +411,4 @@ class fixed {
   } Data;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_FIXED_H_

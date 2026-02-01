@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RADAR_H
-#define RADAR_H
+#ifndef CNC_RED_ALERT_RA_RADAR_H_
+#define CNC_RED_ALERT_RA_RADAR_H_
 
 #include "ra/defines.h"
 #include "ra/display.h"
@@ -125,11 +125,9 @@ class RadarClass : public DisplayClass {
   */
   enum RadarClassEnums { RADAR_ACTIVATED_FRAME = 22, MAX_RADAR_FRAMES = 41 };
 
-  /*
-  **	If the radar map must be completely redrawn, then this flag will be
-  *true. *	Typical causes of this would be when the radar first appears, or
-  *when the *	screen has been damaged.
-  */
+  // If the radar map must be completely redrawn, then this flag will be true.
+  // Typical causes of this would be when the radar first appears, or when the
+  // screen has been damaged.
   unsigned IsToRedraw : 1;
   unsigned RadarCursorRedraw : 1;
 
@@ -247,4 +245,4 @@ class RadarClass : public DisplayClass {
   CELL PixelStack[PIXELSTACK];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_RADAR_H_

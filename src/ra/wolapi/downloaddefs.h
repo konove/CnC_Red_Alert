@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _DOWNLOADDEFS_H
-#define _DOWNLOADDEFS_H
+#ifndef CNC_RED_ALERT_RA_WOLAPI_DOWNLOADDEFS_H_
+#define CNC_RED_ALERT_RA_WOLAPI_DOWNLOADDEFS_H_
 
 // CDownload statuses
 
@@ -57,4 +57,4 @@
 #define DOWNLOADEVENT_TCPERROR 6
 #define DOWNLOADEVENT_DISCONNECTERROR 7
 
-#endif
+#endif  // CNC_RED_ALERT_RA_WOLAPI_DOWNLOADDEFS_H_

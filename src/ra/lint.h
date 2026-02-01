@@ -37,6 +37,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#ifndef CNC_RED_ALERT_RA_LINT_H_
+#define CNC_RED_ALERT_RA_LINT_H_
+
 // overloading data member (e.g., IsToRedraw)
 // lint -e1516
 
@@ -191,3 +194,5 @@
 **	Signed/unsigned mix with relational... ignore for now.
 */
 // lint -e574
+
+#endif  // CNC_RED_ALERT_RA_LINT_H_

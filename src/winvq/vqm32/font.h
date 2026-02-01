@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMFONT_H
-#define VQMFONT_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_FONT_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_FONT_H_
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -101,4 +101,4 @@ long __cdecl Char_Pixel_Width(char chr);
 }
 #endif
 
-#endif /* VQMFONT_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_FONT_H_

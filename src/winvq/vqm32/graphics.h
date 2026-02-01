@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMGRAPHICS_H
-#define VQMGRAPHICS_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_GRAPHICS_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_GRAPHICS_H_
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -51,4 +51,4 @@ void __cdecl Fill_Rect(long x1, long y1, long x2, long y2, long color);
 }
 #endif
 
-#endif /* VQMGRAPHICS_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_GRAPHICS_H_

@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef POWER_H
-#define POWER_H
+#ifndef CNC_RED_ALERT_TD_POWER_H_
+#define CNC_RED_ALERT_TD_POWER_H_
 
 #include "sdllib/include/keyboard.h"
 #include "td/defines.h"
@@ -133,4 +133,4 @@ class PowerClass : public RadarClass {
   static const void* PowerBarShape;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_POWER_H_

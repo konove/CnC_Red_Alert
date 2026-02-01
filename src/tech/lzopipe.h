@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LZOPIPE_H
-#define LZOPIPE_H
+#ifndef CNC_RED_ALERT_TECH_LZOPIPE_H_
+#define CNC_RED_ALERT_TECH_LZOPIPE_H_
 
 #include "tech/pipe.h"
 
@@ -101,4 +101,4 @@ class LZOPipe : public Pipe {
   LZOPipe& operator=(LZOPipe&&) = delete;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_LZOPIPE_H_

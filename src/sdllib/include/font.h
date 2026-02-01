@@ -35,8 +35,8 @@
  *   VVPC::Text_Print -- Text print into a virtual viewport.               *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef FONT_H
-#define FONT_H
+#ifndef CNC_RED_ALERT_SDLLIB_FONT_H_
+#define CNC_RED_ALERT_SDLLIB_FONT_H_
 
 #include <cstdint>
 
@@ -106,4 +106,4 @@ extern char* FontWidthBlockPtr;
 extern "C" const void* FontPtr;
 extern uint8_t ColorXlat[];
 
-#endif  // FONT_H
+#endif  // CNC_RED_ALERT_SDLLIB_FONT_H_

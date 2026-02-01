@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef CNC_RED_ALERT_TD_OBJECT_H_
+#define CNC_RED_ALERT_TD_OBJECT_H_
 
 #include "td/abstract.h"
 #include "td/defines.h"
@@ -252,4 +252,4 @@ class ObjectClass : public AbstractClass {
   virtual void Move(FacingType);
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_OBJECT_H_

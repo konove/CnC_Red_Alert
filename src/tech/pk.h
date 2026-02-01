@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef PK_H
-#define PK_H
+#ifndef CNC_RED_ALERT_TECH_PK_H_
+#define CNC_RED_ALERT_TECH_PK_H_
 
 #include "tech/int.h"
 #include "tech/straw.h"
@@ -95,4 +95,4 @@ class PKey {
   int BitPrecision;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_PK_H_

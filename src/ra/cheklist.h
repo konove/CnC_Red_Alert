@@ -40,8 +40,8 @@
  *-------------------------------------------------------------------------*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CHEKLIST_H
-#define CHEKLIST_H
+#ifndef CNC_RED_ALERT_RA_CHEKLIST_H_
+#define CNC_RED_ALERT_RA_CHEKLIST_H_
 
 #include "ra/defines.h"
 #include "ra/list.h"
@@ -101,4 +101,4 @@ class CheckListClass : public ListClass {
   bool IsReadOnly;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CHEKLIST_H_

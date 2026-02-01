@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef UNIT_H
-#define UNIT_H
+#ifndef CNC_RED_ALERT_RA_UNIT_H_
+#define CNC_RED_ALERT_RA_UNIT_H_
 
 #include <cstddef>
 
@@ -269,4 +269,4 @@ class UnitClass : public DriveClass {
   bool Save(Pipe& file) const;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_UNIT_H_

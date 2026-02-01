@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMMONO_H
-#define VQMMONO_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_MONO_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_MONO_H_
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -63,4 +63,4 @@ short __cdecl Mono_Y();
 }
 #endif
 
-#endif /* VQMMONO_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_MONO_H_

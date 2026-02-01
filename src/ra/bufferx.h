@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BUFFERx_H
-#define BUFFERx_H
+#ifndef CNC_RED_ALERT_RA_BUFFERX_H_
+#define CNC_RED_ALERT_RA_BUFFERX_H_
 
 #include "ra/wwfile.h"
 
@@ -111,4 +111,4 @@ class BufferTransmuter {
   void* BufferPtr;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_BUFFERX_H_

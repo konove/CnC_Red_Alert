@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CDFILE_H
-#define CDFILE_H
+#ifndef CNC_RED_ALERT_TD_CDFILE_H_
+#define CNC_RED_ALERT_TD_CDFILE_H_
 
 #include "td/compat.h"
 #include "td/rawfile.h"
@@ -115,4 +115,4 @@ class CDFileClass : public RawFileClass {
 
 extern int Get_CD_Drive();
 
-#endif
+#endif  // CNC_RED_ALERT_TD_CDFILE_H_

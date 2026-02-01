@@ -36,8 +36,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef WSPROTO_H
-#define WSPROTO_H
+#ifndef CNC_RED_ALERT_RA_WSPROTO_H_
+#define CNC_RED_ALERT_RA_WSPROTO_H_
 
 #include "ra/vector_dynamic.h"
 
@@ -184,4 +184,4 @@ class WinsockInterfaceClass {
   ConnectStatusEnum ConnectStatus;
 };
 
-#endif  // WSPROTO_H
+#endif  // CNC_RED_ALERT_RA_WSPROTO_H_

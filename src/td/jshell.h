@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef JSHELL_H
-#define JSHELL_H
+#ifndef CNC_RED_ALERT_TD_JSHELL_H_
+#define CNC_RED_ALERT_TD_JSHELL_H_
 
 #include <algorithm>
 #include <cstdint>
@@ -230,4 +230,4 @@ void* Conquer_Build_Translucent_Table(const void* palette,
                                       const TLucentType* control, int count,
                                       void* buffer);
 
-#endif
+#endif  // CNC_RED_ALERT_TD_JSHELL_H_

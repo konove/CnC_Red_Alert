@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CELL_H
-#define CELL_H
+#ifndef CNC_RED_ALERT_RA_CELL_H_
+#define CNC_RED_ALERT_RA_CELL_H_
 
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -308,4 +308,4 @@ class CellClass {
   LandType Land;  // The land type of this cell.
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CELL_H_

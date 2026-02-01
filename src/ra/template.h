@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TEMPLATE_H
-#define TEMPLATE_H
+#ifndef CNC_RED_ALERT_RA_TEMPLATE_H_
+#define CNC_RED_ALERT_RA_TEMPLATE_H_
 
 #include <cstddef>
 
@@ -101,4 +101,4 @@ class TemplateClass : public ObjectClass {
   bool Save(Pipe& file) const;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TEMPLATE_H_

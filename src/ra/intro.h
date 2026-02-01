@@ -37,9 +37,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef INTRO_H
-#define INTRO_H
+#ifndef CNC_RED_ALERT_RA_INTRO_H_
+#define CNC_RED_ALERT_RA_INTRO_H_
 
 void Choose_Side();
 
-#endif
+#endif  // CNC_RED_ALERT_RA_INTRO_H_

@@ -21,8 +21,8 @@
 
 #ifdef WOLAPI_INTEGRATION
 
-#ifndef BIGCHECKBOX_H
-#define BIGCHECKBOX_H
+#ifndef CNC_RED_ALERT_RA_BIGCHECK_H_
+#define CNC_RED_ALERT_RA_BIGCHECK_H_
 
 #include "ra/toggle.h"
 
@@ -62,6 +62,6 @@ class BigCheckBoxClass : public ToggleClass {
   char* szCaption;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_BIGCHECK_H_
 
 #endif

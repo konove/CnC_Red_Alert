@@ -34,6 +34,9 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#ifndef CNC_RED_ALERT_WINVQ_VQAVIEW_WM_H_
+#define CNC_RED_ALERT_WINVQ_VQAVIEW_WM_H_
+
 //==========================================================================
 // Public functions
 //==========================================================================
@@ -55,3 +58,5 @@ long WM_ActivateApp_Func(WindowHandle window_handle, unsigned int message,
 
 long WM_Destroy_Func(WindowHandle window_handle, unsigned int message,
                      unsigned int w_param, long l_param);
+
+#endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_WM_H_

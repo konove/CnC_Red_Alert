@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef UNIT_H
-#define UNIT_H
+#ifndef CNC_RED_ALERT_TD_UNIT_H_
+#define CNC_RED_ALERT_TD_UNIT_H_
 
 #include <cstddef>
 
@@ -206,4 +206,4 @@ class UnitClass : public TarComClass {
   static void* VTable;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_UNIT_H_

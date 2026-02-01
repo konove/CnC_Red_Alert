@@ -36,8 +36,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef WSPUDP_H
-#define WSPUDP_H
+#ifndef CNC_RED_ALERT_RA_WSPUDP_H_
+#define CNC_RED_ALERT_RA_WSPUDP_H_
 
 #include "ra/vector_dynamic.h"
 #include "ra/wsproto.h"
@@ -77,4 +77,4 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
   DynamicVectorClass<unsigned char*> LocalAddresses;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_WSPUDP_H_

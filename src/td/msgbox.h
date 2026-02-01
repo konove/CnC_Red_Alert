@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MSGBOX_H
-#define MSGBOX_H
+#ifndef CNC_RED_ALERT_TD_MSGBOX_H_
+#define CNC_RED_ALERT_TD_MSGBOX_H_
 
 #include "td/conquer.h"
 
@@ -62,4 +62,4 @@ class CCMessageBox {
               int b3txt = TXT_NONE, bool preserve = false);
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_MSGBOX_H_

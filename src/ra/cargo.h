@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CARGO_H
-#define CARGO_H
+#ifndef CNC_RED_ALERT_RA_CARGO_H_
+#define CNC_RED_ALERT_RA_CARGO_H_
 
 #include "ra/house.h"
 #include "ra/monoc.h"
@@ -89,4 +89,4 @@ class CargoClass {
   FootClass* CargoHold;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CARGO_H_

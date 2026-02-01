@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef ABSTRACT_H
-#define ABSTRACT_H
+#ifndef CNC_RED_ALERT_RA_ABSTRACT_H_
+#define CNC_RED_ALERT_RA_ABSTRACT_H_
 
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -140,4 +140,4 @@ class AbstractClass {
   virtual void AI() {}
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_ABSTRACT_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RECT_H
-#define RECT_H
+#ifndef CNC_RED_ALERT_TECH_RECT_H_
+#define CNC_RED_ALERT_TECH_RECT_H_
 
 class Rect {
  public:
@@ -58,4 +58,4 @@ class Rect {
   int Height;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_RECT_H_

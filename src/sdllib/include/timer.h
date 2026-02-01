@@ -34,8 +34,8 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef CNC_RED_ALERT_SDLLIB_TIMER_H_
+#define CNC_RED_ALERT_SDLLIB_TIMER_H_
 
 #include <cstdint>
 
@@ -151,4 +151,4 @@ extern WinTimerClass* WindowsTimer;
 extern TimerClass TickCount;
 #endif
 
-#endif  // TIMER_H
+#endif  // CNC_RED_ALERT_SDLLIB_TIMER_H_

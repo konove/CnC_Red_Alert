@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MISSION_H
-#define MISSION_H
+#ifndef CNC_RED_ALERT_TD_MISSION_H_
+#define CNC_RED_ALERT_TD_MISSION_H_
 
 #include "td/defines.h"
 #include "td/ftimer.h"
@@ -134,4 +134,4 @@ class MissionClass : public ObjectClass {
   static const char* Missions[MISSION_COUNT];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_MISSION_H_

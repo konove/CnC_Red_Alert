@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FOOT_H
-#define FOOT_H
+#ifndef CNC_RED_ALERT_TD_FOOT_H_
+#define CNC_RED_ALERT_TD_FOOT_H_
 
 #include "td/defines.h"
 #include "td/ftimer.h"
@@ -322,4 +322,4 @@ class FootClass : public TechnoClass {
   COORDINATE HeadToCoord;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_FOOT_H_

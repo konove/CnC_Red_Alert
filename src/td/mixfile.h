@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TD_MIXFILE_H_
-#define TD_MIXFILE_H_
+#ifndef CNC_RED_ALERT_TD_MIXFILE_H_
+#define CNC_RED_ALERT_TD_MIXFILE_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -108,4 +108,4 @@ class MixFileClass : public LinkClass {
   static MixFileClass* First;  // Head of registered mixfile linked list.
 };
 
-#endif  // TD_MIXFILE_H_
+#endif  // CNC_RED_ALERT_TD_MIXFILE_H_

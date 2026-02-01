@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CREW_H
-#define CREW_H
+#ifndef CNC_RED_ALERT_RA_CREW_H_
+#define CNC_RED_ALERT_RA_CREW_H_
 
 /****************************************************************************
 **	This class handles the basic crew logic. This includes hero tracking,
@@ -67,4 +67,4 @@ class CrewClass {
  private:
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CREW_H_

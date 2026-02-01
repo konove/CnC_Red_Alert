@@ -36,11 +36,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef INTERNET_H
-#define INTERNET_H
+#ifndef CNC_RED_ALERT_RA_INTERNET_H_
+#define CNC_RED_ALERT_RA_INTERNET_H_
 
 #define IP_ADDRESS_MAX 40
 
 int Read_Game_Options(char* name);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_INTERNET_H_

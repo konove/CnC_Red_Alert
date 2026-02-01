@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TEXTBTN_H
-#define TEXTBTN_H
+#ifndef CNC_RED_ALERT_RA_TEXTBTN_H_
+#define CNC_RED_ALERT_RA_TEXTBTN_H_
 
 #include "ra/defines.h"
 #include "ra/toggle.h"
@@ -72,4 +72,4 @@ class TextButtonClass : public ToggleClass {
   TextPrintType PrintFlags;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TEXTBTN_H_

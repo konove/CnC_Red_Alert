@@ -85,3 +85,8 @@ guideline of offloading as much processing as possible to compile-time rather
 than run-time.
 
 */
+
+#ifndef CNC_RED_ALERT_RA_STYLE_H_
+#define CNC_RED_ALERT_RA_STYLE_H_
+
+#endif  // CNC_RED_ALERT_RA_STYLE_H_

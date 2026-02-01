@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef HELP_H
-#define HELP_H
+#ifndef CNC_RED_ALERT_RA_HELP_H_
+#define CNC_RED_ALERT_RA_HELP_H_
 
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -144,4 +144,4 @@ class HelpClass : public TabClass {
   };
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_HELP_H_

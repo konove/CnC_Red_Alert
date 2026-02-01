@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef mpmgr_h
-#define mpmgr_h
+#ifndef CNC_RED_ALERT_RA_MPMGRD_H_
+#define CNC_RED_ALERT_RA_MPMGRD_H_
 
 #include "ra/connmgr.h"
 
@@ -81,5 +81,5 @@ class MPlayerManClass : public ConnManClass {
   int _nConnections;
 };
 
-#endif  // mpmgr_h
+#endif  // CNC_RED_ALERT_RA_MPMGRD_H_
 

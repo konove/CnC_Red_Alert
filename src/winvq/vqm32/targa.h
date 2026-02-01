@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMTARGA_H
-#define VQMTARGA_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_TARGA_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_TARGA_H_
 /****************************************************************************
  *
  *         C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
@@ -126,4 +126,4 @@ long SaveTarga(char*, TGAHeader*, char*, char*);
 void XFlipTarga(TGAHeader*, char*);
 void YFlipTarga(TGAHeader*, char*);
 
-#endif /* VQMTARGA_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_TARGA_H_

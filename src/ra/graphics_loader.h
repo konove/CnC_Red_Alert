@@ -19,8 +19,8 @@
 // Graphics loading utilities for title screens and images.
 // Provides functions to load PCX files and display them on screen.
 
-#ifndef GRAPHICS_LOADER_H
-#define GRAPHICS_LOADER_H
+#ifndef CNC_RED_ALERT_RA_GRAPHICS_LOADER_H_
+#define CNC_RED_ALERT_RA_GRAPHICS_LOADER_H_
 
 #include <string_view>
 
@@ -33,4 +33,4 @@ class GraphicViewPortClass;
 void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
                        unsigned char* palette);
 
-#endif  // GRAPHICS_LOADER_H
+#endif  // CNC_RED_ALERT_RA_GRAPHICS_LOADER_H_

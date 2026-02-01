@@ -1,5 +1,6 @@
 // Core type definitions for the project.
-#pragma once
+#ifndef CNC_RED_ALERT_BASE_TYPES_H_
+#define CNC_RED_ALERT_BASE_TYPES_H_
 
 #include <cstddef>
 
@@ -13,3 +14,5 @@ namespace base {
 using ssize = std::ptrdiff_t;
 
 }  // namespace base
+
+#endif  // CNC_RED_ALERT_BASE_TYPES_H_

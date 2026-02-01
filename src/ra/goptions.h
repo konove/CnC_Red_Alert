@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef GOPTIONS_H
-#define GOPTIONS_H
+#ifndef CNC_RED_ALERT_RA_GOPTIONS_H_
+#define CNC_RED_ALERT_RA_GOPTIONS_H_
 
 #include "ra/options.h"
 
@@ -93,4 +93,4 @@ class GameOptionsClass : public OptionsClass {
   int ButtonResumeY;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_GOPTIONS_H_

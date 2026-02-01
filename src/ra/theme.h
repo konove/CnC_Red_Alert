@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef THEME_H
-#define THEME_H
+#ifndef CNC_RED_ALERT_RA_THEME_H_
+#define CNC_RED_ALERT_RA_THEME_H_
 
 #include "ra/defines.h"
 
@@ -90,4 +90,4 @@ class ThemeClass {
   void Suspend();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_THEME_H_

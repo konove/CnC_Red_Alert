@@ -34,8 +34,8 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef WWSTD_H
-#define WWSTD_H
+#ifndef CNC_RED_ALERT_SDLLIB_WWSTD_H_
+#define CNC_RED_ALERT_SDLLIB_WWSTD_H_
 
 inline constexpr int kInvalidHandle = -1;
 
@@ -58,4 +58,4 @@ enum ColorType : int {
   WHITE = 15,
 };
 
-#endif
+#endif  // CNC_RED_ALERT_SDLLIB_WWSTD_H_

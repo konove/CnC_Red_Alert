@@ -136,7 +136,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(1, 22);
     mono->Printf("%3d", Factories.Count());
 
-    SpareTicks = std::min(SpareTicks, (long)TIMER_SECOND);
+    SpareTicks = std::min<long>(SpareTicks, TIMER_SECOND);
 
     /*
     **	CPU utilization record.
@@ -233,8 +233,6 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
  *Ensures that no object gets skipped if it was deleted.                   *
  *=============================================================================================*/
 void LogicClass::AI() {
-  int index;
-
   FramesPerSecond++;
 
   /*
@@ -310,7 +308,7 @@ void LogicClass::AI() {
   /*
   **	Team AI is processed.
   */
-  for (index = 0; index < Teams.Count(); index++) {
+  for (int index = 0; index < Teams.Count(); ++index) {
     Teams.Ptr(index)->AI();
   }
 
@@ -326,15 +324,14 @@ void LogicClass::AI() {
   /*
   **	AI for all sentient objects is processed.
   */
-  for (index = 0; index < Count(); index++) {
+  for (int index = 0; index < Count(); index++) {
     ObjectClass* obj = (*this)[index];
 
     BStart(BENCH_AI);
     obj->AI();
     BEnd(BENCH_AI);
 
-    if (TimeQuake && obj != nullptr && obj->IsActive && !obj->IsInLimbo &&
-        obj->Strength) {
+    if (TimeQuake && obj->IsActive && !obj->IsInLimbo && obj->Strength) {
       int damage = obj->Class_Of().MaxStrength * Rule.QuakeDamagePercent;
       if (TimeQuakeCenter) {
         if (Distance(obj->As_Target(), TimeQuakeCenter) / 256 < MTankDistance) {
@@ -377,24 +374,24 @@ void LogicClass::AI() {
   /*
   **	Factory processing is performed.
   */
-  for (index = 0; index < Factories.Count(); index++) {
+  for (int index = 0; index < Factories.Count(); index++) {
     Factories.Ptr(index)->AI();
   }
 
   /*
   **	House processing is performed.
   */
-  if (Session.Type != GAME_NORMAL) {
-    for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; house++) {
+  if (Session.Type == GAME_NORMAL) {
+    for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; ++house) {
       HouseClass* hptr = HouseClass::As_Pointer(house);
-      if (hptr && hptr->IsActive) {
+      if (hptr != nullptr && hptr->IsActive) {
         hptr->AI();
       }
     }
   } else {
-    for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+    for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; ++house) {
       HouseClass* hptr = HouseClass::As_Pointer(house);
-      if (hptr && hptr->IsActive) {
+      if (hptr != nullptr && hptr->IsActive) {
         hptr->AI();
       }
     }
@@ -406,13 +403,12 @@ void LogicClass::AI() {
       Sound_Effect(VOC_SONAR);
       bAutoSonarPulse = false;
     }
-#define AUTOSONAR_PERIOD TICKS_PER_SECOND * 40
-    Scen.AutoSonarTimer = AUTOSONAR_PERIOD;
+    Scen.AutoSonarTimer = TICKS_PER_SECOND * 40;
   }
 }
 
 /***********************************************************************************************
- * LogicClass::Detach -- Detatch the specified target from the logic system. *
+ * LogicClass::Detach -- Detach the specified target from the logic system. *
  *                                                                                             *
  *    This routine is called when the specified target object is about to be
  *removed from the  * game system and all references to it must be severed. The

@@ -34,8 +34,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef TEAMTYPE_H
-#define TEAMTYPE_H
+#ifndef CNC_RED_ALERT_TD_TEAMTYPE_H_
+#define CNC_RED_ALERT_TD_TEAMTYPE_H_
 
 #include <cstddef>
 
@@ -260,4 +260,4 @@ class TeamTypeClass : public AbstractTypeClass {
   static void* VTable;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TEAMTYPE_H_

@@ -27,8 +27,8 @@
 
 //	Based somewhat on Neal's Borlandized version, "chatapi.h".
 
-#ifndef RAWOLAPI_H
-#define RAWOLAPI_H
+#ifndef CNC_RED_ALERT_RA_RAWOLAPI_H_
+#define CNC_RED_ALERT_RA_RAWOLAPI_H_
 
 #include "ra/function.h"
 
@@ -347,6 +347,6 @@ class RANetUtilEventSink :
 #define LADDER_CODE_RA 1005
 #define LADDER_CODE_AM 500
 
-#endif
+#endif  // CNC_RED_ALERT_RA_RAWOLAPI_H_
 
 #endif

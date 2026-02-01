@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef CNC_RED_ALERT_RA_OPTIONS_H_
+#define CNC_RED_ALERT_RA_OPTIONS_H_
 
 #include "ra/palette.h"
 #include "sdllib/include/keyboard.h"
@@ -158,4 +158,4 @@ class OptionsClass {
   static const char* const HotkeyName;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_OPTIONS_H_

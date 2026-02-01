@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LINK_H
-#define LINK_H
+#ifndef CNC_RED_ALERT_TD_LINK_H_
+#define CNC_RED_ALERT_TD_LINK_H_
 
 /*
 **	This implements a simple linked list. It is possible to add, remove, and
@@ -78,4 +78,4 @@ class LinkClass {
   LinkClass* Prev;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_LINK_H_

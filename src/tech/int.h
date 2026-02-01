@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef INT_H
-#define INT_H
+#ifndef CNC_RED_ALERT_TECH_INT_H_
+#define CNC_RED_ALERT_TECH_INT_H_
 
 #include <climits>
 #include <cstdint>
@@ -443,4 +443,4 @@ typedef Int<MAX_UNIT_PRECISION> BigInt;
 // BigInt Generate_Prime(RandomNumberGenerator & rng, int pbits, BigInt const *
 // dummy);
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_INT_H_

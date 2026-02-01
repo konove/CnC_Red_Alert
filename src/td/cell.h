@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CELL_H
-#define CELL_H
+#ifndef CNC_RED_ALERT_TD_CELL_H_
+#define CNC_RED_ALERT_TD_CELL_H_
 
 #include "td/building.h"
 #include "td/defines.h"
@@ -268,4 +268,4 @@ class CellClass {
   LandType Land;  // The land type of this cell.
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_CELL_H_

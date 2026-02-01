@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef STAGE_H
-#define STAGE_H
+#ifndef CNC_RED_ALERT_TD_STAGE_H_
+#define CNC_RED_ALERT_TD_STAGE_H_
 
 #include "td/monoc.h"
 #include "tech/noinit.h"
@@ -102,4 +102,4 @@ class StageClass {
   void Decode_Pointers() {}
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_STAGE_H_

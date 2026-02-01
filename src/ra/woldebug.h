@@ -16,6 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef CNC_RED_ALERT_RA_WOLDEBUG_H_
+#define CNC_RED_ALERT_RA_WOLDEBUG_H_
+
 #if 0
 
 #define debugprogress
@@ -33,3 +36,5 @@
   if (!(x)) debugprint("ASSERT FALSE!\n");
 
 #endif
+
+#endif  // CNC_RED_ALERT_RA_WOLDEBUG_H_

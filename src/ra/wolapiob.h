@@ -27,8 +27,8 @@
 // when we are finished with the API - this will 	presumably parallel the
 // duration of the user's connection to WOL.
 
-#ifndef WOLAPI_H
-#define WOLAPI_H
+#ifndef CNC_RED_ALERT_RA_WOLAPIOB_H_
+#define CNC_RED_ALERT_RA_WOLAPIOB_H_
 
 #include "IconList.h"
 #include "RAWolapi.h"
@@ -460,6 +460,6 @@ class WolapiObject {
   CHATSAVE* pChatSaveLast;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_WOLAPIOB_H_
 
 #endif

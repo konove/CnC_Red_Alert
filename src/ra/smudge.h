@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SMUDGE_H
-#define SMUDGE_H
+#ifndef CNC_RED_ALERT_RA_SMUDGE_H_
+#define CNC_RED_ALERT_RA_SMUDGE_H_
 
 #include <cstddef>
 
@@ -103,4 +103,4 @@ class SmudgeClass : public ObjectClass {
   static HousesType ToOwn;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_SMUDGE_H_

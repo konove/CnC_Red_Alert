@@ -43,8 +43,8 @@
  *   Animate_Frame -- Animate a frame to a viewport.                       *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef WSA_H
-#define WSA_H
+#ifndef CNC_RED_ALERT_SDLLIB_WSA_H_
+#define CNC_RED_ALERT_SDLLIB_WSA_H_
 
 #include "sdllib/include/gbuffer.h"
 
@@ -99,4 +99,4 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
                                          int nextrow, int copy);
 }
 
-#endif  // WSA_H
+#endif  // CNC_RED_ALERT_SDLLIB_WSA_H_

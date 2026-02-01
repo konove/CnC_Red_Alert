@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CRATE_H
-#define CRATE_H
+#ifndef CNC_RED_ALERT_RA_CRATE_H_
+#define CNC_RED_ALERT_RA_CRATE_H_
 
 #include "ra/defines.h"
 #include "ra/jshell.h"
@@ -68,4 +68,4 @@ class CrateClass {
   CELL Cell;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CRATE_H_

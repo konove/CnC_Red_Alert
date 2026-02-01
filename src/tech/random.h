@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RANDOM_H
-#define RANDOM_H
+#ifndef CNC_RED_ALERT_TECH_RANDOM_H_
+#define CNC_RED_ALERT_TECH_RANDOM_H_
 
 /**********************************************************************
 ** Enable this define to turn on the random # counters.  This must not
@@ -84,4 +84,4 @@ class RandomClass {
   };
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_RANDOM_H_

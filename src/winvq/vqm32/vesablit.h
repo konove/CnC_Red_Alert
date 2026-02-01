@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMVESABLIT_H
-#define VQMVESABLIT_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_VESABLIT_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_VESABLIT_H_
 /****************************************************************************
  *
  *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -67,4 +67,4 @@ void __cdecl Copy_Word_Row(char* source, char* dest, char* palette,
 }
 #endif
 
-#endif /* VQMVESABLIT_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_VESABLIT_H_

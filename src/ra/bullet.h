@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BULLET_H
-#define BULLET_H
+#ifndef CNC_RED_ALERT_RA_BULLET_H_
+#define CNC_RED_ALERT_RA_BULLET_H_
 
 #include <cstddef>
 
@@ -150,4 +150,4 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   WarheadType Warhead;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_BULLET_H_

@@ -35,8 +35,8 @@
  *---------------------------------------------------------------------------------------------*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef CNC_RED_ALERT_RA_DEFINES_H_
+#define CNC_RED_ALERT_RA_DEFINES_H_
 
 #include <cstdint>
 #include <utility>
@@ -3329,4 +3329,4 @@ typedef enum OptionControlType {
 // Maximum number of multi players possible.
 #define MAX_PLAYERS 8  // max # of players we can have
 
-#endif
+#endif  // CNC_RED_ALERT_RA_DEFINES_H_

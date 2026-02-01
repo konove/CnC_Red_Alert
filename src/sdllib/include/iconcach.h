@@ -40,8 +40,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef ICONCACH_H
-#define ICONCACH_H
+#ifndef CNC_RED_ALERT_SDLLIB_ICONCACH_H_
+#define CNC_RED_ALERT_SDLLIB_ICONCACH_H_
 
 #include "sdllib/include/tile.h"
 
@@ -64,4 +64,4 @@ typedef struct tIconSetType {
 extern void Restore_Cached_Icons();
 extern void Register_Icon_Set(const void* icon_data, bool pre_cache);
 
-#endif  // ICONCACH_H
+#endif  // CNC_RED_ALERT_SDLLIB_ICONCACH_H_

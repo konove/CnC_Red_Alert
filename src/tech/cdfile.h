@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CDFILE_H
-#define CDFILE_H
+#ifndef CNC_RED_ALERT_TECH_CDFILE_H_
+#define CNC_RED_ALERT_TECH_CDFILE_H_
 
 #include <string>
 #include <string_view>
@@ -129,4 +129,4 @@ int harderr_handler(unsigned, unsigned, unsigned __far*);
 
 int Get_CD_Drive();
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_CDFILE_H_

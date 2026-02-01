@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef ANIM_H
-#define ANIM_H
+#ifndef CNC_RED_ALERT_TD_ANIM_H_
+#define CNC_RED_ALERT_TD_ANIM_H_
 
 #include <cstddef>
 
@@ -188,4 +188,4 @@ class AnimClass : public ObjectClass, private StageClass {
 
 void Shorten_Attached_Anims(ObjectClass* obj);
 
-#endif
+#endif  // CNC_RED_ALERT_TD_ANIM_H_

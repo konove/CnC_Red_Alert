@@ -72,8 +72,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CONNMGR_H
-#define CONNMGR_H
+#ifndef CNC_RED_ALERT_RA_CONNMGR_H_
+#define CNC_RED_ALERT_RA_CONNMGR_H_
 
 /*
 ***************************** Class Declaration *****************************
@@ -154,4 +154,4 @@ class ConnManClass {
   .....................................................................*/
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CONNMGR_H_

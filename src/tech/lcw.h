@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LCW_H
-#define LCW_H
+#ifndef CNC_RED_ALERT_TECH_LCW_H_
+#define CNC_RED_ALERT_TECH_LCW_H_
 
 int LCW_Uncomp(const void* source, void* dest, unsigned long length = 0);
 
@@ -46,4 +46,4 @@ extern "C" {
 int __cdecl LCW_Comp(const void* source, void* dest, int length);
 }
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_LCW_H_

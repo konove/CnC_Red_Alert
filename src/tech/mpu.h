@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MPU_H
-#define MPU_H
+#ifndef CNC_RED_ALERT_TECH_MPU_H_
+#define CNC_RED_ALERT_TECH_MPU_H_
 
 #include <cstdint>
 
@@ -76,4 +76,4 @@ constexpr int kProc80586 = 2;  // Pentium and later
 // Returns the processor type. All modern CPUs return kProc80586.
 inline int Processor() { return kProc80586; }
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_MPU_H_

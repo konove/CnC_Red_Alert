@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TEAM_H
-#define TEAM_H
+#ifndef CNC_RED_ALERT_RA_TEAM_H_
+#define CNC_RED_ALERT_RA_TEAM_H_
 
 #include <cstddef>
 
@@ -286,4 +286,4 @@ class TeamClass : public AbstractClass {
   unsigned char Quantity[TeamTypeClass::MAX_TEAM_CLASSCOUNT];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TEAM_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SIDEBAR_H
-#define SIDEBAR_H
+#ifndef CNC_RED_ALERT_RA_SIDEBAR_H_
+#define CNC_RED_ALERT_RA_SIDEBAR_H_
 
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -411,4 +411,4 @@ class SidebarClass : public PowerClass {
   unsigned IsDemolishActive : 1;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_SIDEBAR_H_

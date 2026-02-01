@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TEMPLATE_H
-#define TEMPLATE_H
+#ifndef CNC_RED_ALERT_TD_TEMPLATE_H_
+#define CNC_RED_ALERT_TD_TEMPLATE_H_
 
 #include <cstddef>
 
@@ -130,4 +130,4 @@ class TemplateClass : public ObjectClass {
   static void* VTable;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TEMPLATE_H_

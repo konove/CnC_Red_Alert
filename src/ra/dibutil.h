@@ -29,6 +29,10 @@
  */
 
 /* DIB constants */
+
+#ifndef CNC_RED_ALERT_RA_DIBUTIL_H_
+#define CNC_RED_ALERT_RA_DIBUTIL_H_
+
 #define PALVERSION 0x300
 
 /* DIB macros */
@@ -38,3 +42,5 @@
 
 /* function prototypes */
 HANDLE AllocRoomForDIB(BITMAPINFOHEADER bi, HBITMAP hBitmap);
+
+#endif  // CNC_RED_ALERT_RA_DIBUTIL_H_

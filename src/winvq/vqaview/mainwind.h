@@ -34,6 +34,9 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#ifndef CNC_RED_ALERT_WINVQ_VQAVIEW_MAINWIND_H_
+#define CNC_RED_ALERT_WINVQ_VQAVIEW_MAINWIND_H_
+
 //==========================================================================
 // Public classes
 //==========================================================================
@@ -72,3 +75,5 @@ class MainWindowClass {
 //==========================================================================
 
 extern MainWindowClass Main_Window;
+
+#endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_MAINWIND_H_

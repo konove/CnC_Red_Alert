@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CARGO_H
-#define CARGO_H
+#ifndef CNC_RED_ALERT_TD_CARGO_H_
+#define CNC_RED_ALERT_TD_CARGO_H_
 
 #include "td/monoc.h"
 #include "tech/noinit.h"
@@ -93,4 +93,4 @@ class CargoClass {
   FootClass* CargoHold;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_CARGO_H_

@@ -16,6 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef CNC_RED_ALERT_RA_WOLEDIT_H_
+#define CNC_RED_ALERT_RA_WOLEDIT_H_
+
 #ifdef WOLAPI_INTEGRATION
 
 /***************************************************************************
@@ -40,3 +43,5 @@ class WOLEditClass : public EditClass {
 };
 
 #endif
+
+#endif  // CNC_RED_ALERT_RA_WOLEDIT_H_

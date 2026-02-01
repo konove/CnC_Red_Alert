@@ -30,8 +30,8 @@
  * HISTORY:    07/07/1998 ajw : Created, largely in hack mode.             *
  *=========================================================================*/
 
-#ifndef ICONLIST_H
-#define ICONLIST_H
+#ifndef CNC_RED_ALERT_RA_ICONLIST_H_
+#define CNC_RED_ALERT_RA_ICONLIST_H_
 
 #include "ra/function.h"
 #include "ra/vector.h"
@@ -208,6 +208,6 @@ class IconListClass : public ListClass {
   int iMaxItems;    //	Number of items to limit list to, if bDoAlloc is true.
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_ICONLIST_H_
 
 #endif

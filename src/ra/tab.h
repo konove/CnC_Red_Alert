@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TAB_H
-#define TAB_H
+#ifndef CNC_RED_ALERT_RA_TAB_H_
+#define CNC_RED_ALERT_RA_TAB_H_
 
 #include "ra/credits.h"
 #include "ra/jshell.h"
@@ -83,4 +83,4 @@ class TabClass : public SidebarClass {
   static const void* TabShape;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TAB_H_

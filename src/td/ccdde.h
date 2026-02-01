@@ -40,6 +40,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#ifndef CNC_RED_ALERT_TD_CCDDE_H_
+#define CNC_RED_ALERT_TD_CCDDE_H_
+
 #ifdef _WIN32
 
 #include "td/dde.h"
@@ -85,3 +88,5 @@ extern DDEServerClass DDEServer;
 extern BOOL Send_Data_To_DDE_Server(char* data, int length, int packet_type);
 
 #endif  // WIN32
+
+#endif  // CNC_RED_ALERT_TD_CCDDE_H_

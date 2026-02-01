@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TYPE_H
-#define TYPE_H
+#ifndef CNC_RED_ALERT_TD_TYPE_H_
+#define CNC_RED_ALERT_TD_TYPE_H_
 
 #include <cstring>
 
@@ -1757,4 +1757,4 @@ class SmudgeTypeClass : public ObjectTypeClass {
   static const SmudgeTypeClass* const Pointers[SMUDGE_COUNT];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TYPE_H_

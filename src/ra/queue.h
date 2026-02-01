@@ -43,8 +43,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef CNC_RED_ALERT_RA_QUEUE_H_
+#define CNC_RED_ALERT_RA_QUEUE_H_
 
 #include <cstdint>
 
@@ -295,4 +295,4 @@ bool Queue_Exit();
 void Queue_AI();
 void Add_CRC(uint32_t* crc, uint32_t val);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_QUEUE_H_

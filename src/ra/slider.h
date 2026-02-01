@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SLIDER_H
-#define SLIDER_H
+#ifndef CNC_RED_ALERT_RA_SLIDER_H_
+#define CNC_RED_ALERT_RA_SLIDER_H_
 
 #include "ra/control.h"
 #include "ra/gauge.h"
@@ -111,4 +111,4 @@ class SliderClass : public GaugeClass {
   void Recalc_Thumb();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_SLIDER_H_

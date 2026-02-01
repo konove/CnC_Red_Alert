@@ -19,8 +19,8 @@
 /* $Header:   F:\projects\c&c0\vcs\code\led.h_v   4.42   04 Jul 1996 16:10:40
  * JOE_BOSTIC  $ */
 
-#ifndef LED_H
-#define LED_H
+#ifndef CNC_RED_ALERT_RA_LED_H_
+#define CNC_RED_ALERT_RA_LED_H_
 
 class LEDClass {
  public:
@@ -49,4 +49,4 @@ class LEDClass {
   static void Send_To_Keyboard(unsigned char val);
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_LED_H_

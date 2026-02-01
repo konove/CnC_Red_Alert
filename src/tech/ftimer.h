@@ -58,8 +58,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FTIMER_H
-#define FTIMER_H
+#ifndef CNC_RED_ALERT_TECH_FTIMER_H_
+#define CNC_RED_ALERT_TECH_FTIMER_H_
 
 #include "tech/noinit.h"
 
@@ -592,4 +592,4 @@ bool CDTimerClass<T>::Is_Active() const {
   return this->Started != 0xFFFFFFFFU;
 }
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_FTIMER_H_

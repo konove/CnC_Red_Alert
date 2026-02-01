@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MSGBOX_H
-#define MSGBOX_H
+#ifndef CNC_RED_ALERT_RA_MSGBOX_H_
+#define CNC_RED_ALERT_RA_MSGBOX_H_
 
 #include "ra/conquer.h"
 
@@ -55,4 +55,4 @@ class WWMessageBox {
               int b3txt = TXT_NONE, bool preserve = false);
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_MSGBOX_H_

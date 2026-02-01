@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FACING_H
-#define FACING_H
+#ifndef CNC_RED_ALERT_RA_FACING_H_
+#define CNC_RED_ALERT_RA_FACING_H_
 #include "ra/face.h"
 #include "tech/noinit.h"
 
@@ -84,4 +84,4 @@ class FacingClass {
   DirType DesiredFacing;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_FACING_H_

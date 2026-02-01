@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef DIAL8_H
-#define DIAL8_H
+#ifndef CNC_RED_ALERT_RA_DIAL8_H_
+#define CNC_RED_ALERT_RA_DIAL8_H_
 
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -79,4 +79,4 @@ class Dial8Class : public ControlClass {
   FacingType OldFacing;  // previous Facing value
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_DIAL8_H_

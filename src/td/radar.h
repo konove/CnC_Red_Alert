@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RADAR_H
-#define RADAR_H
+#ifndef CNC_RED_ALERT_TD_RADAR_H_
+#define CNC_RED_ALERT_TD_RADAR_H_
 
 #include "sdllib/include/keyboard.h"
 #include "td/defines.h"
@@ -216,4 +216,4 @@ class RadarClass : public DisplayClass {
   CELL PixelStack[PIXELSTACK];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_RADAR_H_

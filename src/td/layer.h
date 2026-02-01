@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LAYER_H
-#define LAYER_H
+#ifndef CNC_RED_ALERT_TD_LAYER_H_
+#define CNC_RED_ALERT_TD_LAYER_H_
 
 #include "td/object.h"
 #include "td/vector.h"
@@ -64,4 +64,4 @@ class LayerClass : public DynamicVectorClass<ObjectClass*> {
   virtual void Decode_Pointers();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_LAYER_H_

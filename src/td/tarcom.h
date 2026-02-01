@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TARCOM_H
-#define TARCOM_H
+#ifndef CNC_RED_ALERT_TD_TARCOM_H_
+#define CNC_RED_ALERT_TD_TARCOM_H_
 
 #include "td/defines.h"
 #include "td/monoc.h"
@@ -77,4 +77,4 @@ class TarComClass : public TurretClass {
   void Decode_Pointers() override;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_TARCOM_H_

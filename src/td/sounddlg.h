@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SOUNDDLG_H
-#define SOUNDDLG_H
+#ifndef CNC_RED_ALERT_TD_SOUNDDLG_H_
+#define CNC_RED_ALERT_TD_SOUNDDLG_H_
 
 class SoundControlsClass {
   enum SoundControlsClassEnums {
@@ -154,4 +154,4 @@ class SoundControlsClass {
   int FXSlider_Height;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_SOUNDDLG_H_

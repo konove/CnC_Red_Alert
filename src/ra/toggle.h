@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TOGGLE_H
-#define TOGGLE_H
+#ifndef CNC_RED_ALERT_RA_TOGGLE_H_
+#define CNC_RED_ALERT_RA_TOGGLE_H_
 
 #include "ra/control.h"
 #include "sdllib/include/keyboard.h"
@@ -82,4 +82,4 @@ class ToggleClass : public ControlClass {
   int Action(unsigned flags, KeyNumType& key) override;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TOGGLE_H_

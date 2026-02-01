@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MONOC_H
-#define MONOC_H
+#ifndef CNC_RED_ALERT_TD_MONOC_H_
+#define CNC_RED_ALERT_TD_MONOC_H_
 
 // #include	"dpmi.h"
 // #include	"function.h"
@@ -193,4 +193,4 @@ void Mono_Print(const void* text);
 int Mono_X();
 int Mono_Y();
 
-#endif
+#endif  // CNC_RED_ALERT_TD_MONOC_H_

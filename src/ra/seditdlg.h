@@ -16,6 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef CNC_RED_ALERT_RA_SEDITDLG_H_
+#define CNC_RED_ALERT_RA_SEDITDLG_H_
+
 #ifdef WOLAPI_INTEGRATION
 
 //	SEditDlg.h - "SimpleEditDlgClass": An ok/cancel type dialog with a
@@ -60,3 +63,5 @@ class SimpleEditDlgClass {
 };
 
 #endif
+
+#endif  // CNC_RED_ALERT_RA_SEDITDLG_H_

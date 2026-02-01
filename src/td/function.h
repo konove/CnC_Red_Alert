@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FUNCTION_H
-#define FUNCTION_H
+#ifndef CNC_RED_ALERT_TD_FUNCTION_H_
+#define CNC_RED_ALERT_TD_FUNCTION_H_
 
 /*
 Map (screen) class heirarchy.
@@ -116,4 +116,4 @@ UnitTypeClass      │   BuildingTypeClass      │
            AircraftTypeClass
 */
 
-#endif
+#endif  // CNC_RED_ALERT_TD_FUNCTION_H_

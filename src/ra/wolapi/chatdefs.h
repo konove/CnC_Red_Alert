@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CHATDEFS_HEADER
-#define CHATDEFS_HEADER
+#ifndef CNC_RED_ALERT_RA_WOLAPI_CHATDEFS_H_
+#define CNC_RED_ALERT_RA_WOLAPI_CHATDEFS_H_
 
 //
 // Response errors (Sent as arguments to the OnFoo calls)
@@ -142,4 +142,4 @@
 #define CHAN_MODE_BAN 0x0200
 #define CHAN_MODE_LIMIT 0x0400
 
-#endif
+#endif  // CNC_RED_ALERT_RA_WOLAPI_CHATDEFS_H_

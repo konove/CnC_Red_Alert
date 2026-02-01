@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FACTORY_H
-#define FACTORY_H
+#ifndef CNC_RED_ALERT_TD_FACTORY_H_
+#define CNC_RED_ALERT_TD_FACTORY_H_
 
 #include <cstddef>
 
@@ -154,4 +154,4 @@ class FactoryClass : StageClass {
   HouseClass* House;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_FACTORY_H_

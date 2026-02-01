@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BUILDING_H
-#define BUILDING_H
+#ifndef CNC_RED_ALERT_RA_BUILDING_H_
+#define CNC_RED_ALERT_RA_BUILDING_H_
 
 #include <cstddef>
 
@@ -367,4 +367,4 @@ class BuildingClass : public TechnoClass {
   static const COORDINATE CenterOffset[BSIZE_COUNT];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_BUILDING_H_

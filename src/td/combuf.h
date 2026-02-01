@@ -51,8 +51,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef COMBUF_H
-#define COMBUF_H
+#ifndef CNC_RED_ALERT_TD_COMBUF_H_
+#define CNC_RED_ALERT_TD_COMBUF_H_
 
 /*
 ********************************** Defines **********************************
@@ -178,6 +178,6 @@ class CommBufferClass {
   int DebugMaxNames;  // max # of names in array
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_COMBUF_H_
 
 /**************************** end of combuf.h ******************************/

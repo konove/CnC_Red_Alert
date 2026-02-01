@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BASE_H
-#define BASE_H
+#ifndef CNC_RED_ALERT_RA_BASE_H_
+#define CNC_RED_ALERT_RA_BASE_H_
 
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -135,4 +135,4 @@ class BaseClass {
   HousesType House;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_BASE_H_

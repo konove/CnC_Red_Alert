@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMCRC_H
-#define VQMCRC_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_CRC_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_CRC_H_
 /****************************************************************************
  *
  *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -48,4 +48,4 @@ long __cdecl Calculate_CRC(void const* buffer, long length);
 }
 #endif
 
-#endif /* VQMCRC_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_CRC_H_

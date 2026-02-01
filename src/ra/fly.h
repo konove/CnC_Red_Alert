@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef FLY_H
-#define FLY_H
+#ifndef CNC_RED_ALERT_RA_FLY_H_
+#define CNC_RED_ALERT_RA_FLY_H_
 
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -78,4 +78,4 @@ class FlyClass {
   MPHType SpeedAdd;     // Lepton add (per frame).
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_FLY_H_

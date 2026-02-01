@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BUFFER_H
-#define BUFFER_H
+#ifndef CNC_RED_ALERT_SDLLIB_BUFFER_H_
+#define CNC_RED_ALERT_SDLLIB_BUFFER_H_
 
 #include <cstdint>
 
@@ -62,4 +62,4 @@ class BufferClass {
   BufferClass& operator=(BufferClass&&) = delete;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_SDLLIB_BUFFER_H_

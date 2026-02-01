@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SCORE_H
-#define SCORE_H
+#ifndef CNC_RED_ALERT_TD_SCORE_H_
+#define CNC_RED_ALERT_TD_SCORE_H_
 
 #include <cstring>
 
@@ -171,4 +171,4 @@ void Call_Back_Delay(int time);
 int Alloc_Object(ScoreAnimClass* obj);
 extern GraphicBufferClass* PseudoSeenBuff;
 
-#endif
+#endif  // CNC_RED_ALERT_TD_SCORE_H_

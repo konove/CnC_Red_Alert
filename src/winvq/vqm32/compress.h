@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMCOMP_H
-#define VQMCOMP_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_COMPRESS_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_COMPRESS_H_
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -55,4 +55,4 @@ long __cdecl AudioUnzap(void* source, void* dest, long);
 }
 #endif
 
-#endif /* VQMCOMP_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_COMPRESS_H_

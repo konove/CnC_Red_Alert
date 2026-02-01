@@ -129,8 +129,8 @@
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef IPXMANAGER_H
-#define IPXMANAGER_H
+#ifndef CNC_RED_ALERT_TD_IPXMGR_H_
+#define CNC_RED_ALERT_TD_IPXMGR_H_
 
 /*
 ********************************* Includes **********************************
@@ -388,5 +388,5 @@ class IPXManagerClass : public ConnManClass {
   int BadConnection;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_IPXMGR_H_
 /*************************** end of ipxmgr.h *******************************/

@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef OVERLAY_H
-#define OVERLAY_H
+#ifndef CNC_RED_ALERT_TD_OVERLAY_H_
+#define CNC_RED_ALERT_TD_OVERLAY_H_
 
 #include <cstddef>
 
@@ -118,4 +118,4 @@ class OverlayClass : public ObjectClass {
   static void* VTable;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_OVERLAY_H_

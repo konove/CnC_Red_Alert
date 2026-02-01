@@ -16,6 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef CNC_RED_ALERT_RA_WOLSTRNG_H_
+#define CNC_RED_ALERT_RA_WOLSTRNG_H_
+
 //	Wolstrng.h - this will presumably go away eventually.
 
 //	New character strings.
@@ -209,3 +212,5 @@ extern const char TXT_WOL_CANCELMEANSFORFEIT[];
 extern const char TXT_WOL_DLLERROR_GETIE3[];
 extern const char TXT_WOL_DLLERROR_CALLUS[];
 extern const char TXT_WOL_PRIVATE[];
+
+#endif  // CNC_RED_ALERT_RA_WOLSTRNG_H_

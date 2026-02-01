@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SHA_H
-#define SHA_H
+#ifndef CNC_RED_ALERT_TECH_SHA_H_
+#define CNC_RED_ALERT_TECH_SHA_H_
 
 #include <cstdint>
 #include <new>
@@ -203,4 +203,4 @@ class SHAEngine {
   "\x32\x32\xAF\xFA\x48\x62\x8A\x26\x65\x3B\x5A\xAA\x44\x54\x1F\xD9\x0D\x69" \
   "\x06\x03"
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_SHA_H_

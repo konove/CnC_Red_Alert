@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TECHNO_H
-#define TECHNO_H
+#ifndef CNC_RED_ALERT_RA_TECHNO_H_
+#define CNC_RED_ALERT_RA_TECHNO_H_
 
 #include "ra/bullet.h"
 #include "ra/cargo.h"
@@ -434,4 +434,4 @@ class TechnoClass : public RadioClass,
   static const int BodyShape[32];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TECHNO_H_

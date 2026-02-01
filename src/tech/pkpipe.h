@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef PKPIPE_H
-#define PKPIPE_H
+#ifndef CNC_RED_ALERT_TECH_PKPIPE_H_
+#define CNC_RED_ALERT_TECH_PKPIPE_H_
 
 #include "tech/blowfish.h"
 #include "tech/blowpipe.h"
@@ -135,4 +135,4 @@ class PKPipe : public Pipe {
   int Plain_Key_Length() const;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_PKPIPE_H_

@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CCFILE_H
-#define CCFILE_H
+#ifndef CNC_RED_ALERT_TD_CCFILE_H_
+#define CNC_RED_ALERT_TD_CCFILE_H_
 
 #include <cstdio>
 
@@ -123,4 +123,4 @@ class CCFileClass : public CDFileClass {
 
 void WWDOS_Shutdown();
 
-#endif
+#endif  // CNC_RED_ALERT_TD_CCFILE_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TYPE_H
-#define TYPE_H
+#ifndef CNC_RED_ALERT_RA_TYPE_H_
+#define CNC_RED_ALERT_RA_TYPE_H_
 
 #include <cstddef>
 #include <cstring>
@@ -1905,4 +1905,4 @@ class SmudgeTypeClass : public ObjectTypeClass {
                HousesType house = HOUSE_NONE) const override;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TYPE_H_

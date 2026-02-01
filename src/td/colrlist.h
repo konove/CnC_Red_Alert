@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef COLORLIST_H
-#define COLORLIST_H
+#ifndef CNC_RED_ALERT_TD_COLRLIST_H_
+#define CNC_RED_ALERT_TD_COLRLIST_H_
 
 #include "sdllib/include/wwstd.h"
 #include "td/defines.h"
@@ -87,4 +87,4 @@ class ColorListClass : public ListClass {
   int SelectColor;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_COLRLIST_H_

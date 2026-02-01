@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef GAMEDLG_H
-#define GAMEDLG_H
+#ifndef CNC_RED_ALERT_TD_GAMEDLG_H_
+#define CNC_RED_ALERT_TD_GAMEDLG_H_
 
 class GameControlsClass {
  public:
@@ -47,4 +47,4 @@ class GameControlsClass {
   void Process();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_GAMEDLG_H_

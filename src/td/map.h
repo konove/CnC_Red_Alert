@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MAP_H
-#define MAP_H
+#ifndef CNC_RED_ALERT_TD_MAP_H_
+#define CNC_RED_ALERT_TD_MAP_H_
 
 #include "td/defines.h"
 #include "td/gscreen.h"
@@ -160,4 +160,4 @@ class MapClass : public GScreenClass {
 int Terrain_Cost(CELL cell, FacingType facing);
 int Coord_Spillage_Number(COORDINATE coord, int maxsize);
 
-#endif
+#endif  // CNC_RED_ALERT_TD_MAP_H_

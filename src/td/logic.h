@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef LOGIC_H
-#define LOGIC_H
+#ifndef CNC_RED_ALERT_TD_LOGIC_H_
+#define CNC_RED_ALERT_TD_LOGIC_H_
 
 #include "td/layer.h"
 #include "td/monoc.h"
@@ -54,4 +54,4 @@ class LogicClass : public LayerClass {
   void AI();
   void Debug_Dump(MonoClass* mono) const;
 };
-#endif
+#endif  // CNC_RED_ALERT_TD_LOGIC_H_

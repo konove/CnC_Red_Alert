@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef TARGET_H
-#define TARGET_H
+#ifndef CNC_RED_ALERT_RA_TARGET_H_
+#define CNC_RED_ALERT_RA_TARGET_H_
 
 #include "ra/abstract.h"
 #include "ra/ccini.h"
@@ -269,4 +269,4 @@ VesselClass* As_Vessel(TARGET target);
 inline bool Target_Legal(TARGET target) { return target != TARGET_NONE; };
 ObjectClass* As_Object(TARGET target);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_TARGET_H_

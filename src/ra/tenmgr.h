@@ -30,6 +30,9 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#ifndef CNC_RED_ALERT_RA_TENMGR_H_
+#define CNC_RED_ALERT_RA_TENMGR_H_
+
 class TenConnManClass : public ConnManClass {
  public:
   //
@@ -112,3 +115,5 @@ class TenConnManClass : public ConnManClass {
 };
 
 /***************************** end of tenmgr.h *****************************/
+
+#endif  // CNC_RED_ALERT_RA_TENMGR_H_

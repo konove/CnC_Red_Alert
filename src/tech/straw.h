@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef STRAW_H
-#define STRAW_H
+#ifndef CNC_RED_ALERT_TECH_STRAW_H_
+#define CNC_RED_ALERT_TECH_STRAW_H_
 
 /*
 **	This is a demand driven data carrier. It will retrieve the byte request
@@ -68,4 +68,4 @@ class Straw {
   Straw* ChainFrom = nullptr;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_STRAW_H_

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef OVERLAY_H
-#define OVERLAY_H
+#ifndef CNC_RED_ALERT_RA_OVERLAY_H_
+#define CNC_RED_ALERT_RA_OVERLAY_H_
 
 #include <cstddef>
 
@@ -107,4 +107,4 @@ class OverlayClass : public ObjectClass {
   static HousesType ToOwn;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_OVERLAY_H_

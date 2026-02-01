@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BLOWFISH_H
-#define BLOWFISH_H
+#ifndef CNC_RED_ALERT_TECH_BLOWFISH_H_
+#define CNC_RED_ALERT_TECH_BLOWFISH_H_
 
 #include <climits>
 
@@ -107,4 +107,4 @@ class BlowfishEngine {
   unsigned long bf_S[4][UCHAR_MAX + 1];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_BLOWFISH_H_

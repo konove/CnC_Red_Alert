@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQAPLAYP_H
-#define VQAPLAYP_H
+#ifndef CNC_RED_ALERT_WINVQ_VQA32_VQAPLAYP_H_
+#define CNC_RED_ALERT_WINVQ_VQA32_VQAPLAYP_H_
 /****************************************************************************
  *
  *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -496,4 +496,4 @@ long CopyAudio(VQAHandleP* vqap);
 void VQA_InitMono(VQAHandleP* vqap);
 void VQA_UpdateMono(VQAHandleP* vqap);
 
-#endif /* VQAPLAYP_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAYP_H_

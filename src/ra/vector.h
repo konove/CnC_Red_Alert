@@ -18,8 +18,8 @@
 
 // Dynamically-sized array containers for game objects.
 
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef CNC_RED_ALERT_RA_VECTOR_H_
+#define CNC_RED_ALERT_RA_VECTOR_H_
 
 #include <new>  // IWYU pragma: keep
 
@@ -181,4 +181,4 @@ bool VectorClass<T>::Resize(base::ssize newsize, const T* array) {
   return false;
 }
 
-#endif
+#endif  // CNC_RED_ALERT_RA_VECTOR_H_

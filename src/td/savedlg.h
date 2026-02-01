@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef SAVEDLG_H
-#define SAVEDLG_H
+#ifndef CNC_RED_ALERT_TD_SAVEDLG_H_
+#define CNC_RED_ALERT_TD_SAVEDLG_H_
 
 class SaveOptionsClass {
  private:
@@ -66,4 +66,4 @@ class SaveOptionsClass {
   void Process();
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_SAVEDLG_H_

@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMIFF_H
-#define VQMIFF_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_IFF_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_IFF_H_
 /****************************************************************************
  *
  *         C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
@@ -139,4 +139,4 @@ long FindChunk(IFFHandle*, long);
 char* IDtoStr(long, char*);
 long CurrentFilePos(IFFHandle*);
 
-#endif /* VQMIFF_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_IFF_H_

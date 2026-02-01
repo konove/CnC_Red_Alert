@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VQMCAPTOKEN_H
-#define VQMCAPTOKEN_H
+#ifndef CNC_RED_ALERT_WINVQ_VQM32_CAPTOKEN_H_
+#define CNC_RED_ALERT_WINVQ_VQM32_CAPTOKEN_H_
 /****************************************************************************
  *
  *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -76,4 +76,4 @@ typedef struct _CaptionText {
 /* Function prototypes. */
 long BuildCaptions(char* name, char* buffer);
 
-#endif /* VQMCAPTOKEN_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQM32_CAPTOKEN_H_

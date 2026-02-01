@@ -50,8 +50,8 @@
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef SEQCONN_H
-#define SEQCONN_H
+#ifndef CNC_RED_ALERT_RA_SEQCONN_H_
+#define CNC_RED_ALERT_RA_SEQCONN_H_
 
 #include "ra/comqueue.h"
 #include "ra/connect.h"
@@ -109,5 +109,5 @@ class SequencedConnClass : public ConnectionClass {
   unsigned long NumSendAck;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_SEQCONN_H_
 /*************************** end of seqconn.h ******************************/

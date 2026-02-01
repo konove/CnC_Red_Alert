@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef AIRCRAFT_H
-#define AIRCRAFT_H
+#ifndef CNC_RED_ALERT_TD_AIRCRAFT_H_
+#define CNC_RED_ALERT_TD_AIRCRAFT_H_
 
 #include <cstddef>
 
@@ -230,4 +230,4 @@ class AircraftClass : public FootClass, public FlyClass {
   static void* VTable;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_AIRCRAFT_H_

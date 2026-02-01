@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef BENCH_H
-#define BENCH_H
+#ifndef CNC_RED_ALERT_TECH_BENCH_H_
+#define CNC_RED_ALERT_TECH_BENCH_H_
 
 #include "tech/ftimer.h"
 #include "tech/mpu.h"
@@ -112,4 +112,4 @@ class Benchmark {
   unsigned long TotalCount = 0;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_BENCH_H_

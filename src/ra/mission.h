@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef RA_MISSION_H_
-#define RA_MISSION_H_
+#ifndef CNC_RED_ALERT_RA_MISSION_H_
+#define CNC_RED_ALERT_RA_MISSION_H_
 
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -200,4 +200,4 @@ class MissionControlClass {
   fixed AARate;
 };
 
-#endif  // RA_MISSION_H_
+#endif  // CNC_RED_ALERT_RA_MISSION_H_

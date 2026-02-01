@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CCINI_H
-#define CCINI_H
+#ifndef CNC_RED_ALERT_RA_CCINI_H_
+#define CNC_RED_ALERT_RA_CCINI_H_
 
 #include <cstdint>
 
@@ -146,4 +146,4 @@ class CCINIClass : public INIClass {
   unsigned char Digest[20];
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CCINI_H_
