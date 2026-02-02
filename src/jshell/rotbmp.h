@@ -19,16 +19,12 @@
 #ifndef CNC_RED_ALERT_JSHELL_ROTBMP_H_
 #define CNC_RED_ALERT_JSHELL_ROTBMP_H_
 
-#include "base/trig.h"
-#include "sdllib/gbuffer.h"
+class GraphicViewPortClass;
 
-#define MAKE_PTR(vp, x, y) \
-  (char*)(vp->Get_Offset() + ((y) * (vp->Get_Width() + vp->Get_XAdd())) + (x))
-#define MAKE_PTR2(vp, x, y)  \
-  (char*)(vp->Get_Offset() + \
-          (((y) << 1) * (vp->Get_Width() + vp->Get_XAdd())) + ((x) << 1))
-
-int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
-                  int angle);
+// Rotates the 8-bit indexed-color bitmap in `srcvp` into `destvp` by `angle`
+// (0-255 maps to 0-360 degrees, clockwise). Zero pixels are transparent.
+// `destvp` should be a square with sides >= MAX(src width, src height) * sqrt(2).
+void Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
+                   int angle);
 
 #endif  // CNC_RED_ALERT_JSHELL_ROTBMP_H_

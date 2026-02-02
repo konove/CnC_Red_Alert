@@ -341,8 +341,11 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   bool Lock();
   bool Unlock();
 
-  void Scale_Rotate(BitmapClass& bmp, const TPoint2D& pt, long scale,
-                    unsigned char angle);
+  // Draws `bmp` scaled and rotated onto this buffer, centered at `pt`.
+  // `scale` is 24.8 fixed point (0x100 = 1.0). `angle` is 0-255 (full circle).
+  // Zero pixels are treated as transparent. No clipping is performed.
+  void Scale_Rotate(const BitmapClass& bmp, const TPoint2D& pt, int32_t scale,
+                    uint8_t angle);
 
   bool Is_Window_Surface() const { return WindowTexture != nullptr; }
   void Update_Window_Surface(bool end_frame);
