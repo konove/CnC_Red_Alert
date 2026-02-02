@@ -31,7 +31,7 @@ for Windows builds.
 ### Building with IWYU (Default)
 ```bash
 cmake -Bbuild
-cmake --build build
+cmake --build build --parallel
 ```
 
 IWYU warnings will appear during compilation but won't fail the build.
@@ -40,14 +40,14 @@ IWYU warnings will appear during compilation but won't fail the build.
 For faster builds without IWYU analysis:
 ```bash
 cmake -Bbuild -DENABLE_IWYU=OFF
-cmake --build build
+cmake --build build --parallel
 ```
 
 ### Custom IWYU Path
 If IWYU is installed in a non-standard location:
 ```bash
 cmake -Bbuild -DIWYU_PATH=/path/to/include-what-you-use
-cmake --build build
+cmake --build build --parallel
 ```
 
 ## Understanding IWYU Output

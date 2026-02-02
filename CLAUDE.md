@@ -5,15 +5,15 @@ incrementally.
 
 ## Quick Reference
 
-| Target                 | Command                                                         | Output                              |
-|------------------------|-----------------------------------------------------------------|-------------------------------------|
-| Both games             | `cmake -Bbuild && cmake --build build`                          | `build/ra/rasdl`, `build/td/tdsdl`  |
-| Red Alert only         | `cmake --build build --target rasdl`                            | `build/ra/rasdl`                    |
-| Tiberian Dawn only     | `cmake --build build --target tdsdl`                            | `build/td/tdsdl`                    |
-| Fast build (no checks) | `cmake -Bbuild -DSTRICT_CHECKS=OFF`                             | Disables clang-tidy, IWYU, warnings |
-| With ASan              | `cmake -Bbuild -DENABLE_ASAN=ON`                                | Memory debugging                    |
-| Header verification    | `cmake --build build --target all_verify_interface_header_sets` | Checks headers are self-contained   |
-| Clean rebuild          | `rm -rf build && cmake -Bbuild && cmake --build build`          |                                     |
+| Target                 | Command                                                                    | Output                              |
+|------------------------|----------------------------------------------------------------------------|-------------------------------------|
+| Both games             | `cmake -Bbuild && cmake --build build --parallel`                          | `build/ra/rasdl`, `build/td/tdsdl`  |
+| Red Alert only         | `cmake --build build --parallel --target rasdl`                            | `build/ra/rasdl`                    |
+| Tiberian Dawn only     | `cmake --build build --parallel --target tdsdl`                            | `build/td/tdsdl`                    |
+| Fast build (no checks) | `cmake -Bbuild -DSTRICT_CHECKS=OFF`                                        | Disables clang-tidy, IWYU, warnings |
+| With ASan              | `cmake -Bbuild -DENABLE_ASAN=ON`                                           | Memory debugging                    |
+| Header verification    | `cmake --build build --parallel --target all_verify_interface_header_sets` | Checks headers are self-contained   |
+| Clean rebuild          | `rm -rf build && cmake -Bbuild && cmake --build build --parallel`          |                                     |
 
 ## Setup
 

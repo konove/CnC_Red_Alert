@@ -15,7 +15,7 @@ All this fork needs to compile is:
 ## Compiling (Everywhere)
 
 1. `cmake -Bbuild`
-2. `cmake --build build`
+2. `cmake --build build --parallel`
 3. Find some data files
 4. Run `tdsdl` or `rasdl`
 5. (optional) Command and/or conquer
