@@ -84,7 +84,6 @@
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/wsproto.h"
-#include "sdllib/wwlib32.h"
 
 /***************************************************************************
  * IPXManagerClass::IPXManagerClass -- class constructor                   *

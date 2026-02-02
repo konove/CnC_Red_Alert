@@ -67,7 +67,6 @@
 #include <share.h>
 #endif
 
-#include "sdllib/wwlib32.h"
 #include "td/compat.h"
 #include "td/rawfile.h"
 
