@@ -86,7 +86,6 @@ typedef MixFileClass<CCFileClass> MFCD;
 extern bool IsVQ640;
 extern unsigned long GameVersion;
 extern bool Debug_MotionCapture;
-extern bool Debug_Rotate;
 extern bool Debug_Quiet;
 extern bool Debug_Cheat;
 extern bool Debug_Remap;

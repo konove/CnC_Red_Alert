@@ -42,7 +42,7 @@ endif ()
 if (STRICT_CHECKS)
     set(CMAKE_CXX_CLANG_TIDY
             "clang-tidy"
-            "--header-filter=${CMAKE_SOURCE_DIR}/src/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*"
+            "--header-filter=${CMAKE_SOURCE_DIR}/src/(base|port|sdllib|tech|winvq|ra|td)/.*"
     )
     message(STATUS "Strict checks enabled (clang-tidy + warnings)")
 else ()
@@ -132,7 +132,6 @@ add_subdirectory(src/base)
 add_subdirectory(src/port)
 add_subdirectory(src/sdllib)
 add_subdirectory(src/winvq)
-add_subdirectory(src/jshell)
 add_subdirectory(third_party)
 add_subdirectory(src/tech)
 

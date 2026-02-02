@@ -43,10 +43,9 @@ static analysis.
 port/        → Portability layer (string utilities) [standalone]
 sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil]
 tech/        → Compression, encryption, Pipe/Straw pattern [depends: sdllib, port, vqa32]
-jshell/      → Sprite rendering, bitmap rotation [depends: sdllib, port]
 vqa32/       → VQA video codec [depends: port, SDL2]
 ra/          → Red Alert (~200 files) [uses: ALL libraries]
-td/          → Tiberian Dawn (~288 files) [uses: sdllib, vqa32, port only - NO tech/jshell]
+td/          → Tiberian Dawn (~288 files) [uses: sdllib, vqa32, port only - NO tech]
 ```
 
 **Class hierarchy:** `AbstractClass → ObjectClass → TechnoClass → FootClass → InfantryClass/AircraftClass/DriveClass`
@@ -162,14 +161,14 @@ For indices, counts, and sizes, use `base::ssize` (defined in `base/types.h` as 
 `size_t` to avoid signed/unsigned comparison issues and to allow negative sentinel values. Include `"base/types.h"`
 and link the `base` library.
 
-| Legacy Type                       | Replacement                                           |
-|-----------------------------------|-------------------------------------------------------|
-| `int`                             | Keep as `int`                                         |
-| `long` / `long int`              | `int32_t` or `int64_t`                                |
-| `unsigned long`                   | `uint32_t` (bitfield) or `int32_t`/`int64_t` (number) |
-| `short`                           | `int16_t` or `int`                                    |
-| `unsigned int/short`              | Prefer signed; `uint*_t` only for bit patterns        |
-| `size_t` (index/count/size)       | `base::ssize`                                         |
+| Legacy Type                 | Replacement                                           |
+|-----------------------------|-------------------------------------------------------|
+| `int`                       | Keep as `int`                                         |
+| `long` / `long int`         | `int32_t` or `int64_t`                                |
+| `unsigned long`             | `uint32_t` (bitfield) or `int32_t`/`int64_t` (number) |
+| `short`                     | `int16_t` or `int`                                    |
+| `unsigned int/short`        | Prefer signed; `uint*_t` only for bit patterns        |
+| `size_t` (index/count/size) | `base::ssize`                                         |
 
 When converting between integer types, use brace initialization (`int32_t{value}`) for safe conversions that should
 fail on narrowing, or `static_cast<int32_t>(value)` when narrowing is intentional. Do not use C-style casts like

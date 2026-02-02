@@ -83,7 +83,6 @@
 #include <string>
 
 #include "absl/log/log.h"
-#include "jshell/rotbmp.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -3302,26 +3301,15 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
         buffer =
             static_cast<unsigned char*>(Get_Shape_Header_Data(shape_pointer));
 
-        if (Debug_Rotate) {
-          GraphicBufferClass src(width, height, buffer);
-          width *= 2;
-          height *= 2;
-          memset(_xbuffer, '\0', SHAPE_BUFFER_SIZE);
-          GraphicBufferClass dst(width, height, _xbuffer);
-          Rotate_Bitmap(&src, &dst, rotation);
-          buffer = _xbuffer;
+        BitmapClass bm(width, height, buffer);
+        width *= 2;
+        height *= 2;
+        memset(_xbuffer, '\0', SHAPE_BUFFER_SIZE);
+        GraphicBufferClass gb(width, height, _xbuffer);
+        TPoint2D pt(width / 2, height / 2);
 
-        } else {
-          BitmapClass bm(width, height, buffer);
-          width *= 2;
-          height *= 2;
-          memset(_xbuffer, '\0', SHAPE_BUFFER_SIZE);
-          GraphicBufferClass gb(width, height, _xbuffer);
-          TPoint2D pt(width / 2, height / 2);
-
-          gb.Scale_Rotate(bm, pt, scale, 256 - (rotation - 64));
-          buffer = _xbuffer;
-        }
+        gb.Scale_Rotate(bm, pt, scale, 256 - (rotation - 64));
+        buffer = _xbuffer;
       }
 
       /*

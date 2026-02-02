@@ -107,7 +107,6 @@ target_compile_definitions(rasdl PRIVATE
 apply_dotenv_settings(rasdl)
 target_link_libraries(rasdl PRIVATE
         tech
-        jshell
         port
         sdllib
         vqa32

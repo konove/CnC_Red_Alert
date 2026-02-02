@@ -13,7 +13,7 @@ namespace base {
 //                kCos256[i] = int(128 * cos(i * 2*pi / 256))
 // Range [-128, 128]. kCos256 is kSin256 shifted by 64 entries.
 //
-// Used by both movement (MovePoint) and bitmap rotation (Rotate_Bitmap).
+// Used by movement (MovePoint).
 // For game directions (0=N, 64=E, 128=S, 192=W clockwise):
 //   X displacement = kSin256[dir],  Y displacement = kCos256[dir].
 
