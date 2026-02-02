@@ -109,6 +109,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "base/trig.h"
 #include "sdllib/shape.h"
 #include "td/abstract.h"
 #include "td/anim.h"
@@ -461,11 +462,11 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
       short xx = x;
       short yy = y - Altitude;
       FacingType face = Dir_Facing(SecondaryFacing);
-      Move_Point(xx, yy, SecondaryFacing.Current(), _stretch[face]);
+      base::MovePoint(xx, yy, SecondaryFacing.Current(), _stretch[face]);
       CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
                     flags, nullptr, MouseClass::UnitShadow);
 
-      Move_Point(xx, yy, SecondaryFacing.Current() + DIR_S, _stretch[face] * 2);
+      base::MovePoint(xx, yy, SecondaryFacing.Current() + DIR_S, _stretch[face] * 2);
       CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
                     flags, nullptr, MouseClass::UnitShadow);
 

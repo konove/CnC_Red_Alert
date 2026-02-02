@@ -59,6 +59,7 @@
 #include <filesystem>
 #include <string>
 
+#include "base/trig.h"
 #include "port/ex_string.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
@@ -576,19 +577,19 @@ void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
 
   switch (Type) {
     case VESSEL_CA:
-      Normal_Move_Point(xx, yy, dir, 22);
+      base::MovePointIsometric(xx, yy, dir, 22);
       x = xx;
       y = yy - 4;
       break;
 
     case VESSEL_PT:
-      Normal_Move_Point(xx, yy, dir, 14);
+      base::MovePointIsometric(xx, yy, dir, 14);
       x = xx;
       y = yy + 1;
       break;
 
     case VESSEL_DD:
-      Normal_Move_Point(xx, yy, dir + DIR_S, 8);
+      base::MovePointIsometric(xx, yy, dir + DIR_S, 8);
       x = xx;
       y = yy - 4;
       break;

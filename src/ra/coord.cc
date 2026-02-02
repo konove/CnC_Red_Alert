@@ -83,7 +83,7 @@ COORDINATE Coord_Move(const COORDINATE start, const DirType facing,
                       const unsigned short distance) {
   short x = Coord_X(start);
   short y = Coord_Y(start);
-  Move_Point(x, y, facing, distance);
+  base::MovePoint(x, y, facing, distance);
   return XY_Coord(x, y);
 }
 
@@ -232,14 +232,4 @@ CELL Coord_Cell(COORDINATE coord) {
   cell.Sub.X = reinterpret_cast<COORD_COMPOSITE&>(coord).Sub.X.Sub.Cell;
   cell.Sub.Y = reinterpret_cast<COORD_COMPOSITE&>(coord).Sub.Y.Sub.Cell;
   return cell.Cell;
-}
-
-void Move_Point(short& x, short& y, const DirType dir,
-                const unsigned short distance) {
-  base::MovePoint(x, y, dir, distance);
-}
-
-void Normal_Move_Point(short& x, short& y, const DirType dir,
-                       const unsigned short distance) {
-  base::MovePointIsometric(x, y, dir, distance);
 }

@@ -3,7 +3,6 @@
 
 #include "td/defines.h"
 
-void Move_Point(short& x, short& y, DirType dir, unsigned short distance);
 COORDINATE Coord_Move(COORDINATE start, DirType facing,
                       unsigned short distance);
 COORDINATE Coord_Scatter(COORDINATE coord, unsigned distance,

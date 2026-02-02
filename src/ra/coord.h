@@ -14,15 +14,6 @@
 const short* Coord_Spillage_List(COORDINATE coord, const Rect& rect,
                                  bool no_center = true);
 
-// Moves a point by `distance` in the given direction, compensating for the
-// isometric tilt of the playfield (Y displacement is halved). Used for
-// screen-space positioning of elements like turrets and fire offsets.
-void Normal_Move_Point(short& x, short& y, DirType dir,
-                       unsigned short distance);
-
-// Moves a point by `distance` in the given direction without tilt correction.
-void Move_Point(short& x, short& y, DirType dir, unsigned short distance);
-
 // Moves `start` by `distance` leptons in the given `facing` direction.
 COORDINATE Coord_Move(COORDINATE start, DirType facing,
                       unsigned short distance);

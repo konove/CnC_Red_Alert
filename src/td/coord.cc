@@ -219,7 +219,7 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
   short x = Coord_X(start);
   short y = Coord_Y(start);
 
-  Move_Point(x, y, dir, distance);
+  base::MovePoint(x, y, dir, distance);
   return XY_Coord(x, y);
 }
 
@@ -259,10 +259,6 @@ COORDINATE Coord_Scatter(COORDINATE coord, unsigned distance, bool lock) {
   }
 
   return newcoord;
-}
-
-void Move_Point(short& x, short& y, DirType dir, unsigned short distance) {
-  base::MovePoint(x, y, dir, distance);
 }
 
 unsigned int Cardinal_To_Fixed(unsigned base, unsigned cardinal) {

@@ -112,6 +112,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "base/trig.h"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -573,11 +574,11 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     short xx = x;
     short yy = y - Lepton_To_Pixel(Height);
     FacingType face = Dir_Facing(SecondaryFacing);
-    Move_Point(xx, yy, SecondaryFacing.Current(), _stretch[face]);
+    base::MovePoint(xx, yy, SecondaryFacing.Current(), _stretch[face]);
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
                   flags, nullptr, DisplayClass::UnitShadow);
 
-    Move_Point(xx, yy, SecondaryFacing.Current() + DIR_S, _stretch[face] * 2);
+    base::MovePoint(xx, yy, SecondaryFacing.Current() + DIR_S, _stretch[face] * 2);
     CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
                   flags, nullptr, DisplayClass::UnitShadow);
 

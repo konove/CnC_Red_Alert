@@ -75,15 +75,15 @@ inline constexpr int16_t kCos256[256] = {
 
 // Move a point by `distance` leptons in the given direction.
 // The >> 7 (divide by 128) exactly cancels the amplitude-128 scaling.
-inline void MovePoint(short& x, short& y, uint8_t dir,
-                      unsigned short distance) {
+inline void MovePoint(int16_t& x, int16_t& y, const uint8_t dir,
+                      const int16_t distance) {
   x += (kSin256[dir] * distance) >> 7;
   y -= (kCos256[dir] * distance) >> 7;
 }
 
 // Like MovePoint but halves Y for 2:1 isometric projection (turret offsets).
-inline void MovePointIsometric(short& x, short& y, uint8_t dir,
-                               unsigned short distance) {
+inline void MovePointIsometric(int16_t& x, int16_t& y, const uint8_t dir,
+                               const int16_t distance) {
   x += (kSin256[dir] * distance) >> 7;
   y -= ((kCos256[dir] / 2) * distance) >> 7;
 }
