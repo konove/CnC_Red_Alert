@@ -143,10 +143,39 @@ You will encounter: `strcpy`/`strcat`/`sprintf`, raw `new`/`delete`, C-style cas
 missing const, `WIN32`/`PORTABLE` ifdefs.
 
 **Acceptable changes:** Safe string functions, buffer overflow fixes, add `override`, IWYU fixes, self-contained
-headers.
+headers, fixed-width integer types (`long` → `int32_t`, etc.).
 
 **Avoid unless requested:** Class hierarchy refactoring, smart pointers everywhere, const everywhere, STL containers
 everywhere, removing globals.
+
+## Integer Types
+
+Use `int` as the default integer type. For other sizes, use fixed-width types from `<cstdint>` (`int16_t`,
+`int32_t`, `int64_t`). Do not use `short`, `long`, or `long long`.
+
+Avoid unsigned types (`uint32_t`, etc.) unless representing bit patterns, flags, or modular arithmetic. Do not use
+unsigned merely to indicate a value is non-negative — use assertions instead.
+
+Use `int64_t` for values that could exceed 2^31, including intermediate calculations.
+
+For indices, counts, and sizes, use `base::ssize` (defined in `base/types.h` as `std::ptrdiff_t`). Prefer this over
+`size_t` to avoid signed/unsigned comparison issues and to allow negative sentinel values. Include `"base/types.h"`
+and link the `base` library.
+
+| Legacy Type                       | Replacement                                           |
+|-----------------------------------|-------------------------------------------------------|
+| `int`                             | Keep as `int`                                         |
+| `long` / `long int`              | `int32_t` or `int64_t`                                |
+| `unsigned long`                   | `uint32_t` (bitfield) or `int32_t`/`int64_t` (number) |
+| `short`                           | `int16_t` or `int`                                    |
+| `unsigned int/short`              | Prefer signed; `uint*_t` only for bit patterns        |
+| `size_t` (index/count/size)       | `base::ssize`                                         |
+
+When converting between integer types, use brace initialization (`int32_t{value}`) for safe conversions that should
+fail on narrowing, or `static_cast<int32_t>(value)` when narrowing is intentional. Do not use C-style casts like
+`(int)value`. See [Type Conversion Casts](docs/TYPE_MIGRATION.md#type-conversion-casts) for details.
+
+Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for full details.
 
 ## Tools Configuration
 
