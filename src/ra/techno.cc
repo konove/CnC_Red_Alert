@@ -4685,7 +4685,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
 
         while (object != nullptr) {
           value += object->Value();
-          object = dynamic_cast<FootClass*>((ObjectClass*)object->Next);
+          object = dynamic_cast<FootClass*>(object->Next);
         }
       }
     }

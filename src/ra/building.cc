@@ -721,10 +721,6 @@ int BuildingClass::Shape_Number() const {
         **	from the building's turret facing. All other animation stages
         **	fetch their frame from the embedded animation sequencer.
         */
-        //				if (Status == SAM_READY || Status ==
-        // SAM_FIRING || Status == SAM_LOCKING) {
-        // shapenum = Fetch_Stage();
-        //				}
         if (Health_Ratio() <= Rule.ConditionYellow) {
           shapenum += 35;
         }
@@ -753,12 +749,10 @@ int BuildingClass::Shape_Number() const {
         *current *	Tiberium collected as it relates to Tiberium capacity.
         */
         if (*this == STRUCT_STORAGE) {
-          int level = 0;
-          if (House->Capacity) {
-            level = House->Tiberium * 5 / House->Capacity;
-          }
+          const int level =
+              House->Capacity ? House->Tiberium * 5 / House->Capacity : 0;
 
-          shapenum += Bound(level, 0, 4);
+          shapenum += std::clamp(level, 0, 4);
           if (Health_Ratio() <= Rule.ConditionYellow) {
             shapenum += 5;
           }
@@ -5620,38 +5614,24 @@ void BuildingClass::Animation_AI() {
   }
 }
 
-/***********************************************************************************************
- * BuildingClass::How_Many_Survivors -- This determine the maximum number of
- *survivors.        *
- *                                                                                             *
- *    This routine is called to determine how many survivors should run from
- *this building     * when it is either sold or destroyed. Buildings that are
- *captured have fewer survivors.   * The number of survivors is a portion of the
- *cost of the building divided by the cost     * of a minigunner. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the number of soldiers that should run from this
- *building.            *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/04/1996 JLB : Created. *
- *=============================================================================================*/
+// Survivor count is building cost scaled by SurvivorFraction, measured in
+// minigunner cost units. Captured buildings double the cost divisor to halve
+// the survivor count as a penalty.
 int BuildingClass::How_Many_Survivors() const {
   if (IsSurvivorless || !Class->IsCrew) {
     return 0;
   }
 
-  int divisor = InfantryTypeClass::As_Reference(INFANTRY_E1).Raw_Cost();
-  if (divisor == 0) {
+  int soldier_cost = InfantryTypeClass::As_Reference(INFANTRY_E1).Raw_Cost();
+  if (soldier_cost == 0) {
     return 0;
   }
   if (IsCaptured) {
-    divisor *= 2;
+    soldier_cost *= 2;
   }
-  int count = Class->Raw_Cost() * Rule.SurvivorFraction / divisor;
-  return Bound(count, 1, 5);
+  const int survivors =
+      Class->Raw_Cost() * Rule.SurvivorFraction / soldier_cost;
+  return std::clamp(survivors, 1, 5);
 }
 
 /***********************************************************************************************

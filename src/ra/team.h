@@ -211,7 +211,7 @@ class TeamClass : public AbstractClass {
         SuspendTimer(x),
         Trigger(x),
         TimeOut(x),
-        Member(x) {}
+        Member(nullptr) {}
   ~TeamClass() override;
   void operator delete(void* ptr);
   void* operator new(size_t size) noexcept;
@@ -281,7 +281,7 @@ class TeamClass : public AbstractClass {
   /*
   **	Points to the first member in the list of members for this team.
   */
-  SmartPtr<FootClass> Member;
+  FootClass* Member;
 
   unsigned char Quantity[TeamTypeClass::MAX_TEAM_CLASSCOUNT];
 };

@@ -189,7 +189,8 @@ void TeamClass::Decode_Pointers() {
   **	Decode the 'Member'
   */
   if (Member) {
-    Member = dynamic_cast<FootClass*>(As_Techno(Member));
+    Member = dynamic_cast<FootClass*>(
+        As_Techno(static_cast<TARGET>(reinterpret_cast<intptr_t>(Member))));
     assert(Member != nullptr);
   }
 }
@@ -753,7 +754,7 @@ void ObjectClass::Code_Pointers() {
  *=============================================================================================*/
 void ObjectClass::Decode_Pointers() {
   if (Next) {
-    Next = As_Object(Next);
+    Next = As_Object(static_cast<TARGET>(reinterpret_cast<intptr_t>(Next)));
     assert(Next != nullptr);
   }
 }

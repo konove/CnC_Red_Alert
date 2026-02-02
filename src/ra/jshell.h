@@ -196,18 +196,6 @@ T Bound(T original, T minval, T maxval) {
 #define ARRAY_SIZE(x) int(sizeof(x) / sizeof(x[0]))
 
 inline void Set_Bit(void* array, int bit, int value) {
-  /*
-  #pragma aux Set_Bit parm [esi] [ecx] [eax] \
-          modify [esi ebx] = 			\
-          "mov	ebx,ecx"					\
-          "shr	ebx,5"					\
-          "and	ecx,01Fh"				\
-          "btr	[esi+ebx*4],ecx"		\
-          "or	eax,eax"					\
-          "jz	ok"						\
-          "bts	[esi+ebx*4],ecx"		\
-          "ok:"
-  */
   if (value) {
     ((uint32_t*)array)[(unsigned)bit >> 5] |= 1 << (bit & 0x1F);
   } else {
@@ -216,30 +204,10 @@ inline void Set_Bit(void* array, int bit, int value) {
 }
 
 inline int Get_Bit(const void* array, int bit) {
-  /*
-          "mov	ebx,eax"					\
-          "shr	ebx,5"					\
-          "and	eax,01Fh"				\
-          "bt	[esi+ebx*4],eax"		\
-          "setc	al"
-  */
   return !!(((const uint32_t*)array)[(unsigned)bit >> 5] & 1 << (bit & 0x1F));
 }
 
 inline int First_True_Bit(const void* array) {
-  /*
-  #pragma aux First_True_Bit parm [esi] \
-          modify [esi ebx] \
-          value [eax]		= 				\
-          "mov	eax,-32"					\
-          "again:"							\
-          "add	eax,32"					\
-          "mov	ebx,[esi]"				\
-          "add	esi,4"					\
-          "bsf	ebx,ebx"					\
-          "jz	again"					\
-          "add	eax,ebx"
-  */
   const uint32_t* array32 = (const uint32_t*)array;
   int off = 0;
   while (true) {
@@ -278,13 +246,8 @@ inline int First_False_Bit(const void* array) {
   }
 }
 
-#ifndef OUTPORTB
-#define OUTPORTB
-
 extern void outportb(int port, unsigned char data);
 extern void outport(int port, unsigned short data);
-
-#endif
 
 /*
 **	Timer objects that fetch the appropriate timer value according to
@@ -296,8 +259,6 @@ class FrameTimerClass {
   operator std::uint64_t() const { return Frame; }
 };
 
-#ifndef SYSTEM_TIMER_CLASS
-#define SYSTEM_TIMER_CLASS
 class SystemTimerClass {
  public:
   std::uint64_t operator()() const {
@@ -313,11 +274,9 @@ class SystemTimerClass {
     return WindowsTimer->Get_System_Tick_Count();
   }
 };
-#endif
 
 class UserTimerClass {
  public:
-#ifdef WIN32
   std::uint64_t operator()() const {
     if (!WindowsTimer) {
       return 0;
@@ -330,10 +289,6 @@ class UserTimerClass {
     }
     return WindowsTimer->Get_User_Tick_Count();
   }
-#else
-  std::uint64_t operator()() const { return (Get_User_Tick_Count()); }
-  operator std::uint64_t() const { return (Get_User_Tick_Count()); }
-#endif
 };
 
 template <class T>
@@ -392,58 +347,6 @@ void PNBubble_Sort(T* array, int count) {
     } while (swapflag);
   }
 }
-
-template <class T>
-class SmartPtr {
- public:
-  SmartPtr(const NoInitClass&) {}
-  SmartPtr(T* realptr = nullptr) : Pointer(realptr) {}
-  SmartPtr(const SmartPtr& rvalue) : Pointer(rvalue.Pointer) {}
-  ~SmartPtr() { Pointer = nullptr; }
-
-  operator T*() const { return Pointer; }
-
-  operator long() const { return (long)Pointer; }
-
-  SmartPtr<T> operator++(int) {
-    assert(Pointer != nullptr);
-    SmartPtr<T> temp = *this;
-    ++Pointer;
-    return temp;
-  }
-  SmartPtr<T>& operator++() {
-    assert(Pointer != nullptr);
-    ++Pointer;
-    return *this;
-  }
-  SmartPtr<T> operator--(int) {
-    assert(Pointer != nullptr);
-    SmartPtr<T> temp = *this;
-    --Pointer;
-    return temp;
-  }
-  SmartPtr<T>& operator--() {
-    assert(Pointer != nullptr);
-    --Pointer;
-    return *this;
-  }
-
-  SmartPtr& operator=(const SmartPtr& rvalue) {
-    Pointer = rvalue.Pointer;
-    return *this;
-  }
-  T* operator->() const {
-    assert(Pointer != nullptr);
-    return Pointer;
-  }
-  T& operator*() const {
-    assert(Pointer != nullptr);
-    return *Pointer;
-  }
-
- private:
-  T* Pointer;
-};
 
 typedef struct {
   unsigned char SourceColor;

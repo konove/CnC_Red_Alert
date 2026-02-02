@@ -123,7 +123,7 @@ class ObjectClass : public AbstractClass {
   *the *	next object in the cell list. The objects in this list are not
   *in any *	significant order.
   */
-  SmartPtr<ObjectClass> Next;
+  ObjectClass* Next;
 
   /*
   ** Every object can be assigned a trigger; the same trigger can be assigned
@@ -140,7 +140,8 @@ class ObjectClass : public AbstractClass {
   **	Constructor & destructors.
   */
   ObjectClass(RTTIType rtti, int id);
-  ObjectClass(const NoInitClass& x) : AbstractClass(x), Next(x), Trigger(x) {}
+  ObjectClass(const NoInitClass& x)
+      : AbstractClass(x), Next(nullptr), Trigger(x) {}
   ~ObjectClass() override { Next = nullptr; }
   int operator<(const ObjectClass& object) const {
     return Sort_Y() < object.Sort_Y();

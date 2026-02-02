@@ -1653,11 +1653,7 @@ int MapClass::Validate() {
     */
     obj = (*this)[cell].Cell_Occupier();
     if (obj) {
-      if ((uintptr_t)obj & 0xff000000 ||
-          static_cast<uintptr_t>(obj->Next) & 0xff000000 ||
-          //				((unsigned int)obj->Trigger &
-          // 0xff000000) ||
-          obj->IsInLimbo ||
+      if (obj->IsInLimbo ||
           static_cast<unsigned int>(Coord_Cell(obj->Coord)) >= MAP_CELL_TOTAL) {
         return false;
       }
@@ -1669,13 +1665,8 @@ int MapClass::Validate() {
     for (i = 0; i < ARRAY_SIZE((*this)[cell].CellClass::Overlappers); i++) {
       obj = (*this)[cell].Overlappers[i];
       if (obj) {
-        if ((uintptr_t)obj & 0xff000000 ||
-            static_cast<uintptr_t>(obj->Next) & 0xff000000 ||
-            //					((unsigned int)obj->Trigger &
-            // 0xff000000) ||
-            obj->IsInLimbo ||
-            static_cast<unsigned int>(Coord_Cell(obj->Coord)) >=
-                MAP_CELL_TOTAL) {
+        if (obj->IsInLimbo || static_cast<unsigned int>(
+                                  Coord_Cell(obj->Coord)) >= MAP_CELL_TOTAL) {
           return false;
         }
       }

@@ -94,7 +94,7 @@ static bool _Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
   */
   while (group != nullptr) {
     TechnoClass* todo = group;
-    group = dynamic_cast<FootClass*>((ObjectClass*)group->Next);
+    group = dynamic_cast<FootClass*>(group->Next);
     todo->Next = nullptr;
 
     switch (object->What_Am_I()) {
@@ -477,7 +477,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
 
   CELL newcell = cell;
 
-  FootClass* o = dynamic_cast<FootClass*>((ObjectClass*)object->Next);
+  FootClass* o = dynamic_cast<FootClass*>(object->Next);
   object->Next = nullptr;
   bool okvoice = false;
   while (newcell > 0 && object != nullptr) {
@@ -524,7 +524,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
 
     object = o;
     if (object != nullptr) {
-      o = dynamic_cast<FootClass*>((ObjectClass*)object->Next);
+      o = dynamic_cast<FootClass*>(object->Next);
       object->Next = nullptr;
     }
   }
@@ -535,7 +535,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   if (o != nullptr) {
     while (o != nullptr) {
       FootClass* old = o;
-      o = dynamic_cast<FootClass*>((ObjectClass*)o->Next);
+      o = dynamic_cast<FootClass*>(o->Next);
       old->Next = nullptr;
 
       delete old;

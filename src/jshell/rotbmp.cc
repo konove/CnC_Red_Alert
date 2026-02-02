@@ -56,11 +56,9 @@ struct WPPOINT {
  * OUTPUT:                                                                 *
  *                                                                         *
  * WARNINGS:                                                               *
- *	   destvp should be a square. width and height should be equal to :
- ** MAX(srcvp->width,srcvp->height) * 1.7 (square root of 2!!)
- **
- *																								 	*
- *																								 	*
+ * destvp should be a square. width and height should be equal to :
+ * MAX(srcvp->width,srcvp->height) * 1.7 (square root of 2!!)
+ *
  * HISTORY:                                                                *
  *   01/02/1996  BP : Created.                                             *
  *=========================================================================*/
@@ -68,8 +66,6 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
                   int a) {
   int shift = 7;
   int fixpoint1 = 1 << shift;  // this is a fixed point 1
-  int Deltax;
-  int Deltay;
   int sx, sy, dx, dy;
   int Error = 0;
   int Decimal = 0;
@@ -77,22 +73,18 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
   int buffwid2 = destvp->Get_Width() + destvp->Get_XAdd();
   char* dest;
   char* src;
-  int sa, ca;
-  int t;
-  int x, y;
   int rx, ry;
-  int w, h;
   int dw = destvp->Get_Width();
   int dh = destvp->Get_Height();
   WPPOINT sp[4];
   WPPOINT dp[4];
-  sa = base::kSin256[a];
-  ca = base::kCos256[a];
+  int sa = base::kSin256[a];
+  int ca = base::kCos256[a];
   // get rectangle size
-  x = 0;
-  y = 0;
-  w = srcvp->Get_Width();
-  h = srcvp->Get_Height();
+  int x = 0;
+  int y = 0;
+  int w = srcvp->Get_Width();
+  int h = srcvp->Get_Height();
 
   int halfws = w >> 1;
   int halfhs = h >> 1;
@@ -125,29 +117,27 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
 
   // diff from new to old x
 
-  Deltax = dp[1].x - dp[0].x;
+  int Deltax = dp[1].x - dp[0].x;
 
   // diff from new to old y
 
-  Deltay = dp[1].y - dp[0].y;
+  int Deltay = dp[1].y - dp[0].y;
 
   // handle the easy cases
 
   // no change in x
-  int r;
-  if (!Deltax) {  // must be 90 or 270 degree transpose!
+  if (!Deltax) {
+    // must be 90 or 270 degree transpose!
     if (Deltay < 0) {
       // walk across source in the x + dir
       // walk across dest in the y - dir
 
-      x = 0;
       dy = 0;
       dx = 0;
-      for (t = 0; t < h; t++) {
-        x = 0;
-        src = MAKE_PTR(srcvp, x, y);
+      for (int t = 0; t < h; t++) {
+        src = MAKE_PTR(srcvp, 0, y);
         dest = MAKE_PTR(destvp, rx + dx, ry - dy);
-        for (r = 0; r < w; r++) {
+        for (int r = 0; r < w; r++) {
           // transparency
           if (*src) {
             *dest = *src;
@@ -162,14 +152,12 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
       // walk across source in the x + dir
       // walk across dest in the y + dir
 
-      x = 0;
       dy = 0;
       dx = 0;
-      for (t = 0; t < h; t++) {
-        x = 0;
-        src = MAKE_PTR(srcvp, x, y);
+      for (int t = 0; t < h; t++) {
+        src = MAKE_PTR(srcvp, 0, y);
         dest = MAKE_PTR(destvp, rx - dx, ry + dy);
-        for (r = 0; r < w; r++) {
+        for (int r = 0; r < w; r++) {
           // transparency
           if (*src) {
             *dest = *src;
@@ -187,11 +175,9 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
 
   if (!Deltay) {  // must be 0 or 180 degree transpose !
     if (Deltax < 0) {
-      y = 0;
       for (y = 0; y < h; y++) {
-        x = 0;
-        src = MAKE_PTR(srcvp, x, y);
-        dest = MAKE_PTR(destvp, rx - x, ry - y);
+        src = MAKE_PTR(srcvp, 0, y);
+        dest = MAKE_PTR(destvp, rx, ry - y);
         for (x = 0; x < w; x++) {
           // transparency
           if (*src) {
@@ -203,9 +189,8 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
       }
     } else {
       for (y = 0; y < h; y++) {
-        x = 0;
-        src = MAKE_PTR(srcvp, x, y);
-        dest = MAKE_PTR(destvp, rx + x, ry + y);
+        src = MAKE_PTR(srcvp, 0, y);
+        dest = MAKE_PTR(destvp, rx, ry + y);
         for (x = 0; x < w; x++) {
           // transparency
           if (*src) {
@@ -222,12 +207,11 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
   // ok now the hard part
 
   // make them 16.16
-  if (std::abs(Deltax) <
-      std::abs(Deltay)) {  // ok this means we want to walk in y
+  if (std::abs(Deltax) < std::abs(Deltay)) {
+    // ok this means we want to walk in y
 
     // walk in  + x in the src and
     // walk in  + y in the dest
-    Error = 0;
     // start at left top corner in src and dest
 
     sx = 0;
@@ -313,7 +297,6 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
     return 0;
   }
   // else we walk in X
-  Error = 0;
   // start at left top corner in src and dest
 
   sx = 0;
@@ -363,7 +346,6 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
     // this is the other side of the box
 
     int x2 = ((sx + w - halfws) * ca - (sy - halfhs) * sa) >> shift;
-
     x2 += halfwd;
 
     int diff = x2 - rx;

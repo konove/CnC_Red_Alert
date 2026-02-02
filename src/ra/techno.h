@@ -278,7 +278,12 @@ class TechnoClass : public RadioClass,
   bool Is_Players_Army() const override;
   int Combat_Damage(int which = -1) const;
   bool Is_Ready_To_Cloak() const;
+
+  // Returns the number of infantry that emerge when this object is sold or
+  // destroyed. Captured buildings yield fewer survivors. Result is clamped
+  // to [1, 5], or 0 if the object cannot produce survivors.
   virtual int How_Many_Survivors() const;
+
   virtual DirType Turret_Facing() const { return PrimaryFacing.Current(); }
   CELL Nearby_Location(const TechnoClass* from = nullptr) const;
   TechnoTypeClass* Techno_Type_Class() const {

@@ -733,9 +733,8 @@ void VesselClass::Per_Cell_Process(PCPType why) {
     if (IsToSelfRepair) {
       for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
         CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), face));
-        SmartPtr<BuildingClass> whom;
-        whom = Map[cell].Cell_Building();
-        if (whom != NULL &&
+        BuildingClass* whom = Map[cell].Cell_Building();
+        if (whom != nullptr &&
             (*whom == STRUCT_SHIP_YARD || *whom == STRUCT_SUB_PEN)) {
           if (IsOwnedByPlayer) {
             Speak(VOX_REPAIRING);
