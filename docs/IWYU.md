@@ -30,8 +30,8 @@ for Windows builds.
 
 ### Building with IWYU (Default)
 ```bash
-cmake -Bbuild
-cmake --build build --parallel
+cmake -Bbuild -G Ninja
+JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2)) && cmake --build build --parallel $JOBS
 ```
 
 IWYU warnings will appear during compilation but won't fail the build.
@@ -39,15 +39,15 @@ IWYU warnings will appear during compilation but won't fail the build.
 ### Disabling IWYU
 For faster builds without IWYU analysis:
 ```bash
-cmake -Bbuild -DENABLE_IWYU=OFF
-cmake --build build --parallel
+cmake -Bbuild -G Ninja -DENABLE_IWYU=OFF
+JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2)) && cmake --build build --parallel $JOBS
 ```
 
 ### Custom IWYU Path
 If IWYU is installed in a non-standard location:
 ```bash
-cmake -Bbuild -DIWYU_PATH=/path/to/include-what-you-use
-cmake --build build --parallel
+cmake -Bbuild -G Ninja -DIWYU_PATH=/path/to/include-what-you-use
+JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2)) && cmake --build build --parallel $JOBS
 ```
 
 ## Understanding IWYU Output

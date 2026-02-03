@@ -5,33 +5,38 @@ incrementally.
 
 ## Quick Reference
 
-| Target                 | Command                                                                    | Output                              |
-|------------------------|----------------------------------------------------------------------------|-------------------------------------|
-| Both games             | `cmake -Bbuild && cmake --build build --parallel`                          | `build/ra/rasdl`, `build/td/tdsdl`  |
-| Red Alert only         | `cmake --build build --parallel --target rasdl`                            | `build/ra/rasdl`                    |
-| Tiberian Dawn only     | `cmake --build build --parallel --target tdsdl`                            | `build/td/tdsdl`                    |
-| Fast build (no checks) | `cmake -Bbuild -DSTRICT_CHECKS=OFF`                                        | Disables clang-tidy, IWYU, warnings |
-| With ASan              | `cmake -Bbuild -DENABLE_ASAN=ON`                                           | Memory debugging                    |
-| Header verification    | `cmake --build build --parallel --target all_verify_interface_header_sets` | Checks headers are self-contained   |
-| Clean rebuild          | `rm -rf build && cmake -Bbuild && cmake --build build --parallel`          |                                     |
+```bash
+# Set this once per terminal session (works on Linux and macOS):
+JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2))
+```
+
+| Target                 | Command                                                                              | Output                              |
+|------------------------|--------------------------------------------------------------------------------------|-------------------------------------|
+| Both games             | `cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS`                     | `build/ra/rasdl`, `build/td/tdsdl`  |
+| Red Alert only         | `cmake --build build --parallel $JOBS --target rasdl`                                | `build/ra/rasdl`                    |
+| Tiberian Dawn only     | `cmake --build build --parallel $JOBS --target tdsdl`                                | `build/td/tdsdl`                    |
+| Fast build (no checks) | `cmake -Bbuild -G Ninja -DSTRICT_CHECKS=OFF`                                         | Disables clang-tidy, IWYU, warnings |
+| With ASan              | `cmake -Bbuild -G Ninja -DENABLE_ASAN=ON`                                            | Memory debugging                    |
+| Header verification    | `cmake --build build --parallel $JOBS --target all_verify_interface_header_sets`     | Checks headers are self-contained   |
+| Clean rebuild          | `rm -rf build && cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS`     |                                     |
 
 ## Setup
 
 ### Required Dependencies
 
-**All platforms:** SDL2, C++23 compiler
+**All platforms:** SDL2, C++23 compiler, Ninja
 
 **Linux (Debian/Ubuntu):**
 
 ```bash
 sudo apt update
-sudo apt install libsdl2-dev clang-tidy
+sudo apt install libsdl2-dev clang-tidy ninja-build
 ```
 
 **macOS:**
 
 ```bash
-brew install sdl2 llvm
+brew install sdl2 llvm ninja
 ```
 
 **Note:** If clang-tidy is not installed, either install it (above) or build with `-DSTRICT_CHECKS=OFF` to disable

@@ -10,12 +10,13 @@ All this fork needs to compile is:
 - A C++ compiler
 - CMake
 - SDL2
+- Ninja (optional but recommended)
 
 
 ## Compiling (Everywhere)
 
-1. `cmake -Bbuild`
-2. `cmake --build build --parallel`
+1. `cmake -Bbuild -G Ninja`
+2. `JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2)) && cmake --build build --parallel $JOBS`
 3. Find some data files
 4. Run `tdsdl` or `rasdl`
 5. (optional) Command and/or conquer
