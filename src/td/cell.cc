@@ -114,7 +114,6 @@
 #include "td/layer.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/rand.h"
@@ -147,14 +146,13 @@
  *=============================================================================================*/
 int CellClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Cell_Number();
+    const int num = Cell_Number();
     if (num < 0 || num > 4095) {
       Validate_Error("CELL");
-      return (0);
+      return 0;
     }
-    return (1);
+
+    return 1;
   } else {
     return 1;
   }
@@ -1075,7 +1073,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                 waypt[0] = 'A' + i;
                 waypt[1] = 0;
                 Fancy_Text_Print(waypt, Map.TacPixelX + x + CELL_PIXEL_W / 2,
-                                 Map.TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
+                                 Map.TacPixelY + y + CELL_PIXEL_H / 2 - 3,
                                  YELLOW, TBLACK,
                                  TPF_NOSHADOW | TPF_6POINT | TPF_CENTER);
                 break;
@@ -1083,12 +1081,12 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
             }
             if (Waypoint[WAYPT_HOME] == Cell_Number()) {
               Fancy_Text_Print("Home", Map.TacPixelX + x,
-                               Map.TacPixelY + y + (CELL_PIXEL_H)-7, WHITE,
+                               Map.TacPixelY + y + CELL_PIXEL_H - 7, WHITE,
                                TBLACK, TPF_NOSHADOW | TPF_6POINT);
             }
             if (Waypoint[WAYPT_REINF] == Cell_Number()) {
               Fancy_Text_Print("Reinf", Map.TacPixelX + x,
-                               Map.TacPixelY + y + (CELL_PIXEL_H)-7, WHITE,
+                               Map.TacPixelY + y + CELL_PIXEL_H - 7, WHITE,
                                TBLACK, TPF_NOSHADOW | TPF_6POINT);
             }
           }
@@ -1129,7 +1127,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                 tptr = (TemplateTypeClass*)Map.PendingObject;
                 if (tptr->Get_Image_Data()) {
                   icon =
-                      (Cell_X(cell) - Cell_X(Map.ZoneCell + Map.ZoneOffset)) +
+                      Cell_X(cell) - Cell_X(Map.ZoneCell + Map.ZoneOffset) +
                       (Cell_Y(cell) - Cell_Y(Map.ZoneCell + Map.ZoneOffset)) *
                           tptr->Width;
                   LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y,
@@ -1166,7 +1164,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       if (IsFlagged) {
         const void* remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
-        CC_Draw_Shape(MixFileClass::Retrieve("FLAGFLY.SHP"), Frame % 14,
+        CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), Frame % 14,
                       x + ICON_PIXEL_W / 2, y + ICON_PIXEL_H / 2,
                       WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, remap,

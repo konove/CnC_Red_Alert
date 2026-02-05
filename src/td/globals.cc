@@ -70,7 +70,6 @@
 #include "td/ipxmgr.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/monoc.h"
 #include "td/msglist.h"
 #include "td/nodename.h"
@@ -281,12 +280,12 @@ bool GameInFocus;
 /***************************************************************************
 **	This holds the theater specific mixfiles.
 */
-MixFileClass* TheaterData = nullptr;
-MixFileClass* TheaterIcons = nullptr;
-MixFileClass* LowTheaterData;
-MixFileClass* MoviesMix = nullptr;
-MixFileClass* GeneralMix = nullptr;
-MixFileClass* ScoreMix = nullptr;
+MFCD* TheaterData = nullptr;
+MFCD* TheaterIcons = nullptr;
+MFCD* LowTheaterData;
+MFCD* MoviesMix = nullptr;
+MFCD* GeneralMix = nullptr;
+MFCD* ScoreMix = nullptr;
 
 /***************************************************************************
 **	This is the options control class. The options control such things as

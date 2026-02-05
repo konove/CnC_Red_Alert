@@ -16,22 +16,34 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// MIX file archive format implementation. MIX files are Westwood's archive
-// format that bundles game assets (sprites, sounds, etc.) into single files.
-// Files are indexed by CRC of their filename for fast lookup.
+// MIX file archive format. MIX files are Westwood's archive format that
+// bundles game assets (sprites, sounds, etc.) into single files. Files are
+// indexed by CRC of their filename for fast O(log n) lookup.
+//
+// MIX files come in two formats:
+// - Plain: FileHeader + FileEntry[] + raw data
+// - Extended: metadata flags + optional PK-encrypted header + optional SHA-1
+//   digest
+//
+// Example:
+//   using MFCD = MixFileClass<CCFileClass>;
+//   MFCD::Register("GENERAL.MIX");     // Creates and registers in global list
+//   MFCD::Cache("GENERAL.MIX");        // Load into RAM
+//   void* data = MFCD::Retrieve("MOUSE.SHP");
 
-#include "ra/mixfile.h"
+#ifndef CNC_RED_ALERT_TECH_MIXFILE_H_
+#define CNC_RED_ALERT_TECH_MIXFILE_H_
 
 #include <algorithm>
+#include <cassert>
 #include <cerrno>
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <filesystem>
-#include <functional>
+#include <memory>
 #include <new>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -39,32 +51,126 @@
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
-#include "ra/ccfile.h"
-#include "ra/compat.h"
-#include "ra/conquer.h"
-#include "ra/externs.h"
-#include "ra/startup.h"
 #include "tech/crc.h"
+#include "tech/listnode.h"
+#include "tech/pk.h"
 #include "tech/pkstraw.h"
+#include "tech/rndstraw.h"
 #include "tech/shastraw.h"
 #include "tech/straw.h"
 #include "tech/xstraw.h"
 
 template <class T>
-MixFileClass<T>::MixFileClass(std::string_view filename, const PKey* key) {
-  if (!Force_CD_Available(RequiredCD)) {
-    Emergency_Exit(EXIT_FAILURE);
-  }
+class MixFileClass : public Node<MixFileClass<T>> {
+ public:
+  // Result of looking up a file in the mixfile system.
+  struct FileLocation {
+    // View into cached data (empty if not cached).
+    std::span<const std::byte> data;
 
+    // The mixfile containing this file.
+    MixFileClass* mixfile;
+
+    // Absolute file offset (if uncached) or relative (if cached).
+    std::int32_t offset;
+
+    // Size of the embedded file.
+    std::int32_t size;
+  };
+
+  ~MixFileClass() override;
+
+  // Delete copy/move to prevent slicing or list corruption.
+  MixFileClass(const MixFileClass&) = delete;
+  MixFileClass& operator=(const MixFileClass&) = delete;
+  MixFileClass(MixFileClass&&) = delete;
+  MixFileClass& operator=(MixFileClass&&) = delete;
+
+  [[nodiscard]] const std::string& Filename() const { return filename_; }
+
+  static bool Free(std::string_view filename);
+  void Free();
+  bool Cache();
+  static bool Cache(std::string_view filename);
+  static std::optional<FileLocation> Offset(std::string_view filename);
+
+  // Returns cached file data as a span, or empty span if not found/not cached.
+  static std::span<const std::byte> RetrieveData(std::string_view filename);
+
+  // Legacy API: returns raw pointer for backward compatibility.
+  static const void* Retrieve(std::string_view filename);
+
+  // Factory: returns existing instance if already registered, otherwise
+  // creates a new MixFileClass and adds it to the global list.
+  static MixFileClass* Register(std::string_view filename,
+                                const PKey* key = nullptr,
+                                RandomStraw* rng = nullptr);
+
+  // Removes and deletes a mixfile by name. Returns true if found.
+  static bool Unregister(std::string_view filename);
+
+  // Deletes all registered mixfiles.
+  static void Free_All();
+
+  // Index entry for an embedded file within the mixfile.
+  struct FileEntry {
+    std::int32_t crc;     // CRC of the filename (lookup key).
+    std::int32_t offset;  // Offset from start of data section.
+    std::int32_t size;    // Size of the embedded file.
+
+    // Default spaceship operator for easy comparison
+    auto operator<=>(const FileEntry& other) const = default;
+    // Comparison with raw CRC for binary search projections
+    auto operator<=>(std::int32_t other_crc) const { return crc <=> other_crc; }
+  };
+
+ private:
+  MixFileClass() = default;
+
+  // Opens and parses the MIX file. Returns true on success.
+  // For encrypted MIX files, provide key; for plain MIX files, may be nullptr.
+  bool Open(std::string_view filename, const PKey* key);
+
+  // On-disk file header format.
+#pragma pack(push, 1)
+  struct FileHeader {
+    std::int16_t count;
+    std::int32_t size;
+  };
+#pragma pack(pop)
+
+  static MixFileClass* Finder(std::string_view filename);
+
+  std::string filename_;
+
+  bool has_digest_ = false;    // True if mixfile has an attached SHA-1 digest.
+  bool is_encrypted_ = false;  // True if the file header is encrypted.
+
+  std::int32_t data_size_ = 0;   // Total size of embedded data.
+  std::int32_t data_start_ = 0;  // File offset where raw data begins.
+
+  std::vector<FileEntry> file_index_;  // Sorted by CRC.
+  std::vector<std::byte> data_;        // Cached file data.
+
+  // Global registry of all open mixfiles.
+  inline static List<MixFileClass> MixList;
+};
+
+// ---------------------------------------------------------------------------
+// Template implementation
+// ---------------------------------------------------------------------------
+
+template <class T>
+bool MixFileClass<T>::Open(std::string_view filename, const PKey* key) {
   T file(std::string(filename).c_str());
   filename_ = file.File_Name();
 
   FileStraw file_straw(file);
-  PKStraw pk_straw(PKStraw::DECRYPT, CryptRandom);
+  std::unique_ptr<BlowStraw> decrypt_straw;
   Straw* straw = &file_straw;
 
   if (!file.Is_Available()) {
-    return;
+    return false;
   }
 
   FileHeader file_header{};
@@ -82,9 +188,12 @@ MixFileClass<T>::MixFileClass(std::string_view filename, const PKey* key) {
     is_encrypted_ = (alternate.Second & 0x02) != 0;
 
     if (is_encrypted_) {
-      pk_straw.Key(key);
-      pk_straw.Get_From(&file_straw);
-      straw = &pk_straw;
+      assert(key != nullptr);
+      decrypt_straw = MakePKDecryptStraw(file_straw, *key);
+      if (decrypt_straw == nullptr) {
+        return false;  // Failed to read encrypted key header.
+      }
+      straw = decrypt_straw.get();
     }
 
     straw->Get(&file_header, sizeof(file_header));
@@ -112,7 +221,7 @@ MixFileClass<T>::MixFileClass(std::string_view filename, const PKey* key) {
   data_start_ =
       static_cast<std::int32_t>(file.Seek(0, SEEK_CUR) + file.BiasStart);
 
-  MixList.Add_Tail(this);
+  return true;
 }
 
 template <class T>
@@ -153,7 +262,7 @@ bool MixFileClass<T>::Cache() {
 
   SHAStraw sha;
   if (has_digest_) {
-    sha.Get_From(file_straw);
+    sha.SetSource(file_straw);
     straw = &sha;
   }
 
@@ -167,7 +276,6 @@ bool MixFileClass<T>::Cache() {
   file.Bias(data_start_);
 
   // Read directly into the vector buffer
-
   if (const int actual = straw->Get(data_.data(), data_size_);
       actual != data_size_) {
     data_.clear();
@@ -207,8 +315,7 @@ std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
     return std::nullopt;
   }
 
-  // NOTE: CRC calculation depends on specific implementation.
-  // Using upper case for case-insensitivity consistency.
+  // CRC calculation uses upper case for case-insensitivity consistency.
   const std::int32_t crc = CrcEngine::Compute(absl::AsciiStrToUpper(filename));
 
   // Iterate through mixfiles (Most Recently Added / Tail priority is typical
@@ -260,6 +367,39 @@ const void* MixFileClass<T>::Retrieve(std::string_view filename) {
 }
 
 template <class T>
+MixFileClass<T>* MixFileClass<T>::Register(std::string_view filename,
+                                           const PKey* key, RandomStraw*) {
+  if (auto* existing = Finder(filename)) {
+    return existing;
+  }
+  auto* mix = new MixFileClass();
+  if (!mix->Open(filename, key)) {
+    delete mix;
+    return nullptr;
+  }
+  MixList.Add_Tail(mix);
+  return mix;
+}
+
+template <class T>
+bool MixFileClass<T>::Unregister(std::string_view filename) {
+  if (auto* mix = Finder(filename)) {
+    delete mix;
+    return true;
+  }
+  return false;
+}
+
+template <class T>
+void MixFileClass<T>::Free_All() {
+  for (auto* node = MixList.First(); node->Is_Valid();) {
+    auto* next = node->Next();
+    delete node;
+    node = next;
+  }
+}
+
+template <class T>
 MixFileClass<T>* MixFileClass<T>::Finder(const std::string_view filename) {
   for (auto* ptr = MixList.First(); ptr->Is_Valid(); ptr = ptr->Next()) {
     // Compare basename only; paths may differ.
@@ -271,5 +411,4 @@ MixFileClass<T>* MixFileClass<T>::Finder(const std::string_view filename) {
   return nullptr;
 }
 
-// Explicit template instantiation
-template class MixFileClass<CCFileClass>;
+#endif  // CNC_RED_ALERT_TECH_MIXFILE_H_

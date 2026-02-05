@@ -4357,17 +4357,17 @@ bool Force_CD_Available(int cd_desired)  //	ajw
     delete ScoreMix;
     delete MainMix;
 
-    MainMix = new MFCD("MAIN.MIX", &FastKey);
+    MainMix = MFCD::Register("MAIN.MIX", &FastKey, &CryptRandom);
     assert(MainMix != nullptr);
-    //		ConquerMix = new MFCD("CONQUER.MIX", &FastKey);
+    //		ConquerMix = new MFCD("CONQUER.MIX", &FastKey, &CryptRandom);
     if (CCFileClass("MOVIES1.MIX").Is_Available()) {
-      MoviesMix = new MFCD("MOVIES1.MIX", &FastKey);
+      MoviesMix = MFCD::Register("MOVIES1.MIX", &FastKey, &CryptRandom);
     } else {
-      MoviesMix = new MFCD("MOVIES2.MIX", &FastKey);
+      MoviesMix = MFCD::Register("MOVIES2.MIX", &FastKey, &CryptRandom);
     }
     assert(MoviesMix != nullptr);
-    GeneralMix = new MFCD("GENERAL.MIX", &FastKey);
-    ScoreMix = new MFCD("SCORES.MIX", &FastKey);
+    GeneralMix = MFCD::Register("GENERAL.MIX", &FastKey, &CryptRandom);
+    ScoreMix = MFCD::Register("SCORES.MIX", &FastKey, &CryptRandom);
     ThemeClass::Scan();
   }
 

@@ -63,7 +63,6 @@
 #include "td/house.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/radar.h"
 
 const void* PowerClass::PowerShape;
@@ -159,7 +158,7 @@ void PowerClass::One_Time() {
   PowerButton.Width = PowWidth - 1;
   PowerButton.Height = PowHeight;
 
-  PowerShape = MixFileClass::Retrieve(factor ? "HPOWER.SHP" : "POWER.SHP");
+  PowerShape = MFCD::Retrieve(factor ? "HPOWER.SHP" : "POWER.SHP");
   PowerBarShape = Hires_Retrieve("PWRBAR.SHP");
 }
 

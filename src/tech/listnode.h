@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_RA_LISTNODE_H_
-#define CNC_RED_ALERT_RA_LISTNODE_H_
+#ifndef CNC_RED_ALERT_TECH_LISTNODE_H_
+#define CNC_RED_ALERT_TECH_LISTNODE_H_
 
 #include <cassert>
 
@@ -173,4 +173,4 @@ class List : public GenericList {
   T* Last() const { return static_cast<T*>(GenericList::Last()); }
 };
 
-#endif  // CNC_RED_ALERT_RA_LISTNODE_H_
+#endif  // CNC_RED_ALERT_TECH_LISTNODE_H_

@@ -130,7 +130,6 @@
 #include "td/layer.h"
 #include "td/map.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/msglist.h"
 #include "td/object.h"
 #include "td/profile.h"
@@ -185,7 +184,7 @@ DisplayClass::TacticalClass DisplayClass::TacButton;
 */
 #define _RETRIEVE
 
-extern MixFileClass* TheaterIcons;
+extern MFCD* TheaterIcons;
 
 /***********************************************************************************************
  * DisplayClass::DisplayClass -- Default constructor for display class. *
@@ -255,9 +254,9 @@ void DisplayClass::One_Time() {
   /*
   **	Load the generic transparent icon set.
   */
-  TransIconset = MixFileClass::Retrieve("TRANS.ICN");
+  TransIconset = MFCD::Retrieve("TRANS.ICN");
 
-  ShadowShapes = MixFileClass::Retrieve("SHADOW.SHP");
+  ShadowShapes = MFCD::Retrieve("SHADOW.SHP");
 
   Set_View_Dimensions(0, Map.Get_Tab_Height());
 
@@ -402,7 +401,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   sprintf(fullname, "%s.MIX", Theaters[Theater].Root);
   if (Theater != LastTheater) {
     delete TheaterData;
-    TheaterData = MixFileClass::Register(fullname);
+    TheaterData = MFCD::Register(fullname);
     TheaterData->Cache();
   }
 
@@ -414,7 +413,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   snprintf(iconname, sizeof(iconname), "%.4sICNH.MIX", Theaters[Theater].Root);
   if (Theater != LastTheater) {
     delete TheaterIcons;
-    TheaterIcons = MixFileClass::Register(iconname);
+    TheaterIcons = MFCD::Register(iconname);
     TheaterIcons->Cache();
   }
 
@@ -423,7 +422,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   **	The fading palettes will have to be generated as well.
   */
   sprintf(fullname, "%s.PAL", Theaters[theater].Root);
-  const void* ptr = MixFileClass::Retrieve(fullname);
+  const void* ptr = MFCD::Retrieve(fullname);
   Mem_Copy(ptr, GamePalette, 768);
 
   Mem_Copy(GamePalette, OriginalPalette, 768);
@@ -552,7 +551,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   *tables.
   */
   sprintf(fullname, "%s.PAL", Theaters[theater].Root);
-  ptr = MixFileClass::Retrieve(fullname);
+  ptr = MFCD::Retrieve(fullname);
   Mem_Copy((void*)ptr, GamePalette, 768);
   Mem_Copy(GamePalette, OriginalPalette, 768);
 #endif

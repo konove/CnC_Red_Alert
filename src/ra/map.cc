@@ -1240,7 +1240,7 @@ int MapClass::Write_Binary(Pipe& pipe) {
   int total = 0;
 
   LCWPipe comp(LCWPipe::COMPRESS);
-  comp.Put_To(&pipe);
+  comp.SetSink(&pipe);
 
   CellClass* cellptr = &Array[0];
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
@@ -1274,7 +1274,7 @@ int MapClass::Write_Binary(Pipe& pipe) {
  *=============================================================================================*/
 bool MapClass::Read_Binary(Straw& straw) {
   LCWStraw decomp(LCWStraw::DECOMPRESS);
-  decomp.Get_From(&straw);
+  decomp.SetSource(&straw);
 
   CELL cell;
   CellClass* cellptr;

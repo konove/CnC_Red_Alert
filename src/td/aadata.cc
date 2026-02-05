@@ -57,6 +57,7 @@
 #include <string>
 
 #include "port/ex_string.h"
+#include "sdllib/shape.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/conquer.h"
@@ -66,7 +67,7 @@
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/jshell.h"
-#include "td/mixfile.h"
+#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/type.h"
 
@@ -378,7 +379,7 @@ void AircraftTypeClass::One_Time() {
     }
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    (const void*&)uclass.CameoData = MixFileClass::Retrieve(fullname.c_str());
+    (const void*&)uclass.CameoData = MFCD::Retrieve(fullname);
 
     /*
     **	Generic shape for all houses load method.
@@ -387,11 +388,11 @@ void AircraftTypeClass::One_Time() {
                    .replace_extension(".SHP")
                    .string();
 
-    (const void*&)uclass.ImageData = MixFileClass::Retrieve(fullname.c_str());
+    (const void*&)uclass.ImageData = MFCD::Retrieve(fullname);
   }
 
-  LRotorData = MixFileClass::Retrieve("LROTOR.SHP");
-  RRotorData = MixFileClass::Retrieve("RROTOR.SHP");
+  LRotorData = MFCD::Retrieve("LROTOR.SHP");
+  RRotorData = MFCD::Retrieve("RROTOR.SHP");
 }
 
 /***********************************************************************************************
@@ -670,7 +671,7 @@ void AircraftTypeClass::Init(TheaterType theater) {
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
 
-        cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
+        cameo_ptr = MFCD::Retrieve(fullname);
         if (cameo_ptr) {
           (const void*&)uclass.CameoData = cameo_ptr;
         }

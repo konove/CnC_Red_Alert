@@ -61,7 +61,6 @@
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/list.h"
-#include "td/mixfile.h"
 #include "td/shapebtn.h"
 #include "td/slider.h"
 #include "td/textbtn.h"
@@ -173,7 +172,7 @@ void SoundControlsClass::Process() {
   } else {
     strcpy(filename, "BTN-STH.SHP");
   }
-  ShapeButtonClass stopbtn(BUTTON_STOP, MixFileClass::Retrieve(filename),
+  ShapeButtonClass stopbtn(BUTTON_STOP, MFCD::Retrieve(filename),
                            Option_X + Stop_X, Option_Y + Stop_Y);
 
   /*
@@ -185,7 +184,7 @@ void SoundControlsClass::Process() {
     strcpy(filename, "BTN-PLH.SHP");
   }
 
-  ShapeButtonClass playbtn(BUTTON_PLAY, MixFileClass::Retrieve(filename),
+  ShapeButtonClass playbtn(BUTTON_PLAY, MFCD::Retrieve(filename),
                            Option_X + Play_X, Option_Y + Play_Y);
 
   /*

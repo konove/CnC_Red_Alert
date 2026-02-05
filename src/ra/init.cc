@@ -70,9 +70,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <iterator>
 #include <memory>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "port/ex_string.h"
 #include "ra/_wsproto.h"
 #include "ra/ccfile.h"
@@ -1912,27 +1914,6 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
 #endif  // MPATH
 
-#ifdef NEVER
-    /*
-    **	Handle the prog init differently in this case.
-    */
-    if (strstr(string, "-V")) {
-      continue;
-    }
-#endif
-
-    /*
-    ** look for passed-in video mode to default to
-    */
-#ifndef WIN32
-    if (strnicmp(string, "-V", strlen("-V")) == 0) {
-      Set_Video_Mode(
-          MCGA_MODE);  // do this to get around first_time variable...
-      Set_Original_Video_Mode(atoi(string + 2));
-      continue;
-    }
-#endif
-
     if constexpr (config::kCheatKeysEnabled) {
       if (strstr(string, "-NOMOVIES")) {
         bNoMovies = true;
@@ -1950,14 +1931,13 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     /*
     **	Special command line control parsing.
     */
-    if (strnicmp(string, "-X", strlen("-O")) == 0) {
+    if (absl::StartsWithIgnoreCase(string, "-X")) {
       string += strlen("-X");
       while (*string) {
-        char code = *string++;
-        char upper = toupper(code);
+        const char code = *string++;
 
         if constexpr (config::kCheatKeysEnabled) {
-          switch (upper) {
+          switch (code) {
             case 'M':
               MonoClass::Enable();
               continue;
@@ -1981,7 +1961,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
           }
         }
 
-        switch (upper) {
+        switch (code) {
           case 'Q':
             Debug_Quiet = true;
             break;
@@ -1991,8 +1971,6 @@ bool Parse_Command_Line(int argc, char* argv[]) {
             return false;
         }
       }
-
-      continue;
     }
   }
   return true;
@@ -2131,9 +2109,8 @@ long Obfuscate(const char* string) {
     static unsigned char _addbits[] = {0x10, 0x00, 0x00, 0x80,
                                        0x40, 0x00, 0x00, 0x04};
 
-    buffer[index] |= _addbits[index % (sizeof(_addbits) / sizeof(_addbits[0]))];
-    buffer[index] &=
-        ~_lossbits[index % (sizeof(_lossbits) / sizeof(_lossbits[0]))];
+    buffer[index] |= _addbits[index % std::size(_addbits)];
+    buffer[index] &= ~_lossbits[index % std::size(_lossbits)];
   }
 
   /*
@@ -2548,17 +2525,13 @@ static void Init_Expansion_Files() {
       if (stricmp(state.name, "scores.mix") == 0) {
         continue;
       }
-      // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
-      // self-registering
-      new MFCD(state.name, &FastKey);
+      MFCD::Register(state.name, &FastKey, &CryptRandom);
       MFCD::Cache(state.name);
     } while (Find_Next_File(state));
   }
   if (Find_First_File("SS*.MIX", state)) {
     do {
-      // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
-      // self-registering
-      new MFCD(state.name, &FastKey);
+      MFCD::Register(state.name, &FastKey, &CryptRandom);
     } while (Find_Next_File(state));
   }
 }
@@ -2751,27 +2724,23 @@ static void Init_Bootstrap_Mixfiles() {
 #ifdef WOLAPI_INTEGRATION
   CCFileClass fileWolapiMix("WOLAPI.MIX");
   if (fileWolapiMix.Is_Available()) {
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-    new MFCD("WOLAPI.MIX", &FastKey);
+    MFCD::Register("WOLAPI.MIX", &FastKey, &CryptRandom);
     MFCD::Cache("WOLAPI.MIX");
   }
 #endif
 
   CCFileClass file2("EXPAND2.MIX");
   if (file2.Is_Available()) {
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-    new MFCD("EXPAND2.MIX", &FastKey);
+    MFCD::Register("EXPAND2.MIX", &FastKey, &CryptRandom);
     bool ok = MFCD::Cache("EXPAND2.MIX");
     assert(ok);
 
 #if RESFACTOR == 2
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-    new MFCD("HIRES1.MIX", &FastKey);
+    MFCD::Register("HIRES1.MIX", &FastKey, &CryptRandom);
     ok = MFCD::Cache("HIRES1.MIX");
     assert(ok);
 #else
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-    new MFCD("LORES1.MIX", &FastKey);
+    MFCD::Register("LORES1.MIX", &FastKey, &CryptRandom);
     ok = MFCD::Cache("LORES1.MIX");
     assert(ok);
 #endif
@@ -2779,35 +2748,30 @@ static void Init_Bootstrap_Mixfiles() {
 
   CCFileClass file("EXPAND.MIX");
   if (file.Is_Available()) {
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-    new MFCD("EXPAND.MIX", &FastKey);
+    MFCD::Register("EXPAND.MIX", &FastKey, &CryptRandom);
     bool ok = MFCD::Cache("EXPAND.MIX");
     assert(ok);
   }
 
-  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("REDALERT.MIX", &FastKey);
+  MFCD::Register("REDALERT.MIX", &FastKey, &CryptRandom);
 
   /*
   **	Bootstrap enough of the system so that the error dialog box can
   *successfully *	be displayed.
   */
-  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("LOCAL.MIX", &FastKey);  // Cached.
+  MFCD::Register("LOCAL.MIX", &FastKey, &CryptRandom);  // Cached.
   bool ok = MFCD::Cache("LOCAL.MIX");
   assert(ok);
 
 #if RESFACTOR == 2
-  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("HIRES.MIX", &FastKey);
+  MFCD::Register("HIRES.MIX", &FastKey, &CryptRandom);
   ok = MFCD::Cache("HIRES.MIX");
   assert(ok);
 
-  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("NCHIRES.MIX", &FastKey);  // Non-cached hires stuff incl VQ palettes
+  MFCD::Register("NCHIRES.MIX", &FastKey,
+                 &CryptRandom);  // Non-cached hires stuff incl VQ palettes
 #else
-  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("LORES.MIX", &FastKey);
+  MFCD::Register("LORES.MIX", &FastKey, &CryptRandom);
   ok = MFCD::Cache("LORES.MIX");
   assert(ok);
 #endif  // WIN32
@@ -2841,33 +2805,29 @@ static void Init_Secondary_Mixfiles() {
     // (they don't contain the base missions)
     if (CCFileClass("MAIN3.MIX").Is_Available() &&
         !CCFileClass("GENERAL3.MIX").Is_Available()) {
-      MFCD* tmp = new MFCD("MAIN3.MIX", &FastKey);
+      MFCD* tmp = MFCD::Register("MAIN3.MIX", &FastKey, &CryptRandom);
       Extract("GENERAL.MIX", "GENERAL3.MIX");
       delete tmp;
     }
 
     if (CCFileClass("MAIN4.MIX").Is_Available() &&
         !CCFileClass("GENERAL4.MIX").Is_Available()) {
-      MFCD* tmp = new MFCD("MAIN4.MIX", &FastKey);
+      MFCD* tmp = MFCD::Register("MAIN4.MIX", &FastKey, &CryptRandom);
       Extract("GENERAL.MIX", "GENERAL4.MIX");
       Extract("SCORES.MIX", "SCORES.MIX");  // also extract scores
       delete tmp;
     }
 
     // load the first two to get both movies
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-    new MFCD("MAIN2.MIX", &FastKey);
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-    new MFCD("MAIN1.MIX", &FastKey);
+    MFCD::Register("MAIN2.MIX", &FastKey, &CryptRandom);
+    MFCD::Register("MAIN1.MIX", &FastKey, &CryptRandom);
 
     // load extra missions
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-    new MFCD("GENERAL4.MIX", &FastKey);
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-    new MFCD("GENERAL3.MIX", &FastKey);
+    MFCD::Register("GENERAL4.MIX", &FastKey, &CryptRandom);
+    MFCD::Register("GENERAL3.MIX", &FastKey, &CryptRandom);
   } else {
     // assume regular/TFD files
-    MainMix = new MFCD("MAIN.MIX", &FastKey);
+    MainMix = MFCD::Register("MAIN.MIX", &FastKey, &CryptRandom);
     assert(MainMix != nullptr);
   }
 
@@ -2905,19 +2865,23 @@ static void Init_Secondary_Mixfiles() {
   /*
   **	Inform the file system of the various MIX files.
   */
-  ConquerMix = new MFCD("CONQUER.MIX", &FastKey);  // Cached.
-  //	new MFCD("TRANSIT.MIX", &FastKey);
+  ConquerMix =
+      MFCD::Register("CONQUER.MIX", &FastKey, &CryptRandom);  // Cached.
+  //	MFCD::Register("TRANSIT.MIX", &FastKey, &CryptRandom);
 
   if (GeneralMix == nullptr) {
-    GeneralMix = new MFCD("GENERAL.MIX", &FastKey);  // Never cached.
+    GeneralMix =
+        MFCD::Register("GENERAL.MIX", &FastKey, &CryptRandom);  // Never cached.
   }
 
   if (CCFileClass("MOVIES1.MIX").Is_Available()) {
-    MoviesMix = new MFCD("MOVIES1.MIX", &FastKey);  // Never cached.
+    MoviesMix =
+        MFCD::Register("MOVIES1.MIX", &FastKey, &CryptRandom);  // Never cached.
   }
   // load both sets of movies if possible
   if (CCFileClass("MOVIES2.MIX").Is_Available()) {
-    MoviesMix = new MFCD("MOVIES2.MIX", &FastKey);  // Never cached.
+    MoviesMix =
+        MFCD::Register("MOVIES2.MIX", &FastKey, &CryptRandom);  // Never cached.
   }
   assert(MoviesMix != nullptr);
 
@@ -2925,21 +2889,17 @@ static void Init_Secondary_Mixfiles() {
   **	Register the score mixfile.
   */
   ScoresPresent = true;
-  ScoreMix = new MFCD("SCORES.MIX", &FastKey);
+  ScoreMix = MFCD::Register("SCORES.MIX", &FastKey, &CryptRandom);
   ThemeClass::Scan();
 
   /*
   **	These are sound card specific, but the install program would have
   **	copied the correct versions to the hard drive.
   */
-  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("SPEECH.MIX", &FastKey);  // Never cached.
-  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("SOUNDS.MIX", &FastKey);  // Cached.
-  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("RUSSIAN.MIX", &FastKey);  // Cached.
-  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("ALLIES.MIX", &FastKey);  // Cached.
+  MFCD::Register("SPEECH.MIX", &FastKey, &CryptRandom);   // Never cached.
+  MFCD::Register("SOUNDS.MIX", &FastKey, &CryptRandom);   // Cached.
+  MFCD::Register("RUSSIAN.MIX", &FastKey, &CryptRandom);  // Cached.
+  MFCD::Register("ALLIES.MIX", &FastKey, &CryptRandom);   // Cached.
 }
 
 /***********************************************************************************************

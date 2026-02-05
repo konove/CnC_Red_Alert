@@ -93,7 +93,7 @@ class CCFileClass : public CDFileClass {
   *file access actually *	gets routed through the cached version of the
   *file. This is a pointer to the start *	of the RAM image of the file.
   */
-  void* Pointer;
+  const void* Pointer;
 
   /*
   **	This is the starting offset of the beginning of the file. This value is

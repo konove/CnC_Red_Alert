@@ -70,7 +70,6 @@
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/object.h"
 #include "td/rand.h"
 #include "td/special.h"
@@ -1454,7 +1453,7 @@ void UnitTypeClass::One_Time() {
       }
       auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      (const void*&)uclass.CameoData = MixFileClass::Retrieve(fullname.c_str());
+      (const void*&)uclass.CameoData = MFCD::Retrieve(fullname);
     }
 
     /*
@@ -1464,7 +1463,7 @@ void UnitTypeClass::One_Time() {
       auto fullname = std::filesystem::path(uclass.IniName)
                           .replace_extension(".SHP")
                           .string();
-      ptr = MixFileClass::Retrieve(fullname.c_str());
+      ptr = MFCD::Retrieve(fullname);
     } else {
       ptr = nullptr;
     }
@@ -1488,7 +1487,7 @@ void UnitTypeClass::One_Time() {
   **	Load the wake shapes in at this time.
   */
   if (!WakeShapes) {
-    WakeShapes = MixFileClass::Retrieve("WAKE.SHP");
+    WakeShapes = MFCD::Retrieve("WAKE.SHP");
   }
 }
 
@@ -1521,7 +1520,7 @@ void UnitTypeClass::Init(TheaterType theater) {
               std::filesystem::path(std::string(uclass.IniName) + "ICNH")
                   .replace_extension(".VQA")
                   .string();
-          cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
+          cameo_ptr = MFCD::Retrieve(fullname);
           if (cameo_ptr) {
             (const void*&)uclass.CameoData = cameo_ptr;
           }

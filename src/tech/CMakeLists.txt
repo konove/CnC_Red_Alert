@@ -14,5 +14,5 @@ target_sources(tech PUBLIC
         FILES ${TECH_HEADERS}
 )
 
-target_link_libraries(tech sdllib port vqa32 lzo)
+target_link_libraries(tech PUBLIC absl::strings PRIVATE sdllib port vqa32 lzo)
 target_compile_definitions(tech PUBLIC WINSOCK_IPX=1)

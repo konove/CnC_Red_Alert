@@ -71,7 +71,6 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/object.h"
 #include "td/special.h"
 #include "td/type.h"
@@ -1812,7 +1811,7 @@ void InfantryTypeClass::One_Time() {
     auto fullname = std::filesystem::path(uclass->IniName)
                         .replace_extension(".SHP")
                         .string();
-    (const void*&)uclass->ImageData = MixFileClass::Retrieve(fullname.c_str());
+    (const void*&)uclass->ImageData = MFCD::Retrieve(fullname);
 
     /*
     **	The small build image icon sized shapes are always generic.
@@ -1825,7 +1824,7 @@ void InfantryTypeClass::One_Time() {
     }
     fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    (const void*&)uclass->CameoData = MixFileClass::Retrieve(fullname.c_str());
+    (const void*&)uclass->CameoData = MFCD::Retrieve(fullname);
   }
 }
 
@@ -1863,7 +1862,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
         auto fullname = std::filesystem::path(filename)
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
+        cameo_ptr = MFCD::Retrieve(fullname);
         if (cameo_ptr) {
           (const void*&)uclass->CameoData = cameo_ptr;
         }

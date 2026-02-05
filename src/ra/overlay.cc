@@ -272,7 +272,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
     if (len > 0) {
       BufferStraw bpipe(_staging_buffer, len);
       LCWStraw uncomp(LCWStraw::DECOMPRESS);
-      uncomp.Get_From(&bpipe);
+      uncomp.SetSource(&bpipe);
 
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
         OverlayType classid;
@@ -363,7 +363,7 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   BufferPipe bpipe(_staging_buffer, sizeof(_staging_buffer));
   LCWPipe comppipe(LCWPipe::COMPRESS);
 
-  comppipe.Put_To(&bpipe);
+  comppipe.SetSink(&bpipe);
 
   int total = 0;
   CellClass* cellptr = &Map[static_cast<CELL>(0)];

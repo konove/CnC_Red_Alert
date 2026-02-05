@@ -71,7 +71,6 @@
 #include "td/jshell.h"
 #include "td/loaddlg.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/mplayer.h"
 #include "td/msgbox.h"
 #include "td/palette.h"
@@ -622,11 +621,10 @@ void Draw_Caption(int text, int x, int y, int w) {
   **	Draw the filigree at the corners of the dialog.
   */
   if (option != OPTION_NONE) {
-    CC_Draw_Shape(MixFileClass::Retrieve("OPTIONS.SHP"), option, x + 12, y + 11,
+    CC_Draw_Shape(MFCD::Retrieve("OPTIONS.SHP"), option, x + 12, y + 11,
                   WINDOW_MAIN, SHAPE_CENTER);
-    CC_Draw_Shape(MixFileClass::Retrieve("OPTIONS.SHP"),
-                  static_cast<int>(option) + 1, x + w - 14, y + 11, WINDOW_MAIN,
-                  SHAPE_CENTER);
+    CC_Draw_Shape(MFCD::Retrieve("OPTIONS.SHP"), static_cast<int>(option) + 1,
+                  x + w - 14, y + 11, WINDOW_MAIN, SHAPE_CENTER);
   }
 
   /*

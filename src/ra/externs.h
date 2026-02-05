@@ -43,6 +43,7 @@
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/carry.h"
+#include "ra/ccfile.h"
 #include "ra/cell.h"
 #include "ra/event.h"
 #include "ra/goptions.h"
@@ -50,7 +51,6 @@
 #include "ra/ipxmgr.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
-#include "ra/mixfile.h"
 #include "ra/mouse.h"
 #include "ra/overlay.h"
 #include "ra/queue.h"
@@ -70,6 +70,7 @@
 #include "ra/warhead.h"
 #include "sdllib/playcd.h"
 #include "tech/bench.h"
+#include "tech/mixfile.h"
 #include "tech/rndstraw.h"
 
 extern char _staging_buffer[32000];

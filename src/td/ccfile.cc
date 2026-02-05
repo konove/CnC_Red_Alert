@@ -65,8 +65,8 @@
 #include "td/conquer.h"
 #include "td/externs.h"
 #include "td/jshell.h"
-#include "td/mixfile.h"
 #include "tech/cdfile.h"
+#include "tech/mixfile.h"
 // #include	<share.h>
 // #include	"ccfile.h"
 
@@ -337,7 +337,7 @@ long CCFileClass::Size() {
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
 int CCFileClass::Do_Is_Available(AvailabilityCheck /*mode*/) {
-  if (MixFileClass::Offset(File_Name())) {
+  if (MFCD::Offset(File_Name()).has_value()) {
     return true;
   }
   return CDFileClass::Do_Is_Available(AvailabilityCheck::kQuick);
@@ -427,15 +427,16 @@ int CCFileClass::Open(int rights) {
   **	Check to see if file is part of a mixfile and that mixfile is currently
   *loaded *	into RAM.
   */
-  MixFileClass* mixfile = nullptr;
-  if (MixFileClass::Offset(File_Name(), &Pointer, &mixfile, &Start, &Length)) {
+  auto loc = MFCD::Offset(File_Name());
+  if (loc) {
     /*
     **	If the mixfile is located on disk, then fake out the file system to read
     *from *	the mixfile, but think it is reading from a solitary file.
     */
-    if (!Pointer) {
-      long start = Start;
-      long length = Length;
+    if (loc->data.empty()) {
+      // Not cached - read from disk
+      long start = loc->offset;
+      long length = loc->size;
 
       /*
       **	This is a legitimate open to the file. All access to the file
@@ -444,15 +445,18 @@ int CCFileClass::Open(int rights) {
       *is NOT the same as the file *	attached to the file handle.
       */
       std::string dupfile = File_Name();
-      Open(mixfile->Filename, READ);
+      Open(loc->mixfile->Filename().c_str(), READ);
       Searching(false);  // Disable multi-drive search.
       Set_Name(dupfile.c_str());
       Searching(true);
       Start = start;
       Length = length;
       FromDisk = true;
+    } else {
+      // Cached in RAM
+      Pointer = static_cast<const void*>(loc->data.data());
+      Length = loc->size;
     }
-
   } else {
     /*
     **	The file cannot be found in any mixfile, so it must reside as

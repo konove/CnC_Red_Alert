@@ -105,7 +105,7 @@ target_compile_definitions(rasdl PRIVATE
         PORTABLE=1 # to indicate not windows or dos sometimes
 )
 apply_dotenv_settings(rasdl)
-target_link_libraries(rasdl PRIVATE
+target_link_libraries(rasdl PUBLIC absl::strings PRIVATE
         tech
         port
         sdllib

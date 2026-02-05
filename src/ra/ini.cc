@@ -199,7 +199,7 @@ bool INIClass::Load(Straw& file)
 
 #ifdef FIXIT_FAST_LOAD
   CacheStraw file;
-  file.Get_From(ffile);
+  file.SetSource(ffile);
 #endif
 
   /*
@@ -535,7 +535,7 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
 
   BufferStraw straw(block, len);
   Base64Straw bstraw(Base64Straw::ENCODE);
-  bstraw.Get_From(straw);
+  bstraw.SetSource(straw);
 
   int counter = 1;
 
@@ -591,7 +591,7 @@ int INIClass::Get_UUBlock(const char* section, void* block, int len) const {
   Base64Pipe b64pipe(Base64Pipe::DECODE);
   BufferPipe bpipe(block, len);
 
-  b64pipe.Put_To(&bpipe);
+  b64pipe.SetSink(&bpipe);
 
   int total = 0;
   int counter = Entry_Count(section);

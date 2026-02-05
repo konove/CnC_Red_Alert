@@ -79,7 +79,6 @@
 #include "td/jshell.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/mouse.h"
 #include "td/nullmgr.h"
 #include "td/object.h"
@@ -337,8 +336,8 @@ ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, const void* data, int max,
   Stage = 0;
   MaxStage = max;
   TimerReset = timer;
-  Clock1 = MixFileClass::Retrieve("CLOCK1.AUD");
-  CashTurn = MixFileClass::Retrieve("CASHTURN.AUD");
+  Clock1 = MFCD::Retrieve("CLOCK1.AUD");
+  CashTurn = MFCD::Retrieve("CASHTURN.AUD");
 }
 
 void ScoreCredsClass::Update() {
@@ -718,9 +717,9 @@ void ScoreClass::Presentation() {
 
   Set_Logic_Page(SysMemPage);
 
-  const void* country4 = MixFileClass::Retrieve("COUNTRY4.AUD");
-  const void* sfx4 = MixFileClass::Retrieve("SFX4.AUD");
-  Beepy6 = MixFileClass::Retrieve("BEEPY6.AUD");
+  const void* country4 = MFCD::Retrieve("COUNTRY4.AUD");
+  const void* sfx4 = MFCD::Retrieve("SFX4.AUD");
+  Beepy6 = MFCD::Retrieve("BEEPY6.AUD");
 
   /*
   ** Load the background for the score screen
@@ -792,8 +791,8 @@ void ScoreClass::Presentation() {
 
   // Load up the shapes for the Nod score screen
   if (house == HOUSE_GOOD) {
-    yellowptr = MixFileClass::Retrieve("BAR3YLW.SHP");
-    redptr = MixFileClass::Retrieve("BAR3RED.SHP");
+    yellowptr = MFCD::Retrieve("BAR3YLW.SHP");
+    redptr = MFCD::Retrieve("BAR3RED.SHP");
   }
 
   /* Change to the six-point font for Text_Print */
@@ -828,11 +827,11 @@ void ScoreClass::Presentation() {
   /*
   ** Background's up, so now load various shapes and animations
   */
-  const void* timeshape = MixFileClass::Retrieve("TIME.SHP");
+  const void* timeshape = MFCD::Retrieve("TIME.SHP");
   ScoreObjs[0] = new ScoreTimeClass(233, 2, timeshape, 30, 4);
 
-  const void* hiscore1shape = MixFileClass::Retrieve("HISCORE1.SHP");
-  const void* hiscore2shape = MixFileClass::Retrieve("HISCORE2.SHP");
+  const void* hiscore1shape = MFCD::Retrieve("HISCORE1.SHP");
+  const void* hiscore2shape = MFCD::Retrieve("HISCORE2.SHP");
   ScoreObjs[1] = new ScoreTimeClass(4, 97, hiscore1shape, 10, 4);
   ScoreObjs[2] = new ScoreTimeClass(8, 172, hiscore2shape, 10, 4);
 
@@ -843,7 +842,7 @@ void ScoreClass::Presentation() {
     /*
     ** load the logo
     */
-    const void* logoptr = MixFileClass::Retrieve("LOGOS.SHP");
+    const void* logoptr = MFCD::Retrieve("LOGOS.SHP");
     CC_Draw_Shape(logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
                   nullptr);
 
@@ -1186,9 +1185,9 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
   int shapenum;
   const InfantryTypeClass* ramboclass;
 
-  const void* factptr = MixFileClass::Retrieve("FACT.SHP");
-  const void* rmboptr = MixFileClass::Retrieve("RMBO.SHP");
-  const void* fball1ptr = MixFileClass::Retrieve("FBALL1.SHP");
+  const void* factptr = MFCD::Retrieve("FACT.SHP");
+  const void* rmboptr = MFCD::Retrieve("RMBO.SHP");
+  const void* fball1ptr = MFCD::Retrieve("FBALL1.SHP");
   ramboclass = &InfantryTypeClass::As_Reference(INFANTRY_E5);
 
   /*
@@ -1406,8 +1405,8 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
 void ScoreClass::Do_Nod_Casualties_Graph() {
   int i, gdikilled, nodkilled, civkilled, max;
 
-  const void* e1ptr = MixFileClass::Retrieve("E1.SHP");
-  const void* c1ptr = MixFileClass::Retrieve("C1.SHP");
+  const void* e1ptr = MFCD::Retrieve("E1.SHP");
+  const void* c1ptr = MFCD::Retrieve("C1.SHP");
 
   gdikilled = GKilled;
   nodkilled = NKilled;
@@ -1555,7 +1554,7 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   int credobj, i;
   int min, add;
 
-  const void* credshape = MixFileClass::Retrieve("CREDS.SHP");
+  const void* credshape = MFCD::Retrieve("CREDS.SHP");
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_ENDCRED, _credtx[house],
                                    _credty[house], pal));
@@ -1701,7 +1700,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
                             const unsigned char pal[]) {
   int key = 0, ascii = 0, index = 0;
 
-  const void* keystrok = MixFileClass::Retrieve("KEYSTROK.AUD");
+  const void* keystrok = MFCD::Retrieve("KEYSTROK.AUD");
 
   /*
   ** Ready the hidpage so it can restore background under zoomed letters

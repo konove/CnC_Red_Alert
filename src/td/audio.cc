@@ -56,7 +56,6 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/special.h"
 
 /***************************************************************************
@@ -416,7 +415,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   auto name = std::filesystem::path(SoundEffectName[voc].Name)
                   .replace_extension(ext)
                   .string();
-  const void* ptr = MixFileClass::Retrieve(name.c_str());
+  const void* ptr = MFCD::Retrieve(name);
 
   /*
   **	If the sound data pointer is not null, then presume that it is valid.

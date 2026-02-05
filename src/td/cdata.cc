@@ -51,16 +51,20 @@
 #include <filesystem>
 
 #include "port/ex_string.h"
+#include "sdllib/drawbuff.h"
+#include "sdllib/gbuffer.h"
 #include "sdllib/iconcach.h"
 #include "sdllib/memflag.h"
 #include "sdllib/tile.h"
+#include "sdllib/ww_win.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"
+#include "td/display_constants.h"
 #include "td/externs.h"
 #include "td/house.h"
 #include "td/jshell.h"
-#include "td/mixfile.h"
+#include "td/mapedit.h"
 #include "td/object.h"
 #include "td/template.h"
 #include "td/type.h"
@@ -1342,7 +1346,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
       auto fullname = std::filesystem::path(tplate.IniName)
                           .replace_extension(Theaters[theater].Suffix)
                           .string();
-      ptr = MixFileClass::Retrieve(fullname.c_str());
+      ptr = MFCD::Retrieve(fullname);
       (const void*&)tplate.ImageData = ptr;
       Register_Icon_Set(ptr,
                         true);  // Register icon set for video memory caching

@@ -82,7 +82,6 @@
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/object.h"
 #include "td/special.h"
 #include "td/type.h"
@@ -3708,8 +3707,7 @@ void BuildingTypeClass::One_Time() {
       }
       auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      (const void*&)building.CameoData =
-          MixFileClass::Retrieve(fullname.c_str());
+      (const void*&)building.CameoData = MFCD::Retrieve(fullname);
     }
 
     /*
@@ -3718,7 +3716,7 @@ void BuildingTypeClass::One_Time() {
     std::string filename = std::string(building.IniName) + "MAKE";
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    const void* dataptr = MixFileClass::Retrieve(fullname.c_str());
+    const void* dataptr = MFCD::Retrieve(fullname);
     (const void*&)building.BuildupData = dataptr;
     if (dataptr) {
       int timedelay = 1;
@@ -3735,11 +3733,11 @@ void BuildingTypeClass::One_Time() {
     fullname = std::filesystem::path(building.IniName)
                    .replace_extension(".SHP")
                    .string();
-    (const void*&)building.ImageData = MixFileClass::Retrieve(fullname.c_str());
+    (const void*&)building.ImageData = MFCD::Retrieve(fullname);
   }
 
   // Try to load weap2.shp
-  WarFactoryOverlay = MixFileClass::Retrieve("WEAP2.SHP");
+  WarFactoryOverlay = MFCD::Retrieve("WEAP2.SHP");
 
   /*
   **	Install all the special animation sequences for the different building
@@ -4059,8 +4057,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
         auto fullname = std::filesystem::path(classptr->IniName)
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        (const void*&)classptr->ImageData =
-            MixFileClass::Retrieve(fullname.c_str());
+        (const void*&)classptr->ImageData = MFCD::Retrieve(fullname);
       }
 
       if (Get_Resolution_Factor()) {
@@ -4074,7 +4071,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
 
-        cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
+        cameo_ptr = MFCD::Retrieve(fullname);
         if (cameo_ptr) {
           (const void*&)classptr->CameoData = cameo_ptr;
         }

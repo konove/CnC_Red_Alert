@@ -56,9 +56,9 @@
 #include "sdllib/ww_mouse.h"
 #include "td/defines.h"
 #include "td/dialog.h"
+#include "td/externs.h"
 #include "td/globals.h"
 #include "td/jshell.h"
-#include "td/mixfile.h"
 
 /***********************************************************************************************
  * SliderClass::SliderClass -- Normal constructor for a slider (with thumb)
@@ -81,10 +81,10 @@ SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
   PlusGadget = nullptr;
   MinusGadget = nullptr;
   if (!BelongToList) {
-    PlusGadget = new ShapeButtonClass(
-        id, MixFileClass::Retrieve("BTN-PLUS.SHP"), X + Width + 2, Y);
-    MinusGadget = new ShapeButtonClass(
-        id, MixFileClass::Retrieve("BTN-MINS.SHP"), X - 6, Y);
+    PlusGadget = new ShapeButtonClass(id, MFCD::Retrieve("BTN-PLUS.SHP"),
+                                      X + Width + 2, Y);
+    MinusGadget =
+        new ShapeButtonClass(id, MFCD::Retrieve("BTN-MINS.SHP"), X - 6, Y);
 
     if (PlusGadget) {
       PlusGadget->Make_Peer(*this);

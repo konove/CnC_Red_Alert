@@ -53,8 +53,8 @@
 #include "sdllib/ww_mouse.h"
 #include "td/cell.h"
 #include "td/defines.h"
+#include "td/externs.h"
 #include "td/jshell.h"
-#include "td/mixfile.h"
 #include "td/scroll.h"
 #include "td/vector.h"
 #include "tech/rawfile.h"
@@ -292,7 +292,7 @@ void MouseClass::One_Time() {
   if (file.Is_Available()) {
     MouseShapes = Load_Alloc_Data(file);
   } else {
-    MouseShapes = MixFileClass::Retrieve("MOUSE.SHP");
+    MouseShapes = MFCD::Retrieve("MOUSE.SHP");
   }
 
   VTable = ((void**)((char*)this + sizeof(VectorClass<CellClass>) - 4))[0];

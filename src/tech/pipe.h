@@ -51,7 +51,7 @@
 class Pipe {
  public:
   Pipe() = default;
-  virtual ~Pipe();
+  virtual ~Pipe() = default;
   Pipe(const Pipe&) = delete;
   Pipe& operator=(const Pipe&) = delete;
   Pipe(Pipe&&) = delete;
@@ -59,15 +59,13 @@ class Pipe {
 
   virtual int Flush();
   virtual int End() { return Flush(); }
-  virtual void Put_To(Pipe* pipe);
-  void Put_To(Pipe& pipe) { Put_To(&pipe); }
+  void SetSink(Pipe* sink) { sink_ = sink; }
+  void SetSink(Pipe& sink) { sink_ = &sink; }
   virtual int Put(const void* source, int slen);
 
-  /*
-  **	Pointer to the next pipe segment in the chain.
-  */
-  Pipe* ChainTo = nullptr;
-  Pipe* ChainFrom = nullptr;
+ protected:
+  // The pipe we push data to. Caller must ensure sink outlives this pipe.
+  Pipe* sink_ = nullptr;
 };
 
 #endif  // CNC_RED_ALERT_TECH_PIPE_H_

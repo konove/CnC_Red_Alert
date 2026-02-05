@@ -488,9 +488,9 @@ bool Save_Game(int id, const char* descr, bool) {
   //	LCWPipe pipe(LCWPipe::COMPRESS, SAVE_BLOCK_SIZE);
   bpipe.Key(&FastKey, BlowfishEngine::MAX_KEY_LENGTH);
 
-  sha.Put_To(fpipe);
-  bpipe.Put_To(sha);
-  pipe.Put_To(bpipe);
+  sha.SetSink(fpipe);
+  bpipe.SetSink(sha);
+  pipe.SetSink(bpipe);
   Put_All(pipe, save_net);
 
   /*
@@ -623,7 +623,7 @@ bool Load_Game(int id) {
   **	the digest can be compaired to the one in the file.
   */
   SHAStraw sha;
-  sha.Get_From(fstraw);
+  sha.SetSource(fstraw);
   for (;;) {
     if (sha.Get(_staging_buffer, sizeof(_staging_buffer)) !=
         sizeof(_staging_buffer)) {
@@ -632,7 +632,7 @@ bool Load_Game(int id) {
   }
   char actual[20];
   sha.Result(actual);
-  sha.Get_From(nullptr);
+  sha.SetSource(nullptr);
 
   Call_Back();
 
@@ -654,8 +654,8 @@ bool Load_Game(int id) {
   //	LCWStraw straw(LCWStraw::DECOMPRESS, SAVE_BLOCK_SIZE);
 
   bstraw.Key(&FastKey, BlowfishEngine::MAX_KEY_LENGTH);
-  bstraw.Get_From(fstraw);
-  straw.Get_From(bstraw);
+  bstraw.SetSource(fstraw);
+  straw.SetSource(bstraw);
 
   /*
   **	Clear the scenario so we start fresh; this calls the Init_Clear()

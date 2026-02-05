@@ -50,22 +50,20 @@
 class Straw {
  public:
   Straw() = default;
-  virtual ~Straw();
+  virtual ~Straw() = default;
 
   Straw(const Straw&) = delete;
   Straw& operator=(const Straw&) = delete;
   Straw(Straw&&) = delete;
   Straw& operator=(Straw&&) = delete;
 
-  virtual void Get_From(Straw* pipe);
-  virtual void Get_From(Straw& pipe) { Get_From(&pipe); }
+  void SetSource(Straw* source) { source_ = source; }
+  void SetSource(Straw& source) { source_ = &source; }
   virtual int Get(void* buffer, int slen);
 
-  /*
-  **	Pointer to the next pipe segment in the chain.
-  */
-  Straw* ChainTo = nullptr;
-  Straw* ChainFrom = nullptr;
+ protected:
+  // The straw we pull data from. Caller must ensure source outlives this straw.
+  Straw* source_ = nullptr;
 };
 
 #endif  // CNC_RED_ALERT_TECH_STRAW_H_

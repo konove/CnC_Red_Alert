@@ -56,7 +56,6 @@
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/mixfile.h"
 #include "td/object.h"
 #include "td/terrain.h"
 #include "td/type.h"
@@ -660,8 +659,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
         auto fullname = std::filesystem::path(terrain.IniName)
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        (const void*&)terrain.ImageData =
-            MixFileClass::Retrieve(fullname.c_str());
+        (const void*&)terrain.ImageData = MFCD::Retrieve(fullname);
 
         IsTheaterShape = true;
         if (terrain.RadarIcon) {

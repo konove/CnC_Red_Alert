@@ -144,7 +144,6 @@
 #include "td/layer.h"
 #include "td/mapedit.h"
 #include "td/mission.h"
-#include "td/mixfile.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/profile.h"
@@ -2117,7 +2116,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   *else.
   */
   if (Flagged != HOUSE_NONE) {
-    CC_Draw_Shape(MixFileClass::Retrieve("FLAGFLY.SHP"), Frame % 14, x, y,
+    CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), Frame % 14, x, y,
                   window, SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
                   HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
                   MouseClass::UnitShadow);

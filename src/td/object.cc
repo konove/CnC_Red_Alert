@@ -116,7 +116,6 @@
 #include "td/jshell.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/radio.h"
 #include "td/special.h"
 #include "td/target.h"
@@ -928,7 +927,7 @@ const short* ObjectTypeClass::Overlap_List() const {
  * HISTORY: * 11/01/1994 JLB : Created. *
  *=============================================================================================*/
 void ObjectTypeClass::One_Time() {
-  SelectShapes = MixFileClass::Retrieve("SELECT.SHP");
+  SelectShapes = MFCD::Retrieve("SELECT.SHP");
 #if (FRENCH)
   PipShapes = Hires_Retrieve("PIPS_F.SHP");
 #else

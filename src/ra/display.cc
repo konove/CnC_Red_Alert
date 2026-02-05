@@ -403,7 +403,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   if (Scen.Theater != LastTheater) {
     delete TheaterData;
 
-    TheaterData = new MFCD(fullname, &FastKey);
+    TheaterData = MFCD::Register(fullname, &FastKey, &CryptRandom);
 
     bool theaterload = TheaterData->Cache();
     assert(theaterload);

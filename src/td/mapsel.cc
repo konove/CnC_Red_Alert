@@ -65,7 +65,6 @@
 #include "td/house.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
-#include "td/mixfile.h"
 #include "td/palette.h"
 #include "td/score.h"
 #include "td/text.h"
@@ -573,19 +572,19 @@ void Map_Selection() {
                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
   }
 
-  const void* appear1 = MixFileClass::Retrieve("APPEAR1.AUD");
-  const void* sfx4 = MixFileClass::Retrieve("SFX4.AUD");
-  const void* text2 = MixFileClass::Retrieve("TEXT2.AUD");
-  const void* target1 = MixFileClass::Retrieve("TARGET1.AUD");
-  const void* target2 = MixFileClass::Retrieve("TARGET2.AUD");
-  //	void const * target3 = MixFileClass::Retrieve("TARGET3.AUD");
-  const void* newtarg1 = MixFileClass::Retrieve("NEWTARG1.AUD");
-  const void* beepy2 = MixFileClass::Retrieve("BEEPY2.AUD");
-  const void* beepy3 = MixFileClass::Retrieve("BEEPY3.AUD");
-  const void* beepy6 = MixFileClass::Retrieve("BEEPY6.AUD");
-  const void* world2 = MixFileClass::Retrieve("WORLD2.AUD");
-  const void* country1 = MixFileClass::Retrieve("COUNTRY1.AUD");
-  const void* scold1 = MixFileClass::Retrieve("SCOLD1.AUD");
+  const void* appear1 = MFCD::Retrieve("APPEAR1.AUD");
+  const void* sfx4 = MFCD::Retrieve("SFX4.AUD");
+  const void* text2 = MFCD::Retrieve("TEXT2.AUD");
+  const void* target1 = MFCD::Retrieve("TARGET1.AUD");
+  const void* target2 = MFCD::Retrieve("TARGET2.AUD");
+  //	void const * target3 = MFCD::Retrieve("TARGET3.AUD");
+  const void* newtarg1 = MFCD::Retrieve("NEWTARG1.AUD");
+  const void* beepy2 = MFCD::Retrieve("BEEPY2.AUD");
+  const void* beepy3 = MFCD::Retrieve("BEEPY3.AUD");
+  const void* beepy6 = MFCD::Retrieve("BEEPY6.AUD");
+  const void* world2 = MFCD::Retrieve("WORLD2.AUD");
+  const void* country1 = MFCD::Retrieve("COUNTRY1.AUD");
+  const void* scold1 = MFCD::Retrieve("SCOLD1.AUD");
 
   SysMemPage.Clear();
   PseudoSeenBuff->Clear();
@@ -1134,8 +1133,8 @@ void Map_Selection() {
     /*
     ** Now it's time to highlight the country we're going to.
     */
-    const void* countryshape = MixFileClass::Retrieve(
-        house == HOUSE_GOOD ? "COUNTRYE.SHP" : "COUNTRYA.SHP");
+    const void* countryshape =
+        MFCD::Retrieve(house == HOUSE_GOOD ? "COUNTRYE.SHP" : "COUNTRYA.SHP");
 
     Hide_Mouse();
     // erase "Select country to attack"

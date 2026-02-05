@@ -116,7 +116,6 @@
 #include "td/layer.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/monoc.h"
 #include "td/mouse.h"
 #include "td/mplayer.h"
@@ -3657,9 +3656,9 @@ bool Force_CD_Available(int cd) {
     delete GeneralMix;
     delete ScoreMix;
 
-    MoviesMix = MixFileClass::Register("MOVIES.MIX");
-    GeneralMix = MixFileClass::Register("GENERAL.MIX");
-    ScoreMix = MixFileClass::Register("SCORES.MIX");
+    MoviesMix = MFCD::Register("MOVIES.MIX");
+    GeneralMix = MFCD::Register("GENERAL.MIX");
+    ScoreMix = MFCD::Register("SCORES.MIX");
     ThemeClass::Scan();
   }
 #endif
@@ -3685,7 +3684,7 @@ bool Force_CD_Available(int cd) {
  *                                                                                             *
  * HISTORY: * 08/15/1995 BRR : Created. *
  *=============================================================================================*/
-void Validate_Error(char* name) {
+void Validate_Error(const char* name) {
   if constexpr (config::kCheatKeysEnabled) {
     Prog_End();
     printf("%s object error!\n", name);
@@ -3840,6 +3839,6 @@ const void* Hires_Retrieve(const char* name) {
   } else {
     port::SafeCopy(filename, name);
   }
-  return MixFileClass::Retrieve(filename);
+  return MFCD::Retrieve(filename);
 }
 int Get_Resolution_Factor() { return SeenBuff.Get_Width() == 320 ? 0 : 1; }

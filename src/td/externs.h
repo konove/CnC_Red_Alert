@@ -59,7 +59,10 @@
 #include "td/ipxmgr.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
+#include "tech/mixfile.h"
+
+// Convenient alias for MixFileClass<CCFileClass>.
+using MFCD = MixFileClass<CCFileClass>;
 #include "td/monoc.h"
 #include "td/msglist.h"
 #include "td/nodename.h"
@@ -145,11 +148,11 @@ extern LogicClass Logic;
 extern MapEditClass Map;
 extern ScoreClass Score;
 extern MonoClass MonoArray[MonoClass::MAX_MONO_PAGES];
-extern MixFileClass* ScoreMix;
-extern MixFileClass* TheaterData;
-extern MixFileClass* LowTheaterData;
-extern MixFileClass* MoviesMix;
-extern MixFileClass* GeneralMix;
+extern MFCD* ScoreMix;
+extern MFCD* TheaterData;
+extern MFCD* LowTheaterData;
+extern MFCD* MoviesMix;
+extern MFCD* GeneralMix;
 extern ThemeClass Theme;
 
 /*

@@ -61,7 +61,6 @@
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/mixfile.h"
 #include "td/object.h"
 #include "td/smudge.h"
 #include "td/type.h"
@@ -292,7 +291,7 @@ void SmudgeTypeClass::Init(TheaterType theater) {
       auto fullname = std::filesystem::path(smudge.IniName)
                           .replace_extension(Theaters[theater].Suffix)
                           .string();
-      (const void*&)smudge.ImageData = MixFileClass::Retrieve(fullname.c_str());
+      (const void*&)smudge.ImageData = MFCD::Retrieve(fullname);
     }
   }
 }

@@ -60,8 +60,8 @@
 #include "ra/conquer.h"
 #include "ra/externs.h"
 #include "ra/jshell.h"
-#include "ra/mixfile.h"
 #include "ra/startup.h"
+#include "tech/mixfile.h"
 #include "tech/rawfile.h"
 
 /***********************************************************************************************

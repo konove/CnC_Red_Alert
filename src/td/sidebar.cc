@@ -121,7 +121,6 @@
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/object.h"
 #include "td/power.h"
 #include "td/queue.h"
@@ -1088,7 +1087,7 @@ void SidebarClass::StripClass::One_Time(int) {
     }
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    SpecialShapes[lp] = MixFileClass::Retrieve(fullname.c_str());
+    SpecialShapes[lp] = MFCD::Retrieve(fullname);
   }
 }
 
@@ -1213,7 +1212,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     auto fullname = std::filesystem::path(filename)
                         .replace_extension(Theaters[theater].Suffix)
                         .string();
-    cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
+    cameo_ptr = MFCD::Retrieve(fullname);
     if (cameo_ptr) {
       SpecialShapes[lp] = cameo_ptr;
     }

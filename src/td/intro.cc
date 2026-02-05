@@ -145,9 +145,9 @@ void Choose_Side() {
   f.Open("NOD_SLCT.AUD");
   speechn = Load_Alloc_Data(f);
 
-  //	staticaud = MixFileClass::Retrieve("STRUGGLE.AUD");
-  //	speechg = MixFileClass::Retrieve("GDI_SLCT.AUD");
-  //	speechn = MixFileClass::Retrieve("NOD_SLCT.AUD");
+  //	staticaud = MFCD::Retrieve("STRUGGLE.AUD");
+  //	speechg = MFCD::Retrieve("GDI_SLCT.AUD");
+  //	speechn = MFCD::Retrieve("NOD_SLCT.AUD");
 
   if (Special.IsFromInstall) {
 #ifndef PORTABLE

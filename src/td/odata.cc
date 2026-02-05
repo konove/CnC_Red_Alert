@@ -65,7 +65,6 @@
 #include "td/house.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
-#include "td/mixfile.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/overlay.h"
@@ -893,8 +892,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
                        .replace_extension(".SHP")
                        .string();
       }
-      (const void*&)overlay.ImageData =
-          MixFileClass::Retrieve(fullname.c_str());
+      (const void*&)overlay.ImageData = MFCD::Retrieve(fullname);
 
       IsTheaterShape = overlay.IsTheater;
       if (overlay.RadarIcon) {

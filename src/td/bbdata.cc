@@ -45,8 +45,8 @@
 
 #include "td/conquer.h"
 #include "td/defines.h"
+#include "td/externs.h"
 #include "td/jshell.h"
-#include "td/mixfile.h"
 #include "td/type.h"
 #include "tech/rawfile.h"
 
@@ -596,8 +596,7 @@ void BulletTypeClass::One_Time() {
       if (file.Is_Available()) {
         (const void*&)bullet.ImageData = Load_Alloc_Data(file);
       } else {
-        (const void*&)bullet.ImageData =
-            MixFileClass::Retrieve(fullname.c_str());
+        (const void*&)bullet.ImageData = MFCD::Retrieve(fullname);
       }
     }
   }
