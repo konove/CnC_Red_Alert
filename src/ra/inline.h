@@ -92,7 +92,7 @@
 #include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/scenario.h"
-#include "sdllib/dipthong.h"
+#include "sdllib/string_table.h"
 #include "tech/random.h"
 
 /***********************************************************************************************
@@ -859,15 +859,15 @@ inline FacingType Dir_To_8(DirType facing) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline const char* Text_String(int string) {
-  if (string < 0 && std::abs(string) < std::size(NameOverride)) {
-    return NameOverride[-(string + 1)];
+inline const char* Text_String(int index) {
+  if (index < 0 && -index < std::size(NameOverride)) {
+    return NameOverride[-index - 1];
   }
 
-  if (string < 1000) {
-    return Extract_String(SystemStrings, string);
+  if (index < 1000) {
+    return Extract_String(SystemStrings, index).data();
   }
-  return Extract_String(DebugStrings, string - 1000);
+  return Extract_String(DebugStrings, index - 1000).data();
 }
 
 /***********************************************************************************************

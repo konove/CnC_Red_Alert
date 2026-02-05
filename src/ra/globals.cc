@@ -521,12 +521,8 @@ bool SpecialFlag = false;
 */
 int BuildLevel = 10;  // Buildable level (1 = simplest)
 
-/***************************************************************************
-**	The various tutor and dialog messages are located in the data block
-**	referenced by this pointer.
-*/
-const char* SystemStrings;
-const char* DebugStrings;
+std::span<const std::byte> SystemStrings;
+std::span<const std::byte> DebugStrings;
 
 /***************************************************************************
 **	The game plays as long as this var is true.

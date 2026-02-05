@@ -277,8 +277,13 @@ extern const void* Font8Ptr;
 extern const void* FontLEDPtr;
 extern const void* ScoreFontPtr;
 extern const void* GradFont6Ptr;
-extern const char* SystemStrings;
-extern const char* DebugStrings;
+// Tutorial prompts, dialog text, and other UI strings loaded from the mix file.
+// Accessed via Text_String() for indices 0–999.
+extern std::span<const std::byte> SystemStrings;
+
+// Debug/developer strings loaded from DEBUG.ENG. Accessed via Text_String()
+// for indices >= 1000 (offset by 1000 into this table).
+extern std::span<const std::byte> DebugStrings;
 
 /*
 **	Miscellaneous globals.

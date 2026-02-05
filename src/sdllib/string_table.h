@@ -15,9 +15,16 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef CNC_RED_ALERT_SDLLIB_DIPTHONG_H_
-#define CNC_RED_ALERT_SDLLIB_DIPTHONG_H_
+#ifndef CNC_RED_ALERT_SDLLIB_STRING_TABLE_H_
+#define CNC_RED_ALERT_SDLLIB_STRING_TABLE_H_
 
-char* Extract_String(const void* data, int string);
+#include <cstddef>
+#include <span>
+#include <string_view>
 
-#endif  // CNC_RED_ALERT_SDLLIB_DIPTHONG_H_
+// Extracts a string from packed string table data.
+// Returns the null-terminated string at `index`, or empty string_view if
+// data is empty or index is out of bounds.
+std::string_view Extract_String(std::span<const std::byte> data, int index);
+
+#endif  // CNC_RED_ALERT_SDLLIB_STRING_TABLE_H_

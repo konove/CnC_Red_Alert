@@ -340,17 +340,7 @@ bool Init_Game(int, char*[]) {
   AllSurfaces.SurfacesRestored = false;
 
   DLOG(INFO) << "C&C95 - About to load the language file";
-  /*
-  **	Fetch the language text from the hard drive first. If it cannot be
-  **	found on the hard drive, then look for it in the mixfile.
-  */
-  if (RawFileClass(Language_Name("CONQUER")).Is_Available()) {
-    RawFileClass rf(Language_Name("CONQUER"));
-    SystemStrings = static_cast<const char*>(Load_Alloc_Data(rf));
-  } else {
-    SystemStrings =
-        static_cast<const char*>(MFCD::Retrieve(Language_Name("CONQUER")));
-  }
+  SystemStrings = MFCD::RetrieveData(Language_Name("CONQUER"));
 
   /*
   **	Default palette initialization. Uses the desert palette for convenience,

@@ -2116,8 +2116,8 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   *else.
   */
   if (Flagged != HOUSE_NONE) {
-    CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), Frame % 14, x, y,
-                  window, SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
+    CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), Frame % 14, x, y, window,
+                  SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
                   HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
                   MouseClass::UnitShadow);
   }

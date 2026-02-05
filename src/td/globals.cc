@@ -365,7 +365,7 @@ unsigned long ScenarioCRC;
 **	The various tutor and dialog messages are located in the data block
 **	referenced by this pointer.
 */
-const char* SystemStrings;
+std::span<const std::byte> SystemStrings;
 
 /***************************************************************************
 **	The game plays as long as this var is true.

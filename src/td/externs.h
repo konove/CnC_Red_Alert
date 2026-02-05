@@ -198,7 +198,7 @@ extern const void* Font8Ptr;
 extern const void* FontLEDPtr;
 extern const void* ScoreFontPtr;
 extern const void* GradFont6Ptr;
-extern const char* SystemStrings;
+extern std::span<const std::byte> SystemStrings;
 
 /*
 **	Miscellaneous globals.

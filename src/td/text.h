@@ -1,14 +1,13 @@
 #ifndef CNC_RED_ALERT_TD_TEXT_H_
 #define CNC_RED_ALERT_TD_TEXT_H_
 
+#include "sdllib/string_table.h"
 #include "td/conquer.h"
 #include "td/externs.h"
 
-char* Extract_String(const void* data, int string);
-
-inline const char* Text_String(int string) {
+inline const char* Text_String(int index) {
   // can't find a conquer.eng that contains these
-  switch (string) {
+  switch (index) {
     case TXT_READING_IMAGE_DATA:
       return "READING IMAGE DATA";
     case TXT_ANALYZING:
@@ -36,7 +35,7 @@ inline const char* Text_String(int string) {
     case TXT_BONUS_MISSION_5:
       return "Bonus Mission 5";
   }
-  return Extract_String(SystemStrings, string);
+  return Extract_String(SystemStrings, index).data();
 }
 
 #endif  // CNC_RED_ALERT_TD_TEXT_H_

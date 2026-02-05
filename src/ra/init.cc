@@ -2983,19 +2983,8 @@ static void Bootstrap() {
   */
   Set_Shape_Buffer(new unsigned char[SHAPE_BUFFER_SIZE], SHAPE_BUFFER_SIZE);
 
-  /*
-  **	Fetch the language text from the hard drive first. If it cannot be
-  **	found on the hard drive, then look for it in the mixfile.
-  */
-  RawFileClass strings("CONQUER.ENG");
-  if (strings.Is_Available()) {
-    SystemStrings = new char[strings.Size()];
-    strings.Read((void*)SystemStrings, strings.Size());
-  } else {
-    SystemStrings =
-        static_cast<const char*>(MFCD::Retrieve(Language_Name("CONQUER")));
-  }
-  DebugStrings = static_cast<const char*>(MFCD::Retrieve("DEBUG.ENG"));
+  SystemStrings = MFCD::RetrieveData(Language_Name("CONQUER"));
+  DebugStrings = MFCD::RetrieveData("DEBUG.ENG");
 
   /*
   **	Default palette initialization.
