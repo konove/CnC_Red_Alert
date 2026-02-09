@@ -43,6 +43,7 @@
 #include "ra/debug.h"
 
 #include <algorithm>
+#include <cinttypes>
 #include <cstdio>
 
 #include "ra/aircraft.h"
@@ -368,22 +369,23 @@ void Debug_Key(unsigned input) {
 static const char* Bench_Time(BenchType btype) {
   static char buffer[32];
 
-  int rootcount = Benches[BENCH_GAME_FRAME].Count();
+  int64_t rootcount = Benches[BENCH_GAME_FRAME].Count();
   if (rootcount == 0) {
     rootcount = 1;
   }
-  int roottime = Benches[BENCH_GAME_FRAME].Value();
-  int count = Benches[btype].Count();
-  int time = Benches[btype].Value();
+  int64_t roottime = Benches[BENCH_GAME_FRAME].Value();
+  int64_t count = Benches[btype].Count();
+  int64_t time = Benches[btype].Value();
   if (count > 0 && count * time > roottime * rootcount) {
     time = roottime / count;
   }
   int percent = 0;
   if (roottime != 0 && rootcount != 0) {
-    percent = ((count * time) * 99) / (roottime * rootcount);
+    percent =
+        static_cast<int>(((count * time) * 99) / (roottime * rootcount));
   }
   percent = std::min(percent, 99);
-  sprintf(buffer, "%-2d%% %7d", percent, time);
+  sprintf(buffer, "%-2d%% %7" PRId64, percent, time);
   return (buffer);
 }
 

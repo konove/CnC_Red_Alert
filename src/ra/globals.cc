@@ -39,6 +39,7 @@
 #include "ra/globals.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -441,7 +442,7 @@ Buffer* TheaterBuffer;
 ** This accumulates into a useful value that contributes to a
 **	histogram of game performance.
 */
-long SpareTicks;
+int64_t SpareTicks;
 long PathCount;       // Number of findpaths called.
 long CellCount;       // Number of cells redrawn.
 long TargetScan;      // Number of target scans.

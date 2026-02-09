@@ -136,7 +136,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(1, 22);
     mono->Printf("%3d", Factories.Count());
 
-    SpareTicks = std::min<long>(SpareTicks, TIMER_SECOND);
+    SpareTicks = std::min<int64_t>(SpareTicks, TIMER_SECOND);
 
     /*
     **	CPU utilization record.

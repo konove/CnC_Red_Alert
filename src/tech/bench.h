@@ -16,58 +16,28 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/BENCH.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : BENCH.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 07/17/96 *
- *                                                                                             *
- *                  Last Update : July 17, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Benchmarking utilities built on top of the CPU timestamp counter.
 
 #ifndef CNC_RED_ALERT_TECH_BENCH_H_
 #define CNC_RED_ALERT_TECH_BENCH_H_
 
+#include <cstdint>
+
 #include "tech/ftimer.h"
 #include "tech/mpu.h"
 
-/*
-**	This is a timer access object that will fetch the internal Pentium
-**	clock value.
-*/
+// Tick source that reads the CPU timestamp counter (TSC).
 class PentiumTimerClass {
  public:
-  unsigned long operator()() const {
-    unsigned long h;
-    unsigned long l = Get_CPU_Clock(h);
-    return l >> 4 | h << 28;
-  }
-  operator unsigned long() const {
-    unsigned long h;
-    unsigned long l = Get_CPU_Clock(h);
-    return l >> 4 | h << 28;
+  int64_t operator()() const {
+    return static_cast<int64_t>(Get_CPU_Clock() >> 4);
   }
 };
 
-/*
-**	A performance tracking tool object. It is used to track elapsed time.
-*Unlike a simple clock, this *	class will keep a running average of the
-*duration. Typical use of this would be to benchmark some *	process that
-*occurs multiple times. By benchmarking an average time, inconsistencies in a
-*particular *	run can be overcome.
-*/
+// Tracks elapsed time with a running average across multiple events.
+//
+// Typical use is to benchmark a process that occurs many times. By tracking
+// an average, inconsistencies in a particular run are smoothed out.
 class Benchmark {
  public:
   Benchmark() = default;
@@ -76,40 +46,18 @@ class Benchmark {
   void End();
 
   void Reset();
-  unsigned long Value() const;
-  unsigned long Count() const { return TotalCount; }
+  int64_t Value() const;
+  int64_t Count() const { return TotalCount; }
 
  private:
-  /*
-  **	The maximum number of events to keep running average of. If
-  **	events exceed this number, then older events drop off the
-  **	accumulated time. This number needs to be as small as
-  **	is reasonable. The larger this number gets, the less magnitude
-  **	that the benchmark timer can handle. Example; At a value of
-  **	256, the magnitude of the timer can only be 24 bits.
-  */
+  // Maximum number of events in the running average. Older events drop off
+  // once this count is reached.
   enum { MAXIMUM_EVENT_COUNT = 256 };
 
-  /*
-  **	This is the timer the is used to clock the events.
-  */
-  BasicTimerClass<PentiumTimerClass> Clock;
-
-  /*
-  **	The total time off all events tracked so far.
-  */
-  unsigned long Average = 0;
-
-  /*
-  **	The total number of events tracked so far.
-  */
-  unsigned long Counter = 0;
-
-  /*
-  **	Absolute total number of events (possibly greater than the
-  **	number of events tracked in the average).
-  */
-  unsigned long TotalCount = 0;
+  BasicTimerClass<PentiumTimerClass> Clock;  // Timer for clocking events.
+  int64_t Average = 0;     // Total time of all events tracked so far.
+  int64_t Counter = 0;     // Number of events tracked so far.
+  int64_t TotalCount = 0;  // Absolute total events (may exceed Counter).
 };
 
 #endif  // CNC_RED_ALERT_TECH_BENCH_H_

@@ -29,7 +29,8 @@ void PaletteClass::Set(int fade, void (*callback)()) {
     PaletteClass fade_palette;
 
     while (true) {
-      int cur_time = std::min<int>(TickCount.Value() - start_time, fade);
+      int cur_time =
+          static_cast<int>(std::min<int64_t>(TickCount.Value() - start_time, fade));
 
       const unsigned char* old_ptr = CurrentPalette;
       const unsigned char* new_ptr = *this;

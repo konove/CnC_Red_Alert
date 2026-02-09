@@ -16,341 +16,204 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/FTIMER.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : FTIMER.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 03/16/95 *
- *                                                                                             *
- *                  Last Update : July 6, 1996 [JLB] *
- *                                                                                             *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * BasicTimerClass<T>::BasicTimerClass -- Constructor for basic
- *timer class.                 * BasicTimerClass<T>::operator () -- Function
- *operator for timer object.                    * BasicTimerClass<T>::operator
- *long -- Conversion to long operator.                         *
- *   BasicTimerClass<T>::~BasicTimerClass -- Destructor for basic timer object.
- ** TTimerClass<T>::Is_Active -- Checks to see if the timer is counting. *
- *   TTimerClass<T>::Start -- Starts (resumes) a stopped timer. *
- *   TTimerClass<T>::Stop -- Stops the current timer from incrementing. *
- *   TTimerClass<T>::TTimerClass -- Constructor for timer class object. *
- *   TTimerClass<T>::operator () -- Function operator for timer object. *
- *   TTimerClass<T>::operator long -- Conversion operator for timer object. *
- *   CDTimerClass<T>::CDTimerClass -- Constructor for count down timer. *
- *   CDTimerClass<T>::Is_Active -- Checks to see if the timer object is active.
- ** CDTimerClass<T>::Start -- Starts (resumes) the count down timer. *
- *   CDTimerClass<T>::Stop -- Stops (pauses) the count down timer. *
- *   CDTimerClass<T>::operator () -- Function operator for the count down timer.
- ** CDTimerClass<T>::operator long -- Conversion to long operator function. *
- *   CDTimerClass<T>::~CDTimerClass -- Destructor for the count down timer
- *object.             * TTimerClass<T>::Value -- Returns with the current value
- *of the timer.                     * CDTimerClass<T>::Value -- Fetches the
- *current value of the countdown timer.               *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Timer templates parameterized on a tick-source class.
+//
+// BasicTimerClass<T>  -- counts up from a starting value.
+// TTimerClass<T>      -- adds stop/start (pause/resume) to BasicTimerClass.
+// CDTimerClass<T>     -- counts down toward zero with stop/start support.
+//
+// The tick-source class T must provide `T::operator()() const` returning a
+// monotonically increasing tick count (typically int64_t or uint64_t).
+//
+// These classes are serialized via raw memcpy (see heap.cc), so all members
+// must be trivially copyable. Do not use std::optional or other non-trivial
+// types as members.
 
 #ifndef CNC_RED_ALERT_TECH_FTIMER_H_
 #define CNC_RED_ALERT_TECH_FTIMER_H_
 
+#include <cstdint>
+
 #include "tech/noinit.h"
 
-/*
-**	This is a timer class that watches a constant rate timer (specified by
-*the parameter *	type class) and provides basic timer functionality. It
-*is possible to set the start value *	WITHOUT damaging or otherwise affecting
-*any other timer that may be built upon the same *	specified timer class
-*object. Treat an object of this type as if it were a "magic" integral
-**	long that automatically advances at the speed of the timer class object
-*controlling it.
-*/
+// A timer that watches a constant-rate tick source T and counts upward.
+//
+// The tick source is stored by value, so BasicTimerClass can cascade: an
+// instance of BasicTimerClass<T> itself satisfies the tick-source interface,
+// allowing layered timer hierarchies.
 template <class T>
 class BasicTimerClass {
  public:
-  // Constructor allows assignment as if class was integral 'long' type.
-  BasicTimerClass(unsigned long set = 0);
+  // Starts the timer with an initial elapsed value of `set` ticks.
+  BasicTimerClass(int64_t set = 0);
+
+  // No-init constructor for save/load serialization.
   BasicTimerClass(const NoInitClass&);
+
   ~BasicTimerClass() = default;
   BasicTimerClass(const BasicTimerClass&) = default;
   BasicTimerClass& operator=(const BasicTimerClass&) = default;
   BasicTimerClass(BasicTimerClass&&) = default;
   BasicTimerClass& operator=(BasicTimerClass&&) = default;
 
-  // Fetch current value of timer.
-  unsigned long Value() const;
+  // Returns the number of ticks elapsed since the timer was started/reset.
+  int64_t Value() const;
 
-  // Function operator to allow timer object definition to be cascaded.
-  unsigned long operator()() const;
+  // Allows this timer to serve as a tick source for other timer templates.
+  int64_t operator()() const;
 
  protected:
-  T Timer;                // Timer regulator (ticks at constant rate).
-  unsigned long Started;  // Time started.
+  T Timer;          // Tick source (ticks at constant rate).
+  int64_t Started;  // Tick value when the timer was started/reset.
 };
 
 template <class T>
 BasicTimerClass<T>::BasicTimerClass(const NoInitClass&) {}
 
-/***********************************************************************************************
- * BasicTimerClass<T>::BasicTimerClass -- Constructor for basic timer class. *
- *                                                                                             *
- *    This is the constructor for the basic timer class object. It sets the
- *timer counting     * up from zero at the rate of the controlling timer class
- *object.                          *
- *                                                                                             *
- * INPUT:   set   -- Alternate initial start value for the counter. If not
- *specified, then     * the timer is assumed to start at zero and count upwards.
- **
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/05/1996 JLB : Created. *
- *=============================================================================================*/
+// Anchors Started so that Value() initially returns `set`.
 template <class T>
-BasicTimerClass<T>::BasicTimerClass(unsigned long set)
-    : Started(Timer() - set) {}
+BasicTimerClass<T>::BasicTimerClass(int64_t set)
+    : Started(static_cast<int64_t>(Timer()) - set) {}
 
 template <class T>
-unsigned long BasicTimerClass<T>::Value() const {
-  return Timer() - Started;
+int64_t BasicTimerClass<T>::Value() const {
+  return static_cast<int64_t>(Timer()) - Started;
 }
 
-/***********************************************************************************************
- * BasicTimerClass<T>::operator () -- Function operator for timer object. *
- *                                                                                             *
- *    This function operator allows the timer to also serve as the parameter
- *type class for    * additional timer objects. This allows one to instantiate a
- *controlling timer class that  * can control (e.g., turn on or off) all timers
- *that are based upon it.                    *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns the current timer value expressed as a long. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/05/1996 JLB : Created. *
- *=============================================================================================*/
 template <class T>
-unsigned long BasicTimerClass<T>::operator()() const {
-  return Timer() - Started;
+int64_t BasicTimerClass<T>::operator()() const {
+  return static_cast<int64_t>(Timer()) - Started;
 }
 
-/*
-**	This timer class functions similarly to the basic timer class. In
-*addition to the *	normal timer operation, this class has the ability to be
-*stopped and started at *	will. If you have no need to start or stop the
-*timer, then use the basic timer *	class instead.
-*/
+// A timer that extends BasicTimerClass with stop/start (pause/resume).
+//
+// When stopped, the timer freezes at its current value. When restarted, it
+// resumes counting from where it left off. If stop/start is not needed, use
+// BasicTimerClass directly.
 template <class T>
 class TTimerClass : public BasicTimerClass<T> {
  public:
-  // Constructor allows assignment as if class was integral 'long' type.
-  TTimerClass(unsigned long set = 0);
+  // Starts the timer with an initial elapsed value of `set` ticks.
+  TTimerClass(int64_t set = 0);
+
+  // No-init constructor for save/load serialization.
   TTimerClass(const NoInitClass& x);
+
   ~TTimerClass() = default;
   TTimerClass(const TTimerClass&) = default;
   TTimerClass& operator=(const TTimerClass&) = default;
   TTimerClass(TTimerClass&&) = default;
   TTimerClass& operator=(TTimerClass&&) = default;
 
-  // Fetches current value of timer.
-  unsigned long Value() const;
+  // Returns the current elapsed tick count, accounting for paused time.
+  int64_t Value() const;
 
-  // Function operator to allow timer object definition to be cascaded.
-  unsigned long operator()() const;
+  // Allows this timer to serve as a tick source for other timer templates.
+  int64_t operator()() const;
 
-  // Stops (pauses) the timer.
+  // Resets the timer to count up from `set`, keeping it active.
+  TTimerClass& operator=(int64_t set);
+
+  // Stops (pauses) the timer. Further ticks do not accumulate until Start().
   void Stop();
 
-  // Starts (resumes) the timer.
+  // Starts (resumes) a stopped timer from where it left off.
   void Start();
 
-  // Queries whether the timer is currently active.
+  // Returns true if the timer is currently counting (not stopped).
   bool Is_Active() const;
 
  private:
-  unsigned long Accumulated;  //	Total accumulated ticks.
+  int64_t Accumulated;  // Total ticks accumulated across stop/start cycles.
+  bool Active;          // True when the timer is running.
 };
 
 template <class T>
 TTimerClass<T>::TTimerClass(const NoInitClass& x) : BasicTimerClass<T>(x) {}
 
-/***********************************************************************************************
- * TTimerClass<T>::TTimerClass -- Constructor for timer class object. *
- *                                                                                             *
- *    This is the constructor for the advanced timer class object. This object
- *class can start * or stop the timer under user control. *
- *                                                                                             *
- * INPUT:   set   -- The initial value to set the timer to. If no value is
- *specified, then     * the timer is assumed to start from zero. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/05/1996 JLB : Created. *
- *=============================================================================================*/
 template <class T>
-TTimerClass<T>::TTimerClass(unsigned long set)
-    : BasicTimerClass<T>(set), Accumulated(0) {}
+TTimerClass<T>::TTimerClass(int64_t set)
+    : BasicTimerClass<T>(set), Accumulated(0), Active(true) {}
 
-/***********************************************************************************************
- * TTimerClass<T>::Value -- Returns with the current value of the timer. *
- *                                                                                             *
- *    This routine will return with the current value of the timer. It takes
- *into account      * whether the timer has stopped or not so as to always
- *return the correct value regardless * of that condition. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the current value of the timer. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/06/1996 JLB : Created. *
- *=============================================================================================*/
 template <class T>
-unsigned long TTimerClass<T>::Value() const {
-  unsigned long value = Accumulated;
-  if (this->Started != 0xFFFFFFFFU) {
+int64_t TTimerClass<T>::Value() const {
+  int64_t value = Accumulated;
+  if (Active) {
     value += BasicTimerClass<T>::Value();
   }
   return value;
 }
 
-/***********************************************************************************************
- * TTimerClass<T>::operator () -- Function operator for timer object. *
- *                                                                                             *
- *    This function operator for the timer class allows this timer class to be
- *used as the     * template parameter for other timer class objects. With this
- *ability, one can control     * several timers (e.g., start or stop them) by
- *using a single controlling timer class      * that other timers are
- *instantiated from.                                                 *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the current time expressed as a long. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/05/1996 JLB : Created. *
- *=============================================================================================*/
 template <class T>
-unsigned long TTimerClass<T>::operator()() const {
-  unsigned long value = Accumulated;
-  if (this->Started != 0xFFFFFFFFU) {
-    value += BasicTimerClass<T>::Value();
-  }
-  return value;
+int64_t TTimerClass<T>::operator()() const {
+  return Value();
 }
 
-/***********************************************************************************************
- * TTimerClass<T>::Stop -- Stops the current timer from incrementing. *
- *                                                                                             *
- *    This routine will stop (pause) the timer from further increments. To cause
- *the timer     * to begin anew, call the Start() function. *
- *                                                                                             *
- *                                                                                             *
- * INPUT: *
- *                                                                                             *
- * OUTPUT: *
- *                                                                                             *
- * WARNINGS: *
- *                                                                                             *
- * HISTORY: * 02/05/1996 JLB : Created. *
- *=============================================================================================*/
+template <class T>
+TTimerClass<T>& TTimerClass<T>::operator=(int64_t set) {
+  this->Started = static_cast<int64_t>(this->Timer());
+  Accumulated = set;
+  Active = true;
+  return *this;
+}
+
 template <class T>
 void TTimerClass<T>::Stop() {
-  if (this->Started != 0xFFFFFFFFU) {
+  if (Active) {
     Accumulated += BasicTimerClass<T>::Value();
-    this->Started = 0xFFFFFFFFU;
+    Active = false;
   }
 }
 
-/***********************************************************************************************
- * TTimerClass<T>::Start -- Starts (resumes) a stopped timer. *
- *                                                                                             *
- *    This routine will resume a timer that was previously stopped with the
- *Stop() function.   *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/06/1996 JLB : Created. *
- *=============================================================================================*/
 template <class T>
 void TTimerClass<T>::Start() {
-  if (this->Started == 0xFFFFFFFFU) {
-    this->Started = this->Timer();
+  if (!Active) {
+    this->Started = static_cast<int64_t>(this->Timer());
+    Active = true;
   }
 }
 
-/***********************************************************************************************
- * TTimerClass<T>::Is_Active -- Checks to see if the timer is counting. *
- *                                                                                             *
- *    Since this timer can be paused, this routine is used to examine the timer
- *to see if it   * is currently paused or active. If the timer is active, then
- *the return value will be     * true. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Is this timer currently active? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/06/1996 JLB : Created. *
- *=============================================================================================*/
 template <class T>
 bool TTimerClass<T>::Is_Active() const {
-  return this->Started != 0xFFFFFFFFU;
+  return Active;
 }
 
-/*
-**	This timer counts down from the specified (or constructed) value down
-*towards zero. *	The countdown rate is controlled by the timer object
-*specified. This timer object can *	be started or stopped. It can also be
-*tested to see if it has expired or not. An expired *	count down timer is one
-*that has value of zero. You can treat this class object as if it *	were an
-*integral "magic" long that automatically counts down toward zero.
-*/
+// A countdown timer that counts down from a set duration toward zero.
+//
+// When the value reaches zero the timer is "finished". The timer supports
+// stop/start (pause/resume). Assigning a new duration via operator= resets
+// and restarts the countdown.
 template <class T>
 class CDTimerClass : public BasicTimerClass<T> {
  public:
-  // Constructor allows assignment as if class was integral 'long' type.
-  CDTimerClass(unsigned long set = 0);
+  // Starts counting down from `set` ticks.
+  CDTimerClass(int64_t set = 0);
+
+  // No-init constructor for save/load serialization.
   CDTimerClass(const NoInitClass& x);
+
   ~CDTimerClass() = default;
   CDTimerClass(const CDTimerClass&) = default;
   CDTimerClass& operator=(const CDTimerClass&) = default;
   CDTimerClass(CDTimerClass&&) = default;
   CDTimerClass& operator=(CDTimerClass&&) = default;
 
-  // Fetches current value of count down timer.
-  unsigned long Value() const;
+  // Returns the ticks remaining, or 0 if the countdown has finished.
+  int64_t Value() const;
 
-  // Function operator to allow timer object definition to be cascaded.
-  unsigned long operator()() const;
+  // Allows this timer to serve as a tick source for other timer templates.
+  int64_t operator()() const;
 
-  // Stops (pauses) the timer.
+  // Resets the countdown to `duration` ticks and restarts it.
+  CDTimerClass& operator=(int64_t duration);
+
+  // Stops (pauses) the countdown.
   void Stop();
 
-  // Starts (resumes) the timer.
+  // Starts (resumes) a stopped countdown from where it left off.
   void Start();
 
-  // Queries whether the timer is currently active.
+  // Returns true if the countdown is currently running (not stopped).
   bool Is_Active() const;
 
   // Returns true if the countdown has reached zero.
@@ -360,153 +223,62 @@ class CDTimerClass : public BasicTimerClass<T> {
   bool HasTimeLeft() const;
 
  private:
-  unsigned long DelayTime;  // Ticks remaining before countdown timer expires.
+  int64_t DelayTime;  // Ticks remaining before countdown timer expires.
+  bool Active;        // True when the timer is running.
 };
 
 template <class T>
 CDTimerClass<T>::CDTimerClass(const NoInitClass& x) : BasicTimerClass<T>(x) {}
 
-/***********************************************************************************************
- * CDTimerClass<T>::CDTimerClass -- Constructor for count down timer. *
- *                                                                                             *
- *    This is the constructor for the count down timer object. The optional
- *starting value     * can be used to initiate the timer. Because of this
- *constructor it is possible to assign  * a long to a count down timer object in
- *order to begin the countdown process.             *
- *                                                                                             *
- * INPUT:   set   -- The initial starting value for the countdown timer. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/06/1996 JLB : Created. *
- *=============================================================================================*/
 template <class T>
-CDTimerClass<T>::CDTimerClass(unsigned long set)
-    : BasicTimerClass<T>(0), DelayTime(set) {}
+CDTimerClass<T>::CDTimerClass(int64_t set)
+    : BasicTimerClass<T>(0), DelayTime(set), Active(true) {}
 
-/***********************************************************************************************
- * CDTimerClass<T>::Value -- Fetches the current value of the countdown timer. *
- *                                                                                             *
- *    Use this routine to fetch the current value of the timer. It takes into
- *consideration    * whether the timer has been stopped or not. It returns the
- *correct value regardless of    * this condition. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the correct value of this count down timer. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/06/1996 JLB : Created. *
- *=============================================================================================*/
 template <class T>
-unsigned long CDTimerClass<T>::Value() const {
-  unsigned long remain = DelayTime;
-  if (this->Started != 0xFFFFFFFFU) {
-    unsigned long value = BasicTimerClass<T>::Value();
-    if (value < remain) {
-      return remain - value;
+int64_t CDTimerClass<T>::Value() const {
+  int64_t remain = DelayTime;
+  if (Active) {
+    int64_t elapsed = BasicTimerClass<T>::Value();
+    if (elapsed < remain) {
+      return remain - elapsed;
     }
     return 0;
   }
   return remain;
 }
 
-/***********************************************************************************************
- * CDTimerClass<T>::operator () -- Function operator for the count down timer. *
- *                                                                                             *
- *    This is the function operator for the count down timer object. By
- *supporting this        * function operator, this class (or one derived from
- *this class) could be used as the      * controlling timer to the timer
- *templates.                                                *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the current count down time expressed in the form of a
- *long.          *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/06/1996 JLB : Created. *
- *=============================================================================================*/
 template <class T>
-unsigned long CDTimerClass<T>::operator()() const {
-  unsigned long remain = DelayTime;
-  if (this->Started != 0xFFFFFFFFU) {
-    unsigned long value = BasicTimerClass<T>::Value();
-    if (value < remain) {
-      return remain - value;
-    }
-    return 0;
-  }
-  return remain;
+int64_t CDTimerClass<T>::operator()() const {
+  return Value();
 }
 
-/***********************************************************************************************
- * CDTimerClass<T>::Stop -- Stops (pauses) the count down timer. *
- *                                                                                             *
- *    This routine is used to stop (pause) the count down timer object. A timer
- *object paused  * in this fashion will be resumed by a call to Start() or by
- *assigning a new count down    * value to the timer. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/06/1996 JLB : Created. *
- *=============================================================================================*/
+template <class T>
+CDTimerClass<T>& CDTimerClass<T>::operator=(int64_t duration) {
+  this->Started = static_cast<int64_t>(this->Timer());
+  DelayTime = duration;
+  Active = true;
+  return *this;
+}
+
 template <class T>
 void CDTimerClass<T>::Stop() {
-  if (this->Started != 0xFFFFFFFFU) {
-    DelayTime = this->Value();
-    this->Started = 0xFFFFFFFFU;
+  if (Active) {
+    DelayTime = Value();
+    Active = false;
   }
 }
 
-/***********************************************************************************************
- * CDTimerClass<T>::Start -- Starts (resumes) the count down timer. *
- *                                                                                             *
- *    This routine is used to start (resume) the count down timer that was
- *previously stopped  * with the Stop() function. The timer will also resume
- *when a new timer value is assigned. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/06/1996 JLB : Created. *
- *=============================================================================================*/
 template <class T>
 void CDTimerClass<T>::Start() {
-  if (this->Started == 0xFFFFFFFFU) {
-    this->Started = this->Timer();
+  if (!Active) {
+    this->Started = static_cast<int64_t>(this->Timer());
+    Active = true;
   }
 }
 
-/***********************************************************************************************
- * CDTimerClass<T>::Is_Active -- Checks to see if the timer object is active. *
- *                                                                                             *
- *    Because the timer object counting can be stopped, this routine is used to
- *determine      * if the timer is currently paused or active. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Is the timer currently active? *
- *                                                                                             *
- * WARNINGS:   Note that if the timer has counted down to zero, then it may be
- *active, but     * the value will, naturally, not change. *
- *                                                                                             *
- * HISTORY: * 02/06/1996 JLB : Created. *
- *=============================================================================================*/
 template <class T>
 bool CDTimerClass<T>::Is_Active() const {
-  return this->Started != 0xFFFFFFFFU;
+  return Active;
 }
 
 template <class T>

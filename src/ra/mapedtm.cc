@@ -535,7 +535,7 @@ int MapEditClass::Team_Members(HousesType house) {
   int rheld = 0;
   long tdelay[3] = {5, 20, 0};
   int tindex = 0;
-  long heldtime;
+  int64_t heldtime;
 
   /*
   **	Buttons.

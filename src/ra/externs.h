@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_EXTERNS_H_
 #define CNC_RED_ALERT_RA_EXTERNS_H_
 
+#include <cstdint>
+
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/carry.h"
@@ -293,7 +295,7 @@ extern TTimerClass<SystemTimerClass> TickCount;
 extern bool PassedProximity;  // used in display.cpp
 extern HousesType Whom;
 extern _VQAConfig AnimControl;
-extern long SpareTicks;
+extern int64_t SpareTicks;
 extern long PathCount;
 extern long CellCount;
 extern long TargetScan;

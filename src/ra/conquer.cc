@@ -4632,7 +4632,7 @@ void Shake_The_Screen(int shakes) {
   int oldyoff = 0;
   int newyoff = 0;
   while (shakes--) {
-    int x = TickCount.Value();
+    int64_t x = TickCount.Value();
     //		CountDownTimer = 1;
     do {
       newyoff = Sim_Random_Pick(0, 2) - 1;

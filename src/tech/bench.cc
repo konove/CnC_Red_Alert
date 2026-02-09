@@ -103,7 +103,7 @@ void Benchmark::Begin(bool reset) {
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
 void Benchmark::End() {
-  unsigned long value = Clock.Value();
+  int64_t value = Clock.Value();
 
   if (Counter == MAXIMUM_EVENT_COUNT) {
     Average -= Average / MAXIMUM_EVENT_COUNT;
@@ -130,7 +130,7 @@ void Benchmark::End() {
  *                                                                                             *
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned long Benchmark::Value() const {
+int64_t Benchmark::Value() const {
   if (Counter) {
     return Average / Counter;
   }

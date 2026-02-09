@@ -587,8 +587,8 @@ class SessionClass {
 
   int DesiredFrameRate;
 
-  int ProcessTimer;
-  int ProcessTicks;
+  int64_t ProcessTimer;
+  int64_t ProcessTicks;
   int ProcessFrames;
 
   //.....................................................................

@@ -936,7 +936,7 @@ void ScoreClass::Presentation() {
 void Cycle_Wait_Click(bool cycle) {
   int counter = 0;
   int minclicks = 20;
-  unsigned long timingtime = TickCount.Value();
+  int64_t timingtime = TickCount.Value();
   SerialPacketType sendpacket;
   SerialPacketType receivepacket;
   int packetlen;
@@ -1832,7 +1832,7 @@ void Call_Back_Delay(int time) {
     time = 0;
   }
 
-  const CDTimerClass<SystemTimerClass> cd{static_cast<unsigned long>(time)};
+  const CDTimerClass<SystemTimerClass> cd{static_cast<int64_t>(time)};
   StreamLowImpact = true;
   do {
     if (callbackcd.IsFinished()) {
