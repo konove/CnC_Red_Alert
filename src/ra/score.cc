@@ -1820,7 +1820,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
  *=========================================================================*/
 void Call_Back_Delay(int time) {
   time = std::clamp(time, 0, 60);
-  CDTimerClass<SystemTimerClass> callbackcd = 0;
+  CDTimerClass<SystemTimerClass> callbackcd{0};
 
   if (!ControlQ) {
     if (Keyboard->Down(KN_LCTRL) && Keyboard->Down(KN_Q)) {
@@ -1832,7 +1832,7 @@ void Call_Back_Delay(int time) {
     time = 0;
   }
 
-  const CDTimerClass<SystemTimerClass> cd{static_cast<int64_t>(time)};
+  const CDTimerClass<SystemTimerClass> cd{time};
   StreamLowImpact = true;
   do {
     if (callbackcd.IsFinished()) {

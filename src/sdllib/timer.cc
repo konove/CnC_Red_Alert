@@ -83,11 +83,6 @@ WinTimerClass::WinTimerClass(std::uint32_t freq, bool /*partial*/) {
   TimerHandle = SDL_AddTimer(1000 / freq, TimerCallback, this);
 
   TimerSystemOn = TimerHandle != 0;
-
-  // TickCount is a completely different type to TimerClass
-  // (TTimerClass<SystemTimerClass>)
-  // if(!partial)
-  //    TickCount.Start();
 }
 
 WinTimerClass::~WinTimerClass() {
@@ -95,13 +90,8 @@ WinTimerClass::~WinTimerClass() {
   TimerSystemOn = false;
 }
 
-void WinTimerClass::Update_Tick_Count() {
-  SysTicks++;
-  UserTicks++;
-}
+void WinTimerClass::Update_Tick_Count() { SysTicks++; }
 
 std::uint64_t WinTimerClass::Get_System_Tick_Count() { return SysTicks; }
-
-std::uint64_t WinTimerClass::Get_User_Tick_Count() { return UserTicks; }
 
 uint32_t Get_Time_Ms() { return SDL_GetTicks(); }

@@ -132,12 +132,10 @@ class WinTimerClass {
 
   void Update_Tick_Count();
   std::uint64_t Get_System_Tick_Count();
-  std::uint64_t Get_User_Tick_Count();
 
  private:
-  std::int32_t TimerHandle;     // Handle for windows timer event
-  std::uint64_t SysTicks = 0;   // Tick count of timer.
-  std::uint64_t UserTicks = 0;  // Tick count of timer.
+  std::int32_t TimerHandle;    // Handle for windows timer event
+  std::uint64_t SysTicks = 0;  // Tick count of timer.
 };
 
 uint32_t Get_Time_Ms();

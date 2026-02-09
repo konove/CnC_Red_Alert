@@ -1072,7 +1072,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
             }
           }
         }
-        LastClickTime = TickCount();
+        LastClickTime = TickCount.Value();
         input = KN_NONE;
       } else {
         /*

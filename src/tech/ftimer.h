@@ -22,7 +22,7 @@
 // TTimerClass<T>      -- adds stop/start (pause/resume) to BasicTimerClass.
 // CDTimerClass<T>     -- counts down toward zero with stop/start support.
 //
-// The tick-source class T must provide `T::operator()() const` returning a
+// The tick-source class T must provide `T::Tick() const` returning a
 // monotonically increasing tick count (typically int64_t or uint64_t).
 //
 // These classes are serialized via raw memcpy (see heap.cc), so all members
@@ -32,20 +32,23 @@
 #ifndef CNC_RED_ALERT_TECH_FTIMER_H_
 #define CNC_RED_ALERT_TECH_FTIMER_H_
 
+#include <concepts>
 #include <cstdint>
 
 #include "tech/noinit.h"
 
+// Concept to ensure the timer source provides a numeric tick or timestamp.
+template <typename T>
+concept TimerSource = requires(T t) {
+  { t.Tick() } -> std::convertible_to<int64_t>;
+};
+
 // A timer that watches a constant-rate tick source T and counts upward.
-//
-// The tick source is stored by value, so BasicTimerClass can cascade: an
-// instance of BasicTimerClass<T> itself satisfies the tick-source interface,
-// allowing layered timer hierarchies.
-template <class T>
+template <TimerSource T>
 class BasicTimerClass {
  public:
   // Starts the timer with an initial elapsed value of `set` ticks.
-  BasicTimerClass(int64_t set = 0);
+  explicit BasicTimerClass(int64_t set = 0);
 
   // No-init constructor for save/load serialization.
   BasicTimerClass(const NoInitClass&);
@@ -59,30 +62,31 @@ class BasicTimerClass {
   // Returns the number of ticks elapsed since the timer was started/reset.
   int64_t Value() const;
 
-  // Allows this timer to serve as a tick source for other timer templates.
-  int64_t operator()() const;
+  // Resets the timer so that Value() returns `set`.
+  BasicTimerClass& operator=(int64_t set);
 
  protected:
   T Timer;          // Tick source (ticks at constant rate).
   int64_t Started;  // Tick value when the timer was started/reset.
 };
 
-template <class T>
+template <TimerSource T>
 BasicTimerClass<T>::BasicTimerClass(const NoInitClass&) {}
 
 // Anchors Started so that Value() initially returns `set`.
-template <class T>
+template <TimerSource T>
 BasicTimerClass<T>::BasicTimerClass(int64_t set)
-    : Started(static_cast<int64_t>(Timer()) - set) {}
+    : Started(static_cast<int64_t>(Timer.Tick()) - set) {}
 
-template <class T>
+template <TimerSource T>
 int64_t BasicTimerClass<T>::Value() const {
-  return static_cast<int64_t>(Timer()) - Started;
+  return static_cast<int64_t>(Timer.Tick()) - Started;
 }
 
-template <class T>
-int64_t BasicTimerClass<T>::operator()() const {
-  return static_cast<int64_t>(Timer()) - Started;
+template <TimerSource T>
+BasicTimerClass<T>& BasicTimerClass<T>::operator=(int64_t set) {
+  Started = static_cast<int64_t>(Timer.Tick()) - set;
+  return *this;
 }
 
 // A timer that extends BasicTimerClass with stop/start (pause/resume).
@@ -90,11 +94,11 @@ int64_t BasicTimerClass<T>::operator()() const {
 // When stopped, the timer freezes at its current value. When restarted, it
 // resumes counting from where it left off. If stop/start is not needed, use
 // BasicTimerClass directly.
-template <class T>
+template <TimerSource T>
 class TTimerClass : public BasicTimerClass<T> {
  public:
   // Starts the timer with an initial elapsed value of `set` ticks.
-  TTimerClass(int64_t set = 0);
+  explicit TTimerClass(int64_t set = 0);
 
   // No-init constructor for save/load serialization.
   TTimerClass(const NoInitClass& x);
@@ -107,9 +111,6 @@ class TTimerClass : public BasicTimerClass<T> {
 
   // Returns the current elapsed tick count, accounting for paused time.
   int64_t Value() const;
-
-  // Allows this timer to serve as a tick source for other timer templates.
-  int64_t operator()() const;
 
   // Resets the timer to count up from `set`, keeping it active.
   TTimerClass& operator=(int64_t set);
@@ -128,14 +129,14 @@ class TTimerClass : public BasicTimerClass<T> {
   bool Active;          // True when the timer is running.
 };
 
-template <class T>
+template <TimerSource T>
 TTimerClass<T>::TTimerClass(const NoInitClass& x) : BasicTimerClass<T>(x) {}
 
-template <class T>
+template <TimerSource T>
 TTimerClass<T>::TTimerClass(int64_t set)
     : BasicTimerClass<T>(set), Accumulated(0), Active(true) {}
 
-template <class T>
+template <TimerSource T>
 int64_t TTimerClass<T>::Value() const {
   int64_t value = Accumulated;
   if (Active) {
@@ -144,20 +145,15 @@ int64_t TTimerClass<T>::Value() const {
   return value;
 }
 
-template <class T>
-int64_t TTimerClass<T>::operator()() const {
-  return Value();
-}
-
-template <class T>
+template <TimerSource T>
 TTimerClass<T>& TTimerClass<T>::operator=(int64_t set) {
-  this->Started = static_cast<int64_t>(this->Timer());
+  this->Started = static_cast<int64_t>(this->Timer.Tick());
   Accumulated = set;
   Active = true;
   return *this;
 }
 
-template <class T>
+template <TimerSource T>
 void TTimerClass<T>::Stop() {
   if (Active) {
     Accumulated += BasicTimerClass<T>::Value();
@@ -165,15 +161,15 @@ void TTimerClass<T>::Stop() {
   }
 }
 
-template <class T>
+template <TimerSource T>
 void TTimerClass<T>::Start() {
   if (!Active) {
-    this->Started = static_cast<int64_t>(this->Timer());
+    this->Started = static_cast<int64_t>(this->Timer.Tick());
     Active = true;
   }
 }
 
-template <class T>
+template <TimerSource T>
 bool TTimerClass<T>::Is_Active() const {
   return Active;
 }
@@ -183,11 +179,11 @@ bool TTimerClass<T>::Is_Active() const {
 // When the value reaches zero the timer is "finished". The timer supports
 // stop/start (pause/resume). Assigning a new duration via operator= resets
 // and restarts the countdown.
-template <class T>
+template <TimerSource T>
 class CDTimerClass : public BasicTimerClass<T> {
  public:
   // Starts counting down from `set` ticks.
-  CDTimerClass(int64_t set = 0);
+  explicit CDTimerClass(int64_t set = 0);
 
   // No-init constructor for save/load serialization.
   CDTimerClass(const NoInitClass& x);
@@ -200,9 +196,6 @@ class CDTimerClass : public BasicTimerClass<T> {
 
   // Returns the ticks remaining, or 0 if the countdown has finished.
   int64_t Value() const;
-
-  // Allows this timer to serve as a tick source for other timer templates.
-  int64_t operator()() const;
 
   // Resets the countdown to `duration` ticks and restarts it.
   CDTimerClass& operator=(int64_t duration);
@@ -227,14 +220,14 @@ class CDTimerClass : public BasicTimerClass<T> {
   bool Active;        // True when the timer is running.
 };
 
-template <class T>
+template <TimerSource T>
 CDTimerClass<T>::CDTimerClass(const NoInitClass& x) : BasicTimerClass<T>(x) {}
 
-template <class T>
+template <TimerSource T>
 CDTimerClass<T>::CDTimerClass(int64_t set)
     : BasicTimerClass<T>(0), DelayTime(set), Active(true) {}
 
-template <class T>
+template <TimerSource T>
 int64_t CDTimerClass<T>::Value() const {
   int64_t remain = DelayTime;
   if (Active) {
@@ -247,20 +240,15 @@ int64_t CDTimerClass<T>::Value() const {
   return remain;
 }
 
-template <class T>
-int64_t CDTimerClass<T>::operator()() const {
-  return Value();
-}
-
-template <class T>
+template <TimerSource T>
 CDTimerClass<T>& CDTimerClass<T>::operator=(int64_t duration) {
-  this->Started = static_cast<int64_t>(this->Timer());
+  this->Started = static_cast<int64_t>(this->Timer.Tick());
   DelayTime = duration;
   Active = true;
   return *this;
 }
 
-template <class T>
+template <TimerSource T>
 void CDTimerClass<T>::Stop() {
   if (Active) {
     DelayTime = Value();
@@ -268,25 +256,25 @@ void CDTimerClass<T>::Stop() {
   }
 }
 
-template <class T>
+template <TimerSource T>
 void CDTimerClass<T>::Start() {
   if (!Active) {
-    this->Started = static_cast<int64_t>(this->Timer());
+    this->Started = static_cast<int64_t>(this->Timer.Tick());
     Active = true;
   }
 }
 
-template <class T>
+template <TimerSource T>
 bool CDTimerClass<T>::Is_Active() const {
   return Active;
 }
 
-template <class T>
+template <TimerSource T>
 bool CDTimerClass<T>::IsFinished() const {
   return Value() == 0;
 }
 
-template <class T>
+template <TimerSource T>
 bool CDTimerClass<T>::HasTimeLeft() const {
   return Value() != 0;
 }

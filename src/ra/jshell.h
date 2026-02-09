@@ -255,39 +255,16 @@ extern void outport(int port, unsigned short data);
 */
 class FrameTimerClass {
  public:
-  std::uint64_t operator()() const { return Frame; }
-  operator std::uint64_t() const { return Frame; }
+  std::uint64_t Tick() const { return Frame; }
 };
 
 class SystemTimerClass {
  public:
-  std::uint64_t operator()() const {
+  std::uint64_t Tick() const {
     if (!WindowsTimer) {
       return 0;
     }
     return WindowsTimer->Get_System_Tick_Count();
-  }
-  operator std::uint64_t() const {
-    if (!WindowsTimer) {
-      return 0;
-    }
-    return WindowsTimer->Get_System_Tick_Count();
-  }
-};
-
-class UserTimerClass {
- public:
-  std::uint64_t operator()() const {
-    if (!WindowsTimer) {
-      return 0;
-    }
-    return WindowsTimer->Get_User_Tick_Count();
-  }
-  operator std::uint64_t() const {
-    if (!WindowsTimer) {
-      return 0;
-    }
-    return WindowsTimer->Get_User_Tick_Count();
   }
 };
 
