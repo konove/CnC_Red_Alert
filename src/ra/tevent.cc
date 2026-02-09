@@ -265,10 +265,10 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       return !Scen.GlobalFlags[Data.Value];
 
     case TEVENT_MISSION_TIMER_EXPIRED:
-      return Scen.MissionTimer.Is_Active() && Scen.MissionTimer == 0;
+      return Scen.MissionTimer.Is_Active() && Scen.MissionTimer.IsFinished();
 
     case TEVENT_TIME:
-      return td.Timer == 0;
+      return td.Timer.IsFinished();
   }
 
   /*

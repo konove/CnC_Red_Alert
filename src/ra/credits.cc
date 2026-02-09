@@ -143,7 +143,7 @@ void CreditClass::Graphic_Logic(bool forced) {
 #endif  // WIN32
 
     if (Scen.MissionTimer.Is_Active()) {
-      long secs = Scen.MissionTimer / TICKS_PER_SECOND;
+      long secs = Scen.MissionTimer.Value() / TICKS_PER_SECOND;
       long mins = secs / 60;
       long hours = mins / 60;
       secs %= 60;
@@ -153,31 +153,31 @@ void CreditClass::Graphic_Logic(bool forced) {
       **	Speak mission timer reminders.
       */
       VoxType vox = VOX_NONE;
-      if (Scen.MissionTimer == 1 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 1 * TICKS_PER_MINUTE) {
         vox = VOX_TIME_1;
       }
-      if (Scen.MissionTimer == 2 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 2 * TICKS_PER_MINUTE) {
         vox = VOX_TIME_2;
       }
-      if (Scen.MissionTimer == 3 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 3 * TICKS_PER_MINUTE) {
         vox = VOX_TIME_3;
       }
-      if (Scen.MissionTimer == 4 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 4 * TICKS_PER_MINUTE) {
         vox = VOX_TIME_4;
       }
-      if (Scen.MissionTimer == 5 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 5 * TICKS_PER_MINUTE) {
         vox = VOX_TIME_5;
       }
-      if (Scen.MissionTimer == 10 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 10 * TICKS_PER_MINUTE) {
         vox = VOX_TIME_10;
       }
-      if (Scen.MissionTimer == 20 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 20 * TICKS_PER_MINUTE) {
         vox = VOX_TIME_20;
       }
-      if (Scen.MissionTimer == 30 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 30 * TICKS_PER_MINUTE) {
         vox = VOX_TIME_30;
       }
-      if (Scen.MissionTimer == 40 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 40 * TICKS_PER_MINUTE) {
         vox = VOX_TIME_40;
       }
       if (vox != VOX_NONE) {
@@ -248,7 +248,7 @@ void CreditClass::AI(bool forced) {
   */
   Credits = std::max(Credits, 0L);
 
-  if (Scen.MissionTimer.Is_Active() || Scen.MissionTimer) {
+  if (Scen.MissionTimer.Is_Active() || Scen.MissionTimer.HasTimeLeft()) {
     IsToRedraw = true;
     Map.Flag_To_Redraw(false);
   }

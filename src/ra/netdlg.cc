@@ -2151,7 +2151,8 @@ static int Net_Join_Dialog() {
         //...............................................................
         // Handle a double-click
         //...............................................................
-        if (lastclick_timer < 30 && gamelist.Current_Index() == lastclick_idx) {
+        if (lastclick_timer.Value() < 30 &&
+            gamelist.Current_Index() == lastclick_idx) {
           //............................................................
           // If we're in a game, & the item clicked on is a different
           // game, un-join the game we're in.
@@ -2815,7 +2816,7 @@ static int Net_Join_Dialog() {
       //	- Send queries for the new selected game, if there is one
       //.....................................................................
       for (i = 1; i < Session.Games.Count(); i++) {
-        if (TickCount - Session.Games[i]->Game.LastTime > 400) {
+        if (TickCount.Value() - Session.Games[i]->Game.LastTime > 400) {
           delete Session.Games[i];
           Session.Games.Delete(Session.Games[i]);
 
@@ -2858,10 +2859,10 @@ static int Net_Join_Dialog() {
       // for a chat announcement; he then has 1 second to reply.
       //.....................................................................
       for (i = 1; i < Session.Chat.Count(); i++) {
-        if (TickCount - Session.Chat[i]->Chat.LastTime > 360) {
+        if (TickCount.Value() - Session.Chat[i]->Chat.LastTime > 360) {
           delete Session.Chat[i];
           Session.Chat.Delete(Session.Chat[i]);
-        } else if (TickCount - Session.Chat[i]->Chat.LastTime > 300 &&
+        } else if (TickCount.Value() - Session.Chat[i]->Chat.LastTime > 300 &&
                    Session.Chat[i]->Chat.LastChance == 0) {
           memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
           Session.GPacket.Name[0] = 0;
@@ -2993,8 +2994,8 @@ static int Net_Join_Dialog() {
     // he'll be waiting the whole time we load MIX files.
     //.....................................................................
     int i = std::max(Ipx.Global_Response_Time() * 2, 60ul);
-    starttime = TickCount;
-    while (TickCount - starttime < i) {
+    starttime = TickCount.Value();
+    while (TickCount.Value() - starttime < i) {
       Ipx.Service();
     }
   }
@@ -3301,7 +3302,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   //	Send the game-name query if the time has expired, or we're told to do
   //	it right now
   //------------------------------------------------------------------------
-  if (!game_timer || gamenow) {
+  if (game_timer.IsFinished() || gamenow) {
     game_timer = GAME_QUERY_TIME;
 
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
@@ -3326,7 +3327,8 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   //	expired and there is a currently-selected game, or we're told to do it
   //	right now
   //------------------------------------------------------------------------
-  if ((curgame > 0 && curgame < Session.Games.Count() && !player_timer) ||
+  if ((curgame > 0 && curgame < Session.Games.Count() &&
+       player_timer.IsFinished()) ||
       playernow) {
     player_timer = PLAYER_QUERY_TIME;
 
@@ -3351,7 +3353,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   //------------------------------------------------------------------------
   // Send the chat announcement
   //------------------------------------------------------------------------
-  if ((!chat_timer && joinstate != JOIN_CONFIRMED) || chatnow) {
+  if ((chat_timer.IsFinished() && joinstate != JOIN_CONFIRMED) || chatnow) {
     chat_timer = CHAT_ANNOUNCE_TIME;
 
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
@@ -3464,7 +3466,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         //	If name was found, update the node's time stamp & IsOpen flag.
         //...............................................................
-        Session.Games[i]->Game.LastTime = TickCount;
+        Session.Games[i]->Game.LastTime = TickCount.Value();
         if (Session.Games[i]->Game.IsOpen != Session.GPacket.GameInfo.IsOpen) {
           item = (char*)gamelist->Get_Item(i);
           if (Session.GPacket.GameInfo.IsOpen) {
@@ -3519,7 +3521,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       port::SafeCopy(who->Name, Session.GPacket.Name);
       who->Address = Session.GAddress;
       who->Game.IsOpen = Session.GPacket.GameInfo.IsOpen;
-      who->Game.LastTime = TickCount;
+      who->Game.LastTime = TickCount.Value();
       Session.Games.Add(who);
 
       //..................................................................
@@ -3956,7 +3958,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       for (i = 0; i < Session.Chat.Count(); i++) {
         if (Session.Chat[i]->Address == Session.GAddress) {
           port::SafeCopy(Session.Chat[i]->Name, Session.GPacket.Name);
-          Session.Chat[i]->Chat.LastTime = TickCount;
+          Session.Chat[i]->Chat.LastTime = TickCount.Value();
           Session.Chat[i]->Chat.LastChance = 0;
           Session.Chat[i]->Chat.Color = Session.GPacket.Chat.Color;
           found = 1;
@@ -3971,7 +3973,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       who = new NodeNameType;
       port::SafeCopy(who->Name, Session.GPacket.Name);
       who->Address = Session.GAddress;
-      who->Chat.LastTime = TickCount;
+      who->Chat.LastTime = TickCount.Value();
       who->Chat.LastChance = 0;
       who->Chat.Color = Session.GPacket.Chat.Color;
       Session.Chat.Add(who);
@@ -4770,7 +4772,7 @@ static int Net_New_Dialog() {
         //	a chance to know about this new guy)
         //...............................................................
         i = std::max(Ipx.Global_Response_Time() * 2, 60ul);
-        while (TickCount - ok_timer < i) {
+        while (TickCount.Value() - ok_timer < i) {
           Ipx.Service();
         }
 
@@ -4937,7 +4939,7 @@ static int Net_New_Dialog() {
     //.....................................................................
     whahoppa = Get_NewGame_Responses(&playerlist, color_used);
     if (whahoppa == EV_NEW_PLAYER) {
-      ok_timer = TickCount;
+      ok_timer = TickCount.Value();
       aiplayersgauge.Set_Maximum(Rule.MaxPlayers - Session.Players.Count());
       Session.Options.AIPlayers = aiplayersgauge.Get_Value();
       if (Session.Options.AIPlayers + Session.Players.Count() >
@@ -5036,14 +5038,14 @@ static int Net_New_Dialog() {
     // measure 	the connection response time.  Don't ping myself (index
     // 0).
     //.....................................................................
-    if (TickCount - ping_timer > 15) {
+    if (TickCount.Value() - ping_timer > 15) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
       Session.GPacket.Command = NET_PING;
       for (i = 1; i < Session.Players.Count(); i++) {
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                                 &Session.Players[i]->Address);
       }
-      ping_timer = TickCount;
+      ping_timer = TickCount.Value();
     }
 
     //.....................................................................
@@ -5153,7 +5155,8 @@ static int Net_New_Dialog() {
           }
         }
       }
-    } while (num_responses < Session.Players.Count() - 1 && response_timer);
+    } while (num_responses < Session.Players.Count() - 1 &&
+             response_timer.HasTimeLeft());
 
     if (Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official()) {
       if (!Force_Scenario_Available(Scen.ScenarioName)) {
@@ -7350,7 +7353,7 @@ int Update_WWChat() {
   //------------------------------------------------------------------------
   // Do nothing if it's too soon.
   //------------------------------------------------------------------------
-  if (wwperson_timer > 0) {
+  if (wwperson_timer.HasTimeLeft()) {
     return 0;
   }
 
@@ -7371,13 +7374,14 @@ int Update_WWChat() {
   //------------------------------------------------------------------------
   j = sizeof(WWPersons) / sizeof(struct WWPerson);
   i = Random_Pick(0, j - 1);
-  if (TickCount - WWPersons[i].LastTime < 1800 && WWPersons[i].LastTime != 0) {
+  if (TickCount.Value() - WWPersons[i].LastTime < 1800 &&
+      WWPersons[i].LastTime != 0) {
     return 0;
   }
 
   Session.Messages.Add_Message(WWPersons[i].Name, 0, WWPersons[i].Phrase,
                                WWPersons[i].Color, TPF_TEXT, -1);
-  WWPersons[i].LastTime = TickCount;
+  WWPersons[i].LastTime = TickCount.Value();
 
   return 1;
 
@@ -7696,7 +7700,7 @@ static int Net_Fake_New_Dialog() {
   if (!GameInFocus) {
     do {
       Keyboard->Check();
-      if (!focus_timer) {
+      if (focus_timer.IsFinished()) {
 #ifndef PORTABLE
         WWDebugString("RA95 - Calling SetForgroundWindow.\n");
         SetForegroundWindow(MainWindow);
@@ -7848,7 +7852,7 @@ static int Net_Fake_New_Dialog() {
           //	a chance to know about this new guy)
           //...............................................................
           i = std::max<int>(Ipx.Global_Response_Time() * 2, 60 * 2);
-          while (TickCount - ok_timer < i) {
+          while (TickCount.Value() - ok_timer < i) {
             Ipx.Service();
           }
 
@@ -7877,7 +7881,7 @@ static int Net_Fake_New_Dialog() {
     //.....................................................................
     whahoppa = Get_NewGame_Responses(&playerlist, color_used);
     if (whahoppa == EV_NEW_PLAYER) {
-      ok_timer = TickCount;
+      ok_timer = TickCount.Value();
       transmit = 1;
     } else if (whahoppa == EV_MESSAGE) {
       display = REDRAW_MESSAGE;
@@ -8030,14 +8034,14 @@ static int Net_Fake_New_Dialog() {
     // measure 	the connection response time.  Don't ping myself (index
     // 0).
     //.....................................................................
-    if (TickCount - ping_timer > 15) {
+    if (TickCount.Value() - ping_timer > 15) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
       Session.GPacket.Command = NET_PING;
       for (i = 1; i < Session.Players.Count(); i++) {
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                                 &Session.Players[i]->Address);
       }
-      ping_timer = TickCount;
+      ping_timer = TickCount.Value();
     }
 
     //.....................................................................
@@ -8143,7 +8147,8 @@ static int Net_Fake_New_Dialog() {
           }
         }
       }
-    } while (num_responses < Session.Players.Count() - 1 && response_timer);
+    } while (num_responses < Session.Players.Count() - 1 &&
+             response_timer.HasTimeLeft());
 
     WWDebugString("RA95 - Exited response wait loop.\n");
 
@@ -8169,8 +8174,8 @@ static int Net_Fake_New_Dialog() {
   // he'll be waiting the whole time we load MIX files.
   //.....................................................................
   i = std::max<int>(Ipx.Global_Response_Time() * 2, 60 * 2);
-  int starttime = TickCount;
-  while (TickCount - starttime < i) {
+  int starttime = TickCount.Value();
+  while (TickCount.Value() - starttime < i) {
     Ipx.Service();
   }
 
@@ -8487,7 +8492,7 @@ static int Net_Fake_Join_Dialog() {
   if (!GameInFocus) {
     do {
       Keyboard->Check();
-      if (!focus_timer) {
+      if (focus_timer.IsFinished()) {
 #ifndef PORTABLE
         WWDebugString("RA95 - Calling SetForgroundWindow.\n");
         SetForegroundWindow(MainWindow);
@@ -8914,7 +8919,7 @@ static int Net_Fake_Join_Dialog() {
       //	- Send queries for the new selected game, if there is one
       //.....................................................................
       for (i = 1; i < Session.Games.Count(); i++) {
-        if (TickCount - Session.Games[i]->Game.LastTime > 400) {
+        if (TickCount.Value() - Session.Games[i]->Game.LastTime > 400) {
           delete Session.Games[i];
           Session.Games.Delete(Session.Games[i]);
 
@@ -9025,8 +9030,8 @@ static int Net_Fake_Join_Dialog() {
     // he'll be waiting the whole time we load MIX files.
     //.....................................................................
     i = std::max<int>(Ipx.Global_Response_Time() * 2, 60 * 2);
-    starttime = TickCount;
-    while (TickCount - starttime < i) {
+    starttime = TickCount.Value();
+    while (TickCount.Value() - starttime < i) {
       Ipx.Service();
     }
   }

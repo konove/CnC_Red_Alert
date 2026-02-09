@@ -556,7 +556,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_ADD_TIMER:
       Scen.MissionTimer =
-          Scen.MissionTimer + Data.Value * (TICKS_PER_MINUTE / 10);
+          Scen.MissionTimer.Value() + Data.Value * (TICKS_PER_MINUTE / 10);
       Map.Redraw_Tab();
       break;
 
@@ -564,11 +564,11 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Remove time from the mission timer.
     */
     case TACTION_SUB_TIMER:
-      if (Scen.MissionTimer <= Data.Value * (TICKS_PER_MINUTE / 10)) {
+      if (Scen.MissionTimer.Value() <= Data.Value * (TICKS_PER_MINUTE / 10)) {
         Scen.MissionTimer = 0;
       } else {
         Scen.MissionTimer =
-            Scen.MissionTimer - Data.Value * (TICKS_PER_MINUTE / 10);
+            Scen.MissionTimer.Value() - Data.Value * (TICKS_PER_MINUTE / 10);
       }
       Map.Redraw_Tab();
       break;

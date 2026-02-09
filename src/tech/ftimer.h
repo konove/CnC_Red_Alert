@@ -72,8 +72,6 @@
 **	long that automatically advances at the speed of the timer class object
 *controlling it.
 */
-// Let lint know that non-virtual destructor is OK for this class.
-// lint -esym(1509,BasicTimerClass)
 template <class T>
 class BasicTimerClass {
  public:
@@ -88,9 +86,6 @@ class BasicTimerClass {
 
   // Fetch current value of timer.
   unsigned long Value() const;
-
-  // Conversion operator to allow consistent treatment with integral types.
-  operator unsigned long() const;
 
   // Function operator to allow timer object definition to be cascaded.
   unsigned long operator()() const;
@@ -120,35 +115,12 @@ BasicTimerClass<T>::BasicTimerClass(const NoInitClass&) {}
  *                                                                                             *
  * HISTORY: * 02/05/1996 JLB : Created. *
  *=============================================================================================*/
-// lint -esym(1403,BasicTimerClass<class FrameTimerClass>::Timer)
-// lint -esym(1403,BasicTimerClass<class SystemTimerClass>::Timer)
 template <class T>
 BasicTimerClass<T>::BasicTimerClass(unsigned long set)
     : Started(Timer() - set) {}
 
 template <class T>
 unsigned long BasicTimerClass<T>::Value() const {
-  return Timer() - Started;
-}
-
-/***********************************************************************************************
- * BasicTimerClass<T>::operator long -- Conversion to long operator. *
- *                                                                                             *
- *    This conversion operator allows the basic timer object to function in much
- *the same      * manner as the integral "long" type. One can assign a long with
- *a timer object and the    * actual value of the timer is extracted from the
- *object and used.                         *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the timer value expressed as a long. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/05/1996 JLB : Created. *
- *=============================================================================================*/
-template <class T>
-BasicTimerClass<T>::operator unsigned long() const {
   return Timer() - Started;
 }
 
@@ -193,9 +165,6 @@ class TTimerClass : public BasicTimerClass<T> {
 
   // Fetches current value of timer.
   unsigned long Value() const;
-
-  // Conversion operator to allow consistent treatment with integral types.
-  operator unsigned long() const;
 
   // Function operator to allow timer object definition to be cascaded.
   unsigned long operator()() const;
@@ -260,31 +229,6 @@ unsigned long TTimerClass<T>::Value() const {
 }
 
 /***********************************************************************************************
- * TTimerClass<T>::operator long -- Conversion operator for timer object. *
- *                                                                                             *
- *    This conversion operator allows this timer object to function as an
- *"rvalue" of a "long" * type. This is consistent with the integral "long"
- *value. It is possible to assign a      * timer object to a long and have the
- *long initialized with the current value of the       * timer. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the current time value expressed as a long. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/05/1996 JLB : Created. *
- *=============================================================================================*/
-template <class T>
-TTimerClass<T>::operator unsigned long() const {
-  unsigned long value = Accumulated;
-  if (this->Started != 0xFFFFFFFFU) {
-    value += BasicTimerClass<T>::Value();
-  }
-  return value;
-}
-
-/***********************************************************************************************
  * TTimerClass<T>::operator () -- Function operator for timer object. *
  *                                                                                             *
  *    This function operator for the timer class allows this timer class to be
@@ -328,7 +272,7 @@ unsigned long TTimerClass<T>::operator()() const {
 template <class T>
 void TTimerClass<T>::Stop() {
   if (this->Started != 0xFFFFFFFFU) {
-    Accumulated += BasicTimerClass<T>::operator unsigned long();
+    Accumulated += BasicTimerClass<T>::Value();
     this->Started = 0xFFFFFFFFU;
   }
 }
@@ -397,9 +341,6 @@ class CDTimerClass : public BasicTimerClass<T> {
   // Fetches current value of count down timer.
   unsigned long Value() const;
 
-  // Conversion operator to allow consistent treatment with integral types.
-  operator unsigned long() const;
-
   // Function operator to allow timer object definition to be cascaded.
   unsigned long operator()() const;
 
@@ -411,6 +352,12 @@ class CDTimerClass : public BasicTimerClass<T> {
 
   // Queries whether the timer is currently active.
   bool Is_Active() const;
+
+  // Returns true if the countdown has reached zero.
+  bool IsFinished() const;
+
+  // Returns true if the countdown has not yet reached zero.
+  bool HasTimeLeft() const;
 
  private:
   unsigned long DelayTime;  // Ticks remaining before countdown timer expires.
@@ -456,36 +403,6 @@ CDTimerClass<T>::CDTimerClass(unsigned long set)
  *=============================================================================================*/
 template <class T>
 unsigned long CDTimerClass<T>::Value() const {
-  unsigned long remain = DelayTime;
-  if (this->Started != 0xFFFFFFFFU) {
-    unsigned long value = BasicTimerClass<T>::Value();
-    if (value < remain) {
-      return remain - value;
-    }
-    return 0;
-  }
-  return remain;
-}
-
-/***********************************************************************************************
- * CDTimerClass<T>::operator long -- Conversion to long operator function. *
- *                                                                                             *
- *    This conversion operator allows the count down timer object to be used as
- *if it were     * a "magic" long that automatically counted downward at the
- *controller class tick rate.    * The count down object can be used in any
- *place that an rvalue long could be used.        *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the current count down time expressed in the form of a
- *long value.    *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/06/1996 JLB : Created. *
- *=============================================================================================*/
-template <class T>
-CDTimerClass<T>::operator unsigned long() const {
   unsigned long remain = DelayTime;
   if (this->Started != 0xFFFFFFFFU) {
     unsigned long value = BasicTimerClass<T>::Value();
@@ -545,7 +462,7 @@ unsigned long CDTimerClass<T>::operator()() const {
 template <class T>
 void CDTimerClass<T>::Stop() {
   if (this->Started != 0xFFFFFFFFU) {
-    DelayTime = *this;
+    DelayTime = this->Value();
     this->Started = 0xFFFFFFFFU;
   }
 }
@@ -590,6 +507,16 @@ void CDTimerClass<T>::Start() {
 template <class T>
 bool CDTimerClass<T>::Is_Active() const {
   return this->Started != 0xFFFFFFFFU;
+}
+
+template <class T>
+bool CDTimerClass<T>::IsFinished() const {
+  return Value() == 0;
+}
+
+template <class T>
+bool CDTimerClass<T>::HasTimeLeft() const {
+  return Value() != 0;
 }
 
 #endif  // CNC_RED_ALERT_TECH_FTIMER_H_

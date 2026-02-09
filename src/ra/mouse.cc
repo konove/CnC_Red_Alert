@@ -258,7 +258,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
 void MouseClass::AI(KeyNumType& input, int x, int y) {
   const MouseStruct* control = &MouseControl[CurrentMouseShape];
 
-  if (control->FrameRate && Timer == 0) {
+  if (control->FrameRate && Timer.IsFinished()) {
     Frame++;
     Frame %= control->FrameCount;
     Timer = control->FrameRate;

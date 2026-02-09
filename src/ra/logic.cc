@@ -103,13 +103,13 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
     }
 
     mono->Set_Cursor(1, 1);
-    mono->Printf("%ld", (long)Scen.Timer);
+    mono->Printf("%ld", Scen.Timer.Value());
     mono->Set_Cursor(10, 1);
     mono->Printf("%3d", FramesPerSecond);
     mono->Set_Cursor(1, 3);
-    mono->Printf("%02d:%02d:%02d", Scen.Timer / TICKS_PER_HOUR,
-                 (Scen.Timer % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
-                 (Scen.Timer % TICKS_PER_MINUTE) / TICKS_PER_SECOND);
+    mono->Printf("%02d:%02d:%02d", Scen.Timer.Value() / TICKS_PER_HOUR,
+                 (Scen.Timer.Value() % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
+                 (Scen.Timer.Value() % TICKS_PER_MINUTE) / TICKS_PER_SECOND);
 
     mono->Set_Cursor(1, 11);
     mono->Printf("%3d", Units.Count());
@@ -279,7 +279,7 @@ void LogicClass::AI() {
     **	The mission timer expiration trigger event might spring if the timer is
     *active *	but at a value of zero.
     */
-    if (Scen.MissionTimer.Is_Active() && Scen.MissionTimer == 0) {
+    if (Scen.MissionTimer.Is_Active() && Scen.MissionTimer.IsFinished()) {
       if (trig->Spring(TEVENT_MISSION_TIMER_EXPIRED)) {
         continue;
       }
@@ -290,7 +290,7 @@ void LogicClass::AI() {
   **	Clean up any status values that were maintained only for logic trigger
   **	purposes.
   */
-  if (Scen.MissionTimer.Is_Active() && Scen.MissionTimer == 0) {
+  if (Scen.MissionTimer.Is_Active() && Scen.MissionTimer.IsFinished()) {
     Scen.MissionTimer.Stop();
     Map.Flag_To_Redraw(
         true);  // Used only to cause tabs to redraw in new state.
@@ -300,7 +300,8 @@ void LogicClass::AI() {
   /*
   **	Shadow creeping back over time is handled here.
   */
-  if (Special.IsShadowGrow && Rule.ShroudRate != 0 && Scen.ShroudTimer == 0) {
+  if (Special.IsShadowGrow && Rule.ShroudRate != 0 &&
+      Scen.ShroudTimer.IsFinished()) {
     Scen.ShroudTimer = TICKS_PER_MINUTE * Rule.ShroudRate;
     Map.Encroach_Shadow();
   }
@@ -397,7 +398,7 @@ void LogicClass::AI() {
     }
   }
 
-  if (Session.Type != GAME_NORMAL && Scen.AutoSonarTimer == 0) {
+  if (Session.Type != GAME_NORMAL && Scen.AutoSonarTimer.IsFinished()) {
     if (bAutoSonarPulse) {
       Map.Activate_Pulse();
       Sound_Effect(VOC_SONAR);

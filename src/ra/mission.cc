@@ -232,7 +232,7 @@ void MissionClass::AI() {
   **	This is the script AI equivalent processing.
   */
   BStart(BENCH_MISSION);
-  if (Timer == 0 && Strength > 0) {
+  if (Timer.IsFinished() && Strength > 0) {
     switch (Mission) {
       default:
         Timer = Mission_Sleep();

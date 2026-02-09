@@ -518,7 +518,7 @@ void TeamClass::AI() {
   ** for this team.
   */
   if (Suspended) {
-    if (SuspendTimer != 0) {
+    if (SuspendTimer.HasTimeLeft()) {
       return;
     }
     Suspended = false;
@@ -899,7 +899,7 @@ void TeamClass::AI() {
     switch (mission->Mission) {
         //			case TMISSION_UNLOAD:
       case TMISSION_GUARD:
-        if (TimeOut == 0) {
+        if (TimeOut.IsFinished()) {
           IsNextMission = true;
         }
         break;
@@ -2814,7 +2814,7 @@ int TeamClass::TMission_Spy() {
           *dynamic_cast<UnitClass*>(member) == UNIT_CHRONOTANK) {
         bool finished = true;
         while (member) {
-          if (!dynamic_cast<UnitClass*>(member)->MoebiusCountDown) {
+          if (dynamic_cast<UnitClass*>(member)->MoebiusCountDown.IsFinished()) {
             finished = false;
           }
           member = member->Member;

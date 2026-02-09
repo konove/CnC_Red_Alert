@@ -1025,7 +1025,7 @@ void BuildingClass::AI() {
   *time.
   */
   if (Strength == 0) {
-    if (CountDown == 0) {
+    if (CountDown.IsFinished()) {
       Limbo();
       Drop_Debris(WhomToRepay);
       delete this;
@@ -1053,7 +1053,7 @@ void BuildingClass::AI() {
   **	Check for demolition timeout. When timeout has expired, the building
   *explodes.
   */
-  if (IsGoingToBlow && CountDown == 0) {
+  if (IsGoingToBlow && CountDown.IsFinished()) {
     int damage = Strength;
     Take_Damage(damage, 0, WARHEAD_FIRE, As_Techno(WhomToRepay), true);
     if (!IsActive) {
@@ -1075,7 +1075,7 @@ void BuildingClass::AI() {
   ** to un-jam if the power has just dropped off.
   */
   if (*this == STRUCT_GAP) {
-    if (Arm == 0) {
+    if (Arm.IsFinished()) {
       IsJamming = false;
       Arm = TICKS_PER_MINUTE * Rule.GapRegenInterval +
             Random_Pick(1, TICKS_PER_SECOND);
@@ -3789,7 +3789,7 @@ int BuildingClass::Mission_Attack() {
 
     case FIRE_REARM:
       PrimaryFacing.Set_Desired(Direction(TarCom));
-      return Arm;
+      return Arm.Value();
 
     case FIRE_BUSY:
       return 1;
@@ -5235,7 +5235,8 @@ void BuildingClass::Factory_AI() {
   *buildings have *	production attached to the building itself. The player
   *uses the sidebar interface for *	all production control.
   */
-  if (Factory.Is_Valid() && Factory->Has_Completed() && PlacementDelay == 0) {
+  if (Factory.Is_Valid() && Factory->Has_Completed() &&
+      PlacementDelay.IsFinished()) {
     TechnoClass* product = Factory->Get_Object();
     //		FactoryClass * fact = Factory;
 
@@ -5325,7 +5326,7 @@ void BuildingClass::Factory_AI() {
         **	If production has halted, then just abort production and make
         *the *	funds available for something else.
         */
-        if (PlacementDelay == 0 && !Factory->Is_Building()) {
+        if (PlacementDelay.IsFinished() && !Factory->Is_Building()) {
           Factory->Abandon();
           delete static_cast<FactoryClass*>(Factory);
           Factory = nullptr;
@@ -5425,7 +5426,7 @@ void BuildingClass::Charging_AI() {
             Set_Rate(0);
           }
           //					}
-        } else if (!Arm) {
+        } else if (Arm.IsFinished()) {
           IsCharged = false;
           IsCharging = true;
           Set_Stage(0);

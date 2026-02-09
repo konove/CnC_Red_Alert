@@ -815,8 +815,8 @@ int MapEditClass::Team_Members(HousesType house) {
       *decrement *	tindex to go to the next time delay, which is longer;
       *then, decr. *	again to go to the 1st time delay which is the shortest.
       */
-      if (TickCount - heldtime > tdelay[tindex]) {
-        heldtime = TickCount;
+      if (TickCount.Value() - heldtime > tdelay[tindex]) {
+        heldtime = TickCount.Value();
         if (tindex) {
           tindex--;
         }
@@ -849,11 +849,11 @@ int MapEditClass::Team_Members(HousesType house) {
         *decrement *	tindex to go to the next time delay, which is longer;
         *then, decr. *	again to go to the 1st time delay which is the shortest.
         */
-        if (TickCount - heldtime > tdelay[tindex]) {
+        if (TickCount.Value() - heldtime > tdelay[tindex]) {
           if (tindex) {
             tindex--;
           }
-          heldtime = TickCount;
+          heldtime = TickCount.Value();
 
           if (teamcount[curclass] > 0) {
             teamcount[curclass]--;

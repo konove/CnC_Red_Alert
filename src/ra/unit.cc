@@ -638,9 +638,9 @@ bool UnitClass::Edge_Of_World_AI() {
 void UnitClass::Reload_AI() {
   if (*this == UNIT_V2_LAUNCHER && Ammo < Class->MaxAmmo) {
     if (IsDriving) {
-      Reload = Reload + 1;
+      Reload = Reload.Value() + 1;
     } else {
-      if (Reload == 0) {
+      if (Reload.IsFinished()) {
         Ammo++;
         if (Ammo < Class->MaxAmmo) {
           Reload = TICKS_PER_SECOND * 30;
@@ -1925,7 +1925,7 @@ int UnitClass::Shape_Number() const {
       /*
       **	If in combat, then do combat anims.
       */
-      if (Arm > 0) {
+      if (Arm.HasTimeLeft()) {
         shapenum = 8 + 64 + shapenum * 4 + (Frame + ID) / 2 % 4;
       }
     }
@@ -2685,7 +2685,7 @@ int UnitClass::Mission_Unload() {
         }
       }
 
-      if ((Arm && !Gold) || IronCurtainCountDown) {
+      if ((Arm.HasTimeLeft() && !Gold) || IronCurtainCountDown.HasTimeLeft()) {
         Set_Stage(Fetch_Stage() & 1);
         return 1;
       }
@@ -3460,8 +3460,9 @@ ActionType UnitClass::What_Action(const ObjectClass* object) const {
             // deploy.  Or, if it's a player-controlled chrono tank, and the
             // player's currently trying to teleport a different unit, don't
             // allow teleporting this unit.
-            if (MoebiusCountDown || (IsOwnedByPlayer && House->UnitToTeleport &&
-                                     Map.IsTargettingMode == SPC_CHRONO2)) {
+            if (MoebiusCountDown.HasTimeLeft() ||
+                (IsOwnedByPlayer && House->UnitToTeleport &&
+                 Map.IsTargettingMode == SPC_CHRONO2)) {
               action = ACTION_NO_DEPLOY;
             }
           }
@@ -3896,7 +3897,7 @@ int UnitClass::Pip_Count() const {
 
   if (*this == UNIT_CHRONOTANK) {
     int fulldur = ChronoTankDuration * TICKS_PER_MINUTE;
-    return (fulldur - MoebiusCountDown) / (fulldur / 5);
+    return (fulldur - MoebiusCountDown.Value()) / (fulldur / 5);
   }
   return 0;
 }
@@ -4216,7 +4217,7 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
       /*
       **	Possible reload timer set.
       */
-      if (*this == UNIT_V2_LAUNCHER && Reload == 0) {
+      if (*this == UNIT_V2_LAUNCHER && Reload.IsFinished()) {
         Reload = TICKS_PER_SECOND * 30;
       }
     }

@@ -950,7 +950,7 @@ bool DriveClass::Start_Of_Move() {
     **	NavCom to null and let the script take care of assigning a new
     **	navigation target.
     */
-    if (PathDelay != 0) {
+    if (PathDelay.HasTimeLeft()) {
       return false;
     }
 
@@ -1331,7 +1331,7 @@ void DriveClass::AI() {
   if (IsMoebius) {
     if (What_Am_I() != RTTI_UNIT ||
         dynamic_cast<UnitClass*>(this)->Class->Type != UNIT_CHRONOTANK) {
-      if (MoebiusCountDown == 0) {
+      if (MoebiusCountDown.IsFinished()) {
         IsMoebius = false;
         Teleport_To(MoebiusCell);
         MoebiusCell = 0;

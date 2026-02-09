@@ -136,7 +136,7 @@ void HelpClass::Init_Clear() {
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
 const short* HelpClass::Overlap_List() const {
-  if (Text == TXT_NONE || CountDownTimer) {
+  if (Text == TXT_NONE || CountDownTimer.HasTimeLeft()) {
     OverlapList[0] = REFRESH_EOL;
   }
   return OverlapList;
@@ -163,7 +163,7 @@ const short* HelpClass::Overlap_List() const {
  *coordinates as passed in.                                     *
  *=============================================================================================*/
 void HelpClass::AI(KeyNumType& key, int x, int y) {
-  if (!CountDownTimer && !IsRight && (x != X || y != Y)) {
+  if (CountDownTimer.IsFinished() && !IsRight && (x != X || y != Y)) {
     Help_Text(TXT_NONE);
   }
 
@@ -171,7 +171,7 @@ void HelpClass::AI(KeyNumType& key, int x, int y) {
   **	Process the countdown timer only if it hasn't already expired and there
   *is *	a real help text message to display.
   */
-  if (CountDownTimer && !HelpText && Text != TXT_NONE) {
+  if (CountDownTimer.HasTimeLeft() && !HelpText && Text != TXT_NONE) {
     /*
     **	If the mouse has moved, then reset the timer since a moving mouse is not
     **	supposed to bring up the help text.
@@ -269,7 +269,7 @@ void HelpClass::Draw_It(bool forced) {
   TabClass::Draw_It(forced);
 
   forced = false;  // TCTCTCTC
-  if (Text != TXT_NONE && (forced || !CountDownTimer)) {
+  if (Text != TXT_NONE && (forced || CountDownTimer.IsFinished())) {
     if (LogicPage->Lock()) {
       Plain_Text_Print(Text, DrawX, DrawY, Color, BLACK,
                        TPF_MAP | TPF_NOSHADOW);

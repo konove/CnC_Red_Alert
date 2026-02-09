@@ -77,7 +77,7 @@ class StageClass {
     Rate = rate;
   }
   void AI() {}
-  bool About_To_Change() const { return Timer == 0 && Rate != 0; }
+  bool About_To_Change() const { return Timer.IsFinished() && Rate != 0; }
   bool Graphic_Logic() {
     if (About_To_Change()) {
       Stage++;

@@ -500,7 +500,7 @@ void Self_Regulate() {
   static ObjectClass* _lastobject = nullptr;
   static bool _first = true;
 
-  if (DebugTimer == 0) {
+  if (DebugTimer.IsFinished()) {
     DebugTimer = UPDATE_INTERVAL;
 
     if (MonoClass::Is_Enabled()) {

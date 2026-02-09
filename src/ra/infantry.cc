@@ -784,7 +784,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     if (Mission == MISSION_SABOTAGE) {
       BuildingClass* building = cellptr->Cell_Building();
       if (building != nullptr && building->As_Target() == NavCom) {
-        if (!building->IronCurtainCountDown &&
+        if (building->IronCurtainCountDown.IsFinished() &&
             building->Mission != MISSION_DECONSTRUCTION) {
           building->IsGoingToBlow = true;
           building->Clicked_As_Target(Rule.C4Delay * TICKS_PER_MINUTE / 2);
@@ -1167,7 +1167,7 @@ void InfantryClass::AI() {
   /*
   **	Special victory dance action.
   */
-  if (!Target_Legal(NavCom) && !IsProne && IsStoked && Comment == 0) {
+  if (!Target_Legal(NavCom) && !IsProne && IsStoked && Comment.IsFinished()) {
     IsStoked = false;
     Do_Action(Percent_Chance(50) ? DO_GESTURE1 : DO_GESTURE2);
   }
@@ -3769,7 +3769,7 @@ void InfantryClass::Movement_AI() {
           **	indicates that basic path & movement logic needs to be
           **	aborted.
           */
-          if (PathDelay != 0) {
+          if (PathDelay.HasTimeLeft()) {
             return;
           }
           if (!Basic_Path()) {

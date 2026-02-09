@@ -717,7 +717,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Init misc timing variables.
   */
-  int time = TickCount;
+  int time = TickCount.Value();
   int frame = 0;
   int picture_frame = 0;
   int slide_number = 0;
@@ -810,7 +810,7 @@ void Show_Who_Was_Responsible() {
     /*
     ** Kill any spare time before blitting the hid page forward.
     */
-    while (TickCount - time < frame * speed && !Keyboard->Check()) {
+    while (TickCount.Value() - time < frame * speed && !Keyboard->Check()) {
     }
 
     /*
@@ -889,7 +889,7 @@ void Show_Who_Was_Responsible() {
       /*
       ** Kill any spare time
       */
-      while (TickCount - time < frame * speed && !Keyboard->Check()) {
+      while (TickCount.Value() - time < frame * speed && !Keyboard->Check()) {
       }
     }
   }

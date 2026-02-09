@@ -1050,7 +1050,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
             **	Select an object or a cell
             **	Check for double-click
             */
-            if (CurrentObject.Count() && ((TickCount - LastClickTime) < 15)) {
+            if (CurrentObject.Count() &&
+                ((TickCount.Value() - LastClickTime) < 15)) {
             } else {
               /*
               **	Single-click: select object

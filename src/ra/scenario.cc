@@ -273,21 +273,22 @@ void ScenarioClass::Do_BW_Fade() {
  *=============================================================================================*/
 void ScenarioClass::Do_Fade_AI() {
   if (IsFadingColor) {
-    if (FadeTimer == 0) {
+    if (FadeTimer.IsFinished()) {
       IsFadingColor = false;
     }
     fixed newsat = Options.Get_Saturation() *
-                   fixed(GRAYFADETIME - FadeTimer, GRAYFADETIME);
+                   fixed(GRAYFADETIME - FadeTimer.Value(), GRAYFADETIME);
     Options.Adjust_Palette(OriginalPalette, GamePalette,
                            Options.Get_Brightness(), newsat, Options.Get_Tint(),
                            Options.Get_Contrast());
     GamePalette.Set();
   }
   if (IsFadingBW) {
-    if (FadeTimer == 0) {
+    if (FadeTimer.IsFinished()) {
       IsFadingBW = false;
     }
-    fixed newsat = Options.Get_Saturation() * fixed(FadeTimer, GRAYFADETIME);
+    fixed newsat =
+        Options.Get_Saturation() * fixed(FadeTimer.Value(), GRAYFADETIME);
     Options.Adjust_Palette(OriginalPalette, GamePalette,
                            Options.Get_Brightness(), newsat, Options.Get_Tint(),
                            Options.Get_Contrast());
@@ -872,7 +873,7 @@ void Do_Win() {
     while (Is_Speaking()) {
     }
     Speak(VOX_ACCOMPLISHED);
-    while (CountDownTimer || Is_Speaking()) {
+    while (CountDownTimer.HasTimeLeft() || Is_Speaking()) {
       Call_Back();
     }
   }
@@ -902,7 +903,7 @@ void Do_Win() {
   Keyboard->Clear();
 
   SaveTanya = IsTanyaDead;
-  Scen.CarryOverTimer = Scen.MissionTimer;
+  Scen.CarryOverTimer = Scen.MissionTimer.Value();
   //	int timer = Scen.MissionTimer;
 
   /*
@@ -1127,7 +1128,7 @@ void Do_Lose() {
   while (Is_Speaking()) {
   }
   Speak(VOX_FAIL);
-  while (CountDownTimer || Is_Speaking()) {
+  while (CountDownTimer.HasTimeLeft() || Is_Speaking()) {
     Call_Back();
   }
 
@@ -1217,7 +1218,7 @@ void Do_Draw() {
   while (Is_Speaking()) {
   }
   Speak(VOX_CONTROL_EXIT);
-  while (CountDownTimer || Is_Speaking()) {
+  while (CountDownTimer.HasTimeLeft() || Is_Speaking()) {
     Call_Back();
   }
 
@@ -1277,7 +1278,7 @@ void Do_Restart() {
   /*
   ** Make sure the message stays displayed for at least 1 second
   */
-  while (timer > 0) {
+  while (timer.HasTimeLeft()) {
     Call_Back();
   }
   Keyboard->Clear();
@@ -1556,7 +1557,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       cd = 5;
       do {
         Call_Back();
-      } while (!Keyboard->Check() && cd);
+      } while (!Keyboard->Check() && cd.HasTimeLeft());
     }
   } while (buffer[++bufindex]);
 

@@ -263,7 +263,7 @@ std::string Map_Selection() {
         hovering_over_choice ? std::tuple{21, 8, 4} : std::tuple{0, 1, 0};
     const auto [hotspot_x, hotspot_y] =
         hovering_over_choice ? std::pair{14, 11} : std::pair{0, 0};
-    if (timer == 0) {
+    if (timer.IsFinished()) {
       cursor_frame++;
       cursor_frame %= count;
       timer = delay;

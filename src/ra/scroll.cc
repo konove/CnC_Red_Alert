@@ -216,7 +216,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
               distance = _rate[rate];
               Scroll_Map(direction, distance, true);
 
-              if (Counter == 0 && player_scrolled) {
+              if (Counter.IsFinished() && player_scrolled) {
                 Counter = SCROLL_DELAY;
                 Inertia++;
               }
@@ -226,7 +226,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
       }
 
       if (!MapEditorActive && !player_scrolled) {
-        if (!Counter) {
+        if (Counter.IsFinished()) {
           Inertia--;
           if (Inertia < 0) {
             Inertia++;

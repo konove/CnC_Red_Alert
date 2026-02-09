@@ -707,10 +707,10 @@ void TechnoClass::Debug_Dump(MonoClass* mono) const {
     mono->Fill_Attrib(40, 16, 12, 1,
                       IsALemon ? MonoClass::INVERSE : MonoClass::NORMAL);
     mono->Set_Cursor(47, 17);
-    mono->Printf("%3d", (long)IronCurtainCountDown);
-    mono->Fill_Attrib(
-        40, 17, 12, 1,
-        IronCurtainCountDown > 0 ? MonoClass::INVERSE : MonoClass::NORMAL);
+    mono->Printf("%3d", IronCurtainCountDown.Value());
+    mono->Fill_Attrib(40, 17, 12, 1,
+                      IronCurtainCountDown.HasTimeLeft() ? MonoClass::INVERSE
+                                                         : MonoClass::NORMAL);
 
     RadioClass::Debug_Dump(mono);
   }
@@ -2770,7 +2770,7 @@ bool TechnoClass::Is_Ready_To_Cloak() const {
   /*
   **	If the object is currently rearming, then don't begin to recloak.
   */
-  if (Arm != 0) {
+  if (Arm.HasTimeLeft()) {
     return false;
   }
 
@@ -2794,7 +2794,7 @@ bool TechnoClass::Is_Ready_To_Cloak() const {
   **	If the arbitrary cloak delay value is still counting down, then don't
   **	allow recloaking just yet.
   */
-  if (CloakDelay != 0) {
+  if (CloakDelay.HasTimeLeft()) {
     return false;
   }
 
@@ -2917,7 +2917,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
   /*
   **	Don't allow firing if still rearming.
   */
-  if (Arm != 0) {
+  if (Arm.HasTimeLeft()) {
     return FIRE_REARM;
   }
 
@@ -3997,7 +3997,7 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
     damage = damage * ArmorBias * House->ArmorBias;
   }
 
-  if (IronCurtainCountDown == 0) {
+  if (IronCurtainCountDown.IsFinished()) {
     result =
         ObjectClass::Take_Damage(damage, distance, warhead, source, forced);
   }
@@ -4454,7 +4454,7 @@ void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
       }
     }
 
-    if (IronCurtainCountDown > 0) {
+    if (IronCurtainCountDown.HasTimeLeft()) {
       remap = DisplayClass::FadingRed;
     }
 
@@ -4846,7 +4846,7 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
   ** If the threat has already been dealt with then we don't need to do
   ** any work. Check for that here.
   */
-  if (enemy->Is_Foot() && ((FootClass*)enemy)->BaseAttackTimer != 0) {
+  if (enemy->Is_Foot() && ((FootClass*)enemy)->BaseAttackTimer.HasTimeLeft()) {
     return;
   }
 
@@ -5520,7 +5520,7 @@ int TechnoClass::Exit_Object(TechnoClass*) {
  *=============================================================================================*/
 bool TechnoClass::Is_Ready_To_Random_Animate() const {
   assert(IsActive);
-  return IdleTimer == 0;
+  return IdleTimer.IsFinished();
 }
 
 /***********************************************************************************************

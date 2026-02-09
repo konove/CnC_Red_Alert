@@ -264,7 +264,7 @@ bool SuperClass::AI(const bool player) {
         return true;
       }
     } else {
-      if (Control == 0) {
+      if (Control.IsFinished()) {
         IsReady = true;
         if (player) {
           Speak(VoxRecharge);

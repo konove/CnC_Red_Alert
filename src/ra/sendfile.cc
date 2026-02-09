@@ -153,7 +153,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
           break;
         }
       }
-    } while (response_timer);
+    } while (response_timer.HasTimeLeft());
   } else {
     do {
       Ipx.Service();
@@ -184,7 +184,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
         pWolapi->dwTimeNextWolapiPump = ::timeGetTime() + WOLAPIPUMPWAIT;
       }
 #endif
-    } while (response_timer);
+    } while (response_timer.HasTimeLeft());
   }
 
   // char rt[80];
@@ -196,7 +196,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
   *just
   ** return failure.
   */
-  if (!response_timer) {
+  if (response_timer.IsFinished()) {
     return false;
   }
 
@@ -631,7 +631,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
     }
     file_info.ScenarioInfo.FileLength = file_length;
     NullModem.Send_Message(&file_info, sizeof(file_info), 1);
-    while (NullModem.Num_Send() > 0 && response_timer) {
+    while (NullModem.Num_Send() > 0 && response_timer.HasTimeLeft()) {
       NullModem.Service();
     }
   } else {
@@ -655,7 +655,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
           &Session.Players[Session.ScenarioRequests[i]]->Address);
     }
 
-    while (Ipx.Global_Num_Send() > 0 && response_timer) {
+    while (Ipx.Global_Num_Send() > 0 && response_timer.HasTimeLeft()) {
       Ipx.Service();
     }
   }

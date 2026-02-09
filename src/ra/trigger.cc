@@ -353,9 +353,10 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
         MonoArray[DMONO_STRESS].Sub_Window(61, 1, 18, 11);
         MonoArray[DMONO_STRESS].Set_Cursor(0, 10);
         MonoArray[DMONO_STRESS].Printf(
-            "%02d:%02d:%02d-%s", Scen.Timer / TICKS_PER_HOUR,
-            (Scen.Timer % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
-            (Scen.Timer % TICKS_PER_MINUTE) / TICKS_PER_SECOND, Class->IniName);
+            "%02d:%02d:%02d-%s", Scen.Timer.Value() / TICKS_PER_HOUR,
+            (Scen.Timer.Value() % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
+            (Scen.Timer.Value() % TICKS_PER_MINUTE) / TICKS_PER_SECOND,
+            Class->IniName);
         MonoArray[DMONO_STRESS].Sub_Window();
       }
 

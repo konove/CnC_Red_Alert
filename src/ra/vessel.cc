@@ -635,7 +635,7 @@ void VesselClass::AI() {
 
   // Re-stock the ammo of any on-board helicopters on an aircraft carrier.
   if (*this == VESSEL_CARRIER && How_Many()) {
-    if (!MoebiusCountDown) {
+    if (MoebiusCountDown.IsFinished()) {
       MoebiusCountDown = Rule.ReloadRate * TICKS_PER_MINUTE;
       ObjectClass* obj = Attached_Object();
       while (obj) {
@@ -680,7 +680,7 @@ void VesselClass::AI() {
     */
     if (!Is_Door_Closed() && Mission != MISSION_UNLOAD &&
         Transmit_Message(RADIO_TRYING_TO_LOAD) != RADIO_ROGER &&
-        !static_cast<long>(DoorShutCountDown)) {
+        DoorShutCountDown.IsFinished()) {
       LST_Close_Door();
     }
   }
@@ -1045,7 +1045,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
   int diff;
 
   if (*this == VESSEL_CARRIER) {
-    if (!How_Many() || Arm) {
+    if (!How_Many() || Arm.HasTimeLeft()) {
       return FIRE_REARM;
     }
     return FIRE_OK;
@@ -1954,7 +1954,9 @@ int VesselClass::Mission_Retreat() {
  *                                                                                             *
  * HISTORY: * 07/09/1996 BWG : Created. *
  *=============================================================================================*/
-bool VesselClass::Is_Allowed_To_Recloak() const { return PulseCountDown == 0; }
+bool VesselClass::Is_Allowed_To_Recloak() const {
+  return PulseCountDown.IsFinished();
+}
 
 /***********************************************************************************************
  * VesselClass::Read_INI -- Read the vessel data from the INI database. *

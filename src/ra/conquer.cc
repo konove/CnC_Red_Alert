@@ -1531,7 +1531,7 @@ void Color_Cycle() {
     **	Process the fading white color. It is used for the radar box and other
     *glowing *	game interface elements.
     */
-    if (!_ftimer) {
+    if (_ftimer.IsFinished()) {
       _ftimer = TIMER_SECOND / 6;
 
 #define STEP_RATE 20
@@ -1568,7 +1568,7 @@ void Color_Cycle() {
     /*
     **	Process the color cycling effects -- water.
     */
-    if (!_timer) {
+    if (_timer.IsFinished()) {
       _timer = TIMER_SECOND / 4;
 
       RGBClass first = InGamePalette[CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1];
@@ -2053,13 +2053,13 @@ static void Sync_Delay() {
   /*
   **	Accumulate the number of 'spare' ticks that are frittered away here.
   */
-  SpareTicks += FrameTimer;
+  SpareTicks += FrameTimer.Value();
 
   /*
   **	Delay until the frame timer expires. This forces the game loop to be
   *regulated to a *	speed controlled by the game options slider.
   */
-  while (FrameTimer) {
+  while (FrameTimer.HasTimeLeft()) {
     Color_Cycle();
     Call_Back();
 
@@ -2132,7 +2132,7 @@ bool Main_Loop() {
   //
   // Initialize our AI processing timer
   //
-  Session.ProcessTimer = TickCount;
+  Session.ProcessTimer = TickCount.Value();
 
 #if 1
   if (Session.TrapCheckHeap) {
@@ -2250,7 +2250,7 @@ bool Main_Loop() {
   //
   // Measure how long it took to process the AI
   //
-  Session.ProcessTicks += TickCount - Session.ProcessTimer;
+  Session.ProcessTicks += TickCount.Value() - Session.ProcessTimer;
   Session.ProcessFrames++;
 
   /*
@@ -4632,7 +4632,7 @@ void Shake_The_Screen(int shakes) {
   int oldyoff = 0;
   int newyoff = 0;
   while (shakes--) {
-    int x = TickCount;
+    int x = TickCount.Value();
     //		CountDownTimer = 1;
     do {
       newyoff = Sim_Random_Pick(0, 2) - 1;
@@ -4649,7 +4649,7 @@ void Shake_The_Screen(int shakes) {
         break;
     }
 #ifdef PORTABLE
-    while (x == TickCount) {
+    while (x == TickCount.Value()) {
       Video_End_Frame();
     }
 #else

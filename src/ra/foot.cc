@@ -241,7 +241,7 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(54, 5);
     mono->Printf("%2d", PathThreshhold);
     mono->Set_Cursor(72, 3);
-    mono->Printf("%4d", (long)PathDelay);
+    mono->Printf("%4d", PathDelay.Value());
     mono->Set_Cursor(67, 3);
     mono->Printf("%3d", TryTryAgain);
     if (HeadToCoord) {
@@ -697,7 +697,7 @@ int FootClass::Mission_Guard() {
     }
   }
 
-  return Arm != 0 ? static_cast<int>(Arm) : dtime + Random_Pick(0, 2);
+  return Arm.HasTimeLeft() ? Arm.Value() : dtime + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************

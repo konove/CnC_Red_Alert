@@ -892,7 +892,7 @@ void EventClass::Execute() {
 
         Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
 
-        while (timer > 0) {
+        while (timer.HasTimeLeft()) {
           Call_Back();
         }
 

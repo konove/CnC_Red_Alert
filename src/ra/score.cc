@@ -186,7 +186,7 @@ void ScoreTimeClass::Update() {
 #else
   GraphicBufferClass* oldpage;
 #endif
-  if (!Timer) {
+  if (Timer.IsFinished()) {
     Timer = TimerReset;
     if (++Stage >= MaxStage) {
       Stage = 0;
@@ -219,7 +219,7 @@ void ScoreCredsClass::Update() {
 #else
   GraphicBufferClass* oldpage;
 #endif
-  if (!Timer) {
+  if (Timer.IsFinished()) {
     Timer = TimerReset;
     if (++Stage >= MaxStage) {
       Stage = 0;
@@ -275,7 +275,7 @@ void ScorePrintClass::Update() {
 #ifdef WIN32
   StillUpdating = true;
 #endif
-  if (!Timer) {
+  if (Timer.IsFinished()) {
     Timer = 1;
 
     int pos = XPos + Stage * (6 * RESFACTOR);
@@ -329,7 +329,7 @@ void ScoreScaleClass::Update() {
   /*
   ** Restore the background for the scaled-up letter
   */
-  if (!Timer) {
+  if (Timer.IsFinished()) {
     Timer = 1;
 #ifndef WIN32
     if (Stage != 5) {
@@ -936,7 +936,7 @@ void ScoreClass::Presentation() {
 void Cycle_Wait_Click(bool cycle) {
   int counter = 0;
   int minclicks = 20;
-  unsigned long timingtime = TickCount;
+  unsigned long timingtime = TickCount.Value();
   SerialPacketType sendpacket;
   SerialPacketType receivepacket;
   int packetlen;
@@ -947,14 +947,14 @@ void Cycle_Wait_Click(bool cycle) {
       //
       // send a timing packet if enough time has gone by.
       //
-      if (TickCount - timingtime > PACKET_TIMING_TIMEOUT) {
+      if (TickCount.Value() - timingtime > PACKET_TIMING_TIMEOUT) {
         memset(&sendpacket, 0, sizeof(SerialPacketType));
         sendpacket.Command = SERIAL_SCORE_SCREEN;
         sendpacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
         sendpacket.ID = Session.ModemType;
 
         NullModem.Send_Message(&sendpacket, sizeof(sendpacket), 0);
-        timingtime = TickCount;
+        timingtime = TickCount.Value();
       }
 
       if (NullModem.Get_Message(&receivepacket, &packetlen) > 0) {
@@ -1622,7 +1622,7 @@ void Animate_Cursor(int pos, int ypos) {
   /*
   ** Toggle the color of the cursor, green or black, if it's time to do so.
   */
-  if (!_timer) {
+  if (_timer.IsFinished()) {
     _state ^= 1;
     _timer = 5;
   }
@@ -1835,7 +1835,7 @@ void Call_Back_Delay(int time) {
   const CDTimerClass<SystemTimerClass> cd{static_cast<unsigned long>(time)};
   StreamLowImpact = true;
   do {
-    if (callbackcd == 0) {
+    if (callbackcd.IsFinished()) {
       Call_Back();
       callbackcd = TIMER_SECOND / 4;
     } else {
@@ -1845,7 +1845,7 @@ void Call_Back_Delay(int time) {
       Video_End_Frame();
     }
     Animate_Score_Objs();
-  } while (cd);
+  } while (cd.HasTimeLeft());
   StreamLowImpact = false;
 }
 

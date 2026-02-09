@@ -52,7 +52,7 @@ class CrateClass {
   bool Create_Crate(CELL cell);
   bool Is_Here(CELL cell) const { return Is_Valid() && cell == Cell; }
   bool Remove_It();
-  bool Is_Expired() const { return Is_Valid() && Timer == 0; }
+  bool Is_Expired() const { return Is_Valid() && Timer.IsFinished(); }
   bool Is_Valid() const { return Cell != -1; }
 
  private:

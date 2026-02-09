@@ -409,7 +409,7 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(65, 1);
     mono->Printf("%2d", IQ);
     mono->Set_Cursor(72, 1);
-    mono->Printf("%5d", (long)RepairTimer);
+    mono->Printf("%5d", RepairTimer.Value());
 
     mono->Set_Cursor(1, 3);
     mono->Printf("%08X", AScan);
@@ -430,9 +430,9 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(52, 3);
     mono->Printf("%5d", PointTotal);
     mono->Set_Cursor(62, 3);
-    mono->Printf("%5d", (long)TeamTime);
+    mono->Printf("%5d", TeamTime.Value());
     mono->Set_Cursor(71, 3);
-    mono->Printf("%5d", (long)AlertTime);
+    mono->Printf("%5d", AlertTime.Value());
 
     mono->Set_Cursor(1, 5);
     mono->Printf("%08X", BScan);
@@ -451,9 +451,9 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(44, 5);
     mono->Printf("%16.16s", QuarryName[PreferredTarget]);
     mono->Set_Cursor(62, 5);
-    mono->Printf("%5d", (long)TriggerTime);
+    mono->Printf("%5d", TriggerTime.Value());
     mono->Set_Cursor(71, 5);
-    mono->Printf("%5d", (long)BorrowedTime);
+    mono->Printf("%5d", BorrowedTime.Value());
 
     mono->Set_Cursor(1, 7);
     mono->Printf("%08X", UScan);
@@ -471,7 +471,7 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(44, 7);
     mono->Printf("%08X", Allies);
     mono->Set_Cursor(71, 7);
-    mono->Printf("%5d", (long)Attack);
+    mono->Printf("%5d", Attack.Value());
 
     mono->Set_Cursor(1, 9);
     mono->Printf("%08X", IScan);
@@ -490,7 +490,7 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(45, 9);
     mono->Printf("%4d", Radius / CELL_LEPTON_W);
     mono->Set_Cursor(71, 9);
-    mono->Printf("%5d", (long)AITimer);
+    mono->Printf("%5d", AITimer.Value());
 
     mono->Set_Cursor(1, 11);
     mono->Printf("%08X", VScan);
@@ -505,7 +505,7 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(54, 11);
     mono->Printf("%04X", Coord_Cell(Center));
     mono->Set_Cursor(71, 11);
-    mono->Printf("%5d", (long)DamageTime);
+    mono->Printf("%5d", DamageTime.Value());
 
     for (int index = 0; index < ARRAY_SIZE(Scen.GlobalFlags); index++) {
       mono->Set_Cursor(1 + index, 15);
@@ -1091,7 +1091,7 @@ void HouseClass::AI() {
   /*
   **	Check to see if the house wins.
   */
-  if (Session.Type == GAME_NORMAL && IsToWin && BorrowedTime == 0 &&
+  if (Session.Type == GAME_NORMAL && IsToWin && BorrowedTime.IsFinished() &&
       Blockage <= 0) {
     IsToWin = false;
     if (this == PlayerPtr) {
@@ -1104,7 +1104,7 @@ void HouseClass::AI() {
   /*
   **	Check to see if the house loses.
   */
-  if (Session.Type == GAME_NORMAL && IsToLose && BorrowedTime == 0) {
+  if (Session.Type == GAME_NORMAL && IsToLose && BorrowedTime.IsFinished()) {
     IsToLose = false;
     if (this == PlayerPtr) {
       PlayerLoses = true;
@@ -1116,7 +1116,7 @@ void HouseClass::AI() {
   /*
   **	Check to see if all objects of this house should be blown up.
   */
-  if (IsToDie && BorrowedTime == 0) {
+  if (IsToDie && BorrowedTime.IsFinished()) {
     IsToDie = false;
     Blowup_All();
   }
@@ -1136,7 +1136,7 @@ void HouseClass::AI() {
   **	see if the attack timer has expired. If it has, then create the attack
   **	teams.
   */
-  if (IsAlerted && AlertTime == 0) {
+  if (IsAlerted && AlertTime.IsFinished()) {
     /*
     **	Adjusted to reduce maximum number of teams created.
     */
@@ -1203,7 +1203,7 @@ void HouseClass::AI() {
   **	Create teams for this house if necessary.
   ** (Use the same timer for some extra capture-the-flag logic.)
   */
-  if (!IsAlerted && !TeamTime) {
+  if (!IsAlerted && TeamTime.IsFinished()) {
     const TeamTypeClass* ttype = Suggested_New_Team(false);
     if (ttype) {
       ttype->Create_One_Of();
@@ -1216,7 +1216,7 @@ void HouseClass::AI() {
   **	If there is insufficient power, then all buildings that are above
   **	half strength take a little bit of damage.
   */
-  if (DamageTime == 0) {
+  if (DamageTime.IsFinished()) {
     /*
     **	When the power is below required, then the buildings will take damage
     *over *	time.
@@ -1251,7 +1251,7 @@ void HouseClass::AI() {
   *would be *	low tiberium capacity or low power.
   */
   if (PlayerPtr == this) {
-    if (SpeakMaxedDelay == 0 && Available_Money() < 100 &&
+    if (SpeakMaxedDelay.IsFinished() && Available_Money() < 100 &&
         UnitFactories + BuildingFactories + InfantryFactories > 0) {
       Speak(VOX_NEED_MO_MONEY);
       Map.Flash_Money();
@@ -1259,7 +1259,7 @@ void HouseClass::AI() {
           Options.Normalize_Delay(TICKS_PER_MINUTE * Rule.SpeakDelay);
     }
 
-    if (SpeakMaxedDelay == 0 && IsMaxedOut) {
+    if (SpeakMaxedDelay.IsFinished() && IsMaxedOut) {
       IsMaxedOut = false;
       if (Capacity - Tiberium < 300 && Capacity > 500 &&
           ActiveBScan & (STRUCTF_REFINERY | STRUCTF_CONST)) {
@@ -1268,7 +1268,7 @@ void HouseClass::AI() {
             Options.Normalize_Delay(TICKS_PER_MINUTE * Rule.SpeakDelay);
       }
     }
-    if (SpeakPowerDelay == 0 && Power_Fraction() < 1) {
+    if (SpeakPowerDelay.IsFinished() && Power_Fraction() < 1) {
       if (ActiveBScan & STRUCTF_CONST) {
         Speak(VOX_LOW_POWER);
         SpeakPowerDelay =
@@ -1313,7 +1313,7 @@ void HouseClass::AI() {
   **	Triggers are only checked every so often. If the trigger timer has
   *expired, *	then set the trigger processing flag.
   */
-  if (TriggerTime == 0 || IsBuiltSomething) {
+  if (TriggerTime.IsFinished() || IsBuiltSomething) {
     TriggerTime = TICKS_PER_MINUTE / 10;
     IsBuiltSomething = false;
   }
@@ -1324,7 +1324,7 @@ void HouseClass::AI() {
   Super_Weapon_Handler();
 
   // For endgame auto-sonar pulse.
-  if (Scen.AutoSonarTimer == 0) {
+  if (Scen.AutoSonarTimer.IsFinished()) {
     //	If house has nothing but subs left, do an automatic sonar pulse to
     // reveal them.
     if (VQuantity[VESSEL_SS] >
@@ -1455,7 +1455,7 @@ void HouseClass::AI() {
   /*
   **	Perform any expert system AI processing.
   */
-  if (IsBaseBuilding && AITimer == 0) {
+  if (IsBaseBuilding && AITimer.IsFinished()) {
     AITimer = Expert_AI();
   }
 
@@ -1498,7 +1498,7 @@ void HouseClass::AI() {
   /*
   ** See if it's time to re-set the can-repair flag
   */
-  if (DidRepair && RepairTimer == 0) {
+  if (DidRepair && RepairTimer.IsFinished()) {
     DidRepair = false;
   }
 
@@ -1929,7 +1929,7 @@ void HouseClass::Super_Weapon_Handler() {
 void HouseClass::Attacked() {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (SpeakAttackDelay == 0 &&
+  if (SpeakAttackDelay.IsFinished() &&
       ((Session.Type == GAME_NORMAL && IsPlayerControl) ||
        PlayerPtr->Class->House == Class->House)) {
     Speak(VOX_BASE_UNDER_ATTACK);
@@ -4653,7 +4653,7 @@ int HouseClass::Expert_AI() {
   **	enemy that is closest is picked. However, don't pick an enemy if the
   **	base has not been established yet.
   */
-  if (ActiveBScan && Center && Attack == 0) {
+  if (ActiveBScan && Center && Attack.IsFinished()) {
     int close = 0;
     HousesType enemy = HOUSE_NONE;
     int maxunit = 0;
@@ -4971,7 +4971,7 @@ UrgencyType HouseClass::Check_Build_Offense() const {
 UrgencyType HouseClass::Check_Attack() const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (Frame > TICKS_PER_MINUTE && Attack == 0) {
+  if (Frame > TICKS_PER_MINUTE && Attack.IsFinished()) {
     if (State == STATE_ATTACKED) {
       return URGENCY_LOW;
     }

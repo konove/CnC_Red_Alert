@@ -578,7 +578,8 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
                   flags, nullptr, DisplayClass::UnitShadow);
 
-    base::MovePoint(xx, yy, SecondaryFacing.Current() + DIR_S, _stretch[face] * 2);
+    base::MovePoint(xx, yy, SecondaryFacing.Current() + DIR_S,
+                    _stretch[face] * 2);
     CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
                   flags, nullptr, DisplayClass::UnitShadow);
 
@@ -819,7 +820,7 @@ int AircraftClass::Mission_Hunt() {
             if (Class->Is_Two_Shooter()) {
               Fire_At(targ, 0);
             }
-            return Arm;
+            return Arm.Value();
 
           case FIRE_RANGE:
           case FIRE_FACING:
@@ -977,7 +978,7 @@ void AircraftClass::AI() {
   /*
   **	Perform sighting every so often as controlled by the sight timer.
   */
-  if (IsOwnedByPlayer && Class->SightRange && SightTimer == 0) {
+  if (IsOwnedByPlayer && Class->SightRange && SightTimer.IsFinished()) {
     Look();
     SightTimer = TICKS_PER_SECOND;
   }
@@ -1539,7 +1540,7 @@ int AircraftClass::Paradrop_Cargo() {
       Arm = 0;
     }
   }
-  return Arm;
+  return Arm.Value();
 }
 
 /***********************************************************************************************
@@ -3996,7 +3997,7 @@ FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
   *under the *	aircraft is generally clear.
   */
   if (camera || (fudge && Passenger && Is_Something_Attached())) {
-    if (Arm != 0) {
+    if (Arm.HasTimeLeft()) {
       return FIRE_REARM;
     }
 

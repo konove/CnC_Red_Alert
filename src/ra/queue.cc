@@ -1046,7 +1046,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     // him to advance.  Resending a FRAMESYNC ensures he knows what frame
     // number I'm on.
     //---------------------------------------------------------------------
-    if (!retry_timer) {
+    if (retry_timer.IsFinished()) {
       retry_timer = resend_delta;  // time to retry
       Update_Queue_Mono(net, 3);
       Send_FrameSync(net, my_sent);
@@ -1060,7 +1060,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //---------------------------------------------------------------------
     //	Pop up a reconnect dialog if enough time goes by
     //---------------------------------------------------------------------
-    if (!dialog_timer && SpecialDialog == SDLG_NONE) {
+    if (dialog_timer.IsFinished() && SpecialDialog == SDLG_NONE) {
       if (reconnect_dlg == 0 && first_time == 0) {
         FILE* fp;
         int i;
@@ -1112,7 +1112,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //	Exit if too much time goes by (the other system has crashed or
     // bailed)
     //---------------------------------------------------------------------
-    if (!timeout_timer) {
+    if (timeout_timer.IsFinished()) {
       //..................................................................
       // For the first-time run, just give up; something's wrong.
       //..................................................................
@@ -2234,7 +2234,7 @@ static int Process_Reconnect_Dialog(
   //------------------------------------------------------------------------
   // Convert the timer to seconds
   //------------------------------------------------------------------------
-  new_time = *timeout_timer / 60;
+  new_time = timeout_timer->Value() / 60;
 
   //------------------------------------------------------------------------
   // If the timer has changed, or 'fresh' is set, redraw the dialog
@@ -3502,7 +3502,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
           // going out of sync, if the games were saved at different
           // frame numbers.
           //............................................................
-          if (!skip_crc || *skip_crc == 0) {
+          if (skip_crc == nullptr || skip_crc->IsFinished()) {
             check_crc = 1;
           } else {
             check_crc = 0;

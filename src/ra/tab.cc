@@ -169,7 +169,7 @@ void TabClass::Draw_Credits_Tab() {
   /*
   ** Use the new sidebar art for 640x400
   */
-  CC_Draw_Shape(TabShape, Map.MoneyFlashTimer > 1 ? 8 : 6,
+  CC_Draw_Shape(TabShape, Map.MoneyFlashTimer.Value() > 1 ? 8 : 6,
                 (320 - EVA_WIDTH) * RESFACTOR, 0, WINDOW_MAIN, SHAPE_NORMAL);
 #else
   CC_Draw_Shape(TabShape, 4, (320 - (EVA_WIDTH * 2)) * RESFACTOR, 0,
@@ -177,8 +177,9 @@ void TabClass::Draw_Credits_Tab() {
 #endif
 
   if (Scen.MissionTimer.Is_Active()) {
-    bool light = Scen.MissionTimer < TICKS_PER_MINUTE * Rule.TimerWarning ||
-                 Map.FlasherTimer > 0;
+    bool light =
+        Scen.MissionTimer.Value() < TICKS_PER_MINUTE * Rule.TimerWarning ||
+        Map.FlasherTimer.HasTimeLeft();
 #ifdef WIN32
     CC_Draw_Shape(TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN, SHAPE_NORMAL);
 #else
@@ -270,7 +271,7 @@ void TabClass::AI(KeyNumType& input, int x, int y) {
     }
   }
 
-  if (MoneyFlashTimer == 1) {
+  if (MoneyFlashTimer.Value() == 1) {
     IsToRedraw = true;
     Flag_To_Redraw(false);
   }

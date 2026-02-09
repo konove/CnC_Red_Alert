@@ -266,8 +266,8 @@ void Modem_Signoff() {
     NullModem.Send_Message(&event, sizeof(EventClass), 0);
     NullModem.Send_Message(&event, sizeof(EventClass), 0);
 
-    starttime = TickCount;
-    while (TickCount - starttime < 30) {
+    starttime = TickCount.Value();
+    while (TickCount.Value() - starttime < 30) {
       NullModem.Service();
     }
   }
@@ -411,13 +411,13 @@ int Test_Null_Modem() {
   ** Note: The initial time must be a little longer than the resend delay.
   ** 	Just in case we just missed the packet.
   */
-  starttime = TickCount;
-  while (TickCount - starttime < 80) {
+  starttime = TickCount.Value();
+  while (TickCount.Value() - starttime < 80) {
     NullModem.Service();
     if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
       if (ReceivePacket.Command == SERIAL_CONNECT) {
-        starttime = TickCount;
-        while (TickCount - starttime < 30) {
+        starttime = TickCount.Value();
+        while (TickCount.Value() - starttime < 30) {
           NullModem.Service();
         }
         process = false;
@@ -437,18 +437,18 @@ int Test_Null_Modem() {
     //
     // put time from start of game for determining the host in case of tie.
     //
-    SendPacket.ScenarioInfo.Seed = TickCount;
+    SendPacket.ScenarioInfo.Seed = TickCount.Value();
     SendPacket.ID = (intptr_t)buffer;  // address of buffer for more uniqueness.
 
     NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
-    starttime = TickCount;
-    while (TickCount - starttime < 80) {
+    starttime = TickCount.Value();
+    while (TickCount.Value() - starttime < 80) {
       NullModem.Service();
       if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
         if (ReceivePacket.Command == SERIAL_CONNECT) {
-          starttime = TickCount;
-          while (TickCount - starttime < 30) {
+          starttime = TickCount.Value();
+          while (TickCount.Value() - starttime < 30) {
             NullModem.Service();
           }
 
@@ -478,7 +478,7 @@ int Test_Null_Modem() {
     }
   }
 
-  starttime = TickCount;
+  starttime = TickCount.Value();
 
   /*
   ** Main Processing Loop
@@ -525,8 +525,8 @@ int Test_Null_Modem() {
     if (NullModem.Num_Send() == 0) {
       if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
         if (ReceivePacket.Command == SERIAL_CONNECT) {
-          starttime = TickCount;
-          while (TickCount - starttime < 30) {
+          starttime = TickCount.Value();
+          while (TickCount.Value() - starttime < 30) {
             NullModem.Service();
           }
 
@@ -562,7 +562,7 @@ int Test_Null_Modem() {
       }
     }
 
-    if (TickCount - starttime > 3600) {  // only wait 1 minute
+    if (TickCount.Value() - starttime > 3600) {  // only wait 1 minute
       retval = 0;
       process = false;
     }
@@ -723,7 +723,7 @@ static int Reconnect_Null_Modem() {
   /*
   ** Main Processing Loop
   */
-  starttime = lastmsgtime = TickCount;
+  starttime = lastmsgtime = TickCount.Value();
   while (process) {
 #ifdef WIN32
     /*
@@ -767,8 +767,8 @@ static int Reconnect_Null_Modem() {
     /*
     ** Resend our message if it's time
     */
-    if (TickCount - starttime > PACKET_RETRANS_TIME) {
-      starttime = TickCount;
+    if (TickCount.Value() - starttime > PACKET_RETRANS_TIME) {
+      starttime = TickCount.Value();
       memset(&SendPacket, 0, sizeof(SerialPacketType));
       SendPacket.Command = SERIAL_CONNECT;
       SendPacket.ID = Session.ColorIdx;
@@ -779,7 +779,7 @@ static int Reconnect_Null_Modem() {
     ** Check for an incoming message
     */
     if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-      lastmsgtime = TickCount;
+      lastmsgtime = TickCount.Value();
 
       if (ReceivePacket.Command == SERIAL_CONNECT) {
         // are we getting our own packets back??
@@ -799,8 +799,8 @@ static int Reconnect_Null_Modem() {
         SendPacket.Command = SERIAL_CONNECT;
         SendPacket.ID = Session.ColorIdx;
         NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
-        starttime = TickCount;
-        while (TickCount - starttime < 60) {
+        starttime = TickCount.Value();
+        while (TickCount.Value() - starttime < 60) {
           NullModem.Service();
         }
         retval = true;
@@ -811,7 +811,7 @@ static int Reconnect_Null_Modem() {
     //
     // timeout if we do not get any packets
     //
-    if (TickCount - lastmsgtime > PACKET_CANCEL_TIMEOUT) {
+    if (TickCount.Value() - lastmsgtime > PACKET_CANCEL_TIMEOUT) {
       retval = false;
       process = false;
     }
@@ -3515,7 +3515,7 @@ int Com_Scenario_Dialog(bool skirmish) {
     NullModem.Reset_Response_Time();  // clear response time
   }
   theirresponsetime = 10000;  // initialize to an invalid value
-  timingtime = lastmsgtime = lastredrawtime = TickCount;
+  timingtime = lastmsgtime = lastredrawtime = TickCount.Value();
 
   bool retry_setup = true;
   while (retry_setup) {
@@ -3529,7 +3529,7 @@ int Com_Scenario_Dialog(bool skirmish) {
 #endif
 
       if (!skirmish) {
-        if (!ok_button_added && gameoptions && kludge_timer == 0) {
+        if (!ok_button_added && gameoptions && kludge_timer.IsFinished()) {
           okbtn.Add_Tail(*commands);
           ok_button_added = true;
           if (loadfile.Is_Available()) {
@@ -4126,7 +4126,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         transmit = false;
       }
 
-      if (transmit && TickCount - transmittime > PACKET_RETRANS_TIME) {
+      if (transmit && TickCount.Value() - transmittime > PACKET_RETRANS_TIME) {
         memset(&SendPacket, 0, sizeof(SerialPacketType));
         SendPacket.Command = SERIAL_GAME_OPTIONS;
         port::SafeCopy(SendPacket.Name, namebuf);
@@ -4177,7 +4177,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
         NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
-        transmittime = TickCount;
+        transmittime = TickCount.Value();
         transmit = false;
 
         //..................................................................
@@ -4212,21 +4212,21 @@ int Com_Scenario_Dialog(bool skirmish) {
       //
       // send a timing packet if enough time has gone by.
       //
-      if (!skirmish && TickCount - timingtime > PACKET_TIMING_TIMEOUT) {
+      if (!skirmish && TickCount.Value() - timingtime > PACKET_TIMING_TIMEOUT) {
         memset(&SendPacket, 0, sizeof(SerialPacketType));
         SendPacket.Command = SERIAL_TIMING;
         SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
         SendPacket.ID = Session.ModemType;
 
         NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
-        timingtime = TickCount;
+        timingtime = TickCount.Value();
       }
 
       /*---------------------------------------------------------------------
       Check for an incoming message
       ---------------------------------------------------------------------*/
       if (!skirmish && NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-        lastmsgtime = TickCount;
+        lastmsgtime = TickCount.Value();
         msg_timeout = 600;  // reset timeout value to 10 seconds
                             // (only the 1st time through is 20 seconds)
 
@@ -4239,7 +4239,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
           // to skip the other system not responding msg
-          lastmsgtime = TickCount;
+          lastmsgtime = TickCount.Value();
 
           process = false;
           rc = false;
@@ -4251,8 +4251,8 @@ int Com_Scenario_Dialog(bool skirmish) {
 
         event = (EventClass*)&ReceivePacket;
         if (event->Type <= EventClass::FRAMEINFO) {
-          if (TickCount - lastredrawtime > PACKET_REDRAW_TIME) {
-            lastredrawtime = TickCount;
+          if (TickCount.Value() - lastredrawtime > PACKET_REDRAW_TIME) {
+            lastredrawtime = TickCount.Value();
             display = std::max(display, REDRAW_MESSAGE);
           }
         } else {
@@ -4262,14 +4262,14 @@ int Com_Scenario_Dialog(bool skirmish) {
             message, and exit.
             ..................................................................*/
             case SERIAL_SIGN_OFF:
-              starttime = TickCount;
-              while (TickCount - starttime < 60) {
+              starttime = TickCount.Value();
+              while (TickCount.Value() - starttime < 60) {
                 NullModem.Service();
               }
               WWMessageBox().Process(TXT_USER_SIGNED_OFF);
 
               // to skip the other system not responding msg
-              lastmsgtime = TickCount;
+              lastmsgtime = TickCount.Value();
 
               process = false;
               rc = false;
@@ -4306,7 +4306,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                 WWMessageBox().Process(TXT_DESTGAME_OUTDATED);
 
                 // to skip the other system not responding msg
-                lastmsgtime = TickCount;
+                lastmsgtime = TickCount.Value();
 
                 process = false;
                 rc = false;
@@ -4318,7 +4318,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                 WWMessageBox().Process(TXT_YOURGAME_OUTDATED);
 
                 // to skip the other system not responding msg
-                lastmsgtime = TickCount;
+                lastmsgtime = TickCount.Value();
 
                 process = false;
                 rc = false;
@@ -4328,7 +4328,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                   WWMessageBox().Process(TXT_MISMATCH);
 
                   // to skip the other system not responding msg
-                  lastmsgtime = TickCount;
+                  lastmsgtime = TickCount.Value();
 
                   process = false;
                   rc = false;
@@ -4456,7 +4456,7 @@ int Com_Scenario_Dialog(bool skirmish) {
 
       // if we haven't received a msg for 10 seconds exit
 
-      if (!skirmish && TickCount - lastmsgtime > msg_timeout) {
+      if (!skirmish && TickCount.Value() - lastmsgtime > msg_timeout) {
         WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
         process = false;
         rc = false;
@@ -4592,10 +4592,10 @@ int Com_Scenario_Dialog(bool skirmish) {
 
       if (!skirmish) {
         NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
-        starttime = TickCount;
+        starttime = TickCount.Value();
         while ((NullModem.Num_Send() &&
-                TickCount - starttime < PACKET_SENDING_TIMEOUT) ||
-               TickCount - starttime < 60) {
+                TickCount.Value() - starttime < PACKET_SENDING_TIMEOUT) ||
+               TickCount.Value() - starttime < 60) {
 #if (SHOW_MONO)
           NullModem.Mono_Debug_Print(0);
 #endif
@@ -4633,7 +4633,7 @@ int Com_Scenario_Dialog(bool skirmish) {
               */
               process = true;
               display = REDRAW_ALL;
-              lastmsgtime = TickCount;
+              lastmsgtime = TickCount.Value();
               retry_setup = true;
               break;
             }
@@ -4679,10 +4679,10 @@ int Com_Scenario_Dialog(bool skirmish) {
           SendPacket.ID = Session.ModemType;
           NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
-          starttime = TickCount;
+          starttime = TickCount.Value();
           while ((NullModem.Num_Send() &&
-                  TickCount - starttime < PACKET_CANCEL_TIMEOUT) ||
-                 TickCount - starttime < 60) {
+                  TickCount.Value() - starttime < PACKET_CANCEL_TIMEOUT) ||
+                 TickCount.Value() - starttime < 60) {
 #if (SHOW_MONO)
             NullModem.Mono_Debug_Print(0);
 #endif
@@ -5289,7 +5289,7 @@ int Com_Show_Scenario_Dialog() {
   ---------------------------- Processing loop -----------------------------
   */
   NullModem.Reset_Response_Time();  // clear response time
-  timingtime = lastmsgtime = lastredrawtime = TickCount;
+  timingtime = lastmsgtime = lastredrawtime = TickCount.Value();
 
   bool process = true;  // process while true
   while (process) {
@@ -5728,7 +5728,7 @@ int Com_Show_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     If our Transmit flag is set, we need to send out a game option packet
     ---------------------------------------------------------------------*/
-    if (transmit && TickCount - transmittime > PACKET_RETRANS_TIME) {
+    if (transmit && TickCount.Value() - transmittime > PACKET_RETRANS_TIME) {
       memset(&SendPacket, 0, sizeof(SerialPacketType));
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       port::SafeCopy(SendPacket.Name, namebuf);
@@ -5741,7 +5741,7 @@ int Com_Show_Scenario_Dialog() {
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
-      transmittime = TickCount;
+      transmittime = TickCount.Value();
       transmit = false;
 
       //..................................................................
@@ -5776,21 +5776,21 @@ int Com_Show_Scenario_Dialog() {
     //
     // send a timing packet if enough time has gone by.
     //
-    if (TickCount - timingtime > PACKET_TIMING_TIMEOUT) {
+    if (TickCount.Value() - timingtime > PACKET_TIMING_TIMEOUT) {
       memset(&SendPacket, 0, sizeof(SerialPacketType));
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
       SendPacket.ID = Session.ModemType;
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
-      timingtime = TickCount;
+      timingtime = TickCount.Value();
     }
 
     /*---------------------------------------------------------------------
     Check for an incoming message
     ---------------------------------------------------------------------*/
     if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-      lastmsgtime = TickCount;
+      lastmsgtime = TickCount.Value();
 
       msg_timeout = 600;
 
@@ -5803,7 +5803,7 @@ int Com_Show_Scenario_Dialog() {
         WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
         // to skip the other system not responding msg
-        lastmsgtime = TickCount;
+        lastmsgtime = TickCount.Value();
 
         process = false;
         rc = false;
@@ -5815,8 +5815,8 @@ int Com_Show_Scenario_Dialog() {
 
       event = (EventClass*)&ReceivePacket;
       if (event->Type <= EventClass::FRAMEINFO) {
-        if (TickCount - lastredrawtime > PACKET_REDRAW_TIME) {
-          lastredrawtime = TickCount;
+        if (TickCount.Value() - lastredrawtime > PACKET_REDRAW_TIME) {
+          lastredrawtime = TickCount.Value();
           oppscorescreen = true;
           display = std::max(display, REDRAW_MESSAGE);
           parms_received = true;
@@ -5828,14 +5828,14 @@ int Com_Show_Scenario_Dialog() {
           a message.
           ..................................................................*/
           case SERIAL_SIGN_OFF:
-            starttime = TickCount;
-            while (TickCount - starttime < 60) {
+            starttime = TickCount.Value();
+            while (TickCount.Value() - starttime < 60) {
               NullModem.Service();
             }
             WWMessageBox().Process(TXT_USER_SIGNED_OFF);
 
             // to skip the other system not responding msg
-            lastmsgtime = TickCount;
+            lastmsgtime = TickCount.Value();
 
             process = false;
             rc = false;
@@ -5970,7 +5970,7 @@ int Com_Show_Scenario_Dialog() {
               WWMessageBox().Process(TXT_DESTGAME_OUTDATED);
 
               // to skip the other system not responding msg
-              lastmsgtime = TickCount;
+              lastmsgtime = TickCount.Value();
 
               process = false;
               rc = false;
@@ -5982,7 +5982,7 @@ int Com_Show_Scenario_Dialog() {
               WWMessageBox().Process(TXT_YOURGAME_OUTDATED);
 
               // to skip the other system not responding msg
-              lastmsgtime = TickCount;
+              lastmsgtime = TickCount.Value();
 
               process = false;
               rc = false;
@@ -5997,7 +5997,7 @@ int Com_Show_Scenario_Dialog() {
                 WWMessageBox().Process(TXT_MISMATCH);
 
                 // to skip the other system not responding msg
-                lastmsgtime = TickCount;
+                lastmsgtime = TickCount.Value();
 
                 process = false;
                 rc = false;
@@ -6147,10 +6147,11 @@ int Com_Show_Scenario_Dialog() {
                     SendPacket.Command = SERIAL_READY_TO_GO;
                     NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
-                    starttime = TickCount;
-                    while ((NullModem.Num_Send() &&
-                            TickCount - starttime < PACKET_SENDING_TIMEOUT) ||
-                           TickCount - starttime < 60) {
+                    starttime = TickCount.Value();
+                    while (
+                        (NullModem.Num_Send() && TickCount.Value() - starttime <
+                                                     PACKET_SENDING_TIMEOUT) ||
+                        TickCount.Value() - starttime < 60) {
                       NullModem.Service();
                     }
                     ready_packet_was_sent = true;
@@ -6169,7 +6170,7 @@ int Com_Show_Scenario_Dialog() {
                     /*
                     ** Make sure we dont time out because of the disk swap
                     */
-                    lastmsgtime = TickCount;
+                    lastmsgtime = TickCount.Value();
                   }
                 }
               }
@@ -6191,11 +6192,12 @@ int Com_Show_Scenario_Dialog() {
                   memset(&SendPacket, 0, sizeof(SendPacket));
                   SendPacket.Command = SERIAL_READY_TO_GO;
                   NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
-                  starttime = TickCount;
+                  starttime = TickCount.Value();
 
-                  while ((NullModem.Num_Send() &&
-                          TickCount - starttime < PACKET_SENDING_TIMEOUT) ||
-                         TickCount - starttime < 60) {
+                  while (
+                      (NullModem.Num_Send() && TickCount.Value() - starttime <
+                                                   PACKET_SENDING_TIMEOUT) ||
+                      TickCount.Value() - starttime < 60) {
                     NullModem.Service();
                   }
                 }
@@ -6213,7 +6215,7 @@ int Com_Show_Scenario_Dialog() {
                 /*
                  ** Make sure we dont time-out because of the download
                  */
-                lastmsgtime = TickCount;
+                lastmsgtime = TickCount.Value();
               }
             } else {
               /*
@@ -6222,11 +6224,11 @@ int Com_Show_Scenario_Dialog() {
               memset(&SendPacket, 0, sizeof(SendPacket));
               SendPacket.Command = SERIAL_READY_TO_GO;
               NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
-              starttime = TickCount;
+              starttime = TickCount.Value();
 
               while ((NullModem.Num_Send() &&
-                      TickCount - starttime < PACKET_SENDING_TIMEOUT) ||
-                     TickCount - starttime < 60) {
+                      TickCount.Value() - starttime < PACKET_SENDING_TIMEOUT) ||
+                     TickCount.Value() - starttime < 60) {
                 NullModem.Service();
               }
             }
@@ -6306,7 +6308,7 @@ int Com_Show_Scenario_Dialog() {
 
     // if we haven't received a msg for 10 seconds exit
 
-    if (TickCount - lastmsgtime > msg_timeout) {
+    if (TickCount.Value() - lastmsgtime > msg_timeout) {
       WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
       process = false;
       rc = false;
@@ -6358,10 +6360,10 @@ int Com_Show_Scenario_Dialog() {
     who->Player.ProcessTime = -1;
     Session.Players.Add(who);
 
-    starttime = TickCount;
+    starttime = TickCount.Value();
     while ((NullModem.Num_Send() &&
-            TickCount - starttime < PACKET_SENDING_TIMEOUT) ||
-           TickCount - starttime < 60) {
+            TickCount.Value() - starttime < PACKET_SENDING_TIMEOUT) ||
+           TickCount.Value() - starttime < 60) {
 #if (SHOW_MONO)
       NullModem.Mono_Debug_Print(0);
 #endif
@@ -6383,10 +6385,10 @@ int Com_Show_Scenario_Dialog() {
       SendPacket.ID = Session.ModemType;
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
-      starttime = TickCount;
+      starttime = TickCount.Value();
       while ((NullModem.Num_Send() &&
-              TickCount - starttime < PACKET_CANCEL_TIMEOUT) ||
-             TickCount - starttime < 60) {
+              TickCount.Value() - starttime < PACKET_CANCEL_TIMEOUT) ||
+             TickCount.Value() - starttime < 60) {
 #if (SHOW_MONO)
         NullModem.Mono_Debug_Print(0);
 #endif
@@ -7849,7 +7851,7 @@ void Log_Start_Time(char* string) {
   //	LogDump_Print = true;
 
   LogLevel = 0;
-  LogLevelTime[LogLevel] = LogLastTime = TickCount;
+  LogLevelTime[LogLevel] = LogLastTime = TickCount.Value();
 
   Smart_Printf("start tick=%d, %s \n", LogLastTime, string);
 }
@@ -7859,7 +7861,7 @@ void Log_End_Time(char* string) {
   unsigned long currtime;
   unsigned long ticks;
 
-  currtime = TickCount;
+  currtime = TickCount.Value();
   while (LogLevel >= 0) {
     if (LogLevel < MAX_LOG_LEVEL) {
       //
@@ -7887,7 +7889,7 @@ void Log_Time(char* string) {
   unsigned long currtime;
   unsigned long ticks;
 
-  currtime = TickCount;
+  currtime = TickCount.Value();
 
   if (LogLevel < MAX_LOG_LEVEL) {
     //
@@ -7915,7 +7917,7 @@ void Log_Start_Nest_Time(char* string) {
   unsigned long currtime;
   unsigned long ticks;
 
-  currtime = TickCount;
+  currtime = TickCount.Value();
 
   if (LogLevel < MAX_LOG_LEVEL) {
     //
@@ -7949,7 +7951,7 @@ void Log_End_Nest_Time(char* string) {
   unsigned long currtime;
   unsigned long ticks;
 
-  currtime = TickCount;
+  currtime = TickCount.Value();
 
   if (LogLevel <= 0) {
     Smart_Printf("Could not end another nesting Mined at %d,%d!-! \n", LogLevel,

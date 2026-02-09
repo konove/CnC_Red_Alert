@@ -176,7 +176,7 @@ void PowerClass::Draw_It(bool complete) {
         ShapeFlags_Type flags = SHAPE_NORMAL;
         const void* remap = nullptr;
 
-        if (FlashTimer > 1 && (FlashTimer % 3 & 0x01) != 0) {
+        if (FlashTimer.Value() > 1 && (FlashTimer.Value() % 3 & 0x01) != 0) {
           flags = flags | SHAPE_FADING;
           remap = FadingRed;
         }
@@ -352,7 +352,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     **	Flag to redraw if the power bar flash effect has expired.
     */
     //		if (FlashTimer == 1) {
-    if (FlashTimer > 0) {
+    if (FlashTimer.HasTimeLeft()) {
       IsToRedraw = true;
       Flag_To_Redraw(false);
     }

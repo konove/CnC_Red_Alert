@@ -437,7 +437,7 @@ int LoadOptionsClass::Process() {
           /*
           ** Make sure the message says on the screen at least 1 second
           */
-          while (timer > 0) {
+          while (timer.HasTimeLeft()) {
             Call_Back();
           }
           Keyboard->Clear();
@@ -501,7 +501,7 @@ int LoadOptionsClass::Process() {
           /*
           **	Delay to let the user read the message
           */
-          while (timer > 0) {
+          while (timer.HasTimeLeft()) {
             Call_Back();
           }
           Keyboard->Clear();
