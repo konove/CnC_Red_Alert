@@ -1257,7 +1257,7 @@ void Do_Restart() {
   /*
   ** Start a timer going, before we restart the scenario
   */
-  CDTimerClass<SystemTimerClass> timer;
+  CDTimerClass<SystemTickSource> timer;
   timer = TICKS_PER_SECOND * 4;
   Theme.Queue_Song(THEME_QUIET);
 
@@ -1553,7 +1553,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     }
     if (bufprint[0] == '\r' || bufprint[0] == '@') {
       Play_Sample(briefsnd, 255, Options.Normalize_Volume(135));
-      CDTimerClass<SystemTimerClass> cd;
+      CDTimerClass<SystemTickSource> cd;
       cd = 5;
       do {
         Call_Back();

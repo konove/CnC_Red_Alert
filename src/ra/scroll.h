@@ -59,7 +59,7 @@ class ScrollClass : public HelpClass {
   *reaches zero, *	scroll the map in the direction required and reset this
   *timer.
   */
-  static CDTimerClass<SystemTimerClass> Counter;
+  static CDTimerClass<SystemTickSource> Counter;
 
   /*
   ** Inertia control for scrolling

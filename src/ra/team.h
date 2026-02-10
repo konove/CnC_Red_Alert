@@ -194,7 +194,7 @@ class TeamClass : public AbstractClass {
   /*
   ** This is the amount of time the team is suspended for.
   */
-  CDTimerClass<FrameTimerClass> SuspendTimer;
+  CDTimerClass<FrameTickSource> SuspendTimer;
 
   /*
   **	If there is a trigger that should be attached to every member of this
@@ -254,7 +254,7 @@ class TeamClass : public AbstractClass {
   **	Some missions will time out. This is the timer that keeps track of the
   **	time to transition between missions.
   */
-  CDTimerClass<FrameTimerClass> TimeOut;
+  CDTimerClass<FrameTickSource> TimeOut;
 
   int TMission_Formation();
   int TMission_Attack();

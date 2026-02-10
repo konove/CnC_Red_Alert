@@ -1520,8 +1520,8 @@ static void Message_Input(KeyNumType& input) {
  *JLB : Faster pulsing of white color. *
  *=============================================================================================*/
 void Color_Cycle() {
-  static CDTimerClass<SystemTimerClass> _timer;
-  static CDTimerClass<SystemTimerClass> _ftimer;
+  static CDTimerClass<SystemTickSource> _timer;
+  static CDTimerClass<SystemTickSource> _ftimer;
   static bool _up = false;
   static int val = 255;
   bool changed = false;

@@ -124,7 +124,7 @@ class MouseClass : public ScrollClass {
   /*
   **	For animating mouse shapes, this controls the frame and animation rate.
   */
-  static CDTimerClass<SystemTimerClass> Timer;
+  static CDTimerClass<SystemTickSource> Timer;
   int Frame;
 };
 

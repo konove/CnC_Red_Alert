@@ -83,13 +83,13 @@ class VesselClass : public DriveClass {
   /*
   ** If this is an LST, is it time to shut the door?
   */
-  CDTimerClass<FrameTimerClass> DoorShutCountDown;
+  CDTimerClass<FrameTickSource> DoorShutCountDown;
 
   /*
   ** If this is a sub, has the sonar pulse worn off, such that we can
   ** re-submerge?
   */
-  CDTimerClass<FrameTimerClass> PulseCountDown;
+  CDTimerClass<FrameTickSource> PulseCountDown;
 
   VesselClass(VesselType classid, HousesType house);
   VesselClass(const NoInitClass& x)

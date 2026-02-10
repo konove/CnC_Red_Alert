@@ -3188,7 +3188,7 @@ int Com_Scenario_Dialog(bool skirmish) {
 
   Set_Logic_Page(SeenBuff);
 
-  CDTimerClass<SystemTimerClass>
+  CDTimerClass<SystemTickSource>
       kludge_timer;  // Timer to allow a wait after client joins
                      // game before game can start
   bool ok_button_added = false;

@@ -1589,7 +1589,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
 
 void Animate_Cursor(int pos, int ypos) {
   static int _lastpos = 0, _state;
-  static CDTimerClass<SystemTimerClass> _timer;
+  static CDTimerClass<SystemTickSource> _timer;
 
   ypos += 6;  // move cursor to bottom of letter
 
@@ -1820,7 +1820,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
  *=========================================================================*/
 void Call_Back_Delay(int time) {
   time = std::clamp(time, 0, 60);
-  CDTimerClass<SystemTimerClass> callbackcd{0};
+  CDTimerClass<SystemTickSource> callbackcd{0};
 
   if (!ControlQ) {
     if (Keyboard->Down(KN_LCTRL) && Keyboard->Down(KN_Q)) {
@@ -1832,7 +1832,7 @@ void Call_Back_Delay(int time) {
     time = 0;
   }
 
-  const CDTimerClass<SystemTimerClass> cd{time};
+  const CDTimerClass<SystemTickSource> cd{time};
   StreamLowImpact = true;
   do {
     if (callbackcd.IsFinished()) {

@@ -426,7 +426,7 @@ int LoadOptionsClass::Process() {
           /*
           ** Start a timer before we load the game
           */
-          CDTimerClass<SystemTimerClass> timer;
+          CDTimerClass<SystemTickSource> timer;
           //					timer.Start();
           timer = TICKS_PER_SECOND * 4;
 
@@ -492,7 +492,7 @@ int LoadOptionsClass::Process() {
           while (Is_Speaking()) {
             Call_Back();
           }
-          CDTimerClass<SystemTimerClass> timer;
+          CDTimerClass<SystemTickSource> timer;
           //					timer.Start();
           timer = TICKS_PER_SECOND * 4;
 

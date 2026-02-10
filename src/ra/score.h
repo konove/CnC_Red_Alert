@@ -64,7 +64,7 @@ class ScoreClass {
   int GHarvested;
   int CHarvested;
   unsigned long ElapsedTime;
-  TTimerClass<SystemTimerClass> RealTime;
+  TTimerClass<SystemTickSource> RealTime;
 
   void Init();
   void Presentation();
@@ -98,7 +98,7 @@ class ScoreAnimClass {
   ScoreAnimClass(int x, int y, const void* data);
   int XPos;
   int YPos;
-  CDTimerClass<SystemTimerClass> Timer;
+  CDTimerClass<SystemTickSource> Timer;
   const void* DataPtr;
   virtual void Update() {}
   virtual ~ScoreAnimClass() { DataPtr = nullptr; }

@@ -64,7 +64,7 @@ const void* MouseClass::MouseShapes;
 **	This is the timer that controls the mouse animation. It is always at a
 *fixed *	rate so it uses the constant system timer.
 */
-CDTimerClass<SystemTimerClass> MouseClass::Timer{0};
+CDTimerClass<SystemTickSource> MouseClass::Timer{0};
 
 /***********************************************************************************************
  * MouseClass::MouseClass -- Default constructor for the mouse handler class. *

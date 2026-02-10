@@ -118,7 +118,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
 
   IPXAddressClass sender_address;
 
-  CDTimerClass<SystemTimerClass>
+  CDTimerClass<SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
 
   /*
@@ -544,7 +544,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
 
   char* info_string = (char*)Text_String(TXT_SENDING_SCENARIO);
 
-  CDTimerClass<SystemTimerClass>
+  CDTimerClass<SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
 
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,

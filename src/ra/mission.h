@@ -124,7 +124,7 @@ class MissionClass : public ObjectClass {
   **	This the thread processing timer. When this value counts down to zero,
   *then *	more script processing may occur.
   */
-  CDTimerClass<FrameTimerClass> Timer;
+  CDTimerClass<FrameTickSource> Timer;
 };
 
 /****************************************************************************

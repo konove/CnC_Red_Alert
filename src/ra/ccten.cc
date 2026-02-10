@@ -130,7 +130,7 @@ int Init_TEN() {
  *=========================================================================*/
 void Shutdown_TEN() {
 #if (TEN)
-  CDTimerClass<SystemTimerClass> timer;
+  CDTimerClass<SystemTickSource> timer;
 
   //------------------------------------------------------------------------
   // Wait a full second before exiting, to ensure all packets get sent.
@@ -190,7 +190,7 @@ void Connect_TEN() {
   int found;
   int size;
   int i;
-  CDTimerClass<SystemTimerClass> send_timer;
+  CDTimerClass<SystemTickSource> send_timer;
   NodeNameType* who;
 
   enum {

@@ -27,11 +27,8 @@
 #include "tech/mpu.h"
 
 // Tick source that reads the CPU timestamp counter (TSC).
-class PentiumTimerClass {
- public:
-  int64_t Tick() const {
-    return static_cast<int64_t>(Get_CPU_Clock() >> 4);
-  }
+struct PentiumTimerClass {
+  static int64_t Tick() { return static_cast<int64_t>(Get_CPU_Clock() >> 4); }
 };
 
 // Tracks elapsed time with a running average across multiple events.

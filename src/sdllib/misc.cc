@@ -29,9 +29,9 @@ void Wait_Blit() {
 }
 
 void Delay(int duration) {
-  auto target = WindowsTimer->Get_System_Tick_Count() + duration;
+  auto target = WindowsTimer->TickCount() + duration;
 
-  while (WindowsTimer->Get_System_Tick_Count() < target) {
+  while (WindowsTimer->TickCount() < target) {
     Video_End_Frame();
   }
 }

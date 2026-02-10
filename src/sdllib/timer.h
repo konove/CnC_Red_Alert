@@ -37,16 +37,11 @@
 #ifndef CNC_RED_ALERT_SDLLIB_TIMER_H_
 #define CNC_RED_ALERT_SDLLIB_TIMER_H_
 
+#include <SDL_timer.h>
+
+#include <atomic>
 #include <cstdint>
 
-/*=========================================================================*/
-/* The following prototypes are for the file: TIMERA.ASM
- */
-/*=========================================================================*/
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////// Externs
-////////////////////////////////////////////////
 extern bool TimerSystemOn;
 
 /*=========================================================================*/
@@ -123,19 +118,29 @@ inline long CountDownTimerClass::Reset(bool start) {
 
 class WinTimerClass {
  public:
-  WinTimerClass(std::uint32_t freq = 60, bool partial = false);
+  explicit WinTimerClass(int tick_rate = 60);
   ~WinTimerClass();
   WinTimerClass(const WinTimerClass&) = delete;
   WinTimerClass& operator=(const WinTimerClass&) = delete;
   WinTimerClass(WinTimerClass&&) = delete;
   WinTimerClass& operator=(WinTimerClass&&) = delete;
 
-  void Update_Tick_Count();
-  std::uint64_t Get_System_Tick_Count();
+  // Increments the tick counter. Called from the SDL timer callback thread.
+  void UpdateTickCount() {
+    tick_count_.fetch_add(1, std::memory_order_relaxed);
+  }
+
+  // Returns the current tick count.
+  int64_t TickCount() const {
+    return tick_count_.load(std::memory_order_relaxed);
+  }
 
  private:
-  std::int32_t TimerHandle;    // Handle for windows timer event
-  std::uint64_t SysTicks = 0;  // Tick count of timer.
+  // Handle for SDL timer event.
+  SDL_TimerID timer_id_;
+
+  // Tick count, updated from SDL timer thread.
+  std::atomic<int64_t> tick_count_{0};
 };
 
 uint32_t Get_Time_Ms();

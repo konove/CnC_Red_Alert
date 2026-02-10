@@ -86,7 +86,7 @@ class ScenarioClass {
   **	start of the mission. It, effectively, holds the elapsed time of the
   **	mission.
   */
-  TTimerClass<FrameTimerClass> Timer;
+  TTimerClass<FrameTickSource> Timer;
 
   /*
   **	This is an array of waypoints; each waypoint corresponds to a letter of
@@ -104,13 +104,13 @@ class ScenarioClass {
   *examine *	this timer. The current value of this timer will display on the
   *game *	screen.
   */
-  CDTimerClass<FrameTimerClass> MissionTimer;
+  CDTimerClass<FrameTickSource> MissionTimer;
 
   /*
   **	The shroud regrowth (if enabled) is regulated by this timer. When the
   **	timer expires, the shroud will regrow one step.
   */
-  CDTimerClass<FrameTimerClass> ShroudTimer;
+  CDTimerClass<FrameTickSource> ShroudTimer;
 
   /*
   **	The scenario number.
@@ -319,13 +319,13 @@ class ScenarioClass {
   **	fading to b&w or color will progress.  This timer represents a
   ** percentage of the Options.Get_Saturation() to fade towards.
   */
-  CDTimerClass<FrameTimerClass> FadeTimer;
+  CDTimerClass<FrameTickSource> FadeTimer;
 
   //	For endgame auto-sonar pulse.
   //	Timer to set the period for checking if an auto-sonar pulse should be
   // performed. 	This will take place if a player has nothing but subs
   // left in the game.
-  CDTimerClass<FrameTimerClass> AutoSonarTimer;
+  CDTimerClass<FrameTickSource> AutoSonarTimer;
 
   bool bLocalProposesDraw;  //	True if the local player in a 2-player game has
                             // a draw offer extended.

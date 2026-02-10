@@ -884,7 +884,7 @@ void EventClass::Execute() {
       ** we're not already inside a dialog box routine!)
       */
       if (SpecialDialog == SDLG_NONE) {
-        CDTimerClass<SystemTimerClass> timer;
+        CDTimerClass<SystemTickSource> timer;
         // timer.Start();
         timer = TICKS_PER_SECOND * 4;
 

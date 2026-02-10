@@ -5,7 +5,7 @@
 
 #include "sdllib/gbuffer.h"
 
-extern std::uint64_t Frame;
+extern int64_t Frame;
 extern bool GameActive;
 extern long LParam;
 extern int Seed;

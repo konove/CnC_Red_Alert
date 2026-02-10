@@ -290,37 +290,8 @@ int main(int argc, char* argv[])
   ForceEnglish = false;
 #endif
   if (Parse_Command_Line(argc, argv)) {
-#ifdef PORTABLE
-    WindowsTimer = new WinTimerClass(60, false);
+    WindowsTimer = new WinTimerClass();
     TickCount.Start();
-#else
-    WindowsTimer = new WinTimerClass(60, false);
-
-    int time_test = WindowsTimer->Get_System_Tick_Count();
-    Sleep(1000);
-    if (WindowsTimer->Get_System_Tick_Count() == time_test) {
-#ifdef FRENCH
-      MessageBox(0,
-                 "Error - L'horloge système n'a pas pu s'initialiser en raison "
-                 "de l'instabilité du sytème. Vous devez redémarrer Windows.",
-                 "Command & Conquer", MB_OK | MB_ICONSTOP);
-#else
-#ifdef GERMAN
-      MessageBox(
-          0,
-          "Fehler - das Timer-System konnte aufgrund einer Instabilität des "
-          "Systems nicht initialisiert werden. Bitte starten Sie Windows neu.",
-          "Command & Conquer", MB_OK | MB_ICONSTOP);
-#else
-      MessageBox(0,
-                 "Error - Timer system failed to start due to system "
-                 "instability. You need to restart Windows.",
-                 "Command & Conquer", MB_OK | MB_ICONSTOP);
-#endif  // GERMAN
-#endif  // FRENCH
-      return (EXIT_FAILURE);
-    }
-#endif
 
     RawFileClass cfile("CONQUER.INI");
 

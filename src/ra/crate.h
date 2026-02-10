@@ -64,7 +64,7 @@ class CrateClass {
     Timer.Stop();
   }
 
-  CDTimerClass<FrameTimerClass> Timer;
+  CDTimerClass<FrameTickSource> Timer;
   CELL Cell;
 };
 

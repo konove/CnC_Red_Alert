@@ -288,7 +288,7 @@ int main(int argc, char* argv[])
     }
 #endif  // MPATH
 
-    WindowsTimer = new WinTimerClass(60, false);
+    WindowsTimer = new WinTimerClass();
     RawFileClass cfile(CONFIG_FILE_NAME);
 
     Keyboard = new KeyboardClass();

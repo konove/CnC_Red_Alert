@@ -82,7 +82,7 @@
 #include "tech/bench.h"
 #include "tech/ftimer.h"
 
-static CDTimerClass<SystemTimerClass> DebugTimer;
+static CDTimerClass<SystemTickSource> DebugTimer;
 
 int VortexFrame = -1;
 

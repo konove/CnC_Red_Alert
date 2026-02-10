@@ -78,7 +78,7 @@ class InfantryClass : public FootClass {
   *an *	amount of time has expired subsequent to an significant event. This is
   *the *	timer the counts down.
   */
-  CDTimerClass<FrameTimerClass> Comment;
+  CDTimerClass<FrameTickSource> Comment;
 
   /*
   **	If this civilian is actually a technician, then this flag will be true.

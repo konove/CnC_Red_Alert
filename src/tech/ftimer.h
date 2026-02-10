@@ -40,7 +40,7 @@
 // Concept to ensure the timer source provides a numeric tick or timestamp.
 template <typename T>
 concept TimerSource = requires(T t) {
-  { t.Tick() } -> std::convertible_to<int64_t>;
+  { T::Tick() } -> std::convertible_to<int64_t>;
 };
 
 // A timer that watches a constant-rate tick source T and counts upward.
@@ -66,7 +66,6 @@ class BasicTimerClass {
   BasicTimerClass& operator=(int64_t set);
 
  protected:
-  T Timer;          // Tick source (ticks at constant rate).
   int64_t Started;  // Tick value when the timer was started/reset.
 };
 
@@ -76,16 +75,16 @@ BasicTimerClass<T>::BasicTimerClass(const NoInitClass&) {}
 // Anchors Started so that Value() initially returns `set`.
 template <TimerSource T>
 BasicTimerClass<T>::BasicTimerClass(int64_t set)
-    : Started(static_cast<int64_t>(Timer.Tick()) - set) {}
+    : Started(static_cast<int64_t>(T::Tick()) - set) {}
 
 template <TimerSource T>
 int64_t BasicTimerClass<T>::Value() const {
-  return static_cast<int64_t>(Timer.Tick()) - Started;
+  return static_cast<int64_t>(T::Tick()) - Started;
 }
 
 template <TimerSource T>
 BasicTimerClass<T>& BasicTimerClass<T>::operator=(int64_t set) {
-  Started = static_cast<int64_t>(Timer.Tick()) - set;
+  Started = static_cast<int64_t>(T::Tick()) - set;
   return *this;
 }
 
@@ -147,7 +146,7 @@ int64_t TTimerClass<T>::Value() const {
 
 template <TimerSource T>
 TTimerClass<T>& TTimerClass<T>::operator=(int64_t set) {
-  this->Started = static_cast<int64_t>(this->Timer.Tick());
+  this->Started = static_cast<int64_t>(T::Tick());
   Accumulated = set;
   Active = true;
   return *this;
@@ -164,7 +163,7 @@ void TTimerClass<T>::Stop() {
 template <TimerSource T>
 void TTimerClass<T>::Start() {
   if (!Active) {
-    this->Started = static_cast<int64_t>(this->Timer.Tick());
+    this->Started = static_cast<int64_t>(T::Tick());
     Active = true;
   }
 }
@@ -242,7 +241,7 @@ int64_t CDTimerClass<T>::Value() const {
 
 template <TimerSource T>
 CDTimerClass<T>& CDTimerClass<T>::operator=(int64_t duration) {
-  this->Started = static_cast<int64_t>(this->Timer.Tick());
+  this->Started = static_cast<int64_t>(T::Tick());
   DelayTime = duration;
   Active = true;
   return *this;
@@ -259,7 +258,7 @@ void CDTimerClass<T>::Stop() {
 template <TimerSource T>
 void CDTimerClass<T>::Start() {
   if (!Active) {
-    this->Started = static_cast<int64_t>(this->Timer.Tick());
+    this->Started = static_cast<int64_t>(T::Tick());
     Active = true;
   }
 }

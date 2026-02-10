@@ -112,7 +112,7 @@ class PowerClass : public RadarClass {
   **	If the power bar should be rendered with some flash effect then
   **	this specifies the duration that the flash will occur.
   */
-  CDTimerClass<FrameTimerClass> FlashTimer;
+  CDTimerClass<FrameTickSource> FlashTimer;
 
   int RecordedDrain;
   int RecordedPower;

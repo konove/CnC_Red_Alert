@@ -184,7 +184,7 @@ class BuildingClass : public TechnoClass {
   **	it won't actually be removed from the map until this value reaches
   **	zero. This delay is for cosmetic reasons.
   */
-  CDTimerClass<FrameTimerClass> CountDown;
+  CDTimerClass<FrameTickSource> CountDown;
 
   /*
   **	This is the current animation processing state that the building is
@@ -223,7 +223,7 @@ class BuildingClass : public TechnoClass {
   **	This is the countdown timer that regulates placement retry logic
   **	for factory type buildings.
   */
-  CDTimerClass<FrameTimerClass> PlacementDelay;
+  CDTimerClass<FrameTickSource> PlacementDelay;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

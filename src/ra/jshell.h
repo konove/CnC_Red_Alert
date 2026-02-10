@@ -246,25 +246,18 @@ inline int First_False_Bit(const void* array) {
   }
 }
 
-extern void outportb(int port, unsigned char data);
-extern void outport(int port, unsigned short data);
-
-/*
-**	Timer objects that fetch the appropriate timer value according to
-**	the type of timer they are.
-*/
-class FrameTimerClass {
- public:
-  std::uint64_t Tick() const { return Frame; }
+// Tick sources for BasicTimerClass<T>. Each provides a Tick() function that
+// returns the current value of a specific time source.
+struct FrameTickSource {
+  static int64_t Tick() { return Frame; }
 };
 
-class SystemTimerClass {
- public:
-  std::uint64_t Tick() const {
-    if (!WindowsTimer) {
+struct SystemTickSource {
+  static int64_t Tick() {
+    if (WindowsTimer == nullptr) {
       return 0;
     }
-    return WindowsTimer->Get_System_Tick_Count();
+    return WindowsTimer->TickCount();
   }
 };
 

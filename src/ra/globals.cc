@@ -405,7 +405,7 @@ bool AllowVoice = true;
 **	upward at the rate of one per game logic process. The target rate is 15
 **	per second. This value is saved and restored with the saved game.
 */
-std::uint64_t Frame = 0;
+int64_t Frame = 0;
 
 /***************************************************************************
 **	These globals are constantly monitored to determine if the player
@@ -750,8 +750,8 @@ GraphicBufferClass& VisiblePage = SeenBuff;
 #endif
 
 int SoundOn;
-CDTimerClass<SystemTimerClass> FrameTimer;
-CDTimerClass<SystemTimerClass> CountDownTimer;
+CDTimerClass<SystemTickSource> FrameTimer;
+CDTimerClass<SystemTickSource> CountDownTimer;
 
 NewConfigType NewConfig;
 TheaterType LastTheater =
@@ -777,7 +777,7 @@ bool LogDump_Print = false;  // true = print the Log time Stuff
 /***************************************************************************
 ** Tick Count global timer object.
 */
-TTimerClass<SystemTimerClass> TickCount{0};
+TTimerClass<SystemTickSource> TickCount{0};
 
 /***************************************************************************
 **  Win32 specific globals

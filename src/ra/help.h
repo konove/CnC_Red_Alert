@@ -127,7 +127,7 @@ class HelpClass : public TabClass {
   *mouse *	remains stationary while this countdown timer expires, then the
   *help text *	will pop up.
   */
-  CDTimerClass<SystemTimerClass> CountDownTimer;
+  CDTimerClass<SystemTickSource> CountDownTimer;
 
   /*
   **	This is a calculated cell offset list (from the Map.TacticalCell) that

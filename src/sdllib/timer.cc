@@ -9,7 +9,7 @@
 bool TimerSystemOn = false;
 
 static Uint32 TimerCallback(Uint32 interval, void* param) {
-  static_cast<WinTimerClass*>(param)->Update_Tick_Count();
+  static_cast<WinTimerClass*>(param)->UpdateTickCount();
 
   return interval;
 }
@@ -50,7 +50,7 @@ long TimerClass::Time() {
 
 long TimerClass::Get_Ticks() {
   if (WindowsTimer && TickType == BT_SYSTEM) {  // BT_USER seems unused
-    return WindowsTimer->Get_System_Tick_Count();
+    return WindowsTimer->TickCount();
   }
 
   return 0;
@@ -78,20 +78,16 @@ long CountDownTimerClass::Time() {
   return std::max<long>(DelayTime - TimerClass::Time(), 0);
 }
 
-WinTimerClass::WinTimerClass(std::uint32_t freq, bool /*partial*/) {
+WinTimerClass::WinTimerClass(const int tick_rate) {
   SDL_Init(SDL_INIT_TIMER);
-  TimerHandle = SDL_AddTimer(1000 / freq, TimerCallback, this);
+  timer_id_ = SDL_AddTimer(1000 / tick_rate, TimerCallback, this);
 
-  TimerSystemOn = TimerHandle != 0;
+  TimerSystemOn = timer_id_ != 0;
 }
 
 WinTimerClass::~WinTimerClass() {
-  SDL_RemoveTimer(TimerHandle);
+  SDL_RemoveTimer(timer_id_);
   TimerSystemOn = false;
 }
-
-void WinTimerClass::Update_Tick_Count() { SysTicks++; }
-
-std::uint64_t WinTimerClass::Get_System_Tick_Count() { return SysTicks; }
 
 uint32_t Get_Time_Ms() { return SDL_GetTicks(); }
