@@ -108,7 +108,7 @@ struct point {
 // Palette entry 254 cycles between dim and bright to draw attention.
 // TODO(konove): Seems to be not working.
 void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
-  static CDTimerClass<SystemTickSource> _ftimer;
+  static Timer<SystemTickSource> _ftimer;
   static bool _up = false;
   static int val = 255;
 
@@ -180,7 +180,7 @@ std::string Map_Selection() {
   PaletteClass map_palette;
 
   int selection = 0;
-  static CDTimerClass<SystemTickSource> timer;
+  static Timer<SystemTickSource> timer;
 
   const void* appear1 = MFCD::Retrieve("MAPWIPE2.AUD");
   const void* bleep11 = MFCD::Retrieve("BLEEP11.AUD");

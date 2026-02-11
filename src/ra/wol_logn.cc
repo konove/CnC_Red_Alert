@@ -457,7 +457,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                                 case( EDITBOX_PASS | KN_BUTTON ):
                                 {
                                         //	Message with delay so that user
-           has time to read it... CDTimerClass<SystemTickSource> timer; timer =
+           has time to read it... Timer<SystemTickSource> timer; timer =
            TICKS_PER_SECOND*4; WWMessageBox().Process(TXT_WOL_DEBUG2, TXT_NONE);
                                         while (timer > 0) {
                                                 Call_Back();

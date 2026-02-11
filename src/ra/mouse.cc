@@ -64,7 +64,7 @@ const void* MouseClass::MouseShapes;
 **	This is the timer that controls the mouse animation. It is always at a
 *fixed *	rate so it uses the constant system timer.
 */
-CDTimerClass<SystemTickSource> MouseClass::Timer{0};
+Timer<SystemTickSource> MouseClass::AnimTimer{0};
 
 /***********************************************************************************************
  * MouseClass::MouseClass -- Default constructor for the mouse handler class. *
@@ -217,7 +217,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
       (MouseShapes && (mouse != CurrentMouseShape || wsmall != IsSmall))) {
     startup = true;
 
-    Timer = control->FrameRate;
+    AnimTimer = control->FrameRate;
     Frame = 0;
 
     baseshp = wsmall ? control->SmallFrame : control->StartFrame;
@@ -258,10 +258,10 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
 void MouseClass::AI(KeyNumType& input, int x, int y) {
   const MouseStruct* control = &MouseControl[CurrentMouseShape];
 
-  if (control->FrameRate && Timer.IsFinished()) {
+  if (control->FrameRate && AnimTimer.IsFinished()) {
     Frame++;
     Frame %= control->FrameCount;
-    Timer = control->FrameRate;
+    AnimTimer = control->FrameRate;
 
     if (!IsSmall || control->SmallFrame != -1) {
       int baseframe = IsSmall ? control->SmallFrame : control->StartFrame;

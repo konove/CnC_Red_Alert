@@ -84,7 +84,7 @@ MissionClass::MissionClass(RTTIType rtti, int id)
       SuspendedMission(MISSION_NONE),
       MissionQueue(MISSION_NONE),
       Status(0),
-      Timer(0) {}
+      MissionTimer(0) {}
 
 /***********************************************************************************************
  * MissionClass::Mission_???  -- Stub mission functions that do nothing. *
@@ -189,7 +189,7 @@ void MissionClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(16, 9);
     mono->Printf("%-12s", MissionClass::Mission_Name(MissionQueue));
     mono->Set_Cursor(1, 7);
-    mono->Printf("%3d", Timer.Value());
+    mono->Printf("%3d", MissionTimer.Value());
     mono->Set_Cursor(6, 7);
     mono->Printf("%2d", Status);
 
@@ -232,87 +232,87 @@ void MissionClass::AI() {
   **	This is the script AI equivalent processing.
   */
   BStart(BENCH_MISSION);
-  if (Timer.IsFinished() && Strength > 0) {
+  if (MissionTimer.IsFinished() && Strength > 0) {
     switch (Mission) {
       default:
-        Timer = Mission_Sleep();
+        MissionTimer = Mission_Sleep();
         break;
 
       case MISSION_HARMLESS:
       case MISSION_SLEEP:
-        Timer = Mission_Sleep();
+        MissionTimer = Mission_Sleep();
         break;
 
       case MISSION_STICKY:
       case MISSION_GUARD:
-        Timer = Mission_Guard();
+        MissionTimer = Mission_Guard();
         break;
 
       case MISSION_ENTER:
-        Timer = Mission_Enter();
+        MissionTimer = Mission_Enter();
         break;
 
       case MISSION_CONSTRUCTION:
-        Timer = Mission_Construction();
+        MissionTimer = Mission_Construction();
         break;
 
       case MISSION_DECONSTRUCTION:
-        Timer = Mission_Deconstruction();
+        MissionTimer = Mission_Deconstruction();
         break;
 
       case MISSION_CAPTURE:
       case MISSION_SABOTAGE:
-        Timer = Mission_Capture();
+        MissionTimer = Mission_Capture();
         break;
 
       case MISSION_QMOVE:
       case MISSION_MOVE:
-        Timer = Mission_Move();
+        MissionTimer = Mission_Move();
         break;
 
       case MISSION_ATTACK:
-        Timer = Mission_Attack();
+        MissionTimer = Mission_Attack();
         break;
 
       case MISSION_RETREAT:
-        Timer = Mission_Retreat();
+        MissionTimer = Mission_Retreat();
         break;
 
       case MISSION_HARVEST:
-        Timer = Mission_Harvest();
+        MissionTimer = Mission_Harvest();
         break;
 
       case MISSION_GUARD_AREA:
-        Timer = Mission_Guard_Area();
+        MissionTimer = Mission_Guard_Area();
         break;
 
       case MISSION_RETURN:
-        Timer = Mission_Return();
+        MissionTimer = Mission_Return();
         break;
 
       case MISSION_STOP:
-        Timer = Mission_Stop();
+        MissionTimer = Mission_Stop();
         break;
 
       case MISSION_AMBUSH:
-        Timer = Mission_Ambush();
+        MissionTimer = Mission_Ambush();
         break;
 
       case MISSION_HUNT:
       case MISSION_RESCUE:
-        Timer = Mission_Hunt();
+        MissionTimer = Mission_Hunt();
         break;
 
       case MISSION_UNLOAD:
-        Timer = Mission_Unload();
+        MissionTimer = Mission_Unload();
         break;
 
       case MISSION_REPAIR:
-        Timer = Mission_Repair();
+        MissionTimer = Mission_Repair();
         break;
 
       case MISSION_MISSILE:
-        Timer = Mission_Missile();
+        MissionTimer = Mission_Missile();
         break;
     }
   }
@@ -347,7 +347,7 @@ bool MissionClass::Commence() {
     **	Force immediate state machine processing at the first state machine
     *state value.
     */
-    Timer = 0;
+    MissionTimer = 0;
     Status = 0;
     return true;
   }

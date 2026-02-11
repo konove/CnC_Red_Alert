@@ -204,7 +204,7 @@ void EventChoiceClass::Draw_It(int, int x, int y, int width, int height,
 void TEventClass::Reset(TDEventClass& td) const {
   td.IsTripped = false;
   if (Event == TEVENT_TIME) {
-    td.Timer = Data.Value * (TICKS_PER_MINUTE / 10);
+    td.EventTimer = Data.Value * (TICKS_PER_MINUTE / 10);
   }
 }
 
@@ -268,7 +268,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       return Scen.MissionTimer.Is_Active() && Scen.MissionTimer.IsFinished();
 
     case TEVENT_TIME:
-      return td.Timer.IsFinished();
+      return td.EventTimer.IsFinished();
   }
 
   /*

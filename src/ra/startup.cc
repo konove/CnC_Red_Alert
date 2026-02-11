@@ -95,7 +95,6 @@
 bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config);
 void Print_Error_Exit(char* string);
 
-// WinTimerClass * WinTimer;
 extern void Create_Main_Window(HANDLE instance, int command_show, int width,
                                int height);
 extern bool RA95AlreadyRunning;
@@ -288,7 +287,7 @@ int main(int argc, char* argv[])
     }
 #endif  // MPATH
 
-    WindowsTimer = new WinTimerClass();
+    g_tick_timer = new TickTimer();
     RawFileClass cfile(CONFIG_FILE_NAME);
 
     Keyboard = new KeyboardClass();
@@ -306,7 +305,7 @@ int main(int argc, char* argv[])
       printf(TEXT_INSUFFICIENT);
       printf(TEXT_MUST_HAVE, INIT_FREE_DISK_SPACE / (1024 * 1024));
       printf("\n");
-      delete WindowsTimer;
+      delete g_tick_timer;
       return EXIT_FAILURE;
     }
 
@@ -438,9 +437,9 @@ int main(int argc, char* argv[])
     puts(TEXT_SETUP_FIRST);
     Keyboard->Get();
 
-    if (WindowsTimer) {
-      delete WindowsTimer;
-      WindowsTimer = nullptr;
+    if (g_tick_timer) {
+      delete g_tick_timer;
+      g_tick_timer = nullptr;
     }
   }
   /*
@@ -470,7 +469,7 @@ bool InitDDraw() {
   }
 
   if (!video_success) {
-    delete WindowsTimer;
+    delete g_tick_timer;
 
     return false;
   }
@@ -514,9 +513,9 @@ void __cdecl Prog_End() {
     delete WWMouse;
     WWMouse = nullptr;
   }
-  if (WindowsTimer) {
-    delete WindowsTimer;
-    WindowsTimer = nullptr;
+  if (g_tick_timer) {
+    delete g_tick_timer;
+    g_tick_timer = nullptr;
   }
 
   // Release owning members of ObjectTypeClass-derived objects in all global

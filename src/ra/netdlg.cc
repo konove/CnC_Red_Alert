@@ -1554,7 +1554,7 @@ static int Net_Join_Dialog() {
   int found;
   NodeNameType* who;                              // node to add to Players
   RejectType why;                                 // reason for rejection
-  TTimerClass<SystemTickSource> lastclick_timer;  // time b/w send periods
+  Stopwatch<SystemTickSource> lastclick_timer;  // time b/w send periods
   int lastclick_idx = 0;  // index of item last clicked on
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   Session.Options.ScenarioDescription[0] =
@@ -3282,11 +3282,11 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
     PLAYER_QUERY_TIME = 35,
     CHAT_ANNOUNCE_TIME = 83,
   };
-  static CDTimerClass<SystemTickSource>
+  static Timer<SystemTickSource>
       game_timer;  // time between NET_QUERY_GAME's
-  static CDTimerClass<SystemTickSource>
+  static Timer<SystemTickSource>
       player_timer;  // time between NET_QUERY_PLAYERS's
-  static CDTimerClass<SystemTickSource>
+  static Timer<SystemTickSource>
       chat_timer;  // time between NET_CHAT_ANNOUNCE's
 
   //------------------------------------------------------------------------
@@ -5127,7 +5127,7 @@ static int Net_New_Dialog() {
 #ifdef WIN32
     WWDebugString("RA95 - About to wait for 'GO' response.");
 #endif
-    CDTimerClass<SystemTickSource>
+    Timer<SystemTickSource>
         response_timer;        // timeout timer for waiting for responses
     response_timer = 60 * 10;  // Wait for 10 seconds. If we dont hear by then
                                // assume someone crashed
@@ -7274,7 +7274,7 @@ struct WWPerson WWPersons[] = {
      0},
 };
 
-CDTimerClass<SystemTickSource> wwperson_timer;
+Timer<SystemTickSource> wwperson_timer;
 
 void Start_WWChat(ColorListClass* playerlist) {
   char* item;
@@ -7687,7 +7687,7 @@ static int Net_Fake_New_Dialog() {
   /*
   ** Process the message loop until we are in focus.
   */
-  CDTimerClass<SystemTickSource>
+  Timer<SystemTickSource>
       focus_timer;  // Timer to allow a wait after client joins
   focus_timer = 5 * 60;
 
@@ -8119,7 +8119,7 @@ static int Net_Fake_New_Dialog() {
     bool send_scenario = false;
     WWDebugString("RA95 - About to wait for 'GO' response.\n");
 
-    CDTimerClass<SystemTickSource>
+    Timer<SystemTickSource>
         response_timer;        // timeout timer for waiting for responses
     response_timer = 60 * 30;  // Wait for 30 seconds. If we dont hear by then
                                // assume someone crashed
@@ -8384,7 +8384,7 @@ static int Net_Fake_Join_Dialog() {
   int i;                                   // loop counter
   NodeNameType* who;                       // node to add to Players
   RejectType why;                          // reason for rejection
-  TTimerClass<SystemTickSource> lastclick_timer;  // time b/w send periods
+  Stopwatch<SystemTickSource> lastclick_timer;  // time b/w send periods
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   Session.Options.ScenarioDescription[0] =
       0;  // Flag that we dont know the scenario name yet
@@ -8479,7 +8479,7 @@ static int Net_Fake_Join_Dialog() {
   /*
   ** Process the message loop until we are in focus.
   */
-  CDTimerClass<SystemTickSource>
+  Timer<SystemTickSource>
       focus_timer;  // Timer to allow a wait after client joins
   focus_timer = 5 * 60;
 

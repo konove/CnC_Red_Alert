@@ -246,7 +246,7 @@ inline int First_False_Bit(const void* array) {
   }
 }
 
-// Tick sources for BasicTimerClass<T>. Each provides a Tick() function that
+// Tick sources for Ticker<T>. Each provides a Tick() function that
 // returns the current value of a specific time source.
 struct FrameTickSource {
   static int64_t Tick() { return Frame; }
@@ -254,10 +254,10 @@ struct FrameTickSource {
 
 struct SystemTickSource {
   static int64_t Tick() {
-    if (WindowsTimer == nullptr) {
+    if (g_tick_timer == nullptr) {
       return 0;
     }
-    return WindowsTimer->TickCount();
+    return g_tick_timer->TickCount();
   }
 };
 

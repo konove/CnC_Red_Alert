@@ -265,7 +265,7 @@ fixed EngineerCaptureLevel =
 unsigned short Hard_Error_Occured = 0;
 WWMouseClass* WWMouse = nullptr;
 GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, nullptr);
-WinTimerClass* WindowsTimer = nullptr;
+TickTimer* g_tick_timer = nullptr;
 int ScreenWidth = 640;
 int ScreenHeight = 400;
 GraphicBufferClass ModeXBuff;
@@ -750,8 +750,8 @@ GraphicBufferClass& VisiblePage = SeenBuff;
 #endif
 
 int SoundOn;
-CDTimerClass<SystemTickSource> FrameTimer;
-CDTimerClass<SystemTickSource> CountDownTimer;
+Timer<SystemTickSource> FrameTimer;
+Timer<SystemTickSource> CountDownTimer;
 
 NewConfigType NewConfig;
 TheaterType LastTheater =
@@ -777,7 +777,7 @@ bool LogDump_Print = false;  // true = print the Log time Stuff
 /***************************************************************************
 ** Tick Count global timer object.
 */
-TTimerClass<SystemTickSource> TickCount{0};
+Stopwatch<SystemTickSource> TickCount{0};
 
 /***************************************************************************
 **  Win32 specific globals

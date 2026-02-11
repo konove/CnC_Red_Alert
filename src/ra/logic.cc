@@ -103,13 +103,13 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
     }
 
     mono->Set_Cursor(1, 1);
-    mono->Printf("%ld", Scen.Timer.Value());
+    mono->Printf("%ld", Scen.ElapsedTime.Value());
     mono->Set_Cursor(10, 1);
     mono->Printf("%3d", FramesPerSecond);
     mono->Set_Cursor(1, 3);
-    mono->Printf("%02d:%02d:%02d", Scen.Timer.Value() / TICKS_PER_HOUR,
-                 (Scen.Timer.Value() % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
-                 (Scen.Timer.Value() % TICKS_PER_MINUTE) / TICKS_PER_SECOND);
+    mono->Printf("%02d:%02d:%02d", Scen.ElapsedTime.Value() / TICKS_PER_HOUR,
+                 (Scen.ElapsedTime.Value() % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
+                 (Scen.ElapsedTime.Value() % TICKS_PER_MINUTE) / TICKS_PER_SECOND);
 
     mono->Set_Cursor(1, 11);
     mono->Printf("%3d", Units.Count());

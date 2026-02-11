@@ -74,7 +74,7 @@ class SuperClass {
   unsigned IsOneTime : 1;
   unsigned IsReady : 1;
 
-  CDTimerClass<FrameTickSource> Control;
+  Timer<FrameTickSource> Control;
   int OldStage;
 
   VoxType VoxRecharge;

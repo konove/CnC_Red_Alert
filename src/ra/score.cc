@@ -168,7 +168,7 @@ ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 ScoreAnimClass::ScoreAnimClass(int x, int y, const void* data) {
   XPos = x * RESFACTOR;
   YPos = y * RESFACTOR;
-  Timer = 0;
+  AnimTimer = 0;
   DataPtr = data;
 }
 
@@ -186,8 +186,8 @@ void ScoreTimeClass::Update() {
 #else
   GraphicBufferClass* oldpage;
 #endif
-  if (Timer.IsFinished()) {
-    Timer = TimerReset;
+  if (AnimTimer.IsFinished()) {
+    AnimTimer = TimerReset;
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
@@ -219,8 +219,8 @@ void ScoreCredsClass::Update() {
 #else
   GraphicBufferClass* oldpage;
 #endif
-  if (Timer.IsFinished()) {
-    Timer = TimerReset;
+  if (AnimTimer.IsFinished()) {
+    AnimTimer = TimerReset;
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
@@ -275,8 +275,8 @@ void ScorePrintClass::Update() {
 #ifdef WIN32
   StillUpdating = true;
 #endif
-  if (Timer.IsFinished()) {
-    Timer = 1;
+  if (AnimTimer.IsFinished()) {
+    AnimTimer = 1;
 
     int pos = XPos + Stage * (6 * RESFACTOR);
     // print the letter properly
@@ -329,8 +329,8 @@ void ScoreScaleClass::Update() {
   /*
   ** Restore the background for the scaled-up letter
   */
-  if (Timer.IsFinished()) {
-    Timer = 1;
+  if (AnimTimer.IsFinished()) {
+    AnimTimer = 1;
 #ifndef WIN32
     if (Stage != 5) {
       int destx = _destx[Stage + 1] * RESFACTOR;
@@ -1589,7 +1589,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
 
 void Animate_Cursor(int pos, int ypos) {
   static int _lastpos = 0, _state;
-  static CDTimerClass<SystemTickSource> _timer;
+  static Timer<SystemTickSource> _timer;
 
   ypos += 6;  // move cursor to bottom of letter
 
@@ -1820,7 +1820,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
  *=========================================================================*/
 void Call_Back_Delay(int time) {
   time = std::clamp(time, 0, 60);
-  CDTimerClass<SystemTickSource> callbackcd{0};
+  Timer<SystemTickSource> callbackcd{0};
 
   if (!ControlQ) {
     if (Keyboard->Down(KN_LCTRL) && Keyboard->Down(KN_Q)) {
@@ -1832,7 +1832,7 @@ void Call_Back_Delay(int time) {
     time = 0;
   }
 
-  const CDTimerClass<SystemTickSource> cd{time};
+  const Timer<SystemTickSource> cd{time};
   StreamLowImpact = true;
   do {
     if (callbackcd.IsFinished()) {

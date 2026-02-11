@@ -76,7 +76,8 @@ class MissionClass : public ObjectClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   MissionClass(RTTIType rtti, int id);
-  explicit MissionClass(const NoInitClass& x) : ObjectClass(x), Timer(x) {}
+  explicit MissionClass(const NoInitClass& x)
+      : ObjectClass(x), MissionTimer(x) {}
   ~MissionClass() override {}
 
   /*---------------------------------------------------------------------
@@ -84,7 +85,7 @@ class MissionClass : public ObjectClass {
   */
   void Debug_Dump(MonoClass* mono) const override;
 
-  void Shorten_Mission_Timer() { Timer = 0; }
+  void Shorten_Mission_Timer() { MissionTimer = 0; }
   MissionType Get_Mission() const override;
   virtual void Assign_Mission(MissionType mission);
   virtual bool Commence();
@@ -124,7 +125,7 @@ class MissionClass : public ObjectClass {
   **	This the thread processing timer. When this value counts down to zero,
   *then *	more script processing may occur.
   */
-  CDTimerClass<FrameTickSource> Timer;
+  Timer<FrameTickSource> MissionTimer;
 };
 
 /****************************************************************************

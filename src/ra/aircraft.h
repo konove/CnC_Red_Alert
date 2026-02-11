@@ -259,7 +259,7 @@ class AircraftClass : public FootClass, public FlyClass {
   *itself. *	When this timer expires and this aircraft has a sight range,
   *then the *	look around process will occur.
   */
-  CDTimerClass<FrameTickSource> SightTimer;
+  Timer<FrameTickSource> SightTimer;
 
   /*
   **	Most attack aircraft can make several attack runs. This value contains

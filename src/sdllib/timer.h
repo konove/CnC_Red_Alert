@@ -116,14 +116,14 @@ inline long CountDownTimerClass::Reset(bool start) {
   return TimerClass::Reset(start);
 }
 
-class WinTimerClass {
+class TickTimer {
  public:
-  explicit WinTimerClass(int tick_rate = 60);
-  ~WinTimerClass();
-  WinTimerClass(const WinTimerClass&) = delete;
-  WinTimerClass& operator=(const WinTimerClass&) = delete;
-  WinTimerClass(WinTimerClass&&) = delete;
-  WinTimerClass& operator=(WinTimerClass&&) = delete;
+  explicit TickTimer(int tick_rate = 60);
+  ~TickTimer();
+  TickTimer(const TickTimer&) = delete;
+  TickTimer& operator=(const TickTimer&) = delete;
+  TickTimer(TickTimer&&) = delete;
+  TickTimer& operator=(TickTimer&&) = delete;
 
   // Increments the tick counter. Called from the SDL timer callback thread.
   void UpdateTickCount() {
@@ -145,7 +145,7 @@ class WinTimerClass {
 
 uint32_t Get_Time_Ms();
 
-extern WinTimerClass* WindowsTimer;
+extern TickTimer* g_tick_timer;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////// externs

@@ -225,7 +225,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
                        const unsigned short* their_sent,
                        const unsigned short* their_recv);
 static int Process_Reconnect_Dialog(
-    CDTimerClass<SystemTickSource>* timeout_timer, const long* their_frame,
+    Timer<SystemTickSource>* timeout_timer, const long* their_frame,
     int num_conn, int reconn, int fresh);
 static int Handle_Timeout(ConnManClass* net, long* their_frame,
                           unsigned short* their_sent,
@@ -250,7 +250,7 @@ int Extract_Compressed_Events(void* buf, int bufsize);
 //...........................................................................
 static int Execute_DoList(
     int max_houses, HousesType base_house, ConnManClass* net,
-    CDTimerClass<FrameTickSource>* skip_crc,
+    Timer<FrameTickSource>* skip_crc,
     //	ConnManClass *net, TCountDownTimerClass *skip_crc,
     long* their_frame, unsigned short* their_sent, unsigned short* their_recv);
 static void Clean_DoList(ConnManClass* net);
@@ -664,7 +664,7 @@ static void Queue_AI_Multiplayer() {
   //........................................................................
   // Timing variables
   //........................................................................
-  static CDTimerClass<FrameTickSource> skip_crc;  // to delay the CRC check
+  static Timer<FrameTickSource> skip_crc;  // to delay the CRC check
   //	static TCountDownTimerClass skip_crc;	// to delay the CRC check
 
   //........................................................................
@@ -1009,10 +1009,10 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //........................................................................
   // Timing variables
   //........................................................................
-  CDTimerClass<SystemTickSource>
+  Timer<SystemTickSource>
       retry_timer;  // time between FRAMESYNC packet resends
-  CDTimerClass<SystemTickSource> dialog_timer;   // time to pop up a dialog
-  CDTimerClass<SystemTickSource> timeout_timer;  // general-purpose timeout
+  Timer<SystemTickSource> dialog_timer;   // time to pop up a dialog
+  Timer<SystemTickSource> timeout_timer;  // general-purpose timeout
 
   //........................................................................
   // Dialog variables
@@ -2225,7 +2225,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Process_Reconnect_Dialog(
-    CDTimerClass<SystemTickSource>* timeout_timer, const long* their_frame,
+    Timer<SystemTickSource>* timeout_timer, const long* their_frame,
     int num_conn, int reconn, int fresh) {
   static int displayed_time = 0;  // time value currently displayed
   int new_time;
@@ -3299,7 +3299,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
  *=========================================================================*/
 static int Execute_DoList(int max_houses, HousesType base_house,
                           ConnManClass* net,
-                          CDTimerClass<FrameTickSource>* skip_crc,
+                          Timer<FrameTickSource>* skip_crc,
                           long* their_frame, unsigned short* their_sent,
                           unsigned short* their_recv) {
   HousesType house;

@@ -115,10 +115,10 @@ struct TDEventClass {
   /*
   **	Timer based events require a special timer control handler.
   */
-  CDTimerClass<FrameTickSource> Timer;
+  Timer<FrameTickSource> EventTimer;
 
-  TDEventClass() : IsTripped(false), Timer(0) {}
-  TDEventClass(const NoInitClass& x) : Timer(x) {}
+  TDEventClass() : IsTripped(false), EventTimer(0) {}
+  TDEventClass(const NoInitClass& x) : EventTimer(x) {}
 };
 
 /*

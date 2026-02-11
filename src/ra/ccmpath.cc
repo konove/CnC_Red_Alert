@@ -116,7 +116,7 @@ int Init_MPATH() {
  *=========================================================================*/
 void Shutdown_MPATH() {
 #if (MPATH)
-  CDTimerClass<SystemTickSource> timer;
+  Timer<SystemTickSource> timer;
 
   //------------------------------------------------------------------------
   // Wait a full second before exiting, to ensure all packets get sent.
@@ -176,7 +176,7 @@ void Connect_MPATH() {
   int found;
   int size;
   int i;
-  CDTimerClass<SystemTickSource> send_timer;
+  Timer<SystemTickSource> send_timer;
   NodeNameType* who;
 
   enum {

@@ -51,7 +51,7 @@ class Benchmark {
   // once this count is reached.
   enum { MAXIMUM_EVENT_COUNT = 256 };
 
-  BasicTimerClass<PentiumTimerClass> Clock;  // Timer for clocking events.
+  Ticker<PentiumTimerClass> Clock;  // Timer for clocking events.
   int64_t Average = 0;     // Total time of all events tracked so far.
   int64_t Counter = 0;     // Number of events tracked so far.
   int64_t TotalCount = 0;  // Absolute total events (may exceed Counter).

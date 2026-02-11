@@ -57,7 +57,7 @@
 #define SCROLL_DELAY 2
 #endif
 
-CDTimerClass<SystemTickSource> ScrollClass::Counter;
+Timer<SystemTickSource> ScrollClass::Counter;
 
 /***********************************************************************************************
  * ScrollClass::ScrollClass -- Constructor for the scroll class object. *

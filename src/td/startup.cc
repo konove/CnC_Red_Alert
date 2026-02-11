@@ -94,7 +94,6 @@ bool Read_Private_Config_Struct(char* profile, NewConfigType* config);
 void Delete_Swap_Files();
 void Print_Error_End_Exit(char* string);
 void Print_Error_Exit(char* string);
-WinTimerClass* WinTimer;
 extern void Create_Main_Window(HANDLE instance, int command_show, int width,
                                int height);
 
@@ -176,7 +175,6 @@ int main(int argc, char* argv[])
 
   CCDebugString("C&C95 - Starting up.\n");
 
-  // WindowsTimer = new WinTimerClass(60,false);
   // CD_Test();
 
   /*
@@ -290,7 +288,7 @@ int main(int argc, char* argv[])
   ForceEnglish = false;
 #endif
   if (Parse_Command_Line(argc, argv)) {
-    WindowsTimer = new WinTimerClass();
+    g_tick_timer = new TickTimer();
     TickCount.Start();
 
     RawFileClass cfile("CONQUER.INI");
@@ -318,7 +316,7 @@ int main(int argc, char* argv[])
     if (Disk_Space_Available() < INIT_FREE_DISK_SPACE) {
 #ifdef PORTABLE
       // pretty unlikely
-      delete WindowsTimer;
+      delete g_tick_timer;
       return EXIT_FAILURE;
 #else
 #ifdef GERMAN
@@ -329,8 +327,8 @@ int main(int argc, char* argv[])
               (INIT_FREE_DISK_SPACE) / (1024 * 1024));
       MessageBox(NULL, disk_space_message, "Command & Conquer",
                  MB_ICONEXCLAMATION | MB_OK);
-      if (WindowsTimer) {
-        delete WindowsTimer;
+      if (g_tick_timer) {
+        delete g_tick_timer;
       }
       return (EXIT_FAILURE);
 #endif
@@ -342,8 +340,8 @@ int main(int argc, char* argv[])
               (INIT_FREE_DISK_SPACE) / (1024 * 1024));
       MessageBox(NULL, disk_space_message, "Command & Conquer",
                  MB_ICONEXCLAMATION | MB_OK);
-      if (WindowsTimer) {
-        delete WindowsTimer;
+      if (g_tick_timer) {
+        delete g_tick_timer;
       }
       return (EXIT_FAILURE);
 #endif
@@ -354,8 +352,8 @@ int main(int argc, char* argv[])
           "memory and save games. Do you want to play C&C anyway?",
           "Command & Conquer", MB_ICONQUESTION | MB_YESNO);
       if (reply == IDNO) {
-        if (WindowsTimer) {
-          delete WindowsTimer;
+        if (g_tick_timer) {
+          delete g_tick_timer;
         }
         return (EXIT_FAILURE);
       }
@@ -418,7 +416,7 @@ int main(int argc, char* argv[])
         MessageBox(MainWindow, Text_String(TXT_UNABLE_TO_SET_VIDEO_MODE),
                    "Command & Conquer", MB_ICONEXCLAMATION | MB_OK);
 #endif
-        delete WindowsTimer;
+        delete g_tick_timer;
         delete[] Palette;
         return EXIT_FAILURE;
       }
@@ -452,8 +450,8 @@ int main(int argc, char* argv[])
           MessageBox(MainWindow,
                      Text_String(TXT_UNABLE_TO_ALLOCATE_PRIMARY_VIDEO_BUFFER),
                      "Command & Conquer", MB_ICONEXCLAMATION | MB_OK);
-          if (WindowsTimer) {
-            delete WindowsTimer;
+          if (g_tick_timer) {
+            delete g_tick_timer;
           }
           if (Palette) {
             delete[] Palette;
@@ -654,9 +652,9 @@ int main(int argc, char* argv[])
 #endif
 
     //		Remove_Keyboard_Interrupt();
-    if (WindowsTimer) {
-      delete WindowsTimer;
-      WindowsTimer = nullptr;
+    if (g_tick_timer) {
+      delete g_tick_timer;
+      g_tick_timer = nullptr;
     }
 
     if (Palette) {
@@ -705,10 +703,10 @@ void __cdecl Prog_End() {
     delete WWMouse;
     WWMouse = nullptr;
   }
-  if (WindowsTimer) {
-    CCDebugString("C&C95 - Deleting windows timer.\n");
-    delete WindowsTimer;
-    WindowsTimer = nullptr;
+  if (g_tick_timer) {
+    CCDebugString("C&C95 - Deleting tick timer.\n");
+    delete g_tick_timer;
+    g_tick_timer = nullptr;
   }
 
   if (Palette) {

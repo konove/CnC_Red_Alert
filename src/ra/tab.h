@@ -67,7 +67,7 @@ class TabClass : public SidebarClass {
 
   CreditClass Credits;
 
-  CDTimerClass<FrameTickSource> FlasherTimer;
+  Timer<FrameTickSource> FlasherTimer;
 
  protected:
   /*
@@ -78,7 +78,7 @@ class TabClass : public SidebarClass {
  private:
   void Set_Active(int select);
 
-  CDTimerClass<FrameTickSource> MoneyFlashTimer;
+  Timer<FrameTickSource> MoneyFlashTimer;
 
   static const void* TabShape;
 };

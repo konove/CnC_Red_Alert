@@ -193,7 +193,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   bool process = true;              // process while true
   KeyNumType input;
 
-  TTimerClass<SystemTickSource> lastclick_timer;
+  Stopwatch<SystemTickSource> lastclick_timer;
   int lastclick_idx = 0;  // index of item last clicked on
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 

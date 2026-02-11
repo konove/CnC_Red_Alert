@@ -192,7 +192,7 @@ bool Is_Mission_Aftermath(char* file_name);
 ScenarioClass::ScenarioClass()
     : Difficulty(DIFF_NORMAL),
       CDifficulty(DIFF_NORMAL),
-      Timer(0),
+      ElapsedTime(0),
       MissionTimer(0),
       ShroudTimer(TICKS_PER_MINUTE * Rule.ShroudRate),
       Scenario(1),
@@ -733,7 +733,7 @@ void Clear_Scenario() {
 
   Scen.MissionTimer = 0;
   Scen.MissionTimer.Stop();
-  Scen.Timer = 0;
+  Scen.ElapsedTime = 0;
   Scen.ShroudTimer = 0;
   Scen.IntroMovie = VQ_NONE;
   Scen.BriefMovie = VQ_NONE;
@@ -1257,7 +1257,7 @@ void Do_Restart() {
   /*
   ** Start a timer going, before we restart the scenario
   */
-  CDTimerClass<SystemTickSource> timer;
+  Timer<SystemTickSource> timer;
   timer = TICKS_PER_SECOND * 4;
   Theme.Queue_Song(THEME_QUIET);
 
@@ -1553,7 +1553,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     }
     if (bufprint[0] == '\r' || bufprint[0] == '@') {
       Play_Sample(briefsnd, 255, Options.Normalize_Volume(135));
-      CDTimerClass<SystemTickSource> cd;
+      Timer<SystemTickSource> cd;
       cd = 5;
       do {
         Call_Back();

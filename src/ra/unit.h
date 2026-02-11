@@ -121,7 +121,7 @@ class UnitClass : public DriveClass {
   **	This is the timer that controls the reload rate. The MSAM rocket
   **	launcher is the primary user of this.
   */
-  CDTimerClass<FrameTickSource> Reload;
+  Timer<FrameTickSource> Reload;
 
   /*
   **	This is the facing of the turret. It can be, and usually is,

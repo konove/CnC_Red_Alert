@@ -47,12 +47,12 @@
 
 class CrateClass {
  public:
-  CrateClass() : Timer(NoInitClass()), Cell(-1) {}
+  CrateClass() : CrateTimer(NoInitClass()), Cell(-1) {}
   void Init() { Make_Invalid(); }
   bool Create_Crate(CELL cell);
   bool Is_Here(CELL cell) const { return Is_Valid() && cell == Cell; }
   bool Remove_It();
-  bool Is_Expired() const { return Is_Valid() && Timer.IsFinished(); }
+  bool Is_Expired() const { return Is_Valid() && CrateTimer.IsFinished(); }
   bool Is_Valid() const { return Cell != -1; }
 
  private:
@@ -61,10 +61,10 @@ class CrateClass {
 
   void Make_Invalid() {
     Cell = -1;
-    Timer.Stop();
+    CrateTimer.Stop();
   }
 
-  CDTimerClass<FrameTickSource> Timer;
+  Timer<FrameTickSource> CrateTimer;
   CELL Cell;
 };
 

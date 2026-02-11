@@ -291,7 +291,7 @@ extern std::span<const std::byte> DebugStrings;
 **	Miscellaneous globals.
 */
 extern ChronalVortexClass ChronalVortex;
-extern TTimerClass<SystemTickSource> TickCount;
+extern Stopwatch<SystemTickSource> TickCount;
 extern bool PassedProximity;  // used in display.cpp
 extern HousesType Whom;
 extern _VQAConfig AnimControl;
@@ -343,8 +343,8 @@ extern int NewMaxAheadFrame2;
 
 extern GraphicViewPortClass HidPage;
 extern int MenuList[][8];
-extern CDTimerClass<SystemTickSource> FrameTimer;
-extern CDTimerClass<SystemTickSource> CountDownTimer;
+extern Timer<SystemTickSource> FrameTimer;
+extern Timer<SystemTickSource> CountDownTimer;
 
 extern SpecialDialogType SpecialDialog;
 

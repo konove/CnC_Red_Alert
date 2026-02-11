@@ -356,20 +356,20 @@ class HouseClass {
   **	performing repair actions. This timer regulates that delay. If the
   **	timer has not expired, then no repair initiation is allowed.
   */
-  CDTimerClass<FrameTickSource> RepairTimer;
+  Timer<FrameTickSource> RepairTimer;
 
   /*
   **	This timer controls the computer auto-attack logic. When this timer
   *expires *	and the house has been alerted, then it will create a set of
   *attack *	teams.
   */
-  CDTimerClass<FrameTickSource> AlertTime;
+  Timer<FrameTickSource> AlertTime;
 
   /*
   **	This timer is used to handle the delay between some catastrophic
   **	event trigger and when it is actually carried out.
   */
-  CDTimerClass<FrameTickSource> BorrowedTime;
+  Timer<FrameTickSource> BorrowedTime;
 
   /*
   **	This is the last working scan bits for buildings. If a building is
@@ -587,7 +587,7 @@ class HouseClass {
   **	When this timer expires, send most of this house's units in an
   **	attack.
   */
-  CDTimerClass<FrameTickSource> Attack;
+  Timer<FrameTickSource> Attack;
 
  public:
   /*
@@ -603,7 +603,7 @@ class HouseClass {
   *intervals. Not only will *	this distribute the overhead more evenly, but
   *will add variety to play.
   */
-  CDTimerClass<FrameTickSource> AITimer;
+  Timer<FrameTickSource> AITimer;
 
   /*
   ** For the moebius effect, this is a pointer to the unit that we
@@ -848,27 +848,27 @@ class HouseClass {
   **	General low-power related damaged is doled out whenever this timer
   **	expires.
   */
-  CDTimerClass<FrameTickSource> DamageTime;
+  Timer<FrameTickSource> DamageTime;
 
   /*
   **	Team creation is done whenever this timer expires.
   */
-  CDTimerClass<FrameTickSource> TeamTime;
+  Timer<FrameTickSource> TeamTime;
 
   /*
   **	This controls the rate that the trigger time logic is processed.
   */
-  CDTimerClass<FrameTickSource> TriggerTime;
+  Timer<FrameTickSource> TriggerTime;
 
   /*
   **	At various times, the computer may announce the player's condition. The
   *following *	variables are used as countdown timers so that these
   *announcements are paced *	far enough apart to reduce annoyance.
   */
-  CDTimerClass<FrameTickSource> SpeakAttackDelay;
-  CDTimerClass<FrameTickSource> SpeakPowerDelay;
-  CDTimerClass<FrameTickSource> SpeakMoneyDelay;
-  CDTimerClass<FrameTickSource> SpeakMaxedDelay;
+  Timer<FrameTickSource> SpeakAttackDelay;
+  Timer<FrameTickSource> SpeakPowerDelay;
+  Timer<FrameTickSource> SpeakMoneyDelay;
+  Timer<FrameTickSource> SpeakMaxedDelay;
 
   /*
   **	This structure is used to record a build request as determined by

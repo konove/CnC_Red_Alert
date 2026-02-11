@@ -968,7 +968,7 @@ int AreThingiesEnabled = false;
 **
 */
 
-WinTimerClass* WindowsTimer = nullptr;
+TickTimer* g_tick_timer = nullptr;
 
 /*
 ** Command line arguments
