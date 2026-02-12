@@ -73,7 +73,7 @@ class StageClass {
   int Fetch_Rate() const { return Rate; }
   void Set_Stage(int stage) { Stage = stage; }
   void Set_Rate(int rate) {
-    StageTimer = rate;
+    StageTimer.Set(rate);
     Rate = rate;
   }
   void AI() {}
@@ -81,7 +81,7 @@ class StageClass {
   bool Graphic_Logic() {
     if (About_To_Change()) {
       Stage++;
-      StageTimer = Rate;
+      StageTimer.Set(Rate);
       return true;
     }
     return false;

@@ -6,6 +6,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
+#include "td/externs.h"
 
 unsigned char CurrentPalette[3 * 256];
 

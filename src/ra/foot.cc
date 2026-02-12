@@ -525,7 +525,7 @@ bool FootClass::Basic_Path() {
       Mark(MARK_DOWN);
     }
 
-    PathDelay = Rule.PathDelay * TICKS_PER_MINUTE;
+    PathDelay.Set(Rule.PathDelay * TICKS_PER_MINUTE);
     if (Path[0] != FACING_NONE) {
       return true;
     }

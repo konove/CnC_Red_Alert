@@ -224,9 +224,9 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
                        const long* their_frame,
                        const unsigned short* their_sent,
                        const unsigned short* their_recv);
-static int Process_Reconnect_Dialog(
-    Timer<SystemTickSource>* timeout_timer, const long* their_frame,
-    int num_conn, int reconn, int fresh);
+static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
+                                    const long* their_frame, int num_conn,
+                                    int reconn, int fresh);
 static int Handle_Timeout(ConnManClass* net, long* their_frame,
                           unsigned short* their_sent,
                           unsigned short* their_recv);
@@ -726,7 +726,7 @@ static void Queue_AI_Multiplayer() {
       their_recv[i] = 0;
     }
     my_sent = 0;
-    skip_crc = 32;
+    skip_crc.Set(32);
     for (i = 0; i < 32; i++) {
       CRC[i] = 0;
     }
@@ -1009,8 +1009,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //........................................................................
   // Timing variables
   //........................................................................
-  Timer<SystemTickSource>
-      retry_timer;  // time between FRAMESYNC packet resends
+  Timer<SystemTickSource> retry_timer;  // time between FRAMESYNC packet resends
   Timer<SystemTickSource> dialog_timer;   // time to pop up a dialog
   Timer<SystemTickSource> timeout_timer;  // general-purpose timeout
 
@@ -1030,9 +1029,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   // Wait to hear from all other players
   //------------------------------------------------------------------------
   num_ready = 0;
-  retry_timer = resend_delta;  // time to retry
-  dialog_timer = dialog_time;  // time to show dlg
-  timeout_timer = timeout;     // time to bail out
+  retry_timer.Set(resend_delta);  // time to retry
+  dialog_timer.Set(dialog_time);  // time to show dlg
+  timeout_timer.Set(timeout);     // time to bail out
 
   while (1) {
     Keyboard->Check();
@@ -1047,7 +1046,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     // number I'm on.
     //---------------------------------------------------------------------
     if (retry_timer.IsFinished()) {
-      retry_timer = resend_delta;  // time to retry
+      retry_timer.Set(resend_delta);  // time to retry
       Update_Queue_Mono(net, 3);
       Send_FrameSync(net, my_sent);
     }
@@ -1128,9 +1127,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       if (Handle_Timeout(net, their_frame, their_sent, their_recv)) {
         Map.Flag_To_Redraw(true);  // erase modem reconnect dialog
         Map.Render();
-        retry_timer = resend_delta;
-        dialog_timer = dialog_time;
-        timeout_timer = timeout;
+        retry_timer.Set(resend_delta);
+        dialog_timer.Set(dialog_time);
+        timeout_timer.Set(timeout);
       } else if (Session.Type == GAME_MODEM ||
                  Session.Type == GAME_NULL_MODEM) {
         if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_NOT_RESPONDING,
@@ -1187,9 +1186,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
         //...............................................................
         if (rc == RC_SERIAL_PROCESSED) {
           net->Service();
-          retry_timer = resend_delta;
-          dialog_timer = dialog_time;
-          timeout_timer = timeout;
+          retry_timer.Set(resend_delta);
+          dialog_timer.Set(dialog_time);
+          timeout_timer.Set(timeout);
           continue;
         }
         //...............................................................
@@ -2224,9 +2223,9 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Process_Reconnect_Dialog(
-    Timer<SystemTickSource>* timeout_timer, const long* their_frame,
-    int num_conn, int reconn, int fresh) {
+static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
+                                    const long* their_frame, int num_conn,
+                                    int reconn, int fresh) {
   static int displayed_time = 0;  // time value currently displayed
   int new_time;
   int i, j;
@@ -3298,8 +3297,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Execute_DoList(int max_houses, HousesType base_house,
-                          ConnManClass* net,
-                          Timer<FrameTickSource>* skip_crc,
+                          ConnManClass* net, Timer<FrameTickSource>* skip_crc,
                           long* their_frame, unsigned short* their_sent,
                           unsigned short* their_recv) {
   HousesType house;

@@ -274,7 +274,7 @@ void Debug_Key(unsigned input) {
         } else {
           MonoPage = DMonoType(MonoPage - 1);
         }
-        DebugTimer = 0;
+        DebugTimer.Set(0);
         break;
 
       case KN_RBRACKET:
@@ -283,7 +283,7 @@ void Debug_Key(unsigned input) {
         if (MonoPage == DMONO_COUNT) {
           MonoPage = DMONO_FIRST;
         }
-        DebugTimer = 0;
+        DebugTimer.Set(0);
         break;
 
       case KN_V:
@@ -381,8 +381,7 @@ static const char* Bench_Time(BenchType btype) {
   }
   int percent = 0;
   if (roottime != 0 && rootcount != 0) {
-    percent =
-        static_cast<int>(((count * time) * 99) / (roottime * rootcount));
+    percent = static_cast<int>(((count * time) * 99) / (roottime * rootcount));
   }
   percent = std::min(percent, 99);
   sprintf(buffer, "%-2d%% %7" PRId64, percent, time);
@@ -503,7 +502,7 @@ void Self_Regulate() {
   static bool _first = true;
 
   if (DebugTimer.IsFinished()) {
-    DebugTimer = UPDATE_INTERVAL;
+    DebugTimer.Set(UPDATE_INTERVAL);
 
     if (MonoClass::Is_Enabled()) {
       if (_first) {

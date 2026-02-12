@@ -1112,8 +1112,8 @@ static void Message_Input(KeyNumType& input) {
  *text fade color.                                                 *
  *=============================================================================================*/
 bool Color_Cycle() {
-  static CountDownTimerClass _timer(BT_SYSTEM, 0L);
-  static CountDownTimerClass _ftimer(BT_SYSTEM, 0L);
+  static CountDownTimerClass _timer(0L);
+  static CountDownTimerClass _ftimer(0L);
   static bool _up = false;
   bool changed = false;
 

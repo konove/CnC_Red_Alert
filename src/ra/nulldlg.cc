@@ -3188,9 +3188,8 @@ int Com_Scenario_Dialog(bool skirmish) {
 
   Set_Logic_Page(SeenBuff);
 
-  Timer<SystemTickSource>
-      kludge_timer;  // Timer to allow a wait after client joins
-                     // game before game can start
+  Timer<SystemTickSource> kludge_timer;  // Timer to allow a wait after client
+                                         // joins game before game can start
   bool ok_button_added = false;
 
   /*........................................................................
@@ -4284,7 +4283,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             ..................................................................*/
             case SERIAL_GAME_OPTIONS:
               gameoptions = true;
-              kludge_timer = 2 * 60;
+              kludge_timer.Set(2 * 60);
               port::SafeCopy(TheirName, ReceivePacket.Name);
               TheirColor = ReceivePacket.ScenarioInfo.Color;
               TheirHouse = ReceivePacket.ScenarioInfo.House;

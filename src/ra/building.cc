@@ -1077,8 +1077,8 @@ void BuildingClass::AI() {
   if (*this == STRUCT_GAP) {
     if (Arm.IsFinished()) {
       IsJamming = false;
-      Arm = TICKS_PER_MINUTE * Rule.GapRegenInterval +
-            Random_Pick(1, TICKS_PER_SECOND);
+      Arm.Set(TICKS_PER_MINUTE * Rule.GapRegenInterval +
+              Random_Pick(1, TICKS_PER_SECOND));
     }
 
     if (!IsJamming) {
@@ -1373,10 +1373,10 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         }
         Sound_Effect(VOC_CRUMBLE, Coord);
         if (Mission == MISSION_DECONSTRUCTION) {
-          CountDown = 0;
+          CountDown.Set(0);
           Set_Rate(0);
         } else {
-          CountDown = 8;
+          CountDown.Set(8);
         }
 
         /*
@@ -3078,7 +3078,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     if (*this == STRUCT_GAP) {
       Remove_Gap_Effect();
       IsJamming = false;
-      Arm = 0;
+      Arm.Set(0);
     }
 
     /*
@@ -5257,7 +5257,7 @@ void BuildingClass::Factory_AI() {
       *Wait *	a bit before trying again.
       */
       case 1:
-        PlacementDelay = TICKS_PER_SECOND * 3;
+        PlacementDelay.Set(TICKS_PER_SECOND * 3);
         break;
 
       /*
@@ -5479,9 +5479,9 @@ void BuildingClass::Repair_AI() {
             Repair(1);
 
             if (!House->IsHuman) {
-              House->RepairTimer =
+              House->RepairTimer.Set(
                   Random_Pick(House->RepairDelay * (TICKS_PER_MINUTE / 4),
-                              House->RepairDelay * TICKS_PER_MINUTE * 2);
+                              House->RepairDelay * TICKS_PER_MINUTE * 2));
             }
           }
         }
@@ -5729,7 +5729,7 @@ void BuildingClass::Remove_Gap_Effect() {
     if (obj && !obj->IsInLimbo && obj->House == House && *obj == STRUCT_GAP &&
         obj != this) {
       obj->IsJamming = false;
-      obj->Arm = 0;
+      obj->Arm.Set(0);
       //			Map.Jam_From(Coord_Cell(obj->Center_Coord()),
       // Rule.GapShroudRadius, PlayerPtr);
     }

@@ -980,7 +980,7 @@ void AircraftClass::AI() {
   */
   if (IsOwnedByPlayer && Class->SightRange && SightTimer.IsFinished()) {
     Look();
-    SightTimer = TICKS_PER_SECOND;
+    SightTimer.Set(TICKS_PER_SECOND);
   }
 
   /*
@@ -1537,7 +1537,7 @@ int AircraftClass::Paradrop_Cargo() {
         }
       }
       //			Arm = Rearm_Delay(IsSecondShot);
-      Arm = 0;
+      Arm.Set(0);
     }
   }
   return Arm.Value();
@@ -1585,7 +1585,7 @@ BulletClass* AircraftClass::Fire_At(TARGET target, int which) {
       Map.Sight_From(Coord_Cell(Center_Coord()), 9, House, false);
     }
     Ammo = 0;
-    Arm = Rearm_Delay(IsSecondShot);
+    Arm.Set(Rearm_Delay(IsSecondShot));
     return nullptr;
   }
 

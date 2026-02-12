@@ -140,7 +140,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
   /*
   ** Wait for host to respond with a file info packet
   */
-  response_timer = RESPONSE_TIMEOUT;
+  response_timer.Set(RESPONSE_TIMEOUT);
   if (!gametype) {
     do {
       NullModem.Service();
@@ -614,7 +614,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
   }
   file_length = send_file.Size();
 
-  response_timer = RESPONSE_TIMEOUT;
+  response_timer.Set(RESPONSE_TIMEOUT);
 
   /*
   ** Send the file info to the remote machine(s)

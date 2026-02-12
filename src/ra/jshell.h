@@ -254,10 +254,7 @@ struct FrameTickSource {
 
 struct SystemTickSource {
   static int64_t Tick() {
-    if (g_tick_timer == nullptr) {
-      return 0;
-    }
-    return g_tick_timer->TickCount();
+    return g_tick_timer == nullptr ? 0 : g_tick_timer->TickCount();
   }
 };
 

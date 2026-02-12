@@ -142,7 +142,7 @@ void CreditClass::Graphic_Logic(bool forced) {
         TPF_NOSHADOW | TPF_6PT_GRAD | TPF_CENTER | TPF_BRIGHT_COLOR, Current);
 #endif  // WIN32
 
-    if (Scen.MissionTimer.Is_Active()) {
+    if (Scen.MissionTimer.IsRunning()) {
       int64_t secs = Scen.MissionTimer.Value() / TICKS_PER_SECOND;
       int64_t mins = secs / 60;
       int64_t hours = mins / 60;
@@ -182,7 +182,7 @@ void CreditClass::Graphic_Logic(bool forced) {
       }
       if (vox != VOX_NONE) {
         Speak(vox);
-        Map.FlasherTimer = 7;
+        Map.FlasherTimer.Set(7);
       }
 
 #ifdef WIN32
@@ -248,7 +248,7 @@ void CreditClass::AI(bool forced) {
   */
   Credits = std::max(Credits, 0L);
 
-  if (Scen.MissionTimer.Is_Active() || Scen.MissionTimer.HasTimeLeft()) {
+  if (Scen.MissionTimer.IsRunning() || Scen.MissionTimer.HasTimeLeft()) {
     IsToRedraw = true;
     Map.Flag_To_Redraw(false);
   }

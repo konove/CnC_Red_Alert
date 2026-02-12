@@ -777,7 +777,7 @@ bool LogDump_Print = false;  // true = print the Log time Stuff
 /***************************************************************************
 ** Tick Count global timer object.
 */
-Stopwatch<SystemTickSource> TickCount{0};
+Stopwatch<SystemTickSource> TickCount;
 
 /***************************************************************************
 **  Win32 specific globals

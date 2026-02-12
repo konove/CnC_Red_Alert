@@ -636,7 +636,7 @@ void VesselClass::AI() {
   // Re-stock the ammo of any on-board helicopters on an aircraft carrier.
   if (*this == VESSEL_CARRIER && How_Many()) {
     if (MoebiusCountDown.IsFinished()) {
-      MoebiusCountDown = Rule.ReloadRate * TICKS_PER_MINUTE;
+      MoebiusCountDown.Set(Rule.ReloadRate * TICKS_PER_MINUTE);
       ObjectClass* obj = Attached_Object();
       while (obj) {
         long bogus;
@@ -1402,7 +1402,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         if (How_Many() == Class->Max_Passengers()) {
           LST_Close_Door();
         } else {
-          DoorShutCountDown = TICKS_PER_SECOND;
+          DoorShutCountDown.Set(TICKS_PER_SECOND);
         }
       }
       return RADIO_ATTACH;
@@ -2331,7 +2331,7 @@ BulletClass* VesselClass::Fire_At(TARGET target, int which) {
   assert(IsActive);
 
   if (*this == VESSEL_CARRIER) {
-    Arm = CarrierLaunchDelay;
+    Arm.Set(CarrierLaunchDelay);
     FootClass* passenger = Detach_Object();
     if (passenger != nullptr) {
       ScenarioInit++;

@@ -108,7 +108,7 @@ SuperClass::SuperClass(int recharge, bool powered, VoxType charging,
  * HISTORY: * 07/28/1995 JLB : Created. *
  *=============================================================================================*/
 bool SuperClass::Suspend(bool on) {
-  if (IsPresent && !IsReady && !IsOneTime && on == Control.Is_Active()) {
+  if (IsPresent && !IsReady && !IsOneTime && on == Control.IsRunning()) {
     if (!on) {
       Control.Start();
     } else {
@@ -205,11 +205,11 @@ bool SuperClass::Recharge(bool player) {
   if (IsPresent && !IsReady) {
     OldStage = -1;
     Control.Start();
-    Control = RechargeTime;
+    Control.Set(RechargeTime);
 
     if constexpr (config::kCheatKeysEnabled) {
       if (Special.IsSpeedBuild) {
-        Control = 1;
+        Control.Set(1);
       }
     }
 
@@ -240,7 +240,7 @@ bool SuperClass::Recharge(bool player) {
  * HISTORY: * 07/28/1995 JLB : Created. *
  *=============================================================================================*/
 bool SuperClass::Discharged(bool player) {
-  if (Control.Is_Active() && IsPresent && IsReady) {
+  if (Control.IsRunning() && IsPresent && IsReady) {
     IsReady = false;
     if (IsOneTime) {
       IsOneTime = false;
@@ -258,7 +258,7 @@ bool SuperClass::Discharged(bool player) {
 // `player` is true.
 bool SuperClass::AI(const bool player) {
   if (IsPresent && !IsReady) {
-    if (!Control.Is_Active()) {
+    if (!Control.IsRunning()) {
       if (OldStage != -1) {
         OldStage = -1;
         return true;
@@ -334,7 +334,7 @@ int SuperClass::Anim_Stage() const {
  * HISTORY: * 07/28/1995 JLB : Created. *
  *=============================================================================================*/
 void SuperClass::Impatient_Click() const {
-  if (!Control.Is_Active()) {
+  if (!Control.IsRunning()) {
     Speak(VoxSuspend);
   } else {
     Speak(VoxImpatient);
@@ -361,7 +361,7 @@ void SuperClass::Forced_Charge(bool player) {
   if (IsPresent) {
     IsReady = true;
     Control.Start();
-    Control = 0;
+    Control.Set(0);
     //		IsSuspended = false;
     if (player) {
       Speak(VoxRecharge);

@@ -884,9 +884,7 @@ void EventClass::Execute() {
       ** we're not already inside a dialog box routine!)
       */
       if (SpecialDialog == SDLG_NONE) {
-        Timer<SystemTickSource> timer;
-        // timer.Start();
-        timer = TICKS_PER_SECOND * 4;
+        Timer<SystemTickSource> timer{TICKS_PER_SECOND * 4};
 
         WWMessageBox().Process(TXT_SAVING_GAME, TXT_NONE);
 

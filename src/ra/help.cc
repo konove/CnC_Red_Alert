@@ -179,7 +179,7 @@ void HelpClass::AI(KeyNumType& key, int x, int y) {
     if (!IsRight && (X != x || Y != y)) {
       X = x;
       Y = y;
-      CountDownTimer = HELP_DELAY;
+      CountDownTimer.Set(HELP_DELAY);
       Help_Text(TXT_NONE);
     } else {
       /*
@@ -236,9 +236,9 @@ void HelpClass::Help_Text(int text, int x, int y, int /*color*/, bool quick) {
     IsRight = y != -1 || x != -1;
 
     if (quick) {
-      CountDownTimer = 1;
+      CountDownTimer.Set(1);
     } else {
-      CountDownTimer = HELP_DELAY;
+      CountDownTimer.Set(HELP_DELAY);
     }
 
     /*

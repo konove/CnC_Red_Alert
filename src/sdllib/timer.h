@@ -37,62 +37,54 @@
 #ifndef CNC_RED_ALERT_SDLLIB_TIMER_H_
 #define CNC_RED_ALERT_SDLLIB_TIMER_H_
 
-#include <SDL_timer.h>
-
 #include <atomic>
 #include <cstdint>
 
 extern bool TimerSystemOn;
 
-/*=========================================================================*/
-typedef enum BaseTimerEnum {
-  BT_SYSTEM,  // System timer (60 / second).
-  BT_USER     // User controllable timer (? / second).
-} BaseTimerEnum;
-
 class TimerClass {
  public:
   // Constructor.  Timers set before low level init has been done will not
   // be able to be 'Started' or 'on' until timer system is in place.
-  TimerClass(BaseTimerEnum timer = BT_SYSTEM, bool start = false);
+  TimerClass(bool start = false);
   ~TimerClass() = default;
   TimerClass(const TimerClass&) = default;
   TimerClass& operator=(const TimerClass&) = default;
   TimerClass(TimerClass&&) = default;
   TimerClass& operator=(TimerClass&&) = default;
 
-  //
-  long Set(long value, bool start = true);  // Set initial timer value.
-  long Stop();                              // Pause timer.
-  long Start();                             // Resume timer.
-  long Reset(bool start = true);            // Reset timer to zero.
-  long Time();                              // Fetch current timer value.
+  // Set initial timer value.
+  long Set(long value, bool start = true);
+  // Pause timer
+  long Stop();
+  // Resume timer.
+  long Start();
+  // Reset timer to zero.
+  long Reset(bool start = true) { return Set(0, start); }
+  // Fetch current timer value.
+  long Time();
 
  protected:
   long Started = 0;      // Time last started (0 == not paused).
-  long Accumulated = 0;  //	Total accumulated ticks.
+  long Accumulated = 0;  // Total accumulated ticks.
 
  private:
-  BaseTimerEnum TickType;
   long Get_Ticks();
 };
 
-inline long TimerClass::Reset(bool start) { return Set(0, start); }
-
-class CountDownTimerClass : private TimerClass {
+class CountDownTimerClass : TimerClass {
  public:
   // Constructor.  Timers set before low level init has been done will not
   // be able to be 'Started' or 'on' until timer system is in place.
-  CountDownTimerClass(BaseTimerEnum timer, long set, bool on = false);
-  CountDownTimerClass(BaseTimerEnum timer = BT_SYSTEM, bool on = false);
+  CountDownTimerClass(long set, bool on = false);
+  CountDownTimerClass(bool on = false);
   ~CountDownTimerClass() = default;
   CountDownTimerClass(const CountDownTimerClass&) = default;
   CountDownTimerClass& operator=(const CountDownTimerClass&) = default;
   CountDownTimerClass(CountDownTimerClass&&) = default;
   CountDownTimerClass& operator=(CountDownTimerClass&&) = default;
 
-  // Public functions
-  long Set(long set, bool start = true);  // Set count down value.
+  void Set(long set, bool start = true);  // Set count down value.
   long Reset(bool start = true);          // Reset timer to zero.
   long Stop();                            // Pause timer.
   long Start();                           // Resume timer.
@@ -137,7 +129,7 @@ class TickTimer {
 
  private:
   // Handle for SDL timer event.
-  SDL_TimerID timer_id_;
+  int timer_id_;
 
   // Tick count, updated from SDL timer thread.
   std::atomic<int64_t> tick_count_{0};
@@ -146,12 +138,5 @@ class TickTimer {
 uint32_t Get_Time_Ms();
 
 extern TickTimer* g_tick_timer;
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////// externs
-/////////////////////////////////////////////
-#ifdef TD
-extern TimerClass TickCount;
-#endif
 
 #endif  // CNC_RED_ALERT_SDLLIB_TIMER_H_

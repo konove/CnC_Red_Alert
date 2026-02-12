@@ -168,7 +168,7 @@ ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 ScoreAnimClass::ScoreAnimClass(int x, int y, const void* data) {
   XPos = x * RESFACTOR;
   YPos = y * RESFACTOR;
-  AnimTimer = 0;
+  AnimTimer.Set(0);
   DataPtr = data;
 }
 
@@ -187,7 +187,7 @@ void ScoreTimeClass::Update() {
   GraphicBufferClass* oldpage;
 #endif
   if (AnimTimer.IsFinished()) {
-    AnimTimer = TimerReset;
+    AnimTimer.Set(TimerReset);
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
@@ -220,7 +220,7 @@ void ScoreCredsClass::Update() {
   GraphicBufferClass* oldpage;
 #endif
   if (AnimTimer.IsFinished()) {
-    AnimTimer = TimerReset;
+    AnimTimer.Set(TimerReset);
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
@@ -276,7 +276,7 @@ void ScorePrintClass::Update() {
   StillUpdating = true;
 #endif
   if (AnimTimer.IsFinished()) {
-    AnimTimer = 1;
+    AnimTimer.Set(1);
 
     int pos = XPos + Stage * (6 * RESFACTOR);
     // print the letter properly
@@ -330,7 +330,7 @@ void ScoreScaleClass::Update() {
   ** Restore the background for the scaled-up letter
   */
   if (AnimTimer.IsFinished()) {
-    AnimTimer = 1;
+    AnimTimer.Set(1);
 #ifndef WIN32
     if (Stage != 5) {
       int destx = _destx[Stage + 1] * RESFACTOR;
@@ -1624,7 +1624,7 @@ void Animate_Cursor(int pos, int ypos) {
   */
   if (_timer.IsFinished()) {
     _state ^= 1;
-    _timer = 5;
+    _timer.Set(5);
   }
 }
 
@@ -1837,7 +1837,7 @@ void Call_Back_Delay(int time) {
   do {
     if (callbackcd.IsFinished()) {
       Call_Back();
-      callbackcd = TIMER_SECOND / 4;
+      callbackcd.Set(TIMER_SECOND / 4);
     } else {
       if (SoundType) {
         Sound_Callback();
@@ -2061,6 +2061,6 @@ void ScoreClass::Init() {
   GHarvested = 0;
   CHarvested = 0;
   ElapsedTime = 0;
-  RealTime = 0;
+  RealTime.Reset();
   ChangingGun = nullptr;
 }

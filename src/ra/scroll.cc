@@ -73,7 +73,7 @@ Timer<SystemTickSource> ScrollClass::Counter;
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
 ScrollClass::ScrollClass() : IsAutoScroll(true) {
-  Counter = SCROLL_DELAY;
+  Counter.Set(SCROLL_DELAY);
   Inertia = 0;
 }
 
@@ -211,13 +211,13 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
 
             if (MapEditorActive) {
               Scroll_Map(direction, distance, true);
-              Counter = SCROLL_DELAY;
+              Counter.Set(SCROLL_DELAY);
             } else {
               distance = _rate[rate];
               Scroll_Map(direction, distance, true);
 
               if (Counter.IsFinished() && player_scrolled) {
-                Counter = SCROLL_DELAY;
+                Counter.Set(SCROLL_DELAY);
                 Inertia++;
               }
             }
@@ -231,7 +231,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           if (Inertia < 0) {
             Inertia++;
           }
-          Counter = SCROLL_DELAY;
+          Counter.Set(SCROLL_DELAY);
         }
       }
     }

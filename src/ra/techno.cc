@@ -2663,7 +2663,7 @@ void TechnoClass::Cloaking_AI() {
             CloakingDevice.Set_Rate(0);
             CloakingDevice.Set_Stage(0);  // re-start the stage counter
             Cloak = UNCLOAKED;
-            CloakDelay = Rule.CloakDelay * TICKS_PER_MINUTE;
+            CloakDelay.Set(Rule.CloakDelay * TICKS_PER_MINUTE);
             Mark(MARK_CHANGE);
           }
           break;
@@ -3300,7 +3300,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       Mark(MARK_CHANGE_REDRAW);
     }
 
-    Arm = Rearm_Delay(IsSecondShot, which);
+    Arm.Set(Rearm_Delay(IsSecondShot, which));
     if (tclass.Is_Two_Shooter()) {
       IsSecondShot = !static_cast<bool>(IsSecondShot);
     }
@@ -4037,7 +4037,7 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
         if (!Scen.IsFadingColor) {
           Scen.IsFadingBW = false;
           Scen.IsFadingColor = true;
-          Scen.FadeTimer = GRAYFADETIME;
+          Scen.FadeTimer.Set(GRAYFADETIME);
         }
         if (Map.IsTargettingMode == SPC_CHRONO2) {
           KeyNumType input = KN_RMOUSE;
@@ -5071,8 +5071,8 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
   }
 
   if (risktotal > desired && enemy->Is_Foot()) {
-    ((FootClass*)enemy)->BaseAttackTimer =
-        TICKS_PER_MINUTE * Rule.BaseDefenseDelay;
+    ((FootClass*)enemy)
+        ->BaseAttackTimer.Set(TICKS_PER_MINUTE * Rule.BaseDefenseDelay);
   }
 }
 

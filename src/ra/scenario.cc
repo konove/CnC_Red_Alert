@@ -192,7 +192,6 @@ bool Is_Mission_Aftermath(char* file_name);
 ScenarioClass::ScenarioClass()
     : Difficulty(DIFF_NORMAL),
       CDifficulty(DIFF_NORMAL),
-      ElapsedTime(0),
       MissionTimer(0),
       ShroudTimer(TICKS_PER_MINUTE * Rule.ShroudRate),
       Scenario(1),
@@ -254,7 +253,7 @@ ScenarioClass::ScenarioClass()
 void ScenarioClass::Do_BW_Fade() {
   IsFadingBW = true;
   IsFadingColor = false;
-  FadeTimer = GRAYFADETIME;
+  FadeTimer.Set(GRAYFADETIME);
 }
 
 /***********************************************************************************************
@@ -295,7 +294,7 @@ void ScenarioClass::Do_Fade_AI() {
     GamePalette.Set();
     if (!IsFadingBW) {
       IsFadingColor = true;
-      FadeTimer = GRAYFADETIME;
+      FadeTimer.Set(GRAYFADETIME);
     }
   }
 }
@@ -731,10 +730,10 @@ void Post_Load_Game(int load_multi) {
 void Clear_Scenario() {
   // TCTCTC -- possibly just use in-place new of scenario object?
 
-  Scen.MissionTimer = 0;
+  Scen.MissionTimer.Set(0);
   Scen.MissionTimer.Stop();
-  Scen.ElapsedTime = 0;
-  Scen.ShroudTimer = 0;
+  Scen.ElapsedTime.Reset();
+  Scen.ShroudTimer.Set(0);
   Scen.IntroMovie = VQ_NONE;
   Scen.BriefMovie = VQ_NONE;
   Scen.WinMovie = VQ_NONE;
@@ -869,7 +868,7 @@ void Do_Win() {
                      TBLACK,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
 #endif
-    CountDownTimer = TIMER_SECOND * 3;
+    CountDownTimer.Set(TIMER_SECOND * 3);
     while (Is_Speaking()) {
     }
     Speak(VOX_ACCOMPLISHED);
@@ -1071,7 +1070,7 @@ void Do_Win() {
   *then do it now.
   */
   if (Scen.IsInheritTimer) {
-    Scen.MissionTimer = Scen.CarryOverTimer;
+    Scen.MissionTimer.Set(Scen.CarryOverTimer);
     Scen.MissionTimer.Start();
   }
 
@@ -1124,7 +1123,7 @@ void Do_Lose() {
   Fancy_Text_Print(TXT_SCENARIO_LOST, x, 90 * RESFACTOR,
                    &ColorRemaps[PCOLOR_RED], TBLACK,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-  CountDownTimer = TIMER_SECOND * 3;
+  CountDownTimer.Set(TIMER_SECOND * 3);
   while (Is_Speaking()) {
   }
   Speak(VOX_FAIL);
@@ -1170,7 +1169,7 @@ void Do_Lose() {
     **	Start the scenario timer with the carried over value if necessary.
     */
     if (Scen.IsInheritTimer) {
-      Scen.MissionTimer = Scen.CarryOverTimer;
+      Scen.MissionTimer.Set(Scen.CarryOverTimer);
       Scen.MissionTimer.Start();
     }
 
@@ -1214,7 +1213,7 @@ void Do_Draw() {
   Fancy_Text_Print(TXT_WOL_DRAW, x, 90 * RESFACTOR, &ColorRemaps[PCOLOR_RED],
                    TBLACK,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-  CountDownTimer = TIMER_SECOND * 3;
+  CountDownTimer.Set(TIMER_SECOND * 3);
   while (Is_Speaking()) {
   }
   Speak(VOX_CONTROL_EXIT);
@@ -1258,7 +1257,7 @@ void Do_Restart() {
   ** Start a timer going, before we restart the scenario
   */
   Timer<SystemTickSource> timer;
-  timer = TICKS_PER_SECOND * 4;
+  timer.Set(TICKS_PER_SECOND * 4);
   Theme.Queue_Song(THEME_QUIET);
 
   WWMessageBox().Process(TXT_RESTARTING, TXT_NONE);
@@ -1271,7 +1270,7 @@ void Do_Restart() {
   **	Start the scenario timer with the carried over value if necessary.
   */
   if (Scen.IsInheritTimer) {
-    Scen.MissionTimer = Scen.CarryOverTimer;
+    Scen.MissionTimer.Set(Scen.CarryOverTimer);
     Scen.MissionTimer.Start();
   }
 
@@ -1554,7 +1553,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     if (bufprint[0] == '\r' || bufprint[0] == '@') {
       Play_Sample(briefsnd, 255, Options.Normalize_Volume(135));
       Timer<SystemTickSource> cd;
-      cd = 5;
+      cd.Set(5);
       do {
         Call_Back();
       } while (!Keyboard->Check() && cd.HasTimeLeft());

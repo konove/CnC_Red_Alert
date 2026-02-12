@@ -74,7 +74,7 @@ class ScrollClass : public HelpClass {
 
   void AI(KeyNumType& input, int x, int y) override;
   void Init_IO() override {
-    Counter = 0;
+    Counter.Set(0);
     HelpClass::Init_IO();
   }
 };

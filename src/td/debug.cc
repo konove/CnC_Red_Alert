@@ -99,7 +99,7 @@ extern bool ScreenRecording;
  *=============================================================================================*/
 #define UPDATE_INTERVAL TIMER_SECOND
 void Self_Regulate() {
-  static CountDownTimerClass DebugTimer(BT_SYSTEM);
+  static CountDownTimerClass DebugTimer{};
   static ObjectClass* _lastobject = nullptr;
 
   if (!DebugTimer.Time()) {

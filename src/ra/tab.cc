@@ -176,7 +176,7 @@ void TabClass::Draw_Credits_Tab() {
                 WINDOW_MAIN, SHAPE_NORMAL);
 #endif
 
-  if (Scen.MissionTimer.Is_Active()) {
+  if (Scen.MissionTimer.IsRunning()) {
     bool light =
         Scen.MissionTimer.Value() < TICKS_PER_MINUTE * Rule.TimerWarning ||
         Map.FlasherTimer.HasTimeLeft();
@@ -336,5 +336,5 @@ void TabClass::One_Time() {
 void TabClass::Flash_Money() {
   IsToRedraw = true;
   Flag_To_Redraw(false);
-  MoneyFlashTimer = 7;
+  MoneyFlashTimer.Set(7);
 }

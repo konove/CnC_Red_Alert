@@ -323,7 +323,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
       ShroudCenter(0),
       Reload(0),
       SecondaryFacing(PrimaryFacing) {
-  Reload = 0;
+  Reload.Set(0);
   House->Tracking_Add(this);
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
@@ -638,12 +638,12 @@ bool UnitClass::Edge_Of_World_AI() {
 void UnitClass::Reload_AI() {
   if (*this == UNIT_V2_LAUNCHER && Ammo < Class->MaxAmmo) {
     if (IsDriving) {
-      Reload = Reload.Value() + 1;
+      Reload.Set(Reload.Value() + 1);
     } else {
       if (Reload.IsFinished()) {
         Ammo++;
         if (Ammo < Class->MaxAmmo) {
-          Reload = TICKS_PER_SECOND * 30;
+          Reload.Set(TICKS_PER_SECOND * 30);
         }
         Mark(MARK_CHANGE);
       }
@@ -1563,7 +1563,7 @@ bool UnitClass::Try_To_Deploy() {
           if (IsMoebius && !Scen.IsFadingColor) {
             Scen.IsFadingBW = false;
             Scen.IsFadingColor = true;
-            Scen.FadeTimer = GRAYFADETIME;
+            Scen.FadeTimer.Set(GRAYFADETIME);
           }
           delete this;
           return true;
@@ -1759,7 +1759,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     */
     if (!Target_Legal(NavCom) && Path[0] == FACING_NONE) {
       if (Class->IsNoFireWhileMoving) {
-        Arm = Rearm_Delay(true) / 4;
+        Arm.Set(Rearm_Delay(true) / 4);
       }
     }
 
@@ -2651,7 +2651,7 @@ int UnitClass::Mission_Unload() {
       if (!Gems && !IsDumping) {
         Gems = 1;
         Gold = 0;
-        Arm = QuakeDelay * House->ROFBias;
+        Arm.Set(QuakeDelay * House->ROFBias);
 #ifdef ENGLISH
         Speak(VOX_MADTANK_DEPLOYED);  // this voice only exists in English
 #else
@@ -4218,7 +4218,7 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
       **	Possible reload timer set.
       */
       if (*this == UNIT_V2_LAUNCHER && Reload.IsFinished()) {
-        Reload = TICKS_PER_SECOND * 30;
+        Reload.Set(TICKS_PER_SECOND * 30);
       }
     }
   }

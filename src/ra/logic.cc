@@ -107,9 +107,10 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(10, 1);
     mono->Printf("%3d", FramesPerSecond);
     mono->Set_Cursor(1, 3);
-    mono->Printf("%02d:%02d:%02d", Scen.ElapsedTime.Value() / TICKS_PER_HOUR,
-                 (Scen.ElapsedTime.Value() % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
-                 (Scen.ElapsedTime.Value() % TICKS_PER_MINUTE) / TICKS_PER_SECOND);
+    mono->Printf(
+        "%02d:%02d:%02d", Scen.ElapsedTime.Value() / TICKS_PER_HOUR,
+        (Scen.ElapsedTime.Value() % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
+        (Scen.ElapsedTime.Value() % TICKS_PER_MINUTE) / TICKS_PER_SECOND);
 
     mono->Set_Cursor(1, 11);
     mono->Printf("%3d", Units.Count());
@@ -279,7 +280,7 @@ void LogicClass::AI() {
     **	The mission timer expiration trigger event might spring if the timer is
     *active *	but at a value of zero.
     */
-    if (Scen.MissionTimer.Is_Active() && Scen.MissionTimer.IsFinished()) {
+    if (Scen.MissionTimer.IsRunning() && Scen.MissionTimer.IsFinished()) {
       if (trig->Spring(TEVENT_MISSION_TIMER_EXPIRED)) {
         continue;
       }
@@ -290,7 +291,7 @@ void LogicClass::AI() {
   **	Clean up any status values that were maintained only for logic trigger
   **	purposes.
   */
-  if (Scen.MissionTimer.Is_Active() && Scen.MissionTimer.IsFinished()) {
+  if (Scen.MissionTimer.IsRunning() && Scen.MissionTimer.IsFinished()) {
     Scen.MissionTimer.Stop();
     Map.Flag_To_Redraw(
         true);  // Used only to cause tabs to redraw in new state.
@@ -302,7 +303,7 @@ void LogicClass::AI() {
   */
   if (Special.IsShadowGrow && Rule.ShroudRate != 0 &&
       Scen.ShroudTimer.IsFinished()) {
-    Scen.ShroudTimer = TICKS_PER_MINUTE * Rule.ShroudRate;
+    Scen.ShroudTimer.Set(TICKS_PER_MINUTE * Rule.ShroudRate);
     Map.Encroach_Shadow();
   }
 
@@ -404,7 +405,7 @@ void LogicClass::AI() {
       Sound_Effect(VOC_SONAR);
       bAutoSonarPulse = false;
     }
-    Scen.AutoSonarTimer = TICKS_PER_SECOND * 40;
+    Scen.AutoSonarTimer.Set(TICKS_PER_SECOND * 40);
   }
 }
 

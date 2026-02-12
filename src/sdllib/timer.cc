@@ -15,8 +15,8 @@ static Uint32 TimerCallback(Uint32 interval, void* param) {
 }
 
 // TimerClass/CountDownTimerClass are mostly used by TD
-// (RA has it's own impl)
-TimerClass::TimerClass(BaseTimerEnum timer, bool start) : TickType(timer) {
+// (RA has its own impl)
+TimerClass::TimerClass(bool start) {
   if (start && TimerSystemOn) {
     Start();
   }
@@ -33,7 +33,7 @@ long TimerClass::Set(long value, bool start) {
 }
 
 long TimerClass::Start() {
-  if (!Started) {
+  if (Started == 0) {
     Started = Get_Ticks() + 1;
   }
   return Time();
@@ -49,29 +49,27 @@ long TimerClass::Time() {
 }
 
 long TimerClass::Get_Ticks() {
-  if (g_tick_timer && TickType == BT_SYSTEM) {  // BT_USER seems unused
+  if (g_tick_timer) {
     return g_tick_timer->TickCount();
   }
 
   return 0;
 }
 
-CountDownTimerClass::CountDownTimerClass(BaseTimerEnum timer, long set, bool on)
-    : TimerClass(timer, on) {
+CountDownTimerClass::CountDownTimerClass(long set, bool on) : TimerClass(on) {
   Set(set, on);
 }
 
-CountDownTimerClass::CountDownTimerClass(BaseTimerEnum timer, bool on)
-    : TimerClass(timer, false), DelayTime(0) {
+CountDownTimerClass::CountDownTimerClass(bool on)
+    : TimerClass(false), DelayTime(0) {
   if (on) {
     Start();
   }
 }
 
-long CountDownTimerClass::Set(long value, bool start) {
+void CountDownTimerClass::Set(long value, bool start) {
   DelayTime = value;
   TimerClass::Reset(start);
-  return Time();
 }
 
 long CountDownTimerClass::Time() {

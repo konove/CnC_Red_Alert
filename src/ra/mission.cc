@@ -235,84 +235,84 @@ void MissionClass::AI() {
   if (MissionTimer.IsFinished() && Strength > 0) {
     switch (Mission) {
       default:
-        MissionTimer = Mission_Sleep();
+        MissionTimer.Set(Mission_Sleep());
         break;
 
       case MISSION_HARMLESS:
       case MISSION_SLEEP:
-        MissionTimer = Mission_Sleep();
+        MissionTimer.Set(Mission_Sleep());
         break;
 
       case MISSION_STICKY:
       case MISSION_GUARD:
-        MissionTimer = Mission_Guard();
+        MissionTimer.Set(Mission_Guard());
         break;
 
       case MISSION_ENTER:
-        MissionTimer = Mission_Enter();
+        MissionTimer.Set(Mission_Enter());
         break;
 
       case MISSION_CONSTRUCTION:
-        MissionTimer = Mission_Construction();
+        MissionTimer.Set(Mission_Construction());
         break;
 
       case MISSION_DECONSTRUCTION:
-        MissionTimer = Mission_Deconstruction();
+        MissionTimer.Set(Mission_Deconstruction());
         break;
 
       case MISSION_CAPTURE:
       case MISSION_SABOTAGE:
-        MissionTimer = Mission_Capture();
+        MissionTimer.Set(Mission_Capture());
         break;
 
       case MISSION_QMOVE:
       case MISSION_MOVE:
-        MissionTimer = Mission_Move();
+        MissionTimer.Set(Mission_Move());
         break;
 
       case MISSION_ATTACK:
-        MissionTimer = Mission_Attack();
+        MissionTimer.Set(Mission_Attack());
         break;
 
       case MISSION_RETREAT:
-        MissionTimer = Mission_Retreat();
+        MissionTimer.Set(Mission_Retreat());
         break;
 
       case MISSION_HARVEST:
-        MissionTimer = Mission_Harvest();
+        MissionTimer.Set(Mission_Harvest());
         break;
 
       case MISSION_GUARD_AREA:
-        MissionTimer = Mission_Guard_Area();
+        MissionTimer.Set(Mission_Guard_Area());
         break;
 
       case MISSION_RETURN:
-        MissionTimer = Mission_Return();
+        MissionTimer.Set(Mission_Return());
         break;
 
       case MISSION_STOP:
-        MissionTimer = Mission_Stop();
+        MissionTimer.Set(Mission_Stop());
         break;
 
       case MISSION_AMBUSH:
-        MissionTimer = Mission_Ambush();
+        MissionTimer.Set(Mission_Ambush());
         break;
 
       case MISSION_HUNT:
       case MISSION_RESCUE:
-        MissionTimer = Mission_Hunt();
+        MissionTimer.Set(Mission_Hunt());
         break;
 
       case MISSION_UNLOAD:
-        MissionTimer = Mission_Unload();
+        MissionTimer.Set(Mission_Unload());
         break;
 
       case MISSION_REPAIR:
-        MissionTimer = Mission_Repair();
+        MissionTimer.Set(Mission_Repair());
         break;
 
       case MISSION_MISSILE:
-        MissionTimer = Mission_Missile();
+        MissionTimer.Set(Mission_Missile());
         break;
     }
   }
@@ -347,7 +347,7 @@ bool MissionClass::Commence() {
     **	Force immediate state machine processing at the first state machine
     *state value.
     */
-    MissionTimer = 0;
+    MissionTimer.Set(0);
     Status = 0;
     return true;
   }

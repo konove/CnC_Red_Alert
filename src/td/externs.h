@@ -399,5 +399,6 @@ extern bool IsTheaterShape;
 
 extern void Reset_Theater_Shapes();
 extern TheaterType LastTheater;
+extern TimerClass TickCount;
 
 #endif  // CNC_RED_ALERT_TD_EXTERNS_H_

@@ -217,7 +217,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
       (MouseShapes && (mouse != CurrentMouseShape || wsmall != IsSmall))) {
     startup = true;
 
-    AnimTimer = control->FrameRate;
+    AnimTimer.Set(control->FrameRate);
     Frame = 0;
 
     baseshp = wsmall ? control->SmallFrame : control->StartFrame;
@@ -261,7 +261,7 @@ void MouseClass::AI(KeyNumType& input, int x, int y) {
   if (control->FrameRate && AnimTimer.IsFinished()) {
     Frame++;
     Frame %= control->FrameCount;
-    AnimTimer = control->FrameRate;
+    AnimTimer.Set(control->FrameRate);
 
     if (!IsSmall || control->SmallFrame != -1) {
       int baseframe = IsSmall ? control->SmallFrame : control->StartFrame;

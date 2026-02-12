@@ -151,25 +151,6 @@ char PaletteLUT[256];
 */
 #define CHUNK_HEIGHT RESFACTOR * 50
 
-#ifndef WIN32
-extern void Vsync();
-#pragma aux Vsync modify[edx ebx eax] =            \
-                             "mov	edx,03DAh"       \
-                             "mov	ebx,[VertBlank]" \
-                             "and	bl,001h"         \
-                             "shl	bl,3"            \
-                             "in_vbi:"             \
-                             "in	al,dx"            \
-                             "and	al,008h"         \
-                             "xor	al,bl"           \
-                             "je	in_vbi"           \
-                             "out_vbi:"            \
-                             "in	al,dx"            \
-                             "and	al,008h"         \
-                             "xor	al,bl"           \
-                             "jne	out_vbi"
-#endif  // WIN32
-
 /***********************************************************************************************
  * EC::EgoClass -- EgoClass constructor *
  *                                                                                             *
@@ -403,7 +384,6 @@ void Slide_Show(int slide, int frame) {
  * HISTORY: * 9/10/96 0:20AM ST : Created *
  *=============================================================================================*/
 void Show_Who_Was_Responsible() {
-  int i;
   int key;
 
   /*
@@ -411,14 +391,6 @@ void Show_Who_Was_Responsible() {
   *scrolls.
   */
   static int speed = 3;
-
-  /*
-  ** In DOS we need to scroll slower so we have a bool that lets us do it every
-  *other time
-  */
-#ifndef WIN32
-  bool scroll_now = false;
-#endif  // WIN32
 
   /*
   ** Read in the credits file to be displayed
@@ -768,20 +740,14 @@ void Show_Who_Was_Responsible() {
     /*
     ** Scroll the text. If any text goes off the top then delete that object.
     */
-#ifndef WIN32
-    scroll_now = !scroll_now;
-    if (scroll_now) {
-#endif  // WIN32
-      for (int i = EgoList.Count() - 1; i >= 0; i--) {
-        EgoList[i]->Wipe(BackgroundPage);
-        if (EgoList[i]->Scroll(1)) {
-          EgoList.Delete(i);
-          break;
-        }
+    for (int i = EgoList.Count() - 1; i >= 0; i--) {
+      EgoList[i]->Wipe(BackgroundPage);
+      if (EgoList[i]->Scroll(1)) {
+        EgoList.Delete(i);
+        break;
       }
-#ifndef WIN32
     }
-#endif  // WIN32
+
     /*
     ** Render all the text strings in their new positions.
     */
@@ -793,7 +759,7 @@ void Show_Who_Was_Responsible() {
     }
 
     if (frame > 1000 && !Theme.Still_Playing()) {
-      Theme.Queue_Song(THEME_CREDITS);  // NONE);
+      Theme.Queue_Song(THEME_CREDITS);
     }
 
     /*
@@ -801,11 +767,6 @@ void Show_Who_Was_Responsible() {
     *playing
     */
     Call_Back();
-    //		if (frame <1000 ){
-    //			Theme.AI();
-    //		}else{
-    //			Sound_Callback();
-    //		}
 
     /*
     ** Kill any spare time before blitting the hid page forward.
@@ -818,10 +779,6 @@ void Show_Who_Was_Responsible() {
     *print doesn't
     ** clip vertically and looks ugly when it suddenly appears and disappears.
     */
-#ifndef WIN32
-    Wait_Vert_Blank(VertBlank);
-    // Vsync();
-#endif  // WIN32
     HidPage.Blit(SeenBuff, 0, 8 * RESFACTOR, 0, 8 * RESFACTOR,
                  SeenBuff.Get_Width(), SeenBuff.Get_Height() - 16 * RESFACTOR,
                  false);
@@ -829,16 +786,14 @@ void Show_Who_Was_Responsible() {
     /*
     ** Try and prevent Win95 from swapping out pictures we havnt used yet.
     */
-#ifdef WIN32
-    if (frame && 3 == 3) {
-      for (i = slide_number + 1; i < NUM_SLIDES; i++) {
+    if (frame) {
+      for (int i = slide_number + 1; i < NUM_SLIDES; i++) {
         if (!SlideBuffers[i]->Get_IsDirectDraw()) {
           Force_VM_Page_In(SlideBuffers[i]->Get_Offset(),
                            SeenBuff.Get_Width() * SeenBuff.Get_Height());
         }
       }
     }
-#endif  // WIN32
 
     /*
     ** If user hits escape then break.
@@ -849,21 +804,6 @@ void Show_Who_Was_Responsible() {
       if (key == KN_ESC) {
         break;
       }
-#if (0)
-      if (key == KN_Z) {
-        speed--;
-        if (speed < 1) {
-          speed = 1;
-        }
-        time = TickCount;
-        frame = 0;
-      }
-      if (key == KN_X) {
-        speed++;
-        time = TickCount;
-        frame = 0;
-      }
-#endif  //(0)
     }
   }
 
@@ -884,7 +824,6 @@ void Show_Who_Was_Responsible() {
       Slide_Show(slide_number, picture_frame);
 
       Call_Back();
-      //			Sound_Callback();		//Theme.AI();
 
       /*
       ** Kill any spare time
@@ -897,7 +836,6 @@ void Show_Who_Was_Responsible() {
   /*
   ** Tidy up.
   */
-  // SetPriorityClass (GetCurrentProcess() , process_priority);
   SeenBuff.Clear();
 
   Show_Mouse();

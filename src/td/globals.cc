@@ -899,9 +899,9 @@ GraphicBufferClass ModeXBuff;
 GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
 GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, nullptr);
 int SoundOn;
-CountDownTimerClass FrameTimer(BT_SYSTEM, 0L);
-CountDownTimerClass DebugTimer(BT_SYSTEM, 0L);
-CountDownTimerClass CountDownTimer(BT_SYSTEM, 0L);
+CountDownTimerClass FrameTimer{0L};
+CountDownTimerClass DebugTimer{0L};
+CountDownTimerClass CountDownTimer{0L};
 
 NewConfigType NewConfig;
 
@@ -994,8 +994,5 @@ bool ConnectionLost;
 
 TheaterType LastTheater = THEATER_NONE;
 
-#ifdef PORTABLE
-// extra glue to SDLLIB
 TimerClass TickCount;
 WWKeyboardClass* _Kbd = &Kbd;
-#endif

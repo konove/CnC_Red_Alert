@@ -788,12 +788,12 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
             building->Mission != MISSION_DECONSTRUCTION) {
           building->IsGoingToBlow = true;
           building->Clicked_As_Target(Rule.C4Delay * TICKS_PER_MINUTE / 2);
-          building->CountDown = Rule.C4Delay * TICKS_PER_MINUTE;
+          building->CountDown.Set(Rule.C4Delay * TICKS_PER_MINUTE);
           building->WhomToRepay = As_Target();
         }
         NavCom = TARGET_NONE;
         Do_Uncloak();
-        Arm = Rearm_Delay(true);
+        Arm.Set(Rearm_Delay(true));
         Scatter(building->Center_Coord(), true, true);  // RUN AWAY!
         BEnd(BENCH_PCP);
         return;
@@ -1697,8 +1697,8 @@ bool InfantryClass::Random_Animate() {
   assert(IsActive);
 
   if (Is_Ready_To_Random_Animate()) {
-    IdleTimer = Random_Pick(Rule.RandomAnimateTime * (TICKS_PER_MINUTE / 2),
-                            Rule.RandomAnimateTime * (TICKS_PER_MINUTE * 2));
+    IdleTimer.Set(Random_Pick(Rule.RandomAnimateTime * (TICKS_PER_MINUTE / 2),
+                              Rule.RandomAnimateTime * (TICKS_PER_MINUTE * 2)));
 
     /*
     **	Scared infantry will always follow the golden rule of civilians;

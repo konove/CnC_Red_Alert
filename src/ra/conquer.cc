@@ -1532,7 +1532,7 @@ void Color_Cycle() {
     *glowing *	game interface elements.
     */
     if (_ftimer.IsFinished()) {
-      _ftimer = TIMER_SECOND / 6;
+      _ftimer.Set(TIMER_SECOND / 6);
 
 #define STEP_RATE 20
       if (_up) {
@@ -1569,7 +1569,7 @@ void Color_Cycle() {
     **	Process the color cycling effects -- water.
     */
     if (_timer.IsFinished()) {
-      _timer = TIMER_SECOND / 4;
+      _timer.Set(TIMER_SECOND / 4);
 
       RGBClass first = InGamePalette[CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1];
       for (int index = CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1;
@@ -2168,23 +2168,23 @@ bool Main_Loop() {
     // In playback mode, run as fast as possible.
     //
     if (Session.Play) {
-      FrameTimer = 0;
+      FrameTimer.Set(0);
     } else {
       if (!Session.DesiredFrameRate) {
         Session.DesiredFrameRate =
             60;  //	A division by zero was happening (very rare).
       }
       framedelay = TIMER_SECOND / Session.DesiredFrameRate;
-      FrameTimer = framedelay;
+      FrameTimer.Set(framedelay);
     }
   } else {
     if (Options.GameSpeed != 0) {
-      FrameTimer = Options.GameSpeed +
-                   (PlayerPtr->Difficulty == DIFF_EASY ? 1 : 0) -
-                   (PlayerPtr->Difficulty == DIFF_HARD ? 1 : 0);
+      FrameTimer.Set(Options.GameSpeed +
+                     (PlayerPtr->Difficulty == DIFF_EASY ? 1 : 0) -
+                     (PlayerPtr->Difficulty == DIFF_HARD ? 1 : 0));
     } else {
-      FrameTimer =
-          Options.GameSpeed + (PlayerPtr->Difficulty == DIFF_EASY ? 1 : 0);
+      FrameTimer.Set(
+          Options.GameSpeed + (PlayerPtr->Difficulty == DIFF_EASY ? 1 : 0));
     }
   }
 

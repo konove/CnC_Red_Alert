@@ -534,7 +534,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Star the mission timer.
     */
     case TACTION_START_TIMER:
-      if (!Scen.MissionTimer.Is_Active()) {
+      if (!Scen.MissionTimer.IsRunning()) {
         Scen.MissionTimer.Start();
         Map.Redraw_Tab();
       }
@@ -545,7 +545,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	suspend the timer.
     */
     case TACTION_STOP_TIMER:
-      if (Scen.MissionTimer.Is_Active()) {
+      if (Scen.MissionTimer.IsRunning()) {
         Scen.MissionTimer.Stop();
         Map.Redraw_Tab();
       }
@@ -555,8 +555,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Add time to the mission timer.
     */
     case TACTION_ADD_TIMER:
-      Scen.MissionTimer =
-          Scen.MissionTimer.Value() + Data.Value * (TICKS_PER_MINUTE / 10);
+      Scen.MissionTimer.Set(
+          Scen.MissionTimer.Value() + Data.Value * (TICKS_PER_MINUTE / 10));
       Map.Redraw_Tab();
       break;
 
@@ -565,10 +565,10 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_SUB_TIMER:
       if (Scen.MissionTimer.Value() <= Data.Value * (TICKS_PER_MINUTE / 10)) {
-        Scen.MissionTimer = 0;
+        Scen.MissionTimer.Set(0);
       } else {
-        Scen.MissionTimer =
-            Scen.MissionTimer.Value() - Data.Value * (TICKS_PER_MINUTE / 10);
+        Scen.MissionTimer.Set(
+            Scen.MissionTimer.Value() - Data.Value * (TICKS_PER_MINUTE / 10));
       }
       Map.Redraw_Tab();
       break;
@@ -577,7 +577,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Set the mission timer to the value specified.
     */
     case TACTION_SET_TIMER:
-      Scen.MissionTimer = Data.Value * (TICKS_PER_MINUTE / 10);
+      Scen.MissionTimer.Set(Data.Value * (TICKS_PER_MINUTE / 10));
       Scen.MissionTimer.Start();
       Map.Redraw_Tab();
       break;

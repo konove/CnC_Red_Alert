@@ -2706,8 +2706,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
           if (obj && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius) {
-            dynamic_cast<TechnoClass*>(obj)->IronCurtainCountDown =
-                TICKS_PER_MINUTE * fixed(CrateData[powerup], 256);
+            dynamic_cast<TechnoClass*>(obj)->IronCurtainCountDown.Set(
+                TICKS_PER_MINUTE * fixed(CrateData[powerup], 256));
             obj->Mark(MARK_CHANGE);
           }
         }

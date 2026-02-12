@@ -122,7 +122,7 @@ void PowerClass::Init_Clear() {
   DrainBounce = 0;
   DrainDir = 0;
   PowerDir = 0;
-  FlashTimer = 0;
+  FlashTimer.Set(0);
 }
 
 /***********************************************************************************************
@@ -479,7 +479,7 @@ int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
  * HISTORY: * 10/14/1996 JLB : Created. *
  *=============================================================================================*/
 void PowerClass::Flash_Power() {
-  FlashTimer = TICKS_PER_SECOND;
+  FlashTimer.Set(TICKS_PER_SECOND);
   IsToRedraw = true;
   Flag_To_Redraw(false);
 }

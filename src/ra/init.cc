@@ -519,7 +519,7 @@ bool Select_Game(bool /*fade*/) {
   DoList.Init();
   OutList.Init();
   Frame = 0;
-  Scen.MissionTimer = 0;
+  Scen.MissionTimer.Set(0);
   Scen.MissionTimer.Stop();
   Scen.CDifficulty = DIFF_NORMAL;
   Scen.Difficulty = DIFF_NORMAL;

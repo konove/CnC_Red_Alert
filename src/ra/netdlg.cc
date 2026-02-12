@@ -1552,10 +1552,10 @@ static int Net_Join_Dialog() {
   const char* p;
   int parms_received = 0;  // 1 = game options received
   int found;
-  NodeNameType* who;                              // node to add to Players
-  RejectType why;                                 // reason for rejection
+  NodeNameType* who;                            // node to add to Players
+  RejectType why;                               // reason for rejection
   Stopwatch<SystemTickSource> lastclick_timer;  // time b/w send periods
-  int lastclick_idx = 0;  // index of item last clicked on
+  int lastclick_idx = 0;                        // index of item last clicked on
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   Session.Options.ScenarioDescription[0] =
       0;  // Flag that we dont know the scenario name yet
@@ -1713,7 +1713,7 @@ static int Net_Join_Dialog() {
                             TPF_TEXT, nullptr, '_', d_message2_w);
   Session.WWChat = 0;
 
-  lastclick_timer = 0;
+  lastclick_timer.Reset();
 
   //------------------------------------------------------------------------
   //	Clear the list of games, players, and the chat list
@@ -2226,7 +2226,7 @@ static int Net_Join_Dialog() {
           // If no double-click occurred, set the last-clicked index
           // & double-click timer.
           //............................................................
-          lastclick_timer = 0;
+          lastclick_timer.Reset();
           lastclick_idx = gamelist.Current_Index();
 
           //............................................................
@@ -3282,8 +3282,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
     PLAYER_QUERY_TIME = 35,
     CHAT_ANNOUNCE_TIME = 83,
   };
-  static Timer<SystemTickSource>
-      game_timer;  // time between NET_QUERY_GAME's
+  static Timer<SystemTickSource> game_timer;  // time between NET_QUERY_GAME's
   static Timer<SystemTickSource>
       player_timer;  // time between NET_QUERY_PLAYERS's
   static Timer<SystemTickSource>
@@ -3293,9 +3292,9 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   // Initialize timers
   //------------------------------------------------------------------------
   if (init) {
-    game_timer = GAME_QUERY_TIME;
-    player_timer = PLAYER_QUERY_TIME;
-    chat_timer = CHAT_ANNOUNCE_TIME;
+    game_timer.Set(GAME_QUERY_TIME);
+    player_timer.Set(PLAYER_QUERY_TIME);
+    chat_timer.Set(CHAT_ANNOUNCE_TIME);
   }
 
   //------------------------------------------------------------------------
@@ -3303,7 +3302,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   //	it right now
   //------------------------------------------------------------------------
   if (game_timer.IsFinished() || gamenow) {
-    game_timer = GAME_QUERY_TIME;
+    game_timer.Set(GAME_QUERY_TIME);
 
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
@@ -3330,7 +3329,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   if ((curgame > 0 && curgame < Session.Games.Count() &&
        player_timer.IsFinished()) ||
       playernow) {
-    player_timer = PLAYER_QUERY_TIME;
+    player_timer.Set(PLAYER_QUERY_TIME);
 
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
@@ -3354,7 +3353,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   // Send the chat announcement
   //------------------------------------------------------------------------
   if ((chat_timer.IsFinished() && joinstate != JOIN_CONFIRMED) || chatnow) {
-    chat_timer = CHAT_ANNOUNCE_TIME;
+    chat_timer.Set(CHAT_ANNOUNCE_TIME);
 
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
@@ -5127,10 +5126,9 @@ static int Net_New_Dialog() {
 #ifdef WIN32
     WWDebugString("RA95 - About to wait for 'GO' response.");
 #endif
-    Timer<SystemTickSource>
-        response_timer;        // timeout timer for waiting for responses
-    response_timer = 60 * 10;  // Wait for 10 seconds. If we dont hear by then
-                               // assume someone crashed
+    // timeout timer for waiting for responses
+    // Wait for 10 seconds. If we dont hear by then assume someone crashed
+    Timer<SystemTickSource> response_timer{60 * 10};
 
     do {
       Ipx.Service();
@@ -7342,7 +7340,7 @@ void Start_WWChat(ColorListClass* playerlist) {
   }
 
   // wwperson_timer = 240;
-  wwperson_timer = Random_Pick(90, 360);
+  wwperson_timer.Set(Random_Pick(90, 360));
 
 }  // end of Start_WWChat
 
@@ -7358,7 +7356,7 @@ int Update_WWChat() {
   }
 
   // wwperson_timer = 240;
-  wwperson_timer = Random_Pick(90, 360);
+  wwperson_timer.Set(Random_Pick(90, 360));
 
   //------------------------------------------------------------------------
   // Even after the timer's gone off, there's only a 1/8 chance we'll
@@ -7687,9 +7685,8 @@ static int Net_Fake_New_Dialog() {
   /*
   ** Process the message loop until we are in focus.
   */
-  Timer<SystemTickSource>
-      focus_timer;  // Timer to allow a wait after client joins
-  focus_timer = 5 * 60;
+  // Timer to allow a wait after client joins
+  Timer<SystemTickSource> focus_timer{5 * 60};
 
   WWDebugString("RA95 - About to enter wait for focus loop.\n");
 #ifndef PORTABLE
@@ -7707,7 +7704,7 @@ static int Net_Fake_New_Dialog() {
         WWDebugString("RA95 - Calling ShowWindow.\n");
         ShowWindow(MainWindow, SW_SHOWMAXIMIZED);
 #endif
-        focus_timer = 5 * 60;
+        focus_timer.Set(5 * 60);
       }
     } while (!GameInFocus);
     AllSurfaces.SurfacesRestored = false;
@@ -8119,10 +8116,9 @@ static int Net_Fake_New_Dialog() {
     bool send_scenario = false;
     WWDebugString("RA95 - About to wait for 'GO' response.\n");
 
-    Timer<SystemTickSource>
-        response_timer;        // timeout timer for waiting for responses
-    response_timer = 60 * 30;  // Wait for 30 seconds. If we dont hear by then
-                               // assume someone crashed
+    // Wait for 30 seconds. If we dont hear by then assume someone crashed
+    // timeout timer for waiting for responses
+    Timer<SystemTickSource> response_timer{60 * 30};
 
     do {
       Ipx.Service();
@@ -8437,7 +8433,7 @@ static int Net_Fake_Join_Dialog() {
 
   Fancy_Text_Print("", 0, 0, scheme, TBLACK, TPF_CENTER | TPF_TEXT);
 
-  lastclick_timer = 0;
+  lastclick_timer.Reset();
 
   //------------------------------------------------------------------------
   //	Clear the list of games, players, and the chat list
@@ -8479,9 +8475,8 @@ static int Net_Fake_Join_Dialog() {
   /*
   ** Process the message loop until we are in focus.
   */
-  Timer<SystemTickSource>
-      focus_timer;  // Timer to allow a wait after client joins
-  focus_timer = 5 * 60;
+  // Timer to allow a wait after client joins
+  Timer<SystemTickSource> focus_timer{5 * 60};
 
   WWDebugString("RA95 - About to enter wait for focus loop.\n");
 #ifndef PORTABLE
@@ -8499,7 +8494,7 @@ static int Net_Fake_Join_Dialog() {
         WWDebugString("RA95 - Calling ShowWindow.\n");
         ShowWindow(MainWindow, SW_SHOWMAXIMIZED);
 #endif
-        focus_timer = 5 * 60;
+        focus_timer.Set(5 * 60);
       }
     } while (!GameInFocus);
     AllSurfaces.SurfacesRestored = false;

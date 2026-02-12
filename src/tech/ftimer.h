@@ -18,8 +18,7 @@
 
 // Timer templates parameterized on a tick-source class.
 //
-// Ticker<T>    -- counts up from a starting value.
-// Stopwatch<T> -- adds stop/start (pause/resume) to Ticker.
+// Stopwatch<T> -- counts up with stop/start (pause/resume).
 // Timer<T>     -- counts down toward zero with stop/start support.
 //
 // The tick-source class T must provide `T::Tick() const` returning a
@@ -37,82 +36,29 @@
 
 #include "tech/noinit.h"
 
-// Concept to ensure the timer source provides a numeric tick or timestamp.
 template <typename T>
 concept TickSource = requires {
   { T::Tick() } -> std::convertible_to<int64_t>;
 };
 
-// A timer that watches a constant-rate tick source T and counts upward.
-template <TickSource T>
-class Ticker {
- public:
-  // Starts the timer with an initial elapsed value of `set` ticks.
-  explicit Ticker(int64_t set = 0);
-
-  // No-init constructor for save/load serialization.
-  Ticker(const NoInitClass&);
-
-  ~Ticker() = default;
-  Ticker(const Ticker&) = default;
-  Ticker& operator=(const Ticker&) = default;
-  Ticker(Ticker&&) = default;
-  Ticker& operator=(Ticker&&) = default;
-
-  // Returns the number of ticks elapsed since the timer was started/reset.
-  int64_t Value() const;
-
-  // Resets the timer so that Value() returns `set`.
-  Ticker& operator=(int64_t set);
-
- protected:
-  int64_t Started;  // Tick value when the timer was started/reset.
-};
-
-template <TickSource T>
-Ticker<T>::Ticker(const NoInitClass&) {}
-
-// Anchors Started so that Value() initially returns `set`.
-template <TickSource T>
-Ticker<T>::Ticker(int64_t set)
-    : Started(static_cast<int64_t>(T::Tick()) - set) {}
-
-template <TickSource T>
-int64_t Ticker<T>::Value() const {
-  return static_cast<int64_t>(T::Tick()) - Started;
-}
-
-template <TickSource T>
-Ticker<T>& Ticker<T>::operator=(int64_t set) {
-  Started = static_cast<int64_t>(T::Tick()) - set;
-  return *this;
-}
-
-// A timer that extends Ticker with stop/start (pause/resume).
+// A count-up timer with stop/start (pause/resume).
 //
 // When stopped, the timer freezes at its current value. When restarted, it
-// resumes counting from where it left off. If stop/start is not needed, use
-// Ticker directly.
+// resumes counting from where it left off.
 template <TickSource T>
-class Stopwatch : public Ticker<T> {
+class Stopwatch {
  public:
-  // Starts the timer with an initial elapsed value of `set` ticks.
-  explicit Stopwatch(int64_t set = 0);
+  // Creates a running timer starting at zero elapsed ticks.
+  Stopwatch();
 
   // No-init constructor for save/load serialization.
-  Stopwatch(const NoInitClass& x);
-
-  ~Stopwatch() = default;
-  Stopwatch(const Stopwatch&) = default;
-  Stopwatch& operator=(const Stopwatch&) = default;
-  Stopwatch(Stopwatch&&) = default;
-  Stopwatch& operator=(Stopwatch&&) = default;
+  Stopwatch(const NoInitClass&);
 
   // Returns the current elapsed tick count, accounting for paused time.
   int64_t Value() const;
 
-  // Resets the timer to count up from `set`, keeping it active.
-  Stopwatch& operator=(int64_t set);
+  // Resets the timer to zero and activates it.
+  void Reset();
 
   // Stops (pauses) the timer. Further ticks do not accumulate until Start().
   void Stop();
@@ -120,84 +66,91 @@ class Stopwatch : public Ticker<T> {
   // Starts (resumes) a stopped timer from where it left off.
   void Start();
 
-  // Returns true if the timer is currently counting (not stopped).
-  bool Is_Active() const;
+  bool IsRunning() const;
 
  private:
-  int64_t Accumulated;  // Total ticks accumulated across stop/start cycles.
-  bool Active;          // True when the timer is running.
+  // Returns ticks elapsed since start_tick_ was last anchored.
+  int64_t Elapsed() const;
+
+  int64_t start_tick_;
+  // Total ticks accumulated across stop/start cycles.
+  int64_t accumulated_ticks_;
+  bool running_;
 };
 
 template <TickSource T>
-Stopwatch<T>::Stopwatch(const NoInitClass& x) : Ticker<T>(x) {}
+Stopwatch<T>::Stopwatch()
+    : start_tick_(static_cast<int64_t>(T::Tick())),
+      accumulated_ticks_(0),
+      running_(true) {}
 
 template <TickSource T>
-Stopwatch<T>::Stopwatch(int64_t set)
-    : Ticker<T>(set), Accumulated(0), Active(true) {}
+Stopwatch<T>::Stopwatch(const NoInitClass&) {}
 
 template <TickSource T>
 int64_t Stopwatch<T>::Value() const {
-  int64_t value = Accumulated;
-  if (Active) {
-    value += Ticker<T>::Value();
+  int64_t value = accumulated_ticks_;
+  if (running_) {
+    value += Elapsed();
   }
   return value;
 }
 
 template <TickSource T>
-Stopwatch<T>& Stopwatch<T>::operator=(int64_t set) {
-  this->Started = static_cast<int64_t>(T::Tick());
-  Accumulated = set;
-  Active = true;
-  return *this;
+void Stopwatch<T>::Reset() {
+  start_tick_ = static_cast<int64_t>(T::Tick());
+  accumulated_ticks_ = 0;
+  running_ = true;
 }
 
 template <TickSource T>
 void Stopwatch<T>::Stop() {
-  if (Active) {
-    Accumulated += Ticker<T>::Value();
-    Active = false;
+  if (running_) {
+    accumulated_ticks_ += Elapsed();
+    running_ = false;
   }
 }
 
 template <TickSource T>
 void Stopwatch<T>::Start() {
-  if (!Active) {
-    this->Started = static_cast<int64_t>(T::Tick());
-    Active = true;
+  if (!running_) {
+    start_tick_ = static_cast<int64_t>(T::Tick());
+    running_ = true;
   }
 }
 
 template <TickSource T>
-bool Stopwatch<T>::Is_Active() const {
-  return Active;
+bool Stopwatch<T>::IsRunning() const {
+  return running_;
+}
+
+template <TickSource T>
+int64_t Stopwatch<T>::Elapsed() const {
+  return static_cast<int64_t>(T::Tick()) - start_tick_;
 }
 
 // A countdown timer that counts down from a set duration toward zero.
 //
 // When the value reaches zero the timer is "finished". The timer supports
-// stop/start (pause/resume). Assigning a new duration via operator= resets
-// and restarts the countdown.
+// stop/start (pause/resume). Calling Set() with a new duration resets and
+// restarts the countdown.
 template <TickSource T>
-class Timer : public Ticker<T> {
+class Timer {
  public:
   // Starts counting down from `set` ticks.
   explicit Timer(int64_t set = 0);
 
   // No-init constructor for save/load serialization.
-  Timer(const NoInitClass& x);
-
-  ~Timer() = default;
-  Timer(const Timer&) = default;
-  Timer& operator=(const Timer&) = default;
-  Timer(Timer&&) = default;
-  Timer& operator=(Timer&&) = default;
+  Timer(const NoInitClass&);
 
   // Returns the ticks remaining, or 0 if the countdown has finished.
   int64_t Value() const;
 
   // Resets the countdown to `duration` ticks and restarts it.
-  Timer& operator=(int64_t duration);
+  void Set(int64_t duration);
+
+  // Restarts the countdown with the same duration.
+  void Restart();
 
   // Stops (pauses) the countdown.
   void Stop();
@@ -205,31 +158,34 @@ class Timer : public Ticker<T> {
   // Starts (resumes) a stopped countdown from where it left off.
   void Start();
 
-  // Returns true if the countdown is currently running (not stopped).
-  bool Is_Active() const;
-
-  // Returns true if the countdown has reached zero.
+  bool IsRunning() const;
   bool IsFinished() const;
-
-  // Returns true if the countdown has not yet reached zero.
   bool HasTimeLeft() const;
 
  private:
-  int64_t DelayTime;  // Ticks remaining before countdown timer expires.
-  bool Active;        // True when the timer is running.
+  // Returns ticks elapsed since start_tick_ was last anchored.
+  int64_t Elapsed() const;
+
+  int64_t start_tick_;
+  // Ticks remaining as of the last anchor point (Set, Stop, or construction).
+  int64_t delay_time_;
+  bool running_;
 };
 
 template <TickSource T>
-Timer<T>::Timer(const NoInitClass& x) : Ticker<T>(x) {}
+Timer<T>::Timer(int64_t set)
+    : start_tick_(static_cast<int64_t>(T::Tick())),
+      delay_time_(set),
+      running_(true) {}
 
 template <TickSource T>
-Timer<T>::Timer(int64_t set) : Ticker<T>(0), DelayTime(set), Active(true) {}
+Timer<T>::Timer(const NoInitClass&) {}
 
 template <TickSource T>
 int64_t Timer<T>::Value() const {
-  int64_t remain = DelayTime;
-  if (Active) {
-    int64_t elapsed = Ticker<T>::Value();
+  int64_t remain = delay_time_;
+  if (running_) {
+    int64_t elapsed = Elapsed();
     if (elapsed < remain) {
       return remain - elapsed;
     }
@@ -239,32 +195,37 @@ int64_t Timer<T>::Value() const {
 }
 
 template <TickSource T>
-Timer<T>& Timer<T>::operator=(int64_t duration) {
-  this->Started = static_cast<int64_t>(T::Tick());
-  DelayTime = duration;
-  Active = true;
-  return *this;
+void Timer<T>::Set(int64_t duration) {
+  start_tick_ = static_cast<int64_t>(T::Tick());
+  delay_time_ = duration;
+  running_ = true;
+}
+
+template <TickSource T>
+void Timer<T>::Restart() {
+  start_tick_ = static_cast<int64_t>(T::Tick());
+  running_ = true;
 }
 
 template <TickSource T>
 void Timer<T>::Stop() {
-  if (Active) {
-    DelayTime = Value();
-    Active = false;
+  if (running_) {
+    delay_time_ = Value();
+    running_ = false;
   }
 }
 
 template <TickSource T>
 void Timer<T>::Start() {
-  if (!Active) {
-    this->Started = static_cast<int64_t>(T::Tick());
-    Active = true;
+  if (!running_) {
+    start_tick_ = static_cast<int64_t>(T::Tick());
+    running_ = true;
   }
 }
 
 template <TickSource T>
-bool Timer<T>::Is_Active() const {
-  return Active;
+bool Timer<T>::IsRunning() const {
+  return running_;
 }
 
 template <TickSource T>
@@ -275,6 +236,11 @@ bool Timer<T>::IsFinished() const {
 template <TickSource T>
 bool Timer<T>::HasTimeLeft() const {
   return Value() != 0;
+}
+
+template <TickSource T>
+int64_t Timer<T>::Elapsed() const {
+  return static_cast<int64_t>(T::Tick()) - start_tick_;
 }
 
 #endif  // CNC_RED_ALERT_TECH_FTIMER_H_

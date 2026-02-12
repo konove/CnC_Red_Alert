@@ -114,7 +114,7 @@ void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
 
   while (time--) {
     if (_ftimer.Value() > 0) {
-      _ftimer = TIMER_SECOND / 6;
+      _ftimer.Set(TIMER_SECOND / 6);
 
       // Oscillate brightness between 0x20 (dim) and 150 (bright).
       constexpr int kStepRate = 20;
@@ -266,7 +266,7 @@ std::string Map_Selection() {
     if (timer.IsFinished()) {
       cursor_frame++;
       cursor_frame %= count;
-      timer = delay;
+      timer.Set(delay);
       Set_Mouse_Cursor(
           hotspot_x, hotspot_y,
           Extract_Shape(MouseClass::MouseShapes, start + cursor_frame));
