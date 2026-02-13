@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/soscomp.h"
@@ -40,10 +41,8 @@ bool DecompressVqaSosData(SosCompressInfo* info, std::size_t uncomp_size) {
     return false;
   }
 
-  // Cast void*/uint8_t* to the specific types needed for processing.
-  // source is read as bytes (uint8_t), dest is written as shorts (int16_t).
   auto* in_ptr = info->source;
-  auto* out_ptr = reinterpret_cast<std::int16_t*>(info->dest);
+  auto* out_ptr = info->dest;
 
   // Loop processes 4 output bytes (2 samples) per iteration.
   // We use >= 4 to prevent underflow if uncomp_size is not a multiple of 4.
@@ -74,16 +73,17 @@ bool DecompressVqaSosData(SosCompressInfo* info, std::size_t uncomp_size) {
       info->predicted = std::clamp(info->predicted + diff, -32768, 32767);
 
       // 6. Output Sample
-      *out_ptr++ = static_cast<std::int16_t>(info->predicted);
+      const auto sample = static_cast<std::int16_t>(info->predicted);
+      std::memcpy(out_ptr, &sample, sizeof(sample));
+      out_ptr += sizeof(sample);
     }
 
     uncomp_size -= 4;
   }
 
-  // Update the struct pointers to reflect the new position
-  // (Optional: depends if the caller expects the struct pointers to move)
+  // Update the struct pointers to reflect the new position.
   info->source = in_ptr;
-  info->dest = reinterpret_cast<std::uint8_t*>(out_ptr);
+  info->dest = out_ptr;
 
   return true;
 }

@@ -227,9 +227,11 @@ const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
 }
 
 CELL Coord_Cell(COORDINATE coord) {
+  COORD_COMPOSITE cc{};
+  cc.Coord = coord;
   CELL_COMPOSITE cell;
   cell.Cell = 0;
-  cell.Sub.X = reinterpret_cast<COORD_COMPOSITE&>(coord).Sub.X.Sub.Cell;
-  cell.Sub.Y = reinterpret_cast<COORD_COMPOSITE&>(coord).Sub.Y.Sub.Cell;
+  cell.Sub.X = cc.Sub.X.Sub.Cell;
+  cell.Sub.Y = cc.Sub.Y.Sub.Cell;
   return cell.Cell;
 }

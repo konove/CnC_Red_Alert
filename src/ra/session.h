@@ -331,9 +331,8 @@ typedef struct {
 #else
       char ShortFileName[12];  // Name of scenario file to expect from host
 #endif
-      unsigned char
-          FileDigest[32];  // Digest of scenario file to expect from host
-                           //	ajw - This is not necessarily null-terminated.
+      char FileDigest[32];  // Digest of scenario file to expect from host
+                            //	ajw - This is not necessarily null-terminated.
     } ScenarioInfo;
     struct {
       char Message[MAX_MESSAGE_LENGTH];  // inter-player message
@@ -397,9 +396,8 @@ typedef struct GlobalPacketType {
 #else
       char ShortFileName[12];  // Name of scenario file to expect from host
 #endif
-      unsigned char
-          FileDigest[32];  // Digest of scenario file to expect from host
-                           //	ajw - This is not necessarily null-terminated.
+      char FileDigest[32];  // Digest of scenario file to expect from host
+                            //	ajw - This is not necessarily null-terminated.
     } ScenarioInfo;
     struct {
       char Buf[MAX_MESSAGE_LENGTH];  // inter-user message

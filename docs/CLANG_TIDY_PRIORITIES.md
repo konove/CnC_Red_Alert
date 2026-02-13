@@ -75,7 +75,7 @@ Worth enabling incrementally. Can be fixed file-by-file.
 
 | Check                                | Why Enable             | Effort                       | Status |
 |--------------------------------------|------------------------|------------------------------|--------|
-| `clang-analyzer-deadcode.DeadStores` | Assignments never read | Medium                       |        |
+| `clang-analyzer-deadcode.DeadStores` | Assignments never read | Medium                       | ✅      |
 | `clang-diagnostic-unused-variable`   | Unused variables       | Low                          | ✅      |
 | `clang-diagnostic-unused-function`   | Dead functions         | Low                          | ✅      |
 | `clang-diagnostic-unused-parameter`  | Unused params          | Low - use `[[maybe_unused]]` | ✅      |
@@ -161,7 +161,7 @@ checks.
 
 | Rule   | Description                         | clang-tidy Check                                  | Current  |
 |--------|-------------------------------------|---------------------------------------------------|----------|
-| Type.1 | Don't use `reinterpret_cast`        | `cppcoreguidelines-pro-type-reinterpret-cast`     | Disabled |
+| Type.1 | Don't use `reinterpret_cast`        | `cppcoreguidelines-pro-type-reinterpret-cast`     | Enabled  |
 | Type.2 | Don't use `static_cast` to downcast | `cppcoreguidelines-pro-type-static-cast-downcast` | Enabled  |
 | Type.3 | Don't use `const_cast`              | `cppcoreguidelines-pro-type-const-cast`           | Enabled  |
 | Type.4 | Don't use C-style casts             | `cppcoreguidelines-pro-type-cstyle-cast`          | Disabled |

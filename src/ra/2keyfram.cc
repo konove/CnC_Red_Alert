@@ -40,6 +40,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <bit>
 #include <cstdint>
 #include <cstring>
 
@@ -105,10 +106,10 @@ static int Length;
 
 void* Get_Shape_Header_Data(void* ptr) {
   if (UseBigShapeBuffer) {
-    ShapeHeaderType* header = static_cast<ShapeHeaderType*>(ptr);
-    return header->shape_data +
-           reinterpret_cast<long>(header->shape_buffer ? TheaterShapeBufferStart
-                                                       : BigShapeBufferStart);
+    const auto* header = static_cast<ShapeHeaderType*>(ptr);
+    char* base =
+        header->shape_buffer ? TheaterShapeBufferStart : BigShapeBufferStart;
+    return header->shape_data + std::bit_cast<uintptr_t>(base);
   }
   return ptr;
 }
@@ -131,7 +132,7 @@ void Reset_Theater_Shapes() {
 void Reallocate_Big_Shape_Buffer() {
   if (ReallocShapeBufferFlag) {
     BigShapeBufferLength += 2000000;  // Extra 2 Mb of uncompressed shape space
-    BigShapeBufferPtr -= reinterpret_cast<uintptr_t>(BigShapeBufferStart);
+    BigShapeBufferPtr -= std::bit_cast<uintptr_t>(BigShapeBufferStart);
     Memory_Error = nullptr;
     BigShapeBufferStart = static_cast<char*>(
         Resize_Alloc(BigShapeBufferStart, BigShapeBufferLength));

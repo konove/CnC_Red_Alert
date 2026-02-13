@@ -4163,7 +4163,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #endif
         port::SafeCopy(
-            reinterpret_cast<char*>(SendPacket.ScenarioInfo.FileDigest),
+            SendPacket.ScenarioInfo.FileDigest,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
             sizeof(SendPacket.ScenarioInfo.FileDigest));
         SendPacket.ScenarioInfo.OfficialScenario =

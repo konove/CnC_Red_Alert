@@ -279,12 +279,8 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
     file_handle.Seek(-static_cast<int>(256 * sizeof(RGB)), SEEK_END);
     file_handle.Read(palette, 256L * sizeof(RGB));
 
-    auto* pal = reinterpret_cast<RGB*>(palette);
-    for (int i = 0; i < 256; i++) {
-      pal->red >>= 2;
-      pal->green >>= 2;
-      pal->blue >>= 2;
-      pal++;
+    for (int i = 0; i < 256 * 3; i++) {
+      palette[i] >>= 2;
     }
   }
 

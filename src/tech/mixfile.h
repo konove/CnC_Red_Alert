@@ -199,14 +199,12 @@ bool MixFileClass<T>::Open(std::string_view filename, const PKey* key) {
     straw->Get(&file_header, sizeof(file_header));
   } else {
     // Plain Format: The bytes read into 'alternate' are actually the start of
-    // FileHeader standard layout allows memcpy, though strictly
-    // reinterpret_cast is valid here due to packing.
-    std::memcpy(&file_header, &alternate, sizeof(alternate));
-
-    // Read the remainder of the header
-    char* header_ptr = reinterpret_cast<char*>(&file_header);
-    straw->Get(header_ptr + sizeof(alternate),
+    // FileHeader. Reassemble via a byte buffer to avoid reinterpret_cast.
+    char header_buf[sizeof(file_header)];
+    std::memcpy(header_buf, &alternate, sizeof(alternate));
+    straw->Get(header_buf + sizeof(alternate),
                sizeof(file_header) - sizeof(alternate));
+    std::memcpy(&file_header, header_buf, sizeof(file_header));
   }
 
   data_size_ = file_header.size;
