@@ -288,7 +288,7 @@ int main(int argc, char* argv[])
   ForceEnglish = false;
 #endif
   if (Parse_Command_Line(argc, argv)) {
-    g_tick_timer = new TickTimer();
+    InitTickTimer();
     TickCount.Start();
 
     RawFileClass cfile("CONQUER.INI");
@@ -316,7 +316,7 @@ int main(int argc, char* argv[])
     if (Disk_Space_Available() < INIT_FREE_DISK_SPACE) {
 #ifdef PORTABLE
       // pretty unlikely
-      delete g_tick_timer;
+      ShutdownTickTimer();
       return EXIT_FAILURE;
 #else
 #ifdef GERMAN
@@ -327,9 +327,7 @@ int main(int argc, char* argv[])
               (INIT_FREE_DISK_SPACE) / (1024 * 1024));
       MessageBox(NULL, disk_space_message, "Command & Conquer",
                  MB_ICONEXCLAMATION | MB_OK);
-      if (g_tick_timer) {
-        delete g_tick_timer;
-      }
+      ShutdownTickTimer();
       return (EXIT_FAILURE);
 #endif
 #ifdef FRENCH
@@ -340,9 +338,7 @@ int main(int argc, char* argv[])
               (INIT_FREE_DISK_SPACE) / (1024 * 1024));
       MessageBox(NULL, disk_space_message, "Command & Conquer",
                  MB_ICONEXCLAMATION | MB_OK);
-      if (g_tick_timer) {
-        delete g_tick_timer;
-      }
+      ShutdownTickTimer();
       return (EXIT_FAILURE);
 #endif
 #if !(FRENCH | GERMAN)
@@ -352,9 +348,7 @@ int main(int argc, char* argv[])
           "memory and save games. Do you want to play C&C anyway?",
           "Command & Conquer", MB_ICONQUESTION | MB_YESNO);
       if (reply == IDNO) {
-        if (g_tick_timer) {
-          delete g_tick_timer;
-        }
+        ShutdownTickTimer();
         return (EXIT_FAILURE);
       }
 
@@ -416,7 +410,7 @@ int main(int argc, char* argv[])
         MessageBox(MainWindow, Text_String(TXT_UNABLE_TO_SET_VIDEO_MODE),
                    "Command & Conquer", MB_ICONEXCLAMATION | MB_OK);
 #endif
-        delete g_tick_timer;
+        ShutdownTickTimer();
         delete[] Palette;
         return EXIT_FAILURE;
       }
@@ -450,9 +444,7 @@ int main(int argc, char* argv[])
           MessageBox(MainWindow,
                      Text_String(TXT_UNABLE_TO_ALLOCATE_PRIMARY_VIDEO_BUFFER),
                      "Command & Conquer", MB_ICONEXCLAMATION | MB_OK);
-          if (g_tick_timer) {
-            delete g_tick_timer;
-          }
+          ShutdownTickTimer();
           if (Palette) {
             delete[] Palette;
           }
@@ -652,10 +644,7 @@ int main(int argc, char* argv[])
 #endif
 
     //		Remove_Keyboard_Interrupt();
-    if (g_tick_timer) {
-      delete g_tick_timer;
-      g_tick_timer = nullptr;
-    }
+    ShutdownTickTimer();
 
     if (Palette) {
       delete[] Palette;
@@ -703,11 +692,8 @@ void __cdecl Prog_End() {
     delete WWMouse;
     WWMouse = nullptr;
   }
-  if (g_tick_timer) {
-    CCDebugString("C&C95 - Deleting tick timer.\n");
-    delete g_tick_timer;
-    g_tick_timer = nullptr;
-  }
+  CCDebugString("C&C95 - Deleting tick timer.\n");
+  ShutdownTickTimer();
 
   if (Palette) {
     CCDebugString("C&C95 - Deleting palette object.\n");

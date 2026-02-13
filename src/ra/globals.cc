@@ -265,7 +265,6 @@ fixed EngineerCaptureLevel =
 unsigned short Hard_Error_Occured = 0;
 WWMouseClass* WWMouse = nullptr;
 GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, nullptr);
-TickTimer* g_tick_timer = nullptr;
 int ScreenWidth = 640;
 int ScreenHeight = 400;
 GraphicBufferClass ModeXBuff;

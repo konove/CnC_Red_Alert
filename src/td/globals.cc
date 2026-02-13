@@ -963,14 +963,6 @@ int MouseInstalled;
 int AreThingiesEnabled = false;
 
 /*
-** Pointer to windows timer object
-**
-**
-*/
-
-TickTimer* g_tick_timer = nullptr;
-
-/*
 ** Command line arguments
 **
 **

@@ -287,7 +287,7 @@ int main(int argc, char* argv[])
     }
 #endif  // MPATH
 
-    g_tick_timer = new TickTimer();
+    InitTickTimer();
     RawFileClass cfile(CONFIG_FILE_NAME);
 
     Keyboard = new KeyboardClass();
@@ -305,7 +305,7 @@ int main(int argc, char* argv[])
       printf(TEXT_INSUFFICIENT);
       printf(TEXT_MUST_HAVE, INIT_FREE_DISK_SPACE / (1024 * 1024));
       printf("\n");
-      delete g_tick_timer;
+      ShutdownTickTimer();
       return EXIT_FAILURE;
     }
 
@@ -437,10 +437,7 @@ int main(int argc, char* argv[])
     puts(TEXT_SETUP_FIRST);
     Keyboard->Get();
 
-    if (g_tick_timer) {
-      delete g_tick_timer;
-      g_tick_timer = nullptr;
-    }
+    ShutdownTickTimer();
   }
   /*
   **	Restore the current drive and directory.
@@ -469,7 +466,7 @@ bool InitDDraw() {
   }
 
   if (!video_success) {
-    delete g_tick_timer;
+    ShutdownTickTimer();
 
     return false;
   }
@@ -513,10 +510,7 @@ void __cdecl Prog_End() {
     delete WWMouse;
     WWMouse = nullptr;
   }
-  if (g_tick_timer) {
-    delete g_tick_timer;
-    g_tick_timer = nullptr;
-  }
+  ShutdownTickTimer();
 
   // Release owning members of ObjectTypeClass-derived objects in all global
   // type heaps. The custom heap allocator (TFixedIHeapClass) never calls

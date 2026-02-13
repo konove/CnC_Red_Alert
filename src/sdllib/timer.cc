@@ -6,7 +6,11 @@
 
 #include <algorithm>
 
+#include "absl/log/check.h"
+
 bool TimerSystemOn = false;
+
+TickTimer* g_tick_timer = nullptr;
 
 static Uint32 TimerCallback(Uint32 interval, void* param) {
   static_cast<TickTimer*>(param)->UpdateTickCount();
@@ -89,3 +93,13 @@ TickTimer::~TickTimer() {
 }
 
 uint32_t Get_Time_Ms() { return SDL_GetTicks(); }
+
+void InitTickTimer(int tick_rate) {
+  CHECK(g_tick_timer == nullptr);
+  g_tick_timer = new TickTimer(tick_rate);
+}
+
+void ShutdownTickTimer() {
+  delete g_tick_timer;
+  g_tick_timer = nullptr;
+}

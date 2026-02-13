@@ -139,4 +139,12 @@ uint32_t Get_Time_Ms();
 
 extern TickTimer* g_tick_timer;
 
+// Initializes the global tick timer at the given rate. Must be called before
+// any code reads g_tick_timer.
+void InitTickTimer(int tick_rate = 60);
+
+// Shuts down the global tick timer. Safe to call if never initialized or
+// already shut down.
+void ShutdownTickTimer();
+
 #endif  // CNC_RED_ALERT_SDLLIB_TIMER_H_
