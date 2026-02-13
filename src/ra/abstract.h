@@ -46,97 +46,64 @@
 #include "ra/monoc.h"
 #include "tech/noinit.h"
 
-/*
-**	This class is the base class for all game objects that have an existence
-*on the *	battlefield.
-*/
+// Base class for all game objects that exist on the battlefield.
 class AbstractClass {
  public:
-  /*
-  **	This specifies the type of object and the unique ID number
-  **	associated with it. The ID number happens to match the index into
-  **	the object heap appropriate for this object type.
-  */
   RTTIType RTTI;
-  int ID;
+  int ID;  // Also serves as the index into the type-specific object heap.
 
-  /*
-  **	The coordinate location of the unit. For vehicles, this is the center
-  **	point. For buildings, it is the upper left corner.
-  */
+  // Object position. Center point for vehicles, upper-left corner for
+  // buildings.
   COORDINATE Coord;
 
-  /*
-  **	This is the height of the object above ground (expressed in leptons).
-  */
-  int Height;
+  int Height;  // Above-ground height in leptons.
 
-  /*
-  **	The actual object ram-space is located in arrays in the data segment.
-  *This flag *	is used to indicate which objects are free to be reused and
-  *which are currently *	in use by the game.
-  */
+  // Whether this slot in the fixed-size object heap is in use.
   unsigned IsActive : 1;
 
-  /*-----------------------------------------------------------------------------------
-  **	Constructor & destructors.
-  */
-  AbstractClass(RTTIType rtti, int id)
-      : RTTI(rtti), ID(id), Coord(0xFFFFFFFFL), Height(0) {}
-  AbstractClass(const NoInitClass& x) { x(); }
+  AbstractClass(const RTTIType rtti, const int id)
+      : RTTI(rtti),
+        ID(id),
+        Coord(0xFFFFFFFFL),  // Sentinel: no position assigned.
+        Height(0) {}
+  AbstractClass(const NoInitClass&) {}
   virtual ~AbstractClass() {}
 
-  /*
-  **	Query functions.
-  */
   virtual const char* Name() const { return ""; }
   virtual HousesType Owner() const { return HOUSE_NONE; }
   TARGET As_Target() const { return Build_Target(RTTI, ID); }
   RTTIType What_Am_I() const { return RTTI; }
 
-  /*
-  **	Scenario and debug support.
-  */
   virtual void Debug_Dump(MonoClass* mono) const;
 
-  /*
-  **	Coordinate query support functions.
-  */
   virtual COORDINATE Center_Coord() const { return Coord; }
   virtual COORDINATE Target_Coord() const { return Coord; }
 
-  /*
-  **	Coordinate inquiry functions. These are used for both display and
-  **	combat purposes.
-  */
   DirType Direction(const AbstractClass* object) const {
     return ::Direction(Center_Coord(), object->Target_Coord());
   }
-  DirType Direction(COORDINATE coord) const {
+  DirType Direction(const COORDINATE coord) const {
     return ::Direction(Center_Coord(), coord);
   }
   DirType Direction(TARGET target) const;
-  DirType Direction(CELL cell) const {
+  DirType Direction(const CELL cell) const {
     return ::Direction(Coord_Cell(Center_Coord()), cell);
   }
+
+  // Returns distance in leptons to the target. For buildings, subtracts
+  // the building's average radius so range checks measure to the edge.
   int Distance(TARGET target) const;
-  int Distance(COORDINATE coord) const {
+  int Distance(const COORDINATE coord) const {
     return ::Distance(Center_Coord(), coord);
   }
   int Distance(const AbstractClass* object) const {
     return ::Distance(Center_Coord(), object->Target_Coord());
   }
 
-  /*
-  **	Object entry and exit from the game system.
-  */
   virtual MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const {
     return MOVE_OK;
   }
 
-  /*
-  **	AI.
-  */
   virtual void AI() {}
 };
 

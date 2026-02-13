@@ -95,13 +95,21 @@ class AbstractTypeClass {
   RTTIType What_Am_I() const { return RTTI; }
   TARGET As_Target() const { return Build_Target(RTTI, ID); }
 
+  // Adjusts a placement coordinate for this type. Derived classes override
+  // to snap to cell boundaries or apply other type-specific rules.
   virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
+
+  // Returns the text string index for this type's display name, checking
+  // the NameOverride table for scenario-specific replacements first.
   virtual int Full_Name() const;
+
   const char* Name() const { return IniName; }
   void Set_Name(const char* buf) const {
     strncpy((char*)IniName, buf, sizeof(IniName));
     (char&)IniName[sizeof(IniName) - 1] = '\0';
   }
+  // Returns a bit flag of houses allowed to own this type. Base allows all;
+  // derived classes override to restrict ownership.
   virtual int Get_Ownable() const;
 
   void Code_Pointers() {}
