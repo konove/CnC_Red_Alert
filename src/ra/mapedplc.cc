@@ -281,7 +281,6 @@ int MapEditClass::Placement_Dialog() {
   for (house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
-  house = HOUSE_FIRST;
 
   TextButtonClass nextbtn(BUTTON_NEXT, TXT_RIGHT, TPF_EBUTTON, D_RIGHT_X,
                           D_RIGHT_Y, D_RIGHT_W, D_RIGHT_H);

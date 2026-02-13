@@ -329,7 +329,6 @@ int GaugeClass::Action(unsigned flags, KeyNumType& key) {
     */
     if (!Set_Value(Pixel_To_Value(IsHorizontal ? Get_Mouse_X() - ClickDiff
                                                : Get_Mouse_Y() - ClickDiff))) {
-      flags &= ~(LEFTHELD | LEFTRELEASE | LEFTPRESS);
       ControlClass::Action(0, key);
       key = KN_NONE;
       return true;

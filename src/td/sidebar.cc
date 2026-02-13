@@ -1739,30 +1739,14 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
 
               case RTTI_BUILDINGTYPE:
                 isbusy = PlayerPtr->BuildingFactory != -1;
-                if (!BuildingTypeClass::As_Reference(
-                         static_cast<StructType>(Buildables[index].BuildableID))
-                         .IsWall) {
-                  remapper = PlayerPtr->Remap_Table(false, false);
-                }
                 break;
 
               case RTTI_UNITTYPE:
                 isbusy = PlayerPtr->UnitFactory != -1;
-                switch (Buildables[index].BuildableID) {
-                  case UNIT_MCV:
-                  case UNIT_HARVESTER:
-                    remapper = PlayerPtr->Remap_Table(false, false);
-                    break;
-
-                  default:
-                    remapper = PlayerPtr->Remap_Table(false, true);
-                    break;
-                }
                 break;
 
               case RTTI_AIRCRAFTTYPE:
                 isbusy = PlayerPtr->AircraftFactory != -1;
-                remapper = PlayerPtr->Remap_Table(false, true);
                 break;
             }
             shapefile = obj->Get_Cameo_Data();
@@ -1815,16 +1799,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           }
         }
 
-        if (obj || spc) {
-          /*
-          ** If this item is flashing then take care of it.
-          **
-          */
-          if (Flasher == index && Fetch_Stage() & 0x01) {
-            remapper = FadingLight;
-          }
-
-        } else {
+        if (!obj && !spc) {
           shapefile = LogoShapes;
           shapenum = SB_BLANK;
         }

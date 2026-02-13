@@ -1689,13 +1689,6 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
                                   Buildables[index].BuildableID);
           if (obj != nullptr) {
             /*
-            **	Fetch the remap table that is appropriate for this object
-            **	type.
-            */
-            remapper = PlayerPtr->Remap_Table(
-                false, dynamic_cast<const TechnoTypeClass*>(obj)->Remap);
-
-            /*
             **	If there is already a factory producing this kind of object,
             *then all *	objects of this type are displays in a disabled state.
             */
@@ -1749,16 +1742,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           darken = false;
         }
 
-        if (obj != nullptr || spc != SPC_NONE) {
-          /*
-          ** If this item is flashing then take care of it.
-          **
-          */
-          if (Flasher == index && Fetch_Stage() & 0x01) {
-            remapper = FadingLight;
-          }
-
-        } else {
+        if (obj == nullptr && spc == SPC_NONE) {
           shapefile = LogoShapes;
           if (!darken) {
             shapenum = SB_BLANK;

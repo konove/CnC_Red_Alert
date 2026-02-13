@@ -41,7 +41,6 @@ void* Build_Fading_Table(const void* palette, void* dest, long int color,
   unsigned matchvalue;
   uint8_t targetred;
   uint8_t targetgreen;
-  uint8_t targetblue;
   uint8_t idealred;
   uint8_t idealgreen;
   uint8_t matchcolor;
@@ -59,7 +58,6 @@ void* Build_Fading_Table(const void* palette, void* dest, long int color,
   const auto* pal8 = (uint8_t*)palette;
   targetred = pal8[color * 3 + 0];
   targetgreen = pal8[color * 3 + 0];
-  targetblue = pal8[color * 3 + 0];
 
   // Main loop
 
@@ -69,18 +67,14 @@ void* Build_Fading_Table(const void* palette, void* dest, long int color,
   *dptr++ = 0;
 
   for (int remap_index = 1; remap_index < 256; remap_index++) {
-    // new = orig - ((orig-target) * fraction);
     uint8_t origred = pal8[remap_index * 3 + 0];
     uint8_t origgreen = pal8[remap_index * 3 + 1];
-    uint8_t origblue = pal8[remap_index * 3 + 2];
 
     uint16_t tmp = (origred - targetred) * (frac >> 1);
     idealred = origred - (tmp >> 7);
 
     tmp = (origgreen - targetgreen) * (frac >> 1);
     idealgreen = origgreen - (tmp >> 7);
-
-    tmp = (origblue - targetblue) * (frac >> 1);
 
     // Sweep through the entire existing palette to find the closest
     // matching color.  Never matches with color 0.
@@ -195,7 +189,6 @@ uint8_t Random() {
 
   tmp = tmp - ((RandNumb & 0xFF) + (1 - c2));
   int c3 = tmp & 1;
-  tmp >>= 1;
 
   r[0] = r[0] >> 1 | c3 << 7;
 

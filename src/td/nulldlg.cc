@@ -760,7 +760,6 @@ static int Reconnect_Null_Modem() {
         if (ReceivePacket.ID == MPlayerLocalID) {
           CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
           retval = false;
-          process = false;
           break;
         }
 
@@ -5401,9 +5400,6 @@ int Com_Show_Scenario_Dialog() {
         CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
         // to skip the other system not responding msg
-        lastmsgtime = TickCount.Time();
-
-        process = false;
         rc = false;
 
         // say we did receive sign off to keep from sending one

@@ -2183,8 +2183,8 @@ bool Main_Loop() {
                      (PlayerPtr->Difficulty == DIFF_EASY ? 1 : 0) -
                      (PlayerPtr->Difficulty == DIFF_HARD ? 1 : 0));
     } else {
-      FrameTimer.Set(
-          Options.GameSpeed + (PlayerPtr->Difficulty == DIFF_EASY ? 1 : 0));
+      FrameTimer.Set(Options.GameSpeed +
+                     (PlayerPtr->Difficulty == DIFF_EASY ? 1 : 0));
     }
   }
 
@@ -4141,7 +4141,6 @@ bool Force_CD_Available(int cd_desired)  //	ajw
       /*
       ** The required CD is still in the CD drive we used last time
       */
-      new_cd_drive = current_drive;
 #ifdef PORTABLE
       // we have a CD, nothing else to do
       // (can't see that the below code does anything other than refresh the

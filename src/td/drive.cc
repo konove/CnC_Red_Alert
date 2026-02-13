@@ -1105,19 +1105,6 @@ bool DriveClass::Start_Of_Move() {
   }
 
   /*
-  **	Adjust speed depending on distance to ultimate movement target. The
-  **	further away the target is, the faster the vehicle will travel.
-  */
-  int dist = Distance(NavCom);
-  if (dist < 0x0200) {
-    speed = Fixed_To_Cardinal(speed, 0x00A0);
-  } else {
-    if (dist < 0x0700) {
-      speed = Fixed_To_Cardinal(speed, 0x00D0);
-    }
-  }
-
-  /*
   **	Reserve the destination cell so that it won't become
   **	occupied AS this unit is moving into it.
   */

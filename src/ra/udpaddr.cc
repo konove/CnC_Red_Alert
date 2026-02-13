@@ -218,7 +218,6 @@ bool Get_Broadcast_Addresses() {
       //..................................................................
       case KN_ESC:
       case BUTTON_CANCEL | KN_BUTTON:
-        process = false;
         return false;
 
       case BUTTON_OK | KN_BUTTON:

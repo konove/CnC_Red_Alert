@@ -675,10 +675,7 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   **	the current animation stage.
   */
   int shapenum;
-  int facenum;
-
-  shapenum = 0;
-  facenum = HumanShape[facing];
+  int facenum = HumanShape[facing];
 
   /*
   **	Fetch the shape pointer to use for the infantry. This is controlled by

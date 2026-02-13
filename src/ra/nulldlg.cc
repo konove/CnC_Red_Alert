@@ -787,7 +787,6 @@ static int Reconnect_Null_Modem() {
         if (ReceivePacket.ID == Session.ColorIdx) {
           WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
           retval = false;
-          process = false;
           break;
         }
 
@@ -1703,10 +1702,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int d_portlist_w =
       80 * RESFACTOR + 80 * (RESFACTOR - 1);  // Port list wider in hires
   int d_portlist_h = 33 * RESFACTOR;
-  int d_portlist_x = d_dialog_x + d_dialog_w / 6 - d_portlist_w / 2;
-#ifdef WIN32
-  d_portlist_x = 0x45;
-#endif
+  int d_portlist_x = 0x45;
   int d_portlist_y =
       d_dialog_y + (d_margin + d_txt6_h) * 2 + d_margin + 10 * RESFACTOR;
 
@@ -3547,11 +3543,9 @@ int Com_Scenario_Dialog(bool skirmish) {
         if (messages_have_focus) {
           if (name_edt.Has_Focus()) {
             display = std::max(display, REDRAW_MESSAGE);
-            messages_have_focus = false;
           }
         } else {
           if (!name_edt.Has_Focus()) {
-            messages_have_focus = true;
             display = std::max(display, REDRAW_MESSAGE);
             Session.Messages.Set_Edit_Focus();
           }
@@ -5303,11 +5297,9 @@ int Com_Show_Scenario_Dialog() {
     if (messages_have_focus) {
       if (name_edt.Has_Focus()) {
         display = std::max(display, REDRAW_MESSAGE);
-        messages_have_focus = false;
       }
     } else {
       if (!name_edt.Has_Focus()) {
-        messages_have_focus = true;
         display = std::max(display, REDRAW_MESSAGE);
         Session.Messages.Set_Edit_Focus();
       }
@@ -5802,9 +5794,6 @@ int Com_Show_Scenario_Dialog() {
         WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
         // to skip the other system not responding msg
-        lastmsgtime = TickCount.Value();
-
-        process = false;
         rc = false;
 
         // say we did receive sign off to keep from sending one

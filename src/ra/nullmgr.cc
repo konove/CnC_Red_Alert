@@ -1207,9 +1207,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Send the user supplied modem init string
   */
-  if (settings->InitStringIndex == -1) {
-    status = Send_Modem_Command("", '\r', buffer, 81, 300, 1);
-  } else {
+  if (settings->InitStringIndex != -1) {
     std::string initStr = Session.InitStrings[settings->InitStringIndex];
 
     std::istringstream tokenStream(initStr);
@@ -1231,6 +1229,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         break;
       }
     }
+  } else {
   }
 
   if (settings->Port == 1 && ModemRegistry) {

@@ -734,7 +734,6 @@ int Main_Menu(unsigned long timeout) {
 #else
       D_EXIT_X, starty, D_EXIT_W, D_EXIT_H);
 #endif
-  starty += ystep;
 
 #else
 

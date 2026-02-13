@@ -232,7 +232,7 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void MonoClass::Set_Cursor(int x, int y) {
+void MonoClass::Set_Cursor([[maybe_unused]] int x, [[maybe_unused]] int y) {
 #ifdef FIX_ME_LATER
   int pos = (y * COLUMNS) + x;
 
@@ -261,15 +261,9 @@ void MonoClass::Set_Cursor(int x, int y) {
 			mov	al,ah
 			out	dx,al
     }
-
-    //		outportb(CONTROL_PORT,0x0E|(pos&0xFF00));
-    //		outportb(CONTROL_PORT,0x0F|(pos<<8));
   }
 
 #endif  // FIX_ME_LATER
-
-  x = y;
-  y = x;
 }
 
 /***********************************************************************************************

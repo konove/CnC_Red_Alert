@@ -4104,7 +4104,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
   int id;
   char buf1[40] = {0};
   char buf2[40] = {0};
-  const char* buf3 = "";
+  const char* buf3;
 
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 

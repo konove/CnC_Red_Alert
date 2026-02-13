@@ -53,11 +53,7 @@
 #include "ra/combuf.h"
 
 #include <algorithm>
-#include <cstdio>
 #include <cstring>
-
-#include "ra/connect.h"
-#include "ra/monoc.h"
 
 /***************************************************************************
  * CommBufferClass::CommBufferClass -- class constructor *

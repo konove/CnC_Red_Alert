@@ -647,7 +647,6 @@ int Main_Menu(unsigned long) {
 
   TextButtonClass exitbtn(BUTTON_EXIT, TXT_EXIT_GAME, TPF_BUTTON, d_exit_x,
                           starty, d_exit_w, d_exit_h);
-  starty += ystep;
 
   /*
   **	Initialize

@@ -1538,11 +1538,9 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
             celly -= Lepton_To_Cell(Map.TacLeptonHeight) / 2;
             celly = std::max(celly, Map.MapCellY);
             cell = XY_Cell(cellx, celly);
-            shadow = !Map[cell].IsVisible && !Debug_Unshroud;
             Map.Set_Tactical_Position(Cell_Coord(cell));
             cell = Coord_Cell(Map.DesiredTacticalCoord);
             Map.DisplayClass::IsToRedraw = true;
-            // Map.Flag_To_Redraw(false);
             Map.Flag_To_Redraw(true);
             Map.SpecialRadarFrame = 4;
           }

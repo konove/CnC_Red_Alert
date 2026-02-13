@@ -698,15 +698,8 @@ void ScoreClass::Presentation() {
   ** Show stats on # of units killed
   */
   Set_Logic_Page(SeenBuff);
-#ifdef WIN32
   Play_Sample(sfx4, 255, Options.Normalize_Volume(150));
-#else
-  Play_Sample(sfx4, 255, Options.Normalize_Volume(60));
-#endif
-  int indx = house;
-#ifdef WIN32
-  indx = 0;
-#endif
+  int indx = 0;
   Alloc_Object(new ScorePrintClass(TXT_SCORE_CASU, _casuax[indx], _casuay[indx],
                                    _greenpal));
   Call_Back_Delay(9);
@@ -739,11 +732,7 @@ void ScoreClass::Presentation() {
   /*
   ** Print out stats on buildings destroyed
   */
-#ifdef WIN32
   Play_Sample(sfx4, 255, Options.Normalize_Volume(150));
-#else
-  Play_Sample(sfx4, 255, Options.Normalize_Volume(60));
-#endif
 #if RESFACTOR == 2
   Alloc_Object(new ScorePrintClass(TXT_SCORE_BUIL, 144, 126, _greenpal));
   Call_Back_Delay(9);

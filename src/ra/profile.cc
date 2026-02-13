@@ -259,7 +259,6 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
   /*
   **	Scan for a matching section
   */
-  retval = ini_data;
   workptr = ini_data;
   for (;;) {
     /*
@@ -346,7 +345,6 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
       *associated *	string.
       */
       if (key) {
-        retval = workptr;
         entrylen = strlen(key);
 
         for (;;) {

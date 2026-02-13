@@ -1794,7 +1794,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ............................ Init parameters .............................
   */
-  orig_theater = theater = Theater;
+  orig_theater = Theater;
   if (ScenPlayer != SCEN_PLAYER_MPLAYER) {
     gdi_credits = HouseClass::As_Pointer(HOUSE_GOOD)->Credits / 1000L;
     nod_credits = HouseClass::As_Pointer(HOUSE_BAD)->Credits / 1000L;

@@ -5455,9 +5455,8 @@ int HouseClass::AI_Building() {
         quant = hptr->CurBuildings;
       }
     }
-    quant += Rule.BaseSizeAdd;
 
-    // TCTC -- Should multiply largest player base by some rational number.
+    // TCTC -- Should multiply the largest player base by some rational number.
     //		if (CurBuildings >= quant) return(TICKS_PER_SECOND);
 
     BuildChoice.Free_All();

@@ -415,15 +415,12 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
     }
     if (code1 & 0b0100) {
       dst_x1 = vp_dst->Get_Width();
-      src_x1 = src_x + (dst_x1 - dst_x) * src_w / dst_w;
     }
     if (code0 & 0b0010) {
-      src_y0 -= dst_x0;
       src_y0 = src_y + (dst_y0 - dst_y) * src_h / dst_h;
     }
     if (code1 & 0b0001) {
       dst_y1 = vp_dst->Get_Height();
-      src_y1 = src_y + (dst_y1 - dst_y) * src_h / dst_h;
     }
   }
 

@@ -980,9 +980,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
   }
 #endif
 
-  newdir = Next_Direction(olddir, search);
   oldcell = start;
-  newcell = Adjacent_Cell(oldcell, newdir);
 
   /*
   **	Continue until we find our target, find our original starting spot,

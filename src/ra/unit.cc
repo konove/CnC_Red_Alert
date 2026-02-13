@@ -1058,7 +1058,6 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
     /*
     **	Possibly have the crew member run away.
     */
-    CELL cell = Coord_Cell(Center_Coord());
     Mark(MARK_UP);
 
     if (Class->IsCrew && Class->Max_Passengers() == 0) {
@@ -1120,7 +1119,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
     **	if the scenario so indicates and there is room.
     */
     if (Scen.IsTruckCrate && *this == UNIT_TRUCK) {
-      cell = Nearby_Location();
+      CELL cell = Nearby_Location();
       if (cell != 0) {
         new OverlayClass(OVERLAY_WOOD_CRATE, cell);
       }

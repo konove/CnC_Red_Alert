@@ -447,7 +447,6 @@ const char* Fetch_Password(int caption, int message, int btext) {
     */
     if (AllSurfaces.SurfacesRestored) {
       AllSurfaces.SurfacesRestored = false;
-      process = false;
       break;
     }
 #endif  // WIN32

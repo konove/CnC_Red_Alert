@@ -1973,8 +1973,6 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     std::string original_arg = argv[index];  // Copy for preserving case.
     char* string = strupr(argv[index]);      // Pointer to argument.
 
-    string = strupr(argv[index]);
-
     /*
     **	Print usage text only if requested.
     */

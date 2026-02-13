@@ -5612,7 +5612,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
   int id;
   char buf1[40] = {0};
   char buf2[40] = {0};
-  const char* buf3 = "";
+  const char* buf3;
 
   int d_txt6_h = 6 * RESFACTOR + 1;
   int d_margin = 5 * RESFACTOR;

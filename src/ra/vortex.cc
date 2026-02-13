@@ -1006,14 +1006,12 @@ void ChronalVortexClass::Render() {
       int dest_height = source_height;
 
       if (dest_x < 0) {
-        source_width += dest_x;
         dest_width += dest_x;
         source_x -= dest_x;
         dest_x = 0;
       }
 
       if (dest_y < 0) {
-        source_height += dest_y;
         dest_height += dest_y;
         source_y -= dest_y;
         dest_y = 0;
@@ -1022,13 +1020,11 @@ void ChronalVortexClass::Render() {
       if (dest_x + dest_width > target.Get_Width()) {
         diff = dest_x + dest_width - target.Get_Width();
         dest_width -= diff;
-        source_width -= diff;
       }
 
       if (dest_y + dest_height > target.Get_Height()) {
         diff = dest_y + dest_height - target.Get_Height();
         dest_height -= diff;
-        source_height -= diff;
       }
 
       /*

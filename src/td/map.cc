@@ -1322,7 +1322,6 @@ int MapClass::Validate() {
     Validate Template & Icon data
     .....................................................................*/
     ttype = (*this)[cell].TType;
-    ticon = (*this)[cell].TIcon;
     if (ttype >= TEMPLATE_COUNT && ttype != TEMPLATE_NONE) {
       return false;
     }

@@ -430,7 +430,6 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	with the render process.
   */
   if (Visual_Character() != VISUAL_HIDDEN) {
-    int tfacing = Dir_To_32(SecondaryFacing);
     DirType rotation = DIR_N;
     int scale = 0x0100;
 
@@ -453,7 +452,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	Determine which turret shape to use. This depends on if there
       **	is any firing animation in progress.
       */
-      int shapenum = BodyShape[tfacing] + 32;
+      int shapenum;
       DirType turdir = static_cast<DirType>(Dir_To_16(PrimaryFacing) * 16);
 
       switch (Class->Type) {
