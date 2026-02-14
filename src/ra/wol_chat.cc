@@ -82,10 +82,10 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  int d_dialog_w = 320 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 200 * RESFACTOR;                       // dialog height
-  int d_dialog_x = ((320 * RESFACTOR - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((200 * RESFACTOR - d_dialog_h) / 2);  // centered y-coord
+  int d_dialog_w = 640;                       // dialog width
+  int d_dialog_h = 400;                       // dialog height
+  int d_dialog_x = ((640 - d_dialog_w) / 2);  // dialog x-coord
+  int d_dialog_y = ((400 - d_dialog_h) / 2);  // centered y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
 
   int d_text_h = 12;
@@ -98,50 +98,50 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   int d_chatlist_h = 337 - d_chatlist_y;
 
   d_chanlist_w = 227;
-  d_chanlist_h = 50 * RESFACTOR;
+  d_chanlist_h = 100;
   d_chanlist_x = d_dialog_x + d_dialog_w - (d_margin1 + d_chanlist_w);
   d_chanlist_y = d_chatlist_y;
 
   d_userlist_w = d_chanlist_w;
-  //		int d_userlist_h = ((10 * 6) + 3) *RESFACTOR;
+  //		int d_userlist_h = ((10 * 6) + 3) *2;
   d_userlist_x = d_chanlist_x;
   d_userlist_y = d_chanlist_y + d_chanlist_h + 14 + 5;
 
   d_userlist_h = d_chatlist_y + d_chatlist_h - d_userlist_y;
 
   int d_action_w = 100;
-  int d_action_h = 9 * RESFACTOR;
+  int d_action_h = 18;
   int d_action_x = d_dialog_x + 500;
   int d_action_y = 365;
 
   //	int d_chanpriv_w = 60;
-  //	int d_chanpriv_h = 9 *RESFACTOR;
+  //	int d_chanpriv_h = 9 *2;
   //	int d_chanpriv_x = d_dialog_x + 150;
   //	int d_chanpriv_y = d_action_y;
 
   //	int d_cgame_w = 60;
-  //	int d_cgame_h = 9 *RESFACTOR;
+  //	int d_cgame_h = 9 *2;
   //	int d_cgame_x = d_dialog_x + 390; //d_dialog_cx - d_cgame_w / 2;
   //	int d_cgame_y = d_action_y;
 
   int d_back_w = 100;
-  int d_back_h = 9 * RESFACTOR;
+  int d_back_h = 18;
   int d_back_x = d_dialog_x + 100;
   int d_back_y = d_action_y;
 
   int d_join_w = 100;
-  int d_join_h = 9 * RESFACTOR;
+  int d_join_h = 18;
   int d_join_x = d_dialog_x + 210;
   int d_join_y = d_action_y;
 
   int d_create_w = 100;
-  int d_create_h = 9 * RESFACTOR;
+  int d_create_h = 18;
   int d_create_x =
       d_dialog_x + 320;  //((d_dialog_w * 5) / 6) - (d_create_w / 2);
   int d_create_y = d_action_y;
 
   int d_send_w = d_chanlist_x + d_chanlist_w - d_chatlist_x;
-  int d_send_h = 9 * RESFACTOR;
+  int d_send_h = 18;
   int d_send_x = d_chatlist_x;
   int d_send_y = d_chatlist_y + d_chatlist_h + 5;
 

@@ -79,19 +79,19 @@ void VisualControlsClass::Process() {
   };
 
   // Make them resolution independent
-  int option_width = kOptionWidth * RESFACTOR;    // Width of dialog box.
-  int option_height = kOptionHeight * RESFACTOR;  // Height of dialog box.
-  int option_x = kOptionX * RESFACTOR;
-  int option_y = kOptionY * RESFACTOR;
-  int text_y = kTextY * RESFACTOR;
-  int slider_x = kSliderX * RESFACTOR;
-  int slider_y = kSliderY * RESFACTOR;
-  int slider_width = kSliderWidth * RESFACTOR;  // Width of each control slider.
+  int option_width = kOptionWidth * 2;    // Width of dialog box.
+  int option_height = kOptionHeight * 2;  // Height of dialog box.
+  int option_x = kOptionX * 2;
+  int option_y = kOptionY * 2;
+  int text_y = kTextY * 2;
+  int slider_x = kSliderX * 2;
+  int slider_y = kSliderY * 2;
+  int slider_width = kSliderWidth * 2;  // Width of each control slider.
   int slider_height =
-      kSliderHeight * RESFACTOR;  // Height of each control slider.
+      kSliderHeight * 2;  // Height of each control slider.
   int slider_y_spacing =
-      kSliderYSpacing * RESFACTOR;      // Vertical spacing between sliders.
-  int button_y = kButtonY * RESFACTOR;  // Options button y pos
+      kSliderYSpacing * 2;      // Vertical spacing between sliders.
+  int button_y = kButtonY * 2;  // Options button y pos
 
   /*
   **	Variables.
@@ -116,8 +116,8 @@ void VisualControlsClass::Process() {
   /*
   **	Centers options button.
   */
-  optionsbtn.X = option_x + (option_width - optionsbtn.Width - 15 * RESFACTOR);
-  resetbtn.X = option_x + 15 * RESFACTOR;
+  optionsbtn.X = option_x + (option_width - optionsbtn.Width - 30);
+  resetbtn.X = option_x + 30;
 
   resetbtn.Add_Tail(optionsbtn);
 
@@ -127,7 +127,7 @@ void VisualControlsClass::Process() {
   SliderClass brightness(BUTTON_BRIGHTNESS, slider_x,
                          slider_y + slider_y_spacing * 0, slider_width,
                          slider_height);
-  brightness.Set_Thumb_Size(20 * RESFACTOR);
+  brightness.Set_Thumb_Size(40);
   brightness.Set_Value(Options.Get_Brightness());
   brightness.Add_Tail(optionsbtn);
 
@@ -136,7 +136,7 @@ void VisualControlsClass::Process() {
   */
   SliderClass color(BUTTON_COLOR, slider_x, slider_y + slider_y_spacing * 1,
                     slider_width, slider_height);
-  color.Set_Thumb_Size(20 * RESFACTOR);
+  color.Set_Thumb_Size(40);
   color.Set_Value(Options.Get_Color());
   color.Add_Tail(optionsbtn);
 
@@ -146,7 +146,7 @@ void VisualControlsClass::Process() {
   SliderClass contrast(BUTTON_CONTRAST, slider_x,
                        slider_y + slider_y_spacing * 2, slider_width,
                        slider_height);
-  contrast.Set_Thumb_Size(20 * RESFACTOR);
+  contrast.Set_Thumb_Size(40);
   contrast.Set_Value(Options.Get_Contrast());
   contrast.Add_Tail(optionsbtn);
 
@@ -155,7 +155,7 @@ void VisualControlsClass::Process() {
   */
   SliderClass tint(BUTTON_TINT, slider_x, slider_y + slider_y_spacing * 3,
                    slider_width, slider_height);
-  tint.Set_Thumb_Size(20 * RESFACTOR);
+  tint.Set_Thumb_Size(40);
   tint.Set_Value(Options.Get_Tint());
   tint.Add_Tail(optionsbtn);
 
@@ -243,7 +243,7 @@ void VisualControlsClass::Process() {
       */
       for (int i = 0; i < sizeof(_titles) / sizeof(_titles[0]); i++) {
         Fancy_Text_Print(
-            _titles[i], slider_x - 8 * RESFACTOR, text_y + i * slider_y_spacing,
+            _titles[i], slider_x - 16, text_y + i * slider_y_spacing,
             CC_GREEN, TBLACK,
             TPF_6PT_GRAD | TPF_RIGHT | TPF_NOSHADOW |
                 (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));

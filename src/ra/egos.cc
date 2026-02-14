@@ -149,7 +149,7 @@ char PaletteLUT[256];
 ** We blit in several strips over several frames so as not to impact on the
 *frame rate.
 */
-#define CHUNK_HEIGHT RESFACTOR * 50
+#define CHUNK_HEIGHT 100
 
 /***********************************************************************************************
  * EC::EgoClass -- EgoClass constructor *
@@ -252,7 +252,7 @@ void EgoClass::Wipe(GraphicBufferClass* background) {
   }
 
   background->Blit(*LogicPage, x - 1, YPos, x - 1, YPos, width + 2,
-                   7 * RESFACTOR + 1, false);
+                   14 + 1, false);
 }
 
 /***********************************************************************************************
@@ -557,7 +557,7 @@ void Show_Who_Was_Responsible() {
         /*
         ** Create the new class and add it to our list.
         */
-        ego = new EgoClass(x, y + line * 8 * RESFACTOR, strstart, flags);
+        ego = new EgoClass(x, y + line * 16, strstart, flags);
 
         if (!EgoList.Add(ego)) {
           delete ego;
@@ -779,8 +779,8 @@ void Show_Who_Was_Responsible() {
     *print doesn't
     ** clip vertically and looks ugly when it suddenly appears and disappears.
     */
-    HidPage.Blit(SeenBuff, 0, 8 * RESFACTOR, 0, 8 * RESFACTOR,
-                 SeenBuff.Get_Width(), SeenBuff.Get_Height() - 16 * RESFACTOR,
+    HidPage.Blit(SeenBuff, 0, 16, 0, 16,
+                 SeenBuff.Get_Width(), SeenBuff.Get_Height() - 32,
                  false);
 
     /*

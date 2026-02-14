@@ -377,10 +377,10 @@ class SidebarClass : public PowerClass {
    public:
     // #ifdef WIN32
     SBGadgetClass()
-        : GadgetClass((static_cast<int>(SIDE_X) + 8) * RESFACTOR,
-                      static_cast<int>(SIDE_Y) * RESFACTOR,
-                      (static_cast<int>(SIDE_WIDTH) - 1) * RESFACTOR - 1,
-                      (static_cast<int>(SIDE_HEIGHT) - 1) * RESFACTOR, LEFTUP) {
+        : GadgetClass((static_cast<int>(SIDE_X) + 8) * 2,
+                      static_cast<int>(SIDE_Y) * 2,
+                      (static_cast<int>(SIDE_WIDTH) - 1) * 2 - 1,
+                      (static_cast<int>(SIDE_HEIGHT) - 1) * 2, LEFTUP) {
     }
     // #else
     //				SBGadgetClass() : GadgetClass((int)SIDE_X+8,

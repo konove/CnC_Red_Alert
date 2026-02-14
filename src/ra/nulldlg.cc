@@ -329,9 +329,9 @@ int Test_Null_Modem() {
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
-  width = std::max(width, 50 * RESFACTOR);
-  width += 40 * RESFACTOR;
-  height += 60 * RESFACTOR;
+  width = std::max(width, 100);
+  width += 80;
+  height += 120;
 
   x = (SeenBuff.Get_Width() - width) / 2;
   y = (SeenBuff.Get_Height() - height) / 2;
@@ -339,10 +339,10 @@ int Test_Null_Modem() {
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON,
       x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 8 * RESFACTOR)) >>
+            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >>
            1),
-      y + height - (FontHeight + FontYSpacing + 2 * RESFACTOR) -
-          10 * RESFACTOR);
+      y + height - (FontHeight + FontYSpacing + 4) -
+          20);
 
   /*
   ** Initialize
@@ -366,7 +366,7 @@ int Test_Null_Modem() {
   Dialog_Box(x, y, width, height);
   Draw_Caption(TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(buffer, x + 20 * RESFACTOR, y + 25 * RESFACTOR, scheme,
+  Fancy_Text_Print(buffer, x + 40, y + 50, scheme,
                    TBLACK, TPF_TEXT);
 
   commands->Draw_All();
@@ -678,9 +678,9 @@ static int Reconnect_Null_Modem() {
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
-  width = std::max(width, 50 * RESFACTOR);
-  width += 40 * RESFACTOR;
-  height += 60 * RESFACTOR;
+  width = std::max(width, 100);
+  width += 80;
+  height += 120;
 
   x = (SeenBuff.Get_Width() - width) / 2;
   y = (SeenBuff.Get_Height() - height) / 2;
@@ -688,10 +688,10 @@ static int Reconnect_Null_Modem() {
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON,
       x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 8 * RESFACTOR)) >>
+            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >>
            1),
-      y + height - (FontHeight + FontYSpacing + 2 * RESFACTOR) -
-          10 * RESFACTOR);
+      y + height - (FontHeight + FontYSpacing + 4) -
+          20);
 
   /*
   ** Initialize
@@ -714,7 +714,7 @@ static int Reconnect_Null_Modem() {
   Dialog_Box(x, y, width, height);
   Draw_Caption(TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(buffer, x + 20 * RESFACTOR, y + 25 * RESFACTOR, scheme,
+  Fancy_Text_Print(buffer, x + 40, y + 50, scheme,
                    TBLACK, TPF_TEXT);
 
   commands->Draw_All();
@@ -946,39 +946,39 @@ GameType Select_Serial_Dialog() {
   /*
   ** Dialog & button dimensions
   */
-  int d_dialog_w = 160 * RESFACTOR;                     // dialog width
-  int d_dialog_h = 94 * RESFACTOR;                      // dialog height
-  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = 80 * RESFACTOR;
-  //	int d_dialog_y = ((136 * RESFACTOR - d_dialog_h) / 2);	// dialog
+  int d_dialog_w = 320;                     // dialog width
+  int d_dialog_h = 188;                      // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = 160;
+  //	int d_dialog_y = ((136 * 2 - d_dialog_h) / 2);	// dialog
   // y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;  // center x-coord
 
-  int d_txt6_h = 7 * RESFACTOR;  // ht of 6-pt text
-  int d_margin = 7 * RESFACTOR;  // margin width/height
+  int d_txt6_h = 14;  // ht of 6-pt text
+  int d_margin = 14;  // margin width/height
 
-  int d_dial_w = 90 * RESFACTOR;
-  int d_dial_h = 9 * RESFACTOR;
+  int d_dial_w = 180;
+  int d_dial_h = 18;
   int d_dial_x = d_dialog_cx - d_dial_w / 2;
   int d_dial_y = d_dialog_y + d_margin + d_txt6_h + d_margin;
 
-  int d_answer_w = 90 * RESFACTOR;
-  int d_answer_h = 9 * RESFACTOR;
+  int d_answer_w = 180;
+  int d_answer_h = 18;
   int d_answer_x = d_dialog_cx - d_answer_w / 2;
   int d_answer_y = d_dial_y + d_dial_h + 2;
 
-  int d_nullmodem_w = 90 * RESFACTOR;
-  int d_nullmodem_h = 9 * RESFACTOR;
+  int d_nullmodem_w = 180;
+  int d_nullmodem_h = 18;
   int d_nullmodem_x = d_dialog_cx - d_nullmodem_w / 2;
   int d_nullmodem_y = d_answer_y + d_answer_h + 2;
 
-  int d_settings_w = 90 * RESFACTOR;
-  int d_settings_h = 9 * RESFACTOR;
+  int d_settings_w = 180;
+  int d_settings_h = 18;
   int d_settings_x = d_dialog_cx - d_settings_w / 2;
   int d_settings_y = d_nullmodem_y + d_nullmodem_h + 2;
 
-  int d_cancel_w = 50 * RESFACTOR;
-  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_w = 100;
+  int d_cancel_h = 18;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
   int d_cancel_y = d_settings_y + d_settings_h + d_margin;
 
@@ -1690,131 +1690,131 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*
   ** Dialog & button dimensions
   */
-  int d_dialog_w = 320 * RESFACTOR;                     // dialog width
-  int d_dialog_h = 200 * RESFACTOR;                     // dialog height
-  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // dialog y-coord
+  int d_dialog_w = 640;                     // dialog width
+  int d_dialog_h = 400;                     // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (400 - d_dialog_h) / 2;  // dialog y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
-  int d_txt6_h = 7 * RESFACTOR;  // ht of 6-pt text
-  int d_margin = 5 * RESFACTOR;  // margin width/height
+  int d_txt6_h = 14;  // ht of 6-pt text
+  int d_margin = 10;  // margin width/height
 
   int d_portlist_w =
-      80 * RESFACTOR + 80 * (RESFACTOR - 1);  // Port list wider in hires
-  int d_portlist_h = 33 * RESFACTOR;
+      240;  // Port list wider in hires
+  int d_portlist_h = 66;
   int d_portlist_x = 0x45;
   int d_portlist_y =
-      d_dialog_y + (d_margin + d_txt6_h) * 2 + d_margin + 10 * RESFACTOR;
+      d_dialog_y + (d_margin + d_txt6_h) * 2 + d_margin + 20;
 
 #ifdef WIN32
   int d_port_w = d_portlist_w;
   int d_port_x = 0x45;
 #else
-  int d_port_w = (5 * 6 * RESFACTOR) + 3 * RESFACTOR;
+  int d_port_w = (5 * 12) + 6;
 
-//	int d_port_x = d_portlist_x + 29 * RESFACTOR;
+//	int d_port_x = d_portlist_x + 29 * 2;
 #ifdef FRENCH  // VG2
-  int d_port_x = (d_portlist_x + 29 * RESFACTOR) + 5;
+  int d_port_x = (d_portlist_x + 58) + 5;
 #else
-  int d_port_x = d_portlist_x + 29 * RESFACTOR;
+  int d_port_x = d_portlist_x + 58;
 #endif
 
 #endif  // WIN32
-  int d_port_h = 9 * RESFACTOR;
+  int d_port_h = 18;
   int d_port_y = d_portlist_y - d_margin - d_txt6_h;
 
   int d_irqlist_y = d_portlist_y;
 
-  int d_baudlist_w = 80 * RESFACTOR;
-  int d_baudlist_h = 33 * RESFACTOR;
+  int d_baudlist_w = 160;
+  int d_baudlist_h = 66;
   int d_baudlist_x = d_dialog_x + d_dialog_w * 5 / 6 - d_baudlist_w / 2;
 #ifdef WIN32
   d_baudlist_x -= 32;
 #endif
   int d_baudlist_y = d_irqlist_y;
 
-  int d_baud_w = (BAUDBUF_MAX - 1) * 6 * RESFACTOR + 3 * RESFACTOR;
-  int d_baud_h = 9 * RESFACTOR;
-  int d_baud_x = d_baudlist_x + 29 * RESFACTOR;
+  int d_baud_w = (BAUDBUF_MAX - 1) * 12 + 6;
+  int d_baud_h = 18;
+  int d_baud_x = d_baudlist_x + 58;
   int d_baud_y = d_baudlist_y - d_margin - d_txt6_h;
 
   int d_initstrlist_w =
-      (INITSTRBUF_MAX - 1) * 6 * RESFACTOR + 8 * RESFACTOR + 3 * RESFACTOR;
-  int d_initstrlist_h = 21 * RESFACTOR;
+      (INITSTRBUF_MAX - 1) * 12 + 16 + 6;
+  int d_initstrlist_h = 42;
   int d_initstrlist_x = d_dialog_cx - d_initstrlist_w / 2;
   int d_initstrlist_y =
       d_portlist_y + d_portlist_h + (d_margin + d_txt6_h) * 2 + d_margin + 4;
 
-  int d_initstr_w = (INITSTRBUF_MAX - 1) * 6 * RESFACTOR + 3 * RESFACTOR;
-  int d_initstr_h = 9 * RESFACTOR;
+  int d_initstr_w = (INITSTRBUF_MAX - 1) * 12 + 6;
+  int d_initstr_h = 18;
   int d_initstr_x = d_initstrlist_x;
   int d_initstr_y = d_initstrlist_y - d_margin - d_txt6_h;
 
-  int d_add_w = 45 * RESFACTOR;
+  int d_add_w = 90;
 #ifdef FRENCH
   int d_add_x = d_dialog_cx - (d_add_w / 2);
 #else
   int d_add_x = d_dialog_cx - d_add_w / 2 + 30;
 #endif
-  int d_add_h = 9 * RESFACTOR;
-  int d_add_y = d_initstr_y - d_add_h - 3 * RESFACTOR;
+  int d_add_h = 18;
+  int d_add_y = d_initstr_y - d_add_h - 6;
 
-  int d_delete_w = 45 * RESFACTOR;
+  int d_delete_w = 90;
 #ifdef FRENCH
   int d_delete_x =
       (d_dialog_x + ((d_dialog_w * 3) / 4) - (d_delete_w / 2)) + 10;
 #else
   int d_delete_x = d_dialog_x + d_dialog_w * 3 / 4 - d_delete_w / 2;
 #endif
-  int d_delete_h = 9 * RESFACTOR;
-  int d_delete_y = d_initstr_y - d_add_h - 3 * RESFACTOR;
+  int d_delete_h = 18;
+  int d_delete_y = d_initstr_y - d_add_h - 6;
 
   int d_cwaitstrlist_w =
-      (CWAITSTRBUF_MAX - 1 + 9) * 6 * RESFACTOR + 3 * RESFACTOR;
-  int d_cwaitstrlist_h = 27 * RESFACTOR;
+      (CWAITSTRBUF_MAX - 1 + 9) * 12 + 6;
+  int d_cwaitstrlist_h = 54;
   int d_cwaitstrlist_x = d_initstrlist_x;
   int d_cwaitstrlist_y =
       d_initstrlist_y + d_initstrlist_h + (d_margin + d_txt6_h) * 2 + 2;
 
-  int d_cwaitstr_w = (CWAITSTRBUF_MAX - 1) * 6 * RESFACTOR + 3 * RESFACTOR;
-  int d_cwaitstr_h = 9 * RESFACTOR;
+  int d_cwaitstr_w = (CWAITSTRBUF_MAX - 1) * 12 + 6;
+  int d_cwaitstr_h = 18;
   int d_cwaitstr_x = d_cwaitstrlist_x;
   int d_cwaitstr_y = d_cwaitstrlist_y - d_margin - d_txt6_h;
 
-  int d_tone_w = 80 * RESFACTOR;
-  int d_tone_h = 9 * RESFACTOR;
+  int d_tone_w = 160;
+  int d_tone_h = 18;
   int d_tone_x = d_dialog_x + d_dialog_w * 3 / 4 - d_tone_w / 2;
   int d_tone_y = d_cwaitstrlist_y;
 
-  int d_pulse_w = 80 * RESFACTOR;
-  int d_pulse_h = 9 * RESFACTOR;
+  int d_pulse_w = 160;
+  int d_pulse_h = 18;
   int d_pulse_x = d_dialog_x + d_dialog_w * 3 / 4 - d_pulse_w / 2;
   int d_pulse_y = d_tone_y + d_tone_h + d_margin;
 
 #ifdef FRENCH
-  int d_save_w = 80 * RESFACTOR;
+  int d_save_w = 160;
 #else
-  int d_save_w = 40 * RESFACTOR;
+  int d_save_w = 80;
 #endif
-  int d_save_h = 9 * RESFACTOR;
+  int d_save_h = 18;
   int d_save_x = d_dialog_x + d_dialog_w / 5 - d_save_w / 2;
-  int d_save_y = d_dialog_y + d_dialog_h - d_save_h - d_margin - 4 * RESFACTOR;
+  int d_save_y = d_dialog_y + d_dialog_h - d_save_h - d_margin - 8;
 
-  int d_cancel_w = 50 * RESFACTOR;
-  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_w = 100;
+  int d_cancel_h = 18;
   int d_cancel_x = d_dialog_x + d_dialog_w * 4 / 5 - d_cancel_w / 2;
   int d_cancel_y =
-      d_dialog_y + d_dialog_h - d_cancel_h - d_margin - 4 * RESFACTOR;
+      d_dialog_y + d_dialog_h - d_cancel_h - d_margin - 8;
 
 #if (GERMAN | FRENCH)
-  int d_advanced_w = 50 * RESFACTOR;
+  int d_advanced_w = 100;
 #else
-  int d_advanced_w = 40 * RESFACTOR;
+  int d_advanced_w = 80;
 #endif
-  int d_advanced_h = 9 * RESFACTOR;
+  int d_advanced_h = 18;
   int d_advanced_x = d_dialog_x + d_dialog_w / 2 - d_advanced_w / 2;
   int d_advanced_y =
-      d_dialog_y + d_dialog_h - d_advanced_h - d_margin - 4 * RESFACTOR;
+      d_dialog_y + d_dialog_h - d_advanced_h - d_margin - 8;
 
   /*
   ** Button Enumerations
@@ -2284,24 +2284,24 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         */
         Draw_Caption(TXT_SETTINGS, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(TXT_PORT_COLON, d_port_x - 3 * RESFACTOR,
-                         d_port_y + 1 * RESFACTOR, scheme, TBLACK,
+        Fancy_Text_Print(TXT_PORT_COLON, d_port_x - 6,
+                         d_port_y + 2, scheme, TBLACK,
                          TPF_RIGHT | TPF_TEXT);
 #ifndef WIN32
-        Fancy_Text_Print(TXT_IRQ_COLON, d_irq_x - 3 * RESFACTOR,
-                         d_irq_y + 1 * RESFACTOR, scheme, TBLACK,
+        Fancy_Text_Print(TXT_IRQ_COLON, d_irq_x - 6,
+                         d_irq_y + 2, scheme, TBLACK,
                          TPF_RIGHT | TPF_TEXT);
 #endif  // WIN32
-        Fancy_Text_Print(TXT_BAUD_COLON, d_baud_x - 3 * RESFACTOR,
-                         d_baud_y + 1 * RESFACTOR, scheme, TBLACK,
+        Fancy_Text_Print(TXT_BAUD_COLON, d_baud_x - 6,
+                         d_baud_y + 2, scheme, TBLACK,
                          TPF_RIGHT | TPF_TEXT);
 
         Fancy_Text_Print(TXT_INIT_STRING, d_initstr_x,
-                         d_initstr_y - d_txt6_h - 3 * RESFACTOR, scheme, TBLACK,
+                         d_initstr_y - d_txt6_h - 6, scheme, TBLACK,
                          TPF_TEXT);
 
         Fancy_Text_Print(TXT_CWAIT_STRING, d_cwaitstr_x,
-                         d_cwaitstr_y - d_txt6_h - 3 * RESFACTOR, scheme,
+                         d_cwaitstr_y - d_txt6_h - 6, scheme,
                          TBLACK, TPF_TEXT);
       }
 
@@ -2982,124 +2982,124 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 320 * RESFACTOR;                     // dialog width
-  int d_dialog_h = 200 * RESFACTOR;                     // dialog height
-  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // dialog y-coord
+  int d_dialog_w = 640;                     // dialog width
+  int d_dialog_h = 400;                     // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (400 - d_dialog_h) / 2;  // dialog y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
-  int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
-  int d_margin1 = 5 * RESFACTOR;     // margin width/height
-  int d_margin2 = 7 * RESFACTOR;     // margin width/height
+  int d_txt6_h = 12 + 1;  // ht of 6-pt text
+  int d_margin1 = 10;     // margin width/height
+  int d_margin2 = 14;     // margin width/height
 
-  int d_name_w = 70 * RESFACTOR;
-  int d_name_h = 9 * RESFACTOR;
+  int d_name_w = 140;
+  int d_name_h = 18;
   int d_name_x = d_dialog_x + d_dialog_w / 4 - d_name_w / 2;
-  int d_name_y = d_dialog_y + d_margin2 + d_txt6_h + 1 * RESFACTOR;
+  int d_name_y = d_dialog_y + d_margin2 + d_txt6_h + 2;
 
 #ifdef OLDWAY
-  int d_gdi_w = 40 * RESFACTOR;
-  int d_gdi_h = 9 * RESFACTOR;
+  int d_gdi_w = 80;
+  int d_gdi_h = 18;
   int d_gdi_x = d_dialog_cx - d_gdi_w;
   int d_gdi_y = d_name_y;
 
-  int d_nod_w = 40 * RESFACTOR;
-  int d_nod_h = 9 * RESFACTOR;
+  int d_nod_w = 80;
+  int d_nod_h = 18;
   int d_nod_x = d_dialog_cx;
   int d_nod_y = d_name_y;
 #else
-  int d_house_w = 60 * RESFACTOR;
-  int d_house_h = 8 * 5 * RESFACTOR;
+  int d_house_w = 120;
+  int d_house_h = 8 * 10;
   int d_house_x = d_dialog_cx - d_house_w / 2;
   int d_house_y = d_name_y;
 #endif
 
-  int d_color_w = 10 * RESFACTOR;
-  int d_color_h = 9 * RESFACTOR;
+  int d_color_w = 20;
+  int d_color_h = 18;
   int d_color_y = d_name_y;
   int d_color_x = d_dialog_x + d_dialog_w / 4 * 3 - d_color_w * 3;
 
-  int d_playerlist_w = 118 * RESFACTOR;
-  int d_playerlist_h = 6 * 6 * RESFACTOR + 3 * RESFACTOR;  // 6 rows high
-  int d_playerlist_x = d_dialog_x + d_margin1 + d_margin1 + 5 * RESFACTOR;
+  int d_playerlist_w = 236;
+  int d_playerlist_h = 6 * 12 + 6;  // 6 rows high
+  int d_playerlist_x = d_dialog_x + d_margin1 + d_margin1 + 10;
   int d_playerlist_y =
-      d_color_y + d_color_h + d_margin2 + 2 * RESFACTOR /*KO + d_txt6_h*/;
+      d_color_y + d_color_h + d_margin2 + 4 /*KO + d_txt6_h*/;
 
-  int d_scenariolist_w = 162 * RESFACTOR;
-  int d_scenariolist_h = 6 * 6 * RESFACTOR + 3 * RESFACTOR;  // 6 rows high
+  int d_scenariolist_w = 324;
+  int d_scenariolist_h = 6 * 12 + 6;  // 6 rows high
 
   if (skirmish) {
     d_scenariolist_h *= 2;
   }
 
   int d_scenariolist_x = d_dialog_x + d_dialog_w - d_margin1 - d_margin1 -
-                         d_scenariolist_w - 5 * RESFACTOR;
-  int d_scenariolist_y = d_color_y + d_color_h + d_margin2 + 2 * RESFACTOR;
+                         d_scenariolist_w - 10;
+  int d_scenariolist_y = d_color_y + d_color_h + d_margin2 + 4;
 
   if (skirmish) {
     d_scenariolist_x = d_dialog_x + (d_dialog_w - d_scenariolist_w) / 2;
   }
 
-  int d_count_w = 25 * RESFACTOR;
+  int d_count_w = 50;
   int d_count_h = d_txt6_h;
   int d_count_x =
-      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
   int d_count_y =
-      d_playerlist_y + d_playerlist_h + d_margin1 * 2 - 2 * RESFACTOR;
+      d_playerlist_y + d_playerlist_h + d_margin1 * 2 - 4;
 
   if (skirmish) {
-    d_count_y = d_scenariolist_y + d_scenariolist_h + d_margin1 - 2 * RESFACTOR;
+    d_count_y = d_scenariolist_y + d_scenariolist_h + d_margin1 - 4;
   }
 
-  int d_level_w = 25 * RESFACTOR;
+  int d_level_w = 50;
   int d_level_h = d_txt6_h;
   int d_level_x =
-      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
   int d_level_y = d_count_y + d_count_h;
 
-  int d_credits_w = 25 * RESFACTOR;
+  int d_credits_w = 50;
   int d_credits_h = d_txt6_h;
   int d_credits_x =
-      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
   int d_credits_y = d_level_y + d_level_h;
 
-  int d_aiplayers_w = 25 * RESFACTOR;
+  int d_aiplayers_w = 50;
   int d_aiplayers_h = d_txt6_h;
   int d_aiplayers_x =
-      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
   int d_aiplayers_y = d_credits_y + d_credits_h;
 
-  int d_options_w = 106 * RESFACTOR;
-  int d_options_h = 5 * 6 * RESFACTOR + 4 * RESFACTOR;
-  int d_options_x = d_dialog_x + d_dialog_w - 149 * RESFACTOR;
+  int d_options_w = 212;
+  int d_options_h = 5 * 12 + 8;
+  int d_options_x = d_dialog_x + d_dialog_w - 298;
   int d_options_y =
-      d_scenariolist_y + d_scenariolist_h + d_margin1 - 2 * RESFACTOR;
+      d_scenariolist_y + d_scenariolist_h + d_margin1 - 4;
 
-  int d_message_w = d_dialog_w - d_margin1 * 2 - 20 * RESFACTOR;
-  int d_message_h = 8 * d_txt6_h + 3 * RESFACTOR;  // 4 rows high
-  int d_message_x = d_dialog_x + d_margin1 + 10 * RESFACTOR;
-  int d_message_y = d_options_y + d_options_h + 2 * RESFACTOR;
+  int d_message_w = d_dialog_w - d_margin1 * 2 - 40;
+  int d_message_h = 8 * d_txt6_h + 6;  // 4 rows high
+  int d_message_x = d_dialog_x + d_margin1 + 20;
+  int d_message_y = d_options_y + d_options_h + 4;
 
-  int d_send_w = d_dialog_w - d_margin1 * 2 - 20 * RESFACTOR;
-  int d_send_h = 9 * RESFACTOR;
-  int d_send_x = d_dialog_x + d_margin1 + 10 * RESFACTOR;
+  int d_send_w = d_dialog_w - d_margin1 * 2 - 40;
+  int d_send_h = 18;
+  int d_send_x = d_dialog_x + d_margin1 + 20;
   int d_send_y = d_message_y + d_message_h;
 
-  int d_ok_w = 45 * RESFACTOR;
-  int d_ok_h = 9 * RESFACTOR;
+  int d_ok_w = 90;
+  int d_ok_h = 18;
   int d_ok_x = d_dialog_x + d_dialog_w / 6 - d_ok_w / 2;
-  int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - RESFACTOR * 6;
+  int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 12;
 
-  int d_cancel_w = 45 * RESFACTOR;
-  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_w = 90;
+  int d_cancel_h = 18;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
   int d_cancel_y =
-      d_dialog_y + d_dialog_h - d_cancel_h - d_margin1 - RESFACTOR * 6;
+      d_dialog_y + d_dialog_h - d_cancel_h - d_margin1 - 12;
 
-  int d_load_w = 45 * RESFACTOR;
-  int d_load_h = 9 * RESFACTOR;
+  int d_load_w = 90;
+  int d_load_h = 18;
   int d_load_x = d_dialog_x + d_dialog_w * 5 / 6 - d_load_w / 2;
-  int d_load_y = d_dialog_y + d_dialog_h - d_load_h - d_margin1 - RESFACTOR * 6;
+  int d_load_y = d_dialog_y + d_dialog_h - d_load_h - d_margin1 - 12;
 
   /*........................................................................
   Button Enumerations
@@ -3145,7 +3145,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   bool process = true;              // process while true
   KeyNumType input;
 
-  int playertabs[] = {77 * RESFACTOR};   // tabs for player list box
+  int playertabs[] = {77 * 2};   // tabs for player list box
   int optiontabs[] = {8};                // tabs for player list box
   char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
   bool transmit;                         // 1 = re-transmit new game options
@@ -3222,21 +3222,21 @@ int Com_Scenario_Dialog(bool skirmish) {
 
   char staticcountbuff[35];
   StaticButtonClass staticcount(
-      0, "     ", TPF_TEXT, d_count_x + d_count_w + 3 * RESFACTOR, d_count_y);
+      0, "     ", TPF_TEXT, d_count_x + d_count_w + 6, d_count_y);
 
   GaugeClass levelgauge(BUTTON_LEVEL, d_level_x, d_level_y, d_level_w,
                         d_level_h);
 
   char staticlevelbuff[35];
   StaticButtonClass staticlevel(
-      0, "     ", TPF_TEXT, d_level_x + d_level_w + 3 * RESFACTOR, d_level_y);
+      0, "     ", TPF_TEXT, d_level_x + d_level_w + 6, d_level_y);
 
   GaugeClass creditsgauge(BUTTON_CREDITS, d_credits_x, d_credits_y, d_credits_w,
                           d_credits_h);
 
   char staticcreditsbuff[35];
   StaticButtonClass staticcredits(0, "         ", TPF_TEXT,
-                                  d_credits_x + d_credits_w + 3 * RESFACTOR,
+                                  d_credits_x + d_credits_w + 6,
                                   d_credits_y);
 
   GaugeClass aiplayersgauge(BUTTON_AIPLAYERS, d_aiplayers_x, d_aiplayers_y,
@@ -3244,7 +3244,7 @@ int Com_Scenario_Dialog(bool skirmish) {
 
   char staticaibuff[35];
   StaticButtonClass staticai(0, "     ", TPF_TEXT,
-                             d_aiplayers_x + d_aiplayers_w + 3 * RESFACTOR,
+                             d_aiplayers_x + d_aiplayers_w + 6,
                              d_aiplayers_y);
 
   CheckListClass optionlist(
@@ -3260,7 +3260,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   SliderClass difficulty(
       BUTTON_DIFFICULTY, d_name_x,
       optionlist.Y + optionlist.Height + d_margin1 + d_margin1,
-      d_dialog_w - (d_name_x - d_dialog_x) * 2, 8 * RESFACTOR, true);
+      d_dialog_w - (d_name_x - d_dialog_x) * 2, 16, true);
   if (Rule.IsFineDifficulty) {
     difficulty.Set_Maximum(5);
     difficulty.Set_Value(2);
@@ -3614,13 +3614,13 @@ int Com_Scenario_Dialog(bool skirmish) {
                              TPF_CENTER | TPF_TEXT);
           } else {
             Fancy_Text_Print(TXT_EASY, difficulty.X,
-                             difficulty.Y - 8 * RESFACTOR, scheme, TBLACK,
+                             difficulty.Y - 16, scheme, TBLACK,
                              TPF_TEXT);
             Fancy_Text_Print(TXT_HARD, difficulty.X + difficulty.Width,
-                             difficulty.Y - 8 * RESFACTOR, scheme, TBLACK,
+                             difficulty.Y - 16, scheme, TBLACK,
                              TPF_RIGHT | TPF_TEXT);
             Fancy_Text_Print(TXT_NORMAL, difficulty.X + difficulty.Width / 2,
-                             difficulty.Y - 8 * RESFACTOR, scheme, TBLACK,
+                             difficulty.Y - 16, scheme, TBLACK,
                              TPF_CENTER | TPF_TEXT);
           }
           Fancy_Text_Print(TXT_SCENARIOS,
@@ -3633,7 +3633,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                            TPF_TEXT | TPF_RIGHT);
           Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 2, d_credits_y,
                            scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-          Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 2 * RESFACTOR,
+          Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
                            d_aiplayers_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
         }
 
@@ -3674,14 +3674,14 @@ int Com_Scenario_Dialog(bool skirmish) {
         //..................................................................
         if (display >= REDRAW_PARMS) {
           //				LogicPage->Fill_Rect(d_count_x +
-          // d_count_w + 2, d_count_y, d_count_x + d_count_w + 35 * RESFACTOR,
-          // d_aiplayers_y + d_aiplayers_h+RESFACTOR, BLACK);
+          // d_count_w + 2, d_count_y, d_count_x + d_count_w + 35 * 2,
+          // d_aiplayers_y + d_aiplayers_h+2, BLACK);
 
           sprintf(staticcountbuff, "%d", Session.Options.UnitCount);
           staticcount.Set_Text(staticcountbuff);
           staticcount.Draw_Me();
           //				Fancy_Text_Print("%d ", d_count_x +
-          // d_count_w + 3 * RESFACTOR, d_count_y, scheme, BLACK, TPF_TEXT,
+          // d_count_w + 3 * 2, d_count_y, scheme, BLACK, TPF_TEXT,
           // Session.Options.UnitCount);
 
           if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -3692,20 +3692,20 @@ int Com_Scenario_Dialog(bool skirmish) {
           staticlevel.Set_Text(staticlevelbuff);
           staticlevel.Draw_Me();
           //				Fancy_Text_Print(txt, d_level_x +
-          // d_level_w + 3 * RESFACTOR, d_level_y, scheme, BLACK, TPF_TEXT);
+          // d_level_w + 3 * 2, d_level_y, scheme, BLACK, TPF_TEXT);
 
           sprintf(staticcreditsbuff, "%d", Session.Options.Credits);
           staticcredits.Set_Text(staticcreditsbuff);
           staticcredits.Draw_Me();
           //				Fancy_Text_Print("%d", d_credits_x +
-          // d_credits_w + 2 * RESFACTOR, d_credits_y, scheme, BLACK, TPF_TEXT,
+          // d_credits_w + 2 * 2, d_credits_y, scheme, BLACK, TPF_TEXT,
           // Session.Options.Credits);
 
           sprintf(staticaibuff, "%d", Session.Options.AIPlayers);
           staticai.Set_Text(staticaibuff);
           staticai.Draw_Me();
           //				Fancy_Text_Print("%d", d_aiplayers_x +
-          // d_aiplayers_w + 2*RESFACTOR, d_aiplayers_y, scheme, BLACK,
+          // d_aiplayers_w + 2*2, d_aiplayers_y, scheme, BLACK,
           // TPF_TEXT, Session.Options.AIPlayers);
         }
 
@@ -4897,96 +4897,96 @@ int Com_Show_Scenario_Dialog() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 320 * RESFACTOR;                     // dialog width
-  int d_dialog_h = 200 * RESFACTOR;                     // dialog height
-  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // dialog y-coord
+  int d_dialog_w = 640;                     // dialog width
+  int d_dialog_h = 400;                     // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (400 - d_dialog_h) / 2;  // dialog y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
-  int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
-  int d_margin1 = 5 * RESFACTOR;     // margin width/height
-  int d_margin2 = 2 * RESFACTOR;     // margin width/height
+  int d_txt6_h = 12 + 1;  // ht of 6-pt text
+  int d_margin1 = 10;     // margin width/height
+  int d_margin2 = 4;     // margin width/height
 
-  int d_name_w = 70 * RESFACTOR;
-  int d_name_h = 9 * RESFACTOR;
+  int d_name_w = 140;
+  int d_name_h = 18;
   int d_name_x = d_dialog_x + d_dialog_w / 4 - d_name_w / 2;
-  int d_name_y = d_dialog_y + d_margin1 + d_margin2 + d_txt6_h + 1 * RESFACTOR;
+  int d_name_y = d_dialog_y + d_margin1 + d_margin2 + d_txt6_h + 2;
 
 #ifdef OLDWAY
-  int d_gdi_w = 40 * RESFACTOR;
-  int d_gdi_h = 9 * RESFACTOR;
+  int d_gdi_w = 80;
+  int d_gdi_h = 18;
   int d_gdi_x = d_dialog_cx - d_gdi_w;
   int d_gdi_y = d_name_y;
 
-  int d_nod_w = 40 * RESFACTOR;
-  int d_nod_h = 9 * RESFACTOR;
+  int d_nod_w = 80;
+  int d_nod_h = 18;
   int d_nod_x = d_dialog_cx;
   int d_nod_y = d_name_y;
 
 #else  // OLDWAY
 
-  int d_house_w = 60 * RESFACTOR;
-  int d_house_h = 8 * 5 * RESFACTOR;
+  int d_house_w = 120;
+  int d_house_h = 8 * 10;
   int d_house_x = d_dialog_cx - d_house_w / 2;
   int d_house_y = d_name_y;
 
 #endif  // OLDWAY
 
-  int d_color_w = 10 * RESFACTOR;
-  int d_color_h = 9 * RESFACTOR;
+  int d_color_w = 20;
+  int d_color_h = 18;
   int d_color_x = d_dialog_x + d_dialog_w / 4 * 3 - d_color_w * 3;
   int d_color_y = d_name_y;
 
   int d_scenario_y = d_name_y + d_name_h + d_margin2;
 
-  int d_gamelist_w = 160 * RESFACTOR;
-  int d_gamelist_h = 6 * 6 * RESFACTOR + 3 * RESFACTOR;  // 6 rows high
-  int d_gamelist_x = d_dialog_x + d_margin1 + 10 * RESFACTOR;
+  int d_gamelist_w = 320;
+  int d_gamelist_h = 6 * 12 + 6;  // 6 rows high
+  int d_gamelist_x = d_dialog_x + d_margin1 + 20;
   int d_gamelist_y = d_scenario_y + d_txt6_h + d_margin2 + d_txt6_h + d_margin2;
 
-  // BG	int d_playerlist_w = 112 * RESFACTOR;
-  int d_playerlist_w = 118 * RESFACTOR;
-  int d_playerlist_h = 6 * 6 * RESFACTOR + 3 * RESFACTOR;  // 6 rows high
+  // BG	int d_playerlist_w = 112 * 2;
+  int d_playerlist_w = 236;
+  int d_playerlist_h = 6 * 12 + 6;  // 6 rows high
   int d_playerlist_x = d_dialog_x + d_dialog_w - d_margin1 - d_margin1 -
-                       d_playerlist_w - 5 * RESFACTOR;
+                       d_playerlist_w - 10;
   int d_playerlist_y = d_gamelist_y;
 
-  int d_count_w = 25 * RESFACTOR;
+  int d_count_w = 50;
   int d_count_h = d_txt6_h;
   int d_count_x = d_gamelist_x + d_gamelist_w / 2;
   int d_count_y = d_gamelist_y + d_gamelist_h + d_margin1 * 2 - d_margin2;
 
-  int d_level_w = 25 * RESFACTOR;
+  int d_level_w = 50;
   int d_level_h = d_txt6_h;
   int d_level_x = d_gamelist_x + d_gamelist_w / 2;
   int d_level_y = d_count_y + d_count_h;
 
-  int d_credits_w = 25 * RESFACTOR;
+  int d_credits_w = 50;
   int d_credits_h = d_txt6_h;
   int d_credits_x = d_gamelist_x + d_gamelist_w / 2;
   int d_credits_y = d_level_y + d_level_h;
 
-  int d_aiplayers_w = 25 * RESFACTOR;
+  int d_aiplayers_w = 50;
   int d_aiplayers_h = d_txt6_h;
   int d_aiplayers_x = d_gamelist_x + d_gamelist_w / 2;
   int d_aiplayers_y = d_credits_y + d_credits_h;
 
-  int d_options_w = 112 * RESFACTOR;
-  int d_options_h = 5 * 6 * RESFACTOR + 4 * RESFACTOR;
+  int d_options_w = 224;
+  int d_options_h = 5 * 12 + 8;
   int d_options_x = d_playerlist_x;
   int d_options_y = d_playerlist_y + d_playerlist_h + d_margin1 - d_margin2;
 
-  int d_message_w = d_dialog_w - d_margin1 * 2 - 20 * RESFACTOR;
-  int d_message_h = 7 * d_txt6_h + 3 * RESFACTOR;  // 7 rows high
-  int d_message_x = d_gamelist_x;  // d_dialog_x + d_margin1 + 10*RESFACTOR;
+  int d_message_w = d_dialog_w - d_margin1 * 2 - 40;
+  int d_message_h = 7 * d_txt6_h + 6;  // 7 rows high
+  int d_message_x = d_gamelist_x;  // d_dialog_x + d_margin1 + 20;
   int d_message_y = d_options_y + d_options_h + d_margin2 /*KO + d_margin1*/;
 
   int d_send_w = d_message_w;
-  int d_send_h = 9 * RESFACTOR;
+  int d_send_h = 18;
   int d_send_x = d_message_x;
   int d_send_y = d_message_y + d_message_h;
 
-  int d_cancel_w = 45 * RESFACTOR;
+  int d_cancel_w = 90;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
   int d_cancel_y = d_send_y + d_send_h /*KO + d_margin2*/;
 
@@ -5040,7 +5040,7 @@ int Com_Show_Scenario_Dialog() {
   char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
   // BG	int playertabs[] = {77};				// tabs for
   // player list box
-  int playertabs[] = {71 * RESFACTOR};  // tabs for player list box
+  int playertabs[] = {71 * 2};  // tabs for player list box
   int optiontabs[] = {8};               // tabs for options list box
   bool transmit;                        // 1 = re-transmit new game options
   bool first;                           // 1 = no packets received yet
@@ -5105,26 +5105,26 @@ int Com_Show_Scenario_Dialog() {
                         d_count_h);
   char staticcountbuff[35];
   StaticButtonClass staticcount(
-      0, "     ", TPF_TEXT, d_count_x + d_count_w + 3 * RESFACTOR, d_count_y);
+      0, "     ", TPF_TEXT, d_count_x + d_count_w + 6, d_count_y);
 
   GaugeClass levelgauge(BUTTON_LEVEL, d_level_x, d_level_y, d_level_w,
                         d_level_h);
   char staticlevelbuff[35];
   StaticButtonClass staticlevel(
-      0, "     ", TPF_TEXT, d_level_x + d_level_w + 3 * RESFACTOR, d_level_y);
+      0, "     ", TPF_TEXT, d_level_x + d_level_w + 6, d_level_y);
 
   GaugeClass creditsgauge(BUTTON_CREDITS, d_credits_x, d_credits_y, d_credits_w,
                           d_credits_h);
   char staticcreditsbuff[35];
   StaticButtonClass staticcredits(0, "         ", TPF_TEXT,
-                                  d_credits_x + d_credits_w + 3 * RESFACTOR,
+                                  d_credits_x + d_credits_w + 6,
                                   d_credits_y);
 
   GaugeClass aiplayersgauge(BUTTON_AI_PLAYERS, d_aiplayers_x, d_aiplayers_y,
                             d_aiplayers_w, d_aiplayers_h);
   char staticaibuff[35];
   StaticButtonClass staticai(0, "     ", TPF_TEXT,
-                             d_aiplayers_x + d_aiplayers_w + 3 * RESFACTOR,
+                             d_aiplayers_x + d_aiplayers_w + 6,
                              d_aiplayers_y);
 
   CheckListClass optionlist(
@@ -5241,8 +5241,8 @@ int Com_Show_Scenario_Dialog() {
   Init the message display system
   ........................................................................*/
   Session.Messages.Init(d_message_x + 1, d_message_y + 1, 7, MAX_MESSAGE_LENGTH,
-                        d_txt6_h, d_send_x + 1 * RESFACTOR,
-                        d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5,
+                        d_txt6_h, d_send_x + 2,
+                        d_send_y + 2, 1, 20, MAX_MESSAGE_LENGTH - 5,
                         d_message_w);
   Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                 ? PCOLOR_REALLY_BLUE
@@ -5360,13 +5360,13 @@ int Com_Show_Scenario_Dialog() {
         Fancy_Text_Print(TXT_COLOR_COLON, d_dialog_x + d_dialog_w / 4 * 3,
                          d_color_y - d_txt6_h, scheme, TBLACK,
                          TPF_CENTER | TPF_TEXT);
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 2 * RESFACTOR, d_count_y,
+        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 2 * RESFACTOR, d_level_y,
+        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 2 * RESFACTOR,
+        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4,
                          d_credits_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 2 * RESFACTOR,
+        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
                          d_aiplayers_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
       }
 
@@ -5376,9 +5376,9 @@ int Com_Show_Scenario_Dialog() {
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           LogicPage->Fill_Rect(
-              cbox_x[i] + 1 * RESFACTOR, d_color_y + 1 * RESFACTOR,
-              cbox_x[i] + 1 * RESFACTOR + d_color_w - 2 * RESFACTOR,
-              d_color_y + 1 * RESFACTOR + d_color_h - 2 * RESFACTOR,
+              cbox_x[i] + 2, d_color_y + 2,
+              cbox_x[i] + 2 + d_color_w - 4,
+              d_color_y + 2 + d_color_h - 4,
               ColorRemaps[i].Box);
           //						(i ==
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
@@ -5416,8 +5416,8 @@ int Com_Show_Scenario_Dialog() {
             /*............................................................
             Scenario description
             ............................................................*/
-            // LogicPage->Fill_Rect(d_dialog_x + 16*RESFACTOR, d_scenario_y,
-            //	d_dialog_x + d_dialog_w - 16*RESFACTOR, d_scenario_y + d_txt6_h,
+            // LogicPage->Fill_Rect(d_dialog_x + 16*2, d_scenario_y,
+            //	d_dialog_x + d_dialog_w - 16*2, d_scenario_y + d_txt6_h,
             // BLACK);
 
             p = (char*)Text_String(TXT_SCENARIO_COLON);
@@ -5456,10 +5456,10 @@ int Com_Show_Scenario_Dialog() {
             //.........................................................
             // Unit count, tech level, credits
             //.........................................................
-            // LogicPage->Fill_Rect(d_count_x + d_count_w + 2 * RESFACTOR,
-            // d_count_y, 	d_count_x + d_count_w + 35 * RESFACTOR,
+            // LogicPage->Fill_Rect(d_count_x + d_count_w + 2 * 2,
+            // d_count_y, 	d_count_x + d_count_w + 35 * 2,
             // d_aiplayers_y
-            //+ d_aiplayers_h+RESFACTOR, 	BLACK);
+            //+ d_aiplayers_h+2, 	BLACK);
 
             sprintf(staticcountbuff, "%d", Session.Options.UnitCount);
             staticcount.Set_Text(staticcountbuff);
@@ -6476,48 +6476,48 @@ static int Phone_Dialog() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 280 * RESFACTOR;                     // dialog width
-  int d_dialog_h = 160 * RESFACTOR;                     // dialog height
-  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // dialog y-coord
+  int d_dialog_w = 560;                     // dialog width
+  int d_dialog_h = 320;                     // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (400 - d_dialog_h) / 2;  // dialog y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
-  int d_txt6_h = 7 * RESFACTOR;  // ht of 6-pt text
-  int d_margin = 7 * RESFACTOR;  // margin width/height
+  int d_txt6_h = 14;  // ht of 6-pt text
+  int d_margin = 14;  // margin width/height
 
-  int d_phonelist_w = 248 * RESFACTOR;
-  int d_phonelist_h = 87 * RESFACTOR;
+  int d_phonelist_w = 496;
+  int d_phonelist_h = 174;
   int d_phonelist_x = d_dialog_cx - d_phonelist_w / 2;
-  int d_phonelist_y = d_dialog_y + d_margin + d_txt6_h + 11 * RESFACTOR;
+  int d_phonelist_y = d_dialog_y + d_margin + d_txt6_h + 22;
 
-  int d_add_w = 45 * RESFACTOR;
-  int d_add_h = 9 * RESFACTOR;
+  int d_add_w = 90;
+  int d_add_h = 18;
   int d_add_x = d_dialog_cx - d_add_w / 2 - d_margin - d_add_w;
   int d_add_y = d_phonelist_y + d_phonelist_h + d_margin;
 
-  int d_edit_w = 45 * RESFACTOR;
-  int d_edit_h = 9 * RESFACTOR;
+  int d_edit_w = 90;
+  int d_edit_h = 18;
   int d_edit_x = d_dialog_cx - d_edit_w / 2;
   int d_edit_y = d_phonelist_y + d_phonelist_h + d_margin;
 
-  int d_delete_w = 45 * RESFACTOR;
-  int d_delete_h = 9 * RESFACTOR;
+  int d_delete_w = 90;
+  int d_delete_h = 18;
   int d_delete_x = d_dialog_cx + d_delete_w / 2 + d_margin;
   int d_delete_y = d_phonelist_y + d_phonelist_h + d_margin;
 
   int d_numedit_w =
-      (PhoneEntryClass::PHONE_MAX_NUM - 1) * 6 * RESFACTOR + 3 * RESFACTOR;
-  int d_numedit_h = 9 * RESFACTOR;
+      (PhoneEntryClass::PHONE_MAX_NUM - 1) * 12 + 6;
+  int d_numedit_h = 18;
   int d_numedit_x = d_dialog_cx - d_numedit_w / 2;
   int d_numedit_y = d_add_y + d_add_h + d_margin;
 
-  int d_dial_w = 45 * RESFACTOR;
-  int d_dial_h = 9 * RESFACTOR;
+  int d_dial_w = 90;
+  int d_dial_h = 18;
   int d_dial_x = d_dialog_cx - d_numedit_w / 2 - d_margin - d_dial_w;
   int d_dial_y = d_add_y + d_add_h + d_margin;
 
-  int d_cancel_w = 45 * RESFACTOR;
-  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_w = 90;
+  int d_cancel_h = 18;
   int d_cancel_x = d_dialog_cx + d_numedit_w / 2 + d_margin;
   int d_cancel_y = d_add_y + d_add_h + d_margin;
 
@@ -6555,7 +6555,7 @@ static int Phone_Dialog() {
       0};  // buffer for editing phone #
   int rc;
   int i;
-  int tabs[] = {123 * RESFACTOR, 207 * RESFACTOR};  // tabs for list box
+  int tabs[] = {123 * 2, 414};  // tabs for list box
   char* item;                // for removing items from list box
   PhoneEntryClass* p_entry;  // for creating / editing phonebook entries
   bool changed = false;      // 1 = save changes to INI file
@@ -7066,47 +7066,47 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  int d_dialog_w = 230 * RESFACTOR;                     // dialog width
-  int d_dialog_h = 110 * RESFACTOR;                     // dialog height
-  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (136 * RESFACTOR - d_dialog_h) / 2;  // dialog y-coord
+  int d_dialog_w = 460;                     // dialog width
+  int d_dialog_h = 220;                     // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (272 - d_dialog_h) / 2;  // dialog y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
-  int d_margin = 7 * RESFACTOR;  // margin width/height
+  int d_margin = 14;  // margin width/height
 
   int d_name_w =
-      (PhoneEntryClass::PHONE_MAX_NAME - 1) * 6 * RESFACTOR + 3 * RESFACTOR;
-  int d_name_h = 9 * RESFACTOR;
-  int d_name_x = d_dialog_x + (d_dialog_w - d_name_w) * 3 / 4 - 5 * RESFACTOR;
-  int d_name_y = d_dialog_y + 25 * RESFACTOR;
+      (PhoneEntryClass::PHONE_MAX_NAME - 1) * 12 + 6;
+  int d_name_h = 18;
+  int d_name_x = d_dialog_x + (d_dialog_w - d_name_w) * 3 / 4 - 10;
+  int d_name_y = d_dialog_y + 50;
 
   int d_number_w =
-      (PhoneEntryClass::PHONE_MAX_NUM - 1) * 6 * RESFACTOR + 3 * RESFACTOR;
-  int d_number_h = 9 * RESFACTOR;
+      (PhoneEntryClass::PHONE_MAX_NUM - 1) * 12 + 6;
+  int d_number_h = 18;
   int d_number_x =
-      d_dialog_x + (d_dialog_w - d_number_w) * 3 / 4 - 5 * RESFACTOR;
+      d_dialog_x + (d_dialog_w - d_number_w) * 3 / 4 - 10;
   int d_number_y = d_name_y + d_name_h + d_margin;
 
-  int d_default_w = 130 * RESFACTOR;
-  int d_default_h = 9 * RESFACTOR;
+  int d_default_w = 260;
+  int d_default_h = 18;
   int d_default_x = d_dialog_cx - d_default_w / 2;
   int d_default_y = d_number_y + d_number_h + d_margin;
 
-  int d_custom_w = 130 * RESFACTOR;
-  int d_custom_h = 9 * RESFACTOR;
+  int d_custom_w = 260;
+  int d_custom_h = 18;
   int d_custom_x = d_dialog_cx - d_default_w / 2;
   int d_custom_y = d_default_y + d_default_h + d_margin;
 
-  int d_save_w = 55 * RESFACTOR;
-  int d_save_h = 9 * RESFACTOR;
+  int d_save_w = 110;
+  int d_save_h = 18;
   int d_save_x = d_dialog_cx - d_margin - d_save_w;
-  int d_save_y = d_dialog_y + d_dialog_h - d_margin - d_save_h - 5 * RESFACTOR;
+  int d_save_y = d_dialog_y + d_dialog_h - d_margin - d_save_h - 10;
 
-  int d_cancel_w = 55 * RESFACTOR;
-  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_w = 110;
+  int d_cancel_h = 18;
   int d_cancel_x = d_dialog_cx + d_margin;
   int d_cancel_y =
-      d_dialog_y + d_dialog_h - d_margin - d_cancel_h - 5 * RESFACTOR;
+      d_dialog_y + d_dialog_h - d_margin - d_cancel_h - 10;
 
   /*........................................................................
   Button Enumerations
@@ -7240,11 +7240,11 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Fancy_Text_Print(TXT_NAME_COLON, d_name_x - 5 * RESFACTOR,
-                         d_name_y + 1 * RESFACTOR, scheme, TBLACK,
+        Fancy_Text_Print(TXT_NAME_COLON, d_name_x - 10,
+                         d_name_y + 2, scheme, TBLACK,
                          TPF_RIGHT | TPF_TEXT);
-        Fancy_Text_Print(TXT_NUMBER_COLON, d_number_x - 5 * RESFACTOR,
-                         d_number_y + 1 * RESFACTOR, scheme, TBLACK,
+        Fancy_Text_Print(TXT_NUMBER_COLON, d_number_x - 10,
+                         d_number_y + 2, scheme, TBLACK,
                          TPF_RIGHT | TPF_TEXT);
       }
       /*

@@ -395,7 +395,7 @@ bool Init_Game(int, char*[]) {
     Load_Title_Page(true);
 
     Hide_Mouse();
-    Fancy_Text_Print(TXT_STAND_BY, 160 * RESFACTOR, 120 * RESFACTOR,
+    Fancy_Text_Print(TXT_STAND_BY, 320, 240,
                      &ColorRemaps[PCOLOR_DIALOG_BLUE], TBLACK,
                      TPF_CENTER | TPF_TEXT | TPF_DROPSHADOW);
     Show_Mouse();
@@ -1417,7 +1417,7 @@ bool Select_Game(bool /*fade*/) {
       Map.TacPixelX, Map.TacPixelY,  // x,y for messages
       6,                             // max # msgs
       MAX_MESSAGE_LENGTH - 14,       // max msg length
-      7 * RESFACTOR,                 // font height in pixels
+      14,                 // font height in pixels
       -1, -1,                        // x,y for edit line (appears above msgs)
       0,                             // BG		1,
                                      // // enable edit overflow
@@ -1536,11 +1536,7 @@ static void Play_Intro(bool sequenced) {
     Hide_Mouse();
     VisiblePage.Clear();
     Show_Mouse();
-#if RESFACTOR == 2
     Play_Movie(VQ_REDINTRO, THEME_NONE, false);
-#else
-    Play_Movie(VQ_TITLE, THEME_NONE, false);
-#endif
   }
 }
 
@@ -2294,12 +2290,7 @@ void Init_Random() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 void Load_Title_Page(bool visible) {
-#if RESFACTOR == 2
   Load_Title_Screen("TITLE.PCX", &HidPage, CCPalette);
-#else
-  Load_Picture("TITLE.CPS", *HidPage.Get_Graphic_Buffer(),
-               *HidPage.Get_Graphic_Buffer(), CCPalette, BM_DEFAULT);
-#endif
 
   if (visible) {
     HidPage.Blit(SeenPage);
@@ -2330,13 +2321,9 @@ static void Init_Color_Remaps() {
   ** after that are the remap colors.
   */
 
-#if RESFACTOR == 2
   SysMemPage.Clear();
   Load_Picture("PALETTE.CPS", SysMemPage, SysMemPage, nullptr, BM_DEFAULT);
   SysMemPage.Blit(HidPage);
-#else
-  Load_Picture("PALETTE.CPS", HiddenPage, HiddenPage, nullptr, BM_DEFAULT);
-#endif
   for (PlayerColorType pcolor = PCOLOR_FIRST; pcolor < PCOLOR_COUNT; pcolor++) {
     unsigned char* ptr = ColorRemaps[pcolor].RemapTable;
 
@@ -2735,15 +2722,9 @@ static void Init_Bootstrap_Mixfiles() {
     bool ok = MFCD::Cache("EXPAND2.MIX");
     assert(ok);
 
-#if RESFACTOR == 2
     MFCD::Register("HIRES1.MIX", &FastKey, &CryptRandom);
     ok = MFCD::Cache("HIRES1.MIX");
     assert(ok);
-#else
-    MFCD::Register("LORES1.MIX", &FastKey, &CryptRandom);
-    ok = MFCD::Cache("LORES1.MIX");
-    assert(ok);
-#endif
   }
 
   CCFileClass file("EXPAND.MIX");
@@ -2763,18 +2744,12 @@ static void Init_Bootstrap_Mixfiles() {
   bool ok = MFCD::Cache("LOCAL.MIX");
   assert(ok);
 
-#if RESFACTOR == 2
   MFCD::Register("HIRES.MIX", &FastKey, &CryptRandom);
   ok = MFCD::Cache("HIRES.MIX");
   assert(ok);
 
   MFCD::Register("NCHIRES.MIX", &FastKey,
                  &CryptRandom);  // Non-cached hires stuff incl VQ palettes
-#else
-  MFCD::Register("LORES.MIX", &FastKey, &CryptRandom);
-  ok = MFCD::Cache("LORES.MIX");
-  assert(ok);
-#endif  // WIN32
 
   RequiredCD = temp;
 }

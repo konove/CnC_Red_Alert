@@ -1312,7 +1312,7 @@ bool WolapiObject::ListChannelUsers() {
           strcpy(szNameToShow, (char*)pUser->name);
         }
 
-        static int iLatencyBarX = 124 * RESFACTOR -
+        static int iLatencyBarX = 248 -
                                   DIBWidth(DibIconInfos[DIBICON_LATENCY].pDIB) -
                                   5 - 16;
 

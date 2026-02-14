@@ -44,7 +44,7 @@ class SaveOptionsClass {
  private:
   enum SaveOptionsClassEnums {
     BUTTON_CANCEL = 200,
-    BUTTON_SAVE,
+    BUTTON_SAVE = 201,
     OPTION_WIDTH = 216,
     OPTION_HEIGHT = 122,
     OPTION_X = (320 - OPTION_WIDTH) / 2 & ~7,

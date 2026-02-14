@@ -127,30 +127,30 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           **	cardinal directions over the diagonals.
           */
           int altx = x;
-          if (altx < 50 * RESFACTOR) {
-            altx -= 50 * RESFACTOR - altx;
+          if (altx < 100) {
+            altx -= 100 - altx;
           }
           altx = std::max(altx, 0);
-          if (altx > (320 - 50) * RESFACTOR) {
-            altx += altx - (320 - 50) * RESFACTOR;
+          if (altx > (320 - 50) * 2) {
+            altx += altx - (320 - 50) * 2;
           }
-          altx = std::min(altx, 320 * RESFACTOR);
-          if (altx > 50 * RESFACTOR && altx < (320 - 50) * RESFACTOR) {
-            altx += (320 / 2 * RESFACTOR - altx) / 2;
+          altx = std::min(altx, 640);
+          if (altx > 100 && altx < (320 - 50) * 2) {
+            altx += (320 - altx) / 2;
           }
 
           int alty = y;
-          if (alty < 50 * RESFACTOR) {
-            alty -= 50 * RESFACTOR - alty;
+          if (alty < 100) {
+            alty -= 100 - alty;
           }
           alty = std::max(alty, 0);
-          if (alty > 150 * RESFACTOR) {
-            alty += alty - 150 * RESFACTOR;
+          if (alty > 300) {
+            alty += alty - 300;
           }
-          alty = std::min(alty, 200 * RESFACTOR);
+          alty = std::min(alty, 400);
 
-          direction = Desired_Facing256(320 / 2 * RESFACTOR,
-                                        200 / 2 * RESFACTOR, altx, alty);
+          direction = Desired_Facing256(320,
+                                        200, altx, alty);
         }
 
         int control = Dir_Facing(direction);
@@ -161,9 +161,9 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         *indicated.
         */
         static int _rate[9] = {
-            0x00E0 * RESFACTOR, 0x00C0 * RESFACTOR, 0x00A0 * RESFACTOR,
-            0x0080 * RESFACTOR, 0x0060 * RESFACTOR, 0x0040 * RESFACTOR,
-            0x0020 * RESFACTOR, 0x0010 * RESFACTOR, 0x0008 * RESFACTOR};
+            0x01C0, 0x0180, 0x0140,
+            0x0100, 0x00C0, 0x0080,
+            0x0040, 0x0020, 0x0010};
         if (MapEditorActive) {
           rate = Options.ScrollRate + 1;
         } else {

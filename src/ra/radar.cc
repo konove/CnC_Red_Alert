@@ -190,23 +190,16 @@ RadarClass::RadarClass()
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::One_Time() {
-  RadWidth = 80 * RESFACTOR;
-  RadHeight = 70 * RESFACTOR;
+  RadWidth = 160;
+  RadHeight = 140;
   RadX = SeenBuff.Get_Width() - RadWidth;
-  RadY = 7 * RESFACTOR;
-  RadPWidth = 64 * RESFACTOR;
-  RadPHeight = 64 * RESFACTOR;
-#if RESFACTOR == 2
+  RadY = 14;
+  RadPWidth = 128;
+  RadPHeight = 128;
   RadOffX = 6;
   RadOffY = 7;
   RadIWidth = 128 + 18;  //************
   RadIHeight = 128 + 2;  //************
-#else
-  RadOffX = 4;
-  RadOffY = 4;
-  RadIWidth = 72;
-  RadIHeight = 65;
-#endif
 
   DisplayClass::One_Time();
 #ifdef OBSOLETE
@@ -567,7 +560,7 @@ void RadarClass::Draw_It(bool forced) {
         GraphicBufferClass* oldpage = Set_Logic_Page(HidPage);
 #endif
 
-        CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 1 * RESFACTOR, WINDOW_MAIN,
+        CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                       SHAPE_NORMAL);
         if (BaseX || BaseY) {
           if (!IsZoomed && BaseX && BaseY && RadarWidth < RadIWidth - 1 &&
@@ -601,7 +594,7 @@ void RadarClass::Draw_It(bool forced) {
           }
           if (IsPulseActive) {
             CC_Draw_Shape(RadarPulse, RadarPulseFrame++, RadX + RadOffX,
-                          RadY + 1 * RESFACTOR, WINDOW_MAIN, SHAPE_NORMAL);
+                          RadY + 2, WINDOW_MAIN, SHAPE_NORMAL);
           }
           LogicPage->Unlock();
         }
@@ -630,7 +623,7 @@ void RadarClass::Draw_It(bool forced) {
       *forced to do so.
       */
       int val = DoesRadarExist ? MAX_RADAR_FRAMES : 0;
-      CC_Draw_Shape(RadarAnim, val, RadX, RadY + 1 * RESFACTOR, WINDOW_MAIN,
+      CC_Draw_Shape(RadarAnim, val, RadX, RadY + 2, WINDOW_MAIN,
                     SHAPE_NORMAL);
       FullRedraw = false;
       IsToRedraw = false;
@@ -643,7 +636,7 @@ void RadarClass::Draw_It(bool forced) {
         Fancy_Text_Print(
             Text_String(
                 HouseTypeClass::As_Reference(PlayerPtr->ActLike).Full_Name()),
-            RadX + RadWidth / 2, RadY + RadHeight - 10 * RESFACTOR,
+            RadX + RadWidth / 2, RadY + RadHeight - 20,
             &ColorRemaps[PlayerPtr->RemapColor], TBLACK,
             TPF_CENTER | TPF_TEXT | TPF_DROPSHADOW);
       }
@@ -940,9 +933,9 @@ void RadarClass::Zoom_Mode(CELL cell) {
   map_c_height = std::min(map_c_height, RadIHeight);
   map_c_height = std::min(map_c_height, MapCellHeight);
 #else
-  map_c_width = std::min(map_c_width, 62 * RESFACTOR);
+  map_c_width = std::min(map_c_width, 124);
   map_c_width = std::min(map_c_width, MapCellWidth);
-  map_c_height = std::min(map_c_height, 62 * RESFACTOR);
+  map_c_height = std::min(map_c_height, 124);
   map_c_height = std::min(map_c_height, MapCellHeight);
 #endif
 
@@ -1604,12 +1597,10 @@ void RadarClass::Radar_Anim() {
                                    RadIWidth, RadIHeight - 2);
 #endif
 // Mono_Set_Cursor(0,0);
-#if RESFACTOR == 2
   Draw_Box(RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
            RadIHeight + 2, BOXSTYLE_RAISED, true);
-#endif
   draw_window.Clear();
-  CC_Draw_Shape(RadarAnim, RadarAnimFrame, RadX, RadY + 1 * RESFACTOR,
+  CC_Draw_Shape(RadarAnim, RadarAnimFrame, RadX, RadY + 2,
                 WINDOW_MAIN, SHAPE_NORMAL);
   Flag_To_Redraw(false);
   Set_Logic_Page(oldpage);
@@ -2332,18 +2323,18 @@ bool RadarClass::Draw_House_Info() {
   if (!Map.IsSidebarActive) {
     return false;
   }
-  CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 1 * RESFACTOR, WINDOW_MAIN,
+  CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                 SHAPE_NORMAL);
-  y = RadY + RadOffY + 2 * RESFACTOR;
+  y = RadY + RadOffY + 4;
 
   MouseClass::Repair.Draw_Me(true);
   MouseClass::Upgrade.Draw_Me(true);
   MouseClass::Zoom.Draw_Me(true);
 
-  Fancy_Text_Print(TXT_SPY_INFO, RadX + RadOffX + 6 * RESFACTOR, y,
+  Fancy_Text_Print(TXT_SPY_INFO, RadX + RadOffX + 12, y,
                    &ColorRemaps[PCOLOR_GREY], TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  y += 7 * RESFACTOR;
+  y += 14;
 
   HouseClass* ptr = HouseClass::As_Pointer(SpyingOn);
   if (ptr && ptr->RadarSpied & 1 << PlayerPtr->Class->House) {
@@ -2367,49 +2358,49 @@ bool RadarClass::Draw_House_Info() {
         txt[9] = '.';
         txt[10] = '\0';
       }
-      Fancy_Text_Print(txt, RadX + RadOffX + 6 * RESFACTOR, y, color, BLACK,
+      Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                        style);
     } else {
       port::SafeCopy(txt, "________");
     }
-    y += 6 * RESFACTOR + 1;
+    y += 12 + 1;
 
-    Fancy_Text_Print(TXT_BUILDNGS, RadX + RadOffX + 6 * RESFACTOR, y,
+    Fancy_Text_Print(TXT_BUILDNGS, RadX + RadOffX + 12, y,
                      &ColorRemaps[PCOLOR_GREY], TBLACK,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
-    y += 6 * RESFACTOR + 1;
+    y += 12 + 1;
 
     // count & print buildings
     snprintf(txt, sizeof(txt), "%i", ptr->CurBuildings);
-    Fancy_Text_Print(txt, RadX + RadOffX + 6 * RESFACTOR, y, color, BLACK,
+    Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
-    y += 6 * RESFACTOR + 1;
+    y += 12 + 1;
 
-    Fancy_Text_Print(TXT_UNITS, RadX + RadOffX + 6 * RESFACTOR, y,
+    Fancy_Text_Print(TXT_UNITS, RadX + RadOffX + 12, y,
                      &ColorRemaps[PCOLOR_GREY], TBLACK,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
-    y += 6 * RESFACTOR + 1;
+    y += 12 + 1;
     // count & print units
     snprintf(txt, sizeof(txt), "%i", ptr->CurUnits);
-    Fancy_Text_Print(txt, RadX + RadOffX + 6 * RESFACTOR, y, color, BLACK,
+    Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
-    y += 6 * RESFACTOR + 1;
+    y += 12 + 1;
 
-    Fancy_Text_Print(TXT_INFANTRY, RadX + RadOffX + 6 * RESFACTOR, y,
+    Fancy_Text_Print(TXT_INFANTRY, RadX + RadOffX + 12, y,
                      &ColorRemaps[PCOLOR_GREY], TBLACK,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
-    y += 6 * RESFACTOR + 1;
+    y += 12 + 1;
     // count & print infantry
     snprintf(txt, sizeof(txt), "%i", ptr->CurInfantry);
-    Fancy_Text_Print(txt, RadX + RadOffX + 6 * RESFACTOR, y, color, BLACK,
+    Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
 #if (0)
-    y += (6 * RESFACTOR) + 1;
+    y += (12) + 1;
 
     Fancy_Text_Print(TXT_AIRCRAFT, RADAR_X + RADAR_OFF_X + 6, y,
                      &ColorRemaps[PCOLOR_GREY], TBLACK,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
-    y += (6 * RESFACTOR) + 1;
+    y += (12) + 1;
     // count & print aircraft
     for (i = AIRCRAFT_NONE + 1, count = 0; i < AIRCRAFT_COUNT; i++) {
       count += ptr->AQuantity[i];
@@ -2453,21 +2444,21 @@ void RadarClass::Draw_Names() {
 
   //	CC_Draw_Shape(RadarAnim, RADAR_ACTIVATED_FRAME, RADAR_X, RADAR_Y+1,
   //		WINDOW_MAIN, SHAPE_NORMAL);
-  CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 1 * RESFACTOR, WINDOW_MAIN,
+  CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                 SHAPE_NORMAL);
 
-  y = RadY + RadOffY + 2 * RESFACTOR;
+  y = RadY + RadOffY + 4;
 
   Fancy_Text_Print(TXT_NAME_COLON, RadX + RadOffX, y, &ColorRemaps[PCOLOR_GREY],
                    TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Fancy_Text_Print(TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
                    &ColorRemaps[PCOLOR_GREY], TBLACK,
                    TPF_RIGHT | TPF_6PT_GRAD | TPF_NOSHADOW);
-  y += 6 * RESFACTOR + 1;
+  y += 12 + 1;
 
   LogicPage->Draw_Line(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
                        LTGREY);
-  y += 2 * RESFACTOR;
+  y += 4;
 
   for (house = HOUSE_MULTI1; house < HOUSE_MULTI1 + Session.MaxPlayers;
        house++) {
@@ -2526,7 +2517,7 @@ void RadarClass::Draw_Names() {
     Fancy_Text_Print(txt, RadX + RadOffX + RadIWidth - 2, y, color, TBLACK,
                      style | TPF_RIGHT);
 
-    y += 6 * RESFACTOR + 1;
+    y += 12 + 1;
   }
 
   MouseClass::Repair.Draw_Me(true);

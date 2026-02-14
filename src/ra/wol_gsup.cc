@@ -230,24 +230,24 @@ void WOL_GameSetupDialog::Initialize() {
   d_dialog_y = 0;
   d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
 
-  d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
+  d_txt6_h = 12 + 1;  // ht of 6-pt text
   int d_text_h = 12;
   d_margin1 = 34;  // large margin
 
-  d_color_w = 10 * RESFACTOR;
-  d_color_h = 9 * RESFACTOR;
+  d_color_w = 20;
+  d_color_h = 18;
   d_color_x = 294;  // 54;		//d_dialog_x + ((d_dialog_w / 4) * 3) -
                     // (d_color_w * 3);
   d_color_y = 89;   // 142;	//d_house_y;
 
-  d_house_w = 60 * RESFACTOR;
-  d_house_h = (8 * 5 * RESFACTOR);
+  d_house_w = 120;
+  d_house_h = (8 * 10);
   d_house_x = 466;        // 65;	//d_color_x;	//d_dialog_cx - (d_house_w / 2);
-  d_house_y = d_color_y;  // + 36;	//d_dialog_y + ( 7 * RESFACTOR ) +
-                          // d_txt6_h + (2*RESFACTOR);
+  d_house_y = d_color_y;  // + 36;	//d_dialog_y + ( 14 ) +
+                          // d_txt6_h + (2*2);
 
   if (bHost) {
-    d_disc_w = 365;  // d_dialog_w - (d_margin1 * 2) - 20*RESFACTOR;
+    d_disc_w = 365;  // d_dialog_w - (d_margin1 * 2) - 40;
   } else {
     d_disc_w = d_dialog_w - (d_margin1 * 2);
   }
@@ -255,16 +255,16 @@ void WOL_GameSetupDialog::Initialize() {
   d_disc_y = 205;  // d_dialog_y + d_dialog_h - ( 65 + d_disc_h );
   d_disc_h = 337 - d_disc_y;
 
-  d_playerlist_w = 124 * RESFACTOR;
+  d_playerlist_w = 248;
   d_playerlist_h = d_text_h * 4 + 4;
   d_playerlist_x = d_dialog_x + d_margin1;
   d_playerlist_y =
-      75;  // d_dialog_y + d_margin1 + d_txt6_h + 3*RESFACTOR + 18 * RESFACTOR;
+      75;  // d_dialog_y + d_margin1 + d_txt6_h + 6 + 36;
 
   int d_tab_h = 19;
 
   d_scenariolist_w = 200;
-  //	d_scenariolist_h = (4 * d_txt6_h) + 3*RESFACTOR;		// 4
+  //	d_scenariolist_h = (4 * d_txt6_h) + 3*2;		// 4
   // rows high
   d_scenariolist_x = d_dialog_x + d_dialog_w - d_margin1 - d_scenariolist_w;
   d_scenariolist_y = d_disc_y + d_tab_h;
@@ -276,23 +276,23 @@ void WOL_GameSetupDialog::Initialize() {
   d_gamekind_y =
       153;  //	d_playerlist_y + d_text_h + 3;	// + d_playerlist_h - d_text_h;
 
-  d_count_w = 25 * RESFACTOR;
+  d_count_w = 50;
   d_count_h = d_txt6_h;
   d_count_x = 310;
   d_count_y = 138;  // d_playerlist_y + d_playerlist_h + d_margin2 +
-                    // 9*RESFACTOR;
+                    // 9*2;
 
-  d_level_w = 25 * RESFACTOR;
+  d_level_w = 50;
   d_level_h = d_txt6_h;
   d_level_x = d_count_x;
   d_level_y = d_count_y + d_count_h;
 
-  d_credits_w = 25 * RESFACTOR;
+  d_credits_w = 50;
   d_credits_h = d_txt6_h;
   d_credits_x = d_count_x;
   d_credits_y = d_level_y + d_level_h;
 
-  d_aiplayers_w = 25 * RESFACTOR;
+  d_aiplayers_w = 50;
   d_aiplayers_h = d_txt6_h;
   d_aiplayers_x = d_count_x;
   d_aiplayers_y = d_credits_y + d_credits_h;
@@ -302,41 +302,41 @@ void WOL_GameSetupDialog::Initialize() {
 #else
   d_options_w = 180;
 #endif
-  d_options_h = ((6 * 6) + 4) * RESFACTOR + 1;
+  d_options_h = ((6 * 6) + 4) * 2 + 1;
   d_options_x = d_dialog_x + d_dialog_w - d_options_w - d_margin1;
   d_options_y = 127 - d_txt6_h + 2;
 
   d_send_w = d_dialog_w - (d_margin1 * 2);
-  d_send_h = 9 * RESFACTOR;
+  d_send_h = 18;
   d_send_x = d_dialog_x + d_margin1;
   d_send_y = d_disc_y + d_disc_h + 5;
 
-  //	d_ok_w = 50*RESFACTOR;
-  //	d_ok_h = 9*RESFACTOR;
+  //	d_ok_w = 50*2;
+  //	d_ok_h = 9*2;
   //	d_ok_x = d_dialog_x + (d_dialog_w / 6) - (d_ok_w / 2);
-  //	d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 3*RESFACTOR;
+  //	d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 3*2;
 
   d_cancel_w = 100;
-  d_cancel_h = 9 * RESFACTOR;
+  d_cancel_h = 18;
   d_cancel_x = d_dialog_x + 100;  // d_dialog_cx - (d_cancel_w / 2);
   d_cancel_y =
-      365;  // d_dialog_y + d_dialog_h - d_cancel_h - d_margin1 - 3*RESFACTOR;
+      365;  // d_dialog_y + d_dialog_h - d_cancel_h - d_margin1 - 6;
 
   d_accept_w = 100;
-  d_accept_h = 9 * RESFACTOR;
+  d_accept_h = 18;
   d_accept_x = d_dialog_x + 210;
-  d_accept_y = d_cancel_y;  // d_dialog_y + d_dialog_h - 17*RESFACTOR;
+  d_accept_y = d_cancel_y;  // d_dialog_y + d_dialog_h - 34;
 
   d_action_w = 100;
-  d_action_h = 9 * RESFACTOR;
+  d_action_h = 18;
   d_action_x = d_dialog_x + 500;
   d_action_y = d_cancel_y;
 
-  /*	int d_load_w = 50*RESFACTOR;
-          int d_load_h = 9*RESFACTOR;
+  /*	int d_load_w = 50*2;
+          int d_load_h = 18;
           int d_load_x = d_dialog_x + ((d_dialog_w * 5) / 6) - (d_load_w / 2);
           int d_load_y = d_dialog_y + d_dialog_h - d_load_h - d_margin1 -
-     3*RESFACTOR;
+     6;
   */
   d_amunits_w = 160;
   d_amunits_h = 18;
@@ -394,8 +394,8 @@ void WOL_GameSetupDialog::Initialize() {
       BUTTON_PARAMS, d_options_x, d_options_y, d_options_w, d_options_h,
       TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
   //	pTextBtnOk = new TextButtonClass( BUTTON_OK, TXT_OK, TPF_BUTTON, d_ok_x,
-  // d_ok_y, 60*RESFACTOR ); 	TextButtonClass loadbtn(BUTTON_LOAD,
-  // TXT_LOAD_BUTTON, TPF_BUTTON, d_load_x, d_load_y, 60*RESFACTOR);
+  // d_ok_y, 60*2 ); 	TextButtonClass loadbtn(BUTTON_LOAD,
+  // TXT_LOAD_BUTTON, TPF_BUTTON, d_load_x, d_load_y, 60*2);
   pTextBtnCancel =
       new TextButtonClass(BUTTON_CANCEL, TXT_WOL_CANCELGAME, TPF_BUTTON,
                           d_cancel_x, d_cancel_y, d_cancel_w);
@@ -443,14 +443,14 @@ void WOL_GameSetupDialog::Initialize() {
   //	pStaticDescrip = new StaticButtonClass( 0, "", TPF_TYPE, d_gamekind_x,
   // d_gamekind_y, d_gamekind_w, d_gamekind_h );
   pStaticUnit = new StaticButtonClass(
-      0, "    ", TPF_TEXT, d_count_x + d_count_w + 2 * RESFACTOR, d_count_y);
+      0, "    ", TPF_TEXT, d_count_x + d_count_w + 4, d_count_y);
   pStaticLevel = new StaticButtonClass(
-      0, "    ", TPF_TEXT, d_level_x + d_level_w + 2 * RESFACTOR, d_level_y);
+      0, "    ", TPF_TEXT, d_level_x + d_level_w + 4, d_level_y);
   pStaticCredits = new StaticButtonClass(
-      0, "         ", TPF_TEXT, d_credits_x + d_credits_w + 2 * RESFACTOR,
+      0, "         ", TPF_TEXT, d_credits_x + d_credits_w + 4,
       d_credits_y);
   pStaticAIPlayers = new StaticButtonClass(
-      0, "   ", TPF_TEXT, d_aiplayers_x + d_aiplayers_w + 2 * RESFACTOR,
+      0, "   ", TPF_TEXT, d_aiplayers_x + d_aiplayers_w + 4,
       d_aiplayers_y);
 
   Fancy_Text_Print("", 0, 0, 0, 0, TPF_TEXT);
@@ -548,8 +548,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
   long ok_timer = 0;  // for timing OK button
   int i;
-  int tabs[] = {77 * RESFACTOR};       // tabs for player list box
-  int optiontabs[] = {8 * RESFACTOR};  // tabs for option list box
+  int tabs[] = {77 * 2};       // tabs for player list box
+  int optiontabs[] = {8 * 2};  // tabs for option list box
 
   CCFileClass loadfile("SAVEGAME.NET");
   int load_game = 0;  // 1 = load a saved game
@@ -1018,13 +1018,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //					Fancy_Text_Print(
         // TXT_SCENARIO_COLON, d_scenariolist_x + (d_scenariolist_w / 2),
         // d_scenariolist_y - d_txt6_h, scheme, TBLACK, TPF_TEXT | TPF_CENTER);
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 2 * RESFACTOR, d_count_y,
+        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 2 * RESFACTOR, d_level_y,
+        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 2 * RESFACTOR,
+        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4,
                          d_credits_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 2 * RESFACTOR,
+        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
                          d_aiplayers_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
         Fancy_Text_Print(
             TXT_SIDE_COLON,
@@ -1110,7 +1110,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           LogicPage->Fill_Rect(cbox_x[i] + 1, d_color_y + 1,
-                               cbox_x[i] + 1 + d_color_w - 2 * RESFACTOR,
+                               cbox_x[i] + 1 + d_color_w - 4,
                                d_color_y + 1 + d_color_h - 2,
                                ColorRemaps[i].Box);
 

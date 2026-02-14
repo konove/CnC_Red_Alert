@@ -234,8 +234,8 @@ int MapEditClass::New_Scenario() {
   Flag_Cell(Coord_Cell(TacticalCoord));
 
   Set_Tactical_Position(Cell_Coord(Scen.Waypoint[WAYPT_HOME] -
-                                   (MAP_CELL_W * 4 * RESFACTOR) -
-                                   (5 * RESFACTOR)));
+                                   (MAP_CELL_W * 8) -
+                                   (10)));
   ScenarioInit--;
 
   return (0);
@@ -1660,20 +1660,20 @@ int MapEditClass::Load_Scenario() {
     **	Dialog & button dimensions
     */
     enum {
-      D_DIALOG_W = 320 * RESFACTOR,
-      D_DIALOG_H = 200 * RESFACTOR,
-      D_DIALOG_X = ((320 * RESFACTOR - D_DIALOG_W) / 2),
-      D_DIALOG_Y = ((200 * RESFACTOR - D_DIALOG_H) / 2),
+      D_DIALOG_W = 640,
+      D_DIALOG_H = 400,
+      D_DIALOG_X = ((640 - D_DIALOG_W) / 2),
+      D_DIALOG_Y = ((400 - D_DIALOG_H) / 2),
 
       D_OK_W = 45,
       D_OK_H = 9,
-      D_OK_X = D_DIALOG_X + 15 * RESFACTOR,
-      D_OK_Y = D_DIALOG_Y + D_DIALOG_H - 15 * RESFACTOR,
+      D_OK_X = D_DIALOG_X + 30,
+      D_OK_Y = D_DIALOG_Y + D_DIALOG_H - 30,
 
       D_CANCEL_W = 45,
       D_CANCEL_H = 9,
-      D_CANCEL_X = D_DIALOG_X + D_DIALOG_W - (D_CANCEL_W + 15 * RESFACTOR),
-      D_CANCEL_Y = D_DIALOG_Y + D_DIALOG_H - 15 * RESFACTOR
+      D_CANCEL_X = D_DIALOG_X + D_DIALOG_W - (D_CANCEL_W + 30),
+      D_CANCEL_Y = D_DIALOG_Y + D_DIALOG_H - 30
     };
 
     /*
@@ -1725,7 +1725,7 @@ int MapEditClass::Load_Scenario() {
     char theatertext[45] = "";
     DropListClass theaterbtn(LIST_THEATER, theatertext, sizeof(theatertext) - 1,
                              TPF_EFNT | TPF_NOSHADOW,
-                             D_DIALOG_X + 15 * RESFACTOR, D_DIALOG_Y + 30, 65,
+                             D_DIALOG_X + 30, D_DIALOG_Y + 30, 65,
                              8 * 5, MFCD::Retrieve("EBTN-UP.SHP"),
                              MFCD::Retrieve("EBTN-DN.SHP"));
     for (TheaterType t = THEATER_FIRST; t < THEATER_COUNT; t++) {
@@ -1917,7 +1917,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	House choice list.
     */
-    ListClass housebtn(BUTTON_HOUSE, D_DIALOG_X + 15 * RESFACTOR,
+    ListClass housebtn(BUTTON_HOUSE, D_DIALOG_X + 30,
                        D_DIALOG_Y + 105, 55, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
                        MFCD::Retrieve("EBTN-UP.SHP"),
                        MFCD::Retrieve("EBTN-DN.SHP"));
@@ -1932,7 +1932,7 @@ int MapEditClass::Load_Scenario() {
     char basetext[35];
     DropListClass basebtn(
         BUTTON_BASE, basetext, sizeof(basetext), TPF_EFNT | TPF_NOSHADOW,
-        D_DIALOG_X + 15 * RESFACTOR, D_DIALOG_Y + 80, 65, 7 * 10,
+        D_DIALOG_X + 30, D_DIALOG_Y + 80, 65, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
     for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
       basebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
@@ -1947,7 +1947,7 @@ int MapEditClass::Load_Scenario() {
     char themetext[65];
     DropListClass themebtn(
         BUTTON_THEME, themetext, sizeof(themetext), TPF_EFNT | TPF_NOSHADOW,
-        basebtn.X + basebtn.Width + 15 * RESFACTOR, basebtn.Y, 85, 7 * 10,
+        basebtn.X + basebtn.Width + 30, basebtn.Y, 85, 7 * 10,
         MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
     themebtn.Add_Item("<none>");
     for (ThemeType th = THEME_FIRST; th < THEME_COUNT; th++) {

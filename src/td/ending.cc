@@ -216,15 +216,15 @@ void Nod_Ending() {
         if ((key & 0x10FF) == KN_LMOUSE && !(key & KN_RLSE_BIT)) {
           int mousex = _Kbd->MouseQX;
           int mousey = _Kbd->MouseQY;
-          if (mousey >= 22 * RESFACTOR && mousey <= 177 * RESFACTOR) {
+          if (mousey >= 44 && mousey <= 354) {
             done = true;
-            if (mousex < 160 * RESFACTOR && mousey < 100 * RESFACTOR) {
+            if (mousex < 320 && mousey < 200) {
               selection = 2;
             }
-            if (mousex < 160 * RESFACTOR && mousey >= 100 * RESFACTOR) {
+            if (mousex < 320 && mousey >= 200) {
               selection = 3;
             }
-            if (mousex >= 160 * RESFACTOR && mousey >= 100 * RESFACTOR) {
+            if (mousex >= 320 && mousey >= 200) {
               selection = 4;
             }
           }
@@ -249,9 +249,8 @@ void Nod_Ending() {
     }
   }
   // erase the "choose a target" text
-  SeenBuff.Fill_Rect(0, 180 * RESFACTOR, 319 * RESFACTOR, 199 * RESFACTOR, 0);
-  TextPrintBuffer->Fill_Rect(0, 180 * RESFACTOR, 319 * RESFACTOR,
-                             199 * RESFACTOR, 0);
+  SeenBuff.Fill_Rect(0, 360, 638, 398, 0);
+  TextPrintBuffer->Fill_Rect(0, 360, 638, 398, 0);
 
   Hide_Mouse();
   Keyboard::Clear();

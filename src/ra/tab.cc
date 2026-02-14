@@ -115,10 +115,10 @@ void TabClass::Draw_It(bool complete) {
   if ((complete || IsToRedraw) && LogicPage->Lock()) {
     int width = SeenBuff.Get_Width();
     int rightx = width - 1;
-    int tab_height = TAB_HEIGHT * RESFACTOR;
+    int tab_height = TAB_HEIGHT * 2;
 
     LogicPage->Fill_Rect(0, 0, rightx, tab_height - 1, BLACK);
-    //		LogicPage->Fill_Rect(0, 0, rightx, tab_height-(2 * RESFACTOR),
+    //		LogicPage->Fill_Rect(0, 0, rightx, tab_height-(2 * 2),
     // BLACK);
 
 #ifdef WIN32
@@ -130,18 +130,18 @@ void TabClass::Draw_It(bool complete) {
     CC_Draw_Shape(TabShape, 2, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
 #endif
     Draw_Credits_Tab();
-    LogicPage->Draw_Line(0, tab_height - 1 * RESFACTOR, rightx,
-                         tab_height - 1 * RESFACTOR, BLACK);
+    LogicPage->Draw_Line(0, tab_height - 2, rightx,
+                         tab_height - 2, BLACK);
 #ifdef WIN32
-    Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH / 2 * RESFACTOR, 0,
+    Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
                      &MetalScheme, TBLACK,
                      TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
 #else
     //			Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, (EVA_WIDTH/2)
-    //* RESFACTOR, 0, &ColorRemaps[PCOLOR_GREY], TBLACK,
+    //* 2, 0, &ColorRemaps[PCOLOR_GREY], TBLACK,
     // TPF_6PT_GRAD|TPF_NOSHADOW|TPF_CENTER|TPF_BRIGHT_COLOR);
     Fancy_Text_Print(
-        TXT_TAB_BUTTON_CONTROLS, (EVA_WIDTH / 2) * RESFACTOR, 0,
+        TXT_TAB_BUTTON_CONTROLS, (EVA_WIDTH / 2) * 2, 0,
         &ColorRemaps[PCOLOR_GREY], TBLACK,
         TPF_METAL12 | TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
 #endif  // WIN32
@@ -150,10 +150,10 @@ void TabClass::Draw_It(bool complete) {
       TabClass::Hilite_Tab(1);
 #endif  // WIN32
     } else {
-      CC_Draw_Shape(TabShape, 0, width - EVA_WIDTH * RESFACTOR, 0, WINDOW_MAIN,
+      CC_Draw_Shape(TabShape, 0, width - EVA_WIDTH * 2, 0, WINDOW_MAIN,
                     SHAPE_NORMAL);
       Fancy_Text_Print(
-          TXT_TAB_SIDEBAR, width - EVA_WIDTH / 2 * RESFACTOR, 0,
+          TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0,
           &ColorRemaps[PCOLOR_GREY], TBLACK,
           TPF_METAL12 | TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
     }
@@ -170,9 +170,9 @@ void TabClass::Draw_Credits_Tab() {
   ** Use the new sidebar art for 640x400
   */
   CC_Draw_Shape(TabShape, Map.MoneyFlashTimer.Value() > 1 ? 8 : 6,
-                (320 - EVA_WIDTH) * RESFACTOR, 0, WINDOW_MAIN, SHAPE_NORMAL);
+                (320 - EVA_WIDTH) * 2, 0, WINDOW_MAIN, SHAPE_NORMAL);
 #else
-  CC_Draw_Shape(TabShape, 4, (320 - (EVA_WIDTH * 2)) * RESFACTOR, 0,
+  CC_Draw_Shape(TabShape, 4, (320 - (EVA_WIDTH * 2)) * 2, 0,
                 WINDOW_MAIN, SHAPE_NORMAL);
 #endif
 
@@ -183,7 +183,7 @@ void TabClass::Draw_Credits_Tab() {
 #ifdef WIN32
     CC_Draw_Shape(TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN, SHAPE_NORMAL);
 #else
-    CC_Draw_Shape(TabShape, light ? 6 : 5, EVA_WIDTH * RESFACTOR, 0,
+    CC_Draw_Shape(TabShape, light ? 6 : 5, EVA_WIDTH * 2, 0,
                   WINDOW_MAIN, SHAPE_NORMAL);
 #endif
   }
@@ -193,7 +193,7 @@ void TabClass::Hilite_Tab(int tab) {
   int xpos = 0;
 
   if (tab) {
-    xpos = (320 - EVA_WIDTH) * RESFACTOR;
+    xpos = (320 - EVA_WIDTH) * 2;
   }
 
 #ifdef WIN32
@@ -202,7 +202,7 @@ void TabClass::Hilite_Tab(int tab) {
   */
   CC_Draw_Shape(TabShape, 1, xpos, 0, WINDOW_MAIN, SHAPE_NORMAL);
   MetalScheme.Color = 128 + 6;
-  Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH / 2 * RESFACTOR, 0,
+  Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
                    &MetalScheme, TBLACK,
                    TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
   MetalScheme.Color = 128;
@@ -237,7 +237,7 @@ void TabClass::Hilite_Tab(int tab) {
  *JLB : Handles new scrolling option. *
  *=============================================================================================*/
 void TabClass::AI(KeyNumType& input, int x, int y) {
-  if (y >= 0 && y < TAB_HEIGHT * RESFACTOR && x < SeenBuff.Get_Width() - 1 &&
+  if (y >= 0 && y < TAB_HEIGHT * 2 && x < SeenBuff.Get_Width() - 1 &&
       x > 0) {
     bool ok = false;
 
@@ -253,11 +253,11 @@ void TabClass::AI(KeyNumType& input, int x, int y) {
     if (ok) {
       if (input == KN_LMOUSE) {
         int sel = -1;
-        if (x < EVA_WIDTH * RESFACTOR) {
+        if (x < EVA_WIDTH * 2) {
           sel = 0;
         }
 #ifndef WIN32  // No Sidebar tab in hires - sidebar is always active.
-        if (x > (320 - 80) * RESFACTOR) {
+        if (x > (320 - 80) * 2) {
           sel = 1;
         }
 #endif  // WIN32

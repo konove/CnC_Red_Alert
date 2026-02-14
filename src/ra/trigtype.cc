@@ -1082,23 +1082,23 @@ bool TriggerTypeClass::Edit() {
 
       if (eventflag == 3) {
         LogicPage->Draw_Line(event1list.X - 1, event1list.Y + 3,
-                             event1list.X - 2 * RESFACTOR, event1list.Y + 3,
+                             event1list.X - 4, event1list.Y + 3,
                              WHITE);
-        LogicPage->Draw_Line(event1list.X - 2 * RESFACTOR, event1list.Y + 3,
-                             action1list.X - 2 * RESFACTOR, action1list.Y + 3,
+        LogicPage->Draw_Line(event1list.X - 4, event1list.Y + 3,
+                             action1list.X - 4, action1list.Y + 3,
                              WHITE);
         LogicPage->Draw_Line(action1list.X - 1, action1list.Y + 3,
-                             action1list.X - 2 * RESFACTOR, action1list.Y + 3,
+                             action1list.X - 4, action1list.Y + 3,
                              WHITE);
 
         LogicPage->Draw_Line(event2list.X - 1, event2list.Y + 3,
-                             event2list.X - 5 * RESFACTOR, event2list.Y + 3,
+                             event2list.X - 10, event2list.Y + 3,
                              WHITE);
-        LogicPage->Draw_Line(event2list.X - 5 * RESFACTOR, event2list.Y + 3,
-                             action2list.X - 5 * RESFACTOR, action2list.Y + 3,
+        LogicPage->Draw_Line(event2list.X - 10, event2list.Y + 3,
+                             action2list.X - 10, action2list.Y + 3,
                              WHITE);
         LogicPage->Draw_Line(action2list.X - 1, action2list.Y + 3,
-                             action2list.X - 5 * RESFACTOR, action2list.Y + 3,
+                             action2list.X - 10, action2list.Y + 3,
                              WHITE);
       }
 

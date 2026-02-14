@@ -581,8 +581,8 @@ void Fill_In_Data() {
     Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
         Scen.Waypoint[WAYPT_HOME];
     Map.Set_Tactical_Position(Cell_Coord(Scen.Waypoint[WAYPT_HOME] -
-                                         MAP_CELL_W * 4 * RESFACTOR -
-                                         5 * RESFACTOR));
+                                         MAP_CELL_W * 8 -
+                                         10));
     //		}
   }
 #endif
@@ -856,18 +856,9 @@ void Do_Win() {
     Set_Logic_Page(SeenBuff);
     Map.Flag_To_Redraw(true);
     Map.Render();
-#if RESFACTOR == 2
-    Fancy_Text_Print(TXT_SCENARIO_WON, x, 90 * RESFACTOR,
+    Fancy_Text_Print(TXT_SCENARIO_WON, x, 180,
                      &ColorRemaps[PCOLOR_RED], TBLACK,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-#else
-    Fancy_Text_Print(TXT_MISSION, x, 90 * RESFACTOR, &ColorRemaps[PCOLOR_RED],
-                     TBLACK,
-                     TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-    Fancy_Text_Print(TXT_HACKHACK, x, 110 * RESFACTOR, &ColorRemaps[PCOLOR_RED],
-                     TBLACK,
-                     TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-#endif
     CountDownTimer.Set(TIMER_SECOND * 3);
     while (Is_Speaking()) {
     }
@@ -1120,7 +1111,7 @@ void Do_Lose() {
   **	Announce win to player.
   */
   Set_Logic_Page(SeenBuff);
-  Fancy_Text_Print(TXT_SCENARIO_LOST, x, 90 * RESFACTOR,
+  Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180,
                    &ColorRemaps[PCOLOR_RED], TBLACK,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(TIMER_SECOND * 3);
@@ -1210,7 +1201,7 @@ void Do_Draw() {
   **	Announce win to player.
   */
   Set_Logic_Page(SeenBuff);
-  Fancy_Text_Print(TXT_WOL_DRAW, x, 90 * RESFACTOR, &ColorRemaps[PCOLOR_RED],
+  Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps[PCOLOR_RED],
                    TBLACK,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(TIMER_SECOND * 3);

@@ -90,20 +90,20 @@ void GameControlsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 232 * RESFACTOR;                          // dialog width
-  int d_dialog_h = 141 * RESFACTOR;                          // dialog height
+  int d_dialog_w = 464;                          // dialog width
+  int d_dialog_h = 282;                          // dialog height
   int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y =
       (SeenBuff.Get_Height() - d_dialog_h) / 2;   // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;  // center x-coord
-  int d_top_margin = 25 * RESFACTOR;
+  int d_top_margin = 50;
 
-  int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
-  int d_margin1 = 5 * RESFACTOR;     // large margin
+  int d_txt6_h = 12 + 1;  // ht of 6-pt text
+  int d_margin1 = 10;     // large margin
 
-  int d_speed_w = d_dialog_w - 34 * RESFACTOR;
-  int d_speed_h = 6 * RESFACTOR;
-  int d_speed_x = d_dialog_x + 17 * RESFACTOR;
+  int d_speed_w = d_dialog_w - 68;
+  int d_speed_h = 12;
+  int d_speed_x = d_dialog_x + 34;
 #ifdef GERMAN
   int d_speed_y =
       d_dialog_y + d_top_margin + d_margin1 + d_txt6_h - GERMAN_OFFSET_Y;
@@ -111,9 +111,9 @@ void GameControlsClass::Process() {
   int d_speed_y = d_dialog_y + d_top_margin + d_margin1 + d_txt6_h;
 #endif
 
-  int d_scroll_w = d_dialog_w - 34 * RESFACTOR;
-  int d_scroll_h = 6 * RESFACTOR;
-  int d_scroll_x = d_dialog_x + 17 * RESFACTOR;
+  int d_scroll_w = d_dialog_w - 68;
+  int d_scroll_h = 12;
+  int d_scroll_x = d_dialog_x + 34;
 #ifdef GERMAN
   int d_scroll_y = d_speed_y + d_speed_h + d_txt6_h + (d_margin1 * 2) +
                    d_txt6_h - GERMAN_OFFSET_Y;
@@ -121,20 +121,20 @@ void GameControlsClass::Process() {
   int d_scroll_y = d_speed_y + d_speed_h + d_txt6_h + d_margin1 * 2 + d_txt6_h;
 #endif
 
-  int d_visual_w = d_dialog_w - 40 * RESFACTOR;
-  int d_visual_h = 9 * RESFACTOR;
-  int d_visual_x = d_dialog_x + 20 * RESFACTOR;
+  int d_visual_w = d_dialog_w - 80;
+  int d_visual_h = 18;
+  int d_visual_x = d_dialog_x + 40;
   int d_visual_y = d_scroll_y + d_scroll_h + d_txt6_h + d_margin1 * 2;
 
-  int d_sound_w = d_dialog_w - 40 * RESFACTOR;
-  int d_sound_h = 9 * RESFACTOR;
-  int d_sound_x = d_dialog_x + 20 * RESFACTOR;
+  int d_sound_w = d_dialog_w - 80;
+  int d_sound_h = 18;
+  int d_sound_x = d_dialog_x + 40;
   int d_sound_y = d_visual_y + d_visual_h + d_margin1;
 
-  int d_ok_w = 20 * RESFACTOR;
-  int d_ok_h = 9 * RESFACTOR;
+  int d_ok_w = 40;
+  int d_ok_h = 18;
   int d_ok_x = d_dialog_cx - d_ok_w / 2;
-  int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 4 * RESFACTOR;
+  int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 8;
 
 #ifdef WOLAPI_INTEGRATION
   int d_wol_x = d_sound_x;
@@ -149,7 +149,7 @@ void GameControlsClass::Process() {
     d_dialog_y =
         ((SeenBuff.Get_Height() - d_dialog_h) / 2);  // centered y-coord
     // d_ok_y += d_wol_h + d_margin1;
-    d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - (4 * RESFACTOR);
+    d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - (8);
   }
 #endif
 
@@ -323,10 +323,10 @@ void GameControlsClass::Process() {
                        TBLACK, style);
 
       Fancy_Text_Print(TXT_SLOWER, d_speed_x,
-                       d_speed_y + d_speed_h + 1 * RESFACTOR, scheme, TBLACK,
+                       d_speed_y + d_speed_h + 2, scheme, TBLACK,
                        TPF_TEXT);
       Fancy_Text_Print(TXT_FASTER, d_speed_x + d_speed_w,
-                       d_speed_y + d_speed_h + 1 * RESFACTOR, scheme, TBLACK,
+                       d_speed_y + d_speed_h + 2, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
 
       /*
@@ -340,10 +340,10 @@ void GameControlsClass::Process() {
                        scheme, TBLACK, style);
 
       Fancy_Text_Print(TXT_SLOWER, d_scroll_x,
-                       d_scroll_y + d_scroll_h + 1 * RESFACTOR, scheme, TBLACK,
+                       d_scroll_y + d_scroll_h + 2, scheme, TBLACK,
                        TPF_TEXT);
       Fancy_Text_Print(TXT_FASTER, d_scroll_x + d_scroll_w,
-                       d_scroll_y + d_scroll_h + 1 * RESFACTOR, scheme, TBLACK,
+                       d_scroll_y + d_scroll_h + 2, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
 
       commands->Draw_All();

@@ -38,28 +38,28 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   /*
   ** Dialog & button dimensions
   */
-  int d_dialog_w = 200 * RESFACTOR;                       // dialog width
-  int d_dialog_h = 90 * RESFACTOR;                        // dialog height
-  int d_dialog_x = ((320 * RESFACTOR - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((200 * RESFACTOR - d_dialog_h) / 2);  // centered y-coord
+  int d_dialog_w = 400;                       // dialog width
+  int d_dialog_h = 180;                        // dialog height
+  int d_dialog_x = ((640 - d_dialog_w) / 2);  // dialog x-coord
+  int d_dialog_y = ((400 - d_dialog_h) / 2);  // centered y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
 
   int d_margin = 34;
   int d_txt6_h = 15;
 
 #if (GERMAN | FRENCH)
-  int d_cancel_w = 50 * RESFACTOR;
+  int d_cancel_w = 100;
 #else
-  int d_cancel_w = 40 * RESFACTOR;
+  int d_cancel_w = 80;
 #endif
-  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_h = 18;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
-  int d_cancel_y = d_dialog_y + d_dialog_h - 20 * RESFACTOR;
+  int d_cancel_y = d_dialog_y + d_dialog_h - 40;
 
-  int d_progress_w = 100 * RESFACTOR;
-  int d_progress_h = 10 * RESFACTOR;
+  int d_progress_w = 200;
+  int d_progress_h = 20;
   int d_progress_x = (SeenBuff.Get_Width() / 2) - d_progress_w / 2;
-  int d_progress_y = d_dialog_y + 45 * RESFACTOR;
+  int d_progress_y = d_dialog_y + 90;
 
   //	int	width;
   //	int	height;
@@ -158,7 +158,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
         //				Fancy_Text_Print(info_string,
-        // d_dialog_cx-width/2, d_dialog_y + 25*RESFACTOR,
+        // d_dialog_cx-width/2, d_dialog_y + 25*2,
         //									GadgetClass::Get_Color_Scheme(),
         // TBLACK,
         // TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);

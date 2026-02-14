@@ -283,7 +283,7 @@ void DisplayClass::One_Time() {
   ShadowShapes = MFCD::Retrieve("SHADOW.SHP");
 #endif
 
-  Set_View_Dimensions(0, 8 * RESFACTOR);
+  Set_View_Dimensions(0, 16);
 }
 
 /***********************************************************************************************
@@ -4012,18 +4012,18 @@ void DisplayClass::Compute_Start_Pos() {
   **	Tactical position is based on the cell of the upper left corner. Make
   *adjustments *	and bound the calculated location to the map dimensions.
   */
-  //	x -= 5 * RESFACTOR;
-  //	y -= 4 * RESFACTOR;
-  x = std::clamp<long>(x, MapCellX + 5 * RESFACTOR,
-                       MapCellX + MapCellWidth - 5 * RESFACTOR);
-  y = std::clamp<long>(y, MapCellY + 4 * RESFACTOR,
-                       MapCellY + MapCellHeight - 4 * RESFACTOR);
+  //	x -= 5 * 2;
+  //	y -= 4 * 2;
+  x = std::clamp<long>(x, MapCellX + 10,
+                       MapCellX + MapCellWidth - 10);
+  y = std::clamp<long>(y, MapCellY + 8,
+                       MapCellY + MapCellHeight - 8);
 
   Scen.Waypoint[WAYPT_HOME] = Scen.Views[0] = Scen.Views[1] = Scen.Views[2] =
       Scen.Views[3] = XY_Cell(x, y);
 
   Map.Set_Tactical_Position(Coord_Whole(
-      Cell_Coord(Scen.Views[0] - MAP_CELL_W * 4 * RESFACTOR - 5 * RESFACTOR)));
+      Cell_Coord(Scen.Views[0] - MAP_CELL_W * 8 - 10)));
   //	Set_Tactical_Position(Cell_Coord(XY_Cell(x, y)));
 }
 
@@ -4449,13 +4449,13 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   */
   if (Scen.Waypoint[WAYPT_HOME] == -1) {
     Scen.Waypoint[WAYPT_HOME] =
-        XY_Cell(MapCellX + 5 * RESFACTOR, MapCellY + 4 * RESFACTOR);
+        XY_Cell(MapCellX + 10, MapCellY + 8);
   }
 
   Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
       Scen.Waypoint[WAYPT_HOME];
   Set_Tactical_Position(Cell_Coord(Scen.Waypoint[WAYPT_HOME] -
-                                   MAP_CELL_W * 4 * RESFACTOR - 5 * RESFACTOR));
+                                   MAP_CELL_W * 8 - 10));
 
   /*
   **	Loop through all CellTrigger entries.

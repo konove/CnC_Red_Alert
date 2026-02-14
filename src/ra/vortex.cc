@@ -986,7 +986,7 @@ void ChronalVortexClass::Render() {
       ** Create a view port to blit to
       */
       GraphicViewPortClass target(LogicPage->Get_Graphic_Buffer(), 0,
-                                  8 * RESFACTOR + LogicPage->Get_YPos(),
+                                  16 + LogicPage->Get_YPos(),
                                   Lepton_To_Pixel(Map.TacLeptonWidth),
                                   Lepton_To_Pixel(Map.TacLeptonHeight));
 

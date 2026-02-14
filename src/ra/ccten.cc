@@ -269,12 +269,12 @@ void Connect_TEN() {
       y = 100 - (h / 2);
       Hide_Mouse();
       // Set_Logic_Page(SeenBuff);
-      Dialog_Box(x * RESFACTOR, y * RESFACTOR, w * RESFACTOR, h * RESFACTOR);
+      Dialog_Box(x * 2, y * 2, w * 2, h * 2);
 
-      Fancy_Text_Print(buf1, 160 * RESFACTOR, (y + (D_MARGIN * 2)) * RESFACTOR,
+      Fancy_Text_Print(buf1, 320, (y + (D_MARGIN * 2)) * 2,
                        scheme, TBLACK, TPF_CENTER | TPF_TEXT);
-      Fancy_Text_Print(buf2, 160 * RESFACTOR,
-                       (y + (D_MARGIN * 2) + D_TXT6_H + D_MARGIN) * RESFACTOR,
+      Fancy_Text_Print(buf2, 320,
+                       (y + (D_MARGIN * 2) + D_TXT6_H + D_MARGIN) * 2,
                        scheme, TBLACK, TPF_CENTER | TPF_TEXT);
       Show_Mouse();
       display = 0;

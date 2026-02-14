@@ -149,8 +149,6 @@
 
 #define FOREIGN_VERSION_NUMBER 6
 
-#define RESFACTOR 2
-
 /**********************************************************************
 **	These enumerations are used to implement RTTI.
 */

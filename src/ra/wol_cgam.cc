@@ -48,59 +48,59 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 150 * RESFACTOR;  // dialog width
-  int d_dialog_h = 135 * RESFACTOR;  // dialog height
-  int d_dialog_x = (((320 * RESFACTOR) - d_dialog_w) / 2);
-  int d_dialog_y = (((200 * RESFACTOR) - d_dialog_h) / 2);
+  int d_dialog_w = 300;  // dialog width
+  int d_dialog_h = 270;  // dialog height
+  int d_dialog_x = (((640) - d_dialog_w) / 2);
+  int d_dialog_y = (((400) - d_dialog_h) / 2);
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
-  int d_txt8_h = 11 * RESFACTOR;  // ht of 8-pt text
-  int d_margin = 7 * RESFACTOR;   // margin width/height
-  int x_margin = 16 * RESFACTOR;  // margin width/height
+  int d_txt8_h = 22;  // ht of 8-pt text
+  int d_margin = 14;   // margin width/height
+  int x_margin = 32;  // margin width/height
 
   int top_margin = 0;
 
-  int d_gaugeplayers_w = 70 * RESFACTOR;
-  int d_gaugeplayers_h = 9 * RESFACTOR;
+  int d_gaugeplayers_w = 140;
+  int d_gaugeplayers_h = 18;
   int d_gaugeplayers_x = d_dialog_cx - d_gaugeplayers_w / 2;
   int d_gaugeplayers_y = d_dialog_y + d_margin + 42;
 
-  int d_checktourn_w = 75 * RESFACTOR;
-  int d_checktourn_h = 9 * RESFACTOR;
+  int d_checktourn_w = 150;
+  int d_checktourn_h = 18;
   int d_checktourn_x = d_dialog_cx - d_checktourn_w / 2;
   int d_checktourn_y = d_gaugeplayers_y + d_gaugeplayers_h + 10;
 
   int d_checkpriv_w = d_checktourn_w;
-  int d_checkpriv_h = 9 * RESFACTOR;
+  int d_checkpriv_h = 18;
   int d_checkpriv_x = d_checktourn_x;
   int d_checkpriv_y = d_checktourn_y + d_checktourn_h + 10;
 
   int d_checkra_w = d_checktourn_w;
-  int d_checkra_h = 9 * RESFACTOR;
+  int d_checkra_h = 18;
   int d_checkra_x = d_checktourn_x;
   int d_checkra_y = d_checkpriv_y + d_checkpriv_h + 20;
 
   int d_checkcs_w = d_checktourn_w;
-  int d_checkcs_h = 9 * RESFACTOR;
+  int d_checkcs_h = 18;
   int d_checkcs_x = d_checktourn_x;
   int d_checkcs_y = d_checkra_y + d_checkra_h + 5;
 
   int d_checkam_w = d_checktourn_w;
-  int d_checkam_h = 9 * RESFACTOR;
+  int d_checkam_h = 18;
   int d_checkam_x = d_checktourn_x;
   int d_checkam_y = d_checkcs_y + d_checkcs_h + 5;
 
 #if (GERMAN | FRENCH)
-  int d_ok_w = 30 * RESFACTOR;
+  int d_ok_w = 60;
 #else
-  int d_ok_w = 30 * RESFACTOR;
+  int d_ok_w = 60;
 #endif
-  int d_ok_h = 13 * RESFACTOR;
+  int d_ok_h = 26;
   int d_ok_x = d_dialog_x + (d_dialog_w / 3) - (d_ok_w / 2);
   int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin;
 
-  int d_cancel_w = 40 * RESFACTOR;
-  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_w = 80;
+  int d_cancel_h = 18;
   int d_cancel_x = d_dialog_x + ((d_dialog_w * 2) / 3) - (d_cancel_w / 2);
   int d_cancel_y = d_ok_y;
 
@@ -227,7 +227,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(TXT_WOL_CG_TITLE, d_dialog_x, d_dialog_y, d_dialog_w);
       //			Fancy_Text_Print( TXT_WOL_CG_PLAYERS,
-      // d_gaugeplayers_x - 2*RESFACTOR, d_gaugeplayers_y,
+      // d_gaugeplayers_x - 2*2, d_gaugeplayers_y,
       //								GadgetClass::Get_Color_Scheme(),
       // TBLACK, TPF_TEXT | TPF_RIGHT );
       commands->Flag_List_To_Redraw();

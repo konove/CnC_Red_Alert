@@ -55,67 +55,67 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   **	Dialog & button dimensions
   */
 #ifdef FRENCH
-  int d_dialog_w = 160 * RESFACTOR;  // dialog width
+  int d_dialog_w = 320;  // dialog width
 #else
-  int d_dialog_w = 150 * RESFACTOR;  // dialog width
+  int d_dialog_w = 300;  // dialog width
 #endif
-  int d_dialog_h = 85 * RESFACTOR;  // dialog height
-  int d_dialog_x = (((320 * RESFACTOR) - d_dialog_w) / 2);
-  int d_dialog_y = (((255 * RESFACTOR) - d_dialog_h) / 2);
+  int d_dialog_h = 170;  // dialog height
+  int d_dialog_x = (((640) - d_dialog_w) / 2);
+  int d_dialog_y = (((510) - d_dialog_h) / 2);
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
-  int d_txt8_h = 11 * RESFACTOR;  // ht of 8-pt text
-  int d_margin = 7 * RESFACTOR;   // margin width/height
-  int x_margin = 16 * RESFACTOR;  // margin width/height
+  int d_txt8_h = 22;  // ht of 8-pt text
+  int d_margin = 14;   // margin width/height
+  int x_margin = 32;  // margin width/height
 
   int top_margin = 0;
 
-  int d_name_w = 66 * RESFACTOR;
-  int d_name_h = 10 * RESFACTOR;
+  int d_name_w = 132;
+  int d_name_h = 20;
 #ifdef FRENCH
-  int d_name_x = d_dialog_x + 25 * RESFACTOR;
+  int d_name_x = d_dialog_x + 50;
 #else
-  int d_name_x = d_dialog_x + 20 * RESFACTOR;
+  int d_name_x = d_dialog_x + 40;
 #endif
-  int d_name_y = d_dialog_y + top_margin + 25 * RESFACTOR;
+  int d_name_y = d_dialog_y + top_margin + 50;
 
-  int d_pass_w = 36 * RESFACTOR;
+  int d_pass_w = 72;
   int d_pass_h = d_name_h;
-  int d_pass_x = d_name_x + d_name_w + 6 * RESFACTOR;
+  int d_pass_x = d_name_x + d_name_w + 12;
   int d_pass_y = d_name_y;
 
   int d_list_w = d_name_w;
-  int d_list_h = 20 * RESFACTOR;
+  int d_list_h = 40;
   int d_list_x = d_name_x;
-  int d_list_y = d_dialog_y + top_margin + 40 * RESFACTOR;
+  int d_list_y = d_dialog_y + top_margin + 80;
 
   //	int d_save_w = d_pass_w;
-  int d_save_h = 9 * RESFACTOR;
+  int d_save_h = 18;
   int d_save_x = d_pass_x + (d_pass_w / 2) - (d_pass_w / 2);
   int d_save_y = d_list_y;  // + ( d_list_h / 2 ) - ( d_save_h / 2 );
 
   int d_delete_w = d_pass_w;
-  int d_delete_h = 10 * RESFACTOR;
+  int d_delete_h = 20;
   int d_delete_x = d_save_x;
   int d_delete_y = d_list_y + d_list_h - d_delete_h;
 
 #ifdef FRENCH
-  int d_connect_w = 45 * RESFACTOR;
+  int d_connect_w = 90;
 #else
-  int d_connect_w = 40 * RESFACTOR;
+  int d_connect_w = 80;
 #endif
-  int d_connect_h = 13 * RESFACTOR;
+  int d_connect_h = 26;
   int d_connect_x = d_name_x + d_name_w / 2 - d_connect_w / 2;
   int d_connect_y =
       d_dialog_y + top_margin +
-      65 * RESFACTOR;  // d_dialog_y + d_dialog_h - d_connect_h - d_margin;
+      130;  // d_dialog_y + d_dialog_h - d_connect_h - d_margin;
 
 #if defined(GERMAN) || defined(FRENCH)
-  int d_cancel_w = 40 * RESFACTOR;  // BG:40
+  int d_cancel_w = 80;  // BG:40
 #else
-  int d_cancel_w = 40 * RESFACTOR;
+  int d_cancel_w = 80;
 #endif
-  int d_cancel_h = 13 * RESFACTOR;
+  int d_cancel_h = 26;
   int d_cancel_x =
       d_pass_x + d_pass_w / 2 - d_cancel_w / 2;  // d_dialog_cx + d_margin;
   int d_cancel_y = d_connect_y;

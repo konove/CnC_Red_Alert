@@ -141,10 +141,10 @@ void PowerClass::Init_Clear() {
  *=============================================================================================*/
 void PowerClass::One_Time() {
   RadarClass::One_Time();
-  PowerButton.X = POWER_X * RESFACTOR;
-  PowerButton.Y = POWER_Y * RESFACTOR;
-  PowerButton.Width = POWER_WIDTH * RESFACTOR - 1;
-  PowerButton.Height = POWER_HEIGHT * RESFACTOR;
+  PowerButton.X = POWER_X * 2;
+  PowerButton.Y = POWER_Y * 2;
+  PowerButton.Width = POWER_WIDTH * 2 - 1;
+  PowerButton.Height = POWER_HEIGHT * 2;
   PowerShape = MFCD::Retrieve("POWER.SHP");
   PowerBarShape = MFCD::Retrieve("POWERBAR.SHP");
 }
@@ -183,23 +183,21 @@ void PowerClass::Draw_It(bool complete) {
 
         //				LogicPage->Fill_Rect(POWER_X, POWER_Y,
         // POWER_X+POWER_WIDTH-1, POWER_Y+POWER_HEIGHT-1, LTGREY);
-        CC_Draw_Shape(PowerBarShape, 0, 240 * RESFACTOR, 88 * RESFACTOR,
+        CC_Draw_Shape(PowerBarShape, 0, 480, 176,
                       WINDOW_MAIN, flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
 
-#if RESFACTOR == 2
         /*
         ** Hires power strip is too big to fit into a shape so it is in two
         *parts
         */
-        CC_Draw_Shape(PowerBarShape, 1, 240 * RESFACTOR,
-                      88 * RESFACTOR + 56 * RESFACTOR, WINDOW_MAIN,
+        CC_Draw_Shape(PowerBarShape, 1, 480,
+                      176 + 112, WINDOW_MAIN,
                       flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
-#endif
         /*
         **	Determine how much the power production exceeds or falls short
         **	of power demands.
         */
-        int bottom = (POWER_Y + POWER_HEIGHT - 1) * RESFACTOR;
+        int bottom = (POWER_Y + POWER_HEIGHT - 1) * 2;
         int power_height = PowerHeight == DesiredPowerHeight
                                ? PowerHeight + _modtable[PowerBounce] * PowerDir
                                : PowerHeight;
@@ -232,25 +230,23 @@ void PowerClass::Draw_It(bool complete) {
           **
           ** ST - 5/2/96 11:23AM
           */
-#if RESFACTOR == 2
           power_height =
-              power_height * (76 * RESFACTOR + 1) / (53 * RESFACTOR + 1);
+              power_height * (152 + 1) / (106 + 1);
           drain_height =
-              drain_height * (76 * RESFACTOR + 1) / (53 * RESFACTOR + 1);
-#endif
-          bottom = 175 * RESFACTOR + 1;
+              drain_height * (152 + 1) / (106 + 1);
+          bottom = 350 + 1;
 
-          LogicPage->Fill_Rect(245 * RESFACTOR, bottom - power_height,
-                               245 * RESFACTOR + 1, bottom, color2);
-          LogicPage->Fill_Rect(246 * RESFACTOR, bottom - power_height,
-                               246 * RESFACTOR + 1, bottom, color1);
+          LogicPage->Fill_Rect(490, bottom - power_height,
+                               490 + 1, bottom, color2);
+          LogicPage->Fill_Rect(492, bottom - power_height,
+                               492 + 1, bottom, color1);
         }
 
         /*
         **	Draw the power drain threshold marker.
         */
-        CC_Draw_Shape(PowerShape, 0, POWER_X * RESFACTOR + RESFACTOR,
-                      bottom - (drain_height + 2 * RESFACTOR), WINDOW_MAIN,
+        CC_Draw_Shape(PowerShape, 0, POWER_X * 2 + 2,
+                      bottom - (drain_height + 4), WINDOW_MAIN,
                       flags | SHAPE_NORMAL, remap);
       }
       LogicPage->Unlock();

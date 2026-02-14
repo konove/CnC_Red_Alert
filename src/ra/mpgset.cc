@@ -215,32 +215,32 @@ bool MPGSettings::Save(FileClass& file) {
 
 void MPGSettings::Dialog() {
   //	Dialog & button dimensions
-  int d_dialog_w = 200 * RESFACTOR;
-  int d_dialog_h = 100 * RESFACTOR;
-  int d_dialog_x = (((320 * RESFACTOR) - d_dialog_w) / 2);
-  int d_dialog_y = 70 * RESFACTOR;
+  int d_dialog_w = 400;
+  int d_dialog_h = 200;
+  int d_dialog_x = (((640) - d_dialog_w) / 2);
+  int d_dialog_y = 140;
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
 
-  int d_txt6_h = 7 * RESFACTOR;
-  int d_margin = 7 * RESFACTOR;
+  int d_txt6_h = 14;
+  int d_margin = 14;
 
-  int d_okay_w = 40 * RESFACTOR;
-  int d_okay_h = 9 * RESFACTOR;
+  int d_okay_w = 80;
+  int d_okay_h = 18;
   int d_okay_x = d_dialog_x + d_margin + 20;
   int d_okay_y = ((d_dialog_y + d_dialog_h) - (d_okay_h + 20));
 
-  int d_test_w = 40 * RESFACTOR;
-  int d_test_h = 9 * RESFACTOR;
+  int d_test_w = 80;
+  int d_test_h = 18;
   int d_test_x = (d_dialog_cx - (d_test_w / 2));
   int d_test_y = ((d_dialog_y + d_dialog_h) - (d_test_h + 20));
 
-  int d_cancel_w = 40 * RESFACTOR;
-  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_w = 80;
+  int d_cancel_h = 18;
   int d_cancel_x = ((d_dialog_x + d_dialog_w) - (d_cancel_w + d_margin + 20));
   int d_cancel_y = ((d_dialog_y + d_dialog_h) - (d_cancel_h + 20));
 
-  int d_method_w = 165 * RESFACTOR;
-  int d_method_h = 50 * RESFACTOR;
+  int d_method_w = 330;
+  int d_method_h = 100;
   int d_method_x = (d_dialog_cx - (d_method_w / 2));
   int d_method_y = (d_dialog_y + 40);
 

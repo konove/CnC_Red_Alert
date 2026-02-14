@@ -534,38 +534,38 @@ int Main_Menu(unsigned long) {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 152 * RESFACTOR;
-  int d_dialog_h = 100 * RESFACTOR;
-  int d_dialog_x = 85 * RESFACTOR;
-  int d_dialog_y = 75 * RESFACTOR;
+  int d_dialog_w = 304;
+  int d_dialog_h = 200;
+  int d_dialog_x = 170;
+  int d_dialog_y = 150;
 
-  int d_start_w = 118 * RESFACTOR;
-  int d_start_h = 9 * RESFACTOR;
-  int d_start_x = 102 * RESFACTOR;
+  int d_start_w = 236;
+  int d_start_h = 18;
+  int d_start_x = 204;
 
   // #if defined(MPEGMOVIE) // Denzil 6/26/98 Video settings
-  //	int	d_movie_w = 118 * RESFACTOR;
-  //	int	d_movie_h = 9 * RESFACTOR;
-  //	int	d_movie_x = 102 * RESFACTOR;
+  //	int	d_movie_w = 118 * 2;
+  //	int	d_movie_h = 9 * 2;
+  //	int	d_movie_x = 102 * 2;
   // #endif
 
-  int d_load_w = 118 * RESFACTOR;
-  int d_load_h = 9 * RESFACTOR;
-  int d_load_x = 102 * RESFACTOR;
+  int d_load_w = 236;
+  int d_load_h = 18;
+  int d_load_x = 204;
 
-  int d_multi_w = 118 * RESFACTOR;
-  int d_multi_h = 9 * RESFACTOR;
-  int d_multi_x = 102 * RESFACTOR;
+  int d_multi_w = 236;
+  int d_multi_h = 18;
+  int d_multi_x = 204;
 
-  int d_intro_w = 118 * RESFACTOR;
-  int d_intro_h = 9 * RESFACTOR;
-  int d_intro_x = 102 * RESFACTOR;
+  int d_intro_w = 236;
+  int d_intro_h = 18;
+  int d_intro_x = 204;
 
-  int d_exit_w = 118 * RESFACTOR;  // changed value to 118 V.Grippi
-  int d_exit_h = 9 * RESFACTOR;
-  int d_exit_x = 102 * RESFACTOR;  // Added V.Grippi
+  int d_exit_w = 236;  // changed value to 118 V.Grippi
+  int d_exit_h = 18;
+  int d_exit_x = 204;  // Added V.Grippi
 
-  int starty = d_dialog_y + 12 * RESFACTOR;
+  int starty = d_dialog_y + 24;
 
   // #if defined(WIN32) && !defined(INTERNET_OFF)
   // Denzil 5/1/98 - No internet play
@@ -603,15 +603,15 @@ int Main_Menu(unsigned long) {
   */
   ControlClass* commands = nullptr;  // the button list
 
-  int ystep = 14 * RESFACTOR;
+  int ystep = 28;
   if (bExpansionCS) {
     if (bExpansionAM) {
-      ystep = 12 * RESFACTOR;
+      ystep = 24;
     } else {
-      ystep = 13 * RESFACTOR;
+      ystep = 26;
     }
   } else if (bExpansionAM) {
-    ystep = 13 * RESFACTOR;
+    ystep = 26;
   }
 
   TextButtonClass expandbtnCS(BUTTON_EXPAND, TXT_WOL_CS_MISSIONS, TPF_BUTTON,
@@ -751,8 +751,8 @@ int Main_Menu(unsigned long) {
       // d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x,
       // d_dialog_y, d_dialog_w);
       commands->Draw_All();
-      Fancy_Text_Print("V%s", d_dialog_x + d_dialog_w - 18 * RESFACTOR,
-                       d_dialog_y + d_dialog_h - 5 * RESFACTOR,
+      Fancy_Text_Print("V%s", d_dialog_x + d_dialog_w - 36,
+                       d_dialog_y + d_dialog_h - 10,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Version_Name());
 
@@ -897,8 +897,8 @@ int Main_Menu(unsigned long) {
       case KN_LMOUSE:
         if (Coordinates_In_Region(Keyboard->MouseQX, Keyboard->MouseQY,
 
-                                  9 * RESFACTOR, 10 * RESFACTOR, 79 * RESFACTOR,
-                                  24 * RESFACTOR)) {
+                                  18, 20, 158,
+                                  48)) {
           Show_Who_Was_Responsible();
           display = true;
           Theme.Play_Song(THEME_INTRO);
@@ -908,8 +908,8 @@ int Main_Menu(unsigned long) {
         if (Is_Counterstrike_Installed()) {
           if ((Keyboard->Down(KN_LSHIFT) || Keyboard->Down(KN_RSHIFT)) &&
               Coordinates_In_Region(Keyboard->MouseQX, Keyboard->MouseQY,
-                                    260 * RESFACTOR, 0, 320 * RESFACTOR,
-                                    50 * RESFACTOR)) {
+                                    520, 0, 640,
+                                    100)) {
             AntsEnabled = true;
             process = false;
             retval = 2;  //	To match SEL_START_NEW_GAME

@@ -226,23 +226,23 @@ void GameOptionsClass::Process() {
   */
   GadgetClass* g = buttons;
   while (g != nullptr) {
-    g->Width = std::max(maxwidth, 90 * RESFACTOR);
+    g->Width = std::max(maxwidth, 180);
     g->X = OptionX + (OptionWidth - g->Width) / 2;
     g = g->Get_Next();
   }
   // #ifdef FRENCH
-  //	buttonsel[BUTTON_RESUME-1]->Width = 110 * RESFACTOR;
-  //	buttonsel[BUTTON_RESUME-1]->X = OptionX + (17 * RESFACTOR) - 5;
+  //	buttonsel[BUTTON_RESUME-1]->Width = 110 * 2;
+  //	buttonsel[BUTTON_RESUME-1]->X = OptionX + (17 * 2) - 5;
   // #else
-  buttonsel[BUTTON_RESUME - 1]->Width = 90 * RESFACTOR;
-  buttonsel[BUTTON_RESUME - 1]->X = OptionX + 17 * RESFACTOR;
+  buttonsel[BUTTON_RESUME - 1]->Width = 180;
+  buttonsel[BUTTON_RESUME - 1]->X = OptionX + 34;
   // #endif
 
   if (Session.Type == GAME_NORMAL) {
-    buttonsel[BUTTON_RESTATE - 1]->Width = 90 * RESFACTOR;
+    buttonsel[BUTTON_RESTATE - 1]->Width = 180;
     buttonsel[BUTTON_RESTATE - 1]->X =
         OptionX + OptionWidth -
-        (buttonsel[BUTTON_RESTATE - 1]->Width + 17 * RESFACTOR);
+        (buttonsel[BUTTON_RESTATE - 1]->Width + 34);
   }
 
   /*
@@ -328,19 +328,19 @@ void GameOptionsClass::Process() {
       **	Display the version number at the bottom of the dialog box.
       */
 #ifndef WIN32
-      Fancy_Text_Print("%s\rV%s", (OptionX + OptionWidth) - (17 * RESFACTOR),
+      Fancy_Text_Print("%s\rV%s", (OptionX + OptionWidth) - (34),
                        OptionY + OptionHeight -
-                           ((Session.Type == GAME_NORMAL) ? (32 * RESFACTOR)
-                                                          : (24 * RESFACTOR)),
+                           ((Session.Type == GAME_NORMAL) ? (64)
+                                                          : (48)),
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Scen.ScenarioName,
                        Version_Name());
 
 #else
       Fancy_Text_Print(
-          "%s\rV%s", OptionX + OptionWidth - 25 * RESFACTOR,
+          "%s\rV%s", OptionX + OptionWidth - 50,
           OptionY + OptionHeight -
-              (Session.Type == GAME_NORMAL ? 32 * RESFACTOR : 24 * RESFACTOR),
+              (Session.Type == GAME_NORMAL ? 64 : 48),
           GadgetClass::Get_Color_Scheme(), TBLACK,
           TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Scen.ScenarioName,
           Version_Name());
@@ -590,15 +590,15 @@ void GameOptionsClass::Process() {
 }
 
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
-  OptionWidth = (216 + 8) * RESFACTOR;
-  OptionHeight = 111 * RESFACTOR;
+  OptionWidth = (216 + 8) * 2;
+  OptionHeight = 222;
   OptionX = (SeenBuff.Get_Width() - OptionWidth) / 2;
   OptionY = (SeenBuff.Get_Height() - OptionHeight) / 2;
-  ButtonWidth = 130 * RESFACTOR;
-  OButtonHeight = 9 * RESFACTOR;
-  CaptionYPos = 5 * RESFACTOR;
-  ButtonY = 21 * RESFACTOR;
-  Border1Len = 72 * RESFACTOR;
-  Border2Len = 16 * RESFACTOR;
-  ButtonResumeY = OptionHeight - 19 * RESFACTOR;
+  ButtonWidth = 260;
+  OButtonHeight = 18;
+  CaptionYPos = 10;
+  ButtonY = 42;
+  Border1Len = 144;
+  Border2Len = 32;
+  ButtonResumeY = OptionHeight - 38;
 }

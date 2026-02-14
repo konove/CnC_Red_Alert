@@ -137,40 +137,40 @@ int LoadOptionsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 250 * RESFACTOR;                     // dialog width
-  int d_dialog_h = 156 * RESFACTOR;                     // dialog height
-  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // centered x-coord
-  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_w = 500;                     // dialog width
+  int d_dialog_h = 312;                     // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;  // centered x-coord
+  int d_dialog_y = (400 - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // coord of x-center
 
-  int d_txt8_h = 11 * RESFACTOR;  // ht of 8-pt text
-  int d_margin = 7 * RESFACTOR;   // margin width/height
-  int x_margin = 16 * RESFACTOR;  // margin width/height
+  int d_txt8_h = 22;  // ht of 8-pt text
+  int d_margin = 14;   // margin width/height
+  int x_margin = 32;  // margin width/height
 
   int d_list_w = d_dialog_w - x_margin * 2;
-  int d_list_h = 104 * RESFACTOR;
+  int d_list_h = 208;
   int d_list_x = d_dialog_x + x_margin;
   int d_list_y = d_dialog_y + d_margin + d_txt8_h + d_margin;
 
   int d_edit_w = d_dialog_w - x_margin * 2;
   int d_edit_x = d_dialog_x + x_margin;
-  int d_edit_y = d_list_y + d_list_h - 30 * RESFACTOR + d_margin + d_txt8_h;
+  int d_edit_y = d_list_y + d_list_h - 60 + d_margin + d_txt8_h;
 
 #if (GERMAN | FRENCH)
-  int d_button_w = 50 * RESFACTOR;
+  int d_button_w = 100;
 #else
-  int d_button_w = 40 * RESFACTOR;
+  int d_button_w = 80;
 #endif
-  int d_button_h = 13 * RESFACTOR;
+  int d_button_h = 26;
   int d_button_x = d_dialog_cx - d_button_w - d_margin;
   int d_button_y = d_dialog_y + d_dialog_h - d_button_h - d_margin;
 
 #if defined(GERMAN) || defined(FRENCH)
-  int d_cancel_w = 60 * RESFACTOR;  // BG:40
+  int d_cancel_w = 120;  // BG:40
 #else
-  int d_cancel_w = 40 * RESFACTOR;
+  int d_cancel_w = 80;
 #endif
-  int d_cancel_h = 13 * RESFACTOR;
+  int d_cancel_h = 26;
   int d_cancel_x = d_dialog_cx + d_margin;
   int d_cancel_y = d_dialog_y + d_dialog_h - d_cancel_h - d_margin;
 

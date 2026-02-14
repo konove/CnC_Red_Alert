@@ -97,46 +97,46 @@ void SoundControlsClass::Process() {
   /*
   ** Adjust dialog controls for resolution
   */
-  int option_width = OPTION_WIDTH * RESFACTOR;
-  int option_height = OPTION_HEIGHT * RESFACTOR;
+  int option_width = OPTION_WIDTH * 2;
+  int option_height = OPTION_HEIGHT * 2;
 
-  int option_x = OPTION_X * RESFACTOR;
-  int option_y = OPTION_Y * RESFACTOR;
+  int option_x = OPTION_X * 2;
+  int option_y = OPTION_Y * 2;
 
-  int listbox_x = LISTBOX_X * RESFACTOR;
-  int listbox_y = LISTBOX_Y * RESFACTOR;
-  int listbox_w = LISTBOX_W * RESFACTOR;
+  int listbox_x = LISTBOX_X * 2;
+  int listbox_y = LISTBOX_Y * 2;
+  int listbox_w = LISTBOX_W * 2;
 #ifdef WIN32
-  int listbox_h = LISTBOX_H * RESFACTOR + 2;
+  int listbox_h = LISTBOX_H * 2 + 2;
 #else
-  int listbox_h = LISTBOX_H * RESFACTOR;
+  int listbox_h = LISTBOX_H * 2;
 #endif
 
-  int button_width = BUTTON_WIDTH * RESFACTOR;
-  int button_x = BUTTON_X * RESFACTOR;
-  int button_y = BUTTON_Y * RESFACTOR;
+  int button_width = BUTTON_WIDTH * 2;
+  int button_x = BUTTON_X * 2;
+  int button_y = BUTTON_Y * 2;
 
-  int stop_x = STOP_X * RESFACTOR;
-  int stop_y = STOP_Y * RESFACTOR;
+  int stop_x = STOP_X * 2;
+  int stop_y = STOP_Y * 2;
 
-  int play_x = PLAY_X * RESFACTOR;
-  int play_y = PLAY_Y * RESFACTOR;
+  int play_x = PLAY_X * 2;
+  int play_y = PLAY_Y * 2;
 
-  int onoff_width = ONOFF_WIDTH * RESFACTOR;
-  int shuffle_x = SHUFFLE_X * RESFACTOR;
-  int shuffle_y = SHUFFLE_Y * RESFACTOR;
-  int repeat_x = REPEAT_X * RESFACTOR;
-  int repeat_y = REPEAT_Y * RESFACTOR;
+  int onoff_width = ONOFF_WIDTH * 2;
+  int shuffle_x = SHUFFLE_X * 2;
+  int shuffle_y = SHUFFLE_Y * 2;
+  int repeat_x = REPEAT_X * 2;
+  int repeat_y = REPEAT_Y * 2;
 
-  int mslider_x = MSLIDER_X * RESFACTOR;
-  int mslider_y = MSLIDER_Y * RESFACTOR;
-  int mslider_w = MSLIDER_W * RESFACTOR;
-  int mslider_height = MSLIDER_HEIGHT * RESFACTOR;
+  int mslider_x = MSLIDER_X * 2;
+  int mslider_y = MSLIDER_Y * 2;
+  int mslider_w = MSLIDER_W * 2;
+  int mslider_height = MSLIDER_HEIGHT * 2;
 
-  int fxslider_x = FXSLIDER_X * RESFACTOR;
-  int fxslider_y = FXSLIDER_Y * RESFACTOR;
-  int fxslider_w = FXSLIDER_W * RESFACTOR;
-  int fxslider_height = FXSLIDER_HEIGHT * RESFACTOR;
+  int fxslider_x = FXSLIDER_X * 2;
+  int fxslider_y = FXSLIDER_Y * 2;
+  int fxslider_w = FXSLIDER_W * 2;
+  int fxslider_height = FXSLIDER_HEIGHT * 2;
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   //	ThemeType theme;
@@ -281,7 +281,7 @@ void SoundControlsClass::Process() {
       }
     }
   }
-  static int _tabs[] = {55 * RESFACTOR, 72 * RESFACTOR, 90 * RESFACTOR};
+  static int _tabs[] = {55 * 2, 144, 180};
   listbox.Set_Tabs(_tabs);
 
   /*
@@ -329,24 +329,24 @@ void SoundControlsClass::Process() {
       /*
       ** Draw the Music, Speech & Sound titles.
       */
-      Fancy_Text_Print(TXT_MUSIC_VOLUME, option_x + mslider_x - 5 * RESFACTOR,
-                       option_y + mslider_y - 2 * RESFACTOR, scheme, TBLACK,
+      Fancy_Text_Print(TXT_MUSIC_VOLUME, option_x + mslider_x - 10,
+                       option_y + mslider_y - 4, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
-      Fancy_Text_Print(TXT_SOUND_VOLUME, option_x + fxslider_x - 5 * RESFACTOR,
-                       option_y + fxslider_y - 2 * RESFACTOR, scheme, TBLACK,
+      Fancy_Text_Print(TXT_SOUND_VOLUME, option_x + fxslider_x - 10,
+                       option_y + fxslider_y - 4, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
 
 #if defined(GERMAN) || defined(FRENCH)
-      Fancy_Text_Print(TXT_SHUFFLE, option_x + 4 + shuffle_x - (5 * RESFACTOR),
-                       option_y + shuffle_y + (1 * RESFACTOR), scheme, TBLACK,
+      Fancy_Text_Print(TXT_SHUFFLE, option_x + 4 + shuffle_x - (10),
+                       option_y + shuffle_y + (2), scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
 #else
-      Fancy_Text_Print(TXT_SHUFFLE, option_x + shuffle_x - 5 * RESFACTOR,
-                       option_y + shuffle_y + 1 * RESFACTOR, scheme, TBLACK,
+      Fancy_Text_Print(TXT_SHUFFLE, option_x + shuffle_x - 10,
+                       option_y + shuffle_y + 2, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
 #endif
-      Fancy_Text_Print(TXT_REPEAT, option_x + repeat_x - 5 * RESFACTOR,
-                       option_y + repeat_y + 1 * RESFACTOR, scheme, TBLACK,
+      Fancy_Text_Print(TXT_REPEAT, option_x + repeat_x - 10,
+                       option_y + repeat_y + 2, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
 
       optionsbtn->Draw_All();

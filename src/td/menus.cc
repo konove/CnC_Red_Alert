@@ -538,60 +538,60 @@ int Do_Menu(const char** strings, bool blue) {
  *=========================================================================*/
 int Main_Menu(unsigned long timeout) {
   enum {
-    D_DIALOG_W = 152 * RESFACTOR,
-    D_DIALOG_H = 136 * RESFACTOR,
-    D_DIALOG_X = 85 * RESFACTOR,
+    D_DIALOG_W = 304,
+    D_DIALOG_H = 272,
+    D_DIALOG_X = 170,
     D_DIALOG_Y = 0,
     D_DIALOG_CX = D_DIALOG_X + D_DIALOG_W / 2,
 
-    D_START_W = 125 * RESFACTOR,
-    D_START_H = 9 * RESFACTOR,
-    D_START_X = 98 * RESFACTOR,
-    D_START_Y = 35 * RESFACTOR,
+    D_START_W = 250,
+    D_START_H = 18,
+    D_START_X = 196,
+    D_START_Y = 70,
 
 #ifdef BONUS_MISSIONS
-    D_BONUS_W = 125 * RESFACTOR,
-    D_BONUS_H = 9 * RESFACTOR,
-    D_BONUS_X = 98 * RESFACTOR,
+    D_BONUS_W = 250,
+    D_BONUS_H = 18,
+    D_BONUS_X = 196,
     D_BONUS_Y = 0,
 #endif  // BONUS_MISSIONS
 
-    D_INTERNET_W = 125 * RESFACTOR,
-    D_INTERNET_H = 9 * RESFACTOR,
-    D_INTERNET_X = 98 * RESFACTOR,
-    D_INTERNET_Y = 36 * RESFACTOR,
+    D_INTERNET_W = 250,
+    D_INTERNET_H = 18,
+    D_INTERNET_X = 196,
+    D_INTERNET_Y = 72,
 
-    D_LOAD_W = 125 * RESFACTOR,
-    D_LOAD_H = 9 * RESFACTOR,
-    D_LOAD_X = 98 * RESFACTOR,
-    D_LOAD_Y = 53 * RESFACTOR,
+    D_LOAD_W = 250,
+    D_LOAD_H = 18,
+    D_LOAD_X = 196,
+    D_LOAD_Y = 106,
 
-    D_MULTI_W = 125 * RESFACTOR,
-    D_MULTI_H = 9 * RESFACTOR,
-    D_MULTI_X = 98 * RESFACTOR,
-    D_MULTI_Y = 71 * RESFACTOR,
+    D_MULTI_W = 250,
+    D_MULTI_H = 18,
+    D_MULTI_X = 196,
+    D_MULTI_Y = 142,
 
-    D_INTRO_W = 125 * RESFACTOR,
-    D_INTRO_H = 9 * RESFACTOR,
-    D_INTRO_X = 98 * RESFACTOR,
-    D_INTRO_Y = 89 * RESFACTOR,
+    D_INTRO_W = 250,
+    D_INTRO_H = 18,
+    D_INTRO_X = 196,
+    D_INTRO_Y = 178,
 #if (GERMAN | FRENCH)
-    D_EXIT_W = 83 * RESFACTOR,
+    D_EXIT_W = 166,
 #else
-    D_EXIT_W = 63 * RESFACTOR,
+    D_EXIT_W = 126,
 #endif
-    D_EXIT_H = 9 * RESFACTOR,
+    D_EXIT_H = 18,
 #if (GERMAN | FRENCH)
-    D_EXIT_X = 118 * RESFACTOR,
+    D_EXIT_X = 236,
 #else
-    D_EXIT_X = 128 * RESFACTOR,
+    D_EXIT_X = 256,
 #endif
-    D_EXIT_Y = 111 * RESFACTOR,
+    D_EXIT_Y = 222,
 
   };
 
 #ifdef NEWMENU
-  int starty = 25 * RESFACTOR;
+  int starty = 50;
 #endif
 
   enum {
@@ -632,13 +632,13 @@ int Main_Menu(unsigned long timeout) {
 
 #ifdef NEWMENU
 #ifdef BONUS_MISSIONS
-  int ystep = 13 * RESFACTOR;
+  int ystep = 26;
 #else
-  int ystep = 15 * RESFACTOR;
+  int ystep = 30;
 #endif  // BONUS_MISSIONS
 
   if (expansions) {
-    ystep -= 2 * RESFACTOR;
+    ystep -= 4;
   }
   TextButtonClass expandbtn(
       BUTTON_EXPAND, TXT_NEW_MISSIONS,
@@ -872,13 +872,13 @@ int Main_Menu(unsigned long timeout) {
       if constexpr (config::kVirginCheatKeysEnabled) {
 #ifdef DEMO
         Version_Number();
-        Fancy_Text_Print("Demo%s", D_DIALOG_X + D_DIALOG_W - 5 * RESFACTOR,
-                         D_DIALOG_Y + D_DIALOG_H - 10 * RESFACTOR, DKGREY,
+        Fancy_Text_Print("Demo%s", D_DIALOG_X + D_DIALOG_W - 10,
+                         D_DIALOG_Y + D_DIALOG_H - 20, DKGREY,
                          TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          VersionText);
 #else
-        Fancy_Text_Print("V.%d%s", D_DIALOG_X + D_DIALOG_W - 5 * RESFACTOR,
-                         D_DIALOG_Y + D_DIALOG_H - 10 * RESFACTOR, DKGREY,
+        Fancy_Text_Print("V.%d%s", D_DIALOG_X + D_DIALOG_W - 10,
+                         D_DIALOG_Y + D_DIALOG_H - 20, DKGREY,
                          TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
 #endif
@@ -890,13 +890,13 @@ int Main_Menu(unsigned long timeout) {
       } else {
 #ifdef DEMO
         Version_Number();
-        Fancy_Text_Print("Demo%s", D_DIALOG_X + D_DIALOG_W - 5 * RESFACTOR,
-                         D_DIALOG_Y + D_DIALOG_H - 10 * RESFACTOR, DKGREY,
+        Fancy_Text_Print("Demo%s", D_DIALOG_X + D_DIALOG_W - 10,
+                         D_DIALOG_Y + D_DIALOG_H - 20, DKGREY,
                          TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          VersionText);
 #else
-        Fancy_Text_Print("V.%d%s", D_DIALOG_X + D_DIALOG_W - 5 * RESFACTOR,
-                         D_DIALOG_Y + D_DIALOG_H - 10 * RESFACTOR, DKGREY,
+        Fancy_Text_Print("V.%d%s", D_DIALOG_X + D_DIALOG_W - 10,
+                         D_DIALOG_Y + D_DIALOG_H - 20, DKGREY,
                          TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), VersionText);
 #endif

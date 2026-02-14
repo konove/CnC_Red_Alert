@@ -319,16 +319,16 @@ void HelpClass::Set_Text(int text) {
       DrawX = X - Width;
       DrawY = Y;
     } else {
-      int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 3 * RESFACTOR;
-      int bottom = TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 1 * RESFACTOR;
+      int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 6;
+      int bottom = TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 2;
 
       DrawX = X + X_OFFSET;
       DrawY = Y + Y_OFFSET;
       if (DrawX + Width > right) {
         DrawX -= DrawX + Width - right;
       }
-      if (DrawY + 10 * RESFACTOR > bottom) {
-        DrawY -= DrawY + 10 * RESFACTOR - bottom;
+      if (DrawY + 20 > bottom) {
+        DrawY -= DrawY + 20 - bottom;
       }
       DrawX = std::max(DrawX, TacPixelX + 1);
       DrawY = std::max(DrawY, TacPixelY + 1);

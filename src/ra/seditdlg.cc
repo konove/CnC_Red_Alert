@@ -98,48 +98,48 @@ const char* SimpleEditDlgClass::Show() {
   /*
   **	Dialog & button dimensions
   */
-  int x_margin = 18 * RESFACTOR;  // margin width/height
-  int y_margin = 10 * RESFACTOR;  // margin width/height
-  int d_gap_y = 5 * RESFACTOR;
+  int x_margin = 36;  // margin width/height
+  int y_margin = 20;  // margin width/height
+  int d_gap_y = 10;
 
   int d_dialog_w = iDialogWidth;
-  int d_dialog_h = szPrompt2 ? (29 * RESFACTOR) + 2 * d_gap_y + 2 * y_margin
-                             : (19 * RESFACTOR) + d_gap_y + 2 * y_margin;
+  int d_dialog_h = szPrompt2 ? (58) + 2 * d_gap_y + 2 * y_margin
+                             : (38) + d_gap_y + 2 * y_margin;
   if (szTitle) {
-    d_dialog_h += 10 * RESFACTOR + 2 * d_gap_y;
+    d_dialog_h += 20 + 2 * d_gap_y;
   }
-  int d_dialog_x = (((320 * RESFACTOR) - d_dialog_w) / 2);
-  int d_dialog_y = (((200 * RESFACTOR) - d_dialog_h) / 2);
+  int d_dialog_x = (((640) - d_dialog_w) / 2);
+  int d_dialog_y = (((400) - d_dialog_h) / 2);
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
   /*
           if( szTitle )
           {
                   d_title_w = String_Pixel_Width( szTitle );
-                  d_title_h = 10 * RESFACTOR;
+                  d_title_h = 20;
                   d_title_x = d_dialog_cx - d_title_w / 2;
                   d_title_y = d_dialog_y + d_gap_y;
           }
   */
 
   int d_prompt_w = String_Pixel_Width(szPrompt);
-  int d_prompt_h = 10 * RESFACTOR;
+  int d_prompt_h = 20;
   int d_prompt_x = d_dialog_x + x_margin;
-  int d_prompt_y = szTitle ? (d_dialog_y + 3 * d_gap_y + 10 * RESFACTOR)
+  int d_prompt_y = szTitle ? (d_dialog_y + 3 * d_gap_y + 20)
                            : (d_dialog_y + d_gap_y);
 
   int d_edit_w = d_dialog_w - d_prompt_w - 2 * x_margin;
-  int d_edit_h = 10 * RESFACTOR;
+  int d_edit_h = 20;
   int d_edit_x = d_dialog_x + d_prompt_w + x_margin;
   int d_edit_y = d_prompt_y;
 
   int d_prompt2_w = szPrompt2 ? String_Pixel_Width(szPrompt2) : 0;
-  int d_prompt2_h = 10 * RESFACTOR;
+  int d_prompt2_h = 20;
   int d_prompt2_x = d_dialog_x + x_margin;
   int d_prompt2_y = d_prompt_y + d_prompt2_h + d_gap_y;
 
   int d_edit2_w = d_dialog_w - d_prompt2_w - 2 * x_margin;
-  int d_edit2_h = 10 * RESFACTOR;
+  int d_edit2_h = 20;
   int d_edit2_x = d_dialog_x + d_prompt2_w + x_margin;
   int d_edit2_y = d_prompt2_y;
 
@@ -147,29 +147,29 @@ const char* SimpleEditDlgClass::Show() {
       d_cancel_y, d_mid_x, d_mid_y, d_mid_w, d_mid_h;
 
   if (!szMiddleButton) {
-    d_ok_w = 40 * RESFACTOR;
-    d_ok_h = 9 * RESFACTOR;
-    d_ok_x = d_dialog_cx - d_ok_w - 10 * RESFACTOR;
+    d_ok_w = 80;
+    d_ok_h = 18;
+    d_ok_x = d_dialog_cx - d_ok_w - 20;
     d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - y_margin;
 
-    d_cancel_w = 40 * RESFACTOR;
-    d_cancel_h = 9 * RESFACTOR;
-    d_cancel_x = d_dialog_cx + 10 * RESFACTOR;
+    d_cancel_w = 80;
+    d_cancel_h = 18;
+    d_cancel_x = d_dialog_cx + 20;
     d_cancel_y = d_ok_y;
   } else {
-    d_ok_w = 40 * RESFACTOR;
-    d_ok_h = 9 * RESFACTOR;
-    d_ok_x = d_dialog_cx - d_ok_w - 30 * RESFACTOR;
+    d_ok_w = 80;
+    d_ok_h = 18;
+    d_ok_x = d_dialog_cx - d_ok_w - 60;
     d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - y_margin;
 
-    d_mid_w = 40 * RESFACTOR;
-    d_mid_h = 9 * RESFACTOR;
+    d_mid_w = 80;
+    d_mid_h = 18;
     d_mid_x = d_dialog_cx - (d_mid_w / 2);
     d_mid_y = d_ok_y;
 
-    d_cancel_w = 40 * RESFACTOR;
-    d_cancel_h = 9 * RESFACTOR;
-    d_cancel_x = d_dialog_cx + 30 * RESFACTOR;
+    d_cancel_w = 80;
+    d_cancel_h = 18;
+    d_cancel_x = d_dialog_cx + 60;
     d_cancel_y = d_ok_y;
   }
 

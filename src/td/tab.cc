@@ -135,7 +135,7 @@ void TabClass::Draw_It(bool complete) {
 }
 
 void TabClass::Draw_Credits_Tab() {
-  CC_Draw_Shape(TabShape, 0, 160 * RESFACTOR, 0, WINDOW_MAIN, SHAPE_NORMAL);
+  CC_Draw_Shape(TabShape, 0, 320, 0, WINDOW_MAIN, SHAPE_NORMAL);
 }
 
 /***********************************************************************************************

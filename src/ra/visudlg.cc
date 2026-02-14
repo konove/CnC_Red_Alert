@@ -80,19 +80,19 @@ void VisualControlsClass::Process() {
   };
 
   // Make them resolution independent
-  int option_width = kOptionWidth * RESFACTOR;    // Width of dialog box.
-  int option_height = kOptionHeight * RESFACTOR;  // Height of dialog box.
-  int option_x = kOptionX * RESFACTOR;
-  int option_y = kOptionY * RESFACTOR;
-  int text_y = kTextY * RESFACTOR;
-  int slider_x = kSliderX * RESFACTOR;
-  int slider_y = kSliderY * RESFACTOR;
-  int slider_width = kSliderWidth * RESFACTOR;  // Width of each control slider.
+  int option_width = kOptionWidth * 2;    // Width of dialog box.
+  int option_height = kOptionHeight * 2;  // Height of dialog box.
+  int option_x = kOptionX * 2;
+  int option_y = kOptionY * 2;
+  int text_y = kTextY * 2;
+  int slider_x = kSliderX * 2;
+  int slider_y = kSliderY * 2;
+  int slider_width = kSliderWidth * 2;  // Width of each control slider.
   int slider_height =
-      kSliderHeight * RESFACTOR;  // Height of each control slider.
+      kSliderHeight * 2;  // Height of each control slider.
   int slider_y_spacing =
-      kSliderYSpacing * RESFACTOR;      // Vertical spacing between sliders.
-  int button_y = kButtonY * RESFACTOR;  // Options button y pos
+      kSliderYSpacing * 2;      // Vertical spacing between sliders.
+  int button_y = kButtonY * 2;  // Options button y pos
 
   /*
   **	Variables.
@@ -109,17 +109,17 @@ void VisualControlsClass::Process() {
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
   */
   TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OK, TPF_BUTTON, 0, button_y,
-                             60 * RESFACTOR);
+                             120);
   //	TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OPTIONS_MENU, TPF_BUTTON,
   // 0, button_y);
   TextButtonClass resetbtn(BUTTON_RESET, TXT_RESET_MENU, TPF_BUTTON, 0,
-                           button_y, 80 * RESFACTOR);
+                           button_y, 160);
 
   /*
   **	Centers options button.
   */
-  optionsbtn.X = option_x + (option_width - optionsbtn.Width - 17 * RESFACTOR);
-  resetbtn.X = option_x + 17 * RESFACTOR;
+  optionsbtn.X = option_x + (option_width - optionsbtn.Width - 34);
+  resetbtn.X = option_x + 34;
 
   resetbtn.Add_Tail(optionsbtn);
 
@@ -129,7 +129,7 @@ void VisualControlsClass::Process() {
   SliderClass brightness(BUTTON_BRIGHTNESS, slider_x,
                          slider_y + slider_y_spacing * 0, slider_width,
                          slider_height, true);
-  brightness.Set_Thumb_Size(20 * RESFACTOR);
+  brightness.Set_Thumb_Size(40);
   brightness.Set_Value(Options.Get_Brightness() * 256);
   brightness.Add_Tail(optionsbtn);
 
@@ -138,7 +138,7 @@ void VisualControlsClass::Process() {
   */
   SliderClass color(BUTTON_COLOR, slider_x, slider_y + slider_y_spacing * 1,
                     slider_width, slider_height, true);
-  color.Set_Thumb_Size(20 * RESFACTOR);
+  color.Set_Thumb_Size(40);
   color.Set_Value(Options.Get_Saturation() * 256);
   color.Add_Tail(optionsbtn);
 
@@ -148,7 +148,7 @@ void VisualControlsClass::Process() {
   SliderClass contrast(BUTTON_CONTRAST, slider_x,
                        slider_y + slider_y_spacing * 2, slider_width,
                        slider_height, true);
-  contrast.Set_Thumb_Size(20 * RESFACTOR);
+  contrast.Set_Thumb_Size(40);
   contrast.Set_Value(Options.Get_Contrast() * 256);
   contrast.Add_Tail(optionsbtn);
 
@@ -157,7 +157,7 @@ void VisualControlsClass::Process() {
   */
   SliderClass tint(BUTTON_TINT, slider_x, slider_y + slider_y_spacing * 3,
                    slider_width, slider_height, true);
-  tint.Set_Thumb_Size(20 * RESFACTOR);
+  tint.Set_Thumb_Size(40);
   tint.Set_Value(Options.Get_Tint() * 256);
   tint.Add_Tail(optionsbtn);
 
@@ -245,7 +245,7 @@ void VisualControlsClass::Process() {
       **	Draw the titles.
       */
       for (int i = 0; i < sizeof(_titles) / sizeof(_titles[0]); i++) {
-        Fancy_Text_Print(_titles[i], slider_x - 8 * RESFACTOR,
+        Fancy_Text_Print(_titles[i], slider_x - 16,
                          text_y + i * slider_y_spacing,
                          GadgetClass::Get_Color_Scheme(), TBLACK,
                          TPF_TEXT | TPF_RIGHT |

@@ -51,38 +51,38 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   **	Dialog & button dimensions
   */
 #ifdef GERMAN
-  int d_list_w = 180 * RESFACTOR;
+  int d_list_w = 360;
 #else
 #ifdef FRENCH
-  int d_list_w = 165 * RESFACTOR;
+  int d_list_w = 330;
 #else
-  int d_list_w = 165 * RESFACTOR;
+  int d_list_w = 330;
 #endif
 #endif
 
-  int d_dialog_w = d_list_w + 40 * RESFACTOR;  // dialog width
-  int d_dialog_h = 90 * RESFACTOR;             // dialog height
-  int d_dialog_x = (((320 * RESFACTOR) - d_dialog_w) / 2);
-  int d_dialog_y = (((200 * RESFACTOR) - d_dialog_h) / 2);
+  int d_dialog_w = d_list_w + 80;  // dialog width
+  int d_dialog_h = 180;             // dialog height
+  int d_dialog_x = (((640) - d_dialog_w) / 2);
+  int d_dialog_y = (((400) - d_dialog_h) / 2);
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
-  int d_txt8_h = 11 * RESFACTOR;  // ht of 8-pt text
-  int d_margin = 7 * RESFACTOR;   // margin width/height
-  int x_margin = 16 * RESFACTOR;  // margin width/height
+  int d_txt8_h = 22;  // ht of 8-pt text
+  int d_margin = 14;   // margin width/height
+  int x_margin = 32;  // margin width/height
 
   int top_margin = 0;
 
-  //	int d_list_w = 100 * RESFACTOR;
-  int d_list_h = 7 * RESFACTOR;
+  //	int d_list_w = 100 * 2;
+  int d_list_h = 14;
   int d_list_x = d_dialog_cx - d_list_w / 2;
   int d_list_y = d_dialog_y + d_margin + 24;
 
 #if (GERMAN | FRENCH)
-  int d_ok_w = 40 * RESFACTOR;
+  int d_ok_w = 80;
 #else
-  int d_ok_w = 40 * RESFACTOR;
+  int d_ok_w = 80;
 #endif
-  int d_ok_h = 13 * RESFACTOR;
+  int d_ok_h = 26;
   int d_ok_x = d_dialog_cx - d_ok_w / 2;
   int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin;
 

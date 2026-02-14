@@ -333,8 +333,8 @@ void SidebarClass::Init_IO() {
 
     Repair.IsSticky = true;
     Repair.ID = BUTTON_REPAIR;
-    Repair.X = 242 * RESFACTOR;
-    Repair.Y = 80 * RESFACTOR;
+    Repair.X = 484;
+    Repair.Y = 160;
     Repair.IsPressed = false;
     Repair.IsToggleType = true;
 
@@ -352,7 +352,7 @@ void SidebarClass::Init_IO() {
     Upgrade.IsSticky = true;
     Upgrade.ID = BUTTON_UPGRADE;
     Upgrade.X = 480 + 57;
-    Upgrade.Y = 80 * RESFACTOR;
+    Upgrade.Y = 160;
     Upgrade.IsPressed = false;
     Upgrade.IsToggleType = true;
 
@@ -370,7 +370,7 @@ void SidebarClass::Init_IO() {
     Zoom.IsSticky = true;
     Zoom.ID = BUTTON_ZOOM;
     Zoom.X = 480 + 110;
-    Zoom.Y = 80 * RESFACTOR;
+    Zoom.Y = 160;
     Zoom.IsPressed = false;
 
 #if (FRENCH)
@@ -1163,15 +1163,15 @@ void SidebarClass::StripClass::Init_IO(int id) {
   UpButton[ID].IsSticky = true;
   UpButton[ID].ID = BUTTON_UP + id;
   UpButton[ID].X = X + ButtonSpacingOffset + 1;
-  UpButton[ID].Y = Y + MAX_VISIBLE * ObjectHeight - (RESFACTOR - 1);
+  UpButton[ID].Y = Y + MAX_VISIBLE * ObjectHeight - 1;
 
   UpButton[ID].Set_Shape(Hires_Retrieve("STRIPUP.SHP"));
 
   DownButton[ID].IsSticky = true;
   DownButton[ID].ID = BUTTON_DOWN + id;
   DownButton[ID].X =
-      UpButton[ID].X + UpButton[ID].Width + ButtonSpacingOffset - RESFACTOR;
-  DownButton[ID].Y = Y + MAX_VISIBLE * ObjectHeight - (RESFACTOR - 1);
+      UpButton[ID].X + UpButton[ID].Width + ButtonSpacingOffset - 2;
+  DownButton[ID].Y = Y + MAX_VISIBLE * ObjectHeight - 1;
 
   DownButton[ID].Set_Shape(Hires_Retrieve("STRIPDN.SHP"));
 
@@ -1818,7 +1818,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       ** Dont draw blank shapes over the new 640x400 sidebar art - ST 5/1/96
       *6:01PM
       */
-      if (shapenum != SB_BLANK || shapefile != LogoShapes || RESFACTOR == 1) {
+      if (shapenum != SB_BLANK || shapefile != LogoShapes) {
         IsTheaterShape = true;  // This shape is theater specific
         CC_Draw_Shape(
             shapefile, shapenum,

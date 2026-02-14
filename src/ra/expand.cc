@@ -223,21 +223,10 @@ const char* XlatNames[] = {
 
 #endif
 
-#if RESFACTOR == 1
-
-#define OPTION_WIDTH 236
-// #error Can never again build without WIN32 defined.
-#define OPTION_HEIGHT 162
-#define OPTION_X ((320 - OPTION_WIDTH) / 2)
-#define OPTION_Y (200 - OPTION_HEIGHT) / 2
-
-#else
-
 #define OPTION_WIDTH 560
 #define OPTION_HEIGHT 332
 #define OPTION_X ((640 - OPTION_WIDTH) / 2)
 #define OPTION_Y (400 - OPTION_HEIGHT) / 2
-#endif
 
 struct EObjectClass {
   HousesType House;
@@ -325,13 +314,8 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
     }
   }
 
-#if RESFACTOR == 1
-  Conquer_Clip_Text_Print(buffer, x, y, scheme, TBLACK, flags & ~(TPF_CENTER),
-                          width, Tabs);
-#else
   Conquer_Clip_Text_Print(buffer, x + 100, y, scheme, TBLACK,
                           flags & ~TPF_CENTER, width, Tabs);
-#endif
 }
 
 bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
@@ -339,30 +323,15 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 {
   GadgetClass* buttons = nullptr;
 
-#if RESFACTOR == 1
-  TextButtonClass ok(200, TXT_OK, TPF_BUTTON, OPTION_X + 40,
-                     OPTION_Y + OPTION_HEIGHT - 15);
-  TextButtonClass cancel(201, TXT_CANCEL, TPF_BUTTON,
-                         OPTION_X + OPTION_WIDTH - 85,
-                         OPTION_Y + OPTION_HEIGHT - 15);
-#else
   TextButtonClass ok(200, TXT_OK, TPF_BUTTON, OPTION_X + 40,
                      OPTION_Y + OPTION_HEIGHT - 50);
   TextButtonClass cancel(201, TXT_CANCEL, TPF_BUTTON,
                          OPTION_X + OPTION_WIDTH - 85,
                          OPTION_Y + OPTION_HEIGHT - 50);
-#endif
 
-#if RESFACTOR == 1
-  EListClass list(202, OPTION_X + 20, OPTION_Y + 20, OPTION_WIDTH - 40,
-                  OPTION_HEIGHT - 40, TPF_BUTTON, MFCD::Retrieve("BTN-UP.SHP"),
-                  MFCD::Retrieve("BTN-DN.SHP"));
-#else
   EListClass list(202, OPTION_X + 35, OPTION_Y + 30, OPTION_WIDTH - 70,
                   OPTION_HEIGHT - 85, TPF_BUTTON, MFCD::Retrieve("BTN-UP.SHP"),
                   MFCD::Retrieve("BTN-DN.SHP"));
-
-#endif
   buttons = &ok;
   cancel.Add(*buttons);
   list.Add(*buttons);

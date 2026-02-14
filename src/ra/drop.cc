@@ -49,7 +49,7 @@
 DropListClass::DropListClass(int id, char* text, int max_len,
                              TextPrintType flags, int x, int y, int w, int h,
                              const void* up, const void* down)
-    : EditClass(id, text, max_len, flags, x, y, w, 9 * RESFACTOR, ALPHANUMERIC),
+    : EditClass(id, text, max_len, flags, x, y, w, 18, ALPHANUMERIC),
       IsDropped(false),
       ListHeight(h),
       DropButton(0, down, x + w, y),
@@ -135,7 +135,7 @@ void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
 void DropListClass::Expand() {
   if (!IsDropped) {
     List.X = X;
-    List.Y = Y + 9 * RESFACTOR;
+    List.Y = Y + 18;
     List.Width = Width;
     List.Height = ListHeight;
     List.Add(Head_Of_List());

@@ -1373,115 +1373,115 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  int d_dialog_w = 320 * RESFACTOR;                     // dialog width
-  int d_dialog_h = 200 * RESFACTOR;                     // dialog height
-  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_w = 640;                     // dialog width
+  int d_dialog_h = 400;                     // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (400 - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
-  int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
-  int d_margin1 = 17 * RESFACTOR;    // large margin
-  int d_margin2 = 7 * RESFACTOR;     // small margin
+  int d_txt6_h = 12 + 1;  // ht of 6-pt text
+  int d_margin1 = 34;    // large margin
+  int d_margin2 = 14;     // small margin
 
-  int d_name_w = 70 * RESFACTOR;
-  int d_name_h = 9 * RESFACTOR;
+  int d_name_w = 140;
+  int d_name_h = 18;
   int d_name_x = d_dialog_x + d_dialog_w / 4 - d_name_w / 2;
-  int d_name_y = d_dialog_y + d_margin2 + d_txt6_h + 2 * RESFACTOR;
+  int d_name_y = d_dialog_y + d_margin2 + d_txt6_h + 4;
 
 #ifdef OLDWAY
-  int d_gdi_w = 40 * RESFACTOR;
-  int d_gdi_h = 9 * RESFACTOR;
+  int d_gdi_w = 80;
+  int d_gdi_h = 18;
   int d_gdi_x = d_dialog_cx - d_gdi_w;
   int d_gdi_y = d_name_y;
 
-  int d_nod_w = 40 * RESFACTOR;
-  int d_nod_h = 9 * RESFACTOR;
+  int d_nod_w = 80;
+  int d_nod_h = 18;
   int d_nod_x = d_dialog_cx;
   int d_nod_y = d_name_y;
 #else
-  int d_house_w = 60 * RESFACTOR;
-  int d_house_h = 8 * 5 * RESFACTOR;
+  int d_house_w = 120;
+  int d_house_h = 8 * 10;
   int d_house_x = d_dialog_cx - d_house_w / 2;
   int d_house_y = d_name_y;
 #endif
 
-  int d_color_w = 10 * RESFACTOR;
-  int d_color_h = 9 * RESFACTOR;
+  int d_color_w = 20;
+  int d_color_h = 18;
   int d_color_y = d_name_y;
   int d_color_x = d_dialog_x + d_dialog_w / 4 * 3 - d_color_w * 3;
 
-  int d_gamelist_w = 155 * RESFACTOR;
-  int d_gamelist_h = (6 * 6 + 3) * RESFACTOR;  // 6 rows high
-  int d_gamelist_x = d_dialog_x + d_margin1 - 2 * RESFACTOR;
+  int d_gamelist_w = 310;
+  int d_gamelist_h = (6 * 6 + 3) * 2;  // 6 rows high
+  int d_gamelist_x = d_dialog_x + d_margin1 - 4;
   int d_gamelist_y = d_color_y + d_color_h + d_margin2 +
-                     2 * RESFACTOR /*KO + d_txt6_h + d_margin2*/;
+                     4 /*KO + d_txt6_h + d_margin2*/;
 
-  // BG		int d_playerlist_w = 113 *RESFACTOR;
-  int d_playerlist_w = 118 * RESFACTOR;
-  int d_playerlist_h = (6 * 6 + 3) * RESFACTOR;  // 6 rows high
+  // BG		int d_playerlist_w = 113 *2;
+  int d_playerlist_w = 236;
+  int d_playerlist_h = (6 * 6 + 3) * 2;  // 6 rows high
   int d_playerlist_x =
-      d_dialog_x + d_dialog_w - (d_margin1 + d_playerlist_w - 2 * RESFACTOR);
+      d_dialog_x + d_dialog_w - (d_margin1 + d_playerlist_w - 4);
   int d_playerlist_y = d_color_y + d_color_h + d_margin2 +
-                       2 * RESFACTOR /*KO + d_txt6_h + d_margin2*/;
+                       4 /*KO + d_txt6_h + d_margin2*/;
 
-  int d_count_w = 25 * RESFACTOR;
+  int d_count_w = 50;
   int d_count_h = d_txt6_h;
   int d_count_x = d_gamelist_x + d_gamelist_w / 2;
   int d_count_y = d_gamelist_y + d_gamelist_h + d_margin2;
 
-  int d_level_w = 25 * RESFACTOR;
+  int d_level_w = 50;
   int d_level_h = d_txt6_h;
   int d_level_x = d_gamelist_x + d_gamelist_w / 2;
   int d_level_y = d_count_y + d_count_h;
 
-  int d_credits_w = 25 * RESFACTOR;
+  int d_credits_w = 50;
   int d_credits_h = d_txt6_h;
   int d_credits_x = d_gamelist_x + d_gamelist_w / 2;
   int d_credits_y = d_level_y + d_level_h;
 
-  int d_aiplayers_w = 25 * RESFACTOR;
+  int d_aiplayers_w = 50;
   int d_aiplayers_h = d_txt6_h;
   int d_aiplayers_x = d_gamelist_x + d_gamelist_w / 2;
   int d_aiplayers_y = d_credits_y + d_level_h;
 
   int d_options_w = d_playerlist_w;
-  int d_options_h = (5 * 6 + 4) * RESFACTOR;
+  int d_options_h = (5 * 6 + 4) * 2;
   int d_options_x = d_playerlist_x;
-  int d_options_y = d_playerlist_y + d_playerlist_h + d_margin2 - 2 * RESFACTOR;
+  int d_options_y = d_playerlist_y + d_playerlist_h + d_margin2 - 4;
 
-  int d_message1_w = d_dialog_w - d_margin1 * 2 + 4 * RESFACTOR;
-  int d_message1_h = 14 * d_txt6_h + 3 * RESFACTOR;
+  int d_message1_w = d_dialog_w - d_margin1 * 2 + 8;
+  int d_message1_h = 14 * d_txt6_h + 6;
   int d_message1_x = d_dialog_x + (d_dialog_w - d_message1_w) / 2;
-  int d_message1_y = d_dialog_y + d_dialog_h - (27 * RESFACTOR + d_message1_h);
+  int d_message1_y = d_dialog_y + d_dialog_h - (54 + d_message1_h);
 
   int d_message2_w = d_message1_w;
-  int d_message2_h = 8 * d_txt6_h + 3 * RESFACTOR;
+  int d_message2_h = 8 * d_txt6_h + 6;
   int d_message2_x = d_message1_x;
-  int d_message2_y = d_dialog_y + d_dialog_h - (27 * RESFACTOR + d_message2_h);
+  int d_message2_y = d_dialog_y + d_dialog_h - (54 + d_message2_h);
 
 #ifdef FRENCH  // VG2
-  int d_join_w = 60 * RESFACTOR;
+  int d_join_w = 120;
 #else
-  int d_join_w = 40 * RESFACTOR;
+  int d_join_w = 80;
 #endif
-  int d_join_h = 9 * RESFACTOR;
+  int d_join_h = 18;
   int d_join_x = d_dialog_x + d_dialog_w / 6 - d_join_w / 2;
-  int d_join_y = d_dialog_y + d_dialog_h - d_join_h - 8 * RESFACTOR;
+  int d_join_y = d_dialog_y + d_dialog_h - d_join_h - 16;
 
-  int d_cancel_w = 50 * RESFACTOR;
+  int d_cancel_w = 100;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
   int d_cancel_y = d_join_y;
 
 #ifdef FRENCH
-  int d_new_w = 60 * RESFACTOR;
+  int d_new_w = 120;
 #else
-  int d_new_w = 40 * RESFACTOR;
+  int d_new_w = 80;
 #endif
   int d_new_x = d_dialog_x + d_dialog_w * 5 / 6 - d_new_w / 2;
   int d_new_y = d_join_y;
 
   int d_send_w = d_message1_w;
-  int d_send_h = 9 * RESFACTOR;
+  int d_send_h = 18;
   int d_send_x = d_message1_x;
   int d_send_y = d_message1_y + d_message1_h;
 
@@ -1541,7 +1541,7 @@ static int Net_Join_Dialog() {
 
   JoinStateType joinstate = JOIN_NOTHING;  // current "state" of this dialog
   char namebuf[MPLAYER_NAME_MAX] = {0};    // buffer for player's name
-  int playertabs[] = {71 * RESFACTOR};     // tabs for player list box
+  int playertabs[] = {71 * 2};     // tabs for player list box
   int optiontabs[] = {8};                  // tabs for player list box
   int game_index = -1;                     // index of currently-selected game
   int join_index = -1;                     // index of game we're joining
@@ -1612,17 +1612,17 @@ static int Net_Join_Dialog() {
       BUTTON_OPTIONS, d_options_x, d_options_y, d_options_w, d_options_h,
       TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
   StaticButtonClass descrip(0, "", TPF_CENTER | TPF_TEXT,
-                            d_dialog_x + 16 * RESFACTOR, d_name_y,
-                            d_dialog_w - 32 * RESFACTOR, d_txt6_h + 1);
+                            d_dialog_x + 32, d_name_y,
+                            d_dialog_w - 64, d_txt6_h + 1);
   StaticButtonClass staticcount(
-      0, "     ", TPF_TEXT, d_count_x + d_count_w + 2 * RESFACTOR, d_count_y);
+      0, "     ", TPF_TEXT, d_count_x + d_count_w + 4, d_count_y);
   StaticButtonClass staticlevel(
-      0, "     ", TPF_TEXT, d_level_x + d_level_w + 2 * RESFACTOR, d_level_y);
+      0, "     ", TPF_TEXT, d_level_x + d_level_w + 4, d_level_y);
   StaticButtonClass staticcredits(0, "          ", TPF_TEXT,
-                                  d_credits_x + d_credits_w + 2 * RESFACTOR,
+                                  d_credits_x + d_credits_w + 4,
                                   d_credits_y);
   StaticButtonClass staticaiplayers(
-      0, "     ", TPF_TEXT, d_aiplayers_x + d_aiplayers_w + 2 * RESFACTOR,
+      0, "     ", TPF_TEXT, d_aiplayers_x + d_aiplayers_w + 4,
       d_aiplayers_y);
 
   //------------------------------------------------------------------------
@@ -1704,9 +1704,9 @@ static int Net_Join_Dialog() {
   Fancy_Text_Print("", 0, 0, scheme, TBLACK, TPF_TEXT);
 
   Session.Messages.Init(
-      d_message1_x + 1 * RESFACTOR, d_message1_y + 1 * RESFACTOR, 14,
-      MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 1 * RESFACTOR,
-      d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5, d_message2_w);
+      d_message1_x + 2, d_message1_y + 2, 14,
+      MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 2,
+      d_send_y + 2, 1, 20, MAX_MESSAGE_LENGTH - 5, d_message2_w);
   Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                 ? PCOLOR_REALLY_BLUE
                                 : Session.ColorIdx,
@@ -1869,7 +1869,7 @@ static int Net_Join_Dialog() {
                       HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
           Fancy_Text_Print(txt, d_dialog_cx,
-                           d_dialog_y + d_margin2 + 1 * RESFACTOR,
+                           d_dialog_y + d_margin2 + 2,
                            Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                ? &ColorRemaps[PCOLOR_REALLY_BLUE]
                                : &ColorRemaps[Session.ColorIdx],
@@ -1950,7 +1950,7 @@ static int Net_Join_Dialog() {
       if (display >= REDRAW_COLORS && joinstate < JOIN_CONFIRMED) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           LogicPage->Fill_Rect(cbox_x[i] + 1, d_color_y + 1,
-                               cbox_x[i] + 1 + d_color_w - 2 * RESFACTOR,
+                               cbox_x[i] + 1 + d_color_w - 4,
                                d_color_y + 1 + d_color_h - 2,
                                ColorRemaps[i].Box);
           //						(i ==
@@ -1991,7 +1991,7 @@ static int Net_Join_Dialog() {
         // Scenario title
         //...............................................................
         //				LogicPage->Fill_Rect(d_dialog_x + 16
-        //*RESFACTOR, d_name_y, d_dialog_x + d_dialog_w - 16 *RESFACTOR,
+        //*2, d_name_y, d_dialog_x + d_dialog_w - 16 *2,
         // d_name_y + d_txt6_h, BLACK);
 
         p = Text_String(TXT_SCENARIO_COLON);
@@ -2029,19 +2029,19 @@ static int Net_Join_Dialog() {
         // Unit count, tech level, credits, ai players
         //...............................................................
         //				LogicPage->Fill_Rect(d_count_x +
-        // d_count_w + 2 *RESFACTOR, d_count_y, d_count_x + d_count_w + 35
-        //*RESFACTOR, d_aiplayers_y + d_aiplayers_h+RESFACTOR, BLACK);
+        // d_count_w + 2 *2, d_count_y, d_count_x + d_count_w + 35
+        //*2, d_aiplayers_y + d_aiplayers_h+2, BLACK);
 
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 2 * RESFACTOR, d_count_y,
+        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
 
         sprintf(txt, "%d", Session.Options.UnitCount);
         staticcount.Set_Text(txt);
         staticcount.Draw_Me();
         //				Fancy_Text_Print(txt, d_count_x +
-        // d_count_w + 2 *RESFACTOR, d_count_y, scheme, BLACK, TPF_TEXT);
+        // d_count_w + 2 *2, d_count_y, scheme, BLACK, TPF_TEXT);
 
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 2 * RESFACTOR, d_level_y,
+        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
           sprintf(txt, "%d", BuildLevel);
@@ -2051,23 +2051,23 @@ static int Net_Join_Dialog() {
         staticlevel.Set_Text(txt);
         staticlevel.Draw_Me();
         //				Fancy_Text_Print(txt, d_level_x +
-        // d_level_w + 2 *RESFACTOR, d_level_y, scheme, BLACK, TPF_TEXT);
+        // d_level_w + 2 *2, d_level_y, scheme, BLACK, TPF_TEXT);
 
-        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 2 * RESFACTOR,
+        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4,
                          d_credits_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
         sprintf(txt, "%d", Session.Options.Credits);
         staticcredits.Set_Text(txt);
         staticcredits.Draw_Me();
         //				Fancy_Text_Print(txt, d_credits_x +
-        // d_credits_w + 2 *RESFACTOR, d_credits_y, scheme, BLACK, TPF_TEXT);
+        // d_credits_w + 2 *2, d_credits_y, scheme, BLACK, TPF_TEXT);
 
-        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 2 * RESFACTOR,
+        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
                          d_aiplayers_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
         sprintf(txt, "%d", Session.Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
         staticaiplayers.Draw_Me();
         //				Fancy_Text_Print(txt, d_aiplayers_x +
-        // d_aiplayers_w + 2 *RESFACTOR, d_aiplayers_y, scheme, BLACK,
+        // d_aiplayers_w + 2 *2, d_aiplayers_y, scheme, BLACK,
         // TPF_TEXT);
       }
 
@@ -2207,9 +2207,9 @@ static int Net_Join_Dialog() {
           if (game_index == 0) {
             Clear_Listbox(&playerlist);
             Session.Messages.Init(
-                d_message1_x + 1 * RESFACTOR, d_message1_y + 1 * RESFACTOR, 14,
-                MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 1 * RESFACTOR,
-                d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5,
+                d_message1_x + 2, d_message1_y + 2, 14,
+                MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 2,
+                d_send_y + 2, 1, 20, MAX_MESSAGE_LENGTH - 5,
                 d_message2_w);
             Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                           ? PCOLOR_REALLY_BLUE
@@ -2683,9 +2683,9 @@ static int Net_Join_Dialog() {
         // Re-init the message system to its new smaller size
         //...............................................................
         Session.Messages.Init(
-            d_message2_x + 1 * RESFACTOR, d_message2_y + 1 * RESFACTOR, 8,
-            MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 1 * RESFACTOR,
-            d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5,
+            d_message2_x + 2, d_message2_y + 2, 8,
+            MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 2,
+            d_send_y + 2, 1, 20, MAX_MESSAGE_LENGTH - 5,
             d_message2_w);
         Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                       ? PCOLOR_REALLY_BLUE
@@ -2698,9 +2698,9 @@ static int Net_Join_Dialog() {
         // chat announcement.
         //..................................................................
         Session.Messages.Init(
-            d_message1_x + 1 * RESFACTOR, d_message1_y + 1 * RESFACTOR, 14,
-            MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 1 * RESFACTOR,
-            d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5,
+            d_message1_x + 2, d_message1_y + 2, 14,
+            MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 2,
+            d_send_y + 2, 1, 20, MAX_MESSAGE_LENGTH - 5,
             d_message2_w);
         Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                       ? PCOLOR_REALLY_BLUE
@@ -4088,88 +4088,88 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  int d_dialog_w = 320 * RESFACTOR;                     // dialog width
-  int d_dialog_h = 200 * RESFACTOR;                     // dialog height
-  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_w = 640;                     // dialog width
+  int d_dialog_h = 400;                     // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (400 - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
-  int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
-  int d_margin1 = 5 * RESFACTOR;     // margin width/height
-  int d_margin2 = 2 * RESFACTOR;     // margin width/height
+  int d_txt6_h = 12 + 1;  // ht of 6-pt text
+  int d_margin1 = 10;     // margin width/height
+  int d_margin2 = 4;     // margin width/height
 
-  // BG	int d_playerlist_w = 118*RESFACTOR;
-  int d_playerlist_w = 124 * RESFACTOR;
-  int d_playerlist_h = 6 * d_txt6_h + 3 * RESFACTOR;  // 6 rows high
-  int d_playerlist_x = d_dialog_x + d_margin1 + d_margin1 + 5 * RESFACTOR;
-  int d_playerlist_y = d_dialog_y + d_margin1 + d_txt6_h + 3 * RESFACTOR;
+  // BG	int d_playerlist_w = 118*2;
+  int d_playerlist_w = 248;
+  int d_playerlist_h = 6 * d_txt6_h + 6;  // 6 rows high
+  int d_playerlist_x = d_dialog_x + d_margin1 + d_margin1 + 10;
+  int d_playerlist_y = d_dialog_y + d_margin1 + d_txt6_h + 6;
 
-  int d_scenariolist_w = 162 * RESFACTOR;
-  int d_scenariolist_h = 6 * d_txt6_h + 3 * RESFACTOR;  // 6 rows high
+  int d_scenariolist_w = 324;
+  int d_scenariolist_h = 6 * d_txt6_h + 6;  // 6 rows high
   int d_scenariolist_x = d_dialog_x + d_dialog_w - d_margin1 - d_margin1 -
-                         d_scenariolist_w - 5 * RESFACTOR;
+                         d_scenariolist_w - 10;
   int d_scenariolist_y = d_playerlist_y;
 
-  int d_reject_w = 55 * RESFACTOR;
-  int d_reject_h = 9 * RESFACTOR;
+  int d_reject_w = 110;
+  int d_reject_h = 18;
   int d_reject_x = d_playerlist_x + d_playerlist_w / 2 - d_reject_w / 2;
   int d_reject_y = d_playerlist_y + d_playerlist_h + d_margin2;
 
-  int d_count_w = 25 * RESFACTOR;
+  int d_count_w = 50;
   int d_count_h = d_txt6_h;
   int d_count_x =
-      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
   int d_count_y = d_reject_y + d_reject_h /*KO+ d_margin2*/;
 
-  int d_level_w = 25 * RESFACTOR;
+  int d_level_w = 50;
   int d_level_h = d_txt6_h;
   int d_level_x =
-      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
   int d_level_y = d_count_y + d_count_h;
 
-  int d_credits_w = 25 * RESFACTOR;
+  int d_credits_w = 50;
   int d_credits_h = d_txt6_h;
   int d_credits_x =
-      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
   int d_credits_y = d_level_y + d_level_h;
 
-  int d_aiplayers_w = 25 * RESFACTOR;
+  int d_aiplayers_w = 50;
   int d_aiplayers_h = d_txt6_h;
   int d_aiplayers_x =
-      d_playerlist_x + d_playerlist_w / 2 + 20 * RESFACTOR;  // (fudged)
+      d_playerlist_x + d_playerlist_w / 2 + 40;  // (fudged)
   int d_aiplayers_y = d_credits_y + d_credits_h;
 
-  int d_options_w = 106 * RESFACTOR;
-  int d_options_h = (5 * 6 + 4) * RESFACTOR;
+  int d_options_w = 212;
+  int d_options_h = (5 * 6 + 4) * 2;
   int d_options_x = d_scenariolist_x + (d_scenariolist_w - d_options_w) / 2;
   int d_options_y = d_scenariolist_y + d_scenariolist_h + d_margin1;
 
-  int d_message_w = d_dialog_w - d_margin1 * 2 - 20 * RESFACTOR;
-  int d_message_h = kNumMessages * d_txt6_h + 3 * RESFACTOR;  // 10 rows high
-  int d_message_x = d_dialog_x + d_margin1 + 10 * RESFACTOR;
-  int d_message_y = d_dialog_y + d_dialog_h - (27 * RESFACTOR + d_message_h);
+  int d_message_w = d_dialog_w - d_margin1 * 2 - 40;
+  int d_message_h = kNumMessages * d_txt6_h + 6;  // 10 rows high
+  int d_message_x = d_dialog_x + d_margin1 + 20;
+  int d_message_y = d_dialog_y + d_dialog_h - (54 + d_message_h);
   //	int d_message_y = d_options_y + d_options_h + d_margin1;
 
-  int d_send_w = d_dialog_w - d_margin1 * 2 - 20 * RESFACTOR;
-  int d_send_h = 9 * RESFACTOR;
-  int d_send_x = d_dialog_x + d_margin1 + 10 * RESFACTOR;
+  int d_send_w = d_dialog_w - d_margin1 * 2 - 40;
+  int d_send_h = 18;
+  int d_send_x = d_dialog_x + d_margin1 + 20;
   int d_send_y = d_message_y + d_message_h;
 
-  int d_ok_w = 50 * RESFACTOR;
-  int d_ok_h = 9 * RESFACTOR;
+  int d_ok_w = 100;
+  int d_ok_h = 18;
   int d_ok_x = d_dialog_x + d_dialog_w / 6 - d_ok_w / 2;
-  int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 3 * RESFACTOR;
+  int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 6;
 
-  int d_cancel_w = 50 * RESFACTOR;
-  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_w = 100;
+  int d_cancel_h = 18;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
   int d_cancel_y =
-      d_dialog_y + d_dialog_h - d_cancel_h - d_margin1 - 3 * RESFACTOR;
+      d_dialog_y + d_dialog_h - d_cancel_h - d_margin1 - 6;
 
-  int d_load_w = 50 * RESFACTOR;
-  int d_load_h = 9 * RESFACTOR;
+  int d_load_w = 100;
+  int d_load_h = 18;
   int d_load_x = d_dialog_x + d_dialog_w * 5 / 6 - d_load_w / 2;
-  int d_load_y = d_dialog_y + d_dialog_h - d_load_h - d_margin1 - 3 * RESFACTOR;
+  int d_load_y = d_dialog_y + d_dialog_h - d_load_h - d_margin1 - 6;
 
   //------------------------------------------------------------------------
   //	Button Enumerations
@@ -4214,8 +4214,8 @@ static int Net_New_Dialog() {
   int rc;
   int i, j;
   char* item;
-  int tabs[] = {77 * RESFACTOR};       // tabs for player list box
-  int optiontabs[] = {8 * RESFACTOR};  // tabs for option list box
+  int tabs[] = {77 * 2};       // tabs for player list box
+  int optiontabs[] = {8 * 2};  // tabs for option list box
 
   NodeNameType* who;    // node to add to Players
   long ping_timer = 0;  // for sending Ping packets
@@ -4255,21 +4255,21 @@ static int Net_New_Dialog() {
       BUTTON_OPTIONS, d_options_x, d_options_y, d_options_w, d_options_h,
       TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
   TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_BUTTON, d_ok_x, d_ok_y,
-                        60 * RESFACTOR);
+                        120);
   TextButtonClass loadbtn(BUTTON_LOAD, TXT_LOAD_BUTTON, TPF_BUTTON, d_load_x,
-                          d_load_y, 60 * RESFACTOR);
+                          d_load_y, 120);
   TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
-                            d_cancel_y, 60 * RESFACTOR);
+                            d_cancel_y, 120);
 
   StaticButtonClass staticunit(
-      0, "    ", TPF_TEXT, d_count_x + d_count_w + 2 * RESFACTOR, d_count_y);
+      0, "    ", TPF_TEXT, d_count_x + d_count_w + 4, d_count_y);
   StaticButtonClass staticlevel(
-      0, "    ", TPF_TEXT, d_level_x + d_level_w + 2 * RESFACTOR, d_level_y);
+      0, "    ", TPF_TEXT, d_level_x + d_level_w + 4, d_level_y);
   StaticButtonClass staticcredits(0, "         ", TPF_TEXT,
-                                  d_credits_x + d_credits_w + 2 * RESFACTOR,
+                                  d_credits_x + d_credits_w + 4,
                                   d_credits_y);
   StaticButtonClass staticaiplayers(
-      0, "   ", TPF_TEXT, d_aiplayers_x + d_aiplayers_w + 2 * RESFACTOR,
+      0, "   ", TPF_TEXT, d_aiplayers_x + d_aiplayers_w + 4,
       d_aiplayers_y);
 
   //------------------------------------------------------------------------
@@ -4417,9 +4417,9 @@ static int Net_New_Dialog() {
   //	Init the message display system
   //------------------------------------------------------------------------
   Session.Messages.Init(
-      d_message_x + 1 * RESFACTOR, d_message_y + 1 * RESFACTOR, kNumMessages,
-      MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 1 * RESFACTOR,
-      d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5, d_message_w);
+      d_message_x + 2, d_message_y + 2, kNumMessages,
+      MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 2,
+      d_send_y + 2, 1, 20, MAX_MESSAGE_LENGTH - 5, d_message_w);
   Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                 ? PCOLOR_REALLY_BLUE
                                 : Session.ColorIdx,
@@ -4507,13 +4507,13 @@ static int Net_New_Dialog() {
         Fancy_Text_Print(TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w / 2,
                          d_scenariolist_y - d_txt6_h, scheme, TBLACK,
                          TPF_TEXT | TPF_CENTER);
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 2 * RESFACTOR, d_count_y,
+        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 2 * RESFACTOR, d_level_y,
+        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 2 * RESFACTOR,
+        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4,
                          d_credits_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 2 * RESFACTOR,
+        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
                          d_aiplayers_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
       }
 
@@ -4582,14 +4582,14 @@ static int Net_New_Dialog() {
       //..................................................................
       if (display >= REDRAW_PARMS) {
         //				LogicPage->Fill_Rect(d_count_x +
-        // d_count_w + 2*RESFACTOR, d_count_y, d_count_x + d_count_w +
-        // 35*RESFACTOR, d_aiplayers_y + d_aiplayers_h+RESFACTOR, BLACK);
+        // d_count_w + 2*2, d_count_y, d_count_x + d_count_w +
+        // 35*2, d_aiplayers_y + d_aiplayers_h+2, BLACK);
 
         sprintf(txt, "%d", Session.Options.UnitCount);
         staticunit.Set_Text(txt);
         staticunit.Draw_Me();
         //				Fancy_Text_Print(txt, d_count_x +
-        // d_count_w + 2*RESFACTOR, d_count_y, scheme, BLACK, TPF_TEXT);
+        // d_count_w + 2*2, d_count_y, scheme, BLACK, TPF_TEXT);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
           sprintf(txt, "%d", BuildLevel);
@@ -4599,19 +4599,19 @@ static int Net_New_Dialog() {
         staticlevel.Set_Text(txt);
         staticlevel.Draw_Me();
         //				Fancy_Text_Print(txt, d_level_x +
-        // d_level_w + 2*RESFACTOR, d_level_y, scheme, BLACK, TPF_TEXT);
+        // d_level_w + 2*2, d_level_y, scheme, BLACK, TPF_TEXT);
 
         sprintf(txt, "%d", Session.Options.Credits);
         staticcredits.Set_Text(txt);
         staticcredits.Draw_Me();
         //				Fancy_Text_Print(txt, d_credits_x +
-        // d_credits_w + 2*RESFACTOR, d_credits_y, scheme, BLACK, TPF_TEXT);
+        // d_credits_w + 2*2, d_credits_y, scheme, BLACK, TPF_TEXT);
 
         sprintf(txt, "%d", Session.Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
         staticaiplayers.Draw_Me();
         //				Fancy_Text_Print(txt, d_aiplayers_x +
-        // d_aiplayers_w + 2*RESFACTOR, d_aiplayers_y, scheme, BLACK,
+        // d_aiplayers_w + 2*2, d_aiplayers_y, scheme, BLACK,
         // TPF_TEXT);
       }
 
@@ -5614,8 +5614,8 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
   char buf2[40] = {0};
   const char* buf3;
 
-  int d_txt6_h = 6 * RESFACTOR + 1;
-  int d_margin = 5 * RESFACTOR;
+  int d_txt6_h = 12 + 1;
+  int d_margin = 10;
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
@@ -5687,47 +5687,47 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
     if (Session.Type == GAME_INTERNET && pWolapi &&
         pWolapi->GameInfoCurrent.bTournament) {
       w = max(String_Pixel_Width(szNewCancelMessage),
-              w);  // * RESFACTOR;		why was it ever multiplied by
+              w);  // * 2;		why was it ever multiplied by
                    // this!!!?
       w += (d_margin * 12);
     } else {
-      w = max(String_Pixel_Width(buf3), w) * RESFACTOR;
+      w = max(String_Pixel_Width(buf3), w) * 2;
       w += (d_margin * 5);
     }
 #else
     w = std::max(String_Pixel_Width(buf3), static_cast<unsigned>(w)) *
-        RESFACTOR;
+        2;
     w += d_margin * 5;
 #endif
 
     h = d_txt6_h * 3 + d_margin * 6;
-    x = 160 * RESFACTOR - w / 2;
-    y = 100 * RESFACTOR - h / 2;
+    x = 320 - w / 2;
+    y = 200 - h / 2;
 
     Hide_Mouse();
     Set_Logic_Page(SeenBuff);
     Dialog_Box(x, y, w, h);
 
-    Fancy_Text_Print(buf1, 160 * RESFACTOR, y + d_margin * 2, scheme, TBLACK,
+    Fancy_Text_Print(buf1, 320, y + d_margin * 2, scheme, TBLACK,
                      TPF_CENTER | TPF_TEXT);
 
-    Fancy_Text_Print(buf2, 160 * RESFACTOR,
+    Fancy_Text_Print(buf2, 320,
                      y + d_margin * 2 + d_txt6_h + d_margin, scheme, TBLACK,
                      TPF_CENTER | TPF_TEXT);
 
 #ifdef WOLAPI_INTEGRATION
     if (Session.Type == GAME_INTERNET && pWolapi &&
         pWolapi->GameInfoCurrent.bTournament) {
-      Fancy_Text_Print(szNewCancelMessage, 160 * RESFACTOR,
+      Fancy_Text_Print(szNewCancelMessage, 320,
                        y + (d_margin * 2) + (d_txt6_h + d_margin) * 2, scheme,
                        TBLACK, TPF_CENTER | TPF_TEXT);
     } else {
-      Fancy_Text_Print(buf3, 160 * RESFACTOR,
+      Fancy_Text_Print(buf3, 320,
                        y + (d_margin * 2) + (d_txt6_h + d_margin) * 2, scheme,
                        TBLACK, TPF_CENTER | TPF_TEXT);
     }
 #else
-    Fancy_Text_Print(buf3, 160 * RESFACTOR,
+    Fancy_Text_Print(buf3, 320,
                      y + d_margin * 2 + (d_txt6_h + d_margin) * 2, scheme,
                      TBLACK, TPF_CENTER | TPF_TEXT);
 #endif
@@ -5743,14 +5743,14 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
 
     sprintf(buf2, Text_String(TXT_TIME_ALLOWED), timeval + 1);
 
-    int fillx = 160 * RESFACTOR - String_Pixel_Width(buf2) / 2 - 6;
+    int fillx = 320 - String_Pixel_Width(buf2) / 2 - 6;
     LogicPage->Fill_Rect(
         fillx, y + d_margin * 2 + d_txt6_h + d_margin,
         fillx + String_Pixel_Width(buf2) + 12,
-        y + d_margin * 2 + d_txt6_h + d_margin + d_txt6_h + 1 * RESFACTOR,
+        y + d_margin * 2 + d_txt6_h + d_margin + d_txt6_h + 2,
         BLACK);
 
-    Fancy_Text_Print(buf2, 160 * RESFACTOR,
+    Fancy_Text_Print(buf2, 320,
                      y + d_margin * 2 + d_txt6_h + d_margin, scheme, BLACK,
                      TPF_CENTER | TPF_TEXT);
 
@@ -7529,28 +7529,28 @@ static int Net_Fake_New_Dialog() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  int d_dialog_w = 120 * RESFACTOR;                     // dialog width
-  int d_dialog_h = 80 * RESFACTOR;                      // dialog height
-  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_w = 240;                     // dialog width
+  int d_dialog_h = 160;                      // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (400 - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
-  int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
-  int d_margin1 = 5 * RESFACTOR;     // margin width/height
+  int d_txt6_h = 12 + 1;  // ht of 6-pt text
+  int d_margin1 = 10;     // margin width/height
 
-  int d_playerlist_w = 118 * RESFACTOR;
-  int d_playerlist_h = (6 * 6 + 3) * RESFACTOR;  // 6 rows high
-  int d_playerlist_x = 500 * RESFACTOR;
+  int d_playerlist_w = 236;
+  int d_playerlist_h = (6 * 6 + 3) * 2;  // 6 rows high
+  int d_playerlist_x = 1000;
   int d_playerlist_y = d_dialog_y + d_margin1 + d_txt6_h;
 
 #if (GERMAN | FRENCH)
-  int d_cancel_w = 50 * RESFACTOR;
+  int d_cancel_w = 100;
 #else
-  int d_cancel_w = 40 * RESFACTOR;
+  int d_cancel_w = 80;
 #endif
-  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_h = 18;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
-  int d_cancel_y = d_dialog_y + d_dialog_h - 20 * RESFACTOR;
+  int d_cancel_y = d_dialog_y + d_dialog_h - 40;
 
   //------------------------------------------------------------------------
   //	Button Enumerations
@@ -7759,7 +7759,7 @@ static int Net_Fake_New_Dialog() {
         //	Dialog & Field labels
         //...............................................................
         Fancy_Text_Print(TXT_HACKHACK, d_dialog_cx - width / 2,
-                         d_dialog_y + 25 * RESFACTOR, scheme, TBLACK, TPF_TEXT);
+                         d_dialog_y + 50, scheme, TBLACK, TPF_TEXT);
       }
 
       //..................................................................
@@ -8313,33 +8313,33 @@ static int Net_Fake_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  int d_dialog_w = 120 * RESFACTOR;                     // dialog width
-  int d_dialog_h = 80 * RESFACTOR;                      // dialog height
-  int d_dialog_x = (320 * RESFACTOR - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y = (200 * RESFACTOR - d_dialog_h) / 2;  // centered y-coord
+  int d_dialog_w = 240;                     // dialog width
+  int d_dialog_h = 160;                      // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;  // dialog x-coord
+  int d_dialog_y = (400 - d_dialog_h) / 2;  // centered y-coord
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // center x-coord
 
-  int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
-  int d_margin2 = 7 * RESFACTOR;     // small margin
+  int d_txt6_h = 12 + 1;  // ht of 6-pt text
+  int d_margin2 = 14;     // small margin
 
-  int d_gamelist_w = 160 * RESFACTOR;
-  int d_gamelist_h = (6 * 6 + 3) * RESFACTOR;  // 6 rows high
-  int d_gamelist_x = 500 * RESFACTOR;
-  int d_gamelist_y = 50 + d_margin2 + 2 * RESFACTOR;
+  int d_gamelist_w = 320;
+  int d_gamelist_h = (6 * 6 + 3) * 2;  // 6 rows high
+  int d_gamelist_x = 1000;
+  int d_gamelist_y = 50 + d_margin2 + 4;
 
-  int d_playerlist_w = 118 * RESFACTOR;
-  int d_playerlist_h = (6 * 6 + 3) * RESFACTOR;  // 6 rows high
-  int d_playerlist_x = 500 * RESFACTOR;
-  int d_playerlist_y = 50 + d_margin2 + 2 * RESFACTOR;
+  int d_playerlist_w = 236;
+  int d_playerlist_h = (6 * 6 + 3) * 2;  // 6 rows high
+  int d_playerlist_x = 1000;
+  int d_playerlist_y = 50 + d_margin2 + 4;
 
 #if (GERMAN | FRENCH)
-  int d_cancel_w = 50 * RESFACTOR;
+  int d_cancel_w = 100;
 #else
-  int d_cancel_w = 40 * RESFACTOR;
+  int d_cancel_w = 80;
 #endif
-  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_h = 18;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
-  int d_cancel_y = d_dialog_y + d_dialog_h - 20 * RESFACTOR;
+  int d_cancel_y = d_dialog_y + d_dialog_h - 40;
 
   //------------------------------------------------------------------------
   //	Button Enumerations
@@ -8372,7 +8372,7 @@ static int Net_Fake_Join_Dialog() {
 
   JoinStateType joinstate = JOIN_NOTHING;  // current "state" of this dialog
   char namebuf[MPLAYER_NAME_MAX] = {0};    // buffer for player's name
-  int playertabs[] = {77 * RESFACTOR};     // tabs for player list box
+  int playertabs[] = {77 * 2};     // tabs for player list box
   int game_index = -1;                     // index of currently-selected game
   int join_index = -1;                     // index of game we're joining
   int rc = 0;                              // -1 = user cancelled, 1 = New
@@ -8539,7 +8539,7 @@ static int Net_Fake_Join_Dialog() {
         //	Dialog & Field labels
         //...............................................................
         Fancy_Text_Print(TXT_HACKHACK, d_dialog_cx - width / 2,
-                         d_dialog_y + 25 * RESFACTOR, scheme, TBLACK, TPF_TEXT);
+                         d_dialog_y + 50, scheme, TBLACK, TPF_TEXT);
 
         //...............................................................
         //	Rebuild the button list

@@ -997,10 +997,10 @@ bool Load_Game(int id) {
       /*
       ** Find out if the CD in the current drive is the Aftermath disc.
       */
-      if (Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60) != 3) {
+      if (Get_CD_Index(CCFileClass::Get_CD_Drive(), 60) != 3) {
         GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
-        if (!Force_CD_Available(3)) {  // force Aftermath CD in drive.
-                                       // Prog_End();
+        // force Aftermath CD in drive.
+        if (!Force_CD_Available(3)) {
           Emergency_Exit(EXIT_FAILURE);
         }
       }

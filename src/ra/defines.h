@@ -244,8 +244,6 @@
 #define FOREIGN_VERSION_NUMBER 7
 #endif
 
-#define RESFACTOR 2
-
 #define SIDEBAR_WID 80
 
 /**********************************************************************

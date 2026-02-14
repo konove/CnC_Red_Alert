@@ -3021,12 +3021,7 @@ long Obfuscate(const char* string) {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 void Load_Title_Page(bool visible) {
-#if RESFACTOR == 2
   Load_Title_Screen("HTITLE.PCX", &HidPage, Palette);
-#else
-  Load_Picture("TITLE.CPS", *HidPage.Get_Graphic_Buffer(),
-               *HidPage.Get_Graphic_Buffer(), Palette, BM_DEFAULT);
-#endif
 
   if (visible) {
     HidPage.Blit(SeenBuff);

@@ -1167,7 +1167,7 @@ static void Message_Input(KeyNumType& input) {
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 232 * RESFACTOR);
+            txt, 0, 464);
 
         Map.Flag_To_Redraw(false);
       }
@@ -1184,7 +1184,7 @@ static void Message_Input(KeyNumType& input) {
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 232 * RESFACTOR);
+            txt, 0, 464);
 
         Map.Flag_To_Redraw(false);
 
@@ -1200,7 +1200,7 @@ static void Message_Input(KeyNumType& input) {
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 232 * RESFACTOR);
+            txt, 0, 464);
 
         Map.Flag_To_Redraw(false);
       }
@@ -1225,7 +1225,7 @@ static void Message_Input(KeyNumType& input) {
           Session.Messages.Add_Edit(
               Session.ColorIdx,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0,
-              232 * RESFACTOR);
+              464);
 
           Map.Flag_To_Redraw(false);
 
@@ -1253,7 +1253,7 @@ static void Message_Input(KeyNumType& input) {
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 232 * RESFACTOR);
+            txt, 0, 464);
 
         Map.Flag_To_Redraw(false);
 
@@ -1264,7 +1264,7 @@ static void Message_Input(KeyNumType& input) {
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 232 * RESFACTOR);
+            txt, 0, 464);
 
         Map.Flag_To_Redraw(false);
       }
@@ -1283,7 +1283,7 @@ static void Message_Input(KeyNumType& input) {
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 232 * RESFACTOR);
+            txt, 0, 464);
 
         Map.Flag_To_Redraw(false);
 
@@ -1295,7 +1295,7 @@ static void Message_Input(KeyNumType& input) {
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 232 * RESFACTOR);
+            txt, 0, 464);
 
         Map.Flag_To_Redraw(false);
       }
@@ -3932,7 +3932,7 @@ void Handle_View(int view, int action) {
   if (static_cast<unsigned>(view) < ARRAY_SIZE(Scen.Views)) {
     if (action == 0) {
       Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
-          Scen.Views[view] - MAP_CELL_W * 4 * RESFACTOR - 5 * RESFACTOR)));
+          Scen.Views[view] - MAP_CELL_W * 8 - 10)));
 
 #ifdef WIN32
       /*
@@ -3943,7 +3943,7 @@ void Handle_View(int view, int action) {
 #endif  // WIN32
     } else {
       Scen.Views[view] = Coord_Cell(Map.TacticalCoord) +
-                         MAP_CELL_W * 4 * RESFACTOR + 5 * RESFACTOR;
+                         MAP_CELL_W * 8 + 10;
     }
   }
 }

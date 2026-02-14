@@ -712,12 +712,12 @@ int WindowList[][8] = {
 
     /* do not change the first 2 entries!! they are necc. to the system */
 
-    {0, 0, 40 * 8 * RESFACTOR, 200 * RESFACTOR, WHITE, BLACK, 0,
+    {0, 0, 40 * 16, 400, WHITE, BLACK, 0,
      0},                                          /* screen window */
     {1 * 8, 75, 38 * 8, 100, WHITE, BLACK, 0, 0}, /* DOS Error window */
 
     // Tactical map.
-    {0, 0, 40 * 8 * RESFACTOR, 200 * RESFACTOR, WHITE, LTGREY, 0, 0},
+    {0, 0, 40 * 16, 400, WHITE, LTGREY, 0, 0},
 
     // Initial menu window.
     {12 * 8, 199 - 42, 16 * 8, 42, LTGREY, DKGREY, 0, 0},

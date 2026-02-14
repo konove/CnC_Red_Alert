@@ -137,18 +137,18 @@ void Special_Dialog(bool simple) {
       {TXT_SPEED_BUILD, 0, nullptr},
   };
 
-  TextButtonClass ok(200, TXT_OK, TPF_BUTTON, OPTION_X + 15 * RESFACTOR,
-                     OPTION_Y + OPTION_HEIGHT - 15 * RESFACTOR);
+  TextButtonClass ok(200, TXT_OK, TPF_BUTTON, OPTION_X + 30,
+                     OPTION_Y + OPTION_HEIGHT - 30);
   TextButtonClass cancel(201, TXT_CANCEL, TPF_BUTTON,
-                         OPTION_X + OPTION_WIDTH - 60 * RESFACTOR,
-                         OPTION_Y + OPTION_HEIGHT - 15 * RESFACTOR);
+                         OPTION_X + OPTION_WIDTH - 120,
+                         OPTION_Y + OPTION_HEIGHT - 30);
   buttons = &ok;
   cancel.Add(*buttons);
 
   for (int index = 0; index < sizeof(_options) / sizeof(_options[0]); index++) {
     _options[index].Button =
-        new CheckBoxClass(100 + index, OPTION_X + 17 * RESFACTOR,
-                          OPTION_Y + 20 * RESFACTOR + index * 10 * RESFACTOR);
+        new CheckBoxClass(100 + index, OPTION_X + 34,
+                          OPTION_Y + 40 + index * 20);
     if (_options[index].Button) {
       _options[index].Button->Add(*buttons);
 
@@ -195,7 +195,7 @@ void Special_Dialog(bool simple) {
       for (int index = 0; index < sizeof(_options) / sizeof(_options[0]);
            index++) {
         Fancy_Text_Print(_options[index].Description,
-                         _options[index].Button->X + 10 * RESFACTOR,
+                         _options[index].Button->X + 20,
                          _options[index].Button->Y,
                          GadgetClass::Get_Color_Scheme(), TBLACK,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -363,9 +363,9 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Build the button list.
   */
-  bheight = FontHeight + FontYSpacing + 2 * RESFACTOR;
-  bwidth = std::max(String_Pixel_Width(Text_String(btext)) + 8 * RESFACTOR,
-                    30u * RESFACTOR);
+  bheight = FontHeight + FontYSpacing + 4;
+  bwidth = std::max(String_Pixel_Width(Text_String(btext)) + 16,
+                    30u * 2);
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -378,9 +378,9 @@ const char* Fetch_Password(int caption, int message, int btext) {
   int height;
   Format_Window_String(buffer, 255, width, height);
 
-  width = std::max(width, 50 * RESFACTOR);
-  width += 40 * RESFACTOR;
-  height += (60 + 25) * RESFACTOR;
+  width = std::max(width, 100);
+  width += 80;
+  height += (60 + 25) * 2;
 
   int x = (SeenBuff.Get_Width() - width) / 2;
   int y = (SeenBuff.Get_Height() - height) / 2;
@@ -389,15 +389,15 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Create the "ok" and password edit buttons.
   */
   TextButtonClass button1(1, btext, TPF_BUTTON, x + ((width - bwidth) >> 1),
-                          y + height - (bheight + 5 * RESFACTOR), bwidth);
+                          y + height - (bheight + 10), bwidth);
 
   static char pbuffer[45];
   memset(pbuffer, '\0', sizeof(pbuffer));
-  int editx = x + 26 * RESFACTOR;
+  int editx = x + 52;
   int editwidth = (SeenBuff.Get_Width() / 2 - editx) * 2;
   PWEditClass button2(2, &pbuffer[0], sizeof(pbuffer),
                       TPF_6PT_GRAD | TPF_NOSHADOW, editx,
-                      y + height - 35 * RESFACTOR, editwidth, 10 * RESFACTOR);
+                      y + height - 70, editwidth, 20);
 
   TextButtonClass* buttonlist = nullptr;
 
@@ -418,7 +418,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Draw the body of the message box.
   */
-  Fancy_Text_Print(buffer, x + 20 * RESFACTOR, y + 25 * RESFACTOR,
+  Fancy_Text_Print(buffer, x + 40, y + 50,
                    GadgetClass::Get_Color_Scheme(), TBLACK,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -498,11 +498,11 @@ const char* Fetch_Password(int caption, int message, int btext) {
  * HISTORY: * 08/13/1996 JLB : Created. *
  *=============================================================================================*/
 int Fetch_Difficulty(bool amath) {
-  const int w = 250 * RESFACTOR;
-  const int h = 80 * RESFACTOR;
-  const int x = 320 * RESFACTOR / 2 - w / 2;
-  const int y = 200 * RESFACTOR / 2 - h / 2;
-  const int bwidth = 30 * RESFACTOR;
+  const int w = 500;
+  const int h = 160;
+  const int x = 640 / 2 - w / 2;
+  const int y = 400 / 2 - h / 2;
+  const int bwidth = 60;
 
   /*
   **	Fill the description buffer with the description text. Break
@@ -525,21 +525,21 @@ int Fetch_Difficulty(bool amath) {
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int width;
   int height;
-  Format_Window_String(buffer, w - 60 * RESFACTOR, width, height);
+  Format_Window_String(buffer, w - 120, width, height);
 
   /*
   **	Create the OK button.
   */
   TextButtonClass okbutton(1, TXT_OK, TPF_BUTTON,
-                           x + w - (bwidth + 20 * RESFACTOR),
-                           y + h - 18 * RESFACTOR, bwidth);
+                           x + w - (bwidth + 40),
+                           y + h - 36, bwidth);
   GadgetClass* buttonlist = &okbutton;
 
   /*
   **	Create the slider button.
   */
-  SliderClass slider(2, x + 20 * RESFACTOR, y + h - 29 * RESFACTOR,
-                     w - 40 * RESFACTOR, 8 * RESFACTOR, true);
+  SliderClass slider(2, x + 40, y + h - 58,
+                     w - 80, 16, true);
   if (Rule.IsFineDifficulty) {
     slider.Set_Maximum(5);
     slider.Set_Value(2);
@@ -568,10 +568,10 @@ int Fetch_Difficulty(bool amath) {
       /*
       **	Draw the body of the message.
       */
-      //			Fancy_Text_Print(buffer, x + 20*RESFACTOR, y +
-      // 15*RESFACTOR, GadgetClass::Get_Color_Scheme(), TBLACK,
+      //			Fancy_Text_Print(buffer, x + 20*2, y +
+      // 15*2, GadgetClass::Get_Color_Scheme(), TBLACK,
       // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW);
-      Fancy_Text_Print(buffer, x + 20 * RESFACTOR, y + 15 * RESFACTOR,
+      Fancy_Text_Print(buffer, x + 40, y + 30,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_6PT_GRAD | TPF_NOSHADOW);
 
@@ -579,14 +579,14 @@ int Fetch_Difficulty(bool amath) {
       **	Display the descripton of the slider range.
       */
       Fancy_Text_Print(TXT_HARD, slider.X + slider.Width,
-                       slider.Y - 9 * RESFACTOR,
+                       slider.Y - 18,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_RIGHT | TPF_6PT_GRAD | TPF_DROPSHADOW);
-      Fancy_Text_Print(TXT_EASY, slider.X, slider.Y - 9 * RESFACTOR,
+      Fancy_Text_Print(TXT_EASY, slider.X, slider.Y - 18,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_6PT_GRAD | TPF_DROPSHADOW);
       Fancy_Text_Print(TXT_NORMAL, slider.X + slider.Width / 2,
-                       slider.Y - 9 * RESFACTOR,
+                       slider.Y - 18,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
 

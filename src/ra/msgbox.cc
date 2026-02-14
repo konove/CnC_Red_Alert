@@ -129,13 +129,13 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     /*
     **	Build the button list.
     */
-    bheight = FontHeight + FontYSpacing + 2 * RESFACTOR;
+    bheight = FontHeight + FontYSpacing + 4;
     bwidth =
-        std::max(String_Pixel_Width(b1txt) + 8 * RESFACTOR, 30u * RESFACTOR);
+        std::max(String_Pixel_Width(b1txt) + 16, 30u * 2);
 
     if (b2txt != nullptr) {
       numbuttons = 2;
-      bwidth = std::max(String_Pixel_Width(b2txt) + 8 * RESFACTOR,
+      bwidth = std::max(String_Pixel_Width(b2txt) + 16,
                         static_cast<unsigned>(bwidth));
 
       if (b3txt != nullptr) {
@@ -156,19 +156,19 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
   int width;
   int height;
-  int lines = Format_Window_String(buffer, 255 * RESFACTOR, width, height);
+  int lines = Format_Window_String(buffer, 510, width, height);
   TextPrintType tpf = TPF_TEXT;
 
-  width = std::max(width, 90 * RESFACTOR);
-  width += 40 * RESFACTOR;
-  height += numbuttons == 0 ? 40 * RESFACTOR : 60 * RESFACTOR;
+  width = std::max(width, 180);
+  width += 80;
+  height += numbuttons == 0 ? 80 : 120;
 
   // make sure dialog is wide enough for the buttons
-  width = std::max(bwidth * numbuttons + 40 * RESFACTOR, width);
+  width = std::max(bwidth * numbuttons + 80, width);
 
   int x = (SeenBuff.Get_Width() - width) / 2;
   int y = (SeenBuff.Get_Height() - height) / 2;
-  int printx = x + 20 * RESFACTOR;
+  int printx = x + 40;
 
   /*
   **	Special hack to center a one line dialog box text.
@@ -193,21 +193,21 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   // DOS BUILD GERMAN BUTTONS NEED TO ONE ON TOP OF THE OTHER  VG 11/6/96
   TextButtonClass button1(
       BUTTON_1, b1txt, TPF_BUTTON,
-      x + (numbuttons == 1 ? (width - bwidth) >> 1 : 20 * RESFACTOR),
-      y + height - (bheight + 15 * RESFACTOR), bwidth);
+      x + (numbuttons == 1 ? (width - bwidth) >> 1 : 40),
+      y + height - (bheight + 30), bwidth);
 
   /*
   **	Center button.
   */
   TextButtonClass button2(BUTTON_2, b2txt, TPF_BUTTON,
-                          x + width - (bwidth + 20 * RESFACTOR),
-                          y + height - (bheight + 15 * RESFACTOR), bwidth);
+                          x + width - (bwidth + 40),
+                          y + height - (bheight + 30), bwidth);
 
   /*
   **	Right button.
   */
   TextButtonClass button3(BUTTON_3, b3txt, TPF_BUTTON, 0,
-                          y + height - (bheight + 15 * RESFACTOR));
+                          y + height - (bheight + 30));
   button3.X = x + ((width - button3.Width) >> 1);
 
   TextButtonClass* buttonlist = nullptr;
@@ -263,7 +263,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Draw the body of the message.
   */
-  Fancy_Text_Print(buffer, printx, y + 20 * RESFACTOR,
+  Fancy_Text_Print(buffer, printx, y + 40,
                    GadgetClass::Get_Color_Scheme(), TBLACK, tpf);
 
   /*
@@ -304,7 +304,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         /*
         **	Draw the body of the message.
         */
-        Fancy_Text_Print(buffer, printx, y + 20 * RESFACTOR,
+        Fancy_Text_Print(buffer, printx, y + 40,
                          GadgetClass::Get_Color_Scheme(), TBLACK, tpf);
 
         /*

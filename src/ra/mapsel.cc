@@ -148,8 +148,8 @@ int Mouse_Over_Spot(const int is_soviet, const int scenario) {
   int retval = -1;
   for (int choice = 0;
        choice < 3 && MapCoords[is_soviet][scenario][choice].x != -1; choice++) {
-    const int mouse_x = Get_Mouse_X() / RESFACTOR;
-    const int mouse_y = Get_Mouse_Y() / RESFACTOR;
+    const int mouse_x = Get_Mouse_X() / 2;
+    const int mouse_y = Get_Mouse_Y() / 2;
     if (mouse_x >= MapCoords[is_soviet][scenario][choice].x &&
         mouse_y >= MapCoords[is_soviet][scenario][choice].y &&
         mouse_x <= MapCoords[is_soviet][scenario][choice].x + 11 &&
@@ -291,7 +291,7 @@ std::string Map_Selection() {
 
   Keyboard->Clear();
 
-  Fancy_Text_Print(TXT_STAND_BY, 160 * RESFACTOR, 190 * RESFACTOR,
+  Fancy_Text_Print(TXT_STAND_BY, 320, 380,
                    GadgetClass::Get_Color_Scheme(), TBLACK,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
 

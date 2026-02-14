@@ -86,14 +86,6 @@ unsigned char* Font_Palette(int color);
  *the box.                                             *
  *=============================================================================================*/
 void Dialog_Box(int x, int y, int w, int h) {
-// Try to expand the box a little taller and a little wider to make room for
-// the dialog box graphics in the DOS version.
-#if RESFACTOR == 1
-  x = max(0, x - 4);
-  y = max(0, y - 4);
-  w = min(w + 8, 320 - x);
-  h = min(h + 8, 200 - y);
-#endif
 
   WindowList[WINDOW_PARTIAL][WINDOWX] = x;
   WindowList[WINDOW_PARTIAL][WINDOWY] = y;
@@ -115,23 +107,19 @@ void Dialog_Box(int x, int y, int w, int h) {
   int cx = w / 2;
   int cy = h / 2;
   const void* shapedata = MFCD::Retrieve("DD-BKGND.SHP");
-#if RESFACTOR == 2
   CC_Draw_Shape(shapedata, 0, cx - 312, cy - 192, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 1, cx, cy - 192, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 2, cx - 312, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 3, cx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
-#else
-  CC_Draw_Shape(shapedata, 0, cx - 156, cy - 96, WINDOW_PARTIAL, SHAPE_WIN_REL);
-#endif
   /*
   **	Draw the side strips.
   */
   shapedata = MFCD::Retrieve("DD-EDGE.SHP");
   for (int yy = 0; yy < h; yy += 6) {
-    CC_Draw_Shape(shapedata, 0, 7 * RESFACTOR, yy, WINDOW_PARTIAL,
+    CC_Draw_Shape(shapedata, 0, 14, yy, WINDOW_PARTIAL,
                   SHAPE_WIN_REL);
-    CC_Draw_Shape(shapedata, 1, w - (7 + 8) * RESFACTOR, yy, WINDOW_PARTIAL,
+    CC_Draw_Shape(shapedata, 1, w - (7 + 8) * 2, yy, WINDOW_PARTIAL,
                   SHAPE_WIN_REL);
   }
 
@@ -139,27 +127,24 @@ void Dialog_Box(int x, int y, int w, int h) {
   **	Draw the border bars.
   */
   shapedata = MFCD::Retrieve("DD-LEFT.SHP");
-  CC_Draw_Shape(shapedata, 0, 0, cy - 100 * RESFACTOR, WINDOW_PARTIAL,
+  CC_Draw_Shape(shapedata, 0, 0, cy - 200, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, 0, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   shapedata = MFCD::Retrieve("DD-RIGHT.SHP");
-  int rightx = w - 7 * RESFACTOR;
-#if RESFACTOR == 1
-  rightx--;
-#endif
-  CC_Draw_Shape(shapedata, 0, rightx, cy - 100 * RESFACTOR, WINDOW_PARTIAL,
+  int rightx = w - 14;
+  CC_Draw_Shape(shapedata, 0, rightx, cy - 200, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, rightx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   shapedata = MFCD::Retrieve("DD-BOTM.SHP");
-  CC_Draw_Shape(shapedata, 0, cx - 160 * RESFACTOR, h - 8 * RESFACTOR,
+  CC_Draw_Shape(shapedata, 0, cx - 320, h - 16,
                 WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 0, cx, h - 8 * RESFACTOR, WINDOW_PARTIAL,
+  CC_Draw_Shape(shapedata, 0, cx, h - 16, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
 
   shapedata = MFCD::Retrieve("DD-TOP.SHP");
-  CC_Draw_Shape(shapedata, 0, cx - 160 * RESFACTOR, 0, WINDOW_PARTIAL,
+  CC_Draw_Shape(shapedata, 0, cx - 320, 0, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, cx, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
@@ -168,11 +153,11 @@ void Dialog_Box(int x, int y, int w, int h) {
   */
   shapedata = MFCD::Retrieve("DD-CRNR.SHP");
   CC_Draw_Shape(shapedata, 0, 0, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 1, w - (12 * RESFACTOR - 1), 0, WINDOW_PARTIAL,
+  CC_Draw_Shape(shapedata, 1, w - 23, 0, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 2, 0, h - 12 * RESFACTOR, WINDOW_PARTIAL,
+  CC_Draw_Shape(shapedata, 2, 0, h - 24, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 3, w - (12 * RESFACTOR - 1), h - 12 * RESFACTOR,
+  CC_Draw_Shape(shapedata, 3, w - 23, h - 24,
                 WINDOW_PARTIAL, SHAPE_WIN_REL);
 
 #ifdef WIN32
@@ -476,11 +461,7 @@ void Simple_Text_Print(const char* text, unsigned x, unsigned y,
   /*
   **	Change the current font if it differs from the font desired.
   */
-#if RESFACTOR == 2
   xspace = 1;
-#else
-  xspace = 0;
-#endif
   yspace = 0;
 
   switch (point) {
@@ -520,30 +501,19 @@ void Simple_Text_Print(const char* text, unsigned x, unsigned y,
 
     case TPF_EFNT:
       font = EditorFont;
-#if RESFACTOR == 2
       yspace += 1;
       xspace -= 1;
-#endif
       xspace -= 1;
       break;
 
     case TPF_8POINT:
       font = Font8Ptr;
-#if RESFACTOR == 2
       xspace -= 2;
       yspace -= 4;
-#else
-      xspace -= 1;
-      yspace -= 2;
-#endif
       break;
 
     case TPF_LED:
-#if RESFACTOR == 2
       xspace -= 4;
-#else
-      xspace -= 2;
-#endif
       font = FontLEDPtr;
       break;
 
@@ -1001,17 +971,17 @@ void Draw_Caption(const char* text, int x, int y, int w) {
   */
   if (text != nullptr && *text != '\0') {
     if (MapEditorActive) {
-      Fancy_Text_Print(text, w / 2 + x, 2 * RESFACTOR + y,
+      Fancy_Text_Print(text, w / 2 + x, 4 + y,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | TPF_EFNT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     } else {
-      Fancy_Text_Print(text, w / 2 + x, 8 * RESFACTOR + y,
+      Fancy_Text_Print(text, w / 2 + x, 16 + y,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | TPF_TEXT);
       int length = String_Pixel_Width(text);
       LogicPage->Draw_Line(
-          x + w / 2 - length / 2, y + FontHeight + FontYSpacing + 8 * RESFACTOR,
-          x + w / 2 + length / 2, y + FontHeight + FontYSpacing + 8 * RESFACTOR,
+          x + w / 2 - length / 2, y + FontHeight + FontYSpacing + 16,
+          x + w / 2 + length / 2, y + FontHeight + FontYSpacing + 16,
           GadgetClass::Get_Color_Scheme()->Box);
     }
   }

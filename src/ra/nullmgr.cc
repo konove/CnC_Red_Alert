@@ -1131,9 +1131,9 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   int lines =
       Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
-  width = std::max(width, 90 * RESFACTOR);
-  width += 40 * RESFACTOR;
-  height += 40 * RESFACTOR;
+  width = std::max(width, 180);
+  width += 80;
+  height += 80;
 
   x = (SeenBuff.Get_Width() - width) / 2;
   y = (SeenBuff.Get_Height() - height) / 2;
@@ -1159,7 +1159,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                      GadgetClass::Get_Color_Scheme(), TBLACK,
                      TPF_TEXT | TPF_CENTER);
   } else {
-    Fancy_Text_Print(buffer, x + 20 * RESFACTOR, y + 25,
+    Fancy_Text_Print(buffer, x + 40, y + 25,
                      GadgetClass::Get_Color_Scheme(), TBLACK, TPF_TEXT);
   }
 
@@ -1364,9 +1364,9 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   Format_Window_String(buffer.data(), SeenBuff.Get_Height(), width, height);
 
   int text_width = width;
-  width = std::max(width, 90 * RESFACTOR);
-  width += 40 * RESFACTOR;
-  height += 60 * RESFACTOR;
+  width = std::max(width, 180);
+  width += 80;
+  height += 120;
 
   x = (SeenBuff.Get_Width() - width) / 2;
   y = (SeenBuff.Get_Height() - height) / 2;
@@ -1374,10 +1374,10 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON,
       x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 8 * RESFACTOR)) >>
+            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >>
            1),
-      y + height - (FontHeight + FontYSpacing + 2 * RESFACTOR) -
-          10 * RESFACTOR);
+      y + height - (FontHeight + FontYSpacing + 4) -
+          20);
 
   /*------------------------------------------------------------------------
   Initialize
@@ -1403,7 +1403,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   Draw_Caption(TXT_NONE, x, y, width);
 
   Fancy_Text_Print(buffer.c_str(), SeenBuff.Get_Width() / 2 - text_width / 2,
-                   y + 25 * RESFACTOR, GadgetClass::Get_Color_Scheme(), TBLACK,
+                   y + 50, GadgetClass::Get_Color_Scheme(), TBLACK,
                    TPF_TEXT);
 
   Commands->Draw_All();
@@ -1561,9 +1561,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
   text_width = width;
-  width = std::max(width, 90 * RESFACTOR);
-  width += 40 * RESFACTOR;
-  height += 60 * RESFACTOR;
+  width = std::max(width, 180);
+  width += 80;
+  height += 120;
 
   x = (SeenBuff.Get_Width() - width) / 2;
   y = (SeenBuff.Get_Height() - height) / 2;
@@ -1571,10 +1571,10 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON,
       x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 8 * RESFACTOR)) >>
+            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >>
            1),
-      y + height - (FontHeight + FontYSpacing + 2 * RESFACTOR) -
-          10 * RESFACTOR);
+      y + height - (FontHeight + FontYSpacing + 4) -
+          20);
 
   /*------------------------------------------------------------------------
   Initialize
@@ -1637,7 +1637,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         Draw_Caption(TXT_NONE, x, y, width);
 
         Fancy_Text_Print(text_buffer, SeenBuff.Get_Width() / 2 - text_width / 2,
-                         y + 25 * RESFACTOR, GadgetClass::Get_Color_Scheme(),
+                         y + 50, GadgetClass::Get_Color_Scheme(),
                          TBLACK, TPF_TEXT);
 
         Commands->Draw_All();
@@ -1673,9 +1673,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
         text_width = width;
-        width = std::max(width, 90 * RESFACTOR);
-        width += 40 * RESFACTOR;
-        height += 60 * RESFACTOR;
+        width = std::max(width, 180);
+        width += 80;
+        height += 120;
 
         x = (SeenBuff.Get_Width() - width) / 2;
         y = (SeenBuff.Get_Height() - height) / 2;

@@ -102,19 +102,17 @@ CreditClass::CreditClass()
  *                                                                                             *
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
-// #define	XX (320-120)
-// #define	WW	50
 void CreditClass::Graphic_Logic(bool forced) {
   if (forced || IsToRedraw) {
     BStart(BENCH_TABS);
 
-    int xx = SeenBuff.Get_Width() - 120 * RESFACTOR;
+    int xx = SeenBuff.Get_Width() - 240;
 
     /*
     ** Adjust the credits display to be above the sidebar for 640x400
     */
 #ifdef WIN32
-    xx += 80 * RESFACTOR;
+    xx += 160;
 #endif
 
     /*
@@ -187,23 +185,23 @@ void CreditClass::Graphic_Logic(bool forced) {
 
 #ifdef WIN32
       if (hours) {
-        Fancy_Text_Print(
-            TXT_TIME_FORMAT_HOURS, 200 * RESFACTOR, 0, &MetalScheme, TBLACK,
-            TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, hours, mins, secs);
+        Fancy_Text_Print(TXT_TIME_FORMAT_HOURS, 400, 0, &MetalScheme, TBLACK,
+                         TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, hours,
+                         mins, secs);
       } else {
-        Fancy_Text_Print(
-            TXT_TIME_FORMAT_NO_HOURS, 200 * RESFACTOR, 0, &MetalScheme, TBLACK,
-            TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, mins, secs);
+        Fancy_Text_Print(TXT_TIME_FORMAT_NO_HOURS, 400, 0, &MetalScheme, TBLACK,
+                         TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, mins,
+                         secs);
       }
 #else
       if (hours) {
         Fancy_Text_Print(
-            "%02d:%02d:%02d", 120 * RESFACTOR, 0, &ColorRemaps[PCOLOR_GREY],
+            "%02d:%02d:%02d", 240, 0, &ColorRemaps[PCOLOR_GREY],
             TBLACK, TPF_NOSHADOW | TPF_6PT_GRAD | TPF_CENTER | TPF_BRIGHT_COLOR,
             hours, mins, secs);
       } else {
         Fancy_Text_Print(
-            "%02d:%02d", 120 * RESFACTOR, 0, &ColorRemaps[PCOLOR_GREY], TBLACK,
+            "%02d:%02d", 240, 0, &ColorRemaps[PCOLOR_GREY], TBLACK,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_CENTER | TPF_BRIGHT_COLOR, mins,
             secs);
       }

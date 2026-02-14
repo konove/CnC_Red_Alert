@@ -123,7 +123,7 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
   SelectedIndex = 0;
   CurrentTopIndex = 0;
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TextFlags);
-  LineHeight = FontHeight + FontYSpacing - (RESFACTOR - 1);
+  LineHeight = FontHeight + FontYSpacing - 1;
   LineCount = (h - 1) / LineHeight;
 }
 
