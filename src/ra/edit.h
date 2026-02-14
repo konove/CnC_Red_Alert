@@ -16,26 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/EDIT.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : EDIT.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 01/15/95 *
- *                                                                                             *
- *                  Last Update : January 15, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Single-line text input UI gadget for the game's dialog system.
 
 #ifndef CNC_RED_ALERT_RA_EDIT_H_
 #define CNC_RED_ALERT_RA_EDIT_H_
@@ -43,6 +24,10 @@
 #include "ra/defines.h"
 #include "sdllib/keyboard.h"
 
+// A text editing gadget that accepts keyboard input and displays the result.
+// Supports filtering by character type (alpha, numeric, misc) and optional
+// uppercase forcing. The gadget does not own its text buffer; the caller
+// provides a char array that EditClass modifies in place.
 class EditClass : public ControlClass {
  public:
   typedef enum EditStyle {
@@ -53,12 +38,18 @@ class EditClass : public ControlClass {
     ALPHANUMERIC = ALPHA | NUMERIC | MISC
   } EditStyle;
 
+  // Constructs an edit gadget. |text| is a caller-owned buffer that will be
+  // modified in place. |max_len| is the buffer size including the null
+  // terminator. |w| and |h| default to -1, meaning auto-sized from the text.
   EditClass(int id, char* text, int max_len, TextPrintType flags, int x, int y,
             int w = -1, int h = -1, EditStyle style = ALPHANUMERIC);
   ~EditClass() override;
 
   void Set_Focus() override;
   int Draw_Me(int forced) override;
+
+  // Changes the text buffer and maximum length. Does not copy; |text| must
+  // outlive this gadget.
   virtual void Set_Text(char* text, int max_len);
   virtual char* Get_Text() { return String; }
   void Set_Color(RemapControlType* color) { Color = color; }
@@ -67,38 +58,29 @@ class EditClass : public ControlClass {
   int Get_Max_Length() const { return MaxLength; }
 
  protected:
-  /*
-  **	These are the text size and style flags to be used when displaying the
-  *text *	of the edit gadget.
-  */
-  TextPrintType TextFlags;
+  TextPrintType TextFlags;  // Text rendering style (font, alignment).
+  EditStyle EditFlags;       // Allowed character types for input filtering.
 
-  /*
-  **	Input flags that control what characters are allowed in the string.
-  */
-  EditStyle EditFlags;
+  char* String;   // Caller-owned text buffer modified in place.
+  int MaxLength;  // Max string length (excludes null terminator).
+  int Length;     // Current string length, always <= MaxLength.
 
-  /*
-  **	Pointer to text staging buffer and the maximum length of the string it
-  **	can contain.
-  */
-  char* String;
-  int MaxLength;
+  RemapControlType* Color;  // Color scheme for rendering.
 
-  /*
-  **	This is the current length of the string. This length will never exceed
-  *the *	MaxLength allowed.
-  */
-  int Length;
-
-  /*
-  **	This is the desired color of the edit control.
-  */
-  RemapControlType* Color;
-
+  // Processes mouse and keyboard events. Sets focus on left-click; inserts
+  // characters on keypress. Returns the gadget ID on RETURN, clears focus
+  // on ESC.
   int Action(unsigned flags, KeyNumType& key) override;
+
+  // Draws the gadget background. Called with the mouse hidden.
   virtual void Draw_Background();
+
+  // Draws the text content and cursor. Called after Draw_Background with
+  // the mouse hidden.
   virtual void Draw_Text(const char* text);
+
+  // Processes a single keyboard character. Returns false if the RETURN key
+  // was pressed (allowing the gadget ID to propagate), true otherwise.
   virtual bool Handle_Key(KeyASCIIType ascii);
 
  private:
