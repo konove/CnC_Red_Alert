@@ -171,11 +171,11 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
 
   WOLEditClass NameEdit(EDITBOX_NAME, szNameBuffer, sizeof(szNameBuffer),
                         TPF_6PT_GRAD | TPF_NOSHADOW, d_name_x, d_name_y,
-                        d_name_w, -1, EditClass::ALPHANUMERIC);
+                        d_name_w, -1, EditClass::kAlphanumeric);
 
   PassEditClass PassEdit(EDITBOX_PASS, szPassBuffer, sizeof(szPassBuffer),
                          TPF_6PT_GRAD | TPF_NOSHADOW, d_pass_x, d_pass_y,
-                         d_pass_w, -1, EditClass::ALPHANUMERIC);
+                         d_pass_w, -1, EditClass::kAlphanumeric);
 
   //	Just making sure globals are set right before String_Pixel_Width()
   // call... sigh

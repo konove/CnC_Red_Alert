@@ -1868,20 +1868,20 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   GadgetClass* commands;  // button list
 
   EditClass port_edt(BUTTON_PORT, portbuf, PORTBUF_MAX, TPF_TEXT, d_port_x,
-                     d_port_y, d_port_w, d_port_h, EditClass::ALPHANUMERIC);
+                     d_port_y, d_port_w, d_port_h, EditClass::kAlphanumeric);
 
   ListClass portlist(BUTTON_PORTLIST, d_portlist_x, d_portlist_y, d_portlist_w,
                      d_portlist_h, TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),
                      MFCD::Retrieve("BTN-DN.SHP"));
 
   EditClass baud_edt(BUTTON_BAUD, baudbuf, BAUDBUF_MAX, TPF_TEXT, d_baud_x,
-                     d_baud_y, d_baud_w, d_baud_h, EditClass::NUMERIC);
+                     d_baud_y, d_baud_w, d_baud_h, EditClass::kNumeric);
   ListClass baudlist(BUTTON_BAUDLIST, d_baudlist_x, d_baudlist_y, d_baudlist_w,
                      d_baudlist_h, TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),
                      MFCD::Retrieve("BTN-DN.SHP"));
   EditClass initstr_edt(BUTTON_INITSTR, initstrbuf, INITSTRBUF_MAX, TPF_TEXT,
                         d_initstr_x, d_initstr_y, d_initstr_w, d_initstr_h,
-                        EditClass::ALPHANUMERIC);
+                        EditClass::kAlphanumeric);
   ListClass initstrlist(BUTTON_INITSTRLIST, d_initstrlist_x, d_initstrlist_y,
                         d_initstrlist_w, d_initstrlist_h, TPF_TEXT,
                         MFCD::Retrieve("BTN-UP.SHP"),
@@ -1892,7 +1892,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                             d_delete_x, d_delete_y, d_delete_w, d_delete_h);
   EditClass cwaitstr_edt(BUTTON_CWAITSTR, cwaitstrbuf, CWAITSTRBUF_MAX,
                          TPF_TEXT, d_cwaitstr_x, d_cwaitstr_y, d_cwaitstr_w,
-                         d_cwaitstr_h, EditClass::ALPHANUMERIC);
+                         d_cwaitstr_h, EditClass::kAlphanumeric);
   ListClass cwaitstrlist(BUTTON_CWAITSTRLIST, d_cwaitstrlist_x,
                          d_cwaitstrlist_y, d_cwaitstrlist_w, d_cwaitstrlist_h,
                          TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),
@@ -2937,7 +2937,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   GadgetClass* commands;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, TPF_TEXT, d_name_x,
-                     d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
+                     d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
 
 #ifdef OLDWAY
   TextButtonClass gdibtn(BUTTON_GDI, TXT_ALLIES, TPF_BUTTON, d_gdi_x, d_gdi_y,
@@ -4814,7 +4814,7 @@ int Com_Show_Scenario_Dialog() {
   GadgetClass* commands;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, TPF_TEXT, d_name_x,
-                     d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
+                     d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
 #ifdef OLDWAY
   TextButtonClass gdibtn(BUTTON_GDI, TXT_ALLIES, TPF_BUTTON, d_gdi_x, d_gdi_y,
                          d_gdi_w, d_gdi_h);
@@ -6309,7 +6309,7 @@ static int Phone_Dialog() {
                             d_cancel_y, d_cancel_w, d_cancel_h);
   EditClass numedit(BUTTON_NUMEDIT, phone_num, PhoneEntryClass::PHONE_MAX_NUM,
                     TPF_TEXT, d_numedit_x, d_numedit_y, d_numedit_w,
-                    d_numedit_h, EditClass::ALPHANUMERIC);
+                    d_numedit_h, EditClass::kAlphanumeric);
 
   /*
   ------------------------- Build the button list --------------------------
@@ -6877,10 +6877,10 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
 
   EditClass nameedit(BUTTON_NAME, namebuf, PhoneEntryClass::PHONE_MAX_NAME,
                      TPF_TEXT, d_name_x, d_name_y, d_name_w, d_name_h,
-                     EditClass::ALPHANUMERIC);
+                     EditClass::kAlphanumeric);
   EditClass numedit(BUTTON_NUMBER, numbuf, PhoneEntryClass::PHONE_MAX_NUM,
                     TPF_TEXT, d_number_x, d_number_y, d_number_w, d_number_h,
-                    EditClass::ALPHANUMERIC);
+                    EditClass::kAlphanumeric);
   TextButtonClass defaultbtn(BUTTON_DEFAULT, TXT_DEFAULT_SETTINGS, TPF_BUTTON,
                              d_default_x, d_default_y, d_default_w,
                              d_default_h);

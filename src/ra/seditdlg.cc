@@ -214,11 +214,11 @@ const char* SimpleEditDlgClass::Show() {
   WOLEditClass EditBox(BUTTON_EDIT, szEdit,
                        min(sizeof(szEdit), iEditCharsAccept),
                        TPF_6PT_GRAD | TPF_NOSHADOW, d_edit_x, d_edit_y,
-                       d_edit_w, -1, EditClass::ALPHANUMERIC);
+                       d_edit_w, -1, EditClass::kAlphanumeric);
   WOLEditClass EditBox2(BUTTON_EDIT2, szEdit2,
                         min(sizeof(szEdit2), iEditCharsAccept2),
                         TPF_6PT_GRAD | TPF_NOSHADOW, d_edit2_x, d_edit2_y,
-                        d_edit2_w, -1, EditClass::ALPHANUMERIC);
+                        d_edit2_w, -1, EditClass::kAlphanumeric);
 
   /*
   **	Initialize.

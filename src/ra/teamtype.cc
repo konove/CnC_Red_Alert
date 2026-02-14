@@ -748,7 +748,7 @@ bool TeamTypeClass::Edit() {
   char name_buf[10];
   EditClass name_edt(BUTTON_NAME, name_buf, sizeof(name_buf),
                      TPF_EFNT | TPF_NOSHADOW, D_NAME_X, D_NAME_Y, ED_WIDTH, 9,
-                     EditClass::ALPHANUMERIC);
+                     EditClass::kAlphanumeric);
   port::SafeCopy(name_buf, IniName);
   commands = &name_edt;
 
@@ -776,7 +776,7 @@ bool TeamTypeClass::Edit() {
   EditClass recr_edt(BUTTON_RECRUIT, recr_buf, sizeof(recr_buf),
                      TPF_EFNT | TPF_NOSHADOW,
                      housebtn.X + housebtn.Width + 5 + D_SPACING_X, housebtn.Y,
-                     ED_WIDTH, 9, EditClass::NUMERIC);
+                     ED_WIDTH, 9, EditClass::kNumeric);
   sprintf(recr_buf, "%d", RecruitPriority);
   recr_edt.Add(*commands);
 
@@ -787,7 +787,7 @@ bool TeamTypeClass::Edit() {
   EditClass maxnum_edt(BUTTON_MAXNUM, maxnum_buf, sizeof(maxnum_buf),
                        TPF_EFNT | TPF_NOSHADOW,
                        recr_edt.X + recr_edt.Width + D_SPACING_X, recr_edt.Y,
-                       ED_WIDTH, 9, EditClass::NUMERIC);
+                       ED_WIDTH, 9, EditClass::kNumeric);
   sprintf(maxnum_buf, "%d", MaxAllowed);
   maxnum_edt.Add(*commands);
 
@@ -798,7 +798,7 @@ bool TeamTypeClass::Edit() {
   EditClass initnum_edt(BUTTON_INITNUM, initnum_buf, sizeof(initnum_buf),
                         TPF_EFNT | TPF_NOSHADOW,
                         maxnum_edt.X + maxnum_edt.Width + D_SPACING_X,
-                        maxnum_edt.Y, ED_WIDTH, 9, EditClass::NUMERIC);
+                        maxnum_edt.Y, ED_WIDTH, 9, EditClass::kNumeric);
   sprintf(initnum_buf, "%d", InitNum);
   initnum_edt.Add(*commands);
 
@@ -809,7 +809,7 @@ bool TeamTypeClass::Edit() {
   EditClass originbtn(BUTTON_ORIGIN, origin, sizeof(origin),
                       TPF_EFNT | TPF_NOSHADOW,
                       initnum_edt.X + initnum_edt.Width + D_SPACING_X,
-                      initnum_edt.Y, 20, 9, EditClass::ALPHA);
+                      initnum_edt.Y, 20, 9, EditClass::kAlpha);
   *originbtn.Get_Text() = '\0';
   if (Origin != -1) {
     if (Origin < 26) {
@@ -928,7 +928,7 @@ bool TeamTypeClass::Edit() {
   EditClass arg_edt(BUTTON_ARG, arg_buf, sizeof(arg_buf),
                     TPF_EFNT | TPF_NOSHADOW,
                     missionlist1.X + missionlist1.Width + 15, missionlist1.Y,
-                    60, -1, EditClass::ALPHANUMERIC);
+                    60, -1, EditClass::kAlphanumeric);
   //	arg_edt.Add(*commands);
 
   char qtext[55];

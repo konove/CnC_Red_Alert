@@ -411,7 +411,7 @@ bool TriggerTypeClass::Edit() {
   */
   char way1[WAYPOINT_SIZE] = "A";
   EditClass way1data(DATA_EDIT, way1, sizeof(way1), TPF_EFNT | TPF_NOSHADOW,
-                     ED1_X, ED1_Y, ED_WIDTH, 9, EditClass::ALPHA);
+                     ED1_X, ED1_Y, ED_WIDTH, 9, EditClass::kAlpha);
   if (Event_Needs(Event1.Event) == NEED_WAYPOINT) {
     if (Event1.Data.Value < 26) {
       sprintf(way1data.Get_Text(), "%c", Event1.Data.Value + 'A');
@@ -423,7 +423,7 @@ bool TriggerTypeClass::Edit() {
 
   char way2[WAYPOINT_SIZE] = "A";
   EditClass way2data(DATA_EDIT2, way2, sizeof(way2), TPF_EFNT | TPF_NOSHADOW,
-                     ED2_X, ED2_Y, ED_WIDTH, 9, EditClass::ALPHA);
+                     ED2_X, ED2_Y, ED_WIDTH, 9, EditClass::kAlpha);
   if (Event_Needs(Event2.Event) == NEED_WAYPOINT) {
     if (Event2.Data.Value < 26) {
       sprintf(way2data.Get_Text(), "%c", Event2.Data.Value + 'A');
@@ -435,7 +435,7 @@ bool TriggerTypeClass::Edit() {
 
   char way3[WAYPOINT_SIZE] = "A";
   EditClass way3data(DATA_EDIT3, way3, sizeof(way3), TPF_EFNT | TPF_NOSHADOW,
-                     AD1_X, AD1_Y, ED_WIDTH, 9, EditClass::ALPHA);
+                     AD1_X, AD1_Y, ED_WIDTH, 9, EditClass::kAlpha);
   if (Action_Needs(Action1.Action) == NEED_WAYPOINT) {
     if (Action1.Data.Value < 26) {
       sprintf(way3data.Get_Text(), "%c", Action1.Data.Value + 'A');
@@ -447,7 +447,7 @@ bool TriggerTypeClass::Edit() {
 
   char way4[WAYPOINT_SIZE] = "A";
   EditClass way4data(DATA_EDIT4, way4, sizeof(way4), TPF_EFNT | TPF_NOSHADOW,
-                     AD2_X, AD2_Y, ED_WIDTH, 9, EditClass::ALPHA);
+                     AD2_X, AD2_Y, ED_WIDTH, 9, EditClass::kAlpha);
   if (Action_Needs(Action2.Action) == NEED_WAYPOINT) {
     if (Action2.Data.Value < 26) {
       sprintf(way4data.Get_Text(), "%c", Action2.Data.Value + 'A');
@@ -463,7 +463,7 @@ bool TriggerTypeClass::Edit() {
   char databuf1[GENERAL_SIZE] = "";
   EditClass event1data(DATA_GENERAL1, databuf1, sizeof(databuf1),
                        TPF_EFNT | TPF_NOSHADOW, ED1_X, ED1_Y, ED_WIDTH, 9,
-                       EditClass::NUMERIC);
+                       EditClass::kNumeric);
   switch (Event_Needs(Event1.Event)) {
     case NEED_TIME:
     case NEED_NUMBER:
@@ -474,7 +474,7 @@ bool TriggerTypeClass::Edit() {
   char databuf2[GENERAL_SIZE] = "";
   EditClass event2data(DATA_GENERAL2, databuf2, sizeof(databuf2),
                        TPF_EFNT | TPF_NOSHADOW, ED2_X, ED2_Y, ED_WIDTH, 9,
-                       EditClass::NUMERIC);
+                       EditClass::kNumeric);
   switch (Event_Needs(Event2.Event)) {
     case NEED_TIME:
     case NEED_NUMBER:
@@ -485,7 +485,7 @@ bool TriggerTypeClass::Edit() {
   char actionbuf1[GENERAL_SIZE] = "";
   EditClass action1data(DATA_GENERAL3, actionbuf1, sizeof(actionbuf1),
                         TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH, 9,
-                        EditClass::NUMERIC);
+                        EditClass::kNumeric);
   switch (Action_Needs(Action1.Action)) {
     case NEED_NUMBER:
       sprintf(action1data.Get_Text(), "%d", Action1.Data.Value);
@@ -495,7 +495,7 @@ bool TriggerTypeClass::Edit() {
   char actionbuf2[GENERAL_SIZE] = "";
   EditClass action2data(DATA_GENERAL4, actionbuf2, sizeof(actionbuf2),
                         TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH, 9,
-                        EditClass::NUMERIC);
+                        EditClass::kNumeric);
   switch (Action_Needs(Action2.Action)) {
     case NEED_NUMBER:
       sprintf(action2data.Get_Text(), "%d", Action2.Data.Value);
@@ -968,7 +968,7 @@ bool TriggerTypeClass::Edit() {
   char namebuf[5] = "";
   EditClass name_edt(NAME_EDIT, namebuf, sizeof(namebuf),
                      TPF_EFNT | TPF_NOSHADOW, D_DIALOG_X + 40, D_DIALOG_Y + 30,
-                     40, 9, EditClass::ALPHANUMERIC);
+                     40, 9, EditClass::kAlphanumeric);
   port::SafeCopy(namebuf, IniName);  // Name
 
   /*

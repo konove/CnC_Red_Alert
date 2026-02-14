@@ -607,7 +607,7 @@ int MapEditClass::Load_Scenario() {
     ControlClass* commands = nullptr;  // the button list
     EditClass editbtn(BUTTON_SCENARIO, scen_buf, 5, TPF_EFNT | TPF_NOSHADOW,
                       D_SCEN_X, D_SCEN_Y, D_SCEN_W, D_SCEN_H,
-                      EditClass::ALPHANUMERIC);
+                      EditClass::kAlphanumeric);
 
     TextButtonClass varabtn(BUTTON_VAR_A, "A", TPF_EBUTTON, D_VARA_X, D_VARA_Y,
                             D_VARA_W, D_VARA_H);

@@ -30,19 +30,38 @@
 // provides a char array that EditClass modifies in place.
 class EditClass : public ControlClass {
  public:
-  typedef enum EditStyle {
-    ALPHA = 0x0001,      // Edit accepts alphabetic characters.
-    NUMERIC = 0x0002,    // Edit accepts numbers.
-    MISC = 0x0004,       // Edit accepts misc graphic characters.
-    UPPERCASE = 0x0008,  // Force to upper case.
-    ALPHANUMERIC = ALPHA | NUMERIC | MISC
-  } EditStyle;
+  // Character filter flags for the text input field.
+  struct EditStyle {
+    bool alpha;      // Accept alphabetic characters.
+    bool numeric;    // Accept numbers.
+    bool misc;       // Accept misc graphic characters.
+    bool uppercase;  // Force to upper case.
+  };
+
+  static constexpr EditStyle kAlphanumeric{
+      .alpha = true,
+      .numeric = true,
+      .misc = true,
+      .uppercase = false,
+  };
+  static constexpr EditStyle kNumeric{
+      .alpha = false,
+      .numeric = true,
+      .misc = false,
+      .uppercase = false,
+  };
+  static constexpr EditStyle kAlpha{
+      .alpha = true,
+      .numeric = false,
+      .misc = false,
+      .uppercase = false,
+  };
 
   // Constructs an edit gadget. |text| is a caller-owned buffer that will be
   // modified in place. |max_len| is the buffer size including the null
   // terminator. |w| and |h| default to -1, meaning auto-sized from the text.
   EditClass(int id, char* text, int max_len, TextPrintType flags, int x, int y,
-            int w = -1, int h = -1, EditStyle style = ALPHANUMERIC);
+            int w = -1, int h = -1, EditStyle style = kAlphanumeric);
   ~EditClass() override;
 
   void Set_Focus() override;
@@ -59,7 +78,7 @@ class EditClass : public ControlClass {
 
  protected:
   TextPrintType TextFlags;  // Text rendering style (font, alignment).
-  EditStyle EditFlags;       // Allowed character types for input filtering.
+  EditStyle EditFlags;      // Allowed character types for input filtering.
 
   char* String;   // Caller-owned text buffer modified in place.
   int MaxLength;  // Max string length (excludes null terminator).

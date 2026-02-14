@@ -139,9 +139,8 @@ void Special_Dialog(bool simple) {
   cancel.Add(*buttons);
 
   for (int index = 0; index < sizeof(_options) / sizeof(_options[0]); index++) {
-    _options[index].Button =
-        new CheckBoxClass(100 + index, OPTION_X + 34,
-                          OPTION_Y + 40 + index * 20);
+    _options[index].Button = new CheckBoxClass(100 + index, OPTION_X + 34,
+                                               OPTION_Y + 40 + index * 20);
     if (_options[index].Button) {
       _options[index].Button->Add(*buttons);
 
@@ -187,11 +186,10 @@ void Special_Dialog(bool simple) {
 
       for (int index = 0; index < sizeof(_options) / sizeof(_options[0]);
            index++) {
-        Fancy_Text_Print(_options[index].Description,
-                         _options[index].Button->X + 20,
-                         _options[index].Button->Y,
-                         GadgetClass::Get_Color_Scheme(), TBLACK,
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        Fancy_Text_Print(
+            _options[index].Description, _options[index].Button->X + 20,
+            _options[index].Button->Y, GadgetClass::Get_Color_Scheme(), TBLACK,
+            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All();
       Show_Mouse();
@@ -256,7 +254,7 @@ class PWEditClass : public EditClass {
  public:
   PWEditClass(int id, char* text, int max_len, TextPrintType flags, int x,
               int y, int w = -1, int h = -1)
-      : EditClass(id, text, max_len, flags, x, y, w, h, ALPHANUMERIC) {}
+      : EditClass(id, text, max_len, flags, x, y, w, h, kAlphanumeric) {}
 
  protected:
   void Draw_Text(const char* text) override;
@@ -357,8 +355,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Build the button list.
   */
   bheight = FontHeight + FontYSpacing + 4;
-  bwidth = std::max(String_Pixel_Width(Text_String(btext)) + 16,
-                    30u * 2);
+  bwidth = std::max(String_Pixel_Width(Text_String(btext)) + 16, 30u * 2);
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -389,8 +386,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
   int editx = x + 52;
   int editwidth = (SeenBuff.Get_Width() / 2 - editx) * 2;
   PWEditClass button2(2, &pbuffer[0], sizeof(pbuffer),
-                      TPF_6PT_GRAD | TPF_NOSHADOW, editx,
-                      y + height - 70, editwidth, 20);
+                      TPF_6PT_GRAD | TPF_NOSHADOW, editx, y + height - 70,
+                      editwidth, 20);
 
   TextButtonClass* buttonlist = nullptr;
 
@@ -411,9 +408,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Draw the body of the message box.
   */
-  Fancy_Text_Print(buffer, x + 40, y + 50,
-                   GadgetClass::Get_Color_Scheme(), TBLACK,
-                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  Fancy_Text_Print(buffer, x + 40, y + 50, GadgetClass::Get_Color_Scheme(),
+                   TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
   **	Redraw the buttons.
@@ -521,16 +517,14 @@ int Fetch_Difficulty(bool amath) {
   /*
   **	Create the OK button.
   */
-  TextButtonClass okbutton(1, TXT_OK, TPF_BUTTON,
-                           x + w - (bwidth + 40),
+  TextButtonClass okbutton(1, TXT_OK, TPF_BUTTON, x + w - (bwidth + 40),
                            y + h - 36, bwidth);
   GadgetClass* buttonlist = &okbutton;
 
   /*
   **	Create the slider button.
   */
-  SliderClass slider(2, x + 40, y + h - 58,
-                     w - 80, 16, true);
+  SliderClass slider(2, x + 40, y + h - 58, w - 80, 16, true);
   if (Rule.IsFineDifficulty) {
     slider.Set_Maximum(5);
     slider.Set_Value(2);
@@ -562,22 +556,19 @@ int Fetch_Difficulty(bool amath) {
       //			Fancy_Text_Print(buffer, x + 20*2, y +
       // 15*2, GadgetClass::Get_Color_Scheme(), TBLACK,
       // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW);
-      Fancy_Text_Print(buffer, x + 40, y + 30,
-                       GadgetClass::Get_Color_Scheme(), TBLACK,
-                       TPF_6PT_GRAD | TPF_NOSHADOW);
+      Fancy_Text_Print(buffer, x + 40, y + 30, GadgetClass::Get_Color_Scheme(),
+                       TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
 
       /*
       **	Display the descripton of the slider range.
       */
-      Fancy_Text_Print(TXT_HARD, slider.X + slider.Width,
-                       slider.Y - 18,
+      Fancy_Text_Print(TXT_HARD, slider.X + slider.Width, slider.Y - 18,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_RIGHT | TPF_6PT_GRAD | TPF_DROPSHADOW);
       Fancy_Text_Print(TXT_EASY, slider.X, slider.Y - 18,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_6PT_GRAD | TPF_DROPSHADOW);
-      Fancy_Text_Print(TXT_NORMAL, slider.X + slider.Width / 2,
-                       slider.Y - 18,
+      Fancy_Text_Print(TXT_NORMAL, slider.X + slider.Width / 2, slider.Y - 18,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
 

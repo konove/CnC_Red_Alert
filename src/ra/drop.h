@@ -167,7 +167,7 @@ TDropListClass<T>::TDropListClass(
     char* text,  // NOLINT(readability-non-const-parameter)
     int max_len, TextPrintType flags, int x, int y, int w, int h,
     const void* up, const void* down)
-    : EditClass(id, text, max_len, flags, x, y, w, 9, ALPHANUMERIC),
+    : EditClass(id, text, max_len, flags, x, y, w, 9, kAlphanumeric),
       IsDropped(false),
       ListHeight(h),
       DropButton(0, down, x + w, y),

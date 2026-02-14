@@ -1953,7 +1953,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
   TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_EBUTTON, D_CANCEL_X,
                             D_CANCEL_Y, D_CANCEL_W);
   EditClass editbtn(BUTTON_EDIT, wayptname, 3, TPF_EFNT | TPF_NOSHADOW,
-                    D_EDIT_X, D_EDIT_Y, D_EDIT_W, -1, EditClass::ALPHANUMERIC);
+                    D_EDIT_X, D_EDIT_Y, D_EDIT_W, -1, EditClass::kAlphanumeric);
 
   /*
   **	Initialize.

@@ -251,7 +251,7 @@ int LoadOptionsClass::Process() {
 
   EditClass editbtn(BUTTON_EDIT, game_descr, sizeof(game_descr) - 4,
                     TPF_6PT_GRAD | TPF_NOSHADOW, d_edit_x, d_edit_y, d_edit_w,
-                    -1, EditClass::ALPHANUMERIC);
+                    -1, EditClass::kAlphanumeric);
 
   /*
   **	Initialize.

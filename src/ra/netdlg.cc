@@ -1572,7 +1572,7 @@ static int Net_Join_Dialog() {
   GadgetClass* commands;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, TPF_TEXT, d_name_x,
-                     d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
+                     d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
 
 #ifdef OLDWAY
   TextButtonClass gdibtn(BUTTON_GDI, TXT_ALLIES, TPF_BUTTON, d_gdi_x, d_gdi_y,

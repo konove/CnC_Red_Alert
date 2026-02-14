@@ -34,12 +34,16 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 
-EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
-                     int x, int y, int w, int h, EditStyle style)
+EditClass::EditClass(const int id, char* text, const int max_len,
+                     const TextPrintType flags, const int x, const int y,
+                     const int w, const int h, const EditStyle style)
     : ControlClass(id, x, y, w, h, LEFTPRESS), String(text) {
   TextFlags = flags & ~TPF_CENTER;
   EditFlags = style;
-  Set_Text(text, max_len);
+  String = text;
+  MaxLength = max_len - 1;
+  Length = strlen(String);
+  GadgetClass::Flag_To_Redraw();
   Color = Get_Color_Scheme();
 
   if (w == -1 || h == -1) {
@@ -61,19 +65,19 @@ EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
 }
 
 EditClass::~EditClass() {
-  if (Has_Focus()) {
-    Clear_Focus();
+  if (GadgetClass::Has_Focus()) {
+    GadgetClass::Clear_Focus();
   }
 }
 
-void EditClass::Set_Text(char* text, int max_len) {
+void EditClass::Set_Text(char* text, const int max_len) {
   String = text;
   MaxLength = max_len - 1;
   Length = strlen(String);
   Flag_To_Redraw();
 }
 
-int EditClass::Draw_Me(int forced) {
+int EditClass::Draw_Me(const int forced) {
   if (ControlClass::Draw_Me(forced)) {
     if (LogicPage == &SeenBuff) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
@@ -111,8 +115,7 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
       flags = 0;
 
     } else {
-
-      KeyASCIIType ascii =
+      const auto ascii =
           static_cast<KeyASCIIType>(Keyboard->To_ASCII(key) & 0xff);
 
       // Allow numeric keypad presses to map to ascii numbers.
@@ -140,7 +143,6 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
         }
       }
     }
-
   }
 
   return ControlClass::Action(flags, key);
@@ -204,14 +206,15 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
         break;
       }
 
-      if (EditFlags & UPPERCASE && isalpha(ascii)) {
+      if (EditFlags.uppercase && isalpha(ascii)) {
         ascii = static_cast<KeyASCIIType>(toupper(ascii));
       }
 
       // Reject characters not matching any enabled EditStyle category.
-      if ((!(EditFlags & NUMERIC) || !isdigit(ascii)) &&
-          (!(EditFlags & ALPHA) || !isalpha(ascii)) &&
-          (!(EditFlags & MISC) || isalnum(ascii)) && ascii != ' ') {
+      const bool accepted = (EditFlags.numeric && isdigit(ascii)) ||
+                            (EditFlags.alpha && isalpha(ascii)) ||
+                            (EditFlags.misc && !isalnum(ascii)) || ascii == ' ';
+      if (!accepted) {
         break;
       }
 
