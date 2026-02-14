@@ -79,9 +79,6 @@
 
 // extern unsigned char *Palette;
 extern unsigned char MDisabled;  // Is mouse disabled?
-#ifndef WIN32
-extern WORD Hard_Error_Occured;
-#endif
 
 /*
 **	This is the menu control structures.

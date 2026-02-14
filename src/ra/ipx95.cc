@@ -46,7 +46,6 @@
 
 #include "ra/function.h"
 
-#ifdef WIN32
 
 #include "ra/ipx95.h"
 
@@ -181,4 +180,3 @@ int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,
                                 bridge_address);
 }
 
-#endif  // WIN32

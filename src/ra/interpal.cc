@@ -257,7 +257,6 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
   }
 }
 
-#ifdef WIN32
 /***************************************************************************
  * INTERPOLATE_2X_SCALE                                                    *
  *                                                                         *
@@ -288,4 +287,3 @@ void Interpolate_2X_Scale(GraphicBufferClass* source, GraphicViewPortClass*,
   source->Unlock();
 }
 
-#endif

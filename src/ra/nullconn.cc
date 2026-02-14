@@ -78,11 +78,7 @@ NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
   /*------------------------------------------------------------------------
   Pre-set the port value to NULL, so Send won't send until we've been Init'd
   ------------------------------------------------------------------------*/
-#ifdef WIN32
   PortHandle = nullptr;
-#else   // WIN32
-  Port = NULL;
-#endif  // WIN32
   /*------------------------------------------------------------------------
   Allocate the Send Buffer; the parent constructor has set MaxPacketLen,
   so we can use it in our computation.
@@ -131,17 +127,10 @@ NullModemConnClass::~NullModemConnClass() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-#ifdef WIN32
 void NullModemConnClass::Init(HANDLE port_handle) {
   ConnectionClass::Init();
   PortHandle = port_handle;
 }
-#else   // WIN32
-void NullModemConnClass::Init(PORT* port) {
-  ConnectionClass::Init();
-  Port = port;
-} /* end of Init */
-#endif  // WIN32
 
 /***************************************************************************
  * NullModemConnClass::Send -- hardware-dependent packet sending
@@ -173,17 +162,10 @@ int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
   /*------------------------------------------------------------------------
   Error if we haven't been properly initialized
   ------------------------------------------------------------------------*/
-#ifdef WIN32
   if (PortHandle == nullptr) {
     return false;
   }
 
-#else   // WIN32
-  int status;
-  if (Port == NULL) {
-    return (0);
-  }
-#endif  // WIN32
 
   /*------------------------------------------------------------------------
   Package the data into the Send Buffer
@@ -206,19 +188,10 @@ int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
   /*------------------------------------------------------------------------
   Send the data
   ------------------------------------------------------------------------*/
-#ifdef WIN32
   SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf,
                                    static_cast<int>(sendlen));
   return true;
 
-#else   // WIN32
-  status = WriteBuffer(Port, SendBuf, sendlen);
-  if (status == ASSUCCESS) {
-    return (1);
-  } else {
-    return (0);
-  }
-#endif  // WIN32
 
 } /* end of Send */
 

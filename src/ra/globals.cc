@@ -736,17 +736,10 @@ int MenuList[][8] = {
     {1, 3, 12, 3, 0, WHITE, PINK, 0},
 };
 
-#ifdef WIN32
 GraphicBufferClass VisiblePage;
 GraphicBufferClass HiddenPage;
 GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
 GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
-#else
-GraphicBufferClass HidPage(DEFAULT_SCREEN_WIDTH, 201, (void*)NULL);
-GraphicBufferClass SeenBuff(320, 200, (void*)0xA0000L);
-VideoBufferClass SeenPage;
-GraphicBufferClass& VisiblePage = SeenBuff;
-#endif
 
 int SoundOn;
 Timer<SystemTickSource> FrameTimer;
@@ -781,14 +774,10 @@ Stopwatch<SystemTickSource> TickCount;
 /***************************************************************************
 **  Win32 specific globals
 */
-#ifdef WIN32
 
 bool InDebugger = false;
 bool ReadyToQuit = false;
 
-#else
-bool IsTheaterShape = false;  // must be defined only if not Win32
-#endif  // WIN32
 
 GetCDClass CDList;
 int UnitBuildPenalty = 100;

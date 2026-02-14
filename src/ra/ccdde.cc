@@ -52,7 +52,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifdef WIN32
 
 #include "ra/ccdde.h"
 
@@ -380,4 +379,3 @@ BOOL Send_Data_To_DDE_Server(char* data, int length, int packet_type) {
   return (true);
 }
 
-#endif  // WIN32

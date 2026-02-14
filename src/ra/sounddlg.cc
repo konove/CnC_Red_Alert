@@ -106,11 +106,7 @@ void SoundControlsClass::Process() {
   int listbox_x = LISTBOX_X * 2;
   int listbox_y = LISTBOX_Y * 2;
   int listbox_w = LISTBOX_W * 2;
-#ifdef WIN32
   int listbox_h = LISTBOX_H * 2 + 2;
-#else
-  int listbox_h = LISTBOX_H * 2;
-#endif
 
   int button_width = BUTTON_WIDTH * 2;
   int button_x = BUTTON_X * 2;
@@ -302,7 +298,6 @@ void SoundControlsClass::Process() {
       }
     }
 
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -312,7 +307,6 @@ void SoundControlsClass::Process() {
       AllSurfaces.SurfacesRestored = false;
       display = true;
     }
-#endif
     /*
     **	Refresh display if needed.
     */

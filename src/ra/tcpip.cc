@@ -850,4 +850,4 @@ void TcpipManagerClass::Clear_Socket_Error(SOCKET socket) {
 
 #endif
 
-#endif  // WIN32
+#endif  // _WIN32

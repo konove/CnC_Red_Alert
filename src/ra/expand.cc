@@ -420,7 +420,6 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   bool okval = true;
 
   while (process) {
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -430,7 +429,6 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       AllSurfaces.SurfacesRestored = false;
       display = true;
     }
-#endif
 
     Call_Back();
 

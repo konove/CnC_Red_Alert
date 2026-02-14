@@ -121,11 +121,7 @@ class CDFileClass : public BufferIOFileClass {
   static int last_cd_drive_;
 };
 
-#ifdef WIN32
 int harderr_handler(unsigned, unsigned, unsigned*);
-#else
-int harderr_handler(unsigned, unsigned, unsigned __far*);
-#endif
 
 int Get_CD_Drive();
 

@@ -285,7 +285,6 @@ void GameOptionsClass::Process() {
       }
     }
 
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -295,7 +294,6 @@ void GameOptionsClass::Process() {
       AllSurfaces.SurfacesRestored = false;
       display = true;
     }
-#endif
 
     /*
     **	Refresh display if needed.
@@ -327,16 +325,6 @@ void GameOptionsClass::Process() {
       /*
       **	Display the version number at the bottom of the dialog box.
       */
-#ifndef WIN32
-      Fancy_Text_Print("%s\rV%s", (OptionX + OptionWidth) - (34),
-                       OptionY + OptionHeight -
-                           ((Session.Type == GAME_NORMAL) ? (64)
-                                                          : (48)),
-                       GadgetClass::Get_Color_Scheme(), TBLACK,
-                       TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Scen.ScenarioName,
-                       Version_Name());
-
-#else
       Fancy_Text_Print(
           "%s\rV%s", OptionX + OptionWidth - 50,
           OptionY + OptionHeight -
@@ -344,7 +332,6 @@ void GameOptionsClass::Process() {
           GadgetClass::Get_Color_Scheme(), TBLACK,
           TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Scen.ScenarioName,
           Version_Name());
-#endif
 
       buttons->Draw_All();
       TabClass::Hilite_Tab(0);

@@ -183,9 +183,6 @@ static void Init_Keys();
 extern "C" {
 extern long RandNumb;
 }
-#ifndef WIN32
-static int UsePageFaultHandler = 1;  // 1 = install PFH
-#endif                               // WIN32
 
 void Init_Random();
 
@@ -509,7 +506,7 @@ bool Select_Game(bool /*fade*/) {
   ** Enable the DDE Server so we can get internet start game packets from WChat
   */
   DDEServer.Enable();
-#endif  // WIN32
+#endif  // _WIN32
 #endif  //	!WOLAPI_INTEGRATION
 
   /*
@@ -667,7 +664,7 @@ bool Select_Game(bool /*fade*/) {
           }
         }
       }
-#endif  // WIN32
+#endif  // _WIN32 && !INTERNET_OFF
 #endif
 
 #ifdef WOLAPI_INTEGRATION
@@ -927,7 +924,7 @@ bool Select_Game(bool /*fade*/) {
                 break;
 
 #ifndef WOLAPI_INTEGRATION
-#if defined(WIN32) && !defined(INTERNET_OFF)  // Denzil 5/1/98 - Internet play
+#ifndef INTERNET_OFF  // Denzil 5/1/98 - Internet play
               /*
               ** Handle being spawned from WChat. Internet play based on IPX
               *code.
@@ -1100,7 +1097,7 @@ bool Select_Game(bool /*fade*/) {
                 }
               } break;
 
-#endif  // WIN32
+#endif  // !INTERNET_OFF
 #endif  //	!WOLAPI_INTEGRATION
             }
 #ifdef WOLAPI_INTEGRATION
@@ -2190,32 +2187,6 @@ void Init_Random() {
   int ms = Get_Time_Ms();
   CryptRandom.Seed_Byte(ms);
   // grab some more bits from somewhere?
-#elifdef WIN32
-
-  /*
-  **	Gather some "random" bits from the system timer. Actually, only the
-  **	low order millisecond bits are secure. The other bits could be
-  **	easily guessed from the system clock (most clocks are fairly accurate
-  **	and thus predictable).
-  */
-  SYSTEMTIME t;
-  GetSystemTime(&t);
-  CryptRandom.Seed_Byte(t.wMilliseconds);
-  CryptRandom.Seed_Bit(t.wSecond);
-  CryptRandom.Seed_Bit(t.wSecond >> 1);
-  CryptRandom.Seed_Bit(t.wSecond >> 2);
-  CryptRandom.Seed_Bit(t.wSecond >> 3);
-  CryptRandom.Seed_Bit(t.wSecond >> 4);
-  CryptRandom.Seed_Bit(t.wMinute);
-  CryptRandom.Seed_Bit(t.wMinute >> 1);
-  CryptRandom.Seed_Bit(t.wMinute >> 2);
-  CryptRandom.Seed_Bit(t.wMinute >> 3);
-  CryptRandom.Seed_Bit(t.wMinute >> 4);
-  CryptRandom.Seed_Bit(t.wHour);
-  CryptRandom.Seed_Bit(t.wDay);
-  CryptRandom.Seed_Bit(t.wDayOfWeek);
-  CryptRandom.Seed_Bit(t.wMonth);
-  CryptRandom.Seed_Bit(t.wYear);
 #else
 
   /*
@@ -2931,19 +2902,6 @@ static void Bootstrap() {
   */
   Init_Fonts();
 
-#ifndef WIN32
-  /*
-  **	Install the hard error handler.
-  */
-  _harderr(harderr_handler);  // BG: Install hard error handler
-
-  /*
-  ** Install a Page Fault handler
-  */
-  if (UsePageFaultHandler) {
-    Install_Page_Fault_Handle();
-  }
-#endif
 
   /*
   **	Setup the keyboard processor in preparation for the game.
@@ -3016,9 +2974,6 @@ static void Init_Mouse() {
   ** Since there is no mouse shape currently available we need
   ** to set one of our own.
   */
-#if defined(WIN32) && !defined(PORTABLE)
-  ShowCursor(false);
-#endif
   if (MouseInstalled) {
     const void* temp_mouse_shapes = MFCD::Retrieve("MOUSE.SHP");
     if (temp_mouse_shapes) {

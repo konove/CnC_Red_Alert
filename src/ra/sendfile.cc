@@ -346,7 +346,6 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
   */
 
   do {
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -356,7 +355,6 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
 
 #ifdef WOLAPI_INTEGRATION
     if (Session.Type == GAME_INTERNET && pWolapi &&
@@ -674,7 +672,6 @@ bool Send_Remote_File(char* file_name, int gametype) {
   block_number = 0;
 
   while (process) {
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -684,7 +681,6 @@ bool Send_Remote_File(char* file_name, int gametype) {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
 
 #ifdef WOLAPI_INTEGRATION
     if (Session.Type == GAME_INTERNET && pWolapi &&

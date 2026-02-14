@@ -95,11 +95,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   /*
   **	Always draw to the hidpage and then blit forward.
   */
-#ifdef WIN32
   GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
-#else
-  GraphicBufferClass* oldpage = Set_Logic_Page(HidPage);
-#endif
 
   /*
   **	Draw the background block.
@@ -160,19 +156,9 @@ void Dialog_Box(int x, int y, int w, int h) {
   CC_Draw_Shape(shapedata, 3, w - 23, h - 24,
                 WINDOW_PARTIAL, SHAPE_WIN_REL);
 
-#ifdef WIN32
   WWMouse->Draw_Mouse(&HidPage);
   HidPage.Blit(SeenBuff, x, y, x, y, w, h, false);
   WWMouse->Erase_Mouse(&HidPage, false);
-#else
-  //	Shadow_Blit(0, 0, 320, 200, HidPage, SeenPage,
-  // Map.ShadowPage->Get_Buffer());
-  Hide_Mouse();
-  HidPage.Blit(SeenBuff);
-  Show_Mouse();
-//	Shadow_Blit(0, 0, 320, 200, HidPage, SeenPage,
-//((GraphicBufferClass*)Map.Shadow_Address())->Get_Buffer());
-#endif
   Set_Logic_Page(oldpage);
 }
 
@@ -551,11 +537,7 @@ void Simple_Text_Print(const char* text, unsigned x, unsigned y,
       fontpalette[2] = back;
       fontpalette[3] = back;
       xspace -= 1;
-#ifdef WIN32
       yspace -= 2;
-#else
-      yspace -= 1;
-#endif
       break;
 
     /*

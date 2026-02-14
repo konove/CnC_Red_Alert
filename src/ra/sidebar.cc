@@ -839,15 +839,9 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
   /*
   **	Toggle the sidebar in and out with the <TAB> key.
   */
-#ifndef WIN32
-  if (input == KN_TAB) {
-    Activate(-1);
-  }
-#else
   if (!MapEditorActive) {
     Activate(1);  // Force the sidebar always on in Win95 mode
   }
-#endif  // WIN32
   if (!MapEditorActive) {
     Column[0].AI(input, x, y);
     Column[1].AI(input, x, y);
@@ -1186,11 +1180,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
   UpButton[ID].Y = Y + UP_Y_OFFSET * 2;
 
 #if (FRENCH)
-#ifdef WIN32
   UpButton[ID].Set_Shape(MFCD::Retrieve("STRIPUP.SHP"));
-#else
-  UpButton[ID].Set_Shape(MFCD::Retrieve("STUP_FIX.SHP"));
-#endif
 #else   // FRENCH
   UpButton[ID].Set_Shape(MFCD::Retrieve("STRIPUP.SHP"));
 #endif  // FRENCH
@@ -2336,7 +2326,6 @@ bool SidebarClass::StripClass::Abandon_Production(int factory) {
  * HISTORY: * 07/31/1996 JLB : Created. *
  *=============================================================================================*/
 void SidebarClass::Zoom_Mode_Control() {
-#ifdef WIN32
   /*
   ** If radar is active, cycle as follows:
   ** Zoomed => not zoomed
@@ -2364,32 +2353,4 @@ void SidebarClass::Zoom_Mode_Control() {
       Player_Names(Is_Player_Names() == 0);
     }
   }
-#else
-  /*
-  ** If radar is active, cycle as follows:
-  ** not zoomed => player status (multiplayer only)
-  ** player status => radar spying readout
-  ** radar spying readout => not zoomed
-  */
-  if (IsRadarActive) {
-    if (Session.Type == GAME_NORMAL) {
-      if (!Spy_Next_House()) {
-        Zoom_Mode(Coord_Cell(TacticalCoord));
-      }
-    } else {
-      if (!Spying_On_House() && !Is_Player_Names()) {
-        Player_Names(1);
-      } else {
-        Player_Names(0);
-        if (!Spy_Next_House()) {
-          Zoom_Mode(Coord_Cell(TacticalCoord));
-        }
-      }
-    }
-  } else {
-    if (Session.Type != GAME_NORMAL) {
-      Player_Names(Is_Player_Names() == 0);
-    }
-  }
-#endif
 }

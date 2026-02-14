@@ -70,27 +70,6 @@ struct KeyboardClass : public WWKeyboardClass {
   */
   unsigned IsLibrary;
 
-#ifndef WIN32
-  int& MouseQX;
-  int& MouseQY;
-
-  KeyboardClass() : IsLibrary(true), MouseQX(::MouseQX), MouseQY(::MouseQY) {}
-  KeyNumType Get() {
-    return (IsLibrary ? (KeyNumType)Get_Key_Num() : (KeyNumType)getch());
-  };
-  KeyNumType Check() {
-    return (IsLibrary ? (KeyNumType)Check_Key_Num() : (KeyNumType)kbhit());
-  };
-  KeyASCIIType To_ASCII(KeyNumType key) {
-    return ((KeyASCIIType)KN_To_KA(key));
-  };
-  void Clear() {
-    if (IsLibrary) {
-      Clear_KeyBuffer();
-    }
-  };
-  int Down(KeyNumType key) { return (Key_Down(key)); };
-#else
   KeyboardClass() : IsLibrary(true) {}
   KeyNumType Get() { return (KeyNumType)WWKeyboardClass::Get(); }
   KeyNumType Check() { return (KeyNumType)WWKeyboardClass::Check(); }
@@ -99,7 +78,6 @@ struct KeyboardClass : public WWKeyboardClass {
   }
   void Clear() { WWKeyboardClass::Clear(); }
   int Down(KeyNumType key) { return WWKeyboardClass::Down(key); }
-#endif
 
   int Mouse_X() { return Get_Mouse_X(); }
   int Mouse_Y() { return Get_Mouse_Y(); }
@@ -145,27 +123,6 @@ T operator~(T t1) {
   return (T) ~(int)t1;
 }
 
-#ifndef WIN32
-template <class T>
-inline T min(T value1, T value2) {
-  if (value1 < value2) {
-    return (value1);
-  }
-  return (value2);
-}
-int min(int, int);
-long min(long, long);
-
-template <class T>
-inline T max(T value1, T value2) {
-  if (value1 > value2) {
-    return (value1);
-  }
-  return (value2);
-}
-int max(int, int);
-long max(long, long);
-#endif
 
 template <class T>
 void swap(T& value1, T& value2) {

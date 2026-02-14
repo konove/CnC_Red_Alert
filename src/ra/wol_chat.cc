@@ -558,7 +558,6 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       pWO->dwTimeNextChannelUpdate = ::timeGetTime() + CHANNELUPDATEWAIT;
     }
 
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -568,7 +567,6 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
 
     if (bFirsttime && !pWO->bChatShownBefore) {
       WWMessageBox().Process(TXT_WOL_FINDINGLOBBY, TXT_NONE);

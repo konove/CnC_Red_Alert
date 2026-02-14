@@ -636,12 +636,10 @@ int __cdecl Find_Disk_Number(const char*) { return (0); }
 // dest_buff, reserved_data));
 // }
 
-#ifdef WIN32
 extern "C" {
 int MaxDevice;
 int DefaultDrive;
 char CallingDOSInt;
 }
-#endif
 
 void Unfragment_File_Cache() {}

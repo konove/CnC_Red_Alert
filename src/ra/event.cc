@@ -952,7 +952,7 @@ void EventClass::Execute() {
       if (Special.IsFromWChat) {
         Session.MaxAhead += DDEServer.Time_Since_Heartbeat() / (70 * 60);
       }
-#endif  // WIN32
+#endif  // _WIN32
 #endif  //	!WOLAPI_INTEGRATION
       if (Debug_Print_Events) {
         printf("DesiredFrameRate:%d MaxAhead:%d ", Session.DesiredFrameRate,

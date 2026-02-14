@@ -111,9 +111,7 @@ void CreditClass::Graphic_Logic(bool forced) {
     /*
     ** Adjust the credits display to be above the sidebar for 640x400
     */
-#ifdef WIN32
     xx += 160;
-#endif
 
     /*
     **	Play a sound effect when the money display changes, but only if a sound
@@ -131,14 +129,8 @@ void CreditClass::Graphic_Logic(bool forced) {
     **	Display the new current value.
     */
     TabClass::Draw_Credits_Tab();
-#ifdef WIN32
     Fancy_Text_Print("%ld", xx, 0, &MetalScheme, TBLACK,
                      TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, Current);
-#else
-    Fancy_Text_Print(
-        "%ld", xx, 0, &ColorRemaps[PCOLOR_GREY], TBLACK,
-        TPF_NOSHADOW | TPF_6PT_GRAD | TPF_CENTER | TPF_BRIGHT_COLOR, Current);
-#endif  // WIN32
 
     if (Scen.MissionTimer.IsRunning()) {
       int64_t secs = Scen.MissionTimer.Value() / TICKS_PER_SECOND;
@@ -183,7 +175,6 @@ void CreditClass::Graphic_Logic(bool forced) {
         Map.FlasherTimer.Set(7);
       }
 
-#ifdef WIN32
       if (hours) {
         Fancy_Text_Print(TXT_TIME_FORMAT_HOURS, 400, 0, &MetalScheme, TBLACK,
                          TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, hours,
@@ -193,19 +184,6 @@ void CreditClass::Graphic_Logic(bool forced) {
                          TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, mins,
                          secs);
       }
-#else
-      if (hours) {
-        Fancy_Text_Print(
-            "%02d:%02d:%02d", 240, 0, &ColorRemaps[PCOLOR_GREY],
-            TBLACK, TPF_NOSHADOW | TPF_6PT_GRAD | TPF_CENTER | TPF_BRIGHT_COLOR,
-            hours, mins, secs);
-      } else {
-        Fancy_Text_Print(
-            "%02d:%02d", 240, 0, &ColorRemaps[PCOLOR_GREY], TBLACK,
-            TPF_NOSHADOW | TPF_6PT_GRAD | TPF_CENTER | TPF_BRIGHT_COLOR, mins,
-            secs);
-      }
-#endif  // WIN32
     }
 
     IsToRedraw = false;

@@ -282,7 +282,6 @@ void GameControlsClass::Process() {
       }
     }
 
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -292,7 +291,6 @@ void GameControlsClass::Process() {
       AllSurfaces.SurfacesRestored = false;
       display = true;
     }
-#endif
     /*
     **	Refresh display if needed.
     */

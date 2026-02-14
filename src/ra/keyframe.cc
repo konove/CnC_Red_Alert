@@ -59,7 +59,6 @@ typedef struct {
   short flags;
 } KeyFrameHeaderType;
 
-#ifdef WIN32
 #define INITIAL_BIG_SHAPE_BUFFER_SIZE 20000000
 #define UNCOMPRESS_MAGIC_NUMBER 56789
 
@@ -113,7 +112,6 @@ void Check_Use_Compressed_Shapes() {
   UseBigShapeBuffer = mem_info.dwTotalPhys > 12 * 1024 * 1024 ? true : false;
 }
 
-#endif
 
 unsigned long Build_Frame(const void* dataptr, unsigned short framenumber,
                           void* buffptr) {

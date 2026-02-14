@@ -2647,7 +2647,6 @@ int Version_Number() {
   return (version);
 #endif
 
-#ifdef WIN32
 
 #if (FRENCH)
   sprintf(VersionText, ".02");  // Win95 french version number
@@ -2689,30 +2688,6 @@ int Version_Number() {
   return 1;  // Win95 USA version number
 #endif       // FRENCH | GERMAN
 
-#else
-
-#ifdef PATCH
-
-#ifdef DEMO
-  sprintf(VersionText, " 1.0a");  // Demo version.
-#else
-  strcpy(VersionText, ".34 ");
-#endif
-  return (1);
-
-#else
-
-#ifdef DEMO
-  sprintf(VersionText, " 1.0a");  // Demo version.
-#else
-  //	sprintf(VersionText, ".%02dp", 13);			// Patch
-  // version.
-  sprintf(VersionText, ".%02d", 14);  // Master version.
-#endif
-  return (1);
-#endif
-
-#endif  // WIN32
 }
 
 /***************************************************************************

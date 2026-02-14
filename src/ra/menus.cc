@@ -288,13 +288,9 @@ int Check_Menu(int menu, const char* text[], char*, long field, int index) {
   key = 0;
   UnknownKey = 0;
   if (Keyboard->Check()) {
-#ifdef WIN32
     key = Keyboard->Get() &
           ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT |
             WWKEY_CTRL_BIT); /* mask off all but release bit	*/
-#else
-    key = (Keyboard->Get() & 0x08FF); /* mask off all but release bit	*/
-#endif
   }
 
   /*
@@ -567,7 +563,6 @@ int Main_Menu(unsigned long) {
 
   int starty = d_dialog_y + 24;
 
-  // #if defined(WIN32) && !defined(INTERNET_OFF)
   // Denzil 5/1/98 - No internet play
   static int max_buttons = 7;
 
@@ -628,10 +623,6 @@ int Main_Menu(unsigned long) {
   TextButtonClass startbtn(BUTTON_START, TXT_START_NEW_GAME, TPF_BUTTON,
                            d_start_x, starty, d_start_w, d_start_h);
   starty += ystep;
-
-  // #if defined(MPEGMOVIE) // Denzil 6/26/98 Video settings
-  //	TextButtonClass moviebutton(BUTTON_MOVIE, "Movie Settings", TPF_BUTTON,
-  // d_movie_x, starty, d_movie_w, d_movie_h); 	starty += ystep; #endif	//WIN32
 
   TextButtonClass loadbtn(BUTTON_LOAD, TXT_LOAD_MISSION, TPF_BUTTON, d_load_x,
                           starty, d_load_w, d_load_h);
@@ -708,7 +699,6 @@ int Main_Menu(unsigned long) {
   bool display = true;
   bool process = true;
   while (process) {
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -718,7 +708,6 @@ int Main_Menu(unsigned long) {
       AllSurfaces.SurfacesRestored = false;
       display = true;
     }
-#endif
 
     /*
     **	If timeout expires, bail
@@ -779,10 +768,6 @@ int Main_Menu(unsigned long) {
     if (input != 0) {
 #ifdef PORTABLE
       CryptRandom.Seed_Byte(Get_Time_Ms());
-#elifdef WIN32
-      SYSTEMTIME t;
-      GetSystemTime(&t);
-      CryptRandom.Seed_Byte(t.wMilliseconds);
 #else
       struct timeb t;
       ftime(&t);

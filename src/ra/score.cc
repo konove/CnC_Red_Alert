@@ -108,18 +108,6 @@
 #define NUMFAMENAMES 7
 #define MAX_FAMENAME_LENGTH 11
 
-#ifndef WIN32
-extern short StreamLowImpact;
-#endif  // WIN32
-
-// WIN32 build keeps a second copy of seenbuf for focus loss
-#if defined(WIN32) && !defined(PORTABLE)
-#define SEENBUF_COPY
-#endif
-
-#ifdef SEENBUF_COPY
-GraphicBufferClass* PseudoSeenBuff;
-#endif
 
 struct InfantryAnim {
   int xpos;
@@ -148,10 +136,6 @@ bool StillUpdating;
 
 char* ScreenNames[2] = {"ALIBACKH.PCX", "SOVBACKH.PCX"};
 
-// #ifdef WIN32
-// TextBlitClass BlitList;
-// #endif
-
 struct Fame {
   char name[MAX_FAMENAME_LENGTH];
   int score;
@@ -177,11 +161,7 @@ ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, const void* data, int maxval,
 }
 
 void ScoreTimeClass::Update() {
-#ifdef WIN32
   GraphicViewPortClass* oldpage;
-#else
-  GraphicBufferClass* oldpage;
-#endif
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(TimerReset);
     if (++Stage >= MaxStage) {
@@ -191,10 +171,6 @@ void ScoreTimeClass::Update() {
     Set_Logic_Page(SeenBuff);
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
                   nullptr, nullptr);
-#ifdef SEENBUF_COPY
-    Set_Logic_Page(*PseudoSeenBuff);
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
-#endif
     Set_Logic_Page(oldpage);
   }
 }
@@ -210,11 +186,7 @@ ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, const void* data,
 }
 
 void ScoreCredsClass::Update() {
-#ifdef WIN32
   GraphicViewPortClass* oldpage;
-#else
-  GraphicBufferClass* oldpage;
-#endif
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(TimerReset);
     if (++Stage >= MaxStage) {
@@ -222,17 +194,9 @@ void ScoreCredsClass::Update() {
     }
     oldpage = LogicPage;
     Set_Logic_Page(SeenBuff);
-#ifdef WIN32
     Play_Sample(Clock1, 255, Options.Normalize_Volume(130));
-#else
-    Play_Sample(Clock1, 255, Options.Normalize_Volume(50));
-#endif
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
                   nullptr, nullptr);
-#ifdef SEENBUF_COPY
-    Set_Logic_Page(*PseudoSeenBuff);
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
-#endif
     Set_Logic_Page(oldpage);
   }
 }
@@ -268,9 +232,7 @@ void ScorePrintClass::Update() {
     return;
   }
 
-#ifdef WIN32
   StillUpdating = true;
-#endif
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(1);
 
@@ -283,13 +245,6 @@ void ScorePrintClass::Update() {
       HidPage.Blit(SeenPage, pos - 12, YPos - 2,
                    pos - 12, YPos - 2, 14,
                    16);
-#ifdef SEENBUF_COPY
-      HidPage.Blit(*PseudoSeenBuff, pos - 12, YPos - 2,
-                   pos - 12, YPos - 2, 14,
-                   16);
-      PseudoSeenBuff->Print(localstr, pos - 12, YPos, TBLACK,
-                            TBLACK);
-#endif
     }
     if (((char*)DataPtr)[Stage]) {
       localstr[0] = ((char*)DataPtr)[Stage];
@@ -297,11 +252,6 @@ void ScorePrintClass::Update() {
       SeenPage.Print(localstr, pos, YPos - 1, TBLACK, TBLACK);
       SeenPage.Print(localstr, pos, YPos + 1, TBLACK, TBLACK);
       SeenPage.Print(localstr, pos + 1, YPos, TBLACK, TBLACK);
-#ifdef SEENBUF_COPY
-      PseudoSeenBuff->Print(localstr, pos, YPos - 1, TBLACK, TBLACK);
-      PseudoSeenBuff->Print(localstr, pos, YPos + 1, TBLACK, TBLACK);
-      PseudoSeenBuff->Print(localstr, pos + 1, YPos, TBLACK, TBLACK);
-#endif
     }
     Stage++;
   }
@@ -311,11 +261,7 @@ ScoreScaleClass::ScoreScaleClass(const void* string, int xpos, int ypos,
                                  const unsigned char palette[])
     : ScoreAnimClass(xpos, ypos, string) {
   Palette = &palette[0];
-#ifdef WIN32
   Stage = 0;
-#else
-  Stage = 5;
-#endif
 }
 
 void ScoreScaleClass::Update() {
@@ -327,17 +273,6 @@ void ScoreScaleClass::Update() {
   */
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(1);
-#ifndef WIN32
-    if (Stage != 5) {
-      int destx = _destx[Stage + 1] * 2;
-      int destw = _destw[Stage + 1] * 2;
-      HidPage.Blit(
-          SeenPage, destx, YPos, destx, YPos,
-          (destx + destw) <= 640 ? destw
-                                             : (640) - destx,
-          (YPos + destw) <= 400 ? destw : (400) - YPos);
-    }
-#endif
     if (Stage) {
       Set_Font_Palette(Palette);
       HidPage.Fill_Rect(0, 0, 14, 14, TBLACK);
@@ -356,10 +291,6 @@ void ScoreScaleClass::Update() {
       HidPage.Print((char*)DataPtr, XPos, YPos, TBLACK, TBLACK);
       HidPage.Blit(SeenPage, XPos, YPos, XPos, YPos, 12,
                    12);
-#ifdef SEENBUF_COPY
-      HidPage.Blit(*PseudoSeenBuff, XPos, YPos, XPos, YPos, 12,
-                   12);
-#endif
       delete this;
       return;
     }
@@ -407,9 +338,7 @@ static const unsigned char _yellowpal[] = {0x0,  0x0, 0xEC, 0x0, 0xEB, 0x0,
                                            0xEA, 0x0, 0xE9, 0x0, 0x0,  0x0,
                                            0x0,  0x0, 0xED, 0x0};
 void ScoreClass::Presentation() {
-#ifdef WIN32
 //	if (Keyboard != NULL) return;
-#endif
   static const int _casuax[2] = {144, 150};
   static const int _casuay[2] = {78, 78};
   static const int _gditxy[2] = {90, 90};
@@ -425,16 +354,10 @@ void ScoreClass::Presentation() {
   static const int _bldggy[2] = {138, 138};
   static const int _bldgny[2] = {150, 150};
 
-#ifdef WIN32
   /*
   ** Fix for the score screen crash due to uncompressed shape buffer overflow.
   */
   Disable_Uncompressed_Shapes();
-#ifdef SEENBUF_COPY
-  PseudoSeenBuff = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                          SeenBuff.Get_Height(), (void*)NULL);
-#endif
-#endif
   int i;
   const void* yellowptr;
   const void* redptr;
@@ -452,17 +375,11 @@ void ScoreClass::Presentation() {
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   Theme.Queue_Song(THEME_SCORE);
 
-#ifdef WIN32
   VisiblePage.Clear();
   // SysMemPage.Clear();
   WWMouse->Erase_Mouse(&HidPage, true);
   HiddenPage.Clear();
   // Set_Logic_Page(SysMemPage);
-#else
-  SeenPage.Clear();
-  HidPage.Clear();
-  Set_Logic_Page(HidPage);
-#endif
   BlackPalette.Set();
 
   const void* country4 = MFCD::Retrieve("COUNTRY4.AUD");
@@ -489,15 +406,8 @@ void ScoreClass::Presentation() {
   Load_Title_Screen(ScreenNames[house], &HidPage, ScorePalette);
   Increase_Palette_Luminance(ScorePalette, 30, 30, 30, 63);
   HidPage.Blit(SeenPage);
-#ifdef SEENBUF_COPY
-  HidPage.Blit(*PseudoSeenBuff);
-#endif
   ScorePalette.Set(FADE_PALETTE_FAST, Call_Back);
-#ifdef WIN32
   Play_Sample(country4, 255, Options.Normalize_Volume(150));
-#else
-  Play_Sample(country4, 255, Options.Normalize_Volume(60));
-#endif
 
 
   /*
@@ -511,10 +421,6 @@ void ScoreClass::Presentation() {
   ScoreObjs[2] = new ScoreTimeClass(4, 180, hiscore2shape, 10, 4);
 
   /* Now display the stuff */
-#ifdef WIN32
-#else
-  SeenPage.Blit(HidPage);
-#endif
   Set_Logic_Page(SeenBuff);
 
 #ifdef FRENCH
@@ -525,11 +431,7 @@ void ScoreClass::Presentation() {
   Alloc_Object(new ScorePrintClass(TXT_SCORE_LEAD, 164, 26, _greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_EFFI, 164, 38, _greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOTA, 164, 50, _greenpal));
-#ifdef WIN32
   Play_Sample(sfx4, 255, Options.Normalize_Volume(150));
-#else
-  Play_Sample(sfx4, 255, Options.Normalize_Volume(60));
-#endif
   Call_Back_Delay(13);
 
   Keyboard->Clear();
@@ -617,11 +519,7 @@ void ScoreClass::Presentation() {
     }
     Print_Minutes(minutes);
     Call_Back_Delay(1);
-#ifdef WIN32
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(100));
-#else
-    Play_Sample(Beepy6, 255, Options.Normalize_Volume(40));
-#endif
     if (i >= 30 && i >= leadership && i - 30 >= economy) {
       break;
     }
@@ -701,12 +599,10 @@ void ScoreClass::Presentation() {
   Call_Back_Delay(7);
   Do_GDI_Graph(yellowptr, redptr, GBKilled + CBKilled, NBKilled, 137);
 
-#ifdef WIN32
   // Wait for text printing to complete
   while (StillUpdating) {
     Call_Back_Delay(1);
   }
-#endif
 
   Keyboard->Clear();
 
@@ -716,11 +612,7 @@ void ScoreClass::Presentation() {
   /*
   ** Hall of fame display and processing
   */
-#ifdef WIN32
   Play_Sample(sfx4, 255, Options.Normalize_Volume(150));
-#else
-  Play_Sample(sfx4, 255, Options.Normalize_Volume(60));
-#endif
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, 28, 110, _greenpal));
   Call_Back_Delay(9);
 
@@ -844,9 +736,6 @@ void ScoreClass::Presentation() {
   FontXSpacing = oldfontxspacing;
   ControlQ = 0;
 
-#ifdef SEENBUF_COPY
-  delete PseudoSeenBuff;
-#endif
   /*
   ** Fix for the score screen crash due to uncompressed shape buffer overflow.
   */
@@ -1019,7 +908,6 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
 void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
                               int gkilled, int nkilled, int ypos) {
   int i, maxval;
-#ifdef WIN32
   int xpos = 174;
   int house = PlayerPtr->Class->House == HOUSE_USSR ||
               PlayerPtr->Class->House == HOUSE_UKRAINE;  // 0 or 1
@@ -1031,9 +919,6 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
     yellowptr = redptr;
     redptr = tempptr;
   }
-#else
-  int xpos = 173;
-#endif
   int gdikilled = gkilled, nodkilled = nkilled;
 
   maxval = std::max(gdikilled, nodkilled);
@@ -1059,84 +944,41 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   CC_Draw_Shape(redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
                 nullptr);
   Set_Logic_Page(SeenBuff);
-#ifdef WIN32
   Set_Font_Palette(house ? _redpal : _bluepal);
-#else
-  Set_Font_Palette(_bluepal);
-#endif
 
   for (i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
-#ifdef SEENBUF_COPY
-      Set_Logic_Page(*PseudoSeenBuff);
-      CC_Draw_Shape(yellowptr, i, xpos * 2, ypos * 2,
-                    WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
-      Set_Logic_Page(SeenBuff);
-#endif
       CC_Draw_Shape(yellowptr, i, xpos * 2, ypos * 2,
                     WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
     } else {
       HidPage.Blit(SeenPage, 0, 0, xpos * 2, ypos * 2,
                    (3 + gdikilled) * 2, 16);
-#ifdef SEENBUF_COPY
-      HidPage.Blit(*PseudoSeenBuff, 0, 0, xpos * 2, ypos * 2,
-                   (3 + gdikilled) * 2, 16);
-#endif
     }
 
     Count_Up_Print("%d", i * gkilled / maxval, gkilled, 297, ypos + 2);
 // BG		if (!Keyboard->Check()) {
-#ifdef WIN32
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
-#else
-    Play_Sample(Beepy6, 255, Options.Normalize_Volume(60));
-#endif
     Call_Back_Delay(2);
     // BG		}
   }
   CC_Draw_Shape(yellowptr, gdikilled, xpos * 2, ypos * 2,
                 WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
-#ifdef SEENBUF_COPY
-  Set_Logic_Page(*PseudoSeenBuff);
-  CC_Draw_Shape(yellowptr, gdikilled, xpos * 2, ypos * 2,
-                WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
-  Set_Logic_Page(SeenBuff);
-#endif
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2);
   /*BG	if (!Keyboard->Check()) */ Call_Back_Delay(40);
 
-#ifdef WIN32
   Set_Font_Palette(house ? _bluepal : _redpal);
-#else
-  Set_Font_Palette(_redpal);
-#endif
   for (i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
-#ifdef SEENBUF_COPY
-      Set_Logic_Page(*PseudoSeenBuff);
-      CC_Draw_Shape(redptr, i, xpos * 2, (ypos + 12) * 2,
-                    WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
-      Set_Logic_Page(SeenBuff);
-#endif
       CC_Draw_Shape(redptr, i, xpos * 2, (ypos + 12) * 2,
                     WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
     } else {
       HidPage.Blit(SeenPage, 0, 0, xpos * 2, (ypos + 12) * 2,
                    (3 + nodkilled) * 2, 16);
-#ifdef SEENBUF_COPY
-      HidPage.Blit(*PseudoSeenBuff, 0, 0, xpos * 2,
-                   (ypos + 12) * 2, (3 + nodkilled) * 2,
-                   16);
-#endif
     }
 
     Count_Up_Print("%d", i * nkilled / maxval, nkilled, 297, ypos + 14);
 // BG		if (!Keyboard->Check()) {
-#ifdef WIN32
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
-#else
-    Play_Sample(Beepy6, 255, Options.Normalize_Volume(60));
-#endif
     Call_Back_Delay(2);
     // BG		}
   }
@@ -1146,12 +988,6 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   /*
   ** Make sure accurate count is printed at end
   */
-#ifdef SEENBUF_COPY
-  Set_Logic_Page(*PseudoSeenBuff);
-  CC_Draw_Shape(redptr, nodkilled, xpos * 2, (ypos + 12) * 2,
-                WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
-  Set_Logic_Page(SeenBuff);
-#endif
   CC_Draw_Shape(redptr, nodkilled, xpos * 2, (ypos + 12) * 2,
                 WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);
@@ -1224,11 +1060,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
                      CASUALTY_Y + 14);
       /*BG			if (!Keyboard->Check()) */ Call_Back_Delay(3);
     }
-#ifdef WIN32
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
-#else
-    Play_Sample(Beepy6, 255, Options.Normalize_Volume(60));
-#endif
   }
   // BG	if (Keyboard->Check()) Keyboard->Clear();
 
@@ -1344,9 +1176,6 @@ void ScoreClass::Print_Minutes(int minutes) {
     sprintf(str, Text_String(TXT_SCORE_TIMEFORMAT2), minutes);
   }
   SeenPage.Print(str, 550, 18, TBLACK, TBLACK);
-#ifdef SEENBUF_COPY
-  PseudoSeenBuff->Print(str, 550, 18, TBLACK, TBLACK);
-#endif
 }
 
 /***********************************************************************************************
@@ -1375,10 +1204,6 @@ void ScoreClass::Count_Up_Print(char* str, int percent, int maxval, int xpos,
 
   sprintf(destbuf, str, percent <= maxval ? percent : maxval);
   SeenPage.Print(destbuf, xpos * 2, ypos * 2, TBLACK, BLACK);
-#ifdef SEENBUF_COPY
-  PseudoSeenBuff->Print(destbuf, xpos * 2, ypos * 2, TBLACK,
-                        BLACK);
-#endif
 }
 
 /***********************************************************************************************
@@ -1448,11 +1273,6 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           HidPage.Blit(SeenPage, xposindex6, (ypos - 100) * 2,
                        xposindex6, ypos * 2, 12,
                        12);
-#ifdef SEENBUF_COPY
-          HidPage.Blit(*PseudoSeenBuff, xposindex6, (ypos - 100) * 2,
-                       xposindex6, ypos * 2, 12,
-                       12);
-#endif
           HidPage.Blit(HidPage, xposindex6, (ypos - 100) * 2,
                        xposindex6, ypos * 2, 12,
                        12);
@@ -1468,12 +1288,6 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           HidPage.Blit(SeenPage, (xpos + index * 6) * 2,
                        (ypos - 100) * 2, (xpos + index * 6) * 2,
                        ypos * 2, 12, 12);
-#ifdef SEENBUF_COPY
-          HidPage.Blit(*PseudoSeenBuff, (xpos + (index * 6)) * 2,
-                       (ypos - 100) * 2,
-                       (xpos + (index * 6)) * 2, ypos * 2,
-                       12, 12);
-#endif
           HidPage.Blit(HidPage, (xpos + index * 6) * 2,
                        (ypos - 100) * 2, (xpos + index * 6) * 2,
                        ypos * 2, 12, 12);
@@ -1481,11 +1295,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           str[index + 1] = 0;
 
           int objindex;
-#ifdef WIN32
           Play_Sample(keystrok, 255, Options.Normalize_Volume(150));
-#else
-          Play_Sample(keystrok, 255, Options.Normalize_Volume(105));
-#endif
           objindex = Alloc_Object(
               new ScoreScaleClass(str + index, xpos + index * 6, ypos, pal));
           while (ScoreObjs[objindex]) {
@@ -1518,23 +1328,12 @@ void Animate_Cursor(int pos, int ypos) {
                  ypos - 200,
                  (HALLFAME_X + _lastpos * 6) * 2, ypos, 12,
                  2);
-#ifdef SEENBUF_COPY
-    HidPage.Blit(*PseudoSeenBuff, (HALLFAME_X + (_lastpos * 6)) * 2,
-                 ypos - 200,
-                 (HALLFAME_X + (_lastpos * 6)) * 2, ypos, 12,
-                 2);
-#endif
     _lastpos = pos;
     _state = 0;
   }
   SeenBuff.Draw_Line((HALLFAME_X + pos * 6) * 2, ypos,
                      (HALLFAME_X + pos * 6 + 5) * 2, ypos,
                      _state ? LTBLUE : TBLACK);
-#ifdef SEENBUF_COPY
-  PseudoSeenBuff->Draw_Line((HALLFAME_X + (pos * 6)) * 2, ypos,
-                            (HALLFAME_X + (pos * 6) + 5) * 2, ypos,
-                            _state ? LTBLUE : TBLACK);
-#endif
   /*
   ** Toggle the color of the cursor, green or black, if it's time to do so.
   */
@@ -1766,20 +1565,7 @@ void Call_Back_Delay(int time) {
 }
 
 void Animate_Score_Objs() {
-#ifdef WIN32
   StillUpdating = false;
-#ifdef SEENBUF_COPY
-  /*
-  ** If we have just received input focus again after running in the background
-  *then
-  ** we need to redraw.
-  */
-  if (AllSurfaces.SurfacesRestored) {
-    AllSurfaces.SurfacesRestored = false;
-    PseudoSeenBuff->Blit(SeenPage);
-  }
-#endif
-#endif
   for (int i = 0; i < MAXSCOREOBJS; i++) {
     if (ScoreObjs[i]) {
       ScoreObjs[i]->Update();
@@ -1811,10 +1597,6 @@ void Multi_Score_Presentation() {
   char remap[16];
   GraphicBufferClass* pseudoseenbuff =
       new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
-#ifdef SEENBUF_COPY
-  PseudoSeenBuff = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                          SeenBuff.Get_Height(), (void*)NULL);
-#endif
 
   int i, k;
   void* oldfont;
@@ -1850,9 +1632,6 @@ void Multi_Score_Presentation() {
   }
   Close_Animation(anim);
 
-#ifdef SEENBUF_COPY
-  Interpolate_2X_Scale(pseudoseenbuff, PseudoSeenBuff, NULL);
-#endif
 
   /* Change to the six-point font for Text_Print */
   oldfont = Set_Font(ScoreFontPtr);
@@ -1945,9 +1724,6 @@ void Multi_Score_Presentation() {
   BlackPalette.Set(FADE_PALETTE_FAST, nullptr);
   SeenPage.Clear();
   GamePalette.Set();
-#if SEENBUF_COPY
-  delete PseudoSeenBuff;
-#endif
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
   ControlQ = 0;

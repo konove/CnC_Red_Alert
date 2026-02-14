@@ -246,11 +246,7 @@ void RadarClass::Init_Clear() {
   ** If we have a valid map lets make sure that we set it correctly
   */
   if (MapCellWidth || MapCellHeight) {
-#ifdef WIN32
     IsZoomed = false;
-#else
-    IsZoomed = true;
-#endif
     Zoom_Mode(Coord_Cell(Map.TacticalCoord));
   }
 }
@@ -554,18 +550,13 @@ void RadarClass::Draw_It(bool forced) {
         Radar_Cursor(RadarCursorRedraw);
 
       } else {
-#ifdef WIN32
         GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
-#else
-        GraphicBufferClass* oldpage = Set_Logic_Page(HidPage);
-#endif
 
         CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                       SHAPE_NORMAL);
         if (BaseX || BaseY) {
           if (!IsZoomed && BaseX && BaseY && RadarWidth < RadIWidth - 1 &&
               RadarHeight < RadIHeight - 1) {
-#ifdef WIN32
             LogicPage->Draw_Rect(
                 RadX + RadOffX + BaseX - 1, RadY + RadOffY + BaseY - 1,
                 RadX + RadOffX + BaseX + RadarWidth,
@@ -575,7 +566,6 @@ void RadarClass::Draw_It(bool forced) {
                 //													RadY
                 //+ RadOffY + BaseY + RadarHeight +1,
                 WHITE);
-#endif
           }
         } else {
           LogicPage->Fill_Rect(RadX + RadOffX, RadY + RadOffY,
@@ -825,7 +815,6 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
       if (!icon) {
         return;
       }
-#ifdef WIN32
       Buffer_To_Page(0, 0, 3, 3, icon, _IconStage);
       if (otype->IsTiberium) {
         if (size == 1) {
@@ -843,37 +832,6 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
         // 0, x, y, 3, 3, size, size, true, (char *)&FadingBrighten[0]);
       }
 
-#else
-      for (int lpy = 0; lpy < size; lpy++) {
-        for (int lpx = 0; lpx < size; lpx++) {
-          if (size == 1) {
-            icon += 4;
-          }
-          if (*icon) {
-            if (otype->IsTiberium) {
-              if (size == 1) {
-                LogicPage->Put_Pixel(x + lpx, y + lpy, DKGREY);
-                //								LogicPage->Put_Pixel(x
-                //+ lpx, y + lpy, FadingShade[*icon]);
-              } else {
-                LogicPage->Put_Pixel(x + lpx, y + lpy, FadingYellow[*icon]);
-              }
-              //							LogicPage->Put_Pixel(x
-              //+ lpx, y + lpy, FadingGreen[*icon]);
-              //} else {
-              // LogicPage->Put_Pixel(x
-              //+ lpx, y + lpy, FadingBrighten[*icon]);
-            }
-          }
-          if (size == 1) {
-            icon += 5;
-          } else {
-            icon++;
-          }
-          icon++;
-        }
-      }
-#endif  // WIN32
     }
   }
 }
@@ -896,15 +854,11 @@ void RadarClass::Zoom_Mode(CELL cell) {
   ** Set all of the initial zoom mode variables to the correct
   ** setting.
   */
-#ifdef WIN32
   if (Is_Zoomable()) {
     IsZoomed = !IsZoomed;
   } else {
     IsZoomed = true;
   }
-#else
-  IsZoomed = false;
-#endif
   BaseX = 0;
   BaseY = 0;
 
@@ -927,17 +881,10 @@ void RadarClass::Zoom_Mode(CELL cell) {
   /*
   ** Make sure we do not show more cells than are on the map.
   */
-#ifdef WIN32
   map_c_width = std::min(map_c_width, RadIWidth);
   map_c_width = std::min(map_c_width, MapCellWidth);
   map_c_height = std::min(map_c_height, RadIHeight);
   map_c_height = std::min(map_c_height, MapCellHeight);
-#else
-  map_c_width = std::min(map_c_width, 124);
-  map_c_width = std::min(map_c_width, MapCellWidth);
-  map_c_height = std::min(map_c_height, 124);
-  map_c_height = std::min(map_c_height, MapCellHeight);
-#endif
 
   /*
   ** Find the amount of remainder because this will let us calculate
@@ -1446,11 +1393,7 @@ bool RadarClass::UnJam_Cell(CELL cell, HouseClass* house) {
 void RadarClass::Radar_Cursor(int forced) {
   static int _last_pos = -1;
   static int _last_frame = -1;
-#ifdef WIN32
   GraphicViewPortClass* oldpage;
-#else
-  GraphicBufferClass* oldpage;
-#endif
   int x1, y1, x2, y2;
 
   /*
@@ -1586,16 +1529,10 @@ void RadarClass::Radar_Anim() {
     return;
   }
 
-#ifdef WIN32
   GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
   GraphicViewPortClass draw_window(
       LogicPage->Get_Graphic_Buffer(), RadX + RadOffX + LogicPage->Get_XPos(),
       RadY + RadOffY + LogicPage->Get_YPos(), RadIWidth, RadIHeight);
-#else
-  GraphicBufferClass* oldpage = Set_Logic_Page(HidPage);
-  GraphicViewPortClass draw_window(LogicPage, RadX + RadOffX, RadY + RadOffY,
-                                   RadIWidth, RadIHeight - 2);
-#endif
 // Mono_Set_Cursor(0,0);
   Draw_Box(RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
            RadIHeight + 2, BOXSTYLE_RAISED, true);
@@ -1948,7 +1885,6 @@ void RadarClass::Refresh_Cells(CELL cell, const short* list) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::Set_Radar_Position(CELL cell) {
-#ifdef WIN32
   int oldx, oldy;
   int newx, newy;
   int newcell;
@@ -2088,53 +2024,6 @@ void RadarClass::Set_Radar_Position(CELL cell) {
     IsToRedraw = IsRadarActive;
     Flag_To_Redraw(false);
   }
-#else
-
-  if (cell != RadarCell) {
-    int oldx = RadarX;
-    int oldy = RadarY;
-    CELL oldcell = RadarCell;
-    int x = Cell_X(cell);
-    int y = Cell_Y(cell);
-
-    /*
-    **	If the new radar position is not too close to the edge of the
-    **	current radar display, then don't bother to change the radar position.
-    */
-    if ((unsigned)(x - (RadarX + 10)) > RadarCellWidth - 20) {
-      oldx = (Cell_X(cell) - MapCellX) - RadarCellWidth / 2;
-    } else {
-      oldx = Cell_X(RadarCell) - MapCellX;
-    }
-    if ((unsigned)(y - (RadarY + 10)) > RadarCellHeight - 20) {
-      oldy = (Cell_Y(cell) - MapCellY) - RadarCellHeight / 2;
-    } else {
-      oldy = Cell_Y(RadarCell) - MapCellY;
-    }
-
-#ifdef NEVER
-    if ((unsigned)(x - (RadarX + 10)) > RadarWidth - 20 ||
-        (unsigned)(y - (RadarY + 10)) > RadarHeight - 20) {
-      oldx = (Cell_X(cell) - MapCellX) - RadarCellWidth / 2;
-      oldy = (Cell_Y(cell) - MapCellY) - RadarCellHeight / 2;
-    } else {
-      oldx = Cell_X(RadarCell) - MapCellX;
-      oldy = Cell_Y(RadarCell) - MapCellY;
-    }
-#endif
-
-    Confine_Rect(&oldx, &oldy, RadarCellWidth, RadarCellHeight, MapCellWidth,
-                 MapCellHeight);
-    RadarX = oldx + MapCellX;
-    RadarY = oldy + MapCellY;
-    RadarCell = XY_Cell(RadarX, RadarY);
-    IsToRedraw = true;
-    Flag_To_Redraw(false);
-    if (oldcell != RadarCell) {
-      FullRedraw = IsRadarActive;
-    }
-  }
-#endif
 }
 
 /***********************************************************************************************
@@ -2495,17 +2384,10 @@ void RadarClass::Draw_Names() {
     /*
     **	Print the player name, and the # of kills
     */
-#ifdef WIN32
     if (strlen(txt) > 9) {
       txt[9] = '.';
       txt[10] = '\0';
     }
-#else
-    if (strlen(txt) > 8) {
-      txt[8] = '.';
-      txt[9] = '\0';
-    }
-#endif
     Fancy_Text_Print(txt, RadX + RadOffX, y, color, TBLACK, style);
 
     kills = 0;

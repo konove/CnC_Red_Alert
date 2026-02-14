@@ -36,8 +36,6 @@
 
 #ifdef PORTABLE
 #include "sdllib/keyboard.h"
-#elif !defined(WIN32)
-#include "..\wwflat32\include\keyboard.h"
 #else
 
 #ifndef CNC_RED_ALERT_RA_KEY_H_

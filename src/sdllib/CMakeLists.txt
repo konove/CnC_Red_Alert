@@ -14,10 +14,6 @@ target_sources(sdllib PUBLIC
         FILES ${SDLLIB_HEADERS}
 )
 
-# somewhere in the SDL headers, this ends up enabling __WIN32__ and then it tries to include windows headers
-target_compile_options(sdllib PRIVATE -UWIN32)
-
-
 find_package(SDL2 REQUIRED)
 target_link_libraries(sdllib SDL2::SDL2 absl::check absl::log absl::strings)
 

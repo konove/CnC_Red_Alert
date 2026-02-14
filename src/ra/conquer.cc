@@ -304,7 +304,6 @@ void Main_Game(int argc, char* argv[]) {
       Show_Mouse();
     }
 
-#ifdef WIN32
     if (Session.Type == GAME_INTERNET) {
       Register_Game_Start_Time();
       GameStatisticsPacketSent = false;
@@ -315,7 +314,6 @@ void Main_Game(int argc, char* argv[]) {
       DDEServer.Disable();
 #endif  //	!WOLAPI_INTEGRATION
     }
-#endif  // WIN32
 
     for (;;) {
       if constexpr (config::kScenarioEditorEnabled) {
@@ -383,14 +381,12 @@ void Main_Game(int argc, char* argv[]) {
       }
     }
 
-#ifdef WIN32
     /*
     ** Send the game stats to WChat if we haven't already done so
     */
     if (!GameStatisticsPacketSent && PacketLater) {
       Send_Statistics_Packet();  //	After game sending if PacketLater set.
     }
-#endif  // WIN32
 
     /*
     **	Scenario is done; fade palette to black
@@ -451,7 +447,6 @@ void Main_Game(int argc, char* argv[]) {
       Session.Play = 0;
     }
 #ifndef WOLAPI_INTEGRATION
-#ifdef WIN32
     if (Special.IsFromWChat) {
       Shutdown_Network();  // Clear up the pseudo IPX stuff
 #ifndef WINSOCK_IPX
@@ -468,7 +463,6 @@ void Main_Game(int argc, char* argv[]) {
       Spawn_WChat(false);  // Will switch back to Wchat. It must be there
                            // because its been poking us
     }
-#endif  // WIN32
 #endif  //	!WOLAPI_INTEGRATION
   }
 
@@ -509,7 +503,6 @@ void Keyboard_Process(KeyNumType& input) {
   */
   Message_Input(input);
 
-#ifdef WIN32
   /*
   **	The VK_BIT must be stripped from the "plain" value of the key so that a
   *comparison to *	KN_1, for example, will yield true if in fact the "1"
@@ -521,11 +514,6 @@ void Keyboard_Process(KeyNumType& input) {
                                         WWKEY_CTRL_BIT | WWKEY_VK_BIT));
   KeyNumType key = static_cast<KeyNumType>(input & ~WWKEY_VK_BIT);
 
-#else
-  KeyNumType plain =
-      KeyNumType(input & ~(KN_SHIFT_BIT | KN_ALT_BIT | KN_CTRL_BIT));
-  KeyNumType key = plain;
-#endif
 
   if constexpr (config::kCheatKeysEnabled) {
     if (Debug_Flag) {
@@ -582,7 +570,6 @@ void Keyboard_Process(KeyNumType& input) {
   **	CTRL or ALT key is held down.
   */
   int action = 0;
-#ifdef WIN32
   if (input & WWKEY_SHIFT_BIT) {
     action = 1;
   }
@@ -592,17 +579,6 @@ void Keyboard_Process(KeyNumType& input) {
   if (input & WWKEY_CTRL_BIT) {
     action = 2;
   }
-#else
-  if (input & KN_SHIFT_BIT) {
-    action = 1;
-  }
-  if (input & KN_ALT_BIT) {
-    action = 3;
-  }
-  if (input & KN_CTRL_BIT) {
-    action = 2;
-  }
-#endif
 
   /*
   **	If the "N" key is pressed, then select the next object.
@@ -694,9 +670,7 @@ void Keyboard_Process(KeyNumType& input) {
   if (key != 0 && (key == Options.KeyHome1 || key == Options.KeyHome2)) {
     if (CurrentObject.Count()) {
       Map.Center_Map();
-#ifdef WIN32
       Map.Flag_To_Redraw(true);
-#endif
       input = KN_NONE;
     } else {
       input = Options.KeyBase;
@@ -2064,9 +2038,7 @@ static void Sync_Delay() {
     Call_Back();
 
     if (SpecialDialog == SDLG_NONE) {
-#ifdef WIN32
       WWMouse->Erase_Mouse(&HidPage, true);
-#endif  // WIN32
       KeyNumType input = KN_NONE;
       int x, y;
       Map.Input(input, x, y);
@@ -2093,10 +2065,8 @@ static void Sync_Delay() {
  *                                                                                             *
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
-#ifdef WIN32
 extern void Check_For_Focus_Loss();
 void Reallocate_Big_Shape_Buffer();
-#endif  // WIN32
 
 bool Main_Loop() {
   KeyNumType input;  // Player input.
@@ -2110,7 +2080,6 @@ bool Main_Loop() {
     return !GameActive;
   }
 
-#ifdef WIN32
   /*
   ** Call the focus loss handler
   */
@@ -2120,7 +2089,6 @@ bool Main_Loop() {
   ** Allocate extra memory for uncompressed shapes as needed
   */
   Reallocate_Big_Shape_Buffer();
-#endif
 
   /*
   ** Sync-bug trapping code
@@ -2192,12 +2160,8 @@ bool Main_Loop() {
   **	Update the display, unless we're inside a dialog.
   */
   if (!Session.Play) {
-#ifdef WIN32
     if (SpecialDialog == SDLG_NONE && GameInFocus) {
       WWMouse->Erase_Mouse(&HidPage, true);
-#else
-    if (SpecialDialog == SDLG_NONE) {
-#endif
       Map.Input(input, x, y);
       if (input) {
         Keyboard_Process(input);
@@ -2239,11 +2203,7 @@ bool Main_Loop() {
   *updated.
   */
   if (Session.Messages.Manage()) {
-#ifdef WIN32
     HiddenPage.Clear();
-#else   // WIN32
-    HidPage.Clear();
-#endif  // WIN32
     Map.Flag_To_Redraw(true);
   }
 
@@ -2269,7 +2229,6 @@ bool Main_Loop() {
   **	Check for player wins or loses according to global event flag.
   */
   if (PlayerWins) {
-#ifdef WIN32
 
     /*
     ** Send the game statistics to WChat.
@@ -2280,7 +2239,6 @@ bool Main_Loop() {
     }
 
     WWMouse->Erase_Mouse(&HidPage, true);
-#endif  // WIN32
     PlayerLoses = false;
     PlayerWins = false;
     PlayerRestarts = false;
@@ -2289,7 +2247,6 @@ bool Main_Loop() {
     return !GameActive;
   }
   if (PlayerLoses) {
-#ifdef WIN32
     /*
     ** Send the game statistics to WChat.
     */
@@ -2299,7 +2256,6 @@ bool Main_Loop() {
     }
 
     WWMouse->Erase_Mouse(&HidPage, true);
-#endif  // WIN32
     PlayerWins = false;
     PlayerLoses = false;
     PlayerRestarts = false;
@@ -2308,9 +2264,7 @@ bool Main_Loop() {
     return !GameActive;
   }
   if (PlayerRestarts) {
-#ifdef WIN32
     WWMouse->Erase_Mouse(&HidPage, true);
-#endif  // WIN32
     PlayerWins = false;
     PlayerLoses = false;
     PlayerRestarts = false;
@@ -2352,7 +2306,6 @@ bool Main_Loop() {
     }
   }
 
-#ifdef WIN32
   if (Debug_MotionCapture) {
     static void** _array = nullptr;
     static int _sequence = 0;
@@ -2402,7 +2355,6 @@ bool Main_Loop() {
       _sequence = 0;
     }
   }
-#endif
 
   BEnd(BENCH_GAME_FRAME);
 
@@ -2433,9 +2385,7 @@ bool Map_Edit_Loop() {
   */
   KeyNumType input;
 
-#ifdef WIN32
   WWMouse->Erase_Mouse(&HidPage, true);
-#endif  // WIN32
 
   int x;
   int y;
@@ -2499,11 +2449,7 @@ void Go_Editor(bool flag) {
     /*
     ** Force a complete redraw of the screen
     */
-#ifdef WIN32
     HiddenPage.Clear();
-#else
-    HidPage.Clear();
-#endif
     Map.Flag_To_Redraw(true);
     Map.Render();
 
@@ -3150,15 +3096,10 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
     ** just need to skip past this set of icons and try to build the
     ** next frame.
     */
-#ifdef WIN32
     void* ptr;
     ptr = Build_Frame(shapefile, shapenum + framelp, SysMemPage.Get_Buffer());
     if (ptr != nullptr) {
       ptr = Get_Shape_Header_Data(ptr);
-#else   // WIN32
-    if (Build_Frame(shapefile, shapenum + framelp, HidPage.Get_Buffer()) <=
-        (unsigned long)HidPage.Get_Size()) {
-#endif  // WIN32
 
       /*
       ** Loop through the icon width and the icon height building icons
@@ -3167,7 +3108,6 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
       */
       for (int icony = 0; icony < icon_height; icony++) {
         for (int iconx = 0; iconx < icon_width; iconx++) {
-#ifdef WIN32
 
           for (int y = 0; y < zoomfactor; y++) {
             for (int x = 0; x < zoomfactor; x++) {
@@ -3179,17 +3119,6 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
                       *(static_cast<char*>(ptr) +
                         (gety - _offy[lp]) * pixel_width + getx - _offx[lp]);
 
-#else   // WIN32
-          for (int y = 0; y < 3; y++) {
-            for (int x = 0; x < 3; x++) {
-              int getx = (iconx * 24) + (x << 3) + 4;
-              int gety = (icony * 24) + (y << 3) + 4;
-              if ((getx < pixel_width) && (gety < pixel_height)) {
-                for (lp = 0; lp < 9; lp++) {
-                  pixel = *(char*)((char*)HidPage.Get_Buffer(),
-                                   ((gety - _offy[lp]) * pixel_width) + getx -
-                                       _offx[lp]);
-#endif  // WIN32
                   if (pixel == LTGREEN) {
                     pixel = 0;
                   }
@@ -3393,16 +3322,11 @@ const Rect Shape_Dimensions(const void* shapedata, int shapenum) {
   }
 
   char* shape;
-#ifdef WIN32
   void* sh = Build_Frame(shapedata, shapenum, _ShapeBuffer);
   if (sh == nullptr) {
     return rect;
   }
   shape = static_cast<char*>(Get_Shape_Header_Data(sh));
-#else
-  Build_Frame(shapedata, shapenum, _ShapeBuffer);
-  shape = (char*)_ShapeBuffer;
-#endif
 
   int width = Get_Build_Frame_Width(shapedata);
   int height = Get_Build_Frame_Height(shapedata);
@@ -3540,7 +3464,6 @@ const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
-#ifdef WIN32
 void Check_VQ_Palette_Set();
 
 long VQ_Call_Back(unsigned char*, long) {
@@ -3579,21 +3502,6 @@ long VQ_Call_Back(unsigned char*, long) {
   return false;
 }
 
-#else   // WIN32
-
-long VQ_Call_Back(unsigned char*, long) {
-  Call_Back();
-  if ((BreakoutAllowed || Debug_Flag) && Keyboard->Check()) {
-    if (Keyboard->Get() == KN_ESC) {
-      Keyboard->Clear();
-      Brokeout = true;
-      return (true);
-    }
-    Keyboard->Clear();
-  }
-  return (false);
-}
-#endif  // WIN32
 
 long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
 #ifdef PORTABLE
@@ -3702,9 +3610,7 @@ void Handle_Team(int team, int action) {
       */
       if (action == 3) {
         Map.Center_Map();
-#ifdef WIN32
         Map.Flag_To_Redraw(true);
-#endif  // WIn32
       }
       break;
 
@@ -3934,13 +3840,11 @@ void Handle_View(int view, int action) {
       Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
           Scen.Views[view] - MAP_CELL_W * 8 - 10)));
 
-#ifdef WIN32
       /*
       ** Win95 scrolling logic cant handle just jumps in screen position so
       *redraw the lot.
       */
       Map.Flag_To_Redraw(true);
-#endif  // WIN32
     } else {
       Scen.Views[view] = Coord_Cell(Map.TacticalCoord) +
                          MAP_CELL_W * 8 + 10;
@@ -4623,7 +4527,6 @@ int Owner_From_Name(const char* text) {
  * HISTORY: * 09/04/1996 BWG : Created. *
  *=============================================================================================*/
 void Shake_The_Screen(int shakes) {
-#ifdef WIN32
   shakes += shakes;
 
   Hide_Mouse();
@@ -4658,9 +4561,6 @@ void Shake_The_Screen(int shakes) {
   }
   HidPage.Blit(SeenPage);
   Show_Mouse();
-#else
-  Shake_Screen(shakes);
-#endif
 }
 
 /***********************************************************************************************

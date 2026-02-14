@@ -788,16 +788,6 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
     ini.Get_String("SerialDefaults", "DialMethod", "T", buf, 2);
 
-#ifndef WIN32
-    /*
-    ** Ignore any modem name in DOS. This should only be nessasary if the user
-    ** previously set up the modem in the windows version.
-    */
-    if (SerialDefaults.ModemName[0] && SerialDefaults.Port == 1) {
-      SerialDefaults.Port = 0x3F8;
-      SerialDefaults.ModemName[0] = 0;
-    }
-#endif  // WIN32
 
     // find dial method
     for (i = 0; i < DIAL_METHODS; i++) {
@@ -1303,7 +1293,6 @@ void SessionClass::Read_Scenario_Descriptions() {
 /*
 **	Fetch any scenario packet lists and apply them first.
 */
-#ifdef WIN32
   FindFileState state;
   bool found = Find_First_File("*.PKT", state);
   while (found) {
@@ -1407,85 +1396,6 @@ void SessionClass::Read_Scenario_Descriptions() {
     found = Find_Next_File(state);
   }
 
-#else  // WIN32
-
-#error What? You think you can still build the DOS version after all this time?
-
-  char name_buffer[128];
-  char digest_buffer[32];
-
-  struct find_t block;
-  if (_dos_findfirst("*.PKT", _A_NORMAL, &block) == 0) {
-    do {
-      CCFileClass file(block.name);
-      INIClass ini;
-      ini.Load(file);
-      int count = ini.Entry_Count("Missions");
-      for (int index = 0; index < count; index++) {
-        const char* fname = ini.Get_Entry("Missions", index);
-        char buffer[128];
-        ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-        bool official = Is_Mission_126x126((char*)fname);
-        if (!official) {
-          official = !Is_Mission_Aftermath((char*)fname);
-        }
-        Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
-                                       Is_Mission_Counterstrike((char*)fname)));
-      }
-
-    } while (_dos_findnext(&block) == 0);
-  }
-
-  /*
-  ** Scan the current directory for any loose .MPR files and build the
-  * appropriate entries
-  **  into the scenario list list
-  */
-  if (_dos_findfirst("*.MPR", _A_NORMAL, &block) == 0) {
-    do {
-      CCFileClass file(block.name);
-      INIClass ini;
-      ini.Load(file);
-      ini.Get_String("Basic", "Name", "No Name", name_buffer,
-                     sizeof(name_buffer));
-      ini.Get_String("Digest", "1", "No Digest", digest_buffer,
-                     sizeof(digest_buffer));
-      bool official = ini.Get_Bool("Basic", "Official", false);
-      Scenarios.Add(new MultiMission(block.name, name_buffer, digest_buffer,
-                                     official, false));
-    } while (_dos_findnext(&block) == 0);
-  }
-
-  /*
-  **	Fetch the Counterstrike multiplayer scenario packet data.
-  ** Load the scenarios regardless of whether counterstrike's installed,
-  ** and at the point of hosting a network game, enable the counterstrike
-  ** maps only if they have CS installed.  If they don't, then the maps
-  ** are available as a guest, but not as a host, which fixes a multitude
-  ** of problems without obviously giving the maps away to non-CS owners.
-  */
-  //	if (Is_Counterstrike_Installed()) {
-  CCFileClass file2("CSTRIKE.PKT");
-  if (file2.Is_Available()) {
-    INIClass ini;
-    ini.Load(file2);
-    int count = ini.Entry_Count("Missions");
-    for (int index = 0; index < count; index++) {
-      const char* fname = ini.Get_Entry("Missions", index);
-      char buffer[128];
-      ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-      bool official = Is_Mission_126x126((char*)fname);
-      if (!official) {
-        official = !Is_Mission_Aftermath((char*)fname);
-      }
-
-      Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
-                                     Is_Mission_Counterstrike((char*)fname)));
-    }
-  }
-  //	}
-
-#endif  // WIN32
 }
 
 /***************************************************************************

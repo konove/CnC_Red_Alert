@@ -52,7 +52,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#define WIN32
 #include "td/ccdde.h"
 
 #include <WINDOWS.H>

@@ -1762,9 +1762,7 @@ static int Net_Join_Dialog() {
                       GlobalPacketNames, 0, 13);
   Ipx.Mono_Debug_Print(-1, 1);
 #endif
-#ifdef WIN32
 // char *fred;
-#endif
   //------------------------------------------------------------------------
   //	Processing loop
   //------------------------------------------------------------------------
@@ -1796,7 +1794,6 @@ static int Net_Join_Dialog() {
       display = std::max(display, REDRAW_BACKGROUND);
     }
 
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -1806,7 +1803,6 @@ static int Net_Join_Dialog() {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
     //.....................................................................
     //	Refresh display if needed
     //.....................................................................
@@ -4475,7 +4471,6 @@ static int Net_New_Dialog() {
     Ipx.Mono_Debug_Print(-1, 0);
 #endif
 
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -4485,7 +4480,6 @@ static int Net_New_Dialog() {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
     //.....................................................................
     //	Refresh display if needed
     //.....................................................................
@@ -5123,9 +5117,7 @@ static int Net_New_Dialog() {
     memset(responses, 0, sizeof(responses));
     int num_responses = 0;
     bool send_scenario = false;
-#ifdef WIN32
     WWDebugString("RA95 - About to wait for 'GO' response.");
-#endif
     // timeout timer for waiting for responses
     // Wait for 10 seconds. If we dont hear by then assume someone crashed
     Timer<SystemTickSource> response_timer{60 * 10};
@@ -5205,12 +5197,6 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   Hide_Mouse();
   Load_Title_Page(true);
-  // #ifdef WIN32
-  //	Load_Uncompress(CCFileClass("TITLE.CPS"), SysMemPage, SysMemPage,
-  // CCPalette); 	SysMemPage.Scale(SeenPage); #else
-  //	Load_Uncompress(CCFileClass("TITLE.CPS"), HidPage, HidPage, CCPalette);
-  //	HidPage.Blit(SeenPage);
-  // #endif	//WIN32
   Show_Mouse();
 
   if (load_game) {
@@ -5619,7 +5605,6 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
-#ifdef WIN32
   /*
   ** If we have just received input focus again after running in the
   * background then
@@ -5629,7 +5614,6 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
     AllSurfaces.SurfacesRestored = false;
     fresh = true;
   }
-#endif
 
   //------------------------------------------------------------------------
   //	Draw the dialog from scratch
@@ -7525,7 +7509,6 @@ extern bool Spawn_WChat(bool can_launch);
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 static int Net_Fake_New_Dialog() {
-#ifdef WIN32
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
@@ -8216,11 +8199,6 @@ static int Net_Fake_New_Dialog() {
 
   return rc;
 
-#else  // WIN32
-
-  return (0);
-
-#endif  // WIN32
 } /* end of Net_Fake_New_Dialog */
 
 /***********************************************************************************************
@@ -8309,7 +8287,6 @@ static int Net_Fake_New_Dialog() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 static int Net_Fake_Join_Dialog() {
-#ifdef WIN32
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
@@ -9075,11 +9052,6 @@ static int Net_Fake_Join_Dialog() {
 
   return rc;
 
-#else  // WIN32
-
-  return (0);
-
-#endif  // WIN32
 
 } /* end of Net_Join_Dialog */
 

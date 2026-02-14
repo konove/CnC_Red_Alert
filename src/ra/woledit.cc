@@ -102,7 +102,6 @@ int WOLEditClass::Action(unsigned flags, KeyNumType& key) {
       flags = 0;
 
     } else {
-#ifdef WIN32
 
       KeyASCIIType ascii = (KeyASCIIType)(Keyboard->To_ASCII(key) & 0xff);
 
@@ -139,13 +138,6 @@ int WOLEditClass::Action(unsigned flags, KeyNumType& key) {
       }
     }
 
-#else   // WIN32
-      if (Handle_Key(Keyboard->To_ASCII(key))) {
-        flags &= ~KEYBOARD;
-        key = KN_NONE;
-      }
-    }
-#endif  // WIN32
   } else {
     //	ajw added
     //		if( key == ( KN_ESC | WWKEY_RLS_BIT ) && ( key & WWKEY_ALT_BIT )

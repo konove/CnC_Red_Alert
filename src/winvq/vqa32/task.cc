@@ -230,7 +230,7 @@ long VQA_Play(VQAHandle* vqa, long mode) {
   */
   DWORD process_priority = GetPriorityClass(GetCurrentProcess());
   SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-#endif  // WIN32
+#endif  // _WIN32
 
   /* Dereference commonly used data members for quick access. */
   vqabuf = dynamic_cast<VQAHandleP*>(vqa)->VQABuf;
@@ -378,7 +378,7 @@ long VQA_Play(VQAHandle* vqa, long mode) {
   ** Restore the process priority level
   */
   SetPriorityClass(GetCurrentProcess(), process_priority);
-#endif  // WIN32
+#endif  // _WIN32
 
   return rc;
 }

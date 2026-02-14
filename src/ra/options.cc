@@ -83,11 +83,7 @@
 #include "tech/hsv.h"
 #include "tech/rgb.h"
 
-#ifdef WIN32
 const char* const OptionsClass::HotkeyName = "WinHotkeys";
-#else
-const char* const OptionsClass::HotkeyName = "DOSHotkeys";
-#endif
 
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.
@@ -108,14 +104,9 @@ const char* const OptionsClass::HotkeyName = "DOSHotkeys";
 OptionsClass::OptionsClass()
     : GameSpeed(3),
       ScrollRate(3),
-#ifdef WIN32
       Volume(".40"),  // was .295
       ScoreVolume(".25"),
       MultiScoreVolume("0"),
-#else
-      Volume(".8"),
-      ScoreVolume(".6"),
-#endif
       Brightness(fixed(1, 2)),
       Tint(fixed(1, 2)),
       Saturation(fixed(1, 2)),
@@ -668,7 +659,6 @@ void OptionsClass::Load_Settings() {
   KeyTeam10 =
       static_cast<KeyNumType>(ini.Get_Int(HotkeyName, "KeyTeam10", KeyTeam10));
 
-#ifdef WIN32
   KeyForceMove1 = static_cast<KeyNumType>(KeyForceMove1 & ~WWKEY_VK_BIT);
   KeyForceMove2 = static_cast<KeyNumType>(KeyForceMove2 & ~WWKEY_VK_BIT);
   KeyForceAttack1 = static_cast<KeyNumType>(KeyForceAttack1 & ~WWKEY_VK_BIT);
@@ -718,7 +708,6 @@ void OptionsClass::Load_Settings() {
   KeyTeam8 = static_cast<KeyNumType>(KeyTeam8 & ~WWKEY_VK_BIT);
   KeyTeam9 = static_cast<KeyNumType>(KeyTeam9 & ~WWKEY_VK_BIT);
   KeyTeam10 = static_cast<KeyNumType>(KeyTeam10 & ~WWKEY_VK_BIT);
-#endif
 }
 
 /***********************************************************************************************

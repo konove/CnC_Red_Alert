@@ -118,12 +118,10 @@
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-#ifdef WIN32
 #include "sdllib/modemreg.h"
 #include "sdllib/wincomm.h"
 
 ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
-#endif                                             // WIN32
 
 extern bool Is_Mission_126x126(char* file_name);
 extern bool Is_Mission_Counterstrike(char* file_name);
@@ -403,7 +401,7 @@ int Test_Null_Modem() {
   ** Drop DTR as well - just in case the modem still hasnt got the message
   */
   EscapeCommFunction(SerialPort->Get_Port_Handle(), CLRDTR);
-#endif  // WIN32
+#endif  // _WIN32
 
   /*
   ** Check for a packet.  If we detect one, the other system has already been
@@ -484,7 +482,6 @@ int Test_Null_Modem() {
   ** Main Processing Loop
   */
   while (process) {
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -494,7 +491,6 @@ int Test_Null_Modem() {
       AllSurfaces.SurfacesRestored = false;
       commands->Draw_All();
     }
-#endif  // WIN32
     /*
     ** Invoke game callback
     */
@@ -725,7 +721,6 @@ static int Reconnect_Null_Modem() {
   */
   starttime = lastmsgtime = TickCount.Value();
   while (process) {
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -735,7 +730,6 @@ static int Reconnect_Null_Modem() {
       AllSurfaces.SurfacesRestored = false;
       commands->Draw_All();
     }
-#endif  // WIN32
     /*
     ** Invoke game callback
     */
@@ -1092,7 +1086,6 @@ GameType Select_Serial_Dialog() {
     /*
     ** Refresh display if needed
     */
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -1102,7 +1095,6 @@ GameType Select_Serial_Dialog() {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
 
     if (display) {
       Hide_Mouse();
@@ -1265,10 +1257,8 @@ GameType Select_Serial_Dialog() {
             ** Remote-connect
             */
             settings = &Session.SerialDefaults;
-#ifdef WIN32
             delete SerialPort;
             SerialPort = new WinModemClass;
-#endif  // WIN32
             if (Init_Null_Modem(settings)) {
               if (Answer_Modem(settings, false)) {
                 Session.ModemType = MODEM_ANSWERER;
@@ -1375,7 +1365,6 @@ GameType Select_Serial_Dialog() {
   return retval;
 }
 
-#ifdef WIN32
 /***********************************************************************************************
  * Advanced_Modem_Settings -- Allows to user to set additional modem settings *
  *                                                                                             *
@@ -1636,7 +1625,6 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
     }
   }
 }
-#endif  // WIN32
 
 /***************************************************************************
  * Com_Settings_Dialog -- Lets user select serial port settings            *
@@ -1706,20 +1694,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int d_portlist_y =
       d_dialog_y + (d_margin + d_txt6_h) * 2 + d_margin + 20;
 
-#ifdef WIN32
   int d_port_w = d_portlist_w;
   int d_port_x = 0x45;
-#else
-  int d_port_w = (5 * 12) + 6;
-
-//	int d_port_x = d_portlist_x + 29 * 2;
-#ifdef FRENCH  // VG2
-  int d_port_x = (d_portlist_x + 58) + 5;
-#else
-  int d_port_x = d_portlist_x + 58;
-#endif
-
-#endif  // WIN32
   int d_port_h = 18;
   int d_port_y = d_portlist_y - d_margin - d_txt6_h;
 
@@ -1728,9 +1704,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int d_baudlist_w = 160;
   int d_baudlist_h = 66;
   int d_baudlist_x = d_dialog_x + d_dialog_w * 5 / 6 - d_baudlist_w / 2;
-#ifdef WIN32
   d_baudlist_x -= 32;
-#endif
   int d_baudlist_y = d_irqlist_y;
 
   int d_baud_w = (BAUDBUF_MAX - 1) * 12 + 6;
@@ -1851,24 +1825,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
   static char custom_port[10 + MODEM_NAME_MAX] = {"CUSTOM - ????"};
 
-#ifndef WIN32  // No IRQ dialog in Win version
-  static const char* irqname[5] = {"2 / 9", "3 - [COM2 & 4]", "4 - [COM1 & 3]",
-                                   "5", "CUSTOM - ??"};
 
-  static int _irqidx[4] = {2, 1, 2, 1};
-
-#endif  // WIN32
-
-#ifdef WIN32
   static const char* baudname[5] = {
       "14400", "19200", "28800", "38400", "57600",
   };
 
   static char modemnames[10][MODEM_NAME_MAX];
 
-#else   // WIN32
-  static const char* baudname[5] = {"9600", "14400", "19200", "28800", "38400"};
-#endif  // WIN32
   /*
   ** Dialog variables
   */
@@ -1910,14 +1873,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   ListClass portlist(BUTTON_PORTLIST, d_portlist_x, d_portlist_y, d_portlist_w,
                      d_portlist_h, TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),
                      MFCD::Retrieve("BTN-DN.SHP"));
-#ifndef WIN32
-  EditClass irq_edt(BUTTON_IRQ, irqbuf, IRQBUF_MAX, TPF_TEXT, d_irq_x, d_irq_y,
-                    d_irq_w, d_irq_h, EditClass::NUMERIC);
-
-  ListClass irqlist(BUTTON_IRQLIST, d_irqlist_x, d_irqlist_y, d_irqlist_w,
-                    d_irqlist_h, TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),
-                    MFCD::Retrieve("BTN-DN.SHP"));
-#endif  // WIN32
 
   EditClass baud_edt(BUTTON_BAUD, baudbuf, BAUDBUF_MAX, TPF_TEXT, d_baud_x,
                      d_baud_y, d_baud_w, d_baud_h, EditClass::NUMERIC);
@@ -1950,11 +1905,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                           d_save_y, d_save_w, d_save_h);
   TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
                             d_cancel_y, d_cancel_w, d_cancel_h);
-#ifdef WIN32
   TextButtonClass advancedbutton(BUTTON_ADVANCED, TXT_ADVANCED, TPF_BUTTON,
                                  d_advanced_x, d_advanced_y, d_advanced_w,
                                  d_advanced_h);
-#endif  // WIN32
   /*
   ** Various Inits
   */
@@ -1969,53 +1922,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   }
 
   if (tempsettings.Baud == -1) {
-#ifdef WIN32
     tempsettings.Baud = 19200;
-#else   // WIN32
-    tempsettings.Baud = 9600;
-#endif  // WIN32
   }
 
   /*
   ** Set the current indices
   */
-#ifndef WIN32
-  switch (tempsettings.IRQ) {
-    case (2):
-      irq_index = 0;
-      port::SafeCopy(irqbuf, "2");
-      break;
 
-    case (3):
-      irq_index = 1;
-      port::SafeCopy(irqbuf, "3");
-      break;
-
-    case (4):
-      irq_index = 2;
-      port::SafeCopy(irqbuf, "4");
-      break;
-
-    case (5):
-      irq_index = 3;
-      port::SafeCopy(irqbuf, "5");
-      break;
-
-    default:
-      irq_index = 4;
-      sprintf(irqbuf, "%d", tempsettings.IRQ);
-      temp = strchr(irqname[4], '-');
-      if (temp) {
-        pos = (int)(temp - irqname[4]) + 2;
-        len = strlen(irqbuf);
-        port::SafeCopy(irqname[4] + pos, irqbuf, len);
-        *(irqname[4] + pos + len) = 0;
-      }
-      break;
-  }
-#endif  // WIN32
-
-#ifdef WIN32
   if (tempsettings.Baud == 14400) {
     baud_index = 0;
   } else if (tempsettings.Baud == 19200) {
@@ -2027,19 +1940,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   } else {
     baud_index = 4;
   }
-#else   // WIN32
-  if (tempsettings.Baud == 9600) {
-    baud_index = 0;
-  } else if (tempsettings.Baud == 14400) {
-    baud_index = 1;
-  } else if (tempsettings.Baud == 19200) {
-    baud_index = 2;
-  } else if (tempsettings.Baud == 28800) {
-    baud_index = 3;
-  } else {
-    baud_index = 4;
-  }
-#endif  // WIN32
   sprintf(baudbuf, "%d", tempsettings.Baud);
 
   /*
@@ -2051,7 +1951,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   }
 #endif
 
-#ifdef WIN32
   /*
   ** Loop through the first 10 possible modem entries in the registry. Frankly,
   *its just
@@ -2071,7 +1970,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   }
   ModemRegistry = nullptr;
 
-#endif  // WIN32
 
   portlist.Add_Item(custom_port);
 
@@ -2079,7 +1977,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   ** Work out the current port index
   */
   port_index = -1;
-#ifdef WIN32
   if (tempsettings.ModemName[0]) {
     for (i = 0; i < port_custom_index; i++) {
       if (!stricmp(portlist.Get_Item(i), tempsettings.ModemName)) {
@@ -2104,7 +2001,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       }
     }
   }
-#endif  // WIN32
 
   if (port_index == -1) {
     switch (tempsettings.Port) {
@@ -2148,17 +2044,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   ** Set up the port edit box
   */
   port_edt.Set_Text(portbuf, PORTBUF_MAX);
-#ifndef WIN32
-  /*
-  ** Set up the IRQ list box & edit box
-  */
-  for (i = 0; i < 5; i++) {
-    irqlist.Add_Item(irqname[i]);
-  }
-
-  irqlist.Set_Selected_Index(irq_index);
-  irq_edt.Set_Text(irqbuf, IRQBUF_MAX);
-#endif  // WIN32
   /*
   ** Set up the baud rate list box & edit box
   */
@@ -2204,10 +2089,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   commands = &cancelbtn;
   port_edt.Add_Tail(*commands);
   portlist.Add_Tail(*commands);
-#ifndef WIN32
-  irq_edt.Add_Tail(*commands);
-  irqlist.Add_Tail(*commands);
-#endif  // WIN32
   baud_edt.Add_Tail(*commands);
   baudlist.Add_Tail(*commands);
   initstr_edt.Add_Tail(*commands);
@@ -2219,9 +2100,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   tonebtn.Add_Tail(*commands);
   pulsebtn.Add_Tail(*commands);
   savebtn.Add_Tail(*commands);
-#ifdef WIN32
   advancedbutton.Add_Tail(*commands);
-#endif  // WIN32
 
   if (tempsettings.DialMethod == DIAL_TOUCH_TONE) {
     tonebtn.Turn_On();
@@ -2249,7 +2128,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       port_edt.Set_Read_Only(true);
     }
 
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -2259,7 +2137,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
     /*
     ** Refresh display if needed
     */
@@ -2287,11 +2164,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         Fancy_Text_Print(TXT_PORT_COLON, d_port_x - 6,
                          d_port_y + 2, scheme, TBLACK,
                          TPF_RIGHT | TPF_TEXT);
-#ifndef WIN32
-        Fancy_Text_Print(TXT_IRQ_COLON, d_irq_x - 6,
-                         d_irq_y + 2, scheme, TBLACK,
-                         TPF_RIGHT | TPF_TEXT);
-#endif  // WIN32
         Fancy_Text_Print(TXT_BAUD_COLON, d_baud_x - 6,
                          d_baud_y + 2, scheme, TBLACK,
                          TPF_RIGHT | TPF_TEXT);
@@ -2312,15 +2184,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         cancelbtn.Flag_To_Redraw();
         port_edt.Flag_To_Redraw();
         portlist.Flag_To_Redraw();
-#ifndef WIN32
-        irq_edt.Flag_To_Redraw();
-        irqlist.Flag_To_Redraw();
-#endif  // WIN32
         baud_edt.Flag_To_Redraw();
         baudlist.Flag_To_Redraw();
-#ifdef WIN32
         advancedbutton.Flag_To_Redraw();
-#endif  // WIN32
         initstr_edt.Flag_To_Redraw();
         initstrlist.Flag_To_Redraw();
         addbtn.Flag_To_Redraw();
@@ -2352,12 +2218,10 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     ** Process input
     */
     switch (input) {
-#ifdef WIN32
       case BUTTON_ADVANCED | KN_BUTTON:
         Advanced_Modem_Settings(&tempsettings);
         display = REDRAW_ALL;
         break;
-#endif  // WIN32
 
       case BUTTON_PORT | KN_BUTTON:
         item = (char*)portlist.Current_Item();
@@ -2371,10 +2235,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
           port_edt.Flag_To_Redraw();
-#ifndef WIN32
-          irq_edt.Set_Focus();
-          irq_edt.Flag_To_Redraw();
-#endif  // WIN32
         } else {
           strupr(portbuf);
           if (stricmp(portbuf, "3F8") == 0) {
@@ -2422,7 +2282,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                 break;
 
               default:
-#ifdef WIN32
                 if (portbuf[3] <= '9' && portbuf[3] > '0') {
                   portbuf[4] = 0;
                   port_index = port_custom_index;
@@ -2436,7 +2295,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                   }
                   break;
                 }
-#endif  // WIN32
                 WWMessageBox().Process(TXT_INVALID_PORT_ADDRESS);
                 port_edt.Set_Focus();
                 display = REDRAW_ALL;
@@ -2455,12 +2313,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               display = REDRAW_BUTTONS;
             }
           }
-#ifndef WIN32
-          if (display == REDRAW_BUTTONS) {
-            irq_edt.Set_Focus();
-            irq_edt.Flag_To_Redraw();
-          }
-#endif  // WIN32
         }
         break;
 
@@ -2477,20 +2329,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             port_edt.Clear_Focus();
 
             // auto select the irq for port
-#ifndef WIN32
-            irq_index = _irqidx[port_index];
-            irqlist.Set_Selected_Index(irq_index);
-            item = (char*)irqlist.Current_Item();
-            temp = strchr(item, ' ');
-            if (!temp) {
-              port::SafeCopy(irqbuf, item, 2);
-            } else {
-              pos = (int)(temp - item);
-              port::SafeCopy(irqbuf, item, pos);
-              irqbuf[pos] = 0;
-            }
-            irq_edt.Clear_Focus();
-#endif  // WIN32
           } else
 #endif
           {
@@ -2524,69 +2362,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         display = REDRAW_BUTTONS;
         break;
 
-#ifndef WIN32
-      case (BUTTON_IRQ | KN_BUTTON):
-        item = (char*)irqlist.Current_Item();
-        if (irq_index < 4) {
-          temp = strchr(item, ' ');
-          if (!temp) {
-            port::SafeCopy(irqbuf, item);
-          } else {
-            pos = (int)(temp - item);
-            port::SafeCopy(irqbuf, item, pos);
-            irqbuf[pos] = 0;
-          }
-          irq_edt.Set_Text(irqbuf, IRQBUF_MAX);
-          irq_edt.Flag_To_Redraw();
-        } else {
-          temp = strchr(item, '-');
-          if (temp) {
-            pos = (int)(temp - item) + 2;
-            len = strlen(irqbuf);
-            port::SafeCopy(item + pos, irqbuf, len);
-            *(item + pos + len) = 0;
-            display = REDRAW_BUTTONS;
-          }
-        }
-        baud_edt.Set_Focus();
-        baud_edt.Flag_To_Redraw();
-        break;
-
-      case (BUTTON_IRQLIST | KN_BUTTON):
-        if (irqlist.Current_Index() != irq_index) {
-          irq_index = irqlist.Current_Index();
-          item = (char*)irqlist.Current_Item();
-          if (irq_index < 4) {
-            temp = strchr(item, ' ');
-            if (!temp) {
-              port::SafeCopy(irqbuf, item);
-            } else {
-              pos = (int)(temp - item);
-              port::SafeCopy(irqbuf, item, pos);
-              irqbuf[pos] = 0;
-            }
-            irq_edt.Clear_Focus();
-          } else {
-            temp = strchr(item, '-');
-            if (temp) {
-              pos = (int)(temp - item) + 2;
-              if (*(item + pos) == '?') {
-                irqbuf[0] = 0;
-              } else {
-                port::SafeCopy(irqbuf, item + pos);
-              }
-            }
-            irq_edt.Set_Focus();
-          }
-          irq_edt.Set_Text(irqbuf, IRQBUF_MAX);
-        } else if (irq_index < 4) {
-          irq_edt.Clear_Focus();
-        } else {
-          irq_edt.Set_Focus();
-        }
-        display = REDRAW_BUTTONS;
-        break;
-#endif  // WIN32
       case BUTTON_BAUD | KN_BUTTON:
         item = (char*)baudlist.Current_Item();
         port::SafeCopy(baudbuf, item);
@@ -2753,13 +2528,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 #endif
           default:
             if (port_index == port_custom_index) {
-#ifdef WIN32
               port::SafeCopy(tempsettings.ModemName, portbuf);
               tempsettings.Port = 1;
-#else   // WIN32
-              sscanf(portbuf, "%x", &tempsettings.Port);
-              tempsettings.ModemName[0] = 0;
-#endif  // WIN32
             } else {
               /*
               ** Must be a modem name index
@@ -2770,29 +2540,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             break;
         }
 
-#ifndef WIN32
-        switch (irq_index) {
-          case (0):
-            tempsettings.IRQ = 2;
-            break;
-
-          case (1):
-            tempsettings.IRQ = 3;
-            break;
-
-          case (2):
-            tempsettings.IRQ = 4;
-            break;
-
-          case (3):
-            tempsettings.IRQ = 5;
-            break;
-
-          default:
-            sscanf(irqbuf, "%d", &tempsettings.IRQ);
-            break;
-        }
-#endif  // WIN32
         sscanf(baudbuf, "%d", &tempsettings.Baud);
 
         tempsettings.InitStringIndex = initstr_index;
@@ -2816,11 +2563,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           rc = true;
 
         } else if (dpstatus == PORT_INVALID) {
-#ifdef WIN32
           WWMessageBox().Process(TXT_UNABLE_TO_OPEN_PORT);
-#else   // WIN32
-          WWMessageBox().Process(TXT_INVALID_SETTINGS);
-#endif  // WIN32
           firsttime = true;
           display = REDRAW_ALL;
 
@@ -3557,7 +3300,6 @@ int Com_Scenario_Dialog(bool skirmish) {
       */
       Call_Back();
 
-#ifdef WIN32
       /*
       ** If we have just received input focus again after running in the
       *background then
@@ -3567,7 +3309,6 @@ int Com_Scenario_Dialog(bool skirmish) {
         AllSurfaces.SurfacesRestored = false;
         display = REDRAW_ALL;
       }
-#endif
 
       /*
       ...................... Refresh display if needed ......................
@@ -4602,9 +4343,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         * scenario
         ** cant be played.
         */
-#ifdef WIN32
         WWDebugString("RA95 - About to wait for 'GO' response.\n");
-#endif
         do {
           NullModem.Service();
 
@@ -4632,10 +4371,8 @@ int Com_Scenario_Dialog(bool skirmish) {
             }
 
             if (ReceivePacket.Command == SERIAL_REQ_SCENARIO) {
-#ifdef WIN32
               WWDebugString("RA95 - About to call 'Send_Remote_File'.\n");
 
-#endif
 
               if (Session.Scenarios[Session.Options.ScenarioIndex]
                       ->Get_Official()) {
@@ -5310,7 +5047,6 @@ int Com_Show_Scenario_Dialog() {
     */
     Call_Back();
 
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -5320,7 +5056,6 @@ int Com_Show_Scenario_Dialog() {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
 
     /*
     ...................... Refresh display if needed ......................
@@ -6123,9 +5858,7 @@ int Com_Show_Scenario_Dialog() {
                     }
                   }
                   if (needcd) {
-#ifdef WIN32
                     WWDebugString("RA95 - Counterstrike CD is not in drive\n");
-#endif
 
                     /*
                     ** We should have the scenario but the wrong disk is in.
@@ -6427,12 +6160,6 @@ int Com_Show_Scenario_Dialog() {
   ------------------------------------------------------------------------*/
   Hide_Mouse();
   Load_Title_Page(true);
-  // #ifdef WIN32
-  //	Load_Uncompress(CCFileClass("TITLE.CPS"), SysMemPage, SysMemPage,
-  // CCPalette); 	SysMemPage.Scale(SeenPage); #else
-  //	Load_Uncompress(CCFileClass("TITLE.CPS"), HidPage, HidPage, CCPalette);
-  //	HidPage.Blit(SeenPage);
-  // #endif
   Show_Mouse();
 
   /*------------------------------------------------------------------------
@@ -6618,7 +6345,6 @@ static int Phone_Dialog() {
     */
     Call_Back();
 
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -6628,7 +6354,6 @@ static int Phone_Dialog() {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
     /*
     ...................... Refresh display if needed ......................
     */
@@ -7211,7 +6936,6 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     */
     Call_Back();
 
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -7221,7 +6945,6 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
     /*
     ...................... Refresh display if needed ......................
     */
@@ -7389,7 +7112,6 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     NullModem.Remove_Modem_Echo();
     NullModem.Print_EchoBuf();
     NullModem.Reset_EchoBuf();
-    // #ifndef WIN32
     /*
     ** If our first attempt to detect the modem failed, and we're at
     ** 14400 or 28800, bump up to the next baud rate & try again.
@@ -7432,10 +7154,6 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
         Session.ModemService = true;
         return connected;
     }
-    // #else	//WIN32
-    //		Session.ModemService = true;
-    //		return( connected );
-    // #endif	//WIN32
 
   } else if (modemstatus == -1) {
     NullModem.Remove_Modem_Echo();
@@ -7447,7 +7165,6 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     return connected;
   }
 
-#ifdef WIN32
 
   /*
   ** Completely disable audio. This is required for MWave devices like those
@@ -7471,7 +7188,6 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     }
     SoundOn = 0;
   }
-#endif  // WIN32
 
   dialstatus =
       NullModem.Dial_Modem(DialString.c_str(), settings->DialMethod, reconnect);
@@ -7522,7 +7238,6 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   NullModem.Print_EchoBuf();
   NullModem.Reset_EchoBuf();
 
-#ifdef WIN32
   /*
   ** Restore audio capability
   */
@@ -7530,7 +7245,6 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   if (SoundOn) {
     Theme.Play_Song(old_theme);
   }
-#endif  // WIN32
 
   Session.ModemService = true;
   return connected;
@@ -7570,7 +7284,6 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     NullModem.Remove_Modem_Echo();
     NullModem.Print_EchoBuf();
     NullModem.Reset_EchoBuf();
-    // #ifndef WIN32
     /*
     ** If our first attempt to detect the modem failed, and we're at
     ** 14400 or 28800, bump up to the next baud rate & try again.
@@ -7613,10 +7326,6 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
         Session.ModemService = true;
         return connected;
     }
-    // #else	//WIN32
-    //		Session.ModemService = true;
-    //		return( connected );
-    // #endif	//WIN32
   } else if (modemstatus == -1) {
     NullModem.Remove_Modem_Echo();
     NullModem.Print_EchoBuf();
@@ -7626,7 +7335,6 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     return connected;
   }
 
-#ifdef WIN32
   /*
   ** Completely disable audio. This is required for some MWave devices like
   *those
@@ -7650,7 +7358,6 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     }
     SoundOn = 0;
   }
-#endif  // WIN32
 
   dialstatus = NullModem.Answer_Modem(reconnect);
 
@@ -7684,7 +7391,6 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   NullModem.Print_EchoBuf();
   NullModem.Reset_EchoBuf();
 
-#ifdef WIN32
   /*
   ** Restore audio capability
   */
@@ -7692,7 +7398,6 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   if (SoundOn) {
     Theme.Play_Song(old_theme);
   }
-#endif  // WIN32
 
   Session.ModemService = true;
   return connected;

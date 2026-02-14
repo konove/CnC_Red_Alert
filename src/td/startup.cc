@@ -76,13 +76,8 @@
 #include "td/special.h"
 #include "tech/cdfile.h"
 #include "tech/rawfile.h"
-#ifdef WIN32
 #ifndef PORTABLE
 #include <windows.h>
-#endif
-#else
-#include <conio.h>
-#include <io.h>
 #endif
 
 #ifdef _WIN32
@@ -163,9 +158,9 @@ void Check_Use_Compressed_Shapes();
 #ifdef _WIN32
 int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
                    int command_show)
-#else   // WIN32
+#else   // _WIN32
 int main(int argc, char* argv[])
-#endif  // WIN32
+#endif  // _WIN32
 {
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);

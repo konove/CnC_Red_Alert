@@ -43,9 +43,7 @@
 #include "ra/ccten.h"
 
 #if (TEN)
-#ifdef WIN32
 #define WINDOWS
-#endif
 #include "ten.h"
 #endif
 
@@ -246,7 +244,6 @@ void Connect_TEN() {
   //
   display = 1;
   while (num_found < num_players) {
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -256,7 +253,6 @@ void Connect_TEN() {
       AllSurfaces.SurfacesRestored = false;
       display = 1;
     }
-#endif
 
     if (display) {
       Fancy_Text_Print("", 0, 0, 0, 0, TPF_TEXT);

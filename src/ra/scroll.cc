@@ -51,11 +51,7 @@
 #include "ra/inline.h"
 #include "sdllib/gbuffer.h"
 
-#ifdef WIN32
 #define SCROLL_DELAY 1
-#else
-#define SCROLL_DELAY 2
-#endif
 
 Timer<SystemTickSource> ScrollClass::Counter;
 

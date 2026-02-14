@@ -76,7 +76,6 @@
 
 extern unsigned long Get_Game_Time();
 
-#undef WIN32
 #include <SDL_audio.h>
 
 /*---------------------------------------------------------------------------

@@ -349,7 +349,6 @@ void MPGSettings::Dialog() {
   pressed = false;
 
   while (process) {
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -359,7 +358,6 @@ void MPGSettings::Dialog() {
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
 
     //	Invoke game callback
     Call_Back();

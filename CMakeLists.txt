@@ -119,8 +119,6 @@ else ()
     add_compile_definitions(__cdecl= __far= __stdcall= cdecl= far=)
 endif ()
 
-add_compile_definitions(WIN32) # hopefully easier than DOS
-
 # Use Chromium-style includes: all paths relative to src root
 include_directories(${CMAKE_SOURCE_DIR}/src)
 

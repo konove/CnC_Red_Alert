@@ -44,14 +44,5 @@
 #ifndef CNC_RED_ALERT_RA_FAKESOCK_H_
 #define CNC_RED_ALERT_RA_FAKESOCK_H_
 
-#ifndef WIN32
-
-class TcpipManagerClass {
- public:
-  inline BOOL Get_Connected() { return (false); }
-};
-
-extern TcpipManagerClass Winsock;
-#endif
 
 #endif  // CNC_RED_ALERT_RA_FAKESOCK_H_

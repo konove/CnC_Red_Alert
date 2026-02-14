@@ -4,7 +4,6 @@
 #include "sdllib/ww_win.h"
 #include "td/globals.h"
 
-#undef WIN32
 #include <SDL_events.h>
 #include <SDL_video.h>
 

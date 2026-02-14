@@ -50,7 +50,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
 
-#ifdef WIN32
 
 #include <cstdlib>
 #include <cstring>
@@ -994,4 +993,3 @@ bool Do_The_Internet_Menu_Thang() {
 
 #endif  // #ifndef WOLAPI_INTEGRATION
 
-#endif  // WIN32

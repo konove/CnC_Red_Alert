@@ -570,7 +570,6 @@ void Fill_In_Data() {
   */
   Map.Zone_Reset(MZONEF_ALL);
 
-#ifdef WIN32
   /*
   **	Since the sidebar starts up activated, adjust the home start position so
   *that *	the right edge of the map will still be visible.
@@ -585,7 +584,6 @@ void Fill_In_Data() {
                                          10));
     //		}
   }
-#endif
 
   /*
   **	Handle any data resetting that can be safely inferred from the actual

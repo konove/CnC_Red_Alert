@@ -121,13 +121,6 @@ void GScreenClass::One_Time() {
   *SEENPAGE is.
   */
   Buttons = nullptr;
-#ifndef WIN32
-  ShadowPage = new GraphicBufferClass(320, 200);
-  if (ShadowPage) {
-    ShadowPage->Clear();
-    HidPage.Clear();
-  }
-#endif
 }
 
 /***********************************************************************************************
@@ -282,11 +275,7 @@ void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
       Flag_To_Redraw(false);
     }
 
-#ifdef WIN32
     GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
-#else
-    GraphicBufferClass* oldpage = Set_Logic_Page(HidPage);
-#endif
 
     key = Buttons->Input();
 
@@ -389,17 +378,7 @@ void GScreenClass::Render() {
   if (IsToUpdate || IsToRedraw) {
     BStart(BENCH_GSCREEN_RENDER);
 
-#ifdef WIN32
     GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
-#else
-    GraphicBufferClass* oldpage = Set_Logic_Page(HidPage);
-
-    if (IsToRedraw) {
-      Hide_Mouse();
-      SeenPage.To_Buffer(0, 0, 320, 200, ShadowPage);
-      Show_Mouse();
-    }
-#endif
 
     Draw_It(IsToRedraw);
 

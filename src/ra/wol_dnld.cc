@@ -129,7 +129,6 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   progress_meter.Set_Value(0);      // Current is 0%
 
   do {
-#ifdef WIN32
     /*
     ** If we have just received input focus again after running in the
     *background then
@@ -139,7 +138,6 @@ bool WOL_Download_Dialog(IDownload* pDownload,
       AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
-#endif
 
     if (display) {
       if (display >= REDRAW_BACKGROUND) {
