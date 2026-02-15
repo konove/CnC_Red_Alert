@@ -192,7 +192,7 @@ void DropListClass::Set_Selected_Index(const char* text) {
   }
 }
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 void DropListClass::Flag_To_Redraw() {
   if (IsDropped) {
     List.Flag_To_Redraw();

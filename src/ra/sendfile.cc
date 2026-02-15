@@ -82,7 +82,7 @@ extern bool Is_Mission_Aftermath(char* file_name);
 
 #define RESPONSE_TIMEOUT 60 * 60
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 #include "WolapiOb.h"
 
 extern WolapiObject* pWolapi;
@@ -177,7 +177,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
         }
       }
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       if (Session.Type == GAME_INTERNET && pWolapi &&
           (::timeGetTime() > pWolapi->dwTimeNextWolapiPump)) {
         pWolapi->pChat->PumpMessages();
@@ -356,7 +356,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
       display = REDRAW_ALL;
     }
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     if (Session.Type == GAME_INTERNET && pWolapi &&
         (::timeGetTime() > pWolapi->dwTimeNextWolapiPump)) {
       pWolapi->pChat->PumpMessages();
@@ -682,7 +682,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
       display = REDRAW_ALL;
     }
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     if (Session.Type == GAME_INTERNET && pWolapi &&
         (::timeGetTime() > pWolapi->dwTimeNextWolapiPump)) {
       pWolapi->pChat->PumpMessages();

@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef WOLAPI_INTEGRATION  //	Implies FIXIT_CSII.
+#if WOLAPI_INTEGRATION  //	Implies FIXIT_CSII.
 
 //	Wol_CGam.cpp - Create game dialog.
 //	ajw 09/9/98

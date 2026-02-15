@@ -326,7 +326,7 @@ typedef struct {
       unsigned int GameSpeed;             // Game Speed
       uint32_t ResponseTime;              // packet response time
       unsigned int FileLength;  // Length of scenario file to expect from host.
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       char ShortFileName[13];  // Name of scenario file to expect from host
 #else
       char ShortFileName[12];  // Name of scenario file to expect from host
@@ -391,7 +391,7 @@ typedef struct GlobalPacketType {
       unsigned int GameSpeed;    // Game Speed
       uint32_t Version;          // version # common to all players
       unsigned int FileLength;   // Length of scenario file to expect from host.
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       char ShortFileName[13];  // Name of scenario file to expect from host
 #else
       char ShortFileName[12];  // Name of scenario file to expect from host

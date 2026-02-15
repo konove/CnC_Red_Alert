@@ -19,7 +19,7 @@
 #ifndef CNC_RED_ALERT_RA_WOL_GSUP_H_
 #define CNC_RED_ALERT_RA_WOL_GSUP_H_
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 
 //	wol_gsup.h			"WOL Game Setup Dialog"
 //	ajw 08/06/98

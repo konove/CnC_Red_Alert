@@ -507,7 +507,7 @@ void Simple_Text_Print(const char* text, unsigned x, unsigned y,
       font = TypeFontPtr;
       xspace -= 1;
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       xspace -= 2;
       yspace += 2;
 #else  //	I am implicitly assuming that TPF_TYPE was no longer being used,

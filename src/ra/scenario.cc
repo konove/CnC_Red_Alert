@@ -497,7 +497,7 @@ bool Read_Scenario(char* name) {
         GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
         RequiredCD = 3;
         if (!Force_CD_Available(RequiredCD)) {  // force Aftermath CD in drive.
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 #ifdef _WIN32
           if (Special.IsFromWChat || SpawnedFromWChat) {
             char packet[10] = {"Hello"};
@@ -2499,7 +2499,7 @@ void Assign_Houses() {
     house = static_cast<HousesType>(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
     port::SafeCopy(housep->IniName, Session.Players[index]->Name);
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     //	Make another copy of name, permanent throughout entire game.
     port::SafeCopy(housep->InitialName, Session.Players[index]->Name);
 #endif

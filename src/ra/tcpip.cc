@@ -68,7 +68,7 @@ typedef int socklen_t;
 /*
 ** Nasty globals
 */
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 bool Server;  // Is this player acting as client or server
 #endif
 

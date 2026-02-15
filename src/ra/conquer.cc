@@ -162,7 +162,7 @@
 #include "tech/rgb.h"
 #include "winvq/vqa32/vqaplay.h"
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 // #include "WolDebug.h"
 #include "WolStrng.h"
 #include "WolapiOb.h"
@@ -310,7 +310,7 @@ void Main_Game(int argc, char* argv[]) {
       PacketLater = nullptr;
       ConnectionLost = false;
     } else {
-#if !defined(WOLAPI_INTEGRATION) && defined(_WIN32)
+#if !WOLAPI_INTEGRATION && defined(_WIN32)
       DDEServer.Disable();
 #endif  //	!WOLAPI_INTEGRATION
     }
@@ -446,7 +446,7 @@ void Main_Game(int argc, char* argv[]) {
       Session.Type = GAME_NORMAL;
       Session.Play = 0;
     }
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
     if (Special.IsFromWChat) {
       Shutdown_Network();  // Clear up the pseudo IPX stuff
 #ifndef WINSOCK_IPX
@@ -1119,7 +1119,7 @@ static void Message_Input(KeyNumType& input) {
   **	'to' portion.  At the other end, the buffer allocated to display the
   **	message must be MAX_MESSAGE_LENGTH plus the size of "From: xxx (house)".
   */
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       ((input >= KN_F1 && input < (KN_F1 + Session.MaxPlayers)) ||
        input == PAGE_RESPOND_KEY) &&
@@ -1162,7 +1162,7 @@ static void Message_Input(KeyNumType& input) {
 
         Map.Flag_To_Redraw(false);
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       } else if ((input - KN_F1) < Ipx.Num_Connections() && !Session.ObiWan &&
                  input != PAGE_RESPOND_KEY) {
 #else
@@ -1178,7 +1178,7 @@ static void Message_Input(KeyNumType& input) {
 
         Map.Flag_To_Redraw(false);
       }
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       else if (Session.Type == GAME_INTERNET && pWolapi &&
                !pWolapi->bConnectionDown && input == PAGE_RESPOND_KEY) {
         if (*pWolapi->szExternalPager) {
@@ -1300,7 +1300,7 @@ static void Message_Input(KeyNumType& input) {
   if (rc == 2 && Session.Type != GAME_NORMAL) {
     if (copy_input == KN_ESC) {
       Map.Flag_To_Redraw(true);
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       if (pWolapi) {
         //	Just in case user was responding to a page from outside the
         // game, and we had frozen the "szExternalPager".
@@ -1351,7 +1351,7 @@ static void Message_Input(KeyNumType& input) {
       }
       port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
     } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       NetNumType blip;
       NetNodeType blop;
       Session.MessageAddress.Get_Address(blip, blop);
@@ -1608,7 +1608,7 @@ void Call_Back() {
     NullModem.Service();
   }
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   //	Wolapi maintenance.
   if (pWolapi) {
     if (pWolapi->bInGame) {

@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 
 //	Iconlist.cpp - created by ajw 07/07/98
 

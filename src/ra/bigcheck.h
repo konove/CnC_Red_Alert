@@ -19,7 +19,7 @@
 //	Bigcheck.h
 //	ajw 9/14/98
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 
 #ifndef CNC_RED_ALERT_RA_BIGCHECK_H_
 #define CNC_RED_ALERT_RA_BIGCHECK_H_

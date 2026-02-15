@@ -294,7 +294,7 @@ void TextButtonClass::Draw_Background() {
   BoxStyleEnum style;
 
   if (IsDisabled) {
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     style = BOXSTYLE_BOX;
 #else
     style = BOXSTYLE_DIS_RAISED;

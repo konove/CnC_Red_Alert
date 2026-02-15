@@ -644,7 +644,7 @@ unsigned long VersionClass::Min_Version() {
   return (Version_Number());
 #else
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 
   //	Note! I'm no longer using MIN_VERSION, MAX_VERSION, or VERSION_RA_300!
   //	But no time to do three full rebuilds right now, so I'm not deleting
@@ -695,7 +695,7 @@ unsigned long VersionClass::Max_Version() {
   return (Version_Number());
 #else  // DEV_VERSION
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   // Note! I'm no longer using MIN_VERSION, MAX_VERSION, or VERSION_RA_300!
   // But no time to do three full rebuilds right now, so I'm not deleting
   // them from the header file...   ajw

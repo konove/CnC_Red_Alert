@@ -71,7 +71,7 @@
 
 extern bool Is_Mission_Counterstrike(char* file_name);
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 #include "WolStrng.h"
 #endif
 
@@ -91,7 +91,7 @@ GameType Select_MPlayer_Game() {
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
   int d_dialog_w = 380;
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   int d_dialog_h = 178;  //	ajw
   int d_dialog_y = (((510) - d_dialog_h) / 2);
 #else
@@ -119,7 +119,7 @@ GameType Select_MPlayer_Game() {
   int d_ipx_x = d_dialog_cx - d_ipx_w / 2;
   int d_ipx_y = d_skirmish_y + d_skirmish_h + 4;
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   //	ajw 7/2/98 - added button
   int d_wol_w = 160;
   int d_wol_h = 18;
@@ -130,7 +130,7 @@ GameType Select_MPlayer_Game() {
   int d_cancel_w = 120;
   int d_cancel_h = 18;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   int d_cancel_y = d_wol_y + d_wol_h + d_margin;
 #else
   int d_cancel_y = d_ipx_y + d_ipx_h + d_margin;
@@ -143,12 +143,12 @@ GameType Select_MPlayer_Game() {
     BUTTON_MODEMSERIAL = 100,
     BUTTON_SKIRMISH,
     BUTTON_IPX,
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     BUTTON_WOL,  //	ajw
 #endif
     BUTTON_CANCEL,
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     NUM_OF_BUTTONS = 5,  //	ajw
 #else
     NUM_OF_BUTTONS = 4,
@@ -201,7 +201,7 @@ GameType Select_MPlayer_Game() {
   TextButtonClass ipxbtn(BUTTON_IPX, TXT_NETWORK, TPF_BUTTON, d_ipx_x, d_ipx_y,
                          d_ipx_w, d_ipx_h);
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   //	ajw
   TextButtonClass wolbtn(BUTTON_WOL, TXT_WOL_INTERNETBUTTON, TPF_BUTTON,
                          d_wol_x, d_wol_y, d_wol_w, d_wol_h);
@@ -227,7 +227,7 @@ GameType Select_MPlayer_Game() {
   if (Ipx.Is_IPX()) {
     ipxbtn.Add_Tail(*commands);
   }
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   wolbtn.Add_Tail(*commands);  //	ajw
 #endif
   cancelbtn.Add_Tail(*commands);
@@ -240,14 +240,14 @@ GameType Select_MPlayer_Game() {
   buttons[1] = &skirmishbtn;
   if (Ipx.Is_IPX()) {
     buttons[2] = &ipxbtn;
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     buttons[3] = &wolbtn;  //	ajw
     buttons[4] = &cancelbtn;
 #else
     buttons[3] = &cancelbtn;
 #endif
   } else {
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     buttons[2] = &wolbtn;  //	ajw
     buttons[3] = &cancelbtn;
 #else
@@ -328,7 +328,7 @@ GameType Select_MPlayer_Game() {
         pressed = true;
         break;
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       case (BUTTON_WOL | KN_BUTTON):  //	ajw
         selection = BUTTON_WOL;
         pressed = true;
@@ -424,7 +424,7 @@ GameType Select_MPlayer_Game() {
           process = false;
           break;
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
         case (BUTTON_WOL):  //	ajw
           retval = GAME_INTERNET;
           process = false;

@@ -85,7 +85,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/rawfile.h"
 
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 int Read_Game_Options();
 #endif
 
@@ -135,7 +135,7 @@ int ShowCommand;
  *                                                                                             *
  * HISTORY: * 6/9/96 1:44PM ST : Created *
  *=============================================================================================*/
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 void Check_From_WChat(char* wchat_name) {
   char default_string[] = {"Error"};
   char key_string[256];
@@ -253,7 +253,7 @@ void Check_From_WChat(char* wchat_name) {
  * HISTORY:                                                                *
  *   01/11/1996 BRR : Created.                                             *
  *=========================================================================*/
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 int Read_Game_Options(char* name) {
   char* buffer = nullptr;
 
@@ -571,7 +571,7 @@ bool Is_User_WChat_Registered(char* /*buffer*/, int /*buffer_len*/) {
  *                                                                                             *
  * HISTORY: * 6/8/96 12:33PM ST : Created *
  *=============================================================================================*/
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 bool Poke_WChat();
 bool Spawn_WChat(bool /*can_launch*/) {
 #ifndef PORTABLE  // Get_Registry_Sub_Key is in WIN32LIB, also MainWindow is not
@@ -716,7 +716,7 @@ bool Spawn_WChat(bool /*can_launch*/) {
 #endif
 }
 
-#endif  // #ifndef WOLAPI_INTEGRATION
+#endif  // #if !WOLAPI_INTEGRATION
 
 /***********************************************************************************************
  * Spawn_Registration_App -- spawns the C&C/Planet westwood registration app *
@@ -731,7 +731,7 @@ bool Spawn_WChat(bool /*can_launch*/) {
  *                                                                                             *
  * HISTORY: * 6/8/96 12:33PM ST : Created *
  *=============================================================================================*/
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 bool Spawn_Registration_App() {
 #ifndef PORTABLE  // Get_Registry_Sub_Key is in WIN32LIB
   /*
@@ -786,7 +786,7 @@ bool Spawn_Registration_App() {
 #endif
 }
 
-#endif  // #ifndef WOLAPI_INTEGRATION
+#endif  // #if !WOLAPI_INTEGRATION
 
 /***********************************************************************************************
  * Do_The_Internet_Menu_Thang -- Handle case where user clicks on 'Internet'
@@ -802,7 +802,7 @@ bool Spawn_Registration_App() {
  *                                                                                             *
  * HISTORY: * 6/7/96 8:30PM ST : Created *
  *=============================================================================================*/
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 bool Do_The_Internet_Menu_Thang() {
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
@@ -991,5 +991,5 @@ bool Do_The_Internet_Menu_Thang() {
   return false;
 }
 
-#endif  // #ifndef WOLAPI_INTEGRATION
+#endif  // #if !WOLAPI_INTEGRATION
 

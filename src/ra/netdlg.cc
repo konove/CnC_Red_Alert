@@ -205,7 +205,7 @@ bool Is_Mission_Counterstrike(char* file_name);
 bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
 bool Force_Scenario_Available(const char* szName);
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 #include "WolStrng.h"
 #include "WolapiOb.h"
 extern WolapiObject* pWolapi;
@@ -3792,7 +3792,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                      Session.GPacket.ScenarioInfo.Scenario);
       port::SafeCopy(Session.ScenarioFileName,
                      Session.GPacket.ScenarioInfo.ShortFileName);
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       port::SafeCopy(Session.ScenarioDigest,
                      (char*)Session.GPacket.ScenarioInfo.FileDigest);
 #else
@@ -4980,7 +4980,7 @@ static int Net_New_Dialog() {
         CCFileClass file(
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
         Session.GPacket.ScenarioInfo.FileLength = file.Size();
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
         port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
@@ -5664,7 +5664,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
 
     w = std::max(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     char szNewCancelMessage[300];
     sprintf(szNewCancelMessage, "%s%s", buf3, TXT_WOL_CANCELMEANSFORFEIT);
 
@@ -5699,7 +5699,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
                      y + d_margin * 2 + d_txt6_h + d_margin, scheme, TBLACK,
                      TPF_CENTER | TPF_TEXT);
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     if (Session.Type == GAME_INTERNET && pWolapi &&
         pWolapi->GameInfoCurrent.bTournament) {
       Fancy_Text_Print(szNewCancelMessage, 320,
@@ -7460,7 +7460,7 @@ void Log_Message(char* msg) {
 } /* end of Log_Message */
 #endif
 
-#ifndef WOLAPI_INTEGRATION  //	Rest of file ifdeffed out.
+#if !WOLAPI_INTEGRATION  //	Rest of file ifdeffed out.
 
 extern bool Spawn_WChat(bool can_launch);
 
@@ -9134,4 +9134,4 @@ bool Client_Remote_Connect() {
 
 /*************************** end of netdlg.cpp *****************************/
 
-#endif  // #ifndef WOLAPI_INTEGRATION
+#endif  // #if !WOLAPI_INTEGRATION

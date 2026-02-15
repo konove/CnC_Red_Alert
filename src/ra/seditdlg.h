@@ -19,7 +19,7 @@
 #ifndef CNC_RED_ALERT_RA_SEDITDLG_H_
 #define CNC_RED_ALERT_RA_SEDITDLG_H_
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 
 //	SEditDlg.h - "SimpleEditDlgClass": An ok/cancel type dialog with a
 // single edit box. 	ajw 07/21/98

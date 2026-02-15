@@ -942,7 +942,7 @@ void EventClass::Execute() {
       Session.DesiredFrameRate = Data.Timing.DesiredFrameRate;
       Session.MaxAhead = Data.Timing.MaxAhead;
 
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
       /*
       ** If spawned from WChat then we should be getting poked every minute. If
       *not then

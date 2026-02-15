@@ -88,7 +88,7 @@
 #include "ra/mcimovie.h"
 #endif
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 // #include "WolDebug.h"
 #endif
 
@@ -222,7 +222,7 @@ int main(int argc, char* argv[])
     std::filesystem::current_path(dir_path);
   }
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   //	Look for special wolapi install program, used after the patch to version
   // 3, to install "Shared Internet Components".
   WIN32_FIND_DATA wfd;
@@ -370,7 +370,7 @@ int main(int argc, char* argv[])
         ini.Save(cfile);
       }
 
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 #ifdef _WIN32
       /*
       ** If WChat has been trying to send us a game start packet then receive it

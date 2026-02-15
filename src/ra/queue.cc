@@ -144,7 +144,7 @@
 #include "tech/ftimer.h"
 #include "tech/random.h"
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 // #include "WolDebug.h"
 #include "WolapiOb.h"
 extern WolapiObject* pWolapi;
@@ -869,7 +869,7 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   //	Frame-sync'ing: wait until it's OK to advance to the next frame.
   //------------------------------------------------------------------------
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   int iFramesyncTimeout;
   if (Session.Type == GAME_INTERNET && pWolapi &&
       pWolapi->GameInfoCurrent.iPlayerCount > 2) {
@@ -896,7 +896,7 @@ static void Queue_AI_Multiplayer() {
   if (rc != RC_NORMAL) {
     if (Session.Type == GAME_INTERNET) {
       Register_Game_End_Time();
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       //	New rule - if you cancel a waiting to reconnect dialog, you
       // lose.
       bReconnectDialogCancelled = (rc == RC_CANCEL);
@@ -1073,7 +1073,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
           fclose(fp);
         }
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
         //	"Reconnecting" dialog is about to be shown.
         //	At this point, begin wolapi "disconnect pinging", if
         // appropriate.
@@ -1092,7 +1092,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       }
       reconnect_dlg = 1;
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       //	Continue wolapi "disconnect pinging", if appropriate.
       if (Session.Type == GAME_INTERNET && pWolapi &&
           pWolapi->bDoingDisconnectPinging) {

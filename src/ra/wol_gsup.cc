@@ -24,7 +24,7 @@
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 
-#ifdef WOLAPI_INTEGRATION  // Now implies also WINSOCK_IPX and FIXIT_CSII must
+#if WOLAPI_INTEGRATION  // Now implies also WINSOCK_IPX and FIXIT_CSII must
                            // be true
 
 #include <ctime>

@@ -73,7 +73,7 @@ class DropListClass : public EditClass {
   virtual int Count() const { return List.Count(); }
   virtual const char* Get_Item(int index) const { return List.Get_Item(index); }
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   virtual void Flag_To_Redraw();
 #endif
 

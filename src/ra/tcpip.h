@@ -56,7 +56,7 @@ typedef void* HANDLE;
 #define MAXGETHOSTSTRUCT 1024
 #endif
 
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 extern bool Server;
 #endif
 

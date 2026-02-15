@@ -68,7 +68,7 @@
 
 // #define GERMAN_OFFSET_Y 4  // VG
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 #include "WolStrng.h"
 #include "WolapiOb.h"
 
@@ -136,7 +136,7 @@ void GameControlsClass::Process() {
   int d_ok_x = d_dialog_cx - d_ok_w / 2;
   int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 8;
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   int d_wol_x = d_sound_x;
   int d_wol_y = d_sound_y + d_sound_h + d_margin1;
   int d_wol_w = d_sound_w;
@@ -156,7 +156,7 @@ void GameControlsClass::Process() {
   /*
   **	Button Enumerations
   */
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   enum {
     BUTTON_SPEED = 100,
     BUTTON_SCROLLRATE,
@@ -211,7 +211,7 @@ void GameControlsClass::Process() {
                         d_ok_y);
   okbtn.X = (SeenBuff.Get_Width() - okbtn.Width) / 2;
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   TextButtonClass wol_btn(BUTTON_WOLAPI, TXT_WOL_OPTTITLE, TPF_BUTTON, d_wol_x,
                           d_wol_y, d_wol_w, d_wol_h);
 #endif
@@ -229,7 +229,7 @@ void GameControlsClass::Process() {
   scrate_btn.Add_Tail(*commands);
   visual_btn.Add_Tail(*commands);
   sound_btn.Add_Tail(*commands);
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   if (bShowWolapi) {
     wol_btn.Add_Tail(*commands);
   }
@@ -258,7 +258,7 @@ void GameControlsClass::Process() {
   buttons[1] = nullptr;
   buttons[2] = &visual_btn;
   buttons[3] = &sound_btn;
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   buttons[4] = &wol_btn;
   buttons[5] = &okbtn;
 #else
@@ -384,7 +384,7 @@ void GameControlsClass::Process() {
         pressed = true;
         break;
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       case (BUTTON_WOLAPI | KN_BUTTON):
         selection = BUTTON_WOLAPI;
         pressed = true;
@@ -418,7 +418,7 @@ void GameControlsClass::Process() {
         }
 
         curbutton--;
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
         if (!bShowWolapi) {
           if (curbutton == BUTTON_WOLAPI - BUTTON_FIRST) {
             curbutton--;  //	Skip over missing button.
@@ -443,7 +443,7 @@ void GameControlsClass::Process() {
         }
 
         curbutton++;
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
         if (!bShowWolapi) {
           if (curbutton == BUTTON_WOLAPI - BUTTON_FIRST) {
             curbutton++;  //	Skip over missing button.
@@ -537,7 +537,7 @@ void GameControlsClass::Process() {
           }
           break;
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
         case BUTTON_WOLAPI:
           if (WOL_Options_Dialog(pWolapi, true)) {
             //	The game ended while in this dialog.

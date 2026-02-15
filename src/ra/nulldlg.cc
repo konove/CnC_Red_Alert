@@ -3894,7 +3894,7 @@ int Com_Scenario_Dialog(bool skirmish) {
 
         SendPacket.ScenarioInfo.FileLength = file.Size();
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
         port::SafeCopy(
             SendPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
@@ -5668,7 +5668,7 @@ int Com_Show_Scenario_Dialog() {
                            ReceivePacket.ScenarioInfo.Scenario);
             port::SafeCopy(Session.ScenarioFileName,
                            ReceivePacket.ScenarioInfo.ShortFileName);
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
             port::SafeCopy(Session.ScenarioDigest,
                            (char*)ReceivePacket.ScenarioInfo.FileDigest);
 #else

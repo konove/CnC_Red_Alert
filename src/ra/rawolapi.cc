@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 
 //	rawolapi.cpp - Core WOLAPI interface functions stuff.
 //	Definitions for RAChatEventSink, RADownloadEventSink,

@@ -19,7 +19,7 @@
 //	BigCheck.cpp
 //	ajw 9/14/98
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 
 #include "ra/bigcheck.h"
 

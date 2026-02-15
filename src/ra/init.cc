@@ -191,7 +191,7 @@ void Init_Random();
 bool Load_Recording_Values(CCFileClass& file);
 bool Save_Recording_Values(CCFileClass& file);
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 extern int WOL_Main();
 #include "WolapiOb.h"
 extern WolapiObject* pWolapi;
@@ -500,7 +500,7 @@ bool Select_Game(bool /*fade*/) {
       0;  // Assume new units disabled, unless specifically .INI enabled or
           // multiplayer negotiations enable it.
 
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 #ifdef _WIN32
   /*
   ** Enable the DDE Server so we can get internet start game packets from WChat
@@ -638,7 +638,7 @@ bool Select_Game(bool /*fade*/) {
         selection = SEL_START_NEW_GAME;
       }
 
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 #if defined(_WIN32) && !defined(INTERNET_OFF)  // Denzil 5/1/98 - Internet play
       /*
       ** Handle case where we were spawned from Wchat and our start game
@@ -667,7 +667,7 @@ bool Select_Game(bool /*fade*/) {
 #endif  // _WIN32 && !INTERNET_OFF
 #endif
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       if (pWolapi) {
         selection = SEL_MULTIPLAYER_GAME;  //	We are returning from a game.
       }
@@ -849,7 +849,7 @@ bool Select_Game(bool /*fade*/) {
         * modem, or *	network play.
         */
         case SEL_MULTIPLAYER_GAME:
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
           if (!pWolapi) {
 #endif
             switch (Session.Type) {
@@ -923,7 +923,7 @@ bool Select_Game(bool /*fade*/) {
                 }
                 break;
 
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
 #ifndef INTERNET_OFF  // Denzil 5/1/98 - Internet play
               /*
               ** Handle being spawned from WChat. Internet play based on IPX
@@ -1100,7 +1100,7 @@ bool Select_Game(bool /*fade*/) {
 #endif  // !INTERNET_OFF
 #endif  //	!WOLAPI_INTEGRATION
             }
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
           }  //	if( !pWolapi )
 
           if (pWolapi) {
@@ -1114,7 +1114,7 @@ bool Select_Game(bool /*fade*/) {
             */
             case GAME_MODEM:
             case GAME_NULL_MODEM:
-#ifndef WOLAPI_INTEGRATION
+#if !WOLAPI_INTEGRATION
             case GAME_INTERNET:
 #endif
             case GAME_SKIRMISH:
@@ -1123,7 +1123,7 @@ bool Select_Game(bool /*fade*/) {
               Options.ScoreVolume = Options.MultiScoreVolume;
               break;
 
-#ifdef WOLAPI_INTEGRATION  //	implies also WINSOCK_IPX
+#if WOLAPI_INTEGRATION  //	implies also WINSOCK_IPX
             case GAME_INTERNET:
               if (PacketTransport) {
                 delete PacketTransport;
@@ -1350,7 +1350,7 @@ bool Select_Game(bool /*fade*/) {
       //= %i\n", NewUnitsEnabled );
       break;
     case GAME_INTERNET:
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       if (!pWolapi)
 #endif
       {
@@ -1469,7 +1469,7 @@ bool Select_Game(bool /*fade*/) {
   Call_Back();
   Map.Render();
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 
   // ajw debugging only
   //						debugprint( "Debugging
@@ -2679,7 +2679,7 @@ static void Init_Bootstrap_Mixfiles() {
   int temp = RequiredCD;
   RequiredCD = -2;
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   CCFileClass fileWolapiMix("WOLAPI.MIX");
   if (fileWolapiMix.Is_Available()) {
     MFCD::Register("WOLAPI.MIX", &FastKey, &CryptRandom);

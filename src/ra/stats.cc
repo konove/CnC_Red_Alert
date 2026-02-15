@@ -90,7 +90,7 @@
 // #define FIELD_VIDEO_MEMORY "VIDM"
 #define FIELD_SHADOW_REGROWS "SHAD"
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 #define FIELD_HOSTORNOT "SDFX"
 #define FIELD_TOURNAMENT "TRNY"
 #define FIELD_NUM_INITIAL_PLAYERS "NUMP"
@@ -178,7 +178,7 @@ TimerClass GameTimer;
 long GameEndTime;
 void* PacketLater = nullptr;
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 #include "WolapiOb.h"
 extern WolapiObject* pWolapi;
 
@@ -204,7 +204,7 @@ void Send_Statistics_Packet() {
 //	debugprint( "Stats: Send_Statistics_Packet() called.\n" );
 #ifndef INTERNET_OFF  // Denzil 5/4/98
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   if (!pWolapi) {  //	Should no longer ever happen.
     return;
   }
@@ -247,7 +247,7 @@ void Send_Statistics_Packet() {
     /*
     ** Field to identify this as C&C 95 internet game statistics packet
     */
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     if (pWolapi->bGameServer) {
       stats.Add_Field(
           FIELD_HOSTORNOT,
@@ -268,7 +268,7 @@ void Send_Statistics_Packet() {
     */
     stats.Add_Field(FIELD_GAME_ID, PlanetWestwoodGameID);
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
 
     //	Number of players initially in game.
     stats.Add_Field(FIELD_NUM_INITIAL_PLAYERS,
@@ -367,7 +367,7 @@ void Send_Statistics_Packet() {
     // stats.Add_Field(FIELD_SCENARIO, MPlayerScenarios[ScenarioIdx]);
 #endif  //(1)
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     //	Completion status is set for Tournament games only - ajw.
     if (pWolapi->GameInfoCurrent.bTournament) {
 #endif
@@ -402,7 +402,7 @@ void Send_Statistics_Packet() {
       int completion = -1;
 
       if (player1 && player2) {  //	Can this ever fail?		ajw
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
         //	Send IP addresses of both players.
         NetNumType net;
         NetNodeType node;
@@ -462,7 +462,7 @@ void Send_Statistics_Packet() {
           completion = COMPLETION_WASH;
         } else {
           if (ConnectionLost) {
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
             if (bReconnectDialogCancelled) {
               if (Session.Players[0]->Player.ID == HOUSE_MULTI1) {
                 //	I am player1.
@@ -531,7 +531,7 @@ void Send_Statistics_Packet() {
       // debugprint( "Stats: Tournament game completion value: %i\n", completion
       // );
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     }
 #endif
 
@@ -631,7 +631,7 @@ void Send_Statistics_Packet() {
     ** Build the player specific statistics
     **
     */
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
     for (int house = 0; house < 8; house++) {
 #else
     for (int house = 0; house < 2; house++) {
@@ -639,7 +639,7 @@ void Send_Statistics_Packet() {
       player =
           HouseClass::As_Pointer(static_cast<HousesType>(house + HOUSE_MULTI1));
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       if (!player) {
         continue;
       }
@@ -649,7 +649,7 @@ void Send_Statistics_Packet() {
       ** Player handle.
       */
       field_player_handle[3] = '1' + static_cast<char>(house);
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       stats.Add_Field(field_player_handle, (char*)player->InitialName);
 // debugprint( "Stats: Player %i name %s\n", house, (char*) player->InitialName
 // ); debugprint( "Stats: Player %i ending name %s\n", house, (char*)
@@ -658,7 +658,7 @@ void Send_Statistics_Packet() {
       stats.Add_Field(field_player_handle, player->IniName);
 #endif
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
       //	Whether or not this player was taken over by the computer, due
       // to his quitting the game.
       if (strcmp(player->IniName, player->InitialName)) {
@@ -862,7 +862,7 @@ void Send_Statistics_Packet() {
     */
     packet = stats.Create_Comms_Packet(packet_size);
 
-#ifndef WOLAPI_INTEGRATION  //	ajw - 'PacketLater' is no longer ever used.
+#if !WOLAPI_INTEGRATION  //	ajw - 'PacketLater' is no longer ever used.
     /*
     ** If a player disconnected then dont send the packet at this time - save it
     *for later
@@ -883,7 +883,7 @@ void Send_Statistics_Packet() {
     PacketLater = nullptr;
   }
 
-#ifdef WOLAPI_INTEGRATION
+#if WOLAPI_INTEGRATION
   /*
   ** Send it.....
   */

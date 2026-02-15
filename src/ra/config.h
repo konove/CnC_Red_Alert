@@ -49,6 +49,7 @@ inline constexpr bool kVirginCheatKeysEnabled = kPlaytestVersion;
 // a time
 inline constexpr bool kMPathEnabled = MPATH != 0;
 inline constexpr bool kTenEnabled = TEN != 0;
+inline constexpr bool kWolapiEnabled = WOLAPI_INTEGRATION != 0;
 
 // Compile-time assertion to ensure MPATH and TEN are mutually exclusive
 static_assert(!(kMPathEnabled && kTenEnabled),
