@@ -505,9 +505,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       auto* out = dst_offset;
       do {
         *out++ = remap[src_offset[x >> 16]];
-
         x += dx_frac;
-        out++;
       } while (--counter_x);
 
       src_offset += dy_intr;
@@ -527,9 +525,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       auto* out = dst_offset;
       do {
         *out++ = src_offset[x >> 16];
-
         x += dx_frac;
-        out++;
       } while (--counter_x);
 
       src_offset += dy_intr;
