@@ -108,10 +108,10 @@
 #include "ra/aircraft.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/log/check.h"
 #include "base/trig.h"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
@@ -345,8 +345,8 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool AircraftClass::Unlimbo(COORDINATE coord, DirType dir) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (FootClass::Unlimbo(coord, dir)) {
     if (*this == AIRCRAFT_BADGER ||
@@ -464,8 +464,8 @@ int AircraftClass::Shape_Number() const {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   /*
   **	Verify the legality of the unit class.
@@ -688,8 +688,8 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 int AircraftClass::Mission_Hunt() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (Class->IsFixedWing) {
     if (TarCom != NavCom) {
@@ -927,8 +927,8 @@ int AircraftClass::Mission_Hunt() {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::AI() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   /*
   **	A Mission change can always occur if the aircraft is landed or flying.
@@ -1034,8 +1034,8 @@ void AircraftClass::AI() {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 const short* AircraftClass::Overlap_List(bool redraw) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   static const short _list[] = {-(MAP_CELL_W - 1),
                                 -MAP_CELL_W,
@@ -1151,8 +1151,8 @@ void AircraftClass::Init() { Aircraft.Free_All(); }
  * HISTORY: * 10/31/94   JLB : Created. *
  *=============================================================================================*/
 int AircraftClass::Mission_Unload() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (Class->IsFixedWing) {
     Assign_Target(NavCom);
@@ -1309,8 +1309,8 @@ int AircraftClass::Mission_Unload() {
  * HISTORY: * 10/31/94   JLB : Created. *
  *=============================================================================================*/
 bool AircraftClass::Is_LZ_Clear(TARGET target) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (!Target_Legal(target)) {
     return false;
@@ -1363,8 +1363,8 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
  * HISTORY: * 11/02/1994 JLB : Created. *
  *=============================================================================================*/
 COORDINATE AircraftClass::Sort_Y() const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   return Coord_Add(Coord, 0x00800000L);
 }
@@ -1389,8 +1389,8 @@ COORDINATE AircraftClass::Sort_Y() const {
  *altitude gain after takeoff logic.                      *
  *=============================================================================================*/
 int AircraftClass::Mission_Retreat() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (Class->IsFixedWing) {
     if (Class->IsFixedWing && Height < FLIGHT_LEVEL) {
@@ -1464,41 +1464,35 @@ int AircraftClass::Mission_Retreat() {
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
 int AircraftClass::Exit_Object(TechnoClass* unit) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
-  static FacingType _toface[FACING_COUNT] = {FACING_S,  FACING_SW, FACING_SE,
-                                             FACING_NW, FACING_NE, FACING_N,
-                                             FACING_W,  FACING_E};
-  CELL cell;
+  // Priority order for trying adjacent cells when unloading passengers.
+  static constexpr FacingType kUnloadPriority[FACING_COUNT] = {
+      FACING_S,  FACING_SW, FACING_SE, FACING_NW,
+      FACING_NE, FACING_N,  FACING_W,  FACING_E};
 
   /*
   **	Find a free cell to drop the unit off at.
   */
-  FacingType face;
-  for (face = FACING_N; face < FACING_COUNT; face++) {
-    cell = Adjacent_Cell(Coord_Cell(Coord), _toface[face]);
-    if (unit->Can_Enter_Cell(cell) == MOVE_OK) {
-      break;
+  for (const auto direction : kUnloadPriority) {
+    const CELL adjacent = Adjacent_Cell(Coord_Cell(Coord), direction);
+    if (unit->Can_Enter_Cell(adjacent) == MOVE_OK) {
+      // If the passenger can be placed on the map, then start it moving toward
+      // the destination cell and establish radio contact with the transport.
+      // This is used to make sure that the transport waits until the passenger
+      // is clear before unloading the next passenger or taking off.
+      if (unit->Unlimbo(Coord, Facing_Dir(direction))) {
+        unit->Assign_Mission(MISSION_MOVE);
+        unit->Assign_Destination(::As_Target(adjacent));
+        if (Transmit_Message(RADIO_HELLO, unit) == RADIO_ROGER) {
+          Transmit_Message(RADIO_UNLOAD);
+        }
+        return true;
+      }
     }
   }
 
-  // Should perform a check here to see if no cell could be found.
-
-  /*
-  **	If the passenger can be placed on the map, then start it moving toward
-  *the *	destination cell and establish radio contact with the transport.
-  *This is used *	to make sure that the transport waits until the
-  *passenger is clear before *	unloading the next passenger or taking off.
-  */
-  if (unit->Unlimbo(Coord, Facing_Dir(_toface[face]))) {
-    unit->Assign_Mission(MISSION_MOVE);
-    unit->Assign_Destination(::As_Target(cell));
-    if (Transmit_Message(RADIO_HELLO, unit) == RADIO_ROGER) {
-      Transmit_Message(RADIO_UNLOAD);
-    }
-    return true;
-  }
   return false;
 }
 
@@ -1564,8 +1558,8 @@ int AircraftClass::Paradrop_Cargo() {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 BulletClass* AircraftClass::Fire_At(TARGET target, int which) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   /*
   **	Passenger aircraft will actually paradrop their cargo instead of
@@ -1629,8 +1623,8 @@ BulletClass* AircraftClass::Fire_At(TARGET target, int which) {
 ResultType AircraftClass::Take_Damage(int& damage, int distance,
                                       WarheadType warhead, TechnoClass* source,
                                       bool forced) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   ResultType res = RESULT_NONE;
 
@@ -1698,8 +1692,8 @@ ResultType AircraftClass::Take_Damage(int& damage, int distance,
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
 int AircraftClass::Mission_Move() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (Class->IsFixedWing) {
     enum { TAKE_OFF, FLY_TOWARD_TARGET };
@@ -1922,8 +1916,8 @@ int AircraftClass::Mission_Move() {
  * HISTORY: * 06/05/1995 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Enter_Idle_Mode(bool) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   MissionType mission = MISSION_GUARD;
   if (Class->IsFixedWing) {
@@ -2122,8 +2116,8 @@ void AircraftClass::Enter_Idle_Mode(bool) {
  *target value.                                      *
  *=============================================================================================*/
 int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (Class->IsFixedWing) {
     slowdown = false;
@@ -2173,8 +2167,8 @@ int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest) {
  *=============================================================================================*/
 void AircraftClass::Debug_Dump(MonoClass* mono) const {
   if constexpr (config::kCheatKeysEnabled) {
-    assert(Aircraft.ID(this) == ID);
-    assert(IsActive);
+    DCHECK_EQ(Aircraft.ID(this), ID);
+    DCHECK(IsActive);
 
     mono->Set_Cursor(0, 0);
     mono->Print(Text_String(TXT_DEBUG_AIRCRAFT));
@@ -2204,8 +2198,8 @@ void AircraftClass::Debug_Dump(MonoClass* mono) const {
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Active_Click_With(ActionType action, ObjectClass* object) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   action = What_Action(object);
 
@@ -2245,8 +2239,8 @@ void AircraftClass::Active_Click_With(ActionType action, ObjectClass* object) {
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Active_Click_With(ActionType action, CELL cell) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   FootClass::Active_Click_With(action, cell);
 }
@@ -2275,8 +2269,8 @@ void AircraftClass::Active_Click_With(ActionType action, CELL cell) {
  *=============================================================================================*/
 void AircraftClass::Player_Assign_Mission(MissionType mission, TARGET target,
                                           TARGET destination) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (AllowVoice) {
     if (mission == MISSION_ATTACK) {
@@ -2306,8 +2300,8 @@ void AircraftClass::Player_Assign_Mission(MissionType mission, TARGET target,
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType AircraftClass::What_Action(const ObjectClass* target) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   ActionType action = FootClass::What_Action(target);
 
@@ -2375,8 +2369,8 @@ ActionType AircraftClass::What_Action(const ObjectClass* target) const {
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType AircraftClass::What_Action(CELL cell) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   ActionType action = FootClass::What_Action(cell);
 
@@ -2413,8 +2407,8 @@ ActionType AircraftClass::What_Action(CELL cell) const {
  *always face down the runway.                         *
  *=============================================================================================*/
 DirType AircraftClass::Pose_Dir() const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (*this == AIRCRAFT_TRANSPORT) {
     return DIR_N;
@@ -2443,8 +2437,8 @@ DirType AircraftClass::Pose_Dir() const {
  *helicopter for Nod scen #7.                             *
  *=============================================================================================*/
 int AircraftClass::Mission_Attack() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (Class->IsFixedWing) {
     return Mission_Hunt();
@@ -2678,8 +2672,8 @@ int AircraftClass::Mission_Attack() {
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
 TARGET AircraftClass::New_LZ(TARGET oldlz) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (Target_Legal(oldlz) &&
       (!Is_LZ_Clear(oldlz) || !Cell_Seems_Ok(As_Cell(oldlz)))) {
@@ -2739,8 +2733,8 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
 RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
                                                 RadioMessageType message,
                                                 long& param) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   switch (message) {
     case RADIO_PREPARED:
@@ -2918,8 +2912,8 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
  *=============================================================================================*/
 DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
                                         CELL& moveto) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   CELL center = Coord_Cell(Center_Coord());
   for (int sweep = FACING_N; sweep < FACING_S; sweep++) {
@@ -2956,8 +2950,8 @@ DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
 bool AircraftClass::Process_Take_Off() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   IsLanding = false;
   IsTakingOff = true;
@@ -3017,8 +3011,8 @@ bool AircraftClass::Process_Take_Off() {
  *aircraft.                                             *
  *=============================================================================================*/
 bool AircraftClass::Process_Landing() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   IsTakingOff = false;
   IsLanding = true;
@@ -3085,8 +3079,8 @@ bool AircraftClass::Process_Landing() {
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
 MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (!Map.In_Radar(cell)) {
     return MOVE_NO;
@@ -3132,8 +3126,8 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
  *fire position to get closer to moving objects.                      *
  *=============================================================================================*/
 TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (Target_Legal(target)) {
     int range = Weapon_Range(0);
@@ -3221,8 +3215,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
 bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   /*
   **	Make sure that no other aircraft are heading to the selected location.
@@ -3256,8 +3250,8 @@ bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
  * HISTORY: * 06/11/1995 JLB : Created. *
  *=============================================================================================*/
 int AircraftClass::Pip_Count() const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   int retval = 0;
 
@@ -3293,8 +3287,8 @@ int AircraftClass::Pip_Count() const {
  *gives orders.                                          *
  *=============================================================================================*/
 int AircraftClass::Mission_Enter() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   enum {
     INITIAL,
@@ -3529,8 +3523,8 @@ int AircraftClass::Mission_Enter() {
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
 TARGET AircraftClass::Good_LZ() const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   /*
   **	Scan through all of the buildings and try to land near
@@ -3582,8 +3576,8 @@ TARGET AircraftClass::Good_LZ() const {
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Set_Speed(int speed) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   FootClass::Set_Speed(speed);
 
@@ -3608,8 +3602,8 @@ void AircraftClass::Set_Speed(int speed) {
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
 DirType AircraftClass::Fire_Direction() const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   return SecondaryFacing.Current();
 }
@@ -3672,8 +3666,8 @@ AircraftClass::~AircraftClass() {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Scatter(COORDINATE, bool, bool) {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   /*
   **	Certain missions prevent scattering regardless of whether it would be
@@ -3716,8 +3710,8 @@ void AircraftClass::Scatter(COORDINATE, bool, bool) {
  *that are unescorted.                                *
  *=============================================================================================*/
 int AircraftClass::Mission_Guard() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (Height == FLIGHT_LEVEL) {
     /*
@@ -3858,8 +3852,8 @@ int AircraftClass::Mission_Guard() {
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
 int AircraftClass::Mission_Guard_Area() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (Height == FLIGHT_LEVEL) {
     if (!Team.Is_Valid()) {
@@ -3897,8 +3891,8 @@ int AircraftClass::Mission_Guard_Area() {
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Response_Attack() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
   VocType response = _response[Sim_Random_Pick(0, ARRAY_SIZE(_response) - 1)];
@@ -3921,8 +3915,8 @@ void AircraftClass::Response_Attack() {
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Response_Move() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   static VocType _response[] = {VOC_ACKNOWL, VOC_AFFIRM};
   VocType response = _response[Sim_Random_Pick(0, ARRAY_SIZE(_response) - 1)];
@@ -3945,8 +3939,8 @@ void AircraftClass::Response_Move() {
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Response_Select() {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   static VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
                                 VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
@@ -3974,8 +3968,8 @@ void AircraftClass::Response_Select() {
  *carrying aircraft.                                      *
  *=============================================================================================*/
 FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
-  assert(Aircraft.ID(this) == ID);
-  assert(IsActive);
+  DCHECK_EQ(Aircraft.ID(this), ID);
+  DCHECK(IsActive);
 
   if (Passenger && !Is_Something_Attached()) {
     return FIRE_AMMO;
@@ -4335,7 +4329,7 @@ void AircraftClass::Per_Cell_Process(PCPType why) {
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Assign_Destination(TARGET dest) {
-  assert(IsActive);
+  DCHECK(IsActive);
   if (dest == NavCom) {
     return;
   }
@@ -4393,8 +4387,8 @@ LayerType AircraftClass::In_Which_Layer() const {
  * HISTORY: * 10/23/1996 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Look(bool incremental) {
-  assert(IsActive);
-  assert(!IsInLimbo);
+  DCHECK(IsActive);
+  DCHECK(!IsInLimbo);
 
   int sight_range = Techno_Type_Class()->SightRange;
   if (Height == 0) {
