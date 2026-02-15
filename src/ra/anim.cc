@@ -96,8 +96,6 @@
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 
-#define VIC 1
-
 /***********************************************************************************************
  * Anim_From_Name -- Given a name, this finds the corresponding anim type. *
  *                                                                                             *
@@ -114,7 +112,6 @@
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 AnimType Anim_From_Name(const char* name) {
-#ifdef VIC
   if (name == nullptr) {
     return ANIM_NONE;
   }
@@ -124,7 +121,6 @@ AnimType Anim_From_Name(const char* name) {
       return anim;
     }
   }
-#endif
   return ANIM_NONE;
 }
 
@@ -177,7 +173,6 @@ void Shorten_Attached_Anims(ObjectClass* obj) {
  *(infantry decay anims).                               *
  *=============================================================================================*/
 COORDINATE AnimClass::Sort_Y() const {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
@@ -190,7 +185,6 @@ COORDINATE AnimClass::Sort_Y() const {
   if (Class->IsGroundLayer || *this == ANIM_LZ_SMOKE) {
     return Coord_Add(Center_Coord(), XYP_COORD(0, 14));
   }
-#endif
   return Coord;
 }
 
@@ -214,14 +208,12 @@ COORDINATE AnimClass::Sort_Y() const {
  *visual center of object.                             *
  *=============================================================================================*/
 COORDINATE AnimClass::Center_Coord() const {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
   if (xObject != TARGET_NONE) {
     return Coord_Add(Coord, As_Object(xObject)->Target_Coord());
   }
-#endif
   return Coord;
 }
 
@@ -241,7 +233,6 @@ COORDINATE AnimClass::Center_Coord() const {
  *=============================================================================================*/
 bool AnimClass::Render(bool forced)  // const
 {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
@@ -251,7 +242,6 @@ bool AnimClass::Render(bool forced)  // const
   if (Map[Center_Coord()].IsVisible) {
     IsToDisplay = true;
   }
-#endif
   return ObjectClass::Render(forced);
 }
 
@@ -273,7 +263,6 @@ bool AnimClass::Render(bool forced)  // const
  *translucent effect.                                          *
  *=============================================================================================*/
 void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
@@ -320,7 +309,6 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
     IsTheaterShape = false;
     BEnd(BENCH_ANIMS);
   }
-#endif
 }
 
 /***********************************************************************************************
@@ -338,7 +326,6 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 bool AnimClass::Mark(MarkType mark) {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
@@ -347,7 +334,6 @@ bool AnimClass::Mark(MarkType mark) {
     //		ObjectClass::Mark(mark);
     return true;
   }
-#endif
   return false;
 }
 
@@ -367,7 +353,6 @@ bool AnimClass::Mark(MarkType mark) {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 const short* AnimClass::Overlap_List() const {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
   static const short OverlapAtom[] = {
@@ -408,7 +393,6 @@ const short* AnimClass::Overlap_List() const {
   }
   IsTheaterShape = false;
 #endif
-#endif
   return Coord_Spillage_List(Center_Coord(), Class->Size);
 }
 
@@ -428,13 +412,11 @@ const short* AnimClass::Overlap_List() const {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 const short* AnimClass::Occupy_List(bool) const {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
   static short _simple[] = {REFRESH_EOL};
 
-#endif
   return _simple;
 }
 
@@ -534,7 +516,6 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
       IsInvisible(false),
       Delay(timedelay),
       Accum(0) {
-#ifdef VIC
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
     Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
@@ -574,7 +555,6 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
   if (!Delay) {
     Start();
   }
-#endif
 }
 
 /***********************************************************************************************
@@ -593,7 +573,6 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
  * HISTORY: * 11/29/1994 JLB : Created. *
  *=============================================================================================*/
 AnimClass::~AnimClass() {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
   if (GameActive) {
@@ -642,8 +621,6 @@ AnimClass::~AnimClass() {
   xObject = TARGET_NONE;
   Class = nullptr;
   ID = -1;
-
-#endif
 }
 
 /***********************************************************************************************
@@ -661,7 +638,6 @@ AnimClass::~AnimClass() {
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void AnimClass::AI() {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
@@ -824,7 +800,6 @@ void AnimClass::AI() {
       }
     }
   }
-#endif
 }
 
 /***********************************************************************************************
@@ -844,7 +819,6 @@ void AnimClass::AI() {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 void AnimClass::Attach_To(ObjectClass* obj) {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
@@ -860,7 +834,6 @@ void AnimClass::Attach_To(ObjectClass* obj) {
   xObject = obj->As_Target();
   Map.Submit(this, In_Which_Layer());
   Coord = Coord_Sub(Coord, obj->Target_Coord());
-#endif
 }
 
 /***********************************************************************************************
@@ -880,7 +853,6 @@ void AnimClass::Attach_To(ObjectClass* obj) {
  * HISTORY: * 12/25/1994 JLB : Created. *
  *=============================================================================================*/
 LayerType AnimClass::In_Which_Layer() const {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
@@ -891,7 +863,6 @@ LayerType AnimClass::In_Which_Layer() const {
   if (Target_Legal(xObject) || Class->IsGroundLayer) {
     return LAYER_GROUND;
   }
-#endif
   return LAYER_AIR;
 }
 
@@ -913,7 +884,6 @@ LayerType AnimClass::In_Which_Layer() const {
  * HISTORY: * 06/30/1995 JLB : Created. *
  *=============================================================================================*/
 void AnimClass::Start() {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
@@ -932,7 +902,6 @@ void AnimClass::Start() {
   if (!Class->Biggest) {
     Middle();
   }
-#endif
 }
 
 /***********************************************************************************************
@@ -951,7 +920,6 @@ void AnimClass::Start() {
  * HISTORY: * 06/30/1995 JLB : Created. * 10/17/1995 JLB : Ion camera added. *
  *=============================================================================================*/
 void AnimClass::Middle() {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
@@ -1029,7 +997,6 @@ void AnimClass::Middle() {
     default:
       break;
   }
-#endif
 }
 
 /***********************************************************************************************
@@ -1053,7 +1020,6 @@ void AnimClass::Middle() {
  *to animation destruction.                          *
  *=============================================================================================*/
 void AnimClass::Detach(TARGET target, bool all) {
-#ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
@@ -1063,7 +1029,6 @@ void AnimClass::Detach(TARGET target, bool all) {
     IsToDelete = true;
     Mark(MARK_UP);
   }
-#endif
 }
 
 /***********************************************************************************************
@@ -1084,7 +1049,6 @@ void AnimClass::Detach(TARGET target, bool all) {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
-#ifdef VIC
   /*
   **	Find someone to blame the explosion on. This is necessary in
   **	order to properly enact retribution and record the kill for
@@ -1128,5 +1092,4 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
   if (Session.Type == GAME_NORMAL) {
     GamePalette.Set(FADE_PALETTE_SLOW, Call_Back);
   }
-#endif
 }
