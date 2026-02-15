@@ -374,9 +374,10 @@ int ThemeClass::Play_Song(ThemeType theme) {
  *=============================================================================================*/
 const char* ThemeClass::Theme_File_Name(ThemeType theme) {
   if (theme >= THEME_FIRST && theme < THEME_COUNT) {
-    static const auto name = std::filesystem::path(_themes[theme].Name)
-                                 .replace_extension(".AUD")
-                                 .string();
+    static std::string name;
+    name = std::filesystem::path(_themes[theme].Name)
+               .replace_extension(".AUD")
+               .string();
     return name.data();
   }
 
