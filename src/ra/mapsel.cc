@@ -104,37 +104,39 @@ struct point {
                                 {{32, 156}, {46, 171}, {-1, -1}},
                                 {{108, 97}, {-1, -1}, {-1, -1}}}};
 
+// Palette index reserved in the map WSA artwork for clickable hotspots.
+constexpr int kHotspotPaletteIndex = 254;
+
 // Animates the pulsing highlight on clickable map locations.
-// Palette entry 254 cycles between dim and bright to draw attention.
-// TODO(konove): Seems to be not working.
 void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
-  static Timer<SystemTickSource> _ftimer;
-  static bool _up = false;
-  static int val = 255;
+  static Timer<SystemTickSource> pulse_timer;
+  static bool brightening = false;
+  constexpr int kMinFade = 32;
+  constexpr int kMaxFade = 150;
+  constexpr int kStepRate = 20;
+  static int fade_ratio = kMaxFade;
 
   while (time--) {
-    if (_ftimer.Value() > 0) {
-      _ftimer.Set(TIMER_SECOND / 6);
+    if (pulse_timer.IsFinished()) {
+      pulse_timer.Set(TIMER_SECOND / 6);
 
-      // Oscillate brightness between 0x20 (dim) and 150 (bright).
-      constexpr int kStepRate = 20;
-      if (_up) {
-        val += kStepRate;
-        if (val > 150) {
-          val = 150;
-          _up = false;
+      if (brightening) {
+        fade_ratio += kStepRate;
+        if (fade_ratio >= kMaxFade) {
+          fade_ratio = kMaxFade;
+          brightening = false;
         }
       } else {
-        val -= kStepRate;
-        if (val < 0x20) {
-          val = 0x20;
-          _up = true;
+        fade_ratio -= kStepRate;
+        if (fade_ratio <= kMinFade) {
+          fade_ratio = kMinFade;
+          brightening = true;
         }
       }
 
-      // Blend white toward black based on current brightness level.
-      pal[254] = GamePalette[WHITE];
-      pal[254].Adjust(val, kBlackColor);
+      // Blend white toward black based on current fade ratio.
+      pal[kHotspotPaletteIndex] = GamePalette[WHITE];
+      pal[kHotspotPaletteIndex].Adjust(fade_ratio, kBlackColor);
 
       pal.Set();
     }
@@ -247,13 +249,12 @@ std::string Map_Selection() {
   bool mission_selected = false;
   int cursor_frame = 0;
   while (!mission_selected) {
-    // Redraw after regaining window focus (surfaces may have been
-    // invalidated while the game was in the background).
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, nullptr);
-    }
     Cycle_Call_Back_Delay(1, map_palette);
+    // Re-render each frame so palette cycling on entry 254 is visible.
+    // The SDL2 port bakes palette colors into an RGBA texture, so unlike
+    // DOS VGA hardware, palette changes aren't reflected until we re-render.
+    AllSurfaces.SurfacesRestored = false;
+    Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, nullptr);
     const int choice = Mouse_Over_Spot(is_soviet, Scen.Scenario);
     const bool hovering_over_choice = choice != -1;
 
@@ -291,9 +292,8 @@ std::string Map_Selection() {
 
   Keyboard->Clear();
 
-  Fancy_Text_Print(TXT_STAND_BY, 320, 380,
-                   GadgetClass::Get_Color_Scheme(), TBLACK,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
+  Fancy_Text_Print(TXT_STAND_BY, 320, 380, GadgetClass::Get_Color_Scheme(),
+                   TBLACK, TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
 
   // Build the next scenario filename. Format: SCxNNEV.INI where x=campaign,
   // NN=scenario number (01-14), E=side (E=Allied, usually), V=variant (A/B/C).
