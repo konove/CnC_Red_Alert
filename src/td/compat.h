@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_COMPAT_H_
 
 #define BuffType BufferClass
+// TODO(konove): Fix the code instead.
 #define movmem(a, b, c) memmove(b, a, c)
 #define ShapeBufferSize _ShapeBufferSize
 
@@ -112,7 +113,6 @@ typedef enum MenuIndexType {
 #define FMINEXP -37
 
 #define MAXDOUBLE 1.797693E+308
-#define MAXFLOAT 3.37E+38F
 #define MINDOUBLE 2.225074E-308
 #define MINFLOAT 8.43E-37F
 
