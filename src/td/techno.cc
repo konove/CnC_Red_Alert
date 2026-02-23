@@ -228,7 +228,9 @@ TechnoTypeClass::TechnoTypeClass(
   MaxAmmo = ammo;
   MaxSpeed = maxspeed;
   CameoData = nullptr;
-  Primary = primary, Secondary = secondary, Cost = cost;
+  Primary = primary;
+  Secondary = secondary;
+  Cost = cost;
   IsLeader = is_leader;
   IsScanner = is_scanner;
   IsTransporter = is_transporter;

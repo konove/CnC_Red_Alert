@@ -236,7 +236,8 @@ void SidebarClass::One_Time() {
   TopHeight = ButtonHeight + 4 * factor;
 
   Background.X = SideX + 8 * factor;
-  Background.Y = SideY, Background.Width = SideWidth - 1;
+  Background.Y = SideY;
+  Background.Width = SideWidth - 1;
   Background.Height = SideHeight - 1;
   /*
   **	This sets up the clipping window. This window is used by the shape
