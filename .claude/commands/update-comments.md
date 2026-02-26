@@ -10,6 +10,11 @@ Review and improve comments in the specified file(s): $ARGUMENTS
 Comments should explain **why** code exists, not **what** it does. The code itself shows what happens; comments should
 provide context that isn't obvious from reading the code.
 
+**Preservation bias:** When in doubt, keep the comment. This is legacy 1990s game code where original developer comments
+often carry valuable context, domain knowledge, or historical flavor that cannot be reconstructed. A comment that seems
+redundant may be the only record of a design decision. Only remove comments that are truly noise — prefer rewriting over
+removing.
+
 ## Process
 
 1. **Read the entire file** to understand its purpose and how the pieces fit together
@@ -25,19 +30,22 @@ provide context that isn't obvious from reading the code.
 - The `.h` declaration lacks documentation but the `.cc` definition has it — move the comment, don't delete it
 - This preserves documentation that would otherwise be lost when cleaning up `.cc` comments
 
-### Remove if:
+### Remove only if:
 
-- It restates what the code obviously does (`i++; // increment i`)
-- It describes the "what" that's clear from well-named functions/variables
-- It's outdated or no longer matches the code
-- It adds noise without insight
+- It's a pure tautology that adds zero information (`i++; // increment i`, `return true; // return true`)
+- It's factually wrong and no longer matches the code (but first check: might the comment reveal a bug?)
+- It's commented-out code with no explanatory note
+
+Do **not** remove comments just because the "what" seems obvious from code. Comments that describe what a block does
+in domain terms (e.g., "Scan for adjacent enemy units" above a loop) help readers skim the code and preserve the
+original developer's intent. Rewrite these to be clearer rather than deleting them.
 
 ### Rewrite if:
 
-- It describes "what" but should explain "why"
-- It's verbose and can be made concise
-- It uses unclear terminology or abbreviations
-- It's grammatically awkward
+- It describes "what" but could also explain "why" — add the "why", but keep the "what" if it provides useful context
+- It's verbose and can be made concise without losing meaning
+- It uses unclear terminology or abbreviations that aren't game-domain terms
+- It's grammatically awkward enough to impede understanding
 
 ### Add comments for:
 
