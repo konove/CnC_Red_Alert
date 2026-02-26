@@ -93,6 +93,13 @@ void* Get_Font_Palette_Ptr();
 }
 #endif
 
+// Sets all 16 font color entries (indices 0 through 15).
+inline void Set_Font_Palette(const void* palette) {
+  constexpr int kFirstColor = 0;
+  constexpr int kLastColor = 15;
+  Set_Font_Palette_Range(palette, kFirstColor, kLastColor);
+}
+
 /*=========================================================================*/
 
 //////////////////////////////////////// External varables
