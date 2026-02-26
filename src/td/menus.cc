@@ -230,16 +230,15 @@ int Find_Menu_Items(int maxitems, unsigned long field, char index) {
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-void Setup_Menu(const int menu_index, const char* labels[],
+void Setup_Menu(const MenuConfig& menu, const char* labels[],
                 const unsigned long visible_items, const int bit_offset,
                 const int line_spacing) {
-  const int* menu_entry = &MenuList[menu_index][0];
-  const int menu_x = (WinX + menu_entry[MENUX]) << 3;
-  const int menu_y = WinY + menu_entry[MENUY];
+  const int menu_x = (WinX + menu.x) << 3;
+  const int menu_y = WinY + menu.y;
 
   const int selected_entry =
-      Select_To_Entry(menu_entry[MSELECTED], visible_items, bit_offset);
-  const int item_count = menu_entry[ITEMSHIGH];
+      Select_To_Entry(menu.selected, visible_items, bit_offset);
+  const int item_count = menu.item_count;
 
   Fancy_Text_Print(0, 0, 0, TBLACK, TBLACK, TPF_8POINT | TPF_DROPSHADOW);
   Hide_Mouse();
@@ -248,8 +247,8 @@ void Setup_Menu(const int menu_index, const char* labels[],
     const int draw_y = menu_y + i * FontHeight + i * line_spacing;
     Fancy_Text_Print(
         labels[text_index], menu_x, draw_y,
-        menu_entry[text_index == selected_entry && MenuUpdate ? HILITE
-                                                              : NORMCOL],
+        text_index == selected_entry && MenuUpdate ? menu.highlight_color
+                                                   : menu.normal_color,
         TBLACK, TPF_8POINT | TPF_DROPSHADOW);
   }
   MenuSkip = line_spacing;
@@ -268,28 +267,22 @@ void Setup_Menu(const int menu_index, const char* labels[],
 /*	RETURNS:
  */
 /*=========================================================================*/
-int Check_Menu(int menu, const char* text[], char*, long field, int index) {
+int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
   int maxitem, select, key, menuy, menux;
   int mx1, mx2, my1, my2, tempy;
   int drawy, menuskip, halfskip;
   int normcol, litcol, item, newitem, idx;
-  int* menuptr;
 
-  // selection++;
-  // /* get rid of warning	*/
-
-  menuptr = &MenuList[menu][0];                        /* get pointer to menu	*/
-  maxitem = menuptr[ITEMSHIGH] - 1;                    /* find max items			*/
-  newitem = item = menuptr[MSELECTED] % (maxitem + 1); /* find selected */
-  select = -1;                                         /* no selection made		*/
+  maxitem = menu.item_count - 1;                    /* find max items			*/
+  newitem = item = menu.selected % (maxitem + 1);   /* find selected */
+  select = -1;                                      /* no selection made		*/
   menuskip = FontHeight + MenuSkip; /* calc new font height	*/
   halfskip = MenuSkip >> 1;         /* adjustment for menus	*/
 
-  menuy = WinY + menuptr[MENUY]; /* get the absolute 		*/
-  menux = (WinX + menuptr[MENUX])
-          << 3; /*		coords of menu		*/
-  normcol = menuptr[NORMCOL];
-  litcol = menuptr[HILITE];
+  menuy = WinY + menu.y;            /* get the absolute 		*/
+  menux = (WinX + menu.x) << 3;    /*		coords of menu		*/
+  normcol = menu.normal_color;
+  litcol = menu.highlight_color;
 
   /*
   **	Fetch a pending keystroke from the buffer if there is a keystroke
@@ -309,13 +302,13 @@ int Check_Menu(int menu, const char* text[], char*, long field, int index) {
   **	out the new selected item, and continue forward.
   */
   mx1 = (WinX << 3) +
-        (menuptr[MENUX] * FontWidth); /* get menu coords		*/
-  my1 = (WinY) + (menuptr[MENUY]) -
-        halfskip; /*		from the menu		*/
-  mx2 = mx1 + (menuptr[ITEMWIDTH] * FontWidth) -
-        1; /*		structure as		*/
-  my2 = my1 + (menuptr[ITEMSHIGH] * menuskip) -
-        1; /*		necessary			*/
+        (menu.x * FontWidth);       /* get menu coords		*/
+  my1 = (WinY) + (menu.y) -
+        halfskip;                    /*		from the menu		*/
+  mx2 = mx1 + (menu.item_width * FontWidth) -
+        1;                           /*		structure as		*/
+  my2 = my1 + (menu.item_count * menuskip) -
+        1;                           /*		necessary			*/
 
   tempy = Get_Mouse_Y();
   if (Coordinates_In_Region(Get_Mouse_X(), tempy, mx1, my1, mx2, my2) &&
@@ -380,7 +373,7 @@ int Check_Menu(int menu, const char* text[], char*, long field, int index) {
     *selection of *					that entry.
     */
     default:
-      for (int menu_item = 0; menu_item < menuptr[ITEMSHIGH]; menu_item++) {
+      for (int menu_item = 0; menu_item < menu.item_count; menu_item++) {
         if (toupper(*(text[Select_To_Entry(menu_item, field, index)])) ==
             toupper(Keyboard::To_ASCII((KeyNumType)(key & 0x0FF)))) {
           newitem = select = menu_item;
@@ -413,7 +406,7 @@ int Check_Menu(int menu, const char* text[], char*, long field, int index) {
     select = idx;
   }
 
-  menuptr[MSELECTED] = newitem; /* update menu select	*/
+  menu.selected = newitem; /* update menu select	*/
 
   return (select);
 }
@@ -461,7 +454,7 @@ int Do_Menu(const char** strings, bool blue) {
   while (*ptr++) {
     count++;
   }
-  MenuList[0][ITEMSHIGH] = count;
+  menu_config.item_count = count;
 
   /*
   **	Determine the width of the menu by finding the length of the
@@ -475,18 +468,18 @@ int Do_Menu(const char** strings, bool blue) {
     ptr++;
   }
   length += 7;
-  MenuList[0][ITEMWIDTH] = length >> 3;
+  menu_config.item_width = length >> 3;
 
   /*
   **	Adjust the window values to match the size of the
   **	specified menu.
   */
-  WindowList[WINDOW_MENU][WINDOWWIDTH] = MenuList[0][ITEMWIDTH] + 2;
+  WindowList[WINDOW_MENU][WINDOWWIDTH] = menu_config.item_width + 2;
   WindowList[WINDOW_MENU][WINDOWX] = 19 - (length >> 4);
   WindowList[WINDOW_MENU][WINDOWY] =
-      174 - (unsigned)(MenuList[0][ITEMSHIGH] * (FontHeight + FontYSpacing));
+      174 - (unsigned)(menu_config.item_count * (FontHeight + FontYSpacing));
   WindowList[WINDOW_MENU][WINDOWHEIGHT] =
-      MenuList[0][ITEMSHIGH] * FontHeight + 5 /*11*/;
+      menu_config.item_count * FontHeight + 5 /*11*/;
 
   /*
   **	Display the menu.
@@ -494,14 +487,14 @@ int Do_Menu(const char** strings, bool blue) {
   Change_Window((int)WINDOW_MENU);
   Show_Mouse();
   Window_Box(WINDOW_MENU, blue ? BOXSTYLE_BLUE_UP : BOXSTYLE_RAISED);
-  Setup_Menu(0, strings, 0xFFFFL, 0, 0);
+  Setup_Menu(menu_config, strings, 0xFFFFL, 0, 0);
 
   Keyboard::Clear();
   selection = -1;
   UnknownKey = 0;
   while (selection == -1) {
     Call_Back();
-    selection = Check_Menu(0, strings, nullptr, 0xFFL, 0);
+    selection = Check_Menu(menu_config, strings, 0xFFL, 0);
     if (UnknownKey != 0 || UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
         UnknownKey == KN_RMOUSE) {
       break;

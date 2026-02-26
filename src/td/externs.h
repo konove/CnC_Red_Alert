@@ -360,7 +360,8 @@ extern GraphicBufferClass ModeXBuff;
 extern GraphicViewPortClass HidPage;
 extern GraphicBufferClass LoResHidPage;
 extern GraphicBufferClass SysMemPage;
-extern int MenuList[][8];
+struct MenuConfig;
+extern MenuConfig menu_config;
 extern CountDownTimerClass FrameTimer;
 extern CountDownTimerClass CountDownTimer;
 

@@ -70,6 +70,7 @@
 #include "td/ipxmgr.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
+#include "td/menus.h"
 #include "td/monoc.h"
 #include "td/msglist.h"
 #include "td/nodename.h"
@@ -886,10 +887,7 @@ int WindowList[][8] = {
 
 };
 
-/* X,Y,Item Width,Items High,Selected,Norm Color,Sel Color,zero 	*/
-int MenuList[][8] = {
-    {1, 3, 12, 3, 0, WHITE, PINK, 0},
-};
+MenuConfig menu_config;
 
 GraphicBufferClass VisiblePage;
 GraphicBufferClass HiddenPage;

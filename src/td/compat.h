@@ -56,18 +56,4 @@
 extern unsigned char* Palette;
 extern unsigned char MDisabled;  // Is mouse disabled?
 
-/*
-**	This is the menu control structures.
-*/
-enum MenuIndexType {
-  MENUX,
-  MENUY,
-  ITEMWIDTH,
-  ITEMSHIGH,
-  MSELECTED,
-  NORMCOL,
-  HILITE,
-  MENUPADDING = 0x1000
-};
-
 #endif  // CNC_RED_ALERT_TD_COMPAT_H_
