@@ -41,11 +41,14 @@
 #ifndef CNC_RED_ALERT_TD_COMPAT_H_
 #define CNC_RED_ALERT_TD_COMPAT_H_
 
-/*=========================================================================*/
-/* Define some Graphic Routines which will only be fixed by these defines
- */
-/*=========================================================================*/
-#define Set_Font_Palette(a) Set_Font_Palette_Range(a, 0, 15)
+#include "sdllib/font.h"
+
+// Sets all 16 font color entries (indices 0 through 15).
+inline void Set_Font_Palette(const void* palette) {
+  constexpr int kFirstColor = 0;
+  constexpr int kLastColor = 15;
+  Set_Font_Palette_Range(palette, kFirstColor, kLastColor);
+}
 
 /*
 **	These are the Open_File, Read_File, and Seek_File constants.
