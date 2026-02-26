@@ -216,6 +216,7 @@ extern HouseClass* PlayerPtr;
 extern unsigned char* BlackPalette;
 extern unsigned char* WhitePalette;
 extern unsigned char* GamePalette;
+extern unsigned char* Palette;
 extern unsigned Scenario;
 extern ScenarioPlayerType ScenPlayer;
 extern ScenarioDirType ScenDir;

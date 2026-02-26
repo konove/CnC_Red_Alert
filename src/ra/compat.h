@@ -72,7 +72,6 @@
 #define ErrorWindow 1
 
 // extern unsigned char *Palette;
-extern unsigned char MDisabled;  // Is mouse disabled?
 
 /*
 **	This is the menu control structures.

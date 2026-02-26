@@ -47,7 +47,4 @@
 #define READ 1   // Read access.
 #define WRITE 2  // Write access.
 
-extern unsigned char* Palette;
-extern unsigned char MDisabled;  // Is mouse disabled?
-
 #endif  // CNC_RED_ALERT_TD_COMPAT_H_
