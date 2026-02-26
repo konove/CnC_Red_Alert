@@ -298,7 +298,7 @@ void GameOptionsClass::Process() {
                            WindowList[WINDOW_EDITOR][WINDOWHEIGHT] -
                            ((GameToPlay == GAME_NORMAL) ? (32 * resfactor)
                                                         : (24 * resfactor)),
-                       DKGREY, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT,
+                       GREY, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT,
                        ScenarioName, VersionText);
 #else
       Fancy_Text_Print(
@@ -310,7 +310,7 @@ void GameOptionsClass::Process() {
           WindowList[WINDOW_EDITOR][WINDOWY] +
               WindowList[WINDOW_EDITOR][WINDOWHEIGHT] -
               (GameToPlay == GAME_NORMAL ? 32 * resfactor : 24 * resfactor),
-          DKGREY, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
+          GREY, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
           Version_Number(), VersionText);
 #endif
 

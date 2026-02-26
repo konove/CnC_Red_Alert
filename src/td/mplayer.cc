@@ -659,7 +659,7 @@ void Read_MultiPlayer_Settings() {
   Read all Base-Scenario names into 'tbuffer'
   ------------------------------------------------------------------------*/
   WWGetPrivateProfileString("InitStrings", nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+                            _ShapeBufferSize - len, buffer);
 
   /*------------------------------------------------------------------------
   Read in & store each entry
@@ -704,7 +704,7 @@ void Read_MultiPlayer_Settings() {
   Read the entry names in
   ........................................................................*/
   WWGetPrivateProfileString("PhoneBook", nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+                            _ShapeBufferSize - len, buffer);
 
   while (*tbuffer != '\0') {
     /*.....................................................................

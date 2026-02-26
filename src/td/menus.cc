@@ -230,31 +230,29 @@ int Find_Menu_Items(int maxitems, unsigned long field, char index) {
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-void Setup_Menu(int menu, const char* text[], unsigned long field, int index,
-                int skip) {
-  int *menuptr, lp;
-  int menuy, menux, idx, item, num, drawy;
+void Setup_Menu(const int menu_index, const char* labels[],
+                const unsigned long visible_items, const int bit_offset,
+                const int line_spacing) {
+  const int* menu_entry = &MenuList[menu_index][0];
+  const int menu_x = (WinX + menu_entry[MENUX]) << 3;
+  const int menu_y = WinY + menu_entry[MENUY];
 
-  menuptr = &MenuList[menu][0];  /* get pointer to menu	*/
-  menuy = WinY + menuptr[MENUY]; /* get the absolute 		*/
-  menux = (WinX + menuptr[MENUX])
-          << 3; /*		coords of menu		*/
-  item = Select_To_Entry(menuptr[MSELECTED], field, index);
-  num = menuptr[ITEMSHIGH];
+  const int selected_entry =
+      Select_To_Entry(menu_entry[MSELECTED], visible_items, bit_offset);
+  const int item_count = menu_entry[ITEMSHIGH];
 
   Fancy_Text_Print(0, 0, 0, TBLACK, TBLACK, TPF_8POINT | TPF_DROPSHADOW);
   Hide_Mouse();
-  for (lp = 0; lp < num; lp++) {
-    idx = Select_To_Entry(lp, field, index);
-    drawy = menuy + (lp * FontHeight) + (lp * skip);
+  for (int i = 0; i < item_count; i++) {
+    const int text_index = Select_To_Entry(i, visible_items, bit_offset);
+    const int draw_y = menu_y + i * FontHeight + i * line_spacing;
     Fancy_Text_Print(
-        text[idx], menux, drawy,
-        menuptr[((idx == item) && (MenuUpdate)) ? HILITE : NORMCOL], TBLACK,
-        TPF_8POINT | TPF_DROPSHADOW);
-    //		if ((idx==item) && (MenuUpdate ))
-    //			Text_Print(text[idx],menux,drawy,menuptr[HILITE],TBLACK);
+        labels[text_index], menu_x, draw_y,
+        menu_entry[text_index == selected_entry && MenuUpdate ? HILITE
+                                                              : NORMCOL],
+        TBLACK, TPF_8POINT | TPF_DROPSHADOW);
   }
-  MenuSkip = skip;
+  MenuSkip = line_spacing;
   Show_Mouse();
   Keyboard::Clear();
 }
@@ -873,31 +871,29 @@ int Main_Menu(unsigned long timeout) {
 #ifdef DEMO
         Version_Number();
         Fancy_Text_Print("Demo%s", D_DIALOG_X + D_DIALOG_W - 10,
-                         D_DIALOG_Y + D_DIALOG_H - 20, DKGREY,
-                         TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                         VersionText);
+                         D_DIALOG_Y + D_DIALOG_H - 20, GREY, TBLACK,
+                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, VersionText);
 #else
         Fancy_Text_Print("V.%d%s", D_DIALOG_X + D_DIALOG_W - 10,
-                         D_DIALOG_Y + D_DIALOG_H - 20, DKGREY,
-                         TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                         D_DIALOG_Y + D_DIALOG_H - 20, GREY, TBLACK,
+                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
 #endif
         //			Fancy_Text_Print("V.%d%s%02d",
         // D_DIALOG_X+D_DIALOG_W-5,
-        // D_DIALOG_Y+D_DIALOG_H-10, DKGREY, TBLACK,
+        // D_DIALOG_Y+D_DIALOG_H-10, GREY, TBLACK,
         // TPF_6POINT|TPF_FULLSHADOW|TPF_RIGHT, Version_Number(), VersionText,
         // FOREIGN_VERSION_NUMBER);
       } else {
 #ifdef DEMO
         Version_Number();
         Fancy_Text_Print("Demo%s", D_DIALOG_X + D_DIALOG_W - 10,
-                         D_DIALOG_Y + D_DIALOG_H - 20, DKGREY,
-                         TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                         VersionText);
+                         D_DIALOG_Y + D_DIALOG_H - 20, GREY, TBLACK,
+                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, VersionText);
 #else
         Fancy_Text_Print("V.%d%s", D_DIALOG_X + D_DIALOG_W - 10,
-                         D_DIALOG_Y + D_DIALOG_H - 20, DKGREY,
-                         TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                         D_DIALOG_Y + D_DIALOG_H - 20, GREY, TBLACK,
+                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), VersionText);
 #endif
       }

@@ -221,7 +221,7 @@ void TeamTypeClass::Read_INI(char* buffer) {
   Read all TeamType entry names into 'tbuffer'
   ------------------------------------------------------------------------*/
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+                            _ShapeBufferSize - len, buffer);
 
   /*
   ----------------------- Loop for all team entries ------------------------
@@ -562,7 +562,7 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
   Read all TeamType entry names into 'tbuffer'
   ------------------------------------------------------------------------*/
   WWGetPrivateProfileString("Teams", nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+                            _ShapeBufferSize - len, buffer);
 
   /*
   ----------------------- Loop for all team entries ------------------------

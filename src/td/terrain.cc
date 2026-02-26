@@ -812,7 +812,7 @@ void TerrainClass::Read_INI(char* buffer) {
   tbuffer = buffer + len;
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+                            _ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
     TerrainType terrain;  // Terrain type.
     CELL cell;
@@ -860,7 +860,7 @@ void TerrainClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - strlen(buffer), buffer);
+                            _ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;

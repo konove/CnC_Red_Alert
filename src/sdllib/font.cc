@@ -92,14 +92,14 @@ int Char_Pixel_Width(char chr) {
 }
 
 unsigned int String_Pixel_Width(const char* string) {
-  int width;        // Working accumulator of string width.
   int largest = 0;  // Largest recorded width of the string.
 
   if (!string) {
     return 0;
   }
 
-  width = 0;
+  // Working accumulator of string width.
+  int width = 0;
   while (*string) {
     if (*string == '\r') {
       string++;

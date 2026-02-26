@@ -3022,7 +3022,7 @@ void BuildingClass::Read_INI(char* buffer) {
   **	Read the entire building INI section into HIDBUF
   */
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+                            _ShapeBufferSize - len, buffer);
 
   while (*tbuffer != '\0') {
     /*
@@ -3117,7 +3117,7 @@ void BuildingClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - strlen(buffer), buffer);
+                            _ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;

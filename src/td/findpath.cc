@@ -1388,7 +1388,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
         if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
           Map.Coord_To_Pixel(Cell_Coord(Adjacent_Cell(cell, *cmd2)), x1, y1);
           Set_Logic_Page(SeenBuff);
-          LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, DKGREY);
+          LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, GREY);
         }
       }
 #endif

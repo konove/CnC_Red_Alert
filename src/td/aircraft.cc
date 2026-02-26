@@ -466,7 +466,8 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
       CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
                     flags, nullptr, MouseClass::UnitShadow);
 
-      base::MovePoint(xx, yy, SecondaryFacing.Current() + DIR_S, _stretch[face] * 2);
+      base::MovePoint(xx, yy, SecondaryFacing.Current() + DIR_S,
+                      _stretch[face] * 2);
       CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
                     flags, nullptr, MouseClass::UnitShadow);
 
@@ -510,7 +511,7 @@ void AircraftClass::Read_INI(char* buffer) {
   tbuffer = buffer + len;
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+                            _ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
@@ -577,7 +578,7 @@ void AircraftClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - strlen(buffer), buffer);
+                            _ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;

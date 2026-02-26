@@ -1460,7 +1460,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   */
   if (ok) {
     if (path->Length <= 1) {
-      movmem(&stage[0], path->Command, std::max(counter, 1));
+      memmove(path->Command, &stage[0], std::max(counter, 1));
       path->Length = counter;
     } else {
       /*
@@ -1479,8 +1479,8 @@ void DriveClass::Fixup_Path(PathType* path) {
       **	insert the rest now.
       */
       if (counter) {
-        movmem(&path->Command[0], &path->Command[counter], 40 - counter);
-        movmem(&stage[0], &path->Command[0], counter);
+        memmove(&path->Command[counter], &path->Command[0], 40 - counter);
+        memmove(&path->Command[0], &stage[0], counter);
         path->Length += counter;
       }
     }

@@ -482,8 +482,7 @@ void Debug_Key(unsigned input) {
 
             for (index = 0; index < 12; index++) {
               LogicPage->Put_Pixel((_gridx[index] + XCENTER) - (32 + 64),
-                                   (_gridy[index] + YCENTER) - (32 + 64),
-                                   DKGRAY);
+                                   (_gridy[index] + YCENTER) - (32 + 64), GREY);
             }
           }
 

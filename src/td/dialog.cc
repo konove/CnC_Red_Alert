@@ -112,20 +112,20 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
 
       // Filler, Shadow, Hilite, Corner colors
 
-      {LTGREY, WHITE, DKGREY, LTGREY},  // 0 Button is down.
-      {LTGREY, DKGREY, WHITE, LTGREY},  // 1 Button is up w/border.
-      {LTBLUE, BLUE, LTCYAN, LTBLUE},   // 2 Raised blue.
-      {DKGREY, WHITE, BLACK, DKGREY},   // 3 Button is disabled down.
-      {DKGREY, BLACK, WHITE, LTGREY},   // 4 Button is disabled up.
-      {LTGREY, DKGREY, WHITE, LTGREY},  // 5 Button is up w/arrows.
+      {LTGREY, WHITE, GREY, LTGREY},   // 0 Button is down.
+      {LTGREY, GREY, WHITE, LTGREY},   // 1 Button is up w/border.
+      {LTBLUE, BLUE, LTCYAN, LTBLUE},  // 2 Raised blue.
+      {GREY, WHITE, BLACK, GREY},      // 3 Button is disabled down.
+      {GREY, BLACK, WHITE, LTGREY},    // 4 Button is disabled up.
+      {LTGREY, GREY, WHITE, LTGREY},   // 5 Button is up w/arrows.
       //{ CC_GREEN_BKGD, CC_LIGHT_GREEN, CC_GREEN_SHADOW,  CC_GREEN_CORNERS },
       //// 6 Button is down.
       //{ CC_GREEN_BKGD, CC_GREEN_SHADOW, CC_LIGHT_GREEN,  CC_GREEN_CORNERS },
       //// 7 Button is up w/border.
-      {CC_GREEN_BKGD, 14, 12, 13},      // 6 Button is down.
-      {CC_GREEN_BKGD, 12, 14, 13},      // 7 Button is up w/border.
-      {DKGREY, WHITE, BLACK, DKGREY},   // 8 Button is disabled down.
-      {DKGREY, BLACK, LTGREY, DKGREY},  // 9 Button is disabled up.
+      {CC_GREEN_BKGD, 14, 12, 13},  // 6 Button is down.
+      {CC_GREEN_BKGD, 12, 14, 13},  // 7 Button is up w/border.
+      {GREY, WHITE, BLACK, GREY},   // 8 Button is disabled down.
+      {GREY, BLACK, LTGREY, GREY},  // 9 Button is disabled up.
       //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 10 List box.
       //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 11 Menu box.
       {BLACK, 14, 14, BLACK},  // 10 List box.

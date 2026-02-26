@@ -363,7 +363,7 @@ void TextButtonClass::Draw_Text(const char* text) {
       } else {
         if (IsPressed) {
           if (PrintFlags & TPF_NOSHADOW) {
-            color = DKGREY;
+            color = GREY;
           } else {
             color = LTGREY;
           }

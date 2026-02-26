@@ -467,7 +467,7 @@ void RadarClass::Draw_It(bool forced) {
         if (BaseX || BaseY) {
           LogicPage->Fill_Rect(RadX + RadOffX, RadY + RadOffY,
                                RadX + RadOffX + RadIWidth - 1,
-                               RadY + RadOffY + RadIHeight - 1, DKGREY);
+                               RadY + RadOffY + RadIHeight - 1, GREY);
         } else {
           LogicPage->Fill_Rect(RadX + RadOffX, RadY + RadOffY,
                                RadX + RadOffX + RadIWidth - 1,

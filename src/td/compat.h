@@ -41,25 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_COMPAT_H_
 #define CNC_RED_ALERT_TD_COMPAT_H_
 
-#define BuffType BufferClass
-// TODO(konove): Fix the code instead.
-#define movmem(a, b, c) memmove(b, a, c)
-#define ShapeBufferSize _ShapeBufferSize
-
-extern "C" {
-extern long ShapeBufferSize;
-extern char* ShapeBuffer;
-}
-
-/*=========================================================================*/
-/* Define some equates for the different graphic routines we will install
- */
-/*		later.
- */
-/*=========================================================================*/
-#define HIDBUFF ((void*)(0xA0000))
-// #define Size_Of_Region(a, b) a*b
-
 /*=========================================================================*/
 /* Define some Graphic Routines which will only be fixed by these defines
  */
@@ -72,22 +53,13 @@ extern char* ShapeBuffer;
 #define READ 1   // Read access.
 #define WRITE 2  // Write access.
 
-#ifndef SEEK_SET
-#define SEEK_SET 0  // Seek from start of file.
-#define SEEK_CUR 1  // Seek relative from current location.
-#define SEEK_END 2  // Seek from end of file.
-#endif
-
-#define ERROR_WINDOW 1
-#define ErrorWindow 1
-
 extern unsigned char* Palette;
 extern unsigned char MDisabled;  // Is mouse disabled?
 
 /*
 **	This is the menu control structures.
 */
-typedef enum MenuIndexType {
+enum MenuIndexType {
   MENUX,
   MENUY,
   ITEMWIDTH,
@@ -96,68 +68,6 @@ typedef enum MenuIndexType {
   NORMCOL,
   HILITE,
   MENUPADDING = 0x1000
-} MenuIndexType;
-
-#define BITSPERBYTE 8
-#define MAXSHORT 0x7fff
-#define HIBITS 0x8000
-// #define MAXLONG     0x7fffffffL
-#define HIBITL 0x80000000
-
-#define MAXINT MAXLONG
-#define HIBITI HIBITL
-
-#define DMAXEXP 308
-#define FMAXEXP 38
-#define DMINEXP -307
-#define FMINEXP -37
-
-#define MAXDOUBLE 1.797693E+308
-#define MINDOUBLE 2.225074E-308
-#define MINFLOAT 8.43E-37F
-
-#define DSIGNIF 53
-#define FSIGNIF 24
-
-#define DMAXPOWTWO 0x3FF
-#define FMAXPOWTWO 0x7F
-#define DEXPLEN 11
-#define FEXPLEN 8
-#define EXPBASE 2
-#define IEEE 1
-#define LENBASE 1
-#define HIDDENBIT 1
-#define LN_MAXDOUBLE 7.0978E+2
-#define LN_MINDOUBLE -7.0840E+2
-
-/* These defines handle the various names given to the same color. */
-#define DKGREEN GREEN
-#define DKBLUE BLUE
-#define GRAY GREY
-#define DKGREY GREY
-#define DKGRAY GREY
-#define LTGRAY LTGREY
-
-#if 0
-typedef struct {
-	short	Width;			// Width of icons (pixels).
-	short	Height;			// Height of icons (pixels).
-	short	Count;			// Number of (logical) icons in this set.
-	short	Allocated;		// Was this iconset allocated?
-	long	Size;				// Size of entire iconset memory block.
-	unsigned char * Icons;			// Offset from buffer start to icon data.
-	long	Palettes;		// Offset from buffer start to palette data.
-	long	Remaps;			// Offset from buffer start to remap index data.
-	long	TransFlag;		// Offset for transparency flag table.
-	unsigned char * Map;				// Icon map offset (if present).
-} IControl_Type;
-#endif
-
-void Stuff_Key_Num(int);
-
-extern "C" {
-extern int MouseQX;
-extern int MouseQY;
-}
+};
 
 #endif  // CNC_RED_ALERT_TD_COMPAT_H_

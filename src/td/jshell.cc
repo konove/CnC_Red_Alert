@@ -192,8 +192,8 @@ void File_Fatal(const char* message) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
-                     BuffType& dest_buff, void* reserved_data) {
+long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
+                     BufferClass& dest_buff, void* reserved_data) {
   unsigned short size;
   void* sptr = uncomp_buff.Get_Buffer();
   void* dptr = dest_buff.Get_Buffer();

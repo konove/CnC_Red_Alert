@@ -228,7 +228,7 @@ void RawFileClass::Error(int error, int canretry, const char* filename) {
     **	Setup display in preparation for printing the error message.
     */
     oldpage = Set_Logic_Page(SeenBuff);
-    oldwindow = Change_Window(ErrorWindow);
+    oldwindow = Change_Window(1);
     oldfont = Set_Font(FontPtr);
     oldspacing = FontXSpacing;
     FontXSpacing = 0;

@@ -862,8 +862,8 @@ long* RandSeedPtr;
 int CustomSeed = 0;
 
 int WindowList[][8] = {
-    /* xbyte, ypixel, bytewid, pixelht, cursor color, bkgd color,	cursor
-       x, cursor y */
+    /* xbyte, ypixel, bytewid, pixelht, cursor color, bkgd color, cursor x,
+       cursor y */
 
     /* do not change the first 2 entries!! they are necc. to the system */
     {0, 0, 40, 200, WHITE, BLACK, 0, 0},  /* screen window */
@@ -873,7 +873,7 @@ int WindowList[][8] = {
     {0, 0, 40, 200, WHITE, LTGREY, 0, 0},
 
     // Initial menu window.
-    {12, 199 - 42, 16, 42, LTGREY, DKGREY, 0, 0},
+    {12, 199 - 42, 16, 42, LTGREY, GREY, 0, 0},
 
     // Sidebar clipping window.
     {0, 0, 0, 0, 0, 0, 0, 0},

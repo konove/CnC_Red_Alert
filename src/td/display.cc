@@ -368,18 +368,18 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   static const TLucentType MouseCols[4] = {{BLACK, BLACK, 110, 0},
                                            {WHITE, WHITE, 110, 0},
                                            {LTGREY, LTGREY, 110, 0},
-                                           {DKGREY, DKGREY, 110, 0}};
+                                           {GREY, GREY, 110, 0}};
   static const TLucentType MagicCols[MAGIC_COL_COUNT] = {
       {32, 32, 110, 0},      {33, 33, 110, 0},       {34, 34, 110, 0},
       {35, 35, 110, 0},      {36, 36, 110, 0},       {37, 37, 110, 0},
       {38, 38, 110, 0},      {39, 39, 110, 0},       {BLACK, BLACK, 200, 0},
-      {WHITE, BLACK, 40, 0}, {LTGREY, BLACK, 80, 0}, {DKGREY, BLACK, 140, 0}};
+      {WHITE, BLACK, 40, 0}, {LTGREY, BLACK, 80, 0}, {GREY, BLACK, 140, 0}};
   static const TLucentType WhiteCols[1] = {{1, WHITE, 80, 0}};
   static const TLucentType ShadowCols[SHADOW_COL_COUNT] = {
       {WHITE + 1, BLACK, 130, 0},
       {WHITE, BLACK, 170, 0},
-      {LTGRAY, BLACK, 250, 0},
-      {DKGRAY, BLACK, 250, 0}};
+      {LTGREY, BLACK, 250, 0},
+      {GREY, BLACK, 250, 0}};
   static const TLucentType UShadowCols[USHADOW_COL_COUNT] = {
       {LTGREEN, BLACK, 130, 0}};
 #endif
@@ -1233,7 +1233,7 @@ void DisplayClass::Read_INI(char* buffer) {
   **	Read all entry names into 'tbuffer'.
   */
   WWGetPrivateProfileString(trigsection, nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+                            _ShapeBufferSize - len, buffer);
 
   /*
   **	Loop through all CellTrigger entries.

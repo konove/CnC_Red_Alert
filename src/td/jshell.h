@@ -64,7 +64,7 @@ class Keyboard {
     return static_cast<KeyASCIIType>(KN_To_KA(key));
   }
   static void Clear() { Clear_KeyBuffer(); }
-  static void Stuff(KeyNumType key) { Stuff_Key_Num(key); }
+  static void Stuff(KeyNumType /*key*/) {}
   static int Down(KeyNumType key) { return Key_Down(key); }
   static int Mouse_X() { return Get_Mouse_X(); }
   static int Mouse_Y() { return Get_Mouse_Y(); }
@@ -221,8 +221,8 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
 void* Small_Icon(const void* iconptr, int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
 void* Load_Alloc_Data(FileClass& file);
-long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
-                     BuffType& dest_buff, void* reserved_data);
+long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
+                     BufferClass& dest_buff, void* reserved_data);
 long Translucent_Table_Size(int count);
 void* Build_Translucent_Table(const void* palette, const TLucentType* control,
                               int count, void* buffer);

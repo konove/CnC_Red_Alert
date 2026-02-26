@@ -1121,7 +1121,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         Fancy_Text_Print("Neutral Unit", txt_x, txt_y, PURPLE, TBLACK,
                          TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print("Terrain Object", txt_x, txt_y, DKGREEN, TBLACK,
+        Fancy_Text_Print("Terrain Object", txt_x, txt_y, GREEN, TBLACK,
                          TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
         Fancy_Text_Print("Starting Cell", txt_x, txt_y, WHITE, TBLACK,
@@ -1225,7 +1225,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
           occupier = (*this)[cell].Cell_Occupier();
           if (occupier) {
-            color = DKGREEN;
+            color = GREEN;
             if (occupier && occupier->Owner() != HOUSE_NONE) {
               color = HouseClass::As_Pointer(occupier->Owner())->Class->Color;
             }

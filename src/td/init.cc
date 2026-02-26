@@ -985,18 +985,18 @@ bool Select_Game(bool fade) {
         if constexpr (config::kVirginCheatKeysEnabled) {
           Fancy_Text_Print(
               "V.%d%s", SeenBuff.Get_Width() - 1, SeenBuff.Get_Height() - 10,
-              DKGREY, TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+              GREY, TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
               Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
         } else {
 #ifdef DEMO
           Version_Number();
           Fancy_Text_Print("DEMO V%s", SeenBuff.Get_Width() - 1,
-                           SeenBuff.Get_Height() - 10, DKGREY, TBLACK,
+                           SeenBuff.Get_Height() - 10, GREY, TBLACK,
                            TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                            VersionText);
 #else
           Fancy_Text_Print("V.%d%s", SeenBuff.Get_Width() - 1,
-                           SeenBuff.Get_Height() - 10, DKGREY, TBLACK,
+                           SeenBuff.Get_Height() - 10, GREY, TBLACK,
                            TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                            Version_Number(), VersionText);
 #endif

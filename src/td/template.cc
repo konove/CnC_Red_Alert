@@ -131,7 +131,7 @@ void TemplateClass::Read_INI(char* buffer) {
   tbuffer = buffer + len;
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+                            _ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
     TemplateType temp;  // Terrain type.
 
@@ -170,7 +170,7 @@ void TemplateClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - strlen(buffer), buffer);
+                            _ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;
