@@ -41,20 +41,8 @@
 #include <cstdint>
 #include <ctime>
 
-/*=========================================================================*/
-/* File IO system defines and enumerations
- */
-/*=========================================================================*/
+#include "sdllib/file_access.h"
 
-/*
-**	These are the Open_File, Read_File, and Seek_File constants.
-*/
-#ifndef READ
-#define READ 1  // Read access.
-#endif
-#ifndef WRITE
-#define WRITE 2  // Write access.
-#endif
 #ifndef SEEK_SET
 #define SEEK_SET 0  // Seek from start of file.
 #define SEEK_CUR 1  // Seek relative from current location.
@@ -62,7 +50,7 @@
 #endif
 
 // These are actually implemented in the game, but used by audio and WSA
-int Open_File(const char* file_name, int mode);
+int Open_File(const char* file_name, FileAccess mode);
 void Close_File(int handle);
 long Read_File(int handle, void* buf, unsigned long bytes);
 long Write_File(int handle, const void* buf, unsigned long bytes);
@@ -71,7 +59,7 @@ unsigned long File_Size(int handle);
 int Find_File(const char* file_name);
 
 // low level IO implemented here
-void* IO_Open_File(const char* filename, int mode);
+void* IO_Open_File(const char* filename, FileAccess mode);
 void IO_Close_File(void* handle);
 
 bool IO_Read_File(void* handle, void* buffer, size_t count,

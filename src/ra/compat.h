@@ -55,11 +55,6 @@
 #define HIDBUFF ((void*)(0xA0000))
 #define Size_Of_Region(a, b) ((a) * (b))
 
-/*
-**	These are the Open_File, Read_File, and Seek_File constants.
-*/
-#define READ 1   // Read access.
-#define WRITE 2  // Write access.
 #include "sdllib/tile.h"
 
 #ifndef SEEK_SET

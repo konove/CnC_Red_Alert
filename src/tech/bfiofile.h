@@ -67,8 +67,9 @@ class BufferIOFileClass : public RawFileClass {
   bool Commit();
   const char* Set_Name(const char* filename) override;
   int Is_Open() const override;
-  int Open(const char* filename, int rights = READ) override;
-  int Open(int rights = READ) override;
+  int Open(const char* filename,
+           FileAccess rights = FileAccess::kRead) override;
+  int Open(FileAccess rights = FileAccess::kRead) override;
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;
@@ -88,7 +89,7 @@ class BufferIOFileClass : public RawFileClass {
   unsigned IsChanged : 1;
   unsigned UseBuffer : 1;
 
-  int BufferRights;
+  FileAccess BufferRights;
 
   void* Buffer;
 

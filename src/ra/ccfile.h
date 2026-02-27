@@ -63,11 +63,12 @@ class CCFileClass : public CDFileClass {
 
   bool Is_Resident() const { return Data.Get_Buffer() != nullptr; }
   int Is_Open() const override;
-  int Open(const char* filename, int rights = READ) override {
+  int Open(const char* filename,
+           FileAccess rights = FileAccess::kRead) override {
     Set_Name(filename);
     return Open(rights);
   }
-  int Open(int rights = READ) override;
+  int Open(FileAccess rights = FileAccess::kRead) override;
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;

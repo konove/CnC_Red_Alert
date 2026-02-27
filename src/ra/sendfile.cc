@@ -333,7 +333,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
   /*
   ** Open the file for write
   */
-  save_file.Open(WRITE);
+  save_file.Open(FileAccess::kWrite);
 
   commands = &cancelbtn;
   commands->Add_Tail(progress_meter);
@@ -661,7 +661,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
   max_chunk_size = MAX_SEND_FILE_PACKET_SIZE;
   total_blocks = (file_length + max_chunk_size - 1) / max_chunk_size;
 
-  send_file.Open(READ);
+  send_file.Open(FileAccess::kRead);
 
   commands = &cancelbtn;
   commands->Add_Tail(progress_meter);

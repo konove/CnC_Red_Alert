@@ -107,7 +107,9 @@ int cdecl Is_Disk_Inserted(int disk) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(int rights) { return BufferIOFileClass::Open(rights); }
+int CDFileClass::Open(FileAccess rights) {
+  return BufferIOFileClass::Open(rights);
+}
 
 /***********************************************************************************************
  * CDFC::Refresh_Search_Drives -- Updates the search path when a CD changes or
@@ -320,7 +322,7 @@ const char* CDFileClass::Set_Name(const char* filename) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(const char* filename, int rights) {
+int CDFileClass::Open(const char* filename, FileAccess rights) {
   CDFileClass::Close();
 
   /*
@@ -334,7 +336,7 @@ int CDFileClass::Open(const char* filename, int rights) {
   /*
   **	If writing is requested, then multiple drive searching is not performed.
   */
-  if (is_disabled_ || rights == WRITE) {
+  if (is_disabled_ || rights == FileAccess::kWrite) {
     BufferIOFileClass::Set_Name(filename);
     return BufferIOFileClass::Open(rights);
   }

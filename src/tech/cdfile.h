@@ -44,7 +44,7 @@
 // Example usage:
 //   CDFileClass::Add_Search_Drives("C:\GameData;?:\Assets");
 //   CDFileClass file("textures\player.bmp");
-//   file.Open(READ);  // Searches C:\GameData, then CD drive
+//   file.Open(FileAccess::kRead);  // Searches C:\GameData, then CD drive
 class CDFileClass : public BufferIOFileClass {
  public:
   explicit CDFileClass(const char* filename);
@@ -57,8 +57,9 @@ class CDFileClass : public BufferIOFileClass {
   CDFileClass& operator=(CDFileClass&&) = delete;
 
   const char* Set_Name(const char* filename) override;
-  int Open(const char* filename, int rights = READ) override;
-  int Open(int rights = READ) override;
+  int Open(const char* filename,
+           FileAccess rights = FileAccess::kRead) override;
+  int Open(FileAccess rights = FileAccess::kRead) override;
 
   void Searching(const bool on) { is_disabled_ = !on; }
 

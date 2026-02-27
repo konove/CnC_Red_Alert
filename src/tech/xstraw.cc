@@ -117,7 +117,7 @@ int FileStraw::Get(void* source, int slen) {
       if (!File->Is_Available()) {
         return 0;
       }
-      if (!File->Open(READ)) {
+      if (!File->Open(FileAccess::kRead)) {
         return 0;
       }
     }

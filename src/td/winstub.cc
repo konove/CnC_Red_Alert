@@ -756,7 +756,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
     return NULL;
   }
 
-  file_handle.Open(READ);
+  file_handle.Open(FileAccess::kRead);
 
   file_handle.Read(&header, sizeof(PCX_HEADER));
 

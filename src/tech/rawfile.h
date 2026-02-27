@@ -73,7 +73,7 @@ class RawFileClass : public FileClass {
   **	This is a record of the access rights used to open the file. These
   *rights are *	used if the file object is duplicated.
   */
-  int Rights;
+  FileAccess Rights;
 
   RawFileClass(const char* filename);
   RawFileClass();
@@ -88,8 +88,9 @@ class RawFileClass : public FileClass {
   int Create() override;
   int Delete() override;
   int Is_Open() const override;
-  int Open(const char* filename, int rights = READ) override;
-  int Open(int rights = READ) override;
+  int Open(const char* filename,
+           FileAccess rights = FileAccess::kRead) override;
+  int Open(FileAccess rights = FileAccess::kRead) override;
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;
@@ -188,7 +189,7 @@ inline const char* RawFileClass::File_Name() const {
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
 inline RawFileClass::RawFileClass()
-    : Rights(READ),
+    : Rights(FileAccess::kRead),
       BiasStart(0),
       BiasLength(-1),
       Handle(nullptr),

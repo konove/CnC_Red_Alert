@@ -61,11 +61,12 @@ class CCFileClass : public CDFileClass {
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 
-  int Open(const char* filename, int rights = READ) override {
+  int Open(const char* filename,
+           FileAccess rights = FileAccess::kRead) override {
     Set_Name(filename);
     return Open(rights);
   }
-  int Open(int rights = READ) override;
+  int Open(FileAccess rights = FileAccess::kRead) override;
   int Is_Open() const override;
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;

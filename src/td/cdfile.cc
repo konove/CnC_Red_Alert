@@ -98,7 +98,7 @@ CDFileClass::CDFileClass() : IsDisabled(false) {}
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(int rights) { return RawFileClass::Open(rights); }
+int CDFileClass::Open(FileAccess rights) { return RawFileClass::Open(rights); }
 
 /***********************************************************************************************
  * CDFC::Refresh_Search_Drives -- Updates the search path when a CD changes or
@@ -436,7 +436,7 @@ const char* CDFileClass::Set_Name(const char* filename) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(const char* filename, int rights) {
+int CDFileClass::Open(const char* filename, FileAccess rights) {
   Close();
 
   /*
@@ -450,7 +450,7 @@ int CDFileClass::Open(const char* filename, int rights) {
   /*
   **	If writing is requested, then multiple drive searching is not performed.
   */
-  if (IsDisabled || rights == WRITE) {
+  if (IsDisabled || rights == FileAccess::kWrite) {
     return RawFileClass::Open(filename, rights);
   }
 

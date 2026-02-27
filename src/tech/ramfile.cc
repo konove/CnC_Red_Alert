@@ -205,7 +205,7 @@ int RAMFileClass::Is_Open() const { return IsOpen; }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Open(const char*, int access) { return Open(access); }
+int RAMFileClass::Open(const char*, FileAccess access) { return Open(access); }
 
 /***********************************************************************************************
  * RAMFileClass::Open -- Opens the RAM based file. *
@@ -223,7 +223,7 @@ int RAMFileClass::Open(const char*, int access) { return Open(access); }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Open(int access) {
+int RAMFileClass::Open(FileAccess access) {
   if (Buffer == nullptr || Is_Open()) {
     return false;
   }
@@ -234,14 +234,14 @@ int RAMFileClass::Open(int access) {
 
   switch (access) {
     default:
-    case READ:
+    case FileAccess::kRead:
       break;
 
-    case WRITE:
+    case FileAccess::kWrite:
       Length = 0;
       break;
 
-    case READ | WRITE:
+    case FileAccess::kReadWrite:
       break;
   }
 
@@ -276,10 +276,10 @@ long RAMFileClass::Read(void* buffer, long size) {
 
   bool hasopened = false;
   if (!Is_Open()) {
-    Open(READ);
+    Open(FileAccess::kRead);
     hasopened = true;
   } else {
-    if ((Access & READ) == 0) {
+    if (!HasAccess(Access, FileAccess::kRead)) {
       return 0;
     }
   }
@@ -321,7 +321,7 @@ long RAMFileClass::Seek(long pos, int dir) {
   }
 
   int maxoffset = Length;
-  if ((Access & WRITE) != 0) {
+  if (HasAccess(Access, FileAccess::kWrite)) {
     maxoffset = MaxLength;
   }
 
@@ -388,10 +388,10 @@ long RAMFileClass::Write(const void* buffer, long size) {
 
   bool hasopened = false;
   if (!Is_Open()) {
-    Open(WRITE);
+    Open(FileAccess::kWrite);
     hasopened = true;
   } else {
-    if ((Access & WRITE) == 0) {
+    if (!HasAccess(Access, FileAccess::kWrite)) {
       return 0;
     }
   }

@@ -14,14 +14,14 @@
 #include <unistd.h>
 #endif
 
-void* IO_Open_File(const char* filename, int mode) {
+void* IO_Open_File(const char* filename, FileAccess mode) {
   const char* mode_str;
 
-  if (mode == READ) {
+  if (mode == FileAccess::kRead) {
     mode_str = "rb";
-  } else if (mode == WRITE) {
+  } else if (mode == FileAccess::kWrite) {
     mode_str = "wb";
-  } else if (mode == (READ | WRITE)) {
+  } else if (mode == FileAccess::kReadWrite) {
     mode_str = "w+b";
   } else {
     return nullptr;

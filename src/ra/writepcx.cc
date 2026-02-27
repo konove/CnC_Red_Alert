@@ -122,7 +122,7 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
   */
   bool open = false;
   if (!file.Is_Open()) {
-    file.Open(WRITE);
+    file.Open(FileAccess::kWrite);
     open = true;
   }
   file.Write(&header, sizeof(header));

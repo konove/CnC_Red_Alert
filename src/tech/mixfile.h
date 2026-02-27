@@ -264,7 +264,7 @@ bool MixFileClass<T>::Cache() {
     straw = &sha;
   }
 
-  if (!file.Open(READ)) {
+  if (!file.Open(FileAccess::kRead)) {
     data_.clear();
     return false;
   }

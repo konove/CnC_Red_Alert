@@ -406,7 +406,7 @@ void CCFileClass::Close() {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int CCFileClass::Open(int rights) {
+int CCFileClass::Open(FileAccess rights) {
   /*
   **	Always close the file if it was open.
   */
@@ -418,7 +418,7 @@ int CCFileClass::Open(int rights) {
   **	of whether it also exists in RAM. This is slower, but allows
   **	upgrade files to work.
   */
-  if (rights & WRITE ||
+  if (HasAccess(rights, FileAccess::kWrite) ||
       CDFileClass::Do_Is_Available(AvailabilityCheck::kQuick)) {
     return CDFileClass::Open(rights);
   }
@@ -445,7 +445,7 @@ int CCFileClass::Open(int rights) {
       *is NOT the same as the file *	attached to the file handle.
       */
       std::string dupfile = File_Name();
-      Open(loc->mixfile->Filename().c_str(), READ);
+      Open(loc->mixfile->Filename().c_str(), FileAccess::kRead);
       Searching(false);  // Disable multi-drive search.
       Set_Name(dupfile.c_str());
       Searching(true);
@@ -481,7 +481,7 @@ bool __cdecl Set_Search_Drives(const char*) {
 }
 #endif
 
-int __cdecl Open_File(const char* file_name, int mode) {
+int __cdecl Open_File(const char* file_name, FileAccess mode) {
   for (int index = 0; index < sizeof(Handles) / sizeof(Handles[0]); index++) {
     if (!Handles[index].Is_Open()) {
       Handles[index].Set_Name(file_name);

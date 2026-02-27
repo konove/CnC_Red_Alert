@@ -59,8 +59,9 @@ class RAMFileClass : public FileClass {
   int Create() override;
   int Delete() override;
   int Is_Open() const override;
-  int Open(const char* filename, int access = READ) override;
-  int Open(int access = READ) override;
+  int Open(const char* filename,
+           FileAccess access = FileAccess::kRead) override;
+  int Open(FileAccess access = FileAccess::kRead) override;
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;
@@ -100,7 +101,7 @@ class RAMFileClass : public FileClass {
   /*
   **	The file was opened with this access mode.
   */
-  int Access = 0;
+  FileAccess Access = FileAccess::kRead;
 
   /*
   **	Is the file currently open?

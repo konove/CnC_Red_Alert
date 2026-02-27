@@ -1044,7 +1044,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
 
   file.Set_Name(CONFIG_FILE_NAME);
   if (file.Is_Available()) {
-    file.Open(READ);
+    file.Open(FileAccess::kRead);
     file.Read(buffer, _ShapeBufferSize - 1);
     file.Close();
   }
@@ -1127,7 +1127,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
   //------------------------------------------------------------------------
   //	Write the INI data out to a file.
   //------------------------------------------------------------------------
-  file.Open(WRITE);
+  file.Open(FileAccess::kWrite);
   file.Write(buffer, strlen(buffer));
   file.Close();
 #endif

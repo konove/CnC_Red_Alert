@@ -2553,7 +2553,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
       file = new CCFileClass(static_cast<char*>(buffer));
 
       if (file != nullptr && file->Is_Available()) {
-        error = file->Open(static_cast<char*>(buffer), READ);
+        error = file->Open(static_cast<char*>(buffer), FileAccess::kRead);
 
         if (error != -1) {
           vqa->VQAio = (uintptr_t)file;
@@ -2658,7 +2658,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   }
 
   if (file.Is_Available()) {
-    file.Open(READ);
+    file.Open(FileAccess::kRead);
     file.Read(&num_palettes, 4);
 
     for (i = 0; i < num_palettes; i++) {

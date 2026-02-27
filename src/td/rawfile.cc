@@ -409,7 +409,7 @@ const char* RawFileClass::Set_Name(const char* filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Open(const char* filename, int rights) {
+int RawFileClass::Open(const char* filename, FileAccess rights) {
   Set_Name(filename);
   return Open(rights);
 }
@@ -432,7 +432,7 @@ int RawFileClass::Open(const char* filename, int rights) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Open(int rights) {
+int RawFileClass::Open(FileAccess rights) {
   Close();
 
   /*
@@ -473,15 +473,15 @@ int RawFileClass::Open(int rights) {
         errno = EINVAL;
         break;
 
-      case READ:
+      case FileAccess::kRead:
         _dos_open(Filename, O_RDONLY | SH_DENYNO, &Handle);
         break;
 
-      case WRITE:
+      case FileAccess::kWrite:
         _dos_creat(Filename, 0, &Handle);
         break;
 
-      case READ | WRITE:
+      case FileAccess::kReadWrite:
         _dos_open(Filename, O_RDWR | O_CREAT | SH_DENYWR, &Handle);
         break;
     }
@@ -552,7 +552,7 @@ int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
   *since those *	channels ensure that the file must exist.
   */
   if (mode == AvailabilityCheck::kBlocking) {
-    RawFileClass::Open(READ);
+    RawFileClass::Open(FileAccess::kRead);
     RawFileClass::Close();
     return true;
   }
@@ -565,14 +565,14 @@ int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
   */
   for (;;) {
 #ifdef PORTABLE
-    file = IO_Open_File(Filename, READ);
+    file = IO_Open_File(Filename, FileAccess::kRead);
     if (!file) {
       // retry with lowercase name for case-sensitive fs
       size_t len = strlen(Filename) + 1;
       char* lower_name = new char[len];
       memcpy(lower_name, Filename, len);
       strlwr(lower_name);
-      file = IO_Open_File(lower_name, READ);
+      file = IO_Open_File(lower_name, FileAccess::kRead);
 
       if (file) {
         // if successful, replace the filename with the working one
@@ -753,7 +753,7 @@ long RawFileClass::Read(void* buffer, long size) {
     **	The error check here is moot. Open will never return unless it
     *succeeded.
     */
-    if (!Open(READ)) {
+    if (!Open(FileAccess::kRead)) {
       return 0;
     }
     opened = true;
@@ -854,7 +854,7 @@ long RawFileClass::Write(const void* buffer, long size) {
   *the *	output is finished.
   */
   if (!Is_Open()) {
-    if (!Open(WRITE)) {
+    if (!Open(FileAccess::kWrite)) {
       return 0;
     }
     opened = true;
@@ -1083,7 +1083,7 @@ long RawFileClass::Size() {
  *=============================================================================================*/
 int RawFileClass::Create() {
   Close();
-  if (Open(WRITE)) {
+  if (Open(FileAccess::kWrite)) {
     Close();
     return true;
   }

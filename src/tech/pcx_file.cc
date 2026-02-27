@@ -75,7 +75,7 @@ int Write_PCX_File(char* name, GraphicViewPortClass& pic,
                        320, 200, {0}, 0, 1, 320, 1,   {0}};
 
   // Open file name
-  file_handle = Open_File(name, WRITE);
+  file_handle = Open_File(name, FileAccess::kWrite);
   if (file_handle == -1) {
     return false;
   }

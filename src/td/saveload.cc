@@ -175,7 +175,7 @@ bool Save_Game(int id, char* descr) {
   /*
   **	Open the file
   */
-  if (!file.Open(name, WRITE)) {
+  if (!file.Open(name, FileAccess::kWrite)) {
     Decode_All_Pointers();
     return false;
   }
@@ -351,7 +351,7 @@ bool Load_Game(int id) {
   /*
   **	Open the file
   */
-  if (!file.Open(name, READ)) {
+  if (!file.Open(name, FileAccess::kRead)) {
     return false;
   }
 
@@ -1031,7 +1031,7 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
   /*
   **	If the file opens OK, read the file
   */
-  if (file.Open(name, READ)) {
+  if (file.Open(name, FileAccess::kRead)) {
     /*
     **	Read in the description, scenario #, and the house
     */

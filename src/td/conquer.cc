@@ -2096,7 +2096,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
       file = new CCFileClass((char*)buffer);
 
       if (file != NULL && file->Is_Available()) {
-        error = file->Open((char*)buffer, READ);
+        error = file->Open((char*)buffer, FileAccess::kRead);
 
         if (error != -1) {
           vqa->VQAio = (unsigned long)file;
@@ -2226,7 +2226,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
       file = new CCFileClass(static_cast<char*>(buffer));
 
       if (file != nullptr && file->Is_Available()) {
-        error = file->Open(static_cast<char*>(buffer), READ);
+        error = file->Open(static_cast<char*>(buffer), FileAccess::kRead);
 
         if (error != -1) {
           vqa->VQAio = (unsigned long)file;
@@ -2312,7 +2312,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   //	palette_file = new RawFileClass (filename);
   //	if (file.Is_Available()){
 
-  file.Open(READ);
+  file.Open(FileAccess::kRead);
   file.Read(&num_palettes, 4);
 
   for (i = 0; i < num_palettes; i++) {
@@ -3724,7 +3724,7 @@ static void Do_Record_Playback() {
     For 'SuperRecord', we'll open & close the file with every entry.
     .....................................................................*/
     if (SuperRecord) {
-      RecordFile.Open(READ | WRITE);
+      RecordFile.Open(FileAccess::kReadWrite);
       RecordFile.Seek(0, SEEK_END);
     }
 

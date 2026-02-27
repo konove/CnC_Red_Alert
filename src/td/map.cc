@@ -942,7 +942,7 @@ bool MapClass::Read_Binary(const char* root, unsigned long* crc)
   if (!file.Is_Available()) {
     return false;
   }
-  file.Open(READ);
+  file.Open(FileAccess::kRead);
 
   /*
   **	Loop through all cells.
@@ -1025,7 +1025,7 @@ bool MapClass::Write_Binary(const char* root) {
   **	Create object & open file.
   */
   file = new CCFileClass(fname);
-  file->Open(WRITE);
+  file->Open(FileAccess::kWrite);
 
   /*
   **	Loop through all cells.

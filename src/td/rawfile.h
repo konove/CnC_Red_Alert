@@ -129,7 +129,7 @@ EZERO,                 // Non-error.
   **	This is a record of the access rights used to open the file. These
   *rights are *	used if the file object is duplicated.
   */
-  int Rights;
+  FileAccess Rights;
 
   RawFileClass(const char* filename);
   RawFileClass();
@@ -142,8 +142,9 @@ EZERO,                 // Non-error.
   int Create() override;
   int Delete() override;
   int Is_Open() const override;
-  int Open(const char* filename, int rights = READ) override;
-  int Open(int rights = READ) override;
+  int Open(const char* filename,
+           FileAccess rights = FileAccess::kRead) override;
+  int Open(FileAccess rights = FileAccess::kRead) override;
   long Read(void* buffer, long size) override;
   long Seek(long pos, int dir = SEEK_CUR) override;
   long Size() override;

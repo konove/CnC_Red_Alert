@@ -110,7 +110,7 @@ void RawFileClass::Error(int, int, const char*) {}
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 RawFileClass::RawFileClass(const char* filename)
-    : Rights(0),
+    : Rights(FileAccess::kRead),
       BiasStart(0),
       BiasLength(-1),
       Handle(nullptr),
@@ -170,7 +170,7 @@ const char* RawFileClass::Set_Name(const char* filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Open(const char* filename, int rights) {
+int RawFileClass::Open(const char* filename, FileAccess rights) {
   Set_Name(filename);
   return Open(rights);
 }
@@ -193,7 +193,7 @@ int RawFileClass::Open(const char* filename, int rights) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Open(int rights) {
+int RawFileClass::Open(FileAccess rights) {
   Close();
 
   /*
@@ -275,7 +275,7 @@ int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
   // If this is a blocking check, then go through the normal open channels,
   // since those channels ensure that the file must exist.
   if (mode == AvailabilityCheck::kBlocking) {
-    RawFileClass::Open(READ);
+    RawFileClass::Open(FileAccess::kRead);
     RawFileClass::Close();
     return true;
   }
@@ -287,11 +287,11 @@ int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
   *error recover channels.
   */
   for (;;) {
-    Handle = IO_Open_File(Filename_.c_str(), READ);
+    Handle = IO_Open_File(Filename_.c_str(), FileAccess::kRead);
     if (!Handle) {
       // retry with lowercase name for case-sensitive fs
       std::string lower_name = absl::AsciiStrToLower(Filename_);
-      Handle = IO_Open_File(lower_name.c_str(), READ);
+      Handle = IO_Open_File(lower_name.c_str(), FileAccess::kRead);
 
       if (Handle) {
         // if successful, replace the filename with the working one
@@ -384,7 +384,7 @@ long RawFileClass::Read(void* buffer, long size) {
     **	The error check here is moot. Open will never return unless it
     *succeeded.
     */
-    if (!Open(READ)) {
+    if (!Open(FileAccess::kRead)) {
       return 0;
     }
     opened = true;
@@ -443,7 +443,7 @@ long RawFileClass::Write(const void* buffer, long size) {
   *the *	output is finished.
   */
   if (!Is_Open()) {
-    if (!Open(WRITE)) {
+    if (!Open(FileAccess::kWrite)) {
       return 0;
     }
     opened = true;
@@ -618,7 +618,7 @@ long RawFileClass::Size() {
  *=============================================================================================*/
 int RawFileClass::Create() {
   Close();
-  if (Open(WRITE)) {
+  if (Open(FileAccess::kWrite)) {
     /*
     **	A biased file must be at least as long as the bias offset. Seeking to
     *the *	appropriate start offset has the effect of lengthening the file

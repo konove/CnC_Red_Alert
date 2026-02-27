@@ -43,12 +43,7 @@
 
 #include <cstdio>
 
-#ifndef READ
-#define READ _READ
-#endif
-#ifndef WRITE
-#define WRITE _WRITE
-#endif
+#include "sdllib/file_access.h"
 
 // Specifies how thoroughly to check file availability.
 enum class AvailabilityCheck {
@@ -74,8 +69,9 @@ class FileClass {
   }
 
   virtual int Is_Open() const = 0;
-  virtual int Open(const char* filename, int rights = READ) = 0;
-  virtual int Open(int rights = READ) = 0;
+  virtual int Open(const char* filename,
+                   FileAccess rights = FileAccess::kRead) = 0;
+  virtual int Open(FileAccess rights = FileAccess::kRead) = 0;
   virtual long Read(void* buffer, long size) = 0;
   virtual long Seek(long pos, int dir = SEEK_CUR) = 0;
   virtual long Size() = 0;

@@ -41,10 +41,4 @@
 #ifndef CNC_RED_ALERT_TD_COMPAT_H_
 #define CNC_RED_ALERT_TD_COMPAT_H_
 
-/*
-**	These are the Open_File, Read_File, and Seek_File constants.
-*/
-#define READ 1   // Read access.
-#define WRITE 2  // Write access.
-
 #endif  // CNC_RED_ALERT_TD_COMPAT_H_

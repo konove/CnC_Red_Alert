@@ -84,7 +84,7 @@ BufferIOFileClass::BufferIOFileClass(const char* filename)
       IsCached(false),
       IsChanged(false),
       UseBuffer(false),
-      BufferRights(0),
+      BufferRights(FileAccess::kRead),
       Buffer(nullptr),
       BufferSize(0),
       BufferPos(0),
@@ -118,7 +118,7 @@ BufferIOFileClass::BufferIOFileClass()
       IsCached(false),
       IsChanged(false),
       UseBuffer(false),
-      BufferRights(0),
+      BufferRights(FileAccess::kRead),
       Buffer(nullptr),
       BufferSize(0),
       BufferPos(0),
@@ -465,7 +465,7 @@ int BufferIOFileClass::Is_Open() const {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-int BufferIOFileClass::Open(const char* filename, int rights) {
+int BufferIOFileClass::Open(const char* filename, FileAccess rights) {
   Set_Name(filename);
   return BufferIOFileClass::Open(rights);
 }
@@ -488,17 +488,17 @@ int BufferIOFileClass::Open(const char* filename, int rights) {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-int BufferIOFileClass::Open(int rights) {
+int BufferIOFileClass::Open(FileAccess rights) {
   BufferIOFileClass::Close();
 
   if (UseBuffer) {
     BufferRights = rights;  // save rights requested for checks later
 
-    if (rights != READ || (rights == READ && FileSize > BufferSize)) {
-      if (rights == WRITE) {
+    if (rights != FileAccess::kRead || FileSize > BufferSize) {
+      if (rights == FileAccess::kWrite) {
         RawFileClass::Open(rights);
         RawFileClass::Close();
-        rights = READ | WRITE;
+        rights = FileAccess::kReadWrite;
         TrueFileStart = 0;  // now writing to single file
       }
 
@@ -512,7 +512,7 @@ int BufferIOFileClass::Open(int rights) {
 
       IsDiskOpen = true;
 
-      if (BufferRights == WRITE) {
+      if (BufferRights == FileAccess::kWrite) {
         FileSize = 0;
       }
 
@@ -552,7 +552,7 @@ long BufferIOFileClass::Write(const void* buffer, long size) {
   int opened = false;
 
   if (!Is_Open()) {
-    if (!Open(WRITE)) {
+    if (!Open(FileAccess::kWrite)) {
       return 0;
     }
     TrueFileStart = RawFileClass::Seek(0);
@@ -562,7 +562,7 @@ long BufferIOFileClass::Write(const void* buffer, long size) {
   if (UseBuffer) {
     long sizewritten = 0;
 
-    if (BufferRights != READ) {
+    if (BufferRights != FileAccess::kRead) {
       while (size) {
         long sizetowrite;
 
@@ -696,7 +696,7 @@ long BufferIOFileClass::Read(void* buffer, long size) {
   if (UseBuffer) {
     long sizeread = 0;
 
-    if (BufferRights != WRITE) {
+    if (BufferRights != FileAccess::kWrite) {
       while (size) {
         long sizetoread;
 

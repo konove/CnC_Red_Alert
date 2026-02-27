@@ -594,7 +594,7 @@ bool Select_Game(bool /*fade*/) {
     ** the menu loop.  Hide the now-useless mouse pointer.
     */
     if (Session.Play && Session.RecordFile.Is_Available()) {
-      if (Session.RecordFile.Open(READ)) {
+      if (Session.RecordFile.Open(FileAccess::kRead)) {
         Load_Recording_Values(Session.RecordFile);
         process = false;
         Theme.Fade_Out();
@@ -1292,7 +1292,7 @@ bool Select_Game(bool /*fade*/) {
         case SEL_TIMEOUT:
           if (Session.Attract && Session.RecordFile.Is_Available()) {
             Session.Play = true;
-            if (Session.RecordFile.Open(READ)) {
+            if (Session.RecordFile.Open(FileAccess::kRead)) {
               Load_Recording_Values(Session.RecordFile);
               process = false;
               Theme.Fade_Out();
@@ -1330,7 +1330,7 @@ bool Select_Game(bool /*fade*/) {
   ** Save initialization values if we're recording this game.
   */
   if (Session.Record) {
-    if (Session.RecordFile.Open(WRITE)) {
+    if (Session.RecordFile.Open(FileAccess::kWrite)) {
       Save_Recording_Values(Session.RecordFile);
     } else {
       Session.Record = false;
@@ -3177,7 +3177,7 @@ void Extract(char* filename, char* outname) {
   CCFileClass outFile(outname);
 
   inFile.Open();
-  outFile.Open(WRITE);
+  outFile.Open(FileAccess::kWrite);
 
   auto buffer = std::make_unique<char[]>(32768);
 

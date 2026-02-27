@@ -930,7 +930,7 @@ bool Select_Game(bool fade) {
     ** the menu loop.  Hide the now-useless mouse pointer.
     */
     if (PlaybackGame && RecordFile.Is_Available()) {
-      if (RecordFile.Open(READ)) {
+      if (RecordFile.Open(FileAccess::kRead)) {
         Load_Recording_Values();
         process = false;
         Theme.Fade_Out();
@@ -1573,7 +1573,7 @@ bool Select_Game(bool fade) {
         case SEL_TIMEOUT:
           if (AllowAttract && RecordFile.Is_Available()) {
             PlaybackGame = true;
-            if (RecordFile.Open(READ)) {
+            if (RecordFile.Open(FileAccess::kRead)) {
               Load_Recording_Values();
               process = false;
               Theme.Fade_Out();
@@ -1650,7 +1650,7 @@ bool Select_Game(bool fade) {
   ** This must be done after 'Seed' has been initialized.
   */
   if (RecordGame) {
-    if (RecordFile.Open(WRITE)) {
+    if (RecordFile.Open(FileAccess::kWrite)) {
       Save_Recording_Values();
     } else {
       RecordGame = false;

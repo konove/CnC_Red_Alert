@@ -156,7 +156,7 @@ bool Read_Scenario_INI_Write_INB(char* root, bool fresh) {
   sprintf(fname, "%s.INB", root);
   file.Set_Name(fname);
   file.Cache(16384);
-  file.Open(WRITE);
+  file.Open(FileAccess::kWrite);
 
   unsigned long crc = Ini_Binary_Version();
 

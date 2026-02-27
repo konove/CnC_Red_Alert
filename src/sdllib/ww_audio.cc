@@ -342,7 +342,7 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
   }
 
   // try to open file and get header
-  int handle = Open_File(filename, READ);
+  int handle = Open_File(filename, FileAccess::kRead);
 
   if (handle < 0) {
     return -1;
@@ -703,7 +703,7 @@ void* Load_Sample(const char* filename) {
     return nullptr;
   }
 
-  fh = Open_File(filename, READ);
+  fh = Open_File(filename, FileAccess::kRead);
   if (fh != kInvalidHandle) {
     size = File_Size(fh) + sizeof(AUDHeaderType);
     buffer = Alloc(size, MEM_NORMAL);

@@ -106,7 +106,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   /*======================================================================*/
 
   anim_flags = 0;
-  fh = Open_File(file_name, READ);
+  fh = Open_File(file_name, FileAccess::kRead);
   Read_File(fh, &file_header, sizeof(WSA_FileHeaderType));
 
   /*======================================================================*/

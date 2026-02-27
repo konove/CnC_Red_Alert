@@ -985,7 +985,7 @@ void ScoreClass::Presentation() {
   */
   if (!file.Is_Available()) {
     // hall of fame doesn't exist, so blank it out & write it
-    file.Open(WRITE);
+    file.Open(FileAccess::kWrite);
 
     for (i = 0; i < NUMFAMENAMES; i++) {
       hallfame[i].name[0] = hallfame[i].score = hallfame[i].level = 0;
@@ -995,7 +995,7 @@ void ScoreClass::Presentation() {
     file.Close();
   }
 
-  file.Open(READ);
+  file.Open(FileAccess::kRead);
   for (i = 0; i < NUMFAMENAMES; i++) {
     file.Read(&hallfame[i], sizeof(struct Fame));
   }
@@ -1064,7 +1064,7 @@ void ScoreClass::Presentation() {
     Input_Name(hallfame[index].name, HALLFAME_X, HALLFAME_Y + index * 8,
                _bluepal);
 
-    file.Open(WRITE);
+    file.Open(FileAccess::kWrite);
     for (i = 0; i < NUMFAMENAMES; i++) {
       file.Write(&hallfame[i], sizeof(struct Fame));
     }
@@ -1079,7 +1079,7 @@ void ScoreClass::Presentation() {
   }
 
 #ifdef WRITE_LBM
-  file.Open("e:scorscrn.lbm", WRITE);
+  file.Open("e:scorscrn.lbm", FileAccess::kWrite);
   SeenBuff.Blit(SysMemPage, 0, 0, 0, 0, 320, 200);
   CCWrite_LBM_File(file, SysMemPage, 8, Palette);
   file.Close();
