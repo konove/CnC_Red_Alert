@@ -1551,23 +1551,45 @@ class AircraftTypeClass : public TechnoTypeClass {
                     MPHType MaxSpeed, int ROT, MissionType deforder);
   RTTIType What_Am_I() const override;
 
+  // Returns the AircraftType matching the given INI name (case-insensitive),
+  // or AIRCRAFT_NONE if no match is found.
   static AircraftType From_Name(const char* name);
   static const AircraftTypeClass& As_Reference(AircraftType a) {
     return *Pointers[a];
   }
+
+  // Reloads theater-specific hi-res sidebar icons.
   static void Init(TheaterType);
+
+  // Loads shape and graphic data from disk. Must be called exactly once.
   static void One_Time();
+
+  // Populates the scenario editor's aircraft selection list.
   static void Prep_For_Add();
 
+  // Returns the credit cost for each repair step.
   int Repair_Cost() const override;
+
+  // Returns the number of health points restored per repair step.
   int Repair_Step() const override;
   void Dimensions(int& width, int& height) const override;
+
+  // Aircraft cannot be placed directly; always returns false.
   bool Create_And_Place(CELL, HousesType) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
+
+  // Occupation and overlap lists are only meaningful when the aircraft is
+  // landed.
   const short* Occupy_List(bool placement = false) const override;
   const short* Overlap_List() const override;
+
+  // Scans all buildings to find a factory that can produce this aircraft type.
+  // Returns the leader building if available, otherwise any eligible building,
+  // or nullptr if none qualifies.
   BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
                                   HousesType house) const override;
+
+  // Returns max passengers for transports, 5 for armed aircraft, 0 otherwise.
   int Max_Pips() const override;
 
   void Display(int x, int y, WindowNumberType window,

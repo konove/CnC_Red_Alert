@@ -69,7 +69,6 @@
 #include "sdllib/tile.h"
 #include "td/ccfile.h"
 #include "td/cell.h"
-#include "td/compat.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"

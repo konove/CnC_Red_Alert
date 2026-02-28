@@ -67,7 +67,6 @@
 #include <share.h>
 #endif
 
-#include "td/compat.h"
 #include "td/rawfile.h"
 
 #ifndef PORTABLE

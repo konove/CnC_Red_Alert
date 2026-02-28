@@ -43,7 +43,6 @@
 
 #include <cstdio>
 
-#include "td/compat.h"
 #include "tech/cdfile.h"
 #include "tech/wwfile.h"
 

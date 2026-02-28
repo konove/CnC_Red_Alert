@@ -67,7 +67,6 @@
 #include "td/building.h"
 #include "td/bullet.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 #include "td/conquer.h"
 #include "td/dialog.h"
 #include "td/ending.h"

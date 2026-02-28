@@ -41,7 +41,6 @@
 #include "td/const.h"
 
 #include "sdllib/wwstd.h"
-#include "td/compat.h"
 #include "td/defines.h"
 #include "td/type.h"
 

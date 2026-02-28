@@ -16,42 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\aadata.cpv   2.18   16 Oct 1995 16:49:50
- * JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer * name in * File Name :
- *AADATA.CPP                                                   *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : July 22, 1994 *
- *                                                                                             *
- *                  Last Update : August 7, 1995 [JLB] * Determines *
- *---------------------------------------------------------------------------------------------*
- * Functions: * AircraftTypeClass::AircraftTypeClass -- Constructor for aircraft
- *objects.                 * AircraftTypeClass::Create_And_Place -- Creates and
- *places aircraft using normal game syste* AircraftTypeClass::Create_One_Of --
- *Creates an aircraft object of the appropriate type.   *
- *   AircraftTypeClass::Dimensions -- Fetches the graphic dimensions of the
- *aircraft type.     * AircraftTypeClass::Display -- Displays a generic version
- *of the aircraft type.            * AircraftTypeClass::From_Name -- Converts an
- *ASCIIto an aircraft type number.      * AircraftTypeClass::Max_Pips -- Fetches
- *the maximum number of pips allowed.                *
- *   AircraftTypeClass::Occupy_List -- Returns with occupation list for landed
- *aircraft.       * AircraftTypeClass::One_Time -- Performs one time
- *initialization of the aircraft type class.* AircraftTypeClass::Overlap_List --
- *the overlap list for a landed aircraft.     * AircraftTypeClass::Prep_For_Add
- *-- Prepares the scenario editor for adding an aircraft objec*
- *   AircraftTypeClass::Repair_Cost -- Fetchs the cost per repair step. *
- *   AircraftTypeClass::Repair_Step -- Fetches the number of health points per
- *repair.         * AircraftTypeClass::Who_Can_Build_Me -- Determines which
- *object can build the aircraft obje*
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Aircraft type definitions and AircraftTypeClass method implementations.
 
 #include <filesystem>
 #include <string>
@@ -133,8 +98,8 @@ static const AircraftTypeClass TransportHeli(
     true,                // Can the player select it so as to give it orders?
     true,                // Can it be assigned as a target for attack.
     false,               // Is it insignificant (won't be announced)?
+    false,               // Is it immune to normal combat damage?
     false,               // Theater specific graphic image?
-    false,               // Is it equipped with a combat turret?
     false,               // Can it be repaired in a repair facility?
     true,                // Can the player construct or order this unit?
     true,                // Is there a crew inside?
@@ -154,7 +119,7 @@ static const AircraftTypeClass TransportHeli(
     MISSION_HUNT      // Default mission for aircraft.
 );
 
-// Apache attach helicopter.
+// Apache attack helicopter.
 static const AircraftTypeClass AttackHeli(
     AIRCRAFT_HELICOPTER,  // What kind of aircraft is this.
     TXT_HELI,             // Translated text number for aircraft.
@@ -278,19 +243,6 @@ const AircraftTypeClass* const AircraftTypeClass::Pointers[AIRCRAFT_COUNT] = {
     &TransportHeli, &AttackPlane, &AttackHeli, &CargoPlane, &OrcaHeli,
 };
 
-/***********************************************************************************************
- * AircraftTypeClass::AircraftTypeClass -- Constructor for aircraft objects. *
- *                                                                                             *
- *    This is the constructor for the aircraft object. *
- *                                                                                             *
- * INPUT:   see below... *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/26/1994 JLB : Created. *
- *=============================================================================================*/
 AircraftTypeClass::AircraftTypeClass(
     AircraftType airtype, int name, const char* ininame, unsigned char level,
     long pre, bool is_leader, bool is_twoshooter, bool is_transporter,
@@ -317,24 +269,6 @@ AircraftTypeClass::AircraftTypeClass(
   Mission = deforder;
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::From_Name -- Converts an ASCII name into an aircraft type
- *number.        *
- *                                                                                             *
- *    This routine is used to convert an ASCII representation of an aircraft
- *into the          * matching aircraft type number. This is used by the
- *scenario INI reader code.             *
- *                                                                                             *
- * INPUT:   name  -- Pointer to ASCII name to translate. *
- *                                                                                             *
- * OUTPUT:  Returns the aircraft type number that matches the ASCII name
- *provided. If no       * match could be found, then AIRCRAFT_NONE is returned.
- **
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/26/1994 JLB : Created. *
- *=============================================================================================*/
 AircraftType AircraftTypeClass::From_Name(const char* name) {
   if (name) {
     for (AircraftType classid = AIRCRAFT_FIRST; classid < AIRCRAFT_COUNT;
@@ -347,30 +281,13 @@ AircraftType AircraftTypeClass::From_Name(const char* name) {
   return AIRCRAFT_NONE;
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::One_Time -- Performs one time initialization of the
- *aircraft type class. *
- *                                                                                             *
- *    This routine is used to perform the onetime initialization of the aircraft
- *type. This    * includes primarily the shape and other graphic data loading. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   This goes to disk and also must only be called ONCE. *
- *                                                                                             *
- * HISTORY: * 07/26/1994 JLB : Created. *
- *=============================================================================================*/
 void AircraftTypeClass::One_Time() {
   AircraftType index;
 
   for (index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
     const AircraftTypeClass& uclass = As_Reference(index);
 
-    /*
-    **	Fetch the supporting data files for the unit.
-    */
+    // Load the sidebar cameo icon (hi-res "ICNH" or lo-res "ICON").
     std::string filename;
     if (Get_Resolution_Factor()) {
       filename = std::string(uclass.IniName) + "ICNH";
@@ -381,9 +298,7 @@ void AircraftTypeClass::One_Time() {
         std::filesystem::path(filename).replace_extension(".SHP").string();
     (const void*&)uclass.CameoData = MFCD::Retrieve(fullname);
 
-    /*
-    **	Generic shape for all houses load method.
-    */
+    // Load the main sprite sheet (shared across all houses).
     fullname = std::filesystem::path(uclass.IniName)
                    .replace_extension(".SHP")
                    .string();
@@ -395,76 +310,24 @@ void AircraftTypeClass::One_Time() {
   RRotorData = MFCD::Retrieve("RROTOR.SHP");
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::Create_One_Of -- Creates an aircraft object of the
- *appropriate type.     *
- *                                                                                             *
- *    This routine is used to create an aircraft object that matches the
- *aircraft type. It     * serves as a shortcut to creating an object using the
- *"new" operator and "if" checks.     *
- *                                                                                             *
- * INPUT:   house -- The house owner of the aircraft that is to be created. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the aircraft created. If the aircraft
- *could not be       * created, then a NULL is returned. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/26/1994 JLB : Created. *
- *=============================================================================================*/
 ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
   return new AircraftClass(Type, house->Class->House);
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::Prep_For_Add -- Prepares the scenario editor for adding an
- *aircraft objec*
- *                                                                                             *
- *    This routine is used by the scenario editor to prepare for the adding
- *operation. It      * builds a list of pointers to object types that can be
- *added.                             *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/26/1994 JLB : Created. *
- *=============================================================================================*/
 void AircraftTypeClass::Prep_For_Add() {
-  for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
+  for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; ++index) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
     }
   }
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::Display -- Displays a generic version of the aircraft
- *type.              *
- *                                                                                             *
- *    This routine is used by the scenario editor to display a generic version
- *of the object   * type. This is displayed in the object selection dialog box.
- **
- *                                                                                             *
- * INPUT:   x,y      -- The coordinates to draw the aircraft at (centered). *
- *                                                                                             *
- *          window   -- The window to base the coordinates upon. *
- *                                                                                             *
- *          house    -- The owner of this generic aircraft. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/26/1994 JLB : Created. *
- *=============================================================================================*/
 void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType house) const {
   int shape = 0;
   const void* ptr = Get_Cameo_Data();
   if (!ptr) {
+    // Fall back to the main sprite sheet; frame 5 is the south-facing pose.
     ptr = Get_Image_Data();
     shape = 5;
   }
@@ -473,42 +336,12 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
                 HouseClass::As_Pointer(house)->Remap_Table(false, true));
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::Occupy_List -- Returns with occupation list for landed
- *aircraft.         *
- *                                                                                             *
- *    This determines the occupation list for the aircraft (if it was landed). *
- *                                                                                             *
- * INPUT:   placement   -- Is this for placement legality checking only? The
- *normal condition  * is for marking occupation flags. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to a cell offset occupation list for the
- *aircraft.          *
- *                                                                                             *
- * WARNINGS:   This occupation list is only valid if the aircraft is landed. *
- *                                                                                             *
- * HISTORY: * 07/26/1994 JLB : Created. *
- *=============================================================================================*/
 const short* AircraftTypeClass::Occupy_List(bool) const {
   static const short _list[] = {0, REFRESH_EOL};
   return _list;
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::Overlap_List -- Determines the overlap list for a landed
- *aircraft.       *
- *                                                                                             *
- *    This routine figures out the overlap list for the aircraft as if it were
- *landed.         *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the cell offset overlap list for the aircraft. *
- *                                                                                             *
- * WARNINGS:   This overlap list is only valid when the aircraft is landed. *
- *                                                                                             *
- * HISTORY: * 07/26/1994 JLB : Created. *
- *=============================================================================================*/
+// All 8 surrounding cells when landed.
 const short* AircraftTypeClass::Overlap_List() const {
   static const short _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
@@ -516,30 +349,6 @@ const short* AircraftTypeClass::Overlap_List() const {
   return _list;
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::Who_Can_Build_Me -- Determines which object can build the
- *aircraft objec *
- *                                                                                             *
- *    Use this routine to determine which object (factory) can build the
- *aircraft. It          * determines this by scanning through the available
- *factories, looking for one that is     * of the proper ownership and is
- *available.                                                *
- *                                                                                             *
- * INPUT:   intheory -- When true, it doesn't consider if the factory is
- *currently busy. It    * only considers that it is the right type. *
- *                                                                                             *
- *          legal    -- Should building prerequisite legality checks be
- *performed as well?     * For building placements, this is usually false. For
- *sidebar button     * adding, this is usually true. *
- *                                                                                             *
- *          house    -- The house of the desired aircraft to be built. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the object that can build the aircraft. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/30/1994 JLB : Created. *
- *=============================================================================================*/
 BuildingClass* AircraftTypeClass::Who_Can_Build_Me(bool, bool legal,
                                                    HousesType house) const {
   BuildingClass* anybuilding = nullptr;
@@ -561,55 +370,12 @@ BuildingClass* AircraftTypeClass::Who_Can_Build_Me(bool, bool legal,
   return anybuilding;
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::Repair_Cost -- Fetchs the cost per repair step. *
- *                                                                                             *
- *    This routine will return the cost for every repair step. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the credit expense for every repair step. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/26/1995 JLB : Created. *
- *=============================================================================================*/
 int AircraftTypeClass::Repair_Cost() const {
   return Fixed_To_Cardinal(Cost / (MaxStrength / REPAIR_STEP), REPAIR_PERCENT);
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::Repair_Step -- Fetches the number of health points per
- *repair.           *
- *                                                                                             *
- *    For every repair event, the returned number of health points is acquired.
- **
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the number of health points to recover each repair
- *step.              *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/26/1995 JLB : Created. *
- *=============================================================================================*/
 int AircraftTypeClass::Repair_Step() const { return REPAIR_STEP; }
 
-/***********************************************************************************************
- * AircraftTypeClass::Max_Pips -- Fetches the maximum number of pips allowed. *
- *                                                                                             *
- *    Use this routine to retrieve the maximum pip count allowed for this
- *aircraft. This is    * the maximum number of passengers. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the maximum number of pips for this aircraft. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/26/1995 JLB : Created. *
- *=============================================================================================*/
 int AircraftTypeClass::Max_Pips() const {
   if (IsTransporter) {
     return Max_Passengers();
@@ -620,47 +386,15 @@ int AircraftTypeClass::Max_Pips() const {
   return 0;
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::Create_And_Place -- Creates and places aircraft using
- *normal game system *
- *                                                                                             *
- *    This routine is used to create and place an aircraft through the normal
- *game system.     * Since creation of aircraft in this fashion is prohibited,
- *this routine does nothing.     *
- *                                                                                             *
- * INPUT:   na *
- *                                                                                             *
- * OUTPUT:  Always returns a failure code (false). *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/07/1995 JLB : Created. *
- *=============================================================================================*/
 bool AircraftTypeClass::Create_And_Place(CELL, HousesType) const {
   return false;
 }
 
-/***********************************************************************************************
- * ATC::Init -- load up terrain set dependant sidebar icons *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    theater type *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 4/25/96 0:33AM ST : Created *
- *=============================================================================================*/
-
 void AircraftTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     if (Get_Resolution_Factor()) {
-      AircraftType index;
-      const void* cameo_ptr;
-
-      for (index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
+      for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT;
+           ++index) {
         const AircraftTypeClass& uclass = As_Reference(index);
 
         (const void*&)uclass.CameoData = nullptr;
@@ -671,7 +405,7 @@ void AircraftTypeClass::Init(TheaterType theater) {
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
 
-        cameo_ptr = MFCD::Retrieve(fullname);
+        const void* cameo_ptr = MFCD::Retrieve(fullname);
         if (cameo_ptr) {
           (const void*&)uclass.CameoData = cameo_ptr;
         }
@@ -680,25 +414,6 @@ void AircraftTypeClass::Init(TheaterType theater) {
   }
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::Dimensions -- Fetches the graphic dimensions of the
- *aircraft type.       *
- *                                                                                             *
- *    This routine will fetch the pixel dimensions of this aircraft type. These
- *dimensions     * are used to control map refresh and select box rendering. *
- *                                                                                             *
- * INPUT:   width    -- Reference to variable that will be filled in with
- *aircraft width.      *
- *                                                                                             *
- *          height   -- Reference to variable that will be filled in with
- *aircraft height.     *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/07/1995 JLB : Created. *
- *=============================================================================================*/
 void AircraftTypeClass::Dimensions(int& width, int& height) const {
   width = 21;
   height = 20;

@@ -61,7 +61,6 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
-#include "td/compat.h"
 #include "td/conquer.h"
 #include "td/externs.h"
 #include "td/globals.h"

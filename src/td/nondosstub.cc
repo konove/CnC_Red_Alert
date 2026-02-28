@@ -26,7 +26,6 @@
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 #include "td/defines.h"
 #include "td/externs.h"
 // #include "ra/filepcx.h"

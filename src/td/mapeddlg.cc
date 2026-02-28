@@ -65,7 +65,6 @@
 #include "td/ccfile.h"
 #include "td/cell.h"
 #include "td/cheklist.h"
-#include "td/compat.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/control.h"

@@ -41,7 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_CDFILE_H_
 #define CNC_RED_ALERT_TD_CDFILE_H_
 
-#include "td/compat.h"
 #include "td/rawfile.h"
 
 /*

@@ -73,7 +73,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
-#include "td/compat.h"
 #include "td/conquer.h"
 #include "td/dialog.h"
 #include "td/edit.h"

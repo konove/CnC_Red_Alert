@@ -70,7 +70,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -2647,7 +2646,6 @@ int Version_Number() {
   return (version);
 #endif
 
-
 #if (FRENCH)
   sprintf(VersionText, ".02");  // Win95 french version number
 #endif                          // FRENCH
@@ -2687,7 +2685,6 @@ int Version_Number() {
 #if !(FRENCH | GERMAN | JAPANESE)
   return 1;  // Win95 USA version number
 #endif       // FRENCH | GERMAN
-
 }
 
 /***************************************************************************

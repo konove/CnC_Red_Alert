@@ -93,7 +93,6 @@
 #include "support.h"
 #include "td/audio.h"
 #include "td/cell.h"
-#include "td/compat.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"

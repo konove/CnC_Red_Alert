@@ -48,7 +48,6 @@
 #include "sdllib/iff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
-#include "td/compat.h"
 #include "tech/wwfile.h"
 
 /*

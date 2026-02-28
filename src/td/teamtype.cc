@@ -59,7 +59,6 @@
 
 #include "port/ex_string.h"
 #include "port/safe_string.h"
-#include "td/compat.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"

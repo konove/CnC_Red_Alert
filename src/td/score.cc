@@ -68,7 +68,6 @@
 #include "sdllib/wwstd.h"
 #include "td/audio.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -298,8 +297,8 @@ struct Fame {
 ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
 ScoreAnimClass::ScoreAnimClass(int x, int y, const void* data) {
-  BlitList.Add(x * 2, y * 2, x * 2, y * 2,
-               2 * String_Pixel_Width((char*)data), 16);
+  BlitList.Add(x * 2, y * 2, x * 2, y * 2, 2 * String_Pixel_Width((char*)data),
+               16);
   XPos = x;
   YPos = y;
   Timer.Set(0);
@@ -389,8 +388,7 @@ void ScorePrintClass::Update() {
         ScoreObjs[i] = nullptr;
       }
     }
-    BlitList.Add(XPos * 2, YPos * 2, XPos * 2,
-                 YPos * 2, Stage * 6 + 14, 16);
+    BlitList.Add(XPos * 2, YPos * 2, XPos * 2, YPos * 2, Stage * 6 + 14, 16);
     delete this;
     return;
   }
@@ -411,26 +409,22 @@ void ScorePrintClass::Update() {
                                        BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
                                        BLACK, BLACK, BLACK, BLACK};
       Set_Font_Palette(_blackpal);
-      TextPrintBuffer->Print(localstr, 2 * (pos - 6),
-                             2 * (YPos - 1), TBLACK, TBLACK);
-      TextPrintBuffer->Print(localstr, 2 * (pos - 6),
-                             2 * (YPos + 1), TBLACK, TBLACK);
-      TextPrintBuffer->Print(localstr, 2 * (pos - 6 + 1),
-                             2 * YPos, TBLACK, TBLACK);
+      TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos - 1), TBLACK,
+                             TBLACK);
+      TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos + 1), TBLACK,
+                             TBLACK);
+      TextPrintBuffer->Print(localstr, 2 * (pos - 6 + 1), 2 * YPos, TBLACK,
+                             TBLACK);
 
       Set_Font_Palette(PrimaryPalette);
-      TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * YPos,
-                             TBLACK, TBLACK);
+      TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * YPos, TBLACK, TBLACK);
     }
     if (((char*)DataPtr)[Stage]) {
       localstr[0] = ((char*)DataPtr)[Stage];
       Set_Font_Palette(_whitepal);
-      TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos - 1),
-                             TBLACK, TBLACK);
-      TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos + 1),
-                             TBLACK, TBLACK);
-      TextPrintBuffer->Print(localstr, (pos + 1) * 2, 2 * YPos,
-                             TBLACK, TBLACK);
+      TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos - 1), TBLACK, TBLACK);
+      TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos + 1), TBLACK, TBLACK);
+      TextPrintBuffer->Print(localstr, (pos + 1) * 2, 2 * YPos, TBLACK, TBLACK);
     }
     Stage++;
   }
@@ -464,8 +458,7 @@ void MultiStagePrintClass::Update() {
         ScoreObjs[i] = nullptr;
       }
     }
-    BlitList.Add(XPos * 2, YPos * 2, XPos * 2,
-                 YPos * 2, Stage * 6 + 14, 16);
+    BlitList.Add(XPos * 2, YPos * 2, XPos * 2, YPos * 2, Stage * 6 + 14, 16);
     delete this;
     return;
   }
@@ -490,26 +483,26 @@ void MultiStagePrintClass::Update() {
             BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
             BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK};
         Set_Font_Palette(_blackpal);
-        TextPrintBuffer->Print(localstr, 2 * (pos - 6),
-                               2 * (YPos - 1), TBLACK, TBLACK);
-        TextPrintBuffer->Print(localstr, 2 * (pos - 6),
-                               2 * (YPos + 1), TBLACK, TBLACK);
-        TextPrintBuffer->Print(localstr, 2 * (pos - 6 + 1),
-                               2 * YPos, TBLACK, TBLACK);
+        TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos - 1), TBLACK,
+                               TBLACK);
+        TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos + 1), TBLACK,
+                               TBLACK);
+        TextPrintBuffer->Print(localstr, 2 * (pos - 6 + 1), 2 * YPos, TBLACK,
+                               TBLACK);
 
         Set_Font_Palette(PrimaryPalette);
-        TextPrintBuffer->Print(localstr, 2 * (pos - 6),
-                               2 * YPos, TBLACK, TBLACK);
+        TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * YPos, TBLACK,
+                               TBLACK);
       }
       if (((char*)DataPtr)[Stage]) {
         localstr[0] = ((char*)DataPtr)[Stage];
         Set_Font_Palette(_whitepal);
-        TextPrintBuffer->Print(localstr, pos * 2,
-                               2 * (YPos - 1), TBLACK, TBLACK);
-        TextPrintBuffer->Print(localstr, pos * 2,
-                               2 * (YPos + 1), TBLACK, TBLACK);
-        TextPrintBuffer->Print(localstr, (pos + 1) * 2,
-                               2 * YPos, TBLACK, TBLACK);
+        TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos - 1), TBLACK,
+                               TBLACK);
+        TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos + 1), TBLACK,
+                               TBLACK);
+        TextPrintBuffer->Print(localstr, (pos + 1) * 2, 2 * YPos, TBLACK,
+                               TBLACK);
       }
       Stage++;
 
@@ -537,10 +530,9 @@ void ScoreScaleClass::Update() {
   if (!Timer.Time()) {
     Timer.Set(1);
     if (Stage != 5) {
-      TextPrintBuffer->Blit(HidPage, _destx[Stage + 1] * 2,
-                            YPos * 2, _destx[Stage + 1] * 2,
-                            YPos * 2, _destw[Stage + 1] * 2,
-                            _destw[Stage + 1] * 2);
+      TextPrintBuffer->Blit(HidPage, _destx[Stage + 1] * 2, YPos * 2,
+                            _destx[Stage + 1] * 2, YPos * 2,
+                            _destw[Stage + 1] * 2, _destw[Stage + 1] * 2);
       // SysMemPage.Blit(*PseudoSeenBuff, _destx[Stage+1], YPos,
       // _destx[Stage+1], YPos, _destw[Stage+1], _destw[Stage+1]);
     }
@@ -548,10 +540,8 @@ void ScoreScaleClass::Update() {
       Set_Font_Palette(Palette);
       TextPrintBuffer->Fill_Rect(0, 0, 14, 14, TBLACK);
       TextPrintBuffer->Print((char*)DataPtr, 0, 0, TBLACK, TBLACK);
-      TextPrintBuffer->Scale(HidPage, 0, 0, _destx[Stage] * 2,
-                             YPos * 2, 10, 10,
-                             _destw[Stage] * 2,
-                             _destw[Stage] * 2, true);
+      TextPrintBuffer->Scale(HidPage, 0, 0, _destx[Stage] * 2, YPos * 2, 10, 10,
+                             _destw[Stage] * 2, _destw[Stage] * 2, true);
 
       // SysMemPage.Fill_Rect(0,0, 7,7, TBLACK);
       // SysMemPage.Print((char *)DataPtr, 0,0,   TBLACK, TBLACK);
@@ -565,8 +555,8 @@ void ScoreScaleClass::Update() {
           ScoreObjs[i] = nullptr;
         }
       }
-      TextPrintBuffer->Print((char*)DataPtr, XPos * 2, YPos * 2,
-                             TBLACK, TBLACK);
+      TextPrintBuffer->Print((char*)DataPtr, XPos * 2, YPos * 2, TBLACK,
+                             TBLACK);
       // TextPrintBuffer->Blit(HidPage, XPos * 2, YPos * 2, XPos
       // * 2, YPos * 2,2 * 6, 2 * 6);
       // BlitList.Add (XPos, YPos, XPos, YPos, 6,6);
@@ -867,14 +857,10 @@ void ScoreClass::Presentation() {
   int scorecounter = 0;
   Keyboard::Clear();
 
-  BlitList.Add(528, 52, 528, 52,
-               4 * 12, 12);
-  BlitList.Add(528, 76, 528, 76,
-               4 * 12, 12);
-  BlitList.Add(528, 100, 528, 100,
-               4 * 12, 12);
-  BlitList.Add(550, 18, 550, 18,
-               64, 12);  // Minutes
+  BlitList.Add(528, 52, 528, 52, 4 * 12, 12);
+  BlitList.Add(528, 76, 528, 76, 4 * 12, 12);
+  BlitList.Add(528, 100, 528, 100, 4 * 12, 12);
+  BlitList.Add(550, 18, 550, 18, 64, 12);  // Minutes
   for (i = 0; i <= 160; i++) {
     Set_Font_Palette(_greenpal);
     Count_Up_Print("%3d%%", i, leadership, 264, 26);
@@ -1196,22 +1182,19 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
   PseudoSeenBuff->Blit(SysMemPage);
   Set_Logic_Page(SysMemPage);
   Call_Back_Delay(30);
-  BlitList.Add(2 * (BUILDING_X + 8), 2 * BUILDING_Y,
-               2 * (BUILDING_X + 8), 2 * BUILDING_Y, 5 * 12,
-               12);
+  BlitList.Add(2 * (BUILDING_X + 8), 2 * BUILDING_Y, 2 * (BUILDING_X + 8),
+               2 * BUILDING_Y, 5 * 12, 12);
   BlitList.Add(2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 12),
-               2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 12),
-               5 * 12, 12);
+               2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 12), 5 * 12, 12);
   BlitList.Add(2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 24),
-               2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 24),
-               5 * 12, 12);
+               2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 24), 5 * 12, 12);
 
-  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2,
-                         BUILDING_Y * 2, TBLACK, TBLACK);
-  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2,
-                         (BUILDING_Y + 12) * 2, TBLACK, TBLACK);
-  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2,
-                         (BUILDING_Y + 24) * 2, TBLACK, TBLACK);
+  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2, BUILDING_Y * 2, TBLACK,
+                         TBLACK);
+  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2, (BUILDING_Y + 12) * 2, TBLACK,
+                         TBLACK);
+  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2, (BUILDING_Y + 24) * 2, TBLACK,
+                         TBLACK);
 
   /*
   ** Here's the animation/draw loop for blowing up the factory
@@ -1348,8 +1331,7 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
                 nullptr);
   Set_Logic_Page(PseudoSeenBuff);
 
-  BlitList.Add(594, 2 * (ypos + 2), 594,
-               2 * (ypos + 2), 5 * 12, 12);
+  BlitList.Add(594, 2 * (ypos + 2), 594, 2 * (ypos + 2), 5 * 12, 12);
 
   for (i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
@@ -1372,8 +1354,7 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
     Call_Back_Delay(40);
   }
 
-  BlitList.Add(594, 2 * (ypos + 14), 594,
-               2 * (ypos + 14), 5 * 12, 12);
+  BlitList.Add(594, 2 * (ypos + 14), 594, 2 * (ypos + 14), 5 * 12, 12);
   for (i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
       CC_Draw_Shape(redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL,
@@ -1478,14 +1459,11 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   Call_Back_Delay(40);
 
   BlitList.Add(2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 2),
-               2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 2),
-               5 * 12, 12);
+               2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 2), 5 * 12, 12);
   BlitList.Add(2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 14),
-               2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 14),
-               5 * 12, 12);
+               2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 14), 5 * 12, 12);
   BlitList.Add(2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 26),
-               2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 26),
-               5 * 12, 12);
+               2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 26), 5 * 12, 12);
 
   for (i = 1; i <= max; i++) {
     // Draw & update infantrymen 3 times for every tick on the graph (i)
@@ -1569,9 +1547,8 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   */
   i = -50;
 
-  BlitList.Add(2 * _credpx[house], 2 * _credpy[house],
-               2 * _credpx[house], 2 * _credpy[house], 5 * 12,
-               12);
+  BlitList.Add(2 * _credpx[house], 2 * _credpy[house], 2 * _credpx[house],
+               2 * _credpy[house], 5 * 12, 12);
 
   do {
     add = 5;
@@ -1665,11 +1642,9 @@ void ScoreClass::Count_Up_Print(char* str, int percent, int max, int xpos,
   //	LogicPage->Print(	destbuf, 0, 0, WHITE, TBLACK);
   //	HidPage.Blit(SeenBuff, 0, 0, xpos, ypos, width, 8);
 
-  TextPrintBuffer->Fill_Rect(xpos * 2, ypos * 2,
-                             (xpos + width) * 2, (ypos + 7) * 2,
-                             BLACK);
-  TextPrintBuffer->Print(destbuf, xpos * 2, ypos * 2, WHITE,
-                         TBLACK);
+  TextPrintBuffer->Fill_Rect(xpos * 2, ypos * 2, (xpos + width) * 2,
+                             (ypos + 7) * 2, BLACK);
+  TextPrintBuffer->Print(destbuf, xpos * 2, ypos * 2, WHITE, TBLACK);
 
   // TextPrintBuffer->Blit(*TextPrintBuffer, xpos * 2, ypos * 2,
   // 0, 0, width * 2, 8 * 2); TextPrintBuffer->Print(destbuf, 0,
@@ -1747,8 +1722,8 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           SysMemPage.Fill_Rect(xposindex6, ypos, xposindex6 + 6, ypos + 6,
                                TBLACK);
           TextPrintBuffer->Fill_Rect(xposindex6 * 2, ypos * 2,
-                                     (xposindex6 + 6) * 2,
-                                     (ypos + 6) * 2, BLACK);
+                                     (xposindex6 + 6) * 2, (ypos + 6) * 2,
+                                     BLACK);
         }
 
       } else if (key != KA_RETURN) {  // else if (key != KN_RETURN &&
@@ -1763,10 +1738,9 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
                                     xpos + index * 6 + 6, ypos + 5, TBLACK);
           SysMemPage.Fill_Rect(xpos + index * 6, ypos, xpos + index * 6 + 6,
                                ypos + 5, TBLACK);
-          TextPrintBuffer->Fill_Rect(2 * (xpos + index * 6),
-                                     ypos * 2,
-                                     2 * (xpos + index * 6 + 6),
-                                     2 * (ypos + 6), BLACK);
+          TextPrintBuffer->Fill_Rect(2 * (xpos + index * 6), ypos * 2,
+                                     2 * (xpos + index * 6 + 6), 2 * (ypos + 6),
+                                     BLACK);
           str[index] = ascii;
           str[index + 1] = 0;
 
@@ -1800,8 +1774,7 @@ void Animate_Cursor(int pos, int ypos) {
   if (pos != _lastpos) {
     PseudoSeenBuff->Draw_Line(HALLFAME_X + _lastpos * 6, ypos,
                               HALLFAME_X + _lastpos * 6 + 5, ypos, TBLACK);
-    TextPrintBuffer->Fill_Rect(2 * (HALLFAME_X + _lastpos * 6),
-                               2 * ypos,
+    TextPrintBuffer->Fill_Rect(2 * (HALLFAME_X + _lastpos * 6), 2 * ypos,
                                2 * (HALLFAME_X + _lastpos * 6 + 5),
                                2 * ypos + 1, BLACK);
     _lastpos = pos;
@@ -1811,10 +1784,9 @@ void Animate_Cursor(int pos, int ypos) {
   PseudoSeenBuff->Draw_Line(HALLFAME_X + pos * 6, ypos,
                             HALLFAME_X + pos * 6 + 5, ypos,
                             _state ? LTBLUE : TBLACK);
-  TextPrintBuffer->Fill_Rect(2 * (HALLFAME_X + pos * 6),
-                             2 * ypos,
-                             2 * (HALLFAME_X + pos * 6 + 5),
-                             2 * ypos + 1, _state ? LTBLUE : BLACK);
+  TextPrintBuffer->Fill_Rect(2 * (HALLFAME_X + pos * 6), 2 * ypos,
+                             2 * (HALLFAME_X + pos * 6 + 5), 2 * ypos + 1,
+                             _state ? LTBLUE : BLACK);
 
   /*
   ** Toggle the color of the cursor, green or black, if it's time to do so.

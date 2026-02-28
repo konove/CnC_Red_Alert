@@ -49,7 +49,6 @@
 
 #include "sdllib/gbuffer.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 
 bool InterpolationPaletteChanged = false;
 

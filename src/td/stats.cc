@@ -49,7 +49,6 @@
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 #include "td/defines.h"
 #include "td/expand.h"
 #include "td/externs.h"

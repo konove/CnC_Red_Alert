@@ -56,7 +56,6 @@
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 #include "td/confdlg.h"
 #include "td/conquer.h"
 #include "td/control.h"

@@ -56,7 +56,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
-#include "td/compat.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/control.h"
@@ -245,11 +244,11 @@ void Setup_Menu(const MenuConfig& menu, const char* labels[],
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
     const int draw_y = menu_y + i * FontHeight + i * line_spacing;
-    Fancy_Text_Print(
-        labels[text_index], menu_x, draw_y,
-        text_index == selected_entry && MenuUpdate ? menu.highlight_color
-                                                   : menu.normal_color,
-        TBLACK, TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(labels[text_index], menu_x, draw_y,
+                     text_index == selected_entry && MenuUpdate
+                         ? menu.highlight_color
+                         : menu.normal_color,
+                     TBLACK, TPF_8POINT | TPF_DROPSHADOW);
   }
   MenuSkip = line_spacing;
   Show_Mouse();
@@ -273,14 +272,14 @@ int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
   int drawy, menuskip, halfskip;
   int normcol, litcol, item, newitem, idx;
 
-  maxitem = menu.item_count - 1;                    /* find max items			*/
-  newitem = item = menu.selected % (maxitem + 1);   /* find selected */
-  select = -1;                                      /* no selection made		*/
-  menuskip = FontHeight + MenuSkip; /* calc new font height	*/
-  halfskip = MenuSkip >> 1;         /* adjustment for menus	*/
+  maxitem = menu.item_count - 1;                  /* find max items			*/
+  newitem = item = menu.selected % (maxitem + 1); /* find selected */
+  select = -1;                                    /* no selection made		*/
+  menuskip = FontHeight + MenuSkip;               /* calc new font height	*/
+  halfskip = MenuSkip >> 1;                       /* adjustment for menus	*/
 
-  menuy = WinY + menu.y;            /* get the absolute 		*/
-  menux = (WinX + menu.x) << 3;    /*		coords of menu		*/
+  menuy = WinY + menu.y;        /* get the absolute 		*/
+  menux = (WinX + menu.x) << 3; /*		coords of menu		*/
   normcol = menu.normal_color;
   litcol = menu.highlight_color;
 
@@ -301,14 +300,13 @@ int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
   **	the heck outta here. If we are somewhere on the menu, then figure
   **	out the new selected item, and continue forward.
   */
-  mx1 = (WinX << 3) +
-        (menu.x * FontWidth);       /* get menu coords		*/
-  my1 = (WinY) + (menu.y) -
-        halfskip;                    /*		from the menu		*/
+  mx1 = (WinX << 3) + (menu.x * FontWidth); /* get menu coords		*/
+  my1 = (WinY) + (menu.y) - halfskip;       /*		from the menu
+                                             */
   mx2 = mx1 + (menu.item_width * FontWidth) -
-        1;                           /*		structure as		*/
+        1; /*		structure as		*/
   my2 = my1 + (menu.item_count * menuskip) -
-        1;                           /*		necessary			*/
+        1; /*		necessary			*/
 
   tempy = Get_Mouse_Y();
   if (Coordinates_In_Region(Get_Mouse_X(), tempy, mx1, my1, mx2, my2) &&

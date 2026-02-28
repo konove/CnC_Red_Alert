@@ -59,7 +59,6 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
-#include "td/compat.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"

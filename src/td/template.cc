@@ -61,7 +61,6 @@
 #include "sdllib/tile.h"
 #include "td/abstract.h"
 #include "td/cell.h"
-#include "td/compat.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/externs.h"

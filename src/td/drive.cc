@@ -69,7 +69,6 @@
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"
-#include "td/compat.h"
 #include "td/config.h"
 #include "td/const.h"
 #include "td/defines.h"

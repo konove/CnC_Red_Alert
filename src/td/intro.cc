@@ -52,7 +52,6 @@
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -249,8 +248,7 @@ void Choose_Side() {
     if (Keyboard::Check() && endframe == 255) {
       if ((Keyboard::Get() & 0x10FF) == KN_LMOUSE) {
         if (_Kbd->MouseQY > 96 && _Kbd->MouseQY < 300) {
-          if (_Kbd->MouseQX > 36 &&
-              _Kbd->MouseQX < 296) {
+          if (_Kbd->MouseQX > 36 && _Kbd->MouseQX < 296) {
             // Chose GDI
             Whom = HOUSE_GOOD;
             ScenPlayer = SCEN_PLAYER_GDI;
@@ -259,8 +257,7 @@ void Choose_Side() {
             speechplaying = true;
             speech = speechg;
 
-          } else if (_Kbd->MouseQX > 320 &&
-                     _Kbd->MouseQX < 600) {
+          } else if (_Kbd->MouseQX > 320 && _Kbd->MouseQX < 600) {
             // Chose Nod
             endframe = 14;
             Whom = HOUSE_BAD;

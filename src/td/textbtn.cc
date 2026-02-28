@@ -52,7 +52,6 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "td/compat.h"
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/dialog.h"

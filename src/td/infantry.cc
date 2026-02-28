@@ -107,7 +107,6 @@
 #include "td/bullet.h"
 #include "td/cell.h"
 #include "td/combat.h"
-#include "td/compat.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/const.h"

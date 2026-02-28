@@ -61,7 +61,6 @@
 #include "sdllib/misc.h"
 #include "sdllib/wwstd.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 #include "td/conquer.h"
 #include "td/externs.h"
 #include "td/jshell.h"

@@ -92,7 +92,6 @@
 #include "td/building.h"
 #include "td/bullet.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 #include "td/config.h"
 #include "td/const.h"
 #include "td/debug.h"

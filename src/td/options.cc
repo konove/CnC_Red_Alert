@@ -74,7 +74,6 @@
 #include "sdllib/ww_audio.h"
 #include "td/audio.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"

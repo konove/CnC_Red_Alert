@@ -44,7 +44,6 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "td/compat.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 

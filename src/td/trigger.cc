@@ -73,7 +73,6 @@
 #include "td/anim.h"
 #include "td/building.h"
 #include "td/cell.h"
-#include "td/compat.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"

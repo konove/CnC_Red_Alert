@@ -53,7 +53,6 @@
 #include "td/bullet.h"
 #include "td/ccfile.h"
 #include "td/cell.h"
-#include "td/compat.h"
 #include "td/connect.h"
 #include "td/credits.h"
 #include "td/defines.h"

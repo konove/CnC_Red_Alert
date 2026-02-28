@@ -61,7 +61,6 @@
 #include "sdllib/ww_win.h"
 #include "support.h"
 #include "td/ccfile.h"
-#include "td/compat.h"
 #include "td/monoc.h"
 #include "tech/wwfile.h"
 
