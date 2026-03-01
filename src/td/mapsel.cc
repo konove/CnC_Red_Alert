@@ -42,7 +42,11 @@
 
 #include <cstdio>
 #include <cstring>
+#include <numeric>
 
+#include "absl/algorithm/container.h"
+#include "absl/random/random.h"
+#include "absl/types/span.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -411,7 +415,7 @@ struct nodstats {
   int military;
   int probability;
 } const NodStats[] = {
-    // Name   Pop     Expendable   Capital	Government Corruptible   Worth
+    // Name   Pop     Expendable   Capital   Government Corruptible   Worth
     // Conflict   Military  Probability
     {16, TXT_MAP_P18, 38, TXT_MAP_C17, 8, 86, TXT_MAP_GDP14, TXT_MAP_PC20, 0,
      23},
@@ -598,7 +602,7 @@ void Map_Selection() {
   //	SeenBuff.Blit(HidPage);
   Animate_Frame(greyearth, SysMemPage, 0);
 
-  Bit_It_In_Scale(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, &SeenBuff);
+  Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff);
   PseudoSeenBuff->Put_Pixel(237, 92, TBLACK);
   PseudoSeenBuff->Put_Pixel(237, 93, TBLACK);
 
@@ -835,7 +839,7 @@ void Map_Selection() {
   Play_Sample(country1, 255, Options.Normalize_Sound(90));
   Animate_Frame(progress, SysMemPage, startframe + 1);
   Animate_Frame(progress, SysMemPage, startframe + 1);
-  Bit_It_In_Scale(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, &SeenBuff, 1, 1);
+  Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, 1, true);
   backpage.Blit(SysMemPage, 0, 0, xcoord, 1, 20 * 6, 8);
   Call_Back_Delay(85);
 
@@ -866,7 +870,7 @@ void Map_Selection() {
 
   Play_Sample(country1, 255, Options.Normalize_Sound(90));
   Animate_Frame(progress, SysMemPage, startframe + 2);
-  Bit_It_In_Scale(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, &SeenBuff, 1, 1);
+  Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, 1, true);
   backpage.Blit(SysMemPage, 0, 0, xcoord, 11, 20 * 6, 8);
   if (!lastscenario) {
     Call_Back_Delay(85);
@@ -916,7 +920,7 @@ void Map_Selection() {
     HidPage.Fill_Rect(0, 320, 40 * 6, 352, TBLACK);
 #endif
     BlitList.Clear();
-    Bit_It_In_Scale(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, &SeenBuff);
+    Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff);
   }
 
   /*
@@ -1129,9 +1133,10 @@ void Map_Selection() {
     Set_Logic_Page(SysMemPage);
     europe->Blit(SysMemPage);
     int shape = CountryArray[scenario].CountryShape[ScenDir][selection];
-    int xyindex = shape + (house == HOUSE_GOOD ? 0 : 18);
-    CC_Draw_Shape(countryshape, shape, _countryx[xyindex], _countryy[xyindex],
-                  WINDOW_MAIN, SHAPE_WIN_REL | SHAPE_CENTER, nullptr, nullptr);
+    int xshuffled_rows = shape + (house == HOUSE_GOOD ? 0 : 18);
+    CC_Draw_Shape(countryshape, shape, _countryx[xshuffled_rows],
+                  _countryy[xshuffled_rows], WINDOW_MAIN,
+                  SHAPE_WIN_REL | SHAPE_CENTER, nullptr, nullptr);
     SysMemPage.Blit(*PseudoSeenBuff);
     Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 
@@ -1150,7 +1155,8 @@ void Map_Selection() {
 
     countryshape = nullptr;
 
-    Print_Statistics(color & 0x7F, _countryx[xyindex], _countryy[xyindex]);
+    Print_Statistics(color & 0x7F, _countryx[xshuffled_rows],
+                     _countryy[xshuffled_rows]);
   } else {
     CCFileClass(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL")
         .Read(localpalette, 768);
@@ -1436,12 +1442,12 @@ void Print_Statistics(int country, int xpos, int ypos) {
  *=========================================================================*/
 void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
                       GraphicBufferClass* src, GraphicBufferClass* dest) {
-  unsigned int xindex,  // Working array index var.
-      yindex;           // Working y index var.
-  unsigned int x, y;    // Extraction position indexes.
-  unsigned int tempy;   // Temporary working Y index var.
-  int _xindex[40];      // X position array.
-  int _yindex[200];     // Y position array.
+  unsigned int shuffled_cols,  // Working array index var.
+      shuffled_rows;           // Working y index var.
+  unsigned int x, y;           // Extraction position indexes.
+  unsigned int tempy;          // Temporary working Y index var.
+  int _shuffled_cols[40];      // X position array.
+  int _shuffled_rows[200];     // Y position array.
 
   // Anticipate two pixel rows per blit.
   h >>= 1;
@@ -1451,49 +1457,49 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
   destx >>= 3;
   w >>= 3;
 
-  for (xindex = 0; xindex < w; xindex++) {
-    _xindex[xindex] = xindex; /* init the index array */
+  for (shuffled_cols = 0; shuffled_cols < w; shuffled_cols++) {
+    _shuffled_cols[shuffled_cols] = shuffled_cols; /* init the index array */
   }
-  for (yindex = 0; yindex < h; yindex++) {
-    _yindex[yindex] = yindex; /* init the index array */
+  for (shuffled_rows = 0; shuffled_rows < h; shuffled_rows++) {
+    _shuffled_rows[shuffled_rows] = shuffled_rows; /* init the index array */
   }
 
   /*
   **	Shuffle the X indexes around a bit.  This gives it
   **	that 'random' feel while remaining precise.
   */
-  for (xindex = 0; xindex < w; xindex++) {
+  for (shuffled_cols = 0; shuffled_cols < w; shuffled_cols++) {
     int temp;
 
     x = IRandom(0, w - 1);
-    temp = _xindex[x];
-    _xindex[x] = _xindex[xindex];
-    _xindex[xindex] = temp;
+    temp = _shuffled_cols[x];
+    _shuffled_cols[x] = _shuffled_cols[shuffled_cols];
+    _shuffled_cols[shuffled_cols] = temp;
   }
 
   /*
   **	Shuffle the Y indexes around a bit for the same reason that
   **	the x indexes were shuffled.
   */
-  for (yindex = 0; yindex < h; yindex++) {
+  for (shuffled_rows = 0; shuffled_rows < h; shuffled_rows++) {
     int temp;
 
     y = IRandom(0, h - 1);
-    temp = _yindex[y];
-    _yindex[y] = _yindex[yindex];
-    _yindex[yindex] = temp;
+    temp = _shuffled_rows[y];
+    _shuffled_rows[y] = _shuffled_rows[shuffled_rows];
+    _shuffled_rows[shuffled_rows] = temp;
   }
 
   /*
   **	Sweep through the indexes and 'construct' the destination display
   **	from a series of miniature Byte_Blits.
   */
-  for (yindex = 0; yindex < h; yindex++) {
-    tempy = yindex;
+  for (shuffled_rows = 0; shuffled_rows < h; shuffled_rows++) {
+    tempy = shuffled_rows;
     Call_Back();
-    for (xindex = 0; xindex < w; xindex++) {
-      x = _xindex[xindex];
-      y = _yindex[tempy];
+    for (shuffled_cols = 0; shuffled_cols < w; shuffled_cols++) {
+      x = _shuffled_cols[shuffled_cols];
+      y = _shuffled_rows[tempy];
       tempy++;
       if (tempy >= h) {
         tempy = 0;
@@ -1549,7 +1555,7 @@ int LowMedHiStr(int percentage) {
  * Bit_It_In -- Pixel fade graphic copy.                                   *
  *                                                                         *
  *    Copies a block of graphic memory using a 'random' pixel algorithm.   *
- *    Typcial use would be to 'fade' some graphic display into another.    *
+ *    Typical use would be to 'fade' some graphic display into another.    *
  *                                                                         *
  * INPUT:   x,y   - Pixel position of upper left corner of block.          *
  *                                                                         *
@@ -1559,7 +1565,7 @@ int LowMedHiStr(int percentage) {
  *                                                                         *
  *          dest  - Page number of the destination page.                   *
  *                                                                         *
- *    		delay - # of frames to wait after each line fades in           *
+ *          delay - # of frames to wait after each line fades in           *
  *                                                                         *
  * OUTPUT:     none                                                        *
  *                                                                         *
@@ -1571,84 +1577,69 @@ int LowMedHiStr(int percentage) {
  *   04/16/1991 JLB : Created.                                             *
  *   04/17/1995 BWG : Adapted to C++ library.                              *
  *=========================================================================*/
+void Bit_It_In(const int x, const int y, const int w, const int h,
+               GraphicBufferClass* src, GraphicBufferClass* dest,
+               const int delay, const bool dagger) {
+  // Build shuffled coordinate tables so pixels are copied in random order,
+  // creating a dissolve transition where the new image materializes from
+  // scattered dots rather than appearing all at once.
+  int shuffled_cols[320];
+  int shuffled_rows[200];
+  std::iota(shuffled_cols, shuffled_cols + w, 0);
+  std::iota(shuffled_rows, shuffled_rows + h, 0);
 
-void Bit_It_In_Scale(int x, int y, int w, int h, GraphicBufferClass* src,
-                     GraphicBufferClass* dest, GraphicViewPortClass* /*seen*/,
-                     int delay, int dagger) {
-  short int *xindex, *yindex;
-  int n;
-  unsigned int i, j, k, m, j1;
-  short ScaleBuffer[320 + 200];
+  absl::BitGen gen;
+  auto x_span = absl::MakeSpan(shuffled_cols, w);
+  auto y_span = absl::MakeSpan(shuffled_rows, h);
+  absl::c_shuffle(x_span, gen);
+  absl::c_shuffle(y_span, gen);
 
-  xindex = static_cast<short int*>(ScaleBuffer);
-  yindex = xindex + 320;
-
-  for (i = 0; i < w; i++) {
-    xindex[i] = i; /* init the index array */
-  }
-  for (i = 0; i < h; i++) {
-    yindex[i] = i; /* init the index array */
-  }
-  for (i = 0; i < w; i++) { /* shuffle the indexes */
-    k = IRandom(0, w - 1);
-    m = i;
-    n = xindex[k];
-    xindex[k] = xindex[m];
-    xindex[m] = n;
-  }
-  for (i = 0; i < h; i++) { /* shuffle the indexes */
-    k = IRandom(0, h - 1);
-    m = i;
-    n = yindex[k];
-    yindex[k] = yindex[m];
-    yindex[m] = n;
-  }
-
-  for (j = 0; j < h; j++) {
-    j1 = j;
-    // execute delay every other line
-    if (j & 1) {
-      i = delay;
+  // Copy w pixels per iteration in shuffled order. The Call_Back_Delay
+  // between iterations processes the game loop (including screen
+  // rendering), so each batch of random pixels becomes visible before
+  // the next batch is drawn.
+  for (int line = 0; line < h; line++) {
+    int row_offset = line;
+    if (line & 1) {
+      int remaining = delay;
       do {
-        Call_Back_Delay(i ? 1 : 0);
-      } while (i--);
+        Call_Back_Delay(remaining ? 1 : 0);
+      } while (remaining--);
     } else {
       Call_Back();
     }
 
     if (src->Lock() && dest->Lock()) {
-      for (i = 0; i < w; i++) {
-        k = x + xindex[i];
-        m = y + yindex[j1];
-        j1++;
-        if (j1 >= h) {
-          j1 = 0;
+      // Each pixel uses a shuffled x and a wrapping y offset, so pixels
+      // scatter across the entire image rather than filling row by row.
+      for (int col = 0; col < w; col++) {
+        const int px = x + shuffled_cols[col];
+        const int py = y + shuffled_rows[row_offset];
+        row_offset++;
+        if (row_offset >= h) {
+          row_offset = 0;
         }
 
-        Buffer_Put_Pixel(dest, k, m, Buffer_Get_Pixel(src, k, m));
-        // n=src->Get_Pixel(k,m);
-        // dest->Put_Pixel(k,m,n);
+        dest->Buffer_Put_Pixel(px, py, Buffer_Get_Pixel(src, px, py));
       }
       if (dagger) {
-        for (int q = j; q >= 0; q--) {
-          Buffer_Put_Pixel(dest, 160 - (j - q), q,
-                           Buffer_Get_Pixel(src, 160 - (j - q), q));
-          Buffer_Put_Pixel(dest, 160 + (j - q), q,
-                           Buffer_Get_Pixel(src, 160 + (j - q), q));
-          // dest->Put_Pixel(160-(j-q),q,src->Get_Pixel(160-(j-q),q));
-          // dest->Put_Pixel(160+(j-q),q,src->Get_Pixel(160+(j-q),q));
+        // Overlay a downward-pointing wedge from screen center (x=160),
+        // expanding one pixel wider per row. This adds a dagger-shaped
+        // reveal on top of the random dissolve.
+        // NOTE: Ignores x/y/w/h and assumes a full 320-wide screen.
+        // Only used with full-screen (0,0,320,200) dissolves.
+        for (int row = line; row >= 0; row--) {
+          const unsigned offset = line - row;
+          const unsigned x_left = 160 - offset;
+          const unsigned x_right = 160 + offset;
+          dest->Buffer_Put_Pixel(x_left, row,
+                                 Buffer_Get_Pixel(src, x_left, row));
+          dest->Buffer_Put_Pixel(x_right, row,
+                                 Buffer_Get_Pixel(src, x_right, row));
         }
       }
     }
     src->Unlock();
     dest->Unlock();
-    // if (seen){
-    // Interpolate_2X_Scale(dest , seen ,NULL);
-    //}
   }
-}
-
-void Bit_It_In(int x, int y, int w, int h, GraphicBufferClass* src,
-               GraphicBufferClass* dest, int delay, int dagger) {
-  Bit_It_In_Scale(x, y, w, h, src, dest, nullptr, delay, dagger);
 }

@@ -229,6 +229,7 @@ class GraphicViewPortClass {
   /*===================================================================*/
 
   void Put_Pixel(int x, int y, unsigned char color);
+  void Buffer_Put_Pixel(int x, int y, unsigned char color);
   int Get_Pixel(int x, int y);
   void Clear(unsigned char color = 0);
   long To_Buffer(int x, int y, int w, int h, void* buff, long size);
@@ -525,10 +526,21 @@ inline GraphicBufferClass* GraphicViewPortClass::Get_Graphic_Buffer() {
 }
 
 inline void GraphicViewPortClass::Put_Pixel(int x, int y, unsigned char color) {
-  if (Lock()) {
-    Buffer_Put_Pixel(this, x, y, color);
+  if (!Lock()) {
+    return;
   }
+
+  this->Buffer_Put_Pixel(x, y, color);
+
   Unlock();
+}
+
+inline void GraphicViewPortClass::Buffer_Put_Pixel(const int x, const int y,
+                                                   const unsigned char color) {
+  if (x >= 0 && y >= 0 && x < Get_Width() && y < Get_Height()) {
+    const int pitch = Get_XAdd() + Get_Width() + Get_Pitch();
+    *(Get_Offset() + x + y * pitch) = color;
+  }
 }
 
 inline int GraphicViewPortClass::Get_Pixel(int x, int y) {

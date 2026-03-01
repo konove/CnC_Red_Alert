@@ -51,7 +51,7 @@ target_compile_definitions(tdsdl PRIVATE
         TD=1
 )
 apply_dotenv_settings(tdsdl)
-target_link_libraries(tdsdl PUBLIC absl::strings PRIVATE tech port sdllib vqa32 absl::check absl::log absl::log_initialize absl::status absl::statusor)
+target_link_libraries(tdsdl PUBLIC absl::strings PRIVATE tech port sdllib vqa32 absl::algorithm absl::check absl::log absl::log_initialize absl::random_random absl::span absl::status absl::statusor)
 
 install(TARGETS tdsdl)
 

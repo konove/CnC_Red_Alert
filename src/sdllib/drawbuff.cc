@@ -23,19 +23,6 @@ inline int Make_Code(int x, int y, int w, int h) {
          (y >= h ? 0b0001 : 0);
 }
 
-void Buffer_Put_Pixel(void* thisptr, int x, int y, unsigned char color) {
-  auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
-
-  if (x < 0 || y < 0 || x >= vp_dst->Get_Width() || y >= vp_dst->Get_Height()) {
-    return;
-  }
-
-  int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
-  auto* dst_offset = vp_dst->Get_Offset() + x + y * dst_area;
-
-  *dst_offset = color;
-}
-
 int Buffer_Get_Pixel(void* thisptr, int x, int y) {
   auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 

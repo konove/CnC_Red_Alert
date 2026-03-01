@@ -162,11 +162,8 @@ extern ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 void Multi_Score_Presentation();
 
 void Map_Selection();
-void Bit_It_In_Scale(int x, int y, int w, int h, GraphicBufferClass* src,
-                     GraphicBufferClass* dest, GraphicViewPortClass* seen,
-                     int delay = 0, int dagger = 0);
 void Bit_It_In(int x, int y, int w, int h, GraphicBufferClass* src,
-               GraphicBufferClass* dest, int delay = 0, int dagger = 0);
+               GraphicBufferClass* dest, int delay = 0, bool dagger = false);
 void Call_Back_Delay(int time);
 int Alloc_Object(ScoreAnimClass* obj);
 extern GraphicBufferClass* PseudoSeenBuff;

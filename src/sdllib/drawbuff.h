@@ -21,19 +21,10 @@
 
 class GraphicViewPortClass;
 
-/*=========================================================================*/
-/* Define functions which have not under-gone name mangling
- */
-/*=========================================================================*/
-
-extern "C" {
 /*======================================================================*/
-/* Externs for all of the common functions between the video buffer
- */
-/*		class and the graphic buffer class.
- */
+/* Externs for all the common functions between the video buffer */
+/* class and the graphic buffer class. */
 /*======================================================================*/
-void Buffer_Put_Pixel(void* thisptr, int x, int y, unsigned char color);
 int Buffer_Get_Pixel(void* thisptr, int x, int y);
 void Buffer_Clear(void* thisptr, unsigned char color);
 long Buffer_To_Buffer(void* thisptr, int x, int y, int w, int h, void* buff,
@@ -49,8 +40,7 @@ long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
                   int bcolor);
 
 /*======================================================================*/
-/* Externs for all of the graphic buffer class only functions
- */
+/* Externs for all the graphic buffer class only functions */
 /*======================================================================*/
 void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
                       unsigned char color);
@@ -61,8 +51,8 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
 void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
                             int x_pixel, int y_pixel, const void* remap, int,
                             int, int, int);
-}
 
 extern GraphicViewPortClass* LogicPage;
 extern bool AllowHardwareBlitFills;
+
 #endif  // CNC_RED_ALERT_SDLLIB_DRAWBUFF_H_
