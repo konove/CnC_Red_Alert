@@ -16,40 +16,20 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\checkbox.h_v   1.6   16 Oct 1995 16:46:00
- * JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : CHECKBOX.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 05/26/95 *
- *                                                                                             *
- *                  Last Update : May 26, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #ifndef CNC_RED_ALERT_TD_CHECKBOX_H_
 #define CNC_RED_ALERT_TD_CHECKBOX_H_
 
 #include "td/toggle.h"
 
+// A small 7x7 checkbox gadget that draws an X when toggled on.
 class CheckBoxClass : public ToggleClass {
  public:
-  CheckBoxClass(unsigned id, int x, int y) : ToggleClass(id, x, y, 7, 7) {}
+  CheckBoxClass(const unsigned id, const int x, const int y)
+      : ToggleClass(id, x, y, 7, 7) {}
 
-  int Draw_Me(int forced = false) override;
-
- protected:
+  // Draws the checkbox as a filled or empty box.
+  // Returns true if the checkbox was actually rendered.
+  int Draw_Me(bool forced = false) override;
 };
 
 #endif  // CNC_RED_ALERT_TD_CHECKBOX_H_

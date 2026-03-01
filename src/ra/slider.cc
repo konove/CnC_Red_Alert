@@ -337,7 +337,7 @@ void SliderClass::Draw_Thumb() {
  *redraw flag?     * OUTPUT:  bool; Was the gauge redrawn? * WARNINGS:   none *
  * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int SliderClass::Draw_Me(int forced) {
+int SliderClass::Draw_Me(bool forced) {
   if (BelongToList) {
     if (ControlClass::Draw_Me(forced)) {
       /*

@@ -79,7 +79,7 @@ class ListClass : public ControlClass {
   virtual int Count() const { return List.Count(); }
   virtual int Current_Index() const;
   virtual const char* Current_Item() const;
-  int Draw_Me(int forced) override;
+  int Draw_Me(bool forced) override;
   virtual const char* Get_Item(size_t index) const;
   virtual int Step_Selected_Index(int forward);
   void Flag_To_Redraw() override;
@@ -177,7 +177,7 @@ class TListClass : public ControlClass {
   virtual int Count() const { return List.Count(); }
   virtual int Current_Index() const;
   virtual T Current_Item() const;
-  int Draw_Me(int forced) override;
+  int Draw_Me(bool forced) override;
   virtual int Step_Selected_Index(int forward);
   void Flag_To_Redraw() override;
   virtual T Get_Item(int index) const { return (List[index]); }
@@ -451,7 +451,7 @@ int TListClass<T>::Action(unsigned flags, KeyNumType& key) {
 }
 
 template <class T>
-int TListClass<T>::Draw_Me(int forced) {
+int TListClass<T>::Draw_Me(bool forced) {
   if (GadgetClass::Draw_Me(forced)) {
     /*
     **	Turn off the mouse.

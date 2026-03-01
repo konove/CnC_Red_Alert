@@ -177,7 +177,7 @@ void EditClass::Set_Text(char* text, int max_len) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int EditClass::Draw_Me(int forced) {
+int EditClass::Draw_Me(bool forced) {
   if (ControlClass::Draw_Me(forced)) {
     /*
     **	Hide the mouse.

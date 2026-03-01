@@ -185,7 +185,7 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
  *                                                                                             *
  * HISTORY: * 01/03/1995 MML : Created. * 01/16/1995 JLB : Modified *
  *=============================================================================================*/
-int TextButtonClass::Draw_Me(int forced) {
+int TextButtonClass::Draw_Me(bool forced) {
   if (ControlClass::Draw_Me(forced)) {
     /*
     **	Hide the mouse.

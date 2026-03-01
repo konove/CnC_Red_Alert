@@ -47,21 +47,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 
-/***********************************************************************************************
- * CheckBoxClass::Draw_Me -- Draws the checkbox imagery. *
- *                                                                                             *
- *    This routine will draw the checkbox either filled or empty as necessary. *
- *                                                                                             *
- * INPUT:   forced   -- Should the check box be drawn even if it doesn't think
- *it needs to?    *
- *                                                                                             *
- * OUTPUT:  Was the check box rendered? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/01/1995 JLB : Created. *
- *=============================================================================================*/
-int CheckBoxClass::Draw_Me(int forced) {
+int CheckBoxClass::Draw_Me(bool forced) {
   if (ToggleClass::Draw_Me(forced)) {
     Hide_Mouse();
     Draw_Box(X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, false);

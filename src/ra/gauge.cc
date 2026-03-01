@@ -211,7 +211,7 @@ int GaugeClass::Value_To_Pixel(int value) {
  *                                                                                             *
  * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int GaugeClass::Draw_Me(int forced) {
+int GaugeClass::Draw_Me(bool forced) {
   if (ControlClass::Draw_Me(forced)) {
     /*
     **	Hide the mouse
@@ -458,7 +458,7 @@ int TriColorGaugeClass::Set_Yellow_Limit(int value) {
  *                                                                                             *
  * HISTORY:    01/16/1995 MML : Created. *
  *=============================================================================================*/
-int TriColorGaugeClass::Draw_Me(int forced) {
+int TriColorGaugeClass::Draw_Me(bool forced) {
   if (ControlClass::Draw_Me(forced)) {
     /*
     **	Hide the mouse

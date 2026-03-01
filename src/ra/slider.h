@@ -71,7 +71,7 @@ class SliderClass : public GaugeClass {
   int Set_Value(int) override;
   virtual int Bump(int up);
   virtual int Step(int up);
-  int Draw_Me(int forced) override;
+  int Draw_Me(bool forced) override;
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
 

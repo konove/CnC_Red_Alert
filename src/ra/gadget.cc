@@ -391,7 +391,7 @@ int GadgetClass::Action(unsigned flags, KeyNumType&) {
  *                                                                                             *
  * HISTORY: * 01/14/1995 JLB : Created. *
  *=============================================================================================*/
-int GadgetClass::Draw_Me(int forced) {
+int GadgetClass::Draw_Me(bool forced) {
   if (forced || IsToRepaint) {
     IsToRepaint = false;
     return true;

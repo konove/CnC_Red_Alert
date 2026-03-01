@@ -232,7 +232,7 @@ int Dial8Class::Action(unsigned flags, KeyNumType& key) {
  * HISTORY:                                                                *
  *   02/06/1995 BR : Created.                                              *
  *=========================================================================*/
-int Dial8Class::Draw_Me(int forced) {
+int Dial8Class::Draw_Me(bool forced) {
   /*
   **	Redraw if parent indicates a redraw is needed
   */

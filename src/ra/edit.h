@@ -65,7 +65,7 @@ class EditClass : public ControlClass {
   ~EditClass() override;
 
   void Set_Focus() override;
-  int Draw_Me(int forced) override;
+  int Draw_Me(bool forced) override;
 
   // Changes the text buffer and maximum length. Does not copy; |text| must
   // outlive this gadget.

@@ -183,7 +183,7 @@ unsigned ControlClass::Get_ID() const { return ID; }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int ControlClass::Draw_Me(int forced) {
+int ControlClass::Draw_Me(bool forced) {
   if (Peer) {
     Peer->Draw_Me();
   }

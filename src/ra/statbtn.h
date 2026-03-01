@@ -49,7 +49,7 @@ class StaticButtonClass : public GadgetClass {
   StaticButtonClass();
   StaticButtonClass(unsigned id, const char* text, TextPrintType style, int x,
                     int y, int w = -1, int h = -1);
-  int Draw_Me(int forced = false) override;
+  int Draw_Me(bool forced = false) override;
   virtual void Set_Text(const char* text, bool resize = false);
 
  protected:

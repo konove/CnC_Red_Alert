@@ -74,7 +74,7 @@ class ControlClass : public GadgetClass {
   /*
   **	Render support function.
   */
-  int Draw_Me(int forced = false) override;
+  int Draw_Me(bool forced = false) override;
 
   /*
   **	This is the ID number for this control gadget. This number is used to

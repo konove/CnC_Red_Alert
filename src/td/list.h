@@ -80,7 +80,7 @@ class ListClass : public ControlClass {
   virtual int Count() { return List.Count(); }
   virtual int Current_Index();
   virtual const char* Current_Item();
-  int Draw_Me(int forced) override;
+  int Draw_Me(bool forced) override;
   virtual const char* Get_Item(int index) const;
   virtual int Step_Selected_Index(int forward);
 

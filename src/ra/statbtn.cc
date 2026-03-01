@@ -137,7 +137,7 @@ StaticButtonClass::StaticButtonClass()
  *                                                                                             *
  * HISTORY: * 01/03/1995 MML : Created. * 01/16/1995 JLB : Modified *
  *=============================================================================================*/
-int StaticButtonClass::Draw_Me(int forced) {
+int StaticButtonClass::Draw_Me(bool forced) {
   if (GadgetClass::Draw_Me(forced)) {
     /*
     **	Hide the mouse.

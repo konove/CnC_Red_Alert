@@ -306,7 +306,7 @@ int ListClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Draw_Me(int forced) {
+int ListClass::Draw_Me(bool forced) {
   if (GadgetClass::Draw_Me(forced)) {
     /*
     **	Turn off the mouse.

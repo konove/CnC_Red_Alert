@@ -59,7 +59,7 @@ class EditClass : public ControlClass {
             int w = -1, int h = -1, EditStyle style = ALPHANUMERIC);
   ~EditClass() override;
 
-  int Draw_Me(int forced) override;
+  int Draw_Me(bool forced) override;
   virtual void Set_Text(char* text, int max_len);
   void Set_Color(int color) { Color = color; }
 

@@ -26,7 +26,7 @@
 #include "ra/function.h"
 
 //***********************************************************************************************
-int BigCheckBoxClass::Draw_Me(int forced) {
+int BigCheckBoxClass::Draw_Me(bool forced) {
   if (ToggleClass::Draw_Me(forced)) {
     Hide_Mouse();
 

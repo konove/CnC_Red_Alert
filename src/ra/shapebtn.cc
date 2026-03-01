@@ -135,7 +135,7 @@ void ShapeButtonClass::Set_Shape(const void* data) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int ShapeButtonClass::Draw_Me(int forced) {
+int ShapeButtonClass::Draw_Me(bool forced) {
   if (ControlClass::Draw_Me(forced) && ShapeData) {
     /*
     **	Hide the mouse.

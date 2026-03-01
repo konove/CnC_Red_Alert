@@ -83,7 +83,7 @@ TextLabelClass::TextLabelClass(char* txt, int x, int y, int color,
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int TextLabelClass::Draw_Me(int forced) {
+int TextLabelClass::Draw_Me(bool forced) {
   if (GadgetClass::Draw_Me(forced)) {
     if (PixWidth == -1) {
       Fancy_Text_Print("%s", X, Y, Color, TBLACK, Style, Text);

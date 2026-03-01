@@ -45,7 +45,7 @@ class BigCheckBoxClass : public ToggleClass {
   }
   virtual ~BigCheckBoxClass() { delete[] szCaption; }
 
-  virtual int Draw_Me(int forced = false);
+  virtual int Draw_Me(bool forced = false);
   virtual int Action(unsigned flags, KeyNumType& key);
 
   bool Toggle() {

@@ -138,7 +138,7 @@ class GadgetClass : public LinkClass {
   /*
   **	General render function.
   */
-  virtual int Draw_Me(int forced = false);
+  virtual int Draw_Me(bool forced = false);
 
   /*
   **	This is the coordinates and dimensions of the gadget region. These are

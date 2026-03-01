@@ -77,7 +77,7 @@ void EditClass::Set_Text(char* text, const int max_len) {
   Flag_To_Redraw();
 }
 
-int EditClass::Draw_Me(const int forced) {
+int EditClass::Draw_Me(const bool forced) {
   if (ControlClass::Draw_Me(forced)) {
     if (LogicPage == &SeenBuff) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);

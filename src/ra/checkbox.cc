@@ -63,7 +63,7 @@
  *                                                                                             *
  * HISTORY: * 07/01/1995 JLB : Created. *
  *=============================================================================================*/
-int CheckBoxClass::Draw_Me(int forced) {
+int CheckBoxClass::Draw_Me(bool forced) {
   if (ToggleClass::Draw_Me(forced)) {
     Hide_Mouse();
     Draw_Box(X, Y, Width, Height, BOXSTYLE_DOWN, false);
