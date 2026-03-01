@@ -8,18 +8,9 @@ void (*Memory_Error_Exit)(char* string) = nullptr;
 
 void Force_VM_Page_In(void* /*buffer*/, int /*length*/) {}
 
-void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
-  void* ptr = new char[bytes_to_alloc];
-
-  if (!ptr && Memory_Error) {
-    Memory_Error();
-  }
-
-  if (ptr && flags & MEM_CLEAR) {
-    memset(ptr, 0, bytes_to_alloc);
-  }
-
-  return ptr;
+char* Alloc(const unsigned long bytes_to_alloc, const MemoryFlagType flags) {
+  return (flags & MEM_CLEAR) ? new char[bytes_to_alloc]()
+                             : new char[bytes_to_alloc];
 }
 
 void Free(const void* pointer) {

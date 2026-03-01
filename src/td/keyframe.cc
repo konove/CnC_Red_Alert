@@ -239,14 +239,12 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
     **
     */
     if (!BigShapeBufferStart) {
-      BigShapeBufferStart =
-          static_cast<char*>(Alloc(BigShapeBufferLength, MEM_NORMAL));
+      BigShapeBufferStart = new char[BigShapeBufferLength];
       BigShapeBufferPtr = BigShapeBufferStart;
       /*
       ** Allocate memory for theater specific uncompressed shapes
       */
-      TheaterShapeBufferStart =
-          static_cast<char*>(Alloc(TheaterShapeBufferLength, MEM_NORMAL));
+      TheaterShapeBufferStart = new char[TheaterShapeBufferLength];
       TheaterShapeBufferPtr = TheaterShapeBufferStart;
     }
 

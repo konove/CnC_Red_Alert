@@ -275,33 +275,11 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
   return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
 }
 
-/***********************************************************************************************
- * Load_Alloc_Data -- Allocates a buffer and loads the file into it. *
- *                                                                                             *
- *    This is the C++ replacement for the Load_Alloc_Data function. It will
- *allocate the       * memory big enough to hold the file and then read the file
- *into it.                       *
- *                                                                                             *
- * INPUT:   file  -- The file to read. *
- *                                                                                             *
- *          mem   -- The memory system to use for allocation. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the allocated and filled memory block. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
 void* Load_Alloc_Data(FileClass& file) {
-  void* ptr = nullptr;
-  long size = file.Size();
-
-  ptr = new char[size + 1];
-  if (ptr) {
-    file.Read(ptr, size);
-    static_cast<char*>(ptr)[size] =
-        0;  // workaround scanning past the end of text files
-  }
+  const int32_t size = file.Size();
+  auto* ptr = new char[size + 1];
+  file.Read(ptr, size);
+  ptr[size] = '\0';  // Null-terminate so text parsers don't read past the data.
   return ptr;
 }
 

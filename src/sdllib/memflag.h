@@ -64,21 +64,21 @@ void Force_VM_Page_In(void* buffer, int length);
  */
 /*=========================================================================*/
 
-void* operator new(size_t size, MemoryFlagType flag);
-void* operator new[](size_t size, MemoryFlagType flag);
-void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags);
+// void* operator new(size_t size, MemoryFlagType flag);
+// void* operator new[](size_t size, MemoryFlagType flag);
+char* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags);
 void Free(const void* pointer);
 void* Resize_Alloc(void* original_ptr, unsigned long new_size_in_bytes);
 long Ram_Free(MemoryFlagType flag);
 long Total_Ram_Free(MemoryFlagType flag);
 long Heap_Size(MemoryFlagType flag);
 
-inline void* operator new(size_t size, MemoryFlagType flag) {
-  return Alloc(size, flag);
-}
-inline void* operator new[](size_t size, MemoryFlagType flag) {
-  return Alloc(size, flag);
-}
+// inline void* operator new(size_t size, MemoryFlagType flag) {
+//   return Alloc(size, flag);
+// }
+// inline void* operator new[](size_t size, MemoryFlagType flag) {
+//   return Alloc(size, flag);
+// }
 
 /*=========================================================================*/
 /* The following prototypes are for the file: MEM_COPY.ASM

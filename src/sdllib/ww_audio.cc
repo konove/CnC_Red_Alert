@@ -706,11 +706,8 @@ void* Load_Sample(const char* filename) {
   fh = Open_File(filename, FileAccess::kRead);
   if (fh != kInvalidHandle) {
     size = File_Size(fh) + sizeof(AUDHeaderType);
-    buffer = Alloc(size, MEM_NORMAL);
-
-    if (buffer) {
-      Sample_Read(fh, buffer, size);
-    }
+    buffer = new char[size];
+    Sample_Read(fh, buffer, size);
 
     Close_File(fh);
   }

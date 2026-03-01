@@ -290,10 +290,10 @@ bool Init_Game(int, char*[]) {
   //	GradFont6Ptr = MFCD::Retrieve("GRAD6FNT.FNT");
   f.Open("GRAD6FNT.FNT");
   GradFont6Ptr = Load_Alloc_Data(f);
-  BlackPalette = new (MEM_CLEAR | MEM_REAL) unsigned char[768];
-  GamePalette = new (MEM_CLEAR | MEM_REAL) unsigned char[768];
-  OriginalPalette = new (MEM_CLEAR | MEM_REAL) unsigned char[768];
-  WhitePalette = new (MEM_CLEAR | MEM_REAL) unsigned char[768];
+  BlackPalette = new unsigned char[768]();
+  GamePalette = new unsigned char[768]();
+  OriginalPalette = new unsigned char[768]();
+  WhitePalette = new unsigned char[768]();
   memset(WhitePalette, 63, 768);
 
   DLOG(INFO) << "C&C95 - About to set palette";
@@ -515,7 +515,7 @@ bool Init_Game(int, char*[]) {
   /*
   ** Extract a movie from a mixfile.
   */
-  char* file_ptr = (char*)Alloc(32 * 1024 * 1024, MEM_NORMAL);
+  char* file_ptr = new char[32 * 1024 * 1024];
   CCFileClass whatever("PINTLE.VQA");
 
   int len = whatever.Size();

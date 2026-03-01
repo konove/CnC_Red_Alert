@@ -219,6 +219,8 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  PicturePlaneType format);
 void* Small_Icon(const void* iconptr, int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
+// Allocates a buffer, reads the file into it, and null-terminates.
+// Returns ownership of the buffer. Caller must delete[].
 void* Load_Alloc_Data(FileClass& file);
 long Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
                      BufferClass& dest_buff, void* reserved_data);

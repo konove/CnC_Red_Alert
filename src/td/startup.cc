@@ -376,7 +376,7 @@ int main(int argc, char* argv[])
 
       SoundOn = Audio_Init(MainWindow, 16, false, 11025 * 2, 0);
 
-      Palette = new (MEM_CLEAR) unsigned char[768];
+      Palette = new unsigned char[768]();
 
       bool video_success = false;
       CCDebugString("C&C95 - Setting video mode.\n");
@@ -538,8 +538,7 @@ int main(int argc, char* argv[])
       ** See if we should run the intro
       */
       CCDebugString("C&C95 - Reading CONQUER.INI.\n");
-      char* buffer = static_cast<char*>(
-          Alloc(64000, MEM_NORMAL));  //(char *)HidPage.Get_Buffer();
+      char* buffer = new char[64000];
       cfile.Read(buffer, cfile.Size());
       buffer[cfile.Size()] = '\0';
 

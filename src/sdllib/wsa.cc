@@ -220,7 +220,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     }
 
     // allocate buffer needed
-    user_buffer = static_cast<char*>(Alloc(user_buffer_size, MEM_CLEAR));
+    user_buffer = new char[user_buffer_size]();
 
     anim_flags |= WSA_SYS_ALLOCATED;
   } else {
