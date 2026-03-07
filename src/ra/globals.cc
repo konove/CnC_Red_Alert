@@ -253,14 +253,14 @@ bool TimeQuake;
 
 bool PendingTimeQuake;
 TARGET TimeQuakeCenter;
-fixed QuakeUnitDamage = 0x300;
-fixed QuakeBuildingDamage = 0x300;
+fixed QuakeUnitDamage(0x300);
+fixed QuakeBuildingDamage(0x300);
 int QuakeInfantryDamage = 25;
 int QuakeDelay;
-fixed ChronoTankDuration = 0x300;  // chrono override for chrono tanks
-fixed EngineerDamage = 0x55;       // Amount of damage an engineer does
-fixed EngineerCaptureLevel =
-    0x40;  // Building damage level before engineer can capture
+fixed ChronoTankDuration(0x300);  // chrono override for chrono tanks
+fixed EngineerDamage(0x55);       // Amount of damage an engineer does
+fixed EngineerCaptureLevel(
+    0x40);  // Building damage level before engineer can capture
 
 unsigned short Hard_Error_Occured = 0;
 WWMouseClass* WWMouse = nullptr;
@@ -712,8 +712,7 @@ int WindowList[][8] = {
 
     /* do not change the first 2 entries!! they are necc. to the system */
 
-    {0, 0, 40 * 16, 400, WHITE, BLACK, 0,
-     0},                                          /* screen window */
+    {0, 0, 40 * 16, 400, WHITE, BLACK, 0, 0},     /* screen window */
     {1 * 8, 75, 38 * 8, 100, WHITE, BLACK, 0, 0}, /* DOS Error window */
 
     // Tactical map.
@@ -777,7 +776,6 @@ Stopwatch<SystemTickSource> TickCount;
 
 bool InDebugger = false;
 bool ReadyToQuit = false;
-
 
 GetCDClass CDList;
 int UnitBuildPenalty = 100;

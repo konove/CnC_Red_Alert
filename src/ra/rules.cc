@@ -290,11 +290,11 @@ RulesClass::RulesClass()
       TiberiumLongScan(0x2000) {
   NewUnitsEnabled = SecretUnitsEnabled = 0;
   MTankDistance = 30;
-  QuakeUnitDamage = 0x080;
-  QuakeBuildingDamage = 0x040;
+  QuakeUnitDamage = fixed(0x080);
+  QuakeBuildingDamage = fixed(0x040);
   QuakeInfantryDamage = 0;
   QuakeDelay = 120;
-  ChronoTankDuration = 0x300;
+  ChronoTankDuration = fixed(0x300);
   EngineerDamage = static_cast<fixed>(1) /
                    static_cast<fixed>(3);  // Amount of damage an engineer does
   EngineerCaptureLevel =
@@ -323,16 +323,16 @@ RulesClass::RulesClass()
 static void Difficulty_Get(CCINIClass& ini, DifficultyClass& diff,
                            const char* section) {
   if (ini.Is_Present(section)) {
-    diff.FirepowerBias = ini.Get_Fixed(section, "FirePower", 1);
-    diff.GroundspeedBias = ini.Get_Fixed(section, "Groundspeed", 1);
-    diff.AirspeedBias = ini.Get_Fixed(section, "Airspeed", 1);
-    diff.ArmorBias = ini.Get_Fixed(section, "Armor", 1);
-    diff.ROFBias = ini.Get_Fixed(section, "ROF", 1);
-    diff.CostBias = ini.Get_Fixed(section, "Cost", 1);
-    diff.RepairDelay = ini.Get_Fixed(section, "RepairDelay", ".02");
-    diff.BuildDelay = ini.Get_Fixed(section, "BuildDelay", ".03");
+    diff.FirepowerBias = ini.Get_Fixed(section, "FirePower", fixed(1));
+    diff.GroundspeedBias = ini.Get_Fixed(section, "Groundspeed", fixed(1));
+    diff.AirspeedBias = ini.Get_Fixed(section, "Airspeed", fixed(1));
+    diff.ArmorBias = ini.Get_Fixed(section, "Armor", fixed(1));
+    diff.ROFBias = ini.Get_Fixed(section, "ROF", fixed(1));
+    diff.CostBias = ini.Get_Fixed(section, "Cost", fixed(1));
+    diff.RepairDelay = ini.Get_Fixed(section, "RepairDelay", fixed(".02"));
+    diff.BuildDelay = ini.Get_Fixed(section, "BuildDelay", fixed(".03"));
     diff.IsBuildSlowdown = ini.Get_Bool(section, "BuildSlowdown", false);
-    diff.BuildSpeedBias = ini.Get_Fixed(section, "BuildTime", 1);
+    diff.BuildSpeedBias = ini.Get_Fixed(section, "BuildTime", fixed(1));
     diff.IsWallDestroyer = ini.Get_Bool(section, "DestroyWalls", true);
     diff.IsContentScan = ini.Get_Bool(section, "ContentScan", false);
   }
@@ -434,7 +434,8 @@ bool RulesClass::General(CCINIClass& ini) {
     GPSTechLevel = ini.Get_Int(GENERAL, "GPSTechLevel", GPSTechLevel);
     UnitCrateType = ini.Get_UnitType(GENERAL, "UnitCrateType", UnitCrateType);
     IsExplosiveHarvester =
-        ini.Get_Fixed(GENERAL, "OreExplosive", IsExplosiveHarvester);
+        ini.Get_Fixed(GENERAL, "OreExplosive", fixed(IsExplosiveHarvester))
+            .ToInt();
     GapRegenInterval =
         ini.Get_Fixed(GENERAL, "GapRegenInterval", GapRegenInterval);
     TeamDelay = ini.Get_Fixed(GENERAL, "TeamDelay", TeamDelay);
@@ -482,7 +483,7 @@ bool RulesClass::General(CCINIClass& ini) {
         ini.Get_Lepton(GENERAL, "BallisticScatter", BallisticScatter);
     BridgeStrength = ini.Get_Int(GENERAL, "BridgeStrength", BridgeStrength);
     BuildSpeedBias = ini.Get_Fixed(GENERAL, "BuildSpeed", BuildSpeedBias);
-    ConditionGreen = 1;
+    ConditionGreen = fixed(1);
     ConditionRed = ini.Get_Fixed(GENERAL, "ConditionRed", ConditionRed);
     ConditionYellow =
         ini.Get_Fixed(GENERAL, "ConditionYellow", ConditionYellow);
@@ -852,14 +853,14 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
 
     if (ini.Is_Present(_lands[land])) {
       gptr->Cost[SPEED_FOOT] =
-          Sub_Saturate(ini.Get_Fixed(_lands[land], "Foot", 1), 1);
+          Sub_Saturate(ini.Get_Fixed(_lands[land], "Foot", fixed(1)), 1);
       gptr->Cost[SPEED_TRACK] =
-          Sub_Saturate(ini.Get_Fixed(_lands[land], "Track", 1), 1);
+          Sub_Saturate(ini.Get_Fixed(_lands[land], "Track", fixed(1)), 1);
       gptr->Cost[SPEED_WHEEL] =
-          Sub_Saturate(ini.Get_Fixed(_lands[land], "Wheel", 1), 1);
+          Sub_Saturate(ini.Get_Fixed(_lands[land], "Wheel", fixed(1)), 1);
       gptr->Cost[SPEED_WINGED] = Sub_Saturate(fixed(1), 1);
       gptr->Cost[SPEED_FLOAT] =
-          Sub_Saturate(ini.Get_Fixed(_lands[land], "Float", 1), 1);
+          Sub_Saturate(ini.Get_Fixed(_lands[land], "Float", fixed(1)), 1);
       gptr->Build = ini.Get_Bool(_lands[land], "Buildable", false);
     }
   }

@@ -4266,7 +4266,7 @@ fixed UnitClass::Tiberium_Load() const {
   if (*this == UNIT_HARVESTER) {
     return fixed(Tiberium, Rule.BailCount);
   }
-  return 0;
+  return fixed(0);
 }
 
 /***********************************************************************************************

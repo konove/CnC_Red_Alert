@@ -83,7 +83,7 @@ WarheadTypeClass::WarheadTypeClass(const char* name)
       ExplosionSet(0),
       InfantryDeath(0) {
   for (ArmorType armor = ARMOR_FIRST; armor < ARMOR_COUNT; armor++) {
-    Modifier[armor] = 1;
+    Modifier[armor] = fixed(1);
   }
 }
 

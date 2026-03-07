@@ -728,8 +728,8 @@ void AnimClass::AI() {
           **	Administer the damage. If the object was destroyed by this anim,
           **	then the attached damaging anim is also destroyed.
           */
-          int damage = Accum;
-          Accum -= damage;
+          int damage = Accum.ToInt();
+          Accum.Clear();
           if (As_Object(xObject)->Take_Damage(damage, 0, WARHEAD_FIRE) ==
               RESULT_DESTROYED) {
             delete this;
@@ -785,7 +785,7 @@ void AnimClass::AI() {
 
             IsToDelete = false;
             Loops = Class->Loops;
-            Accum = 0;
+            Accum = fixed(0);
             if (Class->IsNormalized) {
               Set_Rate(Options.Normalize_Delay(Class->Delay));
             } else {

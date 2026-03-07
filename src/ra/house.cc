@@ -264,7 +264,7 @@ HouseClass::operator HousesType() const {
  *=============================================================================================*/
 fixed HouseClass::Tiberium_Fraction() const {
   if (Tiberium == 0) {
-    return 0;
+    return fixed(0);
   }
   return fixed(Tiberium, Capacity);
 }
@@ -4198,13 +4198,13 @@ fixed HouseClass::Power_Fraction() const {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (Power >= Drain || Drain == 0) {
-    return 1;
+    return fixed(1);
   }
 
   if (Power) {
     return fixed(Power, Drain);
   }
-  return 0;
+  return fixed(0);
 }
 
 /***********************************************************************************************

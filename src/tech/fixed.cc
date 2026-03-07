@@ -111,7 +111,7 @@ fixed::fixed(const char* ascii) {
   }
 }
 
-int fixed::To_ASCII(char* buffer, int maxlen) const {
+int fixed::To_ASCII(char* buffer, int buffer_size) const {
   if (buffer == nullptr) {
     return 0;
   }
@@ -134,17 +134,17 @@ int fixed::To_ASCII(char* buffer, int maxlen) const {
     }
   }
 
-  if (maxlen == -1) {
-    maxlen = strlen(tbuffer) + 1;
+  if (buffer_size == -1) {
+    buffer_size = strlen(tbuffer) + 1;
   }
 
-  strncpy(buffer, tbuffer, maxlen);
+  strncpy(buffer, tbuffer, buffer_size);
 
   int len = strlen(tbuffer);
-  if (len < maxlen - 1) {
+  if (len < buffer_size - 1) {
     return len;
   }
-  return maxlen - 1;
+  return buffer_size - 1;
 }
 
 const char* fixed::As_ASCII() const {

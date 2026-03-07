@@ -579,9 +579,8 @@ void Fill_In_Data() {
     //		if (Session.Type == GAME_NORMAL) {
     Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
         Scen.Waypoint[WAYPT_HOME];
-    Map.Set_Tactical_Position(Cell_Coord(Scen.Waypoint[WAYPT_HOME] -
-                                         MAP_CELL_W * 8 -
-                                         10));
+    Map.Set_Tactical_Position(
+        Cell_Coord(Scen.Waypoint[WAYPT_HOME] - MAP_CELL_W * 8 - 10));
     //		}
   }
 
@@ -748,7 +747,7 @@ void Clear_Scenario() {
   Scen.IsMoneyTiberium = false;
   Scen.IsNoMapSel = false;
   Scen.CarryOverCap = 0;
-  Scen.CarryOverPercent = 0;
+  Scen.CarryOverPercent = fixed(0);
   Scen.TransitTheme = THEME_NONE;
   Scen.Percent = 0;
 
@@ -854,8 +853,7 @@ void Do_Win() {
     Set_Logic_Page(SeenBuff);
     Map.Flag_To_Redraw(true);
     Map.Render();
-    Fancy_Text_Print(TXT_SCENARIO_WON, x, 180,
-                     &ColorRemaps[PCOLOR_RED], TBLACK,
+    Fancy_Text_Print(TXT_SCENARIO_WON, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
     CountDownTimer.Set(TIMER_SECOND * 3);
     while (Is_Speaking()) {
@@ -1109,8 +1107,7 @@ void Do_Lose() {
   **	Announce win to player.
   */
   Set_Logic_Page(SeenBuff);
-  Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180,
-                   &ColorRemaps[PCOLOR_RED], TBLACK,
+  Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(TIMER_SECOND * 3);
   while (Is_Speaking()) {
@@ -1199,8 +1196,7 @@ void Do_Draw() {
   **	Announce win to player.
   */
   Set_Logic_Page(SeenBuff);
-  Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps[PCOLOR_RED],
-                   TBLACK,
+  Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(TIMER_SECOND * 3);
   while (Is_Speaking()) {

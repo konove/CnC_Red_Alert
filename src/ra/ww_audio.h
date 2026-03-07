@@ -99,7 +99,7 @@
 VocType Voc_From_Name(const char* name);
 const char* Speech_Name(VoxType speech);
 const char* Voc_Name(VocType voc);
-int Sound_Effect(VocType voc, fixed volume = 1, int variation = 1,
+int Sound_Effect(VocType voc, fixed volume = fixed(1), int variation = 1,
                  signed short panvalue = 0, HousesType house = HOUSE_NONE);
 void Speak(VoxType voice);
 void Speak_AI();

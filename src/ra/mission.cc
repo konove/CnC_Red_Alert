@@ -539,7 +539,7 @@ bool MissionControlClass::Read_INI(CCINIClass& ini) {
     IsRetaliate = ini.Get_Bool(Name(), "Retaliate", IsRetaliate);
     IsScatter = ini.Get_Bool(Name(), "Scatter", IsScatter);
     Rate = ini.Get_Fixed(Name(), "Rate", Rate);
-    AARate = ini.Get_Fixed(Name(), "AARate", 0);
+    AARate = ini.Get_Fixed(Name(), "AARate", fixed(0));
     if (AARate == 0) {
       AARate = Rate;
     }

@@ -39,39 +39,44 @@ class fixed {
   fixed(int numerator, int denominator);
 
   // Constructs from a whole number (fractional part set to zero).
-  fixed(int value) {
+  explicit fixed(const int value) {
     Data.Composite.Fraction = 0;
     Data.Composite.Whole = static_cast<unsigned char>(value);
   }
 
   // Parses a decimal string ("1.5") or a percentage string ("75%").
   // A null pointer yields zero.
-  fixed(const char* ascii);
+  explicit fixed(const char* ascii);
 
-  // Rounds to nearest integer on implicit conversion.
-  operator unsigned() const {
+  // Returns the value rounded to the nearest whole integer.
+  int ToInt() const {
     return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256;
   }
 
+  // Resets the value to zero.
+  void Clear() { Data.Raw = 0; }
+
   // In-place arithmetic operators.
   fixed& operator*=(const fixed& rvalue) {
-    Data.Raw =
-        static_cast<unsigned short>((int)Data.Raw * rvalue.Data.Raw / 256);
+    Data.Raw = static_cast<unsigned short>(static_cast<int>(Data.Raw) *
+                                           rvalue.Data.Raw / 256);
     return *this;
   }
-  fixed& operator*=(int rvalue) {
+  fixed& operator*=(const int rvalue) {
     Data.Raw = static_cast<unsigned short>(Data.Raw * rvalue);
     return *this;
   }
   fixed& operator/=(const fixed& rvalue) {
     if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256) {
-      Data.Raw = static_cast<unsigned short>((int)Data.Raw * 256 / rvalue);
+      Data.Raw = static_cast<unsigned short>(static_cast<int>(Data.Raw) * 256 /
+                                             rvalue);
     }
     return *this;
   }
-  fixed& operator/=(int rvalue) {
+  fixed& operator/=(const int rvalue) {
     if (rvalue) {
-      Data.Raw = static_cast<unsigned short>((unsigned)Data.Raw / rvalue);
+      Data.Raw =
+          static_cast<unsigned short>(static_cast<unsigned>(Data.Raw) / rvalue);
     }
     return *this;
   }
@@ -79,74 +84,83 @@ class fixed {
     Data.Raw += rvalue.Data.Raw;
     return *this;
   }
+  fixed& operator+=(const int rvalue) {
+    Data.Raw += static_cast<unsigned short>(rvalue * 256);
+    return *this;
+  }
   fixed& operator-=(const fixed& rvalue) {
     Data.Raw -= rvalue.Data.Raw;
+    return *this;
+  }
+  fixed& operator-=(const int rvalue) {
+    Data.Raw -= static_cast<unsigned short>(rvalue * 256);
     return *this;
   }
 
   // Arithmetic operators. Integer overloads are more efficient than
   // fixed-point and return int rounded to nearest whole value.
-  const fixed operator*(const fixed& rvalue) const {
+  fixed operator*(const fixed& rvalue) const {
     fixed temp = *this;
-    temp.Data.Raw = static_cast<unsigned short>((int)temp.Data.Raw *
-                                                (int)rvalue.Data.Raw / 256);
+    temp.Data.Raw =
+        static_cast<unsigned short>(static_cast<int>(temp.Data.Raw) *
+                                    static_cast<int>(rvalue.Data.Raw) / 256);
     return temp;
   }
-  const int operator*(int rvalue) const {
+  int operator*(const int rvalue) const {
     return (static_cast<unsigned>(Data.Raw) * rvalue + 256 / 2) / 256;
   }
-  const fixed operator/(const fixed& rvalue) const {
+  fixed operator/(const fixed& rvalue) const {
     fixed temp = *this;
     if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256) {
-      temp.Data.Raw = static_cast<unsigned short>((int)temp.Data.Raw * 256 /
-                                                  rvalue.Data.Raw);
+      temp.Data.Raw = static_cast<unsigned short>(
+          static_cast<int>(temp.Data.Raw) * 256 / rvalue.Data.Raw);
     }
     return temp;
   }
-  const int operator/(int rvalue) const {
+  int operator/(const int rvalue) const {
     if (rvalue) {
       return (static_cast<unsigned>(Data.Raw) + 256 / 2) /
              (static_cast<unsigned>(rvalue) * 256);
     }
-    return *this;
+    return this->ToInt();
   }
-  const fixed operator+(const fixed& rvalue) const {
+  fixed operator+(const fixed& rvalue) const {
     fixed temp = *this;
     temp += rvalue;
     return temp;
   }
-  const int operator+(int rvalue) const {
+  int operator+(const int rvalue) const {
     return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256 + rvalue;
   }
-  const fixed operator-(const fixed& rvalue) const {
+  fixed operator-(const fixed& rvalue) const {
     fixed temp = *this;
     temp -= rvalue;
     return temp;
   }
-  const int operator-(int rvalue) const {
+  int operator-(const int rvalue) const {
     return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256 - rvalue;
   }
 
   // Avoids MSVC ambiguity between int and fixed overloads.
-  const int operator*(unsigned short rvalue) const {
+  int operator*(const unsigned short rvalue) const {
     return *this * static_cast<int>(rvalue);
   }
 
   // Shift operators for efficient multiply/divide by powers of 2.
-  fixed& operator>>=(unsigned rvalue) {
+  fixed& operator>>=(const unsigned rvalue) {
     Data.Raw >>= rvalue;
     return *this;
   }
-  fixed& operator<<=(unsigned rvalue) {
+  fixed& operator<<=(const unsigned rvalue) {
     Data.Raw <<= rvalue;
     return *this;
   }
-  const fixed operator>>(unsigned rvalue) const {
+  fixed operator>>(const unsigned rvalue) const {
     fixed temp = *this;
     temp >>= rvalue;
     return temp;
   }
-  const fixed operator<<(unsigned rvalue) const {
+  fixed operator<<(const unsigned rvalue) const {
     fixed temp = *this;
     temp <<= rvalue;
     return temp;
@@ -174,45 +188,45 @@ class fixed {
   bool operator!() const { return Data.Raw == 0; }
 
   // Comparison to integers (scales integer to 8.8 for accurate comparison).
-  bool operator<(int rvalue) const { return Data.Raw < rvalue * 256; }
-  bool operator>(int rvalue) const { return Data.Raw > rvalue * 256; }
-  bool operator<=(int rvalue) const { return Data.Raw <= rvalue * 256; }
-  bool operator>=(int rvalue) const { return Data.Raw >= rvalue * 256; }
-  bool operator==(int rvalue) const { return Data.Raw == rvalue * 256; }
-  bool operator!=(int rvalue) const { return Data.Raw != rvalue * 256; }
+  bool operator<(const int rvalue) const { return Data.Raw < rvalue * 256; }
+  bool operator>(const int rvalue) const { return Data.Raw > rvalue * 256; }
+  bool operator<=(const int rvalue) const { return Data.Raw <= rvalue * 256; }
+  bool operator>=(const int rvalue) const { return Data.Raw >= rvalue * 256; }
+  bool operator==(const int rvalue) const { return Data.Raw == rvalue * 256; }
+  bool operator!=(const int rvalue) const { return Data.Raw != rvalue * 256; }
 
   // Commutative friend operators for int-on-left expressions (e.g., 5 * f).
-  friend const int operator*(int lvalue, const fixed& rvalue) {
+  friend int operator*(const int lvalue, const fixed& rvalue) {
     return rvalue * lvalue;
   }
-  friend const int operator/(int lvalue, const fixed& rvalue) {
+  friend int operator/(const int lvalue, const fixed& rvalue) {
     if (rvalue.Data.Raw == 0 || rvalue.Data.Raw == 256) {
       return lvalue;
     }
     return (static_cast<unsigned>(lvalue * 256) + 256 / 2) / rvalue.Data.Raw;
   }
-  friend const int operator+(int lvalue, const fixed& rvalue) {
+  friend int operator+(const int lvalue, const fixed& rvalue) {
     return rvalue + lvalue;
   }
-  friend const int operator-(int lvalue, const fixed& rvalue) {
+  friend int operator-(const int lvalue, const fixed& rvalue) {
     return (lvalue * 256 - rvalue.Data.Raw + 256 / 2) / 256;
   }
-  friend bool operator<(unsigned lvalue, const fixed& rvalue) {
+  friend bool operator<(const unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 < rvalue.Data.Raw;
   }
-  friend bool operator>(unsigned lvalue, const fixed& rvalue) {
+  friend bool operator>(const unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 > rvalue.Data.Raw;
   }
-  friend bool operator<=(unsigned lvalue, const fixed& rvalue) {
+  friend bool operator<=(const unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 <= rvalue.Data.Raw;
   }
-  friend bool operator>=(unsigned lvalue, const fixed& rvalue) {
+  friend bool operator>=(const unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 >= rvalue.Data.Raw;
   }
-  friend bool operator==(unsigned lvalue, const fixed& rvalue) {
+  friend bool operator==(const unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 == rvalue.Data.Raw;
   }
-  friend bool operator!=(unsigned lvalue, const fixed& rvalue) {
+  friend bool operator!=(const unsigned lvalue, const fixed& rvalue) {
     return lvalue * 256 != rvalue.Data.Raw;
   }
   friend int operator*=(int& lvalue, const fixed& rvalue) {
@@ -233,7 +247,7 @@ class fixed {
   }
 
   // Avoids MSVC ambiguity between int and fixed overloads.
-  friend const int operator*(unsigned short lvalue, const fixed& rvalue) {
+  friend int operator*(const unsigned short lvalue, const fixed& rvalue) {
     return rvalue * static_cast<int>(lvalue);
   }
 
@@ -249,74 +263,74 @@ class fixed {
     }
     Round_Down();
   }
-  void Saturate(unsigned capvalue) {
-    if (Data.Raw > capvalue * 256) {
-      Data.Raw = static_cast<unsigned short>(capvalue * 256);
+  void Saturate(const unsigned cap) {
+    if (Data.Raw > cap * 256) {
+      Data.Raw = static_cast<unsigned short>(cap * 256);
     }
   }
-  void Saturate(const fixed& capvalue) {
-    if (*this > capvalue) {
-      *this = capvalue;
+  void Saturate(const fixed& cap) {
+    if (*this > cap) {
+      *this = cap;
     }
   }
-  void Sub_Saturate(unsigned capvalue) {
-    if (Data.Raw >= capvalue * 256) {
-      Data.Raw = static_cast<unsigned short>(capvalue * 256 - 1);
+  void Sub_Saturate(const unsigned cap) {
+    if (Data.Raw >= cap * 256) {
+      Data.Raw = static_cast<unsigned short>(cap * 256 - 1);
     }
   }
-  void Sub_Saturate(const fixed& capvalue) {
-    if (*this >= capvalue) {
-      Data.Raw = static_cast<unsigned short>(capvalue.Data.Raw - 1);
+  void Sub_Saturate(const fixed& cap) {
+    if (*this >= cap) {
+      Data.Raw = static_cast<unsigned short>(cap.Data.Raw - 1);
     }
   }
   void Inverse() { *this = fixed(1) / *this; }
 
   // Non-member versions that return a modified copy.
-  friend const fixed Round_Up(const fixed& value) {
+  friend fixed Round_Up(const fixed& value) {
     fixed temp = value;
     temp.Round_Up();
     return temp;
   }
-  friend const fixed Round_Down(const fixed& value) {
+  friend fixed Round_Down(const fixed& value) {
     fixed temp = value;
     temp.Round_Down();
     return temp;
   }
-  friend const fixed Round(const fixed& value) {
+  friend fixed Round(const fixed& value) {
     fixed temp = value;
     temp.Round();
     return temp;
   }
-  friend const fixed Saturate(const fixed& value, unsigned capvalue) {
+  friend fixed Saturate(const fixed& value, const unsigned cap) {
     fixed temp = value;
-    temp.Saturate(capvalue);
+    temp.Saturate(cap);
     return temp;
   }
-  friend const fixed Saturate(const fixed& value, const fixed& capvalue) {
+  friend fixed Saturate(const fixed& value, const fixed& cap) {
     fixed temp = value;
-    temp.Saturate(capvalue);
+    temp.Saturate(cap);
     return temp;
   }
-  friend const fixed Sub_Saturate(const fixed& value, unsigned capvalue) {
+  friend fixed Sub_Saturate(const fixed& value, const unsigned cap) {
     fixed temp = value;
-    temp.Sub_Saturate(capvalue);
+    temp.Sub_Saturate(cap);
     return temp;
   }
-  friend const fixed Sub_Saturate(const fixed& value, const fixed& capvalue) {
+  friend fixed Sub_Saturate(const fixed& value, const fixed& cap) {
     fixed temp = value;
-    temp.Sub_Saturate(capvalue);
+    temp.Sub_Saturate(cap);
     return temp;
   }
-  friend const fixed Inverse(const fixed& value) {
+  friend fixed Inverse(const fixed& value) {
     fixed temp = value;
     temp.Inverse();
     return temp;
   }
 
   // Writes the decimal representation to buffer. Returns the number of
-  // characters written (excluding null terminator). If maxlen is -1, the
-  // buffer is assumed to be large enough.
-  int To_ASCII(char* buffer, int maxlen = -1) const;
+  // characters written (excluding null terminator). If buffer_size is -1,
+  // the buffer is assumed to be large enough.
+  int To_ASCII(char* buffer, int buffer_size = -1) const;
 
   // Returns a pointer to a static buffer containing the decimal representation.
   // Valid until the next call.

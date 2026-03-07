@@ -805,7 +805,7 @@ int TechnoClass::Time_To_Build() const {
   */
   fixed power = House->Power_Fraction();
   if (power > 1) {
-    power = 1;
+    power = fixed(1);
   }
   if (power < 1 && power > fixed::_3_4) {
     power = fixed::_3_4;
@@ -1478,11 +1478,11 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
   //	assert(Techno_Type_Class()->PrimaryWeapon != nullptr);
   if (Techno_Type_Class()->PrimaryWeapon == nullptr ||
       !Techno_Type_Class()->PrimaryWeapon->IsSupressed) {
-    return 1;
+    return fixed(1);
   }
 
   int crange = Lepton_To_Cell(Rule.SupressRadius);
-  fixed odds = 1;
+  fixed odds(1);
 
   for (int radius = 1; radius < crange; radius++) {
     /*
@@ -5198,7 +5198,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   *target. Don't retaliate *	if it is currently attacking the greater threat.
   */
   if (!House->IsHuman && Percent_Chance(50)) {
-    fixed source_val = 0;
+    fixed source_val = fixed(0);
     int primary = What_Weapon_Should_I_Use(source->As_Target());
     const WeaponTypeClass* weapon =
         primary == 0 ? source->Techno_Type_Class()->PrimaryWeapon
@@ -5208,7 +5208,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
       source_val = weapon->WarheadPtr->Modifier[Techno_Type_Class()->Armor];
     }
 
-    fixed current_val = 0;
+    fixed current_val = fixed(0);
     const TechnoClass* tech = As_Techno(TarCom);
     if (tech != nullptr) {
       primary = What_Weapon_Should_I_Use(tech->As_Target());
@@ -5299,7 +5299,7 @@ int TechnoClass::Risk() const {
 fixed TechnoClass::Tiberium_Load() const {
   assert(IsActive);
 
-  return 0;
+  return fixed(0);
 }
 
 /***********************************************************************************************

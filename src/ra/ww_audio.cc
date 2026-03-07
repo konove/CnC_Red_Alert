@@ -468,7 +468,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
     cell_pos = Coord_Cell(coord);
   }
 
-  fixed volume = 1;
+  fixed volume(1);
   pan_value = 0;
   if (coord && !Map.In_View(cell_pos)) {
     int distance = Distance(coord, Map.TacticalCoord) / CELL_LEPTON_W;
