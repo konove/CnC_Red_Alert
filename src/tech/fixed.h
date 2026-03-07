@@ -16,90 +16,44 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/FIXED.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : FIXED.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 06/19/96 *
- *                                                                                             *
- *                  Last Update : June 19, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #ifndef CNC_RED_ALERT_TECH_FIXED_H_
 #define CNC_RED_ALERT_TECH_FIXED_H_
 
-/*
-**	This is a very simple fixed point class that functions like a regular
-*integral type. However *	it is under certain restrictions. The whole part
-*must not exceed 255. The fractional part is *	limited to an accuracy of 1/256.
-*It cannot represent or properly handle negative values. It *	really isn't all
-*that fast (if an FPU is guaranteed to be present than using "float" might be
-**	more efficient). It doesn't detect overflow or underflow in mathematical
-*or bit-shift operations.
-**
-**	Take careful note that the normal mathematical operators return integers
-*and not fixed point *	values if either of the components is an integer. This
-*is the normal C auto-upcasting rule *	as it would apply presuming that
-*integers are considered to be of higher precision than *	fixed point
-*numbers. This allows the result of these operators to generate values with
-*greater *	magnitude than is normally possible if the result were coerced
-*into a fixed point number. *	If the result should be fixed point, then ensure
-*that both parameters are fixed point.
-**
-**	Note that although integers are used as the parameters in the
-*mathematical operators, this *	does not imply that negative parameters are
-*supported. The use of integers is as a convenience *	to the programmer --
-*constant integers are presumed signed. If unsigned parameters were
-**	specified, then the compiler would have ambiguous conversion situation
-*in the case of constant
-** integers (e.g. 1, 10, 32, etc). This is most important for the constructor
-*when dealing with the *	"0" parameter case. In that situation the
-*compiler might interpret the "0" as a null pointer rather *	than an unsigned
-*integer. There should be no adverse consequences of using signed integer
-*parameters *	since the precision/magnitude of these integers far exceeds the
-*fixed point component counterparts.
-**
-**	Note that when integer values are returns from the arithmetic operators,
-*the value is rounded *	to the nearest whole integer value. This differs from
-*normal integer math that always rounds down.
-*/
+// Unsigned 8.8 fixed-point number (whole: 0-255, fraction: 1/256 precision).
+//
+// Does not support negative values or detect overflow/underflow. Operators
+// with an integer operand return int (following C upcasting rules, treating
+// int as higher precision), rounded to the nearest whole value. To get a
+// fixed-point result, ensure both operands are fixed.
+//
+// Integer parameters are signed to avoid ambiguity with literal "0" (which
+// the compiler might otherwise interpret as a null pointer).
 class fixed {
  public:
-  // The default constructor must not touch the data members in any way.
+  // Default constructor leaves value uninitialized (required for memcpy-based
+  // serialization and NoInit patterns).
   fixed() {}
 
-  // Convenient constructor if numerator and denominator components are known.
+  // Constructs from a fraction (e.g., fixed(3, 4) = 0.75). Zero denominator
+  // yields zero.
   fixed(int numerator, int denominator);
 
-  // Conversion constructor to get fixed point from integer.
+  // Constructs from a whole number (fractional part set to zero).
   fixed(int value) {
     Data.Composite.Fraction = 0;
     Data.Composite.Whole = static_cast<unsigned char>(value);
   }
 
-  // Constructor if ASCII image of number is known.
+  // Parses a decimal string ("1.5") or a percentage string ("75%").
+  // A null pointer yields zero.
   fixed(const char* ascii);
 
-  // Convert to integer when implicitly required.
+  // Rounds to nearest integer on implicit conversion.
   operator unsigned() const {
     return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256;
   }
 
-  /*
-  **	The standard operators as they apply to in-place operation.
-  */
+  // In-place arithmetic operators.
   fixed& operator*=(const fixed& rvalue) {
     Data.Raw =
         static_cast<unsigned short>((int)Data.Raw * rvalue.Data.Raw / 256);
@@ -130,13 +84,8 @@ class fixed {
     return *this;
   }
 
-  /*
-  **	The standard "My Dear Aunt Sally" operators. The integer versions of
-  *multiply *	and divide are more efficient than using the fixed point
-  *counterparts.
-  */
-  //		const fixed operator * (fixed const & rvalue) const
-  //{return(fixed(*this) *= rvalue);}
+  // Arithmetic operators. Integer overloads are more efficient than
+  // fixed-point and return int rounded to nearest whole value.
   const fixed operator*(const fixed& rvalue) const {
     fixed temp = *this;
     temp.Data.Raw = static_cast<unsigned short>((int)temp.Data.Raw *
@@ -146,8 +95,6 @@ class fixed {
   const int operator*(int rvalue) const {
     return (static_cast<unsigned>(Data.Raw) * rvalue + 256 / 2) / 256;
   }
-  //		const fixed operator / (fixed const & rvalue) const
-  //{return(fixed(*this) /= rvalue);}
   const fixed operator/(const fixed& rvalue) const {
     fixed temp = *this;
     if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256) {
@@ -163,8 +110,6 @@ class fixed {
     }
     return *this;
   }
-  //		const fixed operator + (fixed const & rvalue) const
-  //{return(fixed(*this) += rvalue);}
   const fixed operator+(const fixed& rvalue) const {
     fixed temp = *this;
     temp += rvalue;
@@ -173,8 +118,6 @@ class fixed {
   const int operator+(int rvalue) const {
     return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256 + rvalue;
   }
-  //		const fixed operator - (fixed const & rvalue) const
-  //{return(fixed(*this) -= rvalue);}
   const fixed operator-(const fixed& rvalue) const {
     fixed temp = *this;
     temp -= rvalue;
@@ -184,15 +127,12 @@ class fixed {
     return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256 - rvalue;
   }
 
-  // extra to help MSVC
+  // Avoids MSVC ambiguity between int and fixed overloads.
   const int operator*(unsigned short rvalue) const {
     return *this * static_cast<int>(rvalue);
   }
 
-  /*
-  **	The Shift operators are more efficient than using multiplies or divides
-  *by power-of-2 numbers.
-  */
+  // Shift operators for efficient multiply/divide by powers of 2.
   fixed& operator>>=(unsigned rvalue) {
     Data.Raw >>= rvalue;
     return *this;
@@ -212,9 +152,7 @@ class fixed {
     return temp;
   }
 
-  /*
-  **	The full set of comparison operators.
-  */
+  // Comparison operators (fixed vs fixed).
   bool operator==(const fixed& rvalue) const {
     return Data.Raw == rvalue.Data.Raw;
   }
@@ -235,9 +173,7 @@ class fixed {
   }
   bool operator!() const { return Data.Raw == 0; }
 
-  /*
-  **	Comparison to integers requires consideration of fractional component.
-  */
+  // Comparison to integers (scales integer to 8.8 for accurate comparison).
   bool operator<(int rvalue) const { return Data.Raw < rvalue * 256; }
   bool operator>(int rvalue) const { return Data.Raw > rvalue * 256; }
   bool operator<=(int rvalue) const { return Data.Raw <= rvalue * 256; }
@@ -245,10 +181,7 @@ class fixed {
   bool operator==(int rvalue) const { return Data.Raw == rvalue * 256; }
   bool operator!=(int rvalue) const { return Data.Raw != rvalue * 256; }
 
-  /*
-  **	Friend functions to handle the alternate positioning of fixed and
-  *integer parameters.
-  */
+  // Commutative friend operators for int-on-left expressions (e.g., 5 * f).
   friend const int operator*(int lvalue, const fixed& rvalue) {
     return rvalue * lvalue;
   }
@@ -299,15 +232,12 @@ class fixed {
     return lvalue;
   }
 
-  // extra to help MSVC
+  // Avoids MSVC ambiguity between int and fixed overloads.
   friend const int operator*(unsigned short lvalue, const fixed& rvalue) {
     return rvalue * static_cast<int>(lvalue);
   }
 
-  /*
-  **	Helper functions to handle simple and common operations on fixed point
-  *numbers.
-  */
+  // Rounding, clamping, and inversion helpers.
   void Round_Up() {
     Data.Raw += static_cast<unsigned short>(256 - 1);
     Data.Composite.Fraction = 0;
@@ -341,10 +271,7 @@ class fixed {
   }
   void Inverse() { *this = fixed(1) / *this; }
 
-  /*
-  **	Friend helper functions that work in the typical C fashion of passing
-  *the object to *	be processed as a parameter to the function.
-  */
+  // Non-member versions that return a modified copy.
   friend const fixed Round_Up(const fixed& value) {
     fixed temp = value;
     temp.Round_Up();
@@ -386,28 +313,32 @@ class fixed {
     return temp;
   }
 
-  /*
-  **	Conversion of the fixed point number into an ASCII string.
-  */
+  // Writes the decimal representation to buffer. Returns the number of
+  // characters written (excluding null terminator). If maxlen is -1, the
+  // buffer is assumed to be large enough.
   int To_ASCII(char* buffer, int maxlen = -1) const;
+
+  // Returns a pointer to a static buffer containing the decimal representation.
+  // Valid until the next call.
   const char* As_ASCII() const;
 
-  /*
-  **	Helper constants that provide some convenient fixed point values.
-  */
-  static const fixed _1_2;
-  static const fixed _1_3;
-  static const fixed _1_4;
-  static const fixed _3_4;
-  static const fixed _2_3;
+  // Common fixed-point constants.
+  static const fixed _1_2;  // 1/2
+  static const fixed _1_3;  // 1/3
+  static const fixed _1_4;  // 1/4
+  static const fixed _3_4;  // 3/4
+  static const fixed _2_3;  // 2/3
 
  private:
+  // 8.8 representation: Whole is the high byte, Fraction is the low byte.
+  // Raw provides direct access to the full 16-bit value for arithmetic.
   union {
     struct {
-      unsigned char Fraction;
-      unsigned char Whole;
+      unsigned char
+          Fraction;  // Low byte: fractional part (0-255 = 0/256 to 255/256).
+      unsigned char Whole;  // High byte: integer part (0-255).
     } Composite;
-    unsigned short Raw;
+    unsigned short Raw;  // Full 16-bit value (Whole * 256 + Fraction).
   } Data;
 };
 
