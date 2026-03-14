@@ -18,56 +18,53 @@
 
 #include "tech/fixed.h"
 
-#include <cctype>
-#include <cstring>
+#include <charconv>
 
+#include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 
-fixed fixed::FromString(const char* ascii) {
-  if (ascii == nullptr) {
-    return fixed{0};
+// Parses leading digits from a string_view into an int. Returns 0 on failure.
+static int ParseInt(const std::string_view s) {
+  int value = 0;
+  std::from_chars(s.data(), s.data() + s.size(), value);
+  return value;
+}
+
+fixed fixed::FromString(const std::string_view str_in) {
+  const auto str = absl::StripLeadingAsciiWhitespace(str_in);
+  if (str.empty()) {
+    return {};
   }
 
-  const char* whole_part = ascii;
-
-  // Skip leading whitespace.
-  while (isspace(*ascii)) {
-    ascii++;
-  }
-
-  // Check for trailing '%' to detect percentage format.
-  const char* suffix = ascii;
-  while (isdigit(*suffix)) {
-    suffix++;
-  }
-
-  fixed result;
   // Percentage: "75%" → 75 * 256 / 100 ≈ 0.75 in 8.8 fixed point.
-  if (*suffix == '%') {
-    result.raw_ = static_cast<uint16_t>(atoi(ascii) * 256 / 100);
-  } else {
-    result.raw_ = 0;
-    if (whole_part && *whole_part != '.') {
-      result.raw_ = static_cast<uint16_t>(atoi(whole_part) << 8);
-    }
-
-    const char* decimal = strchr(ascii, '.');
-    if (decimal) {
-      decimal++;
-    }
-    if (decimal) {
-      const int frac = atoi(decimal);
-
-      int base = 1;
-      const char* fptr = decimal;
-      while (isdigit(*fptr)) {
-        fptr++;
-        base *= 10;
-      }
-
-      result.raw_ |= static_cast<uint16_t>(256 * frac / base);
-    }
+  if (str.ends_with('%')) {
+    fixed result;
+    result.raw_ = static_cast<uint16_t>(
+        ParseInt(str.substr(0, str.size() - 1)) * 256 / 100);
+    return result;
   }
+
+  // Parse decimal number (e.g., "1.5", ".016", "3").
+  fixed result;
+  const auto dot = str.find('.');
+  const auto whole_part = str.substr(0, dot);
+  if (!whole_part.empty()) {
+    result.raw_ = static_cast<uint16_t>(ParseInt(whole_part) << 8);
+  }
+
+  if (dot != std::string_view::npos && dot + 1 < str.size()) {
+    const auto frac_part = str.substr(dot + 1);
+    // Count digits parsed to determine the decimal base (10^n).
+    int frac = 0;
+    const auto [ptr, ec] = std::from_chars(
+        frac_part.data(), frac_part.data() + frac_part.size(), frac);
+    int base = 1;
+    for (const auto* i = frac_part.data(); i < ptr; ++i) {
+      base *= 10;
+    }
+    result.raw_ |= static_cast<uint16_t>(256 * frac / base);
+  }
+
   return result;
 }
 

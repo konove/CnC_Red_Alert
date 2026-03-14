@@ -21,6 +21,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 // Unsigned 8.8 fixed-point number (whole: 0-255, fraction: 1/256 precision).
 //
@@ -48,8 +49,14 @@ class fixed {
       : raw_(static_cast<uint16_t>(value << 8)) {}
 
   // Parses a decimal string ("1.5") or a percentage string ("75%").
-  // Returns zero for null input.
-  static fixed FromString(const char* ascii);
+  static fixed FromString(std::string_view str);
+
+  // Overload for const char* to handle null pointers safely. Callers passing
+  // strtok() results or other potentially-null C strings use this overload.
+  static fixed FromString(const char* str) {
+    if (str == nullptr) return {};
+    return FromString(std::string_view(str));
+  }
 
   // Returns the value rounded to the nearest whole integer.
   int ToInt() const { return (raw_ + kRoundingBias) >> 8; }
