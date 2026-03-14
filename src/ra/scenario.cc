@@ -2147,7 +2147,7 @@ bool Read_Scenario_INI(char* fname, bool) {
   NewINIFormat = ini.Get_Int(BASIC, "NewINIFormat", 0);
   Scen.CarryOverPercent =
       ini.Get_Fixed(BASIC, "CarryOverMoney", Scen.CarryOverPercent);
-  Scen.CarryOverPercent = Saturate(Scen.CarryOverPercent, 1);
+  Scen.CarryOverPercent.Saturate(1);
   Scen.CarryOverCap = ini.Get_Int(BASIC, "CarryOverCap", Scen.CarryOverCap);
   Scen.IsNoSpyPlane = ini.Get_Bool(BASIC, "NoSpyPlane", Scen.IsNoSpyPlane);
   Scen.IsSkipScore = ini.Get_Bool(BASIC, "SkipScore", Scen.IsSkipScore);

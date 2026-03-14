@@ -1224,7 +1224,7 @@ fixed INIClass::Get_Fixed(const char* section, const char* entry,
   fixed retval = defvalue;
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    retval = fixed(buffer);
+    retval = fixed::FromString(buffer);
   }
   return retval;
 }
@@ -1249,7 +1249,7 @@ fixed INIClass::Get_Fixed(const char* section, const char* entry,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool INIClass::Put_Fixed(const char* section, const char* entry, fixed value) {
-  return Put_String(section, entry, value.As_ASCII());
+  return Put_String(section, entry, value.AsString().c_str());
 }
 
 /***********************************************************************************************

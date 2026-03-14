@@ -2643,7 +2643,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
               dynamic_cast<TechnoClass*>(obj)->ArmorBias == 1) {
             fixed val = dynamic_cast<TechnoClass*>(obj)->ArmorBias *
-                        Inverse(fixed(CrateData[powerup], 256));
+                        fixed(CrateData[powerup], 256).Inverse();
             dynamic_cast<TechnoClass*>(obj)->ArmorBias = val;
             if (obj->Owner() == PlayerPtr->Class->House) {
               tospeak = true;

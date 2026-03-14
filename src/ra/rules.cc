@@ -112,45 +112,45 @@ static inline int _Scale_To_256(int val) {
  * HISTORY: * 06/17/1996 JLB : Created. *
  *=============================================================================================*/
 RulesClass::RulesClass()
-    : TurboBoost("1.5"),
+    : TurboBoost(fixed::FromString("1.5")),
       AttackInterval(3),
       AttackDelay(5),
       PowerEmergencyFraction(fixed(3, 4)),
       BadgerBombCount(1),
-      AirstripRatio(".12"),
+      AirstripRatio(fixed::FromString(".12")),
       AirstripLimit(5),
-      HelipadRatio(".12"),
+      HelipadRatio(fixed::FromString(".12")),
       HelipadLimit(5),
-      TeslaRatio(".16"),
+      TeslaRatio(fixed::FromString(".16")),
       TeslaLimit(10),
-      AARatio(".14"),
+      AARatio(fixed::FromString(".14")),
       AALimit(10),
-      DefenseRatio(".5"),
+      DefenseRatio(fixed::FromString(".5")),
       DefenseLimit(40),
-      WarRatio(".1"),
+      WarRatio(fixed::FromString(".1")),
       WarLimit(2),
-      BarracksRatio(".16"),
+      BarracksRatio(fixed::FromString(".16")),
       BarracksLimit(2),
       RefineryLimit(4),
-      RefineryRatio(".16"),
+      RefineryRatio(fixed::FromString(".16")),
       BaseSizeAdd(3),
       PowerSurplus(50),
       InfantryReserve(2000),
       InfantryBaseMult(2),
       ChronoDuration(3),
-      WaterCrateChance(".2"),
+      WaterCrateChance(fixed::FromString(".2")),
       SoloCrateMoney(2000),
       GPSTechLevel(0),
       UnitCrateType(UNIT_NONE),
-      PatrolTime(".016"),
-      TeamDelay(".6"),
+      PatrolTime(fixed::FromString(".016")),
+      TeamDelay(fixed::FromString(".6")),
       CloakDelay(0),
       GameSpeedBias(1),
       NervousBias(1),
       VortexRange(10 * CELL_LEPTON_W),
       VortexSpeed(static_cast<MPHType>(10)),
       VortexDamage(200),
-      VortexChance(".2"),
+      VortexChance(fixed::FromString(".2")),
       ExplosionSpread(fixed(1, 2)),
       SupressRadius(CELL_LEPTON_W),
       ParaInfantryTechLevel(10),
@@ -182,8 +182,8 @@ RulesClass::RulesClass()
       IsMPAIPlayers(false),
       IsMPCaptureTheFlag(false),
       DropZoneRadius(4 * CELL_LEPTON_W),
-      MessageDelay(".6"),
-      SavourDelay(".03"),
+      MessageDelay(fixed::FromString(".6")),
+      SavourDelay(fixed::FromString(".03")),
       AVMineDamage(1200),
       APMineDamage(1000),
       MaxPlayers(8),
@@ -191,9 +191,9 @@ RulesClass::RulesClass()
       SuspendPriority(20),
       SuspendDelay(2),
       SurvivorFraction(fixed(1, 2)),
-      ReloadRate(".05"),
+      ReloadRate(fixed::FromString(".05")),
       AutocreateTime(5),
-      BuildupTime(".05"),
+      BuildupTime(fixed::FromString(".05")),
       OreDumpRate(2),
       AtomDamage(1000),
       IsComputerParanoid(true),
@@ -216,8 +216,8 @@ RulesClass::RulesClass()
       IsScatter(false),
       IsChronoKill(true),
       ProneDamageBias(fixed(1, 2)),
-      QuakeDamagePercent(".33"),
-      QuakeChance(".2"),
+      QuakeDamagePercent(fixed::FromString(".33")),
+      QuakeChance(fixed::FromString(".2")),
       GrowthRate(2),
       ShroudRate(4),
       CrateTime(10),
@@ -236,7 +236,7 @@ RulesClass::RulesClass()
       DamageDelay(1),
       Gravity(3),
       GapShroudRadius(10),
-      GapRegenInterval(".1"),
+      GapRegenInterval(fixed::FromString(".1")),
       RadarJamRadius(10 * CELL_LEPTON_W),
       Incoming(MPH_IMMOBILE),
       MinDamage(1),
@@ -245,11 +245,11 @@ RulesClass::RulesClass()
       RepairPercent(fixed(1, 4)),
       URepairStep(5),
       URepairPercent(fixed(1, 4)),
-      RepairRate(".016"),
+      RepairRate(fixed::FromString(".016")),
       ConditionGreen(1),
       ConditionYellow(fixed(1, 2)),
       ConditionRed(fixed(1, 4)),
-      RandomAnimateTime(".083"),
+      RandomAnimateTime(fixed::FromString(".083")),
       BailCount(28),
       GoldValue(35),
       GemValue(110),
@@ -282,21 +282,20 @@ RulesClass::RulesClass()
       IronCurtainDuration(fixed(1, 2)),
       BridgeStrength(1000),
       BuildSpeedBias(1),
-      C4Delay(".03"),
+      C4Delay(fixed::FromString(".03")),
       RepairThreshhold(1000),
-      PathDelay(".016"),
+      PathDelay(fixed::FromString(".016")),
       MovieTime(fixed(1, 4)),
       TiberiumShortScan(0x0600),
       TiberiumLongScan(0x2000) {
   NewUnitsEnabled = SecretUnitsEnabled = 0;
   MTankDistance = 30;
-  QuakeUnitDamage = fixed(0x080);
-  QuakeBuildingDamage = fixed(0x040);
+  QuakeUnitDamage = fixed::_1_2;
+  QuakeBuildingDamage = fixed::_1_4;
   QuakeInfantryDamage = 0;
   QuakeDelay = 120;
-  ChronoTankDuration = fixed(0x300);
-  EngineerDamage = static_cast<fixed>(1) /
-                   static_cast<fixed>(3);  // Amount of damage an engineer does
+  ChronoTankDuration = fixed(3);
+  EngineerDamage = fixed::_1_3;  // Amount of damage an engineer does
   EngineerCaptureLevel =
       ConditionRed;  // Building damage level before engineer can capture
   CarrierLaunchDelay = 60;
@@ -329,8 +328,10 @@ static void Difficulty_Get(CCINIClass& ini, DifficultyClass& diff,
     diff.ArmorBias = ini.Get_Fixed(section, "Armor", fixed(1));
     diff.ROFBias = ini.Get_Fixed(section, "ROF", fixed(1));
     diff.CostBias = ini.Get_Fixed(section, "Cost", fixed(1));
-    diff.RepairDelay = ini.Get_Fixed(section, "RepairDelay", fixed(".02"));
-    diff.BuildDelay = ini.Get_Fixed(section, "BuildDelay", fixed(".03"));
+    diff.RepairDelay =
+        ini.Get_Fixed(section, "RepairDelay", fixed::FromString(".02"));
+    diff.BuildDelay =
+        ini.Get_Fixed(section, "BuildDelay", fixed::FromString(".03"));
     diff.IsBuildSlowdown = ini.Get_Bool(section, "BuildSlowdown", false);
     diff.BuildSpeedBias = ini.Get_Fixed(section, "BuildTime", fixed(1));
     diff.IsWallDestroyer = ini.Get_Bool(section, "DestroyWalls", true);
@@ -813,7 +814,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         token = strtok(nullptr, ",");
         if (token != nullptr) {
           if (strpbrk(token, ".%") != nullptr) {
-            CrateData[crate] = fixed(token) * 256;
+            CrateData[crate] = fixed::FromString(token) * 256;
           } else {
             strtrim(token);
             CrateData[crate] = atoi(token);
@@ -853,14 +854,14 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
 
     if (ini.Is_Present(_lands[land])) {
       gptr->Cost[SPEED_FOOT] =
-          Sub_Saturate(ini.Get_Fixed(_lands[land], "Foot", fixed(1)), 1);
+          ini.Get_Fixed(_lands[land], "Foot", fixed(1)).Sub_Saturate(1);
       gptr->Cost[SPEED_TRACK] =
-          Sub_Saturate(ini.Get_Fixed(_lands[land], "Track", fixed(1)), 1);
+          ini.Get_Fixed(_lands[land], "Track", fixed(1)).Sub_Saturate(1);
       gptr->Cost[SPEED_WHEEL] =
-          Sub_Saturate(ini.Get_Fixed(_lands[land], "Wheel", fixed(1)), 1);
-      gptr->Cost[SPEED_WINGED] = Sub_Saturate(fixed(1), 1);
+          ini.Get_Fixed(_lands[land], "Wheel", fixed(1)).Sub_Saturate(1);
+      gptr->Cost[SPEED_WINGED] = fixed(1).Sub_Saturate(1);
       gptr->Cost[SPEED_FLOAT] =
-          Sub_Saturate(ini.Get_Fixed(_lands[land], "Float", fixed(1)), 1);
+          ini.Get_Fixed(_lands[land], "Float", fixed(1)).Sub_Saturate(1);
       gptr->Build = ini.Get_Bool(_lands[land], "Buildable", false);
     }
   }

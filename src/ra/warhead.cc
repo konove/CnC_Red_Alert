@@ -180,7 +180,7 @@ bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
                        buffer, sizeof(buffer))) {
       char* aval = strtok(buffer, ",");
       for (ArmorType armor = ARMOR_FIRST; armor < ARMOR_COUNT; armor++) {
-        Modifier[armor] = fixed(aval);
+        Modifier[armor] = fixed::FromString(aval);
         aval = strtok(nullptr, ",");
       }
     }

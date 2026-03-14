@@ -5501,7 +5501,7 @@ int HouseClass::AI_Building() {
     */
     unsigned int current = BQuantity[STRUCT_REFINERY];
     if (!IsTiberiumShort &&
-        current < Round_Up(Rule.RefineryRatio * fixed(CurBuildings)) &&
+        current < (Rule.RefineryRatio * fixed(CurBuildings)).Round_Up() &&
         current < Rule.RefineryLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
       if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
@@ -5519,7 +5519,7 @@ int HouseClass::AI_Building() {
     **	will be sufficient money to train troopers.
     */
     current = BQuantity[STRUCT_BARRACKS] + BQuantity[STRUCT_TENT];
-    if (current < Round_Up(Rule.BarracksRatio * fixed(CurBuildings)) &&
+    if (current < (Rule.BarracksRatio * fixed(CurBuildings)).Round_Up() &&
         current < Rule.BarracksLimit && (money > 300 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5573,7 +5573,7 @@ int HouseClass::AI_Building() {
     **	be sufficient money to build vehicles.
     */
     current = BQuantity[STRUCT_WEAP];
-    if (current < Round_Up(Rule.WarRatio * fixed(CurBuildings)) &&
+    if (current < (Rule.WarRatio * fixed(CurBuildings)).Round_Up() &&
         current < Rule.WarLimit && (money > 2000 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5590,7 +5590,7 @@ int HouseClass::AI_Building() {
     */
     current = BQuantity[STRUCT_PILLBOX] + BQuantity[STRUCT_CAMOPILLBOX] +
               BQuantity[STRUCT_TURRET] + BQuantity[STRUCT_FLAME_TURRET];
-    if (current < Round_Up(Rule.DefenseRatio * fixed(CurBuildings)) &&
+    if (current < (Rule.DefenseRatio * fixed(CurBuildings)).Round_Up() &&
         current < Rule.DefenseLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5623,7 +5623,7 @@ int HouseClass::AI_Building() {
     **	Build some air defense.
     */
     current = BQuantity[STRUCT_SAM] + BQuantity[STRUCT_AAGUN];
-    if (current < Round_Up(Rule.AARatio * fixed(CurBuildings)) &&
+    if (current < (Rule.AARatio * fixed(CurBuildings)).Round_Up() &&
         current < Rule.AALimit) {
       /*
       **	Building air defense only makes sense if the opponent has
@@ -5682,7 +5682,7 @@ int HouseClass::AI_Building() {
     **	Advanced base defense would be good.
     */
     current = BQuantity[STRUCT_TESLA];
-    if (current < Round_Up(Rule.TeslaRatio * fixed(CurBuildings)) &&
+    if (current < (Rule.TeslaRatio * fixed(CurBuildings)).Round_Up() &&
         current < Rule.TeslaLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
@@ -5722,7 +5722,7 @@ int HouseClass::AI_Building() {
     **	A helipad would be good.
     */
     current = BQuantity[STRUCT_HELIPAD];
-    if (current < Round_Up(Rule.HelipadRatio * fixed(CurBuildings)) &&
+    if (current < (Rule.HelipadRatio * fixed(CurBuildings)).Round_Up() &&
         current < Rule.HelipadLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5744,7 +5744,7 @@ int HouseClass::AI_Building() {
     **	An airstrip would be good.
     */
     current = BQuantity[STRUCT_AIRSTRIP];
-    if (current < Round_Up(Rule.AirstripRatio * fixed(CurBuildings)) &&
+    if (current < (Rule.AirstripRatio * fixed(CurBuildings)).Round_Up() &&
         current < Rule.AirstripLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {

@@ -53,15 +53,16 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string>
 
 #include "absl/log/log.h"
 #include "port/ex_string.h"
 #include "sdllib/file.h"
+#include "sdllib/file_access.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/memflag.h"
 #include "sdllib/misc.h"
 #include "sdllib/playcd.h"
 #include "sdllib/shape.h"

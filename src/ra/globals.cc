@@ -253,12 +253,12 @@ bool TimeQuake;
 
 bool PendingTimeQuake;
 TARGET TimeQuakeCenter;
-fixed QuakeUnitDamage(0x300);
-fixed QuakeBuildingDamage(0x300);
+fixed QuakeUnitDamage = fixed(3);
+fixed QuakeBuildingDamage = fixed(3);
 int QuakeInfantryDamage = 25;
 int QuakeDelay;
-fixed ChronoTankDuration(0x300);  // chrono override for chrono tanks
-fixed EngineerDamage(0x55);       // Amount of damage an engineer does
+fixed ChronoTankDuration = fixed(3);  // chrono override for chrono tanks
+fixed EngineerDamage = fixed::_1_3;   // Amount of damage an engineer does
 fixed EngineerCaptureLevel(
     0x40);  // Building damage level before engineer can capture
 

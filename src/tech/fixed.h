@@ -19,6 +19,9 @@
 #ifndef CNC_RED_ALERT_TECH_FIXED_H_
 #define CNC_RED_ALERT_TECH_FIXED_H_
 
+#include <cstdint>
+#include <string>
+
 // Unsigned 8.8 fixed-point number (whole: 0-255, fraction: 1/256 precision).
 //
 // Does not support negative values or detect overflow/underflow. Operators
@@ -30,70 +33,70 @@
 // the compiler might otherwise interpret as a null pointer).
 class fixed {
  public:
-  // Default constructor leaves value uninitialized (required for memcpy-based
-  // serialization and NoInit patterns).
-  fixed() {}
+  // Default-constructs to zero.
+  fixed() = default;
 
   // Constructs from a fraction (e.g., fixed(3, 4) = 0.75). Zero denominator
   // yields zero.
-  fixed(int numerator, int denominator);
+  constexpr fixed(const int numerator, const int denominator)
+      : raw_(denominator == 0
+                 ? uint16_t{0}
+                 : static_cast<uint16_t>((numerator << 8) / denominator)) {}
 
   // Constructs from a whole number (fractional part set to zero).
-  explicit fixed(const int value) {
-    Data.Composite.Fraction = 0;
-    Data.Composite.Whole = static_cast<unsigned char>(value);
-  }
+  explicit fixed(const uint8_t value)
+      : raw_(static_cast<uint16_t>(value << 8)) {}
 
   // Parses a decimal string ("1.5") or a percentage string ("75%").
-  // A null pointer yields zero.
-  explicit fixed(const char* ascii);
+  // Returns zero for null input.
+  static fixed FromString(const char* ascii);
 
   // Returns the value rounded to the nearest whole integer.
-  int ToInt() const {
-    return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256;
-  }
+  int ToInt() const { return (raw_ + kRoundingBias) >> 8; }
+
+  // Accessors for the whole and fractional parts.
+  uint8_t whole() const { return raw_ >> 8; }
+  uint8_t fraction() const { return raw_ & 0xFF; }
 
   // Resets the value to zero.
-  void Clear() { Data.Raw = 0; }
+  void Clear() { raw_ = 0; }
 
   // In-place arithmetic operators.
   fixed& operator*=(const fixed& rvalue) {
-    Data.Raw = static_cast<unsigned short>(static_cast<int>(Data.Raw) *
-                                           rvalue.Data.Raw / 256);
+    // Divide by 256 to remove extra 8.8 scale factor.
+    raw_ = static_cast<uint16_t>((raw_ * rvalue.raw_) >> 8);
     return *this;
   }
   fixed& operator*=(const int rvalue) {
-    Data.Raw = static_cast<unsigned short>(Data.Raw * rvalue);
+    raw_ = static_cast<uint16_t>(raw_ * rvalue);
     return *this;
   }
   fixed& operator/=(const fixed& rvalue) {
-    if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256) {
-      Data.Raw = static_cast<unsigned short>(static_cast<int>(Data.Raw) * 256 /
-                                             rvalue);
+    if (rvalue.raw_ != 0 && rvalue.raw_ != 256) {
+      raw_ = static_cast<uint16_t>(raw_ * 256 / rvalue.raw_);
     }
     return *this;
   }
   fixed& operator/=(const int rvalue) {
     if (rvalue) {
-      Data.Raw =
-          static_cast<unsigned short>(static_cast<unsigned>(Data.Raw) / rvalue);
+      raw_ = static_cast<uint16_t>(raw_ / rvalue);
     }
     return *this;
   }
   fixed& operator+=(const fixed& rvalue) {
-    Data.Raw += rvalue.Data.Raw;
+    raw_ += rvalue.raw_;
     return *this;
   }
   fixed& operator+=(const int rvalue) {
-    Data.Raw += static_cast<unsigned short>(rvalue * 256);
+    raw_ += static_cast<uint16_t>(rvalue << 8);
     return *this;
   }
   fixed& operator-=(const fixed& rvalue) {
-    Data.Raw -= rvalue.Data.Raw;
+    raw_ -= rvalue.raw_;
     return *this;
   }
   fixed& operator-=(const int rvalue) {
-    Data.Raw -= static_cast<unsigned short>(rvalue * 256);
+    raw_ -= static_cast<uint16_t>(rvalue << 8);
     return *this;
   }
 
@@ -101,58 +104,46 @@ class fixed {
   // fixed-point and return int rounded to nearest whole value.
   fixed operator*(const fixed& rvalue) const {
     fixed temp = *this;
-    temp.Data.Raw =
-        static_cast<unsigned short>(static_cast<int>(temp.Data.Raw) *
-                                    static_cast<int>(rvalue.Data.Raw) / 256);
+    // Divide by 256 to remove extra 8.8 scale factor.
+    temp.raw_ = static_cast<uint16_t>(temp.raw_ * rvalue.raw_ / 256);
     return temp;
   }
   int operator*(const int rvalue) const {
-    return (static_cast<unsigned>(Data.Raw) * rvalue + 256 / 2) / 256;
+    return (raw_ * rvalue + kRoundingBias) / 256;
   }
   fixed operator/(const fixed& rvalue) const {
     fixed temp = *this;
-    if (rvalue.Data.Raw != 0 && rvalue.Data.Raw != 256) {
-      temp.Data.Raw = static_cast<unsigned short>(
-          static_cast<int>(temp.Data.Raw) * 256 / rvalue.Data.Raw);
+    if (rvalue.raw_ != 0 && rvalue.raw_ != 256) {
+      temp.raw_ = static_cast<uint16_t>(temp.raw_ * 256 / rvalue.raw_);
     }
     return temp;
   }
   int operator/(const int rvalue) const {
-    if (rvalue) {
-      return (static_cast<unsigned>(Data.Raw) + 256 / 2) /
-             (static_cast<unsigned>(rvalue) * 256);
+    if (rvalue != 0) {
+      return ToInt() / rvalue;
     }
-    return this->ToInt();
+    return ToInt();
   }
   fixed operator+(const fixed& rvalue) const {
     fixed temp = *this;
     temp += rvalue;
     return temp;
   }
-  int operator+(const int rvalue) const {
-    return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256 + rvalue;
-  }
+  int operator+(const int rvalue) const { return ToInt() + rvalue; }
   fixed operator-(const fixed& rvalue) const {
     fixed temp = *this;
     temp -= rvalue;
     return temp;
   }
-  int operator-(const int rvalue) const {
-    return (static_cast<unsigned>(Data.Raw) + 256 / 2) / 256 - rvalue;
-  }
-
-  // Avoids MSVC ambiguity between int and fixed overloads.
-  int operator*(const unsigned short rvalue) const {
-    return *this * static_cast<int>(rvalue);
-  }
+  int operator-(const int rvalue) const { return ToInt() - rvalue; }
 
   // Shift operators for efficient multiply/divide by powers of 2.
   fixed& operator>>=(const unsigned rvalue) {
-    Data.Raw >>= rvalue;
+    raw_ >>= rvalue;
     return *this;
   }
   fixed& operator<<=(const unsigned rvalue) {
-    Data.Raw <<= rvalue;
+    raw_ <<= rvalue;
     return *this;
   }
   fixed operator>>(const unsigned rvalue) const {
@@ -167,67 +158,55 @@ class fixed {
   }
 
   // Comparison operators (fixed vs fixed).
-  bool operator==(const fixed& rvalue) const {
-    return Data.Raw == rvalue.Data.Raw;
-  }
-  bool operator!=(const fixed& rvalue) const {
-    return Data.Raw != rvalue.Data.Raw;
-  }
-  bool operator<(const fixed& rvalue) const {
-    return Data.Raw < rvalue.Data.Raw;
-  }
-  bool operator>(const fixed& rvalue) const {
-    return Data.Raw > rvalue.Data.Raw;
-  }
-  bool operator<=(const fixed& rvalue) const {
-    return Data.Raw <= rvalue.Data.Raw;
-  }
-  bool operator>=(const fixed& rvalue) const {
-    return Data.Raw >= rvalue.Data.Raw;
-  }
-  bool operator!() const { return Data.Raw == 0; }
+  bool operator==(const fixed& rvalue) const { return raw_ == rvalue.raw_; }
+  bool operator!=(const fixed& rvalue) const { return raw_ != rvalue.raw_; }
+  bool operator<(const fixed& rvalue) const { return raw_ < rvalue.raw_; }
+  bool operator>(const fixed& rvalue) const { return raw_ > rvalue.raw_; }
+  bool operator<=(const fixed& rvalue) const { return raw_ <= rvalue.raw_; }
+  bool operator>=(const fixed& rvalue) const { return raw_ >= rvalue.raw_; }
+  bool operator!() const { return raw_ == 0; }
 
   // Comparison to integers (scales integer to 8.8 for accurate comparison).
-  bool operator<(const int rvalue) const { return Data.Raw < rvalue * 256; }
-  bool operator>(const int rvalue) const { return Data.Raw > rvalue * 256; }
-  bool operator<=(const int rvalue) const { return Data.Raw <= rvalue * 256; }
-  bool operator>=(const int rvalue) const { return Data.Raw >= rvalue * 256; }
-  bool operator==(const int rvalue) const { return Data.Raw == rvalue * 256; }
-  bool operator!=(const int rvalue) const { return Data.Raw != rvalue * 256; }
+  bool operator<(const int rvalue) const { return raw_ < rvalue << 8; }
+  bool operator>(const int rvalue) const { return raw_ > rvalue << 8; }
+  bool operator<=(const int rvalue) const { return raw_ <= rvalue << 8; }
+  bool operator>=(const int rvalue) const { return raw_ >= rvalue << 8; }
+  bool operator==(const int rvalue) const { return raw_ == rvalue << 8; }
+  bool operator!=(const int rvalue) const { return raw_ != rvalue << 8; }
 
   // Commutative friend operators for int-on-left expressions (e.g., 5 * f).
   friend int operator*(const int lvalue, const fixed& rvalue) {
     return rvalue * lvalue;
   }
-  friend int operator/(const int lvalue, const fixed& rvalue) {
-    if (rvalue.Data.Raw == 0 || rvalue.Data.Raw == 256) {
+  friend int32_t operator/(const int32_t lvalue, const fixed& rvalue) {
+    if (rvalue.raw_ == 0 || rvalue.raw_ == 256) {
       return lvalue;
     }
-    return (static_cast<unsigned>(lvalue * 256) + 256 / 2) / rvalue.Data.Raw;
+    return (lvalue * 256 + kRoundingBias) / rvalue.raw_;
   }
   friend int operator+(const int lvalue, const fixed& rvalue) {
     return rvalue + lvalue;
   }
   friend int operator-(const int lvalue, const fixed& rvalue) {
-    return (lvalue * 256 - rvalue.Data.Raw + 256 / 2) / 256;
+    return (lvalue * 256 - rvalue.raw_ + kRoundingBias) / 256;
   }
   friend bool operator<(const unsigned lvalue, const fixed& rvalue) {
-    return lvalue * 256 < rvalue.Data.Raw;
+    return lvalue * 256 < rvalue.raw_;
   }
   friend bool operator>(const unsigned lvalue, const fixed& rvalue) {
-    return lvalue * 256 > rvalue.Data.Raw;
+    return lvalue * 256 > rvalue.raw_;
   }
   friend bool operator<=(const unsigned lvalue, const fixed& rvalue) {
-    return lvalue * 256 <= rvalue.Data.Raw;
+    return lvalue * 256 <= rvalue.raw_;
   }
   friend bool operator>=(const unsigned lvalue, const fixed& rvalue) {
-    return lvalue * 256 >= rvalue.Data.Raw;
+    return lvalue * 256 >= rvalue.raw_;
   }
   friend bool operator==(const unsigned lvalue, const fixed& rvalue) {
-    return lvalue * 256 == rvalue.Data.Raw;
+    return lvalue * 256 == rvalue.raw_;
   }
   friend bool operator!=(const unsigned lvalue, const fixed& rvalue) {
-    return lvalue * 256 != rvalue.Data.Raw;
+    return lvalue * 256 != rvalue.raw_;
   }
   friend int operator*=(int& lvalue, const fixed& rvalue) {
     lvalue = lvalue * rvalue;
@@ -246,97 +225,62 @@ class fixed {
     return lvalue;
   }
 
-  // Avoids MSVC ambiguity between int and fixed overloads.
-  friend int operator*(const unsigned short lvalue, const fixed& rvalue) {
-    return rvalue * static_cast<int>(lvalue);
-  }
-
   // Rounding, clamping, and inversion helpers.
-  void Round_Up() {
-    Data.Raw += static_cast<unsigned short>(256 - 1);
-    Data.Composite.Fraction = 0;
+
+  // Ceiling: rounds up only if there is a fractional part. Adding 255
+  // (not 256) avoids carrying into the whole part when fraction is zero.
+  // Values above 255.0 are left unchanged to prevent uint16_t overflow.
+  fixed& Round_Up() {
+    if (raw_ < 0xFF00) {
+      raw_ += 255;
+      raw_ &= 0xFF00;
+    }
+    return *this;
   }
-  void Round_Down() { Data.Composite.Fraction = 0; }
-  void Round() {
-    if (Data.Composite.Fraction >= 256 / 2) {
+  fixed& Round_Down() {
+    raw_ &= 0xFF00;
+    return *this;
+  }
+  fixed& Round() {
+    if (fraction() >= kRoundingBias) {
       Round_Up();
     }
     Round_Down();
+    return *this;
   }
-  void Saturate(const unsigned cap) {
-    if (Data.Raw > cap * 256) {
-      Data.Raw = static_cast<unsigned short>(cap * 256);
+  fixed& Saturate(const unsigned cap) {
+    if (raw_ > cap * 256) {
+      raw_ = static_cast<uint16_t>(cap * 256);
     }
+    return *this;
   }
-  void Saturate(const fixed& cap) {
+  fixed& Saturate(const fixed& cap) {
     if (*this > cap) {
       *this = cap;
     }
+    return *this;
   }
-  void Sub_Saturate(const unsigned cap) {
-    if (Data.Raw >= cap * 256) {
-      Data.Raw = static_cast<unsigned short>(cap * 256 - 1);
+  fixed& Sub_Saturate(const unsigned cap) {
+    if (raw_ >= cap * 256) {
+      raw_ = static_cast<uint16_t>(cap * 256 - 1);
     }
+    return *this;
   }
-  void Sub_Saturate(const fixed& cap) {
+  fixed& Sub_Saturate(const fixed& cap) {
     if (*this >= cap) {
-      Data.Raw = static_cast<unsigned short>(cap.Data.Raw - 1);
+      raw_ = static_cast<uint16_t>(cap.raw_ - 1);
     }
+    return *this;
   }
-  void Inverse() { *this = fixed(1) / *this; }
-
-  // Non-member versions that return a modified copy.
-  friend fixed Round_Up(const fixed& value) {
-    fixed temp = value;
-    temp.Round_Up();
-    return temp;
-  }
-  friend fixed Round_Down(const fixed& value) {
-    fixed temp = value;
-    temp.Round_Down();
-    return temp;
-  }
-  friend fixed Round(const fixed& value) {
-    fixed temp = value;
-    temp.Round();
-    return temp;
-  }
-  friend fixed Saturate(const fixed& value, const unsigned cap) {
-    fixed temp = value;
-    temp.Saturate(cap);
-    return temp;
-  }
-  friend fixed Saturate(const fixed& value, const fixed& cap) {
-    fixed temp = value;
-    temp.Saturate(cap);
-    return temp;
-  }
-  friend fixed Sub_Saturate(const fixed& value, const unsigned cap) {
-    fixed temp = value;
-    temp.Sub_Saturate(cap);
-    return temp;
-  }
-  friend fixed Sub_Saturate(const fixed& value, const fixed& cap) {
-    fixed temp = value;
-    temp.Sub_Saturate(cap);
-    return temp;
-  }
-  friend fixed Inverse(const fixed& value) {
-    fixed temp = value;
-    temp.Inverse();
-    return temp;
+  fixed& Inverse() {
+    *this = fixed(1) / *this;
+    return *this;
   }
 
-  // Writes the decimal representation to buffer. Returns the number of
-  // characters written (excluding null terminator). If buffer_size is -1,
-  // the buffer is assumed to be large enough.
-  int To_ASCII(char* buffer, int buffer_size = -1) const;
+  // Returns the decimal string representation (e.g., "1.5", "0.75", "3").
+  std::string AsString() const;
 
-  // Returns a pointer to a static buffer containing the decimal representation.
-  // Valid until the next call.
-  const char* As_ASCII() const;
-
-  // Common fixed-point constants.
+  // Common fixed-point constants (defined after the class is complete).
   static const fixed _1_2;  // 1/2
   static const fixed _1_3;  // 1/3
   static const fixed _1_4;  // 1/4
@@ -344,16 +288,21 @@ class fixed {
   static const fixed _2_3;  // 2/3
 
  private:
-  // 8.8 representation: Whole is the high byte, Fraction is the low byte.
-  // Raw provides direct access to the full 16-bit value for arithmetic.
-  union {
-    struct {
-      unsigned char
-          Fraction;  // Low byte: fractional part (0-255 = 0/256 to 255/256).
-      unsigned char Whole;  // High byte: integer part (0-255).
-    } Composite;
-    unsigned short Raw;  // Full 16-bit value (Whole * 256 + Fraction).
-  } Data;
+  // Half the fractional range, added before integer division for
+  // round-to-nearest instead of truncation.
+  static constexpr int kRoundingBias = 128;
+
+  // 8.8 fixed-point value: high byte is the whole part (0-255),
+  // low byte is the fractional part (0-255 representing 0/256 to 255/256).
+  uint16_t raw_{0};
 };
+
+// constinit: compile-time initialization, no global constructor.
+// inline: safe for header definitions (ODR).
+inline constinit const fixed fixed::_1_2{1, 2};
+inline constinit const fixed fixed::_1_3{1, 3};
+inline constinit const fixed fixed::_1_4{1, 4};
+inline constinit const fixed fixed::_3_4{3, 4};
+inline constinit const fixed fixed::_2_3{2, 3};
 
 #endif  // CNC_RED_ALERT_TECH_FIXED_H_

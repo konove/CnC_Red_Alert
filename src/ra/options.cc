@@ -104,9 +104,9 @@ const char* const OptionsClass::HotkeyName = "WinHotkeys";
 OptionsClass::OptionsClass()
     : GameSpeed(3),
       ScrollRate(3),
-      Volume(".40"),  // was .295
-      ScoreVolume(".25"),
-      MultiScoreVolume("0"),
+      Volume(fixed::FromString(".40")),  // was .295
+      ScoreVolume(fixed::FromString(".25")),
+      MultiScoreVolume(fixed::FromString("0")),
       Brightness(fixed(1, 2)),
       Tint(fixed(1, 2)),
       Saturation(fixed(1, 2)),
@@ -253,7 +253,7 @@ void OptionsClass::Set_Repeat(int on) { IsScoreRepeat = on; }
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Score_Volume(fixed volume, bool feedback) {
-  ScoreVolume = Sub_Saturate(volume, 1);
+  ScoreVolume = fixed(volume).Sub_Saturate(1);
   Set_Score_Vol(ScoreVolume * 256);
   if (feedback && !Theme.Still_Playing()) {
     Sound_Effect(VOC_BEEP, ScoreVolume);
@@ -278,7 +278,7 @@ void OptionsClass::Set_Score_Volume(fixed volume, bool feedback) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Sound_Volume(fixed volume, bool feedback) {
-  Volume = Sub_Saturate(volume, 1);
+  Volume = fixed(volume).Sub_Saturate(1);
   if (feedback) {
     Sound_Effect(VOC_BEEP);
   }

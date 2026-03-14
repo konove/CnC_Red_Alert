@@ -16,61 +16,19 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/FIXED.CPP 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : FIXED.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 06/20/96 *
- *                                                                                             *
- *                  Last Update : July 3, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * fixed::As_ASCII -- Returns a pointer (static) of this number as
- *an ASCII string.          * fixed::To_ASCII -- Convert a fixed point number
- *into an ASCII string.                     * fixed::fixed -- Constructor for
- *fixed integral from ASCII initializer.                    *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #include "tech/fixed.h"
 
 #include <cctype>
-#include <cstdio>
-#include <cstdlib>
 #include <cstring>
 
-const fixed fixed::_1_2(1, 2);
-const fixed fixed::_1_3(1, 3);
-const fixed fixed::_1_4(1, 4);
-const fixed fixed::_3_4(3, 4);
-const fixed fixed::_2_3(2, 3);
+#include "absl/strings/str_format.h"
 
-fixed::fixed(int numerator, int denominator) {
-  if (denominator == 0) {
-    Data.Raw = 0;
-  } else {
-    Data.Raw = static_cast<unsigned short>((unsigned)(numerator * 256) /
-                                           (unsigned)denominator);
-  }
-}
-
-fixed::fixed(const char* ascii) {
-  // Handles null pointer, which can occur when the compiler selects this
-  // overload instead of the int constructor for literal "0".
+fixed fixed::FromString(const char* ascii) {
   if (ascii == nullptr) {
-    Data.Raw = 0;
-    return;
+    return fixed{0};
   }
 
-  const char* wholepart = ascii;
+  const char* whole_part = ascii;
 
   // Skip leading whitespace.
   while (isspace(*ascii)) {
@@ -78,78 +36,54 @@ fixed::fixed(const char* ascii) {
   }
 
   // Check for trailing '%' to detect percentage format.
-  const char* tptr = ascii;
-  while (isdigit(*tptr)) {
-    tptr++;
+  const char* suffix = ascii;
+  while (isdigit(*suffix)) {
+    suffix++;
   }
 
+  fixed result;
   // Percentage: "75%" → 75 * 256 / 100 ≈ 0.75 in 8.8 fixed point.
-  if (*tptr == '\%') {
-    Data.Raw = static_cast<unsigned short>(atoi(ascii) * 256 / 100);
+  if (*suffix == '%') {
+    result.raw_ = static_cast<uint16_t>(atoi(ascii) * 256 / 100);
   } else {
-    Data.Composite.Whole = Data.Composite.Fraction = 0;
-    if (wholepart && *wholepart != '.') {
-      Data.Composite.Whole = static_cast<unsigned char>(atoi(wholepart));
+    result.raw_ = 0;
+    if (whole_part && *whole_part != '.') {
+      result.raw_ = static_cast<uint16_t>(atoi(whole_part) << 8);
     }
 
-    const char* fracpart = strchr(ascii, '.');
-    if (fracpart) {
-      fracpart++;
+    const char* decimal = strchr(ascii, '.');
+    if (decimal) {
+      decimal++;
     }
-    if (fracpart) {
-      int frac = atoi(fracpart);
+    if (decimal) {
+      const int frac = atoi(decimal);
 
       int base = 1;
-      const char* fptr = fracpart;
+      const char* fptr = decimal;
       while (isdigit(*fptr)) {
         fptr++;
         base *= 10;
       }
 
-      Data.Composite.Fraction = static_cast<unsigned char>(256 * frac / base);
+      result.raw_ |= static_cast<uint16_t>(256 * frac / base);
     }
   }
+  return result;
 }
 
-int fixed::To_ASCII(char* buffer, int buffer_size) const {
-  if (buffer == nullptr) {
-    return 0;
+std::string fixed::AsString() const {
+  if (fraction() == 0) {
+    return std::to_string(whole());
   }
 
-  int whole = Data.Composite.Whole;
   // Convert 8-bit fraction (0-255) to thousandths for decimal display.
-  int frac = static_cast<int>(Data.Composite.Fraction) * 1000 / 256;
-  char tbuffer[32];
+  const int frac = fraction() * 1000 / 256;
 
-  if (frac == 0) {
-    sprintf(tbuffer, "%d", whole);
-  } else {
-    sprintf(tbuffer, "%d.%02d", whole, frac);
-
-    // Strip trailing zeros from the fractional part.
-    char* ptr = &tbuffer[strlen(tbuffer) - 1];
-    while (*ptr == '0') {
-      *ptr = '\0';
-      ptr--;
-    }
+  // Strip trailing zeros from the fractional part.
+  std::string result = absl::StrFormat("%d.%02d", whole(), frac);
+  const auto last_nonzero = result.find_last_not_of('0');
+  if (last_nonzero != std::string::npos) {
+    result.erase(last_nonzero + 1);
   }
-
-  if (buffer_size == -1) {
-    buffer_size = strlen(tbuffer) + 1;
-  }
-
-  strncpy(buffer, tbuffer, buffer_size);
-
-  int len = strlen(tbuffer);
-  if (len < buffer_size - 1) {
-    return len;
-  }
-  return buffer_size - 1;
-}
-
-const char* fixed::As_ASCII() const {
-  static char buffer[32];
-
-  To_ASCII(buffer, sizeof(buffer));
-  return buffer;
+  return result;
 }

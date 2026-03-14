@@ -4109,11 +4109,12 @@ int BuildingClass::Mission_Repair() {
             Contact_With_Whom()->Assign_Mission(MISSION_GUARD);
             return 1;
           }
-          fixed pfrac = Saturate(House->Power_Fraction(), 1);
+          fixed pfrac = House->Power_Fraction();
+          pfrac.Saturate(1);
           if (pfrac < fixed::_1_2) {
             pfrac = fixed::_1_2;
           }
-          int time = Inverse(pfrac) * Rule.ReloadRate * TICKS_PER_MINUTE;
+          int time = pfrac.Inverse() * Rule.ReloadRate * TICKS_PER_MINUTE;
           IsReadyToCommence = false;
           return time;
         }

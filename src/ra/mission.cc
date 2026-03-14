@@ -520,8 +520,8 @@ MissionControlClass::MissionControlClass()
       IsParalyzed(false),
       IsRetaliate(true),
       IsScatter(true),
-      Rate(".016"),
-      AARate(".016") {}
+      Rate(fixed::FromString(".016")),
+      AARate(fixed::FromString(".016")) {}
 
 const char* MissionControlClass::Name() const {
   if (Mission == MISSION_NONE) {
