@@ -2050,8 +2050,9 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
     PreserveVQAScreen = 0;
     Keyboard::Clear();
 
-    VQAHandle* vqa = nullptr;
+    VqaPlayer player;
     MixFileVqaIo movie_io;  // Must outlive the open movie.
+    player.SetIo(&movie_io);
 
     if (!Debug_Quiet && Get_Digi_Handle() != -1) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
@@ -2059,70 +2060,64 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
     }
 
-    vqa = VQA_Alloc();
-    if (vqa != nullptr) {
-      VQA_SetIo(vqa, &movie_io);
-      if (VQA_Open(vqa, fullname.c_str(), &AnimControl) == 0) {
-        Brokeout = false;
-        // Suspend_Audio_Thread();
+    if (player.Open(fullname.c_str(), &AnimControl) == 0) {
+      Brokeout = false;
+      // Suspend_Audio_Thread();
 
 #if (FRENCH | GERMAN | JAPANESE)
+      /*
+      ** Kludge to use the old palette interpolation table for CC2TEASE
+      ** unless the covert CD is inserted.
+      */
+      if (!stricmp(palname, "CC2TEASE.VQP")) {
+        int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
         /*
-        ** Kludge to use the old palette interpolation table for CC2TEASE
-        ** unless the covert CD is inserted.
+        ** If cd_index == 2 then its a covert CD
         */
-        if (!stricmp(palname, "CC2TEASE.VQP")) {
-          int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
-          /*
-          ** If cd_index == 2 then its a covert CD
-          */
-          if (cd_index != 2) {
-            port::SafeCopy(palname, "OLDCC2T.VQP");
-          }
+        if (cd_index != 2) {
+          port::SafeCopy(palname, "OLDCC2T.VQP");
         }
+      }
 #endif  //(FRENCH | GERMAN)
 
 #if (GERMAN)
+      /*
+      ** Kludge to use a different palette interpolation table for RETRO.VQA
+      ** if the covert CD is inserted.
+      */
+      if (!stricmp(palname, "RETRO.VQP")) {
+        int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
         /*
-        ** Kludge to use a different palette interpolation table for RETRO.VQA
-        ** if the covert CD is inserted.
+        ** If cd_index == 2 then its a covert CD
         */
-        if (!stricmp(palname, "RETRO.VQP")) {
-          int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
-          /*
-          ** If cd_index == 2 then its a covert CD
-          */
-          if (cd_index == 2) {
-            port::SafeCopy(palname, "RETROGER.VQP");
-          }
-        }
-
-#endif  // GERMAN
-
-        Load_Interpolated_Palettes(palname.c_str());
-        // Set_Palette(BlackPalette);
-        SysMemPage.Clear();
-        InMovie = true;
-        VQA_Play(vqa, VQAMODE_RUN);
-        VQA_Close(vqa);
-        // Resume_Audio_Thread();
-        InMovie = false;
-        Free_Interpolated_Palettes();
-#ifndef PORTABLE
-        Set_Primary_Buffer_Format();
-#endif
-        /*
-        **	Any movie that ends prematurely must have the screen
-        **	cleared to avoid any unexpected palette glitches.
-        */
-        if (Brokeout) {
-          clrscrn = true;
-          VisiblePage.Clear();
-          Brokeout = false;
+        if (cd_index == 2) {
+          port::SafeCopy(palname, "RETROGER.VQP");
         }
       }
 
-      VQA_Free(vqa);
+#endif  // GERMAN
+
+      Load_Interpolated_Palettes(palname.c_str());
+      // Set_Palette(BlackPalette);
+      SysMemPage.Clear();
+      InMovie = true;
+      player.Play(VQAMODE_RUN);
+      player.Close();
+      // Resume_Audio_Thread();
+      InMovie = false;
+      Free_Interpolated_Palettes();
+#ifndef PORTABLE
+      Set_Primary_Buffer_Format();
+#endif
+      /*
+      **	Any movie that ends prematurely must have the screen
+      **	cleared to avoid any unexpected palette glitches.
+      */
+      if (Brokeout) {
+        clrscrn = true;
+        VisiblePage.Clear();
+        Brokeout = false;
+      }
     }
 
     /*

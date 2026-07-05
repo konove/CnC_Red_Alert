@@ -41,20 +41,14 @@
  *----------------------------------------------------------------------------
  *
  * PUBLIC
- *     VQA_Alloc    - Allocate a VQAHandle to use.
- *     VQA_Free     - Free a VQAHandle.
- *     VQA_Init     - Initialize the VQAHandle IO.
+ *     VqaPlayer    - RAII facade over the player entry points.
+ *
+ * PRIVATE
  *     VQA_Play     - Play the VQA movie.
  *     VQA_SetStop  - Set the frame the player should stop on.
  *     VQA_GetInfo  - Get VQA movie information.
  *     VQA_GetStats - Get VQA movie statistics.
- *     VQA_Version  - Get VQA library version number.
- *     VQA_IDString - Get the VQA player library's ID string.
- *
- * PRIVATE
- *     VQA_IO_Task        - Loader task for multitasking.
- *     VQA_Rendering_Task - Drawer task for multitasking.
- *     User_Update        - Page flip routine called by the task interrupt.
+ *     User_Update  - Page flip routine called by the task interrupt.
  *
  ****************************************************************************/
 
@@ -75,86 +69,43 @@ extern int __cdecl Check_Key();
 extern int __cdecl Get_Key();
 }
 
-/****************************************************************************
- *
- * NAME
- *     VQA_Alloc - Allocate a VQAHandle to use.
- *
- * SYNOPSIS
- *     VQAHandle = VQA_Alloc()
- *
- *     VQAHandle *VQA_Alloc();
- *
- * FUNCTION
- *     Obtain a VQAHandle. This handle is used by most VQA library functions,
- *     and contains the current position in the file. This is the only legal
- *     way to obtain a VQAHandle.
- *
- * INPUTS
- *     NONE
- *
- * RESULT
- *     VQA - Handle of a VQA.
- *
- ****************************************************************************/
+/* VqaPlayer: thin RAII facade over the internal player entry points. */
 
-VQAHandle* VQA_Alloc() { return new VQAHandle{}; }
+VqaPlayer::VqaPlayer() : impl_(std::make_unique<VQAHandle>()) {}
 
-/****************************************************************************
- *
- * NAME
- *     VQA_Free - Free a VQAHandle.
- *
- * SYNOPSIS
- *     VQA_Free(VQA)
- *
- *     void VQA_Free(VQAHandle *);
- *
- * FUNCTION
- *     Dispose of a VQAHandle. This is the only legal way to dispose of a
- *     VQAHandle.
- *
- * INPUTS
- *     VQA - Pointer to VQAHandle to dispose of.
- *
- * RESULT
- *     NONE
- *
- ****************************************************************************/
+VqaPlayer::~VqaPlayer() {
+  /* Only an open movie needs shutdown; Close() on a never-opened player
+   * would touch the (possibly absent) io object.
+   */
+  if (impl_->data != nullptr) {
+    Close();
+  }
+}
 
-void VQA_Free(VQAHandle* vqa) { delete vqa; }
+void VqaPlayer::SetIo(VqaIo* io) { impl_->io = io; }
 
-void VQA_SetIo(VQAHandle* vqa, VqaIo* io) { vqa->io = io; }
+int VqaPlayer::Open(const char* filename, VQAConfig* config) {
+  return static_cast<int>(VQA_Open(impl_.get(), filename, config));
+}
 
-/****************************************************************************
- *
- * NAME
- *     VQA_Reset - Reset the VQAHandle.
- *
- * SYNOPSIS
- *     VQA_Reset(VQA)
- *
- *     void VQA_Reset(VQAHandle *);
- *
- * FUNCTION
- *
- * INPUTS
- *     VQA - VQAHandle to reset.
- *
- * RESULT
- *     NONE
- *
- ****************************************************************************/
+void VqaPlayer::Close() { VQA_Close(impl_.get()); }
 
-void VQA_Reset(VQAHandle* vqa) {
-  /* Dereference data members for quick access */
-  auto* vqabuf = vqa->data;
+int VqaPlayer::Play(int mode) {
+  return static_cast<int>(VQA_Play(impl_.get(), mode));
+}
 
-  vqabuf->Flags = 0;
-  vqabuf->LoadedFrames = 0;
-  vqabuf->DrawnFrames = 0;
-  vqabuf->StartTime = 0;
-  vqabuf->EndTime = 0;
+int VqaPlayer::SeekFrame(int frame, int fromwhere) {
+  return static_cast<int>(VQA_SeekFrame(impl_.get(), frame, fromwhere));
+}
+
+int VqaPlayer::SetStop(int frame) {
+  return static_cast<int>(VQA_SetStop(impl_.get(), frame));
+}
+
+void VqaPlayer::GetInfo(VQAInfo* info) const { VQA_GetInfo(impl_.get(), info); }
+
+void VqaPlayer::GetStats(VQAStatistics* stats) const {
+  VQA_GetStats(impl_.get(), stats);
 }
 
 int VQAMovieDone;
@@ -264,8 +215,7 @@ long VQA_Play(VQAHandle* vqa, long mode) {
           }
         }
 
-        VQA_SetTimer(vqa, vqabuf->EndTime,
-                     config->TimerMethod);
+        VQA_SetTimer(vqa, vqabuf->EndTime, config->TimerMethod);
       }
 
       /* Load, Draw, Load, Draw, Load, Draw ... */
@@ -454,52 +404,6 @@ void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats) {
   stats->MaxFrameSize = vqabuf->Loader.MaxFrameSize;
   stats->SamplesPlayed = vqabuf->Audio.SamplesPlayed;
 }
-
-/****************************************************************************
- *
- * NAME
- *     VQA_Version - Get VQA library version number.
- *
- * SYNOPSIS
- *     Version = VQA_Version()
- *
- *     char *VQA_Version();
- *
- * FUNCTION
- *     Return the version of the VQA player library.
- *
- * INPUTS
- *     NONE
- *
- * RESULT
- *     Version - Pointer to version number string.
- *
- ****************************************************************************/
-
-char* VQA_Version() { return VQA_VERSION; }
-
-/****************************************************************************
- *
- * NAME
- *     VQA_IDString - Get the VQA player library's ID string.
- *
- * SYNOPSIS
- *     IDString = VQA_IDString()
- *
- *     char *VQA_IDString();
- *
- * FUNCTION
- *     Return the ID string of this VQA player library.
- *
- * INPUTS
- *     NONE
- *
- * RESULT
- *     IDString - Pointer to ID string.
- *
- ****************************************************************************/
-
-char* VQA_IDString() { return VQA_IDSTRING; }
 
 /****************************************************************************
  *

@@ -66,26 +66,17 @@
 
 #ifndef DEMO
 
-// Opens a movie on a fresh handle without playing it. The io object must
-// stay alive until the returned handle is closed and freed. Returns nullptr
-// if the movie could not be opened.
-static VQAHandle* Open_Movie(const char* name, MixFileVqaIo& io) {
+// Opens a movie on the given player without playing it. The io object must
+// stay alive until the player is closed. Returns true if the movie opened.
+static bool Open_Movie(VqaPlayer& player, MixFileVqaIo& io, const char* name) {
   if (!Debug_Quiet && Get_Digi_Handle() != -1) {
     AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   } else {
     AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
   }
 
-  VQAHandle* vqa = VQA_Alloc();
-  if (vqa) {
-    VQA_SetIo(vqa, &io);
-
-    if (VQA_Open(vqa, name, &AnimControl) != 0) {
-      VQA_Free(vqa);
-      vqa = nullptr;
-    }
-  }
-  return vqa;
+  player.SetIo(&io);
+  return player.Open(name, &AnimControl) == 0;
 }
 
 /***********************************************************************************************
@@ -111,8 +102,9 @@ void Choose_Side() {
                                            0x0,  0x0,  0x1C, 0x0};
 
   void* anim;
-  VQAHandle *gdibrief = nullptr, *nodbrief = nullptr;
-  MixFileVqaIo gdibrief_io, nodbrief_io;  // Must outlive the open handles.
+  VqaPlayer gdibrief_player, nodbrief_player;
+  MixFileVqaIo gdibrief_io, nodbrief_io;  // Must outlive the open players.
+  bool gdibrief = false, nodbrief = false;  // Movie opened successfully?
   const void *staticaud, *oldfont;
   const void *speechg, *speechn, *speech;
   int statichandle, speechplaying = 0;
@@ -173,10 +165,10 @@ void Choose_Side() {
   InterpolationPalette = Palette;
   Read_Interpolation_Palette("SIDES.PAL");
 
-  nodbrief = Open_Movie("NOD1PRE.VQA", nodbrief_io);
+  nodbrief = Open_Movie(nodbrief_player, nodbrief_io, "NOD1PRE.VQA");
   gdi_start_palette = Load_Interpolated_Palettes("NOD1PRE.VQP");
   Call_Back();
-  gdibrief = Open_Movie("GDI1.VQA", gdibrief_io);
+  gdibrief = Open_Movie(gdibrief_player, gdibrief_io, "GDI1.VQA");
   Load_Interpolated_Palettes("GDI1.VQP", true);
 
   WWMouse->Erase_Mouse(&HidPage, true);
@@ -290,38 +282,32 @@ void Choose_Side() {
   */
   if (Special.IsJurassic && AreThingiesEnabled) {
     if (nodbrief) {
-      VQA_Close(nodbrief);
-      VQA_Free(nodbrief);
-      nodbrief = nullptr;
+      nodbrief_player.Close();
+      nodbrief = false;
     }
     if (gdibrief) {
-      VQA_Close(gdibrief);
-      VQA_Free(gdibrief);
-      gdibrief = nullptr;
+      gdibrief_player.Close();
+      gdibrief = false;
     }
   }
 
   /* play the scenario 1 briefing movie */
   if (Whom == HOUSE_GOOD) {
     if (nodbrief) {
-      VQA_Close(nodbrief);
-      VQA_Free(nodbrief);
+      nodbrief_player.Close();
     }
     if (gdibrief) {
       PaletteCounter = gdi_start_palette;
-      VQA_Play(gdibrief, VQAMODE_RUN);
-      VQA_Close(gdibrief);
-      VQA_Free(gdibrief);
+      gdibrief_player.Play(VQAMODE_RUN);
+      gdibrief_player.Close();
     }
   } else {
     if (gdibrief) {
-      VQA_Close(gdibrief);
-      VQA_Free(gdibrief);
+      gdibrief_player.Close();
     }
     if (nodbrief) {
-      VQA_Play(nodbrief, VQAMODE_RUN);
-      VQA_Close(nodbrief);
-      VQA_Free(nodbrief);
+      nodbrief_player.Play(VQAMODE_RUN);
+      nodbrief_player.Close();
     }
   }
 

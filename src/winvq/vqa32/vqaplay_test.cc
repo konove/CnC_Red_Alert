@@ -94,9 +94,7 @@ std::vector<uint8_t> ValidPreamble() {
 class VqaPlayTest : public testing::Test {
  protected:
   void SetUp() override {
-    vqa_ = VQA_Alloc();
-    ASSERT_NE(vqa_, nullptr);
-    VQA_SetIo(vqa_, &fake_);
+    player_.SetIo(&fake_);
 
     // Audio and drawing stay off: the tests run headless and only exercise
     // the file validation logic.
@@ -105,10 +103,8 @@ class VqaPlayTest : public testing::Test {
     config_.DrawFlags = VQACFGF_NODRAW;
   }
 
-  void TearDown() override { VQA_Free(vqa_); }
-
   FakeVqaIo fake_;
-  VQAHandle* vqa_ = nullptr;
+  VqaPlayer player_;
   VQAConfig config_{};
 };
 
@@ -132,7 +128,7 @@ TEST(VqaConfigTest, DefaultConfigHasDocumentedDefaults) {
 TEST_F(VqaPlayTest, OpenReportsOpenErrorWhenHandlerCannotOpen) {
   fake_.fail_open = true;
 
-  EXPECT_EQ(VQA_Open(vqa_, "missing.vqa", &config_), VQAERR_OPEN);
+  EXPECT_EQ(player_.Open("missing.vqa", &config_), VQAERR_OPEN);
   EXPECT_EQ(fake_.opens, 1);
   // The file never opened, so the player must not try to close it.
   EXPECT_EQ(fake_.closes, 0);
@@ -140,7 +136,7 @@ TEST_F(VqaPlayTest, OpenReportsOpenErrorWhenHandlerCannotOpen) {
 
 TEST_F(VqaPlayTest, OpenReportsReadErrorAndClosesOnEmptyFile) {
   // No data at all: the first 8-byte header read fails.
-  EXPECT_EQ(VQA_Open(vqa_, "empty.vqa", &config_), VQAERR_READ);
+  EXPECT_EQ(player_.Open("empty.vqa", &config_), VQAERR_READ);
   EXPECT_EQ(fake_.closes, 1);
 }
 
@@ -149,7 +145,7 @@ TEST_F(VqaPlayTest, OpenRejectsNonIffFile) {
   AppendBigEndian32(fake_.data, 0x1234);
   AppendBytes(fake_.data, "WVQA");
 
-  EXPECT_EQ(VQA_Open(vqa_, "notiff.vqa", &config_), VQAERR_NOTVQA);
+  EXPECT_EQ(player_.Open("notiff.vqa", &config_), VQAERR_NOTVQA);
   EXPECT_EQ(fake_.closes, 1);
 }
 
@@ -158,7 +154,7 @@ TEST_F(VqaPlayTest, OpenRejectsFormWithZeroSize) {
   AppendBigEndian32(fake_.data, 0);
   AppendBytes(fake_.data, "WVQA");
 
-  EXPECT_EQ(VQA_Open(vqa_, "zerosize.vqa", &config_), VQAERR_NOTVQA);
+  EXPECT_EQ(player_.Open("zerosize.vqa", &config_), VQAERR_NOTVQA);
   EXPECT_EQ(fake_.closes, 1);
 }
 
@@ -167,14 +163,14 @@ TEST_F(VqaPlayTest, OpenRejectsFormWithoutWvqaId) {
   AppendBigEndian32(fake_.data, 0x1234);
   AppendBytes(fake_.data, "XXXX");
 
-  EXPECT_EQ(VQA_Open(vqa_, "notvqa.vqa", &config_), VQAERR_NOTVQA);
+  EXPECT_EQ(player_.Open("notvqa.vqa", &config_), VQAERR_NOTVQA);
   EXPECT_EQ(fake_.closes, 1);
 }
 
 TEST_F(VqaPlayTest, OpenReportsReadErrorWhenTruncatedAfterPreamble) {
   fake_.data = ValidPreamble();
 
-  EXPECT_EQ(VQA_Open(vqa_, "truncated.vqa", &config_), VQAERR_READ);
+  EXPECT_EQ(player_.Open("truncated.vqa", &config_), VQAERR_READ);
   EXPECT_EQ(fake_.closes, 1);
 }
 
@@ -184,18 +180,18 @@ TEST_F(VqaPlayTest, OpenRejectsHeaderChunkWithWrongSize) {
   AppendBigEndian32(fake_.data, 4);  // Real VQA headers are much larger.
   AppendBytes(fake_.data, "XXXX");
 
-  EXPECT_EQ(VQA_Open(vqa_, "badheader.vqa", &config_), VQAERR_NOTVQA);
+  EXPECT_EQ(player_.Open("badheader.vqa", &config_), VQAERR_NOTVQA);
   EXPECT_EQ(fake_.closes, 1);
 }
 
 TEST_F(VqaPlayTest, IoHandlerSurvivesFailedOpen) {
   // A failed open runs VQA_Close(), which resets the handle. The installed
   // io object must survive the reset so the handle can be reused.
-  ASSERT_EQ(VQA_Open(vqa_, "empty.vqa", &config_), VQAERR_READ);
+  ASSERT_EQ(player_.Open("empty.vqa", &config_), VQAERR_READ);
 
   fake_.data = ValidPreamble();
   fake_.pos = 0;
-  EXPECT_EQ(VQA_Open(vqa_, "second.vqa", &config_), VQAERR_READ);
+  EXPECT_EQ(player_.Open("second.vqa", &config_), VQAERR_READ);
   EXPECT_EQ(fake_.opens, 2);
   EXPECT_EQ(fake_.closes, 2);
 }

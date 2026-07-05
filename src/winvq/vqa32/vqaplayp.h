@@ -475,6 +475,15 @@ struct VQAHandle {
  * FUNCTION PROTOTYPES
  *-------------------------------------------------------------------------*/
 
+/* Player entry points (wrapped by the public VqaPlayer class). */
+long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config);
+void VQA_Close(VQAHandle* vqa);
+long VQA_Play(VQAHandle* vqa, long mode);
+long VQA_SeekFrame(VQAHandle* vqa, long frame, long fromwhere);
+int64_t VQA_SetStop(VQAHandle* vqa, int64_t stop);
+void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info);
+void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats);
+
 /* Loader/Drawer system. */
 long VQA_LoadFrame(VQAHandle* vqa);
 void VQA_Configure_Drawer(VQAHandle* vqap);

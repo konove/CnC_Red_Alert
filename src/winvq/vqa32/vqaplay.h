@@ -19,6 +19,7 @@
 #define CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_
 
 #include <cstdint>
+#include <memory>
 
 /****************************************************************************
  *
@@ -258,53 +259,76 @@ typedef struct _VQAStatistics {
   unsigned long MemUsed;
 } VQAStatistics;
 
-/* VQAHandle: Opaque VQA file handle. Must be obtained by calling VQA_Alloc()
- *            and freed through VQA_Free(). This is the only legal way to
- *            obtain and dispose of a VQAHandle. The definition is private to
- *            the player (vqaplayp.h).
- */
+/* Internal player state; defined in vqaplayp.h. */
 struct VQAHandle;
 
 /* Abstract file source the player reads movies through (see vqaio.h). */
 class VqaIo;
+
+// Plays VQA movies.
+//
+// Example:
+//   VqaPlayer player;
+//   MixFileVqaIo io;  // any VqaIo implementation
+//   player.SetIo(&io);
+//   if (player.Open("INTRO.VQA", &AnimControl) == 0) {
+//     player.Play(VQAMODE_RUN);
+//     player.Close();
+//   }
+//
+// The player owns its internal state but never the io object. Destroying
+// the player closes any movie still open.
+class VqaPlayer {
+ public:
+  VqaPlayer();
+  ~VqaPlayer();
+  VqaPlayer(const VqaPlayer&) = delete;
+  VqaPlayer& operator=(const VqaPlayer&) = delete;
+  VqaPlayer(VqaPlayer&&) = delete;
+  VqaPlayer& operator=(VqaPlayer&&) = delete;
+
+  // Installs the file source used by Open()/Play(). Non-owning: io must stay
+  // alive while a movie opened through it is open. Survives Close(), so one
+  // player can open several movies in sequence.
+  void SetIo(VqaIo* io);
+
+  // Opens a movie for playback. config may be nullptr to use defaults; the
+  // configuration is copied. Returns 0 on success or a VQAERR_* code.
+  int Open(const char* filename, VQAConfig* config);
+
+  // Closes the movie, if one is open, and makes the player reusable.
+  void Close();
+
+  // Runs playback in the given VQAMODE_* mode. VQAMODE_RUN blocks until the
+  // movie finishes (returns VQAERR_EOF); VQAMODE_WALK advances one frame.
+  int Play(int mode);
+
+  // Repositions playback to the given frame. Only movies recorded with a
+  // frame-offset index support seeking. Returns the frame number seeked to,
+  // or a negative VQAERR_* code.
+  int SeekFrame(int frame, int fromwhere);
+
+  // Sets the frame to stop playback on. Returns the previous stop frame, or
+  // -1 if the requested frame is out of range.
+  int SetStop(int frame);
+
+  // Retrieve information/statistics about the opened movie.
+  void GetInfo(VQAInfo* info) const;
+  void GetStats(VQAStatistics* stats) const;
+
+ private:
+  std::unique_ptr<VQAHandle> impl_;
+};
 
 /*---------------------------------------------------------------------------
  * FUNCTION PROTOTYPES
  *-------------------------------------------------------------------------*/
 
 /* Configuration routines. */
-void VQA_INIConfig(VQAConfig* config);
 void VQA_DefaultConfig(VQAConfig* config);
 
-/* Handle manipulation routines. */
-VQAHandle* VQA_Alloc();
-void VQA_Free(VQAHandle* vqa);
-void VQA_Reset(VQAHandle* vqa);
-
-/* Installs the file source used by VQA_Open/VQA_Play. Non-owning: the io
- * object must outlive any file opened through it. Survives VQA_Close(), so
- * one handle can open several movies in sequence.
- */
-void VQA_SetIo(VQAHandle* vqa, VqaIo* io);
-unsigned char* VQA_GetPalette(VQAHandle* vqa);
-long VQA_GetPaletteSize(VQAHandle* vqa);
-void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
-                        unsigned long width, unsigned long height, long xpos,
-                        long ypos);
-
-/* File routines. */
-long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config);
-void VQA_Close(VQAHandle* vqa);
-long VQA_Play(VQAHandle* vqa, long mode);
-long VQA_SeekFrame(VQAHandle* vqa, long frame, long fromwhere);
-long VQA_SetStop(VQAHandle* vqa, long stop);
+/* Global audio control; pauses/resumes the active movie's audio stream. */
 void VQA_PauseAudio();
 void VQA_ResumeAudio();
-
-/* Information/statistics access routines. */
-void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info);
-void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats);
-char* VQA_Version();
-char* VQA_IDString();
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_

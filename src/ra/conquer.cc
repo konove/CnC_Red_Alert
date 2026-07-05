@@ -514,7 +514,6 @@ void Keyboard_Process(KeyNumType& input) {
                                         WWKEY_CTRL_BIT | WWKEY_VK_BIT));
   KeyNumType key = static_cast<KeyNumType>(input & ~WWKEY_VK_BIT);
 
-
   if constexpr (config::kCheatKeysEnabled) {
     if (Debug_Flag) {
       HousesType h;
@@ -1198,8 +1197,7 @@ static void Message_Input(KeyNumType& input) {
 
           Session.Messages.Add_Edit(
               Session.ColorIdx,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0,
-              464);
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
 
           Map.Flag_To_Redraw(false);
 
@@ -2229,7 +2227,6 @@ bool Main_Loop() {
   **	Check for player wins or loses according to global event flag.
   */
   if (PlayerWins) {
-
     /*
     ** Send the game statistics to WChat.
     */
@@ -2657,8 +2654,9 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
     PreserveVQAScreen = 0;
     Keyboard->Clear();
 
-    VQAHandle* vqa = nullptr;
+    VqaPlayer player;
     MixFileVqaIo movie_io;  // Must outlive the open movie.
+    player.SetIo(&movie_io);
 
     if (IsVQ640) {
       AnimControl.ImageWidth = 640;
@@ -2676,37 +2674,29 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
     }
 
-    vqa = VQA_Alloc();
-    if (vqa != nullptr) {
-      VQA_SetIo(vqa, &movie_io);
-
-      if (VQA_Open(vqa, fullname.c_str(), &AnimControl) == 0) {
-        Brokeout = false;
-        if (!IsVQ640) {
-          Load_Interpolated_Palettes(palname.c_str());
-        }
-        SysMemPage.Clear();
-        InMovie = true;
-        VQA_Play(vqa, VQAMODE_RUN);
-        VQA_Close(vqa);
-        InMovie = false;
-        if (!IsVQ640) {
-          Free_Interpolated_Palettes();
-        }
-        IsVQ640 = false;
-
-        // Early exit leaves the palette in an inconsistent state.
-        if (Brokeout) {
-          clrscrn = true;
-          VisiblePage.Clear();
-          Brokeout = false;
-        }
-      } else {
-        DLOG(FATAL) << "VQA_Play failed unexpectedly";
+    if (player.Open(fullname.c_str(), &AnimControl) == 0) {
+      Brokeout = false;
+      if (!IsVQ640) {
+        Load_Interpolated_Palettes(palname.c_str());
       }
-      VQA_Free(vqa);
+      SysMemPage.Clear();
+      InMovie = true;
+      player.Play(VQAMODE_RUN);
+      player.Close();
+      InMovie = false;
+      if (!IsVQ640) {
+        Free_Interpolated_Palettes();
+      }
+      IsVQ640 = false;
+
+      // Early exit leaves the palette in an inconsistent state.
+      if (Brokeout) {
+        clrscrn = true;
+        VisiblePage.Clear();
+        Brokeout = false;
+      }
     } else {
-      DLOG(FATAL) << "VQA_Alloc returned nullptr";
+      DLOG(FATAL) << "VQA_Open failed unexpectedly";
     }
 
     // The VQA player may leave the framebuffer and palette dirty.
@@ -3020,7 +3010,6 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
       */
       for (int icony = 0; icony < icon_height; icony++) {
         for (int iconx = 0; iconx < icon_width; iconx++) {
-
           for (int y = 0; y < zoomfactor; y++) {
             for (int x = 0; x < zoomfactor; x++) {
               int getx = iconx * 24 + x * val + zoomfactor / 2;
@@ -3414,7 +3403,6 @@ long VQ_Call_Back(unsigned char*, long) {
   return false;
 }
 
-
 long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
 #ifdef PORTABLE
   // vsync while waiting for frame
@@ -3749,8 +3737,8 @@ void Handle_Team(int team, int action) {
 void Handle_View(int view, int action) {
   if (static_cast<unsigned>(view) < ARRAY_SIZE(Scen.Views)) {
     if (action == 0) {
-      Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
-          Scen.Views[view] - MAP_CELL_W * 8 - 10)));
+      Map.Set_Tactical_Position(
+          Coord_Whole(Cell_Coord(Scen.Views[view] - MAP_CELL_W * 8 - 10)));
 
       /*
       ** Win95 scrolling logic cant handle just jumps in screen position so
@@ -3758,8 +3746,7 @@ void Handle_View(int view, int action) {
       */
       Map.Flag_To_Redraw(true);
     } else {
-      Scen.Views[view] = Coord_Cell(Map.TacticalCoord) +
-                         MAP_CELL_W * 8 + 10;
+      Scen.Views[view] = Coord_Cell(Map.TacticalCoord) + MAP_CELL_W * 8 + 10;
     }
   }
 }
