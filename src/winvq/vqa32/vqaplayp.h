@@ -440,34 +440,38 @@ struct VQAData {
 #define VQADATF_PRIMED (1 << VQADATB_PRIMED)
 #define VQADATF_PAUSED (1 << VQADATB_PAUSED)
 
-/* VQAHandleP: Private VQA file handle. Must be obtained by calling
- *             VQA_Alloc() and freed through VQA_Free(). This is the only
- *             legal way to obtain and dispose of a VQAHandle.
+/* VQAHandle: Full definition of the player state behind the opaque handle
+ *            declared in vqaplay.h. Allocated by VQA_Alloc() and freed by
+ *            VQA_Free(); clients only ever hold a pointer.
  *
- * Inherits VQAio from VQAHandle base class.
- * IOHandler - IO handler callback.
- * VQABuf    - Pointer to internal data buffers.
- * Config    - Configuration structure.
- * Header    - VQA header structure.
+ * io_handler - IO handler callback installed via VQA_Init().
+ * io_context - Opaque slot owned by the IO handler (see VQA_SetIoContext).
+ * data       - Pointer to internal data buffers.
+ * config     - Configuration structure.
+ * header     - VQA header structure.
  */
-struct VQAHandleP : VQAHandle {
-  // Out-of-line (task.cc) to serve as the key function anchoring the vtable
-  // in a single translation unit (-Wweak-vtables).
-  ~VQAHandleP() override;
+struct VQAHandle {
+  VQAHandle() = default;
+  VQAHandle(const VQAHandle&) = delete;
+  VQAHandle& operator=(const VQAHandle&) = delete;
+  VQAHandle(VQAHandle&&) = delete;
+  VQAHandle& operator=(VQAHandle&&) = delete;
 
-  void Reset() override {
-    VQAHandle::Reset();
-    VQABuf = nullptr;
-    Config = {};
-    Header = {};
-    // Note: IOHandler is intentionally preserved across reset
+  // Clears playback state so the handle can be reopened. io_handler is
+  // intentionally preserved across reset.
+  void Reset() {
+    io_context = 0;
+    data = nullptr;
+    config = {};
+    header = {};
   }
 
-  int64_t (*IOHandler)(VQAHandle* vqa, int64_t action, void* buffer,
-                       int64_t nbytes);
-  VQAData* VQABuf;
-  VQAConfig Config;
-  VQAHeader Header;
+  int64_t (*io_handler)(VQAHandle* vqa, int64_t action, void* buffer,
+                        int64_t nbytes) = nullptr;
+  uintptr_t io_context = 0;
+  VQAData* data = nullptr;
+  VQAConfig config{};
+  VQAHeader header{};
 };
 
 /*---------------------------------------------------------------------------
@@ -476,21 +480,21 @@ struct VQAHandleP : VQAHandle {
 
 /* Loader/Drawer system. */
 long VQA_LoadFrame(VQAHandle* vqa);
-void VQA_Configure_Drawer(VQAHandleP* vqap);
+void VQA_Configure_Drawer(VQAHandle* vqap);
 int64_t User_Update(VQAHandle* vqa);
 
 /* Timer system. */
-long VQA_StartTimerInt(VQAHandleP* vqap, long init);
-void VQA_StopTimerInt(VQAHandleP* vqap);
-void VQA_SetTimer(VQAHandleP* vqap, long time, long method);
-int64_t VQA_GetTime(VQAHandleP* vqap);
+long VQA_StartTimerInt(VQAHandle* vqap, long init);
+void VQA_StopTimerInt(VQAHandle* vqap);
+void VQA_SetTimer(VQAHandle* vqap, long time, long method);
+int64_t VQA_GetTime(VQAHandle* vqap);
 long VQA_TimerMethod();
 
 /* Audio system. */
-long VQA_OpenAudio(VQAHandleP* vqap, void* window);
-void VQA_CloseAudio(VQAHandleP* vqap);
-long VQA_StartAudio(VQAHandleP* vqap);
-void VQA_StopAudio(VQAHandleP* vqap);
-long CopyAudio(VQAHandleP* vqap);
+long VQA_OpenAudio(VQAHandle* vqap, void* window);
+void VQA_CloseAudio(VQAHandle* vqap);
+long VQA_StartAudio(VQAHandle* vqap);
+void VQA_StopAudio(VQAHandle* vqap);
+long CopyAudio(VQAHandle* vqap);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAYP_H_

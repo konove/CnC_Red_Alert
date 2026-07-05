@@ -2041,7 +2041,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
   CCFileClass* file;
   int64_t error;
 
-  file = (CCFileClass*)vqa->VQAio;
+  file = reinterpret_cast<CCFileClass*>(VQA_GetIoContext(vqa));
 
   /*
   **	Perform the action specified by the stream command.
@@ -2098,7 +2098,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
         error = file->Open((char*)buffer, FileAccess::kRead);
 
         if (error != -1) {
-          vqa->VQAio = (unsigned long)file;
+          VQA_SetIoContext(vqa, reinterpret_cast<uintptr_t>(file));
           error = 0;
           // file->Set_Buffer_Size(8*1024);
         } else {
@@ -2125,7 +2125,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
       file->Close();
       delete file;
       file = 0;
-      vqa->VQAio = 0;
+      VQA_SetIoContext(vqa, 0);
       error = 0;
       break;
 
@@ -2177,7 +2177,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
   CCFileClass* file;
   int64_t error = 0;
 
-  file = (CCFileClass*)vqa->VQAio;
+  file = reinterpret_cast<CCFileClass*>(VQA_GetIoContext(vqa));
 
   /*
   **	Perform the action specified by the stream command.
@@ -2228,7 +2228,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
         error = file->Open(static_cast<char*>(buffer), FileAccess::kRead);
 
         if (error != -1) {
-          vqa->VQAio = (unsigned long)file;
+          VQA_SetIoContext(vqa, reinterpret_cast<uintptr_t>(file));
           error = 0;
           // file->Set_Buffer_Size(8*1024); // missing?
         } else {
@@ -2245,7 +2245,7 @@ int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
       file->Close();
       delete file;
       file = nullptr;
-      vqa->VQAio = 0;
+      VQA_SetIoContext(vqa, 0);
       error = 0;
       break;
 

@@ -258,23 +258,18 @@ typedef struct _VQAStatistics {
   unsigned long MemUsed;
 } VQAStatistics;
 
-/* VQAHandle: VQA file handle. (Must be obtained by calling VQA_Alloc()
- *            and freed through VQA_Free(). This is the only legal way
- *            to obtain and dispose of a VQAHandle.
- *
- * VQAio - Something meaningful to the IO manager. (See DOCS)
+/* VQAHandle: Opaque VQA file handle. Must be obtained by calling VQA_Alloc()
+ *            and freed through VQA_Free(). This is the only legal way to
+ *            obtain and dispose of a VQAHandle. The definition is private to
+ *            the player (vqaplayp.h).
  */
-struct VQAHandle {
-  VQAHandle() = default;
-  virtual ~VQAHandle();
-  VQAHandle(const VQAHandle&) = delete;
-  VQAHandle& operator=(const VQAHandle&) = delete;
-  VQAHandle(VQAHandle&&) = delete;
-  VQAHandle& operator=(VQAHandle&&) = delete;
+struct VQAHandle;
 
-  virtual void Reset() { VQAio = 0; }
-  uintptr_t VQAio = 0;
-};
+/* Opaque per-handle context slot owned by the installed IO handler (the game
+ * stores a CCFileClass* here). 0 when no file is open.
+ */
+uintptr_t VQA_GetIoContext(const VQAHandle* vqa);
+void VQA_SetIoContext(VQAHandle* vqa, uintptr_t context);
 
 /* Possible IO command values */
 #define VQACMD_INIT 1    /* Prepare the IO for a session */

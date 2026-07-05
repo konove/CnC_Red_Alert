@@ -81,7 +81,7 @@
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
-static long Select_Frame(VQAHandleP* vqap);
+static long Select_Frame(VQAHandle* vqap);
 static void Prepare_Frame(VQAData* vqabuf);
 
 static long DrawFrame_Buffer(VQAHandle* vqa);
@@ -118,7 +118,7 @@ unsigned char* VQA_GetPalette(VQAHandle* vqa) {
   unsigned char* palette = nullptr;
 
   /* Dereference commonly used data members for quick access. */
-  drawer = &dynamic_cast<VQAHandleP*>(vqa)->VQABuf->Drawer;
+  drawer = &vqa->data->Drawer;
 
   if (drawer->CurPalSize > 0) {
     palette = drawer->Palette_24;
@@ -151,7 +151,7 @@ unsigned char* VQA_GetPalette(VQAHandle* vqa) {
 
 long VQA_GetPaletteSize(VQAHandle* vqa) {
   /* Dereference commonly used data members for quick access. */
-  const VQADrawer* drawer = &dynamic_cast<VQAHandleP*>(vqa)->VQABuf->Drawer;
+  const VQADrawer* drawer = &vqa->data->Drawer;
 
   return drawer->CurPalSize;
 }
@@ -187,11 +187,11 @@ long VQA_GetPaletteSize(VQAHandle* vqa) {
 void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
                         unsigned long width, unsigned long height, long xpos,
                         long ypos) {
-  auto* const vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
+  auto* const vqa_handle_p = vqa;
   /* Dereference commonly used data members for quick access. */
-  VQAHeader* header = &vqa_handle_p->Header;
-  VQADrawer* drawer = &vqa_handle_p->VQABuf->Drawer;
-  VQAConfig* config = &vqa_handle_p->Config;
+  VQAHeader* header = &vqa_handle_p->header;
+  VQADrawer* drawer = &vqa_handle_p->data->Drawer;
+  VQAConfig* config = &vqa_handle_p->config;
   long origin = config->DrawFlags & VQACFGF_ORIGIN;
 
   /* Set the drawer buffer information. */
@@ -248,7 +248,7 @@ void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
  * SYNOPSIS
  *     VQA_Configure_Drawer(VQA)
  *
- *     void VQA_Configure_Drawer(VQAHandleP *);
+ *     void VQA_Configure_Drawer(VQAHandle *);
  *
  * FUNCTION
  *     Configure the drawing system for the current movie and configuration
@@ -262,7 +262,7 @@ void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
  *
  ****************************************************************************/
 
-void VQA_Configure_Drawer(VQAHandleP* vqap) {
+void VQA_Configure_Drawer(VQAHandle* vqap) {
   VQAData* vqabuf;
   VQAConfig* config;
   VQAHeader* header;
@@ -271,10 +271,10 @@ void VQA_Configure_Drawer(VQAHandleP* vqap) {
   long blkdim;
 
   /* Dereference commonly used data members for quicker access. */
-  vqabuf = vqap->VQABuf;
+  vqabuf = vqap->data;
   drawer = &vqabuf->Drawer;
-  header = &vqap->Header;
-  config = &vqap->Config;
+  header = &vqap->header;
+  config = &vqap->config;
   origin = config->DrawFlags & VQACFGF_ORIGIN;
 
   /*-------------------------------------------------------------------------
@@ -365,7 +365,7 @@ void VQA_Configure_Drawer(VQAHandleP* vqap) {
  * SYNOPSIS
  *     Error = Select_Frame(VQA)
  *
- *     long Select_Frame(VQAHandleP *);
+ *     long Select_Frame(VQAHandle *);
  *
  * FUNCTION
  *     Select a frame to draw. This is were the frame skipping/delay is
@@ -379,7 +379,7 @@ void VQA_Configure_Drawer(VQAHandleP* vqap) {
  *
  ****************************************************************************/
 
-static long Select_Frame(VQAHandleP* vqap) {
+static long Select_Frame(VQAHandle* vqap) {
   VQAData* vqabuf;
   VQADrawer* drawer;
   VQAConfig* config;
@@ -389,8 +389,8 @@ static long Select_Frame(VQAHandleP* vqap) {
   unsigned long curtime;
 
   /* Dereference commonly used data members for quicker access. */
-  config = &vqap->Config;
-  vqabuf = vqap->VQABuf;
+  config = &vqap->config;
+  vqabuf = vqap->data;
   drawer = &vqabuf->Drawer;
   curframe = drawer->CurFrame;
 
@@ -604,10 +604,10 @@ static long DrawFrame_Buffer(VQAHandle* vqa) {
   long slowpal;
   unsigned char* buff;
 
-  auto* vqa_handle_p = dynamic_cast<VQAHandleP*>(vqa);
+  auto* vqa_handle_p = vqa;
   /* Dereference data members for quicker access. */
-  VQAConfig* config = &vqa_handle_p->Config;
-  VQAData* vqabuf = vqa_handle_p->VQABuf;
+  VQAConfig* config = &vqa_handle_p->config;
+  VQAData* vqabuf = vqa_handle_p->data;
   VQADrawer* drawer = &vqabuf->Drawer;
 
   /* Check our "sleep" state */
