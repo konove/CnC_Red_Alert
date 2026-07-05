@@ -76,6 +76,7 @@ extern int __cdecl Get_Key();
 }
 
 VQAHandle::~VQAHandle() = default;
+VQAHandleP::~VQAHandleP() = default;
 
 /****************************************************************************
  *

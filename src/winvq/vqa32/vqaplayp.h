@@ -452,6 +452,10 @@ struct VQAData {
  * vocfh     - Override audiotrack file handle.
  */
 struct VQAHandleP : VQAHandle {
+  // Out-of-line (task.cc) to serve as the key function anchoring the vtable
+  // in a single translation unit (-Wweak-vtables).
+  ~VQAHandleP() override;
+
   void Reset() override {
     VQAHandle::Reset();
     VQABuf = nullptr;
