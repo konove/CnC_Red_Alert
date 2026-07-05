@@ -51,26 +51,6 @@
 #include "sdllib/ww_mouse.h"
 #include "winvq/vqa32/vqaplay.h"
 
-VQAHandle* Open_Movie(char* name);
-VQAHandle* Open_Movie(char* name) {
-  if (!Debug_Quiet && Get_Digi_Handle() != -1) {
-    AnimControl.OptionFlags |= VQAOPTF_AUDIO;
-  } else {
-    AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
-  }
-
-  VQAHandle* vqa = VQA_Alloc();
-  if (vqa) {
-    VQA_Init(vqa, MixFileHandler);
-
-    if (VQA_Open(vqa, name, &AnimControl) != 0) {
-      VQA_Free(vqa);
-      vqa = nullptr;
-    }
-  }
-  return vqa;
-}
-
 /***********************************************************************************************
  * Choose_Side -- play the introduction movies, select house *
  *                                                                                             *

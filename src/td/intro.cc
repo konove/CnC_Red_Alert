@@ -66,8 +66,10 @@
 
 #ifndef DEMO
 
-VQAHandle* Open_Movie(char* name);
-VQAHandle* Open_Movie(char* name) {
+// Opens a movie on a fresh handle without playing it. The io object must
+// stay alive until the returned handle is closed and freed. Returns nullptr
+// if the movie could not be opened.
+static VQAHandle* Open_Movie(const char* name, MixFileVqaIo& io) {
   if (!Debug_Quiet && Get_Digi_Handle() != -1) {
     AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   } else {
@@ -76,7 +78,7 @@ VQAHandle* Open_Movie(char* name) {
 
   VQAHandle* vqa = VQA_Alloc();
   if (vqa) {
-    VQA_Init(vqa, MixFileHandler);
+    VQA_SetIo(vqa, &io);
 
     if (VQA_Open(vqa, name, &AnimControl) != 0) {
       VQA_Free(vqa);
@@ -110,6 +112,7 @@ void Choose_Side() {
 
   void* anim;
   VQAHandle *gdibrief = nullptr, *nodbrief = nullptr;
+  MixFileVqaIo gdibrief_io, nodbrief_io;  // Must outlive the open handles.
   const void *staticaud, *oldfont;
   const void *speechg, *speechn, *speech;
   int statichandle, speechplaying = 0;
@@ -170,10 +173,10 @@ void Choose_Side() {
   InterpolationPalette = Palette;
   Read_Interpolation_Palette("SIDES.PAL");
 
-  nodbrief = Open_Movie("NOD1PRE.VQA");
+  nodbrief = Open_Movie("NOD1PRE.VQA", nodbrief_io);
   gdi_start_palette = Load_Interpolated_Palettes("NOD1PRE.VQP");
   Call_Back();
-  gdibrief = Open_Movie("GDI1.VQA");
+  gdibrief = Open_Movie("GDI1.VQA", gdibrief_io);
   Load_Interpolated_Palettes("GDI1.VQP", true);
 
   WWMouse->Erase_Mouse(&HidPage, true);

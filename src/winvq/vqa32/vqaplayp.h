@@ -46,6 +46,7 @@
 #include <vector>
 
 #include "winvq/vqa32/vqafile.h"
+#include "winvq/vqa32/vqaio.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqm32/soscomp.h"
 #include "winvq/vqm32/video.h"
@@ -444,11 +445,10 @@ struct VQAData {
  *            declared in vqaplay.h. Allocated by VQA_Alloc() and freed by
  *            VQA_Free(); clients only ever hold a pointer.
  *
- * io_handler - IO handler callback installed via VQA_Init().
- * io_context - Opaque slot owned by the IO handler (see VQA_SetIoContext).
- * data       - Pointer to internal data buffers.
- * config     - Configuration structure.
- * header     - VQA header structure.
+ * io     - File source installed via VQA_SetIo(). Not owned.
+ * data   - Pointer to internal data buffers.
+ * config - Configuration structure.
+ * header - VQA header structure.
  */
 struct VQAHandle {
   VQAHandle() = default;
@@ -457,18 +457,15 @@ struct VQAHandle {
   VQAHandle(VQAHandle&&) = delete;
   VQAHandle& operator=(VQAHandle&&) = delete;
 
-  // Clears playback state so the handle can be reopened. io_handler is
-  // intentionally preserved across reset.
+  // Clears playback state so the handle can be reopened. io is intentionally
+  // preserved across reset.
   void Reset() {
-    io_context = 0;
     data = nullptr;
     config = {};
     header = {};
   }
 
-  int64_t (*io_handler)(VQAHandle* vqa, int64_t action, void* buffer,
-                        int64_t nbytes) = nullptr;
-  uintptr_t io_context = 0;
+  VqaIo* io = nullptr;
   VQAData* data = nullptr;
   VQAConfig config{};
   VQAHeader header{};

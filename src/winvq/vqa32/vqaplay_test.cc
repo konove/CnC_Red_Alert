@@ -1,6 +1,6 @@
 // Tests for the public VQA player API: configuration defaults, handle
 // lifecycle, and the VQA_Open() validation/error paths, driven by a scripted
-// in-memory IO handler. No real movie assets are required.
+// in-memory VqaIo file source. No real movie assets are required.
 
 #include <cstdint>
 #include <cstdio>
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "winvq/vqa32/vqaio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 // Link-time stubs for symbols normally provided by the game or sdllib. The
@@ -29,9 +30,39 @@ void Flag_To_Set_Palette(unsigned char* /*palette*/, long /*numbytes*/,
 
 namespace {
 
-// Scripted in-memory file served through the VQA IO-handler protocol.
-// Records how the player drives the handler so tests can assert on it.
-struct FakeIoState {
+// Scripted in-memory file source. Records how the player drives it so
+// tests can assert on the interaction.
+class FakeVqaIo final : public VqaIo {
+ public:
+  int Open(const char* /*filename*/) override {
+    opens++;
+    if (fail_open) {
+      return 1;
+    }
+    pos = 0;
+    return 0;
+  }
+
+  int Read(void* buffer, int64_t bytes) override {
+    if (fail_read || pos + bytes > static_cast<int64_t>(data.size())) {
+      return 1;
+    }
+    memcpy(buffer, data.data() + pos, static_cast<size_t>(bytes));
+    pos += bytes;
+    return 0;
+  }
+
+  int Seek(int64_t offset, int origin) override {
+    if (origin == SEEK_SET) {
+      pos = offset;
+    } else {
+      pos += offset;
+    }
+    return 0;
+  }
+
+  void Close() override { closes++; }
+
   std::vector<uint8_t> data;
   int64_t pos = 0;
   bool fail_open = false;
@@ -39,52 +70,6 @@ struct FakeIoState {
   int opens = 0;
   int closes = 0;
 };
-
-FakeIoState* g_fake = nullptr;  // Bound per-test; handlers have no context arg.
-
-int64_t FakeIoHandler(VQAHandle* /*vqa*/, int64_t action, void* buffer,
-                      int64_t nbytes) {
-  FakeIoState& fake = *g_fake;
-
-  switch (action) {
-    case VQACMD_OPEN:
-      fake.opens++;
-      if (fake.fail_open) {
-        return 1;
-      }
-      fake.pos = 0;
-      return 0;
-
-    case VQACMD_READ: {
-      if (fake.fail_read ||
-          fake.pos + nbytes > static_cast<int64_t>(fake.data.size())) {
-        return 1;
-      }
-      memcpy(buffer, fake.data.data() + fake.pos,
-             static_cast<size_t>(nbytes));
-      fake.pos += nbytes;
-      return 0;
-    }
-
-    case VQACMD_SEEK: {
-      // The player passes the seek origin through the buffer argument.
-      const auto origin = static_cast<int>(reinterpret_cast<intptr_t>(buffer));
-      if (origin == SEEK_SET) {
-        fake.pos = nbytes;
-      } else {
-        fake.pos += nbytes;
-      }
-      return 0;
-    }
-
-    case VQACMD_CLOSE:
-      fake.closes++;
-      return 0;
-
-    default:
-      return 0;
-  }
-}
 
 void AppendBytes(std::vector<uint8_t>& out, const char* text) {
   out.insert(out.end(), text, text + strlen(text));
@@ -109,10 +94,9 @@ std::vector<uint8_t> ValidPreamble() {
 class VqaPlayTest : public testing::Test {
  protected:
   void SetUp() override {
-    g_fake = &fake_;
     vqa_ = VQA_Alloc();
     ASSERT_NE(vqa_, nullptr);
-    VQA_Init(vqa_, FakeIoHandler);
+    VQA_SetIo(vqa_, &fake_);
 
     // Audio and drawing stay off: the tests run headless and only exercise
     // the file validation logic.
@@ -121,12 +105,9 @@ class VqaPlayTest : public testing::Test {
     config_.DrawFlags = VQACFGF_NODRAW;
   }
 
-  void TearDown() override {
-    VQA_Free(vqa_);
-    g_fake = nullptr;
-  }
+  void TearDown() override { VQA_Free(vqa_); }
 
-  FakeIoState fake_;
+  FakeVqaIo fake_;
   VQAHandle* vqa_ = nullptr;
   VQAConfig config_{};
 };
@@ -146,16 +127,6 @@ TEST(VqaConfigTest, DefaultConfigHasDocumentedDefaults) {
   EXPECT_EQ(config.NumFrameBufs, 6);
   EXPECT_EQ(config.NumCBBufs, 3);
   EXPECT_EQ(config.Volume, 0x00FF);
-}
-
-TEST_F(VqaPlayTest, IoContextRoundTrips) {
-  EXPECT_EQ(VQA_GetIoContext(vqa_), uintptr_t{0});
-
-  VQA_SetIoContext(vqa_, uintptr_t{0x1234});
-  EXPECT_EQ(VQA_GetIoContext(vqa_), uintptr_t{0x1234});
-
-  VQA_SetIoContext(vqa_, uintptr_t{0});
-  EXPECT_EQ(VQA_GetIoContext(vqa_), uintptr_t{0});
 }
 
 TEST_F(VqaPlayTest, OpenReportsOpenErrorWhenHandlerCannotOpen) {
@@ -219,7 +190,7 @@ TEST_F(VqaPlayTest, OpenRejectsHeaderChunkWithWrongSize) {
 
 TEST_F(VqaPlayTest, IoHandlerSurvivesFailedOpen) {
   // A failed open runs VQA_Close(), which resets the handle. The installed
-  // IO handler must survive the reset so the handle can be reused.
+  // io object must survive the reset so the handle can be reused.
   ASSERT_EQ(VQA_Open(vqa_, "empty.vqa", &config_), VQAERR_READ);
 
   fake_.data = ValidPreamble();

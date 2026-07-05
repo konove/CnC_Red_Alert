@@ -19,10 +19,12 @@
 #define CNC_RED_ALERT_TD_CONQUER_H_
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #include "sdllib/shape.h"
 #include "td/defines.h"
+#include "winvq/vqa32/vqaio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #define TXT_NONE 0                         //
@@ -829,8 +831,24 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
                    const void* fadingdata = nullptr,
                    const void* ghostdata = nullptr);
 void Go_Editor(bool flag);
-int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
-                       int64_t nbytes);
+class CCFileClass;
+
+// Serves VQA movie data to the player through the game's mix-file layer
+// (CCFileClass), so movies can be read from .MIX archives as well as loose
+// files. Install on a handle with VQA_SetIo() before VQA_Open().
+class MixFileVqaIo final : public VqaIo {
+ public:
+  MixFileVqaIo();
+  ~MixFileVqaIo() override;  // Out-of-line: CCFileClass is incomplete here.
+
+  int Open(const char* filename) override;
+  int Read(void* buffer, int64_t bytes) override;
+  int Seek(int64_t offset, int origin) override;
+  void Close() override;
+
+ private:
+  std::unique_ptr<CCFileClass> file_;  // Null when no file is open.
+};
 
 char* CC_Get_Shape_Filename(const void* shapeptr);
 void CC_Add_Shape_To_Global(const void* shapeptr, char* filename, char code);

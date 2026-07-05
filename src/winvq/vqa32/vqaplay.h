@@ -265,20 +265,8 @@ typedef struct _VQAStatistics {
  */
 struct VQAHandle;
 
-/* Opaque per-handle context slot owned by the installed IO handler (the game
- * stores a CCFileClass* here). 0 when no file is open.
- */
-uintptr_t VQA_GetIoContext(const VQAHandle* vqa);
-void VQA_SetIoContext(VQAHandle* vqa, uintptr_t context);
-
-/* Possible IO command values */
-#define VQACMD_INIT 1    /* Prepare the IO for a session */
-#define VQACMD_CLEANUP 2 /* Terminate IO session */
-#define VQACMD_OPEN 3    /* Open file */
-#define VQACMD_CLOSE 4   /* Close file */
-#define VQACMD_READ 5    /* Read bytes */
-#define VQACMD_WRITE 6   /* Write bytes */
-#define VQACMD_SEEK 7    /* Seek */
+/* Abstract file source the player reads movies through (see vqaio.h). */
+class VqaIo;
 
 /*---------------------------------------------------------------------------
  * FUNCTION PROTOTYPES
@@ -292,9 +280,12 @@ void VQA_DefaultConfig(VQAConfig* config);
 VQAHandle* VQA_Alloc();
 void VQA_Free(VQAHandle* vqa);
 void VQA_Reset(VQAHandle* vqa);
-void VQA_Init(VQAHandle* vqa,
-              int64_t (*iohandler)(VQAHandle* vqa, int64_t action, void* buffer,
-                                   int64_t nbytes));
+
+/* Installs the file source used by VQA_Open/VQA_Play. Non-owning: the io
+ * object must outlive any file opened through it. Survives VQA_Close(), so
+ * one handle can open several movies in sequence.
+ */
+void VQA_SetIo(VQAHandle* vqa, VqaIo* io);
 unsigned char* VQA_GetPalette(VQAHandle* vqa);
 long VQA_GetPaletteSize(VQAHandle* vqa);
 void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,

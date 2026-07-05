@@ -50,7 +50,7 @@
  *game loop (as a single loop).                               * Map_Edit_Loop --
  *a mini-main loop for map edit mode only                                  *
  *   Message_Input -- allows inter-player message input processing *
- *   MixFileHandler -- Handles VQ file access. * Name_From_Source -- retrieves
+ *   MixFileVqaIo -- Serves VQ file access. * Name_From_Source -- retrieves
  *the name for the given SourceType                           * Play_Movie --
  *Plays a VQ movie.                                                           *
  *   Source_From_Name -- Converts ASCII name into SourceType. * Sync_Delay --
@@ -1873,404 +1873,38 @@ void Go_Editor(bool flag) {
   }
 }
 
-#if (0)
-#define VQ_THREAD_BUFFER_SIZE 1024 * 1024
-#define VQ_THREAD_BUFFER_CHUNK VQ_THREAD_BUFFER_SIZE / 4
-unsigned char* VQThreadBuffer = NULL;
-volatile bool ThreadReading = false;
-unsigned long VQThreadBlockHead;
-unsigned long VQThreadBlockTail;
-unsigned long VQBytesLeft;
-unsigned long VQBytesRead;
+MixFileVqaIo::MixFileVqaIo() = default;
 
-void Init_VQ_Threading(CCFileClass* file) {
-  if (!VQThreadBuffer) {
-    VQThreadBuffer = new unsigned char[VQ_THREAD_BUFFER_SIZE];
+MixFileVqaIo::~MixFileVqaIo() { Close(); }
+
+int MixFileVqaIo::Open(const char* filename) {
+  auto file = std::make_unique<CCFileClass>(filename);
+
+  if (!file->Is_Available()) {
+    return 1;
   }
-  Force_VM_Page_In(VQThreadBuffer, VQ_THREAD_BUFFER_SIZE);
-  VQThreadBlockHead = 0;
-  VQThreadBlockTail = 0;
-  VQBytesRead = 0;
-  VQBytesLeft = file->Size();
+  if (file->Open(filename, FileAccess::kRead) == -1) {
+    return 1;
+  }
+
+  file_ = std::move(file);
+  return 0;
 }
 
-void Cleanup_VQ_Threading() {
-  while (ThreadReading) {
-  }
-  if (VQThreadBuffer) {
-    delete VQThreadBuffer;
-    VQThreadBuffer = NULL;
-  }
+int MixFileVqaIo::Read(void* buffer, int64_t bytes) {
+  return file_->Read(buffer, bytes) != bytes;
 }
 
-unsigned long __stdcall Thread_Read(void* file) {
-  int bytes_to_read;
-  int left_to_read;
-  int read_this_time;
-  unsigned long head;
-  int sleep_time;
-
-  CCFileClass* ccfile = (CCFileClass*)file;
-
-  bytes_to_read = std::min(VQBytesLeft, VQ_THREAD_BUFFER_CHUNK);
-
-  if (!bytes_to_read) {
-    ThreadReading = false;
-    return (0);
-  }
-
-  left_to_read = bytes_to_read;
-
-  while (left_to_read) {
-    read_this_time = std::min(8 * 1024, left_to_read);
-    // if (read_this_time & 3){
-    ccfile->Read(VQThreadBuffer + VQThreadBlockHead, read_this_time);
-    //}else{
-    //	ccfile->Read(VQThreadBuffer+VQThreadBlockHead, read_this_time/4);
-    //	ccfile->Read(VQThreadBuffer+VQThreadBlockHead+read_this_time/4,
-    // read_this_time/4);
-    //	ccfile->Read(VQThreadBuffer+VQThreadBlockHead+(read_this_time/4)*2,
-    // read_this_time/4);
-    //	ccfile->Read(VQThreadBuffer+VQThreadBlockHead+(read_this_time/4)*3,
-    // read_this_time/4);
-    //}
-    VQThreadBlockHead += read_this_time;
-    left_to_read -= read_this_time;
-
-    head = VQThreadBlockHead;
-    if (head < VQThreadBlockTail) {
-      head += VQ_THREAD_BUFFER_SIZE;
-    }
-    sleep_time = head - VQThreadBlockTail;
-    sleep_time = sleep_time / (VQ_THREAD_BUFFER_CHUNK / 32);
-    sleep_time += 2;
-    if (sleep_time < 1) {
-      sleep_time = 1;
-    }
-    Sleep(sleep_time);
-  }
-
-  VQThreadBlockHead &= VQ_THREAD_BUFFER_SIZE - 1;
-  VQBytesLeft -= bytes_to_read;
-  ThreadReading = false;
-  return (0);
+int MixFileVqaIo::Seek(int64_t offset, int origin) {
+  return file_->Seek(offset, origin) == -1;
 }
 
-void Read_VQ_Thread_Block(CCFileClass* file) {
-  HANDLE thread_handle;
-  DWORD thread_id;
-  if (!ThreadReading) {
-    //_beginthreadex (&Thread_Read, NULL, 16*1024, NULL);
-    ThreadReading = true;
-    thread_handle =
-        CreateThread(NULL, 0, &Thread_Read, (void*)file, 0, &thread_id);
-    // SetThreadPriority (thread_handle, THREAD_PRIORITY_IDLE);
-
-    CloseHandle(thread_handle);
+void MixFileVqaIo::Close() {
+  if (file_ != nullptr) {
+    file_->Close();
+    file_.reset();
   }
 }
-
-int VQ_Thread_Read(CCFileClass* file, void* buffer, long bytes) {
-  long bytes_to_read;
-
-  do {
-    if (VQThreadBlockHead > VQThreadBlockTail) {
-      bytes_to_read = std::min(bytes, VQThreadBlockHead - VQThreadBlockTail);
-
-    } else {
-      bytes_to_read = std::min(
-          bytes, VQThreadBlockHead + VQ_THREAD_BUFFER_SIZE - VQThreadBlockTail);
-    }
-
-  } while (ThreadReading && bytes_to_read < bytes);
-
-  if (VQThreadBlockTail + bytes_to_read > VQ_THREAD_BUFFER_SIZE) {
-    int first_chunk = VQ_THREAD_BUFFER_SIZE - VQThreadBlockTail;
-    int second_chunk = bytes_to_read - first_chunk;
-
-    memcpy(buffer, VQThreadBuffer + VQThreadBlockTail, first_chunk);
-    memcpy((unsigned char*)buffer + first_chunk, VQThreadBuffer, second_chunk);
-  } else {
-    memcpy(buffer, VQThreadBuffer + VQThreadBlockTail, bytes_to_read);
-  }
-
-  VQThreadBlockTail += bytes_to_read;
-  VQThreadBlockTail &= VQ_THREAD_BUFFER_SIZE - 1;
-
-  unsigned long head = VQThreadBlockHead;
-  if (head < VQThreadBlockTail) {
-    head += VQ_THREAD_BUFFER_SIZE;
-  }
-  if (head - VQThreadBlockTail < VQ_THREAD_BUFFER_CHUNK && !ThreadReading) {
-    Read_VQ_Thread_Block(file);
-  }
-
-  VQBytesRead += bytes_to_read;
-  return (bytes_to_read);
-}
-
-int VQ_Thread_Seek(long bytes) {
-  VQThreadBlockTail += bytes;
-  VQBytesRead += bytes;
-  return (VQBytesRead);
-}
-
-/***********************************************************************************************
- * MixFileHandler -- Handles VQ file access. *
- *                                                                                             *
- *    This routine is called from the VQ player when it needs to access the
- *source file. By    * using this routine it is possible to virtualize the file
- *system.                         *
- *                                                                                             *
- * INPUT:   vqa   -- Pointer to the VQA handle for this animation. *
- *                                                                                             *
- *          action-- The requested action to perform. *
- *                                                                                             *
- *          buffer-- Optional buffer pointer as needed by the type of action. *
- *                                                                                             *
- *          nbytes-- The number of bytes (if needed) for this operation. *
- *                                                                                             *
- * OUTPUT:  Returns a value consistent with the action requested. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/04/1995 JLB : Created. *
- *=============================================================================================*/
-int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
-                       int64_t nbytes) {
-  CCFileClass* file;
-  int64_t error;
-
-  file = reinterpret_cast<CCFileClass*>(VQA_GetIoContext(vqa));
-
-  /*
-  **	Perform the action specified by the stream command.
-  */
-  switch (action) {
-    /*
-    ** VQACMD_READ means read NBytes from the stream and place it in the
-    ** memory pointed to by Buffer.
-    **
-    ** Any error code returned will be remapped by VQA library into
-    ** VQAERR_READ.
-    */
-    case VQACMD_READ:
-      error = VQ_Thread_Read(file, buffer, nbytes);
-      // error = (file->Read(buffer, (unsigned short)nbytes) != (unsigned
-      // short)nbytes);
-      if (error == nbytes) {
-        error = 0;
-      }
-      break;
-
-    /*
-    **	VQACMD_WRITE is analogous to VQACMD_READ.
-    **
-    ** Writing is not allowed to the VQA file, VQA library will remap the
-    ** error into VQAERR_WRITE.
-    */
-    case VQACMD_WRITE:
-      error = 1;
-      break;
-
-    /*
-    **	VQACMD_SEEK asks that you perform a seek relative to the current
-    ** position. NBytes is a signed number, indicating seek direction
-    ** (positive for forward, negative for backward). Buffer has no meaning
-    ** here.
-    **
-    ** Any error code returned will be remapped by VQA library into
-    ** VQAERR_SEEK.
-    */
-    case VQACMD_SEEK:
-      // error = (file->Seek(nbytes, SEEK_CUR) == -1);
-      VQ_Thread_Seek(nbytes);
-      error = 0;
-      break;
-
-    /*
-    **	VQACMD_OPEN asks that you open your stream for access.
-    */
-    case VQACMD_OPEN:
-      file = new CCFileClass((char*)buffer);
-
-      if (file != NULL && file->Is_Available()) {
-        error = file->Open((char*)buffer, FileAccess::kRead);
-
-        if (error != -1) {
-          VQA_SetIoContext(vqa, reinterpret_cast<uintptr_t>(file));
-          error = 0;
-          // file->Set_Buffer_Size(8*1024);
-        } else {
-          delete file;
-          file = 0;
-          error = 1;
-        }
-      } else {
-        error = 1;
-      }
-
-      if (error != -1) {
-        Init_VQ_Threading(file);
-        Read_VQ_Thread_Block(file);
-        CountDownTimerClass timer;
-        timer.Set(60);
-        while (ThreadReading || timer.Time()) {
-        }
-      }
-      break;
-
-    case VQACMD_CLOSE:
-      Cleanup_VQ_Threading();
-      file->Close();
-      delete file;
-      file = 0;
-      VQA_SetIoContext(vqa, 0);
-      error = 0;
-      break;
-
-    /*
-    **	VQACMD_INIT means to prepare your stream for reading. This is used for
-    ** certain streams that can't be read immediately upon opening, and need
-    ** further preparation. This operation is allowed to fail; the error code
-    ** will be returned directly to the client.
-    */
-    case VQACMD_INIT:
-
-    /*
-    **	IFFCMD_CLEANUP means to terminate the transaction with the associated
-    ** stream. This is used for streams that can't simply be closed. This
-    ** operation is not allowed to fail; any error returned will be ignored.
-    */
-    case VQACMD_CLEANUP:
-      error = 0;
-      break;
-  }
-
-  return (error);
-}
-#endif  //(0)
-// #if (0)
-/***********************************************************************************************
- * MixFileHandler -- Handles VQ file access. *
- *                                                                                             *
- *    This routine is called from the VQ player when it needs to access the
- *source file. By    * using this routine it is possible to virtualize the file
- *system.                         *
- *                                                                                             *
- * INPUT:   vqa   -- Pointer to the VQA handle for this animation. *
- *                                                                                             *
- *          action-- The requested action to perform. *
- *                                                                                             *
- *          buffer-- Optional buffer pointer as needed by the type of action. *
- *                                                                                             *
- *          nbytes-- The number of bytes (if needed) for this operation. *
- *                                                                                             *
- * OUTPUT:  Returns a value consistent with the action requested. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/04/1995 JLB : Created. *
- *=============================================================================================*/
-int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
-                       int64_t nbytes) {
-  CCFileClass* file;
-  int64_t error = 0;
-
-  file = reinterpret_cast<CCFileClass*>(VQA_GetIoContext(vqa));
-
-  /*
-  **	Perform the action specified by the stream command.
-  */
-  switch (action) {
-    /*
-    ** VQACMD_READ means read NBytes from the stream and place it in the
-    ** memory pointed to by Buffer.
-    **
-    ** Any error code returned will be remapped by VQA library into
-    ** VQAERR_READ.
-    */
-    case VQACMD_READ:
-      error = file->Read(buffer, static_cast<unsigned short>(nbytes)) !=
-              static_cast<unsigned short>(nbytes);
-      break;
-
-    /*
-    **	VQACMD_WRITE is analogous to VQACMD_READ.
-    **
-    ** Writing is not allowed to the VQA file, VQA library will remap the
-    ** error into VQAERR_WRITE.
-    */
-    case VQACMD_WRITE:
-      error = 1;
-      break;
-
-    /*
-    **	VQACMD_SEEK asks that you perform a seek relative to the current
-    ** position. NBytes is a signed number, indicating seek direction
-    ** (positive for forward, negative for backward). Buffer has no meaning
-    ** here.
-    **
-    ** Any error code returned will be remapped by VQA library into
-    ** VQAERR_SEEK.
-    */
-    case VQACMD_SEEK:
-      error = file->Seek(nbytes, SEEK_CUR) == -1;
-      break;
-
-    /*
-    **	VQACMD_OPEN asks that you open your stream for access.
-    */
-    case VQACMD_OPEN:
-      file = new CCFileClass(static_cast<char*>(buffer));
-
-      if (file != nullptr && file->Is_Available()) {
-        error = file->Open(static_cast<char*>(buffer), FileAccess::kRead);
-
-        if (error != -1) {
-          VQA_SetIoContext(vqa, reinterpret_cast<uintptr_t>(file));
-          error = 0;
-          // file->Set_Buffer_Size(8*1024); // missing?
-        } else {
-          delete file;
-          file = nullptr;
-          error = 1;
-        }
-      } else {
-        error = 1;
-      }
-      break;
-
-    case VQACMD_CLOSE:
-      file->Close();
-      delete file;
-      file = nullptr;
-      VQA_SetIoContext(vqa, 0);
-      error = 0;
-      break;
-
-    /*
-    **	VQACMD_INIT means to prepare your stream for reading. This is used for
-    ** certain streams that can't be read immediately upon opening, and need
-    ** further preparation. This operation is allowed to fail; the error code
-    ** will be returned directly to the client.
-    */
-    case VQACMD_INIT:
-
-    /*
-    **	IFFCMD_CLEANUP means to terminate the transaction with the associated
-    ** stream. This is used for streams that can't simply be closed. This
-    ** operation is not allowed to fail; any error returned will be ignored.
-    */
-    case VQACMD_CLEANUP:
-      error = 0;
-      break;
-  }
-
-  return error;
-}
-
-// #endif	//(0)
 
 void Rebuild_Interpolated_Palette(unsigned char* interpal) {
   for (int y = 0; y < 255; y++) {
@@ -2417,6 +2051,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
     Keyboard::Clear();
 
     VQAHandle* vqa = nullptr;
+    MixFileVqaIo movie_io;  // Must outlive the open movie.
 
     if (!Debug_Quiet && Get_Digi_Handle() != -1) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
@@ -2426,7 +2061,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
 
     vqa = VQA_Alloc();
     if (vqa != nullptr) {
-      VQA_Init(vqa, MixFileHandler);
+      VQA_SetIo(vqa, &movie_io);
       if (VQA_Open(vqa, fullname.c_str(), &AnimControl) == 0) {
         Brokeout = false;
         // Suspend_Audio_Thread();

@@ -51,7 +51,7 @@
  *-- This is the main game loop (as a single loop). * Map_Edit_Loop -- a
  *mini-main loop for map edit mode only                                  *
  *   Message_Input -- allows inter-player message input processing *
- *   MixFileHandler -- Handles VQ file access. * Name_From_Source -- retrieves
+ *   MixFileVqaIo -- Serves VQ file access. * Name_From_Source -- retrieves
  *the name for the given SourceType                           * Owner_From_Name
  *-- Convert an owner name into a bitfield.                                 *
  *   Play_Movie -- Plays a VQ movie. * Shake_The_Screen -- Dispatcher that
@@ -2479,126 +2479,37 @@ void Go_Editor(bool flag) {
   }
 }
 
-/***********************************************************************************************
- * MixFileHandler -- Handles VQ file access. *
- *                                                                                             *
- *    This routine is called from the VQ player when it needs to access the
- *source file. By    * using this routine it is possible to virtualize the file
- *system.                         *
- *                                                                                             *
- * INPUT:   vqa   -- Pointer to the VQA handle for this animation. *
- *                                                                                             *
- *          action-- The requested action to perform. *
- *                                                                                             *
- *          buffer-- Optional buffer pointer as needed by the type of action. *
- *                                                                                             *
- *          nbytes-- The number of bytes (if needed) for this operation. *
- *                                                                                             *
- * OUTPUT:  Returns a value consistent with the action requested. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/04/1995 JLB : Created. *
- *=============================================================================================*/
-int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
-                       int64_t nbytes) {
-  CCFileClass* file;
-  int64_t error;
+MixFileVqaIo::MixFileVqaIo() = default;
 
-  file = reinterpret_cast<CCFileClass*>(VQA_GetIoContext(vqa));
+MixFileVqaIo::~MixFileVqaIo() { Close(); }
 
-  /*
-  **	Perform the action specified by the stream command.
-  */
-  switch (action) {
-    /*
-    ** VQACMD_READ means read NBytes from the stream and place it in the
-    ** memory pointed to by Buffer.
-    **
-    ** Any error code returned will be remapped by VQA library into
-    ** VQAERR_READ.
-    */
-    case VQACMD_READ:
-      error = file->Read(buffer, static_cast<unsigned short>(nbytes)) !=
-              static_cast<unsigned short>(nbytes);
-      break;
+int MixFileVqaIo::Open(const char* filename) {
+  auto file = std::make_unique<CCFileClass>(filename);
 
-    /*
-    **	VQACMD_WRITE is analogous to VQACMD_READ.
-    **
-    ** Writing is not allowed to the VQA file, VQA library will remap the
-    ** error into VQAERR_WRITE.
-    */
-    case VQACMD_WRITE:
-      error = 1;
-      break;
-
-    /*
-    **	VQACMD_SEEK asks that you perform a seek relative to the current
-    ** position. NBytes is a signed number, indicating seek direction
-    ** (positive for forward, negative for backward). Buffer has no meaning
-    ** here.
-    **
-    ** Any error code returned will be remapped by VQA library into
-    ** VQAERR_SEEK.
-    */
-    case VQACMD_SEEK:
-      error = file->Seek(nbytes, SEEK_CUR) == -1;
-      break;
-
-    /*
-    **	VQACMD_OPEN asks that you open your stream for access.
-    */
-    case VQACMD_OPEN:
-      file = new CCFileClass(static_cast<char*>(buffer));
-
-      if (file != nullptr && file->Is_Available()) {
-        error = file->Open(static_cast<char*>(buffer), FileAccess::kRead);
-
-        if (error != -1) {
-          VQA_SetIoContext(vqa, reinterpret_cast<uintptr_t>(file));
-          error = 0;
-        } else {
-          delete file;
-          file = nullptr;
-          error = 1;
-        }
-      } else {
-        error = 1;
-      }
-      break;
-
-    case VQACMD_CLOSE:
-      file->Close();
-      delete file;
-      file = nullptr;
-      VQA_SetIoContext(vqa, 0);
-      error = 0;
-      break;
-
-    /*
-    **	VQACMD_INIT means to prepare your stream for reading. This is used for
-    ** certain streams that can't be read immediately upon opening, and need
-    ** further preparation. This operation is allowed to fail; the error code
-    ** will be returned directly to the client.
-    */
-    case VQACMD_INIT:
-
-    /*
-    **	IFFCMD_CLEANUP means to terminate the transaction with the associated
-    ** stream. This is used for streams that can't simply be closed. This
-    ** operation is not allowed to fail; any error returned will be ignored.
-    */
-    case VQACMD_CLEANUP:
-      error = 0;
-      break;
-
-    default:
-      error = 0;
-      break;
+  if (!file->Is_Available()) {
+    return 1;
+  }
+  if (file->Open(filename, FileAccess::kRead) == -1) {
+    return 1;
   }
 
-  return error;
+  file_ = std::move(file);
+  return 0;
+}
+
+int MixFileVqaIo::Read(void* buffer, int64_t bytes) {
+  return file_->Read(buffer, bytes) != bytes;
+}
+
+int MixFileVqaIo::Seek(int64_t offset, int origin) {
+  return file_->Seek(offset, origin) == -1;
+}
+
+void MixFileVqaIo::Close() {
+  if (file_ != nullptr) {
+    file_->Close();
+    file_.reset();
+  }
 }
 
 void Rebuild_Interpolated_Palette(unsigned char* interpal) {
@@ -2747,6 +2658,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
     Keyboard->Clear();
 
     VQAHandle* vqa = nullptr;
+    MixFileVqaIo movie_io;  // Must outlive the open movie.
 
     if (IsVQ640) {
       AnimControl.ImageWidth = 640;
@@ -2766,7 +2678,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
 
     vqa = VQA_Alloc();
     if (vqa != nullptr) {
-      VQA_Init(vqa, MixFileHandler);
+      VQA_SetIo(vqa, &movie_io);
 
       if (VQA_Open(vqa, fullname.c_str(), &AnimControl) == 0) {
         Brokeout = false;

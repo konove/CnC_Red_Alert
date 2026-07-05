@@ -124,40 +124,7 @@ VQAHandle* VQA_Alloc() { return new VQAHandle{}; }
 
 void VQA_Free(VQAHandle* vqa) { delete vqa; }
 
-uintptr_t VQA_GetIoContext(const VQAHandle* vqa) { return vqa->io_context; }
-
-void VQA_SetIoContext(VQAHandle* vqa, uintptr_t context) {
-  vqa->io_context = context;
-}
-
-/****************************************************************************
- *
- * NAME
- *     VQA_Init - Initialize the VQAHandle IO handler.
- *
- * SYNOPSIS
- *     VQA_Init(VQA, IOHandler)
- *
- *     void VQA_Init(VQAHandle *, IOHandler *);
- *
- * FUNCTION
- *     Initialize the specified VQAHandle IO with the client provided custom
- *     IO handler.
- *
- * INPUTS
- *     VQA       - Pointer to VQAHandle to initialize.
- *     IOHandler - Pointer to custom file I/O handler function.
- *
- * RESULT
- *     NONE
- *
- ****************************************************************************/
-
-void VQA_Init(VQAHandle* vqa,
-              int64_t (*iohandler)(VQAHandle* vqa, int64_t action, void* buffer,
-                                   int64_t nbytes)) {
-  vqa->io_handler = iohandler;
-}
+void VQA_SetIo(VQAHandle* vqa, VqaIo* io) { vqa->io = io; }
 
 /****************************************************************************
  *
