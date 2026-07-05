@@ -1,6 +1,7 @@
 add_library(vqa32 STATIC)
 
 file(GLOB_RECURSE VQA32_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cc")
+list(FILTER VQA32_SOURCES EXCLUDE REGEX "_test\\.cc$")
 
 file(GLOB_RECURSE VQA32_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 
@@ -18,3 +19,11 @@ target_link_libraries(vqa32 PRIVATE port)
 
 find_package(SDL2 REQUIRED)
 target_link_libraries(vqa32 PRIVATE SDL2::SDL2)
+
+# Tests
+include(Testing)
+add_gtest(
+    NAME vqa32_test
+    SOURCES vqaplay_test.cc
+    LIBS vqa32
+)
