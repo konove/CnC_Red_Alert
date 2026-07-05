@@ -449,7 +449,6 @@ struct VQAData {
  * VQABuf    - Pointer to internal data buffers.
  * Config    - Configuration structure.
  * Header    - VQA header structure.
- * vocfh     - Override audiotrack file handle.
  */
 struct VQAHandleP : VQAHandle {
   // Out-of-line (task.cc) to serve as the key function anchoring the vtable
@@ -461,7 +460,6 @@ struct VQAHandleP : VQAHandle {
     VQABuf = nullptr;
     Config = {};
     Header = {};
-    vocfh = 0;
     // Note: IOHandler is intentionally preserved across reset
   }
 
@@ -470,7 +468,6 @@ struct VQAHandleP : VQAHandle {
   VQAData* VQABuf;
   VQAConfig Config;
   VQAHeader Header;
-  long vocfh;
 };
 
 /*---------------------------------------------------------------------------
@@ -495,9 +492,5 @@ void VQA_CloseAudio(VQAHandleP* vqap);
 long VQA_StartAudio(VQAHandleP* vqap);
 void VQA_StopAudio(VQAHandleP* vqap);
 long CopyAudio(VQAHandleP* vqap);
-
-/* Debugging system. */
-void VQA_InitMono(VQAHandleP* vqap);
-void VQA_UpdateMono(VQAHandleP* vqap);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAYP_H_

@@ -297,7 +297,6 @@ void VQA_DefaultConfig(VQAConfig* config);
 VQAHandle* VQA_Alloc();
 void VQA_Free(VQAHandle* vqa);
 void VQA_Reset(VQAHandle* vqa);
-void VQA_InitAsDOS(VQAHandle* vqa);
 void VQA_Init(VQAHandle* vqa,
               int64_t (*iohandler)(VQAHandle* vqa, int64_t action, void* buffer,
                                    int64_t nbytes));
