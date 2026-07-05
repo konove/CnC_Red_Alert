@@ -102,7 +102,7 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
                        signed short panloc, int id);
 int Set_Score_Vol(int volume);
 void Fade_Sample(int handle, int ticks);
-int Get_Free_Sample_Handle(int priority);
+int AcquireSampleHandle(int priority);
 int Get_Digi_Handle();
 bool Start_Primary_Sound_Buffer(bool forced);
 void Stop_Primary_Sound_Buffer();

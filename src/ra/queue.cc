@@ -3907,7 +3907,7 @@ static void Compute_Game_CRC() {
   //	A random #
   //------------------------------------------------------------------------
   //	Add_CRC(&GameCRC, Scen.RandomNumber.Seed);
-  Add_CRC(&GameCRC, Scen.RandomNumber);
+  Add_CRC(&GameCRC, static_cast<uint32_t>(Scen.sync_rng_.Next()));
 
 } /* end of Compute_Game_CRC */
 
@@ -4238,13 +4238,12 @@ static void Print_CRCs(EventClass* ev) {
   //------------------------------------------------------------------------
   //	Random # generator, frame #
   //------------------------------------------------------------------------
-  Mono_Printf("Random Number:%x  \n", Scen.RandomNumber.Seed);
+  Mono_Printf("Random Number:%x  \n", Scen.sync_rng_.seed());
 #ifdef RANDOM_COUNT
   fprintf(fp, "\nRandom Number:%x (Count1:%d, Count2:%d)\n",
-          Scen.RandomNumber.Seed, Scen.RandomNumber.Count1,
-          Scen.RandomNumber.Count2);
+          Scen.sync_rng_.seed(), Scen.sync_rng_.Count1, Scen.sync_rng_.Count2);
 #else
-  fprintf(fp, "\nRandom Number:%x\n", Scen.RandomNumber.Seed);
+  fprintf(fp, "\nRandom Number:%x\n", Scen.sync_rng_.seed());
 #endif
 
   Mono_Printf("My Frame:%d  \n", Frame);

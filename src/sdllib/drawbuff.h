@@ -36,7 +36,10 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
 bool Linear_Scale_To_Linear(void*, void*, int, int, int, int, int, int, int,
                             int, bool, const char*);
 
-long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
+// Draws text onto the viewport using the current global font (FontPtr).
+// Wraps to a new line when text exceeds the viewport width. A bcolor of 0
+// means a transparent background. Does nothing if str or FontPtr is null.
+void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
                   int bcolor);
 
 /*======================================================================*/

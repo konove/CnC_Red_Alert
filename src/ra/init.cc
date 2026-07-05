@@ -392,9 +392,8 @@ bool Init_Game(int, char*[]) {
     Load_Title_Page(true);
 
     Hide_Mouse();
-    Fancy_Text_Print(TXT_STAND_BY, 320, 240,
-                     &ColorRemaps[PCOLOR_DIALOG_BLUE], TBLACK,
-                     TPF_CENTER | TPF_TEXT | TPF_DROPSHADOW);
+    Fancy_Text_Print(TXT_STAND_BY, 320, 240, &ColorRemaps[PCOLOR_DIALOG_BLUE],
+                     TBLACK, TPF_CENTER | TPF_TEXT | TPF_DROPSHADOW);
     Show_Mouse();
 
     CCPalette.Set(FADE_PALETTE_SLOW);
@@ -1414,7 +1413,7 @@ bool Select_Game(bool /*fade*/) {
       Map.TacPixelX, Map.TacPixelY,  // x,y for messages
       6,                             // max # msgs
       MAX_MESSAGE_LENGTH - 14,       // max msg length
-      14,                 // font height in pixels
+      14,                            // font height in pixels
       -1, -1,                        // x,y for edit line (appears above msgs)
       0,                             // BG		1,
                                      // // enable edit overflow
@@ -2212,7 +2211,7 @@ void Init_Random() {
   //
   if (Session.Play) {
     RandNumb = Seed;
-    Scen.RandomNumber = Seed;
+    Scen.sync_rng_.set_seed(static_cast<uint32_t>(Seed));
     return;
   }
 
@@ -2239,7 +2238,7 @@ void Init_Random() {
   /*
   **	Initialize the random-number generators
   */
-  Scen.RandomNumber = Seed;
+  Scen.sync_rng_.set_seed(static_cast<uint32_t>(Seed));
   RandNumb = Seed;
 }
 
@@ -2901,7 +2900,6 @@ static void Bootstrap() {
   **	Initialize the resident font pointers.
   */
   Init_Fonts();
-
 
   /*
   **	Setup the keyboard processor in preparation for the game.

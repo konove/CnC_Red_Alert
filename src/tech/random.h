@@ -16,72 +16,54 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/RANDOM.H 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : RANDOM.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 02/27/96 *
- *                                                                                             *
- *                  Last Update : February 27, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #ifndef CNC_RED_ALERT_TECH_RANDOM_H_
 #define CNC_RED_ALERT_TECH_RANDOM_H_
 
-/**********************************************************************
-** Enable this define to turn on the random # counters.  This must not
-** be defined for the release version, or saved games won't work!
-*/
-// #define RANDOM_COUNT
+#include <cstdint>
 
-/*
-**	This class functions like a 'magic' int value that returns a random
-*number *	every time it is read. To set the "random seed" for this, just
-*assign a number *	to the object (just as you would if it were a true 'int'
-*value). Take note that although *	this class will return an 'int', the
-*actual significance of the random number is *	limited to 15 bits (0..32767).
-*/
+// A deterministic linear congruential pseudo-random number generator.
+//
+// The exact recurrence must never change. Multiplayer peers advance the
+// simulation in lockstep, and saved games and replays reproduce the same draw
+// sequence, so any divergence in the numbers produced causes desync. Only the
+// upper 15 bits of each draw are significant (values 0..32767).
+//
+// Example:
+//   RandomClass rng(seed);
+//   int roll = rng.InRange(1, 6);
 class RandomClass {
  public:
-  RandomClass(unsigned seed = 0);
+  explicit RandomClass(uint32_t seed = 0);
 
-  operator int() { return operator()(); }
-  int operator()();
-  int operator()(int minval, int maxval);
+  // Advances the generator and returns the next raw value in [0, 32767].
+  int Next();
 
-  enum {
-    SIGNIFICANT_BITS = 15  // Random number bit significance.
-  };
+  // Returns a uniformly distributed value in the inclusive range [low, high].
+  // The span must fit within the 15 significant bits, otherwise the result
+  // skews non-random.
+  int InRange(int low, int high);
 
-  unsigned long Seed;
+  uint32_t seed() const { return seed_; }
+  void set_seed(const uint32_t seed) { seed_ = seed; }
 
-#ifdef RANDOM_COUNT
-  unsigned long Count1;
-  unsigned long Count2;
-#endif
+ private:
+  // Number of significant random bits produced by each draw.
+  static constexpr int kSignificantBits = 15;
 
- protected:
-  /*
-  **	Internal working constants that are used to generate the next
-  **	random number.
-  */
-  enum {
-    MULT_CONSTANT = 0x41C64E6D,  // K multiplier value.
-    ADD_CONSTANT = 0x00003039,   // K additive value.
-    THROW_AWAY_BITS = 10         // Low bits to throw away.
-  };
+  // Mask selecting the low kSignificantBits bits, i.e. the value range of a
+  // single draw ([0, kSignificantMask]).
+  static constexpr int kSignificantMask = (1 << kSignificantBits) - 1;
+
+  // Coefficients of the linear congruential recurrence (the classic ANSI-C
+  // constants). Changing these breaks multiplayer sync and saved games.
+  static constexpr uint32_t kMultiplier = 0x41C64E6D;
+  static constexpr uint32_t kAddend = 0x00003039;
+
+  // Number of low, least-random bits discarded from the seed on each draw.
+  static constexpr int kThrowAwayBits = 10;
+
+  // Generator state. Kept trivially copyable so it can be serialized directly.
+  uint32_t seed_;
 };
 
 #endif  // CNC_RED_ALERT_TECH_RANDOM_H_

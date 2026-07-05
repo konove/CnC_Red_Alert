@@ -73,7 +73,7 @@ class ScenarioClass {
   **	This is the source of the random numbers used in the game. This controls
   **	the game logic and thus must be in sync with any networked machines.
   */
-  RandomClass RandomNumber;
+  RandomClass sync_rng_;
 
   /*
   **	This is the difficulty setting of the game.

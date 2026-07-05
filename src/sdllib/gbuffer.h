@@ -121,8 +121,8 @@
 #define CNC_RED_ALERT_SDLLIB_GBUFFER_H_
 
 #include <cstdint>
-#include <cstdio>
 
+#include "absl/strings/str_cat.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/buffer.h"
 #include "sdllib/drawbuff.h"
@@ -148,8 +148,8 @@ enum GBC_Enum {
 /*		easier.
  */
 /*=========================================================================*/
-#define DEFAULT_SCREEN_WIDTH 320
-#define DEFAULT_SCREEN_HEIGHT 200
+inline constexpr int kDefaultScreenWidth = 320;
+constexpr int DEFAULT_SCREEN_HEIGHT = 200;
 
 /*=========================================================================*/
 /* Let the compiler know that a GraphicBufferClass exists so that it can
@@ -250,9 +250,9 @@ class GraphicViewPortClass {
              char* remap = nullptr);
   bool Scale(GraphicViewPortClass& dest, char* remap);
 
-  unsigned long Print(const char* string, int x_pixel, int y_pixel, int fcolor,
-                      int bcolor);
-  unsigned long Print(int num, int x_pixel, int y_pixel, int fcol, int bcol);
+  void Print(const char* string, int x_pixel, int y_pixel, int fcolor,
+             int bcolor);
+  void Print(int num, int x_pixel, int y_pixel, int fcolor, int bcolor);
 
   /*===================================================================*/
   /* Define the list of graphic functions which work only with a */
@@ -644,27 +644,18 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest,
                dest.Get_Height(), false, remap);
 }
 
-inline unsigned long GraphicViewPortClass::Print(const char* str, int x, int y,
-                                                 int fcol, int bcol) {
-  unsigned long return_code = 0;
-  if (Lock()) {
-    return_code = Buffer_Print(this, str, x, y, fcol, bcol);
+inline void GraphicViewPortClass::Print(const char* string, int x_pixel,
+                                        int y_pixel, int fcolor, int bcolor) {
+  if (!Lock()) {
+    return;
   }
+  Buffer_Print(this, string, x_pixel, y_pixel, fcolor, bcolor);
   Unlock();
-  return return_code;
 }
 
-inline unsigned long GraphicViewPortClass::Print(int num, int x, int y,
-                                                 int fcol, int bcol) {
-  char str[17];
-
-  unsigned long return_code = 0;
-  if (Lock()) {
-    snprintf(str, sizeof(str), "%i", num);
-    return_code = Buffer_Print(this, str, x, y, fcol, bcol);
-  }
-  Unlock();
-  return return_code;
+inline void GraphicViewPortClass::Print(int num, int x_pixel, int y_pixel,
+                                        int fcolor, int bcolor) {
+  Print(absl::StrCat(num).c_str(), x_pixel, y_pixel, fcolor, bcolor);
 }
 
 inline void GraphicViewPortClass::Draw_Stamp(const void* icondata, int icon,

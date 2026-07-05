@@ -307,7 +307,7 @@ void SidebarClass::Init_Clear() {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 void SidebarClass::Init_IO() {
-  void* oldfont;
+  const void* oldfont;
   int oldx;
   PowerClass::Init_IO();
 

@@ -260,7 +260,7 @@ int RandomStraw::Get(void* source, int slen) {
 
   int total = 0;
   while (slen > 0) {
-    *static_cast<char*>(source) = static_cast<char>(Random[Current++]);
+    *static_cast<char*>(source) = static_cast<char>(Random[Current++].Next());
     Current = Current % (sizeof(Random) / sizeof(Random[0]));
     source = static_cast<char*>(source) + sizeof(char);
     slen--;

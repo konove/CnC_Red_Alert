@@ -121,7 +121,7 @@ int IconListClass::Add_Item(
       int iWidthMax, iHeight;
       //	Stupid usage of globals for font stuff... <grumble>
       if (TextFlags == TPF_TYPE) {
-        void* pFontBefore = Set_Font(TypeFontPtr);
+        const void* pFontBefore = Set_Font(TypeFontPtr);
         DWORD FontXSpacingBefore = FontXSpacing;
         FontXSpacing = -2;
 

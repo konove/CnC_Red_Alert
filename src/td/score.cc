@@ -662,7 +662,8 @@ void ScoreClass::Presentation() {
   const void* redptr;
   CCFileClass file("HALLFAME.DAT");
   struct Fame hallfame[NUMFAMENAMES];
-  void *anim, *oldfont;
+  void* anim;
+  const void* oldfont;
   int oldfontxspacing = FontXSpacing;
   int house = PlayerPtr->Class->House;  // 0 or 1
   char inter_pal[15];
@@ -2091,7 +2092,8 @@ void Multi_Score_Presentation() {
                                            _orangepal, _greenpal, _graypal};
 
   int i, k;
-  void *oldfont, *anim;
+  void* anim;
+  const void* oldfont;
   int oldfontxspacing = FontXSpacing;
   const unsigned char* pal;
 

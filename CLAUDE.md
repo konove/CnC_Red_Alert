@@ -10,15 +10,14 @@ incrementally.
 JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2))
 ```
 
-| Target                 | Command                                                                              | Output                              |
-|------------------------|--------------------------------------------------------------------------------------|-------------------------------------|
-| Both games             | `cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS`                     | `build/ra/rasdl`, `build/td/tdsdl`  |
-| Red Alert only         | `cmake --build build --parallel $JOBS --target rasdl`                                | `build/ra/rasdl`                    |
-| Tiberian Dawn only     | `cmake --build build --parallel $JOBS --target tdsdl`                                | `build/td/tdsdl`                    |
-| Fast build (no checks) | `cmake -Bbuild -G Ninja -DSTRICT_CHECKS=OFF`                                         | Disables clang-tidy, IWYU, warnings |
-| With ASan              | `cmake -Bbuild -G Ninja -DENABLE_ASAN=ON`                                            | Memory debugging                    |
-| Header verification    | `cmake --build build --parallel $JOBS --target all_verify_interface_header_sets`     | Checks headers are self-contained   |
-| Clean rebuild          | `rm -rf build && cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS`     |                                     |
+| Target                 | Command                                                                          | Output                              |
+|------------------------|----------------------------------------------------------------------------------|-------------------------------------|
+| Both games             | `cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS`                 | `build/ra/rasdl`, `build/td/tdsdl`  |
+| Red Alert only         | `cmake --build build --parallel $JOBS --target rasdl`                            | `build/ra/rasdl`                    |
+| Tiberian Dawn only     | `cmake --build build --parallel $JOBS --target tdsdl`                            | `build/td/tdsdl`                    |
+| Fast build (no checks) | `cmake -Bbuild -G Ninja -DSTRICT_CHECKS=OFF`                                     | Disables clang-tidy, IWYU, warnings |
+| With ASan              | `cmake -Bbuild -G Ninja -DENABLE_ASAN=ON`                                        | Memory debugging                    |
+| Clean rebuild          | `rm -rf build && cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS` |                                     |
 
 ## Setup
 
@@ -32,45 +31,68 @@ JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2))
 sudo apt update
 sudo apt install libsdl2-dev clang-tidy ninja-build
 ```
-
+  
 **macOS:**
 
-```bash
-brew install sdl2 llvm ninja
-```
+  ```bash
+  brew install sdl2 llvm ninja
+  ```
 
 **Note:** If clang-tidy is not installed, either install it (above) or build with `-DSTRICT_CHECKS=OFF` to disable
 static analysis.
 
 ## Architecture
 
-```
-port/        → Portability layer (string utilities) [standalone]
+All source lives under `src/`:
+
+  ```
+  port/        → Portability layer (string utilities) [standalone]
+  base/        → Header-only utilities: types.h (base::ssize), algorithm.h, trig.h [standalone]
 sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil]
+winvq/       → VQA video codec (vqa32, vqm32, …; target name `vqa32`) [depends: port, SDL2]
 tech/        → Compression, encryption, Pipe/Straw pattern [depends: sdllib, port, vqa32]
-vqa32/       → VQA video codec [depends: port, SDL2]
-ra/          → Red Alert (~200 files) [uses: ALL libraries]
-td/          → Tiberian Dawn (~288 files) [uses: sdllib, vqa32, port only - NO tech]
+ra/          → Red Alert (~200 files) [depends: tech, sdllib, port, vqa32]
+td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, port, vqa32]
 ```
 
 **Class hierarchy:** `AbstractClass → ObjectClass → TechnoClass → FootClass → InfantryClass/AircraftClass/DriveClass`
 and `TechnoClass → BuildingClass`. Heavy virtual function usage.
 
-**Naming:** Classes end in `Class`, type definitions end in `Type` or `TypeClass`, enums often end in `Type`.
+**Naming (legacy convention):** Existing classes end in `Class`, type definitions end in `Type` or `TypeClass`, and
+enums often end in `Type`. This describes the original code — new code is not required to follow these suffixes (see
+[Naming](#naming) below).
 
 ## Code Style & Documentation
 
 **Follow [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)** (primary) and
 [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines). If they conflict, ask user.
 
+### Naming
+
+Use [Google C++ naming](https://google.github.io/styleguide/cppguide.html#Naming) for new and modernized code:
+
+| Entity                  | Style                               | Example                              |
+|-------------------------|-------------------------------------|--------------------------------------|
+| Functions               | `PascalCase`                        | `AttachObject()`, `DetachObject()`   |
+| Accessors / mutators    | named like the variable             | `attached_count()`, `set_count(int)` |
+| Variables (local/param) | `snake_case`                        | `cargo_hold`, `target_cell`          |
+| Class data members      | `snake_case_` (trailing underscore) | `attached_count_`, `cargo_hold_`     |
+| Constants               | `kPascalCase`                       | `kMaxPassengers`                     |
+| Classes / types         | `PascalCase`                        | `Cargo`, `RTTIType`                  |
+
+Legacy code uses `PascalCase` methods/members (`How_Many()`, `Quantity`) — leave it unless you are
+modernizing that code, then rename to the Google scheme. Do not mass-rename untouched legacy code.
+
 ### Includes
 
-Chromium-style paths relative to project root:
+Chromium-style paths relative to the `src/` include root (configured via
+`include_directories(${CMAKE_SOURCE_DIR}/src)`), so omit the `src/` prefix:
 
 ```cpp
 #include "ra/object.h"           // Correct
 #include "sdllib/include/gbuffer.h"
 #include "object.h"              // WRONG - no relative paths
+#include "src/ra/object.h"       // WRONG - src/ is the include root, don't repeat it
 ```
 
 ### New Files

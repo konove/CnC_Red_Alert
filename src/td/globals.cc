@@ -894,7 +894,7 @@ GraphicBufferClass HiddenPage;
 GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
 GraphicBufferClass ModeXBuff;
 GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
-GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, nullptr);
+GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, nullptr);
 int SoundOn;
 CountDownTimerClass FrameTimer{0L};
 CountDownTimerClass DebugTimer{0L};

@@ -1,6 +1,7 @@
 add_library(sdllib STATIC)
 
 file(GLOB_RECURSE SDLLIB_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cc")
+list(FILTER SDLLIB_SOURCES EXCLUDE REGEX "_test\\.cc$")
 
 file(GLOB_RECURSE SDLLIB_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 
@@ -16,6 +17,14 @@ target_sources(sdllib PUBLIC
 
 find_package(SDL2 REQUIRED)
 target_link_libraries(sdllib SDL2::SDL2 absl::check absl::log absl::strings)
+
+# Tests
+include(Testing)
+add_gtest(
+        NAME sdllib_test
+        SOURCES font_test.cc
+        LIBS sdllib
+)
 
 # optional serial port support
 find_library(LIBSERIALPORT_LIBRARIES serialport)

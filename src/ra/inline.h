@@ -889,7 +889,7 @@ inline const char* Text_String(int index) {
  *=============================================================================================*/
 template <class T>
 T Random_Pick(T a, T b) {
-  return T(Scen.RandomNumber(static_cast<int>(a), static_cast<int>(b)));
+  return T(Scen.sync_rng_.InRange(static_cast<int>(a), static_cast<int>(b)));
 };
 
 /***********************************************************************************************
@@ -912,7 +912,7 @@ T Random_Pick(T a, T b) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline bool Percent_Chance(int percent) {
-  return Scen.RandomNumber(0, 99) < percent;
+  return Scen.sync_rng_.InRange(0, 99) < percent;
 }
 
 /***********************************************************************************************
@@ -937,7 +937,7 @@ inline bool Percent_Chance(int percent) {
  *=============================================================================================*/
 template <class T>
 T Sim_Random_Pick(T a, T b) {
-  return T(NonCriticalRandomNumber(static_cast<int>(a), static_cast<int>(b)));
+  return T(local_rng.InRange(static_cast<int>(a), static_cast<int>(b)));
 };
 
 /***********************************************************************************************
@@ -961,7 +961,7 @@ T Sim_Random_Pick(T a, T b) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline bool Sim_Percent_Chance(int percent) {
-  return NonCriticalRandomNumber(0, 99) < percent;
+  return local_rng.InRange(0, 99) < percent;
 }
 
 /***********************************************************************************************

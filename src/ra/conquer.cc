@@ -3982,7 +3982,7 @@ typedef enum {
 bool Force_CD_Available(int cd_desired)  //	ajw
 {
   static int _last = -1;
-  static void* font;
+  static const void* font;
 #ifdef FRENCH
   static const char* _cd_name[] = {
       "ALERTE ROUGE CD1",   "ALERTE ROUGE CD2", "CD Missions Taiga",
@@ -4194,7 +4194,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
       GraphicViewPortClass* oldpage = Set_Logic_Page(SeenBuff);
       Theme.Stop();
       int hidden = Get_Mouse_State();
-      font = (void*)FontPtr;
+      font = FontPtr;
 
       /*
       **	Only set the palette if necessary.

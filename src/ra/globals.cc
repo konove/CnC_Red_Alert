@@ -264,7 +264,7 @@ fixed EngineerCaptureLevel(
 
 unsigned short Hard_Error_Occured = 0;
 WWMouseClass* WWMouse = nullptr;
-GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, nullptr);
+GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, nullptr);
 int ScreenWidth = 640;
 int ScreenHeight = 400;
 GraphicBufferClass ModeXBuff;
@@ -344,11 +344,11 @@ RemapControlType MetalScheme;
 */
 RemapControlType GreyScheme;
 
-/***************************************************************************
-**	This is the source of the random numbers used in the game. This controls
-**	the game logic and thus must be in sync with any networked machines.
-*/
-RandomClass NonCriticalRandomNumber;
+// Source of random numbers for events that must NOT affect game logic, such as
+// cosmetic animations and one-machine-only effects. Because it never influences
+// the simulation, it does not need to stay in sync across networked machines.
+// For sync-critical randomness use Scen.sync_rng_.
+RandomClass local_rng;
 RandomStraw CryptRandom;
 
 /***************************************************************************

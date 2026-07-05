@@ -5,6 +5,7 @@
 #include <SDL_stdinc.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 
@@ -12,9 +13,9 @@
 #include "sdllib/memflag.h"
 #include "sdllib/wwstd.h"
 
-// original code has 5 for windows, 4 for dos
-// effectively one less as one is used to track streaming from disk
-#define MAX_SFX 4
+// Windows original had 5 slots; DOS had 4. One slot was reserved for disk
+// streaming, leaving 4 usable slots on both platforms.
+constexpr int kMaxSfx = 4;
 
 enum SCompressType : uint8_t {
   SCOMP_NONE = 0,      // No compression -- raw data.
@@ -64,7 +65,8 @@ struct ChannelState {
   int priority = 0;
   int16_t volume = 32767;
 
-  int raw_volume;  // input local * global vol
+  int local_volume = 255;  // per-sound volume [0, 255], set at play time
+  int raw_volume;          // local_volume * ScoreVolume
   int fade = 0;
 
   uint8_t channels = 0;
@@ -81,11 +83,13 @@ struct ChannelState {
   SCompressType compression = SCOMP_NONE;
   int8_t step = 0;
   int16_t predictor = 0;
-} Channels[MAX_SFX];
+};
 
-static int Calculate_Volume(int vol) {
-  // TODO: improve?
-  return vol * 32767 / (255 * 255);
+static ChannelState Channels[kMaxSfx];
+
+static int ToMixerAmplitude(const int raw_volume) {
+  const float normalized = static_cast<float>(raw_volume) / (255.0f * 255.0f);
+  return static_cast<int>(powf(normalized, 2.0f) * 32767.0f);
 }
 
 static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
@@ -320,7 +324,7 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
         chan.playing = false;
         break;
       }
-      chan.volume = Calculate_Volume(chan.raw_volume);
+      chan.volume = ToMixerAmplitude(chan.raw_volume);
     }
 
     int stream_len = SDL_AudioStreamGet(chan.stream, MixBuffer, len);
@@ -335,7 +339,7 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
 
 int File_Stream_Sample_Vol(const char* filename, int volume,
                            bool /*real_time_start*/) {
-  int id = Get_Free_Sample_Handle(0xFF);
+  int id = AcquireSampleHandle(0xFF);
 
   if (id == -1) {
     return -1;
@@ -372,8 +376,9 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
   chan.sample = nullptr;
   chan.playing = true;
   chan.priority = 0xFF;
+  chan.local_volume = volume;
   chan.raw_volume = volume * ScoreVolume;
-  chan.volume = Calculate_Volume(chan.raw_volume);
+  chan.volume = ToMixerAmplitude(chan.raw_volume);
   chan.fade = 0;
 
   ResetStream(chan, &header);
@@ -492,7 +497,7 @@ void Sound_End() {
 }
 
 void Stop_Sample(int handle) {
-  if (handle < 0 || handle >= MAX_SFX) {
+  if (handle < 0 || handle >= kMaxSfx) {
     return;
   }
 
@@ -516,7 +521,7 @@ bool Sample_Status(int handle) {
 }
 
 bool Is_Sample_Playing(const void* sample) {
-  for (int i = 0; i < MAX_SFX; i++) {
+  for (int i = 0; i < kMaxSfx; i++) {
     if (Channels[i].sample == sample && Sample_Status(i)) {
       return true;
     }
@@ -526,7 +531,7 @@ bool Is_Sample_Playing(const void* sample) {
 }
 
 void Stop_Sample_Playing(const void* sample) {
-  for (int i = 0; i < MAX_SFX; i++) {
+  for (int i = 0; i < kMaxSfx; i++) {
     if (Channels[i].sample == sample) {
       Stop_Sample(i);
     }
@@ -536,7 +541,7 @@ void Stop_Sample_Playing(const void* sample) {
 int Play_Sample(const void* sample, int priority, int volume,
                 signed short panloc) {
   return Play_Sample_Handle(sample, priority, volume, panloc,
-                            Get_Free_Sample_Handle(priority));
+                            AcquireSampleHandle(priority));
 }
 
 int Play_Sample_Handle(const void* sample, int priority, int volume,
@@ -569,8 +574,9 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
   chan.sample = sample;
   chan.playing = true;
   chan.priority = priority;
+  chan.local_volume = volume;
   chan.raw_volume = volume * 255;
-  chan.volume = Calculate_Volume(chan.raw_volume);
+  chan.volume = ToMixerAmplitude(chan.raw_volume);
   chan.fade = 0;
 
   ResetStream(chan, header);
@@ -602,12 +608,8 @@ int Set_Score_Vol(int volume) {
   for (auto& chan : Channels) {
     if (chan.playing && !chan.in_ptr)  // score is a file stream
     {
-      if (ScoreVolume) {
-        chan.raw_volume = chan.raw_volume / old * ScoreVolume;
-        chan.volume = Calculate_Volume(chan.raw_volume);
-      } else {
-        chan.playing = false;
-      }
+      chan.raw_volume = chan.local_volume * ScoreVolume;
+      chan.volume = ToMixerAmplitude(chan.raw_volume);
     }
   }
 
@@ -628,36 +630,26 @@ void Fade_Sample(int handle, int ticks) {
   }
 }
 
-int Get_Free_Sample_Handle(int priority) {
-  // find free channel
-  int id;
-  for (id = MAX_SFX - 1; id >= 0; id--) {
-    if (!Channels[id].playing) {
-      break;
+int AcquireSampleHandle(const int priority) {
+  for (int i = kMaxSfx - 1; i >= 0; i--) {
+    if (!Channels[i].playing) {
+      return i;
     }
   }
 
-  if (id < 0) {
-    // look for lower priority channel instead
-    for (id = 0; id < MAX_SFX; id++) {
-      if (Channels[id].priority < priority) {
-        break;
-      }
+  // All channels busy; evict the first with lower priority.
+  for (int i = 0; i < kMaxSfx; i++) {
+    if (Channels[i].priority < priority) {
+      Stop_Sample(i);
+      return i;
     }
-
-    // no channel found, give up
-    if (id == MAX_SFX) {
-      return -1;
-    }
-
-    Stop_Sample(id);
   }
 
-  return id;
+  return -1;
 }
 
 int Get_Digi_Handle() {
-  // used to check if audio is initialised
+  // used to check if audio is initialized
   return AudioDevice ? 1 : -1;
 }
 

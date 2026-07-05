@@ -1218,7 +1218,7 @@ void Map_Selection() {
  *=========================================================================*/
 void Print_Statistics(int country, int xpos, int ypos) {
   int index, newx;
-  void* oldfont;
+  const void* oldfont;
   static const int _gdistatnames[] = {
       TXT_MAP_GDISTAT0, TXT_MAP_GDISTAT1, TXT_MAP_GDISTAT2, TXT_MAP_GDISTAT3,
       TXT_MAP_GDISTAT4, TXT_MAP_GDISTAT5, TXT_MAP_GDISTAT6};

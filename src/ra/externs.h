@@ -157,7 +157,7 @@ extern PKey SlowKey;
 extern RulesClass Rule;
 extern KeyboardClass* Keyboard;
 extern RandomStraw CryptRandom;
-extern RandomClass NonCriticalRandomNumber;
+extern RandomClass local_rng;
 extern CarryoverClass* Carryover;
 extern ScenarioClass Scen;
 extern RemapControlType ColorRemaps[PCOLOR_COUNT];

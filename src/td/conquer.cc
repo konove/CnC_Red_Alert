@@ -3469,8 +3469,8 @@ bool Force_CD_Available(int cd) {
   static int _last = -1;
 #endif
   static char _palette[768];
-  static char _hold[256];
-  static void* font;
+  static char _hold[16];  // Saved copy of the font palette (FontPalette).
+  static const void* font;
   static char* _volid[] = {"GDI", "NOD", "COVERT"};
 
   int new_cd_drive = 0;
@@ -3598,9 +3598,9 @@ bool Force_CD_Available(int cd) {
       theme_playing = Theme.What_Is_Playing();
       Theme.Stop();
       int hidden = Get_Mouse_State();
-      font = (void*)FontPtr;
+      font = FontPtr;
       Mem_Copy(CurrentPalette, _palette, 768);
-      Mem_Copy(Get_Font_Palette_Ptr(), _hold, 256);
+      Mem_Copy(Get_Font_Palette_Ptr(), _hold, sizeof(_hold));
 
       /*
       **	Only set the palette if necessary.
@@ -3631,7 +3631,7 @@ bool Force_CD_Available(int cd) {
       }
       Set_Palette(_palette);
       Set_Font(font);
-      Mem_Copy(_hold, Get_Font_Palette_Ptr(), 256);
+      Mem_Copy(_hold, Get_Font_Palette_Ptr(), sizeof(_hold));
       Set_Logic_Page(oldpage);
       InMainLoop = old_in_main_loop;
     }

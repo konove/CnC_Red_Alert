@@ -352,7 +352,7 @@ std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
 
 template <class T>
 std::span<const std::byte> MixFileClass<T>::RetrieveData(
-    std::string_view filename) {
+    const std::string_view filename) {
   auto loc = Offset(filename);
   return loc ? loc->data : std::span<const std::byte>{};
 }

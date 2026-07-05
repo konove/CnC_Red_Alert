@@ -529,151 +529,131 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
   return true;
 }
 
-long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
+void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
                   int bcolor) {
-  auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
-
-  if (!str) {
-    return 0;
+  if (!str || !FontPtr) {
+    return;
   }
 
-  int start_x = x;
-  auto* font = (uint8_t*)FontPtr;  // this could use a struct
+  auto* viewport = static_cast<GraphicViewPortClass*>(thisptr);
+  const FontView font(FontPtr);
 
-  int vpheight = vp_dst->Get_Height();
-  int vpwidth = vp_dst->Get_Width();
-  int bufferwidth = vpwidth + vp_dst->Get_XAdd() + vp_dst->Get_Pitch();
-  auto* curline = vp_dst->Get_Offset() + bufferwidth * y;
+  const int start_x = x;
+  const int viewport_width = viewport->Get_Width();
+  const int viewport_height = viewport->Get_Height();
+  const int buffer_stride =
+      viewport_width + viewport->Get_XAdd() + viewport->Get_Pitch();
+  uint8_t* line_start = viewport->Get_Offset() + buffer_stride * y;
 
-  if (!FontPtr) {
-    return 0;
+  const int max_glyph_height = font.MaxHeight();
+  y += max_glyph_height;
+  if (y > viewport_height) {
+    return;
   }
 
-  uint16_t infoblock_off = *(uint16_t*)(font + FONTINFOBLOCK);
-  uint16_t offsetblock_off = *(uint16_t*)(font + FONTOFFSETBLOCK);
-  uint16_t widthblock_off = *(uint16_t*)(font + FONTWIDTHBLOCK);
-  uint16_t heightblock_off = *(uint16_t*)(font + FONTHEIGHTBLOCK);
+  // Glyph pixels are palette indices into FontPalette: entry 0 is the
+  // background (0 also means transparent) and entry 1 the foreground;
+  // multi-colour fonts fill entries 2-15 via Set_Font_Palette_Range().
+  const uint8_t background = static_cast<uint8_t>(bcolor);
+  FontPalette[1] = static_cast<uint8_t>(fcolor);
+  FontPalette[0] = background;
 
-  uint8_t* infoblock = font + infoblock_off;
-  uint16_t* offsetblock = (uint16_t*)(font + offsetblock_off);
-  uint8_t* widthblock = font + widthblock_off;
-  uint16_t* heightblock = (uint16_t*)(font + heightblock_off);
+  uint8_t* next_glyph_start = line_start + x;
 
-  uint8_t maxheight = infoblock[FONTINFOMAXHEIGHT];
-  y = maxheight + y;
-  if (y > vpheight) {
-    return 0;
-  }
-
-  // setup colours
-  ColorXlat[1] = fcolor;
-  ColorXlat[16] = fcolor;
-  ColorXlat[0] = bcolor;
-
-  auto* next_ptr = curline + x;
-
-  do {
-    auto* startdraw = next_ptr;
-
-    char ch = *str++;
-    if (!ch) {
-      return (long)startdraw;
+  while (true) {
+    // Unsigned so characters >= 128 index the metric tables correctly.
+    const uint8_t ch = static_cast<uint8_t>(*str++);
+    if (ch == '\0') {
+      return;
     }
 
+    uint8_t* draw_ptr = next_glyph_start;
+    const int glyph_width = font.GlyphWidth(ch);
+
     if (ch == '\n' || ch == '\r' ||
-        x + widthblock[ch] + FontXSpacing > vpwidth) {
-      // newline
-      int line_height = maxheight + FontYSpacing;
-
-      // check bounds
-      if (vpheight < y + line_height) {
-        break;
+        x + glyph_width + FontXSpacing > viewport_width) {
+      // Advance to the next line: '\n' returns to the viewport edge, '\r'
+      // and auto-wrap return to the starting column.
+      const int line_height = max_glyph_height + FontYSpacing;
+      if (viewport_height < y + line_height) {
+        return;  // No room for another line.
       }
 
-      curline += bufferwidth * line_height;
-      y = y + line_height;
-      x = 0;
-      if (ch != '\n') {
-        x = start_x;
-      }
-      next_ptr = curline + x;
+      line_start += buffer_stride * line_height;
+      y += line_height;
+      x = ch == '\n' ? 0 : start_x;
+      next_glyph_start = line_start + x;
 
       if (ch == '\n' || ch == '\r') {
         continue;
       }
+      draw_ptr = next_glyph_start;  // The wrapped glyph draws on the new line.
     }
 
-    int char_w = widthblock[ch];
-    x += char_w + FontXSpacing;
-    next_ptr = startdraw + FontXSpacing + char_w;
+    x += glyph_width + FontXSpacing;
+    next_glyph_start = draw_ptr + FontXSpacing + glyph_width;
 
-    int nextdraw = bufferwidth - char_w;
-    int char_offset = offsetblock[ch];
-    int height_val = heightblock[ch];
-    int charheight = height_val >> 8;
-    int topblank = height_val & 0xFF;
-    int bottomblank = maxheight - (charheight + topblank);
+    // Distance from the end of a glyph row to the start of the next one.
+    const int row_skip = buffer_stride - glyph_width;
+    const int glyph_height = font.GlyphHeight(ch);
+    const int blank_rows_above = font.GlyphBlankRowsAbove(ch);
+    const int blank_rows_below =
+        max_glyph_height - (glyph_height + blank_rows_above);
 
-    // top blank area
-    if (topblank != 0) {
-      if (ColorXlat[0] == 0) {  // transparent
-        startdraw = startdraw + topblank * bufferwidth;
+    // Fill the blank rows above the glyph, or skip them if transparent.
+    if (blank_rows_above != 0) {
+      if (background == 0) {
+        draw_ptr += blank_rows_above * buffer_stride;
       } else {
-        do {
-          int x_count = char_w;
-          do {
-            *startdraw++ = ColorXlat[0];
-          } while (--x_count);
-
-          startdraw += nextdraw;
-        } while (--topblank);
+        for (int row = 0; row < blank_rows_above; ++row) {
+          for (int col = 0; col < glyph_width; ++col) {
+            *draw_ptr++ = background;
+          }
+          draw_ptr += row_skip;
+        }
       }
     }
 
-    // draw char
-    int y_count = charheight;
-    auto* char_data = font + char_offset;
-    if (y_count != 0) {
-      do {
-        int x_count = char_w;
-        do {
-          uint8_t b = *char_data++;
-          int col = ColorXlat[b & 0xF];
-          if (col != 0) {
-            *startdraw = col;
+    if (glyph_height != 0) {
+      // Each glyph byte packs two 4-bit palette indices, low nibble first.
+      // Index 0 is transparent unless a background color is set, in which
+      // case FontPalette[0] already paints it.
+      const uint8_t* glyph_data = font.GlyphData(ch);
+      for (int row = 0; row < glyph_height; ++row) {
+        int cols_left = glyph_width;
+        while (cols_left > 0) {
+          const uint8_t pixel_pair = *glyph_data++;
+
+          const uint8_t left = FontPalette[pixel_pair & 0x0F];
+          if (left != 0) {
+            *draw_ptr = left;
           }
+          ++draw_ptr;
+          --cols_left;
 
-          startdraw++;
-          x_count--;
-
-          if (x_count) {
-            int col = ColorXlat[b & 0xF0];
-            if (col != 0) {
-              *startdraw = col;
+          if (cols_left > 0) {
+            const uint8_t right = FontPalette[(pixel_pair & 0xF0) >> 4];
+            if (right != 0) {
+              *draw_ptr = right;
             }
-
-            startdraw++;
-            x_count--;
+            ++draw_ptr;
+            --cols_left;
           }
-        } while (x_count);
+        }
+        draw_ptr += row_skip;
+      }
 
-        startdraw = startdraw + nextdraw;
-      } while (--y_count);
-
-      if (bottomblank && ColorXlat[0] != 0) {
-        do {
-          int x_count = char_w;
-          do {
-            *startdraw++ = ColorXlat[0];
-          } while (--x_count);
-
-          startdraw += nextdraw;
-        } while (--bottomblank);
+      // Fill the blank rows below the glyph unless transparent.
+      if (blank_rows_below != 0 && background != 0) {
+        for (int row = 0; row < blank_rows_below; ++row) {
+          for (int col = 0; col < glyph_width; ++col) {
+            *draw_ptr++ = background;
+          }
+          draw_ptr += row_skip;
+        }
       }
     }
-  } while (true);
-
-  return 0;
+  }
 }
 
 void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
