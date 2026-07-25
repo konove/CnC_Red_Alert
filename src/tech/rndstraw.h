@@ -85,7 +85,7 @@ class RandomStraw : public Straw {
   *seed *	in order to be reasonably secure, however, using 1024 bits would
   *be best.
   */
-  RandomClass Random[32] = {};
+  RandomClass Random[32];
 
   void Scramble_Seed();
 };
