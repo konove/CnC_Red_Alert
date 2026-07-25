@@ -118,6 +118,7 @@
 #include "ra/language.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
+#include "ra/mission_id.h"
 #include "ra/monoc.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -185,8 +186,6 @@ extern bool Spawn_WChat(bool can_launch);
 
 void Enable_Secret_Units();
 
-extern bool Is_Mission_Aftermath(char* file_name);
-extern bool Is_Mission_Counterstrike(char* file_name);
 extern void Do_Draw();
 
 bool bNoMovies = false;
@@ -4612,10 +4611,10 @@ void Enable_Secret_Units() {
 bool Force_Scenario_Available(const char* szName) {
   // Calls Force_CD_Available based on type of scenario. szName is assumed to
   // be an official scenario here.
-  if (Is_Mission_Counterstrike((char*)szName)) {
+  if (IsMissionCounterstrike(szName)) {
     return Force_CD_Available(4);
   }
-  if (Is_Mission_Aftermath((char*)szName)) {
+  if (IsMissionAftermath(szName)) {
     return Force_CD_Available(3);
   }
   return true;

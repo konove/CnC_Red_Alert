@@ -67,6 +67,7 @@
 #include "ra/init.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/mission_id.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
 #include "ra/profile.h"
@@ -90,8 +91,6 @@ int Read_Game_Options();
 #endif
 
 extern bool Is_Mission_126x126(char* file_name);
-extern bool Is_Mission_Aftermath(char* file_name);
-extern bool Is_Mission_Counterstrike(char* file_name);
 
 /***************************************************************************
 ** Internet specific globals
@@ -370,19 +369,19 @@ int Read_Game_Options(char* name) {
     if (Session.Options.ScenarioIndex == -1) {
       // WWDebugString ("RA95I - Session.Options.ScenarioIndex == -1\n");
       if ((Expansion_CS_Present() &&
-           Is_Mission_Counterstrike(Session.ScenarioFileName)) ||
+           IsMissionCounterstrike(Session.ScenarioFileName)) ||
           (Expansion_AM_Present() &&
-           Is_Mission_Aftermath(Session.ScenarioFileName))) {
+           IsMissionAftermath(Session.ScenarioFileName))) {
         int current_drive = CCFileClass::Get_CD_Drive();
         int index = Get_CD_Index(current_drive, 1 * 60);
         bool needcd = false;
-        if (Is_Mission_Counterstrike(Session.ScenarioFileName)) {
+        if (IsMissionCounterstrike(Session.ScenarioFileName)) {
           if (index != 2 && index != 3) {
             RequiredCD = 2;
             needcd = true;
           }
         }
-        if (Is_Mission_Aftermath(Session.ScenarioFileName)) {
+        if (IsMissionAftermath(Session.ScenarioFileName)) {
           if (index != 3) {
             RequiredCD = 3;
             needcd = true;

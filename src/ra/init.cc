@@ -106,6 +106,7 @@
 #include "ra/logic.h"
 #include "ra/mapedit.h"
 #include "ra/menus.h"
+#include "ra/mission_id.h"
 #include "ra/monoc.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -198,8 +199,6 @@ extern WolapiObject* pWolapi;
 #endif
 
 bool Expansion_Dialog(bool bCounterstrike);
-
-extern bool Is_Mission_Counterstrike(char* file_name);
 
 /***********************************************************************************************
  * Load_Prolog_Page -- Loads the special pre-prolog "please wait" page. *
@@ -879,7 +878,7 @@ bool Select_Game(bool /*fade*/) {
                   // aftermath units require AM CD.
                   bAftermathMultiplayer =
                       Is_Aftermath_Installed() &&
-                      !Is_Mission_Counterstrike(Scen.ScenarioName);
+                      !IsMissionCounterstrike(Scen.ScenarioName);
                   //	ajw I'll bet this was needed before also...
                   Session.ScenarioIsOfficial =
                       Session.Scenarios[Session.Options.ScenarioIndex]

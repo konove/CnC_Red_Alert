@@ -86,6 +86,7 @@
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
+#include "ra/mission_id.h"
 #include "ra/monoc.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -111,21 +112,19 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
+#include "sdllib/modemreg.h"
 #include "sdllib/timer.h"
+#include "sdllib/wincomm.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-#include "sdllib/modemreg.h"
-#include "sdllib/wincomm.h"
 
 ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 
 extern bool Is_Mission_126x126(char* file_name);
-extern bool Is_Mission_Counterstrike(char* file_name);
-extern bool Is_Mission_Aftermath(char* file_name);
 
 // #include "WolDebug.h"
 
@@ -3164,11 +3163,9 @@ int Com_Scenario_Dialog(bool skirmish) {
       if (!strcmp(Session.Scenarios[i]->Description(), EngMisStr[j])) {
         // ajw Added Aftermath installed checks (before, it was
         // assumed). Add mission if it's available to us.
-        if ((!Is_Mission_Counterstrike(
-                 (char*)Session.Scenarios[i]->Get_Filename()) ||
+        if ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
              Is_Counterstrike_Installed()) &&
-            (!Is_Mission_Aftermath(
-                 (char*)Session.Scenarios[i]->Get_Filename()) ||
+            (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
              Is_Aftermath_Installed())) {
 #if defined(GERMAN) || defined(FRENCH)
           scenariolist.Add_Item(EngMisStr[j + 1]);
@@ -3184,11 +3181,9 @@ int Com_Scenario_Dialog(bool skirmish) {
       // assumed). Added officialness check. Add mission if
       // it's available to us.
       if (!Session.Scenarios[i]->Get_Official() ||
-          ((!Is_Mission_Counterstrike(
-                (char*)Session.Scenarios[i]->Get_Filename()) ||
+          ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
             Is_Counterstrike_Installed()) &&
-           (!Is_Mission_Aftermath(
-                (char*)Session.Scenarios[i]->Get_Filename()) ||
+           (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
             Is_Aftermath_Installed()))) {
         scenariolist.Add_Item(Session.Scenarios[i]->Description());
       }
@@ -4556,8 +4551,7 @@ bool Find_Local_Scenario(char* description, char* filename, unsigned int length,
           ** If this is an aftermath scenario then ignore the digest and return
           *success.
           */
-          if (Is_Mission_Aftermath(
-                  (char*)Session.Scenarios[index]->Get_Filename())) {
+          if (IsMissionAftermath(Session.Scenarios[index]->Get_Filename())) {
             // debugprint("a 1match!\n");
             port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
                            _MAX_FNAME + _MAX_EXT + 1);
@@ -5837,21 +5831,21 @@ int Com_Show_Scenario_Dialog() {
 
               if (Session.ScenarioIsOfficial &&
                   ((Expansion_CS_Present() &&
-                    Is_Mission_Counterstrike(Session.ScenarioFileName)) ||
+                    IsMissionCounterstrike(Session.ScenarioFileName)) ||
                    (Expansion_AM_Present() &&
-                    Is_Mission_Aftermath(Session.ScenarioFileName)))) {
+                    IsMissionAftermath(Session.ScenarioFileName)))) {
                 CCFileClass check_file(Session.ScenarioFileName);
                 if (!check_file.Is_Available()) {
                   int current_drive = CCFileClass::Get_CD_Drive();
                   int index = Get_CD_Index(current_drive, 1 * 60);
                   bool needcd = false;
-                  if (Is_Mission_Counterstrike(Session.ScenarioFileName)) {
+                  if (IsMissionCounterstrike(Session.ScenarioFileName)) {
                     if (index != 2 && index != 3) {
                       RequiredCD = 2;
                       needcd = true;
                     }
                   }
-                  if (Is_Mission_Aftermath(Session.ScenarioFileName)) {
+                  if (IsMissionAftermath(Session.ScenarioFileName)) {
                     if (index != 3) {
                       RequiredCD = 3;
                       needcd = true;

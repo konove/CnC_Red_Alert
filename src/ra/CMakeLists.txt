@@ -3,6 +3,7 @@ add_executable(rasdl WIN32)
 file(GLOB_RECURSE RA_SOURCES
         CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cc"
 )
+list(FILTER RA_SOURCES EXCLUDE REGEX "_test\\.cc$")
 list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/adpcm.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/alloc.cc"
@@ -117,6 +118,14 @@ target_link_libraries(rasdl PUBLIC absl::strings PRIVATE
         absl::statusor) # mpgdll wwipx32
 
 install(TARGETS rasdl)
+
+# Tests
+include(Testing)
+add_gtest(
+    NAME ra_mission_id_test
+    SOURCES mission_id_test.cc mission_id.cc
+    LIBS absl::strings
+)
 
 if (EMSCRIPTEN)
     set_target_properties(rasdl PROPERTIES

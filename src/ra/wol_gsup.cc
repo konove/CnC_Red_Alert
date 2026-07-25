@@ -20,6 +20,7 @@
 
 #include "port/ex_string.h"
 #include "ra/externs.h"
+#include "ra/mission_id.h"
 #include "ra/session.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
@@ -39,8 +40,6 @@
 extern const char* EngMisStr[];
 
 bool Is_Mission_126x126(char* file_name);
-bool Is_Mission_Aftermath(char* file_name);
-bool Is_Mission_Counterstrike(char* file_name);
 
 bool Force_Scenario_Available(const char* szName);
 
@@ -657,14 +656,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 #endif
         //	Place scenario name in a specific scenario list.
         if (pMMission->Get_Official()) {
-          if (Is_Mission_Counterstrike(
-                  (char*)(Session.Scenarios[i]->Get_Filename()))) {
+          if (IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename())) {
             //					debugprint( " ----------------
             // Adding scenario %s as CS\n", szScenarioNameShow );
             ar_szScenarios[SCENARIO_CS].Add(szScenarioNameShow);
             ar_szScenIndexes[SCENARIO_CS].Add((void*)i);
-          } else if (Is_Mission_Aftermath(
-                         (char*)(Session.Scenarios[i]->Get_Filename()))) {
+          } else if (IsMissionAftermath(
+                         (Session.Scenarios[i]->Get_Filename()))) {
             //					debugprint( " ----------------
             // Adding scenario %s as AM\n", szScenarioNameShow ); 	If this
             // is not an Aftermath game channel, we must filter out any AM maps
@@ -1189,9 +1187,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           const char* pDIB;
 
           if (bOfficial) {
-            if (Is_Mission_Counterstrike(szScenarioFileName)) {
+            if (IsMissionCounterstrike(szScenarioFileName)) {
               pDIB = pWO->OldRAGameTypeInfos[1].pDIB;
-            } else if (Is_Mission_Aftermath(szScenarioFileName)) {
+            } else if (IsMissionAftermath(szScenarioFileName)) {
               pDIB = pWO->OldRAGameTypeInfos[2].pDIB;
             } else {
               pDIB = pWO->OldRAGameTypeInfos[0].pDIB;

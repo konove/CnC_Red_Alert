@@ -114,6 +114,7 @@
 #include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mapsel.h"
+#include "ra/mission_id.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
@@ -168,9 +169,6 @@ static int _build_tech[11] = {
 #if defined(ENGLISH) || defined(GERMAN)
 // #define TXT_HACKHACK Text_String(TXT_ACCOMPLISHED)
 #endif
-
-bool Is_Mission_Counterstrike(char* file_name);
-bool Is_Mission_Aftermath(char* file_name);
 
 /***********************************************************************************************
  * ScenarioClass::ScenarioClass -- Constructor for the scenario control object.
@@ -1945,14 +1943,14 @@ bool Read_Scenario_INI(char* fname, bool) {
         // the Aftermath CD is already in the drive, in which case, leave it
         // there. Note, this works because this section only tests for
         // multiplayer scenarios.
-        if (Is_Mission_Counterstrike(Scen.ScenarioName)) {
+        if (IsMissionCounterstrike(Scen.ScenarioName)) {
           RequiredCD = 2;
           if (Is_Aftermath_Installed() ||
               Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60) == 3) {
             RequiredCD = 3;
           }
         }
-        if (Is_Mission_Aftermath(Scen.ScenarioName)) {
+        if (IsMissionAftermath(Scen.ScenarioName)) {
           RequiredCD = 3;
         }
       } else {

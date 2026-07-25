@@ -60,6 +60,7 @@
 #include "ra/ipxaddr.h"
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
+#include "ra/mission_id.h"
 #include "ra/nullmgr.h"
 #include "ra/palette.h"
 #include "ra/session.h"
@@ -76,9 +77,6 @@
 
 bool Receive_Remote_File(char* file_name, unsigned int file_length,
                          int gametype);
-
-extern bool Is_Mission_Counterstrike(char* file_name);
-extern bool Is_Mission_Aftermath(char* file_name);
 
 #define RESPONSE_TIMEOUT 60 * 60
 
@@ -622,8 +620,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
     strncpy(file_info.ScenarioInfo.ShortFileName, file_name,
             sizeof(file_info.ScenarioInfo.ShortFileName));
     //	If we're sending an official map, always send it to 'download.tmp'.
-    if (Is_Mission_Counterstrike(file_name) ||
-        Is_Mission_Aftermath(file_name)) {
+    if (IsMissionCounterstrike(file_name) || IsMissionAftermath(file_name)) {
       strncpy(file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP",
               sizeof(file_info.ScenarioInfo.ShortFileName));
     }
@@ -638,8 +635,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
             sizeof(net_file_info.ScenarioInfo.ShortFileName));
     //		debugprint( "Uploading '%s'\n", file_name );
     //	If we're sending an official map, always send it to 'download.tmp'.
-    if (Is_Mission_Counterstrike(file_name) ||
-        Is_Mission_Aftermath(file_name)) {
+    if (IsMissionCounterstrike(file_name) || IsMissionAftermath(file_name)) {
       strncpy(net_file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP",
               sizeof(net_file_info.ScenarioInfo.ShortFileName));
     }

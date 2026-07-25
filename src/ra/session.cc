@@ -57,7 +57,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <regex>
 
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -76,6 +75,7 @@
 #include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
+#include "ra/mission_id.h"
 #include "ra/queue.h"
 #include "ra/unit.h"
 #include "ra/vector.h"
@@ -1200,31 +1200,6 @@ void SessionClass::Write_MultiPlayer_Settings() {
   }
 }
 
-// Determine if a mission is from counterstrike or aftermath, or either.
-// Multiplayer maps >24, with a numerical name, are Counterstrike.
-// Multiplayer maps with an alphabetical name, like SCMJGEA.INI, are Aftermath.
-
-bool Is_Mission_Counterstrike(char* file_name) {
-  int scenario_number = 0;
-
-  if (isdigit(file_name[5])) {
-    sscanf(file_name, "SCM%03d", &scenario_number);
-  } else {
-    if (!isdigit(file_name[3]) || !isdigit(file_name[4])) {
-      return false;
-    }
-    sscanf(file_name, "SCM%02d", &scenario_number);
-  }
-  return scenario_number > 24;
-}
-
-bool Is_Mission_Aftermath(char* file_name) {
-  // Matches "scm" + 2 digits + non-digit, or "scm" + non-digit pattern
-  static const std::regex aftermath_pattern(R"(^scm(\d\d\D|\D))",
-                                            std::regex::icase);
-  return std::regex_search(file_name, aftermath_pattern);
-}
-
 /*
 ** Certain missions are 126x126 size, and those can't be downloaded to a
 ** non-Aftermath player, so this function checks to see if the map in
@@ -1278,7 +1253,7 @@ void SessionClass::Read_Scenario_Descriptions() {
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
       Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
-                                     Is_Mission_Counterstrike((char*)fname)));
+                                     IsMissionCounterstrike(fname)));
     }
   /*		//	ajw Copy file for viewing.
                   CCFileClass fileCopy( "msns_pkt.txt" );
@@ -1312,7 +1287,7 @@ void SessionClass::Read_Scenario_Descriptions() {
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
 
       Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
-                                     Is_Mission_Counterstrike((char*)fname)));
+                                     IsMissionCounterstrike(fname)));
     }
 
     found = Find_Next_File(state);
@@ -1338,7 +1313,7 @@ void SessionClass::Read_Scenario_Descriptions() {
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
         Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
-                                       Is_Mission_Counterstrike((char*)fname)));
+                                       IsMissionCounterstrike(fname)));
       }
       /*ajw Copy file for viewing.
                               CCFileClass fileCopy( "cs_pkt.txt" );
@@ -1365,7 +1340,7 @@ void SessionClass::Read_Scenario_Descriptions() {
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
         Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
-                                       Is_Mission_Counterstrike((char*)fname)));
+                                       IsMissionCounterstrike(fname)));
       }
     }
   }

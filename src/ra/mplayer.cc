@@ -59,6 +59,7 @@
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
+#include "ra/mission_id.h"
 #include "ra/nulldlg.h"
 #include "ra/palette.h"
 #include "ra/session.h"
@@ -68,8 +69,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-
-extern bool Is_Mission_Counterstrike(char* file_name);
 
 #if WOLAPI_INTEGRATION
 #include "WolStrng.h"

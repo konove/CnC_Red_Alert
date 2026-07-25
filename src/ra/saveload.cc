@@ -85,6 +85,7 @@
 #include "ra/link.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
+#include "ra/mission_id.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
@@ -145,8 +146,6 @@
 //										sizeof(Waypoint)))
 
 static int Reconcile_Players();
-extern bool Is_Mission_Counterstrike(char* file_name);
-extern bool Is_Mission_Aftermath(char* file_name);
 
 /***********************************************************************************************
  * Put_All -- Store all save game data to the pipe. *
@@ -681,7 +680,7 @@ bool Load_Game(int id) {
     CCFileClass scenario_file(Scen.ScenarioName);
     if (!scenario_file.Is_Available()) {
       int cd = -1;
-      if (Is_Mission_Counterstrike(Scen.ScenarioName)) {
+      if (IsMissionCounterstrike(Scen.ScenarioName)) {
         cd = 2;
         if (Expansion_AM_Present()) {
           int current_drive = CCFileClass::Get_CD_Drive();
@@ -691,7 +690,7 @@ bool Load_Game(int id) {
           }
         }
       }
-      if (Is_Mission_Aftermath(Scen.ScenarioName)) {
+      if (IsMissionAftermath(Scen.ScenarioName)) {
         cd = 3;
 #ifdef BOGUSCD
         cd = -1;
