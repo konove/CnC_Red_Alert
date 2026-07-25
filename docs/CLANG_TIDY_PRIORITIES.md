@@ -2,164 +2,200 @@
 
 ## Overview
 
-The `.clang-tidy` file enables all checks (`'*'`) then disables ~200 specific checks. This analysis prioritizes which
-disabled checks to re-enable and fix, ordered by **bug severity**, **fix effort**, and **value for legacy code**.
+`.clang-tidy` enables all checks (`'*'`) and then disables **275** of them. This document prioritizes which of those 275
+to re-enable, ordered by **measured bug yield per unit of fix effort**.
+
+Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
+(see [Methodology](#methodology)). Every count in the tables is a real diagnostic site in this repository.
+
+### Two facts that shape everything below
+
+1. **`WarningsAsErrors: '*'`.** Enabling a check does not "start reporting" it — it *breaks the build* until every site
+   is fixed. Check selection is therefore a scheduling decision, not a reporting decision.
+2. **The clang build already passes `-Weverything`** (`CMakeLists.txt:107`). Every `clang-diagnostic-*` entry in the
+   disable list is *already being printed on every build*; disabling it in `.clang-tidy` only decides whether it is
+   fatal. For these checks the discovery cost is zero — you are choosing what to enforce, not what to find.
 
 ---
 
-## TIER 1: HIGH PRIORITY - Real Bugs ✅ DONE
+## Methodology
 
-These find actual bugs, crashes, and security issues. Worth the effort even in legacy code.
+57 disabled checks were re-enabled and run over a 16-file sample (~49,700 lines, **~10% of `src/` by line count**),
+deduplicated by source location so shared headers count once.
 
-**Status: All checks in this tier have been enabled.**
+```bash
+# Sample: src/ra/{conquer,display,house,techno,infantry,building,cell,radar,init,saveload,scenario,ini,mission_id}.cc
+#         src/sdllib/{gbuffer,wsa}.cc  src/tech/lcw.cc
+clang-tidy -p cmake-build-strict-ra-clang --quiet \
+    --checks="-*,<comma-separated-candidates>" --warnings-as-errors= <file>
+```
 
-### 1.1 Null/Uninitialized (Common crash sources)
+**Reading the counts:** "Sample" is the observed number of distinct sites. Tree-wide is roughly **10×** that, but the
+sample deliberately favours large, busy files, so treat 10× as an upper bound for `src/ra` — and note `src/td` (294
+files) will contribute its own, largely parallel, set.
 
-| Check                                            | Why Enable                             | Effort                            |
-|--------------------------------------------------|----------------------------------------|-----------------------------------|
-| `clang-analyzer-core.NullDereference`            | Finds null pointer crashes             | Medium - may have false positives |
-| `clang-analyzer-core.uninitialized.*` (3 checks) | Uninitialized variable bugs            | Medium                            |
-| `clang-diagnostic-uninitialized`                 | Compiler-level uninitialized detection | Low                               |
-| `clang-diagnostic-sometimes-uninitialized`       | Conditional uninitialized paths        | Low                               |
-
-### 1.2 Memory Safety
-
-| Check                                       | Why Enable                | Effort |
-|---------------------------------------------|---------------------------|--------|
-| `clang-analyzer-cplusplus.NewDelete`        | new/delete mismatches     | Medium |
-| `clang-analyzer-unix.MismatchedDeallocator` | malloc/free vs new/delete | Medium |
-| `clang-diagnostic-mismatched-new-delete`    | Array vs scalar delete    | Low    |
-| `clang-diagnostic-delete-incomplete`        | Deleting incomplete types | Low    |
-
-### 1.3 Critical UB/Security
-
-| Check                                               | Why Enable                  | Effort         |
-|-----------------------------------------------------|-----------------------------|----------------|
-| `clang-diagnostic-return-stack-address`             | Returning dangling pointers | Low - must fix |
-| `clang-analyzer-core.UndefinedBinaryOperatorResult` | Undefined behavior          | Medium         |
-| `bugprone-not-null-terminated-result`               | String buffer overflows     | Medium         |
+Last measured: 2026-07-25, clang-tidy 21.1.8.
 
 ---
 
-## TIER 2: MEDIUM PRIORITY - Code Quality (Valuable improvements)
+## Status Corrections
 
-Worth enabling incrementally. Can be fixed file-by-file.
+The previous revision of this document marked several checks "✅ DONE" that are still disabled, and listed several as
+deferred that are in fact already enabled. Verified against the current `.clang-tidy`:
 
-### 2.1 Easy Wins ✅ DONE
+| Check                                | Previously claimed | Actual state        |
+|--------------------------------------|--------------------|---------------------|
+| `clang-diagnostic-uninitialized`     | Tier 1 ✅ DONE     | **still disabled**  |
+| `clang-analyzer-cplusplus.NewDelete` | Tier 1 ✅ DONE     | **still disabled**  |
+| `clang-diagnostic-self-assign`       | Tier 2.1 ✅ DONE   | **still disabled**  |
+| `misc-redundant-expression`          | Tier 2.1 ✅ DONE   | **still disabled**  |
+| `modernize-use-nullptr`              | Tier 3, "defer"    | **already enabled** |
+| `modernize-use-override`             | Tier 3, "defer"    | **already enabled** |
+| `readability-else-after-return`      | Tier 4, keep off   | **already enabled** |
 
-| Check                                | Why Enable                 | Effort                  |
-|--------------------------------------|----------------------------|-------------------------|
-| `clang-diagnostic-suggest-override`  | Missing `override` keyword | Very Low - auto-fixable |
-| `readability-redundant-control-flow` | Useless return/continue    | Very Low                |
-| `readability-redundant-declaration`  | Duplicate declarations     | Very Low                |
-| `clang-diagnostic-self-assign`       | `x = x` bugs               | Very Low                |
-| `misc-redundant-expression`          | `x == x` type bugs         | Low                     |
-
-### 2.2 Switch Statement Issues
-
-| Check                                  | Why Enable                 | Effort |
-|----------------------------------------|----------------------------|--------|
-| `bugprone-switch-missing-default-case` | Unhandled cases            | Medium |
-| `clang-diagnostic-switch-enum`         | Missing enum cases         | Medium |
-| `hicpp-multiway-paths-covered`         | Incomplete switch coverage | Medium |
-
-### 2.3 Type Safety (Prevent subtle bugs)
-
-| Check                            | Why Enable                 | Effort             |
-|----------------------------------|----------------------------|--------------------|
-| `bugprone-narrowing-conversions` | Data loss in conversions   | High - pervasive   |
-| `clang-diagnostic-sign-compare`  | Signed/unsigned comparison | High - very common |
-| `bugprone-signed-char-misuse`    | char vs unsigned char      | Medium             |
-
-### 2.4 Dead Code / Unused (3/4 done)
-
-| Check                                | Why Enable             | Effort                       | Status |
-|--------------------------------------|------------------------|------------------------------|--------|
-| `clang-analyzer-deadcode.DeadStores` | Assignments never read | Medium                       | ✅      |
-| `clang-diagnostic-unused-variable`   | Unused variables       | Low                          | ✅      |
-| `clang-diagnostic-unused-function`   | Dead functions         | Low                          | ✅      |
-| `clang-diagnostic-unused-parameter`  | Unused params          | Low - use `[[maybe_unused]]` | ✅      |
+Genuinely done and confirmed enabled: `clang-diagnostic-suggest-override`, `-return-stack-address`,
+`-mismatched-new-delete`, `-delete-incomplete`, `-sometimes-uninitialized`, `-unused-variable/-function/-parameter`,
+`clang-analyzer-core.NullDereference`, `clang-analyzer-core.uninitialized.*`, `clang-analyzer-deadcode.DeadStores`,
+`clang-analyzer-unix.MismatchedDeallocator`, `bugprone-not-null-terminated-result`,
+`readability-redundant-control-flow`, `readability-redundant-declaration`.
 
 ---
 
-## TIER 3: LOW PRIORITY - Style/Modernization (Tackle Last)
+## TIER 1: Enable now — real bugs, negligible volume
 
-These are "nice to have" but require significant refactoring. Consider for new code only.
+The measurement found a **live bug in shipped logic** on its first pass, `src/ra/house.cc:2367`:
 
-### 3.1 Modern C++ (Massive effort)
+```cpp
+void HouseClass::Make_Enemy(HousesType house) {
+  ...
+  Allies &= ~(1L << house);
+  if (ScenarioInit) {
+    Control.Allies &= !(1L << house);   // '!' should be '~'
+  }
+```
 
-| Check                    | Why Defer                         | Notes                         |
-|--------------------------|-----------------------------------|-------------------------------|
-| `modernize-use-nullptr`  | Replace `NULL`/`0` with `nullptr` | Thousands of changes          |
-| `modernize-use-auto`     | Use `auto` keyword                | Style preference              |
-| `modernize-loop-convert` | Range-based for loops             | Many loops to convert         |
-| `modernize-use-using`    | `using` vs `typedef`              | Low value                     |
-| `modernize-use-override` | Add `override`                    | Duplicate of suggest-override |
+`1L << house` is always non-zero, so `!(...)` is `0` and the statement clears **every** ally bit instead of one. It is
+caught by `clang-diagnostic-int-in-bool-context`, which is currently disabled and has exactly one hit in the entire
+sample.
 
-### 3.2 C-Style Casts (Everywhere in legacy code)
+| Check                                                    | Sample | What it caught                                                                                                        |
+|----------------------------------------------------------|--------|-----------------------------------------------------------------------------------------------------------------------|
+| `clang-diagnostic-int-in-bool-context`                   | 1      | the `house.cc:2367` bug above                                                                                         |
+| `bugprone-suspicious-memory-comparison` (`cert-flp37-c`) | 1      | `ra/event.h:265` — `EventClass::operator==` memcmps a type with padding; this is the **multiplayer event** comparison |
+| `clang-analyzer-security.ArrayBound`                     | 1      | heap-underflow path in `ra/search.h:515`                                                                              |
+| `bugprone-suspicious-enum-usage`                         | 1      | mixed enum families in `ra/conquer.cc:543`                                                                            |
+| `bugprone-too-small-loop-variable`                       | 5      | `CELL` loop counters against `int` bounds in `ra/display.cc` — truncation                                             |
+| `bugprone-signed-char-misuse` (`cert-str34-c`)           | 7      | `signed char`→`int` on file/INI data (`display.cc`, `infantry.cc`, `init.cc`)                                         |
+| `bugprone-multi-level-implicit-pointer-conversion`       | 5      | `ObjectClass**`→`void*` in `saveload.cc`, `cell.cc` — the save/load memcpy paths                                      |
+| `clang-diagnostic-format`                                | 10     | genuine `printf`/`scanf` type mismatches in `ini.cc`, `radar.cc`, `init.cc`                                           |
+| `clang-diagnostic-writable-strings`                      | 9      | string literal → `char*`; mechanical `const` fix                                                                      |
+| `bugprone-suspicious-string-compare`                     | 1      | `stricmp` result used without comparison (`scenario.cc:1923`)                                                         |
 
-| Check                                    | Why Defer                | Notes              |
-|------------------------------------------|--------------------------|--------------------|
-| `clang-diagnostic-old-style-cast`        | C-style casts everywhere | Thousands of casts |
-| `cppcoreguidelines-pro-type-cstyle-cast` | Same                     | Duplicate          |
-| `google-readability-casting`             | Same                     | Duplicate          |
+Total fix surface: **~41 sites in the sample**, realistically a few hundred tree-wide, most of them one-line changes.
 
-### 3.3 Member Initialization
+### 1.1 Free guards — zero hits, zero fix cost
 
-| Check                                         | Why Defer              | Notes          |
-|-----------------------------------------------|------------------------|----------------|
-| `cppcoreguidelines-pro-type-member-init`      | Initialize all members | Major refactor |
-| `cppcoreguidelines-prefer-member-initializer` | Use init lists         | Style          |
+Clean across the entire 10% sample. Enable them to prevent the class of defect from *entering*:
 
----
+`bugprone-unhandled-self-assignment`, `bugprone-sizeof-expression`, `bugprone-parent-virtual-call`,
+`bugprone-redundant-branch-condition`, `bugprone-inc-dec-in-conditions`,
+`bugprone-unchecked-string-to-number-conversion`, `clang-diagnostic-uninitialized`,
+`clang-diagnostic-conditional-uninitialized`, `clang-diagnostic-self-assign`, `clang-diagnostic-implicit-fallthrough`,
+`clang-diagnostic-char-subscripts`, `clang-diagnostic-null-arithmetic`, `clang-diagnostic-logical-not-parentheses`,
+`clang-diagnostic-format-security`, `clang-diagnostic-varargs`, `clang-diagnostic-missing-field-initializers`,
+`misc-redundant-expression`, `misc-definitions-in-headers`, `readability-misleading-indentation`, `cert-oop57-cpp`,
+`clang-analyzer-core.CallAndMessage`, `clang-analyzer-cplusplus.NewDelete`,
+`clang-analyzer-optin.cplusplus.VirtualCall`,
+`clang-analyzer-optin.cplusplus.UninitializedObject`, `clang-analyzer-unix.Stream`, `clang-analyzer-security.VAList`.
 
-## TIER 4: KEEP DISABLED (Inappropriate for this codebase)
+Caveat: zero in 10% of the tree is not zero tree-wide. Expect a small tail, especially from `src/td`.
 
-### 4.1 Platform-Specific (Not applicable)
+### 1.2 Single most valuable check in the whole list
 
-- `altera-*` - FPGA specific
-- `android-*` - Android specific
-- `fuchsia-*` - Fuchsia OS specific
-- `llvmlibc-*` - LLVM libc specific
+**`bugprone-raw-memory-call-on-non-trivial-type`** — 0 hits today, so it costs nothing to enable.
 
-### 4.2 Architectural (Would require complete rewrite)
-
-| Check                                                | Why Keep Disabled                             |
-|------------------------------------------------------|-----------------------------------------------|
-| `cppcoreguidelines-avoid-non-const-global-variables` | Entire game architecture is globals           |
-| `cppcoreguidelines-no-malloc`                        | Legacy memory management                      |
-| `cppcoreguidelines-owning-memory`                    | No smart pointers in legacy code              |
-| `readability-magic-numbers`                          | Game code is inherently full of magic numbers |
-| `cppcoreguidelines-avoid-c-arrays`                   | C arrays everywhere                           |
-| `cppcoreguidelines-pro-bounds-pointer-arithmetic`    | Fundamental to the code                       |
-
-### 4.3 Style Preferences (Subjective)
-
-- `readability-braces-around-statements` - Style choice
-- `readability-identifier-length` - Short names are fine
-- `readability-else-after-return` - Style preference
-- `llvm-else-after-return` - Same
-
-### 4.4 False Positive Prone
-
-| Check                                  | Why Keep Disabled                     |
-|----------------------------------------|---------------------------------------|
-| `bugprone-easily-swappable-parameters` | Too many false positives in game code |
-| `bugprone-branch-clone`                | Intentional similar branches          |
-| `cert-err58-cpp`                       | Static init order, hard to fix        |
+`TFixedIHeapClass::Save/Load` in `src/ra/heap.cc` serializes game objects by **raw memcpy**, followed by a placement-new
+with `NoInitClass()`. That contract silently breaks the moment anyone adds a `std::string`,
+`std::optional`, or any non-trivially-copyable member to a serialized type — and it breaks as save-file corruption or a
+multiplayer desync, not as a compile error. This check is the tripwire for exactly that mistake.
 
 ---
 
-## C++ CORE GUIDELINES TYPE SAFETY PROFILE
+## TIER 1.5: Small counts, real UB in a deep virtual hierarchy
 
-The C++ Core Guidelines define
-a [Type Safety Profile](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#ss-type)
-for incrementally modernizing legacy codebases. clang-tidy provides direct support via `cppcoreguidelines-pro-type-*`
-checks.
+The `AbstractClass → ObjectClass → TechnoClass → ...` hierarchy makes these more dangerous here than in typical code.
 
-### Profile Rules and clang-tidy Mapping
+| Check                                        | Sample | Notes                                                  |
+|----------------------------------------------|--------|--------------------------------------------------------|
+| `clang-diagnostic-overloaded-virtual`        | 10     | silently shadowed virtuals — behaviour bugs, not style |
+| `cppcoreguidelines-virtual-class-destructor` | 14     | polymorphic delete through base                        |
+| `clang-diagnostic-non-virtual-dtor`          | 12     | overlaps the above                                     |
+| `misc-unconventional-assign-operator`        | 4      | `ra/vector.h:43,84,85` — `virtual operator=`           |
+| `cert-oop58-cpp`                             | 2      | `tech/listnode.h:56,59` — copy ctor mutates its source |
 
-| Rule   | Description                         | clang-tidy Check                                  | Current  |
+`vector.h` and `listnode.h` are foundational; fixing those two files clears most of this tier.
+
+---
+
+## TIER 2: Valuable, but these *are* the type-migration project
+
+High counts, genuine latent bugs mixed with thousands of benign sites. Enabling any of these globally halts the build
+until ~3,000 sites are fixed.
+
+| Check                                                 | Sample | Tree-wide est. |
+|-------------------------------------------------------|--------|----------------|
+| `bugprone-narrowing-conversions`                      | 292    | ~2900          |
+| `cppcoreguidelines-pro-type-member-init`              | 116    | ~1160          |
+| `clang-diagnostic-shorten-64-to-32`                   | 69     | ~690           |
+| `clang-diagnostic-sign-compare`                       | 40     | ~400           |
+| `bugprone-implicit-widening-of-multiplication-result` | 29     | ~290           |
+| `clang-diagnostic-switch`                             | 20     | ~200           |
+| `bugprone-switch-missing-default-case`                | 10     | ~100           |
+
+**Strategy — per-directory, not global.** Drop a stricter `.clang-tidy` into directories that are already clean
+(`src/base`, `src/port`) and into each directory as it completes type migration. clang-tidy applies the nearest config
+file, so new and modernized code is held to Tier 2 while legacy code is not. This is strictly better than
+`// NOLINTBEGIN` blocks, which rot silently.
+
+These checks are the enforcement mechanism for `docs/TYPE_MIGRATION.md` — turning one on for a directory is the natural
+way to *finish* a migration and keep it finished.
+
+⚠️ **`cppcoreguidelines-pro-type-member-init` conflicts with the `NoInitClass` pattern.** Constructors that deliberately
+leave members uninitialized so memcpy'd save data survives will need `// NOLINT` with a comment pointing at `heap.cc`.
+Budget for that before enabling it anywhere that serializes.
+
+---
+
+## TIER 3: Keep disabled — high volume, near-zero bug yield
+
+| Check                              | Sample | Why not                                                |
+|------------------------------------|--------|--------------------------------------------------------|
+| `cppcoreguidelines-init-variables` | 371    | Largest count in the list; almost entirely benign      |
+| `performance-enum-size`            | 168    | Enum storage width is irrelevant at this scale         |
+| `bugprone-macro-parentheses`       | 28     | 1990s macros; fixes risk changing behaviour            |
+| `cert-err34-c`                     | 19     | Unchecked `atoi` in INI parsing; low real-world impact |
+| `bugprone-branch-clone`            | 9      | Intentionally parallel branches throughout game logic  |
+| `performance-no-int-to-ptr`        | 1      | Legacy handle/pointer punning                          |
+
+Plus the standing architectural exclusions, unchanged and still correct:
+
+- **Not applicable to this project:** `altera-*` (3), `android-*` (4), `fuchsia-*` (6), `llvmlibc-*` (4)
+- **Would require a rewrite:** `cppcoreguidelines-avoid-non-const-global-variables` (the game *is* globals — see
+  `ra/externs.h`), `-no-malloc`, `-owning-memory`, `-avoid-c-arrays`, `-pro-bounds-pointer-arithmetic`,
+  `readability-magic-numbers`
+- **Style-only:** `readability-braces-around-statements`, `readability-identifier-length`, `llvm-else-after-return`
+- **False-positive prone:** `bugprone-easily-swappable-parameters`, `cert-err58-cpp`
+- **Cast checks:** `clang-diagnostic-old-style-cast`, `cppcoreguidelines-pro-type-cstyle-cast`,
+  `google-readability-casting` — thousands of sites; revisit only per-directory alongside Tier 2
+
+---
+
+## C++ Core Guidelines Type Safety Profile
+
+The [Type Safety Profile](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#ss-type) maps directly onto
+`cppcoreguidelines-pro-type-*`. Current state:
+
+| Rule   | Description                         | Check                                             | State    |
 |--------|-------------------------------------|---------------------------------------------------|----------|
 | Type.1 | Don't use `reinterpret_cast`        | `cppcoreguidelines-pro-type-reinterpret-cast`     | Enabled  |
 | Type.2 | Don't use `static_cast` to downcast | `cppcoreguidelines-pro-type-static-cast-downcast` | Enabled  |
@@ -170,63 +206,59 @@ checks.
 | Type.7 | Avoid naked unions                  | `cppcoreguidelines-pro-type-union-access`         | Disabled |
 | Type.8 | Avoid varargs                       | `cppcoreguidelines-pro-type-vararg`               | Disabled |
 
-### Recommended Adoption Order
-
-For legacy codebases, enable checks incrementally from least to most noisy:
-
-1. **`pro-type-static-cast-downcast`** - Likely few violations; use `dynamic_cast` or redesign
-2. **`pro-type-const-cast`** - Usually rare; indicates design issues
-3. **`pro-type-union-access`** - Depends on union usage; consider `std::variant`
-4. **`pro-type-vararg`** - Printf/logging heavy code has many; migrate to `std::format`/`absl::StrFormat`
-5. **`pro-type-reinterpret-cast`** - Common in low-level code; often unavoidable
-6. **`pro-type-cstyle-cast`** - Very common; thousands of violations expected
-7. **`pro-type-member-init`** - Noisy but offers auto-fixes
-
-### Usage Pattern
-
-```bash
-# Check violation count for a specific rule before enabling
-clang-tidy -checks='-*,cppcoreguidelines-pro-type-static-cast-downcast' src/**/*.cpp
-
-# Enable in .clang-tidy by removing the '-' prefix
-# Before: -cppcoreguidelines-pro-type-static-cast-downcast,
-# After:  (line removed or '-' removed)
-```
+Rules 1–3 are already satisfied tree-wide. Rules 4–8 belong to the Tier 2 per-directory strategy; do not attempt them
+globally.
 
 ---
 
-## RECOMMENDED ACTION PLAN
+## Action Plan
 
-### Phase 1: Quick Wins ✅ DONE
+### Phase A — Tier 1 (do now)
 
-1. ~~Enable `clang-diagnostic-suggest-override` - auto-fix with clang-tidy~~
-2. ~~Enable `clang-diagnostic-self-assign`~~
-3. ~~Enable `readability-redundant-control-flow`~~
-4. ~~Enable `clang-diagnostic-return-stack-address`~~
+1. Fix `src/ra/house.cc:2367` (`!` → `~`) — it is a bug regardless of tooling.
+2. Un-disable the Tier 1 table + §1.1 free guards + §1.2 in `.clang-tidy`.
+3. Build `rasdl` **and** `tdsdl`; fix fallout. Expect the `src/td` tail to exceed the `src/ra` count.
+4. Re-run the sample command to confirm a clean pass.
 
-### Phase 2: Memory Safety ✅ DONE
+### Phase B — Tier 1.5
 
-1. ~~Enable `clang-analyzer-core.NullDereference` - fix warnings~~
-2. ~~Enable `clang-diagnostic-delete-incomplete`~~
-3. ~~Enable `clang-diagnostic-mismatched-new-delete`~~
+Fix `src/ra/vector.h` and `src/tech/listnode.h` first, then enable the five checks and clear the remainder.
 
-### Phase 3: Uninitialized Variables ✅ DONE
+### Phase C — Tier 2, per directory
 
-1. ~~Enable `clang-diagnostic-uninitialized`~~
-2. ~~Enable `clang-analyzer-core.uninitialized.*`~~
+1. Add a stricter `.clang-tidy` to `src/base` and `src/port` (already clean).
+2. Extend it to each directory as type migration completes there.
+3. Never enable Tier 2 at the repository root.
 
-### Phase 4: Incremental (ongoing)
+---
 
-1. Enable checks file-by-file using `// NOLINTBEGIN` / `// NOLINTEND` for legacy files
-2. Require new code to pass all reasonable checks
+## Re-measuring
+
+Before enabling anything not listed above, measure it — the counts here are the whole basis of the tiering:
+
+```bash
+# Cost of a single check, tree-wide:
+clang-tidy -p cmake-build-strict-ra-clang --quiet \
+    --checks='-*,the-check-name' --warnings-as-errors= src/ra/*.cc 2>/dev/null \
+  | grep -c 'warning:\|error:'
+
+# Cost of several at once, tallied per check (dedup by site, since headers repeat):
+clang-tidy -p cmake-build-strict-ra-clang --quiet \
+    --checks='-*,check-a,check-b' --warnings-as-errors= <files> 2>/dev/null \
+  | grep -oE '^[^ ]+:[0-9]+:[0-9]+: (warning|error): .*\[[a-zA-Z0-9_.,-]+\]$' \
+  | sed -E 's/^([^ ]+): (warning|error): .*\[([^]]+)\]$/\3\t\1/' | sort -u \
+  | cut -f1 | sort | uniq -c | sort -rn
+```
+
+Note `--warnings-as-errors=` (empty) to override the config's `WarningsAsErrors: '*'` while measuring.
 
 ---
 
 ## Summary
 
-| Tier   | Checks | Action                        | Status             |
-|--------|--------|-------------------------------|--------------------|
-| Tier 1 | ~12    | Enable ASAP - finds real bugs | ✅ DONE             |
-| Tier 2 | ~20    | Enable incrementally          | Partial (2.1, 2.4) |
-| Tier 3 | ~50    | New code only, or never       | Not started        |
-| Tier 4 | ~120   | Keep disabled permanently     | N/A                |
+| Tier | Checks | Sample sites | Action                                        |
+|------|--------|--------------|-----------------------------------------------|
+| 1    | ~36    | ~41          | Enable now — confirmed bugs, cheap fixes      |
+| 1.5  | 5      | 42           | Enable after fixing `vector.h` / `listnode.h` |
+| 2    | 7      | 576          | Per-directory only, tied to type migration    |
+| 3    | ~230   | —            | Keep disabled                                 |
