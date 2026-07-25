@@ -58,31 +58,30 @@ static SDL_AudioSpec ObtainedSpec;
 static uint8_t* MixBuffer;  // temp buffer for mixing
 static AudioCallback ExtraCallback = nullptr;
 
+// Fields are ordered by decreasing alignment to minimize padding
+// (clang-analyzer-optin.performance.Padding).
 struct ChannelState {
   const void* sample = nullptr;
   SDL_AudioStream* stream = nullptr;
-  bool playing = false;
-  int priority = 0;
-  int16_t volume = 32767;
+  uint8_t* in_ptr = nullptr;
 
+  int priority = 0;
   int local_volume = 255;  // per-sound volume [0, 255], set at play time
   int raw_volume;          // local_volume * ScoreVolume
   int fade = 0;
-
-  uint8_t channels = 0;
-  uint8_t bits = 0;
-  uint16_t sample_rate = 0;
-
   uint32_t offset = 0;
   uint32_t length = 0;
-  uint8_t* in_ptr = nullptr;
-
   int file_handle = -1;  // if this is a file stream
 
-  // compression state
+  int16_t volume = 32767;
+  uint16_t sample_rate = 0;
+  int16_t predictor = 0;  // ADPCM compression state
+
+  bool playing = false;
+  uint8_t channels = 0;
+  uint8_t bits = 0;
   SCompressType compression = SCOMP_NONE;
-  int8_t step = 0;
-  int16_t predictor = 0;
+  int8_t step = 0;  // ADPCM compression state
 };
 
 static ChannelState Channels[kMaxSfx];
@@ -136,18 +135,16 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
 
   while (in_ptr != in_end) {
     auto code = *in_ptr++;  // Get code byte
-    // incount++
-    int data = code & 0x3F;
-    code >>= 6;
+    auto data = code & 0x3Fu;
+    code >>= 6u;
 
-    if (code == 2)  // Raw sequence?
-    {
+    if (code == 2) {  // Raw sequence?
       // The code contains either a 5 bit delta or a count of
       // raw samples to dump out.
-      if (data & 0x20) {
+      if (data & 0x20u) {
         // The lower 5 bits are actually a signed delta.
         // Sign extend the delta and add it to the stream.
-        int8_t v = data & 0x10 ? data | 0xE0 : data & 0xF;
+        int8_t v = data & 0x10u ? data | 0xE0u : data & 0xFu;
 
         prev_sample += v;
 
