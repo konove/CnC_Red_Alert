@@ -2364,7 +2364,7 @@ void HouseClass::Make_Enemy(HousesType house) {
     Allies &= ~(1L << house);
 
     if (ScenarioInit) {
-      Control.Allies &= !(1L << house);
+      Control.Allies &= ~(1L << house);
     }
 
     /*
