@@ -86,6 +86,15 @@ struct ChannelState {
 
 static ChannelState Channels[kMaxSfx];
 
+// Returns true if 'handle' names a real mixer channel.
+//
+// Handles come from AcquireSampleHandle, but callers store them in long-lived
+// state (ThemeClass::Current, for example) and pass them back later, so every
+// public entry point validates before indexing Channels.
+static bool Is_Valid_Handle(const int handle) {
+  return handle >= 0 && handle < kMaxSfx;
+}
+
 static int ToMixerAmplitude(const int raw_volume) {
   const float normalized = static_cast<float>(raw_volume) / (255.0f * 255.0f);
   return static_cast<int>(powf(normalized, 2.0f) * 32767.0f);
@@ -494,7 +503,7 @@ void Sound_End() {
 }
 
 void Stop_Sample(int handle) {
-  if (handle < 0 || handle >= kMaxSfx) {
+  if (!Is_Valid_Handle(handle)) {
     return;
   }
 
@@ -511,7 +520,7 @@ void Stop_Sample(int handle) {
 }
 
 bool Sample_Status(int handle) {
-  if (handle < 0) {
+  if (!Is_Valid_Handle(handle)) {
     return false;
   }
   return Channels[handle].playing;
@@ -543,7 +552,7 @@ int Play_Sample(const void* sample, int priority, int volume,
 
 int Play_Sample_Handle(const void* sample, int priority, int volume,
                        signed short /*panloc*/, int id) {
-  if (id == -1 || !sample) {
+  if (!Is_Valid_Handle(id) || !sample) {
     return -1;
   }
 
