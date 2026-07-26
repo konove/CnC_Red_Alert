@@ -23,6 +23,7 @@
 
 #include <new>  // IWYU pragma: keep
 
+#include "absl/log/check.h"
 #include "base/types.h"
 #include "ra/defines.h"  // IWYU pragma: keep
 #include "ra/egos.h"     // IWYU pragma: keep
@@ -38,8 +39,14 @@ class VectorClass {
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
 
-  T& operator[](base::ssize index) { return Vector[index]; }
-  const T& operator[](base::ssize index) const { return Vector[index]; }
+  T& operator[](base::ssize index) {
+    DCHECK(index >= 0 && index < VectorMax);
+    return Vector[index];
+  }
+  const T& operator[](base::ssize index) const {
+    DCHECK(index >= 0 && index < VectorMax);
+    return Vector[index];
+  }
   virtual VectorClass& operator=(const VectorClass&);  // Assignment operator.
   virtual bool operator==(const VectorClass&) const;   // Equality operator.
   virtual bool Resize(base::ssize newsize, const T* array = nullptr);
@@ -64,7 +71,10 @@ VectorClass<T>::VectorClass(base::ssize size, const T* array)
       Vector =
           new ((void*)array) T[size];  // Placement new into provided buffer.
     } else {
-      Vector = new T[size];
+      // Value initialized: callers routinely read capacity that has not been
+      // assigned yet (Resize copies the whole old capacity, not just the
+      // elements in use), which is an indeterminate value for a POD T.
+      Vector = new T[size]();
       IsAllocated = true;
     }
   }
@@ -120,7 +130,9 @@ bool VectorClass<T>::operator==(const VectorClass<T>& vector) const {
 // into this vector.
 template <class T>
 base::ssize VectorClass<T>::ID(const T* ptr) {
-  return ptr - &(*this)[0];
+  // Uses Vector rather than &(*this)[0] so that querying an empty vector does
+  // not trip the bounds check in operator[].
+  return ptr - Vector;
 }
 
 // Finds index of first element equal to object. Returns -1 if not found.
@@ -152,7 +164,7 @@ bool VectorClass<T>::Resize(base::ssize newsize, const T* array) {
   if (newsize > 0) {
     T* newptr;
     if (!array) {
-      newptr = new T[newsize];
+      newptr = new T[newsize]();  // Value initialized, see the constructor.
     } else {
       newptr = new ((void*)array) T[newsize];
     }
@@ -161,9 +173,16 @@ bool VectorClass<T>::Resize(base::ssize newsize, const T* array) {
     }
 
     if (Vector) {
-      // Copy existing elements (uses assignment operator).
+      // Copy existing elements (uses assignment operator). This copies the
+      // whole old capacity, including slots the owner has not assigned yet,
+      // which is why the allocations above are value initialized.
+      //
+      // NOLINT below: the static analyzer does not model the initialization
+      // performed by `new T[n]()`, so it reads every element of a heap array
+      // as indeterminate no matter how it was allocated.
       base::ssize copycount = newsize < VectorMax ? newsize : VectorMax;
       for (base::ssize index = 0; index < copycount; index++) {
+        // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.Assign)
         newptr[index] = Vector[index];
       }
       if (IsAllocated) {

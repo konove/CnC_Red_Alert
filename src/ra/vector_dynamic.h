@@ -60,6 +60,11 @@ class DynamicVectorClass : public VectorClass<T> {
 
   // Elements to add when growing (0 disables auto-grow).
   base::ssize GrowthStep;
+
+ private:
+  // Makes sure at least one unused slot exists past ActiveCount, growing the
+  // vector by GrowthStep if it is full. Returns false if no room could be made.
+  bool EnsureRoom();
 };
 
 // Implementation details only below here
@@ -83,18 +88,30 @@ bool DynamicVectorClass<T>::Resize(base::ssize newsize, const T* array) {
   return false;
 }
 
+// Growing is only possible for vectors that own their memory; one wrapping a
+// caller-supplied buffer is stuck with that buffer's size.
+template <class T>
+bool DynamicVectorClass<T>::EnsureRoom() {
+  if (ActiveCount < this->Length()) {
+    return true;
+  }
+  if ((!this->IsAllocated && this->VectorMax) || GrowthStep <= 0) {
+    return false;
+  }
+  if (!Resize(this->Length() + GrowthStep)) {
+    return false;
+  }
+  // Resize() clamps ActiveCount to the new capacity, so confirm the grow
+  // actually left a free slot rather than assuming it did.
+  return ActiveCount < this->Length();
+}
+
 // Appends object to end. Auto-grows if needed and allowed. Returns true on
 // success.
 template <class T>
 bool DynamicVectorClass<T>::Add(const T& object) {
-  if (ActiveCount >= this->Length()) {
-    if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
-      if (!Resize(this->Length() + GrowthStep)) {
-        return false;
-      }
-    } else {
-      return false;  // Can't grow.
-    }
+  if (!EnsureRoom()) {
+    return false;
   }
   (*this)[ActiveCount++] = object;
   return true;
@@ -104,14 +121,8 @@ bool DynamicVectorClass<T>::Add(const T& object) {
 // success.
 template <class T>
 bool DynamicVectorClass<T>::Add_Head(const T& object) {
-  if (ActiveCount >= this->Length()) {
-    if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
-      if (!Resize(this->Length() + GrowthStep)) {
-        return false;
-      }
-    } else {
-      return false;  // Can't grow.
-    }
+  if (!EnsureRoom()) {
+    return false;
   }
   if (ActiveCount) {
     // Shift elements to make room. NOLINT: sizeof(T) is intentional for raw

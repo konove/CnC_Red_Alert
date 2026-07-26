@@ -49,6 +49,7 @@
 
 #include "td/mplayer.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -354,10 +355,9 @@ GameType Select_MPlayer_Game() {
         break;
 
       case KN_RETURN:
-        selection = curbutton + BUTTON_MODEMSERIAL;
-        if (!ipx_avail) {
-          selection--;
-        }
+        // Read the id off the button itself. The array skips the IPX button
+        // when IPX is unavailable, so ids and indices are not interchangeable.
+        selection = static_cast<int>(buttons[curbutton]->ID);
         pressed = true;
         break;
 
@@ -371,7 +371,12 @@ GameType Select_MPlayer_Game() {
       //
       buttons[curbutton]->Turn_Off();
       buttons[curbutton]->Flag_To_Redraw();
-      curbutton = selection - BUTTON_MODEMSERIAL;
+      for (int index = 0; index < number_of_buttons; index++) {
+        if (buttons[index]->ID == static_cast<unsigned>(selection)) {
+          curbutton = index;
+          break;
+        }
+      }
       buttons[curbutton]->Turn_On();
       //			buttons[curbutton]->Flag_To_Redraw();
       buttons[curbutton]->IsPressed = true;
@@ -1203,6 +1208,12 @@ static void Garble_Message(char* buf) {
       break;
     }
   }
+  /*
+  ** An empty message, or one that is nothing but punctuation, walks p back
+  ** past the start of the buffer. Clamp it so the copy and the terminator
+  ** below stay inside buf.
+  */
+  p = std::max(p, buf);
   port::SafeCopy(punct, p);
   p[0] = 0;
 

@@ -42,6 +42,7 @@
 #include "ra/scroll.h"
 
 #include <algorithm>
+#include <iterator>
 
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -188,6 +189,10 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         **	accordingly.
         */
         direction = Facing_Dir(Dir_Facing(direction));
+
+        // Inertia and the scroll rate option both feed into rate without any
+        // guarantee they land inside _rate, so clamp before indexing.
+        rate = Bound(rate, 0, static_cast<int>(std::ssize(_rate)) - 1);
 
         int distance = _rate[rate] / 2;
 

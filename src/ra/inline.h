@@ -801,7 +801,9 @@ inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
-  return static_cast<CELL>(cell + AdjacentCell[dir]);
+  // Masked like the COORDINATE overload above, so that FACING_NONE (-1) does
+  // not index before the start of the table.
+  return static_cast<CELL>(cell + AdjacentCell[static_cast<int>(dir) & 0x07]);
 }
 
 /***********************************************************************************************

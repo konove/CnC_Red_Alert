@@ -1723,8 +1723,14 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           shapenum = 0;
 
           production = true;
-          completed = PlayerPtr->SuperWeapon[spc].Is_Ready();
-          stage = PlayerPtr->SuperWeapon[spc].Anim_Stage();
+
+          // Get_Special_Cameo() returns null for an out of range special, but
+          // SuperWeapon has no such guard. Range check before indexing it and
+          // leave the defaults (not complete, stage zero) in place otherwise.
+          if (static_cast<unsigned>(spc) < SPC_COUNT) {
+            completed = PlayerPtr->SuperWeapon[spc].Is_Ready();
+            stage = PlayerPtr->SuperWeapon[spc].Anim_Stage();
+          }
           darken = false;
         }
 

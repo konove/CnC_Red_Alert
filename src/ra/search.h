@@ -62,6 +62,8 @@
 #define _USERENTRY
 #endif
 
+#include "absl/log/check.h"
+
 /*
 **	This class is used to create and maintain an index. It does this by
 *assigning a unique *	identifier number to the type objects that it is
@@ -512,6 +514,7 @@ bool IndexClass<T>::Add_Index(int id, T data) {
   /*
   **	Add the data to the end of the index data and then sort the index table.
   */
+  DCHECK(IndexCount >= 0 && IndexCount < IndexSize);
   IndexTable[IndexCount].ID = id;
   IndexTable[IndexCount].Data = data;
   IndexCount++;

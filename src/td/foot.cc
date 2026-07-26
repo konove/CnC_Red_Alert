@@ -88,6 +88,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <iterator>
 
 #include "rand.h"
 #include "sdllib/misc.h"
@@ -235,7 +236,6 @@ FootClass::FootClass(HousesType house) : TechnoClass(house), Speed(0) {
 void FootClass::Debug_Dump(MonoClass* mono) const {
   if constexpr (config::kCheatKeysEnabled) {
     static const char* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
-#define Path_To_String(a) _p2c[((std::abs((int)a + 1)) % 9)]
 
     /*
     **	Display the common data for all objects that inherity from FootClass.
@@ -258,14 +258,13 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
     **	used and thus should not be displayed.
     */
     if (What_Am_I() != RTTI_AIRCRAFT) {
-      mono->Set_Cursor(50, 3);
-      mono->Printf("%s%s%s%s%s%s%s%s%s%s%s%s", Path_To_String(Path[0]),
-                   Path_To_String(Path[1]), Path_To_String(Path[2]),
-                   Path_To_String(Path[3]), Path_To_String(Path[4]),
-                   Path_To_String(Path[5]), Path_To_String(Path[6]),
-                   Path_To_String(Path[7]), Path_To_String(Path[8]),
-                   Path_To_String(Path[9]), Path_To_String(Path[10]),
-                   Path_To_String(Path[11]), Path_To_String(Path[12]));
+      // The original printed a fixed 13 entries, four of which read past the
+      // end of Path. Walk the array instead.
+      for (int index = 0; index < CONQUER_PATH_MAX; index++) {
+        mono->Set_Cursor(50 + index, 3);
+        mono->Printf("%s", _p2c[(std::abs(static_cast<int>(Path[index]) + 1)) %
+                                std::ssize(_p2c)]);
+      }
 
       mono->Set_Cursor(65, 1);
       mono->Printf("%08lX", Head_To_Coord());

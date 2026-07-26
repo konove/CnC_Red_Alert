@@ -129,7 +129,9 @@ inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
   return Adjacent_Cell(coord, Dir_Facing(dir));
 }
 inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
-  return static_cast<CELL>(cell + AdjacentCell[dir]);
+  // Masked like the COORDINATE overload above, so that FACING_NONE (-1) does
+  // not index before the start of the table.
+  return static_cast<CELL>(cell + AdjacentCell[dir & 0x07]);
 }
 inline CELL Adjacent_Cell(CELL cell, DirType dir) {
   return static_cast<CELL>(cell + AdjacentCell[Dir_Facing(dir)]);

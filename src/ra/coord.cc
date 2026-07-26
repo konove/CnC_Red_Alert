@@ -210,16 +210,17 @@ const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
 
   x = Coord_XLepton(coord) - 0x0080;
   y = Coord_YLepton(coord) - 0x0080;
+  // The north/south and east/west bits are set with "else if" so that opposing
+  // pairs can never both be set. That keeps index away from the -1 entries in
+  // kSpillToFacing, which stand for combinations that cannot occur.
   if (y > spill_threshold) {
     index |= 0x08;  // Spilling South.
-  }
-  if (y < -spill_threshold) {
+  } else if (y < -spill_threshold) {
     index |= 0x04;  // Spilling North.
   }
   if (x > spill_threshold) {
     index |= 0x02;  // Spilling East.
-  }
-  if (x < -spill_threshold) {
+  } else if (x < -spill_threshold) {
     index |= 0x01;  // Spilling West.
   }
 
