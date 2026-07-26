@@ -41,7 +41,6 @@
 #define CNC_RED_ALERT_RA_EVENT_H_
 
 #include <cstdint>
-#include <cstring>
 
 #include "ra/defines.h"
 #include "ra/special.h"
@@ -261,8 +260,6 @@ class EventClass {
 
   // Process the event.
   void Execute();
-
-  int operator==(EventClass& q) { return memcmp(this, &q, sizeof(q)) == 0; }
 
   static unsigned char EventLength[LAST_EVENT];
   static char* EventNames[LAST_EVENT];

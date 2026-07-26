@@ -41,8 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_EVENT_H_
 #define CNC_RED_ALERT_TD_EVENT_H_
 
-#include <cstring>
-
 #include "td/defines.h"
 #include "td/special.h"
 
@@ -224,8 +222,6 @@ class EventClass {
 
   // Process the event.
   void Execute();
-
-  int operator==(EventClass& q) { return memcmp(this, &q, sizeof(q)) == 0; }
 
   static unsigned char EventLength[LAST_EVENT];
   static char* EventNames[LAST_EVENT];

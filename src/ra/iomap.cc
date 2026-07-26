@@ -52,7 +52,6 @@
 
 #include <cassert>
 #include <cstdint>
-#include <cstring>
 #include <new>
 
 #include "ra/cell.h"
@@ -85,10 +84,33 @@
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
+// Compares every field against the value the default constructor assigns. ID is
+// deliberately excluded: it is just the cell's index in the map array, which the
+// constructor recomputes and which MouseClass::Save writes separately as the
+// cell number. Cells that fail this test are never written, so MouseClass::Load
+// relies on Init_Cells() to restore them to exactly this default state.
 bool CellClass::Should_Save() const {
-  static const CellClass _identity_cell;
+  for (unsigned char zone : Zones) {
+    if (zone != 0) {
+      return true;
+    }
+  }
 
-  return memcmp(&_identity_cell, this, sizeof(*this)) != 0;
+  // Occupier and overlapper pointers are null both before and after
+  // Code_Pointers(), so this test holds whichever side of coding it runs on.
+  for (const ObjectClass* overlapper : Overlappers) {
+    if (overlapper != nullptr) {
+      return true;
+    }
+  }
+
+  return IsPlot || IsCursorHere || IsMapped || IsVisible || IsWaypoint ||
+         IsRadarCursor || IsFlagged || IsToShroud || Jammed != 0 ||
+         Trigger.Is_Valid() || TType != TEMPLATE_NONE || TIcon != 0 ||
+         Overlay != OVERLAY_NONE || OverlayData != 0 ||
+         Smudge != SMUDGE_NONE || SmudgeData != 0 || Owner != HOUSE_NONE ||
+         InfType != HOUSE_NONE || OccupierPtr != nullptr ||
+         Flag.Composite != 0 || Land != LAND_CLEAR;
 }
 
 /***********************************************************************************************
