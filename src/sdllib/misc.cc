@@ -6,6 +6,7 @@
 #include <cstdlib>
 
 #include "absl/log/check.h"
+#include "base/hsv.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
 
@@ -197,9 +198,8 @@ uint8_t Random() {
 
 // from WIN32LIB/MISC/LIB.CPP
 static unsigned Divide_With_Round(unsigned num, unsigned den) {
-  // return num/den + (0 ro 1).  1 if the remainder is more than half the
-  // denominator.
-  return num / den + static_cast<unsigned>(num % den >= (den + 1) >> 1);
+  return static_cast<unsigned>(
+      base::DivideWithRound(static_cast<int>(num), static_cast<int>(den)));
 }
 
 #define HSV_BASE \
@@ -272,42 +272,14 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
 
 void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
                         unsigned int* r, unsigned int* g, unsigned int* b) {
-  unsigned int i;  // Integer part.
-  unsigned int f;  // Fractional or remainder part.  f/HSV_BASE gives fraction.
-  unsigned int tmp;        // Tempary variable to help with calculations.
-  unsigned int values[7];  // Possible rgb values.  Don't use zero.
+  const base::Rgb8 color = base::HsvToRgb8(
+      static_cast<int>(h), static_cast<int>(s), static_cast<int>(v));
 
-  h *= 6;
-  f = h % HSV_BASE;
-
-  // Set up possible red, green and blue values.
-  values[1] = values[2] = v;
-
-  //
-  // The following lines of code change
-  //	values[3] = (v * (HSV_BASE - ( (s * f) / HSV_BASE) )) / HSV_BASE;
-  //	values[4] = values[5] = (v * (HSV_BASE - s)) / HSV_BASE;
-  // values[6] = (v * (HSV_BASE - (s * (HSV_BASE - f)) / HSV_BASE)) / HSV_BASE;
-  // so that the are rounded divides.
-  //
-
-  tmp = Divide_With_Round(s * f, HSV_BASE);
-  values[3] = Divide_With_Round(v * (HSV_BASE - tmp), HSV_BASE);
-
-  values[4] = values[5] = Divide_With_Round(v * (HSV_BASE - s), HSV_BASE);
-
-  tmp = HSV_BASE - Divide_With_Round(s * (HSV_BASE - f), HSV_BASE);
-  values[6] = Divide_With_Round(v * tmp, HSV_BASE);
-
-  // This should not be rounded.
-  i = h / HSV_BASE;
-
-  i += i > 4 ? -4 : 2;
-  *r = Divide_With_Round(values[i] * RGB_BASE, HSV_BASE);
-
-  i += i > 4 ? -4 : 2;
-  *b = Divide_With_Round(values[i] * RGB_BASE, HSV_BASE);
-
-  i += i > 4 ? -4 : 2;
-  *g = Divide_With_Round(values[i] * RGB_BASE, HSV_BASE);
+  // HsvToRgb8 works at HSV_BASE; scale each gun down to the VGA RGB_BASE.
+  *r = static_cast<unsigned int>(
+      base::DivideWithRound(color.red * RGB_BASE, HSV_BASE));
+  *g = static_cast<unsigned int>(
+      base::DivideWithRound(color.green * RGB_BASE, HSV_BASE));
+  *b = static_cast<unsigned int>(
+      base::DivideWithRound(color.blue * RGB_BASE, HSV_BASE));
 }

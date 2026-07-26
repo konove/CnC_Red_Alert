@@ -7,3 +7,11 @@ target_sources(base PUBLIC
         BASE_DIRS ${CMAKE_SOURCE_DIR}/src
         FILES ${BASE_HEADERS}
 )
+
+# Tests
+include(Testing)
+add_gtest(
+        NAME base_test
+        SOURCES hsv_test.cc
+        LIBS base
+)

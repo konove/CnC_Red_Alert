@@ -42,6 +42,9 @@
 
 #include "tech/hsv.h"
 
+#include <cstdint>
+
+#include "base/hsv.h"
 #include "tech/rgb.h"
 
 const HSVClass HSVClass::BlackColor(0, 0, 0);
@@ -138,49 +141,11 @@ int HSVClass::Difference(const HSVClass& hsv) const {
  * HISTORY: * 02/20/1996 JLB : Created. *
  *=============================================================================================*/
 HSVClass::operator RGBClass() const {
-  unsigned int i;  // Integer part.
-  unsigned int f;  // Fractional or remainder part.  f/HSV_BASE gives fraction.
-  unsigned int tmp;        // Temporary variable to help with calculations.
-  unsigned int values[7];  // Possible rgb values.  Don't use zero.
+  const base::Rgb8 color = base::HsvToRgb8(
+      Hue_Component(), Saturation_Component(), Value_Component());
 
-  int hue = Hue_Component();
-  int saturation = Saturation_Component();
-  int value = Value_Component();
-  int red, green, blue;
-
-  hue *= 6;
-  f = hue % 255;
-
-  // Set up possible red, green and blue values.
-  values[1] = values[2] = value;
-
-  //
-  // The following lines of code change
-  //	values[3] = (v * (255 - ( (s * f) / 255) )) / 255;
-  //	values[4] = values[5] = (v * (255 - s)) / 255;
-  // values[6] = (v * (255 - (s * (255 - f)) / 255)) / 255;
-  // so that the are rounded divides.
-  //
-
-  tmp = saturation * f / 255;
-  values[3] = value * (255 - tmp) / 255;
-
-  values[4] = values[5] = value * (255 - saturation) / 255;
-
-  tmp = 255 - saturation * (255 - f) / 255;
-  values[6] = value * tmp / 255;
-
-  // This should not be rounded.
-  i = hue / 255;
-
-  i += i > 4 ? -4 : 2;
-  red = values[i];
-
-  i += i > 4 ? -4 : 2;
-  blue = values[i];
-
-  i += i > 4 ? -4 : 2;
-  green = values[i];
-
-  return RGBClass(red, green, blue);
+  // RGBClass narrows each 8-bit gun to the 6-bit VGA range it stores.
+  return RGBClass(static_cast<uint8_t>(color.red),
+                  static_cast<uint8_t>(color.green),
+                  static_cast<uint8_t>(color.blue));
 }

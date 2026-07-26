@@ -16,7 +16,7 @@ target_sources(sdllib PUBLIC
 )
 
 find_package(SDL2 REQUIRED)
-target_link_libraries(sdllib SDL2::SDL2 absl::check absl::log absl::strings)
+target_link_libraries(sdllib base SDL2::SDL2 absl::check absl::log absl::strings)
 
 # Tests
 include(Testing)
