@@ -118,7 +118,7 @@ void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
     if (flags & LEFTRELEASE) {
       if (IsDropped) {
         Collapse();
-        key = static_cast<KeyNumType>(ID | KN_BUTTON);
+        key = ButtonKey(static_cast<int>(ID));
       } else {
         Expand();
       }
@@ -128,7 +128,7 @@ void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
   if (&whom == &List) {
     port::SafeCopy(String, List.Current_Item(), MaxLength);
     Flag_To_Redraw();
-    key = static_cast<KeyNumType>(ID | KN_BUTTON);
+    key = ButtonKey(static_cast<int>(ID));
   }
 }
 

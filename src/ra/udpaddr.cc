@@ -217,10 +217,10 @@ bool Get_Broadcast_Addresses() {
       // - If we're part of a game, stay in this dialog; otherwise, exit
       //..................................................................
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         return false;
 
-      case BUTTON_OK | KN_BUTTON:
+      case ButtonKey(BUTTON_OK):
         process = false;
         break;
     }

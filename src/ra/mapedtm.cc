@@ -353,29 +353,29 @@ int MapEditClass::Select_Team(const char*) {
     **	Process input
     */
     switch (input) {
-      case (TEAM_LIST | KN_BUTTON):
+      case ButtonKey(TEAM_LIST):
         CurTeam = teamlist.Current_Item();
         break;
 
-      case (BUTTON_EDIT | KN_BUTTON):
+      case ButtonKey(BUTTON_EDIT):
         if (teamlist.Count()) {
           process = false;
           edit_team = true;
         }
         break;
 
-      case (BUTTON_NEW | KN_BUTTON):
+      case ButtonKey(BUTTON_NEW):
         process = false;
         new_team = true;
         break;
 
-      case (BUTTON_DELETE | KN_BUTTON):
+      case ButtonKey(BUTTON_DELETE):
         process = false;
         del_team = true;
         break;
 
       case (KN_RETURN):
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         process = false;
         break;
     }
@@ -748,14 +748,14 @@ int MapEditClass::Team_Members(HousesType house) {
       /*
       **	OK: save values & return.
       */
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         process = false;
         break;
 
       /*
       **	Cancel: abort & return.
       */
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;

@@ -1132,7 +1132,7 @@ bool TeamTypeClass::Edit() {
       *Argument *	field to reflect the current value. This only serves as
       *an aide to editing *	the team mission list.
       */
-      case BUTTON_MISSION2 | KN_BUTTON:
+      case ButtonKey(BUTTON_MISSION2):
         if (missionlist2.Count() && lastcount == missionlist2.Count() &&
             lastbutton == BUTTON_MISSION2 &&
             lastindex == missionlist2.Current_Index()) {
@@ -1188,7 +1188,7 @@ bool TeamTypeClass::Edit() {
       **	Add current mission data to current position of team mission
       *list. Any *	subsequent missions get moved downward.
       */
-      case BUTTON_INSERT | KN_BUTTON:
+      case ButtonKey(BUTTON_INSERT):
         if (missionlist2.Count() < MAX_TEAM_MISSIONS) {
           TeamMissionClass* tm = new TeamMissionClass;
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
@@ -1237,7 +1237,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Add mission data to the end of the mission list.
       */
-      case BUTTON_ADD | KN_BUTTON:
+      case ButtonKey(BUTTON_ADD):
         if (missionlist2.Count() < MAX_TEAM_MISSIONS) {
           TeamMissionClass* tm = new TeamMissionClass;
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
@@ -1287,7 +1287,7 @@ bool TeamTypeClass::Edit() {
       **	Replace the currently selected mission with the work mission
       *data.
       */
-      case BUTTON_REPLACE | KN_BUTTON:
+      case ButtonKey(BUTTON_REPLACE):
         if (missionlist2.Count()) {
           TeamMissionClass* tm = missionlist2.Current_Item();
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
@@ -1336,7 +1336,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Delete the currently selected mission.
       */
-      case BUTTON_DELETE | KN_BUTTON:
+      case ButtonKey(BUTTON_DELETE):
         if (missionlist2.Count()) {
           TeamMissionClass* tm = missionlist2.Current_Item();
           missionlist2.Remove_Index(missionlist2.Current_Index());
@@ -1348,7 +1348,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Invoke the members dialog
       */
-      case BUTTON_MEMBERS | KN_BUTTON:
+      case ButtonKey(BUTTON_MEMBERS):
 
         /*
         **	Take editor focus away
@@ -1370,7 +1370,7 @@ bool TeamTypeClass::Edit() {
       **	When the OK button is selected, lift the values from the dialog
       *box *	and place them into the team type object.
       */
-      case BUTTON_OK | KN_BUTTON:
+      case ButtonKey(BUTTON_OK):
         strtrim(name_edt.Get_Text());
         if (strlen(name_edt.Get_Text()) != 0) {
           port::SafeCopy(IniName, name_edt.Get_Text());
@@ -1420,7 +1420,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Cancel: return
       */
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;

@@ -318,20 +318,20 @@ const char* SimpleEditDlgClass::Show() {
     if ((::GetAsyncKeyState(VK_ESCAPE) & 0x8000)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
-      input = (KeyNumType)(BUTTON_CANCEL | KN_BUTTON);
+      input = ButtonKey(BUTTON_CANCEL);
       bEscapeDown = false;
     }
     if ((::GetAsyncKeyState(VK_RETURN) & 0x8000)) {
       bReturnDown = true;
     } else if (bReturnDown) {
-      input = (KeyNumType)(BUTTON_OK | KN_BUTTON);
+      input = ButtonKey(BUTTON_OK);
       bReturnDown = false;
     }
 
     //	I really hate to do this, but...      ajw
     if (cancel_current_msgbox) {
       cancel_current_msgbox = false;
-      input = (KeyNumType)(BUTTON_CANCEL | KN_BUTTON);
+      input = ButtonKey(BUTTON_CANCEL);
     }
 
     if (disable_current_msgbox) {
@@ -360,19 +360,19 @@ const char* SimpleEditDlgClass::Show() {
     */
     switch (input) {
         //		case ( KN_ESC ):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         szReturn = szCancelButton;
         process = false;
         break;
 
         //		case KN_RETURN:
-      case (BUTTON_EDIT | KN_BUTTON):  //	(Return pressed while on edit.)
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_EDIT):  //	(Return pressed while on edit.)
+      case ButtonKey(BUTTON_OK):
         szReturn = szOkButton;
         process = false;
         break;
 
-      case (BUTTON_MIDDLE | KN_BUTTON):
+      case ButtonKey(BUTTON_MIDDLE):
         szReturn = szMiddleButton;
         process = false;
         break;

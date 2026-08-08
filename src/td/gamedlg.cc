@@ -304,27 +304,27 @@ void GameControlsClass::Process() {
     **	Process input.
     */
     switch (input) {
-      case BUTTON_SPEED | KN_BUTTON:
+      case ButtonKey(BUTTON_SPEED):
         curbutton = BUTTON_SPEED - BUTTON_FIRST;
         refresh = true;
         break;
 
-      case BUTTON_SCROLLRATE | KN_BUTTON:
+      case ButtonKey(BUTTON_SCROLLRATE):
         curbutton = BUTTON_SCROLLRATE - BUTTON_FIRST;
         refresh = true;
         break;
 
-      case BUTTON_VISUAL | KN_BUTTON:
+      case ButtonKey(BUTTON_VISUAL):
         selection = BUTTON_VISUAL;
         pressed = true;
         break;
 
-      case BUTTON_SOUND | KN_BUTTON:
+      case ButtonKey(BUTTON_SOUND):
         selection = BUTTON_SOUND;
         pressed = true;
         break;
 
-      case BUTTON_OK | KN_BUTTON:
+      case ButtonKey(BUTTON_OK):
         selection = BUTTON_OK;
         pressed = true;
         break;

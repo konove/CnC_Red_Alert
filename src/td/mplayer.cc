@@ -309,25 +309,25 @@ GameType Select_MPlayer_Game() {
     ............................ Process input ............................
     */
     switch (input) {
-      case BUTTON_MODEMSERIAL | KN_BUTTON:
+      case ButtonKey(BUTTON_MODEMSERIAL):
         selection = BUTTON_MODEMSERIAL;
         pressed = true;
         break;
 
 #if (0)
-      case (BUTTON_INTERNET | KN_BUTTON):
+      case ButtonKey(BUTTON_INTERNET):
         selection = BUTTON_INTERNET;
         pressed = true;
         break;
 #endif  //(0)
 
-      case BUTTON_IPX | KN_BUTTON:
+      case ButtonKey(BUTTON_IPX):
         selection = BUTTON_IPX;
         pressed = true;
         break;
 
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         selection = BUTTON_CANCEL;
         pressed = true;
         break;
@@ -1414,13 +1414,13 @@ int Surrender_Dialog() {
     */
     switch (input) {
       case KN_RETURN:
-      case BUTTON_OK | KN_BUTTON:
+      case ButtonKey(BUTTON_OK):
         retcode = 1;
         process = false;
         break;
 
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         retcode = 0;
         process = false;
         break;

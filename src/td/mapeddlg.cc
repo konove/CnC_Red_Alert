@@ -767,7 +767,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
     ............................ Process input ............................
     */
     switch (input) {
-      case (BUTTON_VAR_A | KN_BUTTON):
+      case ButtonKey(BUTTON_VAR_A):
         (*varp) = SCEN_VAR_A;
         varabtn.Turn_On();
         varbbtn.Turn_Off();
@@ -776,7 +776,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         varlbtn.Turn_Off();
         break;
 
-      case (BUTTON_VAR_B | KN_BUTTON):
+      case ButtonKey(BUTTON_VAR_B):
         (*varp) = SCEN_VAR_B;
         varabtn.Turn_Off();
         varbbtn.Turn_On();
@@ -785,7 +785,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         varlbtn.Turn_Off();
         break;
 
-      case (BUTTON_VAR_C | KN_BUTTON):
+      case ButtonKey(BUTTON_VAR_C):
         (*varp) = SCEN_VAR_C;
         varabtn.Turn_Off();
         varbbtn.Turn_Off();
@@ -794,7 +794,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         varlbtn.Turn_Off();
         break;
 
-      case (BUTTON_VAR_D | KN_BUTTON):
+      case ButtonKey(BUTTON_VAR_D):
         (*varp) = SCEN_VAR_D;
         varabtn.Turn_Off();
         varbbtn.Turn_Off();
@@ -803,7 +803,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         varlbtn.Turn_Off();
         break;
 
-      case (BUTTON_VAR_L | KN_BUTTON):
+      case ButtonKey(BUTTON_VAR_L):
         (*varp) = SCEN_VAR_LOSE;
         varabtn.Turn_Off();
         varbbtn.Turn_Off();
@@ -812,33 +812,33 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         varlbtn.Turn_On();
         break;
 
-      case (BUTTON_EAST | KN_BUTTON):
+      case ButtonKey(BUTTON_EAST):
         (*dirp) = SCEN_DIR_EAST;
         eastbtn.Turn_On();
         westbtn.Turn_Off();
         break;
 
-      case (BUTTON_WEST | KN_BUTTON):
+      case ButtonKey(BUTTON_WEST):
         (*dirp) = SCEN_DIR_WEST;
         eastbtn.Turn_Off();
         westbtn.Turn_On();
         break;
 
-      case (BUTTON_GDI | KN_BUTTON):
+      case ButtonKey(BUTTON_GDI):
         (*playerp) = SCEN_PLAYER_GDI;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
         playermbtn.Turn_Off();
         break;
 
-      case (BUTTON_NOD | KN_BUTTON):
+      case ButtonKey(BUTTON_NOD):
         (*playerp) = SCEN_PLAYER_NOD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
         playermbtn.Turn_Off();
         break;
 
-      case (BUTTON_MPLAYER | KN_BUTTON):
+      case ButtonKey(BUTTON_MPLAYER):
         (*playerp) = SCEN_PLAYER_MPLAYER;
         gdibtn.Turn_Off();
         nodbtn.Turn_Off();
@@ -846,18 +846,18 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         break;
 
       case (KN_RETURN):
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         cancel = false;
         process = false;
         break;
 
       case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;
 
-      case (BUTTON_SCENARIO | KN_BUTTON):
+      case ButtonKey(BUTTON_SCENARIO):
         break;
 
       default:
@@ -1292,13 +1292,13 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     if (grabbed == 0) {
       switch (input) {
         case (KN_RETURN):
-        case (BUTTON_OK | KN_BUTTON):
+        case ButtonKey(BUTTON_OK):
           cancel = false;
           process = false;
           break;
 
         case (KN_ESC):
-        case (BUTTON_CANCEL | KN_BUTTON):
+        case ButtonKey(BUTTON_CANCEL):
           cancel = true;
           process = false;
           break;
@@ -1969,19 +1969,19 @@ int MapEditClass::Scenario_Dialog() {
       /*..................................................................
       Credit edit boxes: no need for any action
       ..................................................................*/
-      case (TEDIT_GDICRED | KN_BUTTON):
+      case ButtonKey(TEDIT_GDICRED):
         break;
 
-      case (TEDIT_NODCRED | KN_BUTTON):
+      case ButtonKey(TEDIT_NODCRED):
         break;
 
-      case (TEDIT_NEUTCRED | KN_BUTTON):
+      case ButtonKey(TEDIT_NEUTCRED):
         break;
 
       /*..................................................................
       GDI Edge buttons: turn this one on, others off, save the edge value
       ..................................................................*/
-      case (BUTTON_GDI_N | KN_BUTTON):
+      case ButtonKey(BUTTON_GDI_N):
         gdi_edge = SOURCE_NORTH;
         gdinbtn.Turn_On();
         gdiebtn.Turn_Off();
@@ -1989,7 +1989,7 @@ int MapEditClass::Scenario_Dialog() {
         gdiwbtn.Turn_Off();
         break;
 
-      case (BUTTON_GDI_E | KN_BUTTON):
+      case ButtonKey(BUTTON_GDI_E):
         gdi_edge = SOURCE_EAST;
         gdinbtn.Turn_Off();
         gdiebtn.Turn_On();
@@ -1997,7 +1997,7 @@ int MapEditClass::Scenario_Dialog() {
         gdiwbtn.Turn_Off();
         break;
 
-      case (BUTTON_GDI_S | KN_BUTTON):
+      case ButtonKey(BUTTON_GDI_S):
         gdi_edge = SOURCE_SOUTH;
         gdinbtn.Turn_Off();
         gdiebtn.Turn_Off();
@@ -2005,7 +2005,7 @@ int MapEditClass::Scenario_Dialog() {
         gdiwbtn.Turn_Off();
         break;
 
-      case (BUTTON_GDI_W | KN_BUTTON):
+      case ButtonKey(BUTTON_GDI_W):
         gdi_edge = SOURCE_WEST;
         gdinbtn.Turn_Off();
         gdiebtn.Turn_Off();
@@ -2016,7 +2016,7 @@ int MapEditClass::Scenario_Dialog() {
       /*..................................................................
       NOD Edge buttons: turn this one on, others off, save the edge value
       ..................................................................*/
-      case (BUTTON_NOD_N | KN_BUTTON):
+      case ButtonKey(BUTTON_NOD_N):
         nod_edge = SOURCE_NORTH;
         nodnbtn.Turn_On();
         nodebtn.Turn_Off();
@@ -2024,7 +2024,7 @@ int MapEditClass::Scenario_Dialog() {
         nodwbtn.Turn_Off();
         break;
 
-      case (BUTTON_NOD_E | KN_BUTTON):
+      case ButtonKey(BUTTON_NOD_E):
         nod_edge = SOURCE_EAST;
         nodnbtn.Turn_Off();
         nodebtn.Turn_On();
@@ -2032,7 +2032,7 @@ int MapEditClass::Scenario_Dialog() {
         nodwbtn.Turn_Off();
         break;
 
-      case (BUTTON_NOD_S | KN_BUTTON):
+      case ButtonKey(BUTTON_NOD_S):
         nod_edge = SOURCE_SOUTH;
         nodnbtn.Turn_Off();
         nodebtn.Turn_Off();
@@ -2040,7 +2040,7 @@ int MapEditClass::Scenario_Dialog() {
         nodwbtn.Turn_Off();
         break;
 
-      case (BUTTON_NOD_W | KN_BUTTON):
+      case ButtonKey(BUTTON_NOD_W):
         nod_edge = SOURCE_WEST;
         nodnbtn.Turn_Off();
         nodebtn.Turn_Off();
@@ -2049,13 +2049,13 @@ int MapEditClass::Scenario_Dialog() {
         break;
 
       case (KN_RETURN):
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         cancel = false;
         process = false;
         break;
 
       case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;
@@ -2559,32 +2559,32 @@ int MapEditClass::Select_Trigger() {
     ............................ Process input ............................
     */
     switch (input) {
-      case (TRIGGER_LIST | KN_BUTTON):
+      case ButtonKey(TRIGGER_LIST):
         def_idx = triggerlist.Current_Index();
         if (def_idx < Triggers.Count()) {
           CurTrigger = Triggers.Ptr(def_idx);
         }
         break;
 
-      case (BUTTON_EDIT | KN_BUTTON):
+      case ButtonKey(BUTTON_EDIT):
         if (CurTrigger) {  // only allow if there's one selected
           process = false;
           edit_trig = true;
         }
         break;
 
-      case (BUTTON_NEW | KN_BUTTON):
+      case ButtonKey(BUTTON_NEW):
         process = false;
         new_trig = true;
         break;
 
-      case (BUTTON_DELETE | KN_BUTTON):
+      case ButtonKey(BUTTON_DELETE):
         process = false;
         del_trig = true;
         break;
 
       case (KN_RETURN):
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         process = false;
         break;
     }
@@ -3104,7 +3104,7 @@ int MapEditClass::Edit_Trigger() {
     ............................ Process input ............................
     */
     switch (input) {
-      case (EVENT_LIST | KN_BUTTON):
+      case ButtonKey(EVENT_LIST):
         if (eventlist.Current_Index() != event_idx) {
           event_idx = EventType(eventlist.Current_Index());
           databuf[0] = 0;
@@ -3116,33 +3116,33 @@ int MapEditClass::Edit_Trigger() {
         }
         break;
 
-      case (ACTION_LIST | KN_BUTTON):
+      case ButtonKey(ACTION_LIST):
         if (actionlist.Current_Index() != action_idx) {
           action_idx = TriggerClass::ActionType(actionlist.Current_Index());
           display = REDRAW_ALL;
         }
         break;
 
-      case (NAME_EDIT | KN_BUTTON):
+      case ButtonKey(NAME_EDIT):
         break;
 
-      case (DATA_EDIT | KN_BUTTON):
+      case ButtonKey(DATA_EDIT):
         break;
 
-      case (BUTTON_GDI | KN_BUTTON):
-      case (BUTTON_NOD | KN_BUTTON):
-      case (BUTTON_NEUTRAL | KN_BUTTON):
-      case (BUTTON_MULTI1 | KN_BUTTON):
-      case (BUTTON_MULTI2 | KN_BUTTON):
-      case (BUTTON_MULTI3 | KN_BUTTON):
-      case (BUTTON_MULTI4 | KN_BUTTON):
-      case (BUTTON_MULTI5 | KN_BUTTON):
-      case (BUTTON_MULTI6 | KN_BUTTON):
+      case ButtonKey(BUTTON_GDI):
+      case ButtonKey(BUTTON_NOD):
+      case ButtonKey(BUTTON_NEUTRAL):
+      case ButtonKey(BUTTON_MULTI1):
+      case ButtonKey(BUTTON_MULTI2):
+      case ButtonKey(BUTTON_MULTI3):
+      case ButtonKey(BUTTON_MULTI4):
+      case ButtonKey(BUTTON_MULTI5):
+      case ButtonKey(BUTTON_MULTI6):
         house = (HousesType)((input & (~KN_BUTTON)) - BUTTON_GDI);
         Set_House_Buttons(house, commands, BUTTON_GDI);
         break;
 
-      case (BUTTON_TEAM | KN_BUTTON):
+      case ButtonKey(BUTTON_TEAM):
         Handle_Teams("Select a Team");
         if (CurTeam) {
           CurTrigger->Team = CurTeam;
@@ -3153,21 +3153,21 @@ int MapEditClass::Edit_Trigger() {
         display = REDRAW_ALL;
         break;
 
-      case (BUTTON_VOLATILE | KN_BUTTON):
+      case ButtonKey(BUTTON_VOLATILE):
         persistant = TriggerClass::VOLATILE;
         volatilebtn.Turn_On();
         persistbtn.Turn_Off();
         semipersistbtn.Turn_Off();
         break;
 
-      case (BUTTON_PERSIST | KN_BUTTON):
+      case ButtonKey(BUTTON_PERSIST):
         persistant = TriggerClass::PERSISTANT;
         volatilebtn.Turn_Off();
         persistbtn.Turn_On();
         semipersistbtn.Turn_Off();
         break;
 
-      case (BUTTON_SEMIPERSIST | KN_BUTTON):
+      case ButtonKey(BUTTON_SEMIPERSIST):
         persistant = TriggerClass::SEMIPERSISTANT;
         volatilebtn.Turn_Off();
         persistbtn.Turn_Off();
@@ -3175,12 +3175,12 @@ int MapEditClass::Edit_Trigger() {
         break;
 
       case (KN_RETURN):
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         process = false;
         break;
 
       case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;
@@ -3521,16 +3521,16 @@ int MapEditClass::Import_Triggers() {
     ............................ Process input ............................
     */
     switch (input) {
-      case (TRIGGER_LIST | KN_BUTTON):
+      case ButtonKey(TRIGGER_LIST):
         break;
 
       case (KN_RETURN):
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         process = false;
         break;
 
       case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;
@@ -3864,16 +3864,16 @@ int MapEditClass::Import_Teams() {
     ............................ Process input ............................
     */
     switch (input) {
-      case (TEAM_LIST | KN_BUTTON):
+      case ButtonKey(TEAM_LIST):
         break;
 
       case (KN_RETURN):
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         process = false;
         break;
 
       case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;

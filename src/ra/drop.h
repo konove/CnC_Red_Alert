@@ -251,7 +251,7 @@ void TDropListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType& key,
     if (flags & LEFTRELEASE) {
       if (IsDropped) {
         Collapse();
-        key = (KeyNumType)(ID | KN_BUTTON);
+        key = ButtonKey(static_cast<int>(ID));
       } else {
         Expand();
       }
@@ -261,7 +261,7 @@ void TDropListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType& key,
   if (&whom == &List) {
     strncpy(String, List.Current_Item()->Description(), MaxLength);
     Flag_To_Redraw();
-    key = (KeyNumType)(ID | KN_BUTTON);
+    key = ButtonKey(static_cast<int>(ID));
   }
 }
 

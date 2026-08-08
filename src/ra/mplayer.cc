@@ -312,30 +312,30 @@ GameType Select_MPlayer_Game() {
     //	Process input
     //.....................................................................
     switch (input) {
-      case BUTTON_MODEMSERIAL | KN_BUTTON:
+      case ButtonKey(BUTTON_MODEMSERIAL):
         selection = BUTTON_MODEMSERIAL;
         pressed = true;
         break;
 
-      case BUTTON_SKIRMISH | KN_BUTTON:
+      case ButtonKey(BUTTON_SKIRMISH):
         selection = BUTTON_SKIRMISH;
         pressed = true;
         break;
 
-      case BUTTON_IPX | KN_BUTTON:
+      case ButtonKey(BUTTON_IPX):
         selection = BUTTON_IPX;
         pressed = true;
         break;
 
 #if WOLAPI_INTEGRATION
-      case (BUTTON_WOL | KN_BUTTON):  //	ajw
+      case ButtonKey(BUTTON_WOL):  //	ajw
         selection = BUTTON_WOL;
         pressed = true;
         break;
 #endif
 
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         selection = BUTTON_CANCEL;
         pressed = true;
         break;
@@ -805,12 +805,12 @@ int Surrender_Dialog(const char* text) {
     //	Process input
     //.....................................................................
     switch (input) {
-      case BUTTON_OK | KN_BUTTON:
+      case ButtonKey(BUTTON_OK):
         retcode = 1;
         process = false;
         break;
 
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         retcode = 0;
         process = false;
         break;
@@ -996,12 +996,12 @@ int Abort_Dialog() {
     //	Process input
     //.....................................................................
     switch (input) {
-      case BUTTON_YES | KN_BUTTON:
+      case ButtonKey(BUTTON_YES):
         retcode = 1;
         process = false;
         break;
 
-      case BUTTON_NO | KN_BUTTON:
+      case ButtonKey(BUTTON_NO):
         retcode = 0;
         process = false;
         break;

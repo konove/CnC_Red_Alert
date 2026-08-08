@@ -476,7 +476,7 @@ int Test_Null_Modem() {
     */
     switch (input) {
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         // Smart_Printf( "Canceled waiting for SERIAL_CONNECT\n" );
         retval = 0;
         process = false;
@@ -721,7 +721,7 @@ static int Reconnect_Null_Modem() {
     */
     switch (input) {
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         retval = false;
         process = false;
         break;
@@ -1141,28 +1141,28 @@ GameType Select_Serial_Dialog() {
     ............................ Process input ............................
     */
     switch (input) {
-      case BUTTON_DIAL | KN_BUTTON:
+      case ButtonKey(BUTTON_DIAL):
         selection = BUTTON_DIAL;
         pressed = true;
         break;
 
-      case BUTTON_ANSWER | KN_BUTTON:
+      case ButtonKey(BUTTON_ANSWER):
         selection = BUTTON_ANSWER;
         pressed = true;
         break;
 
-      case BUTTON_NULLMODEM | KN_BUTTON:
+      case ButtonKey(BUTTON_NULLMODEM):
         selection = BUTTON_NULLMODEM;
         pressed = true;
         break;
 
-      case BUTTON_SETTINGS | KN_BUTTON:
+      case ButtonKey(BUTTON_SETTINGS):
         selection = BUTTON_SETTINGS;
         pressed = true;
         break;
 
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         selection = BUTTON_CANCEL;
         pressed = true;
         break;
@@ -1600,28 +1600,28 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
     ---------------------------- Process input ----------------------------
     */
     switch (input) {
-      case BUTTON_COMPRESSION | KN_BUTTON:
+      case ButtonKey(BUTTON_COMPRESSION):
         settings->Compression = settings->Compression ^ 1;
         port::SafeCopy(compress_text, settings->Compression
                                           ? Text_String(TXT_ON)
                                           : Text_String(TXT_OFF));
         break;
 
-      case BUTTON_ERROR_CORRECTION | KN_BUTTON:
+      case ButtonKey(BUTTON_ERROR_CORRECTION):
         settings->ErrorCorrection = settings->ErrorCorrection ^ 1;
         port::SafeCopy(correction_text, settings->ErrorCorrection
                                             ? Text_String(TXT_ON)
                                             : Text_String(TXT_OFF));
         break;
 
-      case BUTTON_HARDWARE_FLOW_CONTROL | KN_BUTTON:
+      case ButtonKey(BUTTON_HARDWARE_FLOW_CONTROL):
         settings->HardwareFlowControl = settings->HardwareFlowControl ^ 1;
         port::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
                                              ? Text_String(TXT_ON)
                                              : Text_String(TXT_OFF));
         break;
 
-      case BUTTON_DEFAULT | KN_BUTTON:
+      case ButtonKey(BUTTON_DEFAULT):
         settings->Compression = false;
         settings->ErrorCorrection = false;
         settings->HardwareFlowControl = true;
@@ -1641,7 +1641,7 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
         display = std::max(display, REDRAW_BUTTONS);
         break;
 
-      case BUTTON_OK | KN_BUTTON:
+      case ButtonKey(BUTTON_OK):
         process = false;
         break;
     }
@@ -2452,7 +2452,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     */
     switch (input) {
 #if (0)
-      case (BUTTON_INITTYPE | KN_BUTTON):
+      case ButtonKey(BUTTON_INITTYPE):
         tempsettings.Init = !tempsettings.Init;
         port::SafeCopy(init_text, init_types[tempsettings.Init]);
         inittypebutton.Flag_To_Redraw();
@@ -2460,12 +2460,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
 #endif  //(0)
 
-      case BUTTON_ADVANCED | KN_BUTTON:
+      case ButtonKey(BUTTON_ADVANCED):
         Advanced_Modem_Settings(&tempsettings);
         display = REDRAW_ALL;
         break;
 
-      case BUTTON_PORT | KN_BUTTON:
+      case ButtonKey(BUTTON_PORT):
         item = (char*)portlist.Current_Item();
         if (port_index < 4) {
           temp = strchr(item, ' ');
@@ -2565,7 +2565,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-      case BUTTON_PORTLIST | KN_BUTTON:
+      case ButtonKey(BUTTON_PORTLIST):
         if (portlist.Current_Index() != port_index) {
           port_index = portlist.Current_Index();
           item = (char*)portlist.Current_Item();
@@ -2631,7 +2631,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 
 #ifdef EDIT_IRQ
-      case (BUTTON_IRQ | KN_BUTTON):
+      case ButtonKey(BUTTON_IRQ):
         item = (char*)irqlist.Current_Item();
         if (irq_index < 4) {
           temp = strchr(item, ' ');
@@ -2658,7 +2658,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         baud_edt.Flag_To_Redraw();
         break;
 
-      case (BUTTON_IRQLIST | KN_BUTTON):
+      case ButtonKey(BUTTON_IRQLIST):
         if (irqlist.Current_Index() != irq_index) {
           irq_index = irqlist.Current_Index();
           item = (char*)irqlist.Current_Item();
@@ -2696,7 +2696,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 #endif  // EDIT_IRQ
 
-      case BUTTON_BAUD | KN_BUTTON:
+      case ButtonKey(BUTTON_BAUD):
         item = (char*)baudlist.Current_Item();
         strncpy(baudbuf, item, BAUDBUF_MAX);
         baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
@@ -2705,7 +2705,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         display = REDRAW_BUTTONS;
         break;
 
-      case BUTTON_BAUDLIST | KN_BUTTON:
+      case ButtonKey(BUTTON_BAUDLIST):
         if (baudlist.Current_Index() != baud_index) {
           baud_index = baudlist.Current_Index();
           item = (char*)baudlist.Current_Item();
@@ -2717,7 +2717,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 
 #if 0
-			case (BUTTON_INITSTR | KN_BUTTON):
+			case ButtonKey(BUTTON_INITSTR):
 				strupr( initstrbuf );
 				strncpy( InitStrings[ initstr_index ], initstrbuf, INITSTRBUF_MAX );
 				Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
@@ -2728,7 +2728,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 				break;
 #endif
 
-      case BUTTON_INITSTRLIST | KN_BUTTON:
+      case ButtonKey(BUTTON_INITSTRLIST):
         if (initstrlist.Current_Index() != initstr_index) {
           initstr_index = initstrlist.Current_Index();
           item = (char*)initstrlist.Current_Item();
@@ -2743,7 +2743,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       /*------------------------------------------------------------------
       Add a new InitString entry
       ------------------------------------------------------------------*/
-      case BUTTON_ADD | KN_BUTTON:
+      case ButtonKey(BUTTON_ADD):
 
         item = new char[INITSTRBUF_MAX];
         memset(item, 0, INITSTRBUF_MAX);
@@ -2773,7 +2773,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       /*------------------------------------------------------------------
       Delete the current InitString entry
       ------------------------------------------------------------------*/
-      case BUTTON_DELETE | KN_BUTTON:
+      case ButtonKey(BUTTON_DELETE):
 
         if (InitStrings.Count() && initstr_index != -1) {
           InitStrings.Delete(initstr_index);
@@ -2782,7 +2782,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-      case BUTTON_CWAITSTR | KN_BUTTON:
+      case ButtonKey(BUTTON_CWAITSTR):
         item = (char*)cwaitstrlist.Current_Item();
         if (cwaitstr_index < 3) {
         } else {
@@ -2797,7 +2797,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-      case BUTTON_CWAITSTRLIST | KN_BUTTON:
+      case ButtonKey(BUTTON_CWAITSTRLIST):
         if (cwaitstrlist.Current_Index() != cwaitstr_index) {
           cwaitstr_index = cwaitstrlist.Current_Index();
           item = (char*)cwaitstrlist.Current_Item();
@@ -2823,13 +2823,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         display = REDRAW_BUTTONS;
         break;
 
-      case BUTTON_TONE | KN_BUTTON:
+      case ButtonKey(BUTTON_TONE):
         tempsettings.DialMethod = DIAL_TOUCH_TONE;
         tonebtn.Turn_On();
         pulsebtn.Turn_Off();
         break;
 
-      case BUTTON_PULSE | KN_BUTTON:
+      case ButtonKey(BUTTON_PULSE):
         tempsettings.DialMethod = DIAL_PULSE;
         tonebtn.Turn_Off();
         pulsebtn.Turn_On();
@@ -2839,7 +2839,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       SAVE: save the com settings
       ------------------------------------------------------------------*/
       case KN_RETURN:
-      case BUTTON_SAVE | KN_BUTTON:
+      case ButtonKey(BUTTON_SAVE):
         switch (port_index) {
           case 0:
             tempsettings.Port = 0x3f8;
@@ -2935,7 +2935,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         process = false;
         rc = false;
         break;
@@ -3745,7 +3745,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User edits the name field; retransmit new game options
       ------------------------------------------------------------------*/
-      case BUTTON_NAME | KN_BUTTON:
+      case ButtonKey(BUTTON_NAME):
         if (!ready_to_go) {
           credit_edt.Clear_Focus();
           credit_edt.Flag_To_Redraw();
@@ -3759,7 +3759,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/
-      case BUTTON_GDI | KN_BUTTON:
+      case ButtonKey(BUTTON_GDI):
         if (!ready_to_go) {
           MPlayerHouse = HOUSE_GOOD;
           gdibtn.Turn_On();
@@ -3770,7 +3770,7 @@ int Com_Scenario_Dialog() {
         }
         break;
 
-      case BUTTON_NOD | KN_BUTTON:
+      case ButtonKey(BUTTON_NOD):
         if (!ready_to_go) {
           MPlayerHouse = HOUSE_BAD;
           gdibtn.Turn_Off();
@@ -3784,7 +3784,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User edits the credits value; retransmit new game options
       ------------------------------------------------------------------*/
-      case BUTTON_CREDITS | KN_BUTTON:
+      case ButtonKey(BUTTON_CREDITS):
         if (!ready_to_go) {
           name_edt.Clear_Focus();
           name_edt.Flag_To_Redraw();
@@ -3797,7 +3797,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       New Scenario selected.
       ------------------------------------------------------------------*/
-      case BUTTON_SCENARIOLIST | KN_BUTTON:
+      case ButtonKey(BUTTON_SCENARIOLIST):
         if (scenariolist.Current_Index() != ScenarioIdx && !ready_to_go) {
           ScenarioIdx = scenariolist.Current_Index();
           MPlayerCredits = atoi(credbuf);
@@ -3809,7 +3809,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User adjusts max # units
       ------------------------------------------------------------------*/
-      case BUTTON_COUNT | KN_BUTTON:
+      case ButtonKey(BUTTON_COUNT):
         if (!ready_to_go) {
           MPlayerUnitCount =
               countgauge.Get_Value() + MPlayerCountMin[MPlayerBases];
@@ -3821,7 +3821,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User adjusts build level
       ------------------------------------------------------------------*/
-      case BUTTON_LEVEL | KN_BUTTON:
+      case ButtonKey(BUTTON_LEVEL):
         if (!ready_to_go) {
           BuildLevel = std::min<unsigned int>(levelgauge.Get_Value() + 1,
                                               MPLAYER_BUILD_LEVEL_MAX);
@@ -3833,7 +3833,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle bases
       ------------------------------------------------------------------*/
-      case BUTTON_BASES | KN_BUTTON:
+      case ButtonKey(BUTTON_BASES):
         if (!ready_to_go) {
           if (MPlayerBases) {
             MPlayerBases = 0;
@@ -3870,7 +3870,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle tiberium
       ------------------------------------------------------------------*/
-      case BUTTON_TIBERIUM | KN_BUTTON:
+      case ButtonKey(BUTTON_TIBERIUM):
         if (!ready_to_go) {
           if (MPlayerTiberium) {
             MPlayerTiberium = 0;
@@ -3894,7 +3894,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle goodies
       ------------------------------------------------------------------*/
-      case BUTTON_GOODIES | KN_BUTTON:
+      case ButtonKey(BUTTON_GOODIES):
         if (!ready_to_go) {
           if (MPlayerGoodies) {
             MPlayerGoodies = 0;
@@ -3914,7 +3914,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle ghosts
       ------------------------------------------------------------------*/
-      case BUTTON_GHOSTS | KN_BUTTON:
+      case ButtonKey(BUTTON_GHOSTS):
         if (!ready_to_go) {
           if (!MPlayerGhosts &&
               !Special.IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
@@ -3942,7 +3942,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       OK: exit loop with true status
       ------------------------------------------------------------------*/
-      case BUTTON_OK | KN_BUTTON:
+      case ButtonKey(BUTTON_OK):
         if (!ready_to_go) {
           //
           // make sure we got a game options packet from the other player
@@ -3993,7 +3993,7 @@ int Com_Scenario_Dialog() {
             break;
           }
         }
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         if (!ready_to_go) {
           process = false;
           rc = false;
@@ -4012,7 +4012,7 @@ int Com_Scenario_Dialog() {
         F4/SEND/'M' = send a message
         ...............................................................*/
         if (Messages.Get_Edit_Buf() == nullptr) {
-          if (input == KN_M || input == (BUTTON_SEND | KN_BUTTON) ||
+          if (input == KN_M || input == ButtonKey(BUTTON_SEND) ||
               input == KN_F4) {
             memset(txt, 0, 80);
 
@@ -4031,7 +4031,7 @@ int Com_Scenario_Dialog() {
             break;
           }
         } else {
-          if (input == (BUTTON_SEND | KN_BUTTON)) {
+          if (input == ButtonKey(BUTTON_SEND)) {
             input = KN_RETURN;
           }
         }
@@ -5148,7 +5148,7 @@ int Com_Show_Scenario_Dialog() {
       /*------------------------------------------------------------------
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/
-      case BUTTON_GDI | KN_BUTTON:
+      case ButtonKey(BUTTON_GDI):
         if (!ready_to_go) {
           MPlayerHouse = HOUSE_GOOD;
           gdibtn.Turn_On();
@@ -5158,7 +5158,7 @@ int Com_Show_Scenario_Dialog() {
         }
         break;
 
-      case BUTTON_NOD | KN_BUTTON:
+      case ButtonKey(BUTTON_NOD):
         if (!ready_to_go) {
           MPlayerHouse = HOUSE_BAD;
           gdibtn.Turn_Off();
@@ -5171,7 +5171,7 @@ int Com_Show_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User edits the name value; retransmit
       ------------------------------------------------------------------*/
-      case BUTTON_NAME | KN_BUTTON:
+      case ButtonKey(BUTTON_NAME):
         if (!ready_to_go) {
           port::SafeCopy(MPlayerName, namebuf);
           transmit = 1;
@@ -5190,7 +5190,7 @@ int Com_Show_Scenario_Dialog() {
             break;
           }
         }
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         if (!ready_to_go) {
           process = false;
           rc = false;
@@ -5206,7 +5206,7 @@ int Com_Show_Scenario_Dialog() {
           F4/SEND/'M' = send a message
           ...............................................................*/
           if (Messages.Get_Edit_Buf() == nullptr) {
-            if (input == KN_M || input == (BUTTON_SEND | KN_BUTTON) ||
+            if (input == KN_M || input == ButtonKey(BUTTON_SEND) ||
                 input == KN_F4) {
               memset(txt, 0, 80);
 
@@ -5224,7 +5224,7 @@ int Com_Show_Scenario_Dialog() {
               break;
             }
           } else {
-            if (input == (BUTTON_SEND | KN_BUTTON)) {
+            if (input == ButtonKey(BUTTON_SEND)) {
               input = KN_RETURN;
             }
           }
@@ -6009,7 +6009,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       New phone listing selected.
       ------------------------------------------------------------------*/
-      case BUTTON_PHONELIST | KN_BUTTON:
+      case ButtonKey(BUTTON_PHONELIST):
         /*...............................................................
         Detect a change in the selected item; update CurPhoneIdx, and
         the edit box buffer.
@@ -6025,7 +6025,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       Add a new entry
       ------------------------------------------------------------------*/
-      case BUTTON_ADD | KN_BUTTON:
+      case ButtonKey(BUTTON_ADD):
 
         /*...............................................................
         Allocate a new phone book entry
@@ -6072,7 +6072,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       Edit the current entry
       ------------------------------------------------------------------*/
-      case BUTTON_EDIT | KN_BUTTON:
+      case ButtonKey(BUTTON_EDIT):
 
         /*...............................................................
         Do nothing if no entry is selected.
@@ -6115,7 +6115,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       Delete the current entry
       ------------------------------------------------------------------*/
-      case BUTTON_DELETE | KN_BUTTON:
+      case ButtonKey(BUTTON_DELETE):
 
         /*...............................................................
         Do nothing if no entry is selected.
@@ -6145,7 +6145,7 @@ static int Phone_Dialog() {
         dialbtn.Draw_Me(true);
         // fall thru
 
-      case BUTTON_DIAL | KN_BUTTON:
+      case ButtonKey(BUTTON_DIAL):
 
         /*...............................................................
         If no item is selected, just dial the number in the phone #
@@ -6194,7 +6194,7 @@ static int Phone_Dialog() {
       CANCEL: bail out
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         process = false;
         rc = false;
         break;
@@ -6620,7 +6620,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     ---------------------------- Process input ----------------------------
     */
     switch (input) {
-      case BUTTON_NAME | KN_BUTTON:
+      case ButtonKey(BUTTON_NAME):
         numedit.Set_Focus();
         numedit.Flag_To_Redraw();
         break;
@@ -6633,7 +6633,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       /*------------------------------------------------------------------
       Use Default Serial Settings
       ------------------------------------------------------------------*/
-      case BUTTON_DEFAULT | KN_BUTTON:
+      case ButtonKey(BUTTON_DEFAULT):
         custombtn.Turn_Off();
         defaultbtn.Turn_On();
         custom = 0;
@@ -6642,7 +6642,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       /*------------------------------------------------------------------
       Use Custom Serial Settings
       ------------------------------------------------------------------*/
-      case BUTTON_CUSTOM | KN_BUTTON:
+      case ButtonKey(BUTTON_CUSTOM):
         if (Com_Settings_Dialog(&settings)) {
           custombtn.Turn_On();
           defaultbtn.Turn_Off();
@@ -6655,7 +6655,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       CANCEL: bail out
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         process = false;
         rc = false;
         break;
@@ -6664,7 +6664,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       Save: save changes
       ------------------------------------------------------------------*/
       case KN_RETURN:
-      case BUTTON_SAVE | KN_BUTTON:
+      case ButtonKey(BUTTON_SAVE):
         process = false;
         rc = true;
         break;
@@ -7311,7 +7311,7 @@ int Com_Fake_Scenario_Dialog() {
     input = buttons->Input();
     switch (input) {
       case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         process = false;
         rc = false;
         break;
@@ -7787,7 +7787,7 @@ int Com_Show_Fake_Scenario_Dialog() {
     input = buttons->Input();
     switch (input) {
       case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         process = false;
         rc = false;
         break;

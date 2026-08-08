@@ -1057,7 +1057,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     - Toggle LMouseDown
     - release any grabbed object
     ---------------------------------------------------------------------*/
-    case ((int)MAP_AREA | (int)KN_BUTTON):
+    case ButtonKey(MAP_AREA):
       /*
       ------------------------- Left Button DOWN -------------------------
       */
@@ -1202,13 +1202,13 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: House Button
     ---------------------------------------------------------------------*/
-    case (POPUP_GDI | KN_BUTTON):
-    case (POPUP_NOD | KN_BUTTON):
-    case (POPUP_NEUTRAL | KN_BUTTON):
-    case (POPUP_MULTI1 | KN_BUTTON):
-    case (POPUP_MULTI2 | KN_BUTTON):
-    case (POPUP_MULTI3 | KN_BUTTON):
-    case (POPUP_MULTI4 | KN_BUTTON):
+    case ButtonKey(POPUP_GDI):
+    case ButtonKey(POPUP_NOD):
+    case ButtonKey(POPUP_NEUTRAL):
+    case ButtonKey(POPUP_MULTI1):
+    case ButtonKey(POPUP_MULTI2):
+    case ButtonKey(POPUP_MULTI3):
+    case ButtonKey(POPUP_MULTI4):
       /*..................................................................
       Convert input value into a house value; assume HOUSE_GOOD is 0
       ..................................................................*/
@@ -1230,7 +1230,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Mission
     ---------------------------------------------------------------------*/
-    case (POPUP_MISSIONLIST | KN_BUTTON):
+    case ButtonKey(POPUP_MISSIONLIST):
       if (CurrentObject[0]->Is_Techno()) {
         /*
         ........................ Set new mission ........................
@@ -1248,7 +1248,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Health
     ---------------------------------------------------------------------*/
-    case (POPUP_HEALTHGAUGE | KN_BUTTON):
+    case ButtonKey(POPUP_HEALTHGAUGE):
       if (CurrentObject[0]->Is_Techno()) {
         /*
         .......... Derive strength from current gauge reading ...........
@@ -1285,7 +1285,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Facing
     ---------------------------------------------------------------------*/
-    case (POPUP_FACINGDIAL | KN_BUTTON):
+    case ButtonKey(POPUP_FACINGDIAL):
       if (CurrentObject[0]->Is_Techno()) {
         /*
         ........................ Set new facing .........................
@@ -1317,7 +1317,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Facing
     ---------------------------------------------------------------------*/
-    case (POPUP_BASEPERCENT | KN_BUTTON):
+    case ButtonKey(POPUP_BASEPERCENT):
       if (BaseGauge->Get_Value() != BasePercent) {
         BasePercent = BaseGauge->Get_Value();
         Build_Base_To(BasePercent);

@@ -917,12 +917,12 @@ int Main_Menu(unsigned long timeout) {
     input = commands->Input();
     switch (input) {
 #ifdef NEWMENU
-      case BUTTON_EXPAND | KN_BUTTON:
+      case ButtonKey(BUTTON_EXPAND):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case BUTTON_INTERNET | KN_BUTTON:
+      case ButtonKey(BUTTON_INTERNET):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
@@ -931,19 +931,19 @@ int Main_Menu(unsigned long timeout) {
 #define BUTTON_EXPAND BUTTON_START
 #endif
 
-      case BUTTON_START | KN_BUTTON:
+      case ButtonKey(BUTTON_START):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
 #ifdef BONUS_MISSIONS
-      case BUTTON_BONUS | KN_BUTTON:
+      case ButtonKey(BUTTON_BONUS):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 #endif  // BONUS_MISSIONS
 
-      case BUTTON_LOAD | KN_BUTTON:
+      case ButtonKey(BUTTON_LOAD):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
 #ifdef DEMO
         retval += 1;
@@ -951,7 +951,7 @@ int Main_Menu(unsigned long timeout) {
         process = false;
         break;
 
-      case BUTTON_MULTI | KN_BUTTON:
+      case ButtonKey(BUTTON_MULTI):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
 #ifdef DEMO
         retval += 1;
@@ -959,7 +959,7 @@ int Main_Menu(unsigned long timeout) {
         process = false;
         break;
 
-      case BUTTON_INTRO | KN_BUTTON:
+      case ButtonKey(BUTTON_INTRO):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
 #ifdef DEMO
         retval += 1;
@@ -967,7 +967,7 @@ int Main_Menu(unsigned long timeout) {
         process = false;
         break;
 
-      case BUTTON_EXIT | KN_BUTTON:
+      case ButtonKey(BUTTON_EXIT):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
 #ifdef DEMO
         retval += 1;

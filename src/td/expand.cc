@@ -237,7 +237,7 @@ bool Expansion_Dialog() {
     KeyNumType input = buttons->Input();
     switch (input) {
       case KN_RETURN:
-      case 200 | KN_BUTTON:
+      case ButtonKey(200):
         if (list.Current_Item()[sizeof(int)] == 'G') {
           ScenPlayer = SCEN_PLAYER_GDI;
         } else {
@@ -251,7 +251,7 @@ bool Expansion_Dialog() {
         break;
 
       case KN_ESC:
-      case 201 | KN_BUTTON:
+      case ButtonKey(201):
         ScenPlayer = SCEN_PLAYER_GDI;
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
@@ -397,7 +397,7 @@ bool Bonus_Dialog() {
     KeyNumType input = buttons->Input();
     switch (input) {
       case KN_RETURN:
-      case 200 | KN_BUTTON:
+      case ButtonKey(200):
         if (list.Current_Item()[sizeof(int)] == 'G') {
           ScenPlayer = SCEN_PLAYER_GDI;
         } else {
@@ -411,7 +411,7 @@ bool Bonus_Dialog() {
         break;
 
       case KN_ESC:
-      case 201 | KN_BUTTON:
+      case ButtonKey(201):
         ScenPlayer = SCEN_PLAYER_GDI;
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;

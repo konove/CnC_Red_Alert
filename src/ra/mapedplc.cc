@@ -540,7 +540,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	GDI House
       */
-      case (BUTTON_HOUSE | KN_BUTTON):
+      case ButtonKey(BUTTON_HOUSE):
         house = HousesType(housebtn.Current_Index());
 
         /*
@@ -554,7 +554,7 @@ int MapEditClass::Placement_Dialog() {
       **	Next in list
       */
       case (KN_RIGHT):
-      case (BUTTON_NEXT | KN_BUTTON):
+      case ButtonKey(BUTTON_NEXT):
         /*
         **	Increment to next obj
         */
@@ -572,7 +572,7 @@ int MapEditClass::Placement_Dialog() {
       **	Previous in list
       */
       case (KN_LEFT):
-      case (BUTTON_PREV | KN_BUTTON):
+      case ButtonKey(BUTTON_PREV):
 
         /*
         **	Decrement to prev obj
@@ -589,20 +589,20 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Select a class type
       */
-      case (BUTTON_TEMPLATE | KN_BUTTON):
-      case (BUTTON_OVERLAY | KN_BUTTON):
-      case (BUTTON_SMUDGE | KN_BUTTON):
-      case (BUTTON_TERRAIN | KN_BUTTON):
-      case (BUTTON_UNIT | KN_BUTTON):
-      case (BUTTON_INFANTRY | KN_BUTTON):
-      case (BUTTON_AIRCRAFT | KN_BUTTON):
-      case (BUTTON_BUILDING | KN_BUTTON):
-      case (BUTTON_AIR | KN_BUTTON):
+      case ButtonKey(BUTTON_TEMPLATE):
+      case ButtonKey(BUTTON_OVERLAY):
+      case ButtonKey(BUTTON_SMUDGE):
+      case ButtonKey(BUTTON_TERRAIN):
+      case ButtonKey(BUTTON_UNIT):
+      case ButtonKey(BUTTON_INFANTRY):
+      case ButtonKey(BUTTON_AIRCRAFT):
+      case ButtonKey(BUTTON_BUILDING):
+      case ButtonKey(BUTTON_AIR):
 
         /*
         **	Find index of class
         */
-        typeindex = input - (BUTTON_TEMPLATE | KN_BUTTON);
+        typeindex = input - ButtonKey(BUTTON_TEMPLATE);
 
         /*
         **	If no objects of that type, do nothing
@@ -671,7 +671,7 @@ int MapEditClass::Placement_Dialog() {
       **	OK
       */
       case (KN_RETURN):
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         cancel = false;
         process = false;
         break;
@@ -680,7 +680,7 @@ int MapEditClass::Placement_Dialog() {
       **	Cancel
       */
       case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;

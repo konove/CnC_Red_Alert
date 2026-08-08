@@ -348,15 +348,15 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       ** ESC/Cancel: break
       */
       case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         iReturn = 0;
         process = false;
         break;
 
       case KN_RETURN:
-      case (EDITBOX_NAME | KN_BUTTON):
-      case (EDITBOX_PASS | KN_BUTTON):
-      case (BUTTON_CONNECT | KN_BUTTON): {
+      case ButtonKey(EDITBOX_NAME):
+      case ButtonKey(EDITBOX_PASS):
+      case ButtonKey(BUTTON_CONNECT): {
         if (!strlen(szNameBuffer)) {
           WWMessageBox().Process(TXT_WOL_MISSINGNAME);
           firsttime = true;  //	Bloody hack.
@@ -466,7 +466,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                                         break;
                                 }
         */
-      case (LISTBOX_NICKS | KN_BUTTON):
+      case ButtonKey(LISTBOX_NICKS):
         strcpy(szNameBuffer, NickList.Get_Item(NickList.Current_Index()));
         strcpy(szPassBuffer,
                NickList.Get_Item_ExtraDataString(NickList.Current_Index()));
@@ -481,10 +481,10 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
         //				display = true;
         break;
 
-      case (BUTTON_SAVECHECK | KN_BUTTON):
+      case ButtonKey(BUTTON_SAVECHECK):
         break;
 
-      case (BUTTON_DELETE | KN_BUTTON):
+      case ButtonKey(BUTTON_DELETE):
         if (NickList.Count() > 0) {
           DeleteNick(pWO, NickList.Current_Index() + 1);
           NickList.Remove_Item(NickList.Current_Index());

@@ -1426,32 +1426,32 @@ bool TriggerTypeClass::Edit() {
     **	Process input
     */
     switch (input) {
-      case BUTTON_EVENT | KN_BUTTON:
+      case ButtonKey(BUTTON_EVENT):
         eventflag = (eventflag + 1) % 4;
         display = true;
         break;
 
-      case BUTTON_ACTION | KN_BUTTON:
+      case ButtonKey(BUTTON_ACTION):
         actionflag = !actionflag;
         display = true;
         break;
 
-      case DATA_SPEECH1 | KN_BUTTON:
+      case ButtonKey(DATA_SPEECH1):
         Speak(VoxType(speechtype1list.Current_Index()));
         display = true;
         break;
 
-      case DATA_SPEECH2 | KN_BUTTON:
+      case ButtonKey(DATA_SPEECH2):
         Speak(VoxType(speechtype2list.Current_Index()));
         display = true;
         break;
 
-      case DATA_SOUND1 | KN_BUTTON:
+      case ButtonKey(DATA_SOUND1):
         Sound_Effect(VocType(soundtype1list.Current_Index()));
         display = true;
         break;
 
-      case DATA_SOUND2 | KN_BUTTON:
+      case ButtonKey(DATA_SOUND2):
         Sound_Effect(VocType(soundtype2list.Current_Index()));
         display = true;
         break;
@@ -1461,7 +1461,7 @@ bool TriggerTypeClass::Edit() {
       *their *	respective positions within the trigger object.
       */
       case KN_RETURN:
-      case BUTTON_OK | KN_BUTTON:
+      case ButtonKey(BUTTON_OK):
         House = HousesType(housebtn.Current_Index());
         IsPersistant = PersistantType(persbtn.Current_Index());
         if (strlen(namebuf) == 0) {
@@ -1684,7 +1684,7 @@ bool TriggerTypeClass::Edit() {
         return (true);
 
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         process = false;
 
       /*

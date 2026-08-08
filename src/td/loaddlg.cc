@@ -417,15 +417,15 @@ int LoadOptionsClass::Process() {
     if (input == KN_RETURN) {
       switch (Style) {
         case SAVE:
-          input = static_cast<KeyNumType>(BUTTON_SAVE | KN_BUTTON);
+          input = ButtonKey(BUTTON_SAVE);
           break;
 
         case LOAD:
-          input = static_cast<KeyNumType>(BUTTON_LOAD | KN_BUTTON);
+          input = ButtonKey(BUTTON_LOAD);
           break;
 
         case WWDELETE:
-          input = static_cast<KeyNumType>(BUTTON_DELETE | KN_BUTTON);
+          input = ButtonKey(BUTTON_DELETE);
           break;
       }
     }
@@ -438,7 +438,7 @@ int LoadOptionsClass::Process() {
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game
       */
-      case BUTTON_LOAD | KN_BUTTON:
+      case ButtonKey(BUTTON_LOAD):
         game_idx = listbtn.Current_Index();
         game_num = Files[game_idx]->Num;
         if (Files[game_idx]->Valid) {
@@ -460,7 +460,7 @@ int LoadOptionsClass::Process() {
       /*
       ** Save: Save the game & exit the dialog
       */
-      case BUTTON_SAVE | KN_BUTTON:
+      case ButtonKey(BUTTON_SAVE):
         if (!strlen(game_descr)) {
           CCMessageBox().Process(TXT_MUSTENTER_DESCRIPTION);
           firsttime = true;
@@ -491,7 +491,7 @@ int LoadOptionsClass::Process() {
       ** Delete: delete the file & stay in the dialog, to allow the user
       ** to delete multiple files.
       */
-      case BUTTON_DELETE | KN_BUTTON:
+      case ButtonKey(BUTTON_DELETE):
         game_idx = listbtn.Current_Index();
         game_num = Files[game_idx]->Num;
         if (CCMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
@@ -512,7 +512,7 @@ int LoadOptionsClass::Process() {
       ** item; if so, and if we're in SAVE mode, copy the list item into
       ** the save-game description field.
       */
-      case BUTTON_LIST | KN_BUTTON:
+      case ButtonKey(BUTTON_LIST):
         if (Style != SAVE) {
           break;
         }
@@ -536,7 +536,7 @@ int LoadOptionsClass::Process() {
       ** ESC/Cancel: break
       */
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;

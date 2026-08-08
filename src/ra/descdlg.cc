@@ -130,19 +130,19 @@ void DescriptionClass::Process(char* string) {
     */
     switch (input) {
       case KN_RETURN:
-      case static_cast<KeyNumType>(BUTTON_OPTIONS | KN_BUTTON):
+      case ButtonKey(BUTTON_OPTIONS):
         strtrim(string);
         process = false;
         break;
 
       case KN_ESC:
-      case static_cast<KeyNumType>(BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         string[0] = NULL;
         strtrim(string);
         process = false;
         break;
 
-      case static_cast<KeyNumType>(BUTTON_EDIT | KN_BUTTON):
+      case ButtonKey(BUTTON_EDIT):
         break;
 
       default:

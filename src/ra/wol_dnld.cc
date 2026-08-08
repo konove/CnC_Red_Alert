@@ -182,7 +182,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         ** Cancel. Just return to the main menu
         */
         case (KN_ESC):
-        case (BUTTON_CANCEL | KN_BUTTON):
+        case ButtonKey(BUTTON_CANCEL):
           pDownload->Abort();
           process = false;
           bReturn = false;

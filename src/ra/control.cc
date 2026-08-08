@@ -103,7 +103,7 @@ int ControlClass::Action(unsigned flags, KeyNumType& key) {
   */
   if (flags) {
     if (ID) {
-      key = static_cast<KeyNumType>(ID | KN_BUTTON);
+      key = ButtonKey(static_cast<int>(ID));
     } else {
       key = KN_NONE;
     }

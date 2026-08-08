@@ -711,7 +711,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //	Process input
     //.....................................................................
     switch (input) {
-      case (BUTTON_SENDEDIT | KN_BUTTON):
+      case ButtonKey(BUTTON_SENDEDIT):
         //	Enter has been pressed - was caught by sendedit control.
         if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
             pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
@@ -734,7 +734,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       case KN_LMOUSE:
         break;
 
-      case (BUTTON_EXPANDCHANNELS | KN_BUTTON):
+      case ButtonKey(BUTTON_EXPANDCHANNELS):
         if (OnExpandChannelList(chanlist, userlist)) {
           //	Hide userlist.
           if (ExpandUserBtn.Get_Next() == &userlist) {
@@ -774,7 +774,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         display = REDRAW_ALL;
         break;
 
-      case (BUTTON_EXPANDUSERS | KN_BUTTON):
+      case ButtonKey(BUTTON_EXPANDUSERS):
         if (OnExpandUserList(chanlist, userlist)) {
           //	Hide chanlist controls.
           if (ExpandChanBtn.Get_Next() == &chanlist) {
@@ -808,7 +808,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         display = REDRAW_ALL;
         break;
 
-      case (BUTTON_CHANLIST | KN_BUTTON):
+      case ButtonKey(BUTTON_CHANLIST):
         //	User clicks on the game list.
         //...............................................................
         // Handle a double-click
@@ -836,7 +836,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         break;
 
-      case (BUTTON_JOIN | KN_BUTTON):
+      case ButtonKey(BUTTON_JOIN):
         //	Pressing the join button is exactly like doubleclicking on the
         // selected index in chanlist, except: 		if the first item is
         // selected, ignore, unless we are at the top level
@@ -853,11 +853,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         break;
 
-      case (BUTTON_USERLIST | KN_BUTTON):
+      case ButtonKey(BUTTON_USERLIST):
         //	User clicks on user list.
         break;
 
-      case (BUTTON_CREATE | KN_BUTTON):
+      case ButtonKey(BUTTON_CREATE):
         switch (pWO->CurrentLevel) {
           case WOL_LEVEL_INCHATCHANNEL:
             //					debugprint( "%s\n",
@@ -893,7 +893,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         bHackFocus = true;
         break;
 
-      case (BUTTON_LEAVE | KN_BUTTON):
+      case ButtonKey(BUTTON_LEAVE):
         //	Because of the way things are set up, this is exactly like
         // selecting the first item in chanlist. 	(Button is disabled when
         // this is not appropriate.)
@@ -901,31 +901,31 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         display = REDRAW_ALL;
         break;
 
-      case (BUTTON_REFRESH | KN_BUTTON):
+      case ButtonKey(BUTTON_REFRESH):
         pWO->dwTimeNextChannelUpdate = ::timeGetTime();
         break;
 
-      case (BUTTON_SQUELCH | KN_BUTTON):
+      case ButtonKey(BUTTON_SQUELCH):
         pWO->DoSquelch(&userlist);
         break;
 
-      case (BUTTON_BAN | KN_BUTTON):
+      case ButtonKey(BUTTON_BAN):
         pWO->DoKick(&userlist, true);
         //				display = REDRAW_ALL;
         break;
 
-      case (BUTTON_KICK | KN_BUTTON):
+      case ButtonKey(BUTTON_KICK):
         pWO->DoKick(&userlist, false);
         //				display = REDRAW_ALL;
         break;
 
-      case (BUTTON_FINDPAGE | KN_BUTTON):
+      case ButtonKey(BUTTON_FINDPAGE):
         pWO->DoFindPage();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case (BUTTON_OPTIONS | KN_BUTTON):
+      case ButtonKey(BUTTON_OPTIONS):
         pWO->DoOptions();
         display = REDRAW_ALL;
         bHackFocus = true;
@@ -935,7 +935,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         //				break;			ajw
         // Put back in?
 
-      case (BUTTON_BACK | KN_BUTTON):
+      case ButtonKey(BUTTON_BACK):
         //	Pressing the back button is exactly like doubleclicking on the
         // top item in chanlist, except 	when we're at the top level.
         if (pWO->CurrentLevel != WOL_LEVEL_TOP) {
@@ -944,7 +944,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           break;
         }
         //	Note no break; here. Fall through if at top level.
-      case (BUTTON_DISCONNECT | KN_BUTTON):
+      case ButtonKey(BUTTON_DISCONNECT):
         if (WWMessageBox().Process(TXT_WOL_CONFIRMLOGOUT, TXT_YES, TXT_NO) ==
             0) {
           if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
@@ -959,7 +959,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         bHackFocus = true;
         break;
 
-      case (BUTTON_ACTION | KN_BUTTON):
+      case ButtonKey(BUTTON_ACTION):
         if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
             pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
           pWO->SendMessage(sendedit.Get_Text(), userlist, true);
@@ -979,24 +979,24 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         break;
 
-      case (BUTTON_LADDER | KN_BUTTON):
+      case ButtonKey(BUTTON_LADDER):
         pWO->DoLadder();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case (BUTTON_HELP | KN_BUTTON):
+      case ButtonKey(BUTTON_HELP):
         pWO->DoHelp();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case (BUTTON_RANKRA | KN_BUTTON):
+      case ButtonKey(BUTTON_RANKRA):
         pWO->bShowRankRA = true;
         pWO->bShowRankUpdated = true;
         break;
 
-      case (BUTTON_RANKAM | KN_BUTTON):
+      case ButtonKey(BUTTON_RANKAM):
         pWO->bShowRankRA = false;
         pWO->bShowRankUpdated = true;
         break;

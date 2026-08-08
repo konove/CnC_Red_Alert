@@ -202,7 +202,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     if ((::GetAsyncKeyState(VK_ESCAPE) & 0x8000)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
-      input = (KeyNumType)(BUTTON_OK | KN_BUTTON);
+      input = ButtonKey(BUTTON_OK);
       bEscapeDown = false;
     }
     if ((::GetAsyncKeyState(VK_RETURN) & 0x8000)) {
@@ -212,7 +212,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     } else {
       bIgnoreReturnDown = false;
       if (bReturnDown) {
-        input = (KeyNumType)(BUTTON_OK | KN_BUTTON);
+        input = ButtonKey(BUTTON_OK);
         bReturnDown = false;
       }
     }
@@ -223,22 +223,22 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
 
     if (cancel_current_msgbox) {
       cancel_current_msgbox = false;
-      input = (KeyNumType)(BUTTON_OK | KN_BUTTON);
+      input = ButtonKey(BUTTON_OK);
     }
     switch (input) {
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         process = false;
         break;
 
-      case (CHECK_FIND | KN_BUTTON):
-      case (CHECK_PAGE | KN_BUTTON):
-      case (CHECK_LANGUAGE | KN_BUTTON):
-      case (CHECK_ALLGAMES | KN_BUTTON):
+      case ButtonKey(CHECK_FIND):
+      case ButtonKey(CHECK_PAGE):
+      case ButtonKey(CHECK_LANGUAGE):
+      case ButtonKey(CHECK_ALLGAMES):
         pWO->SetOptions(FindCheck.IsOn, PageCheck.IsOn, LanguageCheck.IsOn,
                         !GamescopeCheck.IsOn);
         break;
 
-      case (CHECK_RANKAM | KN_BUTTON):
+      case ButtonKey(CHECK_RANKAM):
         pWO->bShowRankRA = !RankAMCheck.IsOn;
         pWO->bMyRecordUpdated = true;
         pWO->bShowRankUpdated = true;

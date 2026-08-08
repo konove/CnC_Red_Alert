@@ -1012,7 +1012,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	- Toggle LMouseDown
     **	- release any grabbed object
     */
-    case ((int)MAP_AREA | (int)KN_BUTTON):
+    case ButtonKey(MAP_AREA):
 
       /*
       **	Left Button DOWN
@@ -1163,7 +1163,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	Object-Editing button: House Button
     */
-    case POPUP_HOUSELIST | KN_BUTTON:
+    case ButtonKey(POPUP_HOUSELIST):
       /*
       **	Determine the house desired by examining the currently
       **	selected index in the house list gadget.
@@ -1216,7 +1216,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       // Flag_To_Redraw(true); 			input = KN_NONE;
       // break;
 
-    case POPUP_SELLABLE | KN_BUTTON:
+    case ButtonKey(POPUP_SELLABLE):
       if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
         BuildingClass* building = (BuildingClass*)CurrentObject[0];
 
@@ -1234,7 +1234,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       }
       break;
 
-    case POPUP_REBUILDABLE | KN_BUTTON:
+    case ButtonKey(POPUP_REBUILDABLE):
       if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
         BuildingClass* building = (BuildingClass*)CurrentObject[0];
 
@@ -1254,7 +1254,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	Object-Editing button: Mission
     */
-    case (POPUP_MISSIONLIST | KN_BUTTON):
+    case ButtonKey(POPUP_MISSIONLIST):
       if (CurrentObject[0]->Is_Techno()) {
         /*
         **	Set new mission
@@ -1273,7 +1273,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	Object-Editing button: Health
     */
-    case (POPUP_HEALTHGAUGE | KN_BUTTON):
+    case ButtonKey(POPUP_HEALTHGAUGE):
       if (CurrentObject[0]->Is_Techno()) {
         /*
         **	Derive strength from current gauge reading
@@ -1312,7 +1312,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	Object-Editing button: Facing
     */
-    case (POPUP_FACINGDIAL | KN_BUTTON):
+    case ButtonKey(POPUP_FACINGDIAL):
       if (CurrentObject[0]->Is_Techno()) {
         /*
         **	Set new facing
@@ -1344,7 +1344,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	Object-Editing button: Facing
     */
-    case (POPUP_BASEPERCENT | KN_BUTTON):
+    case ButtonKey(POPUP_BASEPERCENT):
       if (BaseGauge->Get_Value() != Scen.Percent) {
         Scen.Percent = BaseGauge->Get_Value();
         Build_Base_To(Scen.Percent);
@@ -2032,7 +2032,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
     **	action button according to the style of this dialog box.
     */
     if (input == KN_RETURN) {
-      input = (KeyNumType)(BUTTON_OK | KN_BUTTON);
+      input = ButtonKey(BUTTON_OK);
     }
 
     /*
@@ -2043,7 +2043,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game
       */
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         Hide_Mouse();
         SeenPage.Clear();
         GamePalette.Set();
@@ -2056,7 +2056,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
       ** ESC/Cancel: break
       */
       case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         Hide_Mouse();
         SeenPage.Clear();
         GamePalette.Set();

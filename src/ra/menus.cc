@@ -779,17 +779,17 @@ int Main_Menu(unsigned long) {
     **	Dispatch the input to be processed.
     */
     switch (input) {
-      case BUTTON_EXPAND | KN_BUTTON:
+      case ButtonKey(BUTTON_EXPAND):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case BUTTON_EXPAND_AM | KN_BUTTON:
+      case ButtonKey(BUTTON_EXPAND_AM):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case BUTTON_START | KN_BUTTON:
+      case ButtonKey(BUTTON_START):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
@@ -800,22 +800,22 @@ int Main_Menu(unsigned long) {
         // BUTTON_EXPAND; 				process = false;
         // break; 			#endif
 
-      case BUTTON_LOAD | KN_BUTTON:
+      case ButtonKey(BUTTON_LOAD):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case BUTTON_MULTI | KN_BUTTON:
+      case ButtonKey(BUTTON_MULTI):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case BUTTON_INTRO | KN_BUTTON:
+      case ButtonKey(BUTTON_INTRO):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
 
-      case BUTTON_EXIT | KN_BUTTON:
+      case ButtonKey(BUTTON_EXIT):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;

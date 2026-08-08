@@ -258,29 +258,29 @@ void VisualControlsClass::Process() {
     */
     KeyNumType input = optionsbtn.Input();
     switch (input) {
-      case BUTTON_BRIGHTNESS | KN_BUTTON:
+      case ButtonKey(BUTTON_BRIGHTNESS):
         Options.Set_Brightness(brightness.Get_Value());
         break;
 
-      case BUTTON_COLOR | KN_BUTTON:
+      case ButtonKey(BUTTON_COLOR):
         Options.Set_Color(color.Get_Value());
         break;
 
-      case BUTTON_CONTRAST | KN_BUTTON:
+      case ButtonKey(BUTTON_CONTRAST):
         Options.Set_Contrast(contrast.Get_Value());
         break;
 
-      case BUTTON_TINT | KN_BUTTON:
+      case ButtonKey(BUTTON_TINT):
         Options.Set_Tint(tint.Get_Value());
         break;
 
-      case BUTTON_RESET | KN_BUTTON:
+      case ButtonKey(BUTTON_RESET):
         selection = BUTTON_RESET;
         pressed = true;
         break;
 
       case KN_ESC:
-      case BUTTON_OPTIONS | KN_BUTTON:
+      case ButtonKey(BUTTON_OPTIONS):
         selection = BUTTON_OPTIONS;
         pressed = true;
         break;

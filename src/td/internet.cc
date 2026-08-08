@@ -874,7 +874,7 @@ bool Do_The_Internet_Menu_Thang() {
       ** Cancel. Just return to the main menu
       */
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         process = false;
 #ifdef _WIN32
         Send_Data_To_DDE_Server(packet, strlen(packet),

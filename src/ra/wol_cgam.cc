@@ -252,13 +252,13 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     if ((::GetAsyncKeyState(VK_ESCAPE) & 0x8000)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
-      input = (KeyNumType)(BUTTON_CANCEL | KN_BUTTON);
+      input = ButtonKey(BUTTON_CANCEL);
       bEscapeDown = false;
     }
     if ((::GetAsyncKeyState(VK_RETURN) & 0x8000)) {
       bReturnDown = true;
     } else if (bReturnDown) {
-      input = (KeyNumType)(BUTTON_OK | KN_BUTTON);
+      input = ButtonKey(BUTTON_OK);
       bReturnDown = false;
     }
 
@@ -267,16 +267,16 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     */
 
     switch (input) {
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         cgiReturn.bCreateGame = true;
         process = false;
         break;
 
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         process = false;
         break;
 
-      case (GAUGE_PLAYERCOUNT | KN_BUTTON):
+      case ButtonKey(GAUGE_PLAYERCOUNT):
         if (PlayerCountGauge.Get_Value() != 0 && cgiReturn.bTournament) {
           WWMessageBox().Process(TXT_WOL_TOURNAMENTPLAYERLIMIT);
           PlayerCountGauge.Set_Value(0);
@@ -288,7 +288,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
         PlayerCountStatic.Draw_Me();
         break;
 
-      case (CHECK_TOURNAMENT | KN_BUTTON):
+      case ButtonKey(CHECK_TOURNAMENT):
         cgiReturn.bTournament = TournamentCheck.IsOn;
         if (cgiReturn.bTournament) {
           PlayerCountGauge.Set_Value(0);
@@ -302,11 +302,11 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
         //					PlayerCountGauge.Enable();
         break;
 
-      case (CHECK_PRIVACY | KN_BUTTON):
+      case ButtonKey(CHECK_PRIVACY):
         cgiReturn.bPrivate = PrivacyCheck.IsOn;
         break;
 
-      case (CHECK_RA | KN_BUTTON):
+      case ButtonKey(CHECK_RA):
         if (RA_Check.IsOn) {
           //	Box was checked.
           CS_Check.Turn_Off();
@@ -317,7 +317,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           RA_Check.Turn_On();
         }
         break;
-      case (CHECK_CS | KN_BUTTON):
+      case ButtonKey(CHECK_CS):
         if (CS_Check.IsOn) {
           //	Box was checked.
           RA_Check.Turn_Off();
@@ -328,7 +328,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           CS_Check.Turn_On();
         }
         break;
-      case (CHECK_AM | KN_BUTTON):
+      case ButtonKey(CHECK_AM):
         if (AM_Check.IsOn) {
           //	Box was checked.
           RA_Check.Turn_Off();

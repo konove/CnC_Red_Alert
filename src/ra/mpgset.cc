@@ -390,18 +390,18 @@ void MPGSettings::Dialog() {
 
     //	Process input
     switch (input) {
-      case (BUTTON_OKAY | KN_BUTTON):
+      case ButtonKey(BUTTON_OKAY):
         selection = BUTTON_OKAY;
         pressed = true;
         break;
 
-      case (BUTTON_TEST | KN_BUTTON):
+      case ButtonKey(BUTTON_TEST):
         selection = BUTTON_TEST;
         pressed = true;
         break;
 
       case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         selection = BUTTON_CANCEL;
         pressed = true;
         break;

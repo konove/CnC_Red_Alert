@@ -361,11 +361,11 @@ int LoadOptionsClass::Process() {
     **	If the <RETURN> key was pressed, then default to the appropriate
     **	action button according to the style of this dialog box.
     */
-    if (input == KN_RETURN || input == (BUTTON_EDIT | KN_BUTTON)) {
+    if (input == KN_RETURN || input == ButtonKey(BUTTON_EDIT)) {
       ToggleClass* toggle = nullptr;
       switch (Style) {
         case SAVE:
-          input = static_cast<KeyNumType>(BUTTON_SAVE | KN_BUTTON);
+          input = ButtonKey(BUTTON_SAVE);
           cancelbtn.Turn_Off();
           //					cancelbtn.IsOn = false;
           toggle =
@@ -378,7 +378,7 @@ int LoadOptionsClass::Process() {
           break;
 
         case LOAD:
-          input = static_cast<KeyNumType>(BUTTON_LOAD | KN_BUTTON);
+          input = ButtonKey(BUTTON_LOAD);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
           toggle =
@@ -390,7 +390,7 @@ int LoadOptionsClass::Process() {
           break;
 
         case WWDELETE:
-          input = static_cast<KeyNumType>(BUTTON_DELETE | KN_BUTTON);
+          input = ButtonKey(BUTTON_DELETE);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
           toggle = dynamic_cast<ToggleClass*>(
@@ -414,7 +414,7 @@ int LoadOptionsClass::Process() {
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game
       */
-      case BUTTON_LOAD | KN_BUTTON:
+      case ButtonKey(BUTTON_LOAD):
         game_idx = listbtn.Current_Index();
         if (game_idx < 0 || game_idx >= Files.Count()) {
           break;
@@ -462,9 +462,9 @@ int LoadOptionsClass::Process() {
       /*
       ** Save: Save the game & exit the dialog
       */
-      case BUTTON_EDIT | KN_BUTTON:
+      case ButtonKey(BUTTON_EDIT):
 
-      case BUTTON_SAVE | KN_BUTTON:
+      case ButtonKey(BUTTON_SAVE):
         if (!strlen(game_descr)) {
           WWMessageBox().Process(TXT_MUSTENTER_DESCRIPTION);
           firsttime = true;
@@ -511,7 +511,7 @@ int LoadOptionsClass::Process() {
       ** Delete: delete the file & stay in the dialog, to allow the user
       ** to delete multiple files.
       */
-      case BUTTON_DELETE | KN_BUTTON:
+      case ButtonKey(BUTTON_DELETE):
         game_idx = listbtn.Current_Index();
         if (game_idx < 0 || game_idx >= Files.Count()) {
           break;
@@ -545,7 +545,7 @@ int LoadOptionsClass::Process() {
       ** item; if so, and if we're in SAVE mode, copy the list item into
       ** the save-game description field.
       */
-      case BUTTON_LIST | KN_BUTTON:
+      case ButtonKey(BUTTON_LIST):
         if (Style != SAVE) {
           break;
         }
@@ -582,7 +582,7 @@ int LoadOptionsClass::Process() {
       ** ESC/Cancel: break
       */
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;

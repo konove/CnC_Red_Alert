@@ -786,31 +786,31 @@ int MapEditClass::Load_Scenario() {
         /*
         **	Handle a click on one of the scenario variation group buttons.
         */
-        case (BUTTON_VAR_A | KN_BUTTON):
-        case (BUTTON_VAR_B | KN_BUTTON):
-        case (BUTTON_VAR_C | KN_BUTTON):
-        case (BUTTON_VAR_D | KN_BUTTON):
+        case ButtonKey(BUTTON_VAR_A):
+        case ButtonKey(BUTTON_VAR_B):
+        case ButtonKey(BUTTON_VAR_C):
+        case ButtonKey(BUTTON_VAR_D):
           varabtn.Turn_Off();
           varbbtn.Turn_Off();
           varcbtn.Turn_Off();
           vardbtn.Turn_Off();
           switch (input) {
-            case (BUTTON_VAR_A | KN_BUTTON):
+            case ButtonKey(BUTTON_VAR_A):
               varp = SCEN_VAR_A;
               varabtn.Turn_On();
               break;
 
-            case (BUTTON_VAR_B | KN_BUTTON):
+            case ButtonKey(BUTTON_VAR_B):
               varp = SCEN_VAR_B;
               varbbtn.Turn_On();
               break;
 
-            case (BUTTON_VAR_C | KN_BUTTON):
+            case ButtonKey(BUTTON_VAR_C):
               varp = SCEN_VAR_C;
               varcbtn.Turn_On();
               break;
 
-            case (BUTTON_VAR_D | KN_BUTTON):
+            case ButtonKey(BUTTON_VAR_D):
               varp = SCEN_VAR_D;
               vardbtn.Turn_On();
               break;
@@ -820,17 +820,17 @@ int MapEditClass::Load_Scenario() {
         /*
         **	Handle a click on the east/west variation group.
         */
-        case (BUTTON_EAST | KN_BUTTON):
-        case (BUTTON_WEST | KN_BUTTON):
+        case ButtonKey(BUTTON_EAST):
+        case ButtonKey(BUTTON_WEST):
           westbtn.Turn_Off();
           eastbtn.Turn_Off();
           switch (input) {
-            case (BUTTON_EAST | KN_BUTTON):
+            case ButtonKey(BUTTON_EAST):
               dirp = SCEN_DIR_EAST;
               eastbtn.Turn_On();
               break;
 
-            case (BUTTON_WEST | KN_BUTTON):
+            case ButtonKey(BUTTON_WEST):
               dirp = SCEN_DIR_WEST;
               westbtn.Turn_On();
               break;
@@ -841,31 +841,31 @@ int MapEditClass::Load_Scenario() {
         **	Handle a click on one of the player category
         **	group buttons.
         */
-        case (BUTTON_GDI | KN_BUTTON):
-        case (BUTTON_NOD | KN_BUTTON):
-        case (BUTTON_NEUTRAL | KN_BUTTON):
-        case (BUTTON_MPLAYER | KN_BUTTON):
+        case ButtonKey(BUTTON_GDI):
+        case ButtonKey(BUTTON_NOD):
+        case ButtonKey(BUTTON_NEUTRAL):
+        case ButtonKey(BUTTON_MPLAYER):
           gdibtn.Turn_Off();
           nodbtn.Turn_Off();
           neubtn.Turn_Off();
           playermbtn.Turn_Off();
           switch (input) {
-            case (BUTTON_GDI | KN_BUTTON):
+            case ButtonKey(BUTTON_GDI):
               playerp = SCEN_PLAYER_SPAIN;
               gdibtn.Turn_On();
               break;
 
-            case (BUTTON_NOD | KN_BUTTON):
+            case ButtonKey(BUTTON_NOD):
               playerp = SCEN_PLAYER_GREECE;
               nodbtn.Turn_On();
               break;
 
-            case (BUTTON_NEUTRAL | KN_BUTTON):
+            case ButtonKey(BUTTON_NEUTRAL):
               playerp = SCEN_PLAYER_USSR;
               neubtn.Turn_On();
               break;
 
-            case (BUTTON_MPLAYER | KN_BUTTON):
+            case ButtonKey(BUTTON_MPLAYER):
               playerp = SCEN_PLAYER_MPLAYER;
               playermbtn.Turn_On();
               break;
@@ -873,18 +873,18 @@ int MapEditClass::Load_Scenario() {
           break;
 
         case (KN_RETURN):
-        case (BUTTON_OK | KN_BUTTON):
+        case ButtonKey(BUTTON_OK):
           cancel = false;
           process = false;
           break;
 
         case (KN_ESC):
-        case (BUTTON_CANCEL | KN_BUTTON):
+        case ButtonKey(BUTTON_CANCEL):
           cancel = true;
           process = false;
           break;
 
-        case (BUTTON_SCENARIO | KN_BUTTON):
+        case ButtonKey(BUTTON_SCENARIO):
           break;
 
         default:
@@ -1359,13 +1359,13 @@ int MapEditClass::Load_Scenario() {
       if (grabbed == 0) {
         switch (input) {
           case (KN_RETURN):
-          case (BUTTON_OK | KN_BUTTON):
+          case ButtonKey(BUTTON_OK):
             cancel = false;
             process = false;
             break;
 
           case (KN_ESC):
-          case (BUTTON_CANCEL | KN_BUTTON):
+          case ButtonKey(BUTTON_CANCEL):
             cancel = true;
             process = false;
             break;
@@ -2284,22 +2284,22 @@ int MapEditClass::Load_Scenario() {
       **	Process input
       */
       switch (input) {
-        case BUTTON_ALLIES | KN_BUTTON:
+        case ButtonKey(BUTTON_ALLIES):
           allies.Check_Item(house, true);
           break;
 
-        case BUTTON_CONTROL | KN_BUTTON:
+        case ButtonKey(BUTTON_CONTROL):
           control.Check_Item(house, true);
           break;
 
-        case BUTTON_THEME | KN_BUTTON:
-        case BUTTON_INTRO | KN_BUTTON:
-        case BUTTON_BRIEFING | KN_BUTTON:
-        case BUTTON_ACTION | KN_BUTTON:
-        case BUTTON_WIN | KN_BUTTON:
-        case BUTTON_LOSE | KN_BUTTON:
-        case BUTTON_BASE | KN_BUTTON:
-        case LIST_THEATER | KN_BUTTON:
+        case ButtonKey(BUTTON_THEME):
+        case ButtonKey(BUTTON_INTRO):
+        case ButtonKey(BUTTON_BRIEFING):
+        case ButtonKey(BUTTON_ACTION):
+        case ButtonKey(BUTTON_WIN):
+        case ButtonKey(BUTTON_LOSE):
+        case ButtonKey(BUTTON_BASE):
+        case ButtonKey(LIST_THEATER):
           briefing.Collapse();
           action.Collapse();
           win.Collapse();
@@ -2311,10 +2311,10 @@ int MapEditClass::Load_Scenario() {
           display = true;
           break;
 
-        case BUTTON_SMARTIES | KN_BUTTON:
-        case BUTTON_MAXUNIT | KN_BUTTON:
-        case BUTTON_CREDITS | KN_BUTTON:
-        case BUTTON_TECH | KN_BUTTON:
+        case ButtonKey(BUTTON_SMARTIES):
+        case ButtonKey(BUTTON_MAXUNIT):
+        case ButtonKey(BUTTON_CREDITS):
+        case ButtonKey(BUTTON_TECH):
           briefing.Collapse();
           action.Collapse();
           win.Collapse();
@@ -2325,7 +2325,7 @@ int MapEditClass::Load_Scenario() {
           dotext = true;
           break;
 
-        case BUTTON_HOUSE | KN_BUTTON:
+        case ButtonKey(BUTTON_HOUSE):
           newhouse = HousesType(housebtn.Current_Index());
           housechange = true;
           briefing.Collapse();
@@ -2340,14 +2340,14 @@ int MapEditClass::Load_Scenario() {
           break;
 
         case (KN_RETURN):
-        case (BUTTON_OK | KN_BUTTON):
+        case ButtonKey(BUTTON_OK):
           cancel = false;
           process = false;
           fetch = true;
           break;
 
         case (KN_ESC):
-        case (BUTTON_CANCEL | KN_BUTTON):
+        case ButtonKey(BUTTON_CANCEL):
           cancel = true;
           process = false;
           break;
@@ -2800,31 +2800,31 @@ int MapEditClass::Load_Scenario() {
       **	Process input
       */
       switch (input) {
-        case (TRIGGER_LIST | KN_BUTTON):
+        case ButtonKey(TRIGGER_LIST):
           CurTrigger = &*triggerlist.Current_Item();
           //				CurTrigger = (TriggerTypeClass
           //*)&*triggerlist.Current_Item();
           break;
 
-        case (BUTTON_EDIT | KN_BUTTON):
+        case ButtonKey(BUTTON_EDIT):
           if (CurTrigger) {  // only allow if there's one selected
             process = false;
             edit_trig = true;
           }
           break;
 
-        case (BUTTON_NEW | KN_BUTTON):
+        case ButtonKey(BUTTON_NEW):
           process = false;
           new_trig = true;
           break;
 
-        case (BUTTON_DELETE | KN_BUTTON):
+        case ButtonKey(BUTTON_DELETE):
           process = false;
           del_trig = true;
           break;
 
         case (KN_RETURN):
-        case (BUTTON_OK | KN_BUTTON):
+        case ButtonKey(BUTTON_OK):
           process = false;
           break;
       }

@@ -455,7 +455,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 
     KeyNumType input = buttons->Input();
     switch (input) {
-      case 200 | KN_BUTTON:
+      case ButtonKey(200):
         Whom = list.Current_Object()->House;
         Scen.Scenario = list.Current_Object()->Scenario;
         port::SafeCopy(Scen.ScenarioName, list.Current_Object()->FullName);
@@ -464,7 +464,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
         break;
 
       case KN_ESC:
-      case 201 | KN_BUTTON:
+      case ButtonKey(201):
         process = false;
         okval = false;
         break;

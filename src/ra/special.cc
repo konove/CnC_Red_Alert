@@ -198,7 +198,7 @@ void Special_Dialog(bool simple) {
     KeyNumType input = buttons->Input();
     switch (input) {
       case KN_ESC:
-      case 200 | KN_BUTTON:
+      case ButtonKey(200):
         process = false;
         for (int index = 0; index < sizeof(_options) / sizeof(_options[0]);
              index++) {
@@ -220,7 +220,7 @@ void Special_Dialog(bool simple) {
         }
         break;
 
-      case 201 | KN_BUTTON:
+      case ButtonKey(201):
         process = false;
         break;
 

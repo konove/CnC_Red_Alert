@@ -485,4 +485,21 @@ typedef enum KeyNumType {
   KN_BUTTON = WWKEY_BTN_BIT,
 } KeyNumType;
 
+// Returns the KeyNumType that GadgetClass::Input() reports when the gadget with
+// the given ID is triggered. The KN_BUTTON bit distinguishes a gadget event
+// from a real keypress, letting both share one switch on the input value.
+//
+// Gadget IDs are dialog-local — the same numeric ID means a different button in
+// each dialog — so they are passed in rather than enumerated here.
+//
+// Example:
+//   switch (input) {
+//     case KN_ESC:
+//     case ButtonKey(BUTTON_CANCEL):
+//       ...
+//   }
+constexpr KeyNumType ButtonKey(const int id) {
+  return static_cast<KeyNumType>(id | static_cast<int>(KN_BUTTON));
+}
+
 #endif  // CNC_RED_ALERT_SDLLIB_KEYBOARD_H_

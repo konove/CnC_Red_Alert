@@ -379,25 +379,25 @@ void SoundControlsClass::Process() {
     */
     switch (input) {
       case KN_ESC:
-      case BUTTON_OPTIONS | KN_BUTTON:
+      case ButtonKey(BUTTON_OPTIONS):
         process = false;
         break;
 
       /*
       **	Control music volume.
       */
-      case SLIDER_MUSIC | KN_BUTTON:
+      case ButtonKey(SLIDER_MUSIC):
         Options.Set_Score_Volume(music.Get_Value());
         break;
 
       /*
       **	Control sound volume.
       */
-      case SLIDER_SOUND | KN_BUTTON:
+      case ButtonKey(SLIDER_SOUND):
         Options.Set_Sound_Volume(sound.Get_Value(), true);
         break;
 
-      case BUTTON_LISTBOX | KN_BUTTON:
+      case ButtonKey(BUTTON_LISTBOX):
         //				Mono_Printf ("%d %s Listbox was
         // pressed.\r",__LINE__, __FILE__);
         break;
@@ -405,7 +405,7 @@ void SoundControlsClass::Process() {
       /*
       **	Stop all themes from playing.
       */
-      case BUTTON_STOP | KN_BUTTON:
+      case ButtonKey(BUTTON_STOP):
         Theme.Queue_Song(THEME_NONE);
         break;
 
@@ -413,7 +413,7 @@ void SoundControlsClass::Process() {
       **	Start the currently selected theme to play.
       */
       case KN_SPACE:
-      case BUTTON_PLAY | KN_BUTTON:
+      case ButtonKey(BUTTON_PLAY):
         if (listbox.Count()) {
           Theme.Queue_Song(
               static_cast<ThemeType>(*(unsigned char*)listbox.Current_Item()));
@@ -423,7 +423,7 @@ void SoundControlsClass::Process() {
       /*
       **	Toggle the shuffle button.
       */
-      case BUTTON_SHUFFLE | KN_BUTTON:
+      case ButtonKey(BUTTON_SHUFFLE):
         shufflebtn.Set_Text(shufflebtn.IsOn ? TXT_ON : TXT_OFF);
         Options.Set_Shuffle(shufflebtn.IsOn);
         break;
@@ -431,7 +431,7 @@ void SoundControlsClass::Process() {
       /*
       **	Toggle the repeat button.
       */
-      case BUTTON_REPEAT | KN_BUTTON:
+      case ButtonKey(BUTTON_REPEAT):
         repeatbtn.Set_Text(repeatbtn.IsOn ? TXT_ON : TXT_OFF);
         Options.Set_Repeat(repeatbtn.IsOn);
         break;

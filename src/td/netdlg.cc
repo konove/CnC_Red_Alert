@@ -1367,7 +1367,7 @@ static int Net_Join_Dialog() {
       - Clear the player list
       - Send an immediate player query
       ------------------------------------------------------------------*/
-      case BUTTON_GAMELIST | KN_BUTTON:
+      case ButtonKey(BUTTON_GAMELIST):
         if (joinstate == JOIN_CONFIRMED) {
           gamelist.Set_Selected_Index(game_index);
         } else {
@@ -1382,13 +1382,13 @@ static int Net_Join_Dialog() {
       /*------------------------------------------------------------------
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/
-      case BUTTON_GDI | KN_BUTTON:
+      case ButtonKey(BUTTON_GDI):
         MPlayerHouse = HOUSE_GOOD;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
         break;
 
-      case BUTTON_NOD | KN_BUTTON:
+      case ButtonKey(BUTTON_NOD):
         MPlayerHouse = HOUSE_BAD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
@@ -1398,7 +1398,7 @@ static int Net_Join_Dialog() {
       JOIN: send a join request packet & switch to waiting-for-confirmation
       mode.  (Request_To_Join fills in MPlayerName with my namebuf.)
       ------------------------------------------------------------------*/
-      case BUTTON_JOIN | KN_BUTTON:
+      case ButtonKey(BUTTON_JOIN):
         name_edt.Clear_Focus();
         name_edt.Flag_To_Redraw();
 
@@ -1422,7 +1422,7 @@ static int Net_Join_Dialog() {
           display = REDRAW_MESSAGE;
           break;
         }
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;
@@ -1489,7 +1489,7 @@ static int Net_Join_Dialog() {
       /*------------------------------------------------------------------
       NEW: bail out with return code 1
       ------------------------------------------------------------------*/
-      case BUTTON_NEW | KN_BUTTON:
+      case ButtonKey(BUTTON_NEW):
         /*
         .................. Force user to enter a name ...................
         */
@@ -1535,7 +1535,7 @@ static int Net_Join_Dialog() {
         ...............................................................*/
         if (Messages.Get_Edit_Buf() == nullptr) {
           if ((input == KN_M && joinstate == JOIN_CONFIRMED) ||
-              input == (BUTTON_SEND | KN_BUTTON) || input == KN_F4) {
+              input == ButtonKey(BUTTON_SEND) || input == KN_F4) {
             memset(txt, 0, 80);
 
             port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
@@ -1560,7 +1560,7 @@ static int Net_Join_Dialog() {
           'Send', translate our input to a Return so Messages.Input() will
           work properly.
           ...............................................................*/
-          if (input == (BUTTON_SEND | KN_BUTTON)) {
+          if (input == ButtonKey(BUTTON_SEND)) {
             input = KN_RETURN;
           }
 
@@ -3249,7 +3249,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       New Scenario selected.
       ------------------------------------------------------------------*/
-      case BUTTON_SCENARIOLIST | KN_BUTTON:
+      case ButtonKey(BUTTON_SCENARIOLIST):
         if (scenariolist.Current_Index() != ScenarioIdx) {
           ScenarioIdx = scenariolist.Current_Index();
           MPlayerCredits = atoi(credbuf);
@@ -3261,7 +3261,7 @@ static int Net_New_Dialog() {
       Reject the currently-selected player (don't allow rejecting myself,
       who will be the first entry in the list)
       ------------------------------------------------------------------*/
-      case BUTTON_REJECT | KN_BUTTON:
+      case ButtonKey(BUTTON_REJECT):
         index = playerlist.Current_Index();
         if (index == 0) {
           CCMessageBox().Process(TXT_CANT_REJECT_SELF, TXT_OOPS);
@@ -3284,7 +3284,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       User adjusts max # units
       ------------------------------------------------------------------*/
-      case BUTTON_COUNT | KN_BUTTON:
+      case ButtonKey(BUTTON_COUNT):
         MPlayerUnitCount =
             countgauge.Get_Value() + MPlayerCountMin[MPlayerBases];
 
@@ -3305,7 +3305,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       User adjusts build level
       ------------------------------------------------------------------*/
-      case BUTTON_LEVEL | KN_BUTTON:
+      case ButtonKey(BUTTON_LEVEL):
         BuildLevel = std::min<unsigned int>(levelgauge.Get_Value() + 1,
                                             MPLAYER_BUILD_LEVEL_MAX);
 
@@ -3330,7 +3330,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       User edits the credits value; retransmit new game options
       ------------------------------------------------------------------*/
-      case BUTTON_CREDITS | KN_BUTTON:
+      case ButtonKey(BUTTON_CREDITS):
         MPlayerCredits = atoi(credbuf);
         transmit = 1;
         break;
@@ -3343,7 +3343,7 @@ static int Net_New_Dialog() {
         using the current gauge setting
       - Change the unit count gauge limit & value
       ------------------------------------------------------------------*/
-      case BUTTON_BASES | KN_BUTTON:
+      case ButtonKey(BUTTON_BASES):
         if (MPlayerBases) {
           MPlayerBases = 0;
           basesbtn.Turn_Off();
@@ -3377,7 +3377,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       Toggle tiberium
       ------------------------------------------------------------------*/
-      case BUTTON_TIBERIUM | KN_BUTTON:
+      case ButtonKey(BUTTON_TIBERIUM):
         if (MPlayerTiberium) {
           MPlayerTiberium = 0;
           Special.IsTGrowth = 0;
@@ -3398,7 +3398,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       Toggle goodies
       ------------------------------------------------------------------*/
-      case BUTTON_GOODIES | KN_BUTTON:
+      case ButtonKey(BUTTON_GOODIES):
         if (MPlayerGoodies) {
           MPlayerGoodies = 0;
           goodiesbtn.Turn_Off();
@@ -3415,7 +3415,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       Toggle ghosts/capture-the-flag
       ------------------------------------------------------------------*/
-      case BUTTON_GHOSTS | KN_BUTTON:
+      case ButtonKey(BUTTON_GHOSTS):
         if (!MPlayerGhosts &&
             !Special.IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
           MPlayerGhosts = 1;
@@ -3445,7 +3445,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       OK: exit loop with true status
       ------------------------------------------------------------------*/
-      case BUTTON_OK | KN_BUTTON:
+      case ButtonKey(BUTTON_OK):
         /*...............................................................
         If a new player has joined in the last second, don't allow
         an OK; force a wait longer than 1 second (to give all players
@@ -3477,7 +3477,7 @@ static int Net_New_Dialog() {
           display = std::max(display, REDRAW_MESSAGE);
           break;
         }
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;
@@ -3528,7 +3528,7 @@ static int Net_New_Dialog() {
         F4/SEND/'M' = send a message
         ...............................................................*/
         if (Messages.Get_Edit_Buf() == nullptr) {
-          if (input == KN_M || input == (BUTTON_SEND | KN_BUTTON) ||
+          if (input == KN_M || input == ButtonKey(BUTTON_SEND) ||
               input == KN_F4) {
             memset(txt, 0, 80);
 
@@ -3550,7 +3550,7 @@ static int Net_New_Dialog() {
           'Send', translate our input to a Return so Messages.Input() will
           work properly.
           ...............................................................*/
-          if (input == (BUTTON_SEND | KN_BUTTON)) {
+          if (input == ButtonKey(BUTTON_SEND)) {
             input = KN_RETURN;
           }
         }
@@ -4500,7 +4500,7 @@ static int Net_Fake_New_Dialog() {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;
@@ -5064,7 +5064,7 @@ static int Net_Fake_Join_Dialog() {
       - If we're part of a game, stay in this dialog; otherwise, exit
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;

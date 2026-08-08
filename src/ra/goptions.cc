@@ -349,43 +349,43 @@ void GameOptionsClass::Process() {
     **	Process Input.
     */
     switch (input) {
-      case BUTTON_RESTATE | KN_BUTTON:
+      case ButtonKey(BUTTON_RESTATE):
         selection = BUTTON_RESTATE;
         pressed = true;
         break;
 
-      case BUTTON_LOAD | KN_BUTTON:
+      case ButtonKey(BUTTON_LOAD):
         selection = BUTTON_LOAD;
         pressed = true;
         break;
 
-      case BUTTON_SAVE | KN_BUTTON:
+      case ButtonKey(BUTTON_SAVE):
         selection = BUTTON_SAVE;
         pressed = true;
         break;
 
-      case BUTTON_DELETE | KN_BUTTON:
+      case ButtonKey(BUTTON_DELETE):
         selection = BUTTON_DELETE;
         pressed = true;
         break;
 
-      case BUTTON_QUIT | KN_BUTTON:
+      case ButtonKey(BUTTON_QUIT):
         selection = BUTTON_QUIT;
         pressed = true;
         break;
 
-      case BUTTON_GAME | KN_BUTTON:
+      case ButtonKey(BUTTON_GAME):
         selection = BUTTON_GAME;
         pressed = true;
         break;
 
-      case BUTTON_DRAW | KN_BUTTON:
+      case ButtonKey(BUTTON_DRAW):
         selection = BUTTON_DRAW;
         pressed = true;
         break;
 
       case KN_ESC:
-      case BUTTON_RESUME | KN_BUTTON:
+      case ButtonKey(BUTTON_RESUME):
         selection = BUTTON_RESUME;
         pressed = true;
         break;

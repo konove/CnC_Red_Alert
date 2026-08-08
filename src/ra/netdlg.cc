@@ -2136,7 +2136,7 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	User clicks on the game list:
       //..................................................................
-      case BUTTON_GAMELIST | KN_BUTTON:
+      case ButtonKey(BUTTON_GAMELIST):
         //...............................................................
         // Handle a double-click
         //...............................................................
@@ -2243,13 +2243,13 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	House Buttons: set the player's desired House
       //..................................................................
-      case (BUTTON_GDI | KN_BUTTON):
+      case ButtonKey(BUTTON_GDI):
         Session.House = HOUSE_GOOD;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
         break;
 
-      case (BUTTON_NOD | KN_BUTTON):
+      case ButtonKey(BUTTON_NOD):
         Session.House = HOUSE_BAD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
@@ -2261,7 +2261,7 @@ static int Net_Join_Dialog() {
       //	JOIN: send a join request packet & switch to waiting-for-
       // confirmation mode.
       //..................................................................
-      case BUTTON_JOIN | KN_BUTTON:
+      case ButtonKey(BUTTON_JOIN):
         name_edt.Clear_Focus();
         name_edt.Flag_To_Redraw();
         port::SafeCopy(Session.Handle, namebuf);
@@ -2284,7 +2284,7 @@ static int Net_Join_Dialog() {
       // - If we're part of a game, stay in this dialog; otherwise, exit
       //..................................................................
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         if (housebtn.IsDropped) {
           housebtn.Collapse();
         }
@@ -2336,7 +2336,7 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	NEW: bail out with return code 1
       //..................................................................
-      case BUTTON_NEW | KN_BUTTON:
+      case ButtonKey(BUTTON_NEW):
         //...............................................................
         //	Force user to enter a name
         //...............................................................
@@ -4604,7 +4604,7 @@ static int Net_New_Dialog() {
       //	New Scenario selected.
       //..................................................................
       // All scenarios now allowable as downloads. ajw
-      case BUTTON_SCENARIOLIST | KN_BUTTON:
+      case ButtonKey(BUTTON_SCENARIOLIST):
         if (scenariolist.Current_Index() != Session.Options.ScenarioIndex) {
           Session.Options.ScenarioIndex = scenariolist.Current_Index();
           transmit = 1;
@@ -4614,7 +4614,7 @@ static int Net_New_Dialog() {
       //	Reject the currently-selected player (don't allow rejecting
       // myself, 	who will be the first entry in the list)
       //..................................................................
-      case BUTTON_REJECT | KN_BUTTON:
+      case ButtonKey(BUTTON_REJECT):
         index = playerlist.Current_Index();
 
         if (index == 0) {
@@ -4644,7 +4644,7 @@ static int Net_New_Dialog() {
       //..................................................................
       //	User adjusts max # units
       //..................................................................
-      case BUTTON_COUNT | KN_BUTTON:
+      case ButtonKey(BUTTON_COUNT):
         Session.Options.UnitCount =
             countgauge.Get_Value() +
             SessionClass::CountMin[Session.Options.Bases];
@@ -4655,7 +4655,7 @@ static int Net_New_Dialog() {
       //..................................................................
       //	User adjusts build level
       //..................................................................
-      case BUTTON_LEVEL | KN_BUTTON:
+      case ButtonKey(BUTTON_LEVEL):
         BuildLevel =
             std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
         transmit = 1;
@@ -4666,7 +4666,7 @@ static int Net_New_Dialog() {
       //	User edits the credits value; retransmit new game options
       // Round the credits to the nearest 500.
       //..................................................................
-      case BUTTON_CREDITS | KN_BUTTON:
+      case ButtonKey(BUTTON_CREDITS):
         Session.Options.Credits = creditsgauge.Get_Value();
         Session.Options.Credits = (Session.Options.Credits + 250) / 500 * 500;
         transmit = 1;
@@ -4676,7 +4676,7 @@ static int Net_New_Dialog() {
       //..................................................................
       //	User adjusts # of AI players
       //..................................................................
-      case BUTTON_AIPLAYERS | KN_BUTTON:
+      case ButtonKey(BUTTON_AIPLAYERS):
         Session.Options.AIPlayers = aiplayersgauge.Get_Value();
         if (Session.Options.AIPlayers + Session.Players.Count() >
             Rule.MaxPlayers) {  // if it's pegged, max it out
@@ -4694,7 +4694,7 @@ static int Net_New_Dialog() {
       // Also, if Tiberium gets toggled, we have to set the flags
       // in SpecialClass.
       //..................................................................
-      case BUTTON_OPTIONS | KN_BUTTON:
+      case ButtonKey(BUTTON_OPTIONS):
         if (Special.IsCaptureTheFlag != optionlist.Is_Checked(3) &&
             !Special.IsCaptureTheFlag) {
           optionlist.Check_Item(0, true);
@@ -4735,8 +4735,8 @@ static int Net_New_Dialog() {
       //..................................................................
       //	OK: exit loop with true status
       //..................................................................
-      case BUTTON_LOAD | KN_BUTTON:
-      case BUTTON_OK | KN_BUTTON:
+      case ButtonKey(BUTTON_LOAD):
+      case ButtonKey(BUTTON_OK):
         //...............................................................
         //	If a new player has joined in the last second, don't allow
         //	an OK; force a wait longer than 1 second (to give all players
@@ -4762,7 +4762,7 @@ static int Net_New_Dialog() {
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
         }
-        if (input == (BUTTON_LOAD | KN_BUTTON)) {
+        if (input == ButtonKey(BUTTON_LOAD)) {
           load_game = 1;
         } else {
           load_game = 0;
@@ -4773,7 +4773,7 @@ static int Net_New_Dialog() {
       //	CANCEL: send a SIGN_OFF, bail out with error code
       //..................................................................
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
         Session.GPacket.Command = NET_SIGN_OFF;
@@ -7739,7 +7739,7 @@ static int Net_Fake_New_Dialog() {
     //.....................................................................
     switch (input) {
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
         Session.GPacket.Command = NET_SIGN_OFF;
@@ -8527,7 +8527,7 @@ static int Net_Fake_Join_Dialog() {
       // - If we're part of a game, stay in this dialog; otherwise, exit
       //..................................................................
       case KN_ESC:
-      case BUTTON_CANCEL | KN_BUTTON:
+      case ButtonKey(BUTTON_CANCEL):
         //...............................................................
         //	If we're joined to a game, make extra sure the other players in
         //	that game know I'm exiting; send my SIGN_OFF as an ack-required

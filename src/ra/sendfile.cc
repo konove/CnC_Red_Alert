@@ -472,7 +472,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
         ** Cancel. Just return to the main menu
         */
         case KN_ESC:
-        case BUTTON_CANCEL | KN_BUTTON:
+        case ButtonKey(BUTTON_CANCEL):
           process = false;
           return_code = false;
           break;
@@ -809,7 +809,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
         ** Cancel. Just return to the main menu
         */
         case KN_ESC:
-        case BUTTON_CANCEL | KN_BUTTON:
+        case ButtonKey(BUTTON_CANCEL):
           process = false;
           return_code = false;
           break;

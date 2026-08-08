@@ -457,32 +457,32 @@ int MapEditClass::Select_Team(const char* caption) {
     ............................ Process input ............................
     */
     switch (input) {
-      case (TEAM_LIST | KN_BUTTON):
+      case ButtonKey(TEAM_LIST):
         def_idx = teamlist.Current_Index();
         if (def_idx < TeamTypes.Count()) {
           CurTeam = TeamTypes.Ptr(def_idx);
         }
         break;
 
-      case (BUTTON_EDIT | KN_BUTTON):
+      case ButtonKey(BUTTON_EDIT):
         if (CurTeam) {  // only allow if there's one selected
           process = false;
           edit_team = true;
         }
         break;
 
-      case (BUTTON_NEW | KN_BUTTON):
+      case ButtonKey(BUTTON_NEW):
         process = false;
         new_team = true;
         break;
 
-      case (BUTTON_DELETE | KN_BUTTON):
+      case ButtonKey(BUTTON_DELETE):
         process = false;
         del_team = true;
         break;
 
       case (KN_RETURN):
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         process = false;
         break;
     }
@@ -1113,25 +1113,25 @@ int MapEditClass::Edit_Team() {
     ............................ Process input ............................
     */
     switch (input) {
-      case (BUTTON_NAME | KN_BUTTON):
+      case ButtonKey(BUTTON_NAME):
         break;
 
-      case (BUTTON_RECRUIT | KN_BUTTON):
+      case ButtonKey(BUTTON_RECRUIT):
         break;
 
-      case (BUTTON_MAXNUM | KN_BUTTON):
+      case ButtonKey(BUTTON_MAXNUM):
         break;
 
-      case (BUTTON_INITNUM | KN_BUTTON):
+      case ButtonKey(BUTTON_INITNUM):
         break;
 
-      case (BUTTON_FEAR | KN_BUTTON):
+      case ButtonKey(BUTTON_FEAR):
         break;
 
       /*..................................................................
       Toggle RoundAbout
       ..................................................................*/
-      case (BUTTON_ROUNDABOUT | KN_BUTTON):
+      case ButtonKey(BUTTON_ROUNDABOUT):
         if (roundabout) {
           roundabout = 0;
           roundbtn.Turn_Off();
@@ -1144,7 +1144,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Learning
       ..................................................................*/
-      case (BUTTON_LEARNING | KN_BUTTON):
+      case ButtonKey(BUTTON_LEARNING):
         if (learning) {
           learning = 0;
           learnbtn.Turn_Off();
@@ -1157,7 +1157,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Suicide
       ..................................................................*/
-      case (BUTTON_SUICIDE | KN_BUTTON):
+      case ButtonKey(BUTTON_SUICIDE):
         if (suicide) {
           suicide = 0;
           suicidebtn.Turn_Off();
@@ -1170,7 +1170,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Spy
       ..................................................................*/
-      case (BUTTON_AUTO | KN_BUTTON):
+      case ButtonKey(BUTTON_AUTO):
         if (autocreate) {
           autocreate = 0;
           autocreatebtn.Turn_Off();
@@ -1183,7 +1183,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Mercenary
       ..................................................................*/
-      case (BUTTON_MERCENARY | KN_BUTTON):
+      case ButtonKey(BUTTON_MERCENARY):
         if (mercenary) {
           mercenary = 0;
           mercbtn.Turn_Off();
@@ -1193,7 +1193,7 @@ int MapEditClass::Edit_Team() {
         }
         break;
 
-      case (BUTTON_PREBUILT | KN_BUTTON):
+      case ButtonKey(BUTTON_PREBUILT):
         if (prebuilt) {
           prebuilt = 0;
           prebuiltbtn.Turn_Off();
@@ -1203,7 +1203,7 @@ int MapEditClass::Edit_Team() {
         }
         break;
 
-      case (BUTTON_REINFORCE | KN_BUTTON):
+      case ButtonKey(BUTTON_REINFORCE):
         if (reinforce) {
           reinforce = 0;
           reinforcebtn.Turn_Off();
@@ -1216,14 +1216,14 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Select a Mission on the left-hand mission list
       ..................................................................*/
-      case (BUTTON_MISSION1 | KN_BUTTON):
+      case ButtonKey(BUTTON_MISSION1):
         break;
 
       /*..................................................................
       Select a Mission on the right-hand mission list; update the Argument
       field to reflect the current value
       ..................................................................*/
-      case (BUTTON_MISSION2 | KN_BUTTON):
+      case ButtonKey(BUTTON_MISSION2):
         if (missionlist2.Count() > 0 &&
             missionlist2.Current_Index() != curmission) {
           curmission = missionlist2.Current_Index();
@@ -1240,15 +1240,15 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Copy mission from left list box to right list box
       ..................................................................*/
-      case (BUTTON_ADD | KN_BUTTON):
-      case (BUTTON_INSERT | KN_BUTTON):
+      case ButtonKey(BUTTON_ADD):
+      case ButtonKey(BUTTON_INSERT):
         if (missioncount < TeamTypeClass::MAX_TEAM_MISSIONS) {
           /*
           ** Set 'i' to the position we're going to add into; this will
           ** be just AFTER the current item if we're adding, and it will
           ** be the current item if we're inserting.
           */
-          if (input == (BUTTON_ADD | KN_BUTTON)) {
+          if (input == ButtonKey(BUTTON_ADD)) {
             i = missionlist2.Current_Index() + 1;
             i = std::max(i, 0);
             i = std::min(i, missioncount);
@@ -1299,7 +1299,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Delete mission from right-hand list box
       ..................................................................*/
-      case (BUTTON_DEL | KN_BUTTON):
+      case ButtonKey(BUTTON_DEL):
         if (missioncount > 0) {
           i = missionlist2.Current_Index();
           if (i < 0 || i >= missioncount) {
@@ -1333,13 +1333,13 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Set house
       ..................................................................*/
-      case (BUTTON_GDI | KN_BUTTON):
-      case (BUTTON_NOD | KN_BUTTON):
-      case (BUTTON_NEU | KN_BUTTON):
-      case (BUTTON_MULTI1 | KN_BUTTON):
-      case (BUTTON_MULTI2 | KN_BUTTON):
-      case (BUTTON_MULTI3 | KN_BUTTON):
-      case (BUTTON_MULTI4 | KN_BUTTON):
+      case ButtonKey(BUTTON_GDI):
+      case ButtonKey(BUTTON_NOD):
+      case ButtonKey(BUTTON_NEU):
+      case ButtonKey(BUTTON_MULTI1):
+      case ButtonKey(BUTTON_MULTI2):
+      case ButtonKey(BUTTON_MULTI3):
+      case ButtonKey(BUTTON_MULTI4):
         house = (HousesType)((input & (~KN_BUTTON)) - BUTTON_GDI);
         Set_House_Buttons(house, commands, BUTTON_GDI);
         break;
@@ -1347,7 +1347,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Invoke the members dialog
       ..................................................................*/
-      case (BUTTON_MEMBERS | KN_BUTTON):
+      case ButtonKey(BUTTON_MEMBERS):
         /*
         .................... Take editor focus away .....................
         */
@@ -1367,7 +1367,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       OK: return
       ..................................................................*/
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         cancel = false;
         process = false;
         break;
@@ -1375,7 +1375,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Cancel: return
       ..................................................................*/
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;
@@ -1829,14 +1829,14 @@ int MapEditClass::Team_Members(HousesType house) {
       /*
       **	OK: save values & return.
       */
-      case (BUTTON_OK | KN_BUTTON):
+      case ButtonKey(BUTTON_OK):
         process = false;
         break;
 
       /*
       **	Cancel: abort & return.
       */
-      case (BUTTON_CANCEL | KN_BUTTON):
+      case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
         break;

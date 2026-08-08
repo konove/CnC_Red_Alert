@@ -818,11 +818,11 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
       Activate_Repair(false);
     }
 
-    if (input == (BUTTON_REPAIR | KN_BUTTON)) {
+    if (input == ButtonKey(BUTTON_REPAIR)) {
       Repair_Mode_Control(-1);
     }
 
-    if (input == (BUTTON_ZOOM | KN_BUTTON)) {
+    if (input == ButtonKey(BUTTON_ZOOM)) {
       /*
       ** If radar is active, cycle as follows:
       ** Zoomed => not zoomed
@@ -847,7 +847,7 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
       }
     }
 
-    if (input == (BUTTON_UPGRADE | KN_BUTTON)) {
+    if (input == ButtonKey(BUTTON_UPGRADE)) {
       Sell_Mode_Control(-1);
     }
 
@@ -1517,11 +1517,13 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
   **	If this is scroll button for this side strip, then scroll the strip as
   **	indicated.
   */
-  if (input == (UpButton[ID].ID | KN_BUTTON)) {  // && !IsScrolling
+  if (input ==
+      ButtonKey(static_cast<int>(UpButton[ID].ID))) {  // && !IsScrolling
     UpButton[ID].IsPressed = false;
     Scroll(true);
   }
-  if (input == (DownButton[ID].ID | KN_BUTTON)) {  // && !IsScrolling
+  if (input ==
+      ButtonKey(static_cast<int>(DownButton[ID].ID))) {  // && !IsScrolling
     DownButton[ID].IsPressed = false;
     Scroll(false);
   }
