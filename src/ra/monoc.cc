@@ -119,7 +119,7 @@ MonoClass::MonoClass()
   for (index = 0; index < MAX_MONO_PAGES; index++) {
     if (!PageUsage[index]) {
       PageUsage[index] = this;
-      Page = static_cast<char>(index);
+      Page = index;
       break;
     }
   }
@@ -694,8 +694,8 @@ void MonoClass::Text_Print(const char* text, int x, int y,
   int oldy = Y;
   MonoAttribute oldattrib = Attrib;
 
-  X = static_cast<char>(x);
-  Y = static_cast<char>(y);
+  X = x;
+  Y = y;
   Attrib = attrib;
   Print(text);
   Attrib = oldattrib;
@@ -727,8 +727,8 @@ void MonoClass::Text_Print(int text, int x, int y, MonoAttribute attrib) {
   MonoAttribute oldattrib = Attrib;
 
   if (text != 0) {
-    X = static_cast<char>(x);
-    Y = static_cast<char>(y);
+    X = x;
+    Y = y;
     Attrib = attrib;
     Print(Text_String(text));
     Attrib = oldattrib;

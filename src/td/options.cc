@@ -449,9 +449,9 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
       memcpy(&static_cast<char*>(newpal)[index * 3],
              &static_cast<char*>(oldpal)[index * 3], 3);
     } else {
-      r = static_cast<char*>(oldpal)[index * 3 + 0];
-      g = static_cast<char*>(oldpal)[index * 3 + 1];
-      b = static_cast<char*>(oldpal)[index * 3 + 2];
+      r = static_cast<unsigned char*>(oldpal)[index * 3 + 0];
+      g = static_cast<unsigned char*>(oldpal)[index * 3 + 1];
+      b = static_cast<unsigned char*>(oldpal)[index * 3 + 2];
       Convert_RGB_To_HSV(r, g, b, &h, &s, &v);
 
       /*

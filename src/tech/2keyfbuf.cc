@@ -69,7 +69,7 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
     int trans_count = 0;
     int x_count = pixel_width;
     do {
-      int pixel = *src;
+      int pixel = static_cast<uint8_t>(*src);
       src = src + 1;
       if (!pixel && flags & SHAPE_TRANS) {
         line_flags = BLIT_TRANSPARENT;

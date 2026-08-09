@@ -7,8 +7,8 @@
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/soscomp.h"
 
-static constexpr int8_t kImaAdpcmIndexTable[] = {-1, -1, -1, -1, 2, 4, 6, 8,
-                                                 -1, -1, -1, -1, 2, 4, 6, 8};
+static constexpr int kImaAdpcmIndexTable[] = {-1, -1, -1, -1, 2, 4, 6, 8,
+                                              -1, -1, -1, -1, 2, 4, 6, 8};
 
 static constexpr int16_t kImaAdpcmStepTable[89] = {
     7,     8,     9,     10,    11,    12,    13,    14,    16,    17,

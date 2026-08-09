@@ -1160,8 +1160,8 @@ class InfantryTypeClass : public TechnoTypeClass {
   **	shape file. These values tell how many frames are used for the firing
   *animation.
   */
-  char FireLaunch;
-  char ProneLaunch;
+  int FireLaunch;
+  int ProneLaunch;
 
   /*
   ** This is a pointer to the special override remap table, which is

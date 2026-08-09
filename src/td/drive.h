@@ -153,8 +153,8 @@ class DriveClass : public FootClass {
   // #define	F_S	0x10	// Is this a 90 degree turn?
 
   typedef struct {
-    char Track;             // Which track to use.
-    char StartTrack;        // Track when starting from stand-still.
+    int Track;              // Which track to use.
+    int StartTrack;         // Track when starting from stand-still.
     DirType Facing;         // Facing when track has been completed.
     TrackControlType Flag;  // List processing flag bits.
   } TurnTrackType;

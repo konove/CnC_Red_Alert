@@ -148,8 +148,8 @@ class DriveClass : public FootClass {
 
  private:
   typedef struct {
-    char Track;             // Which track to use.
-    char StartTrack;        // Track when starting from stand-still.
+    int Track;              // Which track to use.
+    int StartTrack;         // Track when starting from stand-still.
     DirType Facing;         // Facing when track has been completed.
     TrackControlType Flag;  // List processing flag bits.
   } TurnTrackType;

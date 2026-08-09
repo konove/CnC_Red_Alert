@@ -142,7 +142,7 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr) {
       file_ptr = pool;
     }
   };
-  last = *ptr;
+  last = static_cast<unsigned char>(*ptr);
   rle = 1;
 
   for (i = 1; i < scansize; i++) {

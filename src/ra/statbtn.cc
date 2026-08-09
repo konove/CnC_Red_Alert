@@ -101,7 +101,7 @@ StaticButtonClass::StaticButtonClass(unsigned, const char* text,
       Width = String_Pixel_Width(String);
     }
     if (h == -1) {
-      Height = FontHeight;
+      Height = static_cast<unsigned char>(FontHeight);
     }
   }
 }

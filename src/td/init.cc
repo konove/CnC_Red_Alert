@@ -2929,24 +2929,28 @@ long Obfuscate(const char* string) {
   *hackers.
   */
   for (int index = 0; index < length; index += 4) {
-    short key1 = buffer[index];
-    short key2 = buffer[index + 1];
-    short key3 = buffer[index + 2];
-    short key4 = buffer[index + 3];
-    short val1 = key1;
-    short val2 = key2;
-    short val3 = key3;
-    short val4 = key4;
+    // The original read these bytes as signed char. Reading them as unsigned
+    // yields the same result: the transformation below uses only +, * and ^,
+    // whose low 8 bits depend only on the low 8 bits of their operands, and
+    // only those low 8 bits are stored back into the buffer.
+    int16_t key1 = static_cast<unsigned char>(buffer[index]);
+    int16_t key2 = static_cast<unsigned char>(buffer[index + 1]);
+    int16_t key3 = static_cast<unsigned char>(buffer[index + 2]);
+    int16_t key4 = static_cast<unsigned char>(buffer[index + 3]);
+    int16_t val1 = key1;
+    int16_t val2 = key2;
+    int16_t val3 = key3;
+    int16_t val4 = key4;
 
     val1 *= key1;
     val2 += key2;
     val3 += key3;
     val4 *= key4;
 
-    short s3 = val3;
+    int16_t s3 = val3;
     val3 ^= val1;
     val3 *= key1;
-    short s2 = val2;
+    int16_t s2 = val2;
     val2 ^= val4;
     val2 += val3;
     val2 *= key3;

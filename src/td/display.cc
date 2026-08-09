@@ -1504,10 +1504,10 @@ int DisplayClass::Cell_Shadow(CELL cell) {
   int index;
   int value = -1;
   CellClass* cellptr;
-  static const char CardShadow[16] = {-2, 0, 1,  2,  3, -1, 4,  -1,
-                                      5,  6, -1, -1, 7, -1, -1, -1};
-  static const char DiagShadow[16] = {-2, 8,  9,  -1, 10, -1, -1, -1,
-                                      11, -1, -1, -1, -1, -1, -1, -1};
+  static const int CardShadow[16] = {-2, 0, 1,  2,  3, -1, 4,  -1,
+                                     5,  6, -1, -1, 7, -1, -1, -1};
+  static const int DiagShadow[16] = {-2, 8,  9,  -1, 10, -1, -1, -1,
+                                     11, -1, -1, -1, -1, -1, -1, -1};
 
   /*
   **	Don't map cells that are at the top or bottom edge. This solves

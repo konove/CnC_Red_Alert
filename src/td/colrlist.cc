@@ -218,7 +218,7 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
   ** For selected items, choose the right color & style:
   */
   if (SelectColor == -1) {
-    color = Colors[index];
+    color = static_cast<unsigned char>(Colors[index]);
   } else {
     color = SelectColor;
   }

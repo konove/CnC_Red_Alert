@@ -86,7 +86,7 @@ void* Small_Icon(const void* iconptr, int iconnum) {
   unsigned char* data;
 
   if (iconptr) {
-    iconnum = ((char*)iptr + iptr->Map)[iconnum];
+    iconnum = ((unsigned char*)iptr + iptr->Map)[iconnum];
     data = &((unsigned char*)iptr + iptr->Icons)[iconnum * (24 * 24)];
     //		data = &iptr->Icons[iconnum*(24*24)];
 

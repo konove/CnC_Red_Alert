@@ -1361,7 +1361,7 @@ void DisplayClass::Refresh_Cells(CELL cell, const short* list) {
  *Converted to member function.                                            *
  *=============================================================================================*/
 int DisplayClass::Cell_Shadow(CELL cell) const {
-  static const signed char _shadow[256] = {
+  static const int _shadow[256] = {
       -1, 33, 2,  2,  34, 37, 2,  2,  4,  26, 6,  6,  4,  26, 6,  6,
       35, 45, 17, 17, 38, 41, 17, 17, 4,  26, 6,  6,  4,  26, 6,  6,
       8,  21, 10, 10, 27, 31, 10, 10, 12, 23, 14, 14, 12, 23, 14, 14,
