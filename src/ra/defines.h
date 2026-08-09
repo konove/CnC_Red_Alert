@@ -484,21 +484,30 @@ typedef enum DiffType {
 
 #define HIGH_COORD_MASK 0x80008000L
 
-// Size of the map in cells.
-#define MAP_CELL_W 128
-#define MAP_CELL_H 128
-#define MAP_CELL_TOTAL (MAP_CELL_W * MAP_CELL_H)
+// A map coordinate with cell resolution. Declared here rather than alongside
+// COORDINATE below so that the map dimensions can carry it: a loop walking the
+// map then has a counter no narrower than its own bound.
+using CELL = int16_t;
 
-#define REFRESH_EOL 32767  // This number ends a refresh/occupy offset list.
-#define REFRESH_SIDEBAR \
-  32766  // This number flags that sidebar needs refreshing.
+// Size of the map in cells. The brace initialization fails to compile if the
+// map ever outgrows a CELL.
+inline constexpr CELL MAP_CELL_W{128};
+inline constexpr CELL MAP_CELL_H{128};
+inline constexpr CELL MAP_CELL_TOTAL{MAP_CELL_W * MAP_CELL_H};
+
+// This number ends a refresh/occupy offset list.
+#define REFRESH_EOL 32767
+
+// This number flags that sidebar needs refreshing.
+#define REFRESH_SIDEBAR 32766
 
 /****************************************************************************
-**	These are custom C&C specific types. The CELL is used for map coordinate
-**	with cell resolution. The COORDINATE type is used for map coordinates
-*that *	have a lepton resolution. CELL is more efficient when indexing into the
-*map *	and when size is critical. COORDINATE is more efficient when dealing
-*with *	accuracy and object movement.
+**	These are custom C&C specific types. The CELL (declared above, with the
+**	map dimensions) is used for map coordinates with cell resolution. The
+**	COORDINATE type is used for map coordinates that have a lepton
+**	resolution. CELL is more efficient when indexing into the map and when
+**	size is critical. COORDINATE is more efficient when dealing with
+**	accuracy and object movement.
 */
 typedef unsigned short LEPTON;
 typedef union {
@@ -518,7 +527,6 @@ typedef union {
   } Sub;
 } COORD_COMPOSITE;
 
-typedef signed short CELL;
 typedef union {
   CELL Cell;
   struct {

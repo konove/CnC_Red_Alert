@@ -218,10 +218,16 @@ number of meta-cells will be a subset of the cell width.
 // #define	MAP_CELL_Y_MASK			((~(~0 << MAP_CELL_MAX_Y_BITS))
 // << MAP_CELL_MAX_Y_BITS)
 
-// Size of the map in cells.
-#define MAP_CELL_W (1 << MAP_CELL_MAX_X_BITS)
-#define MAP_CELL_H (1 << MAP_CELL_MAX_Y_BITS)
-#define MAP_CELL_TOTAL (MAP_CELL_W * MAP_CELL_H)
+// A map coordinate with cell resolution. Declared here rather than alongside
+// COORDINATE below so that the map dimensions can carry it: a loop walking the
+// map then has a counter no narrower than its own bound.
+using CELL = int16_t;
+
+// Size of the map in cells. The brace initialization fails to compile if the
+// map ever outgrows a CELL.
+inline constexpr CELL MAP_CELL_W{1u << MAP_CELL_MAX_X_BITS};
+inline constexpr CELL MAP_CELL_H{1u << MAP_CELL_MAX_Y_BITS};
+inline constexpr CELL MAP_CELL_TOTAL{MAP_CELL_W * MAP_CELL_H};
 
 #define REFRESH_EOL 32767  // This number ends a refresh/occupy offset list.
 #define REFRESH_SIDEBAR \
@@ -1483,12 +1489,11 @@ typedef enum RadioMessageType {
 } RadioMessageType;
 
 /****************************************************************************
-**	These are custom C&C specific types. The CELL is used for map coordinate
-**	with cell resolution. The COORD type is used for map coordinates that
-**	have a lepton resolution.
+**	These are custom C&C specific types. The CELL (declared above, with the
+**	map dimensions) is used for map coordinates with cell resolution. The
+**	COORD type is used for map coordinates that have a lepton resolution.
 */
 typedef uint32_t COORDINATE;
-typedef signed short CELL;
 
 typedef unsigned short TARGET;
 inline constexpr TARGET kTargetNone{};

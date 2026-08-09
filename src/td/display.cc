@@ -1836,40 +1836,15 @@ void DisplayClass::Draw_It(bool forced) {
     */
     int num = Messages.Num_Messages();
     if (num) {
-      for (CELL cell = Coord_Cell(TacticalCoord);
-           cell <
-           Coord_Cell(TacticalCoord) + Lepton_To_Cell(TacLeptonWidth) + 1;
-           cell++) {
-        (*this)[cell].Redraw_Objects();
-      }
-      for (CELL cell = Coord_Cell(TacticalCoord) + MAP_CELL_W;
-           cell < Coord_Cell(TacticalCoord) + MAP_CELL_W +
-                      Lepton_To_Cell(TacLeptonWidth) + 1;
-           cell++) {
-        (*this)[cell].Redraw_Objects();
-      }
-      if (num > 1) {
-        for (CELL cell = Coord_Cell(TacticalCoord) + MAP_CELL_W * 2;
-             cell < Coord_Cell(TacticalCoord) + MAP_CELL_W * 2 +
-                        Lepton_To_Cell(TacLeptonWidth) + 1;
-             cell++) {
-          (*this)[cell].Redraw_Objects();
-        }
-      }
-      if (num > 3) {
-        for (CELL cell = Coord_Cell(TacticalCoord) + MAP_CELL_W * 3;
-             cell < Coord_Cell(TacticalCoord) + MAP_CELL_W * 3 +
-                        Lepton_To_Cell(TacLeptonWidth) + 1;
-             cell++) {
-          (*this)[cell].Redraw_Objects();
-        }
-      }
-      if (num > 4) {
-        for (CELL cell = Coord_Cell(TacticalCoord) + MAP_CELL_W * 4;
-             cell < Coord_Cell(TacticalCoord) + MAP_CELL_W * 4 +
-                        Lepton_To_Cell(TacLeptonWidth) + 1;
-             cell++) {
-          (*this)[cell].Redraw_Objects();
+      // One message covers a single map row, but the first one also claims the
+      // row below it. At most five rows are ever covered.
+      const int rows = std::min(num + 1, 5);
+      const int width = Lepton_To_Cell(TacLeptonWidth) + 1;
+      const int first = Coord_Cell(TacticalCoord);
+      for (int row = 0; row < rows; row++) {
+        const int start = first + row * MAP_CELL_W;
+        for (int offset = 0; offset < width; offset++) {
+          (*this)[static_cast<CELL>(start + offset)].Redraw_Objects();
         }
       }
     }

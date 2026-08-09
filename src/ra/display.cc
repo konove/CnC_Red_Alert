@@ -396,7 +396,6 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   */
   sprintf(fullname, "%s.MIX", Theaters[theater].Root);
 
-
   if (Scen.Theater != LastTheater) {
     delete TheaterData;
 
@@ -1733,40 +1732,15 @@ void DisplayClass::Draw_It(bool forced) {
     */
     int num = Session.Messages.Num_Messages();
     if (num > 0) {
-      for (CELL cell = Coord_Cell(TacticalCoord);
-           cell <
-           Coord_Cell(TacticalCoord) + Lepton_To_Cell(TacLeptonWidth) + 1;
-           cell++) {
-        (*this)[cell].Redraw_Objects();
-      }
-      for (CELL cell = Coord_Cell(TacticalCoord) + MAP_CELL_W;
-           cell < Coord_Cell(TacticalCoord) + MAP_CELL_W +
-                      Lepton_To_Cell(TacLeptonWidth) + 1;
-           cell++) {
-        (*this)[cell].Redraw_Objects();
-      }
-      if (num > 1) {
-        for (CELL cell = Coord_Cell(TacticalCoord) + MAP_CELL_W * 2;
-             cell < Coord_Cell(TacticalCoord) + MAP_CELL_W * 2 +
-                        Lepton_To_Cell(TacLeptonWidth) + 1;
-             cell++) {
-          (*this)[cell].Redraw_Objects();
-        }
-      }
-      if (num > 2) {
-        for (CELL cell = Coord_Cell(TacticalCoord) + MAP_CELL_W * 3;
-             cell < Coord_Cell(TacticalCoord) + MAP_CELL_W * 3 +
-                        Lepton_To_Cell(TacLeptonWidth) + 1;
-             cell++) {
-          (*this)[cell].Redraw_Objects();
-        }
-      }
-      if (num > 3) {
-        for (CELL cell = Coord_Cell(TacticalCoord) + MAP_CELL_W * 4;
-             cell < Coord_Cell(TacticalCoord) + MAP_CELL_W * 4 +
-                        Lepton_To_Cell(TacLeptonWidth) + 1;
-             cell++) {
-          (*this)[cell].Redraw_Objects();
+      // One message covers a single map row, but the first one also claims the
+      // row below it. At most five rows are ever covered.
+      const int rows = std::min(num + 1, 5);
+      const int width = Lepton_To_Cell(TacLeptonWidth) + 1;
+      const int first = Coord_Cell(TacticalCoord);
+      for (int row = 0; row < rows; row++) {
+        const int start = first + row * MAP_CELL_W;
+        for (int offset = 0; offset < width; offset++) {
+          (*this)[static_cast<CELL>(start + offset)].Redraw_Objects();
         }
       }
     }
@@ -1797,7 +1771,6 @@ void DisplayClass::Draw_It(bool forced) {
       if (oldh < 1) {
         forced = true;
       }
-
 
       /*
       ** Work out which map edges need to be redrawn
@@ -2003,7 +1976,6 @@ void DisplayClass::Draw_It(bool forced) {
       ScenarioInit--;
     }
 
-
     /*
     **	If the entire tactical map is forced to be redrawn, then set all the
     *redraw flags *	and let the normal processing take care of the rest.
@@ -2036,7 +2008,6 @@ void DisplayClass::Draw_It(bool forced) {
 
       HidPage.Unlock();
     }
-
 
     if (HidPage.Lock()) {
       /*
@@ -3928,16 +3899,14 @@ void DisplayClass::Compute_Start_Pos() {
   */
   //	x -= 5 * 2;
   //	y -= 4 * 2;
-  x = std::clamp<long>(x, MapCellX + 10,
-                       MapCellX + MapCellWidth - 10);
-  y = std::clamp<long>(y, MapCellY + 8,
-                       MapCellY + MapCellHeight - 8);
+  x = std::clamp<long>(x, MapCellX + 10, MapCellX + MapCellWidth - 10);
+  y = std::clamp<long>(y, MapCellY + 8, MapCellY + MapCellHeight - 8);
 
   Scen.Waypoint[WAYPT_HOME] = Scen.Views[0] = Scen.Views[1] = Scen.Views[2] =
       Scen.Views[3] = XY_Cell(x, y);
 
-  Map.Set_Tactical_Position(Coord_Whole(
-      Cell_Coord(Scen.Views[0] - MAP_CELL_W * 8 - 10)));
+  Map.Set_Tactical_Position(
+      Coord_Whole(Cell_Coord(Scen.Views[0] - MAP_CELL_W * 8 - 10)));
   //	Set_Tactical_Position(Cell_Coord(XY_Cell(x, y)));
 }
 
@@ -4360,14 +4329,13 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   **	IsWaypoint flags).
   */
   if (Scen.Waypoint[WAYPT_HOME] == -1) {
-    Scen.Waypoint[WAYPT_HOME] =
-        XY_Cell(MapCellX + 10, MapCellY + 8);
+    Scen.Waypoint[WAYPT_HOME] = XY_Cell(MapCellX + 10, MapCellY + 8);
   }
 
   Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
       Scen.Waypoint[WAYPT_HOME];
-  Set_Tactical_Position(Cell_Coord(Scen.Waypoint[WAYPT_HOME] -
-                                   MAP_CELL_W * 8 - 10));
+  Set_Tactical_Position(
+      Cell_Coord(Scen.Waypoint[WAYPT_HOME] - MAP_CELL_W * 8 - 10));
 
   /*
   **	Loop through all CellTrigger entries.
