@@ -55,9 +55,6 @@ extern unsigned short primeTable[3511];
 #define SEMI_MASK ((unsigned short)~0)
 #define MAX_BIT_PRECISION 2048
 #define MAX_UNIT_PRECISION (MAX_BIT_PRECISION / UNITSIZE)
-#ifndef ARRAY_SIZE
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
-#endif
 
 int XMP_Significance(const uint32_t* r, int precision);
 void XMP_Inc(uint32_t* r, int precision);

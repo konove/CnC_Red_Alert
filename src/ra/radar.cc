@@ -81,6 +81,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 #include "absl/log/check.h"
 #include "port/ex_string.h"
@@ -670,7 +671,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   ** Now loop through all the occupiers and add them to the list if they
   ** are terrain type.
   */
-  for (lp = 0; lp < ARRAY_SIZE(Map[cell].Overlappers); lp++) {
+  for (lp = 0; lp < std::ssize(Map[cell].Overlappers); lp++) {
     obj = Map[cell].Overlappers[lp];
     if (obj && obj->What_Am_I() == RTTI_TERRAIN) {
       list[listidx++] = dynamic_cast<TerrainClass*>(obj);

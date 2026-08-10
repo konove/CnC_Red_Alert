@@ -116,6 +116,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 #include "ra/anim.h"
 #include "ra/bench_util.h"
@@ -1936,8 +1937,8 @@ int UnitClass::Shape_Number() const {
       //			static char _hstage[] = {0, 1, 2, 3, 4, 5, 6, 7,
       // 0};
       unsigned stage = Fetch_Stage();
-      if (stage >= ARRAY_SIZE(Class->Harvester_Load_List)) {
-        stage = ARRAY_SIZE(Class->Harvester_Load_List) - 1;
+      if (stage >= std::ssize(Class->Harvester_Load_List)) {
+        stage = std::ssize(Class->Harvester_Load_List) - 1;
       }
       shapenum =
           32 +
@@ -1955,8 +1956,8 @@ int UnitClass::Shape_Number() const {
           }
           shapenum = 32 + stage + BodyShape[facing] / 4 * 8;
         } else {
-          if (stage >= ARRAY_SIZE(Class->Harvester_Dump_List)) {
-            stage = ARRAY_SIZE(Class->Harvester_Dump_List) - 1;
+          if (stage >= std::ssize(Class->Harvester_Dump_List)) {
+            stage = std::ssize(Class->Harvester_Dump_List) - 1;
           }
           shapenum = UnitTypeClass::Harvester_Dump_List[stage] + 96;
         }
@@ -2368,7 +2369,7 @@ int UnitClass::Mission_Unload() {
         Set_Rate(Rule.OreDumpRate);
         break;
       }
-      if (Fetch_Stage() < ARRAY_SIZE(Class->Harvester_Dump_List) - 1) {
+      if (Fetch_Stage() < std::ssize(Class->Harvester_Dump_List) - 1) {
         break;
       }
 
@@ -2831,7 +2832,7 @@ int UnitClass::Mission_Harvest() {
     */
     case HARVESTING:
       //			if (Fetch_Stage() >
-      // ARRAY_SIZE(Class->Harvester_Load_List)) {
+      // std::ssize(Class->Harvester_Load_List)) {
       // Set_Stage(0);
       //			}
       if (Fetch_Rate() == 0) {
@@ -2839,7 +2840,7 @@ int UnitClass::Mission_Harvest() {
         Set_Rate(Rule.OreDumpRate);
       }
 
-      if (Fetch_Stage() < ARRAY_SIZE(Class->Harvester_Load_List)) {
+      if (Fetch_Stage() < std::ssize(Class->Harvester_Load_List)) {
         return 1;
       }
       if (!Harvesting()) {

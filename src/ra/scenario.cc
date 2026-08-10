@@ -72,6 +72,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <string>
 #include <string_view>
 
@@ -225,7 +226,7 @@ ScenarioClass::ScenarioClass()
 #define AUTOSONAR_PERIOD TICKS_PER_SECOND * 40
       AutoSonarTimer(AUTOSONAR_PERIOD),
       FadeTimer(0) {
-  for (int index = 0; index < ARRAY_SIZE(Waypoint); index++) {
+  for (int index = 0; index < std::ssize(Waypoint); index++) {
     Waypoint[index] = -1;
   }
   port::SafeCopy(Description, "");
@@ -315,7 +316,7 @@ void ScenarioClass::Do_Fade_AI() {
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
 bool ScenarioClass::Set_Global_To(int global, bool value) {
-  if (static_cast<unsigned>(global) < ARRAY_SIZE(Scen.GlobalFlags)) {
+  if (static_cast<unsigned>(global) < std::ssize(Scen.GlobalFlags)) {
     bool previous = GlobalFlags[global];
     if (previous != value) {
       GlobalFlags[global] = value;
@@ -1850,7 +1851,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
 void ScenarioClass::Set_Scenario_Name(const char* name) {
   if (name != nullptr) {
     port::SafeCopy(ScenarioName, name);
-    ScenarioName[ARRAY_SIZE(ScenarioName) - 1] = '\0';
+    ScenarioName[std::ssize(ScenarioName) - 1] = '\0';
 
     char buf[3];
     memcpy(buf, &ScenarioName[3], 2);
@@ -2045,7 +2046,7 @@ bool Read_Scenario_INI(char* fname, bool) {
   /*
   **	Reset the rules values to their initial settings.
   */
-  for (int index = 0; index < ARRAY_SIZE(NameOverride); index++) {
+  for (int index = 0; index < std::ssize(NameOverride); index++) {
     delete[] NameOverride[index];
     NameOverride[index] = nullptr;
     NameIDOverride[index] = 0;
@@ -2641,7 +2642,7 @@ static void Create_Units(bool official) {
                 {5, {UNIT_APC, UNIT_NONE}, {UNIT_V2_LAUNCHER, UNIT_NONE}},
                 {8, {UNIT_ARTY, UNIT_JEEP}, {UNIT_MTANK, UNIT_NONE}},
                 {10, {UNIT_MTANK2, UNIT_MTANK2}, {UNIT_HTANK, UNIT_NONE}}};
-  static int num_units[ARRAY_SIZE(utable)];  // # of each type of unit to create
+  static int num_units[std::size(utable)];  // # of each type of unit to create
   int tot_units;                             // total # units to create
 
   static struct {
@@ -2664,7 +2665,7 @@ static void Create_Units(bool official) {
       // 2,INFANTRY_DOG}
   };
   static int
-      num_infantry[ARRAY_SIZE(itable)];  // # of each type of infantry to create
+      num_infantry[std::size(itable)];  // # of each type of infantry to create
   int tot_infantry;                      // total # infantry to create
 
   CELL centroid;  // centroid of this house's stuff
@@ -2679,12 +2680,12 @@ static void Create_Units(bool official) {
   /*
   **	For the current BuildLevel, find the max allowable index into the tables
   */
-  for (i = 0; i < ARRAY_SIZE(utable); i++) {
+  for (i = 0; i < std::ssize(utable); i++) {
     if (PlayerPtr->Control.TechLevel >= utable[i].MinLevel) {
       u_limit = i + 1;
     }
   }
-  for (i = 0; i < ARRAY_SIZE(itable); i++) {
+  for (i = 0; i < std::ssize(itable); i++) {
     if (PlayerPtr->Control.TechLevel >= itable[i].MinLevel) {
       i_limit = i + 1;
     }
@@ -2752,7 +2753,7 @@ static void Create_Units(bool official) {
   */
   bool taken[26];
   CELL waypts[26];
-  assert(Rule.MaxPlayers < ARRAY_SIZE(waypts));
+  assert(Rule.MaxPlayers < std::ssize(waypts));
   int num_waypts = 0;
 
   /*

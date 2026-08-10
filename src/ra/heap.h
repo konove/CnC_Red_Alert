@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_HEAP_H_
 
 #include <cstddef>
+#include <iterator>
 #include <vector>
 
 #include "ra/vector.h"

@@ -72,6 +72,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
+#include <iterator>
 #include <new>
 
 #include "ra/anim.h"
@@ -469,7 +470,7 @@ void MapClass::Init_Clear() {
   TiberiumGrowthExcess = 0;
   TiberiumSpreadCount = 0;
   TiberiumSpreadExcess = 0;
-  for (int index = 0; index < ARRAY_SIZE(Crates); index++) {
+  for (int index = 0; index < std::ssize(Crates); index++) {
     Crates[index].Init();
   }
 }
@@ -1036,7 +1037,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
     short xlist[32];
-    List_Copy(object->Occupy_List(), ARRAY_SIZE(xlist), xlist);
+    List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
     while (*list != REFRESH_EOL) {
       CELL newcell = cell + *list++;
@@ -1047,7 +1048,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
       }
     }
 
-    List_Copy(object->Overlap_List(), ARRAY_SIZE(xlist), xlist);
+    List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     list = xlist;
     while (*list != REFRESH_EOL) {
       CELL newcell = cell + *list++;
@@ -1085,7 +1086,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
     short xlist[32];
-    List_Copy(object->Occupy_List(), ARRAY_SIZE(xlist), xlist);
+    List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
     while (*list != REFRESH_EOL) {
       CELL newcell = cell + *list++;
@@ -1096,7 +1097,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
       }
     }
 
-    List_Copy(object->Overlap_List(), ARRAY_SIZE(xlist), xlist);
+    List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     list = xlist;
     while (*list != REFRESH_EOL) {
       CELL newcell = cell + *list++;
@@ -1134,7 +1135,7 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
     short xlist[32];
-    List_Copy(object->Overlap_List(), ARRAY_SIZE(xlist), xlist);
+    List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
     while (*list != REFRESH_EOL) {
       CELL newcell = cell + *list++;
@@ -1171,7 +1172,7 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
   if (object->Class_Of().IsFootprint &&
       object->In_Which_Layer() == LAYER_GROUND) {
     short xlist[32];
-    List_Copy(object->Overlap_List(), ARRAY_SIZE(xlist), xlist);
+    List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
     while (*list != REFRESH_EOL) {
       CELL newcell = cell + *list++;
@@ -1332,7 +1333,7 @@ void MapClass::Logic() {
     **	Find any crate that has expired and then regenerate it at a new
     **	spot.
     */
-    for (int index = 0; index < ARRAY_SIZE(Crates); index++) {
+    for (int index = 0; index < std::ssize(Crates); index++) {
       if (Crates[index].Is_Expired()) {
         Crates[index].Remove_It();
         Place_Random_Crate();
@@ -1387,7 +1388,7 @@ void MapClass::Logic() {
         *cell value to *	the list.
         */
         if (Random_Pick(0, TiberiumSpreadExcess) <= TiberiumSpreadCount) {
-          if (TiberiumSpreadCount < ARRAY_SIZE(TiberiumSpread)) {
+          if (TiberiumSpreadCount < std::ssize(TiberiumSpread)) {
             TiberiumSpread[TiberiumSpreadCount++] = cell;
           } else {
             TiberiumSpread[Random_Pick(0, TiberiumSpreadCount - 1)] = cell;
@@ -1500,12 +1501,12 @@ bool MapClass::Place_Random_Crate() {
   **	no free slots, then return with failure to place crate.
   */
   int crateindex = 0;
-  for (crateindex = 0; crateindex < ARRAY_SIZE(Crates); crateindex++) {
+  for (crateindex = 0; crateindex < std::ssize(Crates); crateindex++) {
     if (!Crates[crateindex].Is_Valid()) {
       break;
     }
   }
-  if (crateindex == ARRAY_SIZE(Crates)) {
+  if (crateindex == std::ssize(Crates)) {
     return false;
   }
 
@@ -1538,7 +1539,7 @@ bool MapClass::Place_Random_Crate() {
  *=============================================================================================*/
 bool MapClass::Remove_Crate(CELL cell) {
   if (Session.Type != GAME_NORMAL) {
-    for (int index = 0; index < ARRAY_SIZE(Crates); index++) {
+    for (int index = 0; index < std::ssize(Crates); index++) {
       if (Crates[index].Is_Here(cell)) {
         return Crates[index].Remove_It();
       }
@@ -1554,7 +1555,7 @@ bool MapClass::Remove_Crate(CELL cell) {
     return true;
   }
   //	} else {
-  //		for (int index = 0; index < ARRAY_SIZE(Crates); index++) {
+  //		for (int index = 0; index < std::ssize(Crates); index++) {
   //			if (Crates[index].Is_Here(cell)) {
   //				return(Crates[index].Remove_It());
   //			}
@@ -1661,7 +1662,7 @@ int MapClass::Validate() {
     /*
     **	Validate Overlappers
     */
-    for (i = 0; i < ARRAY_SIZE((*this)[cell].CellClass::Overlappers); i++) {
+    for (i = 0; i < std::ssize((*this)[cell].CellClass::Overlappers); i++) {
       obj = (*this)[cell].Overlappers[i];
       if (obj) {
         if (obj->IsInLimbo || static_cast<unsigned int>(
@@ -2017,7 +2018,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
           topten[count++] = newcell;
         }
       }
-      if (count == ARRAY_SIZE(topten)) {
+      if (count == std::ssize(topten)) {
         break;
       }
 
@@ -2029,12 +2030,12 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
           topten[count++] = newcell;
         }
       }
-      if (count == ARRAY_SIZE(topten)) {
+      if (count == std::ssize(topten)) {
         break;
       }
     }
 
-    if (count == ARRAY_SIZE(topten)) {
+    if (count == std::ssize(topten)) {
       break;
     }
 
@@ -2050,7 +2051,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
           topten[count++] = newcell;
         }
       }
-      if (count == ARRAY_SIZE(topten)) {
+      if (count == std::ssize(topten)) {
         break;
       }
 
@@ -2062,7 +2063,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
           topten[count++] = newcell;
         }
       }
-      if (count == ARRAY_SIZE(topten)) {
+      if (count == std::ssize(topten)) {
         break;
       }
     }

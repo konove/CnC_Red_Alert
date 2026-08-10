@@ -153,6 +153,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <iterator>
 #include <new>
 
 #include "absl/log/check.h"
@@ -507,7 +508,7 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(71, 11);
     mono->Printf("%5d", DamageTime.Value());
 
-    for (int index = 0; index < ARRAY_SIZE(Scen.GlobalFlags); index++) {
+    for (int index = 0; index < std::ssize(Scen.GlobalFlags); index++) {
       mono->Set_Cursor(1 + index, 15);
       if (Scen.GlobalFlags[index] != 0) {
         mono->Print("1");
@@ -4465,9 +4466,9 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   */
   static ZoneType _zones[] = {ZONE_CORE, ZONE_NORTH, ZONE_SOUTH, ZONE_EAST,
                               ZONE_WEST};
-  int start = Random_Pick(0, ARRAY_SIZE(_zones) - 1);
-  for (int zz = 0; zz < ARRAY_SIZE(_zones); zz++) {
-    ZoneType tryzone = _zones[(zz + start) % ARRAY_SIZE(_zones)];
+  int start = Random_Pick<int>(0, std::ssize(_zones) - 1);
+  for (int zz = 0; zz < std::ssize(_zones); zz++) {
+    ZoneType tryzone = _zones[(zz + start) % std::ssize(_zones)];
     zcell = Find_Cell_In_Zone(building, tryzone);
     if (zcell) {
       return zcell;
@@ -5255,7 +5256,7 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const {
   **	Find a structure to sell and then sell it. Bail from further scanning
   *until *	the next time.
   */
-  for (int i = 0; i < ARRAY_SIZE(_types); i++) {
+  for (int i = 0; i < std::ssize(_types); i++) {
     if (urgency >= _types[i].Urgency) {
       BuildingClass* b = Find_Building(_types[i].Structure);
       if (b != nullptr) {
@@ -5314,7 +5315,7 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
   **	Find a structure to sell and then sell it. Bail from further scanning
   *until *	the next time.
   */
-  for (int i = 0; i < ARRAY_SIZE(_types); i++) {
+  for (int i = 0; i < std::ssize(_types); i++) {
     if (urgency >= _types[i].Urgency) {
       b = Find_Building(_types[i].Structure);
       if (b != nullptr) {

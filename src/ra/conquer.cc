@@ -2536,12 +2536,12 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   CCFileClass file(filename);
 
   if (!add) {
-    for (i = 0; i < ARRAY_SIZE(InterpolatedPalettes); i++) {
+    for (i = 0; i < std::ssize(InterpolatedPalettes); i++) {
       InterpolatedPalettes[i] = nullptr;
     }
     start_palette = 0;
   } else {
-    for (start_palette = 0; start_palette < ARRAY_SIZE(InterpolatedPalettes);
+    for (start_palette = 0; start_palette < std::ssize(InterpolatedPalettes);
          start_palette++) {
       if (!InterpolatedPalettes[start_palette]) {
         break;
@@ -2578,7 +2578,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
 }
 
 void Free_Interpolated_Palettes() {
-  for (int i = 0; i < ARRAY_SIZE(InterpolatedPalettes); i++) {
+  for (int i = 0; i < std::ssize(InterpolatedPalettes); i++) {
     if (InterpolatedPalettes[i]) {
       delete[] InterpolatedPalettes[i];
       InterpolatedPalettes[i] = nullptr;
@@ -3727,7 +3727,7 @@ void Handle_Team(int team, int action) {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 void Handle_View(int view, int action) {
-  if (static_cast<unsigned>(view) < ARRAY_SIZE(Scen.Views)) {
+  if (static_cast<unsigned>(view) < std::ssize(Scen.Views)) {
     if (action == 0) {
       Map.Set_Tactical_Position(
           Coord_Whole(Cell_Coord(Scen.Views[view] - MAP_CELL_W * 8 - 10)));

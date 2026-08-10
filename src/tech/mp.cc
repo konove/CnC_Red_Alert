@@ -2028,8 +2028,8 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
 void XMP_Mod_Mult_Clear(int precision) {
   XMP_Init(_scratch_modulus, 0, precision);
   XMP_Init(_double_staging_number, 0, precision);
-  XMP_Init(_mod_quotient, 0, ARRAY_SIZE(_mod_quotient));
-  XMP_Init(_mod_divisor, 0, ARRAY_SIZE(_mod_divisor));
+  XMP_Init(_mod_quotient, 0, std::ssize(_mod_quotient));
+  XMP_Init(_mod_divisor, 0, std::ssize(_mod_divisor));
   _modulus_shift = _modulus_bit_count = 0;
   _reciprical_high_digit = _reciprical_low_digit = 0;
   _modulus_sub_precision = /*mutemp =*/0;
@@ -2264,7 +2264,7 @@ bool XMP_Is_Small_Prime(const uint32_t* candidate, const int precision) {
 bool XMP_Small_Divisors_Test(const uint32_t* candidate, int precision) {
   uint32_t quotient[MAX_UNIT_PRECISION];
 
-  for (unsigned i = 0; i < ARRAY_SIZE(primeTable); i++) {
+  for (unsigned i = 0; i < std::ssize(primeTable); i++) {
     if (XMP_Unsigned_Div_Int(quotient, candidate, primeTable[i], precision) ==
         0) {
       return false;
@@ -2299,7 +2299,7 @@ bool XMP_Small_Divisors_Test(const uint32_t* candidate, int precision) {
  *=============================================================================================*/
 bool XMP_Fermat_Test(const uint32_t* candidate_prime, unsigned rounds,
                      int precision) {
-  assert(rounds < ARRAY_SIZE(primeTable));
+  assert(rounds < std::ssize(primeTable));
 
   uint32_t term[MAX_UNIT_PRECISION];
   XMP_Move(term, candidate_prime, precision);

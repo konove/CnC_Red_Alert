@@ -41,6 +41,7 @@
 #include "ra/goptions.h"
 
 #include <algorithm>
+#include <iterator>
 
 #include "ra/conquer.h"
 #include "ra/control.h"
@@ -117,7 +118,7 @@ void GameOptionsClass::Process() {
   bool pressed;
   int curbutton = 7;
   int y;
-  TextButtonClass* buttonsel[ARRAY_SIZE(_constants)];
+  TextButtonClass* buttonsel[std::size(_constants)];
   static int num_buttons = sizeof(_constants) / sizeof(_constants[0]);
 
   int num_players = 0;

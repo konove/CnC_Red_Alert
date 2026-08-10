@@ -160,6 +160,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstring>
+#include <iterator>
 
 #include "absl/log/check.h"
 #include "port/safe_string.h"
@@ -4921,7 +4922,7 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
         continue;
       }
 
-      if (count < ARRAY_SIZE(defender)) {
+      if (count < std::ssize(defender)) {
         defender[count] = infantry;
         value[count] = threat;
         count++;
@@ -5010,7 +5011,7 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
         continue;
       }
 
-      if (count < ARRAY_SIZE(defender)) {
+      if (count < std::ssize(defender)) {
         defender[count] = unit;
         value[count] = threat;
         count++;
@@ -6403,7 +6404,7 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
       /*
       **	Insert the new name text into the buffer list.
       */
-      for (int index = 0; index < ARRAY_SIZE(NameOverride); index++) {
+      for (int index = 0; index < std::ssize(NameOverride); index++) {
         if (NameIDOverride[index] == 0) {
           NameOverride[index] = port::CloneString(buffer);
           NameIDOverride[index] = id;

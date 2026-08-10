@@ -52,6 +52,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <iterator>
 #include <new>
 
 #include "ra/cell.h"
@@ -195,7 +196,7 @@ void CellClass::Decode_Pointers() {
     assert(OccupierPtr != nullptr);
   }
 
-  for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+  for (int index = 0; index < std::ssize(Overlappers); index++) {
     if (Overlappers[index] != nullptr) {
       Overlappers[index] =
           As_Object(static_cast<TARGET>((intptr_t)Overlappers[index]));

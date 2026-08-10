@@ -107,6 +107,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 #include "ra/aircraft.h"
 #include "ra/bench_util.h"
@@ -496,7 +497,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 const short* DisplayClass::Text_Overlap_List(const char* text, int x,
                                              int y) const {
   static short _list[60];
-  int count = ARRAY_SIZE(_list);
+  int count = std::ssize(_list);
 
   if (text != nullptr) {
     short* ptr = &_list[0];
@@ -1332,7 +1333,7 @@ void DisplayClass::Refresh_Cells(CELL cell, const short* list) {
     list++;
   }
 
-  List_Copy(list, ARRAY_SIZE(tlist), tlist);
+  List_Copy(list, std::ssize(tlist), tlist);
   short* tt = tlist;
   while (*tt != REFRESH_EOL) {
     CELL newcell = cell + *tt++;

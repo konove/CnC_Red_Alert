@@ -2446,7 +2446,7 @@ static void Init_Heaps() {
   **	into a custom holding tank only as large as the largest speech file to
   **	be played.
   */
-  for (int index = 0; index < ARRAY_SIZE(SpeechBuffer); index++) {
+  for (int index = 0; index < std::ssize(SpeechBuffer); index++) {
     SpeechBuffer[index] = new char[SPEECH_BUFFER_SIZE];
     SpeechRecord[index] = VOX_NONE;
     assert(SpeechBuffer[index] != nullptr);
@@ -3037,7 +3037,7 @@ static void Init_Bulk_Data() {
   CCFileClass fc("TUTORIAL.INI");
   ini.Load(fc);
   int totallen = 0;
-  for (int index = 0; index < ARRAY_SIZE(TutorialTextOffsets); index++) {
+  for (int index = 0; index < std::ssize(TutorialTextOffsets); index++) {
     TutorialTextOffsets[index] = 0xFFFF;
 
     char buffer[128];
@@ -3052,7 +3052,7 @@ static void Init_Bulk_Data() {
   TutorialTextData = new char[totallen];
   char* textptr = (char*)TutorialTextData;
 
-  for (int index = 0; index < ARRAY_SIZE(TutorialTextOffsets); index++) {
+  for (int index = 0; index < std::ssize(TutorialTextOffsets); index++) {
     char num[10];
     sprintf(num, "%d", index);
     int textoffset = textptr - TutorialTextData;

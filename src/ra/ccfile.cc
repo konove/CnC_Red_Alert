@@ -52,6 +52,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <new>
 #include <optional>
 #include <span>
@@ -537,7 +538,7 @@ bool CCFileClass::Set_Date_Time(unsigned long datetime) {
 static CCFileClass Handles[10];
 
 int __cdecl Open_File(const char* file_name, FileAccess mode) {
-  for (int index = 0; index < ARRAY_SIZE(Handles); index++) {
+  for (int index = 0; index < std::ssize(Handles); index++) {
     if (!Handles[index].Is_Open()) {
       if (Handles[index].Open(file_name, mode)) {
         return index;

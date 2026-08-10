@@ -63,13 +63,13 @@
 
 #include "ra/key.h"
 
+#include <iterator>
+
 #include "ra/monoc.h"
 
 // void Message_Loop();
 
 // WWKeyboardClass * _Kbd = NULL;
-
-#define ARRAY_SIZE(x) int(sizeof(x) / sizeof(x[0]))
 
 /***********************************************************************************************
  * WWKeyboardClass::WWKeyBoardClass -- Construction for Westwood Keyboard Class
@@ -389,7 +389,7 @@ unsigned short WWKeyboardClass::Fetch_Element() {
   if (Head != Tail) {
     val = Buffer[Head];
 
-    Head = (Head + 1) % ARRAY_SIZE(Buffer);
+    Head = (Head + 1) % std::ssize(Buffer);
   }
   return val;
 }
@@ -436,7 +436,7 @@ unsigned short WWKeyboardClass::Peek_Element() const {
  *=============================================================================================*/
 bool WWKeyboardClass::Put_Element(unsigned short val) {
   if (!Is_Buffer_Full()) {
-    int temp = (Tail + 1) % ARRAY_SIZE(Buffer);
+    int temp = (Tail + 1) % std::ssize(Buffer);
     Buffer[Tail] = val;
     Tail = temp;
     return true;
@@ -460,7 +460,7 @@ bool WWKeyboardClass::Put_Element(unsigned short val) {
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
 bool WWKeyboardClass::Is_Buffer_Full() const {
-  if ((Tail + 1) % ARRAY_SIZE(Buffer) == Head) {
+  if ((Tail + 1) % std::ssize(Buffer) == Head) {
     return true;
   }
   return false;
@@ -731,13 +731,13 @@ bool WWKeyboardClass::Message_Handler(HWND window, UINT message, UINT wParam,
 int WWKeyboardClass::Available_Buffer_Room() const {
   int avail;
   if (Head == Tail) {
-    avail = ARRAY_SIZE(Buffer);
+    avail = std::ssize(Buffer);
   }
   if (Head < Tail) {
     avail = Tail - Head;
   }
   if (Head > Tail) {
-    avail = Tail + ARRAY_SIZE(Buffer) - Head;
+    avail = Tail + std::ssize(Buffer) - Head;
   }
   return avail;
 }

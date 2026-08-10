@@ -54,6 +54,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <iterator>
 
 #include "ra/conquer.h"
 #include "ra/coord.h"
@@ -335,7 +336,7 @@ void HelpClass::Set_Text(int text) {
     }
     memcpy(OverlapList, Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY),
            sizeof(OverlapList));
-    *&OverlapList[ARRAY_SIZE(OverlapList) - 1] = REFRESH_EOL;
+    *&OverlapList[std::ssize(OverlapList) - 1] = REFRESH_EOL;
   }
 }
 

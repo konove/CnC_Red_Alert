@@ -110,6 +110,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 #include "absl/log/check.h"
 #include "base/trig.h"
@@ -3895,7 +3896,7 @@ void AircraftClass::Response_Attack() {
   DCHECK(IsActive);
 
   static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
-  VocType response = _response[Sim_Random_Pick(0, ARRAY_SIZE(_response) - 1)];
+  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -3919,7 +3920,7 @@ void AircraftClass::Response_Move() {
   DCHECK(IsActive);
 
   static VocType _response[] = {VOC_ACKNOWL, VOC_AFFIRM};
-  VocType response = _response[Sim_Random_Pick(0, ARRAY_SIZE(_response) - 1)];
+  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -3944,7 +3945,7 @@ void AircraftClass::Response_Select() {
 
   static VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
                                 VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
-  VocType response = _response[Sim_Random_Pick(0, ARRAY_SIZE(_response) - 1)];
+  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }

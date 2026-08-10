@@ -69,6 +69,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <iterator>
 #include <string>
 
 #include "port/ex_string.h"
@@ -176,9 +177,6 @@ extern char* __nheapbeg;
 }
 bool InMainLoop = false;
 
-#ifndef ARRAY_SIZE
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
-#endif
 
 /***********************************************************************************************
  * Main_Game -- Main game startup routine. *
@@ -1929,12 +1927,12 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   //	RawFileClass	*palette_file;
 
   if (!add) {
-    for (i = 0; i < ARRAY_SIZE(InterpolatedPalettes); i++) {
+    for (i = 0; i < std::ssize(InterpolatedPalettes); i++) {
       InterpolatedPalettes[i] = nullptr;
     }
     start_palette = 0;
   } else {
-    for (start_palette = 0; start_palette < ARRAY_SIZE(InterpolatedPalettes);
+    for (start_palette = 0; start_palette < std::ssize(InterpolatedPalettes);
          start_palette++) {
       if (!InterpolatedPalettes[start_palette]) {
         break;
@@ -1965,7 +1963,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
 }
 
 void Free_Interpolated_Palettes() {
-  for (int i = 0; i < ARRAY_SIZE(InterpolatedPalettes); i++) {
+  for (int i = 0; i < std::ssize(InterpolatedPalettes); i++) {
     if (InterpolatedPalettes[i]) {
       delete[] InterpolatedPalettes[i];
       InterpolatedPalettes[i] = nullptr;

@@ -135,13 +135,6 @@ T Bound(T original, T minval, T maxval) {
   return original;
 }
 
-/*
-**	This macro serves as a general way to determine the number of elements
-**	within an array.
-*/
-#define ARRAY_LENGTH(x) int(sizeof(x) / sizeof(x[0]))
-#define ARRAY_SIZE(x) int(sizeof(x) / sizeof(x[0]))
-
 inline void Set_Bit(void* array, int bit, int value) {
   if (value) {
     ((uint32_t*)array)[(unsigned)bit >> 5] |= 1 << (bit & 0x1F);

@@ -68,6 +68,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -452,7 +453,7 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house, long,
       maxnum = 0;
     }
 
-    if (choicecount >= ARRAY_SIZE(choices)) {
+    if (choicecount >= std::ssize(choices)) {
       break;
     }
 

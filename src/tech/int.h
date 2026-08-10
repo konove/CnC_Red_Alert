@@ -43,6 +43,7 @@
 #include <climits>
 #include <cstdint>
 #include <cstring>
+#include <iterator>
 
 #include "tech/mp.h"
 #include "tech/straw.h"
@@ -353,14 +354,14 @@ class Int {
 
   struct RemainderTable {
     explicit RemainderTable(const Int<PRECISION>& p) {
-      for (unsigned i = 0; i < ARRAY_SIZE(primeTable); i++) {
+      for (unsigned i = 0; i < std::ssize(primeTable); i++) {
         table[i] = p % primeTable[i];
       }
     }
     bool HasZero() const { return HasZeroEntry; }
     void Increment(unsigned short increment = 1) {
       HasZeroEntry = false;
-      for (unsigned int i = 0; i < ARRAY_SIZE(primeTable); i++) {
+      for (unsigned int i = 0; i < std::ssize(primeTable); i++) {
         table[i] += increment;
         while (table[i] >= primeTable[i]) {
           table[i] -= primeTable[i];
@@ -370,7 +371,7 @@ class Int {
     }
     void Increment(const RemainderTable& rtQ) {
       HasZeroEntry = false;
-      for (unsigned int i = 0; i < ARRAY_SIZE(primeTable); i++) {
+      for (unsigned int i = 0; i < std::ssize(primeTable); i++) {
         table[i] += rtQ.table[i];
         if (table[i] >= primeTable[i]) {
           table[i] -= primeTable[i];
@@ -380,7 +381,7 @@ class Int {
     }
 
     bool HasZeroEntry = false;
-    unsigned short table[ARRAY_SIZE(primeTable)];
+    unsigned short table[std::size(primeTable)];
   };
 };
 

@@ -865,7 +865,7 @@ void Speak_AI() {
       **	voice into the oldest buffer available.
       */
       if (speech == nullptr) {
-        _index = (_index + 1) % ARRAY_SIZE(SpeechRecord);
+        _index = (_index + 1) % std::ssize(SpeechRecord);
 
         auto name = std::filesystem::path(Speech[SpeakQueue])
                         .replace_extension(".AUD")

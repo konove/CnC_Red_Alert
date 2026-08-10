@@ -68,6 +68,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -122,7 +123,7 @@ void DriveClass::Response_Select() {
 
   static VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
                                 VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
-  VocType response = _response[Sim_Random_Pick(0, ARRAY_SIZE(_response) - 1)];
+  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -149,7 +150,7 @@ void DriveClass::Response_Move() {
       VOC_ACKNOWL,
       VOC_AFFIRM,
   };
-  VocType response = _response[Sim_Random_Pick(0, ARRAY_SIZE(_response) - 1)];
+  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -173,7 +174,7 @@ void DriveClass::Response_Attack() {
   assert(IsActive);
 
   static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
-  VocType response = _response[Sim_Random_Pick(0, ARRAY_SIZE(_response) - 1)];
+  VocType response = _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -933,7 +934,7 @@ bool DriveClass::Start_Of_Move() {
         Is_Target_Infantry(NavCom)) {
       dist = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
 
-      if (dist < ARRAY_SIZE(Path)) {
+      if (dist < std::ssize(Path)) {
         Path[dist] = FACING_NONE;
         facing = Path[0];  // Maybe needed.
       }

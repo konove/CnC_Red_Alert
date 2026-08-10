@@ -102,6 +102,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 #include "ra/anim.h"
 #include "ra/bench_util.h"
@@ -2357,63 +2358,63 @@ void InfantryClass::Response_Select() {
       case INFANTRY_GENERAL:
         if (house != HOUSE_USSR && house != HOUSE_BAD) {
           response = _stavros;
-          size = ARRAY_SIZE(_stavros);
+          size = std::ssize(_stavros);
         } else {
           response = _default_response;
-          size = ARRAY_SIZE(_default_response);
+          size = std::ssize(_default_response);
         }
         house = HOUSE_USSR;
         break;
 
       case INFANTRY_DOG:
         response = _dog_response;
-        size = ARRAY_SIZE(_dog_response);
+        size = std::ssize(_dog_response);
         break;
 
       case INFANTRY_EINSTEIN:
         response = _ein_response;
-        size = ARRAY_SIZE(_ein_response);
+        size = std::ssize(_ein_response);
         break;
 
       case INFANTRY_SPY:
         response = _spy_response;
-        size = ARRAY_SIZE(_spy_response);
+        size = std::ssize(_spy_response);
         if (house == HOUSE_USSR) {
           response = _default_response;
-          size = ARRAY_SIZE(_default_response);
+          size = std::ssize(_default_response);
         }
         break;
 
       case INFANTRY_MEDIC:
         response = _medic_response;
-        size = ARRAY_SIZE(_medic_response);
+        size = std::ssize(_medic_response);
         break;
       case INFANTRY_MECHANIC:
         response = _mechanic_response;
-        size = ARRAY_SIZE(_mechanic_response);
+        size = std::ssize(_mechanic_response);
         break;
       case INFANTRY_SHOCK:
         response = _shock_response;
-        size = ARRAY_SIZE(_shock_response);
+        size = std::ssize(_shock_response);
         break;
       case INFANTRY_TANYA:
         response = _tanya_response;
-        size = ARRAY_SIZE(_tanya_response);
+        size = std::ssize(_tanya_response);
         break;
 
       case INFANTRY_THIEF:
         response = _thief_response;
-        size = ARRAY_SIZE(_thief_response);
+        size = std::ssize(_thief_response);
         break;
 
       case INFANTRY_RENOVATOR:
         response = _eng_response;
-        size = ARRAY_SIZE(_eng_response);
+        size = std::ssize(_eng_response);
         break;
 
       default:
         response = _default_response;
-        size = ARRAY_SIZE(_default_response);
+        size = std::ssize(_default_response);
         break;
     }
     if (response != nullptr) {
@@ -2483,66 +2484,66 @@ void InfantryClass::Response_Move() {
       case INFANTRY_GENERAL:
         if (house != HOUSE_USSR && house != HOUSE_BAD) {
           response = _stavros;
-          size = ARRAY_SIZE(_stavros);
+          size = std::ssize(_stavros);
         } else {
           response = _default_response;
-          size = ARRAY_SIZE(_default_response);
+          size = std::ssize(_default_response);
         }
         house = HOUSE_USSR;
         break;
 
       case INFANTRY_DOG:
         response = _dog_response;
-        size = ARRAY_SIZE(_dog_response);
+        size = std::ssize(_dog_response);
         break;
 
       case INFANTRY_EINSTEIN:
         response = _ein_response;
-        size = ARRAY_SIZE(_ein_response);
+        size = std::ssize(_ein_response);
         break;
 
       case INFANTRY_RENOVATOR:
         response = _eng_response;
-        size = ARRAY_SIZE(_eng_response);
+        size = std::ssize(_eng_response);
         break;
 
       case INFANTRY_SPY:
         response = _spy_response;
-        size = ARRAY_SIZE(_spy_response);
+        size = std::ssize(_spy_response);
         if (house == HOUSE_USSR) {
           response = _default_response;
-          size = ARRAY_SIZE(_default_response);
+          size = std::ssize(_default_response);
         }
         break;
 
       case INFANTRY_MEDIC:
         response = _medic_response;
-        size = ARRAY_SIZE(_medic_response);
+        size = std::ssize(_medic_response);
         break;
 
       case INFANTRY_MECHANIC:
         response = _mechanic;
-        size = ARRAY_SIZE(_mechanic);
+        size = std::ssize(_mechanic);
         break;
 
       case INFANTRY_SHOCK:
         response = _shock;
-        size = ARRAY_SIZE(_shock);
+        size = std::ssize(_shock);
         break;
 
       case INFANTRY_TANYA:
         response = _tanya_response;
-        size = ARRAY_SIZE(_tanya_response);
+        size = std::ssize(_tanya_response);
         break;
 
       case INFANTRY_THIEF:
         response = _thief_response;
-        size = ARRAY_SIZE(_thief_response);
+        size = std::ssize(_thief_response);
         break;
 
       default:
         response = _default_response;
-        size = ARRAY_SIZE(_default_response);
+        size = std::ssize(_default_response);
         break;
     }
     if (response != nullptr) {
@@ -2616,66 +2617,66 @@ void InfantryClass::Response_Attack() {
       case INFANTRY_GENERAL:
         if (house != HOUSE_USSR && house != HOUSE_BAD) {
           response = _stavros;
-          size = ARRAY_SIZE(_stavros);
+          size = std::ssize(_stavros);
         } else {
           response = _default_response;
-          size = ARRAY_SIZE(_default_response);
+          size = std::ssize(_default_response);
         }
         house = HOUSE_USSR;
         break;
 
       case INFANTRY_DOG:
         response = _dog_response;
-        size = ARRAY_SIZE(_dog_response);
+        size = std::ssize(_dog_response);
         break;
 
       case INFANTRY_SPY:
         response = _spy_response;
-        size = ARRAY_SIZE(_spy_response);
+        size = std::ssize(_spy_response);
         if (house == HOUSE_USSR) {
           response = _default_response;
-          size = ARRAY_SIZE(_default_response);
+          size = std::ssize(_default_response);
         }
         break;
 
       case INFANTRY_EINSTEIN:
         response = _ein_response;
-        size = ARRAY_SIZE(_ein_response);
+        size = std::ssize(_ein_response);
         break;
 
       case INFANTRY_RENOVATOR:
         response = _eng_response;
-        size = ARRAY_SIZE(_eng_response);
+        size = std::ssize(_eng_response);
         break;
 
       case INFANTRY_MEDIC:
         response = _medic_response;
-        size = ARRAY_SIZE(_medic_response);
+        size = std::ssize(_medic_response);
         break;
 
       case INFANTRY_MECHANIC:
         response = _mechanic;
-        size = ARRAY_SIZE(_mechanic);
+        size = std::ssize(_mechanic);
         break;
 
       case INFANTRY_SHOCK:
         response = _shock;
-        size = ARRAY_SIZE(_shock);
+        size = std::ssize(_shock);
         break;
 
       case INFANTRY_TANYA:
         response = _tanya_response;
-        size = ARRAY_SIZE(_tanya_response);
+        size = std::ssize(_tanya_response);
         break;
 
       case INFANTRY_THIEF:
         response = _thief_response;
-        size = ARRAY_SIZE(_thief_response);
+        size = std::ssize(_thief_response);
         break;
 
       default:
         response = _default_response;
-        size = ARRAY_SIZE(_default_response);
+        size = std::ssize(_default_response);
         break;
     }
     if (response != nullptr) {

@@ -22,6 +22,7 @@
 #include "ra/coord.h"
 
 #include <algorithm>
+#include <iterator>
 
 #include "base/trig.h"
 #include "ra/const.h"
@@ -65,12 +66,12 @@ const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
           !no_center || offset != 0) {
         *ptr++ = offset;
         count++;
-        if (count + 2 >= ARRAY_SIZE(offsets)) {
+        if (count + 2 >= std::ssize(offsets)) {
           break;
         }
       }
     }
-    if (count + 2 >= ARRAY_SIZE(offsets)) {
+    if (count + 2 >= std::ssize(offsets)) {
       break;
     }
   }

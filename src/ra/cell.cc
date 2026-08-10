@@ -92,6 +92,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iterator>
 #include <utility>
 
 #include "config.h"
@@ -188,7 +189,7 @@ CellClass::CellClass()
     Zones[zone] = 0;
   }
   Flag.Composite = 0;
-  for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+  for (int index = 0; index < std::ssize(Overlappers); index++) {
     Overlappers[index] = nullptr;
   }
 }
@@ -448,7 +449,7 @@ void CellClass::Redraw_Objects(bool forced) {
     /*
     **	Flag any overlapping object in this cell to be redrawn.
     */
-    for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+    for (int index = 0; index < std::ssize(Overlappers); index++) {
       if (Overlappers[index]) {
         assert(Overlappers[index]->IsActive);
         if (Overlappers[index]->Is_Techno() &&
@@ -462,7 +463,7 @@ void CellClass::Redraw_Objects(bool forced) {
     /*
     **	Flag any overlapping object in this cell to be redrawn.
     */
-    for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+    for (int index = 0; index < std::ssize(Overlappers); index++) {
       if (Overlappers[index] != nullptr) {
         if (!Overlappers[index]->IsActive) {
           Overlappers[index] = nullptr;
@@ -780,7 +781,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   }
 
   int index;
-  for (index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+  for (index = 0; index < std::ssize(Overlappers); index++) {
     if (Overlappers[index] == object) {
       return;
     }
@@ -794,7 +795,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   *somebody *	else out in this case.
   */
   if (!ptr && object->What_Am_I() == RTTI_BUILDING) {
-    for (index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+    for (index = 0; index < std::ssize(Overlappers); index++) {
       switch (Overlappers[index]->What_Am_I()) {
         case RTTI_BUILDING:
         case RTTI_TERRAIN:
@@ -802,7 +803,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
 
         default:
           Overlappers[index] = object;
-          index = ARRAY_SIZE(Overlappers);
+          index = std::ssize(Overlappers);
           break;
       }
     }
@@ -838,7 +839,7 @@ void CellClass::Overlap_Up(ObjectClass* object) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
   assert(object != nullptr && object->IsActive);
 
-  for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+  for (int index = 0; index < std::ssize(Overlappers); index++) {
     if (Overlappers[index] == object) {
       Overlappers[index] = nullptr;
       break;
@@ -1260,7 +1261,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     **	hack overpass after the cells are redrawn so that subs can be
     **	redrawn separately.
     */
-    ObjectClass* optr[20 + ARRAY_SIZE(Overlappers)];
+    ObjectClass* optr[20 + std::size(Overlappers)];
     int count = 0;
     ObjectClass* object = Cell_Occupier();
     while (object != nullptr) {
@@ -1272,7 +1273,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       object = object->Next;
       count++;
     }
-    for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+    for (int index = 0; index < std::ssize(Overlappers); index++) {
       object = Overlappers[index];
       if (object != nullptr && object->IsActive) {
         object->IsToDisplay = true;
@@ -2519,7 +2520,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
               INFANTRY_E1, INFANTRY_E1, INFANTRY_E1,
               INFANTRY_E2, INFANTRY_E3, INFANTRY_RENOVATOR};
           if (!InfantryTypeClass::As_Reference(
-                   _inf[Random_Pick(0, ARRAY_SIZE(_inf) - 1)])
+                   _inf[Random_Pick<int>(0, std::ssize(_inf) - 1)])
                    .Create_And_Place(Cell_Number(), object->Owner())) {
             if (index == 0) {
               give_crate_money();

@@ -43,6 +43,7 @@
 #include "ra/combat.h"
 
 #include <algorithm>
+#include <iterator>
 
 #include "ra/cell.h"
 #include "ra/coord.h"
@@ -232,13 +233,13 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
       if (!object->IsToDamage && object != source) {
         object->IsToDamage = true;
         objects[count++] = object;
-        if (count >= ARRAY_SIZE(objects)) {
+        if (count >= std::ssize(objects)) {
           break;
         }
       }
       object = object->Next;
     }
-    if (count >= ARRAY_SIZE(objects)) {
+    if (count >= std::ssize(objects)) {
       break;
     }
   }
@@ -382,10 +383,10 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
       }
       //	Fixed math error
       if (land == LAND_WATER) {
-        return _waterlist[(ARRAY_SIZE(_waterlist) - 1) *
+        return _waterlist[(std::ssize(_waterlist) - 1) *
                           fixed(std::min(damage, 90), 90)];
       }
-      return _aplist[(ARRAY_SIZE(_aplist) - 1) *
+      return _aplist[(std::ssize(_aplist) - 1) *
                      fixed(std::min(damage, 90), 90)];
 
     case 5:
@@ -393,10 +394,10 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
         return ANIM_FLAK;
       }
       if (land == LAND_WATER) {
-        return _waterlist[(ARRAY_SIZE(_waterlist) - 1) *
+        return _waterlist[(std::ssize(_waterlist) - 1) *
                           fixed(std::min(damage, 130), 130)];
       }
-      return _helist[(ARRAY_SIZE(_helist) - 1) *
+      return _helist[(std::ssize(_helist) - 1) *
                      fixed(std::min(damage, 130), 130)];
 
     case 3:
@@ -404,10 +405,10 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
         return ANIM_FLAK;
       }
       if (land == LAND_WATER) {
-        return _waterlist[(ARRAY_SIZE(_waterlist) - 1) *
+        return _waterlist[(std::ssize(_waterlist) - 1) *
                           fixed(std::min(damage, 150), 150)];
       }
-      return _firelist[(ARRAY_SIZE(_firelist) - 1) *
+      return _firelist[(std::ssize(_firelist) - 1) *
                        fixed(std::min(damage, 150), 150)];
 
     case 1:
