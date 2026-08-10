@@ -537,7 +537,8 @@ bool Save_Misc_Values(FileClass& file) {
   /*
   **	Player's House.
   */
-  if (file.Write(&PlayerPtr, sizeof(void*)) != sizeof(void*)) {
+  if (file.Write(static_cast<const void*>(&PlayerPtr), sizeof(void*)) !=
+      sizeof(void*)) {
     return false;
   }
 
@@ -580,7 +581,8 @@ bool Save_Misc_Values(FileClass& file) {
   */
   for (i = 0; i < count; i++) {
     ptr = CurrentObject[i];
-    if (file.Write(&ptr, sizeof(void*)) != sizeof(void*)) {
+    if (file.Write(static_cast<const void*>(&ptr), sizeof(void*)) !=
+        sizeof(void*)) {
       return false;
     }
   }
@@ -627,7 +629,8 @@ bool Load_Misc_Values(FileClass& file) {
   /*
   **	Player's House.
   */
-  if (file.Read(&PlayerPtr, sizeof(void*)) != sizeof(void*)) {
+  if (file.Read(static_cast<void*>(&PlayerPtr), sizeof(void*)) !=
+      sizeof(void*)) {
     return false;
   }
 
@@ -668,7 +671,8 @@ bool Load_Misc_Values(FileClass& file) {
   **	Load the pointers.
   */
   for (i = 0; i < count; i++) {
-    if (file.Read(&ptr, sizeof(void*)) != sizeof(void*)) {
+    if (file.Read(static_cast<void*>(&ptr), sizeof(void*)) !=
+        sizeof(void*)) {
       return false;
     }
     CurrentObject.Add(ptr);  // add to the list

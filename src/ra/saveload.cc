@@ -1070,7 +1070,7 @@ bool Save_Misc_Values(Pipe& file) {
   */
   for (i = 0; i < count; i++) {
     ptr = CurrentObject[i];
-    file.Put(&ptr, sizeof(void*));
+    file.Put(static_cast<const void*>(&ptr), sizeof(void*));
   }
 
   /*
@@ -1125,7 +1125,7 @@ bool Load_Misc_Values(Straw& file) {
   **	Load the pointers.
   */
   for (int i = 0; i < count; i++) {
-    file.Get(&ptr, sizeof(void*));
+    file.Get(static_cast<void*>(&ptr), sizeof(void*));
     CurrentObject.Add(ptr);  // add to the list
   }
 

@@ -46,8 +46,10 @@
 
 #include "sdllib/ww_audio.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
+#include <iterator>
 #include <string>
 
 #include "absl/log/log.h"
@@ -847,8 +849,13 @@ void Speak_AI() {
       *the *	speech buffers.
       */
       const void* speech = nullptr;
-      for (int index = 0; index < ARRAY_SIZE(SpeechRecord); index++) {
+      for (size_t index = 0; index < std::size(SpeechRecord); index++) {
         if (SpeechRecord[index] == SpeakQueue) {
+          // _index tracks the buffer being played, so move it to the cached
+          // one -- the poll at the top of this routine watches that buffer to
+          // decide when the voice has finished.
+          _index = static_cast<int>(index);
+          speech = SpeechBuffer[index];
           break;
         }
       }
@@ -901,7 +908,9 @@ void Speak_AI() {
  *=============================================================================================*/
 void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
-  Stop_Sample_Playing(SpeechBuffer);
+  for (size_t index = 0; index < std::size(SpeechBuffer); index++) {
+    Stop_Sample_Playing(SpeechBuffer[index]);
+  }
 }
 
 /***********************************************************************************************
@@ -922,5 +931,8 @@ void Stop_Speaking() {
 bool Is_Speaking() {
   Speak_AI();
   return !Debug_Quiet && SampleType != 0 &&
-         (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer));
+         (SpeakQueue != VOX_NONE ||
+          std::ranges::any_of(SpeechBuffer, [](const void* buffer) {
+            return Is_Sample_Playing(buffer);
+          }));
 }

@@ -39,15 +39,14 @@
  *   LoadOptionsClass::Clear_List -- clears the list box & Files arrays *
  *   LoadOptionsClass::Fill_List -- fills the list box & GameNum arrays *
  *   LoadOptionsClass::Num_From_Ext -- clears the list box & GameNum arrays *
- *   LoadOptionsClass::Compare -- for qsort *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
 #include "ra/loaddlg.h"
 
+#include <algorithm>
 #include <charconv>
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 
@@ -137,14 +136,14 @@ int LoadOptionsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 500;                     // dialog width
-  int d_dialog_h = 312;                     // dialog height
-  int d_dialog_x = (640 - d_dialog_w) / 2;  // centered x-coord
-  int d_dialog_y = (400 - d_dialog_h) / 2;  // centered y-coord
-  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;        // coord of x-center
+  int d_dialog_w = 500;                           // dialog width
+  int d_dialog_h = 312;                           // dialog height
+  int d_dialog_x = (640 - d_dialog_w) / 2;        // centered x-coord
+  int d_dialog_y = (400 - d_dialog_h) / 2;        // centered y-coord
+  int d_dialog_cx = d_dialog_x + d_dialog_w / 2;  // coord of x-center
 
   int d_txt8_h = 22;  // ht of 8-pt text
-  int d_margin = 14;   // margin width/height
+  int d_margin = 14;  // margin width/height
   int x_margin = 32;  // margin width/height
 
   int d_list_w = d_dialog_w - x_margin * 2;
@@ -741,7 +740,10 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
   if (Files.Count() > 0) {
-    qsort(&Files[0], Files.Count(), sizeof(FileEntryClass*), Compare);
+    std::sort(&Files[0], &Files[0] + Files.Count(),
+              [](const FileEntryClass* left, const FileEntryClass* right) {
+                return left->DateTime > right->DateTime;
+              });
   }
 
   /*
@@ -771,31 +773,4 @@ int LoadOptionsClass::Num_From_Ext(const char* fname) {
     std::from_chars(ext.data() + 1, ext.data() + ext.size(), num);
   }
   return num;
-}
-
-/***********************************************************************************************
- * LoadOptionsClass::Compare -- for qsort *
- *                                                                                             *
- * INPUT: * p1,p2      ptrs to elements to compare *
- *                                                                                             *
- * OUTPUT: * 0 = same, -1 = (*p1) goes BEFORE (*p2), 1 = (*p1) goes AFTER (*p2)
- **
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 02/14/1995 BR : Created. *
- *=============================================================================================*/
-int LoadOptionsClass::Compare(const void* p1, const void* p2) {
-  class FileEntryClass *fe1, *fe2;
-
-  fe1 = *(class FileEntryClass**)p1;
-  fe2 = *(class FileEntryClass**)p2;
-
-  if (fe1->DateTime > fe2->DateTime) {
-    return -1;
-  }
-  if (fe1->DateTime < fe2->DateTime) {
-    return 1;
-  }
-  return 0;
 }

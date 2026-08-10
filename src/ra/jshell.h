@@ -123,16 +123,6 @@ T operator~(T t1) {
   return (T) ~(int)t1;
 }
 
-
-template <class T>
-void swap(T& value1, T& value2) {
-  T temp = value1;
-  value1 = value2;
-  value2 = temp;
-}
-int swap(int, int);
-long swap(long, long);
-
 // TODO(konove): Replace with std::clamp
 template <class T>
 T Bound(T original, T minval, T maxval) {

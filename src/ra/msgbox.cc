@@ -93,7 +93,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   int selection;
   bool pressed;
   int curbutton;
-  TextButtonClass* buttons[3];
+  TextButtonClass* buttons[3] = {};
   char* back;
   bool display = true;  // display level
   int realval[5];
@@ -204,7 +204,6 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Add and initialize the buttons to the button list.
   */
-  memset(buttons, '\0', sizeof(buttons));
   if (numbuttons > 0) {
     buttonlist = &button1;
     buttons[0] = &button1;

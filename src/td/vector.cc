@@ -40,7 +40,7 @@
 
 #include "td/vector.h"
 
-#include <cstring>
+#include <algorithm>
 #include <new>
 
 #include "td/base.h"
@@ -541,12 +541,11 @@ int DynamicVectorClass<T>::Add_Head(const T& object) {
   **	There is room for the new object now. Add it to the end of the object
   *vector.
   */
-  if (ActiveCount) {
-    // We explicitly use NOLINT because we intend to move the raw pointers,
-    // so sizeof(T) returning the pointer size is correct behavior.
-    memmove(&(*this)[1], &(*this)[0],
-            ActiveCount * sizeof(T));  // NOLINT(bugprone-sizeof-expression)
-  }
+  // Shift by assignment rather than a raw byte move, both so that a non-trivial
+  // T is handled correctly (matching Delete()) and to avoid the void* round
+  // trip. For a trivially copyable T this still compiles down to a memmove.
+  std::move_backward(this->Vector, this->Vector + ActiveCount,
+                     this->Vector + ActiveCount + 1);
   (*this)[0] = object;
   ActiveCount++;
   //	(*this)[ActiveCount++] = object;

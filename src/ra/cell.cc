@@ -92,7 +92,7 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cstdlib>
+#include <utility>
 
 #include "config.h"
 #include "ra/anim.h"
@@ -964,17 +964,6 @@ static bool _Calc_Partial_Window(int cellx, int celly, int& drawx, int& drawy) {
   return (true);
 }
 
-static int _ocompare(const void* left, const void* right) {
-  COORDINATE lcoord = (*((ObjectClass**)left))->Sort_Y();
-  COORDINATE rcoord = (*((ObjectClass**)right))->Sort_Y();
-  if (lcoord < rcoord) {
-    return (-1);
-  }
-  if (lcoord > rcoord) {
-    return (1);
-  }
-  return (0);
-}
 #endif
 
 /***********************************************************************************************
@@ -1310,7 +1299,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       */
       case 2:
         if (optr[0]->Sort_Y() > optr[1]->Sort_Y()) {
-          swap(optr[0], optr[1]);
+          std::swap(optr[0], optr[1]);
         }
         break;
 
@@ -1319,13 +1308,13 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       */
       case 3:
         if (optr[0]->Sort_Y() > optr[2]->Sort_Y()) {
-          swap(optr[0], optr[2]);
+          std::swap(optr[0], optr[2]);
         }
         if (optr[0]->Sort_Y() > optr[1]->Sort_Y()) {
-          swap(optr[0], optr[1]);
+          std::swap(optr[0], optr[1]);
         }
         if (optr[1]->Sort_Y() > optr[2]->Sort_Y()) {
-          swap(optr[1], optr[2]);
+          std::swap(optr[1], optr[2]);
         }
         break;
 
@@ -1334,7 +1323,10 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	a quicksort.
       */
       default:
-        qsort(optr, count, sizeof(optr[0]), _ocompare);
+        std::sort(optr, optr + count,
+                  [](const ObjectClass* left, const ObjectClass* right) {
+                    return *left < *right;  // Compares Sort_Y().
+                  });
         break;
     }
 

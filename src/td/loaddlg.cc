@@ -35,7 +35,7 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * LoadOptionsClass::Clear_List -- clears the list box & Files
- *arrays                        * LoadOptionsClass::Compare -- for qsort *
+ *arrays                                                                       *
  *   LoadOptionsClass::Fill_List -- fills the list box & GameNum arrays *
  *   LoadOptionsClass::LoadOptionsClass -- class constructor *
  *   LoadOptionsClass::Num_From_Ext -- clears the list box & GameNum arrays *
@@ -45,9 +45,9 @@
  *- - - - - - - */
 #include "td/loaddlg.h"
 
+#include <algorithm>
 #include <charconv>
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 
@@ -685,7 +685,12 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   /*
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
-  qsort(&Files[0], Files.Count(), sizeof(class FileEntryClass*), Compare);
+  if (Files.Count() > 0) {
+    std::sort(&Files[0], &Files[0] + Files.Count(),
+              [](const FileEntryClass* left, const FileEntryClass* right) {
+                return left->DateTime > right->DateTime;
+              });
+  }
 
   /*
   ** Now add every file's name to the list box
@@ -716,29 +721,3 @@ int LoadOptionsClass::Num_From_Ext(const char* fname) {
   return num;
 }
 
-/***********************************************************************************************
- * LoadOptionsClass::Compare -- for qsort *
- *                                                                                             *
- * INPUT: * p1,p2      ptrs to elements to compare *
- *                                                                                             *
- * OUTPUT: * 0 = same, -1 = (*p1) goes BEFORE (*p2), 1 = (*p1) goes AFTER (*p2)
- **
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 02/14/1995 BR : Created. *
- *=============================================================================================*/
-int LoadOptionsClass::Compare(const void* p1, const void* p2) {
-  class FileEntryClass *fe1, *fe2;
-
-  fe1 = *(class FileEntryClass**)p1;
-  fe2 = *(class FileEntryClass**)p2;
-
-  if (fe1->DateTime > fe2->DateTime) {
-    return -1;
-  }
-  if (fe1->DateTime < fe2->DateTime) {
-    return 1;
-  }
-  return 0;
-}

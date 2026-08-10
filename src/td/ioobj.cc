@@ -1467,7 +1467,8 @@ bool LayerClass::Load(FileClass& file) {
   ----------------------- Read in all array elements -----------------------
   */
   for (i = 0; i < count; i++) {
-    if (file.Read(&ptr, sizeof(ObjectClass*)) != sizeof(ObjectClass*)) {
+    if (file.Read(static_cast<void*>(&ptr), sizeof(ObjectClass*)) !=
+        sizeof(ObjectClass*)) {
       return false;
     }
     Add(ptr);
@@ -1505,7 +1506,8 @@ bool LayerClass::Save(FileClass& file) {
   */
   for (i = 0; i < count; i++) {
     ptr = (*this)[i];
-    if (file.Write(&ptr, sizeof(ObjectClass*)) != sizeof(ObjectClass*)) {
+    if (file.Write(static_cast<const void*>(&ptr), sizeof(ObjectClass*)) !=
+        sizeof(ObjectClass*)) {
       return false;
     }
   }

@@ -79,10 +79,13 @@
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
+#include <iterator>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "absl/log/log.h"
+#include "base/types.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -2296,36 +2299,30 @@ bool Main_Loop() {
   }
 
   if (Debug_MotionCapture) {
-    static void** _array = nullptr;
-    static int _sequence = 0;
-    static int _seqsize = Rule.MovieTime * TICKS_PER_MINUTE;
+    // One captured screen per element. Empty between runs.
+    static std::vector<std::vector<char>> frames;
+    static base::ssize sequence = 0;
 
-    if (_array == nullptr) {
-      _array = new void*[_seqsize];
-      memset(_array, '\0', _seqsize * sizeof(void*));
-    }
-
-    if (_array == nullptr) {
-      Debug_MotionCapture = false;
+    if (frames.empty()) {
+      // Sized when a capture run starts rather than once per process, so that
+      // an edit to MovieTime takes effect on the next run.
+      int frame_count = Rule.MovieTime * TICKS_PER_MINUTE;
+      frames.resize(frame_count);
     }
 
     static GraphicBufferClass temp_page(
         SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
         SeenBuff.Get_Width() * SeenBuff.Get_Height());
 
-    int size = SeenBuff.Get_Width() * SeenBuff.Get_Height();
+    base::ssize size = SeenBuff.Get_Width() * SeenBuff.Get_Height();
 
-    if (_sequence < _seqsize) {
-      if (_array[_sequence] == nullptr) {
-        _array[_sequence] = new char[size];
-      }
+    if (sequence < std::ssize(frames)) {
+      // A no-op on a frame reused from an earlier run of the same resolution.
+      frames[sequence].resize(size);
 
-      if (_array[_sequence] != nullptr) {
-        SeenBuff.Blit(temp_page);
-        memmove(_array[_sequence], temp_page.Get_Buffer(), size);
-      }
-      _sequence++;
-
+      SeenBuff.Blit(temp_page);
+      std::memcpy(frames[sequence].data(), temp_page.Get_Buffer(), size);
+      sequence++;
     } else {
       Debug_MotionCapture = false;
 
@@ -2333,15 +2330,18 @@ bool Main_Loop() {
       file.Cache(200000);
       char filename[30];
 
-      for (int index = 0; index < _sequence; index++) {
-        memmove(temp_page.Get_Buffer(), _array[index], size);
-        sprintf(filename, "cap%04d.pcx", index);
+      for (base::ssize index = 0; index < sequence; index++) {
+        std::memcpy(temp_page.Get_Buffer(), frames[index].data(), size);
+        snprintf(filename, sizeof(filename), "cap%04zd.pcx", index);
         file.Set_Name(filename);
 
         Write_PCX_File(file, temp_page, &GamePalette);
       }
 
-      _sequence = 0;
+      // Release the run's buffers so that the next run re-reads MovieTime.
+      frames.clear();
+      frames.shrink_to_fit();
+      sequence = 0;
     }
   }
 

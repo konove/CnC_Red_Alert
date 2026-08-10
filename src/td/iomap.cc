@@ -143,7 +143,8 @@ bool CellClass::Load(FileClass& file) {
   */
   if (rc) {
     if (IsTrigger) {
-      if (file.Read(&trig, sizeof(void*)) != sizeof(void*)) {
+      if (file.Read(static_cast<void*>(&trig), sizeof(void*)) !=
+          sizeof(void*)) {
         return false;
       }
       CellTriggers[Cell_Number()] = trig;
@@ -179,7 +180,8 @@ bool CellClass::Save(FileClass& file) {
   if (rc) {
     if (IsTrigger) {
       trig = CellTriggers[Cell_Number()];
-      if (file.Write(&trig, sizeof(void*)) != sizeof(void*)) {
+      if (file.Write(static_cast<const void*>(&trig), sizeof(void*)) !=
+          sizeof(void*)) {
         return false;
       }
     }

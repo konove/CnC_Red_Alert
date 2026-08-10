@@ -93,6 +93,7 @@
 #include <climits>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 /***********************************************************************************************
  * _Byte_Precision -- Determines the number of bytes significant in long
@@ -2210,16 +2211,6 @@ void memrev(char* buffer, size_t length) {
   }
 }
 
-int pfunc(const void* pkey, const void* base) {
-  if (*(unsigned short*)pkey < *(unsigned short*)base) {
-    return -1;
-  }
-  if (*(unsigned short*)pkey > *(unsigned short*)base) {
-    return 1;
-  }
-  return 0;
-}
-
 /***********************************************************************************************
  * XMP_Is_Small_Prime -- Determine if MP number is a small prime. *
  *                                                                                             *
@@ -2236,22 +2227,20 @@ int pfunc(const void* pkey, const void* base) {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-bool XMP_Is_Small_Prime(const uint32_t* candidate, int precision) {
-  /*
-  **	If the number is too large for comparison to the known small primes
-  *table, then *	bail immediately.
-  */
+bool XMP_Is_Small_Prime(const uint32_t* candidate, const int precision) {
+  // If the number is too large for comparison to the known small primes table,
+  // then bail immediately.
   if (XMP_Significance(candidate, precision) > 1) {
     return false;
   }
-  if (*candidate > primeTable[ARRAY_SIZE(primeTable) - 1]) {
+  if (*candidate > primeTable[std::size(primeTable) - 1]) {
     return false;
   }
 
-  unsigned long* ptr = static_cast<unsigned long*>(
-      bsearch(&candidate, &primeTable[0], ARRAY_SIZE(primeTable),
-              sizeof(primeTable[0]), pfunc));
-  return ptr != nullptr;
+  // The bounds check above guarantees the value fits in the table's element
+  // type.
+  return std::ranges::binary_search(primeTable,
+                                    static_cast<unsigned short>(*candidate));
 }
 
 /***********************************************************************************************
@@ -2502,7 +2491,7 @@ bool XMP_Is_Prime(const uint32_t* prime, int precision) {
   /*
   **	Even numbers are ALWAYS not prime.
   */
-  if (!(*prime & 0x01)) {
+  if (!(*prime & 0x01u)) {
     return false;
   }
 

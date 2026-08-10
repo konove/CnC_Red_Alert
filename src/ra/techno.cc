@@ -4800,11 +4800,8 @@ bool TechnoClass::Is_In_Same_Zone(CELL cell) const {
 void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
   assert(IsActive);
 
-  FootClass* defender[6];
-  memset(defender, '\0', sizeof(defender));
-
-  int value[ARRAY_SIZE(defender)];
-  memset(value, '\0', sizeof(value));
+  FootClass* defender[6] = {};
+  int value[std::size(defender)] = {};
 
   int count = 0;
   int weakest = 0;

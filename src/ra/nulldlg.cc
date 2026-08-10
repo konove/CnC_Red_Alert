@@ -40,8 +40,6 @@
  *   Destroy_Null_Connection -- destroys the given connection
  ** Edit_Phone_Dialog -- lets user edit a phone book entry                *
  *   Init_Null_Modem -- Initializes Null Modem communications              *
- *   Init_String_Compare -- for qsort
- ** Phone_Compare -- for qsort
  ** Phone_Dialog -- Lets user edit phone directory & dial                 *
  *   Reconnect_Null_Modem -- allows user to reconnect
  ** Select_Serial_Dialog -- Serial Communications menu dialog             *
@@ -150,9 +148,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings);
 static int Phone_Dialog();
 static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
                                       char* buf, int* index);
-static int Init_String_Compare(const void* p1, const void* p2);
 static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf);
-static int Phone_Compare(const void* p1, const void* p2);
 static int Edit_Phone_Dialog(PhoneEntryClass* phone);
 static bool Dial_Modem(SerialSettingsType* settings, bool reconnect);
 static bool Answer_Modem(SerialSettingsType* settings, bool reconnect);
@@ -2646,8 +2642,13 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the init string list by name then number
   */
-  qsort(&Session.InitStrings[0], Session.InitStrings.Count(), sizeof(char*),
-        Init_String_Compare);
+  if (Session.InitStrings.Count() > 0) {
+    std::sort(&Session.InitStrings[0],
+              &Session.InitStrings[0] + Session.InitStrings.Count(),
+              [](const char* left, const char* right) {
+                return strcmp(left, right) < 0;
+              });
+  }
 
   /*........................................................................
   Build the list
@@ -2678,29 +2679,6 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   }
 
   *index = curidx;
-}
-
-/***************************************************************************
- * Init_String_Compare -- for qsort
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		p1,p2		ptrs to elements to compare
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		0 = same, -1 = (*p1) goes BEFORE (*p2), 1 = (*p1) goes AFTER
- *(*p2)	*
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   06/08/1995 DRD : Created.                                             *
- *=========================================================================*/
-static int Init_String_Compare(const void* p1, const void* p2) {
-  return strcmp(*(char**)p1, *(char**)p2);
 }
 
 /***********************************************************************************************
@@ -6668,8 +6646,18 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   /*
   ** Now sort the phone list by name then number
   */
-  qsort(&Session.PhoneBook[0], Session.PhoneBook.Count(),
-        sizeof(class PhoneEntryClass*), Phone_Compare);
+  if (Session.PhoneBook.Count() > 0) {
+    std::sort(&Session.PhoneBook[0],
+              &Session.PhoneBook[0] + Session.PhoneBook.Count(),
+              [](const PhoneEntryClass* left, const PhoneEntryClass* right) {
+                int result = strcmp(left->Name, right->Name);
+                if (result == 0) {
+                  // Same name, so order by the phone number instead.
+                  result = strcmp(left->Number, right->Number);
+                }
+                return result < 0;
+              });
+  }
 
   /*........................................................................
   Build the list
@@ -6724,43 +6712,6 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
     edit->Set_Text(buf, PhoneEntryClass::PHONE_MAX_NUM);
     list->Set_Selected_Index(Session.CurPhoneIdx);
   }
-}
-
-/***************************************************************************
- * Phone_Compare -- for qsort
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		p1,p2		ptrs to elements to compare
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		0 = same, -1 = (*p1) goes BEFORE (*p2), 1 = (*p1) goes AFTER
- *(*p2)	*
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   02/14/1995 BR : Created.                                              *
- *=========================================================================*/
-static int Phone_Compare(const void* p1, const void* p2) {
-  class PhoneEntryClass *pe1, *pe2;
-  int result;
-
-  pe1 = *(class PhoneEntryClass**)p1;
-  pe2 = *(class PhoneEntryClass**)p2;
-
-  result = strcmp(pe1->Name, pe2->Name);
-
-  // if strings are equal then check the phone number
-
-  if (!result) {
-    result = strcmp(pe1->Number, pe2->Number);
-  }
-
-  return result;
 }
 
 /***************************************************************************

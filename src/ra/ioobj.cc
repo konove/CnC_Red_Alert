@@ -373,7 +373,8 @@ bool LayerClass::Load(Straw& file) {
   */
   for (int index = 0; index < count; index++) {
     ObjectClass* ptr;
-    if (file.Get(&ptr, sizeof(ObjectClass*)) != sizeof(ObjectClass*)) {
+    if (file.Get(static_cast<void*>(&ptr), sizeof(ObjectClass*)) !=
+        sizeof(ObjectClass*)) {
       return false;
     }
     Add(ptr);
@@ -405,7 +406,7 @@ bool LayerClass::Save(Pipe& file) const {
   */
   for (int index = 0; index < count; index++) {
     ObjectClass* ptr = (*this)[index];
-    file.Put(&ptr, sizeof(ObjectClass*));
+    file.Put(static_cast<const void*>(&ptr), sizeof(ObjectClass*));
   }
 
   return true;

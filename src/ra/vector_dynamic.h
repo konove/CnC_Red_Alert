@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_RA_VECTOR_DYNAMIC_H_
 #define CNC_RED_ALERT_RA_VECTOR_DYNAMIC_H_
 
-#include <cstring>
+#include <algorithm>
 #include <type_traits>
 
 #include "base/types.h"
@@ -124,13 +124,11 @@ bool DynamicVectorClass<T>::Add_Head(const T& object) {
   if (!EnsureRoom()) {
     return false;
   }
-  if (ActiveCount) {
-    // Shift elements to make room. NOLINT: sizeof(T) is intentional for raw
-    // move.
-    std::memmove(
-        &(*this)[1], &(*this)[0],
-        ActiveCount * sizeof(T));  // NOLINT(bugprone-sizeof-expression)
-  }
+  // Shift by assignment rather than a raw byte move, both so that a non-trivial
+  // T is handled correctly (matching Delete()) and to avoid the void* round
+  // trip. For a trivially copyable T this still compiles down to a memmove.
+  std::move_backward(this->Vector, this->Vector + ActiveCount,
+                     this->Vector + ActiveCount + 1);
   (*this)[0] = object;
   ActiveCount++;
   return true;

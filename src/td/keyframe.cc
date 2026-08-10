@@ -303,8 +303,10 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
       /*
       ** Allocate and clear the memory for the shape info
       */
-      KeyFrameSlots[keyfr->y] = new char*[keyfr->frames];
-      memset(KeyFrameSlots[keyfr->y], 0, keyfr->frames * 4);
+      // Value initialized rather than memset: the original cleared
+      // `frames * 4` bytes, which left the upper half of the slots
+      // indeterminate once pointers grew to 8 bytes.
+      KeyFrameSlots[keyfr->y] = new char*[keyfr->frames]();
     }
 
     /*
