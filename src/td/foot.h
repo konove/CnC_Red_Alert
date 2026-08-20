@@ -302,7 +302,7 @@ class FootClass : public TechnoClass {
                     MoveType threshhold);
   PathType* Find_Path(CELL dest, FacingType* final_moves, int maxlen,
                       MoveType threshhold);
-  void Debug_Draw_Map(char* txt, CELL start, CELL dest, bool pause);
+  void Debug_Draw_Map(const char* txt, CELL start, CELL dest, bool pause);
   void Debug_Draw_Path(PathType* path);
   bool Follow_Edge(CELL start, CELL target, PathType* path, FacingType search,
                    FacingType olddir, int threat, int threat_stage,

@@ -99,7 +99,7 @@ int IPXConnClass::PacketLen;
  *=========================================================================*/
 IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
                            unsigned short magicnum, IPXAddressClass* address,
-                           int id, char* name, int extralen)
+                           int id, const char* name, int extralen)
     : ConnectionClass(
           numsend, numreceive, maxlen, magicnum,
           2,         // retry delta

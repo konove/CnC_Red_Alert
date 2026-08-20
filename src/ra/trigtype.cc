@@ -998,7 +998,8 @@ bool TriggerTypeClass::Edit() {
   **	TriggerTypeClass definition.
   */
   char perstext[DESC_SIZE] = "";
-  static char* _perstext[3] = {"Volatile", "Semi-persistent", "Persistent"};
+  static const char* _perstext[3] = {"Volatile", "Semi-persistent",
+                                     "Persistent"};
   DropListClass persbtn(
       BUTTON_PERSISTANCE, perstext, sizeof(perstext), TPF_EFNT | TPF_NOSHADOW,
       housebtn.X + housebtn.Width + 20, housebtn.Y, 105, 8 * 5,

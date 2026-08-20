@@ -102,7 +102,10 @@ bool Get_Broadcast_Addresses() {
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String("IP Addresses", SeenBuff.Get_Height(), width, height);
+  // Format_Window_String rewrites the buffer in place, so the title cannot
+  // be a string literal.
+  char title[] = "IP Addresses";
+  Format_Window_String(title, SeenBuff.Get_Height(), width, height);
 
   GadgetClass* commands;  // button list
   ColorListClass ip_address_list(

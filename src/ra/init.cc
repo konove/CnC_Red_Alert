@@ -2743,7 +2743,7 @@ static void Init_Bootstrap_Mixfiles() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 // #define DENZIL_MIXEXTRACT
-void Extract(char* filename, char* outfile);
+void Extract(const char* filename, const char* outfile);
 
 static void Init_Secondary_Mixfiles() {
   if (CCFileClass("MAIN1.MIX").Is_Available()) {
@@ -3173,7 +3173,7 @@ void __PRO() {
 }
 }
 
-void Extract(char* filename, char* outname) {
+void Extract(const char* filename, const char* outname) {
   CCFileClass inFile(filename);
   CCFileClass outFile(outname);
 

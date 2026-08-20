@@ -735,7 +735,7 @@ void CommBufferClass::Reset_Response_Time() {
  * HISTORY:                                                                *
  *   05/31/1995 BRR : Created.                                             *
  *=========================================================================*/
-void CommBufferClass::Configure_Debug(int offset, int size, char** names,
+void CommBufferClass::Configure_Debug(int offset, int size, const char** names,
                                       int maxnames) {
   DebugOffset = offset;
   DebugSize = size;

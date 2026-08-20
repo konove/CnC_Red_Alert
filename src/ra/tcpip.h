@@ -191,7 +191,7 @@ extern TcpipManagerClass Winsock;
 extern char PlanetWestwoodIPAddress[IP_ADDRESS_MAX];
 extern long PlanetWestwoodPortNumber;
 extern bool PlanetWestwoodIsHost;
-extern int Read_Game_Options(char*);
+extern int Read_Game_Options(const char*);
 
 #define TXT_WINSOCK_CONNECTING 4567 + 13
 #define TXT_WINSOCK_NOT_CONNECTING 4567 + 14

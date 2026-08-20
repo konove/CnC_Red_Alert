@@ -84,7 +84,8 @@ class ScoreClass {
   void Pulse_Bar_Graph();
   void Print_Graph_Title(int, int);
   void Print_Minutes(int minutes);
-  void Count_Up_Print(char* str, int percent, int max, int xpos, int ypos);
+  void Count_Up_Print(const char* str, int percent, int max, int xpos,
+                      int ypos);
   void Show_Credits(int house, const unsigned char pal[]);
   void Do_GDI_Graph(const void* yellowptr, const void* redptr, int gdikilled,
                     int nodkilled, int ypos);

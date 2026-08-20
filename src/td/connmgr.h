@@ -140,7 +140,7 @@ class ConnManClass {
   Debugging
   .....................................................................*/
   virtual void Configure_Debug(int index, int type_offset, int type_size,
-                               char** names, int maxnames) = 0;
+                               const char** names, int maxnames) = 0;
   virtual void Mono_Debug_Print(int index, int refresh) = 0;
   /*
   --------------------------- Private Interface ----------------------------

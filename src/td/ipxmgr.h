@@ -256,7 +256,7 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Debug routines
   .....................................................................*/
-  void Configure_Debug(int index, int offset, int size, char** names,
+  void Configure_Debug(int index, int offset, int size, const char** names,
                        int maxnames) override;
   void Mono_Debug_Print(int index, int refresh = 0) override;
 

@@ -1537,7 +1537,8 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
 #endif
 }
 
-void FootClass::Debug_Draw_Map(char* txt, CELL start, CELL dest, bool pause) {
+void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
+                               bool pause) {
   if (!Debug_Find_Path || !DrawPath) {
     return;
   }

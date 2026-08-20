@@ -733,7 +733,7 @@ bool MessageListClass::Has_Edit_Focus() {
  *   05/22/1995 BRR : Created.                                             *
  *=========================================================================*/
 TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
-                                           TextPrintType style, char* to,
+                                           TextPrintType style, const char* to,
                                            char cursor, int width) {
   int i;
   TextLabelClass* txtlabel;

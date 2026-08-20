@@ -1067,7 +1067,7 @@ SidebarClass::StripClass::StripClass(const InitClass&) {
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
 void SidebarClass::StripClass::One_Time(int) {
-  static char* _file[3] = {"ION", "ATOM", "BOMB"};
+  static const char* _file[3] = {"ION", "ATOM", "BOMB"};
   int factor = Get_Resolution_Factor();
 
   ObjectWidth = OBJECT_WIDTH << factor;
@@ -1200,7 +1200,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
-  static char* _file[3] = {"ION", "ATOM", "BOMB"};
+  static const char* _file[3] = {"ION", "ATOM", "BOMB"};
   const void* cameo_ptr;
 
   for (int lp = 0; lp < 3; lp++) {

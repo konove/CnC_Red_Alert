@@ -206,7 +206,7 @@ extern "C" {
 bool UseOldShapeDraw = false;
 }
 
-void Error_In_Heap_Pointers(char* string);
+void Error_In_Heap_Pointers(const char* string);
 static void Do_Record_Playback();
 
 void Toggle_Formation();

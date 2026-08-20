@@ -167,7 +167,7 @@ extern "C" {
 bool UseOldShapeDraw = false;
 }
 
-void Error_In_Heap_Pointers(char* string);
+void Error_In_Heap_Pointers(const char* string);
 static void Do_Record_Playback();
 extern void Register_Game_Start_Time();
 extern void Register_Game_End_Time();
@@ -2897,7 +2897,7 @@ void Handle_View(int view, int action) {
   }
 }
 
-void Heap_Dump_Check(char* string) {
+void Heap_Dump_Check(const char* string) {
   if constexpr (config::kCheatKeysEnabled) {
 #if 0
 	struct _heapinfo h_info;
@@ -2980,7 +2980,7 @@ void Heap_Dump_Check(char* string) {
   }
 }
 
-void Error_In_Heap_Pointers(char* string) {
+void Error_In_Heap_Pointers(const char* string) {
   if constexpr (config::kCheatKeysEnabled) {
     Smart_Printf("Error in Heap for %s\n", string);
   }
@@ -3015,7 +3015,7 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
 
   CountDownTimerClass timer;
 
-  static char* _volid[] = {"GDI95", "NOD95", "COVERT"};
+  static const char* _volid[] = {"GDI95", "NOD95", "COVERT"};
   static int num_volumes = 3;
 
   char buffer[128];
@@ -3100,7 +3100,7 @@ bool Force_CD_Available(int cd) {
   static char _palette[768];
   static char _hold[16];  // Saved copy of the font palette (FontPalette).
   static const void* font;
-  static char* _volid[] = {"GDI", "NOD", "COVERT"};
+  static const char* _volid[] = {"GDI", "NOD", "COVERT"};
 
   int new_cd_drive = 0;
   int cd_index;

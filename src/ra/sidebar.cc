@@ -1255,7 +1255,7 @@ void SidebarClass::StripClass::Reload_LogoShapes() {
   /*
   ** Load hi-res strip art here since it is player side specific
   */
-  static char* stripnames[] = {
+  static const char* stripnames[] = {
       "stripna.shp",  // Nato
       "stripna.shp",
       "stripus.shp",  // USSR

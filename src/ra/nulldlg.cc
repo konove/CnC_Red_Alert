@@ -2544,13 +2544,15 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         tempsettings.InitStringIndex = initstr_index;
         tempsettings.CallWaitStringIndex = cwaitstr_index;
 
-        item = SessionClass::CallWaitStrings[CALL_WAIT_CUSTOM];
-        temp = strchr(item, '-');
-        if (temp) {
-          pos = static_cast<int>(temp - item) + 2;
-          port::SafeCopy(cwaitstrbuf, item + pos);
-        } else {
-          cwaitstrbuf[0] = 0;
+        {
+          const char* custom = SessionClass::CallWaitStrings[CALL_WAIT_CUSTOM];
+          const char* dash = strchr(custom, '-');
+          if (dash) {
+            pos = static_cast<int>(dash - custom) + 2;
+            port::SafeCopy(cwaitstrbuf, custom + pos);
+          } else {
+            cwaitstrbuf[0] = 0;
+          }
         }
 
         port::SafeCopy(tempsettings.CallWaitString, cwaitstrbuf);

@@ -143,8 +143,9 @@ class NullModemClass : public ConnManClass {
   unsigned long Response_Time() override;
   void Reset_Response_Time() override;
   void* Oldest_Send();
-  void Configure_Debug(int index, int type_offset, int type_size, char** names,
-                       int namestart, int namecount) override;
+  void Configure_Debug(int index, int type_offset, int type_size,
+                       const char** names, int namestart,
+                       int namecount) override;
   void Mono_Debug_Print(int index, int refresh = 0) override;
 
   /*

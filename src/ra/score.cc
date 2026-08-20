@@ -134,7 +134,7 @@ const void* Beepy6;
 int ControlQ;  // cheat key to skip past score/mapsel screens
 bool StillUpdating;
 
-char* ScreenNames[2] = {"ALIBACKH.PCX", "SOVBACKH.PCX"};
+const char* ScreenNames[2] = {"ALIBACKH.PCX", "SOVBACKH.PCX"};
 
 struct Fame {
   char name[MAX_FAMENAME_LENGTH];
@@ -1191,8 +1191,8 @@ void ScoreClass::Print_Minutes(int minutes) {
  *                                                                                             *
  * HISTORY: * 04/07/1995 BWG : Created. *
  *=============================================================================================*/
-void ScoreClass::Count_Up_Print(char* str, int percent, int maxval, int xpos,
-                                int ypos) {
+void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
+                                int xpos, int ypos) {
   char destbuf[64];
 
   Format_Runtime_Text(destbuf, sizeof(destbuf), str,

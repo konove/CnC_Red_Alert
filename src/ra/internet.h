@@ -41,6 +41,6 @@
 
 #define IP_ADDRESS_MAX 40
 
-int Read_Game_Options(char* name);
+int Read_Game_Options(const char* name);
 
 #endif  // CNC_RED_ALERT_RA_INTERNET_H_

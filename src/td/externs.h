@@ -252,8 +252,10 @@ extern int CurPhoneIdx;
 extern DynamicVectorClass<char*> InitStrings;
 extern SerialSettingsType SerialDefaults;
 extern ModemGameType ModemGameToPlay;
-extern char* DialMethodCheck[DIAL_METHODS];
-extern char* CallWaitStrings[CALL_WAIT_STRINGS_NUM];
+extern const char* DialMethodCheck[DIAL_METHODS];
+// CALL_WAIT_CUSTOM is edited in place by the serial-settings dialog, so
+// these are writable buffers rather than pointers to literals.
+extern char CallWaitStrings[CALL_WAIT_STRINGS_NUM][CALL_WAIT_STRING_MAX];
 
 /*
 ** Network/Modem globals
@@ -300,8 +302,8 @@ extern int MPlayerCurGame;
 extern int TheirProcessTime[MAX_PLAYERS - 1];
 extern int DesiredFrameRate;
 
-extern char* GlobalPacketNames[];
-extern char* SerialPacketNames[];
+extern const char* GlobalPacketNames[];
+extern const char* SerialPacketNames[];
 
 typedef struct {
   union {

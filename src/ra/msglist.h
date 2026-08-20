@@ -153,8 +153,8 @@ class MessageListClass {
   //.....................................................................
   // Message-editing support routines
   //.....................................................................
-  TextLabelClass* Add_Edit(PlayerColorType color, TextPrintType style, char* to,
-                           char cursor = 0, int width = 640);
+  TextLabelClass* Add_Edit(PlayerColorType color, TextPrintType style,
+                           const char* to, char cursor = 0, int width = 640);
   void Remove_Edit();
   char* Get_Edit_Buf();
   char* Get_Overflow_Buf() { return OverflowBuf; }

@@ -2344,6 +2344,8 @@ typedef enum CommProtocolEnum {
 #define BAUDBUF_MAX 7
 #define INITSTRBUF_MAX 41
 #define CWAITSTRBUF_MAX 16
+// Room for the "CUSTOM - " prefix plus a CWAITSTRBUF_MAX user string.
+#define CALL_WAIT_STRING_MAX (9 + CWAITSTRBUF_MAX)
 #define CREDITSBUF_MAX 5
 #define MODEM_NAME_MAX PORTBUF_MAX - 1  // Max length of modem name in list box
 

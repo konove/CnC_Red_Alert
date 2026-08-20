@@ -250,8 +250,11 @@ void MapEditClass::One_Time() {
   ........................................................................*/
   BaseGauge = new GaugeClass(POPUP_BASEPERCENT, POPUP_BASE_X, POPUP_BASE_Y,
                              POPUP_BASE_W, POPUP_BASE_H);
+  // TextLabelClass keeps the pointer in its non-const Text member, so the
+  // caption needs storage that outlives this call and is not a literal.
+  static char base_caption[] = "Base:";
   BaseLabel = new TextLabelClass(
-      "Base:", POPUP_BASE_X - 3, POPUP_BASE_Y, CC_GREEN,
+      base_caption, POPUP_BASE_X - 3, POPUP_BASE_Y, CC_GREEN,
       TPF_RIGHT | TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   BaseGauge->Set_Maximum(100);
   BaseGauge->Set_Value(BasePercent);

@@ -1498,7 +1498,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   Hide_Mouse();
 
   PaletteClass temp;
-  char* filename = "SOVPAPER.PCX";
+  const char* filename = "SOVPAPER.PCX";
   if (PlayerPtr->Class->House != HOUSE_USSR &&
       PlayerPtr->Class->House != HOUSE_UKRAINE) {
     filename = "ALIPAPER.PCX";

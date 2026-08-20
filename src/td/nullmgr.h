@@ -147,7 +147,7 @@ class NullModemClass : public ConnManClass {
   unsigned long Response_Time() override;
   void Reset_Response_Time() override;
   void* Oldest_Send();
-  void Configure_Debug(int index, int offset, int size, char** names,
+  void Configure_Debug(int index, int offset, int size, const char** names,
                        int maxnames) override;
   void Mono_Debug_Print(int index, int refresh = 0) override;
 
@@ -178,7 +178,7 @@ class NullModemClass : public ConnManClass {
 
   int Change_IRQ_Priority(int irq);
   int Get_Modem_Status();
-  int Send_Modem_Command(char* command, char terminator, char* buffer,
+  int Send_Modem_Command(const char* command, char terminator, char* buffer,
                          int buflen, int delay, int retries);
   int Verify_And_Convert_To_Int(char* buffer);
 

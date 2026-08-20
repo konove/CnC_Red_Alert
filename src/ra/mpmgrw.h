@@ -73,8 +73,8 @@ class MPlayerManClass : public ConnManClass {
                   unsigned long timeout);
 
   // debug
-  void Configure_Debug(int index, int type_offset, int type_size, char** names,
-                       int namestart, int namecount);
+  void Configure_Debug(int index, int type_offset, int type_size,
+                       const char** names, int namestart, int namecount);
   void Mono_Debug_Print(int index, int refresh);
 
  private:

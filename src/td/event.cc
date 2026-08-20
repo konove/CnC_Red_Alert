@@ -109,7 +109,7 @@ unsigned char EventClass::EventLength[LAST_EVENT] = {
     size_of(EventClass, Data.ProcessTime),      // PROCESS_TIME
 };
 
-char* EventClass::EventNames[LAST_EVENT] = {
+const char* EventClass::EventNames[LAST_EVENT] = {
     "EMPTY",        "ALLY",      "MEGAMISSION",   "IDLE",      "SCATTER",
     "DESTRUCT",     "DEPLOY",    "PLACE",         "OPTIONS",   "GAMESPEED",
     "PRODUCE",      "SUSPEND",   "ABANDON",       "PRIMARY",   "SPECIAL_PLACE",

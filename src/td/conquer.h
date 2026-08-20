@@ -855,7 +855,7 @@ void CC_Add_Shape_To_Global(const void* shapeptr, char* filename, char code);
 
 void Bubba_Print(char* format, ...);
 
-void Heap_Dump_Check(char* string);
+void Heap_Dump_Check(const char* string);
 
 void Validate_Error(const char* name);
 const void* Hires_Retrieve(const char* name);

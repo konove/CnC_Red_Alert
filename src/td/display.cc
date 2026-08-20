@@ -1150,7 +1150,7 @@ void DisplayClass::Read_INI(char* buffer) {
   char name[16];
   int len;        // Length of data in buffer.
   char* tbuffer;  // Accumulation buffer of Trigger names.
-  char* trigsection = "CellTriggers";
+  const char* trigsection = "CellTriggers";
   char buf[20];  // trigger name for a cell
   int cell;
   int i;

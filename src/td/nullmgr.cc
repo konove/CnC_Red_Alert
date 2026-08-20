@@ -1062,8 +1062,8 @@ void* NullModemClass::Oldest_Send() {
  * HISTORY:                                                                *
  *   05/31/1995 BRR : Created.                                             *
  *=========================================================================*/
-void NullModemClass::Configure_Debug(int, int offset, int size, char** names,
-                                     int maxnames) {
+void NullModemClass::Configure_Debug(int, int offset, int size,
+                                     const char** names, int maxnames) {
   if (Connection) {
     Connection->Queue->Configure_Debug(offset, size, names, maxnames);
   }
@@ -2230,7 +2230,7 @@ int NullModemClass::Get_Modem_Status() {
  *                                                                                             *
  * HISTORY: * 8/2/96 3:09PM ST : Documented / Win32 support added *
  *=============================================================================================*/
-int NullModemClass::Send_Modem_Command(char* command, char terminator,
+int NullModemClass::Send_Modem_Command(const char* command, char terminator,
                                        char* buffer, int buflen, int delay,
                                        int retries) {
   return SerialPort->Send_Command_To_Modem(command, terminator, buffer, buflen,

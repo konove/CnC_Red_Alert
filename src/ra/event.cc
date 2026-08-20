@@ -136,7 +136,7 @@ unsigned char EventClass::EventLength[LAST_EVENT] = {
     0,                                                        // RETRACT_DRAW
 };
 
-char* EventClass::EventNames[LAST_EVENT] = {
+const char* EventClass::EventNames[LAST_EVENT] = {
     "EMPTY",         "ALLY",      "MEGAMISSION",  "MEGAMISSION_F",
     "IDLE",          "SCATTER",   "DESTRUCT",     "DEPLOY",
     "PLACE",         "OPTIONS",   "GAMESPEED",    "PRODUCE",

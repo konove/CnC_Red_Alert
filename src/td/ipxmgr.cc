@@ -1700,7 +1700,7 @@ void IPXManagerClass::Set_Bridge(NetNumType bridge) {
  *   05/31/1995 BRR : Created.                                             *
  *=========================================================================*/
 void IPXManagerClass::Configure_Debug(int index, int offset, int size,
-                                      char** names, int maxnames) {
+                                      const char** names, int maxnames) {
   if (index == -1) {
     GlobalChannel->Queue->Configure_Debug(offset, size, names, maxnames);
   } else {

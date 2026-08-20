@@ -1041,7 +1041,7 @@ void* NullModemClass::Oldest_Send() {
  *   05/31/1995 BRR : Created.                                             *
  *=========================================================================*/
 void NullModemClass::Configure_Debug(int, int type_offset, int type_size,
-                                     char** names, int namestart,
+                                     const char** names, int namestart,
                                      int namecount) {
   if (Connection) {
     Connection->Queue->Configure_Debug(type_offset, type_size, names, namestart,

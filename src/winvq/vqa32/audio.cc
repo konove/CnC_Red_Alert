@@ -90,7 +90,6 @@ static long TimerMethod;
 static long VQATickCount = 0;
 
 static long TickOffset = 0;
-char* HMIDevName = "<none>";
 
 extern int VQAMovieDone;
 static bool VQAAudioPaused = false;

@@ -262,7 +262,7 @@ class EventClass {
   void Execute();
 
   static unsigned char EventLength[LAST_EVENT];
-  static char* EventNames[LAST_EVENT];
+  static const char* EventNames[LAST_EVENT];
 };
 
 #endif  // CNC_RED_ALERT_RA_EVENT_H_

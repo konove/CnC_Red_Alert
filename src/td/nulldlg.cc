@@ -1878,8 +1878,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
-  static char* portname[4] = {"COM1 - 3F8", "COM2 - 2F8", "COM3 - 3E8",
-                              "COM4 - 2E8"};
+  static const char* portname[4] = {"COM1 - 3F8", "COM2 - 2F8", "COM3 - 3E8",
+                                    "COM4 - 2E8"};
 
   static char custom_port[10 + MODEM_NAME_MAX] = {"CUSTOM - ????"};
 
@@ -1892,11 +1892,11 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
   static char modemnames[10][MODEM_NAME_MAX];
 
-  static char* baudname[5] = {
+  static const char* baudname[5] = {
       "14400", "19200", "28800", "38400", "57600",
   };
 
-  static char* init_types[2] = {
+  static const char* init_types[2] = {
       "Normal",
       "Full",
   };
@@ -7001,7 +7001,7 @@ static void Modem_Echo(char c) {
 
 } /* end of Modem_Echo */
 
-void Smart_Printf(char* format, ...) {
+void Smart_Printf(const char* format, ...) {
   va_list arglist;
   char buf[501];
 
