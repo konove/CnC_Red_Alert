@@ -97,7 +97,7 @@ void VisualControlsClass::Process() {
   /*
   **	Variables.
   */
-  int selection;
+  int selection = 0;
   bool pressed;
   int curbutton;
   TextButtonClass* buttons[NUM_OF_BUTTONS];

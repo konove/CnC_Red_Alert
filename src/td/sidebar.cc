@@ -1628,7 +1628,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
                 case RTTI_AIRCRAFT:
                   OutList.Add(
                       EventClass(EventClass::PLACE, pending->What_Am_I(), -1));
-                  // Fall into next case.
+                  [[fallthrough]];
 
                 case RTTI_BUILDING:
                   Speak(VOX_CONSTRUCTION);

@@ -574,7 +574,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   int min_chars;
   int max_chars;
   char* msg;
-  TextLabelClass* tlabel;
+  TextLabelClass* tlabel = nullptr;
   int found;
 
   //------------------------------------------------------------------------

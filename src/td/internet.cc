@@ -120,7 +120,7 @@ void Check_From_WChat(char* wchat_name) {
 
   char default_string[] = {"Error"};
   char key_string[256];
-  char* ini_file;
+  char* ini_file = nullptr;
   RawFileClass wchat_file;
 
   /*

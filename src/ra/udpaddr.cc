@@ -107,7 +107,7 @@ bool Get_Broadcast_Addresses() {
   char title[] = "IP Addresses";
   Format_Window_String(title, SeenBuff.Get_Height(), width, height);
 
-  GadgetClass* commands;  // button list
+  GadgetClass* commands = nullptr;  // button list
   ColorListClass ip_address_list(
       BUTTON_IPLIST, d_ip_address_list_x, d_ip_address_list_y,
       d_ip_address_list_w, d_ip_address_list_h, TPF_TEXT,

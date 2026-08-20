@@ -82,7 +82,7 @@ bool ConfirmationClass::Process(const char* string) {
   int width;
   int bwidth, bheight;  // button width and height
   int height;
-  int selection;
+  int selection = 0;
   bool pressed;
   int curbutton;
   TextButtonClass* buttons[NUM_OF_BUTTONS];

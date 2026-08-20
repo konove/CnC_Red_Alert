@@ -128,7 +128,7 @@ struct countrylist {
   ScenarioVarType CountryVariant[2][3];
 } const CountryArray[27] = {
     // GDI SCENARIO CHOICES
-    /*  0 */ {0},
+    /*  0 */ {},
     /*E  W*/ /* cont */ /* East colors */ /* West color*/ /* E frame   W frame
                                                            */
                                                           /*  1 */
@@ -967,6 +967,9 @@ void Map_Selection() {
                 Text_String(TXT_ENHANCING_IMAGE), 210, 10, _othergreenpal));
 #endif  //(FRENCH)
           }
+          // Frame 35 blacks out the region this frame starts printing into,
+          // so this case has to stop here.
+          break;
 
         case 35:
           if (house == HOUSE_GOOD) {

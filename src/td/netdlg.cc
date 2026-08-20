@@ -924,7 +924,7 @@ static int Net_Join_Dialog() {
   int i, j;                                // loop counter
   char txt[80];
   const char* p;
-  int parms_received;  // 1 = game options received
+  int parms_received = 0;  // 1 = game options received
   int found;
 
   unsigned char tmp_id[MAX_PLAYERS] =
@@ -956,7 +956,7 @@ static int Net_Join_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
+  GadgetClass* commands = nullptr;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
@@ -1428,6 +1428,7 @@ static int Net_Join_Dialog() {
           display = REDRAW_MESSAGE;
           break;
         }
+        [[fallthrough]];
       case ButtonKey(BUTTON_CANCEL):
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
@@ -2898,7 +2899,7 @@ static int Net_New_Dialog() {
 
   long ok_timer = 0;  // for timing OK button
   int index;          // index for rejecting a player
-  int rc;
+  int rc = 0;
   int i, j;
   char* item;
   int tabs[] = {77 * factor};  // tabs for player list box
@@ -3491,6 +3492,7 @@ static int Net_New_Dialog() {
           display = std::max(display, REDRAW_MESSAGE);
           break;
         }
+        [[fallthrough]];
       case ButtonKey(BUTTON_CANCEL):
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
@@ -4330,7 +4332,7 @@ static int Net_Fake_New_Dialog() {
   int transmit;                  // 1 = re-transmit new game options
 
   long ok_timer = 0;  // for timing OK button
-  int rc;
+  int rc = 0;
   int i, j;
   char* item;
   int tabs[] = {77 * factor};  // tabs for player list box
@@ -4949,7 +4951,7 @@ static int Net_Fake_Join_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
+  GadgetClass* commands = nullptr;  // button list
 
   ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h,

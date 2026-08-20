@@ -1331,7 +1331,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
         OutList.Add(
             EventClass(ANIM_MOVE_FLASH, PlayerPtr->Class->House, coord));
       }
-      // Fall into next case.
+      [[fallthrough]];
 
     case ACTION_NOMOVE:
       if (What_Am_I() != RTTI_AIRCRAFT || Map[cell].IsVisible) {

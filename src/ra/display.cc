@@ -3205,6 +3205,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
           Set_Default_Mouse(MOUSE_NO_MOVE, wsmall);
           break;
         }
+        [[fallthrough]];
         // Fall into next case for non aircraft object types.
 
       default:
@@ -3257,7 +3258,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
           Set_Default_Mouse(MOUSE_STAY_ATTACK, wsmall);
           break;
         }
-        // fall into next case.
+        [[fallthrough]];
 
       case ACTION_HARVEST:
         Set_Default_Mouse(MOUSE_CAN_ATTACK, wsmall);

@@ -5787,7 +5787,7 @@ int HouseClass::AI_Building() {
     **	Pick the choice that is the most urgent.
     */
     UrgencyType best = URGENCY_NONE;
-    int bestindex;
+    int bestindex = 0;
     for (int index = 0; index < BuildChoice.Count(); index++) {
       if (BuildChoice.Ptr(index)->Urgency > best) {
         bestindex = index;

@@ -1010,8 +1010,8 @@ static void Create_Units() {
   int try_count;  // # times we've tried to select a centroid
   CELL centerpt;  // centroid for a category of objects, as a CELL
 
-  int u_limit;       // last allowable index of units for this BuildLevel
-  int i_limit;       // last allowable index of infantry for this BuildLevel
+  int u_limit = 0;   // last allowable index of units for this BuildLevel
+  int i_limit = 0;   // last allowable index of infantry for this BuildLevel
   TechnoClass* obj;  // newly-created object
   int i, j, k;       // loop counters
   int scaleval;      // value to scale # units or infantry

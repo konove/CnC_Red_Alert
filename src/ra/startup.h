@@ -2,7 +2,7 @@
 #define CNC_RED_ALERT_RA_STARTUP_H_
 
 void Print_Error_End_Exit(char* string);
-void Emergency_Exit(int code);
+[[noreturn]] void Emergency_Exit(int code);
 bool InitDDraw();
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_H_

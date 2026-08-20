@@ -96,7 +96,7 @@ GadgetClass* GadgetClass::Focused = nullptr;
 /*
 ** This points to the current color scheme for drawing all gadgets.
 */
-static RemapControlType _GreyScheme = {15};
+static RemapControlType _GreyScheme = {15, 0, {}, {}, 0, 0, 0, 0, 0, 0, 0, 0};
 RemapControlType* GadgetClass::ColorScheme = &_GreyScheme;
 
 /***********************************************************************************************

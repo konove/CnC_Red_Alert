@@ -384,7 +384,7 @@ void Slide_Show(int slide, int frame) {
  * HISTORY: * 9/10/96 0:20AM ST : Created *
  *=============================================================================================*/
 void Show_Who_Was_Responsible() {
-  int key;
+  int key = 0;
 
   /*
   ** Deault speed of credits scolling. This is the frame delay between pixel

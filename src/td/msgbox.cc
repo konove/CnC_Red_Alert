@@ -98,12 +98,12 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   bool retval = false;
   bool process;      // loop while true
   KeyNumType input;  // user input
-  int selection;
+  int selection = 0;
   bool pressed;
   int curbutton;
   TextButtonClass* buttons[3];
-  void* back;
-  bool display;  // display level
+  void* back = nullptr;
+  bool display = false;  // display level
   int realval[5];
 
   GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),

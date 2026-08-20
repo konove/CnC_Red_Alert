@@ -1693,6 +1693,7 @@ bool TriggerTypeClass::Edit() {
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         process = false;
+        [[fallthrough]];
 
       /*
       **	Always signal a redraw if any of the buttons were touched. This

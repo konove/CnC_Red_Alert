@@ -105,7 +105,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
                                  int gametype) {
   // WWDebugString ("RA95 - In Get_Scenario_From_Host\n");
 
-  unsigned int file_length;
+  unsigned int file_length = 0;
 
   SerialPacketType send_packet;
   SerialPacketType receive_packet;
@@ -298,7 +298,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
   RedrawType display = REDRAW_ALL;  // redraw level
   KeyNumType input;
   GadgetClass* commands;  // button list
-  bool return_code;
+  bool return_code = false;
   int update_time = 0;
 
   RemoteFileTransferType receive_packet;
@@ -586,7 +586,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
   RedrawType display = REDRAW_ALL;  // redraw level
   KeyNumType input;
   GadgetClass* commands;  // button list
-  bool return_code;
+  bool return_code = false;
   int update_time = 0;
 
   int file_length;

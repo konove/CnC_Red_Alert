@@ -32,12 +32,12 @@
     case LCW:
       LCW_Uncompress(payload_src, payload_dst, uncompressed_size);
       break;
-    // Unsupported compression methods - treat as uncompressed.
-    case LZW12:
+    // Unsupported compression methods - copy the payload through untouched.
+    [[unlikely]] case LZW12:
     case LZW14:
     case NOCOMPRESS:
-    [[unlikely]] default:
-      std::memcpy(payload_src, payload_dst, uncompressed_size);
+    default:
+      std::memcpy(payload_dst, payload_src, uncompressed_size);
       break;
   }
 

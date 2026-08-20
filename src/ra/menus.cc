@@ -349,6 +349,7 @@ int Check_Menu(int menu, const char* text[], char*, long field, int index) {
         UnknownKey = key;  //	Pass the unprocessed button click back.
         break;
       }
+      [[fallthrough]];
 
     /*
     **	Normal menu item select logic. Will flash line and exit with menu
@@ -589,7 +590,7 @@ int Main_Menu(unsigned long) {
   bool bExpansionCS = Expansion_CS_Present();
   bool bExpansionAM = Expansion_AM_Present();
   KeyNumType input;  // input from user
-  int retval;        // return value
+  int retval = 0;    // return value
   int curbutton;
   TextButtonClass* buttons[7];
 
@@ -900,6 +901,7 @@ int Main_Menu(unsigned long) {
             retval = 2;  //	To match SEL_START_NEW_GAME
           }
         }
+        [[fallthrough]];
 
       default:
         break;

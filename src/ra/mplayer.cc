@@ -171,8 +171,8 @@ GameType Select_MPlayer_Game() {
   KeyNumType input;    // input from user
   bool process;        // loop while true
   RedrawType display;  // true = re-draw everything
-  GameType retval;     // return value
-  int selection;
+  GameType retval = GAME_NORMAL;  // return value
+  int selection = 0;
   bool pressed;
   int curbutton;
   TextButtonClass* buttons[NUM_OF_BUTTONS];

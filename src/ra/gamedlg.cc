@@ -186,7 +186,7 @@ void GameControlsClass::Process() {
 
   int gamespeed = Options.GameSpeed;
   int scrollrate = Options.ScrollRate;
-  int selection;
+  int selection = 0;
   bool pressed = false;
   int curbutton = 0;
   TextButtonClass* buttons[BUTTON_COUNT - BUTTON_FIRST];

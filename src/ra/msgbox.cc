@@ -90,11 +90,11 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   char buffer[BUFFSIZE];
   int retval = -1;
   bool process;  // loop while true
-  int selection;
+  int selection = 0;
   bool pressed;
   int curbutton;
   TextButtonClass* buttons[3] = {};
-  char* back;
+  char* back = nullptr;
   bool display = true;  // display level
   int realval[5];
 

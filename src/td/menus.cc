@@ -349,6 +349,7 @@ int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
         UnknownKey = key;  //	Pass the unprocessed button click back.
         break;
       }
+      [[fallthrough]];
 
     /*
     **	Normal menu item select logic. Will flash line and exit with menu
@@ -606,7 +607,7 @@ int Main_Menu(unsigned long timeout) {
   bool expansions = Expansion_Present();
 #endif
   KeyNumType input;  // input from user
-  int retval;        // return value
+  int retval = 0;    // return value
   int curbutton;
 #ifdef NEWMENU
 #ifdef BONUS_MISSIONS

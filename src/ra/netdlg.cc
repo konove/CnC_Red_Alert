@@ -1574,7 +1574,7 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  GadgetClass* commands;  // button list
+  GadgetClass* commands = nullptr;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, TPF_TEXT, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
@@ -4211,7 +4211,7 @@ static int Net_New_Dialog() {
 
   long ok_timer = 0;  // for timing OK button
   int index;          // index for rejecting a player
-  int rc;
+  int rc = 0;
   int i, j;
   char* item;
   int tabs[] = {77 * 2};       // tabs for player list box
@@ -7565,7 +7565,7 @@ static int Net_Fake_New_Dialog() {
   int transmit;  // 1 = re-transmit new game options
 
   long ok_timer = 0;  // for timing OK button
-  int rc;
+  int rc = 0;
   int i;
   char* item;
   int tabs[] = {77};  // tabs for player list box
@@ -8374,7 +8374,7 @@ static int Net_Fake_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  GadgetClass* commands;  // button list
+  GadgetClass* commands = nullptr;  // button list
 
   ListClass gamelist(BUTTON_GAMELIST, d_gamelist_x, d_gamelist_y, d_gamelist_w,
                      d_gamelist_h, TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),

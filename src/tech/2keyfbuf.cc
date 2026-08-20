@@ -159,7 +159,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   uint8_t* FadingTable = nullptr;
   int FadingNum = 0;
 
-  ShapeHeaderType* header_pointer;
+  ShapeHeaderType* header_pointer = nullptr;
 
   bool use_new_draw = !UseOldShapeDraw && UseBigShapeBuffer;
 

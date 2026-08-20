@@ -2649,8 +2649,8 @@ int TeamClass::TMission_Formation() {
     member = Member;
     while (member != nullptr) {
       RTTIType mytype = member->What_Am_I();
-      SpeedType memspeed;
-      MPHType memmax;
+      SpeedType memspeed = SPEED_NONE;
+      MPHType memmax = MPH_IMMOBILE;
       bool speedcheck = false;
 
       if (mytype == RTTI_INFANTRY) {

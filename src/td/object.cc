@@ -1309,9 +1309,9 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
  *=============================================================================================*/
 bool ObjectClass::Mark(MarkType mark) {
   TechnoClass* tech;
-  CELL cell;
-  int threat;
-  HousesType house;
+  CELL cell = 0;
+  int threat = 0;
+  HousesType house = HOUSE_NONE;
 
   if (!IsInLimbo && IsActive) {
     /*

@@ -2940,7 +2940,7 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
   static int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   static int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   int lp, framelp;
-  char pixel;
+  char pixel = 0;
 
   char* buffer = nullptr;
   std::unique_ptr<char[]> result;

@@ -2170,7 +2170,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     *powerup. *	In solo play, the bonus item is dependant upon the rules
     *control.
     */
-    CrateType powerup;
+    CrateType powerup = CRATE_MONEY;
     if (Session.Type == GAME_NORMAL) {
       /*
       **	Solo play has money amount determined by rules.ini file.

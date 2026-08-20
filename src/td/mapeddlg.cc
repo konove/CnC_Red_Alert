@@ -990,7 +990,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   int map_y1;           // map coords y1, pixel coords
   int map_y2;           // map coords y2, pixel coords
   int delta1, delta2;   // mouse-click proximity
-  int mx, my;           // last-saved mouse coords
+  int mx = 0, my = 0;   // last-saved mouse coords
   char txt[40];
   int txt_x, txt_y;       // for displaying text
   unsigned index;         // for drawing map symbology

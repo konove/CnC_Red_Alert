@@ -662,7 +662,7 @@ void EventClass::Execute() {
         FormMaxSpeed = Data.MegaMission_F.MaxSpeed;
         formation = true;
       }
-      // Fall thru to next case...
+      [[fallthrough]];
 
     case MEGAMISSION:
       if (Debug_Print_Events) {

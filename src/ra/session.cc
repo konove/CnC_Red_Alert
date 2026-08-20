@@ -1568,6 +1568,7 @@ void SessionClass::Trap_Object() {
           return;
         }
       }
+      [[fallthrough]];
 
     default:
       break;

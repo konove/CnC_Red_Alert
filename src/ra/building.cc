@@ -1485,7 +1485,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
             anim->Attach_To(this);
           }
         }
-        // Fall into next case.
+        [[fallthrough]];
 
       case RESULT_MAJOR:
         Sound_Effect(VOC_KABOOM1, Coord);
@@ -4164,6 +4164,7 @@ int BuildingClass::Mission_Missile() {
           AnimToTrack = sput->As_Target();
         }
       }
+        [[fallthrough]];
 
       /*
       ** Once the smoke has been going for a little while this

@@ -1617,7 +1617,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
             anim->Attach_To(this);
           }
         }
-        // Fall into next case.
+        [[fallthrough]];
 
       case RESULT_MAJOR:
         Sound_Effect(VOC_XPLOBIG4, Coord);

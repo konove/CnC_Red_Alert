@@ -315,7 +315,7 @@ static struct {
  *=============================================================================================*/
 void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
   unsigned distance;
-  CELL cell_pos;
+  CELL cell_pos = 0;
   int pan_value;
 
   if (!Options.Volume || voc == VOC_NONE || !SoundOn ||

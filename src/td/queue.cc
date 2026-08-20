@@ -590,8 +590,8 @@ static void Queue_AI_Multiplayer() {
   //........................................................................
   ConnManClass* net = nullptr;  // ptr to access all multiplayer functions
   EventClass packet;            // for sending single frame-sync's
-  char* multi_packet_buf;       // buffer for sending/receiving
-  int multi_packet_max;         // max length of multi_packet_buf
+  char* multi_packet_buf = nullptr;  // buffer for sending/receiving
+  int multi_packet_max = 0;          // max length of multi_packet_buf
 
   //........................................................................
   // Frame-sync'ing variables.  Values in these arrays are stored in the

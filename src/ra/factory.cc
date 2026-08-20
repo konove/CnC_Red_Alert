@@ -414,7 +414,7 @@ bool FactoryClass::Start() {
 
   if ((Object || SpecialItem) && IsSuspended && !Has_Completed()) {
     if (House->Available_Money() >= Cost_Per_Tick()) {
-      int time;
+      int time = 0;
 
       if (Object) {
         time = Object->Time_To_Build();

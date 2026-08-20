@@ -580,7 +580,7 @@ void Print_Error_Exit(char* string) {
  *                                                                                             *
  * HISTORY: * 3/13/97 1:32AM ST : Created *
  *=============================================================================================*/
-void Emergency_Exit(int code) {
+[[noreturn]] void Emergency_Exit(int code) {
   /*
   ** Clear out the video buffers so we dont glitch when we lose focus
   */

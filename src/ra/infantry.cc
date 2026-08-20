@@ -1405,7 +1405,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
                 retval = MOVE_TEMP;
                 break;
               }
-              // otherwise, fall thru.
+              [[fallthrough]];
             default:
               retval = std::max(retval, MOVE_DESTROYABLE);
               break;

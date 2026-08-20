@@ -3745,7 +3745,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.
   */
-  FacingType bestdir;
+  FacingType bestdir = FACING_N;
   int bestval = -1;
   for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
     int value = 0;

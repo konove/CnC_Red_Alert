@@ -131,7 +131,7 @@ void GameOptionsClass::Process() {
   **	Variables.
   */
   TextButtonClass* buttons = nullptr;
-  int selection;
+  int selection = 0;
   bool pressed;
   int curbutton = 6;
   int y;

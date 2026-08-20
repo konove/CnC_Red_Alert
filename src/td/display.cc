@@ -3168,6 +3168,7 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
           Set_Default_Mouse(MOUSE_NO_MOVE, wwsmall);
           break;
         }
+        [[fallthrough]];
         // Fall into next case for non aircraft object types.
 
       default:

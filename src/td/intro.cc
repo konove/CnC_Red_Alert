@@ -106,7 +106,7 @@ void Choose_Side() {
   MixFileVqaIo gdibrief_io, nodbrief_io;  // Must outlive the open players.
   bool gdibrief = false, nodbrief = false;  // Movie opened successfully?
   const void *staticaud, *oldfont;
-  const void *speechg, *speechn, *speech;
+  const void *speechg, *speechn, *speech = nullptr;
   int statichandle, speechplaying = 0;
   int oldfontxspacing = FontXSpacing;
   int setpalette = 0;

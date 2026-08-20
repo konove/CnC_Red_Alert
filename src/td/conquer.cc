@@ -590,7 +590,7 @@ void Keyboard_Process(KeyNumType& input) {
         Map.Flag_To_Redraw(true);
         break;
       }
-      // Fall into next case.
+      [[fallthrough]];
 
     /*
     **	Center the map about the construction yard or construction vehicle
@@ -2196,7 +2196,7 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
   static int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   static int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   int lp, framelp;
-  char pixel;
+  char pixel = 0;
 
   char* retval = nullptr;
   char* buffer = nullptr;
@@ -2636,6 +2636,7 @@ void Trap_Object() {
           return;
         }
       }
+      [[fallthrough]];
 
     default:
       break;

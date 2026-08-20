@@ -268,7 +268,7 @@ int MapEditClass::Placement_Dialog() {
   const short* occupy;            // ptr into object's OccupyList
   int cell;                       // cell index for parsing OccupyList
   int i;
-  int typeindex;  // index of class type
+  int typeindex = 0;  // index of class type
 
   /*
   **	Buttons

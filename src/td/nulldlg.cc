@@ -264,7 +264,7 @@ int Test_Null_Modem() {
   bool process = true;  // process while true
   KeyNumType input;
 
-  int retval;
+  int retval = 0;
   unsigned long starttime;
   int packetlen;
 
@@ -626,7 +626,7 @@ static int Reconnect_Null_Modem() {
   bool process = true;  // process while true
   KeyNumType input;
 
-  int retval;
+  int retval = 0;
   unsigned long starttime;
   unsigned long lastmsgtime;
   int packetlen;
@@ -986,9 +986,9 @@ GameType Select_Serial_Dialog() {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
   KeyNumType input;
-  GameType retval;  // return value
+  GameType retval = GAME_NORMAL;  // return value
 
-  int selection;
+  int selection = 0;
   bool pressed;
   int curbutton;
   TextButtonClass* buttons[NUM_OF_BUTTONS];
@@ -3256,7 +3256,7 @@ int Com_Scenario_Dialog() {
   int parms_received = 0;  // 1 = game options received
   int changed = 0;         // 1 = user has changed an option
 
-  int rc;
+  int rc = 0;
   int recsignedoff = false;
   int i;
   int version;
@@ -3973,6 +3973,7 @@ int Com_Scenario_Dialog() {
             break;
           }
         }
+        [[fallthrough]];
       case ButtonKey(BUTTON_CANCEL):
         if (!ready_to_go) {
           process = false;
@@ -4677,7 +4678,7 @@ int Com_Show_Scenario_Dialog() {
   int parms_received = 0;  // 1 = game options received
   int changed = 0;         // 1 = user has changed an option
 
-  int rc;
+  int rc = 0;
   int recsignedoff = 0;
   int i;
   int version;
@@ -5171,6 +5172,7 @@ int Com_Show_Scenario_Dialog() {
             break;
           }
         }
+        [[fallthrough]];
       case ButtonKey(BUTTON_CANCEL):
         if (!ready_to_go) {
           process = false;
@@ -5816,7 +5818,7 @@ static int Phone_Dialog() {
 
   char phone_num[PhoneEntryClass::PHONE_MAX_NUM] = {
       0};  // buffer for editing phone #
-  int rc;
+  int rc = 0;
   int i;
   int tabs[] = {123 * factor, 207 * factor};  // tabs for list box
   char* item;                // for removing items from list box
@@ -6126,7 +6128,7 @@ static int Phone_Dialog() {
       case KN_RETURN:
         dialbtn.IsPressed = true;
         dialbtn.Draw_Me(true);
-        // fall thru
+        [[fallthrough]];
 
       case ButtonKey(BUTTON_DIAL):
 
@@ -6423,7 +6425,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       0};  // buffer for editing name
   char numbuf[PhoneEntryClass::PHONE_MAX_NUM] = {
       0};  // buffer for editing phone #
-  int rc;
+  int rc = 0;
   SerialSettingsType settings;
   int custom = 0;
   int firsttime = 1;

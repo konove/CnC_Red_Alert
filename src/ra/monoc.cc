@@ -620,7 +620,7 @@ void MonoClass::Print(const char* ptr) {
       */
       case '\t':
         cell.Character = ' ';
-        // fall into normal print case.
+        [[fallthrough]];
 
       /*
       **	All other characters are output directly and the cursor moves
@@ -636,7 +636,7 @@ void MonoClass::Print(const char* ptr) {
           Set_Cursor(X + 1, Y);
           break;
         }
-        // Fall into newline case.
+        [[fallthrough]];
 
       /*
       **	The "newline" code behaves like the console newline character.

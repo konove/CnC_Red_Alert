@@ -1461,7 +1461,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
   // int status;
   int delay;
-  DialStatusType dialstatus;
+  DialStatusType dialstatus = DIAL_ERROR;
 
   int x, y, width, height;  // dialog dimensions
   char buffer[80 * 3];
@@ -1705,7 +1705,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
   // int status;
   int delay;
-  DialStatusType dialstatus;
+  DialStatusType dialstatus = DIAL_ERROR;
   bool ring = false;
 
   int x, y, width, height;  // dialog dimensions

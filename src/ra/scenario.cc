@@ -1317,7 +1317,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   int right_btn_text_id = right_btn;
   bool process;      // loop while true
   KeyNumType input;  // user input
-  int selection;
+  int selection = 0;
   bool pressed;
   int curbutton;
   TextButtonClass* buttons[3];
@@ -1386,7 +1386,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   **	Examine the optional button parameters. Fetch the width and starting
   **	characters for each.
   */
-  char b1char, b2char, b3char;  // 1st char of each string
+  char b1char = '\0', b2char = '\0', b3char = '\0';  // 1st char of each string
   int bwidth = 0;               // button width and height
   int bheight = 0;
   int numbuttons = 0;

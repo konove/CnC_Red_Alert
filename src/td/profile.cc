@@ -213,15 +213,15 @@ bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
 char* WWGetPrivateProfileString(const char* section, const char* entry,
                                 const char* def, char* retbuffer, int retlen,
                                 char* profile) {
-  char *workptr,      // Working pointer into profile block.
-      *altworkptr;    // Alternate work pointer.
+  char *workptr,              // Working pointer into profile block.
+      *altworkptr = nullptr;  // Alternate work pointer.
   char sec[50];       // Working section buffer.
   char* retval;       // Start of section or entry pointer.
   char* next;         // Pointer to start of next section (or EOF).
   char c, c2;         // Working character values.
   int len;            // Working substring length value.
   int entrylen;       // Byte length of specified entry.
-  char* orig_retbuf;  // original retbuffer ptr
+  char* orig_retbuf = nullptr;  // original retbuffer ptr
 
   /*
   **	Fill in the default value just in case the entry could not be found.

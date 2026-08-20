@@ -543,7 +543,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
           source->Strength =
               std::min<int>(source->Strength, source->Class_Of().MaxStrength);
         }
-        // Fall thru to WARHEAD_SA:
+        [[fallthrough]];
 
       case WARHEAD_HEADBUTT:
       case WARHEAD_SPORE:
@@ -2536,7 +2536,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const {
       if (*this != INFANTRY_E7) {
         return kTargetNone;
       }
-      // fall into next case.
+      [[fallthrough]];
 
     /*
     **	Dragon missile equiped soldiers are also assumed to carry a Stinger

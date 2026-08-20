@@ -1348,7 +1348,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   ------------------------------------------------------------------------*/
   bool process = true;  // process while true
   int delay;
-  DialStatusType dialstatus;
+  DialStatusType dialstatus = DIAL_ERROR;
 
   int x, y, width, height;  // dialog dimensions
   /*------------------------------------------------------------------------
@@ -1539,7 +1539,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
   int delay;
-  DialStatusType dialstatus;
+  DialStatusType dialstatus = DIAL_ERROR;
   bool ring = false;
 
   int x, y, width, height;  // dialog dimensions

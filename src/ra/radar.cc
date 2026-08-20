@@ -1035,7 +1035,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     if (color == TBLACK) {
       if (ZoomFactor > 1) {
         const void* ptr = nullptr;
-        int icon;
+        int icon = 0;
 
         /*
         **	Fetch the template pointer and template icon number for the

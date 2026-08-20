@@ -658,8 +658,8 @@ void ScoreClass::Presentation() {
   //	int gdikilled, nodkilled, civkilled, max, i, k, shapenum;
   int i;
   int max;
-  const void* yellowptr;
-  const void* redptr;
+  const void* yellowptr = nullptr;
+  const void* redptr = nullptr;
   CCFileClass file("HALLFAME.DAT");
   struct Fame hallfame[NUMFAMENAMES];
   void* anim;

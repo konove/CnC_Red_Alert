@@ -71,8 +71,8 @@ int Write_PCX_File(char* name, GraphicViewPortClass& pic,
   char* ptr;
   RGB* pal;
   GraphicBufferClass* Graphic_Buffer;
-  PCX_HEADER header = {10,  5,   1,   8, 0, 0,   319, 199,
-                       320, 200, {0}, 0, 1, 320, 1,   {0}};
+  PCX_HEADER header = {10,  5,   1,  8, 0, 0,   319, 199,
+                       320, 200, {}, 0, 1, 320, 1,   {}};
 
   // Open file name
   file_handle = Open_File(name, FileAccess::kWrite);

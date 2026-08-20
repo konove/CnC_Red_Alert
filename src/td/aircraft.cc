@@ -1467,7 +1467,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   static FacingType _toface[FACING_COUNT] = {FACING_S,  FACING_SW, FACING_SE,
                                              FACING_NW, FACING_NE, FACING_N,
                                              FACING_W,  FACING_E};
-  CELL cell;
+  CELL cell = 0;
 
   /*
   **	Find a free cell to drop the unit off at.
@@ -3096,7 +3096,7 @@ TARGET AircraftClass::Good_LZ() const {
   **	Scan through all of the buildings and try to land near
   **	the helipad (if there is one) or the nearest friendly building.
   */
-  CELL bestcell;
+  CELL bestcell = 0;
   int bestdist = -1;
   for (int index = 0; index < Buildings.Count(); index++) {
     BuildingClass* building = Buildings.Ptr(index);

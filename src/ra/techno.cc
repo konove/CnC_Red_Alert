@@ -3088,7 +3088,7 @@ int TechnoClass::Rearm_Delay(bool second, int which) const {
  *=============================================================================================*/
 bool TechnoClass::Electric_Zap(TARGET target, int which,
                                COORDINATE source_coord, unsigned char* remap) {
-  int x, y, x1, y1;
+  int x = 0, y = 0, x1 = 0, y1 = 0;
   COORDINATE source;
 
   if (source_coord != 0) {
@@ -5677,6 +5677,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
 
             case 4:
               shape = PIP_FULL;
+              [[fallthrough]];
             default:
               break;
           }

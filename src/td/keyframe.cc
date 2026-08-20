@@ -209,7 +209,7 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
   uint32_t offset[SUBFRAMEOFFS];
   unsigned long offcurr, off16, offdiff;
   KeyFrameHeaderType* keyfr;
-  unsigned short buffsize, currframe, subframe;
+  unsigned short buffsize, currframe = 0, subframe;
   unsigned long length = 0;
   char frameflags;
   void* return_value;

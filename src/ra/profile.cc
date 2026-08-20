@@ -216,14 +216,14 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
                                 const char* def, char* dest, int dest_len,
                                 const char* ini_data) {
   const char* workptr;     // Working pointer into profile block.
-  const char* altworkptr;  // Alternate work pointer.
+  const char* altworkptr = nullptr;  // Alternate work pointer.
   char sec[50];            // Working section buffer.
   const char* retval;      // Start of section or entry pointer.
   const char* next;        // Pointer to start of next section (or EOF).
   char c, c2;              // Working character values.
   int len;                 // Working substring length value.
   int entrylen;            // Byte length of specified entry.
-  char* orig_retbuf;       // original retbuffer ptr
+  char* orig_retbuf = nullptr;  // original retbuffer ptr
 
   //	if (!retlen) return(NULL);
 
