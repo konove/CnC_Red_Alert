@@ -3823,7 +3823,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       /*---------------------------------------------------------------------
       Detect editing of the name buffer, transmit new values to players
       ---------------------------------------------------------------------*/
-      if (strcmp(namebuf, Session.Handle)) {
+      if (strcmp(namebuf, Session.Handle) != 0) {
         port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         changed = true;
@@ -5423,7 +5423,7 @@ int Com_Show_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     Detect editing of the name buffer, transmit new values to players
     ---------------------------------------------------------------------*/
-    if (strcmp(namebuf, Session.Handle)) {
+    if (strcmp(namebuf, Session.Handle) != 0) {
       port::SafeCopy(Session.Handle, namebuf);
       transmit = true;
       changed = true;
@@ -5633,7 +5633,7 @@ int Com_Show_Scenario_Dialog() {
             *lot.
             */
             if (strcmp(Session.Options.ScenarioDescription,
-                       ReceivePacket.ScenarioInfo.Scenario)) {
+                       ReceivePacket.ScenarioInfo.Scenario) != 0) {
               display = std::max(display, REDRAW_BACKGROUND);
             }
 
@@ -6544,7 +6544,8 @@ static int Phone_Dialog() {
         - Set settings to defaults
         ...............................................................*/
         if (Session.CurPhoneIdx == -1 ||
-            strcmp(Session.PhoneBook[Session.CurPhoneIdx]->Number, phone_num)) {
+            strcmp(Session.PhoneBook[Session.CurPhoneIdx]->Number, phone_num) !=
+                0) {
           if (strlen(phone_num) == 0) {  // do not dial
             dialbtn.IsPressed = true;
             dialbtn.Flag_To_Redraw();

@@ -2894,7 +2894,7 @@ static int Net_Join_Dialog() {
             playerlist.Flag_To_Redraw();
           }
           for (i = 0; i < Session.Chat.Count(); i++) {
-            if (stricmp(Session.Chat[i]->Name, playerlist.Get_Item(i)) ||
+            if (stricmp(Session.Chat[i]->Name, playerlist.Get_Item(i)) != 0 ||
                 &ColorRemaps[Session.Chat[i]->Chat.Color == PCOLOR_DIALOG_BLUE
                                  ? PCOLOR_REALLY_BLUE
                                  : Session.Chat[i]->Chat.Color] !=
@@ -2909,7 +2909,7 @@ static int Net_Join_Dialog() {
             }
           }
         } else {
-          if (stricmp(Session.Chat[0]->Name, playerlist.Get_Item(0)) ||
+          if (stricmp(Session.Chat[0]->Name, playerlist.Get_Item(0)) != 0 ||
               &ColorRemaps[Session.Chat[0]->Chat.Color] !=
                   playerlist.Colors[0]) {
             playerlist.Colors[0] = &ColorRemaps[Session.Chat[0]->Chat.Color];
@@ -7294,7 +7294,7 @@ void Start_WWChat(ColorListClass* playerlist) {
     // Add the 1st entry to the list no matter what; for entries after the
     // 1st, only add the name if it's different from the previous name.
     //.....................................................................
-    if (i == 0 || strcmp(WWPersons[i].Name, WWPersons[i - 1].Name)) {
+    if (i == 0 || strcmp(WWPersons[i].Name, WWPersons[i - 1].Name) != 0) {
       WWPersons[i].Color =
           static_cast<PlayerColorType>(Random_Pick(0, PCOLOR_LAST - 1));
       if (Percent_Chance(50)) {

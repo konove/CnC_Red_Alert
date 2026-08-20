@@ -1913,7 +1913,7 @@ static int Net_Join_Dialog() {
         /*...............................................................
         Only create the connection if it's not myself!
         ...............................................................*/
-        if (strcmp(MPlayerName, Players[i]->Name)) {
+        if (strcmp(MPlayerName, Players[i]->Name) != 0) {
           id = Build_MPlayerID(Players[i]->Player.Color,
                                Players[i]->Player.House);
 
@@ -5410,7 +5410,7 @@ static int Net_Fake_Join_Dialog() {
         /*...............................................................
         Only create the connection if it's not myself!
         ...............................................................*/
-        if (strcmp(MPlayerName, Players[i]->Name)) {
+        if (strcmp(MPlayerName, Players[i]->Name) != 0) {
           id = Build_MPlayerID(Players[i]->Player.Color,
                                Players[i]->Player.House);
 

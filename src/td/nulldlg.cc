@@ -4130,7 +4130,7 @@ int Com_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     Detect editing of the name buffer, transmit new values to players
     ---------------------------------------------------------------------*/
-    if (strcmp(namebuf, MPlayerName)) {
+    if (strcmp(namebuf, MPlayerName) != 0) {
       port::SafeCopy(MPlayerName, namebuf);
       transmit = 1;
       changed = 1;
@@ -5319,7 +5319,7 @@ int Com_Show_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     Detect editing of the name buffer, transmit new values to players
     ---------------------------------------------------------------------*/
-    if (strcmp(namebuf, MPlayerName)) {
+    if (strcmp(namebuf, MPlayerName) != 0) {
       port::SafeCopy(MPlayerName, namebuf);
       transmit = 1;
       changed = 1;
@@ -6138,7 +6138,7 @@ static int Phone_Dialog() {
         - Set settings to defaults
         ...............................................................*/
         if (CurPhoneIdx == -1 ||
-            strcmp(PhoneBook[CurPhoneIdx]->Number, phone_num)) {
+            strcmp(PhoneBook[CurPhoneIdx]->Number, phone_num) != 0) {
           if (strlen(phone_num) == 0) {  // do not dial
             dialbtn.IsPressed = false;
             dialbtn.Flag_To_Redraw();

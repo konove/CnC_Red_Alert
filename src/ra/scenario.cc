@@ -1921,7 +1921,7 @@ bool Read_Scenario_INI(char* fname, bool) {
   */
   // Avoid CD check if official scenario was downloaded.
   if ((Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) &&
-      stricmp(Scen.ScenarioName, "download.tmp")) {
+      stricmp(Scen.ScenarioName, "download.tmp") != 0) {
     /*
     ** If this is scenario 1 then it should be on all CDs unless its an ant
     *scenario
