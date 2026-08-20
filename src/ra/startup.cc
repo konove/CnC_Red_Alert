@@ -667,13 +667,13 @@ void Read_Setup_Options(RawFileClass* config_file) {
       */
       int i = 0;
       char* p = strtok(netbuf, ".");
-      int x;
+      unsigned int x = 0;
       while (p != nullptr) {
         sscanf(p, "%x", &x);  // convert from hex string to int
         if (i < 4) {
-          net[i] = static_cast<char>(x);  // fill NetNum
+          net[i] = static_cast<unsigned char>(x);  // fill NetNum
         } else {
-          node[i - 4] = static_cast<char>(x);  // fill NetNode
+          node[i - 4] = static_cast<unsigned char>(x);  // fill NetNode
         }
         i++;
         p = strtok(nullptr, ".");

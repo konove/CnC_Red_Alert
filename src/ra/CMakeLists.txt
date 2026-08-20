@@ -112,10 +112,12 @@ target_link_libraries(rasdl PUBLIC absl::strings PRIVATE
         sdllib
         vqa32
         absl::check
+        absl::core_headers
         absl::log
         absl::log_initialize
         absl::status
-        absl::statusor) # mpgdll wwipx32
+        absl::statusor
+        absl::str_format) # mpgdll wwipx32
 
 install(TARGETS rasdl)
 

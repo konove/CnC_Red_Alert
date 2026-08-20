@@ -1157,7 +1157,8 @@ bool TeamTypeClass::Edit() {
 
             case NEED_HEX_NUMBER:
               sprintf(arg_edt.Get_Text(), "%x",
-                      missionlist2.Current_Item()->Data.Value);
+                      static_cast<unsigned int>(
+                          missionlist2.Current_Item()->Data.Value));
               break;
 
             case NEED_QUARRY:
@@ -1603,7 +1604,8 @@ const char* TeamMissionClass::Description(int index) const {
         break;
 
       case NEED_HEX_NUMBER:
-        sprintf(&buffer[strlen(buffer)], "%x", Data.Value);
+        sprintf(&buffer[strlen(buffer)], "%x",
+                static_cast<unsigned int>(Data.Value));
         break;
 
       case NEED_QUARRY:

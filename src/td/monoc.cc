@@ -54,6 +54,8 @@
 // #pragma inline
 #include "td/monoc.h"
 
+#include "td/jshell.h"
+
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
@@ -378,8 +380,7 @@ void MonoClass::Printf(const char* text, ...) {
   }
 
   va_start(va, text);
-  vsprintf(buffer, text, va);
-  buffer[sizeof(buffer) - 1] = '\0';
+  Format_Runtime_Text(buffer, sizeof(buffer), text, va);
 
   Print(buffer);
   va_end(va);
@@ -669,7 +670,7 @@ int Mono_Printf(const char* string, ...) {
     }
 
     va_start(va, string);
-    vsprintf(buffer, string, va);
+    Format_Runtime_Text(buffer, sizeof(buffer), string, va);
 
     mono->Print(buffer);
 

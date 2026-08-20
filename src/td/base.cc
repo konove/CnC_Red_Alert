@@ -213,7 +213,7 @@ void BaseClass::Write_INI(char* buffer) {
     sprintf(uname, "%03d", i);
     sprintf(buf, "%s,%d",
             BuildingTypeClass::As_Reference(Nodes[i].Type).IniName,
-            Nodes[i].Coord);
+            static_cast<int>(Nodes[i].Coord));
 
     WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
   }

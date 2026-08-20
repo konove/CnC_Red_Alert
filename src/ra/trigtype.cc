@@ -414,10 +414,12 @@ bool TriggerTypeClass::Edit() {
                      ED1_X, ED1_Y, ED_WIDTH, 9, EditClass::kAlpha);
   if (Event_Needs(Event1.Event) == NEED_WAYPOINT) {
     if (Event1.Data.Value < 26) {
-      sprintf(way1data.Get_Text(), "%c", Event1.Data.Value + 'A');
+      sprintf(way1data.Get_Text(), "%c",
+              static_cast<int>(Event1.Data.Value) + 'A');
     } else {
-      sprintf(way1data.Get_Text(), "%c%c", (Event1.Data.Value / 26) + 'A' - 1,
-              (Event1.Data.Value % 26) + 'A');
+      sprintf(way1data.Get_Text(), "%c%c",
+              static_cast<int>(Event1.Data.Value / 26) + 'A' - 1,
+              static_cast<int>(Event1.Data.Value % 26) + 'A');
     }
   }
 
@@ -426,10 +428,12 @@ bool TriggerTypeClass::Edit() {
                      ED2_X, ED2_Y, ED_WIDTH, 9, EditClass::kAlpha);
   if (Event_Needs(Event2.Event) == NEED_WAYPOINT) {
     if (Event2.Data.Value < 26) {
-      sprintf(way2data.Get_Text(), "%c", Event2.Data.Value + 'A');
+      sprintf(way2data.Get_Text(), "%c",
+              static_cast<int>(Event2.Data.Value) + 'A');
     } else {
-      sprintf(way2data.Get_Text(), "%c%c", (Event2.Data.Value / 26) + 'A' - 1,
-              (Event2.Data.Value % 26) + 'A');
+      sprintf(way2data.Get_Text(), "%c%c",
+              static_cast<int>(Event2.Data.Value / 26) + 'A' - 1,
+              static_cast<int>(Event2.Data.Value % 26) + 'A');
     }
   }
 
@@ -467,7 +471,8 @@ bool TriggerTypeClass::Edit() {
   switch (Event_Needs(Event1.Event)) {
     case NEED_TIME:
     case NEED_NUMBER:
-      sprintf(event1data.Get_Text(), "%d", Event1.Data.Value);
+      sprintf(event1data.Get_Text(), "%d",
+              static_cast<int>(Event1.Data.Value));
       break;
   }
 
@@ -478,7 +483,8 @@ bool TriggerTypeClass::Edit() {
   switch (Event_Needs(Event2.Event)) {
     case NEED_TIME:
     case NEED_NUMBER:
-      sprintf(event2data.Get_Text(), "%d", Event2.Data.Value);
+      sprintf(event2data.Get_Text(), "%d",
+              static_cast<int>(Event2.Data.Value));
       break;
   }
 
@@ -1751,7 +1757,7 @@ const char* TriggerTypeClass::Description() const {
     const char* added = "";
     switch (Event_Needs(Event1.Event)) {
       case NEED_NUMBER:
-        sprintf(tbuf, "%d", Event1.Data.Value);
+        sprintf(tbuf, "%d", static_cast<int>(Event1.Data.Value));
         added = tbuf;
         break;
 
@@ -1777,10 +1783,11 @@ const char* TriggerTypeClass::Description() const {
 
       case NEED_WAYPOINT:
         if (Event1.Data.Value < 26) {
-          sprintf(tbuf, "'%c'", Event1.Data.Value + 'A');
+          sprintf(tbuf, "'%c'", static_cast<int>(Event1.Data.Value) + 'A');
         } else {
-          sprintf(tbuf, "'%c%c'", (Event1.Data.Value / 26) + 'A' - 1,
-                  (Event1.Data.Value % 26) + 'A');
+          sprintf(tbuf, "'%c%c'",
+                  static_cast<int>(Event1.Data.Value / 26) + 'A' - 1,
+                  static_cast<int>(Event1.Data.Value % 26) + 'A');
         }
         added = tbuf;
         break;

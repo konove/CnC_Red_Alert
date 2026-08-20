@@ -1589,10 +1589,11 @@ void ScoreClass::Print_Minutes(int minutes) {
     if (minutes / 60 > 9) {
       minutes = 9 * 60 + 59;
     }
-    sprintf(str, Text_String(TXT_SCORE_TIMEFORMAT1), minutes / 60,
-            minutes % 60);
+    Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT1),
+                        minutes / 60, minutes % 60);
   } else {
-    sprintf(str, Text_String(TXT_SCORE_TIMEFORMAT2), minutes);
+    Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT2),
+                        minutes);
   }
   TextPrintBuffer->Print(str, 550, 18, TBLACK, TBLACK);
 }
@@ -1622,7 +1623,8 @@ void ScoreClass::Count_Up_Print(char* str, int percent, int max, int xpos,
   char destbuf[64];
   int width;
 
-  sprintf(destbuf, str, percent <= max ? percent : max);
+  Format_Runtime_Text(destbuf, sizeof(destbuf), str,
+                      percent <= max ? percent : max);
   width = strlen(destbuf) * 7;
 
   //	HidPage.Blit(HidPage, xpos, ypos, 0, 0, width, 8);

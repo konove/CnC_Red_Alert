@@ -2229,7 +2229,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       int i = 0;
       char* p = strtok(string + 8, ".");
       while (p) {
-        int x;
+        unsigned int x = 0;
 
         sscanf(p, "%x", &x);  // convert from hex string to int
         if (i < 4) {

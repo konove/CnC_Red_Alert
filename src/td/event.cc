@@ -436,7 +436,8 @@ void EventClass::Execute() {
       Special = Data.Options.Data;
       HouseClass* house = Houses.Raw_Ptr(ID);
 
-      sprintf(txt, Text_String(TXT_SPECIAL_WARNING), house->Name);
+      Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_SPECIAL_WARNING),
+                          house->Name);
       Messages.Add_Message(txt, MPlayerTColors[house->RemapColor],
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                            1200, 0, 0);

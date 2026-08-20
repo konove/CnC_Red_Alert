@@ -1780,8 +1780,8 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
   // Process an incoming message
   //------------------------------------------------------------------------
   if (serial_packet->Command == SERIAL_MESSAGE) {
-    sprintf(txt, Text_String(TXT_FROM), serial_packet->Name,
-            serial_packet->Message);
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
+                        serial_packet->Name, serial_packet->Message);
 
     magic_number =
         *(unsigned short*)(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 4);
@@ -3520,7 +3520,7 @@ void Print_CRCs(EventClass* /*ev*/) {
   Mono_Set_Cursor(0, 0);
 
   char filename[80];
-  sprintf(filename, "CRC%02d.TXT", Frame & 0x1f);
+  snprintf(filename, sizeof(filename), "CRC%02ld.TXT", Frame & 0x1f);
 
   fp = fopen(filename, "wt");  //"OUT.TXT","wt");
   if (fp == nullptr) {
@@ -3528,7 +3528,7 @@ void Print_CRCs(EventClass* /*ev*/) {
   }
 
   for (i = 0; i < 32; i++) {
-    fprintf(fp, "CRC[%d]=%x\n", i, CRC[i]);
+    fprintf(fp, "CRC[%d]=%lx\n", i, CRC[i]);
   }
 
   housep = HouseClass::As_Pointer(HOUSE_MULTI1);
@@ -4036,8 +4036,8 @@ void Print_CRCs(EventClass* /*ev*/) {
   Mono_Printf("Random Number:%d\n", rnd);
   fprintf(fp, "\nRandom Number:%d\n", rnd);
 
-  Mono_Printf("My Frame:%d\n", Frame);
-  fprintf(fp, "My Frame:%d\n", Frame);
+  Mono_Printf("My Frame:%ld\n", Frame);
+  fprintf(fp, "My Frame:%ld\n", Frame);
 #if (0)
   fprintf(fp, "-------------- Offending event: ----------------\n");
   fprintf(fp, "Type:         %d\n", ev->Type);
@@ -4291,8 +4291,8 @@ void Dump_Packet_Too_Late_Stuff(EventClass* event) {
   }
 
   fprintf(fp, "----------- My data: ------------------\n");
-  fprintf(fp, "Frame:%d\n", Frame);
-  fprintf(fp, "MaxAhead:%d\n", MPlayerMaxAhead);
+  fprintf(fp, "Frame:%ld\n", Frame);
+  fprintf(fp, "MaxAhead:%lu\n", MPlayerMaxAhead);
 
   fclose(fp);
 }

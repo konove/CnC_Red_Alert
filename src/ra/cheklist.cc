@@ -341,7 +341,7 @@ void CheckListClass::Draw_Entry(int index, int x, int y, int width,
       buffer[0] = UNCHECK_CHAR;
     }
     buffer[1] = ' ';
-    sprintf(&buffer[2], obj->Text);
+    snprintf(&buffer[2], sizeof(buffer) - 2, "%s", obj->Text);
 
     TextPrintType flags = TextFlags;
     RemapControlType* scheme = Get_Color_Scheme();

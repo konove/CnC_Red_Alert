@@ -200,6 +200,10 @@
 #define TXT_HACKHACK Text_String(TXT_CONNECTING)
 #endif
 
+// Size of the heap buffers holding the "xxx's Game" entries of the game list:
+// a player name plus room for the surrounding text and brackets.
+constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 64;
+
 bool Is_Mission_126x126(char* file_name);
 bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
@@ -1168,9 +1172,11 @@ void Destroy_Connection(int id, int error) {
   //------------------------------------------------------------------------
   txt[0] = '\0';
   if (error == 1) {
-    sprintf(txt, Text_String(TXT_CONNECTION_LOST), housep->IniName);
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_CONNECTION_LOST),
+                        housep->IniName);
   } else if (error == 0) {
-    sprintf(txt, Text_String(TXT_LEFT_GAME), housep->IniName);
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_LEFT_GAME),
+                        housep->IniName);
   }
 
   if (strlen(txt)) {
@@ -1848,16 +1854,19 @@ static int Net_Join_Dialog() {
           //...............................................................
 #ifdef OLDWAY
           if (Session.House == HOUSE_GOOD) {
-            sprintf(txt, Text_String(TXT_S_PLAYING_S), namebuf,
-                    Text_String(TXT_ALLIES));
+            Format_Runtime_Text(txt, sizeof(txt),
+                                Text_String(TXT_S_PLAYING_S), namebuf,
+                                Text_String(TXT_ALLIES));
           } else {
-            sprintf(txt, Text_String(TXT_S_PLAYING_S), namebuf,
-                    Text_String(TXT_SOVIET));
+            Format_Runtime_Text(txt, sizeof(txt),
+                                Text_String(TXT_S_PLAYING_S), namebuf,
+                                Text_String(TXT_SOVIET));
           }
 #else   // OLDWAY
-          sprintf(txt, Text_String(TXT_S_PLAYING_S), namebuf,
-                  Text_String(
-                      HouseTypeClass::As_Reference(Session.House).Full_Name()));
+          Format_Runtime_Text(
+              txt, sizeof(txt), Text_String(TXT_S_PLAYING_S), namebuf,
+              Text_String(
+                  HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
           Fancy_Text_Print(txt, d_dialog_cx, d_dialog_y + d_margin2 + 2,
                            Session.ColorIdx == PCOLOR_DIALOG_BLUE
@@ -3455,10 +3464,13 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         if (Session.Games[i]->Game.IsOpen != Session.GPacket.GameInfo.IsOpen) {
           item = (char*)gamelist->Get_Item(i);
           if (Session.GPacket.GameInfo.IsOpen) {
-            sprintf(item, Text_String(TXT_THATGUYS_GAME), Session.GPacket.Name);
+            Format_Runtime_Text(item, kGameListItemSize,
+                                Text_String(TXT_THATGUYS_GAME),
+                                Session.GPacket.Name);
           } else {
-            sprintf(item, Text_String(TXT_THATGUYS_GAME_BRACKET),
-                    Session.GPacket.Name);
+            Format_Runtime_Text(item, kGameListItemSize,
+                                Text_String(TXT_THATGUYS_GAME_BRACKET),
+                                Session.GPacket.Name);
           }
           Session.Games[i]->Game.IsOpen = Session.GPacket.GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
@@ -3478,12 +3490,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           //............................................................
           if (*joinstate < JOIN_CONFIRMED) {
             if (Session.Games[i]->Game.IsOpen) {
-              sprintf(txt, Text_String(TXT_S_FORMED_NEW_GAME),
-                      Session.Games[Session.Games.Count() - 1]->Name);
+              Format_Runtime_Text(txt, sizeof(txt),
+                                  Text_String(TXT_S_FORMED_NEW_GAME),
+                                  Session.Games[Session.Games.Count() - 1]->Name);
               Sound_Effect(VOC_GAME_FORMING);
             } else {
-              sprintf(txt, Text_String(TXT_GAME_NOW_IN_PROGRESS),
-                      Session.Games[Session.Games.Count() - 1]->Name);
+              Format_Runtime_Text(txt, sizeof(txt),
+                                  Text_String(TXT_GAME_NOW_IN_PROGRESS),
+                                  Session.Games[Session.Games.Count() - 1]->Name);
               Sound_Effect(VOC_GAME_CLOSED);
             }
             Session.Messages.Add_Message(nullptr, 0, txt, PCOLOR_BROWN,
@@ -3513,12 +3527,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //	Create a string for "xxx's Game", leaving room for brackets
       // around 	the string if it's a closed game
       //..................................................................
-      item = new char[MPLAYER_NAME_MAX + 64];
+      item = new char[kGameListItemSize];
       if (Session.GPacket.GameInfo.IsOpen) {
-        sprintf(item, Text_String(TXT_THATGUYS_GAME), Session.GPacket.Name);
+        Format_Runtime_Text(item, kGameListItemSize,
+                            Text_String(TXT_THATGUYS_GAME),
+                            Session.GPacket.Name);
       } else {
-        sprintf(item, Text_String(TXT_THATGUYS_GAME_BRACKET),
-                Session.GPacket.Name);
+        Format_Runtime_Text(item, kGameListItemSize,
+                            Text_String(TXT_THATGUYS_GAME_BRACKET),
+                            Session.GPacket.Name);
       }
       gamelist->Add_Item(item);
 
@@ -3538,7 +3555,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // now available.
       //..................................................................
       if (Session.GPacket.GameInfo.IsOpen && *joinstate < JOIN_CONFIRMED) {
-        sprintf(txt, Text_String(TXT_S_FORMED_NEW_GAME), Session.GPacket.Name);
+        Format_Runtime_Text(txt, sizeof(txt),
+                            Text_String(TXT_S_FORMED_NEW_GAME),
+                            Session.GPacket.Name);
         Session.Messages.Add_Message(nullptr, 0, txt, PCOLOR_BROWN, TPF_TEXT,
                                      1200);
         Sound_Effect(VOC_GAME_FORMING);
@@ -5607,10 +5626,12 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
 
         if (reconn) {
           id = Ipx.Connection_ID(oldest_index);
-          sprintf(buf1, Text_String(TXT_RECONNECTING_TO),
-                  Ipx.Connection_Name(id));
+          Format_Runtime_Text(buf1, sizeof(buf1),
+                              Text_String(TXT_RECONNECTING_TO),
+                              Ipx.Connection_Name(id));
         } else {
-          sprintf(buf1, Text_String(TXT_WAITING_FOR_CONNECTIONS));
+          snprintf(buf1, sizeof(buf1), "%s",
+                   Text_String(TXT_WAITING_FOR_CONNECTIONS));
         }
         break;
 
@@ -5618,10 +5639,12 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
       case GAME_TEN:
         if (reconn) {
           id = Ten->Connection_ID(oldest_index);
-          sprintf(buf1, Text_String(TXT_RECONNECTING_TO),
-                  Ten->Connection_Name(id));
+          Format_Runtime_Text(buf1, sizeof(buf1),
+                              Text_String(TXT_RECONNECTING_TO),
+                              Ten->Connection_Name(id));
         } else {
-          sprintf(buf1, Text_String(TXT_WAITING_FOR_CONNECTIONS));
+          snprintf(buf1, sizeof(buf1), "%s",
+                   Text_String(TXT_WAITING_FOR_CONNECTIONS));
         }
 #endif  // TEN
 
@@ -5629,15 +5652,18 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
       case GAME_MPATH:
         if (reconn) {
           id = MPath->Connection_ID(oldest_index);
-          sprintf(buf1, Text_String(TXT_RECONNECTING_TO),
-                  MPath->Connection_Name(id));
+          Format_Runtime_Text(buf1, sizeof(buf1),
+                              Text_String(TXT_RECONNECTING_TO),
+                              MPath->Connection_Name(id));
         } else {
-          sprintf(buf1, Text_String(TXT_WAITING_FOR_CONNECTIONS));
+          snprintf(buf1, sizeof(buf1), "%s",
+                   Text_String(TXT_WAITING_FOR_CONNECTIONS));
         }
 #endif  // MPATH
     }
 
-    sprintf(buf2, Text_String(TXT_TIME_ALLOWED), timeval + 1);
+    Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
+                        timeval + 1);
     buf3 = Text_String(TXT_PRESS_ESC);
 
     w = std::max(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
@@ -5700,7 +5726,8 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
     Hide_Mouse();
     Set_Logic_Page(SeenBuff);
 
-    sprintf(buf2, Text_String(TXT_TIME_ALLOWED), timeval + 1);
+    Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
+                        timeval + 1);
 
     int fillx = 320 - String_Pixel_Width(buf2) / 2 - 6;
     LogicPage->Fill_Rect(fillx, y + d_margin * 2 + d_txt6_h + d_margin,

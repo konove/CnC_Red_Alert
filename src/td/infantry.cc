@@ -3086,7 +3086,8 @@ void InfantryClass::Write_INI(char* buffer) {
     if (!infantry->IsInLimbo) {
       sprintf(uname, "%03d", index);
       sprintf(buf, "%s,%s,%d,%u,%d,%s,%d,%s", infantry->House->Class->IniName,
-              infantry->Class->IniName, infantry->Health_Ratio(),
+              infantry->Class->IniName,
+              static_cast<int>(infantry->Health_Ratio()),
               Coord_Cell(infantry->Coord),
               CellClass::Spot_Index(infantry->Coord),
               Mission_Name(infantry->Mission == MISSION_NONE

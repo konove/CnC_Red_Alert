@@ -153,9 +153,28 @@ void Fatal(const char* message, ...) {
   va_start(va, message);
   // Prog_End();
   vfprintf(stderr, message, va);
-  Mono_Printf(message);
+  va_end(va);
+  Mono_Printf("%s", message);
   Emergency_Exit(EXIT_FAILURE);
 }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+
+void Format_Runtime_Text(char* buffer, size_t size, const char* format, ...) {
+  va_list va;
+
+  va_start(va, format);
+  vsnprintf(buffer, size, format, va);
+  va_end(va);
+}
+
+void Format_Runtime_Text(char* buffer, size_t size, const char* format,
+                         va_list args) {
+  vsnprintf(buffer, size, format, args);
+}
+
+#pragma GCC diagnostic pop
 
 #ifdef NEVER
 void File_Fatal(const char* message) {

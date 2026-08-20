@@ -2261,7 +2261,7 @@ bool RadarClass::Draw_House_Info() {
     y += 12 + 1;
 
     // count & print buildings
-    snprintf(txt, sizeof(txt), "%i", ptr->CurBuildings);
+    snprintf(txt, sizeof(txt), "%i", static_cast<int>(ptr->CurBuildings));
     Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
     y += 12 + 1;
@@ -2271,7 +2271,7 @@ bool RadarClass::Draw_House_Info() {
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print units
-    snprintf(txt, sizeof(txt), "%i", ptr->CurUnits);
+    snprintf(txt, sizeof(txt), "%i", static_cast<int>(ptr->CurUnits));
     Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
     y += 12 + 1;
@@ -2281,7 +2281,7 @@ bool RadarClass::Draw_House_Info() {
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print infantry
-    snprintf(txt, sizeof(txt), "%i", ptr->CurInfantry);
+    snprintf(txt, sizeof(txt), "%i", static_cast<int>(ptr->CurInfantry));
     Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
 #if (0)

@@ -835,9 +835,11 @@ void Destroy_Null_Connection(int id, int error) {
   ------------------------------------------------------------------------*/
   txt[0] = '\0';
   if (error == 1) {
-    sprintf(txt, Text_String(TXT_CONNECTION_LOST), MPlayerNames[idx]);
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_CONNECTION_LOST),
+                        MPlayerNames[idx]);
   } else if (error == 0) {
-    sprintf(txt, Text_String(TXT_LEFT_GAME), MPlayerNames[idx]);
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_LEFT_GAME),
+                        MPlayerNames[idx]);
   } else if (error == -1) {
     NullModem.Delete_Connection();
   }
@@ -2215,7 +2217,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
       default:
         port_index = port_custom_index;
-        sprintf(portbuf, "%x", tempsettings.Port);
+        snprintf(portbuf, sizeof(portbuf), "%x",
+                 static_cast<unsigned int>(tempsettings.Port));
         temp = strchr(custom_port, '-');
         if (temp) {
           pos = static_cast<int>(temp - custom_port) + 2;
@@ -3667,7 +3670,7 @@ int Com_Scenario_Dialog() {
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d ", BuildLevel);
+          sprintf(txt, "%d ", static_cast<int>(BuildLevel));
         } else {
           sprintf(txt, "**");
         }
@@ -4097,8 +4100,8 @@ int Com_Scenario_Dialog() {
             /*..................................................................
             Add the message to our own screen
             ..................................................................*/
-            sprintf(txt, Text_String(TXT_FROM), MPlayerName,
-                    SendPacket.Message);
+            Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
+                                MPlayerName, SendPacket.Message);
             Messages.Add_Message(
                 txt, MPlayerTColors[MPlayerColorIdx],
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -4322,8 +4325,8 @@ int Com_Scenario_Dialog() {
           case SERIAL_MESSAGE:
             // Smart_Printf( "received serial message\n" );
             oppscorescreen = false;
-            sprintf(txt, Text_String(TXT_FROM), ReceivePacket.Name,
-                    ReceivePacket.Message);
+            Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
+                                ReceivePacket.Name, ReceivePacket.Message);
             magic_number = *(unsigned short*)(ReceivePacket.Message +
                                               COMPAT_MESSAGE_LENGTH - 4);
             crc = *(unsigned short*)(ReceivePacket.Message +
@@ -4456,7 +4459,8 @@ int Com_Scenario_Dialog() {
     //
     MPlayerMaxAhead = std::max<int>(SendPacket.ResponseTime / 8, 2);
     char flip[128];
-    sprintf(flip, "C&C95 - MaxAhead set to %d frames\n", MPlayerMaxAhead);
+    snprintf(flip, sizeof(flip), "C&C95 - MaxAhead set to %d frames\n",
+             static_cast<int>(MPlayerMaxAhead));
     CCDebugString(flip);
 
     SendPacket.ID = ModemGameToPlay;
@@ -4980,7 +4984,7 @@ int Com_Show_Scenario_Dialog() {
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-              sprintf(txt, "%d ", BuildLevel);
+              sprintf(txt, "%d ", static_cast<int>(BuildLevel));
             } else {
               sprintf(txt, "**");
             }
@@ -5292,8 +5296,9 @@ int Com_Show_Scenario_Dialog() {
                   /*..................................................................
                   Add the message to our own screen
                   ..................................................................*/
-                  sprintf(txt, Text_String(TXT_FROM), MPlayerName,
-                          SendPacket.Message);
+                  Format_Runtime_Text(txt, sizeof(txt),
+                                      Text_String(TXT_FROM), MPlayerName,
+                                      SendPacket.Message);
                   Messages.Add_Message(
                       txt, MPlayerTColors[MPlayerColorIdx],
                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -5538,8 +5543,9 @@ int Com_Show_Scenario_Dialog() {
             //
             MPlayerMaxAhead = std::max<int>(ReceivePacket.ResponseTime / 8, 2);
             char flip[128];
-            sprintf(flip, "C&C95 - MaxAhead set to %d frames\n",
-                    MPlayerMaxAhead);
+            snprintf(flip, sizeof(flip),
+                     "C&C95 - MaxAhead set to %d frames\n",
+                     static_cast<int>(MPlayerMaxAhead));
             CCDebugString(flip);
 
             process = false;
@@ -5551,8 +5557,8 @@ int Com_Show_Scenario_Dialog() {
           ..................................................................*/
           case SERIAL_MESSAGE:
             oppscorescreen = false;
-            sprintf(txt, Text_String(TXT_FROM), ReceivePacket.Name,
-                    ReceivePacket.Message);
+            Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
+                                ReceivePacket.Name, ReceivePacket.Message);
             magic_number = *(unsigned short*)(ReceivePacket.Message +
                                               COMPAT_MESSAGE_LENGTH - 4);
             crc = *(unsigned short*)(ReceivePacket.Message +
@@ -7000,7 +7006,7 @@ void Smart_Printf(char* format, ...) {
   char buf[501];
 
   va_start(arglist, format);
-  vsprintf(buf, format, arglist);
+  Format_Runtime_Text(buf, sizeof(buf), format, arglist);
   va_end(arglist);
 
   if (Debug_Smart_Print) {

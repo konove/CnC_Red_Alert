@@ -71,6 +71,7 @@
 #include <cstring>
 
 #include "ra/inline.h"
+#include "ra/jshell.h"
 
 void output(short port, short data);
 
@@ -521,12 +522,6 @@ void MonoClass::Scroll(int lines) {
  *=============================================================================================*/
 void MonoClass::Printf(const char* text, ...) {
   va_list va;
-  /*
-  **	The buffer object is placed at the end of the local variable list
-  **	so that if the sprintf happens to spill past the end, it isn't likely
-  **	to trash anything (important). The buffer is then manually truncated
-  **	to maximum allowed size before being printed.
-  */
   char buffer[256];
 
   if (!Enabled) {
@@ -534,8 +529,7 @@ void MonoClass::Printf(const char* text, ...) {
   }
 
   va_start(va, text);
-  vsprintf(buffer, text, va);
-  buffer[sizeof(buffer) - 1] = '\0';
+  Format_Runtime_Text(buffer, sizeof(buffer), text, va);
 
   Print(buffer);
   va_end(va);
@@ -561,12 +555,6 @@ void MonoClass::Printf(const char* text, ...) {
 void MonoClass::Printf(int text, ...) {
   va_list va;
 
-  /*
-  **	The buffer object is placed at the end of the local variable list
-  **	so that if the sprintf happens to spill past the end, it isn't likely
-  **	to trash anything (important). The buffer is then manually truncated
-  **	to maximum allowed size before being printed.
-  */
   char buffer[256];
 
   if (!Enabled) {
@@ -574,8 +562,7 @@ void MonoClass::Printf(int text, ...) {
   }
 
   va_start(va, text);
-  vsprintf(buffer, Text_String(text), va);
-  buffer[sizeof(buffer) - 1] = '\0';
+  Format_Runtime_Text(buffer, sizeof(buffer), Text_String(text), va);
 
   Print(buffer);
   va_end(va);
@@ -879,7 +866,7 @@ int Mono_Printf(const char* string, ...) {
     }
 
     va_start(va, string);
-    vsprintf(buffer, string, va);
+    Format_Runtime_Text(buffer, sizeof(buffer), string, va);
 
     mono->Print(buffer);
 
@@ -1068,7 +1055,7 @@ int Mono_Printf(int string, ...) {
     }
 
     va_start(va, string);
-    vsprintf(buffer, Text_String(string), va);
+    Format_Runtime_Text(buffer, sizeof(buffer), Text_String(string), va);
 
     mono->Print(buffer);
 

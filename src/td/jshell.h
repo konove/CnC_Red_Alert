@@ -42,7 +42,11 @@
 #define CNC_RED_ALERT_TD_JSHELL_H_
 
 #include <algorithm>
+#include <cstdarg>
+#include <cstddef>
 #include <cstdint>
+
+#include "absl/base/attributes.h"
 
 #include "sdllib/buffer.h"
 #include "sdllib/iff.h"
@@ -205,7 +209,23 @@ unsigned Fixed_To_Cardinal(unsigned base, unsigned fixed);
 
 unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
 
-extern void Fatal(const char* message, ...);
+// Prints a printf-style message to stderr and exits with a failure code. The
+// format attribute both type-checks every call site and tells the compiler the
+// forwarded format string inside Fatal() is intentionally non-literal.
+extern void Fatal(const char* message, ...) ABSL_PRINTF_ATTRIBUTE(1, 2);
+
+// Formats "format" and its arguments into "buffer", which holds "size" bytes.
+// The result is always null terminated and is truncated rather than allowed to
+// overflow.
+//
+// Use this whenever the format string is only known at runtime -- the
+// localized string table, or a format handed in by a caller. The compiler
+// cannot check such a format against its arguments, and the suppression of
+// that diagnostic is centralized here instead of being repeated at every call
+// site.
+void Format_Runtime_Text(char* buffer, size_t size, const char* format, ...);
+void Format_Runtime_Text(char* buffer, size_t size, const char* format,
+                         va_list args);
 
 typedef struct {
   unsigned char SourceColor;

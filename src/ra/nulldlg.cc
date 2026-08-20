@@ -50,6 +50,7 @@
 #include "ra/nulldlg.h"
 
 #include <algorithm>
+#include <cinttypes>
 #include <cstdarg>
 #include <cstdint>
 #include <cstdio>
@@ -852,11 +853,13 @@ void Destroy_Null_Connection(int id, int error) {
   txt[0] = '\0';
   switch (error) {
     case 1:
-      sprintf(txt, Text_String(TXT_CONNECTION_LOST), housep->IniName);
+      Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_CONNECTION_LOST),
+                          housep->IniName);
       break;
 
     case 0:
-      sprintf(txt, Text_String(TXT_LEFT_GAME), housep->IniName);
+      Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_LEFT_GAME),
+                          housep->IniName);
       break;
 
     case -1:
@@ -2021,7 +2024,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
       default:
         port_index = port_custom_index;
-        sprintf(portbuf, "%x", tempsettings.Port);
+        snprintf(portbuf, sizeof(portbuf), "%x",
+                 static_cast<unsigned int>(tempsettings.Port));
         temp = strchr(custom_port, '-');
         if (temp) {
           pos = static_cast<int>(temp - custom_port) + 2;
@@ -5737,7 +5741,8 @@ int Com_Show_Scenario_Dialog() {
             // we receive an options packet.
             //.........................................................
             item = (char*)gamelist.Get_Item(0);
-            sprintf(item, Text_String(TXT_THATGUYS_GAME), TheirName);
+            Format_Runtime_Text(item, MPLAYER_NAME_MAX + 64,
+                                Text_String(TXT_THATGUYS_GAME), TheirName);
             item = (char*)playerlist.Get_Item(0);
 #ifdef OLDWAY
             if (Session.House == HOUSE_GOOD) {
@@ -7363,7 +7368,7 @@ void Smart_Printf(const char* format, ...) {
   char buf[501];
 
   va_start(arglist, format);
-  vsprintf(buf, format, arglist);
+  Format_Runtime_Text(buf, sizeof(buf), format, arglist);
   va_end(arglist);
 
   if (Debug_Smart_Print) {
@@ -7392,7 +7397,7 @@ void Hex_Dump_Data(char* buffer, int length) {
   while (length >= 16) {
     memcpy(ptr, buffer + offset, 16);
 
-    Smart_Printf("%05lX  ", offset);
+    Smart_Printf("%05X  ", static_cast<unsigned int>(offset));
 
     for (i = 0; i < 16; i++) {
       c = ptr[i];
@@ -7426,7 +7431,7 @@ void Hex_Dump_Data(char* buffer, int length) {
   if (length) {
     memcpy(ptr, buffer + offset, 16);
 
-    Smart_Printf("%05lX  ", offset);
+    Smart_Printf("%05X  ", static_cast<unsigned int>(offset));
 
     for (i = 0; i < 16; i++) {
       if (i < length) {
@@ -7491,13 +7496,13 @@ void Log_Start_Time(char* string) {
   LogLevel = 0;
   LogLevelTime[LogLevel] = LogLastTime = TickCount.Value();
 
-  Smart_Printf("start tick=%d, %s \n", LogLastTime, string);
+  Smart_Printf("start tick=%" PRId64 ", %s \n", LogLastTime, string);
 }
 
 void Log_End_Time(char* string) {
   int i;
-  unsigned long currtime;
-  unsigned long ticks;
+  int64_t currtime;
+  int64_t ticks;
 
   currtime = TickCount.Value();
   while (LogLevel >= 0) {
@@ -7515,8 +7520,9 @@ void Log_End_Time(char* string) {
     }
 
     ticks = currtime - LogLevelTime[LogLevel--];
-    Smart_Printf("end tick=%d, ticks=%d, tsecs=%d, %s \n", currtime, ticks,
-                 ticks * 10 / 60, string);
+    Smart_Printf("end tick=%" PRId64 ", ticks=%" PRId64 ", tsecs=%" PRId64
+                 ", %s \n",
+                 currtime, ticks, ticks * 10 / 60, string);
   }
 
   LogDump_Print = false;
@@ -7524,8 +7530,8 @@ void Log_End_Time(char* string) {
 
 void Log_Time(char* string) {
   int i;
-  unsigned long currtime;
-  unsigned long ticks;
+  int64_t currtime;
+  int64_t ticks;
 
   currtime = TickCount.Value();
 
@@ -7544,16 +7550,16 @@ void Log_Time(char* string) {
 
   ticks = currtime - LogLastTime;
 
-  Smart_Printf("tick=%d, ticks=%d, tsecs=%d, %s \n", currtime, ticks,
-               ticks * 10 / 60, string);
+  Smart_Printf("tick=%" PRId64 ", ticks=%" PRId64 ", tsecs=%" PRId64 ", %s \n",
+               currtime, ticks, ticks * 10 / 60, string);
 
   LogLastTime = currtime;
 }
 
 void Log_Start_Nest_Time(char* string) {
   int i;
-  unsigned long currtime;
-  unsigned long ticks;
+  int64_t currtime;
+  int64_t ticks;
 
   currtime = TickCount.Value();
 
@@ -7571,8 +7577,9 @@ void Log_Start_Nest_Time(char* string) {
   }
 
   ticks = currtime - LogLastTime;
-  Smart_Printf("start ntick=%d, ticks=%d, tsecs=%d, %s \n", currtime, ticks,
-               ticks * 10 / 60, string);
+  Smart_Printf("start ntick=%" PRId64 ", ticks=%" PRId64 ", tsecs=%" PRId64
+               ", %s \n",
+               currtime, ticks, ticks * 10 / 60, string);
 
   if (LogLevel >= MAX_LOG_LEVEL - 1) {
     Smart_Printf("Could not start another nesting Maxed at %d,%d!-! \n",
@@ -7586,8 +7593,8 @@ void Log_Start_Nest_Time(char* string) {
 
 void Log_End_Nest_Time(char* string) {
   int i;
-  unsigned long currtime;
-  unsigned long ticks;
+  int64_t currtime;
+  int64_t ticks;
 
   currtime = TickCount.Value();
 
@@ -7611,8 +7618,9 @@ void Log_End_Nest_Time(char* string) {
   }
 
   ticks = currtime - LogLevelTime[LogLevel];
-  Smart_Printf("end ntick=%d, ticks=%d, secs=%d, %s \n", currtime, ticks,
-               ticks * 10 / 60, string);
+  Smart_Printf("end ntick=%" PRId64 ", ticks=%" PRId64 ", secs=%" PRId64
+               ", %s \n",
+               currtime, ticks, ticks * 10 / 60, string);
 
   if (LogLevel) {
     LogLevel--;

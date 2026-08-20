@@ -864,7 +864,10 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
       tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
-        sscanf(tokenptr, "%x", &phone->Settings.Port);
+        unsigned int port = 0;
+        if (sscanf(tokenptr, "%x", &port) == 1) {
+          phone->Settings.Port = static_cast<int>(port);
+        }
       } else {
         phone->Settings.Port = 0;
       }
@@ -1000,7 +1003,10 @@ void SessionClass::Read_MultiPlayer_Settings() {
     sscanf(buf, "%x", &TrapCoord);
 
     ini.Get_String("SyncBug", "Target", "0", buf, 80);
-    sscanf(buf, "%x", &TrapTarget);
+    unsigned int trap_target = 0;
+    if (sscanf(buf, "%x", &trap_target) == 1) {
+      TrapTarget = static_cast<TARGET>(trap_target);
+    }
 
     ini.Get_String("SyncBug", "Cell", "0", buf, 80);
     cell = atoi(buf);
@@ -1181,8 +1187,9 @@ void SessionClass::Write_MultiPlayer_Settings() {
     for (int i = PhoneBook.Count() - 1; i >= 0; i--) {
       char buf[128];
       char entrytext[10];
-      sprintf(buf, "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s", PhoneBook[i]->Name,
-              PhoneBook[i]->Number, PhoneBook[i]->Settings.Port,
+      snprintf(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
+               PhoneBook[i]->Name, PhoneBook[i]->Number,
+               static_cast<unsigned int>(PhoneBook[i]->Settings.Port),
               PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
               PhoneBook[i]->Settings.Compression,
               PhoneBook[i]->Settings.ErrorCorrection,

@@ -86,7 +86,6 @@ unsigned char* Font_Palette(int color);
  *the box.                                             *
  *=============================================================================================*/
 void Dialog_Box(int x, int y, int w, int h) {
-
   WindowList[WINDOW_PARTIAL][WINDOWX] = x;
   WindowList[WINDOW_PARTIAL][WINDOWY] = y;
   WindowList[WINDOW_PARTIAL][WINDOWWIDTH] = w;
@@ -113,8 +112,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   */
   shapedata = MFCD::Retrieve("DD-EDGE.SHP");
   for (int yy = 0; yy < h; yy += 6) {
-    CC_Draw_Shape(shapedata, 0, 14, yy, WINDOW_PARTIAL,
-                  SHAPE_WIN_REL);
+    CC_Draw_Shape(shapedata, 0, 14, yy, WINDOW_PARTIAL, SHAPE_WIN_REL);
     CC_Draw_Shape(shapedata, 1, w - (7 + 8) * 2, yy, WINDOW_PARTIAL,
                   SHAPE_WIN_REL);
   }
@@ -123,25 +121,20 @@ void Dialog_Box(int x, int y, int w, int h) {
   **	Draw the border bars.
   */
   shapedata = MFCD::Retrieve("DD-LEFT.SHP");
-  CC_Draw_Shape(shapedata, 0, 0, cy - 200, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
+  CC_Draw_Shape(shapedata, 0, 0, cy - 200, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, 0, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   shapedata = MFCD::Retrieve("DD-RIGHT.SHP");
   int rightx = w - 14;
-  CC_Draw_Shape(shapedata, 0, rightx, cy - 200, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
+  CC_Draw_Shape(shapedata, 0, rightx, cy - 200, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, rightx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   shapedata = MFCD::Retrieve("DD-BOTM.SHP");
-  CC_Draw_Shape(shapedata, 0, cx - 320, h - 16,
-                WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 0, cx, h - 16, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
+  CC_Draw_Shape(shapedata, 0, cx - 320, h - 16, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(shapedata, 0, cx, h - 16, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   shapedata = MFCD::Retrieve("DD-TOP.SHP");
-  CC_Draw_Shape(shapedata, 0, cx - 320, 0, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
+  CC_Draw_Shape(shapedata, 0, cx - 320, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, cx, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   /*
@@ -149,12 +142,9 @@ void Dialog_Box(int x, int y, int w, int h) {
   */
   shapedata = MFCD::Retrieve("DD-CRNR.SHP");
   CC_Draw_Shape(shapedata, 0, 0, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 1, w - 23, 0, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 2, 0, h - 24, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 3, w - 23, h - 24,
-                WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(shapedata, 1, w - 23, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(shapedata, 2, 0, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(shapedata, 3, w - 23, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   WWMouse->Draw_Mouse(&HidPage);
   HidPage.Blit(SeenBuff, x, y, x, y, w, h, false);
@@ -162,145 +152,166 @@ void Dialog_Box(int x, int y, int w, int h) {
   Set_Logic_Page(oldpage);
 }
 
-/***********************************************************************************************
- * Draw_Box -- Displays a highlighted box. *
- *                                                                                             *
- *    This will draw a highlighted box to the logicpage. It can * optionally
- *fill the box with a color as well. This is a low level * function and thus, it
- *doesn't do any graphic mode color adjustments.                     *
- *                                                                                             *
- * INPUT:   x,y   -- Upper left corner of the box to be drawn (pixels). *
- *                                                                                             *
- *          w,h   -- Width and height of box (in pixels). *
- *                                                                                             *
- *          up    -- Is the box rendered in the "up" stated? *
- *                                                                                             *
- *          filled-- Is the box to be filled. *
- *                                                                                             *
- * OUTPUT:     none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/28/1991 JLB : Created. * 05/30/1992 JLB : Embedded color codes.
- ** 07/31/1992 JLB : Depressed option added. *
- *=============================================================================================*/
-void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
-
-  // Filler, Shadow, Hilite, Corner colors
-
-  const BoxStyleType ButtonColors[BOXSTYLE_COUNT] = {
-      {scheme->Background, scheme->Highlight, scheme->Shadow,
-       scheme->Corners},  // Down
-      {scheme->Background, scheme->Shadow, scheme->Highlight,
-       scheme->Corners},                         // Raised
-      {DKGREY, WHITE, BLACK, DKGREY},            // Disabled down
-      {DKGREY, BLACK, LTGREY, DKGREY},           // Disabled up
-      {BLACK, scheme->Box, scheme->Box, BLACK},  // List box
-      {BLACK, scheme->Box, scheme->Box, BLACK},  // Dialog box
-  };
-
-  w--;
-  h--;
-  const BoxStyleType& style = ButtonColors[up];
-
+// Draws the beveled edges shared by the button box styles: "Shadow" along the
+// bottom and right, "Highlight" along the top and left, and "Corner" on the two
+// pixels where they meet. Swapping shadow and highlight is what turns a raised
+// button into a depressed one. All coordinates are inclusive.
+static void Draw_Beveled_Box(const int left, const int top, const int right,
+                             const int bottom, const bool filled,
+                             const BoxStyleType& colors) {
   if (filled) {
-    LogicPage->Fill_Rect(x, y, x + w, y + h, style.Filler);
+    LogicPage->Fill_Rect(left, top, right, bottom, colors.Filler);
   }
 
+  LogicPage->Draw_Line(left, bottom, right, bottom, colors.Shadow);
+  LogicPage->Draw_Line(right, top, right, bottom, colors.Shadow);
+
+  LogicPage->Draw_Line(left, top, right, top, colors.Highlight);
+  LogicPage->Draw_Line(left, top, left, bottom, colors.Highlight);
+
+  LogicPage->Put_Pixel(left, bottom, colors.Corner);
+  LogicPage->Put_Pixel(right, top, colors.Corner);
+}
+
+// Draw_Box -- Displays a highlighted box.
+//
+// HISTORY: 05/28/1991 JLB : Created.
+//          05/30/1992 JLB : Embedded color codes.
+//          07/31/1992 JLB : Depressed option added.
+void Draw_Box(const int x, const int y, const int w, const int h,
+              const BoxStyleEnum up, const bool filled) {
+  const RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+
+  // The draw calls below take inclusive corner coordinates, so a box "w" pixels
+  // wide ends at x + w - 1.
+  const int right = x + w - 1;
+  const int bottom = y + h - 1;
+
   switch (up) {
+    // Flat outline drawn on the box edge itself.
     case BOXSTYLE_BOX:
-      LogicPage->Draw_Rect(x, y, x + w, y + h, style.Highlight);
+      if (filled) {
+        LogicPage->Fill_Rect(x, y, right, bottom, BLACK);
+      }
+      LogicPage->Draw_Rect(x, y, right, bottom, scheme->Box);
       break;
 
+    // Same outline, inset one pixel, which leaves a filled margin around the
+    // frame of a dialog.
     case BOXSTYLE_BORDER:
-      LogicPage->Draw_Rect(x + 1, y + 1, x + w - 1, y + h - 1, style.Highlight);
+      if (filled) {
+        LogicPage->Fill_Rect(x, y, right, bottom, BLACK);
+      }
+      LogicPage->Draw_Rect(x + 1, y + 1, right - 1, bottom - 1, scheme->Box);
       break;
 
+    case BOXSTYLE_DOWN:
+      Draw_Beveled_Box(x, y, right, bottom, filled,
+                       {
+                           .Filler = scheme->Background,
+                           .Shadow = scheme->Highlight,
+                           .Highlight = scheme->Shadow,
+                           .Corner = scheme->Corners,
+                       });
+      break;
+
+    // The disabled styles use fixed greys rather than the color scheme.
+    case BOXSTYLE_DIS_DOWN:
+      Draw_Beveled_Box(x, y, right, bottom, filled,
+                       {
+                           .Filler = GREY,
+                           .Shadow = WHITE,
+                           .Highlight = BLACK,
+                           .Corner = GREY,
+                       });
+      break;
+
+    case BOXSTYLE_DIS_RAISED:
+      Draw_Beveled_Box(x, y, right, bottom, filled,
+                       {
+                           .Filler = GREY,
+                           .Shadow = BLACK,
+                           .Highlight = LTGREY,
+                           .Corner = GREY,
+                       });
+      break;
+
+    // A raised button is also the fallback for an unrecognized style.
+    case BOXSTYLE_RAISED:
     default:
-      LogicPage->Draw_Line(x, y + h, x + w, y + h, style.Shadow);
-      LogicPage->Draw_Line(x + w, y, x + w, y + h, style.Shadow);
-
-      LogicPage->Draw_Line(x, y, x + w, y, style.Highlight);
-      LogicPage->Draw_Line(x, y, x, y + h, style.Highlight);
-
-      LogicPage->Put_Pixel(x, y + h, style.Corner);
-      LogicPage->Put_Pixel(x + w, y, style.Corner);
+      Draw_Beveled_Box(x, y, right, bottom, filled,
+                       {
+                           .Filler = scheme->Background,
+                           .Shadow = scheme->Shadow,
+                           .Highlight = scheme->Highlight,
+                           .Corner = scheme->Corners,
+                       });
       break;
   }
 }
 
-/***********************************************************************************************
- * Format_Window_String -- Separates a String into Lines. * This function will
- *take a long string and break it up into lines                          * which
- *are not longer then the window width. Any character < ' ' is * considered a
- *new line marker and will be replaced by a nullptr.   *
- *                                                                                             *
- * INPUT:      char *String - string to be formated. * int maxlinelen - Max
- *length of any line in pixels.                              *
- *                                                                                             *
- * OUTPUT:     int - number of lines string is. *
- *                                                                                             *
- * WARNINGS:    The string passed in will be modified - NULLs will be put * into
- *each position that will be a new line.                                  *
- *                                                                                             *
- * HISTORY: * 03/27/1992  SB : Created. * 05/18/1995 JLB : Greatly revised for
- *new font system.                                     * 09/04/1996 BWG : Added
- *'@' is treated as a carriage return for width calculations.		  *
- *=============================================================================================*/
-int Format_Window_String(char* string, int maxlinelen, int& width,
+// Returns true for the characters that terminate a line: the carriage return
+// this routine writes as its hard break, the author supplied break marker
+// ('@') and the string terminator.
+static constexpr bool Is_Line_Break(const char c) {
+  return c == '\r' || c == '@' || c == '\0';
+}
+
+int Format_Window_String(char* string, int max_line_len, int& width,
                          int& height) {
-  int linelen;
-  int lines = 0;
   width = 0;
   height = 0;
 
-  // In no string was passed in, then there are no lines.
-  if (!string) {
+  if (string == nullptr) {
     return 0;
   }
 
-  // While there are more letters left divide the line up.
-  while (*string) {
-    linelen = 0;
+  int lines = 0;
+  char* cursor = string;
+
+  while (*cursor != '\0') {
+    char* const line_start = cursor;
     height += FontHeight + FontYSpacing;
     lines++;
 
-    // Look for special line break character and force a line break when it is
-    // discovered.
-    if (*string == '@') {
-      *string = '\r';
+    // Gather characters until the line is full or an explicit break is hit.
+    // "line_len" always holds the pixel width of [line_start, cursor).
+    int line_len = 0;
+    while (line_len < max_line_len && !Is_Line_Break(*cursor)) {
+      line_len += Char_Pixel_Width(*cursor++);
     }
 
-    // While the current line is less than the max length...
-    while (linelen < maxlinelen && *string != '\r' && *string != '\0' &&
-           *string != '@') {
-      linelen += Char_Pixel_Width(*string++);
-    }
+    if (line_len >= max_line_len) {
+      char* const overflow = cursor;
 
-    // if the line is too long...
-    if (linelen >= maxlinelen) {
-      /*
-      **	Back up to an appropriate location to break.
-      */
-      while (*string != ' ' && *string != '\r' && *string != '\0' &&
-             *string != '@') {
-        linelen -= Char_Pixel_Width(*string--);
+      // Back up to the last space so the break falls between words. The
+      // line_start guard is what keeps a word wider than the whole line from
+      // walking off the front of the buffer, which the original code did.
+      while (cursor > line_start && *cursor != ' ') {
+        line_len -= Char_Pixel_Width(*--cursor);
+      }
+
+      if (cursor == line_start) {
+        // No break point in the line at all. The '\r' has to be stored
+        // somewhere and the buffer cannot grow, so the last character that
+        // fits is sacrificed to make room for it.
+        cursor = std::max(overflow - 1, line_start);
+        line_len = 0;
+        for (const char* c = line_start; c < cursor; ++c) {
+          line_len += Char_Pixel_Width(*c);
+        }
       }
     }
 
-    /*
-    **	Record the largest width of the worst case string.
-    */
-    width = std::max(linelen, width);
+    width = std::max(line_len, width);
 
-    /*
-    **	Force a break at the end of the line.
-    */
-    if (*string) {
-      *string++ = '\r';
+    // Overwrite the break candidate (a space, an '@' or an already present
+    // '\r') with the canonical line break and step past it.
+    if (*cursor != '\0') {
+      *cursor++ = '\r';
     }
   }
+
   return lines;
 }
 
@@ -650,7 +661,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType* fore,
     **	how to handle EMS pointers.
     */
     const char* tptr = Text_String(text);
-    vsprintf(buffer, tptr, arg);
+    Format_Runtime_Text(buffer, sizeof(buffer), tptr, arg);
     va_end(arg);
 
     Simple_Text_Print(buffer, x, y, fore, back, flag);
@@ -705,7 +716,7 @@ void Fancy_Text_Print(const char* text, unsigned x, unsigned y,
     **	call with locking code.
     */
     va_start(arg, flag);
-    vsprintf(buffer, text, arg);
+    Format_Runtime_Text(buffer, sizeof(buffer), text, arg);
     va_end(arg);
 
     Simple_Text_Print(buffer, x, y, fore, back, flag);
@@ -953,13 +964,12 @@ void Draw_Caption(const char* text, int x, int y, int w) {
   */
   if (text != nullptr && *text != '\0') {
     if (MapEditorActive) {
-      Fancy_Text_Print(text, w / 2 + x, 4 + y,
-                       GadgetClass::Get_Color_Scheme(), TBLACK,
+      Fancy_Text_Print(text, w / 2 + x, 4 + y, GadgetClass::Get_Color_Scheme(),
+                       TBLACK,
                        TPF_CENTER | TPF_EFNT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     } else {
-      Fancy_Text_Print(text, w / 2 + x, 16 + y,
-                       GadgetClass::Get_Color_Scheme(), TBLACK,
-                       TPF_CENTER | TPF_TEXT);
+      Fancy_Text_Print(text, w / 2 + x, 16 + y, GadgetClass::Get_Color_Scheme(),
+                       TBLACK, TPF_CENTER | TPF_TEXT);
       int length = String_Pixel_Width(text);
       LogicPage->Draw_Line(
           x + w / 2 - length / 2, y + FontHeight + FontYSpacing + 16,

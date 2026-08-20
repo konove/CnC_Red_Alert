@@ -64,6 +64,7 @@
 #include "td/conquer.h"
 #include "td/externs.h"
 #include "td/globals.h"
+#include "td/jshell.h"
 #include "td/text.h"
 
 /***********************************************************************************************
@@ -608,7 +609,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
     **	how to handle EMS pointers.
     */
     const char* tptr = Text_String(text);
-    vsprintf(buffer, tptr, arg);
+    Format_Runtime_Text(buffer, sizeof(buffer), tptr, arg);
     va_end(arg);
 
     Simple_Text_Print(buffer, x, y, fore, back, flag);
@@ -662,7 +663,7 @@ void Fancy_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
     **	call with locking code.
     */
     va_start(arg, flag);
-    vsprintf(buffer, text, arg);
+    Format_Runtime_Text(buffer, sizeof(buffer), text, arg);
     va_end(arg);
 
     Simple_Text_Print(buffer, x, y, fore, back, flag);

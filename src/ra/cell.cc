@@ -1261,7 +1261,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     **	hack overpass after the cells are redrawn so that subs can be
     **	redrawn separately.
     */
-    ObjectClass* optr[20 + std::size(Overlappers)];
+    ObjectClass* optr[20 + kOverlapperCount];
     int count = 0;
     ObjectClass* object = Cell_Occupier();
     while (object != nullptr) {

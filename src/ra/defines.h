@@ -2441,23 +2441,21 @@ typedef enum MouseType {
 **	This structure is used to control the box relief style drawn by
 **	the Draw_Box() function.
 */
-typedef struct {
-  int Filler;     // Center box fill color.
-  int Shadow;     // Shadow color (darker).
-  int Highlight;  // Highlight color (lighter).
-  int Corner;     // Corner color (transition).
-} BoxStyleType;
+struct BoxStyleType {
+  uint8_t Filler;     // Center box fill color.
+  uint8_t Shadow;     // Shadow color (darker).
+  uint8_t Highlight;  // Highlight color (lighter).
+  uint8_t Corner;     // Corner color (transition).
+};
 
-typedef enum BoxStyleEnum {
+enum BoxStyleEnum {
   BOXSTYLE_DOWN,        // Typical depressed edge border.
   BOXSTYLE_RAISED,      // Typical raised edge border.
   BOXSTYLE_DIS_DOWN,    // Disabled but depressed.
   BOXSTYLE_DIS_RAISED,  // Disabled but raised.
   BOXSTYLE_BOX,         // list box.
   BOXSTYLE_BORDER,      // main dialog box.
-
-  BOXSTYLE_COUNT
-} BoxStyleEnum;
+};
 
 /**********************************************************************
 **	Damage, as inflicted by projectiles, has different characteristics.

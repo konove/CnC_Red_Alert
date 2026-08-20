@@ -228,9 +228,11 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
     // address = ntohl (address);
 
     char temp[128];
-    sprintf(temp, "RA95: Found local address: %d.%d.%d.%d\n", address & 0xff,
-            (address & 0xff00) >> 8, (address & 0xff0000) >> 16,
-            (address & 0xff000000) >> 24);
+    snprintf(temp, sizeof(temp), "RA95: Found local address: %d.%d.%d.%d\n",
+             static_cast<int>(address & 0xff),
+             static_cast<int>((address & 0xff00) >> 8),
+             static_cast<int>((address & 0xff0000) >> 16),
+             static_cast<int>((address & 0xff000000) >> 24));
     OutputDebugString(temp);
 
     unsigned char* a = new unsigned char[4];

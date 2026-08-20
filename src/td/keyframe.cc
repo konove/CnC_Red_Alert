@@ -257,17 +257,17 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
       if (show_info) {
         char crap[128];
         sprintf(crap, "C&C95 - Big shape buffer is now %d Kb.\n",
-                BigShapeBufferLength / 1024);
+                static_cast<int>(BigShapeBufferLength / 1024));
         CCDebugString(crap);
 
         sprintf(crap, "C&C95 - %d Kb Used in big shape buffer.\n",
-                static_cast<unsigned>(BigShapeBufferPtr - BigShapeBufferStart) /
+                static_cast<int>(BigShapeBufferPtr - BigShapeBufferStart) /
                     1024);
         CCDebugString(crap);
 
         sprintf(crap, "C&C95 - %d Kb Used in theater shape buffer.\n",
-                static_cast<unsigned>(TheaterShapeBufferPtr -
-                                      TheaterShapeBufferStart) /
+                static_cast<int>(TheaterShapeBufferPtr -
+                                 TheaterShapeBufferStart) /
                     1024);
         CCDebugString(crap);
         show_info = false;

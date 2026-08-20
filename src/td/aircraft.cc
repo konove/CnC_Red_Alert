@@ -593,7 +593,7 @@ void AircraftClass::Write_INI(char* buffer) {
     if (!unit->IsInLimbo) {
       snprintf(uname, 10, "%03d", index);
       snprintf(buf, 128, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
-               unit->Class->IniName, unit->Health_Ratio(),
+               unit->Class->IniName, static_cast<int>(unit->Health_Ratio()),
                Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
                Mission_Name(unit->Mission));
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);

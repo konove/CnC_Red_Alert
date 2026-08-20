@@ -794,7 +794,7 @@ void Read_Setup_Options(RawFileClass* config_file) {
       */
       int i = 0;
       char* p = strtok(netbuf, ".");
-      int x;
+      unsigned int x = 0;
       while (p) {
         sscanf(p, "%x", &x);  // convert from hex string to int
         if (i < 4) {

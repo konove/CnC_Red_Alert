@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_CELL_H_
 #define CNC_RED_ALERT_RA_CELL_H_
 
+#include "base/types.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/foot.h"
@@ -183,10 +184,11 @@ class CellClass {
 
  public:
 #ifdef SORTDRAW
-  ObjectClass* Overlappers[10];
+  static constexpr base::ssize kOverlapperCount = 10;
 #else
-  ObjectClass* Overlappers[6];
+  static constexpr base::ssize kOverlapperCount = 6;
 #endif
+  ObjectClass* Overlappers[kOverlapperCount];
 
   /*
   **	This array of bit flags is used to indicate which sub positions

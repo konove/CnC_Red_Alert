@@ -50,6 +50,8 @@
 #include "td/mplayer.h"
 
 #include <algorithm>
+#include <bit>
+#include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -606,7 +608,10 @@ void Read_MultiPlayer_Settings() {
     SerialDefaults.ModemName[0] = 0;
   }
   WWGetPrivateProfileString("SerialDefaults", "Port", "0", buf, 5, buffer);
-  sscanf(buf, "%x", &SerialDefaults.Port);
+  unsigned int default_port = 0;
+  if (sscanf(buf, "%x", &default_port) == 1) {
+    SerialDefaults.Port = static_cast<int>(default_port);
+  }
   SerialDefaults.IRQ =
       WWGetPrivateProfileInt("SerialDefaults", "IRQ", -1, buffer);
   SerialDefaults.Baud =
@@ -742,7 +747,10 @@ void Read_MultiPlayer_Settings() {
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      sscanf(tokenptr, "%x", &phone->Settings.Port);
+      unsigned int port = 0;
+      if (sscanf(tokenptr, "%x", &port) == 1) {
+        phone->Settings.Port = static_cast<int>(port);
+      }
     } else {
       phone->Settings.Port = 0;
     }
@@ -862,7 +870,10 @@ void Read_MultiPlayer_Settings() {
     sscanf(buf, "%x", &TrapCoord);
 
     WWGetPrivateProfileString("SyncBug", "this", "0", buf, 80, buffer);
-    sscanf(buf, "%x", &TrapThis);
+    uintptr_t trap_this = 0;
+    if (sscanf(buf, "%" SCNxPTR, &trap_this) == 1) {
+      TrapThis = std::bit_cast<void*>(trap_this);
+    }
 
     WWGetPrivateProfileString("SyncBug", "Cell", "0", buf, 80, buffer);
     cell = atoi(buf);
@@ -934,7 +945,7 @@ void Write_MultiPlayer_Settings() {
   WWWritePrivateProfileInt("SerialDefaults", "Baud", SerialDefaults.Baud,
                            buffer);
   WWWritePrivateProfileInt("SerialDefaults", "IRQ", SerialDefaults.IRQ, buffer);
-  sprintf(buf, "%x", SerialDefaults.Port);
+  sprintf(buf, "%x", static_cast<unsigned int>(SerialDefaults.Port));
   WWWritePrivateProfileString("SerialDefaults", "Port", buf, buffer);
   WWWritePrivateProfileString("SerialDefaults", "ModemName",
                               SerialDefaults.ModemName, buffer);
@@ -969,8 +980,9 @@ void Write_MultiPlayer_Settings() {
   Format: Entry=Name,PhoneNum,Port,IRQ,Baud,InitString
   ------------------------------------------------------------------------*/
   for (i = PhoneBook.Count() - 1; i >= 0; i--) {
-    sprintf(buf, "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s", PhoneBook[i]->Name,
-            PhoneBook[i]->Number, PhoneBook[i]->Settings.Port,
+    snprintf(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
+             PhoneBook[i]->Name, PhoneBook[i]->Number,
+             static_cast<unsigned int>(PhoneBook[i]->Settings.Port),
             PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
             PhoneBook[i]->Settings.Compression,
             PhoneBook[i]->Settings.ErrorCorrection,

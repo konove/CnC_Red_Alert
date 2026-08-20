@@ -694,7 +694,8 @@ void Write_Scenario_Ini(char* root) {
       file.Read(buffer, _ShapeBufferSize - 1);
       //		file.Close();
     } else {
-      sprintf(buffer, "; Scenario %d control for house %s.\r\n", Scenario,
+      sprintf(buffer, "; Scenario %d control for house %s.\r\n",
+              static_cast<int>(Scenario),
               HouseTypeClass::As_Reference(house).IniName);
     }
 

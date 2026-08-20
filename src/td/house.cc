@@ -1911,8 +1911,9 @@ void HouseClass::Make_Ally(HousesType house) {
         }
       }
 
-      sprintf(buffer, Text_String(TXT_HAS_ALLIED), Name,
-              As_Pointer(house)->Name);
+      Format_Runtime_Text(buffer, sizeof(buffer),
+                          Text_String(TXT_HAS_ALLIED), Name,
+                          As_Pointer(house)->Name);
       Messages.Add_Message(buffer, MPlayerTColors[RemapColor],
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                            1200, 0, 0);
@@ -1948,7 +1949,8 @@ void HouseClass::Make_Enemy(HousesType house) {
     if ((Debug_Flag || GameToPlay != GAME_NORMAL) && !ScenarioInit) {
       char buffer[80];
 
-      sprintf(buffer, Text_String(TXT_AT_WAR), Name, enemy->Name);
+      Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR),
+                          Name, enemy->Name);
       Messages.Add_Message(buffer, MPlayerTColors[RemapColor],
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                            600, 0, 0);
@@ -3723,7 +3725,8 @@ void HouseClass::MPlayer_Defeated() {
     /*.....................................................................
     Pop up a message showing that I was defeated
     .....................................................................*/
-    sprintf(txt, Text_String(TXT_PLAYER_DEFEATED), MPlayerName);
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
+                        MPlayerName);
     Messages.Add_Message(txt, MPlayerTColors[MPlayerColorIdx],
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
                          0, 0);
@@ -3734,12 +3737,15 @@ void HouseClass::MPlayer_Defeated() {
     If it wasn't me, find out who was defeated
     ------------------------------------------------------------------------*/
     if (IsHuman) {
-      sprintf(txt, Text_String(TXT_PLAYER_DEFEATED), Text_String(TXT_UNKNOWN));
+      Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
+                          Text_String(TXT_UNKNOWN));
       id = 0;
       for (i = 0; i < MPlayerCount; i++) {
         house = MPlayerHouses[i];
         if (As_Pointer(house) == this) {
-          sprintf(txt, Text_String(TXT_PLAYER_DEFEATED), MPlayerNames[i]);
+          Format_Runtime_Text(txt, sizeof(txt),
+                              Text_String(TXT_PLAYER_DEFEATED),
+                              MPlayerNames[i]);
           id = MPlayerID[i];
         }
       }

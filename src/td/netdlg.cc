@@ -197,6 +197,10 @@ typedef enum {
   EV_MESSAGE,         // a message was received
 } JoinEventType;
 
+// Size of the heap buffers holding the "xxx's Game" entries of the game list:
+// a player name plus room for the surrounding text and brackets.
+constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 9;
+
 /*
 ******************************** Prototypes *********************************
 */
@@ -441,9 +445,11 @@ void Destroy_Connection(int id, int error) {
   ------------------------------------------------------------------------*/
   txt[0] = '\0';
   if (error == 1) {
-    sprintf(txt, Text_String(TXT_CONNECTION_LOST), Ipx.Connection_Name(id));
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_CONNECTION_LOST),
+                        Ipx.Connection_Name(id));
   } else if (error == 0) {
-    sprintf(txt, Text_String(TXT_LEFT_GAME), Ipx.Connection_Name(id));
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_LEFT_GAME),
+                        Ipx.Connection_Name(id));
   }
 
   if (strlen(txt)) {
@@ -1237,7 +1243,7 @@ static int Net_Join_Dialog() {
 
           p = Text_String(TXT_LEVEL);
           if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-            sprintf(txt, "%s %d", p, BuildLevel);
+            sprintf(txt, "%s %d", p, static_cast<int>(BuildLevel));
           } else {
             sprintf(txt, "%s **", p);
           }
@@ -1653,8 +1659,9 @@ static int Net_Join_Dialog() {
                     Ipx.Service();
                   }
 
-                  sprintf(txt, Text_String(TXT_FROM), MPlayerName,
-                          GPacket.Message.Buf);
+                  Format_Runtime_Text(txt, sizeof(txt),
+                                      Text_String(TXT_FROM), MPlayerName,
+                                      GPacket.Message.Buf);
                   Messages.Add_Message(
                       txt, MPlayerTColors[MPlayerColorIdx],
                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
@@ -2357,9 +2364,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         if (Games[i]->Game.IsOpen != GPacket.GameInfo.IsOpen) {
           item = (char*)gamelist->Get_Item(i);
           if (GPacket.GameInfo.IsOpen) {
-            sprintf(item, Text_String(TXT_THATGUYS_GAME), GPacket.Name);
+            Format_Runtime_Text(item, kGameListItemSize,
+                                Text_String(TXT_THATGUYS_GAME), GPacket.Name);
           } else {
-            sprintf(item, Text_String(TXT_THATGUYS_GAME_BRACKET), GPacket.Name);
+            Format_Runtime_Text(item, kGameListItemSize,
+                                Text_String(TXT_THATGUYS_GAME_BRACKET),
+                                GPacket.Name);
           }
           Games[i]->Game.IsOpen = GPacket.GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
@@ -2394,11 +2404,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       Create a string for "xxx's Game", leaving room for brackets around
       the string if it's a closed game
       ..................................................................*/
-      item = new char[MPLAYER_NAME_MAX + 9];
+      item = new char[kGameListItemSize];
       if (GPacket.GameInfo.IsOpen) {
-        sprintf(item, Text_String(TXT_THATGUYS_GAME), GPacket.Name);
+        Format_Runtime_Text(item, kGameListItemSize,
+                            Text_String(TXT_THATGUYS_GAME), GPacket.Name);
       } else {
-        sprintf(item, Text_String(TXT_THATGUYS_GAME_BRACKET), GPacket.Name);
+        Format_Runtime_Text(item, kGameListItemSize,
+                            Text_String(TXT_THATGUYS_GAME_BRACKET),
+                            GPacket.Name);
       }
       gamelist->Add_Item(item);
 
@@ -2650,7 +2663,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   NET_MESSAGE: Someone is sending us a message
   ------------------------------------------------------------------------*/
   else if (GPacket.Command == NET_MESSAGE) {
-    sprintf(txt, Text_String(TXT_FROM), GPacket.Name, GPacket.Message.Buf);
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM), GPacket.Name,
+                        GPacket.Message.Buf);
     magic_number =
         *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
     crc = *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
@@ -3199,7 +3213,7 @@ static int Net_New_Dialog() {
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d", BuildLevel);
+          sprintf(txt, "%d", static_cast<int>(BuildLevel));
         } else {
           sprintf(txt, "**");
         }
@@ -3315,7 +3329,7 @@ static int Net_New_Dialog() {
                              d_level_y + 6 * factor, BLACK);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d", BuildLevel);
+          sprintf(txt, "%d", static_cast<int>(BuildLevel));
         } else {
           sprintf(txt, "**");
         }
@@ -3644,8 +3658,8 @@ static int Net_New_Dialog() {
             Add the message to our own list, since we're not in the player list
             on this dialog.
             ..................................................................*/
-            sprintf(txt, Text_String(TXT_FROM), MPlayerName,
-                    GPacket.Message.Buf);
+            Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
+                                MPlayerName, GPacket.Message.Buf);
             Messages.Add_Message(
                 txt, MPlayerTColors[MPlayerColorIdx],
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -4028,7 +4042,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   NET_MESSAGE: Someone is sending us a message
   ------------------------------------------------------------------------*/
   else if (GPacket.Command == NET_MESSAGE) {
-    sprintf(txt, Text_String(TXT_FROM), GPacket.Name, GPacket.Message.Buf);
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM), GPacket.Name,
+                        GPacket.Message.Buf);
     magic_number =
         *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
     crc = *(unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
@@ -4119,11 +4134,15 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     if (reconn) {
       id = Ipx.Connection_ID(oldest_index);
-      sprintf(buf1, Text_String(TXT_RECONNECTING_TO), Ipx.Connection_Name(id));
+      Format_Runtime_Text(buf1, sizeof(buf1),
+                          Text_String(TXT_RECONNECTING_TO),
+                          Ipx.Connection_Name(id));
     } else {
-      sprintf(buf1, Text_String(TXT_WAITING_FOR_CONNECTIONS));
+      snprintf(buf1, sizeof(buf1), "%s",
+               Text_String(TXT_WAITING_FOR_CONNECTIONS));
     }
-    sprintf(buf2, Text_String(TXT_TIME_ALLOWED), timeval + 1);
+    Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
+                        timeval + 1);
     buf3 = Text_String(TXT_PRESS_ESC);
 
     w = std::max<int>(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
@@ -4159,7 +4178,8 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
     Hide_Mouse();
     Set_Logic_Page(SeenBuff);
 
-    sprintf(buf2, Text_String(TXT_TIME_ALLOWED), timeval + 1);
+    Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
+                        timeval + 1);
     int pixwidth = String_Pixel_Width(buf2);
     LogicPage->Fill_Rect(160 * factor - pixwidth / 2 - 12,
                          y + d_margin * 2 + d_txt6_h + d_margin,
@@ -4418,7 +4438,8 @@ static int Net_Fake_New_Dialog() {
   }
 
   char a_buffer[128];
-  sprintf(a_buffer, "Number of players:%d", Players.Count());
+  snprintf(a_buffer, sizeof(a_buffer), "Number of players:%d",
+           static_cast<int>(Players.Count()));
   CCDebugString(a_buffer);
 
 #ifdef VIRTUAL_SUBNET_SERVER
@@ -4979,7 +5000,8 @@ static int Net_Fake_Join_Dialog() {
   }
 
   char a_buffer[128];
-  sprintf(a_buffer, "C&C95 - Number of players:%d\n", Players.Count());
+  snprintf(a_buffer, sizeof(a_buffer), "C&C95 - Number of players:%d\n",
+           static_cast<int>(Players.Count()));
   CCDebugString(a_buffer);
 
   /*

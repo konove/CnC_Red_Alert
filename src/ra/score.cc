@@ -67,6 +67,7 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/interpal.h"
+#include "ra/jshell.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
 #include "ra/nullmgr.h"
@@ -1161,10 +1162,11 @@ void ScoreClass::Print_Minutes(int minutes) {
     if (minutes / 60 > 9) {
       minutes = 9 * 60 + 59;
     }
-    sprintf(str, Text_String(TXT_SCORE_TIMEFORMAT1), minutes / 60,
-            minutes % 60);
+    Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT1),
+                        minutes / 60, minutes % 60);
   } else {
-    sprintf(str, Text_String(TXT_SCORE_TIMEFORMAT2), minutes);
+    Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT2),
+                        minutes);
   }
   SeenPage.Print(str, 550, 18, TBLACK, TBLACK);
 }
@@ -1193,7 +1195,8 @@ void ScoreClass::Count_Up_Print(char* str, int percent, int maxval, int xpos,
                                 int ypos) {
   char destbuf[64];
 
-  sprintf(destbuf, str, percent <= maxval ? percent : maxval);
+  Format_Runtime_Text(destbuf, sizeof(destbuf), str,
+                      percent <= maxval ? percent : maxval);
   SeenPage.Print(destbuf, xpos * 2, ypos * 2, TBLACK, BLACK);
 }
 

@@ -51,8 +51,12 @@
 
 #include "ra/event.h"
 
+#include <cinttypes>
 #include <cstdio>
+#include <string>
 
+#include "absl/log/log.h"
+#include "absl/strings/str_format.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -475,15 +479,13 @@ EventClass::EventClass(EventType type, void* ptr, unsigned long size) {
 void EventClass::Execute() {
   TechnoClass* techno;
   AnimClass* anim = nullptr;
-  HouseClass* house = nullptr;
   //	CELL cell = 0;
-  char txt[80];
   bool formation = false;
   //	RTTIType rt;
 
   if (Debug_Print_Events) {
-    printf("(%d) Executing %s ID:%d Frame:%d ", ::Frame, EventNames[Type], ID,
-           Frame);
+    printf("(%" PRId64 ") Executing %s ID:%d Frame:%d ", ::Frame,
+           EventNames[Type], ID, Frame);
   }
 
   switch (Type) {
@@ -500,8 +502,8 @@ void EventClass::Execute() {
     /*
     **	Make or break alliance.
     */
-    case ALLY:
-      house = Houses.Raw_Ptr(Data.General.Value);
+    case ALLY: {
+      HouseClass* house = Houses.Raw_Ptr(Data.General.Value);
       if (Houses.Raw_Ptr(ID)->Is_Ally(house)) {
         Houses.Raw_Ptr(ID)->Make_Enemy(
             static_cast<HousesType>(Data.General.Value));
@@ -509,7 +511,7 @@ void EventClass::Execute() {
         Houses.Raw_Ptr(ID)->Make_Ally(
             static_cast<HousesType>(Data.General.Value));
       }
-      break;
+    } break;
 
     /*
     **	Special self destruct action requested. This is active in the
@@ -529,10 +531,18 @@ void EventClass::Execute() {
       Special = Data.Options.Data;
       HouseClass* house = Houses.Raw_Ptr(ID);
 
-      sprintf(txt, Text_String(TXT_SPECIAL_WARNING), house->Name());
-      Session.Messages.Add_Message(
-          nullptr, 0, txt, house->RemapColor,
-          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200);
+      // The format string comes from the localized string table, so verify the
+      // translation still takes exactly one %s before using it.
+      auto format =
+          absl::ParsedFormat<'s'>::New(Text_String(TXT_SPECIAL_WARNING));
+      if (format != nullptr) {
+        std::string message = absl::StrFormat(*format, house->Name());
+        Session.Messages.Add_Message(
+            nullptr, 0, message.c_str(), house->RemapColor,
+            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200);
+      } else {
+        DLOG(WARNING) << "TXT_SPECIAL_WARNING is not a single-%s format string";
+      }
       Map.Flag_To_Redraw(false);
     } break;
 
@@ -656,9 +666,10 @@ void EventClass::Execute() {
 
     case MEGAMISSION:
       if (Debug_Print_Events) {
-        printf("Whom:%x Tgt:%x Dest:%x ", Data.MegaMission.Whom.As_TARGET(),
-               Data.MegaMission.Target.As_TARGET(),
-               Data.MegaMission.Destination.As_TARGET());
+        printf("Whom:%x Tgt:%x Dest:%x ",
+               static_cast<unsigned>(Data.MegaMission.Whom.As_TARGET()),
+               static_cast<unsigned>(Data.MegaMission.Target.As_TARGET()),
+               static_cast<unsigned>(Data.MegaMission.Destination.As_TARGET()));
       }
       techno = Data.MegaMission.Whom.As_Techno();
       if (techno != nullptr && techno->IsActive && techno->Strength > 0 &&
@@ -955,7 +966,7 @@ void EventClass::Execute() {
 #endif  // _WIN32
 #endif  //	!WOLAPI_INTEGRATION
       if (Debug_Print_Events) {
-        printf("DesiredFrameRate:%d MaxAhead:%d ", Session.DesiredFrameRate,
+        printf("DesiredFrameRate:%d MaxAhead:%lu ", Session.DesiredFrameRate,
                Session.MaxAhead);
       }
 
@@ -994,19 +1005,25 @@ void EventClass::Execute() {
           Scen.bOtherProposesDraw = true;
           break;
         }
-        char szMessage[100];
+        std::string message;
+        // The format string lives in the localized string table, so verify the
+        // translation still takes exactly one %s before using it.
+        auto format = absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_PROPOSED_OTHER);
         for (i = 0; i < Session.Players.Count(); i++) {
           if (ID == Session.Players[i]->Player.ID) {
-            sprintf(szMessage, TXT_WOL_DRAW_PROPOSED_OTHER,
-                    Session.Players[i]->Name);
+            if (format != nullptr) {
+              message = absl::StrFormat(*format, Session.Players[i]->Name);
+            }
             break;
           }
         }
         Scen.bOtherProposesDraw = true;
-        Session.Messages.Add_Message(
-            nullptr, 0, szMessage, PCOLOR_GOLD,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            Rule.MessageDelay * TICKS_PER_MINUTE);
+        if (!message.empty()) {
+          Session.Messages.Add_Message(
+              nullptr, 0, message.c_str(), PCOLOR_GOLD,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+              Rule.MessageDelay * TICKS_PER_MINUTE);
+        }
       }
       Sound_Effect(VOC_INCOMING_MESSAGE);
       break;
@@ -1019,19 +1036,26 @@ void EventClass::Execute() {
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             Rule.MessageDelay * TICKS_PER_MINUTE);
       } else {
-        char szMessage[100];
+        std::string message;
+        // The format string lives in the localized string table, so verify the
+        // translation still takes exactly one %s before using it.
+        auto format =
+            absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_RETRACTED_OTHER);
         for (i = 0; i < Session.Players.Count(); i++) {
           if (ID == Session.Players[i]->Player.ID) {
-            sprintf(szMessage, TXT_WOL_DRAW_RETRACTED_OTHER,
-                    Session.Players[i]->Name);
+            if (format != nullptr) {
+              message = absl::StrFormat(*format, Session.Players[i]->Name);
+            }
             break;
           }
         }
         Scen.bOtherProposesDraw = false;
-        Session.Messages.Add_Message(
-            nullptr, 0, szMessage, PCOLOR_GOLD,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            Rule.MessageDelay * TICKS_PER_MINUTE);
+        if (!message.empty()) {
+          Session.Messages.Add_Message(
+              nullptr, 0, message.c_str(), PCOLOR_GOLD,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+              Rule.MessageDelay * TICKS_PER_MINUTE);
+        }
       }
       Sound_Effect(VOC_INCOMING_MESSAGE);
       break;

@@ -1759,13 +1759,13 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       int i = 0;
       char* p = strtok(string + 8, ".");
       while (p) {
-        int x;
+        unsigned int x = 0;
 
         sscanf(p, "%x", &x);  // convert from hex string to int
         if (i < 4) {
-          net[i] = static_cast<char>(x);  // fill NetNum
+          net[i] = static_cast<unsigned char>(x);  // fill NetNum
         } else {
-          node[i - 4] = static_cast<char>(x);  // fill NetNode
+          node[i - 4] = static_cast<unsigned char>(x);  // fill NetNode
         }
         i++;
         p = strtok(nullptr, ".");

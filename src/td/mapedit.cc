@@ -1870,7 +1870,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
  *=========================================================================*/
 void MapEditClass::Fatal(int txt) {
   Prog_End();
-  printf("%s\n", txt);
+  printf("%s\n", Text_String(txt));
   exit(EXIT_FAILURE);
 }
 

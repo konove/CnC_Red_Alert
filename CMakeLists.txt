@@ -111,6 +111,10 @@ else ()
                     -Wno-sign-conversion
                     -Wno-old-style-cast
                     -Wno-padded
+                    # -Wswitch-enum wants every enumerator listed, while GCC's
+                    # -Wswitch-default wants a default label. Clang flags that
+                    # combination as redundant; the GCC requirement wins.
+                    -Wno-covered-switch-default
             )
         endif ()
     else ()

@@ -180,6 +180,7 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/ipxmgr.h"
+#include "ra/jshell.h"
 #include "ra/logic.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
@@ -2315,8 +2316,9 @@ void HouseClass::Make_Ally(HousesType house) {
       }
 
       if (IsHuman) {
-        sprintf(buffer, Text_String(TXT_HAS_ALLIED), IniName,
-                As_Pointer(house)->IniName);
+        Format_Runtime_Text(buffer, sizeof(buffer),
+                            Text_String(TXT_HAS_ALLIED), IniName,
+                            As_Pointer(house)->IniName);
         //				sprintf(buffer,
         // Text_String(TXT_HAS_ALLIED), Session.Players[Class->House -
         // HOUSE_MULTI1]->Name,
@@ -2383,8 +2385,8 @@ void HouseClass::Make_Enemy(HousesType house) {
         IsHuman) {
       char buffer[80];
 
-      sprintf(buffer, Text_String(TXT_AT_WAR), IniName,
-              As_Pointer(house)->IniName);
+      Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR),
+                          IniName, As_Pointer(house)->IniName);
       //			sprintf(buffer, Text_String(TXT_AT_WAR),
       // Session.Players[Class->House - HOUSE_MULTI1]->Name,
       // Session.Players[enemy->Class->House - HOUSE_MULTI1]->Name);
@@ -3665,7 +3667,8 @@ void HouseClass::MPlayer_Defeated() {
     /*
     **	Pop up a message showing that I was defeated
     */
-    sprintf(txt, Text_String(TXT_PLAYER_DEFEATED), IniName);
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
+                        IniName);
     Session.Messages.Add_Message(
         nullptr, 0, txt, Session.ColorIdx,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -3677,7 +3680,8 @@ void HouseClass::MPlayer_Defeated() {
     **	If it wasn't me, find out who was defeated
     */
     if (IsHuman) {
-      sprintf(txt, Text_String(TXT_PLAYER_DEFEATED), IniName);
+      Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
+                          IniName);
 
       Session.Messages.Add_Message(
           nullptr, 0, txt, RemapColor,

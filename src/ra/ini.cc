@@ -770,15 +770,17 @@ bool INIClass::Put_Int(const char* section, const char* entry, int number,
   switch (format) {
     default:
     case 0:
-      sprintf(buffer, "%d", number);
+      snprintf(buffer, sizeof(buffer), "%d", number);
       break;
 
     case 1:
-      sprintf(buffer, "%Xh", number);
+      snprintf(buffer, sizeof(buffer), "%Xh",
+               static_cast<unsigned int>(number));
       break;
 
     case 2:
-      sprintf(buffer, "$%X", number);
+      snprintf(buffer, sizeof(buffer), "$%X",
+               static_cast<unsigned int>(number));
       break;
   }
   return Put_String(section, entry, buffer);
@@ -817,11 +819,17 @@ int INIClass::Get_Int(const char* section, const char* entry,
 
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr && entryptr->Value != nullptr) {
+    unsigned int value = 0;
+
     if (*entryptr->Value == '$') {
-      sscanf(entryptr->Value, "$%x", &defvalue);
+      if (sscanf(entryptr->Value, "$%x", &value) == 1) {
+        defvalue = static_cast<int>(value);
+      }
     } else {
       if (tolower(entryptr->Value[strlen(entryptr->Value) - 1]) == 'h') {
-        sscanf(entryptr->Value, "%xh", &defvalue);
+        if (sscanf(entryptr->Value, "%xh", &value) == 1) {
+          defvalue = static_cast<int>(value);
+        }
       } else {
         defvalue = atoi(entryptr->Value);
       }
@@ -855,7 +863,7 @@ int INIClass::Get_Int(const char* section, const char* entry,
 bool INIClass::Put_Hex(const char* section, const char* entry, int number) {
   char buffer[MAX_LINE_LENGTH];
 
-  sprintf(buffer, "%X", number);
+  snprintf(buffer, sizeof(buffer), "%X", static_cast<unsigned int>(number));
   return Put_String(section, entry, buffer);
 }
 
@@ -894,7 +902,10 @@ int INIClass::Get_Hex(const char* section, const char* entry,
 
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr && entryptr->Value != nullptr) {
-    sscanf(entryptr->Value, "%x", &defvalue);
+    unsigned int value = 0;
+    if (sscanf(entryptr->Value, "%x", &value) == 1) {
+      defvalue = static_cast<int>(value);
+    }
   }
   return defvalue;
 }

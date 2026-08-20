@@ -3577,7 +3577,7 @@ void UnitClass::Write_INI(char* buffer) {
     if (!unit->IsInLimbo && unit->IsActive) {
       sprintf(uname, "%03d", index);
       sprintf(buf, "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
-              unit->Class->IniName, unit->Health_Ratio(),
+              unit->Class->IniName, static_cast<int>(unit->Health_Ratio()),
               Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
               Mission_Name(unit->Mission),
               unit->Trigger ? unit->Trigger->Get_Name() : "None");

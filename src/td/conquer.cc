@@ -879,7 +879,8 @@ static void Message_Input(KeyNumType& input) {
             if (input - KN_F1 < Ipx.Num_Connections() && !MPlayerObiWan) {
               id = Ipx.Connection_ID(input - KN_F1);
               MessageAddress = *Ipx.Connection_Address(id);
-              sprintf(txt, Text_String(TXT_TO), Ipx.Connection_Name(id));
+              Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_TO),
+                                  Ipx.Connection_Name(id));
 
               Messages.Add_Edit(
                   MPlayerTColors[MPlayerColorIdx],
@@ -1261,8 +1262,8 @@ void Call_Back() {
               }
 
               if (msg_ok) {
-                sprintf(txt, Text_String(TXT_FROM), GPacket.Name,
-                        GPacket.Message.Buf);
+                Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
+                                    GPacket.Name, GPacket.Message.Buf);
                 magic_number = *(unsigned short*)(GPacket.Message.Buf +
                                                   COMPAT_MESSAGE_LENGTH - 4);
                 crc = *(unsigned short*)(GPacket.Message.Buf +
@@ -3213,13 +3214,15 @@ bool Force_CD_Available(int cd) {
       **	Prompt to insert the CD into the drive.
       */
       if (cd == -1) {
-        sprintf(buffer, Text_String(TXT_CD_DIALOG_1));
+        snprintf(buffer, sizeof(buffer), "%s", Text_String(TXT_CD_DIALOG_1));
       } else {
         if (cd == 2) {
-          sprintf(buffer, Text_String(TXT_CD_DIALOG_3));
+          snprintf(buffer, sizeof(buffer), "%s", Text_String(TXT_CD_DIALOG_3));
         } else {
           // 0 or 1?
-          sprintf(buffer, Text_String(TXT_CD_DIALOG_2), cd + 1, _volid[cd]);
+          Format_Runtime_Text(buffer, sizeof(buffer),
+                              Text_String(TXT_CD_DIALOG_2), cd + 1,
+                              _volid[cd]);
         }
       }
       GraphicViewPortClass* oldpage = Set_Logic_Page(SeenBuff);

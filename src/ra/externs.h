@@ -353,8 +353,8 @@ extern int CurrentCD;
 extern int MouseInstalled;
 
 extern int LogLevel;
-extern unsigned long LogLevelTime[MAX_LOG_LEVEL];
-extern unsigned long LogLastTime;
+extern int64_t LogLevelTime[MAX_LOG_LEVEL];
+extern int64_t LogLastTime;
 
 extern DynamicVectorClass<EventChoiceClass> test2;
 extern DynamicVectorClass<ActionChoiceClass> test3;

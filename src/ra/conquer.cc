@@ -85,6 +85,7 @@
 #include <vector>
 
 #include "absl/log/log.h"
+#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -1164,7 +1165,13 @@ static void Message_Input(KeyNumType& input) {
 #endif
         id = Ipx.Connection_ID(input - KN_F1);
         Session.MessageAddress = *Ipx.Connection_Address(id);
-        sprintf(txt, Text_String(TXT_TO), Ipx.Connection_Name(id));
+        // TXT_TO comes from the localized string table, so verify the
+        // translation still takes exactly one %s before using it.
+        auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
+        if (format != nullptr) {
+          port::SafeCopy(
+              txt, absl::StrFormat(*format, Ipx.Connection_Name(id)).c_str());
+        }
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -4073,13 +4080,17 @@ bool Force_CD_Available(int cd_desired)  //	ajw
         sprintf(buffer, "Please insert the %s", _cd_name[cd_desired]);
 #endif
 #endif
-      } else if (cd_desired == CD_ANY) {
-        sprintf(buffer, Text_String(TXT_CD_DIALOG_1), cd_desired + 1,
-                _cd_name[cd_desired]);
-      } else  //	0 or 1
-      {
-        sprintf(buffer, Text_String(TXT_CD_DIALOG_2), cd_desired + 1,
-                _cd_name[cd_desired]);
+      } else {
+        // These prompts come from the localized string table, so verify the
+        // translation still takes a %d followed by a %s before using it.
+        const int text = (cd_desired == CD_ANY) ? TXT_CD_DIALOG_1
+                                                : TXT_CD_DIALOG_2;  // 0 or 1
+        auto format = absl::ParsedFormat<'d', 's'>::New(Text_String(text));
+        if (format != nullptr) {
+          port::SafeCopy(buffer, absl::StrFormat(*format, cd_desired + 1,
+                                                 _cd_name[cd_desired])
+                                     .c_str());
+        }
       }
 
       GraphicViewPortClass* oldpage = Set_Logic_Page(SeenBuff);
