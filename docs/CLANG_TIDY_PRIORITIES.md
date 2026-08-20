@@ -2,11 +2,14 @@
 
 ## Overview
 
-`.clang-tidy` enables all checks (`'*'`) and then disables **275** of them. This document prioritizes which of those 275
+`.clang-tidy` enables all checks (`'*'`) and then disables **260** of them. This document prioritizes which of those 260
 to re-enable, ordered by **measured bug yield per unit of fix effort**.
 
 Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
 (see [Methodology](#methodology)). Every count in the tables is a real diagnostic site in this repository.
+
+**Tier 1 is complete.** All ten rows of its table (13 checks) are enabled and their sites cleared; see
+[Progress](#progress). The next work is §1.1, §1.2 and Tier 1.5.
 
 ### Two facts that shape everything below
 
@@ -34,7 +37,25 @@ clang-tidy -p cmake-build-strict-ra-clang --quiet \
 sample deliberately favours large, busy files, so treat 10× as an upper bound for `src/ra` — and note `src/td` (294
 files) will contribute its own, largely parallel, set.
 
-Last measured: 2026-07-25, clang-tidy 21.1.8.
+⚠️ **The 10× rule held for effort, not for counts.** Now that Tier 1 has actually been cleared, the sample turns out to
+be a poor predictor of volume:
+
+| Check                                  | Sample said | Tree-wide actual                     |
+|----------------------------------------|-------------|--------------------------------------|
+| `clang-diagnostic-writable-strings`    | 9           | **357** diagnostics over 244 lines   |
+| `bugprone-suspicious-enum-usage`       | 1           | **617** call sites                   |
+| `clang-diagnostic-format`              | 10          | ~160                                 |
+| `bugprone-too-small-loop-variable`     | 5           | 36 loops                             |
+| `bugprone-suspicious-string-compare`   | 1           | 13                                   |
+
+Two effects the sample could not see. First, it contains no `src/td` files, and TD carries a near-duplicate copy of
+most of this code — `writable-strings` landed 115 sites in RA against 241 in TD. Second, a single declaration can
+carry an unbounded number of sites: `td/globals.cc` alone accounts for 126 of the 357 `writable-strings` diagnostics
+because `SerialPacketNames[]` is a 100-entry table of literals. Use the sample to rank checks, not to budget them.
+
+What did hold: every Tier 1 check was cheap *per site*, and each one paid for itself in real bugs.
+
+Last measured: 2026-07-25, clang-tidy 21.1.8. Tier 1 outcomes measured as each check was enabled (through 2026-08-19).
 
 ---
 
@@ -61,7 +82,39 @@ Genuinely done and confirmed enabled: `clang-diagnostic-suggest-override`, `-ret
 
 ---
 
+## Progress
+
+Tier 1 is done. Each check was enabled in its own commit, with every site it flagged cleared first, so `main` has never
+been red on an enabled check.
+
+| Check                                                    | Commit     | Outcome                                                                          |
+|----------------------------------------------------------|------------|----------------------------------------------------------------------------------|
+| `clang-diagnostic-int-in-bool-context`                   | `f7552ee3` | The `house.cc` `Make_Enemy` bug below; that was its only site tree-wide           |
+| `bugprone-suspicious-memory-comparison`                  | `aee456e6` | `EventClass::operator==` (padding + union, both games) deleted — it had no callers; `CellClass::Should_Save` never worked at all |
+| `clang-analyzer-security.ArrayBound`                     | `2cc33f7a` | 4 real out-of-bounds accesses, incl. `buttons[-1]` in TD's multiplayer menu       |
+| `bugprone-suspicious-enum-usage`                         | `6a792756` | 617 sites via a new `ButtonKey()` helper; exposed the Alt+W cheat comparing `KA_W` instead of `KN_W`, so it never fired |
+| `bugprone-too-small-loop-variable`                       | `c4571d27` | 36 map loops; `MAP_CELL_W/H/TOTAL` retyped as `CELL` so they cannot regress       |
+| `bugprone-signed-char-misuse`                            | `c4f61444` | 4 sign-extension bugs, incl. a truncated PCX RLE run and a read before `IsTranslucent[]` |
+| `bugprone-multi-level-implicit-pointer-conversion`       | `f7c93bc9` | `XMP_Is_Small_Prime` bsearching a stack address; `KeyFrameSlots` clearing half its allocation on 64-bit; `Stop_Speaking` never matching |
+| `clang-diagnostic-format` (+ `-nonliteral`, `-security`, `-signedness`) | `b1e57f20` | ~160 sites; runtime-only formats now funnel through `Format_Runtime_Text` in `jshell.h` |
+| `clang-diagnostic-writable-strings`                      | `dd96637d` | 357 diagnostics; mostly mechanical `const`, but 3 were live writes into string literals |
+| `bugprone-suspicious-string-compare`                     | `d58e3977` | 13 sites, all `!= 0`; no behaviour change                                        |
+
+Two lessons worth carrying into the next tier:
+
+- **A "mechanical" check is not automatically safe.** `writable-strings` looked like a pure `const` sweep, yet three
+  sites were genuinely writing through a literal: `Format_Window_String` rewrites its buffer in place, `TextLabelClass`
+  stores the pointer in a non-const member, and TD's serial dialog `strncpy`s into `CallWaitStrings[CALL_WAIT_CUSTOM]`.
+  Adding `const` to those would have moved the error, not fixed it. Read what the callee does before const-ing the
+  caller.
+- **RA and TD diverge.** RA's copy of that same call-waiting loop had already been reworked to `std::string`, so the two
+  ports needed opposite fixes. Never assume a fix ports across verbatim.
+
+---
+
 ## TIER 1: Enable now — real bugs, negligible volume
+
+> **Status: complete.** Retained for the reasoning; the per-check outcomes are in [Progress](#progress).
 
 The measurement found a **live bug in shipped logic** on its first pass, `src/ra/house.cc:2367`:
 
@@ -75,8 +128,8 @@ void HouseClass::Make_Enemy(HousesType house) {
 ```
 
 `1L << house` is always non-zero, so `!(...)` is `0` and the statement clears **every** ally bit instead of one. It is
-caught by `clang-diagnostic-int-in-bool-context`, which is currently disabled and has exactly one hit in the entire
-sample.
+caught by `clang-diagnostic-int-in-bool-context`, which had exactly one hit in the entire sample — and, as it turned
+out, exactly one in the entire tree. Fixed in `f7552ee3`.
 
 | Check                                                    | Sample | What it caught                                                                                                        |
 |----------------------------------------------------------|--------|-----------------------------------------------------------------------------------------------------------------------|
@@ -88,10 +141,12 @@ sample.
 | `bugprone-signed-char-misuse` (`cert-str34-c`)           | 7      | `signed char`→`int` on file/INI data (`display.cc`, `infantry.cc`, `init.cc`)                                         |
 | `bugprone-multi-level-implicit-pointer-conversion`       | 5      | `ObjectClass**`→`void*` in `saveload.cc`, `cell.cc` — the save/load memcpy paths                                      |
 | `clang-diagnostic-format`                                | 10     | genuine `printf`/`scanf` type mismatches in `ini.cc`, `radar.cc`, `init.cc`                                           |
-| `clang-diagnostic-writable-strings`                      | 9      | string literal → `char*`; mechanical `const` fix                                                                      |
+| `clang-diagnostic-writable-strings`                      | 9      | string literal → `char*`; mostly a mechanical `const` fix                                                             |
 | `bugprone-suspicious-string-compare`                     | 1      | `stricmp` result used without comparison (`scenario.cc:1923`)                                                         |
 
-Total fix surface: **~41 sites in the sample**, realistically a few hundred tree-wide, most of them one-line changes.
+The sample predicted **~41 sites**, "realistically a few hundred tree-wide". Clearing the tier actually touched **206
+files under `src/`** and well over a thousand sites — see the volume caveat under [Methodology](#methodology). The
+estimate of *cost per site* was right; the estimate of *site count* was not.
 
 ### 1.1 Free guards — zero hits, zero fix cost
 
@@ -213,12 +268,19 @@ globally.
 
 ## Action Plan
 
-### Phase A — Tier 1 (do now)
+### Phase A — Tier 1 ✅ done
 
-1. Fix `src/ra/house.cc:2367` (`!` → `~`) — it is a bug regardless of tooling.
-2. Un-disable the Tier 1 table + §1.1 free guards + §1.2 in `.clang-tidy`.
-3. Build `rasdl` **and** `tdsdl`; fix fallout. Expect the `src/td` tail to exceed the `src/ra` count.
-4. Re-run the sample command to confirm a clean pass.
+1. ~~Fix `src/ra/house.cc:2367` (`!` → `~`)~~ — done in `f7552ee3`.
+2. ~~Un-disable the Tier 1 table~~ — done, one check per commit; see [Progress](#progress).
+3. ~~Build `rasdl` **and** `tdsdl`; fix fallout.~~ The `src/td` tail did exceed `src/ra`, by roughly 2:1.
+4. **Still open:** the §1.1 free guards and §1.2 have *not* been enabled yet. They are the cheapest work left.
+
+### Phase A.2 — §1.1 free guards and §1.2 (do now)
+
+Zero hits in the sample, so the only cost is the tree-wide tail — which Tier 1 showed is real, and concentrated in
+`src/td`. Enable them in small batches rather than all 27 at once, so a surprise in one check does not block the rest.
+`bugprone-raw-memory-call-on-non-trivial-type` (§1.2) is the highest-value item in the entire document and should go
+first: it is the only automated guard on the `TFixedIHeapClass::Save/Load` memcpy contract.
 
 ### Phase B — Tier 1.5
 
@@ -256,9 +318,12 @@ Note `--warnings-as-errors=` (empty) to override the config's `WarningsAsErrors:
 
 ## Summary
 
-| Tier | Checks | Sample sites | Action                                        |
-|------|--------|--------------|-----------------------------------------------|
-| 1    | ~36    | ~41          | Enable now — confirmed bugs, cheap fixes      |
-| 1.5  | 5      | 42           | Enable after fixing `vector.h` / `listnode.h` |
-| 2    | 7      | 576          | Per-directory only, tied to type migration    |
-| 3    | ~230   | —            | Keep disabled                                 |
+| Tier      | Checks | Sample sites | Status                                                       |
+|-----------|--------|--------------|--------------------------------------------------------------|
+| 1 (table) | 13     | ~41          | ✅ **Done** — 206 files touched, 18 latent bugs surfaced      |
+| 1.1 + 1.2 | 27     | 0            | Next — free guards, but expect a `src/td` tail               |
+| 1.5       | 5      | 42           | Enable after fixing `vector.h` / `listnode.h`                |
+| 2         | 7      | 576          | Per-directory only, tied to type migration                   |
+| 3         | ~230   | —            | Keep disabled                                                |
+
+Disabled-check count: **275 → 260**.
