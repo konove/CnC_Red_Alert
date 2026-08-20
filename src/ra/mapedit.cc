@@ -1996,18 +1996,14 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
       **	Display the dialog box.
       */
       Hide_Mouse();
-      if (display) {
-        Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
-        //				Draw_Caption(caption, D_DIALOG_X,
-        // D_DIALOG_Y, D_DIALOG_W);
-      }
+      Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
+      //				Draw_Caption(caption, D_DIALOG_X,
+      // D_DIALOG_Y, D_DIALOG_W);
 
       /*
       **	Redraw the buttons.
       */
-      if (display) {
-        commands->Flag_List_To_Redraw();
-      }
+      commands->Flag_List_To_Redraw();
       Show_Mouse();
       display = false;
     }

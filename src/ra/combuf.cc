@@ -1004,7 +1004,7 @@ void CommBufferClass::Mono_Debug_Print(int refresh) {
   }
 
 #else
-  refresh = refresh;
+  (void)refresh;
 #endif
 } /* end of Mono_Debug_Print */
 
@@ -1234,7 +1234,7 @@ void CommBufferClass::Mono_Debug_Print2(int refresh) {
   }
 
 #else
-  refresh = refresh;
+  (void)refresh;
 #endif
 } /* end of Mono_Debug_Print2 */
 

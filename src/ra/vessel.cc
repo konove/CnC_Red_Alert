@@ -577,7 +577,7 @@ const short* VesselClass::Overlap_List(bool redraw) const {
     return Coord_Spillage_List(Coord, rect, true);
   }
 #else
-  redraw = redraw;
+  (void)redraw;
 #endif
 
   return Coord_Spillage_List(Coord, 56) + 1;

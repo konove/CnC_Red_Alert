@@ -221,7 +221,11 @@ void RandomStraw::Seed_Long(long seed) {
 void RandomStraw::Scramble_Seed() {
   SHAEngine sha;
 
-  for (int index = 0; index < sizeof(Random); index++) {
+  // The seed is scrambled a byte at a time, so the bound is the size of the
+  // whole array in bytes, not its element count.
+  constexpr int kSeedBytes = sizeof(Random);
+
+  for (int index = 0; index < kSeedBytes; index++) {
     char digest[20];
 
     sha.Hash(&Random[0], sizeof(Random));

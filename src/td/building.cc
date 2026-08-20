@@ -3533,7 +3533,7 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType) const {
 bool BuildingClass::Can_Demolish() const {
   Validate();
   if (Class->Get_Buildup_Data() && BState != BSTATE_CONSTRUCTION &&
-      !Mission != MISSION_DECONSTRUCTION && Mission != MISSION_CONSTRUCTION) {
+      Mission != MISSION_DECONSTRUCTION && Mission != MISSION_CONSTRUCTION) {
     return *this != STRUCT_REFINERY || !Is_Something_Attached();
   }
   return false;

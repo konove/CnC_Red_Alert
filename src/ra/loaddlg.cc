@@ -317,23 +317,19 @@ int LoadOptionsClass::Process() {
       **	Display the dialog box.
       */
       Hide_Mouse();
-      if (display) {
-        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-        Draw_Caption(caption, d_dialog_x, d_dialog_y, d_dialog_w);
+      Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+      Draw_Caption(caption, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        if (Style == SAVE) {
-          Fancy_Text_Print(TXT_MISSION_DESCRIPTION, d_dialog_cx,
-                           d_edit_y - d_txt8_h, GadgetClass::Get_Color_Scheme(),
-                           TBLACK, TPF_TEXT | TPF_CENTER);
-        }
+      if (Style == SAVE) {
+        Fancy_Text_Print(TXT_MISSION_DESCRIPTION, d_dialog_cx,
+                         d_edit_y - d_txt8_h, GadgetClass::Get_Color_Scheme(),
+                         TBLACK, TPF_TEXT | TPF_CENTER);
       }
 
       /*
       **	Redraw the buttons.
       */
-      if (display) {
-        commands->Flag_List_To_Redraw();
-      }
+      commands->Flag_List_To_Redraw();
       Show_Mouse();
       display = false;
     }

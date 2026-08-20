@@ -1561,7 +1561,6 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   // scenario-based CRC rather than a game-state-based CRC, to let the
   // games compare scenario CRC's on startup.
   //------------------------------------------------------------------------
-  memset(&packet, 0, sizeof(EventClass));
   packet.Type = EventClass::FRAMESYNC;
   if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     packet.Frame = (Frame + MPlayerMaxAhead + (FrameSendRate - 1)) /
@@ -2359,7 +2358,6 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
   //------------------------------------------------------------------------
   // clear previous event
   //------------------------------------------------------------------------
-  memset(&prevevent, 0, sizeof(EventClass));
 
   //------------------------------------------------------------------------
   // Loop until there are no more events, we've processed our max # of
@@ -2720,7 +2718,6 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
   //------------------------------------------------------------------------
   //  Clear work event structure
   //------------------------------------------------------------------------
-  memset(&eventdata, 0, sizeof(EventClass));
 
   //------------------------------------------------------------------------
   // Assume the first event is a FRAMEINFO event

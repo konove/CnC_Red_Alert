@@ -552,8 +552,10 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Set up the team data arrays (ObjectTypeClass pointers & count)
   */
   teamclass = (const TechnoTypeClass**)SysMemPage.Get_Buffer();
-  teamcount = (int*)SysMemPage.Get_Buffer() +
-              MAX_TEAM_CLASSES * sizeof(ObjectTypeClass*);
+  // The counts live directly after the pointer array. Deriving the address
+  // from teamclass keeps the pointer arithmetic in units of pointers; the
+  // original scaled the byte count by sizeof(int) a second time.
+  teamcount = (int*)(teamclass + MAX_TEAM_CLASSES);
 
   /*
   **	Fill in the ObjectTypeClass array with all available object type ptrs,

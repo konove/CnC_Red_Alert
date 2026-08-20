@@ -102,8 +102,8 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   //;	01 = below axis
   //;	10 = above axis
   //;	11 = undefined
-  static const char _SpillTable[16] = {8, 6, 2, -1, 0,  7,  1,  -1,
-                                       4, 5, 3, -1, -1, -1, -1, -1};
+  static const int _SpillTable[16] = {8, 6, 2, -1, 0,  7,  1,  -1,
+                                      4, 5, 3, -1, -1, -1, -1, -1};
   int index = 0;
   int x, y;
 

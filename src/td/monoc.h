@@ -143,7 +143,7 @@ class MonoClass {
   char X;       // Cursor X position.
   char Y;       // Cursor Y position.
   char Attrib;  // Normal attribute to use if none specified.
-  char Page;    // The current page to write to.
+  int Page;     // The current page to write to.
 
   /*
   **	Helper functions to help with display operations.

@@ -184,8 +184,8 @@ class DriveClass : public FootClass {
   *track). The *	'TrackIndex' variable holds the current index into the
   *specified track *	(starts at 0).
   */
-  char TrackNumber;
-  char TrackIndex;
+  int TrackNumber;
+  int TrackIndex;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

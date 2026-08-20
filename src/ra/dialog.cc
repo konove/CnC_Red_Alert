@@ -654,6 +654,11 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType* fore,
   **	If the text number is valid, then process it.
   */
   if (text != TXT_NONE) {
+    // The C++ standard says parmN of va_start must not be an enumeration
+    // type (a restriction lifted in C++26). TextPrintType is the flag API
+    // for every text call in the game, and its promotion is a no-op on the
+    // ABIs this port targets, so the parameter type is kept.
+    // NOLINTNEXTLINE(clang-diagnostic-varargs)
     va_start(arg, flag);
 
     /*
@@ -715,6 +720,11 @@ void Fancy_Text_Print(const char* text, unsigned x, unsigned y,
     **	Since vsprintf doesn't know about EMS pointers, be sure to surround this
     **	call with locking code.
     */
+    // The C++ standard says parmN of va_start must not be an enumeration
+    // type (a restriction lifted in C++26). TextPrintType is the flag API
+    // for every text call in the game, and its promotion is a no-op on the
+    // ABIs this port targets, so the parameter type is kept.
+    // NOLINTNEXTLINE(clang-diagnostic-varargs)
     va_start(arg, flag);
     Format_Runtime_Text(buffer, sizeof(buffer), text, arg);
     va_end(arg);

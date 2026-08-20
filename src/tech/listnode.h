@@ -91,6 +91,11 @@ class GenericNode {
     NextNode = node;
   }
 
+  // ~GenericNode unlinks the node, so a list never refers to a deleted one.
+  // The analyzer does not follow the pointer writes Unlink() makes through
+  // PrevNode/NextNode, and reports the next walk of the list as a
+  // use-after-free.
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDelete)
   GenericNode* Next() const { return NextNode; }
   GenericNode* Prev() const { return PrevNode; }
   bool Is_Valid() const { return NextNode != nullptr && PrevNode != nullptr; }

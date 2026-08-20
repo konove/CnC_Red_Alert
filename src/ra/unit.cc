@@ -3019,8 +3019,6 @@ const short* UnitClass::Overlap_List(bool redraw) const {
 
     return Coord_Spillage_List(Coord, rect, true);
   }
-#else
-  redraw = redraw;
 #endif
 
   int size = ICON_PIXEL_W;

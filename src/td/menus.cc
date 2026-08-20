@@ -493,8 +493,10 @@ int Do_Menu(const char** strings, bool blue) {
   while (selection == -1) {
     Call_Back();
     selection = Check_Menu(menu_config, strings, 0xFFL, 0);
-    if (UnknownKey != 0 || UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
-        UnknownKey == KN_RMOUSE) {
+    // The KN_ESC/KN_LMOUSE/KN_RMOUSE tests were unreachable: any of them
+    // already satisfies the != 0 in front of them, so the loop has always
+    // exited on the first unrecognized key of any kind.
+    if (UnknownKey != 0) {
       break;
     }
   }

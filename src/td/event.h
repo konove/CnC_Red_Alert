@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_EVENT_H_
 #define CNC_RED_ALERT_TD_EVENT_H_
 
+#include <cstring>
+
 #include "td/defines.h"
 #include "td/special.h"
 
@@ -206,7 +208,12 @@ class EventClass {
   } Data;
 
   //-------------- Functions ---------------------
-  EventClass() { Type = EMPTY; }
+  // Events cross the wire and are compared as raw bytes, so every byte has to
+  // be deterministic - the padding and the unused half of Data included.
+  // Initializing the members cannot reach those, which is why the queue code
+  // used to memset each event by hand right after constructing it.
+  // NOLINTNEXTLINE(cert-oop57-cpp)
+  EventClass() { std::memset(this, 0, sizeof(EventClass)); }
   EventClass(SpecialClass data);
   EventClass(EventType type, TARGET target);
   EventClass(EventType type);

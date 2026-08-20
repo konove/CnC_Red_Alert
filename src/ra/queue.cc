@@ -1794,7 +1794,6 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   // scenario-based CRC rather than a game-state-based CRC, to let the
   // games compare scenario CRC's on startup.
   //------------------------------------------------------------------------
-  memset(&packet, 0, sizeof(EventClass));
   packet.Type = EventClass::FRAMESYNC;
   if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     packet.Frame = (Frame + Session.MaxAhead + (Session.FrameSendRate - 1)) /
@@ -1910,6 +1909,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                   event->Data.FrameInfo.CRC, event->Data.FrameInfo.CommandCount,
                   event->Data.FrameInfo.Delay);
         }
+        fclose(fp);
       }
     }
 
@@ -2652,7 +2652,6 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
   //------------------------------------------------------------------------
   // clear previous event
   //------------------------------------------------------------------------
-  memset(&prevevent, 0, sizeof(EventClass));
 
   if (Debug_Print_Events) {
     printf("\n(%" PRId64 ") Building Send Packet\n", Frame);
@@ -3095,7 +3094,6 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
   //------------------------------------------------------------------------
   // Clear work event structure
   //------------------------------------------------------------------------
-  memset(&eventdata, 0, sizeof(EventClass));
 
   //------------------------------------------------------------------------
   // Assume the first event is a FRAMEINFO event

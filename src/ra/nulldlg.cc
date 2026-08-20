@@ -255,7 +255,6 @@ void Modem_Signoff() {
     /*
     ** Send a sign-off packet
     */
-    memset(&event, 0, sizeof(EventClass));
     event.Type = EventClass::EXIT;
     NullModem.Send_Message(&event, sizeof(EventClass), 0);
     NullModem.Send_Message(&event, sizeof(EventClass), 0);

@@ -143,12 +143,16 @@ void SHAEngine::Hash(const void* data, long length) {
   /*
   **	First process all the whole blocks available in the source data.
   */
+  // source advances a whole block at a time, and it is typed in words, so the
+  // step has to be expressed in words rather than bytes.
+  constexpr int kWordsPerBlock = SRC_BLOCK_SIZE / sizeof(uint32_t);
+
   long blocks = length / SRC_BLOCK_SIZE;
   const uint32_t* source = static_cast<const uint32_t*>(data);
   for (int bcount = 0; bcount < blocks; bcount++) {
     Process_Block(source, Acc);
     Length += static_cast<long>(SRC_BLOCK_SIZE);
-    source += SRC_BLOCK_SIZE / sizeof(uint32_t);
+    source += kWordsPerBlock;
     length -= static_cast<long>(SRC_BLOCK_SIZE);
   }
 

@@ -370,24 +370,20 @@ int LoadOptionsClass::Process() {
       /*
       **	Display the dialog box.
       */
-      if (display) {
-        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-        Draw_Caption(caption, d_dialog_x, d_dialog_y, d_dialog_w);
+      Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+      Draw_Caption(caption, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        if (Style == SAVE) {
-          Fancy_Text_Print(
-              TXT_MISSION_DESCRIPTION, d_dialog_cx, d_edit_y - d_txt8_h,
-              CC_GREEN, TBLACK,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER | TPF_NOSHADOW);
-        }
+      if (Style == SAVE) {
+        Fancy_Text_Print(
+            TXT_MISSION_DESCRIPTION, d_dialog_cx, d_edit_y - d_txt8_h, CC_GREEN,
+            TBLACK,
+            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER | TPF_NOSHADOW);
       }
 
       /*
       **	Redraw the buttons.
       */
-      if (display) {
-        commands->Flag_List_To_Redraw();
-      }
+      commands->Flag_List_To_Redraw();
       Show_Mouse();
       display = false;
     }
