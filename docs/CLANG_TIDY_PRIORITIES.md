@@ -61,26 +61,32 @@ because `SerialPacketNames[]` is a 100-entry table of literals. Use the sample t
 
 What did hold: every Tier 1 check was cheap *per site*, and each one paid for itself in real bugs.
 
-Last measured: 2026-07-25, clang-tidy 21.1.8. Tier 1 outcomes measured as each check was enabled (through 2026-08-19).
+Last measured: 2026-07-25, clang-tidy 21.1.8. Tier 1 and §1.1 outcomes measured as each check was enabled, through
+2026-08-20; the §1.1 counts come from clang-tidy 22 over the full `cmake-build-strict-ra-clang-22` compile database
+rather than from the sample.
 
 ---
 
 ## Status Corrections
 
-The previous revision of this document marked several checks "✅ DONE" that are still disabled, and listed several as
-deferred that are in fact already enabled. Verified against the current `.clang-tidy`:
+An earlier revision of this document marked four checks "✅ DONE" while they were still disabled, and listed three as
+deferred that were in fact already enabled. All seven now agree with `.clang-tidy` — the four that were falsely claimed
+were enabled for real as part of §1.1:
 
-| Check                                | Previously claimed | Actual state        |
-|--------------------------------------|--------------------|---------------------|
-| `clang-diagnostic-uninitialized`     | Tier 1 ✅ DONE     | **still disabled**  |
-| `clang-analyzer-cplusplus.NewDelete` | Tier 1 ✅ DONE     | **still disabled**  |
-| `clang-diagnostic-self-assign`       | Tier 2.1 ✅ DONE   | **still disabled**  |
-| `misc-redundant-expression`          | Tier 2.1 ✅ DONE   | **still disabled**  |
-| `modernize-use-nullptr`              | Tier 3, "defer"    | **already enabled** |
-| `modernize-use-override`             | Tier 3, "defer"    | **already enabled** |
-| `readability-else-after-return`      | Tier 4, keep off   | **already enabled** |
+| Check                                | Once claimed     | Now                                |
+|--------------------------------------|------------------|------------------------------------|
+| `clang-diagnostic-uninitialized`     | Tier 1 ✅ DONE   | enabled in `c9bb3fb0` (13 sites)   |
+| `clang-analyzer-cplusplus.NewDelete` | Tier 1 ✅ DONE   | enabled in `12f738d9`              |
+| `clang-diagnostic-self-assign`       | Tier 2.1 ✅ DONE | enabled in `12f738d9`              |
+| `misc-redundant-expression`          | Tier 2.1 ✅ DONE | enabled in `12f738d9`              |
+| `modernize-use-nullptr`              | Tier 3, "defer"  | was already enabled                |
+| `modernize-use-override`             | Tier 3, "defer"  | was already enabled                |
+| `readability-else-after-return`      | Tier 4, keep off | was already enabled                |
 
-Genuinely done and confirmed enabled: `clang-diagnostic-suggest-override`, `-return-stack-address`,
+The lesson stands even though the discrepancy is gone: this document is not the source of truth for what is enabled.
+`.clang-tidy` is. Check a claim against it before acting on it.
+
+Also genuinely done and confirmed enabled: `clang-diagnostic-suggest-override`, `-return-stack-address`,
 `-mismatched-new-delete`, `-delete-incomplete`, `-sometimes-uninitialized`, `-unused-variable/-function/-parameter`,
 `clang-analyzer-core.NullDereference`, `clang-analyzer-core.uninitialized.*`, `clang-analyzer-deadcode.DeadStores`,
 `clang-analyzer-unix.MismatchedDeallocator`, `bugprone-not-null-terminated-result`,
