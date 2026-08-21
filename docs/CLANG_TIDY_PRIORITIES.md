@@ -2,14 +2,15 @@
 
 ## Overview
 
-`.clang-tidy` enables all checks (`'*'`) and then disables **260** of them. This document prioritizes which of those 260
+`.clang-tidy` enables all checks (`'*'`) and then disables **237** of them. This document prioritizes which of those 237
 to re-enable, ordered by **measured bug yield per unit of fix effort**.
 
 Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
 (see [Methodology](#methodology)). Every count in the tables is a real diagnostic site in this repository.
 
-**Tier 1 is complete.** All ten rows of its table (13 checks) are enabled and their sites cleared; see
-[Progress](#progress). The next work is §1.1, §1.2 and Tier 1.5.
+**Tier 1 and §1.1 are complete.** All ten rows of the Tier 1 table (13 checks) are enabled, and 24 of the 26 checks in
+§1.1; see [Progress](#progress). The two §1.1 checks left out are deliberate — see
+[1.1](#11-free-guards--the-name-was-wrong). The next work is §1.2 and Tier 1.5.
 
 ### Two facts that shape everything below
 
@@ -47,6 +48,11 @@ be a poor predictor of volume:
 | `clang-diagnostic-format`              | 10          | ~160                                 |
 | `bugprone-too-small-loop-variable`     | 5           | 36 loops                             |
 | `bugprone-suspicious-string-compare`   | 1           | 13                                   |
+| §1.1 as a whole                        | 0           | **336** sites across 26 checks        |
+
+§1.1 is the sharpest case: the sample saw zero hits in all 26 checks and the section was written up as free, but three
+of them alone (`conditional-uninitialized` 103, `optin.cplusplus.VirtualCall` 86, `implicit-fallthrough` 33) carry 222
+sites.
 
 Two effects the sample could not see. First, it contains no `src/td` files, and TD carries a near-duplicate copy of
 most of this code — `writable-strings` landed 115 sites in RA against 241 in TD. Second, a single declaration can
@@ -100,6 +106,14 @@ been red on an enabled check.
 | `clang-diagnostic-writable-strings`                      | `dd96637d` | 357 diagnostics; mostly mechanical `const`, but 3 were live writes into string literals |
 | `bugprone-suspicious-string-compare`                     | `d58e3977` | 13 sites, all `!= 0`; no behaviour change                                        |
 
+### §1.1
+
+| Checks                                                                     | Commit     | Sites | Outcome                                                                    |
+|----------------------------------------------------------------------------|------------|-------|----------------------------------------------------------------------------|
+| 18 checks — the cheap end (7 genuinely clean, 11 with 51 sites)             | `12f738d9` | 51    | 4 real defects; `EventClass` now zeroes itself instead of 7 hand-written memsets; TD `TrackNumber`/`TrackIndex`/`Page` retyped `char` → `int` (bumps TD `SAVEGAME_VERSION`) |
+| `missing-field-initializers`, `implicit-fallthrough`, `conditional-uninitialized` | `c2121fa4` | 156   | `td/mapsel.cc` frame 23 fell into the frame that blacks out what it just drew; `sdllib/iff.cc` memcpy arguments reversed; `ra/nullmgr.cc` returned an uninitialized `DialStatusType` on modem timeout |
+| `clang-diagnostic-uninitialized`, `clang-analyzer-core.CallAndMessage`     | `c9bb3fb0` | 31    | 3 real null dereferences, each in both games (`sidebar.cc`, `display.cc`, `queue.cc`); TD's `NoInitClass` constructors no longer self-init a const member |
+
 Two lessons worth carrying into the next tier:
 
 - **A "mechanical" check is not automatically safe.** `writable-strings` looked like a pure `const` sweep, yet three
@@ -109,6 +123,11 @@ Two lessons worth carrying into the next tier:
   caller.
 - **RA and TD diverge.** RA's copy of that same call-waiting loop had already been reworked to `std::string`, so the two
   ports needed opposite fixes. Never assume a fix ports across verbatim.
+- **Sweep with the project's own warning flags.** `clang++ -Wno-everything -W<name>` is not a reliable way to isolate
+  one diagnostic: `-Wconditional-uninitialized` needs `-Wuninitialized` enabled to fire at all, so that form reported
+  zero sites where the real count was 103. Run the compile database with its own flags (which already include
+  `-Weverything`) and filter the output by warning name. Check for hard `error:` lines while filtering, too — a
+  translation unit that fails to compile reports no warnings, which reads exactly like a clean one.
 
 ---
 
@@ -148,22 +167,46 @@ The sample predicted **~41 sites**, "realistically a few hundred tree-wide". Cle
 files under `src/`** and well over a thousand sites — see the volume caveat under [Methodology](#methodology). The
 estimate of *cost per site* was right; the estimate of *site count* was not.
 
-### 1.1 Free guards — zero hits, zero fix cost
+### 1.1 Free guards — the name was wrong
 
-Clean across the entire 10% sample. Enable them to prevent the class of defect from *entering*:
+These 26 checks were clean across the entire 10% sample, so this section was written up as free. Measured against every
+translation unit in `cmake-build-strict-ra-clang-22` (1001 entries: 586 regular plus 415 header-verification units) they
+cost **336 sites**. Twenty-four are now enabled and cleared — see [Progress](#progress) for the three commits and what
+they turned up.
 
-`bugprone-unhandled-self-assignment`, `bugprone-sizeof-expression`, `bugprone-parent-virtual-call`,
+Enabled, with their measured tree-wide counts:
+
+| Check                                                | Sites |
+|------------------------------------------------------|-------|
+| `clang-diagnostic-conditional-uninitialized`         | 103   |
+| `clang-diagnostic-implicit-fallthrough`              | 33    |
+| `clang-diagnostic-missing-field-initializers`        | 20    |
+| `clang-analyzer-core.CallAndMessage`                 | 18    |
+| `clang-diagnostic-uninitialized`                     | 13    |
+| the other 19, together                               | 51    |
+
+The remaining 19 are `bugprone-unhandled-self-assignment`, `bugprone-sizeof-expression`,
 `bugprone-redundant-branch-condition`, `bugprone-inc-dec-in-conditions`,
-`bugprone-unchecked-string-to-number-conversion`, `clang-diagnostic-uninitialized`,
-`clang-diagnostic-conditional-uninitialized`, `clang-diagnostic-self-assign`, `clang-diagnostic-implicit-fallthrough`,
+`bugprone-unchecked-string-to-number-conversion`, `clang-diagnostic-self-assign`,
 `clang-diagnostic-char-subscripts`, `clang-diagnostic-null-arithmetic`, `clang-diagnostic-logical-not-parentheses`,
-`clang-diagnostic-format-security`, `clang-diagnostic-varargs`, `clang-diagnostic-missing-field-initializers`,
-`misc-redundant-expression`, `misc-definitions-in-headers`, `readability-misleading-indentation`, `cert-oop57-cpp`,
-`clang-analyzer-core.CallAndMessage`, `clang-analyzer-cplusplus.NewDelete`,
-`clang-analyzer-optin.cplusplus.VirtualCall`,
-`clang-analyzer-optin.cplusplus.UninitializedObject`, `clang-analyzer-unix.Stream`, `clang-analyzer-security.VAList`.
+`clang-diagnostic-format-security`, `clang-diagnostic-varargs`, `misc-redundant-expression`,
+`misc-definitions-in-headers`, `readability-misleading-indentation`, `cert-oop57-cpp`,
+`clang-analyzer-cplusplus.NewDelete`, `clang-analyzer-optin.cplusplus.UninitializedObject`,
+`clang-analyzer-unix.Stream`, `clang-analyzer-security.VAList` — seven of which really are clean tree-wide.
 
-Caveat: zero in 10% of the tree is not zero tree-wide. Expect a small tail, especially from `src/td`.
+**Two are deliberately left disabled.**
+
+`bugprone-parent-virtual-call` — 12 sites, all of them intentional grandparent dispatch:
+`TriColorGaugeClass::Draw_Me` reaches `ControlClass::Draw_Me` past `GaugeClass`, `ListClass::Draw_Me` reaches
+`GadgetClass::Draw_Me` past `ControlClass`, `UnitClass::Assign_Destination` reaches `FootClass::` past `DriveClass`, and
+`td/unit.cc` dumps `CargoClass`, `MissionClass` and `TarComClass` in a row on purpose. Enabling it would cost twelve
+NOLINTs and prevent nothing. This one should stay off permanently.
+
+`clang-analyzer-optin.cplusplus.VirtualCall` — 86 sites, virtual calls from constructors and destructors. Some are real
+(`LinkClass::Add` from a constructor and `RawFileClass::Close` from a destructor both mean a derived override never
+runs); most are benign because the class has no subclasses. Clearing it means restructuring constructors and destructors
+across `AbstractClass → ObjectClass → TechnoClass → …`, which is exactly the hierarchy refactoring `CLAUDE.md` says not
+to start unasked. It is listed under [Tier 1.5](#tier-15-small-counts-real-ub-in-a-deep-virtual-hierarchy) instead.
 
 ### 1.2 Single most valuable check in the whole list
 
@@ -187,6 +230,7 @@ The `AbstractClass → ObjectClass → TechnoClass → ...` hierarchy makes thes
 | `clang-diagnostic-non-virtual-dtor`          | 12     | overlaps the above                                     |
 | `misc-unconventional-assign-operator`        | 4      | `ra/vector.h:43,84,85` — `virtual operator=`           |
 | `cert-oop58-cpp`                             | 2      | `tech/listnode.h:56,59` — copy ctor mutates its source |
+| `clang-analyzer-optin.cplusplus.VirtualCall` | **86** | moved down from §1.1; needs ctor/dtor restructuring    |
 
 `vector.h` and `listnode.h` are foundational; fixing those two files clears most of this tier.
 
@@ -273,18 +317,21 @@ globally.
 1. ~~Fix `src/ra/house.cc:2367` (`!` → `~`)~~ — done in `f7552ee3`.
 2. ~~Un-disable the Tier 1 table~~ — done, one check per commit; see [Progress](#progress).
 3. ~~Build `rasdl` **and** `tdsdl`; fix fallout.~~ The `src/td` tail did exceed `src/ra`, by roughly 2:1.
-4. **Still open:** the §1.1 free guards and §1.2 have *not* been enabled yet. They are the cheapest work left.
 
-### Phase A.2 — §1.1 free guards and §1.2 (do now)
+### Phase A.2 — §1.1 ✅ done, §1.2 still open
 
-Zero hits in the sample, so the only cost is the tree-wide tail — which Tier 1 showed is real, and concentrated in
-`src/td`. Enable them in small batches rather than all 27 at once, so a surprise in one check does not block the rest.
-`bugprone-raw-memory-call-on-non-trivial-type` (§1.2) is the highest-value item in the entire document and should go
-first: it is the only automated guard on the `TFixedIHeapClass::Save/Load` memcpy contract.
+1. ~~Enable the §1.1 guards in small batches~~ — done in `12f738d9`, `c2121fa4` and `c9bb3fb0`; 24 of 26 enabled, 336
+   sites cleared. Batching mattered: `conditional-uninitialized` alone was 103 sites and would have blocked the rest.
+2. `bugprone-parent-virtual-call` stays disabled permanently, and `clang-analyzer-optin.cplusplus.VirtualCall` moved to
+   Tier 1.5. See [1.1](#11-free-guards--the-name-was-wrong).
+3. **Still open:** `bugprone-raw-memory-call-on-non-trivial-type` (§1.2). Still 0 hits, still the highest-value item in
+   this document — it is the only automated guard on the `TFixedIHeapClass::Save/Load` memcpy contract.
 
 ### Phase B — Tier 1.5
 
-Fix `src/ra/vector.h` and `src/tech/listnode.h` first, then enable the five checks and clear the remainder.
+Fix `src/ra/vector.h` and `src/tech/listnode.h` first, then enable the five original checks and clear the remainder.
+`clang-analyzer-optin.cplusplus.VirtualCall` (86 sites) belongs to this phase and should go last, since it is the one
+that actually changes constructor and destructor behaviour.
 
 ### Phase C — Tier 2, per directory
 
@@ -321,9 +368,10 @@ Note `--warnings-as-errors=` (empty) to override the config's `WarningsAsErrors:
 | Tier      | Checks | Sample sites | Status                                                       |
 |-----------|--------|--------------|--------------------------------------------------------------|
 | 1 (table) | 13     | ~41          | ✅ **Done** — 206 files touched, 18 latent bugs surfaced      |
-| 1.1 + 1.2 | 27     | 0            | Next — free guards, but expect a `src/td` tail               |
-| 1.5       | 5      | 42           | Enable after fixing `vector.h` / `listnode.h`                |
+| 1.1       | 26     | 0 (336 real) | ✅ **Done** — 24 enabled, 7 more real bugs; 1 off for good, 1 moved to 1.5 |
+| 1.2       | 1      | 0            | Next — cheapest and highest-value item left                  |
+| 1.5       | 6      | 128          | Enable after fixing `vector.h` / `listnode.h`; `VirtualCall` last |
 | 2         | 7      | 576          | Per-directory only, tied to type migration                   |
 | 3         | ~230   | —            | Keep disabled                                                |
 
-Disabled-check count: **275 → 260**.
+Disabled-check count: **275 → 237**.
