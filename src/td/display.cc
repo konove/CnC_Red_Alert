@@ -2611,8 +2611,8 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
       **	Find an unoccupied beach cell.
       */
       case SOURCE_BEACH: {
-        CELL cells[MAP_CELL_W];
-        CELL alternate[MAP_CELL_W];
+        CELL cells[MAP_CELL_W] = {};
+        CELL alternate[MAP_CELL_W] = {};
         unsigned counter = 0;
 
         for (x = 0; x < MapCellWidth; x++) {
@@ -3403,9 +3403,10 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
       /*
       **	Selection of other object action.
       */
-      if (action == ACTION_SELECT ||
-          (action == ACTION_NONE && object && object->Class_Of().IsSelectable &&
-           !object->IsSelected)) {
+      if (object != nullptr &&
+          (action == ACTION_SELECT ||
+           (action == ACTION_NONE && object->Class_Of().IsSelectable &&
+            !object->IsSelected))) {
         Unselect_All();
         object->Select();
         Set_Default_Mouse(MOUSE_NORMAL, wwsmall);
@@ -3442,7 +3443,8 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         }
         AllowVoice = true;
 
-        if (action == ACTION_REPAIR && object->What_Am_I() == RTTI_BUILDING) {
+        if (object != nullptr && action == ACTION_REPAIR &&
+            object->What_Am_I() == RTTI_BUILDING) {
           OutList.Add(EventClass(EventClass::REPAIR, object->As_Target()));
         }
         if (action == ACTION_SELL_UNIT && object) {

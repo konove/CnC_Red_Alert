@@ -65,7 +65,7 @@ class OverlayClass : public ObjectClass {
   void operator delete(void* ptr);
   OverlayClass();
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
-  OverlayClass(const NoInitClass& x) : ObjectClass(x), Class(Class) {}
+  OverlayClass(const NoInitClass& x) : ObjectClass(x) {}
   ~OverlayClass() override {
     if (GameActive) {
       OverlayClass::Limbo();
@@ -110,7 +110,7 @@ class OverlayClass : public ObjectClass {
   /*
   **	This is a pointer to the overlay object's class.
   */
-  const OverlayTypeClass* const Class;
+  const OverlayTypeClass* Class;
 
   /*
   ** This contains the value of the Virtual Function Table Pointer

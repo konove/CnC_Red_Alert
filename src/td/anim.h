@@ -66,8 +66,7 @@ class AnimClass : public ObjectClass, private StageClass {
   }  // Default constructor does nothing.
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1, bool alt = false);
-  AnimClass(const NoInitClass& x)
-      : ObjectClass(x), Class(Class), StageClass(x) {}
+  AnimClass(const NoInitClass& x) : ObjectClass(x), StageClass(x) {}
   ~AnimClass() override;
   operator AnimType() const { return Class->Type; }
   RTTIType What_Am_I() const override { return RTTI_ANIM; }
@@ -163,7 +162,7 @@ class AnimClass : public ObjectClass, private StageClass {
   /*
   **	This points to the type of animation object this is.
   */
-  const AnimTypeClass* const Class;
+  const AnimTypeClass* Class;
 
   /*
   **	Is this animation in a temporary suspended state?  If so, then it won't

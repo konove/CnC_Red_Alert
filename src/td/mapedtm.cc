@@ -266,7 +266,7 @@ int MapEditClass::Select_Team(const char* caption) {
   ........................................................................*/
   RedrawType display;                // requested redraw level
   bool process;                      // loop while true
-  char* teamtext[kTeamTypeMax + 1];  // text for defined teams
+  char* teamtext[kTeamTypeMax + 1] = {};  // text for defined teams
   KeyNumType input;                  // user input
   bool edit_team = false;            // true = user wants to edit
   bool new_team = false;             // true = user wants to new

@@ -68,7 +68,7 @@
 */
 class BuildingClass : public TechnoClass {
  public:
-  const BuildingTypeClass* const Class;
+  const BuildingTypeClass* Class;
   operator StructType() const { return Class->Type; }
 
   /*
@@ -179,7 +179,7 @@ class BuildingClass : public TechnoClass {
   BuildingClass() : Class(nullptr) {}
   BuildingClass(StructType type, HousesType house);
   BuildingClass(const NoInitClass& x)
-      : TechnoClass(x), Class(Class), CountDown(x), PlacementDelay(x) {}
+      : TechnoClass(x), CountDown(x), PlacementDelay(x) {}
   ~BuildingClass() override;
   RTTIType What_Am_I() const override { return RTTI_BUILDING; }
 

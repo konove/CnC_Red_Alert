@@ -69,7 +69,7 @@
 
 class InfantryClass : public FootClass {
  public:
-  const InfantryTypeClass* const Class;
+  const InfantryTypeClass* Class;
   operator InfantryType() const { return Class->Type; }
 
   /*
@@ -131,8 +131,7 @@ class InfantryClass : public FootClass {
   void operator delete(void* ptr);
   InfantryClass();
   InfantryClass(InfantryType classid, HousesType house);
-  InfantryClass(const NoInitClass& x)
-      : FootClass(x), Class(Class), Comment(x) {}
+  InfantryClass(const NoInitClass& x) : FootClass(x), Comment(x) {}
   ~InfantryClass() override;
   RTTIType What_Am_I() const override;
 

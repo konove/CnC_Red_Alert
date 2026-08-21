@@ -57,7 +57,7 @@ class DriveClass : public FootClass {
   **	This points to the static control data that gives 'this' unit its
   *characteristics.
   */
-  const UnitTypeClass* const Class;
+  const UnitTypeClass* Class;
 
   /*
   **	This records the number of "loads" of Tiberium the unit is carrying.
@@ -100,7 +100,7 @@ class DriveClass : public FootClass {
   */
   DriveClass();
   DriveClass(UnitType classid, HousesType house);
-  DriveClass(const NoInitClass& x) : FootClass(x), Class(Class) {}
+  DriveClass(const NoInitClass& x) : FootClass(x) {}
   ~DriveClass() override {}
   operator UnitType() const { return Class->Type; }
 

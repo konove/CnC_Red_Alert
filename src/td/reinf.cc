@@ -181,8 +181,8 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
         *transports. The one *	exception is for the hover lander which never
         *becomes part of the team.
         */
-        if (team && (temp->What_Am_I() != RTTI_UNIT ||
-                     *dynamic_cast<UnitClass*>(temp) != UNIT_HOVER)) {
+        UnitClass* unit = dynamic_cast<UnitClass*>(temp);
+        if (team && (unit == nullptr || *unit != UNIT_HOVER)) {
           ScenarioInit++;
           team->Add(temp);
           ScenarioInit--;
@@ -212,8 +212,8 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
           **	A-10s are always considered loaners since the player should
           **	never be allowed to control them.
           */
-          if (temp->What_Am_I() == RTTI_AIRCRAFT &&
-              *dynamic_cast<AircraftClass*>(temp) == AIRCRAFT_A10) {
+          AircraftClass* air = dynamic_cast<AircraftClass*>(temp);
+          if (air != nullptr && *air == AIRCRAFT_A10) {
             temp->IsALoaner = true;
           }
 

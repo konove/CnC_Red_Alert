@@ -59,7 +59,7 @@
 */
 class TerrainClass : public ObjectClass, public StageClass {
  public:
-  const TerrainTypeClass* const Class;
+  const TerrainTypeClass* Class;
   operator TerrainType() const { return Class->Type; }
 
   /*
@@ -70,8 +70,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   void operator delete(void* ptr);
   TerrainClass();
   TerrainClass(TerrainType id, CELL cell);
-  TerrainClass(const NoInitClass& x)
-      : ObjectClass(x), Class(Class), StageClass(x) {}
+  TerrainClass(const NoInitClass& x) : ObjectClass(x), StageClass(x) {}
   ~TerrainClass() override;
   RTTIType What_Am_I() const override { return RTTI_TERRAIN; }
 

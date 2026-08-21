@@ -66,7 +66,7 @@ class SmudgeClass : public ObjectClass {
   void operator delete(void* ptr);
   SmudgeClass(SmudgeType type, COORDINATE pos = -1,
               HousesType house = HOUSE_NONE);
-  SmudgeClass(const NoInitClass& x) : ObjectClass(x), Class(Class) {}
+  SmudgeClass(const NoInitClass& x) : ObjectClass(x) {}
   SmudgeClass() : Class(nullptr) {}
   operator SmudgeType() const { return Class->Type; }
   ~SmudgeClass() override {
@@ -106,7 +106,7 @@ class SmudgeClass : public ObjectClass {
   /*
   **	This is a pointer to the template object's class.
   */
-  const SmudgeTypeClass* const Class;
+  const SmudgeTypeClass* Class;
 
   /*
   ** This contains the value of the Virtual Function Table Pointer

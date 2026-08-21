@@ -60,7 +60,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   *attributes *	for this bullet is located in the BulletTypeClass pointed to by
   *this variable.
   */
-  const BulletTypeClass* const Class;
+  const BulletTypeClass* Class;
   operator BulletType() const { return Class->Type; }
 
   /*
@@ -84,7 +84,6 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   BulletClass(BulletType id);
   BulletClass(const NoInitClass& x)
       : ObjectClass(x),
-        Class(Class),
         FlyClass(x),
         FuseClass(x),
         PrimaryFacing(x) {}

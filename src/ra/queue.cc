@@ -702,6 +702,15 @@ static void Queue_AI_Multiplayer() {
 #endif
 
   //------------------------------------------------------------------------
+  //	Every multiplayer protocol above installs a connection manager. Without
+  // one there is no queue to service, and the rest of this routine would call
+  // through a null pointer.
+  //------------------------------------------------------------------------
+  if (net == nullptr) {
+    return;
+  }
+
+  //------------------------------------------------------------------------
   //	Debug stuff
   //------------------------------------------------------------------------
   Init_Queue_Mono(net);

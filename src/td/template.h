@@ -65,7 +65,7 @@ class TemplateClass : public ObjectClass {
   void operator delete(void* ptr);
   TemplateClass();
   TemplateClass(TemplateType type, CELL pos = -1);
-  TemplateClass(const NoInitClass& x) : ObjectClass(x), Class(Class) {}
+  TemplateClass(const NoInitClass& x) : ObjectClass(x) {}
   ~TemplateClass() override {
     if (GameActive) {
       TemplateClass::Limbo();
@@ -122,7 +122,7 @@ class TemplateClass : public ObjectClass {
   /*
   **	This is a pointer to the template object's class.
   */
-  const TemplateTypeClass* const Class;
+  const TemplateTypeClass* Class;
 
   /*
   ** This contains the value of the Virtual Function Table Pointer

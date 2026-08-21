@@ -45,7 +45,6 @@ class AircraftClass : public FootClass, public FlyClass {
   AircraftClass(const NoInitClass& x)
       : FootClass(x),
         FlyClass(x),
-        Class(Class),
         SecondaryFacing(x),
         SightTimer(x) {}
   AircraftClass(AircraftType classid, HousesType house);
@@ -154,7 +153,7 @@ class AircraftClass : public FootClass, public FlyClass {
   int Validate() const;
 
   // This is a pointer to the class control structure for the aircraft.
-  const AircraftTypeClass* const Class;
+  const AircraftTypeClass* Class;
 
   /*
   **	This is the facing used for the body of the aircraft. Typically, this is

@@ -1202,7 +1202,7 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
       *the damage, then have *	it try to do so. This prevents it from just
       *sitting there and taking damage.
       */
-      if (Is_Allowed_To_Retaliate(source)) {
+      if (source != nullptr && Is_Allowed_To_Retaliate(source)) {
         int primary = What_Weapon_Should_I_Use(source->As_Target());
         if (In_Range(source, primary) || !House->IsHuman) {
           Assign_Target(source->As_Target());

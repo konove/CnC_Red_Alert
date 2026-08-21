@@ -3478,9 +3478,10 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
       /*
       **	Selection of other object action.
       */
-      if (action == ACTION_SELECT ||
-          (action == ACTION_NONE && object && object->Class_Of().IsSelectable &&
-           !object->IsSelected)) {
+      if (object != nullptr &&
+          (action == ACTION_SELECT ||
+           (action == ACTION_NONE && object->Class_Of().IsSelectable &&
+            !object->IsSelected))) {
         Unselect_All();
         object->Select();
         Set_Default_Mouse(MOUSE_NORMAL, wsmall);
@@ -3635,7 +3636,8 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         AllowVoice = true;
         FormMove = false;
 
-        if (action == ACTION_REPAIR && object->What_Am_I() == RTTI_BUILDING) {
+        if (object != nullptr && action == ACTION_REPAIR &&
+            object->What_Am_I() == RTTI_BUILDING) {
           OutList.Add(EventClass(EventClass::REPAIR, TargetClass(object)));
         }
         if (action == ACTION_SELL_UNIT && object) {

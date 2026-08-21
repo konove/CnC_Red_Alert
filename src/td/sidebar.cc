@@ -2295,8 +2295,12 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
             */
             if (factory->Has_Completed()) {
               TechnoClass* pending = factory->Get_Object();
-              if (!pending && factory->Get_Special_Item()) {
-                Map.IsTargettingMode = true;
+              if (pending == nullptr) {
+                // A factory with no object of its own is producing a special
+                // weapon; with neither there is nothing to place.
+                if (factory->Get_Special_Item()) {
+                  Map.IsTargettingMode = true;
+                }
               } else {
                 BuildingClass* builder =
                     pending->Who_Can_Build_Me(false, false);

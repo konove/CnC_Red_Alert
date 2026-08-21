@@ -230,8 +230,8 @@ static FootClass* _Create_Group(const TeamTypeClass* teamtype) {
           temp->IsInitiated = true;
         }
 
-        if (temp->What_Am_I() == RTTI_AIRCRAFT &&
-            !_Need_To_Take(dynamic_cast<const AircraftClass*>(temp))) {
+        const AircraftClass* air = dynamic_cast<const AircraftClass*>(temp);
+        if (air != nullptr && !_Need_To_Take(air)) {
           temp->IsALoaner = true;
         }
 
@@ -279,9 +279,9 @@ static FootClass* _Create_Group(const TeamTypeClass* teamtype) {
   **	For JUST transport helicopters, consider the loaner a gift if there are
   **	no passengers.
   */
-  if (transport != nullptr && object == nullptr &&
-      transport->What_Am_I() == RTTI_AIRCRAFT &&
-      *dynamic_cast<AircraftClass*>(transport) == AIRCRAFT_TRANSPORT) {
+  AircraftClass* air_transport = dynamic_cast<AircraftClass*>(transport);
+  if (air_transport != nullptr && object == nullptr &&
+      *air_transport == AIRCRAFT_TRANSPORT) {
     transport->IsALoaner = false;
   }
 
@@ -463,10 +463,9 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   /*
   **	For the ants, they will pop out of the ant hill directly.
   */
-  if (teamtype->Origin != -1 && object->What_Am_I() == RTTI_UNIT &&
-      (*dynamic_cast<UnitClass*>(object) == UNIT_ANT1 ||
-       *dynamic_cast<UnitClass*>(object) == UNIT_ANT2 ||
-       *dynamic_cast<UnitClass*>(object) == UNIT_ANT3)) {
+  UnitClass* unit = dynamic_cast<UnitClass*>(object);
+  if (teamtype->Origin != -1 && unit != nullptr &&
+      (*unit == UNIT_ANT1 || *unit == UNIT_ANT2 || *unit == UNIT_ANT3)) {
     CELL newcell = Scen.Waypoint[teamtype->Origin];
     if (newcell != -1) {
       if (Map[newcell].TType == TEMPLATE_HILL01) {

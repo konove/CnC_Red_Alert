@@ -65,12 +65,12 @@ class TeamClass : public AbstractClass {
   /*
   **	This specifies the type of team this is.
   */
-  const TeamTypeClass* const Class;
+  const TeamTypeClass* Class;
 
   /*
   **	This specifies the owner of this team.
   */
-  HouseClass* const House;
+  HouseClass* House;
 
   /*
   **	This flag forces the team into active state regardless of whether it
@@ -181,8 +181,6 @@ class TeamClass : public AbstractClass {
   TeamClass(const TeamTypeClass* team, HouseClass* owner);
   TeamClass(const NoInitClass& x)
       : AbstractClass(x),
-        Class(Class),
-        House(House),
         SuspendTimer(x),
         TimeOut(x) {}
   ~TeamClass() override;

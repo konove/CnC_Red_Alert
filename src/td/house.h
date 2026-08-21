@@ -68,7 +68,7 @@ class HouseClass {
   **	Pointer to the HouseTypeClass that this house is "owned" by.
   **	All constant data for a house type is stored in that class.
   */
-  const HouseTypeClass* const Class;
+  const HouseTypeClass* Class;
 
   /*
   **	This is the house type that this house object should act like. This
@@ -393,8 +393,7 @@ class HouseClass {
   HouseClass() : Class(nullptr) {}
   HouseClass(HousesType house);
   HouseClass(const NoInitClass& x)
-      : Class(Class),
-        FreeHarvester(x),
+      : FreeHarvester(x),
         IonCannon(x),
         AirStrike(x),
         NukeStrike(x),

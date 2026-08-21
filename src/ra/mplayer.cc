@@ -154,7 +154,10 @@ GameType Select_MPlayer_Game() {
 #endif
   };
 
-  int num_of_buttons = NUM_OF_BUTTONS - (Ipx.Is_IPX() ? 0 : 1);
+  // Sampled once: the button list, its length and the cancel-button fixup
+  // below all have to agree on how many buttons this dialog has.
+  const bool has_ipx = Ipx.Is_IPX();
+  int num_of_buttons = NUM_OF_BUTTONS - (has_ipx ? 0 : 1);
   //------------------------------------------------------------------------
   //	Redraw values: in order from "top" to "bottom" layer of the dialog
   //------------------------------------------------------------------------
@@ -206,7 +209,7 @@ GameType Select_MPlayer_Game() {
                          d_wol_x, d_wol_y, d_wol_w, d_wol_h);
 #endif
 
-  if (!Ipx.Is_IPX()) {
+  if (!has_ipx) {
     d_cancel_y = d_ipx_y;
     d_dialog_h -= d_cancel_h;
   }
@@ -223,7 +226,7 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   commands = &modemserialbtn;
   skirmishbtn.Add_Tail(*commands);
-  if (Ipx.Is_IPX()) {
+  if (has_ipx) {
     ipxbtn.Add_Tail(*commands);
   }
 #if WOLAPI_INTEGRATION
@@ -237,7 +240,7 @@ GameType Select_MPlayer_Game() {
   curbutton = 0;
   buttons[0] = &modemserialbtn;
   buttons[1] = &skirmishbtn;
-  if (Ipx.Is_IPX()) {
+  if (has_ipx) {
     buttons[2] = &ipxbtn;
 #if WOLAPI_INTEGRATION
     buttons[3] = &wolbtn;  //	ajw
@@ -378,7 +381,7 @@ GameType Select_MPlayer_Game() {
       buttons[curbutton]->Turn_Off();
       buttons[curbutton]->Flag_To_Redraw();
       curbutton = selection - BUTTON_MODEMSERIAL;
-      if (selection == BUTTON_CANCEL && !Ipx.Is_IPX()) {
+      if (selection == BUTTON_CANCEL && !has_ipx) {
         curbutton--;
       }
       buttons[curbutton]->Turn_On();
