@@ -6,6 +6,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# ccache / mold. Must come before the first target is created so the fetched
+# dependencies below are built through them too.
+include(Speedup)
+
 # Fetch Abseil
 include(FetchContent)
 FetchContent_Declare(

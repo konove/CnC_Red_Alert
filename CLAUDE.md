@@ -41,6 +41,28 @@ sudo apt install libsdl2-dev clang-tidy ninja-build
 **Note:** If clang-tidy is not installed, either install it (above) or build with `-DSTRICT_CHECKS=OFF` to disable
 static analysis.
 
+### Optional: Faster Builds
+
+`ccache` (compile cache) and `mold` (linker) are picked up automatically by `cmake/Speedup.cmake` when installed —
+no per-machine configuration, and the build works unchanged without them.
+
+```bash
+sudo apt install ccache mold        # Linux
+brew install ccache mold            # macOS (mold is Linux-only; the module skips it elsewhere)
+```
+
+Configure output confirms them (`-- ccache enabled: ...`, `-- mold linker enabled: ...`). Disable either with
+`-DUSE_CCACHE=OFF` / `-DUSE_MOLD=OFF`. Check the cache with `ccache -s`; resize with
+`ccache -M 25G`.
+
+Note that ccache does not cache clang-tidy or IWYU output — a cached compile still re-runs both under
+`STRICT_CHECKS=ON`.
+
+**CLion:** nothing to configure — reload the CMake project (*File | Reload CMake Project*) and check the CMake tool
+window for the two status lines. Ensure CLion's toolchain PATH sees `/usr/bin`; if `ccache` shows as not found there
+but works in a terminal, set the full path in *Settings | Build, Execution, Deployment | CMake | Environment* via
+`CMAKE_CXX_COMPILER_LAUNCHER=/usr/bin/ccache`.
+
 ## Architecture
 
 All source lives under `src/`:
