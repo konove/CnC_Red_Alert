@@ -58,6 +58,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/log/check.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/memflag.h"
@@ -179,6 +180,35 @@ static unsigned long
 static CELL DestLocation;
 static CELL StartLocation;
 
+/*
+**	The overlap lists above are bitmaps with one bit per map cell, marking
+**	which cells a path has already entered. Every access goes through these
+**	helpers, so the "cell is on the map" invariant lives in one place -
+**	callers get their cells by stepping to an adjacent cell, which has no
+**	notion of the map edge.
+**
+**	The bit index is deliberately one less than the cell's position within
+**	the word. That looks wrong, but path results depend on it, so it is
+**	preserved. ra/findpath.cc keeps the same expression for shipping builds,
+**	behind an #ifdef TEST that TD's copy never had.
+*/
+static int Overlap_Bit(CELL cell) { return (cell & 31) - 1; }
+
+static bool Is_Overlapped(const PathType* path, CELL cell) {
+  DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
+  return (path->Overlap[cell >> 5] & (1 << Overlap_Bit(cell))) != 0;
+}
+
+static void Set_Overlap(PathType* path, CELL cell) {
+  DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
+  path->Overlap[cell >> 5] |= 1 << Overlap_Bit(cell);
+}
+
+static void Clear_Overlap(PathType* path, CELL cell) {
+  DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
+  path->Overlap[cell >> 5] &= ~(1 << Overlap_Bit(cell));
+}
+
 /***************************************************************************
  * Point_Relative_To_Line -- Relation between a point and a line           *
  *                                                                         *
@@ -295,7 +325,7 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
     /*
     ** Remove this cells flag from the overlap list for the path
     */
-    path->Overlap[curr_pos >> 5] &= ~(1 << ((curr_pos & 31) - 1));
+    Clear_Overlap(path, curr_pos);
 
     /*
     ** Mark cell on the map
@@ -337,15 +367,13 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
 bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
                               int cost, MoveType threshhold) {
   FacingType* list;
-  int pos = cell >> 5;
-  int bit = (cell & 31) - 1;
 
   /*
   ** See if this point has already been registered as on the list.  If so
   ** we need to truncate the list back to this point and register the
   ** new direction.
   */
-  if (path->Overlap[pos] & 1 << bit) {
+  if (Is_Overlapped(path, cell)) {
     /*
     ** If this is not a case of immediate back tracking then handle
     ** by searching the list to see what we find.  However is this is
@@ -357,7 +385,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
 
     if (path->Command[path->Length - 1] == Opposite(dir)) {
       CELL pos = Adjacent_Cell(cell, Opposite(dir));
-      path->Overlap[pos >> 5] &= ~(1 << ((pos & 31) - 1));
+      Clear_Overlap(path, pos);
       path->Length--;
       Draw_Cell_Point(pos, true, -1, BLUE);
     } else {
@@ -408,7 +436,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
       while (idx < path->Length) {
         pos = Adjacent_Cell(pos, *list);
         path->Cost -= Passable_Cell(pos, *list, -1, threshhold);
-        path->Overlap[pos >> 5] &= ~(1 << ((pos & 31) - 1));
+        Clear_Overlap(path, pos);
         Draw_Cell_Point(pos, true, -1, LTBLUE);
         idx++;
         list++;
@@ -421,9 +449,9 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
     ** and the cost.
     */
     int cpos = path->Length++;
-    path->Command[cpos] = dir;       // save of the direction we moved
-    path->Cost += cost;              // figure new cost for cell
-    path->Overlap[pos] |= 1 << bit;  // mark the we have entered point
+    path->Command[cpos] = dir;  // save of the direction we moved
+    path->Cost += cost;         // figure new cost for cell
+    Set_Overlap(path, cell);    // mark the we have entered point
   }
   return true;
 }
@@ -606,7 +634,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
   ** on the overlap list.  (Otherwise the harvesters will drive in circles... )
   */
   //	memset(path.Overlap, 0, 512);
-  path.Overlap[source >> 5] |= 1 << ((source & 31) - 1);
+  Set_Overlap(&path, source);
 
   startcell = source;
 
@@ -1585,7 +1613,7 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
 }
 
 void FootClass::Debug_Draw_Path(PathType* path) {
-  if (!path) {
+  if (!path || !path->Command) {
     return;
   }
 
