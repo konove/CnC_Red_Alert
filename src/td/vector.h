@@ -87,7 +87,7 @@ class VectorClass {
 
   T& operator[](size_t index) { return Vector[index]; }
   const T& operator[](size_t index) const { return Vector[index]; }
-  virtual VectorClass& operator=(const VectorClass&);
+  VectorClass& operator=(const VectorClass&);
   virtual int operator==(const VectorClass&) const;
   virtual int Resize(unsigned newsize, const T* array = nullptr);
   virtual void Clear();

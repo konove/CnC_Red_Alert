@@ -47,7 +47,7 @@ class VectorClass {
     DCHECK(index >= 0 && index < VectorMax);
     return Vector[index];
   }
-  virtual VectorClass& operator=(const VectorClass&);  // Assignment operator.
+  VectorClass& operator=(const VectorClass&);  // Assignment operator.
   virtual bool operator==(const VectorClass&) const;   // Equality operator.
   virtual bool Resize(base::ssize newsize, const T* array = nullptr);
   virtual void Clear();

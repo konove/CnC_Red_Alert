@@ -67,8 +67,8 @@ class LinkClass {
   virtual void Zap();
   virtual LinkClass* Remove();
 
-  LinkClass& operator=(LinkClass& link);  // Assignment operator.
-  LinkClass(LinkClass& link);             // Copy constructor.
+  LinkClass& operator=(const LinkClass& link);  // Assignment operator.
+  LinkClass(const LinkClass& link);             // Copy constructor.
 
  private:
   /*

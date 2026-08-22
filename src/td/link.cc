@@ -85,9 +85,9 @@ LinkClass::LinkClass() { LinkClass::Zap(); }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass::LinkClass(LinkClass& link) {
+LinkClass::LinkClass(const LinkClass& link) {
   LinkClass::Zap();
-  Add(link);
+  Add(const_cast<LinkClass&>(link));
 }
 
 /***********************************************************************************************
@@ -151,10 +151,10 @@ void LinkClass::Zap() {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass& LinkClass::operator=(LinkClass& link) {
+LinkClass& LinkClass::operator=(const LinkClass& link) {
   if (this != &link) {
     Remove();
-    Add(link);
+    Add(const_cast<LinkClass&>(link));
   }
   return *this;
 }
