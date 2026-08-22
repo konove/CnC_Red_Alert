@@ -53,13 +53,13 @@ class GenericNode {
   friend class GenericList;
   GenericNode() : NextNode(nullptr), PrevNode(nullptr) {}
   virtual ~GenericNode() { Unlink(); }
-  GenericNode(GenericNode& node) { node.Link(this); }
-  GenericNode& operator=(GenericNode& node) {
-    if (&node != this) {
-      node.Link(this);
-    }
-    return *this;
-  }
+
+  // Not copyable. The original copy constructor and assignment operator did
+  // not copy -- they linked the destination into the source's list, mutating
+  // the source. Nothing in the tree ever invoked them, and GenericList has
+  // always suppressed its own copies the same way.
+  GenericNode(const GenericNode&) = delete;
+  GenericNode& operator=(const GenericNode&) = delete;
 
   void Unlink() {
     if (Is_Valid()) {
