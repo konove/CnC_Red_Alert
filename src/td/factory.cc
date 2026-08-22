@@ -99,9 +99,9 @@ int FactoryClass::Validate() const {
     num = Factories.ID(this);
     if (num < 0 || num >= FACTORY_MAX) {
       Validate_Error("FACTORY");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }

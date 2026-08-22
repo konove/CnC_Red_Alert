@@ -421,7 +421,7 @@ int TListClass<T>::Action(unsigned flags, KeyNumType& key) {
     key = KN_NONE;
     flags &= (~LEFTRELEASE);
     ControlClass::Action(flags, key);
-    return (true);
+    return true;
   }
   /*
    ** Handle keyboard events here.
@@ -491,9 +491,9 @@ int TListClass<T>::Draw_Me(bool forced) {
     if (LogicPage == &SeenBuff) {
       Conditional_Show_Mouse();
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 template <class T>
@@ -528,7 +528,7 @@ template <class T>
 T TListClass<T>::Current_Item() const {
   static T _temp;
   if (List.Count() <= SelectedIndex) {
-    return (_temp);
+    return _temp;
   }
   return (List[SelectedIndex]);
 }
@@ -568,9 +568,9 @@ int TListClass<T>::Set_View_Index(int index) {
     if (IsScrollActive) {
       ScrollGadget.Set_Value(CurrentTopIndex);
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 template <class T>
@@ -621,9 +621,9 @@ int TListClass<T>::Add_Scroll_Bar() {
     /*
     **	Return with success flag.
     */
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 template <class T>
@@ -635,9 +635,9 @@ int TListClass<T>::Remove_Scroll_Bar() {
     UpGadget.Remove();
     DownGadget.Remove();
     Flag_To_Redraw();
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 template <class T>
@@ -761,7 +761,7 @@ int TListClass<T>::Step_Selected_Index(int step) {
   int old = SelectedIndex;
 
   Set_Selected_Index(old + step);
-  return (old);
+  return old;
 }
 
 template <class T>

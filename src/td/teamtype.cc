@@ -117,9 +117,9 @@ int TeamTypeClass::Validate() const {
     num = TeamTypes.ID(this);
     if (num < 0 || num >= kTeamTypeMax) {
       Validate_Error("TEAMTYPE");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }

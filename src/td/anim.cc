@@ -120,9 +120,9 @@ int AnimClass::Validate() const {
     num = Anims.ID(this);
     if (num < 0 || num >= ANIM_MAX) {
       Validate_Error("ANIM");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }
@@ -830,8 +830,7 @@ void AnimClass::AI() {
             //						AnimTypeClass const *
             // aptr = &AnimTypeClass::As_Reference(Class->ChainTo);
 
-            (const AnimTypeClass*&)Class =
-                &AnimTypeClass::As_Reference(Class->ChainTo);
+            Class = &AnimTypeClass::As_Reference(Class->ChainTo);
 
             if (Class->IsNormalized) {
               Set_Rate(Options.Normalize_Delay(Class->Delay));

@@ -197,7 +197,7 @@ const unsigned char Pixel2Lepton[24] = {
 **	in the indexed direction.
 */
 const CELL AdjacentCell[FACING_COUNT] = {
-    -(MAP_CELL_W),      // North
+    -MAP_CELL_W,        // North
     -(MAP_CELL_W - 1),  // North East
     1,                  // East
     MAP_CELL_W + 1,     // South East

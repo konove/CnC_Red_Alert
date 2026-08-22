@@ -236,7 +236,7 @@ void ScorePrintClass::Update() {
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(1);
 
-    int pos = XPos + Stage * (12);
+    int pos = XPos + Stage * 12;
     // print the letter properly
     if (Stage) {
       Set_Font_Palette(PrimaryPalette);

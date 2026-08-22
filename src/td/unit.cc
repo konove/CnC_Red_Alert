@@ -186,9 +186,9 @@ int UnitClass::Validate() const {
     num = Units.ID(this);
     if (num < 0 || num >= UNIT_MAX) {
       Validate_Error("UNIT");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }

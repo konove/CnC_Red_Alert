@@ -314,7 +314,7 @@ void TeamClass::Code_Pointers() {
   */
   cls = Class;
   (TeamTypeClass*&)Class = (TeamTypeClass*)cls->As_Target();
-  (HouseClass*&)House = (HouseClass*)House->Class->House;
+  House = (HouseClass*)House->Class->House;
 
   /*
   --------------------------- Code the 'Member' ----------------------------
@@ -344,8 +344,7 @@ void TeamClass::Decode_Pointers() {
   */
   (TeamTypeClass*&)Class = As_TeamType(static_cast<TARGET>((uintptr_t)Class));
   Check_Ptr(Class);
-  (HouseClass*&)House =
-      HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
+  House = HouseClass::As_Pointer(static_cast<HousesType>((uintptr_t)House));
   Check_Ptr(House);
 
   /*
@@ -535,7 +534,7 @@ void AircraftClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  (const AircraftTypeClass*&)Class = &AircraftTypeClass::As_Reference(
+  Class = &AircraftTypeClass::As_Reference(
       static_cast<AircraftType>((uintptr_t)Class));
   Check_Ptr(Class);
 
@@ -630,8 +629,7 @@ void AnimClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  (const AnimTypeClass*&)Class =
-      &AnimTypeClass::As_Reference(static_cast<AnimType>((uintptr_t)Class));
+  Class = &AnimTypeClass::As_Reference(static_cast<AnimType>((uintptr_t)Class));
   Check_Ptr(Class);
 
   /*
@@ -699,7 +697,7 @@ void BuildingClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  (const BuildingTypeClass*&)Class = (BuildingTypeClass*)Class->Type;
+  Class = (BuildingTypeClass*)Class->Type;
 
   /*------------------------------------------------------------------------
   Code the Factory value; there's not target conversion routine for factories,
@@ -734,7 +732,7 @@ void BuildingClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  (const BuildingTypeClass*&)Class = &BuildingTypeClass::As_Reference(
+  Class = &BuildingTypeClass::As_Reference(
       static_cast<StructType>((uintptr_t)Class));
   Check_Ptr(Class);
 
@@ -837,7 +835,7 @@ void BulletClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  (const BulletTypeClass*&)Class =
+  Class =
       &BulletTypeClass::As_Reference(static_cast<BulletType>((uintptr_t)Class));
   Check_Ptr(Class);
 
@@ -933,7 +931,7 @@ void InfantryClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  (const InfantryTypeClass*&)Class = &InfantryTypeClass::As_Reference(
+  Class = &InfantryTypeClass::As_Reference(
       static_cast<InfantryType>((uintptr_t)Class));
   Check_Ptr(Class);
 
@@ -1019,7 +1017,7 @@ void OverlayClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  (const OverlayTypeClass*&)Class = &OverlayTypeClass::As_Reference(
+  Class = &OverlayTypeClass::As_Reference(
       static_cast<OverlayType>((uintptr_t)Class));
   Check_Ptr(Class);
 
@@ -1079,7 +1077,7 @@ void SmudgeClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  (const SmudgeTypeClass*&)Class = (SmudgeTypeClass*)Class->Type;
+  Class = (SmudgeTypeClass*)Class->Type;
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1105,7 +1103,7 @@ void SmudgeClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  (const SmudgeTypeClass*&)Class =
+  Class =
       &SmudgeTypeClass::As_Reference(static_cast<SmudgeType>((uintptr_t)Class));
   Check_Ptr(Class);
 
@@ -1191,7 +1189,7 @@ void TemplateClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  (const TemplateTypeClass*&)Class = &TemplateTypeClass::As_Reference(
+  Class = &TemplateTypeClass::As_Reference(
       static_cast<TemplateType>((uintptr_t)Class));
   Check_Ptr(Class);
 
@@ -1278,7 +1276,7 @@ void TerrainClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  (const TerrainTypeClass*&)Class = &TerrainTypeClass::As_Reference(
+  Class = &TerrainTypeClass::As_Reference(
       static_cast<TerrainType>((uintptr_t)Class));
   Check_Ptr(Class);
 
@@ -1614,7 +1612,7 @@ void HouseClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  (const HouseTypeClass*&)Class = (const HouseTypeClass*)Class->House;
+  Class = (const HouseTypeClass*)Class->House;
 }
 
 /***********************************************************************************************
@@ -1635,7 +1633,7 @@ void HouseClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  (const HouseTypeClass*&)Class =
+  Class =
       &HouseTypeClass::As_Reference(static_cast<HousesType>((uintptr_t)Class));
   Check_Ptr(Class);
 }
@@ -1878,8 +1876,7 @@ void DriveClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  (const UnitTypeClass*&)Class =
-      &UnitTypeClass::As_Reference(static_cast<UnitType>((uintptr_t)Class));
+  Class = &UnitTypeClass::As_Reference(static_cast<UnitType>((uintptr_t)Class));
   Check_Ptr(Class);
 
   /*

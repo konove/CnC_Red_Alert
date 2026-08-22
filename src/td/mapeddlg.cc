@@ -201,7 +201,7 @@ int MapEditClass::New_Scenario() {
   Set_Tactical_Position(Cell_Coord(Waypoint[WAYPT_HOME]));
   ScenarioInit--;
 
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -286,7 +286,7 @@ int MapEditClass::Load_Scenario() {
     Set_Palette(GamePalette);
   }
 
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -377,7 +377,7 @@ int MapEditClass::Save_Scenario() {
   */
   Write_Scenario_Ini(ScenarioName);
 
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -845,13 +845,13 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         playermbtn.Turn_On();
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
       case ButtonKey(BUTTON_OK):
         cancel = false;
         process = false;
         break;
 
-      case (KN_ESC):
+      case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
@@ -884,7 +884,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   */
   (*scen_nump) = atoi(scen_buf);
 
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -1291,13 +1291,13 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     .....................................................................*/
     if (grabbed == 0) {
       switch (input) {
-        case (KN_RETURN):
+        case KN_RETURN:
         case ButtonKey(BUTTON_OK):
           cancel = false;
           process = false;
           break;
 
-        case (KN_ESC):
+        case KN_ESC:
         case ButtonKey(BUTTON_CANCEL):
           cancel = true;
           process = false;
@@ -1510,7 +1510,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         XY_Cell(Cell_X(Waypoint[WAYPT_HOME]), MapCellY + MapCellHeight - 1);
   }
 
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -2048,13 +2048,13 @@ int MapEditClass::Scenario_Dialog() {
         nodwbtn.Turn_On();
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
       case ButtonKey(BUTTON_OK):
         cancel = false;
         process = false;
         break;
 
-      case (KN_ESC):
+      case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
@@ -2158,7 +2158,7 @@ int MapEditClass::Scenario_Dialog() {
     SmudgeTypeClass::Init(theater);
   }
 
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -2583,7 +2583,7 @@ int MapEditClass::Select_Trigger() {
         del_trig = true;
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
       case ButtonKey(BUTTON_OK):
         process = false;
         break;
@@ -2602,15 +2602,15 @@ int MapEditClass::Select_Trigger() {
   }
 
   if (edit_trig) {
-    return (1);
+    return 1;
   }
   if (new_trig) {
-    return (2);
+    return 2;
   }
   if (del_trig) {
-    return (3);
+    return 3;
   }
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -3174,12 +3174,12 @@ int MapEditClass::Edit_Trigger() {
         semipersistbtn.Turn_On();
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
       case ButtonKey(BUTTON_OK):
         process = false;
         break;
 
-      case (KN_ESC):
+      case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
@@ -3247,7 +3247,7 @@ int MapEditClass::Edit_Trigger() {
   if (cancel) {
     return (-1);
   }
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -3524,12 +3524,12 @@ int MapEditClass::Import_Triggers() {
       case ButtonKey(TRIGGER_LIST):
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
       case ButtonKey(BUTTON_OK):
         process = false;
         break;
 
-      case (KN_ESC):
+      case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
@@ -3587,7 +3587,7 @@ int MapEditClass::Import_Triggers() {
   if (cancel) {
     return (-1);
   }
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -3867,12 +3867,12 @@ int MapEditClass::Import_Teams() {
       case ButtonKey(TEAM_LIST):
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
       case ButtonKey(BUTTON_OK):
         process = false;
         break;
 
-      case (KN_ESC):
+      case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
@@ -3926,5 +3926,5 @@ int MapEditClass::Import_Teams() {
   if (cancel) {
     return (-1);
   }
-  return (0);
+  return 0;
 }

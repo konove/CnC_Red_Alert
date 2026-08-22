@@ -219,9 +219,9 @@ int BuildingClass::Validate() const {
     num = Buildings.ID(this);
     if (num < 0 || num >= BUILDING_MAX) {
       Validate_Error("BUILDING");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }

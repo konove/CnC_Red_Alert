@@ -103,7 +103,7 @@ static int Select_To_Entry(int select, unsigned long bitfield, int index) {
   int placement;
 
   if (bitfield == 0xFFFFFFFFL) { /* if all bits are set	*/
-    return (select);             /*		then it as is		*/
+    return select;               /*		then it as is		*/
   }
 
   placement = 0;                                  /* current pos zero		*/
@@ -118,7 +118,7 @@ static int Select_To_Entry(int select, unsigned long bitfield, int index) {
     placement++;
   }
 
-  return (placement); /* return the position	*/
+  return placement; /* return the position	*/
 }
 
 /*=========================================================================*/
@@ -301,7 +301,7 @@ int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
   **	out the new selected item, and continue forward.
   */
   mx1 = (WinX << 3) + (menu.x * FontWidth); /* get menu coords		*/
-  my1 = (WinY) + (menu.y) - halfskip;       /*		from the menu
+  my1 = WinY + (menu.y) - halfskip;         /*		from the menu
                                              */
   mx2 = mx1 + (menu.item_width * FontWidth) -
         1; /*		structure as		*/
@@ -407,7 +407,7 @@ int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
 
   menu.selected = newitem; /* update menu select	*/
 
-  return (select);
+  return select;
 }
 
 /***************************************************************************
@@ -507,7 +507,7 @@ int Do_Menu(const char** strings, bool blue) {
   HidPage.Blit(SeenBuff);
   Change_Window((int)WINDOW_MAIN);
   Map.Flag_To_Redraw(true);
-  return (selection);
+  return selection;
 }
 
 /***************************************************************************

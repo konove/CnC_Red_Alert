@@ -153,9 +153,9 @@ int TriggerClass::Validate() const {
     num = Triggers.ID(this);
     if (num < 0 || num >= TRIGGER_MAX) {
       Validate_Error("TRIGGER");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }

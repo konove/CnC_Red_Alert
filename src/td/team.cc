@@ -124,9 +124,9 @@ int TeamClass::Validate() const {
     num = Teams.ID(this);
     if (num < 0 || num >= TEAM_MAX) {
       Validate_Error("TEAM");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }

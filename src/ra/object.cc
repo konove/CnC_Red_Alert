@@ -1161,7 +1161,7 @@ bool ObjectClass::Render(bool forced)  // const
         **	relative, so add the window's x-coord to 'x'.
         */
         if (MapEditorActive && Trigger.Is_Valid()) {
-          Fancy_Text_Print(Trigger->Class->IniName, x + (WinX), y,
+          Fancy_Text_Print(Trigger->Class->IniName, x + WinX, y,
                            &ColorRemaps[PCOLOR_RED], TBLACK,
                            TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
         }

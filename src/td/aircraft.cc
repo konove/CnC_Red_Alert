@@ -175,9 +175,9 @@ int AircraftClass::Validate() const {
     num = Aircraft.ID(this);
     if (num < 0 || num >= AIRCRAFT_MAX) {
       Validate_Error("AIRCRAFT");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }

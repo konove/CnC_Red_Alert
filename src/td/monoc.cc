@@ -109,7 +109,7 @@ MonoClass::MonoClass() {
   for (index = 0; index < MAX_MONO_PAGES; index++) {
     if (!PageUsage[index]) {
       PageUsage[index] = this;
-      Page = static_cast<char>(index);
+      Page = index;
       break;
     }
   }

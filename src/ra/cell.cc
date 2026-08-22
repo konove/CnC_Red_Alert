@@ -935,7 +935,7 @@ static bool _Calc_Partial_Window(int cellx, int celly, int& drawx, int& drawy) {
     px = tx;
   }
   if (pw < 1) {
-    return (false);
+    return false;
   }
 
   if (py < ty) {
@@ -943,26 +943,26 @@ static bool _Calc_Partial_Window(int cellx, int celly, int& drawx, int& drawy) {
     py = ty;
   }
   if (ph < 1) {
-    return (false);
+    return false;
   }
 
   if (px + pw > tx + tw) {
     pw -= (px + pw) - (tx + tw);
   }
   if (pw < 1) {
-    return (false);
+    return false;
   }
 
   if (py + ph > ty + th) {
     ph -= (py + ph) - (ty + th);
   }
   if (ph < 1) {
-    return (false);
+    return false;
   }
 
   drawx = drawx - (px - tx);
   drawy = drawy - (py - ty);
-  return (true);
+  return true;
 }
 
 #endif

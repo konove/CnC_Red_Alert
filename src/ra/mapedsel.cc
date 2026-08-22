@@ -166,7 +166,7 @@ int MapEditClass::Select_Object() {
   HidPage.Clear();
   Flag_To_Redraw(true);
 
-  return (rc);
+  return rc;
 }
 
 /***************************************************************************
@@ -532,7 +532,7 @@ int MapEditClass::Move_Grabbed_Object() {
 
   Flag_To_Redraw(true);
 
-  return (retval);
+  return retval;
 }
 
 /***************************************************************************
@@ -557,14 +557,14 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   **	Return if no current object
   */
   if (!CurrentObject.Count()) {
-    return (false);
+    return false;
   }
 
   /*
   **	Only techno objects can be owned by a house; return if not a techno
   */
   if (!CurrentObject[0]->Is_Techno()) {
-    return (false);
+    return false;
   }
 
   /*
@@ -572,14 +572,14 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   */
   if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING &&
       Base.Is_Node((BuildingClass*)CurrentObject[0])) {
-    return (false);
+    return false;
   }
 
   /*
   **	Verify that the target house exists
   */
   if (HouseClass::As_Pointer(newhouse) == nullptr) {
-    return (false);
+    return false;
   }
 
   /*
@@ -600,5 +600,5 @@ bool MapEditClass::Change_House(HousesType newhouse) {
     tp->IsOwnedByPlayer = true;
   }
 
-  return (true);
+  return true;
 }

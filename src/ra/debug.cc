@@ -385,7 +385,7 @@ static const char* Bench_Time(BenchType btype) {
   }
   percent = std::min(percent, 99);
   sprintf(buffer, "%-2d%% %7" PRId64, percent, time);
-  return (buffer);
+  return buffer;
 }
 
 /***********************************************************************************************

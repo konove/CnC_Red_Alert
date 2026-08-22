@@ -362,10 +362,10 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
         NumType[8]++;
         break;
     }
-    return (true);
+    return true;
   }
 
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -706,7 +706,6 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       }
       // Prog_End();
       Emergency_Exit(0);
-      break;
 
     /*
     **	LEFT = go to previous placement object
@@ -1462,7 +1461,7 @@ bool MapEditClass::Mouse_Moved() {
   **	Return if no motion
   */
   if (old_mx == Get_Mouse_X() && old_my == Get_Mouse_Y()) {
-    return (false);
+    return false;
   }
 
   /*
@@ -1477,7 +1476,7 @@ bool MapEditClass::Mouse_Moved() {
       old_mx = Get_Mouse_X();
       old_my = Get_Mouse_Y();
       old_zonecell = ZoneCell;
-      return (false);
+      return false;
     }
   }
 
@@ -1496,7 +1495,7 @@ bool MapEditClass::Mouse_Moved() {
   old_mx = Get_Mouse_X();
   old_my = Get_Mouse_Y();
   old_zonecell = ZoneCell;
-  return (retcode);
+  return retcode;
 }
 
 /***************************************************************************
@@ -1851,7 +1850,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
     //		}
   }
 
-  return (curhouse);
+  return curhouse;
 }
 
 /***************************************************************************
@@ -2054,7 +2053,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
       /*
       ** ESC/Cancel: break
       */
-      case (KN_ESC):
+      case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         Hide_Mouse();
         SeenPage.Clear();
@@ -2070,11 +2069,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
   }
 
   Map.Flag_To_Redraw(true);
-  if (cancel) {
-    return (false);
-  }
-
-  return (true);
+  return !cancel;
 }
 
 void MapEditClass::Update_Waypoint(int waypt_idx) {

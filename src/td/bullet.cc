@@ -111,9 +111,9 @@ int BulletClass::Validate() const {
     num = Bullets.ID(this);
     if (num < 0 || num >= BULLET_MAX) {
       Validate_Error("BULLET");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }

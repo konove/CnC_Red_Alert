@@ -481,7 +481,7 @@ int MapEditClass::Select_Team(const char* caption) {
         del_team = true;
         break;
 
-      case (KN_RETURN):
+      case KN_RETURN:
       case ButtonKey(BUTTON_OK):
         process = false;
         break;
@@ -499,15 +499,15 @@ int MapEditClass::Select_Team(const char* caption) {
     delete[] teamtext[i];
   }
   if (edit_team) {
-    return (1);
+    return 1;
   }
   if (new_team) {
-    return (2);
+    return 2;
   }
   if (del_team) {
-    return (3);
+    return 3;
   }
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -1422,7 +1422,7 @@ int MapEditClass::Edit_Team() {
     CurTeam->MissionList[i] = missions[i];
   }
 
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -1802,7 +1802,7 @@ int MapEditClass::Team_Members(HousesType house) {
       /*
       **	Mouse buttons set or clear 'held' values
       */
-      case (KN_LMOUSE):
+      case KN_LMOUSE:
         if (curclass >= 0 && curclass < maxclasses) {
           lheld = 1;
           tindex = 2;
@@ -1810,7 +1810,7 @@ int MapEditClass::Team_Members(HousesType house) {
         }
         break;
 
-      case (KN_RMOUSE):
+      case KN_RMOUSE:
         if (curclass >= 0 && curclass < maxclasses) {
           rheld = 1;
           tindex = 2;
@@ -1981,7 +1981,7 @@ int MapEditClass::Team_Members(HousesType house) {
   if (cancel) {
     return (-1);
   }
-  return (0);
+  return 0;
 }
 
 /***********************************************************************************************

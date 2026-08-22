@@ -233,12 +233,11 @@ int MapEditClass::New_Scenario() {
   (*this)[TacticalCoord].IsWaypoint = 1;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
-  Set_Tactical_Position(Cell_Coord(Scen.Waypoint[WAYPT_HOME] -
-                                   (MAP_CELL_W * 8) -
-                                   (10)));
+  Set_Tactical_Position(
+      Cell_Coord(Scen.Waypoint[WAYPT_HOME] - (MAP_CELL_W * 8) - 10));
   ScenarioInit--;
 
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -343,7 +342,7 @@ int MapEditClass::Load_Scenario() {
       //		Set_Palette(GamePalette);
     }
 
-    return (0);
+    return 0;
   }
 
   /***************************************************************************
@@ -439,7 +438,7 @@ int MapEditClass::Load_Scenario() {
     */
     Write_Scenario_INI(Scen.ScenarioName);
 
-    return (0);
+    return 0;
   }
 
   /***************************************************************************
@@ -872,13 +871,13 @@ int MapEditClass::Load_Scenario() {
           }
           break;
 
-        case (KN_RETURN):
+        case KN_RETURN:
         case ButtonKey(BUTTON_OK):
           cancel = false;
           process = false;
           break;
 
-        case (KN_ESC):
+        case KN_ESC:
         case ButtonKey(BUTTON_CANCEL):
           cancel = true;
           process = false;
@@ -937,7 +936,7 @@ int MapEditClass::Load_Scenario() {
       // scen_nump);Keyboard->Get();Keyboard->Get();
     }
 
-    return (0);
+    return 0;
   }
 
   /***************************************************************************
@@ -1358,13 +1357,13 @@ int MapEditClass::Load_Scenario() {
       */
       if (grabbed == 0) {
         switch (input) {
-          case (KN_RETURN):
+          case KN_RETURN:
           case ButtonKey(BUTTON_OK):
             cancel = false;
             process = false;
             break;
 
-          case (KN_ESC):
+          case KN_ESC:
           case ButtonKey(BUTTON_CANCEL):
             cancel = true;
             process = false;
@@ -1618,7 +1617,7 @@ int MapEditClass::Load_Scenario() {
                                           MapCellY + MapCellHeight - 1);
     }
 
-    return (0);
+    return 0;
   }
 
   /***************************************************************************
@@ -2339,14 +2338,14 @@ int MapEditClass::Load_Scenario() {
           fetch = true;
           break;
 
-        case (KN_RETURN):
+        case KN_RETURN:
         case ButtonKey(BUTTON_OK):
           cancel = false;
           process = false;
           fetch = true;
           break;
 
-        case (KN_ESC):
+        case KN_ESC:
         case ButtonKey(BUTTON_CANCEL):
           cancel = true;
           process = false;
@@ -2497,7 +2496,7 @@ int MapEditClass::Load_Scenario() {
       //		LastTheater = theater;
     }
 
-    return (0);
+    return 0;
   }
 
   /***************************************************************************
@@ -2823,7 +2822,7 @@ int MapEditClass::Load_Scenario() {
           del_trig = true;
           break;
 
-        case (KN_RETURN):
+        case KN_RETURN:
         case ButtonKey(BUTTON_OK):
           process = false;
           break;
@@ -2838,13 +2837,13 @@ int MapEditClass::Load_Scenario() {
     Render();
 
     if (edit_trig) {
-      return (1);
+      return 1;
     }
     if (new_trig) {
-      return (2);
+      return 2;
     }
     if (del_trig) {
-      return (3);
+      return 3;
     }
-    return (0);
+    return 0;
   }

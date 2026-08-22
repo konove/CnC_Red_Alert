@@ -194,8 +194,10 @@ estimate of *cost per site* was right; the estimate of *site count* was not.
 
 These 26 checks were clean across the entire 10% sample, so this section was written up as free. Measured against every
 translation unit in `cmake-build-strict-ra-clang-22` (1001 entries: 586 regular plus 415 header-verification units) they
-cost **336 sites**. Twenty-four are now enabled and cleared — see [Progress](#progress) for the three commits and what
-they turned up.
+cost **336 sites**. Twenty-four were enabled and cleared — see [Progress](#progress) for the three commits and what
+they turned up. Twenty-three are still on: clang-tidy 22 broadened
+`bugprone-unchecked-string-to-number-conversion` from clean to 200 sites, and it was disabled rather than swept — see
+[clang-tidy 22 fallout](#clang-tidy-22-fallout).
 
 Enabled, with their measured tree-wide counts:
 
@@ -210,7 +212,7 @@ Enabled, with their measured tree-wide counts:
 
 The remaining 19 are `bugprone-unhandled-self-assignment`, `bugprone-sizeof-expression`,
 `bugprone-redundant-branch-condition`, `bugprone-inc-dec-in-conditions`,
-`bugprone-unchecked-string-to-number-conversion`, `clang-diagnostic-self-assign`,
+`bugprone-unchecked-string-to-number-conversion` (since disabled), `clang-diagnostic-self-assign`,
 `clang-diagnostic-char-subscripts`, `clang-diagnostic-null-arithmetic`, `clang-diagnostic-logical-not-parentheses`,
 `clang-diagnostic-format-security`, `clang-diagnostic-varargs`, `misc-redundant-expression`,
 `misc-definitions-in-headers`, `readability-misleading-indentation`, `cert-oop57-cpp`,
@@ -281,22 +283,53 @@ existing save, so it has not been done; the gap is recorded here rather than clo
 
 ## clang-tidy 22 fallout
 
-The toolchain moved from clang-tidy 21 to 22 on 2026-08-20. **The strict build is red as a result**, and none of it
-comes from §1.2 — the four checks below are all enabled through `'*'` (none is in the disable list) and all four are
-either new in 22 or newly stronger in 22. Measured over the same 838 translation units, deduplicated by site:
+The toolchain moved from clang-tidy 21 to 22 on 2026-08-20, which turned the strict build red. None of it came from
+§1.2 — the four checks below were all enabled through `'*'` and all four are either new in 22 or newly stronger in 22.
+Measured over the same 838 translation units, deduplicated by site. **All four are now resolved and the strict build
+is green again**: two swept, two disabled.
 
-| Check                                            | Sites | Files | Note                                                            |
-|--------------------------------------------------|-------|-------|-----------------------------------------------------------------|
-| `bugprone-unchecked-string-to-number-conversion` | 200   | 47    | Was enabled and **clean** under 21 as part of §1.1; 22 broadened it |
-| `readability-redundant-parentheses`              | 170   | 34    | New in 22. Almost all of it is the legacy `return (x);` idiom   |
-| `llvm-prefer-static-over-anonymous-namespace`    | 5     | 2     | New in 22                                                       |
-| `readability-redundant-typename`                 | 1     | 1     | New in 22 — `src/ra/search.h:626`                               |
+| Check                                            | Sites | Files | Status                                                              |
+|--------------------------------------------------|-------|-------|---------------------------------------------------------------------|
+| `bugprone-unchecked-string-to-number-conversion` | 200   | 47    | ✅ Disabled → [Tier 3](#tier-3-keep-disabled--high-volume-near-zero-bug-yield). Was clean under 21 as part of §1.1; 22 broadened it |
+| `readability-redundant-parentheses`              | 170   | 34    | ✅ Swept. New in 22. Almost all of it was the legacy `return (x);` idiom |
+| `llvm-prefer-static-over-anonymous-namespace`    | 5     | 2     | ✅ Disabled — style-only, and Google style permits both spellings   |
+| `readability-redundant-typename`                 | 1     | 1     | ✅ Fixed. New in 22 — `src/ra/search.h:626`                          |
 
-`readability-redundant-parentheses` and `readability-redundant-typename` are mechanical. The 200
-`unchecked-string-to-number-conversion` sites are `atoi`/`atol` on INI and network data and overlap
-`cert-err34-c`, which [Tier 3](#tier-3-keep-disabled--high-volume-near-zero-bug-yield) deliberately keeps disabled at
-19 sample sites for exactly this reason — so the honest choice there is between fixing 200 sites and adding the check
-to the disable list, not a mechanical sweep. Nothing here has been decided or actioned yet.
+The two mechanical ones are done, and both now measure 0 sites tree-wide.
+`readability-redundant-parentheses` was swept with `clang-tidy --export-fixes` over all 840 units, applied with
+`clang-apply-replacements --format`. The 170 sites were `return (x);` → `return x;`, `case (KN_ESC):` →
+`case KN_ESC:`, and a handful of expression parens (`Stage * (12)`, `x + (WinX)`, `-(MAP_CELL_W)`). Formatting
+fallout was one re-wrap (`src/ra/mapeddlg.cc:236`) and two trailing-comment realignments (`src/td/const.cc:200`,
+`src/td/menus.cc:304`); nothing else moved. `readability-redundant-typename` was the single `src/ra/search.h:626`
+line, valid to drop since C++20 P0634.
+
+`llvm-prefer-static-over-anonymous-namespace` is **disabled** as style-only.
+[Google style](https://google.github.io/styleguide/cppguide.html#Internal_Linkage) explicitly permits either spelling
+("put it in an unnamed namespace or declare it `static`") and `CLAUDE.md` makes Google style primary, so the check
+enforces an LLVM house preference this project has not adopted. All 5 sites are test helpers in
+`src/sdllib/font_test.cc` and `src/winvq/vqa32/vqaplay_test.cc`, and both files need their anonymous namespace anyway
+— it wraps the fixtures (`VqaPlayTest`) and the `TEST_F` bodies. Satisfying the check would move only the free
+helpers out to file-scope `static`, separating them from the fixtures they exist to serve. It would also fire on
+every future test helper written the idiomatic way.
+
+`bugprone-unchecked-string-to-number-conversion` is now **disabled**, joining `cert-err34-c` in Tier 3 — it is the
+same 200 sites seen tree-wide rather than in a 19-file sample. Three findings decided it:
+
+- **Nothing remote reaches these calls.** All 200 read a local `.INI` (modem and sound-card settings, rules,
+  scenario data) or a UI edit box. The 24 in each `teamtype.cc` and every `MPlayerCredits` site in `netdlg.cc` /
+  `nulldlg.cc` are `Get_Text()` off a map-editor or lobby gadget, not packet data.
+- **The 18 `sscanf` sites cannot be fixed by checking the return value.** `src/ra/session.cc:1007` already reads
+  `if (sscanf(buf, "%x", &trap_target) == 1)` and is still flagged: the check's complaint is unreported *overflow*,
+  not match failure. Only a rewrite to `strtoul` silences them.
+- **Where a bad value would actually hurt, the check aims at the wrong thing.** The hazard is an out-of-range value
+  indexing a type array, and `atoi` → `strtol` does not help — a well-formed `"999"` is exactly as dangerous. Range
+  checking is the fix, and several sites already do it (`Bound(atoi(credbuf), 0, 9999)`,
+  `src/td/nulldlg.cc:4124`).
+
+Fixing all 200 was rejected on that basis, as was routing them through a behaviour-preserving `ParseInt` helper —
+that silences the check without changing what the code does, which is worse than saying so here. If the parsing is
+ever hardened for real, do it as range validation at the INI and gadget boundary, and re-enable this check afterwards
+as the regression guard.
 
 Reproduce with the sweep under [Re-measuring](#re-measuring), substituting these four check names.
 
@@ -356,6 +389,8 @@ Budget for that before enabling it anywhere that serializes.
 | `performance-enum-size`            | 168    | Enum storage width is irrelevant at this scale         |
 | `bugprone-macro-parentheses`       | 28     | 1990s macros; fixes risk changing behaviour            |
 | `cert-err34-c`                     | 19     | Unchecked `atoi` in INI parsing; low real-world impact |
+| `bugprone-unchecked-string-to-number-conversion` | 200 | Same sites as `cert-err34-c`, seen tree-wide — see below |
+| `llvm-prefer-static-over-anonymous-namespace` | 5 | Style-only; Google style permits unnamed namespaces |
 | `bugprone-branch-clone`            | 9      | Intentionally parallel branches throughout game logic  |
 | `performance-no-int-to-ptr`        | 1      | Legacy handle/pointer punning                          |
 
@@ -467,10 +502,10 @@ which reads exactly like a clean one.
 | Tier      | Checks | Sample sites | Status                                                                     |
 |-----------|--------|--------------|----------------------------------------------------------------------------|
 | 1 (table) | 13     | ~41          | ✅ **Done** — 206 files touched, 18 latent bugs surfaced                   |
-| 1.1       | 26     | 0 (336 real) | ✅ **Done** — 24 enabled, 7 more real bugs; 1 off for good, 1 moved to 1.5 |
+| 1.1       | 26     | 0 (336 real) | ✅ **Done** — 24 enabled (23 after 22), 7 more real bugs; 1 off for good, 1 moved to 1.5 |
 | 1.2       | 1      | 0            | ✅ **Done** — free, but it guards nothing; save layout pinned in tests     |
 | 1.5       | 6      | 128          | Enable after fixing `vector.h` / `listnode.h`; `VirtualCall` last          |
 | 2         | 7      | 576          | Per-directory only, tied to type migration                                 |
 | 3         | ~230   | —            | Keep disabled                                                              |
 
-Disabled-check count: **275 → 236**.
+Disabled-check count: **275 → 238**.

@@ -553,7 +553,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Next in list
       */
-      case (KN_RIGHT):
+      case KN_RIGHT:
       case ButtonKey(BUTTON_NEXT):
         /*
         **	Increment to next obj
@@ -571,7 +571,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Previous in list
       */
-      case (KN_LEFT):
+      case KN_LEFT:
       case ButtonKey(BUTTON_PREV):
 
         /*
@@ -670,7 +670,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	OK
       */
-      case (KN_RETURN):
+      case KN_RETURN:
       case ButtonKey(BUTTON_OK):
         cancel = false;
         process = false;
@@ -679,7 +679,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Cancel
       */
-      case (KN_ESC):
+      case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         cancel = true;
         process = false;
@@ -701,7 +701,7 @@ int MapEditClass::Placement_Dialog() {
     return (-1);
   }
 
-  return (0);
+  return 0;
 }
 
 /***************************************************************************
@@ -938,7 +938,7 @@ int MapEditClass::Place_Object() {
         // ScenarioInit--;
         TotalValue = Overpass();
         Flag_To_Redraw(false);
-        return (0);
+        return 0;
       }
 
       /*
@@ -990,7 +990,7 @@ int MapEditClass::Place_Object() {
       PendingHouse = HOUSE_NONE;
       Set_Cursor_Shape(nullptr);
       // ScenarioInit--;
-      return (0);
+      return 0;
     }
 
     // ScenarioInit--;
@@ -1026,7 +1026,7 @@ int MapEditClass::Place_Object() {
     PendingHouse = HOUSE_NONE;
     Set_Cursor_Shape(nullptr);
     // ScenarioInit--;
-    return (0);
+    return 0;
   }
 
   return (-1);

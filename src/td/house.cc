@@ -192,9 +192,9 @@ int HouseClass::Validate() const {
     num = Houses.ID(this);
     if (num < 0 || num >= HOUSE_MAX) {
       Validate_Error("HOUSE");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }

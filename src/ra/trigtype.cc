@@ -1688,7 +1688,7 @@ bool TriggerTypeClass::Edit() {
             Action2.Data.Quarry = QuarryType(qlist1.Current_Index());
             break;
         }
-        return (true);
+        return true;
 
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
@@ -1707,7 +1707,7 @@ bool TriggerTypeClass::Edit() {
         break;
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -1812,7 +1812,7 @@ const char* TriggerTypeClass::Description() const {
     sprintf(_buffer, "%4.4s\t %s %c%c%c  %s%s", IniName,
             HouseTypeClass::As_Reference(House).Suffix, pers, special, special2,
             Name_From_Event(Event1.Event), added);
-    return (_buffer);
+    return _buffer;
   }
   return "";
 }

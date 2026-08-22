@@ -98,9 +98,9 @@ int TemplateClass::Validate() const {
     num = Templates.ID(this);
     if (num < 0 || num >= TEMPLATE_MAX) {
       Validate_Error("TEMPLATE");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }

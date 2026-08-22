@@ -215,9 +215,9 @@ int InfantryClass::Validate() const {
     num = Infantry.ID(this);
     if (num < 0 || num >= INFANTRY_MAX) {
       Validate_Error("INFANTRY");
-      return (0);
+      return 0;
     }
-    return (1);
+    return 1;
   } else {
     return 1;
   }

@@ -1473,7 +1473,7 @@ int atoh(char* str) {
     }
     str++;
   }
-  return (retval);
+  return retval;
 }
 
 /***********************************************************************************************
@@ -1520,7 +1520,7 @@ const char* TeamTypeClass::Member_Description() const {
       port::SafeCopy(&buffer[25 - 3], "...", 4);
     }
 
-    return (buffer);
+    return buffer;
   }
   return "";
 }
@@ -1563,7 +1563,7 @@ const char* TeamTypeClass::Description() const {
     sprintf(_buffer, "%s\t%s\t%c%s\t%d\t%s", IniName,
             HouseTypeClass::As_Reference(House).Suffix, extra, loc,
             MissionCount, Member_Description());
-    return (_buffer);
+    return _buffer;
   }
   return "";
 }
@@ -1624,7 +1624,7 @@ const char* TeamMissionClass::Description(int index) const {
         break;
     }
 
-    return (buffer);
+    return buffer;
   }
   return "";
 }

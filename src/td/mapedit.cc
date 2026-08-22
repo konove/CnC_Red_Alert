@@ -436,10 +436,10 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
         NumType[7]++;
         break;
     }
-    return (true);
+    return true;
   }
 
-  return (false);
+  return false;
 }
 
 /***************************************************************************
@@ -1330,7 +1330,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       input = KN_NONE;
       break;
 
-    case (KN_LMOUSE):
+    case KN_LMOUSE:
       input = KN_NONE;
       break;
 
@@ -1445,7 +1445,7 @@ bool MapEditClass::Mouse_Moved() {
   -------------------------- Return if no motion ---------------------------
   */
   if (old_mx == Get_Mouse_X() && old_my == Get_Mouse_Y()) {
-    return (false);
+    return false;
   }
 
   /*
@@ -1460,7 +1460,7 @@ bool MapEditClass::Mouse_Moved() {
       old_mx = Get_Mouse_X();
       old_my = Get_Mouse_Y();
       old_zonecell = ZoneCell;
-      return (false);
+      return false;
     }
   }
 
@@ -1482,7 +1482,7 @@ bool MapEditClass::Mouse_Moved() {
   old_mx = Get_Mouse_X();
   old_my = Get_Mouse_Y();
   old_zonecell = ZoneCell;
-  return (retcode);
+  return retcode;
 }
 
 /***************************************************************************
@@ -1852,7 +1852,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
     }
   }
 
-  return (curhouse);
+  return curhouse;
 }
 
 /***************************************************************************
