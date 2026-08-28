@@ -74,6 +74,10 @@ cached and 23.9 s cold to 4.5 s warm — a 5x rebuild, gated entirely on keeping
 The cache defaults to `/tmp/ctcache-$USER`, which does not survive a reboot; set `CTCACHE_DIR=~/.cache/ctcache` to
 keep it.
 
+Editing `.clang-tidy` re-checks the whole tree on the next build — its hash rides along in the clang-tidy command
+line, so a config change makes every object stale. No `clean` needed (and `clean` is expensive: it throws away
+objects ccache can restore for free, but nothing can restore the analysis).
+
 **CLion:** nothing to configure — reload the CMake project (*File | Reload CMake Project*) and check the CMake tool
 window for the status lines. Ensure CLion's toolchain PATH sees `/usr/bin`; if `ccache` shows as not found there
 but works in a terminal, set the full path in *Settings | Build, Execution, Deployment | CMake | Environment* via

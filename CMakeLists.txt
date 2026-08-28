@@ -52,6 +52,18 @@ if (STRICT_CHECKS)
             "clang-tidy"
             "--header-filter=${CMAKE_SOURCE_DIR}/src/(base|port|sdllib|tech|winvq|ra|td)/.*"
     )
+    # Ninja decides what is stale from the command line and the declared inputs,
+    # and .clang-tidy is neither: editing it leaves every object untouched and
+    # the build reports "no work to do". Hash the config into the tidy
+    # invocation so any edit changes the command, and re-run CMake when the file
+    # changes so the hash is refreshed. The -D is never referenced by any code;
+    # it exists only to carry the hash into the command line.
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+            "${CMAKE_SOURCE_DIR}/.clang-tidy")
+    file(SHA256 "${CMAKE_SOURCE_DIR}/.clang-tidy" CLANG_TIDY_CONFIG_HASH)
+    list(APPEND CMAKE_CXX_CLANG_TIDY
+            "--extra-arg=-DCLANG_TIDY_CONFIG_HASH=${CLANG_TIDY_CONFIG_HASH}")
+
     # ctcache takes the clang-tidy invocation as its arguments, so it goes in
     # front of the list rather than replacing anything in it. Set by Speedup.
     if (CTCACHE_PROGRAM)
