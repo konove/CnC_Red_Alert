@@ -2,18 +2,19 @@
 
 ## Overview
 
-`.clang-tidy` enables all checks (`'*'`) and then disables **236** of them. This document prioritizes which of those 236
-to re-enable, ordered by **measured bug yield per unit of fix effort**.
+`.clang-tidy` enables all checks (`'*'`) and then disables **236** of them. This document prioritizes which of those
+236 to re-enable, ordered by **measured bug yield per unit of fix effort**.
 
 Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
 (see [Methodology](#methodology)). Every count in the tables is a real diagnostic site in this repository.
 
-**Tier 1, §1.1 and §1.2 are complete.** All ten rows of the Tier 1 table (13 checks) are enabled, 24 of the 26 checks
-in §1.1, and the single §1.2 check; see [Progress](#progress). The two §1.1 checks left out are deliberate — see
-[1.1](#11-free-guards--the-name-was-wrong). The next work is Tier 1.5.
+**Tier 1, §1.1 and §1.2 are complete, and Tier 1.5 is three checks of six in.** All ten rows of the Tier 1 table (13
+checks) are enabled, 24 of the 26 checks in §1.1, and the single §1.2 check; see [Progress](#progress). The two §1.1
+checks left out are deliberate — see [1.1](#11-free-guards--the-name-was-wrong). What is left in Tier 1.5 is the
+destructor pair and `VirtualCall`.
 
-⚠️ **The toolchain moved to clang-tidy 22 on 2026-08-20 and the strict build is currently red** for reasons unrelated
-to any tier below — see [clang-tidy 22 fallout](#clang-tidy-22-fallout).
+The clang-tidy 22 move on 2026-08-20 turned the strict build red for reasons unrelated to any tier below; all four
+causes are resolved and it is green again — see [clang-tidy 22 fallout](#clang-tidy-22-fallout).
 
 ### Two facts that shape everything below
 
@@ -130,6 +131,16 @@ been red on an enabled check.
 |-------------------------------------------------|------------|-------|------------------------------------------------------------------------------------------------------------------------------------|
 | `bugprone-raw-memory-call-on-non-trivial-type`  | `c580283d` | 0     | Free, and it guards nothing this document thought it did — see [1.2](#12-the-check-that-was-not-what-this-document-thought-it-was) |
 | — (no check; `src/{ra,td}/heap_layout_test.cc`) | `201cfb3c` | —     | `sizeof()` pinned for 44 RA and 35 TD byte-serialized types; the actual tripwire on the save format                                |
+
+### 1.5
+
+| Check                                   | Commit     | Sites | Outcome                                                                                                                                       |
+|-----------------------------------------|------------|-------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `misc-unconventional-assign-operator`   | `7a9e933b` | 9     | `virtual` dropped from `VectorClass::operator=` in both games; TD's `LinkClass` brought in line with RA                                       |
+| `cert-oop58-cpp`                        | `30cb1c6e` | 2     | `GenericNode`'s copy operations deleted — they spliced the destination into the source's list rather than copying                             |
+| `clang-diagnostic-overloaded-virtual`   | `bc3c370c` | 28    | 6 live bugs: vessel damage, TD turret-locked movement, anim/bullet refresh lists in both games, RA checklist items, 4 null-modem stubs        |
+
+`src/ra/vector.h` and `src/tech/listnode.h`, which Phase B named as the prerequisite, were cleared by the first two.
 
 Three lessons worth carrying into the next tier:
 
@@ -339,16 +350,20 @@ Reproduce with the sweep under [Re-measuring](#re-measuring), substituting these
 
 The `AbstractClass → ObjectClass → TechnoClass → ...` hierarchy makes these more dangerous here than in typical code.
 
-| Check                                        | Sample | Notes                                                  |
-|----------------------------------------------|--------|--------------------------------------------------------|
-| `clang-diagnostic-overloaded-virtual`        | 10     | silently shadowed virtuals — behaviour bugs, not style |
-| `cppcoreguidelines-virtual-class-destructor` | 14     | polymorphic delete through base                        |
-| `clang-diagnostic-non-virtual-dtor`          | 12     | overlaps the above                                     |
-| `misc-unconventional-assign-operator`        | 4      | `ra/vector.h:43,84,85` — `virtual operator=`           |
-| `cert-oop58-cpp`                             | 2      | `tech/listnode.h:56,59` — copy ctor mutates its source |
-| `clang-analyzer-optin.cplusplus.VirtualCall` | **86** | moved down from §1.1; needs ctor/dtor restructuring    |
+| Check                                        | Sample | Tree-wide | Status                                                                  |
+|----------------------------------------------|--------|-----------|-------------------------------------------------------------------------|
+| `misc-unconventional-assign-operator`        | 4      | 9         | ✅ Done, `7a9e933b`                                                     |
+| `cert-oop58-cpp`                             | 2      | 2         | ✅ Done, `30cb1c6e`                                                     |
+| `clang-diagnostic-overloaded-virtual`        | 10     | **28**    | ✅ Done, `bc3c370c` — silently shadowed virtuals, 6 of them live bugs   |
+| `cppcoreguidelines-virtual-class-destructor` | 14     | **32**    | Next, with the row below                                                |
+| `clang-diagnostic-non-virtual-dtor`          | 12     | **27**    | 26 of its 27 sites are also the row above — one job, not two            |
+| `clang-analyzer-optin.cplusplus.VirtualCall` | **86** | 86        | Last; moved down from §1.1, needs ctor/dtor restructuring               |
 
-`vector.h` and `listnode.h` are foundational; fixing those two files clears most of this tier.
+Tree-wide counts are over all 840 translation units in `cmake-build-strict-ra-clang-22`, deduplicated by site,
+measured 2026-08-28. The sample under-predicted all of them except `cert-oop58-cpp`, as it did for Tier 1.
+
+The two destructor checks belong in a single commit: they overlap on 26 sites, so clearing them separately means
+touching the same declarations in `src/td/type.h` and elsewhere twice.
 
 ---
 
@@ -446,11 +461,14 @@ globally.
    `cert-oop57-cpp` under a new name, and to have no visibility into the save path at all; the real guard is the pair
    of layout tests added in `201cfb3c`. See [1.2](#12-the-check-that-was-not-what-this-document-thought-it-was).
 
-### Phase B — Tier 1.5
-  
-Fix `src/ra/vector.h` and `src/tech/listnode.h` first, then enable the five original checks and clear the remainder.
-`clang-analyzer-optin.cplusplus.VirtualCall` (86 sites) belongs to this phase and should go last, since it is the one
-that actually changes constructor and destructor behaviour.
+### Phase B — Tier 1.5, in progress
+
+1. ~~Fix `src/ra/vector.h` and `src/tech/listnode.h` first~~ — done in `7a9e933b` and `30cb1c6e`, which is what
+   enabling `misc-unconventional-assign-operator` and `cert-oop58-cpp` amounted to.
+2. ~~`clang-diagnostic-overloaded-virtual`~~ — done in `bc3c370c`, 28 sites.
+3. `cppcoreguidelines-virtual-class-destructor` and `clang-diagnostic-non-virtual-dtor` together, 33 distinct sites.
+4. `clang-analyzer-optin.cplusplus.VirtualCall` (86 sites) last, since it is the one that actually changes
+   constructor and destructor behaviour.
 
 ### Phase C — Tier 2, per directory
 
@@ -490,10 +508,20 @@ xargs -a /tmp/tidy_files.txt -P $JOBS -I{} clang-tidy \
 
 Note `--warnings-as-errors=` (empty) to override the config's `WarningsAsErrors: '*'` while measuring.
 
-Two traps. Confirm the check name exists in the *installed* clang-tidy first — `clang-tidy --checks='-*,name'
---list-checks` prints `No checks enabled.` for a name it does not know, silently, so a typo or a renamed check
-measures as clean. And watch for hard `error:` lines: a translation unit that fails to compile reports no warnings,
-which reads exactly like a clean one.
+Four traps, every one of which reports a clean tree that is not clean.
+
+1. **Confirm the check name exists in the *installed* clang-tidy.** `clang-tidy --checks='-*,name' --list-checks`
+   prints `No checks enabled.` for a name it does not know, so a typo or a renamed check measures as zero.
+2. **A `clang-diagnostic-*` name on its own enables nothing.** `--checks='-*,clang-diagnostic-overloaded-virtual'`
+   prints `Error: no checks enabled.` once per file and reports zero sites — those entries only filter warnings the
+   compiler already emits, they do not select work. Always pair them with at least one real check; the sweep above
+   works because `cppcoreguidelines-virtual-class-destructor` is in the same list.
+3. **Check that `-p` names a directory that still has a `compile_commands.json` with `-Weverything` in it.**
+   Without the database clang-tidy falls back to default flags, real checks keep firing, and every
+   `clang-diagnostic-*` silently drops to zero — which looks exactly like success. `grep -c -- -Weverything
+   <dir>/compile_commands.json` before trusting a zero.
+4. **Watch for hard `error:` lines.** A translation unit that fails to compile reports no warnings, which reads
+   exactly like a clean one.
 
 ---
 
@@ -504,8 +532,8 @@ which reads exactly like a clean one.
 | 1 (table) | 13     | ~41          | ✅ **Done** — 206 files touched, 18 latent bugs surfaced                                 |
 | 1.1       | 26     | 0 (336 real) | ✅ **Done** — 24 enabled (23 after 22), 7 more real bugs; 1 off for good, 1 moved to 1.5 |
 | 1.2       | 1      | 0            | ✅ **Done** — free, but it guards nothing; save layout pinned in tests                   |
-| 1.5       | 6      | 128          | Enable after fixing `vector.h` / `listnode.h`; `VirtualCall` last                        |
+| 1.5       | 6      | 128 (184 real) | 3 of 6 done; destructor pair next as one commit, `VirtualCall` last                    |
 | 2         | 7      | 576          | Per-directory only, tied to type migration                                               |
 | 3         | ~230   | —            | Keep disabled                                                                            |
 
-Disabled-check count: **275 → 238**.
+Disabled-check count: **275 → 236**.
