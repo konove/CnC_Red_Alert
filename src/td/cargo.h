@@ -59,6 +59,7 @@ class CargoClass {
     CargoHold = nullptr;
   }
   CargoClass(const NoInitClass&) {}
+  virtual ~CargoClass() { CargoHold = nullptr; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

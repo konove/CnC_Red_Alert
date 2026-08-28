@@ -61,6 +61,7 @@
 #include "tech/xstraw.h"
 
 template <class T>
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class MixFileClass : public Node<MixFileClass<T>> {
  public:
   // Result of looking up a file in the mixfile system.

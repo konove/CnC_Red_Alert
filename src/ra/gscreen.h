@@ -50,6 +50,7 @@ class GScreenClass {
  public:
   GScreenClass();
   GScreenClass(const NoInitClass&) {}
+  virtual ~GScreenClass() = default;
 
   /*
   ** Initialization

@@ -65,6 +65,8 @@ class FlasherClass {
     IsBlushing = false;
   }
   FlasherClass(const NoInitClass&) {}
+  virtual ~FlasherClass() = default;
+
   virtual void Debug_Dump(MonoClass* mono) const;
   bool Process();
 

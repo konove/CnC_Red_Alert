@@ -72,12 +72,13 @@ class TurretClass : public DriveClass {
   void Code_Pointers() override;
   void Decode_Pointers() override;
 
+  ~TurretClass() override = default;
+
  protected:
   TurretClass(UnitType classid, HousesType house);
   TurretClass() = default;
   TurretClass(const NoInitClass& x)
       : DriveClass(x), Reload(x), SecondaryFacing(x) {}
-  ~TurretClass() override = default;
 
   BulletClass* Fire_At(TARGET target, int which) override;
 

@@ -230,6 +230,8 @@ class AbstractTypeClass {
   AbstractTypeClass() {}
   AbstractTypeClass(int name, const char* ini);
   AbstractTypeClass(const NoInitClass&) {}
+  virtual ~AbstractTypeClass() = default;
+
   virtual RTTIType What_Am_I() const;
 
   virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
