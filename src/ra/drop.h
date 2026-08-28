@@ -82,8 +82,9 @@ class DropListClass : public EditClass {
 
   void Set_Position(int x, int y) override;
 
-  DropListClass& operator=(const DropListClass& list);
-  DropListClass(const DropListClass& list);
+  // Not copyable -- see LinkClass.
+  DropListClass(const DropListClass&) = delete;
+  DropListClass& operator=(const DropListClass&) = delete;
 
   /*
   **	Indicates whether the list box has dropped down or not.
@@ -111,7 +112,7 @@ class TDropListClass : public EditClass {
  public:
   TDropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
                  int y, int w, int h, const void* up, const void* down);
-  TDropListClass(const TDropListClass<T>& list);
+  TDropListClass(const TDropListClass<T>&) = delete;
   ~TDropListClass() override {}
 
   T operator[](int index) const { return (List[index]); }
@@ -138,7 +139,7 @@ class TDropListClass : public EditClass {
 
   void Set_Position(int x, int y) override;
 
-  TDropListClass<T>& operator=(const TDropListClass<T>& list);
+  TDropListClass& operator=(const TDropListClass<T>&) = delete;
 
   /*
   **	Indicates whether the list box has dropped down or not.
@@ -284,32 +285,6 @@ void TDropListClass<T>::Collapse() {
     List.Remove();
     IsDropped = false;
   }
-}
-
-template <class T>
-TDropListClass<T>& TDropListClass<T>::operator=(const TDropListClass<T>& list) {
-  if (this == &list) {
-    return (*this);
-  }
-  EditClass::operator=(list);
-  List = list.List;
-  IsDropped = list.IsDropped;
-  ListHeight = list.ListHeight;
-  DropButton = list.DropButton;
-  List.Make_Peer(*this);
-  DropButton.Make_Peer(*this);
-  return (*this);
-}
-
-template <class T>
-TDropListClass<T>::TDropListClass(const TDropListClass<T>& list)
-    : EditClass(list),
-      IsDropped(list.IsDropped),
-      ListHeight(list.ListHeight),
-      DropButton(list.DropButton),
-      List(list.List) {
-  List.Make_Peer(*this);
-  DropButton.Make_Peer(*this);
 }
 
 template <class T>

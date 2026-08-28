@@ -67,8 +67,11 @@ class LinkClass {
   virtual void Zap();
   virtual LinkClass* Remove();
 
-  LinkClass& operator=(const LinkClass& link);  // Assignment operator.
-  LinkClass(const LinkClass& link);             // Copy constructor.
+  // Not copyable. The original copy operations did not copy: they spliced the
+  // destination into the source object's list, which mutates the source. Use
+  // Add() to put an object into a list.
+  LinkClass(const LinkClass&) = delete;
+  LinkClass& operator=(const LinkClass&) = delete;
 
  private:
   /*

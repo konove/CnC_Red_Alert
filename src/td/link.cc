@@ -34,20 +34,18 @@
  *                  Last Update : January 19, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * LinkClass::LinkClass -- Default constructor for linked list
- *object.                       * LinkClass::LinkClass -- Copy constructor for
- *linked list object.                          * LinkClass::~LinkClass --
- *Default destructor for linked list object.                       *
- *   LinkClass::Zap -- Forces the link pointers to NULL. * LinkClass::operator=
- *-- Assignment operator for linked list class object.                 *
- *   LinkClass::Get_Next -- Fetches the next object in list. *
- *   LinkClass::Get_Prev -- Fetches previous object in linked list. *
- *   LinkClass::Head_Of_List -- Finds the head of the list. *
- *   LinkClass::Tail_Of_List -- Scans for the object at the end of the list. *
- *   LinkClass::Add -- This object adds itself to the given list *
+ * Functions:
+ *   LinkClass::LinkClass -- Default constructor for linked list object.
+ *   LinkClass::~LinkClass -- Default destructor for linked list object.
+ *   LinkClass::Zap -- Forces the link pointers to NULL.
+ *   LinkClass::Get_Next -- Fetches the next object in list.
+ *   LinkClass::Get_Prev -- Fetches previous object in linked list.
+ *   LinkClass::Head_Of_List -- Finds the head of the list.
+ *   LinkClass::Tail_Of_List -- Scans for the object at the end of the list.
+ *   LinkClass::Add -- This object adds itself to the given list
  *   LinkClass::Add_Head -- This gadget makes itself the head of the given list.
- ** LinkClass::Add_Tail -- Add myself to the end of the given list. *
- *   LinkClass::Remove -- Removes the specified object from the list. *
+ *   LinkClass::Add_Tail -- Add myself to the end of the given list.
+ *   LinkClass::Remove -- Removes the specified object from the list.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -68,27 +66,6 @@
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 LinkClass::LinkClass() { LinkClass::Zap(); }
-
-/***********************************************************************************************
- * LinkClass::LinkClass -- Copy constructor for linked list object. *
- *                                                                                             *
- *    This copy constructor, unlike the assigment operator, doesn't have to deal
- *with an       * already initialized and legal link object to the left of the
- *"=". It merely puts the     * destination object into the same list as the
- *source object.                              *
- *                                                                                             *
- * INPUT:   link  -- Reference to the object on the right of the "=". *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/16/1995 JLB : Created. *
- *=============================================================================================*/
-LinkClass::LinkClass(const LinkClass& link) {
-  LinkClass::Zap();
-  Add(const_cast<LinkClass&>(link));
-}
 
 /***********************************************************************************************
  * LinkClass::~LinkClass -- Default destructor for linked list object. *
@@ -126,37 +103,6 @@ LinkClass::~LinkClass() { Remove(); }
 void LinkClass::Zap() {
   Next = nullptr;
   Prev = nullptr;
-}
-
-/***********************************************************************************************
- * LinkClass::operator= -- Assignment operator for linked list class object. *
- *                                                                                             *
- *    The assignment operator makes sure that the previous and next pointers
- *remain valid.     * Because this class only consists of pointers, the
- *assignment operator doesn't actually   * transfer any data from the source
- *object. It merely makes the destination object part    * of the same list as
- *the source object. In essence, this is transferring information      * but not
- *the actual values. *
- *                                                                                             *
- *    If the destination object is already part of another list, it is removed
- *from that list  * before being added to the source object's list. This ensures
- *that either list remains    * in a valid condition. *
- *                                                                                             *
- * INPUT:   link  -- The object to the right of the "=" operator. *
- *                                                                                             *
- * OUTPUT:  Returns a reference to the rightmost object -- per standard
- *assigment rules.       *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/16/1995 JLB : Created. *
- *=============================================================================================*/
-LinkClass& LinkClass::operator=(const LinkClass& link) {
-  if (this != &link) {
-    Remove();
-    Add(const_cast<LinkClass&>(link));
-  }
-  return *this;
 }
 
 /***********************************************************************************************

@@ -108,7 +108,8 @@ class GadgetClass : public LinkClass {
   GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky = false);
   GadgetClass(const NoInitClass& x) : LinkClass(x) {}
   GadgetClass() {}
-  GadgetClass(const GadgetClass& gadget) = default;
+  // Not copyable -- see LinkClass.
+  GadgetClass(const GadgetClass&) = delete;
   ~GadgetClass() override;
 
   /*

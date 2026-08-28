@@ -151,30 +151,6 @@ void DropListClass::Collapse() {
   }
 }
 
-DropListClass& DropListClass::operator=(const DropListClass& list) {
-  if (this == &list) {
-    return *this;
-  }
-  EditClass::operator=(list);
-  List = list.List;
-  IsDropped = list.IsDropped;
-  ListHeight = list.ListHeight;
-  DropButton = list.DropButton;
-  List.Make_Peer(*this);
-  DropButton.Make_Peer(*this);
-  return *this;
-}
-
-DropListClass::DropListClass(const DropListClass& list)
-    : EditClass(list),
-      IsDropped(list.IsDropped),
-      ListHeight(list.ListHeight),
-      DropButton(list.DropButton),
-      List(list.List) {
-  List.Make_Peer(*this);
-  DropButton.Make_Peer(*this);
-}
-
 void DropListClass::Set_Position(int x, int y) {
   EditClass::Set_Position(x, y);
   List.Set_Position(x, y + Get_Build_Frame_Height(DropButton.Get_Shape_Data()));

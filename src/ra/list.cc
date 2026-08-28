@@ -127,24 +127,6 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
   LineCount = (h - 1) / LineHeight;
 }
 
-ListClass::ListClass(const ListClass& list)
-    : ControlClass(list),
-      TextFlags(list.TextFlags),
-      Tabs(list.Tabs),
-      List(list.List),
-      LineHeight(list.LineHeight),
-      LineCount(list.LineCount),
-      IsScrollActive(list.IsScrollActive),
-      UpGadget(list.UpGadget),
-      DownGadget(list.DownGadget),
-      ScrollGadget(list.ScrollGadget),
-      SelectedIndex(list.SelectedIndex),
-      CurrentTopIndex(list.CurrentTopIndex) {
-  UpGadget.Make_Peer(*this);
-  DownGadget.Make_Peer(*this);
-  ScrollGadget.Make_Peer(*this);
-}
-
 void ListClass::Set_Position(int x, int y) {
   UpGadget.X = x + Width - UpGadget.Width;
   UpGadget.Y = y;

@@ -69,7 +69,8 @@ class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
             const void* up, const void* down);
-  ListClass(const ListClass& list);
+  // Not copyable -- see LinkClass.
+  ListClass(const ListClass&) = delete;
   ~ListClass() override;
 
   virtual int Add_Item(const char* text);
@@ -165,7 +166,7 @@ class TListClass : public ControlClass {
  public:
   TListClass(int id, int x, int y, int w, int h, TextPrintType flags,
              const void* up, const void* down);
-  TListClass(const TListClass<T>& list);
+  TListClass(const TListClass<T>&) = delete;
   ~TListClass() override;
   T operator[](int index) const { return (List[index]); }
   T& operator[](int index) { return (List[index]); }
@@ -286,25 +287,6 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h,
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TextFlags);
   LineHeight = FontHeight + FontYSpacing - 1;
   LineCount = (h - 1) / LineHeight;
-}
-
-template <class T>
-TListClass<T>::TListClass(const TListClass<T>& list)
-    : ControlClass(list),
-      TextFlags(list.TextFlags),
-      Tabs(list.Tabs),
-      List(list.List),
-      LineHeight(list.LineHeight),
-      LineCount(list.LineCount),
-      IsScrollActive(list.IsScrollActive),
-      UpGadget(list.UpGadget),
-      DownGadget(list.DownGadget),
-      ScrollGadget(list.ScrollGadget),
-      SelectedIndex(list.SelectedIndex),
-      CurrentTopIndex(list.CurrentTopIndex) {
-  UpGadget.Make_Peer(*this);
-  DownGadget.Make_Peer(*this);
-  ScrollGadget.Make_Peer(*this);
 }
 
 template <class T>
