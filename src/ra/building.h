@@ -293,7 +293,6 @@ class BuildingClass : public TechnoClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual const void* Remap_Table();
   int Exit_Object(TechnoClass* base) override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;

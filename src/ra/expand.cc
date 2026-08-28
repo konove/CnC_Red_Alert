@@ -265,7 +265,7 @@ class EListClass : public ListClass {
   const char* Current_Item() const override {
     return ListClass::Current_Item();
   }
-  virtual const char* Get_Item(int index) const {
+  const char* Get_Item(int index) const override {
     return ListClass::Get_Item(index);
   }
 };

@@ -90,6 +90,7 @@ class NullModemConnClass : public NonSequencedConnClass {
   /*.....................................................................
   Initialization.
   .....................................................................*/
+  using ConnectionClass::Init;
   void Init(HANDLE port_handle);
 
   /*.....................................................................

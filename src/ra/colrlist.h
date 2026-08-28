@@ -65,8 +65,10 @@ class ColorListClass : public ListClass {
                  const void* up, const void* down);
   ~ColorListClass() override;
 
-  virtual int Add_Item(const char* text, RemapControlType* color = nullptr);
-  virtual int Add_Item(int text, RemapControlType* color = nullptr);
+  int Add_Item(const char* text) override { return Add_Item(text, nullptr); }
+  int Add_Item(int text) override { return Add_Item(text, nullptr); }
+  virtual int Add_Item(const char* text, RemapControlType* color);
+  virtual int Add_Item(int text, RemapControlType* color);
   void Remove_Item(const char* text) override;
 
   virtual void Set_Selected_Style(SelectStyleType style,

@@ -203,6 +203,9 @@ class TFixedIHeapClass : public FixedIHeapClass {
   TFixedIHeapClass() : FixedIHeapClass(sizeof(T)) {}
   ~TFixedIHeapClass() override {}
 
+  using FixedIHeapClass::ID;
+  using FixedIHeapClass::Logical_ID;
+
   virtual int ID(const T* pointer) const {
     return FixedIHeapClass::ID(pointer);
   }

@@ -240,7 +240,7 @@ BulletClass::BulletClass(BulletType id)
  * HISTORY: * 06/20/1994 JLB : Created. * 01/05/1995 JLB : Handles projectiles
  *with altitude.                                       *
  *=============================================================================================*/
-const short* BulletClass::Occupy_List() const {
+const short* BulletClass::Occupy_List(bool) const {
   Validate();
   switch (*this) {
     case BULLET_FLAME:

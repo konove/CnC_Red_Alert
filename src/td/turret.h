@@ -83,7 +83,7 @@ class TurretClass : public DriveClass {
 
   DirType Fire_Direction() const override;
   FireErrorType Can_Fire(TARGET target, int which) const override;
-  virtual bool Ok_To_Move(DirType facing);
+  bool Ok_To_Move(DirType facing) override;
   void AI() override;
   COORDINATE Fire_Coord(int which) const override;
 };

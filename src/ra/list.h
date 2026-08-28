@@ -81,7 +81,7 @@ class ListClass : public ControlClass {
   virtual int Current_Index() const;
   virtual const char* Current_Item() const;
   int Draw_Me(bool forced) override;
-  virtual const char* Get_Item(size_t index) const;
+  virtual const char* Get_Item(int index) const;
   virtual int Step_Selected_Index(int forward);
   void Flag_To_Redraw() override;
 

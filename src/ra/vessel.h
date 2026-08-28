@@ -133,9 +133,9 @@ class VesselClass : public DriveClass {
   void Per_Cell_Process(PCPType why) override;
   void Assign_Destination(TARGET target) override;
 
-  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source = nullptr,
-                                 int forced = false);
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                         TechnoClass* source = nullptr,
+                         bool forced = false) override;
   FireErrorType Can_Fire(TARGET target, int which) const override;
 
   void Enter_Idle_Mode(bool initial = false) override;

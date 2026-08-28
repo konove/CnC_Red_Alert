@@ -86,7 +86,7 @@ class AnimClass : public ObjectClass, private StageClass {
   COORDINATE Sort_Y() const override;
   LayerType In_Which_Layer() const override;
   const ObjectTypeClass& Class_Of() const override { return *Class; }
-  virtual const short* Occupy_List() const;
+  const short* Occupy_List(bool = false) const override;
   const short* Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   void AI() override;

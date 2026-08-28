@@ -92,7 +92,7 @@ class AnimClass : public ObjectClass, public StageClass {
   LayerType In_Which_Layer() const override;
   const ObjectTypeClass& Class_Of() const override { return *Class; }
   const short* Occupy_List(bool = false) const override;
-  virtual const short* Overlap_List() const;
+  const short* Overlap_List(bool = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   void AI() override;
   void Detach(TARGET target, bool all) override;

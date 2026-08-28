@@ -143,9 +143,15 @@ class IPXGlobalConnClass : public IPXConnClass {
   //.....................................................................
   // Send/Receive routines.
   //.....................................................................
+  // These deliberately hide the inherited point-to-point routines rather than
+  // overriding them: a global packet carries a GlobalHeaderType with a magic
+  // number and a destination address, which the base versions do not write.
+  // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
   virtual int Send_Packet(void* buf, int buflen, IPXAddressClass* address,
                           int ack_req);
+  // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
   virtual int Receive_Packet(void* buf, int buflen, IPXAddressClass* address);
+  // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
   virtual int Get_Packet(void* buf, int* buflen, IPXAddressClass* address,
                          unsigned short* product_id);
 

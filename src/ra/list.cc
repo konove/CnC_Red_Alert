@@ -424,11 +424,11 @@ void ListClass::Step(int up) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-const char* ListClass::Get_Item(size_t index) const {
+const char* ListClass::Get_Item(int index) const {
   if (List.Count() == 0) {
     return nullptr;
   }
-  index = std::min(index, static_cast<size_t>(List.Count() - 1));
+  index = std::clamp(index, 0, static_cast<int>(List.Count()) - 1);
   return List[index];
 }
 

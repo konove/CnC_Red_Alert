@@ -352,7 +352,7 @@ bool AnimClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const short* AnimClass::Overlap_List() const {
+const short* AnimClass::Overlap_List(bool) const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
   static const short OverlapAtom[] = {

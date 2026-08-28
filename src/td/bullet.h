@@ -107,7 +107,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   void Draw_It(int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void AI() override;
-  virtual const short* Occupy_List() const;
+  const short* Occupy_List(bool = false) const override;
   const short* Overlap_List() const override { return Occupy_List(); }
   TARGET As_Target() const override;
 

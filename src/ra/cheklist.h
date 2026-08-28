@@ -68,7 +68,7 @@ class CheckListClass : public ListClass {
   int Add_Item(int text) override { return ListClass::Add_Item(text); }
   int Add_Item(const char* text) override;
   const char* Current_Item() const override;
-  virtual const char* Get_Item(int index) const;
+  const char* Get_Item(int index) const override;
   void Remove_Item(const char* text) override;
   void Remove_Item(int text) override { ListClass::Remove_Item(text); }
   void Set_Selected_Index(const char* text) override;

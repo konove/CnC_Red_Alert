@@ -187,6 +187,8 @@ class TFixedIHeapClass : public FixedIHeapClass {
   TFixedIHeapClass() : FixedIHeapClass(sizeof(T)) {}
   ~TFixedIHeapClass() override = default;
 
+  using FixedIHeapClass::ID;
+
   virtual int ID(const T* pointer) { return FixedIHeapClass::ID(pointer); }
   virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
   virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }

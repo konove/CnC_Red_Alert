@@ -488,7 +488,7 @@ const short* AnimClass::Overlap_List() const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const short* AnimClass::Occupy_List() const {
+const short* AnimClass::Occupy_List(bool) const {
   Validate();
   static short _simple[] = {REFRESH_EOL};
 

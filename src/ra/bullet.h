@@ -107,7 +107,9 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void AI() override;
   const short* Occupy_List(bool = false) const override;
-  virtual const short* Overlap_List() const { return Occupy_List(false); }
+  const short* Overlap_List(bool = false) const override {
+    return Occupy_List(false);
+  }
   COORDINATE Target_Coord() const override;
 
   /*

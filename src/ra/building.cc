@@ -92,8 +92,7 @@
  *   BuildingClass::Power_Output -- Fetches the current power output from this
  *building.       * BuildingClass::Read_INI -- Reads buildings from INI file. *
  *   BuildingClass::Receive_Message -- Handle an incoming message to the
- *building.             * BuildingClass::Remap_Table -- Fetches the remap table
- *to use for this building.           * BuildingClass::Remove_Gap_Effect -- Stop
+ *building.             * BuildingClass::Remove_Gap_Effect -- Stop
  *a gap generator from jamming cells               * BuildingClass::Repair --
  *Initiates or terminates the repair process.                      *
  *   BuildingClass::Repair_AI -- Handle the repair (and sell) logic for the
@@ -4491,29 +4490,6 @@ DirType BuildingClass::Fire_Direction() const {
     return PrimaryFacing.Current();
   }
   return Direction(TarCom);
-}
-
-/***********************************************************************************************
- * BuildingClass::Remap_Table -- Fetches the remap table to use for this
- *building.             *
- *                                                                                             *
- *    Use this routine to fetch the remap table to use.  This override function
- *is needed      * because the default remap table for techno objects presumes
- *the object is a unit.        * Buildings aren't units. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the proper remap table to use for this building. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/08/1995 JLB : Created. *
- *=============================================================================================*/
-const void* BuildingClass::Remap_Table() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
-
-  return House->Remap_Table(IsBlushing, Class->Remap);
 }
 
 /***********************************************************************************************

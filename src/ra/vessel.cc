@@ -952,7 +952,7 @@ void VesselClass::Active_Click_With(ActionType action, CELL cell) {
  *=============================================================================================*/
 ResultType VesselClass::Take_Damage(int& damage, int distance,
                                     WarheadType warhead, TechnoClass* source,
-                                    int forced) {
+                                    bool forced) {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 

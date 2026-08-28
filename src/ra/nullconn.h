@@ -92,6 +92,7 @@ class NullModemConnClass : public ConnectionClass {
   /*.....................................................................
   Initialization.
   .....................................................................*/
+  using ConnectionClass::Init;
   void Init(HANDLE port_handle);
 
   /*.....................................................................
