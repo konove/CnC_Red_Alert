@@ -2,16 +2,16 @@
 
 ## Overview
 
-`.clang-tidy` enables all checks (`'*'`) and then disables **236** of them. This document prioritizes which of those
-236 to re-enable, ordered by **measured bug yield per unit of fix effort**.
+`.clang-tidy` enables all checks (`'*'`) and then disables **234** of them. This document prioritizes which of those
+234 to re-enable, ordered by **measured bug yield per unit of fix effort**.
 
 Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
 (see [Methodology](#methodology)). Every count in the tables is a real diagnostic site in this repository.
 
-**Tier 1, §1.1 and §1.2 are complete, and Tier 1.5 is three checks of six in.** All ten rows of the Tier 1 table (13
+**Tier 1, §1.1 and §1.2 are complete, and Tier 1.5 is five checks of six in.** All ten rows of the Tier 1 table (13
 checks) are enabled, 24 of the 26 checks in §1.1, and the single §1.2 check; see [Progress](#progress). The two §1.1
-checks left out are deliberate — see [1.1](#11-free-guards--the-name-was-wrong). What is left in Tier 1.5 is the
-destructor pair and `VirtualCall`.
+checks left out are deliberate — see [1.1](#11-free-guards--the-name-was-wrong). All that is left in Tier 1.5 is
+`clang-analyzer-optin.cplusplus.VirtualCall`.
 
 The clang-tidy 22 move on 2026-08-20 turned the strict build red for reasons unrelated to any tier below; all four
 causes are resolved and it is green again — see [clang-tidy 22 fallout](#clang-tidy-22-fallout).
@@ -139,6 +139,7 @@ been red on an enabled check.
 | `misc-unconventional-assign-operator`   | `7a9e933b` | 9     | `virtual` dropped from `VectorClass::operator=` in both games; TD's `LinkClass` brought in line with RA                                       |
 | `cert-oop58-cpp`                        | `30cb1c6e` | 2     | `GenericNode`'s copy operations deleted — they spliced the destination into the source's list rather than copying                             |
 | `clang-diagnostic-overloaded-virtual`   | `bc3c370c` | 28    | 6 live bugs: vessel damage, TD turret-locked movement, anim/bullet refresh lists in both games, RA checklist items, 4 null-modem stubs        |
+| `cppcoreguidelines-virtual-class-destructor` + `clang-diagnostic-non-virtual-dtor` | `fdb3a9e8` | 33 | 6 edits — a virtual destructor on each hierarchy root; 3 of them only restore RA/TD parity. No layout change              |
 
 `src/ra/vector.h` and `src/tech/listnode.h`, which Phase B named as the prerequisite, were cleared by the first two.
 
@@ -157,6 +158,15 @@ Three lessons worth carrying into the next tier:
   (`bugprone-undefined-memory-manipulation`) was already enabled too. Check names are also added, renamed and aliased
   between releases. Confirm against `clang-tidy --list-checks` *and* the check's own documentation before writing a
   line of this document about it.
+- **Adding a virtual destructor renumbers a vtable, so land it with a build nobody is racing.** `GScreenClass` had no
+  declared destructor and therefore no destructor slot; adding one shifts the index of every virtual after it, right
+  down the `GScreenClass → MapClass → DisplayClass → … → MapEditClass` chain. Ninja gets this right on its own, but a
+  build already running when the header is saved keeps objects it had already stat'ed, and the link silently mixes two
+  vtable layouts. The result is not a crash at the edit: it is one virtual call landing in a different virtual
+  entirely — a `Help_Text(TXT_NONE)` in `sidebar.cc` arriving in `MapEditClass::Scroll_Map`, which then read its
+  `int&` argument from `TXT_NONE`. A call that lands in the wrong function is a stale build, not a logic bug; rebuild
+  the directory before debugging it. `sizeof()` is untouched either way when the class already had virtual functions,
+  so the layout tests stay green and cannot catch this.
 - **Sweep with the project's own warning flags.** `clang++ -Wno-everything -W<name>` is not a reliable way to isolate
   one diagnostic: `-Wconditional-uninitialized` needs `-Wuninitialized` enabled to fire at all, so that form reported
   zero sites where the real count was 103. Run the compile database with its own flags (which already include
@@ -355,15 +365,16 @@ The `AbstractClass → ObjectClass → TechnoClass → ...` hierarchy makes thes
 | `misc-unconventional-assign-operator`        | 4      | 9         | ✅ Done, `7a9e933b`                                                     |
 | `cert-oop58-cpp`                             | 2      | 2         | ✅ Done, `30cb1c6e`                                                     |
 | `clang-diagnostic-overloaded-virtual`        | 10     | **28**    | ✅ Done, `bc3c370c` — silently shadowed virtuals, 6 of them live bugs   |
-| `cppcoreguidelines-virtual-class-destructor` | 14     | **32**    | Next, with the row below                                                |
-| `clang-diagnostic-non-virtual-dtor`          | 12     | **27**    | 26 of its 27 sites are also the row above — one job, not two            |
-| `clang-analyzer-optin.cplusplus.VirtualCall` | **86** | 86        | Last; moved down from §1.1, needs ctor/dtor restructuring               |
+| `cppcoreguidelines-virtual-class-destructor` | 14     | **32**    | ✅ Done, `fdb3a9e8`, with the row below — 26 sites in common            |
+| `clang-diagnostic-non-virtual-dtor`          | 12     | **27**    | ✅ Done, `fdb3a9e8`                                                     |
+| `clang-analyzer-optin.cplusplus.VirtualCall` | **86** | 86        | All that is left; moved down from §1.1, needs ctor/dtor restructuring   |
 
 Tree-wide counts are over all 840 translation units in `cmake-build-strict-ra-clang-22`, deduplicated by site,
 measured 2026-08-28. The sample under-predicted all of them except `cert-oop58-cpp`, as it did for Tier 1.
 
-The two destructor checks belong in a single commit: they overlap on 26 sites, so clearing them separately means
-touching the same declarations in `src/td/type.h` and elsewhere twice.
+The two destructor checks were done as one commit, as planned: they overlap on 26 sites, and both fire on every class
+in a hierarchy whose root lacks a virtual destructor, so 33 sites collapsed to six declarations — `GScreenClass`
+covering 11 RA sites and TD's `AbstractTypeClass` covering 13.
 
 ---
 
@@ -466,7 +477,8 @@ globally.
 1. ~~Fix `src/ra/vector.h` and `src/tech/listnode.h` first~~ — done in `7a9e933b` and `30cb1c6e`, which is what
    enabling `misc-unconventional-assign-operator` and `cert-oop58-cpp` amounted to.
 2. ~~`clang-diagnostic-overloaded-virtual`~~ — done in `bc3c370c`, 28 sites.
-3. `cppcoreguidelines-virtual-class-destructor` and `clang-diagnostic-non-virtual-dtor` together, 33 distinct sites.
+3. ~~`cppcoreguidelines-virtual-class-destructor` and `clang-diagnostic-non-virtual-dtor` together~~ — done in
+   `fdb3a9e8`, 33 sites in six edits.
 4. `clang-analyzer-optin.cplusplus.VirtualCall` (86 sites) last, since it is the one that actually changes
    constructor and destructor behaviour.
 
@@ -532,8 +544,8 @@ Four traps, every one of which reports a clean tree that is not clean.
 | 1 (table) | 13     | ~41          | ✅ **Done** — 206 files touched, 18 latent bugs surfaced                                 |
 | 1.1       | 26     | 0 (336 real) | ✅ **Done** — 24 enabled (23 after 22), 7 more real bugs; 1 off for good, 1 moved to 1.5 |
 | 1.2       | 1      | 0            | ✅ **Done** — free, but it guards nothing; save layout pinned in tests                   |
-| 1.5       | 6      | 128 (184 real) | 3 of 6 done; destructor pair next as one commit, `VirtualCall` last                    |
+| 1.5       | 6      | 128 (184 real) | 5 of 6 done; only `VirtualCall` left                                                   |
 | 2         | 7      | 576          | Per-directory only, tied to type migration                                               |
 | 3         | ~230   | —            | Keep disabled                                                                            |
 
-Disabled-check count: **275 → 236**.
+Disabled-check count: **275 → 234**.
