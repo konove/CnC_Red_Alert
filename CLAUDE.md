@@ -61,8 +61,18 @@ Configure output confirms them (`-- ccache enabled: ...`, `-- clang-tidy cache e
 
 ccache caches only the compile. clang-tidy and IWYU run as separate passes in front of it, so under
 `STRICT_CHECKS=ON` a fully cached rebuild still pays their full cost — measured on `src/ra/drop.cc`: 0.00 s for the
-cached compile, 1.5 s for clang-tidy, 1.0 s for IWYU. `clang-tidy-cache` removes the clang-tidy share when
-installed; nothing caches IWYU, so use `-DENABLE_IWYU=OFF` when iterating on tidy findings.
+cached compile, 1.5 s for clang-tidy, 1.0 s for IWYU. Nothing caches IWYU, so `-DENABLE_IWYU=OFF` is the lever when
+iterating on tidy findings.
+
+**`clang-tidy-cache` caches little here as things stand.** It derives its hash by re-running the compiler to
+preprocess the TU and gives up on any compiler output to stderr (`hash_inputs` returns `None`). Under `-Weverything`
+the `_MAX_PATH` and friends defines in `src/port/ex_string.h` raise `-Wreserved-macro-identifier` while
+preprocessing, which most of the tree includes. Measured over 40 RA TUs: 14/40 cacheable as configured, and a
+rebuild after deleting the objects went 24.0 s cold to 19.2 s warm. Silencing that one warning takes it to 37/40
+cached and 23.9 s cold to 4.5 s warm — a 5x rebuild, gated entirely on keeping the preprocessor quiet.
+
+The cache defaults to `/tmp/ctcache-$USER`, which does not survive a reboot; set `CTCACHE_DIR=~/.cache/ctcache` to
+keep it.
 
 **CLion:** nothing to configure — reload the CMake project (*File | Reload CMake Project*) and check the CMake tool
 window for the status lines. Ensure CLion's toolchain PATH sees `/usr/bin`; if `ccache` shows as not found there
