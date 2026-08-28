@@ -1,14 +1,16 @@
-# Optional build accelerators: ccache for compile caching, mold for linking.
+# Optional build accelerators: ccache for compile caching, ctcache for
+# clang-tidy caching, mold for linking.
 #
-# Both are auto-detected and silently skipped when not installed, so this file
-# needs no per-machine configuration. Turn either off explicitly with
-# -DUSE_CCACHE=OFF / -DUSE_MOLD=OFF.
+# All three are auto-detected and silently skipped when not installed, so this
+# file needs no per-machine configuration. Turn any of them off explicitly with
+# -DUSE_CCACHE=OFF / -DUSE_CTCACHE=OFF / -DUSE_MOLD=OFF.
 #
 # Include this BEFORE any target is created (including FetchContent
 # dependencies): the launcher and link options are captured when a target is
 # defined, not when it is built.
 
 option(USE_CCACHE "Use ccache to cache compilation results when available" ON)
+option(USE_CTCACHE "Use clang-tidy-cache to cache clang-tidy results when available" ON)
 option(USE_MOLD "Use the mold linker when available" ON)
 
 if (USE_CCACHE)
@@ -19,6 +21,22 @@ if (USE_CCACHE)
         message(STATUS "ccache enabled: ${CCACHE_PROGRAM}")
     else ()
         message(STATUS "ccache not found - compiling without a cache")
+    endif ()
+endif ()
+
+# clang-tidy runs as its own pass in front of the compiler, so ccache never
+# caches it: even a fully cached rebuild pays the whole analysis cost again.
+# ctcache (https://github.com/matus-chochlik/ctcache) wraps clang-tidy and
+# skips the re-analysis when the preprocessed source and .clang-tidy are
+# unchanged. Only useful when the checks actually run, hence the STRICT_CHECKS
+# guard. The top-level CMakeLists.txt puts CTCACHE_PROGRAM in front of
+# CMAKE_CXX_CLANG_TIDY. Point the cache elsewhere with CTCACHE_DIR.
+if (USE_CTCACHE AND STRICT_CHECKS)
+    find_program(CTCACHE_PROGRAM NAMES clang-tidy-cache ctcache)
+    if (CTCACHE_PROGRAM)
+        message(STATUS "clang-tidy cache enabled: ${CTCACHE_PROGRAM}")
+    else ()
+        message(STATUS "clang-tidy-cache not found - clang-tidy re-runs on every build")
     endif ()
 endif ()
 

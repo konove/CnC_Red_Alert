@@ -6,8 +6,14 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# ccache / mold. Must come before the first target is created so the fetched
-# dependencies below are built through them too.
+# Option to enable strict checks (clang-tidy + extra warnings)
+# Disable for quick iteration: cmake -DSTRICT_CHECKS=OFF ..
+# Declared before Speedup so it can skip the clang-tidy cache when the checks
+# themselves are off.
+option(STRICT_CHECKS "Enable clang-tidy and extra compiler warnings" ON)
+
+# ccache / ctcache / mold. Must come before the first target is created so the
+# fetched dependencies below are built through them too.
 include(Speedup)
 
 # Fetch Abseil
@@ -32,10 +38,6 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Option to enable strict checks (clang-tidy + extra warnings)
-# Disable for quick iteration: cmake -DSTRICT_CHECKS=OFF ..
-option(STRICT_CHECKS "Enable clang-tidy and extra compiler warnings" ON)
-
 # Option to enable AddressSanitizer for debugging memory issues
 option(ENABLE_ASAN "Enable AddressSanitizer for memory debugging" OFF)
 
@@ -50,6 +52,11 @@ if (STRICT_CHECKS)
             "clang-tidy"
             "--header-filter=${CMAKE_SOURCE_DIR}/src/(base|port|sdllib|tech|winvq|ra|td)/.*"
     )
+    # ctcache takes the clang-tidy invocation as its arguments, so it goes in
+    # front of the list rather than replacing anything in it. Set by Speedup.
+    if (CTCACHE_PROGRAM)
+        set(CMAKE_CXX_CLANG_TIDY "${CTCACHE_PROGRAM}" ${CMAKE_CXX_CLANG_TIDY})
+    endif ()
     message(STATUS "Strict checks enabled (clang-tidy + warnings)")
 else ()
     message(STATUS "Strict checks disabled (quick build mode)")

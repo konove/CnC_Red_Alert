@@ -43,23 +43,29 @@ static analysis.
 
 ### Optional: Faster Builds
 
-`ccache` (compile cache) and `mold` (linker) are picked up automatically by `cmake/Speedup.cmake` when installed —
-no per-machine configuration, and the build works unchanged without them.
+`ccache` (compile cache), `clang-tidy-cache` (clang-tidy cache) and `mold` (linker) are picked up automatically by
+`cmake/Speedup.cmake` when installed — no per-machine configuration, and the build works unchanged without them.
 
 ```bash
 sudo apt install ccache mold        # Linux
 brew install ccache mold            # macOS (mold is Linux-only; the module skips it elsewhere)
 ```
 
-Configure output confirms them (`-- ccache enabled: ...`, `-- mold linker enabled: ...`). Disable either with
-`-DUSE_CCACHE=OFF` / `-DUSE_MOLD=OFF`. Check the cache with `ccache -s`; resize with
-`ccache -M 25G`.
+`clang-tidy-cache` has no distro or PyPI package — install it from
+[matus-chochlik/ctcache](https://github.com/matus-chochlik/ctcache) and put `clang-tidy-cache` on `PATH`
+(`ctcache` is also accepted as the binary name).
 
-Note that ccache does not cache clang-tidy or IWYU output — a cached compile still re-runs both under
-`STRICT_CHECKS=ON`.
+Configure output confirms them (`-- ccache enabled: ...`, `-- clang-tidy cache enabled: ...`,
+`-- mold linker enabled: ...`). Disable any of them with `-DUSE_CCACHE=OFF` / `-DUSE_CTCACHE=OFF` /
+`-DUSE_MOLD=OFF`. Check the compile cache with `ccache -s`; resize with `ccache -M 25G`.
+
+ccache caches only the compile. clang-tidy and IWYU run as separate passes in front of it, so under
+`STRICT_CHECKS=ON` a fully cached rebuild still pays their full cost — measured on `src/ra/drop.cc`: 0.00 s for the
+cached compile, 1.5 s for clang-tidy, 1.0 s for IWYU. `clang-tidy-cache` removes the clang-tidy share when
+installed; nothing caches IWYU, so use `-DENABLE_IWYU=OFF` when iterating on tidy findings.
 
 **CLion:** nothing to configure — reload the CMake project (*File | Reload CMake Project*) and check the CMake tool
-window for the two status lines. Ensure CLion's toolchain PATH sees `/usr/bin`; if `ccache` shows as not found there
+window for the status lines. Ensure CLion's toolchain PATH sees `/usr/bin`; if `ccache` shows as not found there
 but works in a terminal, set the full path in *Settings | Build, Execution, Deployment | CMake | Environment* via
 `CMAKE_CXX_COMPILER_LAUNCHER=/usr/bin/ccache`.
 
