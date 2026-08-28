@@ -126,10 +126,10 @@ been red on an enabled check.
 
 ### §1.2
 
-| Check                                          | Commit     | Sites | Outcome                                                                     |
-|------------------------------------------------|------------|-------|------------------------------------------------------------------------------|
-| `bugprone-raw-memory-call-on-non-trivial-type` | `c580283d` | 0     | Free, and it guards nothing this document thought it did — see [1.2](#12-the-check-that-was-not-what-this-document-thought-it-was) |
-| — (no check; `src/{ra,td}/heap_layout_test.cc`) | `201cfb3c` | —     | `sizeof()` pinned for 44 RA and 35 TD byte-serialized types; the actual tripwire on the save format |
+| Check                                           | Commit     | Sites | Outcome                                                                                                                            |
+|-------------------------------------------------|------------|-------|------------------------------------------------------------------------------------------------------------------------------------|
+| `bugprone-raw-memory-call-on-non-trivial-type`  | `c580283d` | 0     | Free, and it guards nothing this document thought it did — see [1.2](#12-the-check-that-was-not-what-this-document-thought-it-was) |
+| — (no check; `src/{ra,td}/heap_layout_test.cc`) | `201cfb3c` | —     | `sizeof()` pinned for 44 RA and 35 TD byte-serialized types; the actual tripwire on the save format                                |
 
 Three lessons worth carrying into the next tier:
 
@@ -271,10 +271,10 @@ pin it for every byte-serialized type, so the failure names the type.
 `SAVEGAME_VERSION` (`src/ra/saveload.cc:132-145`, `src/td/saveload.cc:99-112`) is a sum of `sizeof()` over the
 serialized types, so a layout change invalidates existing saves rather than corrupting loads. Neither sum is complete:
 
-| Game | Byte-serialized but absent from the sum                                                                                                          |
-|------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| Game | Byte-serialized but absent from the sum                                                                                                                                     |
+|------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | RA   | `VesselTypeClass`, `WeaponTypeClass`, `WarheadTypeClass`, `ScoreClass`, `CarryoverClass`, `SpecialClass`, `GameOptionsClass`, `NodeNameType`, `EventClass`, `BaseNodeClass` |
-| TD   | `TriggerClass`, `ScoreClass`, `EventClass`, `BaseNodeClass`, `WeaponTypeClass`, `WarheadTypeClass`                                                |
+| TD   | `TriggerClass`, `ScoreClass`, `EventClass`, `BaseNodeClass`, `WeaponTypeClass`, `WarheadTypeClass`                                                                          |
 
 For those types a layout change is caught by nothing but the new tests. Extending either sum would invalidate every
 existing save, so it has not been done; the gap is recorded here rather than closed.
@@ -288,12 +288,12 @@ The toolchain moved from clang-tidy 21 to 22 on 2026-08-20, which turned the str
 Measured over the same 838 translation units, deduplicated by site. **All four are now resolved and the strict build
 is green again**: two swept, two disabled.
 
-| Check                                            | Sites | Files | Status                                                              |
-|--------------------------------------------------|-------|-------|---------------------------------------------------------------------|
+| Check                                            | Sites | Files | Status                                                                                                                              |
+|--------------------------------------------------|-------|-------|-------------------------------------------------------------------------------------------------------------------------------------|
 | `bugprone-unchecked-string-to-number-conversion` | 200   | 47    | ✅ Disabled → [Tier 3](#tier-3-keep-disabled--high-volume-near-zero-bug-yield). Was clean under 21 as part of §1.1; 22 broadened it |
-| `readability-redundant-parentheses`              | 170   | 34    | ✅ Swept. New in 22. Almost all of it was the legacy `return (x);` idiom |
-| `llvm-prefer-static-over-anonymous-namespace`    | 5     | 2     | ✅ Disabled — style-only, and Google style permits both spellings   |
-| `readability-redundant-typename`                 | 1     | 1     | ✅ Fixed. New in 22 — `src/ra/search.h:626`                          |
+| `readability-redundant-parentheses`              | 170   | 34    | ✅ Swept. New in 22. Almost all of it was the legacy `return (x);` idiom                                                            |
+| `llvm-prefer-static-over-anonymous-namespace`    | 5     | 2     | ✅ Disabled — style-only, and Google style permits both spellings                                                                   |
+| `readability-redundant-typename`                 | 1     | 1     | ✅ Fixed. New in 22 — `src/ra/search.h:626`                                                                                         |
 
 The two mechanical ones are done, and both now measure 0 sites tree-wide.
 `readability-redundant-parentheses` was swept with `clang-tidy --export-fixes` over all 840 units, applied with
@@ -383,16 +383,16 @@ Budget for that before enabling it anywhere that serializes.
 
 ## TIER 3: Keep disabled — high volume, near-zero bug yield
 
-| Check                              | Sample | Why not                                                |
-|------------------------------------|--------|--------------------------------------------------------|
-| `cppcoreguidelines-init-variables` | 371    | Largest count in the list; almost entirely benign      |
-| `performance-enum-size`            | 168    | Enum storage width is irrelevant at this scale         |
-| `bugprone-macro-parentheses`       | 28     | 1990s macros; fixes risk changing behaviour            |
-| `cert-err34-c`                     | 19     | Unchecked `atoi` in INI parsing; low real-world impact |
-| `bugprone-unchecked-string-to-number-conversion` | 200 | Same sites as `cert-err34-c`, seen tree-wide — see below |
-| `llvm-prefer-static-over-anonymous-namespace` | 5 | Style-only; Google style permits unnamed namespaces |
-| `bugprone-branch-clone`            | 9      | Intentionally parallel branches throughout game logic  |
-| `performance-no-int-to-ptr`        | 1      | Legacy handle/pointer punning                          |
+| Check                                            | Sample | Why not                                                  |
+|--------------------------------------------------|--------|----------------------------------------------------------|
+| `cppcoreguidelines-init-variables`               | 371    | Largest count in the list; almost entirely benign        |
+| `performance-enum-size`                          | 168    | Enum storage width is irrelevant at this scale           |
+| `bugprone-macro-parentheses`                     | 28     | 1990s macros; fixes risk changing behaviour              |
+| `cert-err34-c`                                   | 19     | Unchecked `atoi` in INI parsing; low real-world impact   |
+| `bugprone-unchecked-string-to-number-conversion` | 200    | Same sites as `cert-err34-c`, seen tree-wide — see below |
+| `llvm-prefer-static-over-anonymous-namespace`    | 5      | Style-only; Google style permits unnamed namespaces      |
+| `bugprone-branch-clone`                          | 9      | Intentionally parallel branches throughout game logic    |
+| `performance-no-int-to-ptr`                      | 1      | Legacy handle/pointer punning                            |
 
 Plus the standing architectural exclusions, unchanged and still correct:
 
@@ -499,13 +499,13 @@ which reads exactly like a clean one.
 
 ## Summary
 
-| Tier      | Checks | Sample sites | Status                                                                     |
-|-----------|--------|--------------|----------------------------------------------------------------------------|
-| 1 (table) | 13     | ~41          | ✅ **Done** — 206 files touched, 18 latent bugs surfaced                   |
+| Tier      | Checks | Sample sites | Status                                                                                   |
+|-----------|--------|--------------|------------------------------------------------------------------------------------------|
+| 1 (table) | 13     | ~41          | ✅ **Done** — 206 files touched, 18 latent bugs surfaced                                 |
 | 1.1       | 26     | 0 (336 real) | ✅ **Done** — 24 enabled (23 after 22), 7 more real bugs; 1 off for good, 1 moved to 1.5 |
-| 1.2       | 1      | 0            | ✅ **Done** — free, but it guards nothing; save layout pinned in tests     |
-| 1.5       | 6      | 128          | Enable after fixing `vector.h` / `listnode.h`; `VirtualCall` last          |
-| 2         | 7      | 576          | Per-directory only, tied to type migration                                 |
-| 3         | ~230   | —            | Keep disabled                                                              |
+| 1.2       | 1      | 0            | ✅ **Done** — free, but it guards nothing; save layout pinned in tests                   |
+| 1.5       | 6      | 128          | Enable after fixing `vector.h` / `listnode.h`; `VirtualCall` last                        |
+| 2         | 7      | 576          | Per-directory only, tied to type migration                                               |
+| 3         | ~230   | —            | Keep disabled                                                                            |
 
 Disabled-check count: **275 → 238**.
