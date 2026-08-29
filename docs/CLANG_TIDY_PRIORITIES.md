@@ -2,16 +2,16 @@
 
 ## Overview
 
-`.clang-tidy` enables all checks (`'*'`) and then disables **234** of them. This document prioritizes which of those
-234 to re-enable, ordered by **measured bug yield per unit of fix effort**.
+`.clang-tidy` enables all checks (`'*'`) and then disables **233** of them. This document prioritizes which of those
+233 to re-enable, ordered by **measured bug yield per unit of fix effort**.
 
 Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
 (see [Methodology](#methodology)). Every count in the tables is a real diagnostic site in this repository.
 
-**Tier 1, §1.1 and §1.2 are complete, and Tier 1.5 is five checks of six in.** All ten rows of the Tier 1 table (13
-checks) are enabled, 24 of the 26 checks in §1.1, and the single §1.2 check; see [Progress](#progress). The two §1.1
-checks left out are deliberate — see [1.1](#11-free-guards--the-name-was-wrong). All that is left in Tier 1.5 is
-`clang-analyzer-optin.cplusplus.VirtualCall`.
+**Tier 1, §1.1, §1.2 and Tier 1.5 are all complete.** All ten rows of the Tier 1 table (13 checks) are enabled, 24 of
+the 26 checks in §1.1, the single §1.2 check, and all six of Tier 1.5; see [Progress](#progress). The two §1.1 checks
+left out are deliberate — see [1.1](#11-free-guards--the-name-was-wrong). The next work is Tier 2, which is the
+per-directory type-migration strategy rather than another tree-wide sweep.
 
 The clang-tidy 22 move on 2026-08-20 turned the strict build red for reasons unrelated to any tier below; all four
 causes are resolved and it is green again — see [clang-tidy 22 fallout](#clang-tidy-22-fallout).
@@ -140,6 +140,7 @@ been red on an enabled check.
 | `cert-oop58-cpp`                        | `30cb1c6e` | 2     | `GenericNode`'s copy operations deleted — they spliced the destination into the source's list rather than copying                             |
 | `clang-diagnostic-overloaded-virtual`   | `bc3c370c` | 28    | 6 live bugs: vessel damage, TD turret-locked movement, anim/bullet refresh lists in both games, RA checklist items, 4 null-modem stubs        |
 | `cppcoreguidelines-virtual-class-destructor` + `clang-diagnostic-non-virtual-dtor` | `fdb3a9e8` | 33 | 6 edits — a virtual destructor on each hierarchy root; 3 of them only restore RA/TD parity. No layout change              |
+| `clang-analyzer-optin.cplusplus.VirtualCall` | `e3ad8275` | 81 | 17 classes and 8 methods marked `final`, 5 qualified calls, 4 restructures, 0 NOLINTs; found buffered writes lost in `~BufferIOFileClass` |
 
 `src/ra/vector.h` and `src/tech/listnode.h`, which Phase B named as the prerequisite, were cleared by the first two.
 
@@ -367,7 +368,7 @@ The `AbstractClass → ObjectClass → TechnoClass → ...` hierarchy makes thes
 | `clang-diagnostic-overloaded-virtual`        | 10     | **28**    | ✅ Done, `bc3c370c` — silently shadowed virtuals, 6 of them live bugs   |
 | `cppcoreguidelines-virtual-class-destructor` | 14     | **32**    | ✅ Done, `fdb3a9e8`, with the row below — 26 sites in common            |
 | `clang-diagnostic-non-virtual-dtor`          | 12     | **27**    | ✅ Done, `fdb3a9e8`                                                     |
-| `clang-analyzer-optin.cplusplus.VirtualCall` | **86** | 86        | All that is left; moved down from §1.1, needs ctor/dtor restructuring   |
+| `clang-analyzer-optin.cplusplus.VirtualCall` | **86** | **81**    | ✅ Done, `e3ad8275` — `final` did most of it, not the feared refactor   |
 
 Tree-wide counts are over all 840 translation units in `cmake-build-strict-ra-clang-22`, deduplicated by site,
 measured 2026-08-28. The sample under-predicted all of them except `cert-oop58-cpp`, as it did for Tier 1.
@@ -375,6 +376,19 @@ measured 2026-08-28. The sample under-predicted all of them except `cert-oop58-c
 The two destructor checks were done as one commit, as planned: they overlap on 26 sites, and both fire on every class
 in a hierarchy whose root lacks a virtual destructor, so 33 sites collapsed to six declarations — `GScreenClass`
 covering 11 RA sites and TD's `AbstractTypeClass` covering 13.
+
+**`VirtualCall` was not the refactor this document feared.** Two revisions predicted that clearing it meant
+restructuring constructors and destructors across `AbstractClass → ObjectClass → TechnoClass → …`. It did not.
+`final` cleared 55 of the 81 sites on its own — the checker stops warning once no override can exist — and the
+compiler validates the claim, since `final` on a class someone inherits does not build. Eight more went to
+method-level `final` where the class has subclasses but nothing overrides that particular slot. Five were calls
+sitting directly in a constructor or destructor, where qualifying the base version only writes down what already
+happened. Only four needed real restructuring, and each of those was a place where a derived override genuinely
+existed and was being skipped: `GaugeClass`'s constructor, `~GadgetClass`, `DisplayClass`'s view setup, and TD's
+`VectorClass` copy constructor. Reach for `final` before reaching for a refactor — and note that qualification is
+*not* a general remedy, because the checker flags calls reachable **from** a constructor, not only calls textually
+inside one. Qualifying inside `LinkClass::Remove` or `DisplayClass::Set_View_Dimensions` would have broken dispatch
+for every ordinary caller.
 
 ---
 
@@ -479,8 +493,8 @@ globally.
 2. ~~`clang-diagnostic-overloaded-virtual`~~ — done in `bc3c370c`, 28 sites.
 3. ~~`cppcoreguidelines-virtual-class-destructor` and `clang-diagnostic-non-virtual-dtor` together~~ — done in
    `fdb3a9e8`, 33 sites in six edits.
-4. `clang-analyzer-optin.cplusplus.VirtualCall` (86 sites) last, since it is the one that actually changes
-   constructor and destructor behaviour.
+4. ~~`clang-analyzer-optin.cplusplus.VirtualCall` (86 sites) last~~ — done in `e3ad8275`, 81 sites, no suppressions.
+   The predicted hierarchy refactor did not materialise: see the note under [Tier 1.5](#tier-15-small-counts-real-ub-in-a-deep-virtual-hierarchy).
 
 ### Phase C — Tier 2, per directory
 
@@ -544,8 +558,8 @@ Four traps, every one of which reports a clean tree that is not clean.
 | 1 (table) | 13     | ~41          | ✅ **Done** — 206 files touched, 18 latent bugs surfaced                                 |
 | 1.1       | 26     | 0 (336 real) | ✅ **Done** — 24 enabled (23 after 22), 7 more real bugs; 1 off for good, 1 moved to 1.5 |
 | 1.2       | 1      | 0            | ✅ **Done** — free, but it guards nothing; save layout pinned in tests                   |
-| 1.5       | 6      | 128 (184 real) | 5 of 6 done; only `VirtualCall` left                                                   |
+| 1.5       | 6      | 128 (265 real) | ✅ **Done** — all six; `VirtualCall` alone found lost buffered writes                  |
 | 2         | 7      | 576          | Per-directory only, tied to type migration                                               |
 | 3         | ~230   | —            | Keep disabled                                                                            |
 
-Disabled-check count: **275 → 234**.
+Disabled-check count: **275 → 233**.
