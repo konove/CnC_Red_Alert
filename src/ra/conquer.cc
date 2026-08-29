@@ -16,58 +16,16 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/CONQUER.CPP 6     3/13/97 2:05p Steve_tall $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : CONQUER.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : April 3, 1991 *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * CC_Draw_Shape -- Custom draw shape handler. * Call_Back -- Main
- *game maintenance callback routine.                                      *
- *   Color_Cycle -- Handle the general palette color cycling. * Crate_From_Name
- *-- Given a crate name convert it to a crate type.                         *
- *   Disk_Space_Available -- returns bytes of free disk space *
- *   Do_Record_Playback -- handles saving/loading map pos & current object *
- *   Fading_Table_Name -- Builds a theater specific fading table name. *
- *   Fetch_Techno_Type -- Convert type and ID into TechnoTypeClass pointer. *
- *   Force_CD_Available -- Ensures that specified CD is available. *
- *   Get_Radar_Icon -- Builds and alloc a radar icon from a shape file *
- *   Handle_Team -- Processes team selection command. * Handle_View -- Either
- *records or restores the tactical view.                              *
- *   KN_To_Facing -- Converts a keyboard input number into a facing value. *
- *   Keyboard_Process -- Processes the tactical map input codes. * Language_Name
- *-- Build filename for current language.                                     *
- *   List_Copy -- Makes a copy of a cell offset list. * Main_Game -- Main game
- *startup routine.                                                   * Main_Loop
- *-- This is the main game loop (as a single loop). * Map_Edit_Loop -- a
- *mini-main loop for map edit mode only                                  *
- *   Message_Input -- allows inter-player message input processing *
- *   MixFileVqaIo -- Serves VQ file access. * Name_From_Source -- retrieves
- *the name for the given SourceType                           * Owner_From_Name
- *-- Convert an owner name into a bitfield.                                 *
- *   Play_Movie -- Plays a VQ movie. * Shake_The_Screen -- Dispatcher that
- *shakes the screen.                                    * Shape_Dimensions --
- *Determine the minimum rectangle for the shape.                        *
- *   Source_From_Name -- Converts ASCII name into SourceType. * Sync_Delay --
- *Forces the game into a 15 FPS rate.                                         *
- *   Theater_From_Name -- Converts ASCII name into a theater number. *
- *   Unselect_All -- Causes all selected objects to become unselected. *
- *   VQ_Call_Back -- Maintenance callback used for VQ movies. *
- *   Game_Registry_Key -- Returns pointer to string containing the registry
- *subkey for the game. Is_Counterstrike_Installed -- Function to determine the
- *availability of the CS expansion. Is_Aftermath_Installed -- Function to
- *determine the availability of the AM expansion.
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// $Header: /CounterStrike/CONQUER.CPP 6     3/13/97 2:05p Steve_tall $
+// File: The main game loop, plus the game-wide services that grew up around it.
+//
+// This is the hub the rest of Red Alert hangs off. Main_Game() owns the
+// outer loop -- pick a game, play it, tear it down -- and Main_Loop() runs one
+// frame of it. Around those sit the odds and ends that never found a better
+// home: keyboard dispatch, inter-player chat, palette cycling, VQA movie
+// playback, the name-to-enum lookups the INI parser needs, and CD swapping.
+//
+// Originally CONQUER.CPP, by Joe L. Bostic, started April 3, 1991.
 
 #include "ra/conquer.h"
 
@@ -194,9 +152,7 @@ extern void Do_Draw();
 
 bool bNoMovies = false;
 
-/****************************************
-**	Function prototypes for this module **
-*****************************************/
+// Function prototypes for this module **
 void Keyboard_Process(KeyNumType& input);
 static void Message_Input(KeyNumType& input);
 static void Color_Cycle();
@@ -215,16 +171,14 @@ extern "C" {
 extern char* __nheapbeg;
 }
 
-//
 // Special module globals for recording and playback
-//
 char TeamEvent = 0;       // 0 = no event, 1,2,3 = team event type
 char TeamNumber = 0;      // which team was selected? (1-9)
 char FormationEvent = 0;  // 0 = no event, 1 = formation was toggled
 
-/* -----------------10/14/96 7:29PM------------------
-
- --------------------------------------------------*/
+// -----------------10/14/96 7:29PM------------------
+//
+// --------------------------------------------------
 
 #if (TEN)
 void TEN_Call_Back();
@@ -234,70 +188,46 @@ void TEN_Call_Back();
 void MPATH_Call_Back();
 #endif  // MPATH
 
-/***********************************************************************************************
- * Main_Game -- Main game startup routine. *
- *                                                                                             *
- *    This is the first official routine of the game. It handles game
- *initialization and       * the main game loop control. *
- *                                                                                             *
- *    Initialization: *
- *    - Init_Game handles one-time-only inits *
- *    - Select_Game is responsible for initializations required for each new
- *game played       * (these may be different depending on whether a multiplayer
- *game is selected, and       * other parameters) *
- *    - This routine performs any un-inits required, both for each game played,
- *and one-time   *
- *                                                                                             *
- * INPUT:   argc  -- Number of command line arguments (including program name
- *itself).         *
- *                                                                                             *
- *          argv  -- Array of command line argument pointers. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/01/1994 JLB : Created. *
- *=============================================================================================*/
+// The game's entry point, after platform startup. Init_Game() does the
+// one-time initialization; everything after it happens once per game played,
+// because Select_Game() may hand back a wholly different kind of session --
+// single player, network, modem, editor -- each needing its own setup and its
+// own teardown.
+//
+// The network and modem layers are shut down after every game rather than left
+// running, so that reselecting one restarts it from a known state.
+
 void Main_Game(int argc, char* argv[]) {
   static bool fade = true;
 
-  /*
-  **	Perform one-time-only initializations
-  */
+  // Perform one-time-only initializations
   if (!Init_Game(argc, argv)) {
     return;
   }
 
-  /*
-  **	Game processing loop:
-  **	1) Select which game to play, or whether to exit (don't fade the palette
-  **		on the first game selection, but fade it in on subsequent calls)
-  **	2) Invoke either the main-loop routine, or the editor-loop routine,
-  **		until they indicate that the user wants to exit the scenario.
-  */
+  // Game processing loop:
+  // 1) Select which game to play, or whether to exit (don't fade the palette
+  // on the first game selection, but fade it in on subsequent calls)
+  // 2) Invoke either the main-loop routine, or the editor-loop routine,
+  // until they indicate that the user wants to exit the scenario.
   while (Select_Game(fade)) {
+    // Original author's note; the two assignments to fade around it cancel
+    // out, so only the ScenarioInit reset has any effect.
     fade = false;
     ScenarioInit = 0;  // Kludge.
 
     fade = true;
 
-    /*
-    ** Initialise the color lookup tables for the chronal vortex
-    */
+    // Initialise the color lookup tables for the chronal vortex
     ChronalVortex.Stop();
     ChronalVortex.Setup_Remap_Tables(Scen.Theater);
 
-    /*
-    **	Make the game screen visible, clear the keyboard buffer of spurious
-    **	values, and then show the mouse.  This PRESUMES that Select_Game() has
-    **	told the map to draw itself.
-    */
+    // Make the game screen visible, clear the keyboard buffer of spurious
+    // values, and then show the mouse.  This PRESUMES that Select_Game() has
+    // told the map to draw itself.
     GamePalette.Set(kFadePaletteMedium);
     Keyboard->Clear();
-    /*
-    ** Only show the mouse if we're not playing back a recording.
-    */
+    // Only show the mouse if we're not playing back a recording.
     if (Session.Play) {
       Hide_Mouse();
       TeamEvent = 0;
@@ -321,9 +251,7 @@ void Main_Game(int argc, char* argv[]) {
     for (;;) {
       if constexpr (config::kScenarioEditorEnabled) {
         if (MapEditorActive) {
-          /*
-          **	Scenario-editor-mode: call the editor's main loop
-          */
+          // Scenario-editor-mode: call the editor's main loop
           if (Map_Edit_Loop()) {
             break;
           }
@@ -333,19 +261,15 @@ void Main_Game(int argc, char* argv[]) {
 
       TimeQuake = PendingTimeQuake;
       PendingTimeQuake = false;
-      /*
-      **	Call the game's main loop
-      */
+      // Call the game's main loop
       if (Main_Loop()) {
         break;
       }
 
-      /*
-      **	If the SpecialDialog flag is set, invoke the given special
-      **	dialog. This must be done outside the main loop, since the
-      **	dialog will call Main_Loop(), allowing the game to run in the
-      **	background.
-      */
+      // If the SpecialDialog flag is set, invoke the given special
+      // dialog. This must be done outside the main loop, since the
+      // dialog will call Main_Loop(), allowing the game to run in the
+      // background.
       if (SpecialDialog != SDLG_NONE) {
         switch (SpecialDialog) {
           case SDLG_SPECIAL:
@@ -384,29 +308,23 @@ void Main_Game(int argc, char* argv[]) {
       }
     }
 
-    /*
-    ** Send the game stats to WChat if we haven't already done so
-    */
+    // Send the game stats to WChat if we haven't already done so
     if (!GameStatisticsPacketSent && PacketLater) {
       Send_Statistics_Packet();  //	After game sending if PacketLater set.
     }
 
-    /*
-    **	Scenario is done; fade palette to black
-    */
+    // Scenario is done; fade palette to black
     BlackPalette.Set(kFadePaletteSlow);
     VisiblePage.Clear();
 
-    /*
-    **	Un-initialize whatever needs it, for each game played.
-    **
-    **	Shut down either the modem or network; they'll get re-initialized if
-    **	the user selections those options again in Select_Game().  This
-    **	"re-boots" the modem & network code, which I currently feel is safer
-    **	than just letting it hang around.
-    ** (Skip this step if we're in playback mode; the modem or net won't have
-    ** been initialized in that case.)
-    */
+    // Un-initialize whatever needs it, for each game played.
+    //
+    // Shut down either the modem or network; they'll get re-initialized if
+    // the user selections those options again in Select_Game().  This
+    // "re-boots" the modem & network code, which I currently feel is safer
+    // than just letting it hang around.
+    // (Skip this step if we're in playback mode; the modem or net won't have
+    // been initialized in that case.)
     if (Session.Record || Session.Play) {
       Session.RecordFile.Close();
     }
@@ -440,10 +358,8 @@ void Main_Game(int argc, char* argv[]) {
     }
 #endif  // MPATH
 
-    /*
-    **	If we're playing back, the mouse will be hidden; show it.
-    ** Also, set all variables back to normal, to return to the main menu.
-    */
+    // If we're playing back, the mouse will be hidden; show it.
+    // Also, set all variables back to normal, to return to the main menu.
     if (Session.Play) {
       Show_Mouse();
       Session.Type = GAME_NORMAL;
@@ -458,59 +374,43 @@ void Main_Game(int argc, char* argv[]) {
       Special.IsFromWChat = false;
       SpawnedFromWChat = false;
 #ifdef _WIN32
-      DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont use the same
-                                             // start packet twice
+      // Discard the start packet so the next launch cannot reuse it.
+      DDEServer.Delete_MPlayer_Game_Info();
 #endif
-      Session.Type = GAME_NORMAL;  // Have to do this or we will got straight to
-                                   // the multiplayer menu
-      Spawn_WChat(false);  // Will switch back to Wchat. It must be there
-                           // because its been poking us
+      // Without this the game would drop straight back into the multiplayer
+      // menu instead of the main one.
+      Session.Type = GAME_NORMAL;
+      // Hand control back to WChat, which is still running -- it launched us
+      // and has been polling for us to finish.
+      Spawn_WChat(false);
     }
 #endif  //	!WOLAPI_INTEGRATION
   }
 
-  /*
-  **	Free the scenario description buffers
-  */
+  // Free the scenario description buffers
   Session.Free_Scenario_Descriptions();
 }
 
-/***********************************************************************************************
- * Keyboard_Process -- Processes the tactical map input codes. *
- *                                                                                             *
- *    This routine is used to process the input codes while the player * has the
- *tactical map displayed. It handles all the keys that * are appropriate to that
- *mode.                                                            *
- *                                                                                             *
- * INPUT:   input -- Input code as returned from Input_Num(). *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/21/1992 JLB : Created. * 07/04/1995 JLB : Handles team and map
- *control hotkeys.                                    *
- *=============================================================================================*/
+// Handles keyboard input while the tactical map is displayed.
+//
+// Every clause that recognizes a key sets input to KN_NONE, so a key is only
+// ever acted on once no matter how many clauses could match it. Message input
+// gets first refusal for that reason: a player typing chat must not also be
+// commanding their units.
 void Keyboard_Process(KeyNumType& input) {
   ObjectClass* obj;
   int index;
 
-  /*
-  **	Don't do anything if there is not keyboard event.
-  */
+  // Don't do anything if there is not keyboard event.
   if (input == KN_NONE) {
     return;
   }
-  /*
-  **	For network & modem, process user input for inter-player messages.
-  */
+  // For network & modem, process user input for inter-player messages.
   Message_Input(input);
 
-  /*
-  **	The VK_BIT must be stripped from the "plain" value of the key so that a
-  *comparison to *	KN_1, for example, will yield true if in fact the "1"
-  *key was pressed.
-  */
+  // The VK_BIT must be stripped from the "plain" value of the key so that a
+  // comparison to *	KN_1, for example, will yield true if in fact the "1"
+  // key was pressed.
 
   KeyNumType plain =
       static_cast<KeyNumType>(input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT |
@@ -559,11 +459,9 @@ void Keyboard_Process(KeyNumType& input) {
     }
   }
 
-  /*
-  **	Process prerecorded team selection. This will be an additive select
-  **	if the SHIFT key is held down. It will create the team if the
-  **	CTRL or ALT key is held down.
-  */
+  // Process prerecorded team selection. This will be an additive select
+  // if the SHIFT key is held down. It will create the team if the
+  // CTRL or ALT key is held down.
   int action = 0;
   if (input & WWKEY_SHIFT_BIT) {
     action = 1;
@@ -575,9 +473,7 @@ void Keyboard_Process(KeyNumType& input) {
     action = 2;
   }
 
-  /*
-  **	If the "N" key is pressed, then select the next object.
-  */
+  // If the "N" key is pressed, then select the next object.
   if (key != 0 && key == Options.KeyNext) {
     if (action) {
       obj = Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
@@ -607,9 +503,7 @@ void Keyboard_Process(KeyNumType& input) {
     input = KN_NONE;
   }
 
-  /*
-  **	All selected units will go into idle mode.
-  */
+  // All selected units will go into idle mode.
   if (key != 0 && key == Options.KeyStop) {
     if (CurrentObject.Count()) {
       for (index = 0; index < CurrentObject.Count(); index++) {
@@ -625,9 +519,7 @@ void Keyboard_Process(KeyNumType& input) {
     input = KN_NONE;
   }
 
-  /*
-  **	All selected units will attempt to go into guard area mode.
-  */
+  // All selected units will attempt to go into guard area mode.
   if (key != 0 && key == Options.KeyGuard) {
     if (CurrentObject.Count()) {
       for (index = 0; index < CurrentObject.Count(); index++) {
@@ -642,9 +534,7 @@ void Keyboard_Process(KeyNumType& input) {
     input = KN_NONE;
   }
 
-  /*
-  **	All selected units will attempt to scatter.
-  */
+  // All selected units will attempt to scatter.
   if (key != 0 && key == Options.KeyScatter) {
     if (CurrentObject.Count()) {
       for (index = 0; index < CurrentObject.Count(); index++) {
@@ -658,10 +548,8 @@ void Keyboard_Process(KeyNumType& input) {
     input = KN_NONE;
   }
 
-  /*
-  **	Center the map around the currently selected objects. If no
-  **	objects are selected, then fall into the home case.
-  */
+  // Center the map around the currently selected objects. If no
+  // objects are selected, then fall into the home case.
   if (key != 0 && (key == Options.KeyHome1 || key == Options.KeyHome2)) {
     if (CurrentObject.Count()) {
       Map.Center_Map();
@@ -672,10 +560,8 @@ void Keyboard_Process(KeyNumType& input) {
     }
   }
 
-  /*
-  **	Center the map about the construction yard or construction vehicle
-  **	if one is present.
-  */
+  // Center the map about the construction yard or construction vehicle
+  // if one is present.
   if (key != 0 && key == Options.KeyBase) {
     Unselect_All();
     if (PlayerPtr->CurBuildings) {
@@ -715,18 +601,14 @@ void Keyboard_Process(KeyNumType& input) {
     input = KN_NONE;
   }
 
-  /*
-  ** Toggle the status of formation for the current team
-  */
+  // Toggle the status of formation for the current team
   if (key != 0 && key == Options.KeyFormation) {
     Toggle_Formation();
     input = KN_NONE;
   }
 
 #ifdef TOFIX
-  /*
-  ** For multiplayer, 'R' pops up the surrender dialog.
-  */
+  // For multiplayer, 'R' pops up the surrender dialog.
   if (input != 0 && input == Options.KeyResign) {
     if (!PlayerLoses &&
         /*Session.Type != GAME_NORMAL &&*/ !PlayerPtr->IsDefeated) {
@@ -737,9 +619,7 @@ void Keyboard_Process(KeyNumType& input) {
   }
 #endif
 
-  /*
-  **	Handle making and breaking alliances.
-  */
+  // Handle making and breaking alliances.
   if (key != 0 && key == Options.KeyAlliance) {
     if (Session.Type != GAME_NORMAL || Debug_Flag) {
       if (CurrentObject.Count() && !PlayerPtr->IsDefeated) {
@@ -751,68 +631,55 @@ void Keyboard_Process(KeyNumType& input) {
     input = KN_NONE;
   }
 
-  /*
-  **	Select all the units on the current display. This is equivalent to
-  **	drag selecting the whole view.
-  */
+  // Select all the units on the current display. This is equivalent to
+  // drag selecting the whole view.
   if (key != 0 && key == Options.KeySelectView) {
+    // The corners are leptons relative to the tactical view, so 0 is its top
+    // left and the size below is its full extent -- a drag select of everything
+    // on screen.
     Map.Select_These(0x00000000,
                      XY_Coord(Map.TacLeptonWidth, Map.TacLeptonHeight));
     input = KN_NONE;
   }
 
-  /*
-  **	Toggles the repair state similarly to pressing the repair button.
-  */
+  // Toggles the repair state similarly to pressing the repair button.
   if (key != 0 && key == Options.KeyRepair) {
     Map.Repair_Mode_Control(-1);
     input = KN_NONE;
   }
 
-  /*
-  **	Toggles the sell state similarly to pressing the sell button.
-  */
+  // Toggles the sell state similarly to pressing the sell button.
   if (key != 0 && key == Options.KeySell) {
     Map.Sell_Mode_Control(-1);
     input = KN_NONE;
   }
 
-  /*
-  **	Toggles the map zoom mode similarly to pressing the map button.
-  */
+  // Toggles the map zoom mode similarly to pressing the map button.
   if (key != 0 && key == Options.KeyMap) {
     Map.Zoom_Mode_Control();
     input = KN_NONE;
   }
 
-  /*
-  **	Scrolls the sidebar up one slot.
-  */
+  // Scrolls the sidebar up one slot.
   if (key != 0 && key == Options.KeySidebarUp) {
     Map.Scroll(true, -1);
     input = KN_NONE;
   }
 
-  /*
-  **	Scrolls the sidebar down one slot.
-  */
+  // Scrolls the sidebar down one slot.
   if (key != 0 && key == Options.KeySidebarDown) {
     Map.Scroll(false, -1);
     input = KN_NONE;
   }
 
-  /*
-  **	Brings up the options dialog box.
-  */
+  // Brings up the options dialog box.
   if (key != 0 && (key == Options.KeyOption1 || key == Options.KeyOption2)) {
     Map.Help_Text(TXT_NONE);  // Turns off help text.
     Queue_Options();
     input = KN_NONE;
   }
 
-  /*
-  **	Scrolls the tactical map in the direction specified.
-  */
+  // Scrolls the tactical map in the direction specified.
   int distance = CELL_LEPTON_W;
   if (key != 0 && key == Options.KeyScrollLeft) {
     Map.Scroll_Map(DIR_W, distance, true);
@@ -831,12 +698,10 @@ void Keyboard_Process(KeyNumType& input) {
     input = KN_NONE;
   }
 
-  /*
-  **	Teams are handled by the 10 special team keys. The manual comparison
-  **	to the KN numbers is because the Windows keyboard driver can vary
-  **	the base code number for the key depending on the shift or alt key
-  **	state!
-  */
+  // Teams are handled by the 10 special team keys. The manual comparison
+  // to the KN numbers is because the Windows keyboard driver can vary
+  // the base code number for the key depending on the shift or alt key
+  // state!
   if (input != 0 && (plain == Options.KeyTeam1 || plain == KN_1)) {
     Handle_Team(0, action);
     input = KN_NONE;
@@ -878,9 +743,7 @@ void Keyboard_Process(KeyNumType& input) {
     input = KN_NONE;
   }
 
-  /*
-  **	Handle the bookmark hotkeys.
-  */
+  // Handle the bookmark hotkeys.
   if (input != 0 && plain == Options.KeyBookmark1 && !MapEditorActive) {
     Handle_View(0, action);
     input = KN_NONE;
@@ -905,47 +768,59 @@ void Keyboard_Process(KeyNumType& input) {
   }
 }
 
+// Puts the player's currently selected group into formation, or takes it out of
+// one if it is already in formation.
+//
+// A formation is stored per unit as an offset from the group's centre, so that
+// the group keeps its shape as it moves. kNoFormationOffset is the "not in
+// formation" sentinel; finding it on the first member is what decides whether
+// this call sets the formation up or tears it down.
 void Toggle_Formation() {
-  int team = -1;
+  // kNoGroup means "no grouped unit found yet". It must be compared against
+  // rather than -1: Group is an unsigned char, so an ungrouped unit reads back
+  // as 255 and would otherwise be taken for a valid group number and used to
+  // index the ten-entry TeamSpeed/TeamMaxSpeed arrays.
+  int team = kNoGroup;
+  // Seeded inverted -- min at the largest possible value, max at the smallest
+  // -- so the first cell examined replaces both.
   long minx = 0x7FFFFFFFL, miny = 0x7FFFFFFFL;
   long maxx = 0, maxy = 0;
   int index;
   bool setform = 0;
 
-  //
   // Recording support
-  //
   if (Session.Record) {
     FormationEvent = 1;
   }
 
-  /*
-  ** Find the first selected object that is a member of a team, and
-  ** register his group as the team we're using.  Once we find the team
-  ** number, update the 'setform' flag to know whether we should be setting
-  ** the formation's offsets, or clearing them.  If they currently have
-  ** illegal offsets (as in 0x80000000), then we're setting.
-  */
+  // Find the first selected object that is a member of a team, and
+  // register his group as the team we're using.  Once we find the team
+  // number, update the 'setform' flag to know whether we should be setting
+  // the formation's offsets, or clearing them.  If they currently have
+  // illegal offsets (kNoFormationOffset), then we're setting.
+  //
+  // The three passes are ordered units, infantry, vessels because a mixed
+  // group takes its speed from whichever type is found first.
   for (index = 0; index < Units.Count(); index++) {
     UnitClass* obj = Units.Ptr(index);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr && obj->IsSelected) {
       team = obj->Group;
-      if (team != -1) {
-        setform = obj->XFormOffset == static_cast<int>(0x80000000);
+      if (team != kNoGroup) {
+        setform = obj->XFormOffset == kNoFormationOffset;
         TeamSpeed[team] = SPEED_WHEEL;
         TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
         break;
       }
     }
   }
-  if (team == -1) {
+  if (team == kNoGroup) {
     for (index = 0; index < Infantry.Count(); index++) {
       InfantryClass* obj = Infantry.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
         team = obj->Group;
-        if (team != -1) {
-          setform = obj->XFormOffset == static_cast<int>(0x80000000);
+        if (team != kNoGroup) {
+          setform = obj->XFormOffset == kNoFormationOffset;
           TeamSpeed[team] = SPEED_WHEEL;
           TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
           break;
@@ -954,14 +829,14 @@ void Toggle_Formation() {
     }
   }
 
-  if (team == -1) {
+  if (team == kNoGroup) {
     for (index = 0; index < Vessels.Count(); index++) {
       VesselClass* obj = Vessels.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
         team = obj->Group;
-        if (team != -1) {
-          setform = obj->XFormOffset == 0x80000000UL;
+        if (team != kNoGroup) {
+          setform = obj->XFormOffset == kNoFormationOffset;
           TeamSpeed[team] = SPEED_WHEEL;
           TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
           break;
@@ -970,12 +845,10 @@ void Toggle_Formation() {
     }
   }
 
-  if (team == -1) {
+  if (team == kNoGroup) {
     return;
   }
-  /*
-  ** Now that we have a team, let's go set (or clear) the formation offsets.
-  */
+  // Now that we have a team, let's go set (or clear) the formation offsets.
   for (index = 0; index < Units.Count(); index++) {
     UnitClass* obj = Units.Ptr(index);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
@@ -993,7 +866,7 @@ void Toggle_Formation() {
           TeamSpeed[team] = obj->Class->Speed;
         }
       } else {
-        obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000);
+        obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
       }
     }
   }
@@ -1012,7 +885,7 @@ void Toggle_Formation() {
         maxy = std::max(yc, maxy);
         TeamMaxSpeed[team] = std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
       } else {
-        obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000);
+        obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
       }
     }
   }
@@ -1031,16 +904,17 @@ void Toggle_Formation() {
         maxy = std::max(yc, maxy);
         TeamMaxSpeed[team] = std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
       } else {
-        obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000UL);
+        obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
       }
     }
   }
 
-  /*
-  ** All the units have been counted to find the bounding rectangle and
-  ** center of the formation, or to clear their offsets.  Now, if we're to
-  ** set them into formation, proceed to do so.  Otherwise, bail.
-  */
+  // All the units have been counted to find the bounding rectangle and
+  // center of the formation, or to clear their offsets.  Now, if we're to
+  // set them into formation, proceed to do so.  Otherwise, bail.
+  //
+  // Offsets are taken from where each unit already stands, so the formation
+  // locks in the group's current shape rather than imposing a canned one.
   if (setform) {
     int centerx = static_cast<int>((maxx - minx) / 2 + minx);
     int centery = static_cast<int>((maxy - miny) / 2 + miny);
@@ -1083,20 +957,12 @@ void Toggle_Formation() {
   }
 }
 
-/***********************************************************************************************
- * Message_Input -- allows inter-player message input processing *
- *                                                                                             *
- * INPUT: * input		key value
- **
- *                                                                                             *
- * OUTPUT: * none.
- **
- *                                                                                             *
- * WARNINGS: * none.
- **
- *                                                                                             *
- * HISTORY: * 05/22/1995 BRR : Created. *
- *=============================================================================================*/
+// Processes inter-player message input. F1 through F8 open an editable message
+// addressed to one player or to everyone, and RETURN sends what has been typed.
+//
+// The four session types put the text on the wire differently -- a serial
+// packet, an IPX global packet, TEN, or MPATH -- but all of them build the same
+// message from the same edit buffer.
 static void Message_Input(KeyNumType& input) {
   int rc;
   char txt[MAX_MESSAGE_LENGTH + 32];
@@ -1104,16 +970,13 @@ static void Message_Input(KeyNumType& input) {
   SerialPacketType* serial_packet;
   int i;
   KeyNumType copy_input;
-  // char *msg;
 
-  /*
-  **	Check keyboard input for a request to send a message.
-  **	The 'to' argument for Add_Edit is prefixed to the message buffer; the
-  **	message buffer is big enough for the 'to' field plus MAX_MESSAGE_LENGTH.
-  **	To send the message, calling Get_Edit_Buf retrieves the buffer minus the
-  **	'to' portion.  At the other end, the buffer allocated to display the
-  **	message must be MAX_MESSAGE_LENGTH plus the size of "From: xxx (house)".
-  */
+  // Check keyboard input for a request to send a message.
+  // The 'to' argument for Add_Edit is prefixed to the message buffer; the
+  // message buffer is big enough for the 'to' field plus MAX_MESSAGE_LENGTH.
+  // To send the message, calling Get_Edit_Buf retrieves the buffer minus the
+  // 'to' portion.  At the other end, the buffer allocated to display the
+  // message must be MAX_MESSAGE_LENGTH plus the size of "From: xxx (house)".
 #if WOLAPI_INTEGRATION
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       ((input >= KN_F1 && input < (KN_F1 + Session.MaxPlayers)) ||
@@ -1126,10 +989,8 @@ static void Message_Input(KeyNumType& input) {
 #endif
     memset(txt, 0, 40);
 
-    /*
-    **	For a serial game, send a message on F1 or F4; set 'txt' to the
-    **	"Message:" string & add an editable message to the list.
-    */
+    // For a serial game, send a message on F1 or F4; set 'txt' to the
+    // "Message:" string & add an editable message to the list.
     if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
       if (input == KN_F1 || input == KN_F1 + Session.MaxPlayers - 1) {
         port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
@@ -1142,11 +1003,9 @@ static void Message_Input(KeyNumType& input) {
       }
     } else if ((Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) &&
                !Session.Messages.Is_Edit()) {
-      /*
-      **	For a network game:
-      **	F1-F7 = "To <name> (house):" (only allowed if we're not in
-      *ObiWan mode) *	F8 = "To All:"
-      */
+      // For a network game:
+      // F1-F7 = "To <name> (house):" (only allowed if we're not in
+      // ObiWan mode) *	F8 = "To All:"
       if (input == KN_F1 + Session.MaxPlayers - 1) {
         Session.MessageAddress = IPXAddressClass();    // set to broadcast
         port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
@@ -1215,11 +1074,9 @@ static void Message_Input(KeyNumType& input) {
 #endif
     }
 #if (TEN)
-    /*
-    **	For a TEN game:
-    **	F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
-    **	F8 = "To All:"
-    */
+    // For a TEN game:
+    // F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
+    // F8 = "To All:"
     else if (Session.Type == GAME_TEN && !Session.Messages.Is_Edit()) {
       if (input == (KN_F1 + Session.MaxPlayers - 1)) {
         Session.TenMessageAddress = -1;        // set to broadcast
@@ -1245,11 +1102,9 @@ static void Message_Input(KeyNumType& input) {
     }
 #endif  // TEN
 #if (MPATH)
-    /*
-    **	For a MPATH game:
-    **	F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
-    **	F8 = "To All:"
-    */
+    // For a MPATH game:
+    // F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
+    // F8 = "To All:"
     else if (Session.Type == GAME_MPATH && !Session.Messages.Is_Edit()) {
       if (input == (KN_F1 + Session.MaxPlayers - 1)) {
         Session.MPathMessageAddress = 0;       // set to broadcast
@@ -1277,26 +1132,20 @@ static void Message_Input(KeyNumType& input) {
 #endif  // MPATH
   }
 
-  /*
-  **	Process message-system input; send the message out if RETURN is hit.
-  */
+  // Process message-system input; send the message out if RETURN is hit.
   copy_input = input;
   rc = Session.Messages.Input(input);
 
-  /*
-  **	If a single character has been added to an edit buffer, update the
-  *display.
-  */
+  // If a single character has been added to an edit buffer, update the
+  // display.
   if (rc == 1 && Session.Type != GAME_NORMAL) {
     Map.Flag_To_Redraw(false);
   }
 
-  /*
-  **	If backspace was hit, redraw the map.  If the edit message was removed,
-  ** the map must be force-drawn, since it won't be able to compute the
-  ** cells to redraw; otherwise, let the map compute the cells to redraw,
-  ** by not force-drawing it, but just setting the IsToRedraw bit.
-  */
+  // If backspace was hit, redraw the map.  If the edit message was removed,
+  // the map must be force-drawn, since it won't be able to compute the
+  // cells to redraw; otherwise, let the map compute the cells to redraw,
+  // by not force-drawing it, but just setting the IsToRedraw bit.
   if (rc == 2 && Session.Type != GAME_NORMAL) {
     if (copy_input == KN_ESC) {
       Map.Flag_To_Redraw(true);
@@ -1313,16 +1162,12 @@ static void Message_Input(KeyNumType& input) {
     Map.DisplayClass::IsToRedraw = true;
   }
 
-  /*
-  **	Send a message
-  */
+  // Send a message
   if ((rc == 3 || rc == 4) && Session.Type != GAME_NORMAL &&
       Session.Type != GAME_SKIRMISH) {
-    /*
-    **	Serial game: fill in a SerialPacketType & send it.
-    **	(Note: The size of the SerialPacketType.Command must be the same as
-    **	the EventClass.Type!)
-    */
+    // Serial game: fill in a SerialPacketType & send it.
+    // (Note: The size of the SerialPacketType.Command must be the same as
+    // the EventClass.Type!)
     if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
       serial_packet = (SerialPacketType*)NullModem.BuildBuf;
 
@@ -1339,12 +1184,13 @@ static void Message_Input(KeyNumType& input) {
         Session.Messages.Clear_Overflow_Buf();
       }
 
-      /*
-      ** Send the message, and store this message in our LastMessage
-      ** buffer; the computer may send us a version of it later.
-      */
+      // Send the message, and store this message in our LastMessage
+      // buffer; the computer may send us a version of it later.
       NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
 
+      // A chat message is how the secret units get switched on for everyone
+      // at once: both ends recognize the phrase and enable them locally, so
+      // the setting stays in step without a new packet type.
       char* ptr = &serial_packet->Message.Message[0];
       if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
         Enable_Secret_Units();
@@ -1371,9 +1217,7 @@ static void Message_Input(KeyNumType& input) {
 #endif
       {
 
-        /*
-        **	Network game: fill in a GlobalPacketType & send it.
-        */
+        // Network game: fill in a GlobalPacketType & send it.
         Session.GPacket.Command = NET_MESSAGE;
         port::SafeCopy(Session.GPacket.Name, Session.Players[0]->Name);
         Session.GPacket.Message.Color = Session.ColorIdx;
@@ -1388,10 +1232,8 @@ static void Message_Input(KeyNumType& input) {
           Session.Messages.Clear_Overflow_Buf();
         }
 
-        /*
-        **	If 'F4' was hit, MessageAddress will be a broadcast address;
-        *send *	the message to every player we have a connection with.
-        */
+        // If 'F4' was hit, MessageAddress will be a broadcast address;
+        // send *	the message to every player we have a connection with.
         if (Session.MessageAddress.Is_Broadcast()) {
           char* ptr = &Session.GPacket.Message.Buf[0];
           if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
@@ -1405,26 +1247,20 @@ static void Message_Input(KeyNumType& input) {
             Ipx.Service();
           }
         } else {
-          /*
-          **	Otherwise, MessageAddress contains the exact address to send to.
-          **	Send to that address only.
-          */
+          // Otherwise, MessageAddress contains the exact address to send to.
+          // Send to that address only.
           Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                                   &Session.MessageAddress);
           Ipx.Service();
         }
 
-        /*
-        **	Store this message in our LastMessage buffer; the computer may
-        *send *	us a version of it later.
-        */
+        // Store this message in our LastMessage buffer; the computer may
+        // send *	us a version of it later.
         port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
       }
     }
 #if (TEN)
-    /*
-    **	TEN game: fill in a GlobalPacketType & send it.
-    */
+    // TEN game: fill in a GlobalPacketType & send it.
     else if (Session.Type == GAME_TEN) {
       Session.GPacket.Command = NET_MESSAGE;
       strcpy(Session.GPacket.Name, Session.Players[0]->Name);
@@ -1445,9 +1281,7 @@ static void Message_Input(KeyNumType& input) {
 #endif  // TEN
 
 #if (MPATH)
-    /*
-    **	MPATH game: fill in a GlobalPacketType & send it.
-    */
+    // MPATH game: fill in a GlobalPacketType & send it.
     else if (Session.Type == GAME_MPATH) {
       Session.GPacket.Command = NET_MESSAGE;
       strcpy(Session.GPacket.Name, Session.Players[0]->Name);
@@ -1467,32 +1301,19 @@ static void Message_Input(KeyNumType& input) {
     }
 #endif  // MPATH
 
-    /*
-    **	Tell the map to completely update itself, since a message is now
-    *missing.
-    */
+    // Tell the map to completely update itself, since a message is now
+    // missing.
     Map.Flag_To_Redraw(true);
   }
 }
 
-/***********************************************************************************************
- * Color_Cycle -- Handle the general palette color cycling. *
- *                                                                                             *
- *    This is a maintenance routine that handles the color cycling. It should be
- *called as     * often as necessary to achieve smooth color cycling effects --
- *at least 8 times a second. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/31/1994 JLB : Created. * 06/10/1994 JLB : Uses new cycle color
- *values.                                             * 12/21/1994 JLB : Handles
- *text fade color.                                                 * 07/16/1996
- *JLB : Faster pulsing of white color. *
- *=============================================================================================*/
+// Cycles the animated palette entries. Two effects run off independent timers:
+// a white that pulses between full and dark, used by the radar box and other
+// interface glows, and a rotation of the water colours.
+//
+// This needs to run at least 8 times a second to look smooth, which is why
+// Sync_Delay() calls it while idling rather than the main loop calling it once
+// per frame.
 void Color_Cycle() {
   static Timer<SystemTickSource> _timer;
   static Timer<SystemTickSource> _ftimer;
@@ -1501,13 +1322,15 @@ void Color_Cycle() {
   bool changed = false;
 
   if (Options.IsPaletteScroll) {
-    /*
-    **	Process the fading white color. It is used for the radar box and other
-    *glowing *	game interface elements.
-    */
+    // Process the fading white color. It is used for the radar box and other
+    // glowing *	game interface elements.
     if (_ftimer.IsFinished()) {
       _ftimer.Set(kTimerSecond / 6);
 
+// Six steps of 20 carry the pulse across its 0x20..150 range, so a full
+// cycle takes about two seconds at the timer rate set above. The range stops
+// short of both black and full white: the glow has to stay legible at its
+// dimmest and stay distinct from plain white at its brightest.
 #define STEP_RATE 20
       if (_up) {
         val += STEP_RATE;
@@ -1523,25 +1346,19 @@ void Color_Cycle() {
         }
       }
 
-      /*
-      **	Set the pulse color as the proportional value between white and
-      *the *	minimum value for pulsing.
-      */
+      // Set the pulse color as the proportional value between white and
+      // the *	minimum value for pulsing.
       InGamePalette[CC_PULSE_COLOR] = GamePalette[WHITE];
       InGamePalette[CC_PULSE_COLOR].Adjust(val, kBlackColor);
 
-      /*
-      **	Pulse the glowing embers between medium and dark red.
-      */
+      // Pulse the glowing embers between medium and dark red.
       InGamePalette[CC_EMBER_COLOR] = RGBClass(255, 80, 80);
       InGamePalette[CC_EMBER_COLOR].Adjust(val, kBlackColor);
 
       changed = true;
     }
 
-    /*
-    **	Process the color cycling effects -- water.
-    */
+    // Process the color cycling effects -- water.
     if (_timer.IsFinished()) {
       _timer.Set(kTimerSecond / 4);
 
@@ -1555,54 +1372,30 @@ void Color_Cycle() {
       changed = true;
     }
 
-    /*
-    **	If any of the processing functions changed the palette, then this
-    *palette must be *	passed to the system.
-    */
+    // If any of the processing functions changed the palette, then this
+    // palette must be *	passed to the system.
     if (changed) {
       BStart(BENCH_PALETTE);
       InGamePalette.Set();
-      //			Set_Palette(InGamePalette);
       BEnd(BENCH_PALETTE);
     }
   }
 }
 
-/***********************************************************************************************
- * Call_Back -- Main game maintenance callback routine. *
- *                                                                                             *
- *    This routine handles all the "real time" processing that needs to * occur.
- *This includes palette fading and sound updating. It needs * to be called as
- *often as possible.                                                       *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/07/1992 JLB : Created. *
- *=============================================================================================*/
 void Call_Back() {
-  /*
-  **	Music and speech maintenance
-  */
+  // Music and speech maintenance
   if (SampleType) {
     Sound_Callback();
     Theme.AI();
     Speak_AI();
   }
 
-  /*
-  **	Network maintenance.
-  */
+  // Network maintenance.
   if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
     IPX_Call_Back();
   }
 
-  /*
-  **	Serial game maintenance.
-  */
+  // Serial game maintenance.
   if (Session.Type == GAME_NULL_MODEM ||
       (Session.Type == GAME_MODEM && Session.ModemService)) {
     NullModem.Service();
@@ -1667,19 +1460,15 @@ void Call_Back() {
 void IPX_Call_Back() {
   Ipx.Service();
 
-  /*
-  ** Read packets only if the game is "closed", so we don't steal global
-  ** messages from the connection dialogs.
-  */
+  // Read packets only if the game is "closed", so we don't steal global
+  // messages from the connection dialogs.
   if (!Session.NetOpen) {
     if (Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                                &Session.GAddress, &Session.GProductID)) {
       if (Session.GProductID == IPXGlobalConnClass::COMMAND_AND_CONQUER0) {
-        /*
-        **	If this is another player signing off, remove the connection &
-        **	mark that player's house as non-human, so the computer will take
-        **	it over.
-        */
+        // If this is another player signing off, remove the connection &
+        // mark that player's house as non-human, so the computer will take
+        // it over.
         if (Session.GPacket.Command == NET_SIGN_OFF) {
           for (int i = 0; i < Ipx.Num_Connections(); i++) {
             int id = Ipx.Connection_ID(i);
@@ -1689,16 +1478,12 @@ void IPX_Call_Back() {
             }
           }
         } else {
-          /*
-          **	Process a message from another user.
-          */
+          // Process a message from another user.
           if (Session.GPacket.Command == NET_MESSAGE) {
             bool msg_ok = false;
 
-            /*
-            ** If NetProtect is set, make sure this message came from within
-            ** this game.
-            */
+            // If NetProtect is set, make sure this message came from within
+            // this game.
             if (!Session.NetProtect) {
               msg_ok = true;
             } else {
@@ -1725,15 +1510,11 @@ void IPX_Call_Back() {
                 Sound_Effect(VOC_INCOMING_MESSAGE);
               }
 
-              /*
-              **	Tell the map to do a partial update (just to force the
-              *messages *	to redraw).
-              */
+              // Tell the map to do a partial update (just to force the
+              // messages *	to redraw).
               Map.Flag_To_Redraw(true);
 
-              /*
-              **	Save this message in our last-message buffer
-              */
+              // Save this message in our last-message buffer
               port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
             }
           } else {
@@ -1753,11 +1534,9 @@ void TEN_Call_Back() {
 
   if (Ten->Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                               &Session.TenAddress)) {
-    //
     //	If this is another player signing off, remove the connection &
     //	mark that player's house as non-human, so the computer will take
     //	it over.
-    //
     if (Session.GPacket.Command == NET_SIGN_OFF) {
       for (int i = 0; i < Ten->Num_Connections(); i++) {
         id = Ten->Connection_ID(i);
@@ -1768,9 +1547,7 @@ void TEN_Call_Back() {
       }
     }
 
-    //
     //	Process a message from another user.
-    //
     else if (Session.GPacket.Command == NET_MESSAGE) {
       if (!Session.Messages.Concat_Message(
               Session.GPacket.Name, Session.GPacket.Message.Color,
@@ -1784,15 +1561,11 @@ void TEN_Call_Back() {
 
         Sound_Effect(VOC_INCOMING_MESSAGE);
 
-        /*
-        **	Tell the map to do a partial update (just to force the messages
-        **	to redraw).
-        */
+        // Tell the map to do a partial update (just to force the messages
+        // to redraw).
         Map.Flag_To_Redraw(true);
 
-        /*
-        **	Save this message in our last-message buffer
-        */
+        // Save this message in our last-message buffer
         strcpy(Session.LastMessage, Session.GPacket.Message.Buf);
       }
     }
@@ -1808,11 +1581,9 @@ void MPATH_Call_Back() {
 
   if (MPath->Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                                 &Session.MPathAddress)) {
-    //
     //	If this is another player signing off, remove the connection &
     //	mark that player's house as non-human, so the computer will take
     //	it over.
-    //
     if (Session.GPacket.Command == NET_SIGN_OFF) {
       for (int i = 0; i < MPath->Num_Connections(); i++) {
         id = MPath->Connection_ID(i);
@@ -1823,9 +1594,7 @@ void MPATH_Call_Back() {
       }
     }
 
-    //
     //	Process a message from another user.
-    //
     else if (Session.GPacket.Command == NET_MESSAGE) {
       if (!Session.Messages.Concat_Message(
               Session.GPacket.Name, Session.GPacket.Message.Color,
@@ -1839,15 +1608,11 @@ void MPATH_Call_Back() {
 
         Sound_Effect(VOC_INCOMING_MESSAGE);
 
-        /*
-        **	Tell the map to do a partial update (just to force the messages
-        **	to redraw).
-        */
+        // Tell the map to do a partial update (just to force the messages
+        // to redraw).
         Map.Flag_To_Redraw(true);
 
-        /*
-        **	Save this message in our last-message buffer
-        */
+        // Save this message in our last-message buffer
         strcpy(Session.LastMessage, Session.GPacket.Message.Buf);
       }
     }
@@ -1855,22 +1620,9 @@ void MPATH_Call_Back() {
 }
 #endif  // MPATH
 
-/***********************************************************************************************
- * Language_Name -- Build filename for current language. *
- *                                                                                             *
- *    This routine attaches a language specific suffix to the base * filename
- *provided. Typical use of this is when loading language * specific files at
- *game initialization time.                                              *
- *                                                                                             *
- * INPUT:   basename -- Base name to append language specific * extension to. *
- *                                                                                             *
- * OUTPUT:  Returns with pointer to completed filename. *
- *                                                                                             *
- * WARNINGS:   The return pointer value is valid only until the next time * this
- *routine is called.                                                         *
- *                                                                                             *
- * HISTORY: * 10/07/1992 JLB : Created. *
- *=============================================================================================*/
+// The extension is hardcoded to .ENG rather than chosen from the build's
+// language, so only the English string files are ever found. The original built
+// a separate executable per language and picked the suffix with an #ifdef.
 const char* Language_Name(const char* basename) {
   static char _fullname[_MAX_FNAME + _MAX_EXT];
 
@@ -1882,21 +1634,6 @@ const char* Language_Name(const char* basename) {
   return _fullname;
 }
 
-/***********************************************************************************************
- * Source_From_Name -- Converts ASCII name into SourceType. *
- *                                                                                             *
- *    This routine is used to convert an ASCII name representing a * SourceType
- *into the actual SourceType value. Typically, this is * used when processing
- *the scenario INI file.                                              *
- *                                                                                             *
- * INPUT:   name  -- The ASCII source name to process. *
- *                                                                                             *
- * OUTPUT:  Returns with the SourceType represented by the name * specified. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 04/17/1994 JLB : Created. *
- *=============================================================================================*/
 SourceType Source_From_Name(const char* name) {
   if (name) {
     for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; source++) {
@@ -1908,21 +1645,6 @@ SourceType Source_From_Name(const char* name) {
   return SOURCE_NONE;
 }
 
-/***********************************************************************************************
- * Name_From_Source -- retrieves the name for the given SourceType
- **
- *                                                                         						  *
- * INPUT: * source		SourceType to get the name for
- **
- *                                                                         						  *
- * OUTPUT: * name of SourceType
- **
- *                                                                         						  *
- * WARNINGS: * none.
- **
- *                                                                         						  *
- * HISTORY: * 11/15/1994 BR : Created. *
- *=============================================================================================*/
 const char* Name_From_Source(SourceType source) {
   if (static_cast<unsigned>(source) < SOURCE_COUNT) {
     return SourceName[source];
@@ -1930,21 +1652,6 @@ const char* Name_From_Source(SourceType source) {
   return "None";
 }
 
-/***********************************************************************************************
- * Theater_From_Name -- Converts ASCII name into a theater number. *
- *                                                                                             *
- *    This routine converts an ASCII representation of a theater and converts it
- *into a        * matching theater number. If no match was found, then
- *THEATER_NONE is returned.           *
- *                                                                                             *
- * INPUT:   name  -- Pointer to ASCII name to convert. *
- *                                                                                             *
- * OUTPUT:  Returns with the name converted into a theater number. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/01/1994 JLB : Created. *
- *=============================================================================================*/
 TheaterType Theater_From_Name(const char* name) {
   TheaterType index;
 
@@ -1958,22 +1665,6 @@ TheaterType Theater_From_Name(const char* name) {
   return THEATER_NONE;
 }
 
-/***********************************************************************************************
- * KN_To_Facing -- Converts a keyboard input number into a facing value. *
- *                                                                                             *
- *    This routine determine which compass direction is represented by the
- *keyboard value      * provided. It is used for map scrolling and other
- *directional control operations from     * the keyboard. *
- *                                                                                             *
- * INPUT:   input -- The KN number to convert. *
- *                                                                                             *
- * OUTPUT:  Returns with the facing type that the keyboard number represents. If
- *it could      * not be translated, then FACING_NONE is returned. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/28/1994 JLB : Created. *
- *=============================================================================================*/
 FacingType KN_To_Facing(int input) {
   input &= ~(KN_ALT_BIT | KN_SHIFT_BIT | KN_CTRL_BIT);
   switch (input) {
@@ -2007,32 +1698,20 @@ FacingType KN_To_Facing(int input) {
   return FACING_NONE;
 }
 
-/***********************************************************************************************
- * Sync_Delay -- Forces the game into a 15 FPS rate. *
- *                                                                                             *
- *    This routine will wait until the timer for the current frame has expired
- *before          * returning. It is called at the end of every game loop in
- *order to force the game loop    * to run at a fixed rate. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   This routine will delay an amount of time according to the game
- *speed setting.  *
- *                                                                                             *
- * HISTORY: * 01/04/1995 JLB : Created. * 03/06/1995 JLB : Fixed. *
- *=============================================================================================*/
+// Spins until the frame timer expires, holding the game to the rate set by the
+// game-speed option.
+//
+// The wait is not idle: input, rendering and the real-time callbacks all run
+// here. That keeps the interface responsive and the palette cycling smooth
+// between logic frames, which tick far more slowly than the display does.
+// Ticks spent waiting are accumulated into SpareTicks as a measure of how much
+// headroom the machine has.
 static void Sync_Delay() {
-  /*
-  **	Accumulate the number of 'spare' ticks that are frittered away here.
-  */
+  // Accumulate the number of 'spare' ticks that are frittered away here.
   SpareTicks += FrameTimer.Value();
 
-  /*
-  **	Delay until the frame timer expires. This forces the game loop to be
-  *regulated to a *	speed controlled by the game options slider.
-  */
+  // Delay until the frame timer expires. This forces the game loop to be
+  // regulated to a *	speed controlled by the game options slider.
   while (FrameTimer.HasTimeLeft()) {
     Color_Cycle();
     Call_Back();
@@ -2052,19 +1731,11 @@ static void Sync_Delay() {
   Call_Back();
 }
 
-/***********************************************************************************************
- * Main_Loop -- This is the main game loop (as a single loop). *
- *                                                                                             *
- *    This function will perform one game loop. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Should the game end? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/01/1994 JLB : Created. *
- *=============================================================================================*/
+// Runs one frame of the game. See the declaration in conquer.h.
+//
+// Nothing that affects game state may be skipped here on the grounds that it is
+// only visual -- every machine in a multiplayer game runs this same sequence
+// and must arrive at the same state, or the session desyncs.
 extern void Check_For_Focus_Loss();
 void Reallocate_Big_Shape_Buffer();
 
@@ -2080,26 +1751,18 @@ bool Main_Loop() {
     return !GameActive;
   }
 
-  /*
-  ** Call the focus loss handler
-  */
+  // Call the focus loss handler
   Check_For_Focus_Loss();
 
-  /*
-  ** Allocate extra memory for uncompressed shapes as needed
-  */
+  // Allocate extra memory for uncompressed shapes as needed
   Reallocate_Big_Shape_Buffer();
 
-  /*
-  ** Sync-bug trapping code
-  */
+  // Sync-bug trapping code
   if (Frame >= Session.TrapFrame) {
     Session.Trap_Object();
   }
 
-  //
   // Initialize our AI processing timer
-  //
   Session.ProcessTimer = TickCount.Value();
 
 #if 1
@@ -2109,32 +1772,24 @@ bool Main_Loop() {
 #endif
 
   if constexpr (config::kCheatKeysEnabled) {
-    /*
-     **	Update the running status debug display.
-     */
+    // Update the running status debug display.
     Self_Regulate();
   }
 
   BStart(BENCH_GAME_FRAME);
 
-  /*
-  **	If there is no theme playing, but it looks like one is required, then
-  *start one *	playing. This is usually the symptom of there being no
-  *transition score.
-  */
+  // If there is no theme playing, but it looks like one is required, then
+  // start one *	playing. This is usually the symptom of there being no
+  // transition score.
   if (SampleType && Theme.What_Is_Playing() == THEME_NONE) {
     Theme.Queue_Song(THEME_PICK_ANOTHER);
   }
 
-  /*
-  **	Setup the timer so that the Main_Loop function processes at the correct
-  *rate.
-  */
+  // Setup the timer so that the Main_Loop function processes at the correct
+  // rate.
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    //
     // In playback mode, run as fast as possible.
-    //
     if (Session.Play) {
       FrameTimer.Set(0);
     } else {
@@ -2156,9 +1811,11 @@ bool Main_Loop() {
     }
   }
 
-  /*
-  **	Update the display, unless we're inside a dialog.
-  */
+  // Update the display, unless we're inside a dialog.
+  //
+  // Skipped entirely during playback: the recording drives the view instead,
+  // and Do_Record_Playback() renders below once it has restored the
+  // position.
   if (!Session.Play) {
     if (SpecialDialog == SDLG_NONE && GameInFocus) {
       WWMouse->Erase_Mouse(&HidPage, true);
@@ -2170,68 +1827,53 @@ bool Main_Loop() {
     }
   }
 
-  /*
-  ** Save map's position & selected objects, if we're recording the game.
-  */
+  // Save map's position & selected objects, if we're recording the game.
   if (Session.Record || Session.Play) {
     Do_Record_Playback();
   }
 
 #ifndef SORTDRAW
-  /*
-  ** Sort the map's ground layer by y-coordinate value.  This is done
-  ** outside the IsToRedraw check, for the purposes of game sync'ing
-  ** between machines; this way, all machines will sort the Map's
-  ** layer in the same way, and any processing done that's based on
-  ** the order of this layer will remain in sync.
-  */
+  // Sort the map's ground layer by y-coordinate value.  This is done
+  // outside the IsToRedraw check, for the purposes of game sync'ing
+  // between machines; this way, all machines will sort the Map's
+  // layer in the same way, and any processing done that's based on
+  // the order of this layer will remain in sync.
   DisplayClass::Layer[LAYER_GROUND].Sort();
 #endif
 
-  /*
-  **	AI logic operations are performed here.
-  */
+  // AI logic operations are performed here.
   Logic.AI();
   TimeQuake = false;
   if (!PendingTimeQuake) {
     TimeQuakeCenter = 0;
   }
 
-  /*
-  **	Manage the inter-player message list.  If Manage() returns true, it
-  *means *	a message has expired & been removed, and the entire map must be
-  *updated.
-  */
+  // Manage the inter-player message list.  If Manage() returns true, it
+  // means *	a message has expired & been removed, and the entire map must be
+  // updated.
   if (Session.Messages.Manage()) {
     HiddenPage.Clear();
     Map.Flag_To_Redraw(true);
   }
 
-  //
   // Measure how long it took to process the AI
   //
+  // Multiplayer uses this running average to pick a frame rate every machine
+  // in the session can actually keep up with.
   Session.ProcessTicks += TickCount.Value() - Session.ProcessTimer;
   Session.ProcessFrames++;
 
-  /*
-  **	Process all commands that are ready to be processed.
-  */
+  // Process all commands that are ready to be processed.
   Queue_AI();
 
-  /*
-  **	Keep track of elapsed time in the game.
-  */
+  // Keep track of elapsed time in the game.
   Score.ElapsedTime += kTimerSecond / kTicksPerSecond;
 
   Call_Back();
 
-  /*
-  **	Check for player wins or loses according to global event flag.
-  */
+  // Check for player wins or loses according to global event flag.
   if (PlayerWins) {
-    /*
-    ** Send the game statistics to WChat.
-    */
+    // Send the game statistics to WChat.
     if (Session.Type == GAME_INTERNET && !GameStatisticsPacketSent) {
       Register_Game_End_Time();
       Send_Statistics_Packet();  //	Player just won.
@@ -2246,9 +1888,7 @@ bool Main_Loop() {
     return !GameActive;
   }
   if (PlayerLoses) {
-    /*
-    ** Send the game statistics to WChat.
-    */
+    // Send the game statistics to WChat.
     if (Session.Type == GAME_INTERNET && !GameStatisticsPacketSent) {
       Register_Game_End_Time();
       Send_Statistics_Packet();  //	Player just lost.
@@ -2286,15 +1926,11 @@ bool Main_Loop() {
     return !GameActive;
   }
 
-  /*
-  **	The frame logic has been completed. Increment the frame
-  **	counter.
-  */
+  // The frame logic has been completed. Increment the frame
+  // counter.
   Frame++;
 
-  /*
-  ** Is there a memory trasher altering the map??
-  */
+  // Is there a memory trasher altering the map??
   if (Debug_Check_Map) {
     if (!Map.Validate()) {
       if (WWMessageBox().Process(TEXT_MAP_ERROR, TEXT_STOP, TEXT_CONTINUE) ==
@@ -2308,6 +1944,8 @@ bool Main_Loop() {
   if (Debug_MotionCapture) {
     // One captured screen per element. Empty between runs.
     static std::vector<std::vector<char>> frames;
+    // Doubles as the frame counter and the end-of-run signal: reaching
+    // frames.size() ends the capture and flushes to disk.
     static base::ssize sequence = 0;
 
     if (frames.empty()) {
@@ -2321,7 +1959,8 @@ bool Main_Loop() {
         SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
         static_cast<long>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
 
-    base::ssize size = static_cast<base::ssize>(SeenBuff.Get_Width()) * SeenBuff.Get_Height();
+    base::ssize size =
+        static_cast<base::ssize>(SeenBuff.Get_Width()) * SeenBuff.Get_Height();
 
     if (sequence < std::ssize(frames)) {
       // A no-op on a frame reused from an earlier run of the same resolution.
@@ -2358,27 +1997,16 @@ bool Main_Loop() {
   return !GameActive;
 }
 
-/***************************************************************************
- * Map_Edit_Loop -- a mini-main loop for map edit mode only                *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   10/19/1994 BR : Created.                                              *
- *=========================================================================*/
+// The map editor's stand-in for Main_Loop(): render, take input, and keep the
+// real-time callbacks alive so music continues. No game logic runs, so the
+// scenario stays frozen while it is edited.
+//
+// Returns true when the game should end.
 bool Map_Edit_Loop() {
-  /*
-  **	Redraw the map.
-  */
+  // Redraw the map.
   Map.Render();
 
-  /*
-  **	Get user input (keys, mouse clicks).
-  */
+  // Get user input (keys, mouse clicks).
   KeyNumType input;
 
   WWMouse->Erase_Mouse(&HidPage, true);
@@ -2387,9 +2015,7 @@ bool Map_Edit_Loop() {
   int y;
   Map.Input(input, x, y);
 
-  /*
-  **	Process keypress.
-  */
+  // Process keypress.
   if (input) {
     Keyboard_Process(input);
   }
@@ -2400,75 +2026,38 @@ bool Map_Edit_Loop() {
   return (!GameActive);
 }
 
-/***************************************************************************
- * Go_Editor -- Enables/disables the map editor
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		flag		true = go into editor mode; false = go into game
- *mode			*
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   10/19/1994 BR : Created.                                              *
- *=========================================================================*/
 void Go_Editor(bool flag) {
-  /*
-  **	Go into Scenario Editor mode
-  */
+  // Go into Scenario Editor mode
   if (flag) {
     MapEditorActive = true;
     Debug_Unshroud = true;
 
-    /*
-    ** Un-select any selected objects
-    */
+    // Un-select any selected objects
     Unselect_All();
 
-    /*
-    ** Turn off the sidebar if it's on
-    */
+    // Turn off the sidebar if it's on
     Map.Activate(0);
 
-    /*
-    ** Reset the map's Button list for the new mode
-    */
+    // Reset the map's Button list for the new mode
     Map.Init_IO();
 
-    /*
-    ** Force a complete redraw of the screen
-    */
+    // Force a complete redraw of the screen
     HiddenPage.Clear();
     Map.Flag_To_Redraw(true);
     Map.Render();
 
   } else {
-    /*
-    **	Go into normal game mode
-    */
+    // Go into normal game mode
     MapEditorActive = false;
     Debug_Unshroud = false;
 
-    /*
-    ** Un-select any selected objects
-    */
+    // Un-select any selected objects
     Unselect_All();
 
-    /*
-    ** Reset the map's Button list for the new mode
-    */
+    // Reset the map's Button list for the new mode
     Map.Init_IO();
 
-    /*
-    ** Force a complete redraw of the screen
-    */
+    // Force a complete redraw of the screen
     HidPage.Clear();
     Map.Flag_To_Redraw(true);
     Map.Render();
@@ -2516,24 +2105,12 @@ void Rebuild_Interpolated_Palette(unsigned char* interpal) {
   }
 }
 
+// One interpolation table per palette a movie can use; VQAs in this game never
+// come close to the limit.
 unsigned char* InterpolatedPalettes[100];
 bool PalettesRead;
 unsigned PaletteCounter;
 
-/***********************************************************************************************
- * Load_Interpolated_Palettes -- Loads in any precalculated palettes for hires
- *VQs             *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Name of palette file *
- *                                                                                             *
- * OUTPUT:   Number of palettes loaded *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 5/7/96 9:49AM ST : Created *
- *=============================================================================================*/
 int Load_Interpolated_Palettes(const char* filename, bool add) {
   int num_palettes = 0;
   int i;
@@ -2556,10 +2133,8 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
     }
   }
 
-  /*
-  **	Hack another interpolated palette if the requested one is
-  **	not present.
-  */
+  // Hack another interpolated palette if the requested one is
+  // not present.
   if (!file.Is_Available()) {
     file.Set_Name("AAGUN.VQP");
   }
@@ -2569,9 +2144,14 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
     file.Read(&num_palettes, 4);
 
     for (i = 0; i < num_palettes; i++) {
+      // 256 x 256: the blended result for every pair of palette indices.
       InterpolatedPalettes[i + start_palette] = new unsigned char[65536]();
+      // Only the lower triangle is stored, row y holding y + 1 entries;
+      // Rebuild_Interpolated_Palette() mirrors it to fill the rest.
       for (int y = 0; y < 256; y++) {
-        file.Read(InterpolatedPalettes[i + start_palette] + static_cast<base::ssize>(y) * 256, y + 1);
+        file.Read(InterpolatedPalettes[i + start_palette] +
+                      static_cast<base::ssize>(y) * 256,
+                  y + 1);
       }
 
       Rebuild_Interpolated_Palette(InterpolatedPalettes[i + start_palette]);
@@ -2598,29 +2178,11 @@ extern void Resume_Audio_Thread();
 
 extern GraphicBufferClass VQ640;
 
-/***********************************************************************************************
- * Play_Movie -- Plays a VQ movie. *
- *                                                                                             *
- *    Use this routine to play a VQ movie. It will dispatch the specified movie
- *to the         * VQ player. The routine will not return until the movie has
- *finished playing.             *
- *                                                                                             *
- * INPUT:   name  -- The name of the movie file (sans ".VQA"). *
- *                                                                                             *
- *          theme -- The identifier for an optional theme that should be played
- *in the         * background while this VQ plays. *
- *                                                                                             *
- *          clrscrn -- 'true' if to clear the screen when the movie is over *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 12/19/1994 JLB : Created. *
- *=============================================================================================*/
 void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
   DLOG(INFO) << "Play_Movie: " << name;
 
+  // A movie blocks until it finishes, which would stall every other player in
+  // a multiplayer session and interrupt editing, so both modes skip it.
   if (MapEditorActive) {
     return;
   }
@@ -2639,7 +2201,9 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
     }
     Anim_Init();
 
-    // Fade audio and video to black before launching the VQA player.
+    // Fade audio and video to black before launching the VQA player. The
+    // adjust-set-adjust-set sequence below drives the palette to black and
+    // then back, which is what produces the fade rather than a hard cut.
     Hide_Mouse();
     Theme.Queue_Song(theme);
     if (PreserveVQAScreen == 0 && !clrscrn) {
@@ -2879,43 +2443,14 @@ MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user) {
 }
 #endif
 
-/***********************************************************************************************
- * Unselect_All -- Causes all selected objects to become unselected. *
- *                                                                                             *
- *    This routine will unselect all objects that are currently selected. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/19/1995 JLB : Created. *
- *=============================================================================================*/
+// Unselect() removes the object from CurrentObject, so index 0 is always the
+// next one to drop and the count shrinks on every pass.
 void Unselect_All() {
   while (CurrentObject.Count()) {
     CurrentObject[0]->Unselect();
   }
 }
 
-/***********************************************************************************************
- * Fading_Table_Name -- Builds a theater specific fading table name. *
- *                                                                                             *
- *    This routine builds a standard fading table name. This name is dependent
- * on the theater * being played, since each theater has its own palette. *
- *                                                                                             *
- * INPUT:   base  -- The base name of this fading table. *
- *                                                                                             *
- *          theater  -- The theater that this fading table is specific to. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the constructed fading table filename. *
- *          This pointer is valid until this function is called again. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/19/1995 JLB : Created. *
- *          * 12/30/2025 : Modernized to use C++23 features. *
- *=============================================================================================*/
 std::string Fading_Table_Name(const char* base, TheaterType theater) {
   // Build filename: first character of theater root + base name + .MRF
   // extension
@@ -2924,17 +2459,14 @@ std::string Fading_Table_Name(const char* base, TheaterType theater) {
   return file_path.string();
 }
 
-/***********************************************************************************************
- * Get_Radar_Icon -- Builds and alloc a radar icon from a shape file *
- *                                                                                             *
- * INPUT:      void const * shapefile - pointer to a key framed shapefile * int
- *shapenum          - shape to extract from shapefile                         *
- *                                                                                             *
- * OUTPUT:     void const *           - 3/3 icon set of shape from file *
- *                                                                                             *
- * HISTORY: * 04/12/1995 PWG : Created. * 05/10/1995 JLB : Handles a null
- *shapefile pointer.                                        *
- *=============================================================================================*/
+// Icons are 24x24 pixels in the source art, and the radar draws them at
+// zoomfactor pixels per cell -- so each output pixel stands for several source
+// ones.
+//
+// Rather than point-sampling, each output pixel takes the first
+// non-transparent of the nine source pixels around its sample point (the
+// _offx/_offy offsets). Without that spread, anything thinner than the sample
+// step -- walls, most of a structure's outline -- would vanish at radar zoom.
 std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
                                        int frames, int zoomfactor) {
   static int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
@@ -2945,9 +2477,7 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
   char* buffer = nullptr;
   std::unique_ptr<char[]> result;
 
-  /*
-  **	If there is no shape file, then there can be no radar icon imagery.
-  */
+  // If there is no shape file, then there can be no radar icon imagery.
   if (!shapefile) {
     return nullptr;
   }
@@ -2958,33 +2488,25 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
   CC_Draw_Shape(shapefile, shapenum, 64, 64, WINDOW_MAIN, SHAPE_WIN_REL);
 #endif
 
-  /*
-  ** Get the pixel width and height of the frame we built.  This will
-  ** be used to extract icons and build pixels.
-  */
+  // Get the pixel width and height of the frame we built.  This will
+  // be used to extract icons and build pixels.
   int pixel_width = Get_Build_Frame_Width(shapefile);
   int pixel_height = Get_Build_Frame_Height(shapefile);
 
-  /*
-  ** Find the width and height in icons, adjust these by half an
-  ** icon because the artists may be sloppy and miss the edge of an
-  ** icon one way or the other.
-  */
+  // Find the width and height in icons, adjust these by half an
+  // icon because the artists may be sloppy and miss the edge of an
+  // icon one way or the other.
   int icon_width = (pixel_width + 12) / 24;
   int icon_height = (pixel_height + 12) / 24;
 
-  /*
-  ** If we have been told to build as many frames as possible, then
-  ** find out how many frames there are to build.
-  */
+  // If we have been told to build as many frames as possible, then
+  // find out how many frames there are to build.
   if (frames == -1) {
     frames = Get_Build_Frame_Count(shapefile);
   }
 
-  /*
-  ** Allocate a position to store our icons.  If the alloc fails then
-  ** we don't add these icons to the set.
-  **/
+  // Allocate a position to store our icons.  If the alloc fails then
+  // we don't add these icons to the set.
   result = std::make_unique<char[]>(icon_width * icon_height * 9 * frames + 2);
   buffer = result.get();
   *buffer++ = static_cast<char>(icon_width);
@@ -2992,21 +2514,17 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
   int val = 24 / zoomfactor;
 
   for (framelp = 0; framelp < frames; framelp++) {
-    /*
-    ** Build the current frame.  If the frame can not be built then we
-    ** just need to skip past this set of icons and try to build the
-    ** next frame.
-    */
+    // Build the current frame.  If the frame can not be built then we
+    // just need to skip past this set of icons and try to build the
+    // next frame.
     void* ptr;
     ptr = Build_Frame(shapefile, shapenum + framelp, SysMemPage.Get_Buffer());
     if (ptr != nullptr) {
       ptr = Get_Shape_Header_Data(ptr);
 
-      /*
-      ** Loop through the icon width and the icon height building icons
-      ** into the buffer pointer.  When the getx or gety falls outside of
-      ** the width and height of the shape, just insert transparent pixels.
-      */
+      // Loop through the icon width and the icon height building icons
+      // into the buffer pointer.  When the getx or gety falls outside of
+      // the width and height of the shape, just insert transparent pixels.
       for (int icony = 0; icony < icon_height; icony++) {
         for (int iconx = 0; iconx < icon_width; iconx++) {
           for (int y = 0; y < zoomfactor; y++) {
@@ -3015,9 +2533,10 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
               int gety = icony * 24 + y * val + zoomfactor / 2;
               if (getx < pixel_width && gety < pixel_height) {
                 for (lp = 0; lp < 9; lp++) {
-                  pixel =
-                      *(static_cast<char*>(ptr) +
-                        (static_cast<base::ssize>(gety - _offy[lp])) * pixel_width + getx - _offx[lp]);
+                  pixel = *(static_cast<char*>(ptr) +
+                            (static_cast<base::ssize>(gety - _offy[lp])) *
+                                pixel_width +
+                            getx - _offx[lp]);
 
                   if (pixel == LTGREEN) {
                     pixel = 0;
@@ -3041,43 +2560,6 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
   return result;
 }
 
-/***********************************************************************************************
- * CC_Draw_Shape -- Custom draw shape handler. *
- *                                                                                             *
- *    All draw shape calls will route through this function. It handles all
- *draws for          * C&C. Such draws always occur to the logical page and
- *assume certain things about         * the parameters passed. *
- *                                                                                             *
- * INPUT:   shapefile   -- Pointer to the shape data file. This data file
- *contains all the     * embedded shapes. *
- *                                                                                             *
- *          shapenum    -- The shape number within the shapefile that will be
- *drawn.           *
- *                                                                                             *
- *          x,y         -- The pixel coordinates to draw the shape. *
- *                                                                                             *
- *          window      -- The clipping window to use. *
- *                                                                                             *
- *          flags       -- The custom draw shape flags. This controls how the
- *parameters       * are used (if any). *
- *                                                                                             *
- *          fadingdata  -- If SHAPE_FADING is desired, then this points to the
- *fading          * data table. *
- *                                                                                             *
- *          ghostdata   -- If SHAPE_GHOST is desired, then this points to the
- *ghost remap      * table. *
- *                                                                                             *
- *          rotation    -- Rotation to apply to the shape (DIR_N = no rotation
- *at all).        *
- *                                                                                             *
- *          scale       -- 24.8 fixed point scale factor. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/21/1995 JLB : Created. *
- *=============================================================================================*/
 void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
                    const void* fadingdata, const void* ghostdata,
@@ -3085,9 +2567,10 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
   int predoffset;
   void* shape_pointer;
 
-  /*
-  ** Special kludge for E3 to prevent crashes
-  */
+  // Special kludge for E3 to prevent crashes
+  //
+  // Callers that ask for ghosting or fading without supplying the table get
+  // the display class's default rather than a null dereference.
   if (flags & SHAPE_GHOST && !ghostdata) {
     ghostdata = DisplayClass::SpecialGhost;
   }
@@ -3105,9 +2588,7 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
     int width = Get_Build_Frame_Width(shapefile);
     int height = Get_Build_Frame_Height(shapefile);
 
-    /*
-    ** In WIn95, build shape returns a pointer to the shape not its size
-    */
+    // In WIn95, build shape returns a pointer to the shape not its size
     shape_pointer = Build_Frame(shapefile, shapenum, _ShapeBuffer);
     if (shape_pointer) {
       GraphicViewPortClass draw_window(
@@ -3118,14 +2599,12 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
       unsigned char* buffer = static_cast<unsigned char*>(shape_pointer);
 
       UseOldShapeDraw = false;
-      /*
-      **	Rotation and scale handler.
-      */
+      // Rotation and scale handler.
+      // 0x0100 is 1.0 in the 24.8 fixed point scale, so this is "no rotation
+      // and no scaling" -- the common case, which skips the slow path below.
       if (rotation != DIR_N || scale != 0x0100) {
-        /*
-        ** Get the raw shape data without the new header and flag to use the old
-        *shape drawing
-        */
+        // Get the raw shape data without the new header and flag to use the old
+        // shape drawing
         UseOldShapeDraw = true;
         buffer =
             static_cast<unsigned char*>(Get_Shape_Header_Data(shape_pointer));
@@ -3137,13 +2616,12 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
         GraphicBufferClass gb(width, height, _xbuffer);
         TPoint2D pt(width / 2, height / 2);
 
-        gb.Scale_Rotate(bm, pt, static_cast<int32_t>(scale), 256 - (rotation - 64));
+        gb.Scale_Rotate(bm, pt, static_cast<int32_t>(scale),
+                        256 - (rotation - 64));
         buffer = _xbuffer;
       }
 
-      /*
-      **	Special shadow drawing code (used for aircraft and bullets).
-      */
+      // Special shadow drawing code (used for aircraft and bullets).
       if ((flags & (SHAPE_FADING | SHAPE_PREDATOR)) ==
           (SHAPE_FADING | SHAPE_PREDATOR)) {
         flags = flags & ~(SHAPE_FADING | SHAPE_PREDATOR);
@@ -3151,6 +2629,10 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
         ghostdata = DisplayClass::SpecialGhost;
       }
 
+      // The predator (cloaking) effect samples the screen at an offset that
+      // walks with the frame counter, which is what makes it shimmer. Objects
+      // on the right half of the window walk it the other way, so that two
+      // cloaked objects side by side do not ripple in lockstep.
       predoffset = static_cast<int>(Frame);
 
       if (x > WindowList[window][WINDOWWIDTH] << 2) {
@@ -3192,27 +2674,6 @@ void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
                 ghostdata, rotation, scale);
 }
 
-/***********************************************************************************************
- * Shape_Dimensions -- Determine the minimum rectangle for the shape. *
- *                                                                                             *
- *    This routine will calculate (using brute forced) the minimum rectangle
- *that will         * enclose the pixels of the shape. This rectangle will be
- *relative to the upper left       * corner of the maximum shape size. By using
- *this minimum rectangle, it is possible to     * greatly optimize the map
- *'dirty rectangle' logic.                                        *
- *                                                                                             *
- * INPUT:   shapedata   -- Pointer to the shape data block. *
- *                                                                                             *
- *          shapenum    -- The shape number to examine. Each shape would have a
- *different      * dimension rectangle. *
- *                                                                                             *
- * OUTPUT:  Returns with the rectangle that encloses the shape. *
- *                                                                                             *
- * WARNINGS:   This routine uses brute force and is slow. It is presumed that
- *the results      * will be cached for subsiquent reuse. *
- *                                                                                             *
- * HISTORY: * 07/22/1996 JLB : Created. *
- *=============================================================================================*/
 const Rect Shape_Dimensions(const void* shapedata, int shapenum) {
   Rect rect;
 
@@ -3231,28 +2692,29 @@ const Rect Shape_Dimensions(const void* shapedata, int shapenum) {
   int width = Get_Build_Frame_Width(shapedata);
   int height = Get_Build_Frame_Height(shapedata);
 
+  // Four scans, one per edge, each narrowing the search area for the next:
+  // the top scan also gives a first guess at the left edge, the bottom scan
+  // hands the right scan a starting column, and so on.
   rect.X = 0;
   rect.Y = 0;
   int xlimit = width - 1;
   int ylimit = height - 1;
 
-  /*
-  **	Find top edge of the shape.
-  */
+  // Find top edge of the shape.
   for (int y = 0; y <= ylimit; y++) {
     for (int x = 0; x <= xlimit; x++) {
       if (shape[y * width + x] != 0) {
         rect.Y = y;
         rect.X = x;
+        // Pushing y past the limit breaks the outer loop too -- the first row
+        // holding any pixel is the top edge, so there is nothing left to scan.
         y = ylimit + 1;
         break;
       }
     }
   }
 
-  /*
-  **	Find bottom edge of the shape.
-  */
+  // Find bottom edge of the shape.
   for (int y = ylimit; y >= rect.Y; y--) {
     for (int x = xlimit; x >= 0; x--) {
       if (shape[y * width + x] != 0) {
@@ -3264,9 +2726,7 @@ const Rect Shape_Dimensions(const void* shapedata, int shapenum) {
     }
   }
 
-  /*
-  **	Find left edge of the shape.
-  */
+  // Find left edge of the shape.
   for (int x = 0; x < rect.X; x++) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
       if (shape[y * width + x] != 0) {
@@ -3277,9 +2737,7 @@ const Rect Shape_Dimensions(const void* shapedata, int shapenum) {
     }
   }
 
-  /*
-  **	Find the right edge of the shape.
-  */
+  // Find the right edge of the shape.
   for (int x = width - 1; x >= xlimit; x--) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
       if (shape[y * width + x] != 0) {
@@ -3290,36 +2748,14 @@ const Rect Shape_Dimensions(const void* shapedata, int shapenum) {
     }
   }
 
-  /*
-  **	Normalize the rectangle around the center of the shape.
-  */
+  // Normalize the rectangle around the center of the shape.
   rect.X -= width / 2;
   rect.Y -= height / 2;
 
-  /*
-  **	Return with the minimum rectangle that encloses the shape.
-  */
+  // Return with the minimum rectangle that encloses the shape.
   return rect;
 }
 
-/***********************************************************************************************
- * Fetch_Techno_Type -- Convert type and ID into TechnoTypeClass pointer. *
- *                                                                                             *
- *    This routine will convert the supplied RTTI type number and the ID value
- *into a valid    * TechnoTypeClass pointer. If there is an error in conversion,
- *then nullptr is returned.      *
- *                                                                                             *
- * INPUT:   type  -- RTTI type of the techno class object. *
- *                                                                                             *
- *          id    -- Integer representation of the techno sub type number. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the techno type class object specified or
- *nullptr if the    * conversion could not occur. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/08/1995 JLB : Created. *
- *=============================================================================================*/
 const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
   switch (type) {
     case RTTI_UNITTYPE:
@@ -3348,22 +2784,6 @@ const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
   return nullptr;
 }
 
-/***********************************************************************************************
- * VQ_Call_Back -- Maintenance callback used for VQ movies. *
- *                                                                                             *
- *    This routine is called every frame of the VQ movie as it is being played.
- *If this        * routine returns non-zero, then the movie will stop. *
- *                                                                                             *
- * INPUT:   buffer   -- Pointer to the image buffer for the current frame. *
- *                                                                                             *
- *          frame    -- The frame number about to be displayed. *
- *                                                                                             *
- * OUTPUT:  Should the movie be stopped? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/24/1995 JLB : Created. *
- *=============================================================================================*/
 void Check_VQ_Palette_Set();
 
 long VQ_Call_Back(unsigned char*, long) {
@@ -3382,7 +2802,8 @@ long VQ_Call_Back(unsigned char*, long) {
 #else
   Interpolate_2X_Scale(&SysMemPage, &SeenBuff, nullptr);
 #endif
-  // Call_Back();
+  // Call_Back() is deliberately not invoked here. The VQA player drives audio
+  // itself while a movie runs, and the game logic it would service is stopped.
 
   if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
     Keyboard->Clear();
@@ -3412,32 +2833,14 @@ long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
   return 0;
 }
 
-/***********************************************************************************************
- * Handle_Team -- Processes team selection command. *
- *                                                                                             *
- *    This routine will handle creation and selection of pseudo teams that the
- *player can      * create or control. A team in this sense is an arbitrary
- *grouping of units such that      * rapid selection control is allowed. *
- *                                                                                             *
- * INPUT:   team  -- The logical team number to process. *
- *                                                                                             *
- *          action-- The action to perform on this team: * 0 - Toggle the select
- *state for all members of this team.                 * 1 - Select the members
- *of this team.                                      * 2 - Make all selected
- *objects members of this team.                       *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/27/1995 JLB : Created. *
- *=============================================================================================*/
+// Handles the player's numbered unit groups. See the declaration in conquer.h.
+//
+// AllowVoice is cleared once something has been selected so that picking a
+// group of ten units produces one acknowledgement rather than ten.
 void Handle_Team(int team, int action) {
   int index;
 
-  //
   // Recording support
-  //
   if (Session.Record) {
     TeamNumber = static_cast<char>(team);
     TeamEvent = static_cast<char>(action + 1);
@@ -3445,18 +2848,14 @@ void Handle_Team(int team, int action) {
 
   AllowVoice = true;
   switch (action) {
-    /*
-    **	Toggle the team selection. If the team is selected, then merely unselect
-    *it. If the *	team is not selected, then unselect all others before
-    *selecting this team.
-    */
+    // Toggle the team selection. If the team is selected, then merely unselect
+    // it. If the *	team is not selected, then unselect all others before
+    // selecting this team.
     case 3:
     case 0:
 
-      /*
-      **	If a non team member is currently selected, then deselect all
-      *objects *	before selecting this team.
-      */
+      // If a non team member is currently selected, then deselect all
+      // objects *	before selecting this team.
       if (CurrentObject.Count()) {
         if (CurrentObject[0]->Is_Foot() &&
             dynamic_cast<FootClass*>(CurrentObject[0])->Group != team) {
@@ -3504,18 +2903,14 @@ void Handle_Team(int team, int action) {
         }
       }
 
-      /*
-      **	Center the map around the team if the ALT key was pressed too.
-      */
+      // Center the map around the team if the ALT key was pressed too.
       if (action == 3) {
         Map.Center_Map();
         Map.Flag_To_Redraw(true);
       }
       break;
 
-    /*
-    **	Additive selection of team.
-    */
+    // Additive selection of team.
     case 1:
       for (index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
@@ -3559,10 +2954,9 @@ void Handle_Team(int team, int action) {
       }
       break;
 
-    /*
-    **	Create the team.
-    */
+    // Create the team.
     case 2: {
+      // Seeded inverted so the first member examined replaces both bounds.
       long minx = 0x7FFFFFFFL, miny = 0x7FFFFFFFL;
       long maxx = 0, maxy = 0;
       TeamSpeed[team] = SPEED_WHEEL;
@@ -3571,7 +2965,7 @@ void Handle_Team(int team, int action) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (obj->Group == team) {
-            obj->Group = 0xFF;
+            obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
             obj->Group = team;
@@ -3594,7 +2988,7 @@ void Handle_Team(int team, int action) {
         VesselClass* obj = Vessels.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (obj->Group == team) {
-            obj->Group = -1;
+            obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
             obj->Group = team;
@@ -3617,7 +3011,7 @@ void Handle_Team(int team, int action) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (obj->Group == team) {
-            obj->Group = 0xFF;
+            obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
             obj->Group = team;
@@ -3637,7 +3031,7 @@ void Handle_Team(int team, int action) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (obj->Group == team) {
-            obj->Group = 0xFF;
+            obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
             obj->Group = team;
@@ -3650,15 +3044,13 @@ void Handle_Team(int team, int action) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl &&
             obj->Group == team && obj->IsSelected) {
-          /*
-          ** When a team is first created, they're created without a
-          ** formation offset, so they will not be created in
-          ** formation.  Later, if they're assigned a formation, the
-          ** XFormOffset & YFormOffset numbers will change to valid
-          ** offsets, and they'll be formationed.
-          */
+          // When a team is first created, they're created without a
+          // formation offset, so they will not be created in
+          // formation.  Later, if they're assigned a formation, the
+          // XFormOffset & YFormOffset numbers will change to valid
+          // offsets, and they'll be formationed.
 #if (1)
-          obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000);
+          obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
 #else
 #if (1)
           // Old always-north formation stuff
@@ -3680,14 +3072,14 @@ void Handle_Team(int team, int action) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (obj->Group == team) {
-            obj->Group = 0xFF;
+            obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
             obj->Group = team;
           }
           if (obj->Group == team && obj->IsSelected) {
 #if (1)
-            obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000);
+            obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
 #else
 #if (1)
             // Old always-north formation stuff
@@ -3716,55 +3108,28 @@ void Handle_Team(int team, int action) {
   AllowVoice = true;
 }
 
-/***********************************************************************************************
- * Handle_View -- Either records or restores the tactical view. *
- *                                                                                             *
- *    This routine is used to record or restore the current map tactical view. *
- *                                                                                             *
- * INPUT:   view  -- The view number to work with. *
- *                                                                                             *
- *          action-- The action to perform with this view number. * 0  = Restore
- *the view to this previously remembered location.            * 1  =  Record the
- *current view location.                                   *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/04/1995 JLB : Created. *
- *=============================================================================================*/
+// Bookmarks are stored biased by half a screen -- eight rows down and ten
+// columns across from the tactical corner -- so the cell recorded is the middle
+// of what the player was looking at, not its top left corner.
 void Handle_View(int view, int action) {
   if (static_cast<unsigned>(view) < std::ssize(Scen.Views)) {
     if (action == 0) {
-      Map.Set_Tactical_Position(
-          Coord_Whole(Cell_Coord(static_cast<CELL>(Scen.Views[view] - MAP_CELL_W * 8 - 10))));
+      Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
+          static_cast<CELL>(Scen.Views[view] - MAP_CELL_W * 8 - 10))));
 
-      /*
-      ** Win95 scrolling logic cant handle just jumps in screen position so
-      *redraw the lot.
-      */
+      // Win95 scrolling logic cant handle just jumps in screen position so
+      // redraw the lot.
       Map.Flag_To_Redraw(true);
     } else {
-      Scen.Views[view] = static_cast<CELL>(Coord_Cell(Map.TacticalCoord) + MAP_CELL_W * 8 + 10);
+      Scen.Views[view] = static_cast<CELL>(Coord_Cell(Map.TacticalCoord) +
+                                           MAP_CELL_W * 8 + 10);
     }
   }
 }
 
-/***********************************************************************************************
- * Get_CD_Index -- returns the volume type of the CD in the given drive *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    drive number * timeout *
- *                                                                                             *
- * OUTPUT:   0 = gdi * 1 = nod * 2 = covert or CS * 3 = Aftermath 5 = DVD -1 =
- *non C&C *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 5/21/96 5:27PM ST : Created * 01/20/97 V.Grippi added CS support
- **
- *=============================================================================================*/
+// On the portable build there are no removable discs to check: the data is
+// installed on disk, so this reports the DVD unconditionally and the volume
+// label scan below is left in place only for the Windows build.
 int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
 #ifdef PORTABLE  // below code might work on win32 if GetCDClass was implemented
                  // in SDLLIB
@@ -3780,11 +3145,9 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
 
   timer.Set(timeout);
 
-  /*
-  ** Get the volume label. If we get a 'not ready' error then retry for the
-  *timeout
-  ** period.
-  */
+  // Get the volume label. If we get a 'not ready' error then retry for the
+  // timeout
+  // period.
   for (;;) {
     sprintf(buffer, "%c:\\", 'A' + cd_drive);
 
@@ -3792,11 +3155,9 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
                              (unsigned long)sizeof(volume_name), nullptr,
                              (DWORD*)&filename_length, (DWORD*)&misc_dword,
                              (char*)nullptr, (unsigned long)0)) {
-      /*
-      ** Try opening 'movies.mix' to verify that the CD is really there and is
-      *what
-      ** it says it is.
-      */
+      // Try opening 'movies.mix' to verify that the CD is really there and is
+      // what
+      // it says it is.
       sprintf(buffer, "%c:\\main.mix", 'A' + cd_drive);
 
       HANDLE handle = CreateFile(buffer, GENERIC_READ, FILE_SHARE_READ, nullptr,
@@ -3805,9 +3166,7 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
       if (handle != INVALID_HANDLE_VALUE) {
         CloseHandle(handle);
 
-        /*
-        ** Match the volume label to the list of known C&C volume labels.
-        */
+        // Match the volume label to the list of known C&C volume labels.
         for (int i = 0; i < _Num_Volumes; i++) {
           if (!stricmp(_CD_Volume_Label[i], volume_name)) {
             return (i);
@@ -3821,12 +3180,10 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
         }
       }
     } else {
-      /*
-      ** Failed to get the volume label on a known CD drive.
-      ** If this is a CD changer it may require time to swap the disks so dont
-      *return
-      ** immediately if the error is ROR_NOT_READY
-      */
+      // Failed to get the volume label on a known CD drive.
+      // If this is a CD changer it may require time to swap the disks so dont
+      // return
+      // immediately if the error is ROR_NOT_READY
       if (!timer.Time()) {
         return -1;
       }
@@ -3840,27 +3197,6 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
   }
 #endif
 }
-
-/***********************************************************************************************
- * Force_CD_Available -- Ensures that specified CD is available. *
- *                                                                                             *
- *    Call this routine when you need to ensure that the specified CD is
- *actually in the       * CD-ROM drive. *
- *                                                                                             *
- * INPUT:   cd    -- The CD that must be available. This will either be "0" for
- *the GDI CD, or * "1" for the Nod CD. If either CD will qualify, then pass in
- *"-1".         * 0  = CD1 1  = CD2 2  = Counterstrike 3  = Aftermath 4  =
- *Counterstrike or Aftermath 5  = DVD -1 = Any CD -2 = Local Harddisk
- *                                                                                             *
- * OUTPUT:  Is the CD inserted and available? If false is returned, then this
- *indicates that   * the player pressed <CANCEL>. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/11/1995 JLB : Created. * 05/22/1996  ST : Handles multiple CD
- *drives / CD changers                                 * 01/20/1997 V.Grippi
- *added expansion cd message
- *=============================================================================================*/
 
 typedef enum {
   CD_LOCAL = -2,
@@ -3904,30 +3240,20 @@ bool Force_CD_Available(int cd_desired)  //	ajw
   int cd_current;
   int current_drive;
 
-  /*
-  ** If the required CD is set to -2 then it means that the file is present
-  ** on the local hard drive and we shouldn't have to worry about it.
-  */
+  // If the required CD is set to -2 then it means that the file is present
+  // on the local hard drive and we shouldn't have to worry about it.
   if (cd_desired == CD_LOCAL) {
     return true;
   }
 
-  /*
-  ** Find out if the CD in the current drive is the one we are looking for
-  */
+  // Find out if the CD in the current drive is the one we are looking for
   current_drive = CCFileClass::Get_CD_Drive();
   cd_current = Get_CD_Index(current_drive, 1 * 60);
 
-  //	debugprint("Get_CD_Index just returned %d\n", cd_current);
-  //	debugprint("We are checking for %d\n", cd_desired);
-  //	debugprint("current_drive = %d\n", current_drive);
-
   if (Using_DVD()) {
-    //	All requested cd indexes get rerouted to the DVD.
+    // The DVD release carries every disc's content, so any disc request is
+    // satisfied by it.
     cd_desired = CD_DVD;
-    //		if( RequiredCD != -1 )
-    //			RequiredCD = CD_DVD;		//	Just seems like
-    // a good idea. Not sure if necessary.	ajw
   }
 
   if (cd_current >= 0) {
@@ -3940,42 +3266,30 @@ bool Force_CD_Available(int cd_desired)  //	ajw
     }
     // If the current CD is requested or any CD will work
     if (cd_desired == cd_current || cd_desired == CD_ANY) {
-      /*
-      ** The required CD is still in the CD drive we used last time
-      */
+      // The required CD is still in the CD drive we used last time
 #ifdef PORTABLE
-      // we have a CD, nothing else to do
-      // (can't see that the below code does anything other than refresh the
-      // search path in this case)
+      // Nothing further to do: on this build the content is already reachable,
+      // and the code below would only refresh the search path.
       return true;
 #endif
     }
   }
 
-  /*
-  ** Flag that we will have to restart the theme
-  */
+  // Flag that we will have to restart the theme
   Theme.Stop();
 
   // Check the last drive
   if (!new_cd_drive) {
-    /*
-    ** Check the last CD drive we used if it's different from the current one
-    */
+    // Check the last CD drive we used if it's different from the current one
     int last_drive = CCFileClass::Get_Last_CD_Drive();
 
-    /*
-    ** Make sure the last drive is valid and it isn't the current drive
-    */
-    if (last_drive &&
-        last_drive != CCFileClass::Get_CD_Drive())  //	Else we have already
-                                                    // checked this cd.
-    {
-      /*
-      ** Find out if there is a C&C cd in the last drive and if so is it the one
-      *we are looking for
-      ** Give it a nice big timeout so the CD changer has time to swap the discs
-      */
+    // Make sure the last drive is valid and it isn't the current drive
+    // Skipped when it is the current drive, which the search above already
+    // covered.
+    if (last_drive && last_drive != CCFileClass::Get_CD_Drive()) {
+      // Find out if there is a C&C cd in the last drive and if so is it the one
+      // we are looking for
+      // Give it a nice big timeout so the CD changer has time to swap the discs
       cd_current = Get_CD_Index(last_drive, 10 * 60);
 
       if (cd_current >= 0) {
@@ -3988,38 +3302,28 @@ bool Force_CD_Available(int cd_desired)  //	ajw
         }
         // If the cd is present or any cd will work
         if (cd_desired == cd_current || cd_desired == CD_ANY) {
-          /*
-          ** The required CD is in the CD drive we used last time
-          */
+          // The required CD is in the CD drive we used last time
           new_cd_drive = last_drive;
         }
       }
     }
   }
 
-  /*
-  ** Lordy.  No sign of that blimming CD anywhere. Search all the CD drives
-  ** then if we still can't find it prompt the user to insert it.
-  */
+  // Lordy.  No sign of that blimming CD anywhere. Search all the CD drives
+  // then if we still can't find it prompt the user to insert it.
   if (!new_cd_drive) {
-    /*
-    ** Small timeout for the first pass through the drives
-    */
+    // Small timeout for the first pass through the drives
     int drive_search_timeout = 2 * 60;
 
     for (;;) {
       char buffer[128];
-      /*
-      ** Search all present CD drives for the required disc.
-      */
+      // Search all present CD drives for the required disc.
       for (int i = 0; i < CDList.Get_Number_Of_Drives(); i++) {
         int cd_drive = CDList.Get_Next_CD_Drive();
         cd_current = Get_CD_Index(cd_drive, drive_search_timeout);
 
         if (cd_current >= 0) {
-          /*
-          ** We found a C&C cd - lets see if it was the one we were looking for
-          */
+          // We found a C&C cd - lets see if it was the one we were looking for
           // Require CS or AM
           if (cd_desired == CD_CS_OR_AM) {
             // If the cd is CS or AM then change request to whatever
@@ -4030,31 +3334,23 @@ bool Force_CD_Available(int cd_desired)  //	ajw
           }
 
           if (cd_desired == cd_current || cd_desired == CD_ANY) {
-            /*
-            ** Woohoo! The disk was in a different cd drive. Refresh the search
-            *path list and return.
-            */
+            // Woohoo! The disk was in a different cd drive. Refresh the search
+            // path list and return.
             new_cd_drive = cd_drive;
             break;
           }
         }
       }
 
-      /*
-      ** A new disc has become available so break
-      */
+      // A new disc has become available so break
       if (new_cd_drive) {
         break;
       }
 
-      /*
-      ** Increase the timeout for subsequent drive searches.
-      */
+      // Increase the timeout for subsequent drive searches.
       drive_search_timeout = 5 * 60;
 
-      /*
-      **	Prompt to insert the CD into the drive.
-      */
+      // Prompt to insert the CD into the drive.
       // V.Grippi
       if (cd_desired == CD_CS_OR_AM) {
         cd_desired = CD_AFTERMATH;
@@ -4098,9 +3394,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
       int hidden = Get_Mouse_State();
       font = FontPtr;
 
-      /*
-      **	Only set the palette if necessary.
-      */
+      // Only set the palette if necessary.
       if (PaletteClass::CurrentPalette[1].Red_Component() +
               PaletteClass::CurrentPalette[1].Blue_Component() +
               PaletteClass::CurrentPalette[1].Green_Component() ==
@@ -4136,22 +3430,22 @@ bool Force_CD_Available(int cd_desired)  //	ajw
   CCFileClass::Set_CD_Drive(new_cd_drive);
   CCFileClass::Refresh_Search_Drives();
 
-  /*
-  **	If it broke out of the query for CD-ROM loop, then this means that the
-  **	CD-ROM has been inserted.
-  */
+  // If it broke out of the query for CD-ROM loop, then this means that the
+  // CD-ROM has been inserted.
+  // CD_CS_OR_AM is a request, not a disc that exists; narrow it to Aftermath
+  // now that a real disc has been found, so the cache check below compares
+  // like with like.
   if (cd_desired == 4) {
     cd_desired--;
   }
 
-  //	ajw - Added condition of cd_desired != 5 to the following if.
-  //	Reason: This was triggering before Init_Secondary_Mixfiles(), which was
-  // screwing up the mixfile system somehow.
+  // Re-register the secondary mix files from the disc that was just found,
+  // but only when the disc actually changed.
   //
-  //	Since the DVD is the only disk that can possibly be required when
-  // Using_DVD(), I never have to reload the mix 	files here, because no
-  // other disk could ever have been asked for. And if not Using_DVD(),
-  // cd_desired will never 	be equal to 5. So this is safe.
+  // The cd_desired != CD_DVD condition is ajw's: on the DVD build this ran
+  // before Init_Secondary_Mixfiles() and corrupted the mixfile system. Skipping
+  // it there is safe, because the DVD is the only disc that can ever be
+  // requested when Using_DVD(), and cd_desired can never be CD_DVD otherwise.
   if (cd_desired > -1 && _last != cd_desired && cd_desired != 5) {
     _last = cd_desired;
 
@@ -4164,7 +3458,6 @@ bool Force_CD_Available(int cd_desired)  //	ajw
 
     MainMix = MFCD::Register("MAIN.MIX", &FastKey, &CryptRandom);
     assert(MainMix != nullptr);
-    //		ConquerMix = new MFCD("CONQUER.MIX", &FastKey, &CryptRandom);
     if (CCFileClass("MOVIES1.MIX").Is_Available()) {
       MoviesMix = MFCD::Register("MOVIES1.MIX", &FastKey, &CryptRandom);
     } else {
@@ -4179,20 +3472,14 @@ bool Force_CD_Available(int cd_desired)  //	ajw
   return true;
 }
 
-/***********************************************************************************************
- * Do_Record_Playback -- handles saving/loading map pos & current object *
- *                                                                                             *
- * INPUT: * none.
- **
- *                                                                                             *
- * OUTPUT: * none.
- **
- *                                                                                             *
- * WARNINGS: * none.
- **
- *                                                                                             *
- * HISTORY: * 08/15/1995 BRR : Created. *
- *=============================================================================================*/
+// Saves or replays the parts of the game state that the event stream alone
+// cannot reconstruct: where the map is scrolled to, which objects are selected,
+// and any team or formation hotkey pressed this frame.
+//
+// The selection is written as a checksum followed by the target list. On
+// playback the checksum says whether the current selection already matches; if
+// it does, the objects are read but not reselected, which stops the unit
+// acknowledgement voices from firing again on every frame.
 static void Do_Record_Playback() {
   int count;
   TARGET tgt;
@@ -4203,25 +3490,17 @@ static void Do_Record_Playback() {
   unsigned long sum2;
   unsigned long ltgt;
 
-  /*
-  **	Record a game
-  */
+  // Record a game
   if (Session.Record) {
-    /*
-    **	Save the map's location
-    */
+    // Save the map's location
     Session.RecordFile.Write(&Map.DesiredTacticalCoord,
                              sizeof(Map.DesiredTacticalCoord));
 
-    /*
-    **	Save the current object list count
-    */
+    // Save the current object list count
     count = static_cast<int>(CurrentObject.Count());
     Session.RecordFile.Write(&count, sizeof(count));
 
-    /*
-    **	Save a CRC of the selected-object list.
-    */
+    // Save a CRC of the selected-object list.
     sum = 0;
     for (i = 0; i < count; i++) {
       ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
@@ -4229,17 +3508,13 @@ static void Do_Record_Playback() {
     }
     Session.RecordFile.Write(&sum, sizeof(sum));
 
-    /*
-    **	Save all selected objects.
-    */
+    // Save all selected objects.
     for (i = 0; i < count; i++) {
       tgt = CurrentObject[i]->As_Target();
       Session.RecordFile.Write(&tgt, sizeof(tgt));
     }
 
-    //
     // Save team-selection and formation events
-    //
     Session.RecordFile.Write(&TeamEvent, sizeof(TeamEvent));
     Session.RecordFile.Write(&TeamNumber, sizeof(TeamNumber));
     Session.RecordFile.Write(&FormationEvent, sizeof(FormationEvent));
@@ -4253,13 +3528,9 @@ static void Do_Record_Playback() {
     FormationEvent = 0;
   }
 
-  /*
-  **	Play back a game ("attract" mode)
-  */
+  // Play back a game ("attract" mode)
   if (Session.Play) {
-    /*
-    **	Read & set the map's location.
-    */
+    // Read & set the map's location.
     if (Session.RecordFile.Read(&coord, sizeof(coord)) == sizeof(coord)) {
       if (coord != Map.DesiredTacticalCoord) {
         Map.Set_Tactical_Position(coord);
@@ -4267,19 +3538,15 @@ static void Do_Record_Playback() {
     }
 
     if (Session.RecordFile.Read(&count, sizeof(count)) == sizeof(count)) {
-      /*
-      **	Compute a CRC of the current object-selection list.
-      */
+      // Compute a CRC of the current object-selection list.
       sum = 0;
       for (i = 0; i < CurrentObject.Count(); i++) {
         ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
         sum += ltgt;
       }
 
-      /*
-      **	Load the CRC of the objects on disk; if it doesn't match, select
-      **	all objects as they're loaded.
-      */
+      // Load the CRC of the objects on disk; if it doesn't match, select
+      // all objects as they're loaded.
       Session.RecordFile.Read(&sum2, sizeof(sum2));
       if (sum2 != sum) {
         Unselect_All();
@@ -4300,9 +3567,7 @@ static void Do_Record_Playback() {
       AllowVoice = true;
     }
 
-    //
     // Save team-selection and formation events
-    //
     Session.RecordFile.Read(&TeamEvent, sizeof(TeamEvent));
     Session.RecordFile.Read(&TeamNumber, sizeof(TeamNumber));
     Session.RecordFile.Read(&FormationEvent, sizeof(FormationEvent));
@@ -4318,27 +3583,11 @@ static void Do_Record_Playback() {
     Session.RecordFile.Read(&FormMove, sizeof(FormMove));
     Session.RecordFile.Read(&FormSpeed, sizeof(FormSpeed));
     Session.RecordFile.Read(&FormMaxSpeed, sizeof(FormMaxSpeed));
-    /*
-    **	The map isn't drawn in playback mode, so draw it here.
-    */
+    // The map isn't drawn in playback mode, so draw it here.
     Map.Render();
   }
 }
 
-/***********************************************************************************************
- * Hires_Load -- Allocates memory for, and loads, a resolution dependant file. *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Name of file to load *
- *                                                                                             *
- * OUTPUT:   Ptr to loaded file *
- *                                                                                             *
- * WARNINGS: Caller is responsible for releasing the memory allocated *
- *                                                                                             *
- *                                                                                             *
- * HISTORY: * 5/13/96 3:20PM ST : Created *
- *=============================================================================================*/
 void* Hires_Load(char* name) {
   char filename[30];
   int length;
@@ -4356,21 +3605,6 @@ void* Hires_Load(char* name) {
   return nullptr;
 }
 
-/***********************************************************************************************
- * Crate_From_Name -- Given a crate name convert it to a crate type. *
- *                                                                                             *
- *    Use this routine to convert an ASCII crate name into a crate type. If no
- *match could     * be found, then CRATE_MONEY is assumed. *
- *                                                                                             *
- * INPUT:   name  -- Pointer to the crate name text to convert into a crate
- *type.              *
- *                                                                                             *
- * OUTPUT:  Returns with the crate name converted into a crate type. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/12/1996 JLB : Created. *
- *=============================================================================================*/
 CrateType Crate_From_Name(const char* name) {
   if (name != nullptr) {
     for (CrateType crate = CRATE_FIRST; crate < CRATE_COUNT; crate++) {
@@ -4382,22 +3616,6 @@ CrateType Crate_From_Name(const char* name) {
   return CRATE_MONEY;
 }
 
-/***********************************************************************************************
- * Owner_From_Name -- Convert an owner name into a bitfield. *
- *                                                                                             *
- *    This will take an owner specification and convert it into a bitfield that
- *represents     * it. Sometimes this will be just a single house bit, but other
- *times it could be          * all the allies or soviet house bits combined. *
- *                                                                                             *
- * INPUT:   text  -- Pointer to the text to convert into a house bitfield. *
- *                                                                                             *
- * OUTPUT:  Returns with the houses specified. The value is in the form of a bit
- *field with    * one bit per house type. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/12/1996 JLB : Created. *
- *=============================================================================================*/
 int Owner_From_Name(const char* text) {
   int ownable = 0;
   if (stricmp(text, "soviet") == 0) {
@@ -4415,29 +3633,23 @@ int Owner_From_Name(const char* text) {
   return ownable;
 }
 
-/***********************************************************************************************
- * Shake_The_Screen -- Dispatcher that shakes the screen. *
- *                                                                                             *
- *    This routine will shake the game screen the number of shakes requested. *
- *                                                                                             *
- * INPUT:   shakes   -- The number of shakes to shake the screen. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/04/1996 BWG : Created. *
- *=============================================================================================*/
+// Blits the screen two pixels up or two pixels down, one step per game tick,
+// for twice the requested number of shakes.
 void Shake_The_Screen(int shakes) {
   shakes += shakes;
 
   Hide_Mouse();
   SeenPage.Blit(HidPage);
+  // TODO: oldyoff is never reassigned, so the reject test below only ever
+  // rejects 0. The offset is therefore always +/-2 and never centre, which
+  // makes the newyoff == 0 case unreachable. Intent was presumably to reject a
+  // repeat of the previous offset.
   int oldyoff = 0;
   int newyoff = 0;
   while (shakes--) {
+    // Hold each offset for exactly one tick, so the shake runs at game speed
+    // rather than as fast as the machine can blit.
     int64_t x = TickCount.Value();
-    //		CountDownTimer = 1;
     do {
       newyoff = Sim_Random_Pick(0, 2) - 1;
     } while (newyoff == oldyoff);
@@ -4459,36 +3671,13 @@ void Shake_The_Screen(int shakes) {
 #else
     while (x == TickCount);
 #endif
-    //		} while (CountDownTimer != 0) ;
   }
   HidPage.Blit(SeenPage);
   Show_Mouse();
 }
 
-/***********************************************************************************************
- * List_Copy -- Makes a copy of a cell offset list. *
- *                                                                                             *
- *    This routine will make a copy of a cell offset list. It will only copy the
- *significant   * elements of the list limited by the maximum length specified.
- **
- *                                                                                             *
- * INPUT:   source   -- Pointer to a cell offset list. *
- *                                                                                             *
- *          len      -- The maximum number of cell offset elements to store in
- *to the          * destination list pointer. *
- *                                                                                             *
- *          dest     -- Pointer to the destination list to store the copy into.
- **
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Ensure that the destination list is large enough to hold the list
- *copy.         *
- *                                                                                             *
- * HISTORY: * 09/04/1996 JLB : Created. *
- *=============================================================================================*/
 void List_Copy(const short* source, int len, short* dest) {
-  if (dest == nullptr || dest == nullptr) {
+  if (source == nullptr || dest == nullptr) {
     return;
   }
 
@@ -4503,11 +3692,9 @@ void List_Copy(const short* source, int len, short* dest) {
   }
 }
 
-/***********************************************************************************************
- * Game_Registry_Key -- Returns pointer to string containing the registry subkey
- *for the game. This is located under HKEY_LOCAL_MACHINE. HISTORY: 11/19/98 ajw
- *: Created
- *=============================================================================================*/
+// Returns the registry subkey, under HKEY_LOCAL_MACHINE, that the Windows
+// installer wrote this game's settings to. The key name is language specific
+// because each localized release installed as a separate product.
 const char* Game_Registry_Key() {
 #ifdef ENGLISH
   static char szKey[] = "SOFTWARE\\Westwood\\Red Alert Windows 95 Edition";
@@ -4521,20 +3708,12 @@ const char* Game_Registry_Key() {
   return szKey;
 }
 
-/***********************************************************************************************
- * Is_Counterstrike_Installed -- Function to determine the availability of the
- *CS expansion    *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   true if Counterstrike is present *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 4/1/97 11:39PM ST : Created *
- *=============================================================================================*/
+// Reports whether the Counterstrike expansion is installed, by reading the flag
+// the installer left in the registry. The answer is cached: it cannot change
+// while the game is running.
+//
+// Off Windows there is no registry and no separate installer, so the expansion
+// content is simply assumed to be present.
 bool Is_Counterstrike_Installed() {
 #ifdef _WIN32
   //	ajw 9/29/98
@@ -4561,14 +3740,15 @@ bool Is_Counterstrike_Installed() {
   }
   return bInstalled;
 #else
+  // No registry off Windows, and no separate expansion installer -- the
+  // content is assumed present. Before the installer wrote a registry flag,
+  // this was decided by probing for EXPAND.MIX.
   return true;
 #endif
-  //	RawFileClass file("EXPAND.MIX");
-  //	return(file.Is_Available());
 }
 
-/***********************************************************************************************
- *=============================================================================================*/
+// Reports whether the Aftermath expansion is installed. See
+// Is_Counterstrike_Installed() above; this works the same way.
 bool Is_Aftermath_Installed() {
 #ifdef _WIN32
   //	ajw 9/29/98
@@ -4595,10 +3775,11 @@ bool Is_Aftermath_Installed() {
   }
   return bInstalled;
 #else
+  // No registry off Windows, and no separate expansion installer -- the
+  // content is assumed present. Before the installer wrote a registry flag,
+  // this was decided by probing for EXPAND2.MIX.
   return true;
 #endif
-  //	RawFileClass file("EXPAND2.MIX");
-  //	return(file.Is_Available());
 }
 
 void Enable_Secret_Units() {

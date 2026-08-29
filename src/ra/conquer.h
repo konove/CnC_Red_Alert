@@ -18,6 +18,12 @@
 #ifndef CNC_RED_ALERT_RA_CONQUER_H_
 #define CNC_RED_ALERT_RA_CONQUER_H_
 
+// File: Interface to the main game loop and the assorted game-wide services
+// that live alongside it -- movie playback, shape drawing, name-to-enum
+// lookups for the INI parser, and CD-swap handling.
+//
+// Also defines the TXT_* string-table indices used throughout the game.
+
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -32,6 +38,10 @@
 #include "winvq/vqa32/vqaio.h"
 #include "winvq/vqa32/vqaplay.h"
 
+// Indices into the language string table; Text_String() turns one of these into
+// the localized string for the build's language. The trailing comments are the
+// original French strings, kept as a hint at what each index says -- they are
+// truncated and are NOT what the game displays.
 #define TXT_NONE 0                            //
 #define TXT_CREDIT_FORMAT 1                   // %3d.%02d
 #define TXT_TIME_FORMAT_HOURS 2               // Temps:%02d:%02d:%02d
@@ -588,12 +598,36 @@
 #define TXT_THEME_WASTELND 553                     // Chaos
 #define TXT_CARRIER 554                            // Héliport Mobile
 
+// Copies a cell offset list, stopping early at the REFRESH_EOL terminator.
+// At most len elements are written, so dest must have room for that many.
 void List_Copy(const short* source, int len, short* dest);
+
+// Identifies which C&C disc is in the given drive by matching its volume label.
+// Returns a CD_VOLUME value (see conquer.cc), or -1 if the disc is not a C&C
+// one. Retries for up to timeout ticks, which gives a CD changer time to swap
+// discs before giving up.
 int Get_CD_Index(int cd_drive, int timeout);
+
+// Converts an INI owner specification into a house bitfield, one bit per
+// HousesType. The names "soviet", "allies" and "allied" expand to every house
+// on that side rather than to a single house.
 int Owner_From_Name(const char* text);
+
+// Converts an ASCII crate name into a crate type, defaulting to CRATE_MONEY
+// when the name is unrecognized.
 CrateType Crate_From_Name(const char* name);
+
+// Returns the smallest rectangle enclosing the shape's non-transparent pixels,
+// positioned relative to the center of the shape's maximum extent. Used to
+// tighten the map's dirty-rectangle logic.
+//
+// This is brute force and slow -- cache the result rather than recomputing it.
 const Rect Shape_Dimensions(const void* shapedata, int shapenum);
+
+// Services the IPX connection and dispatches any global packet that arrived:
+// sign-offs, player chat, or a game-setup packet.
 void IPX_Call_Back();
+
 bool Is_Counterstrike_Installed();
 bool Is_Aftermath_Installed();
 
@@ -606,27 +640,105 @@ void MPATH_Call_Back();
 #endif  // MPATH
 
 void Center_About_Objects();
+
+// Ensures the requested disc is in a drive, searching every CD drive and then
+// prompting the player until it turns up. Returns false if the player cancelled
+// the prompt. cd is a CD_VOLUME value (see conquer.cc): -2 means the data is on
+// the hard drive and nothing needs checking, -1 means any C&C disc will do.
+//
+// On success the file system's CD search path is repointed at the drive that
+// holds the disc, and the secondary mix files are re-registered from it.
 bool Force_CD_Available(int cd);
+
+// Records or restores one of the player's tactical-view bookmarks.
+// action: 0 = jump the view back to the remembered location,
+//         1 = remember the current view location.
 void Handle_View(int view, int action = 0);
+
+// Handles the player's numbered unit groups ("teams" here, unrelated to
+// TeamClass). team is the group number, 0-9.
+// action: 0 = select this group, replacing the selection if it holds
+//             non-members,
+//         1 = add this group to the current selection,
+//         2 = make the currently selected objects into this group,
+//         3 = as 0, and also center the map on the group.
 void Handle_Team(int team, int action = 0);
+
+// Converts an RTTI type and a sub-type ID into the matching type-class object,
+// or nullptr if the RTTI type is not one that has a TechnoTypeClass.
 const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id);
+
+// Builds the filename of a fading table. Each theater has its own palette and
+// so its own tables, hence the theater-specific prefix.
 std::string Fading_Table_Name(const char* base, TheaterType theater);
+
 void Unselect_All();
+
+// Plays a VQA movie, returning only once it has finished. name is the movie
+// filename without its extension. theme optionally names background music to
+// start first; clrscrn asks for the screen to be cleared afterwards.
+//
+// Does nothing outside of a normal (non-multiplayer) game or in the map editor.
 void Play_Movie(const char* name, ThemeType theme = THEME_NONE,
                 bool clrscrn = true);
 void Play_Movie(VQType name, ThemeType theme = THEME_NONE, bool clrscrn = true);
+
+// Runs one frame of the game. Returns true when the game should end.
 bool Main_Loop();
+
+// Converts a theater name from the scenario INI into a theater number, or
+// THEATER_NONE if it matches nothing.
 TheaterType Theater_From_Name(const char* name);
+
+// The game's entry point: one-time init, then a loop of choosing a game and
+// running it until the player exits.
 void Main_Game(int argc, char* argv[]);
+
+// Per-frame callback installed into the VQA player. Scales the decoded frame
+// onto the visible page, and returns non-zero to abort the movie (ESC, when
+// breaking out is allowed).
 long VQ_Call_Back(unsigned char* buffer = nullptr, long frame = 0);
 long VQ_Event_Handler(unsigned long event, void* buffer, long nbytes);
+
+// Real-time maintenance -- sound, music, and network servicing. Unlike the
+// per-frame game logic this has to run as often as possible, so it is called
+// from inside blocking loops and dialogs as well as from the main loop.
 void Call_Back();
+
+// Appends the language-specific extension to a base filename.
+//
+// The returned pointer refers to a static buffer and is only valid until the
+// next call.
 const char* Language_Name(const char* basename);
+
+// Converts a reinforcement source name from the scenario INI into a
+// SourceType, or SOURCE_NONE if it matches nothing.
 SourceType Source_From_Name(const char* name);
+
+// Returns the INI name for a source, or "None" if the source is out of range.
 const char* Name_From_Source(SourceType source);
+
+// Converts a keyboard code into the compass direction it represents, or
+// FACING_NONE for a key that is not directional. Used for keyboard scrolling.
 FacingType KN_To_Facing(int input);
+
+// Renders the radar-map icons for a shape file, at zoomfactor pixels per map
+// cell, and returns the buffer holding them.
+//
+// The first two bytes of the buffer are the icon width and height in cells;
+// the icons themselves follow, frames of (width * height) icons each. Pass
+// frames == -1 to build every frame in the shape file. Returns nullptr if
+// shapefile is null.
 std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
                                        int frames, int zoomfactor);
+// Draws a shape to the current logical page. Every shape draw in the game goes
+// through here.
+//
+// x,y are pixel coordinates, interpreted according to flags, and window is the
+// clipping window to draw within. fadingdata is required by SHAPE_FADING and
+// ghostdata by SHAPE_GHOST; if either is omitted the display class's default
+// table is substituted. rotation and scale (24.8 fixed point) take the slower
+// rotate-and-scale path when either differs from its default.
 void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
                    const void* fadingdata = nullptr,
@@ -637,6 +749,9 @@ void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
                    const void* fadingdata = nullptr,
                    const void* ghostdata = nullptr, DirType rotation = DIR_N,
                    long scale = 0x0100);
+
+// Switches between scenario-editor mode and normal game mode. Both modes need
+// a different button layout and a full redraw, so this cannot just set a flag.
 void Go_Editor(bool flag);
 
 class CCFileClass;
@@ -657,13 +772,29 @@ class MixFileVqaIo final : public VqaIo {
  private:
   std::unique_ptr<CCFileClass> file_;  // Null when no file is open.
 };
+// Debugging leftovers from the original build: declared here but never defined
+// or called anywhere in the tree.
 char* CC_Get_Shape_Filename(const void* shapeptr);
 void CC_Add_Shape_To_Global(const void* shapeptr, char* filename, char code);
 void Bubba_Print(char* format, ...);
 void Heap_Dump_Check(const char* string);
+
+// Loads the resolution-specific ("H"-prefixed) variant of a file, or nullptr if
+// it is not available. The caller owns the returned buffer.
 void* Hires_Load(char* name);
+
+// Jolts the screen up and down the given number of times, for explosions and
+// similar. Blocks until the shaking is done.
 void Shake_The_Screen(int shakes);
+
+// Mirrors an interpolation table's lower triangle into its upper one. The
+// tables are symmetric, so only half of each is stored on disk.
 void Rebuild_Interpolated_Palette(unsigned char* interpal);
+
+// Loads the precalculated interpolation tables a hi-res VQA needs to scale its
+// frames, and returns how many were loaded. Pass add == true to append to the
+// tables already loaded rather than starting over. Falls back to AAGUN.VQP when
+// the requested file is missing.
 int Load_Interpolated_Palettes(const char* filename, bool add = false);
 void Free_Interpolated_Palettes();
 
