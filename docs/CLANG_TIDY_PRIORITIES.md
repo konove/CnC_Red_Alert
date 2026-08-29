@@ -2,16 +2,17 @@
 
 ## Overview
 
-`.clang-tidy` enables all checks (`'*'`) and then disables **233** of them. This document prioritizes which of those
-233 to re-enable, ordered by **measured bug yield per unit of fix effort**.
+`.clang-tidy` enables all checks (`'*'`) and then disables **230** of them. This document prioritizes which of those
+230 to re-enable, ordered by **measured bug yield per unit of fix effort**.
 
 Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
 (see [Methodology](#methodology)). Every count in the tables is a real diagnostic site in this repository.
 
-**Tier 1, §1.1, §1.2 and Tier 1.5 are all complete.** All ten rows of the Tier 1 table (13 checks) are enabled, 24 of
-the 26 checks in §1.1, the single §1.2 check, and all six of Tier 1.5; see [Progress](#progress). The two §1.1 checks
-left out are deliberate — see [1.1](#11-free-guards--the-name-was-wrong). The next work is Tier 2, which is the
-per-directory type-migration strategy rather than another tree-wide sweep.
+**Tier 1, §1.1, §1.2 and Tier 1.5 are complete, and Tier 2 is four checks of seven in.** All ten rows of the Tier 1
+table (13 checks) are enabled, 24 of the 26 checks in §1.1, the single §1.2 check, all six of Tier 1.5, and three of
+Tier 2 with a fourth reclassified; see [Progress](#progress). The two §1.1 checks left out are deliberate — see
+[1.1](#11-free-guards--the-name-was-wrong). What is left in Tier 2 is `narrowing-conversions`,
+`pro-type-member-init` and `switch-missing-default-case`.
 
 The clang-tidy 22 move on 2026-08-20 turned the strict build red for reasons unrelated to any tier below; all four
 causes are resolved and it is green again — see [clang-tidy 22 fallout](#clang-tidy-22-fallout).
@@ -143,6 +144,18 @@ been red on an enabled check.
 | `clang-analyzer-optin.cplusplus.VirtualCall` | `e3ad8275` | 81 | 17 classes and 8 methods marked `final`, 5 qualified calls, 4 restructures, 0 NOLINTs; found buffered writes lost in `~BufferIOFileClass` |
 
 `src/ra/vector.h` and `src/tech/listnode.h`, which Phase B named as the prerequisite, were cleared by the first two.
+
+### 2
+
+| Check                                                 | Commit     | Sites | Outcome                                                                                                                     |
+|-------------------------------------------------------|------------|-------|-------------------------------------------------------------------------------------------------------------------------------|
+| `bugprone-implicit-widening-of-multiplication-result` | `c0045ac4` | 224   | Stride and buffer-size types, not casts; 3 timer macro definitions cleared 43 sites at once                                 |
+| `clang-diagnostic-sign-compare`                       | `35c51bbf` | 305   | 8 type changes cleared ~240; the cause was RA being migrated to signed sizes and TD not                                     |
+| `clang-diagnostic-shorten-64-to-32`                   | `cf44023c` | 439   | Much of it created by the two above — signedness work moves the mismatch from comparisons into assignments                  |
+| — (`clang-diagnostic-switch`, not enabled)            | —          | 720   | Reclassified: 567 are `case ButtonKey(n):`, a deliberate idiom `-Wswitch` cannot model — see [Tier 2](#tier-2-valuable-but-these-are-the-type-migration-project) |
+
+Two supporting commits: `7553a5ce` replaced 34 timer and object-limit macros with `inline constexpr` constants, which
+is what made the timer durations typed enough to fix; `532aef0f` cleared the Tier 1.5 fallout.
 
 Three lessons worth carrying into the next tier:
 
@@ -394,18 +407,74 @@ for every ordinary caller.
 
 ## TIER 2: Valuable, but these *are* the type-migration project
 
-High counts, genuine latent bugs mixed with thousands of benign sites. Enabling any of these globally halts the build
-until ~3,000 sites are fixed.
+Four of the seven are done. Measured tree-wide over all 840 translation units on 2026-08-28, the tier came to **3,568
+sites, not the ~5,700 the estimates said** — and the estimates were wrong in shape as well as size, which is why the
+order below is not the order of the counts.
 
-| Check                                                 | Sample | Tree-wide est. |
-|-------------------------------------------------------|--------|----------------|
-| `bugprone-narrowing-conversions`                      | 292    | ~2900          |
-| `cppcoreguidelines-pro-type-member-init`              | 116    | ~1160          |
-| `clang-diagnostic-shorten-64-to-32`                   | 69     | ~690           |
-| `clang-diagnostic-sign-compare`                       | 40     | ~400           |
-| `bugprone-implicit-widening-of-multiplication-result` | 29     | ~290           |
-| `clang-diagnostic-switch`                             | 20     | ~200           |
-| `bugprone-switch-missing-default-case`                | 10     | ~100           |
+| Check                                                 | Sample | Tree-wide | Status                                                                 |
+|-------------------------------------------------------|--------|-----------|------------------------------------------------------------------------|
+| `bugprone-implicit-widening-of-multiplication-result` | 29     | **224**   | ✅ Done, `c0045ac4`                                                    |
+| `clang-diagnostic-sign-compare`                       | 40     | **305**   | ✅ Done, `35c51bbf`                                                    |
+| `clang-diagnostic-shorten-64-to-32`                   | 69     | **439**   | ✅ Done, `cf44023c` — 428 when first measured, before the two above    |
+| `clang-diagnostic-switch`                             | 20     | **720**   | ❌ Reclassified, see below — 567 of them are one deliberate idiom      |
+| `bugprone-narrowing-conversions`                      | 292    | **1424**  | Next, but read the option note below: 839 after excluding one sub-class |
+| `cppcoreguidelines-pro-type-member-init`              | 116    | **349**   | Collides with `NoInitClass`; decide the annotation first               |
+| `bugprone-switch-missing-default-case`                | 10     | **118**   | Mechanical, low yield, last                                            |
+
+`src/ra` and `src/td` held 3,243 of the 3,568; the support layers (`sdllib`, `tech`, `winvq`, `base`, `port`) held
+325, and `src/port` was clean on all seven. The per-directory strategy below is still right, but the split is that
+lopsided.
+
+**`clang-diagnostic-switch` is off the list, at 720 sites.** 567 of them say *"case value not in enumerated type
+`KeyNumType`"* and come from `case ButtonKey(200):` — the helper `6a792756` introduced. Clang's `-Wswitch` warns on
+any case label that is not a **named enumerator**, and giving `KeyNumType` a fixed underlying type does not change
+that; it was tried and measured no different. Clearing them means rewriting 105 switch statements across 43 files to
+switch on `static_cast<unsigned>(input)`, which buys silence and nothing else, since those switches were never
+enumerator-based. The remaining ~153 are genuine "enumeration value not handled" findings and could be had
+per-directory.
+
+**Configure `bugprone-narrowing-conversions` before enabling it.** At its defaults it measures 1424, but 585 of those
+are same-width `unsigned` → `signed` — `LEPTON` (`unsigned short`), `COORDINATE` (`uint32_t`) and friends flowing into
+`int`, which is exactly what `docs/TYPE_MIGRATION.md`'s do-not-touch list protects. `WarnOnEquivalentBitWidth: false`
+drops it to **839** real narrowing sites. Setting that option is better than accepting 585 findings already decided
+against.
+
+### What the three finished checks actually cost
+
+**The fixes were type changes, not casts.** `sign-compare` cleared roughly 240 of its 305 sites through eight
+declarations, and the recurring cause was not the comparisons: **RA had already been migrated to signed sizes and TD
+had not.** `DynamicVectorClass::Count()`, `VectorClass`, `TechnoTypeClass::Level`, the radar geometry — signed in one
+port, `size_t`/`unsigned` in the other, which is why TD carried 170 sites against RA's 103. The same held for
+`implicit-widening`: six `int` → `base::ssize` stride declarations in `drawbuff.cc` took that file from 23 sites to 8,
+and three timer macro definitions cleared 43 more.
+
+**Order matters, and it is sign-compare before truncation.** Making `Count()` return `base::ssize` moved the mismatch
+out of comparisons and into assignments, which is precisely what `shorten-64-to-32` catches — so a large share of its
+439 sites were created by the commit before it. That is the correct sequence, not an accident, but budget for it: the
+truncation count grows as the signedness work lands.
+
+**The layout tests stopped two member retypes.** Widening `td/vector.h`'s `VectorMax` to `base::ssize` changed
+`sizeof()` for three serialized types (56→64, 40→48, 1952→1960); narrowing `HouseClass::Tiberium` and `Capacity` to
+`int` shrank TD's `HouseClass` from 3368 to 3360. Both are the raw-byte save format. Both members keep their width
+with a comment saying why, and their call sites got casts instead. Full RA/TD type parity in those two classes needs a
+`SAVEGAME_VERSION` bump, which is a separate decision.
+
+**Do not bulk-wrap expressions using a diagnostic's column.** The last 151 `shorten-64-to-32` sites were wrapped by a
+script that read each diagnostic's line and column and inserted a cast around what it judged the expression to be. The
+column often points into the middle of an expression rather than at its start, so it produced about 25 malformed edits
+— `Array.static_cast<int>(ID(ptr))`, `x static_cast<int>(- y)`, `std::max<static_cast<int>(int>(...)` — all caught by
+the compiler, and **one that compiled and changed behaviour**:
+
+```cpp
+int graph = kRecordHeight * fixed(kTimerSecond - SpareTicks, kTimerSecond);
+int graph = kRecordHeight * static_cast<int>(fixed(kTimerSecond - SpareTicks), kTimerSecond);
+```
+
+The inserted paren landed on `fixed()`'s argument separator, turning a two-argument ratio into a one-argument
+construction followed by a comma operator, so `graph` became `kTimerSecond`. It compiled because `fixed` has a
+one-argument constructor, and only `clang-diagnostic-comma` caught it. Two audits over the other 150 wraps found no
+second instance — none has a top-level comma inside a cast, and every changed line reduces to its committed form once
+the inserted casts are stripped — but the technique is not worth repeating. Fix the type, or edit the site by hand.
 
 **Strategy — per-directory, not global.** Drop a stricter `.clang-tidy` into directories that are already clean
 (`src/base`, `src/port`) and into each directory as it completes type migration. clang-tidy applies the nearest config
@@ -496,11 +565,22 @@ globally.
 4. ~~`clang-analyzer-optin.cplusplus.VirtualCall` (86 sites) last~~ — done in `e3ad8275`, 81 sites, no suppressions.
    The predicted hierarchy refactor did not materialise: see the note under [Tier 1.5](#tier-15-small-counts-real-ub-in-a-deep-virtual-hierarchy).
 
-### Phase C — Tier 2, per directory
+### Phase C — Tier 2, in progress
 
-1. Add a stricter `.clang-tidy` to `src/base` and `src/port` (already clean).
-2. Extend it to each directory as type migration completes there.
-3. Never enable Tier 2 at the repository root.
+Three of the seven went in tree-wide rather than per-directory, because their counts turned out to be in the hundreds
+rather than the thousands the estimates predicted:
+
+1. ~~`bugprone-implicit-widening-of-multiplication-result`~~ — done in `c0045ac4`, 224 sites.
+2. ~~`clang-diagnostic-sign-compare`~~ — done in `35c51bbf`, 305 sites.
+3. ~~`clang-diagnostic-shorten-64-to-32`~~ — done in `cf44023c`, 439 sites.
+4. ~~`clang-diagnostic-switch`~~ — reclassified, not enabled; 567 of its 720 sites are a deliberate idiom.
+5. `bugprone-narrowing-conversions` next, with `WarnOnEquivalentBitWidth: false` — 839 sites rather than 1424.
+6. `cppcoreguidelines-pro-type-member-init` after deciding how the `NoInitClass` constructors get annotated.
+7. `bugprone-switch-missing-default-case` last, or never.
+
+The per-directory idea still stands for what remains, but note `src/port` is already clean on all seven checks and
+`src/base` had four sites, so the two directories Phase C named as the starting point are worth almost nothing on
+their own. `src/ra` and `src/td` hold 91% of the tier.
 
 ---
 
@@ -533,6 +613,11 @@ xargs -a /tmp/tidy_files.txt -P $JOBS -I{} clang-tidy \
 ```
 
 Note `--warnings-as-errors=` (empty) to override the config's `WarningsAsErrors: '*'` while measuring.
+
+**A check's own fix can be the next check's finding, and that is fine.** Enabling `sign-compare` created a large
+share of `shorten-64-to-32`'s sites, because making a count signed moves the mismatch from the comparison to the
+assignment. Sequence the signedness work before the truncation work and expect the second count to grow while you
+clear the first; do not read it as a regression.
 
 **Measure the check you are enabling, then sweep the whole config before committing.** Tier 1.5 was verified twice
 by sweeping only the check being enabled, and twice the strict build went red afterwards on a check that had never
@@ -568,7 +653,7 @@ Four traps, every one of which reports a clean tree that is not clean.
 | 1.1       | 26     | 0 (336 real) | ✅ **Done** — 24 enabled (23 after 22), 7 more real bugs; 1 off for good, 1 moved to 1.5 |
 | 1.2       | 1      | 0            | ✅ **Done** — free, but it guards nothing; save layout pinned in tests                   |
 | 1.5       | 6      | 128 (265 real) | ✅ **Done** — all six; `VirtualCall` alone found lost buffered writes                  |
-| 2         | 7      | 576          | Per-directory only, tied to type migration                                               |
+| 2         | 7      | 576 (3568 real) | 3 done, 1 reclassified; `narrowing-conversions` next                                  |
 | 3         | ~230   | —            | Keep disabled                                                                            |
 
-Disabled-check count: **275 → 233**.
+Disabled-check count: **275 → 230**.
