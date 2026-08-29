@@ -71,6 +71,10 @@ preprocessing, which most of the tree includes. Measured over 40 RA TUs: 14/40 c
 rebuild after deleting the objects went 24.0 s cold to 19.2 s warm. Silencing that one warning takes it to 37/40
 cached and 23.9 s cold to 4.5 s warm — a 5x rebuild, gated entirely on keeping the preprocessor quiet.
 
+That bail-out is also what prints `ERROR:clang-tidy-cache:Error executing compile command: #[...]` during a strict
+build — one line per translation unit whose preprocess warns. It is noise, not a failure: the build continues
+uncached. Silence it with `CTCACHE_LOG_LEVEL=CRITICAL`, or `-DUSE_CTCACHE=OFF` to drop the wrapper entirely.
+
 The cache defaults to `/tmp/ctcache-$USER`, which does not survive a reboot; set `CTCACHE_DIR=~/.cache/ctcache` to
 keep it.
 

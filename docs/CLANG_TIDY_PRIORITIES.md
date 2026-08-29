@@ -534,6 +534,15 @@ xargs -a /tmp/tidy_files.txt -P $JOBS -I{} clang-tidy \
 
 Note `--warnings-as-errors=` (empty) to override the config's `WarningsAsErrors: '*'` while measuring.
 
+**Measure the check you are enabling, then sweep the whole config before committing.** Tier 1.5 was verified twice
+by sweeping only the check being enabled, and twice the strict build went red afterwards on a check that had never
+been measured: marking classes `final` for `VirtualCall` tripped
+`clang-diagnostic-unnecessary-virtual-specifier` in 46 declarations, and giving TD's `AbstractTypeClass` a virtual
+destructor made `~TeamTypeClass` an override, tripping `clang-diagnostic-suggest-destructor-override` and
+`modernize-use-override`. A single-check sweep cannot see fallout that lands on a different check. Run the sweep
+below once with the check under study, and once with no `--checks` at all — the full config, all 840 units — before
+committing. Both were fixed in `532aef0f`.
+
 Four traps, every one of which reports a clean tree that is not clean.
 
 1. **Confirm the check name exists in the *installed* clang-tidy.** `clang-tidy --checks='-*,name' --list-checks`
