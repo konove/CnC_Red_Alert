@@ -167,7 +167,7 @@ class HouseTypeClass {
   **	flagged have a greater break-down chance. The percentage is expressed
   **	as a fixed point number with 0x000 meaning 0% and 0x100 meaning 100%.
   */
-  unsigned Lemon;
+  int Lemon;
 
   /*
   **	Each house is assigned a unique identification color to be used on the

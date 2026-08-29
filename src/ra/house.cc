@@ -5504,7 +5504,7 @@ int HouseClass::AI_Building() {
     /*
     **	Build a refinery if there isn't one already available.
     */
-    unsigned int current = BQuantity[STRUCT_REFINERY];
+    int current = BQuantity[STRUCT_REFINERY];
     if (!IsTiberiumShort &&
         current < (Rule.RefineryRatio * fixed(CurBuildings)).Round_Up() &&
         current < Rule.RefineryLimit) {

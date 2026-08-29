@@ -331,7 +331,8 @@ std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
       std::span<const std::byte> view;
       if (cached) {
         // Ensure bounds safety
-        if (it->offset + it->size <= mix->data_.size()) {
+        if (it->offset + it->size <=
+            static_cast<std::int32_t>(mix->data_.size())) {
           view = {mix->data_.data() + it->offset,
                   static_cast<std::size_t>(it->size)};
         }

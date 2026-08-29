@@ -86,6 +86,7 @@
 #include "td/terrain.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include <iterator>
 
 #define MCW MAP_CELL_W
 const int MapClass::RadiusOffset[] = {
@@ -1098,8 +1099,7 @@ void MapClass::Logic() {
 
     if (Special.IsTGrowth && ptr->Land_Type() == LAND_TIBERIUM &&
         ptr->OverlayData < 11) {
-      if (TiberiumGrowthCount <
-          sizeof(TiberiumGrowth) / sizeof(TiberiumGrowth[0])) {
+      if (TiberiumGrowthCount < std::ssize(TiberiumGrowth)) {
         TiberiumGrowth[TiberiumGrowthCount++] = cell;
       } else {
         TiberiumGrowth[Random_Pick(0, TiberiumGrowthCount - 1)] = cell;
@@ -1118,8 +1118,7 @@ void MapClass::Logic() {
         tries = 3;
       }
       for (int i = 0; i < tries; i++) {
-        if (TiberiumSpreadCount <
-            sizeof(TiberiumSpread) / sizeof(TiberiumSpread[0])) {
+        if (TiberiumSpreadCount < std::ssize(TiberiumSpread)) {
           TiberiumSpread[TiberiumSpreadCount++] = cell;
         } else {
           TiberiumSpread[Random_Pick(0, TiberiumSpreadCount - 1)] = cell;
@@ -1432,7 +1431,7 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
                            MAP_CELL_W + 1,
                            -(MAP_CELL_W - 1),
                            -(MAP_CELL_W + 1)};
-  for (int index = 0; index < sizeof(_offsets) / sizeof(_offsets[0]); index++) {
+  for (int index = 0; index < std::ssize(_offsets); index++) {
     /*
     **	Examine the cell for close object. Make sure that the cell actually is a
     **	legal one.

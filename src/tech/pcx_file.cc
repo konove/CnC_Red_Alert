@@ -91,7 +91,7 @@ int Write_PCX_File(char* name, GraphicViewPortClass& pic,
   ptr = (char*)Graphic_Buffer->Get_Buffer();
   ptr += ((pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos());
 
-  for (i = 0; i < header.height + 1; i++) {
+  for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {
     Write_Pcx_ScanLine(file_handle, header.byte_per_line,
                        ptr + static_cast<base::ssize>(i) * VP_Scan_Line);
   }
@@ -146,7 +146,7 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr) {
   last = static_cast<unsigned char>(*ptr);
   rle = 1;
 
-  for (i = 1; i < scansize; i++) {
+  for (i = 1; i < static_cast<unsigned>(scansize); i++) {
     color = 0xff & *++ptr;
     if (color == last) {
       rle++;

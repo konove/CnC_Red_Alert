@@ -923,7 +923,7 @@ void EventClass::Execute() {
     case ADDPLAYER:
       int i;
       printf("ADDPLAYER EVENT!\n");
-      for (i = 0; i < Data.Variable.Size; i++) {
+      for (i = 0; i < static_cast<int>(Data.Variable.Size); i++) {
         printf("%d\n", static_cast<char*>(Data.Variable.Pointer)[i]);
       }
       if (ID != PlayerPtr->ID) {

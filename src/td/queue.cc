@@ -1137,7 +1137,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
-  unsigned long resp_time;  // connection response time, in ticks
+  long resp_time;  // connection response time, in ticks
   EventClass ev;
 
   //------------------------------------------------------------------------
@@ -1217,7 +1217,7 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
  *   07/02/1996 BRR : Created.                                             *
  *=========================================================================*/
 static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
-  unsigned long resp_time;  // connection response time, in ticks
+  long resp_time;  // connection response time, in ticks
   EventClass ev;
   int highest_ticks;
   int i;
@@ -1328,7 +1328,7 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
 static void Generate_Process_Time_Event(ConnManClass* net) {
   EventClass ev;
   int avgticks;
-  unsigned long resp_time;  // connection response time, in ticks
+  long resp_time;  // connection response time, in ticks
 
   //
   // Measure the current connection response time.  This time will be in
@@ -2664,7 +2664,7 @@ int Extract_Uncompressed_Events(void* buf, int bufsize) {
   //------------------------------------------------------------------------
   // Loop until there are no more events in the packet
   //------------------------------------------------------------------------
-  while (leftover >= sizeof(EventClass)) {
+  while (leftover >= static_cast<int>(sizeof(EventClass))) {
     event = (EventClass*)(static_cast<char*>(buf) + pos);
 
     //.....................................................................
@@ -2738,7 +2738,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
              sizeof(EventClass::EventType);
   event = (EventClass*)(static_cast<char*>(buf) + pos);
 
-  while (leftover >= datasize + sizeof(EventClass::EventType)) {
+  while (leftover >=
+         datasize + static_cast<int>(sizeof(EventClass::EventType))) {
     //.....................................................................
     // add event to the DoList, only if it's not a FRAMESYNC
     // (but FRAMEINFO's do get added.)

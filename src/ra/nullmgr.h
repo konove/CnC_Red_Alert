@@ -140,7 +140,7 @@ class NullModemClass : public ConnManClass {
   */
   int Num_Send();
   int Num_Receive();
-  unsigned long Response_Time() override;
+  long Response_Time() override;
   void Reset_Response_Time() override;
   void* Oldest_Send();
   void Configure_Debug(int index, int type_offset, int type_size,

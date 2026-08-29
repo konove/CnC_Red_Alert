@@ -132,7 +132,7 @@ class ConnManClass {
   Timing management
   .....................................................................*/
   virtual void Reset_Response_Time() = 0;
-  virtual unsigned long Response_Time() = 0;
+  virtual long Response_Time() = 0;
   virtual void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
                           unsigned long timeout) = 0;
 

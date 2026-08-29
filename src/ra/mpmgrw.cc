@@ -197,7 +197,7 @@ void MPlayerManClass::Reset_Response_Time() {
   // unsupported
 }
 
-unsigned long MPlayerManClass::Response_Time() {
+long MPlayerManClass::Response_Time() {
   return (160 * 60) / 1000;  // 160 microseconds one way (9 ticks)
 }
 

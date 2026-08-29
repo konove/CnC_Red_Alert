@@ -9,6 +9,7 @@
 #include "base/hsv.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
+#include <climits>
 
 SurfaceMonitorClass AllSurfaces;
 
@@ -39,7 +40,7 @@ void Delay(int duration) {
 
 void* Build_Fading_Table(const void* palette, void* dest, long int color,
                          long int frac) {
-  unsigned matchvalue;
+  int matchvalue;
   uint8_t targetred;
   uint8_t targetgreen;
   uint8_t idealred;
@@ -81,7 +82,7 @@ void* Build_Fading_Table(const void* palette, void* dest, long int color,
     // matching color.  Never matches with color 0.
 
     matchcolor = color;  // Default color (self).
-    matchvalue = -1;     // Ridiculous match value init.
+    matchvalue = INT_MAX;  // Ridiculous match value init.
 
     const auto* palptr = pal8 + 3;
 

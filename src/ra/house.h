@@ -102,9 +102,9 @@ class HouseStaticClass {
   */
   unsigned MaxUnit;
   unsigned MaxBuilding;
-  unsigned MaxInfantry;
+  int MaxInfantry;
   unsigned MaxVessel;
-  unsigned MaxAircraft;
+  int MaxAircraft;
 
   /*
   **	This records the initial credits assigned to this house when the
@@ -427,10 +427,10 @@ class HouseClass {
   *This *	value is used to keep track of ownership limits.
   */
   unsigned CurUnits;
-  unsigned CurBuildings;
-  unsigned CurInfantry;
+  int CurBuildings;
+  int CurInfantry;
   unsigned CurVessels;
-  unsigned CurAircraft;
+  int CurAircraft;
 
   /*
   **	This is the running total of the number of credits this house has

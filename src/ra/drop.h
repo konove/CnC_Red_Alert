@@ -232,7 +232,7 @@ int TDropListClass<T>::Current_Index() {
 
 template <class T>
 void TDropListClass<T>::Set_Selected_Index(int index) {
-  if ((unsigned)index < List.Count()) {
+  if (static_cast<unsigned>(index) < static_cast<unsigned>(List.Count())) {
     List.Set_Selected_Index(index);
     strncpy(String, List.Get_Item(Current_Index())->Description(), MaxLength);
   } else {

@@ -301,9 +301,9 @@ class ConnectionClass {
   unsigned short Magic_Num() { return MagicNum; }
   unsigned long Retry_Delta() { return RetryDelta; }
   void Set_Retry_Delta(unsigned long delta) { RetryDelta = delta; }
-  unsigned long Max_Retries() { return MaxRetries; }
+  long Max_Retries() { return MaxRetries; }
   void Set_Max_Retries(unsigned long retries) { MaxRetries = retries; }
-  unsigned long Time_Out() { return Timeout; }
+  long Time_Out() { return Timeout; }
   void Set_TimeOut(unsigned long t) { Timeout = t; }
   unsigned long Max_Packet_Len() { return MaxPacketLen; }
   static const char* Command_Name(int command);
@@ -350,13 +350,13 @@ class ConnectionClass {
   This is the maximum number of retries allowed for a packet; if this
   value is exceeded, the connection is probably broken.
   .....................................................................*/
-  unsigned long MaxRetries;
+  long MaxRetries;
 
   /*.....................................................................
   This is the total timeout for this connection; if this time is exceeded
   on a packet, the connection is probably broken.
   .....................................................................*/
-  unsigned long Timeout;
+  long Timeout;
 
   /*.....................................................................
   Names of all packet commands

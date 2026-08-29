@@ -60,6 +60,7 @@
 #include <cstddef>
 
 #include "tech/noinit.h"
+#include "base/types.h"
 
 // IWYU pragma: no_include "td/cell.h"
 // IWYU pragma: no_include "td/nodename.h"
@@ -81,12 +82,12 @@ template <class T>
 class VectorClass {
  public:
   VectorClass(const NoInitClass&) {}
-  VectorClass(unsigned size = 0, const T* array = nullptr);
+  VectorClass(base::ssize size = 0, const T* array = nullptr);
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
 
-  T& operator[](size_t index) { return Vector[index]; }
-  const T& operator[](size_t index) const { return Vector[index]; }
+  T& operator[](base::ssize index) { return Vector[index]; }
+  const T& operator[](base::ssize index) const { return Vector[index]; }
   VectorClass& operator=(const VectorClass&);
 
  private:
@@ -98,9 +99,9 @@ class VectorClass {
 
  public:
   virtual int operator==(const VectorClass&) const;
-  virtual int Resize(unsigned newsize, const T* array = nullptr);
+  virtual int Resize(base::ssize newsize, const T* array = nullptr);
   virtual void Clear();
-  unsigned Length() const { return VectorMax; }
+  base::ssize Length() const { return VectorMax; }
   virtual int ID(const T* ptr);  // Pointer based identification.
   virtual int ID(const T& ptr);  // Value based identification.
 
@@ -113,6 +114,9 @@ class VectorClass {
   /*
   **	This is the maximum number of elements allowed in this vector.
   */
+  // Stays 32-bit: this member is byte-serialized as part of the save format
+  // (see src/td/heap_layout_test.cc), so widening it changes sizeof() for every
+  // containing type. The public interface below is signed regardless.
   unsigned VectorMax;
 
   /*
@@ -135,10 +139,10 @@ class VectorClass {
 template <class T>
 class DynamicVectorClass : public VectorClass<T> {
  public:
-  DynamicVectorClass(unsigned size = 0, const T* array = nullptr);
+  DynamicVectorClass(base::ssize size = 0, const T* array = nullptr);
 
   // Change maximum size of vector.
-  int Resize(unsigned newsize, const T* array = nullptr) override;
+  int Resize(base::ssize newsize, const T* array = nullptr) override;
 
   // Resets and frees the vector array.
   void Clear() override {
@@ -147,7 +151,7 @@ class DynamicVectorClass : public VectorClass<T> {
   }
 
   // Fetch number of "allocated" vector objects.
-  size_t Count() const { return ActiveCount; }
+  base::ssize Count() const { return ActiveCount; }
 
   // Add object to vector (growing as necessary).
   int Add(const T& object);
@@ -177,7 +181,7 @@ class DynamicVectorClass : public VectorClass<T> {
   **	vector. The memory array often times is bigger than this
   **	value.
   */
-  size_t ActiveCount;
+  base::ssize ActiveCount;
 
   /*
   **	If there is insufficient room in the vector array for a new

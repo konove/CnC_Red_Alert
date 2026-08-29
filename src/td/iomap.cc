@@ -309,7 +309,7 @@ void CellClass::Decode_Pointers() {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 bool MouseClass::Load(FileClass& file) {
-  unsigned count;
+  int count;
   CELL cell = 0;
   int index;
   //	int rc;
@@ -411,7 +411,7 @@ bool MouseClass::Load(FileClass& file) {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 bool MouseClass::Save(FileClass& file) {
-  unsigned count;
+  int count;
   long pos;
 
   /*

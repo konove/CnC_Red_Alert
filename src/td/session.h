@@ -447,7 +447,7 @@ class SessionClass {
   // smoothing.
   //.....................................................................
   unsigned long MaxAhead;
-  unsigned long FrameSendRate;
+  long FrameSendRate;
   unsigned long FrameRateDelay;
 
   //.....................................................................

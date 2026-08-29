@@ -66,7 +66,7 @@ class TextLabelClass : public GadgetClass {
   /*
   ** General-purpose data field
   */
-  unsigned long UserData;
+  long UserData;
   TextPrintType Style;
   char* Text;
   int Color;

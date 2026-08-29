@@ -58,6 +58,7 @@
 #include "td/mapedit.h"
 #include "td/queue.h"
 #include "td/textbtn.h"
+#include <iterator>
 
 #define OPTION_WIDTH 236
 #define OPTION_HEIGHT 162
@@ -95,7 +96,7 @@ void Special_Dialog() {
   buttons = &ok;
   cancel.Add(*buttons);
 
-  for (int index = 0; index < sizeof(_options) / sizeof(_options[0]); index++) {
+  for (int index = 0; index < std::ssize(_options); index++) {
     _options[index].Button = new CheckBoxClass(100 + index, OPTION_X + 7,
                                                OPTION_Y + 20 + index * 10);
     if (_options[index].Button) {
@@ -195,7 +196,7 @@ void Special_Dialog() {
       Dialog_Box(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
       Draw_Caption(TXT_SPECIAL_OPTIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
 
-      for (int index = 0; index < sizeof(_options) / sizeof(_options[0]);
+      for (int index = 0; index < std::ssize(_options);
            index++) {
         Fancy_Text_Print(_options[index].Description,
                          _options[index].Button->X + 10,
@@ -211,7 +212,7 @@ void Special_Dialog() {
       case KN_ESC:
       case ButtonKey(200):
         process = false;
-        for (int index = 0; index < sizeof(_options) / sizeof(_options[0]);
+        for (int index = 0; index < std::ssize(_options);
              index++) {
           switch (_options[index].Description) {
             case TXT_SEPARATE_HELIPAD:

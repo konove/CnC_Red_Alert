@@ -695,7 +695,7 @@ void Write_Scenario_Ini(char* root) {
       //		file.Close();
     } else {
       sprintf(buffer, "; Scenario %d control for house %s.\r\n",
-              static_cast<int>(Scenario),
+              Scenario,
               HouseTypeClass::As_Reference(house).IniName);
     }
 

@@ -770,7 +770,7 @@ int NullModemClass::Service() {
 
   // minimum packet size
 
-  if (RXCount < PACKET_SERIAL_OVERHEAD_SIZE + 1) {
+  if (RXCount < static_cast<int>(PACKET_SERIAL_OVERHEAD_SIZE) + 1) {
     return Connection->Service();
   }
 
@@ -778,7 +778,7 @@ int NullModemClass::Service() {
   Now scan the buffer for the start of a packet.
   ------------------------------------------------------------------------*/
   pos = -1;
-  for (i = 0; i <= RXCount - sizeof(short); i++) {
+  for (i = 0; i <= RXCount - static_cast<int>(sizeof(short)); i++) {
     if (*(unsigned short*)(RXBuf + i) == PACKET_SERIAL_START) {
       pos = i;
       break;
@@ -802,7 +802,7 @@ int NullModemClass::Service() {
   /*........................................................................
   Check to see if there are enough bytes for the header to be decoded
   ........................................................................*/
-  if (RXCount - pos < sizeof(SerialHeaderType)) {
+  if (RXCount - pos < static_cast<int>(sizeof(SerialHeaderType))) {
     memmove(RXBuf, RXBuf + pos, RXCount - pos);
     RXCount -= pos;
     return Connection->Service();
@@ -852,7 +852,8 @@ int NullModemClass::Service() {
   If the entire packet isn't stored in our buffer, copy the remaining bytes
   to the front of the buffer & return.
   ........................................................................*/
-  if (pos + length + PACKET_SERIAL_OVERHEAD_SIZE > RXCount) {
+  if (pos + length + static_cast<int>(PACKET_SERIAL_OVERHEAD_SIZE) >
+        RXCount) {
     if (moredata) {
       // Smart_Printf( "waiting for more data %d, pos = %d \n", ((length +
       // PACKET_SERIAL_OVERHEAD_SIZE) - (RXCount - pos)), pos );
@@ -972,7 +973,7 @@ int NullModemClass::Num_Receive() {
  * HISTORY:                                                                *
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long NullModemClass::Response_Time() {
+long NullModemClass::Response_Time() {
   if (Connection) {
     return Connection->Queue->Avg_Response_Time();
   }
@@ -2055,7 +2056,7 @@ void NullModemClass::Remove_Modem_Echo() {
  * HISTORY: * 8/2/96 12:51PM ST : Documented *
  *=============================================================================================*/
 void NullModemClass::Print_EchoBuf() {
-  for (int i = 0; i < strlen(NullModem.EchoBuf); i++) {
+  for (int i = 0; i < static_cast<int>(strlen(NullModem.EchoBuf)); i++) {
     if (NullModem.EchoBuf[i] == '\r') {
       NullModem.EchoBuf[i] = 1;
     } else {

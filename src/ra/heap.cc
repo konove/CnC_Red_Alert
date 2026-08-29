@@ -229,7 +229,7 @@ int FixedHeapClass::Free(void* pointer) {
   if (pointer && ActiveCount) {
     int index = ID(pointer);
 
-    if (static_cast<unsigned>(index) < TotalCount) {
+    if (static_cast<unsigned>(index) < static_cast<unsigned>(TotalCount)) {
       if (FreeFlag[index]) {
         ActiveCount--;
         FreeFlag[index] = false;

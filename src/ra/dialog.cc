@@ -394,7 +394,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
  * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
-void Simple_Text_Print(const char* text, unsigned x, unsigned y,
+void Simple_Text_Print(const char* text, int x, int y,
                        RemapControlType* fore, unsigned back,
                        TextPrintType flag) {
   static int yspace = 0;          // Y spacing adjustment for font.
@@ -645,7 +645,7 @@ void Simple_Text_Print(const char* text, unsigned x, unsigned y,
  *                                                                                             *
  * HISTORY: * 11/29/1994 JLB : Created *
  *=============================================================================================*/
-void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType* fore,
+void Fancy_Text_Print(int text, int x, int y, RemapControlType* fore,
                       unsigned back, TextPrintType flag, ...) {
   char buffer[512];  // Working staging buffer.
   va_list arg;       // Argument list var.
@@ -704,7 +704,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType* fore,
  *spacing in a more friendly manner.                        * 11/29/1994 JLB :
  *Separated actual draw action.                                            *
  *=============================================================================================*/
-void Fancy_Text_Print(const char* text, unsigned x, unsigned y,
+void Fancy_Text_Print(const char* text, int x, int y,
                       RemapControlType* fore, unsigned back, TextPrintType flag,
                       ...) {
   char buffer[512];  // Working staging buffer.
@@ -768,7 +768,7 @@ void Fancy_Text_Print(const char* text, unsigned x, unsigned y,
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void Conquer_Clip_Text_Print(const char* text, unsigned x, unsigned y,
+void Conquer_Clip_Text_Print(const char* text, int x, int y,
                              RemapControlType* fore, unsigned back,
                              TextPrintType flag, int width, const int* tabs) {
   char buffer[512];
@@ -783,7 +783,7 @@ void Conquer_Clip_Text_Print(const char* text, unsigned x, unsigned y,
     Simple_Text_Print(nullptr, 0, 0, nullptr, TBLACK, flag);
 
     char* source = &buffer[0];
-    unsigned offset = 0;
+    int offset = 0;
     int processing = true;
     while (processing && offset < width) {
       char* ptr = strchr(source, '\t');

@@ -43,6 +43,7 @@
 #include "tech/sha.h"
 
 #include <cstring>
+#include <iterator>
 
 #if !defined(__BORLANDC__) && !defined(min)
 #define min(a, b) ((a) < (b)) ? (a) : (b)
@@ -232,7 +233,9 @@ int SHAEngine::Result(void* result) const {
   Process_Block(&partial[0], acc);
 
   memcpy((char*)&FinalResult, &acc, sizeof(acc));
-  for (int index = 0; index < sizeof(FinalResult) / sizeof(uint32_t); index++) {
+  for (int index = 0;
+       index < static_cast<int>(sizeof(FinalResult) / sizeof(uint32_t));
+       index++) {
     //	for (int index = 0; index < SRC_BLOCK_SIZE/sizeof(long); index++) {
     (uint32_t&)FinalResult.Long[index] = Reverse_LONG(FinalResult.Long[index]);
   }
@@ -291,12 +294,12 @@ void SHAEngine::Process_Block(const void* source, SHADigest& acc) const {
   */
   const uint32_t* data = static_cast<const uint32_t*>(source);
   int index;
-  for (index = 0; index < SRC_BLOCK_SIZE / sizeof(uint32_t); index++) {
+  for (index = 0; index < static_cast<int>(SRC_BLOCK_SIZE / sizeof(uint32_t)); index++) {
     block[index] = Reverse_LONG(data[index]);
   }
 
   for (index = SRC_BLOCK_SIZE / sizeof(uint32_t);
-       index < PROC_BLOCK_SIZE / sizeof(uint32_t); index++) {
+       index < static_cast<int>(PROC_BLOCK_SIZE / sizeof(uint32_t)); index++) {
     //		block[index] = _rotl(block[(index-3)&15] ^ block[(index-8)&15] ^
     // block[(index-14)&15] ^ block[(index-16)&15], 1);
     block[index] = _rotl(block[index - 3] ^ block[index - 8] ^
@@ -310,7 +313,7 @@ void SHAEngine::Process_Block(const void* source, SHADigest& acc) const {
   *buffer.
   */
   SHADigest alt = acc;
-  for (index = 0; index < PROC_BLOCK_SIZE / sizeof(uint32_t); index++) {
+  for (index = 0; index < static_cast<int>(PROC_BLOCK_SIZE / sizeof(uint32_t)); index++) {
     uint32_t temp = _rotl(alt.Long[0], 5) +
                     Do_Function(index, alt.Long[1], alt.Long[2], alt.Long[3]) +
                     alt.Long[4] + block[index] + Get_Constant(index);

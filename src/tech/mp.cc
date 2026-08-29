@@ -2375,7 +2375,7 @@ bool XMP_Rabin_Miller_Test(Straw& rng, const uint32_t* w, int rounds,
       continue;  // passes this round
     }
 
-    int j;
+    unsigned j;
     for (j = 1; j < a; j++) {
       uint32_t t2[MAX_UNIT_PRECISION];
       xmp_exponent_mod(t2, z, temp, w, precision);

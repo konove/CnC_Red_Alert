@@ -346,7 +346,7 @@ void MapEditClass::Popup_Controls() {
   */
   owner = CurrentObject[0]->Owner();
   mission_index = 0;
-  for (i = 0; i < MapEditMissions.size(); i++) {
+  for (i = 0; i < static_cast<int>(MapEditMissions.size()); i++) {
     if (CurrentObject[0]->Get_Mission() == MapEditMissions[i]) {
       mission_index = i;
     }

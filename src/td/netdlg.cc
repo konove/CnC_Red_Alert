@@ -933,7 +933,7 @@ static int Net_Join_Dialog() {
   unsigned char min_id = 0;  // for sorting player ID's
   unsigned char id = 0;      // connection ID
   char* item;
-  unsigned long starttime;
+  int64_t starttime;
 
   NodeNameType* who;
 
@@ -1243,7 +1243,7 @@ static int Net_Join_Dialog() {
 
           p = Text_String(TXT_LEVEL);
           if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-            sprintf(txt, "%s %d", p, static_cast<int>(BuildLevel));
+            sprintf(txt, "%s %d", p, BuildLevel);
           } else {
             sprintf(txt, "%s **", p);
           }
@@ -1961,7 +1961,7 @@ static int Net_Join_Dialog() {
     ---------------------------------------------------------------------*/
     i = std::max<int>(Ipx.Global_Response_Time() * 2, 60);
     starttime = TickCount.Time();
-    while (TickCount.Time() - starttime < i) {
+    while (TickCount.Time() - starttime < static_cast<int64_t>(i)) {
       Ipx.Service();
     }
   }
@@ -3214,7 +3214,7 @@ static int Net_New_Dialog() {
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d", static_cast<int>(BuildLevel));
+          sprintf(txt, "%d", BuildLevel);
         } else {
           sprintf(txt, "**");
         }
@@ -3330,7 +3330,7 @@ static int Net_New_Dialog() {
                              d_level_y + 6 * factor, BLACK);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d", static_cast<int>(BuildLevel));
+          sprintf(txt, "%d", BuildLevel);
         } else {
           sprintf(txt, "**");
         }
@@ -4085,7 +4085,7 @@ unsigned long Compute_Name_CRC(char* name) {
   port::SafeCopy(buf, name);
   strupr(buf);
 
-  for (i = 0; i < strlen(buf); i++) {
+  for (i = 0; i < static_cast<int>(strlen(buf)); i++) {
     Add_CRC(&crc, static_cast<unsigned long>(buf[i]));
   }
 
@@ -4933,7 +4933,7 @@ static int Net_Fake_Join_Dialog() {
   unsigned char min_id = 0;  // for sorting player ID's
   unsigned char id = 0;      // connection ID
   char* item;
-  unsigned long starttime;
+  int64_t starttime;
 
   NodeNameType* who;
 
@@ -5474,7 +5474,7 @@ static int Net_Fake_Join_Dialog() {
     ---------------------------------------------------------------------*/
     i = std::max<int>(Ipx.Global_Response_Time() * 2, 120);
     starttime = TickCount.Time();
-    while (TickCount.Time() - starttime < i) {
+    while (TickCount.Time() - starttime < static_cast<int64_t>(i)) {
       Ipx.Service();
     }
   }

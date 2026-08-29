@@ -337,7 +337,7 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
 
     // mix into buffer
     auto* mix16 = (int16_t*)MixBuffer;
-    for (int s = 0; s < stream_len / sizeof(int16_t); s++) {
+    for (int s = 0; s < static_cast<int>(stream_len / sizeof(int16_t)); s++) {
       stream16[s] += (mix16[s] * chan.volume) >> 15;
     }
   }

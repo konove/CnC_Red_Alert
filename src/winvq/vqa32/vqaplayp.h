@@ -327,16 +327,16 @@ struct VQAAudio {
   std::vector<short> IsLoadedStorage;
   std::vector<unsigned char> TempBufStorage;
   unsigned char* Buffer = nullptr;  // Points into BufferStorage
-  unsigned long AudBufPos = 0;
+  long AudBufPos = 0;
   short* IsLoaded = nullptr;  // Points into IsLoadedStorage
-  unsigned long NumAudBlocks = 0;
-  unsigned long CurBlock = 0;
-  unsigned long NextBlock = 0;
+  long NumAudBlocks = 0;
+  long CurBlock = 0;
+  long NextBlock = 0;
   unsigned char* TempBuf = nullptr;  // Points into TempBufStorage
   unsigned long TempBufLen = 0;
   unsigned long TempBufSize = 0;
   unsigned long Flags = 0;
-  unsigned long PlayPosition = 0;
+  long PlayPosition = 0;
   unsigned long SamplesPlayed = 0;
   unsigned long NumSkipped = 0;
   unsigned short SampleRate = 0;

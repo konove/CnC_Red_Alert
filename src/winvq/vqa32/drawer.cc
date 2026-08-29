@@ -386,7 +386,7 @@ static long Select_Frame(VQAHandle* vqap) {
   VQAFrameNode* curframe;
   long desiredframe;
   // MEG 11.29.95 - changed from long to unsigned long
-  unsigned long curtime;
+  long curtime;
 
   /* Dereference commonly used data members for quicker access. */
   config = &vqap->config;

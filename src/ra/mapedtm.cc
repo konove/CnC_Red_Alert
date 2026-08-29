@@ -693,7 +693,7 @@ int MapEditClass::Team_Members(HousesType house) {
           Draw_Member(teamclass[i], i, teamcount[i], house);
         }
 
-        if ((unsigned)curclass < maxclasses) {
+        if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(teamclass[curclass]->Full_Name(),
                            D_DIALOG_X + D_DIALOG_W / 2, msg_y,
                            &ColorRemaps[PCOLOR_BROWN], TBLACK,
@@ -783,7 +783,7 @@ int MapEditClass::Team_Members(HousesType house) {
                                D_DIALOG_X + D_DIALOG_W - 64, msg_y + D_TXT6_H,
                                BLACK);
 
-          if ((unsigned)curclass < maxclasses) {
+          if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(teamclass[curclass]->Full_Name(),
                              D_DIALOG_X + D_DIALOG_W / 2, msg_y, scheme, TBLACK,
                              TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);

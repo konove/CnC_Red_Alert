@@ -94,6 +94,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include <iterator>
 
 /***********************************************************************************************
  * TriggerTypeClass::TriggerTypeClass -- Constructor for trigger class object. *
@@ -1004,7 +1005,7 @@ bool TriggerTypeClass::Edit() {
       BUTTON_PERSISTANCE, perstext, sizeof(perstext), TPF_EFNT | TPF_NOSHADOW,
       housebtn.X + housebtn.Width + 20, housebtn.Y, 105, 8 * 5,
       MFCD::Retrieve("EBTN-UP.SHP"), MFCD::Retrieve("EBTN-DN.SHP"));
-  for (i = 0; i < sizeof(_perstext) / sizeof(_perstext[0]); i++) {
+  for (i = 0; i < std::ssize(_perstext); i++) {
     persbtn.Add_Item(_perstext[i]);
   }
   persbtn.Set_Selected_Index(IsPersistant);

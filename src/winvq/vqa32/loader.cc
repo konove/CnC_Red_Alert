@@ -1055,7 +1055,7 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
    *-----------------------------------------------------------------------*/
   vqa->CBNodes.reserve(config->NumCBBufs);
 
-  for (size_t i = 0; i < config->NumCBBufs; i++) {
+  for (long i = 0; i < config->NumCBBufs; i++) {
     /* Allocate a codebook node using unique_ptr. */
     auto cbnode = std::make_unique<VQACBNode>();
 
@@ -1085,7 +1085,7 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
    *-----------------------------------------------------------------------*/
   vqa->FrameNodes.reserve(config->NumFrameBufs);
 
-  for (size_t i = 0; i < config->NumFrameBufs; i++) {
+  for (long i = 0; i < config->NumFrameBufs; i++) {
     /* Allocate a frame node using unique_ptr. */
     auto framenode = std::make_unique<VQAFrameNode>();
 
@@ -1993,7 +1993,7 @@ static long Load_SND0(VQAHandle* vqap, unsigned long iffsize) {
     audio->AudBufPos += iffsize;
 
     /* Flag the audio frame flags as loaded for the initial audio frame. */
-    for (i = 0; i < iffsize / config->HMIBufSize; i++) {
+    for (i = 0; i < static_cast<long>(iffsize) / config->HMIBufSize; i++) {
       audio->IsLoaded[i] = 1;
     }
 
@@ -2190,7 +2190,8 @@ static long Load_SND2(VQAHandle* vqap, unsigned long iffsize) {
     /* Set buffer positions & flags */
     audio->AudBufPos += uncomp_size;
 
-    for (i = 0; i < uncomp_size / config->HMIBufSize; i++) {
+    for (i = 0; i < static_cast<long>(uncomp_size) / config->HMIBufSize;
+         i++) {
       audio->IsLoaded[i] = 1;
     }
 

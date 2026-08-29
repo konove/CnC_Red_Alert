@@ -1862,7 +1862,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   .......................... Init credits buffers ..........................
   */
-  sprintf(level_buf, "%d", static_cast<int>(BuildLevel));
+  sprintf(level_buf, "%d", BuildLevel);
   leveledt.Set_Text(level_buf, 4);
 
   sprintf(gdicred_buf, "%ld", gdi_credits);

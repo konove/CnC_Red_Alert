@@ -1140,7 +1140,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   **	Decrement the counter for the team class. There is now one less of this
   *object type.
   */
-  if (static_cast<unsigned>(typeindex) < Class->ClassCount) {
+  if (static_cast<unsigned>(typeindex) < static_cast<unsigned>(Class->ClassCount)) {
     Quantity[typeindex]--;
   }
 

@@ -244,8 +244,8 @@ class IPXManagerClass : public ConnManClass {
   Routines to return the largest average queue response time, and to
   reset the response time for all queues.
   .....................................................................*/
-  unsigned long Response_Time() override;
-  unsigned long Global_Response_Time();
+  long Response_Time() override;
+  long Global_Response_Time();
   void Reset_Response_Time() override;
 
   /*.....................................................................

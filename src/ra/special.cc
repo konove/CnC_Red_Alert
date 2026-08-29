@@ -71,6 +71,7 @@
 #include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include <iterator>
 
 #define OPTION_WIDTH 236 * 2
 #define OPTION_HEIGHT 162 * 2
@@ -138,7 +139,7 @@ void Special_Dialog(bool simple) {
   buttons = &ok;
   cancel.Add(*buttons);
 
-  for (int index = 0; index < sizeof(_options) / sizeof(_options[0]); index++) {
+  for (int index = 0; index < std::ssize(_options); index++) {
     _options[index].Button = new CheckBoxClass(100 + index, OPTION_X + 34,
                                                OPTION_Y + 40 + index * 20);
     if (_options[index].Button) {
@@ -184,7 +185,7 @@ void Special_Dialog(bool simple) {
       Dialog_Box(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
       Draw_Caption(TXT_SPECIAL_OPTIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
 
-      for (int index = 0; index < sizeof(_options) / sizeof(_options[0]);
+      for (int index = 0; index < std::ssize(_options);
            index++) {
         Fancy_Text_Print(
             _options[index].Description, _options[index].Button->X + 20,
@@ -200,7 +201,7 @@ void Special_Dialog(bool simple) {
       case KN_ESC:
       case ButtonKey(200):
         process = false;
-        for (int index = 0; index < sizeof(_options) / sizeof(_options[0]);
+        for (int index = 0; index < std::ssize(_options);
              index++) {
           bool setting = _options[index].Setting;
           switch (_options[index].Description) {
@@ -294,7 +295,7 @@ void PWEditClass::Draw_Text(const char* text) {
     Conquer_Clip_Text_Print(buffer, X + 1, Y + 1, Color, TBLACK,
                             TextFlags | flags, Width - 2);
 
-    if (Has_Focus() && strlen(buffer) < MaxLength) {
+    if (Has_Focus() && static_cast<int>(strlen(buffer)) < MaxLength) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(buffer), Y + 1,
                               Color, TBLACK, TextFlags | flags);
     }
@@ -304,7 +305,7 @@ void PWEditClass::Draw_Text(const char* text) {
                                         : &ColorRemaps[PCOLOR_GREY],
                             TBLACK, TextFlags, Width - 2);
 
-    if (Has_Focus() && strlen(buffer) < MaxLength) {
+    if (Has_Focus() && static_cast<int>(strlen(buffer)) < MaxLength) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(buffer), Y + 1,
                               &ColorRemaps[PCOLOR_DIALOG_BLUE], TBLACK,
                               TextFlags);

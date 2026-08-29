@@ -21,7 +21,7 @@ void Draw_Caption(const char* text, int x, int y, int w);
 int Format_Window_String(char* string, int max_line_len, int& width,
                          int& height);
 extern void Dialog_Box(int x, int y, int w, int h);
-void Conquer_Clip_Text_Print(const char*, unsigned x, unsigned y,
+void Conquer_Clip_Text_Print(const char*, int x, int y,
                              RemapControlType* fore, unsigned back = TBLACK,
                              TextPrintType flag = static_cast<TextPrintType>(
                                  TPF_8POINT | TPF_DROPSHADOW),
@@ -37,12 +37,12 @@ void Conquer_Clip_Text_Print(const char*, unsigned x, unsigned y,
 void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled);
 int cdecl Dialog_Message(char* errormsg, ...);
 void Window_Box(WindowNumberType window, BoxStyleEnum style);
-void Fancy_Text_Print(const char* text, unsigned x, unsigned y,
+void Fancy_Text_Print(const char* text, int x, int y,
                       RemapControlType* fore, unsigned back, TextPrintType flag,
                       ...);
-void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType* fore,
+void Fancy_Text_Print(int text, int x, int y, RemapControlType* fore,
                       unsigned back, TextPrintType flag, ...);
-void Simple_Text_Print(const char* text, unsigned x, unsigned y,
+void Simple_Text_Print(const char* text, int x, int y,
                        RemapControlType* fore, unsigned back,
                        TextPrintType flag);
 void Plain_Text_Print(int text, unsigned x, unsigned y, unsigned fore,

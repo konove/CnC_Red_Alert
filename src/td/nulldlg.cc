@@ -3670,7 +3670,7 @@ int Com_Scenario_Dialog() {
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d ", static_cast<int>(BuildLevel));
+          sprintf(txt, "%d ", BuildLevel);
         } else {
           sprintf(txt, "**");
         }
@@ -4985,7 +4985,7 @@ int Com_Show_Scenario_Dialog() {
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-              sprintf(txt, "%d ", static_cast<int>(BuildLevel));
+              sprintf(txt, "%d ", BuildLevel);
             } else {
               sprintf(txt, "**");
             }

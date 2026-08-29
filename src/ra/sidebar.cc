@@ -1669,7 +1669,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       *current working *	slot. This shape pointer is used to draw the
       *underlying graphic there.
       */
-      if (static_cast<unsigned>(index) < BuildableCount) {
+      if (static_cast<unsigned>(index) < static_cast<unsigned>(BuildableCount)) {
         const ObjectTypeClass* obj = nullptr;
         SpecialWeaponType spc = SPC_NONE;
 

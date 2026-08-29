@@ -58,6 +58,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
+#include <iterator>
 
 /***********************************************************************************************
  * VisualControlsClass::Process -- Process the visual control dialog box. *
@@ -242,7 +243,7 @@ void VisualControlsClass::Process() {
       /*
       **	Draw the titles.
       */
-      for (int i = 0; i < sizeof(_titles) / sizeof(_titles[0]); i++) {
+      for (int i = 0; i < std::ssize(_titles); i++) {
         Fancy_Text_Print(_titles[i], slider_x - 16,
                          text_y + i * slider_y_spacing,
                          GadgetClass::Get_Color_Scheme(), TBLACK,

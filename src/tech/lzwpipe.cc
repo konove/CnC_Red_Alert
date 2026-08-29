@@ -134,9 +134,9 @@ int LZWPipe::Put(const void* source, int slen) {
       *the regular *	data processing begin for the block.
       */
       if (BlockHeader.CompCount == 0xFFFF) {
-        int len = slen < sizeof(BlockHeader) - Counter
-                      ? slen
-                      : sizeof(BlockHeader) - Counter;
+        const int needed =
+            static_cast<int>(sizeof(BlockHeader)) - Counter;
+        int len = slen < needed ? slen : needed;
         memmove(&source_buffer_[Counter], source, len);
         source = (char*)source + len;
         slen -= len;

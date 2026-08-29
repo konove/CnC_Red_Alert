@@ -129,7 +129,7 @@ void SmudgeClass::operator delete(void* ptr) {
  *=============================================================================================*/
 SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
     : ObjectClass(RTTI_SMUDGE, Smudges.ID(this)), Class(SmudgeTypes.Ptr(type)) {
-  if (pos != -1) {
+  if (pos != ~0U) {
     ToOwn = house;
     if (!Unlimbo(pos)) {
       delete this;

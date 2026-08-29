@@ -3553,7 +3553,8 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             **	formation offset, then it can't be a formation move.
             */
             const FootClass* foot = (FootClass*)tobject;
-            if (foot->Group != group || foot->XFormOffset == 0x80000000) {
+            if (foot->Group != group ||
+            foot->XFormOffset == static_cast<int>(0x80000000)) {
               FormMove = false;
               break;
             }

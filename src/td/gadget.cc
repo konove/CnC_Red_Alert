@@ -190,8 +190,8 @@ int GadgetClass::Clicked_On(KeyNumType& key, unsigned flags, int mousex,
   *typical action for *	buttons.
   */
   if (this == StuckOn || flags & KEYBOARD ||
-      (flags && static_cast<unsigned>(mousex - X) < Width &&
-       static_cast<unsigned>(mousey - Y) < Height)) {
+      (flags && static_cast<unsigned>(mousex - X) < static_cast<unsigned>(Width) &&
+       static_cast<unsigned>(mousey - Y) < static_cast<unsigned>(Height))) {
     return Action(flags, key);
   }
   return false;

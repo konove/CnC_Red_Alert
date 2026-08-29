@@ -111,8 +111,8 @@ int BlowPipe::Put(const void* source, int slen) {
   **	can be skipped if there are no pending bytes in the buffer.
   */
   if (Counter) {
-    int sublen =
-        sizeof(Buffer) - Counter < slen ? sizeof(Buffer) - Counter : slen;
+    const int room = static_cast<int>(sizeof(Buffer)) - Counter;
+    int sublen = room < slen ? room : slen;
     memmove(&Buffer[Counter], source, sublen);
     Counter += sublen;
     source = (char*)source + sublen;
@@ -133,7 +133,7 @@ int BlowPipe::Put(const void* source, int slen) {
   **	Process the input data in blocks until there is not enough
   **	source data to fill a full block of data.
   */
-  while (slen >= sizeof(Buffer)) {
+  while (slen >= static_cast<int>(sizeof(Buffer))) {
     if (Control == DECRYPT) {
       BF->Decrypt(source, sizeof(Buffer), Buffer);
     } else {

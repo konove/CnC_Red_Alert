@@ -53,6 +53,7 @@
 #include "td/special.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include <iterator>
 
 int Modify_Damage(int damage, WarheadType warhead, ArmorType armor);
 
@@ -194,13 +195,13 @@ void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass* source,
       if (!object->IsToDamage && object != source) {
         object->IsToDamage = true;
         objects[count++] = object;
-        if (count >= sizeof(objects) / sizeof(objects[0])) {
+        if (count >= std::ssize(objects)) {
           break;
         }
       }
       object = object->Next;
     }
-    if (count >= sizeof(objects) / sizeof(objects[0])) {
+    if (count >= std::ssize(objects)) {
       break;
     }
   }

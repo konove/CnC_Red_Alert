@@ -127,6 +127,7 @@
 #include "td/unit.h"
 #include "td/utracker.h"
 #include "td/vector.h"
+#include <iterator>
 
 // #define FIXUP 0
 
@@ -478,7 +479,7 @@ void CellClass::Redraw_Objects(bool forced) {
     /*
     **	Flag any overlapping object in this cell to be redrawn.
     */
-    for (int index = 0; index < sizeof(Overlappers) / sizeof(Overlappers[0]);
+    for (int index = 0; index < std::ssize(Overlappers);
          index++) {
       if (Overlappers[index]) {
         if (!Overlappers[index]->IsActive) {
@@ -782,7 +783,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   if (!object) {
     return;
   }
-  for (int index = 0; index < sizeof(Overlappers) / sizeof(Overlappers[0]);
+  for (int index = 0; index < std::ssize(Overlappers);
        index++) {
     if (Overlappers[index] == object) {
       return;
@@ -797,7 +798,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   *somebody *	else out in this case.
   */
   if (!ptr && object->What_Am_I() == RTTI_BUILDING) {
-    for (int index = 0; index < sizeof(Overlappers) / sizeof(Overlappers[0]);
+    for (int index = 0; index < std::ssize(Overlappers);
          index++) {
       switch (Overlappers[index]->What_Am_I()) {
         case RTTI_BUILDING:
@@ -840,7 +841,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
  *=============================================================================================*/
 void CellClass::Overlap_Up(ObjectClass* object) {
   Validate();
-  for (int index = 0; index < sizeof(Overlappers) / sizeof(Overlappers[0]);
+  for (int index = 0; index < std::ssize(Overlappers);
        index++) {
     if (Overlappers[index] == object) {
       Overlappers[index] = nullptr;
@@ -1231,7 +1232,7 @@ void CellClass::Concrete_Calc() {
   **	depends on whether this is for an even or odd column.
   */
   index = 0;
-  for (int i = 0; i < sizeof(_even) / sizeof(_even[0]); i++) {
+  for (int i = 0; i < std::ssize(_even); i++) {
     CellClass& cellptr = Adjacent_Cell(*ptr++);
 
     //		if ((cellptr->IsConcrete) ||

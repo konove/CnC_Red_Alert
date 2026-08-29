@@ -572,7 +572,7 @@ void CCDebugString(const char* string) {
 // void  IPXManagerClass::Set_Bridge( char unsigned  * ){}
 // int  IPXManagerClass::Global_Num_Send() { return (0); }
 // void  IPXManagerClass::Set_Timing( long unsigned, long unsigned, long
-// unsigned ){} unsigned long IPXManagerClass::Global_Response_Time() { return
+// unsigned ){} long IPXManagerClass::Global_Response_Time() { return
 // (0); } int  IPXManagerClass::Create_Connection( int, char  *, IPXAddressClass
 // * ) { return (0); } int  IPXAddressClass::operator !=( IPXAddressClass  & ) {
 // return (0); } int  IPXManagerClass::Send_Private_Message( void  *, int, int,

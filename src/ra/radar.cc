@@ -999,8 +999,8 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
   */
   x = Cell_X(cell) - RadarX;
   y = Cell_Y(cell) - RadarY;
-  if (static_cast<unsigned>(x) >= RadarCellWidth ||
-      static_cast<unsigned>(y) >= RadarCellHeight) {
+  if (static_cast<unsigned>(x) >= static_cast<unsigned>(RadarCellWidth) ||
+      static_cast<unsigned>(y) >= static_cast<unsigned>(RadarCellHeight)) {
     return;
   }
 
@@ -1153,13 +1153,15 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) const {
 
   x -= RadX + RadOffX;
   y -= RadY + RadOffY;
-  if (static_cast<unsigned>(x) < RadIWidth &&
-      static_cast<unsigned>(y) < RadIHeight) {
+  if (static_cast<unsigned>(x) < static_cast<unsigned>(RadIWidth) &&
+      static_cast<unsigned>(y) < static_cast<unsigned>(RadIHeight)) {
     x -= BaseX;
     y -= BaseY;
 
-    if (static_cast<unsigned>(x) < RadarWidth + (ZoomFactor - 1) &&
-        static_cast<unsigned>(y) < RadarHeight + (ZoomFactor - 1)) {
+    if (static_cast<unsigned>(x) <
+            static_cast<unsigned>(RadarWidth + (ZoomFactor - 1)) &&
+        static_cast<unsigned>(y) <
+            static_cast<unsigned>(RadarHeight + (ZoomFactor - 1))) {
       //		if ((unsigned)x < RadarWidth && (unsigned)y <
       // RadarHeight) {
       x = RadarX + x / ZoomFactor;
@@ -2262,7 +2264,7 @@ bool RadarClass::Draw_House_Info() {
     y += 12 + 1;
 
     // count & print buildings
-    snprintf(txt, sizeof(txt), "%i", static_cast<int>(ptr->CurBuildings));
+    snprintf(txt, sizeof(txt), "%i", ptr->CurBuildings);
     Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
     y += 12 + 1;
@@ -2282,7 +2284,7 @@ bool RadarClass::Draw_House_Info() {
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print infantry
-    snprintf(txt, sizeof(txt), "%i", static_cast<int>(ptr->CurInfantry));
+    snprintf(txt, sizeof(txt), "%i", ptr->CurInfantry);
     Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
 #if (0)

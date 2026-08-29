@@ -96,8 +96,8 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
   **	offset direction that is bigger (X or Y) will indicate which
   **	orthogonal direction the facing is closer to.
   */
-  unsigned bigger;
-  unsigned smaller;
+  int bigger;
+  int smaller;
   if (xdiff < ydiff) {
     smaller = xdiff;
     bigger = ydiff;
@@ -188,8 +188,8 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   **	offset direction that is bigger (X or Y) will indicate which
   **	orthogonal direction the facing is closer to.
   */
-  unsigned bigger;
-  unsigned smaller;
+  int bigger;
+  int smaller;
   if (xdiff < ydiff) {
     smaller = xdiff;
     bigger = ydiff;

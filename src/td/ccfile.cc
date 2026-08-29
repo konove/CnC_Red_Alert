@@ -66,6 +66,7 @@
 #include "td/jshell.h"
 #include "tech/cdfile.h"
 #include "tech/mixfile.h"
+#include <iterator>
 // #include	<share.h>
 // #include	"ccfile.h"
 
@@ -481,7 +482,7 @@ bool __cdecl Set_Search_Drives(const char*) {
 #endif
 
 int __cdecl Open_File(const char* file_name, FileAccess mode) {
-  for (int index = 0; index < sizeof(Handles) / sizeof(Handles[0]); index++) {
+  for (int index = 0; index < std::ssize(Handles); index++) {
     if (!Handles[index].Is_Open()) {
       Handles[index].Set_Name(file_name);
       if (Handles[index].Open(mode)) {

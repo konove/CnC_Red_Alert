@@ -62,9 +62,9 @@ This is one output queue entry
 typedef struct {
   unsigned int IsActive : 1;  // 1 = this entry is ready to be processed
   unsigned int IsACK : 1;     // 1 = ACK received for this packet
-  unsigned long FirstTime;    // time this packet was first sent
-  unsigned long LastTime;     // time this packet was last sent
-  unsigned long SendCount;    // # of times this packet has been sent
+  long FirstTime;    // time this packet was first sent
+  long LastTime;     // time this packet was last sent
+  long SendCount;    // # of times this packet has been sent
   int BufLen;                 // size of the packet stored in this entry
   char* Buffer;               // the data packet
   int ExtraLen;               // size of extra data

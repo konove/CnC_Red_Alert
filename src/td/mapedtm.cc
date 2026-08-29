@@ -1772,7 +1772,7 @@ int MapEditClass::Team_Members(HousesType house) {
                       dlg_picture_top);
         }
 
-        if ((unsigned)curclass < maxclasses) {
+        if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(
               teamclass[curclass]->Full_Name(), D_DIALOG_X + D_DIALOG_W / 2,
               msg_y, CC_TAN, TBLACK,
@@ -1862,7 +1862,7 @@ int MapEditClass::Team_Members(HousesType house) {
                                D_DIALOG_X + D_DIALOG_W - 9, msg_y + D_TXT6_H,
                                BLACK);
 
-          if ((unsigned)curclass < maxclasses) {
+          if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(
                 teamclass[curclass]->Full_Name(), D_DIALOG_X + D_DIALOG_W / 2,
                 msg_y, CC_GREEN, TBLACK,

@@ -207,7 +207,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   bool use_all_flags = false;
 
   if (use_new_draw &&
-      (header_pointer->draw_flags == -1 ||
+      (header_pointer->draw_flags == ~0U ||
        header_pointer->draw_flags != (flags & SHAPE_TRANS | SHAPE_FADING |
                                       SHAPE_PREDATOR | SHAPE_GHOST))) {
     Setup_Shape_Header(w, h, static_cast<char*>(src), header_pointer, flags,

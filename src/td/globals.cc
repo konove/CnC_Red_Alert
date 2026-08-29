@@ -338,7 +338,7 @@ SpecialClass Special;
 ** These variables should all be set together.
 */
 HousesType Whom;                           // Initial command line house choice.
-unsigned Scenario;                         // Scenario #
+int Scenario;                              // Scenario #
 ScenarioPlayerType ScenPlayer;             // GDI, NOD, 2-Player, Multi-Player
 ScenarioDirType ScenDir;                   // East/West
 ScenarioVarType ScenVar;                   // variation A/B/C
@@ -353,7 +353,7 @@ bool SpecialFlag = false;
 ** This value tells the sidebar what items it's allowed to add.  The
 ** lower the value, the simpler the sidebar will be.
 */
-unsigned BuildLevel = 3;  // Buildable level (1 = simplest)
+int BuildLevel = 3;       // Buildable level (1 = simplest)
 
 /***************************************************************************
 ** This value is computed every time a new scenario is loaded; it's a
@@ -578,7 +578,7 @@ unsigned long MPlayerMaxAhead = 3;
 'FrameSendRate' is the # frames between data packets
 'FrameRateDelay' is the time ticks to wait between frames, for smoothing.
 ---------------------------------------------------------------------------*/
-unsigned long FrameSendRate;
+long FrameSendRate;
 
 /***************************************************************************
 **	Multiplayer ID's, stored in order of event execution.

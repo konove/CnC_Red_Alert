@@ -1244,7 +1244,8 @@ void BuildingClass::AI() {
     if (Scenario > 10) {
       ratio = 0x00C0;
     }
-    if (Class->IsRepairable && Health_Ratio() <= ratio) {
+    if (Class->IsRepairable &&
+            Health_Ratio() <= static_cast<unsigned>(ratio)) {
       if (House->Available_Money() >= REPAIR_THRESHHOLD) {
         Repair(1);
       } else {

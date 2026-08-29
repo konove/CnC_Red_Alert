@@ -1369,8 +1369,7 @@ void MapClass::Logic() {
         *cell value to *	the list.
         */
         if (Random_Pick(0, TiberiumGrowthExcess) <= TiberiumGrowthCount) {
-          if (TiberiumGrowthCount <
-              sizeof(TiberiumGrowth) / sizeof(TiberiumGrowth[0])) {
+          if (TiberiumGrowthCount < std::ssize(TiberiumGrowth)) {
             TiberiumGrowth[TiberiumGrowthCount++] = cell;
           } else {
             TiberiumGrowth[Random_Pick(0, TiberiumGrowthCount - 1)] = cell;
@@ -1712,7 +1711,7 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
                            MAP_CELL_W + 1,
                            -(MAP_CELL_W - 1),
                            -(MAP_CELL_W + 1)};
-  for (int index = 0; index < sizeof(_offsets) / sizeof(_offsets[0]); index++) {
+  for (int index = 0; index < std::ssize(_offsets); index++) {
     /*
     **	Examine the cell for close object. Make sure that the cell actually is a
     **	legal one.

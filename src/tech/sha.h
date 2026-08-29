@@ -93,14 +93,17 @@ class SHAEngine {
     K1 = 0x5a827999L,  // t=0..19		2^(1/2)/4
     K2 = 0x6ed9eba1L,  // t=20..39		3^(1/2)/4
     K3 = 0x8f1bbcdcL,  // t=40..59		5^(1/2)/4
-    K4 = 0xca62c1d6L,  // t=60..79		10^(1/2)/4
-
-    // Source data is grouped into blocks of this size.
-    SRC_BLOCK_SIZE = 16 * sizeof(uint32_t),
-
-    // Internal processing data is grouped into blocks this size.
-    PROC_BLOCK_SIZE = 80 * sizeof(uint32_t)
+    K4 = 0xca62c1d6L  // t=60..79		10^(1/2)/4
   };
+
+  // Source data is grouped into blocks of this size. Sizes are constexpr int
+  // rather than enumerators: sizeof() makes an enumerator unsigned, which turns
+  // every comparison against an int index into a sign mismatch.
+  static constexpr int SRC_BLOCK_SIZE = 16 * static_cast<int>(sizeof(uint32_t));
+
+  // Internal processing data is grouped into blocks this size.
+  static constexpr int PROC_BLOCK_SIZE =
+      80 * static_cast<int>(sizeof(uint32_t));
 
   uint32_t Get_Constant(int index) const {
     if (index < 20) {

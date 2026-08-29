@@ -211,6 +211,7 @@ bool Force_Scenario_Available(const char* szName);
 #if WOLAPI_INTEGRATION
 #include "WolStrng.h"
 #include "WolapiOb.h"
+#include <iterator>
 extern WolapiObject* pWolapi;
 #endif
 
@@ -1566,7 +1567,7 @@ static int Net_Join_Dialog() {
       0;  // Flag that we dont know the scenario name yet
 
   char* item;
-  unsigned long starttime;
+  int64_t starttime;
   int load_game = 0;  // 1 = load saved game
   int goto_lobby;
   bool messages_have_focus = true;  // Gadget focus starts on the message system
@@ -2988,9 +2989,9 @@ static int Net_Join_Dialog() {
     //	a chance to get to the other system.  If he doesn't get our ACK,
     // he'll be waiting the whole time we load MIX files.
     //.....................................................................
-    int i = std::max(Ipx.Global_Response_Time() * 2, 60ul);
+    int i = std::max(Ipx.Global_Response_Time() * 2, 60L);
     starttime = TickCount.Value();
-    while (TickCount.Value() - starttime < i) {
+    while (TickCount.Value() - starttime < static_cast<int64_t>(i)) {
       Ipx.Service();
     }
   }
@@ -3002,7 +3003,7 @@ static int Net_Join_Dialog() {
   //	Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   //		Ipx.Global_Response_Time() * 4);
   Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, static_cast<unsigned long>(-1),
-                 std::max(120ul, Ipx.Global_Response_Time() * 8));
+                 std::max(120L, Ipx.Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
   //	Clear all lists, but NOT the Games & Players vectors.
@@ -4761,7 +4762,7 @@ static int Net_New_Dialog() {
         //	an OK; force a wait longer than 1 second (to give all players
         //	a chance to know about this new guy)
         //...............................................................
-        i = std::max(Ipx.Global_Response_Time() * 2, 60ul);
+        i = std::max(Ipx.Global_Response_Time() * 2, 60L);
         while (TickCount.Value() - ok_timer < i) {
           Ipx.Service();
         }
@@ -5174,7 +5175,7 @@ static int Net_New_Dialog() {
   // Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   // Ipx.Global_Response_Time() * 4);
   Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, static_cast<unsigned long>(-1),
-                 std::max(120ul, Ipx.Global_Response_Time() * 8));
+                 std::max(120L, Ipx.Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
   //	Clear all lists, but NOT the Games or Players vectors.
@@ -5558,7 +5559,7 @@ uint32_t Compute_Name_CRC(char* name) {
   port::SafeCopy(buf, name);
   strupr(buf);
 
-  for (i = 0; i < strlen(buf); i++) {
+  for (i = 0; i < static_cast<int>(strlen(buf)); i++) {
     Add_CRC(&crc, static_cast<uint32_t>(buf[i]));
   }
 
@@ -7289,7 +7290,7 @@ void Start_WWChat(ColorListClass* playerlist) {
   //------------------------------------------------------------------------
   // Add everyone else to the list
   //------------------------------------------------------------------------
-  for (i = 0; i < sizeof(WWPersons) / sizeof(struct WWPerson); i++) {
+  for (i = 0; i < std::ssize(WWPersons); i++) {
     //.....................................................................
     // Add the 1st entry to the list no matter what; for entries after the
     // 1st, only add the name if it's different from the previous name.
@@ -8153,7 +8154,7 @@ static int Net_Fake_New_Dialog() {
   //.....................................................................
   i = std::max<int>(Ipx.Global_Response_Time() * 2, 60 * 2);
   int starttime = TickCount.Value();
-  while (TickCount.Value() - starttime < i) {
+  while (TickCount.Value() - starttime < static_cast<int64_t>(i)) {
     Ipx.Service();
   }
 
@@ -8164,7 +8165,7 @@ static int Net_Fake_New_Dialog() {
   // Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   //	Ipx.Global_Response_Time() * 4);
   Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, static_cast<unsigned long>(-1),
-                 std::max(120ul, Ipx.Global_Response_Time() * 8));
+                 std::max(120L, Ipx.Global_Response_Time() * 8));
 
   Clear_Listbox(&playerlist);
 
@@ -8368,7 +8369,7 @@ static int Net_Fake_Join_Dialog() {
   Format_Window_String((char*)TXT_HACKHACK, SeenBuff.Get_Height(), width,
                        height);
   char* item;
-  unsigned long starttime;
+  int64_t starttime;
   int load_game = 0;  // 1 = load saved game
 
   //------------------------------------------------------------------------
@@ -9002,7 +9003,7 @@ static int Net_Fake_Join_Dialog() {
     //.....................................................................
     i = std::max<int>(Ipx.Global_Response_Time() * 2, 60 * 2);
     starttime = TickCount.Value();
-    while (TickCount.Value() - starttime < i) {
+    while (TickCount.Value() - starttime < static_cast<int64_t>(i)) {
       Ipx.Service();
     }
   }
@@ -9014,7 +9015,7 @@ static int Net_Fake_Join_Dialog() {
   // Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   //	Ipx.Global_Response_Time() * 4);
   Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, static_cast<unsigned long>(-1),
-                 std::max(120ul, Ipx.Global_Response_Time() * 8));
+                 std::max(120L, Ipx.Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
   //	Clear all lists, but NOT the Games & Players vectors.

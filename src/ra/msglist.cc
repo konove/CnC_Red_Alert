@@ -368,7 +368,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
     } else {
       mess_start = 0;
     }
-    for (int i = 1; i < strlen(txt); i++) {
+    for (int i = 1; i < static_cast<int>(strlen(txt)); i++) {
       strncpy(&temp[mess_start], txt, i);
       temp[mess_start + i] = 0;
       wid = String_Pixel_Width(temp);
@@ -617,7 +617,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   //------------------------------------------------------------------------
   // If there's room enough in the message, just add the given string
   //------------------------------------------------------------------------
-  if (strlen(msg) + strlen(txt) < MaxChars) {
+  if (static_cast<int>(strlen(msg)) + static_cast<int>(strlen(txt)) < MaxChars) {
     //---------------------------------------------------------------------
     // We need to trim the message if there is no room to draw it
     //---------------------------------------------------------------------

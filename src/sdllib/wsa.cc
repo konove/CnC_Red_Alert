@@ -880,7 +880,7 @@ static bool Apply_Delta(SysAnimHeaderType* sys_header, int curr_frame,
         delta_back, sys_header->largest_frame_size - frame_data_size));
 
     if (Read_File(file_handle, delta_back, frame_data_size) !=
-        frame_data_size) {
+        static_cast<int>(frame_data_size)) {
       return false;
     }
   }

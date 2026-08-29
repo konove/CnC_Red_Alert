@@ -581,7 +581,7 @@ class SessionClass {
   // 'FrameSendRate' is the # frames between data packets
   //.....................................................................
   unsigned long MaxAhead;
-  unsigned long FrameSendRate;
+  long FrameSendRate;
 
   int DesiredFrameRate;
 

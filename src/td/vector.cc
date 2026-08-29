@@ -77,7 +77,7 @@
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-VectorClass<T>::VectorClass(unsigned size, const T* array) {
+VectorClass<T>::VectorClass(base::ssize size, const T* array) {
   Vector = nullptr;
   VectorMax = size;
   IsAllocated = false;
@@ -146,7 +146,7 @@ void VectorClass<T>::Copy_From(const VectorClass<T>& vector) {
     Vector = new T[VectorMax];
     if (Vector) {
       IsAllocated = true;
-      for (int index = 0; index < VectorMax; index++) {
+      for (unsigned index = 0; index < VectorMax; index++) {
         Vector[index] = vector[index];
       }
     }
@@ -199,7 +199,7 @@ VectorClass<T>& VectorClass<T>::operator=(const VectorClass<T>& vector) {
 template <class T>
 int VectorClass<T>::operator==(const VectorClass<T>& vector) const {
   if (VectorMax == vector.Length()) {
-    for (int index = 0; index < VectorMax; index++) {
+    for (unsigned index = 0; index < VectorMax; index++) {
       if (Vector[index] != vector[index]) {
         return false;
       }
@@ -254,7 +254,7 @@ int VectorClass<T>::ID(const T* ptr) {
  *=============================================================================================*/
 template <class T>
 int VectorClass<T>::ID(const T& object) {
-  for (int index = 0; index < VectorMax; index++) {
+  for (unsigned index = 0; index < VectorMax; index++) {
     if ((*this)[index] == object) {
       return index;
     }
@@ -309,7 +309,7 @@ void VectorClass<T>::Clear() {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int VectorClass<T>::Resize(unsigned newsize, const T* array) {
+int VectorClass<T>::Resize(base::ssize newsize, const T* array) {
   if (newsize) {
     /*
     **	Allocate a new vector of the size specified. The default constructor
@@ -406,7 +406,7 @@ template class VectorClass<unsigned char>;
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-DynamicVectorClass<T>::DynamicVectorClass(unsigned size, const T* array)
+DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, const T* array)
     : VectorClass<T>(size, array) {
   GrowthStep = 10;
   ActiveCount = 0;
@@ -433,7 +433,7 @@ DynamicVectorClass<T>::DynamicVectorClass(unsigned size, const T* array)
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int DynamicVectorClass<T>::Resize(unsigned newsize, const T* array) {
+int DynamicVectorClass<T>::Resize(base::ssize newsize, const T* array) {
   if (VectorClass<T>::Resize(newsize, array)) {
     if (this->Length() < ActiveCount) {
       ActiveCount = this->Length();
@@ -463,7 +463,7 @@ int DynamicVectorClass<T>::Resize(unsigned newsize, const T* array) {
  *=============================================================================================*/
 template <class T>
 int DynamicVectorClass<T>::ID(const T& ptr) {
-  for (size_t index = 0; index < Count(); index++) {
+  for (base::ssize index = 0; index < Count(); index++) {
     if ((*this)[index] == ptr) {
       return index;
     }

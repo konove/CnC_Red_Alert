@@ -64,7 +64,7 @@ class MPlayerManClass : public ConnManClass {
 
   // timing magnagement
   void Reset_Response_Time() override;
-  unsigned long Response_Time() override;
+  long Response_Time() override;
   void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
                   unsigned long timeout) override;
 

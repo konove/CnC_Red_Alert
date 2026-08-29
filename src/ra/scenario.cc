@@ -614,7 +614,7 @@ void Fill_In_Data() {
   */
   int x, y;
   for (x = Map.MapCellX - 1;
-       x < static_cast<unsigned>(Map.MapCellX + Map.MapCellWidth + 1); x++) {
+       x < Map.MapCellX + Map.MapCellWidth + 1; x++) {
     Map[XY_Cell(x, Map.MapCellY - 1)].IsVisible =
         Map[XY_Cell(x, Map.MapCellY - 1)].IsMapped = true;
 

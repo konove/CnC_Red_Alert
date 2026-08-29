@@ -961,13 +961,13 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) {
 
   x -= RadX + RadOffX;
   y -= RadY + RadOffY;
-  if (static_cast<unsigned>(x) < RadIWidth &&
-      static_cast<unsigned>(y) < RadIHeight) {
+  if (static_cast<unsigned>(x) < static_cast<unsigned>(RadIWidth) &&
+      static_cast<unsigned>(y) < static_cast<unsigned>(RadIHeight)) {
     x -= BaseX;
     y -= BaseY;
 
-    if (static_cast<unsigned>(x) < RadarWidth &&
-        static_cast<unsigned>(y) < RadarHeight) {
+    if (static_cast<unsigned>(x) < static_cast<unsigned>(RadarWidth) &&
+        static_cast<unsigned>(y) < static_cast<unsigned>(RadarHeight)) {
       x = RadarX + x / ZoomFactor;
       y = RadarY + y / ZoomFactor;
       if (change) {
@@ -1820,8 +1820,8 @@ bool RadarClass::Cell_On_Radar(CELL cell) {
 
   int x = Cell_X(cell) - RadarX;
   int y = Cell_Y(cell) - RadarY;
-  return static_cast<unsigned>(x) < RadarCellWidth &&
-         static_cast<unsigned>(y) < RadarCellHeight;
+  return static_cast<unsigned>(x) < static_cast<unsigned>(RadarCellWidth) &&
+         static_cast<unsigned>(y) < static_cast<unsigned>(RadarCellHeight);
 
   //	if (!IsZoomed) {
   //		return(true);

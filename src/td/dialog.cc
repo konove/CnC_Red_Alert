@@ -323,7 +323,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
  * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
-void Simple_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
+void Simple_Text_Print(const char* text, int x, int y, unsigned fore,
                        unsigned back, TextPrintType flag) {
   static int yspace = 0;       // Y spacing adjustment for font.
   static int xspace = 0;       // Spacing adjustment for font.
@@ -385,7 +385,7 @@ void Simple_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
     tempstr = new char[strlen(text) + 1];
     char* tempptr = tempstr;
 
-    for (int i = 0; i < strlen(text) + 1; i++) {
+    for (int i = 0; i < static_cast<int>(strlen(text)) + 1; i++) {
       if (text[i] != -1) {
         *tempptr = text[i];
         tempptr++;
@@ -593,7 +593,7 @@ void Simple_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
  *                                                                                             *
  * HISTORY: * 11/29/1994 JLB : Created *
  *=============================================================================================*/
-void Fancy_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
+void Fancy_Text_Print(int text, int x, int y, unsigned fore,
                       unsigned back, TextPrintType flag, ...) {
   char buffer[512];  // Working staging buffer.
   va_list arg;       // Argument list var.
@@ -652,7 +652,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
  *spacing in a more friendly manner.                        * 11/29/1994 JLB :
  *Separated actual draw action.                                            *
  *=============================================================================================*/
-void Fancy_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
+void Fancy_Text_Print(const char* text, int x, int y, unsigned fore,
                       unsigned back, TextPrintType flag, ...) {
   char buffer[512];  // Working staging buffer.
   va_list arg;       // Argument list var.
@@ -715,9 +715,9 @@ void Fancy_Text_Print(const char* text, unsigned x, unsigned y, unsigned fore,
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void Conquer_Clip_Text_Print(const char* text, unsigned x, unsigned y,
-                             unsigned fore, unsigned back, TextPrintType flag,
-                             unsigned width, const int* tabs) {
+void Conquer_Clip_Text_Print(const char* text, int x, int y, unsigned fore,
+                             unsigned back, TextPrintType flag, int width,
+                             const int* tabs) {
   char buffer[512];
 
   if (text) {
@@ -730,7 +730,7 @@ void Conquer_Clip_Text_Print(const char* text, unsigned x, unsigned y,
     Simple_Text_Print(nullptr, 0, 0, TBLACK, TBLACK, flag);
 
     char* source = &buffer[0];
-    unsigned offset = 0;
+    int offset = 0;
     int processing = true;
     while (processing && offset < width) {
       char* ptr = strchr(source, '\t');

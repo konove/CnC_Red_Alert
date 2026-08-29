@@ -1507,7 +1507,7 @@ void IPXManagerClass::Set_Socket(unsigned short socket) {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long IPXManagerClass::Response_Time() {
+long IPXManagerClass::Response_Time() {
   unsigned long resp;
   unsigned long maxresp = 0;
   int i;
@@ -1547,7 +1547,7 @@ unsigned long IPXManagerClass::Response_Time() {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long IPXManagerClass::Global_Response_Time() {
+long IPXManagerClass::Global_Response_Time() {
   if (GlobalChannel) {
     return GlobalChannel->Queue->Avg_Response_Time();
   }

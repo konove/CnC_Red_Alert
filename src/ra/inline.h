@@ -862,7 +862,7 @@ inline FacingType Dir_To_8(DirType facing) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline const char* Text_String(int index) {
-  if (index < 0 && -index < std::size(NameOverride)) {
+  if (index < 0 && -index < std::ssize(NameOverride)) {
     return NameOverride[-index - 1];
   }
 

@@ -494,7 +494,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   /*
   **	The tech level that this object can be produced at.
   */
-  unsigned Level;
+  int Level;
 
   /*
   **	This specifies the building prerequisites required before an object

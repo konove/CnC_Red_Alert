@@ -944,7 +944,7 @@ void FootClass::Approach_Target() {
         static int _angles[] = {0,  8,   -8, 16,  -16, 24, -24,
                                 32, -32, 48, -48, 64,  -64};
 
-        for (int index = 0; index < sizeof(_angles) / sizeof(_angles[0]);
+        for (int index = 0; index < std::ssize(_angles);
              index++) {
           trycoord = Coord_Move(tcoord, dir + _angles[index], range);
 

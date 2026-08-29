@@ -151,7 +151,7 @@ inline bool XMP_Is_Negative(const uint32_t* r, int precision) {
 }
 
 inline bool XMP_Test_Eq_Int(const uint32_t* r, int i, int p) {
-  return *r == i && XMP_Significance(r, p) <= 1;
+  return *r == static_cast<uint32_t>(i) && XMP_Significance(r, p) <= 1;
 }
 
 inline void XMP_Set_Bit(uint32_t* r, unsigned bit) {

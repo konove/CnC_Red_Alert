@@ -102,7 +102,7 @@ const char* DropListClass::Current_Item() { return List.Current_Item(); }
 int DropListClass::Current_Index() { return List.Current_Index(); }
 
 void DropListClass::Set_Selected_Index(int index) {
-  if (static_cast<unsigned>(index) < List.Count()) {
+  if (static_cast<unsigned>(index) < static_cast<unsigned>(List.Count())) {
     List.Set_Selected_Index(index);
     port::SafeCopy(String, List.Get_Item(Current_Index()), MaxLength);
   } else {

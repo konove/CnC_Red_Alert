@@ -79,6 +79,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/theme.h"
+#include <iterator>
 
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
   int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
@@ -145,7 +146,7 @@ void GameOptionsClass::Process() {
   int maxwidth = 0;
   int resfactor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
-  for (int index = 0; index < sizeof(_constants) / sizeof(_constants[0]);
+  for (int index = 0; index < std::ssize(_constants);
        index++) {
     int text = _constants[index].Text;
     buttonsel[index] = nullptr;

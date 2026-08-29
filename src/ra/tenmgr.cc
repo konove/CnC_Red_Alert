@@ -814,7 +814,7 @@ void TenConnManClass::Reset_Response_Time() {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long TenConnManClass::Response_Time() {
+long TenConnManClass::Response_Time() {
   return ((Session.NetResponseTime * 60) / 1000);  // 300 milliseconds one way
 
 }  // end of Response_Time

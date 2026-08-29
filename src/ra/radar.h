@@ -188,11 +188,11 @@ class RadarClass : public DisplayClass {
   **	radar map display. The width and height is controlled by the
   **	actual dimensions of the radar map display box (in pixels).
   */
-  unsigned RadarX;
-  unsigned RadarY;
-  unsigned RadarCellWidth;
-  unsigned RadarCellHeight;
-  unsigned RadarCell;
+  int RadarX;
+  int RadarY;
+  int RadarCellWidth;
+  int RadarCellHeight;
+  int RadarCell;
 
   /*
   **	This is the origin (pixel offsets) for the upper left corner
@@ -203,8 +203,8 @@ class RadarClass : public DisplayClass {
   unsigned BaseX;
   unsigned BaseY;
 
-  unsigned RadarWidth;
-  unsigned RadarHeight;
+  int RadarWidth;
+  int RadarHeight;
 
   /*
   **	If the radar map is in zoom mode, then this value will be true.
@@ -240,7 +240,7 @@ class RadarClass : public DisplayClass {
   **	This is the list of radar pixels that need to be updated. Only a partial
   **	list is maintained for maximum speed.
   */
-  unsigned PixelPtr;
+  int PixelPtr;
   enum PixelStackEnums { PIXELSTACK = 400 };
   CELL PixelStack[PIXELSTACK];
 };
