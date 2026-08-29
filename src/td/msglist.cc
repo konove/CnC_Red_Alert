@@ -63,6 +63,7 @@
 #include "td/gadget.h"
 #include "td/jshell.h"
 #include "td/txtlabel.h"
+#include "base/types.h"
 
 char MessageListClass::MessageBuffers[MAX_NUM_MESSAGES]
                                      [MAX_MESSAGE_LENGTH + 30];
@@ -168,7 +169,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars,
   MessageY = y;
 
   MaxMessages = std::min(max_msg, MAX_NUM_MESSAGES);
-  MaxChars = std::min(maxchars, MAX_MESSAGE_LENGTH);
+  MaxChars = std::min<int>(maxchars, static_cast<int>(MAX_MESSAGE_LENGTH));
 
   Height = height;
   EditLabel = nullptr;
@@ -284,7 +285,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
             raw_string = s2;
             current_string = s1;
             if (raw_string++ && current_string++) {
-              memcpy(current_string + position * (COMPAT_MESSAGE_LENGTH -
+              memcpy(current_string + static_cast<base::ssize>(position) * (COMPAT_MESSAGE_LENGTH -
                                                   5) /*+from_adjust*/,
                      raw_string, COMPAT_MESSAGE_LENGTH - 4);
               /*
@@ -415,14 +416,14 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
           for (j = 0; j < 3; j++) {
             if (!(magic_number - j == MESSAGE_HEAD_MAGIC_NUMBER)) {
               memset(
-                  dest_str + j * (COMPAT_MESSAGE_LENGTH - 4) /*+from_adjust*/,
+                  dest_str + static_cast<base::ssize>(j) * (COMPAT_MESSAGE_LENGTH - 4) /*+from_adjust*/,
                   32, COMPAT_MESSAGE_LENGTH - 4);
             } else {
               // This whole segment needs to be rewritten. Impossible to guess
               // safe length.
               // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
               strcpy(
-                  dest_str + j * (COMPAT_MESSAGE_LENGTH - 4) /*+from_adjust*/,
+                  dest_str + static_cast<base::ssize>(j) * (COMPAT_MESSAGE_LENGTH - 4) /*+from_adjust*/,
                   raw_string);
             }
           }

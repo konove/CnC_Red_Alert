@@ -95,7 +95,7 @@ void GDI_Ending() {
     SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
     Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
     Clear_KeyBuffer();
-    count.Set(TIMER_SECOND * 3);
+    count.Set(int64_t{TIMER_SECOND} * 3);
     while (count.Time()) {
       Call_Back();
     }
@@ -111,7 +111,7 @@ void GDI_Ending() {
   Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
   Clear_KeyBuffer();
   //	CountDownTimerClass count;
-  count.Set(TIMER_SECOND * 3);
+  count.Set(int64_t{TIMER_SECOND} * 3);
   while (count.Time()) {
     Call_Back();
   }
@@ -271,7 +271,7 @@ void Nod_Ending() {
     SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
     Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
     Clear_KeyBuffer();
-    count.Set(TIMER_SECOND * 3);
+    count.Set(int64_t{TIMER_SECOND} * 3);
     while (count.Time()) {
       Call_Back();
     }
@@ -287,7 +287,7 @@ void Nod_Ending() {
   Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
   Clear_KeyBuffer();
   //	CountDownTimerClass count;
-  count.Set(TIMER_SECOND * 3);
+  count.Set(int64_t{TIMER_SECOND} * 3);
   while (count.Time()) {
     Call_Back();
   }

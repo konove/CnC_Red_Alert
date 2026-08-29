@@ -59,6 +59,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
+#include <cstddef>
 
 // extern void output(short port, short data);
 // #pragma aux output parm [dx] [ax] =		\
@@ -330,7 +331,7 @@ void MonoClass::Scroll(int lines) {
 
   memmove((void*)((long)MonoSegment + Offset(0, 0)),
           (void*)((long)MonoSegment + Offset(0, lines)),
-          (LINES - lines) * COLUMNS * sizeof(CellType));
+          (static_cast<std::size_t>(LINES - lines)) * COLUMNS * sizeof(CellType));
 
   //	DOSSegmentClass::Copy(MonoSegment, Offset(0, lines), MonoSegment,
   // Offset(0, 0), (LINES-lines)*COLUMNS*sizeof(CellType));

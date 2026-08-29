@@ -147,6 +147,7 @@
 #endif
 
 #include "td/interpal.h"
+#include "base/types.h"
 
 #define SHAPE_TRANS 0x40
 
@@ -1159,11 +1160,14 @@ bool Color_Cycle() {
     _timer.Set(TIMER_SECOND / 4);
 
     memmove(colors,
-            &GamePalette[(CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1) * 3],
+            &GamePalette[std::size_t{CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1} *
+                         3],
             sizeof(colors));
-    memmove(&GamePalette[(CYCLE_COLOR_START + 1) * 3],
-            &GamePalette[CYCLE_COLOR_START * 3], (CYCLE_COLOR_COUNT - 1) * 3);
-    memmove(&GamePalette[CYCLE_COLOR_START * 3], colors, sizeof(colors));
+    memmove(&GamePalette[std::size_t{CYCLE_COLOR_START + 1} * 3],
+            &GamePalette[std::size_t{CYCLE_COLOR_START} * 3],
+            std::size_t{CYCLE_COLOR_COUNT - 1} * 3);
+    memmove(&GamePalette[std::size_t{CYCLE_COLOR_START} * 3], colors,
+            sizeof(colors));
     changed = true;
   }
 
@@ -1950,7 +1954,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   for (i = 0; i < num_palettes; i++) {
     InterpolatedPalettes[i + start_palette] = new unsigned char[65536]();
     for (int y = 0; y < 256; y++) {
-      file.Read(InterpolatedPalettes[i + start_palette] + y * 256, y + 1);
+      file.Read(InterpolatedPalettes[i + start_palette] + static_cast<base::ssize>(y) * 256, y + 1);
     }
 
     Rebuild_Interpolated_Palette(InterpolatedPalettes[i + start_palette]);
@@ -2291,7 +2295,7 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
         }
       }
     } else {
-      buffer += icon_width * icon_height * 9;
+      buffer += static_cast<base::ssize>(icon_width * icon_height) * 9;
     }
   }
   return retval;
@@ -2328,7 +2332,7 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
       // source_width, source_height);
 #if (1)
       if (LogicPage->Lock()) {
-        unsigned char* shape_end = shape_pointer + source_width * source_height;
+        unsigned char* shape_end = shape_pointer + static_cast<base::ssize>(source_width) * source_height;
 
         for (int y = ypos; y < ypos + height; y++) {
           unsigned char* shape_save = shape_pointer;
@@ -2345,7 +2349,7 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
           shape_pointer = line_end;
 
           if (shape_pointer == shape_end) {
-            shape_pointer -= source_width * source_height;
+            shape_pointer -= static_cast<base::ssize>(source_width) * source_height;
           }
         }
 

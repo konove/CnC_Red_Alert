@@ -10,6 +10,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_win.h"
 #include "tech/ftimer.h"
+#include <cstddef>
 
 PaletteClass PaletteClass::CurrentPalette;
 
@@ -111,6 +112,6 @@ PaletteClass::operator const unsigned char*() const {
 }
 
 void Set_Palette(void* palette) {
-  memcpy(&PaletteClass::CurrentPalette, palette, PaletteClass::COLOR_COUNT * 3);
+  memcpy(&PaletteClass::CurrentPalette, palette, static_cast<std::size_t>(PaletteClass::COLOR_COUNT) * 3);
   Do_Set_Palette(palette);
 }

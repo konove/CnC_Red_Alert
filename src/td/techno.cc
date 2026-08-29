@@ -3503,7 +3503,7 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
   }
 
   if (risktotal > desired) {
-    ((FootClass*)enemy)->BaseAttackTimer.Set(15 * 15);
+    ((FootClass*)enemy)->BaseAttackTimer.Set(static_cast<long>(15) * 15);
   }
 }
 

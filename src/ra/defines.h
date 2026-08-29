@@ -279,7 +279,7 @@
 **	Defines for verifying free disk space
 */
 #define INIT_FREE_DISK_SPACE 8388608
-#define SAVE_GAME_DISK_SPACE (INIT_FREE_DISK_SPACE - (1024 * 4096))
+#define SAVE_GAME_DISK_SPACE (INIT_FREE_DISK_SPACE - (1024L * 4096))
 // #define	SAVE_GAME_DISK_SPACE		 100000
 
 /**********************************************************************
@@ -2851,18 +2851,23 @@ inline DirType operator+(DirType f1, int f2) {
 **	Timer constants. These are used when setting the countdown timer.
 **	Note that this is based upon a timer that ticks every 60th of a second.
 */
+// The derived durations are computed in int64_t: they feed timer Set() calls
+// and timer constructors, all of which take int64_t, so computing them in int
+// and widening afterwards is what bugprone-implicit-widening-of-multiplication
+// -result flags. The base tick rates stay int -- they are also divided into
+// int quantities (FADE_PALETTE_*, frame delays).
 #define TIMER_SECOND 60
-#define TIMER_MINUTE (TIMER_SECOND * 60)
+#define TIMER_MINUTE (int64_t{TIMER_SECOND} * 60)
 
 #define FADE_PALETTE_FAST (TIMER_SECOND / 8)
 #define FADE_PALETTE_MEDIUM (TIMER_SECOND / 4)
 #define FADE_PALETTE_SLOW (TIMER_SECOND / 2)
 
 #define TICKS_PER_SECOND 15
-#define TICKS_PER_MINUTE (TICKS_PER_SECOND * 60)
+#define TICKS_PER_MINUTE (int64_t{TICKS_PER_SECOND} * 60)
 #define TICKS_PER_HOUR (TICKS_PER_MINUTE * 60)
 
-#define GRAYFADETIME (1 * TICKS_PER_SECOND)
+#define GRAYFADETIME (int64_t{1} * TICKS_PER_SECOND)
 
 /****************************************************************************
 ** Each vehicle is give a speed rating. This is a combination of not only

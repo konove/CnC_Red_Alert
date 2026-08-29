@@ -3996,7 +3996,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             ..................................................................*/
             case SERIAL_GAME_OPTIONS:
               gameoptions = true;
-              kludge_timer.Set(2 * 60);
+              kludge_timer.Set(static_cast<int64_t>(2) * 60);
               port::SafeCopy(TheirName, ReceivePacket.Name);
               TheirColor = ReceivePacket.ScenarioInfo.Color;
               TheirHouse = ReceivePacket.ScenarioInfo.House;

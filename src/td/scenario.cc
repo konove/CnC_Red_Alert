@@ -386,7 +386,7 @@ void Do_Win() {
 #endif
   Fancy_Text_Print(TXT_SCENARIO_WON, x, y + 30, WHITE, TBLACK,
                    TPF_CENTER | TPF_VCR);
-  CountDownTimer.Set(TIMER_SECOND * 3);
+  CountDownTimer.Set(int64_t{TIMER_SECOND} * 3);
   Stop_Speaking();
   Speak(VOX_ACCOMPLISHED);
   while (CountDownTimer.Time() || Is_Speaking()) {
@@ -606,7 +606,7 @@ void Do_Lose() {
   Fancy_Text_Print(TXT_MISSION, x, y, WHITE, TBLACK, TPF_CENTER | TPF_VCR);
   Fancy_Text_Print(TXT_SCENARIO_LOST, x, y + 30, WHITE, TBLACK,
                    TPF_CENTER | TPF_VCR);
-  CountDownTimer.Set(TIMER_SECOND * 3);
+  CountDownTimer.Set(int64_t{TIMER_SECOND} * 3);
   Stop_Speaking();
   Speak(VOX_FAIL);
   while (CountDownTimer.Time() || Is_Speaking()) {

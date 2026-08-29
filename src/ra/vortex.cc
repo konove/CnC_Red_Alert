@@ -90,6 +90,7 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
 #include "tech/rgb.h"
+#include "base/types.h"
 
 /*
 ** Instance of chronal vortex class. This must be the only instance.
@@ -761,7 +762,7 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
                                           unsigned char* remap_table) {
   unsigned char getx, gety, remap_color, pixel_color;
 
-  BufferClass destbuf(width * height);
+  BufferClass destbuf(static_cast<long>(width) * height);
 
   unsigned char* destptr = static_cast<unsigned char*>(destbuf.Get_Buffer());
 
@@ -777,7 +778,7 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
     */
     unsigned char* bufptr =
         inbuffer->Get_Offset() + destx +
-        desty * (inbuffer->Get_Width() + inbuffer->Get_XAdd() +
+        static_cast<base::ssize>(desty) * (inbuffer->Get_Width() + inbuffer->Get_XAdd() +
                  inbuffer->Get_Pitch());
 
     int modulo =
@@ -792,12 +793,12 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
         gety = *remap_table++;
         remap_color = *remap_table++;
 
-        pixel_color = *(bufptr + getx + gety * modulo);
+        pixel_color = *(bufptr + getx + static_cast<base::ssize>(gety) * modulo);
 
         *destptr++ = VortexRemapTables[remap_color][pixel_color];
       }
 
-      remap_table += 3 * (width - dest_width);
+      remap_table += static_cast<base::ssize>(3) * (width - dest_width);
       destptr += width - dest_width;
     }
 
@@ -1103,14 +1104,14 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
     CCFileClass file(_remaps[static_cast<int>(Theater)]);
 
     if (file.Is_Available()) {
-      file.Read(VortexRemapTables, MAX_REMAP_SHADES * 256);
+      file.Read(VortexRemapTables, int64_t{MAX_REMAP_SHADES} * 256);
     } else {
       for (i = 0; i < MAX_REMAP_SHADES; i++) {
         Build_Fading_Table(GamePalette, &VortexRemapTables[i][0], 0,
                            240 - i * 256 / MAX_REMAP_SHADES);
       }
 
-      file.Write(VortexRemapTables, MAX_REMAP_SHADES * 256);
+      file.Write(VortexRemapTables, int64_t{MAX_REMAP_SHADES} * 256);
     }
   }
 

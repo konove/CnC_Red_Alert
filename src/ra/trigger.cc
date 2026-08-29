@@ -196,7 +196,7 @@ TriggerClass::~TriggerClass() {
     if (Houses.Ptr(Class->House)->Blockage) {
       Houses.Ptr(Class->House)->Blockage--;
     }
-    Houses.Ptr(Class->House)->BorrowedTime.Set(TICKS_PER_SECOND * 4);
+    Houses.Ptr(Class->House)->BorrowedTime.Set(int64_t{TICKS_PER_SECOND} * 4);
   }
   ID = -1;
 }

@@ -7,6 +7,7 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
 #include "td/externs.h"
+#include <cstddef>
 
 unsigned char CurrentPalette[3 * 256];
 
@@ -50,6 +51,6 @@ void Fade_Palette_To(unsigned char* palette, int fade, void (*callback)()) {
 }
 
 void Set_Palette(void* palette) {
-  memcpy(CurrentPalette, palette, 256 * 3);
+  memcpy(CurrentPalette, palette, static_cast<std::size_t>(256) * 3);
   Do_Set_Palette(palette);
 }

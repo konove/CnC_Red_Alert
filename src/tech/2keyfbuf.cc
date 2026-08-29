@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "base/types.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/shape.h"
 
@@ -316,10 +317,12 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   }
 
   // do blit
-  auto* src_offset = static_cast<uint8_t*>(src) + src_x0 + src_y0 * w;
+  auto* src_offset = static_cast<uint8_t*>(src) + src_x0 +
+                     static_cast<base::ssize>(src_y0) * w;
   int src_adjust_width = w - (dst_x1 - dst_x0);
 
-  int dst_area = dest.Get_XAdd() + dest.Get_Width() + dest.Get_Pitch();
+  base::ssize dst_area =
+      dest.Get_XAdd() + dest.Get_Width() + dest.Get_Pitch();
   auto* dst_offset = dest.Get_Offset() + dst_x0 + dst_y0 * dst_area;
   int dst_adjust_width = dst_area - (dst_x1 - dst_x0);
 

@@ -83,6 +83,7 @@
 #include "td/palette.h"
 #include "td/profile.h"
 #include "td/special.h"
+#include "base/types.h"
 
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.
@@ -446,8 +447,8 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
   */
   for (index = 0; index < 256; index++) {
     if (/*index == LTGREEN ||*/ index == 255) {
-      memcpy(&static_cast<char*>(newpal)[index * 3],
-             &static_cast<char*>(oldpal)[index * 3], 3);
+      memcpy(&static_cast<char*>(newpal)[static_cast<base::ssize>(index) * 3],
+             &static_cast<char*>(oldpal)[static_cast<base::ssize>(index) * 3], 3);
     } else {
       r = static_cast<unsigned char*>(oldpal)[index * 3 + 0];
       g = static_cast<unsigned char*>(oldpal)[index * 3 + 1];

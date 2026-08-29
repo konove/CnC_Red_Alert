@@ -86,6 +86,7 @@
 #include "ra/target.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
+#include "base/types.h"
 
 /***********************************************************************************************
  * TerrainClass::~TerrainClass -- Default destructor for terrain class objects.
@@ -680,7 +681,7 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   int xdiff = Cell_X(cell) - Cell_X(basecell);
   if (xdiff < width && ydiff < height) {
     int iconnum = ydiff * width + xdiff;
-    return icon + iconnum * 9;
+    return icon + static_cast<base::ssize>(iconnum) * 9;
   }
   return nullptr;
 }

@@ -193,7 +193,7 @@ int LZOPipe::Put(const void* source, int slen) {
 
       if (Counter == BlockSize) {
         unsigned int len = sizeof(Buffer2);
-        char* dictionary = new char[16 * 1024 * sizeof(void*)];
+        char* dictionary = new char[16UL * 1024 * sizeof(void*)];
         lzo1x_1_compress((unsigned char*)Buffer, BlockSize,
                          (unsigned char*)Buffer2, &len, dictionary);
         delete[] dictionary;
@@ -211,7 +211,7 @@ int LZOPipe::Put(const void* source, int slen) {
     */
     while (slen >= BlockSize) {
       unsigned int len = sizeof(Buffer2);
-      char* dictionary = new char[16 * 1024 * sizeof(void*)];
+      char* dictionary = new char[16UL * 1024 * sizeof(void*)];
       lzo1x_1_compress((unsigned char*)source, BlockSize,
                        (unsigned char*)Buffer2, &len, dictionary);
       delete[] dictionary;
@@ -296,7 +296,7 @@ int LZOPipe::Flush() {
       *occurrence. Just *	compress the partial block and output normally.
       */
       unsigned int len = sizeof(Buffer2);
-      char* dictionary = new char[16 * 1024 * sizeof(void*)];
+      char* dictionary = new char[16UL * 1024 * sizeof(void*)];
       lzo1x_1_compress((unsigned char*)Buffer, Counter, (unsigned char*)Buffer2,
                        &len, dictionary);
       delete[] dictionary;

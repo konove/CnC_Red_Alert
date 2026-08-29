@@ -67,6 +67,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+#include "base/types.h"
 
 /*
 ** List of Ego Class instances
@@ -316,7 +317,7 @@ void Slide_Show(int slide, int frame) {
     */
     for (int index = 0; index < 256; index++) {
       if (PaletteLUT[index]) {
-        ComboPalPtr[index * 3] = SlidePals[slide][index * 3];
+        ComboPalPtr[static_cast<base::ssize>(index) * 3] = SlidePals[slide][static_cast<base::ssize>(index) * 3];
         ComboPalPtr[index * 3 + 1] = SlidePals[slide][index * 3 + 1];
         ComboPalPtr[index * 3 + 2] = SlidePals[slide][index * 3 + 2];
       }
@@ -360,7 +361,7 @@ void Slide_Show(int slide, int frame) {
       unsigned char* ccpalptr = CCPalette;
       for (int index = 0; index < 256; index++) {
         if (PaletteLUT[index]) {
-          ccpalptr[index * 3] = 0;
+          ccpalptr[static_cast<base::ssize>(index) * 3] = 0;
           ccpalptr[index * 3 + 1] = 0;
           ccpalptr[index * 3 + 2] = 0;
         }
@@ -632,7 +633,7 @@ void Show_Who_Was_Responsible() {
 
   for (int index = 0; index < 256; index++) {
     if (PaletteLUT[index]) {
-      ComboPalPtr[index * 3] = 0;
+      ComboPalPtr[static_cast<base::ssize>(index) * 3] = 0;
       ComboPalPtr[index * 3 + 1] = 0;
       ComboPalPtr[index * 3 + 2] = 0;
     }
@@ -771,7 +772,7 @@ void Show_Who_Was_Responsible() {
     /*
     ** Kill any spare time before blitting the hid page forward.
     */
-    while (TickCount.Value() - time < frame * speed && !Keyboard->Check()) {
+    while (TickCount.Value() - time < static_cast<int64_t>(frame) * speed && !Keyboard->Check()) {
     }
 
     /*
@@ -828,7 +829,7 @@ void Show_Who_Was_Responsible() {
       /*
       ** Kill any spare time
       */
-      while (TickCount.Value() - time < frame * speed && !Keyboard->Check()) {
+      while (TickCount.Value() - time < static_cast<int64_t>(frame) * speed && !Keyboard->Check()) {
       }
     }
   }

@@ -2319,9 +2319,9 @@ bool Main_Loop() {
 
     static GraphicBufferClass temp_page(
         SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
-        SeenBuff.Get_Width() * SeenBuff.Get_Height());
+        static_cast<long>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
 
-    base::ssize size = SeenBuff.Get_Width() * SeenBuff.Get_Height();
+    base::ssize size = static_cast<base::ssize>(SeenBuff.Get_Width()) * SeenBuff.Get_Height();
 
     if (sequence < std::ssize(frames)) {
       // A no-op on a frame reused from an earlier run of the same resolution.
@@ -2571,7 +2571,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
     for (i = 0; i < num_palettes; i++) {
       InterpolatedPalettes[i + start_palette] = new unsigned char[65536]();
       for (int y = 0; y < 256; y++) {
-        file.Read(InterpolatedPalettes[i + start_palette] + y * 256, y + 1);
+        file.Read(InterpolatedPalettes[i + start_palette] + static_cast<base::ssize>(y) * 256, y + 1);
       }
 
       Rebuild_Interpolated_Palette(InterpolatedPalettes[i + start_palette]);
@@ -3017,7 +3017,7 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
                 for (lp = 0; lp < 9; lp++) {
                   pixel =
                       *(static_cast<char*>(ptr) +
-                        (gety - _offy[lp]) * pixel_width + getx - _offx[lp]);
+                        (static_cast<base::ssize>(gety - _offy[lp])) * pixel_width + getx - _offx[lp]);
 
                   if (pixel == LTGREEN) {
                     pixel = 0;
@@ -3035,7 +3035,7 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
         }
       }
     } else {
-      buffer += icon_width * icon_height * 9;
+      buffer += static_cast<base::ssize>(icon_width * icon_height) * 9;
     }
   }
   return result;

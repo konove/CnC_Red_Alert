@@ -1217,7 +1217,7 @@ void BuildingClass::AI() {
         break;
 
       case 1:
-        PlacementDelay = TICKS_PER_SECOND * 3;
+        PlacementDelay = int64_t{TICKS_PER_SECOND} * 3;
         break;
 
       case 2:

@@ -2123,7 +2123,7 @@ long CellClass::Tiberium_Adjust(bool pregame) {
       } else {
         OverlayData = _adj[count];
       }
-      return (OverlayData + 1) * value;
+      return (static_cast<long>(OverlayData + 1)) * value;
     }
   }
   return 0;

@@ -199,7 +199,7 @@ void Debug_Key(unsigned input) {
         {
           GraphicBufferClass temp_page(
               SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
-              SeenBuff.Get_Width() * SeenBuff.Get_Height());
+              static_cast<long>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
           char filename[30];
 
           SeenBuff.Blit(temp_page);

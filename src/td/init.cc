@@ -1477,7 +1477,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
             }
             Clear_KeyBuffer();
-            count.Set(TIMER_SECOND * 3);
+            count.Set(int64_t{TIMER_SECOND} * 3);
             while (count.Time()) {
               Call_Back();
             }
@@ -1496,7 +1496,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
             }
             Clear_KeyBuffer();
-            count.Set(TIMER_SECOND * 3);
+            count.Set(int64_t{TIMER_SECOND} * 3);
             while (count.Time()) {
               Call_Back();
             }
@@ -1515,7 +1515,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
             }
             Clear_KeyBuffer();
-            count.Set(TIMER_SECOND * 3);
+            count.Set(int64_t{TIMER_SECOND} * 3);
             while (count.Time()) {
               Call_Back();
             }
@@ -1533,7 +1533,7 @@ bool Select_Game(bool fade) {
             Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
           }
           Clear_KeyBuffer();
-          count.Set(TIMER_SECOND * 3);
+          count.Set(int64_t{TIMER_SECOND} * 3);
           while (count.Time()) {
             Call_Back();
           }

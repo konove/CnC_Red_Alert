@@ -61,6 +61,7 @@
 #include "td/jshell.h"
 #include "td/text.h"
 #include "td/textbtn.h"
+#include <cstddef>
 
 #ifdef JAPANESE
 CCMessageBox::CCMessageBox(int caption, bool pict)
@@ -236,8 +237,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   Hide_Mouse();
   if (preserve) {
-    back = new char[width * height];
-    SeenBuff.To_Buffer(x, y, width, height, back, width * height);
+    back = new char[static_cast<std::size_t>(width) * height];
+    SeenBuff.To_Buffer(x, y, width, height, back, static_cast<long>(width) * height);
   }
   // display = true;
 #ifdef JAPANESE
@@ -433,7 +434,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     */
     CountDownTimerClass timer(false);
     timer.Start();
-    timer.Set(TICKS_PER_SECOND * 4);
+    timer.Set(int64_t{TICKS_PER_SECOND} * 4);
     while (timer.Time() > 0) {
       Call_Back();
     }

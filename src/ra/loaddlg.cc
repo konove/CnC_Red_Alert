@@ -421,7 +421,7 @@ int LoadOptionsClass::Process() {
           */
           Timer<SystemTickSource> timer;
           //					timer.Start();
-          timer.Set(TICKS_PER_SECOND * 4);
+          timer.Set(int64_t{TICKS_PER_SECOND} * 4);
 
           WWMessageBox().Process(TXT_LOADING, TXT_NONE);
           Theme.Fade_Out();
@@ -487,7 +487,7 @@ int LoadOptionsClass::Process() {
           }
           Timer<SystemTickSource> timer;
           //					timer.Start();
-          timer.Set(TICKS_PER_SECOND * 4);
+          timer.Set(int64_t{TICKS_PER_SECOND} * 4);
 
           WWMessageBox().Process(TXT_GAME_WAS_SAVED, TXT_NONE, TXT_NONE);
 

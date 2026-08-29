@@ -1361,7 +1361,7 @@ void HouseClass::AI() {
                 for (int index = 0; index < Vessels.Count(); index++) {
                   VesselClass* sub = Vessels.Ptr(index);
                   if (*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) {
-                    sub->PulseCountDown.Set(15 * TICKS_PER_SECOND);
+                    sub->PulseCountDown.Set(static_cast<int64_t>(15) * TICKS_PER_SECOND);
                     sub->Do_Uncloak();
                   }
                 }
@@ -2753,7 +2753,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         for (int index = 0; index < Vessels.Count(); index++) {
           VesselClass* sub = Vessels.Ptr(index);
           if (*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) {
-            sub->PulseCountDown.Set(15 * TICKS_PER_SECOND);
+            sub->PulseCountDown.Set(static_cast<int64_t>(15) * TICKS_PER_SECOND);
             sub->Do_Uncloak();
           }
         }
@@ -7241,7 +7241,7 @@ void HouseClass::Read_INI(CCINIClass& ini) {
     if (p->Control.MaxVessel == 0) {
       p->Control.MaxVessel = p->Control.MaxUnit;
     }
-    p->Control.InitialCredits = ini.Get_Int(hname, "Credits", 0) * 100;
+    p->Control.InitialCredits = static_cast<long>(ini.Get_Int(hname, "Credits", 0)) * 100;
     p->Credits = p->Control.InitialCredits;
 
     int iq = ini.Get_Int(hname, "IQ", 0);

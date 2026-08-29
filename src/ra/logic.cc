@@ -405,7 +405,7 @@ void LogicClass::AI() {
       Sound_Effect(VOC_SONAR);
       bAutoSonarPulse = false;
     }
-    Scen.AutoSonarTimer.Set(TICKS_PER_SECOND * 40);
+    Scen.AutoSonarTimer.Set(int64_t{TICKS_PER_SECOND} * 40);
   }
 }
 

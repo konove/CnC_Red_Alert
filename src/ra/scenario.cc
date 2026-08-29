@@ -223,7 +223,7 @@ ScenarioClass::ScenarioClass()
       IsNoMapSel(false),
       IsTruckCrate(false),
       IsMoneyTiberium(false),
-#define AUTOSONAR_PERIOD TICKS_PER_SECOND * 40
+#define AUTOSONAR_PERIOD (int64_t{TICKS_PER_SECOND} * 40)
       AutoSonarTimer(AUTOSONAR_PERIOD),
       FadeTimer(0) {
   for (int index = 0; index < std::ssize(Waypoint); index++) {
@@ -854,7 +854,7 @@ void Do_Win() {
     Map.Render();
     Fancy_Text_Print(TXT_SCENARIO_WON, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-    CountDownTimer.Set(TIMER_SECOND * 3);
+    CountDownTimer.Set(int64_t{TIMER_SECOND} * 3);
     while (Is_Speaking()) {
     }
     Speak(VOX_ACCOMPLISHED);
@@ -1108,7 +1108,7 @@ void Do_Lose() {
   Set_Logic_Page(SeenBuff);
   Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-  CountDownTimer.Set(TIMER_SECOND * 3);
+  CountDownTimer.Set(int64_t{TIMER_SECOND} * 3);
   while (Is_Speaking()) {
   }
   Speak(VOX_FAIL);
@@ -1197,7 +1197,7 @@ void Do_Draw() {
   Set_Logic_Page(SeenBuff);
   Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-  CountDownTimer.Set(TIMER_SECOND * 3);
+  CountDownTimer.Set(int64_t{TIMER_SECOND} * 3);
   while (Is_Speaking()) {
   }
   Speak(VOX_CONTROL_EXIT);
@@ -1241,7 +1241,7 @@ void Do_Restart() {
   ** Start a timer going, before we restart the scenario
   */
   Timer<SystemTickSource> timer;
-  timer.Set(TICKS_PER_SECOND * 4);
+  timer.Set(int64_t{TICKS_PER_SECOND} * 4);
   Theme.Queue_Song(THEME_QUIET);
 
   WWMessageBox().Process(TXT_RESTARTING, TXT_NONE);

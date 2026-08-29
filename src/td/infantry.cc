@@ -3160,7 +3160,7 @@ int InfantryClass::Made_A_Kill() {
   Validate();
   if (*this == INFANTRY_RAMBO || Random_Pick(0, 5) < Kills) {
     IsStoked = true;
-    Comment = TICKS_PER_SECOND * 2;
+    Comment = int64_t{TICKS_PER_SECOND} * 2;
   }
   return FootClass::Made_A_Kill();
 }

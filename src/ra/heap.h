@@ -48,6 +48,7 @@
 #include "ra/vector_dynamic.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
+#include "base/types.h"
 
 // Fixed-size block memory allocator that manages a pool of uniformly-sized
 // memory blocks.
@@ -91,10 +92,10 @@ class FixedHeapClass {
   virtual int Free_All();
 
   void* operator[](int index) {
-    return static_cast<char*>(Buffer) + index * Size;
+    return static_cast<char*>(Buffer) + static_cast<base::ssize>(index) * Size;
   }
   const void* operator[](int index) const {
-    return static_cast<char*>(Buffer) + index * Size;
+    return static_cast<char*>(Buffer) + static_cast<base::ssize>(index) * Size;
   }
 
  protected:

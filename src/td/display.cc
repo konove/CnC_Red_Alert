@@ -140,6 +140,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "base/types.h"
 
 /*
 **	These layer control elements are used to group the displayable objects
@@ -284,8 +285,8 @@ void DisplayClass::One_Time() {
           Mem_Copy(FadingShade, RemapTables[hindex][fade], 256);
           break;
       }
-      Mem_Copy(&RemapTables[hindex][fade][(static_cast<int>(hindex) + 11) * 16],
-               &RemapTables[hindex][fade][(0 + 11) * 16], 16);
+      Mem_Copy(&RemapTables[hindex][fade][(static_cast<base::ssize>(static_cast<int>(hindex) + 11)) * 16],
+               &RemapTables[hindex][fade][(static_cast<base::ssize>(0 + 11)) * 16], 16);
     }
   }
 }
@@ -1555,7 +1556,7 @@ int DisplayClass::Cell_Shadow(CELL cell) {
       if (cellptr->IsMapped) {
         index |= 0x08;
       }
-      cellptr += MAP_CELL_W * 2;
+      cellptr += static_cast<base::ssize>(MAP_CELL_W) * 2;
       if (cellptr->IsMapped) {
         index |= 0x04;
       }
@@ -1563,7 +1564,7 @@ int DisplayClass::Cell_Shadow(CELL cell) {
       if (!rightedge && cellptr->IsMapped) {
         index |= 0x02;
       }
-      cellptr -= MAP_CELL_W * 2;
+      cellptr -= static_cast<base::ssize>(MAP_CELL_W) * 2;
       if (cellptr->IsMapped) {
         index |= 0x01;
       }

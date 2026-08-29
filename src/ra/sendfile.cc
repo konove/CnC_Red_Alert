@@ -78,7 +78,7 @@
 bool Receive_Remote_File(char* file_name, unsigned int file_length,
                          int gametype);
 
-#define RESPONSE_TIMEOUT 60 * 60
+#define RESPONSE_TIMEOUT (int64_t{60} * 60)
 
 #if WOLAPI_INTEGRATION
 #include "WolapiOb.h"

@@ -1283,7 +1283,7 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // resp_time is divided by 2 because, as reported, it represents a round-
   // trip, and we only want to use a one-way trip.
   //
-  maxahead = resp_time * DesiredFrameRate / (2 * 60);
+  maxahead = resp_time * DesiredFrameRate / (static_cast<unsigned long>(2) * 60);
 
   //
   // Now, we have to round 'maxahead' so it's an even multiple of our

@@ -1039,15 +1039,16 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
   vqa->Max_Pal_Size = 768 + 1024 & 0xFFFC;
 
   /* Set maximum vector pointers size. */
-  vqa->Max_Ptr_Size = header->ImageWidth / header->BlockWidth *
-                              (header->ImageHeight / header->BlockHeight) *
-                              sizeof(short) +
-                          1024 &
-                      0xFFFC;
+  vqa->Max_Ptr_Size =
+      static_cast<long>(header->ImageWidth / header->BlockWidth) *
+              (header->ImageHeight / header->BlockHeight) * sizeof(short) +
+          1024 &
+      0xFFFC;
 
   /* Set the frame number of the frame containing the last codebook. */
   vqa->Loader.LastCBFrame =
-      (header->Frames - 1) / header->Groupsize * header->Groupsize;
+      static_cast<long>((header->Frames - 1) / header->Groupsize) *
+      header->Groupsize;
 
   /*-------------------------------------------------------------------------
    * ALLOCATE THE CODEBOOK BUFFERS.
@@ -1121,7 +1122,8 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
   if (config->ImageBuf == nullptr) {
     /* Allocate our own buffer. */
     if ((config->DrawFlags & VQACFGF_BUFFER) != 0) {
-      vqa->ImageBufStorage.resize(header->ImageWidth * header->ImageHeight);
+      vqa->ImageBufStorage.resize(static_cast<std::size_t>(header->ImageWidth) *
+                                  header->ImageHeight);
       vqa->Drawer.ImageBuf = vqa->ImageBufStorage.data();
 
       /* Plugin image buffer information. */
@@ -1167,7 +1169,8 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
       }
 
       audio->BytesPerSec =
-          audio->SampleRate * audio->Channels * (audio->BitsPerSample >> 3);
+          static_cast<unsigned long>(audio->SampleRate) * audio->Channels *
+          (audio->BitsPerSample >> 3);
     }
 
     /* The default audio buffer size should be large enough to hold

@@ -1233,7 +1233,8 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     **	Make sure that remapping doesn't occur on the colors that cycle.
     */
     PaletteClass pal = OriginalPalette;
-    memset(&pal[CYCLE_COLOR_START], 0x3f, CYCLE_COLOR_COUNT * 3);
+    memset(&pal[CYCLE_COLOR_START], 0x3f,
+           std::size_t{CYCLE_COLOR_COUNT} * 3);
     Build_Translucent_Table(pal, &ClockCols[0], 1, ClockTranslucentTable);
 
     //		Mem_Copy(GamePalette, OriginalPalette, 768);

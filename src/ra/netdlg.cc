@@ -5117,7 +5117,7 @@ static int Net_New_Dialog() {
     WWDebugString("RA95 - About to wait for 'GO' response.");
     // timeout timer for waiting for responses
     // Wait for 10 seconds. If we dont hear by then assume someone crashed
-    Timer<SystemTickSource> response_timer{60 * 10};
+    Timer<SystemTickSource> response_timer{static_cast<int64_t>(60) * 10};
 
     do {
       Ipx.Service();
@@ -7669,7 +7669,7 @@ static int Net_Fake_New_Dialog() {
   ** Process the message loop until we are in focus.
   */
   // Timer to allow a wait after client joins
-  Timer<SystemTickSource> focus_timer{5 * 60};
+  Timer<SystemTickSource> focus_timer{static_cast<int64_t>(5) * 60};
 
   WWDebugString("RA95 - About to enter wait for focus loop.\n");
 #ifndef PORTABLE
@@ -7687,7 +7687,7 @@ static int Net_Fake_New_Dialog() {
         WWDebugString("RA95 - Calling ShowWindow.\n");
         ShowWindow(MainWindow, SW_SHOWMAXIMIZED);
 #endif
-        focus_timer.Set(5 * 60);
+        focus_timer.Set(static_cast<int64_t>(5) * 60);
       }
     } while (!GameInFocus);
     AllSurfaces.SurfacesRestored = false;
@@ -7819,7 +7819,7 @@ static int Net_Fake_New_Dialog() {
           */
           if (!player_joined) {
             player_joined = true;
-            join_timer.Set(3 * 60, true);
+            join_timer.Set(static_cast<long>(3) * 60, true);
             break;
           }
           if (join_timer.Time()) {
@@ -8100,7 +8100,7 @@ static int Net_Fake_New_Dialog() {
 
     // Wait for 30 seconds. If we dont hear by then assume someone crashed
     // timeout timer for waiting for responses
-    Timer<SystemTickSource> response_timer{60 * 30};
+    Timer<SystemTickSource> response_timer{static_cast<int64_t>(60) * 30};
 
     do {
       Ipx.Service();
@@ -8452,7 +8452,7 @@ static int Net_Fake_Join_Dialog() {
   ** Process the message loop until we are in focus.
   */
   // Timer to allow a wait after client joins
-  Timer<SystemTickSource> focus_timer{5 * 60};
+  Timer<SystemTickSource> focus_timer{static_cast<int64_t>(5) * 60};
 
   WWDebugString("RA95 - About to enter wait for focus loop.\n");
 #ifndef PORTABLE
@@ -8470,7 +8470,7 @@ static int Net_Fake_Join_Dialog() {
         WWDebugString("RA95 - Calling ShowWindow.\n");
         ShowWindow(MainWindow, SW_SHOWMAXIMIZED);
 #endif
-        focus_timer.Set(5 * 60);
+        focus_timer.Set(static_cast<int64_t>(5) * 60);
       }
     } while (!GameInFocus);
     AllSurfaces.SurfacesRestored = false;

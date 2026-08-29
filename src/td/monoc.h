@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_MONOC_H_
 #define CNC_RED_ALERT_TD_MONOC_H_
 
+#include <cstddef>
+
 // #include	"dpmi.h"
 // #include	"function.h"
 
@@ -81,7 +83,7 @@ class MonoClass {
     DATA_PORT = 0x03B5,     // CRTC data register.
     COLUMNS = 80,           // Number of columns.
     LINES = 25,             // Number of lines.
-    SIZE_OF_PAGE = LINES * COLUMNS * sizeof(CellType),  // Entire page size.
+    SIZE_OF_PAGE = static_cast<std::size_t>(LINES) * COLUMNS * sizeof(CellType),  // Entire page size.
     DEFAULT_ATTRIBUTE = 0x02  // Normal white on black color attribute.
   };
 
@@ -149,7 +151,7 @@ class MonoClass {
   **	Helper functions to help with display operations.
   */
   int Offset(int x = 0, int y = 0) const {
-    return SIZE_OF_PAGE * Page + sizeof(CellType) * (x + y * COLUMNS);
+    return static_cast<std::size_t>(SIZE_OF_PAGE) * Page + sizeof(CellType) * (x + y * COLUMNS);
   }
   void Scroll(int lines);
   void Store_Cell(CellType& cell, int x, int y) {

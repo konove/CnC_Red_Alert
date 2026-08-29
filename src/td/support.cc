@@ -6,6 +6,7 @@
 #include <cstring>
 
 #include "sdllib/gbuffer.h"
+#include "base/types.h"
 
 void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
                                  int frac) {
@@ -57,7 +58,7 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
     matchcolor = color;  // Default color (self).
     matchvalue = -1;     // Ridiculous match value init.
 
-    auto* palptr = pal8 + ALLOWED_START * 3;
+    auto* palptr = pal8 + static_cast<base::ssize>(ALLOWED_START) * 3;
 
     for (int color_index = ALLOWED_START; color_index < 256; color_index++) {
       int compval = 0;

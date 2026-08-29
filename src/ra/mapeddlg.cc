@@ -2364,7 +2364,7 @@ int MapEditClass::Load_Scenario() {
         HouseStaticClass* hstatic = &hdata[house];
 
         Base.House = HousesType(basebtn.Current_Index());
-        hstatic->InitialCredits = creditbtn.Get_Value() * 100;
+        hstatic->InitialCredits = static_cast<long>(creditbtn.Get_Value()) * 100;
         hstatic->Edge = SourceType(sourcebtn.Current_Index());
         hstatic->TechLevel = techlevel.Get_Value();
         hstatic->MaxUnit = maxunit.Get_Value() / 2;

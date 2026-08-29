@@ -11,6 +11,8 @@
 #include <SDL_video.h>
 
 #include <cstring>
+
+#include "base/types.h"
 #include <utility>
 
 #include "absl/log/log.h"
@@ -45,7 +47,7 @@ static WWMouseClass* _Mouse = nullptr;
 
   int dst_w = src_w * scale;
   int dst_h = src_h * scale;
-  auto* dst = new uint8_t[dst_w * dst_h];
+  auto* dst = new uint8_t[static_cast<base::ssize>(dst_w) * dst_h];
 
   for (int y = 0; y < dst_h; ++y) {
     int src_y = y / scale;
@@ -91,7 +93,7 @@ static int Get_Display_Scale() {
 
 WWMouseClass::WWMouseClass([[maybe_unused]] GraphicViewPortClass* scr,
                            int max_width, int max_height)
-    : MouseCursor(max_width * max_height),
+    : MouseCursor(static_cast<base::ssize>(max_width) * max_height),
       MaxWidth(max_width),
       MaxHeight(max_height),
       State(0) {
@@ -182,8 +184,10 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   }
   // SDL surface pitch may include padding, so copy row by row.
   for (int y = 0; y < scaled_height; ++y) {
-    memcpy(static_cast<uint8_t*>(sdl_surf->pixels) + y * sdl_surf->pitch,
-           scaled_cursor + y * scaled_width, scaled_width);
+    memcpy(static_cast<uint8_t*>(sdl_surf->pixels) +
+               static_cast<base::ssize>(y) * sdl_surf->pitch,
+           scaled_cursor + static_cast<base::ssize>(y) * scaled_width,
+           scaled_width);
   }
   delete[] scaled_cursor;
 

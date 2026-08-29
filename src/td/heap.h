@@ -45,6 +45,7 @@
 
 #include "td/vector.h"
 #include "tech/wwfile.h"
+#include "base/types.h"
 
 // Heap templates are generic - users must include type headers themselves.
 // IWYU pragma: no_include "td/aircraft.h"
@@ -83,7 +84,7 @@ class FixedHeapClass {
 
  protected:
   void* operator[](int index) {
-    return static_cast<char*>(Buffer) + index * Size;
+    return static_cast<char*>(Buffer) + static_cast<base::ssize>(index) * Size;
   }
 
   /*

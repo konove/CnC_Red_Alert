@@ -110,6 +110,7 @@
 #include "ra/weapon.h"
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
+#include "base/types.h"
 
 /***********************************************************************************************
  * VesselClass::VesselClass -- Constructor for vessel class objects. *
@@ -374,7 +375,7 @@ int VesselClass::Shape_Number() const {
   /*
   **	For eight facing units, adjust the facing number accordingly.
   */
-  int shapenum = BodyShape[Dir_To_16(PrimaryFacing) * 2] >> 1;
+  int shapenum = BodyShape[static_cast<base::ssize>(Dir_To_16(PrimaryFacing)) * 2] >> 1;
 
   /*
   **	Special case code for transport. The north/south facing is in frame

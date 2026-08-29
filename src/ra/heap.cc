@@ -82,6 +82,7 @@
 #include "ra/warhead.h"
 #include "ra/weapon.h"
 #include "tech/noinit.h"
+#include <cstddef>
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management
@@ -172,7 +173,7 @@ int FixedHeapClass::Set_Heap(int count, void* buffer) {
   */
   FreeFlag.resize(count, false);
   if (!buffer) {
-    buffer = new char[count * Size];
+    buffer = new char[static_cast<std::size_t>(count) * Size];
     IsAllocated = true;
   }
   Buffer = buffer;

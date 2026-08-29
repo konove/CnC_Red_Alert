@@ -122,6 +122,7 @@
 
 #include <cstdint>
 
+#include "base/types.h"
 #include "absl/strings/str_cat.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/buffer.h"
@@ -538,7 +539,7 @@ inline void GraphicViewPortClass::Put_Pixel(int x, int y, unsigned char color) {
 inline void GraphicViewPortClass::Buffer_Put_Pixel(const int x, const int y,
                                                    const unsigned char color) {
   if (x >= 0 && y >= 0 && x < Get_Width() && y < Get_Height()) {
-    const int pitch = Get_XAdd() + Get_Width() + Get_Pitch();
+    const base::ssize pitch = Get_XAdd() + Get_Width() + Get_Pitch();
     *(Get_Offset() + x + y * pitch) = color;
   }
 }

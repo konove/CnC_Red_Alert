@@ -5,6 +5,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/types.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/misc.h"
@@ -30,7 +31,8 @@ int Buffer_Get_Pixel(void* thisptr, int x, int y) {
     return 0;
   }
 
-  int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
+  base::ssize dst_area =
+      vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + x + y * dst_area;
 
   return *dst_offset;
@@ -39,7 +41,8 @@ int Buffer_Get_Pixel(void* thisptr, int x, int y) {
 void Buffer_Clear(void* thisptr, unsigned char color) {
   auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
-  int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
+  base::ssize dst_area =
+      vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset();
 
   int pixel_count = vp_dst->Get_Width();
@@ -93,11 +96,13 @@ long Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel, int pixel_width,
     }
   }
 
-  int src_area = vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
+  base::ssize src_area =
+      vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
   auto* src_offset = vp_src->Get_Offset() + src_x0 + src_y0 * src_area;
 
   auto* dst_offset =
-      static_cast<uint8_t*>(buff) + dst_x0 + dst_y0 * pixel_width;
+      static_cast<uint8_t*>(buff) + dst_x0 +
+      static_cast<base::ssize>(dst_y0) * pixel_width;
 
   if (src_x1 <= src_x0 || src_y1 <= src_y0) {
     return true;
@@ -162,9 +167,11 @@ long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
   }
 
   auto* src_offset =
-      static_cast<uint8_t*>(Buffer) + src_x0 + src_y0 * pixel_width;
+      static_cast<uint8_t*>(Buffer) + src_x0 +
+      static_cast<base::ssize>(src_y0) * pixel_width;
 
-  int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
+  base::ssize dst_area =
+      vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_area;
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
@@ -263,10 +270,12 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
     }
   }
 
-  int src_area = vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
+  base::ssize src_area =
+      vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
   auto* src_offset = vp_src->Get_Offset() + src_x0 + src_y0 * src_area;
 
-  int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
+  base::ssize dst_area =
+      vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_area;
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
@@ -412,11 +421,11 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
   }
 
   // do scale
-  int src_win_width =
+  base::ssize src_win_width =
       vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
   auto* src_offset = vp_src->Get_Offset() + src_x0 + src_y0 * src_win_width;
 
-  int dst_win_width =
+  base::ssize dst_win_width =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_win_width;
 
@@ -541,7 +550,7 @@ void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
   const int start_x = x;
   const int viewport_width = viewport->Get_Width();
   const int viewport_height = viewport->Get_Height();
-  const int buffer_stride =
+  const base::ssize buffer_stride =
       viewport_width + viewport->Get_XAdd() + viewport->Get_Pitch();
   uint8_t* line_start = viewport->Get_Offset() + buffer_stride * y;
 
@@ -731,7 +740,8 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
     }
   }
 
-  int bpr = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
+  base::ssize bpr =
+      vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
 
   int y_dist = dy - sy;
 
@@ -863,7 +873,8 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
     return;
   }
 
-  int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
+  base::ssize dst_area =
+      vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + sx + sy * dst_area;
 
   int pixel_count = dx - sx + 1;
@@ -916,7 +927,8 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
     }
   }
 
-  int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
+  base::ssize dst_area =
+      vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_area;
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
@@ -1032,7 +1044,10 @@ void GraphicViewPortClass::Attach(GraphicBufferClass* graphic_buff, int x,
    */
   /*======================================================================*/
   Offset = graphic_buff->Get_Offset() +
-           (graphic_buff->Get_Width() + graphic_buff->Get_Pitch()) * y + x;
+           static_cast<base::ssize>(graphic_buff->Get_Width() +
+                                    graphic_buff->Get_Pitch()) *
+               y +
+           x;
 
   /*======================================================================*/
   /* Copy over all of the variables that we need to store.
@@ -1053,7 +1068,7 @@ GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer, long size)
 }
 
 GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer)
-    : GraphicBufferClass(w, h, buffer, w * h) {}
+    : GraphicBufferClass(w, h, buffer, static_cast<base::ssize>(w) * h) {}
 
 GraphicBufferClass::GraphicBufferClass() { GraphicBuff = this; }
 
@@ -1079,7 +1094,7 @@ void GraphicBufferClass::Init(int w, int h, void* buffer, long size,
 
     if (buffer == nullptr) {
       if (size == 0) {
-        Size = w * h;
+        Size = static_cast<base::ssize>(w) * h;
       } else {
         Size = size;
       }

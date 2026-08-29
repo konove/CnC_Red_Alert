@@ -4210,7 +4210,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
  *=============================================================================================*/
 void Wait_For_Focus() {
   CountDownTimerClass focus_timer;
-  focus_timer.Set(5 * 60);
+  focus_timer.Set(static_cast<long>(5) * 60);
 #ifndef PORTABLE
   ShowWindow(MainWindow, SW_SHOWMAXIMIZED);
 #endif
@@ -4229,7 +4229,7 @@ void Wait_For_Focus() {
         CCDebugString("C&C95 - Calling ShowWindow.\n");
         ShowWindow(MainWindow, SW_SHOWMAXIMIZED);
 #endif
-        focus_timer.Set(5 * 60);
+        focus_timer.Set(static_cast<long>(5) * 60);
       }
 
     } while (!GameInFocus);
@@ -4587,7 +4587,7 @@ static int Net_Fake_New_Dialog() {
           */
           if (!player_joined) {
             player_joined = true;
-            join_timer.Set(3 * 60, true);
+            join_timer.Set(static_cast<long>(3) * 60, true);
             break;
           }
           if (join_timer.Time()) {

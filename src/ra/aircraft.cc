@@ -157,6 +157,7 @@
 #include "ra/ww_audio.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
+#include "base/types.h"
 
 /***********************************************************************************************
  * _Counts_As_Civ_Evac -- Is the specified object a candidate for civilian evac
@@ -424,11 +425,11 @@ int AircraftClass::Shape_Number() const {
       break;
 
     case 16:
-      shapenum = BodyShape[Dir_To_16(SecondaryFacing) * 2] / 2;
+      shapenum = BodyShape[static_cast<base::ssize>(Dir_To_16(SecondaryFacing)) * 2] / 2;
       break;
 
     case 8:
-      shapenum = BodyShape[Dir_To_8(SecondaryFacing) * 4] / 4;
+      shapenum = BodyShape[static_cast<base::ssize>(Dir_To_8(SecondaryFacing)) * 4] / 4;
       break;
 
     default:

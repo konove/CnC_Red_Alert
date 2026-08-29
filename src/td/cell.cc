@@ -1904,7 +1904,7 @@ long CellClass::Tiberium_Adjust(bool pregame) {
       }
 
       OverlayData = _adj[count];
-      return (OverlayData + 1) * UnitTypeClass::TIBERIUM_STEP;
+      return (static_cast<long>(OverlayData + 1)) * UnitTypeClass::TIBERIUM_STEP;
     }
   }
   return 0;

@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_MONOC_H_
 #define CNC_RED_ALERT_RA_MONOC_H_
 
+#include <cstddef>
+
 class MonoClass {
  public:
   enum MonoClassPageEnums {
@@ -182,7 +184,7 @@ class MonoClass {
   enum MonoClassPortEnums {
     CONTROL_PORT = 0x03B4,  // CRTC control register.
     DATA_PORT = 0x03B5,     // CRTC data register.
-    SIZE_OF_PAGE = static_cast<int>(LINES) * static_cast<int>(COLUMNS) *
+    SIZE_OF_PAGE = static_cast<std::size_t>(static_cast<int>(LINES)) * static_cast<int>(COLUMNS) *
                    sizeof(CellType)  // Entire page size.
   };
 

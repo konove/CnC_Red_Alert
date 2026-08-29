@@ -93,6 +93,7 @@
 #include "td/target.h"
 #include "td/trigger.h"
 #include "td/vector.h"
+#include "base/types.h"
 
 #define BARNACLE_STAGE 22
 #define FIRST_SPORE_STAGE 30
@@ -780,7 +781,7 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   int xdiff = Cell_X(cell) - Cell_X(basecell);
   if (xdiff < width && ydiff < height) {
     int iconnum = ydiff * width + xdiff;
-    return icon + iconnum * 9;
+    return icon + static_cast<base::ssize>(iconnum) * 9;
   }
   return nullptr;
 }

@@ -5235,7 +5235,7 @@ void BuildingClass::Factory_AI() {
       *Wait *	a bit before trying again.
       */
       case 1:
-        PlacementDelay.Set(TICKS_PER_SECOND * 3);
+        PlacementDelay.Set(int64_t{TICKS_PER_SECOND} * 3);
         break;
 
       /*

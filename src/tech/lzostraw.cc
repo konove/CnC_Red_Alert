@@ -174,7 +174,7 @@ int LZOStraw::Get(void* destbuf, int slen) {
       if (BlockHeader.UncompCount == 0) {
         break;
       }
-      char* dictionary = new char[64 * 1024];
+      char* dictionary = new char[64L * 1024];
       unsigned int length = sizeof(Buffer2) - sizeof(BlockHeader);
       lzo1x_1_compress((unsigned char*)Buffer, BlockHeader.UncompCount,
                        (unsigned char*)&Buffer2[sizeof(BlockHeader)], &length,

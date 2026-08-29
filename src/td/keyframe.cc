@@ -53,6 +53,7 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
+#include "base/types.h"
 
 #define SUBFRAMEOFFS 7  // 3 1/2 frame offsets loaded (2 offsets/frame)
 
@@ -282,7 +283,7 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
     ** then allocate some more.
     */
     if (BigShapeBufferStart + BigShapeBufferLength - BigShapeBufferPtr <
-        128 * 1024) {
+        static_cast<base::ssize>(128) * 1024) {
       ReallocShapeBufferFlag = true;
     }
 

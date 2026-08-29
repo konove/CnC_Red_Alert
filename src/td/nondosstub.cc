@@ -284,7 +284,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
       return nullptr;
     }
   } else {
-    pic = new GraphicBufferClass(width, height, nullptr, width * (height + 4));
+    pic = new GraphicBufferClass(width, height, nullptr, static_cast<long>(width) * (height + 4));
     if (!pic->Get_Buffer()) {
       delete pic;
       return nullptr;

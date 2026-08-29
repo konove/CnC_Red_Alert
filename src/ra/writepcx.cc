@@ -42,6 +42,7 @@
 #include "ra/palette.h"
 #include "sdllib/gbuffer.h"
 #include "tech/wwfile.h"
+#include "base/types.h"
 
 static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr);
 
@@ -134,7 +135,7 @@ int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
   ptr = static_cast<char*>(pic.Get_Buffer());
   ptr += pic.Get_YPos() * VP_Scan_Line + pic.Get_XPos();
   for (int line = 0; line < header.height + 1; line++) {
-    Write_Pcx_ScanLine(file, header.byte_per_line, ptr + line * VP_Scan_Line);
+    Write_Pcx_ScanLine(file, header.byte_per_line, ptr + static_cast<base::ssize>(line) * VP_Scan_Line);
   }
 
   /*

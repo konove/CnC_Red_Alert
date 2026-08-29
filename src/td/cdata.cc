@@ -1304,7 +1304,7 @@ const short* TemplateTypeClass::Occupy_List(bool) const {
   short* ptr;
   int index;
 
-  Mem_Copy(Get_Icon_Set_Map(Get_Image_Data()), map, Width * Height);
+  Mem_Copy(Get_Icon_Set_Map(Get_Image_Data()), map, static_cast<unsigned long>(Width) * Height);
 
   ptr = &_occupy[0];
   for (index = 0; index < Width * Height; index++) {
@@ -1391,7 +1391,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
   x += WindowList[window][WINDOWX] << 3;
   y += WindowList[window][WINDOWY];
 
-  Mem_Copy(Get_Icon_Set_Map(Get_Image_Data()), map, Width * Height);
+  Mem_Copy(Get_Icon_Set_Map(Get_Image_Data()), map, static_cast<unsigned long>(Width) * Height);
 
   for (index = 0; index < w * h; index++) {
     if (map[index] != 0xFF) {

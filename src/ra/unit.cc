@@ -644,7 +644,7 @@ void UnitClass::Reload_AI() {
       if (Reload.IsFinished()) {
         Ammo++;
         if (Ammo < Class->MaxAmmo) {
-          Reload.Set(TICKS_PER_SECOND * 30);
+          Reload.Set(int64_t{TICKS_PER_SECOND} * 30);
         }
         Mark(MARK_CHANGE);
       }
@@ -4216,7 +4216,7 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
       **	Possible reload timer set.
       */
       if (*this == UNIT_V2_LAUNCHER && Reload.IsFinished()) {
-        Reload.Set(TICKS_PER_SECOND * 30);
+        Reload.Set(int64_t{TICKS_PER_SECOND} * 30);
       }
     }
   }

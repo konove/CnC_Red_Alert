@@ -88,6 +88,7 @@
 #include "td/theme.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "base/types.h"
 
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8
@@ -1017,7 +1018,7 @@ void ScoreClass::Presentation() {
     Alloc_Object(new ScorePrintClass(hallfame[i].name, HALLFAME_X,
                                      HALLFAME_Y + i * 8, _bluepal));
     if (hallfame[i].score) {
-      char* str = static_cast<char*>(SysMemPage.Get_Buffer()) + i * 32;
+      char* str = static_cast<char*>(SysMemPage.Get_Buffer()) + static_cast<base::ssize>(i) * 32;
       sprintf(str, "%d", hallfame[i].score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + 6 * 15,
                                        HALLFAME_Y + i * 8, _bluepal, BLACK));

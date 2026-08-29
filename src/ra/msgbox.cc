@@ -58,6 +58,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include <cstddef>
 
 bool cancel_current_msgbox = false;
 
@@ -231,8 +232,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   Hide_Mouse();
   if (preserve) {
-    back = new char[width * height];
-    SeenBuff.To_Buffer(x, y, width, height, back, width * height);
+    back = new char[static_cast<std::size_t>(width) * height];
+    SeenBuff.To_Buffer(x, y, width, height, back, static_cast<long>(width) * height);
   }
   Dialog_Box(x, y, width, height);
   Draw_Caption(Caption, x, y, width);

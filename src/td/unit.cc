@@ -443,7 +443,7 @@ void UnitClass::AI() {
       if (Reload.Expired()) {
         Ammo++;
         if (Ammo < Class->MaxAmmo) {
-          Reload = TICKS_PER_SECOND * 30;
+          Reload = int64_t{TICKS_PER_SECOND} * 30;
         }
         Mark(MARK_CHANGE);
       }

@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "base/types.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/tile.h"
@@ -104,7 +105,7 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
   int iheight = IconHeight;
 
   // Fetch pointer to start of icon's data.
-  auto* ptr = StampPtr + icon * IconSize;
+  auto* ptr = StampPtr + static_cast<base::ssize>(icon) * IconSize;
 
   // Update the clipping window coordinates to be valid maxes instead of width &
   // height , and change the coordinates to be window-relative
@@ -143,7 +144,7 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
 
   if (y_pixel < min_y) {
     iheight -= min_y - y_pixel;
-    ptr += IconWidth * (min_y - y_pixel);
+    ptr += static_cast<base::ssize>(IconWidth) * (min_y - y_pixel);
     y_pixel = min_y;
   }
 
@@ -161,7 +162,8 @@ void Buffer_Draw_Stamp_Clip(const void* thisptr, const void* icondata, int icon,
 
   // Get pointer to position to render icon.
   auto* vp_dst = (GraphicViewPortClass*)thisptr;
-  int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
+  base::ssize dst_area =
+      vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + x_pixel + y_pixel * dst_area;
 
   // Determine row modulo for advancing to next line.

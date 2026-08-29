@@ -90,6 +90,7 @@
 #include "tech/fixed.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
+#include "base/types.h"
 
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8
@@ -668,7 +669,7 @@ void ScoreClass::Presentation() {
     Alloc_Object(new ScorePrintClass(hallfame[i].name, HALLFAME_X,
                                      HALLFAME_Y + i * 8, pal));
     if (hallfame[i].score) {
-      char* str = maststr + i * 32;
+      char* str = maststr + static_cast<base::ssize>(i) * 32;
       sprintf(str, "%d", hallfame[i].score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + 6 * 14,
                                        HALLFAME_Y + i * 8, pal, BLACK));

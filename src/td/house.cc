@@ -4151,9 +4151,9 @@ bool HouseClass::Flag_To_Die() {
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToDie = true;
     if (IsV107) {
-      BorrowedTime = TICKS_PER_SECOND * 3;
+      BorrowedTime = int64_t{TICKS_PER_SECOND} * 3;
     } else {
-      BorrowedTime = TICKS_PER_SECOND * 1;
+      BorrowedTime = int64_t{TICKS_PER_SECOND} * 1;
     }
   }
   return IsToDie;
@@ -4178,9 +4178,9 @@ bool HouseClass::Flag_To_Win() {
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToWin = true;
     if (IsV107) {
-      BorrowedTime = TICKS_PER_SECOND * 3;
+      BorrowedTime = int64_t{TICKS_PER_SECOND} * 3;
     } else {
-      BorrowedTime = TICKS_PER_SECOND * 1;
+      BorrowedTime = int64_t{TICKS_PER_SECOND} * 1;
     }
   }
   return IsToWin;
@@ -4208,9 +4208,9 @@ bool HouseClass::Flag_To_Lose() {
   if (!IsToDie && !IsToLose) {
     IsToLose = true;
     if (IsV107) {
-      BorrowedTime = TICKS_PER_SECOND * 3;
+      BorrowedTime = int64_t{TICKS_PER_SECOND} * 3;
     } else {
-      BorrowedTime = TICKS_PER_SECOND * 1;
+      BorrowedTime = int64_t{TICKS_PER_SECOND} * 1;
     }
   }
   return IsToLose;

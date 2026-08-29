@@ -60,6 +60,7 @@
 #include "sdllib/ww_win.h"
 #include "tech/rgb.h"
 #include "tech/wwfile.h"
+#include "base/types.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *
@@ -87,7 +88,7 @@ void* Small_Icon(const void* iconptr, int iconnum) {
 
   if (iconptr) {
     iconnum = ((unsigned char*)iptr + iptr->Map)[iconnum];
-    data = &((unsigned char*)iptr + iptr->Icons)[iconnum * (24 * 24)];
+    data = &((unsigned char*)iptr + iptr->Icons)[static_cast<base::ssize>(iconnum) * (base::ssize{24} * 24)];
     //		data = &iptr->Icons[iconnum*(24*24)];
 
     for (int index = 0; index < 9; index++) {

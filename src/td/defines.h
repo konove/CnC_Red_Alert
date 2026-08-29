@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_TD_DEFINES_H_
 #define CNC_RED_ALERT_TD_DEFINES_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <utility>
 
@@ -132,7 +133,7 @@
 /**********************************************************************
 **	Defines for verifying free disk space
 */
-#define INIT_FREE_DISK_SPACE 1024 * 4096  // 8388608
+#define INIT_FREE_DISK_SPACE (1024L * 4096)  // 8388608
 #define SAVE_GAME_DISK_SPACE \
   INIT_FREE_DISK_SPACE  // (INIT_FREE_DISK_SPACE - (1024*4096))
 // #define	SAVE_GAME_DISK_SPACE		 100000
@@ -1928,11 +1929,16 @@ inline DirType operator+(DirType f1, int f2) {
 **	Timer constants. These are used when setting the countdown timer.
 **	Note that this is based upon a timer that ticks every 60th of a second.
 */
+// The derived durations are computed in int64_t: they feed timer Set() calls
+// and timer constructors, all of which take int64_t, so computing them in int
+// and widening afterwards is what bugprone-implicit-widening-of-multiplication
+// -result flags. The base tick rates stay int -- they are also divided into
+// int quantities (FADE_PALETTE_*, frame delays).
 #define TICKS_PER_SECOND 15
-#define TICKS_PER_MINUTE (TICKS_PER_SECOND * 60)
+#define TICKS_PER_MINUTE (int64_t{TICKS_PER_SECOND} * 60)
 
 #define TIMER_SECOND 60
-#define TIMER_MINUTE (TIMER_SECOND * 60)
+#define TIMER_MINUTE (int64_t{TIMER_SECOND} * 60)
 
 #define FADE_PALETTE_FAST (TIMER_SECOND / 8)
 #define FADE_PALETTE_MEDIUM (TIMER_SECOND / 4)
@@ -2326,7 +2332,7 @@ typedef enum CommProtocolEnum {
 */
 #define COMPAT_MESSAGE_LENGTH 28
 #define MAX_MESSAGE_SEGMENTS 3
-#define MAX_MESSAGE_LENGTH COMPAT_MESSAGE_LENGTH * 3
+#define MAX_MESSAGE_LENGTH (std::size_t{COMPAT_MESSAGE_LENGTH} * 3)
 
 /*
 ** Defines for magic numbers to place in messages to allow concatenation.

@@ -471,7 +471,7 @@ KeyNumType GadgetClass::Input() {
       if (!Debug_MotionCapture) {
         GraphicBufferClass temp_page(
             SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
-            SeenBuff.Get_Width() * SeenBuff.Get_Height());
+            static_cast<long>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
         CDFileClass file;
         char filename[30];
 

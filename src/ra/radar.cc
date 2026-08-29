@@ -117,6 +117,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/rawfile.h"
+#include "base/types.h"
 
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;
@@ -1066,7 +1067,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         icon &= 0x00FF;
         icon = *(iconset->Map_Data() + icon);
 
-        unsigned char* data = (unsigned char*)icondata + icon * (24 * 24);
+        unsigned char* data = (unsigned char*)icondata + static_cast<base::ssize>(icon) * (base::ssize{24} * 24);
         Buffer_To_Page(0, 0, 24, 24, data, _TileStage);
         _TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
                          true);

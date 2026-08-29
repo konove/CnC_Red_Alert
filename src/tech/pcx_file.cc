@@ -37,6 +37,7 @@
 
 #include "tech/pcx_file.h"
 
+#include "base/types.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/memflag.h"
@@ -92,10 +93,10 @@ int Write_PCX_File(char* name, GraphicViewPortClass& pic,
 
   for (i = 0; i < header.height + 1; i++) {
     Write_Pcx_ScanLine(file_handle, header.byte_per_line,
-                       ptr + i * VP_Scan_Line);
+                       ptr + static_cast<base::ssize>(i) * VP_Scan_Line);
   }
 
-  Mem_Copy(palette, palcopy, 256 * 3);
+  Mem_Copy(palette, palcopy, 256UL * 3);
   pal = (RGB*)palcopy;
   for (i = 0; i < 256; i++) {
     pal->red <<= 2;
