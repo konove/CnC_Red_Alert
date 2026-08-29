@@ -896,7 +896,7 @@ static void Queue_AI_Multiplayer() {
       their_frame, their_sent, their_recv);
 #else
   rc = Wait_For_Players(0, net, Session.MaxAhead << 3,
-                        std::max<int>(net->Response_Time() * 3,
+                        std::max<int>(static_cast<int>(net->Response_Time()) * 3,
                                       FRAMESYNC_DLG_TIME * timeout_factor),
                         FRAMESYNC_TIMEOUT * (2 * timeout_factor),
                         multi_packet_buf, my_sent, their_frame, their_sent,
@@ -1506,16 +1506,17 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // resp_time is divided by 2 because, as reported, it represents a round-
   // trip, and we only want to use a one-way trip.
   //
-  maxahead = resp_time * Session.DesiredFrameRate / (static_cast<unsigned long>(2) * 60);
+  maxahead = static_cast<int>(resp_time * Session.DesiredFrameRate /
+                              (static_cast<unsigned long>(2) * 60));
 
   //
   // Now, we have to round 'maxahead' so it's an even multiple of our
   // send rate.  It also must be at least thrice the FrameSendRate.
   // (Isn't "thrice" a cool word?)
   //
-  maxahead = (maxahead + Session.FrameSendRate - 1) / Session.FrameSendRate *
-             Session.FrameSendRate;
-  maxahead = std::max<int>(maxahead, Session.FrameSendRate * 3);
+  maxahead = static_cast<int>((maxahead + Session.FrameSendRate - 1) / Session.FrameSendRate *
+                                         Session.FrameSendRate);
+  maxahead = std::max<int>(maxahead, static_cast<int>(Session.FrameSendRate * 3));
 
   ev.Type = EventClass::TIMING;
   ev.Data.Timing.DesiredFrameRate = Session.DesiredFrameRate;
@@ -1588,7 +1589,7 @@ static void Generate_Process_Time_Event(ConnManClass* net) {
     MonoClass::Disable();
   }
 
-  avgticks = Session.ProcessTicks / Session.ProcessFrames;
+  avgticks = static_cast<int>(Session.ProcessTicks / Session.ProcessFrames);
 
   ev.Type = EventClass::PROCESS_TIME;
   ev.Data.ProcessTime.AverageTicks = avgticks;
@@ -1805,13 +1806,13 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   //------------------------------------------------------------------------
   packet.Type = EventClass::FRAMESYNC;
   if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    packet.Frame = (Frame + Session.MaxAhead + (Session.FrameSendRate - 1)) /
-                   Session.FrameSendRate * Session.FrameSendRate;
+    packet.Frame = static_cast<unsigned>((Frame + Session.MaxAhead + (Session.FrameSendRate - 1)) /
+                                          (Session.FrameSendRate * Session.FrameSendRate));
   } else {
-    packet.Frame = Frame + Session.MaxAhead;
+    packet.Frame = static_cast<int>(Frame + Session.MaxAhead);
   }
   packet.ID = PlayerPtr->ID;
-  packet.Data.FrameInfo.CRC = ScenarioCRC;
+  packet.Data.FrameInfo.CRC = static_cast<std::uint32_t>(ScenarioCRC);
   packet.Data.FrameInfo.CommandCount = cmd_count;
   packet.Data.FrameInfo.Delay = Session.MaxAhead;
 
@@ -2238,7 +2239,7 @@ static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
   //------------------------------------------------------------------------
   // Convert the timer to seconds
   //------------------------------------------------------------------------
-  new_time = timeout_timer->Value() / 60;
+  new_time = static_cast<int>(timeout_timer->Value()) / 60;
 
   //------------------------------------------------------------------------
   // If the timer has changed, or 'fresh' is set, redraw the dialog
@@ -2470,10 +2471,10 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
   // Set the frame to execute this event on; this is protocol-specific
   //........................................................................
   if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    finfo->Frame = (Frame + frame_delay + (Session.FrameSendRate - 1)) /
-                   Session.FrameSendRate * Session.FrameSendRate;
+    finfo->Frame = static_cast<unsigned>((Frame + frame_delay + (Session.FrameSendRate - 1)) /
+                                          (Session.FrameSendRate * Session.FrameSendRate));
   } else {
-    finfo->Frame = Frame + frame_delay;
+    finfo->Frame = static_cast<int>(Frame + frame_delay);
   }
   //........................................................................
   // Fill in the rest of the event
@@ -2580,7 +2581,7 @@ int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
     //.....................................................................
     // Set the event's frame delay
     //.....................................................................
-    OutList.First().Frame = Frame + frame_delay;
+    OutList.First().Frame = static_cast<int>(Frame + frame_delay);
 
     //.....................................................................
     // Set the event's ID
@@ -2819,11 +2820,11 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
     // Set the event's frame delay (this is protocol-dependent)
     //.....................................................................
     if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-      OutList.First().Frame =
+      OutList.First().Frame = static_cast<unsigned>(
           (Frame + frame_delay + (Session.FrameSendRate - 1)) /
-          Session.FrameSendRate * Session.FrameSendRate;
+          (Session.FrameSendRate * Session.FrameSendRate));
     } else {
-      OutList.First().Frame = Frame + frame_delay;
+      OutList.First().Frame = static_cast<int>(Frame + frame_delay);
     }
 
     //.....................................................................
@@ -3767,8 +3768,8 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   // Only process every 'FrameSendRate' frames
   //------------------------------------------------------------------------
-  testframe = (Frame + (Session.FrameSendRate - 1)) / Session.FrameSendRate *
-              Session.FrameSendRate;
+  testframe = static_cast<int>((Frame + (Session.FrameSendRate - 1)) / Session.FrameSendRate *
+                                           Session.FrameSendRate);
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     if (Frame != testframe) {
@@ -4517,7 +4518,7 @@ void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
 
   fprintf(fp, "--------------------- My data: ---------------------\n");
   fprintf(fp, "My Frame:%" PRId64 "\n", Frame);
-  fprintf(fp, "My MaxAhead:%d\n", static_cast<int>(Session.MaxAhead));
+  fprintf(fp, "My MaxAhead:%d\n", Session.MaxAhead);
 
   if (net) {
     fprintf(fp, "-------------------- Frame Stats: ------------------\n");

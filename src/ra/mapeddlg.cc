@@ -2115,7 +2115,8 @@ int MapEditClass::Load_Scenario() {
       */
       if (housechange) {
         HouseStaticClass* hstatic = &hdata[newhouse];
-        creditbtn.Set_Value(hstatic->InitialCredits / 100);
+        creditbtn.Set_Value(
+            static_cast<int>(hstatic->InitialCredits / 100));
         techlevel.Set_Value(hstatic->TechLevel);
         sourcebtn.Set_Selected_Index(hstatic->Edge);
         maxunit.Set_Value(hstatic->MaxUnit + hstatic->MaxInfantry);

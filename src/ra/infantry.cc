@@ -743,8 +743,8 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
                     Speak(VOX_MONEY_STOLEN);
                   }
                   long cash = bldg->House->Available_Money() / 2;
-                  bldg->House->Spend_Money(cash);
-                  House->Refund_Money(cash);
+                  bldg->House->Spend_Money(static_cast<unsigned int>(cash));
+                  House->Refund_Money(static_cast<unsigned int>(cash));
                 }
               }
             }

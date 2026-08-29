@@ -19,7 +19,7 @@ void Fade_Palette_To(unsigned char* palette, int fade, void (*callback)()) {
     unsigned char fade_palette[256 * 3];
 
     while (true) {
-      int cur_time = std::min<int>(TickCount.Time() - start_time, fade);
+      int cur_time = std::min<int>(static_cast<int>(TickCount.Time() - start_time), fade);
 
       const unsigned char* old_ptr = CurrentPalette;
       const unsigned char* new_ptr = palette;

@@ -608,7 +608,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
     // client\n");
     return false;
   }
-  file_length = send_file.Size();
+  file_length = static_cast<int>(send_file.Size());
 
   response_timer.Set(RESPONSE_TIMEOUT);
 

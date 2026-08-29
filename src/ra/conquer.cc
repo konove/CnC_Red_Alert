@@ -1042,8 +1042,8 @@ void Toggle_Formation() {
   ** set them into formation, proceed to do so.  Otherwise, bail.
   */
   if (setform) {
-    int centerx = static_cast<int>((maxx - minx) / 2) + minx;
-    int centery = static_cast<int>((maxy - miny) / 2) + miny;
+    int centerx = static_cast<int>((maxx - minx) / 2 + minx);
+    int centery = static_cast<int>((maxy - miny) / 2 + miny);
 
     for (index = 0; index < Units.Count(); index++) {
       UnitClass* obj = Units.Ptr(index);
@@ -1052,8 +1052,8 @@ void Toggle_Formation() {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
-        obj->XFormOffset = xc - centerx;
-        obj->YFormOffset = yc - centery;
+        obj->XFormOffset = static_cast<int>(xc - centerx);
+        obj->YFormOffset = static_cast<int>(yc - centery);
       }
     }
 
@@ -1064,8 +1064,8 @@ void Toggle_Formation() {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
-        obj->XFormOffset = xc - centerx;
-        obj->YFormOffset = yc - centery;
+        obj->XFormOffset = static_cast<int>(xc - centerx);
+        obj->YFormOffset = static_cast<int>(yc - centery);
       }
     }
 
@@ -1076,8 +1076,8 @@ void Toggle_Formation() {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
-        obj->XFormOffset = xc - centerx;
-        obj->YFormOffset = yc - centery;
+        obj->XFormOffset = static_cast<int>(xc - centerx);
+        obj->YFormOffset = static_cast<int>(yc - centery);
       }
     }
   }
@@ -3137,7 +3137,7 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
         GraphicBufferClass gb(width, height, _xbuffer);
         TPoint2D pt(width / 2, height / 2);
 
-        gb.Scale_Rotate(bm, pt, scale, 256 - (rotation - 64));
+        gb.Scale_Rotate(bm, pt, static_cast<int32_t>(scale), 256 - (rotation - 64));
         buffer = _xbuffer;
       }
 
@@ -3151,7 +3151,7 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
         ghostdata = DisplayClass::SpecialGhost;
       }
 
-      predoffset = Frame;
+      predoffset = static_cast<int>(Frame);
 
       if (x > WindowList[window][WINDOWWIDTH] << 2) {
         predoffset = -predoffset;
@@ -4216,7 +4216,7 @@ static void Do_Record_Playback() {
     /*
     **	Save the current object list count
     */
-    count = CurrentObject.Count();
+    count = static_cast<int>(CurrentObject.Count());
     Session.RecordFile.Write(&count, sizeof(count));
 
     /*
@@ -4348,7 +4348,7 @@ void* Hires_Load(char* name) {
   CCFileClass file(filename);
 
   if (file.Is_Available()) {
-    length = file.Size();
+    length = static_cast<int>(file.Size());
     return_ptr = new char[length];
     file.Read(return_ptr, length);
     return return_ptr;

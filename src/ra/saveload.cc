@@ -123,6 +123,7 @@
 #include "tech/shastraw.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
+#include "base/types.h"
 
 #define SAVE_BLOCK_SIZE 4096
 
@@ -261,7 +262,7 @@ static void Put_All(Pipe& pipe, int save_net) {
   */
   Logic.Save(pipe);
 
-  int count = MapTriggers.Count();
+  base::ssize count = MapTriggers.Count();
   pipe.Put(&count, sizeof(count));
   for (int index = 0; index < MapTriggers.Count(); index++) {
     TARGET target = MapTriggers[index]->As_Target();
@@ -467,7 +468,7 @@ bool Save_Game(int id, const char* descr, bool) {
   version++;
   fpipe.Put(&version, sizeof(version));
 
-  int pos = file.Seek(0, SEEK_CUR);
+  int pos = static_cast<int>(file.Seek(0, SEEK_CUR));
 
   /*
   **	Store a dummy message digest.
@@ -908,7 +909,7 @@ bool Load_Game(int id) {
                  sizeof(Session.Options.ScenarioDescription));
           memcpy(Session.ScenarioFileName, Scen.ScenarioName,
                  sizeof(Session.ScenarioFileName));
-          Session.ScenarioFileLength = scenario_file.Size();
+          Session.ScenarioFileLength = static_cast<int>(scenario_file.Size());
           memcpy(Session.ScenarioDigest, Session.Scenarios[s]->Get_Digest(),
                  sizeof(Session.ScenarioDigest));
           Session.ScenarioIsOfficial = Session.Scenarios[s]->Get_Official();
@@ -1062,7 +1063,7 @@ bool Save_Misc_Values(Pipe& file) {
   **	Save currently-selected objects list.
   **	Save the # of ptrs in the list.
   */
-  count = CurrentObject.Count();
+  count = static_cast<int>(CurrentObject.Count());
   file.Put(&count, sizeof(count));
 
   /*

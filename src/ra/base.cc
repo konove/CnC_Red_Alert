@@ -195,7 +195,7 @@ bool BaseClass::Save(Pipe& file) const {
   */
   file.Put(&House, sizeof(House));
 
-  num_struct = Nodes.Count();
+  num_struct = static_cast<int>(Nodes.Count());
   file.Put(&num_struct, sizeof(num_struct));
 
   /*
@@ -494,7 +494,7 @@ void BaseClass::Write_INI(CCINIClass& ini) {
     **	they must be read in the same order they were created, so "000" must be
     **	read first, etc.
     */
-    ini.Put_Int(INI_Name(), "Count", Nodes.Count());
+    ini.Put_Int(INI_Name(), "Count", static_cast<int>(Nodes.Count()));
 
     // Write each entry into the INI
     for (base::ssize i = 0; i < Nodes.Count(); i++) {

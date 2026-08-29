@@ -171,10 +171,10 @@ int ListClass::Add_Item(const char* text) {
     **	Tell the slider that there is one more entry in the list.
     */
     if (IsScrollActive) {
-      ScrollGadget.Set_Maximum(List.Count());
+      ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
     }
   }
-  return List.Count() - 1;
+  return static_cast<int>(List.Count()) - 1;
 }
 
 /***********************************************************************************************
@@ -192,7 +192,7 @@ int ListClass::Add_Item(int text) {
   if (text != TXT_NONE) {
     Add_Item(Text_String(text));
   }
-  return List.Count() - 1;
+  return static_cast<int>(List.Count()) - 1;
 }
 
 /***********************************************************************************************
@@ -221,7 +221,7 @@ void ListClass::Remove_Item(const char* text) {
     **	Tell the slider that there is one less entry in the list.
     */
     if (IsScrollActive) {
-      ScrollGadget.Set_Maximum(List.Count());
+      ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
     }
 
     /*
@@ -286,7 +286,7 @@ int ListClass::Action(unsigned flags, KeyNumType& key) {
     int index = Get_Mouse_Y() - (Y + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
-    SelectedIndex = std::min<int>(SelectedIndex, List.Count() - 1);
+    SelectedIndex = std::min<int>(SelectedIndex, static_cast<int>(List.Count()) - 1);
   }
   return ControlClass::Action(flags, key);
 }
@@ -412,7 +412,7 @@ const char* ListClass::Get_Item(int index) const {
     return nullptr;
   }
 
-  index = std::min<int>(index, List.Count() - 1);
+  index = std::min<int>(index, static_cast<int>(List.Count()) - 1);
   return List[index];
 }
 
@@ -502,7 +502,7 @@ void ListClass::Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ListClass::Set_View_Index(int index) {
-  index = Bound(index, 0, List.Count() - LineCount);
+  index = Bound(index, 0, static_cast<int>(List.Count()) - LineCount);
   if (index != CurrentTopIndex) {
     CurrentTopIndex = index;
     Flag_To_Redraw();
@@ -569,7 +569,7 @@ int ListClass::Add_Scroll_Bar() {
     **	Inform the slider of the size of the window and the current view
     *position.
     */
-    ScrollGadget.Set_Maximum(List.Count());
+    ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
     ScrollGadget.Set_Thumb_Size(LineCount);
     ScrollGadget.Set_Value(CurrentTopIndex);
 

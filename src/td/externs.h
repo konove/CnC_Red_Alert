@@ -283,7 +283,7 @@ extern int MPlayerSolo;
 extern int MPlayerUnitCount;
 extern int MPlayerCountMin[2];
 extern int MPlayerCountMax[2];
-extern unsigned long MPlayerMaxAhead;
+extern int MPlayerMaxAhead;
 extern long FrameSendRate;
 extern unsigned char MPlayerID[MAX_PLAYERS];
 extern HousesType MPlayerHouses[MAX_PLAYERS];

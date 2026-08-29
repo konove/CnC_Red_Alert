@@ -221,7 +221,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
 
   if (Buff) {
     buffer = static_cast<char*>(Buff);
-    int32_t max_lines = Size / width;
+    int32_t max_lines = static_cast<int32_t>(Size / width);
     height = std::min(max_lines - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
     if (!pic->Get_Buffer()) {

@@ -1014,7 +1014,7 @@ void TriggerClass::Read_INI(char* buffer) {
   /*
   **	Set 'tbuffer' to point just past the INI buffer
   */
-  len = strlen(buffer) + 2;
+  len = static_cast<int>(strlen(buffer)) + 2;
   tbuffer = buffer + len;
 
   /*

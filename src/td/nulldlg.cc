@@ -394,7 +394,7 @@ int Test_Null_Modem() {
     //
     // put time from start of game for determining the host in case of tie.
     //
-    SendPacket.Seed = TickCount.Time();
+    SendPacket.Seed = static_cast<int>(TickCount.Time());
     SendPacket.ID = (intptr_t)buffer;  // address of buffer for more uniqueness.
 
     // Smart_Printf( "Sending SERIAL_CONNECT %d, ID %d \n", SendPacket.Seed,
@@ -2184,7 +2184,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       temp = strchr(custom_port, '-');
       if (temp) {
         pos = static_cast<int>(temp - custom_port) + 2;
-        len = strlen(tempsettings.ModemName);
+        len = static_cast<int>(strlen(tempsettings.ModemName));
         strncpy(custom_port + pos, tempsettings.ModemName, len);
         *(custom_port + pos + len) = 0;
         port::SafeCopy(portbuf, tempsettings.ModemName);
@@ -2222,7 +2222,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         temp = strchr(custom_port, '-');
         if (temp) {
           pos = static_cast<int>(temp - custom_port) + 2;
-          len = strlen(portbuf);
+          len = static_cast<int>(strlen(portbuf));
           strncpy(custom_port + pos, portbuf, len);
           *(custom_port + pos + len) = 0;
         }
@@ -2274,7 +2274,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       temp = strchr(item, '-');
       if (temp) {
         pos = static_cast<int>(temp - item) + 2;
-        len = strlen(tempsettings.CallWaitString);
+        len = static_cast<int>(strlen(tempsettings.CallWaitString));
         strncpy(item + pos, tempsettings.CallWaitString, len);
         *(item + pos + len) = 0;
         if (i == cwaitstr_index) {
@@ -2530,7 +2530,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                   temp = strchr(item, '-');
                   if (temp) {
                     pos = static_cast<int>(temp - item) + 2;
-                    len = strlen(portbuf);
+                    len = static_cast<int>(strlen(portbuf));
                     strncpy(item + pos, portbuf, len);
                     *(item + pos + len) = 0;
                     display = REDRAW_BUTTONS;
@@ -2548,7 +2548,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             temp = strchr(item, '-');
             if (temp) {
               pos = static_cast<int>(temp - item) + 2;
-              len = strlen(portbuf);
+              len = static_cast<int>(strlen(portbuf));
               strncpy(item + pos, portbuf, len);
               *(item + pos + len) = 0;
               display = REDRAW_BUTTONS;
@@ -2788,7 +2788,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           temp = strchr(item, '-');
           if (temp) {
             pos = static_cast<int>(temp - item) + 2;
-            len = strlen(cwaitstrbuf);
+            len = static_cast<int>(strlen(cwaitstrbuf));
             strncpy(item + pos, cwaitstrbuf, len);
             *(item + pos + len) = 0;
             display = REDRAW_BUTTONS;
@@ -4052,7 +4052,7 @@ int Com_Scenario_Dialog() {
 
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-          message_length = strlen(Messages.Get_Edit_Buf());
+          message_length = static_cast<int>(strlen(Messages.Get_Edit_Buf()));
           crc = static_cast<unsigned short>(
               CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
@@ -4458,10 +4458,10 @@ int Com_Scenario_Dialog() {
     // calculated one way delay for a packet and overall delay to execute
     // a packet
     //
-    MPlayerMaxAhead = std::max<int>(SendPacket.ResponseTime / 8, 2);
+    MPlayerMaxAhead = std::max<int>(static_cast<int>(SendPacket.ResponseTime / 8), 2);
     char flip[128];
     snprintf(flip, sizeof(flip), "C&C95 - MaxAhead set to %d frames\n",
-             static_cast<int>(MPlayerMaxAhead));
+             MPlayerMaxAhead);
     CCDebugString(flip);
 
     SendPacket.ID = ModemGameToPlay;
@@ -5246,7 +5246,7 @@ int Com_Show_Scenario_Dialog() {
 
                 sent_so_far = 0;
                 magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-                message_length = strlen(Messages.Get_Edit_Buf());
+                message_length = static_cast<int>(strlen(Messages.Get_Edit_Buf()));
                 crc = static_cast<unsigned short>(
                     CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
@@ -5543,11 +5543,11 @@ int Com_Show_Scenario_Dialog() {
             // calculated one way delay for a packet and overall delay
             // to execute a packet
             //
-            MPlayerMaxAhead = std::max<int>(ReceivePacket.ResponseTime / 8, 2);
+            MPlayerMaxAhead = std::max<int>(static_cast<int>(ReceivePacket.ResponseTime / 8), 2);
             char flip[128];
             snprintf(flip, sizeof(flip),
                      "C&C95 - MaxAhead set to %d frames\n",
-                     static_cast<int>(MPlayerMaxAhead));
+                     MPlayerMaxAhead);
             CCDebugString(flip);
 
             process = false;

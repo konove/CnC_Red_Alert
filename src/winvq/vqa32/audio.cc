@@ -110,7 +110,7 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
 
   while (SDL_AudioStreamAvailable(SDLStream) < len) {
     SDL_AudioStreamPut(SDLStream, audio->Buffer + audio->PlayPosition,
-                       config->HMIBufSize);
+                       static_cast<int>(config->HMIBufSize));
 
     /* Compute the 'NextBlock' index */
     audio->NextBlock = audio->CurBlock + 1;

@@ -1811,7 +1811,7 @@ void MapEditClass::Build_Base_To(int percent) {
   /*
   ** Compute number of buildings to build
   */
-  num_buildings = (Base.Nodes.Count() * percent) / 100;
+  num_buildings = (static_cast<int>(Base.Nodes.Count()) * percent) / 100;
 
   /*
   ** Build the base to the desired amount

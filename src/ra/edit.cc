@@ -42,7 +42,7 @@ EditClass::EditClass(const int id, char* text, const int max_len,
   EditFlags = style;
   String = text;
   MaxLength = max_len - 1;
-  Length = strlen(String);
+  Length = static_cast<int>(strlen(String));
   GadgetClass::Flag_To_Redraw();
   Color = Get_Color_Scheme();
 
@@ -73,7 +73,7 @@ EditClass::~EditClass() {
 void EditClass::Set_Text(char* text, const int max_len) {
   String = text;
   MaxLength = max_len - 1;
-  Length = strlen(String);
+  Length = static_cast<int>(strlen(String));
   Flag_To_Redraw();
 }
 
@@ -233,7 +233,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
 void EditClass::Set_Focus() {
   Length = 0;
   if (String) {
-    Length = strlen(String);
+    Length = static_cast<int>(strlen(String));
   }
   ControlClass::Set_Focus();
 }

@@ -273,6 +273,8 @@ class HouseClass {
   **	This is the running total of the number of credits this house has
   *accumulated.
   */
+  // Stays 64-bit: HouseClass is byte-serialized into the save file (see
+  // src/{ra,td}/heap_layout_test.cc), so narrowing this changes sizeof().
   long Tiberium;
   long Credits;
   long InitialCredits;
@@ -465,7 +467,7 @@ class HouseClass {
   int Adjust_Capacity(int adjust, bool inanger = false);
   int Power_Fraction() const;
   int Tiberium_Fraction() {
-    return !Tiberium ? 0 : Cardinal_To_Fixed(Capacity, Tiberium);
+    return !static_cast<int>(Tiberium) ? 0 : Cardinal_To_Fixed(static_cast<int>(Capacity), static_cast<int>(Tiberium));
   }
   void Begin_Production() { IsStarted = true; }
   const TeamTypeClass* Suggested_New_Team(bool alertcheck = false);

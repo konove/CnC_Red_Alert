@@ -254,7 +254,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
   */
   sprintf(sec, "[%s]", section);  // sec = section name including []'s
   strupr(sec);
-  len = strlen(sec);  // len = section name length, incl []'s
+  len = static_cast<int>(strlen(sec));  // len = section name length, incl []'s
 
   /*
   **	Scan for a matching section
@@ -345,7 +345,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
       *associated *	string.
       */
       if (key) {
-        entrylen = strlen(key);
+        entrylen = static_cast<int>(strlen(key));
 
         for (;;) {
           /*
@@ -612,7 +612,7 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
     **	Get # characters up to newline; \n is used since we're after the end
     **	of this line
     */
-    eol = strcspn(offset, "\n");
+    eol = static_cast<int>(strcspn(offset, "\n"));
 
     /*
     **	Erase the entry by strcpy'ing the entire INI file over this entry

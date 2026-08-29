@@ -661,7 +661,7 @@ void Read_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Set 'tbuffer' to point past the actual INI data
   ------------------------------------------------------------------------*/
-  len = strlen(buffer) + 2;
+  len = static_cast<int>(strlen(buffer)) + 2;
   tbuffer = buffer + len;
 
   /*------------------------------------------------------------------------
@@ -696,7 +696,7 @@ void Read_MultiPlayer_Settings() {
     InitStrings.Add(entry);
     SerialDefaults.InitStringIndex = 0;
   } else {
-    len = strlen(buffer) + 2;
+    len = static_cast<int>(strlen(buffer)) + 2;
   }
 
   /*------------------------------------------------------------------------
@@ -965,7 +965,7 @@ void Write_MultiPlayer_Settings() {
   Save all InitString entries.  In descending order so they come out in
   ascending order.
   ------------------------------------------------------------------------*/
-  for (i = InitStrings.Count() - 1; i >= 0; i--) {
+  for (i = static_cast<int>(InitStrings.Count()) - 1; i >= 0; i--) {
     sprintf(buf, "%03d", i);
     WWWritePrivateProfileString("InitStrings", buf, InitStrings[i], buffer);
   }
@@ -979,7 +979,7 @@ void Write_MultiPlayer_Settings() {
   Save all Phone Book entries.
   Format: Entry=Name,PhoneNum,Port,IRQ,Baud,InitString
   ------------------------------------------------------------------------*/
-  for (i = PhoneBook.Count() - 1; i >= 0; i--) {
+  for (i = static_cast<int>(PhoneBook.Count()) - 1; i >= 0; i--) {
     snprintf(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
              PhoneBook[i]->Name, PhoneBook[i]->Number,
              static_cast<unsigned int>(PhoneBook[i]->Settings.Port),

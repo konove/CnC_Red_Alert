@@ -333,8 +333,9 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       ** Call the recvfrom function to get the outstanding packet.
       */
       socklen_t addr_len = sizeof(addr);
-      int rc = recvfrom(Socket, ReceiveBuffer, sizeof(ReceiveBuffer), 0,
-                        (sockaddr*)&addr, &addr_len);
+      int rc = static_cast<int>(recvfrom(Socket, ReceiveBuffer,
+                                         sizeof(ReceiveBuffer), 0,
+                                         (sockaddr*)&addr, &addr_len));
       if (rc == SOCKET_ERROR) {
         Clear_Socket_Error(Socket);
         return;
@@ -400,8 +401,9 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       *Winsock will
       ** send us another WRITE message when it is ready to receive more data.
       */
-      int rc = sendto(Socket, packet->Buffer, packet->BufferLen, 0,
-                      (sockaddr*)&addr, sizeof(addr));
+      int rc = static_cast<int>(sendto(Socket, packet->Buffer,
+                                       packet->BufferLen, 0,
+                                       (sockaddr*)&addr, sizeof(addr)));
 
       if (rc == -1) {
         if (Get_Last_Error() == EWOULDBLOCK) {

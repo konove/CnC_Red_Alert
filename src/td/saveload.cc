@@ -571,7 +571,7 @@ bool Save_Misc_Values(FileClass& file) {
   **	Save currently-selected objects list.
   **	Save the # of ptrs in the list.
   */
-  count = CurrentObject.Count();
+  count = static_cast<int>(CurrentObject.Count());
   if (file.Write(&count, sizeof(count)) != sizeof(count)) {
     return false;
   }

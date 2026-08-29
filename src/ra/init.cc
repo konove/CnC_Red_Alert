@@ -2013,7 +2013,7 @@ long Obfuscate(const char* string) {
   */
   strncpy(buffer, string, sizeof(buffer));
   buffer[sizeof(buffer) - 1] = '\0';
-  int length = strlen(buffer);
+  int length = static_cast<int>(strlen(buffer));
 
   /*
   **	Only upper case letters are significant.
@@ -2233,7 +2233,7 @@ void Init_Random() {
     if (CustomSeed != 0) {
       Seed = CustomSeed;
     } else {
-      srand(time(nullptr));
+      srand(static_cast<unsigned>(time(nullptr)));
       Seed = rand();
     }
   }
@@ -3055,7 +3055,7 @@ static void Init_Bulk_Data() {
   for (int index = 0; index < std::ssize(TutorialTextOffsets); index++) {
     char num[10];
     sprintf(num, "%d", index);
-    int textoffset = textptr - TutorialTextData;
+    int textoffset = static_cast<int>(textptr - TutorialTextData);
     if (ini.Get_String("Tutorial", num, "", textptr, totallen - textoffset)) {
       TutorialTextOffsets[index] = textoffset;
       textptr += strlen(textptr) + 1;
@@ -3085,7 +3085,7 @@ static void Init_Bulk_Data() {
  *=============================================================================================*/
 static void Init_Keys() {
   std::string keys = GetKeys();
-  RAMFileClass file(keys.data(), keys.size());
+  RAMFileClass file(keys.data(), static_cast<int>(keys.size()));
   INIClass ini;
   ini.Load(file);
 

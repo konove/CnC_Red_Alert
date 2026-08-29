@@ -155,7 +155,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
   */
   SpareTicks = std::min(SpareTicks, (long)kTimerSecond);
   _record[RECORDCOUNT - 1].Graphic = Fixed_To_Cardinal(
-      RECORDHEIGHT, Cardinal_To_Fixed(kTimerSecond, SpareTicks));
+      RECORDHEIGHT, Cardinal_To_Fixed(kTimerSecond, static_cast<unsigned int>(SpareTicks)));
 
   /*
   **	Draw the bars across the performance record screen.

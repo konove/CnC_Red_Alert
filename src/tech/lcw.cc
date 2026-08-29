@@ -98,7 +98,7 @@ int LCW_Uncomp(const void* source, void* dest, unsigned long) {
       if (!(op_code & 0x40)) {
         if (op_code == 0x80) {
           /* Return # of destination bytes written. */
-          return static_cast<unsigned long>(dest_ptr - (unsigned char*)dest);
+          return static_cast<int>(dest_ptr - (unsigned char*)dest);
         }
         /* Do a medium copy from source. */
         count = op_code & 0x3f;

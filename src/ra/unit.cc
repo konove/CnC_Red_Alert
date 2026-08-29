@@ -3895,7 +3895,7 @@ int UnitClass::Pip_Count() const {
 
   if (*this == UNIT_CHRONOTANK) {
     int fulldur = ChronoTankDuration * kTicksPerMinute;
-    return (fulldur - MoebiusCountDown.Value()) / (fulldur / 5);
+    return (fulldur - static_cast<int>(MoebiusCountDown.Value())) / (fulldur / 5);
   }
   return 0;
 }

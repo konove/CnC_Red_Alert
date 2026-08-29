@@ -740,7 +740,7 @@ void BuildingClass::Decode_Pointers() {
   Decode the Factory value, subtracting off the '1' we added when coding it
   ------------------------------------------------------------------------*/
   if (Factory) {
-    Factory = Factories.Raw_Ptr((intptr_t)Factory - 1);
+    Factory = Factories.Raw_Ptr(static_cast<int>((intptr_t)Factory - 1));
     Check_Ptr(Factory);
   }
 
@@ -1494,7 +1494,7 @@ bool LayerClass::Save(FileClass& file) {
   /*
   ------------------------- Save # array elements --------------------------
   */
-  count = Count();
+  count = static_cast<int>(Count());
   if (file.Write(&count, sizeof(count)) != sizeof(count)) {
     return false;
   }

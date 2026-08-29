@@ -1766,7 +1766,7 @@ bool Select_Game(bool fade) {
 #ifdef FORCE_WINSOCK
   if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP && GameToPlay != GAME_NORMAL) {
     if (!Special.IsFromWChat) {
-      MPlayerMaxAhead = FrameSendRate * 3;  // 2;
+      MPlayerMaxAhead = static_cast<int>(FrameSendRate * 3);  // 2;
     } else {
       MPlayerMaxAhead = WChatMaxAhead;
       FrameSendRate = WChatSendRate;
@@ -2826,7 +2826,7 @@ long Obfuscate(const char* string) {
   */
   strncpy(buffer, string, sizeof(buffer));
   buffer[sizeof(buffer) - 1] = '\0';
-  int length = strlen(buffer);
+  int length = static_cast<int>(strlen(buffer));
 
   /*
   **	Only upper case letters are significant.

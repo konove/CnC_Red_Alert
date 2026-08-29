@@ -256,7 +256,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   sys_header->pixel_y = file_header.pixel_y;
   sys_header->pixel_width = file_header.pixel_width;
   sys_header->pixel_height = file_header.pixel_height;
-  sys_header->anim_mem_size = user_buffer_size;
+  sys_header->anim_mem_size = static_cast<std::uint32_t>(user_buffer_size);
   sys_header->delta_buffer = delta_buffer;
   sys_header->largest_frame_size = static_cast<unsigned short>(
       delta_buffer_size - sizeof(SysAnimHeaderType));

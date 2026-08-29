@@ -34,14 +34,14 @@ void strtrim(char* buffer) {
       source++;
     }
     if (source != buffer) {
-      int len = strlen(source);
+      int len = static_cast<int>(strlen(source));
       memmove(buffer, source, len + 1);
     }
 
     /*
     **	Clip trailing white space from the string.
     */
-    for (int index = strlen(buffer) - 1; index >= 0; index--) {
+    for (int index = static_cast<int>(strlen(buffer)) - 1; index >= 0; index--) {
       if (isspace(buffer[index])) {
         buffer[index] = '\0';
       } else {
@@ -80,5 +80,5 @@ int Read_Line(Straw& file, char* buffer, int len, bool& eof) {
   buffer[count] = '\0';
 
   strtrim(buffer);
-  return strlen(buffer);
+  return static_cast<int>(strlen(buffer));
 }

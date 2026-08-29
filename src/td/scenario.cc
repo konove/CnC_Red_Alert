@@ -520,7 +520,7 @@ void Do_Win() {
     Keyboard::Clear();
   }
 
-  CarryOverMoney = PlayerPtr->Credits;
+  CarryOverMoney = static_cast<int>(PlayerPtr->Credits);
 
   int pieces = PlayerPtr->NukePieces;
 

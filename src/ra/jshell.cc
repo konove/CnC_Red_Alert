@@ -290,7 +290,8 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType) {
   CCFileClass fc(filename);
-  return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
+  return static_cast<int>(
+      Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000);
 }
 
 /***********************************************************************************************

@@ -344,7 +344,7 @@ int INIClass::Save(Pipe& pipe) const {
     **	Output the section identifier.
     */
     total += pipe.Put("[", 1);
-    total += pipe.Put(secptr->Section, strlen(secptr->Section));
+    total += pipe.Put(secptr->Section, static_cast<int>(strlen(secptr->Section)));
     total += pipe.Put("]", 1);
     total += pipe.Put("\r\n", strlen("\r\n"));
 
@@ -353,9 +353,9 @@ int INIClass::Save(Pipe& pipe) const {
     */
     INIEntry* entryptr = secptr->EntryList.First();
     while (entryptr && entryptr->Is_Valid()) {
-      total += pipe.Put(entryptr->Entry, strlen(entryptr->Entry));
+      total += pipe.Put(entryptr->Entry, static_cast<int>(strlen(entryptr->Entry)));
       total += pipe.Put("=", 1);
-      total += pipe.Put(entryptr->Value, strlen(entryptr->Value));
+      total += pipe.Put(entryptr->Value, static_cast<int>(strlen(entryptr->Value)));
       total += pipe.Put("\r\n", strlen("\r\n"));
 
       entryptr = entryptr->Next();
@@ -395,8 +395,8 @@ INIClass::INISection* INIClass::Find_Section(const char* section) const {
   if (section != nullptr) {
     long crc = CrcEngine::Compute(section);
 
-    if (SectionIndex.Is_Present(crc)) {
-      return SectionIndex.Fetch_Index(crc);
+    if (SectionIndex.Is_Present(static_cast<int>(crc))) {
+      return SectionIndex.Fetch_Index(static_cast<int>(crc));
     }
   }
   return nullptr;
@@ -648,7 +648,7 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
     /*
     **	Scan backward looking for a good break position.
     */
-    int count = strlen(buffer);
+    int count = static_cast<int>(strlen(buffer));
     if (count > 0) {
       if (count >= 75) {
         while (count) {
@@ -724,7 +724,7 @@ int INIClass::Get_TextBlock(const char* section, char* buffer, int len) const {
 
     Get_String(section, Get_Entry(section, index), "", buffer, len);
 
-    int partial = strlen(buffer);
+    int partial = static_cast<int>(strlen(buffer));
     total += partial;
     buffer += partial;
     len -= partial;
@@ -1034,7 +1034,7 @@ int INIClass::Get_String(const char* section, const char* entry,
   }
   buffer[size - 1] = '\0';
   strtrim(buffer);
-  return strlen(buffer);
+  return static_cast<int>(strlen(buffer));
 }
 
 /***********************************************************************************************

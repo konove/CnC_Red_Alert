@@ -749,7 +749,9 @@ int BuildingClass::Shape_Number() const {
         */
         if (*this == STRUCT_STORAGE) {
           const int level =
-              House->Capacity ? House->Tiberium * 5 / House->Capacity : 0;
+              House->Capacity
+                  ? static_cast<int>(House->Tiberium * 5 / House->Capacity)
+                  : 0;
 
           shapenum += std::clamp(level, 0, 4);
           if (Health_Ratio() <= Rule.ConditionYellow) {
@@ -1284,7 +1286,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
   if (this != source /*&& !Class->IsInsignificant*/) {
     if (source) {
-      House->LATime = Frame;
+      House->LATime = static_cast<int>(Frame);
       House->LAType = source->What_Am_I();
       House->LAZone = House->Which_Zone(this);
       House->LAEnemy = source->Owner();
@@ -3788,7 +3790,7 @@ int BuildingClass::Mission_Attack() {
 
     case FIRE_REARM:
       PrimaryFacing.Set_Desired(Direction(TarCom));
-      return Arm.Value();
+      return static_cast<int>(Arm.Value());
 
     case FIRE_BUSY:
       return 1;

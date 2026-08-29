@@ -1936,10 +1936,10 @@ static int Net_Join_Dialog() {
       //	Redraw buttons
       //..................................................................
       if (display >= REDRAW_BUTTONS) {
-        aiplayersgauge.Set_Maximum(Rule.MaxPlayers - Session.Players.Count());
+        aiplayersgauge.Set_Maximum(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
         if (Session.Options.AIPlayers >
             Rule.MaxPlayers - Session.Players.Count()) {
-          aiplayersgauge.Set_Value(Rule.MaxPlayers - Session.Players.Count());
+          aiplayersgauge.Set_Value(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
         }
         commands->Draw_All();
       }
@@ -2742,7 +2742,7 @@ static int Net_Join_Dialog() {
       creditsgauge.Set_Value(Session.Options.Credits);
       if (Session.Options.AIPlayers >
           Rule.MaxPlayers - Session.Players.Count()) {
-        aiplayersgauge.Set_Value(Rule.MaxPlayers - Session.Players.Count());
+        aiplayersgauge.Set_Value(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
       } else {
         aiplayersgauge.Set_Value(Session.Options.AIPlayers);
       }
@@ -2770,10 +2770,10 @@ static int Net_Join_Dialog() {
       //.....................................................................
       display = REDRAW_MESSAGE;
     } else if (event == EV_NEW_PLAYER || event == EV_PLAYER_SIGNOFF) {
-      aiplayersgauge.Set_Maximum(Rule.MaxPlayers - Session.Players.Count());
+      aiplayersgauge.Set_Maximum(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
       if (Session.Options.AIPlayers >
           Rule.MaxPlayers - Session.Players.Count()) {
-        aiplayersgauge.Set_Value(Rule.MaxPlayers - Session.Players.Count());
+        aiplayersgauge.Set_Value(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
       }
     } else if (event == EV_GAME_SIGNOFF) {
       //.....................................................................
@@ -2981,7 +2981,7 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	Set the number of players in this game, and the scenario number.
       //..................................................................
-      Session.NumPlayers = Session.Players.Count();
+      Session.NumPlayers = static_cast<int>(Session.Players.Count());
     }
 
     //.....................................................................
@@ -2989,7 +2989,7 @@ static int Net_Join_Dialog() {
     //	a chance to get to the other system.  If he doesn't get our ACK,
     // he'll be waiting the whole time we load MIX files.
     //.....................................................................
-    int i = std::max(Ipx.Global_Response_Time() * 2, 60L);
+    int i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
     starttime = TickCount.Value();
     while (TickCount.Value() - starttime < static_cast<int64_t>(i)) {
       Ipx.Service();
@@ -3124,13 +3124,13 @@ static int Request_To_Join(char* playername, int join_index, HousesType house,
   // presence of Aftermath expansion.
   if (Is_Aftermath_Installed()) {
     //		debugprint( "Guest tells host 'I have Aftermath'\n" );
-    Session.GPacket.PlayerInfo.MinVersion = VerNum.Min_Version() | 0x80000000;
+    Session.GPacket.PlayerInfo.MinVersion = static_cast<int>(VerNum.Min_Version()) | 0x80000000;
   } else {
     //		debugprint( "Guest tells host 'I don't have
     // Aftermath'\n" );
-    Session.GPacket.PlayerInfo.MinVersion = VerNum.Min_Version();
+    Session.GPacket.PlayerInfo.MinVersion = static_cast<int>(VerNum.Min_Version());
   }
-  Session.GPacket.PlayerInfo.MaxVersion = VerNum.Max_Version();
+  Session.GPacket.PlayerInfo.MaxVersion = static_cast<std::uint32_t>(VerNum.Max_Version());
   Session.GPacket.PlayerInfo.CheatCheck = RuleINI.Get_Unique_ID();
 
   Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
@@ -3951,7 +3951,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //.....................................................................
     // If this packet is from myself, don't add it to the list
     //.....................................................................
-    if (Session.GPacket.Chat.ID == Session.UniqueID) {
+    if (Session.GPacket.Chat.ID == static_cast<uint32_t>(Session.UniqueID)) {
       found = 1;
     }
     //.....................................................................
@@ -4404,7 +4404,7 @@ static int Net_New_Dialog() {
   //	Init random-number generator, & create a seed to be used for all random
   //	numbers from here on out
   //------------------------------------------------------------------------
-  srand(time(nullptr));
+  srand(static_cast<unsigned>(time(nullptr)));
   Seed = rand();
 
   //------------------------------------------------------------------------
@@ -4458,7 +4458,7 @@ static int Net_New_Dialog() {
   //
   // Now init the max range of the AI players slider.
   //
-  aiplayersgauge.Set_Maximum(Rule.MaxPlayers - Session.Players.Count());
+  aiplayersgauge.Set_Maximum(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
   aiplayersgauge.Set_Value(Session.Options.AIPlayers);
 
   //------------------------------------------------------------------------
@@ -4700,7 +4700,7 @@ static int Net_New_Dialog() {
         Session.Options.AIPlayers = aiplayersgauge.Get_Value();
         if (Session.Options.AIPlayers + Session.Players.Count() >
             Rule.MaxPlayers) {  // if it's pegged, max it out
-          Session.Options.AIPlayers = Rule.MaxPlayers - Session.Players.Count();
+          Session.Options.AIPlayers = Rule.MaxPlayers - static_cast<int>(Session.Players.Count());
           aiplayersgauge.Set_Value(Session.Options.AIPlayers);
         }
         transmit = 1;
@@ -4762,7 +4762,7 @@ static int Net_New_Dialog() {
         //	an OK; force a wait longer than 1 second (to give all players
         //	a chance to know about this new guy)
         //...............................................................
-        i = std::max(Ipx.Global_Response_Time() * 2, 60L);
+        i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
         while (TickCount.Value() - ok_timer < i) {
           Ipx.Service();
         }
@@ -4931,11 +4931,11 @@ static int Net_New_Dialog() {
     whahoppa = Get_NewGame_Responses(&playerlist, color_used);
     if (whahoppa == EV_NEW_PLAYER) {
       ok_timer = TickCount.Value();
-      aiplayersgauge.Set_Maximum(Rule.MaxPlayers - Session.Players.Count());
+      aiplayersgauge.Set_Maximum(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
       Session.Options.AIPlayers = aiplayersgauge.Get_Value();
       if (Session.Options.AIPlayers + Session.Players.Count() >
           Rule.MaxPlayers) {  // if it's pegged, max it out
-        Session.Options.AIPlayers = Rule.MaxPlayers - Session.Players.Count();
+        Session.Options.AIPlayers = Rule.MaxPlayers - static_cast<int>(Session.Players.Count());
         aiplayersgauge.Set_Value(Session.Options.AIPlayers);
       }
       // All scenarios now allowable for download,
@@ -4945,11 +4945,11 @@ static int Net_New_Dialog() {
     } else if (whahoppa == EV_MESSAGE) {
       display = REDRAW_MESSAGE;
     } else if (whahoppa == EV_PLAYER_SIGNOFF) {
-      aiplayersgauge.Set_Maximum(Rule.MaxPlayers - Session.Players.Count());
+      aiplayersgauge.Set_Maximum(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
       Session.Options.AIPlayers = aiplayersgauge.Get_Value();
       if (Session.Options.AIPlayers + Session.Players.Count() >
           Rule.MaxPlayers) {  // if it's pegged, max it out
-        Session.Options.AIPlayers = Rule.MaxPlayers - Session.Players.Count();
+        Session.Options.AIPlayers = Rule.MaxPlayers - static_cast<int>(Session.Players.Count());
         aiplayersgauge.Set_Value(Session.Options.AIPlayers);
         display = REDRAW_PARMS;
       }
@@ -4977,7 +4977,7 @@ static int Net_New_Dialog() {
             Session.Scenarios[Session.Options.ScenarioIndex]->Description());
         CCFileClass file(
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
-        Session.GPacket.ScenarioInfo.FileLength = file.Size();
+        Session.GPacket.ScenarioInfo.FileLength = static_cast<int>(file.Size());
 #if WOLAPI_INTEGRATION
         port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
@@ -5003,18 +5003,18 @@ static int Net_New_Dialog() {
         Session.GPacket.ScenarioInfo.Seed = Seed;
         Session.GPacket.ScenarioInfo.Special = Special;
         Session.GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
-        Session.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
+        Session.GPacket.ScenarioInfo.Version = static_cast<int>(VerNum.Get_Clipped_Version());
         //	Host encodes whether or not this is an Aftermath game in the
         // highest bit.
         if (bAftermathMultiplayer) {
           //					debugprint( "Host tells guests
           //'This is an Aftermath game'\n" );
           Session.GPacket.ScenarioInfo.Version =
-              VerNum.Get_Clipped_Version() | 0x80000000;
+              static_cast<int>(VerNum.Get_Clipped_Version()) | 0x80000000;
         } else {
           //					debugprint( "Host tells guests
           //'This is NOT an Aftermath game'\n" );
-          Session.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
+          Session.GPacket.ScenarioInfo.Version = static_cast<int>(VerNum.Get_Clipped_Version());
         }
 
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
@@ -5059,7 +5059,7 @@ static int Net_New_Dialog() {
     //.....................................................................
     //	Set the player count & scenario number
     //.....................................................................
-    Session.NumPlayers = Session.Players.Count();
+    Session.NumPlayers = static_cast<int>(Session.Players.Count());
 
     Scen.Scenario = Session.Options.ScenarioIndex;
     port::SafeCopy(
@@ -5072,10 +5072,10 @@ static int Net_New_Dialog() {
     // 1-way 	  value, 4 more to convert from ticks to frames)
     //.....................................................................
     if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-      Session.MaxAhead = std::max(
+      Session.MaxAhead = static_cast<int>(std::max(
           (Ipx.Global_Response_Time() / 8 + (Session.FrameSendRate - 1)) /
               Session.FrameSendRate * Session.FrameSendRate,
-          Session.FrameSendRate * 2);
+          Session.FrameSendRate * 2));
     } else {
       Session.MaxAhead =
           std::max(static_cast<unsigned>(Ipx.Global_Response_Time() / 8),
@@ -7832,7 +7832,7 @@ static int Net_Fake_New_Dialog() {
           //	an OK; force a wait longer than 1 second (to give all players
           //	a chance to know about this new guy)
           //...............................................................
-          i = std::max<int>(Ipx.Global_Response_Time() * 2, 60 * 2);
+          i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60 * 2);
           while (TickCount.Value() - ok_timer < i) {
             Ipx.Service();
           }
@@ -7979,7 +7979,7 @@ static int Net_Fake_New_Dialog() {
           }
         }
 
-        Session.GPacket.ScenarioInfo.FileLength = file.Size();
+        Session.GPacket.ScenarioInfo.FileLength = static_cast<int>(file.Size());
         port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
@@ -8000,7 +8000,7 @@ static int Net_Fake_New_Dialog() {
         Session.GPacket.ScenarioInfo.Seed = Seed;
         Session.GPacket.ScenarioInfo.Special = Special;
         Session.GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
-        Session.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
+        Session.GPacket.ScenarioInfo.Version = static_cast<int>(VerNum.Get_Clipped_Version());
 
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                                 &Session.Players[i]->Address);
@@ -8044,7 +8044,7 @@ static int Net_Fake_New_Dialog() {
     //.....................................................................
     //	Set the player count & scenario number
     //.....................................................................
-    Session.NumPlayers = Session.Players.Count();
+    Session.NumPlayers = static_cast<int>(Session.Players.Count());
 
     Scen.Scenario = Session.Options.ScenarioIndex;
     port::SafeCopy(
@@ -8057,13 +8057,13 @@ static int Net_Fake_New_Dialog() {
     // 1-way 	  value, 4 more to convert from ticks to frames)
     //.....................................................................
     if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-      Session.MaxAhead = std::max(
+      Session.MaxAhead = static_cast<int>(std::max(
           (Ipx.Global_Response_Time() / 8 + (Session.FrameSendRate - 1)) /
               Session.FrameSendRate * Session.FrameSendRate,
-          Session.FrameSendRate * 2);
+          Session.FrameSendRate * 2));
     } else {
       Session.MaxAhead =
-          std::max<int>(Ipx.Global_Response_Time() / 8, NETWORK_MIN_MAX_AHEAD);
+          std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) / 8, NETWORK_MIN_MAX_AHEAD);
     }
 
     //.....................................................................
@@ -8152,8 +8152,8 @@ static int Net_Fake_New_Dialog() {
   //	a chance to get to the other system.  If he doesn't get our ACK,
   // he'll be waiting the whole time we load MIX files.
   //.....................................................................
-  i = std::max<int>(Ipx.Global_Response_Time() * 2, 60 * 2);
-  int starttime = TickCount.Value();
+  i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60 * 2);
+  int starttime = static_cast<int>(TickCount.Value());
   while (TickCount.Value() - starttime < static_cast<int64_t>(i)) {
     Ipx.Service();
   }
@@ -8985,7 +8985,7 @@ static int Net_Fake_Join_Dialog() {
       //..................................................................
       //	Set the number of players in this game, and the scenario number.
       //..................................................................
-      Session.NumPlayers = Session.Players.Count();
+      Session.NumPlayers = static_cast<int>(Session.Players.Count());
       ///*
       //**	Hack to fake a scenario name as if it had been sent over the
       // connection.
@@ -9001,7 +9001,7 @@ static int Net_Fake_Join_Dialog() {
     //	a chance to get to the other system.  If he doesn't get our ACK,
     // he'll be waiting the whole time we load MIX files.
     //.....................................................................
-    i = std::max<int>(Ipx.Global_Response_Time() * 2, 60 * 2);
+    i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60 * 2);
     starttime = TickCount.Value();
     while (TickCount.Value() - starttime < static_cast<int64_t>(i)) {
       Ipx.Service();

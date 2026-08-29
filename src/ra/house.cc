@@ -207,6 +207,7 @@
 #include "ra/vortex.h"
 #include "ra/ww_audio.h"
 #include "sdllib/gbuffer.h"
+#include "base/types.h"
 
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 
@@ -268,7 +269,7 @@ fixed HouseClass::Tiberium_Fraction() const {
   if (Tiberium == 0) {
     return fixed(0);
   }
-  return fixed(Tiberium, Capacity);
+  return fixed(static_cast<int>(Tiberium), static_cast<int>(Capacity));
 }
 
 /***********************************************************************************************
@@ -826,7 +827,7 @@ HouseClass::HouseClass(HousesType house)
   **	Set the time of the first AI attack.
   */
   Attack.Set(Rule.AttackDelay *
-             Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2));
+             static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
 
   if (Session.Type == GAME_INTERNET) {
     AircraftTotals = new UnitTrackerClass(static_cast<int>(AIRCRAFT_COUNT));
@@ -1003,7 +1004,8 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
     flags = OldBScan;
   }
 
-  int pre = dynamic_cast<const TechnoTypeClass*>(type)->Prerequisite;
+  int pre = static_cast<int>(
+      dynamic_cast<const TechnoTypeClass*>(type)->Prerequisite);
 
   /*
   **	Advanced power also serves as a prerequisite for normal power.
@@ -1152,7 +1154,7 @@ void HouseClass::AI() {
       }
     }
     AlertTime.Set(Rule.AutocreateTime *
-                  Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2));
+                  static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
     //		int mintime = Rule.AutocreateTime * (kTicksPerMinute/2);
     //		int maxtime = Rule.AutocreateTime * (kTicksPerMinute*2);
     //		AlertTime = Random_Pick(mintime, maxtime);
@@ -2107,7 +2109,7 @@ int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
   Capacity += adjust;
   Capacity = std::max(Capacity, 0L);
   if (Tiberium > Capacity) {
-    retval = Tiberium - Capacity;
+    retval = static_cast<int>(Tiberium) - static_cast<int>(Capacity);
     Tiberium = Capacity;
     if (!inanger) {
       Refund_Money(retval);
@@ -2143,11 +2145,11 @@ void HouseClass::Silo_Redraw_Check(long oldtib, long oldcap) {
 
   int oldratio = 0;
   if (oldcap) {
-    oldratio = oldtib * 5 / oldcap;
+    oldratio = static_cast<int>(oldtib) * 5 / static_cast<int>(oldcap);
   }
   int newratio = 0;
   if (Capacity) {
-    newratio = Tiberium * 5 / Capacity;
+    newratio = static_cast<int>(Tiberium) * 5 / static_cast<int>(Capacity);
   }
 
   if (oldratio != newratio) {
@@ -3337,7 +3339,7 @@ void HouseClass::Detach(TARGET target, bool) {
 bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  int bflag = 1L << btype;
+  int bflag = 1 << btype;
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
     HouseClass* house = As_Pointer(index);
 
@@ -5134,7 +5136,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
     }
   }
   Attack.Set(Rule.AttackInterval *
-             Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2));
+             static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
   return true;
 }
 
@@ -5466,7 +5468,7 @@ int HouseClass::AI_Building() {
 
     BuildChoice.Free_All();
     BuildChoiceClass* choiceptr;
-    int money = Available_Money();
+    int money = static_cast<int>(Available_Money());
     bool hasincome = BQuantity[STRUCT_REFINERY] > 0 && !IsTiberiumShort &&
                      UQuantity[UNIT_HARVESTER] > 0;
     const BuildingTypeClass* b = nullptr;
@@ -7253,7 +7255,7 @@ void HouseClass::Read_INI(CCINIClass& ini) {
     p->Control.Edge = ini.Get_SourceType(hname, "Edge", SOURCE_NORTH);
     p->IsPlayerControl = ini.Get_Bool(hname, "PlayerControl", false);
 
-    int owners = ini.Get_Owners(hname, "Allies", 1 << HOUSE_NEUTRAL);
+    int owners = static_cast<int>(ini.Get_Owners(hname, "Allies", 1 << HOUSE_NEUTRAL));
     p->Make_Ally(index);
     p->Make_Ally(HOUSE_NEUTRAL);
     for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
@@ -7685,7 +7687,7 @@ void HouseClass::Adjust_Drain(int adjust) {
  * HISTORY: * 10/11/1996 BWG : Created. *
  *=============================================================================================*/
 void HouseClass::Update_Spied_Power_Plants() {
-  int count = CurrentObject.Count();
+  base::ssize count = CurrentObject.Count();
   if (count) {
     for (int index = 0; index < count; index++) {
       const ObjectClass* tech = CurrentObject[index];

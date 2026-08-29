@@ -1273,13 +1273,13 @@ void Print_Statistics(int country, int xpos, int ypos) {
     Alloc_Object(new ScorePrintClass(_countryname[GDIStats[country].nameindex],
                                      xpos, ypos, _greenpal));
     Call_Back_Delay(
-        strlen(Text_String(_countryname[GDIStats[country].nameindex])) * 3);
+        static_cast<int>(strlen(Text_String(_countryname[GDIStats[country].nameindex]))) * 3);
     ypos += 16;
     for (index = 0; index < 7; index++) {
       Alloc_Object(
           new ScorePrintClass(_gdistatnames[index], xpos, ypos, _greenpal));
-      Call_Back_Delay(strlen(Text_String(_gdistatnames[index] + 3)));
-      newx = xpos + 6 * strlen(Text_String(_gdistatnames[index]));
+      Call_Back_Delay(static_cast<int>(strlen(Text_String(_gdistatnames[index] + 3))));
+      newx = xpos + 6 * static_cast<int>(strlen(Text_String(_gdistatnames[index])));
       switch (index) {
         case 0:
           Alloc_Object(new ScorePrintClass(GDIStats[country].pop, newx, ypos,
@@ -1325,13 +1325,13 @@ void Print_Statistics(int country, int xpos, int ypos) {
     Alloc_Object(new ScorePrintClass(_countryname[NodStats[country].nameindex],
                                      xpos, ypos, _greenpal));
     Call_Back_Delay(
-        strlen(Text_String(_countryname[NodStats[country].nameindex])) * 3);
+        static_cast<int>(strlen(Text_String(_countryname[NodStats[country].nameindex]))) * 3);
     ypos += 16;
     for (index = 0; index < 9; index++) {
       Alloc_Object(
           new ScorePrintClass(_nodstatnames[index], xpos, ypos, _greenpal));
-      Call_Back_Delay(strlen(Text_String(_nodstatnames[index] + 3)));
-      newx = xpos + 6 * strlen(Text_String(_nodstatnames[index]));
+      Call_Back_Delay(static_cast<int>(strlen(Text_String(_nodstatnames[index] + 3))));
+      newx = xpos + 6 * static_cast<int>(strlen(Text_String(_nodstatnames[index])));
       switch (index) {
         case 0:
           Alloc_Object(new ScorePrintClass(NodStats[country].pop, newx, ypos,

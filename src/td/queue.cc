@@ -177,7 +177,7 @@ static void Queue_AI_Multiplayer();
 static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
                                     int resend_delta, int dialog_time,
                                     int timeout, char* multi_packet_buf,
-                                    int my_sent, long* their_frame,
+                                    int my_sent, int* their_frame,
                                     unsigned short* their_sent,
                                     unsigned short* their_recv);
 static void Generate_Timing_Event(ConnManClass* net, int my_sent);
@@ -189,19 +189,19 @@ static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
 static void Send_FrameSync(ConnManClass* net, int cmd_count);
 static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                           char* multi_packet_buf, int id,
-                                          int packetlen, long* their_frame,
+                                          int packetlen, int* their_frame,
                                           unsigned short* their_sent,
                                           unsigned short* their_recv);
 static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
                                          int first_time);
 static int Can_Advance(ConnManClass* net, int max_ahead,
-                       const long* their_frame,
+                       const int* their_frame,
                        const unsigned short* their_sent,
                        const unsigned short* their_recv);
 static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
-                                    const long* their_frame, int num_conn,
+                                    const int* their_frame, int num_conn,
                                     int reconn, int fresh);
-static int Handle_Timeout(ConnManClass* net, long* their_frame,
+static int Handle_Timeout(ConnManClass* net, int* their_frame,
                           unsigned short* their_sent,
                           unsigned short* their_recv);
 static void Stop_Game();
@@ -227,7 +227,7 @@ int Extract_Compressed_Events(void* buf, int bufsize);
 //...........................................................................
 static int Execute_DoList(int max_houses, HousesType base_house,
                           ConnManClass* net, TCountDownTimerClass* skip_crc,
-                          long* their_frame, unsigned short* their_sent,
+                          int* their_frame, unsigned short* their_sent,
                           unsigned short* their_recv);
 static void Clean_DoList(ConnManClass* net);
 #ifndef DEMO
@@ -598,7 +598,7 @@ static void Queue_AI_Multiplayer() {
   // order in which the connections are created.
   // (ie net->Connection_Index(id))
   //........................................................................
-  static long their_frame[MAX_PLAYERS - 1];  // other players' frame #'s
+  static int their_frame[MAX_PLAYERS - 1];  // other players' frame #'s
   static unsigned short
       their_sent[MAX_PLAYERS - 1];  // # cmds other player claims to have sent
   static unsigned short
@@ -778,7 +778,7 @@ static void Queue_AI_Multiplayer() {
   //	Frame-sync'ing: wait until it's OK to advance to the next frame.
   //------------------------------------------------------------------------
   rc = Wait_For_Players(0, net, MPlayerMaxAhead << 3,
-                        std::max<int>(net->Response_Time() * 3,
+                        std::max<int>(static_cast<int>(net->Response_Time()) * 3,
                                       FRAMESYNC_DLG_TIME * timeout_factor),
                         FRAMESYNC_TIMEOUT * (timeout_factor * 2),
                         multi_packet_buf, my_sent, their_frame, their_sent,
@@ -864,7 +864,7 @@ static void Queue_AI_Multiplayer() {
 static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
                                     int resend_delta, int dialog_time,
                                     int timeout, char* multi_packet_buf,
-                                    int my_sent, long* their_frame,
+                                    int my_sent, int* their_frame,
                                     unsigned short* their_sent,
                                     unsigned short* their_recv) {
   //........................................................................
@@ -1185,10 +1185,10 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
         if (GameToPlay == GAME_MODEM || GameToPlay == GAME_NULL_MODEM) {
           //|| GameToPlay == GAME_INTERNET) {
           ev.Data.FrameInfo.Delay =
-              std::max<int>(resp_time / 8, MODEM_MIN_MAX_AHEAD);
+              std::max<int>(static_cast<int>(resp_time / 8), MODEM_MIN_MAX_AHEAD);
         } else if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
           ev.Data.FrameInfo.Delay =
-              std::max<int>(resp_time / 8, NETWORK_MIN_MAX_AHEAD);
+              std::max<int>(static_cast<int>(resp_time / 8), NETWORK_MIN_MAX_AHEAD);
         }
       }
       OutList.Add(ev);
@@ -1283,15 +1283,17 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // resp_time is divided by 2 because, as reported, it represents a round-
   // trip, and we only want to use a one-way trip.
   //
-  maxahead = resp_time * DesiredFrameRate / (static_cast<unsigned long>(2) * 60);
+  maxahead = static_cast<int>(resp_time * DesiredFrameRate /
+                              (static_cast<unsigned long>(2) * 60));
 
   //
   // Now, we have to round 'maxahead' so it's an even multiple of our
   // send rate.  It also must be at least thrice the FrameSendRate.
   // (Isn't "thrice" a cool word?)
   //
-  maxahead = (maxahead + FrameSendRate - 1) / FrameSendRate * FrameSendRate;
-  maxahead = std::max<int>(maxahead, FrameSendRate * 3);
+  maxahead = static_cast<int>((maxahead + FrameSendRate - 1) / FrameSendRate *
+                              FrameSendRate);
+  maxahead = std::max<int>(maxahead, static_cast<int>(FrameSendRate * 3));
 
   ev.Type = EventClass::TIMING;
   ev.Data.Timing.DesiredFrameRate = DesiredFrameRate;
@@ -1572,10 +1574,10 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   //------------------------------------------------------------------------
   packet.Type = EventClass::FRAMESYNC;
   if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    packet.Frame = (Frame + MPlayerMaxAhead + (FrameSendRate - 1)) /
-                   FrameSendRate * FrameSendRate;
+    packet.Frame = static_cast<unsigned>((Frame + MPlayerMaxAhead + (FrameSendRate - 1)) /
+                                          (FrameSendRate * FrameSendRate));
   } else {
-    packet.Frame = Frame + MPlayerMaxAhead;
+    packet.Frame = static_cast<int>(Frame + MPlayerMaxAhead);
   }
   packet.ID = Houses.ID(PlayerPtr);
   packet.MPlayerID = MPlayerLocalID;
@@ -1630,7 +1632,7 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
  *=========================================================================*/
 static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                           char* multi_packet_buf, int id,
-                                          int packetlen, long* their_frame,
+                                          int packetlen, int* their_frame,
                                           unsigned short* their_sent,
                                           unsigned short* their_recv) {
   EventClass* event;
@@ -1881,10 +1883,10 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Can_Advance(ConnManClass* net, int max_ahead,
-                       const long* their_frame,
+                       const int* their_frame,
                        const unsigned short* their_sent,
                        const unsigned short* their_recv) {
-  long their_oldest_frame;  // other players' oldest frame #
+  int their_oldest_frame;  // other players' oldest frame #
   int count_ok;             // true = my cmd count matches theirs
   int i;
 
@@ -1898,7 +1900,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
   //------------------------------------------------------------------------
   //	Find the oldest frame # in 'their_frame'
   //------------------------------------------------------------------------
-  their_oldest_frame = Frame + 1000;
+  their_oldest_frame = static_cast<int>(Frame + 1000);
   for (i = 0; i < net->Num_Connections(); i++) {
     their_oldest_frame = std::min(their_frame[i], their_oldest_frame);
   }
@@ -1951,7 +1953,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
-                                    const long* their_frame, int num_conn,
+                                    const int* their_frame, int num_conn,
                                     int reconn, int fresh) {
   static int displayed_time = 0;  // time value currently displayed
   int new_time;
@@ -1961,7 +1963,7 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
   //------------------------------------------------------------------------
   // Convert the timer to seconds
   //------------------------------------------------------------------------
-  new_time = timeout_timer->Time() / 60;
+  new_time = static_cast<int>(timeout_timer->Time() / 60);
 
   //--------------------------------------------------------------------------------
   // If we have just received input focus again after running in the background
@@ -2042,7 +2044,7 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Handle_Timeout(ConnManClass* net, long* their_frame,
+static int Handle_Timeout(ConnManClass* net, int* their_frame,
                           unsigned short* their_sent,
                           unsigned short* their_recv) {
   int oldest_index;  // index of person requiring a reconnect
@@ -2191,10 +2193,11 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
   // Set the frame to execute this event on; this is protocol-specific
   //........................................................................
   if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    finfo->Frame = (Frame + frame_delay + (FrameSendRate - 1)) / FrameSendRate *
-                   FrameSendRate;
+    finfo->Frame = static_cast<unsigned>(
+        (Frame + frame_delay + (FrameSendRate - 1)) / FrameSendRate *
+        FrameSendRate);
   } else {
-    finfo->Frame = Frame + frame_delay;
+    finfo->Frame = static_cast<int>(Frame + frame_delay);
   }
   //........................................................................
   // Fill in the rest of the event
@@ -2295,7 +2298,7 @@ int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
     //.....................................................................
     // Set the event's frame delay
     //.....................................................................
-    OutList.First().Frame = Frame + frame_delay;
+    OutList.First().Frame = static_cast<int>(Frame + frame_delay);
 
     //.....................................................................
     // Set the event's ID
@@ -2482,10 +2485,11 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
     // Set the event's frame delay (this is protocol-dependent)
     //.....................................................................
     if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-      OutList.First().Frame = (Frame + frame_delay + (FrameSendRate - 1)) /
-                              FrameSendRate * FrameSendRate;
+      OutList.First().Frame = static_cast<unsigned>(
+          (Frame + frame_delay + (FrameSendRate - 1)) / FrameSendRate *
+          FrameSendRate);
     } else {
-      OutList.First().Frame = Frame + frame_delay;
+      OutList.First().Frame = static_cast<int>(Frame + frame_delay);
     }
 
     //.....................................................................
@@ -2918,7 +2922,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Execute_DoList(int, HousesType, ConnManClass* net,
-                          TCountDownTimerClass*, long* their_frame,
+                          TCountDownTimerClass*, int* their_frame,
                           unsigned short* their_sent,
                           unsigned short* their_recv) {
   int i, j, k, wibble;
@@ -3321,7 +3325,8 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   // Only process every 'FrameSendRate' frames
   //------------------------------------------------------------------------
-  testframe = (Frame + (FrameSendRate - 1)) / FrameSendRate * FrameSendRate;
+  testframe = static_cast<int>((Frame + (FrameSendRate - 1)) / FrameSendRate *
+                               FrameSendRate);
 
   if (GameToPlay != GAME_NORMAL && CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     if (Frame != testframe) {
@@ -4299,7 +4304,7 @@ void Dump_Packet_Too_Late_Stuff(EventClass* event) {
 
   fprintf(fp, "----------- My data: ------------------\n");
   fprintf(fp, "Frame:%ld\n", Frame);
-  fprintf(fp, "MaxAhead:%lu\n", MPlayerMaxAhead);
+  fprintf(fp, "MaxAhead:%d\n", MPlayerMaxAhead);
 
   fclose(fp);
 }

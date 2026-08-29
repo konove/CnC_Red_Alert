@@ -1604,7 +1604,7 @@ static int Net_Join_Dialog() {
 
               sent_so_far = 0;
               magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-              message_length = strlen(Messages.Get_Edit_Buf());
+              message_length = static_cast<int>(strlen(Messages.Get_Edit_Buf()));
               crc = static_cast<unsigned short>(
                   CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
 
@@ -1896,7 +1896,7 @@ static int Net_Join_Dialog() {
       /*..................................................................
       Set the number of players in this game, and my ID
       ..................................................................*/
-      MPlayerCount = Players.Count();
+      MPlayerCount = static_cast<int>(Players.Count());
       MPlayerLocalID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
 
       /*..................................................................
@@ -1959,7 +1959,7 @@ static int Net_Join_Dialog() {
     a chance to get to the other system.  If he doesn't get our ACK, he'll
     be waiting the whole time we load MIX files.
     ---------------------------------------------------------------------*/
-    i = std::max<int>(Ipx.Global_Response_Time() * 2, 60);
+    i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
     starttime = TickCount.Time();
     while (TickCount.Time() - starttime < static_cast<int64_t>(i)) {
       Ipx.Service();
@@ -2226,7 +2226,7 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
   it right now
   ------------------------------------------------------------------------*/
   if (TickCount.Time() - lasttime1 > 120 || gamenow) {
-    lasttime1 = TickCount.Time();
+    lasttime1 = static_cast<int>(TickCount.Time());
 
     memset(&GPacket, 0, sizeof(GlobalPacketType));
 
@@ -2251,7 +2251,7 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
   ------------------------------------------------------------------------*/
   if (curgame != -1 && curgame < Games.Count() &&
       (TickCount.Time() - lasttime2 > 35 || playernow)) {
-    lasttime2 = TickCount.Time();
+    lasttime2 = static_cast<int>(TickCount.Time());
 
     memset(&GPacket, 0, sizeof(GlobalPacketType));
 
@@ -3466,7 +3466,7 @@ static int Net_New_Dialog() {
         an OK; force a wait longer than 1 second (to give all players
         a chance to know about this new guy)
         ...............................................................*/
-        i = std::max<int>(Ipx.Global_Response_Time() * 2, 60);
+        i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
         while (TickCount.Time() - ok_timer < i) {
           Ipx.Service();
         }
@@ -3607,7 +3607,7 @@ static int Net_New_Dialog() {
 
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-          message_length = strlen(Messages.Get_Edit_Buf());
+          message_length = static_cast<int>(strlen(Messages.Get_Edit_Buf()));
           crc = static_cast<unsigned short>(
               CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
           while (sent_so_far < message_length) {
@@ -3758,7 +3758,7 @@ static int Net_New_Dialog() {
     /*.....................................................................
     Set the number of players in this game, and my ID
     .....................................................................*/
-    MPlayerCount = Players.Count() + 1;
+    MPlayerCount = static_cast<int>(Players.Count()) + 1;
     MPlayerLocalID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
 
     /*.....................................................................
@@ -3771,7 +3771,7 @@ static int Net_New_Dialog() {
     - Divide global channel's response time by 8 (2 to convert to 1-way
       value, 4 more to convert from ticks to frames)
     .....................................................................*/
-    MPlayerMaxAhead = std::max<int>(Ipx.Global_Response_Time() / 8, 2);
+    MPlayerMaxAhead = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) / 8, 2);
 
     /*.....................................................................
     Send all players the NET_GO packet.  Wait until all ACK's have been
@@ -4601,7 +4601,7 @@ static int Net_Fake_New_Dialog() {
           an OK; force a wait longer than 2 seconds (to give all players
           a chance to know about this new guy)
           ...............................................................*/
-          i = std::max<int>(Ipx.Global_Response_Time() * 2, 120);
+          i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 120);
           while (TickCount.Time() - ok_timer < i) {
             Ipx.Service();
           }
@@ -4696,7 +4696,7 @@ static int Net_Fake_New_Dialog() {
     /*.....................................................................
     Set the number of players in this game, and my ID
     .....................................................................*/
-    MPlayerCount = Players.Count() + 1;
+    MPlayerCount = static_cast<int>(Players.Count()) + 1;
     MPlayerLocalID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
 
     /*.....................................................................
@@ -4711,7 +4711,7 @@ static int Net_Fake_New_Dialog() {
     - Divide global channel's response time by 8 (2 to convert to 1-way
       value, 4 more to convert from ticks to frames)
     .....................................................................*/
-    MPlayerMaxAhead = std::max<int>(Ipx.Global_Response_Time() / 8, 2);
+    MPlayerMaxAhead = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) / 8, 2);
 
     /*.....................................................................
     Send all players the NET_GO packet.  Wait until all ACK's have been
@@ -5393,7 +5393,7 @@ static int Net_Fake_Join_Dialog() {
       /*..................................................................
       Set the number of players in this game, and my ID
       ..................................................................*/
-      MPlayerCount = Players.Count();
+      MPlayerCount = static_cast<int>(Players.Count());
       MPlayerLocalID = Build_MPlayerID(MPlayerColorIdx, MPlayerHouse);
 
       /*..................................................................
@@ -5472,7 +5472,7 @@ static int Net_Fake_Join_Dialog() {
     a chance to get to the other system.  If he doesn't get our ACK, he'll
     be waiting the whole time we load MIX files.
     ---------------------------------------------------------------------*/
-    i = std::max<int>(Ipx.Global_Response_Time() * 2, 120);
+    i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 120);
     starttime = TickCount.Time();
     while (TickCount.Time() - starttime < static_cast<int64_t>(i)) {
       Ipx.Service();

@@ -94,6 +94,7 @@
 #include "tech/ftimer.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
+#include "base/types.h"
 
 /***********************************************************************************************
  * TeamTypeClass::Code_Pointers -- codes class's pointers for load/save *
@@ -398,7 +399,7 @@ bool LayerClass::Save(Pipe& file) const {
   /*
   **	Save # array elements
   */
-  int count = Count();
+  base::ssize count = Count();
   file.Put(&count, sizeof(count));
 
   /*
@@ -497,7 +498,7 @@ void HouseClass::Decode_Pointers() {
   *so
   ** Init_Data() is called to reset it to a valid pointer.
   */
-  Init_Data(RemapColor, ActLike, Credits);
+  Init_Data(RemapColor, ActLike, static_cast<int>(Credits));
 }
 
 /***********************************************************************************************

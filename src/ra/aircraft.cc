@@ -822,7 +822,7 @@ int AircraftClass::Mission_Hunt() {
             if (Class->Is_Two_Shooter()) {
               Fire_At(targ, 0);
             }
-            return Arm.Value();
+            return static_cast<int>(Arm.Value());
 
           case FIRE_RANGE:
           case FIRE_FACING:
@@ -1536,7 +1536,7 @@ int AircraftClass::Paradrop_Cargo() {
       Arm.Set(0);
     }
   }
-  return Arm.Value();
+  return static_cast<int>(Arm.Value());
 }
 
 /***********************************************************************************************
@@ -2775,8 +2775,8 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
     */
     case RADIO_MOVE_HERE:
       FootClass::Receive_Message(from, message, param);
-      if (Is_Target_Building(param)) {
-        if (Transmit_Message(RADIO_CAN_LOAD, As_Techno(param)) != RADIO_ROGER) {
+      if (Is_Target_Building(static_cast<TARGET>(param))) {
+        if (Transmit_Message(RADIO_CAN_LOAD, As_Techno(static_cast<TARGET>(param))) != RADIO_ROGER) {
           return RADIO_NEGATIVE;
         }
         Assign_Mission(MISSION_ENTER);

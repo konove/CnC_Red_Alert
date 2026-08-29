@@ -41,6 +41,7 @@
 #include <winsock.h>
 #else
 #include <arpa/inet.h>
+#include <cstdint>
 #endif
 
 FieldClass::FieldClass(const char* id, char data) {
@@ -147,8 +148,8 @@ void FieldClass::Host_To_Net() {
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      *static_cast<unsigned long*>(Data) =
-          htonl(*static_cast<unsigned long*>(Data));
+      *static_cast<unsigned long*>(Data) = htonl(
+          static_cast<std::uint32_t>(*static_cast<unsigned long*>(Data)));
       break;
 
     //
@@ -204,8 +205,8 @@ void FieldClass::Net_To_Host() {
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      *static_cast<unsigned long*>(Data) =
-          ntohl(*static_cast<unsigned long*>(Data));
+      *static_cast<unsigned long*>(Data) = ntohl(
+          static_cast<std::uint32_t>(*static_cast<unsigned long*>(Data)));
       break;
 
     //

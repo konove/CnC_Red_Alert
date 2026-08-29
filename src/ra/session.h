@@ -556,7 +556,7 @@ class SessionClass {
   //.....................................................................
   // Unique workstation ID, for detecting my own packets
   //.....................................................................
-  unsigned long UniqueID;
+  int UniqueID;
 
   //.....................................................................
   // Player's local options
@@ -580,7 +580,7 @@ class SessionClass {
   // a given packet.  It's set by the RESPONSE_TIME event.
   // 'FrameSendRate' is the # frames between data packets
   //.....................................................................
-  unsigned long MaxAhead;
+  int MaxAhead;
   long FrameSendRate;
 
   int DesiredFrameRate;

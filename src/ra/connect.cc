@@ -229,10 +229,10 @@ int ConnectionClass::Send_Packet(void* buf, int buflen, int ack_req) {
   ------------------------------------------------------------------------*/
   if (ack_req) {
     ((CommHeaderType*)PacketBuf)->Code = PACKET_DATA_ACK;
-    ((CommHeaderType*)PacketBuf)->PacketID = NumSendAck;
+    ((CommHeaderType*)PacketBuf)->PacketID = static_cast<std::uint32_t>(NumSendAck);
   } else {
     ((CommHeaderType*)PacketBuf)->Code = PACKET_DATA_NOACK;
-    ((CommHeaderType*)PacketBuf)->PacketID = NumSendNoAck;
+    ((CommHeaderType*)PacketBuf)->PacketID = static_cast<std::uint32_t>(NumSendNoAck);
   }
 
   /*------------------------------------------------------------------------

@@ -572,7 +572,7 @@ int MPlayerCountMax[2] = {50, 12};
 MPlayerMaxAhead is the number of frames ahead of this one to execute a given
 packet.  It's set by the RESPONSE_TIME event.
 ---------------------------------------------------------------------------*/
-unsigned long MPlayerMaxAhead = 3;
+int MPlayerMaxAhead = 3;
 
 /*---------------------------------------------------------------------------
 'FrameSendRate' is the # frames between data packets

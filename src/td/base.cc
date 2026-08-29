@@ -166,7 +166,7 @@ void BaseClass::Read_INI(char* buffer) {
     /*
     ** Read & set the node's coordinate
     */
-    node.Coord = atol(strtok(nullptr, ","));
+    node.Coord = static_cast<COORDINATE>(atol(strtok(nullptr, ",")));
 
     /*
     ** Add this node to the Base's list
@@ -204,7 +204,7 @@ void BaseClass::Write_INI(char* buffer) {
   **	they must be read in the same order they were created, so "000" must be
   **	read first, etc.
   */
-  WWWritePrivateProfileInt(INI_Name(), "Count", Nodes.Count(), buffer);
+  WWWritePrivateProfileInt(INI_Name(), "Count", static_cast<int>(Nodes.Count()), buffer);
 
   /*
   **	Write each entry into the INI
@@ -301,7 +301,7 @@ bool BaseClass::Save(FileClass& file) {
     return false;
   }
 
-  num_struct = Nodes.Count();
+  num_struct = static_cast<int>(Nodes.Count());
   if (file.Write(&num_struct, sizeof(num_struct)) != sizeof(num_struct)) {
     return false;
   }

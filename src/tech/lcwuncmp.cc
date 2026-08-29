@@ -97,7 +97,7 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
       count = (op_code >> 4) + 3;
 
       // clamp to decompressed size
-      count = std::min<std::ptrdiff_t>(count, dest_end - dest_ptr);
+      count = static_cast<unsigned int>(std::min<std::ptrdiff_t>(count, dest_end - dest_ptr));
 
       // not possible to write any more, and if we try to read more we might
       // fault
@@ -133,7 +133,7 @@ unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
           source_ptr += 3;
 
           // clamp to decompressed size
-          count = std::min<std::ptrdiff_t>(count, dest_end - dest_ptr);
+          count = static_cast<unsigned int>(std::min<std::ptrdiff_t>(count, dest_end - dest_ptr));
 
           std::memset(dest_ptr, data, count);
           dest_ptr += count;

@@ -79,7 +79,7 @@
 template <class T>
 VectorClass<T>::VectorClass(base::ssize size, const T* array) {
   Vector = nullptr;
-  VectorMax = size;
+  VectorMax = static_cast<unsigned int>(size);
   IsAllocated = false;
 
   /*
@@ -141,7 +141,7 @@ VectorClass<T>::VectorClass(const VectorClass<T>& vector) {
 
 template <class T>
 void VectorClass<T>::Copy_From(const VectorClass<T>& vector) {
-  VectorMax = vector.Length();
+  VectorMax = static_cast<unsigned int>(vector.Length());
   if (VectorMax) {
     Vector = new T[VectorMax];
     if (Vector) {
@@ -335,7 +335,8 @@ int VectorClass<T>::Resize(base::ssize newsize, const T* array) {
       *This *	presumes that there is a functional assignment operator for each
       **	of the objects in the vector.
       */
-      int copycount = newsize < VectorMax ? newsize : VectorMax;
+      int copycount =
+          static_cast<int>(newsize < VectorMax ? newsize : VectorMax);
       for (int index = 0; index < copycount; index++) {
         newptr[index] = Vector[index];
       }
@@ -356,7 +357,7 @@ int VectorClass<T>::Resize(base::ssize newsize, const T* array) {
     **	Assign the new vector data to this class.
     */
     Vector = newptr;
-    VectorMax = newsize;
+    VectorMax = static_cast<unsigned int>(newsize);
     IsAllocated = Vector && !array;
 
   } else {
@@ -465,7 +466,7 @@ template <class T>
 int DynamicVectorClass<T>::ID(const T& ptr) {
   for (base::ssize index = 0; index < Count(); index++) {
     if ((*this)[index] == ptr) {
-      return index;
+      return static_cast<int>(index);
     }
   }
   return -1;

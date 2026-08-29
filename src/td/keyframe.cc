@@ -458,7 +458,7 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
         TheaterShapeBufferPtr =
             (char*)((uintptr_t)(TheaterShapeBufferPtr + 3) & ~3);
       }
-      Length = length;
+      Length = static_cast<int>(length);
       return return_value;
     }
     return_value = BigShapeBufferPtr;
@@ -485,7 +485,7 @@ void* Build_Frame(const void* dataptr, unsigned short framenumber,
     if (3 & (uintptr_t)BigShapeBufferPtr) {
       BigShapeBufferPtr = (char*)((uintptr_t)(BigShapeBufferPtr + 3) & ~3);
     }
-    Length = length;
+    Length = static_cast<int>(length);
     return return_value;
   }
   return buffptr;

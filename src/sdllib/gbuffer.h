@@ -709,7 +709,7 @@ inline void GraphicViewPortClass::Remap(void* remap) {
   Remap(0, 0, Width, Height, remap);
 }
 
-inline int GraphicViewPortClass::Get_Pitch() { return Pitch; }
+inline int GraphicViewPortClass::Get_Pitch() { return static_cast<int>(Pitch); }
 /*=========================================================================*/
 /* The following BufferClass functions are defined here because they act
  */

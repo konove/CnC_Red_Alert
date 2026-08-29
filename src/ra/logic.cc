@@ -197,7 +197,8 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
     mono->Sub_Window(15, 13, 63, 10);
     mono->Pan(1);
     mono->Sub_Window(15, 13, 64, 10);
-    int graph = kRecordHeight * fixed(kTimerSecond - SpareTicks, kTimerSecond);
+    int graph = kRecordHeight * fixed(static_cast<int>(kTimerSecond - SpareTicks),
+                                      kTimerSecond);
     for (int row = 1; row < kRecordHeight; row += 2) {
       static unsigned char _barchar[4] = {' ', 220, 0, 219};
       char str[2];

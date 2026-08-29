@@ -666,7 +666,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
           if (*this == STRUCT_STORAGE) {
             int level = 0;
             if (House->Capacity) {
-              level = House->Tiberium * 5 / House->Capacity;
+              level = static_cast<int>(House->Tiberium * 5 / House->Capacity);
             }
             //						int level =
             // Fixed_To_Cardinal(4, Cardinal_To_Fixed(House->Capacity,
@@ -3015,7 +3015,7 @@ void BuildingClass::Read_INI(char* buffer) {
   char buf[128];
   char* trigname;  // building's trigger's name
 
-  len = strlen(buffer) + 2;
+  len = static_cast<int>(strlen(buffer)) + 2;
   tbuffer = buffer + len;
 
   /*
@@ -3117,7 +3117,7 @@ void BuildingClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - strlen(buffer), buffer);
+                            _ShapeBufferSize - static_cast<int>(strlen(buffer)), buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;
@@ -4746,7 +4746,7 @@ int BuildingClass::Refund_Amount() const {
   */
   if (IsV107 && Class->Capacity > 0) {
     cost += Fixed_To_Cardinal(
-        Class->Capacity, Cardinal_To_Fixed(House->Capacity, House->Tiberium));
+        Class->Capacity, Cardinal_To_Fixed(static_cast<unsigned int>(House->Capacity), static_cast<unsigned int>(House->Tiberium)));
   }
   return cost;
 }

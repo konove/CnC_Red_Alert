@@ -421,7 +421,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Miscellaneous stuff for parsing the credits text file.
   */
-  int length = creditsfile.Size();
+  int length = static_cast<int>(creditsfile.Size());
   int line = 0;
   int column = 0;
   char* cptr = credits;
@@ -690,7 +690,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Init misc timing variables.
   */
-  int time = TickCount.Value();
+  int time = static_cast<int>(TickCount.Value());
   int frame = 0;
   int picture_frame = 0;
   int slide_number = 0;
@@ -741,7 +741,7 @@ void Show_Who_Was_Responsible() {
     /*
     ** Scroll the text. If any text goes off the top then delete that object.
     */
-    for (int i = EgoList.Count() - 1; i >= 0; i--) {
+    for (base::ssize i = EgoList.Count() - 1; i >= 0; i--) {
       EgoList[i]->Wipe(BackgroundPage);
       if (EgoList[i]->Scroll(1)) {
         EgoList.Delete(i);
@@ -753,7 +753,7 @@ void Show_Who_Was_Responsible() {
     ** Render all the text strings in their new positions.
     */
     if (LogicPage->Lock()) {
-      for (int i = EgoList.Count() - 1; i >= 0; i--) {
+      for (base::ssize i = EgoList.Count() - 1; i >= 0; i--) {
         EgoList[i]->Render();
       }
       LogicPage->Unlock();

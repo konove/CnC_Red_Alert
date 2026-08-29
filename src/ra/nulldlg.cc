@@ -430,7 +430,7 @@ int Test_Null_Modem() {
     //
     // put time from start of game for determining the host in case of tie.
     //
-    SendPacket.ScenarioInfo.Seed = TickCount.Value();
+    SendPacket.ScenarioInfo.Seed = static_cast<int>(TickCount.Value());
     SendPacket.ID = (intptr_t)buffer;  // address of buffer for more uniqueness.
 
     NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
@@ -1990,7 +1990,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       temp = strchr(custom_port, '-');
       if (temp) {
         pos = static_cast<int>(temp - custom_port) + 2;
-        len = strlen(tempsettings.ModemName);
+        len = static_cast<int>(strlen(tempsettings.ModemName));
         port::SafeCopy(custom_port + pos, tempsettings.ModemName, len);
         *(custom_port + pos + len) = 0;
         port::SafeCopy(portbuf, tempsettings.ModemName);
@@ -2028,7 +2028,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         temp = strchr(custom_port, '-');
         if (temp) {
           pos = static_cast<int>(temp - custom_port) + 2;
-          len = strlen(portbuf);
+          len = static_cast<int>(strlen(portbuf));
           port::SafeCopy(custom_port + pos, portbuf, len);
           *(custom_port + pos + len) = 0;
         }
@@ -2286,7 +2286,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                   temp = strchr(item, '-');
                   if (temp) {
                     pos = static_cast<int>(temp - item) + 2;
-                    len = strlen(portbuf);
+                    len = static_cast<int>(strlen(portbuf));
                     port::SafeCopy(item + pos, portbuf, len);
                     *(item + pos + len) = 0;
                     display = REDRAW_BUTTONS;
@@ -2305,7 +2305,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             temp = strchr(item, '-');
             if (temp) {
               pos = static_cast<int>(temp - item) + 2;
-              len = strlen(portbuf);
+              len = static_cast<int>(strlen(portbuf));
               port::SafeCopy(item + pos, portbuf, len);
               *(item + pos + len) = 0;
               display = REDRAW_BUTTONS;
@@ -2453,7 +2453,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           temp = strchr(item, '-');
           if (temp) {
             pos = static_cast<int>(temp - item) + 2;
-            len = strlen(cwaitstrbuf);
+            len = static_cast<int>(strlen(cwaitstrbuf));
             port::SafeCopy(item + pos, cwaitstrbuf, len);
             *(item + pos + len) = 0;
             display = REDRAW_BUTTONS;
@@ -3179,7 +3179,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  srand(time(nullptr));
+  srand(static_cast<unsigned>(time(nullptr)));
   Seed = rand();
 
   /*........................................................................
@@ -3843,8 +3843,8 @@ int Com_Scenario_Dialog(bool skirmish) {
         SendPacket.Command = SERIAL_GAME_OPTIONS;
         port::SafeCopy(SendPacket.Name, namebuf);
         SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
-        SendPacket.ScenarioInfo.MinVersion = VerNum.Min_Version();
-        SendPacket.ScenarioInfo.MaxVersion = VerNum.Max_Version();
+        SendPacket.ScenarioInfo.MinVersion = static_cast<int>(VerNum.Min_Version());
+        SendPacket.ScenarioInfo.MaxVersion = static_cast<std::uint32_t>(VerNum.Max_Version());
         SendPacket.ScenarioInfo.House = Session.House;
         SendPacket.ScenarioInfo.Color = Session.ColorIdx;
         SendPacket.ScenarioInfo.Credits = Session.Options.Credits;
@@ -3870,7 +3870,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         CCFileClass file(
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 
-        SendPacket.ScenarioInfo.FileLength = file.Size();
+        SendPacket.ScenarioInfo.FileLength = static_cast<int>(file.Size());
 
 #if WOLAPI_INTEGRATION
         port::SafeCopy(
@@ -3927,7 +3927,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       if (!skirmish && TickCount.Value() - timingtime > PACKET_TIMING_TIMEOUT) {
         memset(&SendPacket, 0, sizeof(SerialPacketType));
         SendPacket.Command = SERIAL_TIMING;
-        SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
+        SendPacket.ScenarioInfo.ResponseTime = static_cast<int>(NullModem.Response_Time());
         SendPacket.ID = Session.ModemType;
 
         NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
@@ -4276,10 +4276,11 @@ int Com_Scenario_Dialog(bool skirmish) {
       }
 
       if (!skirmish) {
-        SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
+        SendPacket.ScenarioInfo.ResponseTime = static_cast<int>(NullModem.Response_Time());
         if (theirresponsetime != 10000) {
-          SendPacket.ScenarioInfo.ResponseTime = std::max<unsigned long>(
-              SendPacket.ScenarioInfo.ResponseTime, theirresponsetime);
+          SendPacket.ScenarioInfo.ResponseTime =
+              static_cast<unsigned>(std::max<unsigned long>(
+                  SendPacket.ScenarioInfo.ResponseTime, theirresponsetime));
         }
       }
 
@@ -4289,11 +4290,11 @@ int Com_Scenario_Dialog(bool skirmish) {
       //
       if (!skirmish) {
         if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-          Session.MaxAhead =
+          Session.MaxAhead = static_cast<int>(
               std::max((SendPacket.ScenarioInfo.ResponseTime / 8 +
                         (Session.FrameSendRate - 1)) /
                            Session.FrameSendRate * Session.FrameSendRate,
-                       Session.FrameSendRate * 2);
+                       Session.FrameSendRate * 2));
         } else {
           Session.MaxAhead = std::max(
               static_cast<unsigned>(SendPacket.ScenarioInfo.ResponseTime / 8),
@@ -5436,8 +5437,8 @@ int Com_Show_Scenario_Dialog() {
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       port::SafeCopy(SendPacket.Name, namebuf);
       SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
-      SendPacket.ScenarioInfo.MinVersion = VerNum.Min_Version();
-      SendPacket.ScenarioInfo.MaxVersion = VerNum.Max_Version();
+      SendPacket.ScenarioInfo.MinVersion = static_cast<int>(VerNum.Min_Version());
+      SendPacket.ScenarioInfo.MaxVersion = static_cast<std::uint32_t>(VerNum.Max_Version());
       SendPacket.ScenarioInfo.House = Session.House;
       SendPacket.ScenarioInfo.Color = Session.ColorIdx;
       SendPacket.ID = Session.ModemType;
@@ -5482,7 +5483,7 @@ int Com_Show_Scenario_Dialog() {
     if (TickCount.Value() - timingtime > PACKET_TIMING_TIMEOUT) {
       memset(&SendPacket, 0, sizeof(SerialPacketType));
       SendPacket.Command = SERIAL_TIMING;
-      SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
+      SendPacket.ScenarioInfo.ResponseTime = static_cast<int>(NullModem.Response_Time());
       SendPacket.ID = Session.ModemType;
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
@@ -5942,11 +5943,11 @@ int Com_Show_Scenario_Dialog() {
             // to execute a packet
             //
             if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-              Session.MaxAhead =
+              Session.MaxAhead = static_cast<int>(
                   std::max((ReceivePacket.ScenarioInfo.ResponseTime / 8 +
                             (Session.FrameSendRate - 1)) /
                                Session.FrameSendRate * Session.FrameSendRate,
-                           Session.FrameSendRate * 2);
+                           Session.FrameSendRate * 2));
             } else {
               Session.MaxAhead =
                   std::max(static_cast<unsigned>(

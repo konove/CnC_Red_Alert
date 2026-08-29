@@ -215,7 +215,7 @@ void CreditClass::AI(bool forced) {
   if (!forced && Frame == _last) {
     return;
   }
-  _last = Frame;
+  _last = static_cast<int>(Frame);
 
   Credits = PlayerPtr->Available_Money();
 
@@ -248,7 +248,7 @@ void CreditClass::AI(bool forced) {
     **	Determine the amount to change the display toward the
     **	desired value.
     */
-    int adder = Credits - Current;
+    int adder = static_cast<int>(Credits - Current);
 
     if (adder > 0) {
       Countdown = 1;

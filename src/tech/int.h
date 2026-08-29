@@ -61,7 +61,7 @@ class Int {
   **	Constructors and initializers.
   */
   Int() { XMP_Init(&reg[0], 0, PRECISION); }
-  Int(unsigned long value) { XMP_Init(&reg[0], value, PRECISION); }
+  Int(unsigned long value) { XMP_Init(&reg[0], static_cast<std::uint32_t>(value), PRECISION); }
 
   void Randomize(Straw& rng, int bitcount) {
     XMP_Randomize(&reg[0], rng, bitcount, PRECISION);

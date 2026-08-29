@@ -942,7 +942,7 @@ static void Message_Input(KeyNumType& input) {
       port::SafeCopy(LastMessage, Messages.Get_Edit_Buf());
     }
 
-    message_length = strlen(Messages.Get_Edit_Buf());
+    message_length = static_cast<int>(strlen(Messages.Get_Edit_Buf()));
 
     long actual_message_size;
     char* the_string;
@@ -2432,7 +2432,7 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
         ghostdata = MouseClass::SpecialGhost;
       }
 
-      predoffset = Frame;
+      predoffset = static_cast<int>(Frame);
 
       if (x > WindowList[window][WINDOWWIDTH] << 2) {
         predoffset = -predoffset;
@@ -3372,7 +3372,7 @@ static void Do_Record_Playback() {
     /*.....................................................................
     Save the current object list count
     .....................................................................*/
-    count = CurrentObject.Count();
+    count = static_cast<int>(CurrentObject.Count());
     RecordFile.Write(&count, sizeof(count));
 
     /*.....................................................................

@@ -175,10 +175,10 @@ int ListClass::Add_Item(const char* text) {
     **	Tell the slider that there is one more entry in the list.
     */
     if (IsScrollActive) {
-      ScrollGadget.Set_Maximum(List.Count());
+      ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
     }
   }
-  return List.Count() - 1;
+  return static_cast<int>(List.Count()) - 1;
 }
 
 /***********************************************************************************************
@@ -196,7 +196,7 @@ int ListClass::Add_Item(int text) {
   if (text != TXT_NONE) {
     Add_Item(Text_String(text));
   }
-  return List.Count() - 1;
+  return static_cast<int>(List.Count()) - 1;
 }
 
 void ListClass::Remove_Item(int index) {
@@ -215,7 +215,7 @@ void ListClass::Remove_Item(int index) {
     **	Tell the slider that there is one less entry in the list.
     */
     if (IsScrollActive) {
-      ScrollGadget.Set_Maximum(List.Count());
+      ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
     }
 
     /*
@@ -255,7 +255,7 @@ void ListClass::Remove_Item(int index) {
  *=============================================================================================*/
 void ListClass::Remove_Item(const char* text) {
   if (text) {
-    Remove_Item(List.ID(text));
+    Remove_Item(static_cast<int>(List.ID(text)));
   }
 }
 
@@ -591,7 +591,7 @@ int ListClass::Add_Scroll_Bar() {
     **	Inform the slider of the size of the window and the current view
     *position.
     */
-    ScrollGadget.Set_Maximum(List.Count());
+    ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
     ScrollGadget.Set_Thumb_Size(LineCount);
     ScrollGadget.Set_Value(CurrentTopIndex);
 

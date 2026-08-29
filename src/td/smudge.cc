@@ -297,7 +297,7 @@ bool SmudgeClass::Mark(MarkType mark) {
 void SmudgeClass::Read_INI(char* buffer) {
   char buf[128];  // Working string staging buffer.
 
-  int len = strlen(buffer) + 2;
+  int len = static_cast<int>(strlen(buffer)) + 2;
   char* tbuffer = buffer + len;
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
@@ -352,7 +352,7 @@ void SmudgeClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - strlen(buffer), buffer);
+                            _ShapeBufferSize - static_cast<int>(strlen(buffer)), buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;

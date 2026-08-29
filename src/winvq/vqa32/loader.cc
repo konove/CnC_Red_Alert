@@ -206,7 +206,7 @@ long VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
       return VQAERR_READ;
     }
 
-    chunk.size = REVERSE_LONG(chunk.size);
+    chunk.size = static_cast<std::uint32_t>(REVERSE_LONG(chunk.size));
 
     switch (chunk.id) {
       /*---------------------------------------------------------------------

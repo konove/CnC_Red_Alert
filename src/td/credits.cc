@@ -179,7 +179,7 @@ void CreditClass::AI(bool forced) {
     long adder = Credits - Current;
     adder = std::abs(adder);
     adder >>= 5;
-    adder = Bound(adder, 1L, 71 + 72);
+    adder = Bound(static_cast<int>(adder), 1L, 71 + 72);
     if (Current > Credits) {
       adder = -adder;
     }

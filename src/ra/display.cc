@@ -155,6 +155,7 @@
 #include "tech/rawfile.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
+#include "base/types.h"
 
 /*
 **	These layer control elements are used to group the displayable objects
@@ -2341,7 +2342,7 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) const {
   if (object == nullptr) {
     foundmatch = true;
   }
-  for (int uindex = Layer[LAYER_GROUND].Count() - 1; uindex >= 0; uindex--) {
+  for (base::ssize uindex = Layer[LAYER_GROUND].Count() - 1; uindex >= 0; uindex--) {
     ObjectClass* obj = Layer[LAYER_GROUND][uindex];
 
     /*
@@ -3915,7 +3916,7 @@ void DisplayClass::Compute_Start_Pos() {
   y = std::clamp<long>(y, MapCellY + 8, MapCellY + MapCellHeight - 8);
 
   Scen.Waypoint[WAYPT_HOME] = Scen.Views[0] = Scen.Views[1] = Scen.Views[2] =
-      Scen.Views[3] = XY_Cell(x, y);
+      Scen.Views[3] = XY_Cell(static_cast<int>(x), static_cast<int>(y));
 
   Map.Set_Tactical_Position(
       Coord_Whole(Cell_Coord(Scen.Views[0] - MAP_CELL_W * 8 - 10)));

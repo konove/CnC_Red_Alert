@@ -212,7 +212,8 @@ bool MixFileClass<T>::Open(std::string_view filename, const PKey* key) {
 
   // Resize index and read entries
   file_index_.resize(file_header.count);
-  straw->Get(file_index_.data(), file_index_.size() * sizeof(FileEntry));
+  straw->Get(file_index_.data(),
+               static_cast<int>(file_index_.size() * sizeof(FileEntry)));
 
   // Calculate start position.
   // Seek returns long, cast to int32_t to match class member (assuming < 2GB

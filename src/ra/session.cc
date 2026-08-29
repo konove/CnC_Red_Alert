@@ -91,6 +91,7 @@
 #include <ctime>  // for station ID computation
 
 #include "port/ex_string.h"
+#include "base/types.h"
 
 // #include "WolDebug.h"
 
@@ -295,7 +296,7 @@ void SessionClass::One_Time() {
   Read_MultiPlayer_Settings();
   Read_Scenario_Descriptions();
 
-  UniqueID = Compute_Unique_ID();
+  UniqueID = static_cast<int>(Compute_Unique_ID());
 
 }  // end of One_Time
 
@@ -654,7 +655,7 @@ int SessionClass::Save(CCFileClass& file) {
   file.Write(&ObiWan, sizeof(ObiWan));
   file.Write(&EmergencySave, sizeof(EmergencySave));
 
-  i = Players.Count();
+  i = static_cast<int>(Players.Count());
   file.Write(&i, sizeof(i));
   for (i = 0; i < Players.Count(); i++) {
     file.Write(Players[i], sizeof(NodeNameType));
@@ -1184,7 +1185,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
 
     //	Save all Phone Book entries.
     //	Format: Entry=Name,PhoneNum,Port,IRQ,Baud,InitString
-    for (int i = PhoneBook.Count() - 1; i >= 0; i--) {
+    for (base::ssize i = PhoneBook.Count() - 1; i >= 0; i--) {
       char buf[128];
       char entrytext[10];
       snprintf(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
@@ -1198,7 +1199,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
               PhoneBook[i]->Settings.InitStringIndex,
               PhoneBook[i]->Settings.CallWaitStringIndex,
               PhoneBook[i]->Settings.CallWaitString);
-      sprintf(entrytext, "%03d", i);
+      sprintf(entrytext, "%03td", i);
       ini.Put_String("PhoneBook", entrytext, buf);
     }
 

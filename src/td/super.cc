@@ -111,7 +111,7 @@ bool SuperClass::Suspend(bool on) {
   if (IsPresent && !IsReady && !IsOneTime) {
     if (on != IsSuspended) {
       if (on) {
-        SuspendTime = Control;
+        SuspendTime = static_cast<int>(Control);
       } else {
         Control = SuspendTime;
       }
@@ -313,7 +313,7 @@ int SuperClass::Anim_Stage() const {
     if (IsReady) {
       return ANIMATION_STAGES;
     }
-    int time = Control.Time();
+    int time = static_cast<int>(Control.Time());
     if (IsSuspended) {
       time = SuspendTime;
     }

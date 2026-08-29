@@ -364,7 +364,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
     //------------------------------------------------------------------------
     if (name) {
       sprintf(temp, "%s:", name);
-      mess_start = strlen(name) + 1;
+      mess_start = static_cast<int>(strlen(name)) + 1;
     } else {
       mess_start = 0;
     }
@@ -632,7 +632,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     min_chars = 10;
 
     while (width >= Width - 8) {
-      max_chars = std::max<int>(strlen(msg), min_chars);
+      max_chars = std::max<int>(static_cast<int>(strlen(msg)), min_chars);
 
       Trim_Message(nullptr, msg, min_chars, max_chars, 0);
 
@@ -653,8 +653,8 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   // Trim from left to right to remove the minimum required text.
   //------------------------------------------------------------------------
   else {
-    min_chars = strlen(msg) + strlen(txt) - MaxChars;
-    max_chars = std::max<int>(strlen(msg), min_chars);
+    min_chars = static_cast<int>(strlen(msg)) + static_cast<int>(strlen(txt)) - MaxChars;
+    max_chars = std::max<int>(static_cast<int>(strlen(msg)), min_chars);
     Trim_Message(nullptr, msg, min_chars, max_chars, 0);
     port::SafeCopy(msg, txt, MAX_MESSAGE_LENGTH);
   }
@@ -778,7 +778,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
   memset(EditBuf, 0, sizeof(EditBuf));
   port::SafeCopy(EditBuf, to);
   OverflowBuf[0] = 0;
-  EditCurPos = EditInitPos = strlen(to);
+  EditCurPos = EditInitPos = static_cast<int>(strlen(to));
   EditLabel =
       new TextLabelClass(EditBuf, EditX, EditY, &ColorRemaps[color], style);
 
@@ -1274,7 +1274,7 @@ int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
     return 0;
   }
 
-  len = strlen(src);
+  len = static_cast<int>(strlen(src));
   max_chars = std::min(max_chars, len);
 
   //------------------------------------------------------------------------

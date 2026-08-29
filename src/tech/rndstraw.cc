@@ -195,7 +195,7 @@ void RandomStraw::Seed_Short(short seed) {
  *=============================================================================================*/
 void RandomStraw::Seed_Long(long seed) {
   for (int index = 0; index < static_cast<int>(sizeof(seed) * CHAR_BIT); index++) {
-    Seed_Bit(seed);
+    Seed_Bit(static_cast<int>(seed));
     seed >>= 1;
   }
 }

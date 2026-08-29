@@ -18,7 +18,7 @@ void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
 
   // Drawing loop
   do {
-    int count = blocksperrow;  // Number of blocks in a line
+    int count = static_cast<int>(blocksperrow);  // Number of blocks in a line
     do {
       int v = *src_ptr;
       int cb = src_ptr[entries];  // Get the codebook pointer value
@@ -64,7 +64,7 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
 
   // Drawing loop
   do {
-    int count = blocksperrow;  // Number of blocks in a line
+    int count = static_cast<int>(blocksperrow);  // Number of blocks in a line
     do {
       int v = *src_ptr;
       int cb = src_ptr[entries];  // Get the codebook pointer value

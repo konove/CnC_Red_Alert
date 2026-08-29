@@ -808,7 +808,7 @@ void TerrainClass::Read_INI(char* buffer) {
   char buf[128];
   TerrainClass* tptr;
 
-  len = strlen(buffer) + 2;
+  len = static_cast<int>(strlen(buffer)) + 2;
   tbuffer = buffer + len;
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
@@ -860,7 +860,7 @@ void TerrainClass::Write_INI(char* buffer) {
   */
   tbuffer = buffer + strlen(buffer) + 2;
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            _ShapeBufferSize - strlen(buffer), buffer);
+                            _ShapeBufferSize - static_cast<int>(strlen(buffer)), buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;

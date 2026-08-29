@@ -803,7 +803,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
 
         default:
           Overlappers[index] = object;
-          index = std::ssize(Overlappers);
+          index = static_cast<int>(std::ssize(Overlappers));
           break;
       }
     }

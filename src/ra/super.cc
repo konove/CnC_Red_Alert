@@ -310,7 +310,7 @@ int SuperClass::Anim_Stage() const {
     //		}
 
     int stage =
-        ANIMATION_STAGES * fixed(RechargeTime - Control.Value(), RechargeTime);
+        ANIMATION_STAGES * fixed(RechargeTime - static_cast<int>(Control.Value()), RechargeTime);
     stage = std::min(stage, ANIMATION_STAGES - 1);
     return stage;
   }

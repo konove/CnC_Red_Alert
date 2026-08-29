@@ -515,7 +515,7 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
   **	Perform some equivalency fixups for the building existance flags.
   */
   long flags = ActiveBScan;
-  int pre = type->Pre;
+  int pre = static_cast<int>(type->Pre);
   if (flags & STRUCTF_ADVANCED_POWER) {
     flags |= STRUCTF_POWER;
   }
@@ -1618,7 +1618,7 @@ int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
   Capacity += adjust;
   Capacity = std::max(Capacity, 0L);
   if (Tiberium > Capacity) {
-    retval = Tiberium - Capacity;
+    retval = static_cast<int>(Tiberium) - static_cast<int>(Capacity);
     Tiberium = Capacity;
     if (!inanger) {
       Refund_Money(retval);
@@ -1653,11 +1653,11 @@ void HouseClass::Silo_Redraw_Check(long oldtib, long oldcap) {
   Validate();
   int oldratio = 0;
   if (oldcap) {
-    oldratio = oldtib * 5 / oldcap;
+    oldratio = static_cast<int>(oldtib) * 5 / static_cast<int>(oldcap);
   }
   int newratio = 0;
   if (Capacity) {
-    newratio = Tiberium * 5 / Capacity;
+    newratio = static_cast<int>(Tiberium) * 5 / static_cast<int>(Capacity);
   }
 
   if (oldratio != newratio) {
@@ -3149,7 +3149,7 @@ void HouseClass::Detach(TARGET, bool) {
  *=============================================================================================*/
 bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
   Validate();
-  int bflag = 1L << btype;
+  int bflag = 1 << btype;
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
     HouseClass* house = As_Pointer(index);
 

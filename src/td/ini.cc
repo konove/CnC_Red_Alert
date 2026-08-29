@@ -320,7 +320,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
   ** Init the Scenario CRC value
   */
   ScenarioCRC = 0;
-  len = strlen(buffer);
+  len = static_cast<int>(strlen(buffer));
   for (int i = 0; i < len; i++) {
     val = static_cast<unsigned char>(buffer[i]);
 #ifndef DEMO
@@ -516,7 +516,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
     sprintf(buff, "%d", index++);
     *stage = '\0';
     WWGetPrivateProfileString("Briefing", buff, "", stage,
-                              sizeof(BriefingText) - strlen(BriefingText) - 1,
+                              sizeof(BriefingText) - static_cast<int>(strlen(BriefingText)) - 1,
                               buffer);
     if (strlen(stage) == 0) {
       break;
@@ -547,7 +547,7 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
       sprintf(buff, "%d", index++);
       *work = '\0';
       WWGetPrivateProfileString(root, buff, "", work,
-                                sizeof(BriefingText) - strlen(BriefingText) - 1,
+                                sizeof(BriefingText) - static_cast<int>(strlen(BriefingText)) - 1,
                                 _ShapeBuffer);
       if (strlen(work) == 0) {
         break;

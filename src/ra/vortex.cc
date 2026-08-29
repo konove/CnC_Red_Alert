@@ -179,7 +179,7 @@ void ChronalVortexClass::Appear(COORDINATE coordinate) {
   Active = true;
   Animate = 0;
   StartShutdown = false;
-  LastAttackFrame = Frame;
+  LastAttackFrame = static_cast<int>(Frame);
   TargetObject = TARGET_NONE;
   ZapFrame = 0;
   Hidden = false;
@@ -428,7 +428,7 @@ void ChronalVortexClass::AI() {
                 Set_Redraw();
                 StartHiding = false;
                 Hidden = true;
-                HiddenFrame = Frame;
+                HiddenFrame = static_cast<int>(Frame);
                 if (Random_Pick(0, 4) == 4) {
                   Disappear();
                 }
@@ -579,7 +579,7 @@ void ChronalVortexClass::Set_Target(ObjectClass* target) {
     if (target != nullptr) {
       TargetObject = target->As_Target();
     }
-    LastAttackFrame = Frame;
+    LastAttackFrame = static_cast<int>(Frame);
     TargetDistance =
         target != nullptr ? Distance(target->Center_Coord(), Position) : 0;
   }

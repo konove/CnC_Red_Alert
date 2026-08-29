@@ -395,7 +395,7 @@ long RawFileClass::Read(void* buffer, long size) {
   *of *	the file.
   */
   if (BiasLength != -1) {
-    int remainder = BiasLength - Seek(0);
+    int remainder = static_cast<int>(BiasLength - Seek(0));
     size = size < remainder ? size : remainder;
   }
 
@@ -458,7 +458,7 @@ long RawFileClass::Write(const void* buffer, long size) {
   */
   if (BiasLength != -1) {
     if (Raw_Seek(0) > BiasStart + BiasLength) {
-      BiasLength = Raw_Seek(0) - BiasStart;
+      BiasLength = static_cast<int>(Raw_Seek(0) - BiasStart);
     }
   }
 
@@ -595,7 +595,7 @@ long RawFileClass::Size() {
     }
   }
 
-  BiasLength = size - BiasStart;
+  BiasLength = static_cast<int>(size - BiasStart);
   return BiasLength;
 }
 
@@ -763,7 +763,7 @@ void RawFileClass::Bias(int start, int length) {
     return;
   }
 
-  BiasLength = RawFileClass::Size();
+  BiasLength = static_cast<int>(RawFileClass::Size());
   BiasStart += start;
   if (length != -1) {
     BiasLength = BiasLength < length ? BiasLength : length;

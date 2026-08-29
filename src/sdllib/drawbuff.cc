@@ -429,7 +429,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto* dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_win_width;
 
-  int dy_intr = src_h / dst_h * src_win_width;
+  int dy_intr = static_cast<int>(src_h / dst_h * src_win_width);
   int dy_frac = src_h % dst_h;
   int dy_acc = -dst_h;
 
@@ -603,7 +603,7 @@ void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
     next_glyph_start = draw_ptr + FontXSpacing + glyph_width;
 
     // Distance from the end of a glyph row to the start of the next one.
-    const int row_skip = buffer_stride - glyph_width;
+    const int row_skip = static_cast<int>(buffer_stride - glyph_width);
     const int glyph_height = font.GlyphHeight(ch);
     const int blank_rows_above = font.GlyphBlankRowsAbove(ch);
     const int blank_rows_below =
@@ -938,7 +938,7 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
   int pixel_count = dst_x1 - dst_x0;
   int line_count = dst_y1 - dst_y0;
 
-  int skip = dst_area - pixel_count;
+  int skip = static_cast<int>(dst_area - pixel_count);
 
   // remap lines
   do {

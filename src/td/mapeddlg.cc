@@ -3391,7 +3391,7 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Read all entry names in the Triggers section into a temp buffer
   ........................................................................*/
-  len = strlen(inibuf) + 2;
+  len = static_cast<int>(strlen(inibuf)) + 2;
   tbuffer = inibuf + len;
   WWGetPrivateProfileString(TriggerClass::INI_Name(), nullptr, nullptr, tbuffer,
                             30000 - len, inibuf);
@@ -3732,7 +3732,7 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Read all entry names in the TeamTypes section into a temp buffer
   ........................................................................*/
-  len = strlen(inibuf) + 2;
+  len = static_cast<int>(strlen(inibuf)) + 2;
   tbuffer = inibuf + len;
   WWGetPrivateProfileString(TeamTypeClass::INI_Name(), nullptr, nullptr,
                             tbuffer, 30000 - len, inibuf);

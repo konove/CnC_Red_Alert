@@ -284,7 +284,8 @@ long RAMFileClass::Read(void* buffer, long size) {
     }
   }
 
-  int tocopy = size < Length - Offset ? size : Length - Offset;
+  int tocopy =
+      static_cast<int>(size < Length - Offset ? size : Length - Offset);
   memmove(buffer, &Buffer[Offset], tocopy);
   Offset += tocopy;
 
@@ -331,11 +332,11 @@ long RAMFileClass::Seek(long pos, int dir) {
       break;
 
     case SEEK_SET:
-      Offset = 0 + pos;
+      Offset = static_cast<int>(pos);
       break;
 
     case SEEK_END:
-      Offset = maxoffset + pos;
+      Offset = static_cast<int>(maxoffset + pos);
       break;
   }
 
@@ -397,7 +398,7 @@ long RAMFileClass::Write(const void* buffer, long size) {
   }
 
   int maxwrite = MaxLength - Offset;
-  int towrite = size < maxwrite ? size : maxwrite;
+  int towrite = static_cast<int>(size < maxwrite ? size : maxwrite);
   memmove(&Buffer[Offset], buffer, towrite);
   Offset += towrite;
 

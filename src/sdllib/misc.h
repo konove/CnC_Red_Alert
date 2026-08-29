@@ -85,7 +85,9 @@ void Prog_End();
 void Delay(int duration);
 
 // extras for TD
-inline void randomize() { std::srand(std::time(nullptr)); }
+inline void randomize() {
+  std::srand(static_cast<unsigned>(std::time(nullptr)));
+}
 int IRandom(int minval, int maxval);
 std::uint8_t Random();
 

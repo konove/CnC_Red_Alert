@@ -753,7 +753,7 @@ void Cycle_Wait_Click(bool cycle) {
       if (TickCount.Value() - timingtime > PACKET_TIMING_TIMEOUT) {
         memset(&sendpacket, 0, sizeof(SerialPacketType));
         sendpacket.Command = SERIAL_SCORE_SCREEN;
-        sendpacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
+        sendpacket.ScenarioInfo.ResponseTime = static_cast<int>(NullModem.Response_Time());
         sendpacket.ID = Session.ModemType;
 
         NullModem.Send_Message(&sendpacket, sizeof(sendpacket), 0);
@@ -1110,7 +1110,7 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
 
   credobj = Alloc_Object(
       new ScoreCredsClass(_credsx[house], _credsy[house], credshape, 32, 2));
-  minval = PlayerPtr->Available_Money() / 100;
+  minval = static_cast<int>(PlayerPtr->Available_Money() / 100);
 
   /*
   ** Print out total credits left at end of scenario
@@ -1134,7 +1134,7 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
     i = std::max(i, 0);
 
     Set_Font_Palette(pal);
-    Count_Up_Print("%d", i, PlayerPtr->Available_Money(), _credpx[house],
+    Count_Up_Print("%d", i, static_cast<int>(PlayerPtr->Available_Money()), _credpx[house],
                    _credpy[house]);
     Call_Back_Delay(2);
   } while (i < PlayerPtr->Available_Money());

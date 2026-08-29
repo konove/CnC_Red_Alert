@@ -84,7 +84,7 @@ class CCPtr {
   }
 
   long Raw() const { return ID; }
-  void Set_Raw(const long value) { ID = value; }
+  void Set_Raw(const long value) { ID = static_cast<int>(value); }
 
  private:
   static FixedIHeapClass* Heap;

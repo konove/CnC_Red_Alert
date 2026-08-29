@@ -419,7 +419,7 @@ class SessionClass {
   //.....................................................................
   // Unique workstation ID, for detecting my own packets
   //.....................................................................
-  unsigned long UniqueID;
+  int UniqueID;
 
   //.....................................................................
   // Player's local options
@@ -446,7 +446,7 @@ class SessionClass {
   // 'FrameRateDelay' is the time ticks to wait between frames, for
   // smoothing.
   //.....................................................................
-  unsigned long MaxAhead;
+  int MaxAhead;
   long FrameSendRate;
   unsigned long FrameRateDelay;
 

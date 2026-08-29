@@ -324,7 +324,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   base::ssize dst_area =
       dest.Get_XAdd() + dest.Get_Width() + dest.Get_Pitch();
   auto* dst_offset = dest.Get_Offset() + dst_x0 + dst_y0 * dst_area;
-  int dst_adjust_width = dst_area - (dst_x1 - dst_x0);
+  int dst_adjust_width = static_cast<int>(dst_area - (dst_x1 - dst_x0));
 
   if (!use_new_draw) {
     if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {

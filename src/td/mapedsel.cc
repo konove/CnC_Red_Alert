@@ -347,7 +347,7 @@ void MapEditClass::Popup_Controls() {
   mission_index = 0;
   for (auto [idx, mission] : MapEditMissions | std::views::enumerate) {
     if (CurrentObject[0]->Get_Mission() == mission) {
-      mission_index = idx;
+      mission_index = static_cast<int>(idx);
       break;
     }
   }

@@ -138,8 +138,8 @@ class MapClass : public GScreenClass {
     return Array[Coord_Cell(coord)];
   }
   const CellClass& operator[](CELL cell) const { return Array[cell]; }
-  int ID(const CellClass* ptr) { return Array.ID(ptr); }
-  int ID(const CellClass& ptr) { return Array.ID(ptr); }
+  int ID(const CellClass* ptr) { return static_cast<int>(Array.ID(ptr)); }
+  int ID(const CellClass& ptr) { return static_cast<int>(Array.ID(ptr)); }
 
  protected:
   /*

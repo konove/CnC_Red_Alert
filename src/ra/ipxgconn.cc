@@ -146,7 +146,7 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
   allows us to determine if an ACK packet we receive later goes with this
   packet; it doesn't let us detect re-sends of other systems' packets.
   ------------------------------------------------------------------------*/
-  ((GlobalHeaderType*)PacketBuf)->Header.PacketID = Queue->Send_Total();
+  ((GlobalHeaderType*)PacketBuf)->Header.PacketID = static_cast<std::uint32_t>(Queue->Send_Total());
 
   /*------------------------------------------------------------------------
   Set the product ID for this packet.

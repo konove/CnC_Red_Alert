@@ -149,7 +149,7 @@ int LayerClass::Sorted_Add(const ObjectClass* const object) {
   /*
   **	Make room if the insertion spot is not at the end of the vector.
   */
-  for (int i = ActiveCount - 1; i >= index; i--) {
+  for (int i = static_cast<int>(ActiveCount - 1); i >= index; i--) {
     (*this)[i + 1] = (*this)[i];
   }
   (*this)[index] = (ObjectClass*)object;

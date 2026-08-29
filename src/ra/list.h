@@ -59,6 +59,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "base/types.h"
 
 // Scrollable list box widget similar to a Windows ListBox control.
 // Displays a list of text items with support for selection, scrolling, and tab
@@ -77,7 +78,7 @@ class ListClass : public ControlClass {
   virtual int Add_Item(int text);
   virtual int Add_Scroll_Bar();
   virtual void Bump(int up);
-  virtual int Count() const { return List.Count(); }
+  virtual int Count() const { return static_cast<int>(List.Count()); }
   virtual int Current_Index() const;
   virtual const char* Current_Item() const;
   int Draw_Me(bool forced) override;
@@ -175,7 +176,7 @@ class TListClass final : public ControlClass {
   int Add_Scroll_Bar();
   void Insert_Item(T item);
   void Bump(int up);
-  int Count() const { return List.Count(); }
+  int Count() const { return static_cast<int>(List.Count()); }
   int Current_Index() const;
   T Current_Item() const;
   int Draw_Me(bool forced) override;
@@ -316,7 +317,7 @@ void TListClass<T>::Insert_Item(T item) {
     /*
     **	Move all trailing items upward.
     */
-    for (int index = List.Count() - 1; index >= Current_Index(); index--) {
+    for (base::ssize index = List.Count() - 1; index >= Current_Index(); index--) {
       List[index + 1] = List[index];
     }
 
@@ -345,10 +346,10 @@ int TListClass<T>::Add_Item(T text) {
   **	Tell the slider that there is one more entry in the list.
   */
   if (IsScrollActive) {
-    ScrollGadget.Set_Maximum(List.Count());
+    ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
   }
   //	}
-  return (List.Count() - 1);
+  return (static_cast<int>(List.Count()) - 1);
 }
 
 template <class T>
@@ -368,7 +369,7 @@ void TListClass<T>::Remove_Index(int index) {
     **	Tell the slider that there is one less entry in the list.
     */
     if (IsScrollActive) {
-      ScrollGadget.Set_Maximum(List.Count());
+      ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
     }
 
     /*
@@ -427,7 +428,7 @@ int TListClass<T>::Action(unsigned flags, KeyNumType& key) {
     int index = Get_Mouse_Y() - (Y + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
-    SelectedIndex = std::min<int>(SelectedIndex, List.Count() - 1);
+    SelectedIndex = std::min<int>(SelectedIndex, static_cast<int>(List.Count()) - 1);
   }
   return (ControlClass::Action(flags, key));
 }
@@ -543,7 +544,7 @@ void TListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType&,
 
 template <class T>
 int TListClass<T>::Set_View_Index(int index) {
-  index = std::clamp<int>(index, 0, List.Count() - LineCount);
+  index = std::clamp<int>(index, 0, static_cast<int>(List.Count()) - LineCount);
   if (index != CurrentTopIndex) {
     CurrentTopIndex = index;
     Flag_To_Redraw();
@@ -596,7 +597,7 @@ int TListClass<T>::Add_Scroll_Bar() {
     **	Inform the slider of the size of the window and the current view
     *position.
     */
-    ScrollGadget.Set_Maximum(List.Count());
+    ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
     ScrollGadget.Set_Thumb_Size(LineCount);
     ScrollGadget.Set_Value(CurrentTopIndex);
 

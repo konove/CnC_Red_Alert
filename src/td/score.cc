@@ -849,7 +849,7 @@ void ScoreClass::Presentation() {
   Play_Sample(sfx4, 255, Options.Normalize_Sound(120));
   Call_Back_Delay(13);
 
-  max = std::max(static_cast<long>(leadership), static_cast<long>(efficiency));
+  max = static_cast<int>(std::max(static_cast<long>(leadership), static_cast<long>(efficiency)));
   int scorecounter = 0;
   Keyboard::Clear();
 
@@ -864,7 +864,7 @@ void ScoreClass::Presentation() {
       Count_Up_Print("%3d%%", i - 30, efficiency, 264, 38);
     }
     if (i >= 60) {
-      Count_Up_Print("%3d", scorecounter, total, 264, 50);
+      Count_Up_Print("%3d", scorecounter, static_cast<int>(total), 264, 50);
       scorecounter += total / 100;
     }
     Print_Minutes(minutes);
@@ -875,7 +875,7 @@ void ScoreClass::Presentation() {
       Keyboard::Clear();
     }
   }
-  Count_Up_Print("%3d", total, total, 264, 50);
+  Count_Up_Print("%3d", static_cast<int>(total), static_cast<int>(total), 264, 50);
 
   Call_Back_Delay(60);
 
@@ -999,7 +999,7 @@ void ScoreClass::Presentation() {
           hallfame[i] = hallfame[i - 1];
         }
       }
-      hallfame[index].score = total;
+      hallfame[index].score = static_cast<int>(total);
       hallfame[index].level = Scenario;
       //			hallfame[index].level = BuildLevel;
       // hallfame[index].name[0] = 0;	// blank out the name
@@ -1529,7 +1529,7 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
 
   credobj = Alloc_Object(
       new ScoreCredsClass(_credsx[house], _credsy[house], credshape, 32, 2));
-  min = PlayerPtr->Available_Money() / 100;
+  min = static_cast<int>(PlayerPtr->Available_Money() / 100);
 
   /*
   ** Print out total credits left at end of scenario
@@ -1553,11 +1553,11 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
     i = std::max(i, 0);
 
     Set_Font_Palette(pal);
-    Count_Up_Print("%d", i, PlayerPtr->Available_Money(), _credpx[house],
+    Count_Up_Print("%d", i, static_cast<int>(PlayerPtr->Available_Money()), _credpx[house],
                    _credpy[house]);
     Call_Back_Delay(2);
     if (Check_Key()) {
-      i = PlayerPtr->Available_Money() - 5;
+      i = static_cast<int>(PlayerPtr->Available_Money() - 5);
       Keyboard::Clear();
     }
   } while (i < PlayerPtr->Available_Money());
@@ -1626,7 +1626,7 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int max, int xpos,
 
   Format_Runtime_Text(destbuf, sizeof(destbuf), str,
                       percent <= max ? percent : max);
-  width = strlen(destbuf) * 7;
+  width = static_cast<int>(strlen(destbuf)) * 7;
 
   //	HidPage.Blit(HidPage, xpos, ypos, 0, 0, width, 8);
   //	Set_Logic_Page(HidPage);

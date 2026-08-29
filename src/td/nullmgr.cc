@@ -260,7 +260,7 @@ int NullModemClass::Init(int port, int, char* dev_name, int baud, char parity,
     "Actual" maximum packet size, given from the connection; this allows for
     both headers that get added to the packet.
     ------------------------------------------------------------------------*/
-    RXSize = Connection->Actual_Max_Packet() * NumReceive;
+    RXSize = static_cast<int>(Connection->Actual_Max_Packet() * NumReceive);
     RXBuf = new char[RXSize];
 
     BuildBuf = new char[MaxLen];
@@ -2254,7 +2254,7 @@ int NullModemClass::Send_Modem_Command(const char* command, char terminator,
  *=============================================================================================*/
 int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
   int value = 0;
-  int len = strlen(buffer);
+  int len = static_cast<int>(strlen(buffer));
 
   for (int i = 0; i < len; i++) {
     if (!isdigit(*(buffer + i))) {

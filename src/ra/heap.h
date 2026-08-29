@@ -228,7 +228,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
     return static_cast<T*>(ActivePointers[index]);
   }
   virtual T* Raw_Ptr(std::size_t index) {
-    return static_cast<T*>((*this)[index]);
+    return static_cast<T*>((*this)[static_cast<int>(index)]);
   }
 };
 

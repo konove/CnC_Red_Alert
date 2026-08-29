@@ -634,7 +634,7 @@ void XMP_Shift_Right_Bits(uint32_t* number, int bits, int precision) {
   if (bits < UNITSIZE) {
     number += precision;
     uint32_t carry = 0;
-    uint32_t bitmask = (1L << bits) - 1;
+    uint32_t bitmask = (1 << bits) - 1;
     int unbits = UNITSIZE - bits;
 
     while (precision--) {
@@ -1676,7 +1676,7 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
   if (!str) {
     return;
   }
-  int i = strlen(str);
+  int i = static_cast<int>(strlen(str));
   if (i == 0) {
     return;
   }

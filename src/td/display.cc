@@ -1227,7 +1227,7 @@ void DisplayClass::Read_INI(char* buffer) {
   /*
   **	Read the cell trigger names, and assign TriggerClass pointers
   */
-  len = strlen(buffer) + 2;  // len is the length of the INI data
+  len = static_cast<int>(strlen(buffer)) + 2;  // len is the length of the INI data
   tbuffer = buffer + len;    // tbuffer is after the INI data
 
   /*
@@ -2399,7 +2399,7 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) {
   if (!object) {
     foundmatch = true;
   }
-  for (int uindex = Layer[LAYER_GROUND].Count() - 1; uindex >= 0; uindex--) {
+  for (base::ssize uindex = Layer[LAYER_GROUND].Count() - 1; uindex >= 0; uindex--) {
     ObjectClass* obj = Layer[LAYER_GROUND][uindex];
 
     /*
@@ -3681,7 +3681,7 @@ void DisplayClass::Compute_Start_Pos() {
   /*
   **	Set our TacticalCell
   */
-  Set_Tactical_Position(Cell_Coord(XY_Cell(x, y)));
+  Set_Tactical_Position(Cell_Coord(XY_Cell(static_cast<int>(x), static_cast<int>(y))));
   for (int index = 0; index < std::ssize(Views); index++) {
     Views[index] = Coord_Cell(TacticalCoord);
   }

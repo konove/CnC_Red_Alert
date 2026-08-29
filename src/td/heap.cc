@@ -198,7 +198,7 @@ int FixedHeapClass::Set_Heap(int count, void* buffer) {
  *=============================================================================================*/
 void* FixedHeapClass::Allocate() {
   if (ActiveCount < TotalCount) {
-    int index = base::first_false(FreeFlag);
+    int index = static_cast<int>(base::first_false(FreeFlag));
 
     if (index != -1) {
       ActiveCount++;

@@ -55,6 +55,7 @@
 #include <winsock.h>
 #else
 #include <arpa/inet.h>
+#include <cstdint>
 #endif
 
 /***********************************************************************************************
@@ -176,7 +177,7 @@ void UnitTrackerClass::Clear_Unit_Total() {
 void UnitTrackerClass::To_Network_Format() {
   if (!InNetworkFormat) {
     for (int i = 0; i < UnitCount; i++) {
-      UnitTotals[i] = htonl(UnitTotals[i]);
+      UnitTotals[i] = htonl(static_cast<std::uint32_t>(UnitTotals[i]));
     }
   }
   InNetworkFormat = 1;  // Flag that data is now in network format
@@ -199,7 +200,7 @@ void UnitTrackerClass::To_Network_Format() {
 void UnitTrackerClass::To_PC_Format() {
   if (InNetworkFormat) {
     for (int i = 0; i < UnitCount; i++) {
-      UnitTotals[i] = ntohl(UnitTotals[i]);
+      UnitTotals[i] = ntohl(static_cast<std::uint32_t>(UnitTotals[i]));
     }
   }
   InNetworkFormat = 0;  // Flag that data is now in PC format

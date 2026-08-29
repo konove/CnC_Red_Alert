@@ -1030,7 +1030,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
     */
     case RADIO_ATTACK_THIS:
       if (Techno_Type_Class()->PrimaryWeapon != nullptr) {
-        Assign_Target(param);
+        Assign_Target(static_cast<TARGET>(param));
         Assign_Mission(MISSION_ATTACK);
         return RADIO_ROGER;
       }
@@ -6219,9 +6219,9 @@ int TechnoTypeClass::Raw_Cost() const { return Cost; }
  *=============================================================================================*/
 int TechnoTypeClass::Get_Ownable() const {
   if (IsDoubleOwned && Session.Type != GAME_NORMAL) {
-    return Ownable | HOUSEF_SOVIET | HOUSEF_ALLIES;
+    return static_cast<int>(Ownable | HOUSEF_SOVIET | HOUSEF_ALLIES);
   }
-  return Ownable;
+  return static_cast<int>(Ownable);
 }
 
 /***********************************************************************************************

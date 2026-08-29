@@ -158,7 +158,7 @@ EditClass::~EditClass() {
 void EditClass::Set_Text(char* text, int max_len) {
   String = text;
   MaxLength = max_len - 1;
-  Length = strlen(String);
+  Length = static_cast<int>(strlen(String));
   Flag_To_Redraw();
 }
 

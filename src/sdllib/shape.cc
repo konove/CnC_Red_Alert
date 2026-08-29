@@ -4,7 +4,7 @@
 #include <span>
 
 char* _ShapeBuffer;
-long _ShapeBufferSize;
+int _ShapeBufferSize;
 
 int Extract_Shape_Count(const void* buffer) {
   ShapeBlock_Type* block = (ShapeBlock_Type*)buffer;

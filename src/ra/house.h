@@ -436,6 +436,8 @@ class HouseClass {
   **	This is the running total of the number of credits this house has
   *accumulated.
   */
+  // Stays 64-bit: HouseClass is byte-serialized into the save file (see
+  // src/{ra,td}/heap_layout_test.cc), so narrowing this changes sizeof().
   long Tiberium;
   long Credits;
   long Capacity;

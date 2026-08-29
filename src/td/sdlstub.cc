@@ -149,7 +149,7 @@ void Shake_Screen(int shakes) {
   int oldyoff = 0;
   int newyoff = 0;
   while (shakes--) {
-    int x = TickCount.Time();
+    int x = static_cast<int>(TickCount.Time());
 
     do {
       newyoff = Sim_Random_Pick(0, 2) - 1;

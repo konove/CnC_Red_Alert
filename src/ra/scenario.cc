@@ -275,7 +275,7 @@ void ScenarioClass::Do_Fade_AI() {
       IsFadingColor = false;
     }
     fixed newsat = Options.Get_Saturation() *
-                   fixed(kGrayFadeTime - FadeTimer.Value(), kGrayFadeTime);
+                   fixed(kGrayFadeTime - static_cast<int>(FadeTimer.Value()), kGrayFadeTime);
     Options.Adjust_Palette(OriginalPalette, GamePalette,
                            Options.Get_Brightness(), newsat, Options.Get_Tint(),
                            Options.Get_Contrast());
@@ -286,7 +286,7 @@ void ScenarioClass::Do_Fade_AI() {
       IsFadingBW = false;
     }
     fixed newsat =
-        Options.Get_Saturation() * fixed(FadeTimer.Value(), kGrayFadeTime);
+        Options.Get_Saturation() * fixed(static_cast<int>(FadeTimer.Value()), kGrayFadeTime);
     Options.Adjust_Palette(OriginalPalette, GamePalette,
                            Options.Get_Brightness(), newsat, Options.Get_Tint(),
                            Options.Get_Contrast());
@@ -662,7 +662,7 @@ void Fill_In_Data() {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
       HouseClass* hptr = HouseClass::As_Pointer(house);
       if (hptr != nullptr) {
-        int tomove = hptr->Capacity - hptr->Tiberium;
+        int tomove = static_cast<int>(hptr->Capacity - hptr->Tiberium);
         hptr->Credits -= tomove;
         hptr->Tiberium += tomove;
       }
@@ -888,7 +888,7 @@ void Do_Win() {
   Keyboard->Clear();
 
   SaveTanya = IsTanyaDead;
-  Scen.CarryOverTimer = Scen.MissionTimer.Value();
+  Scen.CarryOverTimer = static_cast<int>(Scen.MissionTimer.Value());
   //	int timer = Scen.MissionTimer;
 
   /*
@@ -956,7 +956,7 @@ void Do_Win() {
     Keyboard->Clear();
   }
 
-  Scen.CarryOverMoney = PlayerPtr->Credits;
+  Scen.CarryOverMoney = static_cast<int>(PlayerPtr->Credits);
 
   /*
   **	If requested, record the scenario's objects in the carry over list
@@ -2525,7 +2525,7 @@ void Assign_Houses() {
   //------------------------------------------------------------------------
   // Now assign computer players to the remaining houses.
   //------------------------------------------------------------------------
-  for (i = Session.Players.Count();
+  for (i = static_cast<int>(Session.Players.Count());
        i < Session.Players.Count() + Session.Options.AIPlayers; i++) {
     house = static_cast<HousesType>(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
@@ -2576,7 +2576,7 @@ void Assign_Houses() {
     housep->Assign_Handicap(difficulty);
   }
 
-  for (i = Session.Players.Count() + Session.Options.AIPlayers;
+  for (i = static_cast<int>(Session.Players.Count()) + Session.Options.AIPlayers;
        i < Rule.MaxPlayers; i++) {
     house = static_cast<HousesType>(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);

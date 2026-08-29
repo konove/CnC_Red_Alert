@@ -242,10 +242,10 @@ static void Clear_Overlap(PathType* path, CELL cell) {
  *   10/28/1994 SKB : Created.                                             *
  *=========================================================================*/
 int Point_Relative_To_Line(int x, int z, int x1, int z1, int x2, int z2) {
-  return (static_cast<long>(x) - static_cast<long>(x2)) *
-             (static_cast<long>(z1) - static_cast<long>(z2)) -
-         (static_cast<long>(z) - static_cast<long>(z2)) *
-             (static_cast<long>(x1) - static_cast<long>(x2));
+  return static_cast<int>((static_cast<long>(x) - static_cast<long>(x2)) *
+                              (static_cast<long>(z1) - static_cast<long>(z2)) -
+                          (static_cast<long>(z) - static_cast<long>(z2)) *
+                              (static_cast<long>(x1) - static_cast<long>(x2)));
 }
 
 /***************************************************************************

@@ -66,7 +66,7 @@ class RegionClass {
       Threat += threat;
     }
   }
-  int Threat_Value() const { return Threat; }
+  int Threat_Value() const { return static_cast<int>(Threat); }
 
  protected:
   long Threat;
