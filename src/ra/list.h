@@ -83,13 +83,13 @@ class ListClass : public ControlClass {
   int Draw_Me(bool forced) override;
   virtual const char* Get_Item(int index) const;
   virtual int Step_Selected_Index(int forward);
-  void Flag_To_Redraw() override;
+  void Flag_To_Redraw() final;
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
   virtual void Remove_Item(const char* text);
   virtual void Remove_Item(int);
-  virtual int Remove_Scroll_Bar();
+  virtual int Remove_Scroll_Bar() final;
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(const char* text);
   virtual void Set_Tabs(const int* tabs);
@@ -162,7 +162,7 @@ class ListClass : public ControlClass {
 };
 
 template <class T>
-class TListClass : public ControlClass {
+class TListClass final : public ControlClass {
  public:
   TListClass(int id, int x, int y, int w, int h, TextPrintType flags,
              const void* up, const void* down);

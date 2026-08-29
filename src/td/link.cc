@@ -81,7 +81,7 @@ LinkClass::LinkClass() { LinkClass::Zap(); }
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass::~LinkClass() { Remove(); }
+LinkClass::~LinkClass() { LinkClass::Remove(); }
 
 /***********************************************************************************************
  * LinkClass::Zap -- Forces the link pointers to NULL. *

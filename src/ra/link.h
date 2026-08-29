@@ -58,8 +58,8 @@ class LinkClass {
   virtual LinkClass& Add(LinkClass& object);
   virtual LinkClass& Add_Tail(LinkClass& object);
   virtual LinkClass& Add_Head(LinkClass& object);
-  virtual LinkClass& Head_Of_List();
-  virtual LinkClass& Tail_Of_List();
+  virtual LinkClass& Head_Of_List() final;
+  virtual LinkClass& Tail_Of_List() final;
   virtual void Zap();
   virtual LinkClass* Remove();
 

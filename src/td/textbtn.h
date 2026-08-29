@@ -44,7 +44,7 @@
 #include "td/defines.h"
 #include "td/toggle.h"
 
-class TextButtonClass : public ToggleClass {
+class TextButtonClass final : public ToggleClass {
  public:
   TextButtonClass();
   TextButtonClass(unsigned id, const char* text, TextPrintType style, int x,

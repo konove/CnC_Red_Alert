@@ -212,7 +212,9 @@ inline RawFileClass::RawFileClass()
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
 inline RawFileClass::~RawFileClass() {
-  Close();
+  // Derived overrides commit their own state in their own destructors;
+  // by the time this runs the object is a plain RawFileClass.
+  RawFileClass::Close();
   // Filename_ (std::string) automatically cleans up via RAII
 }
 

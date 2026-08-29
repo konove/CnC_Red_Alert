@@ -105,7 +105,7 @@ EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
   TextFlags = flags;
   EditFlags = style;
   Color = CC_GREEN;
-  Set_Text(text, max_len);
+  EditClass::Set_Text(text, max_len);
 
   if (w == -1 || h == -1) {
     Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TextFlags);

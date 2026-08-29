@@ -58,7 +58,7 @@
 **	these structures. This structure holds information that is specific
 **	and dynamic for a particular unit.
 */
-class UnitClass : public TarComClass {
+class UnitClass final : public TarComClass {
  public:
   /*
   **	This records the house flag that this object is currently carrying.

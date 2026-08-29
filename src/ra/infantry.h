@@ -60,7 +60,7 @@
 #include "tech/pipe.h"
 #include "tech/straw.h"
 
-class InfantryClass : public FootClass {
+class InfantryClass final : public FootClass {
  public:
   CCPtr<InfantryTypeClass> Class;
 

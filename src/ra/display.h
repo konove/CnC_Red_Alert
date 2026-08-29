@@ -149,6 +149,17 @@ class DisplayClass : public MapClass {
   virtual void Set_View_Dimensions(int x, int y, int width = -1,
                                    int height = -1);
 
+ private:
+  // The body of Set_View_Dimensions. 'reposition' drives the call to
+  // Set_Tactical_Position, which is virtual (RadarClass and HelpClass override
+  // it). The constructor passes false: it cannot reach those overrides, and on
+  // a zeroed TacticalCoord the call only sets the redraw flags that the lines
+  // after it set anyway.
+  void Update_View_Dimensions(int x, int y, int width, int height,
+                              bool reposition);
+
+ public:
+
   /*
   **	Pending object placement control.
   */

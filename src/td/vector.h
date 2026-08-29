@@ -88,6 +88,15 @@ class VectorClass {
   T& operator[](size_t index) { return Vector[index]; }
   const T& operator[](size_t index) const { return Vector[index]; }
   VectorClass& operator=(const VectorClass&);
+
+ private:
+  // The copying half of operator=, without the Clear() that precedes it. The
+  // copy constructor uses this directly: Clear() is virtual (DynamicVectorClass
+  // overrides it to reset ActiveCount) and a constructor cannot reach that
+  // override, while a freshly built vector has nothing to clear anyway.
+  void Copy_From(const VectorClass& vector);
+
+ public:
   virtual int operator==(const VectorClass&) const;
   virtual int Resize(unsigned newsize, const T* array = nullptr);
   virtual void Clear();

@@ -143,7 +143,15 @@ BufferIOFileClass::BufferIOFileClass()
  *                                                                                             *
  * HISTORY: * 11/10/1995 DRD : Created. *
  *=============================================================================================*/
-BufferIOFileClass::~BufferIOFileClass() { Free(); }
+BufferIOFileClass::~BufferIOFileClass() {
+  // Close() commits buffered writes; Free() only discards the buffer, clearing
+  // IsChanged without writing it out. ~RawFileClass cannot reach this override
+  // -- by the time it runs, the object is no longer a BufferIOFileClass -- so
+  // the commit has to happen here or pending writes are lost. Qualified: the
+  // derived parts are already gone, so this class's version is the right one.
+  BufferIOFileClass::Close();
+  Free();
+}
 
 /***********************************************************************************************
  * BufferIOFileClass::Cache -- Load part or all of a file data into RAM. *
@@ -909,8 +917,10 @@ void BufferIOFileClass::Close() {
 
     if (IsDiskOpen) {
       if (TrueFileStart) {
+        // Deliberately this class's Close with buffering switched off, not a
+        // derived override, which would re-enter its own logic instead.
         UseBuffer = false;
-        Close();
+        BufferIOFileClass::Close();
         UseBuffer = true;
       } else {
         RawFileClass::Close();

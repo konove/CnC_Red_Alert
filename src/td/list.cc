@@ -143,7 +143,7 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
  * INPUT:      none * OUTPUT:     none * WARNINGS:   none * HISTORY: 01/16/1995
  *JLB : Created.                                                       *
  *=============================================================================================*/
-ListClass::~ListClass() { Remove_Scroll_Bar(); }
+ListClass::~ListClass() { ListClass::Remove_Scroll_Bar(); }
 
 /***********************************************************************************************
  * ListClass::Add_Item -- Adds an item to the list box. *

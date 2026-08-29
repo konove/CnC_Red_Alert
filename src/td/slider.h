@@ -61,7 +61,7 @@
  ** WARNINGS:
  ** HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-class SliderClass : public GaugeClass {
+class SliderClass final : public GaugeClass {
  public:
   SliderClass(unsigned id, int x, int y, int w, int h,
               int belong_to_list = false);

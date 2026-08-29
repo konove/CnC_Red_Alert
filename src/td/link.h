@@ -56,12 +56,12 @@ class LinkClass {
   virtual LinkClass& Add(LinkClass& object);
   virtual LinkClass& Add_Tail(LinkClass& object);
   virtual LinkClass& Add_Head(LinkClass& object);
-  virtual const LinkClass& Head_Of_List() const;
-  virtual LinkClass& Head_Of_List() {
+  virtual const LinkClass& Head_Of_List() const final;
+  virtual LinkClass& Head_Of_List() final {
     return (LinkClass&)static_cast<const LinkClass*>(this)->Head_Of_List();
   }
-  virtual const LinkClass& Tail_Of_List() const;
-  virtual LinkClass& Tail_Of_List() {
+  virtual const LinkClass& Tail_Of_List() const final;
+  virtual LinkClass& Tail_Of_List() final {
     return (LinkClass&)static_cast<const LinkClass*>(this)->Tail_Of_List();
   }
   virtual void Zap();

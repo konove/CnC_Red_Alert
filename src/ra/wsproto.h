@@ -101,7 +101,7 @@ class WinsockInterfaceClass {
   bool Init();
   void Close();
 
-  virtual void Close_Socket();
+  virtual void Close_Socket() final;
   virtual int Read(void* buffer, int& buffer_len, void* address,
                    int& address_len);
   virtual void WriteTo(void* buffer, int buffer_len, void* address);
@@ -109,7 +109,9 @@ class WinsockInterfaceClass {
   virtual void Discard_In_Buffers();
   virtual void Discard_Out_Buffers();
   virtual bool Start_Listening();
-  virtual void Stop_Listening();
+  // final: nothing overrides these, and WinsockInterfaceClass::Close calls
+  // them from the destructor.
+  virtual void Stop_Listening() final;
   virtual void Clear_Socket_Error(SOCKET socket);
   virtual bool Set_Socket_Options();
   virtual void Set_Broadcast_Address(void*) {}

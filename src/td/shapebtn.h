@@ -43,7 +43,7 @@
 
 #include "td/toggle.h"
 
-class ShapeButtonClass : public ToggleClass {
+class ShapeButtonClass final : public ToggleClass {
  public:
   ShapeButtonClass();
   ShapeButtonClass(unsigned id, const void* shapes, int x, int y);

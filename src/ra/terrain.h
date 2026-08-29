@@ -60,7 +60,7 @@
 **	Each type of terrain has certain pieces of static information associated
 **	with it. This class elaborates this data.
 */
-class TerrainClass : public ObjectClass, public StageClass {
+class TerrainClass final : public ObjectClass, public StageClass {
  public:
   /*
   **	This points to the constant terrain data (for this type) that gives this

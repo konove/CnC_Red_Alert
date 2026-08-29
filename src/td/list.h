@@ -87,7 +87,7 @@ class ListClass : public ControlClass {
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
   virtual void Remove_Item(const char* text);
-  virtual int Remove_Scroll_Bar();
+  virtual int Remove_Scroll_Bar() final;
   virtual void Set_Selected_Index(int index);
   virtual void Set_Tabs(const int* tabs);
   virtual int Set_View_Index(int index);

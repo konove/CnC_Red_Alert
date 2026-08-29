@@ -66,7 +66,7 @@
 **	these structures. This structure holds information that is specific
 **	and dynamic for a particular building.
 */
-class BuildingClass : public TechnoClass {
+class BuildingClass final : public TechnoClass {
  public:
   const BuildingTypeClass* Class;
   operator StructType() const { return Class->Type; }

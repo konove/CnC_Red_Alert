@@ -57,7 +57,7 @@
 *animation objects are *	displayed over the top of the game map.
 *Typically, they are used for explosion and fire *	effects.
 */
-class AnimClass : public ObjectClass, public StageClass {
+class AnimClass final : public ObjectClass, public StageClass {
   /*
   **	This points to the type of animation object this is.
   */

@@ -238,7 +238,7 @@ DisplayClass::DisplayClass()
   ShadowShapes = nullptr;
   TransIconset = nullptr;
 
-  Set_View_Dimensions(0, 8, 320 / CELL_PIXEL_W, 200 / CELL_PIXEL_H);
+  Update_View_Dimensions(0, 8, 320 / CELL_PIXEL_W, 200 / CELL_PIXEL_H, false);
 }
 
 /***********************************************************************************************
@@ -577,6 +577,11 @@ const short* DisplayClass::Text_Overlap_List(const char* text, int x,
  *position if necessary.                              *
  *=============================================================================================*/
 void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
+  Update_View_Dimensions(x, y, width, height, true);
+}
+
+void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
+                                          bool reposition) {
   if (width == -1) {
     TacLeptonWidth = Pixel_To_Lepton(SeenBuff.Get_Width() - x);
   } else {
@@ -598,8 +603,10 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
   Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
                MapCellWidth * CELL_LEPTON_W, MapCellHeight * CELL_LEPTON_H);
 
-  Set_Tactical_Position(
-      XY_Coord(xx + MapCellX * CELL_LEPTON_W, yy + MapCellY * CELL_LEPTON_H));
+  if (reposition) {
+    Set_Tactical_Position(
+        XY_Coord(xx + MapCellX * CELL_LEPTON_W, yy + MapCellY * CELL_LEPTON_H));
+  }
 
   TacPixelX = x;
   TacPixelY = y;

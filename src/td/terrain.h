@@ -57,7 +57,7 @@
 **	Each type of terrain has certain pieces of static information associated
 **	with it. This class elaborates this data.
 */
-class TerrainClass : public ObjectClass, public StageClass {
+class TerrainClass final : public ObjectClass, public StageClass {
  public:
   const TerrainTypeClass* Class;
   operator TerrainType() const { return Class->Type; }

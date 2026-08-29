@@ -66,7 +66,7 @@
 **	these structures. This structure holds information that is specific
 **	and dynamic for a particular unit.
 */
-class UnitClass : public DriveClass {
+class UnitClass final : public DriveClass {
  public:
   /*
   **	This points to the static control data that gives 'this' unit its

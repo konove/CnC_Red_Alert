@@ -44,7 +44,7 @@
 
 #include "tech/wwfile.h"
 
-class RAMFileClass : public FileClass {
+class RAMFileClass final : public FileClass {
  public:
   RAMFileClass(void* buffer, int len);
   ~RAMFileClass() override;

@@ -55,7 +55,7 @@
 *animation objects are *	displayed over the top of the game map.
 *Typically, they are used for explosion and fire *	effects.
 */
-class AnimClass : public ObjectClass, private StageClass {
+class AnimClass final : public ObjectClass, private StageClass {
  public:
   void* operator new(size_t size) noexcept;
   void* operator new(size_t, void* ptr) noexcept { return ptr; }

@@ -134,7 +134,26 @@ VectorClass<T>::VectorClass(const VectorClass<T>& vector) {
   VectorMax = 0;
   IsAllocated = false;
   Vector = nullptr;
-  *this = vector;
+  if (this != &vector) {
+    Copy_From(vector);
+  }
+}
+
+template <class T>
+void VectorClass<T>::Copy_From(const VectorClass<T>& vector) {
+  VectorMax = vector.Length();
+  if (VectorMax) {
+    Vector = new T[VectorMax];
+    if (Vector) {
+      IsAllocated = true;
+      for (int index = 0; index < VectorMax; index++) {
+        Vector[index] = vector[index];
+      }
+    }
+  } else {
+    Vector = nullptr;
+    IsAllocated = false;
+  }
 }
 
 /***********************************************************************************************
@@ -157,19 +176,7 @@ VectorClass<T>& VectorClass<T>::operator=(const VectorClass<T>& vector) {
     return *this;
   }
   Clear();
-  VectorMax = vector.Length();
-  if (VectorMax) {
-    Vector = new T[VectorMax];
-    if (Vector) {
-      IsAllocated = true;
-      for (int index = 0; index < VectorMax; index++) {
-        Vector[index] = vector[index];
-      }
-    }
-  } else {
-    Vector = nullptr;
-    IsAllocated = false;
-  }
+  Copy_From(vector);
   return *this;
 }
 

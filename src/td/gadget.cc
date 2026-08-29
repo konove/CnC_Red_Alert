@@ -149,8 +149,13 @@ GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags,
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 GadgetClass::~GadgetClass() {
-  if (Has_Focus()) {
-    Clear_Focus();
+  // Drop the keyboard focus directly. Clear_Focus is virtual -- DropListClass
+  // collapses its drop-down in its override -- and a destructor cannot reach
+  // that override; a derived class that needs more does it in its own
+  // destructor, while the object is still of that type.
+  if (Focused == this) {
+    Flags &= ~KEYBOARD;
+    Focused = nullptr;
   }
 }
 

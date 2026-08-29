@@ -44,7 +44,7 @@
 #include "ra/gadget.h"
 #include "tech/buff.h"
 
-class StaticButtonClass : public GadgetClass {
+class StaticButtonClass final : public GadgetClass {
  public:
   StaticButtonClass();
   StaticButtonClass(unsigned id, const char* text, TextPrintType style, int x,

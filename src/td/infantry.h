@@ -67,7 +67,7 @@
 #define FEAR_PANIC 200    // Run away! Run away!
 #define FEAR_MAXIMUM 255  // Scared to death.
 
-class InfantryClass : public FootClass {
+class InfantryClass final : public FootClass {
  public:
   const InfantryTypeClass* Class;
   operator InfantryType() const { return Class->Type; }
