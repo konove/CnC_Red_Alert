@@ -1658,10 +1658,11 @@ TheaterType Theater_From_Name(const char* name) {
 }
 
 FacingType KN_To_Facing(const unsigned input) {
-  const unsigned key = input & ~(static_cast<unsigned>(KN_ALT_BIT) |
-                                 static_cast<unsigned>(KN_SHIFT_BIT) |
-                                 static_cast<unsigned>(KN_CTRL_BIT));
-  switch (key) {
+  constexpr unsigned kModifierBits = static_cast<unsigned>(KN_ALT_BIT) |
+                                     static_cast<unsigned>(KN_SHIFT_BIT) |
+                                     static_cast<unsigned>(KN_CTRL_BIT);
+  // C++17 init-statement: key exists only for the switch.
+  switch (const unsigned key = input & ~kModifierBits; key) {
     case KN_LEFT:
       return FACING_W;
 
@@ -2615,10 +2616,12 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
         buffer = x_buffer;
       }
 
-      // Special shadow drawing code (used for aircraft and bullets).
-      constexpr auto kFadingPredator = SHAPE_FADING | SHAPE_PREDATOR;
-      if ((flags & kFadingPredator) == kFadingPredator) {
-        flags = flags & ~kFadingPredator;
+      // Special shadow drawing code (used for aircraft and bullets). Both bits
+      // together mean a shadow; either one alone means something else.
+      constexpr auto kShadowMask = SHAPE_FADING | SHAPE_PREDATOR;
+      const auto shadow_bits = flags & kShadowMask;
+      if (shadow_bits == kShadowMask) {
+        flags = flags & ~kShadowMask;
         flags = flags | SHAPE_GHOST;
         ghostdata = DisplayClass::SpecialGhost;
       }
@@ -2634,8 +2637,9 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
       }
 
       if (draw_window.Lock()) {
-        constexpr auto kGhostFading = SHAPE_GHOST | SHAPE_FADING;
-        if ((flags & kGhostFading) == kGhostFading) {
+        constexpr auto kGhostFadeMask = SHAPE_GHOST | SHAPE_FADING;
+        const auto ghost_fade_bits = flags & kGhostFadeMask;
+        if (ghost_fade_bits == kGhostFadeMask) {
           Buffer_Frame_To_Page(x, y, width, height, buffer, draw_window,
                                flags | SHAPE_TRANS, ghostdata, fading_data, 1,
                                pred_offset);
