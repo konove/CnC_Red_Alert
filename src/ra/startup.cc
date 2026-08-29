@@ -105,7 +105,6 @@ void Check_Use_Compressed_Shapes();
 void Read_Setup_Options(RawFileClass* config_file);
 bool VideoBackBufferAllowed = true;
 
-const char* Game_Registry_Key();
 
 // #if (ENGLISH)
 // #define WINDOW_NAME "Red Alert"

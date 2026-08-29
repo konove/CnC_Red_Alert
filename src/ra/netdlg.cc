@@ -207,7 +207,6 @@ constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 64;
 bool Is_Mission_126x126(char* file_name);
 bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
-bool Force_Scenario_Available(const char* szName);
 #if WOLAPI_INTEGRATION
 #include "WolStrng.h"
 #include "WolapiOb.h"

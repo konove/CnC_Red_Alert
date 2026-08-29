@@ -622,11 +622,30 @@ CrateType Crate_From_Name(const char* name);
 // tighten the map's dirty-rectangle logic.
 //
 // This is brute force and slow -- cache the result rather than recomputing it.
-const Rect Shape_Dimensions(const void* shapedata, int shapenum);
+Rect Shape_Dimensions(const void* shapedata, int shape_num);
 
 // Services the IPX connection and dispatches any global packet that arrived:
 // sign-offs, player chat, or a game-setup packet.
 void IPX_Call_Back();
+
+// Set by the -NOMOVIES command line switch; suppresses movie playback.
+extern bool bNoMovies;
+
+// Selects the pre-Win95 shape blitter. Set by CC_Draw_Shape() around the
+// rotate-and-scale path, which produces raw shape data the new blitter cannot
+// read. Read by the shape drawing code in tech/.
+extern "C" {
+extern bool UseOldShapeDraw;
+}
+
+// Returns the registry subkey, under HKEY_LOCAL_MACHINE, holding this game's
+// installer settings. The key name is language specific, because each
+// localized release installed as a separate product.
+const char* Game_Registry_Key();
+
+// Ensures the disc holding the given official scenario is available. Expansion
+// scenarios live on their own discs; everything else is always reachable.
+bool Force_Scenario_Available(const char* name);
 
 bool Is_Counterstrike_Installed();
 bool Is_Aftermath_Installed();
@@ -648,7 +667,7 @@ void Center_About_Objects();
 //
 // On success the file system's CD search path is repointed at the drive that
 // holds the disc, and the secondary mix files are re-registered from it.
-bool Force_CD_Available(int cd);
+bool Force_CD_Available(int cd_desired);
 
 // Records or restores one of the player's tactical-view bookmarks.
 // action: 0 = jump the view back to the remembered location,
@@ -680,8 +699,8 @@ void Unselect_All();
 //
 // Does nothing outside of a normal (non-multiplayer) game or in the map editor.
 void Play_Movie(const char* name, ThemeType theme = THEME_NONE,
-                bool clrscrn = true);
-void Play_Movie(VQType name, ThemeType theme = THEME_NONE, bool clrscrn = true);
+                bool clear_screen = true);
+void Play_Movie(VQType name, ThemeType theme = THEME_NONE, bool clear_screen = true);
 
 // Runs one frame of the game. Returns true when the game should end.
 bool Main_Loop();
@@ -699,6 +718,14 @@ void Main_Game(int argc, char* argv[]);
 // breaking out is allowed).
 long VQ_Call_Back(unsigned char* buffer = nullptr, long frame = 0);
 long VQ_Event_Handler(unsigned long event, void* buffer, long nbytes);
+
+// Handles keyboard input while the tactical map is displayed. Consumes each
+// key it acts on by setting input to KN_NONE.
+void Keyboard_Process(KeyNumType& input);
+
+// Switches on the Aftermath secret units for this session. Triggered by a chat
+// message so that every machine enables them at the same point.
+void Enable_Secret_Units();
 
 // Real-time maintenance -- sound, music, and network servicing. Unlike the
 // per-frame game logic this has to run as often as possible, so it is called
@@ -729,8 +756,8 @@ FacingType KN_To_Facing(int input);
 // the icons themselves follow, frames of (width * height) icons each. Pass
 // frames == -1 to build every frame in the shape file. Returns nullptr if
 // shapefile is null.
-std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
-                                       int frames, int zoomfactor);
+std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shape_num,
+                                       int frames, int zoom_factor);
 // Draws a shape to the current logical page. Every shape draw in the game goes
 // through here.
 //
@@ -739,14 +766,14 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
 // ghostdata by SHAPE_GHOST; if either is omitted the display class's default
 // table is substituted. rotation and scale (24.8 fixed point) take the slower
 // rotate-and-scale path when either differs from its default.
-void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
+void CC_Draw_Shape(const void* shapefile, int shape_num, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
-                   const void* fadingdata = nullptr,
+                   const void* fading_data = nullptr,
                    const void* ghostdata = nullptr, DirType rotation = DIR_N,
                    long scale = 0x0100);
-void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
+void CC_Draw_Shape(std::span<const std::byte> shapefile, int shape_num, int x,
                    int y, WindowNumberType window, ShapeFlags_Type flags,
-                   const void* fadingdata = nullptr,
+                   const void* fading_data = nullptr,
                    const void* ghostdata = nullptr, DirType rotation = DIR_N,
                    long scale = 0x0100);
 

@@ -52,7 +52,6 @@
 #include "ra/building.h"
 #include "ra/ccfile.h"
 #include "ra/ccptr.h"
-#include "ra/compat.h"
 #include "ra/config.h"
 #include "ra/const.h"
 #include "ra/coord.h"
@@ -146,35 +145,26 @@ MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user);
 void* Get_Shape_Header_Data(void* ptr);
 extern bool Spawn_WChat(bool can_launch);
 
-void Enable_Secret_Units();
-
 extern void Do_Draw();
 
 bool bNoMovies = false;
-
-// Function prototypes for this module **
-void Keyboard_Process(KeyNumType& input);
-static void Message_Input(KeyNumType& input);
-static void Color_Cycle();
-bool Map_Edit_Loop();
 
 extern "C" {
 bool UseOldShapeDraw = false;
 }
 
-void Error_In_Heap_Pointers(const char* string);
+// Function prototypes for this module.
+static void Message_Input(KeyNumType& input);
+static void Color_Cycle();
+static bool Map_Edit_Loop();
 static void Do_Record_Playback();
+static void Toggle_Formation();
 
-void Toggle_Formation();
-
-extern "C" {
-extern char* __nheapbeg;
-}
-
-// Special module globals for recording and playback
-char TeamEvent = 0;       // 0 = no event, 1,2,3 = team event type
-char TeamNumber = 0;      // which team was selected? (1-9)
-char FormationEvent = 0;  // 0 = no event, 1 = formation was toggled
+// Recording state for the current frame, consumed and cleared by
+// Do_Record_Playback(). File-local: nothing outside this module touches them.
+static char TeamEvent = 0;       // 0 = no event, 1,2,3 = team event type
+static char TeamNumber = 0;      // which team was selected? (1-9)
+static char FormationEvent = 0;  // 0 = no event, 1 = formation was toggled
 
 // -----------------10/14/96 7:29PM------------------
 //
@@ -195,9 +185,9 @@ void MPATH_Call_Back();
 // own teardown.
 //
 // The network and modem layers are shut down after every game rather than left
-// running, so that reselecting one restarts it from a known state.
+// running, so that selecting one again restarts it from a known state.
 
-void Main_Game(int argc, char* argv[]) {
+void Main_Game(const int argc, char* argv[]) {
   static bool fade = true;
 
   // Perform one-time-only initializations
@@ -302,6 +292,7 @@ void Main_Game(int argc, char* argv[]) {
             Map.Revert_Mouse_Shape();
             break;
 
+          case SDLG_NONE:
           default:
             break;
         }
@@ -412,20 +403,21 @@ void Keyboard_Process(KeyNumType& input) {
   // comparison to *	KN_1, for example, will yield true if in fact the "1"
   // key was pressed.
 
-  KeyNumType plain =
-      static_cast<KeyNumType>(input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT |
-                                        WWKEY_CTRL_BIT | WWKEY_VK_BIT));
-  KeyNumType key = static_cast<KeyNumType>(input & ~WWKEY_VK_BIT);
+  constexpr unsigned kModifierBits =
+      unsigned{WWKEY_SHIFT_BIT} | unsigned{WWKEY_ALT_BIT} |
+      unsigned{WWKEY_CTRL_BIT} | unsigned{WWKEY_VK_BIT};
+  auto plain = static_cast<KeyNumType>(unsigned{input} & ~kModifierBits);
+  auto key = static_cast<KeyNumType>(unsigned{input} & ~unsigned{WWKEY_VK_BIT});
 
   if constexpr (config::kCheatKeysEnabled) {
     if (Debug_Flag) {
       HousesType h;
 
-      switch (int(input)) {
-        case (int(KN_M) | int(KN_SHIFT_BIT)):
-        case (int(KN_M) | int(KN_ALT_BIT)):
-        case (int(KN_M) | int(KN_CTRL_BIT)):
-          for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+      switch (static_cast<unsigned>(input)) {
+        case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_SHIFT_BIT):
+        case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_ALT_BIT):
+        case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_CTRL_BIT):
+          for (h = HOUSE_FIRST; h < HOUSE_COUNT; ++h) {
             Houses.Ptr(h)->Refund_Money(10000);
           }
           break;
@@ -437,7 +429,9 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (Debug_Playtest && input == (KN_W | KN_ALT_BIT)) {
+    if (Debug_Playtest &&
+        static_cast<unsigned>(input) ==
+            (static_cast<unsigned>(KN_W) | static_cast<unsigned>(KN_ALT_BIT))) {
       PlayerPtr->Blockage = false;
       PlayerPtr->Flag_To_Win();
     }
@@ -463,13 +457,13 @@ void Keyboard_Process(KeyNumType& input) {
   // if the SHIFT key is held down. It will create the team if the
   // CTRL or ALT key is held down.
   int action = 0;
-  if (input & WWKEY_SHIFT_BIT) {
+  if ((unsigned{input} & unsigned{WWKEY_SHIFT_BIT}) != 0U) {
     action = 1;
   }
-  if (input & WWKEY_ALT_BIT) {
+  if ((unsigned{input} & unsigned{WWKEY_ALT_BIT}) != 0U) {
     action = 3;
   }
-  if (input & WWKEY_CTRL_BIT) {
+  if ((unsigned{input} & unsigned{WWKEY_CTRL_BIT}) != 0U) {
     action = 2;
   }
 
@@ -762,7 +756,9 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (input != 0 && Debug_Flag && input && (input & KN_RLSE_BIT) == 0) {
+    if (input != 0 && Debug_Flag &&
+        (static_cast<unsigned>(input) & static_cast<unsigned>(KN_RLSE_BIT)) ==
+            0U) {
       Debug_Key(input);
     }
   }
@@ -775,7 +771,7 @@ void Keyboard_Process(KeyNumType& input) {
 // the group keeps its shape as it moves. kNoFormationOffset is the "not in
 // formation" sentinel; finding it on the first member is what decides whether
 // this call sets the formation up or tears it down.
-void Toggle_Formation() {
+static void Toggle_Formation() {
   // kNoGroup means "no grouped unit found yet". It must be compared against
   // rather than -1: Group is an unsigned char, so an ungrouped unit reads back
   // as 255 and would otherwise be taken for a valid group number and used to
@@ -786,7 +782,7 @@ void Toggle_Formation() {
   long minx = 0x7FFFFFFFL, miny = 0x7FFFFFFFL;
   long maxx = 0, maxy = 0;
   int index;
-  bool setform = 0;
+  bool set_form = false;
 
   // Recording support
   if (Session.Record) {
@@ -795,7 +791,7 @@ void Toggle_Formation() {
 
   // Find the first selected object that is a member of a team, and
   // register his group as the team we're using.  Once we find the team
-  // number, update the 'setform' flag to know whether we should be setting
+  // number, update the 'set_form' flag to know whether we should be setting
   // the formation's offsets, or clearing them.  If they currently have
   // illegal offsets (kNoFormationOffset), then we're setting.
   //
@@ -806,7 +802,7 @@ void Toggle_Formation() {
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr && obj->IsSelected) {
       team = obj->Group;
       if (team != kNoGroup) {
-        setform = obj->XFormOffset == kNoFormationOffset;
+        set_form = obj->XFormOffset == kNoFormationOffset;
         TeamSpeed[team] = SPEED_WHEEL;
         TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
         break;
@@ -820,7 +816,7 @@ void Toggle_Formation() {
           obj->IsSelected) {
         team = obj->Group;
         if (team != kNoGroup) {
-          setform = obj->XFormOffset == kNoFormationOffset;
+          set_form = obj->XFormOffset == kNoFormationOffset;
           TeamSpeed[team] = SPEED_WHEEL;
           TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
           break;
@@ -836,7 +832,7 @@ void Toggle_Formation() {
           obj->IsSelected) {
         team = obj->Group;
         if (team != kNoGroup) {
-          setform = obj->XFormOffset == kNoFormationOffset;
+          set_form = obj->XFormOffset == kNoFormationOffset;
           TeamSpeed[team] = SPEED_WHEEL;
           TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
           break;
@@ -854,7 +850,7 @@ void Toggle_Formation() {
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         obj->Group == team) {
       obj->Mark(MARK_CHANGE);
-      if (setform) {
+      if (set_form) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
         minx = std::min(xc, minx);
@@ -876,7 +872,7 @@ void Toggle_Formation() {
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         obj->Group == team) {
       obj->Mark(MARK_CHANGE);
-      if (setform) {
+      if (set_form) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
         minx = std::min(xc, minx);
@@ -895,7 +891,7 @@ void Toggle_Formation() {
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         obj->Group == team) {
       obj->Mark(MARK_CHANGE);
-      if (setform) {
+      if (set_form) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
         minx = std::min(xc, minx);
@@ -915,9 +911,9 @@ void Toggle_Formation() {
   //
   // Offsets are taken from where each unit already stands, so the formation
   // locks in the group's current shape rather than imposing a canned one.
-  if (setform) {
-    int centerx = static_cast<int>((maxx - minx) / 2 + minx);
-    int centery = static_cast<int>((maxy - miny) / 2 + miny);
+  if (set_form) {
+    int center_x = static_cast<int>((maxx - minx) / 2 + minx);
+    int center_y = static_cast<int>((maxy - miny) / 2 + miny);
 
     for (index = 0; index < Units.Count(); index++) {
       UnitClass* obj = Units.Ptr(index);
@@ -926,8 +922,8 @@ void Toggle_Formation() {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
-        obj->XFormOffset = static_cast<int>(xc - centerx);
-        obj->YFormOffset = static_cast<int>(yc - centery);
+        obj->XFormOffset = static_cast<int>(xc - center_x);
+        obj->YFormOffset = static_cast<int>(yc - center_y);
       }
     }
 
@@ -938,8 +934,8 @@ void Toggle_Formation() {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
-        obj->XFormOffset = static_cast<int>(xc - centerx);
-        obj->YFormOffset = static_cast<int>(yc - centery);
+        obj->XFormOffset = static_cast<int>(xc - center_x);
+        obj->YFormOffset = static_cast<int>(yc - center_y);
       }
     }
 
@@ -950,8 +946,8 @@ void Toggle_Formation() {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
 
-        obj->XFormOffset = static_cast<int>(xc - centerx);
-        obj->YFormOffset = static_cast<int>(yc - centery);
+        obj->XFormOffset = static_cast<int>(xc - center_x);
+        obj->YFormOffset = static_cast<int>(yc - center_y);
       }
     }
   }
@@ -964,12 +960,8 @@ void Toggle_Formation() {
 // packet, an IPX global packet, TEN, or MPATH -- but all of them build the same
 // message from the same edit buffer.
 static void Message_Input(KeyNumType& input) {
-  int rc;
   char txt[MAX_MESSAGE_LENGTH + 32];
   int id;
-  SerialPacketType* serial_packet;
-  int i;
-  KeyNumType copy_input;
 
   // Check keyboard input for a request to send a message.
   // The 'to' argument for Add_Edit is prefixed to the message buffer; the
@@ -1133,8 +1125,8 @@ static void Message_Input(KeyNumType& input) {
   }
 
   // Process message-system input; send the message out if RETURN is hit.
-  copy_input = input;
-  rc = Session.Messages.Input(input);
+  const KeyNumType copy_input = input;
+  const int rc = Session.Messages.Input(input);
 
   // If a single character has been added to an edit buffer, update the
   // display.
@@ -1169,7 +1161,11 @@ static void Message_Input(KeyNumType& input) {
     // (Note: The size of the SerialPacketType.Command must be the same as
     // the EventClass.Type!)
     if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
-      serial_packet = (SerialPacketType*)NullModem.BuildBuf;
+      // The modem layer hands back a raw byte buffer that the packet is built
+      // into in place; there is no portable alternative to the cast here.
+      auto* serial_packet =
+          // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+          reinterpret_cast<SerialPacketType*>(NullModem.BuildBuf);
 
       serial_packet->Command = SERIAL_MESSAGE;
       port::SafeCopy(serial_packet->Name, Session.Players[0]->Name);
@@ -1240,7 +1236,7 @@ static void Message_Input(KeyNumType& input) {
             *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
             Enable_Secret_Units();
           }
-          for (i = 0; i < Ipx.Num_Connections(); i++) {
+          for (int i = 0; i < Ipx.Num_Connections(); ++i) {
             Ipx.Send_Global_Message(
                 &Session.GPacket, sizeof(GlobalPacketType), 1,
                 Ipx.Connection_Address(Ipx.Connection_ID(i)));
@@ -1319,9 +1315,9 @@ void Color_Cycle() {
   static Timer<SystemTickSource> _ftimer;
   static bool _up = false;
   static int val = 255;
-  bool changed = false;
 
   if (Options.IsPaletteScroll) {
+    bool changed = false;
     // Process the fading white color. It is used for the radar box and other
     // glowing *	game interface elements.
     if (_ftimer.IsFinished()) {
@@ -1636,7 +1632,7 @@ const char* Language_Name(const char* basename) {
 
 SourceType Source_From_Name(const char* name) {
   if (name) {
-    for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; source++) {
+    for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; ++source) {
       if (stricmp(SourceName[source], name) == 0) {
         return source;
       }
@@ -1645,7 +1641,7 @@ SourceType Source_From_Name(const char* name) {
   return SOURCE_NONE;
 }
 
-const char* Name_From_Source(SourceType source) {
+const char* Name_From_Source(const SourceType source) {
   if (static_cast<unsigned>(source) < SOURCE_COUNT) {
     return SourceName[source];
   }
@@ -1653,10 +1649,8 @@ const char* Name_From_Source(SourceType source) {
 }
 
 TheaterType Theater_From_Name(const char* name) {
-  TheaterType index;
-
-  if (name) {
-    for (index = THEATER_FIRST; index < THEATER_COUNT; index++) {
+  if (name != nullptr) {
+    for (TheaterType index = THEATER_FIRST; index < THEATER_COUNT; ++index) {
       if (stricmp(name, Theaters[index].Name) == 0) {
         return index;
       }
@@ -1740,11 +1734,6 @@ extern void Check_For_Focus_Loss();
 void Reallocate_Big_Shape_Buffer();
 
 bool Main_Loop() {
-  KeyNumType input;  // Player input.
-  int x;
-  int y;
-  int framedelay;
-
   Mono_Set_Cursor(0, 0);
 
   if (!GameActive) {
@@ -1797,8 +1786,8 @@ bool Main_Loop() {
         Session.DesiredFrameRate =
             60;  //	A division by zero was happening (very rare).
       }
-      framedelay = kTimerSecond / Session.DesiredFrameRate;
-      FrameTimer.Set(framedelay);
+      const int frame_delay = kTimerSecond / Session.DesiredFrameRate;
+      FrameTimer.Set(frame_delay);
     }
   } else {
     if (Options.GameSpeed != 0) {
@@ -1819,8 +1808,11 @@ bool Main_Loop() {
   if (!Session.Play) {
     if (SpecialDialog == SDLG_NONE && GameInFocus) {
       WWMouse->Erase_Mouse(&HidPage, true);
+      KeyNumType input = KN_NONE;
+      int x = 0;
+      int y = 0;
       Map.Input(input, x, y);
-      if (input) {
+      if (input != KN_NONE) {
         Keyboard_Process(input);
       }
       Map.Render();
@@ -1834,7 +1826,7 @@ bool Main_Loop() {
 
 #ifndef SORTDRAW
   // Sort the map's ground layer by y-coordinate value.  This is done
-  // outside the IsToRedraw check, for the purposes of game sync'ing
+  // outside the IsToRedraw check, for the purposes of keeping the game in sync
   // between machines; this way, all machines will sort the Map's
   // layer in the same way, and any processing done that's based on
   // the order of this layer will remain in sync.
@@ -1935,15 +1927,17 @@ bool Main_Loop() {
     if (!Map.Validate()) {
       if (WWMessageBox().Process(TEXT_MAP_ERROR, TEXT_STOP, TEXT_CONTINUE) ==
           0) {
-        GameActive = 0;
+        GameActive = false;
       }
       Map.Validate();  // give debugger a chance to catch it
     }
   }
 
   if (Debug_MotionCapture) {
-    // One captured screen per element. Empty between runs.
-    static std::vector<std::vector<char>> frames;
+    // One captured screen per element. Empty between runs. Deliberately leaked
+    // rather than given static storage duration with a destructor, which would
+    // run at exit after the graphics system is already gone.
+    static auto& frames = *new std::vector<std::vector<char>>();
     // Doubles as the frame counter and the end-of-run signal: reaching
     // frames.size() ends the capture and flushes to disk.
     static base::ssize sequence = 0;
@@ -1955,7 +1949,8 @@ bool Main_Loop() {
       frames.resize(frame_count);
     }
 
-    static GraphicBufferClass temp_page(
+    // Leaked for the same reason as frames above.
+    static auto& temp_page = *new GraphicBufferClass(
         SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
         static_cast<long>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
 
@@ -2002,7 +1997,7 @@ bool Main_Loop() {
 // scenario stays frozen while it is edited.
 //
 // Returns true when the game should end.
-bool Map_Edit_Loop() {
+static bool Map_Edit_Loop() {
   // Redraw the map.
   Map.Render();
 
@@ -2026,7 +2021,7 @@ bool Map_Edit_Loop() {
   return (!GameActive);
 }
 
-void Go_Editor(bool flag) {
+void Go_Editor(const bool flag) {
   // Go into Scenario Editor mode
   if (flag) {
     MapEditorActive = true;
@@ -2082,11 +2077,11 @@ int MixFileVqaIo::Open(const char* filename) {
   return 0;
 }
 
-int MixFileVqaIo::Read(void* buffer, int64_t bytes) {
+int MixFileVqaIo::Read(void* buffer, const int64_t bytes) {
   return file_->Read(buffer, bytes) != bytes;
 }
 
-int MixFileVqaIo::Seek(int64_t offset, int origin) {
+int MixFileVqaIo::Seek(const int64_t offset, const int origin) {
   return file_->Seek(offset, origin) == -1;
 }
 
@@ -2111,7 +2106,7 @@ unsigned char* InterpolatedPalettes[100];
 bool PalettesRead;
 unsigned PaletteCounter;
 
-int Load_Interpolated_Palettes(const char* filename, bool add) {
+int Load_Interpolated_Palettes(const char* filename, const bool add) {
   int num_palettes = 0;
   int i;
   int start_palette;
@@ -2178,7 +2173,7 @@ extern void Resume_Audio_Thread();
 
 extern GraphicBufferClass VQ640;
 
-void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
+void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
   DLOG(INFO) << "Play_Movie: " << name;
 
   // A movie blocks until it finishes, which would stall every other player in
@@ -2193,7 +2188,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
   if (name) {
     auto fullname =
         std::filesystem::path(name).replace_extension(".VQA").string();
-    auto palname =
+    auto pal_name =
         std::filesystem::path(name).replace_extension(".VQP").string();
     if (!CCFileClass(fullname.c_str()).Is_Available()) {
       DLOG(WARNING) << "Play_Movie: file not found: " << fullname;
@@ -2206,7 +2201,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
     // then back, which is what produces the fade rather than a hard cut.
     Hide_Mouse();
     Theme.Queue_Song(theme);
-    if (PreserveVQAScreen == 0 && !clrscrn) {
+    if (PreserveVQAScreen == 0 && !clear_screen) {
       BlackPalette.Set(kFadePaletteMedium);
       VisiblePage.Clear();
       BlackPalette.Adjust(0x08, WhitePalette);
@@ -2240,7 +2235,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
     if (player.Open(fullname.c_str(), &AnimControl) == 0) {
       Brokeout = false;
       if (!IsVQ640) {
-        Load_Interpolated_Palettes(palname.c_str());
+        Load_Interpolated_Palettes(pal_name.c_str());
       }
       SysMemPage.Clear();
       InMovie = true;
@@ -2254,7 +2249,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
 
       // Early exit leaves the palette in an inconsistent state.
       if (Brokeout) {
-        clrscrn = true;
+        clear_screen = true;
         VisiblePage.Clear();
         Brokeout = false;
       }
@@ -2263,7 +2258,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
     }
 
     // The VQA player may leave the framebuffer and palette dirty.
-    if (clrscrn) {
+    if (clear_screen) {
       VisiblePage.Clear();
       BlackPalette.Adjust(0x08, WhitePalette);
       BlackPalette.Set();
@@ -2274,12 +2269,13 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
   }
 }
 
-void Play_Movie(VQType name, ThemeType theme, bool clrscrn) {
+void Play_Movie(const VQType name, const ThemeType theme,
+                const bool clear_screen) {
   if (name != VQ_NONE) {
     if (name == VQ_REDINTRO) {
       IsVQ640 = true;
     }
-    Play_Movie(VQName[name], theme, clrscrn);
+    Play_Movie(VQName[name], theme, clear_screen);
     IsVQ640 = false;
   }
 }
@@ -2451,7 +2447,7 @@ void Unselect_All() {
   }
 }
 
-std::string Fading_Table_Name(const char* base, TheaterType theater) {
+std::string Fading_Table_Name(const char* base, const TheaterType theater) {
   // Build filename: first character of theater root + base name + .MRF
   // extension
   const auto root = std::string(1, Theaters[theater].Root[0]) + base;
@@ -2460,32 +2456,28 @@ std::string Fading_Table_Name(const char* base, TheaterType theater) {
 }
 
 // Icons are 24x24 pixels in the source art, and the radar draws them at
-// zoomfactor pixels per cell -- so each output pixel stands for several source
+// zoom_factor pixels per cell -- so each output pixel stands for several source
 // ones.
 //
 // Rather than point-sampling, each output pixel takes the first
 // non-transparent of the nine source pixels around its sample point (the
-// _offx/_offy offsets). Without that spread, anything thinner than the sample
+// off_x/off_y offsets). Without that spread, anything thinner than the sample
 // step -- walls, most of a structure's outline -- would vanish at radar zoom.
-std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
-                                       int frames, int zoomfactor) {
-  static int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
-  static int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
-  int lp, framelp;
-  char pixel = 0;
-
-  char* buffer = nullptr;
-  std::unique_ptr<char[]> result;
+std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
+                                       const int shape_num, int frames,
+                                       const int zoom_factor) {
+  static int off_x[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
+  static int off_y[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
 
   // If there is no shape file, then there can be no radar icon imagery.
-  if (!shapefile) {
+  if (shapefile == nullptr) {
     return nullptr;
   }
 
 #if (0)
   CCPalette.Set();
   Set_Logic_Page(SeenBuff);
-  CC_Draw_Shape(shapefile, shapenum, 64, 64, WINDOW_MAIN, SHAPE_WIN_REL);
+  CC_Draw_Shape(shapefile, shape_num, 64, 64, WINDOW_MAIN, SHAPE_WIN_REL);
 #endif
 
   // Get the pixel width and height of the frame we built.  This will
@@ -2507,36 +2499,39 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
 
   // Allocate a position to store our icons.  If the alloc fails then
   // we don't add these icons to the set.
-  result = std::make_unique<char[]>(icon_width * icon_height * 9 * frames + 2);
-  buffer = result.get();
+  auto result =
+      std::make_unique<char[]>(icon_width * icon_height * 9 * frames + 2);
+  char* buffer = result.get();
   *buffer++ = static_cast<char>(icon_width);
   *buffer++ = static_cast<char>(icon_height);
-  int val = 24 / zoomfactor;
+  const int val = 24 / zoom_factor;
 
-  for (framelp = 0; framelp < frames; framelp++) {
+  for (int frame_num = 0; frame_num < frames; ++frame_num) {
     // Build the current frame.  If the frame can not be built then we
     // just need to skip past this set of icons and try to build the
     // next frame.
-    void* ptr;
-    ptr = Build_Frame(shapefile, shapenum + framelp, SysMemPage.Get_Buffer());
+    void* ptr =
+        Build_Frame(shapefile, static_cast<uint16_t>(shape_num + frame_num),
+                    SysMemPage.Get_Buffer());
     if (ptr != nullptr) {
       ptr = Get_Shape_Header_Data(ptr);
 
       // Loop through the icon width and the icon height building icons
       // into the buffer pointer.  When the getx or gety falls outside of
       // the width and height of the shape, just insert transparent pixels.
-      for (int icony = 0; icony < icon_height; icony++) {
-        for (int iconx = 0; iconx < icon_width; iconx++) {
-          for (int y = 0; y < zoomfactor; y++) {
-            for (int x = 0; x < zoomfactor; x++) {
-              int getx = iconx * 24 + x * val + zoomfactor / 2;
-              int gety = icony * 24 + y * val + zoomfactor / 2;
+      for (int icon_y = 0; icon_y < icon_height; icon_y++) {
+        for (int icon_x = 0; icon_x < icon_width; icon_x++) {
+          for (int y = 0; y < zoom_factor; y++) {
+            for (int x = 0; x < zoom_factor; x++) {
+              int getx = icon_x * 24 + x * val + zoom_factor / 2;
+              int gety = icon_y * 24 + y * val + zoom_factor / 2;
               if (getx < pixel_width && gety < pixel_height) {
-                for (lp = 0; lp < 9; lp++) {
+                char pixel = 0;
+                for (int lp = 0; lp < 9; ++lp) {
                   pixel = *(static_cast<char*>(ptr) +
-                            (static_cast<base::ssize>(gety - _offy[lp])) *
+                            (static_cast<base::ssize>(gety - off_y[lp])) *
                                 pixel_width +
-                            getx - _offx[lp]);
+                            getx - off_x[lp]);
 
                   if (pixel == LTGREEN) {
                     pixel = 0;
@@ -2560,13 +2555,11 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shapenum,
   return result;
 }
 
-void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
-                   WindowNumberType window, ShapeFlags_Type flags,
-                   const void* fadingdata, const void* ghostdata,
-                   DirType rotation, long scale) {
-  int predoffset;
-  void* shape_pointer;
-
+void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
+                   const int y, const WindowNumberType window,
+                   ShapeFlags_Type flags, const void* fading_data,
+                   const void* ghostdata, const DirType rotation,
+                   const long scale) {
   // Special kludge for E3 to prevent crashes
   //
   // Callers that ask for ghosting or fading without supplying the table get
@@ -2574,29 +2567,30 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
   if (flags & SHAPE_GHOST && !ghostdata) {
     ghostdata = DisplayClass::SpecialGhost;
   }
-  if (flags & SHAPE_FADING && !fadingdata) {
-    fadingdata = DisplayClass::FadingShade;
+  if (flags & SHAPE_FADING && !fading_data) {
+    fading_data = DisplayClass::FadingShade;
   }
 
-  static unsigned char* _xbuffer = nullptr;
+  static unsigned char* x_buffer = nullptr;
 
-  if (!_xbuffer) {
-    _xbuffer = new unsigned char[SHAPE_BUFFER_SIZE];
+  if (!x_buffer) {
+    x_buffer = new unsigned char[SHAPE_BUFFER_SIZE];
   }
 
-  if (shapefile != nullptr && shapenum != -1) {
+  if (shapefile != nullptr && shape_num != -1) {
     int width = Get_Build_Frame_Width(shapefile);
     int height = Get_Build_Frame_Height(shapefile);
 
     // In WIn95, build shape returns a pointer to the shape not its size
-    shape_pointer = Build_Frame(shapefile, shapenum, _ShapeBuffer);
+    void* shape_pointer =
+        Build_Frame(shapefile, static_cast<uint16_t>(shape_num), _ShapeBuffer);
     if (shape_pointer) {
       GraphicViewPortClass draw_window(
           LogicPage->Get_Graphic_Buffer(),
           WindowList[window][WINDOWX] + LogicPage->Get_XPos(),
           WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
           WindowList[window][WINDOWWIDTH], WindowList[window][WINDOWHEIGHT]);
-      unsigned char* buffer = static_cast<unsigned char*>(shape_pointer);
+      auto* buffer = static_cast<unsigned char*>(shape_pointer);
 
       UseOldShapeDraw = false;
       // Rotation and scale handler.
@@ -2612,19 +2606,19 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
         BitmapClass bm(width, height, buffer);
         width *= 2;
         height *= 2;
-        memset(_xbuffer, '\0', SHAPE_BUFFER_SIZE);
-        GraphicBufferClass gb(width, height, _xbuffer);
+        memset(x_buffer, '\0', SHAPE_BUFFER_SIZE);
+        GraphicBufferClass gb(width, height, x_buffer);
         TPoint2D pt(width / 2, height / 2);
 
         gb.Scale_Rotate(bm, pt, static_cast<int32_t>(scale),
-                        256 - (rotation - 64));
-        buffer = _xbuffer;
+                        static_cast<uint8_t>(256 - rotation + 64));
+        buffer = x_buffer;
       }
 
       // Special shadow drawing code (used for aircraft and bullets).
-      if ((flags & (SHAPE_FADING | SHAPE_PREDATOR)) ==
-          (SHAPE_FADING | SHAPE_PREDATOR)) {
-        flags = flags & ~(SHAPE_FADING | SHAPE_PREDATOR);
+      constexpr auto kFadingPredator = SHAPE_FADING | SHAPE_PREDATOR;
+      if ((flags & kFadingPredator) == kFadingPredator) {
+        flags = flags & ~kFadingPredator;
         flags = flags | SHAPE_GHOST;
         ghostdata = DisplayClass::SpecialGhost;
       }
@@ -2633,30 +2627,30 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
       // walks with the frame counter, which is what makes it shimmer. Objects
       // on the right half of the window walk it the other way, so that two
       // cloaked objects side by side do not ripple in lockstep.
-      predoffset = static_cast<int>(Frame);
+      int pred_offset = static_cast<int>(Frame);
 
       if (x > WindowList[window][WINDOWWIDTH] << 2) {
-        predoffset = -predoffset;
+        pred_offset = -pred_offset;
       }
 
       if (draw_window.Lock()) {
-        if ((flags & (SHAPE_GHOST | SHAPE_FADING)) ==
-            (SHAPE_GHOST | SHAPE_FADING)) {
+        constexpr auto kGhostFading = SHAPE_GHOST | SHAPE_FADING;
+        if ((flags & kGhostFading) == kGhostFading) {
           Buffer_Frame_To_Page(x, y, width, height, buffer, draw_window,
-                               flags | SHAPE_TRANS, ghostdata, fadingdata, 1,
-                               predoffset);
+                               flags | SHAPE_TRANS, ghostdata, fading_data, 1,
+                               pred_offset);
         } else {
           if (flags & SHAPE_FADING) {
             Buffer_Frame_To_Page(x, y, width, height, buffer, draw_window,
-                                 flags | SHAPE_TRANS, fadingdata, 1,
-                                 predoffset);
+                                 flags | SHAPE_TRANS, fading_data, 1,
+                                 pred_offset);
           } else {
             if (flags & SHAPE_PREDATOR) {
               Buffer_Frame_To_Page(x, y, width, height, buffer, draw_window,
-                                   flags | SHAPE_TRANS, predoffset);
+                                   flags | SHAPE_TRANS, pred_offset);
             } else {
               Buffer_Frame_To_Page(x, y, width, height, buffer, draw_window,
-                                   flags | SHAPE_TRANS, ghostdata, predoffset);
+                                   flags | SHAPE_TRANS, ghostdata, pred_offset);
             }
           }
         }
@@ -2666,28 +2660,29 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
   }
 }
 
-void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
-                   int y, WindowNumberType window, ShapeFlags_Type flags,
-                   const void* fadingdata, const void* ghostdata,
-                   DirType rotation, long scale) {
-  CC_Draw_Shape(shapefile.data(), shapenum, x, y, window, flags, fadingdata,
+void CC_Draw_Shape(const std::span<const std::byte> shapefile,
+                   const int shape_num, const int x, const int y,
+                   const WindowNumberType window, const ShapeFlags_Type flags,
+                   const void* fading_data, const void* ghostdata,
+                   const DirType rotation, const long scale) {
+  CC_Draw_Shape(shapefile.data(), shape_num, x, y, window, flags, fading_data,
                 ghostdata, rotation, scale);
 }
 
-const Rect Shape_Dimensions(const void* shapedata, int shapenum) {
+Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   Rect rect;
 
-  if (shapedata == nullptr || shapenum < 0 ||
-      shapenum > Get_Build_Frame_Count(shapedata)) {
+  if (shapedata == nullptr || shape_num < 0 ||
+      shape_num > Get_Build_Frame_Count(shapedata)) {
     return rect;
   }
 
-  char* shape;
-  void* sh = Build_Frame(shapedata, shapenum, _ShapeBuffer);
+  void* sh =
+      Build_Frame(shapedata, static_cast<uint16_t>(shape_num), _ShapeBuffer);
   if (sh == nullptr) {
     return rect;
   }
-  shape = static_cast<char*>(Get_Shape_Header_Data(sh));
+  const char* shape = static_cast<char*>(Get_Shape_Header_Data(sh));
 
   int width = Get_Build_Frame_Width(shapedata);
   int height = Get_Build_Frame_Height(shapedata);
@@ -2697,29 +2692,29 @@ const Rect Shape_Dimensions(const void* shapedata, int shapenum) {
   // hands the right scan a starting column, and so on.
   rect.X = 0;
   rect.Y = 0;
-  int xlimit = width - 1;
-  int ylimit = height - 1;
+  int x_limit = width - 1;
+  int y_limit = height - 1;
 
   // Find top edge of the shape.
-  for (int y = 0; y <= ylimit; y++) {
-    for (int x = 0; x <= xlimit; x++) {
+  for (int y = 0; y <= y_limit; y++) {
+    for (int x = 0; x <= x_limit; x++) {
       if (shape[y * width + x] != 0) {
         rect.Y = y;
         rect.X = x;
         // Pushing y past the limit breaks the outer loop too -- the first row
         // holding any pixel is the top edge, so there is nothing left to scan.
-        y = ylimit + 1;
+        y = y_limit + 1;
         break;
       }
     }
   }
 
   // Find bottom edge of the shape.
-  for (int y = ylimit; y >= rect.Y; y--) {
-    for (int x = xlimit; x >= 0; x--) {
+  for (int y = y_limit; y >= rect.Y; y--) {
+    for (int x = x_limit; x >= 0; x--) {
       if (shape[y * width + x] != 0) {
         rect.Height = y - rect.Y + 1;
-        xlimit = x;
+        x_limit = x;
         y = rect.Y - 1;
         break;
       }
@@ -2738,11 +2733,11 @@ const Rect Shape_Dimensions(const void* shapedata, int shapenum) {
   }
 
   // Find the right edge of the shape.
-  for (int x = width - 1; x >= xlimit; x--) {
+  for (int x = width - 1; x >= x_limit; x--) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
       if (shape[y * width + x] != 0) {
         rect.Width = x - rect.X + 1;
-        x = xlimit - 1;
+        x = x_limit - 1;
         break;
       }
     }
@@ -2756,7 +2751,7 @@ const Rect Shape_Dimensions(const void* shapedata, int shapenum) {
   return rect;
 }
 
-const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
+const TechnoTypeClass* Fetch_Techno_Type(const RTTIType type, const int id) {
   switch (type) {
     case RTTI_UNITTYPE:
     case RTTI_UNIT:
@@ -2778,6 +2773,30 @@ const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
     case RTTI_AIRCRAFT:
       return &AircraftTypeClass::As_Reference(static_cast<AircraftType>(id));
 
+    // Everything else either has no TechnoTypeClass or is not a type at all.
+    case RTTI_NONE:
+    case RTTI_ANIM:
+    case RTTI_ANIMTYPE:
+    case RTTI_BULLET:
+    case RTTI_BULLETTYPE:
+    case RTTI_CELL:
+    case RTTI_FACTORY:
+    case RTTI_HOUSE:
+    case RTTI_HOUSETYPE:
+    case RTTI_OVERLAY:
+    case RTTI_OVERLAYTYPE:
+    case RTTI_SMUDGE:
+    case RTTI_SMUDGETYPE:
+    case RTTI_SPECIAL:
+    case RTTI_TEAM:
+    case RTTI_TEAMTYPE:
+    case RTTI_TEMPLATE:
+    case RTTI_TEMPLATETYPE:
+    case RTTI_TERRAIN:
+    case RTTI_TERRAINTYPE:
+    case RTTI_TRIGGER:
+    case RTTI_TRIGGERTYPE:
+    case RTTI_COUNT:
     default:
       break;
   }
@@ -2823,7 +2842,8 @@ long VQ_Call_Back(unsigned char*, long) {
   return false;
 }
 
-long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
+long VQ_Event_Handler(const unsigned long event, void* /*buffer*/,
+                      long /*n_bytes*/) {
 #ifdef PORTABLE
   // vsync while waiting for frame
   if (event == VQAEVENT_SYNC) {
@@ -2837,7 +2857,7 @@ long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
 //
 // AllowVoice is cleared once something has been selected so that picking a
 // group of ten units produces one acknowledgement rather than ten.
-void Handle_Team(int team, int action) {
+void Handle_Team(const int team, const int action) {
   int index;
 
   // Recording support
@@ -2968,7 +2988,7 @@ void Handle_Team(int team, int action) {
             obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
-            obj->Group = team;
+            obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
             long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
             long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
@@ -2991,7 +3011,7 @@ void Handle_Team(int team, int action) {
             obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
-            obj->Group = team;
+            obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
             long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
             long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
@@ -3014,7 +3034,7 @@ void Handle_Team(int team, int action) {
             obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
-            obj->Group = team;
+            obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
             long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
             long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
@@ -3034,7 +3054,7 @@ void Handle_Team(int team, int action) {
             obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
-            obj->Group = team;
+            obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
           }
         }
@@ -3048,7 +3068,7 @@ void Handle_Team(int team, int action) {
           // formation offset, so they will not be created in
           // formation.  Later, if they're assigned a formation, the
           // XFormOffset & YFormOffset numbers will change to valid
-          // offsets, and they'll be formationed.
+          // offsets, and they'll move in formation.
 #if (1)
           obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
 #else
@@ -3075,7 +3095,7 @@ void Handle_Team(int team, int action) {
             obj->Group = kNoGroup;
           }
           if (obj->IsSelected) {
-            obj->Group = team;
+            obj->Group = static_cast<unsigned char>(team);
           }
           if (obj->Group == team && obj->IsSelected) {
 #if (1)
@@ -3111,7 +3131,7 @@ void Handle_Team(int team, int action) {
 // Bookmarks are stored biased by half a screen -- eight rows down and ten
 // columns across from the tactical corner -- so the cell recorded is the middle
 // of what the player was looking at, not its top left corner.
-void Handle_View(int view, int action) {
+void Handle_View(const int view, const int action) {
   if (static_cast<unsigned>(view) < std::ssize(Scen.Views)) {
     if (action == 0) {
       Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
@@ -3198,16 +3218,21 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
 #endif
 }
 
-typedef enum {
+// Disc identifiers, matching the order of _cd_name above. CD_SOVIET and
+// CD_ALLIED are unreferenced by name but fix the numbering the later values
+// depend on, and are the values Get_CD_Index() returns for those discs.
+namespace {
+enum CD_VOLUME {
   CD_LOCAL = -2,
   CD_ANY = -1,
-  CD_SOVIET = 0,
-  CD_ALLIED,
+  CD_SOVIET [[maybe_unused]] = 0,
+  CD_ALLIED [[maybe_unused]],
   CD_COUNTERSTRIKE,
   CD_AFTERMATH,
   CD_CS_OR_AM,
-  CD_DVD
-} CD_VOLUME;
+  CD_DVD,
+};
+}  // namespace
 
 #ifndef DVD
 #error DVD must be defined!
@@ -3237,8 +3262,6 @@ bool Force_CD_Available(int cd_desired)  //	ajw
 #endif
 
   int new_cd_drive = 0;
-  int cd_current;
-  int current_drive;
 
   // If the required CD is set to -2 then it means that the file is present
   // on the local hard drive and we shouldn't have to worry about it.
@@ -3247,8 +3270,8 @@ bool Force_CD_Available(int cd_desired)  //	ajw
   }
 
   // Find out if the CD in the current drive is the one we are looking for
-  current_drive = CCFileClass::Get_CD_Drive();
-  cd_current = Get_CD_Index(current_drive, 1 * 60);
+  const int current_drive = CCFileClass::Get_CD_Drive();
+  int cd_current = Get_CD_Index(current_drive, 1 * 60);
 
   if (Using_DVD()) {
     // The DVD release carries every disc's content, so any disc request is
@@ -3389,7 +3412,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
         }
       }
 
-      GraphicViewPortClass* oldpage = Set_Logic_Page(SeenBuff);
+      GraphicViewPortClass* old_page = Set_Logic_Page(SeenBuff);
       Theme.Stop();
       int hidden = Get_Mouse_State();
       font = FontPtr;
@@ -3410,7 +3433,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
 
       if (WWMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {
-        Set_Logic_Page(oldpage);
+        Set_Logic_Page(old_page);
         while (hidden--) {
           Hide_Mouse();
         }
@@ -3421,7 +3444,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
         Hide_Mouse();
       }
       Set_Font(font);
-      Set_Logic_Page(oldpage);
+      Set_Logic_Page(old_page);
     }
   }
 
@@ -3478,14 +3501,13 @@ bool Force_CD_Available(int cd_desired)  //	ajw
 //
 // The selection is written as a checksum followed by the target list. On
 // playback the checksum says whether the current selection already matches; if
-// it does, the objects are read but not reselected, which stops the unit
+// it does, the objects are read but not selected again, which stops the unit
 // acknowledgement voices from firing again on every frame.
 static void Do_Record_Playback() {
   int count;
   TARGET tgt;
   int i;
   COORDINATE coord;
-  ObjectClass* obj;
   unsigned long sum;
   unsigned long sum2;
   unsigned long ltgt;
@@ -3554,10 +3576,10 @@ static void Do_Record_Playback() {
 
       AllowVoice = true;
 
-      for (i = 0; i < count; i++) {
+      for (i = 0; i < count; ++i) {
         if (Session.RecordFile.Read(&tgt, sizeof(tgt)) == sizeof(tgt)) {
-          obj = As_Object(tgt);
-          if (obj && sum2 != sum) {
+          ObjectClass* obj = As_Object(tgt);
+          if (obj != nullptr && sum2 != sum) {
             obj->Select();
             AllowVoice = false;
           }
@@ -3590,15 +3612,13 @@ static void Do_Record_Playback() {
 
 void* Hires_Load(char* name) {
   char filename[30];
-  int length;
-  void* return_ptr;
 
   sprintf(filename, "H%s", name);
   CCFileClass file(filename);
 
   if (file.Is_Available()) {
-    length = static_cast<int>(file.Size());
-    return_ptr = new char[length];
+    const int length = static_cast<int>(file.Size());
+    void* return_ptr = new char[length];
     file.Read(return_ptr, length);
     return return_ptr;
   }
@@ -3607,7 +3627,7 @@ void* Hires_Load(char* name) {
 
 CrateType Crate_From_Name(const char* name) {
   if (name != nullptr) {
-    for (CrateType crate = CRATE_FIRST; crate < CRATE_COUNT; crate++) {
+    for (CrateType crate = CRATE_FIRST; crate < CRATE_COUNT; ++crate) {
       if (stricmp(name, CrateNames[crate]) == 0) {
         return crate;
       }
@@ -3633,35 +3653,35 @@ int Owner_From_Name(const char* text) {
   return ownable;
 }
 
-// Blits the screen two pixels up or two pixels down, one step per game tick,
+// Copies the screen two pixels up or two pixels down, one step per game tick,
 // for twice the requested number of shakes.
 void Shake_The_Screen(int shakes) {
   shakes += shakes;
 
   Hide_Mouse();
   SeenPage.Blit(HidPage);
-  // TODO: oldyoff is never reassigned, so the reject test below only ever
+  // TODO: old_y_off is never reassigned, so the reject test below only ever
   // rejects 0. The offset is therefore always +/-2 and never centre, which
-  // makes the newyoff == 0 case unreachable. Intent was presumably to reject a
-  // repeat of the previous offset.
-  int oldyoff = 0;
-  int newyoff = 0;
-  while (shakes--) {
+  // makes the new_y_off == 0 case unreachable. Intent was presumably to reject
+  // a repeat of the previous offset.
+  int new_y_off = 0;
+  while (shakes-- != 0) {
+    constexpr int old_y_off = 0;
     // Hold each offset for exactly one tick, so the shake runs at game speed
     // rather than as fast as the machine can blit.
     int64_t x = TickCount.Value();
     do {
-      newyoff = Sim_Random_Pick(0, 2) - 1;
-    } while (newyoff == oldyoff);
-    switch (newyoff) {
+      new_y_off = Sim_Random_Pick(0, 2) - 1;
+    } while (new_y_off == old_y_off);
+    switch (new_y_off) {
       case -1:
         HidPage.Blit(SeenPage, 0, 2, 0, 0, 640, 398);
         break;
-      case 0:
-        HidPage.Blit(SeenPage);
-        break;
       case 1:
         HidPage.Blit(SeenPage, 0, 0, 0, 2, 640, 398);
+        break;
+      default:
+        HidPage.Blit(SeenPage);
         break;
     }
 #ifdef PORTABLE
@@ -3793,13 +3813,13 @@ void Enable_Secret_Units() {
 #endif
 }
 
-bool Force_Scenario_Available(const char* szName) {
+bool Force_Scenario_Available(const char* name) {
   // Calls Force_CD_Available based on type of scenario. szName is assumed to
   // be an official scenario here.
-  if (IsMissionCounterstrike(szName)) {
+  if (IsMissionCounterstrike(name)) {
     return Force_CD_Available(4);
   }
-  if (IsMissionAftermath(szName)) {
+  if (IsMissionAftermath(name)) {
     return Force_CD_Available(3);
   }
   return true;

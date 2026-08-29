@@ -163,7 +163,6 @@ HousesType TheirHouse;
 static std::string DialString;
 static SerialSettingsType* DialSettings;
 
-bool Force_Scenario_Available(const char* szName);
 bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
 #define PCOLOR_BROWN PCOLOR_GREY

@@ -193,8 +193,6 @@ typedef enum RetcodeEnum {
   RC_CANCEL,             // user cancelled
 } RetcodeType;
 
-extern void Enable_Secret_Units();
-
 /********************************* Prototypes *******************************/
 //...........................................................................
 // Main multiplayer queue logic
@@ -253,7 +251,8 @@ static int Execute_DoList(
     int max_houses, HousesType base_house, ConnManClass* net,
     Timer<FrameTickSource>* skip_crc,
     //	ConnManClass *net, TCountDownTimerClass *skip_crc,
-    int64_t* their_frame, unsigned short* their_sent, unsigned short* their_recv);
+    int64_t* their_frame, unsigned short* their_sent,
+    unsigned short* their_recv);
 static void Clean_DoList(ConnManClass* net);
 static void Queue_Record();
 static void Queue_Playback();
@@ -271,9 +270,9 @@ static void Print_Framesync_Values(int64_t curframe, unsigned long max_ahead,
                                    unsigned short* their_sent,
                                    unsigned short my_sent);
 
-extern void Keyboard_Process(KeyNumType& input);
 void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
-                                int64_t* their_frame, unsigned short* their_sent,
+                                int64_t* their_frame,
+                                unsigned short* their_sent,
                                 unsigned short* their_recv);
 
 /***************************************************************************
@@ -647,8 +646,8 @@ static void Queue_AI_Multiplayer() {
   //........................................................................
   // Variables for sending, receiving & parsing packets:
   //........................................................................
-  ConnManClass* net = nullptr;  // ptr to access all multiplayer functions
-  EventClass packet;            // for sending single frame-sync's
+  ConnManClass* net = nullptr;       // ptr to access all multiplayer functions
+  EventClass packet;                 // for sending single frame-sync's
   char* multi_packet_buf = nullptr;  // buffer for sending/receiving
   int multi_packet_max = 0;          // max length of multi_packet_buf
 
@@ -679,7 +678,8 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
     multi_packet_buf = NullModem.BuildBuf;
-    multi_packet_max = static_cast<int>(NullModem.MaxLen - sizeof(CommHeaderType));
+    multi_packet_max =
+        static_cast<int>(NullModem.MaxLen - sizeof(CommHeaderType));
     net = &NullModem;
   } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
     multi_packet_buf = Session.MetaPacket;
@@ -895,12 +895,12 @@ static void Queue_AI_Multiplayer() {
       iFramesyncTimeout * (2 * timeout_factor), multi_packet_buf, my_sent,
       their_frame, their_sent, their_recv);
 #else
-  rc = Wait_For_Players(0, net, Session.MaxAhead << 3,
-                        std::max<int>(static_cast<int>(net->Response_Time()) * 3,
-                                      FRAMESYNC_DLG_TIME * timeout_factor),
-                        FRAMESYNC_TIMEOUT * (2 * timeout_factor),
-                        multi_packet_buf, my_sent, their_frame, their_sent,
-                        their_recv);
+  rc = Wait_For_Players(
+      0, net, Session.MaxAhead << 3,
+      std::max<int>(static_cast<int>(net->Response_Time()) * 3,
+                    FRAMESYNC_DLG_TIME * timeout_factor),
+      FRAMESYNC_TIMEOUT * (2 * timeout_factor), multi_packet_buf, my_sent,
+      their_frame, their_sent, their_recv);
 #endif
 
   if (rc != RC_NORMAL) {
@@ -1514,9 +1514,10 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // send rate.  It also must be at least thrice the FrameSendRate.
   // (Isn't "thrice" a cool word?)
   //
-  maxahead = static_cast<int>((maxahead + Session.FrameSendRate - 1) / Session.FrameSendRate *
-                                         Session.FrameSendRate);
-  maxahead = std::max<int>(maxahead, static_cast<int>(Session.FrameSendRate * 3));
+  maxahead = static_cast<int>((maxahead + Session.FrameSendRate - 1) /
+                              Session.FrameSendRate * Session.FrameSendRate);
+  maxahead =
+      std::max<int>(maxahead, static_cast<int>(Session.FrameSendRate * 3));
 
   ev.Type = EventClass::TIMING;
   ev.Data.Timing.DesiredFrameRate = Session.DesiredFrameRate;
@@ -1806,8 +1807,9 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   //------------------------------------------------------------------------
   packet.Type = EventClass::FRAMESYNC;
   if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    packet.Frame = static_cast<unsigned>((Frame + Session.MaxAhead + (Session.FrameSendRate - 1)) /
-                                          (Session.FrameSendRate * Session.FrameSendRate));
+    packet.Frame = static_cast<unsigned>(
+        (Frame + Session.MaxAhead + (Session.FrameSendRate - 1)) /
+        (Session.FrameSendRate * Session.FrameSendRate));
   } else {
     packet.Frame = static_cast<int>(Frame + Session.MaxAhead);
   }
@@ -2051,10 +2053,9 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
   // Process an incoming message
   //------------------------------------------------------------------------
   if (serial_packet->Command == SERIAL_MESSAGE) {
-    if (!Session.Messages.Concat_Message(
-            serial_packet->Name, serial_packet->ID,
-            serial_packet->Message.Message,
-            Rule.MessageDelay * kTicksPerMinute)) {
+    if (!Session.Messages.Concat_Message(serial_packet->Name, serial_packet->ID,
+                                         serial_packet->Message.Message,
+                                         Rule.MessageDelay * kTicksPerMinute)) {
       char* ptr = &serial_packet->Message.Message[0];
       if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
         Enable_Secret_Units();
@@ -2162,7 +2163,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
                        const unsigned short* their_sent,
                        const unsigned short* their_recv) {
   int64_t their_oldest_frame;  // other players' oldest frame #
-  int count_ok;             // true = my cmd count matches theirs
+  int count_ok;                // true = my cmd count matches theirs
   int i;
 
   //------------------------------------------------------------------------
@@ -2471,8 +2472,9 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
   // Set the frame to execute this event on; this is protocol-specific
   //........................................................................
   if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    finfo->Frame = static_cast<unsigned>((Frame + frame_delay + (Session.FrameSendRate - 1)) /
-                                          (Session.FrameSendRate * Session.FrameSendRate));
+    finfo->Frame = static_cast<unsigned>(
+        (Frame + frame_delay + (Session.FrameSendRate - 1)) /
+        (Session.FrameSendRate * Session.FrameSendRate));
   } else {
     finfo->Frame = static_cast<int>(Frame + frame_delay);
   }
@@ -2567,7 +2569,8 @@ int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
     Keyboard->Check();
 
     if (OutList.First().Type == EventClass::ADDPLAYER) {
-      ev_size = static_cast<int>(sizeof(EventClass) + OutList.First().Data.Variable.Size);
+      ev_size = static_cast<int>(sizeof(EventClass) +
+                                 OutList.First().Data.Variable.Size);
     } else {
       ev_size = sizeof(EventClass);
     }
@@ -2683,8 +2686,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
     // in the packet header.)
     //.....................................................................
     if (eventtype == EventClass::ADDPLAYER) {
-      storedsize = static_cast<int>(datasize +
-                                    sizeof(EventClass::EventType) +
+      storedsize = static_cast<int>(datasize + sizeof(EventClass::EventType) +
                                     OutList.First().Data.Variable.Size);
     } else {
       storedsize = static_cast<int>(datasize + sizeof(EventClass::EventType));
@@ -2856,7 +2858,8 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data.FrameInfo.Delay, datasize);
 
-        size = static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
+        size =
+            static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
         break;
 
       //..................................................................
@@ -2895,7 +2898,9 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
                      sizeof(EventClass::EventType) + sizeof(numunits),
                  &OutList.First().Data.MegaMission, datasize);
 
-          size = static_cast<int>(size + (datasize + sizeof(EventClass::EventType) + sizeof(numunits)));
+          size = static_cast<int>(
+              size +
+              (datasize + sizeof(EventClass::EventType) + sizeof(numunits)));
         }
         break;
 
@@ -2907,7 +2912,8 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
 
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data.Variable.Size, datasize);
-        size = static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
+        size =
+            static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
 
         memcpy(static_cast<char*>(buf) + size,
                OutList.First().Data.Variable.Pointer,
@@ -2925,7 +2931,8 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data, datasize);
 
-        size = static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
+        size =
+            static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
 
         break;
     }
@@ -3188,8 +3195,10 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
                  datasize);
 
           if (numunits > 1) {
-            pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
-            leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
+            pos = static_cast<int>(pos +
+                                   (datasize + sizeof(EventClass::EventType)));
+            leftover = static_cast<int>(
+                leftover - (datasize + sizeof(EventClass::EventType)));
             datasize = sizeof(eventdata.Data.MegaMission.Whom);
 
             while (numunits) {
@@ -3240,7 +3249,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       count++;
 
       pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
-      leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
+      leftover = static_cast<int>(leftover -
+                                  (datasize + sizeof(EventClass::EventType)));
 
       if (leftover) {
         event = (EventClass*)(static_cast<char*>(buf) + pos);
@@ -3256,7 +3266,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
     //.....................................................................
     else {
       pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
-      leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
+      leftover = static_cast<int>(leftover -
+                                  (datasize + sizeof(EventClass::EventType)));
       event = (EventClass*)(static_cast<char*>(buf) + pos);
 
       //..................................................................
@@ -3769,8 +3780,8 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   // Only process every 'FrameSendRate' frames
   //------------------------------------------------------------------------
-  testframe = static_cast<int>((Frame + (Session.FrameSendRate - 1)) / Session.FrameSendRate *
-                                           Session.FrameSendRate);
+  testframe = static_cast<int>((Frame + (Session.FrameSendRate - 1)) /
+                               Session.FrameSendRate * Session.FrameSendRate);
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     if (Frame != testframe) {
@@ -4495,7 +4506,8 @@ static void Print_Framesync_Values(int64_t /*curframe*/,
  *   06/28/1996 BRR : Created.                                             *
  *=========================================================================*/
 void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
-                                int64_t* their_frame, unsigned short* their_sent,
+                                int64_t* their_frame,
+                                unsigned short* their_sent,
                                 unsigned short* their_recv) {
   FILE* fp;
   int i;

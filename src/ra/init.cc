@@ -161,7 +161,6 @@
 
 RemapControlType SidebarScheme;
 
-extern bool bNoMovies;
 
 /****************************************
 **	Function prototypes for this module **
@@ -3194,7 +3193,6 @@ void Extract(const char* filename, const char* outname) {
 
 bool bUsingDVD = false;
 
-const char* Game_Registry_Key();
 
 //***********************************************************************************************
 bool Is_DVD_Installed() {
