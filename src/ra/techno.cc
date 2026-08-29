@@ -5767,7 +5767,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     ** If this unit is part of a formation, draw an 'F' after the group
     ** number.
     */
-    if (((FootClass*)this)->XFormOffset != 0x80000000UL) {
+    if (((FootClass*)this)->XFormOffset != kNoFormationOffset) {
       CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_LETTERF, x + 8, y + yval,
                     window, SHAPE_CENTER | SHAPE_WIN_REL);
     }

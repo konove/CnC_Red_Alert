@@ -1140,7 +1140,8 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   **	Decrement the counter for the team class. There is now one less of this
   *object type.
   */
-  if (static_cast<unsigned>(typeindex) < static_cast<unsigned>(Class->ClassCount)) {
+  if (static_cast<unsigned>(typeindex) <
+      static_cast<unsigned>(Class->ClassCount)) {
     Quantity[typeindex]--;
   }
 
@@ -2530,9 +2531,9 @@ int TeamClass::TMission_Formation() {
   switch (Formation) {
     case FORMATION_NONE:
       while (member != nullptr) {
-        member->Group = 0xFF;
-        member->XFormOffset = 0x80000000;
-        member->YFormOffset = 0x80000000;
+        member->Group = kNoGroup;
+        member->XFormOffset = kNoFormationOffset;
+        member->YFormOffset = kNoFormationOffset;
         member->IsFormationMove = false;
         member = member->Member;
       }

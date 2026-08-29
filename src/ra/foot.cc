@@ -156,12 +156,12 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       IsScattering(false),
       Speed(0),
       SpeedBias(1),
-      XFormOffset(0x80000000),
-      YFormOffset(0x80000000),
+      XFormOffset(kNoFormationOffset),
+      YFormOffset(kNoFormationOffset),
       NavCom(TARGET_NONE),
       SuspendedNavCom(TARGET_NONE),
       Team(nullptr),
-      Group(255),
+      Group(kNoGroup),
       Member(nullptr),
       PathThreshhold(MOVE_CLOAK),
       PathDelay(0),
@@ -229,14 +229,14 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
     if (Team) {
       Team->Debug_Dump(mono);
     }
-    if (Group != 255) {
+    if (Group != kNoGroup) {
       mono->Set_Cursor(59, 1);
       mono->Printf("%d", Group);
     }
 
     static const char* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
-    for (base::ssize index = 0; index < std::min<base::ssize>(12, std::ssize(Path));
-         index++) {
+    for (base::ssize index = 0;
+         index < std::min<base::ssize>(12, std::ssize(Path)); index++) {
       mono->Set_Cursor(static_cast<int>(54 + index), 3);
       mono->Printf("%s",
                    _p2c[((std::abs((int)Path[index] + 1)) % std::ssize(_p2c))]);
@@ -700,7 +700,8 @@ int FootClass::Mission_Guard() {
     }
   }
 
-  return Arm.HasTimeLeft() ? static_cast<int>(Arm.Value()) : dtime + Random_Pick(0, 2);
+  return Arm.HasTimeLeft() ? static_cast<int>(Arm.Value())
+                           : dtime + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -980,8 +981,7 @@ void FootClass::Approach_Target() {
         static int _angles[] = {0,  8,   -8, 16,  -16, 24, -24,
                                 32, -32, 48, -48, 64,  -64};
 
-        for (int index = 0; index < std::ssize(_angles);
-             index++) {
+        for (int index = 0; index < std::ssize(_angles); index++) {
           trycoord = Coord_Move(tcoord, dir + _angles[index], range);
 
           if (::Distance(trycoord, tcoord) < range) {

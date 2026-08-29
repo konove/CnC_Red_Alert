@@ -109,6 +109,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "base/types.h"
 #include "ra/aircraft.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -155,7 +156,6 @@
 #include "tech/rawfile.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
-#include "base/types.h"
 
 /*
 **	These layer control elements are used to group the displayable objects
@@ -533,7 +533,8 @@ const short* DisplayClass::Text_Overlap_List(const char* text, int x,
       if (ul != -1 && lr != -1) {
         for (int yy = Cell_Y(ul); yy <= Cell_Y(lr); yy++) {
           for (int xx = Cell_X(ul); xx <= Cell_X(lr); xx++) {
-            *ptr++ = static_cast<short>(XY_Cell(xx, yy) - Coord_Cell(TacticalCoord));
+            *ptr++ =
+                static_cast<short>(XY_Cell(xx, yy) - Coord_Cell(TacticalCoord));
             count--;
             if (count < 2) {
               break;
@@ -950,8 +951,9 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
     }
   }
   ZoneCell = pos;
-  ProximityCheck = Passes_Proximity_Check(PendingObject, PendingHouse,
-                                          CursorSize, static_cast<CELL>(ZoneCell + ZoneOffset));
+  ProximityCheck =
+      Passes_Proximity_Check(PendingObject, PendingHouse, CursorSize,
+                             static_cast<CELL>(ZoneCell + ZoneOffset));
 
   return prevpos;
 }
@@ -2342,7 +2344,8 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) const {
   if (object == nullptr) {
     foundmatch = true;
   }
-  for (base::ssize uindex = Layer[LAYER_GROUND].Count() - 1; uindex >= 0; uindex--) {
+  for (base::ssize uindex = Layer[LAYER_GROUND].Count() - 1; uindex >= 0;
+       uindex--) {
     ObjectClass* obj = Layer[LAYER_GROUND][uindex];
 
     /*
@@ -2546,8 +2549,9 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
       CELL trycell =
           XY_Cell(x + MapCellX, (y + index) % MapCellHeight + MapCellY);
 
-      if (Good_Reinforcement_Cell(trycell, static_cast<CELL>(trycell + modifier), loco, zone,
-                                  mzone)) {
+      if (Good_Reinforcement_Cell(trycell,
+                                  static_cast<CELL>(trycell + modifier), loco,
+                                  zone, mzone)) {
         return trycell;
       }
     }
@@ -2560,8 +2564,9 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
       CELL trycell =
           XY_Cell((x + index) % MapCellWidth + MapCellX, y + MapCellY);
 
-      if (Good_Reinforcement_Cell(trycell, static_cast<CELL>(trycell + modifier), loco, zone,
-                                  mzone)) {
+      if (Good_Reinforcement_Cell(trycell,
+                                  static_cast<CELL>(trycell + modifier), loco,
+                                  zone, mzone)) {
         return trycell;
       }
     }
@@ -3555,7 +3560,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             */
             const FootClass* foot = (FootClass*)tobject;
             if (foot->Group != group ||
-            foot->XFormOffset == static_cast<int>(0x80000000)) {
+                foot->XFormOffset == kNoFormationOffset) {
               FormMove = false;
               break;
             }
@@ -3633,7 +3638,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
               FootClass* foot = dynamic_cast<FootClass*>(tobject);
               oldisform = foot->IsFormationMove;
               foot->IsFormationMove = FormMove;
-              if (FormMove && foot->Group != 255) {
+              if (FormMove && foot->Group != kNoGroup) {
                 newmove = foot->Adjust_Dest(cell);
               }
               foot->IsFormationMove = oldisform;
@@ -3918,8 +3923,8 @@ void DisplayClass::Compute_Start_Pos() {
   Scen.Waypoint[WAYPT_HOME] = Scen.Views[0] = Scen.Views[1] = Scen.Views[2] =
       Scen.Views[3] = XY_Cell(static_cast<int>(x), static_cast<int>(y));
 
-  Map.Set_Tactical_Position(
-      Coord_Whole(Cell_Coord(static_cast<CELL>(Scen.Views[0] - MAP_CELL_W * 8 - 10))));
+  Map.Set_Tactical_Position(Coord_Whole(
+      Cell_Coord(static_cast<CELL>(Scen.Views[0] - MAP_CELL_W * 8 - 10))));
   //	Set_Tactical_Position(Cell_Coord(XY_Cell(x, y)));
 }
 
@@ -4347,8 +4352,8 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
 
   Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
       Scen.Waypoint[WAYPT_HOME];
-  Set_Tactical_Position(
-      Cell_Coord(static_cast<CELL>(Scen.Waypoint[WAYPT_HOME] - MAP_CELL_W * 8 - 10)));
+  Set_Tactical_Position(Cell_Coord(
+      static_cast<CELL>(Scen.Waypoint[WAYPT_HOME] - MAP_CELL_W * 8 - 10)));
 
   /*
   **	Loop through all CellTrigger entries.

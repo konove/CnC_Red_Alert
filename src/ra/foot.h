@@ -54,6 +54,17 @@
 #include "tech/ftimer.h"
 #include "tech/noinit.h"
 
+// Value of FootClass::Group meaning "not in any of the player's numbered
+// groups". Group is an unsigned char, so this cannot be -1 no matter how
+// natural that looks.
+inline constexpr unsigned char kNoGroup = 255;
+
+// Value of FootClass::XFormOffset and YFormOffset meaning "not in formation".
+// Spelled 0x80000000 in the original code; the cast matters, because comparing
+// an int offset against the bare literal compares it against an unsigned value
+// it can never equal.
+inline constexpr int kNoFormationOffset = static_cast<int>(0x80000000);
+
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects
 **	cover everything except buildings.
@@ -177,6 +188,8 @@ class FootClass : public TechnoClass {
   ** the target destination where the unit should move to.  For example,
   ** in a horizontal line formation, XFormOffset would be set to some
   ** value, and YFormOffset would be zero.
+  **
+  ** Both hold kNoFormationOffset when the unit is not in a formation.
   */
   int XFormOffset;
   int YFormOffset;
@@ -206,8 +219,8 @@ class FootClass : public TechnoClass {
 
   /*
   **	If this object is part of a pseudo-team that the player is managing,
-  *then *	this will be set to the team number (0 - 9). If it is not part
-  *of any *	pseudo-team, then the number will be -1.
+  **	then this will be set to the team number (0 - 9). If it is not part
+  **	of any pseudo-team, then the number will be kNoGroup.
   */
   unsigned char Group;
 
