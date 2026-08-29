@@ -181,7 +181,7 @@ class InfantryClass final : public FootClass {
   /*
   **	Combat related.
   */
-  virtual int Made_A_Kill();
+  int Made_A_Kill();
   ActionType What_Action(ObjectClass* object) override;
   ActionType What_Action(CELL cell) const override;
   void Assign_Mission(MissionType order) override;
@@ -236,7 +236,7 @@ class InfantryClass final : public FootClass {
   /*
   **	Movement and animation.
   */
-  virtual bool Do_Action(DoType todo, bool force = false);
+  bool Do_Action(DoType todo, bool force = false);
   void Random_Animate() override;
   MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const override;
   void Per_Cell_Process(bool center) override;

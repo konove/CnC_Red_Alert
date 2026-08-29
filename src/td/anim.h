@@ -79,7 +79,7 @@ class AnimClass final : public ObjectClass, private StageClass {
   void Attach_To(ObjectClass* obj);
   void Make_Invisible() { IsInvisible = true; }
 
-  virtual bool Can_Place_Here(COORDINATE) const { return true; }
+  bool Can_Place_Here(COORDINATE) const { return true; }
   bool Mark(MarkType mark = MARK_CHANGE) override;
   bool Render(bool forced) override;
   COORDINATE Center_Coord() const override;

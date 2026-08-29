@@ -51,13 +51,13 @@ class TextButtonClass final : public ToggleClass {
   TextButtonClass(unsigned id, int text, TextPrintType style, int x, int y,
                   int w = -1, int h = -1, int blackborder = false);
   int Draw_Me(bool forced = false) override;
-  virtual void Set_Text(const char* text, bool resize = false);
-  virtual void Set_Text(int text, bool resize = false);
-  virtual void Set_Style(TextPrintType style) { PrintFlags = style; }
+  void Set_Text(const char* text, bool resize = false);
+  void Set_Text(int text, bool resize = false);
+  void Set_Style(TextPrintType style) { PrintFlags = style; }
 
  protected:
-  virtual void Draw_Background();
-  virtual void Draw_Text(const char* text);
+  void Draw_Background();
+  void Draw_Text(const char* text);
 
   unsigned IsBlackBorder : 1;
 

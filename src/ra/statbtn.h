@@ -50,11 +50,11 @@ class StaticButtonClass final : public GadgetClass {
   StaticButtonClass(unsigned id, const char* text, TextPrintType style, int x,
                     int y, int w = -1, int h = -1);
   int Draw_Me(bool forced = false) override;
-  virtual void Set_Text(const char* text, bool resize = false);
+  void Set_Text(const char* text, bool resize = false);
 
  protected:
-  virtual void Draw_Background();
-  virtual void Draw_Text(const char* text);
+  void Draw_Background();
+  void Draw_Text(const char* text);
 
   /*
   **	If a background is to be preserved for this button, then this will point

@@ -69,11 +69,11 @@ class SliderClass final : public GaugeClass {
   //		static SliderClass * Create_One_Of(unsigned id, int x, int y,
   // int w, int h, int belong_to_list=false);
 
-  virtual void Set_Thumb_Size(int value);
+  void Set_Thumb_Size(int value);
   int Set_Maximum(int value) override;
   int Set_Value(int) override;
-  virtual int Bump(int up);
-  virtual int Step(int up);
+  int Bump(int up);
+  int Step(int up);
   int Draw_Me(bool forced) override;
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;

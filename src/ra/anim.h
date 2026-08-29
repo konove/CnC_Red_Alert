@@ -84,7 +84,7 @@ class AnimClass final : public ObjectClass, public StageClass {
   void Make_Invisible() { IsInvisible = true; }
   static void Do_Atom_Damage(HousesType ownerhouse, CELL cell);
 
-  virtual bool Can_Place_Here(COORDINATE) const { return true; }
+  bool Can_Place_Here(COORDINATE) const { return true; }
   bool Mark(MarkType mark = MARK_CHANGE) override;
   bool Render(bool forced) override;  // const;
   COORDINATE Center_Coord() const override;

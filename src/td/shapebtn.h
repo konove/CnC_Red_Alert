@@ -48,7 +48,7 @@ class ShapeButtonClass final : public ToggleClass {
   ShapeButtonClass();
   ShapeButtonClass(unsigned id, const void* shapes, int x, int y);
   int Draw_Me(bool forced = false) override;
-  virtual void Set_Shape(const void* data);
+  void Set_Shape(const void* data);
 
   enum ShapeButtonClassEnums {
     UP_SHAPE,        // Shape to use when button is "up".

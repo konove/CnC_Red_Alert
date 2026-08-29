@@ -171,28 +171,28 @@ class TListClass final : public ControlClass {
   T operator[](int index) const { return (List[index]); }
   T& operator[](int index) { return (List[index]); }
 
-  virtual int Add_Item(T text);
-  virtual int Add_Scroll_Bar();
-  virtual void Insert_Item(T item);
-  virtual void Bump(int up);
-  virtual int Count() const { return List.Count(); }
-  virtual int Current_Index() const;
-  virtual T Current_Item() const;
+  int Add_Item(T text);
+  int Add_Scroll_Bar();
+  void Insert_Item(T item);
+  void Bump(int up);
+  int Count() const { return List.Count(); }
+  int Current_Index() const;
+  T Current_Item() const;
   int Draw_Me(bool forced) override;
-  virtual int Step_Selected_Index(int forward);
+  int Step_Selected_Index(int forward);
   void Flag_To_Redraw() override;
-  virtual T Get_Item(int index) const { return (List[index]); }
+  T Get_Item(int index) const { return (List[index]); }
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
-  virtual void Remove_Item(T);
-  virtual void Remove_Index(int);
-  virtual int Remove_Scroll_Bar();
-  virtual void Set_Selected_Index(int index);
-  virtual void Set_Selected_Index(T item);
-  virtual void Set_Tabs(const int* tabs);
-  virtual int Set_View_Index(int index);
-  virtual void Step(int up);
+  void Remove_Item(T);
+  void Remove_Index(int);
+  int Remove_Scroll_Bar();
+  void Set_Selected_Index(int index);
+  void Set_Selected_Index(T item);
+  void Set_Tabs(const int* tabs);
+  int Set_View_Index(int index);
+  void Step(int up);
   void Set_Position(int x, int y) override;
 
   /*

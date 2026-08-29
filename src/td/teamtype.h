@@ -95,7 +95,7 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   TeamTypeClass();
   TeamTypeClass(const NoInitClass& x) : AbstractTypeClass(x) {}
-  virtual ~TeamTypeClass() {}
+  ~TeamTypeClass() override {}
 
   /*
   **	Initialization: clears all team types in preparation for new scenario

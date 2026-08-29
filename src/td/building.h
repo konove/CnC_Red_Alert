@@ -223,8 +223,8 @@ class BuildingClass final : public TechnoClass {
   */
   void Detach(TARGET target, bool all) override;
   void Detach_All(bool all = true) override;
-  virtual void Grand_Opening(bool captured = false);
-  virtual void Update_Buildables();
+  void Grand_Opening(bool captured = false);
+  void Update_Buildables();
   MoveType Can_Enter_Cell(CELL cell, FacingType = FACING_NONE) const override;
   bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
   bool Limbo() override;
@@ -270,7 +270,7 @@ class BuildingClass final : public TechnoClass {
                                    long& param) override;
   void AI() override;
   void Assign_Target(TARGET target) override;
-  virtual bool Toggle_Primary();
+  bool Toggle_Primary();
   bool Flush_For_Placement(TechnoClass* techno, CELL cell);
 
   int Mission_Unload() override;

@@ -231,7 +231,7 @@ class InfantryClass final : public FootClass {
   /*
   **	Movement and animation.
   */
-  virtual bool Do_Action(DoType todo, bool force = false);
+  bool Do_Action(DoType todo, bool force = false);
   bool Random_Animate() override;
   MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const override;
   void Per_Cell_Process(PCPType why) override;
