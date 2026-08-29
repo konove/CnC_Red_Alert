@@ -223,7 +223,7 @@ BulletClass* TurretClass::Fire_At(TARGET target, int which) {
       **	Possible reload timer set.
       */
       if (*this == UNIT_MSAM && Reload == 0) {
-        Reload = int64_t{TICKS_PER_SECOND} * 30;
+        Reload = int64_t{kTicksPerSecond} * 30;
       }
     }
   }

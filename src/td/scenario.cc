@@ -235,7 +235,7 @@ bool Read_Scenario(char* root) {
     }
 
   } else {
-    Fade_Palette_To(GamePalette, FADE_PALETTE_FAST, Call_Back);
+    Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);
     Show_Mouse();
     CCMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
     Hide_Mouse();
@@ -302,7 +302,7 @@ void Fill_In_Data() {
  *End count down moved here.                                               *
  *=============================================================================================*/
 void Clear_Scenario() {
-  EndCountDown = TICKS_PER_SECOND * 30;
+  EndCountDown = kTicksPerSecond * 30;
   CrateCount = 0;
   CrateTimer = 0;
   CrateMaker = false;
@@ -386,7 +386,7 @@ void Do_Win() {
 #endif
   Fancy_Text_Print(TXT_SCENARIO_WON, x, y + 30, WHITE, TBLACK,
                    TPF_CENTER | TPF_VCR);
-  CountDownTimer.Set(int64_t{TIMER_SECOND} * 3);
+  CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();
   Speak(VOX_ACCOMPLISHED);
   while (CountDownTimer.Time() || Is_Speaking()) {
@@ -564,7 +564,7 @@ void Do_Win() {
   SabotagedType = STRUCT_NONE;
 
   Map.Render();
-  Fade_Palette_To(GamePalette, FADE_PALETTE_FAST, Call_Back);
+  Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);
   Show_Mouse();
 }
 
@@ -606,7 +606,7 @@ void Do_Lose() {
   Fancy_Text_Print(TXT_MISSION, x, y, WHITE, TBLACK, TPF_CENTER | TPF_VCR);
   Fancy_Text_Print(TXT_SCENARIO_LOST, x, y + 30, WHITE, TBLACK,
                    TPF_CENTER | TPF_VCR);
-  CountDownTimer.Set(int64_t{TIMER_SECOND} * 3);
+  CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();
   Speak(VOX_FAIL);
   while (CountDownTimer.Time() || Is_Speaking()) {
@@ -656,7 +656,7 @@ void Do_Lose() {
     GameActive = 0;
   }
 
-  Fade_Palette_To(GamePalette, FADE_PALETTE_FAST, Call_Back);
+  Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);
   Show_Mouse();
 }
 

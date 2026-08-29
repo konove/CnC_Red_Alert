@@ -133,7 +133,7 @@ void CreditClass::Graphic_Logic(bool forced) {
                      TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, Current);
 
     if (Scen.MissionTimer.IsRunning()) {
-      int64_t secs = Scen.MissionTimer.Value() / TICKS_PER_SECOND;
+      int64_t secs = Scen.MissionTimer.Value() / kTicksPerSecond;
       int64_t mins = secs / 60;
       int64_t hours = mins / 60;
       secs %= 60;
@@ -143,31 +143,31 @@ void CreditClass::Graphic_Logic(bool forced) {
       **	Speak mission timer reminders.
       */
       VoxType vox = VOX_NONE;
-      if (Scen.MissionTimer.Value() == 1 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 1 * kTicksPerMinute) {
         vox = VOX_TIME_1;
       }
-      if (Scen.MissionTimer.Value() == 2 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 2 * kTicksPerMinute) {
         vox = VOX_TIME_2;
       }
-      if (Scen.MissionTimer.Value() == 3 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 3 * kTicksPerMinute) {
         vox = VOX_TIME_3;
       }
-      if (Scen.MissionTimer.Value() == 4 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 4 * kTicksPerMinute) {
         vox = VOX_TIME_4;
       }
-      if (Scen.MissionTimer.Value() == 5 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 5 * kTicksPerMinute) {
         vox = VOX_TIME_5;
       }
-      if (Scen.MissionTimer.Value() == 10 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 10 * kTicksPerMinute) {
         vox = VOX_TIME_10;
       }
-      if (Scen.MissionTimer.Value() == 20 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 20 * kTicksPerMinute) {
         vox = VOX_TIME_20;
       }
-      if (Scen.MissionTimer.Value() == 30 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 30 * kTicksPerMinute) {
         vox = VOX_TIME_30;
       }
-      if (Scen.MissionTimer.Value() == 40 * TICKS_PER_MINUTE) {
+      if (Scen.MissionTimer.Value() == 40 * kTicksPerMinute) {
         vox = VOX_TIME_40;
       }
       if (vox != VOX_NONE) {

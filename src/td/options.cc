@@ -102,8 +102,8 @@
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
 OptionsClass::OptionsClass() {
-  GameSpeed = TIMER_SECOND / TICKS_PER_SECOND;
-  ScrollRate = TIMER_SECOND / TICKS_PER_SECOND;
+  GameSpeed = kTimerSecond / kTicksPerSecond;
+  ScrollRate = kTimerSecond / kTicksPerSecond;
   Volume = 0xE0;
   ScoreVolume = 0x90;
   Contrast = 0x80;

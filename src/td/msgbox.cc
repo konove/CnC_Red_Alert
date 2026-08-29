@@ -434,7 +434,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     */
     CountDownTimerClass timer(false);
     timer.Start();
-    timer.Set(int64_t{TICKS_PER_SECOND} * 4);
+    timer.Set(int64_t{kTicksPerSecond} * 4);
     while (timer.Time() > 0) {
       Call_Back();
     }

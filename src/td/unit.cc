@@ -184,7 +184,7 @@ int UnitClass::Validate() const {
     int num;
 
     num = Units.ID(this);
-    if (num < 0 || num >= UNIT_MAX) {
+    if (num < 0 || num >= kUnitMax) {
       Validate_Error("UNIT");
       return 0;
     }
@@ -443,7 +443,7 @@ void UnitClass::AI() {
       if (Reload.Expired()) {
         Ammo++;
         if (Ammo < Class->MaxAmmo) {
-          Reload = int64_t{TICKS_PER_SECOND} * 30;
+          Reload = int64_t{kTicksPerSecond} * 30;
         }
         Mark(MARK_CHANGE);
       }
@@ -2418,7 +2418,7 @@ int UnitClass::Mission_Unload() {
       }
       break;
   }
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -2454,7 +2454,7 @@ int UnitClass::Mission_Harvest() {
   *harvest mission. This *	allows combat units to act "brain dead".
   */
   if (!Class->IsToHarvest) {
-    return TICKS_PER_SECOND * 30;
+    return kTicksPerSecond * 30;
   }
 
   switch (Status) {
@@ -2477,7 +2477,7 @@ int UnitClass::Mission_Harvest() {
        */
       if (!Target_Legal(NavCom)) {
         Status = GOINGTOIDLE;
-        return TICKS_PER_SECOND * 15;
+        return kTicksPerSecond * 15;
       }
       break;
 
@@ -2543,7 +2543,7 @@ int UnitClass::Mission_Harvest() {
       Assign_Mission(MISSION_GUARD);
       break;
   }
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -2611,7 +2611,7 @@ int UnitClass::Mission_Hunt() {
       return TarComClass::Mission_Hunt();
     }
   }
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -3653,17 +3653,17 @@ int UnitClass::Mission_Guard() {
     } else {
       Exit_Map();
     }
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
 
   if (*this == UNIT_GUNBOAT) {
     Assign_Mission(MISSION_HUNT);
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
 
   if (*this == UNIT_HARVESTER && !House->IsHuman) {
     Assign_Mission(MISSION_HARVEST);
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
   return TarComClass::Mission_Guard();
 }
@@ -3701,7 +3701,7 @@ int UnitClass::Mission_Move() {
   */
   if (*this == UNIT_GUNBOAT) {
     Assign_Mission(MISSION_HUNT);
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
   return TarComClass::Mission_Move();
 }
@@ -3833,7 +3833,7 @@ int UnitClass::Mission_Attack() {
   Validate();
   if (*this == UNIT_GUNBOAT) {
     Assign_Mission(MISSION_HUNT);
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
   return TarComClass::Mission_Attack();
 }

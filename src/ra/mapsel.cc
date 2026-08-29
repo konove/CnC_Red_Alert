@@ -118,7 +118,7 @@ void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
 
   while (time--) {
     if (pulse_timer.IsFinished()) {
-      pulse_timer.Set(TIMER_SECOND / 6);
+      pulse_timer.Set(kTimerSecond / 6);
 
       if (brightening) {
         fade_ratio += kStepRate;
@@ -204,7 +204,7 @@ std::string Map_Selection() {
 
   Keyboard->Clear();
   SeenBuff.Clear();
-  map_palette.Set(FADE_PALETTE_FAST, Call_Back);
+  map_palette.Set(kFadePaletteFast, Call_Back);
 
   pseudo_seen_buf->Clear();
   Animate_Frame(anim, *pseudo_seen_buf, /*frame_number=*/1);

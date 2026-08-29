@@ -140,8 +140,8 @@ class MissionControlClass {
   MissionControlClass();
 
   bool Read_INI(CCINIClass& ini);
-  int Normal_Delay() const { return TICKS_PER_MINUTE * Rate; }
-  int AA_Delay() const { return TICKS_PER_MINUTE * AARate; }
+  int Normal_Delay() const { return kTicksPerMinute * Rate; }
+  int AA_Delay() const { return kTicksPerMinute * AARate; }
 
   /*
   **	This is the mission identifier that this mission represents.

@@ -260,7 +260,7 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
     if (What_Am_I() != RTTI_AIRCRAFT) {
       // The original printed a fixed 13 entries, four of which read past the
       // end of Path. Walk the array instead.
-      for (int index = 0; index < CONQUER_PATH_MAX; index++) {
+      for (int index = 0; index < kConquerPathMax; index++) {
         mono->Set_Cursor(50 + index, 3);
         mono->Printf("%s", _p2c[(std::abs(static_cast<int>(Path[index]) + 1)) %
                                 std::ssize(_p2c)]);
@@ -585,7 +585,7 @@ int FootClass::Mission_Move() {
   if (!Target_Legal(TarCom) && !House->IsHuman) {
     Target_Something_Nearby(THREAT_RANGE);
   }
-  return TICKS_PER_SECOND + 3;
+  return kTicksPerSecond + 3;
 }
 
 /***********************************************************************************************
@@ -612,7 +612,7 @@ int FootClass::Mission_Capture() {
       Scatter(0, true);
     }
   }
-  return TICKS_PER_SECOND - 2;
+  return kTicksPerSecond - 2;
 }
 
 /***********************************************************************************************
@@ -637,7 +637,7 @@ int FootClass::Mission_Attack() {
   } else {
     Enter_Idle_Mode();
   }
-  return TICKS_PER_SECOND + 2;
+  return kTicksPerSecond + 2;
 }
 
 /***********************************************************************************************
@@ -658,7 +658,7 @@ int FootClass::Mission_Guard() {
   if (!Target_Something_Nearby(THREAT_RANGE)) {
     Random_Animate();
   }
-  return TICKS_PER_SECOND + Random_Picky(0, 4, nullptr, 0);
+  return kTicksPerSecond + Random_Picky(0, 4, nullptr, 0);
 }
 
 /***********************************************************************************************
@@ -689,7 +689,7 @@ int FootClass::Mission_Hunt() {
       Approach_Target();
     }
   }
-  return TICKS_PER_SECOND + 5;
+  return kTicksPerSecond + 5;
 }
 
 /***********************************************************************************************
@@ -751,7 +751,7 @@ int FootClass::Mission_Timed_Hunt() {
     }
   }
 
-  return TICKS_PER_SECOND + Random_Pick(0, 4);  // call me back in 1 second.
+  return kTicksPerSecond + Random_Pick(0, 4);  // call me back in 1 second.
 }
 
 /***********************************************************************************************
@@ -1030,7 +1030,7 @@ int FootClass::Mission_Guard_Area() {
   } else {
     Approach_Target();
   }
-  return TICKS_PER_SECOND + Random_Picky(0, 4, nullptr, 0);
+  return kTicksPerSecond + Random_Picky(0, 4, nullptr, 0);
 }
 
 /***********************************************************************************************
@@ -1616,7 +1616,7 @@ int FootClass::Mission_Enter() {
       Enter_Idle_Mode();
     }
   }
-  return TICKS_PER_SECOND / 2;
+  return kTicksPerSecond / 2;
 }
 
 /***********************************************************************************************

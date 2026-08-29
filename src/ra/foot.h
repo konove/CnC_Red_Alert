@@ -228,7 +228,7 @@ class FootClass : public TechnoClass {
   *generations *	of path lists before the ultimate destination is
   *reached. The game logic *	handles regenerating the path list as necessary.
   */
-  FacingType Path[CONQUER_PATH_MAX];
+  FacingType Path[kConquerPathMax];
 
   /*
   **	This value keeps track of how serious the unit is in trying to reach the

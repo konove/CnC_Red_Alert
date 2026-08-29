@@ -395,7 +395,7 @@ bool Init_Game(int, char*[]) {
                      TBLACK, TPF_CENTER | TPF_TEXT | TPF_DROPSHADOW);
     Show_Mouse();
 
-    CCPalette.Set(FADE_PALETTE_SLOW);
+    CCPalette.Set(kFadePaletteSlow);
     Call_Back();
   }
 
@@ -618,7 +618,7 @@ bool Select_Game(bool /*fade*/) {
         HidPage.Blit(SeenPage);
         //				if (fade) {
         //					WhitePalette.Set();
-        //					CCPalette.Set(FADE_PALETTE_SLOW,
+        //					CCPalette.Set(kFadePaletteSlow,
         // Call_Back); 					fade = false;
         // } else {
         CCPalette.Set();
@@ -1147,7 +1147,7 @@ bool Select_Game(bool /*fade*/) {
                   case -1:
                     //	Patch was downloaded. Exit app.
                     Theme.Fade_Out();
-                    BlackPalette.Set(FADE_PALETTE_SLOW);
+                    BlackPalette.Set(kFadePaletteSlow);
                     return false;
                 }
               } else {
@@ -1278,7 +1278,7 @@ bool Select_Game(bool /*fade*/) {
         */
         case SEL_EXIT:
           Theme.Fade_Out();
-          BlackPalette.Set(FADE_PALETTE_SLOW);
+          BlackPalette.Set(kFadePaletteSlow);
           return false;
 
         /*
@@ -1388,7 +1388,7 @@ bool Select_Game(bool /*fade*/) {
     Hide_Mouse();
 
     if (selection != SEL_START_NEW_GAME) {
-      BlackPalette.Set(FADE_PALETTE_MEDIUM, Call_Back);
+      BlackPalette.Set(kFadePaletteMedium, Call_Back);
       HiddenPage.Clear();
       VisiblePage.Clear();
     }
@@ -1452,7 +1452,7 @@ bool Select_Game(bool /*fade*/) {
   */
   Call_Back();
   Hide_Mouse();
-  BlackPalette.Set(FADE_PALETTE_MEDIUM, Call_Back);
+  BlackPalette.Set(kFadePaletteMedium, Call_Back);
   HiddenPage.Clear();
   VisiblePage.Clear();
   Show_Mouse();
@@ -2437,7 +2437,7 @@ static void Init_Heaps() {
   Triggers.Set_Heap(Rule.TriggerMax);
   TeamTypes.Set_Heap(Rule.TeamTypeMax);
   Teams.Set_Heap(Rule.TeamMax);
-  Houses.Set_Heap(HOUSE_MAX);
+  Houses.Set_Heap(kHouseMax);
   TriggerTypes.Set_Heap(Rule.TrigTypeMax);
   //	Weapons.Set_Heap(Rule.WeaponMax);
 

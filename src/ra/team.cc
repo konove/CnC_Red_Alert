@@ -751,7 +751,7 @@ void TeamClass::AI() {
     if (CurrentMission < Class->MissionCount) {
       const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
 
-      TimeOut.Set(mission->Data.Value * (TICKS_PER_MINUTE / 10));
+      TimeOut.Set(mission->Data.Value * (kTicksPerMinute / 10));
       Target = TARGET_NONE;
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
@@ -1752,7 +1752,7 @@ void TeamClass::Coordinate_Attack() {
               *dynamic_cast<UnitClass*>(unit) == UNIT_CHRONOTANK) {
             UnitClass* tank = dynamic_cast<UnitClass*>(unit);
             tank->Teleport_To(As_Cell(Target));
-            tank->MoebiusCountDown.Set(ChronoTankDuration * TICKS_PER_MINUTE);
+            tank->MoebiusCountDown.Set(ChronoTankDuration * kTicksPerMinute);
             Scen.Do_BW_Fade();
             Sound_Effect(VOC_CHRONOTANK1, unit->Coord);
             tank->Assign_Target(TARGET_NONE);
@@ -2397,7 +2397,7 @@ void TeamClass::Suspend_Teams(int priority, const HouseClass* house) {
         team->Remove(team->Member);
       }
       team->IsAltered = team->JustAltered = true;
-      team->SuspendTimer.Set(Rule.SuspendDelay * TICKS_PER_MINUTE);
+      team->SuspendTimer.Set(Rule.SuspendDelay * kTicksPerMinute);
       team->Suspended = true;
     }
   }
@@ -2904,7 +2904,7 @@ int TeamClass::TMission_Loop() {
 int TeamClass::TMission_Invulnerable() {
   FootClass* foot = Member;
   while (foot != nullptr) {
-    foot->IronCurtainCountDown.Set(Rule.IronCurtainDuration * TICKS_PER_MINUTE);
+    foot->IronCurtainCountDown.Set(Rule.IronCurtainDuration * kTicksPerMinute);
     foot->Mark(MARK_CHANGE);
     foot = foot->Member;
   }
@@ -2968,7 +2968,7 @@ int TeamClass::TMission_Patrol() {
   /*
   **	Every so often, scan for a nearby enemy.
   */
-  if (Frame % (Rule.PatrolTime * TICKS_PER_MINUTE) == 0) {
+  if (Frame % (Rule.PatrolTime * kTicksPerMinute) == 0) {
     FootClass* leader = Fetch_A_Leader();
     if (leader != nullptr) {
       TARGET target = leader->Greatest_Threat(THREAT_NORMAL | THREAT_RANGE);

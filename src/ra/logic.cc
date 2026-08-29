@@ -108,9 +108,9 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
     mono->Printf("%3d", FramesPerSecond);
     mono->Set_Cursor(1, 3);
     mono->Printf(
-        "%02d:%02d:%02d", Scen.ElapsedTime.Value() / TICKS_PER_HOUR,
-        (Scen.ElapsedTime.Value() % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
-        (Scen.ElapsedTime.Value() % TICKS_PER_MINUTE) / TICKS_PER_SECOND);
+        "%02d:%02d:%02d", Scen.ElapsedTime.Value() / kTicksPerHour,
+        (Scen.ElapsedTime.Value() % kTicksPerHour) / kTicksPerMinute,
+        (Scen.ElapsedTime.Value() % kTicksPerMinute) / kTicksPerSecond);
 
     mono->Set_Cursor(1, 11);
     mono->Printf("%3d", Units.Count());
@@ -137,7 +137,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(1, 22);
     mono->Printf("%3d", Factories.Count());
 
-    SpareTicks = std::min<int64_t>(SpareTicks, TIMER_SECOND);
+    SpareTicks = std::min<int64_t>(SpareTicks, kTimerSecond);
 
     /*
     **	CPU utilization record.
@@ -145,7 +145,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
     mono->Sub_Window(15, 1, 6, 11);
     mono->Scroll();
     mono->Set_Cursor(0, 10);
-    mono->Printf("%3d%%", ((TIMER_SECOND - SpareTicks) * 100) / TIMER_SECOND);
+    mono->Printf("%3d%%", ((kTimerSecond - SpareTicks) * 100) / kTimerSecond);
 
     /*
     **	Update the frame rate log.
@@ -197,7 +197,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
     mono->Sub_Window(15, 13, 63, 10);
     mono->Pan(1);
     mono->Sub_Window(15, 13, 64, 10);
-    int graph = kRecordHeight * fixed(TIMER_SECOND - SpareTicks, TIMER_SECOND);
+    int graph = kRecordHeight * fixed(kTimerSecond - SpareTicks, kTimerSecond);
     for (int row = 1; row < kRecordHeight; row += 2) {
       static unsigned char _barchar[4] = {' ', 220, 0, 219};
       char str[2];
@@ -303,7 +303,7 @@ void LogicClass::AI() {
   */
   if (Special.IsShadowGrow && Rule.ShroudRate != 0 &&
       Scen.ShroudTimer.IsFinished()) {
-    Scen.ShroudTimer.Set(TICKS_PER_MINUTE * Rule.ShroudRate);
+    Scen.ShroudTimer.Set(kTicksPerMinute * Rule.ShroudRate);
     Map.Encroach_Shadow();
   }
 
@@ -405,7 +405,7 @@ void LogicClass::AI() {
       Sound_Effect(VOC_SONAR);
       bAutoSonarPulse = false;
     }
-    Scen.AutoSonarTimer.Set(int64_t{TICKS_PER_SECOND} * 40);
+    Scen.AutoSonarTimer.Set(int64_t{kTicksPerSecond} * 40);
   }
 }
 

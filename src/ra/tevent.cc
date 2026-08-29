@@ -204,7 +204,7 @@ void EventChoiceClass::Draw_It(int, int x, int y, int width, int height,
 void TEventClass::Reset(TDEventClass& td) const {
   td.IsTripped = false;
   if (Event == TEVENT_TIME) {
-    td.EventTimer.Set(Data.Value * (TICKS_PER_MINUTE / 10));
+    td.EventTimer.Set(Data.Value * (kTicksPerMinute / 10));
   }
 }
 

@@ -1352,7 +1352,7 @@ void MapClass::Logic() {
   **	Scan another block of the map in order to accumulate the potential
   **	Tiberium cells that can grow or spread.
   */
-  int subcount = MAP_CELL_TOTAL / (Rule.GrowthRate * TICKS_PER_MINUTE);
+  int subcount = MAP_CELL_TOTAL / (Rule.GrowthRate * kTicksPerMinute);
   subcount = std::max(subcount, 1);
   int index;
   for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {

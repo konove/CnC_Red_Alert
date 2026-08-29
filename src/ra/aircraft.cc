@@ -761,7 +761,7 @@ int AircraftClass::Mission_Hunt() {
             **	break the circle cycle.
             */
             if (In_Range(TarCom, 0) || Passenger) {
-              return TICKS_PER_SECOND * 2;
+              return kTicksPerSecond * 2;
             }
             if (!PrimaryFacing.Is_Rotating() && Target_Legal(TarCom)) {
               PrimaryFacing.Set_Desired(Direction(TarCom));
@@ -791,7 +791,7 @@ int AircraftClass::Mission_Hunt() {
             }
             break;
         }
-        return TICKS_PER_SECOND / 2;
+        return kTicksPerSecond / 2;
 
       /*
       **	Dropping a stream of bombs phase.
@@ -827,7 +827,7 @@ int AircraftClass::Mission_Hunt() {
           case FIRE_RANGE:
           case FIRE_FACING:
             Status = FLY_TO_TARGET;
-            return TICKS_PER_SECOND * 4;
+            return kTicksPerSecond * 4;
 
           case FIRE_ILLEGAL:
             if (Mission == MISSION_ATTACK) {
@@ -982,7 +982,7 @@ void AircraftClass::AI() {
   */
   if (IsOwnedByPlayer && Class->SightRange && SightTimer.IsFinished()) {
     Look();
-    SightTimer.Set(TICKS_PER_SECOND);
+    SightTimer.Set(kTicksPerSecond);
   }
 
   /*
@@ -1399,7 +1399,7 @@ int AircraftClass::Mission_Retreat() {
       Height += 1;
       return 3;
     }
-    return TICKS_PER_SECOND * 10;
+    return kTicksPerSecond * 10;
   }
 
   enum { TAKE_OFF, FACE_MAP_EDGE, KEEP_FLYING };
@@ -3809,7 +3809,7 @@ int AircraftClass::Mission_Guard() {
   **	Transport helicopters don't really do anything but just sit there.
   */
   if (!Is_Weapon_Equipped()) {
-    return TICKS_PER_SECOND * 3;
+    return kTicksPerSecond * 3;
   }
 
   /*
@@ -3818,7 +3818,7 @@ int AircraftClass::Mission_Guard() {
   */
   if (Height == 0 && !In_Radio_Contact()) {
     Scatter(0, true);
-    return TICKS_PER_SECOND * 3;
+    return kTicksPerSecond * 3;
   }
 
   /*
@@ -3864,12 +3864,12 @@ int AircraftClass::Mission_Guard_Area() {
     return 1;
   }
   if (House->IsHuman) {
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
 
   if (Height == 0 && !In_Radio_Contact()) {
     Scatter(0, true);
-    return TICKS_PER_SECOND * 3;
+    return kTicksPerSecond * 3;
   }
 
   if (Target_Legal(TarCom)) {

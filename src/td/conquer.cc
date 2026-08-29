@@ -235,7 +235,7 @@ void Main_Game(int argc, char* argv[]) {
     **	values, and then show the mouse.  This PRESUMES that Select_Game() has
     **	told the map to draw itself.
     */
-    Fade_Palette_To(GamePalette, FADE_PALETTE_MEDIUM, nullptr);
+    Fade_Palette_To(GamePalette, kFadePaletteMedium, nullptr);
     Keyboard::Clear();
 
     /*
@@ -380,7 +380,7 @@ void Main_Game(int argc, char* argv[]) {
     /*
     **	Scenario is done; fade palette to black
     */
-    Fade_Palette_To(BlackPalette, FADE_PALETTE_SLOW, nullptr);
+    Fade_Palette_To(BlackPalette, kFadePaletteSlow, nullptr);
     VisiblePage.Clear();
 
 #ifndef DEMO
@@ -455,13 +455,13 @@ void Main_Game(int argc, char* argv[]) {
 
 #ifdef DEMO
   Hide_Mouse();
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, NULL);
+  Fade_Palette_To(BlackPalette, kFadePaletteMedium, NULL);
   Load_Title_Screen("DEMOPIC.PCX", &HidPage, Palette);
   HidPage.Blit(SeenBuff);
-  Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, NULL);
+  Fade_Palette_To(Palette, kFadePaletteMedium, NULL);
   Clear_KeyBuffer();
   Get_Key();
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, NULL);
+  Fade_Palette_To(BlackPalette, kFadePaletteMedium, NULL);
 //		Show_Mouse();
 #else
 
@@ -1121,7 +1121,7 @@ bool Color_Cycle() {
   *glowing *	game interface elements.
   */
   if (!_ftimer.Time()) {
-    _ftimer.Set(TIMER_SECOND / 8);
+    _ftimer.Set(kTimerSecond / 8);
 
 /*
 **	Pulse the pulsing text color.
@@ -1157,7 +1157,7 @@ bool Color_Cycle() {
   if (!_timer.Time()) {
     unsigned char colors[3];
 
-    _timer.Set(TIMER_SECOND / 4);
+    _timer.Set(kTimerSecond / 4);
 
     memmove(colors,
             &GamePalette[std::size_t{CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1} *
@@ -1662,7 +1662,7 @@ bool Main_Loop() {
   /*
   **	Keep track of elapsed time in the game.
   */
-  Score.ElapsedTime += TIMER_SECOND / TICKS_PER_SECOND;
+  Score.ElapsedTime += kTimerSecond / kTicksPerSecond;
 
   Call_Back();
 
@@ -2044,7 +2044,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
     // Theme.AI();
     Theme.Queue_Song(theme);
     if (PreserveVQAScreen == 0) {
-      Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+      Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
       VisiblePage.Clear();
       memset(BlackPalette, 0x01, 768);
       Set_Palette(BlackPalette);

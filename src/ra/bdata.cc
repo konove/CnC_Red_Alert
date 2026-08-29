@@ -3129,7 +3129,7 @@ void BuildingTypeClass::One_Time() {
       int timedelay = 1;
       int count = Get_Build_Frame_Count(dataptr);
       if (count > 0) {
-        timedelay = Rule.BuildupTime * TICKS_PER_MINUTE / count;
+        timedelay = Rule.BuildupTime * kTicksPerMinute / count;
       }
       building.Init_Anim(BSTATE_CONSTRUCTION, 0, count, timedelay);
     }
@@ -3363,7 +3363,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
           int timedelay = 1;
           int count = Get_Build_Frame_Count(classptr->BuildupData);
           if (count != 0) {
-            timedelay = 5 * TICKS_PER_SECOND / count;
+            timedelay = 5 * kTicksPerSecond / count;
           }
           classptr->Init_Anim(BSTATE_CONSTRUCTION, 0, count, timedelay);
         }

@@ -475,7 +475,7 @@ int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
  * HISTORY: * 10/14/1996 JLB : Created. *
  *=============================================================================================*/
 void PowerClass::Flash_Power() {
-  FlashTimer.Set(TICKS_PER_SECOND);
+  FlashTimer.Set(kTicksPerSecond);
   IsToRedraw = true;
   Flag_To_Redraw(false);
 }

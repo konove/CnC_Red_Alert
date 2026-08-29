@@ -90,13 +90,13 @@ bool Read_Private_Config_Struct(char* profile, NewConfigType* config) {
  *=========================================================================*/
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 char* profile) {
-  char buffer[MAX_ENTRY_SIZE];  // Integer staging buffer.
+  char buffer[kMaxEntrySize];  // Integer staging buffer.
   unsigned card;
 
-  memset(buffer, '0', MAX_ENTRY_SIZE);  // MAX_ENTRY_SIZE = 15
-  buffer[MAX_ENTRY_SIZE - 1] = '\0';
+  memset(buffer, '0', kMaxEntrySize);  // kMaxEntrySize = 15
+  buffer[kMaxEntrySize - 1] = '\0';
 
-  WWGetPrivateProfileString(section, entry, "0", buffer, MAX_ENTRY_SIZE,
+  WWGetPrivateProfileString(section, entry, "0", buffer, kMaxEntrySize,
                             profile);
 
   if (strlen(buffer) > 0) {

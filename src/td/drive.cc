@@ -714,8 +714,8 @@ bool DriveClass::While_Moving() {
                 Per_Cell_Process(true);
                 if (Start_Driver(c)) {
                   Set_Speed(oldspeed);
-                  memmove(&Path[0], &Path[1], CONQUER_PATH_MAX - 1);
-                  Path[CONQUER_PATH_MAX - 1] = FACING_NONE;
+                  memmove(&Path[0], &Path[1], kConquerPathMax - 1);
+                  Path[kConquerPathMax - 1] = FACING_NONE;
                 } else {
                   Path[0] = FACING_NONE;
                   TrackNumber = -1;
@@ -888,7 +888,7 @@ bool DriveClass::Start_Of_Move() {
       //				!As_Techno(NavCom)->Techno_Type_Class()->IsCrushable
       //|| 				!Class->IsCrusher) {
 
-      if (dist < CONQUER_PATH_MAX) {
+      if (dist < kConquerPathMax) {
         Path[dist] = FACING_NONE;
         facing = Path[0];  // Maybe needed.
       }
@@ -1183,14 +1183,14 @@ bool DriveClass::Start_Of_Move() {
           return true;
         }
       } else {
-        memmove(&Path[0], &Path[2], CONQUER_PATH_MAX - 2);
-        Path[CONQUER_PATH_MAX - 2] = FACING_NONE;
+        memmove(&Path[0], &Path[2], kConquerPathMax - 2);
+        Path[kConquerPathMax - 2] = FACING_NONE;
         IsPlanningToLook = true;
       }
     } else {
-      memmove(&Path[0], &Path[1], CONQUER_PATH_MAX - 1);
+      memmove(&Path[0], &Path[1], kConquerPathMax - 1);
     }
-    Path[CONQUER_PATH_MAX - 1] = FACING_NONE;
+    Path[kConquerPathMax - 1] = FACING_NONE;
   }
 
   IsNewNavCom = false;

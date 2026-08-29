@@ -151,7 +151,7 @@ int TriggerClass::Validate() const {
     int num;
 
     num = Triggers.ID(this);
-    if (num < 0 || num >= TRIGGER_MAX) {
+    if (num < 0 || num >= kTriggerMax) {
       Validate_Error("TRIGGER");
       return 0;
     }
@@ -318,7 +318,7 @@ TriggerClass::~TriggerClass() {
     if (Houses.Ptr(House)->Blockage) {
       Houses.Ptr(House)->Blockage--;
     }
-    Houses.Ptr(House)->BorrowedTime = int64_t{TICKS_PER_SECOND} * 4;
+    Houses.Ptr(House)->BorrowedTime = int64_t{kTicksPerSecond} * 4;
   }
 }
 

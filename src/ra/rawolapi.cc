@@ -201,7 +201,7 @@ STDMETHODIMP RAChatEventSink::OnPaged(HRESULT, User* pUser, LPCSTR szMessage) {
     Session.Messages.Add_Message(
         NULL, 0, szPrint, PCOLOR_GOLD,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-        Rule.MessageDelay * TICKS_PER_MINUTE);
+        Rule.MessageDelay * kTicksPerMinute);
     if (!pOwner->bFreezeExternalPager) {
       strcpy(pOwner->szExternalPager, (char*)pUser->name);
     }

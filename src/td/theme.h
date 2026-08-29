@@ -64,7 +64,7 @@ class ThemeClass {
 
   static ThemeControl _themes[THEME_COUNT];
 
-  enum { THEME_DELAY = TIMER_SECOND };
+  enum { THEME_DELAY = kTimerSecond };
 
  public:
   ThemeClass();

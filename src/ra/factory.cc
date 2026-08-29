@@ -419,7 +419,7 @@ bool FactoryClass::Start() {
       if (Object) {
         time = Object->Time_To_Build();
         //			} else {
-        //				time = TICKS_PER_MINUTE * 5;
+        //				time = kTicksPerMinute * 5;
       }
 
       /*

@@ -192,7 +192,7 @@ ScenarioClass::ScenarioClass()
     : Difficulty(DIFF_NORMAL),
       CDifficulty(DIFF_NORMAL),
       MissionTimer(0),
-      ShroudTimer(TICKS_PER_MINUTE * Rule.ShroudRate),
+      ShroudTimer(kTicksPerMinute * Rule.ShroudRate),
       Scenario(1),
       Theater(THEATER_TEMPERATE),
       IntroMovie(VQ_NONE),
@@ -223,7 +223,7 @@ ScenarioClass::ScenarioClass()
       IsNoMapSel(false),
       IsTruckCrate(false),
       IsMoneyTiberium(false),
-#define AUTOSONAR_PERIOD (int64_t{TICKS_PER_SECOND} * 40)
+#define AUTOSONAR_PERIOD (int64_t{kTicksPerSecond} * 40)
       AutoSonarTimer(AUTOSONAR_PERIOD),
       FadeTimer(0) {
   for (int index = 0; index < std::ssize(Waypoint); index++) {
@@ -252,7 +252,7 @@ ScenarioClass::ScenarioClass()
 void ScenarioClass::Do_BW_Fade() {
   IsFadingBW = true;
   IsFadingColor = false;
-  FadeTimer.Set(GRAYFADETIME);
+  FadeTimer.Set(kGrayFadeTime);
 }
 
 /***********************************************************************************************
@@ -275,7 +275,7 @@ void ScenarioClass::Do_Fade_AI() {
       IsFadingColor = false;
     }
     fixed newsat = Options.Get_Saturation() *
-                   fixed(GRAYFADETIME - FadeTimer.Value(), GRAYFADETIME);
+                   fixed(kGrayFadeTime - FadeTimer.Value(), kGrayFadeTime);
     Options.Adjust_Palette(OriginalPalette, GamePalette,
                            Options.Get_Brightness(), newsat, Options.Get_Tint(),
                            Options.Get_Contrast());
@@ -286,14 +286,14 @@ void ScenarioClass::Do_Fade_AI() {
       IsFadingBW = false;
     }
     fixed newsat =
-        Options.Get_Saturation() * fixed(FadeTimer.Value(), GRAYFADETIME);
+        Options.Get_Saturation() * fixed(FadeTimer.Value(), kGrayFadeTime);
     Options.Adjust_Palette(OriginalPalette, GamePalette,
                            Options.Get_Brightness(), newsat, Options.Get_Tint(),
                            Options.Get_Contrast());
     GamePalette.Set();
     if (!IsFadingBW) {
       IsFadingColor = true;
-      FadeTimer.Set(GRAYFADETIME);
+      FadeTimer.Set(kGrayFadeTime);
     }
   }
 }
@@ -493,7 +493,7 @@ bool Read_Scenario(char* name) {
       */
       int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
       if ((!Using_DVD() || cd_index != 5) && cd_index != 3) {
-        GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
+        GamePalette.Set(kFadePaletteFast, Call_Back);
         RequiredCD = 3;
         if (!Force_CD_Available(RequiredCD)) {  // force Aftermath CD in drive.
 #if !WOLAPI_INTEGRATION
@@ -524,8 +524,8 @@ bool Read_Scenario(char* name) {
     }
     Fill_In_Data();
   } else {
-    GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
-    //		Fade_Palette_To(GamePalette, FADE_PALETTE_FAST, Call_Back);
+    GamePalette.Set(kFadePaletteFast, Call_Back);
+    //		Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);
     Show_Mouse();
     WWMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
     Hide_Mouse();
@@ -854,7 +854,7 @@ void Do_Win() {
     Map.Render();
     Fancy_Text_Print(TXT_SCENARIO_WON, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-    CountDownTimer.Set(int64_t{TIMER_SECOND} * 3);
+    CountDownTimer.Set(int64_t{kTimerSecond} * 3);
     while (Is_Speaking()) {
     }
     Speak(VOX_ACCOMPLISHED);
@@ -1063,8 +1063,8 @@ void Do_Win() {
   //	PlayerPtr->NukePieces = nukes;
 
   Map.Render();
-  GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
-  //	Fade_Palette_To(GamePalette, FADE_PALETTE_FAST, Call_Back);
+  GamePalette.Set(kFadePaletteFast, Call_Back);
+  //	Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);
   Show_Mouse();
 }
 
@@ -1108,7 +1108,7 @@ void Do_Lose() {
   Set_Logic_Page(SeenBuff);
   Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-  CountDownTimer.Set(int64_t{TIMER_SECOND} * 3);
+  CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   while (Is_Speaking()) {
   }
   Speak(VOX_FAIL);
@@ -1164,7 +1164,7 @@ void Do_Lose() {
     GameActive = 0;
   }
 
-  GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
+  GamePalette.Set(kFadePaletteFast, Call_Back);
   Show_Mouse();
 }
 
@@ -1197,7 +1197,7 @@ void Do_Draw() {
   Set_Logic_Page(SeenBuff);
   Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-  CountDownTimer.Set(int64_t{TIMER_SECOND} * 3);
+  CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   while (Is_Speaking()) {
   }
   Speak(VOX_CONTROL_EXIT);
@@ -1241,7 +1241,7 @@ void Do_Restart() {
   ** Start a timer going, before we restart the scenario
   */
   Timer<SystemTickSource> timer;
-  timer.Set(int64_t{TICKS_PER_SECOND} * 4);
+  timer.Set(int64_t{kTicksPerSecond} * 4);
   Theme.Queue_Song(THEME_QUIET);
 
   WWMessageBox().Process(TXT_RESTARTING, TXT_NONE);
@@ -1307,7 +1307,7 @@ static constexpr size_t kMaxCharsPerPage = 512;
 int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
                            bool fade_to_black) {
   if (fade_to_black) {
-    BlackPalette.Set(FADE_PALETTE_MEDIUM, Call_Back);
+    BlackPalette.Set(kFadePaletteMedium, Call_Back);
   }
 
   int retval = 0;
@@ -1509,7 +1509,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   static unsigned char _scorepal[] = {0, 1, 12, 13,  4,   5,   6,  7,
                                       8, 9, 10, 255, 252, 253, 14, 248};
   Set_Font_Palette(_scorepal);
-  temp.Set(FADE_PALETTE_MEDIUM, Call_Back);
+  temp.Set(kFadePaletteMedium, Call_Back);
 
   // Main Processing Loop.
 
@@ -1687,7 +1687,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   switch (retval) {
     case 0:
     case 1:
-      BlackPalette.Set(FADE_PALETTE_MEDIUM, Call_Back);
+      BlackPalette.Set(kFadePaletteMedium, Call_Back);
       SeenPage.Clear();
       break;
     default:
@@ -1996,7 +1996,7 @@ bool Read_Scenario_INI(char* fname, bool) {
       if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
         SeenPage.Clear();
       }
-      GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
+      GamePalette.Set(kFadePaletteFast, Call_Back);
     }
     if (!Force_CD_Available(RequiredCD)) {
       // Prog_End();

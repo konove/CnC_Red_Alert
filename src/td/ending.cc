@@ -63,13 +63,13 @@
 
 void GDI_Ending() {
 #ifdef DEMO
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
   Load_Title_Screen("DEMOPIC.PCX", &HidPage, Palette);
   HidPage.Blit(SeenBuff);
-  Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
+  Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   Get_Key_Num();
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
   VisiblePage.Clear();
 
 #else
@@ -89,33 +89,33 @@ void GDI_Ending() {
 
   CountDownTimerClass count;
   if (CCFileClass("TRAILER.VQA").Is_Available()) {
-    Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+    Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
     CCFileClass f("ATTRACT2.CPS");
     Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
     SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
-    Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
+    Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
     Clear_KeyBuffer();
-    count.Set(int64_t{TIMER_SECOND} * 3);
+    count.Set(int64_t{kTimerSecond} * 3);
     while (count.Time()) {
       Call_Back();
     }
-    Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+    Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
 
     Play_Movie("TRAILER");  // Red Alert teaser.
   }
 
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
   CCFileClass f("ATTRACT2.CPS");
   Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
   SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
-  Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
+  Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   //	CountDownTimerClass count;
-  count.Set(int64_t{TIMER_SECOND} * 3);
+  count.Set(int64_t{kTimerSecond} * 3);
   while (count.Time()) {
     Call_Back();
   }
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
 
   Play_Movie("CC2TEASE");
 #endif
@@ -265,33 +265,33 @@ void Nod_Ending() {
 
   CountDownTimerClass count;
   if (CCFileClass("TRAILER.VQA").Is_Available()) {
-    Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+    Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
     CCFileClass f("ATTRACT2.CPS");
     Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
     SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
-    Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
+    Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
     Clear_KeyBuffer();
-    count.Set(int64_t{TIMER_SECOND} * 3);
+    count.Set(int64_t{kTimerSecond} * 3);
     while (count.Time()) {
       Call_Back();
     }
-    Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+    Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
 
     Play_Movie("TRAILER");  // Red Alert teaser.
   }
 
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
   CCFileClass f2("ATTRACT2.CPS");
   Load_Uncompress(f2, SysMemPage, SysMemPage, Palette);
   SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
-  Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
+  Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   //	CountDownTimerClass count;
-  count.Set(int64_t{TIMER_SECOND} * 3);
+  count.Set(int64_t{kTimerSecond} * 3);
   while (count.Time()) {
     Call_Back();
   }
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
 
   Play_Movie("CC2TEASE");
 

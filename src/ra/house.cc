@@ -770,8 +770,8 @@ HouseClass::HouseClass(HousesType house)
       BuildVessel(VESSEL_NONE),
       NukeDest(0),
       Allies(0),
-      DamageTime(TICKS_PER_MINUTE * Rule.DamageDelay),
-      TeamTime(TICKS_PER_MINUTE * Rule.TeamDelay),
+      DamageTime(kTicksPerMinute * Rule.DamageDelay),
+      TeamTime(kTicksPerMinute * Rule.TeamDelay),
       TriggerTime(0),
       SpeakAttackDelay(1),
       SpeakPowerDelay(1),
@@ -785,28 +785,28 @@ HouseClass::HouseClass(HousesType house)
   *reasons).
   */
   new (&SuperWeapon[SPC_NUCLEAR_BOMB])
-      SuperClass(TICKS_PER_MINUTE * Rule.NukeTime, true, VOX_ABOMB_PREPPING,
+      SuperClass(kTicksPerMinute * Rule.NukeTime, true, VOX_ABOMB_PREPPING,
                  VOX_ABOMB_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
   new (&SuperWeapon[SPC_SONAR_PULSE])
-      SuperClass(TICKS_PER_MINUTE * Rule.SonarTime, false, VOX_NONE,
+      SuperClass(kTicksPerMinute * Rule.SonarTime, false, VOX_NONE,
                  VOX_SONAR_AVAILABLE, VOX_NOT_READY, VOX_NOT_READY);
   new (&SuperWeapon[SPC_CHRONOSPHERE])
-      SuperClass(TICKS_PER_MINUTE * Rule.ChronoTime, true, VOX_CHRONO_CHARGING,
+      SuperClass(kTicksPerMinute * Rule.ChronoTime, true, VOX_CHRONO_CHARGING,
                  VOX_CHRONO_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
   new (&SuperWeapon[SPC_PARA_BOMB])
-      SuperClass(TICKS_PER_MINUTE * Rule.ParaBombTime, false, VOX_NONE,
+      SuperClass(kTicksPerMinute * Rule.ParaBombTime, false, VOX_NONE,
                  VOX_NONE, VOX_NOT_READY, VOX_NOT_READY);
   new (&SuperWeapon[SPC_PARA_INFANTRY])
-      SuperClass(TICKS_PER_MINUTE * Rule.ParaInfantryTime, false, VOX_NONE,
+      SuperClass(kTicksPerMinute * Rule.ParaInfantryTime, false, VOX_NONE,
                  VOX_NONE, VOX_NOT_READY, VOX_NOT_READY);
   new (&SuperWeapon[SPC_SPY_MISSION])
-      SuperClass(TICKS_PER_MINUTE * Rule.SpyTime, false, VOX_NONE,
+      SuperClass(kTicksPerMinute * Rule.SpyTime, false, VOX_NONE,
                  VOX_SPY_PLANE, VOX_NOT_READY, VOX_NOT_READY);
   new (&SuperWeapon[SPC_IRON_CURTAIN]) SuperClass(
-      TICKS_PER_MINUTE * Rule.IronCurtainTime, true, VOX_IRON_CHARGING,
+      kTicksPerMinute * Rule.IronCurtainTime, true, VOX_IRON_CHARGING,
       VOX_IRON_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
   new (&SuperWeapon[SPC_GPS])
-      SuperClass(TICKS_PER_MINUTE * Rule.GPSTime, true, VOX_NONE, VOX_NONE,
+      SuperClass(kTicksPerMinute * Rule.GPSTime, true, VOX_NONE, VOX_NONE,
                  VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
 
   memset(UnitsKilled, '\0', sizeof(UnitsKilled));
@@ -826,7 +826,7 @@ HouseClass::HouseClass(HousesType house)
   **	Set the time of the first AI attack.
   */
   Attack.Set(Rule.AttackDelay *
-             Random_Pick(TICKS_PER_MINUTE / 2, TICKS_PER_MINUTE * 2));
+             Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2));
 
   if (Session.Type == GAME_INTERNET) {
     AircraftTotals = new UnitTrackerClass(static_cast<int>(AIRCRAFT_COUNT));
@@ -1152,9 +1152,9 @@ void HouseClass::AI() {
       }
     }
     AlertTime.Set(Rule.AutocreateTime *
-                  Random_Pick(TICKS_PER_MINUTE / 2, TICKS_PER_MINUTE * 2));
-    //		int mintime = Rule.AutocreateTime * (TICKS_PER_MINUTE/2);
-    //		int maxtime = Rule.AutocreateTime * (TICKS_PER_MINUTE*2);
+                  Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2));
+    //		int mintime = Rule.AutocreateTime * (kTicksPerMinute/2);
+    //		int maxtime = Rule.AutocreateTime * (kTicksPerMinute*2);
     //		AlertTime = Random_Pick(mintime, maxtime);
   }
 
@@ -1163,7 +1163,7 @@ void HouseClass::AI() {
   **	someone sitting on it.  If so, make the scatter.  If they refuse,
   **	blow them up.
   */
-  if (FlagHome != 0 && Frame % TICKS_PER_SECOND == 0) {
+  if (FlagHome != 0 && Frame % kTicksPerSecond == 0) {
     TechnoClass* techno = Map[FlagHome].Cell_Techno();
     if (techno != nullptr) {
       bool moving = false;
@@ -1211,7 +1211,7 @@ void HouseClass::AI() {
       ttype->Create_One_Of();
     }
 
-    TeamTime.Set(Rule.TeamDelay * TICKS_PER_MINUTE);
+    TeamTime.Set(Rule.TeamDelay * kTicksPerMinute);
   }
 
   /*
@@ -1237,7 +1237,7 @@ void HouseClass::AI() {
         }
       }
     }
-    DamageTime.Set(TICKS_PER_MINUTE * Rule.DamageDelay);
+    DamageTime.Set(kTicksPerMinute * Rule.DamageDelay);
   }
 
   /*
@@ -1258,7 +1258,7 @@ void HouseClass::AI() {
       Speak(VOX_NEED_MO_MONEY);
       Map.Flash_Money();
       SpeakMaxedDelay.Set(
-          Options.Normalize_Delay(TICKS_PER_MINUTE * Rule.SpeakDelay));
+          Options.Normalize_Delay(kTicksPerMinute * Rule.SpeakDelay));
     }
 
     if (SpeakMaxedDelay.IsFinished() && IsMaxedOut) {
@@ -1267,14 +1267,14 @@ void HouseClass::AI() {
           ActiveBScan & (STRUCTF_REFINERY | STRUCTF_CONST)) {
         Speak(VOX_NEED_MO_CAPACITY);
         SpeakMaxedDelay.Set(
-            Options.Normalize_Delay(TICKS_PER_MINUTE * Rule.SpeakDelay));
+            Options.Normalize_Delay(kTicksPerMinute * Rule.SpeakDelay));
       }
     }
     if (SpeakPowerDelay.IsFinished() && Power_Fraction() < 1) {
       if (ActiveBScan & STRUCTF_CONST) {
         Speak(VOX_LOW_POWER);
         SpeakPowerDelay.Set(
-            Options.Normalize_Delay(TICKS_PER_MINUTE * Rule.SpeakDelay));
+            Options.Normalize_Delay(kTicksPerMinute * Rule.SpeakDelay));
         Map.Flash_Power();
 
         const char* text = nullptr;
@@ -1291,7 +1291,7 @@ void HouseClass::AI() {
           Session.Messages.Add_Message(
               nullptr, 0, text, PCOLOR_GREEN,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-              Rule.MessageDelay * TICKS_PER_MINUTE);
+              Rule.MessageDelay * kTicksPerMinute);
         }
       }
     }
@@ -1316,7 +1316,7 @@ void HouseClass::AI() {
   *expired, *	then set the trigger processing flag.
   */
   if (TriggerTime.IsFinished() || IsBuiltSomething) {
-    TriggerTime.Set(TICKS_PER_MINUTE / 10);
+    TriggerTime.Set(kTicksPerMinute / 10);
     IsBuiltSomething = false;
   }
 
@@ -1361,7 +1361,7 @@ void HouseClass::AI() {
                 for (int index = 0; index < Vessels.Count(); index++) {
                   VesselClass* sub = Vessels.Ptr(index);
                   if (*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) {
-                    sub->PulseCountDown.Set(static_cast<int64_t>(15) * TICKS_PER_SECOND);
+                    sub->PulseCountDown.Set(static_cast<int64_t>(15) * kTicksPerSecond);
                     sub->Do_Uncloak();
                   }
                 }
@@ -1936,7 +1936,7 @@ void HouseClass::Attacked() {
        PlayerPtr->Class->House == Class->House)) {
     Speak(VOX_BASE_UNDER_ATTACK);
     SpeakAttackDelay.Set(
-        Options.Normalize_Delay(TICKS_PER_MINUTE * Rule.SpeakDelay));
+        Options.Normalize_Delay(kTicksPerMinute * Rule.SpeakDelay));
 
     /*
     **	If there is a trigger event associated with being attacked, process it
@@ -2327,7 +2327,7 @@ void HouseClass::Make_Ally(HousesType house) {
         Session.Messages.Add_Message(
             nullptr, 0, buffer, RemapColor,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            TICKS_PER_MINUTE * Rule.MessageDelay);
+            kTicksPerMinute * Rule.MessageDelay);
       }
 
 #if (TEN)
@@ -2393,7 +2393,7 @@ void HouseClass::Make_Enemy(HousesType house) {
       Session.Messages.Add_Message(
           nullptr, 0, buffer, RemapColor,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-          TICKS_PER_MINUTE * Rule.MessageDelay);
+          kTicksPerMinute * Rule.MessageDelay);
       Map.Flag_To_Redraw(false);
 
 #if (TEN)
@@ -2753,7 +2753,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         for (int index = 0; index < Vessels.Count(); index++) {
           VesselClass* sub = Vessels.Ptr(index);
           if (*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) {
-            sub->PulseCountDown.Set(static_cast<int64_t>(15) * TICKS_PER_SECOND);
+            sub->PulseCountDown.Set(static_cast<int64_t>(15) * kTicksPerSecond);
             sub->Do_Uncloak();
           }
         }
@@ -2882,11 +2882,11 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
             case RTTI_VESSEL:
             case RTTI_AIRCRAFT:
               tech->IronCurtainCountDown.Set(Rule.IronCurtainDuration *
-                                             TICKS_PER_MINUTE);
+                                             kTicksPerMinute);
               if (tech->What_Am_I() == RTTI_UNIT &&
                   *dynamic_cast<UnitClass*>(tech) == UNIT_DEMOTRUCK) {
                 tech->IronCurtainCountDown.Set(Rule.IronCurtainDuration *
-                                               TICKS_PER_SECOND);
+                                               kTicksPerSecond);
               }
               tech->Mark(MARK_CHANGE);
               Sound_Effect(VOC_IRON1, tech->Center_Coord());
@@ -2964,10 +2964,10 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
               *dynamic_cast<UnitClass*>(tech) == UNIT_CHRONOTANK) {
             drive->IsMoebius = false;
           }
-          drive->MoebiusCountDown.Set(Rule.ChronoDuration * TICKS_PER_MINUTE);
+          drive->MoebiusCountDown.Set(Rule.ChronoDuration * kTicksPerMinute);
           if (tech->What_Am_I() == RTTI_UNIT &&
               *dynamic_cast<UnitClass*>(tech) == UNIT_CHRONOTANK) {
-            drive->MoebiusCountDown.Set(ChronoTankDuration * TICKS_PER_MINUTE);
+            drive->MoebiusCountDown.Set(ChronoTankDuration * kTicksPerMinute);
           }
           Scen.Do_BW_Fade();
           Sound_Effect(VOC_CHRONO, drive->Coord);
@@ -3672,7 +3672,7 @@ void HouseClass::MPlayer_Defeated() {
     Session.Messages.Add_Message(
         nullptr, 0, txt, Session.ColorIdx,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-        Rule.MessageDelay * TICKS_PER_MINUTE);
+        Rule.MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
 
   } else {
@@ -3686,7 +3686,7 @@ void HouseClass::MPlayer_Defeated() {
       Session.Messages.Add_Message(
           nullptr, 0, txt, RemapColor,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-          Rule.MessageDelay * TICKS_PER_MINUTE);
+          Rule.MessageDelay * kTicksPerMinute);
       Map.Flag_To_Redraw(false);
       RedrawOptionsMenu = true;
     }
@@ -4100,7 +4100,7 @@ bool HouseClass::Flag_To_Die() {
 
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToDie = true;
-    BorrowedTime.Set(TICKS_PER_MINUTE * Rule.SavourDelay);
+    BorrowedTime.Set(kTicksPerMinute * Rule.SavourDelay);
   }
   return IsToDie;
 }
@@ -4124,7 +4124,7 @@ bool HouseClass::Flag_To_Win() {
 
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToWin = true;
-    BorrowedTime.Set(TICKS_PER_MINUTE * Rule.SavourDelay);
+    BorrowedTime.Set(kTicksPerMinute * Rule.SavourDelay);
   }
   return IsToWin;
 }
@@ -4151,7 +4151,7 @@ bool HouseClass::Flag_To_Lose() {
   IsToWin = false;
   if (!IsToDie && !IsToLose) {
     IsToLose = true;
-    BorrowedTime.Set(TICKS_PER_MINUTE * Rule.SavourDelay);
+    BorrowedTime.Set(kTicksPerMinute * Rule.SavourDelay);
   }
   return IsToLose;
 }
@@ -4795,10 +4795,10 @@ int HouseClass::Expert_AI() {
         State = STATE_BUILDUP;
       }
     }
-    if (State == STATE_ATTACKED && LATime + TICKS_PER_MINUTE < Frame) {
+    if (State == STATE_ATTACKED && LATime + kTicksPerMinute < Frame) {
       State = STATE_BUILDUP;
     }
-    if (State != STATE_ATTACKED && LATime + TICKS_PER_MINUTE > Frame) {
+    if (State != STATE_ATTACKED && LATime + kTicksPerMinute > Frame) {
       State = STATE_ATTACKED;
     }
   }
@@ -4915,7 +4915,7 @@ int HouseClass::Expert_AI() {
     }
   }
 
-  return TICKS_PER_SECOND * 5 + Random_Pick(1, TICKS_PER_SECOND / 2);
+  return kTicksPerSecond * 5 + Random_Pick(1, kTicksPerSecond / 2);
 }
 
 UrgencyType HouseClass::Check_Build_Power() const {
@@ -4976,7 +4976,7 @@ UrgencyType HouseClass::Check_Build_Offense() const {
 UrgencyType HouseClass::Check_Attack() const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (Frame > TICKS_PER_MINUTE && Attack.IsFinished()) {
+  if (Frame > kTicksPerMinute && Attack.IsFinished()) {
     if (State == STATE_ATTACKED) {
       return URGENCY_LOW;
     }
@@ -5082,7 +5082,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
   CHECK_EQ(Houses.ID(this), ID);
 
   bool shuffle =
-      (Frame <= TICKS_PER_MINUTE || CurBuildings) && !Percent_Chance(33);
+      (Frame <= kTicksPerMinute || CurBuildings) && !Percent_Chance(33);
   bool forced = CurBuildings == 0;
   int index;
   for (index = 0; index < Aircraft.Count(); index++) {
@@ -5134,7 +5134,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
     }
   }
   Attack.Set(Rule.AttackInterval *
-             Random_Pick(TICKS_PER_MINUTE / 2, TICKS_PER_MINUTE * 2));
+             Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2));
   return true;
 }
 
@@ -5413,7 +5413,7 @@ int HouseClass::AI_Base_Defense() {
     }
   }
 
-  return (TICKS_PER_SECOND * 5);
+  return (kTicksPerSecond * 5);
 }
 #endif
 
@@ -5437,7 +5437,7 @@ int HouseClass::AI_Building() {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (BuildStructure != STRUCT_NONE) {
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
 
   if (Session.Type == GAME_NORMAL && Base.House == Class->House) {
@@ -5462,7 +5462,7 @@ int HouseClass::AI_Building() {
     }
 
     // TCTC -- Should multiply the largest player base by some rational number.
-    //		if (CurBuildings >= quant) return(TICKS_PER_SECOND);
+    //		if (CurBuildings >= quant) return(kTicksPerSecond);
 
     BuildChoice.Free_All();
     BuildChoiceClass* choiceptr;
@@ -5799,7 +5799,7 @@ int HouseClass::AI_Building() {
     }
   }
 
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -5821,10 +5821,10 @@ int HouseClass::AI_Unit() {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (BuildUnit != UNIT_NONE) {
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
   if (CurUnits >= Control.MaxUnit) {
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
 
   /*
@@ -5837,7 +5837,7 @@ int HouseClass::AI_Unit() {
     if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <=
         Control.TechLevel) {
       BuildUnit = UNIT_HARVESTER;
-      return TICKS_PER_SECOND;
+      return kTicksPerSecond;
     }
   }
 
@@ -5958,17 +5958,17 @@ int HouseClass::AI_Unit() {
     }
   }
 
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 int HouseClass::AI_Vessel() {
   CHECK_EQ(Houses.ID(this), ID);
   if (BuildVessel != VESSEL_NONE) {
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
 
   if (CurVessels >= Control.MaxVessel) {
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
 
   if (Session.Type == GAME_NORMAL) {
@@ -6078,7 +6078,7 @@ int HouseClass::AI_Vessel() {
     BuildVessel = VESSEL_NONE;
   }
 
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -6100,10 +6100,10 @@ int HouseClass::AI_Infantry() {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (BuildInfantry != INFANTRY_NONE) {
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
   if (CurInfantry >= Control.MaxInfantry) {
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
 
   if (Session.Type == GAME_NORMAL) {
@@ -6298,7 +6298,7 @@ int HouseClass::AI_Infantry() {
       }
     }
   }
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -6321,10 +6321,10 @@ int HouseClass::AI_Aircraft() {
 
   if (!IsHuman && IQ >= Rule.IQAircraft) {
     if (BuildAircraft != AIRCRAFT_NONE) {
-      return TICKS_PER_SECOND;
+      return kTicksPerSecond;
     }
     if (CurAircraft >= Control.MaxAircraft) {
-      return TICKS_PER_SECOND;
+      return kTicksPerSecond;
     }
 
     if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_LONGBOW),
@@ -6334,7 +6334,7 @@ int HouseClass::AI_Aircraft() {
         BQuantity[STRUCT_HELIPAD] >
             AQuantity[AIRCRAFT_LONGBOW] + AQuantity[AIRCRAFT_HIND]) {
       BuildAircraft = AIRCRAFT_LONGBOW;
-      return TICKS_PER_SECOND;
+      return kTicksPerSecond;
     }
 
     if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_HIND), ActLike) &&
@@ -6343,7 +6343,7 @@ int HouseClass::AI_Aircraft() {
         BQuantity[STRUCT_HELIPAD] >
             AQuantity[AIRCRAFT_LONGBOW] + AQuantity[AIRCRAFT_HIND]) {
       BuildAircraft = AIRCRAFT_HIND;
-      return TICKS_PER_SECOND;
+      return kTicksPerSecond;
     }
 
     if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_MIG), ActLike) &&
@@ -6352,7 +6352,7 @@ int HouseClass::AI_Aircraft() {
         BQuantity[STRUCT_AIRSTRIP] >
             AQuantity[AIRCRAFT_MIG] + AQuantity[AIRCRAFT_YAK]) {
       BuildAircraft = AIRCRAFT_MIG;
-      return TICKS_PER_SECOND;
+      return kTicksPerSecond;
     }
 
     if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_YAK), ActLike) &&
@@ -6361,11 +6361,11 @@ int HouseClass::AI_Aircraft() {
         BQuantity[STRUCT_AIRSTRIP] >
             AQuantity[AIRCRAFT_MIG] + AQuantity[AIRCRAFT_YAK]) {
       BuildAircraft = AIRCRAFT_YAK;
-      return TICKS_PER_SECOND;
+      return kTicksPerSecond;
     }
   }
 
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************

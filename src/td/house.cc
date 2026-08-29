@@ -190,7 +190,7 @@ int HouseClass::Validate() const {
     int num;
 
     num = Houses.ID(this);
-    if (num < 0 || num >= HOUSE_MAX) {
+    if (num < 0 || num >= kHouseMax) {
       Validate_Error("HOUSE");
       return 0;
     }
@@ -895,12 +895,12 @@ void HouseClass::AI() {
       }
     }
     if (Special.IsDifficult) {
-      AlertTime = TICKS_PER_MINUTE * Random_Pick(4, 10);
+      AlertTime = kTicksPerMinute * Random_Pick(4, 10);
     } else {
       if (Special.IsEasy) {
-        AlertTime = TICKS_PER_MINUTE * Random_Pick(16, 40);
+        AlertTime = kTicksPerMinute * Random_Pick(16, 40);
       } else {
-        AlertTime = TICKS_PER_MINUTE * Random_Pick(5, 20);
+        AlertTime = kTicksPerMinute * Random_Pick(5, 20);
       }
     }
   }
@@ -1020,7 +1020,7 @@ void HouseClass::AI() {
         (ActiveBScan & STRUCTF_REFINERY) != 0 &&
         (UScan & UNITF_HARVESTER) == 0 && !IsFreeHarvester) {
       IsFreeHarvester = true;
-      FreeHarvester = TICKS_PER_MINUTE * 2;
+      FreeHarvester = kTicksPerMinute * 2;
     }
 #endif
 
@@ -1101,7 +1101,7 @@ void HouseClass::AI() {
   */
   if (TriggerTime.Expired()) {
     is_time = true;
-    TriggerTime = TICKS_PER_MINUTE / 10;
+    TriggerTime = kTicksPerMinute / 10;
   }
 
   /*
@@ -1693,12 +1693,12 @@ void HouseClass::Read_INI(char* buffer) {
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
     hname = HouseTypeClass::As_Reference(index).IniName;
     int maxunit =
-        WWGetPrivateProfileInt(hname, "MaxUnit", EACH_UNIT_MAX, buffer);
+        WWGetPrivateProfileInt(hname, "MaxUnit", kEachUnitMax, buffer);
 
     maxunit = std::max(maxunit, 150);
 
     int maxbuilding =
-        WWGetPrivateProfileInt(hname, "MaxBuilding", EACH_BUILDING_MAX, buffer);
+        WWGetPrivateProfileInt(hname, "MaxBuilding", kEachBuildingMax, buffer);
 
     maxbuilding = std::max(maxbuilding, 150);
 
@@ -4151,9 +4151,9 @@ bool HouseClass::Flag_To_Die() {
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToDie = true;
     if (IsV107) {
-      BorrowedTime = int64_t{TICKS_PER_SECOND} * 3;
+      BorrowedTime = int64_t{kTicksPerSecond} * 3;
     } else {
-      BorrowedTime = int64_t{TICKS_PER_SECOND} * 1;
+      BorrowedTime = int64_t{kTicksPerSecond} * 1;
     }
   }
   return IsToDie;
@@ -4178,9 +4178,9 @@ bool HouseClass::Flag_To_Win() {
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToWin = true;
     if (IsV107) {
-      BorrowedTime = int64_t{TICKS_PER_SECOND} * 3;
+      BorrowedTime = int64_t{kTicksPerSecond} * 3;
     } else {
-      BorrowedTime = int64_t{TICKS_PER_SECOND} * 1;
+      BorrowedTime = int64_t{kTicksPerSecond} * 1;
     }
   }
   return IsToWin;
@@ -4208,9 +4208,9 @@ bool HouseClass::Flag_To_Lose() {
   if (!IsToDie && !IsToLose) {
     IsToLose = true;
     if (IsV107) {
-      BorrowedTime = int64_t{TICKS_PER_SECOND} * 3;
+      BorrowedTime = int64_t{kTicksPerSecond} * 3;
     } else {
-      BorrowedTime = int64_t{TICKS_PER_SECOND} * 1;
+      BorrowedTime = int64_t{kTicksPerSecond} * 1;
     }
   }
   return IsToLose;

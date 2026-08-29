@@ -895,7 +895,7 @@ void EventClass::Execute() {
       ** we're not already inside a dialog box routine!)
       */
       if (SpecialDialog == SDLG_NONE) {
-        Timer<SystemTickSource> timer{int64_t{TICKS_PER_SECOND} * 4};
+        Timer<SystemTickSource> timer{int64_t{kTicksPerSecond} * 4};
 
         WWMessageBox().Process(TXT_SAVING_GAME, TXT_NONE);
 
@@ -998,7 +998,7 @@ void EventClass::Execute() {
         Session.Messages.Add_Message(
             nullptr, 0, TXT_WOL_DRAW_PROPOSED_LOCAL, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            Rule.MessageDelay * TICKS_PER_MINUTE);
+            Rule.MessageDelay * kTicksPerMinute);
       } else {
         if (Scen.bLocalProposesDraw) {
           //	Both sides agree to draw. Game will end in a tie.
@@ -1022,7 +1022,7 @@ void EventClass::Execute() {
           Session.Messages.Add_Message(
               nullptr, 0, message.c_str(), PCOLOR_GOLD,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-              Rule.MessageDelay * TICKS_PER_MINUTE);
+              Rule.MessageDelay * kTicksPerMinute);
         }
       }
       Sound_Effect(VOC_INCOMING_MESSAGE);
@@ -1034,7 +1034,7 @@ void EventClass::Execute() {
         Session.Messages.Add_Message(
             nullptr, 0, TXT_WOL_DRAW_RETRACTED_LOCAL, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            Rule.MessageDelay * TICKS_PER_MINUTE);
+            Rule.MessageDelay * kTicksPerMinute);
       } else {
         std::string message;
         // The format string lives in the localized string table, so verify the
@@ -1054,7 +1054,7 @@ void EventClass::Execute() {
           Session.Messages.Add_Message(
               nullptr, 0, message.c_str(), PCOLOR_GOLD,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-              Rule.MessageDelay * TICKS_PER_MINUTE);
+              Rule.MessageDelay * kTicksPerMinute);
         }
       }
       Sound_Effect(VOC_INCOMING_MESSAGE);

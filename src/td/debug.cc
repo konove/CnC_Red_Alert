@@ -97,7 +97,7 @@ extern bool ScreenRecording;
  * HISTORY: * 07/31/1991 JLB : Created. * 07/05/1994 JLB : Handles new
  *monochrome system.                                           *
  *=============================================================================================*/
-#define UPDATE_INTERVAL TIMER_SECOND
+#define UPDATE_INTERVAL kTimerSecond
 void Self_Regulate() {
   static CountDownTimerClass DebugTimer{};
   static ObjectClass* _lastobject = nullptr;

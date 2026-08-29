@@ -2281,7 +2281,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             int i, ucount;
             int minunits = 1000;
             bool found = false;
-            unsigned long minutes = Score.ElapsedTime / TIMER_MINUTE;
+            unsigned long minutes = Score.ElapsedTime / kTimerMinute;
             minutes = std::min<unsigned long>(minutes, 100);
             if (Random_Pick(0, 100 - static_cast<int>(minutes)) == 0) {
               for (i = 0;
@@ -2700,7 +2700,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           if (obj && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius) {
             dynamic_cast<TechnoClass*>(obj)->IronCurtainCountDown.Set(
-                TICKS_PER_MINUTE * fixed(CrateData[powerup], 256));
+                kTicksPerMinute * fixed(CrateData[powerup], 256));
             obj->Mark(MARK_CHANGE);
           }
         }

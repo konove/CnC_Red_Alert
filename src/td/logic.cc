@@ -153,9 +153,9 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
   /*
   **	Fill in the data for the current frame's performance record.
   */
-  SpareTicks = std::min(SpareTicks, (long)TIMER_SECOND);
+  SpareTicks = std::min(SpareTicks, (long)kTimerSecond);
   _record[RECORDCOUNT - 1].Graphic = Fixed_To_Cardinal(
-      RECORDHEIGHT, Cardinal_To_Fixed(TIMER_SECOND, SpareTicks));
+      RECORDHEIGHT, Cardinal_To_Fixed(kTimerSecond, SpareTicks));
 
   /*
   **	Draw the bars across the performance record screen.
@@ -205,7 +205,7 @@ void LogicClass::AI() {
   */
   if (GameToPlay != GAME_NORMAL && CrateMaker && CrateTimer.Expired()) {
     Map.Place_Random_Crate();
-    CrateTimer = TICKS_PER_MINUTE * Random_Pick(7, 15);
+    CrateTimer = kTicksPerMinute * Random_Pick(7, 15);
   }
 
   /*

@@ -196,7 +196,7 @@ TriggerClass::~TriggerClass() {
     if (Houses.Ptr(Class->House)->Blockage) {
       Houses.Ptr(Class->House)->Blockage--;
     }
-    Houses.Ptr(Class->House)->BorrowedTime.Set(int64_t{TICKS_PER_SECOND} * 4);
+    Houses.Ptr(Class->House)->BorrowedTime.Set(int64_t{kTicksPerSecond} * 4);
   }
   ID = -1;
 }
@@ -353,9 +353,9 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
         MonoArray[DMONO_STRESS].Sub_Window(61, 1, 18, 11);
         MonoArray[DMONO_STRESS].Set_Cursor(0, 10);
         MonoArray[DMONO_STRESS].Printf(
-            "%02d:%02d:%02d-%s", Scen.ElapsedTime.Value() / TICKS_PER_HOUR,
-            (Scen.ElapsedTime.Value() % TICKS_PER_HOUR) / TICKS_PER_MINUTE,
-            (Scen.ElapsedTime.Value() % TICKS_PER_MINUTE) / TICKS_PER_SECOND,
+            "%02d:%02d:%02d-%s", Scen.ElapsedTime.Value() / kTicksPerHour,
+            (Scen.ElapsedTime.Value() % kTicksPerHour) / kTicksPerMinute,
+            (Scen.ElapsedTime.Value() % kTicksPerMinute) / kTicksPerSecond,
             Class->IniName);
         MonoArray[DMONO_STRESS].Sub_Window();
       }

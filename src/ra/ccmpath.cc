@@ -367,7 +367,7 @@ void Destroy_MPATH_Connection(int /*id*/, int /*error*/) {
 
   if (strlen(txt)) {
     Session.Messages.Add_Message(NULL, 0, txt, housep->RemapColor, TPF_TEXT,
-                                 Rule.MessageDelay * TICKS_PER_MINUTE);
+                                 Rule.MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
   }
 
@@ -402,7 +402,7 @@ void Destroy_MPATH_Connection(int /*id*/, int /*error*/) {
   if (Session.NumPlayers == 1) {
     sprintf(txt, "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Session.Messages.Add_Message(NULL, 0, txt, housep->RemapColor, TPF_TEXT,
-                                 Rule.MessageDelay * TICKS_PER_MINUTE);
+                                 Rule.MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
   }
 #endif

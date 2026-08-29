@@ -309,7 +309,7 @@ typedef struct {
       PlayerColorType Color;              // player's color or SIGNOFF ID
       uint32_t MinVersion;                // min version this game supports
       uint32_t MaxVersion;                // max version this game supports
-      char Scenario[DESCRIP_MAX];         // Scenario name
+      char Scenario[kDescripMax];         // Scenario name
       unsigned int Credits;               // player's credits
       unsigned int IsBases : 1;           // 1 = bases are allowed
       unsigned int IsTiberium : 1;        // 1 = tiberium is allowed
@@ -375,7 +375,7 @@ typedef struct GlobalPacketType {
       int CheatCheck;         // Unique ID of "rules.ini" file.
     } PlayerInfo;
     struct {
-      char Scenario[DESCRIP_MAX];  // Scenario Name
+      char Scenario[kDescripMax];  // Scenario Name
       unsigned int Credits;        // player's credits
       uint8_t IsBases : 1;         // 1 = bases are allowed
       uint8_t IsTiberium : 1;      // 1 = tiberium is allowed
@@ -460,7 +460,7 @@ class MultiMission {
   }  //	Implied "IsCounterstrike". No longer used. -ajw
 
  private:
-  char ScenarioDescription[DESCRIP_MAX];
+  char ScenarioDescription[kDescripMax];
   char Filename[_MAX_FNAME + _MAX_EXT];
   char Digest[32];
   bool IsOfficial;
@@ -476,7 +476,7 @@ typedef struct {
   int Ghosts;
   int UnitCount;
   int AIPlayers;                          // # of AI players allowed to be built
-  char ScenarioDescription[DESCRIP_MAX];  // Used on client machines only
+  char ScenarioDescription[kDescripMax];  // Used on client machines only
 } GameOptionsType;
 
 //---------------------------------------------------------------------------

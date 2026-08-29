@@ -573,9 +573,9 @@ class HouseClass {
   **	state of the base or other intermittent house related events.
   */
   enum SpeakDelayEnum {
-    SPEAK_DELAY = TICKS_PER_MINUTE * 2,
-    TEAM_DELAY = TICKS_PER_MINUTE / 10,
-    DAMAGE_DELAY = TICKS_PER_MINUTE
+    SPEAK_DELAY = kTicksPerMinute * 2,
+    TEAM_DELAY = kTicksPerMinute / 10,
+    DAMAGE_DELAY = kTicksPerMinute
   };
 
   /*

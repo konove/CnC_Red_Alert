@@ -2547,7 +2547,7 @@ void TechnoClass::AI() {
   *will perform *	the heal logic here.
   */
   if (Techno_Type_Class()->IsSelfHealing &&
-      Frame % (Rule.RepairRate * TICKS_PER_MINUTE) == 0 &&
+      Frame % (Rule.RepairRate * kTicksPerMinute) == 0 &&
       Health_Ratio() <= Rule.ConditionYellow) {
     Strength++;
     Mark(MARK_CHANGE);
@@ -2664,7 +2664,7 @@ void TechnoClass::Cloaking_AI() {
             CloakingDevice.Set_Rate(0);
             CloakingDevice.Set_Stage(0);  // re-start the stage counter
             Cloak = UNCLOAKED;
-            CloakDelay.Set(Rule.CloakDelay * TICKS_PER_MINUTE);
+            CloakDelay.Set(Rule.CloakDelay * kTicksPerMinute);
             Mark(MARK_CHANGE);
           }
           break;
@@ -4038,7 +4038,7 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
         if (!Scen.IsFadingColor) {
           Scen.IsFadingBW = false;
           Scen.IsFadingColor = true;
-          Scen.FadeTimer.Set(GRAYFADETIME);
+          Scen.FadeTimer.Set(kGrayFadeTime);
         }
         if (Map.IsTargettingMode == SPC_CHRONO2) {
           KeyNumType input = KN_RMOUSE;
@@ -5070,7 +5070,7 @@ void TechnoClass::Base_Is_Attacked(const TechnoClass* enemy) {
 
   if (risktotal > desired && enemy->Is_Foot()) {
     ((FootClass*)enemy)
-        ->BaseAttackTimer.Set(TICKS_PER_MINUTE * Rule.BaseDefenseDelay);
+        ->BaseAttackTimer.Set(kTicksPerMinute * Rule.BaseDefenseDelay);
   }
 }
 
@@ -6240,7 +6240,7 @@ int TechnoTypeClass::Get_Ownable() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoTypeClass::Time_To_Build() const {
-  return Cost * Rule.BuildSpeedBias * fixed(TICKS_PER_MINUTE, 1000);
+  return Cost * Rule.BuildSpeedBias * fixed(kTicksPerMinute, 1000);
 }
 
 /***********************************************************************************************

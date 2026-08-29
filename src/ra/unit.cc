@@ -515,7 +515,7 @@ void UnitClass::AI() {
   **	Mobile gap generators regenerate their gap every so often (just in
   *case).
   */
-  if (Class->IsGapper && !IsDriving && Frame % TICKS_PER_SECOND == 0) {
+  if (Class->IsGapper && !IsDriving && Frame % kTicksPerSecond == 0) {
     Shroud_Regen();
   }
 }
@@ -644,7 +644,7 @@ void UnitClass::Reload_AI() {
       if (Reload.IsFinished()) {
         Ammo++;
         if (Ammo < Class->MaxAmmo) {
-          Reload.Set(int64_t{TICKS_PER_SECOND} * 30);
+          Reload.Set(int64_t{kTicksPerSecond} * 30);
         }
         Mark(MARK_CHANGE);
       }
@@ -1563,7 +1563,7 @@ bool UnitClass::Try_To_Deploy() {
           if (IsMoebius && !Scen.IsFadingColor) {
             Scen.IsFadingBW = false;
             Scen.IsFadingColor = true;
-            Scen.FadeTimer.Set(GRAYFADETIME);
+            Scen.FadeTimer.Set(kGrayFadeTime);
           }
           delete this;
           return true;
@@ -2761,7 +2761,7 @@ int UnitClass::Mission_Harvest() {
   *harvest mission. This *	allows combat units to act "brain dead".
   */
   if (!Class->IsToHarvest) {
-    return TICKS_PER_SECOND * 30;
+    return kTicksPerSecond * 30;
   }
 
   /*
@@ -2820,7 +2820,7 @@ int UnitClass::Mission_Harvest() {
           Status = GOINGTOIDLE;
           IsUseless = true;
           House->IsTiberiumShort = true;
-          return TICKS_PER_SECOND * 7;
+          return kTicksPerSecond * 7;
         }
       } else {
         IsUseless = false;
@@ -2861,7 +2861,7 @@ int UnitClass::Mission_Harvest() {
         return 1;
       }
       return 1;
-      //			return(TICKS_PER_SECOND*Rule.OreDumpRate);
+      //			return(kTicksPerSecond*Rule.OreDumpRate);
 
     /*
     **	Find and head to refinery.
@@ -3894,7 +3894,7 @@ int UnitClass::Pip_Count() const {
   }
 
   if (*this == UNIT_CHRONOTANK) {
-    int fulldur = ChronoTankDuration * TICKS_PER_MINUTE;
+    int fulldur = ChronoTankDuration * kTicksPerMinute;
     return (fulldur - MoebiusCountDown.Value()) / (fulldur / 5);
   }
   return 0;
@@ -4216,7 +4216,7 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
       **	Possible reload timer set.
       */
       if (*this == UNIT_V2_LAUNCHER && Reload.IsFinished()) {
-        Reload.Set(int64_t{TICKS_PER_SECOND} * 30);
+        Reload.Set(int64_t{kTicksPerSecond} * 30);
       }
     }
   }

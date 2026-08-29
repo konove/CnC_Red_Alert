@@ -715,7 +715,7 @@ void ScoreClass::Presentation() {
                         WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
 
   unsigned minutes =
-      static_cast<unsigned>(ElapsedTime / (long)TIMER_MINUTE) + 1;
+      static_cast<unsigned>(ElapsedTime / (long)kTimerMinute) + 1;
 
   /*
   **	Determine leadership rating.
@@ -796,7 +796,7 @@ void ScoreClass::Presentation() {
   InterpolationPaletteChanged = true;
   Read_Interpolation_Palette(inter_pal);
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, inter_pal);
-  Fade_Palette_To(Palette, FADE_PALETTE_FAST, Call_Back);
+  Fade_Palette_To(Palette, kFadePaletteFast, Call_Back);
 
   Play_Sample(country4, 255, Options.Normalize_Sound(90));
 
@@ -1069,7 +1069,7 @@ void ScoreClass::Presentation() {
       ScoreObjs[i] = nullptr;
     }
   }
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_FAST, nullptr);
+  Fade_Palette_To(BlackPalette, kFadePaletteFast, nullptr);
   VisiblePage.Clear();
 
   Show_Mouse();
@@ -1077,7 +1077,7 @@ void ScoreClass::Presentation() {
 
   Theme.Queue_Song(THEME_NONE);
 
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_FAST, nullptr);
+  Fade_Palette_To(BlackPalette, kFadePaletteFast, nullptr);
   VisiblePage.Clear();
   Set_Palette(GamePalette);
 
@@ -2130,7 +2130,7 @@ void Multi_Score_Presentation() {
   Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
   Animate_Frame(anim, *PseudoSeenBuff, 1);
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "MULTSCOR.PAL");
-  Fade_Palette_To(Palette, FADE_PALETTE_FAST, Call_Back);
+  Fade_Palette_To(Palette, kFadePaletteFast, Call_Back);
 
   int frame = 1;
   while (frame < Get_Animation_Frame_Count(anim)) {
@@ -2201,7 +2201,7 @@ void Multi_Score_Presentation() {
 
   Theme.Queue_Song(THEME_NONE);
 
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_FAST, nullptr);
+  Fade_Palette_To(BlackPalette, kFadePaletteFast, nullptr);
   VisiblePage.Clear();
   Set_Palette(GamePalette);
 

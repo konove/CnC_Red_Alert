@@ -118,7 +118,7 @@ int AnimClass::Validate() const {
     int num;
 
     num = Anims.ID(this);
-    if (num < 0 || num >= ANIM_MAX) {
+    if (num < 0 || num >= kAnimMax) {
       Validate_Error("ANIM");
       return 0;
     }

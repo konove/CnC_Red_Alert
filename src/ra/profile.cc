@@ -119,7 +119,7 @@ unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
   char buffer[16];  // Integer staging buffer.
   unsigned card;
 
-  memset(buffer, '0', sizeof(buffer));  // MAX_ENTRY_SIZE = 15
+  memset(buffer, '0', sizeof(buffer));  // kMaxEntrySize = 15
   buffer[sizeof(buffer) - 1] = '\0';
 
   WWGetPrivateProfileString(section, entry, "0", buffer, sizeof(buffer),

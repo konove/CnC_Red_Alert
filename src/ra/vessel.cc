@@ -636,7 +636,7 @@ void VesselClass::AI() {
   // Re-stock the ammo of any on-board helicopters on an aircraft carrier.
   if (*this == VESSEL_CARRIER && How_Many()) {
     if (MoebiusCountDown.IsFinished()) {
-      MoebiusCountDown.Set(Rule.ReloadRate * TICKS_PER_MINUTE);
+      MoebiusCountDown.Set(Rule.ReloadRate * kTicksPerMinute);
       ObjectClass* obj = Attached_Object();
       while (obj) {
         long bogus;
@@ -1402,7 +1402,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         if (How_Many() == Class->Max_Passengers()) {
           LST_Close_Door();
         } else {
-          DoorShutCountDown.Set(TICKS_PER_SECOND);
+          DoorShutCountDown.Set(kTicksPerSecond);
         }
       }
       return RADIO_ATTACH;
@@ -1757,7 +1757,7 @@ int VesselClass::Mission_Unload() {
             **	Don't do anything if still in radio contact.
             */
             if (In_Radio_Contact()) {
-              return TICKS_PER_SECOND;
+              return kTicksPerSecond;
             }
 
             FootClass* passenger = Detach_Object();
@@ -2287,7 +2287,7 @@ bool VesselClass::Edge_Of_World_AI() {
  *=============================================================================================*/
 void VesselClass::Repair_AI() {
   if (IsSelfRepairing) {
-    if (Frame % (TICKS_PER_MINUTE * Rule.RepairRate) == 0) {
+    if (Frame % (kTicksPerMinute * Rule.RepairRate) == 0) {
       Mark(MARK_CHANGE);
       int cost = Class->Repair_Cost();
       int step = Class->Repair_Step();

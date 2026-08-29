@@ -95,7 +95,7 @@ int OverlayClass::Validate() const {
     int num;
 
     num = Overlays.ID(this);
-    if (num < 0 || num >= OVERLAY_MAX) {
+    if (num < 0 || num >= kOverlayMax) {
       Validate_Error("OVERLAY");
       return 0;
     }

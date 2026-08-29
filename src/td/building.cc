@@ -217,7 +217,7 @@ int BuildingClass::Validate() const {
     int num;
 
     num = Buildings.ID(this);
-    if (num < 0 || num >= BUILDING_MAX) {
+    if (num < 0 || num >= kBuildingMax) {
       Validate_Error("BUILDING");
       return 0;
     }
@@ -1217,7 +1217,7 @@ void BuildingClass::AI() {
         break;
 
       case 1:
-        PlacementDelay = int64_t{TICKS_PER_SECOND} * 3;
+        PlacementDelay = int64_t{kTicksPerSecond} * 3;
         break;
 
       case 2:
@@ -3612,9 +3612,9 @@ int BuildingClass::Mission_Guard() {
         }
         break;
     }
-    return TICKS_PER_SECOND * 5;
+    return kTicksPerSecond * 5;
   }
-  return TICKS_PER_SECOND / 2;
+  return kTicksPerSecond / 2;
 }
 
 /***********************************************************************************************
@@ -3903,7 +3903,7 @@ int BuildingClass::Mission_Attack() {
             As_Aircraft(TarCom)->Altitude == 0) {
           Assign_Target(kTargetNone);
           Status = SAM_LOCKING;
-          return TICKS_PER_SECOND;
+          return kTicksPerSecond;
         } else {
           if (!PrimaryFacing.Is_Rotating()) {
             DirType facing = Direction(TarCom);
@@ -3949,7 +3949,7 @@ int BuildingClass::Mission_Attack() {
             As_Aircraft(TarCom)->Altitude == 0) {
           Assign_Target(kTargetNone);
           Status = SAM_LOCKING;
-          return TICKS_PER_SECOND;
+          return kTicksPerSecond;
         } else {
           if (!PrimaryFacing.Is_Rotating()) {
             DirType facing = Direction(TarCom);
@@ -3980,7 +3980,7 @@ int BuildingClass::Mission_Attack() {
               if (error == FIRE_OK) {
                 Fire_At(TarCom, 0);
                 Status = SAM_LOCKING;
-                return TICKS_PER_SECOND * 3;
+                return kTicksPerSecond * 3;
               }
             }
           }
@@ -4010,7 +4010,7 @@ int BuildingClass::Mission_Attack() {
           Set_Rate(0);
           Set_Stage(0);
           Status = SAM_UNDERGROUND;
-          return TICKS_PER_SECOND;
+          return kTicksPerSecond;
         } else {
           if (Fetch_Rate() == 0) {
             Set_Rate(2);
@@ -4051,7 +4051,7 @@ int BuildingClass::Mission_Attack() {
         return 1;
     }
   }
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -4184,7 +4184,7 @@ int BuildingClass::Mission_Repair() {
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
             Distance(Contact_With_Whom()) < 0x0010) {
           Status = IDLE;
-          return TICKS_PER_SECOND / 4;
+          return kTicksPerSecond / 4;
         }
         break;
 
@@ -4232,16 +4232,16 @@ int BuildingClass::Mission_Repair() {
 #ifdef OBSOLETE
           } else {
             int time = Bound(
-                Fixed_To_Cardinal(TICKS_PER_SECOND, House->Power_Fraction()), 0,
-                TICKS_PER_SECOND);
-            time = (TICKS_PER_SECOND + (TICKS_PER_SECOND / 2)) - time;
+                Fixed_To_Cardinal(kTicksPerSecond, House->Power_Fraction()), 0,
+                kTicksPerSecond);
+            time = (kTicksPerSecond + (kTicksPerSecond / 2)) - time;
             return (time);
 #endif
           }
         }
         break;
     }
-    return TICKS_PER_SECOND / 2;
+    return kTicksPerSecond / 2;
   }
 
   if (*this == STRUCT_HELIPAD) {
@@ -4278,9 +4278,9 @@ int BuildingClass::Mission_Repair() {
             return 1;
           }
           int time = Bound(
-              Fixed_To_Cardinal(TICKS_PER_SECOND, House->Power_Fraction()), 0,
-              TICKS_PER_SECOND);
-          time = TICKS_PER_SECOND * 3 - time;
+              Fixed_To_Cardinal(kTicksPerSecond, House->Power_Fraction()), 0,
+              kTicksPerSecond);
+          time = kTicksPerSecond * 3 - time;
           IsReadyToCommence = false;
           return time;
         }
@@ -4288,7 +4288,7 @@ int BuildingClass::Mission_Repair() {
     }
     return 3;
   }
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -4360,7 +4360,7 @@ int BuildingClass::Mission_Missile() {
 
         if (bullet) {
           Status = LAUNCH_DOWN;
-          return 8 * TICKS_PER_SECOND;
+          return 8 * kTicksPerSecond;
         }
       }
         return 1;
@@ -4388,7 +4388,7 @@ int BuildingClass::Mission_Missile() {
         }
         if (bullet) {
           Status = DONE_LAUNCH;
-          return 7 * TICKS_PER_SECOND;
+          return 7 * kTicksPerSecond;
         }
       }
         return 1;
@@ -4666,10 +4666,10 @@ int BuildingClass::Mission_Unload() {
         }
         break;
     }
-    return TICKS_PER_SECOND / 2;
+    return kTicksPerSecond / 2;
   }
   Assign_Mission(MISSION_GUARD);
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************

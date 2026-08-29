@@ -183,35 +183,35 @@ bool Init_Game(int, char*[]) {
   **	Initialize the game object heaps.
   */
   DLOG(INFO) << "C&C95 - About to enter Units.Set_Heap";
-  Units.Set_Heap(UNIT_MAX);
+  Units.Set_Heap(kUnitMax);
   DLOG(INFO) << "C&C95 - About to enter Factories.Set_Heap";
-  Factories.Set_Heap(FACTORY_MAX);
+  Factories.Set_Heap(kFactoryMax);
   DLOG(INFO) << "C&C95 - About to enter Terrains.Set_Heap";
-  Terrains.Set_Heap(TERRAIN_MAX);
+  Terrains.Set_Heap(kTerrainMax);
   DLOG(INFO) << "C&C95 - About to enter Templates.Set_Heap";
-  Templates.Set_Heap(TEMPLATE_MAX);
+  Templates.Set_Heap(kTemplateMax);
   DLOG(INFO) << "C&C95 - About to enter Smudges.Set_Heap";
-  Smudges.Set_Heap(SMUDGE_MAX);
+  Smudges.Set_Heap(kSmudgeMax);
   DLOG(INFO) << "C&C95 - About to enter Overlays.Set_Heap";
-  Overlays.Set_Heap(OVERLAY_MAX);
+  Overlays.Set_Heap(kOverlayMax);
   DLOG(INFO) << "C&C95 - About to enter Infantry.Set_Heap";
-  Infantry.Set_Heap(INFANTRY_MAX);
+  Infantry.Set_Heap(kInfantryMax);
   DLOG(INFO) << "C&C95 - About to enter Bullets.Set_Heap";
-  Bullets.Set_Heap(BULLET_MAX);
+  Bullets.Set_Heap(kBulletMax);
   DLOG(INFO) << "C&C95 - About to enter Buildings.Set_Heap";
-  Buildings.Set_Heap(BUILDING_MAX);
+  Buildings.Set_Heap(kBuildingMax);
   DLOG(INFO) << "C&C95 - About to enter Anims.Set_Heap";
-  Anims.Set_Heap(ANIM_MAX);
+  Anims.Set_Heap(kAnimMax);
   DLOG(INFO) << "C&C95 - About to enter Aircraft.Set_Heap";
-  Aircraft.Set_Heap(AIRCRAFT_MAX);
+  Aircraft.Set_Heap(kAircraftMax);
   DLOG(INFO) << "C&C95 - About to enter Triggers.Set_Heap";
-  Triggers.Set_Heap(TRIGGER_MAX);
+  Triggers.Set_Heap(kTriggerMax);
   DLOG(INFO) << "C&C95 - About to enter TeamTypes.Set_Heap";
   TeamTypes.Set_Heap(kTeamTypeMax);
   DLOG(INFO) << "C&C95 - About to enter Teams.Set_Heap";
-  Teams.Set_Heap(TEAM_MAX);
+  Teams.Set_Heap(kTeamMax);
   DLOG(INFO) << "C&C95 - About to enter Houses.Set_Heap";
-  Houses.Set_Heap(HOUSE_MAX);
+  Houses.Set_Heap(kHouseMax);
 
   /*
   **	Initialize all the waypoints to invalid values.
@@ -843,7 +843,7 @@ bool Select_Game(bool fade) {
       VisiblePage.Clear();
       Play_Movie("INTRO2", THEME_NONE, false);
       BreakoutAllowed = true;
-      Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+      Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
       fade = true;
       VisiblePage.Clear();
     } else
@@ -977,7 +977,7 @@ bool Select_Game(bool fade) {
         memcpy(GamePalette, Palette, 768);
 
         if (fade) {
-          Fade_Palette_To(Palette, FADE_PALETTE_SLOW, Call_Back);
+          Fade_Palette_To(Palette, kFadePaletteSlow, Call_Back);
           fade = false;
         }
 
@@ -1143,16 +1143,16 @@ bool Select_Game(bool fade) {
 
 #ifdef DEMO
           Hide_Mouse();
-          Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+          Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
           Load_Title_Screen("PREPICK.PCX", &HidPage, Palette);
           HidPage.Blit(SeenBuff);
-          Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
+          Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
           Clear_KeyBuffer();
           while (!Check_Key_Num()) {
             Call_Back();
           }
           Get_Key_Num();
-          Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+          Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
           Show_Mouse();
 
           Scenario = 1;
@@ -1211,13 +1211,13 @@ bool Select_Game(bool fade) {
           Set_Palette(BlackPalette);
           Load_Title_Screen("DEMOPIC.PCX", &HidPage, Palette);
           HidPage.Blit(SeenBuff);
-          Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
+          Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
           Clear_KeyBuffer();
           while (!Check_Key()) {
             Call_Back();
           }
           Get_Key();
-          Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+          Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
           Show_Mouse();
           display = true;
           fade = true;
@@ -1468,76 +1468,76 @@ bool Select_Game(bool fade) {
 
           // verify existence of movie file before playing this sequence.
           if (CCFileClass("TRAILER.VQA").Is_Available()) {
-            Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
             VisiblePage.Clear();
             if (CCFileClass("ATTRACT2.CPS").Is_Available()) {
               CCFileClass f("ATTRACT2.CPS");
               Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
               SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
-              Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
+              Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
             }
             Clear_KeyBuffer();
-            count.Set(int64_t{TIMER_SECOND} * 3);
+            count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
             }
-            Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
 
             Play_Movie("TRAILER");  // Red Alert teaser.
           }
 
           if (CCFileClass("SIZZLE.VQA").Is_Available()) {
-            Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
             VisiblePage.Clear();
             if (CCFileClass("ATTRACT2.CPS").Is_Available()) {
               CCFileClass f("ATTRACT2.CPS");
               Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
               SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
-              Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
+              Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
             }
             Clear_KeyBuffer();
-            count.Set(int64_t{TIMER_SECOND} * 3);
+            count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
             }
-            Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
 
             Play_Movie("SIZZLE");  // Red Alert teaser.
           }
 
           if (CCFileClass("SIZZLE2.VQA").Is_Available()) {
-            Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
             VisiblePage.Clear();
             if (CCFileClass("ATTRACT2.CPS").Is_Available()) {
               CCFileClass f("ATTRACT2.CPS");
               Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
               SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
-              Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
+              Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
             }
             Clear_KeyBuffer();
-            count.Set(int64_t{TIMER_SECOND} * 3);
+            count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
             }
-            Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
 
             Play_Movie("SIZZLE2");  // Red Alert teaser.
           }
 
-          Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+          Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
           VisiblePage.Clear();
           if (CCFileClass("ATTRACT2.CPS").Is_Available()) {
             CCFileClass f("ATTRACT2.CPS");
             Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
             SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
-            Fade_Palette_To(Palette, FADE_PALETTE_MEDIUM, Call_Back);
+            Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
           }
           Clear_KeyBuffer();
-          count.Set(int64_t{TIMER_SECOND} * 3);
+          count.Set(int64_t{kTimerSecond} * 3);
           while (count.Time()) {
             Call_Back();
           }
-          Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+          Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
 
           Play_Movie("CC2TEASE");
           Show_Mouse();
@@ -1558,7 +1558,7 @@ bool Select_Game(bool fade) {
           Hide_Mouse();
 #endif
           Theme.Fade_Out();
-          Fade_Palette_To(BlackPalette, FADE_PALETTE_SLOW, nullptr);
+          Fade_Palette_To(BlackPalette, kFadePaletteSlow, nullptr);
 #ifdef JAPANESE
           VisiblePage.Clear();
 #endif
@@ -1707,7 +1707,7 @@ bool Select_Game(bool fade) {
     Hide_Mouse();
 
     if (selection != SEL_START_NEW_GAME) {
-      Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+      Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
       HiddenPage.Clear();
       VisiblePage.Clear();
     }
@@ -1750,7 +1750,7 @@ bool Select_Game(bool fade) {
   Hide_Mouse();
   WWMouse->Erase_Mouse(&HidPage, true);
 
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
+  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
   HiddenPage.Clear();
   VisiblePage.Clear();
   Set_Logic_Page(SeenBuff);

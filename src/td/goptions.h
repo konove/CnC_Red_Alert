@@ -68,7 +68,7 @@ class GameOptionsClass : public OptionsClass {
 #else
     BUTTON_WIDTH = 130,
 #endif
-    //			OBUTTON_HEIGHT=13,
+    //			kOButtonHeight=13,
     NUMBER_OF_BUTTONS = 6,
     CAPTION_Y_POS = 5,
     BUTTON_Y = 21,

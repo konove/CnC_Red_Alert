@@ -2053,7 +2053,7 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
     if (!Session.Messages.Concat_Message(
             serial_packet->Name, serial_packet->ID,
             serial_packet->Message.Message,
-            Rule.MessageDelay * TICKS_PER_MINUTE)) {
+            Rule.MessageDelay * kTicksPerMinute)) {
       char* ptr = &serial_packet->Message.Message[0];
       if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
         Enable_Secret_Units();
@@ -2063,7 +2063,7 @@ static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
           serial_packet->Message.Message,
           static_cast<PlayerColorType>(serial_packet->ID),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-          Rule.MessageDelay * TICKS_PER_MINUTE);
+          Rule.MessageDelay * kTicksPerMinute);
 
       Sound_Effect(VOC_INCOMING_MESSAGE);
     }

@@ -788,8 +788,8 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         if (building->IronCurtainCountDown.IsFinished() &&
             building->Mission != MISSION_DECONSTRUCTION) {
           building->IsGoingToBlow = true;
-          building->Clicked_As_Target(Rule.C4Delay * TICKS_PER_MINUTE / 2);
-          building->CountDown.Set(Rule.C4Delay * TICKS_PER_MINUTE);
+          building->Clicked_As_Target(Rule.C4Delay * kTicksPerMinute / 2);
+          building->CountDown.Set(Rule.C4Delay * kTicksPerMinute);
           building->WhomToRepay = As_Target();
         }
         NavCom = TARGET_NONE;
@@ -1698,8 +1698,8 @@ bool InfantryClass::Random_Animate() {
   assert(IsActive);
 
   if (Is_Ready_To_Random_Animate()) {
-    IdleTimer.Set(Random_Pick(Rule.RandomAnimateTime * (TICKS_PER_MINUTE / 2),
-                              Rule.RandomAnimateTime * (TICKS_PER_MINUTE * 2)));
+    IdleTimer.Set(Random_Pick(Rule.RandomAnimateTime * (kTicksPerMinute / 2),
+                              Rule.RandomAnimateTime * (kTicksPerMinute * 2)));
 
     /*
     **	Scared infantry will always follow the golden rule of civilians;
@@ -3755,7 +3755,7 @@ void InfantryClass::Movement_AI() {
         **	than the distance to the target.
         */
         int d = Lepton_To_Cell(Distance(NavCom));
-        if (d < CONQUER_PATH_MAX) {
+        if (d < kConquerPathMax) {
           Path[d] = FACING_NONE;
         }
 

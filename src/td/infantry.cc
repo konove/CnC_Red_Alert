@@ -213,7 +213,7 @@ int InfantryClass::Validate() const {
     int num;
 
     num = Infantry.ID(this);
-    if (num < 0 || num >= INFANTRY_MAX) {
+    if (num < 0 || num >= kInfantryMax) {
       Validate_Error("INFANTRY");
       return 0;
     }
@@ -1366,7 +1366,7 @@ void InfantryClass::AI() {
         **	than the distance to the target.
         */
         int d = Lepton_To_Cell(Distance(NavCom));
-        if (d < CONQUER_PATH_MAX) {
+        if (d < kConquerPathMax) {
           Path[d] = FACING_NONE;
         }
 
@@ -3160,7 +3160,7 @@ int InfantryClass::Made_A_Kill() {
   Validate();
   if (*this == INFANTRY_RAMBO || Random_Pick(0, 5) < Kills) {
     IsStoked = true;
-    Comment = int64_t{TICKS_PER_SECOND} * 2;
+    Comment = int64_t{kTicksPerSecond} * 2;
   }
   return FootClass::Made_A_Kill();
 }

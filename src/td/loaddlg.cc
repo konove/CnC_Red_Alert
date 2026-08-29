@@ -593,7 +593,7 @@ void LoadOptionsClass::Clear_List(ListClass* list) {
  *=============================================================================================*/
 void LoadOptionsClass::Fill_List(ListClass* list) {
   FileEntryClass* fdata;  // for adding entries to 'Files'
-  char descr[DESCRIP_MAX];
+  char descr[kDescripMax];
   unsigned scenario;  // scenario #
   HousesType house;   // house
   FindFileState find_state;

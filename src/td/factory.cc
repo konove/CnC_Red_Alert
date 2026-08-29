@@ -97,7 +97,7 @@ int FactoryClass::Validate() const {
     int num;
 
     num = Factories.ID(this);
-    if (num < 0 || num >= FACTORY_MAX) {
+    if (num < 0 || num >= kFactoryMax) {
       Validate_Error("FACTORY");
       return 0;
     }
@@ -509,7 +509,7 @@ bool FactoryClass::Start() {
       if (Object) {
         time = Object->Class_Of().Time_To_Build(House->Class->House);
       } else {
-        time = TICKS_PER_MINUTE * 5;
+        time = kTicksPerMinute * 5;
       }
 
       int frac = House->Power_Fraction();

@@ -2659,26 +2659,24 @@ typedef enum TextPrintType {
 *these *	maximums never exceed the maximum value for the "ID" element in
 *the *	object class.
 */
-#define BUILDING_MAX 500             // Lasts for hours.
-#define HOUSE_MAX (HOUSE_COUNT + 1)  // Lasts entire scenario.
-#define INFANTRY_MAX 500             // Lasts for minutes.
-#define UNIT_MAX 500                 // Lasts for minutes.
-#define VESSEL_MAX 100               // Lasts for minutes.
-#define TEAMTYPE_MAX 60              // Lasts forever.
+inline constexpr int kBuildingMax = 500;             // Lasts for hours.
+inline constexpr int kHouseMax = HOUSE_COUNT + 1;    // Lasts entire scenario.
+inline constexpr int kInfantryMax = 500;             // Lasts for minutes.
+inline constexpr int kUnitMax = 500;                 // Lasts for minutes.
+inline constexpr int kVesselMax = 100;               // Lasts for minutes.
+inline constexpr int kTeamTypeMax = 60;              // Lasts forever.
 
-// Save filename description.
-#define DESCRIP_MAX 44  // 40 chars + CR + LF + CTRL-Z + NULL
+// Save filename description: 40 chars + CR + LF + CTRL-Z + NULL.
+inline constexpr int kDescripMax = 44;
 
-#define CONQUER_PATH_MAX 12  // Number of cells to look ahead for movement.
+// Number of cells to look ahead for movement.
+inline constexpr int kConquerPathMax = 12;
 
-#define EACH_INFANTRY_MAX \
-  (INFANTRY_MAX / 5)  // Default maximum any one player can have.
-#define EACH_UNIT_MAX \
-  (UNIT_MAX / 5)  // Default maximum any one player can have.
-#define EACH_BUILDING_MAX \
-  (BUILDING_MAX / 5)  // Default maximum any one player can build.
-#define EACH_VESSEL_MAX \
-  (VESSEL_MAX / 5)  // Default maximum any one player can build.
+// Default maximum any one player can have or build.
+inline constexpr int kEachInfantryMax = kInfantryMax / 5;
+inline constexpr int kEachUnitMax = kUnitMax / 5;
+inline constexpr int kEachBuildingMax = kBuildingMax / 5;
+inline constexpr int kEachVesselMax = kVesselMax / 5;
 
 /**********************************************************************
 **	Terrain can be of these different classes. At any point in the game
@@ -2851,23 +2849,26 @@ inline DirType operator+(DirType f1, int f2) {
 **	Timer constants. These are used when setting the countdown timer.
 **	Note that this is based upon a timer that ticks every 60th of a second.
 */
-// The derived durations are computed in int64_t: they feed timer Set() calls
-// and timer constructors, all of which take int64_t, so computing them in int
-// and widening afterwards is what bugprone-implicit-widening-of-multiplication
-// -result flags. The base tick rates stay int -- they are also divided into
-// int quantities (FADE_PALETTE_*, frame delays).
-#define TIMER_SECOND 60
-#define TIMER_MINUTE (int64_t{TIMER_SECOND} * 60)
+// Rate of the system timer, in ticks per second.
+inline constexpr int kTimerSecond = 60;
 
-#define FADE_PALETTE_FAST (TIMER_SECOND / 8)
-#define FADE_PALETTE_MEDIUM (TIMER_SECOND / 4)
-#define FADE_PALETTE_SLOW (TIMER_SECOND / 2)
+// Fade durations, in system timer ticks.
+inline constexpr int kFadePaletteFast = kTimerSecond / 8;
+inline constexpr int kFadePaletteMedium = kTimerSecond / 4;
+inline constexpr int kFadePaletteSlow = kTimerSecond / 2;
 
-#define TICKS_PER_SECOND 15
-#define TICKS_PER_MINUTE (int64_t{TICKS_PER_SECOND} * 60)
-#define TICKS_PER_HOUR (TICKS_PER_MINUTE * 60)
+// Rate of the game logic clock, in ticks per second.
+inline constexpr int kTicksPerSecond = 15;
 
-#define GRAYFADETIME (int64_t{1} * TICKS_PER_SECOND)
+// The derived durations are int64_t because that is what the timer classes
+// store; computing them in int and widening afterwards is what
+// bugprone-implicit-widening-of-multiplication-result flags. The two base rates
+// stay int: they are also divided into int quantities (the fade durations
+// above, frame delays) and would otherwise push narrowing into those.
+inline constexpr int64_t kTimerMinute = int64_t{kTimerSecond} * 60;
+inline constexpr int64_t kTicksPerMinute = int64_t{kTicksPerSecond} * 60;
+inline constexpr int64_t kTicksPerHour = kTicksPerMinute * 60;
+inline constexpr int64_t kGrayFadeTime = kTicksPerSecond;
 
 /****************************************************************************
 ** Each vehicle is give a speed rating. This is a combination of not only

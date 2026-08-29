@@ -618,7 +618,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Fade to black.
   */
-  BlackPalette.Set(TIMER_SECOND * 2, Call_Back);
+  BlackPalette.Set(kTimerSecond * 2, Call_Back);
 
   /*
   ** Load the reference palette for the font.
@@ -810,7 +810,7 @@ void Show_Who_Was_Responsible() {
 
   if (key == KN_ESC) {
     Theme.Fade_Out();
-    BlackPalette.Set(TIMER_SECOND * 2, Call_Back);
+    BlackPalette.Set(kTimerSecond * 2, Call_Back);
   } else {
     /*
     ** Wait for the picture to fade down

@@ -185,7 +185,7 @@
 **	Cloaking control values.
 */
 #define MAX_UNCLOAK_STAGE 38
-#define UNCLOAK_VIS_TIME (1 * TICKS_PER_SECOND)
+#define UNCLOAK_VIS_TIME (1 * kTicksPerSecond)
 
 /***************************************************************************
 **	Which shape to use depending on which facing is controlled by these

@@ -2462,7 +2462,7 @@ void WOL_GameSetupDialog::SendParams() {
 
   SetGParamsToCurrent(GParamsLastSent);
 
-  char szSend[130 + DESCRIP_MAX + 12 + 32 + 100];
+  char szSend[130 + kDescripMax + 12 + 32 + 100];
   sprintf(szSend,
           "%01u "
           "%06u "

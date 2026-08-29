@@ -101,8 +101,8 @@ bool CrateClass::Create_Crate(CELL cell) {
   */
   if (Put_Crate(cell)) {
     Cell = cell;
-    CrateTimer.Set(Random_Pick(Rule.CrateTime * (TICKS_PER_MINUTE / 2),
-                               Rule.CrateTime * (TICKS_PER_MINUTE * 2)));
+    CrateTimer.Set(Random_Pick(Rule.CrateTime * (kTicksPerMinute / 2),
+                               Rule.CrateTime * (kTicksPerMinute * 2)));
     CrateTimer.Start();
     return true;
   }

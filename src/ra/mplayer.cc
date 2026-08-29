@@ -569,14 +569,14 @@ void Computer_Message() {
         Session.Messages.Add_Message(
             Text_String(TXT_COMPUTER), 0, Session.LastMessage, color,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            Rule.MessageDelay * TICKS_PER_MINUTE);
+            Rule.MessageDelay * kTicksPerMinute);
       }
     } else {
       Session.Messages.Add_Message(
           Text_String(TXT_COMPUTER), 0,
           Text_String(TXT_COMP_MSG1 + Random_Pick(0, 12)), color,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-          Rule.MessageDelay * TICKS_PER_MINUTE);
+          Rule.MessageDelay * kTicksPerMinute);
     }
 
     return;

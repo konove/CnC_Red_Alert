@@ -122,7 +122,7 @@ int TeamClass::Validate() const {
     int num;
 
     num = Teams.ID(this);
-    if (num < 0 || num >= TEAM_MAX) {
+    if (num < 0 || num >= kTeamMax) {
       Validate_Error("TEAM");
       return 0;
     }
@@ -493,7 +493,7 @@ void TeamClass::AI() {
     if (CurrentMission < Class->MissionCount) {
       const TeamMissionStruct* mission = &Class->MissionList[CurrentMission];
 
-      TimeOut = mission->Argument * (TICKS_PER_MINUTE / 10);
+      TimeOut = mission->Argument * (kTicksPerMinute / 10);
       Target = kTargetNone;
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
@@ -1485,7 +1485,7 @@ void TeamClass::Suspend_Teams(int priority) {
         team->Remove(team->Member);
       }
       team->IsAltered = true;
-      team->SuspendTimer = TICKS_PER_MINUTE * 2;
+      team->SuspendTimer = kTicksPerMinute * 2;
       team->Suspended = true;
     }
   }

@@ -49,7 +49,7 @@
 /*
 ********************************** Defines **********************************
 */
-// #define	TEAMTYPE_MAX			20			// max #
+// #define	kTeamTypeMax			20			// max #
 // of different team types
 
 /*

@@ -173,7 +173,7 @@ int AircraftClass::Validate() const {
     int num;
 
     num = Aircraft.ID(this);
-    if (num < 0 || num >= AIRCRAFT_MAX) {
+    if (num < 0 || num >= kAircraftMax) {
       Validate_Error("AIRCRAFT");
       return 0;
     }
@@ -693,7 +693,7 @@ int AircraftClass::Mission_Hunt() {
       return 1;
     }
   }
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -754,7 +754,7 @@ void AircraftClass::AI() {
   */
   if (IsOwnedByPlayer && Class->SightRange && SightTimer.Expired()) {
     Map.Sight_From(Coord_Cell(Coord), Class->SightRange, false);
-    SightTimer = TICKS_PER_SECOND;
+    SightTimer = kTicksPerSecond;
   }
 
   /*
@@ -1067,7 +1067,7 @@ int AircraftClass::Mission_Unload() {
             */
             PrimaryFacing.Set_Desired(Random_Pick(DIR_N, DIR_MAX));
             SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
-            return TICKS_PER_SECOND * 3;
+            return kTicksPerSecond * 3;
           }
         } else {
           Status = FLY_TO_AIRSTRIP;
@@ -1396,7 +1396,7 @@ int AircraftClass::Mission_Retreat() {
       Altitude++;
       return 3;
     }
-    return TICKS_PER_SECOND * 10;
+    return kTicksPerSecond * 10;
   }
 
   enum { TAKE_OFF, FACE_MAP_EDGE, KEEP_FLYING };
@@ -1440,7 +1440,7 @@ int AircraftClass::Mission_Retreat() {
     default:
       break;
   }
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -1636,7 +1636,7 @@ int AircraftClass::Mission_Move() {
       */
       case FLY_TO_AIRSTRIP:
         if (!Target_Legal(NavCom) || !In_Radio_Contact()) {
-          return TICKS_PER_SECOND;
+          return kTicksPerSecond;
         } else {
           /*
           **	If, for some reason, there is no cargo, then don't stick around.
@@ -1669,7 +1669,7 @@ int AircraftClass::Mission_Move() {
         return 1;
 
       case BUG_OUT:
-        return TICKS_PER_SECOND;
+        return kTicksPerSecond;
     }
     return 5;
   }
@@ -1760,7 +1760,7 @@ int AircraftClass::Mission_Move() {
       return 1;
   }
 
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -2404,7 +2404,7 @@ int AircraftClass::Mission_Attack() {
       break;
   }
 
-  return TICKS_PER_SECOND / 2;
+  return kTicksPerSecond / 2;
 }
 
 /***********************************************************************************************
@@ -3308,7 +3308,7 @@ int AircraftClass::Mission_Guard() {
       if (Target_Legal(NavCom)) {
         Assign_Mission(MISSION_MOVE);
       }
-      return TICKS_PER_SECOND;
+      return kTicksPerSecond;
     }
 
     if (Class->Primary == WEAPON_NONE) {
@@ -3320,7 +3320,7 @@ int AircraftClass::Mission_Guard() {
     return 1;
   }
   if (House->IsHuman) {
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
 
   /*
@@ -3329,7 +3329,7 @@ int AircraftClass::Mission_Guard() {
   */
   if (GameToPlay == GAME_NORMAL && Scenario == 7 &&
       House->Class->House == HOUSE_GOOD) {
-    return TICKS_PER_SECOND * 20;
+    return kTicksPerSecond * 20;
   }
 
   /*
@@ -3366,7 +3366,7 @@ int AircraftClass::Mission_Guard() {
         return 1;
       }
     }
-    //		return(TICKS_PER_SECOND*3);
+    //		return(kTicksPerSecond*3);
   }
 
   /*
@@ -3381,7 +3381,7 @@ int AircraftClass::Mission_Guard() {
   **	Transport helicopters don't really do anything but just sit there.
   */
   if (Class->Primary == WEAPON_NONE) {
-    return TICKS_PER_SECOND * 3;
+    return kTicksPerSecond * 3;
   }
 
   /*
@@ -3390,7 +3390,7 @@ int AircraftClass::Mission_Guard() {
   */
   if (Altitude == 0 && !In_Radio_Contact()) {
     Scatter(0, true);
-    return TICKS_PER_SECOND * 3;
+    return kTicksPerSecond * 3;
   }
 
   return FootClass::Mission_Guard();
@@ -3419,12 +3419,12 @@ int AircraftClass::Mission_Guard_Area() {
     return 1;
   }
   if (House->IsHuman) {
-    return TICKS_PER_SECOND;
+    return kTicksPerSecond;
   }
 
   if (Altitude == 0 && !In_Radio_Contact()) {
     Scatter(0, true);
-    return TICKS_PER_SECOND * 3;
+    return kTicksPerSecond * 3;
   }
 
   if (Target_Legal(TarCom)) {

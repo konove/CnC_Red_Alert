@@ -871,7 +871,7 @@ void Destroy_Null_Connection(int id, int error) {
         nullptr, 0, txt,
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : housep->RemapColor,
-        TPF_TEXT, Rule.MessageDelay * TICKS_PER_MINUTE);
+        TPF_TEXT, Rule.MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
   }
 
@@ -905,7 +905,7 @@ void Destroy_Null_Connection(int id, int error) {
         nullptr, 0, txt,
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : housep->RemapColor,
-        TPF_TEXT, Rule.MessageDelay * TICKS_PER_MINUTE);
+        TPF_TEXT, Rule.MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
   }
 }

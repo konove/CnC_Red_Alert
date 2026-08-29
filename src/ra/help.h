@@ -137,7 +137,7 @@ class HelpClass : public TabClass {
   static short OverlapList[60];
 
   enum HelpClassEnum {
-    HELP_DELAY = TIMER_SECOND *
+    HELP_DELAY = kTimerSecond *
                  1,  // The countdown timer delay before help text pops up.
     Y_OFFSET = 0,    // The Y pixel offset from cursor for help text print.
     X_OFFSET = 12    // The X pixel offset from cursor for help text print.

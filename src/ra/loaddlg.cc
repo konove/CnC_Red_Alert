@@ -209,7 +209,7 @@ int LoadOptionsClass::Process() {
   int caption;                         // dialog caption
   int game_idx = 0;                    // index of game to save/load/etc
   int game_num = 0;                    // file number of game to load/save/etc
-  char game_descr[DESCRIP_MAX] = {0};  // save-game description
+  char game_descr[kDescripMax] = {0};  // save-game description
   char fname[_MAX_FNAME + _MAX_EXT];   // for generating filename to delete
   int rc;                              // return code
 
@@ -421,7 +421,7 @@ int LoadOptionsClass::Process() {
           */
           Timer<SystemTickSource> timer;
           //					timer.Start();
-          timer.Set(int64_t{TICKS_PER_SECOND} * 4);
+          timer.Set(int64_t{kTicksPerSecond} * 4);
 
           WWMessageBox().Process(TXT_LOADING, TXT_NONE);
           Theme.Fade_Out();
@@ -487,7 +487,7 @@ int LoadOptionsClass::Process() {
           }
           Timer<SystemTickSource> timer;
           //					timer.Start();
-          timer.Set(int64_t{TICKS_PER_SECOND} * 4);
+          timer.Set(int64_t{kTicksPerSecond} * 4);
 
           WWMessageBox().Process(TXT_GAME_WAS_SAVED, TXT_NONE, TXT_NONE);
 
@@ -638,7 +638,7 @@ void LoadOptionsClass::Clear_List(ListClass* list) {
  *=============================================================================================*/
 void LoadOptionsClass::Fill_List(ListClass* list) {
   FileEntryClass* fdata;  // for adding entries to 'Files'
-  char descr[DESCRIP_MAX + 32];
+  char descr[kDescripMax + 32];
   unsigned scenario;  // scenario #
   HousesType house;   // house
   FindFileState find_state;

@@ -92,7 +92,7 @@ int SmudgeClass::Validate() const {
     int num;
 
     num = Smudges.ID(this);
-    if (num < 0 || num >= SMUDGE_MAX) {
+    if (num < 0 || num >= kSmudgeMax) {
       Validate_Error("SMUDGE");
       return 0;
     }

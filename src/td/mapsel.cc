@@ -614,7 +614,7 @@ void Map_Selection() {
   Read_Interpolation_Palette("MAP_LOCL.PAL");
 
   Play_Sample(appear1, 255, Options.Normalize_Sound(110));
-  Fade_Palette_To(localpalette, FADE_PALETTE_MEDIUM, Call_Back);
+  Fade_Palette_To(localpalette, kFadePaletteMedium, Call_Back);
   for (int i = 1; i < Get_Animation_Frame_Count(greyearth); i++) {
     Call_Back_Delay(4);
     Animate_Frame(greyearth, *PseudoSeenBuff, i);
@@ -1154,7 +1154,7 @@ void Map_Selection() {
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
     Read_Interpolation_Palette("MAP_LOC2.PAL");
     Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "MAP_LOC2.PAL");
-    Fade_Palette_To(localpalette, FADE_PALETTE_MEDIUM, Call_Back);
+    Fade_Palette_To(localpalette, kFadePaletteMedium, Call_Back);
 
     countryshape = nullptr;
 
@@ -1196,7 +1196,7 @@ void Map_Selection() {
   }
 
   Theme.Queue_Song(THEME_NONE);
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, nullptr);
+  Fade_Palette_To(BlackPalette, kFadePaletteMedium, nullptr);
   delete europe;
   delete[] progresspalette;
   delete[] grey2palette;

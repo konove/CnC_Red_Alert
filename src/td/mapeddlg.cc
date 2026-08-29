@@ -2364,7 +2364,7 @@ int MapEditClass::Select_Trigger() {
   ........................................................................*/
   RedrawType display;                       // requested redraw level
   bool process;                             // loop while true
-  char* trigtext[TRIGGER_MAX + 1] = {};     // text for defined triggers
+  char* trigtext[kTriggerMax + 1] = {};     // text for defined triggers
   KeyNumType input;                         // user input
   bool edit_trig = false;                   // true = user wants to edit
   bool new_trig = false;                    // true = user wants to new

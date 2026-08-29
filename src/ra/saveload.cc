@@ -130,7 +130,7 @@
 ********************************** Defines **********************************
 */
 #define SAVEGAME_VERSION                                                       \
-  (DESCRIP_MAX + 0x01000006 +                                                  \
+  (kDescripMax + 0x01000006 +                                                  \
    (sizeof(AircraftClass) + sizeof(AircraftTypeClass) + sizeof(AnimClass) +    \
     sizeof(AnimTypeClass) + sizeof(BaseClass) + sizeof(BuildingClass) +        \
     sizeof(BuildingTypeClass) + sizeof(BulletClass) +                          \
@@ -450,11 +450,11 @@ bool Save_Game(int id, const char* descr, bool) {
   **	which may or may not be a HousesType number; so, saving 'house'
   **	here ensures we can always pull out the house for this file.)
   */
-  char descr_buf[DESCRIP_MAX];
+  char descr_buf[kDescripMax];
   memset(descr_buf, '\0', sizeof(descr_buf));
   sprintf(descr_buf, "%s\r\n", descr);    // put CR-LF after text
   descr_buf[strlen(descr_buf) + 1] = 26;  // put CTRL-Z after nullptr
-  fpipe.Put(descr_buf, DESCRIP_MAX);
+  fpipe.Put(descr_buf, kDescripMax);
 
   fpipe.Put(&scenario, sizeof(scenario));
 
@@ -553,7 +553,7 @@ bool Load_Game(int id) {
   int i;
   unsigned scenario;
   HousesType house;
-  char descr_buf[DESCRIP_MAX];
+  char descr_buf[kDescripMax];
   int load_net = 0;  // 1 = save network/modem game
 
   /*
@@ -582,7 +582,7 @@ bool Load_Game(int id) {
   /*
   **	Read & discard the save-game's header info
   */
-  if (fstraw.Get(descr_buf, DESCRIP_MAX) != DESCRIP_MAX) {
+  if (fstraw.Get(descr_buf, kDescripMax) != kDescripMax) {
     return false;
   }
 
@@ -997,7 +997,7 @@ bool Load_Game(int id) {
       ** Find out if the CD in the current drive is the Aftermath disc.
       */
       if (Get_CD_Index(CCFileClass::Get_CD_Drive(), 60) != 3) {
-        GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
+        GamePalette.Set(kFadePaletteFast, Call_Back);
         // force Aftermath CD in drive.
         if (!Force_CD_Available(3)) {
           Emergency_Exit(EXIT_FAILURE);
@@ -1404,7 +1404,7 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
                        HousesType* housep) {
   char name[_MAX_FNAME + _MAX_EXT];
   unsigned long version;
-  char descr_buf[DESCRIP_MAX];
+  char descr_buf[kDescripMax];
 
   /*
   **	Generate the filename to load
@@ -1417,7 +1417,7 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
   /*
   **	Read in the description, scenario #, and the house
   */
-  if (straw.Get(descr_buf, DESCRIP_MAX) != DESCRIP_MAX) {
+  if (straw.Get(descr_buf, kDescripMax) != kDescripMax) {
     return false;
   }
 

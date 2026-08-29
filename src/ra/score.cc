@@ -388,7 +388,7 @@ void ScoreClass::Presentation() {
   */
 
   unsigned minutes =
-      static_cast<unsigned>(ElapsedTime / (long)TIMER_MINUTE) + 1;
+      static_cast<unsigned>(ElapsedTime / (long)kTimerMinute) + 1;
 
   // Load up the shapes for the Nod score screen
   yellowptr = MFCD::Retrieve("BAR3BHR.SHP");
@@ -403,7 +403,7 @@ void ScoreClass::Presentation() {
   Load_Title_Screen(ScreenNames[house], &HidPage, ScorePalette);
   Increase_Palette_Luminance(ScorePalette, 30, 30, 30, 63);
   HidPage.Blit(SeenPage);
-  ScorePalette.Set(FADE_PALETTE_FAST, Call_Back);
+  ScorePalette.Set(kFadePaletteFast, Call_Back);
   Play_Sample(country4, 255, Options.Normalize_Volume(150));
 
   /*
@@ -716,13 +716,13 @@ void ScoreClass::Presentation() {
       ScoreObjs[i] = nullptr;
     }
   }
-  BlackPalette.Set(FADE_PALETTE_FAST, nullptr);
+  BlackPalette.Set(kFadePaletteFast, nullptr);
   VisiblePage.Clear();
   Show_Mouse();
 
   Theme.Queue_Song(THEME_NONE);
 
-  BlackPalette.Set(FADE_PALETTE_FAST, nullptr);
+  BlackPalette.Set(kFadePaletteFast, nullptr);
   VisiblePage.Clear();
   GamePalette.Set();
 
@@ -1539,7 +1539,7 @@ void Call_Back_Delay(int time) {
   do {
     if (callbackcd.IsFinished()) {
       Call_Back();
-      callbackcd.Set(TIMER_SECOND / 4);
+      callbackcd.Set(kTimerSecond / 4);
     } else {
       if (SoundType) {
         Sound_Callback();
@@ -1609,7 +1609,7 @@ void Multi_Score_Presentation() {
     memset(&PaletteInterpolationTable[x][0], x, 256);
   }
   Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
-  ScorePalette.Set(FADE_PALETTE_FAST, Call_Back);
+  ScorePalette.Set(kFadePaletteFast, Call_Back);
 
   int frame = 1;
   while (frame < Get_Animation_Frame_Count(anim)) {
@@ -1707,7 +1707,7 @@ void Multi_Score_Presentation() {
 
   Theme.Queue_Song(THEME_NONE);
 
-  BlackPalette.Set(FADE_PALETTE_FAST, nullptr);
+  BlackPalette.Set(kFadePaletteFast, nullptr);
   SeenPage.Clear();
   GamePalette.Set();
   Set_Font(oldfont);

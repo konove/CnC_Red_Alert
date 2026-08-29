@@ -89,7 +89,7 @@ void Choose_Side()  //	ajw - In RA, all this did was play a movie.
       }
 
       Hide_Mouse();
-      BlackPalette.Set(FADE_PALETTE_SLOW);
+      BlackPalette.Set(kFadePaletteSlow);
       SeenPage.Clear();
     }
 #endif

@@ -130,7 +130,7 @@ class ScenarioClass {
   /*
   **	Description of the scenario.
   */
-  char Description[DESCRIP_MAX];
+  char Description[kDescripMax];
 
   /*
   **	The filename of the introduction movie.

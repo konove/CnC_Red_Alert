@@ -97,7 +97,7 @@
 ********************************** Defines **********************************
 */
 #define SAVEGAME_VERSION                                                       \
-  (DESCRIP_MAX + 0x01000003 +                                                  \
+  (kDescripMax + 0x01000003 +                                                  \
    (sizeof(AircraftClass) + sizeof(AircraftTypeClass) + sizeof(AnimClass) +    \
     sizeof(AnimTypeClass) + sizeof(BuildingClass) +                            \
     sizeof(BuildingTypeClass) + sizeof(BulletClass) +                          \
@@ -156,7 +156,7 @@ bool Save_Game(int id, char* descr) {
   unsigned long version;
   unsigned scenario;
   HousesType house;
-  char descr_buf[DESCRIP_MAX];
+  char descr_buf[kDescripMax];
 
   scenario = Scenario;              // get current scenario #
   house = PlayerPtr->Class->House;  // get current house
@@ -191,7 +191,7 @@ bool Save_Game(int id, char* descr) {
   sprintf(descr_buf, "%s\r\n", descr);    // put CR-LF after text
   descr_buf[strlen(descr_buf) + 1] = 26;  // put CTRL-Z after NULL
 
-  if (file.Write(descr_buf, DESCRIP_MAX) != DESCRIP_MAX) {
+  if (file.Write(descr_buf, kDescripMax) != kDescripMax) {
     file.Close();
     return false;
   }
@@ -340,7 +340,7 @@ bool Load_Game(int id) {
   unsigned long version;
   unsigned scenario;
   HousesType house;
-  char descr_buf[DESCRIP_MAX];
+  char descr_buf[kDescripMax];
 
   /*
   **	Generate the filename to load
@@ -357,7 +357,7 @@ bool Load_Game(int id) {
   /*
   **	Read & discard the save-game's header info
   */
-  if (file.Read(descr_buf, DESCRIP_MAX) != DESCRIP_MAX) {
+  if (file.Read(descr_buf, kDescripMax) != kDescripMax) {
     file.Close();
     return false;
   }
@@ -1024,7 +1024,7 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
   RawFileClass file;
   char name[_MAX_FNAME + _MAX_EXT];
   unsigned long version;
-  char descr_buf[DESCRIP_MAX];
+  char descr_buf[kDescripMax];
 
   /*
   **	Generate the filename to load
@@ -1038,13 +1038,13 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
     /*
     **	Read in the description, scenario #, and the house
     */
-    if (file.Read(descr_buf, DESCRIP_MAX) != DESCRIP_MAX) {
+    if (file.Read(descr_buf, kDescripMax) != kDescripMax) {
       file.Close();
       return false;
     }
 
     descr_buf[strlen(descr_buf) - 2] = '\0';  // trim off CR/LF
-    port::SafeCopy(buf, descr_buf, DESCRIP_MAX);
+    port::SafeCopy(buf, descr_buf, kDescripMax);
 
     if (file.Read(scenp, sizeof(unsigned)) != sizeof(unsigned)) {
       file.Close();
@@ -1256,7 +1256,7 @@ void Dump()
 
 	fprintf(fp,"------------------ Teams --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Teams.ActiveCount);
-	for (i = 0; i < TEAM_MAX; i++) {
+	for (i = 0; i < kTeamMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d Name:%s\n",i,Teams[i].IsActive,
 			Teams[i].Class->Get_Name());
 	}
@@ -1264,7 +1264,7 @@ void Dump()
 
 	fprintf(fp,"------------------ Triggers --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Triggers.ActiveCount);
-	for (i = 0; i < TRIGGER_MAX; i++) {
+	for (i = 0; i < kTriggerMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d Name:%s\n",i,Triggers[i].IsActive,
 			Triggers[i].Get_Name());
 	}
@@ -1272,84 +1272,84 @@ void Dump()
 
 	fprintf(fp,"------------------ Aircraft --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Aircraft.ActiveCount);
-	for (i = 0; i < AIRCRAFT_MAX; i++) {
+	for (i = 0; i < kAircraftMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Aircraft[i].IsActive);
 	}
 	fprintf(fp,"\n");
 
 	fprintf(fp,"------------------ Anims --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Anims.ActiveCount);
-	for (i = 0; i < ANIM_MAX; i++) {
+	for (i = 0; i < kAnimMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Anims[i].IsActive);
 	}
 	fprintf(fp,"\n");
 
 	fprintf(fp,"------------------ Buildings --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Buildings.ActiveCount);
-	for (i = 0; i < BUILDING_MAX; i++) {
+	for (i = 0; i < kBuildingMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Buildings[i].IsActive);
 	}
 	fprintf(fp,"\n");
 
 	fprintf(fp,"------------------ Bullets --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Bullets.ActiveCount);
-	for (i = 0; i < BULLET_MAX; i++) {
+	for (i = 0; i < kBulletMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Bullets[i].IsActive);
 	}
 	fprintf(fp,"\n");
 
 	fprintf(fp,"------------------ Infantry --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Infantry.ActiveCount);
-	for (i = 0; i < INFANTRY_MAX; i++) {
+	for (i = 0; i < kInfantryMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Infantry[i].IsActive);
 	}
 	fprintf(fp,"\n");
 
 	fprintf(fp,"------------------ Overlays --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Overlays.ActiveCount);
-	for (i = 0; i < OVERLAY_MAX; i++) {
+	for (i = 0; i < kOverlayMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Overlays[i].IsActive);
 	}
 	fprintf(fp,"\n");
 
 	fprintf(fp,"------------------ Reinforcements --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Reinforcements.ActiveCount);
-	for (i = 0; i < REINFORCEMENT_MAX; i++) {
+	for (i = 0; i < kReinforcementMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Reinforcements[i].IsActive);
 	}
 	fprintf(fp,"\n");
 
 	fprintf(fp,"------------------ Smudges --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Smudges.ActiveCount);
-	for (i = 0; i < SMUDGE_MAX; i++) {
+	for (i = 0; i < kSmudgeMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Smudges[i].IsActive);
 	}
 	fprintf(fp,"\n");
 
 	fprintf(fp,"------------------ Templates --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Templates.ActiveCount);
-	for (i = 0; i < TEMPLATE_MAX; i++) {
+	for (i = 0; i < kTemplateMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Templates[i].IsActive);
 	}
 	fprintf(fp,"\n");
 
 	fprintf(fp,"------------------ Terrains --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Terrains.ActiveCount);
-	for (i = 0; i < TERRAIN_MAX; i++) {
+	for (i = 0; i < kTerrainMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Terrains[i].IsActive);
 	}
 	fprintf(fp,"\n");
 
 	fprintf(fp,"------------------ Units --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Units.ActiveCount);
-	for (i = 0; i < UNIT_MAX; i++) {
+	for (i = 0; i < kUnitMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Units[i].IsActive);
 	}
 	fprintf(fp,"\n");
 
 	fprintf(fp,"------------------ Factories --------------------------\n");
 	fprintf(fp,"ActiveCount: %d\n",Factories.ActiveCount);
-	for (i = 0; i < FACTORY_MAX; i++) {
+	for (i = 0; i < kFactoryMax; i++) {
 		fprintf(fp,"Entry %d: Active:%d \n",i,Factories[i].IsActive);
 	}
 	fprintf(fp,"\n");

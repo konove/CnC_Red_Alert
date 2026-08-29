@@ -124,7 +124,7 @@ int TerrainClass::Validate() const {
     int num;
 
     num = Terrains.ID(this);
-    if (num < 0 || num >= TERRAIN_MAX) {
+    if (num < 0 || num >= kTerrainMax) {
       Validate_Error("TERRAIN");
       return 0;
     }

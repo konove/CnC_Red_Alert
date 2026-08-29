@@ -1732,7 +1732,7 @@ int MapEditClass::Load_Scenario() {
     }
     theaterbtn.Set_Selected_Index(orig_theater);
 
-    char description[DESCRIP_MAX] = "";
+    char description[kDescripMax] = "";
     port::SafeCopy(description, Scen.Description);
     EditClass desc(BUTTON_DESCRIPTION, description, sizeof(description),
                    TPF_EFNT | TPF_NOSHADOW,

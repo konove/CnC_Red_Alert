@@ -456,7 +456,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                                 {
                                         //	Message with delay so that user
            has time to read it... Timer<SystemTickSource> timer; timer =
-           TICKS_PER_SECOND*4; WWMessageBox().Process(TXT_WOL_DEBUG2, TXT_NONE);
+           kTicksPerSecond*4; WWMessageBox().Process(TXT_WOL_DEBUG2, TXT_NONE);
                                         while (timer > 0) {
                                                 Call_Back();
                                         }

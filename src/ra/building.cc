@@ -1076,8 +1076,8 @@ void BuildingClass::AI() {
   if (*this == STRUCT_GAP) {
     if (Arm.IsFinished()) {
       IsJamming = false;
-      Arm.Set(TICKS_PER_MINUTE * Rule.GapRegenInterval +
-              Random_Pick(1, TICKS_PER_SECOND));
+      Arm.Set(kTicksPerMinute * Rule.GapRegenInterval +
+              Random_Pick(1, kTicksPerSecond));
     }
 
     if (!IsJamming) {
@@ -1098,7 +1098,7 @@ void BuildingClass::AI() {
   ** radar jammer.
   */
   if ((*this == STRUCT_RADAR || *this == STRUCT_SAM) &&
-      Frame % TICKS_PER_SECOND == 0) {
+      Frame % kTicksPerSecond == 0) {
     IsJammed = false;
     for (int index = 0; index < Units.Count(); index++) {
       UnitClass* obj = Units.Ptr(index);
@@ -3957,7 +3957,7 @@ int BuildingClass::Mission_Repair() {
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
             Distance(Contact_With_Whom()) < distance) {
           Status = IDLE;
-          return TICKS_PER_SECOND / 4;
+          return kTicksPerSecond / 4;
         }
         break;
       }
@@ -4113,7 +4113,7 @@ int BuildingClass::Mission_Repair() {
           if (pfrac < fixed::_1_2) {
             pfrac = fixed::_1_2;
           }
-          int time = pfrac.Inverse() * Rule.ReloadRate * TICKS_PER_MINUTE;
+          int time = pfrac.Inverse() * Rule.ReloadRate * kTicksPerMinute;
           IsReadyToCommence = false;
           return time;
         }
@@ -4124,7 +4124,7 @@ int BuildingClass::Mission_Repair() {
     }
     return 3;
   }
-  return TICKS_PER_SECOND;
+  return kTicksPerSecond;
 }
 
 /***********************************************************************************************
@@ -4270,7 +4270,7 @@ int BuildingClass::Mission_Missile() {
               delete bullet;
             }
           }
-          return 8 * TICKS_PER_SECOND;
+          return 8 * kTicksPerSecond;
         }
       }
         return 1;
@@ -5235,7 +5235,7 @@ void BuildingClass::Factory_AI() {
       *Wait *	a bit before trying again.
       */
       case 1:
-        PlacementDelay.Set(int64_t{TICKS_PER_SECOND} * 3);
+        PlacementDelay.Set(int64_t{kTicksPerSecond} * 3);
         break;
 
       /*
@@ -5458,8 +5458,8 @@ void BuildingClass::Repair_AI() {
 
             if (!House->IsHuman) {
               House->RepairTimer.Set(
-                  Random_Pick(House->RepairDelay * (TICKS_PER_MINUTE / 4),
-                              House->RepairDelay * TICKS_PER_MINUTE * 2));
+                  Random_Pick(House->RepairDelay * (kTicksPerMinute / 4),
+                              House->RepairDelay * kTicksPerMinute * 2));
             }
           }
         }
@@ -5478,7 +5478,7 @@ void BuildingClass::Repair_AI() {
   /*
   **	If it is repairing, then apply any repair effects as necessary.
   */
-  if (IsRepairing && Frame % (Rule.RepairRate * TICKS_PER_MINUTE) == 0) {
+  if (IsRepairing && Frame % (Rule.RepairRate * kTicksPerMinute) == 0) {
     IsWrenchVisible = !static_cast<bool>(IsWrenchVisible);
     Mark(MARK_CHANGE);
     int cost = Class->Repair_Cost();

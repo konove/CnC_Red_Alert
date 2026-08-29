@@ -293,7 +293,7 @@ void Main_Game(int argc, char* argv[]) {
     **	values, and then show the mouse.  This PRESUMES that Select_Game() has
     **	told the map to draw itself.
     */
-    GamePalette.Set(FADE_PALETTE_MEDIUM);
+    GamePalette.Set(kFadePaletteMedium);
     Keyboard->Clear();
     /*
     ** Only show the mouse if we're not playing back a recording.
@@ -394,7 +394,7 @@ void Main_Game(int argc, char* argv[]) {
     /*
     **	Scenario is done; fade palette to black
     */
-    BlackPalette.Set(FADE_PALETTE_SLOW);
+    BlackPalette.Set(kFadePaletteSlow);
     VisiblePage.Clear();
 
     /*
@@ -1208,7 +1208,7 @@ static void Message_Input(KeyNumType& input) {
           Session.Messages.Add_Message(
               nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-              Rule.MessageDelay * TICKS_PER_MINUTE);
+              Rule.MessageDelay * kTicksPerMinute);
           Sound_Effect(VOC_SYS_ERROR);
         }
       }
@@ -1506,7 +1506,7 @@ void Color_Cycle() {
     *glowing *	game interface elements.
     */
     if (_ftimer.IsFinished()) {
-      _ftimer.Set(TIMER_SECOND / 6);
+      _ftimer.Set(kTimerSecond / 6);
 
 #define STEP_RATE 20
       if (_up) {
@@ -1543,7 +1543,7 @@ void Color_Cycle() {
     **	Process the color cycling effects -- water.
     */
     if (_timer.IsFinished()) {
-      _timer.Set(TIMER_SECOND / 4);
+      _timer.Set(kTimerSecond / 4);
 
       RGBClass first = InGamePalette[CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1];
       for (int index = CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1;
@@ -1624,7 +1624,7 @@ void Call_Back() {
           Session.Messages.Add_Message(
               nullptr, 0, TXT_WOL_WOLAPIGONE, PCOLOR_GOLD,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-              Rule.MessageDelay * TICKS_PER_MINUTE);
+              Rule.MessageDelay * kTicksPerMinute);
           Sound_Effect(WOLSOUND_LOGOUT);
           //	ajw (Wolapi object is now left around, so we can try to send
           // game results.)
@@ -1710,7 +1710,7 @@ void IPX_Call_Back() {
               if (!Session.Messages.Concat_Message(
                       Session.GPacket.Name, Session.GPacket.Message.Color,
                       Session.GPacket.Message.Buf,
-                      Rule.MessageDelay * TICKS_PER_MINUTE)) {
+                      Rule.MessageDelay * kTicksPerMinute)) {
                 if (NewUnitsEnabled && !strncmp(Session.GPacket.Message.Buf,
                                                 "XECRET UNITS ON ", 15)) {
                   Session.GPacket.Message.Buf[0] = 'S';
@@ -1720,7 +1720,7 @@ void IPX_Call_Back() {
                     Session.GPacket.Name, Session.GPacket.Message.Color,
                     Session.GPacket.Message.Buf, Session.GPacket.Message.Color,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                    Rule.MessageDelay * TICKS_PER_MINUTE);
+                    Rule.MessageDelay * kTicksPerMinute);
 
                 Sound_Effect(VOC_INCOMING_MESSAGE);
               }
@@ -1775,12 +1775,12 @@ void TEN_Call_Back() {
       if (!Session.Messages.Concat_Message(
               Session.GPacket.Name, Session.GPacket.Message.Color,
               Session.GPacket.Message.Buf,
-              Rule.MessageDelay * TICKS_PER_MINUTE)) {
+              Rule.MessageDelay * kTicksPerMinute)) {
         Session.Messages.Add_Message(
             Session.GPacket.Name, Session.GPacket.Message.Color,
             Session.GPacket.Message.Buf, Session.GPacket.Message.Color,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            Rule.MessageDelay * TICKS_PER_MINUTE);
+            Rule.MessageDelay * kTicksPerMinute);
 
         Sound_Effect(VOC_INCOMING_MESSAGE);
 
@@ -1830,12 +1830,12 @@ void MPATH_Call_Back() {
       if (!Session.Messages.Concat_Message(
               Session.GPacket.Name, Session.GPacket.Message.Color,
               Session.GPacket.Message.Buf,
-              Rule.MessageDelay * TICKS_PER_MINUTE)) {
+              Rule.MessageDelay * kTicksPerMinute)) {
         Session.Messages.Add_Message(
             Session.GPacket.Name, Session.GPacket.Message.Color,
             Session.GPacket.Message.Buf, Session.GPacket.Message.Color,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            Rule.MessageDelay * TICKS_PER_MINUTE);
+            Rule.MessageDelay * kTicksPerMinute);
 
         Sound_Effect(VOC_INCOMING_MESSAGE);
 
@@ -2142,7 +2142,7 @@ bool Main_Loop() {
         Session.DesiredFrameRate =
             60;  //	A division by zero was happening (very rare).
       }
-      framedelay = TIMER_SECOND / Session.DesiredFrameRate;
+      framedelay = kTimerSecond / Session.DesiredFrameRate;
       FrameTimer.Set(framedelay);
     }
   } else {
@@ -2221,7 +2221,7 @@ bool Main_Loop() {
   /*
   **	Keep track of elapsed time in the game.
   */
-  Score.ElapsedTime += TIMER_SECOND / TICKS_PER_SECOND;
+  Score.ElapsedTime += kTimerSecond / kTicksPerSecond;
 
   Call_Back();
 
@@ -2313,7 +2313,7 @@ bool Main_Loop() {
     if (frames.empty()) {
       // Sized when a capture run starts rather than once per process, so that
       // an edit to MovieTime takes effect on the next run.
-      int frame_count = Rule.MovieTime * TICKS_PER_MINUTE;
+      int frame_count = Rule.MovieTime * kTicksPerMinute;
       frames.resize(frame_count);
     }
 
@@ -2643,7 +2643,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
     Hide_Mouse();
     Theme.Queue_Song(theme);
     if (PreserveVQAScreen == 0 && !clrscrn) {
-      BlackPalette.Set(FADE_PALETTE_MEDIUM);
+      BlackPalette.Set(kFadePaletteMedium);
       VisiblePage.Clear();
       BlackPalette.Adjust(0x08, WhitePalette);
       BlackPalette.Set();
