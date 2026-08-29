@@ -140,8 +140,6 @@ extern WolapiObject* pWolapi;
 MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user);
 #endif
 
-#define SHAPE_TRANS 0x40
-
 void* Get_Shape_Header_Data(void* ptr);
 extern bool Spawn_WChat(bool can_launch);
 
@@ -1659,9 +1657,11 @@ TheaterType Theater_From_Name(const char* name) {
   return THEATER_NONE;
 }
 
-FacingType KN_To_Facing(int input) {
-  input &= ~(KN_ALT_BIT | KN_SHIFT_BIT | KN_CTRL_BIT);
-  switch (input) {
+FacingType KN_To_Facing(const unsigned input) {
+  const unsigned key = input & ~(static_cast<unsigned>(KN_ALT_BIT) |
+                                 static_cast<unsigned>(KN_SHIFT_BIT) |
+                                 static_cast<unsigned>(KN_CTRL_BIT));
+  switch (key) {
     case KN_LEFT:
       return FACING_W;
 
@@ -3637,20 +3637,22 @@ CrateType Crate_From_Name(const char* name) {
 }
 
 int Owner_From_Name(const char* text) {
-  int ownable = 0;
+  // Accumulated unsigned: this is a bit pattern, and the HOUSEF_ masks reach
+  // the sign bit once enough houses are set.
+  unsigned ownable = 0;
   if (stricmp(text, "soviet") == 0) {
-    ownable |= HOUSEF_SOVIET;
+    ownable |= static_cast<unsigned>(HOUSEF_SOVIET);
   } else {
     if (stricmp(text, "allies") == 0 || stricmp(text, "allied") == 0) {
-      ownable |= HOUSEF_ALLIES;
+      ownable |= static_cast<unsigned>(HOUSEF_ALLIES);
     } else {
       HousesType h = HouseTypeClass::From_Name(text);
       if (h != HOUSE_NONE && (h < HOUSE_MULTI1 || h > HOUSE_MULTI8)) {
-        ownable |= 1 << h;
+        ownable |= 1U << static_cast<unsigned>(h);
       }
     }
   }
-  return ownable;
+  return static_cast<int>(ownable);
 }
 
 // Copies the screen two pixels up or two pixels down, one step per game tick,

@@ -700,7 +700,8 @@ void Unselect_All();
 // Does nothing outside of a normal (non-multiplayer) game or in the map editor.
 void Play_Movie(const char* name, ThemeType theme = THEME_NONE,
                 bool clear_screen = true);
-void Play_Movie(VQType name, ThemeType theme = THEME_NONE, bool clear_screen = true);
+void Play_Movie(VQType name, ThemeType theme = THEME_NONE,
+                bool clear_screen = true);
 
 // Runs one frame of the game. Returns true when the game should end.
 bool Main_Loop();
@@ -747,7 +748,7 @@ const char* Name_From_Source(SourceType source);
 
 // Converts a keyboard code into the compass direction it represents, or
 // FACING_NONE for a key that is not directional. Used for keyboard scrolling.
-FacingType KN_To_Facing(int input);
+FacingType KN_To_Facing(unsigned input);
 
 // Renders the radar-map icons for a shape file, at zoomfactor pixels per map
 // cell, and returns the buffer holding them.
