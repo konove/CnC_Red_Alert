@@ -2000,7 +2000,7 @@ extern bool InMovie;
 extern bool VQPaletteChange;
 extern void Suspend_Audio_Thread();
 extern void Resume_Audio_Thread();
-void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
+void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
   /*
   ** Don't play movies in editor mode
   */
@@ -2117,7 +2117,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
       **	cleared to avoid any unexpected palette glitches.
       */
       if (Brokeout) {
-        clrscrn = true;
+        clear_screen = true;
         VisiblePage.Clear();
         Brokeout = false;
       }
@@ -2128,7 +2128,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clrscrn) {
     *palette *	being in an unknown condition. Recover from this by clearing the
     *screen and *	forcing the palette to black.
     */
-    if (clrscrn) {
+    if (clear_screen) {
       VisiblePage.Clear();
       memset(BlackPalette, 0x01, 768);
       Set_Palette(BlackPalette);

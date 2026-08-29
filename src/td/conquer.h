@@ -812,7 +812,7 @@ const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id);
 std::string Fading_Table_Name(const char* base, TheaterType theater);
 void Unselect_All();
 void Play_Movie(const char* name, ThemeType theme = THEME_NONE,
-                bool clrscrn = true);
+                bool clear_screen = true);
 bool Main_Loop();
 TheaterType Theater_From_Name(const char* name);
 // DirType Rotation_Calc(DirType current, DirType desired, int rate);
