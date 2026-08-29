@@ -894,8 +894,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       if (CurrentCell != 0 && Get_Waypoint_Name(wayname)) {
         int waynm = 0;
         if (strlen(wayname)) {
-          wayname[0] = toupper(wayname[0]);
-          wayname[1] = toupper(wayname[1]);
+          wayname[0] = static_cast<char>(toupper(wayname[0]));
+          wayname[1] = static_cast<char>(toupper(wayname[1]));
           if (wayname[0] >= 'A' && wayname[0] <= 'Z') {
             waynm = wayname[0] - 'A';
             if (wayname[1] >= 'A' && wayname[1] <= 'Z') {
@@ -1297,7 +1297,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         **	Set new strength
         */
         if (strength != CurrentObject[0]->Strength) {
-          CurrentObject[0]->Strength = strength;
+          CurrentObject[0]->Strength = static_cast<short>(strength);
           HidPage.Clear();
           Flag_To_Redraw(true);
           Changed = 1;

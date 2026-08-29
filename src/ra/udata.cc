@@ -841,7 +841,7 @@ UnitTypeClass::UnitTypeClass(
       IsGapper(is_gapper),
       IsNoFireWhileMoving(false),
       Type(type),
-      TurretOffset(toffset),
+      TurretOffset(static_cast<signed char>(toffset)),
       Mission(order),
       Explosion(exp),
       MaxSize(0) {

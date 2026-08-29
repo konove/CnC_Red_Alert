@@ -5161,7 +5161,7 @@ static int Net_New_Dialog() {
       Session.RequestCount = 0;
       for (i = 1; i < Session.Players.Count(); i++) {
         if (responses[i] == NET_REQ_SCENARIO) {
-          Session.ScenarioRequests[Session.RequestCount++] = i;
+          Session.ScenarioRequests[Session.RequestCount++] = static_cast<char>(i);
         }
       }
       Send_Remote_File(Scen.ScenarioName, 1);
@@ -8140,7 +8140,7 @@ static int Net_Fake_New_Dialog() {
       Session.RequestCount = 0;
       for (i = 1; i < Session.Players.Count(); i++) {
         if (responses[i] == NET_REQ_SCENARIO) {
-          Session.ScenarioRequests[Session.RequestCount++] = i;
+          Session.ScenarioRequests[Session.RequestCount++] = static_cast<char>(i);
         }
       }
       Send_Remote_File(Scen.ScenarioName, 1);

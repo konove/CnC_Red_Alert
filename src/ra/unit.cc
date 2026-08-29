@@ -1076,7 +1076,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         if (i != nullptr) {
           if (i->Unlimbo(Coord, DIR_N)) {
             i->Strength =
-                Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2);
+                static_cast<short>(Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2));
             i->Scatter(0, true);
             if (!House->IsHuman) {
               i->Assign_Mission(MISSION_HUNT);
@@ -1426,7 +1426,7 @@ bool UnitClass::Goto_Clear_Spot() {
 
     ptr = &_offsets[0];
     while (*ptr) {
-      CELL cell = Coord_Cell(Coord) + *ptr++;
+      CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *ptr++);
       CELL check_cell = Adjacent_Cell(cell, FACING_NW);
       if (BuildingTypeClass::As_Reference(STRUCT_CONST)
               .Legal_Placement(check_cell)) {
@@ -1547,7 +1547,7 @@ bool UnitClass::Try_To_Deploy() {
           **	Force the newly placed construction yard to be in the same
           *strength *	ratio as the MCV that deployed into it.
           */
-          building->Strength = Health_Ratio() * building->Class->MaxStrength;
+          building->Strength = static_cast<short>(Health_Ratio() * building->Class->MaxStrength);
 
           /*
           ** Force the MCV to drop any flag it was carrying.  This will also set
@@ -1920,13 +1920,13 @@ int UnitClass::Shape_Number() const {
     *number.
     */
     if (IsDriving) {
-      shapenum = 8 + shapenum * 8 + (Frame + ID) / 2 % 8;
+      shapenum = static_cast<int>(8 + shapenum * 8 + (Frame + ID) / 2 % 8);
     } else {
       /*
       **	If in combat, then do combat anims.
       */
       if (Arm.HasTimeLeft()) {
-        shapenum = 8 + 64 + shapenum * 4 + (Frame + ID) / 2 % 4;
+        shapenum = static_cast<int>(8 + 64 + shapenum * 4 + (Frame + ID) / 2 % 4);
       }
     }
   } else {
@@ -2066,11 +2066,11 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
     if (Class->IsRadarEquipped) {
       if (*this == UNIT_MGG) {
         int x2 = x, y2 = y;
-        shapenum = 32 + (Frame & 7);
+        shapenum = static_cast<int>(32 + (Frame & 7));
         Class->Turret_Adjust(PrimaryFacing, x2, y2);
         Techno_Draw_Object(shapefile, shapenum, x2, y2, window);
       } else {
-        shapenum = 32 + Frame % 32;
+        shapenum = static_cast<int>(32 + Frame % 32);
         if (*this == UNIT_TESLATANK) {
           Techno_Draw_Object(shapefile, shapenum, x, y, window);
         } else {
@@ -2118,7 +2118,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   if (Flagged != HOUSE_NONE) {
     CC_Draw_Shape(
-        MFCD::Retrieve("FLAGFLY.SHP"), Frame % 14, x, y, window,
+        MFCD::Retrieve("FLAGFLY.SHP"), static_cast<int>(Frame % 14), x, y, window,
         SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
         HouseClass::As_Pointer(Flagged)->Remap_Table(false, Class->Remap),
         MouseClass::UnitShadow);
@@ -3601,14 +3601,14 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
-  cell = Coord_Cell(Coord) + ExitRepair[Dir_Facing(PrimaryFacing.Current())];
+  cell = static_cast<CELL>(Coord_Cell(Coord) + ExitRepair[Dir_Facing(PrimaryFacing.Current())]);
   if (Can_Enter_Cell(cell) == MOVE_OK) {
     found = true;
   }
 
   if (!found) {
     for (i = 0; i < 8; i++) {
-      cell = Coord_Cell(Coord) + ExitRepair[i];
+      cell = static_cast<CELL>(Coord_Cell(Coord) + ExitRepair[i]);
       if (Can_Enter_Cell(cell) == MOVE_OK) {
         found = true;
         break;
@@ -4671,7 +4671,7 @@ void UnitClass::Read_INI(CCINIClass& ini) {
           */
           int strength = atoi(strtok(nullptr, ",\r\n"));
 
-          CELL cell = atoi(strtok(nullptr, ",\r\n"));
+          CELL cell = static_cast<CELL>(atoi(strtok(nullptr, ",\r\n")));
 
           COORDINATE coord = Cell_Coord(cell);
 
@@ -4690,7 +4690,7 @@ void UnitClass::Read_INI(CCINIClass& ini) {
           }
 
           if (unit->Unlimbo(coord, dir)) {
-            unit->Strength = unit->Class->MaxStrength * fixed(strength, 256);
+            unit->Strength = static_cast<short>(unit->Class->MaxStrength * fixed(strength, 256));
             if (unit->Strength > unit->Class->MaxStrength - 3) {
               unit->Strength = unit->Class->MaxStrength;
             }

@@ -198,7 +198,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
     if (i == SCEN_VAR_FIRST) {
       c_var = 'X';  // indicates an error
     } else {
-      c_var = 'A' + Random_Pick(0, i - 1);
+      c_var = static_cast<char>('A' + Random_Pick(0, i - 1));
     }
   } else {
     switch (var) {
@@ -516,7 +516,8 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
     sprintf(buff, "%d", index++);
     *stage = '\0';
     WWGetPrivateProfileString("Briefing", buff, "", stage,
-                              sizeof(BriefingText) - static_cast<int>(strlen(BriefingText)) - 1,
+                              static_cast<int>(sizeof(BriefingText) -
+                                               strlen(BriefingText) - 1),
                               buffer);
     if (strlen(stage) == 0) {
       break;
@@ -547,7 +548,8 @@ bool Read_Scenario_Ini(char* root, bool fresh) {
       sprintf(buff, "%d", index++);
       *work = '\0';
       WWGetPrivateProfileString(root, buff, "", work,
-                                sizeof(BriefingText) - static_cast<int>(strlen(BriefingText)) - 1,
+                                static_cast<int>(sizeof(BriefingText) -
+                                               strlen(BriefingText) - 1),
                                 _ShapeBuffer);
       if (strlen(work) == 0) {
         break;
@@ -1136,7 +1138,7 @@ static void Create_Units() {
       ..................................................................*/
       if (try_count > 200) {
         while (1) {
-          centroid = IRandom(0, MAP_CELL_TOTAL - 1);
+          centroid = static_cast<CELL>(IRandom(0, MAP_CELL_TOTAL - 1));
           if (Map.In_Radar(centroid)) {
             break;
           }

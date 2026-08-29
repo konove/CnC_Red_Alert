@@ -1346,7 +1346,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
         Sound_Effect(VOC_KABOOM22, Coord);
         while (*offset != REFRESH_EOL) {
-          CELL cell = Coord_Cell(Coord) + *offset++;
+          CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
 
           /*
           **	If the building is destroyed, then lots of
@@ -1491,7 +1491,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
       case RESULT_MAJOR:
         Sound_Effect(VOC_KABOOM1, Coord);
         while (*offset != REFRESH_EOL) {
-          CELL cell = Coord_Cell(Coord) + *offset++;
+          CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
           AnimClass* anim = nullptr;
 
           /*
@@ -1785,7 +1785,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
   while (*offset != REFRESH_EOL) {
     CELL newcell;
 
-    newcell = cell + *offset++;
+    newcell = static_cast<CELL>(cell + *offset++);
     const CellClass* cellptr = &Map[newcell];
 
     /*
@@ -1808,7 +1808,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
           if (i->Unlimbo(Cell_Coord(newcell), DIR_N)) {
             count--;
             i->Strength =
-                Random_Pick(5, static_cast<int>(i->Class->MaxStrength));
+                static_cast<short>(Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
             i->Scatter(0, true);
             if (source != TARGET_NONE && !House->Is_Ally(As_Object(source))) {
               i->Assign_Mission(MISSION_ATTACK);
@@ -3203,7 +3203,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     */
     const short* offset = Occupy_List();
     while (*offset != REFRESH_EOL) {
-      CELL cell = Coord_Cell(Coord) + *offset++;
+      CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
       Map.Radar_Pixel(cell);
     }
     return true;
@@ -3623,7 +3623,7 @@ int BuildingClass::Mission_Deconstruction() {
             delete this;
 
             if (unit->Unlimbo(place, DIR_SW)) {
-              unit->Strength = unit->Class_Of().MaxStrength * ratio;
+              unit->Strength = static_cast<short>(unit->Class_Of().MaxStrength * ratio);
 
               /*
               **	Lift the move destination from the building and assign
@@ -4515,7 +4515,7 @@ int BuildingClass::Mission_Unload() {
   assert(IsActive);
 
   if (*this == STRUCT_WEAP) {
-    CELL cell = Coord_Cell(Coord) + Class->ExitList[0];
+    CELL cell = static_cast<CELL>(Coord_Cell(Coord) + Class->ExitList[0]);
     COORDINATE coord = Cell_Coord(cell);
     CellClass* cellptr = &Map[cell];
     enum { INITIAL, CLEAR_BIB, OPEN, LEAVE, CLOSE };
@@ -4846,7 +4846,7 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
   ptr = Class->ExitList;
   if (ptr != nullptr) {
     while (*ptr != REFRESH_EOL) {
-      CELL cell = origin + *ptr++;
+      CELL cell = static_cast<CELL>(origin + *ptr++);
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
@@ -4859,11 +4859,11 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
     y1 = -1;
     y2 = Class->Height();
     for (x1 = -1; x1 <= Class->Width(); x1++) {
-      cell = origin + x1 + y1 * MAP_CELL_W;
+      cell = static_cast<CELL>(origin + x1 + y1 * MAP_CELL_W);
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
-      cell = origin + x1 + y2 * MAP_CELL_W;
+      cell = static_cast<CELL>(origin + x1 + y2 * MAP_CELL_W);
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
@@ -4872,11 +4872,11 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
     x1 = -1;
     x2 = Class->Width();
     for (y1 = -1; y1 <= Class->Height(); y1++) {
-      cell = origin + y1 * MAP_CELL_W + x1;
+      cell = static_cast<CELL>(origin + y1 * MAP_CELL_W + x1);
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
-      cell = origin + y1 * MAP_CELL_W + x2;
+      cell = static_cast<CELL>(origin + y1 * MAP_CELL_W + x2);
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
@@ -4969,11 +4969,11 @@ CELL BuildingClass::Check_Point(CheckPointType cp) const {
   }
 
   if (Cell_X(cell) - Map.MapCellX > Map.MapCellWidth / 2) {
-    xoffset = -xoffset;
+    xoffset = static_cast<CELL>(-xoffset);
   }
 
   if (Cell_Y(cell) - Map.MapCellY > Map.MapCellHeight / 2) {
-    yoffset = -yoffset;
+    yoffset = static_cast<CELL>(-yoffset);
   }
 
   return XY_Cell(Cell_X(cell) + xoffset, Cell_Y(cell) + yoffset);
@@ -5066,7 +5066,7 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       /*
       **	4th token: cell #.
       */
-      cell = atoi(strtok(nullptr, ","));
+      cell = static_cast<CELL>(atoi(strtok(nullptr, ",")));
 
       /*
       **	5th token: facing.
@@ -5107,7 +5107,7 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
         if (b->Unlimbo(Cell_Coord(cell), facing)) {
           strength = std::min(strength, 0x100);
           strength = b->Class->MaxStrength * fixed(strength, 256);
-          b->Strength = strength;
+          b->Strength = static_cast<short>(strength);
           if (b->Strength > b->Class->MaxStrength - 3) {
             b->Strength = b->Class->MaxStrength;
           }
@@ -5491,7 +5491,7 @@ void BuildingClass::Repair_AI() {
     */
     if (House->Available_Money() >= cost) {
       House->Spend_Money(cost);
-      Strength += step;
+      Strength = static_cast<short>(Strength + step);
 
       if (Strength >= Class->MaxStrength) {
         Strength = Class->MaxStrength;

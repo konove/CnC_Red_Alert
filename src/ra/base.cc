@@ -452,7 +452,7 @@ void BaseClass::Read_INI(CCINIClass& ini) {
     /*
     ** Read & set the node's coordinate
     */
-    node.Cell = atoi(strtok(nullptr, ","));
+    node.Cell = static_cast<CELL>(atoi(strtok(nullptr, ",")));
 
     /*
     ** Add this node to the Base's list

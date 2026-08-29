@@ -112,19 +112,19 @@ static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
 
     int nibble = b & 0xF;
     int step = ima_adpcm_step_table[chan.step];
-    chan.step = clamp(chan.step + ima_adpcm_index_table[nibble], 0, 88);
+    chan.step = static_cast<int8_t>(clamp(chan.step + ima_adpcm_index_table[nibble], 0, 88));
 
     int diff = ((((nibble & 7) * 2 + 1) * step) >> 3) * (nibble & 8 ? -1 : 1);
-    chan.predictor = clamp(chan.predictor + diff, -32768, 32767);
+    chan.predictor = static_cast<int16_t>(clamp(chan.predictor + diff, -32768, 32767));
 
     samples[0] = chan.predictor;
 
     nibble = b >> 4;
     step = ima_adpcm_step_table[chan.step];
-    chan.step = clamp(chan.step + ima_adpcm_index_table[nibble], 0, 88);
+    chan.step = static_cast<int8_t>(clamp(chan.step + ima_adpcm_index_table[nibble], 0, 88));
 
     diff = ((((nibble & 7) * 2 + 1) * step) >> 3) * (nibble & 8 ? -1 : 1);
-    chan.predictor = clamp(chan.predictor + diff, -32768, 32767);
+    chan.predictor = static_cast<int16_t>(clamp(chan.predictor + diff, -32768, 32767));
 
     samples[1] = chan.predictor;
 
@@ -153,7 +153,7 @@ static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
       if (data & 0x20u) {
         // The lower 5 bits are actually a signed delta.
         // Sign extend the delta and add it to the stream.
-        int8_t v = data & 0x10u ? data | 0xE0u : data & 0xFu;
+        int8_t v = static_cast<int8_t>(data & 0x10u ? data | 0xE0u : data & 0xFu);
 
         prev_sample += v;
 
@@ -330,7 +330,7 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
         chan.playing = false;
         break;
       }
-      chan.volume = ToMixerAmplitude(chan.raw_volume);
+      chan.volume = static_cast<int16_t>(ToMixerAmplitude(chan.raw_volume));
     }
 
     int stream_len = SDL_AudioStreamGet(chan.stream, MixBuffer, len);
@@ -338,7 +338,7 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
     // mix into buffer
     auto* mix16 = (int16_t*)MixBuffer;
     for (int s = 0; s < static_cast<int>(stream_len / sizeof(int16_t)); s++) {
-      stream16[s] += (mix16[s] * chan.volume) >> 15;
+      stream16[s] = static_cast<int16_t>(stream16[s] + ((mix16[s] * chan.volume) >> 15));
     }
   }
 }
@@ -384,7 +384,7 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
   chan.priority = 0xFF;
   chan.local_volume = volume;
   chan.raw_volume = volume * ScoreVolume;
-  chan.volume = ToMixerAmplitude(chan.raw_volume);
+  chan.volume = static_cast<int16_t>(ToMixerAmplitude(chan.raw_volume));
   chan.fade = 0;
 
   ResetStream(chan, &header);
@@ -582,7 +582,7 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
   chan.priority = priority;
   chan.local_volume = volume;
   chan.raw_volume = volume * 255;
-  chan.volume = ToMixerAmplitude(chan.raw_volume);
+  chan.volume = static_cast<int16_t>(ToMixerAmplitude(chan.raw_volume));
   chan.fade = 0;
 
   ResetStream(chan, header);
@@ -615,7 +615,7 @@ int Set_Score_Vol(int volume) {
     if (chan.playing && !chan.in_ptr)  // score is a file stream
     {
       chan.raw_volume = chan.local_volume * ScoreVolume;
-      chan.volume = ToMixerAmplitude(chan.raw_volume);
+      chan.volume = static_cast<int16_t>(ToMixerAmplitude(chan.raw_volume));
     }
   }
 

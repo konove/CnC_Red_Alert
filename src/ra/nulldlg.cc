@@ -7485,9 +7485,9 @@ void itoh(int i, char* s) {
 
       /* decimal range */
       if (nibble < 10) {
-        *s++ = '0' + nibble;
+        *s++ = static_cast<char>('0' + nibble);
       } else {
-        *s++ = 'A' + (nibble - 10);
+        *s++ = static_cast<char>('A' + (nibble - 10));
       }
     }
   }

@@ -203,7 +203,7 @@ int SHAEngine::Result(void* result) const {
   /*
   **	Cap the end of the source data stream with a 1 bit.
   */
-  partial[partialcount] = 0x80;
+  partial[partialcount] = static_cast<char>(0x80);
 
   /*
   **	Determine if there is insufficient room to append the

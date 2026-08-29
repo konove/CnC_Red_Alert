@@ -1736,7 +1736,7 @@ const short* TemplateTypeClass::Occupy_List(bool) const {
   ptr = &_occupy[0];
   for (int index = 0; index < Width * Height; index++) {
     if (*map++ != 0xFF) {
-      *ptr++ = index % Width + index / Width * MAP_CELL_W;
+      *ptr++ = static_cast<short>(index % Width + index / Width * MAP_CELL_W);
     }
   }
   *ptr = REFRESH_EOL;

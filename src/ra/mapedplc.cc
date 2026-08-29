@@ -847,7 +847,7 @@ int MapEditClass::Place_Object() {
       /*
       **	Check this cell for an occupier
       */
-      template_cell = (ZoneCell + ZoneOffset) + (*occupy);
+      template_cell = static_cast<CELL>((ZoneCell + ZoneOffset) + (*occupy));
       if ((*this)[template_cell].Cell_Occupier()) {
         occupier = (*this)[template_cell].Cell_Occupier();
 
@@ -899,7 +899,7 @@ int MapEditClass::Place_Object() {
     **	If it's still OK after ALL THAT, place the template
     */
     if (okflag) {
-      if (PendingObjectPtr->Unlimbo(Cell_Coord(ZoneCell + ZoneOffset))) {
+      if (PendingObjectPtr->Unlimbo(Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)))) {
         /*
         **	Loop through all cells occupied by this template, and clear the
         **	smudge & overlay.
@@ -909,7 +909,7 @@ int MapEditClass::Place_Object() {
           /*
           **	Get cell for this occupy item
           */
-          template_cell = (ZoneCell + ZoneOffset) + (*occupy);
+          template_cell = static_cast<CELL>((ZoneCell + ZoneOffset) + (*occupy));
 
           /*
           **	Clear smudge & overlay
@@ -1000,7 +1000,7 @@ int MapEditClass::Place_Object() {
   /*
   **	Placing an object
   */
-  if (PendingObjectPtr->Unlimbo(Cell_Coord(ZoneCell + ZoneOffset))) {
+  if (PendingObjectPtr->Unlimbo(Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)))) {
     /*
     ** Update the Tiberium computation if we're placing an overlay
     */

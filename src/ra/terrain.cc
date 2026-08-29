@@ -677,8 +677,8 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   ** conveniently stored out as the first byte of every icon we made.
   */
   int basecell = Coord_Cell(Coord);  // find the base cell of terrain
-  int ydiff = Cell_Y(cell) - Cell_Y(basecell);
-  int xdiff = Cell_X(cell) - Cell_X(basecell);
+  int ydiff = static_cast<CELL>(Cell_Y(cell) - Cell_Y(static_cast<CELL>(basecell)));
+  int xdiff = static_cast<CELL>(Cell_X(cell) - Cell_X(static_cast<CELL>(basecell)));
   if (xdiff < width && ydiff < height) {
     int iconnum = ydiff * width + xdiff;
     return icon + static_cast<base::ssize>(iconnum) * 9;
@@ -728,7 +728,7 @@ void TerrainClass::Read_INI(CCINIClass& ini) {
   for (int index = 0; index < len; index++) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
     TerrainType terrain = ini.Get_TerrainType(INI_Name(), entry, TERRAIN_NONE);
-    CELL cell = atoi(entry);
+    CELL cell = static_cast<CELL>(atoi(entry));
 
     if (terrain != TERRAIN_NONE) {
       new TerrainClass(terrain, cell);

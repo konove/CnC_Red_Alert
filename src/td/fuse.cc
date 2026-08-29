@@ -102,7 +102,7 @@ void FuseClass::Arm_Fuse(COORDINATE location, COORDINATE target, int timeto,
   Timer = std::min(timeto, 0xFF);
   Arming = std::min(arming, 0xFF);
   HeadTo = target;
-  Proximity = Distance(location, target);
+  Proximity = static_cast<short>(Distance(location, target));
 }
 
 /***********************************************************************************************
@@ -150,7 +150,7 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
     if (proximity < ICON_LEPTON_W && proximity > Proximity) {
       return true;
     }
-    Proximity = proximity;
+    Proximity = static_cast<short>(proximity);
   }
   return false;
 }

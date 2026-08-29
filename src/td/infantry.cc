@@ -541,7 +541,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
         if (source) {
           source->Strength += 30;
           source->Strength =
-              std::min<int>(source->Strength, source->Class_Of().MaxStrength);
+              static_cast<short>(std::min<int>(source->Strength, source->Class_Of().MaxStrength));
         }
         [[fallthrough]];
 
@@ -3021,7 +3021,7 @@ void InfantryClass::Read_INI(char* buffer) {
 
           if (infantry->Unlimbo(coord, dir)) {
             infantry->Strength =
-                Fixed_To_Cardinal(infantry->Class_Of().MaxStrength, strength);
+                static_cast<short>(Fixed_To_Cardinal(infantry->Class_Of().MaxStrength, strength));
             if (GameToPlay == GAME_NORMAL || infantry->House->IsHuman) {
               infantry->Assign_Mission(mission);
               infantry->Commence();

@@ -1129,7 +1129,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
         */
         if (House->Available_Money() >= cost) {
           House->Spend_Money(cost);
-          Strength += step;
+          Strength = static_cast<short>(Strength + step);
 
           /*
           **	Return with either an all ok or mission accomplished radio
@@ -5825,7 +5825,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
 
         int startx = x + 6 * digits - 3;  // + 6 * 8;
         while (money) {
-          int xdigit = money % 10;
+          int xdigit = static_cast<int>(money % 10);
           money /= 10;
           CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_NUMBERS + xdigit,
                         startx, y - 6, window, SHAPE_CENTER | SHAPE_WIN_REL);
@@ -6487,7 +6487,7 @@ int TechnoTypeClass::Legal_Placement(CELL pos) const {
   bool build = What_Am_I() == RTTI_BUILDINGTYPE;
 
   while (offset != nullptr && *offset != REFRESH_EOL) {
-    CELL cell = pos + *offset++;
+    CELL cell = static_cast<CELL>(pos + *offset++);
     if (!Map.In_Radar(cell)) {
       return false;
     }

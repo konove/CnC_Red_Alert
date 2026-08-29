@@ -1492,7 +1492,7 @@ bool UnitClass::Goto_Clear_Spot() {
 
     ptr = &_offsets[0];
     while (*ptr) {
-      CELL cell = Coord_Cell(Coord) + *ptr++;
+      CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *ptr++);
 
       if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(cell)) {
         Assign_Destination(::As_Target(cell));
@@ -1581,7 +1581,7 @@ bool UnitClass::Try_To_Deploy() {
           */
           int ratio = Health_Ratio();
           building->Strength =
-              Fixed_To_Cardinal(building->Class->MaxStrength, ratio);
+              static_cast<short>(Fixed_To_Cardinal(building->Class->MaxStrength, ratio));
           /*
           ** Force the MCV to drop any flag it was carrying.  This will also set
           ** the owner house's flag home cell (since the house's FlagHome is
@@ -2031,7 +2031,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
     **	If there is a rotating radar dish, draw it now.
     */
     if (Class->IsRadarEquipped) {
-      shapenum = 32 + Frame % 32;
+      shapenum = static_cast<int>(32 + Frame % 32);
       Techno_Draw_Object(shapefile, shapenum, x, y - 5, window);
     }
 
@@ -2115,7 +2115,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   *else.
   */
   if (Flagged != HOUSE_NONE) {
-    CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), Frame % 14, x, y, window,
+    CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), static_cast<int>(Frame % 14), x, y, window,
                   SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
                   HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
                   MouseClass::UnitShadow);
@@ -3497,7 +3497,7 @@ void UnitClass::Read_INI(char* buffer) {
 
           if (unit->Unlimbo(coord, dir)) {
             unit->Strength =
-                Fixed_To_Cardinal(unit->Class->MaxStrength, strength);
+                static_cast<short>(Fixed_To_Cardinal(unit->Class->MaxStrength, strength));
             if (GameToPlay == GAME_NORMAL || unit->House->IsHuman) {
               unit->Assign_Mission(mission);
               unit->Commence();
@@ -3607,14 +3607,14 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
-  cell = Coord_Cell(Coord) + ExitRepair[Dir_Facing(PrimaryFacing.Current())];
+  cell = static_cast<CELL>(Coord_Cell(Coord) + ExitRepair[Dir_Facing(PrimaryFacing.Current())]);
   if (Can_Enter_Cell(cell) == MOVE_OK) {
     found = true;
   }
 
   if (!found) {
     for (i = 0; i < 8; i++) {
-      cell = Coord_Cell(Coord) + ExitRepair[i];
+      cell = static_cast<CELL>(Coord_Cell(Coord) + ExitRepair[i]);
       if (Can_Enter_Cell(cell) == MOVE_OK) {
         found = true;
         break;

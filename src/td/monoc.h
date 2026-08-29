@@ -151,7 +151,8 @@ class MonoClass {
   **	Helper functions to help with display operations.
   */
   int Offset(int x = 0, int y = 0) const {
-    return static_cast<std::size_t>(SIZE_OF_PAGE) * Page + sizeof(CellType) * (x + y * COLUMNS);
+    return static_cast<int>(static_cast<std::size_t>(SIZE_OF_PAGE) * Page +
+                            sizeof(CellType) * (x + y * COLUMNS));
   }
   void Scroll(int lines);
   void Store_Cell(CellType& cell, int x, int y) {

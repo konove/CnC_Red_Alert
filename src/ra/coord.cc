@@ -62,7 +62,7 @@ const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
   short* ptr = offsets;
   for (int yy = cell_top; yy <= cell_bottom; yy++) {
     for (int xx = cell_left; xx <= cell_right; xx++) {
-      if (const short offset = XY_Cell(xx, yy) - origin_cell;
+      if (const short offset = static_cast<short>(XY_Cell(xx, yy) - origin_cell);
           !no_center || offset != 0) {
         *ptr++ = offset;
         count++;

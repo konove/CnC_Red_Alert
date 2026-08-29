@@ -77,15 +77,15 @@ inline constexpr int16_t kCos256[256] = {
 // The >> 7 (divide by 128) exactly cancels the amplitude-128 scaling.
 inline void MovePoint(int16_t& x, int16_t& y, const uint8_t dir,
                       const int16_t distance) {
-  x += (kSin256[dir] * distance) >> 7;
-  y -= (kCos256[dir] * distance) >> 7;
+  x = static_cast<int16_t>(x + ((kSin256[dir] * distance) >> 7));
+  y = static_cast<int16_t>(y - ((kCos256[dir] * distance) >> 7));
 }
 
 // Like MovePoint but halves Y for 2:1 isometric projection (turret offsets).
 inline void MovePointIsometric(int16_t& x, int16_t& y, const uint8_t dir,
                                const int16_t distance) {
-  x += (kSin256[dir] * distance) >> 7;
-  y -= ((kCos256[dir] / 2) * distance) >> 7;
+  x = static_cast<int16_t>(x + ((kSin256[dir] * distance) >> 7));
+  y = static_cast<int16_t>(y - (((kCos256[dir] / 2) * distance) >> 7));
 }
 
 }  // namespace base

@@ -1010,7 +1010,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     }
 
     ini.Get_String("SyncBug", "Cell", "0", buf, 80);
-    cell = atoi(buf);
+    cell = static_cast<CELL>(atoi(buf));
     if (cell) {
       TrapCell = &Map[cell];
     }

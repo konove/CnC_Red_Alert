@@ -3975,7 +3975,7 @@ int BuildingTypeClass::Legal_Placement(CELL pos) const {
   */
   offset = Occupy_List(true);
   while (*offset != REFRESH_EOL) {
-    CELL cell = pos + *offset++;
+    CELL cell = static_cast<CELL>(pos + *offset++);
     if (!Map.In_Radar(cell)) {
       return false;
     }
@@ -4182,7 +4182,7 @@ const short* BuildingTypeClass::Occupy_List(bool placement) const {
     */
     const short* src = smudge.Occupy_List();
     while (*src != REFRESH_EOL) {
-      *dest++ = *src++ + cell;
+      *dest++ = static_cast<short>(*src++ + cell);
     }
 
     /*
@@ -4351,7 +4351,7 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
     **	of the building art itself.
     */
     if (bib != SMUDGE_NONE) {
-      cell += (Height() - 1) * MAP_CELL_W;
+      cell = static_cast<CELL>(cell + ((Height() - 1) * MAP_CELL_W));
     }
   }
   return bib != SMUDGE_NONE;

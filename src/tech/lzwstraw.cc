@@ -182,7 +182,7 @@ int LZWStraw::Get(void* destbuf, int slen) {
           LZW_Compress(Buffer(source_buffer_, BlockHeader.UncompCount),
                        Buffer(&output_buffer_[sizeof(BlockHeader)])));
       memmove(output_buffer_, &BlockHeader, sizeof(BlockHeader));
-      Counter = BlockHeader.CompCount + sizeof(BlockHeader);
+      Counter = static_cast<int>(BlockHeader.CompCount + sizeof(BlockHeader));
     }
   }
 

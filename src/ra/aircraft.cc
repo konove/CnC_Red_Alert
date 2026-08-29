@@ -573,15 +573,15 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     /*
     **	Dual rotors offset along flight axis.
     */
-    short xx = x;
-    short yy = y - Lepton_To_Pixel(Height);
+    short xx = static_cast<short>(x);
+    short yy = static_cast<short>(y - Lepton_To_Pixel(Height));
     FacingType face = Dir_Facing(SecondaryFacing);
-    base::MovePoint(xx, yy, SecondaryFacing.Current(), _stretch[face]);
+    base::MovePoint(xx, yy, SecondaryFacing.Current(), static_cast<int16_t>(_stretch[face]));
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
                   flags, nullptr, DisplayClass::UnitShadow);
 
     base::MovePoint(xx, yy, SecondaryFacing.Current() + DIR_S,
-                    _stretch[face] * 2);
+                    static_cast<int16_t>(_stretch[face] * 2));
     CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
                   flags, nullptr, DisplayClass::UnitShadow);
 
@@ -659,7 +659,7 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
           if (!Map.In_Radar(Coord_Cell(coord))) {
             delete air;
           } else {
-            air->Strength = air->Class->MaxStrength * fixed(strength, 256);
+            air->Strength = static_cast<short>(air->Class->MaxStrength * fixed(strength, 256));
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(Mission_From_Name(strtok(nullptr, ",\n\r")));
             } else {

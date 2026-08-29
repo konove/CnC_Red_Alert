@@ -619,7 +619,7 @@ void ScoreClass::Presentation() {
     file.Open(FileAccess::kWrite);
 
     for (i = 0; i < NUMFAMENAMES; i++) {
-      hallfame[i].name[0] = hallfame[i].score = hallfame[i].level = 0;
+      hallfame[i].name[0] = static_cast<char>(hallfame[i].score = hallfame[i].level = 0);
       hallfame[i].side = 0;
       file.Write(&hallfame[i], sizeof(struct Fame));
     }
@@ -1025,7 +1025,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
     InfantryMan[i + 0].anim = InfantryMan[i + r].anim = 0;
     InfantryMan[i + 0].stage = InfantryMan[i + r].stage = 0;
     InfantryMan[i + 0].delay = InfantryMan[i + r].delay =
-        local_rng.Next() & 0x1F;
+        static_cast<char>(local_rng.Next() & 0x1F);
     InfantryMan[i + 0].Class = InfantryMan[i + r].Class =
         &InfantryTypeClass::As_Reference(INFANTRY_E1);
   }
@@ -1126,7 +1126,7 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
       add += 30;
     }
     if (PlayerPtr->Available_Money() - i > 1000) {
-      add += PlayerPtr->Available_Money() / 40;
+      add = static_cast<int>(add + (PlayerPtr->Available_Money() / 40));
     }
     add = std::max(add, minval);
     i += add;
@@ -1281,7 +1281,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
                        (xpos + index * 6) * 2, ypos * 2, 12, 12);
           HidPage.Blit(HidPage, (xpos + index * 6) * 2, (ypos - 100) * 2,
                        (xpos + index * 6) * 2, ypos * 2, 12, 12);
-          str[index] = ascii;
+          str[index] = static_cast<char>(ascii);
           str[index + 1] = 0;
 
           int objindex;
@@ -1436,7 +1436,7 @@ void New_Infantry_Anim(int index, int anim) {
   if (anim >= DO_GUN_DEATH) {
     InfantryMan[index].delay = 1;  // start right away
   } else {
-    InfantryMan[index].delay = local_rng.Next() & 15;
+    InfantryMan[index].delay = static_cast<char>(local_rng.Next() & 15);
   }
 }
 

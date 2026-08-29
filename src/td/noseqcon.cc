@@ -195,7 +195,7 @@ int NonSequencedConnClass::Send_Packet(void* buf, int buflen, int ack_req) {
   /*........................................................................
   Add it to the queue.
   ........................................................................*/
-  if (Queue->Queue_Send(PacketBuf, buflen + sizeof(CommHeaderType))) {
+  if (Queue->Queue_Send(PacketBuf, static_cast<int>(buflen + sizeof(CommHeaderType)))) {
     if (ack_req) {
       // Smart_Printf( "Packet ack Queued ID %d \n", ((CommHeaderType
       // *)PacketBuf)->PacketID );
@@ -478,7 +478,7 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
         LastReadID = entry_data->PacketID;
         rec_entry->IsRead = 1;
 
-        packetlen = rec_entry->BufLen - sizeof(CommHeaderType);
+        packetlen = static_cast<int>(rec_entry->BufLen - sizeof(CommHeaderType));
         if (packetlen > 0) {
           memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
         }
@@ -491,7 +491,7 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
       if (entry_data->Code == PACKET_DATA_NOACK) {
         rec_entry->IsRead = 1;
 
-        packetlen = rec_entry->BufLen - sizeof(CommHeaderType);
+        packetlen = static_cast<int>(rec_entry->BufLen - sizeof(CommHeaderType));
         if (packetlen > 0) {
           memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
         }

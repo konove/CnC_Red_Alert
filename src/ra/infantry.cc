@@ -2874,7 +2874,7 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
               ((BuildingClass*)object)->Class->Occupy_List(false);
           bool found = false;
           while (*list != REFRESH_EOL && !found) {
-            CELL newcell = cell + *list++;
+            CELL newcell = static_cast<CELL>(cell + *list++);
             for (FacingType i = FACING_N; i < FACING_COUNT; i++) {
               if (Map[Adjacent_Cell(newcell, i)].Zones[Class->MZone] ==
                   targzone) {
@@ -3280,7 +3280,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           /*
           **	4th token: cell #.
           */
-          CELL cell = atoi(strtok(nullptr, ",\n\r"));
+          CELL cell = static_cast<CELL>(atoi(strtok(nullptr, ",\n\r")));
           COORDINATE coord = Cell_Coord(cell);
 
           /*
@@ -3318,7 +3318,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
 
           if (infantry->Unlimbo(coord, dir)) {
             infantry->Strength =
-                infantry->Class_Of().MaxStrength * fixed(strength, 256);
+                static_cast<short>(infantry->Class_Of().MaxStrength * fixed(strength, 256));
             if (infantry->Strength > infantry->Class->MaxStrength - 3) {
               infantry->Strength = infantry->Class->MaxStrength;
             }

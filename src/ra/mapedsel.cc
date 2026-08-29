@@ -439,7 +439,7 @@ void MapEditClass::Grab_Object() {
     *cell
     */
     cell = Coord_Cell(GrabbedObject->Coord);
-    GrabOffset = cell - ZoneCell;
+    GrabOffset = static_cast<CELL>(cell - ZoneCell);
   }
 }
 
@@ -487,7 +487,7 @@ int MapEditClass::Move_Grabbed_Object() {
     /*
     **	Non-infantry: use cell's center coordinate
     */
-    new_coord = Cell_Coord(ZoneCell + GrabOffset);
+    new_coord = static_cast<CELL>(Cell_Coord(static_cast<CELL>(ZoneCell + GrabOffset)));
 
     if (GrabbedObject->What_Am_I() == RTTI_BUILDING ||
         GrabbedObject->What_Am_I() == RTTI_TERRAIN) {

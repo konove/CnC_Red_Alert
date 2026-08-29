@@ -368,7 +368,7 @@ void OverlayClass::Read_INI(char* buffer) {
     CELL cell;
     OverlayType classid;
 
-    cell = atoi(tbuffer);
+    cell = static_cast<CELL>(atoi(tbuffer));
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     classid = OverlayTypeClass::From_Name(strtok(buf, ",\n\r"));

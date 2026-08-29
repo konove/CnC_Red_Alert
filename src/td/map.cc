@@ -622,7 +622,7 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
     CELL newcell;  // New cell with offset.
     int xdiff;     // New cell's X coordinate distance from center.
 
-    newcell = cell + *ptr++;
+    newcell = static_cast<CELL>(cell + *ptr++);
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -743,7 +743,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
 
   const short* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = cell + *list++;
+    CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Occupy_Down(object);
       (*this)[newcell].Recalc_Attributes();
@@ -753,7 +753,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
 
   list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = cell + *list++;
+    CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Down(object);
       (*this)[newcell].Redraw_Objects();
@@ -786,7 +786,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
 
   const short* list = object->Occupy_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = cell + *list++;
+    CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Occupy_Up(object);
       (*this)[newcell].Recalc_Attributes();
@@ -796,7 +796,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
 
   list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = cell + *list++;
+    CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Up(object);
       (*this)[newcell].Redraw_Objects();
@@ -829,7 +829,7 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
 
   const short* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = cell + *list++;
+    CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Down(object);
       (*this)[newcell].Redraw_Objects();
@@ -861,7 +861,7 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
 
   const short* list = object->Overlap_List();
   while (*list != REFRESH_EOL) {
-    CELL newcell = cell + *list++;
+    CELL newcell = static_cast<CELL>(cell + *list++);
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Up(object);
       (*this)[newcell].Redraw_Objects();
@@ -1091,9 +1091,9 @@ void MapClass::Logic() {
   int subcount = 30;
   int index;
   for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {
-    CELL cell = index;
+    CELL cell = static_cast<CELL>(index);
     if (!IsForwardScan) {
-      cell = MAP_CELL_TOTAL - 1 - index;
+      cell = static_cast<CELL>(MAP_CELL_TOTAL - 1 - index);
     }
     CellClass* ptr = &(*this)[cell];
 
@@ -1130,7 +1130,7 @@ void MapClass::Logic() {
       break;
     }
   }
-  TiberiumScan = index;
+  TiberiumScan = static_cast<CELL>(index);
 
   if (TiberiumScan >= MAP_CELL_TOTAL) {
     int tries = 1;
@@ -1436,7 +1436,7 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
     **	Examine the cell for close object. Make sure that the cell actually is a
     **	legal one.
     */
-    CELL newcell = cell + _offsets[index];
+    CELL newcell = static_cast<CELL>(cell + _offsets[index]);
     if (In_Radar(newcell)) {
       /*
       **	Search through all objects that occupy this cell and then

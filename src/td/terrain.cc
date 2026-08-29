@@ -777,8 +777,8 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   ** conveniantly stored out as the first byte of every icon we made.
   */
   int basecell = Coord_Cell(Coord);  // find the base cell of terrain
-  int ydiff = Cell_Y(cell) - Cell_Y(basecell);
-  int xdiff = Cell_X(cell) - Cell_X(basecell);
+  int ydiff = static_cast<CELL>(Cell_Y(cell) - Cell_Y(static_cast<CELL>(basecell)));
+  int xdiff = static_cast<CELL>(Cell_X(cell) - Cell_X(static_cast<CELL>(basecell)));
   if (xdiff < width && ydiff < height) {
     int iconnum = ydiff * width + xdiff;
     return icon + static_cast<base::ssize>(iconnum) * 9;
@@ -817,7 +817,7 @@ void TerrainClass::Read_INI(char* buffer) {
     TerrainType terrain;  // Terrain type.
     CELL cell;
 
-    cell = atoi(tbuffer);
+    cell = static_cast<CELL>(atoi(tbuffer));
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     terrain = TerrainTypeClass::From_Name(strtok(buf, ","));

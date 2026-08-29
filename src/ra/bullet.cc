@@ -125,7 +125,7 @@ BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
       TarCom(target),
       MaxSpeed(speed),
       Warhead(warhead) {
-  Strength = strength;
+  Strength = static_cast<short>(strength);
   Height = FLIGHT_LEVEL;
 }
 
@@ -164,7 +164,7 @@ BulletClass::~BulletClass() {
         **	Ensure that the coordinate, that the dog is to appear at, is
         *legal. If not, *	then find a nearby legal location.
         */
-        if (Can_Enter_Cell(newcoord) != MOVE_OK) {
+        if (Can_Enter_Cell(static_cast<CELL>(newcoord)) != MOVE_OK) {
           newcoord =
               Map.Nearby_Location(Coord_Cell(newcoord), dog->Class->Speed);
         }
@@ -318,7 +318,7 @@ const short* BulletClass::Occupy_List(bool) const {
     CELL cell2 = Coord_Cell(coord);
     ptr = Coord_Spillage_List(coord, 5);
     while (*ptr != REFRESH_EOL) {
-      _list[index++] = *ptr + (cell2 - cell1);
+      _list[index++] = static_cast<short>(*ptr + (cell2 - cell1));
       ptr++;
     }
     _list[index] = REFRESH_EOL;
@@ -548,7 +548,8 @@ int BulletClass::Shape_Number() const {
   **	For tumbling projectiles, fetch offset stage.
   */
   if (Class->Tumble > 0) {
-    shapenum += static_cast<long>(Frame) % Class->Tumble;
+    shapenum = static_cast<int>(shapenum +
+                                static_cast<long>(Frame) % Class->Tumble);
   }
 
   return shapenum;

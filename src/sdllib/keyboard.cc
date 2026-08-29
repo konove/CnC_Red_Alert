@@ -40,7 +40,7 @@ int WWKeyboardClass::Get() {
 }
 
 bool WWKeyboardClass::Put(int key) {
-  int temp = Tail + 1 & 255;
+  int temp = static_cast<int>(Tail + 1 & 255);
   if (temp != Head) {
     Buffer[Tail] = static_cast<short>(key);
 

@@ -616,7 +616,7 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   if (GameToPlay == GAME_MODEM || GameToPlay == GAME_NULL_MODEM) {
     multi_packet_buf = NullModem.BuildBuf;
-    multi_packet_max = NullModem.MaxLen - sizeof(CommHeaderType);
+    multi_packet_max = static_cast<int>(NullModem.MaxLen - sizeof(CommHeaderType));
     net = &NullModem;
   } else if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
     multi_packet_buf = MetaPacket;
@@ -2382,7 +2382,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
     // For a variable-sized event, pull the size from the event; otherwise,
     // the size will be the data element size plus the event type value.
     //.....................................................................
-    storedsize = datasize + sizeof(EventClass::EventType);
+    storedsize = static_cast<int>(datasize + sizeof(EventClass::EventType));
 
     //.....................................................................
     // MegaMission compression:  MegaMissions are stored as:
@@ -2521,7 +2521,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data.FrameInfo.Delay, datasize);
 
-        size += datasize + sizeof(EventClass::EventType);
+        size = static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
         break;
 
       //..................................................................
@@ -2560,7 +2560,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
                      sizeof(EventClass::EventType) + sizeof(numunits),
                  &OutList.First().Data.MegaMission, datasize);
 
-          size += datasize + sizeof(EventClass::EventType) + sizeof(numunits);
+          size = static_cast<int>(size + (datasize + sizeof(EventClass::EventType) + sizeof(numunits)));
         }
         break;
 
@@ -2573,7 +2573,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data, datasize);
 
-        size += datasize + sizeof(EventClass::EventType);
+        size = static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
 
         break;
     }
@@ -2794,8 +2794,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
                  datasize);
 
           if (numunits > 1) {
-            pos += datasize + sizeof(EventClass::EventType);
-            leftover -= datasize + sizeof(EventClass::EventType);
+            pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
+            leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
             datasize = sizeof(eventdata.Data.MegaMission.Whom);
 
             while (numunits) {
@@ -2850,8 +2850,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       //..................................................................
       count++;
 
-      pos += datasize + sizeof(EventClass::EventType);
-      leftover -= datasize + sizeof(EventClass::EventType);
+      pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
+      leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
 
       if (leftover) {
         event = (EventClass*)(static_cast<char*>(buf) + pos);
@@ -2866,8 +2866,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
     // and it will be uncompressed.
     //.....................................................................
     else {
-      pos += datasize + sizeof(EventClass::EventType);
-      leftover -= datasize + sizeof(EventClass::EventType);
+      pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
+      leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
       event = (EventClass*)(static_cast<char*>(buf) + pos);
 
       //..................................................................

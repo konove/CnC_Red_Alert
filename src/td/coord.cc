@@ -217,8 +217,8 @@ const short* Coord_Spillage_List(COORDINATE coord, int maxsize) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
-  short x = Coord_X(start);
-  short y = Coord_Y(start);
+  short x = static_cast<short>(Coord_X(start));
+  short y = static_cast<short>(Coord_Y(start));
 
   base::MovePoint(x, y, dir, distance);
   return XY_Coord(x, y);

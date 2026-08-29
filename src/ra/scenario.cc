@@ -275,7 +275,8 @@ void ScenarioClass::Do_Fade_AI() {
       IsFadingColor = false;
     }
     fixed newsat = Options.Get_Saturation() *
-                   fixed(kGrayFadeTime - static_cast<int>(FadeTimer.Value()), kGrayFadeTime);
+                   fixed(static_cast<int>(kGrayFadeTime - FadeTimer.Value()),
+                         static_cast<int>(kGrayFadeTime));
     Options.Adjust_Palette(OriginalPalette, GamePalette,
                            Options.Get_Brightness(), newsat, Options.Get_Tint(),
                            Options.Get_Contrast());
@@ -579,7 +580,7 @@ void Fill_In_Data() {
     Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
         Scen.Waypoint[WAYPT_HOME];
     Map.Set_Tactical_Position(
-        Cell_Coord(Scen.Waypoint[WAYPT_HOME] - MAP_CELL_W * 8 - 10));
+        Cell_Coord(static_cast<CELL>(Scen.Waypoint[WAYPT_HOME] - MAP_CELL_W * 8 - 10)));
     //		}
   }
 
@@ -1391,7 +1392,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   int bheight = 0;
   int numbuttons = 0;
   if (b1txt) {
-    b1char = toupper(b1txt[0]);
+    b1char = static_cast<char>(toupper(b1txt[0]));
 
     /*
     **	Build the button list.
@@ -1400,7 +1401,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     bwidth = std::max(String_Pixel_Width(b1txt) + 8, 80u);
     if (b2txt) {
       numbuttons = 2;
-      b2char = toupper(b2txt[0]);
+      b2char = static_cast<char>(toupper(b2txt[0]));
       bwidth = std::max(String_Pixel_Width(b2txt) + 8,
                         static_cast<unsigned>(bwidth));
       //			b1x = x + 10;
@@ -1408,7 +1409,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
       if (b3txt) {
         numbuttons = 3;
-        b3char = toupper(b3txt[0]);
+        b3char = static_cast<char>(toupper(b3txt[0]));
         bwidth = std::max(String_Pixel_Width(b3txt) + 8,
                           static_cast<unsigned>(bwidth));
       }
@@ -1799,7 +1800,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
     if (i == SCEN_VAR_FIRST) {
       c_var = 'X';  // indicates an error
     } else {
-      c_var = 'A' + Random_Pick(0, i - 1);
+      c_var = static_cast<char>('A' + Random_Pick(0, i - 1));
       //			ScenVar = (ScenarioVarType)i;
     }
   } else {
@@ -1834,13 +1835,13 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   if (scenario < 100) {
     sprintf(ScenarioName, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, c_var);
   } else {
-    char first = scenario / 36 + 'A';
-    char second = scenario % 36;
+    char first = static_cast<char>(scenario / 36 + 'A');
+    char second = static_cast<char>(scenario % 36);
 
     if (second < 10) {
       second += '0';
     } else {
-      second = second - 10 + 'A';
+      second = static_cast<char>(second - 10 + 'A');
     }
 
     sprintf(ScenarioName, "SC%c%c%c%c%c.INI", c_player, first, second, c_dir,
@@ -1868,7 +1869,7 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
       if (second <= '9') {
         second -= '0';
       } else {
-        second = second - 'A' + 10;
+        second = static_cast<char>(second - 'A' + 10);
       }
 
       Scenario = 36 * first + second;
@@ -3301,9 +3302,9 @@ void Disect_Scenario_Name(const char* name, int& scenario,
       second -= '0';
     } else {
       if (second >= 'a' && second <= 'z') {
-        second = second - 'a' + 10;
+        second = static_cast<char>(second - 'a' + 10);
       } else {
-        second = second - 'A' + 10;
+        second = static_cast<char>(second - 'A' + 10);
       }
     }
     scenario = 36 * first + second;

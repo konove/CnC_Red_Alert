@@ -328,7 +328,7 @@ long RAMFileClass::Seek(long pos, int dir) {
 
   switch (dir) {
     case SEEK_CUR:
-      Offset += pos;
+      Offset = static_cast<int>(Offset + pos);
       break;
 
     case SEEK_SET:

@@ -355,7 +355,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
 
   Sound_Effect(
       voc, static_cast<VolType>(Fixed_To_Cardinal(distance, Options.Volume)),
-      variation, pan_value);
+      variation, static_cast<short>(pan_value));
 }
 
 /***********************************************************************************************

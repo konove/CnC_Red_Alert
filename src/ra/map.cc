@@ -629,7 +629,7 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
     CELL newcell;  // New cell with offset.
     int xdiff;     // New cell's X coordinate distance from center.
 
-    newcell = cell + *ptr++;
+    newcell = static_cast<CELL>(cell + *ptr++);
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -712,7 +712,7 @@ void MapClass::Shroud_From(CELL cell, int sightrange) {
     CELL newcell;  // New cell with offset.
     int xdiff;     // New cell's X coordinate distance from center.
 
-    newcell = cell + *ptr++;
+    newcell = static_cast<CELL>(cell + *ptr++);
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -787,7 +787,7 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
     CELL newcell;  // New cell with offset.
     int xdiff;     // New cell's X coordinate distance from center.
 
-    newcell = cell + *ptr++;
+    newcell = static_cast<CELL>(cell + *ptr++);
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -934,7 +934,7 @@ void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass* house) {
     CELL newcell;  // New cell with offset.
     int xdiff;     // New cell's X coordinate distance from center.
 
-    newcell = cell + *ptr++;
+    newcell = static_cast<CELL>(cell + *ptr++);
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -1040,7 +1040,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
     List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
     while (*list != REFRESH_EOL) {
-      CELL newcell = cell + *list++;
+      CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Occupy_Down(object);
         (*this)[newcell].Recalc_Attributes();
@@ -1051,7 +1051,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     list = xlist;
     while (*list != REFRESH_EOL) {
-      CELL newcell = cell + *list++;
+      CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Down(object);
         (*this)[newcell].Redraw_Objects();
@@ -1089,7 +1089,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
     List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
     while (*list != REFRESH_EOL) {
-      CELL newcell = cell + *list++;
+      CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Occupy_Up(object);
         (*this)[newcell].Recalc_Attributes();
@@ -1100,7 +1100,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     list = xlist;
     while (*list != REFRESH_EOL) {
-      CELL newcell = cell + *list++;
+      CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Up(object);
         (*this)[newcell].Redraw_Objects();
@@ -1138,7 +1138,7 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
     while (*list != REFRESH_EOL) {
-      CELL newcell = cell + *list++;
+      CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Down(object);
         (*this)[newcell].Redraw_Objects();
@@ -1175,7 +1175,7 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
     while (*list != REFRESH_EOL) {
-      CELL newcell = cell + *list++;
+      CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Up(object);
         (*this)[newcell].Redraw_Objects();
@@ -1211,7 +1211,7 @@ long MapClass::Overpass() {
   */
   for (int y = 0; y < MapCellHeight; y++) {
     for (int x = 0; x < MapCellWidth; x++) {
-      CELL cell = (MapCellY + y) * MAP_CELL_W + (MapCellX + x);
+      CELL cell = static_cast<CELL>((MapCellY + y) * MAP_CELL_W + (MapCellX + x));
       value += (*this)[cell].Tiberium_Adjust(true);
       (*this)[cell].Recalc_Attributes();
     }
@@ -1356,7 +1356,7 @@ void MapClass::Logic() {
   subcount = std::max(subcount, 1);
   int index;
   for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {
-    CELL cell = index;
+    CELL cell = static_cast<CELL>(index);
     if (In_Radar(cell)) {
       CellClass* ptr = &(*this)[cell];
 
@@ -1402,7 +1402,7 @@ void MapClass::Logic() {
       break;
     }
   }
-  TiberiumScan = index;
+  TiberiumScan = static_cast<CELL>(index);
 
   /*
   **	When the entire map has been processed, proceed with tiberium (ore)
@@ -1716,7 +1716,7 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
     **	Examine the cell for close object. Make sure that the cell actually is a
     **	legal one.
     */
-    CELL newcell = cell + _offsets[index];
+    CELL newcell = static_cast<CELL>(cell + _offsets[index]);
     if (In_Radar(newcell)) {
       /*
       **	Search through all objects that occupy this cell and then
@@ -2142,8 +2142,8 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       int w = TemplateTypeClass::As_Reference(ttype).Width;
       int h = TemplateTypeClass::As_Reference(ttype).Height;
 
-      cell -= icon % w;
-      cell -= MAP_CELL_W * (icon / w);
+      cell = static_cast<CELL>(cell - (icon % w));
+      cell = static_cast<CELL>(cell - (MAP_CELL_W * (icon / w)));
 
       if (ttype == TEMPLATE_BRIDGE1) {
         new TemplateClass(TEMPLATE_BRIDGE1H, cell);
@@ -2152,7 +2152,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       }
 
       new AnimClass(ANIM_NAPALM3,
-                    Cell_Coord(cell + w / 2 + h / 2 * MAP_CELL_W));
+                    Cell_Coord(static_cast<CELL>(cell + w / 2 + h / 2 * MAP_CELL_W)));
     }
 
     if (ttype == TEMPLATE_BRIDGE1H || ttype == TEMPLATE_BRIDGE2H) {
@@ -2160,8 +2160,8 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       int bridge_w = TemplateTypeClass::As_Reference(ttype).Width;
       int bridge_h = TemplateTypeClass::As_Reference(ttype).Height;
 
-      cell -= icon % bridge_w;
-      cell -= MAP_CELL_W * (icon / bridge_w);
+      cell = static_cast<CELL>(cell - (icon % bridge_w));
+      cell = static_cast<CELL>(cell - (MAP_CELL_W * (icon / bridge_w)));
 
       if (ttype == TEMPLATE_BRIDGE1H) {
         new TemplateClass(TEMPLATE_BRIDGE1D, cell);
@@ -2171,8 +2171,9 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
 
       Scen.BridgeCount--;
       Scen.IsBridgeChanged = true;
-      new AnimClass(ANIM_NAPALM3, Cell_Coord(cell + bridge_w / 2 +
-                                             bridge_h / 2 * MAP_CELL_W));
+      new AnimClass(ANIM_NAPALM3,
+                    Cell_Coord(static_cast<CELL>(cell + bridge_w / 2 +
+                                                bridge_h / 2 * MAP_CELL_W)));
       Map.Zone_Reset(MZONEF_ALL);
 
       /*
@@ -2201,7 +2202,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
           }
           cell++;
         }
-        cell += MAP_CELL_W - bridge_w;
+        cell = static_cast<CELL>(cell + (MAP_CELL_W - bridge_w));
       }
       Shake_The_Screen(3);
 
@@ -2215,8 +2216,8 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       int w = TemplateTypeClass::As_Reference(ttype).Width;
       int h = TemplateTypeClass::As_Reference(ttype).Height;
 
-      cell -= icon % w;
-      cell -= MAP_CELL_W * (icon / w);
+      cell = static_cast<CELL>(cell - (icon % w));
+      cell = static_cast<CELL>(cell - (MAP_CELL_W * (icon / w)));
       switch (ttype) {
         case TEMPLATE_BRIDGE_1A:
         case TEMPLATE_BRIDGE_1B:
@@ -2235,7 +2236,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       */
       if (ttype == TEMPLATE_BRIDGE_3C) {
         // check the template below us, at x-1, y+1
-        CELL cell2 = cell + (MAP_CELL_W - 1);
+        CELL cell2 = static_cast<CELL>(cell + (MAP_CELL_W - 1));
         CellClass* celptr = &(*this)[cell2];
         if (celptr->TType == TEMPLATE_BRIDGE_3C) {
           // It was also destroyed.  Update us and it.
@@ -2246,7 +2247,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
         }
 
         // Now check the template above us, at x+1, y-1.
-        cell2 = cell - (MAP_CELL_W - 1);
+        cell2 = static_cast<CELL>(cell - (MAP_CELL_W - 1));
         celptr = &(*this)[cell2];
         if (celptr->TType == TEMPLATE_BRIDGE_3C) {
           if (cellptr->TType == TEMPLATE_BRIDGE_3D) {
@@ -2272,7 +2273,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
         Scen.IsBridgeChanged = true;
 
         // Point to the template below us, x-1, y+2
-        CELL cell2 = cell + MAP_CELL_W * 2 - 1;
+        CELL cell2 = static_cast<CELL>(cell + MAP_CELL_W * 2 - 1);
         switch ((*this)[cell2].TType) {
           case TEMPLATE_BRIDGE_3A:
           case TEMPLATE_BRIDGE_3B:
@@ -2288,7 +2289,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       } else {
         if (cellptr->TType == TEMPLATE_BRIDGE_2C) {
           // Point to the template above us, x+2, y-1
-          CELL cell2 = cell - (MAP_CELL_W - 2);
+          CELL cell2 = static_cast<CELL>(cell - (MAP_CELL_W - 2));
           switch ((*this)[cell2].TType) {
             case TEMPLATE_BRIDGE_3A:
             case TEMPLATE_BRIDGE_3B:

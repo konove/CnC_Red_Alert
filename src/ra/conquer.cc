@@ -1031,7 +1031,7 @@ void Toggle_Formation() {
         maxy = std::max(yc, maxy);
         TeamMaxSpeed[team] = std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
       } else {
-        obj->XFormOffset = obj->YFormOffset = 0x80000000UL;
+        obj->XFormOffset = obj->YFormOffset = static_cast<int>(0x80000000UL);
       }
     }
   }
@@ -3440,7 +3440,7 @@ void Handle_Team(int team, int action) {
   //
   if (Session.Record) {
     TeamNumber = static_cast<char>(team);
-    TeamEvent = static_cast<char>(action) + 1;
+    TeamEvent = static_cast<char>(action + 1);
   }
 
   AllowVoice = true;
@@ -3737,7 +3737,7 @@ void Handle_View(int view, int action) {
   if (static_cast<unsigned>(view) < std::ssize(Scen.Views)) {
     if (action == 0) {
       Map.Set_Tactical_Position(
-          Coord_Whole(Cell_Coord(Scen.Views[view] - MAP_CELL_W * 8 - 10)));
+          Coord_Whole(Cell_Coord(static_cast<CELL>(Scen.Views[view] - MAP_CELL_W * 8 - 10))));
 
       /*
       ** Win95 scrolling logic cant handle just jumps in screen position so
@@ -3745,7 +3745,7 @@ void Handle_View(int view, int action) {
       */
       Map.Flag_To_Redraw(true);
     } else {
-      Scen.Views[view] = Coord_Cell(Map.TacticalCoord) + MAP_CELL_W * 8 + 10;
+      Scen.Views[view] = static_cast<CELL>(Coord_Cell(Map.TacticalCoord) + MAP_CELL_W * 8 + 10);
     }
   }
 }

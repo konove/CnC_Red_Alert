@@ -1271,7 +1271,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ....................... Set new strength ........................
         */
         if (strength != CurrentObject[0]->Strength) {
-          CurrentObject[0]->Strength = strength;
+          CurrentObject[0]->Strength = static_cast<short>(strength);
           HiddenPage.Clear();
           Flag_To_Redraw(true);
           Changed = 1;

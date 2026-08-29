@@ -1071,7 +1071,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
           if (IsWaypoint) {
             for (i = 0; i < 26; i++) {
               if (Waypoint[i] == Cell_Number()) {
-                waypt[0] = 'A' + i;
+                waypt[0] = static_cast<char>('A' + i);
                 waypt[1] = 0;
                 Fancy_Text_Print(waypt, Map.TacPixelX + x + CELL_PIXEL_W / 2,
                                  Map.TacPixelY + y + CELL_PIXEL_H / 2 - 3,
@@ -1128,8 +1128,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                 tptr = (TemplateTypeClass*)Map.PendingObject;
                 if (tptr->Get_Image_Data()) {
                   icon =
-                      Cell_X(cell) - Cell_X(Map.ZoneCell + Map.ZoneOffset) +
-                      (Cell_Y(cell) - Cell_Y(Map.ZoneCell + Map.ZoneOffset)) *
+                      Cell_X(cell) - Cell_X(static_cast<CELL>(Map.ZoneCell + Map.ZoneOffset)) +
+                      (Cell_Y(cell) - Cell_Y(static_cast<CELL>(Map.ZoneCell + Map.ZoneOffset))) *
                           tptr->Width;
                   LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y,
                                         nullptr, WINDOW_TACTICAL);
@@ -1165,7 +1165,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       if (IsFlagged) {
         const void* remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
-        CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), Frame % 14,
+        CC_Draw_Shape(MFCD::Retrieve("FLAGFLY.SHP"), static_cast<int>(Frame % 14),
                       x + ICON_PIXEL_W / 2, y + ICON_PIXEL_H / 2,
                       WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, remap,
@@ -2416,4 +2416,4 @@ ObjectClass* CellClass::Cell_Occupier() const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-CELL CellClass::Cell_Number() const { return Map.ID(this); }
+CELL CellClass::Cell_Number() const { return static_cast<CELL>(Map.ID(this)); }

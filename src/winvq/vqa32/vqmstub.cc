@@ -61,7 +61,7 @@ bool DecompressVqaSosData(SosCompressInfo* info, std::size_t uncomp_size) {
 
       // 3. Update Step Index for the NEXT sample
       const int index_delta = kImaAdpcmIndexTable[nibble];
-      info->step_index = std::clamp(info->step_index + index_delta, 0, 88);
+      info->step_index = static_cast<std::int16_t>(std::clamp(info->step_index + index_delta, 0, 88));
 
       // 4. Calculate Difference
       // Formula: ( (nibble * 2 + 1) * step ) / 8

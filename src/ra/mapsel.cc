@@ -178,7 +178,7 @@ std::string Map_Selection() {
                         PlayerPtr->Class->House == HOUSE_UKRAINE;
 
   file_name[2] = is_soviet ? 'S' : 'A';
-  file_name[3] = Scen.Scenario + 'A';
+  file_name[3] = static_cast<char>(Scen.Scenario + 'A');
   PaletteClass map_palette;
 
   int selection = 0;

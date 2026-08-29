@@ -1996,7 +1996,7 @@ void VesselClass::Read_INI(CCINIClass& ini) {
           */
           int strength = atoi(strtok(nullptr, ",\r\n"));
 
-          CELL cell = atoi(strtok(nullptr, ",\r\n"));
+          CELL cell = static_cast<CELL>(atoi(strtok(nullptr, ",\r\n")));
 
           COORDINATE coord = Cell_Coord(cell);
 
@@ -2016,7 +2016,7 @@ void VesselClass::Read_INI(CCINIClass& ini) {
 
           if (vessel->Unlimbo(coord, dir)) {
             vessel->Strength =
-                vessel->Class->MaxStrength * fixed(strength, 256);
+                static_cast<short>(vessel->Class->MaxStrength * fixed(strength, 256));
             if (vessel->Strength > vessel->Class->MaxStrength - 3) {
               vessel->Strength = vessel->Class->MaxStrength;
             }
@@ -2294,7 +2294,7 @@ void VesselClass::Repair_AI() {
 
       if (House->Available_Money() >= cost) {
         House->Spend_Money(cost);
-        Strength += step;
+        Strength = static_cast<short>(Strength + step);
         if (Strength >= Class->MaxStrength) {
           Strength = Class->MaxStrength;
           IsSelfRepairing = IsToSelfRepair = false;

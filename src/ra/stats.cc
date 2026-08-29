@@ -648,7 +648,7 @@ void Send_Statistics_Packet() {
       /*
       ** Player handle.
       */
-      field_player_handle[3] = '1' + static_cast<char>(house);
+      field_player_handle[3] = static_cast<char>('1' + static_cast<char>(house));
 #if WOLAPI_INTEGRATION
       stats.Add_Field(field_player_handle, (char*)player->InitialName);
 // debugprint( "Stats: Player %i name %s\n", house, (char*) player->InitialName
@@ -670,13 +670,13 @@ void Send_Statistics_Packet() {
       /*
       ** Player team. (NOD or GDI)
       */
-      field_player_team[3] = '1' + static_cast<char>(house);
+      field_player_team[3] = static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_team, houses[player->ActLike]);
 
       /*
       ** Player color
       */
-      field_player_color[3] = '1' + static_cast<char>(house);
+      field_player_color[3] = static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(
           field_player_color,
           static_cast<unsigned char>(player->Class->House - HOUSE_MULTI1));
@@ -684,17 +684,17 @@ void Send_Statistics_Packet() {
       /*
       ** Player end credits.
       */
-      field_player_credits[3] = '1' + static_cast<char>(house);
+      field_player_credits[3] = static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_credits, player->Credits + player->Tiberium);
 
       /*
       ** Number of each unit/building type built
       */
-      field_player_infantry_bought[3] = '1' + static_cast<char>(house);
-      field_player_units_bought[3] = '1' + static_cast<char>(house);
-      field_player_planes_bought[3] = '1' + static_cast<char>(house);
-      field_player_buildings_bought[3] = '1' + static_cast<char>(house);
-      field_player_vessels_bought[3] = '1' + static_cast<char>(house);
+      field_player_infantry_bought[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_units_bought[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_planes_bought[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_buildings_bought[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_vessels_bought[3] = static_cast<char>('1' + static_cast<char>(house));
 
       player->InfantryTotals->To_Network_Format();
       player->UnitTotals->To_Network_Format();
@@ -778,11 +778,11 @@ void Send_Statistics_Packet() {
       player->BuildingTotals->To_Network_Format();
       player->VesselTotals->To_Network_Format();
 
-      field_player_infantry_left[3] = '1' + static_cast<char>(house);
-      field_player_units_left[3] = '1' + static_cast<char>(house);
-      field_player_planes_left[3] = '1' + static_cast<char>(house);
-      field_player_buildings_left[3] = '1' + static_cast<char>(house);
-      field_player_vessels_left[3] = '1' + static_cast<char>(house);
+      field_player_infantry_left[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_units_left[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_planes_left[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_buildings_left[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_vessels_left[3] = static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_infantry_left,
                       player->InfantryTotals->Get_All_Totals(),
                       player->InfantryTotals->Get_Unit_Count() * 4);
@@ -809,11 +809,11 @@ void Send_Statistics_Packet() {
       player->DestroyedBuildings->To_Network_Format();
       player->DestroyedVessels->To_Network_Format();
 
-      field_player_infantry_killed[3] = '1' + static_cast<char>(house);
-      field_player_units_killed[3] = '1' + static_cast<char>(house);
-      field_player_planes_killed[3] = '1' + static_cast<char>(house);
-      field_player_buildings_killed[3] = '1' + static_cast<char>(house);
-      field_player_vessels_killed[3] = '1' + static_cast<char>(house);
+      field_player_infantry_killed[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_units_killed[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_planes_killed[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_buildings_killed[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_vessels_killed[3] = static_cast<char>('1' + static_cast<char>(house));
 
       stats.Add_Field(field_player_infantry_killed,
                       player->DestroyedInfantry->Get_All_Totals(),
@@ -834,7 +834,7 @@ void Send_Statistics_Packet() {
       /*
       ** Number and type of enemy buildings captured
       */
-      field_player_buildings_captured[3] = '1' + static_cast<char>(house);
+      field_player_buildings_captured[3] = static_cast<char>('1' + static_cast<char>(house));
       player->CapturedBuildings->To_Network_Format();
       stats.Add_Field(field_player_buildings_captured,
                       player->CapturedBuildings->Get_All_Totals(),
@@ -843,7 +843,7 @@ void Send_Statistics_Packet() {
       /*
       ** Number of crates discovered and their contents
       */
-      field_player_crates_found[3] = '1' + static_cast<char>(house);
+      field_player_crates_found[3] = static_cast<char>('1' + static_cast<char>(house));
       player->TotalCrates->To_Network_Format();
       stats.Add_Field(field_player_crates_found,
                       player->TotalCrates->Get_All_Totals(),
@@ -852,7 +852,7 @@ void Send_Statistics_Packet() {
       /*
       ** Amount of tiberium turned into credits
       */
-      field_player_harvested[3] = '1' + static_cast<char>(house);
+      field_player_harvested[3] = static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_harvested,
                       static_cast<unsigned long>(player->HarvestedCredits));
     }

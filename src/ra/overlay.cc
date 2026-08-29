@@ -315,7 +315,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
     int len = ini.Entry_Count(INI_Name());
     for (int index = 0; index < len; index++) {
       const char* entry = ini.Get_Entry(INI_Name(), index);
-      CELL cell = atoi(entry);
+      CELL cell = static_cast<CELL>(atoi(entry));
       OverlayType classid =
           ini.Get_OverlayType(INI_Name(), entry, OVERLAY_NONE);
 

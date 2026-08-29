@@ -234,7 +234,7 @@ int MapEditClass::New_Scenario() {
   Flag_Cell(Coord_Cell(TacticalCoord));
 
   Set_Tactical_Position(
-      Cell_Coord(Scen.Waypoint[WAYPT_HOME] - (MAP_CELL_W * 8) - 10));
+      Cell_Coord(static_cast<CELL>(Scen.Waypoint[WAYPT_HOME] - (MAP_CELL_W * 8) - 10)));
   ScenarioInit--;
 
   return 0;
@@ -643,16 +643,16 @@ int MapEditClass::Load_Scenario() {
     if (scen_nump < 100) {
       sprintf(scen_buf, "%d", scen_nump);  // init edit buffer
     } else {
-      char first = scen_nump / 36;
-      char second = scen_nump % 36;
-      scen_buf[0] = first + 'A';
+      char first = static_cast<char>(scen_nump / 36);
+      char second = static_cast<char>(scen_nump % 36);
+      scen_buf[0] = static_cast<char>(first + 'A');
       // Mono_Printf("picking map, scen# = %d, first = %c, second = %d
       // (numeric)\n",scen_nump,
       // scen_buf[0],second);Keyboard->Get();Keyboard->Get();
       if (second < 10) {
-        scen_buf[1] = second + '0';
+        scen_buf[1] = static_cast<char>(second + '0');
       } else {
-        scen_buf[1] = (second - 10) + 'A';
+        scen_buf[1] = static_cast<char>((second - 10) + 'A');
       }
       scen_buf[2] = 0;
     }
@@ -926,9 +926,9 @@ int MapEditClass::Load_Scenario() {
         second -= '0';
       } else {
         if (second >= 'a' && second <= 'z') {
-          second = (second - 'a') + 10;
+          second = static_cast<char>((second - 'a') + 10);
         } else {
-          second = (second - 'A') + 10;
+          second = static_cast<char>((second - 'A') + 10);
         }
       }
       scen_nump = (first * 36) + second;
@@ -2373,9 +2373,9 @@ int MapEditClass::Load_Scenario() {
         hstatic->IQ = smarties.Get_Value();
         for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
           if (allies.Is_Checked(h)) {
-            hstatic->Allies |= (1L << h);
+            hstatic->Allies = static_cast<int>(hstatic->Allies | (1L << h));
           } else {
-            hstatic->Allies &= ~(1L << h);
+            hstatic->Allies = static_cast<int>(hstatic->Allies & ~(1L << h));
           }
         }
       }

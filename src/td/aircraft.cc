@@ -458,15 +458,15 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
       /*
       **	Dual rotors offset along flight axis.
       */
-      short xx = x;
-      short yy = y - Altitude;
+      short xx = static_cast<short>(x);
+      short yy = static_cast<short>(y - Altitude);
       FacingType face = Dir_Facing(SecondaryFacing);
-      base::MovePoint(xx, yy, SecondaryFacing.Current(), _stretch[face]);
+      base::MovePoint(xx, yy, SecondaryFacing.Current(), static_cast<int16_t>(_stretch[face]));
       CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
                     flags, nullptr, MouseClass::UnitShadow);
 
       base::MovePoint(xx, yy, SecondaryFacing.Current() + DIR_S,
-                      _stretch[face] * 2);
+                      static_cast<int16_t>(_stretch[face] * 2));
       CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
                     flags, nullptr, MouseClass::UnitShadow);
 
@@ -536,7 +536,7 @@ void AircraftClass::Read_INI(char* buffer) {
             delete air;
           } else {
             air->Strength =
-                Fixed_To_Cardinal(air->Class->MaxStrength, strength);
+                static_cast<short>(Fixed_To_Cardinal(air->Class->MaxStrength, strength));
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(Mission_From_Name(strtok(nullptr, ",\n\r")));
             } else {

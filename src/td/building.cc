@@ -1186,7 +1186,7 @@ void BuildingClass::AI() {
       */
       if (House->Available_Money() >= cost) {
         House->Spend_Money(cost);
-        Strength += step;
+        Strength = static_cast<short>(Strength + step);
 
         if (Strength >= Class->MaxStrength) {
           Strength = Class->MaxStrength;
@@ -1567,7 +1567,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
         Sound_Effect(VOC_XPLOBIG4, Coord);
         while (*offset != REFRESH_EOL) {
-          CELL cell = Coord_Cell(Coord) + *offset++;
+          CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
 
           /*
           **	If the building is destroyed, then lots of
@@ -1623,7 +1623,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
       case RESULT_MAJOR:
         Sound_Effect(VOC_XPLOBIG4, Coord);
         while (*offset != REFRESH_EOL) {
-          CELL cell = Coord_Cell(Coord) + *offset++;
+          CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
           AnimClass* anim = nullptr;
 
           /*
@@ -1939,7 +1939,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
   while (*offset != REFRESH_EOL) {
     CELL newcell;
 
-    newcell = cell + *offset++;
+    newcell = static_cast<CELL>(cell + *offset++);
 
     /*
     **	Infantry could run out of a destroyed building.
@@ -3053,7 +3053,7 @@ void BuildingClass::Read_INI(char* buffer) {
       /*
       **	4th token: cell #.
       */
-      cell = atoi(strtok(nullptr, ","));
+      cell = static_cast<CELL>(atoi(strtok(nullptr, ",")));
 
       /*
       **	5th token: facing.
@@ -3070,7 +3070,7 @@ void BuildingClass::Read_INI(char* buffer) {
         if (b->Unlimbo(Cell_Coord(cell), facing)) {
           strength = std::min(strength, 0x100);
           strength = Fixed_To_Cardinal(b->Class->MaxStrength, strength);
-          b->Strength = strength;
+          b->Strength = static_cast<short>(strength);
           b->IsALemon = false;
           b->Trigger = TriggerClass::As_Pointer(trigname);
           if (b->Trigger) {
@@ -3806,7 +3806,7 @@ int BuildingClass::Mission_Deconstruction() {
             if (unit->Unlimbo(Coord_Snap(Adjacent_Cell(Coord, DIR_SE)),
                               DIR_SW)) {
               unit->Strength =
-                  Fixed_To_Cardinal(unit->Class_Of().MaxStrength, ratio);
+                  static_cast<short>(Fixed_To_Cardinal(unit->Class_Of().MaxStrength, ratio));
             } else {
               /*
               **	If, for some strange reason, the MCV could not be placed
@@ -4900,7 +4900,7 @@ bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
     const short* list = techno->Class_Of().Occupy_List(true);
 
     while (*list != REFRESH_EOL) {
-      CELL newcell = cell + *list++;
+      CELL newcell = static_cast<CELL>(cell + *list++);
 
       if (Map.In_Radar(newcell)) {
         TechnoClass* occupier = Map[newcell].Cell_Techno();
@@ -4932,7 +4932,7 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
   ptr = Class->ExitList;
   if (ptr) {
     while (*ptr != REFRESH_EOL) {
-      CELL cell = origin + *ptr++;
+      CELL cell = static_cast<CELL>(origin + *ptr++);
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
@@ -4979,7 +4979,7 @@ bool BuildingClass::Passes_Proximity_Check(CELL homecell) {
   */
   const short* ptr = Occupy_List(true);
   while (*ptr != REFRESH_EOL) {
-    CELL cell = homecell + *ptr++;
+    CELL cell = static_cast<CELL>(homecell + *ptr++);
 
     if (!Map.In_Radar(cell)) {
       return false;

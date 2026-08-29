@@ -134,7 +134,7 @@ void TemplateClass::Read_INI(char* buffer) {
   while (*tbuffer != '\0') {
     TemplateType temp;  // Terrain type.
 
-    cell = atoi(tbuffer);
+    cell = static_cast<CELL>(atoi(tbuffer));
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     temp = TemplateTypeClass::From_Name(strtok(buf, ",\r\n"));
@@ -278,7 +278,7 @@ bool TemplateClass::Mark(MarkType mark) {
 
     for (int y = 0; y < Class->Height; y++) {
       for (int x = 0; x < Class->Width; x++) {
-        CELL cell = Coord_Cell(Coord) + y * MAP_CELL_W + x;
+        CELL cell = static_cast<CELL>(Coord_Cell(Coord) + y * MAP_CELL_W + x);
         if (Map.In_Radar(cell)) {
           CellClass* cellptr = &Map[cell];
           int number = y * Class->Width + x;

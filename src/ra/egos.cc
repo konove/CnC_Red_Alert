@@ -573,8 +573,8 @@ void Show_Who_Was_Responsible() {
         ** Fix up our outer loop parsing variables.
         */
         cptr = strparse;
-        column += strparse - strstart;
-        length -= strparse - strstart - 1;
+        column = static_cast<int>(column + (strparse - strstart));
+        length = static_cast<int>(length - (strparse - strstart - 1));
 
         if (ch == 13) {
           line++;

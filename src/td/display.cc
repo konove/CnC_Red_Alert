@@ -625,7 +625,7 @@ const short* DisplayClass::Text_Overlap_List(const char* text, int x, int y,
       if (ul != -1 && lr != -1) {
         for (int yy = Cell_Y(ul); yy <= Cell_Y(lr); yy++) {
           for (int xx = Cell_X(ul); xx <= Cell_X(lr); xx++) {
-            *ptr++ = XY_Cell(xx, yy) - Coord_Cell(TacticalCoord);
+            *ptr++ = static_cast<short>(XY_Cell(xx, yy) - Coord_Cell(TacticalCoord));
           }
         }
       }
@@ -726,7 +726,7 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
  *=============================================================================================*/
 void DisplayClass::Set_Cursor_Shape(const short* list) {
   if (CursorSize) {
-    Cursor_Mark(ZoneCell + ZoneOffset, false);
+    Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), false);
   }
 
   ZoneOffset = 0;
@@ -740,8 +740,8 @@ void DisplayClass::Set_Cursor_Shape(const short* list) {
     }
     CursorSize = _list;
     Get_Occupy_Dimensions(w, h, CursorSize);
-    ZoneOffset = -(h / 2 * MAP_CELL_W + w / 2);
-    Cursor_Mark(ZoneCell + ZoneOffset, true);
+    ZoneOffset = static_cast<short>(-(h / 2 * MAP_CELL_W + w / 2));
+    Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), true);
   } else {
     CursorSize = nullptr;
   }
@@ -791,7 +791,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
   */
   ptr = CursorSize;
   while (*ptr != REFRESH_EOL) {
-    CELL cell = ZoneCell + ZoneOffset + *ptr++;
+    CELL cell = static_cast<CELL>(ZoneCell + ZoneOffset + *ptr++);
 
     for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
       CELL newcell = Adjacent_Cell(cell, facing);
@@ -864,8 +864,8 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   int w, h;
   Get_Occupy_Dimensions(w, h, CursorSize);
 
-  int x = Cell_X(pos + ZoneOffset);
-  int y = Cell_Y(pos + ZoneOffset);
+  int x = static_cast<CELL>(Cell_X(static_cast<CELL>(pos + ZoneOffset)));
+  int y = static_cast<CELL>(Cell_Y(static_cast<CELL>(pos + ZoneOffset)));
 
   x = std::clamp<int>(
       x, Coord_XCell(TacticalCoord),
@@ -873,7 +873,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   y = std::clamp<int>(
       y, Coord_YCell(TacticalCoord),
       Coord_YCell(TacticalCoord) + Lepton_To_Cell(TacLeptonHeight) - h);
-  pos = XY_Cell(x, y) - ZoneOffset;
+  pos = static_cast<CELL>(XY_Cell(x, y) - ZoneOffset);
 
   /*
   ** This checks to see if NO animation or drawing is to occur and, if so,
@@ -894,14 +894,14 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
     ** Erase the old cursor (if it exists) AND the cursor is moving.
     */
     if (pos != ZoneCell && ZoneCell != -1) {
-      Cursor_Mark(ZoneCell + ZoneOffset, false);
+      Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), false);
     }
 
     /*
     ** Render the cursor (could just be animation).
     */
     if (pos != -1) {
-      Cursor_Mark(pos + ZoneOffset, true);
+      Cursor_Mark(static_cast<CELL>(pos + ZoneOffset), true);
     }
   }
   ZoneCell = pos;
@@ -991,7 +991,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   */
   ptr = CursorSize;
   while (*ptr != REFRESH_EOL) {
-    CELL cell = pos + *ptr++;
+    CELL cell = static_cast<CELL>(pos + *ptr++);
     if (In_Radar(cell)) {
       cellptr = &(*this)[cell];
       cellptr->Redraw_Objects();
@@ -1006,7 +1006,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   if (PendingObjectPtr) {
     ptr = PendingObjectPtr->Overlap_List();
     while (*ptr != REFRESH_EOL) {
-      CELL cell = pos + *ptr++;
+      CELL cell = static_cast<CELL>(pos + *ptr++);
       if (In_Radar(cell)) {
         cellptr = &(*this)[cell];
         cellptr->Redraw_Objects();
@@ -1208,7 +1208,7 @@ void DisplayClass::Read_INI(char* buffer) {
   */
   for (i = 0; i < WAYPT_COUNT; i++) {
     sprintf(buf, "%d", i);
-    Waypoint[i] = WWGetPrivateProfileInt("Waypoints", buf, -1, buffer);
+    Waypoint[i] = static_cast<CELL>(WWGetPrivateProfileInt("Waypoints", buf, -1, buffer));
     if (Waypoint[i] != -1) {
       (*this)[Waypoint[i]].IsWaypoint = 1;
     }
@@ -1477,7 +1477,7 @@ void DisplayClass::Refresh_Cells(CELL cell, const short* list) {
     list++;
   }
   while (*list != REFRESH_EOL) {
-    CELL newcell = cell + *list++;
+    CELL newcell = static_cast<CELL>(cell + *list++);
     if (In_Radar(newcell)) {
       (*this)[newcell].Redraw_Objects();
     }
@@ -2150,7 +2150,7 @@ void DisplayClass::Draw_It(bool forced) {
       */
       if (Debug_Map && PendingObjectPtr) {
         PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
-            Cell_Coord(ZoneCell + ZoneOffset));
+            Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)));
         PendingObjectPtr->Render(true);
       }
     }

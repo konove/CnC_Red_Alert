@@ -1553,10 +1553,10 @@ const char* TeamTypeClass::Description() const {
     if (Origin > -1) {
       //	if (Origin != -1) {
       if (Origin < 26) {
-        loc[0] = 'A' + Origin;
+        loc[0] = static_cast<char>('A' + Origin);
       } else {
-        loc[0] = Origin / 26 + 'A' - 1;
-        loc[1] = Origin % 26 + 'A';
+        loc[0] = static_cast<char>(Origin / 26 + 'A' - 1);
+        loc[1] = static_cast<char>(Origin % 26 + 'A');
       }
     }
 

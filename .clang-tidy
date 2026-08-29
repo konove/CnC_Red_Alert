@@ -15,7 +15,6 @@ Checks: '*,
          -bugprone-derived-method-shadowing-base-method,
          -bugprone-easily-swappable-parameters,
          -bugprone-macro-parentheses,
-         -bugprone-narrowing-conversions,
          -bugprone-non-zero-enum-to-bool-conversion,
          -bugprone-parent-virtual-call,
          -bugprone-random-generator-seed,
@@ -234,3 +233,10 @@ Checks: '*,
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*/CnC_Red_Alert/src/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*'
 FormatStyle: file
+CheckOptions:
+  # Same-width unsigned-to-signed conversions are the game's own compact types
+  # flowing into int -- LEPTON (unsigned short), COORDINATE (uint32_t) and the
+  # rest of the do-not-touch list in docs/TYPE_MIGRATION.md. Warning on those is
+  # 585 findings the project has already decided against; real narrowing is not
+  # affected.
+  bugprone-narrowing-conversions.WarnOnEquivalentBitWidth: false

@@ -92,7 +92,7 @@ ConnectionClass::ConnectionClass(int numsend, int numreceive, int maxlen,
   /*------------------------------------------------------------------------
   Compute our maximum packet length
   ------------------------------------------------------------------------*/
-  MaxPacketLen = maxlen + sizeof(CommHeaderType);
+  MaxPacketLen = static_cast<int>(maxlen + sizeof(CommHeaderType));
 
   /*------------------------------------------------------------------------
   Assign the magic number
@@ -243,7 +243,7 @@ int ConnectionClass::Send_Packet(void* buf, int buflen, int ack_req) {
   /*------------------------------------------------------------------------
   Add it to the queue; don't add any extra data with it.
   ------------------------------------------------------------------------*/
-  if (Queue->Queue_Send(PacketBuf, buflen + sizeof(CommHeaderType), nullptr,
+  if (Queue->Queue_Send(PacketBuf, static_cast<int>(buflen + sizeof(CommHeaderType)), nullptr,
                         0)) {
     if (ack_req) {
       NumSendAck++;
@@ -505,7 +505,7 @@ int ConnectionClass::Get_Packet(void* buf, int* buflen) {
         LastReadID = entry_data->PacketID;
         rec_entry->IsRead = 1;
 
-        packetlen = rec_entry->BufLen - sizeof(CommHeaderType);
+        packetlen = static_cast<int>(rec_entry->BufLen - sizeof(CommHeaderType));
         if (packetlen > 0) {
           memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
         }
@@ -518,7 +518,7 @@ int ConnectionClass::Get_Packet(void* buf, int* buflen) {
       if (entry_data->Code == PACKET_DATA_NOACK) {
         rec_entry->IsRead = 1;
 
-        packetlen = rec_entry->BufLen - sizeof(CommHeaderType);
+        packetlen = static_cast<int>(rec_entry->BufLen - sizeof(CommHeaderType));
         if (packetlen > 0) {
           memcpy(buf, rec_entry->Buffer + sizeof(CommHeaderType), packetlen);
         }

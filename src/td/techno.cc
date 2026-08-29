@@ -730,7 +730,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
           }
 #endif
           House->Spend_Money(cost);
-          Strength += step;
+          Strength = static_cast<short>(Strength + step);
           return RADIO_ROGER;
         }
       }
@@ -2865,12 +2865,12 @@ CELL TechnoClass::Nearby_Location(const TechnoClass*) const {
     **	Scan the top and bottom rows of the "box".
     */
     for (int x = -radius; x <= radius; x++) {
-      CELL newcell = cell + XY_Cell(x, -radius);
+      CELL newcell = static_cast<CELL>(cell + XY_Cell(x, -radius));
       if (Map.In_Radar(newcell) && Map[newcell].Is_Generally_Clear()) {
         best = newcell;
       }
 
-      newcell = cell + XY_Cell(x, radius);
+      newcell = static_cast<CELL>(cell + XY_Cell(x, radius));
       if (Map.In_Radar(newcell) && Map[newcell].Is_Generally_Clear()) {
         best = newcell;
       }
@@ -2880,12 +2880,12 @@ CELL TechnoClass::Nearby_Location(const TechnoClass*) const {
     **	Scan the left and right columns of the "box".
     */
     for (int y = -(radius - 1); y < radius; y++) {
-      CELL newcell = cell + XY_Cell(-radius, y);
+      CELL newcell = static_cast<CELL>(cell + XY_Cell(-radius, y));
       if (Map.In_Radar(newcell) && Map[newcell].Is_Generally_Clear()) {
         best = newcell;
       }
 
-      newcell = cell + XY_Cell(radius, y);
+      newcell = static_cast<CELL>(cell + XY_Cell(radius, y));
       if (Map.In_Radar(newcell) && Map[newcell].Is_Generally_Clear()) {
         best = newcell;
       }

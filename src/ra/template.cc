@@ -99,7 +99,7 @@ bool TemplateClass::Mark(MarkType mark) {
 
     for (int y = 0; y < Class->Height; y++) {
       for (int x = 0; x < Class->Width; x++) {
-        CELL cell = Coord_Cell(Coord) + y * MAP_CELL_W + x;
+        CELL cell = static_cast<CELL>(Coord_Cell(Coord) + y * MAP_CELL_W + x);
         if (Map.In_Radar(cell)) {
           CellClass* cellptr = &Map[cell];
           int number = y * Class->Width + x;

@@ -984,7 +984,7 @@ static void Message_Input(KeyNumType& input) {
            */
           for (int i = 0; i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
                i++) {
-            the_string[i + actual_message_size] = 0xff;
+            the_string[i + actual_message_size] = static_cast<char>(0xff);
           }
         } else {
           actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
@@ -1003,7 +1003,7 @@ static void Message_Input(KeyNumType& input) {
         NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
 
         magic_number++;
-        sent_so_far += actual_message_size;  // COMPAT_MESSAGE_LENGTH-5;
+        sent_so_far = static_cast<int>(sent_so_far + actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
       }
 
     } else {
@@ -1038,7 +1038,7 @@ static void Message_Input(KeyNumType& input) {
              * print) */
             for (int i = 0; i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
                  i++) {
-              the_string[i + actual_message_size] = 0xff;
+              the_string[i + actual_message_size] = static_cast<char>(0xff);
             }
           } else {
             actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
@@ -1079,7 +1079,7 @@ static void Message_Input(KeyNumType& input) {
           }
 
           magic_number++;
-          sent_so_far += actual_message_size;  // COMPAT_MESSAGE_LENGTH-5;
+          sent_so_far = static_cast<int>(sent_so_far + actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
         }
       }
     }
@@ -1647,7 +1647,7 @@ bool Main_Loop() {
   //
   // Measure how long it took to process the AI
   //
-  ProcessTicks += ProcessTimer.Time();
+  ProcessTicks = static_cast<int>(ProcessTicks + ProcessTimer.Time());
   ProcessFrames++;
 
   //	Heap_Dump_Check( "Before Queue_AI" );

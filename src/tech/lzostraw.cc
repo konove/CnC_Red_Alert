@@ -182,7 +182,7 @@ int LZOStraw::Get(void* destbuf, int slen) {
       BlockHeader.CompCount = static_cast<unsigned short>(length);
       delete[] dictionary;
       memmove(Buffer2, &BlockHeader, sizeof(BlockHeader));
-      Counter = BlockHeader.CompCount + sizeof(BlockHeader);
+      Counter = static_cast<int>(BlockHeader.CompCount + sizeof(BlockHeader));
     }
   }
 

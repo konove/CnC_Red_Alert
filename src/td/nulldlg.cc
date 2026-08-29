@@ -4080,7 +4080,7 @@ int Com_Scenario_Dialog() {
                * print) */
               for (int i = 0;
                    i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size; i++) {
-                the_string[i + actual_message_size] = 0xff;
+                the_string[i + actual_message_size] = static_cast<char>(0xff);
               }
             } else {
               actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
@@ -4109,7 +4109,7 @@ int Com_Scenario_Dialog() {
                 magic_number, crc);
 
             magic_number++;
-            sent_so_far += actual_message_size;  // COMPAT_MESSAGE_LENGTH-5;
+            sent_so_far = static_cast<int>(sent_so_far + actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
           }
 
           display = std::max(display, REDRAW_MESSAGE);
@@ -5277,7 +5277,7 @@ int Com_Show_Scenario_Dialog() {
                     for (int i = 0;
                          i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
                          i++) {
-                      the_string[i + actual_message_size] = 0xff;
+                      the_string[i + actual_message_size] = static_cast<char>(0xff);
                     }
                   } else {
                     actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
@@ -5308,7 +5308,7 @@ int Com_Show_Scenario_Dialog() {
 
                   magic_number++;
                   sent_so_far +=
-                      actual_message_size;  // COMPAT_MESSAGE_LENGTH-5;
+                      static_cast<int>(actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
                 }
                 display = REDRAW_MESSAGE;
               }
@@ -7117,9 +7117,9 @@ void itoh(int i, char* s) {
 
       /* decimal range */
       if (nibble < 10) {
-        *s++ = '0' + nibble;
+        *s++ = static_cast<char>('0' + nibble);
       } else {
-        *s++ = 'A' + (nibble - 10);
+        *s++ = static_cast<char>('A' + (nibble - 10));
       }
     }
   }

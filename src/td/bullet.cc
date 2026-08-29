@@ -267,7 +267,7 @@ const short* BulletClass::Occupy_List(bool) const {
         CELL cell2 = Coord_Cell(coord);
         ptr = Coord_Spillage_List(coord, 5);
         while (*ptr != REFRESH_EOL) {
-          _list[index++] = *ptr++ + (cell2 - cell1);
+          _list[index++] = static_cast<CELL>(*ptr++ + (cell2 - cell1));
         }
         _list[index] = REFRESH_EOL;
         return _list;
@@ -418,9 +418,9 @@ void BulletClass::AI() {
         forced = true;
 
         if (*this == BULLET_TOW) {
-          Strength += Strength / 3;
+          Strength = static_cast<short>(Strength + (Strength / 3));
         } else {
-          Strength += Strength / 2;
+          Strength = static_cast<short>(Strength + (Strength / 2));
         }
       }
 
@@ -539,11 +539,11 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   **	For tumbling projectiles, fetch offset stage.
   */
   if (*this == BULLET_NAPALM) {
-    shapenum += Frame % 6;
+    shapenum = static_cast<int>(shapenum + (Frame % 6));
   }
 
   if (*this == BULLET_GRENADE) {
-    shapenum += Frame % 8;
+    shapenum = static_cast<int>(shapenum + (Frame % 8));
     //		Timer++;
   }
 
@@ -771,8 +771,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     Riser = 0;
     if (Class->IsArcing) {
       Altitude = 1;
-      Riser = Distance(tcoord) / 2 / (speed + 1) * GRAVITY;
-      Riser = std::max<int>(Riser, 10);
+      Riser = static_cast<signed char>(Distance(tcoord) / 2 / (speed + 1) * GRAVITY);
+      Riser = static_cast<signed char>(std::max<int>(Riser, 10));
     }
     if (Class->IsDropping) {
       Altitude = Pixel_To_Lepton(24);

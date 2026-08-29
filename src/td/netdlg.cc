@@ -1633,7 +1633,7 @@ static int Net_Join_Dialog() {
                   for (int i = 0;
                        i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
                        i++) {
-                    the_string[i + actual_message_size] = 0xff;
+                    the_string[i + actual_message_size] = static_cast<char>(0xff);
                   }
                 } else {
                   actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
@@ -1675,7 +1675,7 @@ static int Net_Join_Dialog() {
                   }
                 }
                 magic_number++;
-                sent_so_far += actual_message_size;  // COMPAT_MESSAGE_LENGTH-5;
+                sent_so_far += static_cast<int>(actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
               }
             }
           }
@@ -1715,7 +1715,7 @@ static int Net_Join_Dialog() {
           } else {
             sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_N_O_D));
           }
-          playerlist.Add_Item(item, MPlayerTColors[MPlayerColorIdx]);
+          playerlist.Add_Item(item, static_cast<char>(MPlayerTColors[MPlayerColorIdx]));
 
           who = new NodeNameType;
           port::SafeCopy(who->Name, MPlayerName);
@@ -2440,7 +2440,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         port::SafeCopy(Players[i]->Name, GPacket.Name);
         Players[i]->Player.House = GPacket.PlayerInfo.House;
         Players[i]->Player.Color = GPacket.PlayerInfo.Color;
-        playerlist->Colors[i] = MPlayerTColors[GPacket.PlayerInfo.Color];
+        playerlist->Colors[i] = static_cast<char>(MPlayerTColors[GPacket.PlayerInfo.Color]);
         found = 1;
         break;
       }
@@ -2484,7 +2484,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       } else {
         sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_N_O_D));
       }
-      playerlist->Add_Item(item, MPlayerTColors[who->Player.Color]);
+      playerlist->Add_Item(item, static_cast<char>(MPlayerTColors[who->Player.Color]));
 
       retcode = EV_NEW_PLAYER;
     }
@@ -3129,7 +3129,7 @@ static int Net_New_Dialog() {
   } else {
     sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_N_O_D));
   }
-  playerlist.Add_Item(item, MPlayerTColors[MPlayerColorIdx]);
+  playerlist.Add_Item(item, static_cast<char>(MPlayerTColors[MPlayerColorIdx]));
 
   Load_Title_Page(true);
   Set_Palette(Palette);
@@ -3634,7 +3634,7 @@ static int Net_New_Dialog() {
                * print) */
               for (int i = 0;
                    i < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size; i++) {
-                the_string[i + actual_message_size] = 0xff;
+                the_string[i + actual_message_size] = static_cast<char>(0xff);
               }
             } else {
               actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
@@ -3668,7 +3668,7 @@ static int Net_New_Dialog() {
                 magic_number, crc);
 
             magic_number++;
-            sent_so_far += actual_message_size;  // COMPAT_MESSAGE_LENGTH-5;
+            sent_so_far = static_cast<int>(sent_so_far + actual_message_size);  // COMPAT_MESSAGE_LENGTH-5;
           }
           display = std::max(display, REDRAW_MESSAGE);
         }
@@ -3991,7 +3991,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       } else {
         sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_N_O_D));
       }
-      playerlist->Add_Item(item, MPlayerTColors[who->Player.Color]);
+      playerlist->Add_Item(item, static_cast<char>(MPlayerTColors[who->Player.Color]));
 
       /*..................................................................
       Send a confirmation packet
@@ -4424,7 +4424,7 @@ static int Net_Fake_New_Dialog() {
   } else {
     sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_N_O_D));
   }
-  playerlist.Add_Item(item, MPlayerTColors[MPlayerColorIdx]);
+  playerlist.Add_Item(item, static_cast<char>(MPlayerTColors[MPlayerColorIdx]));
 
   Wait_For_Focus();
 
@@ -5209,7 +5209,7 @@ static int Net_Fake_Join_Dialog() {
           } else {
             sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_N_O_D));
           }
-          playerlist.Add_Item(item, MPlayerTColors[MPlayerColorIdx]);
+          playerlist.Add_Item(item, static_cast<char>(MPlayerTColors[MPlayerColorIdx]));
 
           who = new NodeNameType;
           port::SafeCopy(who->Name, MPlayerName);

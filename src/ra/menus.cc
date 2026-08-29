@@ -768,7 +768,7 @@ int Main_Menu(unsigned long) {
     */
     if (input != 0) {
 #ifdef PORTABLE
-      CryptRandom.Seed_Byte(Get_Time_Ms());
+      CryptRandom.Seed_Byte(static_cast<char>(Get_Time_Ms()));
 #else
       struct timeb t;
       ftime(&t);

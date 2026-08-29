@@ -2262,7 +2262,7 @@ void HouseClass::Make_Ally(HousesType house) {
     }
 
     if (ScenarioInit) {
-      Control.Allies |= 1L << house;
+      Control.Allies = static_cast<int>(Control.Allies | (1L << house));
     }
 
     if (Session.Type != GAME_NORMAL && !ScenarioInit) {
@@ -2369,7 +2369,7 @@ void HouseClass::Make_Enemy(HousesType house) {
     Allies &= ~(1L << house);
 
     if (ScenarioInit) {
-      Control.Allies &= ~(1L << house);
+      Control.Allies = static_cast<int>(Control.Allies & ~(1L << house));
     }
 
     /*
@@ -2379,7 +2379,7 @@ void HouseClass::Make_Enemy(HousesType house) {
       enemy->Allies &= ~(1L << Class->House);
 
       if (ScenarioInit) {
-        Control.Allies &= ~(1L << Class->House);
+        Control.Allies = static_cast<int>(Control.Allies & ~(1L << Class->House));
       }
     }
 
@@ -7776,7 +7776,7 @@ CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
   /*
   **	Return the best location to move to.
   */
-  return bestcell;
+  return static_cast<CELL>(bestcell);
 }
 
 /***********************************************************************************************

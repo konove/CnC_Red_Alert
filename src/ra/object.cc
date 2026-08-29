@@ -1524,8 +1524,8 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
       if (What_Am_I() == RTTI_INFANTRY || What_Am_I() == RTTI_UNIT ||
           What_Am_I() == RTTI_AIRCRAFT) {
         Clicked_As_Target(7);
-        Strength -= damage;
-        Strength = std::min<int>(Strength, maxstrength);
+        Strength = static_cast<short>(Strength - damage);
+        Strength = static_cast<short>(std::min<int>(Strength, maxstrength));
       }
       return RESULT_NONE;
     }
@@ -1556,7 +1556,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     /*
     **	Apply the damage to the object.
     */
-    Strength = oldstrength - damage;
+    Strength = static_cast<short>(oldstrength - damage);
 
     /*
     **	Check to see if the object is majorly damaged or destroyed.

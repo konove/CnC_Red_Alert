@@ -1247,7 +1247,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     /*
     **	Apply the damage to the object.
     */
-    Strength = oldstrength - damage;
+    Strength = static_cast<short>(oldstrength - damage);
 
     /*
     **	Check to see if the object is majorly damaged or destroyed.

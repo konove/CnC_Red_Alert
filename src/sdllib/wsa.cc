@@ -533,7 +533,7 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
       int count = *udelta++;      // get count
       uint8_t xor_b = *udelta++;  // get XOR byte
       do {
-        *source_ptr ^= xor_b;  // XOR that byte
+        *source_ptr = static_cast<char>(*source_ptr ^ xor_b);  // XOR that byte
         source_ptr++;
       } while (--count);
     } else if (b & 0x80) {
@@ -553,7 +553,7 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
             count &= 0x3FFF;
             uint8_t xor_b = *udelta++;  // get XOR byte
             do {
-              *source_ptr ^= xor_b;  // XOR that byte
+              *source_ptr = static_cast<char>(*source_ptr ^ xor_b);  // XOR that byte
               source_ptr++;
             } while (--count);
           } else {
@@ -561,7 +561,7 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
             count &= 0x7FFF;
             do {
               uint8_t xor_b = *udelta++;  // get delta XOR byte
-              *source_ptr ^= xor_b;       // xor that byte on the dest
+              *source_ptr = static_cast<char>(*source_ptr ^ xor_b);       // xor that byte on the dest
               source_ptr++;
             } while (--count);
           }
@@ -577,7 +577,7 @@ unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr) {
 
       do {
         uint8_t xor_b = *udelta++;  // get delta XOR byte
-        *source_ptr ^= xor_b;       // xor that byte on the dest
+        *source_ptr = static_cast<char>(*source_ptr ^ xor_b);       // xor that byte on the dest
         source_ptr++;
       } while (--count);
     }

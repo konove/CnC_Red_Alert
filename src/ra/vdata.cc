@@ -232,7 +232,7 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, const char* ininame,
                       is_turret_equipped, true, true, rotation, SPEED_FLOAT),
       IsPieceOfEight(is_eight),
       Type(type),
-      TurretOffset(toffset),
+      TurretOffset(static_cast<signed char>(toffset)),
       Mission(MISSION_GUARD),
       Explosion(exp),
       MaxSize(0) {
@@ -572,8 +572,8 @@ void VesselTypeClass::One_Time() {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
-  short xx = x;
-  short yy = y;
+  short xx = static_cast<short>(x);
+  short yy = static_cast<short>(y);
 
   switch (Type) {
     case VESSEL_CA:

@@ -580,8 +580,8 @@ void RadarClass::Draw_It(bool forced) {
         */
         if (LogicPage->Lock()) {
           for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-            if (In_Radar(index) && Cell_On_Radar(index)) {
-              Plot_Radar_Pixel(index);
+            if (In_Radar(static_cast<CELL>(index)) && Cell_On_Radar(static_cast<CELL>(index))) {
+              Plot_Radar_Pixel(static_cast<CELL>(index));
             }
           }
           if (IsPulseActive) {
@@ -1405,8 +1405,8 @@ void RadarClass::Radar_Cursor(int forced) {
   *times.
   */
   int tac_cell = Coord_Cell(TacticalCoord);
-  int tac_cell_x = Cell_X(tac_cell);
-  int tac_cell_y = Cell_Y(tac_cell);
+  int tac_cell_x = static_cast<CELL>(Cell_X(static_cast<CELL>(tac_cell)));
+  int tac_cell_y = static_cast<CELL>(Cell_Y(static_cast<CELL>(tac_cell)));
   int barlen = 6;
 
   /*
@@ -1429,8 +1429,8 @@ void RadarClass::Radar_Cursor(int forced) {
     *pixel coordinates back
     ** to the cells that need to be redraw.
     **/
-    int last_cell_x = Cell_X(_last_pos);
-    int last_cell_y = Cell_Y(_last_pos);
+    int last_cell_x = static_cast<CELL>(Cell_X(static_cast<CELL>(_last_pos)));
+    int last_cell_y = static_cast<CELL>(Cell_Y(static_cast<CELL>(_last_pos)));
 
     Cell_XY_To_Radar_Pixel(last_cell_x, last_cell_y, x1, y1);
     Cell_XY_To_Radar_Pixel(last_cell_x + Lepton_To_Cell(TacLeptonWidth),
@@ -1913,8 +1913,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
     int xmod = newx;
     int ymod = newy;
 
-    int radx = Cell_X(RadarCell) - xmod;
-    int rady = Cell_Y(RadarCell) - ymod;
+    int radx = static_cast<CELL>(Cell_X(static_cast<CELL>(RadarCell)) - xmod);
+    int rady = static_cast<CELL>(Cell_Y(static_cast<CELL>(RadarCell)) - ymod);
 
     RadarX = newx;
     RadarY = newy;
@@ -2044,7 +2044,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-CELL RadarClass::Radar_Position() { return RadarCell; }
+CELL RadarClass::Radar_Position() { return static_cast<CELL>(RadarCell); }
 
 /***********************************************************************************************
  * RadarClass::Set_Map_Dimensions -- Sets the tactical map dimensions. *

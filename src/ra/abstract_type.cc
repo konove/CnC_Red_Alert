@@ -22,7 +22,7 @@ int AbstractTypeClass::Full_Name() const {
   // string in NameOverride rather than the normal text table.
   for (base::ssize index = 0; index < std::ssize(NameOverride); index++) {
     if (NameIDOverride[index] == (RTTI + 1) * 100 + ID) {
-      return -(index + 1);
+      return static_cast<int>(-(index + 1));
     }
   }
   return FullName;

@@ -1305,7 +1305,7 @@ UnitTypeClass::UnitTypeClass(
   Mission = order;
   ROT = rot;
   Speed = speed;
-  TurretOffset = toffset;
+  TurretOffset = static_cast<signed char>(toffset);
   Type = type;
 }
 

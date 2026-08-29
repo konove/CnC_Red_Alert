@@ -2839,7 +2839,7 @@ long Obfuscate(const char* string) {
   */
   for (int index = 0; index < length; index++) {
     if (!isgraph(buffer[index])) {
-      buffer[index] = 'A' + index % 26;
+      buffer[index] = static_cast<char>('A' + index % 26);
     }
   }
 
@@ -2854,7 +2854,7 @@ long Obfuscate(const char* string) {
     int maxlen = std::max(length + 3 & 0x00FC, 16);
     int index;
     for (index = length; index < maxlen; index++) {
-      buffer[index] = 'A' + (('?' ^ buffer[index - length]) + index) % 26;
+      buffer[index] = static_cast<char>('A' + (('?' ^ buffer[index - length]) + index) % 26);
     }
     length = index;
     buffer[length] = '\0';
@@ -2896,9 +2896,9 @@ long Obfuscate(const char* string) {
   for (int index = 0; index < length; index++) {
     code ^= static_cast<unsigned char>(buffer[index]);
     unsigned char temp = static_cast<unsigned char>(code);
-    buffer[index] ^= temp;
+    buffer[index] = static_cast<char>(buffer[index] ^ temp);
     code >>= 8;
-    code |= static_cast<long>(temp) << 24;
+    code = static_cast<int>(code | static_cast<long>(temp) << 24);
   }
 
   /*
@@ -2913,9 +2913,12 @@ long Obfuscate(const char* string) {
     static unsigned char _addbits[] = {0x10, 0x00, 0x00, 0x80,
                                        0x40, 0x00, 0x00, 0x04};
 
-    buffer[index] |= _addbits[index % (sizeof(_addbits) / sizeof(_addbits[0]))];
-    buffer[index] &=
-        ~_lossbits[index % (sizeof(_lossbits) / sizeof(_lossbits[0]))];
+    buffer[index] = static_cast<char>(
+        buffer[index] |
+        _addbits[index % (sizeof(_addbits) / sizeof(_addbits[0]))]);
+    buffer[index] = static_cast<char>(
+        buffer[index] &
+        ~_lossbits[index % (sizeof(_lossbits) / sizeof(_lossbits[0]))]);
   }
 
   /*
@@ -2942,30 +2945,30 @@ long Obfuscate(const char* string) {
     int16_t val3 = key3;
     int16_t val4 = key4;
 
-    val1 *= key1;
-    val2 += key2;
-    val3 += key3;
-    val4 *= key4;
+    val1 = static_cast<int16_t>(val1 * key1);
+    val2 = static_cast<int16_t>(val2 + key2);
+    val3 = static_cast<int16_t>(val3 + key3);
+    val4 = static_cast<int16_t>(val4 * key4);
 
     int16_t s3 = val3;
-    val3 ^= val1;
-    val3 *= key1;
+    val3 = static_cast<int16_t>(val3 ^ val1);
+    val3 = static_cast<int16_t>(val3 * key1);
     int16_t s2 = val2;
-    val2 ^= val4;
-    val2 += val3;
-    val2 *= key3;
-    val3 += val2;
+    val2 = static_cast<int16_t>(val2 ^ val4);
+    val2 = static_cast<int16_t>(val2 + val3);
+    val2 = static_cast<int16_t>(val2 * key3);
+    val3 = static_cast<int16_t>(val3 + val2);
 
-    val1 ^= val2;
-    val4 ^= val3;
+    val1 = static_cast<int16_t>(val1 ^ val2);
+    val4 = static_cast<int16_t>(val4 ^ val3);
 
-    val2 ^= s3;
-    val3 ^= s2;
+    val2 = static_cast<int16_t>(val2 ^ s3);
+    val3 = static_cast<int16_t>(val3 ^ s2);
 
-    buffer[index] = val1;
-    buffer[index + 1] = val2;
-    buffer[index + 2] = val3;
-    buffer[index + 3] = val4;
+    buffer[index] = static_cast<char>(val1);
+    buffer[index + 1] = static_cast<char>(val2);
+    buffer[index + 2] = static_cast<char>(val3);
+    buffer[index + 3] = static_cast<char>(val4);
   }
 
   /*

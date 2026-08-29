@@ -291,7 +291,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
               /*
               ** Flag this string segment as complete
               */
-              txtlabel->Segments |= 1 << position;
+              txtlabel->Segments = static_cast<char>(txtlabel->Segments | (1 << position));
               return txtlabel;
             }
           } else {
@@ -431,7 +431,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
             ((COMPAT_MESSAGE_LENGTH - 4) * MAX_MESSAGE_SEGMENTS - 1)) = 0;
         }
         position = magic_number - MESSAGE_HEAD_MAGIC_NUMBER;
-        txtlabel->Segments = 1 << position;
+        txtlabel->Segments = static_cast<char>(1 << position);
       }
 
       txtlabel->Text = MessageBuffers[i];

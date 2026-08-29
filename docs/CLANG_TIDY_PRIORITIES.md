@@ -2,8 +2,8 @@
 
 ## Overview
 
-`.clang-tidy` enables all checks (`'*'`) and then disables **230** of them. This document prioritizes which of those
-230 to re-enable, ordered by **measured bug yield per unit of fix effort**.
+`.clang-tidy` enables all checks (`'*'`) and then disables **230** of them. This document prioritizes which of those 230
+to re-enable, ordered by **measured bug yield per unit of fix effort**.
 
 Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
 (see [Methodology](#methodology)). Every count in the tables is a real diagnostic site in this repository.
@@ -15,7 +15,7 @@ Tier 2 with a fourth reclassified; see [Progress](#progress). The two §1.1 chec
 `pro-type-member-init` and `switch-missing-default-case`.
 
 The clang-tidy 22 move on 2026-08-20 turned the strict build red for reasons unrelated to any tier below; all four
-causes are resolved and it is green again — see [clang-tidy 22 fallout](#clang-tidy-22-fallout).
+causes are resolved, and it is green again — see [clang-tidy 22 fallout](#clang-tidy-22-fallout).
 
 ### Two facts that shape everything below
 
@@ -92,7 +92,7 @@ were enabled for real as part of §1.1:
 The lesson stands even though the discrepancy is gone: this document is not the source of truth for what is enabled.
 `.clang-tidy` is. Check a claim against it before acting on it.
 
-Also genuinely done and confirmed enabled: `clang-diagnostic-suggest-override`, `-return-stack-address`,
+Also, genuinely done and confirmed enabled: `clang-diagnostic-suggest-override`, `-return-stack-address`,
 `-mismatched-new-delete`, `-delete-incomplete`, `-sometimes-uninitialized`, `-unused-variable/-function/-parameter`,
 `clang-analyzer-core.NullDereference`, `clang-analyzer-core.uninitialized.*`, `clang-analyzer-deadcode.DeadStores`,
 `clang-analyzer-unix.MismatchedDeallocator`, `bugprone-not-null-terminated-result`,
@@ -135,27 +135,27 @@ been red on an enabled check.
 
 ### 1.5
 
-| Check                                   | Commit     | Sites | Outcome                                                                                                                                       |
-|-----------------------------------------|------------|-------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| `misc-unconventional-assign-operator`   | `7a9e933b` | 9     | `virtual` dropped from `VectorClass::operator=` in both games; TD's `LinkClass` brought in line with RA                                       |
-| `cert-oop58-cpp`                        | `30cb1c6e` | 2     | `GenericNode`'s copy operations deleted — they spliced the destination into the source's list rather than copying                             |
-| `clang-diagnostic-overloaded-virtual`   | `bc3c370c` | 28    | 6 live bugs: vessel damage, TD turret-locked movement, anim/bullet refresh lists in both games, RA checklist items, 4 null-modem stubs        |
-| `cppcoreguidelines-virtual-class-destructor` + `clang-diagnostic-non-virtual-dtor` | `fdb3a9e8` | 33 | 6 edits — a virtual destructor on each hierarchy root; 3 of them only restore RA/TD parity. No layout change              |
-| `clang-analyzer-optin.cplusplus.VirtualCall` | `e3ad8275` | 81 | 17 classes and 8 methods marked `final`, 5 qualified calls, 4 restructures, 0 NOLINTs; found buffered writes lost in `~BufferIOFileClass` |
+| Check                                                                              | Commit     | Sites | Outcome                                                                                                                                   |
+|------------------------------------------------------------------------------------|------------|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `misc-unconventional-assign-operator`                                              | `7a9e933b` | 9     | `virtual` dropped from `VectorClass::operator=` in both games; TD's `LinkClass` brought in line with RA                                   |
+| `cert-oop58-cpp`                                                                   | `30cb1c6e` | 2     | `GenericNode`'s copy operations deleted — they spliced the destination into the source's list rather than copying                         |
+| `clang-diagnostic-overloaded-virtual`                                              | `bc3c370c` | 28    | 6 live bugs: vessel damage, TD turret-locked movement, anim/bullet refresh lists in both games, RA checklist items, 4 null-modem stubs    |
+| `cppcoreguidelines-virtual-class-destructor` + `clang-diagnostic-non-virtual-dtor` | `fdb3a9e8` | 33    | 6 edits — a virtual destructor on each hierarchy root; 3 of them only restore RA/TD parity. No layout change                              |
+| `clang-analyzer-optin.cplusplus.VirtualCall`                                       | `e3ad8275` | 81    | 17 classes and 8 methods marked `final`, 5 qualified calls, 4 restructures, 0 NOLINTs; found buffered writes lost in `~BufferIOFileClass` |
 
 `src/ra/vector.h` and `src/tech/listnode.h`, which Phase B named as the prerequisite, were cleared by the first two.
 
 ### 2
 
-| Check                                                 | Commit     | Sites | Outcome                                                                                                                     |
-|-------------------------------------------------------|------------|-------|-------------------------------------------------------------------------------------------------------------------------------|
-| `bugprone-implicit-widening-of-multiplication-result` | `c0045ac4` | 224   | Stride and buffer-size types, not casts; 3 timer macro definitions cleared 43 sites at once                                 |
-| `clang-diagnostic-sign-compare`                       | `35c51bbf` | 305   | 8 type changes cleared ~240; the cause was RA being migrated to signed sizes and TD not                                     |
-| `clang-diagnostic-shorten-64-to-32`                   | `cf44023c` | 439   | Much of it created by the two above — signedness work moves the mismatch from comparisons into assignments                  |
+| Check                                                 | Commit     | Sites | Outcome                                                                                                                                                          |
+|-------------------------------------------------------|------------|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `bugprone-implicit-widening-of-multiplication-result` | `c0045ac4` | 224   | Stride and buffer-size types, not casts; 3 timer macro definitions cleared 43 sites at once                                                                      |
+| `clang-diagnostic-sign-compare`                       | `35c51bbf` | 305   | 8 type changes cleared ~240; the cause was RA being migrated to signed sizes and TD not                                                                          |
+| `clang-diagnostic-shorten-64-to-32`                   | `cf44023c` | 439   | Much of it created by the two above — signedness work moves the mismatch from comparisons into assignments                                                       |
 | — (`clang-diagnostic-switch`, not enabled)            | —          | 720   | Reclassified: 567 are `case ButtonKey(n):`, a deliberate idiom `-Wswitch` cannot model — see [Tier 2](#tier-2-valuable-but-these-are-the-type-migration-project) |
 
-Two supporting commits: `7553a5ce` replaced 34 timer and object-limit macros with `inline constexpr` constants, which
-is what made the timer durations typed enough to fix; `532aef0f` cleared the Tier 1.5 fallout.
+Two supporting commits: `7553a5ce` replaced 34 timer and object-limit macros with `inline constexpr` constants, which is
+what made the timer durations typed enough to fix; `532aef0f` cleared the Tier 1.5 fallout.
 
 Three lessons worth carrying into the next tier:
 
@@ -170,8 +170,8 @@ Three lessons worth carrying into the next tier:
   `bugprone-raw-memory-call-on-non-trivial-type` is not the trivially-copyable UB check it sounds like; it is
   `cert-oop57-cpp`, which was already enabled, and the check the section described
   (`bugprone-undefined-memory-manipulation`) was already enabled too. Check names are also added, renamed and aliased
-  between releases. Confirm against `clang-tidy --list-checks` *and* the check's own documentation before writing a
-  line of this document about it.
+  between releases. Confirm against `clang-tidy --list-checks` *and* the check's own documentation before writing a line
+  of this document about it.
 - **Adding a virtual destructor renumbers a vtable, so land it with a build nobody is racing.** `GScreenClass` had no
   declared destructor and therefore no destructor slot; adding one shifts the index of every virtual after it, right
   down the `GScreenClass → MapClass → DisplayClass → … → MapEditClass` chain. Ninja gets this right on its own, but a
@@ -179,8 +179,8 @@ Three lessons worth carrying into the next tier:
   vtable layouts. The result is not a crash at the edit: it is one virtual call landing in a different virtual
   entirely — a `Help_Text(TXT_NONE)` in `sidebar.cc` arriving in `MapEditClass::Scroll_Map`, which then read its
   `int&` argument from `TXT_NONE`. A call that lands in the wrong function is a stale build, not a logic bug; rebuild
-  the directory before debugging it. `sizeof()` is untouched either way when the class already had virtual functions,
-  so the layout tests stay green and cannot catch this.
+  the directory before debugging it. `sizeof()` is untouched either way when the class already had virtual functions, so
+  the layout tests stay green and cannot catch this.
 - **Sweep with the project's own warning flags.** `clang++ -Wno-everything -W<name>` is not a reliable way to isolate
   one diagnostic: `-Wconditional-uninitialized` needs `-Wuninitialized` enabled to fire at all, so that form reported
   zero sites where the real count was 103. Run the compile database with its own flags (which already include
@@ -229,8 +229,8 @@ estimate of *cost per site* was right; the estimate of *site count* was not.
 
 These 26 checks were clean across the entire 10% sample, so this section was written up as free. Measured against every
 translation unit in `cmake-build-strict-ra-clang-22` (1001 entries: 586 regular plus 415 header-verification units) they
-cost **336 sites**. Twenty-four were enabled and cleared — see [Progress](#progress) for the three commits and what
-they turned up. Twenty-three are still on: clang-tidy 22 broadened
+cost **336 sites**. Twenty-four were enabled and cleared — see [Progress](#progress) for the three commits and what they
+turned up. Twenty-three are still on: clang-tidy 22 broadened
 `bugprone-unchecked-string-to-number-conversion` from clean to 200 sites, and it was disabled rather than swept — see
 [clang-tidy 22 fallout](#clang-tidy-22-fallout).
 
@@ -274,30 +274,30 @@ to start unasked. It is listed under [Tier 1.5](#tier-15-small-counts-real-ub-in
 all 838 translation units in `cmake-build-strict-ra-clang-22` (423 project sources plus the 415 header-verification
 units).
 
-An earlier revision of this section called it "the single most valuable check in the whole list", on the grounds that
-it was the only automated guard on the `TFixedIHeapClass::Save/Load` memcpy contract in `src/ra/heap.cc`. Both halves
-of that were wrong.
+An earlier revision of this section called it "the single most valuable check in the whole list", on the grounds that it
+was the only automated guard on the `TFixedIHeapClass::Save/Load` memcpy contract in `src/ra/heap.cc`. Both halves of
+that were wrong.
 
 **It is a different check.** `bugprone-raw-memory-call-on-non-trivial-type` is clang-tidy 22's *primary* name for
 `cert-oop57-cpp` — the CERT OOP57-CPP style rule, "prefer special member functions and overloaded operators to C
 Standard Library functions", covering `memset`, `memcpy`, `memcmp`, `strcpy`, `strcmp` and friends. `cert-oop57-cpp`
 was never in the disable list, so the alias already had that coverage in force; enabling the primary name only makes it
 survive the alias being retired. The trivially-copyable UB check the section actually described is a **separate**
-check, `bugprone-undefined-memory-manipulation`, which still exists in clang-tidy 22 and is also already enabled. It
-too measures 0.
+check, `bugprone-undefined-memory-manipulation`, which still exists in clang-tidy 22 and is also already enabled. It too
+measures 0.
 
 **Neither one can see the save path.** `src/ra/heap.cc:508` and `:568` are `file.Put(Ptr(i), sizeof(T))` and
 `file.Get(ptr, sizeof(T))`, going through `Pipe::Put(const void*, int)` and `Straw::Get(void*, int)`. No `memcpy` is
-textually present and the `T*` decays to `void*` at the call boundary, so no class-typed pointer ever reaches a call
-the checks can match — and the matcher additionally carries `unless(isInTemplateInstantiation())`, which is exactly
-what `heap.cc` is. The same holds for `src/td/heap.cc:485`, `src/ra/iomap.cc` (`CellClass`, `MouseClass`),
+textually present and the `T*` decays to `void*` at the call boundary, so no class-typed pointer ever reaches a call the
+checks can match — and the matcher additionally carries `unless(isInTemplateInstantiation())`, which is exactly what
+`heap.cc` is. The same holds for `src/td/heap.cc:485`, `src/ra/iomap.cc` (`CellClass`, `MouseClass`),
 `src/td/ioobj.cc` (~40 `Read_Object`/`Write_Object` pairs), `src/ra/saveload.cc` (`ScenarioClass`, `ScoreClass`,
 `CarryoverClass`, `SpecialClass`, `GameOptionsClass`) and `src/ra/vortex.cc`.
 
 **What guards it instead.** No standard trait works: `AbstractClass` declares a virtual destructor
 (`src/ra/abstract.h:70`), so every serialized type fails both `is_trivially_copyable_v` and
-`is_trivially_destructible_v`, and there is no trait for "trivially copyable apart from the vptr that the
-placement-new restores". `sizeof(T)` is the closest observable proxy — a `std::string`, `std::vector` or
+`is_trivially_destructible_v`, and there is no trait for "trivially copyable apart from the vptr that the placement-new
+restores". `sizeof(T)` is the closest observable proxy — a `std::string`, `std::vector` or
 `std::optional` member changes it. `src/ra/heap_layout_test.cc` and `src/td/heap_layout_test.cc` (added in `201cfb3c`)
 pin it for every byte-serialized type, so the failure names the type.
 
@@ -320,8 +320,8 @@ existing save, so it has not been done; the gap is recorded here rather than clo
 
 The toolchain moved from clang-tidy 21 to 22 on 2026-08-20, which turned the strict build red. None of it came from
 §1.2 — the four checks below were all enabled through `'*'` and all four are either new in 22 or newly stronger in 22.
-Measured over the same 838 translation units, deduplicated by site. **All four are now resolved and the strict build
-is green again**: two swept, two disabled.
+Measured over the same 838 translation units, deduplicated by site. **All four are now resolved and the strict build is
+green again**: two swept, two disabled.
 
 | Check                                            | Sites | Files | Status                                                                                                                              |
 |--------------------------------------------------|-------|-------|-------------------------------------------------------------------------------------------------------------------------------------|
@@ -333,38 +333,38 @@ is green again**: two swept, two disabled.
 The two mechanical ones are done, and both now measure 0 sites tree-wide.
 `readability-redundant-parentheses` was swept with `clang-tidy --export-fixes` over all 840 units, applied with
 `clang-apply-replacements --format`. The 170 sites were `return (x);` → `return x;`, `case (KN_ESC):` →
-`case KN_ESC:`, and a handful of expression parens (`Stage * (12)`, `x + (WinX)`, `-(MAP_CELL_W)`). Formatting
-fallout was one re-wrap (`src/ra/mapeddlg.cc:236`) and two trailing-comment realignments (`src/td/const.cc:200`,
+`case KN_ESC:`, and a handful of expression parens (`Stage * (12)`, `x + (WinX)`, `-(MAP_CELL_W)`). Formatting fallout
+was one re-wrap (`src/ra/mapeddlg.cc:236`) and two trailing-comment realignments (`src/td/const.cc:200`,
 `src/td/menus.cc:304`); nothing else moved. `readability-redundant-typename` was the single `src/ra/search.h:626`
 line, valid to drop since C++20 P0634.
 
 `llvm-prefer-static-over-anonymous-namespace` is **disabled** as style-only.
-[Google style](https://google.github.io/styleguide/cppguide.html#Internal_Linkage) explicitly permits either spelling
-("put it in an unnamed namespace or declare it `static`") and `CLAUDE.md` makes Google style primary, so the check
+[Google style](https://google.github.io/styleguide/cppguide.html#Internal_Linkage) explicitly permits either spelling (
+"put it in an unnamed namespace or declare it `static`") and `CLAUDE.md` makes Google style primary, so the check
 enforces an LLVM house preference this project has not adopted. All 5 sites are test helpers in
-`src/sdllib/font_test.cc` and `src/winvq/vqa32/vqaplay_test.cc`, and both files need their anonymous namespace anyway
-— it wraps the fixtures (`VqaPlayTest`) and the `TEST_F` bodies. Satisfying the check would move only the free
-helpers out to file-scope `static`, separating them from the fixtures they exist to serve. It would also fire on
-every future test helper written the idiomatic way.
+`src/sdllib/font_test.cc` and `src/winvq/vqa32/vqaplay_test.cc`, and both files need their anonymous namespace anyway —
+it wraps the fixtures (`VqaPlayTest`) and the `TEST_F` bodies. Satisfying the check would move only the free helpers out
+to file-scope `static`, separating them from the fixtures they exist to serve. It would also fire on every future test
+helper written the idiomatic way.
 
-`bugprone-unchecked-string-to-number-conversion` is now **disabled**, joining `cert-err34-c` in Tier 3 — it is the
-same 200 sites seen tree-wide rather than in a 19-file sample. Three findings decided it:
+`bugprone-unchecked-string-to-number-conversion` is now **disabled**, joining `cert-err34-c` in Tier 3 — it is the same
+200 sites seen tree-wide rather than in a 19-file sample. Three findings decided it:
 
-- **Nothing remote reaches these calls.** All 200 read a local `.INI` (modem and sound-card settings, rules,
-  scenario data) or a UI edit box. The 24 in each `teamtype.cc` and every `MPlayerCredits` site in `netdlg.cc` /
+- **Nothing remote reaches these calls.** All 200 read a local `.INI` (modem and sound-card settings, rules, scenario
+  data) or a UI edit box. The 24 in each `teamtype.cc` and every `MPlayerCredits` site in `netdlg.cc` /
   `nulldlg.cc` are `Get_Text()` off a map-editor or lobby gadget, not packet data.
 - **The 18 `sscanf` sites cannot be fixed by checking the return value.** `src/ra/session.cc:1007` already reads
-  `if (sscanf(buf, "%x", &trap_target) == 1)` and is still flagged: the check's complaint is unreported *overflow*,
-  not match failure. Only a rewrite to `strtoul` silences them.
+  `if (sscanf(buf, "%x", &trap_target) == 1)` and is still flagged: the check's complaint is unreported *overflow*, not
+  match failure. Only a rewrite to `strtoul` silences them.
 - **Where a bad value would actually hurt, the check aims at the wrong thing.** The hazard is an out-of-range value
   indexing a type array, and `atoi` → `strtol` does not help — a well-formed `"999"` is exactly as dangerous. Range
   checking is the fix, and several sites already do it (`Bound(atoi(credbuf), 0, 9999)`,
   `src/td/nulldlg.cc:4124`).
 
-Fixing all 200 was rejected on that basis, as was routing them through a behaviour-preserving `ParseInt` helper —
-that silences the check without changing what the code does, which is worse than saying so here. If the parsing is
-ever hardened for real, do it as range validation at the INI and gadget boundary, and re-enable this check afterwards
-as the regression guard.
+Fixing all 200 was rejected on that basis, as was routing them through a behaviour-preserving `ParseInt` helper — that
+silences the check without changing what the code does, which is worse than saying so here. If the parsing is ever
+hardened for real, do it as range validation at the INI and gadget boundary, and re-enable this check afterwards as the
+regression guard.
 
 Reproduce with the sweep under [Re-measuring](#re-measuring), substituting these four check names.
 
@@ -374,34 +374,34 @@ Reproduce with the sweep under [Re-measuring](#re-measuring), substituting these
 
 The `AbstractClass → ObjectClass → TechnoClass → ...` hierarchy makes these more dangerous here than in typical code.
 
-| Check                                        | Sample | Tree-wide | Status                                                                  |
-|----------------------------------------------|--------|-----------|-------------------------------------------------------------------------|
-| `misc-unconventional-assign-operator`        | 4      | 9         | ✅ Done, `7a9e933b`                                                     |
-| `cert-oop58-cpp`                             | 2      | 2         | ✅ Done, `30cb1c6e`                                                     |
-| `clang-diagnostic-overloaded-virtual`        | 10     | **28**    | ✅ Done, `bc3c370c` — silently shadowed virtuals, 6 of them live bugs   |
-| `cppcoreguidelines-virtual-class-destructor` | 14     | **32**    | ✅ Done, `fdb3a9e8`, with the row below — 26 sites in common            |
-| `clang-diagnostic-non-virtual-dtor`          | 12     | **27**    | ✅ Done, `fdb3a9e8`                                                     |
-| `clang-analyzer-optin.cplusplus.VirtualCall` | **86** | **81**    | ✅ Done, `e3ad8275` — `final` did most of it, not the feared refactor   |
+| Check                                        | Sample | Tree-wide | Status                                                                |
+|----------------------------------------------|--------|-----------|-----------------------------------------------------------------------|
+| `misc-unconventional-assign-operator`        | 4      | 9         | ✅ Done, `7a9e933b`                                                   |
+| `cert-oop58-cpp`                             | 2      | 2         | ✅ Done, `30cb1c6e`                                                   |
+| `clang-diagnostic-overloaded-virtual`        | 10     | **28**    | ✅ Done, `bc3c370c` — silently shadowed virtuals, 6 of them live bugs |
+| `cppcoreguidelines-virtual-class-destructor` | 14     | **32**    | ✅ Done, `fdb3a9e8`, with the row below — 26 sites in common          |
+| `clang-diagnostic-non-virtual-dtor`          | 12     | **27**    | ✅ Done, `fdb3a9e8`                                                   |
+| `clang-analyzer-optin.cplusplus.VirtualCall` | **86** | **81**    | ✅ Done, `e3ad8275` — `final` did most of it, not the feared refactor |
 
-Tree-wide counts are over all 840 translation units in `cmake-build-strict-ra-clang-22`, deduplicated by site,
-measured 2026-08-28. The sample under-predicted all of them except `cert-oop58-cpp`, as it did for Tier 1.
+Tree-wide counts are over all 840 translation units in `cmake-build-strict-ra-clang-22`, deduplicated by site, measured
+2026-08-28. The sample under-predicted all of them except `cert-oop58-cpp`, as it did for Tier 1.
 
-The two destructor checks were done as one commit, as planned: they overlap on 26 sites, and both fire on every class
-in a hierarchy whose root lacks a virtual destructor, so 33 sites collapsed to six declarations — `GScreenClass`
+The two destructor checks were done as one commit, as planned: they overlap on 26 sites, and both fire on every class in
+a hierarchy whose root lacks a virtual destructor, so 33 sites collapsed to six declarations — `GScreenClass`
 covering 11 RA sites and TD's `AbstractTypeClass` covering 13.
 
 **`VirtualCall` was not the refactor this document feared.** Two revisions predicted that clearing it meant
 restructuring constructors and destructors across `AbstractClass → ObjectClass → TechnoClass → …`. It did not.
-`final` cleared 55 of the 81 sites on its own — the checker stops warning once no override can exist — and the
-compiler validates the claim, since `final` on a class someone inherits does not build. Eight more went to
-method-level `final` where the class has subclasses but nothing overrides that particular slot. Five were calls
-sitting directly in a constructor or destructor, where qualifying the base version only writes down what already
-happened. Only four needed real restructuring, and each of those was a place where a derived override genuinely
-existed and was being skipped: `GaugeClass`'s constructor, `~GadgetClass`, `DisplayClass`'s view setup, and TD's
-`VectorClass` copy constructor. Reach for `final` before reaching for a refactor — and note that qualification is
-*not* a general remedy, because the checker flags calls reachable **from** a constructor, not only calls textually
-inside one. Qualifying inside `LinkClass::Remove` or `DisplayClass::Set_View_Dimensions` would have broken dispatch
-for every ordinary caller.
+`final` cleared 55 of the 81 sites on its own — the checker stops warning once no override can exist — and the compiler
+validates the claim, since `final` on a class someone inherits does not build. Eight more went to method-level `final`
+where the class has subclasses but nothing overrides that particular slot. Five were calls sitting directly in a
+constructor or destructor, where qualifying the base version only writes down what already happened. Only four needed
+real restructuring, and each of those was a place where a derived override genuinely existed and was being skipped:
+`GaugeClass`'s constructor, `~GadgetClass`, `DisplayClass`'s view setup, and TD's
+`VectorClass` copy constructor. Reach for `final` before reaching for a refactor — and note that qualification is *not*
+a general remedy, because the checker flags calls reachable **from** a constructor, not only calls textually inside one.
+Qualifying inside `LinkClass::Remove` or `DisplayClass::Set_View_Dimensions` would have broken dispatch for every
+ordinary caller.
 
 ---
 
@@ -411,27 +411,25 @@ Four of the seven are done. Measured tree-wide over all 840 translation units on
 sites, not the ~5,700 the estimates said** — and the estimates were wrong in shape as well as size, which is why the
 order below is not the order of the counts.
 
-| Check                                                 | Sample | Tree-wide | Status                                                                 |
-|-------------------------------------------------------|--------|-----------|------------------------------------------------------------------------|
-| `bugprone-implicit-widening-of-multiplication-result` | 29     | **224**   | ✅ Done, `c0045ac4`                                                    |
-| `clang-diagnostic-sign-compare`                       | 40     | **305**   | ✅ Done, `35c51bbf`                                                    |
-| `clang-diagnostic-shorten-64-to-32`                   | 69     | **439**   | ✅ Done, `cf44023c` — 428 when first measured, before the two above    |
-| `clang-diagnostic-switch`                             | 20     | **720**   | ❌ Reclassified, see below — 567 of them are one deliberate idiom      |
+| Check                                                 | Sample | Tree-wide | Status                                                                  |
+|-------------------------------------------------------|--------|-----------|-------------------------------------------------------------------------|
+| `bugprone-implicit-widening-of-multiplication-result` | 29     | **224**   | ✅ Done, `c0045ac4`                                                     |
+| `clang-diagnostic-sign-compare`                       | 40     | **305**   | ✅ Done, `35c51bbf`                                                     |
+| `clang-diagnostic-shorten-64-to-32`                   | 69     | **439**   | ✅ Done, `cf44023c` — 428 when first measured, before the two above     |
+| `clang-diagnostic-switch`                             | 20     | **720**   | ❌ Reclassified, see below — 567 of them are one deliberate idiom       |
 | `bugprone-narrowing-conversions`                      | 292    | **1424**  | Next, but read the option note below: 839 after excluding one sub-class |
-| `cppcoreguidelines-pro-type-member-init`              | 116    | **349**   | Collides with `NoInitClass`; decide the annotation first               |
-| `bugprone-switch-missing-default-case`                | 10     | **118**   | Mechanical, low yield, last                                            |
+| `cppcoreguidelines-pro-type-member-init`              | 116    | **349**   | Collides with `NoInitClass`; decide the annotation first                |
+| `bugprone-switch-missing-default-case`                | 10     | **118**   | Mechanical, low yield, last                                             |
 
-`src/ra` and `src/td` held 3,243 of the 3,568; the support layers (`sdllib`, `tech`, `winvq`, `base`, `port`) held
-325, and `src/port` was clean on all seven. The per-directory strategy below is still right, but the split is that
-lopsided.
+`src/ra` and `src/td` held 3,243 of the 3,568; the support layers (`sdllib`, `tech`, `winvq`, `base`, `port`) held 325,
+and `src/port` was clean on all seven. The per-directory strategy below is still right, but the split is that lopsided.
 
 **`clang-diagnostic-switch` is off the list, at 720 sites.** 567 of them say *"case value not in enumerated type
-`KeyNumType`"* and come from `case ButtonKey(200):` — the helper `6a792756` introduced. Clang's `-Wswitch` warns on
-any case label that is not a **named enumerator**, and giving `KeyNumType` a fixed underlying type does not change
-that; it was tried and measured no different. Clearing them means rewriting 105 switch statements across 43 files to
-switch on `static_cast<unsigned>(input)`, which buys silence and nothing else, since those switches were never
-enumerator-based. The remaining ~153 are genuine "enumeration value not handled" findings and could be had
-per-directory.
+`KeyNumType`"* and come from `case ButtonKey(200):` — the helper `6a792756` introduced. Clang's `-Wswitch` warns on any
+case label that is not a **named enumerator**, and giving `KeyNumType` a fixed underlying type does not change that; it
+was tried and measured no different. Clearing them means rewriting 105 switch statements across 43 files to switch on
+`static_cast<unsigned>(input)`, which buys silence and nothing else, since those switches were never enumerator-based.
+The remaining ~153 are genuine "enumeration value not handled" findings and could be had per-directory.
 
 **Configure `bugprone-narrowing-conversions` before enabling it.** At its defaults it measures 1424, but 585 of those
 are same-width `unsigned` → `signed` — `LEPTON` (`unsigned short`), `COORDINATE` (`uint32_t`) and friends flowing into
@@ -442,9 +440,9 @@ against.
 ### What the three finished checks actually cost
 
 **The fixes were type changes, not casts.** `sign-compare` cleared roughly 240 of its 305 sites through eight
-declarations, and the recurring cause was not the comparisons: **RA had already been migrated to signed sizes and TD
-had not.** `DynamicVectorClass::Count()`, `VectorClass`, `TechnoTypeClass::Level`, the radar geometry — signed in one
-port, `size_t`/`unsigned` in the other, which is why TD carried 170 sites against RA's 103. The same held for
+declarations, and the recurring cause was not the comparisons: **RA had already been migrated to signed sizes and TD had
+not.** `DynamicVectorClass::Count()`, `VectorClass`, `TechnoTypeClass::Level`, the radar geometry — signed in one port,
+`size_t`/`unsigned` in the other, which is why TD carried 170 sites against RA's 103. The same held for
 `implicit-widening`: six `int` → `base::ssize` stride declarations in `drawbuff.cc` took that file from 23 sites to 8,
 and three timer macro definitions cleared 43 more.
 
@@ -455,15 +453,15 @@ truncation count grows as the signedness work lands.
 
 **The layout tests stopped two member retypes.** Widening `td/vector.h`'s `VectorMax` to `base::ssize` changed
 `sizeof()` for three serialized types (56→64, 40→48, 1952→1960); narrowing `HouseClass::Tiberium` and `Capacity` to
-`int` shrank TD's `HouseClass` from 3368 to 3360. Both are the raw-byte save format. Both members keep their width
-with a comment saying why, and their call sites got casts instead. Full RA/TD type parity in those two classes needs a
+`int` shrank TD's `HouseClass` from 3368 to 3360. Both are the raw-byte save format. Both members keep their width with
+a comment saying why, and their call sites got casts instead. Full RA/TD type parity in those two classes needs a
 `SAVEGAME_VERSION` bump, which is a separate decision.
 
 **Do not bulk-wrap expressions using a diagnostic's column.** The last 151 `shorten-64-to-32` sites were wrapped by a
 script that read each diagnostic's line and column and inserted a cast around what it judged the expression to be. The
-column often points into the middle of an expression rather than at its start, so it produced about 25 malformed edits
-— `Array.static_cast<int>(ID(ptr))`, `x static_cast<int>(- y)`, `std::max<static_cast<int>(int>(...)` — all caught by
-the compiler, and **one that compiled and changed behaviour**:
+column often points into the middle of an expression rather than at its start, so it produced about 25 malformed edits —
+`Array.static_cast<int>(ID(ptr))`, `x static_cast<int>(- y)`, `std::max<static_cast<int>(int>(...)` — all caught by the
+compiler, and **one that compiled and changed behaviour**:
 
 ```cpp
 int graph = kRecordHeight * fixed(kTimerSecond - SpareTicks, kTimerSecond);
@@ -552,18 +550,19 @@ globally.
 2. `bugprone-parent-virtual-call` stays disabled permanently, and `clang-analyzer-optin.cplusplus.VirtualCall` moved to
    Tier 1.5. See [1.1](#11-free-guards--the-name-was-wrong).
 3. ~~`bugprone-raw-memory-call-on-non-trivial-type` (§1.2)~~ — enabled in `c580283d` at 0 sites. It turned out to be
-   `cert-oop57-cpp` under a new name, and to have no visibility into the save path at all; the real guard is the pair
-   of layout tests added in `201cfb3c`. See [1.2](#12-the-check-that-was-not-what-this-document-thought-it-was).
+   `cert-oop57-cpp` under a new name, and to have no visibility into the save path at all; the real guard is the pair of
+   layout tests added in `201cfb3c`. See [1.2](#12-the-check-that-was-not-what-this-document-thought-it-was).
 
 ### Phase B — Tier 1.5, in progress
 
-1. ~~Fix `src/ra/vector.h` and `src/tech/listnode.h` first~~ — done in `7a9e933b` and `30cb1c6e`, which is what
-   enabling `misc-unconventional-assign-operator` and `cert-oop58-cpp` amounted to.
+1. ~~Fix `src/ra/vector.h` and `src/tech/listnode.h` first~~ — done in `7a9e933b` and `30cb1c6e`, which is what enabling
+   `misc-unconventional-assign-operator` and `cert-oop58-cpp` amounted to.
 2. ~~`clang-diagnostic-overloaded-virtual`~~ — done in `bc3c370c`, 28 sites.
 3. ~~`cppcoreguidelines-virtual-class-destructor` and `clang-diagnostic-non-virtual-dtor` together~~ — done in
    `fdb3a9e8`, 33 sites in six edits.
-4. ~~`clang-analyzer-optin.cplusplus.VirtualCall` (86 sites) last~~ — done in `e3ad8275`, 81 sites, no suppressions.
-   The predicted hierarchy refactor did not materialise: see the note under [Tier 1.5](#tier-15-small-counts-real-ub-in-a-deep-virtual-hierarchy).
+4. ~~`clang-analyzer-optin.cplusplus.VirtualCall` (86 sites) last~~ — done in `e3ad8275`, 81 sites, no suppressions. The
+   predicted hierarchy refactor did not materialise: see the note
+   under [Tier 1.5](#tier-15-small-counts-real-ub-in-a-deep-virtual-hierarchy).
 
 ### Phase C — Tier 2, in progress
 
@@ -579,8 +578,8 @@ rather than the thousands the estimates predicted:
 7. `bugprone-switch-missing-default-case` last, or never.
 
 The per-directory idea still stands for what remains, but note `src/port` is already clean on all seven checks and
-`src/base` had four sites, so the two directories Phase C named as the starting point are worth almost nothing on
-their own. `src/ra` and `src/td` hold 91% of the tier.
+`src/base` had four sites, so the two directories Phase C named as the starting point are worth almost nothing on their
+own. `src/ra` and `src/td` hold 91% of the tier.
 
 ---
 
@@ -614,18 +613,18 @@ xargs -a /tmp/tidy_files.txt -P $JOBS -I{} clang-tidy \
 
 Note `--warnings-as-errors=` (empty) to override the config's `WarningsAsErrors: '*'` while measuring.
 
-**A check's own fix can be the next check's finding, and that is fine.** Enabling `sign-compare` created a large
-share of `shorten-64-to-32`'s sites, because making a count signed moves the mismatch from the comparison to the
-assignment. Sequence the signedness work before the truncation work and expect the second count to grow while you
-clear the first; do not read it as a regression.
+**A check's own fix can be the next check's finding, and that is fine.** Enabling `sign-compare` created a large share
+of `shorten-64-to-32`'s sites, because making a count signed moves the mismatch from the comparison to the assignment.
+Sequence the signedness work before the truncation work and expect the second count to grow while you clear the first;
+do not read it as a regression.
 
-**Measure the check you are enabling, then sweep the whole config before committing.** Tier 1.5 was verified twice
-by sweeping only the check being enabled, and twice the strict build went red afterwards on a check that had never
-been measured: marking classes `final` for `VirtualCall` tripped
+**Measure the check you are enabling, then sweep the whole config before committing.** Tier 1.5 was verified twice by
+sweeping only the check being enabled, and twice the strict build went red afterwards on a check that had never been
+measured: marking classes `final` for `VirtualCall` tripped
 `clang-diagnostic-unnecessary-virtual-specifier` in 46 declarations, and giving TD's `AbstractTypeClass` a virtual
 destructor made `~TeamTypeClass` an override, tripping `clang-diagnostic-suggest-destructor-override` and
-`modernize-use-override`. A single-check sweep cannot see fallout that lands on a different check. Run the sweep
-below once with the check under study, and once with no `--checks` at all — the full config, all 840 units — before
+`modernize-use-override`. A single-check sweep cannot see fallout that lands on a different check. Run the sweep below
+once with the check under study, and once with no `--checks` at all — the full config, all 840 units — before
 committing. Both were fixed in `532aef0f`.
 
 Four traps, every one of which reports a clean tree that is not clean.
@@ -634,26 +633,26 @@ Four traps, every one of which reports a clean tree that is not clean.
    prints `No checks enabled.` for a name it does not know, so a typo or a renamed check measures as zero.
 2. **A `clang-diagnostic-*` name on its own enables nothing.** `--checks='-*,clang-diagnostic-overloaded-virtual'`
    prints `Error: no checks enabled.` once per file and reports zero sites — those entries only filter warnings the
-   compiler already emits, they do not select work. Always pair them with at least one real check; the sweep above
-   works because `cppcoreguidelines-virtual-class-destructor` is in the same list.
+   compiler already emits, they do not select work. Always pair them with at least one real check; the sweep above works
+   because `cppcoreguidelines-virtual-class-destructor` is in the same list.
 3. **Check that `-p` names a directory that still has a `compile_commands.json` with `-Weverything` in it.**
    Without the database clang-tidy falls back to default flags, real checks keep firing, and every
    `clang-diagnostic-*` silently drops to zero — which looks exactly like success. `grep -c -- -Weverything
-   <dir>/compile_commands.json` before trusting a zero.
-4. **Watch for hard `error:` lines.** A translation unit that fails to compile reports no warnings, which reads
-   exactly like a clean one.
+   [dir]/compile_commands.json` before trusting a zero.
+4. **Watch for hard `error:` lines.** A translation unit that fails to compile reports no warnings, which reads exactly
+   like a clean one.
 
 ---
 
 ## Summary
 
-| Tier      | Checks | Sample sites | Status                                                                                   |
-|-----------|--------|--------------|------------------------------------------------------------------------------------------|
-| 1 (table) | 13     | ~41          | ✅ **Done** — 206 files touched, 18 latent bugs surfaced                                 |
-| 1.1       | 26     | 0 (336 real) | ✅ **Done** — 24 enabled (23 after 22), 7 more real bugs; 1 off for good, 1 moved to 1.5 |
-| 1.2       | 1      | 0            | ✅ **Done** — free, but it guards nothing; save layout pinned in tests                   |
-| 1.5       | 6      | 128 (265 real) | ✅ **Done** — all six; `VirtualCall` alone found lost buffered writes                  |
-| 2         | 7      | 576 (3568 real) | 3 done, 1 reclassified; `narrowing-conversions` next                                  |
-| 3         | ~230   | —            | Keep disabled                                                                            |
+| Tier      | Checks | Sample sites    | Status                                                                                   |
+|-----------|--------|-----------------|------------------------------------------------------------------------------------------|
+| 1 (table) | 13     | ~41             | ✅ **Done** — 206 files touched, 18 latent bugs surfaced                                 |
+| 1.1       | 26     | 0 (336 real)    | ✅ **Done** — 24 enabled (23 after 22), 7 more real bugs; 1 off for good, 1 moved to 1.5 |
+| 1.2       | 1      | 0               | ✅ **Done** — free, but it guards nothing; save layout pinned in tests                   |
+| 1.5       | 6      | 128 (265 real)  | ✅ **Done** — all six; `VirtualCall` alone found lost buffered writes                    |
+| 2         | 7      | 576 (3568 real) | 3 done, 1 reclassified; `narrowing-conversions` next                                     |
+| 3         | ~230   | —               | Keep disabled                                                                            |
 
 Disabled-check count: **275 → 230**.

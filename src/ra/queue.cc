@@ -679,7 +679,7 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
     multi_packet_buf = NullModem.BuildBuf;
-    multi_packet_max = NullModem.MaxLen - sizeof(CommHeaderType);
+    multi_packet_max = static_cast<int>(NullModem.MaxLen - sizeof(CommHeaderType));
     net = &NullModem;
   } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
     multi_packet_buf = Session.MetaPacket;
@@ -2567,7 +2567,7 @@ int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
     Keyboard->Check();
 
     if (OutList.First().Type == EventClass::ADDPLAYER) {
-      ev_size = sizeof(EventClass) + OutList.First().Data.Variable.Size;
+      ev_size = static_cast<int>(sizeof(EventClass) + OutList.First().Data.Variable.Size);
     } else {
       ev_size = sizeof(EventClass);
     }
@@ -2683,10 +2683,11 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
     // in the packet header.)
     //.....................................................................
     if (eventtype == EventClass::ADDPLAYER) {
-      storedsize = datasize + sizeof(EventClass::EventType) +
-                   OutList.First().Data.Variable.Size;
+      storedsize = static_cast<int>(datasize +
+                                    sizeof(EventClass::EventType) +
+                                    OutList.First().Data.Variable.Size);
     } else {
-      storedsize = datasize + sizeof(EventClass::EventType);
+      storedsize = static_cast<int>(datasize + sizeof(EventClass::EventType));
     }
 
     //.....................................................................
@@ -2855,7 +2856,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data.FrameInfo.Delay, datasize);
 
-        size += datasize + sizeof(EventClass::EventType);
+        size = static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
         break;
 
       //..................................................................
@@ -2894,7 +2895,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
                      sizeof(EventClass::EventType) + sizeof(numunits),
                  &OutList.First().Data.MegaMission, datasize);
 
-          size += datasize + sizeof(EventClass::EventType) + sizeof(numunits);
+          size = static_cast<int>(size + (datasize + sizeof(EventClass::EventType) + sizeof(numunits)));
         }
         break;
 
@@ -2906,7 +2907,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
 
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data.Variable.Size, datasize);
-        size += datasize + sizeof(EventClass::EventType);
+        size = static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
 
         memcpy(static_cast<char*>(buf) + size,
                OutList.First().Data.Variable.Pointer,
@@ -2924,7 +2925,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data, datasize);
 
-        size += datasize + sizeof(EventClass::EventType);
+        size = static_cast<int>(size + (datasize + sizeof(EventClass::EventType)));
 
         break;
     }
@@ -3187,8 +3188,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
                  datasize);
 
           if (numunits > 1) {
-            pos += datasize + sizeof(EventClass::EventType);
-            leftover -= datasize + sizeof(EventClass::EventType);
+            pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
+            leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
             datasize = sizeof(eventdata.Data.MegaMission.Whom);
 
             while (numunits) {
@@ -3238,8 +3239,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       //..................................................................
       count++;
 
-      pos += datasize + sizeof(EventClass::EventType);
-      leftover -= datasize + sizeof(EventClass::EventType);
+      pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
+      leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
 
       if (leftover) {
         event = (EventClass*)(static_cast<char*>(buf) + pos);
@@ -3254,8 +3255,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
     // and it will be uncompressed.
     //.....................................................................
     else {
-      pos += datasize + sizeof(EventClass::EventType);
-      leftover -= datasize + sizeof(EventClass::EventType);
+      pos = static_cast<int>(pos + (datasize + sizeof(EventClass::EventType)));
+      leftover = static_cast<int>(leftover - (datasize + sizeof(EventClass::EventType)));
       event = (EventClass*)(static_cast<char*>(buf) + pos);
 
       //..................................................................

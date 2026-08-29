@@ -379,7 +379,7 @@ void XMP_Signed_Decode(uint32_t* result, const unsigned char* from,
 
   unsigned char filler = static_cast<unsigned char>(*from & 0x80 ? 0xff : 0);
 
-  int fillcount = precision * sizeof(uint32_t) - frombytes;
+  int fillcount = static_cast<int>(precision * sizeof(uint32_t) - frombytes);
   unsigned char* dest = (unsigned char*)&result[precision];
 
   /*
@@ -427,7 +427,7 @@ void XMP_Unsigned_Decode(uint32_t* result, const unsigned char* from,
   assert(frombytes > 0);
   assert(precision > 0);
 
-  int fillcount = precision * sizeof(uint32_t) - frombytes;
+  int fillcount = static_cast<int>(precision * sizeof(uint32_t) - frombytes);
   unsigned char* dest = (unsigned char*)&result[precision];
 
   /*

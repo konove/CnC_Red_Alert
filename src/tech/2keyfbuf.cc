@@ -264,8 +264,9 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
     BFPartialPred = 256;  // init partial to off
 
     for (int off = 0; off < 8; off++) {
-      BFPredNegTable[off + 8] = BFPredNegTable[off] + dest.Get_Width() +
-                                dest.Get_XAdd() + dest.Get_Pitch();
+      BFPredNegTable[off + 8] =
+          static_cast<int16_t>(BFPredNegTable[off] + dest.Get_Width() +
+                               dest.Get_XAdd() + dest.Get_Pitch());
     }
   }
 

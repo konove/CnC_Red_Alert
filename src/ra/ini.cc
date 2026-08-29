@@ -346,7 +346,7 @@ int INIClass::Save(Pipe& pipe) const {
     total += pipe.Put("[", 1);
     total += pipe.Put(secptr->Section, static_cast<int>(strlen(secptr->Section)));
     total += pipe.Put("]", 1);
-    total += pipe.Put("\r\n", strlen("\r\n"));
+    total += pipe.Put("\r\n", static_cast<int>(strlen("\r\n")));
 
     /*
     **	Output all the entries and values in this section.
@@ -356,7 +356,7 @@ int INIClass::Save(Pipe& pipe) const {
       total += pipe.Put(entryptr->Entry, static_cast<int>(strlen(entryptr->Entry)));
       total += pipe.Put("=", 1);
       total += pipe.Put(entryptr->Value, static_cast<int>(strlen(entryptr->Value)));
-      total += pipe.Put("\r\n", strlen("\r\n"));
+      total += pipe.Put("\r\n", static_cast<int>(strlen("\r\n")));
 
       entryptr = entryptr->Next();
     }
@@ -365,7 +365,7 @@ int INIClass::Save(Pipe& pipe) const {
     **	After the last entry in this section, output an extra
     **	blank line for readability purposes.
     */
-    total += pipe.Put("\r\n", strlen("\r\n"));
+    total += pipe.Put("\r\n", static_cast<int>(strlen("\r\n")));
 
     secptr = secptr->Next();
   }

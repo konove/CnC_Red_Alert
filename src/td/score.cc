@@ -865,7 +865,7 @@ void ScoreClass::Presentation() {
     }
     if (i >= 60) {
       Count_Up_Print("%3d", scorecounter, static_cast<int>(total), 264, 50);
-      scorecounter += total / 100;
+      scorecounter = static_cast<int>(scorecounter + (total / 100));
     }
     Print_Minutes(minutes);
     Call_Back_Delay(1);
@@ -970,7 +970,7 @@ void ScoreClass::Presentation() {
     file.Open(FileAccess::kWrite);
 
     for (i = 0; i < NUMFAMENAMES; i++) {
-      hallfame[i].name[0] = hallfame[i].score = hallfame[i].level = 0;
+      hallfame[i].name[0] = static_cast<char>(hallfame[i].score = hallfame[i].level = 0);
       file.Write(&hallfame[i], sizeof(struct Fame));
     }
 
@@ -1423,7 +1423,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
     InfantryMan[i + 0].stage = InfantryMan[i + q].stage =
         InfantryMan[i + r].stage = 0;
     InfantryMan[i + 0].delay = InfantryMan[i + q].delay =
-        InfantryMan[i + r].delay = Random() & 0x1F;
+        InfantryMan[i + r].delay = static_cast<char>(Random() & 0x1F);
     InfantryMan[i + 0].Class = InfantryMan[i + q].Class =
         &InfantryTypeClass::As_Reference(INFANTRY_E1);
     InfantryMan[i + r].Class = &InfantryTypeClass::As_Reference(INFANTRY_C1);
@@ -1732,7 +1732,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           TextPrintBuffer->Fill_Rect(2 * (xpos + index * 6), ypos * 2,
                                      2 * (xpos + index * 6 + 6), 2 * (ypos + 6),
                                      BLACK);
-          str[index] = ascii;
+          str[index] = static_cast<char>(ascii);
           str[index + 1] = 0;
 
           int objindex;
@@ -1894,7 +1894,7 @@ void New_Infantry_Anim(int index, int anim) {
   if (anim >= DO_GUN_DEATH) {
     InfantryMan[index].delay = 1;  // start right away
   } else {
-    InfantryMan[index].delay = Random() & 15;
+    InfantryMan[index].delay = static_cast<char>(Random() & 15);
   }
 }
 

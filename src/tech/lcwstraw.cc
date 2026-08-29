@@ -175,7 +175,7 @@ int LCWStraw::Get(void* destbuf, int slen) {
       BlockHeader.CompCount = static_cast<unsigned short>(LCW_Comp(
           Buffer, &Buffer2[sizeof(BlockHeader)], BlockHeader.UncompCount));
       memmove(Buffer2, &BlockHeader, sizeof(BlockHeader));
-      Counter = BlockHeader.CompCount + sizeof(BlockHeader);
+      Counter = static_cast<int>(BlockHeader.CompCount + sizeof(BlockHeader));
     }
   }
 

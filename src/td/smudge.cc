@@ -225,7 +225,7 @@ bool SmudgeClass::Mark(MarkType mark) {
 
       for (int w = 0; w < Class->Width; w++) {
         for (int h = 0; h < Class->Height; h++) {
-          CELL newcell = origin + w + h * MAP_CELL_W;
+          CELL newcell = static_cast<CELL>(origin + w + h * MAP_CELL_W);
           if (Map.In_Radar(newcell)) {
             CellClass* cell = &Map[newcell];
 
@@ -312,7 +312,7 @@ void SmudgeClass::Read_INI(char* buffer) {
       char* ptr = strtok(nullptr, ",");
       if (ptr) {
         int data = 0;
-        CELL cell = atoi(ptr);
+        CELL cell = static_cast<CELL>(atoi(ptr));
         ptr = strtok(nullptr, ",");
         if (ptr) {
           data = atoi(ptr);

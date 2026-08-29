@@ -139,7 +139,7 @@ bool CarryoverClass::Create() const {
 
   if (techno) {
     bool oldscen = ScenarioInit;
-    techno->Strength = Strength;
+    techno->Strength = static_cast<short>(Strength);
     if (RTTI == RTTI_INFANTRY) {
       ScenarioInit = 0;
     }

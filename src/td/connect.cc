@@ -89,7 +89,7 @@ ConnectionClass::ConnectionClass(int maxlen, unsigned short magicnum,
   /*------------------------------------------------------------------------
   Compute our maximum packet length
   ------------------------------------------------------------------------*/
-  MaxPacketLen = maxlen + sizeof(CommHeaderType);
+  MaxPacketLen = static_cast<int>(maxlen + sizeof(CommHeaderType));
 
   /*------------------------------------------------------------------------
   Assign the magic number

@@ -885,7 +885,7 @@ int NullModemClass::Service() {
   /*------------------------------------------------------------------------
   Move all data past this packet to the front of the buffer.
   ------------------------------------------------------------------------*/
-  pos += PACKET_SERIAL_OVERHEAD_SIZE + length;
+  pos = static_cast<int>(pos + (PACKET_SERIAL_OVERHEAD_SIZE + length));
   memmove(RXBuf, RXBuf + pos, RXCount - pos);
   RXCount -= pos;
 
@@ -1682,7 +1682,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         y = (SeenBuff.Get_Height() - height) / 2;
 
         SerialPort->Write_To_Serial_Port((unsigned char*)"ATA\r",
-                                         strlen("ATA\r"));
+                                         static_cast<int>(strlen("ATA\r")));
 
         ring = true;
         delay = ModemWaitCarrier;

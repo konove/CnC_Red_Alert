@@ -876,7 +876,7 @@ void Read_MultiPlayer_Settings() {
     }
 
     WWGetPrivateProfileString("SyncBug", "Cell", "0", buf, 80, buffer);
-    cell = atoi(buf);
+    cell = static_cast<CELL>(atoi(buf));
     if (cell) {
       TrapCell = &Map[cell];
     }

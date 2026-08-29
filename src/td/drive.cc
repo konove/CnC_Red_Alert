@@ -556,7 +556,7 @@ void DriveClass::Assign_Destination(TARGET target) {
         **	Last check to make sure that the loading square is free from
         *permanent *	occupation (such as a building).
         */
-        CELL cell = Coord_Cell(b->Center_Coord()) + (MAP_CELL_W - 1);
+        CELL cell = static_cast<CELL>(Coord_Cell(b->Center_Coord()) + (MAP_CELL_W - 1));
         if (Ground[Map[cell].Land_Type()].Cost[Class->Speed]) {
           if (Transmit_Message(RADIO_DOCKING) == RADIO_ROGER) {
             FootClass::Assign_Destination(target);

@@ -131,7 +131,7 @@ void RandomStraw::Seed_Bit(int seed) {
   char frac = static_cast<char>(1 << (SeedBits & CHAR_BIT - 1));
 
   if (seed & 0x01) {
-    *ptr ^= frac;
+    *ptr = static_cast<char>(*ptr ^ frac);
   }
   SeedBits++;
 
@@ -233,7 +233,7 @@ void RandomStraw::Scramble_Seed() {
 
     int tocopy = sizeof(digest) < sizeof(Random) - index
                      ? sizeof(digest)
-                     : sizeof(Random) - index;
+                     : static_cast<int>(sizeof(Random) - index);
     memmove((char*)&Random[0] + index, digest, tocopy);
   }
 }
@@ -265,7 +265,7 @@ int RandomStraw::Get(void* source, int slen) {
   int total = 0;
   while (slen > 0) {
     *static_cast<char*>(source) = static_cast<char>(Random[Current++].Next());
-    Current = Current % (sizeof(Random) / sizeof(Random[0]));
+    Current = static_cast<int>(Current % (sizeof(Random) / sizeof(Random[0])));
     source = static_cast<char*>(source) + sizeof(char);
     slen--;
     total++;

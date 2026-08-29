@@ -3448,7 +3448,7 @@ const short* BuildingTypeClass::Occupy_List(bool placement) const {
     */
     const short* src = smudge.Occupy_List();
     while (*src != REFRESH_EOL) {
-      *dest++ = *src++ + cell;
+      *dest++ = static_cast<short>(*src++ + cell);
     }
 
     /*
@@ -3582,7 +3582,7 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
     **	of the building art itself.
     */
     if (bib != SMUDGE_NONE) {
-      cell += (Height() - 1) * MAP_CELL_W;
+      cell = static_cast<CELL>(cell + ((Height() - 1) * MAP_CELL_W));
     }
   }
   return bib != SMUDGE_NONE;
@@ -3689,7 +3689,7 @@ bool BuildingTypeClass::Flush_For_Placement(CELL cell,
     const short* list = Occupy_List(true);
 
     while (*list != REFRESH_EOL) {
-      CELL newcell = cell + *list++;
+      CELL newcell = static_cast<CELL>(cell + *list++);
 
       if (Map.In_Radar(newcell)) {
         TechnoClass* occupier = Map[newcell].Cell_Techno();

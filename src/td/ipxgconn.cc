@@ -82,7 +82,7 @@
 IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
                                        unsigned short product_id)
     : IPXConnClass(numsend, numreceive,
-                   maxlen + sizeof(GlobalHeaderType) - sizeof(CommHeaderType),
+                   static_cast<int>(maxlen + sizeof(GlobalHeaderType) - sizeof(CommHeaderType)),
                    GLOBAL_MAGICNUM,  // magic number for this connection
                    nullptr,          // IPX Address (none)
                    0,                // Connection ID
@@ -166,7 +166,8 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
   /*------------------------------------------------------------------------
   Queue it
   ------------------------------------------------------------------------*/
-  return Queue->Queue_Send(PacketBuf, buflen + sizeof(GlobalHeaderType));
+  return Queue->Queue_Send(
+      PacketBuf, static_cast<int>(buflen + sizeof(GlobalHeaderType)));
 
 } /* end of Send_Packet */
 
@@ -317,7 +318,7 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
     .......................... Copy data packet ...........................
     */
     packet = (GlobalHeaderType*)rec_entry->Buffer;
-    packetlen = rec_entry->BufLen - sizeof(GlobalHeaderType);
+    packetlen = static_cast<int>(rec_entry->BufLen - sizeof(GlobalHeaderType));
     if (packetlen > 0) {
       memcpy(buf, rec_entry->Buffer + sizeof(GlobalHeaderType), packetlen);
     }
