@@ -2,7 +2,7 @@
 
 ## Overview
 
-`.clang-tidy` enables all checks (`'*'`) and then disables **249** of them. This document prioritizes which of those 249
+`.clang-tidy` enables all checks (`'*'`) and then disables **247** of them. This document prioritizes which of those 247
 to re-enable, ordered by **measured bug yield per unit of fix effort**.
 
 Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
@@ -393,7 +393,8 @@ rather than against a measurement, and it is the second consecutive bump to brea
 | `clang-diagnostic-lifetime-safety-*-suggestions` (4) | 197   | —     | ✅ Disabled — annotation advice, not defect reports                                 |
 | `bugprone-unhandled-code-paths`                      | 55    | 33    | ✅ Disabled — rename of `hicpp-multiway-paths-covered`                              |
 | `readability-redundant-parentheses`                  | 34    | 12    | ✅ Swept in `8a508285`. Broadened into templates                                    |
-| `clang-diagnostic-lifetime-safety-*` (bug-class, 5)  | 25    | —     | ⚠️ **Disabled, unexamined** — see below                                            |
+| `clang-diagnostic-lifetime-safety-dangling-{field,global}` | 10 | 8 | ✅ Fixed in `f820ac85`; both checks now enabled                                    |
+| `clang-diagnostic-lifetime-safety-*` (other 3)       | 15    | —     | ✅ Disabled — false positives, see below                                            |
 | `readability-trivial-switch`                         | 23    | 20    | ✅ Disabled → Tier 3. New in 23, style-only                                         |
 | `readability-else-after-return`                      | 15    | 9     | ✅ Fixed in `82c69987`. Enabled check, broadened into `switch` cases                |
 | `performance-faster-string-find`                     | 6     | 3     | ✅ Fixed in `82c69987`. Enabled check, gained a new alias                           |
@@ -407,7 +408,8 @@ rather than against a measurement, and it is the second consecutive bump to brea
 
 **Four renames account for 4,921 of the 7,360 and cost nothing to fix.** Naming the 23 spelling restores a decision
 this project had already made; no game code changed. The remaining volume is three new style checks (2,141) and the
-lifetime-safety suggestions (197).
+lifetime-safety suggestions (197). Of everything left, **59 sites were real edits** — 34 parentheses, 25 lifetime and
+broadened-check fixes — and two of those were latent defects rather than style.
 
 **Two of the renames are aliases, and disabling an alias does not disable its primary.** That is the whole mechanism.
 `google-explicit-constructor` is still a valid name in 23, so the disable line looked fine — but 23 demoted it to an
@@ -444,23 +446,55 @@ path that allocates already deletes on failure, two lines above.
 then; 23 looks inside dependent expressions, and every one of the 34 new sites is in a class template body or an
 instantiation of one — `src/ra/list.h` and `src/ra/drop.h` are 17 between them. Same `return (x);` idiom, same sweep.
 
-### ⚠️ Left undone: the lifetime-safety bug-class findings
+### The lifetime-safety family, reviewed
 
-Seven `clang-diagnostic-lifetime-safety-*` names are disabled. Four are annotation advice — where to add
-`[[clang::lifetimebound]]` — and are churn. **The other five report defects and their 25 sites have not been read.**
-They were spelled `-Wexperimental-lifetime-safety-*` in 22, which is why nothing fired before. They are
-`-Weverything`-gated, so they break the clang strict build and not the default GCC one. Candidates worth a look:
+The nine `clang-diagnostic-lifetime-safety-*` names were spelled `-Wexperimental-lifetime-safety-*` in 22, which is why
+none of them fired before. They are `-Weverything`-gated, so they reach the clang strict build and not the default GCC
+one. All 25 sites have now been read, and the family splits three ways rather than two:
 
-- `src/ra/ipxmgr.cc:1025` and three parallel sites in `src/td/ipxmgr.cc` — `CurDataBuf = (char*)temp_receive_buffer;`
-  parks a local's address in a member that outlives it.
-- `src/ra/findpath.cc:174` / `src/td/findpath.cc:181` — `static CELL StartLocation;` written once and never read.
-- `src/ra/nullmgr.cc:1391` and `:1591` plus the TD twins — a global pointed at a stack button that outlives only the
-  dialog loop. Works by construction, fragile.
-- `src/ra/techno.cc:3282` and `src/ra/udata.cc:1074` are likely false under this ownership model; the second says so
-  itself ("This could be a false positive as the storage may have been moved later").
+| Group                                                        | Sites | Outcome                                                |
+|--------------------------------------------------------------|-------|--------------------------------------------------------|
+| `dangling-field`, `dangling-global`                          | 10    | ✅ **Enabled** — sites cleared in `f820ac85`            |
+| `-suggestions` ×4 (`intra-tu`, `cross-tu`, both `-constructor`) | 197   | Disabled — annotation advice, not defect reports        |
+| `use-after-free`, `invalidation`, `use-after-scope-moved`    | 15    | Disabled — false positives, reasons below               |
 
-Re-enable them one at a time once read. Do not disable the whole `lifetime-safety` prefix in a single line — the
-families differ in value.
+**None of the 10 was a live bug, and each was one edit away from being one.** All ten were the same shape: a pointer
+to a stack local left in a member or a global after the function returned, safe only because nothing happened to read
+it out of window.
+
+- **`ipxmgr`, 4 sites.** `Service()` assigned `CurDataBuf` and `CurHeaderBuf` — *members* — from a 1024-byte stack
+  receive buffer, then read them three lines later. In RA the two were used nowhere else at all, so they became locals
+  and the member is gone. In TD they are a genuine cursor over `FirstHeaderBuf`/`FirstDataBuf`, but only in the legacy
+  DOS path; the Winsock branch was borrowing them as scratch. That branch uses locals now, and the declarations moved
+  under `#ifdef NOT_FOR_WIN95` to sit with their only remaining users.
+- **`nullmgr`, 4 sites.** `Commands` is a `static GadgetClass*` pointed at a local button and never cleared, so it
+  dangled from the moment `Dial_Modem()` returned. It worked because `Abort_Modem()` — the one reader outside the
+  function — is registered by `Setup_Abort_Modem()` and dropped by `Remove_Abort_Modem()` while the button is still
+  alive. The pointer is cleared alongside the deregistration now, so the invariant is in the code rather than in the
+  pairing.
+- **`mapsel`, 2 sites.** `InterpolationPalette` is a global read from `interpal.cc` in another translation unit, and
+  `Map_Selection()` pointed it at a 768-byte local. Clearing the global would have been the wrong fix — some path may
+  read it without setting it first, which turns a bad read into a null dereference. The buffer got static storage
+  instead. Every path fills it before reading, so nothing changes except that the pointer stays valid.
+
+The three disabled checks are false positives under this codebase's ownership model, and were left disabled rather than
+suppressed site by site:
+
+- **`use-after-free`, 3 sites** — all `new BulletClass`. `BulletClass` declares its own `operator new`/`operator delete`
+  (`ra/bullet.h:82-84`, `td/bullet.h:80-82`) and is allocated from the game's fixed heap, not the free store. The
+  analyzer sees an unmatched `new`.
+- **`invalidation`, 11 sites** — eight are global page buffers (`PseudoSeenBuff`, `TextPrintBuffer`, `Palette`,
+  `BackgroundPage`) on their intended per-screen `new`/`delete` cycle; the analyzer reports the delete as "later
+  invalidated". The other three are `std::string` and `std::vector` reallocating internally, with nobody holding an
+  interior pointer.
+- **`use-after-scope-moved`, 1 site** — `src/ra/udata.cc:1074`, which says so itself: "This could be a false positive
+  as the storage may have been moved later."
+
+Two notes for the next reviewer. `src/ra/findpath.cc:174` was listed here as a candidate on an earlier reading; it is
+not a lifetime-safety finding at all and was never one of the 25. And the sweep that cleared the 10 produced three
+*new* findings — `clang-diagnostic-unused-private-field` and `-unused-variable`, from members and locals whose only
+remaining references sat in dead preprocessor branches. A single-check sweep would have missed all three; see the
+full-config rule under [Re-measuring](#re-measuring).
 
 ### The dead-name audit
 
@@ -780,8 +814,8 @@ Seven traps, every one of which reports a clean tree that is not clean.
 | 1.2       | 1      | 0               | ✅ **Done** — free, but it guards nothing; save layout pinned in tests                   |
 | 1.5       | 6      | 128 (265 real)  | ✅ **Done** — all six; `VirtualCall` alone found lost buffered writes                    |
 | 2         | 7      | 576 (3568 real) | 4 done, 1 reclassified; `pro-type-member-init` next                                      |
-| 3         | ~249   | —               | Keep disabled                                                                            |
+| 3         | ~247   | —               | Keep disabled                                                                            |
 
-Disabled-check count: **275 → 230 → 249**. The rise is the clang-tidy 23 round, not a retreat: 12 of the 19 additions
+Disabled-check count: **275 → 230 → 247**. The rise is the clang-tidy 23 round, not a retreat: most of the additions
 carry forward decisions already made under names 23 deleted or renamed, and the rest are new style checks. See
 [clang-tidy 23 fallout](#clang-tidy-23-fallout).
