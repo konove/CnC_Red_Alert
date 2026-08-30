@@ -21,6 +21,12 @@ target_compile_definitions(port PUBLIC PORTABLE=1)
 include(Testing)
 add_gtest(
     NAME port_test
-    SOURCES safe_string_test.cc
+    SOURCES safe_string_test.cc sleep_test.cc
+    LIBS port
+)
+
+add_gtest(
+    NAME port_win32_test
+    SOURCES win32/win32_com_test.cc win32/win32_system_test.cc
     LIBS port
 )
