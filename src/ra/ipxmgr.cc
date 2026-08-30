@@ -1014,6 +1014,10 @@ int IPXManagerClass::Service() {
 
   char temp_address[128];
 
+  // Cursor into temp_receive_buffer above. This was a member, which left the
+  // object holding a pointer into this frame's stack after Service() returned.
+  char* cur_data_buf = nullptr;
+
   if (PacketTransport) {
     do {
       temp_receive_buffer_len = sizeof(temp_receive_buffer);
@@ -1022,10 +1026,10 @@ int IPXManagerClass::Service() {
           PacketTransport->Read(temp_receive_buffer, temp_receive_buffer_len,
                                 temp_address, temp_address_len);
       if (packetlen) {
-        CurDataBuf = (char*)temp_receive_buffer;
+        cur_data_buf = (char*)temp_receive_buffer;
         address = *(IPXAddressClass*)temp_address;
 
-        packet = (CommHeaderType*)CurDataBuf;
+        packet = (CommHeaderType*)cur_data_buf;
         if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
           /*
           ** Put the packet in the Global Queue
@@ -1117,8 +1121,8 @@ int IPXManagerClass::Service() {
     ** This is an internet connection so get the packets from winsock
     */
     while ((recv_length = Winsock.Read(temp_receive_buffer, 1024)) != 0) {
-      CurHeaderBuf = nullptr;
-      CurDataBuf = (char*)&temp_receive_buffer[0];
+      cur_header_buf = nullptr;
+      cur_data_buf = (char*)&temp_receive_buffer[0];
 
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
@@ -1128,13 +1132,13 @@ int IPXManagerClass::Service() {
       /*.....................................................................
       Extract the sender's address from the IPX header
       .....................................................................*/
-      address.Set_Address(CurHeaderBuf);
+      address.Set_Address(cur_header_buf);
 
       /*.....................................................................
       Examine the Magic Number of the received packet to determine if this
       packet goes into the Global Queue, or into one of the Private Queues
       .....................................................................*/
-      packet = (CommHeaderType*)CurDataBuf;
+      packet = (CommHeaderType*)cur_data_buf;
       if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
         /*..................................................................
         Put the packet in the Global Queue
@@ -1160,26 +1164,26 @@ int IPXManagerClass::Service() {
     }
   } else {
     while (IPX_Get_Outstanding_Buffer95(&temp_receive_buffer[0])) {
-      CurHeaderBuf = (IPXHEADER*)&temp_receive_buffer[0];
-      CurDataBuf = (char*)&temp_receive_buffer[sizeof(IPXHeaderType)];
+      cur_header_buf = (IPXHeaderType*)&temp_receive_buffer[0];
+      cur_data_buf = (char*)&temp_receive_buffer[sizeof(IPXHeaderType)];
 
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
       .....................................................................*/
       packetlen =
-          ((CurHeaderBuf->Length & 0xff) << 8) | (CurHeaderBuf->Length >> 8);
+          ((cur_header_buf->Length & 0xff) << 8) | (cur_header_buf->Length >> 8);
       packetlen -= sizeof(IPXHeaderType);
 
       /*.....................................................................
       Extract the sender's address from the IPX header
       .....................................................................*/
-      address.Set_Address(CurHeaderBuf);
+      address.Set_Address(cur_header_buf);
 
       /*.....................................................................
       Examine the Magic Number of the received packet to determine if this
       packet goes into the Global Queue, or into one of the Private Queues
       .....................................................................*/
-      packet = (CommHeaderType*)CurDataBuf;
+      packet = (CommHeaderType*)cur_data_buf;
       if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
         /*..................................................................
         Put the packet in the Global Queue

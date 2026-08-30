@@ -1487,6 +1487,9 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   }
 
   Remove_Abort_Modem();
+  // cancelbtn is a local of this function; drop the pointer with it so the
+  // static does not outlive the button it names.
+  Commands = nullptr;
 
   return dialstatus;
 
@@ -1722,6 +1725,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   }
 
   Remove_Abort_Modem();
+  // cancelbtn is a local of this function; drop the pointer with it so the
+  // static does not outlive the button it names.
+  Commands = nullptr;
 
   return dialstatus;
 

@@ -1033,25 +1033,32 @@ int IPXManagerClass::Service() {
   unsigned char temp_receive_buffer[1024];
   int recv_length;
 
+  // Cursors into temp_receive_buffer above. The members of the same name are
+  // the legacy DOS path's cursor over FirstHeaderBuf/FirstDataBuf; using them
+  // here left the object pointing into this frame's stack after Service()
+  // returned.
+  IPXHeaderType* cur_header_buf = nullptr;
+  char* cur_data_buf = nullptr;
+
   if (Winsock.Get_Connected()) {
     while ((recv_length = Winsock.Read(temp_receive_buffer, 1024)) != 0) {
 #ifdef VIRTUAL_SUBNET_SERVER
       /*
       ** Get a pointer to the data header and swap the bit mask
       */
-      CurHeaderBuf = (IPXHEADER*)&temp_receive_buffer[0];  // NULL;
-      unsigned short* swapptr = (unsigned short*)CurHeaderBuf;
+      cur_header_buf = (IPXHEADER*)&temp_receive_buffer[0];  // NULL;
+      unsigned short* swapptr = (unsigned short*)cur_header_buf;
       *swapptr = ntohs(*swapptr);
 
-      CurDataBuf = (char*)&temp_receive_buffer[2];
+      cur_data_buf = (char*)&temp_receive_buffer[2];
 
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
       .....................................................................*/
       packetlen = recv_length - 2;
 #else  // VIRTUAL_SUBNET_SERVER
-      CurHeaderBuf = nullptr;
-      CurDataBuf = (char*)&temp_receive_buffer[0];
+      cur_header_buf = nullptr;
+      cur_data_buf = (char*)&temp_receive_buffer[0];
 
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
@@ -1063,13 +1070,13 @@ int IPXManagerClass::Service() {
       /*.....................................................................
       Extract the sender's address from the IPX header
       .....................................................................*/
-      address.Set_Address(CurHeaderBuf);
+      address.Set_Address(cur_header_buf);
 
       /*.....................................................................
       Examine the Magic Number of the received packet to determine if this
       packet goes into the Global Queue, or into one of the Private Queues
       .....................................................................*/
-      packet = (CommHeaderType*)CurDataBuf;
+      packet = (CommHeaderType*)cur_data_buf;
 #if (0)
       char tempbuf[256];
 
@@ -1081,7 +1088,7 @@ int IPXManagerClass::Service() {
       };
 
       sprintf(tempbuf, "Received packet type %d, ID=%d, code=%s, length=%d \n",
-              CurDataBuf[sizeof(CommHeaderType)], packet->PacketID,
+              cur_data_buf[sizeof(CommHeaderType)], packet->PacketID,
               pcode[packet->Code], recv_length);
       CCDebugString(tempbuf);
 #endif  //(0)
@@ -1115,26 +1122,26 @@ int IPXManagerClass::Service() {
     }
   } else {
     while (IPX_Get_Outstanding_Buffer95(&temp_receive_buffer[0])) {
-      CurHeaderBuf = (IPXHEADER*)&temp_receive_buffer[0];
-      CurDataBuf = (char*)&temp_receive_buffer[sizeof(IPXHeaderType)];
+      cur_header_buf = (IPXHEADER*)&temp_receive_buffer[0];
+      cur_data_buf = (char*)&temp_receive_buffer[sizeof(IPXHeaderType)];
 
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
       .....................................................................*/
       packetlen =
-          (CurHeaderBuf->Length & 0xff) << 8 | CurHeaderBuf->Length >> 8;
+          (cur_header_buf->Length & 0xff) << 8 | cur_header_buf->Length >> 8;
       packetlen -= sizeof(IPXHeaderType);
 
       /*.....................................................................
       Extract the sender's address from the IPX header
       .....................................................................*/
-      address.Set_Address(CurHeaderBuf);
+      address.Set_Address(cur_header_buf);
 
       /*.....................................................................
       Examine the Magic Number of the received packet to determine if this
       packet goes into the Global Queue, or into one of the Private Queues
       .....................................................................*/
-      packet = (CommHeaderType*)CurDataBuf;
+      packet = (CommHeaderType*)cur_data_buf;
 
       if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
         /*..................................................................

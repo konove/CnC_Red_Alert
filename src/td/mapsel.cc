@@ -478,7 +478,11 @@ struct nodstats {
  *=============================================================================================*/
 void Map_Selection() {
   void *anim, *progress, *greyearth, *greyearth2;
-  unsigned char localpalette[768];
+  // Static: InterpolationPalette is a global that keeps pointing here after
+  // this function returns, and interpal.cc reads it from another
+  // translation unit. Every path fills the buffer before reading it, so
+  // persisting it between calls changes nothing.
+  static unsigned char localpalette[768];
   int scenario, lastscenario;
   int house = PlayerPtr->Class->House;
   int attackxcoord = 0;

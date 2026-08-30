@@ -370,11 +370,6 @@ class IPXManagerClass : public ConnManClass {
   char* FirstDataBuf;             // 1st data buffer area
 
   /*.....................................................................
-  Current packet index & ptrs for parsing packets
-  .....................................................................*/
-  char* CurDataBuf;  // Current actual data ptr
-
-  /*.....................................................................
   ECB, header, & buffer for sending
   .....................................................................*/
   ECBType* SendECB;           // ECB for sending

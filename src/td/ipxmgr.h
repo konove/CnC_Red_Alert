@@ -368,10 +368,14 @@ class IPXManagerClass : public ConnManClass {
   char* FirstDataBuf;             // 1st data buffer area
 
   /*.....................................................................
-  Current packet index & ptrs for parsing packets
+  Current packet index & ptrs for parsing packets. Only the legacy DOS IPX
+  path uses these; the Winsock path in Service() walks its own receive buffer
+  with locals, so that nothing survives the call pointing into that frame.
   .....................................................................*/
+#ifdef NOT_FOR_WIN95
   IPXHeaderType* CurHeaderBuf;  // Current packet ptr, for reading
   char* CurDataBuf;             // Current actual data ptr
+#endif
 
   /*.....................................................................
   ECB, header, & buffer for sending
