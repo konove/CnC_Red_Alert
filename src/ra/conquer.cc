@@ -16,7 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// $Header: /CounterStrike/CONQUER.CPP 6     3/13/97 2:05p Steve_tall $
 // File: The main game loop, plus the game-wide services that grew up around it.
 //
 // This is the hub the rest of Red Alert hangs off. Main_Game() owns the
@@ -163,10 +162,6 @@ static void Toggle_Formation();
 static char TeamEvent = 0;       // 0 = no event, 1,2,3 = team event type
 static char TeamNumber = 0;      // which team was selected? (1-9)
 static char FormationEvent = 0;  // 0 = no event, 1 = formation was toggled
-
-// -----------------10/14/96 7:29PM------------------
-//
-// --------------------------------------------------
 
 #if (TEN)
 void TEN_Call_Back();
@@ -2019,7 +2014,7 @@ static bool Map_Edit_Loop() {
   Call_Back();  // maintains Theme.AI() for music
   Color_Cycle();
 
-  return (!GameActive);
+  return !GameActive;
 }
 
 void Go_Editor(const bool flag) {
@@ -2530,7 +2525,7 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
                 char pixel = 0;
                 for (int lp = 0; lp < 9; ++lp) {
                   pixel = *(static_cast<char*>(ptr) +
-                            (static_cast<base::ssize>(gety - off_y[lp])) *
+                            static_cast<base::ssize>(gety - off_y[lp]) *
                                 pixel_width +
                             getx - off_x[lp]);
 
@@ -3386,28 +3381,24 @@ bool Force_CD_Available(int cd_desired)  //	ajw
       if (cd_desired == CD_DVD) {
 #ifdef FRENCH
         sprintf(buffer, "Insèrez le %s", _cd_name[4]);
-#else
-#ifdef GERMAN
+#elifdef GERMAN
         sprintf(buffer, "Bitte %s", _cd_name[4]);
 #else
         sprintf(buffer, "Please insert the %s", _cd_name[4]);
 #endif
-#endif
       } else if (cd_desired == CD_COUNTERSTRIKE || cd_desired == CD_AFTERMATH) {
 #ifdef FRENCH
         sprintf(buffer, "Insèrez le %s", _cd_name[cd_desired]);
-#else
-#ifdef GERMAN
+#elifdef GERMAN
         sprintf(buffer, "Bitte %s", _cd_name[cd_desired]);
 #else
         sprintf(buffer, "Please insert the %s", _cd_name[cd_desired]);
 #endif
-#endif
       } else {
         // These prompts come from the localized string table, so verify the
         // translation still takes a %d followed by a %s before using it.
-        const int text = (cd_desired == CD_ANY) ? TXT_CD_DIALOG_1
-                                                : TXT_CD_DIALOG_2;  // 0 or 1
+        const int text =
+            cd_desired == CD_ANY ? TXT_CD_DIALOG_1 : TXT_CD_DIALOG_2;  // 0 or 1
         auto format = absl::ParsedFormat<'d', 's'>::New(Text_String(text));
         if (format != nullptr) {
           port::SafeCopy(buffer, absl::StrFormat(*format, cd_desired + 1,
