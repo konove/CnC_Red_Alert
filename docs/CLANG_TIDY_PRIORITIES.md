@@ -2,7 +2,7 @@
 
 ## Overview
 
-`.clang-tidy` enables all checks (`'*'`) and then disables **247** of them. This document prioritizes which of those 247
+`.clang-tidy` enables all checks (`'*'`) and then disables **242** of them. This document prioritizes which of those 242
 to re-enable, ordered by **measured bug yield per unit of fix effort**.
 
 Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
@@ -511,10 +511,19 @@ Strip only the leading `-`, not every hyphen: `tr -d ' -'` mangles every name an
 which reads as a clean audit.
 
 `clang-diagnostic-*` names never appear in `--list-checks` and are expected in the output; anything else is a line
-disabling a check that does not exist. Today it prints the 18 `hicpp-` names, `cert-dcl21-cpp`,
-`clang-analyzer-core.FixedAddressDereference`, `clang-analyzer-valist.Unterminated` and
-`cppcoreguidelines-explicit-constructor-and-conversion` — the last three already dead under 22, the residue of the
-21 → 22 round nobody noticed because `google-explicit-constructor` still covered it.
+disabling a check that does not exist under the installed clang-tidy.
+
+Today it prints 17 names: 16 `hicpp-` plus `clang-analyzer-core.FixedAddressDereference`. **These are dead under 23 and
+deliberately kept**, because they are not dead under 22 — disabling a check's primary name does not disable its aliases,
+so dropping them lets the aliases fire. Measured over all 840 units under clang-tidy 22, removing them costs about
+14,000 findings across 18 checks; `hicpp-no-array-decay` alone is 4,027 and `hicpp-signed-bitwise` 4,617.
+
+Five entries were dropped in the cleanup after the 23 move: `cert-dcl21-cpp`, `clang-analyzer-valist.Unterminated` and
+`cppcoreguidelines-explicit-constructor-and-conversion`, which name checks that exist in neither 22 nor 23 — the
+residue of the 21 → 22 round nobody noticed because `google-explicit-constructor` still covered the third — plus
+`hicpp-avoid-goto` and `hicpp-static-assert`, which exist under 22 but measure 0 sites there. Note the latter two are
+free only as long as that stays true: adding a `goto`, or a comparison `static_assert` could express, breaks a
+clang-tidy 22 build. The config is verified clean under both 22 and 23.
 
 Reproduce with the sweep under [Re-measuring](#re-measuring), with no `--checks` at all — a single-check sweep cannot
 see the `clang-diagnostic-*` family.
@@ -814,8 +823,8 @@ Seven traps, every one of which reports a clean tree that is not clean.
 | 1.2       | 1      | 0               | ✅ **Done** — free, but it guards nothing; save layout pinned in tests                   |
 | 1.5       | 6      | 128 (265 real)  | ✅ **Done** — all six; `VirtualCall` alone found lost buffered writes                    |
 | 2         | 7      | 576 (3568 real) | 4 done, 1 reclassified; `pro-type-member-init` next                                      |
-| 3         | ~247   | —               | Keep disabled                                                                            |
+| 3         | ~242   | —               | Keep disabled                                                                            |
 
-Disabled-check count: **275 → 230 → 247**. The rise is the clang-tidy 23 round, not a retreat: most of the additions
+Disabled-check count: **275 → 230 → 242**. The rise is the clang-tidy 23 round, not a retreat: most of the additions
 carry forward decisions already made under names 23 deleted or renamed, and the rest are new style checks. See
 [clang-tidy 23 fallout](#clang-tidy-23-fallout).
