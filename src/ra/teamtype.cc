@@ -1175,10 +1175,9 @@ bool TeamTypeClass::Edit() {
                 sprintf(arg_edt.Get_Text(), "%c",
                         missionlist2.Current_Item()->Data.Value + 'A');
               } else {
-                sprintf(
-                    arg_edt.Get_Text(), "%c%c",
-                    (missionlist2.Current_Item()->Data.Value) / 26 + 'A' - 1,
-                    (missionlist2.Current_Item()->Data.Value % 26) + 'A');
+                sprintf(arg_edt.Get_Text(), "%c%c",
+                        missionlist2.Current_Item()->Data.Value / 26 + 'A' - 1,
+                        (missionlist2.Current_Item()->Data.Value % 26) + 'A');
               }
               break;
           }
@@ -1220,9 +1219,9 @@ bool TeamTypeClass::Edit() {
 
             case NEED_WAYPOINT:
               tm->Data.Value = toupper(*arg_edt.Get_Text()) - 'A';
-              if (*((arg_edt.Get_Text()) + 1)) {
+              if (*(arg_edt.Get_Text() + 1)) {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
-                tm->Data.Value += toupper(*((arg_edt.Get_Text()) + 1)) - 'A';
+                tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
               }
               if ((unsigned)tm->Data.Value >= WAYPT_HOME) {
                 tm->Data.Value = 0;
@@ -1269,9 +1268,9 @@ bool TeamTypeClass::Edit() {
 
             case NEED_WAYPOINT:
               tm->Data.Value = toupper(*arg_edt.Get_Text()) - 'A';
-              if (*((arg_edt.Get_Text()) + 1)) {
+              if (*(arg_edt.Get_Text() + 1)) {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
-                tm->Data.Value += toupper(*((arg_edt.Get_Text()) + 1)) - 'A';
+                tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
               }
               if ((unsigned)tm->Data.Value >= WAYPT_HOME) {
                 tm->Data.Value = 0;
@@ -1319,9 +1318,9 @@ bool TeamTypeClass::Edit() {
 
             case NEED_WAYPOINT:
               tm->Data.Value = toupper(*arg_edt.Get_Text()) - 'A';
-              if (*((arg_edt.Get_Text()) + 1)) {
+              if (*(arg_edt.Get_Text() + 1)) {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
-                tm->Data.Value += toupper(*((arg_edt.Get_Text()) + 1)) - 'A';
+                tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
               }
               if ((unsigned)tm->Data.Value >= WAYPT_HOME) {
                 tm->Data.Value = 0;

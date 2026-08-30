@@ -1886,7 +1886,7 @@ bool MapEditClass::Scroll_Map(DirType facing, int& distance, bool really) {
       Flag_To_Redraw(true);
     }
   }
-  return (MouseClass::Scroll_Map(facing, distance, really));
+  return MouseClass::Scroll_Map(facing, distance, really);
 }
 
 void MapEditClass::Detach(ObjectClass* object) {

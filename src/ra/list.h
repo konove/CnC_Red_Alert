@@ -169,8 +169,8 @@ class TListClass final : public ControlClass {
              const void* up, const void* down);
   TListClass(const TListClass<T>&) = delete;
   ~TListClass() override;
-  T operator[](int index) const { return (List[index]); }
-  T& operator[](int index) { return (List[index]); }
+  T operator[](int index) const { return List[index]; }
+  T& operator[](int index) { return List[index]; }
 
   int Add_Item(T text);
   int Add_Scroll_Bar();
@@ -182,7 +182,7 @@ class TListClass final : public ControlClass {
   int Draw_Me(bool forced) override;
   int Step_Selected_Index(int forward);
   void Flag_To_Redraw() override;
-  T Get_Item(int index) const { return (List[index]); }
+  T Get_Item(int index) const { return List[index]; }
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
@@ -430,7 +430,7 @@ int TListClass<T>::Action(unsigned flags, KeyNumType& key) {
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min<int>(SelectedIndex, static_cast<int>(List.Count()) - 1);
   }
-  return (ControlClass::Action(flags, key));
+  return ControlClass::Action(flags, key);
 }
 
 template <class T>
@@ -513,12 +513,12 @@ T TListClass<T>::Current_Item() const {
   if (List.Count() <= SelectedIndex) {
     return _temp;
   }
-  return (List[SelectedIndex]);
+  return List[SelectedIndex];
 }
 
 template <class T>
 int TListClass<T>::Current_Index() const {
-  return (SelectedIndex);
+  return SelectedIndex;
 }
 
 template <class T>
@@ -669,7 +669,7 @@ LinkClass& TListClass<T>::Add(LinkClass& list) {
   /*
   **	Add myself to the list, then return.
   */
-  return (ControlClass::Add(list));
+  return ControlClass::Add(list);
 }
 
 template <class T>
@@ -686,7 +686,7 @@ LinkClass& TListClass<T>::Add_Head(LinkClass& list) {
   /*
   **	Add myself to the list, then return.
   */
-  return (ControlClass::Add_Head(list));
+  return ControlClass::Add_Head(list);
 }
 
 template <class T>
@@ -705,7 +705,7 @@ LinkClass& TListClass<T>::Add_Tail(LinkClass& list) {
     ScrollGadget.Add_Tail(list);
   }
 
-  return (Head_Of_List());
+  return Head_Of_List();
 }
 
 template <class T>
@@ -722,7 +722,7 @@ GadgetClass* TListClass<T>::Remove() {
   /*
   **	Remove myself & return
   */
-  return (ControlClass::Remove());
+  return ControlClass::Remove();
 }
 
 template <class T>

@@ -1546,7 +1546,7 @@ const short* InfantryClass::Overlap_List(bool) const
 #else
 
   static Rect rect(-16, -24, 32, 36);
-  return (Coord_Spillage_List(Coord, rect, true));
+  return Coord_Spillage_List(Coord, rect, true);
 #endif
 
   //		return(Coord_Spillage_List(Coord, 24 /*+ ((Doing > DO_WALK ||

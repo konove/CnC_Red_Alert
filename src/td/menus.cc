@@ -301,7 +301,7 @@ int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
   **	out the new selected item, and continue forward.
   */
   mx1 = (WinX << 3) + (menu.x * FontWidth); /* get menu coords		*/
-  my1 = WinY + (menu.y) - halfskip;         /*		from the menu
+  my1 = WinY + menu.y - halfskip;           /*		from the menu
                                              */
   mx2 = mx1 + (menu.item_width * FontWidth) -
         1; /*		structure as		*/
@@ -373,7 +373,7 @@ int Check_Menu(MenuConfig& menu, const char* text[], long field, int index) {
     */
     default:
       for (int menu_item = 0; menu_item < menu.item_count; menu_item++) {
-        if (toupper(*(text[Select_To_Entry(menu_item, field, index)])) ==
+        if (toupper(*text[Select_To_Entry(menu_item, field, index)]) ==
             toupper(Keyboard::To_ASCII((KeyNumType)(key & 0x0FF)))) {
           newitem = select = menu_item;
           break;

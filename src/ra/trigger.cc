@@ -91,7 +91,7 @@
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-const char* TriggerClass::Description() const { return (Class->Description()); }
+const char* TriggerClass::Description() const { return Class->Description(); }
 
 /***********************************************************************************************
  * TriggerClass::Draw_It -- Draws this trigger as if it were part of a list box.

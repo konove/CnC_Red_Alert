@@ -170,7 +170,7 @@ class TeamTypeClass : public AbstractTypeClass {
   bool Edit();
   const char* Member_Description() const;
   const char* Description() const;
-  operator const char*() const { return (Description()); }
+  operator const char*() const { return Description(); }
 
   /*
   **	If this teamtype object is active, then this flag will be true.

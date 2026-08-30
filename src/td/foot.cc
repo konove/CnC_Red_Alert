@@ -262,7 +262,7 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
       // end of Path. Walk the array instead.
       for (int index = 0; index < kConquerPathMax; index++) {
         mono->Set_Cursor(50 + index, 3);
-        mono->Printf("%s", _p2c[(std::abs(static_cast<int>(Path[index]) + 1)) %
+        mono->Printf("%s", _p2c[std::abs(static_cast<int>(Path[index]) + 1) %
                                 std::ssize(_p2c)]);
       }
 

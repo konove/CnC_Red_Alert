@@ -115,8 +115,8 @@ class TDropListClass : public EditClass {
   TDropListClass(const TDropListClass<T>&) = delete;
   ~TDropListClass() override {}
 
-  T operator[](int index) const { return (List[index]); }
-  T& operator[](int index) { return (List[index]); }
+  T operator[](int index) const { return List[index]; }
+  T& operator[](int index) { return List[index]; }
 
   TDropListClass& Add(LinkClass& object) override;
   TDropListClass& Add_Tail(LinkClass& object) override;
@@ -131,8 +131,8 @@ class TDropListClass : public EditClass {
   virtual void Set_Selected_Index(T item);
   void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) override;
   void Clear_Focus() override;
-  virtual int Count() const { return (List.Count()); }
-  virtual T Get_Item(int index) const { return (List.Get_Item(index)); }
+  virtual int Count() const { return List.Count(); }
+  virtual T Get_Item(int index) const { return List.Get_Item(index); }
 
   void Expand();
   void Collapse();
@@ -217,17 +217,17 @@ template <class T>
 int TDropListClass<T>::Add_Item(T item) {
   strncpy(String, item->Description(), MaxLength);
   Flag_To_Redraw();
-  return (List.Add_Item(item));
+  return List.Add_Item(item);
 }
 
 template <class T>
 T TDropListClass<T>::Current_Item() {
-  return (List.Current_Item());
+  return List.Current_Item();
 }
 
 template <class T>
 int TDropListClass<T>::Current_Index() {
-  return (List.Current_Index());
+  return List.Current_Index();
 }
 
 template <class T>
