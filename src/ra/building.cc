@@ -4702,9 +4702,8 @@ InfantryType BuildingClass::Crew_Type() const {
     case STRUCT_STORAGE:
       if (Percent_Chance(50)) {
         return INFANTRY_C1;
-      } else {
-        return INFANTRY_C7;
       }
+      return INFANTRY_C7;
 
     case STRUCT_CONST:
       if (!IsCaptured && House->IsHuman && Percent_Chance(25)) {
@@ -4715,9 +4714,8 @@ InfantryType BuildingClass::Crew_Type() const {
     case STRUCT_KENNEL:
       if (Percent_Chance(50)) {
         return INFANTRY_DOG;
-      } else {
-        return INFANTRY_NONE;
       }
+      return INFANTRY_NONE;
 
     case STRUCT_TENT:
     case STRUCT_BARRACKS:

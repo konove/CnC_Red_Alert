@@ -727,50 +727,49 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         }
         input = KN_NONE;
         break;
-      } else {
-        /*
-        ................... Exit trigger placement mode ....................
-        */
-        if (CurTrigger) {
-          Stop_Trigger_Placement();
-          input = KN_NONE;
-          break;
-        }
-        rc = CCMessageBox().Process("Exit Scenario Editor?", TXT_YES, TXT_NO);
+      }
+      /*
+      ................... Exit trigger placement mode ....................
+      */
+      if (CurTrigger) {
+        Stop_Trigger_Placement();
+        input = KN_NONE;
+        break;
+      }
+      rc = CCMessageBox().Process("Exit Scenario Editor?", TXT_YES, TXT_NO);
+      HiddenPage.Clear();
+      Flag_To_Redraw(true);
+      Render();
+
+      /*
+      .......... User doesn't want to exit; return to editor ..........
+      */
+      if (rc == 1) {
+        input = KN_NONE;
+        break;
+      }
+
+      /*
+      ................. If changed, prompt for saving .................
+      */
+      if (Changed) {
+        rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
         HiddenPage.Clear();
         Flag_To_Redraw(true);
         Render();
 
         /*
-        .......... User doesn't want to exit; return to editor ..........
+        ..................... User wants to save .....................
         */
-        if (rc == 1) {
-          input = KN_NONE;
-          break;
-        }
-
-        /*
-        ................. If changed, prompt for saving .................
-        */
-        if (Changed) {
-          rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-          HiddenPage.Clear();
-          Flag_To_Redraw(true);
-          Render();
-
+        if (rc == 0) {
           /*
-          ..................... User wants to save .....................
+          .............. If save cancelled, abort exit ..............
           */
-          if (rc == 0) {
-            /*
-            .............. If save cancelled, abort exit ..............
-            */
-            if (Save_Scenario() != 0) {
-              input = KN_NONE;
-              break;
-            }
-            Changed = 0;
+          if (Save_Scenario() != 0) {
+            input = KN_NONE;
+            break;
           }
+          Changed = 0;
         }
       }
       Prog_End();

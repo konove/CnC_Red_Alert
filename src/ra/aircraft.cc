@@ -707,22 +707,21 @@ int AircraftClass::Mission_Hunt() {
         if (Target_Legal(TarCom)) {
           Status = TAKE_OFF;
           return 1;
-        } else {
-          if (!Team.Is_Valid()) {
-            if (Session.Type != GAME_NORMAL) {
-              Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
-            }
-            if (!Target_Legal(TarCom)) {
-              Assign_Target(Greatest_Threat(THREAT_NORMAL));
-            }
+        }
+        if (!Team.Is_Valid()) {
+          if (Session.Type != GAME_NORMAL) {
+            Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
+          }
+          if (!Target_Legal(TarCom)) {
+            Assign_Target(Greatest_Threat(THREAT_NORMAL));
+          }
 
-            /*
-            **	If there is no target, then this aircraft should just do its
-            *normal thing.
-            */
-            if (!Target_Legal(TarCom) && !Team.Is_Valid()) {
-              Enter_Idle_Mode();
-            }
+          /*
+          **	If there is no target, then this aircraft should just do its
+          *normal thing.
+          */
+          if (!Target_Legal(TarCom) && !Team.Is_Valid()) {
+            Enter_Idle_Mode();
           }
         }
         break;

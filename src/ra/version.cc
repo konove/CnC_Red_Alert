@@ -713,7 +713,7 @@ const char* Version_Name() {
   version = "3.03";
 
 #ifdef ENGLISH
-  version += "E";
+  version += 'E';
 #elifdef GERMAN
   version += "G";
 #elifdef FRENCH
@@ -738,7 +738,7 @@ const char* Version_Name() {
   RawFileClass file("VERSION.TXT");
   if (file.Is_Available()) {
     char file_content[26] = {};
-    version += "\r";
+    version += '\r';
     file.Read(file_content, 25);
     file_content[25] = '\0';  // Ensure null termination
     version += file_content;

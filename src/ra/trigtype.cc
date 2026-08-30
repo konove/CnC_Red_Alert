@@ -2024,13 +2024,13 @@ void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
   **	Append the event and action values.
   */
   Event1.Build_INI_Entry(buffer);
-  buffer += ",";
+  buffer += ',';
 
   Event2.Build_INI_Entry(buffer);
-  buffer += ",";
+  buffer += ',';
 
   Action1.Build_INI_Entry(buffer);
-  buffer += ",";
+  buffer += ',';
 
   Action2.Build_INI_Entry(buffer);
 }

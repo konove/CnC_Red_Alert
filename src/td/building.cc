@@ -3905,14 +3905,13 @@ int BuildingClass::Mission_Attack() {
           Assign_Target(kTargetNone);
           Status = SAM_LOCKING;
           return kTicksPerSecond;
-        } else {
-          if (!PrimaryFacing.Is_Rotating()) {
-            DirType facing = Direction(TarCom);
-            if (PrimaryFacing.Difference(facing)) {
-              PrimaryFacing.Set_Desired(facing);
-            } else {
-              Status = SAM_FIRING;
-            }
+        }
+        if (!PrimaryFacing.Is_Rotating()) {
+          DirType facing = Direction(TarCom);
+          if (PrimaryFacing.Difference(facing)) {
+            PrimaryFacing.Set_Desired(facing);
+          } else {
+            Status = SAM_FIRING;
           }
         }
         return 1;
@@ -3951,14 +3950,13 @@ int BuildingClass::Mission_Attack() {
           Assign_Target(kTargetNone);
           Status = SAM_LOCKING;
           return kTicksPerSecond;
-        } else {
-          if (!PrimaryFacing.Is_Rotating()) {
-            DirType facing = Direction(TarCom);
-            if (PrimaryFacing.Difference(facing)) {
-              PrimaryFacing.Set_Desired(facing);
-            } else {
-              Status = SAM_FIRING2;
-            }
+        }
+        if (!PrimaryFacing.Is_Rotating()) {
+          DirType facing = Direction(TarCom);
+          if (PrimaryFacing.Difference(facing)) {
+            PrimaryFacing.Set_Desired(facing);
+          } else {
+            Status = SAM_FIRING2;
           }
         }
         return 1;
@@ -4012,10 +4010,9 @@ int BuildingClass::Mission_Attack() {
           Set_Stage(0);
           Status = SAM_UNDERGROUND;
           return kTicksPerSecond;
-        } else {
-          if (Fetch_Rate() == 0) {
-            Set_Rate(2);
-          }
+        }
+        if (Fetch_Rate() == 0) {
+          Set_Rate(2);
         }
         return 1;
 
@@ -4774,9 +4771,8 @@ InfantryType BuildingClass::Crew_Type() const {
     case STRUCT_STORAGE:
       if (Random_Pick(0, 1) == 0) {
         return INFANTRY_C1;
-      } else {
-        return INFANTRY_C7;
       }
+      return INFANTRY_C7;
 
     case STRUCT_CONST:
       if (!IsCaptured && House->IsHuman && Random_Pick(0, 3) == 0) {

@@ -3240,6 +3240,10 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
         if (eventdata.Type == EventClass::ADDPLAYER) {
           delete[] static_cast<char*>(eventdata.Data.Variable.Pointer);
         }
+        // The analyzer does not model Add() taking ownership of the buffer on
+        // success, so it reads the stale pointer left in eventdata -- which is
+        // reused across loop iterations -- as still owned here.
+        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         return -1;
       }
 

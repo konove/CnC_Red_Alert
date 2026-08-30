@@ -2478,10 +2478,9 @@ int UnitClass::Mission_Unload() {
           if (Is_Door_Open()) {
             Status = UNLOADING;
             return 1;
-          } else {
-            if (!Is_Door_Opening()) {
-              Status = INITIAL_CHECK;
-            }
+          }
+          if (!Is_Door_Opening()) {
+            Status = INITIAL_CHECK;
           }
           break;
 
@@ -2595,10 +2594,9 @@ int UnitClass::Mission_Unload() {
           if (Is_Door_Open()) {
             Status = UNLOADING;
             return 1;
-          } else {
-            if (!Is_Door_Opening()) {
-              Status = INITIAL_CHECK;
-            }
+          }
+          if (!Is_Door_Opening()) {
+            Status = INITIAL_CHECK;
           }
           break;
 

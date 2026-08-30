@@ -56,7 +56,11 @@ class FieldClass {
   // Define constructors to be able to create all the different kinds
   // of fields.
   //
-  FieldClass() {}
+  // Members are value-initialized rather than left indeterminate: the
+  // packet reader default-constructs a field and then memcpy's only
+  // FIELD_HEADER_SIZE bytes into it, which covers ID, DataType and Size but
+  // not Data or Next.
+  FieldClass() : ID{}, DataType(0), Size(0), Data(nullptr), Next(nullptr) {}
   FieldClass(const char* id, char data);
   FieldClass(const char* id, unsigned char data);
   FieldClass(const char* id, short data);

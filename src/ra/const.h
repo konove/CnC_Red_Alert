@@ -589,7 +589,7 @@ inline std::string GetKeys() {
         "[PrivateKey]\n"
         "1=AigKVje8mROcR8QixnxUEF5b29Curkq01DNDWCdOG99XBqH79OaCiTCB\n";
   }
-  keys += "\n";
+  keys += '\n';
   return keys;
 }
 

@@ -630,16 +630,15 @@ int AircraftClass::Mission_Hunt() {
         if (Target_Legal(TarCom)) {
           Status = FLY_TO_TARGET;
           return 1;
-        } else {
-          Assign_Target(Greatest_Threat(THREAT_NORMAL));
+        }
+        Assign_Target(Greatest_Threat(THREAT_NORMAL));
 
-          /*
-          **	If there is no target, then this aircraft should just do its
-          *normal thing.
-          */
-          if (!Target_Legal(TarCom)) {
-            Enter_Idle_Mode();
-          }
+        /*
+        **	If there is no target, then this aircraft should just do its
+        *normal thing.
+        */
+        if (!Target_Legal(TarCom)) {
+          Enter_Idle_Mode();
         }
         break;
 
@@ -1637,34 +1636,33 @@ int AircraftClass::Mission_Move() {
       case FLY_TO_AIRSTRIP:
         if (!Target_Legal(NavCom) || !In_Radio_Contact()) {
           return kTicksPerSecond;
-        } else {
-          /*
-          **	If, for some reason, there is no cargo, then don't stick around.
-          */
-          if (!Is_Something_Attached()) {
-            Status = BUG_OUT;
-            return 1;
-          }
+        }
+        /*
+        **	If, for some reason, there is no cargo, then don't stick around.
+        */
+        if (!Is_Something_Attached()) {
+          Status = BUG_OUT;
+          return 1;
+        }
 
-          if (!PrimaryFacing.Is_Rotating()) {
-            PrimaryFacing.Set_Desired(Direction(NavCom));
-          }
-          SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
-          if (Distance(NavCom) < 0x0080) {
-            FootClass* unit = Detach_Object();
+        if (!PrimaryFacing.Is_Rotating()) {
+          PrimaryFacing.Set_Desired(Direction(NavCom));
+        }
+        SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
+        if (Distance(NavCom) < 0x0080) {
+          FootClass* unit = Detach_Object();
 
-            if (unit) {
-              ScenarioInit++;
-              if (!unit->Unlimbo(Coord_Snap(Contact_With_Whom()->Coord))) {
-                Attach(unit);
-              }
-              ScenarioInit--;
-
-              Transmit_Message(RADIO_OVER_OUT);
-              Assign_Target(kTargetNone);
+          if (unit) {
+            ScenarioInit++;
+            if (!unit->Unlimbo(Coord_Snap(Contact_With_Whom()->Coord))) {
+              Attach(unit);
             }
-            Status = BUG_OUT;
+            ScenarioInit--;
+
+            Transmit_Message(RADIO_OVER_OUT);
+            Assign_Target(kTargetNone);
           }
+          Status = BUG_OUT;
         }
         return 1;
 

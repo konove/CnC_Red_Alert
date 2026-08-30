@@ -436,10 +436,8 @@ void MonoClass::Clear() {
 void MonoClass::Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib) {
   if (!w || !h || static_cast<unsigned>(x) >= static_cast<unsigned>(SubW) ||
       static_cast<unsigned>(h) >= static_cast<unsigned>(SubH) ||
-      static_cast<unsigned>(static_cast<unsigned>(x) + w) >
-          static_cast<unsigned>(SubW) ||
-      static_cast<unsigned>(static_cast<unsigned>(y) + h) >
-          static_cast<unsigned>(SubH)) {
+      static_cast<unsigned>(x) + w > static_cast<unsigned>(SubW) ||
+      static_cast<unsigned>(y) + h > static_cast<unsigned>(SubH)) {
     return;
   }
 
