@@ -153,6 +153,7 @@
 #include "ra/house.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/internet.h"
 #include "ra/ipx.h"
 #include "ra/ipxgconn.h"
 #include "ra/ipxmgr.h"
@@ -7461,8 +7462,6 @@ void Log_Message(char* msg) {
 #endif
 
 #if !WOLAPI_INTEGRATION  //	Rest of file ifdeffed out.
-
-extern bool Spawn_WChat(bool can_launch);
 
 /***********************************************************************************************
  * Net_Fake_New_Dialog -- lets user start a new game *

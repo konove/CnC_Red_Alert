@@ -164,10 +164,6 @@ static bool Color_Cycle();
 bool Map_Edit_Loop();
 void Trap_Object();
 
-extern "C" {
-bool UseOldShapeDraw = false;
-}
-
 void Error_In_Heap_Pointers(const char* string);
 static void Do_Record_Playback();
 extern void Register_Game_Start_Time();
@@ -1919,7 +1915,7 @@ void Rebuild_Interpolated_Palette(unsigned char* interpal) {
 
 unsigned char* InterpolatedPalettes[100];
 bool PalettesRead;
-unsigned PaletteCounter;
+int PaletteCounter;
 
 int Load_Interpolated_Palettes(const char* filename, bool add) {
   int num_palettes = 0;
@@ -1998,8 +1994,6 @@ void Free_Interpolated_Palettes() {
  *=============================================================================================*/
 extern bool InMovie;
 extern bool VQPaletteChange;
-extern void Suspend_Audio_Thread();
-extern void Resume_Audio_Thread();
 void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
   /*
   ** Don't play movies in editor mode

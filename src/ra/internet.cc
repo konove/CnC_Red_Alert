@@ -66,6 +66,7 @@
 #include "ra/goptions.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/internet.h"
 #include "ra/jshell.h"
 #include "ra/mission_id.h"
 #include "ra/msgbox.h"

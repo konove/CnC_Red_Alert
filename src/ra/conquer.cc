@@ -69,6 +69,7 @@
 #include "ra/infantry.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/internet.h"
 #include "ra/interpal.h"
 #include "ra/ipxaddr.h"
 #include "ra/ipxgconn.h"
@@ -139,24 +140,6 @@ extern WolapiObject* pWolapi;
 MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user);
 #endif
 
-void* Get_Shape_Header_Data(void* ptr);
-extern bool Spawn_WChat(bool can_launch);
-
-extern void Do_Draw();
-
-bool bNoMovies = false;
-
-extern "C" {
-bool UseOldShapeDraw = false;
-}
-
-// Function prototypes for this module.
-static void Message_Input(KeyNumType& input);
-static void Color_Cycle();
-static bool Map_Edit_Loop();
-static void Do_Record_Playback();
-static void Toggle_Formation();
-
 // Recording state for the current frame, consumed and cleared by
 // Do_Record_Playback(). File-local: nothing outside this module touches them.
 static char TeamEvent = 0;       // 0 = no event, 1,2,3 = team event type
@@ -179,6 +162,764 @@ void MPATH_Call_Back();
 //
 // The network and modem layers are shut down after every game rather than left
 // running, so that selecting one again restarts it from a known state.
+
+// Cycles the animated palette entries. Two effects run off independent timers:
+// a white that pulses between full and dark, used by the radar box and other
+// interface glows, and a rotation of the water colours.
+//
+// This needs to run at least 8 times a second to look smooth, which is why
+// Sync_Delay() calls it while idling rather than the main loop calling it once
+// per frame.
+static void Color_Cycle() {
+  static Timer<SystemTickSource> _timer;
+  static Timer<SystemTickSource> _ftimer;
+  static bool _up = false;
+  static int val = 255;
+
+  if (Options.IsPaletteScroll) {
+    bool changed = false;
+    // Process the fading white color. It is used for the radar box and other
+    // glowing *	game interface elements.
+    if (_ftimer.IsFinished()) {
+      _ftimer.Set(kTimerSecond / 6);
+
+// Six steps of 20 carry the pulse across its 0x20..150 range, so a full
+// cycle takes about two seconds at the timer rate set above. The range stops
+// short of both black and full white: the glow has to stay legible at its
+// dimmest and stay distinct from plain white at its brightest.
+#define STEP_RATE 20
+      if (_up) {
+        val += STEP_RATE;
+        if (val > 150) {
+          val = 150;
+          _up = false;
+        }
+      } else {
+        val -= STEP_RATE;
+        if (val < 0x20) {
+          val = 0x20;
+          _up = true;
+        }
+      }
+
+      // Set the pulse color as the proportional value between white and
+      // the *	minimum value for pulsing.
+      InGamePalette[CC_PULSE_COLOR] = GamePalette[WHITE];
+      InGamePalette[CC_PULSE_COLOR].Adjust(val, kBlackColor);
+
+      // Pulse the glowing embers between medium and dark red.
+      InGamePalette[CC_EMBER_COLOR] = RGBClass(255, 80, 80);
+      InGamePalette[CC_EMBER_COLOR].Adjust(val, kBlackColor);
+
+      changed = true;
+    }
+
+    // Process the color cycling effects -- water.
+    if (_timer.IsFinished()) {
+      _timer.Set(kTimerSecond / 4);
+
+      RGBClass first = InGamePalette[CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1];
+      for (int index = CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1;
+           index >= CYCLE_COLOR_START; index--) {
+        InGamePalette[index] = InGamePalette[index - 1];
+      }
+      InGamePalette[CYCLE_COLOR_START] = first;
+
+      changed = true;
+    }
+
+    // If any of the processing functions changed the palette, then this
+    // palette must be *	passed to the system.
+    if (changed) {
+      BStart(BENCH_PALETTE);
+      InGamePalette.Set();
+      BEnd(BENCH_PALETTE);
+    }
+  }
+}
+
+// The map editor's stand-in for Main_Loop(): render, take input, and keep the
+// real-time callbacks alive so music continues. No game logic runs, so the
+// scenario stays frozen while it is edited.
+//
+// Returns true when the game should end.
+static bool Map_Edit_Loop() {
+  // Redraw the map.
+  Map.Render();
+
+  // Get user input (keys, mouse clicks).
+  KeyNumType input;
+
+  WWMouse->Erase_Mouse(&HidPage, true);
+
+  int x;
+  int y;
+  Map.Input(input, x, y);
+
+  // Process keypress.
+  if (input) {
+    Keyboard_Process(input);
+  }
+
+  Call_Back();  // maintains Theme.AI() for music
+  Color_Cycle();
+
+  return !GameActive;
+}
+
+// Puts the player's currently selected group into formation, or takes it out of
+// one if it is already in formation.
+//
+// A formation is stored per unit as an offset from the group's centre, so that
+// the group keeps its shape as it moves. kNoFormationOffset is the "not in
+// formation" sentinel; finding it on the first member is what decides whether
+// this call sets the formation up or tears it down.
+static void Toggle_Formation() {
+  // kNoGroup means "no grouped unit found yet". It must be compared against
+  // rather than -1: Group is an unsigned char, so an ungrouped unit reads back
+  // as 255 and would otherwise be taken for a valid group number and used to
+  // index the ten-entry TeamSpeed/TeamMaxSpeed arrays.
+  int team = kNoGroup;
+  // Seeded inverted -- min at the largest possible value, max at the smallest
+  // -- so the first cell examined replaces both.
+  long minx = 0x7FFFFFFFL, miny = 0x7FFFFFFFL;
+  long maxx = 0, maxy = 0;
+  int index;
+  bool set_form = false;
+
+  // Recording support
+  if (Session.Record) {
+    FormationEvent = 1;
+  }
+
+  // Find the first selected object that is a member of a team, and
+  // register his group as the team we're using.  Once we find the team
+  // number, update the 'set_form' flag to know whether we should be setting
+  // the formation's offsets, or clearing them.  If they currently have
+  // illegal offsets (kNoFormationOffset), then we're setting.
+  //
+  // The three passes are ordered units, infantry, vessels because a mixed
+  // group takes its speed from whichever type is found first.
+  for (index = 0; index < Units.Count(); index++) {
+    UnitClass* obj = Units.Ptr(index);
+    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr && obj->IsSelected) {
+      team = obj->Group;
+      if (team != kNoGroup) {
+        set_form = obj->XFormOffset == kNoFormationOffset;
+        TeamSpeed[team] = SPEED_WHEEL;
+        TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
+        break;
+      }
+    }
+  }
+  if (team == kNoGroup) {
+    for (index = 0; index < Infantry.Count(); index++) {
+      InfantryClass* obj = Infantry.Ptr(index);
+      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+          obj->IsSelected) {
+        team = obj->Group;
+        if (team != kNoGroup) {
+          set_form = obj->XFormOffset == kNoFormationOffset;
+          TeamSpeed[team] = SPEED_WHEEL;
+          TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
+          break;
+        }
+      }
+    }
+  }
+
+  if (team == kNoGroup) {
+    for (index = 0; index < Vessels.Count(); index++) {
+      VesselClass* obj = Vessels.Ptr(index);
+      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+          obj->IsSelected) {
+        team = obj->Group;
+        if (team != kNoGroup) {
+          set_form = obj->XFormOffset == kNoFormationOffset;
+          TeamSpeed[team] = SPEED_WHEEL;
+          TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
+          break;
+        }
+      }
+    }
+  }
+
+  if (team == kNoGroup) {
+    return;
+  }
+  // Now that we have a team, let's go set (or clear) the formation offsets.
+  for (index = 0; index < Units.Count(); index++) {
+    UnitClass* obj = Units.Ptr(index);
+    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+        obj->Group == team) {
+      obj->Mark(MARK_CHANGE);
+      if (set_form) {
+        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        minx = std::min(xc, minx);
+        maxx = std::max(xc, maxx);
+        miny = std::min(yc, miny);
+        maxy = std::max(yc, maxy);
+        if (obj->Class->MaxSpeed < TeamMaxSpeed[team]) {
+          TeamMaxSpeed[team] = obj->Class->MaxSpeed;
+          TeamSpeed[team] = obj->Class->Speed;
+        }
+      } else {
+        obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
+      }
+    }
+  }
+
+  for (index = 0; index < Infantry.Count(); index++) {
+    InfantryClass* obj = Infantry.Ptr(index);
+    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+        obj->Group == team) {
+      obj->Mark(MARK_CHANGE);
+      if (set_form) {
+        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        minx = std::min(xc, minx);
+        maxx = std::max(xc, maxx);
+        miny = std::min(yc, miny);
+        maxy = std::max(yc, maxy);
+        TeamMaxSpeed[team] = std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
+      } else {
+        obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
+      }
+    }
+  }
+
+  for (index = 0; index < Vessels.Count(); index++) {
+    VesselClass* obj = Vessels.Ptr(index);
+    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+        obj->Group == team) {
+      obj->Mark(MARK_CHANGE);
+      if (set_form) {
+        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        minx = std::min(xc, minx);
+        maxx = std::max(xc, maxx);
+        miny = std::min(yc, miny);
+        maxy = std::max(yc, maxy);
+        TeamMaxSpeed[team] = std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
+      } else {
+        obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
+      }
+    }
+  }
+
+  // All the units have been counted to find the bounding rectangle and
+  // center of the formation, or to clear their offsets.  Now, if we're to
+  // set them into formation, proceed to do so.  Otherwise, bail.
+  //
+  // Offsets are taken from where each unit already stands, so the formation
+  // locks in the group's current shape rather than imposing a canned one.
+  if (set_form) {
+    int center_x = static_cast<int>((maxx - minx) / 2 + minx);
+    int center_y = static_cast<int>((maxy - miny) / 2 + miny);
+
+    for (index = 0; index < Units.Count(); index++) {
+      UnitClass* obj = Units.Ptr(index);
+      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+          obj->Group == team) {
+        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+
+        obj->XFormOffset = static_cast<int>(xc - center_x);
+        obj->YFormOffset = static_cast<int>(yc - center_y);
+      }
+    }
+
+    for (index = 0; index < Infantry.Count(); index++) {
+      InfantryClass* obj = Infantry.Ptr(index);
+      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+          obj->Group == team) {
+        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+
+        obj->XFormOffset = static_cast<int>(xc - center_x);
+        obj->YFormOffset = static_cast<int>(yc - center_y);
+      }
+    }
+
+    for (index = 0; index < Vessels.Count(); index++) {
+      VesselClass* obj = Vessels.Ptr(index);
+      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+          obj->Group == team) {
+        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
+        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+
+        obj->XFormOffset = static_cast<int>(xc - center_x);
+        obj->YFormOffset = static_cast<int>(yc - center_y);
+      }
+    }
+  }
+}
+
+// Processes inter-player message input. F1 through F8 open an editable message
+// addressed to one player or to everyone, and RETURN sends what has been typed.
+//
+// The four session types put the text on the wire differently -- a serial
+// packet, an IPX global packet, TEN, or MPATH -- but all of them build the same
+// message from the same edit buffer.
+static void Message_Input(KeyNumType& input) {
+  char txt[MAX_MESSAGE_LENGTH + 32];
+  int id;
+
+  // Check keyboard input for a request to send a message.
+  // The 'to' argument for Add_Edit is prefixed to the message buffer; the
+  // message buffer is big enough for the 'to' field plus MAX_MESSAGE_LENGTH.
+  // To send the message, calling Get_Edit_Buf retrieves the buffer minus the
+  // 'to' portion.  At the other end, the buffer allocated to display the
+  // message must be MAX_MESSAGE_LENGTH plus the size of "From: xxx (house)".
+#if WOLAPI_INTEGRATION
+  if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
+      ((input >= KN_F1 && input < (KN_F1 + Session.MaxPlayers)) ||
+       input == PAGE_RESPOND_KEY) &&
+      !Session.Messages.Is_Edit()) {
+#else
+  if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
+      input >= KN_F1 && input < KN_F1 + Session.MaxPlayers &&
+      !Session.Messages.Is_Edit()) {
+#endif
+    memset(txt, 0, 40);
+
+    // For a serial game, send a message on F1 or F4; set 'txt' to the
+    // "Message:" string & add an editable message to the list.
+    if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
+      if (input == KN_F1 || input == KN_F1 + Session.MaxPlayers - 1) {
+        port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
+
+        Session.Messages.Add_Edit(
+            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            txt, 0, 464);
+
+        Map.Flag_To_Redraw(false);
+      }
+    } else if ((Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) &&
+               !Session.Messages.Is_Edit()) {
+      // For a network game:
+      // F1-F7 = "To <name> (house):" (only allowed if we're not in
+      // ObiWan mode) *	F8 = "To All:"
+      if (input == KN_F1 + Session.MaxPlayers - 1) {
+        Session.MessageAddress = IPXAddressClass();    // set to broadcast
+        port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
+
+        Session.Messages.Add_Edit(
+            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            txt, 0, 464);
+
+        Map.Flag_To_Redraw(false);
+
+#if WOLAPI_INTEGRATION
+      } else if ((input - KN_F1) < Ipx.Num_Connections() && !Session.ObiWan &&
+                 input != PAGE_RESPOND_KEY) {
+#else
+      } else if (input - KN_F1 < Ipx.Num_Connections() && !Session.ObiWan) {
+#endif
+        id = Ipx.Connection_ID(input - KN_F1);
+        Session.MessageAddress = *Ipx.Connection_Address(id);
+        // TXT_TO comes from the localized string table, so verify the
+        // translation still takes exactly one %s before using it.
+        auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
+        if (format != nullptr) {
+          port::SafeCopy(
+              txt, absl::StrFormat(*format, Ipx.Connection_Name(id)).c_str());
+        }
+
+        Session.Messages.Add_Edit(
+            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            txt, 0, 464);
+
+        Map.Flag_To_Redraw(false);
+      }
+#if WOLAPI_INTEGRATION
+      else if (Session.Type == GAME_INTERNET && pWolapi &&
+               !pWolapi->bConnectionDown && input == PAGE_RESPOND_KEY) {
+        if (*pWolapi->szExternalPager) {
+          //	Respond to a page from external ww online user that paged me.
+          //	Set MessageAddress to all zeroes, as a flag to ourselves later
+          // on.
+          NetNumType blip;
+          NetNodeType blop;
+          memset(blip, 0, 4);
+          memset(blop, 0, 6);
+          Session.MessageAddress = IPXAddressClass(blip, blop);
+
+          //	Tell pWolapi not to reset szExternalPager for the time being.
+          pWolapi->bFreezeExternalPager = true;
+
+          sprintf(txt, Text_String(TXT_TO), pWolapi->szExternalPager);
+
+          Session.Messages.Add_Edit(
+              Session.ColorIdx,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
+
+          Map.Flag_To_Redraw(false);
+
+          Keyboard->Clear();
+        } else {
+          Session.Messages.Add_Message(
+              nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+              Rule.MessageDelay * kTicksPerMinute);
+          Sound_Effect(VOC_SYS_ERROR);
+        }
+      }
+#endif
+    }
+#if (TEN)
+    // For a TEN game:
+    // F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
+    // F8 = "To All:"
+    else if (Session.Type == GAME_TEN && !Session.Messages.Is_Edit()) {
+      if (input == (KN_F1 + Session.MaxPlayers - 1)) {
+        Session.TenMessageAddress = -1;        // set to broadcast
+        strcpy(txt, Text_String(TXT_TO_ALL));  // "To All:"
+
+        Session.Messages.Add_Edit(
+            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            txt, 0, 464);
+
+        Map.Flag_To_Redraw(false);
+
+      } else if ((input - KN_F1) < Ten->Num_Connections() && !Session.ObiWan) {
+        id = Ten->Connection_ID(input - KN_F1);
+        Session.TenMessageAddress = Ten->Connection_Address(id);
+        sprintf(txt, Text_String(TXT_TO), Ten->Connection_Name(id));
+
+        Session.Messages.Add_Edit(
+            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            txt, 0, 464);
+
+        Map.Flag_To_Redraw(false);
+      }
+    }
+#endif  // TEN
+#if (MPATH)
+    // For a MPATH game:
+    // F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
+    // F8 = "To All:"
+    else if (Session.Type == GAME_MPATH && !Session.Messages.Is_Edit()) {
+      if (input == (KN_F1 + Session.MaxPlayers - 1)) {
+        Session.MPathMessageAddress = 0;       // set to broadcast
+        strcpy(txt, Text_String(TXT_TO_ALL));  // "To All:"
+
+        Session.Messages.Add_Edit(
+            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            txt, 0, 464);
+
+        Map.Flag_To_Redraw(false);
+
+      } else if ((input - KN_F1) < MPath->Num_Connections() &&
+                 !Session.ObiWan) {
+        id = MPath->Connection_ID(input - KN_F1);
+        Session.MPathMessageAddress = MPath->Connection_Address(id);
+        sprintf(txt, Text_String(TXT_TO), MPath->Connection_Name(id));
+
+        Session.Messages.Add_Edit(
+            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            txt, 0, 464);
+
+        Map.Flag_To_Redraw(false);
+      }
+    }
+#endif  // MPATH
+  }
+
+  // Process message-system input; send the message out if RETURN is hit.
+  const KeyNumType copy_input = input;
+  const int rc = Session.Messages.Input(input);
+
+  // If a single character has been added to an edit buffer, update the
+  // display.
+  if (rc == 1 && Session.Type != GAME_NORMAL) {
+    Map.Flag_To_Redraw(false);
+  }
+
+  // If backspace was hit, redraw the map.  If the edit message was removed,
+  // the map must be force-drawn, since it won't be able to compute the
+  // cells to redraw; otherwise, let the map compute the cells to redraw,
+  // by not force-drawing it, but just setting the IsToRedraw bit.
+  if (rc == 2 && Session.Type != GAME_NORMAL) {
+    if (copy_input == KN_ESC) {
+      Map.Flag_To_Redraw(true);
+#if WOLAPI_INTEGRATION
+      if (pWolapi) {
+        //	Just in case user was responding to a page from outside the
+        // game, and we had frozen the "szExternalPager".
+        pWolapi->bFreezeExternalPager = false;
+      }
+#endif
+    } else {
+      Map.Flag_To_Redraw(false);
+    }
+    Map.DisplayClass::IsToRedraw = true;
+  }
+
+  // Send a message
+  if ((rc == 3 || rc == 4) && Session.Type != GAME_NORMAL &&
+      Session.Type != GAME_SKIRMISH) {
+    // Serial game: fill in a SerialPacketType & send it.
+    // (Note: The size of the SerialPacketType.Command must be the same as
+    // the EventClass.Type!)
+    if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
+      // The modem layer hands back a raw byte buffer that the packet is built
+      // into in place; there is no portable alternative to the cast here.
+      auto* serial_packet =
+          // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+          reinterpret_cast<SerialPacketType*>(NullModem.BuildBuf);
+
+      serial_packet->Command = SERIAL_MESSAGE;
+      port::SafeCopy(serial_packet->Name, Session.Players[0]->Name);
+      serial_packet->ID = Session.ColorIdx;
+
+      if (rc == 3) {
+        port::SafeCopy(serial_packet->Message.Message,
+                       Session.Messages.Get_Edit_Buf());
+      } else {
+        port::SafeCopy(serial_packet->Message.Message,
+                       Session.Messages.Get_Overflow_Buf());
+        Session.Messages.Clear_Overflow_Buf();
+      }
+
+      // Send the message, and store this message in our LastMessage
+      // buffer; the computer may send us a version of it later.
+      NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
+
+      // A chat message is how the secret units get switched on for everyone
+      // at once: both ends recognize the phrase and enable them locally, so
+      // the setting stays in step without a new packet type.
+      char* ptr = &serial_packet->Message.Message[0];
+      if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
+        Enable_Secret_Units();
+      }
+      port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
+    } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
+#if WOLAPI_INTEGRATION
+      NetNumType blip;
+      NetNodeType blop;
+      Session.MessageAddress.Get_Address(blip, blop);
+      if (blip[0] + blip[1] + blip[2] + blip[3] + blop[0] + blop[1] + blop[2] +
+              blop[3] + blop[4] + blop[5] ==
+          0) {
+        //	This message is a response to the last person that paged me.
+        if (pWolapi &&
+            !pWolapi
+                 ->bConnectionDown)  //	(As connection may have gone down.)
+        {
+          pWolapi->Page(pWolapi->szExternalPager,
+                        Session.Messages.Get_Edit_Buf(), false);
+          pWolapi->bFreezeExternalPager = false;
+        }
+      } else
+#endif
+      {
+
+        // Network game: fill in a GlobalPacketType & send it.
+        Session.GPacket.Command = NET_MESSAGE;
+        port::SafeCopy(Session.GPacket.Name, Session.Players[0]->Name);
+        Session.GPacket.Message.Color = Session.ColorIdx;
+        Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
+
+        if (rc == 3) {
+          port::SafeCopy(Session.GPacket.Message.Buf,
+                         Session.Messages.Get_Edit_Buf());
+        } else {
+          port::SafeCopy(Session.GPacket.Message.Buf,
+                         Session.Messages.Get_Overflow_Buf());
+          Session.Messages.Clear_Overflow_Buf();
+        }
+
+        // If 'F4' was hit, MessageAddress will be a broadcast address;
+        // send *	the message to every player we have a connection with.
+        if (Session.MessageAddress.Is_Broadcast()) {
+          char* ptr = &Session.GPacket.Message.Buf[0];
+          if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
+            *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
+            Enable_Secret_Units();
+          }
+          for (int i = 0; i < Ipx.Num_Connections(); ++i) {
+            Ipx.Send_Global_Message(
+                &Session.GPacket, sizeof(GlobalPacketType), 1,
+                Ipx.Connection_Address(Ipx.Connection_ID(i)));
+            Ipx.Service();
+          }
+        } else {
+          // Otherwise, MessageAddress contains the exact address to send to.
+          // Send to that address only.
+          Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+                                  &Session.MessageAddress);
+          Ipx.Service();
+        }
+
+        // Store this message in our LastMessage buffer; the computer may
+        // send *	us a version of it later.
+        port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
+      }
+    }
+#if (TEN)
+    // TEN game: fill in a GlobalPacketType & send it.
+    else if (Session.Type == GAME_TEN) {
+      Session.GPacket.Command = NET_MESSAGE;
+      strcpy(Session.GPacket.Name, Session.Players[0]->Name);
+      Session.GPacket.Message.Color = Session.ColorIdx;
+      Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
+
+      if (rc == 3) {
+        strcpy(Session.GPacket.Message.Buf, Session.Messages.Get_Edit_Buf());
+      } else {
+        strcpy(Session.GPacket.Message.Buf,
+               Session.Messages.Get_Overflow_Buf());
+        Session.Messages.Clear_Overflow_Buf();
+      }
+
+      Ten->Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+                               Session.TenMessageAddress);
+    }
+#endif  // TEN
+
+#if (MPATH)
+    // MPATH game: fill in a GlobalPacketType & send it.
+    else if (Session.Type == GAME_MPATH) {
+      Session.GPacket.Command = NET_MESSAGE;
+      strcpy(Session.GPacket.Name, Session.Players[0]->Name);
+      Session.GPacket.Message.Color = Session.ColorIdx;
+      Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
+
+      if (rc == 3) {
+        strcpy(Session.GPacket.Message.Buf, Session.Messages.Get_Edit_Buf());
+      } else {
+        strcpy(Session.GPacket.Message.Buf,
+               Session.Messages.Get_Overflow_Buf());
+        Session.Messages.Clear_Overflow_Buf();
+      }
+
+      MPath->Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+                                 Session.MPathMessageAddress);
+    }
+#endif  // MPATH
+
+    // Tell the map to completely update itself, since a message is now
+    // missing.
+    Map.Flag_To_Redraw(true);
+  }
+}
+
+// Saves or replays the parts of the game state that the event stream alone
+// cannot reconstruct: where the map is scrolled to, which objects are selected,
+// and any team or formation hotkey pressed this frame.
+//
+// The selection is written as a checksum followed by the target list. On
+// playback the checksum says whether the current selection already matches; if
+// it does, the objects are read but not selected again, which stops the unit
+// acknowledgement voices from firing again on every frame.
+static void Do_Record_Playback() {
+  int count;
+  TARGET tgt;
+  int i;
+  COORDINATE coord;
+  unsigned long sum;
+  unsigned long sum2;
+  unsigned long ltgt;
+
+  // Record a game
+  if (Session.Record) {
+    // Save the map's location
+    Session.RecordFile.Write(&Map.DesiredTacticalCoord,
+                             sizeof(Map.DesiredTacticalCoord));
+
+    // Save the current object list count
+    count = static_cast<int>(CurrentObject.Count());
+    Session.RecordFile.Write(&count, sizeof(count));
+
+    // Save a CRC of the selected-object list.
+    sum = 0;
+    for (i = 0; i < count; i++) {
+      ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
+      sum += ltgt;
+    }
+    Session.RecordFile.Write(&sum, sizeof(sum));
+
+    // Save all selected objects.
+    for (i = 0; i < count; i++) {
+      tgt = CurrentObject[i]->As_Target();
+      Session.RecordFile.Write(&tgt, sizeof(tgt));
+    }
+
+    // Save team-selection and formation events
+    Session.RecordFile.Write(&TeamEvent, sizeof(TeamEvent));
+    Session.RecordFile.Write(&TeamNumber, sizeof(TeamNumber));
+    Session.RecordFile.Write(&FormationEvent, sizeof(FormationEvent));
+    Session.RecordFile.Write(TeamMaxSpeed, sizeof(TeamMaxSpeed));
+    Session.RecordFile.Write(TeamSpeed, sizeof(TeamSpeed));
+    Session.RecordFile.Write(&FormMove, sizeof(FormMove));
+    Session.RecordFile.Write(&FormSpeed, sizeof(FormSpeed));
+    Session.RecordFile.Write(&FormMaxSpeed, sizeof(FormMaxSpeed));
+    TeamEvent = 0;
+    TeamNumber = 0;
+    FormationEvent = 0;
+  }
+
+  // Play back a game ("attract" mode)
+  if (Session.Play) {
+    // Read & set the map's location.
+    if (Session.RecordFile.Read(&coord, sizeof(coord)) == sizeof(coord)) {
+      if (coord != Map.DesiredTacticalCoord) {
+        Map.Set_Tactical_Position(coord);
+      }
+    }
+
+    if (Session.RecordFile.Read(&count, sizeof(count)) == sizeof(count)) {
+      // Compute a CRC of the current object-selection list.
+      sum = 0;
+      for (i = 0; i < CurrentObject.Count(); i++) {
+        ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
+        sum += ltgt;
+      }
+
+      // Load the CRC of the objects on disk; if it doesn't match, select
+      // all objects as they're loaded.
+      Session.RecordFile.Read(&sum2, sizeof(sum2));
+      if (sum2 != sum) {
+        Unselect_All();
+      }
+
+      AllowVoice = true;
+
+      for (i = 0; i < count; ++i) {
+        if (Session.RecordFile.Read(&tgt, sizeof(tgt)) == sizeof(tgt)) {
+          ObjectClass* obj = As_Object(tgt);
+          if (obj != nullptr && sum2 != sum) {
+            obj->Select();
+            AllowVoice = false;
+          }
+        }
+      }
+
+      AllowVoice = true;
+    }
+
+    // Save team-selection and formation events
+    Session.RecordFile.Read(&TeamEvent, sizeof(TeamEvent));
+    Session.RecordFile.Read(&TeamNumber, sizeof(TeamNumber));
+    Session.RecordFile.Read(&FormationEvent, sizeof(FormationEvent));
+    if (TeamEvent) {
+      Handle_Team(TeamNumber, TeamEvent - 1);
+    }
+    if (FormationEvent) {
+      Toggle_Formation();
+    }
+
+    Session.RecordFile.Read(TeamMaxSpeed, sizeof(TeamMaxSpeed));
+    Session.RecordFile.Read(TeamSpeed, sizeof(TeamSpeed));
+    Session.RecordFile.Read(&FormMove, sizeof(FormMove));
+    Session.RecordFile.Read(&FormSpeed, sizeof(FormSpeed));
+    Session.RecordFile.Read(&FormMaxSpeed, sizeof(FormMaxSpeed));
+    // The map isn't drawn in playback mode, so draw it here.
+    Map.Render();
+  }
+}
 
 void Main_Game(const int argc, char* argv[]) {
   static bool fade = true;
@@ -757,620 +1498,6 @@ void Keyboard_Process(KeyNumType& input) {
   }
 }
 
-// Puts the player's currently selected group into formation, or takes it out of
-// one if it is already in formation.
-//
-// A formation is stored per unit as an offset from the group's centre, so that
-// the group keeps its shape as it moves. kNoFormationOffset is the "not in
-// formation" sentinel; finding it on the first member is what decides whether
-// this call sets the formation up or tears it down.
-static void Toggle_Formation() {
-  // kNoGroup means "no grouped unit found yet". It must be compared against
-  // rather than -1: Group is an unsigned char, so an ungrouped unit reads back
-  // as 255 and would otherwise be taken for a valid group number and used to
-  // index the ten-entry TeamSpeed/TeamMaxSpeed arrays.
-  int team = kNoGroup;
-  // Seeded inverted -- min at the largest possible value, max at the smallest
-  // -- so the first cell examined replaces both.
-  long minx = 0x7FFFFFFFL, miny = 0x7FFFFFFFL;
-  long maxx = 0, maxy = 0;
-  int index;
-  bool set_form = false;
-
-  // Recording support
-  if (Session.Record) {
-    FormationEvent = 1;
-  }
-
-  // Find the first selected object that is a member of a team, and
-  // register his group as the team we're using.  Once we find the team
-  // number, update the 'set_form' flag to know whether we should be setting
-  // the formation's offsets, or clearing them.  If they currently have
-  // illegal offsets (kNoFormationOffset), then we're setting.
-  //
-  // The three passes are ordered units, infantry, vessels because a mixed
-  // group takes its speed from whichever type is found first.
-  for (index = 0; index < Units.Count(); index++) {
-    UnitClass* obj = Units.Ptr(index);
-    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr && obj->IsSelected) {
-      team = obj->Group;
-      if (team != kNoGroup) {
-        set_form = obj->XFormOffset == kNoFormationOffset;
-        TeamSpeed[team] = SPEED_WHEEL;
-        TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
-        break;
-      }
-    }
-  }
-  if (team == kNoGroup) {
-    for (index = 0; index < Infantry.Count(); index++) {
-      InfantryClass* obj = Infantry.Ptr(index);
-      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-          obj->IsSelected) {
-        team = obj->Group;
-        if (team != kNoGroup) {
-          set_form = obj->XFormOffset == kNoFormationOffset;
-          TeamSpeed[team] = SPEED_WHEEL;
-          TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
-          break;
-        }
-      }
-    }
-  }
-
-  if (team == kNoGroup) {
-    for (index = 0; index < Vessels.Count(); index++) {
-      VesselClass* obj = Vessels.Ptr(index);
-      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-          obj->IsSelected) {
-        team = obj->Group;
-        if (team != kNoGroup) {
-          set_form = obj->XFormOffset == kNoFormationOffset;
-          TeamSpeed[team] = SPEED_WHEEL;
-          TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
-          break;
-        }
-      }
-    }
-  }
-
-  if (team == kNoGroup) {
-    return;
-  }
-  // Now that we have a team, let's go set (or clear) the formation offsets.
-  for (index = 0; index < Units.Count(); index++) {
-    UnitClass* obj = Units.Ptr(index);
-    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-        obj->Group == team) {
-      obj->Mark(MARK_CHANGE);
-      if (set_form) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-        minx = std::min(xc, minx);
-        maxx = std::max(xc, maxx);
-        miny = std::min(yc, miny);
-        maxy = std::max(yc, maxy);
-        if (obj->Class->MaxSpeed < TeamMaxSpeed[team]) {
-          TeamMaxSpeed[team] = obj->Class->MaxSpeed;
-          TeamSpeed[team] = obj->Class->Speed;
-        }
-      } else {
-        obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
-      }
-    }
-  }
-
-  for (index = 0; index < Infantry.Count(); index++) {
-    InfantryClass* obj = Infantry.Ptr(index);
-    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-        obj->Group == team) {
-      obj->Mark(MARK_CHANGE);
-      if (set_form) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-        minx = std::min(xc, minx);
-        maxx = std::max(xc, maxx);
-        miny = std::min(yc, miny);
-        maxy = std::max(yc, maxy);
-        TeamMaxSpeed[team] = std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
-      } else {
-        obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
-      }
-    }
-  }
-
-  for (index = 0; index < Vessels.Count(); index++) {
-    VesselClass* obj = Vessels.Ptr(index);
-    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-        obj->Group == team) {
-      obj->Mark(MARK_CHANGE);
-      if (set_form) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-        minx = std::min(xc, minx);
-        maxx = std::max(xc, maxx);
-        miny = std::min(yc, miny);
-        maxy = std::max(yc, maxy);
-        TeamMaxSpeed[team] = std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
-      } else {
-        obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
-      }
-    }
-  }
-
-  // All the units have been counted to find the bounding rectangle and
-  // center of the formation, or to clear their offsets.  Now, if we're to
-  // set them into formation, proceed to do so.  Otherwise, bail.
-  //
-  // Offsets are taken from where each unit already stands, so the formation
-  // locks in the group's current shape rather than imposing a canned one.
-  if (set_form) {
-    int center_x = static_cast<int>((maxx - minx) / 2 + minx);
-    int center_y = static_cast<int>((maxy - miny) / 2 + miny);
-
-    for (index = 0; index < Units.Count(); index++) {
-      UnitClass* obj = Units.Ptr(index);
-      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-          obj->Group == team) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-
-        obj->XFormOffset = static_cast<int>(xc - center_x);
-        obj->YFormOffset = static_cast<int>(yc - center_y);
-      }
-    }
-
-    for (index = 0; index < Infantry.Count(); index++) {
-      InfantryClass* obj = Infantry.Ptr(index);
-      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-          obj->Group == team) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-
-        obj->XFormOffset = static_cast<int>(xc - center_x);
-        obj->YFormOffset = static_cast<int>(yc - center_y);
-      }
-    }
-
-    for (index = 0; index < Vessels.Count(); index++) {
-      VesselClass* obj = Vessels.Ptr(index);
-      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
-          obj->Group == team) {
-        long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-
-        obj->XFormOffset = static_cast<int>(xc - center_x);
-        obj->YFormOffset = static_cast<int>(yc - center_y);
-      }
-    }
-  }
-}
-
-// Processes inter-player message input. F1 through F8 open an editable message
-// addressed to one player or to everyone, and RETURN sends what has been typed.
-//
-// The four session types put the text on the wire differently -- a serial
-// packet, an IPX global packet, TEN, or MPATH -- but all of them build the same
-// message from the same edit buffer.
-static void Message_Input(KeyNumType& input) {
-  char txt[MAX_MESSAGE_LENGTH + 32];
-  int id;
-
-  // Check keyboard input for a request to send a message.
-  // The 'to' argument for Add_Edit is prefixed to the message buffer; the
-  // message buffer is big enough for the 'to' field plus MAX_MESSAGE_LENGTH.
-  // To send the message, calling Get_Edit_Buf retrieves the buffer minus the
-  // 'to' portion.  At the other end, the buffer allocated to display the
-  // message must be MAX_MESSAGE_LENGTH plus the size of "From: xxx (house)".
-#if WOLAPI_INTEGRATION
-  if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-      ((input >= KN_F1 && input < (KN_F1 + Session.MaxPlayers)) ||
-       input == PAGE_RESPOND_KEY) &&
-      !Session.Messages.Is_Edit()) {
-#else
-  if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-      input >= KN_F1 && input < KN_F1 + Session.MaxPlayers &&
-      !Session.Messages.Is_Edit()) {
-#endif
-    memset(txt, 0, 40);
-
-    // For a serial game, send a message on F1 or F4; set 'txt' to the
-    // "Message:" string & add an editable message to the list.
-    if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
-      if (input == KN_F1 || input == KN_F1 + Session.MaxPlayers - 1) {
-        port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
-
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
-
-        Map.Flag_To_Redraw(false);
-      }
-    } else if ((Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) &&
-               !Session.Messages.Is_Edit()) {
-      // For a network game:
-      // F1-F7 = "To <name> (house):" (only allowed if we're not in
-      // ObiWan mode) *	F8 = "To All:"
-      if (input == KN_F1 + Session.MaxPlayers - 1) {
-        Session.MessageAddress = IPXAddressClass();    // set to broadcast
-        port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
-
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
-
-        Map.Flag_To_Redraw(false);
-
-#if WOLAPI_INTEGRATION
-      } else if ((input - KN_F1) < Ipx.Num_Connections() && !Session.ObiWan &&
-                 input != PAGE_RESPOND_KEY) {
-#else
-      } else if (input - KN_F1 < Ipx.Num_Connections() && !Session.ObiWan) {
-#endif
-        id = Ipx.Connection_ID(input - KN_F1);
-        Session.MessageAddress = *Ipx.Connection_Address(id);
-        // TXT_TO comes from the localized string table, so verify the
-        // translation still takes exactly one %s before using it.
-        auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
-        if (format != nullptr) {
-          port::SafeCopy(
-              txt, absl::StrFormat(*format, Ipx.Connection_Name(id)).c_str());
-        }
-
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
-
-        Map.Flag_To_Redraw(false);
-      }
-#if WOLAPI_INTEGRATION
-      else if (Session.Type == GAME_INTERNET && pWolapi &&
-               !pWolapi->bConnectionDown && input == PAGE_RESPOND_KEY) {
-        if (*pWolapi->szExternalPager) {
-          //	Respond to a page from external ww online user that paged me.
-          //	Set MessageAddress to all zeroes, as a flag to ourselves later
-          // on.
-          NetNumType blip;
-          NetNodeType blop;
-          memset(blip, 0, 4);
-          memset(blop, 0, 6);
-          Session.MessageAddress = IPXAddressClass(blip, blop);
-
-          //	Tell pWolapi not to reset szExternalPager for the time being.
-          pWolapi->bFreezeExternalPager = true;
-
-          sprintf(txt, Text_String(TXT_TO), pWolapi->szExternalPager);
-
-          Session.Messages.Add_Edit(
-              Session.ColorIdx,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
-
-          Map.Flag_To_Redraw(false);
-
-          Keyboard->Clear();
-        } else {
-          Session.Messages.Add_Message(
-              nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-              Rule.MessageDelay * kTicksPerMinute);
-          Sound_Effect(VOC_SYS_ERROR);
-        }
-      }
-#endif
-    }
-#if (TEN)
-    // For a TEN game:
-    // F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
-    // F8 = "To All:"
-    else if (Session.Type == GAME_TEN && !Session.Messages.Is_Edit()) {
-      if (input == (KN_F1 + Session.MaxPlayers - 1)) {
-        Session.TenMessageAddress = -1;        // set to broadcast
-        strcpy(txt, Text_String(TXT_TO_ALL));  // "To All:"
-
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
-
-        Map.Flag_To_Redraw(false);
-
-      } else if ((input - KN_F1) < Ten->Num_Connections() && !Session.ObiWan) {
-        id = Ten->Connection_ID(input - KN_F1);
-        Session.TenMessageAddress = Ten->Connection_Address(id);
-        sprintf(txt, Text_String(TXT_TO), Ten->Connection_Name(id));
-
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
-
-        Map.Flag_To_Redraw(false);
-      }
-    }
-#endif  // TEN
-#if (MPATH)
-    // For a MPATH game:
-    // F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
-    // F8 = "To All:"
-    else if (Session.Type == GAME_MPATH && !Session.Messages.Is_Edit()) {
-      if (input == (KN_F1 + Session.MaxPlayers - 1)) {
-        Session.MPathMessageAddress = 0;       // set to broadcast
-        strcpy(txt, Text_String(TXT_TO_ALL));  // "To All:"
-
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
-
-        Map.Flag_To_Redraw(false);
-
-      } else if ((input - KN_F1) < MPath->Num_Connections() &&
-                 !Session.ObiWan) {
-        id = MPath->Connection_ID(input - KN_F1);
-        Session.MPathMessageAddress = MPath->Connection_Address(id);
-        sprintf(txt, Text_String(TXT_TO), MPath->Connection_Name(id));
-
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
-
-        Map.Flag_To_Redraw(false);
-      }
-    }
-#endif  // MPATH
-  }
-
-  // Process message-system input; send the message out if RETURN is hit.
-  const KeyNumType copy_input = input;
-  const int rc = Session.Messages.Input(input);
-
-  // If a single character has been added to an edit buffer, update the
-  // display.
-  if (rc == 1 && Session.Type != GAME_NORMAL) {
-    Map.Flag_To_Redraw(false);
-  }
-
-  // If backspace was hit, redraw the map.  If the edit message was removed,
-  // the map must be force-drawn, since it won't be able to compute the
-  // cells to redraw; otherwise, let the map compute the cells to redraw,
-  // by not force-drawing it, but just setting the IsToRedraw bit.
-  if (rc == 2 && Session.Type != GAME_NORMAL) {
-    if (copy_input == KN_ESC) {
-      Map.Flag_To_Redraw(true);
-#if WOLAPI_INTEGRATION
-      if (pWolapi) {
-        //	Just in case user was responding to a page from outside the
-        // game, and we had frozen the "szExternalPager".
-        pWolapi->bFreezeExternalPager = false;
-      }
-#endif
-    } else {
-      Map.Flag_To_Redraw(false);
-    }
-    Map.DisplayClass::IsToRedraw = true;
-  }
-
-  // Send a message
-  if ((rc == 3 || rc == 4) && Session.Type != GAME_NORMAL &&
-      Session.Type != GAME_SKIRMISH) {
-    // Serial game: fill in a SerialPacketType & send it.
-    // (Note: The size of the SerialPacketType.Command must be the same as
-    // the EventClass.Type!)
-    if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
-      // The modem layer hands back a raw byte buffer that the packet is built
-      // into in place; there is no portable alternative to the cast here.
-      auto* serial_packet =
-          // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-          reinterpret_cast<SerialPacketType*>(NullModem.BuildBuf);
-
-      serial_packet->Command = SERIAL_MESSAGE;
-      port::SafeCopy(serial_packet->Name, Session.Players[0]->Name);
-      serial_packet->ID = Session.ColorIdx;
-
-      if (rc == 3) {
-        port::SafeCopy(serial_packet->Message.Message,
-                       Session.Messages.Get_Edit_Buf());
-      } else {
-        port::SafeCopy(serial_packet->Message.Message,
-                       Session.Messages.Get_Overflow_Buf());
-        Session.Messages.Clear_Overflow_Buf();
-      }
-
-      // Send the message, and store this message in our LastMessage
-      // buffer; the computer may send us a version of it later.
-      NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
-
-      // A chat message is how the secret units get switched on for everyone
-      // at once: both ends recognize the phrase and enable them locally, so
-      // the setting stays in step without a new packet type.
-      char* ptr = &serial_packet->Message.Message[0];
-      if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
-        Enable_Secret_Units();
-      }
-      port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
-    } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
-#if WOLAPI_INTEGRATION
-      NetNumType blip;
-      NetNodeType blop;
-      Session.MessageAddress.Get_Address(blip, blop);
-      if (blip[0] + blip[1] + blip[2] + blip[3] + blop[0] + blop[1] + blop[2] +
-              blop[3] + blop[4] + blop[5] ==
-          0) {
-        //	This message is a response to the last person that paged me.
-        if (pWolapi &&
-            !pWolapi
-                 ->bConnectionDown)  //	(As connection may have gone down.)
-        {
-          pWolapi->Page(pWolapi->szExternalPager,
-                        Session.Messages.Get_Edit_Buf(), false);
-          pWolapi->bFreezeExternalPager = false;
-        }
-      } else
-#endif
-      {
-
-        // Network game: fill in a GlobalPacketType & send it.
-        Session.GPacket.Command = NET_MESSAGE;
-        port::SafeCopy(Session.GPacket.Name, Session.Players[0]->Name);
-        Session.GPacket.Message.Color = Session.ColorIdx;
-        Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
-
-        if (rc == 3) {
-          port::SafeCopy(Session.GPacket.Message.Buf,
-                         Session.Messages.Get_Edit_Buf());
-        } else {
-          port::SafeCopy(Session.GPacket.Message.Buf,
-                         Session.Messages.Get_Overflow_Buf());
-          Session.Messages.Clear_Overflow_Buf();
-        }
-
-        // If 'F4' was hit, MessageAddress will be a broadcast address;
-        // send *	the message to every player we have a connection with.
-        if (Session.MessageAddress.Is_Broadcast()) {
-          char* ptr = &Session.GPacket.Message.Buf[0];
-          if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
-            *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
-            Enable_Secret_Units();
-          }
-          for (int i = 0; i < Ipx.Num_Connections(); ++i) {
-            Ipx.Send_Global_Message(
-                &Session.GPacket, sizeof(GlobalPacketType), 1,
-                Ipx.Connection_Address(Ipx.Connection_ID(i)));
-            Ipx.Service();
-          }
-        } else {
-          // Otherwise, MessageAddress contains the exact address to send to.
-          // Send to that address only.
-          Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                  &Session.MessageAddress);
-          Ipx.Service();
-        }
-
-        // Store this message in our LastMessage buffer; the computer may
-        // send *	us a version of it later.
-        port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
-      }
-    }
-#if (TEN)
-    // TEN game: fill in a GlobalPacketType & send it.
-    else if (Session.Type == GAME_TEN) {
-      Session.GPacket.Command = NET_MESSAGE;
-      strcpy(Session.GPacket.Name, Session.Players[0]->Name);
-      Session.GPacket.Message.Color = Session.ColorIdx;
-      Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
-
-      if (rc == 3) {
-        strcpy(Session.GPacket.Message.Buf, Session.Messages.Get_Edit_Buf());
-      } else {
-        strcpy(Session.GPacket.Message.Buf,
-               Session.Messages.Get_Overflow_Buf());
-        Session.Messages.Clear_Overflow_Buf();
-      }
-
-      Ten->Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                               Session.TenMessageAddress);
-    }
-#endif  // TEN
-
-#if (MPATH)
-    // MPATH game: fill in a GlobalPacketType & send it.
-    else if (Session.Type == GAME_MPATH) {
-      Session.GPacket.Command = NET_MESSAGE;
-      strcpy(Session.GPacket.Name, Session.Players[0]->Name);
-      Session.GPacket.Message.Color = Session.ColorIdx;
-      Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
-
-      if (rc == 3) {
-        strcpy(Session.GPacket.Message.Buf, Session.Messages.Get_Edit_Buf());
-      } else {
-        strcpy(Session.GPacket.Message.Buf,
-               Session.Messages.Get_Overflow_Buf());
-        Session.Messages.Clear_Overflow_Buf();
-      }
-
-      MPath->Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                 Session.MPathMessageAddress);
-    }
-#endif  // MPATH
-
-    // Tell the map to completely update itself, since a message is now
-    // missing.
-    Map.Flag_To_Redraw(true);
-  }
-}
-
-// Cycles the animated palette entries. Two effects run off independent timers:
-// a white that pulses between full and dark, used by the radar box and other
-// interface glows, and a rotation of the water colours.
-//
-// This needs to run at least 8 times a second to look smooth, which is why
-// Sync_Delay() calls it while idling rather than the main loop calling it once
-// per frame.
-void Color_Cycle() {
-  static Timer<SystemTickSource> _timer;
-  static Timer<SystemTickSource> _ftimer;
-  static bool _up = false;
-  static int val = 255;
-
-  if (Options.IsPaletteScroll) {
-    bool changed = false;
-    // Process the fading white color. It is used for the radar box and other
-    // glowing *	game interface elements.
-    if (_ftimer.IsFinished()) {
-      _ftimer.Set(kTimerSecond / 6);
-
-// Six steps of 20 carry the pulse across its 0x20..150 range, so a full
-// cycle takes about two seconds at the timer rate set above. The range stops
-// short of both black and full white: the glow has to stay legible at its
-// dimmest and stay distinct from plain white at its brightest.
-#define STEP_RATE 20
-      if (_up) {
-        val += STEP_RATE;
-        if (val > 150) {
-          val = 150;
-          _up = false;
-        }
-      } else {
-        val -= STEP_RATE;
-        if (val < 0x20) {
-          val = 0x20;
-          _up = true;
-        }
-      }
-
-      // Set the pulse color as the proportional value between white and
-      // the *	minimum value for pulsing.
-      InGamePalette[CC_PULSE_COLOR] = GamePalette[WHITE];
-      InGamePalette[CC_PULSE_COLOR].Adjust(val, kBlackColor);
-
-      // Pulse the glowing embers between medium and dark red.
-      InGamePalette[CC_EMBER_COLOR] = RGBClass(255, 80, 80);
-      InGamePalette[CC_EMBER_COLOR].Adjust(val, kBlackColor);
-
-      changed = true;
-    }
-
-    // Process the color cycling effects -- water.
-    if (_timer.IsFinished()) {
-      _timer.Set(kTimerSecond / 4);
-
-      RGBClass first = InGamePalette[CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1];
-      for (int index = CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1;
-           index >= CYCLE_COLOR_START; index--) {
-        InGamePalette[index] = InGamePalette[index - 1];
-      }
-      InGamePalette[CYCLE_COLOR_START] = first;
-
-      changed = true;
-    }
-
-    // If any of the processing functions changed the palette, then this
-    // palette must be *	passed to the system.
-    if (changed) {
-      BStart(BENCH_PALETTE);
-      InGamePalette.Set();
-      BEnd(BENCH_PALETTE);
-    }
-  }
-}
-
 void Call_Back() {
   // Music and speech maintenance
   if (SampleType) {
@@ -1726,8 +1853,6 @@ static void Sync_Delay() {
 // Nothing that affects game state may be skipped here on the grounds that it is
 // only visual -- every machine in a multiplayer game runs this same sequence
 // and must arrive at the same state, or the session desyncs.
-extern void Check_For_Focus_Loss();
-void Reallocate_Big_Shape_Buffer();
 
 bool Main_Loop() {
   Mono_Set_Cursor(0, 0);
@@ -1988,35 +2113,6 @@ bool Main_Loop() {
   return !GameActive;
 }
 
-// The map editor's stand-in for Main_Loop(): render, take input, and keep the
-// real-time callbacks alive so music continues. No game logic runs, so the
-// scenario stays frozen while it is edited.
-//
-// Returns true when the game should end.
-static bool Map_Edit_Loop() {
-  // Redraw the map.
-  Map.Render();
-
-  // Get user input (keys, mouse clicks).
-  KeyNumType input;
-
-  WWMouse->Erase_Mouse(&HidPage, true);
-
-  int x;
-  int y;
-  Map.Input(input, x, y);
-
-  // Process keypress.
-  if (input) {
-    Keyboard_Process(input);
-  }
-
-  Call_Back();  // maintains Theme.AI() for music
-  Color_Cycle();
-
-  return !GameActive;
-}
-
 void Go_Editor(const bool flag) {
   // Go into Scenario Editor mode
   if (flag) {
@@ -2096,12 +2192,6 @@ void Rebuild_Interpolated_Palette(unsigned char* interpal) {
   }
 }
 
-// One interpolation table per palette a movie can use; VQAs in this game never
-// come close to the limit.
-unsigned char* InterpolatedPalettes[100];
-bool PalettesRead;
-unsigned PaletteCounter;
-
 int Load_Interpolated_Palettes(const char* filename, const bool add) {
   int num_palettes = 0;
   int i;
@@ -2163,11 +2253,6 @@ void Free_Interpolated_Palettes() {
     }
   }
 }
-
-extern void Suspend_Audio_Thread();
-extern void Resume_Audio_Thread();
-
-extern GraphicBufferClass VQ640;
 
 void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
   DLOG(INFO) << "Play_Movie: " << name;
@@ -2801,8 +2886,6 @@ const TechnoTypeClass* Fetch_Techno_Type(const RTTIType type, const int id) {
   }
   return nullptr;
 }
-
-void Check_VQ_Palette_Set();
 
 long VQ_Call_Back(unsigned char*, long) {
   int key = 0;
@@ -3488,121 +3571,6 @@ bool Force_CD_Available(int cd_desired)  //	ajw
   }
 
   return true;
-}
-
-// Saves or replays the parts of the game state that the event stream alone
-// cannot reconstruct: where the map is scrolled to, which objects are selected,
-// and any team or formation hotkey pressed this frame.
-//
-// The selection is written as a checksum followed by the target list. On
-// playback the checksum says whether the current selection already matches; if
-// it does, the objects are read but not selected again, which stops the unit
-// acknowledgement voices from firing again on every frame.
-static void Do_Record_Playback() {
-  int count;
-  TARGET tgt;
-  int i;
-  COORDINATE coord;
-  unsigned long sum;
-  unsigned long sum2;
-  unsigned long ltgt;
-
-  // Record a game
-  if (Session.Record) {
-    // Save the map's location
-    Session.RecordFile.Write(&Map.DesiredTacticalCoord,
-                             sizeof(Map.DesiredTacticalCoord));
-
-    // Save the current object list count
-    count = static_cast<int>(CurrentObject.Count());
-    Session.RecordFile.Write(&count, sizeof(count));
-
-    // Save a CRC of the selected-object list.
-    sum = 0;
-    for (i = 0; i < count; i++) {
-      ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
-      sum += ltgt;
-    }
-    Session.RecordFile.Write(&sum, sizeof(sum));
-
-    // Save all selected objects.
-    for (i = 0; i < count; i++) {
-      tgt = CurrentObject[i]->As_Target();
-      Session.RecordFile.Write(&tgt, sizeof(tgt));
-    }
-
-    // Save team-selection and formation events
-    Session.RecordFile.Write(&TeamEvent, sizeof(TeamEvent));
-    Session.RecordFile.Write(&TeamNumber, sizeof(TeamNumber));
-    Session.RecordFile.Write(&FormationEvent, sizeof(FormationEvent));
-    Session.RecordFile.Write(TeamMaxSpeed, sizeof(TeamMaxSpeed));
-    Session.RecordFile.Write(TeamSpeed, sizeof(TeamSpeed));
-    Session.RecordFile.Write(&FormMove, sizeof(FormMove));
-    Session.RecordFile.Write(&FormSpeed, sizeof(FormSpeed));
-    Session.RecordFile.Write(&FormMaxSpeed, sizeof(FormMaxSpeed));
-    TeamEvent = 0;
-    TeamNumber = 0;
-    FormationEvent = 0;
-  }
-
-  // Play back a game ("attract" mode)
-  if (Session.Play) {
-    // Read & set the map's location.
-    if (Session.RecordFile.Read(&coord, sizeof(coord)) == sizeof(coord)) {
-      if (coord != Map.DesiredTacticalCoord) {
-        Map.Set_Tactical_Position(coord);
-      }
-    }
-
-    if (Session.RecordFile.Read(&count, sizeof(count)) == sizeof(count)) {
-      // Compute a CRC of the current object-selection list.
-      sum = 0;
-      for (i = 0; i < CurrentObject.Count(); i++) {
-        ltgt = static_cast<unsigned long>(CurrentObject[i]->As_Target());
-        sum += ltgt;
-      }
-
-      // Load the CRC of the objects on disk; if it doesn't match, select
-      // all objects as they're loaded.
-      Session.RecordFile.Read(&sum2, sizeof(sum2));
-      if (sum2 != sum) {
-        Unselect_All();
-      }
-
-      AllowVoice = true;
-
-      for (i = 0; i < count; ++i) {
-        if (Session.RecordFile.Read(&tgt, sizeof(tgt)) == sizeof(tgt)) {
-          ObjectClass* obj = As_Object(tgt);
-          if (obj != nullptr && sum2 != sum) {
-            obj->Select();
-            AllowVoice = false;
-          }
-        }
-      }
-
-      AllowVoice = true;
-    }
-
-    // Save team-selection and formation events
-    Session.RecordFile.Read(&TeamEvent, sizeof(TeamEvent));
-    Session.RecordFile.Read(&TeamNumber, sizeof(TeamNumber));
-    Session.RecordFile.Read(&FormationEvent, sizeof(FormationEvent));
-    if (TeamEvent) {
-      Handle_Team(TeamNumber, TeamEvent - 1);
-    }
-    if (FormationEvent) {
-      Toggle_Formation();
-    }
-
-    Session.RecordFile.Read(TeamMaxSpeed, sizeof(TeamMaxSpeed));
-    Session.RecordFile.Read(TeamSpeed, sizeof(TeamSpeed));
-    Session.RecordFile.Read(&FormMove, sizeof(FormMove));
-    Session.RecordFile.Read(&FormSpeed, sizeof(FormSpeed));
-    Session.RecordFile.Read(&FormMaxSpeed, sizeof(FormMaxSpeed));
-    // The map isn't drawn in playback mode, so draw it here.
-    Map.Render();
-  }
 }
 
 void* Hires_Load(char* name) {

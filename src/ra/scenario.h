@@ -345,6 +345,10 @@ void Clear_Scenario();
 void Do_Briefing(const char* text);
 void Do_Lose();
 void Do_Win();
+
+// Ends a multiplayer game in a draw: stops the game, shows the "battle
+// control terminated" screen and scores it as neither a win nor a loss.
+void Do_Draw();
 void Do_Restart();
 void Fill_In_Data();
 

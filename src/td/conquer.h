@@ -796,7 +796,7 @@
 
 extern unsigned char* InterpolatedPalettes[100];
 extern bool PalettesRead;
-extern unsigned PaletteCounter;
+extern int PaletteCounter;
 
 extern void Free_Interpolated_Palettes();
 extern int Load_Interpolated_Palettes(const char* filename, bool add = false);

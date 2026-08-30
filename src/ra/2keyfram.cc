@@ -46,6 +46,7 @@
 
 #include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/keyframe.h"
 #include "sdllib/iff.h"
 #include "sdllib/memflag.h"
 #include "sdllib/wsa.h"

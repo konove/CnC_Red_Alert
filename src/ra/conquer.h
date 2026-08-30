@@ -629,14 +629,7 @@ Rect Shape_Dimensions(const void* shapedata, int shape_num);
 void IPX_Call_Back();
 
 // Set by the -NOMOVIES command line switch; suppresses movie playback.
-extern bool bNoMovies;
-
-// Selects the pre-Win95 shape blitter. Set by CC_Draw_Shape() around the
-// rotate-and-scale path, which produces raw shape data the new blitter cannot
-// read. Read by the shape drawing code in tech/.
-extern "C" {
-extern bool UseOldShapeDraw;
-}
+inline bool bNoMovies = false;
 
 // Returns the registry subkey, under HKEY_LOCAL_MACHINE, holding this game's
 // installer settings. The key name is language specific, because each

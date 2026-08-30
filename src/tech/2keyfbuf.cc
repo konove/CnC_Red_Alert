@@ -38,7 +38,6 @@ constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
 
 #define PRED_MASK 0xE
 
-extern "C" bool UseOldShapeDraw;
 extern "C" char* BigShapeBufferStart;
 extern "C" char* TheaterShapeBufferStart;
 extern "C" bool UseBigShapeBuffer;

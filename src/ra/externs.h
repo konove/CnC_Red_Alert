@@ -125,9 +125,11 @@ extern const char* NameOverride[25];
 extern int NameIDOverride[25];
 
 extern bool GameInFocus;
-extern unsigned char* InterpolatedPalettes[100];
-extern bool PalettesRead;
-extern unsigned PaletteCounter;
+// One interpolation table per palette a movie can use; VQAs in this game never
+// come close to the limit.
+inline unsigned char* InterpolatedPalettes[100] = {};
+inline bool PalettesRead = false;
+inline int PaletteCounter = 0;
 extern int AllDone;
 extern bool InMovie;
 extern WWMouseClass* WWMouse;
@@ -138,6 +140,7 @@ extern GraphicBufferClass SysMemPage;
 extern int ScreenWidth;
 extern int ScreenHeight;
 extern GraphicBufferClass ModeXBuff;
+extern GraphicBufferClass VQ640;  // 640x400 staging page for hi-res movies
 
 /*
 **	Dynamic global variables (these change or are initialized at run time).
@@ -376,6 +379,8 @@ extern bool ReadyToQuit;      // Are we about to exit cleanly
 extern bool InDebugger;       // Are we being run from a debugger
 void Memory_Error_Handler();  // Memory error handler function
 void WWDebugString(const char* string);
+void Check_For_Focus_Loss();  // Pumps the event queue while focus is lost
+void Check_VQ_Palette_Set();  // Applies a palette change queued by a movie
 
 /*************************************************************
 ** Internet specific externs
