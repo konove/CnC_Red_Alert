@@ -2,7 +2,7 @@
 
 ## Overview
 
-`.clang-tidy` enables all checks (`'*'`) and then disables **230** of them. This document prioritizes which of those 230
+`.clang-tidy` enables all checks (`'*'`) and then disables **249** of them. This document prioritizes which of those 249
 to re-enable, ordered by **measured bug yield per unit of fix effort**.
 
 Unlike the previous revision of this document, the tiers below are not guesses. They come from an actual measurement run
@@ -11,17 +11,19 @@ Unlike the previous revision of this document, the tiers below are not guesses. 
 **Tier 1, §1.1, §1.2 and Tier 1.5 are complete, and Tier 2 is four checks of seven in.** All ten rows of the Tier 1
 table (13 checks) are enabled, 24 of the 26 checks in §1.1, the single §1.2 check, all six of Tier 1.5, and three of
 Tier 2 with a fourth reclassified; see [Progress](#progress). The two §1.1 checks left out are deliberate — see
-[1.1](#11-free-guards--the-name-was-wrong). What is left in Tier 2 is `narrowing-conversions`,
-`pro-type-member-init` and `switch-missing-default-case`.
+[1.1](#11-free-guards--the-name-was-wrong). `narrowing-conversions` was enabled in `e0e9d2bf`; what is left in
+Tier 2 is `pro-type-member-init` and `switch-missing-default-case`.
 
-The clang-tidy 22 move on 2026-08-20 turned the strict build red for reasons unrelated to any tier below; all four
-causes are resolved, and it is green again — see [clang-tidy 22 fallout](#clang-tidy-22-fallout).
+Two toolchain moves have turned the strict build red for reasons unrelated to any tier below, and both are resolved.
+The 21 → 22 move on 2026-08-20: see [clang-tidy 22 fallout](#clang-tidy-22-fallout). The move to 23 on 2026-08-29,
+which was much larger at 7,360 sites because clang-tidy 23 deleted the whole `hicpp` module and renamed three other
+checks the disable list named: see [clang-tidy 23 fallout](#clang-tidy-23-fallout).
 
 ### Two facts that shape everything below
 
 1. **`WarningsAsErrors: '*'`.** Enabling a check does not "start reporting" it — it *breaks the build* until every site
    is fixed. Check selection is therefore a scheduling decision, not a reporting decision.
-2. **The clang build already passes `-Weverything`** (`CMakeLists.txt:107`). Every `clang-diagnostic-*` entry in the
+2. **The clang build already passes `-Weverything`** (`CMakeLists.txt:130`). Every `clang-diagnostic-*` entry in the
    disable list is *already being printed on every build*; disabling it in `.clang-tidy` only decides whether it is
    fatal. For these checks the discovery cost is zero — you are choosing what to enforce, not what to find.
 
@@ -370,6 +372,121 @@ Reproduce with the sweep under [Re-measuring](#re-measuring), substituting these
 
 ---
 
+## clang-tidy 23 fallout
+
+The machine moved to clang 23 on 2026-08-29 by pointing the `clang` alternative at `/usr/bin/clang-23`
+(`update-alternatives --set clang`), which carries `clang-tidy` with it as a slave link — `CMakeLists.txt` still names
+the unversioned binary, so nothing in the build changed. **The tree was clean under 22 and would have been 7,360 sites
+across 379 of 840 translation units under 23.** All of it was regression from the version, none of it accumulated debt.
+
+The structural event is that **clang-tidy 23 deleted the entire `hicpp` module** — 31 checks in 22, none in 23 — and
+promoted three other checks to new primary names. `.clang-tidy` disabled those checks by names that no longer exist, so
+`'*'` re-enabled them under their new spellings. This is [trap 1](#re-measuring) firing against the disable list itself
+rather than against a measurement, and it is the second consecutive bump to break this way.
+
+| Check                                                | Sites | Files | Status                                                                              |
+|------------------------------------------------------|-------|-------|-------------------------------------------------------------------------------------|
+| `bugprone-signed-bitwise`                            | 4613  | 215   | ✅ Disabled — rename of `hicpp-signed-bitwise`, restores an existing decision       |
+| `readability-trailing-comma`                         | 1653  | 174   | ✅ Disabled → Tier 3. New in 23, style-only                                         |
+| `readability-redundant-nested-if`                    | 465   | 125   | ✅ Disabled → Tier 3. New in 23, style-only                                         |
+| `cppcoreguidelines-explicit-constructor`             | 252   | 144   | ✅ Disabled — new primary name for the disabled `google-explicit-constructor`       |
+| `clang-diagnostic-lifetime-safety-*-suggestions` (4) | 197   | —     | ✅ Disabled — annotation advice, not defect reports                                 |
+| `bugprone-unhandled-code-paths`                      | 55    | 33    | ✅ Disabled — rename of `hicpp-multiway-paths-covered`                              |
+| `readability-redundant-parentheses`                  | 34    | 12    | ✅ Swept in `8a508285`. Broadened into templates                                    |
+| `clang-diagnostic-lifetime-safety-*` (bug-class, 5)  | 25    | —     | ⚠️ **Disabled, unexamined** — see below                                            |
+| `readability-trivial-switch`                         | 23    | 20    | ✅ Disabled → Tier 3. New in 23, style-only                                         |
+| `readability-else-after-return`                      | 15    | 9     | ✅ Fixed in `82c69987`. Enabled check, broadened into `switch` cases                |
+| `performance-faster-string-find`                     | 6     | 3     | ✅ Fixed in `82c69987`. Enabled check, gained a new alias                           |
+| `readability-redundant-casting`                      | 2     | 1     | ✅ Fixed in `82c69987`. Enabled check, broadened                                    |
+| `performance-string-view-conversions`                | 2     | 2     | ✅ Disabled — new in 23                                                             |
+| `clang-diagnostic-unused-but-set-global`             | 2     | 2     | ✅ Disabled — new in 23                                                             |
+| `clang-analyzer-optin.core.FixedAddressDereference`  | 1     | 1     | ✅ Disabled — rename of `clang-analyzer-core.FixedAddressDereference`               |
+| `clang-analyzer-optin.cplusplus.UninitializedObject` | 1     | 1     | ✅ Fixed in `82c69987` — a real one, see below                                      |
+| `clang-analyzer-cplusplus.NewDeleteLeaks`            | 1     | 1     | ✅ Suppressed in `82c69987` with its reason — false positive                        |
+| `clang-analyzer-unix.cstring.UninitializedRead`      | 1     | 1     | ✅ Disabled — new in 23                                                             |
+
+**Four renames account for 4,921 of the 7,360 and cost nothing to fix.** Naming the 23 spelling restores a decision
+this project had already made; no game code changed. The remaining volume is three new style checks (2,141) and the
+lifetime-safety suggestions (197).
+
+**Two of the renames are aliases, and disabling an alias does not disable its primary.** That is the whole mechanism.
+`google-explicit-constructor` is still a valid name in 23, so the disable line looked fine — but 23 demoted it to an
+alias of the new `cppcoreguidelines-explicit-constructor`, and the primary came back on. Both names are needed:
+disabling only the `cppcoreguidelines` one leaves 137 sites reported under `misc-explicit-constructor`. Verified the
+same way for `hicpp-signed-bitwise` → `bugprone-signed-bitwise`, which matched its successor exactly at 4,613 sites.
+
+**The 18 dead `hicpp-` lines stay.** They are inert under 23, but removing them breaks 21 and 22: disabling a check's
+primary name does not disable its aliases, so without those lines the aliases fire. Verified on `modernize-use-auto` —
+`-modernize-use-auto` alone still reports under `hicpp-use-auto`. Sixteen of the eighteen were harmless only because
+their successors happen to be independently listed; the two that were not are in the table above.
+
+**Five of the checks are not 23 artefacts and were kept rather than disabled.** `readability-else-after-return`,
+`performance-faster-string-find`, `readability-redundant-casting`,
+`clang-analyzer-optin.cplusplus.UninitializedObject` and `clang-analyzer-cplusplus.NewDeleteLeaks` were all enabled and
+passing under 22, and fired only because 23 widened them. Disabling those would have given up coverage the project
+already had, so their 25 sites were cleared instead. `performance-prefer-single-char-overloads` is deliberately absent
+from the disable list for the same reason: it is a new alias reporting the same diagnostic as the enabled
+`performance-faster-string-find`, so disabling it alone changes nothing and disabling both would surrender a check that
+works.
+
+`FieldClass` was a real find. Its default constructor was `FieldClass() {}`, leaving every member indeterminate, and
+`src/tech/packet.cc:128` default-constructs a field then `memcpy`s `FIELD_HEADER_SIZE` bytes into it —
+`sizeof(FieldClass) - (sizeof(void*) * 2)` by its own definition, so `Data` and `Next` are deliberately outside it.
+Both happen to be assigned immediately afterwards, so nothing was broken on that path, but any other use of the default
+constructor read garbage. The members are value-initialized now.
+
+The `src/ra/queue.cc:3243` leak is a false positive and carries a `NOLINTNEXTLINE` with that reason. `eventdata` is
+declared outside the read loop and reused, so once `DoList.Add()` succeeds the list owns the buffer while `eventdata`
+still holds the pointer; the analyzer does not model the transfer and reads it as live at a later `return -1`. The only
+path that allocates already deletes on failure, two lines above.
+
+`readability-redundant-parentheses` has now regressed on two consecutive bumps. It was new in 22 and swept to zero
+then; 23 looks inside dependent expressions, and every one of the 34 new sites is in a class template body or an
+instantiation of one — `src/ra/list.h` and `src/ra/drop.h` are 17 between them. Same `return (x);` idiom, same sweep.
+
+### ⚠️ Left undone: the lifetime-safety bug-class findings
+
+Seven `clang-diagnostic-lifetime-safety-*` names are disabled. Four are annotation advice — where to add
+`[[clang::lifetimebound]]` — and are churn. **The other five report defects and their 25 sites have not been read.**
+They were spelled `-Wexperimental-lifetime-safety-*` in 22, which is why nothing fired before. They are
+`-Weverything`-gated, so they break the clang strict build and not the default GCC one. Candidates worth a look:
+
+- `src/ra/ipxmgr.cc:1025` and three parallel sites in `src/td/ipxmgr.cc` — `CurDataBuf = (char*)temp_receive_buffer;`
+  parks a local's address in a member that outlives it.
+- `src/ra/findpath.cc:174` / `src/td/findpath.cc:181` — `static CELL StartLocation;` written once and never read.
+- `src/ra/nullmgr.cc:1391` and `:1591` plus the TD twins — a global pointed at a stack button that outlives only the
+  dialog loop. Works by construction, fragile.
+- `src/ra/techno.cc:3282` and `src/ra/udata.cc:1074` are likely false under this ownership model; the second says so
+  itself ("This could be a false positive as the storage may have been moved later").
+
+Re-enable them one at a time once read. Do not disable the whole `lifetime-safety` prefix in a single line — the
+families differ in value.
+
+### The dead-name audit
+
+Run this at every toolchain bump; it is one command and it would have caught both of the last two:
+
+```bash
+comm -23 \
+  <(grep -oE '^ +-[a-z][A-Za-z0-9._-]*,' .clang-tidy | sed -E 's/^ +-//; s/,$//' | sort -u) \
+  <(clang-tidy --checks='*' --list-checks | tail -n +2 | sed 's/^ *//' | sort -u) \
+  | grep -v '^clang-diagnostic-'
+```
+
+Strip only the leading `-`, not every hyphen: `tr -d ' -'` mangles every name and the comparison then matches nothing,
+which reads as a clean audit.
+
+`clang-diagnostic-*` names never appear in `--list-checks` and are expected in the output; anything else is a line
+disabling a check that does not exist. Today it prints the 18 `hicpp-` names, `cert-dcl21-cpp`,
+`clang-analyzer-core.FixedAddressDereference`, `clang-analyzer-valist.Unterminated` and
+`cppcoreguidelines-explicit-constructor-and-conversion` — the last three already dead under 22, the residue of the
+21 → 22 round nobody noticed because `google-explicit-constructor` still covered it.
+
+Reproduce with the sweep under [Re-measuring](#re-measuring), with no `--checks` at all — a single-check sweep cannot
+see the `clang-diagnostic-*` family.
+
+---
+
 ## TIER 1.5: Small counts, real UB in a deep virtual hierarchy
 
 The `AbstractClass → ObjectClass → TechnoClass → ...` hierarchy makes these more dangerous here than in typical code.
@@ -573,7 +690,7 @@ rather than the thousands the estimates predicted:
 2. ~~`clang-diagnostic-sign-compare`~~ — done in `35c51bbf`, 305 sites.
 3. ~~`clang-diagnostic-shorten-64-to-32`~~ — done in `cf44023c`, 439 sites.
 4. ~~`clang-diagnostic-switch`~~ — reclassified, not enabled; 567 of its 720 sites are a deliberate idiom.
-5. `bugprone-narrowing-conversions` next, with `WarnOnEquivalentBitWidth: false` — 839 sites rather than 1424.
+5. ~~`bugprone-narrowing-conversions`, with `WarnOnEquivalentBitWidth: false`~~ — done in `e0e9d2bf`, 510 sites.
 6. `cppcoreguidelines-pro-type-member-init` after deciding how the `NoInitClass` constructors get annotated.
 7. `bugprone-switch-missing-default-case` last, or never.
 
@@ -627,7 +744,7 @@ destructor made `~TeamTypeClass` an override, tripping `clang-diagnostic-suggest
 once with the check under study, and once with no `--checks` at all — the full config, all 840 units — before
 committing. Both were fixed in `532aef0f`.
 
-Four traps, every one of which reports a clean tree that is not clean.
+Seven traps, every one of which reports a clean tree that is not clean.
 
 1. **Confirm the check name exists in the *installed* clang-tidy.** `clang-tidy --checks='-*,name' --list-checks`
    prints `No checks enabled.` for a name it does not know, so a typo or a renamed check measures as zero.
@@ -641,6 +758,16 @@ Four traps, every one of which reports a clean tree that is not clean.
    [dir]/compile_commands.json` before trusting a zero.
 4. **Watch for hard `error:` lines.** A translation unit that fails to compile reports no warnings, which reads exactly
    like a clean one.
+5. **The tally regex must allow dots, commas and capitals.** `[a-z0-9-]+` truncates
+   `clang-analyzer-optin.core.FixedAddressDereference` at the first dot and mangles the multi-name tags 23 emits, such
+   as `cppcoreguidelines-explicit-constructor,misc-explicit-constructor`. Use `[A-Za-z0-9._,-]+` anchored with `\]$`,
+   and strip the `,-warnings-as-errors` suffix that appears even when `--warnings-as-errors=` is passed.
+6. **Trap 1 applies to `.clang-tidy` itself, not just to measurements.** A disable line naming a check the installed
+   clang-tidy does not know is silently ignored, so the check runs. That is how both of the last two toolchain bumps
+   broke the build. Run the [dead-name audit](#the-dead-name-audit) at every bump.
+7. **The shell here is zsh, which does not word-split unquoted `$VAR`.** `clang-tidy $FLAGS file.cc` passes the whole
+   string as one argument; `-p` and `--checks` never take effect and the run reports zero. Put sweep loops inside
+   `bash -c '...'`. Related: `/usr/bin/c++` is GCC, which rejects `-Weverything` outright.
 
 ---
 
@@ -652,7 +779,9 @@ Four traps, every one of which reports a clean tree that is not clean.
 | 1.1       | 26     | 0 (336 real)    | ✅ **Done** — 24 enabled (23 after 22), 7 more real bugs; 1 off for good, 1 moved to 1.5 |
 | 1.2       | 1      | 0               | ✅ **Done** — free, but it guards nothing; save layout pinned in tests                   |
 | 1.5       | 6      | 128 (265 real)  | ✅ **Done** — all six; `VirtualCall` alone found lost buffered writes                    |
-| 2         | 7      | 576 (3568 real) | 3 done, 1 reclassified; `narrowing-conversions` next                                     |
-| 3         | ~230   | —               | Keep disabled                                                                            |
+| 2         | 7      | 576 (3568 real) | 4 done, 1 reclassified; `pro-type-member-init` next                                      |
+| 3         | ~249   | —               | Keep disabled                                                                            |
 
-Disabled-check count: **275 → 230**.
+Disabled-check count: **275 → 230 → 249**. The rise is the clang-tidy 23 round, not a retreat: 12 of the 19 additions
+carry forward decisions already made under names 23 deleted or renamed, and the rest are new style checks. See
+[clang-tidy 23 fallout](#clang-tidy-23-fallout).
