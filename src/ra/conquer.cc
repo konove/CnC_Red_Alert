@@ -31,6 +31,7 @@
 #include <fcntl.h>
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
@@ -153,15 +154,6 @@ void TEN_Call_Back();
 #if (MPATH)
 void MPATH_Call_Back();
 #endif  // MPATH
-
-// The game's entry point, after platform startup. Init_Game() does the
-// one-time initialization; everything after it happens once per game played,
-// because Select_Game() may hand back a wholly different kind of session --
-// single player, network, modem, editor -- each needing its own setup and its
-// own teardown.
-//
-// The network and modem layers are shut down after every game rather than left
-// running, so that selecting one again restarts it from a known state.
 
 // Cycles the animated palette entries. Two effects run off independent timers:
 // a white that pulses between full and dark, used by the radar box and other
@@ -921,6 +913,14 @@ static void Do_Record_Playback() {
   }
 }
 
+// The game's entry point, after platform startup. Init_Game() does the
+// one-time initialization; everything after it happens once per game played,
+// because Select_Game() may hand back a wholly different kind of session --
+// single player, network, modem, editor -- each needing its own setup and its
+// own teardown.
+//
+// The network and modem layers are shut down after every game rather than left
+// running, so that selecting one again restarts it from a known state.
 void Main_Game(const int argc, char* argv[]) {
   static bool fade = true;
 
@@ -3300,7 +3300,7 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
 #endif
 }
 
-// Disc identifiers, matching the order of _cd_name above. CD_SOVIET and
+// Disc identifiers, matching the order of kCdNames below. CD_SOVIET and
 // CD_ALLIED are unreferenced by name but fix the numbering the later values
 // depend on, and are the values Get_CD_Index() returns for those discs.
 namespace {
@@ -3314,6 +3314,10 @@ enum CD_VOLUME {
   CD_CS_OR_AM,
   CD_DVD,
 };
+
+// Index of the DVD's name in kCdNames. The table has no entry for the
+// CD_CS_OR_AM request, so the names stop lining up with CD_VOLUME there.
+constexpr int kDvdName = 4;
 }  // namespace
 
 #ifndef DVD
@@ -3324,24 +3328,28 @@ bool Force_CD_Available(int cd_desired)  //	ajw
 {
   static int _last = -1;
   static const void* font;
-#ifdef FRENCH
-  static const char* _cd_name[] = {
-      "ALERTE ROUGE CD1",   "ALERTE ROUGE CD2", "CD Missions Taiga",
-      "CD Missions M.A.D.", "ALERTE ROUGE DVD",
-  };
-#endif
-#ifdef GERMAN
-  static const char* _cd_name[] = {
-      "ALARMSTUFE ROT CD1", "ALARMSTUFE ROT CD2", "CD Gegenangriff einlegen",
-      "CD TRANS einlegen",  "ALARMSTUFE ROT DVD",
-  };
-#endif
-#ifdef ENGLISH
-  static const char* _cd_name[] = {
-      "RED ALERT DISK 1", "RED ALERT DISK 2", "CounterStrike CD",
-      "Aftermath CD",     "RED ALERT DVD",
-  };
-#endif
+  // Disc names as printed on the localized releases, in the language this
+  // build was compiled for.
+  static constexpr std::array<const char*, 5> kCdNames = [] {
+    if constexpr (config::kBuildLanguage == config::BuildLanguage::French) {
+      return std::array{
+          "ALERTE ROUGE CD1",   "ALERTE ROUGE CD2", "CD Missions Taiga",
+          "CD Missions M.A.D.", "ALERTE ROUGE DVD",
+      };
+    } else if constexpr (config::kBuildLanguage ==
+                         config::BuildLanguage::German) {
+      return std::array{
+          "ALARMSTUFE ROT CD1",       "ALARMSTUFE ROT CD2",
+          "CD Gegenangriff einlegen", "CD TRANS einlegen",
+          "ALARMSTUFE ROT DVD",
+      };
+    } else {
+      return std::array{
+          "RED ALERT DISK 1", "RED ALERT DISK 2", "CounterStrike CD",
+          "Aftermath CD",     "RED ALERT DVD",
+      };
+    }
+  }();
 
   int new_cd_drive = 0;
 
@@ -3461,22 +3469,23 @@ bool Force_CD_Available(int cd_desired)  //	ajw
         cd_desired = CD_AFTERMATH;
       }
 
+      // The wording is fixed by the language this build was compiled for; only
+      // the disc name varies.
+      auto insert_prompt = [&buffer](const char* disc_name) {
+        if constexpr (config::kBuildLanguage == config::BuildLanguage::French) {
+          snprintf(buffer, sizeof(buffer), "Insèrez le %s", disc_name);
+        } else if constexpr (config::kBuildLanguage ==
+                             config::BuildLanguage::German) {
+          snprintf(buffer, sizeof(buffer), "Bitte %s", disc_name);
+        } else {
+          snprintf(buffer, sizeof(buffer), "Please insert the %s", disc_name);
+        }
+      };
+
       if (cd_desired == CD_DVD) {
-#ifdef FRENCH
-        sprintf(buffer, "Insèrez le %s", _cd_name[4]);
-#elifdef GERMAN
-        sprintf(buffer, "Bitte %s", _cd_name[4]);
-#else
-        sprintf(buffer, "Please insert the %s", _cd_name[4]);
-#endif
+        insert_prompt(kCdNames[kDvdName]);
       } else if (cd_desired == CD_COUNTERSTRIKE || cd_desired == CD_AFTERMATH) {
-#ifdef FRENCH
-        sprintf(buffer, "Insèrez le %s", _cd_name[cd_desired]);
-#elifdef GERMAN
-        sprintf(buffer, "Bitte %s", _cd_name[cd_desired]);
-#else
-        sprintf(buffer, "Please insert the %s", _cd_name[cd_desired]);
-#endif
+        insert_prompt(kCdNames[cd_desired]);
       } else {
         // These prompts come from the localized string table, so verify the
         // translation still takes a %d followed by a %s before using it.
@@ -3485,7 +3494,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
         auto format = absl::ParsedFormat<'d', 's'>::New(Text_String(text));
         if (format != nullptr) {
           port::SafeCopy(buffer, absl::StrFormat(*format, cd_desired + 1,
-                                                 _cd_name[cd_desired])
+                                                 kCdNames[cd_desired])
                                      .c_str());
         }
       }
@@ -3681,16 +3690,14 @@ void List_Copy(const short* source, int len, short* dest) {
 // installer wrote this game's settings to. The key name is language specific
 // because each localized release installed as a separate product.
 const char* Game_Registry_Key() {
-#ifdef ENGLISH
-  static char szKey[] = "SOFTWARE\\Westwood\\Red Alert Windows 95 Edition";
-#else
-#ifdef GERMAN
-  static char szKey[] = "SOFTWARE\\Westwood\\Alarmstufe Rot Windows 95 Edition";
-#else
-  static char szKey[] = "SOFTWARE\\Westwood\\Alerte Rouge version Windows 95";
-#endif
-#endif
-  return szKey;
+  if constexpr (config::kBuildLanguage == config::BuildLanguage::French) {
+    return "SOFTWARE\\Westwood\\Alerte Rouge version Windows 95";
+  } else if constexpr (config::kBuildLanguage ==
+                       config::BuildLanguage::German) {
+    return "SOFTWARE\\Westwood\\Alarmstufe Rot Windows 95 Edition";
+  } else {
+    return "SOFTWARE\\Westwood\\Red Alert Windows 95 Edition";
+  }
 }
 
 // Reports whether the Counterstrike expansion is installed, by reading the flag
