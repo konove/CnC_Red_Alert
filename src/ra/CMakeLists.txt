@@ -130,6 +130,12 @@ add_gtest(
 )
 
 add_gtest(
+    NAME ra_dib_test
+    SOURCES dib_test.cc dib.cc
+    LIBS base
+)
+
+add_gtest(
     NAME ra_heap_layout_test
     SOURCES heap_layout_test.cc
     LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log
