@@ -977,14 +977,14 @@ bool Select_Game(bool /*fade*/) {
                     WWDebugString(
                         "RA95 - About to read multiplayer settings.\n");
                     Session.Read_MultiPlayer_Settings();
-                    Server = PlanetWestwoodIsHost;
+                    IsNetworkHost = PlanetWestwoodIsHost;
 
                     WWDebugString("RA95 - About to set addresses.\n");
                     Winsock.Set_Host_Address(PlanetWestwoodIPAddress);
 
                     WWDebugString(
                         "RA95 - About to call Start_Server or Start_Client.\n");
-                    if (Server) {
+                    if (IsNetworkHost) {
                       Winsock.Start_Server();
                     } else {
                       Winsock.Start_Client();

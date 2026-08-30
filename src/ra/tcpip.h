@@ -56,9 +56,11 @@ typedef void* HANDLE;
 #define MAXGETHOSTSTRUCT 1024
 #endif
 
-#if !WOLAPI_INTEGRATION
-extern bool Server;
-#endif
+// True when this player hosts the internet game, false when they join one.
+// Named for what it is rather than "Server", which collided with the WOL API's
+// struct of that name and is why this declaration used to hide itself whenever
+// WOLAPI_INTEGRATION was on.
+extern bool IsNetworkHost;
 
 #define FORCE_WINSOCK 1
 

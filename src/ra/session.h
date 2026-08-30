@@ -326,11 +326,9 @@ typedef struct {
       unsigned int GameSpeed;             // Game Speed
       uint32_t ResponseTime;              // packet response time
       unsigned int FileLength;  // Length of scenario file to expect from host.
-#if WOLAPI_INTEGRATION
-      char ShortFileName[13];  // Name of scenario file to expect from host
-#else
-      char ShortFileName[12];  // Name of scenario file to expect from host
-#endif
+      // Name of the scenario file to expect from the host: 12 characters of
+      // 8.3 name plus the terminator.
+      char ShortFileName[13];
       char FileDigest[32];  // Digest of scenario file to expect from host
                             //	ajw - This is not necessarily null-terminated.
     } ScenarioInfo;
@@ -343,6 +341,10 @@ typedef struct {
     } Chat;
   };
 } SerialPacketType;
+
+// Both packets go on the wire with sizeof(), so every peer must agree on these
+// numbers. Change one only when you mean to change the protocol.
+static_assert(sizeof(SerialPacketType) == 160);
 
 //...........................................................................
 // Other packet sent over the serial global channel (for file transfers)
@@ -391,11 +393,9 @@ typedef struct GlobalPacketType {
       unsigned int GameSpeed;    // Game Speed
       uint32_t Version;          // version # common to all players
       unsigned int FileLength;   // Length of scenario file to expect from host.
-#if WOLAPI_INTEGRATION
-      char ShortFileName[13];  // Name of scenario file to expect from host
-#else
-      char ShortFileName[12];  // Name of scenario file to expect from host
-#endif
+      // Name of the scenario file to expect from the host: 12 characters of
+      // 8.3 name plus the terminator.
+      char ShortFileName[13];
       char FileDigest[32];  // Digest of scenario file to expect from host
                             //	ajw - This is not necessarily null-terminated.
     } ScenarioInfo;
@@ -416,6 +416,8 @@ typedef struct GlobalPacketType {
     } Chat;
   };
 } GlobalPacketType;
+
+static_assert(sizeof(GlobalPacketType) == 144);
 
 //...........................................................................
 // For finding sync bugs; filled in by the engine when certain conditions

@@ -256,7 +256,7 @@ void Send_Statistics_Packet() {
       stats.Add_Field(FIELD_HOSTORNOT, (unsigned char)1);
     }
 #else
-    if (Server) {
+    if (IsNetworkHost) {
       stats.Add_Field(FIELD_PACKET_TYPE, PACKET_TYPE_HOST_GAME_INFO);
     } else {
       stats.Add_Field(FIELD_PACKET_TYPE, PACKET_TYPE_GUEST_GAME_INFO);

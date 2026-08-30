@@ -908,12 +908,11 @@ class HouseClass {
   */
   char IniName[HOUSE_NAME_MAX];
 
-#if WOLAPI_INTEGRATION
-  //	For Internet games only, unchanging name of player when game began.
-  //	This name does not get changed to "Computer" if computer takes over for
-  // player.
+  // The name this player started the game with. Unlike IniName it is never
+  // rewritten to "Computer" when the computer takes over for a player who has
+  // left, so end-of-game reporting can still say who was here. Internet games
+  // are the only ones that fill it in.
   char InitialName[HOUSE_NAME_MAX];
-#endif
 
   int QuantityB(int index) { return BQuantity[index]; }
   int QuantityU(int index) {

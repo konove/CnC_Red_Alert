@@ -168,11 +168,9 @@ void DropListClass::Set_Selected_Index(const char* text) {
   }
 }
 
-#if WOLAPI_INTEGRATION
 void DropListClass::Flag_To_Redraw() {
   if (IsDropped) {
     List.Flag_To_Redraw();
   }
   EditClass::Flag_To_Redraw();
 }
-#endif

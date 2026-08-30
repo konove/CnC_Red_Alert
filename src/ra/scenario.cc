@@ -2495,10 +2495,8 @@ void Assign_Houses() {
     house = static_cast<HousesType>(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
     port::SafeCopy(housep->IniName, Session.Players[index]->Name);
-#if WOLAPI_INTEGRATION
-    //	Make another copy of name, permanent throughout entire game.
+    // A second copy that stays put for the whole game -- see InitialName.
     port::SafeCopy(housep->InitialName, Session.Players[index]->Name);
-#endif
     housep->IsHuman = true;
     housep->Init_Data(Session.Players[index]->Player.Color,
                       Session.Players[index]->Player.House,

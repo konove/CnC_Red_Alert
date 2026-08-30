@@ -68,9 +68,7 @@ typedef int socklen_t;
 /*
 ** Nasty globals
 */
-#if !WOLAPI_INTEGRATION
-bool Server;  // Is this player acting as client or server
-#endif
+bool IsNetworkHost;
 
 #ifndef WINSOCK_IPX
 TcpipManagerClass Winsock;  // The object for interfacing with Winsock
