@@ -38,6 +38,10 @@ struct Color {
   friend bool operator==(const Color&, const Color&) = default;
 };
 
+// The number of entries in a full 8-bit colour table, and so in the game's
+// own palette.
+inline constexpr base::ssize kPaletteSize = 256;
+
 // A palettised bitmap: a colour table plus one byte of index per pixel.
 //
 // Rows are stored bottom-up and padded to a multiple of four bytes, the way a
@@ -66,6 +70,9 @@ class Image {
   std::span<const Color> Colors() const { return colors_; }
   std::span<Color> MutableColors() { return colors_; }
 
+  // The pixels, for RemapToPalette to rewrite in place.
+  std::span<std::uint8_t> MutableBits() { return bits_; }
+
  private:
   Image() = default;
 
@@ -74,6 +81,20 @@ class Image {
   std::vector<Color> colors_;
   std::vector<std::uint8_t> bits_;
 };
+
+// Rewrites every pixel of `image` so it indexes `target` instead of the
+// image's own colour table, choosing the nearest colour in `target` for each.
+// The image's colour table is left alone; only the pixel indices change, so
+// the result is only meaningful once `target` is the palette in use.
+//
+// Entry 0 is a BMP's transparent colour by convention. The game has no
+// transparency here, so it is mapped to the nearest thing to black rather
+// than to whatever colour the file happens to name.
+//
+// Matching happens in the VGA's 6 bits per channel, which is what the game's
+// palette holds, so `target` is expected to carry values already reduced that
+// way and the image's own 8-bit colours are reduced to match.
+void RemapToPalette(Image& image, std::span<const Color> target);
 
 }  // namespace dib
 

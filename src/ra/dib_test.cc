@@ -1,5 +1,6 @@
 #include "ra/dib.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
@@ -117,6 +118,80 @@ TEST(DibTest, RejectsTruncatedColourTable) {
   bmp.resize(14 + 40 + 4);
 
   EXPECT_FALSE(dib::Image::FromBmp(bmp).has_value());
+}
+
+TEST(DibRemapTest, EveryPixelPointsAtTheNearestColourInTheTarget) {
+  // MakeBmp's palette is {0,1,2,0} and {1,2,3,0} -- blue, green, red, unused.
+  auto image = dib::Image::FromBmp(MakeBmp(2, 1));
+  ASSERT_TRUE(image.has_value());
+
+  // Two target entries, far apart. Both source colours are nearly black, so
+  // both should land on entry 1.
+  const std::vector<dib::Color> target = {
+      dib::Color{63, 63, 63, 0},
+      dib::Color{0, 0, 0, 0},
+  };
+  dib::RemapToPalette(*image, target);
+
+  EXPECT_EQ(image->Bits()[0], 1);
+  EXPECT_EQ(image->Bits()[1], 1);
+}
+
+TEST(DibRemapTest, IndexZeroGoesToBlackRatherThanItsOwnColour) {
+  // A one-pixel image whose only pixel uses palette entry 0. The file says
+  // entry 0 is white, but it is the transparent slot, so it must map to the
+  // target's black rather than to its white.
+  std::vector<std::uint8_t> bmp = MakeBmp(1, 1);
+  const std::size_t table = 14 + 40;
+  bmp[table + 0] = 255;  // blue
+  bmp[table + 1] = 255;  // green
+  bmp[table + 2] = 255;  // red
+
+  auto image = dib::Image::FromBmp(bmp);
+  ASSERT_TRUE(image.has_value());
+  ASSERT_EQ(image->Bits()[0], 1) << "MakeBmp puts row+1 in the pixels";
+  image->MutableBits()[0] = 0;
+
+  const std::vector<dib::Color> target = {
+      dib::Color{63, 63, 63, 0},  // white
+      dib::Color{0, 0, 0, 0},     // black
+  };
+  dib::RemapToPalette(*image, target);
+
+  EXPECT_EQ(image->Bits()[0], 1) << "entry 0 is transparent, so it maps black";
+}
+
+TEST(DibRemapTest, MatchingHappensInTheVgaSixBitSpace) {
+  // 0xFF red reduces to 63, which is an exact hit on a 6-bit palette entry of
+  // 63. Matching in 8-bit space would have found no exact match and picked
+  // whichever entry was merely closest.
+  std::vector<std::uint8_t> bmp = MakeBmp(1, 1);
+  const std::size_t table = 14 + 40;
+  bmp[table + 4] = 0;    // entry 1, blue
+  bmp[table + 5] = 0;    // green
+  bmp[table + 6] = 255;  // red
+
+  auto image = dib::Image::FromBmp(bmp);
+  ASSERT_TRUE(image.has_value());
+
+  const std::vector<dib::Color> target = {
+      dib::Color{0, 0, 0, 0},
+      dib::Color{0, 0, 40, 0},
+      dib::Color{0, 0, 63, 0},  // exactly 0xFF >> 2
+  };
+  dib::RemapToPalette(*image, target);
+
+  EXPECT_EQ(image->Bits()[0], 2);
+}
+
+TEST(DibRemapTest, AnEmptyTargetLeavesTheImageAlone) {
+  auto image = dib::Image::FromBmp(MakeBmp(2, 1));
+  ASSERT_TRUE(image.has_value());
+  const std::uint8_t before = image->Bits()[0];
+
+  dib::RemapToPalette(*image, {});
+
+  EXPECT_EQ(image->Bits()[0], before);
 }
 
 }  // namespace

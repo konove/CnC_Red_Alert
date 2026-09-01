@@ -16,9 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if WOLAPI_INTEGRATION
-
-
 //	rawolapi.h - WOLAPI sinks declarations.
 //	ajw 07/10/98
 
@@ -27,37 +24,28 @@
 #ifndef CNC_RED_ALERT_RA_RAWOLAPI_H_
 #define CNC_RED_ALERT_RA_RAWOLAPI_H_
 
-#include "ra/function.h"
+#include <atomic>
+#include <cstddef>
+#include <cstdint>
+#include <ctime>
 
-// #include "cominit.h"
-#include <cstdio>
-
-//	From OBJBASE.H
-#define interface struct
-
-//	From RPCNDR.H
-#define DECLSPEC_UUID(x)
-
-#include <commctrl.h>
-
-// namespace WOL		//	namespace is workaround due to the use
-// of "Server" as a global in Red Alert. 	ajw - Can't use namespaces in
-// Watcom 10.5 it seems...
-//{
-#include "ra/wolapi/wolapi.h"
-// #include "wlib/wdebug.h"
+// ajw wrapped these in a WOL namespace to keep wolapi's `struct Server` away
+// from Red Alert's global of that name, then had to take it out again --
+// "Can't use namespaces in Watcom 10.5 it seems". The global has since been
+// renamed IsNetworkHost, so there is nothing left to collide with.
+#include "port/win32/win32_com.h"
+#include "port/win32/win32_types.h"
+#include "ra/defines.h"
 #include "ra/wolapi/chatdefs.h"
 #include "ra/wolapi/downloaddefs.h"
 #include "ra/wolapi/ftpdefs.h"
-//};
-// using namespace WOL;
-#include <winerror.h>
-// #include <ocidl.h>
-#include <olectl.h>
+#include "ra/wolapi/wolapi.h"
 
 //***********************************************************************************************
 //	For debugging chat defined hresults...
-void ChatDefAsText(char* szDesc, HRESULT hRes);
+//	Writes the name of `hRes` into `szDesc`, truncating rather than
+//	overflowing. About 150 characters is enough for any of them.
+void ChatDefAsText(char* szDesc, std::size_t iSize, HRESULT hRes);
 void DebugChatDef(HRESULT hRes);
 
 int iChannelLobbyNumber(const unsigned char* szChannelName);
@@ -110,54 +98,51 @@ class RAChatEventSink
        public IChatEvent {
  public:
   RAChatEventSink(WolapiObject* pOwner);
-  virtual ~RAChatEventSink();
+  ~RAChatEventSink() override;
 
   //    BEGIN_COM_MAP(RAChatEventSink)
   //	  COM_INTERFACE_ENTRY(IChatEvent)
   //    END_COM_MAP()
 
   // IUnknown
-  STDMETHOD(QueryInterface)(const IID& iid, void** ppv);
-  STDMETHOD_(ULONG, AddRef)();
-  STDMETHOD_(ULONG, Release)();
+  STDMETHOD(QueryInterface)(const IID& iid, void** ppv) override;
+  STDMETHOD_(ULONG, AddRef)() override;
+  STDMETHOD_(ULONG, Release)() override;
 
-  // IChatEvent
-  STDMETHOD(OnServerList)(HRESULT res, Server* servers);
-  STDMETHOD(OnLogout)(HRESULT r, User* user);
-  STDMETHOD(OnBusy)(HRESULT r);
-  STDMETHOD(OnIdle)(HRESULT r);
-  STDMETHOD(OnPageSend)(HRESULT r);
-  STDMETHOD(OnPaged)(HRESULT r, User*, LPCSTR);
-  STDMETHOD(OnFind)(HRESULT r, Channel*);
-  STDMETHOD(OnConnection)(HRESULT r, LPCSTR motd);
-  STDMETHOD(OnChannelCreate)(HRESULT r, Channel* channel);
-  STDMETHOD(OnChannelModify)(HRESULT r, Channel* channel);
-  STDMETHOD(OnChannelJoin)(HRESULT r, Channel* channel, User* user);
-  STDMETHOD(OnChannelLeave)(HRESULT r, Channel* channel, User* user);
-  STDMETHOD(OnChannelTopic)(HRESULT r, Channel* channel, LPCSTR topic);
-  STDMETHOD(OnGroupList)(HRESULT r, Group*);
+  // IChatEvent. The tree's wolapi.h is a later revision of the IDL than this
+  // sink was written against: OnBusy, OnIdle, OnChannelModify, OnGroupList and
+  // a one-argument OnServerError were declared here and overrode nothing.
+  STDMETHOD(OnServerList)(HRESULT res, Server* servers) override;
+  STDMETHOD(OnLogout)(HRESULT r, User* user) override;
+  STDMETHOD(OnPageSend)(HRESULT r) override;
+  STDMETHOD(OnPaged)(HRESULT r, User*, LPCSTR) override;
+  STDMETHOD(OnFind)(HRESULT r, Channel*) override;
+  STDMETHOD(OnConnection)(HRESULT r, LPCSTR motd) override;
+  STDMETHOD(OnChannelCreate)(HRESULT r, Channel* channel) override;
+  STDMETHOD(OnChannelJoin)(HRESULT r, Channel* channel, User* user) override;
+  STDMETHOD(OnChannelLeave)(HRESULT r, Channel* channel, User* user) override;
+  STDMETHOD(OnChannelTopic)(HRESULT r, Channel* channel, LPCSTR topic) override;
   STDMETHOD(OnPublicMessage)
-  (HRESULT r, Channel* channel, User* user, LPCSTR text);
-  STDMETHOD(OnPrivateMessage)(HRESULT r, User* user, LPCSTR text);
-  STDMETHOD(OnSystemMessage)(HRESULT r, LPCSTR);
-  STDMETHOD(OnNetStatus)(HRESULT r);
-  STDMETHOD(OnChannelList)(HRESULT r, Channel* channels);
-  STDMETHOD(OnUserList)(HRESULT r, Channel* channel, User* users);
-  STDMETHOD(OnUpdateList)(HRESULT res, Update*);
-  STDMETHOD(OnServerError)(HRESULT res);
-  STDMETHOD(OnMessageOfTheDay)(HRESULT res, LPCSTR);
-  STDMETHOD(OnPrivateAction)(HRESULT r, User*, LPCSTR);
-  STDMETHOD(OnPublicAction)(HRESULT r, Channel*, User*, LPCSTR);
-  STDMETHOD(OnPrivateGameOptions)(HRESULT r, User*, LPCSTR);
-  STDMETHOD(OnPublicGameOptions)(HRESULT r, Channel*, User*, LPCSTR);
-  STDMETHOD(OnGameStart)(HRESULT r, Channel*, User*, int);
-  STDMETHOD(OnUserKick)(HRESULT r, Channel*, User*, User*);
-  STDMETHOD(OnUserIP)(HRESULT r, User*);
-  STDMETHOD(OnServerError)(HRESULT res, LPCSTR ircmsg);
-  STDMETHOD(OnServerBannedYou)(HRESULT r, time_t bannedTill);
+  (HRESULT r, Channel* channel, User* user, LPCSTR text) override;
+  STDMETHOD(OnPrivateMessage)(HRESULT r, User* user, LPCSTR text) override;
+  STDMETHOD(OnSystemMessage)(HRESULT r, LPCSTR) override;
+  STDMETHOD(OnNetStatus)(HRESULT r) override;
+  STDMETHOD(OnChannelList)(HRESULT r, Channel* channels) override;
+  STDMETHOD(OnUserList)(HRESULT r, Channel* channel, User* users) override;
+  STDMETHOD(OnUpdateList)(HRESULT res, Update*) override;
+  STDMETHOD(OnMessageOfTheDay)(HRESULT res, LPCSTR) override;
+  STDMETHOD(OnPrivateAction)(HRESULT r, User*, LPCSTR) override;
+  STDMETHOD(OnPublicAction)(HRESULT r, Channel*, User*, LPCSTR) override;
+  STDMETHOD(OnPrivateGameOptions)(HRESULT r, User*, LPCSTR) override;
+  STDMETHOD(OnPublicGameOptions)(HRESULT r, Channel*, User*, LPCSTR) override;
+  STDMETHOD(OnGameStart)(HRESULT r, Channel*, User*, int) override;
+  STDMETHOD(OnUserKick)(HRESULT r, Channel*, User*, User*) override;
+  STDMETHOD(OnUserIP)(HRESULT r, User*) override;
+  STDMETHOD(OnServerError)(HRESULT res, LPCSTR ircmsg) override;
+  STDMETHOD(OnServerBannedYou)(HRESULT r, time_t bannedTill) override;
   STDMETHOD(OnUserFlags)
-  (HRESULT r, LPCSTR name, unsigned int flags, unsigned int mask);
-  STDMETHOD(OnChannelBan)(HRESULT r, LPCSTR name, int banned);
+  (HRESULT r, LPCSTR name, unsigned int flags, unsigned int mask) override;
+  STDMETHOD(OnChannelBan)(HRESULT r, LPCSTR name, int banned) override;
 
   unsigned long GetPlayerGameIP(const char* szPlayerName) const;
   void DeleteUserList();  //	Deletes from heap all users pointed to through
@@ -167,7 +152,6 @@ class RAChatEventSink
 
   void ActionEggSound(const char* szMessage);
 
- public:
   //	These vars are rather hackish. Basically, they are set before a callback
   // is expected to be fired, and 	then checked immediately afterwards. The
   // rest of the time, their values are meaningless. 	The idea is to force
@@ -236,7 +220,7 @@ class RAChatEventSink
   void InsertUserSorted(User* pUserNew);
 
  private:
-  long m_cRef;  // Reference Count
+  std::atomic<int> m_cRef;  // Reference count.
 };
 
 //***********************************************************************************************
@@ -245,26 +229,25 @@ class RADownloadEventSink :
     public IDownloadEvent {
  public:
   RADownloadEventSink();
-  virtual ~RADownloadEventSink() {};
+  ~RADownloadEventSink() override = default;
 
   //  BEGIN_COM_MAP(RADownloadEventSink)
   //    COM_INTERFACE_ENTRY(IDownloadEvent)
   //  END_COM_MAP()
 
   // IUnknown
-  STDMETHOD(QueryInterface)(const IID& iid, void** ppv);
-  STDMETHOD_(ULONG, AddRef)();
-  STDMETHOD_(ULONG, Release)();
+  STDMETHOD(QueryInterface)(const IID& iid, void** ppv) override;
+  STDMETHOD_(ULONG, AddRef)() override;
+  STDMETHOD_(ULONG, Release)() override;
 
   // IDownloadEvent
-  STDMETHOD(OnEnd)();
-  STDMETHOD(OnError)(int error);
+  STDMETHOD(OnEnd)() override;
+  STDMETHOD(OnError)(int error) override;
   STDMETHOD(OnProgressUpdate)
-  (int bytesread, int totalsize, int timetaken, int timeleft);
-  STDMETHOD(OnStatusUpdate)(int status);
-  STDMETHOD(OnQueryResume)();
+  (int bytesread, int totalsize, int timetaken, int timeleft) override;
+  STDMETHOD(OnStatusUpdate)(int status) override;
+  STDMETHOD(OnQueryResume)() override;
 
- public:
   bool bFlagEnd;
   bool bFlagError;
   bool bFlagProgressUpdate;
@@ -278,7 +261,7 @@ class RADownloadEventSink :
   bool bResumed;
 
  private:
-  long m_cRef;  // Ref count
+  std::atomic<int> m_cRef;  // Reference count.
 };
 
 //***********************************************************************************************
@@ -287,23 +270,25 @@ class RANetUtilEventSink :
     public INetUtilEvent {
  public:
   RANetUtilEventSink(WolapiObject* pOwner);
-  virtual ~RANetUtilEventSink();
+  ~RANetUtilEventSink() override;
 
   // BEGIN_COM_MAP(CNetUtilEventSink)
   //	COM_INTERFACE_ENTRY(INetUtilEvent)
   // END_COM_MAP()
 
   // IUnknown
-  STDMETHOD(QueryInterface)(const IID& iid, void** ppv);
-  STDMETHOD_(ULONG, AddRef)();
-  STDMETHOD_(ULONG, Release)();
+  STDMETHOD(QueryInterface)(const IID& iid, void** ppv) override;
+  STDMETHOD_(ULONG, AddRef)() override;
+  STDMETHOD_(ULONG, Release)() override;
 
   // INetUtilEvent
 
-  STDMETHOD(OnGameresSent)(HRESULT res);
+  STDMETHOD(OnGameresSent)(HRESULT res) override;
   STDMETHOD(OnLadderList)
-  (HRESULT res, Ladder* list, int totalCount, long timeStamp, int keyRung);
-  STDMETHOD(OnPing)(HRESULT res, int time, unsigned long ip, int handle);
+  (HRESULT res, Ladder* list, int totalCount, long timeStamp, int keyRung)
+      override;
+  STDMETHOD(OnPing)(HRESULT res, int time, unsigned long ip,
+                    int handle) override;
 
   void DeleteLadderList();  //	Deletes from heap all users pointed to through
                             // pUserList.
@@ -318,7 +303,7 @@ class RANetUtilEventSink :
   WolapiObject* pOwner;  //	Link back to the object that contains me.
 
  private:
-  long m_cRef;  // Reference Count
+  std::atomic<int> m_cRef;  // Reference count.
 };
 
 //***********************************************************************************************
@@ -344,5 +329,3 @@ class RANetUtilEventSink :
 #define LADDER_CODE_AM 500
 
 #endif  // CNC_RED_ALERT_RA_RAWOLAPI_H_
-
-#endif

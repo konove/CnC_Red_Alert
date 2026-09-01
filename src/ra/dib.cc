@@ -1,7 +1,10 @@
 #include "ra/dib.h"
 
+#include <array>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
+#include <limits>
 #include <optional>
 #include <span>
 
@@ -20,7 +23,7 @@ constexpr base::ssize kInfoHeaderSize = 40;
 constexpr std::uint16_t kBitmapSignature = 0x4D42;  // "BM", little-endian.
 constexpr std::uint16_t kUncompressed = 0;
 constexpr int kPalettisedBitCount = 8;
-constexpr base::ssize kMaxColors = 256;
+constexpr base::ssize kMaxColors = kPaletteSize;
 
 std::uint16_t ReadU16(std::span<const std::uint8_t> data, base::ssize offset) {
   return static_cast<std::uint16_t>(
@@ -106,6 +109,48 @@ std::optional<Image> Image::FromBmp(std::span<const std::uint8_t> bmp) {
               static_cast<std::size_t>(needed));
 
   return image;
+}
+
+void RemapToPalette(Image& image, std::span<const Color> target) {
+  if (target.empty()) {
+    return;
+  }
+
+  // The nearest entry in `target` to one of the image's own colours, by the
+  // sum of the per-channel differences. That is the metric the game's own
+  // PaletteClass::Closest_Color uses, and it runs in the palette's 6-bit
+  // space, so the image's 8-bit channels are shifted down to meet it.
+  const auto nearest = [target](const Color& color) {
+    const int red = color.red >> 2U;
+    const int green = color.green >> 2U;
+    const int blue = color.blue >> 2U;
+
+    base::ssize best = 0;
+    int best_difference = std::numeric_limits<int>::max();
+    for (base::ssize i = 0; i < std::ssize(target); ++i) {
+      const int difference = std::abs(red - target[i].red) +
+                             std::abs(green - target[i].green) +
+                             std::abs(blue - target[i].blue);
+      if (difference == 0) {
+        return static_cast<std::uint8_t>(i);
+      }
+      if (difference < best_difference) {
+        best = i;
+        best_difference = difference;
+      }
+    }
+    return static_cast<std::uint8_t>(best);
+  };
+
+  std::array<std::uint8_t, kMaxColors> mapping{};
+  mapping[0] = nearest(Color{});
+  for (base::ssize i = 1; i < std::ssize(image.Colors()); ++i) {
+    mapping[static_cast<std::size_t>(i)] = nearest(image.Colors()[i]);
+  }
+
+  for (std::uint8_t& pixel : image.MutableBits()) {
+    pixel = mapping[pixel];
+  }
 }
 
 }  // namespace dib

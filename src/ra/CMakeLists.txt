@@ -28,6 +28,11 @@ list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/noseqcon.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/number.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/rand.cc"
+        # rawolapi.cc compiles clean under the strict checks, but cannot link
+        # yet: it calls ten functions that wolapiob.cc, wol_gsup.cc and
+        # wol_dnld.cc define, and those three are still guarded out. Remove
+        # this line together with their guards.
+        "${CMAKE_CURRENT_SOURCE_DIR}/rawolapi.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/seqconn.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/stub.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/surface.cc"
@@ -115,6 +120,17 @@ target_link_libraries(rasdl PUBLIC absl::strings PRIVATE
         absl::status
         absl::statusor
         absl::str_format) # mpgdll wwipx32
+
+#	The Westwood Online event sinks. They compile clean under the strict
+#	checks but cannot be linked into rasdl yet: they call ten functions that
+#	wolapiob.cc, wol_gsup.cc and wol_dnld.cc define, and those three are still
+#	guarded out. An object library builds them -- so clang-tidy, IWYU and
+#	-Weverything keep reading them -- without anything having to link the
+#	result. Fold these sources back into rasdl once those guards come off.
+add_library(ra_wol_unlinked OBJECT rawolapi.cc)
+target_compile_definitions(ra_wol_unlinked PRIVATE ENGLISH=1 PORTABLE=1)
+target_link_libraries(ra_wol_unlinked PRIVATE tech port sdllib vqa32
+        absl::check absl::log absl::strings)
 
 install(TARGETS rasdl)
 

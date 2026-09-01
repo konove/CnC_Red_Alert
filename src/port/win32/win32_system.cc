@@ -4,6 +4,7 @@
 
 #include <cstring>
 #include <filesystem>
+#include <string>
 #include <string_view>
 #include <system_error>
 
@@ -110,3 +111,34 @@ HWND GetTopWindow(HWND /*parent*/) { return nullptr; }
 DWORD GetLastError() { return 0; }
 
 #endif  // _WIN32
+
+DWORD GetCurrentDirectory(DWORD buffer_length, LPSTR buffer) {
+  if (buffer == nullptr || buffer_length == 0) {
+    return 0;
+  }
+  std::error_code failed;
+  const std::string path = std::filesystem::current_path(failed).string();
+  if (failed || path.size() + 1 > buffer_length) {
+    return 0;
+  }
+  std::memcpy(buffer, path.c_str(), path.size() + 1);
+  return static_cast<DWORD>(path.size());
+}
+
+BOOL CreateDirectory(LPCSTR path_name, void* /*security*/) {
+  if (path_name == nullptr) {
+    return FALSE;
+  }
+  std::error_code failed;
+  const bool created = std::filesystem::create_directory(path_name, failed);
+  return created && !failed ? TRUE : FALSE;
+}
+
+BOOL SetCurrentDirectory(LPCSTR path_name) {
+  if (path_name == nullptr) {
+    return FALSE;
+  }
+  std::error_code failed;
+  std::filesystem::current_path(path_name, failed);
+  return failed ? FALSE : TRUE;
+}

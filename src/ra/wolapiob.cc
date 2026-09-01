@@ -309,10 +309,10 @@ void WolapiObject::UnsetupCOMStuff() {
   //	debugprint( "QueryInterface\n" );
   hRes =
       pChat->QueryInterface(IID_IConnectionPointContainer, (void**)&pContainer);
-  _ASSERTE(SUCCEEDED(hRes));
+  DCHECK(SUCCEEDED(hRes));
   //	debugprint( "FindConnectionPoint\n" );
   hRes = pContainer->FindConnectionPoint(IID_IChatEvent, &pConnectionPoint);
-  _ASSERTE(SUCCEEDED(hRes));
+  DCHECK(SUCCEEDED(hRes));
   //	debugprint( "Unadvise: %i\n", dwChatAdvise );
   pConnectionPoint->Unadvise(dwChatAdvise);
 
@@ -324,10 +324,10 @@ void WolapiObject::UnsetupCOMStuff() {
   //	debugprint( "QueryInterface\n" );
   hRes = pNetUtil->QueryInterface(IID_IConnectionPointContainer,
                                   (void**)&pContainer);
-  _ASSERTE(SUCCEEDED(hRes));
+  DCHECK(SUCCEEDED(hRes));
   //	debugprint( "FindConnectionPoint\n" );
   hRes = pContainer->FindConnectionPoint(IID_INetUtilEvent, &pConnectionPoint);
-  _ASSERTE(SUCCEEDED(hRes));
+  DCHECK(SUCCEEDED(hRes));
   //	debugprint( "Unadvise: %i\n", dwNetUtilAdvise );
   pConnectionPoint->Unadvise(dwNetUtilAdvise);
 

@@ -16,8 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if WOLAPI_INTEGRATION
-
 //	WolapiOb.h
 //	ajw 07/10/98
 
@@ -30,13 +28,18 @@
 #ifndef CNC_RED_ALERT_RA_WOLAPIOB_H_
 #define CNC_RED_ALERT_RA_WOLAPIOB_H_
 
-#include "IconList.h"
-#include "RAWolapi.h"
-#include "ra/dibapi.h"
+#include <array>
+#include <optional>
+#include <span>
+
+#include "ra/dib.h"
+#include "ra/iconlist.h"
+#include "ra/rawolapi.h"
 
 //***********************************************************************************************
 class IconListClass;
 class WOL_GameSetupDialog;
+class StaticButtonClass;
 class ToolTipClass;
 
 #define PUMPSLEEPDURATION \
@@ -95,8 +98,10 @@ struct WOL_GAMETYPEINFO {
   int iGameType;
   char szName[128];
   char szURL[256];
-  HDIB hDIB;         //	DIB handle.
-  const char* pDIB;  //	What you get when you GlobalLock hDIB.
+  //	The icon for this game type, once downloaded. Was a GlobalAlloc handle
+  //	plus the pointer you got by locking it; the image owns its own memory
+  //	now, and empty means the download has not happened or did not work.
+  std::optional<dib::Image> Icon;
 };
 
 //	Header values for game options messages. Note that 0 is not used!
@@ -136,8 +141,7 @@ enum DIBICON {
 
 struct DIBICONINFO {
   char szFile[50];
-  HDIB hDIB;
-  const char* pDIB;
+  std::optional<dib::Image> Icon;
 };
 
 //	See SaveChat()...
@@ -172,14 +176,21 @@ struct CREATEGAMEINFO {
 };
 
 //***********************************************************************************************
-HPALETTE GetCurrentScreenPalette();
-void RemapDIBToPalette(
-    HPALETTE hPal,
-    const char* pDIB);  //	Note: pDIB is treated as non-const.
+// The palette the screen is showing, in the form dib::RemapToPalette wants.
+// This replaces GetCurrentScreenPalette(), which asked DirectDraw for the
+// surface palette and built a GDI HPALETTE from it -- the only DirectDraw call
+// left anywhere in the tree.
+std::array<dib::Color, dib::kPaletteSize> CurrentScreenPalette();
 // char*		LoadFileIntoMemory( const char* szFileName, int& iLength
 // );
 
 //***********************************************************************************************
+// The fields below are grouped by what they are for -- the three interfaces
+// and their sinks, the server addresses, the chat dialog's gadgets -- rather
+// than by size, which costs 37 bytes of padding. Exactly one of these exists
+// while the player is connected, so reordering ~100 fields to save those bytes
+// would trade a readable class for nothing measurable.
+// NOLINTNEXTLINE(clang-analyzer-optin.performance.Padding)
 class WolapiObject {
  public:
   WolapiObject();
@@ -324,7 +335,6 @@ class WolapiObject {
   WOL_GAMETYPEINFO OldRAGameTypeInfos[3];  //	Used for storing old red alert
                                            // icons only.
 
- public:
   bool bLoggedIn();
 
   void LinkToChatDlg(IconListClass* pILChat, IconListClass* pILChannels,
@@ -433,12 +443,11 @@ class WolapiObject {
 
  protected:
   void GetGameTypeInfo(int iGameType, WOL_GAMETYPEINFO& GameTypeInfo,
-                       HPALETTE hPal);
+                       std::span<const dib::Color> palette);
   void* IconForGameType(int iGameType);
   const char* NameOfGameType(int iGameType) const;
   const char* URLForGameType(int iGameType) const;
 
- protected:
   //	Used by the general chat dialog.
   IconListClass* pILChat;      //	Main messages list.
   IconListClass* pILChannels;  //	Channels list.
@@ -461,5 +470,3 @@ class WolapiObject {
 };
 
 #endif  // CNC_RED_ALERT_RA_WOLAPIOB_H_
-
-#endif

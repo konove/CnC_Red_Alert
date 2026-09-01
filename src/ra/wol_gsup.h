@@ -19,8 +19,6 @@
 #ifndef CNC_RED_ALERT_RA_WOL_GSUP_H_
 #define CNC_RED_ALERT_RA_WOL_GSUP_H_
 
-#if WOLAPI_INTEGRATION
-
 //	wol_gsup.h			"WOL Game Setup Dialog"
 //	ajw 08/06/98
 
@@ -32,7 +30,8 @@
 // class that would handle common input behavior and so forth (one that this
 // class could derive from) 	wasn't written 5 years ago, I don't know...
 
-#include "WolapiOb.h"
+#include "ra/session.h"
+#include "ra/wolapiob.h"
 // class WolapiObject;
 class IconListClass;
 class EditClass;
@@ -71,7 +70,6 @@ class WOL_GameSetupDialog {
 
   RESULT_WOLGSUP Run();
 
- public:
   bool bHost;  //	True when I created the game channel and am the host.
 
   bool bHostSayGo;  //	Trigger host instructing all to start game immediately.
@@ -373,7 +371,5 @@ class WOL_GameSetupDialog {
 
   RedrawType display;
 };
-
-#endif
 
 #endif  // CNC_RED_ALERT_RA_WOL_GSUP_H_

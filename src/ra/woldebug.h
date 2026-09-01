@@ -19,22 +19,18 @@
 #ifndef CNC_RED_ALERT_RA_WOLDEBUG_H_
 #define CNC_RED_ALERT_RA_WOLDEBUG_H_
 
-#if 0
-
-#define debugprogress
-#define _ASSERTE(x)
-
-#else
-
-#define debugprint OutputDebugString
-
-// #define _DEBUG
-// #include "w95trace.h"
-
-#define debugprogress debugprint("...%s: %i\n", __FILE__, __LINE__)
-#define _ASSERTE(x) \
-  if (!(x)) debugprint("ASSERT FALSE!\n");
-
-#endif
+// Where the Westwood Online code sends its tracing.
+//
+// This was `#define debugprint OutputDebugString`, which never matched its
+// call sites: every one of them passes printf-style arguments to what is a
+// one-argument Win32 function. That went unnoticed because all ~325 calls are
+// commented out -- ajw left the tracing in the source but out of the build.
+//
+// A variadic no-op keeps them that way while making the arguments type-check
+// if any are ever uncommented, which the macro never did. Real logging in this
+// tree goes through DLOG (see CLAUDE.md); this exists so the historical calls
+// still mean something when read.
+template <typename... Args>
+inline void debugprint(const char* /*format*/, Args&&... /*args*/) {}
 
 #endif  // CNC_RED_ALERT_RA_WOLDEBUG_H_

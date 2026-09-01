@@ -1,6 +1,7 @@
 #include "port/win32/win32_system.h"
 
 #include <cstdio>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -100,6 +101,53 @@ TEST(Win32SystemTest, CreateProcessFailsAndClearsItsOutParameter) {
                           nullptr, &startup, &process),
             FALSE);
   EXPECT_EQ(process.hProcess, nullptr);
+}
+
+TEST(Win32SystemTest, TheWorkingDirectoryCanBeReadAndChanged) {
+  char before[MAX_PATH] = {};
+  const DWORD length = GetCurrentDirectory(sizeof(before), before);
+  ASSERT_GT(length, 0U);
+  EXPECT_EQ(std::strlen(before), length) << "the length excludes the null";
+  EXPECT_EQ(std::filesystem::path(before), std::filesystem::current_path());
+
+  const std::filesystem::path temp = std::filesystem::temp_directory_path();
+  ASSERT_EQ(SetCurrentDirectory(temp.c_str()), TRUE);
+  EXPECT_EQ(std::filesystem::current_path(), std::filesystem::canonical(temp));
+
+  ASSERT_EQ(SetCurrentDirectory(before), TRUE);
+  EXPECT_EQ(std::filesystem::path(before), std::filesystem::current_path());
+}
+
+TEST(Win32SystemTest, TheWorkingDirectoryReportsFailureRatherThanTruncating) {
+  char tiny[2] = {'x', 'x'};
+  EXPECT_EQ(GetCurrentDirectory(sizeof(tiny), tiny), 0U);
+  EXPECT_EQ(tiny[0], 'x') << "a failed read must not touch the buffer";
+
+  EXPECT_EQ(GetCurrentDirectory(0, tiny), 0U);
+  EXPECT_EQ(GetCurrentDirectory(sizeof(tiny), nullptr), 0U);
+
+  EXPECT_EQ(SetCurrentDirectory("no_such_directory_at_all"), FALSE);
+  EXPECT_EQ(SetCurrentDirectory(nullptr), FALSE);
+}
+
+TEST(Win32SystemTest, CreateDirectoryMakesOneLevelOnly) {
+  const std::filesystem::path root =
+      std::filesystem::temp_directory_path() / "win32_create_dir_test";
+  std::error_code ignored;
+  std::filesystem::remove_all(root, ignored);
+
+  EXPECT_EQ(CreateDirectory(root.c_str(), nullptr), TRUE);
+  EXPECT_TRUE(std::filesystem::is_directory(root));
+
+  EXPECT_EQ(CreateDirectory(root.c_str(), nullptr), FALSE)
+      << "an existing directory is a failure, as on Windows";
+
+  const std::filesystem::path deep = root / "a" / "b";
+  EXPECT_EQ(CreateDirectory(deep.c_str(), nullptr), FALSE)
+      << "this is not mkdir -p";
+
+  EXPECT_EQ(CreateDirectory(nullptr, nullptr), FALSE);
+  std::filesystem::remove_all(root, ignored);
 }
 
 TEST(Win32RegistryTest, ReadsFailAndLeaveOutputsAlone) {

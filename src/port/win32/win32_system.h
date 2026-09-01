@@ -51,6 +51,22 @@ BOOL FindClose(HANDLE find_file);
 
 BOOL DeleteFile(LPCSTR file_name);
 
+// The process's working directory, written into `buffer` with a null
+// terminator. Returns the length written, or 0 if it does not fit or cannot
+// be read -- the Win32 contract, minus the "return the size needed" case,
+// which no caller here uses.
+DWORD GetCurrentDirectory(DWORD buffer_length, LPSTR buffer);
+
+// Changes the working directory. Returns FALSE if the path is not a directory
+// this process can enter.
+BOOL SetCurrentDirectory(LPCSTR path_name);
+
+// Creates one directory. Returns FALSE if it already exists or if any parent
+// of it does not -- the Win32 behaviour, not mkdir -p. `security` is the
+// SECURITY_ATTRIBUTES argument every caller here passes as null; it is
+// accepted so the call sites read as they always did, and ignored.
+BOOL CreateDirectory(LPCSTR path_name, void* security);
+
 // -- Shell ------------------------------------------------------------------
 
 inline constexpr int SW_SHOWMINIMIZED = 2;

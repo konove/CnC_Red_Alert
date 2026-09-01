@@ -578,7 +578,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //	(I may have already received my assigned color from the game host.)
   int iItem = pILPlayers->Find(
       pWO->szMyName);  //	(I must be in the list I just got.)
-  _ASSERTE(iItem != -1);
+  DCHECK(iItem != -1);
   RemapControlType* pColorRemap = pILPlayers->Get_Item_Color(iItem);
   PlayerColorType Color = PlayerColorTypeOf(pColorRemap);
 
@@ -2926,7 +2926,7 @@ bool WOL_GameSetupDialog::RequestPlayerColor(PlayerColorType Color) {
   //	2	color
   sprintf(szSend, "%02u %02u", WOL_GAMEOPT_REQCOLOR, Color);
 
-  _ASSERTE(pWO->pGameHost());
+  DCHECK(pWO->pGameHost());
 
   return pWO->SendGameOpt(szSend, pWO->pGameHost());
 }
@@ -3513,7 +3513,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   }
 
   //	Add myself to Session.Players list.
-  _ASSERTE(pILPlayers->Find(pWO->szMyName) != -1);
+  DCHECK(pILPlayers->Find(pWO->szMyName) != -1);
 
   NodeNameType* pPlayerNew = new NodeNameType;
   strcpy(pPlayerNew->Name, pWO->szMyName);  //	"Name" is 12 chars max.
@@ -3699,7 +3699,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       // above.)
       Session.Options.ScenarioIndex =
           ScenarioIndex_From_Filename(Session.ScenarioFileName);
-      _ASSERTE(Session.Options.ScenarioIndex != -1);
+      DCHECK(Session.Options.ScenarioIndex != -1);
       Scen.Scenario = Session.Options.ScenarioIndex;
       //			debugprint( "Scen.Scenario = %i\n",
       // Scen.Scenario );
