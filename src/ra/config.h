@@ -44,22 +44,15 @@ inline constexpr bool kCheatKeysEnabled = kInternalVersion || kPlaytestVersion;
 // cheat keys).
 inline constexpr bool kVirginCheatKeysEnabled = kPlaytestVersion;
 
-// Network service providers (migrated from MPATH and TEN macros in
-// defines.h:249,255) IMPORTANT: Only one of these can be enabled (non-zero) at
-// a time
+// Network service providers.
+// MPath (Mplayer) is still fed by the MPATH macro in defines.h, since its
+// client code still sits behind #if (MPATH).
 inline constexpr bool kMPathEnabled = MPATH != 0;
-inline constexpr bool kTenEnabled = TEN != 0;
-// Westwood Online. Unlike MPATH and TEN above this is not fed by a macro:
-// nothing preprocesses it any more, so there is nothing for a #define to do.
-// The code it selects is compiled and type-checked either way; turning it on
-// would only make it reachable, and the servers it dials have been gone for
-// two decades.
+// Westwood Online. Unlike MPATH above this is not fed by a macro: nothing
+// preprocesses it any more, so there is nothing for a #define to do. The code
+// it selects is compiled and type-checked either way; turning it on would only
+// make it reachable, and the servers it dials have been gone for two decades.
 inline constexpr bool kWolapiEnabled = false;
-
-// Compile-time assertion to ensure MPATH and TEN are mutually exclusive
-static_assert(!(kMPathEnabled && kTenEnabled),
-              "MPATH and TEN cannot both be enabled - only one network service "
-              "can be active");
 
 // Build language
 enum class BuildLanguage { English, German, French };

@@ -216,16 +216,9 @@
 #define TIMING_FIX 1
 
 /**********************************************************************
-** Define this to 1 to enable MPath-specific code.  Do not define
-** TEN at the same time.
+** Define this to 1 to enable MPath-specific code.
 */
 #define MPATH 0
-
-/**********************************************************************
-** Define this to 1 to enable TEN-specific code.  Do not define
-** MPATH at the same time.
-*/
-#define TEN 0
 
 /**********************************************************************
 **	This define tells the Version Number class to use the date/time-based
@@ -260,13 +253,6 @@
 // Allow normal game play in the MPath version
 //
 #if (MPATH)
-#define PARM_ALLOW_SOLO long(0xc901c9db)  // AllowSoloPlayOptions
-#endif
-
-//
-// Allow normal game play in the TEN version
-//
-#if (TEN)
 #define PARM_ALLOW_SOLO long(0xc901c9db)  // AllowSoloPlayOptions
 #endif
 
