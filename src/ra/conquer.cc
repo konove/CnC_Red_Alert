@@ -129,7 +129,7 @@
 
 extern WolapiObject* pWolapi;
 
-//	The key that answers a page from a Westwood Online user outside the
+// The key that answers a page from a Westwood Online user outside the
 // game.
 constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
 
@@ -171,23 +171,23 @@ static void Color_Cycle() {
   if (Options.IsPaletteScroll) {
     bool changed = false;
     // Process the fading white color. It is used for the radar box and other
-    // glowing *	game interface elements.
+    // glowing game interface elements.
     if (_ftimer.IsFinished()) {
       _ftimer.Set(kTimerSecond / 6);
 
-// Six steps of 20 carry the pulse across its 0x20..150 range, so a full
-// cycle takes about two seconds at the timer rate set above. The range stops
-// short of both black and full white: the glow has to stay legible at its
-// dimmest and stay distinct from plain white at its brightest.
-#define STEP_RATE 20
+      // Six steps of 20 carry the pulse across its 0x20..150 range, so a full
+      // cycle takes about two seconds at the timer rate set above. The range
+      // stops short of both black and full white: the glow has to stay legible
+      // at its dimmest and stay distinct from plain white at its brightest.
+      constexpr int kStepRate = 20;
       if (_up) {
-        val += STEP_RATE;
+        val += kStepRate;
         if (val > 150) {
           val = 150;
           _up = false;
         }
       } else {
-        val -= STEP_RATE;
+        val -= kStepRate;
         if (val < 0x20) {
           val = 0x20;
           _up = true;
@@ -195,7 +195,7 @@ static void Color_Cycle() {
       }
 
       // Set the pulse color as the proportional value between white and
-      // the *	minimum value for pulsing.
+      // the minimum value for pulsing.
       InGamePalette[CC_PULSE_COLOR] = GamePalette[WHITE];
       InGamePalette[CC_PULSE_COLOR].Adjust(val, kBlackColor);
 
@@ -221,7 +221,7 @@ static void Color_Cycle() {
     }
 
     // If any of the processing functions changed the palette, then this
-    // palette must be *	passed to the system.
+    // palette must be passed to the system.
     if (changed) {
       BStart(BENCH_PALETTE);
       InGamePalette.Set();
@@ -591,7 +591,7 @@ static void Message_Input(KeyNumType& input) {
                !Session.Messages.Is_Edit()) {
       // For a network game:
       // F1-F7 = "To <name> (house):" (only allowed if we're not in
-      // ObiWan mode) *	F8 = "To All:"
+      // ObiWan mode) F8 = "To All:"
       if (input == KN_F1 + Session.MaxPlayers - 1) {
         Session.MessageAddress = IPXAddressClass();    // set to broadcast
         port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
@@ -698,7 +698,7 @@ static void Message_Input(KeyNumType& input) {
       Map.Flag_To_Redraw(true);
       if constexpr (config::kWolapiEnabled) {
         if (pWolapi) {
-          //	Just in case user was responding to a page from outside the
+          // Just in case user was responding to a page from outside the
           // game, and we had frozen the "szExternalPager".
           pWolapi->bFreezeExternalPager = false;
         }
@@ -749,9 +749,9 @@ static void Message_Input(KeyNumType& input) {
       port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
     } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
       if constexpr (config::kWolapiEnabled) {
-        //	An all-zero address is the flag Start_External_Page_Reply set,
-        //	meaning "this is a reply to whoever paged me from outside the
-        //	game". No F-key ever produces that address.
+        // An all-zero address is the flag Start_External_Page_Reply set,
+        // meaning "this is a reply to whoever paged me from outside the
+        // game". No F-key ever produces that address.
         NetNumType blip;
         NetNodeType blop;
         Session.MessageAddress.Get_Address(blip, blop);
@@ -760,10 +760,10 @@ static void Message_Input(KeyNumType& input) {
                 blop[2] + blop[3] + blop[4] + blop[5] ==
             0;
         if (reply_to_external_page) {
-          //	(As connection may have gone down.)
+          // (As connection may have gone down.)
           if (pWolapi && !pWolapi->bConnectionDown) {
-            //	The HRESULT carries nothing here: asked not to wait for a
-            //	result, Page returns 0 whether or not the request went out.
+            // The HRESULT carries nothing here: asked not to wait for a
+            // result, Page returns 0 whether or not the request went out.
             static_cast<void>(pWolapi->Page(pWolapi->szExternalPager,
                                             Session.Messages.Get_Edit_Buf(),
                                             false));
@@ -1065,7 +1065,7 @@ void Main_Game(const int argc, char* argv[]) {
 
     // Send the game stats to WChat if we haven't already done so
     if (!GameStatisticsPacketSent && PacketLater) {
-      Send_Statistics_Packet();  //	After game sending if PacketLater set.
+      Send_Statistics_Packet();  // After game sending if PacketLater set.
     }
 
     // Scenario is done; fade palette to black
@@ -1120,9 +1120,9 @@ void Main_Game(const int argc, char* argv[]) {
       Session.Type = GAME_NORMAL;
       Session.Play = 0;
     }
-    //	The pre-Westwood-Online path: WChat launched us and is waiting.
-    //	Westwood Online replaced WChat as the launcher, so the two are
-    //	mutually exclusive -- this hand-back only exists in a build without it.
+    // The pre-Westwood-Online path: WChat launched us and is waiting.
+    // Westwood Online replaced WChat as the launcher, so the two are
+    // mutually exclusive -- this hand-back only exists in a build without it.
     if constexpr (!config::kWolapiEnabled) {
       if (Special.IsFromWChat) {
         Shutdown_Network();  // Clear up the pseudo IPX stuff
@@ -1167,7 +1167,7 @@ void Keyboard_Process(KeyNumType& input) {
   Message_Input(input);
 
   // The VK_BIT must be stripped from the "plain" value of the key so that a
-  // comparison to *	KN_1, for example, will yield true if in fact the "1"
+  // comparison to KN_1, for example, will yield true if in fact the "1"
   // key was pressed.
 
   constexpr unsigned kModifierBits =
@@ -1571,24 +1571,24 @@ void Call_Back() {
           Pump_Wolapi_Messages();
           pWolapi->dwTimeNextWolapiPump =
               Get_Time_Ms() + WOLAPIPUMPWAIT +
-              700;  //	Slower pump during games.
+              700;  // Slower pump during games.
           if (pWolapi->bConnectionDown) {
-            //	Connection to server lost.
+            // Connection to server lost.
             Session.Messages.Add_Message(
                 nullptr, 0, TXT_WOL_WOLAPIGONE, PCOLOR_GOLD,
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                 Rule.MessageDelay * kTicksPerMinute);
             Sound_Effect(WOLSOUND_LOGOUT);
-            //	ajw (Wolapi object is now left around, so we can try to send
+            // ajw (Wolapi object is now left around, so we can try to send
             // game results.)
-            //					//	Kill wolapi.
-            //					pWolapi->UnsetupCOMStuff();
-            //					delete pWolapi;
-            //					pWolapi = nullptr;
+            //  // Kill wolapi.
+            //  pWolapi->UnsetupCOMStuff();
+            //  delete pWolapi;
+            //  pWolapi = nullptr;
           }
         }
       } else {
-        //	When showing a modal dialog during chat, this pumping is turned
+        // When showing a modal dialog during chat, this pumping is turned
         // on. It's turned off immediately following.
         if (pWolapi->bPump_In_Call_Back &&
             Get_Time_Ms() > pWolapi->dwTimeNextWolapiPump) {
@@ -1670,7 +1670,7 @@ void IPX_Call_Back() {
               }
 
               // Tell the map to do a partial update (just to force the
-              // messages *	to redraw).
+              // messages to redraw).
               Map.Flag_To_Redraw(true);
 
               // Save this message in our last-message buffer
@@ -1693,9 +1693,9 @@ void TEN_Call_Back() {
 
   if (Ten->Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                               &Session.TenAddress)) {
-    //	If this is another player signing off, remove the connection &
-    //	mark that player's house as non-human, so the computer will take
-    //	it over.
+    // If this is another player signing off, remove the connection &
+    // mark that player's house as non-human, so the computer will take
+    // it over.
     if (Session.GPacket.Command == NET_SIGN_OFF) {
       for (int i = 0; i < Ten->Num_Connections(); i++) {
         id = Ten->Connection_ID(i);
@@ -1706,7 +1706,7 @@ void TEN_Call_Back() {
       }
     }
 
-    //	Process a message from another user.
+    // Process a message from another user.
     else if (Session.GPacket.Command == NET_MESSAGE) {
       if (!Session.Messages.Concat_Message(
               Session.GPacket.Name, Session.GPacket.Message.Color,
@@ -1740,9 +1740,9 @@ void MPATH_Call_Back() {
 
   if (MPath->Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                                 &Session.MPathAddress)) {
-    //	If this is another player signing off, remove the connection &
-    //	mark that player's house as non-human, so the computer will take
-    //	it over.
+    // If this is another player signing off, remove the connection &
+    // mark that player's house as non-human, so the computer will take
+    // it over.
     if (Session.GPacket.Command == NET_SIGN_OFF) {
       for (int i = 0; i < MPath->Num_Connections(); i++) {
         id = MPath->Connection_ID(i);
@@ -1753,7 +1753,7 @@ void MPATH_Call_Back() {
       }
     }
 
-    //	Process a message from another user.
+    // Process a message from another user.
     else if (Session.GPacket.Command == NET_MESSAGE) {
       if (!Session.Messages.Concat_Message(
               Session.GPacket.Name, Session.GPacket.Message.Color,
@@ -1871,7 +1871,7 @@ static void Sync_Delay() {
   SpareTicks += FrameTimer.Value();
 
   // Delay until the frame timer expires. This forces the game loop to be
-  // regulated to a *	speed controlled by the game options slider.
+  // regulated to a speed controlled by the game options slider.
   while (FrameTimer.HasTimeLeft()) {
     Color_Cycle();
     Call_Back();
@@ -1932,7 +1932,7 @@ bool Main_Loop() {
   BStart(BENCH_GAME_FRAME);
 
   // If there is no theme playing, but it looks like one is required, then
-  // start one *	playing. This is usually the symptom of there being no
+  // start one playing. This is usually the symptom of there being no
   // transition score.
   if (SampleType && Theme.What_Is_Playing() == THEME_NONE) {
     Theme.Queue_Song(THEME_PICK_ANOTHER);
@@ -1948,7 +1948,7 @@ bool Main_Loop() {
     } else {
       if (!Session.DesiredFrameRate) {
         Session.DesiredFrameRate =
-            60;  //	A division by zero was happening (very rare).
+            60;  // A division by zero was happening (very rare).
       }
       const int frame_delay = kTimerSecond / Session.DesiredFrameRate;
       FrameTimer.Set(frame_delay);
@@ -2005,7 +2005,7 @@ bool Main_Loop() {
   }
 
   // Manage the inter-player message list.  If Manage() returns true, it
-  // means *	a message has expired & been removed, and the entire map must be
+  // means a message has expired & been removed, and the entire map must be
   // updated.
   if (Session.Messages.Manage()) {
     HiddenPage.Clear();
@@ -2032,7 +2032,7 @@ bool Main_Loop() {
     // Send the game statistics to WChat.
     if (Session.Type == GAME_INTERNET && !GameStatisticsPacketSent) {
       Register_Game_End_Time();
-      Send_Statistics_Packet();  //	Player just won.
+      Send_Statistics_Packet();  // Player just won.
     }
 
     WWMouse->Erase_Mouse(&HidPage, true);
@@ -2047,7 +2047,7 @@ bool Main_Loop() {
     // Send the game statistics to WChat.
     if (Session.Type == GAME_INTERNET && !GameStatisticsPacketSent) {
       Register_Game_End_Time();
-      Send_Statistics_Packet();  //	Player just lost.
+      Send_Statistics_Packet();  // Player just lost.
     }
 
     WWMouse->Erase_Mouse(&HidPage, true);
@@ -2071,7 +2071,7 @@ bool Main_Loop() {
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       Session.Players.Count() == 2 && Scen.bLocalProposesDraw &&
       Scen.bOtherProposesDraw) {
-    //	End game in a draw.
+    // End game in a draw.
     if (Session.Type == GAME_INTERNET && !GameStatisticsPacketSent) {
       Register_Game_End_Time();
       Send_Statistics_Packet();
@@ -2994,13 +2994,13 @@ void Handle_Team(const int team, const int action) {
   AllowVoice = true;
   switch (action) {
     // Toggle the team selection. If the team is selected, then merely unselect
-    // it. If the *	team is not selected, then unselect all others before
+    // it. If the team is not selected, then unselect all others before
     // selecting this team.
     case 3:
     case 0:
 
       // If a non team member is currently selected, then deselect all
-      // objects *	before selecting this team.
+      // objects before selecting this team.
       if (CurrentObject.Count()) {
         if (CurrentObject[0]->Is_Foot() &&
             dynamic_cast<FootClass*>(CurrentObject[0])->Group != team) {
@@ -3367,7 +3367,7 @@ constexpr int kDvdName = 4;
 #error DVD must be defined!
 #endif
 
-bool Force_CD_Available(int cd_desired)  //	ajw
+bool Force_CD_Available(int cd_desired)  // ajw
 {
   static int _last = -1;
   static const void* font;
@@ -3751,7 +3751,7 @@ const char* Game_Registry_Key() {
 // content is simply assumed to be present.
 bool Is_Counterstrike_Installed() {
 #ifdef _WIN32
-  //	ajw 9/29/98
+  // ajw 9/29/98
   static bool bAlreadyChecked = false;
   static bool bInstalled = false;
 
@@ -3767,7 +3767,7 @@ bool Is_Counterstrike_Installed() {
                         &dwBufSize) != ERROR_SUCCESS) {
       bInstalled = false;
     } else {
-      bInstalled = (bool)dwValue;  //	(Presumably true, if it's there...)
+      bInstalled = (bool)dwValue;  // (Presumably true, if it's there...)
     }
 
     RegCloseKey(hKey);
@@ -3786,7 +3786,7 @@ bool Is_Counterstrike_Installed() {
 // Is_Counterstrike_Installed() above; this works the same way.
 bool Is_Aftermath_Installed() {
 #ifdef _WIN32
-  //	ajw 9/29/98
+  // ajw 9/29/98
   static bool bAlreadyChecked = false;
   static bool bInstalled = false;
 
@@ -3802,7 +3802,7 @@ bool Is_Aftermath_Installed() {
                         (LPBYTE)&dwValue, &dwBufSize) != ERROR_SUCCESS) {
       bInstalled = false;
     } else {
-      bInstalled = (bool)dwValue;  //	(Presumably true, if it's there...)
+      bInstalled = (bool)dwValue;  // (Presumably true, if it's there...)
     }
 
     RegCloseKey(hKey);
@@ -3819,12 +3819,12 @@ bool Is_Aftermath_Installed() {
 
 void Enable_Secret_Units() {
 #if 0
-	SecretUnitsEnabled=true;
-	UnitTypeClass::As_Reference(UNIT_PHASE).Level=10;
-	VesselTypeClass::As_Reference(VESSEL_CARRIER).Level=10;
-	for (int index = 0; index < Buildings.Count(); index++) {
-		Buildings.Ptr(index)->Update_Buildables();
-	}
+  SecretUnitsEnabled=true;
+  UnitTypeClass::As_Reference(UNIT_PHASE).Level=10;
+  VesselTypeClass::As_Reference(VESSEL_CARRIER).Level=10;
+  for (int index = 0; index < Buildings.Count(); index++) {
+    Buildings.Ptr(index)->Update_Buildables();
+  }
 #endif
 }
 
