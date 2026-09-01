@@ -184,8 +184,6 @@ void* PacketLater = nullptr;
 #include "ra/config.h"
 #include "ra/wolapiob.h"
 
-extern bool bReconnectDialogCancelled;
-
 /***********************************************************************************************
  * Send_Statistics_To_Server -- sends internet game statistics to the Westeood
  *server          *

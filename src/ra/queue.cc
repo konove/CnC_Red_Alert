@@ -149,8 +149,6 @@
 #include "ra/config.h"
 #include "ra/wolapiob.h"
 
-bool bReconnectDialogCancelled;
-
 /********************************** Defines *********************************/
 #define SHOW_MONO 0
 

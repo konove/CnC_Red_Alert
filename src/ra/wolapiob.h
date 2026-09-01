@@ -515,4 +515,9 @@ class WolapiObject {
 // can still be sent.
 inline WolapiObject* pWolapi = nullptr;
 
+// Set when the player dismisses the waiting-to-reconnect dialog during an
+// Internet game. Cancelling counts as a forfeit, so the game results the
+// stats code sends afterwards report this player as the one who quit.
+inline bool bReconnectDialogCancelled = false;
+
 #endif  // CNC_RED_ALERT_RA_WOLAPIOB_H_

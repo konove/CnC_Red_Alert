@@ -191,9 +191,8 @@ bool Load_Recording_Values(CCFileClass& file);
 bool Save_Recording_Values(CCFileClass& file);
 
 #include "ra/config.h"
+#include "ra/wol_main.h"
 #include "ra/wolapiob.h"
-
-extern int WOL_Main();
 
 bool Expansion_Dialog(bool bCounterstrike);
 

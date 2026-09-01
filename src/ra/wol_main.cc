@@ -19,6 +19,8 @@
 //	Wol_Main.cpp - Bottom level wolapi-stuff function.
 //	ajw 07/16/98
 
+#include "ra/wol_main.h"
+
 #include "ra/wol_gsup.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
