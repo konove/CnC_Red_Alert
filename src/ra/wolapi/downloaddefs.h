@@ -19,6 +19,9 @@
 #ifndef CNC_RED_ALERT_RA_WOLAPI_DOWNLOADDEFS_H_
 #define CNC_RED_ALERT_RA_WOLAPI_DOWNLOADDEFS_H_
 
+// Every DOWNLOAD_E_* and DOWNLOAD_S_* value is built out of MAKE_HRESULT.
+#include "port/win32/win32_com.h"
+
 // CDownload statuses
 
 #define DOWNLOADSTATUS_NONE 0

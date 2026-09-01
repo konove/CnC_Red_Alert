@@ -19,6 +19,9 @@
 #ifndef CNC_RED_ALERT_RA_WOLAPI_CHATDEFS_H_
 #define CNC_RED_ALERT_RA_WOLAPI_CHATDEFS_H_
 
+// Every CHAT_E_* and CHAT_S_* value is built out of MAKE_HRESULT.
+#include "port/win32/win32_com.h"
+
 //
 // Response errors (Sent as arguments to the OnFoo calls)
 //

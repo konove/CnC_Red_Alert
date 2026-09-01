@@ -19,6 +19,9 @@
 #ifndef CNC_RED_ALERT_RA_WOLAPI_FTPDEFS_H_
 #define CNC_RED_ALERT_RA_WOLAPI_FTPDEFS_H_
 
+// Every FTP_* value is built out of MAKE_HRESULT.
+#include "port/win32/win32_com.h"
+
 // CFtp return codes.
 
 #define FTP_SUCCEEDED S_OK

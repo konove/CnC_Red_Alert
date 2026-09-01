@@ -44,12 +44,11 @@
 // of "Server" as a global in Red Alert. 	ajw - Can't use namespaces in
 // Watcom 10.5 it seems...
 //{
-#include "wolapi\wolapi.h"
-#define IID_DEFINED
+#include "ra/wolapi/wolapi.h"
 // #include "wlib/wdebug.h"
-#include "wolapi\chatdefs.h"
-#include "wolapi\downloaddefs.h"
-#include "wolapi\ftpdefs.h"
+#include "ra/wolapi/chatdefs.h"
+#include "ra/wolapi/downloaddefs.h"
+#include "ra/wolapi/ftpdefs.h"
 //};
 // using namespace WOL;
 #include <winerror.h>

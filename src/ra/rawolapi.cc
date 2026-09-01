@@ -23,13 +23,17 @@
 // RANetUtilEventSink. 	ajw 07/10/98
 
 #include "RAWolapi.h"
-#define IID_DEFINED
+
 #include "WolDebug.h"
 #include "WolStrng.h"
 #include "Wol_gsup.h"
 #include "WolapiOb.h"
-#include "wolapi\netutildefs.h"
-#include "wolapi\wolapi_i.c"
+#include "ra/wolapi/netutildefs.h"
+
+//	The IID and CLSID constants used to be #included here, straight out
+//	of MIDL's wolapi_i.c, because Watcom could not take a C file into
+//	the build. They live in ra/wolapi/wolapi_iids.cc now, and wolapi.h
+//	declares them.
 
 bool operator<(const User& u1, const User& u2);
 

@@ -29,26 +29,26 @@
     error checks: none
 */
 //@@MIDL_FILE_HEADING(  )
+
+// This was wolapi_i.c, MIDL's companion to wolapi.h, textually #included into
+// rawolapi.cc because a C file could not be added to the Watcom build. It is
+// an ordinary translation unit now, which is why the extension changed.
+//
+// Its own IID and CLSID typedefs are gone: they were a fallback for builds
+// with no COM headers, and defining IID as a struct whose first field is
+// `unsigned long` would make it 24 bytes here rather than 16, silently
+// corrupting every constant below. port/win32/win32_com.h supplies the real
+// 16-byte type and defines the two guards this file used to test.
+//
+// Exactly one definition of each constant may exist in the program, so this
+// file must never be #included anywhere.
+
+#include "port/win32/win32_com.h"
+#include "ra/wolapi/wolapi.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef __IID_DEFINED__
-#define __IID_DEFINED__
-
-typedef struct _IID {
-  unsigned long x;
-  unsigned short s1;
-  unsigned short s2;
-  unsigned char c[8];
-} IID;
-
-#endif  // __IID_DEFINED__
-
-#ifndef CLSID_DEFINED
-#define CLSID_DEFINED
-typedef IID CLSID;
-#endif  // CLSID_DEFINED
 
 const IID IID_IRTPatcher = {0x925CDEDE,
                             0x71B9,

@@ -71,7 +71,6 @@ list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/tenmgr.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/turret.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/wolapi/wolapi.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/wspipx.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/wspudp.h"
 )
@@ -131,6 +130,12 @@ add_gtest(
     NAME ra_dib_test
     SOURCES dib_test.cc dib.cc
     LIBS base
+)
+
+add_gtest(
+    NAME ra_wolapi_iids_test
+    SOURCES wolapi/wolapi_iids_test.cc wolapi/wolapi_iids.cc
+    LIBS port
 )
 
 add_gtest(
