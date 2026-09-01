@@ -3763,26 +3763,6 @@ void HouseClass::MPlayer_Defeated() {
       }
       Session.NumPlayers = 0;
     }
-
-#if (MPATH)
-    //
-    // Tell the MPATH server who won
-    //
-    if (Session.Type == GAME_MPATH) {
-      FILE* fp;
-
-      fp = fopen("winner.txt", "wt");
-      if (fp) {
-        for (i = 0; i < Session.Players.Count(); i++) {
-          hptr = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-          if (!hptr->IsDefeated) {
-            fprintf(fp, "%s\n", hptr->IniName);
-          }
-        }
-        fclose(fp);
-      }
-    }
-#endif  // MPATH
   }
 
   /*

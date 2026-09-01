@@ -233,14 +233,6 @@ SessionClass::SessionClass() {
   TrapCheckHeap = 0;             // start checking the Heap
   TrapPrintCRC = 0;              // output CRC file
 
-#if (MPATH)
-  MPathPacket = NULL;
-  MPathSize = 200;
-  OptionsFile[0] = 0;
-  AllowSolo = 0;
-  NetResponseTime = 600;
-#endif  // MPATH
-
 }  // end of SessionClass
 
 /***************************************************************************
@@ -366,61 +358,6 @@ int SessionClass::Create_Connections() {
   return 1;
 
 }  // end of Create_Connections
-
-#if (MPATH)
-/***************************************************************************
- * SessionClass::Create_MPATH_Connections -- forms connections to MPATH players*
- *                                                                         *
- * This routine uses the contents of the Players vector, combined with * that of
- *the Houses array, to create connections to each other player.	* It is assumed
- *that 'Players' contains all the other players to connect	* to, and that
- *the HouseClass's have been filled in with players' data.	*
- *                                                                         *
- * INPUT:                                                                  *
- *		none.
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		1 = success, 0 = failure
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   11/30/1995 BRR : Created.                                             *
- *=========================================================================*/
-int SessionClass::Create_MPATH_Connections() {
-  int i;
-
-  if (Session.Type != GAME_MPATH) {
-    return (0);
-  }
-
-  //------------------------------------------------------------------------
-  // Loop through all entries in 'Players'.  To avoid connecting to myself,
-  // skip the 1st entry.
-  //------------------------------------------------------------------------
-  for (i = 1; i < Players.Count(); i++) {
-    //.....................................................................
-    // Make sure the name matches before creating the connection
-    //.....................................................................
-    if (!stricmp(Players[i]->Name,
-                 HouseClass::As_Pointer(Players[i]->Player.ID)->IniName)) {
-      MPath->Create_Connection((int)Players[i]->Player.ID, Players[i]->Name,
-                               Players[i]->MPathAddress);
-      Players[i]->Player.ProcessTime = -1;
-    } else {
-      return (0);
-    }
-  }
-
-  return (1);
-
-}  // end of Create_MPATH_Connections
-
-#endif  // MPATH
 
 /***************************************************************************
  * SessionClass::Am_I_Master -- tells if the local system is the "master"  *

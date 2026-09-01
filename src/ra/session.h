@@ -126,8 +126,7 @@ typedef enum GameEnum {
   GAME_NULL_MODEM,  // NULL-modem
   GAME_IPX,         // IPX Network game
   GAME_INTERNET,    // Internet H2H
-  GAME_SKIRMISH,    // 1 plr vs. AI's
-  GAME_MPATH        // MPath Network game
+  GAME_SKIRMISH     // 1 plr vs. AI's
 } GameType;
 
 //...........................................................................
@@ -270,9 +269,6 @@ class PhoneEntryClass {
 typedef struct NodeNameTag {
   char Name[MPLAYER_NAME_MAX];  // player or game name
   IPXAddressClass Address;
-#if (MPATH)
-  int MPathAddress;
-#endif
   union {
     struct {
       unsigned char IsOpen;    // is the game open?
@@ -518,10 +514,6 @@ class SessionClass {
   bool Am_I_Master();
   unsigned long Compute_Unique_ID();
 
-#if (MPATH)
-  int Create_MPATH_Connections();
-#endif  // MPATH
-
   //.....................................................................
   // File I/O
   //.....................................................................
@@ -696,18 +688,6 @@ class SessionClass {
   int TrapCheckHeap;          // true = check the heap as of TrapFrame
   long TrapPrintCRC;          // Frame # to print CRC state file
 
-#if (MPATH)
-  //
-  // MPATH-specific variables
-  //
-  char* MPathPacket;
-  int MPathSize;
-  int MPathMessageAddress;
-  int MPathAddress;
-  char OptionsFile[256];
-  int AllowSolo;
-  int NetResponseTime;
-#endif  // MPATH
 };
 
 #endif  // CNC_RED_ALERT_RA_SESSION_H_

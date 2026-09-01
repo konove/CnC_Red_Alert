@@ -5625,19 +5625,6 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
                    Text_String(TXT_WAITING_FOR_CONNECTIONS));
         }
         break;
-
-#if (MPATH)
-      case GAME_MPATH:
-        if (reconn) {
-          id = MPath->Connection_ID(oldest_index);
-          Format_Runtime_Text(buf1, sizeof(buf1),
-                              Text_String(TXT_RECONNECTING_TO),
-                              MPath->Connection_Name(id));
-        } else {
-          snprintf(buf1, sizeof(buf1), "%s",
-                   Text_String(TXT_WAITING_FOR_CONNECTIONS));
-        }
-#endif  // MPATH
     }
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),

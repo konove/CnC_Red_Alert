@@ -1204,23 +1204,6 @@ bool Select_Game(bool /*fade*/) {
 #endif  // WINSOCK_IPX
               }
               break;
-
-#if (MPATH)
-            /*
-            **	MPATH: jump straight into the game
-            */
-            case GAME_MPATH:
-              if (Init_MPATH()) {
-                Options.ScoreVolume = Options.MultiScoreVolume;
-                process = false;
-                Theme.Fade_Out();
-              } else {
-                WWMessageBox().Process("Unable to initialize MPATH!");
-                // Prog_End();
-                Emergency_Exit(1);
-              }
-              break;
-#endif  // MPATH
           }
           break;
 
@@ -1395,13 +1378,7 @@ bool Select_Game(bool /*fade*/) {
 
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       !Session.Play) {
-    if (Session.Type == GAME_MPATH) {
-#if (MPATH)
-      Session.Create_MPATH_Connections();
-#endif
-    } else {
-      Session.Create_Connections();
-    }
+    Session.Create_Connections();
   }
 
   /*
@@ -1645,12 +1622,6 @@ bool Parse_Command_Line(int argc, char* argv[]) {
         //				BreakoutAllowed = false;
         break;
 
-#if (MPATH)
-      case PARM_ALLOW_SOLO:
-        Session.AllowSolo = 1;
-        break;
-#endif
-
       default:
         processed = false;
         break;
@@ -1779,40 +1750,6 @@ bool Parse_Command_Line(int argc, char* argv[]) {
         continue;
       }
     }
-
-#if (MPATH)
-    /*
-    **	Enable MPATH
-    */
-    if (strstr(string, "MPATH")) {
-      if constexpr (config::kCheatKeysEnabled) {
-        Debug_Flag = true;
-        MonoClass::Enable();
-      }
-
-      Session.Type = GAME_MPATH;
-      Special.IsFromInstall = false;
-      //
-      // Create the MPath network manager.  This allows us to keep
-      // the packet queues clean even while we're initializing the game,
-      // so the queues don't fill up in case we're slow, or the user
-      // didn't insert a CD.
-      //
-      MPath = new MPlayerManClass();
-      MPath->Init();
-      strcpy(Session.OptionsFile, "OPTIONS.INI");
-      MPath->Flush_All();
-      continue;
-    }
-
-    /*
-    **	Set the game options filename
-    */
-    if (strstr(string, "OPTIONS:")) {
-      strcpy(Session.OptionsFile, string + 8);
-      continue;
-    }
-#endif  // MPATH
 
     if constexpr (config::kCheatKeysEnabled) {
       if (strstr(string, "-NOMOVIES")) {

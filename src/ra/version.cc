@@ -722,10 +722,6 @@ const char* Version_Name() {
     version += "AM";
   }
 
-#if (MPATH)
-  version += "MPath";  // MPath version
-#endif
-
   RawFileClass file("VERSION.TXT");
   if (file.Is_Available()) {
     char file_content[26] = {};
