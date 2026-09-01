@@ -72,7 +72,6 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 
-extern WolapiObject* pWolapi;
 bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame);
 
 /***********************************************************************************************

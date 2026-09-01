@@ -29,8 +29,6 @@ int WOL_Chat_Dialog(WolapiObject* pWolapi);
 bool ReregisterWolapiDLL();
 void HandleDLLFail();
 
-WolapiObject* pWolapi = nullptr;
-
 #include "absl/log/check.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"

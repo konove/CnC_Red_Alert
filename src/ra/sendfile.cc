@@ -84,8 +84,6 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
 #include "ra/wolapiob.h"
 #include "sdllib/timer.h"
 
-extern WolapiObject* pWolapi;
-
 namespace {
 
 //	A scenario transfer can take a while, and the chat server drops a client

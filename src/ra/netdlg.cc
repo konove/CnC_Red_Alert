@@ -214,8 +214,6 @@ bool bSpecialAftermathScenario(const char* szScenarioDescription);
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 
-extern WolapiObject* pWolapi;
-
 //---------------------------------------------------------------------------
 //	The possible states of the join-game dialog
 //---------------------------------------------------------------------------

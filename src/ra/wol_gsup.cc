@@ -151,8 +151,8 @@ other data being out of sync.
 //	Pieced together from Net_New_Dialog() and Net_Join_Dialog().
 //--------------------------------------------------------------------------
 //***********************************************************************************************
-WOL_GameSetupDialog::WOL_GameSetupDialog(WolapiObject* pWolapi, bool bIsHost)
-    : pWO(pWolapi),
+WOL_GameSetupDialog::WOL_GameSetupDialog(WolapiObject* wolapi, bool bIsHost)
+    : pWO(wolapi),
       bHost(bIsHost),
       HousePrevious(HOUSE_NONE),
       pILPlayers(nullptr),

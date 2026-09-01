@@ -194,7 +194,6 @@ bool Save_Recording_Values(CCFileClass& file);
 #include "ra/wolapiob.h"
 
 extern int WOL_Main();
-extern WolapiObject* pWolapi;
 
 bool Expansion_Dialog(bool bCounterstrike);
 

@@ -127,8 +127,6 @@
 #include "tech/rgb.h"
 #include "winvq/vqa32/vqaplay.h"
 
-extern WolapiObject* pWolapi;
-
 // The key that answers a page from a Westwood Online user outside the
 // game.
 constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA

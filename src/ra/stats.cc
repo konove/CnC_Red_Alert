@@ -184,8 +184,6 @@ void* PacketLater = nullptr;
 #include "ra/config.h"
 #include "ra/wolapiob.h"
 
-extern WolapiObject* pWolapi;
-
 extern bool bReconnectDialogCancelled;
 
 /***********************************************************************************************

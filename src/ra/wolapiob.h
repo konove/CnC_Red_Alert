@@ -510,4 +510,9 @@ class WolapiObject {
   CHATSAVE* pChatSaveLast;
 };
 
+// The one Westwood Online session, or nullptr when the game is not logged in.
+// WOL_Main creates it and leaves it around after logout so the game results
+// can still be sent.
+inline WolapiObject* pWolapi = nullptr;
+
 #endif  // CNC_RED_ALERT_RA_WOLAPIOB_H_

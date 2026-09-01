@@ -65,7 +65,7 @@ struct GAMEPARAMS {
 //***********************************************************************************************
 class WOL_GameSetupDialog {
  public:
-  WOL_GameSetupDialog(WolapiObject* pWO, bool bHost);
+  WOL_GameSetupDialog(WolapiObject* wolapi, bool bHost);
   ~WOL_GameSetupDialog();
 
   RESULT_WOLGSUP Run();

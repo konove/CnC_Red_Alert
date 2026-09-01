@@ -149,8 +149,6 @@
 #include "ra/config.h"
 #include "ra/wolapiob.h"
 
-extern WolapiObject* pWolapi;
-
 bool bReconnectDialogCancelled;
 
 /********************************** Defines *********************************/
