@@ -17,8 +17,4 @@ bool Determine_If_Using_DVD();
 bool Using_DVD();
 int Abort_Dialog();
 
-#if (MPATH)
-int Read_MPATH_Game_Options();
-#endif  // MPATH
-
 #endif  // CNC_RED_ALERT_RA_MPLAYER_H_

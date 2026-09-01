@@ -672,17 +672,6 @@ IPXManagerClass Ipx(
     VIRGIN_SOCKET,                              // Socket ID #
     IPXGlobalConnClass::COMMAND_AND_CONQUER0);  // Product ID #
 
-#if (MPATH)
-/***************************************************************************
-** This is the connection manager for MPath.  Special MPath notes:
-** - MPATH connection ID's are equal to the HousesType for that player.
-** - The player's color is read from the OPTIONS.INI file
-** - MPath's broadcast destination address is 0
-*/
-MPlayerManClass* MPath = NULL;
-
-#endif
-
 /***************************************************************************
 **	This is the random-number seed; it's synchronized between systems for
 ** multiplayer games.

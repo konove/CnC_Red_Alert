@@ -643,10 +643,6 @@ bool Force_Scenario_Available(const char* name);
 bool Is_Counterstrike_Installed();
 bool Is_Aftermath_Installed();
 
-#if (MPATH)
-void MPATH_Call_Back();
-#endif  // MPATH
-
 void Center_About_Objects();
 
 // Ensures the requested disc is in a drive, searching every CD drive and then
