@@ -19,10 +19,10 @@
 //	Bigcheck.h
 //	ajw 9/14/98
 
-#if WOLAPI_INTEGRATION
-
 #ifndef CNC_RED_ALERT_RA_BIGCHECK_H_
 #define CNC_RED_ALERT_RA_BIGCHECK_H_
+
+#include <string>
 
 #include "ra/toggle.h"
 
@@ -33,20 +33,19 @@
 class BigCheckBoxClass : public ToggleClass {
  public:
   BigCheckBoxClass(unsigned id, int x, int y, int w, int h,
-                   const char* szCaptionIn, TextPrintType TextFlags,
+                   const char* szCaptionIn, TextPrintType text_flags,
                    bool bInitiallyChecked = false)
-      : ToggleClass(id, x, y, w, h), TextFlags(TextFlags) {
-    szCaption = new char[strlen(szCaptionIn) + 1];
-    strcpy(szCaption, szCaptionIn);
+      : ToggleClass(id, x, y, w, h),
+        TextFlags(text_flags),
+        szCaption(szCaptionIn) {
     if (bInitiallyChecked) {
       Turn_On();
     }
     IsToggleType = 1;
   }
-  virtual ~BigCheckBoxClass() { delete[] szCaption; }
 
-  virtual int Draw_Me(bool forced = false);
-  virtual int Action(unsigned flags, KeyNumType& key);
+  int Draw_Me(bool forced = false) override;
+  int Action(unsigned flags, KeyNumType& key) override;
 
   bool Toggle() {
     if (IsOn) {
@@ -59,9 +58,7 @@ class BigCheckBoxClass : public ToggleClass {
 
  protected:
   TextPrintType TextFlags;
-  char* szCaption;
+  std::string szCaption;
 };
 
 #endif  // CNC_RED_ALERT_RA_BIGCHECK_H_
-
-#endif

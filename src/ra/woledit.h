@@ -19,8 +19,6 @@
 #ifndef CNC_RED_ALERT_RA_WOLEDIT_H_
 #define CNC_RED_ALERT_RA_WOLEDIT_H_
 
-#if WOLAPI_INTEGRATION
-
 /***************************************************************************
  * WOLEditClass -- Derived from EditClass, includes changes I wanted for
  *                 wolapi integration stuff.
@@ -28,7 +26,12 @@
  * HISTORY:    07/17/1998 ajw : Created.
  *=========================================================================*/
 
-#include "Function.h"
+#include "ra/edit.h"
+
+// Set by WOLEditClass::Action when Tab is pressed, and cleared by whoever
+// reads it. The login dialog uses it to move focus between its two edit boxes,
+// which EditClass has no way to express on its own.
+extern bool bTabKeyPressedHack;
 
 class WOLEditClass : public EditClass {
  public:
@@ -36,12 +39,10 @@ class WOLEditClass : public EditClass {
                int y, int w, int h, EditStyle style)
       : EditClass(id, text, max_len, flags, x, y, w, h, style) {}
 
-  virtual int Action(unsigned flags, KeyNumType& key);  //	Override of base
+  int Action(unsigned flags, KeyNumType& key) override;  //	Override of base
 
  protected:
-  virtual void Draw_Text(const char* text);  //	Override of base
+  void Draw_Text(const char* text) override;  //	Override of base
 };
-
-#endif
 
 #endif  // CNC_RED_ALERT_RA_WOLEDIT_H_

@@ -20,54 +20,63 @@
 
 #include "ra/tooltip.h"
 
-#include "ra/function.h"
+#include <cstdint>
+#include <cstring>
+
+#include "base/types.h"
+#include "port/safe_string.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
 #include "ra/iconlist.h"
+#include "ra/winbits.h"
+#include "sdllib/font.h"
+#include "sdllib/ww_mouse.h"
 
-// #include "WolDebug.h"
+namespace {
 
-bool SaveSurfaceRect(int xRect, int yRect, int wRect, int hRect, char* pBits,
-                     WindowNumberType window);
-bool RestoreSurfaceRect(int xRect, int yRect, int wRect, int hRect,
-                        const char* pBits, WindowNumberType window);
+// The gadget this tooltip is bound to, when bIconList says it is a list whose
+// lines each carry their own help text. Null if it turns out not to be one.
+IconListClass* AsIconList(GadgetClass* gadget) {
+  return dynamic_cast<IconListClass*>(gadget);
+}
+
+}  // namespace
 
 //***********************************************************************************************
-ToolTipClass::ToolTipClass(GadgetClass* pGadget, const char* szText, int xShow,
-                           int yShow, bool bRightAlign /* = false */,
-                           bool bIconList /*= false */)
-    : pGadget(pGadget),
-      xShow(xShow),
-      yShow(yShow),
-      next(NULL),
+ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
+                           int y_show, bool right_align /* = false */,
+                           bool icon_list /*= false */)
+    : pGadget(gadget),
+      xShow(x_show),
+      yShow(y_show),
+      next(nullptr),
       bShowing(false),
-      bIconList(bIconList),
-      bRightAlign(bRightAlign)
+      bIconList(icon_list),
+      bRightAlign(right_align)
 
 {
-  if (szText) {
-    if (strlen(szText) > TOOLTIPTEXT_MAX_LEN) {
-      strcpy(szTip, "Tooltip too long!");
-    } else {
-      strcpy(szTip, szText);
-    }
+  if (szText != nullptr && strlen(szText) > TOOLTIPTEXT_MAX_LEN) {
+    port::SafeCopy(szTip, "Tooltip too long!");
   } else {
-    *szTip = 0;
+    port::SafeCopy(szTip, szText != nullptr ? szText : "");
   }
 
   Set_Font(TypeFontPtr);
-  Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    TPF_TYPE);  //	Required before String_Pixel_Width()
                                // call, for god's sake.
   wShow = String_Pixel_Width(szTip) + 2;
   hShow = 11;
 
   if (!bIconList) {
-    pSaveRect =
-        new char[wShow * hShow];  //	Else it is reallocated on every draw.
+    //	Else it is reallocated on every draw.
+    pSaveRect = new std::uint8_t[base::ssize{wShow} * hShow];
     if (bRightAlign) {
-      this->xShow -= wShow;
+      xShow -= wShow;
     }
   } else {
-    pSaveRect = NULL;
+    pSaveRect = nullptr;
   }
 
   //	bIconList is true if tooltips appear for individual line items in an
@@ -82,11 +91,11 @@ ToolTipClass* ToolTipClass::GetToolTipHit() {
   // which *this is a part.
   if (bGadgetHit()) {
     return this;
-  } else if (next) {
-    return next->GetToolTipHit();
-  } else {
-    return nullptr;
   }
+  if (next) {
+    return next->GetToolTipHit();
+  }
+  return nullptr;
 }
 
 //***********************************************************************************************
@@ -129,7 +138,11 @@ void ToolTipClass::Show() {
       wShowUse = wShow;
       szTipUse = szTip;
     } else {
-      IconListClass* pIconList = static_cast<IconListClass*>(pGadget);
+      IconListClass* pIconList = AsIconList(pGadget);
+      if (pIconList == nullptr) {
+        bShowing = true;
+        return;
+      }
       iLastIconListIndex = pIconList->IndexUnderMouse();
       if (iLastIconListIndex < 0) {
         //	Nothing to show.
@@ -144,7 +157,7 @@ void ToolTipClass::Show() {
         bLastShowNoText = true;
         return;
       }
-      Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
+      Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                        TPF_TYPE);  //	Required before String_Pixel_Width()
                                    // call, for god's sake.
       wShowUse = String_Pixel_Width(szTipUse) + 2;
@@ -152,7 +165,7 @@ void ToolTipClass::Show() {
         xShowUse -= wShowUse;
       }
       delete[] pSaveRect;
-      pSaveRect = new char[wShowUse * hShow];
+      pSaveRect = new std::uint8_t[base::ssize{wShowUse} * hShow];
       bLastShowNoText = false;
       xLastShow = xShowUse;
       yLastShow = yShowUse;
@@ -226,86 +239,7 @@ bool ToolTipClass::bOverDifferentLine() const {
   //	bIconList must be true if this is being used.
   //	Returns true if the iconlist line that the mouse is over is different
   // than the last time Show() was called.
-  return static_cast<IconListClass*>(pGadget)->IndexUnderMouse() !=
-         iLastIconListIndex;
-}
-
-//***********************************************************************************************
-bool SaveSurfaceRect(int xRect, int yRect, int wRect, int hRect, char* pBits,
-                     WindowNumberType window) {
-  //	Saves a rect of the LogicPage DirectDraw surface to pBits.
-  //	if( wRect * hRect > iBufferSize )
-  //	{
-  //		debugprint( "SaveSurfaceRect failed.\n" );
-  //		return false;
-  //	}
-
-  GraphicViewPortClass draw_window(
-      LogicPage->Get_Graphic_Buffer(),
-      WindowList[window][WINDOWX] + LogicPage->Get_XPos(),
-      WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
-      WindowList[window][WINDOWWIDTH], WindowList[window][WINDOWHEIGHT]);
-  if (draw_window.Lock()) {
-    int iPitchSurf =
-        draw_window.Get_Pitch() +
-        draw_window.Get_Width();  //	Meaning of "Pitch" in this class seems
-                                  // to mean the eol skip.
-    const char* pLineSurf = static_cast<char*>(draw_window.Get_Offset()) +
-                            xRect + yRect * iPitchSurf;
-    char* pLineSave = pBits;
-
-    //	ajw - Should copy DWORDs here instead for speed.
-    for (int y = 0; y != hRect; y++) {
-      const char* pSurf = pLineSurf;
-      char* pSave = pLineSave;
-      for (int x = 0; x != wRect; x++) {
-        *pSave++ = *pSurf++;
-      }
-
-      pLineSurf += iPitchSurf;
-      pLineSave += wRect;
-    }
-    draw_window.Unlock();
-    return true;
-  } else {
-    //		debugprint( "SaveSurfaceRect Could not lock surface.\n" );
-    return false;
-  }
-}
-
-//***********************************************************************************************
-bool RestoreSurfaceRect(int xRect, int yRect, int wRect, int hRect,
-                        const char* pBits, WindowNumberType window) {
-  //	Copies a saved rect of bits back to the LogicPage DD surface.
-  GraphicViewPortClass draw_window(
-      LogicPage->Get_Graphic_Buffer(),
-      WindowList[window][WINDOWX] + LogicPage->Get_XPos(),
-      WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
-      WindowList[window][WINDOWWIDTH], WindowList[window][WINDOWHEIGHT]);
-  if (draw_window.Lock()) {
-    int iPitchSurf =
-        draw_window.Get_Pitch() +
-        draw_window.Get_Width();  //	Meaning of "Pitch" in this class seems
-                                  // to mean the eol skip.
-    char* pLineSurf = static_cast<char*>(draw_window.Get_Offset()) + xRect +
-                      yRect * iPitchSurf;
-    const char* pLineSave = pBits;
-
-    //	ajw - Should copy DWORDs here instead for speed.
-    for (int y = 0; y != hRect; y++) {
-      char* pSurf = pLineSurf;
-      const char* pSave = pLineSave;
-      for (int x = 0; x != wRect; x++) {
-        *pSurf++ = *pSave++;
-      }
-
-      pLineSurf += iPitchSurf;
-      pLineSave += wRect;
-    }
-    draw_window.Unlock();
-    return true;
-  } else {
-    //		debugprint( "RestoreSurfaceRect Could not lock surface.\n" );
-    return false;
-  }
+  IconListClass* pIconList = AsIconList(pGadget);
+  return pIconList != nullptr &&
+         pIconList->IndexUnderMouse() != iLastIconListIndex;
 }

@@ -16,8 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if WOLAPI_INTEGRATION
-
 /***************************************************************************
  * WOLEditClass -- Derived from EditClass, includes changes I wanted for
  *                 wolapi integration stuff.
@@ -25,9 +23,12 @@
  *made read-only. See comment below. HISTORY:    07/17/1998 ajw : Created.
  *=========================================================================*/
 
-#include "WOLEdit.h"
+#include "ra/woledit.h"
 
-// #include "WolDebug.h"
+#include "ra/conquer.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "sdllib/font.h"
 
 bool bTabKeyPressedHack = false;
 
@@ -47,10 +48,11 @@ void WOLEditClass::Draw_Text(const char* text) {
   Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, TBLACK, TextFlags | flags,
                           Width - 2);
 
+  const int text_width = static_cast<int>(String_Pixel_Width(text));
   if (Has_Focus() &&  //	strlen(text) < MaxLength &&
-      (String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2)) {
-    Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1, Color,
-                            TBLACK, TextFlags | flags);
+      text_width + static_cast<int>(String_Pixel_Width("_")) < Width - 2) {
+    Conquer_Clip_Text_Print("_", X + 1 + text_width, Y + 1, Color, TBLACK,
+                            TextFlags | flags);
   }
 }
 
@@ -102,7 +104,6 @@ int WOLEditClass::Action(unsigned flags, KeyNumType& key) {
       flags = 0;
 
     } else {
-
       KeyASCIIType ascii = (KeyASCIIType)(Keyboard->To_ASCII(key) & 0xff);
 
       //
@@ -149,7 +150,5 @@ int WOLEditClass::Action(unsigned flags, KeyNumType& key) {
     //		}
   }
 
-  return (ControlClass::Action(flags, key));
+  return ControlClass::Action(flags, key);
 }
-
-#endif

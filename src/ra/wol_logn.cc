@@ -23,7 +23,7 @@
 
 #include "BigCheck.h"
 #include "IconList.h"
-#include "PassEdit.h"
+#include "ra/passedit.h"
 #include "WolStrng.h"
 #include "WolapiOb.h"
 #include "ra/function.h"

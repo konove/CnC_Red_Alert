@@ -19,18 +19,22 @@
 #ifndef CNC_RED_ALERT_RA_SEDITDLG_H_
 #define CNC_RED_ALERT_RA_SEDITDLG_H_
 
-#if WOLAPI_INTEGRATION
-
 //	SEditDlg.h - "SimpleEditDlgClass": An ok/cancel type dialog with a
 // single edit box. 	ajw 07/21/98
 
-#include "ra/function.h"
+#include <string>
+
+// The same idea as cancel_current_msgbox in ra/msgbox.h, but instead of
+// closing the dialog it greys out every control on it: the dialog stays up
+// with what the player typed still visible while the answer is on its way.
+extern bool disable_current_msgbox;
 
 class SimpleEditDlgClass {
  public:
   SimpleEditDlgClass(int iDialogWidth, const char* szTitle,
                      const char* szPrompt, int iEditCharsAccept,
-                     const char* szPrompt2 = NULL, int iEditCharsAccept2 = 0);
+                     const char* szPrompt2 = nullptr,
+                     int iEditCharsAccept2 = 0);
   virtual ~SimpleEditDlgClass();
 
   const char* Show();  //	Shows dialog, returns text of button pressed.
@@ -38,20 +42,20 @@ class SimpleEditDlgClass {
                        // TXT_OK or TXT_CANCEL string values.
 
   void SetButtons(const char* szOk, const char* szCancel,
-                  const char* szMiddle = NULL);
+                  const char* szMiddle = nullptr);
 
   char szEdit[300];  //	iEditCharsAccept upper limit.
   char szEdit2[300];
 
  protected:
-  int iDialogWidth;  //	X pixels width of entire dialog.
-  char* szTitle;     //	Title of dialog, or NULL for no title.
+  int iDialogWidth;     //	X pixels width of entire dialog.
+  std::string szTitle;  //	Title of dialog, or empty for no title.
 
-  char* szPrompt;        //	Text appearing to the left of edit box.
+  std::string szPrompt;  //	Text appearing to the left of edit box.
   int iEditCharsAccept;  //	Max length of string allowed in edit, includes
                          // null-terminator.
 
-  char* szPrompt2;
+  std::string szPrompt2;  //	Empty when the dialog has only one edit box.
   int iEditCharsAccept2;
 
   const char* szOkButton;      //	Text of button that acts like an Ok button.
@@ -61,7 +65,5 @@ class SimpleEditDlgClass {
   const char* szMiddleButton;  //	Optional middle button text. Null = no
                                // middle button.
 };
-
-#endif
 
 #endif  // CNC_RED_ALERT_RA_SEDITDLG_H_

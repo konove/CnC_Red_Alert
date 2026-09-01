@@ -18,12 +18,12 @@
 
 //	ToolTip.h
 
-#if WOLAPI_INTEGRATION
-
 #ifndef CNC_RED_ALERT_RA_TOOLTIP_H_
 #define CNC_RED_ALERT_RA_TOOLTIP_H_
 
-#include "Gadget.h"
+#include <cstdint>
+
+#include "ra/gadget.h"
 
 #define TOOLTIPTEXT_MAX_LEN 100
 
@@ -60,7 +60,7 @@ class ToolTipClass {
   int hShow;
   char szTip[TOOLTIPTEXT_MAX_LEN + 1];  //	Text to show as tip.
 
-  char* pSaveRect;
+  std::uint8_t* pSaveRect;
 
   //	Used only if bIconList.
   int iLastIconListIndex;
@@ -71,5 +71,3 @@ class ToolTipClass {
 };
 
 #endif  // CNC_RED_ALERT_RA_TOOLTIP_H_
-
-#endif

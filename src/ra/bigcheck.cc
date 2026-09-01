@@ -19,11 +19,13 @@
 //	BigCheck.cpp
 //	ajw 9/14/98
 
-#if WOLAPI_INTEGRATION
-
 #include "ra/bigcheck.h"
 
-#include "ra/function.h"
+#include "ra/conquer.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "sdllib/ww_mouse.h"
 
 //***********************************************************************************************
 int BigCheckBoxClass::Draw_Me(bool forced) {
@@ -60,9 +62,9 @@ int BigCheckBoxClass::Draw_Me(bool forced) {
     //			flags = flags | TPF_MEDIUM_COLOR;
     //		}
 
-    Conquer_Clip_Text_Print(szCaption, X + BIGCHECK_OFFSETX,
+    Conquer_Clip_Text_Print(szCaption.c_str(), X + BIGCHECK_OFFSETX,
                             Y + BIGCHECK_OFFSETY, pScheme, TBLACK, flags, Width,
-                            0);
+                            nullptr);
 
     Show_Mouse();
     return true;
@@ -81,7 +83,5 @@ int BigCheckBoxClass::Action(unsigned flags, KeyNumType& key) {
                   }
           }
   */
-  return (ToggleClass::Action(flags, key));
+  return ToggleClass::Action(flags, key);
 }
-
-#endif

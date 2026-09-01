@@ -31,7 +31,6 @@ list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/seqconn.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/stub.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/surface.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tooltip.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/turret.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/winstub.cc"
@@ -70,7 +69,6 @@ list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/surface.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/tcpip.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/tenmgr.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tooltip.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/turret.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/wolapi/wolapi.h"
@@ -134,6 +132,13 @@ add_gtest(
     SOURCES dib_test.cc dib.cc
     LIBS base
 )
+
+add_gtest(
+    NAME ra_winbits_test
+    SOURCES winbits_test.cc winbits.cc dib.cc
+    LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log
+)
+target_compile_definitions(ra_winbits_test PRIVATE ENGLISH=1 PORTABLE=1)
 
 add_gtest(
     NAME ra_heap_layout_test

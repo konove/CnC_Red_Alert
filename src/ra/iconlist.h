@@ -16,8 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if WOLAPI_INTEGRATION
-
 /***************************************************************************
  * IconListClass -- Exactly like ListClass, but displays an icon as well
  *                  (actually a 'shape' image), left-aligned, covering
@@ -33,7 +31,9 @@
 #ifndef CNC_RED_ALERT_RA_ICONLIST_H_
 #define CNC_RED_ALERT_RA_ICONLIST_H_
 
-#include "ra/function.h"
+#include <string>
+
+#include "ra/list.h"
 #include "ra/vector.h"
 
 enum ICONKIND {
@@ -51,33 +51,27 @@ struct FIXEDICON  //	For putting icons in list entries at a specific fixed
   int iWidth;
 };
 
+// Everything an IconListClass remembers about one line beyond its text.
+//
+// Owned by the list, one per item, in the same order as the items.
 struct IconList_ItemExtras {
-  IconList_ItemExtras()
-      : bMultiSelected(false),
-        szHelp(NULL),
-        szExtraData(NULL),
-        pvExtraData(NULL) {
-    pIcon[0] = NULL;
-    pIcon[1] = NULL;
-    pIcon[2] = NULL;
-  }
-  virtual ~IconList_ItemExtras() {
-    delete[] szHelp;
-    delete[] szExtraData;
-  }
+  bool bMultiSelected =
+      false;  //	True if selected when bMultiSelect is on.
 
-  bool bMultiSelected;  //	True if selected when bMultiSelect is on.
-  void* pIcon[3];       //	Icon that appears before an item.
-  ICONKIND
-  IconKind[3];        //	Specifies what kind of image data pIcon points to.
-  char* szHelp;       //	Tooltip help string that can be associated with item.
-                      // Allocated and deleted here.
-  char* szExtraData;  //	Extra string that can be associated with item.
-                      // Allocated and deleted here.
-  void* pvExtraData;  //	Hidden pointer that can be associated with item.
-  RemapControlType* pColorRemap;  //	Pointer to a color remap, or null for
-                                  // default colored text.
-  FIXEDICON FixedIcon;
+  void* pIcon[3] = {nullptr, nullptr, nullptr};  //	Icons before the text.
+  //	Says what kind of image data each pIcon points to.
+  ICONKIND IconKind[3] = {ICON_SHAPE, ICON_SHAPE, ICON_SHAPE};
+
+  //	Tooltip help for the item. Empty means the item has no tooltip.
+  std::string szHelp;
+  //	Extra string carried along with the item. Empty means none was given.
+  std::string szExtraData;
+
+  void* pvExtraData = nullptr;  //	Hidden pointer associated with the item.
+  //	Color remap for the item's text, or null for the default color.
+  RemapControlType* pColorRemap = nullptr;
+
+  FIXEDICON FixedIcon = {};
 };
 
 class IconListClass : public ListClass {
@@ -87,27 +81,29 @@ class IconListClass : public ListClass {
                 bool bResponsibleForStringAlloc = false, int iSelectionType = 1,
                 int iMaxItemsSaved = 0);
   //		IconListClass( const IconListClass& list );
-  virtual ~IconListClass();
+  ~IconListClass() override;
 
-  virtual int Add_Item(const char* text);
+  int Add_Item(const char* text) override;
   virtual int Add_Item(const char* text, const char* szHelp, void* pIcon0,
-                       ICONKIND IconKind0, const char* szExtraDataString = NULL,
-                       void* pvExtraDataPtr = NULL,
-                       RemapControlType* pColorRemap = NULL,
-                       void* pIcon1 = NULL, ICONKIND IconKind1 = ICON_SHAPE,
-                       void* pIcon2 = NULL, ICONKIND IconKind2 = ICON_SHAPE,
-                       void* pFixedIcon = NULL,
+                       ICONKIND IconKind0,
+                       const char* szExtraDataString = nullptr,
+                       void* pvExtraDataPtr = nullptr,
+                       RemapControlType* pColorRemap = nullptr,
+                       void* pIcon1 = nullptr, ICONKIND IconKind1 = ICON_SHAPE,
+                       void* pIcon2 = nullptr, ICONKIND IconKind2 = ICON_SHAPE,
+                       void* pFixedIcon = nullptr,
                        ICONKIND FixedIconKind = ICON_SHAPE, int iXFixedIcon = 0,
                        int iYFixedIcon = 0, int iFixedIconWidth = -1);
 
-  virtual int Add_Item(int text);
+  int Add_Item(int text) override;
   virtual int Add_Item(int text, const char* szHelp, void* pIcon0,
-                       ICONKIND IconKind0, const char* szExtraDataString = NULL,
-                       void* pvExtraDataPtr = NULL,
-                       RemapControlType* pColorRemap = NULL,
-                       void* pIcon1 = NULL, ICONKIND IconKind1 = ICON_SHAPE,
-                       void* pIcon2 = NULL, ICONKIND IconKind2 = ICON_SHAPE,
-                       void* pFixedIcon = NULL,
+                       ICONKIND IconKind0,
+                       const char* szExtraDataString = nullptr,
+                       void* pvExtraDataPtr = nullptr,
+                       RemapControlType* pColorRemap = nullptr,
+                       void* pIcon1 = nullptr, ICONKIND IconKind1 = ICON_SHAPE,
+                       void* pIcon2 = nullptr, ICONKIND IconKind2 = ICON_SHAPE,
+                       void* pFixedIcon = nullptr,
                        ICONKIND FixedIconKind = ICON_SHAPE, int iXFixedIcon = 0,
                        int iYFixedIcon = 0, int iFixedIconWidth = -1);
 
@@ -123,8 +119,8 @@ class IconListClass : public ListClass {
 
   //		virtual void Peer_To_Peer(unsigned flags, KeyNumType & key,
   // ControlClass & whom);
-  virtual void Remove_Item(const char* text);
-  virtual void Remove_Item(int);
+  void Remove_Item(const char* text) override;
+  void Remove_Item(int) override;
   //		virtual int  Remove_Scroll_Bar();
   //		virtual void Set_Selected_Index(int index);
   //		virtual void Set_Selected_Index(char const * text);
@@ -145,10 +141,14 @@ class IconListClass : public ListClass {
   virtual void Show_Last_Item();
   virtual bool bItemIsMultiSelected(int index) const;
   virtual void MultiSelect(int index, bool bSelect);
+  //	The extra string stored with an item, or nullptr when the item has
+  //	none and when the index is out of range.
   virtual const char* Get_Item_ExtraDataString(int index) const;
   virtual void Set_Item_ExtraDataString(int index, const char* szNewString);
   virtual void* Get_Item_ExtraDataPtr(int index) const;
   virtual void Set_Item_ExtraDataPtr(int index, void* pNewValue);
+  //	The item's tooltip text, or nullptr when it has none and when the
+  //	index is out of range.
   const char* Get_Item_Help(int index) const;
   virtual RemapControlType* Get_Item_Color(int index);
   virtual void Set_Item_Color(int index, RemapControlType* pColorRemap);
@@ -181,8 +181,8 @@ class IconListClass : public ListClass {
   }
 
  protected:
-  virtual int Action(unsigned flags, KeyNumType& key);
-  virtual void Draw_Entry(int index, int x, int y, int width, int selected);
+  int Action(unsigned flags, KeyNumType& key) override;
+  void Draw_Entry(int index, int x, int y, int width, int selected) override;
 
   virtual int Add_Item_Detail(const char* szToken, const char* szHelp,
                               void* pIcon0, ICONKIND IconKind0,
@@ -193,11 +193,11 @@ class IconListClass : public ListClass {
                               ICONKIND FixedIconKind, int iXFixedIcon,
                               int iYFixedIcon, int iFixedIconWidth);
 
-  //	The list of Icons.
-  // DynamicVectorClass<void*> IconList;
-  // DynamicVectorClass< IconList_ItemExtras* > ExtrasList;		ajw:
-  // creates hellacious linking problems
-  DynamicVectorClass<void*> ExtrasList;
+  //	The extras for each item, in the same order as the list's text.
+  //	ajw stored these as void* because a vector of the real pointer type
+  //	"creates hellacious linking problems" in the 1998 compiler. It does not
+  //	here.
+  DynamicVectorClass<IconList_ItemExtras*> ExtrasList;
 
   bool bDoAlloc;    //	True if I am responsible for mem. allocation/deletion of
                     // strings.
@@ -209,5 +209,3 @@ class IconListClass : public ListClass {
 };
 
 #endif  // CNC_RED_ALERT_RA_ICONLIST_H_
-
-#endif
