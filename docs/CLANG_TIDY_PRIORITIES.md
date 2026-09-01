@@ -11,13 +11,13 @@ Unlike the previous revision of this document, the tiers below are not guesses. 
 **Tier 1, §1.1, §1.2 and Tier 1.5 are complete, and Tier 2 is four checks of seven in.** All ten rows of the Tier 1
 table (13 checks) are enabled, 24 of the 26 checks in §1.1, the single §1.2 check, all six of Tier 1.5, and three of
 Tier 2 with a fourth reclassified; see [Progress](#progress). The two §1.1 checks left out are deliberate — see
-[1.1](#11-free-guards--the-name-was-wrong). `narrowing-conversions` was enabled in `e0e9d2bf`; what is left in
-Tier 2 is `pro-type-member-init` and `switch-missing-default-case`.
+[1.1](#11-free-guards--the-name-was-wrong). `narrowing-conversions` was enabled in `e0e9d2bf`; what is left in Tier 2 is
+`pro-type-member-init` and `switch-missing-default-case`.
 
-Two toolchain moves have turned the strict build red for reasons unrelated to any tier below, and both are resolved.
-The 21 → 22 move on 2026-08-20: see [clang-tidy 22 fallout](#clang-tidy-22-fallout). The move to 23 on 2026-08-29,
-which was much larger at 7,360 sites because clang-tidy 23 deleted the whole `hicpp` module and renamed three other
-checks the disable list named: see [clang-tidy 23 fallout](#clang-tidy-23-fallout).
+Two toolchain moves have turned the strict build red for reasons unrelated to any tier below, and both are resolved. The
+21 → 22 move on 2026-08-20: see [clang-tidy 22 fallout](#clang-tidy-22-fallout). The move to 23 on 2026-08-29, which was
+much larger at 7,360 sites because clang-tidy 23 deleted the whole `hicpp` module and renamed three other checks the
+disable list named: see [clang-tidy 23 fallout](#clang-tidy-23-fallout).
 
 ### Two facts that shape everything below
 
@@ -384,30 +384,30 @@ promoted three other checks to new primary names. `.clang-tidy` disabled those c
 `'*'` re-enabled them under their new spellings. This is [trap 1](#re-measuring) firing against the disable list itself
 rather than against a measurement, and it is the second consecutive bump to break this way.
 
-| Check                                                | Sites | Files | Status                                                                              |
-|------------------------------------------------------|-------|-------|-------------------------------------------------------------------------------------|
-| `bugprone-signed-bitwise`                            | 4613  | 215   | ✅ Disabled — rename of `hicpp-signed-bitwise`, restores an existing decision       |
-| `readability-trailing-comma`                         | 1653  | 174   | ✅ Disabled → Tier 3. New in 23, style-only                                         |
-| `readability-redundant-nested-if`                    | 465   | 125   | ✅ Disabled → Tier 3. New in 23, style-only                                         |
-| `cppcoreguidelines-explicit-constructor`             | 252   | 144   | ✅ Disabled — new primary name for the disabled `google-explicit-constructor`       |
-| `clang-diagnostic-lifetime-safety-*-suggestions` (4) | 197   | —     | ✅ Disabled — annotation advice, not defect reports                                 |
-| `bugprone-unhandled-code-paths`                      | 55    | 33    | ✅ Disabled — rename of `hicpp-multiway-paths-covered`                              |
-| `readability-redundant-parentheses`                  | 34    | 12    | ✅ Swept in `8a508285`. Broadened into templates                                    |
-| `clang-diagnostic-lifetime-safety-dangling-{field,global}` | 10 | 8 | ✅ Fixed in `f820ac85`; both checks now enabled                                    |
-| `clang-diagnostic-lifetime-safety-*` (other 3)       | 15    | —     | ✅ Disabled — false positives, see below                                            |
-| `readability-trivial-switch`                         | 23    | 20    | ✅ Disabled → Tier 3. New in 23, style-only                                         |
-| `readability-else-after-return`                      | 15    | 9     | ✅ Fixed in `82c69987`. Enabled check, broadened into `switch` cases                |
-| `performance-faster-string-find`                     | 6     | 3     | ✅ Fixed in `82c69987`. Enabled check, gained a new alias                           |
-| `readability-redundant-casting`                      | 2     | 1     | ✅ Fixed in `82c69987`. Enabled check, broadened                                    |
-| `performance-string-view-conversions`                | 2     | 2     | ✅ Disabled — new in 23                                                             |
-| `clang-diagnostic-unused-but-set-global`             | 2     | 2     | ✅ Disabled — new in 23                                                             |
-| `clang-analyzer-optin.core.FixedAddressDereference`  | 1     | 1     | ✅ Disabled — rename of `clang-analyzer-core.FixedAddressDereference`               |
-| `clang-analyzer-optin.cplusplus.UninitializedObject` | 1     | 1     | ✅ Fixed in `82c69987` — a real one, see below                                      |
-| `clang-analyzer-cplusplus.NewDeleteLeaks`            | 1     | 1     | ✅ Suppressed in `82c69987` with its reason — false positive                        |
-| `clang-analyzer-unix.cstring.UninitializedRead`      | 1     | 1     | ✅ Disabled — new in 23                                                             |
+| Check                                                      | Sites | Files | Status                                                                        |
+|------------------------------------------------------------|-------|-------|-------------------------------------------------------------------------------|
+| `bugprone-signed-bitwise`                                  | 4613  | 215   | ✅ Disabled — rename of `hicpp-signed-bitwise`, restores an existing decision |
+| `readability-trailing-comma`                               | 1653  | 174   | ✅ Disabled → Tier 3. New in 23, style-only                                   |
+| `readability-redundant-nested-if`                          | 465   | 125   | ✅ Disabled → Tier 3. New in 23, style-only                                   |
+| `cppcoreguidelines-explicit-constructor`                   | 252   | 144   | ✅ Disabled — new primary name for the disabled `google-explicit-constructor` |
+| `clang-diagnostic-lifetime-safety-*-suggestions` (4)       | 197   | —     | ✅ Disabled — annotation advice, not defect reports                           |
+| `bugprone-unhandled-code-paths`                            | 55    | 33    | ✅ Disabled — rename of `hicpp-multiway-paths-covered`                        |
+| `readability-redundant-parentheses`                        | 34    | 12    | ✅ Swept in `8a508285`. Broadened into templates                              |
+| `clang-diagnostic-lifetime-safety-dangling-{field,global}` | 10    | 8     | ✅ Fixed in `f820ac85`; both checks now enabled                               |
+| `clang-diagnostic-lifetime-safety-*` (other 3)             | 15    | —     | ✅ Disabled — false positives, see below                                      |
+| `readability-trivial-switch`                               | 23    | 20    | ✅ Disabled → Tier 3. New in 23, style-only                                   |
+| `readability-else-after-return`                            | 15    | 9     | ✅ Fixed in `82c69987`. Enabled check, broadened into `switch` cases          |
+| `performance-faster-string-find`                           | 6     | 3     | ✅ Fixed in `82c69987`. Enabled check, gained a new alias                     |
+| `readability-redundant-casting`                            | 2     | 1     | ✅ Fixed in `82c69987`. Enabled check, broadened                              |
+| `performance-string-view-conversions`                      | 2     | 2     | ✅ Disabled — new in 23                                                       |
+| `clang-diagnostic-unused-but-set-global`                   | 2     | 2     | ✅ Disabled — new in 23                                                       |
+| `clang-analyzer-optin.core.FixedAddressDereference`        | 1     | 1     | ✅ Disabled — rename of `clang-analyzer-core.FixedAddressDereference`         |
+| `clang-analyzer-optin.cplusplus.UninitializedObject`       | 1     | 1     | ✅ Fixed in `82c69987` — a real one, see below                                |
+| `clang-analyzer-cplusplus.NewDeleteLeaks`                  | 1     | 1     | ✅ Suppressed in `82c69987` with its reason — false positive                  |
+| `clang-analyzer-unix.cstring.UninitializedRead`            | 1     | 1     | ✅ Disabled — new in 23                                                       |
 
-**Four renames account for 4,921 of the 7,360 and cost nothing to fix.** Naming the 23 spelling restores a decision
-this project had already made; no game code changed. The remaining volume is three new style checks (2,141) and the
+**Four renames account for 4,921 of the 7,360 and cost nothing to fix.** Naming the 23 spelling restores a decision this
+project had already made; no game code changed. The remaining volume is three new style checks (2,141) and the
 lifetime-safety suggestions (197). Of everything left, **59 sites were real edits** — 34 parentheses, 25 lifetime and
 broadened-check fixes — and two of those were latent defects rather than style.
 
@@ -433,8 +433,8 @@ works.
 
 `FieldClass` was a real find. Its default constructor was `FieldClass() {}`, leaving every member indeterminate, and
 `src/tech/packet.cc:128` default-constructs a field then `memcpy`s `FIELD_HEADER_SIZE` bytes into it —
-`sizeof(FieldClass) - (sizeof(void*) * 2)` by its own definition, so `Data` and `Next` are deliberately outside it.
-Both happen to be assigned immediately afterwards, so nothing was broken on that path, but any other use of the default
+`sizeof(FieldClass) - (sizeof(void*) * 2)` by its own definition, so `Data` and `Next` are deliberately outside it. Both
+happen to be assigned immediately afterwards, so nothing was broken on that path, but any other use of the default
 constructor read garbage. The members are value-initialized now.
 
 The `src/ra/queue.cc:3243` leak is a false positive and carries a `NOLINTNEXTLINE` with that reason. `eventdata` is
@@ -442,9 +442,9 @@ declared outside the read loop and reused, so once `DoList.Add()` succeeds the l
 still holds the pointer; the analyzer does not model the transfer and reads it as live at a later `return -1`. The only
 path that allocates already deletes on failure, two lines above.
 
-`readability-redundant-parentheses` has now regressed on two consecutive bumps. It was new in 22 and swept to zero
-then; 23 looks inside dependent expressions, and every one of the 34 new sites is in a class template body or an
-instantiation of one — `src/ra/list.h` and `src/ra/drop.h` are 17 between them. Same `return (x);` idiom, same sweep.
+`readability-redundant-parentheses` has now regressed on two consecutive bumps. It was new in 22 and swept to zero then;
+23 looks inside dependent expressions, and every one of the 34 new sites is in a class template body or an instantiation
+of one — `src/ra/list.h` and `src/ra/drop.h` are 17 between them. Same `return (x);` idiom, same sweep.
 
 ### The lifetime-safety family, reviewed
 
@@ -452,15 +452,15 @@ The nine `clang-diagnostic-lifetime-safety-*` names were spelled `-Wexperimental
 none of them fired before. They are `-Weverything`-gated, so they reach the clang strict build and not the default GCC
 one. All 25 sites have now been read, and the family splits three ways rather than two:
 
-| Group                                                        | Sites | Outcome                                                |
-|--------------------------------------------------------------|-------|--------------------------------------------------------|
-| `dangling-field`, `dangling-global`                          | 10    | ✅ **Enabled** — sites cleared in `f820ac85`            |
-| `-suggestions` ×4 (`intra-tu`, `cross-tu`, both `-constructor`) | 197   | Disabled — annotation advice, not defect reports        |
-| `use-after-free`, `invalidation`, `use-after-scope-moved`    | 15    | Disabled — false positives, reasons below               |
+| Group                                                           | Sites | Outcome                                          |
+|-----------------------------------------------------------------|-------|--------------------------------------------------|
+| `dangling-field`, `dangling-global`                             | 10    | ✅ **Enabled** — sites cleared in `f820ac85`     |
+| `-suggestions` ×4 (`intra-tu`, `cross-tu`, both `-constructor`) | 197   | Disabled — annotation advice, not defect reports |
+| `use-after-free`, `invalidation`, `use-after-scope-moved`       | 15    | Disabled — false positives, reasons below        |
 
-**None of the 10 was a live bug, and each was one edit away from being one.** All ten were the same shape: a pointer
-to a stack local left in a member or a global after the function returned, safe only because nothing happened to read
-it out of window.
+**None of the 10 was a live bug, and each was one edit away from being one.** All ten were the same shape: a pointer to
+a stack local left in a member or a global after the function returned, safe only because nothing happened to read it
+out of window.
 
 - **`ipxmgr`, 4 sites.** `Service()` assigned `CurDataBuf` and `CurHeaderBuf` — *members* — from a 1024-byte stack
   receive buffer, then read them three lines later. In RA the two were used nowhere else at all, so they became locals
@@ -487,14 +487,14 @@ suppressed site by site:
   `BackgroundPage`) on their intended per-screen `new`/`delete` cycle; the analyzer reports the delete as "later
   invalidated". The other three are `std::string` and `std::vector` reallocating internally, with nobody holding an
   interior pointer.
-- **`use-after-scope-moved`, 1 site** — `src/ra/udata.cc:1074`, which says so itself: "This could be a false positive
-  as the storage may have been moved later."
+- **`use-after-scope-moved`, 1 site** — `src/ra/udata.cc:1074`, which says so itself: "This could be a false positive as
+  the storage may have been moved later."
 
 Two notes for the next reviewer. `src/ra/findpath.cc:174` was listed here as a candidate on an earlier reading; it is
-not a lifetime-safety finding at all and was never one of the 25. And the sweep that cleared the 10 produced three
-*new* findings — `clang-diagnostic-unused-private-field` and `-unused-variable`, from members and locals whose only
-remaining references sat in dead preprocessor branches. A single-check sweep would have missed all three; see the
-full-config rule under [Re-measuring](#re-measuring).
+not a lifetime-safety finding at all and was never one of the 25. And the sweep that cleared the 10 produced three *new*
+findings — `clang-diagnostic-unused-private-field` and `-unused-variable`, from members and locals whose only remaining
+references sat in dead preprocessor branches. A single-check sweep would have missed all three; see the full-config rule
+under [Re-measuring](#re-measuring).
 
 ### The dead-name audit
 
@@ -519,8 +519,8 @@ so dropping them lets the aliases fire. Measured over all 840 units under clang-
 14,000 findings across 18 checks; `hicpp-no-array-decay` alone is 4,027 and `hicpp-signed-bitwise` 4,617.
 
 Five entries were dropped in the cleanup after the 23 move: `cert-dcl21-cpp`, `clang-analyzer-valist.Unterminated` and
-`cppcoreguidelines-explicit-constructor-and-conversion`, which name checks that exist in neither 22 nor 23 — the
-residue of the 21 → 22 round nobody noticed because `google-explicit-constructor` still covered the third — plus
+`cppcoreguidelines-explicit-constructor-and-conversion`, which name checks that exist in neither 22 nor 23 — the residue
+of the 21 → 22 round nobody noticed because `google-explicit-constructor` still covered the third — plus
 `hicpp-avoid-goto` and `hicpp-static-assert`, which exist under 22 but measure 0 sites there. Note the latter two are
 free only as long as that stays true: adding a `goto`, or a comparison `static_assert` could express, breaks a
 clang-tidy 22 build. The config is verified clean under both 22 and 23.
