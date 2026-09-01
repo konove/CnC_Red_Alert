@@ -448,6 +448,100 @@ static void Toggle_Formation() {
   }
 }
 
+// Opens an editable reply addressed to the Westwood Online user who paged us
+// from outside the game, or reports that nobody has paged.
+//
+// Only reachable when config::kWolapiEnabled; the caller gates it with
+// `if constexpr` so the whole page-respond path folds away with the toggle.
+// The caller has already checked that pWolapi is live. Marked maybe_unused
+// because the only call site sits in a discarded `if constexpr` branch when
+// the toggle is off, which clang otherwise reports as an unneeded static.
+[[maybe_unused]] static void Start_External_Page_Reply() {
+  if (*pWolapi->szExternalPager == '\0') {
+    Session.Messages.Add_Message(
+        nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
+        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+        Rule.MessageDelay * kTicksPerMinute);
+    Sound_Effect(VOC_SYS_ERROR);
+    return;
+  }
+
+  // An all-zero address is the flag the send path reads later to mean "this
+  // is a reply to whoever paged me from outside the game".
+  NetNumType blip;
+  NetNodeType blop;
+  memset(blip, 0, sizeof(blip));
+  memset(blop, 0, sizeof(blop));
+  Session.MessageAddress = IPXAddressClass(blip, blop);
+
+  // Tell pWolapi not to reset szExternalPager while the reply is being typed.
+  pWolapi->bFreezeExternalPager = true;
+
+  char txt[MAX_MESSAGE_LENGTH + 32] = {};
+  // TXT_TO comes from the localized string table, so verify the translation
+  // still takes exactly one %s before using it.
+  auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
+  if (format != nullptr) {
+    port::SafeCopy(txt,
+                   absl::StrFormat(*format, pWolapi->szExternalPager).c_str());
+  }
+
+  Session.Messages.Add_Edit(Session.ColorIdx,
+                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+                            txt, 0, 464);
+
+  Map.Flag_To_Redraw(false);
+
+  Keyboard->Clear();
+}
+
+// Fills in Session.GPacket with the message just finished in the edit buffer
+// and sends it over IPX, either to every connection (broadcast address) or to
+// the single address the F-key handler recorded.
+//
+// rc is the code MessageListClass::Input returned: 3 for a message that fit
+// the edit buffer, 4 for one that spilled into the overflow buffer.
+static void Send_Network_Chat_Message(const int rc) {
+  Session.GPacket.Command = NET_MESSAGE;
+  port::SafeCopy(Session.GPacket.Name, Session.Players[0]->Name);
+  Session.GPacket.Message.Color = Session.ColorIdx;
+  Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
+
+  if (rc == 3) {
+    port::SafeCopy(Session.GPacket.Message.Buf,
+                   Session.Messages.Get_Edit_Buf());
+  } else {
+    port::SafeCopy(Session.GPacket.Message.Buf,
+                   Session.Messages.Get_Overflow_Buf());
+    Session.Messages.Clear_Overflow_Buf();
+  }
+
+  // If 'F4' was hit, MessageAddress will be a broadcast address; send the
+  // message to every player we have a connection with.
+  if (Session.MessageAddress.Is_Broadcast()) {
+    char* ptr = &Session.GPacket.Message.Buf[0];
+    if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
+      *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
+      Enable_Secret_Units();
+    }
+    for (int i = 0; i < Ipx.Num_Connections(); ++i) {
+      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+                              Ipx.Connection_Address(Ipx.Connection_ID(i)));
+      Ipx.Service();
+    }
+  } else {
+    // Otherwise, MessageAddress contains the exact address to send to.
+    // Send to that address only.
+    Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+                            &Session.MessageAddress);
+    Ipx.Service();
+  }
+
+  // Store this message in our LastMessage buffer; the computer may send us a
+  // version of it later.
+  port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
+}
+
 // Processes inter-player message input. F1 through F8 open an editable message
 // addressed to one player or to everyone, and RETURN sends what has been typed.
 //
@@ -464,12 +558,20 @@ static void Message_Input(KeyNumType& input) {
   // To send the message, calling Get_Edit_Buf retrieves the buffer minus the
   // 'to' portion.  At the other end, the buffer allocated to display the
   // message must be MAX_MESSAGE_LENGTH plus the size of "From: xxx (house)".
-  //	With Westwood Online on, the page-respond key opens the message editor
-  //	too, not just the per-player F-keys.
-  const bool bPageRespond = config::kWolapiEnabled && input == kPageRespondKey;
+
+  // The page-respond key is not one of the per-player F-keys, so it gets its
+  // own gate ahead of them. Compiled and type-checked either way, reachable
+  // only when Westwood Online is on.
+  if constexpr (config::kWolapiEnabled) {
+    if (input == kPageRespondKey && Session.Type == GAME_INTERNET &&
+        !Session.Messages.Is_Edit() && pWolapi != nullptr &&
+        !pWolapi->bConnectionDown) {
+      Start_External_Page_Reply();
+    }
+  }
+
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-      ((input >= KN_F1 && input < KN_F1 + Session.MaxPlayers) ||
-       bPageRespond) &&
+      input >= KN_F1 && input < KN_F1 + Session.MaxPlayers &&
       !Session.Messages.Is_Edit()) {
     memset(txt, 0, 40);
 
@@ -500,8 +602,7 @@ static void Message_Input(KeyNumType& input) {
 
         Map.Flag_To_Redraw(false);
 
-      } else if (input - KN_F1 < Ipx.Num_Connections() && !Session.ObiWan &&
-                 !bPageRespond) {
+      } else if (input - KN_F1 < Ipx.Num_Connections() && !Session.ObiWan) {
         id = Ipx.Connection_ID(input - KN_F1);
         Session.MessageAddress = *Ipx.Connection_Address(id);
         // TXT_TO comes from the localized string table, so verify the
@@ -517,43 +618,6 @@ static void Message_Input(KeyNumType& input) {
             txt, 0, 464);
 
         Map.Flag_To_Redraw(false);
-      } else if (config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
-                 pWolapi && !pWolapi->bConnectionDown && bPageRespond) {
-        if (*pWolapi->szExternalPager) {
-          //	Respond to a page from external ww online user that paged me.
-          //	Set MessageAddress to all zeroes, as a flag to ourselves later
-          // on.
-          NetNumType blip;
-          NetNodeType blop;
-          memset(blip, 0, 4);
-          memset(blop, 0, 6);
-          Session.MessageAddress = IPXAddressClass(blip, blop);
-
-          //	Tell pWolapi not to reset szExternalPager for the time being.
-          pWolapi->bFreezeExternalPager = true;
-
-          //	Same guarded use of TXT_TO as the branch above.
-          auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
-          if (format != nullptr) {
-            port::SafeCopy(
-                txt,
-                absl::StrFormat(*format, pWolapi->szExternalPager).c_str());
-          }
-
-          Session.Messages.Add_Edit(
-              Session.ColorIdx,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
-
-          Map.Flag_To_Redraw(false);
-
-          Keyboard->Clear();
-        } else {
-          Session.Messages.Add_Message(
-              nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-              Rule.MessageDelay * kTicksPerMinute);
-          Sound_Effect(VOC_SYS_ERROR);
-        }
       }
     }
 #if (TEN)
@@ -684,66 +748,32 @@ static void Message_Input(KeyNumType& input) {
       }
       port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
     } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
-      //	An all-zero address is the flag set above meaning "this is a
-      // reply 	to whoever paged me from outside the game".
-      NetNumType blip;
-      NetNodeType blop;
-      Session.MessageAddress.Get_Address(blip, blop);
-      const bool bReplyToExternalPage =
-          config::kWolapiEnabled && blip[0] + blip[1] + blip[2] + blip[3] +
-                                            blop[0] + blop[1] + blop[2] +
-                                            blop[3] + blop[4] + blop[5] ==
-                                        0;
-      if (bReplyToExternalPage) {
-        if (pWolapi &&
-            !pWolapi
-                 ->bConnectionDown)  //	(As connection may have gone down.)
-        {
-          pWolapi->Page(pWolapi->szExternalPager,
-                        Session.Messages.Get_Edit_Buf(), false);
-          pWolapi->bFreezeExternalPager = false;
+      if constexpr (config::kWolapiEnabled) {
+        //	An all-zero address is the flag Start_External_Page_Reply set,
+        //	meaning "this is a reply to whoever paged me from outside the
+        //	game". No F-key ever produces that address.
+        NetNumType blip;
+        NetNodeType blop;
+        Session.MessageAddress.Get_Address(blip, blop);
+        const bool reply_to_external_page =
+            blip[0] + blip[1] + blip[2] + blip[3] + blop[0] + blop[1] +
+                blop[2] + blop[3] + blop[4] + blop[5] ==
+            0;
+        if (reply_to_external_page) {
+          //	(As connection may have gone down.)
+          if (pWolapi && !pWolapi->bConnectionDown) {
+            //	The HRESULT carries nothing here: asked not to wait for a
+            //	result, Page returns 0 whether or not the request went out.
+            static_cast<void>(pWolapi->Page(pWolapi->szExternalPager,
+                                            Session.Messages.Get_Edit_Buf(),
+                                            false));
+            pWolapi->bFreezeExternalPager = false;
+          }
+        } else {
+          Send_Network_Chat_Message(rc);
         }
       } else {
-        // Network game: fill in a GlobalPacketType & send it.
-        Session.GPacket.Command = NET_MESSAGE;
-        port::SafeCopy(Session.GPacket.Name, Session.Players[0]->Name);
-        Session.GPacket.Message.Color = Session.ColorIdx;
-        Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
-
-        if (rc == 3) {
-          port::SafeCopy(Session.GPacket.Message.Buf,
-                         Session.Messages.Get_Edit_Buf());
-        } else {
-          port::SafeCopy(Session.GPacket.Message.Buf,
-                         Session.Messages.Get_Overflow_Buf());
-          Session.Messages.Clear_Overflow_Buf();
-        }
-
-        // If 'F4' was hit, MessageAddress will be a broadcast address;
-        // send *	the message to every player we have a connection with.
-        if (Session.MessageAddress.Is_Broadcast()) {
-          char* ptr = &Session.GPacket.Message.Buf[0];
-          if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
-            *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
-            Enable_Secret_Units();
-          }
-          for (int i = 0; i < Ipx.Num_Connections(); ++i) {
-            Ipx.Send_Global_Message(
-                &Session.GPacket, sizeof(GlobalPacketType), 1,
-                Ipx.Connection_Address(Ipx.Connection_ID(i)));
-            Ipx.Service();
-          }
-        } else {
-          // Otherwise, MessageAddress contains the exact address to send to.
-          // Send to that address only.
-          Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                  &Session.MessageAddress);
-          Ipx.Service();
-        }
-
-        // Store this message in our LastMessage buffer; the computer may
-        // send *	us a version of it later.
-        port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
+        Send_Network_Chat_Message(rc);
       }
     }
 #if (TEN)
@@ -1091,23 +1121,27 @@ void Main_Game(const int argc, char* argv[]) {
       Session.Play = 0;
     }
     //	The pre-Westwood-Online path: WChat launched us and is waiting.
-    if (!config::kWolapiEnabled && Special.IsFromWChat) {
-      Shutdown_Network();  // Clear up the pseudo IPX stuff
+    //	Westwood Online replaced WChat as the launcher, so the two are
+    //	mutually exclusive -- this hand-back only exists in a build without it.
+    if constexpr (!config::kWolapiEnabled) {
+      if (Special.IsFromWChat) {
+        Shutdown_Network();  // Clear up the pseudo IPX stuff
 #ifndef WINSOCK_IPX
-      Winsock.Close();
+        Winsock.Close();
 #endif  // WINSOCK_IPX
-      Special.IsFromWChat = false;
-      SpawnedFromWChat = false;
+        Special.IsFromWChat = false;
+        SpawnedFromWChat = false;
 #ifdef _WIN32
-      // Discard the start packet so the next launch cannot reuse it.
-      DDEServer.Delete_MPlayer_Game_Info();
+        // Discard the start packet so the next launch cannot reuse it.
+        DDEServer.Delete_MPlayer_Game_Info();
 #endif
-      // Without this the game would drop straight back into the multiplayer
-      // menu instead of the main one.
-      Session.Type = GAME_NORMAL;
-      // Hand control back to WChat, which is still running -- it launched us
-      // and has been polling for us to finish.
-      Spawn_WChat(false);
+        // Without this the game would drop straight back into the multiplayer
+        // menu instead of the main one.
+        Session.Type = GAME_NORMAL;
+        // Hand control back to WChat, which is still running -- it launched us
+        // and has been polling for us to finish.
+        Spawn_WChat(false);
+      }
     }
   }
 
@@ -1497,6 +1531,18 @@ void Keyboard_Process(KeyNumType& input) {
   }
 }
 
+// Gives the Westwood Online chat and matchmaking objects a slice of time
+// to deliver whatever their servers have queued.
+//
+// Both PumpMessages HRESULT's are dropped on purpose: a lost connection is
+// reported through the callbacks they fire, which set
+// pWolapi->bConnectionDown (rawolapi.cc), and every caller tests that flag
+// instead. Only reachable when config::kWolapiEnabled, hence maybe_unused.
+[[maybe_unused]] static void Pump_Wolapi_Messages() {
+  static_cast<void>(pWolapi->pChat->PumpMessages());
+  static_cast<void>(pWolapi->pNetUtil->PumpMessages());
+}
+
 void Call_Back() {
   // Music and speech maintenance
   if (SampleType) {
@@ -1516,14 +1562,13 @@ void Call_Back() {
     NullModem.Service();
   }
 
-  //	Wolapi maintenance.
+  // Wolapi maintenance.
   if constexpr (config::kWolapiEnabled) {
     if (pWolapi) {
       if (pWolapi->bInGame) {
         if (!pWolapi->bConnectionDown &&
             Get_Time_Ms() > pWolapi->dwTimeNextWolapiPump) {
-          pWolapi->pChat->PumpMessages();
-          pWolapi->pNetUtil->PumpMessages();
+          Pump_Wolapi_Messages();
           pWolapi->dwTimeNextWolapiPump =
               Get_Time_Ms() + WOLAPIPUMPWAIT +
               700;  //	Slower pump during games.
@@ -1546,9 +1591,8 @@ void Call_Back() {
         //	When showing a modal dialog during chat, this pumping is turned
         // on. It's turned off immediately following.
         if (pWolapi->bPump_In_Call_Back &&
-            (Get_Time_Ms() > pWolapi->dwTimeNextWolapiPump)) {
-          pWolapi->pChat->PumpMessages();
-          pWolapi->pNetUtil->PumpMessages();
+            Get_Time_Ms() > pWolapi->dwTimeNextWolapiPump) {
+          Pump_Wolapi_Messages();
           pWolapi->dwTimeNextWolapiPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
         }
       }
