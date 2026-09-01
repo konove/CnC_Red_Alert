@@ -118,10 +118,6 @@ UnitTypeClass      │   BuildingTypeClass      │  VesselTypeClass
 // #define int386x(a, b, c, d) 0
 // #define int386(a, b, c) 0
 
-#if (TEN)
-#include "ra/tenmgr.h"
-#endif
-
 #if (MPATH)
 #include "ra/mpmgrw.h"
 #endif

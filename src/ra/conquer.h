@@ -643,10 +643,6 @@ bool Force_Scenario_Available(const char* name);
 bool Is_Counterstrike_Installed();
 bool Is_Aftermath_Installed();
 
-#if (TEN)
-void Ten_Call_Back();
-#endif  // TEN
-
 #if (MPATH)
 void MPATH_Call_Back();
 #endif  // MPATH

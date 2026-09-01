@@ -21,8 +21,4 @@ int Abort_Dialog();
 int Read_MPATH_Game_Options();
 #endif  // MPATH
 
-#if (TEN)
-int Read_TEN_Game_Options();
-#endif  // TEN
-
 #endif  // CNC_RED_ALERT_RA_MPLAYER_H_

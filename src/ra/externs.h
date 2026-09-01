@@ -331,10 +331,6 @@ class NullModemClass;
 extern NullModemClass NullModem;
 extern IPXManagerClass Ipx;
 
-#if (TEN)
-extern TenConnManClass* Ten;
-#endif
-
 #if (MPATH)
 extern MPlayerManClass* MPath;
 #endif
