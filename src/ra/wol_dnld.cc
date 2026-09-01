@@ -16,14 +16,38 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if WOLAPI_INTEGRATION
-
 //	Wol_Dnld.cpp - WW online patch download dialog.
 //	ajw 10/12/98
 
-#include "WolStrng.h"
-#include "WolapiOb.h"
-#include "ra/function.h"
+#include <algorithm>
+
+#include "absl/log/check.h"
+#include "port/ex_string.h"
+#include "port/safe_string.h"
+#include "port/sleep.h"
+#include "port/win32/win32_registry.h"
+#include "port/win32/win32_system.h"
+#include "ra/cheklist.h"
+#include "ra/dialog.h"
+#include "ra/drop.h"
+#include "ra/edit.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/gauge.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/msgbox.h"
+#include "ra/shapebtn.h"
+#include "ra/statbtn.h"
+#include "ra/textbtn.h"
+#include "ra/theme.h"
+#include "ra/wolapiob.h"
+#include "ra/wolstrng.h"
+#include "ra/ww_audio.h"
+#include "sdllib/font.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_mouse.h"
 
 //***********************************************************************************************
 bool WOL_Download_Dialog(IDownload* pDownload,
@@ -33,16 +57,16 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   // WOLAPI patch.
 
   bool bReturn = true;
-  DWORD dwTimeNextPump = ::timeGetTime() + WOLAPIPUMPWAIT;
+  DWORD dwTimeNextPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
 
   /*
   ** Dialog & button dimensions
   */
-  int d_dialog_w = 400;                       // dialog width
-  int d_dialog_h = 180;                        // dialog height
-  int d_dialog_x = ((640 - d_dialog_w) / 2);  // dialog x-coord
-  int d_dialog_y = ((400 - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
+  int d_dialog_w = 400;                             // dialog width
+  int d_dialog_h = 180;                             // dialog height
+  int d_dialog_x = ((640 - d_dialog_w) / 2);        // dialog x-coord
+  int d_dialog_y = ((400 - d_dialog_h) / 2);        // centered y-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
 
   int d_margin = 34;
   int d_txt6_h = 15;
@@ -134,10 +158,6 @@ bool WOL_Download_Dialog(IDownload* pDownload,
     *background then
     ** we need to redraw.
     */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     if (display) {
       if (display >= REDRAW_BACKGROUND) {
@@ -181,7 +201,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         /*
         ** Cancel. Just return to the main menu
         */
-        case (KN_ESC):
+        case KN_ESC:
         case ButtonKey(BUTTON_CANCEL):
           pDownload->Abort();
           process = false;
@@ -190,17 +210,15 @@ bool WOL_Download_Dialog(IDownload* pDownload,
       }
     }
 
-    if (::timeGetTime() > dwTimeNextPump) {
+    if (Get_Time_Ms() > dwTimeNextPump) {
       pDownload->PumpMessages();
       if (pDownloadSink->bFlagEnd) {
         pDownloadSink->bFlagEnd = false;
-        process = false;
         break;
       }
       if (pDownloadSink->bFlagError) {
         WWMessageBox().Process(TXT_WOL_DOWNLOADERROR);
         pDownloadSink->bFlagError = false;
-        process = false;
         bReturn = false;
         break;
       }
@@ -209,16 +227,16 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         progress_meter.Set_Value((pDownloadSink->iBytesRead * 100) /
                                  pDownloadSink->iTotalSize);
         char szText[200];
-        sprintf(szText, TXT_WOL_DOWNLOADBYTES, pDownloadSink->iBytesRead,
-                pDownloadSink->iTotalSize,
-                (pDownloadSink->iBytesRead * 100) / pDownloadSink->iTotalSize);
+        Format_Runtime_Text(
+            szText, sizeof(szText), TXT_WOL_DOWNLOADBYTES,
+            pDownloadSink->iBytesRead, pDownloadSink->iTotalSize,
+            (pDownloadSink->iBytesRead * 100) / pDownloadSink->iTotalSize);
         StatBytes.Set_Text(szText);
-        sprintf(szText, TXT_WOL_DOWNLOADTIME, pDownloadSink->iTimeLeft / 60,
-                pDownloadSink->iTimeLeft % 60);
+        Format_Runtime_Text(szText, sizeof(szText), TXT_WOL_DOWNLOADTIME,
+                            pDownloadSink->iTimeLeft / 60,
+                            pDownloadSink->iTimeLeft % 60);
         StatTime.Set_Text(szText);
-        if (display < REDRAW_BUTTONS) {
-          display = REDRAW_BUTTONS;
-        }
+        display = std::max(display, REDRAW_BUTTONS);
       }
       if (pDownloadSink->bFlagStatusUpdate) {
         pDownloadSink->bFlagStatusUpdate = false;
@@ -240,22 +258,19 @@ bool WOL_Download_Dialog(IDownload* pDownload,
             // update!\n" );
             break;
         }
-        if (display < REDRAW_BUTTONS) {
-          display = REDRAW_BUTTONS;
-        }
+        display = std::max(display, REDRAW_BUTTONS);
       }
       if (pDownloadSink->bFlagQueryResume) {
         if (pDownloadSink->bResumed) {
           char szTitleNew[200];
-          sprintf(szTitleNew, TXT_WOL_DOWNLOADRESUMED, szTitle);
+          Format_Runtime_Text(szTitleNew, sizeof(szTitleNew),
+                              TXT_WOL_DOWNLOADRESUMED, szTitle);
           StatTitle.Set_Text(szTitleNew);
-          if (display < REDRAW_BUTTONS) {
-            display = REDRAW_BUTTONS;
-          }
+          display = std::max(display, REDRAW_BUTTONS);
         }
       }
 
-      dwTimeNextPump = ::timeGetTime() + WOLAPIPUMPWAIT;
+      dwTimeNextPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
     }
 
     //	Invoke game callback
@@ -265,5 +280,3 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
   return bReturn;
 }
-
-#endif

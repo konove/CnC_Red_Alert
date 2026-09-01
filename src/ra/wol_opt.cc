@@ -16,19 +16,39 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if WOLAPI_INTEGRATION
-
 //	Wol_Opt.cpp - WW online options dialog.
 //	ajw 09/1/98
 
-#include "BigCheck.h"
-#include "IconList.h"
-#include "WolStrng.h"
-#include "WolapiOb.h"
-#include "ra/function.h"
-// #include "WolDebug.h"
-
-extern bool cancel_current_msgbox;
+#include "absl/log/check.h"
+#include "port/ex_string.h"
+#include "port/safe_string.h"
+#include "port/sleep.h"
+#include "port/win32/win32_registry.h"
+#include "port/win32/win32_system.h"
+#include "ra/bigcheck.h"
+#include "ra/cheklist.h"
+#include "ra/dialog.h"
+#include "ra/drop.h"
+#include "ra/edit.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/gauge.h"
+#include "ra/iconlist.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/msgbox.h"
+#include "ra/shapebtn.h"
+#include "ra/statbtn.h"
+#include "ra/textbtn.h"
+#include "ra/theme.h"
+#include "ra/wolapiob.h"
+#include "ra/wolstrng.h"
+#include "ra/ww_audio.h"
+#include "sdllib/font.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_mouse.h"
+// #include "ra/woldebug.h"
 
 //***********************************************************************************************
 bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
@@ -40,7 +60,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   bool bReturnDown = false;
 
   bool bIgnoreReturnDown = false;
-  if ((::GetAsyncKeyState(VK_RETURN) & 0x8000)) {
+  if (Keyboard->Down(KN_RETURN)) {
     //	The return key is already down, as we enter the dialog.
     //	Until it comes up again, ignore this fact, so that we don't act on a
     // return press that's not valid.
@@ -61,16 +81,12 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
 #endif
 
   int d_dialog_w = d_list_w + 80;  // dialog width
-  int d_dialog_h = 180;             // dialog height
-  int d_dialog_x = (((640) - d_dialog_w) / 2);
-  int d_dialog_y = (((400) - d_dialog_h) / 2);
+  int d_dialog_h = 180;            // dialog height
+  int d_dialog_x = ((640 - d_dialog_w) / 2);
+  int d_dialog_y = ((400 - d_dialog_h) / 2);
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
-  int d_txt8_h = 22;  // ht of 8-pt text
-  int d_margin = 14;   // margin width/height
-  int x_margin = 32;  // margin width/height
-
-  int top_margin = 0;
+  int d_margin = 14;  // margin width/height
 
   //	int d_list_w = 100 * 2;
   int d_list_h = 14;
@@ -101,7 +117,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Buttons
   */
-  ControlClass* commands = NULL;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass OkBtn(BUTTON_OK, TXT_OK, TPF_BUTTON, d_ok_x, d_ok_y, d_ok_w);
 
@@ -159,16 +175,6 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     }
 
     /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = true;
-    }
-
-    /*
     **	Refresh display if needed.
     */
     if (display) {
@@ -189,7 +195,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
       Show_Mouse();
     }
     //	Be nice to other apps.
-    Sleep(50);
+    port::SleepMs(50);
 
     /*
     **	Get user input.
@@ -199,13 +205,13 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
     // the key up, 	though this dialog handled the key down. ajw
-    if ((::GetAsyncKeyState(VK_ESCAPE) & 0x8000)) {
+    if (Keyboard->Down(KN_ESC)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
       input = ButtonKey(BUTTON_OK);
       bEscapeDown = false;
     }
-    if ((::GetAsyncKeyState(VK_RETURN) & 0x8000)) {
+    if (Keyboard->Down(KN_RETURN)) {
       if (!bIgnoreReturnDown) {
         bReturnDown = true;
       }
@@ -250,5 +256,3 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   }
   return bReturn;
 }
-
-#endif

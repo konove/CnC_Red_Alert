@@ -69,6 +69,7 @@ template class DynamicVectorClass<TriggerClass*>;
 template class DynamicVectorClass<FileEntryClass*>;
 template class DynamicVectorClass<RemapControlType*>;
 template class DynamicVectorClass<BaseNodeClass>;
+template class DynamicVectorClass<int>;
 template class DynamicVectorClass<char*>;
 template class DynamicVectorClass<unsigned char*>;
 template class DynamicVectorClass<const char*>;

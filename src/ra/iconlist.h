@@ -31,6 +31,7 @@
 #ifndef CNC_RED_ALERT_RA_ICONLIST_H_
 #define CNC_RED_ALERT_RA_ICONLIST_H_
 
+#include <cstdint>
 #include <string>
 
 #include "ra/list.h"
@@ -73,6 +74,20 @@ struct IconList_ItemExtras {
 
   FIXEDICON FixedIcon = {};
 };
+
+// Each item carries one type-erased pointer for the caller's own use. Some
+// callers keep a small integer there rather than an object. Round tripping an
+// int through a void* needs a cast the guidelines would rather nobody wrote,
+// so it is written once, here, instead of at every such call site.
+inline void* AsItemExtraData(int value) {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
+  return reinterpret_cast<void*>(static_cast<std::intptr_t>(value));
+}
+
+inline int ItemExtraDataAsInt(const void* data) {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  return static_cast<int>(reinterpret_cast<std::intptr_t>(data));
+}
 
 class IconListClass : public ListClass {
  public:

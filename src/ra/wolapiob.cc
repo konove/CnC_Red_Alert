@@ -1553,7 +1553,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
                  szMyName, szMessage);
       }
     } else {
-      // port::SafeCopy( szPrint, "<Private to " );
+      // strcpy( szPrint, "<Private to " );
       snprintf(szPrint, iPrintSize, "<%s ", TXT_WOL_PRIVATETO);
       User* pUserPrint = pUserListSend;
       while (pUserPrint) {

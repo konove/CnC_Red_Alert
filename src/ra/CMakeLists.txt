@@ -28,17 +28,12 @@ list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/noseqcon.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/number.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/rand.cc"
-        # Compiled by ra_wol_unlinked below rather than linked into rasdl.
-        # See the comment there.
-        "${CMAKE_CURRENT_SOURCE_DIR}/rawolapi.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/seqconn.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/stub.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/surface.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/turret.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/winstub.cc"
-        # Compiled by ra_wol_unlinked below rather than linked into rasdl.
-        "${CMAKE_CURRENT_SOURCE_DIR}/wolapiob.cc"
 )
 
 file(GLOB_RECURSE RA_HEADERS
@@ -120,18 +115,6 @@ target_link_libraries(rasdl PUBLIC absl::strings PRIVATE
         absl::status
         absl::statusor
         absl::str_format) # mpgdll wwipx32
-
-#	The Westwood Online client, as far as it has been ported. These compile
-#	clean under the strict checks but cannot be linked into rasdl yet: they
-#	call into the WOL dialogs, which are still guarded out, and those dialogs
-#	call back into them. An object library builds them -- so clang-tidy, IWYU
-#	and -Weverything keep reading them -- without anything having to link the
-#	result. Fold these sources back into rasdl once the dialogs come off
-#	their guards, and delete this target.
-add_library(ra_wol_unlinked OBJECT rawolapi.cc wolapiob.cc)
-target_compile_definitions(ra_wol_unlinked PRIVATE ENGLISH=1 PORTABLE=1)
-target_link_libraries(ra_wol_unlinked PRIVATE tech port sdllib vqa32
-        absl::check absl::log absl::strings)
 
 install(TARGETS rasdl)
 

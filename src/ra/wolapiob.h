@@ -36,6 +36,7 @@
 #include "ra/dib.h"
 #include "ra/iconlist.h"
 #include "ra/rawolapi.h"
+#include "ra/winbits.h"
 
 //***********************************************************************************************
 class IconListClass;
@@ -182,6 +183,24 @@ struct CREATEGAMEINFO {
 template <typename IconInfo>
 void* IconPointer(IconInfo& Info) {
   return Info.Icon.has_value() ? &*Info.Icon : nullptr;
+}
+
+// The same icon, typed, for the drawing code that does not go through
+// IconListClass.
+template <typename IconInfo>
+const dib::Image* IconImage(const IconInfo& Info) {
+  return Info.Icon.has_value() ? &*Info.Icon : nullptr;
+}
+
+// Draws the icon held by one of the structs above, if it loaded at all. The
+// artwork comes down from the server, so a missing icon is a state the lobby
+// has to survive rather than an error.
+template <typename IconInfo>
+void DrawDibIfLoaded(const IconInfo& Info, int xDest, int yDest, int iWidth,
+                     WindowNumberType window) {
+  if (Info.Icon.has_value()) {
+    DrawDib(*Info.Icon, xDest, yDest, iWidth, window);
+  }
 }
 
 //***********************************************************************************************

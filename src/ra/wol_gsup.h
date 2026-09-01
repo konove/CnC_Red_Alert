@@ -89,7 +89,7 @@ class WOL_GameSetupDialog {
   void SetSpecialControlStates();
   void BindControls(bool bBind);
   bool ExitGameChannel();
-  void DrawScenarioDescripIcon(const char* pDIB) const;
+  void DrawScenarioDescripIcon(const dib::Image* pIcon) const;
   void SetPlayerColor(const char* szName, PlayerColorType Color);
   PlayerColorType GetPlayerColor(const char* szName);
   void SetPlayerHouse(const char* szName, HousesType House);
@@ -316,7 +316,7 @@ class WOL_GameSetupDialog {
   //	ar_szScenIndexes parallels ar_szScenarios, holds ScenarioIndex. It's
   // actually an int, but I'm using void* to avoid 	template instantiation
   // problems and the need to change defines.h.
-  DynamicVectorClass<void*> ar_szScenIndexes[4];
+  DynamicVectorClass<int> ar_szScenIndexes[4];
 
   //------------------------------------------------------------------------
   //	Button Enumerations

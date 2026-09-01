@@ -16,17 +16,39 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if WOLAPI_INTEGRATION  //	Implies FIXIT_CSII.
-
 //	Wol_CGam.cpp - Create game dialog.
 //	ajw 09/9/98
 
-#include "BigCheck.h"
-#include "IconList.h"
-#include "SEditDlg.h"
-#include "WolStrng.h"
-#include "WolapiOb.h"
-#include "ra/function.h"
+#include "absl/log/check.h"
+#include "port/ex_string.h"
+#include "port/safe_string.h"
+#include "port/sleep.h"
+#include "port/win32/win32_registry.h"
+#include "port/win32/win32_system.h"
+#include "ra/bigcheck.h"
+#include "ra/cheklist.h"
+#include "ra/dialog.h"
+#include "ra/drop.h"
+#include "ra/edit.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/gauge.h"
+#include "ra/iconlist.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/msgbox.h"
+#include "ra/seditdlg.h"
+#include "ra/shapebtn.h"
+#include "ra/statbtn.h"
+#include "ra/textbtn.h"
+#include "ra/theme.h"
+#include "ra/wolapiob.h"
+#include "ra/wolstrng.h"
+#include "ra/ww_audio.h"
+#include "sdllib/font.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_mouse.h"
 
 // extern char* LoadShpFile( const char* szShpFile );
 void SetPlayerCountList(IconListClass& PlayerCountList, int iPlayerMax,
@@ -50,15 +72,11 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   */
   int d_dialog_w = 300;  // dialog width
   int d_dialog_h = 270;  // dialog height
-  int d_dialog_x = (((640) - d_dialog_w) / 2);
-  int d_dialog_y = (((400) - d_dialog_h) / 2);
+  int d_dialog_x = ((640 - d_dialog_w) / 2);
+  int d_dialog_y = ((400 - d_dialog_h) / 2);
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
 
-  int d_txt8_h = 22;  // ht of 8-pt text
-  int d_margin = 14;   // margin width/height
-  int x_margin = 32;  // margin width/height
-
-  int top_margin = 0;
+  int d_margin = 14;  // margin width/height
 
   int d_gaugeplayers_w = 140;
   int d_gaugeplayers_h = 18;
@@ -100,7 +118,6 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin;
 
   int d_cancel_w = 80;
-  int d_cancel_h = 18;
   int d_cancel_x = d_dialog_x + ((d_dialog_w * 2) / 3) - (d_cancel_w / 2);
   int d_cancel_y = d_ok_y;
 
@@ -121,7 +138,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   /*
   **	Buttons
   */
-  ControlClass* commands = NULL;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass OkBtn(BUTTON_OK, TXT_OK, TPF_BUTTON, d_ok_x, d_ok_y, d_ok_w);
   TextButtonClass CancelBtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
@@ -189,7 +206,8 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   AM_Check.Add_Tail(*commands);
 
   char szPlayerCount[100];
-  sprintf(szPlayerCount, TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax);
+  Format_Runtime_Text(szPlayerCount, sizeof(szPlayerCount), TXT_WOL_CG_PLAYERS,
+                      cgiReturn.iPlayerMax);
   PlayerCountStatic.Set_Text(szPlayerCount);
 
   /*
@@ -203,16 +221,6 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     **	Invoke game callback.
     */
     Call_Back();
-
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = true;
-    }
 
     /*
     **	Refresh display if needed.
@@ -239,7 +247,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       Show_Mouse();
     }
     //	Be nice to other apps.
-    Sleep(50);
+    port::SleepMs(50);
 
     /*
     **	Get user input.
@@ -249,13 +257,13 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
     // the key up, 	though this dialog handled the key down. ajw
-    if ((::GetAsyncKeyState(VK_ESCAPE) & 0x8000)) {
+    if (Keyboard->Down(KN_ESC)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
       input = ButtonKey(BUTTON_CANCEL);
       bEscapeDown = false;
     }
-    if ((::GetAsyncKeyState(VK_RETURN) & 0x8000)) {
+    if (Keyboard->Down(KN_RETURN)) {
       bReturnDown = true;
     } else if (bReturnDown) {
       input = ButtonKey(BUTTON_OK);
@@ -283,7 +291,8 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           display = true;
         }
         cgiReturn.iPlayerMax = PlayerCountGauge.Get_Value() + 2;
-        sprintf(szPlayerCount, TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax);
+        Format_Runtime_Text(szPlayerCount, sizeof(szPlayerCount),
+                            TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax);
         PlayerCountStatic.Set_Text(szPlayerCount);
         PlayerCountStatic.Draw_Me();
         break;
@@ -294,7 +303,8 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           PlayerCountGauge.Set_Value(0);
           //					PlayerCountGauge.Disable();
           cgiReturn.iPlayerMax = 2;
-          sprintf(szPlayerCount, TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax);
+          Format_Runtime_Text(szPlayerCount, sizeof(szPlayerCount),
+                              TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax);
           PlayerCountStatic.Set_Text(szPlayerCount);
           PlayerCountStatic.Draw_Me();
         }
@@ -347,7 +357,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
 
   if (cgiReturn.bCreateGame && cgiReturn.bPrivate) {
     //	Get a password for the channel.
-    Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                      TPF_TEXT);  //	Required before String_Pixel_Width()
                                  // call, for god's sake.
     SimpleEditDlgClass* pEditDlg =
@@ -356,7 +366,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     pWO->bPump_In_Call_Back = true;
     if (strcmp(pEditDlg->Show(), Text_String(TXT_OK)) == 0 &&
         *pEditDlg->szEdit) {
-      strcpy(cgiReturn.szPassword, pEditDlg->szEdit);
+      port::SafeCopy(cgiReturn.szPassword, pEditDlg->szEdit);
     } else {
       cgiReturn.bCreateGame = false;  //	Cancel creation.
     }
@@ -388,5 +398,3 @@ void SetPlayerCountList(IconListClass& PlayerCountList, int iPlayerMax,
       break;
   }
 }
-
-#endif

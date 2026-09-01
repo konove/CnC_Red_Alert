@@ -16,17 +16,39 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if WOLAPI_INTEGRATION
-
 //	Wol_Logn.cpp - WW online name/password dialog.
 //	ajw 07/16/98
 
-#include "BigCheck.h"
-#include "IconList.h"
+#include "absl/log/check.h"
+#include "port/ex_string.h"
+#include "port/safe_string.h"
+#include "port/sleep.h"
+#include "port/win32/win32_registry.h"
+#include "port/win32/win32_system.h"
+#include "ra/bigcheck.h"
+#include "ra/cheklist.h"
+#include "ra/dialog.h"
+#include "ra/drop.h"
+#include "ra/edit.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/gauge.h"
+#include "ra/iconlist.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/msgbox.h"
 #include "ra/passedit.h"
-#include "WolStrng.h"
-#include "WolapiOb.h"
-#include "ra/function.h"
+#include "ra/shapebtn.h"
+#include "ra/statbtn.h"
+#include "ra/textbtn.h"
+#include "ra/theme.h"
+#include "ra/wolapiob.h"
+#include "ra/wolstrng.h"
+#include "ra/ww_audio.h"
+#include "sdllib/font.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_mouse.h"
 
 bool ReadSavedNicks(WolapiObject* pWO, IconListClass& NickList,
                     char* szNameBuffer, char* szPassBuffer);
@@ -35,11 +57,7 @@ bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
 void DeleteNick(WolapiObject* pWO, int iOneBasedEntryToDelete);
 // char* LoadShpFile( const char* szShpFile );
 
-void DebugChatDef(HRESULT hRes);
-
-extern bool bTabKeyPressedHack;
-
-// #include "WolDebug.h"
+// #include "ra/woldebug.h"
 
 //***********************************************************************************************
 int WOL_Login_Dialog(WolapiObject* pWO) {
@@ -60,18 +78,12 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   int d_dialog_w = 300;  // dialog width
 #endif
   int d_dialog_h = 170;  // dialog height
-  int d_dialog_x = (((640) - d_dialog_w) / 2);
-  int d_dialog_y = (((510) - d_dialog_h) / 2);
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // coord of x-center
-
-  int d_txt8_h = 22;  // ht of 8-pt text
-  int d_margin = 14;   // margin width/height
-  int x_margin = 32;  // margin width/height
+  int d_dialog_x = ((640 - d_dialog_w) / 2);
+  int d_dialog_y = ((510 - d_dialog_h) / 2);
 
   int top_margin = 0;
 
   int d_name_w = 132;
-  int d_name_h = 20;
 #ifdef FRENCH
   int d_name_x = d_dialog_x + 50;
 #else
@@ -80,7 +92,6 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   int d_name_y = d_dialog_y + top_margin + 50;
 
   int d_pass_w = 72;
-  int d_pass_h = d_name_h;
   int d_pass_x = d_name_x + d_name_w + 12;
   int d_pass_y = d_name_y;
 
@@ -104,18 +115,15 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
 #else
   int d_connect_w = 80;
 #endif
-  int d_connect_h = 26;
   int d_connect_x = d_name_x + d_name_w / 2 - d_connect_w / 2;
-  int d_connect_y =
-      d_dialog_y + top_margin +
-      130;  // d_dialog_y + d_dialog_h - d_connect_h - d_margin;
+  int d_connect_y = d_dialog_y + top_margin +
+                    130;  // d_dialog_y + d_dialog_h - d_connect_h - d_margin;
 
 #if defined(GERMAN) || defined(FRENCH)
   int d_cancel_w = 80;  // BG:40
 #else
   int d_cancel_w = 80;
 #endif
-  int d_cancel_h = 26;
   int d_cancel_x =
       d_pass_x + d_pass_w / 2 - d_cancel_w / 2;  // d_dialog_cx + d_margin;
   int d_cancel_y = d_connect_y;
@@ -136,12 +144,6 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Redraw values: in order from "top" to "bottom" layer of the dialog
   */
-  typedef enum {
-    REDRAW_NONE = 0,
-    REDRAW_BUTTONS,
-    REDRAW_BACKGROUND,
-    REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
 
   /*
   **	Dialog variables
@@ -157,7 +159,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Buttons
   */
-  ControlClass* commands = NULL;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass ConnectBtn(BUTTON_CONNECT, TXT_WOL_CONNECT, TPF_BUTTON,
                              d_connect_x, d_connect_y, d_connect_w);
@@ -236,16 +238,6 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     Call_Back();
 
     /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = true;
-    }
-
-    /*
     **	Refresh display if needed.
     */
     if (display) {
@@ -260,15 +252,14 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       **	Display the dialog box.
       */
       //			Hide_Mouse();
-      if (display) {
-        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-        Draw_Caption(TXT_WOL_LOGINDIALOG, d_dialog_x, d_dialog_y, d_dialog_w);
-      }
+
+      Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+      Draw_Caption(TXT_WOL_LOGINDIALOG, d_dialog_x, d_dialog_y, d_dialog_w);
 
       /*
       **	Redraw the buttons.
       */
-      if (display) {
+      {
         Fancy_Text_Print(TXT_WOL_NAME, d_name_x + (d_name_w / 2), d_name_y - 14,
                          GadgetClass::Get_Color_Scheme(), TBLACK,
                          TPF_TEXT | TPF_CENTER);
@@ -287,7 +278,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       Show_Mouse();
     }
     //	Be nice to other apps.
-    Sleep(50);
+    port::SleepMs(50);
 
     /*
     **	Get user input.
@@ -347,7 +338,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       /*
       ** ESC/Cancel: break
       */
-      case (KN_ESC):
+      case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
         iReturn = 0;
         process = false;
@@ -467,9 +458,10 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                                 }
         */
       case ButtonKey(LISTBOX_NICKS):
-        strcpy(szNameBuffer, NickList.Get_Item(NickList.Current_Index()));
-        strcpy(szPassBuffer,
-               NickList.Get_Item_ExtraDataString(NickList.Current_Index()));
+        port::SafeCopy(szNameBuffer,
+                       NickList.Get_Item(NickList.Current_Index()));
+        port::SafeCopy(szPassBuffer, NickList.Get_Item_ExtraDataString(
+                                         NickList.Current_Index()));
         NameEdit.Flag_To_Redraw();
         PassEdit.Flag_To_Redraw();
         //	Because the password is mangled, if the user begins to edit it
@@ -521,10 +513,10 @@ bool ReadSavedNicks(WolapiObject* pWO, IconListClass& NickList,
   for (int i = 1; i != 3; i++) {
     if (pWO->pChat->GetNick(i, &szNick, &szPass) == S_OK) {
       if (*szNick) {
-        NickList.Add_Item(szNick, NULL, NULL, ICON_SHAPE, szPass);
+        NickList.Add_Item(szNick, nullptr, nullptr, ICON_SHAPE, szPass);
         if (i == 1) {
-          strcpy(szNameBuffer, szNick);
-          strcpy(szPassBuffer, szPass);
+          port::SafeCopy(szNameBuffer, szNick, WOL_NAME_LEN_MAX);
+          port::SafeCopy(szPassBuffer, szPass, WOL_PASSWORD_LEN);
           bReturn = true;
         }
       }
@@ -635,22 +627,3 @@ void DeleteNick(WolapiObject* pWO, int iOneBasedEntryToDelete) {
     DebugChatDef(hRes);
   }
 }
-
-/*
-//***********************************************************************************************
-char* LoadShpFile( const char* szShpFile )
-{
-        //	Returns pointer to shp data that has been new'ed (and must be
-delete[]d), or NULL if failure.
-        //	ajw: No longer needed - I used this before putting new resources
-into a mix file. HANDLE hFile; hFile = CreateFile( szShpFile, GENERIC_READ,
-FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL ); if( hFile
-== INVALID_HANDLE_VALUE ) return NULL; DWORD dwFileSize = GetFileSize( hFile,
-NULL ); char* pShp = new char[ dwFileSize ]; DWORD dwBytesRead; ReadFile( hFile,
-pShp, dwFileSize, &dwBytesRead, NULL );
-//	debugprint( "~~ LoadShpFile() - Read %i bytes out of %i from shp
-file.\n", dwBytesRead, dwFileSize ); CloseHandle( hFile ); return pShp;
-}
-*/
-
-#endif

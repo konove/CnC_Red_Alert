@@ -16,19 +16,41 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if WOLAPI_INTEGRATION
-
 //	wol_chat.cpp
 //	ajw 7/8/98
 
-#include "SEditDlg.h"
-#include "ToolTip.h"
-#include "WolStrng.h"
-#include "WolapiOb.h"
-#include "ra/function.h"
+#include "absl/log/check.h"
+#include "port/ex_string.h"
+#include "port/safe_string.h"
+#include "port/sleep.h"
+#include "port/win32/win32_registry.h"
+#include "port/win32/win32_system.h"
+#include "ra/cheklist.h"
+#include "ra/dialog.h"
+#include "ra/drop.h"
+#include "ra/edit.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/gauge.h"
 #include "ra/iconlist.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/msgbox.h"
+#include "ra/seditdlg.h"
+#include "ra/shapebtn.h"
+#include "ra/statbtn.h"
+#include "ra/textbtn.h"
+#include "ra/theme.h"
+#include "ra/tooltip.h"
+#include "ra/wolapiob.h"
+#include "ra/wolstrng.h"
+#include "ra/ww_audio.h"
+#include "sdllib/font.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_mouse.h"
 
-// #include "WolDebug.h"
+// #include "ra/woldebug.h"
 
 void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
                       PlayerColorType iColorRemap = PCOLOR_NONE);
@@ -75,7 +97,7 @@ static int d_userlist_y;
 
 //***********************************************************************************************
 int WOL_Chat_Dialog(WolapiObject* pWO) {
-  int rc;
+  int rc = 0;  //	What Run() returns: 0 is "back to the main menu".
   bool bFirsttime = true;
   bool bHackFocus = true;
 
@@ -86,9 +108,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   int d_dialog_h = 400;                       // dialog height
   int d_dialog_x = ((640 - d_dialog_w) / 2);  // dialog x-coord
   int d_dialog_y = ((400 - d_dialog_h) / 2);  // centered y-coord
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
 
-  int d_text_h = 12;
   int d_margin1 = 34;  // large margin
   int d_margin2 = 14;  // small margin
 
@@ -110,7 +130,6 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   d_userlist_h = d_chatlist_y + d_chatlist_h - d_userlist_y;
 
   int d_action_w = 100;
-  int d_action_h = 18;
   int d_action_x = d_dialog_x + 500;
   int d_action_y = 365;
 
@@ -125,17 +144,14 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //	int d_cgame_y = d_action_y;
 
   int d_back_w = 100;
-  int d_back_h = 18;
   int d_back_x = d_dialog_x + 100;
   int d_back_y = d_action_y;
 
   int d_join_w = 100;
-  int d_join_h = 18;
   int d_join_x = d_dialog_x + 210;
   int d_join_y = d_action_y;
 
   int d_create_w = 100;
-  int d_create_h = 18;
   int d_create_x =
       d_dialog_x + 320;  //((d_dialog_w * 5) / 6) - (d_create_w / 2);
   int d_create_y = d_action_y;
@@ -195,7 +211,6 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
   Stopwatch<SystemTickSource> lastclick_timer;
   int lastclick_idx = 0;  // index of item last clicked on
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   //------------------------------------------------------------------------
   //	Buttons
@@ -291,11 +306,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   sendedit.Add_Tail(*commands);
 
   //	Tooltips...
-  DWORD timeToolTipAppear;
+  DWORD timeToolTipAppear = 0;  //	When the pending tooltip is due.
   ToolTipClass* pToolTipHead =
-      NULL;  //	Head of list of ToolTips that parallels gadget list.
+      nullptr;  //	Head of list of ToolTips that parallels gadget list.
   ToolTipClass* pToolTipHitLast =
-      NULL;  //	ToolTip the mouse was last over, or null.
+      nullptr;  //	ToolTip the mouse was last over, or null.
 
   ToolTipClass* pToolTip = pToolTipHead = pWO->pTTipDiscon;
   pToolTip->next = pWO->pTTipLeave;
@@ -324,8 +339,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
                               ExpandUserBtn.X + 8, ExpandUserBtn.Y - 9, true);
   pToolTip->next = &TTipUserExpand;
   pToolTip = pToolTip->next;
-  ToolTipClass TTipChanList(&chanlist, 0, chanlist.X + 1, chanlist.Y + 1, true,
-                            true);
+  ToolTipClass TTipChanList(&chanlist, nullptr, chanlist.X + 1, chanlist.Y + 1,
+                            true, true);
   pToolTip->next = &TTipChanList;
   pToolTip = pToolTip->next;
   ToolTipClass TTipJoin(&JoinBtn, TXT_WOL_TTIP_JOIN, d_join_x + d_join_w / 2,
@@ -352,7 +367,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
                           RankAMBtn.Y - 9, true);
   pToolTip->next = &TTipRankAM;
   pToolTip = pToolTip->next;
-  pToolTip->next = NULL;
+  pToolTip->next = nullptr;
 
   //........................................................................
   // List boxes
@@ -360,9 +375,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   int tabs[] = {150};  //	tabs for channel list
   chanlist.Set_Tabs(tabs);
 
-  //	Fancy_Text_Print("", 0, 0, scheme, TBLACK, TPF_TEXT);
-
-  lastclick_timer = 0;
+  lastclick_timer.Reset();
 
   //	Tell WolapiObject about lists to use for output.
   //	(Sure wish I'd gone against the grain and made this dialog a class...)
@@ -370,7 +383,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
   if (!pWO->bChatShownBefore) {
     //	Print message of the day.
-    chatlist.Add_Item(pWO->pChatSink->szMotd, NULL, NULL, ICON_SHAPE);
+    chatlist.Add_Item(pWO->pChatSink->szMotd, nullptr, nullptr, ICON_SHAPE);
   } else {
     //	We have returned to the chat dialog after being in either game setup or
     // an actual game.
@@ -433,7 +446,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 #endif
 
     //	Regularly check for incoming messages from wolapi.
-    if (::timeGetTime() > pWO->dwTimeNextWolapiPump) {
+    if (Get_Time_Ms() > pWO->dwTimeNextWolapiPump) {
       /*
                               if( pToolTipHitLast && pToolTipHitLast->bShowing )
          //	Lame hack. Problem is draws that occur in callbacks.
@@ -458,7 +471,6 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           pWO->Logout();
         }
         rc = -1;  //	As if the user logged himself out.
-        process = false;
         break;
       }
       if (pWO->pChatSink->bGotKickedTrigger) {
@@ -488,7 +500,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         chanlistTitle.Set_Text(pWO->szChannelListTitle);
         pWO->bChannelListTitleUpdated = false;
       }
-      pWO->dwTimeNextWolapiPump = ::timeGetTime() + WOLAPIPUMPWAIT;
+      pWO->dwTimeNextWolapiPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
     }
 
     //	Synch rank toggle buttons state.
@@ -539,7 +551,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
          pWO->CurrentLevel == WOL_LEVEL_USERCHAT ||
          pWO->CurrentLevel == WOL_LEVEL_LOBBIES ||
          pWO->CurrentLevel == WOL_LEVEL_INLOBBY) &&
-        ::timeGetTime() > pWO->dwTimeNextChannelUpdate) {
+        Get_Time_Ms() > pWO->dwTimeNextChannelUpdate) {
       switch (pWO->CurrentLevel) {
         case WOL_LEVEL_OFFICIALCHAT:
           pWO->UpdateChannels(0, CHANNELFILTER_OFFICIAL, false);
@@ -555,7 +567,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           pWO->UpdateChannels(GAME_TYPE, CHANNELFILTER_LOCALLOBBYGAMES, true);
           break;
       }
-      pWO->dwTimeNextChannelUpdate = ::timeGetTime() + CHANNELUPDATEWAIT;
+      pWO->dwTimeNextChannelUpdate = Get_Time_Ms() + CHANNELUPDATEWAIT;
     }
 
     /*
@@ -563,10 +575,6 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     *background then
     ** we need to redraw.
     */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     if (bFirsttime && !pWO->bChatShownBefore) {
       WWMessageBox().Process(TXT_WOL_FINDINGLOBBY, TXT_NONE);
@@ -574,7 +582,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       if (pWO->GetNameOfBeginningLobby(szLobbyName, sizeof(szLobbyName))) {
         //				debugprint( "Found lobby to go into:
         //'%s'\n", szLobbyName );
-        if (!EnterChannel(pWO, chatlist, NULL, szLobbyName, false)) {
+        if (!EnterChannel(pWO, chatlist, nullptr, szLobbyName, false)) {
           //	Could not enter channel for some reason. Go to top instead.
           pWO->EnterLevel_Top();
         }
@@ -644,15 +652,14 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       Show_Mouse();
     }
     //	Be nice to other apps.
-    Sleep(50);
+    port::SleepMs(50);
 
     //.....................................................................
     //	Get user input
     //.....................................................................
-    if ((::GetAsyncKeyState(KN_LMOUSE) & 0x8000) ||
-        (::GetAsyncKeyState(KN_RMOUSE) & 0x8000)) {
+    if (Keyboard->Down(KN_LMOUSE) || Keyboard->Down(KN_RMOUSE)) {
       //	Mouse button is down.
-      timeToolTipAppear = ::timeGetTime() + TOOLTIPDELAY;
+      timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
       if (pToolTipHitLast && pToolTipHitLast->bShowing) {
         pToolTipHitLast->Unshow();
       }
@@ -688,9 +695,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
             bLinkInList(commands, pToolTipHit->pGadget))  //	(Gadget must be
                                                           // in controls list.)
         {
-          if (!pToolTipHit->bShowing && ::timeGetTime() > timeToolTipAppear &&
-              !((::GetAsyncKeyState(KN_LMOUSE) & 0x8000) ||
-                (::GetAsyncKeyState(KN_RMOUSE) & 0x8000))) {
+          if (!pToolTipHit->bShowing && Get_Time_Ms() > timeToolTipAppear &&
+              !(Keyboard->Down(KN_LMOUSE) || Keyboard->Down(KN_RMOUSE))) {
             pToolTipHit->Show();
           } else if (pToolTipHit->bIconList &&
                      pToolTipHit->bOverDifferentLine()) {
@@ -703,7 +709,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           pToolTipHitLast->Unshow();
         }
         pToolTipHitLast = pToolTipHit;
-        timeToolTipAppear = ::timeGetTime() + TOOLTIPDELAY;
+        timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
       }
     }
 
@@ -813,7 +819,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         //...............................................................
         // Handle a double-click
         //...............................................................
-        if (lastclick_timer < 30 && chanlist.Current_Index() == lastclick_idx) {
+        if (lastclick_timer.Value() < 30 &&
+            chanlist.Current_Index() == lastclick_idx) {
           //	Doubleclick on channel list.
           if (ProcessChannelListSelection(pWO, chatlist, chanlist,
                                           lastclick_idx)) {
@@ -831,7 +838,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           // If no double-click occurred, set the last-clicked index
           // & double-click timer.
           //............................................................
-          lastclick_timer = 0;
+          lastclick_timer.Reset();
           lastclick_idx = chanlist.Current_Index();
         }
         break;
@@ -902,7 +909,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         break;
 
       case ButtonKey(BUTTON_REFRESH):
-        pWO->dwTimeNextChannelUpdate = ::timeGetTime();
+        pWO->dwTimeNextChannelUpdate = Get_Time_Ms();
         break;
 
       case ButtonKey(BUTTON_SQUELCH):
@@ -931,7 +938,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         bHackFocus = true;
         break;
 
-      case (KN_ESC):
+      case KN_ESC:
         //				break;			ajw
         // Put back in?
 
@@ -944,6 +951,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           break;
         }
         //	Note no break; here. Fall through if at top level.
+        [[fallthrough]];
       case ButtonKey(BUTTON_DISCONNECT):
         if (WWMessageBox().Process(TXT_WOL_CONFIRMLOGOUT, TXT_YES, TXT_NO) ==
             0) {
@@ -1038,14 +1046,15 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
                       PlayerColorType iColorRemap /* = PCOLOR_NONE */) {
   RemapControlType* pColorRemap =
-      (iColorRemap == PCOLOR_NONE ? NULL : &ColorRemaps[iColorRemap]);
+      (iColorRemap == PCOLOR_NONE ? nullptr : &ColorRemaps[iColorRemap]);
   WOL_PrintMessage(ILTarget, szText, pColorRemap);
 }
 
 //***********************************************************************************************
 void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
                       RemapControlType* pColorRemap) {
-  ILTarget.Add_Item(szText, NULL, NULL, ICON_SHAPE, NULL, NULL, pColorRemap);
+  ILTarget.Add_Item(szText, nullptr, nullptr, ICON_SHAPE, nullptr, nullptr,
+                    pColorRemap);
   if (!ILTarget.bScrollBeingDragged()) {
     ILTarget.Show_Last_Item();
   }
@@ -1128,7 +1137,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
   //	We've stored the channel pointer in the hidden extra data field.
   //	( Be careful about calling RAChatEventSink::DeleteChannelList()! )
   Channel* pChannel = (Channel*)chanlist.Get_Item_ExtraDataPtr(iIndex);
-  return EnterChannel(pWO, chatlist, pChannel, NULL, bGame);
+  return EnterChannel(pWO, chatlist, pChannel, nullptr, bGame);
 }
 
 //***********************************************************************************************
@@ -1146,7 +1155,8 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
       return false;
     }
     pChannel = &ChannelWhenNameOnly;
-    strcpy((char*)pChannel->name, szChannelName);
+    port::SafeCopy((char*)pChannel->name, szChannelName,
+                   sizeof(pChannel->name));
   }
 
   if (bGame && pChannel->currentUsers >=
@@ -1182,7 +1192,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
                   if( !pEditDlg->Show() || !*pEditDlg->szEdit )
                           return false;
 
-                  strcpy( (char*)pChannel->key, pEditDlg->szEdit );
+                  port::SafeCopy( (char*)pChannel->key, pEditDlg->szEdit );
           }
   */
   bool bKeepTrying = true;
@@ -1190,18 +1200,18 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
   //	Set password automatically for our lobbies, if trying to join one.
   int iLobby = iChannelLobbyNumber(pChannel->name);
   if (iLobby != -1) {
-    strcpy((char*)pChannel->key, LOBBYPASSWORD);
+    port::SafeCopy((char*)pChannel->key, LOBBYPASSWORD, sizeof(pChannel->key));
   }
 
   char szSuccessfulPassword[WOL_PASSWORD_LEN + 5];
   *szSuccessfulPassword = 0;
 
-  HRESULT hRes;
+  HRESULT hRes = E_FAIL;  //	Set by the join attempt below, if it runs.
   while (bKeepTrying) {
     hRes = pWO->ChannelJoin(pChannel);
     switch (hRes) {
       case CHAT_E_BADCHANNELPASSWORD: {
-        Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
+        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                          TPF_TEXT);  //	Required before String_Pixel_Width()
                                      // call, for god's sake.
 #ifdef ENGLISH
@@ -1228,8 +1238,9 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
           break;
         }
         pWO->bPump_In_Call_Back = false;
-        strcpy((char*)pChannel->key, pEditDlg->szEdit);
-        strcpy(szSuccessfulPassword, pEditDlg->szEdit);
+        port::SafeCopy((char*)pChannel->key, pEditDlg->szEdit,
+                       sizeof(pChannel->key));
+        port::SafeCopy(szSuccessfulPassword, pEditDlg->szEdit);
         delete pEditDlg;
         break;
       }
@@ -1270,40 +1281,38 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
   if (!bGame) {
     if (hRes == S_OK) {
       return pWO->OnEnteringChatChannel((char*)pChannel->name, false, iLobby);
-    } else {
-      return false;
     }
-  } else {
-    if (hRes == S_OK) {
-      *pWO->szChannelReturnOnGameEnterFail = 0;
-      //	Return later to the lobby of the channel creator - which was
-      // saved in the channel itself.
-      pWO->iLobbyReturnAfterGame = pChannel->reserved & 0x00FFFFFF;
-      if (pWO->iLobbyReturnAfterGame == 0x00FFFFFF) {
-        pWO->iLobbyReturnAfterGame = -1;
-      }
-      CREATEGAMEINFO CreateGameInfo;
-      //	Not all of these values are currently used during setup.
-      CreateGameInfo.bCreateGame = false;
-      CreateGameInfo.iPlayerMax = pChannel->maxUsers;
-      CreateGameInfo.bTournament = pChannel->tournament;
-      if (*szSuccessfulPassword) {
-        CreateGameInfo.bPrivate = true;
-        strcpy(CreateGameInfo.szPassword, szSuccessfulPassword);
-      } else {
-        CreateGameInfo.bPrivate = false;
-        *CreateGameInfo.szPassword = 0;
-      }
-      CreateGameInfo.GameKind =
-          (CREATEGAMEINFO::GAMEKIND)(pChannel->reserved & 0xFF000000);
-      return pWO->OnEnteringGameChannel((char*)pChannel->name, false,
-                                        CreateGameInfo);
-    } else {
-      pWO->OnFailedToEnterGameChannel();
-      *pWO->szChannelReturnOnGameEnterFail = 0;
-      return false;
-    }
+    return false;
   }
+  if (hRes == S_OK) {
+    *pWO->szChannelReturnOnGameEnterFail = 0;
+    //	Return later to the lobby of the channel creator - which was
+    // saved in the channel itself.
+    pWO->iLobbyReturnAfterGame =
+        static_cast<int>(pChannel->reserved & 0x00FFFFFFU);
+    if (pWO->iLobbyReturnAfterGame == 0x00FFFFFF) {
+      pWO->iLobbyReturnAfterGame = -1;
+    }
+    CREATEGAMEINFO CreateGameInfo;
+    //	Not all of these values are currently used during setup.
+    CreateGameInfo.bCreateGame = false;
+    CreateGameInfo.iPlayerMax = pChannel->maxUsers;
+    CreateGameInfo.bTournament = pChannel->tournament;
+    if (*szSuccessfulPassword) {
+      CreateGameInfo.bPrivate = true;
+      port::SafeCopy(CreateGameInfo.szPassword, szSuccessfulPassword);
+    } else {
+      CreateGameInfo.bPrivate = false;
+      *CreateGameInfo.szPassword = 0;
+    }
+    CreateGameInfo.GameKind =
+        (CREATEGAMEINFO::GAMEKIND)(pChannel->reserved & 0xFF000000);
+    return pWO->OnEnteringGameChannel((char*)pChannel->name, false,
+                                      CreateGameInfo);
+  }
+  pWO->OnFailedToEnterGameChannel();
+  *pWO->szChannelReturnOnGameEnterFail = 0;
+  return false;
 }
 
 //***********************************************************************************************
@@ -1341,7 +1350,7 @@ void CreateChatChannel(WolapiObject* pWO) {
           else
   */
   {
-    Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                      TPF_TEXT);  //	Required before String_Pixel_Width()
                                  // call, for god's sake.
     pEditDlg = new SimpleEditDlgClass(
@@ -1357,7 +1366,7 @@ void CreateChatChannel(WolapiObject* pWO) {
         }
       } else {
         //	Create public channel.
-        if (pWO->ChannelCreate(pEditDlg->szEdit, NULL)) {
+        if (pWO->ChannelCreate(pEditDlg->szEdit, nullptr)) {
           pWO->OnEnteringChatChannel(pEditDlg->szEdit, true, -1);
         }
       }
@@ -1388,7 +1397,7 @@ bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi) {
   if (*cgi.szPassword) {
     szKey = cgi.szPassword;
   } else {
-    szKey = NULL;
+    szKey = nullptr;
   }
 
   if (pWO->ChannelCreate(szNewChannelName, szKey, true, cgi.iPlayerMax,
@@ -1573,5 +1582,3 @@ bool bLinkInList(const LinkClass* pListHead, const LinkClass* pLinkToFind) {
   }
   return false;
 }
-
-#endif

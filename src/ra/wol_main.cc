@@ -16,26 +16,47 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if WOLAPI_INTEGRATION
-
 //	Wol_Main.cpp - Bottom level wolapi-stuff function.
 //	ajw 07/16/98
 
-#include "WolStrng.h"
-#include "WolapiOb.h"
-#include "ra/function.h"
 #include "ra/wol_gsup.h"
+#include "ra/wolapiob.h"
+#include "ra/wolstrng.h"
 
 int WOL_Login_Dialog(WolapiObject* pWolapi);
 int WOL_Chat_Dialog(WolapiObject* pWolapi);
-const char* Game_Registry_Key();
 
 bool ReregisterWolapiDLL();
 void HandleDLLFail();
 
-WolapiObject* pWolapi = NULL;
+WolapiObject* pWolapi = nullptr;
 
-#include "WolDebug.h"
+#include "absl/log/check.h"
+#include "port/ex_string.h"
+#include "port/safe_string.h"
+#include "port/sleep.h"
+#include "port/win32/win32_registry.h"
+#include "port/win32/win32_system.h"
+#include "ra/cheklist.h"
+#include "ra/dialog.h"
+#include "ra/drop.h"
+#include "ra/edit.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/gauge.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/msgbox.h"
+#include "ra/shapebtn.h"
+#include "ra/statbtn.h"
+#include "ra/textbtn.h"
+#include "ra/theme.h"
+#include "ra/woldebug.h"
+#include "ra/ww_audio.h"
+#include "sdllib/font.h"
+#include "sdllib/timer.h"
+#include "sdllib/ww_mouse.h"
 
 //***********************************************************************************************
 //	The first time through, pWolapi is NULL thus wolapi gets set up.
@@ -71,7 +92,7 @@ int WOL_Main() {
       //	Kill wolapi.
       pWolapi->UnsetupCOMStuff();
       delete pWolapi;
-      pWolapi = NULL;
+      pWolapi = nullptr;
     }
   }
 
@@ -113,7 +134,7 @@ int WOL_Main() {
     pWolapi->SetOptionDefaults();
     bool bKeepGoing = true;
     while (bKeepGoing) {
-      bool bCreator;
+      bool bCreator = false;  //	True when this player made the channel.
       switch (WOL_Chat_Dialog(pWolapi)) {
         case -1:
           bKeepGoing = false;
@@ -169,7 +190,7 @@ int WOL_Main() {
     //	Kill wolapi.
     pWolapi->UnsetupCOMStuff();
     delete pWolapi;
-    pWolapi = NULL;
+    pWolapi = nullptr;
   } else {
     pWolapi->bInGame = true;
     pWolapi->bConnectionDown = false;
@@ -192,8 +213,8 @@ bool ReregisterWolapiDLL() {
   if (::RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Westwood\\WOLAPI", 0,
                      KEY_READ, &hKey) == ERROR_SUCCESS) {
     DWORD dwBufSize = _MAX_PATH;
-    if (::RegQueryValueEx(hKey, "InstallPath", 0, NULL, (LPBYTE)szInstallPath,
-                          &dwBufSize) == ERROR_SUCCESS) {
+    if (::RegQueryValueEx(hKey, "InstallPath", nullptr, nullptr,
+                          (LPBYTE)szInstallPath, &dwBufSize) == ERROR_SUCCESS) {
       WIN32_FIND_DATA wfd;
       HANDLE handle = FindFirstFile(szInstallPath, &wfd);
       if (handle == INVALID_HANDLE_VALUE) {
@@ -224,7 +245,7 @@ bool ReregisterWolapiDLL() {
       // necessary. 	Something about Neal's extra threads only getting
       // half-way set up before they get deleted. 	(The extra threads
       // shouldn't really be created in this case, anyway...)
-      ::Sleep(1000);
+      port::SleepMs(1000);
       FreeLibrary(hLib);
       FindClose(handle);
     } else {
@@ -242,32 +263,15 @@ bool ReregisterWolapiDLL() {
 void HandleDLLFail() {
   //	The DLL failed to load. Either we failed to reregister it, or we think
   // we succeeded at this but it 	still is not working. Show an error
-  // message and delete pWolapi. 	We show either "call tech support" or
-  // "download IE3", depending on whether oleaut32.dll looks out of date.
-
-  char szPath[_MAX_PATH + 1];
-  ::GetSystemDirectory(szPath, _MAX_PATH);
-  if (*szPath && szPath[strlen(szPath) - 1] != '\\') {
-    strcat(szPath, "\\");
-  }
-
-  strcat(szPath, "oleaut32.dll");
-
-  WIN32_FIND_DATA wfd;
-  HANDLE handle = FindFirstFile(szPath, &wfd);
-
-  //	debugprint( "HandleDLLFail(): filesize of oleaut32 is %i\n",
-  // wfd.nFileSizeLow );
-  if (handle != INVALID_HANDLE_VALUE && wfd.nFileSizeLow <= 232720) {
-    WWMessageBox().Process(TXT_WOL_DLLERROR_GETIE3);
-  } else {
-    WWMessageBox().Process(TXT_WOL_DLLERROR_CALLUS);
-  }
-
-  FindClose(handle);
+  // message and delete pWolapi.
+  //
+  //	ajw picked between "download IE3" and "call tech support" by finding
+  //	oleaut32.dll in the Windows system directory and calling it out of date
+  //	if it was under 232,720 bytes. There is no system directory to look in
+  //	here and no oleaut32.dll to find, so the advice that does not name a
+  //	Windows component is the only one that could ever be right.
+  WWMessageBox().Process(TXT_WOL_DLLERROR_CALLUS);
 
   delete pWolapi;
-  pWolapi = NULL;
+  pWolapi = nullptr;
 }
-
-#endif
