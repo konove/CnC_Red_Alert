@@ -79,7 +79,6 @@ inline constexpr int SW_RESTORE = 9;
 // so handing it to a shell would turn dead code into a live injection surface.
 HINSTANCE ShellExecute(HWND window, LPCSTR operation, LPCSTR file,
                        LPCSTR parameters, LPCSTR directory, int show);
-HINSTANCE FindExecutable(LPCSTR file, LPCSTR directory, LPSTR result);
 
 // -- Modules ----------------------------------------------------------------
 

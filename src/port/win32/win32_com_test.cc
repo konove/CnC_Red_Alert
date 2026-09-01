@@ -62,11 +62,6 @@ TEST(Win32ComTest, CreatingAnObjectFailsAndClearsTheOutParameter) {
   EXPECT_EQ(object, nullptr);
 }
 
-TEST(Win32ComTest, ApartmentSetupSucceedsAndDoesNothing) {
-  EXPECT_EQ(CoInitialize(nullptr), S_OK);
-  CoUninitialize();
-}
-
 }  // namespace
 
 #endif  // _WIN32

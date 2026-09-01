@@ -344,6 +344,12 @@ typedef struct {
 
 // Both packets go on the wire with sizeof(), so every peer must agree on these
 // numbers. Change one only when you mean to change the protocol.
+//
+// ShortFileName above used to be [12] in one build and [13] in the other,
+// which made these two sizes depend on WOLAPI_INTEGRATION. It is [13]
+// everywhere now -- 12 characters of 8.3 name plus the terminator, which is
+// what the writers were always assuming -- so there is one protocol rather
+// than two, and these assertions are what will notice if that changes again.
 static_assert(sizeof(SerialPacketType) == 160);
 
 //...........................................................................

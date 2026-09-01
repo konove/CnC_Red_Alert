@@ -228,11 +228,6 @@
 #define TEN 0
 
 /**********************************************************************
-** Define this to 1 to enable Westwood Online API integration.
-*/
-#define WOLAPI_INTEGRATION 0
-
-/**********************************************************************
 **	This define tells the Version Number class to use the date/time-based
 ** version numbering system.  If this define is not set, the actual
 ** major/minor version numbers will be used.

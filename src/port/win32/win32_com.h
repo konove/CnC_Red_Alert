@@ -150,11 +150,6 @@ extern const IID IID_IConnectionPointContainer;
 
 inline constexpr DWORD CLSCTX_INPROC_SERVER = 0x1;
 
-// Apartment setup is a no-op: nothing is ever created, so there is nothing to
-// marshal.
-HRESULT CoInitialize(void* reserved);
-void CoUninitialize();
-
 // Always fails with REGDB_E_CLASSNOTREG -- "class not registered" -- which is
 // exactly what Windows returned when wolapi.dll was not installed, and leaves
 // `*object` null so a caller that ignores the result still sees no object.

@@ -68,11 +68,6 @@ HINSTANCE ShellExecute(HWND /*window*/, LPCSTR /*operation*/, LPCSTR /*file*/,
   return nullptr;
 }
 
-HINSTANCE FindExecutable(LPCSTR /*file*/, LPCSTR /*directory*/,
-                         LPSTR /*result*/) {
-  return nullptr;
-}
-
 HINSTANCE LoadLibrary(LPCSTR /*file_name*/) { return nullptr; }
 
 FARPROC GetProcAddress(HMODULE /*module*/, LPCSTR /*proc_name*/) {

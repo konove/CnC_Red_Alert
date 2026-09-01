@@ -15,8 +15,6 @@ list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/cstraw.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/dde.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/descdlg.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dibfile.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dibutil.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/key.cc"
@@ -50,8 +48,6 @@ list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/cstraw.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/dde.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/descdlg.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dibapi.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dibutil.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/externs.h" # Removed since it is crashing IWYU.
         "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.h"

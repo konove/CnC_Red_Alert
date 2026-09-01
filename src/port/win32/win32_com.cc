@@ -23,10 +23,6 @@ IUnknown::~IUnknown() = default;
 IConnectionPoint::~IConnectionPoint() = default;
 IConnectionPointContainer::~IConnectionPointContainer() = default;
 
-HRESULT CoInitialize(void* /*reserved*/) { return S_OK; }
-
-void CoUninitialize() {}
-
 HRESULT CoCreateInstance(REFCLSID /*clsid*/, IUnknown* /*outer*/,
                          DWORD /*context*/, REFIID /*iid*/, void** object) {
   if (object != nullptr) {

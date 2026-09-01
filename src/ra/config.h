@@ -49,7 +49,12 @@ inline constexpr bool kVirginCheatKeysEnabled = kPlaytestVersion;
 // a time
 inline constexpr bool kMPathEnabled = MPATH != 0;
 inline constexpr bool kTenEnabled = TEN != 0;
-inline constexpr bool kWolapiEnabled = WOLAPI_INTEGRATION != 0;
+// Westwood Online. Unlike MPATH and TEN above this is not fed by a macro:
+// nothing preprocesses it any more, so there is nothing for a #define to do.
+// The code it selects is compiled and type-checked either way; turning it on
+// would only make it reachable, and the servers it dials have been gone for
+// two decades.
+inline constexpr bool kWolapiEnabled = false;
 
 // Compile-time assertion to ensure MPATH and TEN are mutually exclusive
 static_assert(!(kMPathEnabled && kTenEnabled),
