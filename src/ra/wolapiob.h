@@ -29,6 +29,7 @@
 #define CNC_RED_ALERT_RA_WOLAPIOB_H_
 
 #include <array>
+#include <cstddef>
 #include <optional>
 #include <span>
 
@@ -174,6 +175,14 @@ struct CREATEGAMEINFO {
   char szPassword[WOL_CHANKEY_LEN_MAX];  //	If not blank, key for private
                                          // game.
 };
+
+// The icon held by one of the structs above, in the type-erased form
+// IconListClass and DrawDib take, or null when there is none. The matching
+// ICONKIND is always ICON_DIB.
+template <typename IconInfo>
+void* IconPointer(IconInfo& Info) {
+  return Info.Icon.has_value() ? &*Info.Icon : nullptr;
+}
 
 //***********************************************************************************************
 // The palette the screen is showing, in the form dib::RemapToPalette wants.
@@ -370,9 +379,15 @@ class WolapiObject {
   bool bItemMarkedReadyToGo(int iIndex);
   void MarkItemReadyToGo(int iIndex, const char* szReadyState);
   bool bItemMarkedNeedScenario(int iIndex);
-  void PullPlayerName_Into_From(char* szDest, const char* szSource);
+  //	Copies the player name out of a game-channel list item into szDest,
+  //	truncating to iSize rather than overflowing.
+  void PullPlayerName_Into_From(char* szDest, std::size_t iSize,
+                                const char* szSource);
   HousesType PullPlayerHouse_From(const char* szSource);
-  void WritePlayerListItem(char* szDest, const char* szName, HousesType House);
+  //	Writes a game-channel player list item into szDest, truncating to
+  //	iSize rather than overflowing.
+  void WritePlayerListItem(char* szDest, std::size_t iSize, const char* szName,
+                           HousesType House);
 
   void RequestPlayerPings();
 
@@ -424,7 +439,10 @@ class WolapiObject {
   void DeleteSavedChat();
   void GenericErrorMessage();
 
-  bool GetNameOfBeginningLobby(char* szNameToSet);
+  //	Picks a lobby to drop the player into and writes its name into
+  //	szNameToSet, truncating to iSize rather than overflowing. False if
+  //	there are no lobbies.
+  bool GetNameOfBeginningLobby(char* szNameToSet, std::size_t iSize);
   bool GetLobbyChannels();
 
   const char* pGameHostName();
@@ -464,6 +482,10 @@ class WolapiObject {
   unsigned int nGameTypeInfos;
 
   float fLatencyToIconWidth;
+  //	Width in pixels of the latency bar icon, or 0 if it did not load. Kept
+  //	beside fLatencyToIconWidth so the list code does not have to reach into
+  //	an optional it cannot check from where it stands.
+  int iLatencyIconWidth;
 
   CHATSAVE* pChatSaveList;
   CHATSAVE* pChatSaveLast;

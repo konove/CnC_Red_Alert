@@ -571,7 +571,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     if (bFirsttime && !pWO->bChatShownBefore) {
       WWMessageBox().Process(TXT_WOL_FINDINGLOBBY, TXT_NONE);
       char szLobbyName[WOL_CHANNAME_LEN_MAX];
-      if (pWO->GetNameOfBeginningLobby(szLobbyName)) {
+      if (pWO->GetNameOfBeginningLobby(szLobbyName, sizeof(szLobbyName))) {
         //				debugprint( "Found lobby to go into:
         //'%s'\n", szLobbyName );
         if (!EnterChannel(pWO, chatlist, NULL, szLobbyName, false)) {

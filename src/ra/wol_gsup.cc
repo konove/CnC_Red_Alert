@@ -2062,7 +2062,7 @@ void WOL_GameSetupDialog::SetPlayerHouse(const char* szName, HousesType House) {
 
   //	Reset item text.
   char szItem[100];
-  pWO->WritePlayerListItem(szItem, szName, House);
+  pWO->WritePlayerListItem(szItem, sizeof(szItem), szName, House);
   //	debugprint ( "%i, %s\n", iItem, szItem );
   pILPlayers->Set_Item(iItem, szItem);
   pILPlayers->Flag_To_Redraw();
@@ -3076,7 +3076,8 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
     for (int i = 0; i < pILPlayers->Count(); i++) {
       char szSendPiece[100];
       char szPlayerName[WOL_NAME_LEN_MAX];
-      pWO->PullPlayerName_Into_From(szPlayerName, pILPlayers->Get_Item(i));
+      pWO->PullPlayerName_Into_From(szPlayerName, sizeof(szPlayerName),
+                                pILPlayers->Get_Item(i));
       //			InformAboutPlayerColor( szPlayerName,
       // PlayerColorTypeOf( pILPlayers->Get_Item_Color( i ) ), pUser );
       sprintf(szSendPiece, " %02u %s %02u", strlen(szPlayerName), szPlayerName,
@@ -3538,7 +3539,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   for (iItem = 0; iItem < pILPlayers->Count(); iItem++) {
     //	The following is not very efficient, but doesn't have to be. Better in
     // this case to keep it clear and simple.
-    pWO->PullPlayerName_Into_From(szPlayerName, pILPlayers->Get_Item(iItem));
+    pWO->PullPlayerName_Into_From(szPlayerName, sizeof(szPlayerName),
+                                  pILPlayers->Get_Item(iItem));
     if (strcmp(szPlayerName, pWO->szMyName) != 0 &&
         GetPlayerColor(szPlayerName) != PCOLOR_NONE) {
       //			debugprint( "Creating player node '%s'\n",
