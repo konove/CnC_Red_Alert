@@ -7440,7 +7440,6 @@ void Log_Message(char* msg) {
 } /* end of Log_Message */
 #endif
 
-#if !WOLAPI_INTEGRATION  //	Rest of file ifdeffed out.
 
 /***********************************************************************************************
  * Net_Fake_New_Dialog -- lets user start a new game *
@@ -9110,4 +9109,3 @@ bool Client_Remote_Connect() {
 
 /*************************** end of netdlg.cpp *****************************/
 
-#endif  // #if !WOLAPI_INTEGRATION

@@ -496,14 +496,14 @@ bool Select_Game(bool /*fade*/) {
       0;  // Assume new units disabled, unless specifically .INI enabled or
           // multiplayer negotiations enable it.
 
-#if !WOLAPI_INTEGRATION
 #ifdef _WIN32
   /*
   ** Enable the DDE Server so we can get internet start game packets from WChat
   */
-  DDEServer.Enable();
+  if constexpr (!config::kWolapiEnabled) {
+    DDEServer.Enable();
+  }
 #endif  // _WIN32
-#endif  //	!WOLAPI_INTEGRATION
 
   /*
   **	[Re]set any globals that need it, in preparation for a new scenario
@@ -634,13 +634,13 @@ bool Select_Game(bool /*fade*/) {
         selection = SEL_START_NEW_GAME;
       }
 
-#if !WOLAPI_INTEGRATION
 #if defined(_WIN32) && !defined(INTERNET_OFF)  // Denzil 5/1/98 - Internet play
       /*
       ** Handle case where we were spawned from Wchat and our start game
       **  packet has already arrived
       */
-      if (Special.IsFromWChat && DDEServer.Get_MPlayer_Game_Info()) {
+      if (!config::kWolapiEnabled && Special.IsFromWChat &&
+          DDEServer.Get_MPlayer_Game_Info()) {
         Check_From_WChat(nullptr);
         selection = SEL_MULTIPLAYER_GAME;
         Theme.Queue_Song(THEME_QUIET);
@@ -649,7 +649,7 @@ bool Select_Game(bool /*fade*/) {
         /*
         ** We werent spawned but we could still receive a DDE packet from wchat
         */
-        if (DDEServer.Get_MPlayer_Game_Info()) {
+        if (!config::kWolapiEnabled && DDEServer.Get_MPlayer_Game_Info()) {
           Check_From_WChat(nullptr);
           /*
           ** Make sure top and bottom of screen are clear in 640x480 mode
@@ -661,7 +661,6 @@ bool Select_Game(bool /*fade*/) {
         }
       }
 #endif  // _WIN32 && !INTERNET_OFF
-#endif
 
       if (config::kWolapiEnabled && pWolapi != nullptr) {
         selection = SEL_MULTIPLAYER_GAME;  //	We are returning from a game.
@@ -917,7 +916,6 @@ bool Select_Game(bool /*fade*/) {
                 }
                 break;
 
-#if !WOLAPI_INTEGRATION
 #ifndef INTERNET_OFF  // Denzil 5/1/98 - Internet play
               /*
               ** Handle being spawned from WChat. Internet play based on IPX
@@ -925,7 +923,7 @@ bool Select_Game(bool /*fade*/) {
               */
               case GAME_INTERNET:  //	ajw		No longer hit.
               {
-                if (Special.IsFromWChat) {
+                if (!config::kWolapiEnabled && Special.IsFromWChat) {
 #ifndef PORTABLE
                   /*
                   ** Give myself focus.
@@ -1092,7 +1090,6 @@ bool Select_Game(bool /*fade*/) {
               } break;
 
 #endif  // !INTERNET_OFF
-#endif  //	!WOLAPI_INTEGRATION
             }
           }  //	if( !pWolapi )
 
@@ -1106,25 +1103,18 @@ bool Select_Game(bool /*fade*/) {
             */
             case GAME_MODEM:
             case GAME_NULL_MODEM:
-#if !WOLAPI_INTEGRATION
-            case GAME_INTERNET:
-#endif
             case GAME_SKIRMISH:
               Theme.Fade_Out();
               process = false;
               Options.ScoreVolume = Options.MultiScoreVolume;
               break;
 
-//	This case cannot become an if constexpr yet: the legacy WChat path below
-//	declares its own `case GAME_INTERNET:` inside #if !WOLAPI_INTEGRATION,
-// and 	two of them in one switch do not compile. Merging the pair is stage 10's
-//	work on this file.
-#if WOLAPI_INTEGRATION  //	implies also WINSOCK_IPX
-            case GAME_INTERNET:
+            //	With Westwood Online on, this runs the whole lobby; without it,
+            //	the game was already set up above and this behaves like the
+            //	cases just before.
+            case GAME_INTERNET:  //	implies also WINSOCK_IPX
               if constexpr (config::kWolapiEnabled) {
-                if (PacketTransport) {
-                  delete PacketTransport;
-                }
+                delete PacketTransport;
                 PacketTransport = new UDPInterfaceClass;
                 assert(PacketTransport != nullptr);
                 if (PacketTransport->Init()) {
@@ -1156,9 +1146,12 @@ bool Select_Game(bool /*fade*/) {
                   delete PacketTransport;
                   PacketTransport = nullptr;
                 }
+              } else {
+                Theme.Fade_Out();
+                process = false;
+                Options.ScoreVolume = Options.MultiScoreVolume;
               }
               break;
-#endif
 
             /*
             **	Network (IPX): start a new network game.

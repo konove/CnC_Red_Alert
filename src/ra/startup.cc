@@ -370,23 +370,21 @@ int main(int argc, char* argv[])
         ini.Save(cfile);
       }
 
-#if !WOLAPI_INTEGRATION
 #ifdef _WIN32
       /*
       ** If WChat has been trying to send us a game start packet then receive it
       *and
       ** flag that we were spawned from WCHat so we dont play the into movie.
       */
-      if (DDEServer.Get_MPlayer_Game_Info()) {
-        Check_From_WChat(NULL);
-      } else {
+      if (!config::kWolapiEnabled && DDEServer.Get_MPlayer_Game_Info()) {
+        Check_From_WChat(nullptr);
+        // } else {
         // Check_From_WChat("C&CSPAWN.INI");
         // if (Special.IsFromWChat){
         //	DDEServer.Disable();
         // }
       }
 #endif  // _WIN32
-#endif
       /*
       **	If the intro is being run for the first time, then don't
       **	allow breaking out of it with the <ESC> key.
