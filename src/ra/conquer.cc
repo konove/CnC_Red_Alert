@@ -147,10 +147,6 @@ static char TeamEvent = 0;       // 0 = no event, 1,2,3 = team event type
 static char TeamNumber = 0;      // which team was selected? (1-9)
 static char FormationEvent = 0;  // 0 = no event, 1 = formation was toggled
 
-#if (TEN)
-void TEN_Call_Back();
-#endif  // TEN
-
 #if (MPATH)
 void MPATH_Call_Back();
 #endif  // MPATH
@@ -545,8 +541,8 @@ static void Send_Network_Chat_Message(const int rc) {
 // Processes inter-player message input. F1 through F8 open an editable message
 // addressed to one player or to everyone, and RETURN sends what has been typed.
 //
-// The four session types put the text on the wire differently -- a serial
-// packet, an IPX global packet, TEN, or MPATH -- but all of them build the same
+// The three session types put the text on the wire differently -- a serial
+// packet, an IPX global packet, or MPATH -- but all of them build the same
 // message from the same edit buffer.
 static void Message_Input(KeyNumType& input) {
   char txt[MAX_MESSAGE_LENGTH + 32];
@@ -620,34 +616,6 @@ static void Message_Input(KeyNumType& input) {
         Map.Flag_To_Redraw(false);
       }
     }
-#if (TEN)
-    // For a TEN game:
-    // F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
-    // F8 = "To All:"
-    else if (Session.Type == GAME_TEN && !Session.Messages.Is_Edit()) {
-      if (input == (KN_F1 + Session.MaxPlayers - 1)) {
-        Session.TenMessageAddress = -1;        // set to broadcast
-        strcpy(txt, Text_String(TXT_TO_ALL));  // "To All:"
-
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
-
-        Map.Flag_To_Redraw(false);
-
-      } else if ((input - KN_F1) < Ten->Num_Connections() && !Session.ObiWan) {
-        id = Ten->Connection_ID(input - KN_F1);
-        Session.TenMessageAddress = Ten->Connection_Address(id);
-        sprintf(txt, Text_String(TXT_TO), Ten->Connection_Name(id));
-
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
-
-        Map.Flag_To_Redraw(false);
-      }
-    }
-#endif  // TEN
 #if (MPATH)
     // For a MPATH game:
     // F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
@@ -776,27 +744,6 @@ static void Message_Input(KeyNumType& input) {
         Send_Network_Chat_Message(rc);
       }
     }
-#if (TEN)
-    // TEN game: fill in a GlobalPacketType & send it.
-    else if (Session.Type == GAME_TEN) {
-      Session.GPacket.Command = NET_MESSAGE;
-      strcpy(Session.GPacket.Name, Session.Players[0]->Name);
-      Session.GPacket.Message.Color = Session.ColorIdx;
-      Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
-
-      if (rc == 3) {
-        strcpy(Session.GPacket.Message.Buf, Session.Messages.Get_Edit_Buf());
-      } else {
-        strcpy(Session.GPacket.Message.Buf,
-               Session.Messages.Get_Overflow_Buf());
-        Session.Messages.Clear_Overflow_Buf();
-      }
-
-      Ten->Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                               Session.TenMessageAddress);
-    }
-#endif  // TEN
-
 #if (MPATH)
     // MPATH game: fill in a GlobalPacketType & send it.
     else if (Session.Type == GAME_MPATH) {
@@ -1095,15 +1042,6 @@ void Main_Game(const int argc, char* argv[]) {
         }
       }
     }
-
-#if (TEN)
-
-    if (Session.Type == GAME_TEN) {
-      Shutdown_TEN();
-      // Prog_End();
-      Emergency_Exit(0);
-    }
-#endif  // TEN
 
 #if (MPATH)
     if (Session.Type == GAME_MPATH) {
@@ -1599,12 +1537,6 @@ void Call_Back() {
     }
   }
 
-#if (TEN)
-  if (Session.Type == GAME_TEN) {
-    TEN_Call_Back();
-  }
-#endif  // TEN
-
 #if (MPATH)
   if (Session.Type == GAME_MPATH) {
     MPATH_Call_Back();
@@ -1684,53 +1616,6 @@ void IPX_Call_Back() {
     }
   }
 }
-
-#if (TEN)
-void TEN_Call_Back() {
-  int id;
-
-  Ten->Service();
-
-  if (Ten->Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
-                              &Session.TenAddress)) {
-    // If this is another player signing off, remove the connection &
-    // mark that player's house as non-human, so the computer will take
-    // it over.
-    if (Session.GPacket.Command == NET_SIGN_OFF) {
-      for (int i = 0; i < Ten->Num_Connections(); i++) {
-        id = Ten->Connection_ID(i);
-
-        if (Session.TenAddress == Ten->Connection_Address(id)) {
-          Destroy_TEN_Connection(id, 0);
-        }
-      }
-    }
-
-    // Process a message from another user.
-    else if (Session.GPacket.Command == NET_MESSAGE) {
-      if (!Session.Messages.Concat_Message(
-              Session.GPacket.Name, Session.GPacket.Message.Color,
-              Session.GPacket.Message.Buf,
-              Rule.MessageDelay * kTicksPerMinute)) {
-        Session.Messages.Add_Message(
-            Session.GPacket.Name, Session.GPacket.Message.Color,
-            Session.GPacket.Message.Buf, Session.GPacket.Message.Color,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            Rule.MessageDelay * kTicksPerMinute);
-
-        Sound_Effect(VOC_INCOMING_MESSAGE);
-
-        // Tell the map to do a partial update (just to force the messages
-        // to redraw).
-        Map.Flag_To_Redraw(true);
-
-        // Save this message in our last-message buffer
-        strcpy(Session.LastMessage, Session.GPacket.Message.Buf);
-      }
-    }
-  }
-}
-#endif  // TEN
 
 #if (MPATH)
 void MPATH_Call_Back() {

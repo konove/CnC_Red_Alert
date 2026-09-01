@@ -2332,15 +2332,6 @@ void HouseClass::Make_Ally(HousesType house) {
             kTicksPerMinute * Rule.MessageDelay);
       }
 
-#if (TEN)
-      //
-      // Notify the TEN server of the new alliance
-      //
-      if (this == PlayerPtr && hptr != nullptr && Session.Type == GAME_TEN) {
-        Send_TEN_Alliance(hptr->IniName, 1);
-      }
-#endif  // TEN
-
       Map.Flag_To_Redraw(false);
     }
   }
@@ -2397,15 +2388,6 @@ void HouseClass::Make_Enemy(HousesType house) {
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           kTicksPerMinute * Rule.MessageDelay);
       Map.Flag_To_Redraw(false);
-
-#if (TEN)
-      //
-      // Notify the TEN server of the broken alliance
-      //
-      if (this == PlayerPtr && enemy != nullptr && Session.Type == GAME_TEN) {
-        Send_TEN_Alliance(enemy->IniName, 0);
-      }
-#endif  // TEN
     }
   }
 }
@@ -3781,15 +3763,6 @@ void HouseClass::MPlayer_Defeated() {
       }
       Session.NumPlayers = 0;
     }
-
-#if (TEN)
-    //
-    // Tell the TEN server who won
-    //
-    if (Session.Type == GAME_TEN) {
-      Send_TEN_Win_Packet();
-    }
-#endif  // TEN
 
 #if (MPATH)
     //

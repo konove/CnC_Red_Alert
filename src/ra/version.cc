@@ -722,10 +722,6 @@ const char* Version_Name() {
     version += "AM";
   }
 
-#if (TEN)
-  version += "Ten";  // Ten version
-#endif
-
 #if (MPATH)
   version += "MPath";  // MPath version
 #endif

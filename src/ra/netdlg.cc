@@ -5626,19 +5626,6 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
         }
         break;
 
-#if (TEN)
-      case GAME_TEN:
-        if (reconn) {
-          id = Ten->Connection_ID(oldest_index);
-          Format_Runtime_Text(buf1, sizeof(buf1),
-                              Text_String(TXT_RECONNECTING_TO),
-                              Ten->Connection_Name(id));
-        } else {
-          snprintf(buf1, sizeof(buf1), "%s",
-                   Text_String(TXT_WAITING_FOR_CONNECTIONS));
-        }
-#endif  // TEN
-
 #if (MPATH)
       case GAME_MPATH:
         if (reconn) {

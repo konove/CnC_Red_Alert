@@ -1205,23 +1205,6 @@ bool Select_Game(bool /*fade*/) {
               }
               break;
 
-#if (TEN)
-            /*
-            **	TEN: jump straight into the game
-            */
-            case GAME_TEN:
-              if (Init_TEN()) {
-                Options.ScoreVolume = Options.MultiScoreVolume;
-                process = false;
-                Theme.Fade_Out();
-              } else {
-                WWMessageBox().Process("Unable to initialize TEN!");
-                // Prog_End();
-                Emergency_Exit(1);
-              }
-              break;
-#endif  // TEN
-
 #if (MPATH)
             /*
             **	MPATH: jump straight into the game
@@ -1412,11 +1395,7 @@ bool Select_Game(bool /*fade*/) {
 
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       !Session.Play) {
-    if (Session.Type == GAME_TEN) {
-#if (TEN)
-      Session.Create_TEN_Connections();
-#endif  // TEN
-    } else if (Session.Type == GAME_MPATH) {
+    if (Session.Type == GAME_MPATH) {
 #if (MPATH)
       Session.Create_MPATH_Connections();
 #endif
@@ -1666,12 +1645,6 @@ bool Parse_Command_Line(int argc, char* argv[]) {
         //				BreakoutAllowed = false;
         break;
 
-#if (TEN)
-      case PARM_ALLOW_SOLO:
-        Session.AllowSolo = 1;
-        break;
-#endif
-
 #if (MPATH)
       case PARM_ALLOW_SOLO:
         Session.AllowSolo = 1;
@@ -1806,40 +1779,6 @@ bool Parse_Command_Line(int argc, char* argv[]) {
         continue;
       }
     }
-
-#if (TEN)
-    /*
-    **	Enable TEN
-    */
-    if (strstr(string, "TEN")) {
-      if constexpr (config::kCheatKeysEnabled) {
-        Debug_Flag = true;
-        MonoClass::Enable();
-      }
-
-      Session.Type = GAME_TEN;
-      Special.IsFromInstall = false;
-      //
-      // Create the Ten network manager.  This allows us to keep
-      // the packet queues clean even while we're initializing the game,
-      // so the queues don't fill up in case we're slow, or the user
-      // didn't insert a CD.
-      //
-      Ten = new TenConnManClass();
-      Ten->Init();
-      strcpy(Session.OptionsFile, "OPTIONS.INI");
-      Ten->Flush_All();
-      continue;
-    }
-
-    /*
-    **	Set the game options filename
-    */
-    if (strstr(string, "OPTIONS:")) {
-      strcpy(Session.OptionsFile, string + 8);
-      continue;
-    }
-#endif  // TEN
 
 #if (MPATH)
     /*

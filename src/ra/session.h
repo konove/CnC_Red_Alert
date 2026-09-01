@@ -127,7 +127,6 @@ typedef enum GameEnum {
   GAME_IPX,         // IPX Network game
   GAME_INTERNET,    // Internet H2H
   GAME_SKIRMISH,    // 1 plr vs. AI's
-  GAME_TEN,         // TEN Network game
   GAME_MPATH        // MPath Network game
 } GameType;
 
@@ -271,9 +270,6 @@ class PhoneEntryClass {
 typedef struct NodeNameTag {
   char Name[MPLAYER_NAME_MAX];  // player or game name
   IPXAddressClass Address;
-#if (TEN)
-  int TenAddress;
-#endif
 #if (MPATH)
   int MPathAddress;
 #endif
@@ -522,10 +518,6 @@ class SessionClass {
   bool Am_I_Master();
   unsigned long Compute_Unique_ID();
 
-#if (TEN)
-  int Create_TEN_Connections();
-#endif  // TEN
-
 #if (MPATH)
   int Create_MPATH_Connections();
 #endif  // MPATH
@@ -703,20 +695,6 @@ class SessionClass {
   CellClass* TrapCell;        // Ptr to cell to trap (watch)
   int TrapCheckHeap;          // true = check the heap as of TrapFrame
   long TrapPrintCRC;          // Frame # to print CRC state file
-
-#if (TEN)
-  //
-  // TEN-specific variables
-  //
-  char* TenPacket;
-  int TenSize;
-  int TenMessageAddress;
-  int TenAddress;
-  int TenPlayerID;
-  char OptionsFile[256];
-  int AllowSolo;
-  int NetResponseTime;
-#endif  // TEN
 
 #if (MPATH)
   //

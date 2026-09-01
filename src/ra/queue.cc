@@ -417,7 +417,6 @@ void Queue_AI() {
       case GAME_NULL_MODEM:
       case GAME_IPX:
       case GAME_INTERNET:
-      case GAME_TEN:
       case GAME_MPATH:
         Queue_AI_Multiplayer();
         break;
@@ -686,13 +685,6 @@ static void Queue_AI_Multiplayer() {
     multi_packet_max = Session.MetaSize;
     net = &Ipx;
   }
-#if (TEN)
-  else if (Session.Type == GAME_TEN) {
-    multi_packet_buf = Session.TenPacket;
-    multi_packet_max = Session.TenSize;
-    net = Ten;
-  }
-#endif
 #if (MPATH)
   else if (Session.Type == GAME_MPATH) {
     multi_packet_buf = Session.MPathPacket;
@@ -1149,13 +1141,13 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     // may be sending commands.
     // We have to limit the number of incoming messages we handle; it's
     // possible to go into an infinite loop processing modem messages.
-    // (This feature is disabled for Ten; we need to keep the TCP buffers
+    // (This feature is disabled for MPath; we need to keep the TCP buffers
     // clear, so we read all the packets we can every time.)
     //---------------------------------------------------------------------
     messages_this_loop = 0;
     message_limit = 5;
 
-    if (Session.Type == GAME_TEN || Session.Type == GAME_MPATH) {
+    if (Session.Type == GAME_MPATH) {
       message_limit = 9999;
     }
 
@@ -1341,10 +1333,10 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
   EventClass ev;
 
   //
-  // For now, TEN & MPATH don't measure the net's response time, so there's
+  // For now, MPATH doesn't measure the net's response time, so there's
   // no point in adjusting our timing.  Do nothing.
   //
-  if (Session.Type == GAME_TEN || Session.Type == GAME_MPATH) {
+  if (Session.Type == GAME_MPATH) {
     return;
   }
 
@@ -1390,7 +1382,7 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
         } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
           ev.Data.FrameInfo.Delay = std::max(
               static_cast<unsigned>(resp_time / 8), NETWORK_MIN_MAX_AHEAD);
-        } else if (Session.Type == GAME_TEN || Session.Type == GAME_MPATH) {
+        } else if (Session.Type == GAME_MPATH) {
           ev.Data.FrameInfo.Delay = std::max(
               static_cast<unsigned>(resp_time / 8), MODEM_MIN_MAX_AHEAD);
         }
@@ -2320,7 +2312,7 @@ static int Handle_Timeout(ConnManClass* net, int64_t* their_frame,
   //	For network, destroy the oldest connection
   //------------------------------------------------------------------------
   else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET ||
-           Session.Type == GAME_TEN || Session.Type == GAME_MPATH) {
+           Session.Type == GAME_MPATH) {
     j = 0x7fffffff;
     oldest_index = 0;
     for (i = 0; i < net->Num_Connections(); i++) {
@@ -2351,11 +2343,6 @@ static int Handle_Timeout(ConnManClass* net, int64_t* their_frame,
       if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
         Destroy_Connection(id, 1);
       }
-#if (TEN)
-      else if (Session.Type == GAME_TEN) {
-        Destroy_TEN_Connection(id, 1);
-      }
-#endif
 #if (MPATH)
       else if (Session.Type == GAME_MPATH) {
         Destroy_MPATH_Connection(id, 1);
@@ -3386,10 +3373,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
         if (Frame > DoList[j].Frame &&
             DoList[j].Type != EventClass::FRAMEINFO &&
             Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH) {
-#if (TEN)
-          Send_TEN_Packet_Too_Late();
-#endif  // TEN
-
 #if (MPATH)
           // Send_MPATH_Packet_Too_Late();
 #endif  // MPATH
@@ -3459,7 +3442,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
               Destroy_Null_Connection(house, 0);
             } else if ((Session.Type == GAME_IPX ||
                         Session.Type == GAME_INTERNET ||
-                        Session.Type == GAME_TEN ||
                         Session.Type == GAME_MPATH) &&
                        net) {
               index = net->Connection_Index(house);
@@ -3472,11 +3454,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                 if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
                   Destroy_Connection(house, 0);
                 }
-#if (TEN)
-                else if (Session.Type == GAME_TEN) {
-                  Destroy_TEN_Connection(house, 0);
-                }
-#endif  // TEN
 #if (MPATH)
                 else if (Session.Type == GAME_MPATH) {
                   Destroy_MPATH_Connection(house, 0);
@@ -3519,10 +3496,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             if (CRC[index] != DoList[j].Data.FrameInfo.CRC) {
               Print_CRCs(&DoList[j]);
 
-#if (TEN)
-              Send_TEN_Out_Of_Sync();
-#endif  // TEN
-
 #if (MPATH)
               // Send_MPATH_Out_Of_Sync();
 #endif  // MPATH
@@ -3542,13 +3515,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                     Destroy_Connection(net->Connection_ID(0), -1);
                   }
                 }
-#if (TEN)
-                else if (Session.Type == GAME_TEN && net) {
-                  while (net->Num_Connections()) {
-                    Destroy_TEN_Connection(net->Connection_ID(0), -1);
-                  }
-                }
-#endif
 #if (MPATH)
                 else if (Session.Type == GAME_MPATH && net) {
                   while (net->Num_Connections()) {
