@@ -216,11 +216,6 @@
 #define TIMING_FIX 1
 
 /**********************************************************************
-** Define this to 1 to enable MPath-specific code.
-*/
-#define MPATH 0
-
-/**********************************************************************
 **	This define tells the Version Number class to use the date/time-based
 ** version numbering system.  If this define is not set, the actual
 ** major/minor version numbers will be used.
@@ -248,13 +243,6 @@
 #define PARM_PLAYTEST long(0xF7DDC227)  // "PLAYTEST"
 
 #define PARM_INSTALL long(0xD95C68A2)  // "FROMINSTALL"
-
-//
-// Allow normal game play in the MPath version
-//
-#if (MPATH)
-#define PARM_ALLOW_SOLO long(0xc901c9db)  // AllowSoloPlayOptions
-#endif
 
 /**********************************************************************
 **	Defines for verifying free disk space

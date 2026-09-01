@@ -44,14 +44,10 @@ inline constexpr bool kCheatKeysEnabled = kInternalVersion || kPlaytestVersion;
 // cheat keys).
 inline constexpr bool kVirginCheatKeysEnabled = kPlaytestVersion;
 
-// Network service providers.
-// MPath (Mplayer) is still fed by the MPATH macro in defines.h, since its
-// client code still sits behind #if (MPATH).
-inline constexpr bool kMPathEnabled = MPATH != 0;
-// Westwood Online. Unlike MPATH above this is not fed by a macro: nothing
-// preprocesses it any more, so there is nothing for a #define to do. The code
-// it selects is compiled and type-checked either way; turning it on would only
-// make it reachable, and the servers it dials have been gone for two decades.
+// Westwood Online. This is not fed by a macro: nothing preprocesses it any
+// more, so there is nothing for a #define to do. The code it selects is
+// compiled and type-checked either way; turning it on would only make it
+// reachable, and the servers it dials have been gone for two decades.
 inline constexpr bool kWolapiEnabled = false;
 
 // Build language
