@@ -47,6 +47,9 @@
 
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
+#include "port/win32/win32_registry.h"
+#include "port/win32/win32_system.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -88,9 +91,7 @@
 #include "ra/mcimovie.h"
 #endif
 
-#if WOLAPI_INTEGRATION
-// #include "WolDebug.h"
-#endif
+// #include "ra/woldebug.h"
 
 bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config);
 void Print_Error_Exit(char* string);
@@ -104,7 +105,6 @@ HINSTANCE ProgramInstance;
 void Check_Use_Compressed_Shapes();
 void Read_Setup_Options(RawFileClass* config_file);
 bool VideoBackBufferAllowed = true;
-
 
 // #if (ENGLISH)
 // #define WINDOW_NAME "Red Alert"
@@ -221,45 +221,46 @@ int main(int argc, char* argv[])
     std::filesystem::current_path(dir_path);
   }
 
-#if WOLAPI_INTEGRATION
-  //	Look for special wolapi install program, used after the patch to version
-  // 3, to install "Shared Internet Components".
-  WIN32_FIND_DATA wfd;
-  HANDLE hWOLSetupFile = FindFirstFile("wolsetup.exe", &wfd);
-  bool bWOLSetupFile = (hWOLSetupFile != INVALID_HANDLE_VALUE);
-  //	if( bWOLSetupFile )
-  //		debugprint( "Found wolsetup.exe\n" );
-  FindClose(hWOLSetupFile);
-  //	Look for special registry entry that tells us when the setup exe has
-  // done its thing.
-  HKEY hKey;
-  RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ, &hKey);
-  DWORD dwValue;
-  DWORD dwBufSize = sizeof(DWORD);
-  if (RegQueryValueEx(hKey, "WolapiInstallComplete", 0, NULL, (LPBYTE)&dwValue,
-                      &dwBufSize) == ERROR_SUCCESS) {
-    //		debugprint( "Found WolapiInstallComplete in registry\n" );
-    //	Setup has finished. Delete the setup exe and remove reg key.
-    if (bWOLSetupFile) {
-      if (DeleteFile("wolsetup.exe")) {
+  //	Westwood Online's own installer left these behind. None of it can
+  //	happen here, but it is what the WOL build did on startup.
+  if constexpr (config::kWolapiEnabled) {
+    //	Look for special wolapi install program, used after the patch to version
+    // 3, to install "Shared Internet Components".
+    WIN32_FIND_DATA wfd;
+    HANDLE hWOLSetupFile = FindFirstFile("wolsetup.exe", &wfd);
+    bool bWOLSetupFile = (hWOLSetupFile != INVALID_HANDLE_VALUE);
+    //	if( bWOLSetupFile )
+    //		debugprint( "Found wolsetup.exe\n" );
+    FindClose(hWOLSetupFile);
+    //	Look for special registry entry that tells us when the setup exe has
+    // done its thing.
+    HKEY hKey;
+    RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ, &hKey);
+    DWORD dwValue;
+    DWORD dwBufSize = sizeof(DWORD);
+    if (RegQueryValueEx(hKey, "WolapiInstallComplete", nullptr, nullptr,
+                        (LPBYTE)&dwValue, &dwBufSize) == ERROR_SUCCESS) {
+      //		debugprint( "Found WolapiInstallComplete in registry\n"
+      //); 	Setup has finished. Delete the setup exe and remove reg key.
+      if (bWOLSetupFile) {
+        if (DeleteFile("wolsetup.exe")) {
+          RegDeleteValue(hKey, "WolapiInstallComplete");
+        }
+      } else {
         RegDeleteValue(hKey, "WolapiInstallComplete");
       }
-    } else {
-      RegDeleteValue(hKey, "WolapiInstallComplete");
+    }
+    RegCloseKey(hKey);
+
+    //	I've been having problems getting the patch to delete "conquer.eng",
+    // which is present in the game 	directory for 1.08, but which must NOT
+    // be present for this version (Aftermath mix files provide the 	string
+    // overrides that the 1.08 separate conquer.eng did before Aftermath).
+    // Delete conquer.eng if it's found.
+    if (FindFirstFile("conquer.eng", &wfd) != INVALID_HANDLE_VALUE) {
+      DeleteFile("conquer.eng");
     }
   }
-  RegCloseKey(hKey);
-
-  //	I've been having problems getting the patch to delete "conquer.eng",
-  // which is present in the game 	directory for 1.08, but which must NOT
-  // be present for this version (Aftermath mix files provide the 	string
-  // overrides that the 1.08 separate conquer.eng did before Aftermath).
-  // Delete conquer.eng if it's found.
-  if (FindFirstFile("conquer.eng", &wfd) != INVALID_HANDLE_VALUE) {
-    DeleteFile("conquer.eng");
-  }
-
-#endif
 
   if (Parse_Command_Line(argc, argv)) {
 #if (TEN)

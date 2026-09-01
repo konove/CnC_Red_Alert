@@ -161,7 +161,6 @@
 
 RemapControlType SidebarScheme;
 
-
 /****************************************
 **	Function prototypes for this module **
 *****************************************/
@@ -191,11 +190,11 @@ void Init_Random();
 bool Load_Recording_Values(CCFileClass& file);
 bool Save_Recording_Values(CCFileClass& file);
 
-#if WOLAPI_INTEGRATION
+#include "ra/config.h"
+#include "ra/wolapiob.h"
+
 extern int WOL_Main();
-#include "WolapiOb.h"
 extern WolapiObject* pWolapi;
-#endif
 
 bool Expansion_Dialog(bool bCounterstrike);
 
@@ -664,11 +663,9 @@ bool Select_Game(bool /*fade*/) {
 #endif  // _WIN32 && !INTERNET_OFF
 #endif
 
-#if WOLAPI_INTEGRATION
-      if (pWolapi) {
+      if (config::kWolapiEnabled && pWolapi != nullptr) {
         selection = SEL_MULTIPLAYER_GAME;  //	We are returning from a game.
       }
-#endif
 
       if (selection == SEL_NONE) {
         AntsEnabled = false;
@@ -846,9 +843,9 @@ bool Select_Game(bool /*fade*/) {
         * modem, or *	network play.
         */
         case SEL_MULTIPLAYER_GAME:
-#if WOLAPI_INTEGRATION
-          if (!pWolapi) {
-#endif
+          //	With Westwood Online in charge, coming back here means we are
+          //	returning from a game and the menu below is skipped.
+          if (!config::kWolapiEnabled || pWolapi == nullptr) {
             switch (Session.Type) {
               /*
               **	If 'Session.Type' isn't already set up for a multiplayer
@@ -1097,13 +1094,11 @@ bool Select_Game(bool /*fade*/) {
 #endif  // !INTERNET_OFF
 #endif  //	!WOLAPI_INTEGRATION
             }
-#if WOLAPI_INTEGRATION
           }  //	if( !pWolapi )
 
-          if (pWolapi) {
+          if (config::kWolapiEnabled && pWolapi != nullptr) {
             Session.Type = GAME_INTERNET;
           }
-#endif
           // debugprint( "Session.Type = %i\n", Session.Type );
           switch (Session.Type) {
             /*
@@ -1120,41 +1115,47 @@ bool Select_Game(bool /*fade*/) {
               Options.ScoreVolume = Options.MultiScoreVolume;
               break;
 
+//	This case cannot become an if constexpr yet: the legacy WChat path below
+//	declares its own `case GAME_INTERNET:` inside #if !WOLAPI_INTEGRATION,
+// and 	two of them in one switch do not compile. Merging the pair is stage 10's
+//	work on this file.
 #if WOLAPI_INTEGRATION  //	implies also WINSOCK_IPX
             case GAME_INTERNET:
-              if (PacketTransport) {
-                delete PacketTransport;
-              }
-              PacketTransport = new UDPInterfaceClass;
-              assert(PacketTransport != nullptr);
-              if (PacketTransport->Init()) {
-                switch (WOL_Main()) {
-                  case 1:
-                    //	Start game.
-                    Options.ScoreVolume = Options.MultiScoreVolume;
-                    process = false;
-                    Theme.Fade_Out();
-                    break;
-                  case 0:
-                    //	User cancelled.
-                    Session.Type = GAME_NORMAL;
-                    display = true;
-                    selection = SEL_MULTIPLAYER_GAME;  // SEL_NONE;
-                    delete PacketTransport;
-                    PacketTransport = nullptr;
-                    break;
-                  case -1:
-                    //	Patch was downloaded. Exit app.
-                    Theme.Fade_Out();
-                    BlackPalette.Set(kFadePaletteSlow);
-                    return false;
+              if constexpr (config::kWolapiEnabled) {
+                if (PacketTransport) {
+                  delete PacketTransport;
                 }
-              } else {
-                Session.Type = GAME_NORMAL;
-                display = true;
-                selection = SEL_MULTIPLAYER_GAME;  // SEL_NONE;
-                delete PacketTransport;
-                PacketTransport = nullptr;
+                PacketTransport = new UDPInterfaceClass;
+                assert(PacketTransport != nullptr);
+                if (PacketTransport->Init()) {
+                  switch (WOL_Main()) {
+                    case 1:
+                      //	Start game.
+                      Options.ScoreVolume = Options.MultiScoreVolume;
+                      process = false;
+                      Theme.Fade_Out();
+                      break;
+                    case 0:
+                      //	User cancelled.
+                      Session.Type = GAME_NORMAL;
+                      display = true;
+                      selection = SEL_MULTIPLAYER_GAME;  // SEL_NONE;
+                      delete PacketTransport;
+                      PacketTransport = nullptr;
+                      break;
+                    case -1:
+                      //	Patch was downloaded. Exit app.
+                      Theme.Fade_Out();
+                      BlackPalette.Set(kFadePaletteSlow);
+                      return false;
+                  }
+                } else {
+                  Session.Type = GAME_NORMAL;
+                  display = true;
+                  selection = SEL_MULTIPLAYER_GAME;  // SEL_NONE;
+                  delete PacketTransport;
+                  PacketTransport = nullptr;
+                }
               }
               break;
 #endif
@@ -1347,10 +1348,7 @@ bool Select_Game(bool /*fade*/) {
       //= %i\n", NewUnitsEnabled );
       break;
     case GAME_INTERNET:
-#if WOLAPI_INTEGRATION
-      if (!pWolapi)
-#endif
-      {
+      if (!config::kWolapiEnabled || pWolapi == nullptr) {
         //				debugprint( "pWolapi is null on internet
         // game!" );
         Fatal("pWolapi is null on internet game!");
@@ -1465,26 +1463,6 @@ bool Select_Game(bool /*fade*/) {
   Map.Flag_To_Redraw();
   Call_Back();
   Map.Render();
-
-#if WOLAPI_INTEGRATION
-
-  // ajw debugging only
-  //						debugprint( "Debugging
-  // Session...\n" ); 						debugprint(
-  // "Session.Players count is %i.\n", Session.Players.Count() );
-  for (i = 0; i < Session.Players.Count(); i++) {
-    NetNumType net;
-    NetNodeType node;
-    Session.Players[i]->Address.Get_Address(net, node);
-    //							debugprint( "Player %i,
-    //%s, color %i, ip %i.%i.%i.%i.%i.%i\n", i, Session.Players[i]->Name,
-    //								Session.Players[i]->Player.Color,
-    // node[0], node[1], node[2], node[3], node[4], node[5] );
-  }
-  //						debugprint(
-  //"PlanetWestwoodPortNumber is %i\n", PlanetWestwoodPortNumber );
-
-#endif
 
   return true;
 }
@@ -2040,7 +2018,8 @@ long Obfuscate(const char* string) {
     int maxlen = std::max(length + 3 & 0x00FC, 16);
     int index;
     for (index = length; index < maxlen; index++) {
-      buffer[index] = static_cast<char>('A' + (('?' ^ buffer[index - length]) + index) % 26);
+      buffer[index] = static_cast<char>(
+          'A' + (('?' ^ buffer[index - length]) + index) % 26);
     }
     length = index;
     buffer[length] = '\0';
@@ -2099,8 +2078,10 @@ long Obfuscate(const char* string) {
     static unsigned char _addbits[] = {0x10, 0x00, 0x00, 0x80,
                                        0x40, 0x00, 0x00, 0x04};
 
-    buffer[index] = static_cast<char>(buffer[index] | _addbits[index % std::size(_addbits)]);
-    buffer[index] = static_cast<char>(buffer[index] & ~_lossbits[index % std::size(_lossbits)]);
+    buffer[index] = static_cast<char>(buffer[index] |
+                                      _addbits[index % std::size(_addbits)]);
+    buffer[index] = static_cast<char>(buffer[index] &
+                                      ~_lossbits[index % std::size(_lossbits)]);
   }
 
   /*
@@ -2680,13 +2661,13 @@ static void Init_Bootstrap_Mixfiles() {
   int temp = RequiredCD;
   RequiredCD = -2;
 
-#if WOLAPI_INTEGRATION
-  CCFileClass fileWolapiMix("WOLAPI.MIX");
-  if (fileWolapiMix.Is_Available()) {
-    MFCD::Register("WOLAPI.MIX", &FastKey, &CryptRandom);
-    MFCD::Cache("WOLAPI.MIX");
+  if constexpr (config::kWolapiEnabled) {
+    CCFileClass fileWolapiMix("WOLAPI.MIX");
+    if (fileWolapiMix.Is_Available()) {
+      MFCD::Register("WOLAPI.MIX", &FastKey, &CryptRandom);
+      MFCD::Cache("WOLAPI.MIX");
+    }
   }
-#endif
 
   CCFileClass file2("EXPAND2.MIX");
   if (file2.Is_Available()) {
@@ -3192,7 +3173,6 @@ void Extract(const char* filename, const char* outname) {
 }
 
 bool bUsingDVD = false;
-
 
 //***********************************************************************************************
 bool Is_DVD_Installed() {

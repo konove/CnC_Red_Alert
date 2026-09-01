@@ -46,6 +46,8 @@
 
 #include "ra/mplayer.h"
 
+#include "absl/log/check.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -65,14 +67,11 @@
 #include "ra/session.h"
 #include "ra/textbtn.h"
 #include "ra/vector.h"
+#include "ra/wolstrng.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-
-#if WOLAPI_INTEGRATION
-#include "WolStrng.h"
-#endif
 
 /***********************************************************************************************
  * Select_MPlayer_Game -- prompts user for NULL-Modem, Modem, or Network game *
@@ -90,13 +89,10 @@ GameType Select_MPlayer_Game() {
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
   int d_dialog_w = 380;
-#if WOLAPI_INTEGRATION
-  int d_dialog_h = 178;  //	ajw
-  int d_dialog_y = (((510) - d_dialog_h) / 2);
-#else
-  int d_dialog_h = 156;
-  int d_dialog_y = 180;
-#endif
+  //	The Westwood Online button makes the dialog taller, and it recentres
+  //	rather than keeping the fixed y the smaller one used.
+  int d_dialog_h = config::kWolapiEnabled ? 178 : 156;  //	ajw
+  int d_dialog_y = config::kWolapiEnabled ? (510 - d_dialog_h) / 2 : 180;
   int d_dialog_x = (640 - d_dialog_w) / 2;
   int d_dialog_cx = d_dialog_x + d_dialog_w / 2;
 
@@ -118,22 +114,17 @@ GameType Select_MPlayer_Game() {
   int d_ipx_x = d_dialog_cx - d_ipx_w / 2;
   int d_ipx_y = d_skirmish_y + d_skirmish_h + 4;
 
-#if WOLAPI_INTEGRATION
   //	ajw 7/2/98 - added button
   int d_wol_w = 160;
   int d_wol_h = 18;
   int d_wol_x = d_dialog_cx - d_wol_w / 2;
   int d_wol_y = d_ipx_y + d_ipx_h + 4;
-#endif
 
   int d_cancel_w = 120;
   int d_cancel_h = 18;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
-#if WOLAPI_INTEGRATION
-  int d_cancel_y = d_wol_y + d_wol_h + d_margin;
-#else
-  int d_cancel_y = d_ipx_y + d_ipx_h + d_margin;
-#endif
+  int d_cancel_y = config::kWolapiEnabled ? d_wol_y + d_wol_h + d_margin
+                                          : d_ipx_y + d_ipx_h + d_margin;
 
   //------------------------------------------------------------------------
   //	Button enumerations:
@@ -142,22 +133,21 @@ GameType Select_MPlayer_Game() {
     BUTTON_MODEMSERIAL = 100,
     BUTTON_SKIRMISH,
     BUTTON_IPX,
-#if WOLAPI_INTEGRATION
     BUTTON_WOL,  //	ajw
-#endif
     BUTTON_CANCEL,
 
-#if WOLAPI_INTEGRATION
+    //	BUTTON_WOL keeps its slot either way; the pointer stays null when
+    //	the button is not built.
     NUM_OF_BUTTONS = 5,  //	ajw
-#else
-    NUM_OF_BUTTONS = 4,
-#endif
   };
 
   // Sampled once: the button list, its length and the cancel-button fixup
   // below all have to agree on how many buttons this dialog has.
   const bool has_ipx = Ipx.Is_IPX();
-  int num_of_buttons = NUM_OF_BUTTONS - (has_ipx ? 0 : 1);
+  //	The IPX and Westwood Online buttons are each present or not; the count
+  //	drives keyboard navigation, so it has to match what was actually built.
+  int num_of_buttons =
+      NUM_OF_BUTTONS - (has_ipx ? 0 : 1) - (config::kWolapiEnabled ? 0 : 1);
   //------------------------------------------------------------------------
   //	Redraw values: in order from "top" to "bottom" layer of the dialog
   //------------------------------------------------------------------------
@@ -171,14 +161,14 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   //	Dialog variables:
   //------------------------------------------------------------------------
-  KeyNumType input;    // input from user
-  bool process;        // loop while true
-  RedrawType display;  // true = re-draw everything
+  KeyNumType input;               // input from user
+  bool process;                   // loop while true
+  RedrawType display;             // true = re-draw everything
   GameType retval = GAME_NORMAL;  // return value
   int selection = 0;
   bool pressed;
   int curbutton;
-  TextButtonClass* buttons[NUM_OF_BUTTONS];
+  TextButtonClass* buttons[NUM_OF_BUTTONS] = {};
 
   //------------------------------------------------------------------------
   //	Buttons
@@ -203,11 +193,9 @@ GameType Select_MPlayer_Game() {
   TextButtonClass ipxbtn(BUTTON_IPX, TXT_NETWORK, TPF_BUTTON, d_ipx_x, d_ipx_y,
                          d_ipx_w, d_ipx_h);
 
-#if WOLAPI_INTEGRATION
   //	ajw
   TextButtonClass wolbtn(BUTTON_WOL, TXT_WOL_INTERNETBUTTON, TPF_BUTTON,
                          d_wol_x, d_wol_y, d_wol_w, d_wol_h);
-#endif
 
   if (!has_ipx) {
     d_cancel_y = d_ipx_y;
@@ -229,9 +217,9 @@ GameType Select_MPlayer_Game() {
   if (has_ipx) {
     ipxbtn.Add_Tail(*commands);
   }
-#if WOLAPI_INTEGRATION
-  wolbtn.Add_Tail(*commands);  //	ajw
-#endif
+  if constexpr (config::kWolapiEnabled) {
+    wolbtn.Add_Tail(*commands);  //	ajw
+  }
   cancelbtn.Add_Tail(*commands);
 
   //------------------------------------------------------------------------
@@ -240,22 +228,14 @@ GameType Select_MPlayer_Game() {
   curbutton = 0;
   buttons[0] = &modemserialbtn;
   buttons[1] = &skirmishbtn;
+  int iButton = 2;
   if (has_ipx) {
-    buttons[2] = &ipxbtn;
-#if WOLAPI_INTEGRATION
-    buttons[3] = &wolbtn;  //	ajw
-    buttons[4] = &cancelbtn;
-#else
-    buttons[3] = &cancelbtn;
-#endif
-  } else {
-#if WOLAPI_INTEGRATION
-    buttons[2] = &wolbtn;  //	ajw
-    buttons[3] = &cancelbtn;
-#else
-    buttons[2] = &cancelbtn;
-#endif
+    buttons[iButton++] = &ipxbtn;
   }
+  if constexpr (config::kWolapiEnabled) {
+    buttons[iButton++] = &wolbtn;  //	ajw
+  }
+  buttons[iButton] = &cancelbtn;
   buttons[curbutton]->Turn_On();
 
   Keyboard->Clear();
@@ -270,7 +250,6 @@ GameType Select_MPlayer_Game() {
   process = true;
   pressed = false;
   while (process) {
-
     //.....................................................................
     //	Invoke game callback
     //.....................................................................
@@ -330,12 +309,10 @@ GameType Select_MPlayer_Game() {
         pressed = true;
         break;
 
-#if WOLAPI_INTEGRATION
       case ButtonKey(BUTTON_WOL):  //	ajw
         selection = BUTTON_WOL;
         pressed = true;
         break;
-#endif
 
       case KN_ESC:
       case ButtonKey(BUTTON_CANCEL):
@@ -381,9 +358,15 @@ GameType Select_MPlayer_Game() {
       buttons[curbutton]->Turn_Off();
       buttons[curbutton]->Flag_To_Redraw();
       curbutton = selection - BUTTON_MODEMSERIAL;
+      //	BUTTON_WOL is in the enum either way, but only takes a slot in
+      //	buttons[] when it was actually built.
+      if (!config::kWolapiEnabled && selection > BUTTON_WOL) {
+        curbutton--;
+      }
       if (selection == BUTTON_CANCEL && !has_ipx) {
         curbutton--;
       }
+      DCHECK(buttons[curbutton] != nullptr);
       buttons[curbutton]->Turn_On();
       buttons[curbutton]->IsPressed = true;
       buttons[curbutton]->Draw_Me(true);
@@ -426,12 +409,10 @@ GameType Select_MPlayer_Game() {
           process = false;
           break;
 
-#if WOLAPI_INTEGRATION
-        case (BUTTON_WOL):  //	ajw
+        case BUTTON_WOL:  //	ajw
           retval = GAME_INTERNET;
           process = false;
           break;
-#endif
 
         case BUTTON_CANCEL:
           retval = GAME_NORMAL;
@@ -694,26 +675,26 @@ int Surrender_Dialog(const char* text) {
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
   enum {
-    D_DIALOG_W = 480,                     // dialog width
-    D_DIALOG_H = 126,                      // dialog height
-    D_DIALOG_X = (640 - D_DIALOG_W) / 2,  // centered x-coord
-    D_DIALOG_Y = (400 - D_DIALOG_H) / 2,  // centered y-coord
-    D_DIALOG_CX = D_DIALOG_X + D_DIALOG_W / 2,        // coord of x-center
+    D_DIALOG_W = 480,                           // dialog width
+    D_DIALOG_H = 126,                           // dialog height
+    D_DIALOG_X = (640 - D_DIALOG_W) / 2,        // centered x-coord
+    D_DIALOG_Y = (400 - D_DIALOG_H) / 2,        // centered y-coord
+    D_DIALOG_CX = D_DIALOG_X + D_DIALOG_W / 2,  // coord of x-center
 
-    D_TXT6_H = 14,      // ht of 6-pt text
-    D_MARGIN = 10,      // margin width/height
+    D_TXT6_H = 14,     // ht of 6-pt text
+    D_MARGIN = 10,     // margin width/height
     D_TOPMARGIN = 40,  // top margin
 
-    D_OK_W = 90,                                   // OK width
-    D_OK_H = 18,                                    // OK height
-    D_OK_X = D_DIALOG_CX - D_OK_W - 10,             // OK x
+    D_OK_W = 90,                                               // OK width
+    D_OK_H = 18,                                               // OK height
+    D_OK_X = D_DIALOG_CX - D_OK_W - 10,                        // OK x
     D_OK_Y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - D_MARGIN * 2,  // OK y
 
-    D_CANCEL_W = 90,               // Cancel width
+    D_CANCEL_W = 90,                // Cancel width
     D_CANCEL_H = 18,                // Cancel height
     D_CANCEL_X = D_DIALOG_CX + 10,  // Cancel x
-    D_CANCEL_Y =
-        D_DIALOG_Y + D_DIALOG_H - D_CANCEL_H - D_MARGIN * 2,  // Cancel y
+    D_CANCEL_Y = D_DIALOG_Y + D_DIALOG_H - D_CANCEL_H -
+        D_MARGIN * 2,  // Cancel y
   };
 
   //------------------------------------------------------------------------
@@ -887,24 +868,24 @@ int Abort_Dialog() {
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
   enum {
-    D_DIALOG_W = 340,                     // dialog width
-    D_DIALOG_H = 126,                      // dialog height
-    D_DIALOG_X = (640 - D_DIALOG_W) / 2,  // centered x-coord
-    D_DIALOG_Y = (400 - D_DIALOG_H) / 2,  // centered y-coord
-    D_DIALOG_CX = D_DIALOG_X + D_DIALOG_W / 2,        // coord of x-center
+    D_DIALOG_W = 340,                           // dialog width
+    D_DIALOG_H = 126,                           // dialog height
+    D_DIALOG_X = (640 - D_DIALOG_W) / 2,        // centered x-coord
+    D_DIALOG_Y = (400 - D_DIALOG_H) / 2,        // centered y-coord
+    D_DIALOG_CX = D_DIALOG_X + D_DIALOG_W / 2,  // coord of x-center
 
-    D_TXT6_H = 14,      // ht of 6-pt text
-    D_MARGIN = 10,      // margin width/height
+    D_TXT6_H = 14,     // ht of 6-pt text
+    D_MARGIN = 10,     // margin width/height
     D_TOPMARGIN = 40,  // top margin
 
-    D_YES_W = 90,                                    // YES width
-    D_YES_H = 18,                                     // YES height
-    D_YES_X = D_DIALOG_CX - D_YES_W - 10,             // YES x
+    D_YES_W = 90,                                                // YES width
+    D_YES_H = 18,                                                // YES height
+    D_YES_X = D_DIALOG_CX - D_YES_W - 10,                        // YES x
     D_YES_Y = D_DIALOG_Y + D_DIALOG_H - D_YES_H - D_MARGIN * 2,  // YES y
 
-    D_NO_W = 90,                                   // Cancel width
-    D_NO_H = 18,                                    // Cancel height
-    D_NO_X = D_DIALOG_CX + 10,                      // Cancel x
+    D_NO_W = 90,                                               // Cancel width
+    D_NO_H = 18,                                               // Cancel height
+    D_NO_X = D_DIALOG_CX + 10,                                 // Cancel x
     D_NO_Y = D_DIALOG_Y + D_DIALOG_H - D_NO_H - D_MARGIN * 2,  // Cancel y
   };
 

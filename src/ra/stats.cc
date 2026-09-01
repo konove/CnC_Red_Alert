@@ -90,7 +90,6 @@
 // #define FIELD_VIDEO_MEMORY "VIDM"
 #define FIELD_SHADOW_REGROWS "SHAD"
 
-#if WOLAPI_INTEGRATION
 #define FIELD_HOSTORNOT "SDFX"
 #define FIELD_TOURNAMENT "TRNY"
 #define FIELD_NUM_INITIAL_PLAYERS "NUMP"
@@ -100,7 +99,6 @@
 // #define FIELD_HARDWARE_GUID					"GUID"
 #define FIELD_PLAYER1_IP "ADR1"
 #define FIELD_PLAYER2_IP "ADR2"
-#endif
 
 //	ajw The following were never used (thank god).
 // #define FIELD_PLAYER1_HANDLE "NAM1"
@@ -178,12 +176,17 @@ TimerClass GameTimer;
 long GameEndTime;
 void* PacketLater = nullptr;
 
-#if WOLAPI_INTEGRATION
-#include "WolapiOb.h"
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+
+#include "port/safe_string.h"
+#include "ra/config.h"
+#include "ra/wolapiob.h"
+
 extern WolapiObject* pWolapi;
 
 extern bool bReconnectDialogCancelled;
-#endif
 
 /***********************************************************************************************
  * Send_Statistics_To_Server -- sends internet game statistics to the Westeood
@@ -204,11 +207,11 @@ void Send_Statistics_Packet() {
 //	debugprint( "Stats: Send_Statistics_Packet() called.\n" );
 #ifndef INTERNET_OFF  // Denzil 5/4/98
 
-#if WOLAPI_INTEGRATION
-  if (!pWolapi) {  //	Should no longer ever happen.
-    return;
+  if constexpr (config::kWolapiEnabled) {
+    if (!pWolapi) {  //	Should no longer ever happen.
+      return;
+    }
   }
-#endif
 
   PacketClass stats;
   HouseClass* player;
@@ -247,53 +250,49 @@ void Send_Statistics_Packet() {
     /*
     ** Field to identify this as C&C 95 internet game statistics packet
     */
-#if WOLAPI_INTEGRATION
-    if (pWolapi->bGameServer) {
-      stats.Add_Field(
-          FIELD_HOSTORNOT,
-          (unsigned char)0);  //	Reversed meaning of this for Neal.
+    if constexpr (config::kWolapiEnabled) {
+      //	Reversed meaning of this for Neal.
+      stats.Add_Field(FIELD_HOSTORNOT,
+                      static_cast<unsigned char>(pWolapi->bGameServer ? 0 : 1));
     } else {
-      stats.Add_Field(FIELD_HOSTORNOT, (unsigned char)1);
+      stats.Add_Field(FIELD_PACKET_TYPE, IsNetworkHost
+                                             ? PACKET_TYPE_HOST_GAME_INFO
+                                             : PACKET_TYPE_GUEST_GAME_INFO);
     }
-#else
-    if (IsNetworkHost) {
-      stats.Add_Field(FIELD_PACKET_TYPE, PACKET_TYPE_HOST_GAME_INFO);
-    } else {
-      stats.Add_Field(FIELD_PACKET_TYPE, PACKET_TYPE_GUEST_GAME_INFO);
-    }
-#endif
 
     /*
     ** Game ID. A unique game identifier assigned by WChat.
     */
     stats.Add_Field(FIELD_GAME_ID, PlanetWestwoodGameID);
 
-#if WOLAPI_INTEGRATION
+    if constexpr (config::kWolapiEnabled) {
+      //	Number of players initially in game.
+      stats.Add_Field(FIELD_NUM_INITIAL_PLAYERS,
+                      (unsigned long)pWolapi->GameInfoCurrent.iPlayerCount);
+      // debugprint( "Stats: number of initial players is %i\n",
+      // pWolapi->GameInfoCurrent.iPlayerCount );
 
-    //	Number of players initially in game.
-    stats.Add_Field(FIELD_NUM_INITIAL_PLAYERS,
-                    (unsigned long)pWolapi->GameInfoCurrent.iPlayerCount);
-    // debugprint( "Stats: number of initial players is %i\n",
-    // pWolapi->GameInfoCurrent.iPlayerCount );
+      //	Number of players remaining in game. Not sure of what use this
+      // will be
+      // statistically...
+      stats.Add_Field(FIELD_NUM_REMAINING_PLAYERS,
+                      (unsigned long)Session.Players.Count());
+      // debugprint( "Stats: number of remaining players is %i\n",
+      // Session.Players.Count() );
 
-    //	Number of players remaining in game. Not sure of what use this will be
-    // statistically...
-    stats.Add_Field(FIELD_NUM_REMAINING_PLAYERS,
-                    (unsigned long)Session.Players.Count());
-    // debugprint( "Stats: number of remaining players is %i\n",
-    // Session.Players.Count() );
+      //	Whether or not this was a tournament game.
+      stats.Add_Field(
+          FIELD_TOURNAMENT,
+          (unsigned char)(pWolapi->GameInfoCurrent.bTournament ? 1 : 0));
 
-    //	Whether or not this was a tournament game.
-    stats.Add_Field(
-        FIELD_TOURNAMENT,
-        (unsigned char)(pWolapi->GameInfoCurrent.bTournament ? 1 : 0));
-
-//	ajw This is now in WOLAPI...
-//		//	A unique value that identifies the machine that the game
-// was played on. 		HW_PROFILE_INFO hwinfo;
-//		::GetCurrentHwProfile( &hwinfo );
-//		stats.Add_Field( FIELD_HARDWARE_GUID, hwinfo.szHwProfileGuid );
-#endif
+      //	ajw This is now in WOLAPI...
+      //		//	A unique value that identifies the machine that
+      // the game
+      // was played on. 		HW_PROFILE_INFO hwinfo;
+      //		::GetCurrentHwProfile( &hwinfo );
+      //		stats.Add_Field( FIELD_HARDWARE_GUID,
+      // hwinfo.szHwProfileGuid );
+    }
 
     /*
     ** Start credits.
@@ -367,11 +366,13 @@ void Send_Statistics_Packet() {
     // stats.Add_Field(FIELD_SCENARIO, MPlayerScenarios[ScenarioIdx]);
 #endif  //(1)
 
-#if WOLAPI_INTEGRATION
-    //	Completion status is set for Tournament games only - ajw.
-    if (pWolapi->GameInfoCurrent.bTournament) {
-#endif
+    //	Read again further down when deciding whether to hold the packet
+    //	back, so it outlives the block that fills it in.
+    int completion = -1;
 
+    //	Completion status is set for Tournament games only - ajw.
+    if (!config::kWolapiEnabled ||
+        (pWolapi != nullptr && pWolapi->GameInfoCurrent.bTournament)) {
       /*
       ** Game completion status.
       **
@@ -399,93 +400,95 @@ void Send_Statistics_Packet() {
         }
       }
 
-      int completion = -1;
-
       if (player1 && player2) {  //	Can this ever fail?		ajw
-#if WOLAPI_INTEGRATION
-        //	Send IP addresses of both players.
-        NetNumType net;
-        NetNodeType node;
-        char szIPAddress[30];
-        Session.Players[0]->Address.Get_Address(net, node);
-        sprintf(szIPAddress, "%i.%i.%i.%i", node[0], node[1], node[2], node[3]);
-        if (strcmp(szIPAddress, "255.255.255.255") == 0) {
-          //	Ok. It's not set. Let's try to get it ourselves...
-          char szHostName[512];
-          int iRes = gethostname(szHostName, 512);
-          if (iRes != SOCKET_ERROR)  //	else forget about trying
-          {
-            //						debugprint( "gethostname
-            // got me %s\n", szHostName );
-            struct hostent* pHostent = gethostbyname(szHostName);
-            if (pHostent)  //	else forget about trying
+        if constexpr (config::kWolapiEnabled) {
+          //	Send IP addresses of both players.
+          NetNumType net;
+          NetNodeType node;
+          char szIPAddress[30];
+          Session.Players[0]->Address.Get_Address(net, node);
+          sprintf(szIPAddress, "%i.%i.%i.%i", node[0], node[1], node[2],
+                  node[3]);
+          if (strcmp(szIPAddress, "255.255.255.255") == 0) {
+            //	Ok. It's not set. Let's try to get it ourselves...
+            char szHostName[512];
+            int iRes = gethostname(szHostName, 512);
+            if (iRes == 0)  //	else forget about trying
             {
-              int i = 0;
-              int* piAddress = (int*)pHostent->h_addr_list[i];
-              while (piAddress) {
-                //	There is a non-null value for this h_addr_list entry.
-                char szAsciiIP[30];
-                strcpy(szAsciiIP, inet_ntoa(*((struct in_addr*)piAddress)));
-                //	We have an address in the right form.
-                //	Now, is it an address in a private network? If so we
-                // should ignore it.
-                unsigned char q1 = ((char*)piAddress)[0];  //	First digit.
-                unsigned char q2 = ((char*)piAddress)[1];  //	Second digit.
-                //								debugprint(
-                //"ip: %s\n", szAsciiIP );
-                if (q1 == 10 || (q1 == 172 && (q2 >= 16 && q2 <= 31)) ||
-                    (q1 == 192 && q2 == 168)) {
-                  //	This is a private network address - ignore it and go on
-                  // to next.
-                } else {
-                  strcpy(szIPAddress, szAsciiIP);
-                  break;
+              //						debugprint(
+              //"gethostname
+              // got me %s\n", szHostName );
+              struct hostent* pHostent = gethostbyname(szHostName);
+              if (pHostent)  //	else forget about trying
+              {
+                int i = 0;
+                int* piAddress = (int*)pHostent->h_addr_list[i];
+                while (piAddress) {
+                  //	There is a non-null value for this h_addr_list entry.
+                  char szAsciiIP[30];
+                  port::SafeCopy(szAsciiIP,
+                                 inet_ntoa(*((struct in_addr*)piAddress)));
+                  //	We have an address in the right form.
+                  //	Now, is it an address in a private network? If so we
+                  // should ignore it.
+                  unsigned char q1 = ((char*)piAddress)[0];  //	First digit.
+                  unsigned char q2 = ((char*)piAddress)[1];  //	Second digit.
+                  //								debugprint(
+                  //"ip: %s\n", szAsciiIP );
+                  if (q1 == 10 || (q1 == 172 && (q2 >= 16 && q2 <= 31)) ||
+                      (q1 == 192 && q2 == 168)) {
+                    //	This is a private network address - ignore it and go on
+                    // to next.
+                  } else {
+                    port::SafeCopy(szIPAddress, szAsciiIP);
+                    break;
+                  }
+                  piAddress = (int*)pHostent->h_addr_list[++i];
                 }
-                piAddress = (int*)pHostent->h_addr_list[++i];
               }
+              //						else
+              //							debugprint(
+              //"gethostbyname failed. Error %i\n", WSAGetLastError() );
             }
-            //						else
-            //							debugprint(
-            //"gethostbyname failed. Error %i\n", WSAGetLastError() );
+            //					else
+            //						debugprint( "gethostname
+            // failed with %i, error %i\n", iRes, WSAGetLastError() );
           }
-          //					else
-          //						debugprint( "gethostname
-          // failed with %i, error %i\n", iRes, WSAGetLastError() );
+          stats.Add_Field(FIELD_PLAYER1_IP, (char*)szIPAddress);
+          Session.Players[1]->Address.Get_Address(net, node);
+          sprintf(szIPAddress, "%i.%i.%i.%i", node[0], node[1], node[2],
+                  node[3]);
+          stats.Add_Field(FIELD_PLAYER2_IP, (char*)szIPAddress);
         }
-        stats.Add_Field(FIELD_PLAYER1_IP, (char*)szIPAddress);
-        Session.Players[1]->Address.Get_Address(net, node);
-        sprintf(szIPAddress, "%i.%i.%i.%i", node[0], node[1], node[2], node[3]);
-        stats.Add_Field(FIELD_PLAYER2_IP, (char*)szIPAddress);
-#endif
         // Stalemate games.
         if (Scen.bLocalProposesDraw && Scen.bOtherProposesDraw) {
           completion = COMPLETION_WASH;
         } else {
           if (ConnectionLost) {
-#if WOLAPI_INTEGRATION
-            if (bReconnectDialogCancelled) {
-              if (Session.Players[0]->Player.ID == HOUSE_MULTI1) {
-                //	I am player1.
-                completion = COMPLETION_PLAYER_2_WON_BY_DISCONNECTION;
+            if constexpr (config::kWolapiEnabled) {
+              if (bReconnectDialogCancelled) {
+                if (Session.Players[0]->Player.ID == HOUSE_MULTI1) {
+                  //	I am player1.
+                  completion = COMPLETION_PLAYER_2_WON_BY_DISCONNECTION;
+                } else {
+                  completion = COMPLETION_PLAYER_1_WON_BY_DISCONNECTION;
+                }
               } else {
-                completion = COMPLETION_PLAYER_1_WON_BY_DISCONNECTION;
+                completion = COMPLETION_CONNECTION_LOST;
+                if (pWolapi->bDisconnectPingingCompleted) {
+                  char szPingResult[8];  //	Format is "x/y a/b", e.g., "3/5
+                                         // 4/5"
+                  pWolapi->DisconnectPingResultsString(szPingResult);
+                  stats.Add_Field(FIELD_DISCONNECT_PINGS, (char*)szPingResult);
+                }
+                //						else
+                //							debugprint(
+                //"Stats: bDisconnectPingingCompleted is false! Should be
+                // finished!!!!!!!!!!!!!!!\n" );
               }
             } else {
               completion = COMPLETION_CONNECTION_LOST;
-              if (pWolapi->bDisconnectPingingCompleted) {
-                char szPingResult[8];  //	Format is "x/y a/b", e.g., "3/5
-                                       // 4/5"
-                pWolapi->DisconnectPingResultsString(szPingResult);
-                stats.Add_Field(FIELD_DISCONNECT_PINGS, (char*)szPingResult);
-              }
-              //						else
-              //							debugprint(
-              //"Stats: bDisconnectPingingCompleted is false! Should be
-              // finished!!!!!!!!!!!!!!!\n" );
             }
-#else
-          completion = COMPLETION_CONNECTION_LOST;
-#endif
           } else {
             if (player1->IsGiverUpper) {
               completion = COMPLETION_PLAYER_2_WON_BY_DISCONNECTION;
@@ -530,10 +533,7 @@ void Send_Statistics_Packet() {
       stats.Add_Field(FIELD_COMPLETION, static_cast<char>(completion));
       // debugprint( "Stats: Tournament game completion value: %i\n", completion
       // );
-
-#if WOLAPI_INTEGRATION
     }
-#endif
 
     /*
     ** Game start time (GMT or Pacific?)
@@ -631,42 +631,37 @@ void Send_Statistics_Packet() {
     ** Build the player specific statistics
     **
     */
-#if WOLAPI_INTEGRATION
-    for (int house = 0; house < 8; house++) {
-#else
-    for (int house = 0; house < 2; house++) {
-#endif
+    //	Westwood Online games can hold eight players; the older stats packet
+    //	only ever described two.
+    constexpr int kHouseCount = config::kWolapiEnabled ? 8 : 2;
+    for (int house = 0; house < kHouseCount; house++) {
       player =
           HouseClass::As_Pointer(static_cast<HousesType>(house + HOUSE_MULTI1));
 
-#if WOLAPI_INTEGRATION
-      if (!player) {
+      if (config::kWolapiEnabled && !player) {
         continue;
       }
-#endif
 
       /*
       ** Player handle.
       */
-      field_player_handle[3] = static_cast<char>('1' + static_cast<char>(house));
-#if WOLAPI_INTEGRATION
-      stats.Add_Field(field_player_handle, (char*)player->InitialName);
-// debugprint( "Stats: Player %i name %s\n", house, (char*) player->InitialName
-// ); debugprint( "Stats: Player %i ending name %s\n", house, (char*)
-// player->IniName );
-#else
-      stats.Add_Field(field_player_handle, player->IniName);
-#endif
+      field_player_handle[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      //	The name the player logged in with, not the one they may have
+      // been 	renamed to when the computer took over.
+      stats.Add_Field(field_player_handle,
+                      config::kWolapiEnabled
+                          ? static_cast<const char*>(player->InitialName)
+                          : player->IniName);
 
-#if WOLAPI_INTEGRATION
-      //	Whether or not this player was taken over by the computer, due
-      // to his quitting the game.
-      if (strcmp(player->IniName, player->InitialName)) {
-        stats.Add_Field(FIELD_COMPUTERTOOKOVER, (unsigned char)1);
-      } else {
-        stats.Add_Field(FIELD_COMPUTERTOOKOVER, (unsigned char)0);
+      if constexpr (config::kWolapiEnabled) {
+        //	Whether or not this player was taken over by the computer, due
+        // to his quitting the game.
+        stats.Add_Field(
+            FIELD_COMPUTERTOOKOVER,
+            static_cast<unsigned char>(
+                strcmp(player->IniName, player->InitialName) != 0 ? 1 : 0));
       }
-#endif
       /*
       ** Player team. (NOD or GDI)
       */
@@ -684,17 +679,23 @@ void Send_Statistics_Packet() {
       /*
       ** Player end credits.
       */
-      field_player_credits[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_credits[3] =
+          static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_credits, player->Credits + player->Tiberium);
 
       /*
       ** Number of each unit/building type built
       */
-      field_player_infantry_bought[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_units_bought[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_planes_bought[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_buildings_bought[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_vessels_bought[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_infantry_bought[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_units_bought[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_planes_bought[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_buildings_bought[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_vessels_bought[3] =
+          static_cast<char>('1' + static_cast<char>(house));
 
       player->InfantryTotals->To_Network_Format();
       player->UnitTotals->To_Network_Format();
@@ -778,11 +779,16 @@ void Send_Statistics_Packet() {
       player->BuildingTotals->To_Network_Format();
       player->VesselTotals->To_Network_Format();
 
-      field_player_infantry_left[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_units_left[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_planes_left[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_buildings_left[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_vessels_left[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_infantry_left[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_units_left[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_planes_left[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_buildings_left[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_vessels_left[3] =
+          static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_infantry_left,
                       player->InfantryTotals->Get_All_Totals(),
                       player->InfantryTotals->Get_Unit_Count() * 4);
@@ -809,11 +815,16 @@ void Send_Statistics_Packet() {
       player->DestroyedBuildings->To_Network_Format();
       player->DestroyedVessels->To_Network_Format();
 
-      field_player_infantry_killed[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_units_killed[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_planes_killed[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_buildings_killed[3] = static_cast<char>('1' + static_cast<char>(house));
-      field_player_vessels_killed[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_infantry_killed[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_units_killed[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_planes_killed[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_buildings_killed[3] =
+          static_cast<char>('1' + static_cast<char>(house));
+      field_player_vessels_killed[3] =
+          static_cast<char>('1' + static_cast<char>(house));
 
       stats.Add_Field(field_player_infantry_killed,
                       player->DestroyedInfantry->Get_All_Totals(),
@@ -834,7 +845,8 @@ void Send_Statistics_Packet() {
       /*
       ** Number and type of enemy buildings captured
       */
-      field_player_buildings_captured[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_buildings_captured[3] =
+          static_cast<char>('1' + static_cast<char>(house));
       player->CapturedBuildings->To_Network_Format();
       stats.Add_Field(field_player_buildings_captured,
                       player->CapturedBuildings->Get_All_Totals(),
@@ -843,7 +855,8 @@ void Send_Statistics_Packet() {
       /*
       ** Number of crates discovered and their contents
       */
-      field_player_crates_found[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_crates_found[3] =
+          static_cast<char>('1' + static_cast<char>(house));
       player->TotalCrates->To_Network_Format();
       stats.Add_Field(field_player_crates_found,
                       player->TotalCrates->Get_All_Totals(),
@@ -852,7 +865,8 @@ void Send_Statistics_Packet() {
       /*
       ** Amount of tiberium turned into credits
       */
-      field_player_harvested[3] = static_cast<char>('1' + static_cast<char>(house));
+      field_player_harvested[3] =
+          static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_harvested,
                       static_cast<unsigned long>(player->HarvestedCredits));
     }
@@ -862,17 +876,17 @@ void Send_Statistics_Packet() {
     */
     packet = stats.Create_Comms_Packet(packet_size);
 
-#if !WOLAPI_INTEGRATION  //	ajw - 'PacketLater' is no longer ever used.
+    //	ajw - 'PacketLater' is no longer ever used.
     /*
     ** If a player disconnected then dont send the packet at this time - save it
     *for later
     */
-    if (completion == COMPLETION_PLAYER_1_WON_BY_DISCONNECTION ||
-        completion == COMPLETION_PLAYER_2_WON_BY_DISCONNECTION) {
+    if (!config::kWolapiEnabled &&
+        (completion == COMPLETION_PLAYER_1_WON_BY_DISCONNECTION ||
+         completion == COMPLETION_PLAYER_2_WON_BY_DISCONNECTION)) {
       PacketLater = packet;
       return;
     }
-#endif
 
   } else {  // else for if (!PacketLater)
 
@@ -883,29 +897,29 @@ void Send_Statistics_Packet() {
     PacketLater = nullptr;
   }
 
-#if WOLAPI_INTEGRATION
-  /*
-  ** Send it.....
-  */
-  const char* szGameResServer;
-  int iPort;
-  if (pWolapi->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
-    szGameResServer = pWolapi->szGameResServerHost2;
-    iPort = pWolapi->iGameResServerPort2;
-  } else {
-    szGameResServer = pWolapi->szGameResServerHost1;
-    iPort = pWolapi->iGameResServerPort1;
-  }
+  if constexpr (config::kWolapiEnabled) {
+    /*
+    ** Send it.....
+    */
+    const char* szGameResServer;
+    int iPort;
+    if (pWolapi->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
+      szGameResServer = pWolapi->szGameResServerHost2;
+      iPort = pWolapi->iGameResServerPort2;
+    } else {
+      szGameResServer = pWolapi->szGameResServerHost1;
+      iPort = pWolapi->iGameResServerPort1;
+    }
 
-  if (*szGameResServer) {
-    if (pWolapi->pNetUtil->RequestGameresSend(szGameResServer, iPort,
-                                              (unsigned char*)packet,
-                                              packet_size) != S_OK)
-      // debugprint( "RequestGameresSend( %s, %i ) failed!!!\n",
-      // szGameResServer, iPort );
-      ;
+    if (*szGameResServer) {
+      if (pWolapi->pNetUtil->RequestGameresSend(szGameResServer, iPort,
+                                                (unsigned char*)packet,
+                                                packet_size) != S_OK) {
+        // debugprint( "RequestGameresSend( %s, %i ) failed!!!\n",
+        // szGameResServer, iPort );
+      }
+    }
   }
-#endif
 
   /*
   ** Save it to disk as well so I can see it

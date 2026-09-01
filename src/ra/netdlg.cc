@@ -208,12 +208,13 @@ constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 64;
 bool Is_Mission_126x126(char* file_name);
 bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
-#if WOLAPI_INTEGRATION
-#include "WolStrng.h"
-#include "WolapiOb.h"
 #include <iterator>
+
+#include "ra/config.h"
+#include "ra/wolapiob.h"
+#include "ra/wolstrng.h"
+
 extern WolapiObject* pWolapi;
-#endif
 
 //---------------------------------------------------------------------------
 //	The possible states of the join-game dialog
@@ -3802,13 +3803,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                      Session.GPacket.ScenarioInfo.Scenario);
       port::SafeCopy(Session.ScenarioFileName,
                      Session.GPacket.ScenarioInfo.ShortFileName);
-#if WOLAPI_INTEGRATION
       port::SafeCopy(Session.ScenarioDigest,
                      (char*)Session.GPacket.ScenarioInfo.FileDigest);
-#else
-      port::SafeCopy(Session.ScenarioDigest,
-                     (char*)Session.GPacket.ScenarioInfo.FileDigest);
-#endif
       Session.ScenarioIsOfficial =
           Session.GPacket.ScenarioInfo.OfficialScenario;
       Session.ScenarioFileLength = Session.GPacket.ScenarioInfo.FileLength;
@@ -4978,15 +4974,9 @@ static int Net_New_Dialog() {
         CCFileClass file(
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
         Session.GPacket.ScenarioInfo.FileLength = static_cast<int>(file.Size());
-#if WOLAPI_INTEGRATION
         port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
-#else
-        port::SafeCopy(
-            Session.GPacket.ScenarioInfo.ShortFileName,
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
-#endif
         strncpy((char*)Session.GPacket.ScenarioInfo.FileDigest,
                 Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
                 sizeof(Session.GPacket.ScenarioInfo.FileDigest));
@@ -5669,24 +5659,25 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
 
     w = std::max(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
 
-#if WOLAPI_INTEGRATION
+    //	A tournament game forfeits if you cancel, so the box says so and has
+    //	to be wide enough for the longer line.
     char szNewCancelMessage[300];
-    sprintf(szNewCancelMessage, "%s%s", buf3, TXT_WOL_CANCELMEANSFORFEIT);
-
-    if (Session.Type == GAME_INTERNET && pWolapi &&
-        pWolapi->GameInfoCurrent.bTournament) {
-      w = max(String_Pixel_Width(szNewCancelMessage),
-              w);  // * 2;		why was it ever multiplied by
-                   // this!!!?
-      w += (d_margin * 12);
+    snprintf(szNewCancelMessage, sizeof(szNewCancelMessage), "%s%s", buf3,
+             TXT_WOL_CANCELMEANSFORFEIT);
+    const bool bForfeitWarning =
+        config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
+        pWolapi != nullptr && pWolapi->GameInfoCurrent.bTournament;
+    if (bForfeitWarning) {
+      w = static_cast<int>(std::max(String_Pixel_Width(szNewCancelMessage),
+                                    static_cast<unsigned>(w)));
+      //	* 2;		why was it ever multiplied by this!!!?
+      w += d_margin * 12;
     } else {
-      w = max(String_Pixel_Width(buf3), w) * 2;
-      w += (d_margin * 5);
+      w = static_cast<int>(std::max(String_Pixel_Width(buf3),
+                                    static_cast<unsigned>(w))) *
+          2;
+      w += d_margin * 5;
     }
-#else
-    w = std::max(String_Pixel_Width(buf3), static_cast<unsigned>(w)) * 2;
-    w += d_margin * 5;
-#endif
 
     h = d_txt6_h * 3 + d_margin * 6;
     x = 320 - w / 2;
@@ -5702,21 +5693,9 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
     Fancy_Text_Print(buf2, 320, y + d_margin * 2 + d_txt6_h + d_margin, scheme,
                      TBLACK, TPF_CENTER | TPF_TEXT);
 
-#if WOLAPI_INTEGRATION
-    if (Session.Type == GAME_INTERNET && pWolapi &&
-        pWolapi->GameInfoCurrent.bTournament) {
-      Fancy_Text_Print(szNewCancelMessage, 320,
-                       y + (d_margin * 2) + (d_txt6_h + d_margin) * 2, scheme,
-                       TBLACK, TPF_CENTER | TPF_TEXT);
-    } else {
-      Fancy_Text_Print(buf3, 320,
-                       y + (d_margin * 2) + (d_txt6_h + d_margin) * 2, scheme,
-                       TBLACK, TPF_CENTER | TPF_TEXT);
-    }
-#else
-    Fancy_Text_Print(buf3, 320, y + d_margin * 2 + (d_txt6_h + d_margin) * 2,
-                     scheme, TBLACK, TPF_CENTER | TPF_TEXT);
-#endif
+    Fancy_Text_Print(bForfeitWarning ? szNewCancelMessage : buf3, 320,
+                     y + d_margin * 2 + (d_txt6_h + d_margin) * 2, scheme,
+                     TBLACK, TPF_CENTER | TPF_TEXT);
 
     Show_Mouse();
   }

@@ -966,18 +966,16 @@ void EventClass::Execute() {
       Session.DesiredFrameRate = Data.Timing.DesiredFrameRate;
       Session.MaxAhead = Data.Timing.MaxAhead;
 
-#if !WOLAPI_INTEGRATION
       /*
       ** If spawned from WChat then we should be getting poked every minute. If
       *not then
       ** deliberately break the max ahead value
       */
 #ifdef _WIN32
-      if (Special.IsFromWChat) {
+      if (!config::kWolapiEnabled && Special.IsFromWChat) {
         Session.MaxAhead += DDEServer.Time_Since_Heartbeat() / (70 * 60);
       }
 #endif  // _WIN32
-#endif  //	!WOLAPI_INTEGRATION
       if (Debug_Print_Events) {
         printf("DesiredFrameRate:%d MaxAhead:%d ", Session.DesiredFrameRate,
                Session.MaxAhead);

@@ -53,9 +53,11 @@
 #include <cstring>
 #include <string>
 
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/rawolapi.h"
 #include "tech/rawfile.h"
 
 /****************************** Globals ************************************/
@@ -644,21 +646,17 @@ unsigned long VersionClass::Min_Version() {
   return (Version_Number());
 #else
 
-#if WOLAPI_INTEGRATION
-
-  //	Note! I'm no longer using MIN_VERSION, MAX_VERSION, or VERSION_RA_300!
-  //	But no time to do three full rebuilds right now, so I'm not deleting
-  // them from the header file...   ajw
-  return GAME_VERSION;
-
-#else  // WOLAPI_INTEGRATION
-
-  if (Is_Counterstrike_Installed()) {
-    return MIN_VERSION - 1;
+  if constexpr (config::kWolapiEnabled) {
+    //	ajw: "Note! I'm no longer using MIN_VERSION, MAX_VERSION, or
+    //	VERSION_RA_300! But no time to do three full rebuilds right now, so
+    //	I'm not deleting them from the header file..."
+    return GAME_VERSION;
+  } else {
+    if (Is_Counterstrike_Installed()) {
+      return MIN_VERSION - 1;
+    }
+    return MIN_VERSION;
   }
-  return MIN_VERSION;
-
-#endif  // WOLAPI_INTEGRATION
 
 #endif
 
@@ -695,14 +693,11 @@ unsigned long VersionClass::Max_Version() {
   return (Version_Number());
 #else  // DEV_VERSION
 
-#if WOLAPI_INTEGRATION
-  // Note! I'm no longer using MIN_VERSION, MAX_VERSION, or VERSION_RA_300!
-  // But no time to do three full rebuilds right now, so I'm not deleting
-  // them from the header file...   ajw
-  return GAME_VERSION;
-#else   // WOLAPI_INTEGRATION
-  return MAX_VERSION;
-#endif  // WOLAPI_INTEGRATION
+  if constexpr (config::kWolapiEnabled) {
+    return GAME_VERSION;
+  } else {
+    return MAX_VERSION;
+  }
 
 #endif  // DEV_VERSION
 }

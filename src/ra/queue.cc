@@ -145,13 +145,13 @@
 #include "tech/ftimer.h"
 #include "tech/random.h"
 
-#if WOLAPI_INTEGRATION
-// #include "WolDebug.h"
-#include "WolapiOb.h"
+// #include "ra/woldebug.h"
+#include "ra/config.h"
+#include "ra/wolapiob.h"
+
 extern WolapiObject* pWolapi;
 
 bool bReconnectDialogCancelled;
-#endif
 
 /********************************** Defines *********************************/
 #define SHOW_MONO 0
@@ -879,38 +879,25 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   //	Frame-sync'ing: wait until it's OK to advance to the next frame.
   //------------------------------------------------------------------------
-#if WOLAPI_INTEGRATION
-  int iFramesyncTimeout;
-  if (Session.Type == GAME_INTERNET && pWolapi &&
-      pWolapi->GameInfoCurrent.iPlayerCount > 2) {
-    //	Shortened resync timeout for non-2 player games.
-    iFramesyncTimeout = 5 * 60;  //	One minute.
-  } else {
-    iFramesyncTimeout = FRAMESYNC_TIMEOUT;
-  }
+  //	Shortened resync timeout for non-2 player games.
+  const int iFramesyncTimeout =
+      (config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
+       pWolapi != nullptr && pWolapi->GameInfoCurrent.iPlayerCount > 2)
+          ? 5 * 60  //	One minute.
+          : FRAMESYNC_TIMEOUT;
 
-  rc = Wait_For_Players(
-      0, net, (Session.MaxAhead << 3),
-      std::max(net->Response_Time() * 3, FRAMESYNC_DLG_TIME * timeout_factor),
-      iFramesyncTimeout * (2 * timeout_factor), multi_packet_buf, my_sent,
-      their_frame, their_sent, their_recv);
-#else
   rc = Wait_For_Players(
       0, net, Session.MaxAhead << 3,
       std::max<int>(static_cast<int>(net->Response_Time()) * 3,
                     FRAMESYNC_DLG_TIME * timeout_factor),
-      FRAMESYNC_TIMEOUT * (2 * timeout_factor), multi_packet_buf, my_sent,
+      iFramesyncTimeout * (2 * timeout_factor), multi_packet_buf, my_sent,
       their_frame, their_sent, their_recv);
-#endif
 
   if (rc != RC_NORMAL) {
     if (Session.Type == GAME_INTERNET) {
       Register_Game_End_Time();
-#if WOLAPI_INTEGRATION
-      //	New rule - if you cancel a waiting to reconnect dialog, you
-      // lose.
+      // New rule - if you cancel a waiting to reconnect dialog, you lose.
       bReconnectDialogCancelled = (rc == RC_CANCEL);
-#endif
     }
     if (rc == RC_NOT_RESPONDING) {
       WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
@@ -1085,15 +1072,13 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
           fclose(fp);
         }
 
-#if WOLAPI_INTEGRATION
         //	"Reconnecting" dialog is about to be shown.
-        //	At this point, begin wolapi "disconnect pinging", if
+        // At this point, begin wolapi "disconnect pinging", if
         // appropriate.
-        if (Session.Type == GAME_INTERNET && pWolapi &&
-            pWolapi->GameInfoCurrent.bTournament) {
+        if (config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
+            pWolapi != nullptr && pWolapi->GameInfoCurrent.bTournament) {
           pWolapi->Init_DisconnectPinging();
         }
-#endif
       }
 
       if (Process_Reconnect_Dialog(&timeout_timer,
@@ -1104,13 +1089,11 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       }
       reconnect_dlg = 1;
 
-#if WOLAPI_INTEGRATION
       //	Continue wolapi "disconnect pinging", if appropriate.
-      if (Session.Type == GAME_INTERNET && pWolapi &&
-          pWolapi->bDoingDisconnectPinging) {
+      if (config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
+          pWolapi != nullptr && pWolapi->bDoingDisconnectPinging) {
         pWolapi->Pump_DisconnectPinging();
       }
-#endif
     }
 
     //---------------------------------------------------------------------

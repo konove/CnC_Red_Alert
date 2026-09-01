@@ -80,11 +80,27 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
 
 #define RESPONSE_TIMEOUT (int64_t{60} * 60)
 
-#if WOLAPI_INTEGRATION
-#include "WolapiOb.h"
+#include "ra/config.h"
+#include "ra/wolapiob.h"
+#include "sdllib/timer.h"
 
 extern WolapiObject* pWolapi;
-#endif
+
+namespace {
+
+//	A scenario transfer can take a while, and the chat server drops a client
+//	that stops answering. Keep pumping it while we wait.
+void PumpWolapi() {
+  if constexpr (config::kWolapiEnabled) {
+    if (Session.Type == GAME_INTERNET && pWolapi != nullptr &&
+        Get_Time_Ms() > pWolapi->dwTimeNextWolapiPump) {
+      pWolapi->pChat->PumpMessages();
+      pWolapi->dwTimeNextWolapiPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
+    }
+  }
+}
+
+}  // namespace
 
 /***********************************************************************************************
  * Get_Scenario_File_From_Host -- Initiates download of scenario file from game
@@ -175,13 +191,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
         }
       }
 
-#if WOLAPI_INTEGRATION
-      if (Session.Type == GAME_INTERNET && pWolapi &&
-          (::timeGetTime() > pWolapi->dwTimeNextWolapiPump)) {
-        pWolapi->pChat->PumpMessages();
-        pWolapi->dwTimeNextWolapiPump = ::timeGetTime() + WOLAPIPUMPWAIT;
-      }
-#endif
+      PumpWolapi();
     } while (response_timer.HasTimeLeft());
   }
 
@@ -354,13 +364,7 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
       display = REDRAW_ALL;
     }
 
-#if WOLAPI_INTEGRATION
-    if (Session.Type == GAME_INTERNET && pWolapi &&
-        (::timeGetTime() > pWolapi->dwTimeNextWolapiPump)) {
-      pWolapi->pChat->PumpMessages();
-      pWolapi->dwTimeNextWolapiPump = ::timeGetTime() + WOLAPIPUMPWAIT;
-    }
-#endif
+    PumpWolapi();
 
     if (display) {
       if (display >= REDRAW_BACKGROUND) {
@@ -678,13 +682,7 @@ bool Send_Remote_File(char* file_name, int gametype) {
       display = REDRAW_ALL;
     }
 
-#if WOLAPI_INTEGRATION
-    if (Session.Type == GAME_INTERNET && pWolapi &&
-        (::timeGetTime() > pWolapi->dwTimeNextWolapiPump)) {
-      pWolapi->pChat->PumpMessages();
-      pWolapi->dwTimeNextWolapiPump = ::timeGetTime() + WOLAPIPUMPWAIT;
-    }
-#endif
+    PumpWolapi();
 
     if (display) {
       if (display >= REDRAW_BACKGROUND) {

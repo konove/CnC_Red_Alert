@@ -68,13 +68,12 @@
 
 // #define GERMAN_OFFSET_Y 4  // VG
 
-#if WOLAPI_INTEGRATION
-#include "WolStrng.h"
-#include "WolapiOb.h"
+#include "ra/config.h"
+#include "ra/wolapiob.h"
+#include "ra/wolstrng.h"
 
 extern WolapiObject* pWolapi;
 bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame);
-#endif
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *
@@ -90,8 +89,8 @@ void GameControlsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  int d_dialog_w = 464;                          // dialog width
-  int d_dialog_h = 282;                          // dialog height
+  int d_dialog_w = 464;                                      // dialog width
+  int d_dialog_h = 282;                                      // dialog height
   int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y =
       (SeenBuff.Get_Height() - d_dialog_h) / 2;   // centered y-coord
@@ -136,27 +135,29 @@ void GameControlsClass::Process() {
   int d_ok_x = d_dialog_cx - d_ok_w / 2;
   int d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 8;
 
-#if WOLAPI_INTEGRATION
   int d_wol_x = d_sound_x;
   int d_wol_y = d_sound_y + d_sound_h + d_margin1;
   int d_wol_w = d_sound_w;
   int d_wol_h = d_sound_h;
 
-  bool bShowWolapi = (pWolapi && !pWolapi->bConnectionDown);
+  //	The Westwood Online options button only appears while connected.
+  const bool bShowWolapi =
+      config::kWolapiEnabled && pWolapi != nullptr && !pWolapi->bConnectionDown;
   if (bShowWolapi) {
     //	Enlarge dialog and shift ok button down.
     d_dialog_h += d_wol_h + d_margin1;
     d_dialog_y =
         ((SeenBuff.Get_Height() - d_dialog_h) / 2);  // centered y-coord
     // d_ok_y += d_wol_h + d_margin1;
-    d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - (8);
+    d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 8;
   }
-#endif
 
   /*
   **	Button Enumerations
   */
-#if WOLAPI_INTEGRATION
+  //	BUTTON_WOLAPI is always in the list, and so always takes a slot in
+  //	buttons[] below, even when bShowWolapi keeps it off the screen. One
+  //	spare pointer costs less than two spellings of the enum.
   enum {
     BUTTON_SPEED = 100,
     BUTTON_SCROLLRATE,
@@ -167,17 +168,6 @@ void GameControlsClass::Process() {
     BUTTON_COUNT,
     BUTTON_FIRST = BUTTON_SPEED,
   };
-#else
-  enum {
-    BUTTON_SPEED = 100,
-    BUTTON_SCROLLRATE,
-    BUTTON_VISUAL,
-    BUTTON_SOUND,
-    BUTTON_OK,
-    BUTTON_COUNT,
-    BUTTON_FIRST = BUTTON_SPEED,
-  };
-#endif
 
   /*
   **	Dialog variables
@@ -189,7 +179,7 @@ void GameControlsClass::Process() {
   int selection = 0;
   bool pressed = false;
   int curbutton = 0;
-  TextButtonClass* buttons[BUTTON_COUNT - BUTTON_FIRST];
+  TextButtonClass* buttons[BUTTON_COUNT - BUTTON_FIRST] = {};
   TextPrintType style;
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
@@ -211,10 +201,8 @@ void GameControlsClass::Process() {
                         d_ok_y);
   okbtn.X = (SeenBuff.Get_Width() - okbtn.Width) / 2;
 
-#if WOLAPI_INTEGRATION
   TextButtonClass wol_btn(BUTTON_WOLAPI, TXT_WOL_OPTTITLE, TPF_BUTTON, d_wol_x,
                           d_wol_y, d_wol_w, d_wol_h);
-#endif
 
   /*
   **	Various Inits.
@@ -229,11 +217,9 @@ void GameControlsClass::Process() {
   scrate_btn.Add_Tail(*commands);
   visual_btn.Add_Tail(*commands);
   sound_btn.Add_Tail(*commands);
-#if WOLAPI_INTEGRATION
   if (bShowWolapi) {
     wol_btn.Add_Tail(*commands);
   }
-#endif
   /*
   **	Init button states
   **	For sliders, the thumb ranges from 0 - (maxval-1), so to convert the
@@ -258,12 +244,8 @@ void GameControlsClass::Process() {
   buttons[1] = nullptr;
   buttons[2] = &visual_btn;
   buttons[3] = &sound_btn;
-#if WOLAPI_INTEGRATION
   buttons[4] = &wol_btn;
   buttons[5] = &okbtn;
-#else
-  buttons[4] = &okbtn;
-#endif
   /*
   **	Processing loop.
   */
@@ -320,9 +302,8 @@ void GameControlsClass::Process() {
       Fancy_Text_Print(TXT_SPEED, d_speed_x, d_speed_y - d_txt6_h, scheme,
                        TBLACK, style);
 
-      Fancy_Text_Print(TXT_SLOWER, d_speed_x,
-                       d_speed_y + d_speed_h + 2, scheme, TBLACK,
-                       TPF_TEXT);
+      Fancy_Text_Print(TXT_SLOWER, d_speed_x, d_speed_y + d_speed_h + 2, scheme,
+                       TBLACK, TPF_TEXT);
       Fancy_Text_Print(TXT_FASTER, d_speed_x + d_speed_w,
                        d_speed_y + d_speed_h + 2, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
@@ -337,9 +318,8 @@ void GameControlsClass::Process() {
       Fancy_Text_Print(TXT_SCROLLRATE, d_scroll_x, d_scroll_y - d_txt6_h,
                        scheme, TBLACK, style);
 
-      Fancy_Text_Print(TXT_SLOWER, d_scroll_x,
-                       d_scroll_y + d_scroll_h + 2, scheme, TBLACK,
-                       TPF_TEXT);
+      Fancy_Text_Print(TXT_SLOWER, d_scroll_x, d_scroll_y + d_scroll_h + 2,
+                       scheme, TBLACK, TPF_TEXT);
       Fancy_Text_Print(TXT_FASTER, d_scroll_x + d_scroll_w,
                        d_scroll_y + d_scroll_h + 2, scheme, TBLACK,
                        TPF_TEXT | TPF_RIGHT);
@@ -384,12 +364,10 @@ void GameControlsClass::Process() {
         pressed = true;
         break;
 
-#if WOLAPI_INTEGRATION
       case ButtonKey(BUTTON_WOLAPI):
         selection = BUTTON_WOLAPI;
         pressed = true;
         break;
-#endif
 
       case KN_ESC:
         process = false;
@@ -418,13 +396,9 @@ void GameControlsClass::Process() {
         }
 
         curbutton--;
-#if WOLAPI_INTEGRATION
-        if (!bShowWolapi) {
-          if (curbutton == BUTTON_WOLAPI - BUTTON_FIRST) {
-            curbutton--;  //	Skip over missing button.
-          }
+        if (!bShowWolapi && curbutton == BUTTON_WOLAPI - BUTTON_FIRST) {
+          curbutton--;  //	Skip over missing button.
         }
-#endif
         if (curbutton < 0) {
           curbutton = BUTTON_COUNT - BUTTON_FIRST - 1;
         }
@@ -443,13 +417,9 @@ void GameControlsClass::Process() {
         }
 
         curbutton++;
-#if WOLAPI_INTEGRATION
-        if (!bShowWolapi) {
-          if (curbutton == BUTTON_WOLAPI - BUTTON_FIRST) {
-            curbutton++;  //	Skip over missing button.
-          }
+        if (!bShowWolapi && curbutton == BUTTON_WOLAPI - BUTTON_FIRST) {
+          curbutton++;  //	Skip over missing button.
         }
-#endif
         if (curbutton > BUTTON_COUNT - BUTTON_FIRST - 1) {
           curbutton = 0;
         }
@@ -537,7 +507,6 @@ void GameControlsClass::Process() {
           }
           break;
 
-#if WOLAPI_INTEGRATION
         case BUTTON_WOLAPI:
           if (WOL_Options_Dialog(pWolapi, true)) {
             //	The game ended while in this dialog.
@@ -548,7 +517,6 @@ void GameControlsClass::Process() {
             refresh = true;
           }
           break;
-#endif
 
         case BUTTON_OK:
           break;

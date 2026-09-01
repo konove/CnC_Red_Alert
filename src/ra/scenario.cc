@@ -497,14 +497,13 @@ bool Read_Scenario(char* name) {
         GamePalette.Set(kFadePaletteFast, Call_Back);
         RequiredCD = 3;
         if (!Force_CD_Available(RequiredCD)) {  // force Aftermath CD in drive.
-#if !WOLAPI_INTEGRATION
 #ifdef _WIN32
-          if (Special.IsFromWChat || SpawnedFromWChat) {
+          if (!config::kWolapiEnabled &&
+              (Special.IsFromWChat || SpawnedFromWChat)) {
             char packet[10] = {"Hello"};
             Send_Data_To_DDE_Server(packet, strlen(packet),
                                     DDEServerClass::DDE_CONNECTION_FAILED);
           }
-#endif
 #endif
           Emergency_Exit(EXIT_FAILURE);
         }

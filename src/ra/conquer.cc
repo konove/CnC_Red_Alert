@@ -105,6 +105,8 @@
 #include "ra/version.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
+#include "ra/wolapiob.h"
+#include "ra/wolstrng.h"
 #include "ra/ww_audio.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/drawbuff.h"
@@ -124,10 +126,6 @@
 #include "tech/rect.h"
 #include "tech/rgb.h"
 #include "winvq/vqa32/vqaplay.h"
-
-// #include "ra/woldebug.h"
-#include "ra/wolapiob.h"
-#include "ra/wolstrng.h"
 
 extern WolapiObject* pWolapi;
 
