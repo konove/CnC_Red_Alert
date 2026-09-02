@@ -2463,7 +2463,9 @@ static void Bootstrap() {
   */
   Set_Shape_Buffer(new unsigned char[SHAPE_BUFFER_SIZE], SHAPE_BUFFER_SIZE);
 
-  SystemStrings = MFCD::RetrieveData(Language_Name("CONQUER"));
+  // The .ENG suffix is the same in every language build: localized releases
+  // ship a translated CONQUER.ENG under the same name.
+  SystemStrings = MFCD::RetrieveData("CONQUER.ENG");
   DebugStrings = MFCD::RetrieveData("DEBUG.ENG");
 
   /*

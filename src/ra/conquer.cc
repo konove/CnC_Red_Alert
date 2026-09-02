@@ -43,7 +43,6 @@
 #include <vector>
 
 #include "absl/log/log.h"
-#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "port/ex_string.h"
@@ -1503,10 +1502,6 @@ void IPX_Call_Back() {
       }
     }
   }
-}
-
-std::string Language_Name(std::string_view basename) {
-  return absl::StrCat(basename, ".ENG");
 }
 
 SourceType Source_From_Name(const char* name) {
