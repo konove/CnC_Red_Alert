@@ -1083,34 +1083,6 @@ const short* AircraftClass::Overlap_List(bool redraw) const {
                                       REFRESH_EOL};
 
   if (redraw || Height != 0) {
-#ifdef PARTIAL
-    Rect rect;
-    if (!IsSelected && Class->DimensionData != nullptr && Class->IsFixedWing) {
-      int shapenum = std::min(
-          Shape_Number(), Get_Build_Frame_Count(Class->Get_Image_Data()) - 1);
-      if (!Class->DimensionData[shapenum].Is_Valid()) {
-        Class->DimensionData[shapenum] =
-            Shape_Dimensions(Class->Get_Image_Data(), shapenum);
-      }
-      rect = Class->DimensionData[shapenum];
-
-      /*
-      **	Increase the rectangle for the aircraft since the aircraft could
-      **	have its shape algorithmically rotated.
-      */
-      rect.X -= 5;
-      rect.Y -= 5;
-      rect.Width += 10;
-      rect.Height += 10;
-
-      Rect hrect = rect;
-
-      hrect.Y -= Lepton_To_Pixel(Height);
-
-      return Coord_Spillage_List(Coord, Union(rect, hrect), true);
-    }
-#endif
-
     if (*this == AIRCRAFT_BADGER) {
       return _listbadger;
     }

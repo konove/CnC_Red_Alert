@@ -312,12 +312,10 @@ bool FootClass::Mark(MarkType mark) {
     //		short list[32];
     CELL cell = Coord_Cell(Coord);
 
-#ifndef PARTIAL
     if (In_Which_Layer() != LAYER_GROUND &&
         (mark == MARK_UP || mark == MARK_DOWN)) {
       mark = MARK_CHANGE;
     }
-#endif
 
     /*
     **	Inform the map of the refresh, occupation, and overlap

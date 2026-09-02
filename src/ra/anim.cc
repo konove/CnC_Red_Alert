@@ -372,27 +372,6 @@ const short* AnimClass::Overlap_List(bool) const {
     return OverlapAtom;
   }
 
-#ifdef PARTIAL
-  IsTheaterShape = Class->IsTheater;
-  if (Class->Get_Image_Data() != nullptr) {
-    int shapenum = Class->Start + Fetch_Stage();
-    int count = Get_Build_Frame_Count(Class->Get_Image_Data());
-    shapenum = std::min(shapenum, count - 1);
-
-    if (Class->DimensionData == nullptr) {
-      Class->DimensionData = std::make_unique<Rect[]>(count);
-    }
-    if (Class->DimensionData != nullptr &&
-        !Class->DimensionData[shapenum].Is_Valid()) {
-      Class->DimensionData[shapenum] =
-          Shape_Dimensions(Class->Get_Image_Data(), shapenum);
-      IsTheaterShape = false;
-      return Coord_Spillage_List(Center_Coord(),
-                                 Class->DimensionData[shapenum]);
-    }
-  }
-  IsTheaterShape = false;
-#endif
   return Coord_Spillage_List(Center_Coord(), Class->Size);
 }
 
@@ -645,13 +624,7 @@ void AnimClass::AI() {
   **	For ground level based animations (ones that can run slowly as well as
   **	occur behind other ground objects) always cause the cell to be redrawn.
   */
-#ifdef PARTIAL
-  if (!Delay && Class->IsGroundLayer) {
-    Map.Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
-  }
-#else
   Map.Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
-#endif
 
   /*
   **	Special case check to make sure that building on top of a smoke marker

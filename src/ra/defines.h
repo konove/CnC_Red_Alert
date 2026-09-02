@@ -200,9 +200,6 @@
 // #define INTERNET_OFF
 #endif
 
-// Test to see if partial object drawing is any faster.
-// #define PARTIAL
-
 /**********************************************************************
 **	If this is defined, then the network code will be enabled.
 */

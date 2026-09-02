@@ -2996,29 +2996,6 @@ const short* UnitClass::Overlap_List(bool redraw) const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-#ifdef PARTIAL
-  if (Height == 0 && redraw && Class->DimensionData != nullptr) {
-    Rect rect;
-    int shapenum = Shape_Number();
-    if (Class->DimensionData[shapenum].Is_Valid()) {
-      rect = Class->DimensionData[shapenum];
-    } else {
-      rect = Class->DimensionData[shapenum] =
-          Shape_Dimensions(Get_Image_Data(), shapenum);
-    }
-
-    if (IsSelected) {
-      rect = Union(rect, Rect(-15, -15, 30, 30));
-    }
-
-    if (Class->IsTurretEquipped || Class->IsRadarEquipped) {
-      rect = Union(rect, Rect(-15, -15, 30, 30));
-    }
-
-    return Coord_Spillage_List(Coord, rect, true);
-  }
-#endif
-
   int size = ICON_PIXEL_W;
 
   if (redraw && (IsSelected || IsFiring)) {

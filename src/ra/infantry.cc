@@ -1504,12 +1504,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-#ifdef PARTIAL
-const short* InfantryClass::Overlap_List(bool redraw) const
-#else
-const short* InfantryClass::Overlap_List(bool) const
-#endif
-{
+const short* InfantryClass::Overlap_List(bool) const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -1523,31 +1518,8 @@ const short* InfantryClass::Overlap_List(bool) const
    *infantry *	can be.
    */
 
-#ifdef PARTIAL
-  Rect rect(-16, -24, 32, 36);
-
-  /*
-  **	If this is for a visual change redraw, then the overlap list will be
-  *based *	on the actual dimensions of the shape data. If the dimensions
-  *have already *	been calculated then use them, otherwise, use the
-  *default large rectangle *	previously created.
-  */
-  if (Height == 0 && !IsSelected && redraw && Class->DimensionData != nullptr) {
-    int shapenum = Shape_Number();
-    if (!Class->DimensionData[shapenum].Is_Valid()) {
-      Class->DimensionData[shapenum] =
-          Shape_Dimensions(Get_Image_Data(), shapenum);
-    }
-    rect = Class->DimensionData[shapenum];
-    rect.Y += 4;
-    rect.X -= 2;
-  }
-  return Coord_Spillage_List(Coord, rect, true);
-#else
-
   static Rect rect(-16, -24, 32, 36);
   return Coord_Spillage_List(Coord, rect, true);
-#endif
 
   //		return(Coord_Spillage_List(Coord, 24 /*+ ((Doing > DO_WALK ||
   // IsSelected)?12:0)*/ ));

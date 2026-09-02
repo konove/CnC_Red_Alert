@@ -556,30 +556,9 @@ void VesselClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-const short* VesselClass::Overlap_List(bool redraw) const {
+const short* VesselClass::Overlap_List(bool /*redraw*/) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
-
-#ifdef PARTIAL
-  if (Height == 0 && redraw && Class->DimensionData != nullptr) {
-    Rect rect;
-    int shapenum = Shape_Number();
-    if (Class->DimensionData[shapenum].Is_Valid()) {
-      rect = Class->DimensionData[shapenum];
-    } else {
-      rect = Class->DimensionData[shapenum] =
-          Shape_Dimensions(Get_Image_Data(), shapenum);
-    }
-
-    if (IsSelected) {
-      rect = Union(rect, Rect(-32, 32, 64, 64));
-    }
-
-    return Coord_Spillage_List(Coord, rect, true);
-  }
-#else
-  (void)redraw;
-#endif
 
   return Coord_Spillage_List(Coord, 56) + 1;
 }
