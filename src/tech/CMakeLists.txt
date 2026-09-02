@@ -16,7 +16,6 @@ target_sources(tech PUBLIC
 )
 
 target_link_libraries(tech PUBLIC absl::strings PRIVATE base sdllib port vqa32 lzo)
-target_compile_definitions(tech PUBLIC WINSOCK_IPX=1)
 
 # Tests
 include(Testing)

@@ -173,14 +173,8 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
       if (Ipx.Get_Global_Message(&net_receive_packet, &receive_packet_length,
                                  &sender_address, &product_id)) {
 // WWDebugString ("RA95 - Got packet from host\n");
-#ifdef WINSOCK_IPX
         if (net_receive_packet.Command == NET_FILE_INFO &&
             sender_address == Session.HostAddress) {
-#else   // WINSOCK_IPX
-        if (net_receive_packet.Command == NET_FILE_INFO &&
-            (Winsock.Get_Connected() ||
-             sender_address == Session.HostAddress)) {
-#endif  // WINSOCK_IPX
           strncpy(return_name, net_receive_packet.ScenarioInfo.ShortFileName,
                   dest_size);
           file_length = net_receive_packet.ScenarioInfo.FileLength;
@@ -431,15 +425,8 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
       int receive_packet_len = sizeof(receive_packet);
       if (Ipx.Get_Global_Message(&receive_packet, &receive_packet_len,
                                  &sender_address, &product_id)) {
-#ifdef WINSOCK_IPX
         if (receive_packet.Command == NET_FILE_CHUNK &&
             sender_address == Session.HostAddress) {
-#else   // WINSOCK_IPX
-        if (receive_packet.Command == NET_FILE_CHUNK &&
-            (Winsock.Get_Connected() ||
-             sender_address == Session.HostAddress)) {
-#endif  // WINSOCK_IPX
-
           if (receive_packet.BlockNumber == last_received_block + 1) {
             save_file.Write(receive_packet.RawData, receive_packet.BlockLength);
             total_length += receive_packet.BlockLength;

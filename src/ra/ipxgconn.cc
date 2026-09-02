@@ -517,24 +517,9 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
  *   07/06/1995 BRR : Created.                                             *
  *=========================================================================*/
 void IPXGlobalConnClass::Set_Bridge(NetNumType /*bridge*/) {
-#ifdef WINSOCK_IPX
-
   if (Configured) {
     IsBridge = 0;
   }
-
-#else   // WINSOCK_IPX
-  if (Configured) {
-    memcpy(BridgeNet, bridge, 4);
-    memset(BridgeNode, 0xff, 6);
-
-    if (IPX_Get_Local_Target(BridgeNet, BridgeNode, Socket, BridgeNode) == 0) {
-      IsBridge = 1;
-    } else {
-      IsBridge = 0;
-    }
-  }
-#endif  // WINSOCK_IPX
 
 } /* end of Set_Bridge */
 

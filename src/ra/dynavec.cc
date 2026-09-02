@@ -75,8 +75,6 @@ template class DynamicVectorClass<unsigned char*>;
 template class DynamicVectorClass<const char*>;
 template class DynamicVectorClass<void*>;
 
-#ifdef WINSOCK_IPX
 template class DynamicVectorClass<WinsockInterfaceClass::WinsockBufferType*>;
-#endif
 
 /************************** end of dynavec.cpp *****************************/

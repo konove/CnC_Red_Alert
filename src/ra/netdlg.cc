@@ -941,9 +941,7 @@ int Update_WWChat();
 bool Init_Network() {
   NetNumType net;
   NetNodeType node;
-#ifdef WINSOCK_IPX
   assert(PacketTransport != nullptr);
-#endif  // WINSOCK_IPX
 
   //------------------------------------------------------------------------
   //	This call allocates all necessary queue buffers, allocates Real-mode

@@ -422,9 +422,7 @@ bool Init_Game(int, char*[]) {
   return true;
 }
 
-#ifdef WINSOCK_IPX  //	Steve Tall missed this one - ajw
 extern bool Get_Broadcast_Addresses();
-#endif
 
 /***********************************************************************************************
  * Select_Game -- The game's main menu *
@@ -887,7 +885,7 @@ bool Select_Game(bool /*fade*/) {
             //	With Westwood Online on, this runs the whole lobby; without it,
             //	the game was already set up above and this behaves like the
             //	cases just before.
-            case GAME_INTERNET:  //	implies also WINSOCK_IPX
+            case GAME_INTERNET:
               if constexpr (config::kWolapiEnabled) {
                 delete PacketTransport;
                 PacketTransport = new UDPInterfaceClass;
@@ -936,12 +934,10 @@ bool Select_Game(bool /*fade*/) {
               /*
               ** Init network system & remote-connect
               */
-#ifdef WINSOCK_IPX
               delete PacketTransport;
               // we don't even have IPX
               PacketTransport = new UDPInterfaceClass;
               PacketTransport->Set_Broadcast_Address((char*)"255.255.255.255");
-#endif  // WINSOCK_IPX
               WWDebugString("RA95 - About to call Init_Network.\n");
               if (Session.Type == GAME_IPX && Init_Network() &&
                   Remote_Connect()) {
@@ -952,10 +948,8 @@ bool Select_Game(bool /*fade*/) {
                 Session.Type = GAME_NORMAL;
                 display = true;
                 selection = SEL_NONE;
-#ifdef WINSOCK_IPX
                 delete PacketTransport;
                 PacketTransport = nullptr;
-#endif  // WINSOCK_IPX
               }
               break;
           }

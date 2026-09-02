@@ -50,7 +50,6 @@ list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/screen.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/seqconn.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/surface.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tcpip.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/turret.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/wspipx.h"

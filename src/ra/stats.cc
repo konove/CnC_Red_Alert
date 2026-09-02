@@ -56,7 +56,6 @@
 #include "ra/scenario.h"
 #include "ra/session.h"
 #include "ra/special.h"
-#include "ra/tcpip.h"
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/utracker.h"
@@ -249,7 +248,7 @@ void Send_Statistics_Packet() {
       stats.Add_Field(FIELD_HOSTORNOT,
                       static_cast<unsigned char>(pWolapi->bGameServer ? 0 : 1));
     } else {
-      stats.Add_Field(FIELD_PACKET_TYPE, IsNetworkHost
+      stats.Add_Field(FIELD_PACKET_TYPE, PlanetWestwoodIsHost
                                              ? PACKET_TYPE_HOST_GAME_INFO
                                              : PACKET_TYPE_GUEST_GAME_INFO);
     }

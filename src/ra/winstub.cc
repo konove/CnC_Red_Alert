@@ -50,12 +50,7 @@
 
 #include "ra/function.h"
 
-#ifdef WINSOCK_IPX
 #include "WSProto.h"
-#else  // WINSOCK_IPX
-#include "ra/ipx95.h"
-#include "ra/tcpip.h"
-#endif  // WINSOCK_IPX
 
 unsigned long CCFocusMessage =
     WM_USER + 50;  // Private message for receiving application focus
@@ -145,7 +140,6 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
     return (0);
   }
 
-#ifdef WINSOCK_IPX
   /*
   ** Pass on any messages intended for the winsock message handler.
   */
@@ -158,7 +152,6 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       }
     }
   }
-#endif  // WINSOCK_IPX
 
   /*
   **	Pass this message through to the keyboard handler. If the message
@@ -220,36 +213,10 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
 
         case 0:
           Shutdown_Network();
-#ifndef WINSOCK_IPX
-          if (Winsock.Get_Connected()) {
-            Winsock.Close();
-          }
-          /*
-          ** Free the THIPX32 dll
-          */
-          Unload_IPX_Dll();
-#endif  // WINSOCK_IPX
           ExitProcess(0);
           break;
         case 3:
           Shutdown_Network();
-#ifndef WINSOCK_IPX
-          /*
-          ** Call the function to disable the IPX callback as horrible things
-          *can
-          ** happen if we get a callback after the process has exited!
-          */
-          if (Session.Type == GAME_IPX) {
-            IPX_Shut_Down95();
-          }
-          /*
-          ** Free the THIPX32 dll
-          */
-
-          if (Winsock.Get_Connected()) {
-            Winsock.Close();
-          }
-#endif  // WINSOCK_IPX
           ReadyToQuit = 2;
           break;
       }
@@ -298,16 +265,6 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
           return (0);
       }
       break;
-
-#ifndef WINSOCK_IPX
-    case WM_ACCEPT:
-    case WM_HOSTBYADDRESS:
-    case WM_HOSTBYNAME:
-    case WM_ASYNCEVENT:
-    case WM_UDPASYNCEVENT:
-      Winsock.Message_Handler(hwnd, message, wParam, lParam);
-      return (0);
-#endif  // WINSOCK_IPX
   }
 
   return DefWindowProc(hwnd, message, wParam, lParam);

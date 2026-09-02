@@ -112,7 +112,6 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
                                  unsigned short socket,
                                  unsigned short product_id) {
   int i;
-#ifdef WINSOCK_IPX
   /*
   ** Find out if Packet protocol services are available through Winsock.
   */
@@ -130,21 +129,6 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
   }
   delete PacketTransport;
   PacketTransport = nullptr;
-
-#else   // WINSOCK_IPX
-
-  //------------------------------------------------------------------------
-  //	Initialize data members
-  //------------------------------------------------------------------------
-  //........................................................................
-  //	IPXStatus = 1 if IPX is installed, 0 if not
-  //........................................................................
-  if (IPX_SPX_Installed() == 0) {
-    IPXStatus = 0;
-  } else {
-    IPXStatus = 1;
-  }
-#endif  // WINSOCK_IPX
 
   //........................................................................
   //	Set listening state flag to off
@@ -179,11 +163,6 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
   //	Get the user's IPX local connection number
   //------------------------------------------------------------------------
   ConnectionNum = 0;
-#ifndef WINSOCK_IPX
-  if (IPXStatus) {
-    ConnectionNum = IPX_Get_Connection_Number();
-  }
-#endif  // WINSOCK_IPX
 
   //------------------------------------------------------------------------
   //	Init connection states
@@ -257,9 +236,6 @@ IPXManagerClass::~IPXManagerClass() {
     Free_RealMode_Mem();
     RealMemAllocd = 0;
   }
-#ifndef WINSOCK_IPX
-  Unload_IPX_Dll();
-#endif
 } /* end of ~IPXManagerClass */
 
 /***************************************************************************
@@ -1006,8 +982,6 @@ int IPXManagerClass::Service() {
   int packetlen;
   IPXAddressClass address;
 
-#ifdef WINSOCK_IPX
-
   unsigned char temp_receive_buffer[1024];
   int temp_receive_buffer_len;
   int temp_address_len;
@@ -1105,107 +1079,6 @@ int IPXManagerClass::Service() {
 
     } while (packetlen);
   }
-
-#else  // WINSOCK_IPX
-
-
-  unsigned char temp_receive_buffer[1024];
-  int recv_length;
-
-  if (Winsock.Get_Connected()) {
-    /*
-    ** This is an internet connection so get the packets from winsock
-    */
-    while ((recv_length = Winsock.Read(temp_receive_buffer, 1024)) != 0) {
-      cur_header_buf = nullptr;
-      cur_data_buf = (char*)&temp_receive_buffer[0];
-
-      /*.....................................................................
-      Compute the length of the packet (byte-swap the length in the IPX hdr)
-      .....................................................................*/
-      packetlen = recv_length;
-
-      /*.....................................................................
-      Extract the sender's address from the IPX header
-      .....................................................................*/
-      address.Set_Address(cur_header_buf);
-
-      /*.....................................................................
-      Examine the Magic Number of the received packet to determine if this
-      packet goes into the Global Queue, or into one of the Private Queues
-      .....................................................................*/
-      packet = (CommHeaderType*)cur_data_buf;
-      if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
-        /*..................................................................
-        Put the packet in the Global Queue
-        ..................................................................*/
-        if (!GlobalChannel->Receive_Packet(packet, packetlen, &address)) {
-          ReceiveOverflows++;
-        }
-      } else {
-        if (packet->MagicNumber == ProductID) {
-          /*..................................................................
-          Find the Private Queue that this packet is for
-          ..................................................................*/
-          for (i = 0; i < NumConnections; i++) {
-            if (Connection[i]->Address == address) {
-              if (!Connection[i]->Receive_Packet(packet, packetlen)) {
-                ReceiveOverflows++;
-              }
-              break;
-            }
-          }
-        }
-      }
-    }
-  } else {
-    while (IPX_Get_Outstanding_Buffer95(&temp_receive_buffer[0])) {
-      cur_header_buf = (IPXHeaderType*)&temp_receive_buffer[0];
-      cur_data_buf = (char*)&temp_receive_buffer[sizeof(IPXHeaderType)];
-
-      /*.....................................................................
-      Compute the length of the packet (byte-swap the length in the IPX hdr)
-      .....................................................................*/
-      packetlen =
-          ((cur_header_buf->Length & 0xff) << 8) | (cur_header_buf->Length >> 8);
-      packetlen -= sizeof(IPXHeaderType);
-
-      /*.....................................................................
-      Extract the sender's address from the IPX header
-      .....................................................................*/
-      address.Set_Address(cur_header_buf);
-
-      /*.....................................................................
-      Examine the Magic Number of the received packet to determine if this
-      packet goes into the Global Queue, or into one of the Private Queues
-      .....................................................................*/
-      packet = (CommHeaderType*)cur_data_buf;
-      if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
-        /*..................................................................
-        Put the packet in the Global Queue
-        ..................................................................*/
-        if (!GlobalChannel->Receive_Packet(packet, packetlen, &address)) {
-          ReceiveOverflows++;
-        }
-      } else {
-        if (packet->MagicNumber == ProductID) {
-          /*..................................................................
-          Find the Private Queue that this packet is for
-          ..................................................................*/
-          for (i = 0; i < NumConnections; i++) {
-            if (Connection[i]->Address == address) {
-              if (!Connection[i]->Receive_Packet(packet, packetlen)) {
-                ReceiveOverflows++;
-              }
-              break;
-            }
-          }
-        }
-      }
-    }
-  }
-
-#endif  // WINSOCK_IPX
 
   //------------------------------------------------------------------------
   //	Service all connections.  If a connection reports that it's gone "bad",

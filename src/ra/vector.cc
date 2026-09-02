@@ -59,6 +59,4 @@ template class VectorClass<const char*>;
 template class VectorClass<void*>;
 template class VectorClass<unsigned char>;
 
-#ifdef WINSOCK_IPX
 template class VectorClass<WinsockInterfaceClass::WinsockBufferType*>;
-#endif
