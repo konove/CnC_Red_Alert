@@ -1588,20 +1588,6 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
       }
     }
 
-#if (0)
-    /*
-    **	Give more weight to the cells that require the least rotation of the
-    *transport or the *	least roundabout movement for the potential passenger.
-    */
-    value -= (int)std::abs((int)(signed char)Facing_Dir(face) -
-                           (int)(signed char)faceto);
-    if (face == FACING_S) {
-      value -= 100;
-    }
-    if (face == FACING_SW || face == FACING_SE) {
-      value += 64;
-    }
-#endif
     /*
     **	If the value for the potential cell is greater than the last recorded
     *potential *	value, then record this cell as the best candidate.

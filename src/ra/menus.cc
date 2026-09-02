@@ -796,13 +796,6 @@ int Main_Menu(unsigned long) {
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
-#if (0)
-      case KN_BACKSPACE:
-        Show_Who_Was_Responsible();
-        display = true;
-        Theme.Play_Song(THEME_INTRO);
-        break;
-#endif  //(0)
       case KN_UP:
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();

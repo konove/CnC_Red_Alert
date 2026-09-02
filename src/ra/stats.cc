@@ -339,25 +339,7 @@ void Send_Statistics_Packet() {
     /*
     ** Scenario
     */
-#if (1)
-
     stats.Add_Field(FIELD_SCENARIO, Session.Options.ScenarioDescription);
-
-#else   //(1)
-    char fname[128];
-    char namebuffer[40];
-    char* abuffer = (char*)_ShapeBuffer;
-    memset(abuffer, '\0', _ShapeBufferSize);
-    sprintf(fname, "%s.INI", Scen.ScenarioName);
-    CCFileClass fileo;
-    fileo.Set_Name(fname);
-    fileo.Read(abuffer, _ShapeBufferSize - 1);
-    fileo.Close();
-    WWGetPrivateProfileString("Basic", "Name", "Nulls-Ville", namebuffer, 40,
-                              abuffer);
-    stats.Add_Field(FIELD_SCENARIO, namebuffer);
-    // stats.Add_Field(FIELD_SCENARIO, MPlayerScenarios[ScenarioIdx]);
-#endif  //(1)
 
     //	Read again further down when deciding whether to hold the packet
     //	back, so it outlives the block that fills it in.

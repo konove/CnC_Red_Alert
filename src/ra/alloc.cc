@@ -116,14 +116,6 @@ void DPMI_Lock(const VOID* ptr, const long size) {
   int386x(DPMI_INT, &regs, &regs, &sregs);  // call DPMI
 //	if (regs.x.cflag) {
 //	}
-#if (0)
-  char* temp = (char*)ptr;
-  char hold;
-  for (int lp = 0; lp < size; lp += 2048) {
-    hold = *temp;
-    temp += 2048;
-  }
-#endif
 }
 
 /***************************************************************************

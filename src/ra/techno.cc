@@ -4321,15 +4321,7 @@ void TechnoClass::Do_Cloak() {
  *=============================================================================================*/
 void TechnoClass::Do_Shimmer() {
   assert(IsActive);
-#if (0)
-  if (IsCloakable && Cloak == CLOAKED) {
-    Cloak = CLOAKING;
-    CloakingDevice.Set_Stage(MAX_UNCLOAK_STAGE / 2);
-    CloakingDevice.Set_Rate(1);
-  }
-#else
   Do_Uncloak();
-#endif
 }
 
 /***********************************************************************************************

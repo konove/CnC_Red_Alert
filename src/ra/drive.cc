@@ -2170,7 +2170,6 @@ const DriveClass::TrackType DriveClass::Track12[] = {
 
     {0x00000000L, DIR_SW}};
 
-#if (1)
 /*
 **	Drive out of weapon's factory.
 */
@@ -2195,37 +2194,6 @@ const DriveClass::TrackType DriveClass::Track13[] = {
     {XYP_COORD(0, -1), DIR_S},
 
     {0x00000000L, DIR_S}};
-#else
-/*
-**	Drive out of weapon's factory.
-*/
-const DriveClass::TrackType DriveClass::Track13[] = {
-    {XYP_COORD(10, -21), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(10, -21), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(10, -20), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(10, -20), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(9, -18), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(9, -18), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(9, -17), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(8, -16), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(8, -15), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(7, -14), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(7, -13), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(6, -12), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(6, -11), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(5, -10), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(5, -9), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(4, -8), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(4, -7), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(3, -6), (DirType)(DIR_SW - 10)},
-    {XYP_COORD(3, -5), (DirType)(DIR_SW - 9)},
-    {XYP_COORD(2, -4), (DirType)(DIR_SW - 7)},
-    {XYP_COORD(2, -3), (DirType)(DIR_SW - 5)},
-    {XYP_COORD(1, -2), (DirType)(DIR_SW - 3)},
-    {XYP_COORD(1, -1), (DirType)(DIR_SW - 1)},
-
-    {0x00000000L, DIR_SW}};
-#endif
 
 /*
 **	There are a limited basic number of tracks that a vehicle can follow.

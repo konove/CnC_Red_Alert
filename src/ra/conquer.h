@@ -714,8 +714,8 @@ long VQ_Event_Handler(unsigned long event, void* buffer, long nbytes);
 // key it acts on by setting input to KN_NONE.
 void Keyboard_Process(KeyNumType& input);
 
-// Switches on the Aftermath secret units for this session. Triggered by a chat
-// message so that every machine enables them at the same point.
+// Hook for the "SECRET UNITS ON" chat trigger, which every machine recognizes
+// at the same point. Does nothing: see the definition.
 void Enable_Secret_Units();
 
 // Real-time maintenance -- sound, music, and network servicing. Unlike the

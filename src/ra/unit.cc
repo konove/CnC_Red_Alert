@@ -4924,12 +4924,8 @@ void UnitClass::Shroud_Regen() {
       for (index = 30; index >= 0 && ShroudBits; index--) {
         if (ShroudBits & 1) {
           trycell = XY_Cell(centerx + _xtab[index], centery + _ytab[index]);
-#if (0)
-          Map.Map_Cell(trycell, PlayerPtr);
-#else
           Map.UnJam_Cell(trycell, House);
           Map.Map_Cell(trycell, PlayerPtr);
-#endif
         }
         ShroudBits >>= 1;
       }
@@ -4945,11 +4941,7 @@ void UnitClass::Shroud_Regen() {
         ShroudBits <<= 1;
         trycell = XY_Cell(centerx + _xtab[index], centery + _ytab[index]);
         if (Map[trycell].IsMapped) {
-#if (0)
-          Map.Shroud_Cell(trycell);
-#else
           Map.Jam_Cell(trycell, House);
-#endif
           ShroudBits |= 1;
         }
       }

@@ -1645,11 +1645,9 @@ bool Main_Loop() {
   // Initialize our AI processing timer
   Session.ProcessTimer = TickCount.Value();
 
-#if 1
   if (Session.TrapCheckHeap) {
     Debug_Trap_Check_Heap = true;
   }
-#endif
 
   if constexpr (config::kCheatKeysEnabled) {
     // Update the running status debug display.
@@ -2165,12 +2163,6 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
   if (shapefile == nullptr) {
     return nullptr;
   }
-
-#if (0)
-  CCPalette.Set();
-  Set_Logic_Page(SeenBuff);
-  CC_Draw_Shape(shapefile, shape_num, 64, 64, WINDOW_MAIN, SHAPE_WIN_REL);
-#endif
 
   // Get the pixel width and height of the frame we built.  This will
   // be used to extract icons and build pixels.
@@ -2758,22 +2750,7 @@ void Handle_Team(const int team, const int action) {
           // formation.  Later, if they're assigned a formation, the
           // XFormOffset & YFormOffset numbers will change to valid
           // offsets, and they'll move in formation.
-#if (1)
           obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
-#else
-#if (1)
-          // Old always-north formation stuff
-          long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-          long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-
-          obj->XFormOffset = xc - centerx;
-          obj->YFormOffset = yc - centery;
-#else
-          // New method: save direction and distance rather than x & y offset
-          obj->XFormOffset = ::Direction(As_Coord(center), obj->Center_Coord());
-          obj->YFormOffset = ::Distance(As_Coord(center), obj->Center_Coord());
-#endif
-#endif
         }
       }
 
@@ -2787,24 +2764,7 @@ void Handle_Team(const int team, const int action) {
             obj->Group = static_cast<unsigned char>(team);
           }
           if (obj->Group == team && obj->IsSelected) {
-#if (1)
             obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
-#else
-#if (1)
-            // Old always-north formation stuff
-            long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-            long yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
-
-            obj->XFormOffset = xc - centerx;
-            obj->YFormOffset = yc - centery;
-#else
-            // New method: save direction and distance rather than x & y offset
-            obj->XFormOffset =
-                ::Direction(As_Coord(center), obj->Center_Coord());
-            obj->YFormOffset =
-                ::Distance(As_Coord(center), obj->Center_Coord());
-#endif
-#endif
           }
         }
       }
@@ -3270,16 +3230,11 @@ bool Is_Aftermath_Installed() {
   }
 }
 
-void Enable_Secret_Units() {
-#if 0
-  SecretUnitsEnabled=true;
-  UnitTypeClass::As_Reference(UNIT_PHASE).Level=10;
-  VesselTypeClass::As_Reference(VESSEL_CARRIER).Level=10;
-  for (int index = 0; index < Buildings.Count(); index++) {
-    Buildings.Ptr(index)->Update_Buildables();
-  }
-#endif
-}
+// The body -- set SecretUnitsEnabled, drop the phase tank and the helicarrier
+// to tech level 10, refresh every building's buildables -- was disabled before
+// release. The chat trigger is still recognized so the message is relayed the
+// same way on every machine.
+void Enable_Secret_Units() {}
 
 bool Force_Scenario_Available(const char* name) {
   // Calls Force_CD_Available based on type of scenario. szName is assumed to

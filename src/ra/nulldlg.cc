@@ -2363,18 +2363,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-#if 0
-			case ButtonKey(BUTTON_INITSTR):
-				strupr( initstrbuf );
-				port::SafeCopy( Session.InitStrings[ initstr_index ], initstrbuf);
-				Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
-					&initstr_index);
-				cwaitstr_edt.Set_Focus();
-				cwaitstr_edt.Flag_To_Redraw();
-				display = REDRAW_BUTTONS;
-				break;
-#endif
-
       case ButtonKey(BUTTON_INITSTRLIST):
         if (initstrlist.Current_Index() != initstr_index) {
           initstr_index = initstrlist.Current_Index();

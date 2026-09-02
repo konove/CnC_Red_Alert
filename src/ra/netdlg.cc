@@ -992,44 +992,6 @@ void Shutdown_Network() {
 // the computer possibly at different times.
 // BRR, 10/29/96
 //
-#if 0
-	//------------------------------------------------------------------------
-	// If the Players vector contains at least one name, send a sign-off
-	// packet.  If 'Players' is empty, I have no name, so there's no point
-	// in sending a sign-off.
-	//------------------------------------------------------------------------
-	if (Session.Players.Count()) {
-		//.....................................................................
-		// Build a sign-off packet & send it
-		//.....................................................................
-		memset (&Session.GPacket, 0, sizeof(GlobalPacketType));
-		Session.GPacket.Command = NET_SIGN_OFF;
-		strcpy (Session.GPacket.Name, Session.Players[0]->Name);
-
-		Ipx.Send_Global_Message (&Session.GPacket, sizeof (GlobalPacketType),
-			0, nullptr);
-		Ipx.Send_Global_Message (&Session.GPacket, sizeof (GlobalPacketType),
-			0, nullptr);
-
-		if (Session.IsBridge	&& !Winsock.Get_Connected()) {
-			Ipx.Send_Global_Message (&Session.GPacket, sizeof(GlobalPacketType), 0,
-				&Session.BridgeNet);
-			Ipx.Send_Global_Message (&Session.GPacket, sizeof(GlobalPacketType), 0,
-				&Session.BridgeNet);
-		}
-
-		//.....................................................................
-		//	Wait for the packets to finish going out (or the Global Channel
-		// times out)
-		//.....................................................................
-		for (;;) {
-			if (Ipx.Global_Num_Send()==0) {
-				break;
-			}
-			Ipx.Service();
-		}
-	}
-#endif
 
   //------------------------------------------------------------------------
   //	If I was in a game, I'm not now, so clear the game name

@@ -720,36 +720,6 @@ int FootClass::Mission_Guard() {
 int FootClass::Mission_Hunt() {
   assert(IsActive);
   if (!Target_Something_Nearby(THREAT_NORMAL)) {
-#if (0)
-    if (What_Am_I() == RTTI_INFANTRY &&
-        *(InfantryClass*)this == INFANTRY_GENERAL &&
-        House->Class->House == HOUSE_UKRAINE && Scen.Scenario == 47) {
-      for (int index = 0; index < Buildings.Count(); index++) {
-        if (Buildings.Ptr(index)->IsOwnedByPlayer) {
-          Assign_Target(Buildings.Ptr(index)->As_Target());
-          break;
-        }
-      }
-      for (index = 0; index < Units.Count(); index++) {
-        if (Units.Ptr(index)->IsOwnedByPlayer) {
-          Assign_Target(Units.Ptr(index)->As_Target());
-          break;
-        }
-      }
-      for (index = 0; index < Infantry.Count(); index++) {
-        if (Infantry.Ptr(index)->IsOwnedByPlayer) {
-          Assign_Target(Infantry.Ptr(index)->As_Target());
-          break;
-        }
-      }
-      for (index = 0; index < Aircraft.Count(); index++) {
-        if (Aircraft.Ptr(index)->IsOwnedByPlayer) {
-          Assign_Target(Aircraft.Ptr(index)->As_Target());
-          break;
-        }
-      }
-    }
-#endif
     Random_Animate();
   } else {
     if (What_Am_I() == RTTI_INFANTRY &&

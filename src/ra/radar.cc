@@ -2287,20 +2287,6 @@ bool RadarClass::Draw_House_Info() {
     snprintf(txt, sizeof(txt), "%i", ptr->CurInfantry);
     Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
-#if (0)
-    y += (12) + 1;
-
-    Fancy_Text_Print(TXT_AIRCRAFT, RADAR_X + RADAR_OFF_X + 6, y,
-                     &ColorRemaps[PCOLOR_GREY], TBLACK,
-                     TPF_6PT_GRAD | TPF_NOSHADOW);
-    y += (12) + 1;
-    // count & print aircraft
-    for (i = AIRCRAFT_NONE + 1, count = 0; i < AIRCRAFT_COUNT; i++) {
-      count += ptr->AQuantity[i];
-    }
-    itoa(count, txt, 10);
-    Fancy_Text_Print(txt, RadX + RadOffX, y, color, BLACK, style);
-#endif
     return true;
   }
   return false;

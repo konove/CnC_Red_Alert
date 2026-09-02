@@ -852,15 +852,6 @@ int NullModemClass::Service() {
     return Connection->Service();
   }
 
-#if (0)
-  // Mono_Printf( "received %d bytes \n", sendlen );
-  Debug_Modem_Dump = true;
-  Smart_Printf("Received tick=%d, Protocol=%d \n", TickCount,
-               Session.CommProtocol);
-  Hex_Dump_Data((RXBuf + pos), (sizeof(SerialHeaderType) + length));
-  Debug_Modem_Dump = false;
-#endif
-
   /*------------------------------------------------------------------------
   Give the new packet to the Connection to process.
   ------------------------------------------------------------------------*/
@@ -869,18 +860,6 @@ int NullModemClass::Service() {
     ReceiveOverflows++;
     // Smart_Printf( "Received overflows %d \n", ReceiveOverflows );
   }
-#if (0)
-  else {
-    // Mono_Printf( "added packet \n", sendlen );
-    Debug_Modem_Dump = true;
-    Smart_Printf("Received Packet \n");
-    Debug_Modem_Dump = false;
-  }
-#endif
-
-#if (0)
-  Hex_Dump_Data((RXBuf + pos), (PACKET_SERIAL_OVERHEAD_SIZE + length));
-#endif
 
   /*------------------------------------------------------------------------
   Move all data past this packet to the front of the buffer.
