@@ -343,17 +343,6 @@ void TcpipManagerClass::Write(void* buffer, int buffer_len) {
     TXBufferHead &= WS_NUM_TX_BUFFERS - 1;
   }
 
-#ifndef PORTABLE
-  /*
-  ** Send a message to ourselves to start off the event
-  */
-  if (UseUDP) {
-    SendMessage(MainWindow, WM_UDPASYNCEVENT, 0, (LONG)FD_WRITE);
-  } else {
-    SendMessage(MainWindow, WM_ASYNCEVENT, 0, (LONG)FD_WRITE);
-  }
-#endif
-
   /*
   ** Make sure the message loop gets called because all the Winsock
   *notifications
@@ -405,26 +394,6 @@ bool TcpipManagerClass::Add_Client() {
   memcpy(&ClientIPAddress, &addr.sin_addr.s_addr, 4);
   memcpy(&UDPIPAddress, &addr.sin_addr.s_addr, 4);
 
-#ifndef PORTABLE
-  /*
-  ** Initiate an asynchronous host lookup by address. Our window will receive
-  *notification
-  ** when this is complete or when it times out.
-  */
-  Async = WSAAsyncGetHostByAddr(MainWindow, WM_HOSTBYADDRESS,
-                                (const char*)&addr.sin_addr, 4, PF_INET,
-                                &HostBuff[0], MAXGETHOSTSTRUCT);
-
-  /*
-  ** Enable asynchronous events on this socket
-  */
-  if (WSAAsyncSelect(ConnectSocket, MainWindow, WM_ASYNCEVENT,
-                     FD_READ | FD_WRITE | FD_CLOSE) == SOCKET_ERROR) {
-    WSACancelAsyncRequest(Async);
-    Close_Socket(ConnectSocket);
-    return (false);
-  }
-#endif
   /*
   ** Create our UDP socket
   */
@@ -452,19 +421,6 @@ bool TcpipManagerClass::Add_Client() {
   setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, (char*)&SocketReceiveBuffer, 4);
   setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, (char*)&SocketSendBuffer, 4);
 
-#ifndef PORTABLE
-  /*
-  ** Enable asynchronous events on this socket
-  */
-  if (WSAAsyncSelect(UDPSocket, MainWindow, WM_UDPASYNCEVENT,
-                     FD_READ | FD_WRITE) == SOCKET_ERROR) {
-    WSACancelAsyncRequest(Async);
-    Close_Socket(UDPSocket);
-    Close_Socket(ConnectSocket);
-    return (false);
-  }
-#endif
-
   return (true);
 }
 
@@ -482,186 +438,6 @@ bool TcpipManagerClass::Add_Client() {
  *                                                                                             *
  * HISTORY: * 3/20/96 3:05PM ST : Created *
  *=============================================================================================*/
-#ifndef PORTABLE
-void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
-  struct hostent* hentry;
-  struct sockaddr_in addr;
-  int event;
-  int rc;
-  int addr_len;
-
-  switch (message) {
-    /*
-    ** Handle the GetHostByAddress result
-    */
-    case WM_HOSTBYADDRESS:
-
-      if (IsServer) {
-        /*
-        ** We are the server
-        */
-        ConnectStatus = CONNECTING;
-        if (WSAGETASYNCERROR(lParam) == 0) {
-          hentry = (struct hostent*)&HostBuff[0];
-          strcpy(&ClientName[0], hentry->h_name);
-        }
-        Async = 0;
-        return;
-
-      } else {
-        /*
-        ** We are the client
-        */
-        ConnectStatus = CONTACTING_SERVER;
-        if (WSAGETASYNCERROR(lParam) == 0) {
-          hentry = (struct hostent*)&HostBuff[0];
-          strcpy(Server.Name, hentry->h_name);
-        } else {
-          Server.Name[0] = 0;
-        }
-        Async = 0;
-        return;
-      }
-
-    /*
-    ** Retrieve host by name: Start connecting now that we have the
-    ** address.
-    */
-    case WM_HOSTBYNAME:
-      if (WSAGETASYNCERROR(lParam) == 0) {
-        hentry = (struct hostent*)&HostBuff[0];
-        memcpy(&(Server.Addr.s_addr), hentry->h_addr, 4);
-        memcpy(&UDPIPAddress, hentry->h_addr, 4);
-        strcpy(Server.DotAddr, inet_ntoa(Server.Addr));
-        ConnectStatus = CONNECTED_OK;
-        Connected = true;
-      } else {
-        Server.Name[0] = 0;
-        strcpy(Server.DotAddr, "????");
-        ConnectStatus = SERVER_ADDRESS_LOOKUP_FAILED;
-      }
-      Async = 0;
-      return;
-
-    /*
-    ** Connection is ready - accept the client
-    */
-    case WM_ACCEPT:
-      rc = WSAGETSELECTERROR(lParam);
-      if (rc != 0) {
-        ConnectStatus = UNABLE_TO_ACCEPT_CLIENT;
-        return;
-      }
-      if (Add_Client()) {
-        ConnectStatus = CONNECTED_OK;
-        Connected = true;
-      } else {
-        ConnectStatus = UNABLE_TO_ACCEPT_CLIENT;
-      }
-      return;
-
-    /*
-    ** Handle UDP packet events
-    */
-    case WM_UDPASYNCEVENT:
-      event = WSAGETSELECTEVENT(lParam);
-      switch (event) {
-        case FD_READ:
-          rc = WSAGETSELECTERROR(lParam);
-          if (rc != 0) {
-            Clear_Socket_Error(UDPSocket);
-            return;
-          }
-          addr_len = sizeof(addr);
-          rc = recvfrom(UDPSocket, ReceiveBuffer, WS_RECEIVE_BUFFER_LEN, 0,
-                        (LPSOCKADDR)&addr, &addr_len);
-          if (rc == SOCKET_ERROR) {
-            Clear_Socket_Error(UDPSocket);
-            return;
-          }
-          memcpy(&UDPIPAddress, &addr.sin_addr.s_addr, 4);
-          Copy_To_In_Buffer(rc);
-          return;
-
-        case FD_WRITE:
-          if (UseUDP) {
-            rc = WSAGETSELECTERROR(lParam);
-            if (rc != 0) {
-              Clear_Socket_Error(UDPSocket);
-              return;
-            }
-
-            addr.sin_family = AF_INET;
-            addr.sin_port = htons(PlanetWestwoodPortNumber);
-            memcpy(&addr.sin_addr.s_addr, &UDPIPAddress, 4);
-
-            /*
-            **  Send as many bytes as there are in the buffer; if there's
-            **  an error, just bail out.  If we get a WOULDBLOCK error,
-            **  WinSock will send us another message when the socket is
-            **  available for another write.
-            */
-            while (TransmitBuffers[TXBufferTail].InUse) {
-              rc = sendto(UDPSocket, TransmitBuffers[TXBufferTail].Buffer,
-                          TransmitBuffers[TXBufferTail].DataLength, 0,
-                          (LPSOCKADDR)&addr, sizeof(addr));
-
-              if (rc == SOCKET_ERROR) {
-                if (WSAGetLastError() != WSAEWOULDBLOCK) {
-                  Clear_Socket_Error(UDPSocket);
-                }
-                break;
-              }
-              TransmitBuffers[TXBufferTail++].InUse = false;
-              TXBufferTail &= WS_NUM_TX_BUFFERS - 1;
-            }
-            return;
-          }
-      }
-
-    /*
-    ** Handle the asynchronous event callbacks
-    */
-    case WM_ASYNCEVENT:
-      event = WSAGETSELECTEVENT(lParam);
-      switch (event) {
-        /*
-        ** FD_CLOSE: the client has gone away. Remove the client from our
-        *system.
-        */
-        case FD_CLOSE:
-          rc = WSAGETSELECTERROR(lParam);
-          if (rc != 0 && rc != WSAECONNRESET) {
-            ConnectStatus = CONNECTION_LOST;
-            return;
-          }
-          if (Async != 0) {
-            WSACancelAsyncRequest(Async);
-          }
-          WSAAsyncSelect(ConnectSocket, MainWindow, WM_ASYNCEVENT, 0);
-          Close_Socket(ConnectSocket);
-          ConnectSocket = INVALID_SOCKET;
-          // Connected = false;
-          ConnectStatus = CONNECTION_LOST;
-          break;
-
-        /*
-        ** FD_CONNECT: A connection was made, or an error occurred.
-        */
-        case FD_CONNECT:
-          rc = WSAGETSELECTERROR(lParam);
-          if (rc != 0) {
-            ConnectStatus = UNABLE_TO_CONNECT;
-            return;
-          }
-
-          ConnectStatus = CONNECTED_OK;
-          Connected = true;
-          return;
-      }
-  }
-}
-#endif
 
 /***********************************************************************************************
  * TMC::Copy_To_In_Buffer -- copy data from our winsock buffer to our internal
@@ -780,36 +556,6 @@ void TcpipManagerClass::Start_Client() {
   */
   setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, (char*)&SocketReceiveBuffer, 4);
   setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, (char*)&SocketSendBuffer, 4);
-
-#ifndef PORTABLE
-  /*
-  ** Enable asynchronous events on the UDP socket
-  */
-  if (WSAAsyncSelect(UDPSocket, MainWindow, WM_UDPASYNCEVENT,
-                     FD_READ | FD_WRITE) == SOCKET_ERROR) {
-    WSACancelAsyncRequest(Async);
-    Close_Socket(UDPSocket);
-    Close_Socket(ConnectSocket);
-    ConnectStatus = NOT_CONNECTING;
-    return;
-  }
-
-  /*
-  ** If the name is not a dot-decimal ip address then do a nameserver lookup
-  */
-
-  Server.Addr.s_addr = inet_addr(PlanetWestwoodIPAddress);
-  memcpy(&UDPIPAddress, &Server.Addr.s_addr, 4);
-  if (Server.Addr.s_addr == INADDR_NONE) {
-    strcpy(Server.Name, PlanetWestwoodIPAddress);
-    Async = WSAAsyncGetHostByName(MainWindow, WM_HOSTBYNAME, Server.Name,
-                                  HostBuff, MAXGETHOSTSTRUCT);
-    ConnectStatus = RESOLVING_HOST_ADDRESS;
-  } else {
-    ConnectStatus = CONNECTED_OK;
-    Connected = true;
-  }
-#endif
 }
 
 /***********************************************************************************************

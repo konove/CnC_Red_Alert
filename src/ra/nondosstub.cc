@@ -70,10 +70,6 @@ void Focus_Restore() {
   if (WWMouse) {
     WWMouse->Set_Cursor_Clip();
   }
-#ifndef PORTABLE
-  VisiblePage.Clear();
-  HiddenPage.Clear();
-#endif
 }
 
 unsigned char* VQPalette;

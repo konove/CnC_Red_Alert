@@ -901,13 +901,6 @@ bool Select_Game(bool /*fade*/) {
               case GAME_INTERNET:  //	ajw		No longer hit.
               {
                 if (!config::kWolapiEnabled && Special.IsFromWChat) {
-#ifndef PORTABLE
-                  /*
-                  ** Give myself focus.
-                  */
-                  SetForegroundWindow(MainWindow);
-                  ShowWindow(MainWindow, ShowCommand);
-#endif
 #ifdef WINSOCK_IPX
 
                   delete PacketTransport;
@@ -1140,30 +1133,9 @@ bool Select_Game(bool /*fade*/) {
               */
 #ifdef WINSOCK_IPX
               delete PacketTransport;
-#ifdef PORTABLE
               // we don't even have IPX
               PacketTransport = new UDPInterfaceClass;
               PacketTransport->Set_Broadcast_Address((char*)"255.255.255.255");
-#else
-              //							if
-              //(WWMessageBox().Process("Select a protocol to use for network
-              // play.", "UDP", "IPX")) {
-              PacketTransport = new IPXInterfaceClass;
-              assert(PacketTransport != nullptr);
-//							}else{
-//								PacketTransport
-//= new UDPInterfaceClass;	//IPXInterfaceClass;
-// assert ( PacketTransport != nullptr);
-// if (!Get_Broadcast_Addresses()) {
-// Session.Type = GAME_NORMAL;
-// display = true;
-// selection = SEL_NONE;
-// delete PacketTransport;
-// PacketTransport = nullptr;
-// break;
-//								}
-//							}
-#endif
 #endif  // WINSOCK_IPX
               WWDebugString("RA95 - About to call Init_Network.\n");
               if (Session.Type == GAME_IPX && Init_Network() &&
@@ -2011,20 +1983,9 @@ long Obfuscate(const char* string) {
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Init_Random() {
-#ifdef PORTABLE
   int ms = Get_Time_Ms();
   CryptRandom.Seed_Byte(static_cast<char>(ms));
   // grab some more bits from somewhere?
-#else
-
-  /*
-  **	Gather some "random" bits from the DOS mode timer.
-  */
-  struct timeb t;
-  ftime(&t);
-  CryptRandom.Seed_Byte(t.millitm);
-  CryptRandom.Seed_Byte(t.time);
-#endif
 
   //
   // If we've loaded a multiplayer save game, return now; the random #

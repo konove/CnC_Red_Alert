@@ -755,13 +755,7 @@ int Main_Menu(unsigned long) {
     **	to the cryptographic random number generator.
     */
     if (input != 0) {
-#ifdef PORTABLE
       CryptRandom.Seed_Byte(static_cast<char>(Get_Time_Ms()));
-#else
-      struct timeb t;
-      ftime(&t);
-      CryptRandom.Seed_Byte(t.millitm);
-#endif
     }
 
     /*

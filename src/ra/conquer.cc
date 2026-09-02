@@ -1466,9 +1466,7 @@ void Call_Back() {
     }
   }
 
-#ifdef PORTABLE
   Video_End_Frame();
-#endif
 }
 
 void IPX_Call_Back() {
@@ -2563,20 +2561,16 @@ long VQ_Call_Back(unsigned char*, long) {
       Check_For_Focus_Loss();
     }
   }
-#ifdef PORTABLE
   Video_End_Frame();
-#endif
   return false;
 }
 
 long VQ_Event_Handler(const unsigned long event, void* /*buffer*/,
                       long /*n_bytes*/) {
-#ifdef PORTABLE
   // vsync while waiting for frame
   if (event == VQAEVENT_SYNC) {
     Video_End_Frame();
   }
-#endif
   return 0;
 }
 
@@ -2874,75 +2868,11 @@ void Handle_View(const int view, const int action) {
   }
 }
 
-// On the portable build there are no removable discs to check: the data is
-// installed on disk, so this reports the DVD unconditionally and the volume
-// label scan below is left in place only for the Windows build.
+// There are no removable discs to check: the data is installed on disk, so
+// this reports the DVD unconditionally. The original scanned the drive's
+// volume label against kCdNames.
 int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
-#ifdef PORTABLE  // below code might work on win32 if GetCDClass was implemented
-                 // in SDLLIB
-  return 5;      // we uh, magically have the DVD
-#else
-  char volume_name[128];
-  char buffer[128];
-  unsigned filename_length;
-  unsigned misc_dword;
-  int count = 0;
-
-  CountDownTimerClass timer;
-
-  timer.Set(timeout);
-
-  // Get the volume label. If we get a 'not ready' error then retry for the
-  // timeout
-  // period.
-  for (;;) {
-    sprintf(buffer, "%c:\\", 'A' + cd_drive);
-
-    if (GetVolumeInformation((const char*)buffer, &volume_name[0],
-                             (unsigned long)sizeof(volume_name), nullptr,
-                             (DWORD*)&filename_length, (DWORD*)&misc_dword,
-                             (char*)nullptr, (unsigned long)0)) {
-      // Try opening 'movies.mix' to verify that the CD is really there and is
-      // what
-      // it says it is.
-      sprintf(buffer, "%c:\\main.mix", 'A' + cd_drive);
-
-      HANDLE handle = CreateFile(buffer, GENERIC_READ, FILE_SHARE_READ, nullptr,
-                                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-
-      if (handle != INVALID_HANDLE_VALUE) {
-        CloseHandle(handle);
-
-        // Match the volume label to the list of known C&C volume labels.
-        for (int i = 0; i < _Num_Volumes; i++) {
-          if (!stricmp(_CD_Volume_Label[i], volume_name)) {
-            return (i);
-          }
-        }
-      } else {
-        if (!count) {
-          count++;
-        } else {
-          return -1;
-        }
-      }
-    } else {
-      // Failed to get the volume label on a known CD drive.
-      // If this is a CD changer it may require time to swap the disks so dont
-      // return
-      // immediately if the error is ROR_NOT_READY
-      if (!timer.Time()) {
-        return -1;
-      }
-
-      int val = GetLastError();
-
-      if (val != ROR_NOT_READY) {
-        return -1;
-      }
-    }
-  }
-#endif
+  return 5;  // we uh, magically have the DVD
 }
 
 // Disc identifiers, matching the order of kCdNames below. CD_SOVIET and
@@ -3024,12 +2954,9 @@ bool Force_CD_Available(int cd_desired)  // ajw
     }
     // If the current CD is requested or any CD will work
     if (cd_desired == cd_current || cd_desired == CD_ANY) {
-      // The required CD is still in the CD drive we used last time
-#ifdef PORTABLE
-      // Nothing further to do: on this build the content is already reachable,
-      // and the code below would only refresh the search path.
+      // The required CD is still in the CD drive we used last time, so the
+      // content is already reachable.
       return true;
-#endif
     }
   }
 
@@ -3303,13 +3230,9 @@ void Shake_The_Screen(int shakes) {
         HidPage.Blit(SeenPage);
         break;
     }
-#ifdef PORTABLE
     while (x == TickCount.Value()) {
       Video_End_Frame();
     }
-#else
-    while (x == TickCount);
-#endif
   }
   HidPage.Blit(SeenPage);
   Show_Mouse();

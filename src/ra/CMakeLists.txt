@@ -17,7 +17,6 @@ list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/descdlg.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/key.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/keyframe.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/noseqcon.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/number.cc"
@@ -47,7 +46,6 @@ list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/externs.h" # Removed since it is crashing IWYU.
         "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/key.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/keyframe.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/memcheck.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/noseqcon.h"

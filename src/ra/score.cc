@@ -815,10 +815,6 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     if (i >= 60) {
       shapenum = Extract_Shape_Count(power_plant_shape) - 2;  // some damage
       if (i == 60) {
-#ifndef PORTABLE  // would blit SeenPage to HidPage, causing the "factory" to
-                  // persist
-        Shake_The_Screen(6);
-#endif
         Sound_Effect(VOC_CRUMBLE);
       }
       if (i > 65) {

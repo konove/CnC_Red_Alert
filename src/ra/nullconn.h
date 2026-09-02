@@ -49,11 +49,7 @@
 ********************************* Includes **********************************
 */
 #include "ra/connect.h"
-#ifdef PORTABLE
 using HANDLE = void*;
-#else
-#include "commlib.h"
-#endif
 
 /*
 ********************************** Defines **********************************

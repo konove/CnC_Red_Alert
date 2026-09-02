@@ -1941,11 +1941,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*
   ** Set up the port list box & edit box
   */
-#ifndef PORTABLE
-  for (i = 0; i < 4; i++) {
-    portlist.Add_Item(portname[i]);
-  }
-#endif
 
   /*
   ** Loop through the first 10 possible modem entries in the registry. Frankly,
@@ -2317,17 +2312,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         if (portlist.Current_Index() != port_index) {
           port_index = portlist.Current_Index();
           item = (char*)portlist.Current_Item();
-#ifndef PORTABLE
-          if (port_index < 4) {
-            temp = strchr(item, ' ');
-            pos = (int)(temp - item);
-            port::SafeCopy(portbuf, item, pos);
-            portbuf[pos] = 0;
-            port_edt.Clear_Focus();
-
-            // auto select the irq for port
-          } else
-#endif
           {
             if (port_index == port_custom_index) {
               /*
@@ -2502,27 +2486,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case KN_RETURN:
       case ButtonKey(BUTTON_SAVE):
         switch (port_index) {
-#ifndef PORTABLE
-          case (0):
-            tempsettings.Port = 0x3f8;
-            tempsettings.ModemName[0] = 0;
-            break;
-
-          case (1):
-            tempsettings.Port = 0x2f8;
-            tempsettings.ModemName[0] = 0;
-            break;
-
-          case (2):
-            tempsettings.Port = 0x3e8;
-            tempsettings.ModemName[0] = 0;
-            break;
-
-          case (3):
-            tempsettings.Port = 0x2e8;
-            tempsettings.ModemName[0] = 0;
-            break;
-#endif
           default:
             if (port_index == port_custom_index) {
               port::SafeCopy(tempsettings.ModemName, portbuf);

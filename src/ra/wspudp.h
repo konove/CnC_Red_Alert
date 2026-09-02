@@ -51,12 +51,7 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
  public:
   UDPInterfaceClass();
   ~UDPInterfaceClass() override;
-#ifdef PORTABLE
   void Event_Handler(int, SocketEvent) override;
-#else
-  virtual long Message_Handler(HWND window, UINT message, UINT wParam,
-                               LONG lParam);
-#endif
   bool Open_Socket(SOCKET socketnum) override;
   void Set_Broadcast_Address(void* address) override;
   void Broadcast(void* buffer, int buffer_len) override;

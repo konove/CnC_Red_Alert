@@ -310,11 +310,6 @@ int Read_Game_Options(const char* name) {
       WWGetPrivateProfileInt("Internet", "GameID", 0, buffer);
   PlanetWestwoodStartTime =
       WWGetPrivateProfileInt("Internet", "StartTime", 0, buffer);
-#ifndef PORTABLE  // this is even broken on 64-bit windows
-  WChatHWND = (HWND)WWGetPrivateProfileInt(
-      "Internet", "HWND", (int)FindWindow("OWL_Window", "Westwood Chat"),
-      buffer);
-#endif
 
   Session.Options.AIPlayers = WWGetPrivateProfileInt(
       "Options", "AI", 0, buffer);  // Number of AI players
@@ -474,81 +469,7 @@ void Just_Path(char* path, char* destpath, size_t dest_size) {
  * HISTORY: * 1/12/96 2:13PM ST : Created *
  *=============================================================================================*/
 bool Is_User_WChat_Registered(char* /*buffer*/, int /*buffer_len*/) {
-#ifndef PORTABLE  // Get_Registry_Sub_Key is in WIN32LIB
-  HKEY key;
-  char user_handle[256];
-  DWORD user_handle_size = sizeof(user_handle);
-  char user_pword[256];
-  DWORD user_pword_size = sizeof(user_pword);
-
-  /*
-  ** Check HKEY_CLASSES_ROOT first. Old versions of Wchat register there
-  */
-  key = Get_Registry_Sub_Key(HKEY_CLASSES_ROOT, "Wchat", false);
-
-  if (key) {
-    key = Get_Registry_Sub_Key(key, "Nick1", true);
-    if (key) {
-      if (RegQueryValue(key, "Nick", user_handle, (long*)&user_handle_size) ==
-          ERROR_SUCCESS) {
-        if (RegQueryValue(key, "Pass", user_pword, (long*)&user_pword_size) ==
-            ERROR_SUCCESS) {
-          /*
-          ** If the first char of the users name is non-numberic and there is a
-          *password
-          ** then return success
-          */
-          if ((user_handle[0] < '0' || user_handle[0] > '9') && user_pword[0]) {
-            RegCloseKey(key);
-            return (true);
-          }
-        }
-      }
-    }
-
-    RegCloseKey(key);
-  }
-
-  /*
-  ** Check HKEY_LOCAL_MACKINE/Software
-  */
-  user_handle_size = sizeof(user_handle);
-
-  key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", false);
-  if (!key) {
-    return (false);
-  }
-
-  key = Get_Registry_Sub_Key(key, "Westwood", true);
-  if (!key) {
-    return (false);
-  }
-
-  key = Get_Registry_Sub_Key(key, "InetReg", true);
-  if (!key) {
-    return (false);
-  }
-
-  if (RegQueryValueEx(key, "UserName", NULL, NULL, (unsigned char*)user_handle,
-                      &user_handle_size) != ERROR_SUCCESS) {
-    RegCloseKey(key);
-    return (false);
-  }
-
-  RegCloseKey(key);
-  memcpy(buffer, user_handle, min(buffer_len, int(user_handle_size)));
-
-  /*
-  ** If the first char of the users name is non-numeric then return success
-  */
-  if (user_handle[0] < '0' || user_handle[0] > '9') {
-    return (true);
-  } else {
-    return (false);
-  }
-#else
   return false;
-#endif
 }
 
 /***********************************************************************************************
@@ -567,146 +488,7 @@ bool Is_User_WChat_Registered(char* /*buffer*/, int /*buffer_len*/) {
  *=============================================================================================*/
 bool Poke_WChat();
 bool Spawn_WChat(bool /*can_launch*/) {
-#ifndef PORTABLE  // Get_Registry_Sub_Key is in WIN32LIB, also MainWindow is not
-                  // a HWND
-  WWDebugString("RA95 - In Spawn_WChat.\n");
-  char packet[10] = {"Hello"};
-  HWND chat_window = NULL;
-
-  /*
-  ** See if WChat is already running...
-  */
-  if (WChatHWND && IsWindow(WChatHWND)) {
-    chat_window = WChatHWND;
-  } else {
-    chat_window = FindWindow("OWL_Window", "Westwood Chat");
-  }
-
-  if (chat_window) {
-    /*
-    ** WChat is already running. Minimize myself then try to give it focus.
-    */
-    BlackPalette.Set();
-    VisiblePage.Clear();
-    ShowWindow(MainWindow, SW_MINIMIZE);
-    /*
-    ** Give windoze a couple of secs to sort itself out.
-    */
-    CountDownTimerClass wibble_timer;
-    wibble_timer.Set(60 * 3, true);
-
-    while (wibble_timer.Time()) {
-      /*
-      ** Call our message loop to make sure we get all the messages that are
-      *sent to us
-      ** when we minimise.
-      */
-      Keyboard->Check();
-    }
-
-    /*
-    ** Send chat a tickle message so it knows to send the game stats to the
-    *server.
-    */
-    if (GameStatisticsPacketSent && !PlanetWestwoodIsHost) {
-      Send_Data_To_DDE_Server(packet, strlen(packet),
-                              DDEServerClass::DDE_TICKLE);
-    }
-
-    // Send_Data_To_DDE_Server (packet, strlen(packet),
-    // DDEServerClass::DDE_TICKLE);
-    /*
-    ** Give the focus to WChat
-    */
-    SetForegroundWindow(chat_window);
-    ShowWindow(chat_window, SW_RESTORE);
-    return (true);
-  }
-
-  /*
-  ** Fail if we aren't allowed to launch wchat and we couldnt find its window.
-  */
-  if (!can_launch) {
-    return (false);
-  }
-
-  /*
-  ** Find where WChat was installed to
-  */
-  HKEY key;
-  char wchat_loc[256];
-  DWORD wchat_loc_size = 256;
-
-  key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", false);
-  if (!key) {
-    return (false);
-  }
-
-  key = Get_Registry_Sub_Key(key, "Westwood", true);
-  if (!key) {
-    return (false);
-  }
-
-  key = Get_Registry_Sub_Key(key, "WChat", true);
-  if (!key) {
-    return (false);
-  }
-
-  // key = Get_Registry_Sub_Key (key, "UserName", true);
-  // if (!key) return (false);
-
-  // key = Get_Registry_Sub_Key (key, "Nick", true);
-  // if (!key) return (false);
-
-  if (RegQueryValueEx(key, "InstallPath", NULL, NULL, (unsigned char*)wchat_loc,
-                      &wchat_loc_size) != ERROR_SUCCESS) {
-    RegCloseKey(key);
-    return (false);
-  }
-
-  RegCloseKey(key);
-
-  PROCESS_INFORMATION process_info;
-  STARTUPINFO start_info;
-  memset((void*)&start_info, 0, sizeof(start_info));
-  start_info.cb = sizeof(start_info);
-  char justpath[256];
-  Just_Path(wchat_loc, justpath, sizeof(justpath));
-
-  /*
-  ** We found WChat in the registry. Minimize myself then try to spawn it.
-  */
-  BlackPalette.Set();
-  VisiblePage.Clear();
-  ShowWindow(MainWindow, SW_MINIMIZE);
-  /*
-  ** Give windoze a couple of secs to sort itself out.
-  */
-  CountDownTimerClass wibble_timer;
-  wibble_timer.Set(60 * 3, true);
-
-  while (wibble_timer.Time()) {
-    /*
-    ** Call our message loop to make sure we get all the messages that are sent
-    *to us
-    ** when we minimise.
-    */
-    Keyboard->Check();
-  }
-  bool success = CreateProcess(wchat_loc, NULL, NULL, NULL, false, 0, NULL,
-                               justpath, &start_info, &process_info);
-
-  if (success) {
-    return (true);
-  } else {
-    ShowWindow(MainWindow, SW_RESTORE);
-    while (Keyboard->Check()) {
-    };
-    return (false);
-  }
-#else
   return false;
-#endif
 }
 
 
@@ -724,57 +506,7 @@ bool Spawn_WChat(bool /*can_launch*/) {
  * HISTORY: * 6/8/96 12:33PM ST : Created *
  *=============================================================================================*/
 bool Spawn_Registration_App() {
-#ifndef PORTABLE  // Get_Registry_Sub_Key is in WIN32LIB
-  /*
-  ** Find where inetreg was installed to
-  */
-
-  HKEY key;
-  char inetreg_loc[256];
-  DWORD inetreg_loc_size = 256;
-
-  key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", false);
-  if (!key) {
-    return (false);
-  }
-
-  key = Get_Registry_Sub_Key(key, "Westwood", true);
-  if (!key) {
-    return (false);
-  }
-
-  key = Get_Registry_Sub_Key(key, "InetReg", true);
-  if (!key) {
-    return (false);
-  }
-
-  if (RegQueryValueEx(key, "InstallPath", NULL, NULL,
-                      (unsigned char*)inetreg_loc,
-                      &inetreg_loc_size) != ERROR_SUCCESS) {
-    RegCloseKey(key);
-    return (false);
-  }
-
-  RegCloseKey(key);
-
-  PROCESS_INFORMATION process_info;
-  STARTUPINFO start_info;
-  char justpath[256];
-  memset((void*)&start_info, 0, sizeof(start_info));
-  start_info.cb = sizeof(start_info);
-  Just_Path(inetreg_loc, justpath, sizeof(justpath));
-
-  BOOL success = CreateProcess(inetreg_loc, NULL, NULL, NULL, false, 0, NULL,
-                               justpath, &start_info, &process_info);
-  if (success) {
-    // WaitForSingleObject (process_info.hProcess, 1000*10000);
-    // SetForegroundWindow ( MainWindow );
-    // ShowWindow ( MainWindow, SW_RESTORE );
-  }
-  return (success);
-#else
   return false;
-#endif
 }
 
 

@@ -555,37 +555,6 @@ void Send_Statistics_Packet() {
       stats.Add_Field(FIELD_FRAME_RATE, 0l);
     }
 
-#ifndef PORTABLE
-    /*
-    ** CPU type
-    */
-    stats.Add_Field(FIELD_CPU_TYPE, (char)CPUType);
-
-    /*
-    ** Memory
-    */
-    MEMORYSTATUS mem_info;
-    mem_info.dwLength = sizeof(mem_info);
-    GlobalMemoryStatus(&mem_info);
-    stats.Add_Field(FIELD_MEMORY, (long)mem_info.dwTotalPhys);
-
-    /*
-    ** Video memory
-    */
-    DDCAPS video_capabilities;
-    long video_memory;
-
-    if (DirectDrawObject) {
-      video_capabilities.dwSize = sizeof(video_capabilities);
-      if (DD_OK == DirectDrawObject->GetCaps(&video_capabilities, NULL)) {
-        video_memory = video_capabilities.dwVidMemTotal;
-        video_memory += 1024 * 1024 - 1;
-        video_memory &= 0xfff00000;
-        stats.Add_Field(FIELD_VIDEO_MEMORY, (long)video_memory);
-      }
-    }
-#endif
-
     /*
     ** Game speed setting.
     */
@@ -597,26 +566,6 @@ void Send_Statistics_Packet() {
     char version[128];
     sprintf(version, "V%s", VerNum.Version_Name());
     stats.Add_Field(FIELD_GAME_VERSION, version);
-
-#ifndef PORTABLE
-    char path_to_exe[280];
-    FILETIME write_time;  // File time is 64 bits
-
-    GetModuleFileName(ProgramInstance, path_to_exe, 280);
-    RawFileClass file;
-    file.Set_Name(path_to_exe);
-    file.Open();
-    HANDLE handle = file.Get_File_Handle();
-
-    if (handle != INVALID_HANDLE_VALUE) {
-      if (GetFileTime(handle, NULL, NULL, &write_time)) {
-        write_time.dwLowDateTime = htonl(write_time.dwLowDateTime);
-        write_time.dwHighDateTime = htonl(write_time.dwHighDateTime);
-        stats.Add_Field(FIELD_GAME_BUILD_DATE, (void*)&write_time,
-                        sizeof(write_time));
-      }
-    }
-#endif
 
     /*
     ** Covert installed? (Yes/No)

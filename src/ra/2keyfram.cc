@@ -181,17 +181,8 @@ void Enable_Uncompressed_Shapes() {
 }
 
 void Check_Use_Compressed_Shapes() {
-#ifdef PORTABLE
   UseBigShapeBuffer =
       false;  // haven't implemented the draw code that uses this
-#else
-  MEMORYSTATUS mem_info;
-
-  mem_info.dwLength = sizeof(mem_info);
-  GlobalMemoryStatus(&mem_info);
-
-  UseBigShapeBuffer = (mem_info.dwTotalPhys > 16 * 1024 * 1024) ? true : false;
-#endif
   /*
   ** Keep track of our original decision about whether to use cached shapes.
   ** This is needed for the score screen crash fix.

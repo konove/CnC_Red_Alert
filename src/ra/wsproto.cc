@@ -89,11 +89,9 @@ typedef int socklen_t;
 #define GetLastError() errno
 #endif
 
-#ifdef PORTABLE
 static void Socket_Event_Handler(int socket, SocketEvent event, void* data) {
   static_cast<WinsockInterfaceClass*>(data)->Event_Handler(socket, event);
 }
-#endif
 
 /***********************************************************************************************
  * WIC::WinsockInterfaceClass -- constructor for the WinsockInterfaceClass *
@@ -205,22 +203,7 @@ void WinsockInterfaceClass::Close_Socket() {
  * HISTORY: * 8/5/97 11:54AM ST : Created *
  *=============================================================================================*/
 bool WinsockInterfaceClass::Start_Listening() {
-#ifdef PORTABLE
   return Socket_Register_Select(Socket, Socket_Event_Handler, this);
-#else
-  /*
-  ** Enable asynchronous events on the socket
-  */
-  if (WSAAsyncSelect(Socket, MainWindow, Protocol_Event_Message(),
-                     FD_READ | FD_WRITE) == SOCKET_ERROR) {
-    WWDebugString("TS: Async select failed.\n");
-    assert(false);
-    WSACancelAsyncRequest(ASync);
-    ASync = INVALID_HANDLE_VALUE;
-    return (false);
-  }
-  return (true);
-#endif
 }
 
 /***********************************************************************************************
@@ -237,14 +220,7 @@ bool WinsockInterfaceClass::Start_Listening() {
  * HISTORY: * 8/5/97 12:06PM ST : Created *
  *=============================================================================================*/
 void WinsockInterfaceClass::Stop_Listening() {
-#ifdef PORTABLE
   Socket_Unregister_Select(Socket);
-#else
-  if (ASync != INVALID_HANDLE_VALUE) {
-    WSACancelAsyncRequest(ASync);
-    ASync = INVALID_HANDLE_VALUE;
-  }
-#endif
 }
 
 /***********************************************************************************************
@@ -472,16 +448,8 @@ void WinsockInterfaceClass::WriteTo(void* buffer, int buffer_len,
     return;
   }
 
-#ifdef PORTABLE
   // enable write events
   Socket_Check_Write(Socket, true);
-#else
-  /*
-  ** Send a message to ourselves so that we can initiate a write if Winsock is
-  *idle.
-  */
-  SendMessage(MainWindow, Protocol_Event_Message(), 0, (LONG)FD_WRITE);
-#endif
 
   /*
   ** Make sure the message loop gets called.
@@ -526,14 +494,6 @@ void WinsockInterfaceClass::Broadcast(void* buffer, int buffer_len) {
     delete packet;
     return;
   }
-
-#ifndef PORTABLE
-  /*
-  ** Send a message to ourselves so that we can initiate a write if Winsock is
-  *idle.
-  */
-  SendMessage(MainWindow, Protocol_Event_Message(), 0, (LONG)FD_WRITE);
-#endif
 
   /*
   ** Make sure the message loop gets called.
@@ -609,7 +569,6 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
     assert(err != INVALID_SOCKET);
   }
 
-#ifdef PORTABLE
   // setup for non-blocking io
 #ifdef _WIN32
   u_long mode = 1;
@@ -617,7 +576,6 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
 #else
   int flags = fcntl(Socket, F_GETFL, 0);
   fcntl(Socket, F_SETFL, flags | O_NONBLOCK);
-#endif
 #endif
 
   return true;

@@ -62,10 +62,6 @@ class IPXInterfaceClass : public WinsockInterfaceClass {
   IPXInterfaceClass();
   // virtual ~IPXInterfaceClass(){Close();};
   bool Get_Network_Card_Address(int card_number, SOCKADDR_IPX* addr);
-#ifndef PORTABLE
-  virtual long Message_Handler(HWND window, UINT message, UINT wParam,
-                               LONG lParam);
-#endif
   bool Open_Socket(SOCKET socketnum) override;
 
   ProtocolEnum Get_Protocol() override { return PROTOCOL_IPX; }

@@ -85,9 +85,6 @@
 #include "sdllib/wwstd.h"
 #include "tech/rawfile.h"
 
-#ifndef PORTABLE
-#include <dos.h>  // for station ID computation
-#endif
 #include <ctime>  // for station ID computation
 
 #include "port/ex_string.h"

@@ -82,16 +82,7 @@
  *   12/14/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPX_SPX_Installed() {
-
-#if defined(TIBERIAN_SUN) || defined(PORTABLE)
   return false;
-#else
-  if (Load_IPX_Dll()) {
-    return (IPX_Initialise());
-  } else {
-    return (false);
-  }
-#endif
 
 
 } /* end of IPX_SPX_Installed */
