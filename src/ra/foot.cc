@@ -1282,20 +1282,10 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
             Techno_Type_Class()->Speed != SPEED_WINGED &&
             Map[Coord].Zones[Techno_Type_Class()->MZone] !=
                 Map[object->Center_Coord()].Zones[Techno_Type_Class()->MZone]) {
-#ifdef FIXIT_MINE_PASSABLE
-          // Fixes units not driving onto mines.
-          if (Can_Enter_Cell(Coord_Cell(object->Center_Coord())) > MOVE_OK) {
-            targ = ::As_Target(Map.Nearby_Location(
-                Coord_Cell(object->Center_Coord()), Techno_Type_Class()->Speed,
-                Map[Coord].Zones[Techno_Type_Class()->MZone],
-                Techno_Type_Class()->MZone));
-          }
-#else
           targ = ::As_Target(Map.Nearby_Location(
               Coord_Cell(object->Center_Coord()), Techno_Type_Class()->Speed,
               Map[Coord].Zones[Techno_Type_Class()->MZone],
               Techno_Type_Class()->MZone));
-#endif
         }
 
         Player_Assign_Mission(MISSION_MOVE, TARGET_NONE, targ);

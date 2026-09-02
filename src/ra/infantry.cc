@@ -663,11 +663,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           **	it damages or captures depends on how badly damaged the
           **	enemy building is.
           */
-#ifdef FIXIT_ENGINEER_CAPTURE
-          if (House->Is_Ally(tech)) {
-#else
           if (tech->House->Is_Ally(House)) {
-#endif
             tech->Renovate();
           } else {
             bool iscapturable = false;

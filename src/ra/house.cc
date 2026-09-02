@@ -3044,18 +3044,6 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
     if (cell == -1) {
       TechnoClass* pending = factory->Get_Object();
       if (pending != nullptr) {
-#ifdef FIXIT_HELI_LANDING
-        /*
-        **	Try to find a place for the object to appear from. For
-        *helicopters, it has the *	option of finding a nearby helipad if no
-        *helipads are free.
-        */
-        TechnoClass* builder = pending->Who_Can_Build_Me(false, false);
-        if (builder == nullptr && pending->What_Am_I() == RTTI_AIRCRAFT &&
-            !((AircraftClass*)pending)->Class->IsFixedWing) {
-          builder = pending->Who_Can_Build_Me(true, false);
-        }
-#else
         bool intheory = false;
         if (pending->What_Am_I() == RTTI_AIRCRAFT) {
           /*
@@ -3068,7 +3056,6 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
           }
         }
         TechnoClass* builder = pending->Who_Can_Build_Me(intheory, false);
-#endif
 
         if (builder != nullptr && builder->Exit_Object(pending)) {
           /*

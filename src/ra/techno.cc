@@ -2564,10 +2564,6 @@ void TechnoClass::AI() {
   */
   if (!House->IsHuman && As_Techno(TarCom) &&
       As_Techno(TarCom)->House->Is_Ally(this)) {
-    // #ifdef FIXIT_CSII	//	checked - ajw 9/28/98 (commented out)
-    // if(What_Am_I() == RTTI_INFANTRY && *(InfantryClass
-    // *)this==INFANTRY_GENERAL && Session.Type==GAME_NORMAL &&
-    // House->Class->House==HOUSE_UKRAINE) { } else #endif
     Assign_Target(TARGET_NONE);
   }
 

@@ -82,10 +82,6 @@
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
 
-#ifdef FIXIT_FAST_LOAD
-#include "tech/cstraw.h"
-#endif
-
 /***********************************************************************************************
  * INIClass::~INIClass -- Destructor for INI handler. *
  *                                                                                             *
@@ -188,19 +184,10 @@ bool INIClass::Load(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
-#ifdef FIXIT_FAST_LOAD
-bool INIClass::Load(Straw& ffile)
-#else
 bool INIClass::Load(Straw& file)
-#endif
 {
   bool end_of_file = false;
   char buffer[MAX_LINE_LENGTH];
-
-#ifdef FIXIT_FAST_LOAD
-  CacheStraw file;
-  file.SetSource(ffile);
-#endif
 
   /*
   **	Prescan until the first section is found.

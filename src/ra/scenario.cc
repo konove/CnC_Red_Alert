@@ -389,17 +389,6 @@ bool Start_Scenario(char* name, bool briefing) {
   // 0;
   //			}
   //
-  // #ifdef FIXIT_FORCE_CD
-  // Forces the CD to be inserted according to the scenario being loaded.
-  // Hide_Mouse();
-  // VisiblePage.Clear();
-  // Show_Mouse();
-  // GamePalette.Set();
-  // if (!Force_CD_Available(RequiredCD)) {
-  //       	Prog_End();
-  //       	exit(EXIT_FAILURE);
-  //}
-  // #endif
 
   //   	}
   Theme.Stop();
