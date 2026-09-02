@@ -44,6 +44,13 @@ inline constexpr bool kCheatKeysEnabled = kInternalVersion || kPlaytestVersion;
 // cheat keys).
 inline constexpr bool kVirginCheatKeysEnabled = kPlaytestVersion;
 
+// Cell-sorted rendering (migrated from the SORTDRAW macro). The ground layer
+// is drawn cell by cell in map order, each cell drawing the objects that
+// overlap it, instead of drawing the whole layer sorted by y. The two paths
+// disagree on how many overlapping objects a cell tracks, so CellClass's
+// layout, and with it the save format, depends on this.
+inline constexpr bool kSortDrawEnabled = true;
+
 // Westwood Online. This is not fed by a macro: nothing preprocesses it any
 // more, so there is nothing for a #define to do. The code it selects is
 // compiled and type-checked either way; turning it on would only make it

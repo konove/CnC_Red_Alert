@@ -42,6 +42,7 @@
 
 #include "base/types.h"
 #include "ra/ccptr.h"
+#include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/foot.h"
 #include "ra/object.h"
@@ -183,11 +184,10 @@ class CellClass {
   ObjectClass* OccupierPtr;
 
  public:
-#ifdef SORTDRAW
-  static constexpr base::ssize kOverlapperCount = 10;
-#else
-  static constexpr base::ssize kOverlapperCount = 6;
-#endif
+  // The cell-sorted renderer tracks more overlapping objects per cell. This
+  // sizes CellClass, so it is part of the save format.
+  static constexpr base::ssize kOverlapperCount =
+      config::kSortDrawEnabled ? 10 : 6;
   ObjectClass* Overlappers[kOverlapperCount];
 
   /*

@@ -101,6 +101,7 @@
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/combat.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/coord.h"
@@ -430,14 +431,14 @@ void CellClass::Redraw_Objects(bool forced) {
     if (Cell_Occupier() != nullptr) {
       ObjectClass* optr = Cell_Occupier();
       while (optr != nullptr && optr->IsActive) {
-#ifdef SORTDRAW
-        if (optr->Is_Techno() &&
-            ((TechnoClass*)optr)->Visual_Character() != VISUAL_NORMAL) {
+        if constexpr (config::kSortDrawEnabled) {
+          if (optr->Is_Techno() &&
+              ((TechnoClass*)optr)->Visual_Character() != VISUAL_NORMAL) {
+            optr->Mark(MARK_CHANGE);
+          }
+        } else {
           optr->Mark(MARK_CHANGE);
         }
-#else
-        optr->Mark(MARK_CHANGE);
-#endif
         if (optr->Next != nullptr && !optr->Next->IsActive) {
           optr->Next = nullptr;
         }
@@ -445,34 +446,34 @@ void CellClass::Redraw_Objects(bool forced) {
       }
     }
 
-#ifdef SORTDRAW
-    /*
-    **	Flag any overlapping object in this cell to be redrawn.
-    */
-    for (int index = 0; index < std::ssize(Overlappers); index++) {
-      if (Overlappers[index]) {
-        assert(Overlappers[index]->IsActive);
-        if (Overlappers[index]->Is_Techno() &&
-            ((TechnoClass*)Overlappers[index])->Visual_Character() !=
-                VISUAL_NORMAL) {
-          Overlappers[index]->Mark(MARK_CHANGE);
+    if constexpr (config::kSortDrawEnabled) {
+      /*
+      **	Flag any overlapping object in this cell to be redrawn.
+      */
+      for (int index = 0; index < std::ssize(Overlappers); index++) {
+        if (Overlappers[index]) {
+          assert(Overlappers[index]->IsActive);
+          if (Overlappers[index]->Is_Techno() &&
+              ((TechnoClass*)Overlappers[index])->Visual_Character() !=
+                  VISUAL_NORMAL) {
+            Overlappers[index]->Mark(MARK_CHANGE);
+          }
+        }
+      }
+    } else {
+      /*
+      **	Flag any overlapping object in this cell to be redrawn.
+      */
+      for (int index = 0; index < std::ssize(Overlappers); index++) {
+        if (Overlappers[index] != nullptr) {
+          if (!Overlappers[index]->IsActive) {
+            Overlappers[index] = nullptr;
+          } else {
+            Overlappers[index]->Mark(MARK_CHANGE);
+          }
         }
       }
     }
-#else
-    /*
-    **	Flag any overlapping object in this cell to be redrawn.
-    */
-    for (int index = 0; index < std::ssize(Overlappers); index++) {
-      if (Overlappers[index] != nullptr) {
-        if (!Overlappers[index]->IsActive) {
-          Overlappers[index] = nullptr;
-        } else {
-          Overlappers[index]->Mark(MARK_CHANGE);
-        }
-      }
-    }
-#endif
   }
 }
 
@@ -914,8 +915,9 @@ InfantryClass* CellClass::Cell_Infantry() const {
   return dynamic_cast<InfantryClass*>(Cell_Find_Object(RTTI_INFANTRY));
 }
 
-#ifdef SORTDRAW
-static bool _Calc_Partial_Window(int cellx, int celly, int& drawx, int& drawy) {
+// Only the cell-sorted renderer draws partial cells, hence maybe_unused.
+[[maybe_unused]] static bool _Calc_Partial_Window(int cellx, int celly,
+                                                  int& drawx, int& drawy) {
   int& px = WindowList[WINDOW_PARTIAL][WINDOWX];
   int& py = WindowList[WINDOW_PARTIAL][WINDOWY];
   int& pw = WindowList[WINDOW_PARTIAL][WINDOWWIDTH];
@@ -964,8 +966,6 @@ static bool _Calc_Partial_Window(int cellx, int celly, int& drawx, int& drawy) {
   drawy = drawy - (py - ty);
   return true;
 }
-
-#endif
 
 /***********************************************************************************************
  * CellClass::Draw_It -- Draws the cell imagery at the location specified. *
@@ -1248,112 +1248,112 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     BEnd(BENCH_CELL);
   }
 
-#ifdef SORTDRAW
-  if (objects) {
-    BStart(BENCH_OBJECTS);
+  if constexpr (config::kSortDrawEnabled) {
+    if (objects) {
+      BStart(BENCH_OBJECTS);
 
-    /*
-    **	Build a list of objects to draw into a working buffer. There is a
-    **	big presumption here -- it is presumed that if the cell is to be
-    **	redrawn, then all objects in the cell should properly be flagged to
-    **	be redrawn as well. Normally, this isn't a problem, but for subs
-    **	the IsToDisplay flag MUST REMAIN SET. This is because there is a
-    **	hack overpass after the cells are redrawn so that subs can be
-    **	redrawn separately.
-    */
-    ObjectClass* optr[20 + kOverlapperCount];
-    int count = 0;
-    ObjectClass* object = Cell_Occupier();
-    while (object != nullptr) {
-      if (!object->IsActive) {
-        break;
-      }
-      optr[count] = object;
-      object->IsToDisplay = true;
-      object = object->Next;
-      count++;
-    }
-    for (int index = 0; index < std::ssize(Overlappers); index++) {
-      object = Overlappers[index];
-      if (object != nullptr && object->IsActive) {
-        object->IsToDisplay = true;
+      /*
+      **	Build a list of objects to draw into a working buffer. There is
+      * a *	big presumption here -- it is presumed that if the cell is to be
+      **	redrawn, then all objects in the cell should properly be flagged
+      * to *	be redrawn as well. Normally, this isn't a problem, but for subs
+      **	the IsToDisplay flag MUST REMAIN SET. This is because there is a
+      **	hack overpass after the cells are redrawn so that subs can be
+      **	redrawn separately.
+      */
+      ObjectClass* optr[20 + kOverlapperCount];
+      int count = 0;
+      ObjectClass* object = Cell_Occupier();
+      while (object != nullptr) {
+        if (!object->IsActive) {
+          break;
+        }
         optr[count] = object;
+        object->IsToDisplay = true;
+        object = object->Next;
         count++;
       }
-    }
-
-    /*
-    **	Sort the object list so that objects will be drawn from
-    **	back to front.
-    */
-    switch (count) {
-      /*
-      **	If there are zero or one object, then sorting is
-      **	unnecessary.
-      */
-      case 0:
-      case 1:
-        break;
+      for (int index = 0; index < std::ssize(Overlappers); index++) {
+        object = Overlappers[index];
+        if (object != nullptr && object->IsActive) {
+          object->IsToDisplay = true;
+          optr[count] = object;
+          count++;
+        }
+      }
 
       /*
-      **	Two objects can be sorted with a single compare and swap.
+      **	Sort the object list so that objects will be drawn from
+      **	back to front.
       */
-      case 2:
-        if (optr[0]->Sort_Y() > optr[1]->Sort_Y()) {
-          std::swap(optr[0], optr[1]);
-        }
-        break;
+      switch (count) {
+        /*
+        **	If there are zero or one object, then sorting is
+        **	unnecessary.
+        */
+        case 0:
+        case 1:
+          break;
+
+        /*
+        **	Two objects can be sorted with a single compare and swap.
+        */
+        case 2:
+          if (optr[0]->Sort_Y() > optr[1]->Sort_Y()) {
+            std::swap(optr[0], optr[1]);
+          }
+          break;
+
+        /*
+        **	Three objects can be sorted with three compares and swaps.
+        */
+        case 3:
+          if (optr[0]->Sort_Y() > optr[2]->Sort_Y()) {
+            std::swap(optr[0], optr[2]);
+          }
+          if (optr[0]->Sort_Y() > optr[1]->Sort_Y()) {
+            std::swap(optr[0], optr[1]);
+          }
+          if (optr[1]->Sort_Y() > optr[2]->Sort_Y()) {
+            std::swap(optr[1], optr[2]);
+          }
+          break;
+
+        /*
+        **	Large number of objects can be effeciently sorted by using
+        **	a quicksort.
+        */
+        default:
+          std::sort(optr, optr + count,
+                    [](const ObjectClass* left, const ObjectClass* right) {
+                      return *left < *right;  // Compares Sort_Y().
+                    });
+          break;
+      }
 
       /*
-      **	Three objects can be sorted with three compares and swaps.
+      **	Draw any objects that happen to be in or overlapping this cell.
       */
-      case 3:
-        if (optr[0]->Sort_Y() > optr[2]->Sort_Y()) {
-          std::swap(optr[0], optr[2]);
-        }
-        if (optr[0]->Sort_Y() > optr[1]->Sort_Y()) {
-          std::swap(optr[0], optr[1]);
-        }
-        if (optr[1]->Sort_Y() > optr[2]->Sort_Y()) {
-          std::swap(optr[1], optr[2]);
-        }
-        break;
-
-      /*
-      **	Large number of objects can be effeciently sorted by using
-      **	a quicksort.
-      */
-      default:
-        std::sort(optr, optr + count,
-                  [](const ObjectClass* left, const ObjectClass* right) {
-                    return *left < *right;  // Compares Sort_Y().
-                  });
-        break;
-    }
-
-    /*
-    **	Draw any objects that happen to be in or overlapping this cell.
-    */
-    for (int index = 0; index < count; index++) {
-      object = optr[index];
-      int xx, yy;
-      if (object->IsToDisplay &&
-          (!object->Is_Techno() ||
-           ((TechnoClass*)object)->Visual_Character() == VISUAL_NORMAL) &&
-          Map.Coord_To_Pixel(object->Render_Coord(), xx, yy)) {
-        if (_Calc_Partial_Window(x, y, xx, yy)) {
-          object->Draw_It(xx, yy, WINDOW_PARTIAL);
-          // IsToDisplay clearing moved to frame end in DisplayClass::Draw_It
-          // to prevent flickering when render rate exceeds logic tick rate.
-          if (MapEditorActive) {
-            object->IsToDisplay = true;
+      for (int index = 0; index < count; index++) {
+        object = optr[index];
+        int xx, yy;
+        if (object->IsToDisplay &&
+            (!object->Is_Techno() ||
+             ((TechnoClass*)object)->Visual_Character() == VISUAL_NORMAL) &&
+            Map.Coord_To_Pixel(object->Render_Coord(), xx, yy)) {
+          if (_Calc_Partial_Window(x, y, xx, yy)) {
+            object->Draw_It(xx, yy, WINDOW_PARTIAL);
+            // IsToDisplay clearing moved to frame end in DisplayClass::Draw_It
+            // to prevent flickering when render rate exceeds logic tick rate.
+            if (MapEditorActive) {
+              object->IsToDisplay = true;
+            }
           }
         }
       }
+      BEnd(BENCH_OBJECTS);
     }
-    BEnd(BENCH_OBJECTS);
   }
-#endif
 }
 
 /***********************************************************************************************

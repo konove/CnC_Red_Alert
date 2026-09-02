@@ -1749,14 +1749,14 @@ bool Main_Loop() {
     Do_Record_Playback();
   }
 
-#ifndef SORTDRAW
-  // Sort the map's ground layer by y-coordinate value.  This is done
-  // outside the IsToRedraw check, for the purposes of keeping the game in sync
-  // between machines; this way, all machines will sort the Map's
-  // layer in the same way, and any processing done that's based on
-  // the order of this layer will remain in sync.
-  DisplayClass::Layer[LAYER_GROUND].Sort();
-#endif
+  if constexpr (!config::kSortDrawEnabled) {
+    // Sort the map's ground layer by y-coordinate value.  This is done
+    // outside the IsToRedraw check, for the purposes of keeping the game in
+    // sync between machines; this way, all machines will sort the Map's layer
+    // in the same way, and any processing done that's based on the order of
+    // this layer will remain in sync.
+    DisplayClass::Layer[LAYER_GROUND].Sort();
+  }
 
   // AI logic operations are performed here.
   Logic.AI();

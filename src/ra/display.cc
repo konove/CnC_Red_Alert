@@ -2013,9 +2013,9 @@ void DisplayClass::Draw_It(bool forced) {
       //				}
       //			}
 
-#ifdef SORTDRAW
-      Redraw_OIcons();
-#endif
+      if constexpr (config::kSortDrawEnabled) {
+        Redraw_OIcons();
+      }
 
       HidPage.Unlock();
     }
@@ -2036,22 +2036,22 @@ void DisplayClass::Draw_It(bool forced) {
         for (int index = 0; index < Layer[layer].Count(); index++) {
           ObjectClass* ptr = Layer[layer][index];
 
-#ifdef SORTDRAW
-          // Objects with IsFootprint are rendered by cell SORTDRAW. Skip them
-          // to avoid double-rendering, except cloaked Techno (cells skip
-          // those).
-          if (!MapEditorActive && layer == LAYER_GROUND) {
-            bool rendered_by_cells = ptr->Class_Of().IsFootprint;
-            if (rendered_by_cells && ptr->Is_Techno()) {
-              // Cloaked/invisible techno objects are NOT rendered by cells.
-              const auto* techno = dynamic_cast<TechnoClass*>(ptr);
-              rendered_by_cells = techno->Visual_Character() == VISUAL_NORMAL;
-            }
-            if (rendered_by_cells) {
-              continue;
+          if constexpr (config::kSortDrawEnabled) {
+            // Objects with IsFootprint are rendered cell by cell. Skip them here
+            // to avoid double-rendering, except cloaked Techno (cells skip
+            // those).
+            if (!MapEditorActive && layer == LAYER_GROUND) {
+              bool rendered_by_cells = ptr->Class_Of().IsFootprint;
+              if (rendered_by_cells && ptr->Is_Techno()) {
+                // Cloaked/invisible techno objects are NOT rendered by cells.
+                const auto* techno = dynamic_cast<TechnoClass*>(ptr);
+                rendered_by_cells = techno->Visual_Character() == VISUAL_NORMAL;
+              }
+              if (rendered_by_cells) {
+                continue;
+              }
             }
           }
-#endif
 
           assert(ptr->IsActive);
           ptr->Render(forced);
@@ -2069,16 +2069,16 @@ void DisplayClass::Draw_It(bool forced) {
     }
     HidPage.Unlock();
 
-#ifdef SORTDRAW
-    // Clear IsToDisplay for ALL layers at frame end. Objects don't clear
-    // IsToDisplay during Render() to allow multiple renders per frame,
-    // preventing flickering when render rate exceeds logic tick rate.
-    for (LayerType layer = LAYER_FIRST; layer < LAYER_COUNT; ++layer) {
-      for (int index = 0; index < Layer[layer].Count(); ++index) {
-        Layer[layer][index]->IsToDisplay = false;
+    if constexpr (config::kSortDrawEnabled) {
+      // Clear IsToDisplay for ALL layers at frame end. Objects don't clear
+      // IsToDisplay during Render() to allow multiple renders per frame,
+      // preventing flickering when render rate exceeds logic tick rate.
+      for (LayerType layer = LAYER_FIRST; layer < LAYER_COUNT; ++layer) {
+        for (int index = 0; index < Layer[layer].Count(); ++index) {
+          Layer[layer][index]->IsToDisplay = false;
+        }
       }
     }
-#endif
 
     /*
     **	Draw the rubber band over the top of it all.
@@ -2175,7 +2175,6 @@ void DisplayClass::Redraw_Icons() {
   }
 }
 
-#ifdef SORTDRAW
 void DisplayClass::Redraw_OIcons() {
   for (int y = -Coord_YLepton(TacticalCoord); y <= TacLeptonHeight;
        y += CELL_LEPTON_H) {
@@ -2207,7 +2206,6 @@ void DisplayClass::Redraw_OIcons() {
     }
   }
 }
-#endif
 
 /***********************************************************************************************
  * DisplayClass::Redraw_Shadow -- Draw the shadow overlay. *

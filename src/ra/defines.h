@@ -203,8 +203,6 @@
 // Test to see if partial object drawing is any faster.
 // #define PARTIAL
 
-#define SORTDRAW
-
 /**********************************************************************
 **	If this is defined, then the network code will be enabled.
 */
