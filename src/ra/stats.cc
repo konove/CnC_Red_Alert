@@ -201,8 +201,6 @@ void* PacketLater = nullptr;
 
 void Send_Statistics_Packet() {
 //	debugprint( "Stats: Send_Statistics_Packet() called.\n" );
-#ifndef INTERNET_OFF  // Denzil 5/4/98
-
   if constexpr (config::kWolapiEnabled) {
     if (!pWolapi) {  //	Should no longer ever happen.
       return;
@@ -879,7 +877,6 @@ void Send_Statistics_Packet() {
   delete[] static_cast<char*>(packet);
 
   GameStatisticsPacketSent = true;
-#endif  // INTERNET_OFF
 }
 
 void Register_Game_Start_Time() {

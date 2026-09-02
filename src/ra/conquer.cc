@@ -533,7 +533,6 @@ static void Send_Network_Chat_Message(const int rc) {
 // same edit buffer.
 static void Message_Input(KeyNumType& input) {
   char txt[MAX_MESSAGE_LENGTH + 32];
-  int id;
 
   // Check keyboard input for a request to send a message.
   // The 'to' argument for Add_Edit is prefixed to the message buffer; the
@@ -586,7 +585,7 @@ static void Message_Input(KeyNumType& input) {
         Map.Flag_To_Redraw(false);
 
       } else if (input - KN_F1 < Ipx.Num_Connections() && !Session.ObiWan) {
-        id = Ipx.Connection_ID(input - KN_F1);
+        int id = Ipx.Connection_ID(input - KN_F1);
         Session.MessageAddress = *Ipx.Connection_Address(id);
         // TXT_TO comes from the localized string table, so verify the
         // translation still takes exactly one %s before using it.
@@ -1406,9 +1405,8 @@ void Call_Back() {
         if (!pWolapi->bConnectionDown &&
             Get_Time_Ms() > pWolapi->dwTimeNextWolapiPump) {
           Pump_Wolapi_Messages();
-          pWolapi->dwTimeNextWolapiPump =
-              Get_Time_Ms() + WOLAPIPUMPWAIT +
-              700;  // Slower pump during games.
+          pWolapi->dwTimeNextWolapiPump = Get_Time_Ms() + WOLAPIPUMPWAIT +
+                                          700;  // Slower pump during games.
           if (pWolapi->bConnectionDown) {
             // Connection to server lost.
             Session.Messages.Add_Message(
