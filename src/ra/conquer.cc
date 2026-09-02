@@ -70,7 +70,6 @@
 #include "ra/infantry.h"
 #include "ra/init.h"
 #include "ra/inline.h"
-#include "ra/internet.h"
 #include "ra/interpal.h"
 #include "ra/ipxaddr.h"
 #include "ra/ipxgconn.h"
@@ -876,14 +875,6 @@ void Main_Game(const int argc, char* argv[]) {
       GameStatisticsPacketSent = false;
       PacketLater = nullptr;
       ConnectionLost = false;
-    } else {
-#ifdef _WIN32
-      // WChat talks to us over DDE; with Westwood Online in charge there is
-      // nothing on the other end of it.
-      if constexpr (!config::kWolapiEnabled) {
-        DDEServer.Disable();
-      }
-#endif
     }
 
     for (;;) {
@@ -947,7 +938,7 @@ void Main_Game(const int argc, char* argv[]) {
       }
     }
 
-    // Send the game stats to WChat if we haven't already done so
+    // Send the game stats if we haven't already done so
     if (!GameStatisticsPacketSent && PacketLater) {
       Send_Statistics_Packet();  // After game sending if PacketLater set.
     }
@@ -986,29 +977,6 @@ void Main_Game(const int argc, char* argv[]) {
       Show_Mouse();
       Session.Type = GAME_NORMAL;
       Session.Play = 0;
-    }
-    // The pre-Westwood-Online path: WChat launched us and is waiting.
-    // Westwood Online replaced WChat as the launcher, so the two are
-    // mutually exclusive -- this hand-back only exists in a build without it.
-    if constexpr (!config::kWolapiEnabled) {
-      if (Special.IsFromWChat) {
-        Shutdown_Network();  // Clear up the pseudo IPX stuff
-#ifndef WINSOCK_IPX
-        Winsock.Close();
-#endif  // WINSOCK_IPX
-        Special.IsFromWChat = false;
-        SpawnedFromWChat = false;
-#ifdef _WIN32
-        // Discard the start packet so the next launch cannot reuse it.
-        DDEServer.Delete_MPlayer_Game_Info();
-#endif
-        // Without this the game would drop straight back into the multiplayer
-        // menu instead of the main one.
-        Session.Type = GAME_NORMAL;
-        // Hand control back to WChat, which is still running -- it launched us
-        // and has been polling for us to finish.
-        Spawn_WChat(false);
-      }
     }
   }
 
@@ -1788,7 +1756,7 @@ bool Main_Loop() {
 
   // Check for player wins or loses according to global event flag.
   if (PlayerWins) {
-    // Send the game statistics to WChat.
+    // Send the game statistics to the game-results server.
     if (Session.Type == GAME_INTERNET && !GameStatisticsPacketSent) {
       Register_Game_End_Time();
       Send_Statistics_Packet();  // Player just won.
@@ -1803,7 +1771,7 @@ bool Main_Loop() {
     return !GameActive;
   }
   if (PlayerLoses) {
-    // Send the game statistics to WChat.
+    // Send the game statistics to the game-results server.
     if (Session.Type == GAME_INTERNET && !GameStatisticsPacketSent) {
       Register_Game_End_Time();
       Send_Statistics_Packet();  // Player just lost.

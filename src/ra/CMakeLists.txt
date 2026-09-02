@@ -8,12 +8,10 @@ list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/adpcm.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/alloc.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/cominit.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/comqueue.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/confdlg.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/cstraw.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dde.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/descdlg.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.cc"
@@ -35,13 +33,11 @@ file(GLOB_RECURSE RA_HEADERS
 list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/bufferx.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/cominit.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/comqueue.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/confdlg.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/crew.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/cstraw.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dde.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/descdlg.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/externs.h" # Removed since it is crashing IWYU.
@@ -77,8 +73,6 @@ set_target_properties(rasdl PROPERTIES
 
 if (WIN32)
     target_sources(rasdl PRIVATE
-            dde.cc
-            ccdde.cc
             cc_icon.rc
     )
     target_link_libraries(rasdl PRIVATE wsock32)

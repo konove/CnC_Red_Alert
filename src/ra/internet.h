@@ -41,11 +41,4 @@
 
 #define IP_ADDRESS_MAX 40
 
-int Read_Game_Options(const char* name);
-
-// Brings up Westwood Chat, launching it if `can_launch` is true and it is not
-// already running. Returns true if Westwood Chat was given focus. Windows
-// only; a stub returning false elsewhere.
-bool Spawn_WChat(bool can_launch);
-
 #endif  // CNC_RED_ALERT_RA_INTERNET_H_

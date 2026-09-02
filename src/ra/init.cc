@@ -340,7 +340,7 @@ bool Init_Game(int, char*[]) {
   /*
   **	Play the startup animation.
   */
-  if (!Special.IsFromInstall && !Special.IsFromWChat) {
+  if (!Special.IsFromInstall) {
     VisiblePage.Clear();
     //		Mono_Printf("Playing Intro\n");
     Play_Intro();
@@ -481,15 +481,6 @@ bool Select_Game(bool /*fade*/) {
       0;  // Assume new units disabled, unless specifically .INI enabled or
           // multiplayer negotiations enable it.
 
-#ifdef _WIN32
-  /*
-  ** Enable the DDE Server so we can get internet start game packets from WChat
-  */
-  if constexpr (!config::kWolapiEnabled) {
-    DDEServer.Enable();
-  }
-#endif  // _WIN32
-
   /*
   **	[Re]set any globals that need it, in preparation for a new scenario
   */
@@ -618,34 +609,6 @@ bool Select_Game(bool /*fade*/) {
       if (Special.IsFromInstall) {
         selection = SEL_START_NEW_GAME;
       }
-
-#if defined(_WIN32) && !defined(INTERNET_OFF)  // Denzil 5/1/98 - Internet play
-      /*
-      ** Handle case where we were spawned from Wchat and our start game
-      **  packet has already arrived
-      */
-      if (!config::kWolapiEnabled && Special.IsFromWChat &&
-          DDEServer.Get_MPlayer_Game_Info()) {
-        Check_From_WChat(nullptr);
-        selection = SEL_MULTIPLAYER_GAME;
-        Theme.Queue_Song(THEME_QUIET);
-        Session.Type = GAME_INTERNET;
-      } else {
-        /*
-        ** We werent spawned but we could still receive a DDE packet from wchat
-        */
-        if (!config::kWolapiEnabled && DDEServer.Get_MPlayer_Game_Info()) {
-          Check_From_WChat(nullptr);
-          /*
-          ** Make sure top and bottom of screen are clear in 640x480 mode
-          */
-          if (ScreenHeight == 480) {
-            VisiblePage.Fill_Rect(0, 0, 639, 40, 0);
-            VisiblePage.Fill_Rect(0, 440, 639, 479, 0);
-          }
-        }
-      }
-#endif  // _WIN32 && !INTERNET_OFF
 
       if (config::kWolapiEnabled && pWolapi != nullptr) {
         selection = SEL_MULTIPLAYER_GAME;  //	We are returning from a game.
@@ -893,173 +856,14 @@ bool Select_Game(bool /*fade*/) {
                 }
                 break;
 
-#ifndef INTERNET_OFF  // Denzil 5/1/98 - Internet play
-              /*
-              ** Handle being spawned from WChat. Internet play based on IPX
-              *code.
-              */
-              case GAME_INTERNET:  //	ajw		No longer hit.
-              {
-                if (!config::kWolapiEnabled && Special.IsFromWChat) {
-#ifdef WINSOCK_IPX
-
-                  delete PacketTransport;
-                  PacketTransport = new UDPInterfaceClass;
-                  assert(PacketTransport != nullptr);
-
-                  if (PacketTransport->Init()) {
-                    WWDebugString(
-                        "RA95 - About to read multiplayer settings.\n");
-                    Session.Read_MultiPlayer_Settings();
-
-                    WWDebugString(
-                        "RA95 - About to call Start_Server or Start_Client.\n");
-                    PacketTransport->Start_Listening();
-
-                    /*
-                    ** Flush out any pending packets from a previous game.
-                    */
-                    PacketTransport->Discard_In_Buffers();
-                    PacketTransport->Discard_Out_Buffers();
-
-                  } else {
-                    delete PacketTransport;
-                    PacketTransport = nullptr;
-                    WWDebugString("RA95 - Winsock failed to initialise.\n");
-                    Session.Type = GAME_NORMAL;
-                    selection = SEL_EXIT;
-                    Special.IsFromWChat = false;
-                    break;
-                  }
-
-                  WWDebugString("RA95 - About to call Init_Network.\n");
-                  Init_Network();
-
-#else   // WINSOCK_IPX
-
-                  WWDebugString("RA95 - About to initialise Winsock.\n");
-                  if (Winsock.Init()) {
-                    WWDebugString(
-                        "RA95 - About to read multiplayer settings.\n");
-                    Session.Read_MultiPlayer_Settings();
-                    IsNetworkHost = PlanetWestwoodIsHost;
-
-                    WWDebugString("RA95 - About to set addresses.\n");
-                    Winsock.Set_Host_Address(PlanetWestwoodIPAddress);
-
-                    WWDebugString(
-                        "RA95 - About to call Start_Server or Start_Client.\n");
-                    if (IsNetworkHost) {
-                      Winsock.Start_Server();
-                    } else {
-                      Winsock.Start_Client();
-                    }
-
-                    /*
-                    ** Flush out any pending packets from a previous game.
-                    */
-                    WWDebugString("RA95 - About to flush packet queue.\n");
-                    WWDebugString("RA95 - Allocating scrap memory.\n");
-                    char* temp_buffer = new char[1024];
-
-                    WWDebugString("RA95 - Creating timer class instance.\n");
-                    CountDownTimerClass ptimer;
-
-                    WWDebugString("RA95 - Entering read loop.\n");
-                    while (Winsock.Read(temp_buffer, 1024)) {
-                      WWDebugString("RA95 - Discarding a packet.\n");
-                      ptimer.Set(30, true);
-                      while (ptimer.Time()) {
-                      };
-                      WWDebugString(
-                          "RA95 - Ready to check for more packets.\n");
-                    }
-                    WWDebugString("RA95 - About to delete scrap memory.\n");
-                    delete temp_buffer;
-
-                  } else {
-                    WWDebugString("RA95 - Winsock failed to initialise.\n");
-                    Session.Type = GAME_NORMAL;
-                    selection = SEL_EXIT;
-                    Special.IsFromWChat = false;
-                    break;
-                  }
-#endif  // WINSOCK_IPX
-                  WWDebugString("RA95 - About to call Init_Network.\n");
-                  Init_Network();
-
-#ifdef _WIN32
-                  if (DDEServer.Get_MPlayer_Game_Info()) {
-                    WWDebugString("RA95 - About to call Read_Game_Options.\n");
-                    Read_Game_Options(nullptr);
-                  } else
-#endif
-                    Read_Game_Options("C&CSPAWN.INI");
-
-#ifdef WINSOCK_IPX
-                  WWDebugString("RA95 - About to set addresses.\n");
-                  PacketTransport->Set_Broadcast_Address(
-                      PlanetWestwoodIPAddress);
-#endif  // WINSOCK_IPX
-                  if (PlanetWestwoodIsHost) {
-                    WWDebugString(
-                        "RA95 - About to call Server_Remote_Connect.\n");
-                    if (Server_Remote_Connect()) {
-                      WWDebugString(
-                          "RA95 - Server_Remote_Connect returned success.\n");
-                      break;
-                    }
-/*
- ** We failed to connect to the other player
- */
-#ifdef WINSOCK_IPX
-                    delete PacketTransport;
-                    PacketTransport = nullptr;
-#else   // WINSOCK_IPX
-                    Winsock.Close();
-#endif  // WINSOCK_IPX
-                    Session.Type = GAME_NORMAL;
-                    selection = SEL_NONE;
-#ifdef _WIN32
-                    DDEServer.Delete_MPlayer_Game_Info();  // Make sure we
-                                                           // dont go round in
-                                                           // an infinite loop
-#endif
-                    break;
-                  }
-                  WWDebugString(
-                      "RA95 - About to call Client_Remote_Connect.\n");
-                  if (Client_Remote_Connect()) {
-                    WWDebugString(
-                        "RA95 - Client_Remote_Connect returned success.\n");
-                    break;
-                  }
-/*
- ** We failed to connect to the other player
- */
-#ifdef WINSOCK_IPX
-                  delete PacketTransport;
-                  PacketTransport = nullptr;
-#else   // WINSOCK_IPX
-                  Winsock.Close();
-#endif  // WINSOCK_IPX
-                  Session.Type = GAME_NORMAL;
-                  selection = SEL_NONE;
-#ifdef _WIN32
-                  DDEServer.Delete_MPlayer_Game_Info();  // Make sure we
-                                                         // dont go round in
-                                                         // an infinite loop
-#endif
-                  break;
-                }
+              // Back from an Internet game: prompt again, like GAME_NORMAL.
+              case GAME_INTERNET:
                 Session.Type = Select_MPlayer_Game();
                 if (Session.Type == GAME_NORMAL) {  // 'Cancel'
                   display = true;
                   selection = SEL_NONE;
                 }
-              } break;
-
-#endif  // !INTERNET_OFF
+                break;
             }
           }  //	if( !pWolapi )
 

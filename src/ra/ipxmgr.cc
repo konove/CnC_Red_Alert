@@ -1112,11 +1112,7 @@ int IPXManagerClass::Service() {
   unsigned char temp_receive_buffer[1024];
   int recv_length;
 
-  if (Winsock.Get_Connected() || Special.IsFromWChat) {
-    if (!Winsock.Get_Connected()) {
-      return (0);
-    }
-
+  if (Winsock.Get_Connected()) {
     /*
     ** This is an internet connection so get the packets from winsock
     */

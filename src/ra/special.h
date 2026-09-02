@@ -92,11 +92,6 @@ class SpecialClass {
   */
   unsigned IsTGrowth : 1;
   unsigned IsTSpread : 1;
-
-  /*
-  ** Flag that we were spawned from WChat.
-  */
-  unsigned IsFromWChat : 1;
 };
 
 void Special_Dialog(bool simple = false);

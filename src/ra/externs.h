@@ -384,21 +384,13 @@ extern long PlanetWestwoodPortNumber;   // Port number to send to
 extern bool
     PlanetWestwoodIsHost;  // Flag true if player has control of game options
 extern unsigned long PlanetWestwoodGameID;  // Game ID
-#ifdef _WIN32
-extern HWND WChatHWND;  // Handle to Wchat window.
-#endif
 extern bool GameStatisticsPacketSent;
 extern bool ConnectionLost;
 extern void* PacketLater;
-extern bool SpawnedFromWChat;
 extern int ShowCommand;
 void Register_Game_Start_Time();
 void Register_Game_End_Time();
 void Send_Statistics_Packet();
-void Check_From_WChat(char* wchat_name);
-bool Do_The_Internet_Menu_Thang();
-bool Server_Remote_Connect();
-bool Client_Remote_Connect();
 extern int UnitBuildPenalty;
 
 /*
