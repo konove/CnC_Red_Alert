@@ -1204,17 +1204,15 @@ void Keyboard_Process(KeyNumType& input) {
     input = KN_NONE;
   }
 
-#ifdef TOFIX
-  // For multiplayer, 'R' pops up the surrender dialog.
-  if (input != 0 && input == Options.KeyResign) {
-    if (!PlayerLoses &&
-        /*Session.Type != GAME_NORMAL &&*/ !PlayerPtr->IsDefeated) {
+  // In multiplayer the resign key brings up the surrender dialog. Single
+  // player has the mission abort in the options menu instead: surrendering
+  // there would only self-destruct the base and lose the mission.
+  if (key != 0 && key == Options.KeyResign) {
+    if (Session.Type != GAME_NORMAL && !PlayerLoses && !PlayerPtr->IsDefeated) {
       SpecialDialog = SDLG_SURRENDER;
-      input = KN_NONE;
     }
     input = KN_NONE;
   }
-#endif
 
   // Handle making and breaking alliances.
   if (key != 0 && key == Options.KeyAlliance) {
