@@ -540,12 +540,6 @@ int Main_Menu(unsigned long) {
   int d_start_h = 18;
   int d_start_x = 204;
 
-  // #if defined(MPEGMOVIE) // Denzil 6/26/98 Video settings
-  //	int	d_movie_w = 118 * 2;
-  //	int	d_movie_h = 9 * 2;
-  //	int	d_movie_x = 102 * 2;
-  // #endif
-
   int d_load_w = 236;
   int d_load_h = 18;
   int d_load_x = 204;
@@ -567,9 +561,6 @@ int Main_Menu(unsigned long) {
   // Denzil 5/1/98 - No internet play
   static int max_buttons = 7;
 
-  // #if defined(MPEGMOVIE) // Denzil 6/26/98 Video settings
-  //	max_buttons++;
-  // #endif
   /*
   **	Button enumerations:
   */
@@ -660,9 +651,6 @@ int Main_Menu(unsigned long) {
   if (bExpansionAM) {
     expandbtnAM.Add_Tail(*commands);
   }
-  // #if defined(MPEGMOVIE) // Denzil 6/26/98 Video settings
-  //	moviebutton.Add_Tail(*commands);
-  // #endif
   loadbtn.Add_Tail(*commands);
   multibtn.Add_Tail(*commands);
   introbtn.Add_Tail(*commands);
@@ -794,12 +782,6 @@ int Main_Menu(unsigned long) {
         retval = (input & 0x7FFF) - BUTTON_EXPAND;
         process = false;
         break;
-
-        //			#if defined(MPEGMOVIE)
-        //			case (BUTTON_MOVIE | KN_BUTTON):
-        //				retval = (input & 0x7FFF) -
-        // BUTTON_EXPAND; 				process = false;
-        // break; 			#endif
 
       case ButtonKey(BUTTON_LOAD):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;

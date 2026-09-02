@@ -811,9 +811,4 @@ void Rebuild_Interpolated_Palette(unsigned char* interpal);
 int Load_Interpolated_Palettes(const char* filename, bool add = false);
 void Free_Interpolated_Palettes();
 
-// Denzil 5/18/98 - Mpeg movie playback
-#ifdef MPEGMOVIE
-bool PlayMpegMovie(const char* name);
-#endif
-
 #endif  // CNC_RED_ALERT_RA_CONQUER_H_

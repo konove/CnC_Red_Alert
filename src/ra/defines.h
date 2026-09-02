@@ -198,10 +198,6 @@
 // Define DVD to turn on RADVD additions/changes - Denzil
 #ifdef DVD
 // #define INTERNET_OFF
-#ifndef PORTABLE
-// #define MPEGMOVIE
-#endif
-// #define MCIMPEG
 #endif
 
 // Test to see if partial object drawing is any faster.

@@ -87,10 +87,6 @@
 #include "ra/ipx95.h"
 #endif  // _WIN32
 
-#ifdef MCIMPEG  // Denzil 6/15/98
-#include "ra/mcimovie.h"
-#endif
-
 // #include "ra/woldebug.h"
 
 bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config);
@@ -370,18 +366,6 @@ int main(int argc, char* argv[])
       Memory_Error_Exit = Print_Error_End_Exit;
 
       Main_Game(argc, argv);
-
-#ifdef MPEGMOVIE  // Denzil 6/15/98
-      if (MpgSettings != NULL) {
-        delete MpgSettings;
-      }
-
-#ifdef MCIMPEG
-      if (MciMovie != NULL) {
-        delete MciMovie;
-      }
-#endif
-#endif
 
       VisiblePage.Clear();
       HiddenPage.Clear();

@@ -155,10 +155,6 @@
 #include "cbn_.h"
 #endif
 
-#ifdef MPEGMOVIE  // Denzil 6/25/98
-#include "ra/mpgset.h"
-#endif
-
 RemapControlType SidebarScheme;
 
 /****************************************
@@ -340,15 +336,6 @@ bool Init_Game(int, char*[]) {
   **	Initialize the animation system.
   */
   Anim_Init();
-
-#ifdef MPEGMOVIE  // Denzil 6/15/98
-  if (Using_DVD()) {
-#ifdef MCIMPEG
-    MciMovie = new MCIMovie(MainWindow);
-#endif
-    MpgSettings = new MPGSettings(nullptr);  // RawFileClass(CONFIG_FILE_NAME));
-  }
-#endif
 
   /*
   **	Play the startup animation.
@@ -812,14 +799,6 @@ bool Select_Game(bool /*fade*/) {
           Session.Type = GAME_NORMAL;
           process = false;
           break;
-
-          //				#if defined(MPEGMOVIE) // Denzil 6/25/98
-          //				case SEL_MOVIESETTINGS:
-          //					MpgSettings->Dialog();
-          //					display = true;
-          //					selection = SEL_NONE;
-          //				break;
-          //				#endif
 
         /*
         **	Load a saved game.

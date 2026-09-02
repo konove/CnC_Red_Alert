@@ -50,7 +50,6 @@ list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/key.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/keyframe.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/memcheck.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/movie.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/noseqcon.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/nullconn.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/nullmgr.h"

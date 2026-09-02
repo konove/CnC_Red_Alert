@@ -413,18 +413,4 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
 bool Find_Local_Scenario(char* description, char* filename, unsigned int length,
                          char* digest, bool official);
 
-#ifdef MPEGMOVIE  // Denzil 6/15/98
-
-#ifdef MCIMPEG
-
-#include "ra/mcimovie.h"
-extern MCIMovie* MciMovie;
-
-#endif
-
-#include "ra/mpgset.h"
-extern MPGSettings* MpgSettings;
-
-#endif
-
 #endif  // CNC_RED_ALERT_RA_EXTERNS_H_

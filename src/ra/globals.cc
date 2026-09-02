@@ -758,16 +758,4 @@ bool ReadyToQuit = false;
 GetCDClass CDList;
 int UnitBuildPenalty = 100;
 
-#ifdef MPEGMOVIE  // Denzil 6/15/98
-#ifdef MCIMPEG
-#include "ra/mcimovie.h"
-
-MCIMovie* MciMovie = NULL;
-#endif
-
-#include "ra/mpgset.h"
-
-MPGSettings* MpgSettings = NULL;
-#endif
-
 bool bAutoSonarPulse = false;
