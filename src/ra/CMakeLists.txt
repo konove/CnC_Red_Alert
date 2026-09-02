@@ -86,7 +86,6 @@ endif ()
 
 target_compile_definitions(rasdl PRIVATE
         ENGLISH=1  # TODO: also french/german
-        PORTABLE=1 # to indicate not windows or dos sometimes
 )
 apply_dotenv_settings(rasdl)
 target_link_libraries(rasdl PUBLIC absl::strings PRIVATE
@@ -129,14 +128,14 @@ add_gtest(
     SOURCES winbits_test.cc winbits.cc dib.cc
     LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log
 )
-target_compile_definitions(ra_winbits_test PRIVATE ENGLISH=1 PORTABLE=1)
+target_compile_definitions(ra_winbits_test PRIVATE ENGLISH=1)
 
 add_gtest(
     NAME ra_heap_layout_test
     SOURCES heap_layout_test.cc
     LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log
 )
-target_compile_definitions(ra_heap_layout_test PRIVATE ENGLISH=1 PORTABLE=1)
+target_compile_definitions(ra_heap_layout_test PRIVATE ENGLISH=1)
 
 if (EMSCRIPTEN)
     set_target_properties(rasdl PROPERTIES

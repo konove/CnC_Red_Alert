@@ -48,7 +48,6 @@ if (WIN32)
 endif ()
 
 target_compile_definitions(tdsdl PRIVATE
-        PORTABLE=1 # to indicate not windows or dos sometimes
         TD=1
 )
 apply_dotenv_settings(tdsdl)
@@ -63,7 +62,7 @@ add_gtest(
     SOURCES heap_layout_test.cc
     LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log
 )
-target_compile_definitions(td_heap_layout_test PRIVATE PORTABLE=1 TD=1)
+target_compile_definitions(td_heap_layout_test PRIVATE TD=1)
 
 if (EMSCRIPTEN)
     set_target_properties(tdsdl PROPERTIES

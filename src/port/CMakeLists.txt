@@ -15,8 +15,6 @@ target_sources(port PUBLIC
         FILES ${PORT_HEADERS}
 )
 
-target_compile_definitions(port PUBLIC PORTABLE=1)
-
 # Tests
 include(Testing)
 add_gtest(
