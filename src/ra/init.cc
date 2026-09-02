@@ -411,7 +411,6 @@ bool Init_Game(int, char*[]) {
   *etc.
   */
   GamePalette = CCPalette;
-  //	InGamePalette = CCPalette;
   OriginalPalette = CCPalette;
 
   /*

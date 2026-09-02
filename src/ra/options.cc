@@ -302,9 +302,9 @@ void OptionsClass::Set_Sound_Volume(fixed volume, bool feedback) {
  *=============================================================================================*/
 void OptionsClass::Set_Brightness(fixed brightness) {
   Brightness = fixed::_1_4 + fixed::_1_2 * brightness;
-  Adjust_Palette(OriginalPalette, InGamePalette, Brightness, Saturation, Tint,
+  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Saturation, Tint,
                  Contrast);
-  InGamePalette.Set();
+  GamePalette.Set();
 }
 
 /***********************************************************************************************
@@ -343,9 +343,9 @@ fixed OptionsClass::Get_Brightness() const {
  *=============================================================================================*/
 void OptionsClass::Set_Saturation(fixed color) {
   Saturation = color;
-  Adjust_Palette(OriginalPalette, InGamePalette, Brightness, Saturation, Tint,
+  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Saturation, Tint,
                  Contrast);
-  InGamePalette.Set();
+  GamePalette.Set();
 }
 
 /***********************************************************************************************
@@ -381,9 +381,9 @@ fixed OptionsClass::Get_Saturation() const { return Saturation; }
  *=============================================================================================*/
 void OptionsClass::Set_Contrast(fixed contrast) {
   Contrast = fixed::_1_4 + fixed::_1_2 * contrast;
-  Adjust_Palette(OriginalPalette, InGamePalette, Brightness, Saturation, Tint,
+  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Saturation, Tint,
                  Contrast);
-  InGamePalette.Set();
+  GamePalette.Set();
 }
 
 /***********************************************************************************************
@@ -422,9 +422,9 @@ fixed OptionsClass::Get_Contrast() const {
  *=============================================================================================*/
 void OptionsClass::Set_Tint(fixed tint) {
   Tint = tint;
-  Adjust_Palette(OriginalPalette, InGamePalette, Brightness, Saturation, Tint,
+  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Saturation, Tint,
                  Contrast);
-  InGamePalette.Set();
+  GamePalette.Set();
 }
 
 /***********************************************************************************************
@@ -892,9 +892,9 @@ int OptionsClass::Normalize_Delay(int delay) const {
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Fixup_Palette() const {
-  Adjust_Palette(OriginalPalette, InGamePalette, Brightness, Saturation, Tint,
+  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Saturation, Tint,
                  Contrast);
-  CCPalette = InGamePalette;
+  CCPalette = GamePalette;
 }
 
 /***********************************************************************************************

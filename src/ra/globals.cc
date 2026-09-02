@@ -570,7 +570,6 @@ HouseClass* PlayerPtr;
 */
 PaletteClass CCPalette;
 PaletteClass GamePalette;
-// PaletteClass InGamePalette;
 PaletteClass BlackPalette(RGBClass(0, 0, 0));
 PaletteClass WhitePalette(RGBClass(RGBClass::kMaxValue, RGBClass::kMaxValue,
                                    RGBClass::kMaxValue));
