@@ -179,12 +179,12 @@ static void Color_Cycle() {
 
       // Set the pulse color as the proportional value between white and
       // the minimum value for pulsing.
-      GamePalette[CC_PULSE_COLOR] = GamePalette[WHITE];
-      GamePalette[CC_PULSE_COLOR].Adjust(val, kBlackColor);
+      GamePalette[kPulseColor] = GamePalette[WHITE];
+      GamePalette[kPulseColor].Adjust(val, kBlackColor);
 
       // Pulse the glowing embers between medium and dark red.
-      GamePalette[CC_EMBER_COLOR] = RGBClass(255, 80, 80);
-      GamePalette[CC_EMBER_COLOR].Adjust(val, kBlackColor);
+      GamePalette[kEmberColor] = RGBClass(255, 80, 80);
+      GamePalette[kEmberColor].Adjust(val, kBlackColor);
 
       changed = true;
     }
@@ -193,12 +193,12 @@ static void Color_Cycle() {
     if (_timer.IsFinished()) {
       _timer.Set(kTimerSecond / 4);
 
-      RGBClass first = GamePalette[CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1];
-      for (int index = CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1;
-           index >= CYCLE_COLOR_START; index--) {
+      RGBClass first = GamePalette[kCycleColorStart + kCycleColorCount - 1];
+      for (int index = kCycleColorStart + kCycleColorCount - 1;
+           index >= kCycleColorStart; index--) {
         GamePalette[index] = GamePalette[index - 1];
       }
-      GamePalette[CYCLE_COLOR_START] = first;
+      GamePalette[kCycleColorStart] = first;
 
       changed = true;
     }

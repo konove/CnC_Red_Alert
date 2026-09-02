@@ -2434,25 +2434,20 @@ typedef enum BenchType {
   BENCH_FIRST = 0
 } BenchType;
 
-/**********************************************************************
-**	Working MCGA colors that give a pleasing effect for beveled edges and
-**	other purposes.
-*/
-#define MAGIC_COL_COUNT 13   // Translucent color count.
-#define SHADOW_COL_COUNT 4   // Terrain shroud translucent color count.
-#define USHADOW_COL_COUNT 1  // Unit shadow special ghost colors.
+// Working MCGA colors that give a pleasing effect for beveled edges and
+// other purposes.
+inline constexpr int kMagicColorCount = 13;      // Translucent colors.
+inline constexpr int kShadowColorCount = 4;      // Terrain shroud translucency.
+inline constexpr int kUnitShadowColorCount = 1;  // Unit shadow ghost colors.
 
-/**********************************************************************
-**	Color cycling range that is used for water effects.
-*/
-#define CYCLE_COLOR_START (6 * 16)
-#define CYCLE_COLOR_COUNT 7
+// Palette range that cycles for water effects.
+inline constexpr int kCycleColorStart = 6 * 16;
+inline constexpr int kCycleColorCount = 7;
 
-/**********************************************************************
-**	Magic color fading pulsing effect limits -- color gun value.
-*/
-#define CC_PULSE_COLOR 255
-#define CC_EMBER_COLOR (CYCLE_COLOR_START + CYCLE_COLOR_COUNT)
+// Palette entries animated by Call_Back: the pulsing selection colour and
+// the ember colour right after the water cycle range.
+inline constexpr int kPulseColor = 255;
+inline constexpr int kEmberColor = kCycleColorStart + kCycleColorCount;
 
 /**********************************************************************
 **	These are the control flags for Fancy_Text_Print function.

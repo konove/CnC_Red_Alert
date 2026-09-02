@@ -1161,9 +1161,9 @@ void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
       *a remap *	to itself. This is effectively no remap.
       */
       if (index == 0 ||
-          (index >= CYCLE_COLOR_START &&
-           index < CYCLE_COLOR_START + CYCLE_COLOR_COUNT) ||
-          index == CC_PULSE_COLOR || index == CC_EMBER_COLOR) {
+          (index >= kCycleColorStart &&
+           index < kCycleColorStart + kCycleColorCount) ||
+          index == kPulseColor || index == kEmberColor) {
         *ptr++ = index;
       } else {
         /*
@@ -1181,9 +1181,9 @@ void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
         int bvalue = 0;
         for (int id = 0; id < PaletteClass::COLOR_COUNT; id++) {
           if (id != 0 &&
-              (id < CYCLE_COLOR_START ||
-               id >= CYCLE_COLOR_START + CYCLE_COLOR_COUNT) &&
-              id != CC_PULSE_COLOR && id != CC_EMBER_COLOR) {
+              (id < kCycleColorStart ||
+               id >= kCycleColorStart + kCycleColorCount) &&
+              id != kPulseColor && id != kEmberColor) {
             int diff = palette[id].Difference(trycolor);
             if (best == -1 || diff < bvalue) {
               best = id;

@@ -559,26 +559,39 @@ constexpr unsigned char RemapCiv10[256] = {
     248, 249, 250, 251, 252, 253, 254, 255  // 240..255
 };
 
+// Shorthand that keeps the table below readable.
+constexpr unsigned char kEmber = kEmberColor;
+
 constexpr unsigned char RemapEmber[256] = {
-#define CEC CC_EMBER_COLOR
-    0,   CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, BLACK, CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC, CEC,   CEC, CEC,
-    CEC};
+    0,      kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, BLACK,  kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kEmber};
 
 inline std::string GetKeys() {
   std::string keys =

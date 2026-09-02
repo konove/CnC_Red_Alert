@@ -103,12 +103,12 @@ class DisplayClass : public MapClass {
   static unsigned char FadingGreen[256];
   static unsigned char FadingYellow[256];
   static unsigned char FadingRed[256];
-  static unsigned char TranslucentTable[(MAGIC_COL_COUNT + 1) * 256];
+  static unsigned char TranslucentTable[(kMagicColorCount + 1) * 256];
   static unsigned char WhiteTranslucentTable[(1 + 1) * 256];
   static unsigned char MouseTranslucentTable[(4 + 1) * 256];
   static const void* TransIconset;
-  static unsigned char UnitShadow[(USHADOW_COL_COUNT + 1) * 256];
-  static unsigned char UnitShadowAir[(USHADOW_COL_COUNT + 1) * 256];
+  static unsigned char UnitShadow[(kUnitShadowColorCount + 1) * 256];
+  static unsigned char UnitShadowAir[(kUnitShadowColorCount + 1) * 256];
   static unsigned char SpecialGhost[2 * 256];
 
   //-------------------------------------------------------------------------
@@ -313,7 +313,7 @@ class DisplayClass : public MapClass {
   int NewX, NewY;
 
   static const void* ShadowShapes;
-  static unsigned char ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
+  static unsigned char ShadowTrans[(kShadowColorCount + 1) * 256];
 
   void Redraw_Icons();
   void Redraw_OIcons();

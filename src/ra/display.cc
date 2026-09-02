@@ -173,16 +173,16 @@ unsigned char DisplayClass::FadingLight[256];
 unsigned char DisplayClass::FadingGreen[256];
 unsigned char DisplayClass::FadingYellow[256];
 unsigned char DisplayClass::FadingRed[256];
-unsigned char DisplayClass::TranslucentTable[(MAGIC_COL_COUNT + 1) * 256];
+unsigned char DisplayClass::TranslucentTable[(kMagicColorCount + 1) * 256];
 unsigned char DisplayClass::WhiteTranslucentTable[(1 + 1) * 256];
 unsigned char DisplayClass::MouseTranslucentTable[(4 + 1) * 256];
 const void* DisplayClass::TransIconset;
-unsigned char DisplayClass::UnitShadow[(USHADOW_COL_COUNT + 1) * 256];
-unsigned char DisplayClass::UnitShadowAir[(USHADOW_COL_COUNT + 1) * 256];
+unsigned char DisplayClass::UnitShadow[(kUnitShadowColorCount + 1) * 256];
+unsigned char DisplayClass::UnitShadowAir[(kUnitShadowColorCount + 1) * 256];
 unsigned char DisplayClass::SpecialGhost[2 * 256];
 
 const void* DisplayClass::ShadowShapes;
-unsigned char DisplayClass::ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
+unsigned char DisplayClass::ShadowTrans[(kShadowColorCount + 1) * 256];
 
 /*
 ** Bit array of cell redraw flags
@@ -364,23 +364,23 @@ void DisplayClass::Init_Theater(TheaterType theater) {
                                            {WHITE, WHITE, 110, 0},
                                            {LTGREY, LTGREY, 110, 0},
                                            {DKGREY, DKGREY, 110, 0}};
-  static const TLucentType MagicCols[MAGIC_COL_COUNT] = {
+  static const TLucentType MagicCols[kMagicColorCount] = {
       {32, 32, 110, 0},        {33, 33, 110, 0},       {34, 34, 110, 0},
       {35, 35, 110, 0},        {36, 36, 110, 0},       {37, 37, 110, 0},
       {38, 38, 110, 0},        {39, 39, 110, 0},       {BLACK, BLACK, 200, 0},
       {WHITE, BLACK, 40, 0},   {LTGREY, BLACK, 80, 0}, {DKGREY, BLACK, 140, 0},
       {LTGREEN, BLACK, 130, 0}};
   static const TLucentType WhiteCols[1] = {{1, WHITE, 80, 0}};
-  static const TLucentType ShadowCols[SHADOW_COL_COUNT] = {
+  static const TLucentType ShadowCols[kShadowColorCount] = {
       {WHITE + 1, BLACK, 130, 0},
       {WHITE, BLACK, 170, 0},
       {LTGRAY, BLACK, 250, 0},
       {DKGRAY, BLACK, 250, 0}};
-  static const TLucentType UShadowCols[USHADOW_COL_COUNT] = {
+  static const TLucentType UShadowCols[kUnitShadowColorCount] = {
       {LTGREEN, BLACK, 130, 0}};
-  static const TLucentType UShadowColsAir[USHADOW_COL_COUNT] = {
+  static const TLucentType UShadowColsAir[kUnitShadowColorCount] = {
       {LTGREEN, WHITE, 0, 0}};
-  static const TLucentType UShadowColsSnow[USHADOW_COL_COUNT] = {
+  static const TLucentType UShadowColsSnow[kUnitShadowColorCount] = {
       {LTGREEN, BLACK, 75, 0}};
 
   /*
@@ -425,24 +425,24 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 
   Build_Translucent_Table(GamePalette, &MouseCols[0], 4, MouseTranslucentTable);
 
-  Build_Translucent_Table(GamePalette, &MagicCols[0], MAGIC_COL_COUNT,
+  Build_Translucent_Table(GamePalette, &MagicCols[0], kMagicColorCount,
                           TranslucentTable);
 
   Build_Translucent_Table(GamePalette, &WhiteCols[0], 1, WhiteTranslucentTable);
 
-  Build_Translucent_Table(GamePalette, &ShadowCols[0], SHADOW_COL_COUNT,
+  Build_Translucent_Table(GamePalette, &ShadowCols[0], kShadowColorCount,
                           ShadowTrans);
 
   Conquer_Build_Translucent_Table(GamePalette, &UShadowColsAir[0],
-                                  USHADOW_COL_COUNT, UnitShadowAir);
+                                  kUnitShadowColorCount, UnitShadowAir);
   memcpy(&UnitShadowAir[256], ColorRemaps[PCOLOR_GOLD].RemapTable,
          sizeof(ColorRemaps[PCOLOR_GOLD].RemapTable));
   if (theater == THEATER_SNOW) {
     Conquer_Build_Translucent_Table(GamePalette, &UShadowColsSnow[0],
-                                    USHADOW_COL_COUNT, UnitShadow);
+                                    kUnitShadowColorCount, UnitShadow);
   } else {
     Conquer_Build_Translucent_Table(GamePalette, &UShadowCols[0],
-                                    USHADOW_COL_COUNT, UnitShadow);
+                                    kUnitShadowColorCount, UnitShadow);
   }
 
   if (theater == THEATER_SNOW) {
