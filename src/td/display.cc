@@ -1890,10 +1890,6 @@ void DisplayClass::Draw_It(bool forced) {
       /*
       **	Blit any replicable block to avoid having to drawstamp.
       */
-#ifndef PORTABLE
-      CachedIconsDrawn = 0;
-      UnCachedIconsDrawn = 0;
-#endif
       if (!forced && (oldw != Lepton_To_Pixel(TacLeptonWidth) ||
                       oldh != Lepton_To_Pixel(TacLeptonHeight))) {
         Set_Cursor_Pos(-1);

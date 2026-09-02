@@ -163,14 +163,7 @@ EZERO,                 // Non-error.
   long Transfer_Block_Size() { return static_cast<long>((UINT_MAX)) - 16L; }
 
  private:
-#ifdef PORTABLE
   void* Handle;
-#else
-  /*
-  **	This is the low level DOS handle. A -1 indicates an empty condition.
-  */
-  int Handle;
-#endif
   /*
   **	This points to the filename as a NULL terminated string. It may point to
   *either a *	constant or an allocated string as indicated by the "Allocated"
@@ -227,17 +220,10 @@ it must be     *
  * HISTORY: *
 ;*   10/18/1994 JLB : Created. *
  *=============================================================================================*/
-#ifdef PORTABLE
 inline RawFileClass::RawFileClass()
     : Handle(nullptr),
       Filename(nullptr),
       Allocated(false)
-#else
-inline RawFileClass::RawFileClass()
-    : Handle(-1),
-      Filename(nullptr),
-      Allocated(false)
-#endif
 {
 }
 
@@ -258,11 +244,7 @@ is.             *
 ;*   10/18/1994 JLB : Created. *
  *=============================================================================================*/
 inline int RawFileClass::Is_Open() const {
-#ifdef PORTABLE
   return Handle != nullptr;
-#else
-  return Handle >= 0;
-#endif
 }
 
 #endif  // CNC_RED_ALERT_TD_RAWFILE_H_

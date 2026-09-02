@@ -110,14 +110,6 @@
 #include "tech/crc.h"
 #include "tech/rawfile.h"
 #include "winvq/vqa32/vqaplay.h"
-#ifndef PORTABLE
-#include <conio.h>
-#include <dos.h>
-#endif
-
-#ifndef PORTABLE
-static HANDLE hCCLibrary;
-#endif
 
 /****************************************
 **	Function prototypes for this module **
@@ -173,11 +165,6 @@ extern bool SpawnedFromWChat;
  *=============================================================================================*/
 bool Init_Game(int, char*[]) {
   const void* temp_mouse_shapes;
-
-#ifndef PORTABLE
-  DLOG(INFO) << "C&C95 - About to load reslib.dll";
-  hCCLibrary = LoadLibrary("reslib.dll");
-#endif
 
   /*
   **	Initialize the game object heaps.
@@ -316,9 +303,6 @@ bool Init_Game(int, char*[]) {
   ** Since there is no mouse shape currently available we need'
   ** to set one of our own.
   */
-#ifndef PORTABLE
-  ShowCursor(false);
-#endif
   if (MouseInstalled) {
     temp_mouse_shapes = MFCD::Retrieve("MOUSE.SHP");
     if (temp_mouse_shapes) {
@@ -377,9 +361,7 @@ bool Init_Game(int, char*[]) {
   }
 #endif
 
-#ifdef PORTABLE
   CCFileClass::Add_Search_Drives(".");  // allow running without CD
-#endif
 
   DLOG(INFO) << "C&C95 - About to search for CD drives";
   /*
@@ -820,12 +802,6 @@ bool Select_Game(bool fade) {
   CountDownTimerClass count;
   int cd_index;
 
-#ifndef PORTABLE
-  MEMORYSTATUS mem_info;
-  mem_info.dwLength = sizeof(mem_info);
-  GlobalMemoryStatus(&mem_info);
-#endif
-
   /*
   ** Enable the DDE Server so we can get internet start game packets from WChat
   */
@@ -834,20 +810,6 @@ bool Select_Game(bool fade) {
 #endif
 
   if (Special.IsFromInstall) {
-#ifndef PORTABLE
-    /*
-    ** Special case for machines with 12 megs or less - just play intro, no
-    *choose side screen
-    */
-    if (mem_info.dwTotalPhys < 12 * 1024 * 1024) {
-      VisiblePage.Clear();
-      Play_Movie("INTRO2", THEME_NONE, false);
-      BreakoutAllowed = true;
-      Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-      fade = true;
-      VisiblePage.Clear();
-    } else
-#endif
     {
       display = false;
       Show_Mouse();
@@ -1008,11 +970,7 @@ bool Select_Game(bool fade) {
       /*
       **	Display menu and fetch selection from player.
       */
-#ifdef PORTABLE
       if (Special.IsFromInstall) {
-#else
-      if (Special.IsFromInstall && mem_info.dwTotalPhys >= 12 * 1024 * 1024) {
-#endif
         selection = SEL_START_NEW_GAME;
         Theme.Queue_Song(THEME_NONE);
       }
@@ -1282,10 +1240,6 @@ bool Select_Game(bool fade) {
                 // MessageBox (NULL, "About to restore focus to C&C95", "C&C95",
                 // MB_OK);
                 DLOG(INFO) << "C&C95 - About to give myself focus.";
-#ifndef PORTABLE
-                SetForegroundWindow(MainWindow);
-                ShowWindow(MainWindow, ShowCommand);
-#endif
 
                 DLOG(INFO) << "C&C95 - About to initialise Winsock.";
                 if (Winsock.Init()) {
@@ -1621,9 +1575,6 @@ bool Select_Game(bool fade) {
   *save *	the address of the random seed.  (Currently not used.)
   */
   srand(0);
-#ifndef PORTABLE
-  RandSeedPtr = (long*)Get_EAX();
-#endif
 
   /*
   **	Initialize the random number Seed.  For multiplayer, this will have been
@@ -1871,10 +1822,6 @@ static void Play_Intro(bool for_real) {
  *                                                                                             *
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
-#ifndef PORTABLE
-extern LPDIRECTSOUND SoundObject;
-extern LPDIRECTSOUNDBUFFER PrimaryBufferPtr;
-#endif
 void Anim_Init() {
   /* Configure player with INI file */
   VQA_DefaultConfig(&AnimControl);
@@ -1914,14 +1861,9 @@ void Anim_Init() {
 // AnimControl.Volume = 0x00FF;
 // AnimControl.AudioRate = 22050;
 //	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
-#ifdef PORTABLE
   AnimControl.AudioDeviceID = Get_Audio_Device();
   AnimControl.AudioCallback = Get_Audio_Callback_Ptr();
   AnimControl.AudioSpec = Get_Audio_Spec();
-#else
-  AnimControl.SoundObject = SoundObject;            // Get_Sound_Object();
-  AnimControl.PrimaryBufferPtr = PrimaryBufferPtr;  // Get_Primart_Buffer();
-#endif
   // if (!Debug_Quiet && Get_Digi_Handle() != -1) {
   // AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   //}

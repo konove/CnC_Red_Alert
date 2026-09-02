@@ -4211,9 +4211,6 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
 void Wait_For_Focus() {
   CountDownTimerClass focus_timer;
   focus_timer.Set(static_cast<long>(5) * 60);
-#ifndef PORTABLE
-  ShowWindow(MainWindow, SW_SHOWMAXIMIZED);
-#endif
   /*
   ** Process the message loop until we are in focus.
   */
@@ -4223,12 +4220,6 @@ void Wait_For_Focus() {
       CCDebugString(".");
       Keyboard::Check();
       if (!focus_timer.Time()) {
-#ifndef PORTABLE
-        CCDebugString("C&C95 - Calling SetForgroundWindow.\n");
-        SetForegroundWindow(MainWindow);
-        CCDebugString("C&C95 - Calling ShowWindow.\n");
-        ShowWindow(MainWindow, SW_SHOWMAXIMIZED);
-#endif
         focus_timer.Set(static_cast<long>(5) * 60);
       }
 

@@ -112,12 +112,6 @@ void Choose_Side() {
   int setpalette = 0;
   int gdi_start_palette;
 
-#ifndef PORTABLE
-  MEMORYSTATUS mem_info;
-  mem_info.dwLength = sizeof(mem_info);
-  GlobalMemoryStatus(&mem_info);
-#endif
-
   TextPrintBuffer = new GraphicBufferClass(
       SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
   TextPrintBuffer->Clear();
@@ -144,9 +138,6 @@ void Choose_Side() {
   //	speechn = MFCD::Retrieve("NOD_SLCT.AUD");
 
   if (Special.IsFromInstall) {
-#ifndef PORTABLE
-    if (mem_info.dwTotalPhys >= 12 * 1024 * 1024)
-#endif
     {
       VisiblePage.Clear();
       PreserveVQAScreen = 1;
@@ -312,9 +303,6 @@ void Choose_Side() {
   }
 
   Free_Interpolated_Palettes();
-#ifndef PORTABLE
-  Set_Primary_Buffer_Format();
-#endif
   /* get rid of all the animating objects */
   for (int i = 0; i < MAXSCOREOBJS; i++) {
     if (ScoreObjs[i]) {

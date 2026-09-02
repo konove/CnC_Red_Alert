@@ -140,11 +140,6 @@
 #include "tech/2keyfbuf.h"
 #include "tech/crc.h"
 #include "winvq/vqa32/vqaplay.h"
-#ifndef PORTABLE
-#include <dos.h>
-#include <io.h>
-#include <share.h>
-#endif
 
 #include "td/interpal.h"
 #include "base/types.h"
@@ -1306,9 +1301,7 @@ void Call_Back() {
   }
 #endif
 
-#ifdef PORTABLE
   Video_End_Frame();
-#endif
 }
 
 /***********************************************************************************************
@@ -2103,9 +2096,6 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       // Resume_Audio_Thread();
       InMovie = false;
       Free_Interpolated_Palettes();
-#ifndef PORTABLE
-      Set_Primary_Buffer_Format();
-#endif
       /*
       **	Any movie that ends prematurely must have the screen
       **	cleared to avoid any unexpected palette glitches.
@@ -2685,20 +2675,16 @@ long VQ_Call_Back(unsigned char*, long) {
     }
   }
 
-#ifdef PORTABLE
   Video_End_Frame();
-#endif
 
   return false;
 }
 
 long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
-#ifdef PORTABLE
   // vsync while waiting for frame
   if (event == VQAEVENT_SYNC) {
     Video_End_Frame();
   }
-#endif
   return 0;
 }
 
@@ -3003,75 +2989,7 @@ void Error_In_Heap_Pointers(const char* string) {
  * HISTORY: * 5/21/96 5:27PM ST : Created *
  *=============================================================================================*/
 int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
-#ifdef PORTABLE
   return -1;  // this may be a problem
-#else
-  char volume_name[128];
-  unsigned filename_length;
-  unsigned misc_dword;
-  unsigned error_code;
-  int count = 0;
-
-  CountDownTimerClass timer;
-
-  static const char* _volid[] = {"GDI95", "NOD95", "COVERT"};
-  static int num_volumes = 3;
-
-  char buffer[128];
-
-  timer.Set(timeout);
-
-  /*
-  ** Get the volume label. If we get a 'not ready' error then retry for the
-  *timeout
-  ** period.
-  */
-  do {
-    sprintf(buffer, "%c:\\", 'A' + cd_drive);
-
-    if (GetVolumeInformation(
-            (const char*)buffer, &volume_name[0], (unsigned long)128,
-            (unsigned long*)NULL, (unsigned long*)&filename_length,
-            (unsigned long*)&misc_dword, (char*)NULL, (unsigned long)0)) {
-      /*
-      ** Try opening 'movies.mix' to verify that the CD is really there and is
-      *what
-      ** it says it is.
-      */
-      sprintf(buffer, "%c:\\movies.mix", 'A' + cd_drive);
-
-      HANDLE handle = CreateFile(buffer, GENERIC_READ, FILE_SHARE_READ, NULL,
-                                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
-      if (handle != INVALID_HANDLE_VALUE) {
-        CloseHandle(handle);
-
-        /*
-        ** Match the volume label to the list of known C&C volume labels.
-        */
-        for (int i = 0; i < num_volumes; i++) {
-          if (!stricmp(_volid[i], volume_name)) {
-            return (i);
-          }
-        }
-      } else {
-        if (count++) {
-          return (-1);
-        }
-      }
-    } else {
-      /*
-      ** Failed to get the volume label on a known CD drive.
-      ** If this is a CD changer it may require time to swap the disks so dont
-      *return
-      ** immediately if the error is ROR_NOT_READY
-      */
-      if (GetLastError() != ROR_NOT_READY || !timer.Time()) {
-        return (-1);
-      }
-    }
-  } while (true);
-#endif
 }
 
 /***********************************************************************************************

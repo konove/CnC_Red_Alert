@@ -35,11 +35,9 @@ void Fade_Palette_To(unsigned char* palette, int fade, void (*callback)()) {
       if (callback) {
         callback();
       }
-#ifdef PORTABLE
       else {  // make sure we actually display the fade
         Video_End_Frame();
       }
-#endif
 
       if (cur_time == fade) {
         break;

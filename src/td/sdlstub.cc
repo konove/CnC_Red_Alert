@@ -165,13 +165,9 @@ void Shake_Screen(int shakes) {
         HidPage.Blit(SeenBuff, 0, 0, 0, 2, 640, 398);
         break;
     }
-#ifdef PORTABLE
     while (x == TickCount.Time()) {
       Video_End_Frame();
     }
-#else
-    while (x == TickCount);
-#endif
   }
 
   HidPage.Blit(SeenBuff);

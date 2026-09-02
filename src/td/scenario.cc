@@ -339,10 +339,6 @@ void Clear_Scenario() {
   Base.Init();
 
   CurrentObject.Clear();
-
-#ifndef PORTABLE
-  Invalidate_Cached_Icons();
-#endif
 }
 
 /***********************************************************************************************

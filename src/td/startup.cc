@@ -75,9 +75,6 @@
 #include "td/special.h"
 #include "tech/cdfile.h"
 #include "tech/rawfile.h"
-#ifndef PORTABLE
-#include <windows.h>
-#endif
 
 #ifdef _WIN32
 #include <direct.h>  //chdir
@@ -176,28 +173,6 @@ int main(int argc, char* argv[])
   */
   //	int temp = Desired_Facing256 (1070, 5419, 1408, 5504);
 
-#ifndef PORTABLE
-  /*
-  ** If we are already running then switch to the existing process and exit
-  */
-  SpawnedFromWChat = false;
-
-  if (CC95AlreadyRunning) {  // Set in the DDEServer constructor
-    // MessageBox (NULL, "Error - attempt to restart C&C95 when already
-    // running.", "Command & Conquer", MB_ICONEXCLAMATION|MB_OK);
-
-    HWND ccwindow;
-    ccwindow = FindWindow("Command & Conquer", "Command & Conquer");
-    if (ccwindow) {
-      SetForegroundWindow(ccwindow);
-      ShowWindow(ccwindow, SW_RESTORE);
-    }
-
-    return (EXIT_SUCCESS);
-  }
-
-  DDSCAPS surface_capabilities;
-#endif
   if (Ram_Free(MEM_NORMAL) < 5000000) {
 #ifdef GERMAN
     printf("Zuwenig Hauptspeicher verfügbar.\n");
@@ -287,17 +262,6 @@ int main(int argc, char* argv[])
 
     RawFileClass cfile("CONQUER.INI");
 
-#ifndef PORTABLE
-    /*
-    ** Check for existance of MMX support on the processor
-    */
-    if (Detect_MMX_Availability()) {
-      // MessageBox(NULL, "MMX extensions detected - enabling MMX support.",
-      // "Command & Conquer",MB_ICONEXCLAMATION|MB_OK);
-      MMXAvailable = true;
-    }
-#endif
-
     /*
     ** If there is loads of memory then use uncompressed shapes
     */
@@ -308,56 +272,17 @@ int main(int argc, char* argv[])
     */
 
     if (Disk_Space_Available() < INIT_FREE_DISK_SPACE) {
-#ifdef PORTABLE
       // pretty unlikely
       ShutdownTickTimer();
       return EXIT_FAILURE;
-#else
-#ifdef GERMAN
-      char disk_space_message[512];
-      sprintf(disk_space_message,
-              "Nicht genug Festplattenplatz für Command & Conquer.\nSie "
-              "brauchen %d MByte freien Platz auf der Festplatte.",
-              (INIT_FREE_DISK_SPACE) / (1024 * 1024));
-      MessageBox(NULL, disk_space_message, "Command & Conquer",
-                 MB_ICONEXCLAMATION | MB_OK);
-      ShutdownTickTimer();
-      return (EXIT_FAILURE);
-#endif
-#ifdef FRENCH
-      char disk_space_message[512];
-      sprintf(disk_space_message,
-              "Espace disque insuffisant pour lancer Command & Conquer.\nVous "
-              "devez disposer de %d Mo d'espace disponsible sur disque dur.",
-              (INIT_FREE_DISK_SPACE) / (1024 * 1024));
-      MessageBox(NULL, disk_space_message, "Command & Conquer",
-                 MB_ICONEXCLAMATION | MB_OK);
-      ShutdownTickTimer();
-      return (EXIT_FAILURE);
-#endif
-#if !(FRENCH | GERMAN)
-      int reply = MessageBox(
-          NULL,
-          "Warning - you are critically low on free disk space for virtual "
-          "memory and save games. Do you want to play C&C anyway?",
-          "Command & Conquer", MB_ICONQUESTION | MB_YESNO);
-      if (reply == IDNO) {
-        ShutdownTickTimer();
-        return (EXIT_FAILURE);
-      }
-
-#endif
-#endif
     }
 
     CDFileClass::Set_CD_Drive(CDList.Get_First_CD_Drive());
 
-#ifdef PORTABLE
     if (!cfile.Is_Available()) {
       // just create an empty config, we don't care about most of it anyway
       cfile.Create();
     }
-#endif
 
     if (cfile.Is_Available()) {
       char* cdata = static_cast<char*>(Load_Alloc_Data(cfile));
@@ -367,11 +292,7 @@ int main(int argc, char* argv[])
 
       CCDebugString("C&C95 - Creating main window.\n");
 
-#ifdef PORTABLE
       Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
-#else
-      Create_Main_Window(instance, command_show, ScreenWidth, ScreenHeight);
-#endif
       CCDebugString("C&C95 - Initialising audio.\n");
 
       SoundOn = Audio_Init(MainWindow, 16, false, 11025 * 2, 0);
@@ -400,10 +321,6 @@ int main(int argc, char* argv[])
 
       if (!video_success) {
         CCDebugString("C&C95 - Failed to set video mode.\n");
-#ifndef PORTABLE  // this can't fail in SDLLIB (because we don't do anything)
-        MessageBox(MainWindow, Text_String(TXT_UNABLE_TO_SET_VIDEO_MODE),
-                   "Command & Conquer", MB_ICONEXCLAMATION | MB_OK);
-#endif
         ShutdownTickTimer();
         delete[] Palette;
         return EXIT_FAILURE;
@@ -411,89 +328,11 @@ int main(int argc, char* argv[])
 
       CCDebugString("C&C95 - Initialising video surfaces.\n");
 
-#ifndef PORTABLE
-      if (ScreenWidth == 320) {
-        VisiblePage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-        ModeXBuff.Init(ScreenWidth, ScreenHeight, NULL, 0,
-                       (GBC_Enum)(GBC_VISIBLE | GBC_VIDEOMEM));
-      } else
-#endif
       {
         VisiblePage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
                          GBC_VISIBLE | GBC_VIDEOMEM);
-#ifdef PORTABLE
         HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
                         static_cast<GBC_Enum>(0));
-#else
-        /*
-        ** Check that we really got a video memory page. Failure is fatal.
-        */
-        memset(&surface_capabilities, 0, sizeof(surface_capabilities));
-        VisiblePage.Get_DD_Surface()->GetCaps(&surface_capabilities);
-        if (surface_capabilities.dwCaps & DDSCAPS_SYSTEMMEMORY) {
-          /*
-          ** Aaaarrgghh!
-          */
-          CCDebugString("C&C95 - Unable to allocate primary surface.\n");
-          MessageBox(MainWindow,
-                     Text_String(TXT_UNABLE_TO_ALLOCATE_PRIMARY_VIDEO_BUFFER),
-                     "Command & Conquer", MB_ICONEXCLAMATION | MB_OK);
-          ShutdownTickTimer();
-          if (Palette) {
-            delete[] Palette;
-          }
-          return (EXIT_FAILURE);
-        }
-
-        /*
-        ** If we have enough left then put the hidpage in video memory unless...
-        **
-        ** If there is no blitter then we will get better performance with a
-        *system
-        ** memory hidpage
-        **
-        ** Use a system memory page if the user has specified it via the ccsetup
-        *program.
-        */
-        CCDebugString("C&C95 - Allocating back buffer ");
-        long video_memory = Get_Free_Video_Memory();
-        unsigned video_capabilities = Get_Video_Hardware_Capabilities();
-        if (video_memory < ScreenWidth * ScreenHeight ||
-            (!(video_capabilities & VIDEO_BLITTER)) ||
-            (video_capabilities & VIDEO_NO_HARDWARE_ASSIST) ||
-            !VideoBackBufferAllowed) {
-          CCDebugString("in system memory.\n");
-          HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-        } else {
-          // HiddenPage.Init (ScreenWidth , ScreenHeight , NULL , 0 ,
-          // (GBC_Enum)0);
-          CCDebugString("in video memory.\n");
-          HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0,
-                          (GBC_Enum)GBC_VIDEOMEM);
-
-          /*
-          ** Make sure we really got a video memory hid page. If we didnt then
-          *things
-          ** will run very slowly.
-          */
-          memset(&surface_capabilities, 0, sizeof(surface_capabilities));
-          HiddenPage.Get_DD_Surface()->GetCaps(&surface_capabilities);
-          if (surface_capabilities.dwCaps & DDSCAPS_SYSTEMMEMORY) {
-            /*
-            ** Oh dear, big trub. This must be an IBM Aptiva or something
-            *similarly cruddy.
-            ** We must redo the Hidden Page as system memory.
-            */
-            AllSurfaces.Remove_DD_Surface(
-                HiddenPage.Get_DD_Surface());  // Remove the old surface from
-                                               // the AllSurfaces list
-            HiddenPage.Get_DD_Surface()->Release();
-            HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-          } else {
-            VisiblePage.Attach_DD_Surface(&HiddenPage);
-          }
-        }
-#endif
       }
 
       if (ScreenHeight == 480) {
@@ -518,16 +357,6 @@ int main(int argc, char* argv[])
       ** Install the memory error handler
       */
       Memory_Error = &Memory_Error_Handler;
-
-#ifndef PORTABLE
-      /*
-      ** Initialise MMX support if its available
-      */
-      CCDebugString("C&C95 - Entering MMX detection.\n");
-      if (MMXAvailable) {
-        Init_MMX();
-      }
-#endif
 
       CCDebugString("C&C95 - Creating mouse class.\n");
       WWMouse = new WWMouseClass(&SeenBuff, 32, 32);
@@ -605,11 +434,7 @@ int main(int argc, char* argv[])
 
       CCDebugString("C&C95 - About to exit.\n");
       ReadyToQuit = 1;
-#ifdef PORTABLE
       SDL_Send_Quit();
-#else
-      PostMessage(MainWindow, WM_DESTROY, 0, 0);
-#endif
       do {
         Keyboard::Check();
       } while (ReadyToQuit == 1);
@@ -694,35 +519,6 @@ void __cdecl Prog_End() {
     Palette = nullptr;
   }
 }
-
-#ifndef PORTABLE
-/***********************************************************************************************
- * Delete_Swap_Files -- Deletes previously existing swap files. *
- *                                                                                             *
- *    This routine will scan through the current directory and delete any swap
- *files it may    * find. This is used to clear out any left over swap files
- *from previous runs (crashes)    * of the game. This routine presumes that it
- *cannot delete the swap file that is created   * by the current run of the
- *game.                                                          *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/27/1995 JLB : Created. *
- *=============================================================================================*/
-void Delete_Swap_Files() {
-  struct find_t ff;  // for _dos_findfirst
-
-  if (!_dos_findfirst("*.SWP", _A_NORMAL, &ff)) {
-    do {
-      unlink(ff.name);
-    } while (!_dos_findnext(&ff));
-  }
-}
-#endif
 
 void Print_Error_End_Exit(char* string) {
   printf("%s\n", string);

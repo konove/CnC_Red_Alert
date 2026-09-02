@@ -435,19 +435,6 @@ COORDINATE As_Coord(TARGET target) {
     */
     ObjectClass* obj = As_Object(target);
     if (obj) {
-#ifndef PORTABLE
-      /*
-      ** If this is invalid memory or the object is dead then return 0
-      ** This is a kludge to fix the problem of team target objects being
-      *assigned after
-      ** the object is already destroyed - 1/15/97 3:13PM
-      */
-      if (IsBadReadPtr((void*)obj, sizeof(ObjectClass)) || !obj->IsActive) {
-        // OutputDebugString ("C&C95 - As_Coord called for invalid target
-        // object\m");
-        return (0x00000000L);
-      }
-#endif
       return obj->Target_Coord();
     }
   }

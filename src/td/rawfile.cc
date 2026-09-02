@@ -59,20 +59,8 @@
 #include <new>
 
 #include "td/function.h"
-#ifndef PORTABLE
-#include <direct.h>
-#include <dos.h>
-#include <fcntl.h>
-#include <io.h>
-#include <share.h>
-#endif
 
 #include "td/rawfile.h"
-
-#ifndef PORTABLE
-extern GraphicBufferClass SeenBuff;
-extern GraphicBufferClass HidPage;
-#endif
 
 /***********************************************************************************************
  * RawFileClass::Error -- Handles displaying a file error message. *
@@ -99,214 +87,6 @@ extern GraphicBufferClass HidPage;
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void RawFileClass::Error(int error, int canretry, const char* filename) {
-#ifndef PORTABLE
-  char message[256];  // Staging buffer for error message string.
-
-  /*
-  **	Build the complete text of the error message. This text is used in
-  *either the graphic *	mode or the text mode version.
-  */
-#ifdef GERMAN
-  strcpy(message, "DATEIFEHLER");
-#else
-#ifdef FRENCH
-  strcpy(message, "ERREUR DE FICHIER");
-#else
-  strcpy(message, "FILE ERROR");
-#endif
-#endif
-  if (filename) {
-    strcat(message, "(");
-    strcat(message, filename);
-    strcat(message, ")");
-  }
-  strcat(message, ": ");
-  // BG: Borland only	strcat(message, _sys_errlist[error]);
-  strcat(message, strerror(error));
-  strcat(message, ". ");
-
-  /*
-  **	If it can't properly handle displaying the error message in the
-  **	current graphic mode, then this forces the error to become non
-  **	recoverable. Go into text mode and proceed.
-  */
-  if (!FontPtr && GraphicMode != TXT_MODE) {
-    Set_Video_Mode(RESET_MODE);
-    canretry = false;
-    GraphicMode = TXT_MODE;
-  }
-
-  /*
-  **	Add the text explaining the valid actions to take.
-  */
-  if (canretry) {
-    if (GraphicMode == TXT_MODE) {
-      strcat(message, "\n");
-    }
-#ifdef GERMAN
-    strcat(message, " Beliebige Taste drücken für erneuten Versuch.");
-    if (GraphicMode == TXT_MODE) {
-      strcat(message, "\n");
-    }
-    strcat(message, " <ESC> drücken, um das Programm zu verlassen.");
-#else
-#ifdef FRENCH
-    strcat(message, " Appuyez sur une touche pour recommencer.");
-    if (GraphicMode == TXT_MODE) {
-      strcat(message, "\n");
-    }
-    strcat(message, " Appuyez sur Echap pour quitter le programme.");
-#else
-    strcat(message, " Press any key to retry.");
-    if (GraphicMode == TXT_MODE) {
-      strcat(message, "\n");
-    }
-    strcat(message, " Press <ESC> to exit program.");
-#endif
-#endif
-    if (GraphicMode == TXT_MODE) {
-      strcat(message, "\n");
-    }
-  } else {
-    if (GraphicMode == TXT_MODE) {
-      strcat(message, "\n");
-    }
-#ifdef GERMAN
-    strcat(message, " Beliebige Taste drücken, um das Programm zu verlassen.");
-#else
-#ifdef FRENCH
-    strcat(message, " Appuyez sur une touche pour quitter le programme.");
-#else
-    strcat(message, " Press any key to exit program.");
-#endif
-#endif
-    if (GraphicMode == TXT_MODE) {
-      strcat(message, "\n");
-    }
-  }
-
-  /*
-  **	In text mode, the error handler is very simple. It just prints the error
-  *message *	to the screen and waits for a response.
-  */
-  if (GraphicMode == TXT_MODE) {
-    int input;
-
-    /*
-    **	Display the error message and wait for a response.
-    */
-    printf(message);
-    Keyboard::Clear();
-    input = Keyboard::Get();
-
-    /*
-    **	Check for input. If the ESC key was pressed or if retrying is not
-    *allowed, *	then exit the program. Otherwise, return from this routine for a
-    *retry *	attempt.
-    */
-    if (input == KN_ESC || !canretry) {
-      Prog_End();
-      exit(EXIT_FAILURE);
-    }
-
-  } else {
-    /*
-    **	The graphic mode version of the error handler will display a simple
-    *message *	box on the screen. If the palette is black at this point, then
-    *the error will *	be invisible. For more thorough and pleasing results,
-    *you should replace this *	virtual function with one of your own, that is
-    *more aware of the environment *	in which is exists.
-    */
-    void* background;             // Pointer to background saving buffer.
-    GraphicBufferClass* oldpage;  // Copy of old logic page.
-    int oldwindow;                // Copy of old window number.
-    const void* oldfont;          // Copy of old font pointer.
-    int oldspacing;               // Old font X spacing.
-
-    /*
-    **	Setup display in preparation for printing the error message.
-    */
-    oldpage = Set_Logic_Page(SeenBuff);
-    oldwindow = Change_Window(1);
-    oldfont = Set_Font(FontPtr);
-    oldspacing = FontXSpacing;
-    FontXSpacing = 0;
-    Hide_Mouse();
-
-    /*
-    **	Try to allocate a storage buffer for the background to the
-    **	error window.
-    */
-    background = new char[Size_Of_Region(WinW << 3, WinH)];
-
-    /*
-    **	If there is memory for the background storage, then save the
-    **	screen image area to that buffer.
-    */
-    if (background) {
-      SeenBuff.To_Buffer(WinX << 3, WinY, WinW << 3, WinH, background,
-                         Size_Of_Region(WinW << 3, WinH));
-    }
-
-    /*
-    **	Draw a rudimentary box.
-    */
-    New_Window();
-    LogicPage->Draw_Rect(WinX << 3, WinY, (WinX + WinW) << 3, WinY + WinH,
-                         WinC);
-
-    /*
-    ** shrinks window down one byte in all directions.
-    */
-    WindowList[Window][WINDOWX] += 1;
-    WindowList[Window][WINDOWY] += 1 << 3;
-    WindowList[Window][WINDOWWIDTH] -= 1 << 1;
-    WindowList[Window][WINDOWHEIGHT] -= 1 << 4;
-    Change_Window(Window);
-    WinCx = WinCy = 0;
-
-    Window_Print(message);
-    Keyboard::Clear();
-
-    /*
-    **	Check for input. If the ESC key was pressed or if retrying is not
-    *allowed, *	then exit the program. Otherwise, return from this routine for a
-    *retry *	attempt.
-    */
-    int input = Keyboard::Get();
-    if (input == KN_ESC || !canretry) {
-      Prog_End();
-      exit(EXIT_FAILURE);
-    }
-
-    /*
-    **	Restore the window back to its original size.
-    */
-    WindowList[Window][WINDOWX] -= 1;
-    WindowList[Window][WINDOWY] -= 1 << 3;
-    WindowList[Window][WINDOWWIDTH] += 1 << 1;
-    WindowList[Window][WINDOWHEIGHT] += 1 << 4;
-    Change_Window(Window);
-    WinCx = WinCy = 0;
-
-    /*
-    **	If the background was saved off, then restore it.
-    */
-    if (background) {
-      Buffer_To_Page(WinX << 3, WinY, WinW << 3, WinH, background, SeenBuff);
-      delete[] background;
-    }
-
-    /*
-    **	Restore the system global settings to original values.
-    */
-    Show_Mouse();
-    Change_Window(oldwindow);
-    Set_Font(oldfont);
-    Set_Logic_Page(oldpage);
-    FontXSpacing = oldspacing;
-  }
-#endif
 }
 
 /***********************************************************************************************
@@ -328,11 +108,7 @@ void RawFileClass::Error(int error, int canretry, const char* filename) {
  *=============================================================================================*/
 RawFileClass::RawFileClass(const char* filename)
     :
-#ifdef PORTABLE
       Handle(nullptr),
-#else
-      Handle(-1),
-#endif
       Filename(filename),
       Allocated(false) {
 }
@@ -456,57 +232,10 @@ int RawFileClass::Open(FileAccess rights) {
     /*
     **	Try to open the file according to the access rights specified.
     */
-#ifdef PORTABLE
     Handle = IO_Open_File(Filename, rights);
     if (!Handle) {
       return false;
     }
-#else
-    Hard_Error_Occured = 0;
-    switch (rights) {
-      /*
-      **	If the access rights are not recognized, then report this as
-      **	an invalid access code.
-      */
-      default:
-        errno = EINVAL;
-        break;
-
-      case FileAccess::kRead:
-        _dos_open(Filename, O_RDONLY | SH_DENYNO, &Handle);
-        break;
-
-      case FileAccess::kWrite:
-        _dos_creat(Filename, 0, &Handle);
-        break;
-
-      case FileAccess::kReadWrite:
-        _dos_open(Filename, O_RDWR | O_CREAT | SH_DENYWR, &Handle);
-        break;
-    }
-
-    /*
-    **	If the handle indicates the file is not open, then this is an error
-    *condition. *	For the case of the file cannot be found, then allow a
-    *retry. All other cases *	are fatal.
-    */
-    if (Handle < 0) {
-      /*
-      **	If this flag is set, then some hard error occurred. Just assume
-      *that the error *	is probably a removed CD-ROM and allow a retry.
-      */
-      if (Hard_Error_Occured) {
-        Error(Hard_Error_Occured, true, Filename);
-      } else {
-        if (errno == ENOENT) {
-          Error(ENOENT, true, Filename);
-        } else {
-          Error(errno, false, Filename);
-        }
-      }
-      continue;
-    }
-#endif
     break;
   }
   return true;
@@ -531,11 +260,7 @@ int RawFileClass::Open(FileAccess rights) {
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
 int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
-#ifdef PORTABLE
   void* file;
-#else
-  int file;  // Working file handle.
-#endif
   int open_failed;
 
   /*
@@ -563,7 +288,6 @@ int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
   *error recover channels.
   */
   for (;;) {
-#ifdef PORTABLE
     file = IO_Open_File(Filename, FileAccess::kRead);
     if (!file) {
       // retry with lowercase name for case-sensitive fs
@@ -589,50 +313,6 @@ int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
     if (!file) {
       return false;
     }
-#else
-    Hard_Error_Occured = 0;
-    open_failed = _dos_open(Filename, O_RDONLY | SH_DENYNO, &file);
-
-    /*
-    **	If DOS reports that everything is just fine except that the file is not
-    *present, *	then return with this fact. Any other case will fall through to
-    *the error handler *	routine.
-    */
-    if (open_failed && errno == ENOENT) {
-      return (false);
-    }
-
-    /*
-    ** If we got an access error it could be because there is no cd in
-    ** the drive.  Call the error handler but allow a continue if it
-    ** returns.
-    */
-    if (open_failed && errno == EACCES) {
-      //			Error(errno, true, Filename);
-      //			continue;
-      return (false);
-    }
-
-    /*
-    **	If the file could not be found, then return with this information. If a
-    *more *	serious error occurred, then display the error message and
-    *abort.
-    */
-    if (Hard_Error_Occured) {
-      return (false);
-      //			Error(Hard_Error_Occured, true, Filename);
-      //			continue;
-    } else {
-      if (open_failed) {
-        /*
-        **	An unhandled error condition is fatal. Display the error message
-        *and then *	abort.
-        */
-        //				Error(errno, false, Filename);
-        return (false);
-      }
-    }
-#endif
     break;
   }
 
@@ -640,13 +320,7 @@ int RawFileClass::Do_Is_Available(AvailabilityCheck mode) {
   **	Since the file could be opened, then close it and return that the file
   *exists.
   */
-#ifdef PORTABLE
   IO_Close_File(file);
-#else
-  if (_dos_close(file)) {
-    Error(errno, false, Filename);
-  }
-#endif
   return true;
 }
 
@@ -676,28 +350,7 @@ void RawFileClass::Close() {
       **	Close the file. If there was an error in the close operation --
       *abort.
       */
-#ifdef PORTABLE
       IO_Close_File(Handle);
-#else
-      Hard_Error_Occured = 0;
-      if (_dos_close(Handle)) {
-        /*
-        **	By definition, this error can only be a bad file handle. This a
-        *fatal condition *	of course, so abort with an error message.
-        */
-        Error(errno, false, Filename);
-      }
-
-      /*
-      **	In the condition (if it is even possible) of a hard error
-      *occurring, then *	assume it is the case of missing media. Display
-      *an error message and try *	again if indicated.
-      */
-      if (Hard_Error_Occured) {
-        Error(Hard_Error_Occured, true, Filename);
-        continue;
-      }
-#endif
       break;
     }
 
@@ -705,11 +358,7 @@ void RawFileClass::Close() {
     **	At this point the file must have been closed. Mark the file as empty and
     *return.
     */
-#ifdef PORTABLE
     Handle = nullptr;
-#else
-    Handle = -1;
-#endif
   }
 }
 
@@ -758,62 +407,9 @@ long RawFileClass::Read(void* buffer, long size) {
     opened = true;
   }
 
-#ifdef PORTABLE
   size_t actual = 0;
   IO_Read_File(Handle, buffer, size, actual);
   bytesread = actual;
-#else
-  /*
-  **	Read the file in convenient chunk sizes. When the actual number
-  **	of bytes read does not match the desired, then assume that the file
-  **	is exhausted and bail. This loop was adjusted to take into
-  **	consideration the fact that "read" returns a SIGNED value whereas
-  **	it takes an UNSIGNED value as the byte count.
-  */
-  while (size) {
-    unsigned desired;  // Bytes desired to be read this pass.
-    unsigned actual;   // Actual number of bytes read.
-
-    /*
-    **	Break the read request into chunks no bigger than the low level DOS read
-    **	can handle.
-    */
-    desired = size;
-
-    Hard_Error_Occured = 0;
-    readresult = _dos_read(Handle, buffer, desired, &actual);
-
-    /*
-    **	If a hard error occurred, then assume that it is the case of the CD-ROM
-    *or *	floppy media having been removed. Display the error and retry as
-    *directed.
-    */
-    if (Hard_Error_Occured) {
-      Error(Hard_Error_Occured, true, Filename);
-      continue;  // Not technically needed, but to be consistent...
-    } else {
-      /*
-      **	If negative one is returned from the read operation, then this
-      *indicates *	either a bad file number or invalid access. These are
-      *fatal conditions, so *	display the error and then abort.
-      */
-      if (readresult != 0) {
-        Error(errno, false, Filename);
-      } else {
-        /*
-        **	No error occurred during the read. Adjust the pointers and size
-        *counters and *	loop again if more data is needed to be read.
-        */
-        buffer = Add_Long_To_Pointer(buffer, actual);
-        bytesread += actual;
-        size -= actual;
-        if (actual != desired) {
-          break;  // No more data?
-        }
-      }
-    }
-  }
-#endif
   /*
   **	Close the file if it was opened by this routine and return
   **	the actual number of bytes read into the buffer.
@@ -859,60 +455,9 @@ long RawFileClass::Write(const void* buffer, long size) {
     opened = true;
   }
 
-#ifdef PORTABLE
   size_t actual = 0;
   IO_Write_File(Handle, buffer, size, actual);
   bytesread = actual;
-#else
-  /*
-  **	Write the data to the file in chunks no bigger than what the low level
-  *DOS write *	can handle.
-  */
-  while (size) {
-    unsigned desired;  // Bytes desired to be write this pass.
-    unsigned actual;   // Actual number of bytes written.
-
-    Hard_Error_Occured = 0;
-    //		desired = (unsigned)std::min(size, Transfer_Block_Size());
-    desired = size;
-    writeresult = _dos_write(Handle, buffer, desired, &actual);
-
-    /*
-    **	If a hard error occurred, then assume it is the case of the media being
-    **	removed. Print the error message an retry as directed.
-    */
-    if (Hard_Error_Occured) {
-      Error(Hard_Error_Occured, true, Filename);
-      continue;  // Not technically needed, but to be consistent...
-    } else {
-      /*
-      **	If negative one is returned by the DOS read, then this indicates
-      *a bad file *	handle or invalid access. Either condition is fatal --
-      *display error condition *	and abort.
-      */
-      if (writeresult != 0) {
-        Error(errno, false, Filename);
-      } else {
-        /*
-        **	A successful write occurred. Update pointers and byte counter as
-        *appropriate.
-        */
-        buffer = Add_Long_To_Pointer((void*)buffer, actual);
-        bytesread += actual;
-        size -= actual;
-
-        /*
-        **	If the actual bytes written is less than requested, assume this
-        *is a case of *	the disk being full. Consider this a fatal error
-        *condition.
-        */
-        if (actual != desired) {
-          Error(ENOSPC, false, Filename);
-        }
-      }
-    }
-  }
-#endif
   /*
   **	If this routine had to open the file, then close it before returning.
   */
@@ -958,38 +503,7 @@ long RawFileClass::Seek(long pos, int dir) {
     Error(EBADF, false, Filename);
   }
 
-#ifdef PORTABLE
   pos = IO_Seek_File(Handle, pos, dir);
-#else
-  /*
-  **	Keep trying to seek until a non-retry condition occurs.
-  */
-  for (;;) {
-    /*
-    **	Perform the low level seek on the file.
-    */
-    Hard_Error_Occured = 0;
-    pos = lseek(Handle, pos, dir);
-
-    /*
-    **	If a hard error occurred, then assume that it is the case of removed
-    *media. Display *	error message and retry.
-    */
-    if (Hard_Error_Occured) {
-      Error(Hard_Error_Occured, true, Filename);
-      continue;
-    } else {
-      /*
-      **	A negative one indicates a fatal error with the seek operation.
-      *Display error *	condition and then abort.
-      */
-      if (pos == -1) {
-        Error(errno, false, Filename);
-      }
-    }
-    break;
-  }
-#endif
   /*
   **	Return with the new position of the file. This will range between zero
   *and the number of *	bytes the file contains.
@@ -1019,32 +533,7 @@ long RawFileClass::Size() {
   **	If the file is open, then proceed normally.
   */
   if (Is_Open()) {
-#ifdef PORTABLE
     return IO_Get_File_Size(Handle);
-#else
-    /*
-    **	Repetitively try to determine the file size until a fatal error
-    *condition or success *	is achieved.
-    */
-    for (;;) {
-      Hard_Error_Occured = 0;
-      size = filelength(Handle);
-
-      /*
-      **	If a hard error occurred, then assume it is the case of removed
-      *media. Display an *	error condition and allow retry.
-      */
-      if (Hard_Error_Occured) {
-        Error(Hard_Error_Occured, true, Filename);
-        continue;
-      } else {
-        if (size == -1) {
-          Error(errno, false, Filename);
-        }
-      }
-      break;
-    }
-#endif
   } else {
     /*
     **	If the file wasn't open, then open the file and call this routine again.
@@ -1119,58 +608,9 @@ int RawFileClass::Delete() {
     Error(ENOENT, false);
   }
 
-#ifdef PORTABLE
   if (!IO_Delete_File(Filename)) {
     return false;
   }
-#else
-  /*
-  **	Repetitively try to delete the file if possible. Either return with
-  *success, or *	abort the program with an error.
-  */
-  for (;;) {
-    /*
-    **	If the file is already missing, then return with this fact. No action is
-    *necessary. *	This can occur as this section loops if the file exists
-    *on a floppy and the floppy *	was removed, the file deleted on another
-    *machine, and then the floppy was *	reinserted. Admittedly, this is a rare
-    *case, but is handled here.
-    */
-    if (!Is_Available()) {
-      return (false);
-    }
-
-    Hard_Error_Occured = 0;
-    if (remove(Filename) == -1) {
-      /*
-      **	If a hard error occurred, then assume that the media has been
-      *removed. Display *	error message and retry as directed.
-      */
-      if (Hard_Error_Occured) {
-        Error(Hard_Error_Occured, true, Filename);
-        continue;
-      }
-
-      /*
-      **	If at this point, DOS says the file doesn't exist, then just
-      *exit with this *	fact. It should have been caught earlier, but in any
-      *case, this is a legal *	condition.
-      */
-      if (errno == ENOENT) {
-        break;
-      }
-
-      /*
-      **	The only way it can reach this point is if DOS indicates that
-      *access is denied *	on the file. This occurs when trying to delete a
-      *file on a read-only media such *	as a CD-ROM. Report this as a fatal
-      *error and then abort.
-      */
-      Error(errno, false, Filename);
-    }
-    break;
-  }
-#endif
   /*
   **	DOS reports that the file was successfully deleted. Return with this
   *fact.
