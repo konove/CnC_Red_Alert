@@ -608,31 +608,31 @@ int MapEditClass::Load_Scenario() {
                       D_SCEN_X, D_SCEN_Y, D_SCEN_W, D_SCEN_H,
                       EditClass::kAlphanumeric);
 
-    TextButtonClass varabtn(BUTTON_VAR_A, "A", TPF_EBUTTON, D_VARA_X, D_VARA_Y,
+    TextButtonClass varabtn(BUTTON_VAR_A, "A", kTpfEButton, D_VARA_X, D_VARA_Y,
                             D_VARA_W, D_VARA_H);
-    TextButtonClass varbbtn(BUTTON_VAR_B, "B", TPF_EBUTTON, D_VARB_X, D_VARB_Y,
+    TextButtonClass varbbtn(BUTTON_VAR_B, "B", kTpfEButton, D_VARB_X, D_VARB_Y,
                             D_VARB_W, D_VARB_H);
-    TextButtonClass varcbtn(BUTTON_VAR_C, "C", TPF_EBUTTON, D_VARC_X, D_VARC_Y,
+    TextButtonClass varcbtn(BUTTON_VAR_C, "C", kTpfEButton, D_VARC_X, D_VARC_Y,
                             D_VARC_W, D_VARC_H);
-    TextButtonClass vardbtn(BUTTON_VAR_D, "D", TPF_EBUTTON, D_VARD_X, D_VARD_Y,
+    TextButtonClass vardbtn(BUTTON_VAR_D, "D", kTpfEButton, D_VARD_X, D_VARD_Y,
                             D_VARD_W, D_VARD_H);
-    TextButtonClass gdibtn(BUTTON_GDI, "North (Spain)", TPF_EBUTTON, D_GDI_X,
+    TextButtonClass gdibtn(BUTTON_GDI, "North (Spain)", kTpfEButton, D_GDI_X,
                            D_GDI_Y, D_GDI_W, D_GDI_H);
-    TextButtonClass nodbtn(BUTTON_NOD, "South (Greece)", TPF_EBUTTON, D_NOD_X,
+    TextButtonClass nodbtn(BUTTON_NOD, "South (Greece)", kTpfEButton, D_NOD_X,
                            D_NOD_Y, D_NOD_W, D_NOD_H);
     TextButtonClass neubtn(BUTTON_NEUTRAL,
                            HouseTypeClass::As_Reference(HOUSE_USSR).IniName,
-                           TPF_EBUTTON, D_NEU_X, D_NEU_Y, D_NEU_W, D_NEU_H);
-    TextButtonClass playermbtn(BUTTON_MPLAYER, "Multiplayer", TPF_EBUTTON,
+                           kTpfEButton, D_NEU_X, D_NEU_Y, D_NEU_W, D_NEU_H);
+    TextButtonClass playermbtn(BUTTON_MPLAYER, "Multiplayer", kTpfEButton,
                                D_MPLAYER_X, D_MPLAYER_Y, D_MPLAYER_W,
                                D_MPLAYER_H);
-    TextButtonClass eastbtn(BUTTON_EAST, "East", TPF_EBUTTON, D_EAST_X,
+    TextButtonClass eastbtn(BUTTON_EAST, "East", kTpfEButton, D_EAST_X,
                             D_EAST_Y, D_EAST_W, D_EAST_H);
-    TextButtonClass westbtn(BUTTON_WEST, "West", TPF_EBUTTON, D_WEST_X,
+    TextButtonClass westbtn(BUTTON_WEST, "West", kTpfEButton, D_WEST_X,
                             D_WEST_Y, D_WEST_W, D_WEST_H);
-    TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_EBUTTON, D_OK_X, D_OK_Y,
+    TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfEButton, D_OK_X, D_OK_Y,
                           D_OK_W, D_OK_H);
-    TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_EBUTTON,
+    TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfEButton,
                               D_CANCEL_X, D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
 
     /*
@@ -1063,10 +1063,10 @@ int MapEditClass::Load_Scenario() {
     */
     ControlClass* commands = nullptr;
 
-    TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_EBUTTON, D_OK_X, D_OK_Y,
+    TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfEButton, D_OK_X, D_OK_Y,
                           D_OK_W, D_OK_H);
 
-    TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_EBUTTON,
+    TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfEButton,
                               D_CANCEL_X, D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
 
     /*
@@ -2050,9 +2050,9 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Create the ubiquitous "ok" and "cancel" buttons.
     */
-    TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_EBUTTON, D_OK_X, D_OK_Y,
+    TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfEButton, D_OK_X, D_OK_Y,
                           D_OK_W, D_OK_H);
-    TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_EBUTTON,
+    TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfEButton,
                               D_CANCEL_X, D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
 
     /*
@@ -2716,13 +2716,13 @@ int MapEditClass::Load_Scenario() {
         TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
         MFCD::Retrieve("EBTN-DN.SHP"));
 
-    TextButtonClass editbtn(BUTTON_EDIT, "Edit", TPF_EBUTTON, D_EDIT_X,
+    TextButtonClass editbtn(BUTTON_EDIT, "Edit", kTpfEButton, D_EDIT_X,
                             D_EDIT_Y, D_EDIT_W, D_EDIT_H);
-    TextButtonClass newbtn(BUTTON_NEW, "New", TPF_EBUTTON, D_NEW_X, D_NEW_Y,
+    TextButtonClass newbtn(BUTTON_NEW, "New", kTpfEButton, D_NEW_X, D_NEW_Y,
                            D_NEW_W, D_NEW_H);
-    TextButtonClass deletebtn(BUTTON_DELETE, "Delete", TPF_EBUTTON, D_DELETE_X,
+    TextButtonClass deletebtn(BUTTON_DELETE, "Delete", kTpfEButton, D_DELETE_X,
                               D_DELETE_Y, D_DELETE_W, D_DELETE_H);
-    TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_EBUTTON, D_OK_X, D_OK_Y,
+    TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfEButton, D_OK_X, D_OK_Y,
                           D_OK_W, D_OK_H);
 
     /*

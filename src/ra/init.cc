@@ -377,7 +377,7 @@ bool Init_Game(int, char*[]) {
 
     Hide_Mouse();
     Fancy_Text_Print(TXT_STAND_BY, 320, 240, &ColorRemaps[PCOLOR_DIALOG_BLUE],
-                     TBLACK, TPF_CENTER | TPF_TEXT | TPF_DROPSHADOW);
+                     TBLACK, TPF_CENTER | kTpfText | TPF_DROPSHADOW);
     Show_Mouse();
 
     CCPalette.Set(kFadePaletteSlow);
@@ -1298,12 +1298,12 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
 
     bool processed = true;
-    long ob = Obfuscate(string);
+    uint32_t ob = Obfuscate(string);
 
     /*
     **	Check to see if the parameter is a cheat enabling one.
     */
-    const long* optr = &CheatCodes[0];
+    const uint32_t* optr = &CheatCodes[0];
     while (*optr) {
       if (*optr++ == ob) {
         Debug_Playtest = true;
@@ -1340,7 +1340,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
 
     switch (ob) {
-      case PARM_PLAYTEST:
+      case kParmPlaytest:
         if constexpr (config::kVirginCheatKeysEnabled) {
           Debug_Playtest = true;
         }
@@ -1349,7 +1349,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       /*
       ** Special flag - is C&C being run from the install program?
       */
-      case PARM_INSTALL:
+      case kParmInstall:
         Special.IsFromInstall = true;
         // If uncommented, will disable the <ESC> key during the first movie
         // run.
@@ -1568,7 +1568,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
  *                                                                                             *
  * HISTORY: * 08/19/1995 JLB : Created. *
  *=============================================================================================*/
-long Obfuscate(const char* string) {
+uint32_t Obfuscate(const char* string) {
   char buffer[128];
 
   if (!string) {
@@ -2008,7 +2008,7 @@ static void Init_Heaps() {
   **	be played.
   */
   for (int index = 0; index < std::ssize(SpeechBuffer); index++) {
-    SpeechBuffer[index] = new char[SPEECH_BUFFER_SIZE];
+    SpeechBuffer[index] = new char[kSpeechBufferSize];
     SpeechRecord[index] = VOX_NONE;
     assert(SpeechBuffer[index] != nullptr);
   }
@@ -2016,7 +2016,7 @@ static void Init_Heaps() {
   /*
   **	Allocate the theater buffer block.
   */
-  TheaterBuffer = new Buffer(THEATER_BUFFER_SIZE);
+  TheaterBuffer = new Buffer(kTheaterBufferSize);
   assert(TheaterBuffer != nullptr);
 }
 
@@ -2461,7 +2461,7 @@ static void Bootstrap() {
   **	and ShapeBufferSize to these values, so it can be accessed for other
   **	purposes.
   */
-  Set_Shape_Buffer(new unsigned char[SHAPE_BUFFER_SIZE], SHAPE_BUFFER_SIZE);
+  Set_Shape_Buffer(new unsigned char[kShapeBufferSize], kShapeBufferSize);
 
   // The .ENG suffix is the same in every language build: localized releases
   // ship a translated CONQUER.ENG under the same name.

@@ -60,8 +60,8 @@ void DescriptionClass::Process(char* string) {
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
   */
-  TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OK, TPF_BUTTON, 0, BUTTON_Y);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, 0, BUTTON_Y);
+  TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OK, kTpfButton, 0, BUTTON_Y);
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, 0, BUTTON_Y);
 
   cancelbtn.X = OPTION_X + (OPTION_WIDTH - optionsbtn.Width) / 3 * 2;
   optionsbtn.X = OPTION_X + (OPTION_WIDTH - optionsbtn.Width) / 3;

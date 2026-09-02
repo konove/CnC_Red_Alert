@@ -238,13 +238,13 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
                          d_userlist_w, d_userlist_h, TPF_TYPE,
                          MFCD::Retrieve("BTN-UP.SHP"),
                          MFCD::Retrieve("BTN-DN.SHP"), true, 2);
-  TextButtonClass ActionBtn(BUTTON_ACTION, TXT_WOL_ACTION, TPF_BUTTON,
+  TextButtonClass ActionBtn(BUTTON_ACTION, TXT_WOL_ACTION, kTpfButton,
                             d_action_x, d_action_y, d_action_w);
-  TextButtonClass CreateBtn(BUTTON_CREATE, TXT_WOL_NEWSOMETHING, TPF_BUTTON,
+  TextButtonClass CreateBtn(BUTTON_CREATE, TXT_WOL_NEWSOMETHING, kTpfButton,
                             d_create_x, d_create_y, d_create_w);
-  TextButtonClass JoinBtn(BUTTON_JOIN, TXT_WOL_JOIN, TPF_BUTTON, d_join_x,
+  TextButtonClass JoinBtn(BUTTON_JOIN, TXT_WOL_JOIN, kTpfButton, d_join_x,
                           d_join_y, d_join_w);
-  TextButtonClass BackBtn(BUTTON_BACK, TXT_WOL_BACK, TPF_BUTTON, d_back_x,
+  TextButtonClass BackBtn(BUTTON_BACK, TXT_WOL_BACK, kTpfButton, d_back_x,
                           d_back_y, d_back_w);
   char* szRecordToStartWith;
   if (pWO->bShowRankRA) {
@@ -263,7 +263,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
                                   d_userlist_w - 4 - 16 * 4, 12);
 
   char szSendBuffer[MAXCHATSENDLENGTH] = "";
-  EditClass sendedit(BUTTON_SENDEDIT, szSendBuffer, MAXCHATSENDLENGTH, TPF_TEXT,
+  EditClass sendedit(BUTTON_SENDEDIT, szSendBuffer, MAXCHATSENDLENGTH, kTpfText,
                      d_send_x, d_send_y, d_send_w, d_send_h);
 
   char* pShpRankRA = (char*)MFCD::Retrieve("rank_ra.shp");
@@ -1212,7 +1212,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     switch (hRes) {
       case CHAT_E_BADCHANNELPASSWORD: {
         Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
-                         TPF_TEXT);  //	Required before String_Pixel_Width()
+                         kTpfText);  //	Required before String_Pixel_Width()
                                      // call, for god's sake.
 #ifdef ENGLISH
         SimpleEditDlgClass* pEditDlg = new SimpleEditDlgClass(
@@ -1351,7 +1351,7 @@ void CreateChatChannel(WolapiObject* pWO) {
   */
   {
     Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
-                     TPF_TEXT);  //	Required before String_Pixel_Width()
+                     kTpfText);  //	Required before String_Pixel_Width()
                                  // call, for god's sake.
     pEditDlg = new SimpleEditDlgClass(
         350, TXT_WOL_CREATECHANNELTITLE, TXT_WOL_CREATECHANNELPROMPT,

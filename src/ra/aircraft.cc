@@ -310,7 +310,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
   Ammo = Class->MaxAmmo;
   Height = FLIGHT_LEVEL;
   Strength = Class->MaxStrength;
-  NavCom = TARGET_NONE;
+  NavCom = kTargetNone;
 
   /*
   ** Keep count of the number of units created. Dont track cargo planes as they
@@ -1053,7 +1053,7 @@ const short* AircraftClass::Overlap_List(bool redraw) const {
                                 -(MAP_CELL_W * 3 - 1),
                                 -(MAP_CELL_W * 3),
                                 -(MAP_CELL_W * 3 + 1),
-                                REFRESH_EOL};
+                                kRefreshEol};
 
   static const short _listbadger[] = {-(MAP_CELL_W - 2),
                                       -(MAP_CELL_W - 1),
@@ -1080,7 +1080,7 @@ const short* AircraftClass::Overlap_List(bool redraw) const {
                                       -(MAP_CELL_W * 3),
                                       -(MAP_CELL_W * 3 + 1),
                                       -(MAP_CELL_W * 3 + 2),
-                                      REFRESH_EOL};
+                                      kRefreshEol};
 
   if (redraw || Height != 0) {
     if (*this == AIRCRAFT_BADGER) {
@@ -1724,7 +1724,7 @@ int AircraftClass::Mission_Move() {
                 }
               }
             }
-            Assign_Destination(TARGET_NONE);
+            Assign_Destination(kTargetNone);
             if (building &&
                 (Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER ||
                  building->What_Am_I() == RTTI_VESSEL)) {
@@ -1898,8 +1898,8 @@ void AircraftClass::Enter_Idle_Mode(bool) {
       if (IsALoaner) {
         mission = MISSION_RETREAT;
       } else {
-        Assign_Destination(TARGET_NONE);
-        Assign_Target(TARGET_NONE);
+        Assign_Destination(kTargetNone);
+        Assign_Target(kTargetNone);
         mission = MISSION_GUARD;
       }
     } else {
@@ -1929,7 +1929,7 @@ void AircraftClass::Enter_Idle_Mode(bool) {
           **	Normal aircraft try to find a good landing spot to rest.
           */
           BuildingClass* building = Find_Docking_Bay(Class->Building, false);
-          Assign_Destination(TARGET_NONE);
+          Assign_Destination(kTargetNone);
           if (building != nullptr &&
               Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER) {
             if (Class->IsFixedWing) {
@@ -1967,8 +1967,8 @@ void AircraftClass::Enter_Idle_Mode(bool) {
           mission = MISSION_RETREAT;
         }
       } else {
-        Assign_Destination(TARGET_NONE);
-        Assign_Target(TARGET_NONE);
+        Assign_Destination(kTargetNone);
+        Assign_Target(kTargetNone);
         mission = MISSION_GUARD;
       }
     } else {
@@ -2039,7 +2039,7 @@ void AircraftClass::Enter_Idle_Mode(bool) {
                 }
               }
             }
-            Assign_Destination(TARGET_NONE);
+            Assign_Destination(kTargetNone);
             if (building &&
                 (Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER ||
                  building->What_Am_I() == RTTI_VESSEL)) {
@@ -2181,11 +2181,11 @@ void AircraftClass::Active_Click_With(ActionType action, ObjectClass* object) {
       return;
 
     case ACTION_ENTER:
-      Player_Assign_Mission(MISSION_ENTER, TARGET_NONE, object->As_Target());
+      Player_Assign_Mission(MISSION_ENTER, kTargetNone, object->As_Target());
       break;
 
     case ACTION_SELF:
-      Player_Assign_Mission(MISSION_UNLOAD, TARGET_NONE, TARGET_NONE);
+      Player_Assign_Mission(MISSION_UNLOAD, kTargetNone, kTargetNone);
       break;
 
     default:
@@ -2508,7 +2508,7 @@ int AircraftClass::Mission_Attack() {
 
           if (distance < 0x0010) {
             Status = FIRE_AT_TARGET;
-            Assign_Destination(TARGET_NONE);
+            Assign_Destination(kTargetNone);
           }
         } else {
           SecondaryFacing.Set_Desired(
@@ -2612,9 +2612,9 @@ int AircraftClass::Mission_Attack() {
       **	reassign a target for the next mission.
       */
       if (!Ammo && (IsALoaner || House->IsHuman)) {
-        Assign_Target(TARGET_NONE);
+        Assign_Target(kTargetNone);
       }
-      Assign_Destination(TARGET_NONE);
+      Assign_Destination(kTargetNone);
       Enter_Idle_Mode();
       break;
 
@@ -3163,7 +3163,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
       return ::As_Target(best2cell);
     }
   }
-  return TARGET_NONE;
+  return kTargetNone;
 }
 
 /***********************************************************************************************
@@ -3331,7 +3331,7 @@ int AircraftClass::Mission_Enter() {
           Status = STACK;
         } else {
           if (tech->What_Am_I() != RTTI_VESSEL) {
-            Assign_Destination(TARGET_NONE);
+            Assign_Destination(kTargetNone);
             Enter_Idle_Mode();
           }
         }
@@ -3406,7 +3406,7 @@ int AircraftClass::Mission_Enter() {
     case TRAVEL:
       Transmit_Message(RADIO_DOCKING);
       if (!In_Radio_Contact() && !Is_Target_Vessel(NavCom)) {
-        Assign_Destination(TARGET_NONE);
+        Assign_Destination(kTargetNone);
         Enter_Idle_Mode();
       } else {
         int distance = Process_Fly_To(true, NavCom);
@@ -3443,7 +3443,7 @@ int AircraftClass::Mission_Enter() {
 
     case LANDING:
       if (IsTakingOff && !Class->IsFixedWing) {
-        Assign_Destination(TARGET_NONE);
+        Assign_Destination(kTargetNone);
         Enter_Idle_Mode();
       }
       // If we were trying to land on a carrier and it moved, take off again
@@ -3726,7 +3726,7 @@ int AircraftClass::Mission_Guard() {
       BuildingClass* building = Find_Docking_Bay(STRUCT_REPAIR, true);
       if (building != nullptr) {
         Assign_Destination(building->As_Target());
-        Assign_Target(TARGET_NONE);
+        Assign_Target(kTargetNone);
         Assign_Mission(MISSION_ENTER);
         return 1;
       }
@@ -3761,7 +3761,7 @@ int AircraftClass::Mission_Guard() {
       }
       if (building != nullptr) {
         Assign_Destination(building->As_Target());
-        Assign_Target(TARGET_NONE);
+        Assign_Target(kTargetNone);
         Assign_Mission(MISSION_ENTER);
         return 1;
       }
@@ -4038,7 +4038,7 @@ bool AircraftClass::Landing_Takeoff_AI() {
         *NavCom.
         */
         if (Coord_Cell(Center_Coord()) == As_Cell(NavCom)) {
-          Assign_Destination(TARGET_NONE);
+          Assign_Destination(kTargetNone);
         }
 
         /*
@@ -4107,7 +4107,7 @@ bool AircraftClass::Landing_Takeoff_AI() {
         *Pick_Up functions.
         */
         if (In_Which_Layer() == LAYER_GROUND) {
-          Assign_Destination(TARGET_NONE);  // Clear the navcom.
+          Assign_Destination(kTargetNone);  // Clear the navcom.
           Transmit_Message(RADIO_TETHER);
           Look();
           //					Map.Sight_From(Coord_Cell(Coord),

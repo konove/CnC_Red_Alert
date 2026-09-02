@@ -361,8 +361,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Ensure that there are no more factories left.
       */
       case TEVENT_NOFACTORIES:
-        if (hptr->BScan & (STRUCTF_AIRSTRIP | STRUCTF_TENT | STRUCTF_WEAP |
-                           STRUCTF_BARRACKS | STRUCTF_CONST)) {
+        if (hptr->BScan &
+            (kStructFlagAirstrip | kStructFlagTent | kStructFlagWeap |
+             kStructFlagBarracks | kStructFlagConst)) {
           return false;
         }
         break;
@@ -371,7 +372,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Ensure that there are no fake structures left.
       */
       case TEVENT_FAKES_DESTROYED:
-        if (hptr->BScan & (STRUCTF_FAKECONST | STRUCTF_FAKEWEAP)) {
+        if (hptr->BScan & (kStructFlagFakeConst | kStructFlagFakeWeap)) {
           return false;
         }
         break;

@@ -239,9 +239,9 @@ int LoadOptionsClass::Process() {
       break;
   }
 
-  TextButtonClass button(btn_id, btn_txt, TPF_BUTTON, d_button_x, d_button_y,
+  TextButtonClass button(btn_id, btn_txt, kTpfButton, d_button_x, d_button_y,
                          d_button_w);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w);
 
   ListClass listbtn(BUTTON_LIST, d_list_x, d_list_y, d_list_w, list_ht,
@@ -323,7 +323,7 @@ int LoadOptionsClass::Process() {
       if (Style == SAVE) {
         Fancy_Text_Print(TXT_MISSION_DESCRIPTION, d_dialog_cx,
                          d_edit_y - d_txt8_h, GadgetClass::Get_Color_Scheme(),
-                         TBLACK, TPF_TEXT | TPF_CENTER);
+                         TBLACK, kTpfText | TPF_CENTER);
       }
 
       /*
@@ -467,7 +467,7 @@ int LoadOptionsClass::Process() {
           break;
         }
         game_idx = listbtn.Current_Index();
-        if (Disk_Space_Available() < SAVE_GAME_DISK_SPACE && game_idx == 0) {
+        if (Disk_Space_Available() < kSaveGameDiskSpace && game_idx == 0) {
           WWMessageBox().Process(TXT_SPACE_CANT_SAVE);
           firsttime = true;
           display = true;
@@ -665,7 +665,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   bool found = Find_First_File("SAVEGAME.*", find_state);
 
   while (found) {
-    if (stricmp(find_state.name, NET_SAVE_FILE_NAME) != 0) {
+    if (stricmp(find_state.name, kNetSaveFileName) != 0) {
       /*
       ** Extract the game ID from the filename
       */

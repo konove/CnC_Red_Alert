@@ -598,7 +598,7 @@
 #define TXT_THEME_WASTELND 553                     // Chaos
 #define TXT_CARRIER 554                            // Héliport Mobile
 
-// Copies a cell offset list, stopping early at the REFRESH_EOL terminator.
+// Copies a cell offset list, stopping early at the kRefreshEol terminator.
 // At most len elements are written, so dest must have room for that many.
 void List_Copy(const short* source, int len, short* dest);
 

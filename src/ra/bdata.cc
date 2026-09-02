@@ -108,47 +108,47 @@
 static const short ExitPyle[] = {
     XYCELL(1, 2),  XYCELL(2, 2),  XYCELL(0, 2),  XYCELL(-1, 2), XYCELL(-1, -1),
     XYCELL(0, -1), XYCELL(1, -1), XYCELL(2, -1), XYCELL(2, -1), XYCELL(-1, 0),
-    XYCELL(2, 0),  XYCELL(2, 1),  XYCELL(-1, 1), REFRESH_EOL};
+    XYCELL(2, 0),  XYCELL(2, 1),  XYCELL(-1, 1), kRefreshEol};
 
 static const short ExitSub[] = {XYCELL(0, 2), XYCELL(2, 2), XYCELL(-1, 2),
                                 XYCELL(1, 2), XYCELL(3, 2)};
 
 static const short ExitWeap[] = {XYCELL(1, 2), XYCELL(-1, 3), XYCELL(0, 3),
                                  XYCELL(1, 3), XYCELL(-2, 3), XYCELL(2, 3),
-                                 REFRESH_EOL};
+                                 kRefreshEol};
 
-static const short ComList[] = {0, 1, MCW, MCW + 1, REFRESH_EOL};
+static const short ComList[] = {0, 1, MCW, MCW + 1, kRefreshEol};
 static const short List000111111[] = {(MCW * 1),  MCW * 1 + 1, MCW * 1 + 2,
                                       (MCW * 2),  MCW * 2 + 1, MCW * 2 + 2,
-                                      REFRESH_EOL};
-static const short List0010[] = {MCW, REFRESH_EOL};
-static const short List0011[] = {(MCW * 1), MCW * 1 + 1, REFRESH_EOL};
+                                      kRefreshEol};
+static const short List0010[] = {MCW, kRefreshEol};
+static const short List0011[] = {(MCW * 1), MCW * 1 + 1, kRefreshEol};
 static const short List010111100[] = {1,           (MCW * 1), MCW * 1 + 1,
-                                      MCW * 1 + 2, (MCW * 2), REFRESH_EOL};
-static const short List0111[] = {1, (MCW * 1), MCW * 1 + 1, REFRESH_EOL};
-static const short List1000[] = {0, REFRESH_EOL};
+                                      MCW * 1 + 2, (MCW * 2), kRefreshEol};
+static const short List0111[] = {1, (MCW * 1), MCW * 1 + 1, kRefreshEol};
+static const short List1000[] = {0, kRefreshEol};
 static const short List101000011[] = {0, 2, MCW * 2 + 1, MCW * 2 + 2,
-                                      REFRESH_EOL};
-static const short List1100[] = {0, 1, REFRESH_EOL};
-static const short List1101[] = {0, 1, MCW * 1 + 1, REFRESH_EOL};
-static const short List11[] = {0, 1, REFRESH_EOL};
-static const short List12[] = {MCW, REFRESH_EOL};
-static const short List1[] = {0, REFRESH_EOL};
-static const short List21[] = {0, 1, REFRESH_EOL};
-static const short List22[] = {0, 1, MCW, MCW + 1, REFRESH_EOL};
-static const short List22_0011[] = {MCW, MCW + 1, REFRESH_EOL};
-static const short List22_1100[] = {0, 1, REFRESH_EOL};
-static const short List2[] = {0, 1, MCW + 1, MCW, REFRESH_EOL};
-static const short List32[] = {0, 1, 2, MCW, MCW + 1, MCW + 2, REFRESH_EOL};
+                                      kRefreshEol};
+static const short List1100[] = {0, 1, kRefreshEol};
+static const short List1101[] = {0, 1, MCW * 1 + 1, kRefreshEol};
+static const short List11[] = {0, 1, kRefreshEol};
+static const short List12[] = {MCW, kRefreshEol};
+static const short List1[] = {0, kRefreshEol};
+static const short List21[] = {0, 1, kRefreshEol};
+static const short List22[] = {0, 1, MCW, MCW + 1, kRefreshEol};
+static const short List22_0011[] = {MCW, MCW + 1, kRefreshEol};
+static const short List22_1100[] = {0, 1, kRefreshEol};
+static const short List2[] = {0, 1, MCW + 1, MCW, kRefreshEol};
+static const short List32[] = {0, 1, 2, MCW, MCW + 1, MCW + 2, kRefreshEol};
 // static short const List42[] = {0, 1, 2, 3, MCW, MCW+1, MCW+2, MCW+3,
-// REFRESH_EOL};
+// kRefreshEol};
 static const short ListFix[] = {1,       MCW,           MCW + 1,
-                                MCW + 2, MCW + MCW + 1, REFRESH_EOL};
+                                MCW + 2, MCW + MCW + 1, kRefreshEol};
 static const short ListWeap[] = {
-    0, 1, 2, (MCW * 1), MCW * 1 + 1, MCW * 1 + 2, REFRESH_EOL};
+    0, 1, 2, (MCW * 1), MCW * 1 + 1, MCW * 1 + 2, kRefreshEol};
 static const short ListWestwood[] = {1,       2,       3,          MCW + 1,
-                                     MCW + 2, MCW + 3, REFRESH_EOL};
-static const short OListSAM[] = {-MCW, -(MCW - 1), REFRESH_EOL};
+                                     MCW + 2, MCW + 3, kRefreshEol};
+static const short OListSAM[] = {-MCW, -(MCW - 1), kRefreshEol};
 #ifdef FATSHIP
 static const short ListSPen[] = {0,
                                  1,
@@ -159,25 +159,25 @@ static const short ListSPen[] = {0,
                                  MCW + MCW,
                                  MCW + MCW + 1,
                                  MCW + MCW + 2,
-                                 REFRESH_EOL};
-static const short OListSPen[] = {REFRESH_EOL};
+                                 kRefreshEol};
+static const short OListSPen[] = {kRefreshEol};
 #else
 static const short ListSPen[] = {1,       MCW,           MCW + 1,
-                                 MCW + 2, MCW + MCW + 1, REFRESH_EOL};
-static const short OListSPen[] = {0, 2, MCW + MCW, MCW + MCW + 2, REFRESH_EOL};
+                                 MCW + 2, MCW + MCW + 1, kRefreshEol};
+static const short OListSPen[] = {0, 2, MCW + MCW, MCW + MCW + 2, kRefreshEol};
 #endif
-static const short OListWestwood[] = {0, MCW, REFRESH_EOL};
-static const short StoreList[] = {0, REFRESH_EOL};
+static const short OListWestwood[] = {0, MCW, kRefreshEol};
+static const short StoreList[] = {0, kRefreshEol};
 
 static const short ListFactory[] = {
     0,           1,         2,           (MCW * 1),   MCW * 1 + 1,
-    MCW * 1 + 2, (MCW * 2), MCW * 2 + 1, MCW * 2 + 2, REFRESH_EOL};
+    MCW * 1 + 2, (MCW * 2), MCW * 2 + 1, MCW * 2 + 2, kRefreshEol};
 
-static const short OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, REFRESH_EOL};
-static const short OListWeap[] = {REFRESH_EOL};
-static const short OComList[] = {1, REFRESH_EOL};
-static const short OList12[] = {0, REFRESH_EOL};
-static const short OListTmpl[] = {0, 1, 2, REFRESH_EOL};
+static const short OListFix[] = {0, 2, MCW + MCW, MCW + MCW + 2, kRefreshEol};
+static const short OListWeap[] = {kRefreshEol};
+static const short OComList[] = {1, kRefreshEol};
+static const short OList12[] = {0, kRefreshEol};
+static const short OListTmpl[] = {0, 1, 2, kRefreshEol};
 
 /***************************************************************************
  */
@@ -3447,7 +3447,7 @@ const short* BuildingTypeClass::Occupy_List(bool placement) const {
     **	Copy the bib overlap list into the working buffer.
     */
     const short* src = smudge.Occupy_List();
-    while (*src != REFRESH_EOL) {
+    while (*src != kRefreshEol) {
       *dest++ = static_cast<short>(*src++ + cell);
     }
 
@@ -3455,10 +3455,10 @@ const short* BuildingTypeClass::Occupy_List(bool placement) const {
     **	Append the building occupy list to this working buffer.
     */
     src = OccupyList;
-    while (src && *src != REFRESH_EOL) {
+    while (src && *src != kRefreshEol) {
       *dest++ = *src++;
     }
-    *dest = REFRESH_EOL;
+    *dest = kRefreshEol;
 
     return &_list[0];
   }
@@ -3467,7 +3467,7 @@ const short* BuildingTypeClass::Occupy_List(bool placement) const {
     return OccupyList;
   }
 
-  static const short _templap[] = {REFRESH_EOL};
+  static const short _templap[] = {kRefreshEol};
   return &_templap[0];
 }
 
@@ -3493,7 +3493,7 @@ const short* BuildingTypeClass::Overlap_List() const {
     return OverlapList;
   }
 
-  static const short _templap[] = {REFRESH_EOL};
+  static const short _templap[] = {kRefreshEol};
   return &_templap[0];
 }
 
@@ -3688,7 +3688,7 @@ bool BuildingTypeClass::Flush_For_Placement(CELL cell,
   if (cell > 0) {
     const short* list = Occupy_List(true);
 
-    while (*list != REFRESH_EOL) {
+    while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);
 
       if (Map.In_Radar(newcell)) {

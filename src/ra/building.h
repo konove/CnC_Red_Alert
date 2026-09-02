@@ -361,7 +361,7 @@ class BuildingClass : public TechnoClass {
   bool Save(Pipe& file) const;
 
  private:
-  void Drop_Debris(TARGET source = TARGET_NONE);
+  void Drop_Debris(TARGET source = kTargetNone);
 
   static const COORDINATE CenterOffset[BSIZE_COUNT];
 };

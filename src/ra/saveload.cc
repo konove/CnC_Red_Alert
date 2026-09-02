@@ -424,7 +424,7 @@ bool Save_Game(int id, const char* descr, bool) {
   ** network/modem game; otherwise, use 'id' as the file extension.
   */
   if (id == -1) {
-    port::SafeCopy(name, NET_SAVE_FILE_NAME);
+    port::SafeCopy(name, kNetSaveFileName);
     save_net = 1;
   } else {
     sprintf(name, "SAVEGAME.%03d", id);
@@ -562,7 +562,7 @@ bool Load_Game(int id) {
   ** network/modem game; otherwise, use 'id' as the file extension.
   */
   if (id == -1) {
-    port::SafeCopy(name, NET_SAVE_FILE_NAME);
+    port::SafeCopy(name, kNetSaveFileName);
     load_net = 1;
   } else {
     sprintf(name, "SAVEGAME.%03d", id);

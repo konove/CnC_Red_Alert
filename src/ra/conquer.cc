@@ -2242,7 +2242,7 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
   static unsigned char* x_buffer = nullptr;
 
   if (!x_buffer) {
-    x_buffer = new unsigned char[SHAPE_BUFFER_SIZE];
+    x_buffer = new unsigned char[kShapeBufferSize];
   }
 
   if (shapefile != nullptr && shape_num != -1) {
@@ -2274,7 +2274,7 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
         BitmapClass bm(width, height, buffer);
         width *= 2;
         height *= 2;
-        memset(x_buffer, '\0', SHAPE_BUFFER_SIZE);
+        memset(x_buffer, '\0', kShapeBufferSize);
         GraphicBufferClass gb(width, height, x_buffer);
         TPoint2D pt(width / 2, height / 2);
 
@@ -3085,14 +3085,14 @@ CrateType Crate_From_Name(const char* name) {
 }
 
 int Owner_From_Name(const char* text) {
-  // Accumulated unsigned: this is a bit pattern, and the HOUSEF_ masks reach
+  // Accumulated unsigned: this is a bit pattern, and the house masks reach
   // the sign bit once enough houses are set.
   unsigned ownable = 0;
   if (stricmp(text, "soviet") == 0) {
-    ownable |= static_cast<unsigned>(HOUSEF_SOVIET);
+    ownable |= static_cast<unsigned>(kHouseFlagSoviet);
   } else {
     if (stricmp(text, "allies") == 0 || stricmp(text, "allied") == 0) {
-      ownable |= static_cast<unsigned>(HOUSEF_ALLIES);
+      ownable |= static_cast<unsigned>(kHouseFlagAllies);
     } else {
       HousesType h = HouseTypeClass::From_Name(text);
       if (h != HOUSE_NONE && (h < HOUSE_MULTI1 || h > HOUSE_MULTI8)) {
@@ -3149,7 +3149,7 @@ void List_Copy(const short* source, int len, short* dest) {
 
   while (len > 0) {
     *dest = *source;
-    if (*dest == REFRESH_EOL) {
+    if (*dest == kRefreshEol) {
       break;
     }
     dest++;

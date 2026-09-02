@@ -205,7 +205,7 @@ class FootClass : public TechnoClass {
   /*
   **	A sequence of move destinations can be given to a unit. The sequence is
   **	stores as an array of movement targets. The list is terminated with a
-  **	TARGET_NONE.
+  **	kTargetNone.
   */
   TARGET NavQueue[10];
 

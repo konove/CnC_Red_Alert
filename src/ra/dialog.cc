@@ -980,7 +980,7 @@ void Draw_Caption(const char* text, int x, int y, int w) {
                        TPF_CENTER | TPF_EFNT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     } else {
       Fancy_Text_Print(text, w / 2 + x, 16 + y, GadgetClass::Get_Color_Scheme(),
-                       TBLACK, TPF_CENTER | TPF_TEXT);
+                       TBLACK, TPF_CENTER | kTpfText);
       int length = String_Pixel_Width(text);
       LogicPage->Draw_Line(
           x + w / 2 - length / 2, y + FontHeight + FontYSpacing + 16,

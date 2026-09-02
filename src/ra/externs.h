@@ -235,8 +235,8 @@ extern FixedIHeapClass* HeapPointers[RTTI_COUNT];
 extern TFixedIHeapClass<WeaponTypeClass> Weapons;
 extern TFixedIHeapClass<WarheadTypeClass> Warheads;
 
-extern QueueClass<EventClass, MAX_EVENTS> OutList;
-extern QueueClass<EventClass, MAX_EVENTS * 64> DoList;
+extern QueueClass<EventClass, kMaxEvents> OutList;
+extern QueueClass<EventClass, kMaxEvents * 64> DoList;
 
 extern DynamicVectorClass<ObjectClass*> CurrentObject;
 extern DynamicVectorClass<TriggerClass*> LogicTriggers;
@@ -346,7 +346,7 @@ extern int CurrentCD;
 extern int MouseInstalled;
 
 extern int LogLevel;
-extern int64_t LogLevelTime[MAX_LOG_LEVEL];
+extern int64_t LogLevelTime[kMaxLogLevel];
 extern int64_t LogLastTime;
 
 extern DynamicVectorClass<EventChoiceClass> test2;

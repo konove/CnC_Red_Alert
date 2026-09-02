@@ -183,18 +183,18 @@ GameType Select_MPlayer_Game() {
   //	}
 
   TextButtonClass modemserialbtn(BUTTON_MODEMSERIAL, TXT_MODEM_SERIAL,
-                                 TPF_BUTTON, d_modemserial_x, d_modemserial_y,
+                                 kTpfButton, d_modemserial_x, d_modemserial_y,
                                  d_modemserial_w, d_modemserial_h);
 
-  TextButtonClass skirmishbtn(BUTTON_SKIRMISH, TXT_SKIRMISH, TPF_BUTTON,
+  TextButtonClass skirmishbtn(BUTTON_SKIRMISH, TXT_SKIRMISH, kTpfButton,
                               d_skirmish_x, d_skirmish_y, d_skirmish_w,
                               d_skirmish_h);
 
-  TextButtonClass ipxbtn(BUTTON_IPX, TXT_NETWORK, TPF_BUTTON, d_ipx_x, d_ipx_y,
+  TextButtonClass ipxbtn(BUTTON_IPX, TXT_NETWORK, kTpfButton, d_ipx_x, d_ipx_y,
                          d_ipx_w, d_ipx_h);
 
   //	ajw
-  TextButtonClass wolbtn(BUTTON_WOL, TXT_WOL_INTERNETBUTTON, TPF_BUTTON,
+  TextButtonClass wolbtn(BUTTON_WOL, TXT_WOL_INTERNETBUTTON, kTpfButton,
                          d_wol_x, d_wol_y, d_wol_w, d_wol_h);
 
   if (!has_ipx) {
@@ -202,7 +202,7 @@ GameType Select_MPlayer_Game() {
     d_dialog_h -= d_cancel_h;
   }
 
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w, d_cancel_h);
 
   //------------------------------------------------------------------------
@@ -241,7 +241,7 @@ GameType Select_MPlayer_Game() {
   Keyboard->Clear();
 
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
-                   TPF_CENTER | TPF_TEXT);
+                   TPF_CENTER | kTpfText);
 
   //------------------------------------------------------------------------
   //	Main Processing Loop
@@ -710,10 +710,10 @@ int Surrender_Dialog(const char* text) {
   //------------------------------------------------------------------------
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_BUTTON, D_OK_X, D_OK_Y, D_OK_W,
+  TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfButton, D_OK_X, D_OK_Y, D_OK_W,
                         D_OK_H);
 
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, D_CANCEL_X,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, D_CANCEL_X,
                             D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
 
   int curbutton;
@@ -771,7 +771,7 @@ int Surrender_Dialog(const char* text) {
       // Stalemate games.
       Fancy_Text_Print(text, D_DIALOG_CX, D_DIALOG_Y + D_TOPMARGIN,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
-                       TPF_CENTER | TPF_TEXT);
+                       TPF_CENTER | kTpfText);
 
       //..................................................................
       //	Redraw the buttons
@@ -902,10 +902,10 @@ int Abort_Dialog() {
   //------------------------------------------------------------------------
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass yesbtn(BUTTON_YES, TXT_YES, TPF_BUTTON, D_YES_X, D_YES_Y,
+  TextButtonClass yesbtn(BUTTON_YES, TXT_YES, kTpfButton, D_YES_X, D_YES_Y,
                          D_YES_W, D_YES_H);
 
-  TextButtonClass nobtn(BUTTON_NO, TXT_NO, TPF_BUTTON, D_NO_X, D_NO_Y, D_NO_W,
+  TextButtonClass nobtn(BUTTON_NO, TXT_NO, kTpfButton, D_NO_X, D_NO_Y, D_NO_W,
                         D_NO_H);
 
   int curbutton;
@@ -962,7 +962,7 @@ int Abort_Dialog() {
       //...............................................................
       Fancy_Text_Print(
           Text_String(TXT_CONFIRM_EXIT), D_DIALOG_CX, D_DIALOG_Y + D_TOPMARGIN,
-          GadgetClass::Get_Color_Scheme(), TBLACK, TPF_CENTER | TPF_TEXT);
+          GadgetClass::Get_Color_Scheme(), TBLACK, TPF_CENTER | kTpfText);
 
       //..................................................................
       //	Redraw the buttons

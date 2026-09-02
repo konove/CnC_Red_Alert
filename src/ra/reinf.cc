@@ -734,14 +734,14 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       /*
       ** If a navcom was specified then set it.
       */
-      if (navcom != TARGET_NONE) {
+      if (navcom != kTargetNone) {
         obj->Assign_Destination(navcom);
       }
 
       /*
       ** If a tarcom was specified then set it.
       */
-      if (tarcom != TARGET_NONE) {
+      if (tarcom != kTargetNone) {
         obj->Assign_Target(tarcom);
       }
 

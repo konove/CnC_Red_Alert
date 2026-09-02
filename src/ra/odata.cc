@@ -693,7 +693,7 @@ OverlayType OverlayTypeClass::From_Name(const char* name) {
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
 const short* OverlayTypeClass::Occupy_List(bool) const {
-  static short _simple[] = {0, REFRESH_EOL};
+  static short _simple[] = {0, kRefreshEol};
 
   return _simple;
 }

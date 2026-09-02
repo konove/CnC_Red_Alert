@@ -376,7 +376,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
  * HISTORY: * 06/01/1995 JLB : Created. *
  *=============================================================================================*/
 void PowerClass::Refresh_Cells(CELL cell, const short* list) {
-  if (*list == REFRESH_SIDEBAR) {
+  if (*list == kRefreshSidebar) {
     IsToRedraw = true;
     Flag_To_Redraw(false);
   }

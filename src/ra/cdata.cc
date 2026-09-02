@@ -78,1073 +78,1141 @@
 #include "sdllib/ww_win.h"
 
 static const TemplateTypeClass Empty(TEMPLATE_CLEAR1,
-                                     THEATERF_TEMPERATE | THEATERF_SNOW |
-                                         THEATERF_INTERIOR,
+                                     kTheaterFlagTemperate | kTheaterFlagSnow |
+                                         kTheaterFlagInterior,
                                      "CLEAR1", TXT_CLEAR);
 static const TemplateTypeClass Clear(TEMPLATE_CLEAR1,
-                                     THEATERF_TEMPERATE | THEATERF_SNOW |
-                                         THEATERF_INTERIOR,
+                                     kTheaterFlagTemperate | kTheaterFlagSnow |
+                                         kTheaterFlagInterior,
                                      "CLEAR1", TXT_CLEAR);
 static const TemplateTypeClass Road01(TEMPLATE_ROAD01,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D01",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D01", TXT_ROAD);
 static const TemplateTypeClass Road02(TEMPLATE_ROAD02,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D02",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D02", TXT_ROAD);
 static const TemplateTypeClass Road03(TEMPLATE_ROAD03,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D03",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D03", TXT_ROAD);
 static const TemplateTypeClass Road04(TEMPLATE_ROAD04,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D04",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D04", TXT_ROAD);
 static const TemplateTypeClass Road05(TEMPLATE_ROAD05,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D05",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D05", TXT_ROAD);
 static const TemplateTypeClass Road06(TEMPLATE_ROAD06,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D06",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D06", TXT_ROAD);
 static const TemplateTypeClass Road07(TEMPLATE_ROAD07,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D07",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D07", TXT_ROAD);
 static const TemplateTypeClass Road08(TEMPLATE_ROAD08,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D08",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D08", TXT_ROAD);
 static const TemplateTypeClass Road09(TEMPLATE_ROAD09,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D09",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D09", TXT_ROAD);
 static const TemplateTypeClass Road10(TEMPLATE_ROAD10,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D10",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D10", TXT_ROAD);
 static const TemplateTypeClass Road11(TEMPLATE_ROAD11,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D11",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D11", TXT_ROAD);
 static const TemplateTypeClass Road12(TEMPLATE_ROAD12,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D12",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D12", TXT_ROAD);
 static const TemplateTypeClass Road13(TEMPLATE_ROAD13,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D13",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D13", TXT_ROAD);
 static const TemplateTypeClass Road14(TEMPLATE_ROAD14,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D14",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D14", TXT_ROAD);
 static const TemplateTypeClass Road15(TEMPLATE_ROAD15,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D15",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D15", TXT_ROAD);
 static const TemplateTypeClass Road16(TEMPLATE_ROAD16,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D16",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D16", TXT_ROAD);
 static const TemplateTypeClass Road17(TEMPLATE_ROAD17,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D17",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D17", TXT_ROAD);
 static const TemplateTypeClass Road18(TEMPLATE_ROAD18,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D18",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D18", TXT_ROAD);
 static const TemplateTypeClass Road19(TEMPLATE_ROAD19,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D19",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D19", TXT_ROAD);
 static const TemplateTypeClass Road20(TEMPLATE_ROAD20,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D20",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D20", TXT_ROAD);
 static const TemplateTypeClass Road21(TEMPLATE_ROAD21,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D21",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D21", TXT_ROAD);
 static const TemplateTypeClass Road22(TEMPLATE_ROAD22,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D22",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D22", TXT_ROAD);
 static const TemplateTypeClass Road23(TEMPLATE_ROAD23,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D23",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D23", TXT_ROAD);
 static const TemplateTypeClass Road24(TEMPLATE_ROAD24,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D24",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D24", TXT_ROAD);
 static const TemplateTypeClass Road25(TEMPLATE_ROAD25,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D25",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D25", TXT_ROAD);
 static const TemplateTypeClass Road26(TEMPLATE_ROAD26,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D26",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D26", TXT_ROAD);
 static const TemplateTypeClass Road27(TEMPLATE_ROAD27,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D27",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D27", TXT_ROAD);
 static const TemplateTypeClass Road28(TEMPLATE_ROAD28,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D28",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D28", TXT_ROAD);
 static const TemplateTypeClass Road29(TEMPLATE_ROAD29,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D29",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D29", TXT_ROAD);
 static const TemplateTypeClass Road30(TEMPLATE_ROAD30,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D30",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D30", TXT_ROAD);
 static const TemplateTypeClass Road31(TEMPLATE_ROAD31,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D31",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D31", TXT_ROAD);
 static const TemplateTypeClass Road32(TEMPLATE_ROAD32,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D32",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D32", TXT_ROAD);
 static const TemplateTypeClass Road33(TEMPLATE_ROAD33,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D33",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D33", TXT_ROAD);
 static const TemplateTypeClass Road34(TEMPLATE_ROAD34,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D34",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D34", TXT_ROAD);
 static const TemplateTypeClass Road35(TEMPLATE_ROAD35,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D35",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D35", TXT_ROAD);
 static const TemplateTypeClass Road36(TEMPLATE_ROAD36,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D36",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D36", TXT_ROAD);
 static const TemplateTypeClass Road37(TEMPLATE_ROAD37,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D37",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D37", TXT_ROAD);
 static const TemplateTypeClass Road38(TEMPLATE_ROAD38,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D38",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D38", TXT_ROAD);
 static const TemplateTypeClass Road39(TEMPLATE_ROAD39,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D39",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D39", TXT_ROAD);
 static const TemplateTypeClass Road40(TEMPLATE_ROAD40,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D40",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D40", TXT_ROAD);
 static const TemplateTypeClass Road41(TEMPLATE_ROAD41,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D41",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D41", TXT_ROAD);
 static const TemplateTypeClass Road42(TEMPLATE_ROAD42,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D42",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D42", TXT_ROAD);
 static const TemplateTypeClass Road43(TEMPLATE_ROAD43,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D43",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D43", TXT_ROAD);
 static const TemplateTypeClass Road44(TEMPLATE_ROAD44,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D44",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D44", TXT_ROAD);
 static const TemplateTypeClass Road45(TEMPLATE_ROAD45,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "D45",
-                                      TXT_ROAD);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "D45", TXT_ROAD);
 static const TemplateTypeClass Water(TEMPLATE_WATER,
-                                     THEATERF_TEMPERATE | THEATERF_SNOW, "W1",
-                                     TXT_WATER);
+                                     kTheaterFlagTemperate | kTheaterFlagSnow,
+                                     "W1", TXT_WATER);
 static const TemplateTypeClass Water2(TEMPLATE_WATER2,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW, "W2",
-                                      TXT_WATER);
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
+                                      "W2", TXT_WATER);
 static const TemplateTypeClass Shore01(TEMPLATE_SHORE01,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH01", TXT_SHORE);
 static const TemplateTypeClass Shore02(TEMPLATE_SHORE02,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH02", TXT_SHORE);
 static const TemplateTypeClass Shore03(TEMPLATE_SHORE03,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH03", TXT_SHORE);
 static const TemplateTypeClass Shore04(TEMPLATE_SHORE04,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH04", TXT_SHORE);
 static const TemplateTypeClass Shore05(TEMPLATE_SHORE05,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH05", TXT_SHORE);
 static const TemplateTypeClass Shore06(TEMPLATE_SHORE06,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH06", TXT_SHORE);
 static const TemplateTypeClass Shore07(TEMPLATE_SHORE07,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH07", TXT_SHORE);
 static const TemplateTypeClass Shore08(TEMPLATE_SHORE08,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH08", TXT_SHORE);
 static const TemplateTypeClass Shore09(TEMPLATE_SHORE09,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH09", TXT_SHORE);
 static const TemplateTypeClass Shore10(TEMPLATE_SHORE10,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH10", TXT_SHORE);
 static const TemplateTypeClass Shore11(TEMPLATE_SHORE11,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH11", TXT_SHORE);
 static const TemplateTypeClass Shore12(TEMPLATE_SHORE12,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH12", TXT_SHORE);
 static const TemplateTypeClass Shore13(TEMPLATE_SHORE13,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH13", TXT_SHORE);
 static const TemplateTypeClass Shore14(TEMPLATE_SHORE14,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH14", TXT_SHORE);
 static const TemplateTypeClass Shore15(TEMPLATE_SHORE15,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH15", TXT_SHORE);
 static const TemplateTypeClass Shore16(TEMPLATE_SHORE16,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH16", TXT_SHORE);
 static const TemplateTypeClass Shore17(TEMPLATE_SHORE17,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH17", TXT_SHORE);
 static const TemplateTypeClass Shore18(TEMPLATE_SHORE18,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH18", TXT_SHORE);
 static const TemplateTypeClass Shore19(TEMPLATE_SHORE19,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH19", TXT_SHORE);
 static const TemplateTypeClass Shore20(TEMPLATE_SHORE20,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH20", TXT_SHORE);
 static const TemplateTypeClass Shore21(TEMPLATE_SHORE21,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH21", TXT_SHORE);
 static const TemplateTypeClass Shore22(TEMPLATE_SHORE22,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH22", TXT_SHORE);
 static const TemplateTypeClass Shore23(TEMPLATE_SHORE23,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH23", TXT_SHORE);
 static const TemplateTypeClass Shore24(TEMPLATE_SHORE24,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH24", TXT_SHORE);
 static const TemplateTypeClass Shore25(TEMPLATE_SHORE25,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH25", TXT_SHORE);
 static const TemplateTypeClass Shore26(TEMPLATE_SHORE26,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH26", TXT_SHORE);
 static const TemplateTypeClass Shore27(TEMPLATE_SHORE27,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH27", TXT_SHORE);
 static const TemplateTypeClass Shore28(TEMPLATE_SHORE28,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH28", TXT_SHORE);
 static const TemplateTypeClass Shore29(TEMPLATE_SHORE29,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH29", TXT_SHORE);
 static const TemplateTypeClass Shore30(TEMPLATE_SHORE30,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH30", TXT_SHORE);
 static const TemplateTypeClass Shore31(TEMPLATE_SHORE31,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH31", TXT_SHORE);
 static const TemplateTypeClass Shore32(TEMPLATE_SHORE32,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH32", TXT_SHORE);
 static const TemplateTypeClass Shore33(TEMPLATE_SHORE33,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH33", TXT_SHORE);
 static const TemplateTypeClass Shore34(TEMPLATE_SHORE34,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH34", TXT_SHORE);
 static const TemplateTypeClass Shore35(TEMPLATE_SHORE35,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH35", TXT_SHORE);
 static const TemplateTypeClass Shore36(TEMPLATE_SHORE36,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH36", TXT_SHORE);
 static const TemplateTypeClass Shore37(TEMPLATE_SHORE37,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH37", TXT_SHORE);
 static const TemplateTypeClass Shore38(TEMPLATE_SHORE38,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH38", TXT_SHORE);
 static const TemplateTypeClass Shore39(TEMPLATE_SHORE39,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH39", TXT_SHORE);
 static const TemplateTypeClass Shore40(TEMPLATE_SHORE40,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH40", TXT_SHORE);
 static const TemplateTypeClass Shore41(TEMPLATE_SHORE41,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH41", TXT_SHORE);
 static const TemplateTypeClass Shore42(TEMPLATE_SHORE42,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH42", TXT_SHORE);
 static const TemplateTypeClass Shore43(TEMPLATE_SHORE43,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH43", TXT_SHORE);
 static const TemplateTypeClass Shore44(TEMPLATE_SHORE44,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH44", TXT_SHORE);
 static const TemplateTypeClass Shore45(TEMPLATE_SHORE45,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH45", TXT_SHORE);
 static const TemplateTypeClass Shore46(TEMPLATE_SHORE46,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH46", TXT_SHORE);
 static const TemplateTypeClass Shore47(TEMPLATE_SHORE47,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH47", TXT_SHORE);
 static const TemplateTypeClass Shore48(TEMPLATE_SHORE48,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH48", TXT_SHORE);
 static const TemplateTypeClass Shore49(TEMPLATE_SHORE49,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH49", TXT_SHORE);
 static const TemplateTypeClass Shore50(TEMPLATE_SHORE50,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH50", TXT_SHORE);
 static const TemplateTypeClass Shore51(TEMPLATE_SHORE51,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH51", TXT_SHORE);
 static const TemplateTypeClass Shore52(TEMPLATE_SHORE52,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH52", TXT_SHORE);
 static const TemplateTypeClass Shore53(TEMPLATE_SHORE53,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH53", TXT_SHORE);
 static const TemplateTypeClass Shore54(TEMPLATE_SHORE54,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH54", TXT_SHORE);
 static const TemplateTypeClass Shore55(TEMPLATE_SHORE55,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH55", TXT_SHORE);
 static const TemplateTypeClass Shore56(TEMPLATE_SHORE56,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "SH56", TXT_SHORE);
 static const TemplateTypeClass Boulder1(TEMPLATE_BOULDER1,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "B1", TXT_SLOPE);
 static const TemplateTypeClass Boulder2(TEMPLATE_BOULDER2,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "B2", TXT_SLOPE);
 static const TemplateTypeClass Boulder3(TEMPLATE_BOULDER3,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "B3", TXT_SLOPE);
 static const TemplateTypeClass Boulder4(TEMPLATE_BOULDER4,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "B4", TXT_SLOPE);
 static const TemplateTypeClass Boulder5(TEMPLATE_BOULDER5,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "B5", TXT_SLOPE);
 static const TemplateTypeClass Boulder6(TEMPLATE_BOULDER6,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "B6", TXT_SLOPE);
 static const TemplateTypeClass Slope01(TEMPLATE_SLOPE01,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S01", TXT_SLOPE);
 static const TemplateTypeClass Slope02(TEMPLATE_SLOPE02,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S02", TXT_SLOPE);
 static const TemplateTypeClass Slope03(TEMPLATE_SLOPE03,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S03", TXT_SLOPE);
 static const TemplateTypeClass Slope04(TEMPLATE_SLOPE04,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S04", TXT_SLOPE);
 static const TemplateTypeClass Slope05(TEMPLATE_SLOPE05,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S05", TXT_SLOPE);
 static const TemplateTypeClass Slope06(TEMPLATE_SLOPE06,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S06", TXT_SLOPE);
 static const TemplateTypeClass Slope07(TEMPLATE_SLOPE07,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S07", TXT_SLOPE);
 static const TemplateTypeClass Slope08(TEMPLATE_SLOPE08,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S08", TXT_SLOPE);
 static const TemplateTypeClass Slope09(TEMPLATE_SLOPE09,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S09", TXT_SLOPE);
 static const TemplateTypeClass Slope10(TEMPLATE_SLOPE10,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S10", TXT_SLOPE);
 static const TemplateTypeClass Slope11(TEMPLATE_SLOPE11,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S11", TXT_SLOPE);
 static const TemplateTypeClass Slope12(TEMPLATE_SLOPE12,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S12", TXT_SLOPE);
 static const TemplateTypeClass Slope13(TEMPLATE_SLOPE13,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S13", TXT_SLOPE);
 static const TemplateTypeClass Slope14(TEMPLATE_SLOPE14,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S14", TXT_SLOPE);
 static const TemplateTypeClass Slope15(TEMPLATE_SLOPE15,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S15", TXT_SLOPE);
 static const TemplateTypeClass Slope16(TEMPLATE_SLOPE16,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S16", TXT_SLOPE);
 static const TemplateTypeClass Slope17(TEMPLATE_SLOPE17,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S17", TXT_SLOPE);
 static const TemplateTypeClass Slope18(TEMPLATE_SLOPE18,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S18", TXT_SLOPE);
 static const TemplateTypeClass Slope19(TEMPLATE_SLOPE19,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S19", TXT_SLOPE);
 static const TemplateTypeClass Slope20(TEMPLATE_SLOPE20,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S20", TXT_SLOPE);
 static const TemplateTypeClass Slope21(TEMPLATE_SLOPE21,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S21", TXT_SLOPE);
 static const TemplateTypeClass Slope22(TEMPLATE_SLOPE22,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S22", TXT_SLOPE);
 static const TemplateTypeClass Slope23(TEMPLATE_SLOPE23,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S23", TXT_SLOPE);
 static const TemplateTypeClass Slope24(TEMPLATE_SLOPE24,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S24", TXT_SLOPE);
 static const TemplateTypeClass Slope25(TEMPLATE_SLOPE25,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S25", TXT_SLOPE);
 static const TemplateTypeClass Slope26(TEMPLATE_SLOPE26,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S26", TXT_SLOPE);
 static const TemplateTypeClass Slope27(TEMPLATE_SLOPE27,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S27", TXT_SLOPE);
 static const TemplateTypeClass Slope28(TEMPLATE_SLOPE28,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S28", TXT_SLOPE);
 static const TemplateTypeClass Slope29(TEMPLATE_SLOPE29,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S29", TXT_SLOPE);
 static const TemplateTypeClass Slope30(TEMPLATE_SLOPE30,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S30", TXT_SLOPE);
 static const TemplateTypeClass Slope31(TEMPLATE_SLOPE31,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S31", TXT_SLOPE);
 static const TemplateTypeClass Slope32(TEMPLATE_SLOPE32,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S32", TXT_SLOPE);
 static const TemplateTypeClass Slope33(TEMPLATE_SLOPE33,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S33", TXT_SLOPE);
 static const TemplateTypeClass Slope34(TEMPLATE_SLOPE34,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S34", TXT_SLOPE);
 static const TemplateTypeClass Slope35(TEMPLATE_SLOPE35,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S35", TXT_SLOPE);
 static const TemplateTypeClass Slope36(TEMPLATE_SLOPE36,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S36", TXT_SLOPE);
 static const TemplateTypeClass Slope37(TEMPLATE_SLOPE37,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S37", TXT_SLOPE);
 static const TemplateTypeClass Slope38(TEMPLATE_SLOPE38,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "S38", TXT_SLOPE);
 static const TemplateTypeClass Patch01(TEMPLATE_PATCH01,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "P01", TXT_PATCH);
 static const TemplateTypeClass Patch02(TEMPLATE_PATCH02,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "P02", TXT_PATCH);
 static const TemplateTypeClass Patch03(TEMPLATE_PATCH03,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "P03", TXT_PATCH);
 static const TemplateTypeClass Patch04(TEMPLATE_PATCH04,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "P04", TXT_PATCH);
 static const TemplateTypeClass Patch07(TEMPLATE_PATCH07,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "P07", TXT_PATCH);
 static const TemplateTypeClass Patch08(TEMPLATE_PATCH08,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "P08", TXT_PATCH);
 static const TemplateTypeClass Patch13(TEMPLATE_PATCH13,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "P13", TXT_PATCH);
 static const TemplateTypeClass Patch14(TEMPLATE_PATCH14,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "P14", TXT_PATCH);
 static const TemplateTypeClass Patch15(TEMPLATE_PATCH15,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "P15", TXT_PATCH);
 static const TemplateTypeClass River01(TEMPLATE_RIVER01,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV01", TXT_RIVER);
 static const TemplateTypeClass River02(TEMPLATE_RIVER02,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV02", TXT_RIVER);
 static const TemplateTypeClass River03(TEMPLATE_RIVER03,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV03", TXT_RIVER);
 static const TemplateTypeClass River04(TEMPLATE_RIVER04,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV04", TXT_RIVER);
 static const TemplateTypeClass River05(TEMPLATE_RIVER05,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV05", TXT_RIVER);
 static const TemplateTypeClass River06(TEMPLATE_RIVER06,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV06", TXT_RIVER);
 static const TemplateTypeClass River07(TEMPLATE_RIVER07,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV07", TXT_RIVER);
 static const TemplateTypeClass River08(TEMPLATE_RIVER08,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV08", TXT_RIVER);
 static const TemplateTypeClass River09(TEMPLATE_RIVER09,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV09", TXT_RIVER);
 static const TemplateTypeClass River10(TEMPLATE_RIVER10,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV10", TXT_RIVER);
 static const TemplateTypeClass River11(TEMPLATE_RIVER11,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV11", TXT_RIVER);
 static const TemplateTypeClass River12(TEMPLATE_RIVER12,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV12", TXT_RIVER);
 static const TemplateTypeClass River13(TEMPLATE_RIVER13,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV13", TXT_RIVER);
 static const TemplateTypeClass River14(TEMPLATE_RIVER14,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV14", TXT_RIVER);
 static const TemplateTypeClass River15(TEMPLATE_RIVER15,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RV15", TXT_RIVER);
 static const TemplateTypeClass Ford1(TEMPLATE_FORD1,
-                                     THEATERF_TEMPERATE | THEATERF_SNOW,
+                                     kTheaterFlagTemperate | kTheaterFlagSnow,
                                      "FORD1", TXT_RIVER);
 static const TemplateTypeClass Ford2(TEMPLATE_FORD2,
-                                     THEATERF_TEMPERATE | THEATERF_SNOW,
+                                     kTheaterFlagTemperate | kTheaterFlagSnow,
                                      "FORD2", TXT_RIVER);
 static const TemplateTypeClass Falls1(TEMPLATE_FALLS1,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW,
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
                                       "FALLS1", TXT_RIVER);
 static const TemplateTypeClass Falls1a(TEMPLATE_FALLS1A,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "FALLS1A", TXT_RIVER);
 static const TemplateTypeClass Falls2(TEMPLATE_FALLS2,
-                                      THEATERF_TEMPERATE | THEATERF_SNOW,
+                                      kTheaterFlagTemperate | kTheaterFlagSnow,
                                       "FALLS2", TXT_RIVER);
 static const TemplateTypeClass Falls2a(TEMPLATE_FALLS2A,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "FALLS2A", TXT_RIVER);
 static const TemplateTypeClass Bridge1x(TEMPLATE_BRIDGE1X,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BRIDGE1X", TXT_BRIDGE);
 static const TemplateTypeClass Bridge1(TEMPLATE_BRIDGE1,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "BRIDGE1", TXT_BRIDGE);
 static const TemplateTypeClass Bridge1h(TEMPLATE_BRIDGE1H,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BRIDGE1H", TXT_BRIDGE);
 static const TemplateTypeClass Bridge1d(TEMPLATE_BRIDGE1D,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BRIDGE1D", TXT_BRIDGE);
 static const TemplateTypeClass Bridge2x(TEMPLATE_BRIDGE2X,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BRIDGE2X", TXT_BRIDGE);
 static const TemplateTypeClass Bridge2(TEMPLATE_BRIDGE2,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "BRIDGE2", TXT_BRIDGE);
 static const TemplateTypeClass Bridge2h(TEMPLATE_BRIDGE2H,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BRIDGE2H", TXT_BRIDGE);
 static const TemplateTypeClass Bridge2d(TEMPLATE_BRIDGE2D,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BRIDGE2D", TXT_BRIDGE);
 static const TemplateTypeClass Bridge1ax(TEMPLATE_BRIDGE_1AX,
-                                         THEATERF_TEMPERATE | THEATERF_SNOW,
+                                         kTheaterFlagTemperate |
+                                             kTheaterFlagSnow,
                                          "BR1X", TXT_BRIDGE);
 static const TemplateTypeClass Bridge1a(TEMPLATE_BRIDGE_1A,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR1A", TXT_BRIDGE);
 static const TemplateTypeClass Bridge1b(TEMPLATE_BRIDGE_1B,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR1B", TXT_BRIDGE);
 static const TemplateTypeClass Bridge1c(TEMPLATE_BRIDGE_1C,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR1C", TXT_BRIDGE);
 static const TemplateTypeClass Bridge2ax(TEMPLATE_BRIDGE_2AX,
-                                         THEATERF_TEMPERATE | THEATERF_SNOW,
+                                         kTheaterFlagTemperate |
+                                             kTheaterFlagSnow,
                                          "BR2X", TXT_BRIDGE);
 static const TemplateTypeClass Bridge2a(TEMPLATE_BRIDGE_2A,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR2A", TXT_BRIDGE);
 static const TemplateTypeClass Bridge2b(TEMPLATE_BRIDGE_2B,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR2B", TXT_BRIDGE);
 static const TemplateTypeClass Bridge2c(TEMPLATE_BRIDGE_2C,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR2C", TXT_BRIDGE);
 static const TemplateTypeClass Bridge3a(TEMPLATE_BRIDGE_3A,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR3A", TXT_BRIDGE);
 static const TemplateTypeClass Bridge3b(TEMPLATE_BRIDGE_3B,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR3B", TXT_BRIDGE);
 static const TemplateTypeClass Bridge3c(TEMPLATE_BRIDGE_3C,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR3C", TXT_BRIDGE);
 static const TemplateTypeClass Bridge3d(TEMPLATE_BRIDGE_3D,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR3D", TXT_BRIDGE);
 static const TemplateTypeClass Bridge3e(TEMPLATE_BRIDGE_3E,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR3E", TXT_BRIDGE);
 static const TemplateTypeClass Bridge3f(TEMPLATE_BRIDGE_3F,
-                                        THEATERF_TEMPERATE | THEATERF_SNOW,
+                                        kTheaterFlagTemperate |
+                                            kTheaterFlagSnow,
                                         "BR3F", TXT_BRIDGE);
 static const TemplateTypeClass ShoreCliff01(TEMPLATE_SHORECLIFF01,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC01", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff02(TEMPLATE_SHORECLIFF02,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC02", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff03(TEMPLATE_SHORECLIFF03,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC03", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff04(TEMPLATE_SHORECLIFF04,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC04", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff05(TEMPLATE_SHORECLIFF05,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC05", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff06(TEMPLATE_SHORECLIFF06,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC06", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff07(TEMPLATE_SHORECLIFF07,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC07", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff08(TEMPLATE_SHORECLIFF08,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC08", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff09(TEMPLATE_SHORECLIFF09,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC09", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff10(TEMPLATE_SHORECLIFF10,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC10", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff11(TEMPLATE_SHORECLIFF11,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC11", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff12(TEMPLATE_SHORECLIFF12,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC12", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff13(TEMPLATE_SHORECLIFF13,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC13", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff14(TEMPLATE_SHORECLIFF14,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC14", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff15(TEMPLATE_SHORECLIFF15,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC15", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff16(TEMPLATE_SHORECLIFF16,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC16", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff17(TEMPLATE_SHORECLIFF17,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC17", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff18(TEMPLATE_SHORECLIFF18,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC18", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff19(TEMPLATE_SHORECLIFF19,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC19", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff20(TEMPLATE_SHORECLIFF20,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC20", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff21(TEMPLATE_SHORECLIFF21,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC21", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff22(TEMPLATE_SHORECLIFF22,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC22", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff23(TEMPLATE_SHORECLIFF23,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC23", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff24(TEMPLATE_SHORECLIFF24,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC24", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff25(TEMPLATE_SHORECLIFF25,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC25", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff26(TEMPLATE_SHORECLIFF26,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC26", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff27(TEMPLATE_SHORECLIFF27,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC27", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff28(TEMPLATE_SHORECLIFF28,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC28", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff29(TEMPLATE_SHORECLIFF29,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC29", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff30(TEMPLATE_SHORECLIFF30,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC30", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff31(TEMPLATE_SHORECLIFF31,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC31", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff32(TEMPLATE_SHORECLIFF32,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC32", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff33(TEMPLATE_SHORECLIFF33,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC33", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff34(TEMPLATE_SHORECLIFF34,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC34", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff35(TEMPLATE_SHORECLIFF35,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC35", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff36(TEMPLATE_SHORECLIFF36,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC36", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff37(TEMPLATE_SHORECLIFF37,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC37", TXT_SHORE);
 static const TemplateTypeClass ShoreCliff38(TEMPLATE_SHORECLIFF38,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "WC38", TXT_SHORE);
 static const TemplateTypeClass Rough01(TEMPLATE_ROUGH01,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RF01", TXT_ROCK);
 static const TemplateTypeClass Rough02(TEMPLATE_ROUGH02,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RF02", TXT_ROCK);
 static const TemplateTypeClass Rough03(TEMPLATE_ROUGH03,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RF03", TXT_ROCK);
 static const TemplateTypeClass Rough04(TEMPLATE_ROUGH04,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RF04", TXT_ROCK);
 static const TemplateTypeClass Rough05(TEMPLATE_ROUGH05,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RF05", TXT_ROCK);
 static const TemplateTypeClass Rough06(TEMPLATE_ROUGH06,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RF06", TXT_ROCK);
 static const TemplateTypeClass Rough07(TEMPLATE_ROUGH07,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RF07", TXT_ROCK);
 static const TemplateTypeClass Rough08(TEMPLATE_ROUGH08,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RF08", TXT_ROCK);
 static const TemplateTypeClass Rough09(TEMPLATE_ROUGH09,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RF09", TXT_ROCK);
 static const TemplateTypeClass Rough10(TEMPLATE_ROUGH10,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RF10", TXT_ROCK);
 static const TemplateTypeClass Rough11(TEMPLATE_ROUGH11,
-                                       THEATERF_TEMPERATE | THEATERF_SNOW,
+                                       kTheaterFlagTemperate | kTheaterFlagSnow,
                                        "RF11", TXT_ROCK);
 static const TemplateTypeClass RiverCliff01(TEMPLATE_RIVERCLIFF01,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "RC01", TXT_RIVER);
 static const TemplateTypeClass RiverCliff02(TEMPLATE_RIVERCLIFF02,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "RC02", TXT_RIVER);
 static const TemplateTypeClass RiverCliff03(TEMPLATE_RIVERCLIFF03,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "RC03", TXT_RIVER);
 static const TemplateTypeClass RiverCliff04(TEMPLATE_RIVERCLIFF04,
-                                            THEATERF_TEMPERATE | THEATERF_SNOW,
+                                            kTheaterFlagTemperate |
+                                                kTheaterFlagSnow,
                                             "RC04", TXT_RIVER);
 
 static const TemplateTypeClass F01(TEMPLATE_F01,
-                                   THEATERF_TEMPERATE | THEATERF_SNOW, "F01",
-                                   TXT_RIVER);
+                                   kTheaterFlagTemperate | kTheaterFlagSnow,
+                                   "F01", TXT_RIVER);
 static const TemplateTypeClass F02(TEMPLATE_F02,
-                                   THEATERF_TEMPERATE | THEATERF_SNOW, "F02",
-                                   TXT_RIVER);
+                                   kTheaterFlagTemperate | kTheaterFlagSnow,
+                                   "F02", TXT_RIVER);
 static const TemplateTypeClass F03(TEMPLATE_F03,
-                                   THEATERF_TEMPERATE | THEATERF_SNOW, "F03",
-                                   TXT_RIVER);
+                                   kTheaterFlagTemperate | kTheaterFlagSnow,
+                                   "F03", TXT_RIVER);
 static const TemplateTypeClass F04(TEMPLATE_F04,
-                                   THEATERF_TEMPERATE | THEATERF_SNOW, "F04",
-                                   TXT_RIVER);
+                                   kTheaterFlagTemperate | kTheaterFlagSnow,
+                                   "F04", TXT_RIVER);
 static const TemplateTypeClass F05(TEMPLATE_F05,
-                                   THEATERF_TEMPERATE | THEATERF_SNOW, "F05",
-                                   TXT_RIVER);
+                                   kTheaterFlagTemperate | kTheaterFlagSnow,
+                                   "F05", TXT_RIVER);
 static const TemplateTypeClass F06(TEMPLATE_F06,
-                                   THEATERF_TEMPERATE | THEATERF_SNOW, "F06",
-                                   TXT_RIVER);
+                                   kTheaterFlagTemperate | kTheaterFlagSnow,
+                                   "F06", TXT_RIVER);
 
-static const TemplateTypeClass ARRO0001(TEMPLATE_ARRO0001, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0001(TEMPLATE_ARRO0001, kTheaterFlagInterior,
                                         "ARRO0001", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0002(TEMPLATE_ARRO0002, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0002(TEMPLATE_ARRO0002, kTheaterFlagInterior,
                                         "ARRO0002", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0003(TEMPLATE_ARRO0003, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0003(TEMPLATE_ARRO0003, kTheaterFlagInterior,
                                         "ARRO0003", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0004(TEMPLATE_ARRO0004, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0004(TEMPLATE_ARRO0004, kTheaterFlagInterior,
                                         "ARRO0004", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0005(TEMPLATE_ARRO0005, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0005(TEMPLATE_ARRO0005, kTheaterFlagInterior,
                                         "ARRO0005", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0006(TEMPLATE_ARRO0006, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0006(TEMPLATE_ARRO0006, kTheaterFlagInterior,
                                         "ARRO0006", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0007(TEMPLATE_ARRO0007, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0007(TEMPLATE_ARRO0007, kTheaterFlagInterior,
                                         "ARRO0007", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0008(TEMPLATE_ARRO0008, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0008(TEMPLATE_ARRO0008, kTheaterFlagInterior,
                                         "ARRO0008", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0009(TEMPLATE_ARRO0009, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0009(TEMPLATE_ARRO0009, kTheaterFlagInterior,
                                         "ARRO0009", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0010(TEMPLATE_ARRO0010, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0010(TEMPLATE_ARRO0010, kTheaterFlagInterior,
                                         "ARRO0010", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0011(TEMPLATE_ARRO0011, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0011(TEMPLATE_ARRO0011, kTheaterFlagInterior,
                                         "ARRO0011", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0012(TEMPLATE_ARRO0012, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0012(TEMPLATE_ARRO0012, kTheaterFlagInterior,
                                         "ARRO0012", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0013(TEMPLATE_ARRO0013, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0013(TEMPLATE_ARRO0013, kTheaterFlagInterior,
                                         "ARRO0013", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0014(TEMPLATE_ARRO0014, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0014(TEMPLATE_ARRO0014, kTheaterFlagInterior,
                                         "ARRO0014", TXT_INTERIOR);
-static const TemplateTypeClass ARRO0015(TEMPLATE_ARRO0015, THEATERF_INTERIOR,
+static const TemplateTypeClass ARRO0015(TEMPLATE_ARRO0015, kTheaterFlagInterior,
                                         "ARRO0015", TXT_INTERIOR);
-static const TemplateTypeClass FLOR0001(TEMPLATE_FLOR0001, THEATERF_INTERIOR,
+static const TemplateTypeClass FLOR0001(TEMPLATE_FLOR0001, kTheaterFlagInterior,
                                         "FLOR0001", TXT_INTERIOR);
-static const TemplateTypeClass FLOR0002(TEMPLATE_FLOR0002, THEATERF_INTERIOR,
+static const TemplateTypeClass FLOR0002(TEMPLATE_FLOR0002, kTheaterFlagInterior,
                                         "FLOR0002", TXT_INTERIOR);
-static const TemplateTypeClass FLOR0003(TEMPLATE_FLOR0003, THEATERF_INTERIOR,
+static const TemplateTypeClass FLOR0003(TEMPLATE_FLOR0003, kTheaterFlagInterior,
                                         "FLOR0003", TXT_INTERIOR);
-static const TemplateTypeClass FLOR0004(TEMPLATE_FLOR0004, THEATERF_INTERIOR,
+static const TemplateTypeClass FLOR0004(TEMPLATE_FLOR0004, kTheaterFlagInterior,
                                         "FLOR0004", TXT_INTERIOR);
-static const TemplateTypeClass FLOR0005(TEMPLATE_FLOR0005, THEATERF_INTERIOR,
+static const TemplateTypeClass FLOR0005(TEMPLATE_FLOR0005, kTheaterFlagInterior,
                                         "FLOR0005", TXT_INTERIOR);
-static const TemplateTypeClass FLOR0006(TEMPLATE_FLOR0006, THEATERF_INTERIOR,
+static const TemplateTypeClass FLOR0006(TEMPLATE_FLOR0006, kTheaterFlagInterior,
                                         "FLOR0006", TXT_INTERIOR);
-static const TemplateTypeClass FLOR0007(TEMPLATE_FLOR0007, THEATERF_INTERIOR,
+static const TemplateTypeClass FLOR0007(TEMPLATE_FLOR0007, kTheaterFlagInterior,
                                         "FLOR0007", TXT_INTERIOR);
-static const TemplateTypeClass GFLR0001(TEMPLATE_GFLR0001, THEATERF_INTERIOR,
+static const TemplateTypeClass GFLR0001(TEMPLATE_GFLR0001, kTheaterFlagInterior,
                                         "GFLR0001", TXT_INTERIOR);
-static const TemplateTypeClass GFLR0002(TEMPLATE_GFLR0002, THEATERF_INTERIOR,
+static const TemplateTypeClass GFLR0002(TEMPLATE_GFLR0002, kTheaterFlagInterior,
                                         "GFLR0002", TXT_INTERIOR);
-static const TemplateTypeClass GFLR0003(TEMPLATE_GFLR0003, THEATERF_INTERIOR,
+static const TemplateTypeClass GFLR0003(TEMPLATE_GFLR0003, kTheaterFlagInterior,
                                         "GFLR0003", TXT_INTERIOR);
-static const TemplateTypeClass GFLR0004(TEMPLATE_GFLR0004, THEATERF_INTERIOR,
+static const TemplateTypeClass GFLR0004(TEMPLATE_GFLR0004, kTheaterFlagInterior,
                                         "GFLR0004", TXT_INTERIOR);
-static const TemplateTypeClass GFLR0005(TEMPLATE_GFLR0005, THEATERF_INTERIOR,
+static const TemplateTypeClass GFLR0005(TEMPLATE_GFLR0005, kTheaterFlagInterior,
                                         "GFLR0005", TXT_INTERIOR);
-static const TemplateTypeClass GSTR0001(TEMPLATE_GSTR0001, THEATERF_INTERIOR,
+static const TemplateTypeClass GSTR0001(TEMPLATE_GSTR0001, kTheaterFlagInterior,
                                         "GSTR0001", TXT_INTERIOR);
-static const TemplateTypeClass GSTR0002(TEMPLATE_GSTR0002, THEATERF_INTERIOR,
+static const TemplateTypeClass GSTR0002(TEMPLATE_GSTR0002, kTheaterFlagInterior,
                                         "GSTR0002", TXT_INTERIOR);
-static const TemplateTypeClass GSTR0003(TEMPLATE_GSTR0003, THEATERF_INTERIOR,
+static const TemplateTypeClass GSTR0003(TEMPLATE_GSTR0003, kTheaterFlagInterior,
                                         "GSTR0003", TXT_INTERIOR);
-static const TemplateTypeClass GSTR0004(TEMPLATE_GSTR0004, THEATERF_INTERIOR,
+static const TemplateTypeClass GSTR0004(TEMPLATE_GSTR0004, kTheaterFlagInterior,
                                         "GSTR0004", TXT_INTERIOR);
-static const TemplateTypeClass GSTR0005(TEMPLATE_GSTR0005, THEATERF_INTERIOR,
+static const TemplateTypeClass GSTR0005(TEMPLATE_GSTR0005, kTheaterFlagInterior,
                                         "GSTR0005", TXT_INTERIOR);
-static const TemplateTypeClass GSTR0006(TEMPLATE_GSTR0006, THEATERF_INTERIOR,
+static const TemplateTypeClass GSTR0006(TEMPLATE_GSTR0006, kTheaterFlagInterior,
                                         "GSTR0006", TXT_INTERIOR);
-static const TemplateTypeClass GSTR0007(TEMPLATE_GSTR0007, THEATERF_INTERIOR,
+static const TemplateTypeClass GSTR0007(TEMPLATE_GSTR0007, kTheaterFlagInterior,
                                         "GSTR0007", TXT_INTERIOR);
-static const TemplateTypeClass GSTR0008(TEMPLATE_GSTR0008, THEATERF_INTERIOR,
+static const TemplateTypeClass GSTR0008(TEMPLATE_GSTR0008, kTheaterFlagInterior,
                                         "GSTR0008", TXT_INTERIOR);
-static const TemplateTypeClass GSTR0009(TEMPLATE_GSTR0009, THEATERF_INTERIOR,
+static const TemplateTypeClass GSTR0009(TEMPLATE_GSTR0009, kTheaterFlagInterior,
                                         "GSTR0009", TXT_INTERIOR);
-static const TemplateTypeClass GSTR0010(TEMPLATE_GSTR0010, THEATERF_INTERIOR,
+static const TemplateTypeClass GSTR0010(TEMPLATE_GSTR0010, kTheaterFlagInterior,
                                         "GSTR0010", TXT_INTERIOR);
-static const TemplateTypeClass GSTR0011(TEMPLATE_GSTR0011, THEATERF_INTERIOR,
+static const TemplateTypeClass GSTR0011(TEMPLATE_GSTR0011, kTheaterFlagInterior,
                                         "GSTR0011", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0001(TEMPLATE_LWAL0001, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0001(TEMPLATE_LWAL0001, kTheaterFlagInterior,
                                         "LWAL0001", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0002(TEMPLATE_LWAL0002, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0002(TEMPLATE_LWAL0002, kTheaterFlagInterior,
                                         "LWAL0002", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0003(TEMPLATE_LWAL0003, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0003(TEMPLATE_LWAL0003, kTheaterFlagInterior,
                                         "LWAL0003", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0004(TEMPLATE_LWAL0004, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0004(TEMPLATE_LWAL0004, kTheaterFlagInterior,
                                         "LWAL0004", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0005(TEMPLATE_LWAL0005, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0005(TEMPLATE_LWAL0005, kTheaterFlagInterior,
                                         "LWAL0005", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0006(TEMPLATE_LWAL0006, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0006(TEMPLATE_LWAL0006, kTheaterFlagInterior,
                                         "LWAL0006", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0007(TEMPLATE_LWAL0007, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0007(TEMPLATE_LWAL0007, kTheaterFlagInterior,
                                         "LWAL0007", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0008(TEMPLATE_LWAL0008, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0008(TEMPLATE_LWAL0008, kTheaterFlagInterior,
                                         "LWAL0008", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0009(TEMPLATE_LWAL0009, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0009(TEMPLATE_LWAL0009, kTheaterFlagInterior,
                                         "LWAL0009", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0010(TEMPLATE_LWAL0010, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0010(TEMPLATE_LWAL0010, kTheaterFlagInterior,
                                         "LWAL0010", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0011(TEMPLATE_LWAL0011, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0011(TEMPLATE_LWAL0011, kTheaterFlagInterior,
                                         "LWAL0011", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0012(TEMPLATE_LWAL0012, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0012(TEMPLATE_LWAL0012, kTheaterFlagInterior,
                                         "LWAL0012", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0013(TEMPLATE_LWAL0013, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0013(TEMPLATE_LWAL0013, kTheaterFlagInterior,
                                         "LWAL0013", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0014(TEMPLATE_LWAL0014, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0014(TEMPLATE_LWAL0014, kTheaterFlagInterior,
                                         "LWAL0014", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0015(TEMPLATE_LWAL0015, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0015(TEMPLATE_LWAL0015, kTheaterFlagInterior,
                                         "LWAL0015", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0016(TEMPLATE_LWAL0016, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0016(TEMPLATE_LWAL0016, kTheaterFlagInterior,
                                         "LWAL0016", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0017(TEMPLATE_LWAL0017, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0017(TEMPLATE_LWAL0017, kTheaterFlagInterior,
                                         "LWAL0017", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0018(TEMPLATE_LWAL0018, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0018(TEMPLATE_LWAL0018, kTheaterFlagInterior,
                                         "LWAL0018", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0019(TEMPLATE_LWAL0019, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0019(TEMPLATE_LWAL0019, kTheaterFlagInterior,
                                         "LWAL0019", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0020(TEMPLATE_LWAL0020, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0020(TEMPLATE_LWAL0020, kTheaterFlagInterior,
                                         "LWAL0020", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0021(TEMPLATE_LWAL0021, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0021(TEMPLATE_LWAL0021, kTheaterFlagInterior,
                                         "LWAL0021", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0022(TEMPLATE_LWAL0022, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0022(TEMPLATE_LWAL0022, kTheaterFlagInterior,
                                         "LWAL0022", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0023(TEMPLATE_LWAL0023, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0023(TEMPLATE_LWAL0023, kTheaterFlagInterior,
                                         "LWAL0023", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0024(TEMPLATE_LWAL0024, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0024(TEMPLATE_LWAL0024, kTheaterFlagInterior,
                                         "LWAL0024", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0025(TEMPLATE_LWAL0025, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0025(TEMPLATE_LWAL0025, kTheaterFlagInterior,
                                         "LWAL0025", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0026(TEMPLATE_LWAL0026, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0026(TEMPLATE_LWAL0026, kTheaterFlagInterior,
                                         "LWAL0026", TXT_INTERIOR);
-static const TemplateTypeClass LWAL0027(TEMPLATE_LWAL0027, THEATERF_INTERIOR,
+static const TemplateTypeClass LWAL0027(TEMPLATE_LWAL0027, kTheaterFlagInterior,
                                         "LWAL0027", TXT_INTERIOR);
-static const TemplateTypeClass STRP0001(TEMPLATE_STRP0001, THEATERF_INTERIOR,
+static const TemplateTypeClass STRP0001(TEMPLATE_STRP0001, kTheaterFlagInterior,
                                         "STRP0001", TXT_INTERIOR);
-static const TemplateTypeClass STRP0002(TEMPLATE_STRP0002, THEATERF_INTERIOR,
+static const TemplateTypeClass STRP0002(TEMPLATE_STRP0002, kTheaterFlagInterior,
                                         "STRP0002", TXT_INTERIOR);
-static const TemplateTypeClass STRP0003(TEMPLATE_STRP0003, THEATERF_INTERIOR,
+static const TemplateTypeClass STRP0003(TEMPLATE_STRP0003, kTheaterFlagInterior,
                                         "STRP0003", TXT_INTERIOR);
-static const TemplateTypeClass STRP0004(TEMPLATE_STRP0004, THEATERF_INTERIOR,
+static const TemplateTypeClass STRP0004(TEMPLATE_STRP0004, kTheaterFlagInterior,
                                         "STRP0004", TXT_INTERIOR);
-static const TemplateTypeClass STRP0005(TEMPLATE_STRP0005, THEATERF_INTERIOR,
+static const TemplateTypeClass STRP0005(TEMPLATE_STRP0005, kTheaterFlagInterior,
                                         "STRP0005", TXT_INTERIOR);
-static const TemplateTypeClass STRP0006(TEMPLATE_STRP0006, THEATERF_INTERIOR,
+static const TemplateTypeClass STRP0006(TEMPLATE_STRP0006, kTheaterFlagInterior,
                                         "STRP0006", TXT_INTERIOR);
-static const TemplateTypeClass STRP0007(TEMPLATE_STRP0007, THEATERF_INTERIOR,
+static const TemplateTypeClass STRP0007(TEMPLATE_STRP0007, kTheaterFlagInterior,
                                         "STRP0007", TXT_INTERIOR);
-static const TemplateTypeClass STRP0008(TEMPLATE_STRP0008, THEATERF_INTERIOR,
+static const TemplateTypeClass STRP0008(TEMPLATE_STRP0008, kTheaterFlagInterior,
                                         "STRP0008", TXT_INTERIOR);
-static const TemplateTypeClass STRP0009(TEMPLATE_STRP0009, THEATERF_INTERIOR,
+static const TemplateTypeClass STRP0009(TEMPLATE_STRP0009, kTheaterFlagInterior,
                                         "STRP0009", TXT_INTERIOR);
-static const TemplateTypeClass STRP0010(TEMPLATE_STRP0010, THEATERF_INTERIOR,
+static const TemplateTypeClass STRP0010(TEMPLATE_STRP0010, kTheaterFlagInterior,
                                         "STRP0010", TXT_INTERIOR);
-static const TemplateTypeClass STRP0011(TEMPLATE_STRP0011, THEATERF_INTERIOR,
+static const TemplateTypeClass STRP0011(TEMPLATE_STRP0011, kTheaterFlagInterior,
                                         "STRP0011", TXT_INTERIOR);
-static const TemplateTypeClass WALL0001(TEMPLATE_WALL0001, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0001(TEMPLATE_WALL0001, kTheaterFlagInterior,
                                         "WALL0001", TXT_INTERIOR);
-static const TemplateTypeClass WALL0002(TEMPLATE_WALL0002, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0002(TEMPLATE_WALL0002, kTheaterFlagInterior,
                                         "WALL0002", TXT_INTERIOR);
-static const TemplateTypeClass WALL0003(TEMPLATE_WALL0003, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0003(TEMPLATE_WALL0003, kTheaterFlagInterior,
                                         "WALL0003", TXT_INTERIOR);
-static const TemplateTypeClass WALL0004(TEMPLATE_WALL0004, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0004(TEMPLATE_WALL0004, kTheaterFlagInterior,
                                         "WALL0004", TXT_INTERIOR);
-static const TemplateTypeClass WALL0005(TEMPLATE_WALL0005, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0005(TEMPLATE_WALL0005, kTheaterFlagInterior,
                                         "WALL0005", TXT_INTERIOR);
-static const TemplateTypeClass WALL0006(TEMPLATE_WALL0006, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0006(TEMPLATE_WALL0006, kTheaterFlagInterior,
                                         "WALL0006", TXT_INTERIOR);
-static const TemplateTypeClass WALL0007(TEMPLATE_WALL0007, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0007(TEMPLATE_WALL0007, kTheaterFlagInterior,
                                         "WALL0007", TXT_INTERIOR);
-static const TemplateTypeClass WALL0008(TEMPLATE_WALL0008, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0008(TEMPLATE_WALL0008, kTheaterFlagInterior,
                                         "WALL0008", TXT_INTERIOR);
-static const TemplateTypeClass WALL0009(TEMPLATE_WALL0009, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0009(TEMPLATE_WALL0009, kTheaterFlagInterior,
                                         "WALL0009", TXT_INTERIOR);
-static const TemplateTypeClass WALL0010(TEMPLATE_WALL0010, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0010(TEMPLATE_WALL0010, kTheaterFlagInterior,
                                         "WALL0010", TXT_INTERIOR);
-static const TemplateTypeClass WALL0011(TEMPLATE_WALL0011, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0011(TEMPLATE_WALL0011, kTheaterFlagInterior,
                                         "WALL0011", TXT_INTERIOR);
-static const TemplateTypeClass WALL0012(TEMPLATE_WALL0012, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0012(TEMPLATE_WALL0012, kTheaterFlagInterior,
                                         "WALL0012", TXT_INTERIOR);
-static const TemplateTypeClass WALL0013(TEMPLATE_WALL0013, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0013(TEMPLATE_WALL0013, kTheaterFlagInterior,
                                         "WALL0013", TXT_INTERIOR);
-static const TemplateTypeClass WALL0014(TEMPLATE_WALL0014, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0014(TEMPLATE_WALL0014, kTheaterFlagInterior,
                                         "WALL0014", TXT_INTERIOR);
-static const TemplateTypeClass WALL0015(TEMPLATE_WALL0015, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0015(TEMPLATE_WALL0015, kTheaterFlagInterior,
                                         "WALL0015", TXT_INTERIOR);
-static const TemplateTypeClass WALL0016(TEMPLATE_WALL0016, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0016(TEMPLATE_WALL0016, kTheaterFlagInterior,
                                         "WALL0016", TXT_INTERIOR);
-static const TemplateTypeClass WALL0017(TEMPLATE_WALL0017, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0017(TEMPLATE_WALL0017, kTheaterFlagInterior,
                                         "WALL0017", TXT_INTERIOR);
-static const TemplateTypeClass WALL0018(TEMPLATE_WALL0018, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0018(TEMPLATE_WALL0018, kTheaterFlagInterior,
                                         "WALL0018", TXT_INTERIOR);
-static const TemplateTypeClass WALL0019(TEMPLATE_WALL0019, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0019(TEMPLATE_WALL0019, kTheaterFlagInterior,
                                         "WALL0019", TXT_INTERIOR);
-static const TemplateTypeClass WALL0020(TEMPLATE_WALL0020, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0020(TEMPLATE_WALL0020, kTheaterFlagInterior,
                                         "WALL0020", TXT_INTERIOR);
-static const TemplateTypeClass WALL0021(TEMPLATE_WALL0021, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0021(TEMPLATE_WALL0021, kTheaterFlagInterior,
                                         "WALL0021", TXT_INTERIOR);
-static const TemplateTypeClass WALL0022(TEMPLATE_WALL0022, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0022(TEMPLATE_WALL0022, kTheaterFlagInterior,
                                         "WALL0022", TXT_INTERIOR);
-static const TemplateTypeClass WALL0023(TEMPLATE_WALL0023, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0023(TEMPLATE_WALL0023, kTheaterFlagInterior,
                                         "WALL0023", TXT_INTERIOR);
-static const TemplateTypeClass WALL0024(TEMPLATE_WALL0024, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0024(TEMPLATE_WALL0024, kTheaterFlagInterior,
                                         "WALL0024", TXT_INTERIOR);
-static const TemplateTypeClass WALL0025(TEMPLATE_WALL0025, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0025(TEMPLATE_WALL0025, kTheaterFlagInterior,
                                         "WALL0025", TXT_INTERIOR);
-static const TemplateTypeClass WALL0026(TEMPLATE_WALL0026, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0026(TEMPLATE_WALL0026, kTheaterFlagInterior,
                                         "WALL0026", TXT_INTERIOR);
-static const TemplateTypeClass WALL0027(TEMPLATE_WALL0027, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0027(TEMPLATE_WALL0027, kTheaterFlagInterior,
                                         "WALL0027", TXT_INTERIOR);
-static const TemplateTypeClass WALL0028(TEMPLATE_WALL0028, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0028(TEMPLATE_WALL0028, kTheaterFlagInterior,
                                         "WALL0028", TXT_INTERIOR);
-static const TemplateTypeClass WALL0029(TEMPLATE_WALL0029, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0029(TEMPLATE_WALL0029, kTheaterFlagInterior,
                                         "WALL0029", TXT_INTERIOR);
-static const TemplateTypeClass WALL0030(TEMPLATE_WALL0030, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0030(TEMPLATE_WALL0030, kTheaterFlagInterior,
                                         "WALL0030", TXT_INTERIOR);
-static const TemplateTypeClass WALL0031(TEMPLATE_WALL0031, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0031(TEMPLATE_WALL0031, kTheaterFlagInterior,
                                         "WALL0031", TXT_INTERIOR);
-static const TemplateTypeClass WALL0032(TEMPLATE_WALL0032, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0032(TEMPLATE_WALL0032, kTheaterFlagInterior,
                                         "WALL0032", TXT_INTERIOR);
-static const TemplateTypeClass WALL0033(TEMPLATE_WALL0033, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0033(TEMPLATE_WALL0033, kTheaterFlagInterior,
                                         "WALL0033", TXT_INTERIOR);
-static const TemplateTypeClass WALL0034(TEMPLATE_WALL0034, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0034(TEMPLATE_WALL0034, kTheaterFlagInterior,
                                         "WALL0034", TXT_INTERIOR);
-static const TemplateTypeClass WALL0035(TEMPLATE_WALL0035, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0035(TEMPLATE_WALL0035, kTheaterFlagInterior,
                                         "WALL0035", TXT_INTERIOR);
-static const TemplateTypeClass WALL0036(TEMPLATE_WALL0036, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0036(TEMPLATE_WALL0036, kTheaterFlagInterior,
                                         "WALL0036", TXT_INTERIOR);
-static const TemplateTypeClass WALL0037(TEMPLATE_WALL0037, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0037(TEMPLATE_WALL0037, kTheaterFlagInterior,
                                         "WALL0037", TXT_INTERIOR);
-static const TemplateTypeClass WALL0038(TEMPLATE_WALL0038, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0038(TEMPLATE_WALL0038, kTheaterFlagInterior,
                                         "WALL0038", TXT_INTERIOR);
-static const TemplateTypeClass WALL0039(TEMPLATE_WALL0039, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0039(TEMPLATE_WALL0039, kTheaterFlagInterior,
                                         "WALL0039", TXT_INTERIOR);
-static const TemplateTypeClass WALL0040(TEMPLATE_WALL0040, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0040(TEMPLATE_WALL0040, kTheaterFlagInterior,
                                         "WALL0040", TXT_INTERIOR);
-static const TemplateTypeClass WALL0041(TEMPLATE_WALL0041, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0041(TEMPLATE_WALL0041, kTheaterFlagInterior,
                                         "WALL0041", TXT_INTERIOR);
-static const TemplateTypeClass WALL0042(TEMPLATE_WALL0042, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0042(TEMPLATE_WALL0042, kTheaterFlagInterior,
                                         "WALL0042", TXT_INTERIOR);
-static const TemplateTypeClass WALL0043(TEMPLATE_WALL0043, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0043(TEMPLATE_WALL0043, kTheaterFlagInterior,
                                         "WALL0043", TXT_INTERIOR);
-static const TemplateTypeClass WALL0044(TEMPLATE_WALL0044, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0044(TEMPLATE_WALL0044, kTheaterFlagInterior,
                                         "WALL0044", TXT_INTERIOR);
-static const TemplateTypeClass WALL0045(TEMPLATE_WALL0045, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0045(TEMPLATE_WALL0045, kTheaterFlagInterior,
                                         "WALL0045", TXT_INTERIOR);
-static const TemplateTypeClass WALL0046(TEMPLATE_WALL0046, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0046(TEMPLATE_WALL0046, kTheaterFlagInterior,
                                         "WALL0046", TXT_INTERIOR);
-static const TemplateTypeClass WALL0047(TEMPLATE_WALL0047, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0047(TEMPLATE_WALL0047, kTheaterFlagInterior,
                                         "WALL0047", TXT_INTERIOR);
-static const TemplateTypeClass WALL0048(TEMPLATE_WALL0048, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0048(TEMPLATE_WALL0048, kTheaterFlagInterior,
                                         "WALL0048", TXT_INTERIOR);
-static const TemplateTypeClass WALL0049(TEMPLATE_WALL0049, THEATERF_INTERIOR,
+static const TemplateTypeClass WALL0049(TEMPLATE_WALL0049, kTheaterFlagInterior,
                                         "WALL0049", TXT_INTERIOR);
 
-static const TemplateTypeClass Xtra0001(TEMPLATE_XTRA0001, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0001(TEMPLATE_XTRA0001, kTheaterFlagInterior,
                                         "XTRA0001", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0002(TEMPLATE_XTRA0002, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0002(TEMPLATE_XTRA0002, kTheaterFlagInterior,
                                         "XTRA0002", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0003(TEMPLATE_XTRA0003, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0003(TEMPLATE_XTRA0003, kTheaterFlagInterior,
                                         "XTRA0003", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0004(TEMPLATE_XTRA0004, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0004(TEMPLATE_XTRA0004, kTheaterFlagInterior,
                                         "XTRA0004", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0005(TEMPLATE_XTRA0005, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0005(TEMPLATE_XTRA0005, kTheaterFlagInterior,
                                         "XTRA0005", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0006(TEMPLATE_XTRA0006, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0006(TEMPLATE_XTRA0006, kTheaterFlagInterior,
                                         "XTRA0006", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0007(TEMPLATE_XTRA0007, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0007(TEMPLATE_XTRA0007, kTheaterFlagInterior,
                                         "XTRA0007", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0008(TEMPLATE_XTRA0008, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0008(TEMPLATE_XTRA0008, kTheaterFlagInterior,
                                         "XTRA0008", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0009(TEMPLATE_XTRA0009, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0009(TEMPLATE_XTRA0009, kTheaterFlagInterior,
                                         "XTRA0009", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0010(TEMPLATE_XTRA0010, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0010(TEMPLATE_XTRA0010, kTheaterFlagInterior,
                                         "XTRA0010", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0011(TEMPLATE_XTRA0011, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0011(TEMPLATE_XTRA0011, kTheaterFlagInterior,
                                         "XTRA0011", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0012(TEMPLATE_XTRA0012, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0012(TEMPLATE_XTRA0012, kTheaterFlagInterior,
                                         "XTRA0012", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0013(TEMPLATE_XTRA0013, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0013(TEMPLATE_XTRA0013, kTheaterFlagInterior,
                                         "XTRA0013", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0014(TEMPLATE_XTRA0014, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0014(TEMPLATE_XTRA0014, kTheaterFlagInterior,
                                         "XTRA0014", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0015(TEMPLATE_XTRA0015, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0015(TEMPLATE_XTRA0015, kTheaterFlagInterior,
                                         "XTRA0015", TXT_INTERIOR);
-static const TemplateTypeClass Xtra0016(TEMPLATE_XTRA0016, THEATERF_INTERIOR,
+static const TemplateTypeClass Xtra0016(TEMPLATE_XTRA0016, kTheaterFlagInterior,
                                         "XTRA0016", TXT_INTERIOR);
-static const TemplateTypeClass AntHill(TEMPLATE_HILL01, THEATERF_TEMPERATE,
+static const TemplateTypeClass AntHill(TEMPLATE_HILL01, kTheaterFlagTemperate,
                                        "HILL01", TXT_ROCK);
 
 /***********************************************************************************************
@@ -1739,7 +1807,7 @@ const short* TemplateTypeClass::Occupy_List(bool) const {
       *ptr++ = static_cast<short>(index % Width + index / Width * MAP_CELL_W);
     }
   }
-  *ptr = REFRESH_EOL;
+  *ptr = kRefreshEol;
 
   return &_occupy[0];
 }

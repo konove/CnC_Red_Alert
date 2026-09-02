@@ -548,7 +548,7 @@ void Fill_In_Data() {
   /*
   **	Reset the movement zones according to the terrain passability.
   */
-  Map.Zone_Reset(MZONEF_ALL);
+  Map.Zone_Reset(kZoneFlagAll);
 
   /*
   **	Since the sidebar starts up activated, adjust the home start position so
@@ -684,7 +684,7 @@ void Post_Load_Game(int load_multi) {
     Map.Overpass();
   }
   Scen.BridgeCount = Map.Intact_Bridge_Count();
-  Map.Zone_Reset(MZONEF_ALL);
+  Map.Zone_Reset(kZoneFlagAll);
 }
 
 /***********************************************************************************************
@@ -1435,15 +1435,15 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   **	Initialize the button structures. All are initialized, even though one
   *(or none) may *	actually be added to the button list.
   */
-  TextButtonClass button1(kButton1, b1txt, TPF_BUTTON,
+  TextButtonClass button1(kButton1, b1txt, kTpfButton,
                           x + (numbuttons == 1 ? (width - bwidth) >> 1 : 10),
                           y + height - (bheight + 5), bwidth);
 
-  TextButtonClass button2(kButton2, b2txt, TPF_BUTTON,
+  TextButtonClass button2(kButton2, b2txt, kTpfButton,
                           x + width - (bwidth + 10), y + height - (bheight + 5),
                           bwidth);
 
-  TextButtonClass button3(kButton3, b3txt, TPF_BUTTON, 0,
+  TextButtonClass button3(kButton3, b3txt, kTpfButton, 0,
                           y + height - (bheight + 5));
   button3.X = x + ((width - button3.Width) >> 1);
 
@@ -2419,7 +2419,7 @@ void Write_Scenario_INI(char* fname) {
  *player in house structure.                               *
  *=============================================================================================*/
 void Assign_Houses() {
-  int assigned[MAX_PLAYERS];
+  int assigned[kMaxPlayers];
   int color_used[8];
   int i, j;
   HousesType house;
@@ -2432,7 +2432,7 @@ void Assign_Houses() {
   //------------------------------------------------------------------------
   // Initialize
   //------------------------------------------------------------------------
-  for (i = 0; i < MAX_PLAYERS; i++) {
+  for (i = 0; i < kMaxPlayers; i++) {
     assigned[i] = 0;
     color_used[i] = 0;
   }
@@ -2582,7 +2582,7 @@ static void Remove_AI_Players() {
   HousesType house;
   HouseClass* housep;
 
-  for (i = 0; i < MAX_PLAYERS; i++) {
+  for (i = 0; i < kMaxPlayers; i++) {
     house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
     if (!static_cast<bool>(housep->IsHuman)) {

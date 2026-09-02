@@ -131,9 +131,9 @@ void Special_Dialog(bool simple) {
       {TXT_SPEED_BUILD, 0, nullptr},
   };
 
-  TextButtonClass ok(200, TXT_OK, TPF_BUTTON, OPTION_X + 30,
+  TextButtonClass ok(200, TXT_OK, kTpfButton, OPTION_X + 30,
                      OPTION_Y + OPTION_HEIGHT - 30);
-  TextButtonClass cancel(201, TXT_CANCEL, TPF_BUTTON,
+  TextButtonClass cancel(201, TXT_CANCEL, kTpfButton,
                          OPTION_X + OPTION_WIDTH - 120,
                          OPTION_Y + OPTION_HEIGHT - 30);
   buttons = &ok;
@@ -379,7 +379,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Create the "ok" and password edit buttons.
   */
-  TextButtonClass button1(1, btext, TPF_BUTTON, x + ((width - bwidth) >> 1),
+  TextButtonClass button1(1, btext, kTpfButton, x + ((width - bwidth) >> 1),
                           y + height - (bheight + 10), bwidth);
 
   static char pbuffer[45];
@@ -518,7 +518,7 @@ int Fetch_Difficulty(bool amath) {
   /*
   **	Create the OK button.
   */
-  TextButtonClass okbutton(1, TXT_OK, TPF_BUTTON, x + w - (bwidth + 40),
+  TextButtonClass okbutton(1, TXT_OK, kTpfButton, x + w - (bwidth + 40),
                            y + h - 36, bwidth);
   GadgetClass* buttonlist = &okbutton;
 

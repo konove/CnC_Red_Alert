@@ -648,11 +648,11 @@ static void Queue_AI_Multiplayer() {
   //........................................................................
   // Frame-sync'ing variables
   //........................................................................
-  static int64_t their_frame[MAX_PLAYERS - 1];  // other players' frame #'s
+  static int64_t their_frame[kMaxPlayers - 1];  // other players' frame #'s
   static unsigned short
-      their_sent[MAX_PLAYERS - 1];  // # cmds other player claims to have sent
+      their_sent[kMaxPlayers - 1];  // # cmds other player claims to have sent
   static unsigned short
-      their_recv[MAX_PLAYERS - 1];  // # cmds actually received from others
+      their_recv[kMaxPlayers - 1];  // # cmds actually received from others
   static unsigned short my_sent;    // # cmds I've sent out
 
   //........................................................................
@@ -710,7 +710,7 @@ static void Queue_AI_Multiplayer() {
     //.....................................................................
     //	Initialize static locals
     //.....................................................................
-    for (i = 0; i < MAX_PLAYERS - 1; i++) {
+    for (i = 0; i < kMaxPlayers - 1; i++) {
       their_frame[i] = -1;
       their_sent[i] = 0;
       their_recv[i] = 0;
@@ -770,7 +770,7 @@ static void Queue_AI_Multiplayer() {
     //	waiting for MIX files to load; we would have fallen through, but
     //	their frame # would still be -1).
     //.....................................................................
-    for (i = 0; i < MAX_PLAYERS - 1; i++) {
+    for (i = 0; i < kMaxPlayers - 1; i++) {
       their_frame[i] = 0;
     }
 
@@ -1663,7 +1663,7 @@ static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
   //........................................................................
   // Make sure we don't send so many events that our DoList fills up
   //........................................................................
-  cap = std::min(cap, MAX_EVENTS * 64 - DoList.Count);
+  cap = std::min(cap, kMaxEvents * 64 - DoList.Count);
 
   //
   // 10/21/96 5:12PM - ST

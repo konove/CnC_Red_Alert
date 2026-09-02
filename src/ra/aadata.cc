@@ -491,7 +491,7 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 const short* AircraftTypeClass::Occupy_List(bool) const {
-  static const short _list[] = {0, REFRESH_EOL};
+  static const short _list[] = {0, kRefreshEol};
   return _list;
 }
 
@@ -513,7 +513,7 @@ const short* AircraftTypeClass::Occupy_List(bool) const {
 const short* AircraftTypeClass::Overlap_List() const {
   static const short _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
-      (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  REFRESH_EOL};
+      (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  kRefreshEol};
   return _list;
 }
 

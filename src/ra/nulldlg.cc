@@ -329,12 +329,9 @@ int Test_Null_Modem() {
   y = (SeenBuff.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON,
-      x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >>
-           1),
-      y + height - (FontHeight + FontYSpacing + 4) -
-          20);
+      BUTTON_CANCEL, TXT_CANCEL, kTpfButton,
+      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >> 1),
+      y + height - (FontHeight + FontYSpacing + 4) - 20);
 
   /*
   ** Initialize
@@ -358,8 +355,7 @@ int Test_Null_Modem() {
   Dialog_Box(x, y, width, height);
   Draw_Caption(TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(buffer, x + 40, y + 50, scheme,
-                   TBLACK, TPF_TEXT);
+  Fancy_Text_Print(buffer, x + 40, y + 50, scheme, TBLACK, kTpfText);
 
   commands->Draw_All();
   while (Get_Mouse_State() > 0) {
@@ -676,12 +672,9 @@ static int Reconnect_Null_Modem() {
   y = (SeenBuff.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON,
-      x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >>
-           1),
-      y + height - (FontHeight + FontYSpacing + 4) -
-          20);
+      BUTTON_CANCEL, TXT_CANCEL, kTpfButton,
+      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >> 1),
+      y + height - (FontHeight + FontYSpacing + 4) - 20);
 
   /*
   ** Initialize
@@ -704,8 +697,7 @@ static int Reconnect_Null_Modem() {
   Dialog_Box(x, y, width, height);
   Draw_Caption(TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(buffer, x + 40, y + 50, scheme,
-                   TBLACK, TPF_TEXT);
+  Fancy_Text_Print(buffer, x + 40, y + 50, scheme, TBLACK, kTpfText);
 
   commands->Draw_All();
   Show_Mouse();
@@ -866,11 +858,11 @@ void Destroy_Null_Connection(int id, int error) {
   }
 
   if (strlen(txt)) {
-    Session.Messages.Add_Message(
-        nullptr, 0, txt,
-        housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                 : housep->RemapColor,
-        TPF_TEXT, Rule.MessageDelay * kTicksPerMinute);
+    Session.Messages.Add_Message(nullptr, 0, txt,
+                                 housep->RemapColor == PCOLOR_DIALOG_BLUE
+                                     ? PCOLOR_REALLY_BLUE
+                                     : housep->RemapColor,
+                                 kTpfText, Rule.MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
   }
 
@@ -900,11 +892,11 @@ void Destroy_Null_Connection(int id, int error) {
   */
   if (Session.NumPlayers == 1) {
     sprintf(txt, "%s", Text_String(TXT_JUST_YOU_AND_ME));
-    Session.Messages.Add_Message(
-        nullptr, 0, txt,
-        housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                 : housep->RemapColor,
-        TPF_TEXT, Rule.MessageDelay * kTicksPerMinute);
+    Session.Messages.Add_Message(nullptr, 0, txt,
+                                 housep->RemapColor == PCOLOR_DIALOG_BLUE
+                                     ? PCOLOR_REALLY_BLUE
+                                     : housep->RemapColor,
+                                 kTpfText, Rule.MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
   }
 }
@@ -1017,17 +1009,17 @@ GameType Select_Serial_Dialog() {
   */
   GadgetClass* commands;  // button list
 
-  TextButtonClass dialbtn(BUTTON_DIAL, TXT_DIAL_MODEM, TPF_BUTTON, d_dial_x,
+  TextButtonClass dialbtn(BUTTON_DIAL, TXT_DIAL_MODEM, kTpfButton, d_dial_x,
                           d_dial_y, d_dial_w, d_dial_h);
-  TextButtonClass answerbtn(BUTTON_ANSWER, TXT_ANSWER_MODEM, TPF_BUTTON,
+  TextButtonClass answerbtn(BUTTON_ANSWER, TXT_ANSWER_MODEM, kTpfButton,
                             d_answer_x, d_answer_y, d_answer_w, d_answer_h);
-  TextButtonClass nullmodembtn(BUTTON_NULLMODEM, TXT_NULL_MODEM, TPF_BUTTON,
+  TextButtonClass nullmodembtn(BUTTON_NULLMODEM, TXT_NULL_MODEM, kTpfButton,
                                d_nullmodem_x, d_nullmodem_y, d_nullmodem_w,
                                d_nullmodem_h);
-  TextButtonClass settingsbtn(BUTTON_SETTINGS, TXT_SETTINGS, TPF_BUTTON,
+  TextButtonClass settingsbtn(BUTTON_SETTINGS, TXT_SETTINGS, kTpfButton,
                               d_settings_x, d_settings_y, d_settings_w,
                               d_settings_h);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w, d_cancel_h);
 
   /*
@@ -1065,7 +1057,7 @@ GameType Select_Serial_Dialog() {
 
   Keyboard->Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, scheme, TBLACK, TPF_CENTER | TPF_TEXT);
+  Fancy_Text_Print(TXT_NONE, 0, 0, scheme, TBLACK, TPF_CENTER | kTpfText);
 
   /*
   ** Main Processing Loop
@@ -1528,7 +1520,7 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
 
         // init font variables
 
-        Fancy_Text_Print(TXT_NONE, 0, 0, scheme, TBLACK, TPF_TEXT);
+        Fancy_Text_Print(TXT_NONE, 0, 0, scheme, TBLACK, kTpfText);
 
         /*...............................................................
         Dialog & Field labels
@@ -1538,15 +1530,15 @@ void Advanced_Modem_Settings(SerialSettingsType* settings) {
 
         Fancy_Text_Print(TXT_DATA_COMPRESSION, d_compression_x - 26,
                          d_compression_y + 2, scheme, TBLACK,
-                         TPF_TEXT | TPF_RIGHT);
+                         kTpfText | TPF_RIGHT);
 
         Fancy_Text_Print(TXT_ERROR_CORRECTION, d_errorcorrection_x - 26,
                          d_errorcorrection_y + 2, scheme, TBLACK,
-                         TPF_TEXT | TPF_RIGHT);
+                         kTpfText | TPF_RIGHT);
 
         Fancy_Text_Print(
             TXT_HARDWARE_FLOW_CONTROL, d_hardwareflowcontrol_x - 26,
-            d_hardwareflowcontrol_y + 2, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
+            d_hardwareflowcontrol_y + 2, scheme, TBLACK, kTpfText | TPF_RIGHT);
       }
 
       /*
@@ -1863,45 +1855,45 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   */
   GadgetClass* commands;  // button list
 
-  EditClass port_edt(BUTTON_PORT, portbuf, PORTBUF_MAX, TPF_TEXT, d_port_x,
+  EditClass port_edt(BUTTON_PORT, portbuf, PORTBUF_MAX, kTpfText, d_port_x,
                      d_port_y, d_port_w, d_port_h, EditClass::kAlphanumeric);
 
   ListClass portlist(BUTTON_PORTLIST, d_portlist_x, d_portlist_y, d_portlist_w,
-                     d_portlist_h, TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),
+                     d_portlist_h, kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
                      MFCD::Retrieve("BTN-DN.SHP"));
 
-  EditClass baud_edt(BUTTON_BAUD, baudbuf, BAUDBUF_MAX, TPF_TEXT, d_baud_x,
+  EditClass baud_edt(BUTTON_BAUD, baudbuf, BAUDBUF_MAX, kTpfText, d_baud_x,
                      d_baud_y, d_baud_w, d_baud_h, EditClass::kNumeric);
   ListClass baudlist(BUTTON_BAUDLIST, d_baudlist_x, d_baudlist_y, d_baudlist_w,
-                     d_baudlist_h, TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),
+                     d_baudlist_h, kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
                      MFCD::Retrieve("BTN-DN.SHP"));
-  EditClass initstr_edt(BUTTON_INITSTR, initstrbuf, INITSTRBUF_MAX, TPF_TEXT,
+  EditClass initstr_edt(BUTTON_INITSTR, initstrbuf, INITSTRBUF_MAX, kTpfText,
                         d_initstr_x, d_initstr_y, d_initstr_w, d_initstr_h,
                         EditClass::kAlphanumeric);
   ListClass initstrlist(BUTTON_INITSTRLIST, d_initstrlist_x, d_initstrlist_y,
-                        d_initstrlist_w, d_initstrlist_h, TPF_TEXT,
+                        d_initstrlist_w, d_initstrlist_h, kTpfText,
                         MFCD::Retrieve("BTN-UP.SHP"),
                         MFCD::Retrieve("BTN-DN.SHP"));
-  TextButtonClass addbtn(BUTTON_ADD, TXT_ADD, TPF_BUTTON, d_add_x, d_add_y,
+  TextButtonClass addbtn(BUTTON_ADD, TXT_ADD, kTpfButton, d_add_x, d_add_y,
                          d_add_w, d_add_h);
-  TextButtonClass deletebtn(BUTTON_DELETE, TXT_DELETE_BUTTON, TPF_BUTTON,
+  TextButtonClass deletebtn(BUTTON_DELETE, TXT_DELETE_BUTTON, kTpfButton,
                             d_delete_x, d_delete_y, d_delete_w, d_delete_h);
   EditClass cwaitstr_edt(BUTTON_CWAITSTR, cwaitstrbuf, CWAITSTRBUF_MAX,
-                         TPF_TEXT, d_cwaitstr_x, d_cwaitstr_y, d_cwaitstr_w,
+                         kTpfText, d_cwaitstr_x, d_cwaitstr_y, d_cwaitstr_w,
                          d_cwaitstr_h, EditClass::kAlphanumeric);
   ListClass cwaitstrlist(BUTTON_CWAITSTRLIST, d_cwaitstrlist_x,
                          d_cwaitstrlist_y, d_cwaitstrlist_w, d_cwaitstrlist_h,
-                         TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),
+                         kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
                          MFCD::Retrieve("BTN-DN.SHP"));
-  TextButtonClass tonebtn(BUTTON_TONE, TXT_TONE_BUTTON, TPF_BUTTON, d_tone_x,
+  TextButtonClass tonebtn(BUTTON_TONE, TXT_TONE_BUTTON, kTpfButton, d_tone_x,
                           d_tone_y, d_tone_w, d_tone_h);
-  TextButtonClass pulsebtn(BUTTON_PULSE, TXT_PULSE_BUTTON, TPF_BUTTON,
+  TextButtonClass pulsebtn(BUTTON_PULSE, TXT_PULSE_BUTTON, kTpfButton,
                            d_pulse_x, d_pulse_y, d_pulse_w, d_pulse_h);
-  TextButtonClass savebtn(BUTTON_SAVE, TXT_SAVE_BUTTON, TPF_BUTTON, d_save_x,
+  TextButtonClass savebtn(BUTTON_SAVE, TXT_SAVE_BUTTON, kTpfButton, d_save_x,
                           d_save_y, d_save_w, d_save_h);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w, d_cancel_h);
-  TextButtonClass advancedbutton(BUTTON_ADVANCED, TXT_ADVANCED, TPF_BUTTON,
+  TextButtonClass advancedbutton(BUTTON_ADVANCED, TXT_ADVANCED, kTpfButton,
                                  d_advanced_x, d_advanced_y, d_advanced_w,
                                  d_advanced_h);
   /*
@@ -2146,27 +2138,23 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         // init font variables
 
         Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
+                         TPF_CENTER | kTpfText);
 
         /*
         ** Dialog & Field labels
         */
         Draw_Caption(TXT_SETTINGS, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(TXT_PORT_COLON, d_port_x - 6,
-                         d_port_y + 2, scheme, TBLACK,
-                         TPF_RIGHT | TPF_TEXT);
-        Fancy_Text_Print(TXT_BAUD_COLON, d_baud_x - 6,
-                         d_baud_y + 2, scheme, TBLACK,
-                         TPF_RIGHT | TPF_TEXT);
+        Fancy_Text_Print(TXT_PORT_COLON, d_port_x - 6, d_port_y + 2, scheme,
+                         TBLACK, TPF_RIGHT | kTpfText);
+        Fancy_Text_Print(TXT_BAUD_COLON, d_baud_x - 6, d_baud_y + 2, scheme,
+                         TBLACK, TPF_RIGHT | kTpfText);
 
         Fancy_Text_Print(TXT_INIT_STRING, d_initstr_x,
-                         d_initstr_y - d_txt6_h - 6, scheme, TBLACK,
-                         TPF_TEXT);
+                         d_initstr_y - d_txt6_h - 6, scheme, TBLACK, kTpfText);
 
         Fancy_Text_Print(TXT_CWAIT_STRING, d_cwaitstr_x,
-                         d_cwaitstr_y - d_txt6_h - 6, scheme,
-                         TBLACK, TPF_TEXT);
+                         d_cwaitstr_y - d_txt6_h - 6, scheme, TBLACK, kTpfText);
       }
 
       /*
@@ -2868,68 +2856,66 @@ int Com_Scenario_Dialog(bool skirmish) {
   ........................................................................*/
   GadgetClass* commands;  // button list
 
-  EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, TPF_TEXT, d_name_x,
+  EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, kTpfText, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
 
 #ifdef OLDWAY
-  TextButtonClass gdibtn(BUTTON_GDI, TXT_ALLIES, TPF_BUTTON, d_gdi_x, d_gdi_y,
+  TextButtonClass gdibtn(BUTTON_GDI, TXT_ALLIES, kTpfButton, d_gdi_x, d_gdi_y,
                          d_gdi_w, d_gdi_h);
-  TextButtonClass nodbtn(BUTTON_NOD, TXT_SOVIET, TPF_BUTTON, d_nod_x, d_nod_y,
+  TextButtonClass nodbtn(BUTTON_NOD, TXT_SOVIET, kTpfButton, d_nod_x, d_nod_y,
                          d_nod_w, d_nod_h);
 #else
   char housetext[25] = "";
-  Fancy_Text_Print("", 0, 0, nullptr, 0, TPF_TEXT);
-  DropListClass housebtn(BUTTON_HOUSE, housetext, sizeof(housetext), TPF_TEXT,
+  Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
+  DropListClass housebtn(BUTTON_HOUSE, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
                          MFCD::Retrieve("BTN-UP.SHP"),
                          MFCD::Retrieve("BTN-DN.SHP"));
 #endif
   ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
-                            d_playerlist_w, d_playerlist_h, TPF_TEXT,
+                            d_playerlist_w, d_playerlist_h, kTpfText,
                             MFCD::Retrieve("BTN-UP.SHP"),
                             MFCD::Retrieve("BTN-DN.SHP"));
   ListClass scenariolist(BUTTON_SCENARIOLIST, d_scenariolist_x,
                          d_scenariolist_y, d_scenariolist_w, d_scenariolist_h,
-                         TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),
+                         kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
                          MFCD::Retrieve("BTN-DN.SHP"));
   GaugeClass countgauge(BUTTON_COUNT, d_count_x, d_count_y, d_count_w,
                         d_count_h);
 
   char staticcountbuff[35];
-  StaticButtonClass staticcount(
-      0, "     ", TPF_TEXT, d_count_x + d_count_w + 6, d_count_y);
+  StaticButtonClass staticcount(0, "     ", kTpfText, d_count_x + d_count_w + 6,
+                                d_count_y);
 
   GaugeClass levelgauge(BUTTON_LEVEL, d_level_x, d_level_y, d_level_w,
                         d_level_h);
 
   char staticlevelbuff[35];
-  StaticButtonClass staticlevel(
-      0, "     ", TPF_TEXT, d_level_x + d_level_w + 6, d_level_y);
+  StaticButtonClass staticlevel(0, "     ", kTpfText, d_level_x + d_level_w + 6,
+                                d_level_y);
 
   GaugeClass creditsgauge(BUTTON_CREDITS, d_credits_x, d_credits_y, d_credits_w,
                           d_credits_h);
 
   char staticcreditsbuff[35];
-  StaticButtonClass staticcredits(0, "         ", TPF_TEXT,
-                                  d_credits_x + d_credits_w + 6,
-                                  d_credits_y);
+  StaticButtonClass staticcredits(0, "         ", kTpfText,
+                                  d_credits_x + d_credits_w + 6, d_credits_y);
 
   GaugeClass aiplayersgauge(BUTTON_AIPLAYERS, d_aiplayers_x, d_aiplayers_y,
                             d_aiplayers_w, d_aiplayers_h);
 
   char staticaibuff[35];
-  StaticButtonClass staticai(0, "     ", TPF_TEXT,
-                             d_aiplayers_x + d_aiplayers_w + 6,
-                             d_aiplayers_y);
+  StaticButtonClass staticai(0, "     ", kTpfText,
+                             d_aiplayers_x + d_aiplayers_w + 6, d_aiplayers_y);
 
   CheckListClass optionlist(
       BUTTON_OPTIONS, d_options_x, d_options_y, d_options_w, d_options_h,
-      TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
-  TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_BUTTON, d_ok_x, d_ok_y, d_ok_w,
+      kTpfText, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
+  TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w,
                         d_ok_h);
-  TextButtonClass loadbtn(BUTTON_LOAD, TXT_LOAD_BUTTON, TPF_BUTTON, d_load_x,
+  TextButtonClass loadbtn(BUTTON_LOAD, TXT_LOAD_BUTTON, kTpfButton, d_load_x,
                           d_load_y, d_load_w, d_load_h);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w, d_cancel_h);
 
   SliderClass difficulty(
@@ -3142,7 +3128,7 @@ int Com_Scenario_Dialog(bool skirmish) {
     Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                   ? PCOLOR_REALLY_BLUE
                                   : Session.ColorIdx,
-                              TPF_TEXT, nullptr, '_', d_message_w);
+                              kTpfText, nullptr, '_', d_message_w);
   }
 
   /*........................................................................
@@ -3158,7 +3144,7 @@ int Com_Scenario_Dialog(bool skirmish) {
 
   if (strlen(ModemRXString) > 0) {
     Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN,
-                                 TPF_TEXT, -1);
+                                 kTpfText, -1);
   }
 
   ModemRXString[0] = '\0';
@@ -3257,53 +3243,52 @@ int Com_Scenario_Dialog(bool skirmish) {
           // init font variables
 
           Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
-                           TPF_CENTER | TPF_TEXT);
+                           TPF_CENTER | kTpfText);
 
           /*...............................................................
           Dialog & Field labels
           ...............................................................*/
           Fancy_Text_Print(TXT_YOUR_NAME, d_name_x + d_name_w / 2,
                            d_name_y - d_txt6_h, scheme, TBLACK,
-                           TPF_CENTER | TPF_TEXT);
+                           TPF_CENTER | kTpfText);
 #ifdef OLDWAY
           Fancy_Text_Print(TXT_SIDE_COLON, d_gdi_x + d_gdi_w,
                            d_gdi_y - d_txt6_h, scheme, TBLACK,
-                           TPF_CENTER | TPF_TEXT);
+                           TPF_CENTER | kTpfText);
 #else
           Fancy_Text_Print(TXT_SIDE_COLON, d_house_x + d_house_w / 2,
                            d_house_y - d_txt6_h, scheme, TBLACK,
-                           TPF_CENTER | TPF_TEXT);
+                           TPF_CENTER | kTpfText);
 #endif
           Fancy_Text_Print(TXT_COLOR_COLON, d_dialog_x + d_dialog_w / 4 * 3,
                            d_color_y - d_txt6_h, scheme, TBLACK,
-                           TPF_CENTER | TPF_TEXT);
+                           TPF_CENTER | kTpfText);
           if (!skirmish) {
             Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + d_playerlist_w / 2,
                              d_playerlist_y - d_txt6_h, scheme, TBLACK,
-                             TPF_CENTER | TPF_TEXT);
+                             TPF_CENTER | kTpfText);
           } else {
-            Fancy_Text_Print(TXT_EASY, difficulty.X,
-                             difficulty.Y - 16, scheme, TBLACK,
-                             TPF_TEXT);
+            Fancy_Text_Print(TXT_EASY, difficulty.X, difficulty.Y - 16, scheme,
+                             TBLACK, kTpfText);
             Fancy_Text_Print(TXT_HARD, difficulty.X + difficulty.Width,
                              difficulty.Y - 16, scheme, TBLACK,
-                             TPF_RIGHT | TPF_TEXT);
+                             TPF_RIGHT | kTpfText);
             Fancy_Text_Print(TXT_NORMAL, difficulty.X + difficulty.Width / 2,
                              difficulty.Y - 16, scheme, TBLACK,
-                             TPF_CENTER | TPF_TEXT);
+                             TPF_CENTER | kTpfText);
           }
           Fancy_Text_Print(TXT_SCENARIOS,
                            d_scenariolist_x + d_scenariolist_w / 2,
                            d_scenariolist_y - d_txt6_h, scheme, TBLACK,
-                           TPF_CENTER | TPF_TEXT);
+                           TPF_CENTER | kTpfText);
           Fancy_Text_Print(TXT_COUNT, d_count_x - 2, d_count_y, scheme, TBLACK,
-                           TPF_TEXT | TPF_RIGHT);
+                           kTpfText | TPF_RIGHT);
           Fancy_Text_Print(TXT_LEVEL, d_level_x - 2, d_level_y, scheme, TBLACK,
-                           TPF_TEXT | TPF_RIGHT);
+                           kTpfText | TPF_RIGHT);
           Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 2, d_credits_y,
-                           scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
+                           scheme, TBLACK, kTpfText | TPF_RIGHT);
           Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
-                           d_aiplayers_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
+                           d_aiplayers_y, scheme, TBLACK, kTpfText | TPF_RIGHT);
         }
 
         /*..................................................................
@@ -3350,7 +3335,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           staticcount.Set_Text(staticcountbuff);
           staticcount.Draw_Me();
           //				Fancy_Text_Print("%d ", d_count_x +
-          // d_count_w + 3 * 2, d_count_y, scheme, BLACK, TPF_TEXT,
+          // d_count_w + 3 * 2, d_count_y, scheme, BLACK, kTpfText,
           // Session.Options.UnitCount);
 
           if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -3361,13 +3346,13 @@ int Com_Scenario_Dialog(bool skirmish) {
           staticlevel.Set_Text(staticlevelbuff);
           staticlevel.Draw_Me();
           //				Fancy_Text_Print(txt, d_level_x +
-          // d_level_w + 3 * 2, d_level_y, scheme, BLACK, TPF_TEXT);
+          // d_level_w + 3 * 2, d_level_y, scheme, BLACK, kTpfText);
 
           sprintf(staticcreditsbuff, "%d", Session.Options.Credits);
           staticcredits.Set_Text(staticcreditsbuff);
           staticcredits.Draw_Me();
           //				Fancy_Text_Print("%d", d_credits_x +
-          // d_credits_w + 2 * 2, d_credits_y, scheme, BLACK, TPF_TEXT,
+          // d_credits_w + 2 * 2, d_credits_y, scheme, BLACK, kTpfText,
           // Session.Options.Credits);
 
           sprintf(staticaibuff, "%d", Session.Options.AIPlayers);
@@ -3375,7 +3360,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           staticai.Draw_Me();
           //				Fancy_Text_Print("%d", d_aiplayers_x +
           // d_aiplayers_w + 2*2, d_aiplayers_y, scheme, BLACK,
-          // TPF_TEXT, Session.Options.AIPlayers);
+          // kTpfText, Session.Options.AIPlayers);
         }
 
         /*
@@ -3757,11 +3742,11 @@ int Com_Scenario_Dialog(bool skirmish) {
                   SendPacket.Name, SendPacket.ID, SendPacket.Message.Message,
                   Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                          : Session.ColorIdx,
-                  TPF_TEXT, -1);
+                  kTpfText, -1);
               Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                             ? PCOLOR_REALLY_BLUE
                                             : Session.ColorIdx,
-                                        TPF_TEXT, nullptr, '_', d_message_w);
+                                        kTpfText, nullptr, '_', d_message_w);
 
               display = std::max(display, REDRAW_MESSAGE);
             } /* end of send message */
@@ -4078,7 +4063,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                           PCOLOR_DIALOG_BLUE
                       ? PCOLOR_REALLY_BLUE
                       : static_cast<PlayerColorType>(ReceivePacket.ID),
-                  TPF_TEXT, -1);
+                  kTpfText, -1);
 
               Sound_Effect(VOC_INCOMING_MESSAGE);
               display = std::max(display, REDRAW_MESSAGE);
@@ -4735,60 +4720,58 @@ int Com_Show_Scenario_Dialog() {
   ........................................................................*/
   GadgetClass* commands;  // button list
 
-  EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, TPF_TEXT, d_name_x,
+  EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, kTpfText, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
 #ifdef OLDWAY
-  TextButtonClass gdibtn(BUTTON_GDI, TXT_ALLIES, TPF_BUTTON, d_gdi_x, d_gdi_y,
+  TextButtonClass gdibtn(BUTTON_GDI, TXT_ALLIES, kTpfButton, d_gdi_x, d_gdi_y,
                          d_gdi_w, d_gdi_h);
-  TextButtonClass nodbtn(BUTTON_NOD, TXT_SOVIET, TPF_BUTTON, d_nod_x, d_nod_y,
+  TextButtonClass nodbtn(BUTTON_NOD, TXT_SOVIET, kTpfButton, d_nod_x, d_nod_y,
                          d_nod_w, d_nod_h);
 #else   // OLDWAY
   char housetext[25] = "";
-  Fancy_Text_Print("", 0, 0, nullptr, 0, TPF_TEXT);
-  DropListClass housebtn(BUTTON_HOUSE, housetext, sizeof(housetext), TPF_TEXT,
+  Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
+  DropListClass housebtn(BUTTON_HOUSE, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
                          MFCD::Retrieve("BTN-UP.SHP"),
                          MFCD::Retrieve("BTN-DN.SHP"));
 #endif  // OLDWAY
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w);
   ListClass gamelist(BUTTON_GAMELIST, d_gamelist_x, d_gamelist_y, d_gamelist_w,
-                     d_gamelist_h, TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),
+                     d_gamelist_h, kTpfText, MFCD::Retrieve("BTN-UP.SHP"),
                      MFCD::Retrieve("BTN-DN.SHP"));
   ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
-                            d_playerlist_w, d_playerlist_h, TPF_TEXT,
+                            d_playerlist_w, d_playerlist_h, kTpfText,
                             MFCD::Retrieve("BTN-UP.SHP"),
                             MFCD::Retrieve("BTN-DN.SHP"));
 
   GaugeClass countgauge(BUTTON_COUNT, d_count_x, d_count_y, d_count_w,
                         d_count_h);
   char staticcountbuff[35];
-  StaticButtonClass staticcount(
-      0, "     ", TPF_TEXT, d_count_x + d_count_w + 6, d_count_y);
+  StaticButtonClass staticcount(0, "     ", kTpfText, d_count_x + d_count_w + 6,
+                                d_count_y);
 
   GaugeClass levelgauge(BUTTON_LEVEL, d_level_x, d_level_y, d_level_w,
                         d_level_h);
   char staticlevelbuff[35];
-  StaticButtonClass staticlevel(
-      0, "     ", TPF_TEXT, d_level_x + d_level_w + 6, d_level_y);
+  StaticButtonClass staticlevel(0, "     ", kTpfText, d_level_x + d_level_w + 6,
+                                d_level_y);
 
   GaugeClass creditsgauge(BUTTON_CREDITS, d_credits_x, d_credits_y, d_credits_w,
                           d_credits_h);
   char staticcreditsbuff[35];
-  StaticButtonClass staticcredits(0, "         ", TPF_TEXT,
-                                  d_credits_x + d_credits_w + 6,
-                                  d_credits_y);
+  StaticButtonClass staticcredits(0, "         ", kTpfText,
+                                  d_credits_x + d_credits_w + 6, d_credits_y);
 
   GaugeClass aiplayersgauge(BUTTON_AI_PLAYERS, d_aiplayers_x, d_aiplayers_y,
                             d_aiplayers_w, d_aiplayers_h);
   char staticaibuff[35];
-  StaticButtonClass staticai(0, "     ", TPF_TEXT,
-                             d_aiplayers_x + d_aiplayers_w + 6,
-                             d_aiplayers_y);
+  StaticButtonClass staticai(0, "     ", kTpfText,
+                             d_aiplayers_x + d_aiplayers_w + 6, d_aiplayers_y);
 
   CheckListClass optionlist(
       BUTTON_OPTIONS, d_options_x, d_options_y, d_options_w, d_options_h,
-      TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
+      kTpfText, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
 
   /*
   ------------------------- Build the button list --------------------------
@@ -4886,7 +4869,7 @@ int Com_Show_Scenario_Dialog() {
   aiplayersgauge.Set_Maximum(Rule.MaxPlayers - 2);
   aiplayersgauge.Set_Value(Session.Options.AIPlayers);
 
-  Fancy_Text_Print("", 0, 0, scheme, TBLACK, TPF_CENTER | TPF_TEXT);
+  Fancy_Text_Print("", 0, 0, scheme, TBLACK, TPF_CENTER | kTpfText);
 
   transmit = true;
   first = true;
@@ -4906,7 +4889,7 @@ int Com_Show_Scenario_Dialog() {
   Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                 ? PCOLOR_REALLY_BLUE
                                 : Session.ColorIdx,
-                            TPF_TEXT, nullptr, '_', d_message_w);
+                            kTpfText, nullptr, '_', d_message_w);
   Session.WWChat = 0;
 
   /*........................................................................
@@ -4923,7 +4906,7 @@ int Com_Show_Scenario_Dialog() {
 
   if (strlen(ModemRXString) > 0) {
     Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN,
-                                 TPF_TEXT, -1);
+                                 kTpfText, -1);
   }
 
   ModemRXString[0] = '\0';
@@ -4999,32 +4982,32 @@ int Com_Show_Scenario_Dialog() {
         ...............................................................*/
         Fancy_Text_Print(TXT_CHANNEL_GAMES, d_gamelist_x + d_gamelist_w / 2,
                          d_gamelist_y - d_txt6_h, scheme, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
+                         TPF_CENTER | kTpfText);
         Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + d_playerlist_w / 2,
                          d_playerlist_y - d_txt6_h, scheme, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
+                         TPF_CENTER | kTpfText);
         Fancy_Text_Print(TXT_YOUR_NAME, d_name_x + d_name_w / 2,
                          d_name_y - d_txt6_h, scheme, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
+                         TPF_CENTER | kTpfText);
 #ifdef OLDWAY
         Fancy_Text_Print(TXT_SIDE_COLON, d_gdi_x + d_gdi_w, d_gdi_y - d_txt6_h,
-                         scheme, TBLACK, TPF_CENTER | TPF_TEXT);
+                         scheme, TBLACK, TPF_CENTER | kTpfText);
 #else
         Fancy_Text_Print(TXT_SIDE_COLON, d_house_x + d_house_w / 2,
                          d_house_y - d_txt6_h, scheme, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
+                         TPF_CENTER | kTpfText);
 #endif
         Fancy_Text_Print(TXT_COLOR_COLON, d_dialog_x + d_dialog_w / 4 * 3,
                          d_color_y - d_txt6_h, scheme, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y,
-                         scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y,
-                         scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4,
-                         d_credits_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
-                         d_aiplayers_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
+                         TPF_CENTER | kTpfText);
+        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, TBLACK,
+                         kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, TBLACK,
+                         kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
+                         scheme, TBLACK, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4, d_aiplayers_y,
+                         scheme, TBLACK, kTpfText | TPF_RIGHT);
       }
 
       /*..................................................................
@@ -5068,7 +5051,7 @@ int Com_Show_Scenario_Dialog() {
             sprintf(txt, "%s", Text_String(TXT_WAITING_FOR_OPPONENT));
 
             Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, scheme, TBLACK,
-                             TPF_CENTER | TPF_TEXT);
+                             TPF_CENTER | kTpfText);
           } else {
             /*............................................................
             Scenario description
@@ -5082,7 +5065,7 @@ int Com_Show_Scenario_Dialog() {
               //							sprintf(txt,"%s
               //%s",p, Session.Options.ScenarioDescription);
               // Fancy_Text_Print (txt, d_dialog_cx, d_scenario_y, scheme,
-              // TBLACK, TPF_TEXT | TPF_CENTER);
+              // TBLACK, kTpfText | TPF_CENTER);
 
               // EW - Scenario language translation goes here!!!!!!!! VG
               for (i = 0; EngMisStr[i] != nullptr; i++) {
@@ -5100,14 +5083,14 @@ int Com_Show_Scenario_Dialog() {
                 sprintf(txt, "%s %s", p, Session.Options.ScenarioDescription);
               }
               Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, scheme, TBLACK,
-                               TPF_TEXT | TPF_CENTER);
+                               kTpfText | TPF_CENTER);
 
             } else {
               sprintf(txt, "%s %s", p, Text_String(TXT_NOT_FOUND));
 
               Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y,
                                &ColorRemaps[PCOLOR_RED], TBLACK,
-                               TPF_TEXT | TPF_CENTER);
+                               kTpfText | TPF_CENTER);
             }
 
             //.........................................................
@@ -5230,7 +5213,7 @@ int Com_Show_Scenario_Dialog() {
                     Get_Mouse_Y() <= d_options_y + d_options_h)) {
           Session.Messages.Add_Message(nullptr, 0,
                                        Text_String(TXT_ONLY_HOST_CAN_MODIFY),
-                                       PCOLOR_BROWN, TPF_TEXT, 1200);
+                                       PCOLOR_BROWN, kTpfText, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = std::max(display, REDRAW_MESSAGE);
           if (housebtn.IsDropped) {
@@ -5354,11 +5337,11 @@ int Com_Show_Scenario_Dialog() {
               SendPacket.Name, SendPacket.ID, SendPacket.Message.Message,
               Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                      : Session.ColorIdx,
-              TPF_TEXT, -1);
+              kTpfText, -1);
           Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                         ? PCOLOR_REALLY_BLUE
                                         : Session.ColorIdx,
-                                    TPF_TEXT, nullptr, '_', d_message_w);
+                                    kTpfText, nullptr, '_', d_message_w);
           display = std::max(display, REDRAW_MESSAGE);
         }
         break;
@@ -5918,7 +5901,7 @@ int Com_Show_Scenario_Dialog() {
                         PCOLOR_DIALOG_BLUE
                     ? PCOLOR_REALLY_BLUE
                     : static_cast<PlayerColorType>(ReceivePacket.ID),
-                TPF_TEXT, -1);
+                kTpfText, -1);
 
             Sound_Effect(VOC_INCOMING_MESSAGE);
             display = std::max(display, REDRAW_MESSAGE);
@@ -6213,21 +6196,21 @@ static int Phone_Dialog() {
   GadgetClass* commands;  // button list
 
   ListClass phonelist(BUTTON_PHONELIST, d_phonelist_x, d_phonelist_y,
-                      d_phonelist_w, d_phonelist_h, TPF_TEXT,
+                      d_phonelist_w, d_phonelist_h, kTpfText,
                       MFCD::Retrieve("BTN-UP.SHP"),
                       MFCD::Retrieve("BTN-DN.SHP"));
-  TextButtonClass addbtn(BUTTON_ADD, TXT_ADD, TPF_BUTTON, d_add_x, d_add_y,
+  TextButtonClass addbtn(BUTTON_ADD, TXT_ADD, kTpfButton, d_add_x, d_add_y,
                          d_add_w, d_add_h);
-  TextButtonClass editbtn(BUTTON_EDIT, TXT_EDIT, TPF_BUTTON, d_edit_x, d_edit_y,
+  TextButtonClass editbtn(BUTTON_EDIT, TXT_EDIT, kTpfButton, d_edit_x, d_edit_y,
                           d_edit_w, d_edit_h);
-  TextButtonClass deletebtn(BUTTON_DELETE, TXT_DELETE_BUTTON, TPF_BUTTON,
+  TextButtonClass deletebtn(BUTTON_DELETE, TXT_DELETE_BUTTON, kTpfButton,
                             d_delete_x, d_delete_y, d_delete_w, d_delete_h);
-  TextButtonClass dialbtn(BUTTON_DIAL, TXT_DIAL, TPF_BUTTON, d_dial_x, d_dial_y,
+  TextButtonClass dialbtn(BUTTON_DIAL, TXT_DIAL, kTpfButton, d_dial_x, d_dial_y,
                           d_dial_w, d_dial_h);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w, d_cancel_h);
   EditClass numedit(BUTTON_NUMEDIT, phone_num, PhoneEntryClass::PHONE_MAX_NUM,
-                    TPF_TEXT, d_numedit_x, d_numedit_y, d_numedit_w,
+                    kTpfText, d_numedit_x, d_numedit_y, d_numedit_w,
                     d_numedit_h, EditClass::kAlphanumeric);
 
   /*
@@ -6290,7 +6273,7 @@ static int Phone_Dialog() {
         // init font variables
 
         Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
+                         TPF_CENTER | kTpfText);
 
         /*...............................................................
         Dialog & Field labels
@@ -6769,19 +6752,19 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   GadgetClass* commands;  // button list
 
   EditClass nameedit(BUTTON_NAME, namebuf, PhoneEntryClass::PHONE_MAX_NAME,
-                     TPF_TEXT, d_name_x, d_name_y, d_name_w, d_name_h,
+                     kTpfText, d_name_x, d_name_y, d_name_w, d_name_h,
                      EditClass::kAlphanumeric);
   EditClass numedit(BUTTON_NUMBER, numbuf, PhoneEntryClass::PHONE_MAX_NUM,
-                    TPF_TEXT, d_number_x, d_number_y, d_number_w, d_number_h,
+                    kTpfText, d_number_x, d_number_y, d_number_w, d_number_h,
                     EditClass::kAlphanumeric);
-  TextButtonClass defaultbtn(BUTTON_DEFAULT, TXT_DEFAULT_SETTINGS, TPF_BUTTON,
+  TextButtonClass defaultbtn(BUTTON_DEFAULT, TXT_DEFAULT_SETTINGS, kTpfButton,
                              d_default_x, d_default_y, d_default_w,
                              d_default_h);
-  TextButtonClass custombtn(BUTTON_CUSTOM, TXT_CUSTOM_SETTINGS, TPF_BUTTON,
+  TextButtonClass custombtn(BUTTON_CUSTOM, TXT_CUSTOM_SETTINGS, kTpfButton,
                             d_custom_x, d_custom_y, d_custom_w, d_custom_h);
-  TextButtonClass savebtn(BUTTON_SAVE, TXT_SAVE_BUTTON, TPF_BUTTON, d_save_x,
+  TextButtonClass savebtn(BUTTON_SAVE, TXT_SAVE_BUTTON, kTpfButton, d_save_x,
                           d_save_y, d_save_w, d_save_h);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w, d_cancel_h);
 
   /*
@@ -6856,12 +6839,10 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Fancy_Text_Print(TXT_NAME_COLON, d_name_x - 10,
-                         d_name_y + 2, scheme, TBLACK,
-                         TPF_RIGHT | TPF_TEXT);
-        Fancy_Text_Print(TXT_NUMBER_COLON, d_number_x - 10,
-                         d_number_y + 2, scheme, TBLACK,
-                         TPF_RIGHT | TPF_TEXT);
+        Fancy_Text_Print(TXT_NAME_COLON, d_name_x - 10, d_name_y + 2, scheme,
+                         TBLACK, TPF_RIGHT | kTpfText);
+        Fancy_Text_Print(TXT_NUMBER_COLON, d_number_x - 10, d_number_y + 2,
+                         scheme, TBLACK, TPF_RIGHT | kTpfText);
       }
       /*
       .......................... Redraw buttons ..........................
@@ -7449,7 +7430,7 @@ void Log_End_Time(char* string) {
 
   currtime = TickCount.Value();
   while (LogLevel >= 0) {
-    if (LogLevel < MAX_LOG_LEVEL) {
+    if (LogLevel < kMaxLogLevel) {
       //
       // put one space for each level as indenting
       //
@@ -7459,7 +7440,7 @@ void Log_End_Time(char* string) {
       }
     } else {
       Smart_Printf("LogLevel %d too large!-! \n", LogLevel);
-      LogLevel = MAX_LOG_LEVEL - 1;
+      LogLevel = kMaxLogLevel - 1;
     }
 
     ticks = currtime - LogLevelTime[LogLevel--];
@@ -7478,7 +7459,7 @@ void Log_Time(char* string) {
 
   currtime = TickCount.Value();
 
-  if (LogLevel < MAX_LOG_LEVEL) {
+  if (LogLevel < kMaxLogLevel) {
     //
     // put one space for each level as indenting
     //
@@ -7488,7 +7469,7 @@ void Log_Time(char* string) {
     }
   } else {
     Smart_Printf("LogLevel %d too large!-! \n", LogLevel);
-    LogLevel = MAX_LOG_LEVEL - 1;
+    LogLevel = kMaxLogLevel - 1;
   }
 
   ticks = currtime - LogLastTime;
@@ -7506,7 +7487,7 @@ void Log_Start_Nest_Time(char* string) {
 
   currtime = TickCount.Value();
 
-  if (LogLevel < MAX_LOG_LEVEL) {
+  if (LogLevel < kMaxLogLevel) {
     //
     // put one space for each level as indenting
     //
@@ -7516,7 +7497,7 @@ void Log_Start_Nest_Time(char* string) {
     }
   } else {
     Smart_Printf("LogLevel %d too large!-! \n", LogLevel);
-    LogLevel = MAX_LOG_LEVEL - 1;
+    LogLevel = kMaxLogLevel - 1;
   }
 
   ticks = currtime - LogLastTime;
@@ -7524,9 +7505,9 @@ void Log_Start_Nest_Time(char* string) {
                ", %s \n",
                currtime, ticks, ticks * 10 / 60, string);
 
-  if (LogLevel >= MAX_LOG_LEVEL - 1) {
+  if (LogLevel >= kMaxLogLevel - 1) {
     Smart_Printf("Could not start another nesting Maxed at %d,%d!-! \n",
-                 LogLevel, MAX_LOG_LEVEL - 1);
+                 LogLevel, kMaxLogLevel - 1);
   } else {
     LogLevelTime[++LogLevel] = currtime;
   }
@@ -7547,7 +7528,7 @@ void Log_End_Nest_Time(char* string) {
     LogLevel = 0;
   }
 
-  if (LogLevel < MAX_LOG_LEVEL) {
+  if (LogLevel < kMaxLogLevel) {
     //
     // put one space for each level as indenting
     //
@@ -7557,7 +7538,7 @@ void Log_End_Nest_Time(char* string) {
     }
   } else {
     Smart_Printf("LogLevel %d too large!-! \n", LogLevel);
-    LogLevel = MAX_LOG_LEVEL - 1;
+    LogLevel = kMaxLogLevel - 1;
   }
 
   ticks = currtime - LogLevelTime[LogLevel];

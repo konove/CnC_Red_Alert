@@ -212,9 +212,9 @@ void MapEditClass::One_Time() {
   /*
   **	Building attribute buttons.
   */
-  Sellable = new TextButtonClass(POPUP_SELLABLE, TXT_SELLABLE, TPF_EBUTTON,
+  Sellable = new TextButtonClass(POPUP_SELLABLE, TXT_SELLABLE, kTpfEButton,
                                  320 - 65, 200 - 25, 60);
-  Rebuildable = new TextButtonClass(POPUP_REBUILDABLE, TXT_REBUILD, TPF_EBUTTON,
+  Rebuildable = new TextButtonClass(POPUP_REBUILDABLE, TXT_REBUILD, kTpfEButton,
                                     320 - 65, 200 - 15, 60);
 
   /*
@@ -967,7 +967,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         **	Loop through flag home values; if this cell is one of them,
         *clear *	that waypoint.
         */
-        for (i = 0; i < MAX_PLAYERS; i++) {
+        for (i = 0; i < kMaxPlayers; i++) {
           house = (HousesType)(HOUSE_MULTI1 + i);
           if (HouseClass::As_Pointer(house) &&
               CurrentCell == HouseClass::As_Pointer(house)->FlagHome) {
@@ -1949,9 +1949,9 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
   */
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass button(BUTTON_OK, TXT_OK, TPF_EBUTTON, D_BUTTON_X, D_BUTTON_Y,
+  TextButtonClass button(BUTTON_OK, TXT_OK, kTpfEButton, D_BUTTON_X, D_BUTTON_Y,
                          D_BUTTON_W);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_EBUTTON, D_CANCEL_X,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfEButton, D_CANCEL_X,
                             D_CANCEL_Y, D_CANCEL_W);
   EditClass editbtn(BUTTON_EDIT, wayptname, 3, TPF_EFNT | TPF_NOSHADOW,
                     D_EDIT_X, D_EDIT_Y, D_EDIT_W, -1, EditClass::kAlphanumeric);

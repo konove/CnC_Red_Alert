@@ -473,13 +473,13 @@ bool CCINIClass::Put_Owners(const char* section, const char* entry,
     buffer += str;
   };
 
-  if ((value & HOUSEF_ALLIES) == HOUSEF_ALLIES) {
+  if ((value & kHouseFlagAllies) == kHouseFlagAllies) {
     append("allies");
-    value &= ~HOUSEF_ALLIES;
+    value &= ~kHouseFlagAllies;
   }
-  if ((value & HOUSEF_SOVIET) == HOUSEF_SOVIET) {
+  if ((value & kHouseFlagSoviet) == kHouseFlagSoviet) {
     append("soviet");
-    value &= ~HOUSEF_SOVIET;
+    value &= ~kHouseFlagSoviet;
   }
 
   // Iterate through House Types

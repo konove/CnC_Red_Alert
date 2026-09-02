@@ -788,7 +788,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           building->CountDown.Set(Rule.C4Delay * kTicksPerMinute);
           building->WhomToRepay = As_Target();
         }
-        NavCom = TARGET_NONE;
+        NavCom = kTargetNone;
         Do_Uncloak();
         Arm.Set(Rearm_Delay(true));
         Scatter(building->Center_Coord(), true, true);  // RUN AWAY!
@@ -1065,7 +1065,7 @@ void InfantryClass::Assign_Target(TARGET target) {
   Path[0] = FACING_NONE;
   if (Class->IsDog) {
     if (As_Object(target) && As_Object(target)->What_Am_I() != RTTI_INFANTRY) {
-      target = TARGET_NONE;
+      target = kTargetNone;
     }
   }
   FootClass::Assign_Target(target);
@@ -1153,7 +1153,7 @@ void InfantryClass::AI() {
   **	Special hack to make sure the dog never attacks a cell.
   */
   if (Class->IsDog && Target_Legal(TarCom) && Is_Target_Cell(TarCom)) {
-    Assign_Target(TARGET_NONE);
+    Assign_Target(kTargetNone);
   }
 
   /*
@@ -2184,7 +2184,7 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
  * INPUT:   threat   -- The basic threat control value. *
  *                                                                                             *
  * OUTPUT:  Returns with the best target for this infantry unit to attack. If no
- *suitable      * target could be found, then TARGET_NONE is returned. *
+ *suitable      * target could be found, then kTargetNone is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -2203,7 +2203,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat)  // const
   *recapture it.
   */
   if (!House->IsHuman && Class->IsCapture && !Is_Weapon_Equipped()) {
-    if (House->ToCapture != TARGET_NONE &&
+    if (House->ToCapture != kTargetNone &&
         Distance(House->ToCapture) < 0x0F00) {
       return House->ToCapture;
     }
@@ -2213,7 +2213,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat)  // const
   if (!Is_Weapon_Equipped()) {
     if (!Class->IsCapture && *this != INFANTRY_RENOVATOR &&
         *this != INFANTRY_SPY && *this != INFANTRY_THIEF) {
-      return TARGET_NONE;
+      return kTargetNone;
     }
   }
 
@@ -2222,7 +2222,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat)  // const
   **	human player.
   */
   if (*this == INFANTRY_TANYA && House->IsHuman) {
-    return TARGET_NONE;
+    return kTargetNone;
   }
 
   if (Class->PrimaryWeapon != nullptr) {
@@ -2841,7 +2841,7 @@ ActionType InfantryClass::What_Action(const ObjectClass* object) const {
           const short* list =
               ((BuildingClass*)object)->Class->Occupy_List(false);
           bool found = false;
-          while (*list != REFRESH_EOL && !found) {
+          while (*list != kRefreshEol && !found) {
             CELL newcell = static_cast<CELL>(cell + *list++);
             for (FacingType i = FACING_N; i < FACING_COUNT; i++) {
               if (Map[Adjacent_Cell(newcell, i)].Zones[Class->MZone] ==
@@ -3481,11 +3481,11 @@ void InfantryClass::Firing_AI() {
                    (targ->What_Am_I() == RTTI_AIRCRAFT ||
                     targ->What_Am_I() == RTTI_UNIT))) {
                 if (targ->Health_Ratio() >= Rule.ConditionGreen) {
-                  Assign_Target(TARGET_NONE);
+                  Assign_Target(kTargetNone);
                 }
               }
             } else {
-              Assign_Target(TARGET_NONE);
+              Assign_Target(kTargetNone);
             }
           }
           break;
@@ -3515,7 +3515,7 @@ void InfantryClass::Firing_AI() {
           **	stop and keep firing.
           */
           if (TarCom == NavCom) {
-            NavCom = TARGET_NONE;
+            NavCom = kTargetNone;
             Path[0] = FACING_NONE;
           }
           break;
@@ -3679,7 +3679,7 @@ void InfantryClass::Movement_AI() {
       */
       if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE &&
           Target_Legal(NavCom)) {
-        Assign_Destination(TARGET_NONE);
+        Assign_Destination(kTargetNone);
         //				if (IsTethered) Scatter(0, true);
       }
 
@@ -3696,7 +3696,7 @@ void InfantryClass::Movement_AI() {
         if (!Class->IsCapture && Mission != MISSION_ENTER) {
           //				if (*this != INFANTRY_TANYA && *this !=
           // INFANTRY_SPY && *this != INFANTRY_RENOVATOR) {
-          Assign_Destination(TARGET_NONE);
+          Assign_Destination(kTargetNone);
         }
       }
 
@@ -3749,15 +3749,15 @@ void InfantryClass::Movement_AI() {
             **	assign a new one.
             */
             if (!House->IsHuman && Mission == MISSION_HUNT) {
-              Assign_Destination(TARGET_NONE);
-              Assign_Target(TARGET_NONE);
+              Assign_Destination(kTargetNone);
+              Assign_Target(kTargetNone);
             } else {
               /*
               **	If the infantry unit is close enough to the target, then
               **	tell it to stop.
               */
               if (Distance(NavCom) < Rule.CloseEnoughDistance && !IsTethered) {
-                Assign_Destination(TARGET_NONE);
+                Assign_Destination(kTargetNone);
               } else {
                 /*
                 **	Update the try try again counter so that this
@@ -3783,12 +3783,12 @@ void InfantryClass::Movement_AI() {
                       IsLocked && Target_Legal(NavCom) &&
                       Map[As_Cell(NavCom)].Zones[Class->MZone] !=
                           Map[Coord].Zones[Class->MZone]) {
-                    Assign_Destination(TARGET_NONE);
+                    Assign_Destination(kTargetNone);
                   }
                   if (IsLocked && Target_Legal(TarCom) &&
                       Map[As_Cell(TarCom)].Zones[Class->MZone] !=
                           Map[Coord].Zones[Class->MZone]) {
-                    Assign_Target(TARGET_NONE);
+                    Assign_Target(kTargetNone);
                   }
                 }
               }
@@ -3810,7 +3810,7 @@ void InfantryClass::Movement_AI() {
           if ((Mission == MISSION_MOVE || Mission == MISSION_ENTER) &&
               !IsTethered /*&& House->IsHuman*/ &&
               Distance(NavCom) < Rule.CloseEnoughDistance) {
-            Assign_Destination(TARGET_NONE);
+            Assign_Destination(kTargetNone);
           } else {
             /*
             ** If blocked by a moving block then just exit start of move and
@@ -3821,13 +3821,13 @@ void InfantryClass::Movement_AI() {
                 if (!House->Is_Ally(Map[acell].Cell_Object())) {
                   Override_Mission(MISSION_ATTACK,
                                    Map[acell].Cell_Object()->As_Target(),
-                                   TARGET_NONE);
+                                   kTargetNone);
                 }
               } else {
                 if (Map[acell].Overlay != OVERLAY_NONE &&
                     OverlayTypeClass::As_Reference(Map[acell].Overlay).IsWall) {
                   Override_Mission(MISSION_ATTACK, ::As_Target(acell),
-                                   TARGET_NONE);
+                                   kTargetNone);
                 }
               }
             }
@@ -3897,7 +3897,7 @@ void InfantryClass::Movement_AI() {
         }
 
         if (Coord_Cell(Coord) == As_Cell(NavCom)) {
-          NavCom = TARGET_NONE;
+          NavCom = kTargetNone;
           if (Mission == MISSION_MOVE) {
             Enter_Idle_Mode();
           }

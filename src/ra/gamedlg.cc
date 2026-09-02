@@ -192,15 +192,15 @@ void GameControlsClass::Process() {
                          d_speed_h, true);
   SliderClass scrate_btn(BUTTON_SCROLLRATE, d_scroll_x, d_scroll_y, d_scroll_w,
                          d_scroll_h, true);
-  TextButtonClass visual_btn(BUTTON_VISUAL, TXT_VISUAL_CONTROLS, TPF_BUTTON,
+  TextButtonClass visual_btn(BUTTON_VISUAL, TXT_VISUAL_CONTROLS, kTpfButton,
                              d_visual_x, d_visual_y, d_visual_w, d_visual_h);
-  TextButtonClass sound_btn(BUTTON_SOUND, TXT_SOUND_CONTROLS, TPF_BUTTON,
+  TextButtonClass sound_btn(BUTTON_SOUND, TXT_SOUND_CONTROLS, kTpfButton,
                             d_sound_x, d_sound_y, d_sound_w, d_sound_h);
-  TextButtonClass okbtn(BUTTON_OK, TXT_OPTIONS_MENU, TPF_BUTTON, d_ok_x,
+  TextButtonClass okbtn(BUTTON_OK, TXT_OPTIONS_MENU, kTpfButton, d_ok_x,
                         d_ok_y);
   okbtn.X = (SeenBuff.Get_Width() - okbtn.Width) / 2;
 
-  TextButtonClass wol_btn(BUTTON_WOLAPI, TXT_WOL_OPTTITLE, TPF_BUTTON, d_wol_x,
+  TextButtonClass wol_btn(BUTTON_WOLAPI, TXT_WOL_OPTTITLE, kTpfButton, d_wol_x,
                           d_wol_y, d_wol_w, d_wol_h);
 
   /*
@@ -294,7 +294,7 @@ void GameControlsClass::Process() {
       /*
       **	Label the game speed slider
       */
-      style = TPF_TEXT;
+      style = kTpfText;
       if (curbutton == BUTTON_SPEED - BUTTON_FIRST) {
         style = style | TPF_BRIGHT_COLOR;
       }
@@ -302,15 +302,15 @@ void GameControlsClass::Process() {
                        TBLACK, style);
 
       Fancy_Text_Print(TXT_SLOWER, d_speed_x, d_speed_y + d_speed_h + 2, scheme,
-                       TBLACK, TPF_TEXT);
+                       TBLACK, kTpfText);
       Fancy_Text_Print(TXT_FASTER, d_speed_x + d_speed_w,
                        d_speed_y + d_speed_h + 2, scheme, TBLACK,
-                       TPF_TEXT | TPF_RIGHT);
+                       kTpfText | TPF_RIGHT);
 
       /*
       **	Label the scroll rate slider
       */
-      style = TPF_TEXT;
+      style = kTpfText;
       if (curbutton == BUTTON_SCROLLRATE - BUTTON_FIRST) {
         style = style | TPF_BRIGHT_COLOR;
       }
@@ -318,10 +318,10 @@ void GameControlsClass::Process() {
                        scheme, TBLACK, style);
 
       Fancy_Text_Print(TXT_SLOWER, d_scroll_x, d_scroll_y + d_scroll_h + 2,
-                       scheme, TBLACK, TPF_TEXT);
+                       scheme, TBLACK, kTpfText);
       Fancy_Text_Print(TXT_FASTER, d_scroll_x + d_scroll_w,
                        d_scroll_y + d_scroll_h + 2, scheme, TBLACK,
-                       TPF_TEXT | TPF_RIGHT);
+                       kTpfText | TPF_RIGHT);
 
       commands->Draw_All();
 

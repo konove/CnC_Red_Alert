@@ -358,7 +358,7 @@ void ScoreClass::Presentation() {
   int i;
   const void* yellowptr;
   const void* redptr;
-  CCFileClass file(FAME_FILE_NAME);
+  CCFileClass file(kFameFileName);
   struct Fame hallfame[NUMFAMENAMES];
   const void* oldfont;
   int oldfontxspacing = FontXSpacing;

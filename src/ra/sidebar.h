@@ -61,10 +61,10 @@ class SidebarClass : public PowerClass {
   *context.
   */
   enum SideBarClassEnums {
-    BUTTON_ACTIVATOR = 100,    // Button ID for the activator.
-    SIDE_X = 320 - 80,         // The X position of sidebar upper left corner.
-    SIDE_Y = 7 + 70,           // The Y position of sidebar upper left corner.
-    SIDE_WIDTH = SIDEBAR_WID,  // Width of the entire sidebar (in pixels).
+    BUTTON_ACTIVATOR = 100,      // Button ID for the activator.
+    SIDE_X = 320 - 80,           // The X position of sidebar upper left corner.
+    SIDE_Y = 7 + 70,             // The Y position of sidebar upper left corner.
+    SIDE_WIDTH = kSidebarWidth,  // Width of the entire sidebar (in pixels).
     SIDE_HEIGHT = 200 - (7 + 70),  // Height of the entire sidebar (in pixels).
     TOP_HEIGHT = 13,  // Height of top section (with repair/sell buttons).
     COLUMN_ONE_X = 320 - 80 + 8,  // Sidestrip upper left coordinates...

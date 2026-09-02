@@ -630,7 +630,7 @@ void RadarClass::Draw_It(bool forced) {
                 HouseTypeClass::As_Reference(PlayerPtr->ActLike).Full_Name()),
             RadX + RadWidth / 2, RadY + RadHeight - 20,
             &ColorRemaps[PlayerPtr->RemapColor], TBLACK,
-            TPF_CENTER | TPF_TEXT | TPF_DROPSHADOW);
+            TPF_CENTER | kTpfText | TPF_DROPSHADOW);
       }
 
       MouseClass::Repair.Draw_Me(true);
@@ -1866,7 +1866,7 @@ int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
  * HISTORY: * 01/01/1995 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::Refresh_Cells(CELL cell, const short* list) {
-  if (*list == REFRESH_SIDEBAR) {
+  if (*list == kRefreshSidebar) {
     IsToRedraw = true;
     Flag_To_Redraw(false);
   }

@@ -161,9 +161,9 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   */
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass ConnectBtn(BUTTON_CONNECT, TXT_WOL_CONNECT, TPF_BUTTON,
+  TextButtonClass ConnectBtn(BUTTON_CONNECT, TXT_WOL_CONNECT, kTpfButton,
                              d_connect_x, d_connect_y, d_connect_w);
-  TextButtonClass CancelBtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
+  TextButtonClass CancelBtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w);
 
   IconListClass NickList(LISTBOX_NICKS, d_list_x, d_list_y, d_list_w, d_list_h,
@@ -188,7 +188,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                                 iSaveTextWidth, d_save_h, TXT_WOL_SAVELOGIN,
                                 TPF_6PT_GRAD | TPF_NOSHADOW, true);
 
-  TextButtonClass DeleteBtn(BUTTON_DELETE, TXT_DELETE_BUTTON, TPF_BUTTON,
+  TextButtonClass DeleteBtn(BUTTON_DELETE, TXT_DELETE_BUTTON, kTpfButton,
                             d_delete_x, d_delete_y, d_delete_w);
 
   /*
@@ -262,10 +262,10 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       {
         Fancy_Text_Print(TXT_WOL_NAME, d_name_x + (d_name_w / 2), d_name_y - 14,
                          GadgetClass::Get_Color_Scheme(), TBLACK,
-                         TPF_TEXT | TPF_CENTER);
+                         kTpfText | TPF_CENTER);
         Fancy_Text_Print(TXT_WOL_PASSWORD, d_pass_x + (d_pass_w / 2),
                          d_pass_y - 14, GadgetClass::Get_Color_Scheme(), TBLACK,
-                         TPF_TEXT | TPF_CENTER);
+                         kTpfText | TPF_CENTER);
         commands->Flag_List_To_Redraw();
       }
       Show_Mouse();

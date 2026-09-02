@@ -146,10 +146,10 @@ void SoundControlsClass::Process() {
   /*
   **	Return to options menu button.
   */
-  TextButtonClass returnto(BUTTON_OPTIONS, TXT_OK, TPF_BUTTON,
+  TextButtonClass returnto(BUTTON_OPTIONS, TXT_OK, kTpfButton,
                            option_x + button_x, option_y + button_y,
                            button_width);
-  //	TextButtonClass returnto(BUTTON_OPTIONS, TXT_OPTIONS_MENU, TPF_BUTTON,
+  //	TextButtonClass returnto(BUTTON_OPTIONS, TXT_OPTIONS_MENU, kTpfButton,
 
   /*
   **	Stop playing button.
@@ -166,16 +166,16 @@ void SoundControlsClass::Process() {
   /*
   **	Shuffle control.
   */
-  TextButtonClass shufflebtn(BUTTON_SHUFFLE, TXT_OFF, TPF_BUTTON,
+  TextButtonClass shufflebtn(BUTTON_SHUFFLE, TXT_OFF, kTpfButton,
                              option_x + shuffle_x, option_y + shuffle_y,
                              onoff_width);
-  //	TextButtonClass shufflebtn(BUTTON_SHUFFLE, TXT_OFF, TPF_BUTTON,
+  //	TextButtonClass shufflebtn(BUTTON_SHUFFLE, TXT_OFF, kTpfButton,
   // option_x+shuffle_x, option_y+shuffle_y, ONOFF_WIDTH);
 
   /*
   **	Repeat control.
   */
-  TextButtonClass repeatbtn(BUTTON_REPEAT, TXT_OFF, TPF_BUTTON,
+  TextButtonClass repeatbtn(BUTTON_REPEAT, TXT_OFF, kTpfButton,
                             option_x + repeat_x, option_y + repeat_y,
                             onoff_width);
 
@@ -325,23 +325,23 @@ void SoundControlsClass::Process() {
       */
       Fancy_Text_Print(TXT_MUSIC_VOLUME, option_x + mslider_x - 10,
                        option_y + mslider_y - 4, scheme, TBLACK,
-                       TPF_TEXT | TPF_RIGHT);
+                       kTpfText | TPF_RIGHT);
       Fancy_Text_Print(TXT_SOUND_VOLUME, option_x + fxslider_x - 10,
                        option_y + fxslider_y - 4, scheme, TBLACK,
-                       TPF_TEXT | TPF_RIGHT);
+                       kTpfText | TPF_RIGHT);
 
 #if defined(GERMAN) || defined(FRENCH)
       Fancy_Text_Print(TXT_SHUFFLE, option_x + 4 + shuffle_x - (10),
                        option_y + shuffle_y + (2), scheme, TBLACK,
-                       TPF_TEXT | TPF_RIGHT);
+                       kTpfText | TPF_RIGHT);
 #else
       Fancy_Text_Print(TXT_SHUFFLE, option_x + shuffle_x - 10,
                        option_y + shuffle_y + 2, scheme, TBLACK,
-                       TPF_TEXT | TPF_RIGHT);
+                       kTpfText | TPF_RIGHT);
 #endif
       Fancy_Text_Print(TXT_REPEAT, option_x + repeat_x - 10,
                        option_y + repeat_y + 2, scheme, TBLACK,
-                       TPF_TEXT | TPF_RIGHT);
+                       kTpfText | TPF_RIGHT);
 
       optionsbtn->Draw_All();
       Show_Mouse();

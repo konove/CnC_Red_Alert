@@ -543,8 +543,8 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
   */
   if (!offset && entry) {
     sprintf(buffer, "\r\n[%s]\r\n", section);
-    // TODO(konove): Why profile is initialized with SHAPE_BUFFER_SIZE?
-    port::SafeAppend(profile, buffer, SHAPE_BUFFER_SIZE);
+    // TODO(konove): Why profile is initialized with kShapeBufferSize?
+    port::SafeAppend(profile, buffer, kShapeBufferSize);
   }
 
   /*
@@ -586,7 +586,7 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
     /*
     **	Remove the section
     */
-    // Profile is initialized to be of size SHAPE_BUFFER_SIZE, which is big
+    // Profile is initialized to be of size kShapeBufferSize, which is big
     // enough.
     // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
     strcpy(offset, next);
@@ -618,7 +618,7 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
     **	Erase the entry by strcpy'ing the entire INI file over this entry
     */
     if (eol) {
-      // Profile is initialized to be of size SHAPE_BUFFER_SIZE, which is big
+      // Profile is initialized to be of size kShapeBufferSize, which is big
       // enough.
       // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
       strcpy(offset, offset + eol + 1);

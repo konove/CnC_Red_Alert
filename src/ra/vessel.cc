@@ -1228,7 +1228,7 @@ TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
     threat = threat | THREAT_BUILDINGS;
     threat = threat | THREAT_FACTORIES;
   } else {
-    if ((threat & (THREAT_GROUND | THREAT_POWER | THREAT_FACTORIES |
+    if ((threat & (kThreatGround | THREAT_POWER | THREAT_FACTORIES |
                    THREAT_TIBERIUM | THREAT_BASE_DEFENSE | THREAT_BOATS)) ==
         0) {
       if (Class->PrimaryWeapon != nullptr) {
@@ -1239,7 +1239,7 @@ TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
         threat = threat | Class->SecondaryWeapon->Allowed_Threats();
       }
 
-      //			threat = threat | THREAT_GROUND | THREAT_BOATS;
+      //			threat = threat | kThreatGround | THREAT_BOATS;
     }
 
     // Cruisers can never hit infantry anyway, so take 'em out of the list
@@ -1249,7 +1249,7 @@ TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
     }
   }
   if (*this == VESSEL_CARRIER) {
-    return TARGET_NONE;
+    return kTargetNone;
   }
   return FootClass::Greatest_Threat(threat);
 }
@@ -1296,8 +1296,8 @@ void VesselClass::Enter_Idle_Mode(bool) {
         order = MISSION_UNLOAD;
       } else {
         order = MISSION_GUARD;
-        Assign_Target(TARGET_NONE);
-        Assign_Destination(TARGET_NONE);
+        Assign_Target(kTargetNone);
+        Assign_Destination(kTargetNone);
       }
 
     } else {
@@ -1420,7 +1420,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         **	Establish contact and let the loading process proceed normally.
         */
         if (!In_Radio_Contact()) {
-          param = TARGET_NONE;
+          param = kTargetNone;
           Transmit_Message(RADIO_HELLO, from);
           Transmit_Message(RADIO_MOVE_HERE, param);
           return RADIO_ROGER;
@@ -1835,7 +1835,7 @@ void VesselClass::Assign_Destination(TARGET target) {
   if (In_Radio_Contact() && Class->Max_Passengers() > 0 &&
       (Contact_With_Whom()->Is_Infantry() ||
        Contact_With_Whom()->What_Am_I() == RTTI_UNIT)) {
-    long param = TARGET_NONE;
+    long param = kTargetNone;
     Transmit_Message(
         RADIO_MOVE_HERE,
         param);  // should stop objects heading toward this transport.
@@ -2306,7 +2306,7 @@ BulletClass* VesselClass::Fire_At(TARGET target, int which) {
       passenger->Commence();
       // If we've launched our last aircraft, discontinue attacking.
       if (!How_Many()) {
-        Assign_Target(TARGET_NONE);
+        Assign_Target(kTargetNone);
       }
     }
   } else {

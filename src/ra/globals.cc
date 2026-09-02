@@ -582,8 +582,8 @@ PaletteClass ScorePalette;
 *for incoming events *	that need to be executed when the correct frame has been
 *reached.
 */
-QueueClass<EventClass, MAX_EVENTS> OutList;
-QueueClass<EventClass, MAX_EVENTS * 64> DoList;
+QueueClass<EventClass, kMaxEvents> OutList;
+QueueClass<EventClass, kMaxEvents * 64> DoList;
 
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
@@ -738,7 +738,7 @@ int MouseInstalled;
 // Variables for helping track how much time goes bye in routines
 //
 int LogLevel = 0;
-int64_t LogLevelTime[MAX_LOG_LEVEL] = {0};
+int64_t LogLevelTime[kMaxLogLevel] = {0};
 int64_t LogLastTime = 0;
 bool LogDump_Print = false;  // true = print the Log time Stuff
 

@@ -1229,9 +1229,9 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
       Map.Flag_To_Redraw(false);
     }
 
-    if ((Class->Ownable & (HOUSEF_GOOD | HOUSEF_BAD)) !=
-        (HOUSEF_GOOD | HOUSEF_BAD)) {
-      if (Class->Ownable & HOUSEF_GOOD) {
+    if ((Class->Ownable & (kHouseFlagGood | kHouseFlagBad)) !=
+        (kHouseFlagGood | kHouseFlagBad)) {
+      if (Class->Ownable & kHouseFlagGood) {
         ActLike = HOUSE_GREECE;
       } else {
         ActLike = HOUSE_USSR;
@@ -1345,7 +1345,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         }
 
         Sound_Effect(VOC_KABOOM22, Coord);
-        while (*offset != REFRESH_EOL) {
+        while (*offset != kRefreshEol) {
           CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
 
           /*
@@ -1490,7 +1490,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
       case RESULT_MAJOR:
         Sound_Effect(VOC_KABOOM1, Coord);
-        while (*offset != REFRESH_EOL) {
+        while (*offset != kRefreshEol) {
           CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
           AnimClass* anim = nullptr;
 
@@ -1695,8 +1695,8 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
       BState(BSTATE_NONE),
       QueueBState(BSTATE_NONE),
       WhoLastHurtMe(house),
-      WhomToRepay(TARGET_NONE),
-      AnimToTrack(TARGET_NONE),
+      WhomToRepay(kTargetNone),
+      AnimToTrack(kTargetNone),
       LastStrength(0),
       PlacementDelay(0) {
   House->Tracking_Add(this);
@@ -1782,7 +1782,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
     odds += 6;
   }
   int count = How_Many_Survivors();
-  while (*offset != REFRESH_EOL) {
+  while (*offset != kRefreshEol) {
     CELL newcell;
 
     newcell = static_cast<CELL>(cell + *offset++);
@@ -1810,7 +1810,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
             i->Strength =
                 static_cast<short>(Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
             i->Scatter(0, true);
-            if (source != TARGET_NONE && !House->Is_Ally(As_Object(source))) {
+            if (source != kTargetNone && !House->Is_Ally(As_Object(source))) {
               i->Assign_Mission(MISSION_ATTACK);
               i->Assign_Target(source);
             } else {
@@ -1946,7 +1946,7 @@ void BuildingClass::Assign_Target(TARGET target) {
   assert(IsActive);
 
   if (*this != STRUCT_SAM && *this != STRUCT_AAGUN && !In_Range(target, 0)) {
-    target = TARGET_NONE;
+    target = kTargetNone;
   }
 
   TechnoClass::Assign_Target(target);
@@ -2439,7 +2439,7 @@ DirType BuildingClass::Turret_Facing() const {
  *THREAT_RANGE     * or THREAT_NORMAL. *
  *                                                                                             *
  * OUTPUT:  Returns with a suitable target. If none could be found, then
- *TARGET_NONE is        * returned instead. *
+ *kTargetNone is        * returned instead. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -3151,7 +3151,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     oldowner->Recalc_Center();
     House->Recalc_Center();
     if (House->ToCapture == As_Target()) {
-      House->ToCapture = TARGET_NONE;
+      House->ToCapture = kTargetNone;
     }
 
     SmudgeType bib;
@@ -3202,7 +3202,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     ** Update the new building's colors on the radar map.
     */
     const short* offset = Occupy_List();
-    while (*offset != REFRESH_EOL) {
+    while (*offset != kRefreshEol) {
       CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
       Map.Radar_Pixel(cell);
     }
@@ -3715,7 +3715,7 @@ int BuildingClass::Mission_Attack() {
         }
         if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
             As_Aircraft(TarCom)->Height == 0) {
-          Assign_Target(TARGET_NONE);
+          Assign_Target(kTargetNone);
           Status = SAM_READY;
           Assign_Mission(MISSION_GUARD);
           Commence();
@@ -3737,13 +3737,13 @@ int BuildingClass::Mission_Attack() {
       case SAM_FIRING:
         if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
             As_Aircraft(TarCom)->Height == 0) {
-          Assign_Target(TARGET_NONE);
+          Assign_Target(kTargetNone);
           Status = SAM_READY;
         } else {
           FireErrorType error = Can_Fire(TarCom, 0);
           if (error == FIRE_ILLEGAL || error == FIRE_CANT ||
               error == FIRE_RANGE) {
-            Assign_Target(TARGET_NONE);
+            Assign_Target(kTargetNone);
             Status = SAM_READY;
           } else {
             if (error == FIRE_FACING) {
@@ -3766,7 +3766,7 @@ int BuildingClass::Mission_Attack() {
   }
 
   if (!Target_Legal(TarCom)) {
-    Assign_Target(TARGET_NONE);
+    Assign_Target(kTargetNone);
     Assign_Mission(MISSION_GUARD);
     Commence();
     return 1;
@@ -3779,7 +3779,7 @@ int BuildingClass::Mission_Attack() {
     case FIRE_CANT:
     case FIRE_RANGE:
     case FIRE_AMMO:
-      Assign_Target(TARGET_NONE);
+      Assign_Target(kTargetNone);
       Assign_Mission(MISSION_GUARD);
       Commence();
       break;
@@ -4670,10 +4670,10 @@ void BuildingClass::Detach(TARGET target, bool all) {
 
   TechnoClass::Detach(target, all);
   if (target == WhomToRepay) {
-    WhomToRepay = TARGET_NONE;
+    WhomToRepay = kTargetNone;
   }
   if (target == AnimToTrack) {
-    AnimToTrack = TARGET_NONE;
+    AnimToTrack = kTargetNone;
   }
 }
 
@@ -4843,7 +4843,7 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
 
   ptr = Class->ExitList;
   if (ptr != nullptr) {
-    while (*ptr != REFRESH_EOL) {
+    while (*ptr != kRefreshEol) {
       CELL cell = static_cast<CELL>(origin + *ptr++);
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
@@ -5718,7 +5718,7 @@ const short* BuildingClass::Overlap_List(bool redraw) const {
   if ((SpiedBy & 1 << PlayerPtr->Class->House) != 0 && IsSelected &&
       (*this == STRUCT_BARRACKS || *this == STRUCT_TENT)) {
     static const short _list[] = {-1, 2, MAP_CELL_W * 1 - 1, MAP_CELL_W * 1 + 2,
-                                  REFRESH_EOL};
+                                  kRefreshEol};
     return _list;
   }
   return TechnoClass::Overlap_List(redraw);

@@ -109,11 +109,11 @@ void VisualControlsClass::Process() {
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
   */
-  TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OK, TPF_BUTTON, 0, button_y,
+  TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OK, kTpfButton, 0, button_y,
                              120);
-  //	TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OPTIONS_MENU, TPF_BUTTON,
+  //	TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OPTIONS_MENU, kTpfButton,
   // 0, button_y);
-  TextButtonClass resetbtn(BUTTON_RESET, TXT_RESET_MENU, TPF_BUTTON, 0,
+  TextButtonClass resetbtn(BUTTON_RESET, TXT_RESET_MENU, kTpfButton, 0,
                            button_y, 160);
 
   /*
@@ -247,8 +247,8 @@ void VisualControlsClass::Process() {
         Fancy_Text_Print(_titles[i], slider_x - 16,
                          text_y + i * slider_y_spacing,
                          GadgetClass::Get_Color_Scheme(), TBLACK,
-                         TPF_TEXT | TPF_RIGHT |
-                             (curbutton == i ? TPF_BRIGHT_COLOR : TPF_TEXT));
+                         kTpfText | TPF_RIGHT |
+                             (curbutton == i ? TPF_BRIGHT_COLOR : kTpfText));
       }
       optionsbtn.Draw_All();
       Show_Mouse();

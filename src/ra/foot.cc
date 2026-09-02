@@ -158,8 +158,8 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       SpeedBias(1),
       XFormOffset(kNoFormationOffset),
       YFormOffset(kNoFormationOffset),
-      NavCom(TARGET_NONE),
-      SuspendedNavCom(TARGET_NONE),
+      NavCom(kTargetNone),
+      SuspendedNavCom(kTargetNone),
       Team(nullptr),
       Group(kNoGroup),
       Member(nullptr),
@@ -172,7 +172,7 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       HeadToCoord(0) {
   Path[0] = FACING_NONE;
   for (int index = 0; index < std::ssize(NavQueue); index++) {
-    NavQueue[index] = TARGET_NONE;
+    NavQueue[index] = kTargetNone;
   }
 }
 
@@ -862,7 +862,7 @@ COORDINATE FootClass::Sort_Y() const {
 void FootClass::Stun() {
   assert(IsActive);
 
-  Assign_Destination(TARGET_NONE);
+  Assign_Destination(kTargetNone);
   Path[0] = FACING_NONE;
   Stop_Driver();
   TechnoClass::Stun();
@@ -1044,7 +1044,7 @@ int FootClass::Mission_Guard_Area() {
 
   if (!IsFiring && !Target_Legal(NavCom) &&
       Distance(ArchiveTarget) > maxrange) {
-    Assign_Target(TARGET_NONE);
+    Assign_Target(kTargetNone);
     Assign_Destination(ArchiveTarget);
   }
 
@@ -1231,7 +1231,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
         if (What_Am_I() == RTTI_INFANTRY &&
             dynamic_cast<InfantryClass*>(this)->Class->IsBomber &&
             object->What_Am_I() == RTTI_BUILDING && !House->Is_Ally(object)) {
-          Player_Assign_Mission(MISSION_SABOTAGE, TARGET_NONE,
+          Player_Assign_Mission(MISSION_SABOTAGE, kTargetNone,
                                 object->As_Target());
         } else {
           Player_Assign_Mission(MISSION_GUARD_AREA, object->As_Target());
@@ -1251,20 +1251,20 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
 
     case ACTION_ENTER:
       if (Can_Player_Move() && object && object->Is_Techno() /*&& !((RadioClass *)object)->In_Radio_Contact()*/) {
-        Player_Assign_Mission(MISSION_ENTER, TARGET_NONE, object->As_Target());
+        Player_Assign_Mission(MISSION_ENTER, kTargetNone, object->As_Target());
       }
       break;
 
     case ACTION_CAPTURE:
       if (Can_Player_Move()) {
-        Player_Assign_Mission(MISSION_CAPTURE, TARGET_NONE,
+        Player_Assign_Mission(MISSION_CAPTURE, kTargetNone,
                               object->As_Target());
       }
       break;
 
     case ACTION_SABOTAGE:
       if (Can_Player_Move()) {
-        Player_Assign_Mission(MISSION_SABOTAGE, TARGET_NONE,
+        Player_Assign_Mission(MISSION_SABOTAGE, kTargetNone,
                               object->As_Target());
       }
       break;
@@ -1288,7 +1288,9 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
               Techno_Type_Class()->MZone));
         }
 
-        Player_Assign_Mission(MISSION_MOVE, TARGET_NONE, targ);
+        // No target, only a destination.
+        // NOLINTNEXTLINE(readability-suspicious-call-argument)
+        Player_Assign_Mission(MISSION_MOVE, kTargetNone, targ);
       }
       break;
 
@@ -1320,7 +1322,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
   action = What_Action(cell);
   switch (action) {
     case ACTION_HARVEST:
-      Player_Assign_Mission(MISSION_HARVEST, TARGET_NONE, ::As_Target(cell));
+      Player_Assign_Mission(MISSION_HARVEST, kTargetNone, ::As_Target(cell));
       break;
 
     case ACTION_MOVE:
@@ -1358,7 +1360,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
 #endif
         }
 
-        Player_Assign_Mission(MISSION_MOVE, TARGET_NONE, ::As_Target(cell));
+        Player_Assign_Mission(MISSION_MOVE, kTargetNone, ::As_Target(cell));
       }
       break;
 
@@ -1371,12 +1373,12 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
     */
     case ACTION_CAPTURE:
       if (Can_Player_Move()) {
-        Player_Assign_Mission(MISSION_CAPTURE, TARGET_NONE, ::As_Target(cell));
+        Player_Assign_Mission(MISSION_CAPTURE, kTargetNone, ::As_Target(cell));
       }
       break;
 
     case ACTION_SABOTAGE:
-      Player_Assign_Mission(MISSION_SABOTAGE, TARGET_NONE, ::As_Target(cell));
+      Player_Assign_Mission(MISSION_SABOTAGE, kTargetNone, ::As_Target(cell));
       break;
   }
 }
@@ -1451,7 +1453,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
       if ((Mission == MISSION_RESCUE || Mission == MISSION_GUARD_AREA ||
            Mission == MISSION_ATTACK || Mission == MISSION_HUNT) &&
           inrange) {
-        Assign_Destination(TARGET_NONE);
+        Assign_Destination(kTargetNone);
         Path[0] = FACING_NONE;
       }
     }
@@ -1661,7 +1663,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     case RADIO_RUN_AWAY:
       if (In_Radio_Contact()) {
         if (NavCom == Contact_With_Whom()->As_Target()) {
-          Assign_Destination(TARGET_NONE);
+          Assign_Destination(kTargetNone);
         }
       }
       if (Mission == MISSION_SLEEP) {
@@ -1951,7 +1953,7 @@ void FootClass::Death_Announcement(const TechnoClass*) const {
  *a target.      *
  *                                                                                             *
  * OUTPUT:  Returns with the best target to attack. If there is no target that
- *qualifies, then * TARGET_NONE is returned. *
+ *qualifies, then * kTargetNone is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -1974,7 +1976,7 @@ TARGET FootClass::Greatest_Threat(ThreatType method)  // const
   **	If this object can cloak, then it won't select a target automatically.
   */
   if (House->IsHuman && IsCloakable && Mission == MISSION_GUARD) {
-    return TARGET_NONE;
+    return kTargetNone;
   }
 
   if (!(method &
@@ -1982,9 +1984,9 @@ TARGET FootClass::Greatest_Threat(ThreatType method)  // const
          THREAT_TIBERIUM | THREAT_BOATS | THREAT_CIVILIANS | THREAT_POWER |
          THREAT_FAKES | THREAT_FACTORIES | THREAT_BASE_DEFENSE))) {
     if (What_Am_I() != RTTI_VESSEL) {
-      method = method | THREAT_GROUND;
+      method = method | kThreatGround;
     } else {
-      method = method | THREAT_BOATS | THREAT_GROUND;
+      method = method | THREAT_BOATS | kThreatGround;
     }
   }
 
@@ -1997,7 +1999,7 @@ TARGET FootClass::Greatest_Threat(ThreatType method)  // const
   **	If no target could be located and this object is under scan range
   **	restrictions, then this restriction must be lifted now.
   */
-  if (IsScanLimited && target == TARGET_NONE) {
+  if (IsScanLimited && target == kTargetNone) {
     IsScanLimited = false;
   }
 
@@ -2033,12 +2035,12 @@ void FootClass::Detach(TARGET target, bool all) {
 
   if (!SpecialFlag) {
     if (ArchiveTarget == target) {
-      ArchiveTarget = TARGET_NONE;
+      ArchiveTarget = kTargetNone;
     }
   }
 
   if (SuspendedNavCom == target) {
-    SuspendedNavCom = TARGET_NONE;
+    SuspendedNavCom = kTargetNone;
     SuspendedMission = MISSION_NONE;
   }
 
@@ -2047,7 +2049,7 @@ void FootClass::Detach(TARGET target, bool all) {
   *navigation *	computer must be cleared.
   */
   if (NavCom == target) {
-    NavCom = TARGET_NONE;
+    NavCom = kTargetNone;
     Path[0] = FACING_NONE;
     Restore_Mission();
   }
@@ -2057,7 +2059,7 @@ void FootClass::Detach(TARGET target, bool all) {
   */
   for (int index = 0; index < std::ssize(NavQueue); index++) {
     if (NavQueue[index] == target) {
-      NavQueue[index] = TARGET_NONE;
+      NavQueue[index] = kTargetNone;
       if (index < std::ssize(NavQueue) - 1) {
         memmove(&NavQueue[index], &NavQueue[index + 1],
                 (std::ssize(NavQueue) - index - 1) * sizeof(NavQueue[0]));
@@ -2288,7 +2290,7 @@ void FootClass::Handle_Navigation_List() {
       Assign_Destination(target);
       memmove(&NavQueue[0], &NavQueue[1],
               sizeof(NavQueue) - sizeof(NavQueue[0]));
-      NavQueue[std::ssize(NavQueue) - 1] = TARGET_NONE;
+      NavQueue[std::ssize(NavQueue) - 1] = kTargetNone;
 
       /*
       **	If the navigation queue is to loop (indefinately), then append
@@ -2296,7 +2298,7 @@ void FootClass::Handle_Navigation_List() {
       */
       if (IsNavQueueLoop) {
         for (int index = 0; index < std::ssize(NavQueue); index++) {
-          if (NavQueue[index] == TARGET_NONE) {
+          if (NavQueue[index] == kTargetNone) {
             NavQueue[index] = target;
             break;
           }
@@ -2381,7 +2383,7 @@ void FootClass::Queue_Navigation_List(TARGET target) {
  *=============================================================================================*/
 void FootClass::Clear_Navigation_List() {
   for (int index = 0; index < std::ssize(NavQueue); index++) {
-    NavQueue[index] = TARGET_NONE;
+    NavQueue[index] = kTargetNone;
   }
 }
 
@@ -2504,7 +2506,7 @@ void FootClass::AI() {
     if (!IsScattering && !IsTethered && !IsInLimbo &&
         What_Am_I() != RTTI_AIRCRAFT && Target_Legal(TarCom) &&
         In_Range(TarCom)) {
-      Assign_Destination(TARGET_NONE);
+      Assign_Destination(kTargetNone);
     }
   }
 #endif

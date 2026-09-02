@@ -536,7 +536,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Create filename and read the file.
   */
-  CCFileClass file(CONFIG_FILE_NAME);
+  CCFileClass file(kConfigFileName);
   INIClass ini;
   ini.Load(file);
 
@@ -724,7 +724,7 @@ void OptionsClass::Load_Settings() {
  *hotkeys.                                                         *
  *=============================================================================================*/
 void OptionsClass::Save_Settings() {
-  CCFileClass file(CONFIG_FILE_NAME);
+  CCFileClass file(kConfigFileName);
   INIClass ini;
 
   /*

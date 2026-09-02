@@ -327,8 +327,8 @@ class TechnoClass : public RadioClass,
   virtual void Response_Move();
   virtual void Response_Attack();
   virtual void Player_Assign_Mission(MissionType order,
-                                     TARGET target = TARGET_NONE,
-                                     TARGET destination = TARGET_NONE);
+                                     TARGET target = kTargetNone,
+                                     TARGET destination = kTargetNone);
 
   /*
   **	Combat related.

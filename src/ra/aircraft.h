@@ -161,8 +161,8 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, CELL cell) override;
-  void Player_Assign_Mission(MissionType mission, TARGET target = TARGET_NONE,
-                             TARGET destination = TARGET_NONE) override;
+  void Player_Assign_Mission(MissionType mission, TARGET target = kTargetNone,
+                             TARGET destination = kTargetNone) override;
   void Response_Select() override;
   void Response_Move() override;
   void Response_Attack() override;

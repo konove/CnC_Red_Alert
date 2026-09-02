@@ -108,7 +108,7 @@ inline bool Is_Target_Object(TARGET a) {
 TARGET As_Target(CELL cell);
 TARGET As_Target(COORDINATE coord);
 // inline TARGET As_Target(CELL cell) {return (TARGET)(((unsigned)RTTI_CELL <<
-// TARGET_MANTISSA) | cell);}
+// kTargetMantissaBits) | cell);}
 
 /*
 ** Must not have a constructor since Watcom cannot handle a class that has a
@@ -139,7 +139,7 @@ class xTargetClass {
 
   void Invalidate() {
     Target.Sub.Exponent = RTTI_NONE;
-    Target.Sub.Mantissa = (1 << TARGET_MANTISSA) - 1;
+    Target.Sub.Mantissa = (1 << kTargetMantissaBits) - 1;
   }
   bool Is_Valid() const { return Target.Sub.Exponent != RTTI_NONE; }
 
@@ -266,7 +266,7 @@ TriggerClass* As_Trigger(TARGET target);
 TriggerTypeClass* As_TriggerType(TARGET target);
 UnitClass* As_Unit(TARGET target);
 VesselClass* As_Vessel(TARGET target);
-inline bool Target_Legal(TARGET target) { return target != TARGET_NONE; };
+inline bool Target_Legal(TARGET target) { return target != kTargetNone; };
 ObjectClass* As_Object(TARGET target);
 
 #endif  // CNC_RED_ALERT_RA_TARGET_H_

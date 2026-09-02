@@ -251,8 +251,8 @@ class EventClass {
   EventClass(EventType type, CELL cell);
   EventClass(EventType type, TargetClass src, TargetClass dest);
   EventClass(TargetClass src, MissionType mission,
-             TargetClass target = TARGET_NONE,
-             TargetClass destination = TARGET_NONE);
+             TargetClass target = kTargetNone,
+             TargetClass destination = kTargetNone);
 
   EventClass(TargetClass src, MissionType mission, TargetClass target,
              TargetClass destination, SpeedType speed, MPHType maxspeed);

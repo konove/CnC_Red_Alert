@@ -394,7 +394,7 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
   }
 
   offset = Occupy_List();
-  while (*offset != REFRESH_EOL) {
+  while (*offset != kRefreshEol) {
     if (Class->IsWaterBased) {
       if (!Map[static_cast<CELL>(cell + *offset++)].Is_Clear_To_Build(
               SPEED_FLOAT)) {
@@ -513,7 +513,7 @@ void TerrainClass::AI() {
         Fetch_Stage() == Get_Build_Frame_Count(Class->Get_Image_Data()) - 1) {
       delete this;
 
-      Map.Zone_Reset(MZONEF_NORMAL | MZONEF_CRUSHER | MZONEF_DESTROYER);
+      Map.Zone_Reset(kZoneFlagNormal | kZoneFlagCrusher | kZoneFlagDestroyer);
     }
   }
 }

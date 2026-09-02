@@ -259,7 +259,7 @@ int main(int argc, char* argv[])
 
   if (Parse_Command_Line(argc, argv)) {
     InitTickTimer();
-    RawFileClass cfile(CONFIG_FILE_NAME);
+    RawFileClass cfile(kConfigFileName);
 
     Keyboard = new KeyboardClass();
 
@@ -271,10 +271,10 @@ int main(int argc, char* argv[])
     /*
     ** If there is not enough disk space free, don't allow the product to run.
     */
-    if (Disk_Space_Available() < INIT_FREE_DISK_SPACE) {
+    if (Disk_Space_Available() < kInitFreeDiskSpace) {
       // pretty unlikely, but print something anyway
       printf(TEXT_INSUFFICIENT);
-      printf(TEXT_MUST_HAVE, INIT_FREE_DISK_SPACE / (1024 * 1024));
+      printf(TEXT_MUST_HAVE, kInitFreeDiskSpace / (1024 * 1024));
       printf("\n");
       ShutdownTickTimer();
       return EXIT_FAILURE;

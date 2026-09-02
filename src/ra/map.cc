@@ -1039,7 +1039,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
     short xlist[32];
     List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
-    while (*list != REFRESH_EOL) {
+    while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Occupy_Down(object);
@@ -1050,7 +1050,7 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
 
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     list = xlist;
-    while (*list != REFRESH_EOL) {
+    while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Down(object);
@@ -1088,7 +1088,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
     short xlist[32];
     List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
-    while (*list != REFRESH_EOL) {
+    while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Occupy_Up(object);
@@ -1099,7 +1099,7 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
 
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     list = xlist;
-    while (*list != REFRESH_EOL) {
+    while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Up(object);
@@ -1137,7 +1137,7 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
     short xlist[32];
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
-    while (*list != REFRESH_EOL) {
+    while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Down(object);
@@ -1174,7 +1174,7 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
     short xlist[32];
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     const short* list = xlist;
-    while (*list != REFRESH_EOL) {
+    while (*list != kRefreshEol) {
       CELL newcell = static_cast<CELL>(cell + *list++);
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Up(object);
@@ -1452,8 +1452,8 @@ void MapClass::Logic() {
  * HISTORY: * 03/15/1995 JLB : Created. *
  *=============================================================================================*/
 int MapClass::Cell_Region(CELL cell) {
-  return Cell_X(cell) / REGION_WIDTH + 1 +
-         (Cell_Y(cell) / REGION_HEIGHT + 1) * MAP_REGION_WIDTH;
+  return Cell_X(cell) / kRegionWidth + 1 +
+         (Cell_Y(cell) / kRegionHeight + 1) * kMapRegionWidth;
 }
 
 /***************************************************************************
@@ -1784,16 +1784,16 @@ bool MapClass::Zone_Reset(int method) {
   **	Zero out all zones to a null state.
   */
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-    if (method & MZONEF_NORMAL) {
+    if (method & kZoneFlagNormal) {
       Array[index].Zones[MZONE_NORMAL] = 0;
     }
-    if (method & MZONEF_CRUSHER) {
+    if (method & kZoneFlagCrusher) {
       Array[index].Zones[MZONE_CRUSHER] = 0;
     }
-    if (method & MZONEF_DESTROYER) {
+    if (method & kZoneFlagDestroyer) {
       Array[index].Zones[MZONE_DESTROYER] = 0;
     }
-    if (method & MZONEF_WATER) {
+    if (method & kZoneFlagWater) {
       Array[index].Zones[MZONE_WATER] = 0;
     }
   }
@@ -1801,7 +1801,7 @@ bool MapClass::Zone_Reset(int method) {
   /*
   **	Normal zone recalculation.
   */
-  if (method & MZONEF_NORMAL) {
+  if (method & kZoneFlagNormal) {
     int zone = 1;  // Starting zone number.
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
       if (Zone_Span(cell, zone, MZONE_NORMAL)) {
@@ -1813,7 +1813,7 @@ bool MapClass::Zone_Reset(int method) {
   /*
   **	Crushable wall recalculation.
   */
-  if (method & MZONEF_CRUSHER) {
+  if (method & kZoneFlagCrusher) {
     int zone = 1;  // Starting zone number.
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
       if (Zone_Span(cell, zone, MZONE_CRUSHER)) {
@@ -1825,7 +1825,7 @@ bool MapClass::Zone_Reset(int method) {
   /*
   **	Wall destroyer zone recalculation.
   */
-  if (method & MZONEF_DESTROYER) {
+  if (method & kZoneFlagDestroyer) {
     int zone = 1;  // Starting zone number.
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
       if (Zone_Span(cell, zone, MZONE_DESTROYER)) {
@@ -1837,7 +1837,7 @@ bool MapClass::Zone_Reset(int method) {
   /*
   **	Water based zone recalcuation.
   */
-  if (method & MZONEF_WATER) {
+  if (method & kZoneFlagWater) {
     int zone = 1;  // Starting zone number.
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
       if (Zone_Span(cell, zone, MZONE_WATER)) {
@@ -2174,7 +2174,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       new AnimClass(ANIM_NAPALM3,
                     Cell_Coord(static_cast<CELL>(cell + bridge_w / 2 +
                                                 bridge_h / 2 * MAP_CELL_W)));
-      Map.Zone_Reset(MZONEF_ALL);
+      Map.Zone_Reset(kZoneFlagAll);
 
       /*
       ** Now, loop through all the bridge cells and find anyone standing
@@ -2261,7 +2261,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
           new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
                             cell2);
         }
-        Map.Zone_Reset(MZONEF_ALL);
+        Map.Zone_Reset(kZoneFlagAll);
       }
 
       /*
@@ -2333,7 +2333,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
           cell += MAP_CELL_W;
         }
         Shake_The_Screen(3);
-        Map.Zone_Reset(MZONEF_ALL);
+        Map.Zone_Reset(kZoneFlagAll);
         return true;
       }
       Shake_The_Screen(3);

@@ -164,11 +164,11 @@ const char* SimpleEditDlgClass::Show() {
   */
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass OkBtn(BUTTON_OK, szOkButton, TPF_BUTTON, d_ok_x, d_ok_y,
+  TextButtonClass OkBtn(BUTTON_OK, szOkButton, kTpfButton, d_ok_x, d_ok_y,
                         d_ok_w);
-  TextButtonClass CancelBtn(BUTTON_CANCEL, szCancelButton, TPF_BUTTON,
+  TextButtonClass CancelBtn(BUTTON_CANCEL, szCancelButton, kTpfButton,
                             d_cancel_x, d_cancel_y, d_cancel_w);
-  TextButtonClass MiddleBtn(BUTTON_MIDDLE, szMiddleButton, TPF_BUTTON, d_mid_x,
+  TextButtonClass MiddleBtn(BUTTON_MIDDLE, szMiddleButton, kTpfButton, d_mid_x,
                             d_mid_y, d_mid_w);
 
   WOLEditClass EditBox(
@@ -231,10 +231,10 @@ const char* SimpleEditDlgClass::Show() {
       **	Redraw the buttons.
       */
       Fancy_Text_Print(szPrompt.c_str(), d_prompt_x, d_prompt_y,
-                       GadgetClass::Get_Color_Scheme(), TBLACK, TPF_TEXT);
+                       GadgetClass::Get_Color_Scheme(), TBLACK, kTpfText);
       if (!szPrompt2.empty()) {
         Fancy_Text_Print(szPrompt2.c_str(), d_prompt2_x, d_prompt2_y,
-                         GadgetClass::Get_Color_Scheme(), TBLACK, TPF_TEXT);
+                         GadgetClass::Get_Color_Scheme(), TBLACK, kTpfText);
       }
       commands->Flag_List_To_Redraw();
       Show_Mouse();

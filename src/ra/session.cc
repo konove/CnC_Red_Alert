@@ -225,7 +225,7 @@ SessionClass::SessionClass() {
   TrapObjType = RTTI_NONE;       // type of object to trap
   TrapObject.Ptr.All = nullptr;  // ptr to object being trapped
   TrapCoord = 0;                 // COORDINATE of object to trap
-  TrapTarget = TARGET_NONE;      // TARGET value of object to trap
+  TrapTarget = kTargetNone;      // TARGET value of object to trap
   TrapCell = nullptr;            // for trapping a cell
   TrapCheckHeap = 0;             // start checking the Heap
   TrapPrintCRC = 0;              // output CRC file
@@ -609,7 +609,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
   int i;
   CELL cell;
 
-  //	CCFileClass file (CONFIG_FILE_NAME);
+  //	CCFileClass file (kConfigFileName);
 
   //------------------------------------------------------------------------
   //	Clear the initstring entries
@@ -627,7 +627,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
   //	Create filename and read the file.
   INIClass ini;
-  RawFileClass fc(CONFIG_FILE_NAME);
+  RawFileClass fc(kConfigFileName);
   if (ini.Load(fc)) {
     //	Get the player's last-used Handle
     ini.Get_String("MultiPlayer", "Handle", "Noname", Handle, sizeof(Handle));
@@ -919,7 +919,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
   buffer = (char*)_ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
-  file.Set_Name(CONFIG_FILE_NAME);
+  file.Set_Name(kConfigFileName);
   if (file.Is_Available()) {
     file.Open(FileAccess::kRead);
     file.Read(buffer, _ShapeBufferSize - 1);
@@ -1010,7 +1010,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
 #endif
 
   INIClass ini;
-  RawFileClass file(CONFIG_FILE_NAME);
+  RawFileClass file(kConfigFileName);
   if (ini.Load(file)) {
     //	Save the player's last-used Handle & Color
     ini.Put_Int("MultiPlayer", "PhoneIndex", CurPhoneIdx);

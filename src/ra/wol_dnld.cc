@@ -116,16 +116,16 @@ bool WOL_Download_Dialog(IDownload* pDownload,
                             d_progress_w, d_progress_h);
   progress_meter.Use_Thumb(0);
 
-  StaticButtonClass StatTitle(0, szTitle, TPF_CENTER | TPF_TEXT,
+  StaticButtonClass StatTitle(0, szTitle, TPF_CENTER | kTpfText,
                               d_dialog_x + d_margin, d_dialog_y + 28,
                               d_dialog_w - 2 * d_margin, d_txt6_h);
-  StaticButtonClass StatStatus(0, "", TPF_CENTER | TPF_TEXT,
+  StaticButtonClass StatStatus(0, "", TPF_CENTER | kTpfText,
                                d_dialog_x + d_margin, d_dialog_y + 49,
                                d_dialog_w - 2 * d_margin, d_txt6_h);
-  StaticButtonClass StatBytes(0, "", TPF_CENTER | TPF_TEXT,
+  StaticButtonClass StatBytes(0, "", TPF_CENTER | kTpfText,
                               d_dialog_x + d_margin, d_dialog_y + 71,
                               d_dialog_w - 2 * d_margin, d_txt6_h);
-  StaticButtonClass StatTime(0, "", TPF_CENTER | TPF_TEXT,
+  StaticButtonClass StatTime(0, "", TPF_CENTER | kTpfText,
                              d_dialog_x + d_margin, d_dialog_y + 117,
                              d_dialog_w - 2 * d_margin, d_txt6_h);
 

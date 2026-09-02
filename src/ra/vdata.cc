@@ -629,11 +629,11 @@ const short* VesselTypeClass::Overlap_List() const {
                                 +(MAP_CELL_W - 1),
                                 +(MAP_CELL_W + 2),
                                 +(MAP_CELL_W - 2),
-                                REFRESH_EOL};
+                                kRefreshEol};
   //	static short const _ship[] = {-1, 1,
   //		-MAP_CELL_W, -(MAP_CELL_W+1), -(MAP_CELL_W-1),
   //		+MAP_CELL_W, +(MAP_CELL_W+1), +(MAP_CELL_W-1),
-  //		REFRESH_EOL};
+  //		kRefreshEol};
 
   return &_ship[0];
 }

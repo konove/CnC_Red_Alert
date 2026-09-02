@@ -140,11 +140,11 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   */
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass OkBtn(BUTTON_OK, TXT_OK, TPF_BUTTON, d_ok_x, d_ok_y, d_ok_w);
-  TextButtonClass CancelBtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
+  TextButtonClass OkBtn(BUTTON_OK, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w);
+  TextButtonClass CancelBtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w);
 
-  StaticButtonClass PlayerCountStatic(0, "               ", TPF_TEXT,
+  StaticButtonClass PlayerCountStatic(0, "               ", kTpfText,
                                       d_gaugeplayers_x, d_gaugeplayers_y - 16);
   GaugeClass PlayerCountGauge(GAUGE_PLAYERCOUNT, d_gaugeplayers_x,
                               d_gaugeplayers_y, d_gaugeplayers_w,
@@ -235,7 +235,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       //			Fancy_Text_Print( TXT_WOL_CG_PLAYERS,
       // d_gaugeplayers_x - 2*2, d_gaugeplayers_y,
       //								GadgetClass::Get_Color_Scheme(),
-      // TBLACK, TPF_TEXT | TPF_RIGHT );
+      // TBLACK, kTpfText | TPF_RIGHT );
       commands->Flag_List_To_Redraw();
       Show_Mouse();
       display = false;
@@ -358,7 +358,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   if (cgiReturn.bCreateGame && cgiReturn.bPrivate) {
     //	Get a password for the channel.
     Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
-                     TPF_TEXT);  //	Required before String_Pixel_Width()
+                     kTpfText);  //	Required before String_Pixel_Width()
                                  // call, for god's sake.
     SimpleEditDlgClass* pEditDlg =
         new SimpleEditDlgClass(300, TXT_WOL_CREATEPRIVGAMETITLE,

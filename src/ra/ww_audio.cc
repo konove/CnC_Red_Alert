@@ -555,7 +555,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
     /*
     **	Change the extension based on the variation and house accent requested.
     */
-    if ((1 << house & HOUSEF_ALLIES) != 0) {
+    if ((1 << house & kHouseFlagAllies) != 0) {
       /*
       **	For infantry, use a variation on the response. For vehicles,
       *always *	use the vehicle response table.
@@ -873,7 +873,7 @@ void Speak_AI() {
 
         CCFileClass file(name.c_str());
         if (file.Is_Available() &&
-            file.Read(SpeechBuffer[_index], SPEECH_BUFFER_SIZE)) {
+            file.Read(SpeechBuffer[_index], kSpeechBufferSize)) {
           speech = SpeechBuffer[_index];
           SpeechRecord[_index] = SpeakQueue;
         }

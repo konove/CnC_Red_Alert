@@ -101,7 +101,7 @@ ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
       **	this.
       */
       if (newcoord &
-          HIGH_COORD_MASK /*|| !Map.In_Radar(Coord_Cell(newcoord))*/) {
+          kHighCoordMask /*|| !Map.In_Radar(Coord_Cell(newcoord))*/) {
         //			if (!Map.In_Radar(Coord_Cell(newcoord))) {
         coord = old;
         return IMPACT_EDGE;

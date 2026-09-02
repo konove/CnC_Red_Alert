@@ -383,7 +383,7 @@ void WOL_GameSetupDialog::Initialize() {
                                  TPF_TYPE, MFCD::Retrieve("BTN-UP.SHP"),
                                  MFCD::Retrieve("BTN-DN.SHP"), true, 2);
   //	ListClass scenariolist(BUTTON_SCENARIOLIST, d_scenariolist_x,
-  // d_scenariolist_y, d_scenariolist_w, d_scenariolist_h, TPF_TEXT,
+  // d_scenariolist_y, d_scenariolist_w, d_scenariolist_h, kTpfText,
   // MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
   pILScens = new IconListClass(
       BUTTON_SCENARIOLIST, d_scenariolist_x, d_scenariolist_y, d_scenariolist_w,
@@ -394,9 +394,9 @@ void WOL_GameSetupDialog::Initialize() {
                               MFCD::Retrieve("BTN-DN.SHP"), true, 0, 300);
 
   pEditSend = new EditClass(BUTTON_SENDEDIT, szSendBuffer, MAXCHATSENDLENGTH,
-                            TPF_TEXT, d_send_x, d_send_y, d_send_w, d_send_h);
+                            kTpfText, d_send_x, d_send_y, d_send_w, d_send_h);
 
-  //	TextButtonClass rejectbtn( BUTTON_REJECT, TXT_REJECT, TPF_BUTTON,
+  //	TextButtonClass rejectbtn( BUTTON_REJECT, TXT_REJECT, kTpfButton,
   // d_reject_x, d_reject_y );
   pGaugeCount =
       new GaugeClass(BUTTON_COUNT, d_count_x, d_count_y, d_count_w, d_count_h);
@@ -408,19 +408,19 @@ void WOL_GameSetupDialog::Initialize() {
                                    d_aiplayers_y, d_aiplayers_w, d_aiplayers_h);
   pCheckListOptions = new CheckListClass(
       BUTTON_PARAMS, d_options_x, d_options_y, d_options_w, d_options_h,
-      TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
-  //	pTextBtnOk = new TextButtonClass( BUTTON_OK, TXT_OK, TPF_BUTTON, d_ok_x,
+      kTpfText, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
+  //	pTextBtnOk = new TextButtonClass( BUTTON_OK, TXT_OK, kTpfButton, d_ok_x,
   // d_ok_y, 60*2 ); 	TextButtonClass loadbtn(BUTTON_LOAD,
-  // TXT_LOAD_BUTTON, TPF_BUTTON, d_load_x, d_load_y, 60*2);
+  // TXT_LOAD_BUTTON, kTpfButton, d_load_x, d_load_y, 60*2);
   pTextBtnCancel =
-      new TextButtonClass(BUTTON_CANCEL, TXT_WOL_CANCELGAME, TPF_BUTTON,
+      new TextButtonClass(BUTTON_CANCEL, TXT_WOL_CANCELGAME, kTpfButton,
                           d_cancel_x, d_cancel_y, d_cancel_w);
   pTTipCancel = new ToolTipClass(pTextBtnCancel, TXT_WOL_TTIP_CANCELGAME,
                                  d_cancel_x + d_cancel_w / 2, d_cancel_y - 6);
 
   if (bHost) {
     pTextBtnAcceptStart =
-        new TextButtonClass(BUTTON_ACCEPTSTART, TXT_WOL_STARTBUTTON, TPF_BUTTON,
+        new TextButtonClass(BUTTON_ACCEPTSTART, TXT_WOL_STARTBUTTON, kTpfButton,
                             d_accept_x, d_accept_y, d_accept_w);
     pTTipAcceptStart =
         new ToolTipClass(pTextBtnAcceptStart, TXT_WOL_TTIP_START,
@@ -428,14 +428,14 @@ void WOL_GameSetupDialog::Initialize() {
   } else {
     pTextBtnAcceptStart =
         new TextButtonClass(BUTTON_ACCEPTSTART, TXT_WOL_ACCEPTBUTTON,
-                            TPF_BUTTON, d_accept_x, d_accept_y, d_accept_w);
+                            kTpfButton, d_accept_x, d_accept_y, d_accept_w);
     pTTipAcceptStart =
         new ToolTipClass(pTextBtnAcceptStart, TXT_WOL_TTIP_ACCEPT,
                          d_accept_x + d_accept_w / 2, d_accept_y - 6);
   }
 
   pTextBtnAction =
-      new TextButtonClass(BUTTON_ACTION, TXT_WOL_ACTION, TPF_BUTTON, d_action_x,
+      new TextButtonClass(BUTTON_ACTION, TXT_WOL_ACTION, kTpfButton, d_action_x,
                           d_action_y, d_action_w);
   pTTipAction =
       new ToolTipClass(pTextBtnAction, TXT_WOL_TTIP_ACTION,
@@ -458,25 +458,25 @@ void WOL_GameSetupDialog::Initialize() {
   // text. You'd think a StaticButton control would.
   //	pStaticDescrip = new StaticButtonClass( 0, "", TPF_TYPE, d_gamekind_x,
   // d_gamekind_y, d_gamekind_w, d_gamekind_h );
-  pStaticUnit = new StaticButtonClass(0, "    ", TPF_TEXT,
+  pStaticUnit = new StaticButtonClass(0, "    ", kTpfText,
                                       d_count_x + d_count_w + 4, d_count_y);
-  pStaticLevel = new StaticButtonClass(0, "    ", TPF_TEXT,
+  pStaticLevel = new StaticButtonClass(0, "    ", kTpfText,
                                        d_level_x + d_level_w + 4, d_level_y);
   pStaticCredits = new StaticButtonClass(
-      0, "         ", TPF_TEXT, d_credits_x + d_credits_w + 4, d_credits_y);
+      0, "         ", kTpfText, d_credits_x + d_credits_w + 4, d_credits_y);
   pStaticAIPlayers = new StaticButtonClass(
-      0, "   ", TPF_TEXT, d_aiplayers_x + d_aiplayers_w + 4, d_aiplayers_y);
+      0, "   ", kTpfText, d_aiplayers_x + d_aiplayers_w + 4, d_aiplayers_y);
 
-  Fancy_Text_Print("", 0, 0, nullptr, 0, TPF_TEXT);
+  Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
   pDropListHouse = new DropListClass(
-      BUTTON_HOUSE, szHouseBuffer, sizeof(szHouseBuffer), TPF_TEXT, d_house_x,
+      BUTTON_HOUSE, szHouseBuffer, sizeof(szHouseBuffer), kTpfText, d_house_x,
       d_house_y, d_house_w, d_house_h, MFCD::Retrieve("BTN-UP.SHP"),
       MFCD::Retrieve("BTN-DN.SHP"));
 
   //	ajw - This checkbox is not used. Could be turned on, though.
   pCheckAftermathUnits = new BigCheckBoxClass(
       BUTTON_AFTERMATHUNITS, d_amunits_x, d_amunits_y, d_amunits_w, d_amunits_h,
-      "Aftermath units enabled", TPF_TEXT, false);
+      "Aftermath units enabled", kTpfText, false);
 
   if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
     bAftermathUnits = true;
@@ -1008,7 +1008,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //...............................................................
         Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
                          d_playerlist_y - d_txt6_h, scheme, TBLACK,
-                         TPF_TEXT | TPF_CENTER);
+                         kTpfText | TPF_CENTER);
         if (bHost) {
           Fancy_Text_Print(TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w,
                            d_scenariolist_y - 12, scheme, TBLACK,
@@ -1017,23 +1017,23 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //				else
         //					Fancy_Text_Print(
         // TXT_SCENARIO_COLON, d_scenariolist_x + (d_scenariolist_w / 2),
-        // d_scenariolist_y - d_txt6_h, scheme, TBLACK, TPF_TEXT | TPF_CENTER);
+        // d_scenariolist_y - d_txt6_h, scheme, TBLACK, kTpfText | TPF_CENTER);
         Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, TBLACK,
-                         TPF_TEXT | TPF_RIGHT);
+                         kTpfText | TPF_RIGHT);
         Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, TBLACK,
-                         TPF_TEXT | TPF_RIGHT);
+                         kTpfText | TPF_RIGHT);
         Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
-                         scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
+                         scheme, TBLACK, kTpfText | TPF_RIGHT);
         Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4, d_aiplayers_y,
-                         scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
+                         scheme, TBLACK, kTpfText | TPF_RIGHT);
         Fancy_Text_Print(
             TXT_SIDE_COLON,
             //					d_house_x + (d_house_w / 2),
             d_house_x + ((d_house_w + 16) / 2), d_house_y - d_txt6_h, scheme,
-            TBLACK, TPF_CENTER | TPF_TEXT);
+            TBLACK, TPF_CENTER | kTpfText);
         Fancy_Text_Print(TXT_COLOR_COLON, d_color_x + d_color_w * 4,
                          d_color_y - d_txt6_h, scheme, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
+                         TPF_CENTER | kTpfText);
 
         const char* szGameKind;
         const dib::Image* pIcon;
@@ -1322,7 +1322,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                  Get_Mouse_Y() <= d_scenariolist_y + d_scenariolist_h)) {
               // Session.Messages.Add_Message(NULL, 0, (char
               // *)Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
-              // TPF_TEXT, 1200);
+              // kTpfText, 1200);
               WOL_PrintMessage(*pILDisc, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
                                WOLCOLORREMAP_LOCALMACHINEMESS);
               Sound_Effect(WOLSOUND_ERROR);

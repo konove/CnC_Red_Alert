@@ -751,11 +751,11 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
       IdleTimer(0),
       IronCurtainCountDown(0),
       SpiedBy(0),
-      ArchiveTarget(TARGET_NONE),
+      ArchiveTarget(kTargetNone),
       House(HouseClass::As_Pointer(house)),
       Cloak(UNCLOAKED),
-      TarCom(TARGET_NONE),
-      SuspendedTarCom(TARGET_NONE),
+      TarCom(kTargetNone),
+      SuspendedTarCom(kTargetNone),
       PrimaryFacing(DIR_N),
       Arm(0),
       Ammo(-1),
@@ -2142,7 +2142,7 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
  *(see ThreatType)  * that are combined to form the target scan desired. *
  *                                                                                             *
  * OUTPUT:  Returns the target value of a suitable target. If no target was
- *found then the     * value TARGET_NONE is returned. *
+ *found then the     * value kTargetNone is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -2462,7 +2462,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
   if (bestobject != nullptr) {
     return bestobject->As_Target();
   }
-  return TARGET_NONE;
+  return kTargetNone;
 }
 
 /***********************************************************************************************
@@ -2564,7 +2564,7 @@ void TechnoClass::AI() {
   */
   if (!House->IsHuman && As_Techno(TarCom) &&
       As_Techno(TarCom)->House->Is_Ally(this)) {
-    Assign_Target(TARGET_NONE);
+    Assign_Target(kTargetNone);
   }
 
   /*
@@ -2577,7 +2577,7 @@ void TechnoClass::AI() {
       (!Is_Foot() || !Is_In_Same_Zone(As_Cell(TarCom)))) {
     int primary = What_Weapon_Should_I_Use(TarCom);
     if (!In_Range(TarCom, primary)) {
-      Assign_Target(TARGET_NONE);
+      Assign_Target(kTargetNone);
     }
   }
 
@@ -2967,8 +2967,8 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
 void TechnoClass::Stun() {
   assert(IsActive);
 
-  Assign_Target(TARGET_NONE);
-  Assign_Destination(TARGET_NONE);
+  Assign_Target(kTargetNone);
+  Assign_Destination(kTargetNone);
   Transmit_Message(RADIO_OVER_OUT);
   Detach_All();
   Unselect();
@@ -2997,7 +2997,7 @@ void TechnoClass::Assign_Target(TARGET target) {
   }
 
   if (!Target_Legal(target)) {
-    target = TARGET_NONE;
+    target = kTargetNone;
   } else {
     /*
     **	Prevent targeting of self.
@@ -3011,7 +3011,7 @@ void TechnoClass::Assign_Target(TARGET target) {
       ObjectClass* object = As_Object(target);
       if (object != nullptr &&
           (!static_cast<bool>(object->IsActive) || object->Strength == 0)) {
-        target = TARGET_NONE;
+        target = kTargetNone;
       }
     }
   }
@@ -4036,7 +4036,7 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
           Scen.IsFadingColor = true;
           Scen.FadeTimer.Set(kGrayFadeTime);
         }
-        if (Map.IsTargettingMode == SPC_CHRONO2) {
+        if (Map.IsTargettingMode == kSpcChrono2) {
           KeyNumType input = KN_RMOUSE;
           Map.AI(input, 0, 0);
         }
@@ -4111,7 +4111,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
   }
   // Hack check: if they were trying to teleport this unit when it died, take
   //	the map mode out of teleportation mode.
-  if (IsOwnedByPlayer && Map.IsTargettingMode == SPC_CHRONO2 &&
+  if (IsOwnedByPlayer && Map.IsTargettingMode == kSpcChrono2 &&
       House->UnitToTeleport == As_Target()) {
     Map.IsTargettingMode = SPC_NONE;
   }
@@ -4536,7 +4536,7 @@ void TechnoClass::Detach(TARGET target, bool all) {
 
   if (SuspendedMission != MISSION_NONE && SuspendedTarCom == target) {
     SuspendedMission = MISSION_NONE;
-    SuspendedTarCom = TARGET_NONE;
+    SuspendedTarCom = kTargetNone;
   }
 
   /*
@@ -4544,7 +4544,7 @@ void TechnoClass::Detach(TARGET target, bool all) {
   **	computer must be cleared.
   */
   if (TarCom == target) {
-    Assign_Target(TARGET_NONE);
+    Assign_Target(kTargetNone);
     Restore_Mission();
   }
 
@@ -5447,7 +5447,7 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
     if (threat & THREAT_RANGE) {
       int primary = What_Weapon_Should_I_Use(TarCom);
       if (!In_Range(TarCom, primary)) {
-        Assign_Target(TARGET_NONE);
+        Assign_Target(kTargetNone);
       }
     }
   }
@@ -6152,7 +6152,7 @@ TechnoTypeClass::TechnoTypeClass(
       SightRange(0),
       Cost(0),
       Level(-1),
-      Prerequisite(STRUCTF_NONE),
+      Prerequisite(kStructFlagNone),
       Risk(0),
       Reward(0),
       MaxSpeed(MPH_IMMOBILE),
@@ -6207,7 +6207,7 @@ int TechnoTypeClass::Raw_Cost() const { return Cost; }
  *=============================================================================================*/
 int TechnoTypeClass::Get_Ownable() const {
   if (IsDoubleOwned && Session.Type != GAME_NORMAL) {
-    return static_cast<int>(Ownable | HOUSEF_SOVIET | HOUSEF_ALLIES);
+    return static_cast<int>(Ownable | kHouseFlagSoviet | kHouseFlagAllies);
   }
   return static_cast<int>(Ownable);
 }
@@ -6474,7 +6474,7 @@ int TechnoTypeClass::Legal_Placement(CELL pos) const {
   const short* offset = Occupy_List(true);
   bool build = What_Am_I() == RTTI_BUILDINGTYPE;
 
-  while (offset != nullptr && *offset != REFRESH_EOL) {
+  while (offset != nullptr && *offset != kRefreshEol) {
     CELL cell = static_cast<CELL>(pos + *offset++);
     if (!Map.In_Radar(cell)) {
       return false;

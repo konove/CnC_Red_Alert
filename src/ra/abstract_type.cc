@@ -29,5 +29,5 @@ int AbstractTypeClass::Full_Name() const {
 }
 
 int AbstractTypeClass::Get_Ownable() const {
-  return HOUSEF_ALLIES | HOUSEF_SOVIET | HOUSEF_OTHERS;
+  return kHouseFlagAllies | kHouseFlagSoviet | kHouseFlagOthers;
 }

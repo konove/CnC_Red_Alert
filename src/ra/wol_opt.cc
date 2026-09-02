@@ -119,7 +119,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   */
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass OkBtn(BUTTON_OK, TXT_OK, TPF_BUTTON, d_ok_x, d_ok_y, d_ok_w);
+  TextButtonClass OkBtn(BUTTON_OK, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w);
 
   BigCheckBoxClass FindCheck(CHECK_FIND, d_list_x, d_list_y, d_list_w, d_list_h,
                              TXT_WOL_OPTFIND, TPF_6PT_GRAD | TPF_NOSHADOW,

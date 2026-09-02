@@ -270,13 +270,13 @@ int MapEditClass::Select_Team(const char*) {
       TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
 
-  TextButtonClass editbtn(BUTTON_EDIT, "Edit", TPF_EBUTTON, D_EDIT_X, D_EDIT_Y,
+  TextButtonClass editbtn(BUTTON_EDIT, "Edit", kTpfEButton, D_EDIT_X, D_EDIT_Y,
                           D_EDIT_W);
-  TextButtonClass newbtn(BUTTON_NEW, "New", TPF_EBUTTON, D_NEW_X, D_NEW_Y,
+  TextButtonClass newbtn(BUTTON_NEW, "New", kTpfEButton, D_NEW_X, D_NEW_Y,
                          D_NEW_W);
-  TextButtonClass deletebtn(BUTTON_DELETE, "Delete", TPF_EBUTTON, D_DELETE_X,
+  TextButtonClass deletebtn(BUTTON_DELETE, "Delete", kTpfEButton, D_DELETE_X,
                             D_DELETE_Y, D_DELETE_W);
-  TextButtonClass okbtn(BUTTON_OK, "OK", TPF_EBUTTON, D_OK_X, D_OK_Y, D_OK_W);
+  TextButtonClass okbtn(BUTTON_OK, "OK", kTpfEButton, D_OK_X, D_OK_Y, D_OK_W);
 
   /*
   **	Initialize

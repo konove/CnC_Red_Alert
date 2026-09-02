@@ -109,7 +109,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     b3txt = nullptr;
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
 
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -145,11 +145,11 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   buffer[BUFFSIZE - 1] = 0;
   strncpy(buffer, msg, BUFFSIZE - 1);
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
   int width;
   int height;
   int lines = Format_Window_String(buffer, 510, width, height);
-  TextPrintType tpf = TPF_TEXT;
+  TextPrintType tpf = kTpfText;
 
   width = std::max(width, 180);
   width += 80;
@@ -180,22 +180,21 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   *(or none) may *	actually be added to the button list.
   */
   // DOS BUILD GERMAN BUTTONS NEED TO ONE ON TOP OF THE OTHER  VG 11/6/96
-  TextButtonClass button1(
-      BUTTON_1, b1txt, TPF_BUTTON,
-      x + (numbuttons == 1 ? (width - bwidth) >> 1 : 40),
-      y + height - (bheight + 30), bwidth);
+  TextButtonClass button1(BUTTON_1, b1txt, kTpfButton,
+                          x + (numbuttons == 1 ? (width - bwidth) >> 1 : 40),
+                          y + height - (bheight + 30), bwidth);
 
   /*
   **	Center button.
   */
-  TextButtonClass button2(BUTTON_2, b2txt, TPF_BUTTON,
+  TextButtonClass button2(BUTTON_2, b2txt, kTpfButton,
                           x + width - (bwidth + 40),
                           y + height - (bheight + 30), bwidth);
 
   /*
   **	Right button.
   */
-  TextButtonClass button3(BUTTON_3, b3txt, TPF_BUTTON, 0,
+  TextButtonClass button3(BUTTON_3, b3txt, kTpfButton, 0,
                           y + height - (bheight + 30));
   button3.X = x + ((width - button3.Width) >> 1);
 

@@ -1773,9 +1773,9 @@ int CellClass::Reduce_Wall(int damage) {
           *sensitive *	travellers.
           */
           if (wall.IsCrushable) {
-            Map.Zone_Reset(MZONEF_NORMAL);
+            Map.Zone_Reset(kZoneFlagNormal);
           } else {
-            Map.Zone_Reset(MZONEF_CRUSHER | MZONEF_NORMAL);
+            Map.Zone_Reset(kZoneFlagCrusher | kZoneFlagNormal);
           }
           return true;
         }
@@ -2331,7 +2331,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
               (BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
                BuildingTypeClass::As_Reference(STRUCT_POWER).Cost) *
                   object->House->CostBias &&
-          Session.Options.Bases && !(object->House->UScan & UNITF_MCV)) {
+          Session.Options.Bases && !(object->House->UScan & kUnitFlagMcv)) {
         powerup = CRATE_UNIT;
         force_mcv = true;
       }
@@ -2342,8 +2342,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
       *money to be enough to rebuild the refinery.
       */
       if (powerup == CRATE_MONEY &&
-          (object->House->BScan & (STRUCTF_CONST | STRUCTF_REFINERY)) ==
-              STRUCTF_CONST &&
+          (object->House->BScan & (kStructFlagConst | kStructFlagRefinery)) ==
+              kStructFlagConst &&
           object->House->Available_Money() <
               BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost *
                   object->House->CostBias) {
@@ -2457,8 +2457,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	If the player has a base and a refinery, but no harvester, then
         *give him *	a free one.
         */
-        if (utp == nullptr && object->House->BScan & STRUCTF_REFINERY &&
-            !(object->House->UScan & UNITF_HARVESTER)) {
+        if (utp == nullptr && object->House->BScan & kStructFlagRefinery &&
+            !(object->House->UScan & kUnitFlagHarvester)) {
           utp = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
         }
 

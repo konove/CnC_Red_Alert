@@ -181,24 +181,24 @@ void GameOptionsClass::Process() {
         if (Scen.bLocalProposesDraw) {
           if (!Scen.bOtherProposesDraw) {
             g = new TextButtonClass(BUTTON_DRAW, TXT_WOL_RETRACT_DRAW,
-                                    TPF_BUTTON, 0, y);
+                                    kTpfButton, 0, y);
           } else {
             continue;  //	Game will end now anyway.
           }
         } else {
           if (!Scen.bOtherProposesDraw) {
             g = new TextButtonClass(BUTTON_DRAW, TXT_WOL_PROPOSE_DRAW,
-                                    TPF_BUTTON, 0, y);
+                                    kTpfButton, 0, y);
           } else {
             g = new TextButtonClass(BUTTON_DRAW, TXT_WOL_ACCEPT_DRAW,
-                                    TPF_BUTTON, 0, y);
+                                    kTpfButton, 0, y);
           }
         }
       } else {
         continue;
       }
     } else {
-      g = new TextButtonClass(_constants[index].ID, text, TPF_BUTTON, 0, y);
+      g = new TextButtonClass(_constants[index].ID, text, kTpfButton, 0, y);
     }
 
     maxwidth = std::max(g->Width, maxwidth);
@@ -266,7 +266,7 @@ void GameOptionsClass::Process() {
   Keyboard->Clear();
 
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
-                   TPF_CENTER | TPF_TEXT);
+                   TPF_CENTER | kTpfText);
 
   /*
   **	Main Processing Loop.

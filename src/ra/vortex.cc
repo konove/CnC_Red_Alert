@@ -180,7 +180,7 @@ void ChronalVortexClass::Appear(COORDINATE coordinate) {
   Animate = 0;
   StartShutdown = false;
   LastAttackFrame = static_cast<int>(Frame);
-  TargetObject = TARGET_NONE;
+  TargetObject = kTargetNone;
   ZapFrame = 0;
   Hidden = false;
   StartHiding = false;
@@ -575,7 +575,7 @@ void ChronalVortexClass::Movement() {
 void ChronalVortexClass::Set_Target(ObjectClass* target) {
   if (Active) {
     ZapFrame = 0;
-    TargetObject = TARGET_NONE;
+    TargetObject = kTargetNone;
     if (target != nullptr) {
       TargetObject = target->As_Target();
     }
@@ -730,7 +730,7 @@ void ChronalVortexClass::Zap_Target() {
         ZapFrame = 0;
         int damage = Damage;
         obj->Take_Damage(damage, TargetDistance, WARHEAD_TESLA, nullptr, 1);
-        TargetObject = TARGET_NONE;
+        TargetObject = kTargetNone;
       }
     }
 

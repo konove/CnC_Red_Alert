@@ -321,7 +321,7 @@ const short* SmudgeTypeClass::Occupy_List(bool) const {
       *ptr++ = static_cast<short>(x + y * MAP_CELL_W);
     }
   }
-  *ptr = REFRESH_EOL;
+  *ptr = kRefreshEol;
   return _occupy;
 }
 

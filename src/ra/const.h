@@ -1,6 +1,7 @@
 #ifndef CNC_RED_ALERT_RA_CONST_H_
 #define CNC_RED_ALERT_RA_CONST_H_
 
+#include <cstdint>
 #include <string>
 
 #include "ra/config.h"
@@ -17,31 +18,31 @@ extern GroundType Ground[LAND_COUNT];
 **	These are the access passwords used to activate cheat mode, editor mode,
 **	and special game options.
 */
-constexpr long PlayCodes[] = {static_cast<long>(0xE0792D6D),  // Dwight Okahara
-                              static_cast<long>(0x90046ECF),  // Paul S. Mudra
-                              static_cast<long>(0xC3EE9A26),  // Frank Klepaki
-                              static_cast<long>(0xED382178),  // Ed Del Castillo
-                              0L};
+constexpr uint32_t PlayCodes[] = {0xE0792D6D,  // Dwight Okahara
+                                  0x90046ECF,  // Paul S. Mudra
+                                  0xC3EE9A26,  // Frank Klepaki
+                                  0xED382178,  // Ed Del Castillo
+                                  0};
 
-constexpr long CheatCodes[] = {static_cast<long>(0xA0E2AB53),  // Joseph Hewitt
-                               static_cast<long>(0x00532693),  // Mike Lightner
-                               static_cast<long>(0x7DDFF824),  // Joe Bostic
-                               static_cast<long>(0x2CB5CF01),  // Phil Gorrow
-                               static_cast<long>(0xB5B63531),  // Bill Randolph
-                               static_cast<long>(0xDFABC23A),  // Adam Isgreen
-                               static_cast<long>(0x52B19A22),  // Erik Yeo
-                               static_cast<long>(0xBE79088C),  // David Dettmer
-                               static_cast<long>(0xB216AE7E),  // Barry Green
-                               static_cast<long>(0x0E07B213),  // Steve Tall
-                               0L};
+constexpr uint32_t CheatCodes[] = {0xA0E2AB53,  // Joseph Hewitt
+                                   0x00532693,  // Mike Lightner
+                                   0x7DDFF824,  // Joe Bostic
+                                   0x2CB5CF01,  // Phil Gorrow
+                                   0xB5B63531,  // Bill Randolph
+                                   0xDFABC23A,  // Adam Isgreen
+                                   0x52B19A22,  // Erik Yeo
+                                   0xBE79088C,  // David Dettmer
+                                   0xB216AE7E,  // Barry Green
+                                   0x0E07B213,  // Steve Tall
+                                   0};
 
-constexpr long EditorCodes[] = {static_cast<long>(0xA2C09326),  // Erik Yeo
-                                static_cast<long>(0x1F944BB3),  // Mike Lightner
-                                static_cast<long>(0xDE07154D),  // Adam Isgreen
-                                static_cast<long>(0x0E07B213),  // Steve Tall
-                                static_cast<long>(0x16B170B1),  // Joe Bostic
-                                // static_cast<long>(0x7DDFF824),  // PASSWORD
-                                0L};
+constexpr uint32_t EditorCodes[] = {0xA2C09326,  // Erik Yeo
+                                    0x1F944BB3,  // Mike Lightner
+                                    0xDE07154D,  // Adam Isgreen
+                                    0x0E07B213,  // Steve Tall
+                                    0x16B170B1,  // Joe Bostic
+                                    // 0x7DDFF824,  // PASSWORD
+                                    0};
 
 /***********************************************************************************************
 **	Unit order names. These names correspond to the player selectable orders

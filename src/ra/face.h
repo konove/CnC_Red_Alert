@@ -53,6 +53,8 @@ typedef enum DirType : uint8_t {
   DIR_SE = 3 << 5,
   DIR_S = 4 << 5,
   DIR_SW = 5 << 5,
+  DIR_SW_X1 = (5 << 5) - 8,   // Direction of harvester while unloading.
+  DIR_SW_X2 = (5 << 5) - 16,  // Direction of harvester while unloading.
   DIR_W = 6 << 5,
   DIR_NW = 7 << 5,
   DIR_MAX = 255

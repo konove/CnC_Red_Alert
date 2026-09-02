@@ -1109,7 +1109,7 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 const short* InfantryTypeClass::Occupy_List(bool) const {
-  static const short _list[] = {0, REFRESH_EOL};
+  static const short _list[] = {0, kRefreshEol};
 
   return &_list[0];
 }

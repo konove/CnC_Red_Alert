@@ -404,7 +404,7 @@ LayerType ObjectClass::In_Which_Layer() const {
 int ObjectClass::Get_Ownable() const {
   assert(IsActive);
 
-  return HOUSEF_ALLIES | HOUSEF_SOVIET | HOUSEF_OTHERS;
+  return kHouseFlagAllies | kHouseFlagSoviet | kHouseFlagOthers;
 }
 
 /***********************************************************************************************
@@ -2020,7 +2020,7 @@ const void* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 const short* ObjectTypeClass::Occupy_List(bool) const {
-  static const short _list[] = {0, REFRESH_EOL};
+  static const short _list[] = {0, kRefreshEol};
   return _list;
 }
 
@@ -2043,7 +2043,7 @@ const short* ObjectTypeClass::Occupy_List(bool) const {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 const short* ObjectTypeClass::Overlap_List() const {
-  static const short _list[] = {REFRESH_EOL};
+  static const short _list[] = {kRefreshEol};
   return _list;
 }
 

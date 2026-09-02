@@ -547,7 +547,7 @@ void FootClass::Code_Pointers() {
   if (Member != nullptr && Member->IsActive) {
     Member = (FootClass*)Member->As_Target();
   } else {
-    Member = (FootClass*)TARGET_NONE;
+    Member = (FootClass*)kTargetNone;
   }
 
   TechnoClass::Code_Pointers();
@@ -568,7 +568,7 @@ void FootClass::Code_Pointers() {
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void FootClass::Decode_Pointers() {
-  if (static_cast<TARGET>((intptr_t)Member) != TARGET_NONE) {
+  if (static_cast<TARGET>((intptr_t)Member) != kTargetNone) {
     Member = dynamic_cast<FootClass*>(As_Techno((TARGET)(intptr_t)Member));
     assert(Member != nullptr);
   }

@@ -70,7 +70,7 @@
 *be in the near *	data segment. It will be filled in by the Set_Text()
 *function.
 */
-short HelpClass::OverlapList[60] = {REFRESH_EOL};
+short HelpClass::OverlapList[60] = {kRefreshEol};
 
 const char* HelpClass::HelpText;
 
@@ -138,7 +138,7 @@ void HelpClass::Init_Clear() {
  *=============================================================================================*/
 const short* HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer.HasTimeLeft()) {
-    OverlapList[0] = REFRESH_EOL;
+    OverlapList[0] = kRefreshEol;
   }
   return OverlapList;
 }
@@ -336,7 +336,7 @@ void HelpClass::Set_Text(int text) {
     }
     memcpy(OverlapList, Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY),
            sizeof(OverlapList));
-    *&OverlapList[std::ssize(OverlapList) - 1] = REFRESH_EOL;
+    *&OverlapList[std::ssize(OverlapList) - 1] = kRefreshEol;
   }
 }
 

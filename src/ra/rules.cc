@@ -892,7 +892,7 @@ bool RulesClass::Themes(CCINIClass& ini) {
       if (ini.Is_Present(THEMECONTROL, Theme.Base_Name(theme))) {
         char buffer[128];
         int scen = 1;
-        int owners = HOUSEF_ALLIES | HOUSEF_SOVIET | HOUSEF_OTHERS;
+        int owners = kHouseFlagAllies | kHouseFlagSoviet | kHouseFlagOthers;
 
         ini.Get_String(THEMECONTROL, Theme.Base_Name(theme), "", buffer,
                        sizeof(buffer));

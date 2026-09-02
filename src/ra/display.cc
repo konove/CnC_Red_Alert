@@ -512,7 +512,7 @@ const short* DisplayClass::Text_Overlap_List(const char* text, int x,
     */
     if (x + len >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth)) {
       len = right - x;
-      *ptr++ = REFRESH_SIDEBAR;
+      *ptr++ = kRefreshSidebar;
       count--;
     }
 
@@ -547,7 +547,7 @@ const short* DisplayClass::Text_Overlap_List(const char* text, int x,
       }
     }
 
-    *ptr = REFRESH_EOL;
+    *ptr = kRefreshEol;
   }
   return _list;
 }
@@ -658,7 +658,7 @@ void DisplayClass::Set_Cursor_Shape(const short* list) {
     int w, h;
     static short _list[50];
 
-    for (int i = 0; !i || list[i - 1] != REFRESH_EOL; i++) {
+    for (int i = 0; !i || list[i - 1] != kRefreshEol; i++) {
       _list[i] = list[i];
     }
 
@@ -742,7 +742,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
   CELL cell = trycell;
   //	CELL cell = ZoneCell;
   if (building->Adjacent == 1) {
-    while (*ptr != REFRESH_EOL && retval == -1) {
+    while (*ptr != kRefreshEol && retval == -1) {
       cell = static_cast<CELL>(trycell + *ptr++);
       //			cell = ZoneCell + ZoneOffset + *ptr++;
 
@@ -986,7 +986,7 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h,
     /*
     ** Loop through all cell offsets, accumulating max & min x- & y-coords
     */
-    while (*list != REFRESH_EOL) {
+    while (*list != kRefreshEol) {
       /*
       ** Compute x & y coords of the current cell offset.  We can't use Cell_X()
       ** & Cell_Y(), because they use shifts to compute the values, and if the
@@ -1039,7 +1039,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   **	toggle its IsCursorHere flag
   */
   ptr = CursorSize;
-  while (*ptr != REFRESH_EOL) {
+  while (*ptr != kRefreshEol) {
     CELL cell = static_cast<CELL>(pos + *ptr++);
     if (In_Radar(cell)) {
       cellptr = &(*this)[cell];
@@ -1054,7 +1054,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   */
   if (PendingObjectPtr) {
     ptr = PendingObjectPtr->Overlap_List();
-    while (*ptr != REFRESH_EOL) {
+    while (*ptr != kRefreshEol) {
       CELL cell = static_cast<CELL>(pos + *ptr++);
       if (In_Radar(cell)) {
         cellptr = &(*this)[cell];
@@ -1339,13 +1339,13 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
 void DisplayClass::Refresh_Cells(CELL cell, const short* list) {
   short tlist[36];
 
-  if (*list == REFRESH_SIDEBAR) {
+  if (*list == kRefreshSidebar) {
     list++;
   }
 
   List_Copy(list, std::ssize(tlist), tlist);
   short* tt = tlist;
-  while (*tt != REFRESH_EOL) {
+  while (*tt != kRefreshEol) {
     CELL newcell = static_cast<CELL>(cell + *tt++);
     if (In_Radar(newcell)) {
       (*this)[newcell].Redraw_Objects();
@@ -2962,7 +2962,7 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
         action = ACTION_CHRONOSPHERE;
       }
 
-      if (Map.IsTargettingMode == SPC_CHRONO2) {
+      if (Map.IsTargettingMode == kSpcChrono2) {
         action = ACTION_CHRONO2;
         if (shadow) {
           action = ACTION_NOMOVE;
@@ -3131,7 +3131,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
                                  ActionType action, bool wsmall) {
   IsTentative = false;
 
-  TARGET target = TARGET_NONE;
+  TARGET target = kTargetNone;
   if (object != nullptr) {
     target = object->As_Target();
   } else {
@@ -3699,7 +3699,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
               EventClass(EventClass::SPECIAL_PLACE, SPC_CHRONOSPHERE, cell));
         }
         if (action == ACTION_CHRONO2) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE, SPC_CHRONO2, cell));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE, kSpcChrono2, cell));
         }
       }
 
@@ -4068,7 +4068,7 @@ bool DisplayClass::In_View(CELL cell) const {
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
-  if (coord & HIGH_COORD_MASK) {
+  if (coord & kHighCoordMask) {
     return 0x00800080;
   }
   return Map[coord].Closest_Free_Spot(coord, any);
@@ -4093,7 +4093,7 @@ COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
 bool DisplayClass::Is_Spot_Free(COORDINATE coord) const {
-  if (coord & HIGH_COORD_MASK) {
+  if (coord & kHighCoordMask) {
     return 0x00800080;
   }
   return Map[coord].Is_Spot_Free(CellClass::Spot_Index(coord));

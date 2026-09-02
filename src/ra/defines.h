@@ -73,10 +73,7 @@
 */
 // #define DONGLE
 
-/**********************************************************************
-**	If this is defined, then the network code will be enabled.
-*/
-#define NETWORK
+// Network frame-timing fix. Still a preprocessor flag: it is tested with #if.
 #define TIMING_FIX 1
 
 /**********************************************************************
@@ -87,33 +84,23 @@
 // #define DEV_VERSION
 // #define DEV_VER_NAME
 
-/**********************************************************************
-** This define enables a special additional foreign-version-number
-** after the other version number, for display purposes only.
-*/
-#ifndef ENGLISH
-#define FOREIGN_VERSION
-#define FOREIGN_VERSION_NUMBER 7
-#endif
-
-#define SIDEBAR_WID 80
+// Width of the sidebar in pixels.
+inline constexpr int kSidebarWidth = 80;
 
 /**********************************************************************
 **	Optional parameter control for special options.
 */
 
-// Cheat key command line parameter. Always defined so switch cases compile, but
-// actual behavior is controlled by config::kVirginCheatKeysEnabled.
-#define PARM_PLAYTEST long(0xF7DDC227)  // "PLAYTEST"
-
-#define PARM_INSTALL long(0xD95C68A2)  // "FROMINSTALL"
+// Obfuscated command-line keywords, compared against Obfuscate() output.
+// Cheat behaviour itself is controlled by config::kVirginCheatKeysEnabled.
+inline constexpr uint32_t kParmPlaytest = 0xF7DDC227;  // "PLAYTEST"
+inline constexpr uint32_t kParmInstall = 0xD95C68A2;   // "FROMINSTALL"
 
 /**********************************************************************
 **	Defines for verifying free disk space
 */
-#define INIT_FREE_DISK_SPACE 8388608
-#define SAVE_GAME_DISK_SPACE (INIT_FREE_DISK_SPACE - (1024L * 4096))
-// #define	SAVE_GAME_DISK_SPACE		 100000
+inline constexpr int kInitFreeDiskSpace = 8388608;
+inline constexpr int kSaveGameDiskSpace = kInitFreeDiskSpace - 1024 * 4096;
 
 /**********************************************************************
 **	This is the complete list of VQs allowed to be played in the game.
@@ -285,14 +272,14 @@ typedef enum DiffType {
 **	as the largest speech sample, plus a few bytes for overhead
 **	(16 bytes is sufficient).
 */
-#define SPEECH_BUFFER_SIZE 50000L
+inline constexpr int kSpeechBufferSize = 50000;
 
 /**********************************************************************
 **	The theater mixfiles are cached into a buffer of this size. Ensure
 **	that the size specified is at least as large as the largest
 **	theater mixfile data block.
 */
-#define THEATER_BUFFER_SIZE 1100000L
+inline constexpr int kTheaterBufferSize = 1100000;
 
 /**********************************************************************
 **	This is the size of the shape buffer. This buffer is used as a staging
@@ -301,21 +288,22 @@ typedef enum DiffType {
 **	changed, be sure to update the makefile and rebuild all of the shape
 **	data files.
 */
-#define SHAPE_BUFFER_SIZE 65000L
+inline constexpr int kShapeBufferSize = 65000;
 
 /**********************************************************************
 **	Filenames of the data files it can create at run time.
 */
-#define FAME_FILE_NAME "HALLFAME.DAT"
-#define NET_SAVE_FILE_NAME "SAVEGAME.NET"
-#define CONFIG_FILE_NAME "REDALERT.INI"
+inline constexpr char kFameFileName[] = "HALLFAME.DAT";
+inline constexpr char kNetSaveFileName[] = "SAVEGAME.NET";
+inline constexpr char kConfigFileName[] = "REDALERT.INI";
 
 /**********************************************************************
 **	Map controls. The map is composed of square elements called 'cells'.
 **	All larger elements are build upon these.
 */
 
-#define HIGH_COORD_MASK 0x80008000L
+// Set in either half of a COORDINATE when it points off the map.
+inline constexpr uint32_t kHighCoordMask = 0x80008000;
 
 // A map coordinate with cell resolution. Declared here rather than alongside
 // COORDINATE below so that the map dimensions can carry it: a loop walking the
@@ -329,10 +317,10 @@ inline constexpr CELL MAP_CELL_H{128};
 inline constexpr CELL MAP_CELL_TOTAL{MAP_CELL_W * MAP_CELL_H};
 
 // This number ends a refresh/occupy offset list.
-#define REFRESH_EOL 32767
+inline constexpr int16_t kRefreshEol = 32767;
 
 // This number flags that sidebar needs refreshing.
-#define REFRESH_SIDEBAR 32766
+inline constexpr int16_t kRefreshSidebar = 32766;
 
 /****************************************************************************
 **	These are custom C&C specific types. The CELL (declared above, with the
@@ -373,17 +361,17 @@ typedef int WAYPOINT;
 /**********************************************************************
 **	This is the target composit information. Notice that with an RTTI_NONE
 **	and an index value of 0, the target value returned is identical with
-**	TARGET_NONE. This is by design and is necessary.
+**	kTargetNone. This is by design and is necessary.
 */
 typedef int32_t TARGET;
 
-#define TARGET_MANTISSA 24  // Bits of value precision.
-#define TARGET_EXPONENT 8
+inline constexpr int kTargetMantissaBits = 24;  // Bits of value precision.
+inline constexpr int kTargetExponentBits = 8;
 typedef union {
   TARGET Target;
   struct {
-    unsigned Mantissa : TARGET_MANTISSA;
-    unsigned Exponent : TARGET_EXPONENT;
+    unsigned Mantissa : kTargetMantissaBits;
+    unsigned Exponent : kTargetExponentBits;
   } Sub;
 } TARGET_COMPOSITE;
 
@@ -396,18 +384,20 @@ inline TARGET Build_Target(RTTIType kind, int value) {
   return target.Target;
 }
 
-#define TARGET_NONE ((TARGET)0)
+inline constexpr TARGET kTargetNone{};
 
 /*
 **	The map is broken down into regions of this specified dimensions.
 */
-#define REGION_WIDTH 4
-#define REGION_HEIGHT 4
-#define MAP_REGION_WIDTH \
-  (((MAP_CELL_W + (REGION_WIDTH - 1)) / REGION_WIDTH) + 2)
-#define MAP_REGION_HEIGHT \
-  (((MAP_CELL_H + (REGION_WIDTH - 1)) / REGION_HEIGHT) + 2)
-#define MAP_TOTAL_REGIONS (MAP_REGION_WIDTH * MAP_REGION_HEIGHT)
+inline constexpr int kRegionWidth = 4;
+inline constexpr int kRegionHeight = 4;
+// Region grid size: the map rounded up to whole regions, plus a one-region
+// border on every side.
+inline constexpr int kMapRegionWidth =
+    (MAP_CELL_W + kRegionWidth - 1) / kRegionWidth + 2;
+inline constexpr int kMapRegionHeight =
+    (MAP_CELL_H + kRegionHeight - 1) / kRegionHeight + 2;
+inline constexpr int kMapTotalRegions = kMapRegionWidth * kMapRegionHeight;
 
 /**********************************************************************
 **	This enumerates the various known fear states for infantry units.
@@ -465,12 +455,13 @@ typedef enum MZoneType {
   MZONE_FIRST = 0
 } MZoneType;
 
-#define MZONEF_NORMAL (1 << MZONE_NORMAL)
-#define MZONEF_CRUSHER (1 << MZONE_CRUSHER)
-#define MZONEF_DESTROYER (1 << MZONE_DESTROYER)
-#define MZONEF_WATER (1 << MZONE_WATER)
-#define MZONEF_ALL \
-  (MZONEF_NORMAL | MZONEF_CRUSHER | MZONEF_DESTROYER | MZONEF_WATER)
+// Bit masks over MZoneType for Map.Zone_Reset and zone checks.
+inline constexpr int kZoneFlagNormal = 1 << MZONE_NORMAL;
+inline constexpr int kZoneFlagCrusher = 1 << MZONE_CRUSHER;
+inline constexpr int kZoneFlagDestroyer = 1 << MZONE_DESTROYER;
+inline constexpr int kZoneFlagWater = 1 << MZONE_WATER;
+inline constexpr int kZoneFlagAll =
+    kZoneFlagNormal | kZoneFlagCrusher | kZoneFlagDestroyer | kZoneFlagWater;
 
 /**********************************************************************
 **	This records the current state of the computer controlled base. The
@@ -591,7 +582,8 @@ typedef enum SpecialWeaponType {
   SPC_FIRST = 0,
   SPC_ANY = 1
 } SpecialWeaponType;
-#define SPC_CHRONO2 (SPC_COUNT)
+// Second stage of chronosphere targeting: picking the destination.
+inline constexpr SpecialWeaponType kSpcChrono2 = SPC_COUNT;
 
 /**********************************************************************
 **	The computer AI is categorized by the following enumerations. If
@@ -703,7 +695,8 @@ typedef enum ThreatType {
       0x2000  // Consider base defense buildings a greater target?
 } ThreatType;
 
-#define THREAT_GROUND (THREAT_VEHICLES | THREAT_BUILDINGS | THREAT_INFANTRY)
+inline constexpr ThreatType kThreatGround = static_cast<ThreatType>(
+    THREAT_VEHICLES | THREAT_BUILDINGS | THREAT_INFANTRY);
 
 /**********************************************************************
 **	These return values are used when determine if firing is legal.
@@ -936,36 +929,37 @@ typedef enum HousesType : int8_t {
   HOUSE_FIRST = 0
 } HousesType;
 
-#define HOUSEF_ALLIES                                               \
-  (HOUSEF_ENGLAND | HOUSEF_SPAIN | HOUSEF_GREECE | HOUSEF_GERMANY | \
-   HOUSEF_FRANCE | HOUSEF_TURKEY | HOUSEF_GOOD)
-#define HOUSEF_SOVIET (HOUSEF_USSR | HOUSEF_UKRAINE | HOUSEF_BAD)
-#define HOUSEF_OTHERS                                              \
-  (HOUSEF_NEUTRAL | HOUSEF_JP | HOUSEF_MULTI1 | HOUSEF_MULTI2 |    \
-   HOUSEF_MULTI3 | HOUSEF_MULTI4 | HOUSEF_MULTI5 | HOUSEF_MULTI6 | \
-   HOUSEF_MULTI7 | HOUSEF_MULTI8)
-#define HOUSEF_NONE 0
-
-#define HOUSEF_ENGLAND (1L << HOUSE_ENGLAND)
-#define HOUSEF_SPAIN (1L << HOUSE_SPAIN)
-#define HOUSEF_GREECE (1L << HOUSE_GREECE)
-#define HOUSEF_USSR (1L << HOUSE_USSR)
-#define HOUSEF_UKRAINE (1L << HOUSE_UKRAINE)
-#define HOUSEF_GERMANY (1L << HOUSE_GERMANY)
-#define HOUSEF_FRANCE (1L << HOUSE_FRANCE)
-#define HOUSEF_TURKEY (1L << HOUSE_TURKEY)
-#define HOUSEF_GOOD (1L << HOUSE_GOOD)
-#define HOUSEF_BAD (1L << HOUSE_BAD)
-#define HOUSEF_NEUTRAL (1L << HOUSE_NEUTRAL)
-#define HOUSEF_JP (1L << HOUSE_JP)
-#define HOUSEF_MULTI1 (1L << HOUSE_MULTI1)
-#define HOUSEF_MULTI2 (1L << HOUSE_MULTI2)
-#define HOUSEF_MULTI3 (1L << HOUSE_MULTI3)
-#define HOUSEF_MULTI4 (1L << HOUSE_MULTI4)
-#define HOUSEF_MULTI5 (1L << HOUSE_MULTI5)
-#define HOUSEF_MULTI6 (1L << HOUSE_MULTI6)
-#define HOUSEF_MULTI7 (1L << HOUSE_MULTI7)
-#define HOUSEF_MULTI8 (1L << HOUSE_MULTI8)
+// House bit masks over HousesType, for owner lists.
+inline constexpr int kHouseFlagEngland = 1 << HOUSE_ENGLAND;
+inline constexpr int kHouseFlagSpain = 1 << HOUSE_SPAIN;
+inline constexpr int kHouseFlagGreece = 1 << HOUSE_GREECE;
+inline constexpr int kHouseFlagUssr = 1 << HOUSE_USSR;
+inline constexpr int kHouseFlagUkraine = 1 << HOUSE_UKRAINE;
+inline constexpr int kHouseFlagGermany = 1 << HOUSE_GERMANY;
+inline constexpr int kHouseFlagFrance = 1 << HOUSE_FRANCE;
+inline constexpr int kHouseFlagTurkey = 1 << HOUSE_TURKEY;
+inline constexpr int kHouseFlagGood = 1 << HOUSE_GOOD;
+inline constexpr int kHouseFlagBad = 1 << HOUSE_BAD;
+inline constexpr int kHouseFlagNeutral = 1 << HOUSE_NEUTRAL;
+inline constexpr int kHouseFlagJp = 1 << HOUSE_JP;
+inline constexpr int kHouseFlagMulti1 = 1 << HOUSE_MULTI1;
+inline constexpr int kHouseFlagMulti2 = 1 << HOUSE_MULTI2;
+inline constexpr int kHouseFlagMulti3 = 1 << HOUSE_MULTI3;
+inline constexpr int kHouseFlagMulti4 = 1 << HOUSE_MULTI4;
+inline constexpr int kHouseFlagMulti5 = 1 << HOUSE_MULTI5;
+inline constexpr int kHouseFlagMulti6 = 1 << HOUSE_MULTI6;
+inline constexpr int kHouseFlagMulti7 = 1 << HOUSE_MULTI7;
+inline constexpr int kHouseFlagMulti8 = 1 << HOUSE_MULTI8;
+inline constexpr int kHouseFlagNone = 0;
+inline constexpr int kHouseFlagAllies =
+    kHouseFlagEngland | kHouseFlagSpain | kHouseFlagGreece | kHouseFlagGermany |
+    kHouseFlagFrance | kHouseFlagTurkey | kHouseFlagGood;
+inline constexpr int kHouseFlagSoviet =
+    kHouseFlagUssr | kHouseFlagUkraine | kHouseFlagBad;
+inline constexpr int kHouseFlagOthers =
+    kHouseFlagNeutral | kHouseFlagJp | kHouseFlagMulti1 | kHouseFlagMulti2 |
+    kHouseFlagMulti3 | kHouseFlagMulti4 | kHouseFlagMulti5 | kHouseFlagMulti6 |
+    kHouseFlagMulti7 | kHouseFlagMulti8;
 
 typedef enum PlayerColorType {
   PCOLOR_NONE = -1,
@@ -1129,7 +1123,7 @@ typedef enum StructType {
   **	for construction, follow this point. Typically, this is
   **	limited to civilian structures. Also, the following
   **	buildings are NEVER used in the availability bit field
-  **	record that each house maintains. i.e., STRUCTF_????
+  **	record that each house maintains, i.e. no kStructFlag mask
   **	bit checking will never occur with the following
   **	building types.
   */
@@ -1196,39 +1190,34 @@ typedef enum StructType {
   STRUCT_FIRST = 0
 } StructType;
 
-#define STRUCTF_NONE 0L
-#define STRUCTF_ADVANCED_TECH (1L << STRUCT_ADVANCED_TECH)
-#define STRUCTF_IRON_CURTAIN (1L << STRUCT_IRON_CURTAIN)
-#define STRUCTF_WEAP (1L << STRUCT_WEAP)
-#define STRUCTF_CHRONOSPHERE (1L << STRUCT_CHRONOSPHERE)
-#define STRUCTF_PILLBOX (1L << STRUCT_PILLBOX)
-#define STRUCTF_CAMOPILLBOX (1L << STRUCT_CAMOPILLBOX)
-#define STRUCTF_RADAR (1L << STRUCT_RADAR)
-#define STRUCTF_GAP (1L << STRUCT_GAP)
-#define STRUCTF_TURRET (1L << STRUCT_TURRET)
-#define STRUCTF_AAGUN (1L << STRUCT_AAGUN)
-#define STRUCTF_FLAME_TURRET (1L << STRUCT_FLAME_TURRET)
-#define STRUCTF_CONST (1L << STRUCT_CONST)
-#define STRUCTF_REFINERY (1L << STRUCT_REFINERY)
-#define STRUCTF_STORAGE (1L << STRUCT_STORAGE)
-#define STRUCTF_HELIPAD (1L << STRUCT_HELIPAD)
-#define STRUCTF_SAM (1L << STRUCT_SAM)
-#define STRUCTF_AIRSTRIP (1L << STRUCT_AIRSTRIP)
-#define STRUCTF_POWER (1L << STRUCT_POWER)
-#define STRUCTF_ADVANCED_POWER (1L << STRUCT_ADVANCED_POWER)
-#define STRUCTF_SOVIET_TECH (1L << STRUCT_SOVIET_TECH)
-#define STRUCTF_HOSPITAL (1L << STRUCT_HOSPITAL)
-#define STRUCTF_BARRACKS (1L << STRUCT_BARRACKS)
-#define STRUCTF_TENT (1L << STRUCT_TENT)
-#define STRUCTF_KENNEL (1L << STRUCT_KENNEL)
-#define STRUCTF_REPAIR (1L << STRUCT_REPAIR)
-#define STRUCTF_BIO_LAB (1L << STRUCT_BIO_LAB)
-#define STRUCTF_MISSION (1L << STRUCT_MISSION)
-#define STRUCTF_SHIP_YARD (1L << STRUCT_SHIP_YARD)
-#define STRUCTF_SUB_PEN (1L << STRUCT_SUB_PEN)
-#define STRUCTF_MSLO (1L << STRUCT_MSLO)
-#define STRUCTF_FAKECONST (1L << STRUCT_FAKECONST)
-#define STRUCTF_FAKEWEAP (1L << STRUCT_FAKEWEAP)
+// Building bit masks over StructType, matching HouseClass::BScan. The enum
+// has more than 32 entries, so the masks are 64 bits wide.
+inline constexpr uint64_t kStructFlagNone = 0;
+inline constexpr uint64_t kStructFlagAdvancedTech = uint64_t{1}
+                                                    << STRUCT_ADVANCED_TECH;
+inline constexpr uint64_t kStructFlagIronCurtain = uint64_t{1}
+                                                   << STRUCT_IRON_CURTAIN;
+inline constexpr uint64_t kStructFlagWeap = uint64_t{1} << STRUCT_WEAP;
+inline constexpr uint64_t kStructFlagChronosphere = uint64_t{1}
+                                                    << STRUCT_CHRONOSPHERE;
+inline constexpr uint64_t kStructFlagRadar = uint64_t{1} << STRUCT_RADAR;
+inline constexpr uint64_t kStructFlagConst = uint64_t{1} << STRUCT_CONST;
+inline constexpr uint64_t kStructFlagRefinery = uint64_t{1} << STRUCT_REFINERY;
+inline constexpr uint64_t kStructFlagHelipad = uint64_t{1} << STRUCT_HELIPAD;
+inline constexpr uint64_t kStructFlagSam = uint64_t{1} << STRUCT_SAM;
+inline constexpr uint64_t kStructFlagAirstrip = uint64_t{1} << STRUCT_AIRSTRIP;
+inline constexpr uint64_t kStructFlagPower = uint64_t{1} << STRUCT_POWER;
+inline constexpr uint64_t kStructFlagAdvancedPower = uint64_t{1}
+                                                     << STRUCT_ADVANCED_POWER;
+inline constexpr uint64_t kStructFlagSovietTech = uint64_t{1}
+                                                  << STRUCT_SOVIET_TECH;
+inline constexpr uint64_t kStructFlagBarracks = uint64_t{1} << STRUCT_BARRACKS;
+inline constexpr uint64_t kStructFlagTent = uint64_t{1} << STRUCT_TENT;
+inline constexpr uint64_t kStructFlagRepair = uint64_t{1} << STRUCT_REPAIR;
+inline constexpr uint64_t kStructFlagMslo = uint64_t{1} << STRUCT_MSLO;
+inline constexpr uint64_t kStructFlagFakeConst = uint64_t{1}
+                                                 << STRUCT_FAKECONST;
+inline constexpr uint64_t kStructFlagFakeWeap = uint64_t{1} << STRUCT_FAKEWEAP;
 
 /**********************************************************************
 **	The overlays are enumerated here. An overlay functions similarly to
@@ -1309,7 +1298,8 @@ typedef enum InfantryType {
   INFANTRY_RA_COUNT = INFANTRY_SHOCK
 } InfantryType;
 
-#define INFANTRYF_DOG (1L << INFANTRY_DOG)
+// Infantry bit mask over InfantryType, matching HouseClass::IScan.
+inline constexpr uint64_t kInfantryFlagDog = uint64_t{1} << INFANTRY_DOG;
 
 /**********************************************************************
 **	The game units are enumerated here. These include not only traditional
@@ -1348,17 +1338,9 @@ typedef enum UnitType {
   UNIT_RA_COUNT = UNIT_CHRONOTANK
 } UnitType;
 
-#define UNITF_HTANK (1L << UNIT_HTANK)
-#define UNITF_MTANK (1L << UNIT_MTANK)
-#define UNITF_MTANK2 (1L << UNIT_MTANK2)
-#define UNITF_LTANK (1L << UNIT_LTANK)
-#define UNITF_STANK (1L << UNIT_STANK)
-#define UNITF_APC (1L << UNIT_APC)
-#define UNITF_MLRS (1L << UNIT_MLRS)
-#define UNITF_JEEP (1L << UNIT_JEEP)
-#define UNITF_HARVESTER (1L << UNIT_HARVESTER)
-#define UNITF_ARTY (1L << UNIT_ARTY)
-#define UNITF_MCV (1L << UNIT_MCV)
+// Unit bit masks over UnitType, matching HouseClass::UScan.
+inline constexpr uint64_t kUnitFlagHarvester = uint64_t{1} << UNIT_HARVESTER;
+inline constexpr uint64_t kUnitFlagMcv = uint64_t{1} << UNIT_MCV;
 
 /**********************************************************************
 **	The naval vessels are enumerated below.
@@ -1382,12 +1364,6 @@ typedef enum VesselType {
   VESSEL_RA_COUNT = VESSEL_MISSILESUB
 } VesselType;
 
-#define VESSELF_SS (1L << VESSEL_SS)
-#define VESSELF_DD (1L << VESSEL_DD)
-#define VESSELF_CA (1L << VESSEL_CA)
-#define VESSELF_TRANSPORT (1L << VESSEL_TRANSPORT)
-#define VESSELF_PT (1L << VESSEL_PT)
-
 /**********************************************************************
 **	The various aircraft types are enumerated here. These include
 *helicopters *	as well as traditional aircraft.
@@ -1405,14 +1381,6 @@ typedef enum AircraftType {
   AIRCRAFT_NONE = -1,
   AIRCRAFT_FIRST = 0
 } AircraftType;
-
-#define AIRCRAFTF_TRANSPORT (1L << AIRCRAFT_TRANSPORT)
-#define AIRCRAFTF_BADGER (1L << AIRCRAFT_BADGER)
-#define AIRCRAFTF_U2 (1L << AIRCRAFT_U2)
-#define AIRCRAFTF_MIG (1L << AIRCRAFT_MIG)
-#define AIRCRAFTF_YAK (1L << AIRCRAFT_YAK)
-#define AIRCRAFTF_LONGBOW (1L << AIRCRAFT_LONGBOW)
-#define AIRCRAFTF_HIND (1L << AIRCRAFT_HIND)
 
 /**********************************************************************
 **	The game templates are enumerated here. These are the underlying
@@ -2478,9 +2446,12 @@ typedef enum TextPrintType {
 } TextPrintType;
 
 // Standard button text print flags.
-#define TPF_BUTTON (TPF_CENTER | TPF_6PT_GRAD | TPF_NOSHADOW)
-#define TPF_EBUTTON (TPF_CENTER | TPF_EFNT | TPF_NOSHADOW)
-#define TPF_TEXT (TPF_6PT_GRAD | TPF_NOSHADOW)
+inline constexpr TextPrintType kTpfButton =
+    static_cast<TextPrintType>(TPF_CENTER | TPF_6PT_GRAD | TPF_NOSHADOW);
+inline constexpr TextPrintType kTpfEButton =
+    static_cast<TextPrintType>(TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
+inline constexpr TextPrintType kTpfText =
+    static_cast<TextPrintType>(TPF_6PT_GRAD | TPF_NOSHADOW);
 
 /**********************************************************************
 **	These control the maximum number of objects in the game. Make sure that
@@ -2541,9 +2512,10 @@ enum TheaterType {
   THEATER_FIRST = 0
 };
 
-#define THEATERF_TEMPERATE (1 << THEATER_TEMPERATE)
-#define THEATERF_SNOW (1 << THEATER_SNOW)
-#define THEATERF_INTERIOR (1 << THEATER_INTERIOR)
+// Theater bit masks over TheaterType, for the object type tables.
+inline constexpr int kTheaterFlagTemperate = 1 << THEATER_TEMPERATE;
+inline constexpr int kTheaterFlagSnow = 1 << THEATER_SNOW;
+inline constexpr int kTheaterFlagInterior = 1 << THEATER_INTERIOR;
 
 typedef struct {
   char Name[16];
@@ -2670,8 +2642,6 @@ inline DirType operator+(DirType f1, int f2) {
   return (DirType)(((int)f1 + (int)f2) & 0x00FF);
 }
 #endif
-#define DIR_SW_X1 DirType((5 << 5) - 8)
-#define DIR_SW_X2 DirType((5 << 5) - 16)
 
 /****************************************************************************
 **	Timer constants. These are used when setting the countdown timer.
@@ -3107,7 +3077,7 @@ typedef enum WaypointEnum {
 /****************************************************************************
 **	This is the max number of events supported on one frame.
 */
-#define MAX_EVENTS 64
+inline constexpr int kMaxEvents = 64;
 
 typedef enum {
   KF_NUMBER = 0x08,
@@ -3167,9 +3137,9 @@ typedef enum OptionControlType {
   OPTION_COUNT
 } OptionControlType;
 
-#define MAX_LOG_LEVEL 10
+inline constexpr int kMaxLogLevel = 10;
 
-// Maximum number of multi players possible.
-#define MAX_PLAYERS 8  // max # of players we can have
+// Maximum number of multiplayer players.
+inline constexpr int kMaxPlayers = 8;
 
 #endif  // CNC_RED_ALERT_RA_DEFINES_H_

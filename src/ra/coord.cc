@@ -34,7 +34,7 @@
 const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
                                  const bool no_center) {
   if (!rect.Is_Valid()) {
-    static constexpr short _list[] = {REFRESH_EOL};
+    static constexpr short _list[] = {kRefreshEol};
     return _list;
   }
 
@@ -76,7 +76,7 @@ const short* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
     }
   }
 
-  *ptr = REFRESH_EOL;
+  *ptr = kRefreshEol;
   return offsets;
 }
 
@@ -93,7 +93,7 @@ COORDINATE Coord_Scatter(const COORDINATE coord, const unsigned distance,
   COORDINATE result = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX), distance);
 
   // If the move overflowed the valid coordinate range, discard it.
-  if (result & HIGH_COORD_MASK) {
+  if (result & kHighCoordMask) {
     result = coord;
   }
 
@@ -128,15 +128,15 @@ int Distance(const TARGET target1, const TARGET target2) {
 
 const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
   static const short kFacingOffsets[static_cast<int>(FACING_COUNT) + 1][5] = {
-      {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
-      {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
-      {0, 1, REFRESH_EOL, 0, 0},                             // E
-      {0, 1, MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL},       // SE
-      {0, MAP_CELL_W, REFRESH_EOL, 0, 0},                    // S
-      {0, -1, MAP_CELL_W, MAP_CELL_W - 1, REFRESH_EOL},      // SW
-      {0, -1, REFRESH_EOL, 0, 0},                            // W
-      {0, -1, -MAP_CELL_W, -(MAP_CELL_W + 1), REFRESH_EOL},  // NW
-      {0, REFRESH_EOL, 0, 0, 0}                              // non-moving.
+      {0, -MAP_CELL_W, kRefreshEol, 0, 0},                   // N
+      {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), kRefreshEol},   // NE
+      {0, 1, kRefreshEol, 0, 0},                             // E
+      {0, 1, MAP_CELL_W, MAP_CELL_W + 1, kRefreshEol},       // SE
+      {0, MAP_CELL_W, kRefreshEol, 0, 0},                    // S
+      {0, -1, MAP_CELL_W, MAP_CELL_W - 1, kRefreshEol},      // SW
+      {0, -1, kRefreshEol, 0, 0},                            // W
+      {0, -1, -MAP_CELL_W, -(MAP_CELL_W + 1), kRefreshEol},  // NW
+      {0, kRefreshEol, 0, 0, 0}                              // non-moving.
   };
   static short computed_offsets[10];
   // 4-bit index encoding: bit3=south, bit2=north, bit1=east, bit0=west.
@@ -161,7 +161,7 @@ const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
         (1 * MAP_CELL_W + 1),  (1 * MAP_CELL_W + 2),
         +(2 * MAP_CELL_W - 2), +(2 * MAP_CELL_W - 1),
         +(2 * MAP_CELL_W),     +(2 * MAP_CELL_W + 1),
-        +(2 * MAP_CELL_W + 2), REFRESH_EOL};
+        +(2 * MAP_CELL_W + 2), kRefreshEol};
     return &_gigundo[0];
   }
 
@@ -202,7 +202,7 @@ const short* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
     if (right >= ICON_PIXEL_H && top < 0) {
       computed_offsets[index++] = -(MAP_CELL_W - 1);
     }
-    computed_offsets[index] = REFRESH_EOL;
+    computed_offsets[index] = kRefreshEol;
     return &computed_offsets[0];
   }
 

@@ -110,17 +110,17 @@ bool Get_Broadcast_Addresses() {
   GadgetClass* commands = nullptr;  // button list
   ColorListClass ip_address_list(
       BUTTON_IPLIST, d_ip_address_list_x, d_ip_address_list_y,
-      d_ip_address_list_w, d_ip_address_list_h, TPF_TEXT,
+      d_ip_address_list_w, d_ip_address_list_h, kTpfText,
       MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
 
-  TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_BUTTON, d_ok_x, d_ok_y, d_ok_w,
+  TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w,
                         d_ok_h);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON, d_cancel_x,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w, d_cancel_h);
 
   ip_address_list.Set_Selected_Style(ColorListClass::SELECT_NORMAL);
 
-  Fancy_Text_Print("", 0, 0, scheme, TBLACK, TPF_CENTER | TPF_TEXT);
+  Fancy_Text_Print("", 0, 0, scheme, TBLACK, TPF_CENTER | kTpfText);
 
   Load_Title_Page(true);
   CCPalette.Set();  // GamePalette.Set();
@@ -181,7 +181,7 @@ bool Get_Broadcast_Addresses() {
         //	Dialog & Field labels
         //...............................................................
         Fancy_Text_Print("IP Addresses", d_dialog_cx - width / 2,
-                         d_dialog_y + 50, scheme, TBLACK, TPF_TEXT);
+                         d_dialog_y + 50, scheme, TBLACK, kTpfText);
 
         //...............................................................
         //	Rebuild the button list

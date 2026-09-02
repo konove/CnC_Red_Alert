@@ -401,8 +401,8 @@ bool DriveClass::Teleport_To(CELL cell) {
   Force_Track(-1, 0);
   PrimaryFacing.Set_Current(PrimaryFacing.Desired());
   Transmit_Message(RADIO_OVER_OUT);
-  Assign_Destination(TARGET_NONE);
-  Assign_Target(TARGET_NONE);
+  Assign_Destination(kTargetNone);
+  Assign_Target(kTargetNone);
   Assign_Mission(MISSION_NONE);
   Commence();
   Mark(MARK_UP);
@@ -608,15 +608,15 @@ void DriveClass::Assign_Destination(TARGET target) {
       if (Transmit_Message(RADIO_HELLO, b) == RADIO_ROGER) {
         if (Mission != MISSION_ENTER && Mission != MISSION_HARVEST) {
           Assign_Mission(MISSION_ENTER);
-          target = TARGET_NONE;
+          target = kTargetNone;
         } else {
-          //					target = TARGET_NONE;
+          //					target = kTargetNone;
         }
       } else {
-        //				target = TARGET_NONE;
+        //				target = kTargetNone;
       }
     } else {
-      //			target = TARGET_NONE;
+      //			target = kTargetNone;
     }
   }
 
@@ -869,7 +869,7 @@ void DriveClass::Per_Cell_Process(PCPType why) {
     */
     if (As_Cell(NavCom) == cell) {
       IsTurretLockedDown = false;
-      NavCom = TARGET_NONE;
+      NavCom = kTargetNone;
       Path[0] = FACING_NONE;
     }
 
@@ -966,7 +966,7 @@ bool DriveClass::Start_Of_Move() {
       if (!Is_On_Priority_Mission() &&
           Distance(NavCom) < Rule.CloseEnoughDistance &&
           (Mission == MISSION_MOVE || Mission == MISSION_GUARD_AREA)) {
-        Assign_Destination(TARGET_NONE);
+        Assign_Destination(kTargetNone);
         if (!IsActive) {
           return false;
         }
@@ -991,7 +991,7 @@ bool DriveClass::Start_Of_Move() {
               */
               if (Distance(NavCom) < Rule.CloseEnoughDistance &&
                   !In_Radio_Contact()) {
-                Assign_Destination(TARGET_NONE);
+                Assign_Destination(kTargetNone);
                 return false;
               }
               cellptr->Incoming(0, true, false);
@@ -1002,7 +1002,7 @@ bool DriveClass::Start_Of_Move() {
         if (TryTryAgain > 0) {
           TryTryAgain--;
         } else {
-          Assign_Destination(TARGET_NONE);
+          Assign_Destination(kTargetNone);
           if (!IsActive) {
             return false;
           }
@@ -1024,7 +1024,7 @@ bool DriveClass::Start_Of_Move() {
         if (Team.Is_Valid()) {
           Team->Scan_Limit();
         }
-        Assign_Target(TARGET_NONE);
+        Assign_Target(kTargetNone);
       }
 
       /*
@@ -1056,7 +1056,7 @@ bool DriveClass::Start_Of_Move() {
           */
           if (Distance(NavCom) < Rule.CloseEnoughDistance &&
               !In_Radio_Contact()) {
-            Assign_Destination(TARGET_NONE);
+            Assign_Destination(kTargetNone);
             return false;
           }
           cellptr->Incoming(0, true, false);
@@ -1100,7 +1100,7 @@ bool DriveClass::Start_Of_Move() {
   if (cando != MOVE_OK) {
     if (Mission == MISSION_MOVE /*KO&& House->IsHuman */ &&
         Distance(NavCom) < Rule.CloseEnoughDistance) {
-      Assign_Destination(TARGET_NONE);
+      Assign_Destination(kTargetNone);
       if (!IsActive) {
         return false;  // BG
       }
@@ -1135,12 +1135,12 @@ bool DriveClass::Start_Of_Move() {
         if (!House->Is_Ally(Map[destcell].Cell_Object())) {
           Override_Mission(MISSION_ATTACK,
                            Map[destcell].Cell_Object()->As_Target(),
-                           TARGET_NONE);
+                           kTargetNone);
         }
       } else {
         if (Map[destcell].Overlay != OVERLAY_NONE &&
             OverlayTypeClass::As_Reference(Map[destcell].Overlay).IsWall) {
-          Override_Mission(MISSION_ATTACK, ::As_Target(destcell), TARGET_NONE);
+          Override_Mission(MISSION_ATTACK, ::As_Target(destcell), kTargetNone);
         }
       }
     } else {
@@ -1260,13 +1260,13 @@ bool DriveClass::Start_Of_Move() {
             if (!House->Is_Ally(Map[destcell].Cell_Object())) {
               Override_Mission(MISSION_ATTACK,
                                Map[destcell].Cell_Object()->As_Target(),
-                               TARGET_NONE);
+                               kTargetNone);
             }
           } else {
             if (Map[destcell].Overlay != OVERLAY_NONE &&
                 OverlayTypeClass::As_Reference(Map[destcell].Overlay).IsWall) {
               Override_Mission(MISSION_ATTACK, ::As_Target(destcell),
-                               TARGET_NONE);
+                               kTargetNone);
             }
           }
           IsNewNavCom = false;
@@ -1409,7 +1409,7 @@ void DriveClass::AI() {
           if (IsLocked && Mission != MISSION_ENTER && Target_Legal(NavCom) &&
               !Is_In_Same_Zone(As_Cell(NavCom))) {
             Stop_Driver();
-            Assign_Destination(TARGET_NONE);
+            Assign_Destination(kTargetNone);
           } else {
             Start_Of_Move();
             if (!IsActive) {
@@ -2150,23 +2150,19 @@ const DriveClass::TrackType DriveClass::Track10[] = {
     {0x00000000L, static_cast<DirType>(96)}};
 
 const DriveClass::TrackType DriveClass::Track11[] = {
-    {0x01000000L, DIR_SW},    {0x00F30008L, DIR_SW},
-    {0x00E50010L, DIR_SW_X1}, {0x00D60018L, DIR_SW_X1},
-    {0x00C80020L, DIR_SW_X1}, {0x00B90028L, DIR_SW_X1},
-    {0x00AB0030L, DIR_SW_X2}, {0x009C0038L, DIR_SW_X2},
-    {0x008D0040L, DIR_SW_X2}, {0x007F0048L, DIR_SW_X2},
-    {0x00710050L, DIR_SW_X2}, {0x00640058L, DIR_SW_X2},
+    {0x01000000L, DIR_SW},   {0x00F30008L, DIR_SW},   {0x00E50010L, DIR_SW_X1},
+    {0x00D60018L, DIR_SW_X1}, {0x00C80020L, DIR_SW_X1}, {0x00B90028L, DIR_SW_X1},
+    {0x00AB0030L, DIR_SW_X2}, {0x009C0038L, DIR_SW_X2}, {0x008D0040L, DIR_SW_X2},
+    {0x007F0048L, DIR_SW_X2}, {0x00710050L, DIR_SW_X2}, {0x00640058L, DIR_SW_X2},
     {0x00550060L, DIR_SW_X2},
 
     {0x00000000L, DIR_SW_X2}};
 
 const DriveClass::TrackType DriveClass::Track12[] = {
-    {0xFF550060L, DIR_SW_X2}, {0xFF640058L, DIR_SW_X2},
-    {0xFF710050L, DIR_SW_X2}, {0xFF7F0048L, DIR_SW_X2},
-    {0xFF8D0040L, DIR_SW_X2}, {0xFF9C0038L, DIR_SW_X2},
-    {0xFFAB0030L, DIR_SW_X2}, {0xFFB90028L, DIR_SW_X1},
-    {0xFFC80020L, DIR_SW_X1}, {0xFFD60018L, DIR_SW_X1},
-    {0xFFE50010L, DIR_SW_X1}, {0xFFF30008L, DIR_SW},
+    {0xFF550060L, DIR_SW_X2}, {0xFF640058L, DIR_SW_X2}, {0xFF710050L, DIR_SW_X2},
+    {0xFF7F0048L, DIR_SW_X2}, {0xFF8D0040L, DIR_SW_X2}, {0xFF9C0038L, DIR_SW_X2},
+    {0xFFAB0030L, DIR_SW_X2}, {0xFFB90028L, DIR_SW_X1}, {0xFFC80020L, DIR_SW_X1},
+    {0xFFD60018L, DIR_SW_X1}, {0xFFE50010L, DIR_SW_X1}, {0xFFF30008L, DIR_SW},
 
     {0x00000000L, DIR_SW}};
 
@@ -2278,7 +2274,7 @@ const DriveClass::TurnTrackType DriveClass::TrackControl[67] = {
     {6, 8, DIR_W, (F_X | F_D)},                //	7-6
     {2, 0, DIR_NW, F_X},                       //	7-7
 
-    {11, 11, DIR_SW, F_},     // Backup harvester into refinery.
+    {11, 11, DIR_SW, F_},    // Backup harvester into refinery.
     {12, 12, DIR_SW_X2, F_},  // Drive back into refinery.
-    {13, 13, DIR_SW, F_}      // Drive out of weapons factory.
+    {13, 13, DIR_SW, F_}     // Drive out of weapons factory.
 };

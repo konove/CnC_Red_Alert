@@ -294,7 +294,7 @@ const short* BulletClass::Occupy_List(bool) const {
                             -MAP_CELL_W * 3 - 1,
                             -MAP_CELL_W * 3,
                             -MAP_CELL_W * 3 + 1,
-                            REFRESH_EOL};
+                            kRefreshEol};
     return _list;
     //		return(Coord_Spillage_List(Coord, 64));
   }
@@ -309,7 +309,7 @@ const short* BulletClass::Occupy_List(bool) const {
     int index = 0;
     CELL cell1 = Coord_Cell(Coord);
 
-    while (ptr[index] != REFRESH_EOL) {
+    while (ptr[index] != kRefreshEol) {
       _list[index] = ptr[index];
       index++;
     }
@@ -317,11 +317,11 @@ const short* BulletClass::Occupy_List(bool) const {
     COORDINATE coord = Coord_Move(Coord, DIR_N, Height);
     CELL cell2 = Coord_Cell(coord);
     ptr = Coord_Spillage_List(coord, 5);
-    while (*ptr != REFRESH_EOL) {
+    while (*ptr != kRefreshEol) {
       _list[index++] = static_cast<short>(*ptr + (cell2 - cell1));
       ptr++;
     }
-    _list[index] = REFRESH_EOL;
+    _list[index] = kRefreshEol;
     return _list;
   }
 
@@ -692,7 +692,7 @@ void BulletClass::Detach(TARGET target, bool all) {
   }
 
   if (all && target == TarCom) {
-    TarCom = TARGET_NONE;
+    TarCom = kTargetNone;
   }
 }
 

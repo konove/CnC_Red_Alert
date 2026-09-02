@@ -282,37 +282,37 @@ int MapEditClass::Placement_Dialog() {
     housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
 
-  TextButtonClass nextbtn(BUTTON_NEXT, TXT_RIGHT, TPF_EBUTTON, D_RIGHT_X,
+  TextButtonClass nextbtn(BUTTON_NEXT, TXT_RIGHT, kTpfEButton, D_RIGHT_X,
                           D_RIGHT_Y, D_RIGHT_W, D_RIGHT_H);
-  TextButtonClass prevbtn(BUTTON_PREV, TXT_LEFT, TPF_EBUTTON, D_LEFT_X,
+  TextButtonClass prevbtn(BUTTON_PREV, TXT_LEFT, kTpfEButton, D_LEFT_X,
                           D_LEFT_Y, D_LEFT_W, D_LEFT_H);
-  TextButtonClass okbtn(BUTTON_OK, "OK", TPF_EBUTTON, D_OK_X, D_OK_Y, D_OK_W,
+  TextButtonClass okbtn(BUTTON_OK, "OK", kTpfEButton, D_OK_X, D_OK_Y, D_OK_W,
                         D_OK_H);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, "Cancel", TPF_EBUTTON, D_CANCEL_X,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, "Cancel", kTpfEButton, D_CANCEL_X,
                             D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
-  TextButtonClass templatebtn(BUTTON_TEMPLATE, "Template", TPF_EBUTTON,
+  TextButtonClass templatebtn(BUTTON_TEMPLATE, "Template", kTpfEButton,
                               D_TEMPLATE_X, D_TEMPLATE_Y, D_TEMPLATE_W,
                               D_TEMPLATE_H);
-  TextButtonClass overlaybtn(BUTTON_OVERLAY, "Overlay", TPF_EBUTTON,
+  TextButtonClass overlaybtn(BUTTON_OVERLAY, "Overlay", kTpfEButton,
                              D_OVERLAY_X, D_OVERLAY_Y, D_OVERLAY_W,
                              D_OVERLAY_H);
-  TextButtonClass smudgebtn(BUTTON_SMUDGE, "Smudge", TPF_EBUTTON, D_SMUDGE_X,
+  TextButtonClass smudgebtn(BUTTON_SMUDGE, "Smudge", kTpfEButton, D_SMUDGE_X,
                             D_SMUDGE_Y, D_SMUDGE_W, D_SMUDGE_H);
-  TextButtonClass terrainbtn(BUTTON_TERRAIN, "Terrain", TPF_EBUTTON,
+  TextButtonClass terrainbtn(BUTTON_TERRAIN, "Terrain", kTpfEButton,
                              D_TERRAIN_X, D_TERRAIN_Y, D_TERRAIN_W,
                              D_TERRAIN_H);
-  TextButtonClass unitbtn(BUTTON_UNIT, "Unit", TPF_EBUTTON, D_UNIT_X, D_UNIT_Y,
+  TextButtonClass unitbtn(BUTTON_UNIT, "Unit", kTpfEButton, D_UNIT_X, D_UNIT_Y,
                           D_UNIT_W, D_UNIT_H);
-  TextButtonClass infantrybtn(BUTTON_INFANTRY, "Infantry", TPF_EBUTTON,
+  TextButtonClass infantrybtn(BUTTON_INFANTRY, "Infantry", kTpfEButton,
                               D_INFANTRY_X, D_INFANTRY_Y, D_INFANTRY_W,
                               D_INFANTRY_H);
-  TextButtonClass aircraftbtn(BUTTON_AIRCRAFT, "Ships", TPF_EBUTTON,
+  TextButtonClass aircraftbtn(BUTTON_AIRCRAFT, "Ships", kTpfEButton,
                               D_AIRCRAFT_X, D_AIRCRAFT_Y, D_AIRCRAFT_W,
                               D_AIRCRAFT_H);
-  TextButtonClass buildingbtn(BUTTON_BUILDING, "Building", TPF_EBUTTON,
+  TextButtonClass buildingbtn(BUTTON_BUILDING, "Building", kTpfEButton,
                               D_BUILDING_X, D_BUILDING_Y, D_BUILDING_W,
                               D_BUILDING_H);
-  TextButtonClass airbtn(BUTTON_AIR, "Aircraft", TPF_EBUTTON, D_AIR_X, D_AIR_Y,
+  TextButtonClass airbtn(BUTTON_AIR, "Aircraft", kTpfEButton, D_AIR_X, D_AIR_Y,
                          D_AIR_W, D_AIR_H);
 
   /*
@@ -428,7 +428,7 @@ int MapEditClass::Placement_Dialog() {
       **	Draw a box for every cell occupied
       */
       occupy = curobj->Occupy_List();
-      while ((*occupy) != REFRESH_EOL) {
+      while ((*occupy) != kRefreshEol) {
         cell = (*occupy);
         occupy++;
         x = D_GRID_X + ((cell % MAP_CELL_W) * GRIDBLOCK_W);
@@ -843,7 +843,7 @@ int MapEditClass::Place_Object() {
     */
     okflag = true;
     occupy = PendingObject->Occupy_List();
-    while ((*occupy) != REFRESH_EOL) {
+    while ((*occupy) != kRefreshEol) {
       /*
       **	Check this cell for an occupier
       */
@@ -905,7 +905,7 @@ int MapEditClass::Place_Object() {
         **	smudge & overlay.
         */
         occupy = PendingObject->Occupy_List();
-        while ((*occupy) != REFRESH_EOL) {
+        while ((*occupy) != kRefreshEol) {
           /*
           **	Get cell for this occupy item
           */

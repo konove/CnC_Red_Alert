@@ -389,10 +389,10 @@ TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
       IsLeaveMap(false),
       Suspended(false),
       Trigger(nullptr),
-      Zone(TARGET_NONE),
-      ClosestMember(TARGET_NONE),
-      MissionTarget(TARGET_NONE),
-      Target(TARGET_NONE),
+      Zone(kTargetNone),
+      ClosestMember(kTargetNone),
+      MissionTarget(kTargetNone),
+      Target(kTargetNone),
       Total(0),
       Risk(0),
       Formation(FORMATION_NONE),
@@ -444,7 +444,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
   ** the old mission target and clear their Tarcom.
   */
   FootClass* unit = Member;
-  if (MissionTarget != TARGET_NONE) {
+  if (MissionTarget != kTargetNone) {
     while (unit != nullptr) {
       bool tar = unit->TarCom == MissionTarget;
       bool nav = unit->NavCom == MissionTarget;
@@ -461,7 +461,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
         ** clear it, so that it will be reset by whatever happens next.
         */
         if (nav) {
-          unit->Assign_Destination(TARGET_NONE);
+          unit->Assign_Destination(kTargetNone);
         }
 
         /*
@@ -469,7 +469,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
         ** clear it, so that it will be reset by whatever happens next.
         */
         if (tar) {
-          unit->Assign_Target(TARGET_NONE);
+          unit->Assign_Target(kTargetNone);
         }
       }
       unit = unit->Member;
@@ -568,7 +568,7 @@ void TeamClass::AI() {
     } else {
       IsUnderStrength = true;
       IsFullStrength = false;
-      Zone = TARGET_NONE;
+      Zone = kTargetNone;
 
       /*
       **	A team that exists on the player's side is automatically
@@ -656,7 +656,7 @@ void TeamClass::AI() {
       Coordinate_Move();
       return;
     }
-    Zone = TARGET_NONE;
+    Zone = kTargetNone;
   }
 
   /*
@@ -695,8 +695,8 @@ void TeamClass::AI() {
   **	If the team is moving or if there is no center position for
   **	the team, then the center position must be recalculated.
   */
-  if (IsReforming || IsMoving || Zone == TARGET_NONE ||
-      ClosestMember == TARGET_NONE) {
+  if (IsReforming || IsMoving || Zone == kTargetNone ||
+      ClosestMember == kTargetNone) {
     Calc_Center(Zone, ClosestMember);
   }
 
@@ -752,7 +752,7 @@ void TeamClass::AI() {
       const TeamMissionClass* mission = &Class->MissionList[CurrentMission];
 
       TimeOut.Set(mission->Data.Value * (kTicksPerMinute / 10));
-      Target = TARGET_NONE;
+      Target = kTargetNone;
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
           Assign_Mission_Target(
@@ -790,7 +790,7 @@ void TeamClass::AI() {
 
         case TMISSION_UNLOAD:
         default:
-          Assign_Mission_Target(TARGET_NONE);
+          Assign_Mission_Target(kTargetNone);
           break;
       }
     } else {
@@ -872,7 +872,7 @@ void TeamClass::AI() {
 
       case TMISSION_ATT_WAYPT:
         if (!Target_Legal(MissionTarget)) {
-          Assign_Mission_Target(TARGET_NONE);
+          Assign_Mission_Target(kTargetNone);
           IsNextMission = true;
         } else {
           Coordinate_Attack();
@@ -971,7 +971,7 @@ bool TeamClass::Add(FootClass* obj) {
 
   Total++;
   Risk += obj->Risk();
-  if (Zone == TARGET_NONE) {
+  if (Zone == kTargetNone) {
     Calc_Center(Zone, ClosestMember);
   }
 
@@ -1167,8 +1167,8 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
       curr->Member = nullptr;
       curr->Team = nullptr;
       curr->SuspendedMission = MISSION_NONE;
-      curr->SuspendedNavCom = TARGET_NONE;
-      curr->SuspendedTarCom = TARGET_NONE;
+      curr->SuspendedNavCom = kTargetNone;
+      curr->SuspendedTarCom = kTargetNone;
       curr = temp;
       Total--;
       found = true;
@@ -1198,7 +1198,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   */
   if (!initiated && Member != nullptr) {
     Member->IsInitiated = true;
-    Zone = TARGET_NONE;
+    Zone = kTargetNone;
   }
 
   /*
@@ -1269,7 +1269,7 @@ int TeamClass::Recruit(int typeindex) {
         }
 
         if (best) {
-          best->Assign_Target(TARGET_NONE);
+          best->Assign_Target(kTargetNone);
           Add(best);
           added++;
         }
@@ -1292,7 +1292,7 @@ int TeamClass::Recruit(int typeindex) {
         }
 
         if (best) {
-          best->Assign_Target(TARGET_NONE);
+          best->Assign_Target(kTargetNone);
           Add(best);
           added++;
         }
@@ -1316,7 +1316,7 @@ int TeamClass::Recruit(int typeindex) {
           }
 
           if (best) {
-            best->Assign_Target(TARGET_NONE);
+            best->Assign_Target(kTargetNone);
             Add(best);
             added++;
 
@@ -1352,7 +1352,7 @@ int TeamClass::Recruit(int typeindex) {
           }
 
           if (best) {
-            best->Assign_Target(TARGET_NONE);
+            best->Assign_Target(kTargetNone);
             Add(best);
             added++;
 
@@ -1402,10 +1402,10 @@ void TeamClass::Detach(TARGET target, bool) {
   **	where they may.
   */
   if (Target == target) {
-    Target = TARGET_NONE;
+    Target = kTargetNone;
   }
   if (MissionTarget == target) {
-    MissionTarget = TARGET_NONE;
+    MissionTarget = kTargetNone;
   }
   if (Trigger.Is_Valid() && Trigger->As_Target() == target) {
     Trigger = nullptr;
@@ -1440,8 +1440,8 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
   **	Presume there is no center. This will be confirmed in the following
   *scanning *	operation.
   */
-  close_member = TARGET_NONE;
-  center = TARGET_NONE;
+  close_member = kTargetNone;
+  center = kTargetNone;
 
   const FootClass* team_member = Member;  // Working team member pointer.
 
@@ -1756,7 +1756,7 @@ void TeamClass::Coordinate_Attack() {
             tank->MoebiusCountDown.Set(ChronoTankDuration * kTicksPerMinute);
             Scen.Do_BW_Fade();
             Sound_Effect(VOC_CHRONOTANK1, unit->Coord);
-            tank->Assign_Target(TARGET_NONE);
+            tank->Assign_Target(kTargetNone);
             tank->Assign_Mission(MISSION_GUARD);
           } else {
             if (unit->Mission != MISSION_ATTACK &&
@@ -1764,8 +1764,8 @@ void TeamClass::Coordinate_Attack() {
                 unit->Mission != MISSION_CAPTURE) {
               unit->Transmit_Message(RADIO_OVER_OUT);
               unit->Assign_Mission(MISSION_ATTACK);
-              unit->Assign_Target(TARGET_NONE);
-              unit->Assign_Destination(TARGET_NONE);
+              unit->Assign_Target(kTargetNone);
+              unit->Assign_Destination(kTargetNone);
             }
           }
         }
@@ -1833,7 +1833,7 @@ bool TeamClass::Coordinate_Regroup() {
         */
         if (unit->Mission != MISSION_GUARD_AREA) {
           unit->Assign_Mission(MISSION_GUARD);
-          unit->Assign_Destination(TARGET_NONE);
+          unit->Assign_Destination(kTargetNone);
         }
       }
     }
@@ -1893,10 +1893,10 @@ void TeamClass::Coordinate_Do() {
         */
         if (!Target_Legal(unit->TarCom) && !Target_Legal(unit->NavCom) &&
             unit->Mission != do_mission) {
-          unit->ArchiveTarget = TARGET_NONE;
+          unit->ArchiveTarget = kTargetNone;
           unit->Assign_Mission(do_mission);
-          unit->Assign_Target(TARGET_NONE);
-          unit->Assign_Destination(TARGET_NONE);
+          unit->Assign_Target(kTargetNone);
+          unit->Assign_Destination(kTargetNone);
         }
       }
     }
@@ -1962,7 +1962,7 @@ void TeamClass::Coordinate_Move() {
             }
             if (Target_Legal(unit->TarCom) &&
                 unit->Distance(unit->TarCom) > stray) {
-              unit->Assign_Target(TARGET_NONE);
+              unit->Assign_Target(kTargetNone);
             }
           }
           found = true;
@@ -2000,7 +2000,7 @@ void TeamClass::Coordinate_Move() {
                   unit->Assign_Destination(::As_Target(newcell));
                 } else {
                   unit->Assign_Mission(MISSION_GUARD);
-                  unit->Assign_Destination(TARGET_NONE);
+                  unit->Assign_Destination(kTargetNone);
                   wasform = true;
                 }
               } else {
@@ -2016,7 +2016,7 @@ void TeamClass::Coordinate_Move() {
             if (unit->Mission == MISSION_MOVE &&
                 (!Target_Legal(unit->NavCom) ||
                  Distance(unit->NavCom) < CELL_LEPTON_W)) {
-              unit->Assign_Destination(TARGET_NONE);
+              unit->Assign_Destination(kTargetNone);
               unit->Enter_Idle_Mode();
             }
           }
@@ -2131,7 +2131,7 @@ bool TeamClass::Lagging_Units() {
         */
         if (unit->Mission != MISSION_GUARD) {
           unit->Assign_Mission(MISSION_GUARD);
-          unit->Assign_Destination(TARGET_NONE);
+          unit->Assign_Destination(kTargetNone);
         }
       }
     }
@@ -2197,8 +2197,8 @@ int TeamClass::TMission_Unload() {
         */
         if (Map[unit->Center_Coord()].Cell_Building() == nullptr &&
             unit->Mission != MISSION_UNLOAD) {
-          unit->Assign_Destination(TARGET_NONE);
-          unit->Assign_Target(TARGET_NONE);
+          unit->Assign_Destination(kTargetNone);
+          unit->Assign_Target(kTargetNone);
           unit->Assign_Mission(MISSION_UNLOAD);
           finished = false;
         }
@@ -2290,7 +2290,7 @@ int TeamClass::TMission_Load() {
     if (_Is_It_Playing(unit) && unit != trans) {
       if (unit->Mission != MISSION_ENTER) {
         unit->Assign_Mission(MISSION_ENTER);
-        unit->Assign_Target(TARGET_NONE);
+        unit->Assign_Target(kTargetNone);
         unit->Assign_Destination(trans->As_Target());
         finished = false;
         break;
@@ -2330,7 +2330,7 @@ bool TeamClass::Coordinate_Conscript(FootClass* unit) {
     if (unit->Distance(Zone) > Rule.StrayDistance) {
       if (!Target_Legal(unit->NavCom)) {
         unit->Assign_Mission(MISSION_MOVE);
-        unit->Assign_Target(TARGET_NONE);
+        unit->Assign_Target(kTargetNone);
         unit->IsFormationMove = false;
         unit->Assign_Destination(Zone);
       }
@@ -2487,10 +2487,10 @@ bool TeamClass::Has_Entered_Map() const {
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Scan_Limit() {
-  Assign_Mission_Target(TARGET_NONE);
+  Assign_Mission_Target(kTargetNone);
   FootClass* foot = Member;
   while (foot != nullptr) {
-    foot->Assign_Target(TARGET_NONE);
+    foot->Assign_Target(kTargetNone);
     foot->IsScanLimited = true;
     foot = foot->Member;
   }
@@ -2824,14 +2824,14 @@ int TeamClass::TMission_Spy() {
         if (!finished) {
           Coordinate_Attack();
         } else {
-          Assign_Mission_Target(TARGET_NONE);
+          Assign_Mission_Target(kTargetNone);
           IsNextMission = true;
         }
       }
     }
   } else {
     if (!Target_Legal(MissionTarget)) {
-      Assign_Mission_Target(TARGET_NONE);
+      Assign_Mission_Target(kTargetNone);
       IsNextMission = true;
     } else {
       Coordinate_Attack();
@@ -2977,7 +2977,7 @@ int TeamClass::TMission_Patrol() {
       if (Target_Legal(target)) {
         Assign_Mission_Target(target);
       } else {
-        Assign_Mission_Target(TARGET_NONE);
+        Assign_Mission_Target(kTargetNone);
       }
     }
   }
@@ -3008,8 +3008,8 @@ int TeamClass::TMission_Deploy() {
       if (unit->What_Am_I() == RTTI_UNIT &&
           *dynamic_cast<UnitClass*>(unit) == UNIT_MCV) {
         if (unit->Mission != MISSION_UNLOAD) {
-          unit->Assign_Destination(TARGET_NONE);
-          unit->Assign_Target(TARGET_NONE);
+          unit->Assign_Destination(kTargetNone);
+          unit->Assign_Target(kTargetNone);
           unit->Assign_Mission(MISSION_UNLOAD);
           finished = false;
         }
@@ -3026,8 +3026,8 @@ int TeamClass::TMission_Deploy() {
         */
         if (!Map[unit->Center_Coord()].Cell_Building() &&
             unit->Mission != MISSION_UNLOAD) {
-          unit->Assign_Destination(TARGET_NONE);
-          unit->Assign_Target(TARGET_NONE);
+          unit->Assign_Destination(kTargetNone);
+          unit->Assign_Target(kTargetNone);
           unit->Assign_Mission(MISSION_UNLOAD);
           finished = false;
         }

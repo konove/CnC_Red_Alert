@@ -176,7 +176,7 @@ COORDINATE AnimClass::Sort_Y() const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
-  if (xObject != TARGET_NONE) {
+  if (xObject != kTargetNone) {
     return Coord_Add(As_Object(xObject)->Sort_Y(), 0x00010000L);
   }
   if (*this == ANIM_MOVE_FLASH) {
@@ -211,7 +211,7 @@ COORDINATE AnimClass::Center_Coord() const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
-  if (xObject != TARGET_NONE) {
+  if (xObject != kTargetNone) {
     return Coord_Add(Coord, As_Object(xObject)->Target_Coord());
   }
   return Coord;
@@ -361,10 +361,10 @@ const short* AnimClass::Overlap_List(bool) const {
       -MAP_CELL_W * 0 - 1, (-MAP_CELL_W * 0), -MAP_CELL_W * 0 + 1,
       MAP_CELL_W * 1 - 1,  (MAP_CELL_W * 1),  MAP_CELL_W * 1 + 1,
       MAP_CELL_W * 2 - 1,  (MAP_CELL_W * 2),  MAP_CELL_W * 2 + 1,
-      REFRESH_EOL};
+      kRefreshEol};
 
   if (IsToDelete) {
-    static const short _list[] = {REFRESH_EOL};
+    static const short _list[] = {kRefreshEol};
     return _list;
   }
 
@@ -394,7 +394,7 @@ const short* AnimClass::Occupy_List(bool) const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
-  static short _simple[] = {REFRESH_EOL};
+  static short _simple[] = {kRefreshEol};
 
   return _simple;
 }
@@ -487,7 +487,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
                      unsigned char timedelay, unsigned char loop)
     : ObjectClass(RTTI_ANIM, Anims.ID(this)),
       Class(AnimTypes.Ptr(animnum)),
-      xObject(TARGET_NONE),
+      xObject(kTargetNone),
       OwnerHouse(HOUSE_NONE),
       Loops(1),
       IsToDelete(false),
@@ -591,13 +591,13 @@ AnimClass::~AnimClass() {
         to->Mark(MARK_OVERLAP_DOWN);
       }
       Coord = Coord_Add(to->Center_Coord(), Coord);
-      xObject = TARGET_NONE;
+      xObject = kTargetNone;
     }
 
     Limbo();
   }
 
-  xObject = TARGET_NONE;
+  xObject = kTargetNone;
   Class = nullptr;
   ID = -1;
 }
@@ -693,7 +693,7 @@ void AnimClass::AI() {
       **	damaging kind of animation, then do the damage to the other
       **	object.
       */
-      if (xObject != TARGET_NONE && Class->Damage > 0) {
+      if (xObject != kTargetNone && Class->Damage > 0) {
         Accum += Class->Damage;
 
         if (Accum >= 1) {
@@ -962,7 +962,7 @@ void AnimClass::Middle() {
     case ANIM_FIRE_MED2:
       newanim =
           new AnimClass(ANIM_FIRE_SMALL, Center_Coord(), 0, Random_Pick(1, 2));
-      if (newanim != nullptr && xObject != TARGET_NONE) {
+      if (newanim != nullptr && xObject != kTargetNone) {
         newanim->Attach_To(As_Object(xObject));
       }
       break;
@@ -998,7 +998,7 @@ void AnimClass::Detach(TARGET target, bool all) {
 
   if (xObject == target && all) {
     Map.Remove(this, In_Which_Layer());
-    xObject = TARGET_NONE;
+    xObject = kTargetNone;
     IsToDelete = true;
     Mark(MARK_UP);
   }

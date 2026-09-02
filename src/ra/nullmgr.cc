@@ -1107,7 +1107,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   ------------------------------------------------------------------------*/
   port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
   int lines =
       Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
@@ -1137,10 +1137,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   if (lines == 1) {
     Fancy_Text_Print(buffer, x + width / 2, y + 25,
                      GadgetClass::Get_Color_Scheme(), TBLACK,
-                     TPF_TEXT | TPF_CENTER);
+                     kTpfText | TPF_CENTER);
   } else {
-    Fancy_Text_Print(buffer, x + 40, y + 25,
-                     GadgetClass::Get_Color_Scheme(), TBLACK, TPF_TEXT);
+    Fancy_Text_Print(buffer, x + 40, y + 25, GadgetClass::Get_Color_Scheme(),
+                     TBLACK, kTpfText);
   }
 
   Show_Mouse();
@@ -1340,7 +1340,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
 
   std::string buffer(buffer_const);
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
   Format_Window_String(buffer.data(), SeenBuff.Get_Height(), width, height);
 
   int text_width = width;
@@ -1352,12 +1352,9 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   y = (SeenBuff.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON,
-      x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >>
-           1),
-      y + height - (FontHeight + FontYSpacing + 4) -
-          20);
+      BUTTON_CANCEL, TXT_CANCEL, kTpfButton,
+      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >> 1),
+      y + height - (FontHeight + FontYSpacing + 4) - 20);
 
   /*------------------------------------------------------------------------
   Initialize
@@ -1383,8 +1380,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   Draw_Caption(TXT_NONE, x, y, width);
 
   Fancy_Text_Print(buffer.c_str(), SeenBuff.Get_Width() / 2 - text_width / 2,
-                   y + 50, GadgetClass::Get_Color_Scheme(), TBLACK,
-                   TPF_TEXT);
+                   y + 50, GadgetClass::Get_Color_Scheme(), TBLACK, kTpfText);
 
   Commands->Draw_All();
   Show_Mouse();
@@ -1540,7 +1536,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     port::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
   Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
   text_width = width;
@@ -1552,12 +1548,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   y = (SeenBuff.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL, TPF_BUTTON,
-      x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >>
-           1),
-      y + height - (FontHeight + FontYSpacing + 4) -
-          20);
+      BUTTON_CANCEL, TXT_CANCEL, kTpfButton,
+      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >> 1),
+      y + height - (FontHeight + FontYSpacing + 4) - 20);
 
   /*------------------------------------------------------------------------
   Initialize
@@ -1620,8 +1613,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         Draw_Caption(TXT_NONE, x, y, width);
 
         Fancy_Text_Print(text_buffer, SeenBuff.Get_Width() / 2 - text_width / 2,
-                         y + 50, GadgetClass::Get_Color_Scheme(),
-                         TBLACK, TPF_TEXT);
+                         y + 50, GadgetClass::Get_Color_Scheme(), TBLACK,
+                         kTpfText);
 
         Commands->Draw_All();
       }
@@ -1652,7 +1645,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       if (strncmp(comm_buffer, "RING", 4) == 0) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
-        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
+        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
         Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
         text_width = width;

@@ -1335,8 +1335,8 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
           } else {
             order = MISSION_GUARD;
           }
-          Assign_Target(TARGET_NONE);
-          Assign_Destination(TARGET_NONE);
+          Assign_Target(kTargetNone);
+          Assign_Destination(kTargetNone);
         } else {
           return;
         }
@@ -1349,8 +1349,8 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
             order = MISSION_UNLOAD;
           } else {
             order = MISSION_GUARD;
-            Assign_Target(TARGET_NONE);
-            Assign_Destination(TARGET_NONE);
+            Assign_Target(kTargetNone);
+            Assign_Destination(kTargetNone);
           }
         }
       }
@@ -1700,7 +1700,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
             if (Target_Legal(ArchiveTarget)) {
               Assign_Mission(MISSION_HARVEST);
               Assign_Destination(ArchiveTarget);
-              ArchiveTarget = TARGET_NONE;
+              ArchiveTarget = kTargetNone;
             } else {
               /*
               **	Since there is no place to go, move away to clear
@@ -2710,7 +2710,7 @@ int UnitClass::Mission_Unload() {
 
     case UNIT_CHRONOTANK:
       if (IsOwnedByPlayer) {
-        Map.IsTargettingMode = SPC_CHRONO2;
+        Map.IsTargettingMode = kSpcChrono2;
         Unselect_All();
       }
       House->UnitToTeleport = As_Target();
@@ -2765,7 +2765,7 @@ int UnitClass::Mission_Harvest() {
   /*
   **	If there are no more refineries, then drop into guard mode.
   */
-  if (!(House->ActiveBScan & STRUCTF_REFINERY)) {
+  if (!(House->ActiveBScan & kStructFlagRefinery)) {
     Assign_Mission(MISSION_GUARD);
     return 1;
   }
@@ -2849,7 +2849,7 @@ int UnitClass::Mission_Harvest() {
         } else {
           if (!Goto_Tiberium(Rule.TiberiumShortScan / CELL_LEPTON_W) &&
               !Target_Legal(NavCom)) {
-            ArchiveTarget = TARGET_NONE;
+            ArchiveTarget = kTargetNone;
             Status = FINDHOME;
           } else {
             Status = HARVESTING;
@@ -2881,7 +2881,8 @@ int UnitClass::Mission_Harvest() {
           if (nearest->House == PlayerPtr &&
               PlayerPtr->Capacity - PlayerPtr->Tiberium < 300 &&
               PlayerPtr->Capacity > 500 &&
-              PlayerPtr->ActiveBScan & (STRUCTF_REFINERY | STRUCTF_CONST)) {
+              PlayerPtr->ActiveBScan &
+                  (kStructFlagRefinery | kStructFlagConst)) {
             Speak(VOX_NEED_MO_CAPACITY);
           }
         } else {
@@ -2910,7 +2911,7 @@ int UnitClass::Mission_Harvest() {
     */
     case GOINGTOIDLE:
       if (IsUseless) {
-        if (House->ActiveBScan & STRUCTF_REPAIR) {
+        if (House->ActiveBScan & kStructFlagRepair) {
           Assign_Mission(MISSION_REPAIR);
         } else {
           Assign_Mission(MISSION_HUNT);
@@ -3435,7 +3436,7 @@ ActionType UnitClass::What_Action(const ObjectClass* object) const {
             // allow teleporting this unit.
             if (MoebiusCountDown.HasTimeLeft() ||
                 (IsOwnedByPlayer && House->UnitToTeleport &&
-                 Map.IsTargettingMode == SPC_CHRONO2)) {
+                 Map.IsTargettingMode == kSpcChrono2)) {
               action = ACTION_NO_DEPLOY;
             }
           }
@@ -3982,7 +3983,7 @@ int UnitClass::Mission_Repair() {
   **	into idle state.
   */
   if (nearest == nullptr) {
-    if (!(House->ActiveBScan & STRUCTF_REFINERY)) {
+    if (!(House->ActiveBScan & kStructFlagRefinery)) {
       Enter_Idle_Mode();
     }
   } else {
@@ -4478,7 +4479,7 @@ void UnitClass::Assign_Destination(TARGET target) {
           *assigned by this routine.
           */
           if (*b != STRUCT_REPAIR) {
-            target = TARGET_NONE;
+            target = kTargetNone;
           }
         } else {
           if (Transmit_Message(RADIO_DOCKING, b) != RADIO_ROGER) {
@@ -4489,7 +4490,7 @@ void UnitClass::Assign_Destination(TARGET target) {
           }
           if (*b != STRUCT_REPAIR) {
             ArchiveTarget = target;
-            //	target = TARGET_NONE;
+            //	target = kTargetNone;
           }
         }
       } else {
@@ -4534,7 +4535,7 @@ void UnitClass::Assign_Destination(TARGET target) {
       //			if (target != NULL) {
       ArchiveTarget = target;
       //			}
-      //			target = TARGET_NONE;
+      //			target = kTargetNone;
     } else {
       /*
       **	Establish radio contact protocol. If the facility responds
@@ -4578,7 +4579,7 @@ void UnitClass::Assign_Destination(TARGET target) {
  * INPUT:   threat   -- The threat type to search for. *
  *                                                                                             *
  * OUTPUT:  Returns with a target value of the target that this unit should
- *pursue. If there   * is no suitable target, then TARGET_NONE is returned. *
+ *pursue. If there   * is no suitable target, then kTargetNone is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *

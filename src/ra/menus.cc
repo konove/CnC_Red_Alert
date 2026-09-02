@@ -601,34 +601,34 @@ int Main_Menu(unsigned long) {
     ystep = 26;
   }
 
-  TextButtonClass expandbtnCS(BUTTON_EXPAND, TXT_WOL_CS_MISSIONS, TPF_BUTTON,
+  TextButtonClass expandbtnCS(BUTTON_EXPAND, TXT_WOL_CS_MISSIONS, kTpfButton,
                               d_start_x, starty, d_start_w, d_start_h);
   if (bExpansionCS) {
     starty += ystep;
   }
-  TextButtonClass expandbtnAM(BUTTON_EXPAND_AM, TXT_WOL_AM_MISSIONS, TPF_BUTTON,
+  TextButtonClass expandbtnAM(BUTTON_EXPAND_AM, TXT_WOL_AM_MISSIONS, kTpfButton,
                               d_start_x, starty, d_start_w, d_start_h);
   if (bExpansionAM) {
     starty += ystep;
   }
 
-  TextButtonClass startbtn(BUTTON_START, TXT_START_NEW_GAME, TPF_BUTTON,
+  TextButtonClass startbtn(BUTTON_START, TXT_START_NEW_GAME, kTpfButton,
                            d_start_x, starty, d_start_w, d_start_h);
   starty += ystep;
 
-  TextButtonClass loadbtn(BUTTON_LOAD, TXT_LOAD_MISSION, TPF_BUTTON, d_load_x,
+  TextButtonClass loadbtn(BUTTON_LOAD, TXT_LOAD_MISSION, kTpfButton, d_load_x,
                           starty, d_load_w, d_load_h);
   starty += ystep;
 
-  TextButtonClass multibtn(BUTTON_MULTI, TXT_MULTIPLAYER_GAME, TPF_BUTTON,
+  TextButtonClass multibtn(BUTTON_MULTI, TXT_MULTIPLAYER_GAME, kTpfButton,
                            d_multi_x, starty, d_multi_w, d_multi_h);
   starty += ystep;
 
-  TextButtonClass introbtn(BUTTON_INTRO, TXT_INTRO, TPF_BUTTON, d_intro_x,
+  TextButtonClass introbtn(BUTTON_INTRO, TXT_INTRO, kTpfButton, d_intro_x,
                            starty, d_intro_w, d_intro_h);
   starty += ystep;
 
-  TextButtonClass exitbtn(BUTTON_EXIT, TXT_EXIT_GAME, TPF_BUTTON, d_exit_x,
+  TextButtonClass exitbtn(BUTTON_EXIT, TXT_EXIT_GAME, kTpfButton, d_exit_x,
                           starty, d_exit_w, d_exit_h);
 
   /*

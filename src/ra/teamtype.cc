@@ -827,7 +827,7 @@ bool TeamTypeClass::Edit() {
   /*
   **	Members of this team control button.
   */
-  TextButtonClass membersbtn(BUTTON_MEMBERS, "Members", TPF_EBUTTON, name_edt.X,
+  TextButtonClass membersbtn(BUTTON_MEMBERS, "Members", kTpfEButton, name_edt.X,
                              name_edt.Y + 12, 50);
   membersbtn.Add(*commands);
 
@@ -982,25 +982,25 @@ bool TeamTypeClass::Edit() {
   /*
   **	Mission editing command buttons.
   */
-  TextButtonClass addbtn(BUTTON_ADD, "Append", TPF_EBUTTON, D_NAME_X,
+  TextButtonClass addbtn(BUTTON_ADD, "Append", kTpfEButton, D_NAME_X,
                          missionlist1.Y + missionlist1.Height + 1, 50);
   addbtn.Add(*commands);
 
-  TextButtonClass insertbtn(BUTTON_INSERT, "Insert", TPF_EBUTTON, addbtn.X,
+  TextButtonClass insertbtn(BUTTON_INSERT, "Insert", kTpfEButton, addbtn.X,
                             addbtn.Y + 10, 50);
   insertbtn.Add(*commands);
 
-  TextButtonClass delbtn(BUTTON_DELETE, "Delete", TPF_EBUTTON, insertbtn.X,
+  TextButtonClass delbtn(BUTTON_DELETE, "Delete", kTpfEButton, insertbtn.X,
                          insertbtn.Y + 10, 50);
   delbtn.Add(*commands);
 
-  TextButtonClass repbtn(BUTTON_REPLACE, "Replace", TPF_EBUTTON, delbtn.X,
+  TextButtonClass repbtn(BUTTON_REPLACE, "Replace", kTpfEButton, delbtn.X,
                          delbtn.Y + 10, 50);
   repbtn.Add(*commands);
 
-  TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_EBUTTON, D_OK_X, D_OK_Y, D_OK_W,
+  TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfEButton, D_OK_X, D_OK_Y, D_OK_W,
                         D_OK_H);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_EBUTTON, D_CANCEL_X,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfEButton, D_CANCEL_X,
                             D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
 
   /*

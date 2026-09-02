@@ -751,9 +751,9 @@ void EventClass::Execute() {
         techno->Assign_Mission(Data.MegaMission.Mission);
 
         if (techno->Is_Foot()) {
-          dynamic_cast<FootClass*>(techno)->SuspendedNavCom = TARGET_NONE;
+          dynamic_cast<FootClass*>(techno)->SuspendedNavCom = kTargetNone;
         }
-        techno->SuspendedTarCom = TARGET_NONE;
+        techno->SuspendedTarCom = kTargetNone;
 
         /*
         **	Guard area mode is handled with care. The specified target is
@@ -763,7 +763,7 @@ void EventClass::Execute() {
         */
         if (Data.MegaMission.Mission == MISSION_GUARD_AREA &&
             techno->Is_Foot()) {
-          techno->Assign_Target(TARGET_NONE);
+          techno->Assign_Target(kTargetNone);
           techno->Assign_Destination(Data.MegaMission.Target.As_TARGET());
           techno->ArchiveTarget = Data.MegaMission.Target.As_TARGET();
         } else {
@@ -829,8 +829,8 @@ void EventClass::Execute() {
       if (techno != nullptr && techno->IsActive && !techno->IsInLimbo &&
           !techno->IsTethered && techno->What_Am_I() != RTTI_BUILDING) {
         techno->Transmit_Message(RADIO_OVER_OUT);
-        techno->Assign_Destination(TARGET_NONE);
-        techno->Assign_Target(TARGET_NONE);
+        techno->Assign_Destination(kTargetNone);
+        techno->Assign_Target(kTargetNone);
         techno->Enter_Idle_Mode();
         if (techno->Is_Foot()) {
           dynamic_cast<FootClass*>(techno)->Clear_Navigation_List();

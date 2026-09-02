@@ -1015,22 +1015,22 @@ bool TriggerTypeClass::Edit() {
   **	event.
   */
   int eventflag = EventControl;
-  TextButtonClass eventbtn(BUTTON_EVENT, TXT_TRIGGER_JUST_EVENT, TPF_EBUTTON,
+  TextButtonClass eventbtn(BUTTON_EVENT, TXT_TRIGGER_JUST_EVENT, kTpfEButton,
                            event1list.X, event1list.Y + 11, 100, 9);
 
   /*
   **	This button controls the existence of a secondary action.
   */
   bool actionflag = ActionControl;
-  TextButtonClass actionbtn(BUTTON_ACTION, TXT_TRIGGER_JUST_ACTION, TPF_EBUTTON,
+  TextButtonClass actionbtn(BUTTON_ACTION, TXT_TRIGGER_JUST_ACTION, kTpfEButton,
                             action1list.X, action1list.Y + 11, 100, 9);
 
   /*
   **	Create the ubiquitous OK and Cancel buttons.
   */
-  TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_EBUTTON, D_DIALOG_X + 35,
+  TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfEButton, D_DIALOG_X + 35,
                         D_DIALOG_Y + D_DIALOG_H - 30, 45, 9);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, TPF_EBUTTON,
+  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfEButton,
                             D_DIALOG_X + D_DIALOG_W - 80,
                             D_DIALOG_Y + D_DIALOG_H - 30, 45, 9);
 

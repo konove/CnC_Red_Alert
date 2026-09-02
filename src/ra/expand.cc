@@ -323,14 +323,14 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 {
   GadgetClass* buttons = nullptr;
 
-  TextButtonClass ok(200, TXT_OK, TPF_BUTTON, OPTION_X + 40,
+  TextButtonClass ok(200, TXT_OK, kTpfButton, OPTION_X + 40,
                      OPTION_Y + OPTION_HEIGHT - 50);
-  TextButtonClass cancel(201, TXT_CANCEL, TPF_BUTTON,
+  TextButtonClass cancel(201, TXT_CANCEL, kTpfButton,
                          OPTION_X + OPTION_WIDTH - 85,
                          OPTION_Y + OPTION_HEIGHT - 50);
 
   EListClass list(202, OPTION_X + 35, OPTION_Y + 30, OPTION_WIDTH - 70,
-                  OPTION_HEIGHT - 85, TPF_BUTTON, MFCD::Retrieve("BTN-UP.SHP"),
+                  OPTION_HEIGHT - 85, kTpfButton, MFCD::Retrieve("BTN-UP.SHP"),
                   MFCD::Retrieve("BTN-DN.SHP"));
   buttons = &ok;
   cancel.Add(*buttons);
