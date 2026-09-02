@@ -469,11 +469,6 @@ bool Select_Game(bool /*fade*/) {
 
   int cdcheck = 0;
 
-  //	#ifndef DVD // Denzil - We want the menu screen			ajw No
-  // we don't 	if (Special.IsFromInstall) { 		display = false;
-  //	}
-  //	#endif
-
   Show_Mouse();
 
   NewUnitsEnabled = SecretUnitsEnabled =
@@ -744,13 +739,8 @@ bool Select_Game(bool /*fade*/) {
             Load_Title_Page();
           } else {
             Theme.Fade_Out();
-#ifdef DVD  // Denzil			ajw Presumably a bug fix.
             Choose_Side();
             Hide_Mouse();
-#else
-            Hide_Mouse();
-            Choose_Side();
-#endif
             if (CurrentCD == 0) {
               Scen.Set_Scenario_Name("SCG01EA.INI");
             } else {

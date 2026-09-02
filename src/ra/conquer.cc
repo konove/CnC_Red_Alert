@@ -2823,10 +2823,6 @@ enum CD_VOLUME {
 constexpr int kDvdName = 4;
 }  // namespace
 
-#ifndef DVD
-#error DVD must be defined!
-#endif
-
 bool Force_CD_Available(int cd_desired)  // ajw
 {
   static int _last = -1;

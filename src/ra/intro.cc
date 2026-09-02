@@ -68,7 +68,6 @@ void Choose_Side()  //	ajw - In RA, all this did was play a movie.
   Whom = HOUSE_GOOD;
 
   if (Special.IsFromInstall) {
-#ifdef DVD  // Denzil
     if (Using_DVD()) {
       Hide_Mouse();
       Load_Title_Page();
@@ -92,7 +91,6 @@ void Choose_Side()  //	ajw - In RA, all this did was play a movie.
       BlackPalette.Set(kFadePaletteSlow);
       SeenPage.Clear();
     }
-#endif
 
     Play_Movie(VQ_INTRO_MOVIE, THEME_NONE, false);
   }

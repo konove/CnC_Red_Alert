@@ -193,9 +193,6 @@
 // versions and undoing of Aftermath divergence. - ajw
 // #define FIXIT_VERSION_3
 
-// Define DVD to turn on RADVD additions/changes - Denzil
-#define DVD
-
 /**********************************************************************
 **	If this is defined, then the network code will be enabled.
 */
