@@ -1214,9 +1214,7 @@ static void Play_Intro(bool sequenced) {
  *                                                                                             *
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
-#ifdef MOVIE640
 GraphicBufferClass VQ640(640, 400, nullptr);
-#endif
 void Anim_Init() {
   /* Configure player with INI file */
   VQA_DefaultConfig(&AnimControl);
@@ -1234,13 +1232,11 @@ void Anim_Init() {
   AnimControl.ImageWidth = 320;
   AnimControl.ImageHeight = 200;
   AnimControl.ImageBuf = SysMemPage.Get_Offset();
-#ifdef MOVIE640
   if (IsVQ640) {
     AnimControl.ImageWidth = 640;
     AnimControl.ImageHeight = 400;
     AnimControl.ImageBuf = VQ640.Get_Offset();
   }
-#endif
   AnimControl.Vmode = 0;
   AnimControl.OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
   if (SlowPalette) {

@@ -2497,15 +2497,11 @@ long VQ_Call_Back(unsigned char*, long) {
     Keyboard->Clear();
   }
   Check_VQ_Palette_Set();
-#ifdef MOVIE640
   if (IsVQ640) {
     VQ640.Blit(SeenBuff);
   } else {
     Interpolate_2X_Scale(&SysMemPage, &SeenBuff, nullptr);
   }
-#else
-  Interpolate_2X_Scale(&SysMemPage, &SeenBuff, nullptr);
-#endif
   // Call_Back() is deliberately not invoked here. The VQA player drives audio
   // itself while a movie runs, and the game logic it would service is stopped.
 

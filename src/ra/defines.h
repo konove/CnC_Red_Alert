@@ -73,9 +73,6 @@
 */
 // #define DONGLE
 
-// Enable 640x400 VQ movie capability in WIN32 mode
-#define MOVIE640
-
 // Fixes score screen crash
 // #define FIXIT_SCORE_CRASH
 
