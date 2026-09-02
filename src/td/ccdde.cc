@@ -332,17 +332,6 @@ int DDEServerClass::Time_Since_Heartbeat() {
  * HISTORY: * 6/9/96 11:07PM ST : Created *
  *=============================================================================================*/
 BOOL Send_Data_To_DDE_Server(char* data, int length, int packet_type) {
-#if (0)
-  BOOL app_exists;
-
-  app_exists = DDE_Class->Test_Server_Running(DDE_Class->remote_name);
-
-  if (app_exists != true) {
-    CCDebugString("Connection to server failed!");
-    return (FALSE);
-  }
-#endif  //(0)
-
   if (DDE_Class->Open_Poke_Connection(DDE_Class->remote_name) == FALSE) {
     CCDebugString("C&C95 - Failed to connect for POKE!");
     return (FALSE);

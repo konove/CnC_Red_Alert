@@ -134,13 +134,6 @@ void Check_From_WChat(char* wchat_name) {
 #ifdef _WIN32
     ini_file = DDEServer.Get_MPlayer_Game_Info();
 #endif
-#if (0)
-    /*
-    ** Save it to disk as well so I can see it
-    */
-    RawFileClass anotherfile("FROMCHAT.TXT");
-    anotherfile.Write(ini_file, DDEServer.Get_MPlayer_Game_Info_Length());
-#endif  //(0)
   }
 
   if (wchat_name) {

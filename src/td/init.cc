@@ -123,26 +123,6 @@ extern long RandNumb;
 extern int SimRandIndex;
 
 #define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode
-#if (0)
-
-long FAR PASCAL _export Start_Game_Proc(HWND hwnd, UINT message, UINT wParam,
-                                        LONG lParam) {
-  switch (message) {
-    case WM_CREATE:
-      break;
-
-    case WM_COMMAND:
-      EndDialog(hwnd, true);
-      AllDone = true;
-      break;
-
-    case WM_DESTROY:
-      EndDialog(hwnd, true);
-      break;
-  }
-  return (DefWindowProc(hwnd, message, wParam, lParam));
-}
-#endif
 
 extern bool Server_Remote_Connect();
 extern bool Client_Remote_Connect();
@@ -492,40 +472,6 @@ bool Init_Game(int, char*[]) {
     MoviesMix = MFCD::Register("MOVIES.MIX");  // Never cached.
                                                //	}
   }
-
-#if (0)
-
-  /*
-  ** Extract a movie from a mixfile.
-  */
-  char* file_ptr = new char[32 * 1024 * 1024];
-  CCFileClass whatever("PINTLE.VQA");
-
-  int len = whatever.Size();
-
-  whatever.Open();
-
-  DWORD actual;
-  HANDLE sfile = CreateFile("c:\\temp\\PINTLE.VQA", GENERIC_WRITE, 0, NULL,
-                            CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-  if (sfile != INVALID_HANDLE_VALUE) {
-    SetFilePointer(sfile, 0, NULL, FILE_END);
-
-    do {
-      whatever.Read(file_ptr, std::min(len, 1024 * 64));
-      WriteFile(sfile, file_ptr, std::min(len, 1024 * 64), &actual, NULL);
-      len -= std::min(len, 1024 * 64);
-    } while (len > 0);
-
-    CloseHandle(sfile);
-  }
-
-  whatever.Close();
-
-  Free(file_ptr);
-
-#endif  //(0)
 
   /*
   **	Register the score mixfile.
@@ -1379,20 +1325,6 @@ bool Select_Game(bool fade) {
               ** Init network system & remote-connect
               */
               if (Init_Network() && Remote_Connect()) {
-#if (0)
-                char seed[80];
-                sprintf(seed, "Seed: %08x\n", Seed);
-                CCDebugString(seed);
-
-                sprintf(seed, "rand: %04x\n", rand());
-                CCDebugString(seed);
-
-                sprintf(seed, "rand: %04x\n", rand());
-                CCDebugString(seed);
-
-                sprintf(seed, "rand: %04x\n", rand());
-                CCDebugString(seed);
-#endif
                 Options.ScoreVolume = 0;
                 ScenPlayer = SCEN_PLAYER_MPLAYER;
                 ScenDir = SCEN_DIR_EAST;
@@ -1616,27 +1548,6 @@ bool Select_Game(bool fade) {
   srand(Seed);
   RandNumb = Seed;
   SimRandIndex = 0;
-#if (0)
-  DWORD actual;
-  HANDLE sfile = CreateFile("random.txt", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
-                            FILE_ATTRIBUTE_NORMAL, NULL);
-
-  if (sfile != INVALID_HANDLE_VALUE) {
-    SetFilePointer(sfile, 0, NULL, FILE_END);
-
-    int minimum;
-    int maximum;
-    char whatever[80];
-    for (int i = 0; i < 1000; i++) {
-      minimum = rand();
-      maximum = rand();
-
-      sprintf(whatever, "%04x\n", Random_Pick(minimum, maximum));
-      WriteFile(sfile, whatever, strlen(whatever), &actual, NULL);
-    }
-    CloseHandle(sfile);
-  }
-#endif
 
   /*
   **	Load the scenario.  Specify variation 'A' for the editor; for the game,

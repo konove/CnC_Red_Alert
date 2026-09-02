@@ -676,15 +676,6 @@ void Keyboard_Process(KeyNumType& input) {
         Handle_View(KN_To_VK(plain) - VK_F7, action);
       }
       break;
-#if (0)
-    case VK_F11:
-      Winsock.Set_Protocol_UDP(false);
-      break;
-
-    case VK_F12:
-      Winsock.Set_Protocol_UDP(true);
-      break;
-#endif  //(0)
 
     /*
     **	Control the custom team select state.
@@ -1547,11 +1538,9 @@ bool Main_Loop() {
   //
   ProcessTimer.Set(0, true);
 
-#if 1
   if (TrapCheckHeap) {
     Debug_Trap_Check_Heap = true;
   }
-#endif
 
   if constexpr (config::kCheatKeysEnabled) {
     Heap_Dump_Check("After Trap");
@@ -2314,7 +2303,6 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
       //  (this is the only user)
       // LogicPage->Texture_Fill_Rect (xpos, ypos, width, height, shape_pointer,
       // source_width, source_height);
-#if (1)
       if (LogicPage->Lock()) {
         unsigned char* shape_end = shape_pointer + static_cast<base::ssize>(source_width) * source_height;
 
@@ -2339,7 +2327,6 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
 
         LogicPage->Unlock();
       }
-#endif
     }
   }
 }
@@ -2884,11 +2871,6 @@ void Handle_View(int view, int action) {
 
 void Heap_Dump_Check(const char* string) {
   if constexpr (config::kCheatKeysEnabled) {
-#if 0
-	struct _heapinfo h_info;
-	int heap_status;
-#endif
-
     if (!Debug_Trap_Check_Heap) {  // check the heap?
       return;
     }
@@ -2896,70 +2878,6 @@ void Heap_Dump_Check(const char* string) {
     //	Debug_Heap_Dump = true;
 
     Smart_Printf("%s\n", string);
-
-#if 0
-	heap_status = _heapset( 0xee );
-
-#if (1)
-	if ( heap_status == _HEAPOK ||
-		heap_status == _HEAPEMPTY ) {
-		Debug_Heap_Dump = false;
-		return;
-	}
-
-	h_info._pentry = NULL;
-
-	for(;;) {
-		heap_status = _heapwalk( &h_info );
-
-		if ( heap_status != _HEAPOK )
-			break;
-	}
-
-	if (heap_status != _HEAPEND &&
-		heap_status != _HEAPEMPTY) {
-#endif
-		h_info._pentry = NULL;
-
-		for(;;) {
-			heap_status = _heapwalk( &h_info );
-
-			if ( heap_status != _HEAPOK )
-				break;
-
-			Smart_Printf( " %s block at %Fp of size %4.4X\n",
-				(h_info._useflag == _USEDENTRY ? "USED" : "FREE"),
-				h_info._pentry, h_info._size );
-		}
-
-		Smart_Printf( " %d block at %Fp of size %4.4X\n",
-			h_info._useflag, h_info._pentry, h_info._size );
-
-		switch ( heap_status ) {
-//			case _HEAPEND:
-//				Smart_Printf( "OK - end of heap\n" );
-//				break;
-
-//			case _HEAPEMPTY:
-//				Smart_Printf( "OK - heap is empty\n" );
-//				break;
-
-			case _HEAPBADBEGIN:
-				Smart_Printf( "ERROR - heap is damaged\n" );
-				break;
-
-			case _HEAPBADPTR:
-				Smart_Printf( "ERROR - bad pointer to heap\n" );
-				break;
-
-			case _HEAPBADNODE:
-				Smart_Printf( "ERROR - bad node in heap\n" );
-				break;
-		}
-#if (1)
-	}
-#endif
-#endif
 
     //	Debug_Heap_Dump = false;
   }

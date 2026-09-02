@@ -201,25 +201,4 @@ extern int InternetMaxPlayers;
 #define TXT_WINSOCK_CONNECTION_LOST 4567 + 20
 #define TXT_WINSOCK_RESOLVING_HOST_ADDRESS 4567 + 21
 
-#if (0)
-
-struct tag tGameStatisticsStruct {
-  char WinnersName[20];
-  char LosersName[20];
-  int WinnersTeam;
-  int LosersTeam;
-  int WinnersCredits;
-  int LosersCredits;
-  int WinnersKills;
-  int LosersKills;
-  int ScenarioPlayed;
-  int GameTimeElapsed;
-  int VersionNumber;
-  char TimeDateStamp[12];
-} GameStatisticsStruct;
-
-extern GameStatisticsStruct GameStatistics;
-
-#endif  //(0)
-
 #endif  // CNC_RED_ALERT_TD_TCPIP_H_

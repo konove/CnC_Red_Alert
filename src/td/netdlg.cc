@@ -294,36 +294,6 @@ void Shutdown_Network() {
 // the computer possibly at different times.
 // BRR, 10/29/96
 //
-#if (0)
-  /*------------------------------------------------------------------------
-  Broadcast a sign-off packet, by sending the packet over the Global Channel,
-  telling the IPX Manager that no ACK is required, and specifying a NULL
-  destination address.
-  ------------------------------------------------------------------------*/
-  memset(&GPacket, 0, sizeof(GlobalPacketType));
-
-  GPacket.Command = NET_SIGN_OFF;
-  port::SafeCopy(GPacket.Name, MPlayerName);
-
-  Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
-  Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
-
-  if (IsBridge && !Winsock.Get_Connected()) {
-    Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, &BridgeNet);
-    Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, &BridgeNet);
-  }
-
-  /*------------------------------------------------------------------------
-  Wait for the packets to finish going out (or the Global Channel times out)
-  ------------------------------------------------------------------------*/
-  for (;;) {
-    if (Ipx.Global_Num_Send() == 0) {
-      break;
-    }
-    Ipx.Service();
-  }
-
-#endif  //(0)
 
   /*------------------------------------------------------------------------
   Delete our "meta-packet"
@@ -5137,16 +5107,6 @@ static int Net_Fake_Join_Dialog() {
         Spawn_WChat(false);
         process = false;
         rc = -1;
-#if (0)
-        if (joinstate != JOIN_CONFIRMED) {
-          process = false;
-          rc = -1;
-        } else {
-          MPlayerGameName[0] = 0;
-          joinstate = JOIN_NOTHING;
-          display = REDRAW_ALL;
-        }
-#endif  //(0)
         break;
 
       /*------------------------------------------------------------------

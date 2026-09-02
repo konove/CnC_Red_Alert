@@ -617,10 +617,6 @@ void Send_Statistics_Packet() {
   /*
   ** Save it to disk as well so I can see it
   */
-#if (0)
-  RawFileClass anotherfile("packet.net");
-  anotherfile.Write(packet, packet_size);
-#endif  //(0)
   /*
   ** Tidy up
   */

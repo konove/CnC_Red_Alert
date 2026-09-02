@@ -1249,9 +1249,6 @@ void RadarClass::Radar_Cursor(int forced) {
   // Draw lower right hand corner
   draw_window.Draw_Line(x2, y2 - barlen, x2, y2, LTGREEN);
   draw_window.Draw_Line(x2 - barlen, y2, x2, y2, LTGREEN);
-#if (0)
-  draw_window.Draw_Rect(x1, y1, x2, y2, WHITE);
-#endif
 
 #if (false)
   if (oldpage == &SeenBuff) {

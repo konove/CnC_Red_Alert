@@ -285,45 +285,6 @@ void TcpipManagerClass::Start_Server() {
   */
   IsServer = true;
   UseUDP = true;
-#if (0)
-  /*
-  ** Create our socket and bind it to our port number
-  */
-  ListenSocket = socket(AF_INET, SOCK_STREAM, 0);
-  if (ListenSocket == INVALID_SOCKET) {
-    ConnectStatus = NOT_CONNECTING;
-    return;
-  }
-
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(PORTNUM);
-  addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-  if (bind(ListenSocket, (LPSOCKADDR)&addr, sizeof(addr)) == SOCKET_ERROR) {
-    Close_Socket(ListenSocket);
-    ConnectStatus = NOT_CONNECTING;
-    return;
-  }
-
-  /*
-  ** Start listening for connections on this socket
-  */
-  if (listen(ListenSocket, 1) == SOCKET_ERROR) {
-    Close_Socket(ListenSocket);
-    ConnectStatus = NOT_CONNECTING;
-    return;
-  }
-
-  /*
-  ** Select the asynchronous events we want to process
-  */
-  if (WSAAsyncSelect(ListenSocket, MainWindow, WM_ACCEPT, FD_ACCEPT) ==
-      SOCKET_ERROR) {
-    Close_Socket(ListenSocket);
-    ConnectStatus = NOT_CONNECTING;
-    return;
-  }
-#endif
   ConnectStatus = CONNECTING;
 }
 

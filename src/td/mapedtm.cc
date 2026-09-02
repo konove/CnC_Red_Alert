@@ -2033,32 +2033,6 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   }
 
   Show_Mouse();
-
-#if 0
-	int numcols = (D_DIALOG_W - 16) / D_PICTURE_W;
-	int col = index % numcols;
-	int row = index / numcols;
-	int dlg_y = 0;
-	int x = D_DIALOG_X + 8 + col * D_PICTURE_W;
-	int y = dlg_y + 8 + 13 + row * D_ROW_H;
-
-	/*
-	**	Change the window to this box.
-	*/
-	WindowList[WINDOW_EDITOR][WINDOWX] = x >> 3;
-	WindowList[WINDOW_EDITOR][WINDOWY] = y;
-	WindowList[WINDOW_EDITOR][WINDOWWIDTH] = D_PICTURE_W >> 3;
-	WindowList[WINDOW_EDITOR][WINDOWHEIGHT] = D_PICTURE_H;
-	Change_Window((int)WINDOW_EDITOR);
-
-	Hide_Mouse();
-	Draw_Box(x, y, D_PICTURE_W, D_PICTURE_H, BOXSTYLE_GREEN_DOWN, true);
-	ptr->Display(WinW<<2, WinH>>1, WINDOW_EDITOR, house);
-	if (quant > 0) {
-		Fancy_Text_Print("%d", x+1, y+D_PICTURE_H-8, CC_GREEN, TBLACK, TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_DROPSHADOW, quant);
-	}
-	Show_Mouse();
-#endif
 }
 
 /***************************************************************************

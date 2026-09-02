@@ -121,8 +121,6 @@ void Write_Interpolation_Palette(const char* palette_file_name) {
 void Create_Palette_Interpolation_Table() {
   //	Asm_Create_Palette_Interpolation_Table();
 
-#if (1)
-
   int i;
   int j;
   int p;
@@ -206,8 +204,6 @@ void Create_Palette_Interpolation_Table() {
           static_cast<unsigned char>(index_of_closest_color);
     }
   }
-
-#endif
   InterpolationPaletteChanged = false;
 }
 

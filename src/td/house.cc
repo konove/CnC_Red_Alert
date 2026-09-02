@@ -3896,48 +3896,6 @@ void HouseClass::MPlayer_Defeated() {
           MPlayerID_To_ColorIndex(MPlayerID[i]);
     }
 
-#if 0  // (This is the old method of tallying scores:
-		/*---------------------------------------------------------------------
-		Tally up the scores for this game:
-		- For each house:
-		  - If this house is human & wasn't defeated, its the winner
-		  - If this house was defeated, find out who did it & increment their
-		    Kills value.
-		---------------------------------------------------------------------*/
-		for (house = HOUSE_MULTI1; house < (HOUSE_MULTI1 + MPlayerMax); house++) {
-			hptr = HouseClass::As_Pointer(house);
-			if (!hptr) continue;
-
-			if (!hptr->IsDefeated) {
-
-				/*...............................................................
-				If this is the winning house, find which player it was & increment
-				their 'Wins' value
-				...............................................................*/
-				if (hptr->IsHuman) {
-					for (i = 0; i < MPlayerCount; i++) {
-						if (house == MPlayerHouses[i]) {
-							MPlayerScore[score_index[i]].Wins++;
-							MPlayerWinner = score_index[i];
-						}
-					}
-				}
-			} else {
-
-				/*..................................................................
-				This house was defeated; find which player who defeated him & increment
-				his 'Kills' value for this game
-				..................................................................*/
-				for (i = 0; i < MPlayerCount; i++) {
-					if (hptr->WhoLastHurtMe == MPlayerHouses[i]) {
-						MPlayerScore[score_index[i]].Kills[MPlayerCurGame]++;
-					}
-				}
-			}
-		}
-
-#else  // This is the new method:
-
     /*---------------------------------------------------------------------
     Tally up the scores for this game:
     - For each player:
@@ -3967,7 +3925,6 @@ void HouseClass::MPlayer_Defeated() {
             hptr->BuildingsKilled[house];
       }
     }
-#endif
 
     /*---------------------------------------------------------------------
     Destroy all the IPX connections, since we have to go through the rest

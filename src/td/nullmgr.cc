@@ -740,34 +740,6 @@ int NullModemClass::Service() {
   // CCDebugString (port);
   //	}
 
-#if (0)
-  if (SerialPort->FramingErrors || SerialPort->IOErrors ||
-      SerialPort->InBufferOverflows || SerialPort->BufferOverruns ||
-      SerialPort->InBufferOverflows || SerialPort->OutBufferOverflows) {
-    if (!MonoClass::Is_Enabled()) {
-      MonoClass::Enable();
-      enabled = true;
-    }
-    Special.IsMonoEnabled = true;
-    Debug_Smart_Print = true;
-    Mono_Set_Cursor(0, 0);
-    Smart_Printf("            In Queue: %5d  \n", SerialPort->InQueue);
-    Smart_Printf("           Out Queue: %5d  \n", SerialPort->OutQueue);
-    Smart_Printf("      Framing errors: %5d  \n", SerialPort->FramingErrors);
-    Smart_Printf("           IO errors: %5d  \n", SerialPort->IOErrors);
-    Smart_Printf("       Parity Errors: %5d  \n",
-                 SerialPort->InBufferOverflows);
-    Smart_Printf("     Buffer overruns: %5d  \n", SerialPort->BufferOverruns);
-    Smart_Printf(" In buffer overflows: %5d  \n",
-                 SerialPort->InBufferOverflows);
-    Smart_Printf("Out buffer overflows: %5d  \n",
-                 SerialPort->OutBufferOverflows);
-
-    MonoClass::Disable();
-    Debug_Smart_Print = false;
-  }
-#endif  //(0)
-
   // minimum packet size
 
   if (RXCount < static_cast<int>(PACKET_SERIAL_OVERHEAD_SIZE) + 1) {
@@ -901,10 +873,6 @@ int NullModemClass::Service() {
     ReceiveOverflows++;
     // Smart_Printf( "Received overflows %d \n", ReceiveOverflows );
   }
-
-#if (0)
-  Hex_Dump_Data((RXBuf + pos), (PACKET_SERIAL_OVERHEAD_SIZE + length));
-#endif
 
   /*------------------------------------------------------------------------
   Move all data past this packet to the front of the buffer.

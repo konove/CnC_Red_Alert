@@ -128,12 +128,6 @@ GameType Select_MPlayer_Game() {
   int d_modemserial_h = 9 * factor;
   int d_modemserial_x = d_dialog_cx - d_modemserial_w / 2;
   int d_modemserial_y = d_dialog_y + d_margin + d_txt6_h + d_margin;
-#if (0)
-  int d_internet_w = 80 * factor;
-  int d_internet_h = 9 * factor;
-  int d_internet_x = d_dialog_cx - d_internet_w / 2;
-  int d_internet_y = d_modemserial_y + d_modemserial_h + 2 * factor;
-#endif  //(0)
   int d_ipx_w = 80 * factor;
   int d_ipx_h = 9 * factor;
   int d_ipx_x = d_dialog_cx - d_ipx_w / 2;
@@ -152,9 +146,6 @@ GameType Select_MPlayer_Game() {
   ........................................................................*/
   enum {
     BUTTON_MODEMSERIAL = 100,
-#if (0)
-    BUTTON_INTERNET,
-#endif  //(0)
     BUTTON_IPX,
     BUTTON_CANCEL,
 
@@ -198,12 +189,6 @@ GameType Select_MPlayer_Game() {
       BUTTON_MODEMSERIAL, TXT_MODEM_SERIAL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       d_modemserial_x, d_modemserial_y, d_modemserial_w, d_modemserial_h);
-#if (0)
-  TextButtonClass internetbtn(
-      BUTTON_INTERNET, TXT_INTERNET,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_internet_x,
-      d_internet_y, d_internet_w, d_internet_h);
-#endif  //(0)
   TextButtonClass ipxbtn(
       BUTTON_IPX, TXT_NETWORK,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ipx_x,
@@ -223,9 +208,6 @@ GameType Select_MPlayer_Game() {
   ............................ Create the list .............................
   */
   commands = &modemserialbtn;
-#if (0)
-  internetbtn.Add_Tail(*commands);
-#endif  //(0)
   if (ipx_avail) {
     ipxbtn.Add_Tail(*commands);
   }
@@ -236,9 +218,6 @@ GameType Select_MPlayer_Game() {
   */
   curbutton = 0;
   buttons[0] = &modemserialbtn;
-#if (0)
-  buttons[1] = &internetbtn;
-#endif  //(0)
   if (ipx_avail) {
     buttons[1] = &ipxbtn;
     buttons[2] = &cancelbtn;
@@ -316,13 +295,6 @@ GameType Select_MPlayer_Game() {
         pressed = true;
         break;
 
-#if (0)
-      case ButtonKey(BUTTON_INTERNET):
-        selection = BUTTON_INTERNET;
-        pressed = true;
-        break;
-#endif  //(0)
-
       case ButtonKey(BUTTON_IPX):
         selection = BUTTON_IPX;
         pressed = true;
@@ -399,107 +371,6 @@ GameType Select_MPlayer_Game() {
             display = REDRAW_ALL;
           }
           break;
-
-#if (0)
-        case (BUTTON_INTERNET):
-// #define ONLY_FOR_E3
-#ifdef ONLY_FOR_E3
-          Call_Back();
-          Show_Internet_Connection_Progress();  // changed to do nothing
-          Hide_Mouse();
-          Load_Title_Page(true);
-          Show_Mouse();
-          Call_Back();
-          CCMessageBox().Process("Error! - Unable to ping KANE.WESTWOOD.COM");
-
-          buttons[curbutton]->IsPressed = false;
-          display = REDRAW_ALL;
-
-#endif  // ONLY_FOR_E3
-
-#ifdef FORCE_WINSOCK
-          if (Winsock.Init()) {
-            Read_MultiPlayer_Settings();
-            int result = Choose_Internet_Game();
-
-            if (!result) {
-              Winsock.Close();
-              buttons[curbutton]->IsPressed = false;
-              display = REDRAW_ALL;
-              break;
-            }
-
-            result = Get_Internet_Host_Or_Join();
-            if (result == 1) {
-              Winsock.Close();
-              buttons[curbutton]->IsPressed = false;
-              display = REDRAW_ALL;
-              break;
-            }
-            Server = !result;
-
-            if (Server) {
-#if (0)
-              ModemGameToPlay = INTERNET_HOST;
-              Winsock.Start_Server();
-#else
-              result = Get_IP_Address();
-              if (!result) {
-                Winsock.Close();
-                buttons[curbutton]->IsPressed = false;
-                display = REDRAW_ALL;
-                break;
-              }
-              Winsock.Set_Host_Address(PlanetWestwoodIPAddress);
-              Winsock.Start_Server();
-#endif
-
-            } else {
-              ModemGameToPlay = INTERNET_JOIN;
-              result = Get_IP_Address();
-              if (!result) {
-                Winsock.Close();
-                buttons[curbutton]->IsPressed = false;
-                display = REDRAW_ALL;
-                break;
-              }
-              Winsock.Set_Host_Address(PlanetWestwoodIPAddress);
-              Winsock.Start_Client();
-            }
-
-            // CountDownTimerClass connect_timeout;
-            // connect_timeout.Set(15*60);
-
-            ////Show_Internet_Connection_Progress();
-
-            if (!Winsock.Get_Connected()) {
-              Winsock.Close();
-              return (GAME_NORMAL);
-            }
-
-            SerialSettingsType* settings;
-            settings = &SerialDefaults;
-            Init_Null_Modem(settings);
-            if (Server) {
-              if (Com_Scenario_Dialog()) {
-                return (GAME_INTERNET);
-              } else {
-                Winsock.Close();
-                return (GAME_NORMAL);
-              }
-            } else {
-              if (Com_Show_Scenario_Dialog()) {
-                return (GAME_INTERNET);
-              } else {
-                Winsock.Close();
-                return (GAME_NORMAL);
-              }
-            }
-          }
-#endif  // FORCE_WINSOCK
-          break;
-
-#endif  //(0)
 
         case BUTTON_IPX:
           retval = GAME_IPX;
@@ -595,9 +466,7 @@ void Read_MultiPlayer_Settings() {
     CurPhoneIdx = -1;
   }
 
-#if 1
   TrapCheckHeap = WWGetPrivateProfileInt("MultiPlayer", "CheckHeap", 0, buffer);
-#endif
 
   /*------------------------------------------------------------------------
   Read in default serial settings

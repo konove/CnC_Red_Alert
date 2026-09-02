@@ -100,31 +100,6 @@ bool __cdecl Detect_MMX_Availability();
 void __cdecl Init_MMX();
 }
 
-#if (0)
-char WibbleBuffer[1024 * 1024];
-
-void CD_Test() {
-  HANDLE handle;
-  DWORD size;
-
-  handle = CreateFile("e:\\scores.mix", GENERIC_READ, FILE_SHARE_READ, NULL,
-                      OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
-  if (handle == INVALID_HANDLE_VALUE) {
-    return;
-  }
-
-  unsigned bytes_read;
-
-  do {
-    bytes_read = ReadFile(handle, WibbleBuffer, 1024 * 1024, &size, NULL);
-
-  } while (size == 1024 * 1024);
-
-  CloseHandle(handle);
-}
-#endif  //(0)
-
 /***********************************************************************************************
  * main -- Initial startup routine (preps library systems). *
  *                                                                                             *
