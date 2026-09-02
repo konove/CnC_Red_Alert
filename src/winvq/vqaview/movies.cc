@@ -346,41 +346,24 @@ long Draw_To_Buffer_Callback(unsigned char* buffer, long frame_number) {
 //
 // Do the cool interpolated, interlaced scale.
 //
-#if (1)
   Interpolate_2X_Scale(Draw_Page, Back_Page);
   Back_Page->Blit(*Screen_Buffer, 0, 0, 0, 100, 640, 314);
-#endif
 
 //
 // Draw 320x200 to Normal RAM, scale to Screen.
 //
-#if (0)
-  Draw_Page->Scale(*Screen_Buffer);
-#endif
 
 //
 // Draw 320x200 to Normal RAM, scale to Normal RAM, Blit to Hid, Blit to Screen.
 //
-#if (0)
-  Draw_Page->Scale(*Back_Page);
-  Back_Page->Blit(*Hid_Page);
-  Hid_Page->Blit(*Screen_Buffer);
-#endif
 
 //
 // Draw 320x200 to Normal RAM, scale to Normal RAM, Blit to Screen.
 //
-#if (0)
-  Draw_Page->Scale(*Back_Page);
-  Back_Page->Blit(*Screen_Buffer);
-#endif
 
 //
 // Draw 320x200 to Normal RAM, Blit to Screen.
 //
-#if (0)
-  Draw_Page->Blit(*Screen_Buffer);
-#endif
 
 #endif
 
@@ -490,7 +473,6 @@ void Create_Palette_Interpolation_Table() {
   // #endif
 }
 
-#if (1)
 /***************************************************************************
  * INTERPOLATE_2X_SCALE                                                    *
  *                                                                         *
@@ -560,154 +542,3 @@ void Interpolate_2X_Scale(GraphicBufferClass* source,
 
   return;
 }
-#endif
-
-#if (0)
-/***************************************************************************
- * INTERPOLATE_2X_SCALE                                                    *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/06/1995  MG : Created.                                             *
- *=========================================================================*/
-void Interpolate_2X_Scale(GraphicBufferClass* source,
-                          GraphicBufferClass* dest) {
-  unsigned char* src_ptr;
-  unsigned char* dest_ptr;
-  unsigned char* end_of_source;
-  int src_width;
-  int dest_width;
-  int width_counter;
-
-  //
-  // Get pointers to the source and destination buffers.
-  //
-  src_ptr = (unsigned char*)source->Get_Offset();
-  dest_ptr = (unsigned char*)dest->Get_Offset();
-  end_of_source = src_ptr + (source->Get_Width() * source->Get_Height());
-
-  //
-  // Get width of source and dest buffers.
-  //
-  src_width = source->Get_Width();
-  dest_width = dest->Get_Width();
-
-  //
-  // Copy over the first pixel (upper left).
-  //
-  *dest_ptr = *src_ptr;
-  src_ptr++;
-  dest_ptr++;
-
-  //
-  // Scale copy.
-  //
-  width_counter = 0;
-  while (src_ptr < end_of_source) {
-    //
-    // Blend this pixel with the one to the left and place this new color in the
-    // dest buffer.
-    //
-    *dest_ptr = Palette_Interpolation_Table[(*src_ptr)][(*(src_ptr - 1))];
-    dest_ptr++;
-
-    //
-    // Now place the source pixel into the dest buffer.
-    //
-    *dest_ptr = *src_ptr;
-
-    src_ptr++;
-    dest_ptr++;
-
-    width_counter++;
-    if (width_counter == src_width) {
-      width_counter = 0;
-      dest_ptr += dest_width;
-    }
-  }
-
-  return;
-}
-#endif
-
-#if (0)
-/***************************************************************************
- * INTERPOLATE_2X_SCALE                                                    *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/06/1995  MG : Created.                                             *
- *=========================================================================*/
-void Interpolate_2X_Scale(GraphicBufferClass* source,
-                          GraphicBufferClass* dest) {
-  unsigned char* src_ptr;
-  unsigned char* dest_ptr;
-  unsigned char* dest2_ptr;
-  unsigned char* end_of_source;
-  int src_width;
-  int dest_width;
-  int width_counter;
-
-  //
-  // Get pointers to the source and destination buffers.
-  //
-  src_ptr = (unsigned char*)source->Get_Offset();
-  dest_ptr = (unsigned char*)dest->Get_Offset();
-  end_of_source = src_ptr + (source->Get_Width() * source->Get_Height());
-
-  //
-  // Get width of source and dest buffers.
-  //
-  src_width = source->Get_Width();
-  dest_width = dest->Get_Width();
-
-  //
-  // Copy over the first pixel (upper left).
-  //
-  *dest_ptr = *src_ptr;
-  src_ptr++;
-  dest_ptr += 2;
-  dest2_ptr = dest_ptr + dest_width + 1;
-
-  //
-  // Scale copy.
-  //
-  width_counter = 0;
-  while (src_ptr < end_of_source) {
-    //
-    // Blend this pixel with the one to the left and place this new color in the
-    // dest buffer.
-    //
-    *dest2_ptr = Palette_Interpolation_Table[(*src_ptr)][(*(src_ptr - 1))];
-    dest2_ptr += 2;
-
-    //
-    // Now place the source pixel into the dest buffer.
-    //
-    *dest_ptr = *src_ptr;
-
-    src_ptr++;
-    dest_ptr += 2;
-
-    width_counter++;
-    if (width_counter == src_width) {
-      width_counter = 0;
-      dest_ptr += dest_width;
-      dest2_ptr += dest_width;
-    }
-  }
-
-  return;
-}
-
-#endif

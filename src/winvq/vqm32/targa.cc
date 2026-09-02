@@ -245,17 +245,9 @@ long LoadTarga(char* name, char* palette, char* image) {
         if (read(tga->fh, palette, size) == size) {
           /* Swap the byte ordering of the palette entries. */
           for (i = 0; i < tga->header.CMapLength; i++) {
-#if (0)
-            for (n = 0; n < depth; n++) {
-              c = *(palette + n);
-              *(palette + n) = *(palette + ((depth - 1) - n));
-              *(palette + ((depth - 1) - n)) = c;
-            }
-#else
             c = *palette;
             *palette = *(palette + (depth - 1));
             *(palette + (depth - 1)) = c;
-#endif
 
             /* Next entry */
             palette += depth;

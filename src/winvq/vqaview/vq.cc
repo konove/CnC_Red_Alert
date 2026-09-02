@@ -638,26 +638,6 @@ BOOL VQAClass::Open_And_Load_Buffers() {
     vqa_is_open = FALSE;
     return (FALSE);
   }
-#if (0)
-  //
-  // Get the VQA's palette.
-  //
-  pal_ptr = (unsigned char*)VQA_GetPalette(vqa_handle);
-  if (pal_ptr) {
-    //
-    // Get a copy of the VQA's palette.
-    //
-    Mem_Copy(pal_ptr, palette, (SIZE_OF_PALETTE * 3));
-
-    //
-    // The palette in the VQA files is 6-bit per pixel, so shift all the
-    // values to make them 8-bits per pixel.
-    //
-    for (i = 0; i < (SIZE_OF_PALETTE * 3); i++) {
-      palette[i] <<= 2;
-    }
-  }
-#endif
   //
   // Get frame information about the VQA.
   //
@@ -957,16 +937,6 @@ unsigned short Get_Key() { return (0); }
  *=========================================================================*/
 void Set_Movie_Frame_Rate() {
   int retval;
-
-#if (0)
-
-  retval = DialogBox(Main_Window.Get_Instance_Handle(), "GEEB",
-                     Main_Window.Get_Window_Handle(),
-                     (DLGPROC)Set_Frame_Rate_Dialog_Procedure);
-
-  Debug_Printf("retval = %d\r\n", retval);
-
-#endif
 }
 
 /***************************************************************************

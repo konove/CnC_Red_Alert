@@ -166,9 +166,6 @@ void main(long argc, char** argv) {
  * INSTALL THE CUSTOM CRITICAL ERROR HANDLER
  *-----------------------------------------------------------------------*/
 #ifndef __WATCOMC__
-#if (0)
-  harderr(HardErr_Handler);
-#endif
 #else
   _harderr(HardErr_Handler);
 #endif
@@ -190,7 +187,6 @@ void main(long argc, char** argv) {
 
     /* Open the movie for playback. */
     if (VQA_Open(vqa, name, &myconfig) == 0) {
-#if (1)
       VQA_Reset(vqa);
       VQA_SetStop(vqa, 100);
       VQA_SeekFrame(vqa, 50, 0);
@@ -201,44 +197,6 @@ void main(long argc, char** argv) {
         VQA_Reset(vqa);
         VQA_SeekFrame(vqa, 50, 0);
       }
-#else
-      {
-        long done = 0;
-        long mode = VQAMODE_WALK;
-        long key;
-
-        do {
-          switch (VQA_Play(vqa, mode)) {
-            case VQAERR_NONE:
-            case VQAERR_PAUSED:
-            case VQAERR_NOT_TIME:
-            case VQAERR_SLEEPING:
-              key = Check_Key();
-
-              if (key != 0) {
-                switch (key) {
-                  case ' ':
-                    mode = VQAMODE_PAUSE;
-                    break;
-
-                  case 0x1B:
-                    done = 1;
-                    break;
-
-                  default:
-                    mode = VQAMODE_WALK;
-                    break;
-                }
-              }
-              break;
-
-            default:
-              done = 1;
-              break;
-          }
-        } while (done == 0);
-      }
-#endif
 
       /* Retrieve playback statistics (FPS, time, etc...) */
       VQA_GetStats(vqa, &stats);
@@ -632,93 +590,6 @@ int Check_Key() {
 int Get_Key() { return (LastKey); }
 
 #ifndef __WATCOMC__
-#if (0)
-/****************************************************************************
- *
- * NAME
- *     HardErr_Handler - Hardware error handle.
- *
- * SYNOPSIS
- *     HardErr_Handler(Error, AX, BP, SI)
- *
- *     int HardErr_Handler(int, int, int, int);
- *
- * FUNCTION
- *     DOS calls 1 through 0xc are OK; any other will corrupt DOS.
- *     Important safety tip: The arguments for this function are NOT the
- *     same as those for the Microsoft '_harderr()' function.
- *
- * INPUTS
- *     Error - Error type value. Low order byte can be:
- *
- *             0  = Attempt to write to write-protected disk.
- *             1  = Unknown unit.
- *             2  = Drive not ready.
- *             3  = Unknown command.
- *             4  = CRC error.
- *             5  = Bad drive-request structure length.
- *             6  = Seek error.
- *             7  = Unknown media type.
- *             8  = Sector not found.
- *             9  = Printer out of paper.
- *             10 = Write fault.
- *             11 = Read fault.
- *             12 = General failure.
- *
- *     AX    - Will be non-negative if this is a disk error, negative
- *             otherwise. low-order byte of ax gives failing drive number
- *             high bits:
- *
- *             15 0 = disk error
- *             14     not used
- *             13 0 = "Ignore" not allowed
- *             12 0 = "Retry" not allowed
- *             11 0 = "Fail" not allowed (fail is same as abort)
- *             10,9:
- *             00     DOS
- *             01     File allocation table
- *             10     Directory
- *             11     Data area
- *             8 0  = Read error, 1 = Write error
- *
- *     BP,SI - Not used
- *
- * RESULT
- *     NONE
- *
- ****************************************************************************/
-
-int HardErr_Handler(int errval, int ax, int bp, int si) {
-  /* Suppress compiler warnings */
-  errval = errval;
-  bp = bp;
-  si = si;
-
-  /* If AX < 0, this was not a disk error, so return the ABORT code */
-  if (ax < 0) {
-    hardretn(_HARDERR_ABORT);
-  }
-
-  /* Otherwise, if this is a drive-not-ready error, retry 5 times */
-  if (kbhit() != 0) {
-    if (ax & (1 << 13)) {
-      hardresume(_HARDERR_IGNORE);
-    } else if (ax & (1 << 11)) {
-      hardresume(_HARDERR_FAIL);
-    } else {
-      hardresume(_HARDERR_RETRY);
-    }
-  } else {
-    if (ax & (1 << 12)) {
-      hardresume(_HARDERR_RETRY);
-    } else {
-      hardresume(_HARDERR_IGNORE);
-    }
-  }
-
-  return (0);
-}
-#endif
 
 #else
 /****************************************************************************
