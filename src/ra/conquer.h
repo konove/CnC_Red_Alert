@@ -29,6 +29,7 @@
 #include <memory>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -723,11 +724,12 @@ void Enable_Secret_Units();
 // from inside blocking loops and dialogs as well as from the main loop.
 void Call_Back();
 
-// Appends the language-specific extension to a base filename.
-//
-// The returned pointer refers to a static buffer and is only valid until the
-// next call.
-const char* Language_Name(const char* basename);
+// Names the language-specific string file for `basename`: "CONQUER" becomes
+// "CONQUER.ENG". The extension is hardcoded to .ENG rather than chosen from the
+// build's language, so only the English string files are ever found; the
+// original built one executable per language and picked the suffix with an
+// #ifdef.
+std::string Language_Name(std::string_view basename);
 
 // Converts a reinforcement source name from the scenario INI into a
 // SourceType, or SOURCE_NONE if it matches nothing.

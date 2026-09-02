@@ -43,6 +43,7 @@
 #include <vector>
 
 #include "absl/log/log.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "port/ex_string.h"
@@ -1504,18 +1505,8 @@ void IPX_Call_Back() {
   }
 }
 
-// The extension is hardcoded to .ENG rather than chosen from the build's
-// language, so only the English string files are ever found. The original built
-// a separate executable per language and picked the suffix with an #ifdef.
-const char* Language_Name(const char* basename) {
-  static char _fullname[_MAX_FNAME + _MAX_EXT];
-
-  if (!basename) {
-    return nullptr;
-  }
-
-  sprintf(_fullname, "%s.ENG", basename);
-  return _fullname;
+std::string Language_Name(std::string_view basename) {
+  return absl::StrCat(basename, ".ENG");
 }
 
 SourceType Source_From_Name(const char* name) {
