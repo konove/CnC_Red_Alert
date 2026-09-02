@@ -46,7 +46,9 @@
 #include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/safe_string.h"
+#include "port/win32/win32_registry.h"
 #include "ra/aircraft.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -3236,78 +3238,38 @@ const char* Game_Registry_Key() {
   }
 }
 
+bool ReadInstallerFlag(const char* value_name) {
+  return port::ReadRegistryDword(HKEY_LOCAL_MACHINE, Game_Registry_Key(),
+                                 value_name)
+             .value_or(0) != 0;
+}
+
 // Reports whether the Counterstrike expansion is installed, by reading the flag
 // the installer left in the registry. The answer is cached: it cannot change
 // while the game is running.
 //
-// Off Windows there is no registry and no separate installer, so the expansion
-// content is simply assumed to be present.
+// Off Windows there is no registry and no separate expansion installer, so the
+// content is simply assumed to be present. Before the installer wrote a
+// registry flag, this was decided by probing for EXPAND.MIX.
 bool Is_Counterstrike_Installed() {
-#ifdef _WIN32
-  // ajw 9/29/98
-  static bool bAlreadyChecked = false;
-  static bool bInstalled = false;
-
-  if (!bAlreadyChecked) {
-    HKEY hKey;
-    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ,
-                     &hKey) != ERROR_SUCCESS) {
-      return false;
-    }
-    DWORD dwValue;
-    DWORD dwBufSize = sizeof(DWORD);
-    if (RegQueryValueEx(hKey, "CStrikeInstalled", 0, nullptr, (LPBYTE)&dwValue,
-                        &dwBufSize) != ERROR_SUCCESS) {
-      bInstalled = false;
-    } else {
-      bInstalled = (bool)dwValue;  // (Presumably true, if it's there...)
-    }
-
-    RegCloseKey(hKey);
-    bAlreadyChecked = true;
+  if constexpr (port::kIsWindows) {
+    static const bool installed = ReadInstallerFlag("CStrikeInstalled");
+    return installed;
+  } else {
+    return true;
   }
-  return bInstalled;
-#else
-  // No registry off Windows, and no separate expansion installer -- the
-  // content is assumed present. Before the installer wrote a registry flag,
-  // this was decided by probing for EXPAND.MIX.
-  return true;
-#endif
 }
 
 // Reports whether the Aftermath expansion is installed. See
-// Is_Counterstrike_Installed() above; this works the same way.
+// Is_Counterstrike_Installed() above; this works the same way, and the probe
+// it replaced was for EXPAND2.MIX.
 bool Is_Aftermath_Installed() {
-#ifdef _WIN32
-  // ajw 9/29/98
-  static bool bAlreadyChecked = false;
-  static bool bInstalled = false;
-
-  if (!bAlreadyChecked) {
-    HKEY hKey;
-    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ,
-                     &hKey) != ERROR_SUCCESS) {
-      return false;
-    }
-    DWORD dwValue;
-    DWORD dwBufSize = sizeof(DWORD);
-    if (RegQueryValueEx(hKey, "AftermathInstalled", 0, nullptr,
-                        (LPBYTE)&dwValue, &dwBufSize) != ERROR_SUCCESS) {
-      bInstalled = false;
-    } else {
-      bInstalled = (bool)dwValue;  // (Presumably true, if it's there...)
-    }
-
-    RegCloseKey(hKey);
-    bAlreadyChecked = true;
+  if constexpr (port::kIsWindows) {
+    static const bool installed = ReadInstallerFlag("AftermathInstalled");
+    return installed;
+  } else {
+    return true;
   }
-  return bInstalled;
-#else
-  // No registry off Windows, and no separate expansion installer -- the
-  // content is assumed present. Before the installer wrote a registry flag,
-  // this was decided by probing for EXPAND2.MIX.
-  return true;
-#endif
 }
 
 void Enable_Secret_Units() {

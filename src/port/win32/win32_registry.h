@@ -61,4 +61,18 @@ LONG RegCloseKey(HKEY key);
 
 #endif  // _WIN32
 
+#include <cstdint>
+#include <optional>
+
+namespace port {
+
+// Reads the REG_DWORD value `value_name` from `sub_key` under `root`, which is
+// how the installer recorded which expansions it put on disk. Returns nullopt
+// when the key or value is absent or is not a DWORD -- and always off Windows,
+// where there is no registry.
+std::optional<uint32_t> ReadRegistryDword(HKEY root, const char* sub_key,
+                                          const char* value_name);
+
+}  // namespace port
+
 #endif  // CNC_RED_ALERT_PORT_WIN32_WIN32_REGISTRY_H_

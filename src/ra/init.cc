@@ -76,6 +76,7 @@
 
 #include "absl/strings/match.h"
 #include "port/ex_string.h"
+#include "port/platform.h"
 #include "ra/_wsproto.h"
 #include "ra/ccfile.h"
 #include "ra/ccini.h"
@@ -2786,29 +2787,14 @@ void Extract(const char* filename, const char* outname) {
 bool bUsingDVD = false;
 
 //***********************************************************************************************
+// Whether the installer recorded a DVD edition. Off Windows there is no
+// installer, and the disc logic treats the data on disk as the DVD.
 bool Is_DVD_Installed() {
-#ifdef _WIN32
-  bool bInstalled;
-  HKEY hKey;
-  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ,
-                   &hKey) != ERROR_SUCCESS) {
-    return false;
-  }
-  DWORD dwValue;
-  DWORD dwBufSize = sizeof(DWORD);
-  if (RegQueryValueEx(hKey, "DVD", 0, nullptr, (LPBYTE)&dwValue, &dwBufSize) !=
-      ERROR_SUCCESS) {
-    bInstalled = false;
+  if constexpr (port::kIsWindows) {
+    return ReadInstallerFlag("DVD");
   } else {
-    bInstalled = (bool)dwValue;  //	(Presumably true, if it's there...)
+    return true;
   }
-
-  RegCloseKey(hKey);
-
-  return bInstalled;
-#else
-  return true;
-#endif
 }
 
 //***********************************************************************************************

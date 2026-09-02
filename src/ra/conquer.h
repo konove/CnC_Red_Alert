@@ -636,6 +636,11 @@ inline bool bNoMovies = false;
 // localized release installed as a separate product.
 const char* Game_Registry_Key();
 
+// Reads one of the DWORD flags the Windows installer left under
+// Game_Registry_Key() -- CStrikeInstalled, AftermathInstalled, DVD. False when
+// the flag is absent or zero, which is always the case off Windows.
+bool ReadInstallerFlag(const char* value_name);
+
 // Ensures the disc holding the given official scenario is available. Expansion
 // scenarios live on their own discs; everything else is always reachable.
 bool Force_Scenario_Available(const char* name);

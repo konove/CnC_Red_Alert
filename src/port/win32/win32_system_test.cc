@@ -176,3 +176,11 @@ TEST(Win32RegistryTest, WritesAreDroppedButReportSuccess) {
 }  // namespace
 
 #endif  // _WIN32
+
+// Runs on every platform: on Windows the key below has never existed, and
+// off Windows nothing exists.
+TEST(Win32RegistryTest, ReadRegistryDwordIsEmptyForAMissingKey) {
+  EXPECT_EQ(port::ReadRegistryDword(HKEY_LOCAL_MACHINE,
+                                    "Software\\Westwood\\NoSuchGame", "DVD"),
+            std::nullopt);
+}
