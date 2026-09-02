@@ -74,6 +74,7 @@
 #include <memory>
 #include <string>
 
+#include "absl/log/log.h"
 #include "absl/strings/match.h"
 #include "port/ex_string.h"
 #include "port/platform.h"
@@ -2473,14 +2474,12 @@ static void Bootstrap() {
   */
   const void* palette_data = MFCD::Retrieve("TEMPERAT.PAL");
   if (!palette_data) {
-    fprintf(stderr,
-            "ERROR: Cannot find TEMPERAT.PAL - game data files not found!\n");
-    fprintf(stderr, "Please specify data directory with: -CD<path>\n");
-    fprintf(stderr,
-            "Example: ./rasdl "
-            "-CD\"/home/konsto/.local/share/Steam/steamapps/common/"
-            "Command & Conquer Red Alert\"\n");
-    exit(1);
+    // Missing data files are a user setup problem, not a bug: report and exit
+    // quietly rather than abort with a stack trace.
+    LOG(QFATAL) << "Cannot find TEMPERAT.PAL: game data files not found. "
+                   "Specify the data directory with -CD<path>, for example "
+                   "-CD\"<Steam library>/steamapps/common/Command & Conquer "
+                   "Red Alert\"";
   }
   memmove(&GamePalette[0], palette_data, 768L);
   WhitePalette[0] = BlackPalette[0];
