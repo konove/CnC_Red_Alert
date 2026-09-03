@@ -1402,10 +1402,6 @@ bool TeamTypeClass::Edit() {
           MissionList[index] = *missionlist2[index];
         }
 
-#ifdef TOFIX
-// the mission class objects pointed to in the list should be deleted?
-#endif
-
         if (strlen(originbtn.Get_Text())) {
           if (strlen(originbtn.Get_Text()) == 1) {
             Origin = toupper(*originbtn.Get_Text()) - 'A';
@@ -1450,6 +1446,11 @@ bool TeamTypeClass::Edit() {
     if (input & KN_BUTTON) {
       lastbutton = (input & ~KN_BUTTON);
     }
+  }
+
+  // The list holds copies made with new; the team type has its own array.
+  for (int index = 0; index < missionlist2.Count(); index++) {
+    delete missionlist2[index];
   }
 
   return (!cancel);
