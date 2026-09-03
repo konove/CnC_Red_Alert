@@ -73,8 +73,7 @@
  *special move mission overrides.                        *
  *   UnitClass::Mission_Repair -- Handles finding and proceeding on a repair
  *mission.          * UnitClass::Mission_Unload -- Handles unloading cargo. *
- *   UnitClass::Offload_Tiberium_Bail -- Offloads one Tiberium quantum from the
- *object.        * UnitClass::Ok_To_Move -- Queries whether the vehicle can
+ *   UnitClass::Ok_To_Move -- Queries whether the vehicle can
  *move.                            * UnitClass::Overlap_List -- Determines
  *overlap list for units.                             *
  *   UnitClass::Overrun_Square -- Handles vehicle overrun of a cell. *
@@ -3203,31 +3202,15 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
             }
 
             /*
-            **	Some kinds of terrain are considered destroyable if the unit is
-            *equipped *	with the weapon that can destroy it. Otherwise, the
-            *terrain is considered *	impassable.
+            **	Terrain is always impassable. Tiberian Dawn let a unit with a
+            **	wood-destroying weapon burn its way through trees; Red Alert
+            **	dropped that, so only units and buildings count as
+            **	destroyable blockers.
             */
-            switch (obj->What_Am_I()) {
-              case RTTI_TERRAIN:
-
-#ifdef TOFIX
-                if (((TerrainClass*)obj)->Class->Armor == ARMOR_WOOD &&
-                    Class->PrimaryWeapon->WarheadPtr->IsWoodDestroyer) {
-                  if (retval < MOVE_DESTROYABLE) {
-                    retval = MOVE_DESTROYABLE;
-                  }
-                } else {
-                  return (MOVE_NO);
-                }
-                break;
-#else
-                return MOVE_NO;
-#endif
-
-              default:
-                retval = std::max(retval, MOVE_DESTROYABLE);
-                break;
+            if (obj->What_Am_I() == RTTI_TERRAIN) {
+              return MOVE_NO;
             }
+            retval = std::max(retval, MOVE_DESTROYABLE);
           } else {
             crushable = true;
           }
@@ -4242,39 +4225,6 @@ fixed UnitClass::Tiberium_Load() const {
     return fixed(Tiberium, Rule.BailCount);
   }
   return fixed(0);
-}
-
-/***********************************************************************************************
- * UnitClass::Offload_Tiberium_Bail -- Offloads one Tiberium quantum from the
- *object.          *
- *                                                                                             *
- *    This routine will offload one Tiberium packet/quantum/bail from the
- *object. Multiple     * calls to this routine are needed in order to fully
- *offload all Tiberium.                 *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the number of credits offloaded for the one call. If
- *zero is returned,* then this indicates that all Tiberium has been offloaded. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/19/1995 JLB : Created. *
- *=============================================================================================*/
-int UnitClass::Offload_Tiberium_Bail() {
-  assert(IsActive);
-
-  if (Tiberium) {
-    Tiberium--;
-#ifdef TOFIX
-    if (House->IsHuman) {
-      return (UnitTypeClass::FULL_LOAD_CREDITS / UnitTypeClass::STEP_COUNT);
-    }
-    return (UnitTypeClass::FULL_LOAD_CREDITS +
-            (UnitTypeClass::FULL_LOAD_CREDITS / 3) / UnitTypeClass::STEP_COUNT);
-#endif
-  }
-  return 0;
 }
 
 /***********************************************************************************************

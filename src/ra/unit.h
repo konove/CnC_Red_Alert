@@ -251,7 +251,6 @@ class UnitClass final : public DriveClass {
   void Assign_Destination(TARGET target) override;
   void Overrun_Square(CELL cell, bool threaten = true) override;
   void Approach_Target() override;
-  int Offload_Tiberium_Bail() override;
   void Enter_Idle_Mode(bool initial = false) override;
   MoveType Can_Enter_Cell(CELL cell,
                           FacingType facing = FACING_NONE) const override;
