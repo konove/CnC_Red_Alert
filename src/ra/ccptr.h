@@ -108,12 +108,12 @@ class CCPtr {
 *desirable.
 */
 template <class T>
-bool operator==(CCPtr<T>& lvalue, T* rvalue) {
+bool operator==(const CCPtr<T>& lvalue, T* rvalue) {
   return static_cast<T*>(lvalue) == rvalue;
 }
 
 template <class T>
-bool operator==(T* lvalue, CCPtr<T>& rvalue) {
+bool operator==(T* lvalue, const CCPtr<T>& rvalue) {
   return lvalue == static_cast<T*>(rvalue);
 }
 
