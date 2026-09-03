@@ -885,14 +885,12 @@ enum ScenarioPlayerType {
   SCEN_PLAYER_MPLAYER
 };
 
-inline ScenarioPlayerType operator++(ScenarioPlayerType&, int);
 
 /**********************************************************************
 ** These are the directional parameters for a scenario.
 */
 enum ScenarioDirType { SCEN_DIR_NONE = -1, SCEN_DIR_EAST, SCEN_DIR_WEST };
 
-inline ScenarioDirType operator++(ScenarioDirType&, int);
 
 /**********************************************************************
 ** These are the random variations of a scenario.
@@ -1841,7 +1839,6 @@ enum DoType {
   DO_DOG_MAUL
 };
 
-inline DoType operator++(DoType&, int);
 
 /*
 **	This structure is associated with each maneuver type. It tells whether
