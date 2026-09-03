@@ -3268,7 +3268,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
   int index;
   int check_crc;
 
-#if (TIMING_FIX)
   //
   // If MPlayerMaxAhead is recomputed such that it increases, the systems
   // may try to free-run to the new MaxAhead value.  If so, they may miss
@@ -3287,7 +3286,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
       DoList[j].Frame = NewMaxAheadFrame2;
     }
   }
-#endif
 
   //------------------------------------------------------------------------
   //	Execute the DoList.  Events must be executed in the same order on all

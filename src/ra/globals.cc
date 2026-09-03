@@ -616,7 +616,7 @@ unsigned long ScenarioCRC;
 ** This class manages data specific to multiplayer games.
 */
 SessionClass Session;
-#if (TIMING_FIX)
+
 //
 // These values store the min & max frame #'s for when MaxAhead >>increases<<.
 // If MaxAhead increases, and the other systems free-run to the new MaxAhead
@@ -630,7 +630,6 @@ SessionClass Session;
 //
 int NewMaxAheadFrame1;
 int NewMaxAheadFrame2;
-#endif
 
 bool bAftermathMultiplayer;  //	Is multiplayer game being played with Aftermath
                              // rules?

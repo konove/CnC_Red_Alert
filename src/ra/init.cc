@@ -153,10 +153,6 @@
 #include "tech/rndstraw.h"
 #include "winvq/vqa32/vqaplay.h"
 
-#ifdef DONGLE
-#include "cbn_.h"
-#endif
-
 RemapControlType SidebarScheme;
 
 /****************************************
@@ -458,15 +454,6 @@ bool Select_Game(bool /*fade*/) {
   bool process = true;      // false = break out of while loop
   bool display = true;
 
-#ifdef DONGLE
-  /* These where added by ColinM for the dongle checking */
-  short iRet = 0;
-  unsigned short iPortNr = 1; /* automatic port scan enabled */
-  unsigned char cSCodeSER[] = "\x41\x42";
-  unsigned long ulIdRet = 0;
-  unsigned char cBoxName[] = "\x00\x00";
-#endif
-
   int cdcheck = 0;
 
   Show_Mouse();
@@ -498,29 +485,8 @@ bool Select_Game(bool /*fade*/) {
   Session.ProcessTicks = 0;
   Session.ProcessFrames = 0;
   Session.DesiredFrameRate = 30;
-#if (TIMING_FIX)
   NewMaxAheadFrame1 = 0;
   NewMaxAheadFrame2 = 0;
-#endif
-
-/* ColinM added to check for dongle */
-#ifdef DONGLE
-  iRet = CbN_BoxReady(iPortNr, cBoxName);
-  if (cBoxName[0] != 0xc5 && cBoxName[0] != 0xc9) {
-    WWMessageBox().Process(
-        "Please ensure dongle is attached. Run the dongle batch file too.",
-        TXT_OK);
-    Emergency_Exit(EXIT_FAILURE);
-  }
-
-  iRet = CbN_ReadSER(iPortNr, cSCodeSER, &ulIdRet);
-  if (ulIdRet != 0xa0095) {
-    WWMessageBox().Process(
-        "Please ensure dongle is attached. Run the dongle batch file too.",
-        TXT_OK);
-    Emergency_Exit(EXIT_FAILURE);
-  }
-#endif
 
   /*
   **	Init multiplayer game scores.  Let Wins accumulate; just init the

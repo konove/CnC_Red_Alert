@@ -43,15 +43,6 @@
 
 #include "tech/fixed.h"
 
-/**********************************************************************
-** ColinM
-** Set this to enable dongle protection
-*/
-// #define DONGLE
-
-// Network frame-timing fix. Still a preprocessor flag: it is tested with #if.
-#define TIMING_FIX 1
-
 // Width of the sidebar in pixels.
 inline constexpr int kSidebarWidth = 80;
 

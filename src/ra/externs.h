@@ -329,10 +329,8 @@ class NullModemClass;
 extern NullModemClass NullModem;
 extern IPXManagerClass Ipx;
 
-#if (TIMING_FIX)
 extern int NewMaxAheadFrame1;
 extern int NewMaxAheadFrame2;
-#endif
 
 extern GraphicViewPortClass HidPage;
 extern int MenuList[][8];

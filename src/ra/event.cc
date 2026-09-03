@@ -942,7 +942,6 @@ void EventClass::Execute() {
     // COMM_MULTI_E_COMP protocol.
     //
     case TIMING:
-#if (TIMING_FIX)
       //
       // If MaxAhead is about to increase, we're vulnerable to a Packet-
       // Received-Too-Late error, if any system generates an event after
@@ -954,7 +953,6 @@ void EventClass::Execute() {
         NewMaxAheadFrame1 = Frame;
         NewMaxAheadFrame2 = Frame + Data.Timing.MaxAhead;
       }
-#endif
       Session.DesiredFrameRate = Data.Timing.DesiredFrameRate;
       Session.MaxAhead = Data.Timing.MaxAhead;
 
