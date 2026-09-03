@@ -32,6 +32,11 @@ function(apply_dotenv_settings TARGET_NAME)
         return()
     endif ()
 
+    if (DEFINED DOTENV_LANGUAGE)
+        set(RA_LANGUAGE "${DOTENV_LANGUAGE}" PARENT_SCOPE)
+        message(STATUS "${TARGET_NAME}: LANGUAGE=${DOTENV_LANGUAGE} from .env")
+    endif ()
+
     if (DEFINED DOTENV_BUILD_VERSION)
         string(TOLOWER "${DOTENV_BUILD_VERSION}" VERSION_LOWER)
         if (VERSION_LOWER STREQUAL "internal")

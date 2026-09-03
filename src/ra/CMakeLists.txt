@@ -1,3 +1,21 @@
+# Build language for Red Alert. Chosen with -DRA_LANGUAGE=<english|german|french>
+# or, in non-Release builds, with LANGUAGE=<...> in .env (see .env.example).
+set(RA_LANGUAGE "english" CACHE STRING "Red Alert build language: english, german or french")
+set_property(CACHE RA_LANGUAGE PROPERTY STRINGS english german french)
+
+function(apply_language_setting TARGET_NAME)
+    string(TOLOWER "${RA_LANGUAGE}" LANGUAGE_LOWER)
+    if (LANGUAGE_LOWER STREQUAL "german")
+        target_compile_definitions(${TARGET_NAME} PRIVATE GERMAN=1)
+    elseif (LANGUAGE_LOWER STREQUAL "french")
+        target_compile_definitions(${TARGET_NAME} PRIVATE FRENCH=1)
+    elseif (LANGUAGE_LOWER STREQUAL "english")
+        target_compile_definitions(${TARGET_NAME} PRIVATE ENGLISH=1)
+    else ()
+        message(FATAL_ERROR "RA_LANGUAGE must be english, german or french, not '${RA_LANGUAGE}'")
+    endif ()
+endfunction()
+
 add_executable(rasdl WIN32)
 
 file(GLOB_RECURSE RA_SOURCES
@@ -77,10 +95,8 @@ if (WIN32)
     target_link_libraries(rasdl PRIVATE wsock32)
 endif ()
 
-target_compile_definitions(rasdl PRIVATE
-        ENGLISH=1  # TODO: also french/german
-)
 apply_dotenv_settings(rasdl)
+apply_language_setting(rasdl)
 target_link_libraries(rasdl PUBLIC absl::strings PRIVATE
         tech
         port
@@ -121,14 +137,14 @@ add_gtest(
     SOURCES winbits_test.cc winbits.cc dib.cc
     LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log
 )
-target_compile_definitions(ra_winbits_test PRIVATE ENGLISH=1)
+apply_language_setting(ra_winbits_test)
 
 add_gtest(
     NAME ra_heap_layout_test
     SOURCES heap_layout_test.cc
     LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log
 )
-target_compile_definitions(ra_heap_layout_test PRIVATE ENGLISH=1)
+apply_language_setting(ra_heap_layout_test)
 
 if (EMSCRIPTEN)
     set_target_properties(rasdl PROPERTIES
