@@ -2098,13 +2098,6 @@ bool Read_Scenario_INI(char* fname, bool) {
   ** Init the Scenario CRC value
   */
   ScenarioCRC = 0;
-#ifdef TOFIX
-  len = strlen(buffer);
-  for (int i = 0; i < len; i++) {
-    val = (unsigned char)buffer[i];
-    Add_CRC(&ScenarioCRC, (unsigned long)val);
-  }
-#endif
 
   /*
   **	Fetch the appropriate movie names from the INI file.
@@ -2888,14 +2881,6 @@ static void Create_Units(bool official) {
       **	capture-the-flag mode.
       */
       scaleval = 1;
-#ifdef TOFIX
-      if (Special.IsCaptureTheFlag) {
-        obj = new UnitClass(UNIT_TRUCK, house);
-        obj->Unlimbo(Cell_Coord(centroid), DIR_N);
-        hptr->FlagHome = 0;  // turn house's flag off
-        hptr->FlagLocation = 0;
-      }
-#endif
     }
 
     /*
