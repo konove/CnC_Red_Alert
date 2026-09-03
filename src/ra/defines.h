@@ -508,9 +508,7 @@ enum SpecialWeaponType : int {
   SPC_PARA_INFANTRY,  // Parachute reinforcement delivery.
   SPC_SPY_MISSION,    // Spy plane to take photo recon mission.
   SPC_IRON_CURTAIN,   // Bestow invulnerability on a unit/building
-  SPC_GPS,            // give allies free unjammable radar.
-
-  SPC_ANY = 1
+  SPC_GPS             // give allies free unjammable radar.
 };
 // Second stage of chronosphere targeting: picking the destination.
 inline constexpr SpecialWeaponType kSpcChrono2 =

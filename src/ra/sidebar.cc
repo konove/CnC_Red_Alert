@@ -2069,14 +2069,11 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
             *exit *	the factory or go into placement mode.
             */
             if (factory->Has_Completed()) {
+              // Red Alert never produces special weapons through a
+              // factory, so a completed factory without an object has
+              // nothing to place.
               TechnoClass* pending = factory->Get_Object();
-              if (pending == nullptr) {
-                // A factory with no object of its own is producing a special
-                // weapon; with neither there is nothing to place.
-                if (factory->Get_Special_Item()) {
-                  Map.IsTargettingMode = SPC_ANY;
-                }
-              } else {
+              if (pending != nullptr) {
                 BuildingClass* builder =
                     pending->Who_Can_Build_Me(false, false);
                 if (!builder) {
